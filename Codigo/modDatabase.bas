@@ -1202,7 +1202,7 @@ End Function
 
 Public Function GetPersonajesCuentaDatabase(ByVal AccountID As Long, Personaje() As PersonajeCuenta) As Byte
 
-    Call MakeQuery("SELECT name, head_id, class_id, body_id, pos_map, level, status, helmet_id, shield_id, weapon_id, guild_index FROM user WHERE deleted = FALSE AND account_id = " & AccountID & ";")
+    Call MakeQuery("SELECT name, head_id, class_id, body_id, pos_map, level, status, helmet_id, shield_id, weapon_id, guild_index, is_dead FROM user WHERE deleted = FALSE AND account_id = " & AccountID & ";")
     If QueryData Is Nothing Then Exit Function
     
     GetPersonajesCuentaDatabase = QueryData.RecordCount
@@ -1233,6 +1233,10 @@ Public Function GetPersonajesCuentaDatabase(ByVal AccountID As Long, Personaje()
             Personaje(i).Status = 6
         ElseIf EsAdmin(Personaje(i).nombre) Then
             Personaje(i).Status = 7
+        End If
+
+        If val(QueryData!is_dead) = 1 Then
+            Personaje(i).Cabeza = iCabezaMuerto
         End If
         
         QueryData.MoveNext
