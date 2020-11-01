@@ -85,10 +85,11 @@ Public IntervaloMagiaGolpe As Long
 Public IntervaloGolpeMagia As Long
 Public IntervaloUserPuedeCastear As Long
 Public IntervaloUserPuedeTrabajar As Long
-Public IntervaloParaConexion As Long
 Public IntervaloCerrarConexion As Long '[Gonzalo]
 Public IntervaloUserPuedeUsar As Long
 Public IntervaloFlechasCazadores As Long
+Public TimeoutPrimerPaquete As Long
+Public TimeoutEsperandoLoggear As Long
 
 Public IntervaloPuedeSerAtacado As Long
 

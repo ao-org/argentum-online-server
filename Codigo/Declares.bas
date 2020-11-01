@@ -908,19 +908,19 @@ End Type
 
 
 Public Type Position
-    x As Integer
+    X As Integer
     Y As Integer
 End Type
 
 Public Type WorldPos
     Map As Integer
-    x As Integer
+    X As Integer
     Y As Integer
 End Type
 
 Public Type CityWorldPos
     Map As Integer
-    x As Integer
+    X As Integer
     Y As Integer
     MapaViaje As Integer
     ViajeX As Byte
@@ -1406,6 +1406,7 @@ Public Type UserFlags
     Escondido As Byte '¿Esta escondido?
     Comerciando As Boolean '¿Esta comerciando?
     UserLogged As Boolean '¿Esta online?
+    FirstPacket As Boolean ' ¿El socket envió algun paquete válido?
     Meditando As Boolean
     Escribiendo As Boolean
 
