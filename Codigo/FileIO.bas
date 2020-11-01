@@ -32,7 +32,7 @@ Option Explicit
 
 
 Private Type Position
-    x As Integer
+    X As Integer
     Y As Integer
 End Type
 
@@ -46,7 +46,7 @@ End Type
 
 Private Type tWorldPos
     Map As Integer
-    x As Byte
+    X As Byte
     Y As Byte
 End Type
 
@@ -88,50 +88,50 @@ Private Type tMapHeader
 End Type
 
 Private Type tDatosBloqueados
-    x As Integer
+    X As Integer
     Y As Integer
 End Type
 
 Private Type tDatosGrh
-    x As Integer
+    X As Integer
     Y As Integer
     GrhIndex As Long
 End Type
 
 Private Type tDatosTrigger
-    x As Integer
+    X As Integer
     Y As Integer
     trigger As Integer
 End Type
 
 Private Type tDatosLuces
-    x As Integer
+    X As Integer
     Y As Integer
     Color As Long
     Rango As Byte
 End Type
 
 Private Type tDatosParticulas
-    x As Integer
+    X As Integer
     Y As Integer
     Particula As Long
 End Type
 
 Private Type tDatosNPC
-    x As Integer
+    X As Integer
     Y As Integer
     NpcIndex As Integer
 End Type
 
 Private Type tDatosObjs
-    x As Integer
+    X As Integer
     Y As Integer
     ObjIndex As Integer
     ObjAmmount As Integer
 End Type
 
 Private Type tDatosTE
-    x As Integer
+    X As Integer
     Y As Integer
     DestM As Integer
     DestX As Integer
@@ -690,7 +690,7 @@ For j = 1 To 100
             If .Blocked Then
                 MH.NumeroBloqueados = MH.NumeroBloqueados + 1
                 ReDim Preserve Blqs(1 To MH.NumeroBloqueados)
-                Blqs(MH.NumeroBloqueados).x = i
+                Blqs(MH.NumeroBloqueados).X = i
                 Blqs(MH.NumeroBloqueados).Y = j
             End If
             
@@ -699,7 +699,7 @@ For j = 1 To 100
             If .Graphic(1) > 0 Then
                 MH.NumeroLayers(1) = MH.NumeroLayers(1) + 1
                 ReDim Preserve L1(1 To MH.NumeroLayers(1))
-                L1(MH.NumeroLayers(1)).x = i
+                L1(MH.NumeroLayers(1)).X = i
                 L1(MH.NumeroLayers(1)).Y = j
                 L1(MH.NumeroLayers(1)).GrhIndex = .Graphic(1)
             End If
@@ -708,7 +708,7 @@ For j = 1 To 100
             If .Graphic(2) > 0 Then
                 MH.NumeroLayers(2) = MH.NumeroLayers(2) + 1
                 ReDim Preserve L2(1 To MH.NumeroLayers(2))
-                L2(MH.NumeroLayers(2)).x = i
+                L2(MH.NumeroLayers(2)).X = i
                 L2(MH.NumeroLayers(2)).Y = j
                 L2(MH.NumeroLayers(2)).GrhIndex = .Graphic(2)
             End If
@@ -716,7 +716,7 @@ For j = 1 To 100
             If .Graphic(3) > 0 Then
                 MH.NumeroLayers(3) = MH.NumeroLayers(3) + 1
                 ReDim Preserve L3(1 To MH.NumeroLayers(3))
-                L3(MH.NumeroLayers(3)).x = i
+                L3(MH.NumeroLayers(3)).X = i
                 L3(MH.NumeroLayers(3)).Y = j
                 L3(MH.NumeroLayers(3)).GrhIndex = .Graphic(3)
             End If
@@ -724,7 +724,7 @@ For j = 1 To 100
             If .Graphic(4) > 0 Then
                 MH.NumeroLayers(4) = MH.NumeroLayers(4) + 1
                 ReDim Preserve L4(1 To MH.NumeroLayers(4))
-                L4(MH.NumeroLayers(4)).x = i
+                L4(MH.NumeroLayers(4)).X = i
                 L4(MH.NumeroLayers(4)).Y = j
                 L4(MH.NumeroLayers(4)).GrhIndex = .Graphic(4)
             End If
@@ -732,7 +732,7 @@ For j = 1 To 100
             If .trigger > 0 Then
                 MH.NumeroTriggers = MH.NumeroTriggers + 1
                 ReDim Preserve Triggers(1 To MH.NumeroTriggers)
-                Triggers(MH.NumeroTriggers).x = i
+                Triggers(MH.NumeroTriggers).X = i
                 Triggers(MH.NumeroTriggers).Y = j
                 Triggers(MH.NumeroTriggers).trigger = .trigger
             End If
@@ -740,7 +740,7 @@ For j = 1 To 100
              If .ParticulaIndex > 0 Then
                  MH.NumeroParticulas = MH.NumeroParticulas + 1
                  ReDim Preserve Particulas(1 To MH.NumeroParticulas)
-                 Particulas(MH.NumeroParticulas).x = i
+                 Particulas(MH.NumeroParticulas).X = i
                  Particulas(MH.NumeroParticulas).Y = j
                  Particulas(MH.NumeroParticulas).Particula = .ParticulaIndex
              End If
@@ -762,7 +762,7 @@ For j = 1 To 100
                 Objetos(MH.NumeroOBJs).ObjIndex = .ObjInfo.ObjIndex
                 Objetos(MH.NumeroOBJs).ObjAmmount = .ObjInfo.Amount
                
-                Objetos(MH.NumeroOBJs).x = i
+                Objetos(MH.NumeroOBJs).X = i
                 Objetos(MH.NumeroOBJs).Y = j
                 
             End If
@@ -771,7 +771,7 @@ For j = 1 To 100
                 MH.NumeroNPCs = MH.NumeroNPCs + 1
                 ReDim Preserve NPCs(1 To MH.NumeroNPCs)
                 NPCs(MH.NumeroNPCs).NpcIndex = .NpcIndex
-                NPCs(MH.NumeroNPCs).x = i
+                NPCs(MH.NumeroNPCs).X = i
                 NPCs(MH.NumeroNPCs).Y = j
             End If
             
@@ -779,9 +779,9 @@ For j = 1 To 100
                 MH.NumeroTE = MH.NumeroTE + 1
                 ReDim Preserve TEs(1 To MH.NumeroTE)
                 TEs(MH.NumeroTE).DestM = .TileExit.Map
-                TEs(MH.NumeroTE).DestX = .TileExit.x
+                TEs(MH.NumeroTE).DestX = .TileExit.X
                 TEs(MH.NumeroTE).DestY = .TileExit.Y
-                TEs(MH.NumeroTE).x = i
+                TEs(MH.NumeroTE).X = i
                 TEs(MH.NumeroTE).Y = j
             End If
         End With
@@ -863,7 +863,7 @@ End Sub
 
 Sub LoadBalance()
     Dim i As Long
-    Dim x As Byte
+    Dim X As Byte
     'Modificadores de Clase
     For i = 1 To NUMCLASES
         With ModClase(i)
@@ -881,15 +881,15 @@ Sub LoadBalance()
     'Modificadores de Vida
     For i = 1 To NUMRAZAS
              ModRaza(i).FuerzaGolpe = val(GetVar(DatPath & "Balance.dat", "MODFUERZAGOLPERAZA", ListaRazas(i)))
-        For x = 1 To NUMCLASES
+        For X = 1 To NUMCLASES
            
     
-            ModVida(i).Inicial(x) = val(GetVar(DatPath & "BalanceVida.dat", "VIDAINICIAL", ListaRazas(i)))
-            ModVida(i).N1TO15(x) = val(GetVar(DatPath & "BalanceVida.dat", ListaClases(x) & ListaRazas(i), "N1TO15"))
-            ModVida(i).N16TO35(x) = val(GetVar(DatPath & "BalanceVida.dat", ListaClases(x) & ListaRazas(i), "N16TO35"))
-            ModVida(i).N36TO45(x) = val(GetVar(DatPath & "BalanceVida.dat", ListaClases(x) & ListaRazas(i), "N36TO45"))
-            ModVida(i).N46TO50(x) = val(GetVar(DatPath & "BalanceVida.dat", ListaClases(x) & ListaRazas(i), "N46TO50"))
-        Next x
+            ModVida(i).Inicial(X) = val(GetVar(DatPath & "BalanceVida.dat", "VIDAINICIAL", ListaRazas(i)))
+            ModVida(i).N1TO15(X) = val(GetVar(DatPath & "BalanceVida.dat", ListaClases(X) & ListaRazas(i), "N1TO15"))
+            ModVida(i).N16TO35(X) = val(GetVar(DatPath & "BalanceVida.dat", ListaClases(X) & ListaRazas(i), "N16TO35"))
+            ModVida(i).N36TO45(X) = val(GetVar(DatPath & "BalanceVida.dat", ListaClases(X) & ListaRazas(i), "N36TO45"))
+            ModVida(i).N46TO50(X) = val(GetVar(DatPath & "BalanceVida.dat", ListaClases(X) & ListaRazas(i), "N46TO50"))
+        Next X
     Next i
     
     'Extra
@@ -1574,7 +1574,7 @@ UserList(UserIndex).flags.Pareja = UserFile.GetValue("FLAGS", "PAREJA")
 
 
 UserList(UserIndex).Pos.Map = CInt(ReadField(1, UserFile.GetValue("INIT", "Position"), 45))
-UserList(UserIndex).Pos.x = CInt(ReadField(2, UserFile.GetValue("INIT", "Position"), 45))
+UserList(UserIndex).Pos.X = CInt(ReadField(2, UserFile.GetValue("INIT", "Position"), 45))
 UserList(UserIndex).Pos.Y = CInt(ReadField(3, UserFile.GetValue("INIT", "Position"), 45))
 
 UserList(UserIndex).Invent.NroItems = CInt(UserFile.GetValue("Inventory", "CantidadItems"))
@@ -1744,7 +1744,7 @@ Exit Sub
 
 man:
     MsgBox ("Error durante la carga de mapas, el mapa " & Map & " contiene errores")
-    Call LogError(Date & " " & Err.description & " " & Err.HelpContext & " " & Err.HelpFile & " " & Err.source)
+    Call LogError(Date & " " & Err.description & " " & Err.HelpContext & " " & Err.HelpFile & " " & Err.Source)
 
 End Sub
 Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
@@ -1793,7 +1793,7 @@ Rem Get #fh, , L1
             Get #fh, , Blqs
             For i = 1 To .NumeroBloqueados
 
-                MapData(Map, Blqs(i).x, Blqs(i).Y).Blocked = 1
+                MapData(Map, Blqs(i).X, Blqs(i).Y).Blocked = 1
             Next i
 
         End If
@@ -1808,7 +1808,7 @@ Rem Get #fh, , L1
             Get #fh, , L1
             For i = 1 To .NumeroLayers(1)
                         
-           MapData(Map, L1(i).x, L1(i).Y).Graphic(1) = L1(i).GrhIndex
+           MapData(Map, L1(i).X, L1(i).Y).Graphic(1) = L1(i).GrhIndex
             
             'InitGrh MapData(L1(i).X, L1(i).Y).Graphic(1), MapData(L1(i).X, L1(i).Y).Graphic(1).GrhIndex
                ' Call Map_Grh_Set(L2(i).X, L2(i).Y, L2(i).GrhIndex, 2)
@@ -1820,7 +1820,7 @@ Rem Get #fh, , L1
             ReDim L2(1 To .NumeroLayers(2))
             Get #fh, , L2
             For i = 1 To .NumeroLayers(2)
-            MapData(Map, L2(i).x, L2(i).Y).Graphic(2) = L2(i).GrhIndex
+            MapData(Map, L2(i).X, L2(i).Y).Graphic(2) = L2(i).GrhIndex
             Next i
         End If
                 
@@ -1828,7 +1828,7 @@ Rem Get #fh, , L1
             ReDim L3(1 To .NumeroLayers(3))
             Get #fh, , L3
             For i = 1 To .NumeroLayers(3)
-                MapData(Map, L3(i).x, L3(i).Y).Graphic(3) = L3(i).GrhIndex
+                MapData(Map, L3(i).X, L3(i).Y).Graphic(3) = L3(i).GrhIndex
             Next i
         End If
         
@@ -1836,7 +1836,7 @@ Rem Get #fh, , L1
             ReDim L4(1 To .NumeroLayers(4))
             Get #fh, , L4
             For i = 1 To .NumeroLayers(4)
-                MapData(Map, L4(i).x, L4(i).Y).Graphic(4) = L4(i).GrhIndex
+                MapData(Map, L4(i).X, L4(i).Y).Graphic(4) = L4(i).GrhIndex
             Next i
         End If
 
@@ -1845,7 +1845,7 @@ Rem Get #fh, , L1
             ReDim Triggers(1 To .NumeroTriggers)
             Get #fh, , Triggers
             For i = 1 To .NumeroTriggers
-                MapData(Map, Triggers(i).x, Triggers(i).Y).trigger = Triggers(i).trigger
+                MapData(Map, Triggers(i).X, Triggers(i).Y).trigger = Triggers(i).trigger
             Next i
         End If
 
@@ -1855,8 +1855,8 @@ Rem Get #fh, , L1
             ReDim Particulas(1 To .NumeroParticulas)
             Get #fh, , Particulas
             For i = 1 To .NumeroParticulas
-                MapData(Map, Particulas(i).x, Particulas(i).Y).ParticulaIndex = Particulas(i).Particula
-                MapData(Map, Particulas(i).x, Particulas(i).Y).ParticulaIndex = 0
+                MapData(Map, Particulas(i).X, Particulas(i).Y).ParticulaIndex = Particulas(i).Particula
+                MapData(Map, Particulas(i).X, Particulas(i).Y).ParticulaIndex = 0
             Next i
         End If
 
@@ -1865,10 +1865,10 @@ Rem Get #fh, , L1
             ReDim Luces(1 To .NumeroLuces)
             Get #fh, , Luces
             For i = 1 To .NumeroLuces
-            MapData(Map, Luces(i).x, Luces(i).Y).Luz.Color = Luces(i).Color
-            MapData(Map, Luces(i).x, Luces(i).Y).Luz.Rango = Luces(i).Rango
-            MapData(Map, Luces(i).x, Luces(i).Y).Luz.Color = 0
-            MapData(Map, Luces(i).x, Luces(i).Y).Luz.Rango = 0
+            MapData(Map, Luces(i).X, Luces(i).Y).Luz.Color = Luces(i).Color
+            MapData(Map, Luces(i).X, Luces(i).Y).Luz.Rango = Luces(i).Rango
+            MapData(Map, Luces(i).X, Luces(i).Y).Luz.Color = 0
+            MapData(Map, Luces(i).X, Luces(i).Y).Luz.Rango = 0
             Next i
         End If
 
@@ -1877,14 +1877,14 @@ Rem Get #fh, , L1
             ReDim Objetos(1 To .NumeroOBJs)
             Get #fh, , Objetos
             For i = 1 To .NumeroOBJs
-                MapData(Map, Objetos(i).x, Objetos(i).Y).ObjInfo.ObjIndex = Objetos(i).ObjIndex
+                MapData(Map, Objetos(i).X, Objetos(i).Y).ObjInfo.ObjIndex = Objetos(i).ObjIndex
 
                 Select Case ObjData(Objetos(i).ObjIndex).OBJType
                     Case eOBJType.otYacimiento, eOBJType.otArboles
-                        MapData(Map, Objetos(i).x, Objetos(i).Y).ObjInfo.Amount = ObjData(Objetos(i).ObjIndex).VidaUtil
-                        MapData(Map, Objetos(i).x, Objetos(i).Y).ObjInfo.UltimoUso = &H7FFFFFFF ' Max Long
+                        MapData(Map, Objetos(i).X, Objetos(i).Y).ObjInfo.Amount = ObjData(Objetos(i).ObjIndex).VidaUtil
+                        MapData(Map, Objetos(i).X, Objetos(i).Y).ObjInfo.UltimoUso = &H7FFFFFFF ' Max Long
                     Case Else
-                        MapData(Map, Objetos(i).x, Objetos(i).Y).ObjInfo.Amount = Objetos(i).ObjAmmount
+                        MapData(Map, Objetos(i).X, Objetos(i).Y).ObjInfo.Amount = Objetos(i).ObjAmmount
                 End Select
             Next i
         End If
@@ -1898,26 +1898,26 @@ Rem Get #fh, , L1
 
 
 
-                    MapData(Map, NPCs(i).x, NPCs(i).Y).NpcIndex = NPCs(i).NpcIndex
+                    MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex = NPCs(i).NpcIndex
                     
 
                     
                     
-                    If MapData(Map, NPCs(i).x, NPCs(i).Y).NpcIndex > 0 Then
+                    If MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex > 0 Then
                            npcfile = DatPath & "NPCs.dat"
                         'Si el npc debe hacer respawn en la pos
                         'original la guardamos
-                            If val(GetVar(npcfile, "NPC" & MapData(Map, NPCs(i).x, NPCs(i).Y).NpcIndex, "PosOrig")) = 1 Then
-                                    MapData(Map, NPCs(i).x, NPCs(i).Y).NpcIndex = OpenNPC(MapData(Map, NPCs(i).x, NPCs(i).Y).NpcIndex)
-                                    Npclist(MapData(Map, NPCs(i).x, NPCs(i).Y).NpcIndex).Orig.Map = Map
-                                    Npclist(MapData(Map, NPCs(i).x, NPCs(i).Y).NpcIndex).Orig.x = NPCs(i).x
-                                    Npclist(MapData(Map, NPCs(i).x, NPCs(i).Y).NpcIndex).Orig.Y = NPCs(i).Y
+                            If val(GetVar(npcfile, "NPC" & MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex, "PosOrig")) = 1 Then
+                                    MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex = OpenNPC(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex)
+                                    Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Orig.Map = Map
+                                    Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Orig.X = NPCs(i).X
+                                    Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Orig.Y = NPCs(i).Y
                             Else
-                                    MapData(Map, NPCs(i).x, NPCs(i).Y).NpcIndex = OpenNPC(MapData(Map, NPCs(i).x, NPCs(i).Y).NpcIndex)
+                                    MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex = OpenNPC(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex)
                             End If
-                        Npclist(MapData(Map, NPCs(i).x, NPCs(i).Y).NpcIndex).Pos.Map = Map
-                        Npclist(MapData(Map, NPCs(i).x, NPCs(i).Y).NpcIndex).Pos.x = NPCs(i).x
-                        Npclist(MapData(Map, NPCs(i).x, NPCs(i).Y).NpcIndex).Pos.Y = NPCs(i).Y
+                        Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Pos.Map = Map
+                        Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Pos.X = NPCs(i).X
+                        Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Pos.Y = NPCs(i).Y
                         
                         
                                     '        If NPCs(i).NpcIndex > 499 Then
@@ -1942,12 +1942,12 @@ Rem Get #fh, , L1
                     'End If
                    
                             
-                        If Npclist(MapData(Map, NPCs(i).x, NPCs(i).Y).NpcIndex).name = "" Then
+                        If Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).name = "" Then
                        
-                        MapData(Map, NPCs(i).x, NPCs(i).Y).NpcIndex = 0
+                        MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex = 0
                         Else
                         
-                       Call MakeNPCChar(True, 0, MapData(Map, NPCs(i).x, NPCs(i).Y).NpcIndex, Map, NPCs(i).x, NPCs(i).Y)
+                       Call MakeNPCChar(True, 0, MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex, Map, NPCs(i).X, NPCs(i).Y)
                         
                         End If
                     End If
@@ -1965,9 +1965,9 @@ Rem Get #fh, , L1
                     ReDim TEs(1 To .NumeroTE)
                     Get #fh, , TEs
                     For i = 1 To .NumeroTE
-                        MapData(Map, TEs(i).x, TEs(i).Y).TileExit.Map = TEs(i).DestM
-                        MapData(Map, TEs(i).x, TEs(i).Y).TileExit.x = TEs(i).DestX
-                        MapData(Map, TEs(i).x, TEs(i).Y).TileExit.Y = TEs(i).DestY
+                        MapData(Map, TEs(i).X, TEs(i).Y).TileExit.Map = TEs(i).DestM
+                        MapData(Map, TEs(i).X, TEs(i).Y).TileExit.X = TEs(i).DestX
+                        MapData(Map, TEs(i).X, TEs(i).Y).TileExit.Y = TEs(i).DestY
                     Next i
         End If
 
@@ -2102,9 +2102,11 @@ Sub LoadSini()
     IntervaloInvocacion = val(Lector.GetValue("INTERVALOS", "IntervaloInvocacion"))
     FrmInterv.txtInvocacion.Text = IntervaloInvocacion
     
-    IntervaloParaConexion = val(Lector.GetValue("INTERVALOS", "IntervaloParaConexion"))
-    FrmInterv.txtIntervaloParaConexion.Text = IntervaloParaConexion
+    TimeoutPrimerPaquete = val(Lector.GetValue("INTERVALOS", "TimeoutPrimerPaquete"))
+    FrmInterv.txtTimeoutPrimerPaquete.Text = TimeoutPrimerPaquete
     
+    TimeoutEsperandoLoggear = val(Lector.GetValue("INTERVALOS", "TimeoutEsperandoLoggear"))
+    FrmInterv.txtTimeoutEsperandoLoggear.Text = TimeoutEsperandoLoggear
     
     IntervaloIncineracion = val(Lector.GetValue("INTERVALOS", "IntervaloFuego"))
     FrmInterv.txtintervalofuego.Text = IntervaloIncineracion
@@ -2158,7 +2160,7 @@ Sub LoadSini()
     
     'Ressurect pos
     ResPos.Map = val(ReadField(1, Lector.GetValue("INIT", "ResPos"), 45))
-    ResPos.x = val(ReadField(2, Lector.GetValue("INIT", "ResPos"), 45))
+    ResPos.X = val(ReadField(2, Lector.GetValue("INIT", "ResPos"), 45))
     ResPos.Y = val(ReadField(3, Lector.GetValue("INIT", "ResPos"), 45))
       
     recordusuarios = val(Lector.GetValue("INIT", "Record"))
@@ -2183,31 +2185,31 @@ Sub LoadSini()
     'Call Statistics.Initialize
     
     Nix.Map = GetVar(DatPath & "Ciudades.dat", "NIX", "Mapa")
-    Nix.x = GetVar(DatPath & "Ciudades.dat", "NIX", "X")
+    Nix.X = GetVar(DatPath & "Ciudades.dat", "NIX", "X")
     Nix.Y = GetVar(DatPath & "Ciudades.dat", "NIX", "Y")
     
     Ullathorpe.Map = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "Mapa")
-    Ullathorpe.x = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "X")
+    Ullathorpe.X = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "X")
     Ullathorpe.Y = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "Y")
     
     Banderbill.Map = GetVar(DatPath & "Ciudades.dat", "Banderbill", "Mapa")
-    Banderbill.x = GetVar(DatPath & "Ciudades.dat", "Banderbill", "X")
+    Banderbill.X = GetVar(DatPath & "Ciudades.dat", "Banderbill", "X")
     Banderbill.Y = GetVar(DatPath & "Ciudades.dat", "Banderbill", "Y")
     
     Lindos.Map = GetVar(DatPath & "Ciudades.dat", "Lindos", "Mapa")
-    Lindos.x = GetVar(DatPath & "Ciudades.dat", "Lindos", "X")
+    Lindos.X = GetVar(DatPath & "Ciudades.dat", "Lindos", "X")
     Lindos.Y = GetVar(DatPath & "Ciudades.dat", "Lindos", "Y")
     
     Arghal.Map = GetVar(DatPath & "Ciudades.dat", "Arghal", "Mapa")
-    Arghal.x = GetVar(DatPath & "Ciudades.dat", "Arghal", "X")
+    Arghal.X = GetVar(DatPath & "Ciudades.dat", "Arghal", "X")
     Arghal.Y = GetVar(DatPath & "Ciudades.dat", "Arghal", "Y")
     
     Hillidan.Map = GetVar(DatPath & "Ciudades.dat", "Hillidan", "Mapa")
-    Hillidan.x = GetVar(DatPath & "Ciudades.dat", "Hillidan", "X")
+    Hillidan.X = GetVar(DatPath & "Ciudades.dat", "Hillidan", "X")
     Hillidan.Y = GetVar(DatPath & "Ciudades.dat", "Hillidan", "Y")
 
     CityNix.Map = GetVar(DatPath & "Ciudades.dat", "NIX", "Mapa")
-    CityNix.x = GetVar(DatPath & "Ciudades.dat", "NIX", "X")
+    CityNix.X = GetVar(DatPath & "Ciudades.dat", "NIX", "X")
     CityNix.Y = GetVar(DatPath & "Ciudades.dat", "NIX", "Y")
     CityNix.MapaViaje = GetVar(DatPath & "Ciudades.dat", "NIX", "MapaViaje")
     CityNix.ViajeX = GetVar(DatPath & "Ciudades.dat", "NIX", "ViajeX")
@@ -2218,7 +2220,7 @@ Sub LoadSini()
     CityNix.NecesitaNave = GetVar(DatPath & "Ciudades.dat", "NIX", "NecesitaNave")
 
     CityUllathorpe.Map = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "Mapa")
-    CityUllathorpe.x = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "X")
+    CityUllathorpe.X = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "X")
     CityUllathorpe.Y = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "Y")
     CityUllathorpe.MapaViaje = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "MapaViaje")
     CityUllathorpe.ViajeX = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "ViajeX")
@@ -2229,7 +2231,7 @@ Sub LoadSini()
     CityUllathorpe.NecesitaNave = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "NecesitaNave")
     
     CityBanderbill.Map = GetVar(DatPath & "Ciudades.dat", "Banderbill", "Mapa")
-    CityBanderbill.x = GetVar(DatPath & "Ciudades.dat", "Banderbill", "X")
+    CityBanderbill.X = GetVar(DatPath & "Ciudades.dat", "Banderbill", "X")
     CityBanderbill.Y = GetVar(DatPath & "Ciudades.dat", "Banderbill", "Y")
     CityBanderbill.MapaViaje = GetVar(DatPath & "Ciudades.dat", "Banderbill", "MapaViaje")
     CityBanderbill.ViajeX = GetVar(DatPath & "Ciudades.dat", "Banderbill", "ViajeX")
@@ -2240,7 +2242,7 @@ Sub LoadSini()
     CityBanderbill.NecesitaNave = GetVar(DatPath & "Ciudades.dat", "Banderbill", "NecesitaNave")
     
     CityLindos.Map = GetVar(DatPath & "Ciudades.dat", "Lindos", "Mapa")
-    CityLindos.x = GetVar(DatPath & "Ciudades.dat", "Lindos", "X")
+    CityLindos.X = GetVar(DatPath & "Ciudades.dat", "Lindos", "X")
     CityLindos.Y = GetVar(DatPath & "Ciudades.dat", "Lindos", "Y")
     CityLindos.MapaViaje = GetVar(DatPath & "Ciudades.dat", "Lindos", "MapaViaje")
     CityLindos.ViajeX = GetVar(DatPath & "Ciudades.dat", "Lindos", "ViajeX")
@@ -2251,7 +2253,7 @@ Sub LoadSini()
     CityLindos.NecesitaNave = GetVar(DatPath & "Ciudades.dat", "Lindos", "NecesitaNave")
     
     CityArghal.Map = GetVar(DatPath & "Ciudades.dat", "Arghal", "Mapa")
-    CityArghal.x = GetVar(DatPath & "Ciudades.dat", "Arghal", "X")
+    CityArghal.X = GetVar(DatPath & "Ciudades.dat", "Arghal", "X")
     CityArghal.Y = GetVar(DatPath & "Ciudades.dat", "Arghal", "Y")
     CityArghal.MapaViaje = GetVar(DatPath & "Ciudades.dat", "Arghal", "MapaViaje")
     CityArghal.ViajeX = GetVar(DatPath & "Ciudades.dat", "Arghal", "ViajeX")
@@ -2262,7 +2264,7 @@ Sub LoadSini()
     CityArghal.NecesitaNave = GetVar(DatPath & "Ciudades.dat", "Arghal", "NecesitaNave")
     
     CityHillidan.Map = GetVar(DatPath & "Ciudades.dat", "Hillidan", "Mapa")
-    CityHillidan.x = GetVar(DatPath & "Ciudades.dat", "Hillidan", "X")
+    CityHillidan.X = GetVar(DatPath & "Ciudades.dat", "Hillidan", "X")
     CityHillidan.Y = GetVar(DatPath & "Ciudades.dat", "Hillidan", "Y")
     CityHillidan.MapaViaje = GetVar(DatPath & "Ciudades.dat", "Hillidan", "MapaViaje")
     CityHillidan.ViajeX = GetVar(DatPath & "Ciudades.dat", "Hillidan", "ViajeX")
@@ -2517,7 +2519,7 @@ Sub SaveUserBinary(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean)
         Put n, , "Arma=" & CStr(UserList(UserIndex).Char.WeaponAnim) & vbCrLf
         Put n, , "Escudo=" & CStr(UserList(UserIndex).Char.ShieldAnim) & vbCrLf
         Put n, , "Casco=" & CStr(UserList(UserIndex).Char.CascoAnim) & vbCrLf
-        Put n, , "Position=" & UserList(UserIndex).Pos.Map & "-" & UserList(UserIndex).Pos.x & "-" & UserList(UserIndex).Pos.Y & vbCrLf
+        Put n, , "Position=" & UserList(UserIndex).Pos.Map & "-" & UserList(UserIndex).Pos.X & "-" & UserList(UserIndex).Pos.Y & vbCrLf
         'If UserList(UserIndex).flags.Muerto = 0 Then
             Put n, , "Body=" & CStr(UserList(UserIndex).Char.Body) & vbCrLf
         'End If
@@ -2985,7 +2987,7 @@ Sub SaveNewUserCharfile(ByVal UserIndex As Integer)
     Put n, , "Arma=" & CStr(UserList(UserIndex).Char.WeaponAnim) & vbCrLf
     Put n, , "Escudo=" & CStr(UserList(UserIndex).Char.ShieldAnim) & vbCrLf
     Put n, , "Casco=" & CStr(UserList(UserIndex).Char.CascoAnim) & vbCrLf
-    Put n, , "Position=" & UserList(UserIndex).Pos.Map & "-" & UserList(UserIndex).Pos.x & "-" & UserList(UserIndex).Pos.Y & vbCrLf
+    Put n, , "Position=" & UserList(UserIndex).Pos.Map & "-" & UserList(UserIndex).Pos.X & "-" & UserList(UserIndex).Pos.Y & vbCrLf
     ' If UserList(UserIndex).flags.Muerto = 0 Then
        Put n, , "Body=" & CStr(UserList(UserIndex).Char.Body) & vbCrLf
     'Else

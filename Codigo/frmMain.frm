@@ -701,7 +701,10 @@ Else
 End If
 
 Call PurgarPenas
-Call CheckIdleUser
+
+If IdleLimit > 0 Then
+    Call CheckIdleUser
+End If
 
 '<<<<<-------- Log the number of users online ------>>>
 Dim n As Integer
@@ -724,7 +727,7 @@ On Error Resume Next
 
 Dim i As Integer
 For i = 1 To MaxUsers
-    Call LogCriticEvent(i & ") ConnID: " & UserList(i).ConnID & ". ConnidValida: " & UserList(i).ConnIDValida & " Name: " & UserList(i).Name & " UserLogged: " & UserList(i).flags.UserLogged)
+    Call LogCriticEvent(i & ") ConnID: " & UserList(i).ConnID & ". ConnidValida: " & UserList(i).ConnIDValida & " Name: " & UserList(i).name & " UserLogged: " & UserList(i).flags.UserLogged)
 Next i
 
 Call LogCriticEvent("Lastuser: " & LastUser & " NextOpenUser: " & NextOpenUser)
@@ -808,8 +811,8 @@ Call GetHoraActual
 
 For i = 1 To Baneos.Count
     If Baneos(i).FechaLiberacion <= Now Then
-        Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> Se ha concluido la sentencia de ban para " & Baneos(i).Name & ".", FontTypeNames.FONTTYPE_SERVER))
-        Call ChangeBan(Baneos(i).Name, 0)
+        Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> Se ha concluido la sentencia de ban para " & Baneos(i).name & ".", FontTypeNames.FONTTYPE_SERVER))
+        Call ChangeBan(Baneos(i).name, 0)
         Call Baneos.Remove(i)
         Call SaveBans
     End If
@@ -818,8 +821,8 @@ Next
 
 For i = 1 To Donadores.Count
     If Donadores(i).FechaExpiracion <= Now Then
-        Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> Se ha concluido el tiempo de donador para " & Donadores(i).Name & ".", FontTypeNames.FONTTYPE_SERVER))
-        Call ChangeDonador(Donadores(i).Name, 0)
+        Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> Se ha concluido el tiempo de donador para " & Donadores(i).name & ".", FontTypeNames.FONTTYPE_SERVER))
+        Call ChangeDonador(Donadores(i).name, 0)
         Call Donadores.Remove(i)
         Call SaveDonadores
     End If
@@ -894,11 +897,11 @@ If TiempoRestanteEvento = 0 Then
 End If
 End Sub
 
-Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, Y As Single)
 On Error Resume Next
    
    If Not Visible Then
-        Select Case X \ Screen.TwipsPerPixelX
+        Select Case x \ Screen.TwipsPerPixelX
                 
             Case WM_LBUTTONDBLCLK
                 WindowState = vbNormal
@@ -990,7 +993,7 @@ On Error GoTo hayerror
                     
                     .NumeroPaquetesPorMiliSec = 0
                     
-                    Call DoTileEvents(iUserIndex, .Pos.Map, .Pos.X, .Pos.Y)
+                    Call DoTileEvents(iUserIndex, .Pos.Map, .Pos.x, .Pos.Y)
                     
 
                     If .flags.Muerto = 0 Then
@@ -1098,8 +1101,9 @@ On Error GoTo hayerror
                 Else 'no esta logeado?
                     'Inactive players will be removed!
                     .Counters.IdleCount = .Counters.IdleCount + 1
-                    If .Counters.IdleCount > IntervaloParaConexion Then
-                        .Counters.IdleCount = 0
+                    
+                    'El intervalo cambia según si envió el primer paquete
+                    If .Counters.IdleCount > IIf(.flags.FirstPacket, TimeoutEsperandoLoggear, TimeoutPrimerPaquete) Then
                         Call CloseSocket(iUserIndex)
                     End If
                 End If 'UserLogged
@@ -1333,7 +1337,7 @@ Private Sub TIMER_AI_Timer()
 
 On Error GoTo ErrorHandler
 Dim NpcIndex As Long
-Dim X As Integer
+Dim x As Integer
 Dim Y As Integer
 Dim UseAI As Integer
 Dim Mapa As Integer
@@ -1376,7 +1380,7 @@ End If
 Exit Sub
 
 ErrorHandler:
-    Call LogError("Error en TIMER_AI_Timer " & Npclist(NpcIndex).Name & " mapa:" & Npclist(NpcIndex).Pos.Map)
+    Call LogError("Error en TIMER_AI_Timer " & Npclist(NpcIndex).name & " mapa:" & Npclist(NpcIndex).Pos.Map)
     Call MuereNpc(NpcIndex, 0)
 End Sub
 
@@ -1488,7 +1492,7 @@ Dim NpcIndex As Long
                 If RespawnList(NpcIndex).Contadores.InvervaloRespawn = 0 Then
                     RespawnList(NpcIndex).flags.NPCActive = False
                     If RespawnList(NpcIndex).InformarRespawn = 1 Then
-                        Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(RespawnList(NpcIndex).Name & " ha regresado y está listo para enfrentarte.", FontTypeNames.FONTTYPE_EXP))
+                        Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(RespawnList(NpcIndex).name & " ha regresado y está listo para enfrentarte.", FontTypeNames.FONTTYPE_EXP))
                         Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(257, NO_3D_SOUND, NO_3D_SOUND)) 'Para evento de respwan
                         
                         
@@ -1504,7 +1508,7 @@ Dim NpcIndex As Long
 Exit Sub
 
 ErrorHandler:
-    Call LogError("Error en TIMER_RESPAWN " & Npclist(NpcIndex).Name & " mapa:" & Npclist(NpcIndex).Pos.Map)
+    Call LogError("Error en TIMER_RESPAWN " & Npclist(NpcIndex).name & " mapa:" & Npclist(NpcIndex).Pos.Map)
     Call MuereNpc(NpcIndex, 0)
 End Sub
 
@@ -1536,7 +1540,7 @@ Dim i As Long
 
 For i = 1 To LastUser
     If UserList(i).flags.UserLogged Then
-        If MapData(UserList(i).Pos.Map, UserList(i).Pos.X, UserList(i).Pos.Y).trigger = eTrigger.ANTIPIQUETE Then
+        If MapData(UserList(i).Pos.Map, UserList(i).Pos.x, UserList(i).Pos.Y).trigger = eTrigger.ANTIPIQUETE Then
             UserList(i).Counters.PiqueteC = UserList(i).Counters.PiqueteC + 1
             'Call WriteConsoleMsg(i, "Estás obstruyendo la via pública, muévete o serás encarcelado!!!", FontTypeNames.FONTTYPE_INFO)
             Call WriteLocaleMsg(i, "70", FontTypeNames.FONTTYPE_INFO)

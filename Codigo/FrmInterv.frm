@@ -9,6 +9,40 @@ Begin VB.Form FrmInterv
    ScaleHeight     =   5205
    ScaleWidth      =   8130
    StartUpPosition =   3  'Windows Default
+   Begin VB.Frame Frame13 
+      Caption         =   "Otros"
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   615
+      Left            =   3600
+      TabIndex        =   59
+      Top             =   4200
+      Width           =   4455
+      Begin VB.TextBox txtTrabajo 
+         Height          =   300
+         Left            =   720
+         TabIndex        =   60
+         Text            =   "0"
+         Top             =   240
+         Width           =   930
+      End
+      Begin VB.Label Label16 
+         AutoSize        =   -1  'True
+         Caption         =   "Trabajo"
+         Height          =   195
+         Left            =   105
+         TabIndex        =   61
+         Top             =   270
+         Width           =   540
+      End
+   End
    Begin VB.CommandButton Command2 
       Caption         =   "Guardar Intervalos"
       BeginProperty Font 
@@ -22,7 +56,7 @@ Begin VB.Form FrmInterv
       EndProperty
       Height          =   255
       Left            =   4200
-      TabIndex        =   36
+      TabIndex        =   34
       Top             =   4800
       Width           =   3255
    End
@@ -56,7 +90,7 @@ Begin VB.Form FrmInterv
       EndProperty
       Height          =   2055
       Left            =   3600
-      TabIndex        =   49
+      TabIndex        =   47
       Top             =   2160
       Width           =   1695
       Begin VB.Frame Frame4 
@@ -72,13 +106,13 @@ Begin VB.Form FrmInterv
          EndProperty
          Height          =   1575
          Left            =   150
-         TabIndex        =   50
+         TabIndex        =   48
          Top             =   240
          Width           =   1365
          Begin VB.TextBox txtAI 
             Height          =   285
             Left            =   150
-            TabIndex        =   52
+            TabIndex        =   50
             Text            =   "0"
             Top             =   1080
             Width           =   1050
@@ -86,7 +120,7 @@ Begin VB.Form FrmInterv
          Begin VB.TextBox txtNPCPuedeAtacar 
             Height          =   285
             Left            =   135
-            TabIndex        =   51
+            TabIndex        =   49
             Text            =   "0"
             Top             =   510
             Width           =   1050
@@ -96,7 +130,7 @@ Begin VB.Form FrmInterv
             Caption         =   "AI"
             Height          =   195
             Left            =   165
-            TabIndex        =   54
+            TabIndex        =   52
             Top             =   840
             Width           =   150
          End
@@ -105,7 +139,7 @@ Begin VB.Form FrmInterv
             Caption         =   "Puede atacar"
             Height          =   195
             Left            =   150
-            TabIndex        =   53
+            TabIndex        =   51
             Top             =   255
             Width           =   960
          End
@@ -124,7 +158,7 @@ Begin VB.Form FrmInterv
       EndProperty
       Height          =   2055
       Left            =   5280
-      TabIndex        =   39
+      TabIndex        =   37
       Top             =   2160
       Width           =   2865
       Begin VB.Frame Frame7 
@@ -140,13 +174,13 @@ Begin VB.Form FrmInterv
          EndProperty
          Height          =   1650
          Left            =   120
-         TabIndex        =   40
+         TabIndex        =   38
          Top             =   240
          Width           =   2625
          Begin VB.TextBox txtCmdExec 
             Height          =   285
             Left            =   1320
-            TabIndex        =   44
+            TabIndex        =   42
             Text            =   "0"
             Top             =   1110
             Width           =   915
@@ -154,7 +188,7 @@ Begin VB.Form FrmInterv
          Begin VB.TextBox txtIntervaloPerdidaStaminaLluvia 
             Height          =   300
             Left            =   1320
-            TabIndex        =   43
+            TabIndex        =   41
             Text            =   "0"
             Top             =   480
             Width           =   930
@@ -162,7 +196,7 @@ Begin VB.Form FrmInterv
          Begin VB.TextBox txtIntervaloWAVFX 
             Height          =   300
             Left            =   150
-            TabIndex        =   42
+            TabIndex        =   40
             Text            =   "0"
             Top             =   480
             Width           =   930
@@ -170,7 +204,7 @@ Begin VB.Form FrmInterv
          Begin VB.TextBox txtIntervaloFrio 
             Height          =   285
             Left            =   180
-            TabIndex        =   41
+            TabIndex        =   39
             Text            =   "0"
             Top             =   1080
             Width           =   915
@@ -180,7 +214,7 @@ Begin VB.Form FrmInterv
             Caption         =   "TimerExec"
             Height          =   195
             Left            =   1320
-            TabIndex        =   48
+            TabIndex        =   46
             Top             =   840
             Width           =   750
          End
@@ -189,7 +223,7 @@ Begin VB.Form FrmInterv
             Caption         =   "Stamina Lluvia"
             Height          =   195
             Left            =   1350
-            TabIndex        =   47
+            TabIndex        =   45
             Top             =   270
             Width           =   1035
          End
@@ -198,7 +232,7 @@ Begin VB.Form FrmInterv
             Caption         =   "FxS"
             Height          =   195
             Left            =   180
-            TabIndex        =   46
+            TabIndex        =   44
             Top             =   270
             Width           =   270
          End
@@ -207,7 +241,7 @@ Begin VB.Form FrmInterv
             Caption         =   "Frio"
             Height          =   195
             Left            =   195
-            TabIndex        =   45
+            TabIndex        =   43
             Top             =   810
             Width           =   255
          End
@@ -245,39 +279,39 @@ Begin VB.Form FrmInterv
          TabIndex        =   24
          Top             =   210
          Width           =   1410
-         Begin VB.TextBox txtIntervaloParaConexion 
+         Begin VB.TextBox txtTimeoutEsperandoLoggear 
             Height          =   300
-            Left            =   45
-            TabIndex        =   26
+            Left            =   120
+            TabIndex        =   62
+            Text            =   "0"
+            Top             =   1155
+            Width           =   930
+         End
+         Begin VB.TextBox txtTimeoutPrimerPaquete 
+            Height          =   300
+            Left            =   120
+            TabIndex        =   25
             Text            =   "0"
             Top             =   495
             Width           =   930
          End
-         Begin VB.TextBox txtTrabajo 
-            Height          =   300
-            Left            =   60
-            TabIndex        =   25
-            Text            =   "0"
-            Top             =   1020
-            Width           =   930
+         Begin VB.Label Label24 
+            AutoSize        =   -1  'True
+            Caption         =   "Espera loggear"
+            Height          =   195
+            Left            =   120
+            TabIndex        =   63
+            Top             =   930
+            Width           =   1065
          End
          Begin VB.Label Label14 
             AutoSize        =   -1  'True
-            Caption         =   "IntervaloCon"
+            Caption         =   "Primer Paquete"
             Height          =   195
             Left            =   120
-            TabIndex        =   28
+            TabIndex        =   26
             Top             =   270
-            Width           =   900
-         End
-         Begin VB.Label Label16 
-            AutoSize        =   -1  'True
-            Caption         =   "Trabajo"
-            Height          =   195
-            Left            =   165
-            TabIndex        =   27
-            Top             =   780
-            Width           =   540
+            Width           =   1080
          End
       End
       Begin VB.Frame Frame8 
@@ -514,13 +548,13 @@ Begin VB.Form FrmInterv
          EndProperty
          Height          =   2250
          Left            =   135
-         TabIndex        =   29
+         TabIndex        =   27
          Top             =   240
          Width           =   3240
          Begin VB.TextBox txtIntervaloInmovilizado 
             Height          =   375
             Left            =   240
-            TabIndex        =   59
+            TabIndex        =   57
             Text            =   "0"
             Top             =   1680
             Width           =   735
@@ -528,7 +562,7 @@ Begin VB.Form FrmInterv
          Begin VB.TextBox txtintervalofuego 
             Height          =   300
             Left            =   2160
-            TabIndex        =   57
+            TabIndex        =   55
             Text            =   "0"
             Top             =   1200
             Width           =   900
@@ -536,7 +570,7 @@ Begin VB.Form FrmInterv
          Begin VB.TextBox txtIntervaloMetamorfosis 
             Height          =   300
             Left            =   2160
-            TabIndex        =   55
+            TabIndex        =   53
             Text            =   "0"
             Top             =   480
             Width           =   900
@@ -544,7 +578,7 @@ Begin VB.Form FrmInterv
          Begin VB.TextBox txtInvocacion 
             Height          =   300
             Left            =   1170
-            TabIndex        =   37
+            TabIndex        =   35
             Text            =   "0"
             Top             =   1170
             Width           =   900
@@ -552,7 +586,7 @@ Begin VB.Form FrmInterv
          Begin VB.TextBox txtIntervaloInvisible 
             Height          =   300
             Left            =   1170
-            TabIndex        =   34
+            TabIndex        =   32
             Text            =   "0"
             Top             =   495
             Width           =   900
@@ -560,7 +594,7 @@ Begin VB.Form FrmInterv
          Begin VB.TextBox txtIntervaloParalizado 
             Height          =   300
             Left            =   195
-            TabIndex        =   31
+            TabIndex        =   29
             Text            =   "0"
             Top             =   1170
             Width           =   795
@@ -568,7 +602,7 @@ Begin VB.Form FrmInterv
          Begin VB.TextBox txtIntervaloVeneno 
             Height          =   300
             Left            =   195
-            TabIndex        =   30
+            TabIndex        =   28
             Text            =   "0"
             Top             =   510
             Width           =   795
@@ -578,7 +612,7 @@ Begin VB.Form FrmInterv
             Caption         =   "Inmovilzado"
             Height          =   195
             Left            =   240
-            TabIndex        =   60
+            TabIndex        =   58
             Top             =   1440
             Width           =   840
          End
@@ -586,7 +620,7 @@ Begin VB.Form FrmInterv
             Caption         =   "Incineración"
             Height          =   255
             Left            =   2160
-            TabIndex        =   58
+            TabIndex        =   56
             Top             =   960
             Width           =   975
          End
@@ -594,7 +628,7 @@ Begin VB.Form FrmInterv
             Caption         =   "Metamorfosis"
             Height          =   255
             Left            =   2160
-            TabIndex        =   56
+            TabIndex        =   54
             Top             =   240
             Width           =   975
          End
@@ -603,7 +637,7 @@ Begin VB.Form FrmInterv
             Caption         =   "Invocacion"
             Height          =   195
             Left            =   1170
-            TabIndex        =   38
+            TabIndex        =   36
             Top             =   960
             Width           =   795
          End
@@ -612,7 +646,7 @@ Begin VB.Form FrmInterv
             Caption         =   "Invisible"
             Height          =   195
             Left            =   1200
-            TabIndex        =   35
+            TabIndex        =   33
             Top             =   285
             Width           =   570
          End
@@ -621,7 +655,7 @@ Begin VB.Form FrmInterv
             Caption         =   "Paralizado"
             Height          =   195
             Left            =   225
-            TabIndex        =   33
+            TabIndex        =   31
             Top             =   960
             Width           =   735
          End
@@ -630,7 +664,7 @@ Begin VB.Form FrmInterv
             Caption         =   "Veneno"
             Height          =   180
             Left            =   225
-            TabIndex        =   32
+            TabIndex        =   30
             Top             =   300
             Width           =   555
          End
@@ -705,7 +739,8 @@ IntervaloInvisible = val(txtIntervaloInvisible.Text)
 IntervaloFrio = val(txtIntervaloFrio.Text)
 IntervaloWavFx = val(txtIntervaloWAVFX.Text)
 IntervaloInvocacion = val(txtInvocacion.Text)
-IntervaloParaConexion = val(txtIntervaloParaConexion.Text)
+TimeoutPrimerPaquete = val(txtTimeoutPrimerPaquete.Text)
+TimeoutEsperandoLoggear = val(txtTimeoutEsperandoLoggear.Text)
 
 '///////////////// TIMERS \\\\\\\\\\\\\\\\\\\
 
@@ -743,8 +778,8 @@ Call WriteVar(IniPath & "Server.ini", "INTERVALOS", "IntervaloInmovilizado", str
 Call WriteVar(IniPath & "Server.ini", "INTERVALOS", "IntervaloInvisible", str(IntervaloInvisible))
 Call WriteVar(IniPath & "Server.ini", "INTERVALOS", "IntervaloFrio", str(IntervaloFrio))
 Call WriteVar(IniPath & "Server.ini", "INTERVALOS", "IntervaloWAVFX", str(IntervaloWavFx))
-Call WriteVar(IniPath & "Server.ini", "INTERVALOS", "IntervaloInvocacion", str(IntervaloInvocacion))
-Call WriteVar(IniPath & "Server.ini", "INTERVALOS", "IntervaloParaConexion", str(IntervaloParaConexion))
+Call WriteVar(IniPath & "Server.ini", "INTERVALOS", "TimeoutPrimerPaquete", str(TimeoutPrimerPaquete))
+Call WriteVar(IniPath & "Server.ini", "INTERVALOS", "TimeoutEsperandoLoggear", str(TimeoutEsperandoLoggear))
 '&&&&&&&&&&&&&&&&&&&&& TIMERS &&&&&&&&&&&&&&&&&&&&&&&
 
 Call WriteVar(IniPath & "Server.ini", "INTERVALOS", "IntervaloLanzaHechizo", str(IntervaloUserPuedeCastear))
@@ -765,4 +800,3 @@ End Sub
 Private Sub ok_Click()
 Me.Visible = False
 End Sub
-
