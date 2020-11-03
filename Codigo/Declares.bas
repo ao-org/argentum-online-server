@@ -514,7 +514,7 @@ Public Const NUMCLASES As Byte = 9
 
 ''
 ' Cantidad de Razas
-Public Const NUMRAZAS As Byte = 6
+Public Const NUMRAZAS As Byte = 5
 
 
 ''
@@ -1211,11 +1211,11 @@ End Type
 
 Public Type ModRaza
 
-    Fuerza As Single
-    Agilidad As Single
-    Inteligencia As Single
-    Carisma As Single
-    Constitucion As Single
+    Fuerza As Integer
+    Agilidad As Integer
+    Inteligencia As Integer
+    Carisma As Integer
+    Constitucion As Integer
 
 End Type
 
