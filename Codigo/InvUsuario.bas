@@ -1592,8 +1592,8 @@ If obj.OBJType = eOBJType.otWeapon Then
  
     #If Lac Then
         If UserList(UserIndex).Lac.LUsar.Puedo = False Then
-        Call WriteConsoleMsg(UserIndex, "Intervalo cortado..", FontTypeNames.FONTTYPE_INFO)
-        Exit Sub
+            'Call WriteConsoleMsg(UserIndex, "Intervalo cortado..", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
         End If
     #End If
     If obj.proyectil = 1 Then
@@ -1735,7 +1735,7 @@ Select Case obj.OBJType
         
         #If Lac Then
         If UserList(UserIndex).Lac.LPociones.Puedo = False Then
-                  Call WriteConsoleMsg(UserIndex, "¡¡Debes esperar unos momentos para tomar otra pocion!!", FontTypeNames.FONTTYPE_INFO)
+                  'Call WriteConsoleMsg(UserIndex, "¡¡Debes esperar unos momentos para tomar otra pocion!!", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         
