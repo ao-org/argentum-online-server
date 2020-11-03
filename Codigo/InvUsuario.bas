@@ -2914,6 +2914,8 @@ Select Case obj.OBJType
         
 End Select
 
+Exit Sub
+
 
 hErr:
     LogError "Error en useinvitem Usuario: " & UserList(UserIndex).name & " item:" & obj.name & " index: " & UserList(UserIndex).Invent.Object(slot).ObjIndex
