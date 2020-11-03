@@ -502,6 +502,12 @@ Sub ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal UserR
     'Prevenimos algun bug con dados inválidos
     If UserList(UserIndex).Stats.UserAtributos(eAtributos.Fuerza) = 0 Then Exit Sub
     
+    UserList(UserIndex).Stats.UserAtributos(eAtributos.Fuerza) = UserList(UserIndex).Stats.UserAtributos(eAtributos.Fuerza) + ModRaza(UserRaza).Fuerza
+    UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad) = UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad) + ModRaza(UserRaza).Agilidad
+    UserList(UserIndex).Stats.UserAtributos(eAtributos.Inteligencia) = UserList(UserIndex).Stats.UserAtributos(eAtributos.Inteligencia) + ModRaza(UserRaza).Inteligencia
+    UserList(UserIndex).Stats.UserAtributos(eAtributos.Carisma) = UserList(UserIndex).Stats.UserAtributos(eAtributos.Carisma) + ModRaza(UserRaza).Carisma
+    UserList(UserIndex).Stats.UserAtributos(eAtributos.Constitucion) = UserList(UserIndex).Stats.UserAtributos(eAtributos.Constitucion) + ModRaza(UserRaza).Constitucion
+    
     UserList(UserIndex).flags.Muerto = 0
     UserList(UserIndex).flags.Escondido = 0
 
