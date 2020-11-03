@@ -97,16 +97,16 @@ manejador:
 End Function
 
 Sub QuitarNewbieObj(ByVal UserIndex As Integer)
-'Dim j As Integer
-'For j = 1 To UserList(UserIndex).CurrentInventorySlots
-       ' If UserList(UserIndex).Invent.Object(j).objindex > 0 Then
+Dim j As Integer
+For j = 1 To UserList(UserIndex).CurrentInventorySlots
+        If UserList(UserIndex).Invent.Object(j).ObjIndex > 0 Then
              
-             'If ObjData(UserList(UserIndex).Invent.Object(j).objindex).Newbie = 1 Then _
-                    'Call QuitarUserInvItem(UserIndex, j, MAX_INVENTORY_OBJS)
-                    'Call UpdateUserInv(False, UserIndex, j)
+             If ObjData(UserList(UserIndex).Invent.Object(j).ObjIndex).Newbie = 1 Then _
+                    Call QuitarUserInvItem(UserIndex, j, MAX_INVENTORY_OBJS)
+                    Call UpdateUserInv(False, UserIndex, j)
         
-       ' End If
-'Next j
+        End If
+Next j
 
 '[Barrin 17-12-03] Si el usuario dejó de ser Newbie, y estaba en el Newbie Dungeon
 'es transportado a su hogar de origen ;)
