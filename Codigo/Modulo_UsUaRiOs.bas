@@ -1431,10 +1431,10 @@ UserList(UserIndex).flags.CarroMineria = 0
     
     
     
-    If UCase$(MapInfo(UserList(UserIndex).Pos.Map).restrict_mode) = "NEWBIE" Then
-        UserList(UserIndex).flags.pregunta = 5
-        Call WritePreguntaBox(UserIndex, "¡Has muerto! ¿Deseas ser resucitado?")
-    End If
+    'If UCase$(MapInfo(UserList(UserIndex).Pos.Map).restrict_mode) = "NEWBIE" Then
+    '    UserList(UserIndex).flags.pregunta = 5
+    '    Call WritePreguntaBox(UserIndex, "¡Has muerto! ¿Deseas ser resucitado?")
+    'End If
     
 
     
