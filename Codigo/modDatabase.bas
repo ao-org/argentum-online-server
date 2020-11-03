@@ -133,6 +133,7 @@ On Error GoTo ErrorHandler
         'Q = Q & "rep_plebe = " & .Reputacion.PlebeRep & ", "
         'Q = Q & "rep_average = " & .Reputacion.Promedio & ", "
         q = q & "is_naked = " & .flags.Desnudo & ", "
+        q = q & "status = " & .Faccion.Status & ", "
         q = q & "is_logged = TRUE; "
         
         Call MakeQuery(q, True)
@@ -281,7 +282,7 @@ On Error GoTo ErrorHandler
         q = "UPDATE user SET "
         q = q & "name = '" & .name & "', "
         q = q & "level = " & .Stats.ELV & ", "
-        q = q & "exp = " & .Stats.Exp & ", "
+        q = q & "exp = " & CLng(.Stats.Exp) & ", "
         q = q & "elu = " & .Stats.ELU & ", "
         q = q & "genre_id = " & .genero & ", "
         q = q & "race_id = " & .raza & ", "
