@@ -864,6 +864,7 @@ End Sub
 Sub LoadBalance()
     Dim i As Long
     Dim x As Byte
+    Dim SearchVar As String
     'Modificadores de Clase
     For i = 1 To NUMCLASES
         With ModClase(i)
@@ -882,15 +883,15 @@ Sub LoadBalance()
     For i = 1 To NUMRAZAS
 
         With ModRaza(i)
-            .Fuerza = val(GetVar(DatPath & "Balance.dat", "MODRAZA", ListaRazas(i) + "Fuerza"))
-            .Agilidad = val(GetVar(DatPath & "Balance.dat", "MODRAZA", ListaRazas(i) + "Agilidad"))
-            .Inteligencia = val(GetVar(DatPath & "Balance.dat", "MODRAZA", ListaRazas(i) + "Inteligencia"))
-            .Constitucion = val(GetVar(DatPath & "Balance.dat", "MODRAZA", ListaRazas(i) + "Constitucion"))
+            SearchVar = Replace(ListaRazas(i), " ", vbNullString)
+
+            .Fuerza = val(GetVar(DatPath & "Balance.dat", "MODRAZA", SearchVar + "Fuerza"))
+            .Agilidad = val(GetVar(DatPath & "Balance.dat", "MODRAZA", SearchVar + "Agilidad"))
+            .Inteligencia = val(GetVar(DatPath & "Balance.dat", "MODRAZA", SearchVar + "Inteligencia"))
+            .Constitucion = val(GetVar(DatPath & "Balance.dat", "MODRAZA", SearchVar + "Constitucion"))
         End With
 
         For x = 1 To NUMCLASES
-           
-    
             ModVida(i).Inicial(x) = val(GetVar(DatPath & "BalanceVida.dat", "VIDAINICIAL", ListaRazas(i)))
             ModVida(i).N1TO15(x) = val(GetVar(DatPath & "BalanceVida.dat", ListaClases(x) & ListaRazas(i), "N1TO15"))
             ModVida(i).N16TO35(x) = val(GetVar(DatPath & "BalanceVida.dat", ListaClases(x) & ListaRazas(i), "N16TO35"))

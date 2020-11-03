@@ -387,10 +387,10 @@ On Error Resume Next
     
     ListaRazas(eRaza.Humano) = "Humano"
     ListaRazas(eRaza.Elfo) = "Elfo"
-    ListaRazas(eRaza.Drow) = "ElfoDrow"
+    ListaRazas(eRaza.Drow) = "Elfo Drow"
     ListaRazas(eRaza.Gnomo) = "Gnomo"
     ListaRazas(eRaza.Enano) = "Enano"
-    ListaRazas(eRaza.Orco) = "Orco"
+    'ListaRazas(eRaza.Orco) = "Orco"
     
     ListaClases(eClass.Mage) = "Mago"
     ListaClases(eClass.Cleric) = "Clerigo"
