@@ -279,7 +279,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
                 .Stats.UserHechizos(3) = 11 ' Curar Veneno
 
             Case eClass.Druid
-                .Invent.Object(NumItems).ObjIndex = 420 ' Daga (Newbies)
+                .Invent.Object(NumItems).ObjIndex = 460 ' Daga (Newbies)
                 .Invent.WeaponEqpSlot = NumItems
                 NumItems = NumItems + 1
 
@@ -289,7 +289,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
                 .Stats.UserHechizos(4) = 12 ' Heridas Leves
 
             Case eClass.Assasin
-                .Invent.Object(NumItems).ObjIndex = 420 ' Daga (Newbies)
+                .Invent.Object(NumItems).ObjIndex = 460 ' Daga (Newbies)
                 .Invent.WeaponEqpSlot = NumItems
                 NumItems = NumItems + 1
 
