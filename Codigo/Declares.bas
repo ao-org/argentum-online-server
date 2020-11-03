@@ -908,19 +908,19 @@ End Type
 
 
 Public Type Position
-    X As Integer
+    x As Integer
     Y As Integer
 End Type
 
 Public Type WorldPos
     Map As Integer
-    X As Integer
+    x As Integer
     Y As Integer
 End Type
 
 Public Type CityWorldPos
     Map As Integer
-    X As Integer
+    x As Integer
     Y As Integer
     MapaViaje As Integer
     ViajeX As Byte
@@ -1210,7 +1210,13 @@ Public Type ModClase
 End Type
 
 Public Type ModRaza
-    FuerzaGolpe As Double
+
+    Fuerza As Single
+    Agilidad As Single
+    Inteligencia As Single
+    Carisma As Single
+    Constitucion As Single
+
 End Type
 
 Public Type ModVidaBalance

@@ -64,12 +64,6 @@ Function ModicadorDañoClaseArmas(ByVal clase As eClass) As Single
 
 End Function
 
-Function ModicadorFuerzaGolpeRaza(ByVal raza As eRaza) As Single
-    
-    ModicadorFuerzaGolpeRaza = ModRaza(raza).FuerzaGolpe
-
-End Function
-
 Function ModicadorDañoClaseWrestling(ByVal clase As eClass) As Single
         
     ModicadorDañoClaseWrestling = ModClase(clase).DañoWrestling
@@ -403,9 +397,6 @@ Else
     'CalcularDaño = 202 * 0.95  = 191      - defensas
     
     'CalcularDaño = 136
-   
-   CalcularDaño = CalcularDaño * ModicadorFuerzaGolpeRaza(UserList(UserIndex).raza)
-   CalcularDaño = CalcularDaño
 End If
 
 End Function
