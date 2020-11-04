@@ -590,8 +590,7 @@ On Error GoTo Errhandler
             PasoDeNivel = True
              
                ' Call LogDesarrollo(.name & " paso a nivel " & .Stats.ELV & " gano HP: " & AumentoHP)
-            
-            
+
             .Stats.MinHp = .Stats.MaxHp
             
            ' Call UpdateUserInv(True, UserIndex, 0)
