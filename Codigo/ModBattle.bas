@@ -1,8 +1,8 @@
 Attribute VB_Name = "ModBattle"
+Option Explicit
+
 Public Sub AumentarPJ(ByVal UserIndex As Integer)
 
-
-Dim DistVida(1 To 5) As Integer
 Dim vidaOk As Integer
         Dim manaok As Integer
         Dim staok As Integer
@@ -13,94 +13,182 @@ Dim vidaOk As Integer
         
         Dim AumentoSTA As Integer
 Dim AumentoHIT As Integer
+
+    With UserList(UserIndex)
  
         Dim i As Byte
-        vidaOk = UserList(UserIndex).Stats.MaxHp
-        manaok = UserList(UserIndex).Stats.MaxMAN
-        staok = UserList(UserIndex).Stats.MaxSta
-        maxhitok = UserList(UserIndex).Stats.MaxHit
-        minhitok = UserList(UserIndex).Stats.MinHIT
+        vidaOk = .Stats.MaxHp
+        manaok = .Stats.MaxMAN
+        staok = .Stats.MaxSta
+        maxhitok = .Stats.MaxHit
+        minhitok = .Stats.MinHIT
         
         
         
-       UserList(UserIndex).flags.LevelBackup = UserList(UserIndex).Stats.ELV
+       .flags.LevelBackup = .Stats.ELV
         
     Dim magia As Boolean
 
         
         
         Dim level As Byte
+    Dim Promedio         As Double
+    Dim aux              As Integer
+    Dim DistVida(1 To 5) As Integer
+    
+    
         
-        For i = UserList(UserIndex).Stats.ELV + 1 To 50
+        For i = .Stats.ELV + 1 To 50
         
         
         
-                                'Calculo subida de vida
-                        Dim RESTA As Byte
-                        RESTA = 22 - UserList(UserIndex).Stats.UserAtributos(eAtributos.Constitucion)
+            'Calculo subida de vida
+            Promedio = ModVida(.clase) - (21 - .Stats.UserAtributos(eAtributos.Constitucion)) * 0.5
+            aux = RandomNumber(0, 100)
+            
+            If Promedio - Int(Promedio) = 0.5 Then
+                'Es promedio semientero
+                DistVida(1) = DistribucionSemienteraVida(1)
+                DistVida(2) = DistVida(1) + DistribucionSemienteraVida(2)
+                DistVida(3) = DistVida(2) + DistribucionSemienteraVida(3)
+                DistVida(4) = DistVida(3) + DistribucionSemienteraVida(4)
+                
+                If aux <= DistVida(1) Then
+                    AumentoHP = Promedio + 1.5
+                ElseIf aux <= DistVida(2) Then
+                    AumentoHP = Promedio + 0.5
+                ElseIf aux <= DistVida(3) Then
+                    AumentoHP = Promedio - 0.5
+                Else
+                    AumentoHP = Promedio - 1.5
+
+                End If
+
+            Else
+                'Es promedio entero
+                DistVida(1) = DistribucionEnteraVida(1)
+                DistVida(2) = DistVida(1) + DistribucionEnteraVida(2)
+                DistVida(3) = DistVida(2) + DistribucionEnteraVida(3)
+                DistVida(4) = DistVida(3) + DistribucionEnteraVida(4)
+                DistVida(5) = DistVida(4) + DistribucionEnteraVida(5)
+                
+                If aux <= DistVida(1) Then
+                    AumentoHP = Promedio + 2
+                ElseIf aux <= DistVida(2) Then
+                    AumentoHP = Promedio + 1
+                ElseIf aux <= DistVida(3) Then
+                    AumentoHP = Promedio
+                ElseIf aux <= DistVida(4) Then
+                    AumentoHP = Promedio - 1
+                Else
+                    AumentoHP = Promedio - 2
+
+                End If
+                
+            End If
+            
+            Select Case .clase
+                Case eClass.Mage '
+                    AumentoHIT = 1
+                    AumentoMANA = 3 * .Stats.UserAtributos(eAtributos.Inteligencia)
+                    AumentoSTA = AumentoSTMago
+            
+                Case eClass.Bard 'Balanceda Mana
+                    AumentoHIT = 2
+                    AumentoMANA = 2.6 * .Stats.UserAtributos(eAtributos.Inteligencia)
+                    AumentoSTA = AumentoSTDef - 4
+                    
+                Case eClass.Druid 'Balanceda Mana
+                    AumentoHIT = 2
+                    AumentoMANA = 2.6 * .Stats.UserAtributos(eAtributos.Inteligencia)
+                    AumentoSTA = AumentoSTDef - 4
+            
+                Case eClass.Assasin
+                    AumentoHIT = IIf(.Stats.ELV > 35, 1, 3)
+                    AumentoMANA = 1.1 * .Stats.UserAtributos(eAtributos.Inteligencia)
+                    AumentoSTA = AumentoSTDef - 3
+                    
+                Case eClass.Cleric 'Balanceda Mana
+                    AumentoHIT = 2
+                    AumentoMANA = 2 * .Stats.UserAtributos(eAtributos.Inteligencia)
+                    AumentoSTA = AumentoSTDef - 4
+                    
+                    
+                Case eClass.Paladin
+                    AumentoHIT = IIf(.Stats.ELV > 39, 1, 3)
+                    AumentoMANA = 1.1 * .Stats.UserAtributos(eAtributos.Inteligencia)
+                    AumentoSTA = AumentoSTDef - 2
+                    
+                Case eClass.Hunter
+                    AumentoHIT = IIf(.Stats.ELV > 35, 2, 3)
+                    AumentoSTA = AumentoSTDef - 2
+                    
+                Case eClass.Trabajador
+                    AumentoHIT = 2
+                    AumentoSTA = AumentoSTDef + 5
+                
+            
+                Case eClass.Warrior
+                    AumentoHIT = IIf(.Stats.ELV > 35, 2, 3)
+                    AumentoSTA = AumentoSTDef
                         
-                        If i < 16 Then
-                            AumentoHP = ModVida(UserList(UserIndex).raza).N1TO15(UserList(UserIndex).clase) - RESTA
-                        ElseIf i < 36 Then
-                            AumentoHP = ModVida(UserList(UserIndex).raza).N16TO35(UserList(UserIndex).clase) - RESTA
-                        ElseIf i < 46 Then
-                            AumentoHP = ModVida(UserList(UserIndex).raza).N36TO45(UserList(UserIndex).clase) - RESTA
-                          Else
-                            AumentoHP = ModVida(UserList(UserIndex).raza).N46TO50(UserList(UserIndex).clase) - RESTA
-                        End If
+                Case Else
+                    AumentoHIT = 2
+                    AumentoSTA = AumentoSTDef
+            End Select
    
             
             
 
         
-                                Select Case UserList(UserIndex).clase
+                                Select Case .clase
                             
                             
                                     Case eClass.Mage '
             
-                                        AumentoMANA = 3.5 * UserList(UserIndex).Stats.UserAtributos(eAtributos.Inteligencia)
+                                        AumentoMANA = 3.5 * .Stats.UserAtributos(eAtributos.Inteligencia)
                                        ' AumentoHP = RandomNumber(MagoVidaMin, MagoVidaMax)
                                         AumentoHIT = 1 'Nueva dist de mana para mago (ToxicWaste)
                                         AumentoSTA = AumentoSTMago
                                         magia = True
                                 
                                     Case eClass.Bard 'Balanceda Mana
-                                        AumentoMANA = 2.6 * UserList(UserIndex).Stats.UserAtributos(eAtributos.Inteligencia)
+                                        AumentoMANA = 2.6 * .Stats.UserAtributos(eAtributos.Inteligencia)
                                        ' AumentoHP = RandomNumber(BardoVidaMin, BardoVidaMax)
                                         magia = True
                                         AumentoHIT = 2
                                         AumentoSTA = AumentoSTDef - 4
                                         
                                     Case eClass.Druid 'Balanceda Mana
-                                        AumentoMANA = 2.9 * UserList(UserIndex).Stats.UserAtributos(eAtributos.Inteligencia)
+                                        AumentoMANA = 2.9 * .Stats.UserAtributos(eAtributos.Inteligencia)
                                       '  AumentoHP = RandomNumber(DruidaVidaMin, DruidaVidaMax)
                                         AumentoHIT = 2
                                         AumentoSTA = AumentoSTDef - 4
                                         magia = True
                                 
                                     Case eClass.Assasin
-                                        AumentoMANA = 1.1 * UserList(UserIndex).Stats.UserAtributos(eAtributos.Inteligencia)
+                                        AumentoMANA = 1.1 * .Stats.UserAtributos(eAtributos.Inteligencia)
                                        ' AumentoHP = RandomNumber(AsesinoVidaMin, AsesinoVidaMax)
-                                        AumentoHIT = IIf(UserList(UserIndex).Stats.ELV > 35, 1, 3)
+                                        AumentoHIT = IIf(.Stats.ELV > 35, 1, 3)
                                         AumentoSTA = AumentoSTDef - 3
                                         magia = True
                                     Case eClass.Cleric 'Balanceda Mana
                                         AumentoHIT = 2
-                                        AumentoMANA = 2 * UserList(UserIndex).Stats.UserAtributos(eAtributos.Inteligencia)
+                                        AumentoMANA = 2 * .Stats.UserAtributos(eAtributos.Inteligencia)
                                         AumentoSTA = AumentoSTDef - 4
                                        ' AumentoHP = RandomNumber(ClerigoVidaMin, ClerigoVidaMax)
                                         magia = True
                                         
                                         
                                     Case eClass.Paladin
-                                        AumentoHIT = IIf(UserList(UserIndex).Stats.ELV > 39, 1, 3)
-                                        AumentoMANA = 1.1 * UserList(UserIndex).Stats.UserAtributos(eAtributos.Inteligencia)
+                                        AumentoHIT = IIf(.Stats.ELV > 39, 1, 3)
+                                        AumentoMANA = 1.1 * .Stats.UserAtributos(eAtributos.Inteligencia)
                                         AumentoSTA = AumentoSTDef - 2
                                        ' AumentoHP = RandomNumber(PaladinVidaMin, PaladinVidaMax)
                                         magia = True
                                         
                                     Case eClass.Hunter
-                                    AumentoHIT = IIf(UserList(UserIndex).Stats.ELV > 35, 2, 3)
+                                    AumentoHIT = IIf(.Stats.ELV > 35, 2, 3)
                                      AumentoSTA = AumentoSTDef - 2
                                      '   AumentoHP = RandomNumber(CazadorVidaMin, CazadorVidaMax)
                                         manaok = 0
@@ -114,7 +202,7 @@ Dim AumentoHIT As Integer
                                     magia = False
                                 
                                     Case eClass.Warrior
-                                    AumentoHIT = IIf(UserList(UserIndex).Stats.ELV > 35, 2, 3)
+                                    AumentoHIT = IIf(.Stats.ELV > 35, 2, 3)
                                     AumentoSTA = AumentoSTDef
                                     '    AumentoHP = RandomNumber(GuerreroVidaMin, GuerreroVidaMax)
                                     manaok = 0
@@ -131,7 +219,7 @@ Dim AumentoHIT As Integer
                              staok = staok + AumentoSTA
         maxhitok = maxhitok + AumentoHIT
         minhitok = minhitok + AumentoHIT
-        UserList(UserIndex).Stats.ELV = UserList(UserIndex).Stats.ELV + 1
+        .Stats.ELV = .Stats.ELV + 1
     Next i
                         
                             
@@ -139,51 +227,51 @@ Dim AumentoHIT As Integer
                             
                             
                                                                     'Actualizamos HitPoints
-                            UserList(UserIndex).Stats.MaxHp = vidaOk
-                            UserList(UserIndex).Stats.MinHp = vidaOk
-                            If UserList(UserIndex).Stats.MaxHp > STAT_MAXHP Then _
-                                UserList(UserIndex).Stats.MaxHp = STAT_MAXHP
+                            .Stats.MaxHp = vidaOk
+                            .Stats.MinHp = vidaOk
+                            If .Stats.MaxHp > STAT_MAXHP Then _
+                                .Stats.MaxHp = STAT_MAXHP
 
                                 
                                 If magia = True Then
                             'Actualizamos Mana
-                                UserList(UserIndex).Stats.MaxMAN = manaok
-                                UserList(UserIndex).Stats.MinMAN = manaok
-                                If UserList(UserIndex).Stats.MaxMAN > 9999 Then _
-                                    UserList(UserIndex).Stats.MaxMAN = 9999
+                                .Stats.MaxMAN = manaok
+                                .Stats.MinMAN = manaok
+                                If .Stats.MaxMAN > 9999 Then _
+                                    .Stats.MaxMAN = 9999
                                     End If
                             
 
                     'Actualizamos Stamina
-                        UserList(UserIndex).Stats.MaxSta = staok
-                        UserList(UserIndex).Stats.MinSta = staok
-                        If UserList(UserIndex).Stats.MaxSta > STAT_MAXSTA Then _
-                            UserList(UserIndex).Stats.MaxSta = STAT_MAXSTA
+                        .Stats.MaxSta = staok
+                        .Stats.MinSta = staok
+                        If .Stats.MaxSta > STAT_MAXSTA Then _
+                            .Stats.MaxSta = STAT_MAXSTA
 
 
     'Actualizamos Golpe Máximo
-    UserList(UserIndex).Stats.MaxHit = maxhitok
+    .Stats.MaxHit = maxhitok
     
     
     'Actualizamos Golpe Mínimo
-    UserList(UserIndex).Stats.MinHIT = minhitok
+    .Stats.MinHIT = minhitok
     
     
-    UserList(UserIndex).Stats.GLD = 25000
-    UserList(UserIndex).Stats.ELV = 50
+    .Stats.GLD = 25000
+    .Stats.ELV = 50
     
-    UserList(UserIndex).Stats.Exp = 0
-    UserList(UserIndex).Stats.ELU = 0
+    .Stats.Exp = 0
+    .Stats.ELU = 0
         
         
         Call RevivirUsuario(UserIndex)
         
         Call WriteUpdateUserStats(UserIndex)
         
-        UserList(UserIndex).Stats.MinAGU = UserList(UserIndex).Stats.MaxAGU
-        UserList(UserIndex).flags.Sed = 0 'Bug reparado 27/01/13
-        UserList(UserIndex).Stats.MinHam = UserList(UserIndex).Stats.MaxHam
-        UserList(UserIndex).flags.Hambre = 0 'Bug reparado 27/01/13
+        .Stats.MinAGU = .Stats.MaxAGU
+        .flags.Sed = 0 'Bug reparado 27/01/13
+        .Stats.MinHam = .Stats.MaxHam
+        .flags.Hambre = 0 'Bug reparado 27/01/13
 
         Call WriteUpdateHungerAndThirst(UserIndex)
         
@@ -191,17 +279,17 @@ Dim AumentoHIT As Integer
             
         
         For i = 1 To NUMSKILLS
-            UserList(UserIndex).Stats.UserSkills(i) = 100
+            .Stats.UserSkills(i) = 100
         Next i
         
     For i = 1 To MAXUSERHECHIZOS
-        UserList(UserIndex).Stats.UserHechizos(i) = 0
+        .Stats.UserHechizos(i) = 0
 
     Next i
 
         
         
- With UserList(UserIndex).flags
+ With .flags
         .DuracionEfecto = 0
         .TipoPocion = 0
         .TomoPocion = False
@@ -241,7 +329,7 @@ End With
     
     Dim LoopX As Integer
         For LoopX = 1 To NUMATRIBUTOS
-              UserList(UserIndex).Stats.UserAtributos(LoopX) = 35
+              .Stats.UserAtributos(LoopX) = 35
         Next
         Call WriteFYA(UserIndex)
         
@@ -249,36 +337,36 @@ End With
         
 
         
-        If UserList(UserIndex).Char.Body_Aura <> "" Then
-            UserList(UserIndex).Char.Body_Aura = 0
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(UserList(UserIndex).Char.CharIndex, UserList(UserIndex).Char.Body_Aura, True, 1))
+        If .Char.Body_Aura <> "" Then
+            .Char.Body_Aura = 0
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Body_Aura, True, 1))
         End If
         
         
-        If UserList(UserIndex).Char.Arma_Aura <> "" Then
-            UserList(UserIndex).Char.Arma_Aura = ""
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(UserList(UserIndex).Char.CharIndex, UserList(UserIndex).Char.Arma_Aura, True, 2))
+        If .Char.Arma_Aura <> "" Then
+            .Char.Arma_Aura = ""
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Arma_Aura, True, 2))
         End If
         
         
-        If UserList(UserIndex).Char.Escudo_Aura <> "" Then
-            UserList(UserIndex).Char.Escudo_Aura = 0
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(UserList(UserIndex).Char.CharIndex, UserList(UserIndex).Char.Escudo_Aura, True, 3))
+        If .Char.Escudo_Aura <> "" Then
+            .Char.Escudo_Aura = 0
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Escudo_Aura, True, 3))
         End If
         
-        If UserList(UserIndex).Char.Head_Aura <> "" Then
-            UserList(UserIndex).Char.Head_Aura = 0
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(UserList(UserIndex).Char.CharIndex, UserList(UserIndex).Char.Head_Aura, True, 4))
+        If .Char.Head_Aura <> "" Then
+            .Char.Head_Aura = 0
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Head_Aura, True, 4))
         End If
         
-        If UserList(UserIndex).Char.Otra_Aura <> "" Then
-            UserList(UserIndex).Char.Otra_Aura = 0
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(UserList(UserIndex).Char.CharIndex, UserList(UserIndex).Char.Otra_Aura, True, 5))
+        If .Char.Otra_Aura <> "" Then
+            .Char.Otra_Aura = 0
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Otra_Aura, True, 5))
         End If
         
         
         
-    With UserList(UserIndex).Char
+    With .Char
         .CascoAnim = 0
         .FX = 0
         .ShieldAnim = 0
@@ -288,328 +376,328 @@ End With
     
     
      
-    UserList(UserIndex).Char.WeaponAnim = NingunArma
-    UserList(UserIndex).Char.ShieldAnim = NingunEscudo
-    UserList(UserIndex).Char.CascoAnim = NingunCasco
-    UserList(UserIndex).Char.CascoAnim = NingunCasco
+    .Char.WeaponAnim = NingunArma
+    .Char.ShieldAnim = NingunEscudo
+    .Char.CascoAnim = NingunCasco
+    .Char.CascoAnim = NingunCasco
             
            
-    UserList(UserIndex).Invent.ArmourEqpObjIndex = 0
-    UserList(UserIndex).Invent.WeaponEqpObjIndex = 0
-    UserList(UserIndex).Invent.CascoEqpObjIndex = 0
-    UserList(UserIndex).Invent.AnilloEqpSlot = 0
-    UserList(UserIndex).Invent.MunicionEqpObjIndex = 0
-    UserList(UserIndex).Invent.EscudoEqpObjIndex = 0
+    .Invent.ArmourEqpObjIndex = 0
+    .Invent.WeaponEqpObjIndex = 0
+    .Invent.CascoEqpObjIndex = 0
+    .Invent.AnilloEqpSlot = 0
+    .Invent.MunicionEqpObjIndex = 0
+    .Invent.EscudoEqpObjIndex = 0
     
     
-    If UserList(UserIndex).flags.Montado > 0 Then
-        Call DoMontar(UserIndex, ObjData(UserList(UserIndex).Invent.MonturaObjIndex), UserList(UserIndex).Invent.MonturaSlot)
+    If .flags.Montado > 0 Then
+        Call DoMontar(UserIndex, ObjData(.Invent.MonturaObjIndex), .Invent.MonturaSlot)
     End If
   Dim LoopC As Byte
-For LoopC = 1 To UserList(UserIndex).CurrentInventorySlots
+For LoopC = 1 To .CurrentInventorySlots
         'Actualiza el inventario
-UserList(UserIndex).Invent.Object(LoopC).ObjIndex = 0
-UserList(UserIndex).Invent.Object(LoopC).Amount = 0
-UserList(UserIndex).Invent.Object(LoopC).Equipped = 0
+.Invent.Object(LoopC).ObjIndex = 0
+.Invent.Object(LoopC).Amount = 0
+.Invent.Object(LoopC).Equipped = 0
     Next LoopC
 
 
 'Vestimenta
-        Select Case UserList(UserIndex).clase
+        Select Case .clase
             Case eClass.Mage
-                UserList(UserIndex).Invent.NroItems = 10
-                UserList(UserIndex).Invent.Object(1).ObjIndex = 1964 'Tunica dorada
-                UserList(UserIndex).Invent.Object(1).Amount = 1 '
-                UserList(UserIndex).Invent.Object(2).ObjIndex = 1147 'DM +20
-                UserList(UserIndex).Invent.Object(2).Amount = 1 '
-                UserList(UserIndex).Invent.Object(3).ObjIndex = 1747 'Gorro Magico +RM 20
-                UserList(UserIndex).Invent.Object(3).Amount = 1 '
-                UserList(UserIndex).Invent.Object(4).ObjIndex = 1330 'Anillo penumbras
-                UserList(UserIndex).Invent.Object(4).Amount = 1 '
-                UserList(UserIndex).Invent.Object(5).ObjIndex = 37 'Pocion Azul
-                UserList(UserIndex).Invent.Object(5).Amount = 10000
-                UserList(UserIndex).Invent.Object(6).ObjIndex = 37 'Pocion Azul
-                UserList(UserIndex).Invent.Object(6).Amount = 10000
-                UserList(UserIndex).Invent.Object(7).ObjIndex = 37 'Pocion Azul
-                UserList(UserIndex).Invent.Object(7).Amount = 10000
-                UserList(UserIndex).Invent.Object(8).ObjIndex = 38 'Pocion Roja
-                UserList(UserIndex).Invent.Object(8).Amount = 10000
-                UserList(UserIndex).Invent.Object(9).ObjIndex = 38 'Pocion Roja
-                UserList(UserIndex).Invent.Object(9).Amount = 10000
-                UserList(UserIndex).Invent.Object(10).ObjIndex = 38 'Pocion Roja
-                UserList(UserIndex).Invent.Object(10).Amount = 10000
+                .Invent.NroItems = 10
+                .Invent.Object(1).ObjIndex = 1964 'Tunica dorada
+                .Invent.Object(1).Amount = 1 '
+                .Invent.Object(2).ObjIndex = 1147 'DM +20
+                .Invent.Object(2).Amount = 1 '
+                .Invent.Object(3).ObjIndex = 1747 'Gorro Magico +RM 20
+                .Invent.Object(3).Amount = 1 '
+                .Invent.Object(4).ObjIndex = 1330 'Anillo penumbras
+                .Invent.Object(4).Amount = 1 '
+                .Invent.Object(5).ObjIndex = 37 'Pocion Azul
+                .Invent.Object(5).Amount = 10000
+                .Invent.Object(6).ObjIndex = 37 'Pocion Azul
+                .Invent.Object(6).Amount = 10000
+                .Invent.Object(7).ObjIndex = 37 'Pocion Azul
+                .Invent.Object(7).Amount = 10000
+                .Invent.Object(8).ObjIndex = 38 'Pocion Roja
+                .Invent.Object(8).Amount = 10000
+                .Invent.Object(9).ObjIndex = 38 'Pocion Roja
+                .Invent.Object(9).Amount = 10000
+                .Invent.Object(10).ObjIndex = 38 'Pocion Roja
+                .Invent.Object(10).Amount = 10000
                 Call EquiparInvItem(UserIndex, 1)
                 Call EquiparInvItem(UserIndex, 2)
                 Call EquiparInvItem(UserIndex, 3)
                 
-                UserList(UserIndex).Stats.UserHechizos(1) = 26 'Inmovilizar
-                UserList(UserIndex).Stats.UserHechizos(2) = 27 'Remover Paralisis
-                UserList(UserIndex).Stats.UserHechizos(3) = 52 'Rafaga Ignea
-                UserList(UserIndex).Stats.UserHechizos(4) = 51 'Descarga
-                UserList(UserIndex).Stats.UserHechizos(5) = 53 'Apocalipsis
-                UserList(UserIndex).Stats.UserHechizos(6) = 55 'Lamento de la banshee
-                UserList(UserIndex).Stats.UserHechizos(7) = 56 'Juicio Final
+                .Stats.UserHechizos(1) = 26 'Inmovilizar
+                .Stats.UserHechizos(2) = 27 'Remover Paralisis
+                .Stats.UserHechizos(3) = 52 'Rafaga Ignea
+                .Stats.UserHechizos(4) = 51 'Descarga
+                .Stats.UserHechizos(5) = 53 'Apocalipsis
+                .Stats.UserHechizos(6) = 55 'Lamento de la banshee
+                .Stats.UserHechizos(7) = 56 'Juicio Final
 
                 
             Case eClass.Bard
             
-                UserList(UserIndex).Invent.NroItems = 11
-                UserList(UserIndex).Invent.Object(1).ObjIndex = 1962 'Tunica dorada
-                UserList(UserIndex).Invent.Object(1).Amount = 1 '
-                UserList(UserIndex).Invent.Object(2).ObjIndex = 1732 'Gorro Magico +RM 20
-                UserList(UserIndex).Invent.Object(2).Amount = 1 '
-                UserList(UserIndex).Invent.Object(3).ObjIndex = 1720 ' Escudo de tortuga +1
-                UserList(UserIndex).Invent.Object(3).Amount = 1 '
-                UserList(UserIndex).Invent.Object(4).ObjIndex = 1825 'Nudillo Oro
-                UserList(UserIndex).Invent.Object(4).Amount = 1 '
-                UserList(UserIndex).Invent.Object(5).ObjIndex = 1330 'Anillo penumbras
-                UserList(UserIndex).Invent.Object(5).Amount = 1 '
-                UserList(UserIndex).Invent.Object(6).ObjIndex = 37 'Pocion Azul
-                UserList(UserIndex).Invent.Object(6).Amount = 10000
-                UserList(UserIndex).Invent.Object(7).ObjIndex = 37 'Pocion Azul
-                UserList(UserIndex).Invent.Object(7).Amount = 10000
-                UserList(UserIndex).Invent.Object(8).ObjIndex = 38 'Pocion Roja
-                UserList(UserIndex).Invent.Object(8).Amount = 10000
-                UserList(UserIndex).Invent.Object(9).ObjIndex = 38 'Pocion Roja
-                UserList(UserIndex).Invent.Object(9).Amount = 10000
-                UserList(UserIndex).Invent.Object(10).ObjIndex = 36 'Pocion Verde
-                UserList(UserIndex).Invent.Object(10).Amount = 10000
-                UserList(UserIndex).Invent.Object(11).ObjIndex = 39 'Pocion Amarilla
-                UserList(UserIndex).Invent.Object(11).Amount = 10000
+                .Invent.NroItems = 11
+                .Invent.Object(1).ObjIndex = 1962 'Tunica dorada
+                .Invent.Object(1).Amount = 1 '
+                .Invent.Object(2).ObjIndex = 1732 'Gorro Magico +RM 20
+                .Invent.Object(2).Amount = 1 '
+                .Invent.Object(3).ObjIndex = 1720 ' Escudo de tortuga +1
+                .Invent.Object(3).Amount = 1 '
+                .Invent.Object(4).ObjIndex = 1825 'Nudillo Oro
+                .Invent.Object(4).Amount = 1 '
+                .Invent.Object(5).ObjIndex = 1330 'Anillo penumbras
+                .Invent.Object(5).Amount = 1 '
+                .Invent.Object(6).ObjIndex = 37 'Pocion Azul
+                .Invent.Object(6).Amount = 10000
+                .Invent.Object(7).ObjIndex = 37 'Pocion Azul
+                .Invent.Object(7).Amount = 10000
+                .Invent.Object(8).ObjIndex = 38 'Pocion Roja
+                .Invent.Object(8).Amount = 10000
+                .Invent.Object(9).ObjIndex = 38 'Pocion Roja
+                .Invent.Object(9).Amount = 10000
+                .Invent.Object(10).ObjIndex = 36 'Pocion Verde
+                .Invent.Object(10).Amount = 10000
+                .Invent.Object(11).ObjIndex = 39 'Pocion Amarilla
+                .Invent.Object(11).Amount = 10000
                 Call EquiparInvItem(UserIndex, 1)
                 Call EquiparInvItem(UserIndex, 2)
                 Call EquiparInvItem(UserIndex, 3)
                 Call EquiparInvItem(UserIndex, 4)
-                UserList(UserIndex).Stats.UserHechizos(1) = 25 'Paralizar
-                UserList(UserIndex).Stats.UserHechizos(2) = 26 'Inmovilizar
-                UserList(UserIndex).Stats.UserHechizos(3) = 27 'Remover Paralisis
-                UserList(UserIndex).Stats.UserHechizos(4) = 51 'Descarga
-                UserList(UserIndex).Stats.UserHechizos(5) = 21 'Celeridad
-                UserList(UserIndex).Stats.UserHechizos(6) = 22 'Fuerza
-                UserList(UserIndex).Stats.UserHechizos(7) = 23 'Furia de Uhkrul
-                UserList(UserIndex).Stats.UserHechizos(8) = 52 'Rafaga Ignea
-                UserList(UserIndex).Stats.UserHechizos(9) = 122 'Palabra Mortal
+                .Stats.UserHechizos(1) = 25 'Paralizar
+                .Stats.UserHechizos(2) = 26 'Inmovilizar
+                .Stats.UserHechizos(3) = 27 'Remover Paralisis
+                .Stats.UserHechizos(4) = 51 'Descarga
+                .Stats.UserHechizos(5) = 21 'Celeridad
+                .Stats.UserHechizos(6) = 22 'Fuerza
+                .Stats.UserHechizos(7) = 23 'Furia de Uhkrul
+                .Stats.UserHechizos(8) = 52 'Rafaga Ignea
+                .Stats.UserHechizos(9) = 122 'Palabra Mortal
 
             Case eClass.Druid
-                UserList(UserIndex).Invent.NroItems = 11
-                UserList(UserIndex).Invent.Object(1).ObjIndex = 1960 'Tunica dorada
-                UserList(UserIndex).Invent.Object(1).Amount = 1 '
-                UserList(UserIndex).Invent.Object(2).ObjIndex = 1849 'Baculo Larzul
-                UserList(UserIndex).Invent.Object(2).Amount = 1 '
-                UserList(UserIndex).Invent.Object(3).ObjIndex = 1759 'Gorro Magico +RM 20
-                UserList(UserIndex).Invent.Object(3).Amount = 1 '
-                UserList(UserIndex).Invent.Object(4).ObjIndex = 1727 'Escudo de tortuga +1
-                UserList(UserIndex).Invent.Object(4).Amount = 1 '
-                UserList(UserIndex).Invent.Object(5).ObjIndex = 1330 'Anillo penumbras
-                UserList(UserIndex).Invent.Object(5).Amount = 1 '
-                UserList(UserIndex).Invent.Object(6).ObjIndex = 37 '
-                UserList(UserIndex).Invent.Object(6).Amount = 10000
-                UserList(UserIndex).Invent.Object(7).ObjIndex = 37 '
-                UserList(UserIndex).Invent.Object(7).Amount = 10000
-                UserList(UserIndex).Invent.Object(8).ObjIndex = 38 '
-                UserList(UserIndex).Invent.Object(8).Amount = 10000
-                UserList(UserIndex).Invent.Object(9).ObjIndex = 38 '
-                UserList(UserIndex).Invent.Object(9).Amount = 10000
-                UserList(UserIndex).Invent.Object(10).ObjIndex = 36 '
-                UserList(UserIndex).Invent.Object(10).Amount = 10000
-                UserList(UserIndex).Invent.Object(11).ObjIndex = 39 '
-                UserList(UserIndex).Invent.Object(11).Amount = 10000
+                .Invent.NroItems = 11
+                .Invent.Object(1).ObjIndex = 1960 'Tunica dorada
+                .Invent.Object(1).Amount = 1 '
+                .Invent.Object(2).ObjIndex = 1849 'Baculo Larzul
+                .Invent.Object(2).Amount = 1 '
+                .Invent.Object(3).ObjIndex = 1759 'Gorro Magico +RM 20
+                .Invent.Object(3).Amount = 1 '
+                .Invent.Object(4).ObjIndex = 1727 'Escudo de tortuga +1
+                .Invent.Object(4).Amount = 1 '
+                .Invent.Object(5).ObjIndex = 1330 'Anillo penumbras
+                .Invent.Object(5).Amount = 1 '
+                .Invent.Object(6).ObjIndex = 37 '
+                .Invent.Object(6).Amount = 10000
+                .Invent.Object(7).ObjIndex = 37 '
+                .Invent.Object(7).Amount = 10000
+                .Invent.Object(8).ObjIndex = 38 '
+                .Invent.Object(8).Amount = 10000
+                .Invent.Object(9).ObjIndex = 38 '
+                .Invent.Object(9).Amount = 10000
+                .Invent.Object(10).ObjIndex = 36 '
+                .Invent.Object(10).Amount = 10000
+                .Invent.Object(11).ObjIndex = 39 '
+                .Invent.Object(11).Amount = 10000
                 
                 Call EquiparInvItem(UserIndex, 1)
                 Call EquiparInvItem(UserIndex, 2)
                 Call EquiparInvItem(UserIndex, 3)
                 Call EquiparInvItem(UserIndex, 4)
                 
-                UserList(UserIndex).Stats.UserHechizos(1) = 25 'Paralizar
-                UserList(UserIndex).Stats.UserHechizos(2) = 26 'Inmovilizar
-                UserList(UserIndex).Stats.UserHechizos(3) = 27 'Remover Paralisis
-                UserList(UserIndex).Stats.UserHechizos(4) = 51 'Descarga
-                UserList(UserIndex).Stats.UserHechizos(5) = 21 'Celeridad
-                UserList(UserIndex).Stats.UserHechizos(6) = 22 'Fuerza
-                UserList(UserIndex).Stats.UserHechizos(7) = 23 'Furia de Uhkrul
-                UserList(UserIndex).Stats.UserHechizos(8) = 52 'Rafaga Ignea
-                UserList(UserIndex).Stats.UserHechizos(9) = 111 'Implosion
-                UserList(UserIndex).Stats.UserHechizos(10) = 113 'Implosion
+                .Stats.UserHechizos(1) = 25 'Paralizar
+                .Stats.UserHechizos(2) = 26 'Inmovilizar
+                .Stats.UserHechizos(3) = 27 'Remover Paralisis
+                .Stats.UserHechizos(4) = 51 'Descarga
+                .Stats.UserHechizos(5) = 21 'Celeridad
+                .Stats.UserHechizos(6) = 22 'Fuerza
+                .Stats.UserHechizos(7) = 23 'Furia de Uhkrul
+                .Stats.UserHechizos(8) = 52 'Rafaga Ignea
+                .Stats.UserHechizos(9) = 111 'Implosion
+                .Stats.UserHechizos(10) = 113 'Implosion
                 
             Case eClass.Assasin
-                UserList(UserIndex).Invent.NroItems = 10
-                UserList(UserIndex).Invent.Object(1).ObjIndex = 1903 'Armadura dragón Azul
-                UserList(UserIndex).Invent.Object(1).Amount = 1 '
-                UserList(UserIndex).Invent.Object(2).ObjIndex = 1789 'Daga Infernal
-                UserList(UserIndex).Invent.Object(2).Amount = 1 '
-                UserList(UserIndex).Invent.Object(3).ObjIndex = 1711 'Escudo Leon +1
-                UserList(UserIndex).Invent.Object(3).Amount = 1 '
-                UserList(UserIndex).Invent.Object(4).ObjIndex = 1763 'Casco Dorado
-                UserList(UserIndex).Invent.Object(4).Amount = 1 '
-                UserList(UserIndex).Invent.Object(5).ObjIndex = 37 '
-                UserList(UserIndex).Invent.Object(5).Amount = 10000
-                UserList(UserIndex).Invent.Object(6).ObjIndex = 37 '
-                UserList(UserIndex).Invent.Object(6).Amount = 10000
-                UserList(UserIndex).Invent.Object(7).ObjIndex = 38 '
-                UserList(UserIndex).Invent.Object(7).Amount = 10000
-                UserList(UserIndex).Invent.Object(8).ObjIndex = 38 '
-                UserList(UserIndex).Invent.Object(8).Amount = 10000
-                UserList(UserIndex).Invent.Object(9).ObjIndex = 36 '
-                UserList(UserIndex).Invent.Object(9).Amount = 10000
-                UserList(UserIndex).Invent.Object(10).ObjIndex = 39 '
-                UserList(UserIndex).Invent.Object(10).Amount = 10000
+                .Invent.NroItems = 10
+                .Invent.Object(1).ObjIndex = 1903 'Armadura dragón Azul
+                .Invent.Object(1).Amount = 1 '
+                .Invent.Object(2).ObjIndex = 1789 'Daga Infernal
+                .Invent.Object(2).Amount = 1 '
+                .Invent.Object(3).ObjIndex = 1711 'Escudo Leon +1
+                .Invent.Object(3).Amount = 1 '
+                .Invent.Object(4).ObjIndex = 1763 'Casco Dorado
+                .Invent.Object(4).Amount = 1 '
+                .Invent.Object(5).ObjIndex = 37 '
+                .Invent.Object(5).Amount = 10000
+                .Invent.Object(6).ObjIndex = 37 '
+                .Invent.Object(6).Amount = 10000
+                .Invent.Object(7).ObjIndex = 38 '
+                .Invent.Object(7).Amount = 10000
+                .Invent.Object(8).ObjIndex = 38 '
+                .Invent.Object(8).Amount = 10000
+                .Invent.Object(9).ObjIndex = 36 '
+                .Invent.Object(9).Amount = 10000
+                .Invent.Object(10).ObjIndex = 39 '
+                .Invent.Object(10).Amount = 10000
                 Call EquiparInvItem(UserIndex, 1)
                 Call EquiparInvItem(UserIndex, 2)
                 Call EquiparInvItem(UserIndex, 3)
                 Call EquiparInvItem(UserIndex, 4)
                 
-                UserList(UserIndex).Stats.UserHechizos(1) = 25 'Paralizar
-                UserList(UserIndex).Stats.UserHechizos(2) = 26 'Inmovilizar
-                UserList(UserIndex).Stats.UserHechizos(3) = 27 'Remover Paralisis
-                UserList(UserIndex).Stats.UserHechizos(4) = 51 'Descarga
-                UserList(UserIndex).Stats.UserHechizos(5) = 21 'Celeridad
-                UserList(UserIndex).Stats.UserHechizos(6) = 22 'Fuerza
-                UserList(UserIndex).Stats.UserHechizos(7) = 23 'Furia de Uhkrul
-                UserList(UserIndex).Stats.UserHechizos(8) = 141 'Ataque Sigiloso
+                .Stats.UserHechizos(1) = 25 'Paralizar
+                .Stats.UserHechizos(2) = 26 'Inmovilizar
+                .Stats.UserHechizos(3) = 27 'Remover Paralisis
+                .Stats.UserHechizos(4) = 51 'Descarga
+                .Stats.UserHechizos(5) = 21 'Celeridad
+                .Stats.UserHechizos(6) = 22 'Fuerza
+                .Stats.UserHechizos(7) = 23 'Furia de Uhkrul
+                .Stats.UserHechizos(8) = 141 'Ataque Sigiloso
                 
             Case eClass.Cleric
-                UserList(UserIndex).Invent.NroItems = 11
-                UserList(UserIndex).Invent.Object(1).ObjIndex = 1904 'Armadura dragón blanco
-                UserList(UserIndex).Invent.Object(1).Amount = 1 '
-                UserList(UserIndex).Invent.Object(2).ObjIndex = 1821 'Lazurt +1
-                UserList(UserIndex).Invent.Object(2).Amount = 1 '
-                UserList(UserIndex).Invent.Object(3).ObjIndex = 1709 'Escudo Torre +1
-                UserList(UserIndex).Invent.Object(3).Amount = 1 '
-                UserList(UserIndex).Invent.Object(4).ObjIndex = 1772 'Casco Dorado
-                UserList(UserIndex).Invent.Object(4).Amount = 1 '
-                UserList(UserIndex).Invent.Object(5).ObjIndex = 37 '
-                UserList(UserIndex).Invent.Object(5).Amount = 10000
-                UserList(UserIndex).Invent.Object(6).ObjIndex = 37 '
-                UserList(UserIndex).Invent.Object(6).Amount = 10000
-                UserList(UserIndex).Invent.Object(7).ObjIndex = 38 '
-                UserList(UserIndex).Invent.Object(7).Amount = 10000
-                UserList(UserIndex).Invent.Object(8).ObjIndex = 38 '
-                UserList(UserIndex).Invent.Object(8).Amount = 10000
-                UserList(UserIndex).Invent.Object(9).ObjIndex = 36 '
-                UserList(UserIndex).Invent.Object(9).Amount = 10000
-                UserList(UserIndex).Invent.Object(10).ObjIndex = 39 '
-                UserList(UserIndex).Invent.Object(10).Amount = 10000
-                UserList(UserIndex).Invent.Object(11).ObjIndex = 1330 ' Anillo
-                UserList(UserIndex).Invent.Object(11).Amount = 1
+                .Invent.NroItems = 11
+                .Invent.Object(1).ObjIndex = 1904 'Armadura dragón blanco
+                .Invent.Object(1).Amount = 1 '
+                .Invent.Object(2).ObjIndex = 1821 'Lazurt +1
+                .Invent.Object(2).Amount = 1 '
+                .Invent.Object(3).ObjIndex = 1709 'Escudo Torre +1
+                .Invent.Object(3).Amount = 1 '
+                .Invent.Object(4).ObjIndex = 1772 'Casco Dorado
+                .Invent.Object(4).Amount = 1 '
+                .Invent.Object(5).ObjIndex = 37 '
+                .Invent.Object(5).Amount = 10000
+                .Invent.Object(6).ObjIndex = 37 '
+                .Invent.Object(6).Amount = 10000
+                .Invent.Object(7).ObjIndex = 38 '
+                .Invent.Object(7).Amount = 10000
+                .Invent.Object(8).ObjIndex = 38 '
+                .Invent.Object(8).Amount = 10000
+                .Invent.Object(9).ObjIndex = 36 '
+                .Invent.Object(9).Amount = 10000
+                .Invent.Object(10).ObjIndex = 39 '
+                .Invent.Object(10).Amount = 10000
+                .Invent.Object(11).ObjIndex = 1330 ' Anillo
+                .Invent.Object(11).Amount = 1
                 Call EquiparInvItem(UserIndex, 1)
                 Call EquiparInvItem(UserIndex, 2)
                 Call EquiparInvItem(UserIndex, 3)
                 Call EquiparInvItem(UserIndex, 4)
                 
-                UserList(UserIndex).Stats.UserHechizos(1) = 25 'Paralizar
-                UserList(UserIndex).Stats.UserHechizos(2) = 26 'Inmovilizar
-                UserList(UserIndex).Stats.UserHechizos(3) = 27 'Remover Paralisis
-                UserList(UserIndex).Stats.UserHechizos(4) = 51 'Descarga
-                UserList(UserIndex).Stats.UserHechizos(5) = 21 'Celeridad
-                UserList(UserIndex).Stats.UserHechizos(6) = 22 'Fuerza
-                UserList(UserIndex).Stats.UserHechizos(7) = 23 'Furia de Uhkrul
-                UserList(UserIndex).Stats.UserHechizos(8) = 52 'Rafaga Ignea
-                UserList(UserIndex).Stats.UserHechizos(9) = 131 'Destierro
-                UserList(UserIndex).Stats.UserHechizos(10) = 132 'Oración divina
-                UserList(UserIndex).Stats.UserHechizos(11) = 133 'Plegaria
+                .Stats.UserHechizos(1) = 25 'Paralizar
+                .Stats.UserHechizos(2) = 26 'Inmovilizar
+                .Stats.UserHechizos(3) = 27 'Remover Paralisis
+                .Stats.UserHechizos(4) = 51 'Descarga
+                .Stats.UserHechizos(5) = 21 'Celeridad
+                .Stats.UserHechizos(6) = 22 'Fuerza
+                .Stats.UserHechizos(7) = 23 'Furia de Uhkrul
+                .Stats.UserHechizos(8) = 52 'Rafaga Ignea
+                .Stats.UserHechizos(9) = 131 'Destierro
+                .Stats.UserHechizos(10) = 132 'Oración divina
+                .Stats.UserHechizos(11) = 133 'Plegaria
 
                 
             Case eClass.Paladin
-                UserList(UserIndex).Invent.NroItems = 10
-                UserList(UserIndex).Invent.Object(1).ObjIndex = 1906 'Armadura Dragón Negra
-                UserList(UserIndex).Invent.Object(1).Amount = 1 '
-                UserList(UserIndex).Invent.Object(2).ObjIndex = 1790 'Espada Saramiana
-                UserList(UserIndex).Invent.Object(2).Amount = 1 '
-                UserList(UserIndex).Invent.Object(3).ObjIndex = 1696 'Escudo Torre +1
-                UserList(UserIndex).Invent.Object(3).Amount = 1 '
-                UserList(UserIndex).Invent.Object(4).ObjIndex = 1762 'Casco legendario
-                UserList(UserIndex).Invent.Object(4).Amount = 1 '
-                UserList(UserIndex).Invent.Object(5).ObjIndex = 37 'Pocion Azul
-                UserList(UserIndex).Invent.Object(5).Amount = 10000
-                UserList(UserIndex).Invent.Object(6).ObjIndex = 37 'Pocion Azul
-                UserList(UserIndex).Invent.Object(6).Amount = 10000
-                UserList(UserIndex).Invent.Object(7).ObjIndex = 38 'Pocion Roja
-                UserList(UserIndex).Invent.Object(7).Amount = 10000
-                UserList(UserIndex).Invent.Object(8).ObjIndex = 38 'Pocion Roja
-                UserList(UserIndex).Invent.Object(8).Amount = 10000
-                UserList(UserIndex).Invent.Object(9).ObjIndex = 36 'Pocion Verde
-                UserList(UserIndex).Invent.Object(9).Amount = 10000
-                UserList(UserIndex).Invent.Object(10).ObjIndex = 39 'Pocion Amarilla
-                UserList(UserIndex).Invent.Object(10).Amount = 10000
+                .Invent.NroItems = 10
+                .Invent.Object(1).ObjIndex = 1906 'Armadura Dragón Negra
+                .Invent.Object(1).Amount = 1 '
+                .Invent.Object(2).ObjIndex = 1790 'Espada Saramiana
+                .Invent.Object(2).Amount = 1 '
+                .Invent.Object(3).ObjIndex = 1696 'Escudo Torre +1
+                .Invent.Object(3).Amount = 1 '
+                .Invent.Object(4).ObjIndex = 1762 'Casco legendario
+                .Invent.Object(4).Amount = 1 '
+                .Invent.Object(5).ObjIndex = 37 'Pocion Azul
+                .Invent.Object(5).Amount = 10000
+                .Invent.Object(6).ObjIndex = 37 'Pocion Azul
+                .Invent.Object(6).Amount = 10000
+                .Invent.Object(7).ObjIndex = 38 'Pocion Roja
+                .Invent.Object(7).Amount = 10000
+                .Invent.Object(8).ObjIndex = 38 'Pocion Roja
+                .Invent.Object(8).Amount = 10000
+                .Invent.Object(9).ObjIndex = 36 'Pocion Verde
+                .Invent.Object(9).Amount = 10000
+                .Invent.Object(10).ObjIndex = 39 'Pocion Amarilla
+                .Invent.Object(10).Amount = 10000
                 Call EquiparInvItem(UserIndex, 1)
                 Call EquiparInvItem(UserIndex, 2)
                 Call EquiparInvItem(UserIndex, 3)
                 Call EquiparInvItem(UserIndex, 4)
                 
-                UserList(UserIndex).Stats.UserHechizos(1) = 25 'Paralizar
-                UserList(UserIndex).Stats.UserHechizos(2) = 26 'Inmovilizar
-                UserList(UserIndex).Stats.UserHechizos(3) = 27 'Remover Paralisis
-                UserList(UserIndex).Stats.UserHechizos(4) = 51 'Descarga
-                UserList(UserIndex).Stats.UserHechizos(5) = 21 'Celeridad
-                UserList(UserIndex).Stats.UserHechizos(6) = 22 'Fuerza
-                UserList(UserIndex).Stats.UserHechizos(7) = 23 'Furia de Uhkrul
-                UserList(UserIndex).Stats.UserHechizos(8) = 100 'Golpe Iracundo
-                UserList(UserIndex).Stats.UserHechizos(9) = 101 'Heroismo
+                .Stats.UserHechizos(1) = 25 'Paralizar
+                .Stats.UserHechizos(2) = 26 'Inmovilizar
+                .Stats.UserHechizos(3) = 27 'Remover Paralisis
+                .Stats.UserHechizos(4) = 51 'Descarga
+                .Stats.UserHechizos(5) = 21 'Celeridad
+                .Stats.UserHechizos(6) = 22 'Fuerza
+                .Stats.UserHechizos(7) = 23 'Furia de Uhkrul
+                .Stats.UserHechizos(8) = 100 'Golpe Iracundo
+                .Stats.UserHechizos(9) = 101 'Heroismo
                 
                 
             Case eClass.Hunter
-                UserList(UserIndex).Invent.NroItems = 11
-                UserList(UserIndex).Invent.Object(1).ObjIndex = 1907 'Armadura dragón verde
-                UserList(UserIndex).Invent.Object(1).Amount = 1 '
-                UserList(UserIndex).Invent.Object(2).ObjIndex = 1875 'Armadura dragón verde
-                UserList(UserIndex).Invent.Object(2).Amount = 1 '
-                UserList(UserIndex).Invent.Object(3).ObjIndex = 1717 'Escudo Gema (Cazador)
-                UserList(UserIndex).Invent.Object(3).Amount = 1 '
-                UserList(UserIndex).Invent.Object(4).ObjIndex = 1767 'Casco legendario
-                UserList(UserIndex).Invent.Object(4).Amount = 1 '
-                UserList(UserIndex).Invent.Object(5).ObjIndex = 1082 'Flecha Explosiva
-                UserList(UserIndex).Invent.Object(5).Amount = 10000 '
-                UserList(UserIndex).Invent.Object(6).ObjIndex = 38 '
-                UserList(UserIndex).Invent.Object(6).Amount = 10000
-                UserList(UserIndex).Invent.Object(7).ObjIndex = 38 '
-                UserList(UserIndex).Invent.Object(7).Amount = 10000
-                UserList(UserIndex).Invent.Object(8).ObjIndex = 36 '
-                UserList(UserIndex).Invent.Object(8).Amount = 10000
-                UserList(UserIndex).Invent.Object(9).ObjIndex = 36 '
-                UserList(UserIndex).Invent.Object(9).Amount = 10000
-                UserList(UserIndex).Invent.Object(10).ObjIndex = 39 '
-                UserList(UserIndex).Invent.Object(10).Amount = 10000
-                UserList(UserIndex).Invent.Object(11).ObjIndex = 39 '
-                UserList(UserIndex).Invent.Object(11).Amount = 10000
+                .Invent.NroItems = 11
+                .Invent.Object(1).ObjIndex = 1907 'Armadura dragón verde
+                .Invent.Object(1).Amount = 1 '
+                .Invent.Object(2).ObjIndex = 1875 'Armadura dragón verde
+                .Invent.Object(2).Amount = 1 '
+                .Invent.Object(3).ObjIndex = 1717 'Escudo Gema (Cazador)
+                .Invent.Object(3).Amount = 1 '
+                .Invent.Object(4).ObjIndex = 1767 'Casco legendario
+                .Invent.Object(4).Amount = 1 '
+                .Invent.Object(5).ObjIndex = 1082 'Flecha Explosiva
+                .Invent.Object(5).Amount = 10000 '
+                .Invent.Object(6).ObjIndex = 38 '
+                .Invent.Object(6).Amount = 10000
+                .Invent.Object(7).ObjIndex = 38 '
+                .Invent.Object(7).Amount = 10000
+                .Invent.Object(8).ObjIndex = 36 '
+                .Invent.Object(8).Amount = 10000
+                .Invent.Object(9).ObjIndex = 36 '
+                .Invent.Object(9).Amount = 10000
+                .Invent.Object(10).ObjIndex = 39 '
+                .Invent.Object(10).Amount = 10000
+                .Invent.Object(11).ObjIndex = 39 '
+                .Invent.Object(11).Amount = 10000
                 Call EquiparInvItem(UserIndex, 1)
                 Call EquiparInvItem(UserIndex, 2)
                 Call EquiparInvItem(UserIndex, 3)
                 Call EquiparInvItem(UserIndex, 4)
-                UserList(UserIndex).Stats.UserHechizos(1) = 152 'Paralizar
-                UserList(UserIndex).Stats.UserHechizos(2) = 151 'Inmovilizar
+                .Stats.UserHechizos(1) = 152 'Paralizar
+                .Stats.UserHechizos(2) = 151 'Inmovilizar
                 
 
             Case eClass.Warrior
-                UserList(UserIndex).Invent.NroItems = 11
-                UserList(UserIndex).Invent.Object(1).ObjIndex = 1908 'Armadura Dragón Legendaria
-                UserList(UserIndex).Invent.Object(1).Amount = 1 '
-                UserList(UserIndex).Invent.Object(2).ObjIndex = 1830 'Harbinger Kin
-                UserList(UserIndex).Invent.Object(2).Amount = 1 '
-                UserList(UserIndex).Invent.Object(3).ObjIndex = 1695 'Escudo Torre +1
-                UserList(UserIndex).Invent.Object(3).Amount = 1 '
-                UserList(UserIndex).Invent.Object(4).ObjIndex = 1768 'Casco legendario
-                UserList(UserIndex).Invent.Object(4).Amount = 1 '
-                UserList(UserIndex).Invent.Object(5).ObjIndex = 38 'Pocion Roja
-                UserList(UserIndex).Invent.Object(5).Amount = 10000
-                UserList(UserIndex).Invent.Object(6).ObjIndex = 38 'Pocion Roja
-                UserList(UserIndex).Invent.Object(6).Amount = 10000
-                UserList(UserIndex).Invent.Object(7).ObjIndex = 36 '
-                UserList(UserIndex).Invent.Object(7).Amount = 10000
-                UserList(UserIndex).Invent.Object(8).ObjIndex = 36 '
-                UserList(UserIndex).Invent.Object(8).Amount = 10000
-                UserList(UserIndex).Invent.Object(9).ObjIndex = 39 '
-                UserList(UserIndex).Invent.Object(9).Amount = 10000
-                UserList(UserIndex).Invent.Object(10).ObjIndex = 39 '
-                UserList(UserIndex).Invent.Object(10).Amount = 10000
-                UserList(UserIndex).Invent.Object(11).ObjIndex = 869 '
-                UserList(UserIndex).Invent.Object(11).Amount = 1
+                .Invent.NroItems = 11
+                .Invent.Object(1).ObjIndex = 1908 'Armadura Dragón Legendaria
+                .Invent.Object(1).Amount = 1 '
+                .Invent.Object(2).ObjIndex = 1830 'Harbinger Kin
+                .Invent.Object(2).Amount = 1 '
+                .Invent.Object(3).ObjIndex = 1695 'Escudo Torre +1
+                .Invent.Object(3).Amount = 1 '
+                .Invent.Object(4).ObjIndex = 1768 'Casco legendario
+                .Invent.Object(4).Amount = 1 '
+                .Invent.Object(5).ObjIndex = 38 'Pocion Roja
+                .Invent.Object(5).Amount = 10000
+                .Invent.Object(6).ObjIndex = 38 'Pocion Roja
+                .Invent.Object(6).Amount = 10000
+                .Invent.Object(7).ObjIndex = 36 '
+                .Invent.Object(7).Amount = 10000
+                .Invent.Object(8).ObjIndex = 36 '
+                .Invent.Object(8).Amount = 10000
+                .Invent.Object(9).ObjIndex = 39 '
+                .Invent.Object(9).Amount = 10000
+                .Invent.Object(10).ObjIndex = 39 '
+                .Invent.Object(10).Amount = 10000
+                .Invent.Object(11).ObjIndex = 869 '
+                .Invent.Object(11).Amount = 1
                 Call EquiparInvItem(UserIndex, 1)
                 Call EquiparInvItem(UserIndex, 2)
                 Call EquiparInvItem(UserIndex, 3)
                 Call EquiparInvItem(UserIndex, 4)
                 Call EquiparInvItem(UserIndex, 11)
-                UserList(UserIndex).Stats.UserHechizos(1) = 152 'Paralizar
-                UserList(UserIndex).Stats.UserHechizos(2) = 151 'Inmovilizar
+                .Stats.UserHechizos(1) = 152 'Paralizar
+                .Stats.UserHechizos(2) = 151 'Inmovilizar
         End Select
     
         Call UpdateUserHechizos(True, UserIndex, 0)
@@ -617,11 +705,7 @@ UserList(UserIndex).Invent.Object(LoopC).Equipped = 0
         
         Call UpdateUserInv(True, UserIndex, 0)
         
-        
-        
-        
-        
-        
+    End With
         
         
          

@@ -496,6 +496,9 @@ On Error Resume Next
     frmCargando.Label1(2).Caption = "Cargando Objetos de Sastre"
     Call LoadObjSastre
     
+    frmCargando.Label1(2).Caption = "Cargando Pesca"
+    Call LoadPesca
+    
     frmCargando.Label1(2).Caption = "Cargando Recursos Especiales"
     Call LoadRecursosEspeciales
     
@@ -1083,6 +1086,7 @@ Call FreeCharIndexes
 
 Call LoadSini
 Call LoadOBJData
+Call LoadPesca
 Call LoadRecursosEspeciales
 
 Call LoadMapData
@@ -1501,7 +1505,7 @@ If UserList(UserIndex).flags.BattleModo = 1 Then Exit Sub
 
 'Sed
 If UserList(UserIndex).Stats.MinAGU > 0 Then
-    If UserList(UserIndex).Counters.AGUACounter < IntervaloSed Then
+    If UserList(UserIndex).Counters.AGUACounter < 5 Then
         UserList(UserIndex).Counters.AGUACounter = UserList(UserIndex).Counters.AGUACounter + 1
     Else
         UserList(UserIndex).Counters.AGUACounter = 0
@@ -1518,7 +1522,7 @@ End If
 
 'hambre
 If UserList(UserIndex).Stats.MinHam > 0 Then
-   If UserList(UserIndex).Counters.COMCounter < IntervaloHambre Then
+   If UserList(UserIndex).Counters.COMCounter < 5 Then
         UserList(UserIndex).Counters.COMCounter = UserList(UserIndex).Counters.COMCounter + 1
    Else
         UserList(UserIndex).Counters.COMCounter = 0

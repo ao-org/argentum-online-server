@@ -12329,6 +12329,7 @@ Public Sub HandleReloadObjects(ByVal UserIndex As Integer)
         Call LogGM(.name, .name & " ha recargado a los objetos.")
         
         Call LoadOBJData
+        Call LoadPesca
         Call LoadRecursosEspeciales
         Call WriteConsoleMsg(UserIndex, "Obj.dat recargado exitosamente.", FontTypeNames.FONTTYPE_SERVER)
     End With

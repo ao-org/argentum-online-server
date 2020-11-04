@@ -1087,23 +1087,18 @@ On Error GoTo Errhandler
         Dim MiObj As obj
         
         MiObj.Amount = IIf(RedDePesca, RandomNumber(1, 3), 1)
+        
+        MiObj.ObjIndex = ObtenerPezRandom(ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).Power)
+        
+        If MiObj.ObjIndex = 0 Then Exit Sub
 
         If ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).donador = 1 Then
             MiObj.Amount = MiObj.Amount * 2
 
-            Dim PecesPosibles(1 To 5) As Integer
-            PecesPosibles(1) = PESCADO1
-            PecesPosibles(2) = PESCADO2
-            PecesPosibles(3) = PESCADO3
-            PecesPosibles(4) = PESCADO4
-            PecesPosibles(5) = PESCADO5
-    
             MiObj.Amount = MiObj.Amount * RecoleccionMult
-            MiObj.ObjIndex = PecesPosibles(RandomNumber(LBound(PecesPosibles), UBound(PecesPosibles)))
         Else
             ' End If
             MiObj.Amount = MiObj.Amount * RecoleccionMult
-            MiObj.ObjIndex = Pescado
         End If
         
         If Not MeterItemEnInventario(UserIndex, MiObj) Then
@@ -1646,7 +1641,7 @@ On Error GoTo Errhandler
         If UserList(UserIndex).flags.TargetObj = 0 Then Exit Sub
         
         Call ActualizarRecurso(UserList(UserIndex).Pos.Map, x, Y)
-        MapData(UserList(UserIndex).Pos.Map, x, Y).ObjInfo.UltimoUso = timeGetTime
+        MapData(UserList(UserIndex).Pos.Map, x, Y).ObjInfo.data = timeGetTime ' Ultimo uso
 
         MiObj.Amount = RandomNumber(4, 7)
         
@@ -1760,7 +1755,7 @@ Dim metal As Integer
         If UserList(UserIndex).flags.TargetObj = 0 Then Exit Sub
         
         Call ActualizarRecurso(UserList(UserIndex).Pos.Map, x, Y)
-        MapData(UserList(UserIndex).Pos.Map, x, Y).ObjInfo.UltimoUso = timeGetTime
+        MapData(UserList(UserIndex).Pos.Map, x, Y).ObjInfo.data = timeGetTime ' Ultimo uso
         
         MiObj.ObjIndex = ObjData(UserList(UserIndex).flags.TargetObj).MineralIndex
         
@@ -2177,8 +2172,21 @@ Public Sub ActualizarRecurso(ByVal Map As Integer, ByVal x As Integer, ByVal Y A
     Dim TiempoActual As Long
     TiempoActual = timeGetTime
 
-    If (TiempoActual - MapData(Map, x, Y).ObjInfo.UltimoUso) * 0.001 > ObjData(ObjIndex).TiempoRegenerar Then
+    ' Data = Ultimo uso
+    If (TiempoActual - MapData(Map, x, Y).ObjInfo.data) * 0.001 > ObjData(ObjIndex).TiempoRegenerar Then
         MapData(Map, x, Y).ObjInfo.Amount = ObjData(ObjIndex).VidaUtil
-        MapData(Map, x, Y).ObjInfo.UltimoUso = &H7FFFFFFF   ' Max Long
+        MapData(Map, x, Y).ObjInfo.data = &H7FFFFFFF   ' Ultimo uso = Max Long
     End If
 End Sub
+
+Public Function ObtenerPezRandom(ByVal PoderCania As Integer) As Long
+    Dim i As Long, SumaPesos As Long, ValorGenerado As Long
+    
+    If PoderCania > UBound(PesoPeces) Then PoderCania = UBound(PesoPeces)
+    SumaPesos = PesoPeces(PoderCania)
+    
+    ValorGenerado = RandomNumber(1, SumaPesos)
+    
+    ObtenerPezRandom = Peces(BinarySearchPeces(ValorGenerado)).ObjIndex
+    
+End Function
