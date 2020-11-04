@@ -1849,11 +1849,6 @@ Public Sub DoMeditar(ByVal UserIndex As Integer)
 
     With UserList(UserIndex)
        .Counters.IdleCount = 0
-        TActual = GetTickCount() And &H7FFFFFFF
-        If TActual - .Counters.tInicioMeditar < TIEMPO_INICIOMEDITAR Then
-            Exit Sub
-        End If
-        
         If .Counters.bPuedeMeditar = False Then
             .Counters.bPuedeMeditar = True
         End If
