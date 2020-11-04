@@ -678,10 +678,10 @@ On Error GoTo Errhandler
     Call UserList(UserIndex).incomingData.ReadASCIIStringFixed(UserList(UserIndex).incomingData.length)
     
     If UserList(UserIndex).flags.UserLogged Then
+        Call CloseUser(UserIndex)
+        
         If NumUsers > 0 Then NumUsers = NumUsers - 1
         Call MostrarNumUsers
-
-        Call CloseUser(UserIndex)
         
     Else
         Call ResetUserSlot(UserIndex)
@@ -1356,7 +1356,7 @@ On Error GoTo Errhandler
         If NumUsers > DayStats.MaxUsuarios Then DayStats.MaxUsuarios = NumUsers
         
         If NumUsers > recordusuarios Then
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Record de usuarios conectados simultaniamente." & "Hay " & NumUsers & " usuarios.", FontTypeNames.FONTTYPE_INFO))
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Record de usuarios conectados simultáneamente: " & NumUsers & " usuarios.", FontTypeNames.FONTTYPE_INFO))
             recordusuarios = NumUsers
             Call WriteVar(IniPath & "Server.ini", "INIT", "Record", str(recordusuarios))
         End If
@@ -2020,6 +2020,7 @@ Sub CloseUser(ByVal UserIndex As Integer)
     
 Errhandler:
     Call LogError("Error en CloseUser. Número " & Err.Number & " Descripción: " & Err.description & "Detalle:" & errordesc)
+    Resume Next ' TODO: Provisional hasta solucionar bugs graves
 
 End Sub
 
