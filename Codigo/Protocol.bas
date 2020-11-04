@@ -5975,8 +5975,6 @@ Private Sub HandleMeditate(ByVal UserIndex As Integer)
         If .flags.Meditando Then
             .Counters.tInicioMeditar = GetTickCount() And &H7FFFFFFF
             
-            Call WriteConsoleMsg(UserIndex, "Te estás concentrando. En " & Fix(TIEMPO_INICIOMEDITAR / 1000) & " segundos comenzarís a meditar.", FontTypeNames.FONTTYPE_INFO)
-            
             .Char.loops = INFINITE_LOOPS
             
             'Show proper FX according to level
