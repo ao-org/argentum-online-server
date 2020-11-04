@@ -679,6 +679,7 @@ Option Explicit
 
 Private Sub Command1_Click()
 Call LoadOBJData
+Call LoadPesca
 Call LoadRecursosEspeciales
 End Sub
 
@@ -930,6 +931,7 @@ Call FreeCharIndexes
 Call LoadSini
 Call CargarBackUp
 Call LoadOBJData
+Call LoadPesca
 Call LoadRecursosEspeciales
 
 #If UsarQueSocket = 1 Then

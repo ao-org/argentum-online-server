@@ -862,48 +862,48 @@ Next lc
 End Sub
 
 Sub LoadBalance()
+    Dim BalanceIni As clsIniReader
+    Set BalanceIni = New clsIniReader
+    
+    BalanceIni.Initialize DatPath & "Balance.dat"
+    
     Dim i As Long
-    Dim x As Byte
     Dim SearchVar As String
     'Modificadores de Clase
     For i = 1 To NUMCLASES
         With ModClase(i)
-            .Evasion = val(GetVar(DatPath & "Balance.dat", "MODEVASION", ListaClases(i)))
-            .AtaqueArmas = val(GetVar(DatPath & "Balance.dat", "MODATAQUEARMAS", ListaClases(i)))
-            .AtaqueProyectiles = val(GetVar(DatPath & "Balance.dat", "MODATAQUEPROYECTILES", ListaClases(i)))
-           ' .DañoWrestling = val(GetVar(DatPath & "Balance.dat", "MODATAQUEWRESTLING", ListaClases(i)))
-            .DañoArmas = val(GetVar(DatPath & "Balance.dat", "MODDANOARMAS", ListaClases(i)))
-            .DañoProyectiles = val(GetVar(DatPath & "Balance.dat", "MODDANOPROYECTILES", ListaClases(i)))
-            .DañoWrestling = val(GetVar(DatPath & "Balance.dat", "MODDANOWRESTLING", ListaClases(i)))
-            .Escudo = val(GetVar(DatPath & "Balance.dat", "MODESCUDO", ListaClases(i)))
+            .Evasion = val(BalanceIni.GetValue("MODEVASION", ListaClases(i)))
+            .AtaqueArmas = val(BalanceIni.GetValue("MODATAQUEARMAS", ListaClases(i)))
+            .AtaqueProyectiles = val(BalanceIni.GetValue("MODATAQUEPROYECTILES", ListaClases(i)))
+           '.DañoWrestling = val(BalanceIni.GetValue("MODATAQUEWRESTLING", ListaClases(i)))
+            .DañoArmas = val(BalanceIni.GetValue("MODDANOARMAS", ListaClases(i)))
+            .DañoProyectiles = val(BalanceIni.GetValue("MODDANOPROYECTILES", ListaClases(i)))
+            .DañoWrestling = val(BalanceIni.GetValue("MODDANOWRESTLING", ListaClases(i)))
+            .Escudo = val(BalanceIni.GetValue("MODESCUDO", ListaClases(i)))
         End With
     Next i
-    
+
     'Modificadores de Vida
-    For i = 1 To NUMRAZAS
+    For i = 1 To NUMCLASES
+        ModVida(i) = val(BalanceIni.GetValue("MODVIDA", ListaClases(i)))
+    Next i
+    
+    'Distribucion de Vida
+    For i = 1 To 5
+        DistribucionEnteraVida(i) = val(BalanceIni.GetValue("DISTRIBUCION", "E" + CStr(i)))
+    Next i
 
-        With ModRaza(i)
-            SearchVar = Replace(ListaRazas(i), " ", vbNullString)
-
-            .Fuerza = val(GetVar(DatPath & "Balance.dat", "MODRAZA", SearchVar + "Fuerza"))
-            .Agilidad = val(GetVar(DatPath & "Balance.dat", "MODRAZA", SearchVar + "Agilidad"))
-            .Inteligencia = val(GetVar(DatPath & "Balance.dat", "MODRAZA", SearchVar + "Inteligencia"))
-            .Constitucion = val(GetVar(DatPath & "Balance.dat", "MODRAZA", SearchVar + "Constitucion"))
-        End With
-
-        For x = 1 To NUMCLASES
-            SearchVar = Replace(ListaRazas(i), " ", vbNullString)
-
-            ModVida(i).Inicial(x) = val(GetVar(DatPath & "BalanceVida.dat", "VIDAINICIAL", SearchVar))
-            ModVida(i).N1TO15(x) = val(GetVar(DatPath & "BalanceVida.dat", ListaClases(x) & SearchVar, "N1TO15"))
-            ModVida(i).N16TO35(x) = val(GetVar(DatPath & "BalanceVida.dat", ListaClases(x) & SearchVar, "N16TO35"))
-            ModVida(i).N36TO45(x) = val(GetVar(DatPath & "BalanceVida.dat", ListaClases(x) & SearchVar, "N36TO45"))
-            ModVida(i).N46TO50(x) = val(GetVar(DatPath & "BalanceVida.dat", ListaClases(x) & SearchVar, "N46TO50"))
-        Next x
+    For i = 1 To 4
+        DistribucionSemienteraVida(i) = val(BalanceIni.GetValue("DISTRIBUCION", "S" + CStr(i)))
     Next i
     
     'Extra
-    PorcentajeRecuperoMana = val(GetVar(DatPath & "Balance.dat", "EXTRA", "PorcentajeRecuperoMana"))
+    PorcentajeRecuperoMana = val(BalanceIni.GetValue("EXTRA", "PorcentajeRecuperoMana"))
+    
+    Set BalanceIni = Nothing
+    
+    AgregarAConsola "Se recargó el balance (Balance.dat)"
+
 End Sub
 
 Sub LoadObjCarpintero()
@@ -1052,6 +1052,8 @@ For Object = 1 To NumObjDatas
     Select Case ObjData(Object).OBJType
         Case eOBJType.OtHerramientas
             ObjData(Object).WeaponAnim = val(Leer.GetValue("OBJ" & Object, "Anim"))
+            ObjData(Object).Power = val(Leer.GetValue("OBJ" & Object, "Poder"))
+            
         Case eOBJType.otArmadura
             ObjData(Object).Real = val(Leer.GetValue("OBJ" & Object, "Real"))
             ObjData(Object).Caos = val(Leer.GetValue("OBJ" & Object, "Caos"))
@@ -1089,7 +1091,7 @@ For Object = 1 To NumObjDatas
             ObjData(Object).MinHIT = val(Leer.GetValue("OBJ" & Object, "MinHIT"))
             ObjData(Object).proyectil = val(Leer.GetValue("OBJ" & Object, "Proyectil"))
             ObjData(Object).Municion = val(Leer.GetValue("OBJ" & Object, "Municiones"))
-            ObjData(Object).StaffPower = val(Leer.GetValue("OBJ" & Object, "StaffPower"))
+            ObjData(Object).Power = val(Leer.GetValue("OBJ" & Object, "StaffPower"))
             ObjData(Object).StaffDamageBonus = val(Leer.GetValue("OBJ" & Object, "StaffDamageBonus"))
             ObjData(Object).Refuerzo = val(Leer.GetValue("OBJ" & Object, "Refuerzo"))
             
@@ -1892,7 +1894,7 @@ Rem Get #fh, , L1
                 Select Case ObjData(Objetos(i).ObjIndex).OBJType
                     Case eOBJType.otYacimiento, eOBJType.otArboles
                         MapData(Map, Objetos(i).x, Objetos(i).Y).ObjInfo.Amount = ObjData(Objetos(i).ObjIndex).VidaUtil
-                        MapData(Map, Objetos(i).x, Objetos(i).Y).ObjInfo.UltimoUso = &H7FFFFFFF ' Max Long
+                        MapData(Map, Objetos(i).x, Objetos(i).Y).ObjInfo.data = &H7FFFFFFF ' Ultimo uso = Max Long
                     Case Else
                         MapData(Map, Objetos(i).x, Objetos(i).Y).ObjInfo.Amount = Objetos(i).ObjAmmount
                 End Select
@@ -3352,7 +3354,7 @@ Public Sub LoadRecursosEspeciales()
             Field = Split(str, "-")
             
             EspecialesTala(i).ObjIndex = val(Field(0))
-            EspecialesTala(i).Amount = val(Field(1))
+            EspecialesTala(i).data = val(Field(1))      ' Probabilidad
         Next
     Else
         ReDim EspecialesTala(0) As obj
@@ -3367,7 +3369,7 @@ Public Sub LoadRecursosEspeciales()
             Field = Split(str, "-")
             
             EspecialesPesca(i).ObjIndex = val(Field(0))
-            EspecialesPesca(i).Amount = val(Field(1))
+            EspecialesPesca(i).data = val(Field(1))     ' Probabilidad
         Next
     Else
         ReDim EspecialesPesca(0) As obj
@@ -3375,3 +3377,119 @@ Public Sub LoadRecursosEspeciales()
     
     Set IniFile = Nothing
 End Sub
+
+Public Sub LoadPesca()
+    If Not FileExist(DatPath & "pesca.dat", vbArchive) Then
+        ReDim Peces(0) As obj
+        ReDim PesoPeces(0) As Long
+        Exit Sub
+    End If
+
+    Dim IniFile As clsIniReader
+    Set IniFile = New clsIniReader
+    
+    Call IniFile.Initialize(DatPath & "pesca.dat")
+    
+    Dim Count As Long, i As Long, str As String, Field() As String, nivel As Integer, MaxLvlCania As Long
+
+    Count = val(IniFile.GetValue("PECES", "NumPeces"))
+    MaxLvlCania = val(IniFile.GetValue("PECES", "Maxlvlcaña"))
+    
+    ReDim PesoPeces(0 To MaxLvlCania) As Long
+    
+    If Count > 0 Then
+        ReDim Peces(1 To Count) As obj
+        ' Cargo todos los peces
+        For i = 1 To Count
+            str = IniFile.GetValue("PECES", "Pez" & i)
+            Field = Split(str, "-")
+            
+            Peces(i).ObjIndex = val(Field(0))
+            Peces(i).data = val(Field(1))       ' Peso
+
+            nivel = val(Field(2))               ' Nivel de caña
+            If (nivel > MaxLvlCania) Then nivel = MaxLvlCania
+            Peces(i).Amount = nivel
+        Next
+
+        ' Los ordeno segun nivel de caña (quick sort)
+        Call QuickSortPeces(1, Count)
+
+        ' Sumo los pesos
+        For i = 1 To Count
+            PesoPeces(Peces(i).Amount) = PesoPeces(Peces(i).Amount) + Peces(i).data
+            Peces(i).data = PesoPeces(Peces(i).Amount)
+        Next
+    Else
+        ReDim Peces(0) As obj
+    End If
+    
+    For i = 1 To MaxLvlCania
+        PesoPeces(i) = PesoPeces(i) + PesoPeces(i - 1)
+    Next
+    
+    Set IniFile = Nothing
+End Sub
+
+' Adaptado de https://www.vbforums.com/showthread.php?231925-VB-Quick-Sort-algorithm-(very-fast-sorting-algorithm)
+Private Sub QuickSortPeces(ByVal First As Long, ByVal Last As Long)
+    Dim low As Long, high As Long
+    Dim MidValue As String
+    Dim aux As obj
+    
+    low = First
+    high = Last
+    MidValue = Peces((First + Last) \ 2).Amount
+    
+    Do
+        While Peces(low).Amount < MidValue
+            low = low + 1
+        Wend
+
+        While Peces(high).Amount > MidValue
+            high = high - 1
+        Wend
+
+        If low <= high Then
+            aux = Peces(low)
+            Peces(low) = Peces(high)
+            Peces(high) = aux
+            low = low + 1
+            high = high - 1
+        End If
+    Loop While low <= high
+    
+    If First < high Then QuickSortPeces First, high
+    If low < Last Then QuickSortPeces low, Last
+End Sub
+
+' Adaptado de https://www.freevbcode.com/ShowCode.asp?ID=9416
+Public Function BinarySearchPeces(ByVal Value As Long) As Long
+    Dim low As Long
+    Dim high As Long
+    low = 1
+    high = UBound(Peces)
+    Dim i As Long
+    Dim valor_anterior As Long
+    
+    Do While low <= high
+        i = (low + high) \ 2
+        If i > 1 Then
+            valor_anterior = Peces(i - 1).data
+        Else
+            valor_anterior = 0
+        End If
+
+        If Value > valor_anterior And Value < Peces(i).data Then
+            BinarySearchPeces = i
+            Exit Do
+            
+        ElseIf Value < valor_anterior Then
+            high = (i - 1)
+            
+        Else
+            low = (i + 1)
+        End If
+    Loop
+End Function
+

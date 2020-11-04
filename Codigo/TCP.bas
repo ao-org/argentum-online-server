@@ -260,83 +260,16 @@ Sub RellenarInventario(ByVal UserIndex As String)
 
         ' Arma y hechizos
         Select Case .clase
-            Case eClass.Mage
-                .Invent.Object(NumItems).ObjIndex = 1356 ' Báculo (Newbies)
-                .Invent.WeaponEqpSlot = NumItems
-                NumItems = NumItems + 1
-
-                .Stats.UserHechizos(1) = 1 ' Proyectil
-                .Stats.UserHechizos(2) = 2 ' Saeta
-                .Stats.UserHechizos(3) = 11 ' Curar Veneno
-
-            Case eClass.Bard
-                .Invent.Object(NumItems).ObjIndex = 1623 ' Nudillos oxidados (Newbies)
-                .Invent.NudilloSlot = NumItems
-                NumItems = NumItems + 1
-
-                .Stats.UserHechizos(1) = 1 ' Proyectil
-                .Stats.UserHechizos(2) = 2 ' Saeta
-                .Stats.UserHechizos(3) = 11 ' Curar Veneno
-
-            Case eClass.Druid
-                .Invent.Object(NumItems).ObjIndex = 460 ' Daga (Newbies)
-                .Invent.WeaponEqpSlot = NumItems
-                NumItems = NumItems + 1
-
+            Case eClass.Mage, eClass.Cleric, eClass.Druid, eClass.Bard
                 .Stats.UserHechizos(1) = 1 ' Proyectil
                 .Stats.UserHechizos(2) = 2 ' Saeta
                 .Stats.UserHechizos(3) = 11 ' Curar Veneno
                 .Stats.UserHechizos(4) = 12 ' Heridas Leves
 
-            Case eClass.Assasin
-                .Invent.Object(NumItems).ObjIndex = 460 ' Daga (Newbies)
-                .Invent.WeaponEqpSlot = NumItems
-                NumItems = NumItems + 1
-
+            Case eClass.Assasin, eClass.Paladin
                 .Stats.UserHechizos(1) = 1 ' Proyectil
                 .Stats.UserHechizos(2) = 2 ' Saeta
                 .Stats.UserHechizos(3) = 11 ' Curar Veneno
-
-            Case eClass.Cleric
-                .Invent.Object(NumItems).ObjIndex = 2085 ' Espada Larga (Newbies)
-                .Invent.WeaponEqpSlot = NumItems
-                NumItems = NumItems + 1
-
-                .Stats.UserHechizos(1) = 1 ' Proyectil
-                .Stats.UserHechizos(2) = 2 ' Saeta
-                .Stats.UserHechizos(3) = 11 ' Curar Veneno
-                .Stats.UserHechizos(4) = 12 ' Heridas Leves
-
-            Case eClass.Paladin
-                .Invent.Object(NumItems).ObjIndex = 2085 ' Espada Larga (Newbies)
-                .Invent.WeaponEqpSlot = NumItems
-                NumItems = NumItems + 1
-                
-                .Stats.UserHechizos(1) = 1 'Proyectil
-                .Stats.UserHechizos(2) = 2 'Saeta
-                .Stats.UserHechizos(3) = 11 'Curar Veneno
-
-            Case eClass.Hunter
-                .Invent.Object(NumItems).ObjIndex = 1355 ' Arco Simple (Newbies)
-                .Invent.WeaponEqpSlot = NumItems
-                NumItems = NumItems + 1
-                
-                .Invent.Object(NumItems).ObjIndex = 1357 ' Flecha (Newbies)
-                .Invent.Object(NumItems).Amount = 2000
-                .Invent.Object(NumItems).Equipped = 1
-                .Invent.MunicionEqpSlot = NumItems
-                .Invent.MunicionEqpObjIndex = .Invent.Object(NumItems).ObjIndex
-                NumItems = NumItems + 1
-
-            Case eClass.Warrior
-                .Invent.Object(NumItems).ObjIndex = 2085 ' Espada Larga (Newbies)
-                .Invent.WeaponEqpSlot = NumItems
-                NumItems = NumItems + 1
-
-            Case eClass.Trabajador
-               .Invent.Object(NumItems).ObjIndex = 2085 ' Espada Larga (Newbies)
-                .Invent.WeaponEqpSlot = NumItems
-                NumItems = NumItems + 1
         End Select
         
         ' Pociones amarillas y verdes
@@ -352,18 +285,13 @@ Sub RellenarInventario(ByVal UserIndex As String)
         End Select
         
         ' Equipo el arma
-        If .Invent.WeaponEqpSlot > 0 Then
-            .Invent.Object(.Invent.WeaponEqpSlot).Amount = 1
-            .Invent.Object(.Invent.WeaponEqpSlot).Equipped = 1
-            .Invent.WeaponEqpObjIndex = .Invent.Object(.Invent.WeaponEqpSlot).ObjIndex
-            .Char.WeaponAnim = ObjData(.Invent.WeaponEqpObjIndex).WeaponAnim
-        ' O los nudillos
-        ElseIf .Invent.NudilloSlot > 0 Then
-            .Invent.Object(.Invent.NudilloSlot).Amount = 1
-            .Invent.Object(.Invent.NudilloSlot).Equipped = 1
-            .Invent.NudilloObjIndex = .Invent.Object(.Invent.NudilloSlot).ObjIndex
-            .Char.WeaponAnim = ObjData(.Invent.NudilloObjIndex).WeaponAnim
-        End If
+        .Invent.Object(NumItems).ObjIndex = 460 ' Daga (Newbies)
+        .Invent.Object(NumItems).Amount = 1
+        .Invent.Object(NumItems).Equipped = 1
+        .Invent.WeaponEqpSlot = NumItems
+        .Invent.WeaponEqpObjIndex = .Invent.Object(NumItems).ObjIndex
+        .Char.WeaponAnim = ObjData(NumItems).WeaponAnim
+        NumItems = NumItems + 1
         
         ' Vestimenta común
         .Invent.Object(NumItems).ObjIndex = 1622 ' Vestimenta Comun
@@ -539,10 +467,13 @@ Sub ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal UserR
 
     'Call AsignarAtributos(UserIndex)
 
-    UserList(UserIndex).Stats.MaxHp = ModVida(UserList(UserIndex).raza).Inicial(UserList(UserIndex).clase)
-    UserList(UserIndex).Stats.MinHp = ModVida(UserList(UserIndex).raza).Inicial(UserList(UserIndex).clase)
-
     Dim MiInt As Integer
+    
+    MiInt = RandomNumber(1, UserList(UserIndex).Stats.UserAtributos(eAtributos.Constitucion) \ 3)
+    
+    UserList(UserIndex).Stats.MaxHp = 15 + MiInt
+    UserList(UserIndex).Stats.MinHp = 15 + MiInt
+    
     MiInt = RandomNumber(1, UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad) \ 6)
     If MiInt = 1 Then MiInt = 2
     
