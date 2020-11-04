@@ -1903,18 +1903,10 @@ Sub CloseUser(ByVal UserIndex As Integer)
     'Call LogTarea("CloseUser " & UserIndex)
     On Error GoTo Errhandler
     
-    Dim n As Integer
-    Dim x As Integer
-    Dim Y As Integer
-    Dim LoopC As Integer
     Dim Map As Integer
-    Dim name As String
-    Dim raza As eRaza
-    Dim clase As eClass
-    Dim i As Integer
-    
     Dim aN As Integer
     
+    Map = UserList(UserIndex).Pos.Map
     
     Dim errordesc As String
     
@@ -1935,18 +1927,10 @@ Sub CloseUser(ByVal UserIndex As Integer)
     UserList(UserIndex).flags.AtacadoPorNpc = 0
     UserList(UserIndex).flags.NPCAtacado = 0
     
+    errordesc = "ERROR AL DESMONTAR"
     If UserList(UserIndex).flags.Montado > 0 Then
         Call DoMontar(UserIndex, ObjData(UserList(UserIndex).Invent.MonturaObjIndex), UserList(UserIndex).Invent.MonturaSlot)
     End If
-    
-    'CHECK:: ACA SE GUARDAN UN MONTON DE COSAS QUE NO SE OCUPAN PARA NADA :S
-    Map = UserList(UserIndex).Pos.Map
-    x = UserList(UserIndex).Pos.x
-    Y = UserList(UserIndex).Pos.Y
-    name = UCase$(UserList(UserIndex).name)
-    raza = UserList(UserIndex).raza
-    clase = UserList(UserIndex).clase
-    
     
     errordesc = "ERROR AL ENVIAR PARTICULA"
     UserList(UserIndex).Char.FX = 0
@@ -2013,13 +1997,13 @@ Sub CloseUser(ByVal UserIndex As Integer)
     
     ' Si el usuario habia dejado un msg en la gm's queue lo borramos
     'If Ayuda.Existe(UserList(UserIndex).Name) Then Call Ayuda.Quitar(UserList(UserIndex).Name)
-    errordesc = "ERROR AL RESETSLOP Name:" & UserList(UserIndex).name & " cuenta:" & UserList(UserIndex).Cuenta
+    errordesc = "ERROR AL RESETSLOT Name:" & UserList(UserIndex).name & " cuenta:" & UserList(UserIndex).Cuenta
     Call ResetUserSlot(UserIndex)
     
     Exit Sub
     
 Errhandler:
-    Call LogError("Error en CloseUser. Número " & Err.Number & " Descripción: " & Err.description & "Detalle:" & errordesc)
+    Call LogError("Error en CloseUser. Número " & Err.Number & ". Descripción: " & Err.description & ". Detalle:" & errordesc)
     Resume Next ' TODO: Provisional hasta solucionar bugs graves
 
 End Sub
