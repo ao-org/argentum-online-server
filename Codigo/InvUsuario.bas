@@ -97,50 +97,51 @@ manejador:
 End Function
 
 Sub QuitarNewbieObj(ByVal UserIndex As Integer)
-Dim j As Integer
-For j = 1 To UserList(UserIndex).CurrentInventorySlots
+
+    Dim j As Integer
+    For j = 1 To UserList(UserIndex).CurrentInventorySlots
         If UserList(UserIndex).Invent.Object(j).ObjIndex > 0 Then
              
-             If ObjData(UserList(UserIndex).Invent.Object(j).ObjIndex).Newbie = 1 Then _
-                    Call QuitarUserInvItem(UserIndex, j, MAX_INVENTORY_OBJS)
-                    Call UpdateUserInv(False, UserIndex, j)
+            If ObjData(UserList(UserIndex).Invent.Object(j).ObjIndex).Newbie = 1 Then
+                Call QuitarUserInvItem(UserIndex, j, MAX_INVENTORY_OBJS)
+                Call UpdateUserInv(False, UserIndex, j)
+            End If
         
         End If
-Next j
-
-'[Barrin 17-12-03] Si el usuario dejó de ser Newbie, y estaba en el Newbie Dungeon
-'es transportado a su hogar de origen ;)
-If UCase$(MapInfo(UserList(UserIndex).Pos.Map).restrict_mode) = "NEWBIE" Then
+    Next j
     
-    Dim DeDonde As WorldPos
-    
-    Select Case UserList(UserIndex).Hogar
-        Case eCiudad.cUllathorpe
-            DeDonde = Ullathorpe
-            
-        Case eCiudad.cNix
-            DeDonde = Nix
-
-        Case eCiudad.cBanderbill
-            DeDonde = Banderbill
+    'Si el usuario dejó de ser Newbie, y estaba en el Newbie Dungeon
+    'es transportado a su hogar de origen ;)
+    If UCase$(MapInfo(UserList(UserIndex).Pos.Map).restrict_mode) = "NEWBIE" Then
         
-        Case eCiudad.cLindos 'Vamos a tener que ir por todo el desierto... uff!
-            DeDonde = Lindos
-            
-        Case eCiudad.cArghal 'Vamos a tener que ir por todo el desierto... uff!
-            DeDonde = Arghal
-            
-        Case eCiudad.CHillidan
-            DeDonde = Hillidan
-            
-        Case Else
-            DeDonde = Ullathorpe
-    End Select
+        Dim DeDonde As WorldPos
+        
+        Select Case UserList(UserIndex).Hogar
+            Case eCiudad.cUllathorpe
+                DeDonde = Ullathorpe
+                
+            Case eCiudad.cNix
+                DeDonde = Nix
     
-    Call WarpUserChar(UserIndex, DeDonde.Map, DeDonde.x, DeDonde.Y, True)
-
-End If
-'[/Barrin]
+            Case eCiudad.cBanderbill
+                DeDonde = Banderbill
+            
+            Case eCiudad.cLindos 'Vamos a tener que ir por todo el desierto... uff!
+                DeDonde = Lindos
+                
+            Case eCiudad.cArghal 'Vamos a tener que ir por todo el desierto... uff!
+                DeDonde = Arghal
+                
+            Case eCiudad.CHillidan
+                DeDonde = Hillidan
+                
+            Case Else
+                DeDonde = Ullathorpe
+        End Select
+        
+        Call WarpUserChar(UserIndex, DeDonde.Map, DeDonde.x, DeDonde.Y, True)
+    
+    End If
 
 End Sub
 

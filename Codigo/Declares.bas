@@ -239,7 +239,7 @@ Public MiCabecera As tCabecera
 
 'Barrin 3/10/03
 'Cambiado a 2 segundos el 30/11/07
-Public Const TIEMPO_INICIOMEDITAR As Integer = 3000
+Public Const TIEMPO_INICIOMEDITAR As Integer = 0
 
 Public Const NingunEscudo As Integer = 2
 Public Const NingunCasco As Integer = 2
@@ -551,15 +551,6 @@ Public Const iCabezaMuerto As Integer = 621
 
 
 Public Const iORO As Byte = 12
-Public Const Pescado As Byte = 139
-
-Public Enum PECES_POSIBLES
-    PESCADO1 = 139
-    PESCADO2 = 544
-    PESCADO3 = 545
-    PESCADO4 = 546
-    PESCADO5 = 900
-End Enum
 
 '%%%%%%%%%% CONSTANTES DE INDICES %%%%%%%%%%%%%%%
 Public Enum eSkill
@@ -965,7 +956,7 @@ End Type
 Public Type obj
     ObjIndex As Integer
     Amount As Integer
-    UltimoUso As Long
+    data As Long
 End Type
 
 Public Type tQuestNpc
@@ -1185,7 +1176,7 @@ Public Type ObjData
     
     NoSeCae As Integer
     
-    StaffPower As Integer
+    Power As Integer
     StaffDamageBonus As Integer
     DefensaMagicaMax As Integer
     DefensaMagicaMin As Integer
@@ -2059,6 +2050,8 @@ Public ObjAlquimista() As Integer
 Public ObjSastre() As Integer
 Public EspecialesTala() As obj
 Public EspecialesPesca() As obj
+Public Peces() As obj
+Public PesoPeces() As Long
 
 Public ObjDonador() As tObjDonador
 Public MD5s() As String
@@ -2067,7 +2060,11 @@ Public ModClase(1 To NUMCLASES) As ModClase
 
 Public ModRaza(1 To NUMRAZAS) As ModRaza
 
-Public ModVida(1 To NUMRAZAS) As ModVidaBalance
+Public ModVida(1 To NUMCLASES) As Double
+
+Public DistribucionEnteraVida(1 To 5) As Integer
+
+Public DistribucionSemienteraVida(1 To 4) As Integer
 
 
 '*********************************************************

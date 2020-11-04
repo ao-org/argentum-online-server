@@ -797,6 +797,7 @@ End Sub
 
 Private Sub Command8_Click()
 Call LoadOBJData
+Call LoadPesca
 Call LoadRecursosEspeciales
 End Sub
 

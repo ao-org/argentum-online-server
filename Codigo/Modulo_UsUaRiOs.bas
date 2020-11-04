@@ -391,238 +391,248 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
 
 On Error GoTo Errhandler
 
-Dim Pts As Integer
-Dim Constitucion As Integer
-Dim AumentoHIT As Integer
-Dim AumentoMANA As Integer
-Dim AumentoSTA As Integer
-Dim AumentoHP As Integer
-Dim WasNewbie As Boolean
+    Dim Pts As Integer
+    Dim AumentoHIT As Integer
+    Dim AumentoMANA As Integer
+    Dim AumentoSTA As Integer
+    Dim AumentoHP As Integer
+    Dim WasNewbie As Boolean
+    Dim Promedio         As Double
+    Dim aux              As Integer
+    Dim DistVida(1 To 5) As Integer
+    
+    Dim PasoDeNivel As Boolean
+    
+    With UserList(UserIndex)
+    
+        '¿Alcanzo el maximo nivel?
+        If .Stats.ELV >= STAT_MAXELV Then
+            .Stats.Exp = 0
+            .Stats.ELU = 0
+            Exit Sub
+        End If
+            
+        WasNewbie = EsNewbie(UserIndex)
+        
+        Do While .Stats.Exp >= .Stats.ELU
+            
+            'Checkea otra vez, esto sucede si tiene mas EXP y puede saltarse el maximo nivel
+            If .Stats.ELV >= STAT_MAXELV Then
+                .Stats.Exp = 0
+                .Stats.ELU = 0
+                Exit Sub
+            End If
+            
+            'Store it!
+            'Call Statistics.UserLevelUp(UserIndex)
 
-Dim PasoDeNivel As Boolean
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, 106, 0))
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_NIVEL, .Pos.x, .Pos.Y))
+            Call WriteLocaleMsg(UserIndex, "186", FontTypeNames.FONTTYPE_INFO)
+            
+            Pts = Pts + 5
+            
+            .Stats.ELV = .Stats.ELV + 1
+            
+            .Stats.Exp = .Stats.Exp - .Stats.ELU
+            
+            'Nueva subida de exp x lvl. Pablo (ToxicWaste)
+            If .Stats.ELV < 15 Then
+                .Stats.ELU = .Stats.ELU * 1.3
+            ElseIf .Stats.ELV < 25 Then
+                .Stats.ELU = .Stats.ELU * 1.15
+            ElseIf .Stats.ELV < 35 Then
+                .Stats.ELU = .Stats.ELU * 1.3
+            ElseIf .Stats.ELV < 45 Then
+                .Stats.ELU = .Stats.ELU * 1.15
+            Else
+                .Stats.ELU = .Stats.ELU * 1.2
+            End If
+            
+            'Calculo subida de vida
+            Promedio = ModVida(.clase) - (21 - .Stats.UserAtributos(eAtributos.Constitucion)) * 0.5
+            aux = RandomNumber(0, 100)
+            
+            If Promedio - Int(Promedio) = 0.5 Then
+                'Es promedio semientero
+                DistVida(1) = DistribucionSemienteraVida(1)
+                DistVida(2) = DistVida(1) + DistribucionSemienteraVida(2)
+                DistVida(3) = DistVida(2) + DistribucionSemienteraVida(3)
+                DistVida(4) = DistVida(3) + DistribucionSemienteraVida(4)
+                
+                If aux <= DistVida(1) Then
+                    AumentoHP = Promedio + 1.5
+                ElseIf aux <= DistVida(2) Then
+                    AumentoHP = Promedio + 0.5
+                ElseIf aux <= DistVida(3) Then
+                    AumentoHP = Promedio - 0.5
+                Else
+                    AumentoHP = Promedio - 1.5
 
+                End If
 
+            Else
+                'Es promedio entero
+                DistVida(1) = DistribucionEnteraVida(1)
+                DistVida(2) = DistVida(1) + DistribucionEnteraVida(2)
+                DistVida(3) = DistVida(2) + DistribucionEnteraVida(3)
+                DistVida(4) = DistVida(3) + DistribucionEnteraVida(4)
+                DistVida(5) = DistVida(4) + DistribucionEnteraVida(5)
+                
+                If aux <= DistVida(1) Then
+                    AumentoHP = Promedio + 2
+                ElseIf aux <= DistVida(2) Then
+                    AumentoHP = Promedio + 1
+                ElseIf aux <= DistVida(3) Then
+                    AumentoHP = Promedio
+                ElseIf aux <= DistVida(4) Then
+                    AumentoHP = Promedio - 1
+                Else
+                    AumentoHP = Promedio - 2
 
-'¿Alcanzo el maximo nivel?
-If UserList(UserIndex).Stats.ELV >= STAT_MAXELV Then
-    UserList(UserIndex).Stats.Exp = 0
-    UserList(UserIndex).Stats.ELU = 0
+                End If
+                
+            End If
+            
+            Select Case .clase
+                Case eClass.Mage '
+                    AumentoHIT = 1
+                    AumentoMANA = 3 * .Stats.UserAtributos(eAtributos.Inteligencia)
+                    AumentoSTA = AumentoSTMago
+            
+                Case eClass.Bard 'Balanceda Mana
+                    AumentoHIT = 2
+                    AumentoMANA = 2.6 * .Stats.UserAtributos(eAtributos.Inteligencia)
+                    AumentoSTA = AumentoSTDef - 4
+                    
+                Case eClass.Druid 'Balanceda Mana
+                    AumentoHIT = 2
+                    AumentoMANA = 2.6 * .Stats.UserAtributos(eAtributos.Inteligencia)
+                    AumentoSTA = AumentoSTDef - 4
+            
+                Case eClass.Assasin
+                    AumentoHIT = IIf(.Stats.ELV > 35, 1, 3)
+                    AumentoMANA = 1.1 * .Stats.UserAtributos(eAtributos.Inteligencia)
+                    AumentoSTA = AumentoSTDef - 3
+                    
+                Case eClass.Cleric 'Balanceda Mana
+                    AumentoHIT = 2
+                    AumentoMANA = 2 * .Stats.UserAtributos(eAtributos.Inteligencia)
+                    AumentoSTA = AumentoSTDef - 4
+                    
+                    
+                Case eClass.Paladin
+                    AumentoHIT = IIf(.Stats.ELV > 39, 1, 3)
+                    AumentoMANA = 1.1 * .Stats.UserAtributos(eAtributos.Inteligencia)
+                    AumentoSTA = AumentoSTDef - 2
+                    
+                Case eClass.Hunter
+                    AumentoHIT = IIf(.Stats.ELV > 35, 2, 3)
+                    AumentoSTA = AumentoSTDef - 2
+                    
+                Case eClass.Trabajador
+                    AumentoHIT = 2
+                    AumentoSTA = AumentoSTDef + 5
+                
+            
+                Case eClass.Warrior
+                    AumentoHIT = IIf(.Stats.ELV > 35, 2, 3)
+                    AumentoSTA = AumentoSTDef
+                        
+                Case Else
+                    AumentoHIT = 2
+                    AumentoSTA = AumentoSTDef
+            End Select
+            
+            'Actualizamos HitPoints
+            .Stats.MaxHp = .Stats.MaxHp + AumentoHP
+            If .Stats.MaxHp > STAT_MAXHP Then _
+                .Stats.MaxHp = STAT_MAXHP
+            'Actualizamos Stamina
+            .Stats.MaxSta = .Stats.MaxSta + AumentoSTA
+            If .Stats.MaxSta > STAT_MAXSTA Then _
+                .Stats.MaxSta = STAT_MAXSTA
+            'Actualizamos Mana
+            .Stats.MaxMAN = .Stats.MaxMAN + AumentoMANA
+            If .Stats.ELV < 36 Then
+                If .Stats.MaxMAN > STAT_MAXMAN Then _
+                    .Stats.MaxMAN = STAT_MAXMAN
+            Else
+                If .Stats.MaxMAN > 9999 Then _
+                    .Stats.MaxMAN = 9999
+            End If
+        
+            
+            'Actualizamos Golpe Máximo
+            .Stats.MaxHit = .Stats.MaxHit + AumentoHIT
+            
+            'Actualizamos Golpe Mínimo
+            .Stats.MinHIT = .Stats.MinHIT + AumentoHIT
+        
+            
+            'Notificamos al user
+            If AumentoHP > 0 Then
+                'Call WriteConsoleMsg(UserIndex, "Has ganado " & AumentoHP & " puntos de vida.", FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, "197", FontTypeNames.FONTTYPE_INFO, AumentoHP)
+            End If
+            If AumentoSTA > 0 Then
+                'Call WriteConsoleMsg(UserIndex, "Has ganado " & AumentoSTA & " puntos de vitalidad.", FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, "198", FontTypeNames.FONTTYPE_INFO, AumentoSTA)
+            End If
+            If AumentoMANA > 0 Then
+                Call WriteLocaleMsg(UserIndex, "199", FontTypeNames.FONTTYPE_INFO, AumentoMANA)
+                'Call WriteConsoleMsg(UserIndex, "Has ganado " & AumentoMANA & " puntos de magia.", FontTypeNames.FONTTYPE_INFO)
+            End If
+            If AumentoHIT > 0 Then
+                Call WriteLocaleMsg(UserIndex, "200", FontTypeNames.FONTTYPE_INFO, AumentoHIT)
+                'Call WriteConsoleMsg(UserIndex, "Tu golpe aumento en " & AumentoHIT & " puntos.", FontTypeNames.FONTTYPE_INFO)
+            End If
+            PasoDeNivel = True
+             
+               ' Call LogDesarrollo(.name & " paso a nivel " & .Stats.ELV & " gano HP: " & AumentoHP)
+            
+            
+            .Stats.MinHp = .Stats.MaxHp
+            
+           ' Call UpdateUserInv(True, UserIndex, 0)
+            
+            If EsNewbie(UserIndex) Then
+                Dim OroRecompenza As Long
+                OroRecompenza = OroPorNivel * .Stats.ELV * OroMult * .flags.ScrollOro
+                .Stats.GLD = .Stats.GLD + OroRecompenza
+                'Call WriteConsoleMsg(UserIndex, "Has ganado " & OroRecompenza & " monedas de oro.", FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, "29", FontTypeNames.FONTTYPE_INFO, OroRecompenza)
+                
+            End If
+            
+            
+            If Not EsNewbie(UserIndex) And WasNewbie Then
+        
+                Call QuitarNewbieObj(UserIndex)
+            
+            End If
+        
+        Loop
+        
+        
+        If PasoDeNivel Then
+            Call UpdateUserInv(True, UserIndex, 0)
+            'Call CheckearRecompesas(UserIndex, 3)
+            Call WriteUpdateUserStats(UserIndex)
+            
+            
+            If Pts > 0 Then
+                
+                .Stats.SkillPts = .Stats.SkillPts + Pts
+                Call WriteLevelUp(UserIndex, .Stats.SkillPts)
+                Call WriteLocaleMsg(UserIndex, "187", FontTypeNames.FONTTYPE_INFO, Pts)
+                'Call WriteConsoleMsg(UserIndex, "Has ganado un total de " & Pts & " skillpoints.", FontTypeNames.FONTTYPE_INFO)
+            End If
+        End If
+    
+    End With
+    
     Exit Sub
-End If
-    
-WasNewbie = EsNewbie(UserIndex)
-
-Do While UserList(UserIndex).Stats.Exp >= UserList(UserIndex).Stats.ELU
-    
-    'Checkea otra vez, esto sucede si tiene mas EXP y puede saltarse el maximo
-    'nivel
-    If UserList(UserIndex).Stats.ELV >= STAT_MAXELV Then
-        UserList(UserIndex).Stats.Exp = 0
-        UserList(UserIndex).Stats.ELU = 0
-        Exit Sub
-    End If
-    
-    'Store it!
-    'Call Statistics.UserLevelUp(UserIndex)
-    
-    
-   ' Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageFxPiso(103, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
-    
-    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.CharIndex, 106, 0))
-    
-    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_NIVEL, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
-    'Call WriteConsoleMsg(UserIndex, "¡Has subido de nivel!", FontTypeNames.FONTTYPE_INFO)
-    Call WriteLocaleMsg(UserIndex, "186", FontTypeNames.FONTTYPE_INFO)
-    
-    Pts = Pts + 5
-   ' End If
-    
-    UserList(UserIndex).Stats.ELV = UserList(UserIndex).Stats.ELV + 1
-    
-    UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp - UserList(UserIndex).Stats.ELU
-    
-    'Nueva subida de exp x lvl. Pablo (ToxicWaste)
-    If UserList(UserIndex).Stats.ELV < 15 Then
-        UserList(UserIndex).Stats.ELU = UserList(UserIndex).Stats.ELU * 1.3
-    ElseIf UserList(UserIndex).Stats.ELV < 25 Then
-        UserList(UserIndex).Stats.ELU = UserList(UserIndex).Stats.ELU * 1.15
-    ElseIf UserList(UserIndex).Stats.ELV < 35 Then
-        UserList(UserIndex).Stats.ELU = UserList(UserIndex).Stats.ELU * 1.3
-    ElseIf UserList(UserIndex).Stats.ELV < 45 Then
-        UserList(UserIndex).Stats.ELU = UserList(UserIndex).Stats.ELU * 1.15
-    Else
-        UserList(UserIndex).Stats.ELU = UserList(UserIndex).Stats.ELU * 1.2
-    End If
-    
-    'Calculo Vida
-    
-    
-    'Calculo subida de vida
-    Dim RESTA As Byte
-    RESTA = 22 - UserList(UserIndex).Stats.UserAtributos(eAtributos.Constitucion)
-    
-    If UserList(UserIndex).Stats.ELV < 16 Then
-        AumentoHP = ModVida(UserList(UserIndex).raza).N1TO15(UserList(UserIndex).clase) - RESTA
-    ElseIf UserList(UserIndex).Stats.ELV < 36 Then
-        AumentoHP = ModVida(UserList(UserIndex).raza).N16TO35(UserList(UserIndex).clase) - RESTA
-    ElseIf UserList(UserIndex).Stats.ELV < 46 Then
-        AumentoHP = ModVida(UserList(UserIndex).raza).N36TO45(UserList(UserIndex).clase) - RESTA
-      Else
-        AumentoHP = ModVida(UserList(UserIndex).raza).N46TO50(UserList(UserIndex).clase) - RESTA
-    End If
-    
-    
-    Select Case UserList(UserIndex).clase
-    
-    
-            Case eClass.Mage '
-                AumentoHIT = 1 'Nueva dist de mana para mago (ToxicWaste)
-                AumentoMANA = 3.5 * UserList(UserIndex).Stats.UserAtributos(eAtributos.Inteligencia)
-                AumentoSTA = AumentoSTMago
-               ' AumentoHP = RandomNumber(MagoVidaMin, MagoVidaMax)
-        
-            Case eClass.Bard 'Balanceda Mana
-                AumentoHIT = 2
-                AumentoMANA = 2.6 * UserList(UserIndex).Stats.UserAtributos(eAtributos.Inteligencia)
-                AumentoSTA = AumentoSTDef - 4
-              ' AumentoHP = RandomNumber(BardoVidaMin, BardoVidaMax)
-                
-            Case eClass.Druid 'Balanceda Mana
-                AumentoHIT = 2
-                AumentoMANA = 2.6 * UserList(UserIndex).Stats.UserAtributos(eAtributos.Inteligencia)
-                AumentoSTA = AumentoSTDef - 4
-               ' AumentoHP = RandomNumber(DruidaVidaMin, DruidaVidaMax)
-        
-            Case eClass.Assasin
-                AumentoHIT = IIf(UserList(UserIndex).Stats.ELV > 35, 1, 3)
-                AumentoMANA = 1.1 * UserList(UserIndex).Stats.UserAtributos(eAtributos.Inteligencia)
-                AumentoSTA = AumentoSTDef - 3
-               ' AumentoHP = RandomNumber(AsesinoVidaMin, AsesinoVidaMax)
-                
-            Case eClass.Cleric 'Balanceda Mana
-                AumentoHIT = 2
-                AumentoMANA = 2 * UserList(UserIndex).Stats.UserAtributos(eAtributos.Inteligencia)
-                AumentoSTA = AumentoSTDef - 4
-              '  AumentoHP = RandomNumber(ClerigoVidaMin, ClerigoVidaMax)
-                
-                
-            Case eClass.Paladin
-                AumentoHIT = IIf(UserList(UserIndex).Stats.ELV > 39, 1, 3)
-                AumentoMANA = 1.1 * UserList(UserIndex).Stats.UserAtributos(eAtributos.Inteligencia)
-                AumentoSTA = AumentoSTDef - 2
-             '  AumentoHP = RandomNumber(PaladinVidaMin, PaladinVidaMax)
-                
-            Case eClass.Hunter
-                AumentoHIT = IIf(UserList(UserIndex).Stats.ELV > 35, 2, 3)
-                AumentoSTA = AumentoSTDef - 2
-               ' AumentoHP = RandomNumber(CazadorVidaMin, CazadorVidaMax)
-                
-            Case eClass.Trabajador
-                AumentoHIT = 2
-                AumentoSTA = AumentoSTDef + 5
-               ' AumentoHP = RandomNumber(TrabajadorVidaMin, TrabajadorVidaMax)
-            
-        
-            Case eClass.Warrior
-                AumentoHIT = IIf(UserList(UserIndex).Stats.ELV > 35, 2, 3)
-                AumentoSTA = AumentoSTDef
-              '  AumentoHP = RandomNumber(GuerreroVidaMin, GuerreroVidaMax)
-                
-        Case Else
-            AumentoHIT = 2
-            AumentoSTA = AumentoSTDef
-          '  AumentoHP = RandomNumber(GuerreroVidaMin, GuerreroVidaMax)
-            
-            
-    End Select
-    
-    'Actualizamos HitPoints
-    UserList(UserIndex).Stats.MaxHp = UserList(UserIndex).Stats.MaxHp + AumentoHP
-    If UserList(UserIndex).Stats.MaxHp > STAT_MAXHP Then _
-        UserList(UserIndex).Stats.MaxHp = STAT_MAXHP
-    'Actualizamos Stamina
-    UserList(UserIndex).Stats.MaxSta = UserList(UserIndex).Stats.MaxSta + AumentoSTA
-    If UserList(UserIndex).Stats.MaxSta > STAT_MAXSTA Then _
-        UserList(UserIndex).Stats.MaxSta = STAT_MAXSTA
-    'Actualizamos Mana
-    UserList(UserIndex).Stats.MaxMAN = UserList(UserIndex).Stats.MaxMAN + AumentoMANA
-    If UserList(UserIndex).Stats.ELV < 36 Then
-        If UserList(UserIndex).Stats.MaxMAN > STAT_MAXMAN Then _
-            UserList(UserIndex).Stats.MaxMAN = STAT_MAXMAN
-    Else
-        If UserList(UserIndex).Stats.MaxMAN > 9999 Then _
-            UserList(UserIndex).Stats.MaxMAN = 9999
-    End If
-
-    
-    'Actualizamos Golpe Máximo
-    UserList(UserIndex).Stats.MaxHit = UserList(UserIndex).Stats.MaxHit + AumentoHIT
-    
-    'Actualizamos Golpe Mínimo
-    UserList(UserIndex).Stats.MinHIT = UserList(UserIndex).Stats.MinHIT + AumentoHIT
-
-    
-    'Notificamos al user
-    If AumentoHP > 0 Then
-        'Call WriteConsoleMsg(UserIndex, "Has ganado " & AumentoHP & " puntos de vida.", FontTypeNames.FONTTYPE_INFO)
-        Call WriteLocaleMsg(UserIndex, "197", FontTypeNames.FONTTYPE_INFO, AumentoHP)
-    End If
-    If AumentoSTA > 0 Then
-        'Call WriteConsoleMsg(UserIndex, "Has ganado " & AumentoSTA & " puntos de vitalidad.", FontTypeNames.FONTTYPE_INFO)
-        Call WriteLocaleMsg(UserIndex, "198", FontTypeNames.FONTTYPE_INFO, AumentoSTA)
-    End If
-    If AumentoMANA > 0 Then
-        Call WriteLocaleMsg(UserIndex, "199", FontTypeNames.FONTTYPE_INFO, AumentoMANA)
-        'Call WriteConsoleMsg(UserIndex, "Has ganado " & AumentoMANA & " puntos de magia.", FontTypeNames.FONTTYPE_INFO)
-    End If
-    If AumentoHIT > 0 Then
-        Call WriteLocaleMsg(UserIndex, "200", FontTypeNames.FONTTYPE_INFO, AumentoHIT)
-        'Call WriteConsoleMsg(UserIndex, "Tu golpe aumento en " & AumentoHIT & " puntos.", FontTypeNames.FONTTYPE_INFO)
-    End If
-    PasoDeNivel = True
-     
-       ' Call LogDesarrollo(UserList(UserIndex).name & " paso a nivel " & UserList(UserIndex).Stats.ELV & " gano HP: " & AumentoHP)
-    
-    
-    UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MaxHp
-    
-   ' Call UpdateUserInv(True, UserIndex, 0)
-    
-    If EsNewbie(UserIndex) Then
-        Dim OroRecompenza As Long
-        OroRecompenza = OroPorNivel * UserList(UserIndex).Stats.ELV * OroMult * UserList(UserIndex).flags.ScrollOro
-        UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + OroRecompenza
-        'Call WriteConsoleMsg(UserIndex, "Has ganado " & OroRecompenza & " monedas de oro.", FontTypeNames.FONTTYPE_INFO)
-        Call WriteLocaleMsg(UserIndex, "29", FontTypeNames.FONTTYPE_INFO, OroRecompenza)
-        
-    End If
-    
-    
-    If Not EsNewbie(UserIndex) And WasNewbie Then
-
-    Call QuitarNewbieObj(UserIndex)
-    
-    End If
-
-Loop
-
-
-If PasoDeNivel Then
-    Call UpdateUserInv(True, UserIndex, 0)
-    'Call CheckearRecompesas(UserIndex, 3)
-    Call WriteUpdateUserStats(UserIndex)
-    
-    
-    If Pts > 0 Then
-        
-        UserList(UserIndex).Stats.SkillPts = UserList(UserIndex).Stats.SkillPts + Pts
-        Call WriteLevelUp(UserIndex, UserList(UserIndex).Stats.SkillPts)
-        Call WriteLocaleMsg(UserIndex, "187", FontTypeNames.FONTTYPE_INFO, Pts)
-        'Call WriteConsoleMsg(UserIndex, "Has ganado un total de " & Pts & " skillpoints.", FontTypeNames.FONTTYPE_INFO)
-    End If
-End If
-
-Exit Sub
 
 Errhandler:
     Call LogError("Error en la subrutina CheckUserLevel - Error : " & Err.Number & " - Description : " & Err.description)
