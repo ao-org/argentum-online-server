@@ -1250,7 +1250,7 @@ Public Sub SetUserLoggedDatabase(ByVal Id As Long, ByVal AccountID As Long)
 End Sub
 
 Public Sub SaveBattlePointsDatabase(ByVal Id As Long, ByVal BattlePoints As Long)
-    Call SetDBValue("account", "battle_points", BattlePoints, "id", Id)
+    Call SetDBValue("user", "battle_points", BattlePoints, "id", Id)
 End Sub
 
 Public Sub SaveVotoDatabase(ByVal Id As Long, ByVal Encuestas As Integer)
