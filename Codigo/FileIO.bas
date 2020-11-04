@@ -892,11 +892,13 @@ Sub LoadBalance()
         End With
 
         For x = 1 To NUMCLASES
-            ModVida(i).Inicial(x) = val(GetVar(DatPath & "BalanceVida.dat", "VIDAINICIAL", ListaRazas(i)))
-            ModVida(i).N1TO15(x) = val(GetVar(DatPath & "BalanceVida.dat", ListaClases(x) & ListaRazas(i), "N1TO15"))
-            ModVida(i).N16TO35(x) = val(GetVar(DatPath & "BalanceVida.dat", ListaClases(x) & ListaRazas(i), "N16TO35"))
-            ModVida(i).N36TO45(x) = val(GetVar(DatPath & "BalanceVida.dat", ListaClases(x) & ListaRazas(i), "N36TO45"))
-            ModVida(i).N46TO50(x) = val(GetVar(DatPath & "BalanceVida.dat", ListaClases(x) & ListaRazas(i), "N46TO50"))
+            SearchVar = Replace(ListaRazas(i), " ", vbNullString)
+
+            ModVida(i).Inicial(x) = val(GetVar(DatPath & "BalanceVida.dat", "VIDAINICIAL", SearchVar))
+            ModVida(i).N1TO15(x) = val(GetVar(DatPath & "BalanceVida.dat", ListaClases(x) & SearchVar, "N1TO15"))
+            ModVida(i).N16TO35(x) = val(GetVar(DatPath & "BalanceVida.dat", ListaClases(x) & SearchVar, "N16TO35"))
+            ModVida(i).N36TO45(x) = val(GetVar(DatPath & "BalanceVida.dat", ListaClases(x) & SearchVar, "N36TO45"))
+            ModVida(i).N46TO50(x) = val(GetVar(DatPath & "BalanceVida.dat", ListaClases(x) & SearchVar, "N46TO50"))
         Next x
     Next i
     
