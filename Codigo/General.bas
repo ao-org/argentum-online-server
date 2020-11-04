@@ -1505,7 +1505,7 @@ If UserList(UserIndex).flags.BattleModo = 1 Then Exit Sub
 
 'Sed
 If UserList(UserIndex).Stats.MinAGU > 0 Then
-    If UserList(UserIndex).Counters.AGUACounter < 5 Then
+    If UserList(UserIndex).Counters.AGUACounter < IntervaloSed Then
         UserList(UserIndex).Counters.AGUACounter = UserList(UserIndex).Counters.AGUACounter + 1
     Else
         UserList(UserIndex).Counters.AGUACounter = 0
@@ -1522,7 +1522,7 @@ End If
 
 'hambre
 If UserList(UserIndex).Stats.MinHam > 0 Then
-   If UserList(UserIndex).Counters.COMCounter < 5 Then
+   If UserList(UserIndex).Counters.COMCounter < IntervaloHambre Then
         UserList(UserIndex).Counters.COMCounter = UserList(UserIndex).Counters.COMCounter + 1
    Else
         UserList(UserIndex).Counters.COMCounter = 0
