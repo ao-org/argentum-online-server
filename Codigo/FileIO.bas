@@ -2479,7 +2479,7 @@ End Sub
 Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = False)
 
     If Database_Enabled Then
-        Call SaveUserDatabase(UserIndex, Logout)
+        Call SaveUserDatabase(UserIndex)
     Else
         Call SaveUserBinary(UserIndex, Logout)
     End If
@@ -3154,9 +3154,7 @@ End Sub
 
 Sub SetUserLogged(ByVal UserIndex As Integer)
 
-    If Database_Enabled Then
-        Call SetUserLoggedDatabase(UserList(UserIndex).Id, UserList(UserIndex).AccountID)
-    Else
+    If Not Database_Enabled Then
         Call WriteVar(CharPath & UCase$(UserList(UserIndex).name) & ".chr", "INIT", "Logged", 1)
         Call WriteVar(CuentasPath & UCase$(UserList(UserIndex).Cuenta) & ".act", "INIT", "LOGEADA", 1)
     End If

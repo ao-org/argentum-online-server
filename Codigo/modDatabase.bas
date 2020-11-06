@@ -133,8 +133,7 @@ On Error GoTo ErrorHandler
         'Q = Q & "rep_plebe = " & .Reputacion.PlebeRep & ", "
         'Q = Q & "rep_average = " & .Reputacion.Promedio & ", "
         q = q & "is_naked = " & .flags.Desnudo & ", "
-        q = q & "status = " & .Faccion.Status & ", "
-        q = q & "is_logged = TRUE; "
+        q = q & "status = " & .Faccion.Status & "; "
         
         Call MakeQuery(q, True)
 
@@ -272,7 +271,7 @@ ErrorHandler:
 
 End Sub
 
-Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = False)
+Public Sub SaveUserDatabase(ByVal UserIndex As Integer)
 On Error GoTo ErrorHandler
     
     Dim q As String
@@ -375,8 +374,7 @@ On Error GoTo ErrorHandler
         q = q & "battle_points = " & .flags.BattlePuntos & ", "
         q = q & "guild_index = " & .GuildIndex & ", "
         q = q & "chat_combate = " & .ChatCombate & ", "
-        q = q & "chat_global = " & .ChatGlobal & ", "
-        q = q & "is_logged = " & IIf(Logout, 0, 1)
+        q = q & "chat_global = " & .ChatGlobal
         q = q & " WHERE id = " & .Id & "; "
         
         Dim LoopC As Integer
@@ -595,7 +593,7 @@ On Error GoTo ErrorHandler
         
         'User mail
         'TODO:
-        
+
         Call MakeQuery(q, True)
 
     End With
@@ -1245,8 +1243,8 @@ Public Function GetPersonajesCuentaDatabase(ByVal AccountID As Long, Personaje()
 
 End Function
 
-Public Sub SetUserLoggedDatabase(ByVal Id As Long, ByVal AccountID As Long)
-    Call MakeQuery("UPDATE user SET is_logged = TRUE WHERE id = " & Id & "; UPDATE account SET is_logged = TRUE WHERE id = " & AccountID & ";", True)
+Public Sub SetUsersLoggedDatabase(ByVal NumUsers As Long)
+    Call MakeQuery("UPDATE statistics SET value = '" & NumUsers & "' WHERE name = 'online';", True)
 End Sub
 
 Public Sub SaveBattlePointsDatabase(ByVal Id As Long, ByVal BattlePoints As Long)
