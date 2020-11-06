@@ -458,17 +458,13 @@ On Error Resume Next
     
     MaxUsers = 0
     Call LoadSini
+    Call LoadIntervalos
     Call CargarForbidenWords
     Call CargaApuestas
     Call CargarSpawnList
     Call LoadMotd
     Call BanIpCargar
-    
-    #If Lac Then
-    frmCargando.Label1(2).Caption = "Cargando Anti-Cheat"
-        Call LoadAntiCheat
-    #End If
-    
+
     '*************************************************
     frmCargando.Label1(2).Caption = "Cargando NPCs.Dat"
     Call CargaNpcsDat
@@ -1085,6 +1081,7 @@ Call FreeNPCs
 Call FreeCharIndexes
 
 Call LoadSini
+Call LoadIntervalos
 Call LoadOBJData
 Call LoadPesca
 Call LoadRecursosEspeciales

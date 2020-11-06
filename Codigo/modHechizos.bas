@@ -693,14 +693,6 @@ End Sub
 
 Sub LanzarHechizo(Index As Integer, UserIndex As Integer)
 
-
-        #If Lac Then
-            If UserList(UserIndex).Lac.LLanzar.Puedo = False Then
-           ' Call WriteConsoleMsg(UserIndex, "Cortado Intervalo de Hechizo", FontTypeNames.FONTTYPE_SERVER)
-            Exit Sub
-            End If
-        #End If
-
 Dim uh As Integer
 
 uh = UserList(UserIndex).Stats.UserHechizos(Index)

@@ -1589,14 +1589,6 @@ If UserList(UserIndex).Stats.ELV < obj.MinELV Then
 End If
 
 If obj.OBJType = eOBJType.otWeapon Then
-
- 
-    #If Lac Then
-        If UserList(UserIndex).Lac.LUsar.Puedo = False Then
-            'Call WriteConsoleMsg(UserIndex, "Intervalo cortado..", FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-        End If
-    #End If
     If obj.proyectil = 1 Then
         'valido para evitar el flood pero no bloqueo. El bloqueo se hace en WLC con proyectiles.
         If Not IntervaloPermiteUsar(UserIndex, False) Then Exit Sub
@@ -1732,15 +1724,6 @@ Select Case obj.OBJType
             'Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
-    
-        
-        #If Lac Then
-        If UserList(UserIndex).Lac.LPociones.Puedo = False Then
-                  'Call WriteConsoleMsg(UserIndex, "¡¡Debes esperar unos momentos para tomar otra pocion!!", FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-        End If
-        
-        #End If
         
         UserList(UserIndex).flags.TomoPocion = True
         UserList(UserIndex).flags.TipoPocion = obj.TipoPocion

@@ -68,7 +68,6 @@ Module=ModCuentas; Codigo\ModEmail.bas
 Module=ModMetamorfosis; Codigo\ModMetamorfosis.bas
 Class=clsSecurity; Codigo\clsSecurity.cls
 Module=ModLadder; Codigo\ModLadder.bas
-Class=Cls_InterGTC; Codigo\Cls_InterGTC.cls
 Module=ModRetos; Codigo\ModRetos.bas
 Module=ModFamiliar; Codigo\ModFamiliar.bas
 Module=ModUpTime; Codigo\ModUpTime.bas
@@ -109,7 +108,7 @@ AutoIncrementVer=0
 ServerSupportFiles=0
 VersionCompanyName="Argentum20 Staff"
 VersionProductName="Argentum20 Server"
-CondComp="UsarQueSocket = 1 : ConUpTime = 1 : AntiExternos = 0 : Lac = 1 : DEBUGGING = 1"
+CondComp="UsarQueSocket = 1 : ConUpTime = 1 : AntiExternos = 0 : DEBUGGING = 1"
 CompilationType=-1
 OptimizationType=0
 FavorPentiumPro(tm)=0

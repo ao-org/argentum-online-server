@@ -185,6 +185,7 @@ Private Enum ServerPacketID
     QuestListSend
     UpdateNPCSimbolo
     ClanSeguro
+    Intervals
 End Enum
 
 Private Enum ClientPacketID
@@ -2126,7 +2127,9 @@ demora = timeGetTime
                 Call WriteLocaleMsg(UserIndex, "123", FontTypeNames.FONTTYPE_INFO)
                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, .Char.ParticulaFx, 0, True))
                 .Char.ParticulaFx = 0
-            Else
+            
+            ElseIf IntervaloPermiteCaminar(UserIndex) Then
+            
                 'Move user
                 Call MoveUserChar(UserIndex, heading)
                 
@@ -2207,11 +2210,7 @@ demora = timeGetTime
               '      Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, False))
               '  End If
         End If
-        
-        
-        
 
-    
     End With
     
     demorafinal = timeGetTime - demora
@@ -2256,17 +2255,7 @@ Private Sub HandleAttack(ByVal UserIndex As Integer)
             'Call WriteConsoleMsg(UserIndex, "í¡No podes atacar a nadie porque estas muerto!!.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
-        
-        
-        #If Lac Then
-            If UserList(UserIndex).Lac.LPegar.Puedo = False Then
-                    'Call WriteConsoleMsg(UserIndex, "Intervalo de pegar cortado", FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-            End If
-            
-        #End If
 
-        
         'If user meditates, can't attack
         If .flags.Meditando Then
             Exit Sub
@@ -2619,9 +2608,9 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
 
         slot = .incomingData.ReadByte()
         Amount = .incomingData.ReadLong()
-        #If Lac Then
-        If UserList(UserIndex).Lac.LTirar.Puedo = False Then Exit Sub
-        #End If
+
+        If Not IntervaloPermiteTirar(UserIndex) Then Exit Sub
+
         'low rank admins can't drop item. Neither can the dead nor those sailing.
         If .flags.Muerto = 1 Or _
            ((.flags.Privilegios And PlayerType.Consejero) <> 0 And (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0) Then Exit Sub
@@ -3088,9 +3077,9 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
             Case eSkill.Proyectiles
             
                 'Check attack interval
-                If Not IntervaloPermiteAtacar(UserIndex, False) Then Exit Sub
+                If Not IntervaloPermiteMagiaGolpe(UserIndex, False) Then Exit Sub
                 'Check Magic interval
-                If Not IntervaloPermiteLanzarSpell(UserIndex, False) Then Exit Sub
+                If Not IntervaloPermiteGolpeMagia(UserIndex, False) Then Exit Sub
                 'Check bow's interval
                 If Not IntervaloPermiteUsarArcos(UserIndex) Then Exit Sub
                 
@@ -3355,14 +3344,11 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                 'Check bow's interval
                 If Not IntervaloPermiteUsarArcos(UserIndex, False) Then Exit Sub
                 
-                'Check Spell-Hit interval
-                If Not IntervaloPermiteGolpeMagia(UserIndex) Then
-                    'Check Magic interval
-                    If Not IntervaloPermiteLanzarSpell(UserIndex) Then
-                        Exit Sub
-                    End If
-                End If
+                'Check attack-spell interval
+                If Not IntervaloPermiteGolpeMagia(UserIndex, False) Then Exit Sub
                 
+                'Check Magic interval
+                If Not IntervaloPermiteLanzarSpell(UserIndex) Then Exit Sub
                 
                 'Check intervals and cast
                 If .flags.Hechizo > 0 Then
@@ -5553,9 +5539,9 @@ Private Sub HandleOnline(ByVal UserIndex As Integer)
         
         For i = 1 To LastUser
             If LenB(UserList(i).name) <> 0 Then
-            If UserList(i).flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then
-            nombres = nombres & " - " & UserList(i).name
-            End If
+                If UserList(i).flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then
+                    nombres = nombres & " - " & UserList(i).name
+                End If
                 Count = Count + 1
                 'If UserList(i).flags.Privilegios And (PlayerType.User Or PlayerType.Consejero) Then _
                     Count = Count + 1
@@ -15854,6 +15840,33 @@ Errhandler:
 
     End If
 
+End Sub
+
+Public Sub WriteIntervals(ByVal UserIndex As Integer)
+On Error GoTo Errhandler
+
+    With UserList(UserIndex)
+        Call .outgoingData.WriteByte(ServerPacketID.Intervals)
+        Call .outgoingData.WriteLong(.Intervals.Arco)
+        Call .outgoingData.WriteLong(.Intervals.Caminar)
+        Call .outgoingData.WriteLong(.Intervals.Golpe)
+        Call .outgoingData.WriteLong(.Intervals.GolpeMagia)
+        Call .outgoingData.WriteLong(.Intervals.magia)
+        Call .outgoingData.WriteLong(.Intervals.MagiaGolpe)
+        Call .outgoingData.WriteLong(.Intervals.Trabajar)
+        Call .outgoingData.WriteLong(.Intervals.Usar)
+        Call .outgoingData.WriteLong(IntervaloTirar)
+    End With
+
+    Exit Sub
+
+Errhandler:
+
+    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
+        Call FlushBuffer(UserIndex)
+        Resume
+
+    End If
 End Sub
 
 Public Sub WriteChangeInventorySlot(ByVal UserIndex As Integer, ByVal slot As Byte)

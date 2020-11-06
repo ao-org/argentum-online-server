@@ -29,10 +29,6 @@ Option Explicit
 Private totalProcessTime As Currency
 
 Private totalProcessCount As Long
-Private icant As Cls_InterGTC
-
-
-
 
 
 'Si la variable esta en TRUE , al iniciar el WsApi se crea
@@ -50,7 +46,7 @@ Public Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal
 Public Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Public Declare Function CallWindowProc Lib "user32" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Long, ByVal hWnd As Long, ByVal msg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 
-Private Declare Function CreateWindowEx Lib "user32" Alias "CreateWindowExA" (ByVal dwExStyle As Long, ByVal lpClassName As String, ByVal lpWindowName As String, ByVal dwStyle As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hwndParent As Long, ByVal hMenu As Long, ByVal hInstance As Long, lpParam As Any) As Long
+Private Declare Function CreateWindowEx Lib "user32" Alias "CreateWindowExA" (ByVal dwExStyle As Long, ByVal lpClassName As String, ByVal lpWindowName As String, ByVal dwStyle As Long, ByVal x As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hwndParent As Long, ByVal hMenu As Long, ByVal hInstance As Long, lpParam As Any) As Long
 Private Declare Function DestroyWindow Lib "user32" (ByVal hWnd As Long) As Long
 
 Private Const WS_CHILD = &H40000000
@@ -94,8 +90,6 @@ Public LastSockListen As Long
 
 Public Sub IniciaWsApi(ByVal hwndParent As Long)
 #If UsarQueSocket = 1 Then
-Set icant = New Cls_InterGTC
-icant.Init 1000
 Call LogApiSock("IniciaWsApi")
 Debug.Print "IniciaWsApi"
 
@@ -225,8 +219,8 @@ ttt = GetTickCount
 Dim Ret As Long
 Dim Tmp() As Byte
 
-Dim S As Long, E As Long
-Dim N As Integer
+Dim S As Long, e As Long
+Dim n As Integer
     
 Dim Dale As Boolean
 Dim UltError As Long
@@ -239,11 +233,11 @@ Select Case msg
 Case 1025
 
     S = wParam
-    E = WSAGetSelectEvent(lParam)
+    e = WSAGetSelectEvent(lParam)
     'Debug.Print "Msg: " & msg & " W: " & wParam & " L: " & lParam
     'Call LogApiSock("Msg: " & msg & " W: " & wParam & " L: " & lParam)
     
-    Select Case E
+    Select Case e
     Case FD_ACCEPT
             'If frmMain.SUPERLOG.Value = 1 Then LogCustom ("FD_ACCEPT")
         If S = SockListen Then
@@ -282,8 +276,8 @@ Case 1025
 
     Case FD_READ
         
-        N = BuscaSlotSock(S)
-        If N < 0 And S <> SockListen Then
+        n = BuscaSlotSock(S)
+        If n < 0 And S <> SockListen Then
             'Call apiclosesocket(s)
             Call WSApiCloseSocket(S)
             Exit Function
@@ -304,20 +298,20 @@ Case 1025
                 Ret = SIZE_RCVBUF
             Else
                 Debug.Print "Error en Recv: " & GetWSAErrorString(UltError)
-                Call LogApiSock("Error en Recv: N=" & N & " S=" & S & " Str=" & GetWSAErrorString(UltError))
+                Call LogApiSock("Error en Recv: N=" & n & " S=" & S & " Str=" & GetWSAErrorString(UltError))
                 
                 'no hay q llamar a CloseSocket() directamente,
                 'ya q pueden abusar de algun error para
                 'desconectarse sin los 10segs. CREEME.
             '    Call C l o s e Socket(N)
             
-                Call CloseSocketSL(N)
-                Call Cerrar_Usuario(N)
+                Call CloseSocketSL(n)
+                Call Cerrar_Usuario(n)
                 Exit Function
             End If
         ElseIf Ret = 0 Then
-            Call CloseSocketSL(N)
-            Call Cerrar_Usuario(N)
+            Call CloseSocketSL(n)
+            Call Cerrar_Usuario(n)
         End If
         
         'Call WSAAsyncSelect(s, hWndMsg, ByVal 1025, ByVal (FD_READ Or FD_WRITE Or FD_CLOSE Or FD_ACCEPT))
@@ -326,20 +320,20 @@ Case 1025
         
         'Call LogApiSock("WndProc:FD_READ:N=" & N & ":TMP=" & Tmp)
         
-        Call EventoSockRead(N, Tmp)
+        Call EventoSockRead(n, Tmp)
         
     Case FD_CLOSE
         'Debug.Print WSAGETSELECTERROR(lParam)
-        N = BuscaSlotSock(S)
+        n = BuscaSlotSock(S)
         If S <> SockListen Then Call apiclosesocket(S)
         
-        Call LogApiSock("WndProc:FD_CLOSE:N=" & N & ":Err=" & WSAGetAsyncError(lParam))
+        Call LogApiSock("WndProc:FD_CLOSE:N=" & n & ":Err=" & WSAGetAsyncError(lParam))
         
-        If N > 0 Then
+        If n > 0 Then
             Call BorraSlotSock(S)
-            UserList(N).ConnID = -1
-            UserList(N).ConnIDValida = False
-            Call EventoSockClose(N)
+            UserList(n).ConnID = -1
+            UserList(n).ConnIDValida = False
+            Call EventoSockClose(n)
         End If
         
     End Select
@@ -592,9 +586,9 @@ End Sub
  
 Public Sub EventoSockRead(ByVal slot As Integer, ByRef Datos() As Byte)
 #If UsarQueSocket = 1 Then
-Dim A As Currency
+Dim a As Currency
 Dim f As Currency
- QueryPerformanceCounter A
+ QueryPerformanceCounter a
 
 
 
@@ -622,15 +616,9 @@ With UserList(slot)
 End With
 QueryPerformanceCounter f
 
-totalProcessTime = totalProcessTime + (f - A)
+totalProcessTime = totalProcessTime + (f - a)
 totalProcessCount = totalProcessCount + 1
-If icant.Puedo() Then
-    QueryPerformanceFrequency f
-    OutputDebugString "PP: " & totalProcessCount & " time:" & totalProcessTime & " s?: " & totalProcessTime / (f * 10000)
-    
-    totalProcessCount = 0
-    totalProcessTime = 0
-End If
+
 #End If
 End Sub
  

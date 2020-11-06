@@ -36,7 +36,7 @@ Begin VB.Form frmMain
       Width           =   1575
    End
    Begin VB.CommandButton Command6 
-      Caption         =   "Recargar Anticheat"
+      Caption         =   "Recargar intervalos.ini"
       Height          =   495
       Left            =   5160
       TabIndex        =   32
@@ -783,12 +783,8 @@ Call GuardarRanking
 
 End Sub
 
-
-
 Private Sub Command6_Click()
-#If Lac Then
-Call LoadAntiCheat
-#End If
+    Call LoadIntervalos
 End Sub
 
 Private Sub Command7_Click()

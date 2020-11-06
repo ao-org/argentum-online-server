@@ -45,26 +45,6 @@ Public Enum e_SoundIndex
     SOUND_COMIDA = 7
 End Enum
 
-
-#If Lac Then
-Public Lac_Camina As Long
-Public Lac_Pociones As Long
-Public Lac_Pegar As Long
-Public Lac_Lanzar As Long
-Public Lac_Usar As Long
-Public Lac_Tirar As Long
- 
-Public Type TLac
-    LCaminar As New Cls_InterGTC
-    LPociones As New Cls_InterGTC
-    LPegar As New Cls_InterGTC
-    LUsar As New Cls_InterGTC
-    LTirar As New Cls_InterGTC
-    LLanzar As New Cls_InterGTC
-End Type
-#End If
-
-
 Public HoraFanstasia As Integer
 
 
@@ -174,7 +154,7 @@ Public Type tLlamadaGM
 End Type
 
 Public Enum PlayerType
-    user = &H1
+    User = &H1
     Consejero = &H2
     SemiDios = &H4
     Dios = &H8
@@ -432,7 +412,7 @@ Public Const MAXEXP As Long = 1999999999
 
 Public Const MAXUSERMATADOS As Long = 65000
 
-Public Const MAXATRIBUTOS As Byte = 35
+Public Const MAXATRIBUTOS As Byte = 40
 Public Const MINATRIBUTOS As Byte = 6
 
 Public Const LingoteHierro As Integer = 386 'OK
@@ -554,7 +534,7 @@ Public Const iORO As Byte = 12
 
 '%%%%%%%%%% CONSTANTES DE INDICES %%%%%%%%%%%%%%%
 Public Enum eSkill
-    magia = 1
+    Magia = 1
     Robar = 2
     Tacticas = 3
     Armas = 4
@@ -720,10 +700,10 @@ Public Const FONTTYPE_ROSA As String = "~255~0~128~0~0"
 Public Const FONTTYPE_VIOLETA As String = "~99~0~198~0~0"
 Public Const FONTTYPE_INFOIAO As String = "~204~193~115~0~0"
 'Estadisticas
-Public Const STAT_MAXELV As Byte = 50
-Public Const STAT_MAXHP As Integer = 999
-Public Const STAT_MAXSTA As Integer = 999
-Public Const STAT_MAXMAN As Integer = 9999
+Public Const STAT_MAXELV As Byte = 47
+Public Const STAT_MAXHP As Integer = 32000
+Public Const STAT_MAXSTA As Integer = 32000
+Public Const STAT_MAXMAN As Integer = 32000
 Public Const STAT_MAXHIT_UNDER36 As Byte = 99
 Public Const STAT_MAXHIT_OVER36 As Integer = 999
 Public Const STAT_MAXDEF As Byte = 99
@@ -1543,7 +1523,6 @@ Public Type UserCounters
     Salir As Integer
     '[/Gonzalo]
     
-    
     Maldicion As Byte
     
     'Barrin 3/10/03
@@ -1559,16 +1538,27 @@ Public Type UserCounters
     TimerUsar As Long
     TimerMagiaGolpe As Long
     TimerGolpeMagia As Long
+    TimerCaminar As Long
+    TimerTirar As Long
     
     'Nuevos de AoLibre
     TimerPuedeSerAtacado As Long
     TimerPerteneceNpc As Long
     
-    
     Trabajando As Long  ' Para el centinela
     Ocultando As Long   ' Unico trabajo no revisado por el centinela
 End Type
 
+Public Type UserIntervals
+    Magia As Long
+    Golpe As Long
+    Arco As Long
+    Usar As Long
+    Caminar As Long
+    GolpeMagia As Long
+    MagiaGolpe As Long
+    Trabajar As Long
+End Type
 
 Public Type tQuestStats
     Quests(1 To MAXUSERQUESTS) As tUserQuest
@@ -1598,10 +1588,7 @@ Public Type tFacciones
 End Type
 
 'Tipo de los Usuarios
-Public Type user
-#If Lac Then
-    Lac As TLac '[loopzer]
-#End If
+Public Type User
     name As String
     Cuenta As String
     
@@ -1649,7 +1636,7 @@ Public Type user
     '[/KEVIN]
     
     Counters As UserCounters
-    
+    Intervals As UserIntervals
     
     Stats As UserStats
     flags As UserFlags
@@ -2032,7 +2019,7 @@ Public Type tObjDonador
 End Type
 
 '*****************ARRAYS PUBLICOS*************************
-Public UserList() As user 'USUARIOS
+Public UserList() As User 'USUARIOS
 Public Npclist(1 To MAXNPCS) As npc 'NPCS
 Public MapData() As MapBlock
 Public MapInfo() As MapInfo

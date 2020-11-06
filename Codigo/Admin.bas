@@ -75,7 +75,6 @@ Public IntervaloParalizado As Integer
 Public IntervaloInvisible As Integer
 Public IntervaloFrio As Integer
 Public IntervaloWavFx As Integer
-Public IntervaloLanzaHechizo As Integer
 Public IntervaloNPCPuedeAtacar As Integer
 Public IntervaloNPCAI As Integer
 Public IntervaloInvocacion As Integer
@@ -90,6 +89,8 @@ Public IntervaloUserPuedeUsar As Long
 Public IntervaloFlechasCazadores As Long
 Public TimeoutPrimerPaquete As Long
 Public TimeoutEsperandoLoggear As Long
+Public IntervaloTirar As Long
+Public IntervaloCaminar As Long
 
 Public IntervaloPuedeSerAtacado As Long
 
@@ -461,7 +462,7 @@ Public Function CheckHD(ByVal hd As String) As Boolean
     End If
 End Function
 
-Public Function CheckMAC(ByVal mac As String) As Boolean
+Public Function CheckMAC(ByVal Mac As String) As Boolean
 '***************************************************
 'Author: Nahuel Casas (Zagen)
 'Last Modify Date: 07/12/2009
@@ -479,7 +480,7 @@ Public Function CheckMAC(ByVal mac As String) As Boolean
     Close #handle
 
     Dim Ret As String
-    If InStr(1, Total, mac) Then
+    If InStr(1, Total, Mac) Then
         CheckMAC = True
     End If
 End Function

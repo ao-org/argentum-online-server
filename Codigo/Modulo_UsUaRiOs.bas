@@ -261,7 +261,9 @@ On Error GoTo ErrorHandler
 
 Dim Error As String
    
-   Error = "1"
+    Error = "1"
+    If UserList(UserIndex).Char.CharIndex = 0 Then Exit Sub
+   
     CharList(UserList(UserIndex).Char.CharIndex) = 0
     
     If UserList(UserIndex).Char.CharIndex = LastChar Then
@@ -288,7 +290,7 @@ Dim Error As String
 Exit Sub
     
 ErrorHandler:
-        Call LogError("Error en EraseUserchar " & Error & Err.Number & ": " & Err.description)
+        Call LogError("Error en EraseUserchar " & Error & " - " & Err.Number & ": " & Err.description)
 End Sub
 
 Sub RefreshCharStatus(ByVal UserIndex As Integer)
@@ -435,18 +437,19 @@ On Error GoTo Errhandler
             .Stats.ELV = .Stats.ELV + 1
             
             .Stats.Exp = .Stats.Exp - .Stats.ELU
-            
-            'Nueva subida de exp x lvl. Pablo (ToxicWaste)
+
             If .Stats.ELV < 15 Then
+                .Stats.ELU = .Stats.ELU * 1.4
+            ElseIf .Stats.ELV < 21 Then
+                .Stats.ELU = .Stats.ELU * 1.35
+            ElseIf .Stats.ELV < 26 Then
                 .Stats.ELU = .Stats.ELU * 1.3
-            ElseIf .Stats.ELV < 25 Then
-                .Stats.ELU = .Stats.ELU * 1.15
             ElseIf .Stats.ELV < 35 Then
-                .Stats.ELU = .Stats.ELU * 1.3
-            ElseIf .Stats.ELV < 45 Then
-                .Stats.ELU = .Stats.ELU * 1.15
-            Else
                 .Stats.ELU = .Stats.ELU * 1.2
+            ElseIf .Stats.ELV < 40 Then
+                .Stats.ELU = .Stats.ELU * 1.3
+            Else
+                .Stats.ELU = .Stats.ELU * 1.375
             End If
             
             'Calculo subida de vida
@@ -497,48 +500,46 @@ On Error GoTo Errhandler
             Select Case .clase
                 Case eClass.Mage '
                     AumentoHIT = 1
-                    AumentoMANA = 3 * .Stats.UserAtributos(eAtributos.Inteligencia)
+                    AumentoMANA = 2.8 * .Stats.UserAtributos(eAtributos.Inteligencia)
                     AumentoSTA = AumentoSTMago
-            
+
                 Case eClass.Bard 'Balanceda Mana
                     AumentoHIT = 2
-                    AumentoMANA = 2.6 * .Stats.UserAtributos(eAtributos.Inteligencia)
-                    AumentoSTA = AumentoSTDef - 4
-                    
+                    AumentoMANA = 2 * .Stats.UserAtributos(eAtributos.Inteligencia)
+                    AumentoSTA = AumentoSTDef
+
                 Case eClass.Druid 'Balanceda Mana
                     AumentoHIT = 2
-                    AumentoMANA = 2.6 * .Stats.UserAtributos(eAtributos.Inteligencia)
-                    AumentoSTA = AumentoSTDef - 4
-            
+                    AumentoMANA = 2 * .Stats.UserAtributos(eAtributos.Inteligencia)
+                    AumentoSTA = AumentoSTDef
+
                 Case eClass.Assasin
                     AumentoHIT = IIf(.Stats.ELV > 35, 1, 3)
-                    AumentoMANA = 1.1 * .Stats.UserAtributos(eAtributos.Inteligencia)
-                    AumentoSTA = AumentoSTDef - 3
-                    
+                    AumentoMANA = .Stats.UserAtributos(eAtributos.Inteligencia)
+                    AumentoSTA = AumentoSTDef
+
                 Case eClass.Cleric 'Balanceda Mana
                     AumentoHIT = 2
                     AumentoMANA = 2 * .Stats.UserAtributos(eAtributos.Inteligencia)
-                    AumentoSTA = AumentoSTDef - 4
-                    
-                    
+                    AumentoSTA = AumentoSTDef
+
                 Case eClass.Paladin
-                    AumentoHIT = IIf(.Stats.ELV > 39, 1, 3)
-                    AumentoMANA = 1.1 * .Stats.UserAtributos(eAtributos.Inteligencia)
-                    AumentoSTA = AumentoSTDef - 2
-                    
+                    AumentoHIT = IIf(.Stats.ELV > 35, 1, 3)
+                    AumentoMANA = .Stats.UserAtributos(eAtributos.Inteligencia)
+                    AumentoSTA = AumentoSTDef
+
                 Case eClass.Hunter
                     AumentoHIT = IIf(.Stats.ELV > 35, 2, 3)
-                    AumentoSTA = AumentoSTDef - 2
-                    
+                    AumentoSTA = AumentoSTDef
+
                 Case eClass.Trabajador
                     AumentoHIT = 2
                     AumentoSTA = AumentoSTDef + 5
-                
-            
+
                 Case eClass.Warrior
                     AumentoHIT = IIf(.Stats.ELV > 35, 2, 3)
                     AumentoSTA = AumentoSTDef
-                        
+
                 Case Else
                     AumentoHIT = 2
                     AumentoSTA = AumentoSTDef
@@ -554,22 +555,15 @@ On Error GoTo Errhandler
                 .Stats.MaxSta = STAT_MAXSTA
             'Actualizamos Mana
             .Stats.MaxMAN = .Stats.MaxMAN + AumentoMANA
-            If .Stats.ELV < 36 Then
-                If .Stats.MaxMAN > STAT_MAXMAN Then _
-                    .Stats.MaxMAN = STAT_MAXMAN
-            Else
-                If .Stats.MaxMAN > 9999 Then _
-                    .Stats.MaxMAN = 9999
-            End If
-        
-            
+            If .Stats.MaxMAN > STAT_MAXMAN Then _
+                .Stats.MaxMAN = STAT_MAXMAN
+
             'Actualizamos Golpe Máximo
             .Stats.MaxHit = .Stats.MaxHit + AumentoHIT
             
             'Actualizamos Golpe Mínimo
             .Stats.MinHIT = .Stats.MinHIT + AumentoHIT
         
-            
             'Notificamos al user
             If AumentoHP > 0 Then
                 'Call WriteConsoleMsg(UserIndex, "Has ganado " & AumentoHP & " puntos de vida.", FontTypeNames.FONTTYPE_INFO)
@@ -662,24 +656,24 @@ Dim sailing As Boolean
 
     With UserList(UserIndex)
         If .accion.AccionPendiente = True Then
-                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, .accion.Particula, 1, True))
-                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.CharIndex, 1, Accion_Barra.CancelarAccion))
-                        .accion.AccionPendiente = False
-                        .accion.Particula = 0
-                        .accion.TipoAccion = Accion_Barra.CancelarAccion
-                        .accion.HechizoPendiente = 0
-                        .accion.RunaObj = 0
-                        .accion.ObjSlot = 0
-                        .accion.AccionPendiente = False
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, .accion.Particula, 1, True))
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.CharIndex, 1, Accion_Barra.CancelarAccion))
+            .accion.AccionPendiente = False
+            .accion.Particula = 0
+            .accion.TipoAccion = Accion_Barra.CancelarAccion
+            .accion.HechizoPendiente = 0
+            .accion.RunaObj = 0
+            .accion.ObjSlot = 0
+            .accion.AccionPendiente = False
         End If
 
 
-    sailing = PuedeAtravesarAgua(UserIndex)
-    nPos = .Pos
-    Call HeadtoPos(nHeading, nPos)
+        sailing = PuedeAtravesarAgua(UserIndex)
+        nPos = .Pos
+        Call HeadtoPos(nHeading, nPos)
     End With
-    
-    
+        
+        
     If MapData(nPos.Map, nPos.x, nPos.Y).TileExit.Map <> 0 And UserList(UserIndex).Counters.TiempoDeMapeo > 0 Then
         If UserList(UserIndex).flags.Muerto = 0 Then
             Call WriteConsoleMsg(UserIndex, "Estas en combate, debes aguardar " & UserList(UserIndex).Counters.TiempoDeMapeo & " segundo(s) para escapar...", FontTypeNames.FONTTYPE_INFOBOLD)
@@ -687,45 +681,39 @@ Dim sailing As Boolean
             Exit Sub
         End If
     End If
-    
-    
-    
-    
-    
-    
-    
-    If MapData(nPos.Map, nPos.x, nPos.Y).UserIndex <> 0 Then
-            If UserList(MapData(nPos.Map, nPos.x, nPos.Y).UserIndex).flags.Muerto = 1 Then
-                    Dim IndexMuerto As Integer
-                    IndexMuerto = MapData(nPos.Map, nPos.x, nPos.Y).UserIndex
-                    With UserList(IndexMuerto)
-                        'Call WarpToLegalPos(IndexMuerto, .Pos.Map, .Pos.X, .Pos.Y, False)
-                        
-                        If .accion.AccionPendiente = True Then
-                                Call SendData(SendTarget.ToPCArea, IndexMuerto, PrepareMessageParticleFX(.Char.CharIndex, .accion.Particula, 1, True))
-                                Call SendData(SendTarget.ToPCArea, IndexMuerto, PrepareMessageBarFx(.Char.CharIndex, 1, Accion_Barra.CancelarAccion))
-                                .accion.AccionPendiente = False
-                                .accion.Particula = 0
-                                .accion.TipoAccion = Accion_Barra.CancelarAccion
-                                .accion.HechizoPendiente = 0
-                                .accion.RunaObj = 0
-                                .accion.ObjSlot = 0
-                                .accion.AccionPendiente = False
-                        'Call WritePosUpdate(UserIndex)
-                        'Call WarpToLegalPos(IndexMuerto, .Pos.Map, .Pos.X, .Pos.Y)
-                        End If
-                        Call WarpToLegalPos(IndexMuerto, .Pos.Map, .Pos.x, .Pos.Y, False)
-                        
-                    End With
-            Else
-                Call WritePosUpdate(UserIndex)
-                'Call WritePosUpdate(MapData(nPos.Map, nPos.X, nPos.Y).UserIndex)
-            End If
-    End If
-                    
-                    
 
-    
+    If MapData(nPos.Map, nPos.x, nPos.Y).UserIndex <> 0 Then
+        If UserList(MapData(nPos.Map, nPos.x, nPos.Y).UserIndex).flags.Muerto = 1 Then
+                Dim IndexMuerto As Integer
+                IndexMuerto = MapData(nPos.Map, nPos.x, nPos.Y).UserIndex
+                With UserList(IndexMuerto)
+                    'Call WarpToLegalPos(IndexMuerto, .Pos.Map, .Pos.X, .Pos.Y, False)
+                    
+                    If .accion.AccionPendiente = True Then
+                            Call SendData(SendTarget.ToPCArea, IndexMuerto, PrepareMessageParticleFX(.Char.CharIndex, .accion.Particula, 1, True))
+                            Call SendData(SendTarget.ToPCArea, IndexMuerto, PrepareMessageBarFx(.Char.CharIndex, 1, Accion_Barra.CancelarAccion))
+                            .accion.AccionPendiente = False
+                            .accion.Particula = 0
+                            .accion.TipoAccion = Accion_Barra.CancelarAccion
+                            .accion.HechizoPendiente = 0
+                            .accion.RunaObj = 0
+                            .accion.ObjSlot = 0
+                            .accion.AccionPendiente = False
+                    'Call WritePosUpdate(UserIndex)
+                    'Call WarpToLegalPos(IndexMuerto, .Pos.Map, .Pos.X, .Pos.Y)
+                    End If
+                    Call WarpToLegalPos(IndexMuerto, .Pos.Map, .Pos.x, .Pos.Y, False)
+                    
+                End With
+        Else
+            Call WritePosUpdate(UserIndex)
+            'Call WritePosUpdate(MapData(nPos.Map, nPos.X, nPos.Y).UserIndex)
+        End If
+    End If
+                
+                
+
+
     If LegalPos(UserList(UserIndex).Pos.Map, nPos.x, nPos.Y, sailing, Not sailing, UserList(UserIndex).flags.Montado) Then
         If MapInfo(UserList(UserIndex).Pos.Map).NumUsers > 1 Then
             'si no estoy solo en el mapa...
@@ -751,8 +739,8 @@ Dim sailing As Boolean
         Call WriteMacroTrabajoToggle(UserIndex, False)
     End If
 
-   If UserList(UserIndex).Counters.Ocultando Then _
-        UserList(UserIndex).Counters.Ocultando = UserList(UserIndex).Counters.Ocultando - 1
+    If UserList(UserIndex).Counters.Ocultando Then _
+         UserList(UserIndex).Counters.Ocultando = UserList(UserIndex).Counters.Ocultando - 1
 End Sub
 
 Sub ChangeUserInv(ByVal UserIndex As Integer, ByVal slot As Byte, ByRef Object As UserOBJ)
@@ -1279,7 +1267,7 @@ On Error GoTo ErrorHandler
  If MapInfo(UserList(UserIndex).Pos.Map).Seguro = 0 Then '  Ladder 06/07/2014 Si el mapa es seguro, no se caen los items
     If TriggerZonaPelea(UserIndex, UserIndex) <> eTrigger6.TRIGGER6_PERMITE Then
         ' << Si es newbie no pierde el inventario >>
-        If UserList(UserIndex).flags.Privilegios = user Then
+        If UserList(UserIndex).flags.Privilegios = User Then
         
             If Not EsNewbie(UserIndex) Then
                 If UserList(UserIndex).flags.PendienteDelSacrificio = 0 Then
@@ -1731,7 +1719,7 @@ Sub Cerrar_Usuario(ByVal UserIndex As Integer)
  
     If UserList(UserIndex).flags.UserLogged And Not UserList(UserIndex).Counters.Saliendo Then
         UserList(UserIndex).Counters.Saliendo = True
-        If UserList(UserIndex).flags.Privilegios = PlayerType.user And MapInfo(UserList(UserIndex).Pos.Map).Seguro = 0 And UserList(UserIndex).flags.Muerto = 0 Then
+        If UserList(UserIndex).flags.Privilegios = PlayerType.User And MapInfo(UserList(UserIndex).Pos.Map).Seguro = 0 And UserList(UserIndex).flags.Muerto = 0 Then
                 UserList(UserIndex).Counters.Salir = IntervaloCerrarConexion
                 Call WriteLocaleMsg(UserIndex, "203", FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Counters.Salir)
                 'Call WriteConsoleMsg(UserIndex, "Saliendo...Se saldrá del juego en " & UserList(UserIndex).Counters.Salir & " segundos...", FontTypeNames.FONTTYPE_INFO)
@@ -1765,7 +1753,7 @@ Public Sub CancelExit(ByVal UserIndex As Integer)
             Call WriteConsoleMsg(UserIndex, "/salir cancelado.", FontTypeNames.FONTTYPE_WARNING)
         Else
             'Simply reset
-            If UserList(UserIndex).flags.Privilegios = PlayerType.user And MapInfo(UserList(UserIndex).Pos.Map).Seguro = 0 Then
+            If UserList(UserIndex).flags.Privilegios = PlayerType.User And MapInfo(UserList(UserIndex).Pos.Map).Seguro = 0 Then
                 UserList(UserIndex).Counters.Salir = IntervaloCerrarConexion
             Else
                 Call WriteConsoleMsg(UserIndex, "Gracias por jugar Argentum20.", FontTypeNames.FONTTYPE_INFO)
@@ -1852,7 +1840,7 @@ Sub VolverCriminal(ByVal UserIndex As Integer)
 '**************************************************************
 If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y).trigger = 6 Then Exit Sub
 
-If UserList(UserIndex).flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then
+If UserList(UserIndex).flags.Privilegios And (PlayerType.User Or PlayerType.Consejero) Then
    
     If UserList(UserIndex).Faccion.ArmadaReal = 1 Then Call ExpulsarFaccionReal(UserIndex)
 End If
