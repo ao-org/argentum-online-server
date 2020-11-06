@@ -14123,25 +14123,22 @@ Errhandler:
 End Sub
 Public Sub WriteMacroTrabajoToggle(ByVal UserIndex As Integer, ByVal Activar As Boolean)
 
+    If Not Activar Then
+        UserList(UserIndex).flags.TargetObj = 0 ' Sacamos el targer del objeto
+         UserList(UserIndex).flags.UltimoMensaje = 0
+        UserList(UserIndex).Counters.Trabajando = 0
+        UserList(UserIndex).flags.UsandoMacro = False
+       
+    Else
+        UserList(UserIndex).flags.UsandoMacro = True
+    End If
 
-If Not Activar Then
-    UserList(UserIndex).flags.TargetObj = 0 ' Sacamos el targer del objeto
-     UserList(UserIndex).flags.UltimoMensaje = 0
-    UserList(UserIndex).Counters.Trabajando = 0
-    UserList(UserIndex).flags.UsandoMacro = False
-   
-Else
-    UserList(UserIndex).flags.UsandoMacro = True
-End If
-
-    
-        
-On Error GoTo Errhandler
-    With UserList(UserIndex).outgoingData
-        Call .WriteByte(ServerPacketID.MacroTrabajoToggle)
-        Call .WriteBoolean(Activar)
-    End With
-Exit Sub
+    On Error GoTo Errhandler
+        With UserList(UserIndex).outgoingData
+            Call .WriteByte(ServerPacketID.MacroTrabajoToggle)
+            Call .WriteBoolean(Activar)
+        End With
+    Exit Sub
 
 Errhandler:
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
