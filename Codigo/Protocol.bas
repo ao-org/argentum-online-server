@@ -5524,10 +5524,6 @@ End Sub
 
 Private Sub HandleOnline(ByVal UserIndex As Integer)
 '***************************************************
-'Author: Juan Martín Sotuyo Dodero (Maraxus)
-'Last Modification: 05/17/06
-'
-'***************************************************
     Dim i As Long
     Dim Count As Long
     
@@ -5538,17 +5534,15 @@ Private Sub HandleOnline(ByVal UserIndex As Integer)
         
         
         For i = 1 To LastUser
-            If LenB(UserList(i).name) <> 0 Then
-                If UserList(i).flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then
-                    nombres = nombres & " - " & UserList(i).name
-                End If
+            If UserList(i).flags.UserLogged Then
+                'If UserList(i).flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then
+                '    nombres = nombres & " - " & UserList(i).name
+                'End If
                 Count = Count + 1
-                'If UserList(i).flags.Privilegios And (PlayerType.User Or PlayerType.Consejero) Then _
-                    Count = Count + 1
             End If
         Next i
         
-        Call WriteConsoleMsg(UserIndex, "Nímero de usuarios: " & CStr(Count) & nombres, FontTypeNames.FONTTYPE_INFOIAO)
+        Call WriteConsoleMsg(UserIndex, "Número de usuarios: " & CStr(Count) & " conectados", FontTypeNames.FONTTYPE_INFOIAO)
     End With
 End Sub
 
