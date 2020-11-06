@@ -163,18 +163,8 @@ Public Function ObtenerCuenta(ByVal name As String) As String
     
 End Function
 
-Public Function PasswordValida(Cuenta As String, Password As String) As Boolean
+Public Function PasswordValida(Password As String, PasswordHash As String, Salt As String) As Boolean
 
-    Dim PasswordHash As String * 64
-    Dim Salt As String * 10
-
-    If Database_Enabled Then
-        Call GetPasswordAndSaltDatabase(Cuenta, PasswordHash, Salt)
-    Else
-        PasswordHash = GetVar(CuentasPath & UCase$(Cuenta) & ".act", "INIT", "PASSWORD")
-        Salt = GetVar(CuentasPath & UCase$(Cuenta) & ".act", "INIT", "SALT")
-    End If
-    
     Dim oSHA256 As CSHA256
 
     Set oSHA256 = New CSHA256

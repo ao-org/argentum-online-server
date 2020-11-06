@@ -18,7 +18,7 @@ Private auxiliarBuffer As New clsByteQueue
 
 
 Private Enum ServerPacketID
-    Logged                  ' LOGGED    1
+    logged                  ' LOGGED    1
     RemoveDialogs           ' QTDL
     RemoveCharDialog        ' QDL
     NavigateToggle          ' NAVEG
@@ -6937,21 +6937,24 @@ On Error GoTo Errhandler
         'Remove packet ID
         Call buffer.ReadByte
         
-
         oldPass = buffer.ReadASCIIString()
         newPass = buffer.ReadASCIIString()
 
+        If Database_Enabled Then
+            Call ChangePasswordDatabase(UserIndex, SDesencriptar(oldPass), SDesencriptar(newPass))
         
-        If LenB(SDesencriptar(newPass)) = 0 Then
-            Call WriteConsoleMsg(UserIndex, "Debe especificar una contraseña nueva, intíntelo de nuevo.", FontTypeNames.FONTTYPE_INFO)
         Else
-            oldPass2 = GetVar(CuentasPath & UserList(UserIndex).Cuenta & ".act", "INIT", "PASSWORD")
-            
-            If SDesencriptar(oldPass2) <> SDesencriptar(oldPass) Then
-                Call WriteConsoleMsg(UserIndex, "La contraseña actual proporcionada no es correcta. La contraseña no ha sido cambiada, intíntelo de nuevo.", FontTypeNames.FONTTYPE_INFO)
+            If LenB(SDesencriptar(newPass)) = 0 Then
+                Call WriteConsoleMsg(UserIndex, "Debe especificar una contraseña nueva, inténtelo de nuevo.", FontTypeNames.FONTTYPE_INFO)
             Else
-                Call WriteVar(CuentasPath & UserList(UserIndex).Cuenta & ".act", "INIT", "PASSWORD", newPass)
-                Call WriteConsoleMsg(UserIndex, "La contraseña de su cuenta fue cambiada con íxito.", FontTypeNames.FONTTYPE_INFO)
+                oldPass2 = GetVar(CuentasPath & UserList(UserIndex).Cuenta & ".act", "INIT", "PASSWORD")
+                
+                If SDesencriptar(oldPass2) <> SDesencriptar(oldPass) Then
+                    Call WriteConsoleMsg(UserIndex, "La contraseña actual proporcionada no es correcta. La contraseña no ha sido cambiada, inténtelo de nuevo.", FontTypeNames.FONTTYPE_INFO)
+                Else
+                    Call WriteVar(CuentasPath & UserList(UserIndex).Cuenta & ".act", "INIT", "PASSWORD", newPass)
+                    Call WriteConsoleMsg(UserIndex, "La contraseña de su cuenta fue cambiada con éxito.", FontTypeNames.FONTTYPE_INFO)
+                End If
             End If
         End If
         
@@ -13988,7 +13991,7 @@ End Sub
 
 Public Sub WriteLoggedMessage(ByVal UserIndex As Integer)
 On Error GoTo Errhandler
-    Call UserList(UserIndex).outgoingData.WriteByte(ServerPacketID.Logged)
+    Call UserList(UserIndex).outgoingData.WriteByte(ServerPacketID.logged)
 Exit Sub
 Errhandler:
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
@@ -15096,14 +15099,14 @@ Errhandler:
         Resume
     End If
 End Sub
-Public Sub WriteLocaleMsg(ByVal UserIndex As Integer, ByVal Id As Integer, ByVal FontIndex As FontTypeNames, Optional ByVal strExtra As String = vbNullString)
+Public Sub WriteLocaleMsg(ByVal UserIndex As Integer, ByVal ID As Integer, ByVal FontIndex As FontTypeNames, Optional ByVal strExtra As String = vbNullString)
 '***************************************************
 'Author: Juan Martín Sotuyo Dodero (Maraxus)
 'Last Modification: 05/17/06
 'Writes the "ConsoleMsg" message to the given user's outgoing data buffer
 '***************************************************
 On Error GoTo Errhandler
-    Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageLocaleMsg(Id, strExtra, FontIndex))
+    Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageLocaleMsg(ID, strExtra, FontIndex))
 Exit Sub
 
 Errhandler:
@@ -17876,7 +17879,7 @@ Public Function PrepareMessageConsoleMsg(ByVal chat As String, ByVal FontIndex A
         PrepareMessageConsoleMsg = .ReadASCIIStringFixed(.length)
     End With
 End Function
-Public Function PrepareMessageLocaleMsg(ByVal Id As Integer, ByVal chat As String, ByVal FontIndex As FontTypeNames) As String
+Public Function PrepareMessageLocaleMsg(ByVal ID As Integer, ByVal chat As String, ByVal FontIndex As FontTypeNames) As String
 '***************************************************
 'Author: Juan Martín Sotuyo Dodero (Maraxus)
 'Last Modification: 05/17/06
@@ -17884,7 +17887,7 @@ Public Function PrepareMessageLocaleMsg(ByVal Id As Integer, ByVal chat As Strin
 '***************************************************
     With auxiliarBuffer
         Call .WriteByte(ServerPacketID.LocaleMsg)
-        Call .WriteInteger(Id)
+        Call .WriteInteger(ID)
         Call .WriteASCIIString(chat)
         Call .WriteByte(FontIndex)
         
@@ -19373,7 +19376,7 @@ On Error GoTo Errhandler
             Exit Sub
         End If
         
-        If PasswordValida(AccountDelete, Password) Then
+        If True Then ' Desactivado
             Call WriteShowFrmLogear(UserIndex)
             Call WriteShowMessageBox(UserIndex, "La contraseña introducida no es correcta.")
             Call FlushBuffer(UserIndex)
