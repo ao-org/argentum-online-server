@@ -133,7 +133,8 @@ On Error GoTo ErrorHandler
         'Q = Q & "rep_plebe = " & .Reputacion.PlebeRep & ", "
         'Q = Q & "rep_average = " & .Reputacion.Promedio & ", "
         q = q & "is_naked = " & .flags.Desnudo & ", "
-        q = q & "status = " & .Faccion.Status & "; "
+        q = q & "status = " & .Faccion.Status & ", "
+        q = q & "is_logged = TRUE; "
         
         Call MakeQuery(q, True)
 
@@ -141,9 +142,9 @@ On Error GoTo ErrorHandler
         Call MakeQuery("SELECT LAST_INSERT_ID();")
 
         If QueryData Is Nothing Then
-            .Id = 1
+            .ID = 1
         Else
-            .Id = val(QueryData.Fields(0).Value)
+            .ID = val(QueryData.Fields(0).Value)
         End If
         
         ' Comenzamos una cadena de queries (para enviar todo de una)
@@ -154,7 +155,7 @@ On Error GoTo ErrorHandler
 
         For LoopC = 1 To NUMATRIBUTOS
             q = q & "("
-            q = q & .Id & ", "
+            q = q & .ID & ", "
             q = q & LoopC & ", "
             q = q & .Stats.UserAtributos(LoopC) & ")"
 
@@ -171,7 +172,7 @@ On Error GoTo ErrorHandler
 
         For LoopC = 1 To MAXUSERHECHIZOS
             q = q & "("
-            q = q & .Id & ", "
+            q = q & .ID & ", "
             q = q & LoopC & ", "
             q = q & .Stats.UserHechizos(LoopC) & ")"
 
@@ -189,7 +190,7 @@ On Error GoTo ErrorHandler
 
         For LoopC = 1 To UserList(UserIndex).CurrentInventorySlots
             q = q & "("
-            q = q & .Id & ", "
+            q = q & .ID & ", "
             q = q & LoopC & ", "
             q = q & .Invent.Object(LoopC).ObjIndex & ", "
             q = q & .Invent.Object(LoopC).Amount & ", "
@@ -210,7 +211,7 @@ On Error GoTo ErrorHandler
 
         For LoopC = 1 To NUMSKILLS
             q = q & "("
-            q = q & .Id & ", "
+            q = q & .ID & ", "
             q = q & LoopC & ", "
             q = q & .Stats.UserSkills(LoopC) & ")"
             'Q = Q & .Stats.UserSkills(LoopC) & ", "
@@ -247,7 +248,7 @@ On Error GoTo ErrorHandler
 
         For LoopC = 1 To MAXUSERQUESTS
             q = q & "("
-            q = q & .Id & ", "
+            q = q & .ID & ", "
             q = q & LoopC & ")"
 
             If LoopC < MAXUSERQUESTS Then
@@ -271,7 +272,7 @@ ErrorHandler:
 
 End Sub
 
-Public Sub SaveUserDatabase(ByVal UserIndex As Integer)
+Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = False)
 On Error GoTo ErrorHandler
     
     Dim q As String
@@ -374,8 +375,9 @@ On Error GoTo ErrorHandler
         q = q & "battle_points = " & .flags.BattlePuntos & ", "
         q = q & "guild_index = " & .GuildIndex & ", "
         q = q & "chat_combate = " & .ChatCombate & ", "
-        q = q & "chat_global = " & .ChatGlobal
-        q = q & " WHERE id = " & .Id & "; "
+        q = q & "chat_global = " & .ChatGlobal & ", "
+        q = q & "is_logged = " & IIf(Logout, "FALSE", "TRUE")
+        q = q & " WHERE id = " & .ID & "; "
         
         Dim LoopC As Integer
 
@@ -384,7 +386,7 @@ On Error GoTo ErrorHandler
 
         For LoopC = 1 To NUMATRIBUTOS
             q = q & "("
-            q = q & .Id & ", "
+            q = q & .ID & ", "
             q = q & LoopC & ", "
             q = q & .Stats.UserAtributos(LoopC) & ")"
 
@@ -401,7 +403,7 @@ On Error GoTo ErrorHandler
 
         For LoopC = 1 To MAXUSERHECHIZOS
             q = q & "("
-            q = q & .Id & ", "
+            q = q & .ID & ", "
             q = q & LoopC & ", "
             q = q & .Stats.UserHechizos(LoopC) & ")"
 
@@ -418,7 +420,7 @@ On Error GoTo ErrorHandler
 
         For LoopC = 1 To UserList(UserIndex).CurrentInventorySlots
             q = q & "("
-            q = q & .Id & ", "
+            q = q & .ID & ", "
             q = q & LoopC & ", "
             q = q & .Invent.Object(LoopC).ObjIndex & ", "
             q = q & .Invent.Object(LoopC).Amount & ", "
@@ -437,7 +439,7 @@ On Error GoTo ErrorHandler
 
         For LoopC = 1 To MAX_BANCOINVENTORY_SLOTS
             q = q & "("
-            q = q & .Id & ", "
+            q = q & .ID & ", "
             q = q & LoopC & ", "
             q = q & .BancoInvent.Object(LoopC).ObjIndex & ", "
             q = q & .BancoInvent.Object(LoopC).Amount & ")"
@@ -456,7 +458,7 @@ On Error GoTo ErrorHandler
 
         For LoopC = 1 To NUMSKILLS
             q = q & "("
-            q = q & .Id & ", "
+            q = q & .ID & ", "
             q = q & LoopC & ", "
             q = q & .Stats.UserSkills(LoopC) & ")"
             'Q = Q & .Stats.UserSkills(LoopC) & ", "
@@ -526,7 +528,7 @@ On Error GoTo ErrorHandler
        
         'Agrego ip del user
         q = q & "INSERT INTO connection (user_id, ip, date_last_login) VALUES ("
-        q = q & .Id & ", "
+        q = q & .ID & ", "
         q = q & "'" & .ip & "', "
         q = q & "NOW()) "
         q = q & "ON DUPLICATE KEY UPDATE "
@@ -534,9 +536,9 @@ On Error GoTo ErrorHandler
         
         'Borro la mas vieja si hay mas de 5 (WyroX: si alguien sabe una forma mejor de hacerlo me avisa)
         q = q & "DELETE FROM connection WHERE"
-        q = q & " user_id = " & .Id
+        q = q & " user_id = " & .ID
         q = q & " AND date_last_login < (SELECT min(date_last_login) FROM (SELECT date_last_login FROM connection WHERE"
-        q = q & " user_id = " & .Id
+        q = q & " user_id = " & .ID
         q = q & " ORDER BY date_last_login DESC LIMIT 5) AS d); "
         
         'User quests
@@ -546,7 +548,7 @@ On Error GoTo ErrorHandler
 
         For LoopC = 1 To MAXUSERQUESTS
             q = q & "("
-            q = q & .Id & ", "
+            q = q & .ID & ", "
             q = q & LoopC & ", "
             q = q & .QuestStats.Quests(LoopC).QuestIndex & ", '"
             
@@ -579,7 +581,7 @@ On Error GoTo ErrorHandler
     
             For LoopC = 1 To .QuestStats.NumQuestsDone
                 q = q & "("
-                q = q & .Id & ", "
+                q = q & .ID & ", "
                 q = q & .QuestStats.QuestsDone(LoopC) & ")"
     
                 If LoopC < .QuestStats.NumQuestsDone Then
@@ -593,6 +595,11 @@ On Error GoTo ErrorHandler
         
         'User mail
         'TODO:
+        
+        ' Si deslogueó, actualizo la cuenta
+        If Logout Then
+            q = q & "UPDATE account SET logged = logged - 1 WHERE id = " & .AccountID & ";"
+        End If
 
         Call MakeQuery(q, True)
 
@@ -616,7 +623,7 @@ On Error GoTo ErrorHandler
         If QueryData Is Nothing Then Exit Sub
 
         'Start setting data
-        .Id = QueryData!Id
+        .ID = QueryData!ID
         .name = QueryData!name
         .Stats.ELV = QueryData!level
         .Stats.Exp = QueryData!Exp
@@ -728,7 +735,7 @@ On Error GoTo ErrorHandler
         .GuildIndex = SanitizeNullValue(QueryData!Guild_Index, 0)
 
         'User attributes
-        Call MakeQuery("SELECT * FROM attribute WHERE user_id = " & .Id & ";")
+        Call MakeQuery("SELECT * FROM attribute WHERE user_id = " & .ID & ";")
     
         If Not QueryData Is Nothing Then
             QueryData.MoveFirst
@@ -744,7 +751,7 @@ On Error GoTo ErrorHandler
         
 
         'User spells
-        Call MakeQuery("SELECT * FROM spell WHERE user_id = " & .Id & ";")
+        Call MakeQuery("SELECT * FROM spell WHERE user_id = " & .ID & ";")
 
         If Not QueryData Is Nothing Then
             QueryData.MoveFirst
@@ -772,7 +779,7 @@ On Error GoTo ErrorHandler
         'End If
 
         'User inventory
-        Call MakeQuery("SELECT * FROM inventory_item WHERE user_id = " & .Id & ";")
+        Call MakeQuery("SELECT * FROM inventory_item WHERE user_id = " & .ID & ";")
 
         If Not QueryData Is Nothing Then
             QueryData.MoveFirst
@@ -788,7 +795,7 @@ On Error GoTo ErrorHandler
         End If
 
         'User bank inventory
-        Call MakeQuery("SELECT * FROM bank_item WHERE user_id = " & .Id & ";")
+        Call MakeQuery("SELECT * FROM bank_item WHERE user_id = " & .ID & ";")
 
         If Not QueryData Is Nothing Then
             QueryData.MoveFirst
@@ -803,7 +810,7 @@ On Error GoTo ErrorHandler
         End If
 
         'User skills
-        Call MakeQuery("SELECT * FROM skillpoint WHERE user_id = " & .Id & ";")
+        Call MakeQuery("SELECT * FROM skillpoint WHERE user_id = " & .ID & ";")
 
         If Not QueryData Is Nothing Then
             QueryData.MoveFirst
@@ -836,7 +843,7 @@ On Error GoTo ErrorHandler
         Dim LoopC As Byte
         
         'User quests
-        Call MakeQuery("SELECT * FROM quest WHERE user_id = " & .Id & ";")
+        Call MakeQuery("SELECT * FROM quest WHERE user_id = " & .ID & ";")
 
         If Not QueryData Is Nothing Then
             QueryData.MoveFirst
@@ -863,7 +870,7 @@ On Error GoTo ErrorHandler
         End If
         
         'User quests done
-        Call MakeQuery("SELECT * FROM quest_done WHERE user_id = " & .Id & ";")
+        Call MakeQuery("SELECT * FROM quest_done WHERE user_id = " & .ID & ";")
 
         If Not QueryData Is Nothing Then
             .QuestStats.NumQuestsDone = QueryData.RecordCount
@@ -895,7 +902,7 @@ ErrorHandler:
 
 End Sub
 
-Private Sub MakeQuery(query As String, Optional ByVal NoResult As Boolean = False)
+Private Sub MakeQuery(Query As String, Optional ByVal NoResult As Boolean = False)
     ' 17/10/2020 Autor: Alexis Caraballo (WyroX)
     ' Hace una unica query a la db. Asume una conexion.
     ' Si NoResult = False, el metodo lee el resultado de la query
@@ -910,10 +917,10 @@ On Error GoTo ErrorHandler
     End If
     
     If NoResult Then
-        Call Database_Connection.Execute(query)
+        Call Database_Connection.Execute(Query)
 
     Else
-        Set QueryData = Database_Connection.Execute(query)
+        Set QueryData = Database_Connection.Execute(Query)
 
         If QueryData.BOF Or QueryData.EOF Then
             Set QueryData = Nothing
@@ -923,36 +930,9 @@ On Error GoTo ErrorHandler
     Exit Sub
     
 ErrorHandler:
-    Call LogDatabaseError("Error en MakeQuery: query = '" & query & "'. " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error en MakeQuery: query = '" & Query & "'. " & Err.Number & " - " & Err.description)
 
 End Sub
-
-Private Function GetDBValueOff(Tabla As String, ColumnaGet As String, ColumnaTest As String, ValueTest As Variant) As Variant
-    ' 17/10/2020 Autor: Alexis Caraballo (WyroX)
-    ' Para leer un unico valor de una unica fila
-    ' Asume que estas conectado
-    
-On Error GoTo ErrorHandler
-    
-    'Hacemos la query segun el tipo de variable.
-    If VarType(ValueTest) = vbString Then
-        Call MakeQuery("SELECT " & ColumnaGet & " FROM " & Tabla & " WHERE " & ColumnaTest & " = '" & ValueTest & "';")
-    Else
-        Call MakeQuery("SELECT " & ColumnaGet & " FROM " & Tabla & " WHERE " & ColumnaTest & " = " & ValueTest & ";")  ' Sin comillas
-    End If
-    
-    'Revisamos si recibio un resultado
-    If QueryData Is Nothing Then Exit Function
-
-    'Obtenemos la variable
-    GetDBValueOff = QueryData.Fields(0).Value
-
-    Exit Function
-    
-ErrorHandler:
-    Call LogDatabaseError("Error en GetDBValueOff: SELECT " & ColumnaGet & " FROM " & Tabla & " WHERE " & ColumnaTest & " = '" & ValueTest & "';" & ". " & Err.Number & " - " & Err.description)
-    
-End Function
 
 Private Function GetDBValue(Tabla As String, ColumnaGet As String, ColumnaTest As String, ValueTest As Variant) As Variant
     ' 17/10/2020 Autor: Alexis Caraballo (WyroX)
@@ -1036,11 +1016,11 @@ Private Sub SetCuentaValueByID(AccountID As Long, Columna As String, Value As Va
     Call SetDBValue("account", Columna, Value, "id", AccountID)
 End Sub
 
-Private Sub SetUserValueByID(Id As Long, Columna As String, Value As Variant)
+Private Sub SetUserValueByID(ID As Long, Columna As String, Value As Variant)
     ' 18/10/2020 Autor: Alexis Caraballo (WyroX)
     ' Para cuando hay que escribir un unico valor del char
     ' Por ID
-    Call SetDBValue("user", Columna, Value, "id", Id)
+    Call SetDBValue("user", Columna, Value, "id", ID)
 End Sub
 
 Public Function CheckUserDonatorDatabase(CuentaEmail As String) As Boolean
@@ -1136,29 +1116,13 @@ ErrorHandler:
     
 End Sub
 
-Private Function GetPersonajesCountByID_Off(ByVal AccountID As Long) As Byte
-On Error GoTo ErrorHandler
-    
-    Call MakeQuery("SELECT COUNT(*) FROM user WHERE deleted = FALSE AND account_id = " & AccountID & ";")
-    
-    If QueryData Is Nothing Then Exit Function
-    
-    GetPersonajesCountByID_Off = QueryData.Fields(0).Value
-    
-    Exit Function
-
-ErrorHandler:
-    Call LogDatabaseError("Error in GetPersonajesCountByID_Off. AccountID: " & AccountID & ". " & Err.Number & " - " & Err.description)
-    
-End Function
-
 Public Function GetPersonajesCountDatabase(CuentaEmail As String) As Byte
 On Error GoTo ErrorHandler
 
-    Dim Id As Integer
-    Id = GetDBValueOff("account", "id", "email", LCase$(CuentaEmail))
+    Dim ID As Integer
+    ID = GetDBValue("account", "id", "email", LCase$(CuentaEmail))
     
-    GetPersonajesCountDatabase = GetPersonajesCountByIDDatabase(Id)
+    GetPersonajesCountDatabase = GetPersonajesCountByIDDatabase(ID)
     
     Exit Function
     
@@ -1181,22 +1145,6 @@ On Error GoTo ErrorHandler
 ErrorHandler:
     Call LogDatabaseError("Error in GetPersonajesCountByIDDatabase. AccountID: " & AccountID & ". " & Err.Number & " - " & Err.description)
     
-End Function
-
-Public Function LoadCuentaDatabase(CuentaEmail As String, MacAddress As String, ByVal HDserial As Long, ip As String) As Long
-On Error GoTo ErrorHandler
-    
-    Dim Id As Long
-    Id = GetDBValueOff("account", "id", "email", LCase$(CuentaEmail))
-
-    Call MakeQuery("UPDATE account SET mac_address = '" & MacAddress & "', hd_serial = " & HDserial & ", last_ip = '" & ip & "', last_access = NOW();", True)
-    
-    LoadCuentaDatabase = Id
-    
-    Exit Function
-
-ErrorHandler:
-    Call LogDatabaseError("Error in LoadCuentaDatabase. UserCuenta: " & CuentaEmail & ". " & Err.Number & " - " & Err.description)
 End Function
 
 Public Function GetPersonajesCuentaDatabase(ByVal AccountID As Long, Personaje() As PersonajeCuenta) As Byte
@@ -1243,16 +1191,29 @@ Public Function GetPersonajesCuentaDatabase(ByVal AccountID As Long, Personaje()
 
 End Function
 
+Public Sub SetUserLoggedDatabase(ByVal ID As Long, ByVal AccountID As Long)
+    Call SetDBValue("user", "is_logged", 1, "id", ID)
+    Call MakeQuery("UPDATE account SET logged = logged + 1 WHERE id = " & AccountID & ";", True)
+End Sub
+
 Public Sub SetUsersLoggedDatabase(ByVal NumUsers As Long)
     Call MakeQuery("UPDATE statistics SET value = '" & NumUsers & "' WHERE name = 'online';", True)
 End Sub
 
-Public Sub SaveBattlePointsDatabase(ByVal Id As Long, ByVal BattlePoints As Long)
-    Call SetDBValue("user", "battle_points", BattlePoints, "id", Id)
+Public Sub LogoutAllUsersAndAccounts()
+    Dim Query As String
+    Query = "UPDATE user SET is_logged = FALSE; "
+    Query = Query & "UPDATE account SET logged = 0;"
+
+    Call MakeQuery(Query, True)
 End Sub
 
-Public Sub SaveVotoDatabase(ByVal Id As Long, ByVal Encuestas As Integer)
-    Call SetUserValueByID(Id, "votes_Amount", Encuestas)
+Public Sub SaveBattlePointsDatabase(ByVal ID As Long, ByVal BattlePoints As Long)
+    Call SetDBValue("user", "battle_points", BattlePoints, "id", ID)
+End Sub
+
+Public Sub SaveVotoDatabase(ByVal ID As Long, ByVal Encuestas As Integer)
+    Call SetUserValueByID(ID, "votes_amount", Encuestas)
 End Sub
 
 Public Sub SaveUserBodyDatabase(UserName As String, ByVal Body As Integer)
@@ -1307,16 +1268,16 @@ End Sub
 Public Sub BorrarCuentaDatabase(CuentaEmail As String)
 On Error GoTo ErrorHandler
 
-    Dim Id As Integer
-    Id = GetDBValueOff("account", "id", "email", LCase$(CuentaEmail))
+    Dim ID As Integer
+    ID = GetDBValue("account", "id", "email", LCase$(CuentaEmail))
 
-    Dim query As String
+    Dim Query As String
     
-    query = "UPDATE account SET email = CONCAT('DELETED_', email), deleted = TRUE WHERE email = '" & LCase$(CuentaEmail) & "'; "
+    Query = "UPDATE account SET email = CONCAT('DELETED_', email), deleted = TRUE WHERE email = '" & LCase$(CuentaEmail) & "'; "
     
-    query = query & "UPDATE user SET name = CONCAT('DELETED_', name), deleted = TRUE WHERE account_id = '" & Id & "';"
+    Query = Query & "UPDATE user SET name = CONCAT('DELETED_', name), deleted = TRUE WHERE account_id = '" & ID & "';"
     
-    Call MakeQuery(query, True)
+    Call MakeQuery(Query, True)
 
     Exit Sub
     
@@ -1334,16 +1295,16 @@ Public Sub SaveBanDatabase(ByVal UserName As String, _
     '***************************************************
     On Error GoTo ErrorHandler
 
-    Dim query     As String
+    Dim Query     As String
 
-    query = "UPDATE user SET is_banned = TRUE WHERE name = '" & UserName & "'; "
+    Query = "UPDATE user SET is_banned = TRUE WHERE name = '" & UserName & "'; "
 
-    query = query & "INSERT INTO punishment SET "
-    query = query & "user_id = (SELECT id from user WHERE name = '" & UserName & "'), "
-    query = query & "number = number + 1, "
-    query = query & "reason = '" & BannedBy & ": " & LCase$(Reason) & " " & Date & " " & Time & "';"
+    Query = Query & "INSERT INTO punishment SET "
+    Query = Query & "user_id = (SELECT id from user WHERE name = '" & UserName & "'), "
+    Query = Query & "number = number + 1, "
+    Query = Query & "reason = '" & BannedBy & ": " & LCase$(Reason) & " " & Date & " " & Time & "';"
 
-    Call MakeQuery(query, True)
+    Call MakeQuery(Query, True)
 
     Exit Sub
 
@@ -1356,14 +1317,14 @@ Public Sub SavePenaDatabase(UserName As String, Reason As String)
 
 On Error GoTo ErrorHandler
 
-    Dim query     As String
+    Dim Query     As String
 
-    query = query & "INSERT INTO punishment SET "
-    query = query & "user_id = (SELECT id from user WHERE name = '" & UserName & "'), "
-    query = query & "number = number + 1, "
-    query = query & "reason = '" & Reason & "';"
+    Query = Query & "INSERT INTO punishment SET "
+    Query = Query & "user_id = (SELECT id from user WHERE name = '" & UserName & "'), "
+    Query = Query & "number = number + 1, "
+    Query = Query & "reason = '" & Reason & "';"
 
-    Call MakeQuery(query, True)
+    Call MakeQuery(Query, True)
 
     Exit Sub
 
@@ -1552,13 +1513,13 @@ Public Sub SaveUserGuildRejectionReasonDatabase(ByVal UserName As String, _
     '***************************************************
     On Error GoTo ErrorHandler
 
-    Dim query As String
+    Dim Query As String
 
-    query = "UPDATE user SET "
-    query = query & "guild_rejected_because = '" & Reason & "' "
-    query = query & "WHERE name = '" & UserName & "';"
+    Query = "UPDATE user SET "
+    Query = Query & "guild_rejected_because = '" & Reason & "' "
+    Query = Query & "WHERE name = '" & UserName & "';"
 
-    Call MakeQuery(query, True)
+    Call MakeQuery(Query, True)
 
     Exit Sub
 ErrorHandler:
@@ -1575,13 +1536,13 @@ Public Sub SaveUserGuildIndexDatabase(ByVal UserName As String, _
     '***************************************************
     On Error GoTo ErrorHandler
 
-    Dim query As String
+    Dim Query As String
 
-    query = "UPDATE user SET "
-    query = query & "guild_index = " & GuildIndex & " "
-    query = query & "WHERE name = '" & UserName & "';"
+    Query = "UPDATE user SET "
+    Query = Query & "guild_index = " & GuildIndex & " "
+    Query = Query & "WHERE name = '" & UserName & "';"
     
-    Call MakeQuery(query, True)
+    Call MakeQuery(Query, True)
 
     Exit Sub
 ErrorHandler:
@@ -1598,13 +1559,13 @@ Public Sub SaveUserGuildAspirantDatabase(ByVal UserName As String, _
     '***************************************************
     On Error GoTo ErrorHandler
 
-    Dim query As String
+    Dim Query As String
 
-    query = "UPDATE user SET "
-    query = query & "guild_aspirant_index = " & AspirantIndex & " "
-    query = query & "WHERE name = '" & UserName & "';"
+    Query = "UPDATE user SET "
+    Query = Query & "guild_aspirant_index = " & AspirantIndex & " "
+    Query = Query & "WHERE name = '" & UserName & "';"
 
-    Call MakeQuery(query, True)
+    Call MakeQuery(Query, True)
 
     Exit Sub
 ErrorHandler:
@@ -1620,13 +1581,13 @@ Public Sub SaveUserGuildMemberDatabase(ByVal UserName As String, ByVal guilds As
     '***************************************************
     On Error GoTo ErrorHandler
 
-    Dim query As String
+    Dim Query As String
 
-    query = "UPDATE user SET "
-    query = query & "guild_member_history = '" & guilds & "' "
-    query = query & "WHERE name = '" & UserName & "';"
+    Query = "UPDATE user SET "
+    Query = Query & "guild_member_history = '" & guilds & "' "
+    Query = Query & "WHERE name = '" & UserName & "';"
 
-    Call MakeQuery(query, True)
+    Call MakeQuery(Query, True)
 
     Exit Sub
 ErrorHandler:
@@ -1642,13 +1603,13 @@ Public Sub SaveUserGuildPedidosDatabase(ByVal UserName As String, ByVal Pedidos 
     '***************************************************
     On Error GoTo ErrorHandler
 
-    Dim query As String
+    Dim Query As String
 
-    query = "UPDATE user SET "
-    query = query & "guild_requests_history = '" & Pedidos & "' "
-    query = query & "WHERE name = '" & UserName & "';"
+    Query = "UPDATE user SET "
+    Query = Query & "guild_requests_history = '" & Pedidos & "' "
+    Query = Query & "WHERE name = '" & UserName & "';"
 
-    Call MakeQuery(query, True)
+    Call MakeQuery(Query, True)
 
     Exit Sub
 ErrorHandler:
@@ -1702,6 +1663,100 @@ ErrorHandler:
     Call LogDatabaseError("Error in SendCharacterInfoDatabase: " & UserName & ". " & Err.Number & " - " & Err.description)
 
 End Sub
+
+Public Function EnterAccountDatabase(ByVal UserIndex As Integer, CuentaEmail As String, Password As String, MacAddress As String, ByVal HDserial As Long, ip As String) As Boolean
+On Error GoTo ErrorHandler
+    
+    Call MakeQuery("SELECT id, password, salt, validated, is_banned, ban_reason, banned_by FROM account WHERE email = '" & LCase$(CuentaEmail) & "';")
+    
+    If QueryData Is Nothing Then
+        Call WriteShowMessageBox(UserIndex, "La cuenta no existe.")
+        Exit Function
+    End If
+    
+    If val(QueryData!is_banned) > 0 Then
+        Call WriteShowMessageBox(UserIndex, "La cuenta se encuentra baneada debido a: " & QueryData!ban_reason & ". Esta decisión fue tomada por: " & QueryData!banned_by & ".")
+        Exit Function
+    End If
+    
+    If Not PasswordValida(Password, QueryData!Password, QueryData!Salt) Then
+        Call WriteShowMessageBox(UserIndex, "Contraseña inválida.")
+        Exit Function
+    End If
+    
+    If val(QueryData!validated) = 0 Then
+        Call WriteShowMessageBox(UserIndex, "¡La cuenta no ha sido validada aún!")
+        Exit Function
+    End If
+    
+    UserList(UserIndex).AccountID = QueryData!ID
+    UserList(UserIndex).Cuenta = CuentaEmail
+    
+    Call MakeQuery("UPDATE account SET mac_address = '" & MacAddress & "', hd_serial = " & HDserial & ", last_ip = '" & ip & "', last_access = NOW() WHERE id = " & QueryData!ID & ";", True)
+    
+    EnterAccountDatabase = True
+    
+    Exit Function
+
+ErrorHandler:
+    Call LogDatabaseError("Error in EnterAccountDatabase. UserCuenta: " & CuentaEmail & ". " & Err.Number & " - " & Err.description)
+End Function
+
+Public Sub ChangePasswordDatabase(ByVal UserIndex As Integer, OldPassword As String, NewPassword As String)
+On Error GoTo ErrorHandler
+
+    If LenB(NewPassword) = 0 Then
+        Call WriteConsoleMsg(UserIndex, "Debe especificar una contraseña nueva, inténtelo de nuevo.", FontTypeNames.FONTTYPE_INFO)
+        Exit Sub
+    End If
+    
+    Call MakeQuery("SELECT password, salt FROM account WHERE id = " & UserList(UserIndex).AccountID & ";")
+    
+    If QueryData Is Nothing Then
+        Call WriteConsoleMsg(UserIndex, "No se ha podido cambiar la contraseña por un error interno. Avise a un administrador.", FontTypeNames.FONTTYPE_INFO)
+        Exit Sub
+    End If
+    
+    If Not PasswordValida(OldPassword, QueryData!Password, QueryData!Salt) Then
+        Call WriteConsoleMsg(UserIndex, "La contraseña actual proporcionada no es correcta. La contraseña no ha sido cambiada, inténtelo de nuevo.", FontTypeNames.FONTTYPE_INFO)
+        Exit Sub
+    End If
+    
+    Dim Salt As String * 10
+    Salt = RandomString(10) ' Alfanumerico
+    
+    Dim oSHA256 As CSHA256
+    Set oSHA256 = New CSHA256
+
+    Dim PasswordHash As String * 64
+    PasswordHash = oSHA256.SHA256(NewPassword & Salt)
+    
+    Set oSHA256 = Nothing
+    
+    Call MakeQuery("UPDATE account SET password = '" & paswordhash & "', salt = '" & Salt & "' WHERE id = " & UserList(UserIndex).AccountID & ";", True)
+    
+    Call WriteConsoleMsg(UserIndex, "La contraseña de su cuenta fue cambiada con éxito.", FontTypeNames.FONTTYPE_INFO)
+    
+    Exit Sub
+
+ErrorHandler:
+    Call LogDatabaseError("Error in ChangePasswordDatabase. Username: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.description)
+End Sub
+
+Public Function GetUsersLoggedAccountDatabase(ByVal AccountID As Integer) As Byte
+On Error GoTo ErrorHandler
+
+    Call GetDBValue("account", "logged", "id", AccountID)
+    
+    If QueryData Is Nothing Then Exit Function
+    
+    GetUsersLoggedAccountDatabase = val(QueryData!logged)
+
+    Exit Function
+
+ErrorHandler:
+    Call LogDatabaseError("Error in GetUsersLoggedAccountDatabase. AccountID: " & AccountID & ". " & Err.Number & " - " & Err.description)
+End Function
 
 Public Function SanitizeNullValue(ByVal Value As Variant, _
                                   ByVal defaultValue As Variant) As Variant

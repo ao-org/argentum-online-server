@@ -2082,6 +2082,7 @@ Sub LoadSini()
     LastSockListen = val(Lector.GetValue("INIT", "LastSockListen"))
     HideMe = val(Lector.GetValue("INIT", "Hide"))
     AllowMultiLogins = val(Lector.GetValue("INIT", "AllowMultiLogins"))
+    MaxUsersPorCuenta = val(Lector.GetValue("INIT", "MaxUsersPorCuenta"))
     IdleLimit = val(Lector.GetValue("INIT", "IdleLimit"))
     'Lee la version correcta del cliente
     ULTIMAVERSION = Lector.GetValue("INIT", "Version")
@@ -2479,7 +2480,7 @@ End Sub
 Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = False)
 
     If Database_Enabled Then
-        Call SaveUserDatabase(UserIndex)
+        Call SaveUserDatabase(UserIndex, Logout)
     Else
         Call SaveUserBinary(UserIndex, Logout)
     End If
@@ -3154,7 +3155,9 @@ End Sub
 
 Sub SetUserLogged(ByVal UserIndex As Integer)
 
-    If Not Database_Enabled Then
+    If Database_Enabled Then
+        Call SetUserLoggedDatabase(UserList(UserIndex).ID, UserList(UserIndex).AccountID)
+    Else
         Call WriteVar(CharPath & UCase$(UserList(UserIndex).name) & ".chr", "INIT", "Logged", 1)
         Call WriteVar(CuentasPath & UCase$(UserList(UserIndex).Cuenta) & ".act", "INIT", "LOGEADA", 1)
     End If
@@ -3164,7 +3167,7 @@ End Sub
 Sub SaveBattlePoints(ByVal UserIndex As Integer)
     
     If Database_Enabled Then
-        Call SaveBattlePointsDatabase(UserList(UserIndex).Id, UserList(UserIndex).flags.BattlePuntos)
+        Call SaveBattlePointsDatabase(UserList(UserIndex).ID, UserList(UserIndex).flags.BattlePuntos)
     Else
         Call WriteVar(CharPath & UserList(UserIndex).name & ".chr", "Battle", "Puntos", UserList(UserIndex).flags.BattlePuntos)
     End If
