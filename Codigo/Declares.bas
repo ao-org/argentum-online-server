@@ -154,7 +154,7 @@ Public Type tLlamadaGM
 End Type
 
 Public Enum PlayerType
-    User = &H1
+    user = &H1
     Consejero = &H2
     SemiDios = &H4
     Dios = &H8
@@ -534,7 +534,7 @@ Public Const iORO As Byte = 12
 
 '%%%%%%%%%% CONSTANTES DE INDICES %%%%%%%%%%%%%%%
 Public Enum eSkill
-    Magia = 1
+    magia = 1
     Robar = 2
     Tacticas = 3
     Armas = 4
@@ -1550,7 +1550,7 @@ Public Type UserCounters
 End Type
 
 Public Type UserIntervals
-    Magia As Long
+    magia As Long
     Golpe As Long
     Arco As Long
     Usar As Long
@@ -1588,11 +1588,11 @@ Public Type tFacciones
 End Type
 
 'Tipo de los Usuarios
-Public Type User
+Public Type user
     name As String
     Cuenta As String
     
-    Id As Long
+    ID As Long
     AccountID As Long
     
     Grupo As Tgrupo
@@ -1995,6 +1995,7 @@ Public NumMaps As Long
 Public NumObjDatas As Integer
 Public NumeroHechizos As Integer
 Public AllowMultiLogins As Byte
+Public MaxUsersPorCuenta As Byte
 Public IdleLimit As Integer
 Public MaxUsers As Integer
 Public HideMe As Byte
@@ -2019,7 +2020,7 @@ Public Type tObjDonador
 End Type
 
 '*****************ARRAYS PUBLICOS*************************
-Public UserList() As User 'USUARIOS
+Public UserList() As user 'USUARIOS
 Public Npclist(1 To MAXNPCS) As npc 'NPCS
 Public MapData() As MapBlock
 Public MapInfo() As MapInfo

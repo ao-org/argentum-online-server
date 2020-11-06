@@ -330,9 +330,7 @@ On Error Resume Next
     minutos = Format(Now, "Short Time")
     
     IniPath = App.Path & "\"
-    
-    
-    
+
     LevelSkill(1).LevelValue = 3
     LevelSkill(2).LevelValue = 5
     LevelSkill(3).LevelValue = 7
@@ -553,8 +551,6 @@ On Error Resume Next
         .KillLog.Enabled = True
         .TIMER_AI.Enabled = True
         '.npcataca.Enabled = True
-        
-    
     End With
     
     
@@ -562,11 +558,15 @@ On Error Resume Next
     Subasta.HaySubastaActiva = False
     Call ResetMeteo
     
+    frmCargando.Label1(2).Caption = "Conectando base de datos y limpiando usuarios logueados"
+    
     'Conecto base de datos
     Call Database_Connect
     
     'Reinicio los users online
     Call SetUsersLoggedDatabase(0)
+    'Tarea pesada
+    Call LogoutAllUsersAndAccounts
     
     '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
     'Configuracion de los sockets

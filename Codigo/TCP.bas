@@ -932,34 +932,39 @@ Function EntrarCuenta(ByVal UserIndex As Integer, CuentaEmail As String, CuentaP
         Exit Function
     End If
     
+    If Database_Enabled Then
+        EntrarCuenta = EnterAccountDatabase(UserIndex, CuentaEmail, SDesencriptar(CuentaPassword), MacAddress, HDserial, UserList(UserIndex).ip)
     
-    If CuentaExiste(CuentaEmail) Then
-        If Not ObtenerBaneo(CuentaEmail) Then
-            If PasswordValida(CuentaEmail, SDesencriptar(CuentaPassword)) Then
-                If ObtenerValidacion(CuentaEmail) Then
-                    If Database_Enabled Then
-                        UserList(UserIndex).AccountID = LoadCuentaDatabase(CuentaEmail, MacAddress, HDserial, UserList(UserIndex).ip)
-                    Else
+    Else
+        If CuentaExiste(CuentaEmail) Then
+            If Not ObtenerBaneo(CuentaEmail) Then
+
+                Dim PasswordHash As String, Salt As String
+                PasswordHash = GetVar(CuentasPath & UCase$(CuentaEmail) & ".act", "INIT", "PASSWORD")
+                Salt = GetVar(CuentasPath & UCase$(CuentaEmail) & ".act", "INIT", "SALT")
+
+                If PasswordValida(SDesencriptar(CuentaPassword), PasswordHash, Salt) Then
+                    If ObtenerValidacion(CuentaEmail) Then
                         Call WriteVar(CuentasPath & LCase$(CuentaEmail) & ".act", "INIT", "MacAdress", MacAddress)
                         Call WriteVar(CuentasPath & LCase$(CuentaEmail) & ".act", "INIT", "HDserial", HDserial)
                         Call WriteVar(CuentasPath & LCase$(CuentaEmail) & ".act", "INIT", "UltimoAcceso", Date & " " & Time)
                         Call WriteVar(CuentasPath & LCase$(CuentaEmail) & ".act", "INIT", "UltimaIP", UserList(UserIndex).ip)
+                        
+                        UserList(UserIndex).Cuenta = CuentaEmail
+                        
+                        EntrarCuenta = True
+                    Else
+                        Call WriteShowMessageBox(UserIndex, "¡La cuenta no ha sido validada aún!")
                     End If
-                    
-                    UserList(UserIndex).Cuenta = CuentaEmail
-                    
-                    EntrarCuenta = True
                 Else
-                    Call WriteShowMessageBox(UserIndex, "¡La cuenta no ha sido validada aún!")
+                   Call WriteShowMessageBox(UserIndex, "Contraseña inválida.")
                 End If
             Else
-               Call WriteShowMessageBox(UserIndex, "Contraseña inválida.")
+                Call WriteShowMessageBox(UserIndex, "La cuenta se encuentra baneada debido a: " & ObtenerMotivoBaneo(CuentaEmail) & ". Esta decisión fue tomada por: " & ObtenerQuienBaneo(CuentaEmail) & ".")
             End If
         Else
-            Call WriteShowMessageBox(UserIndex, "La cuenta se encuentra baneada debido a: " & ObtenerMotivoBaneo(CuentaEmail) & ". Esta decisión fue tomada por: " & ObtenerQuienBaneo(CuentaEmail) & ".")
+           Call WriteShowMessageBox(UserIndex, "La cuenta no existe.")
         End If
-    Else
-       Call WriteShowMessageBox(UserIndex, "La cuenta no existe.")
     End If
     
 End Function
@@ -983,6 +988,18 @@ On Error GoTo Errhandler
             Exit Sub
         End If
         
+        If MaxUsersPorCuenta > 0 Then
+            If GetUsersLoggedAccountDatabase(.AccountID) >= MaxUsersPorCuenta Then
+                If MaxUsersPorCuenta = 1 Then
+                    Call WriteShowMessageBox(UserIndex, "Ya hay un usuario conectado con esta cuenta.")
+                Else
+                    Call WriteShowMessageBox(UserIndex, "La cuenta ya alcanzó el máximo de " & MaxUsersPorCuenta & " usuarios conectados.")
+                End If
+                Call FlushBuffer(UserIndex)
+                Exit Sub
+            End If
+        End If
+        
         'Reseteamos los FLAGS
         .flags.Escondido = 0
         .flags.TargetNPC = 0
@@ -1000,23 +1017,25 @@ On Error GoTo Errhandler
         End If
         
         '¿Este IP ya esta conectado?
-        'If AllowMultiLogins = 0 Then
-        '    If CheckForSameIP(UserIndex, .ip) = True Then
-        '       ' Call WriteErrorMsg(UserIndex, "No es posible usar mas de un personaje al mismo tiempo.")
-        '        Call WriteShowMessageBox(UserIndex, "No es posible usar mas de un personaje al mismo tiempo.")
-        '        Call FlushBuffer(UserIndex)
-        '       ' Call CloseSocket(UserIndex)
-        '        Exit Sub
-        '    End If
-        'End If
+        If AllowMultiLogins = 0 Then
+            If CheckForSameIP(UserIndex, .ip) = True Then
+                Call WriteShowMessageBox(UserIndex, "No es posible usar más de un personaje al mismo tiempo.")
+                Call FlushBuffer(UserIndex)
+                Exit Sub
+            End If
+        End If
         
-        '¿Existe el personaje?
-        'If Not FileExist(CharPath & UCase$(name) & ".chr", vbNormal) Then
-        '    Call WriteErrorMsg(UserIndex, "El personaje no existe.")
-        '    Call FlushBuffer(UserIndex)
-        '    Call CloseSocket(UserIndex)
-        '    Exit Sub
-        'End If
+        '¿Supera el máximo de usuarios por cuenta?
+        If MaxUsersPorCuenta > 0 Then
+            If QueryData!logged >= MaxUsersPorCuenta Then
+                If MaxUsersPorCuenta = 1 Then
+                    Call WriteShowMessageBox(UserIndex, "Ya hay un usuario conectado con esta cuenta.")
+                Else
+                    Call WriteShowMessageBox(UserIndex, "La cuenta ya alcanzó el máximo de " & MaxUsersPorCuenta & " usuarios conectados.")
+                End If
+                Exit Sub
+            End If
+        End If
 
         'Reseteamos los privilegios
         .flags.Privilegios = 0
@@ -1074,7 +1093,7 @@ On Error GoTo Errhandler
             If UserList(NameIndex(name)).Counters.Saliendo Then
                 Call WriteShowMessageBox(UserIndex, "El usuario está saliendo.")
             Else
-                Call WriteShowMessageBox(UserIndex, "Perdon, un usuario con el mismo nombre se há logoeado.")
+                Call WriteShowMessageBox(UserIndex, "Perdon, un usuario con el mismo nombre se ha logueado.")
             End If
             Call FlushBuffer(UserIndex)
            ' Call CloseSocket(UserIndex)
@@ -1539,7 +1558,7 @@ Dim LoopC As Integer
     With UserList(UserIndex)
         .name = vbNullString
         .Cuenta = vbNullString
-        .Id = -1
+        .ID = -1
         .AccountID = -1
         .modName = vbNullString
         .Desc = vbNullString
