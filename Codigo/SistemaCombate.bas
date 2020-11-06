@@ -779,91 +779,78 @@ End Function
 
 Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
 
-
-
     'Check bow's interval
     If Not IntervaloPermiteUsarArcos(UserIndex, False) Then Exit Sub
     
-    'Check Spell-Magic interval
-    If Not IntervaloPermiteMagiaGolpe(UserIndex) Then
+    'Check Spell-Attack interval
+    If Not IntervaloPermiteMagiaGolpe(UserIndex, False) Then Exit Sub
 
-        'Check Attack interval
-        If Not IntervaloPermiteAtacar(UserIndex) Then
-            Exit Sub
+    'Check Attack interval
+    If Not IntervaloPermiteAtacar(UserIndex) Then Exit Sub
 
-        End If
-
-    End If
-
-
-'Quitamos stamina
-If UserList(UserIndex).Stats.MinSta >= 10 Then
-    Call QuitarSta(UserIndex, RandomNumber(1, 10))
-    'Movimiento de arma
-    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(UserList(UserIndex).Char.CharIndex))
-Else
-    'Call WriteConsoleMsg(UserIndex, "Estas muy cansado para luchar.", FontTypeNames.FONTTYPE_INFO)
-    Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
-    Exit Sub
-End If
- 
-'UserList(UserIndex).flags.PuedeAtacar = 0
-
-Dim AttackPos As WorldPos
-AttackPos = UserList(UserIndex).Pos
-Call HeadtoPos(UserList(UserIndex).Char.heading, AttackPos)
-   
-'Exit if not legal
-If AttackPos.x < XMinMapSize Or AttackPos.x > XMaxMapSize Or AttackPos.Y <= YMinMapSize Or AttackPos.Y > YMaxMapSize Then
-    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_SWING, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
-    Exit Sub
-End If
-
-
-
-
-
-    
-Dim Index As Integer
-Index = MapData(AttackPos.Map, AttackPos.x, AttackPos.Y).UserIndex
-    
-'Look for user
-If Index > 0 Then
-    Call UsuarioAtacaUsuario(UserIndex, Index)
-    Call WriteUpdateUserStats(UserIndex)
-    Call WriteUpdateUserStats(Index)
-    Exit Sub
-End If
-    
-'Look for NPC
-If MapData(AttackPos.Map, AttackPos.x, AttackPos.Y).NpcIndex > 0 Then
-    
-    If Npclist(MapData(AttackPos.Map, AttackPos.x, AttackPos.Y).NpcIndex).Attackable Then
-            
-        Call UsuarioAtacaNpc(UserIndex, MapData(AttackPos.Map, AttackPos.x, AttackPos.Y).NpcIndex)
-            
+    'Quitamos stamina
+    If UserList(UserIndex).Stats.MinSta >= 10 Then
+        Call QuitarSta(UserIndex, RandomNumber(1, 10))
+        'Movimiento de arma
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(UserList(UserIndex).Char.CharIndex))
     Else
+        'Call WriteConsoleMsg(UserIndex, "Estas muy cansado para luchar.", FontTypeNames.FONTTYPE_INFO)
+        Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
+        Exit Sub
+    End If
+     
+    'UserList(UserIndex).flags.PuedeAtacar = 0
     
-        Call WriteConsoleMsg(UserIndex, "No podés atacar a este NPC", FontTypeNames.FONTTYPE_FIGHT)
+    Dim AttackPos As WorldPos
+    AttackPos = UserList(UserIndex).Pos
+    Call HeadtoPos(UserList(UserIndex).Char.heading, AttackPos)
+       
+    'Exit if not legal
+    If AttackPos.x < XMinMapSize Or AttackPos.x > XMaxMapSize Or AttackPos.Y <= YMinMapSize Or AttackPos.Y > YMaxMapSize Then
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_SWING, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+        Exit Sub
+    End If
+
+    Dim Index As Integer
+    Index = MapData(AttackPos.Map, AttackPos.x, AttackPos.Y).UserIndex
+        
+    'Look for user
+    If Index > 0 Then
+        Call UsuarioAtacaUsuario(UserIndex, Index)
+        Call WriteUpdateUserStats(UserIndex)
+        Call WriteUpdateUserStats(Index)
+        Exit Sub
     End If
         
-    Call WriteUpdateUserStats(UserIndex)
+    'Look for NPC
+    If MapData(AttackPos.Map, AttackPos.x, AttackPos.Y).NpcIndex > 0 Then
         
-    Exit Sub
-End If
+        If Npclist(MapData(AttackPos.Map, AttackPos.x, AttackPos.Y).NpcIndex).Attackable Then
+                
+            Call UsuarioAtacaNpc(UserIndex, MapData(AttackPos.Map, AttackPos.x, AttackPos.Y).NpcIndex)
+                
+        Else
+        
+            Call WriteConsoleMsg(UserIndex, "No podés atacar a este NPC", FontTypeNames.FONTTYPE_FIGHT)
+        End If
+            
+        Call WriteUpdateUserStats(UserIndex)
+            
+        Exit Sub
+    End If
+        
+    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_SWING, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.CharIndex, 90, 0))
     
-Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_SWING, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
-Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.CharIndex, 90, 0))
-
-Call WriteUpdateUserStats(UserIndex)
-
-
-If UserList(UserIndex).Counters.Trabajando Then
-    Call WriteMacroTrabajoToggle(UserIndex, False)
-End If
+    Call WriteUpdateUserStats(UserIndex)
     
-If UserList(UserIndex).Counters.Ocultando Then _
-    UserList(UserIndex).Counters.Ocultando = UserList(UserIndex).Counters.Ocultando - 1
+    
+    If UserList(UserIndex).Counters.Trabajando Then
+        Call WriteMacroTrabajoToggle(UserIndex, False)
+    End If
+        
+    If UserList(UserIndex).Counters.Ocultando Then _
+        UserList(UserIndex).Counters.Ocultando = UserList(UserIndex).Counters.Ocultando - 1
 
 End Sub
 
