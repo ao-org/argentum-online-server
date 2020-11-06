@@ -50,65 +50,6 @@ frmMain.lblhora.Caption = HoraActual & ":" & Format(theTime.wMinute, "00") & ":"
 HoraEvento = HoraActual
 End Sub
 
-#If Lac Then
-Public Sub LoadAntiCheat()
-Dim i As Integer
-
-Lac_Camina = CLng(val(GetVar$(App.Path & "\AntiCheats.ini", "INTERVALOS", "Caminar")))
-Lac_Lanzar = CLng(val(GetVar$(App.Path & "\AntiCheats.ini", "INTERVALOS", "Lanzar")))
-Lac_Usar = CLng(val(GetVar$(App.Path & "\AntiCheats.ini", "INTERVALOS", "Usar")))
-Lac_Tirar = CLng(val(GetVar$(App.Path & "\AntiCheats.ini", "INTERVALOS", "Tirar")))
-Lac_Pociones = CLng(val(GetVar$(App.Path & "\AntiCheats.ini", "INTERVALOS", "Pociones")))
-Lac_Pegar = CLng(val(GetVar$(App.Path & "\AntiCheats.ini", "INTERVALOS", "Pegar")))
-For i = 1 To MaxUsers
-ResetearLac i
-Next
-
-
-End Sub
-Public Sub ResetearLac(UserIndex As Integer)
-With UserList(UserIndex).Lac
-.LCaminar.Init Lac_Camina
-.LPociones.Init Lac_Pociones
-.LUsar.Init Lac_Usar
-.LPegar.Init Lac_Pegar
-.LLanzar.Init Lac_Lanzar
-.LTirar.Init Lac_Tirar
-End With
-
-End Sub
-Public Sub CargaLac(UserIndex As Integer)
-With UserList(UserIndex).Lac
-Set .LCaminar = New Cls_InterGTC
-Set .LLanzar = New Cls_InterGTC
-Set .LPegar = New Cls_InterGTC
-Set .LPociones = New Cls_InterGTC
-Set .LTirar = New Cls_InterGTC
-Set .LUsar = New Cls_InterGTC
-
-.LCaminar.Init Lac_Camina
-.LPociones.Init Lac_Pociones
-.LUsar.Init Lac_Usar
-.LPegar.Init Lac_Pegar
-.LLanzar.Init Lac_Lanzar
-.LTirar.Init Lac_Tirar
-End With
-
-End Sub
-Public Sub DescargaLac(UserIndex As Integer)
-'Exit Sub
-With UserList(UserIndex).Lac
-Set .LCaminar = Nothing
-Set .LLanzar = Nothing
-Set .LPegar = Nothing
-Set .LPociones = Nothing
-Set .LTirar = Nothing
-Set .LUsar = Nothing
-End With
-End Sub
-#End If
-
-
 Public Function DarNameMapa(ByVal Map As Long) As String
 DarNameMapa = MapInfo(Map).map_name
 End Function

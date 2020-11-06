@@ -1346,7 +1346,7 @@ For Object = 1 To NumObjDatas
 
     Dim n As Integer
     Dim S As String
-    For i = 1 To 9
+    For i = 1 To NUMCLASES
         S = UCase$(Leer.GetValue("OBJ" & Object, "CP" & i))
         n = 1
         Do While LenB(S) > 0 And UCase$(ListaClases(n)) <> S
@@ -2069,99 +2069,6 @@ Sub LoadSini()
     
     EnTesting = val(Lector.GetValue("INIT", "Testing"))
     
-    'Start pos
-    
-    
-    'Intervalos
-    SanaIntervaloSinDescansar = val(Lector.GetValue("INTERVALOS", "SanaIntervaloSinDescansar"))
-    FrmInterv.txtSanaIntervaloSinDescansar.Text = SanaIntervaloSinDescansar
-    
-    StaminaIntervaloSinDescansar = val(Lector.GetValue("INTERVALOS", "StaminaIntervaloSinDescansar"))
-    FrmInterv.txtStaminaIntervaloSinDescansar.Text = StaminaIntervaloSinDescansar
-    
-    SanaIntervaloDescansar = val(Lector.GetValue("INTERVALOS", "SanaIntervaloDescansar"))
-    FrmInterv.txtSanaIntervaloDescansar.Text = SanaIntervaloDescansar
-    
-    StaminaIntervaloDescansar = val(Lector.GetValue("INTERVALOS", "StaminaIntervaloDescansar"))
-    FrmInterv.txtStaminaIntervaloDescansar.Text = StaminaIntervaloDescansar
-    
-    IntervaloSed = val(Lector.GetValue("INTERVALOS", "IntervaloSed"))
-    FrmInterv.txtIntervaloSed.Text = IntervaloSed
-    
-    IntervaloHambre = val(Lector.GetValue("INTERVALOS", "IntervaloHambre"))
-    FrmInterv.txtIntervaloHambre.Text = IntervaloHambre
-    
-    IntervaloVeneno = val(Lector.GetValue("INTERVALOS", "IntervaloVeneno"))
-    FrmInterv.txtIntervaloVeneno.Text = IntervaloVeneno
-    
-    IntervaloParalizado = val(Lector.GetValue("INTERVALOS", "IntervaloParalizado"))
-    FrmInterv.txtIntervaloParalizado.Text = IntervaloParalizado
-    
-    
-    IntervaloInmovilizado = val(Lector.GetValue("INTERVALOS", "IntervaloInmovilizado"))
-    FrmInterv.txtIntervaloInmovilizado.Text = IntervaloInmovilizado
-    
-    
-    IntervaloInvisible = val(Lector.GetValue("INTERVALOS", "IntervaloInvisible"))
-    FrmInterv.txtIntervaloInvisible.Text = IntervaloInvisible
-    
-    IntervaloFrio = val(Lector.GetValue("INTERVALOS", "IntervaloFrio"))
-    FrmInterv.txtIntervaloFrio.Text = IntervaloFrio
-    
-    IntervaloWavFx = val(Lector.GetValue("INTERVALOS", "IntervaloWAVFX"))
-    FrmInterv.txtIntervaloWAVFX.Text = IntervaloWavFx
-    
-    IntervaloInvocacion = val(Lector.GetValue("INTERVALOS", "IntervaloInvocacion"))
-    FrmInterv.txtInvocacion.Text = IntervaloInvocacion
-    
-    TimeoutPrimerPaquete = val(Lector.GetValue("INTERVALOS", "TimeoutPrimerPaquete"))
-    FrmInterv.txtTimeoutPrimerPaquete.Text = TimeoutPrimerPaquete
-    
-    TimeoutEsperandoLoggear = val(Lector.GetValue("INTERVALOS", "TimeoutEsperandoLoggear"))
-    FrmInterv.txtTimeoutEsperandoLoggear.Text = TimeoutEsperandoLoggear
-    
-    IntervaloIncineracion = val(Lector.GetValue("INTERVALOS", "IntervaloFuego"))
-    FrmInterv.txtintervalofuego.Text = IntervaloIncineracion
-    'Ladder
-    
-    '&&&&&&&&&&&&&&&&&&&&& TIMERS &&&&&&&&&&&&&&&&&&&&&&&
-    
-    
-    IntervaloUserPuedeCastear = val(Lector.GetValue("INTERVALOS", "IntervaloLanzaHechizo"))
-    FrmInterv.txtIntervaloLanzaHechizo.Text = IntervaloUserPuedeCastear
-    
-    frmMain.TIMER_AI.Interval = val(Lector.GetValue("INTERVALOS", "IntervaloNpcAI"))
-    FrmInterv.txtAI.Text = frmMain.TIMER_AI.Interval
-    
-    frmMain.npcataca.Interval = val(Lector.GetValue("INTERVALOS", "IntervaloNpcPuedeAtacar"))
-    FrmInterv.txtNPCPuedeAtacar.Text = frmMain.npcataca.Interval
-    
-    IntervaloUserPuedeTrabajar = val(Lector.GetValue("INTERVALOS", "IntervaloTrabajo"))
-    FrmInterv.txtTrabajo.Text = IntervaloUserPuedeTrabajar
-    
-    IntervaloUserPuedeAtacar = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeAtacar"))
-    FrmInterv.txtPuedeAtacar.Text = IntervaloUserPuedeAtacar
-    
-    'TODO : Agregar estos intervalos al form!!!
-    IntervaloMagiaGolpe = val(Lector.GetValue("INTERVALOS", "IntervaloMagiaGolpe"))
-    IntervaloGolpeMagia = val(Lector.GetValue("INTERVALOS", "IntervaloGolpeMagia"))
-    
-    'frmMain.tLluvia.Interval = val(Lector.GetValue("INTERVALOS", "IntervaloPerdidaStaminaLluvia"))
-    'FrmInterv.txtIntervaloPerdidaStaminaLluvia.Text = frmMain.tLluvia.Interval
-    
-    MinutosWs = val(Lector.GetValue("INTERVALOS", "IntervaloWS"))
-    If MinutosWs < 1 Then MinutosWs = 10
-    
-    IntervaloCerrarConexion = val(Lector.GetValue("INTERVALOS", "IntervaloCerrarConexion"))
-    IntervaloUserPuedeUsar = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeUsar"))
-    IntervaloFlechasCazadores = val(Lector.GetValue("INTERVALOS", "IntervaloFlechasCazadores"))
-    
-    IntervaloOculto = val(Lector.GetValue("INTERVALOS", "IntervaloOculto"))
-    
-    IntervaloPuedeSerAtacado = val(Lector.GetValue("INTERVALOS", "IntervaloPuedeSerAtacado"))
-    
-    '&&&&&&&&&&&&&&&&&&&&& FIN TIMERS &&&&&&&&&&&&&&&&&&&&&&&
-    
     ' Database
     Database_Enabled = CBool(val(Lector.GetValue("DATABASE", "Enabled")))
     Database_DataSource = Lector.GetValue("DATABASE", "DSN")
@@ -2293,6 +2200,112 @@ Sub LoadSini()
     Set Lector = Nothing
 
 End Sub
+
+Sub LoadIntervalos()
+    Dim Lector As clsIniReader
+
+    Set Lector = New clsIniReader
+    Call Lector.Initialize(IniPath & "intervalos.ini")
+    
+    'Intervalos
+    SanaIntervaloSinDescansar = val(Lector.GetValue("INTERVALOS", "SanaIntervaloSinDescansar"))
+    FrmInterv.txtSanaIntervaloSinDescansar.Text = SanaIntervaloSinDescansar
+    
+    StaminaIntervaloSinDescansar = val(Lector.GetValue("INTERVALOS", "StaminaIntervaloSinDescansar"))
+    FrmInterv.txtStaminaIntervaloSinDescansar.Text = StaminaIntervaloSinDescansar
+    
+    SanaIntervaloDescansar = val(Lector.GetValue("INTERVALOS", "SanaIntervaloDescansar"))
+    FrmInterv.txtSanaIntervaloDescansar.Text = SanaIntervaloDescansar
+    
+    StaminaIntervaloDescansar = val(Lector.GetValue("INTERVALOS", "StaminaIntervaloDescansar"))
+    FrmInterv.txtStaminaIntervaloDescansar.Text = StaminaIntervaloDescansar
+    
+    IntervaloSed = val(Lector.GetValue("INTERVALOS", "IntervaloSed"))
+    FrmInterv.txtIntervaloSed.Text = IntervaloSed
+    
+    IntervaloHambre = val(Lector.GetValue("INTERVALOS", "IntervaloHambre"))
+    FrmInterv.txtIntervaloHambre.Text = IntervaloHambre
+    
+    IntervaloVeneno = val(Lector.GetValue("INTERVALOS", "IntervaloVeneno"))
+    FrmInterv.txtIntervaloVeneno.Text = IntervaloVeneno
+    
+    IntervaloParalizado = val(Lector.GetValue("INTERVALOS", "IntervaloParalizado"))
+    FrmInterv.txtIntervaloParalizado.Text = IntervaloParalizado
+    
+    
+    IntervaloInmovilizado = val(Lector.GetValue("INTERVALOS", "IntervaloInmovilizado"))
+    FrmInterv.txtIntervaloInmovilizado.Text = IntervaloInmovilizado
+    
+    
+    IntervaloInvisible = val(Lector.GetValue("INTERVALOS", "IntervaloInvisible"))
+    FrmInterv.txtIntervaloInvisible.Text = IntervaloInvisible
+    
+    IntervaloFrio = val(Lector.GetValue("INTERVALOS", "IntervaloFrio"))
+    FrmInterv.txtIntervaloFrio.Text = IntervaloFrio
+    
+    IntervaloWavFx = val(Lector.GetValue("INTERVALOS", "IntervaloWAVFX"))
+    FrmInterv.txtIntervaloWAVFX.Text = IntervaloWavFx
+    
+    IntervaloInvocacion = val(Lector.GetValue("INTERVALOS", "IntervaloInvocacion"))
+    FrmInterv.txtInvocacion.Text = IntervaloInvocacion
+    
+    TimeoutPrimerPaquete = val(Lector.GetValue("INTERVALOS", "TimeoutPrimerPaquete"))
+    FrmInterv.txtTimeoutPrimerPaquete.Text = TimeoutPrimerPaquete
+    
+    TimeoutEsperandoLoggear = val(Lector.GetValue("INTERVALOS", "TimeoutEsperandoLoggear"))
+    FrmInterv.txtTimeoutEsperandoLoggear.Text = TimeoutEsperandoLoggear
+    
+    IntervaloIncineracion = val(Lector.GetValue("INTERVALOS", "IntervaloFuego"))
+    FrmInterv.txtintervalofuego.Text = IntervaloIncineracion
+    
+    IntervaloTirar = val(Lector.GetValue("INTERVALOS", "IntervaloTirar"))
+    FrmInterv.txtintervalotirar.Text = IntervaloTirar
+    
+    IntervaloCaminar = val(Lector.GetValue("INTERVALOS", "IntervaloCaminar"))
+    FrmInterv.txtintervalocaminar.Text = IntervaloCaminar
+    'Ladder
+    
+    '&&&&&&&&&&&&&&&&&&&&& TIMERS &&&&&&&&&&&&&&&&&&&&&&&
+    
+    
+    IntervaloUserPuedeCastear = val(Lector.GetValue("INTERVALOS", "IntervaloLanzaHechizo"))
+    FrmInterv.txtIntervaloLanzaHechizo.Text = IntervaloUserPuedeCastear
+    
+    frmMain.TIMER_AI.Interval = val(Lector.GetValue("INTERVALOS", "IntervaloNpcAI"))
+    FrmInterv.txtAI.Text = frmMain.TIMER_AI.Interval
+    
+    frmMain.npcataca.Interval = val(Lector.GetValue("INTERVALOS", "IntervaloNpcPuedeAtacar"))
+    FrmInterv.txtNPCPuedeAtacar.Text = frmMain.npcataca.Interval
+    
+    IntervaloUserPuedeTrabajar = val(Lector.GetValue("INTERVALOS", "IntervaloTrabajo"))
+    FrmInterv.txtTrabajo.Text = IntervaloUserPuedeTrabajar
+    
+    IntervaloUserPuedeAtacar = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeAtacar"))
+    FrmInterv.txtPuedeAtacar.Text = IntervaloUserPuedeAtacar
+    
+    'TODO : Agregar estos intervalos al form!!!
+    IntervaloMagiaGolpe = val(Lector.GetValue("INTERVALOS", "IntervaloMagiaGolpe"))
+    IntervaloGolpeMagia = val(Lector.GetValue("INTERVALOS", "IntervaloGolpeMagia"))
+    
+    'frmMain.tLluvia.Interval = val(Lector.GetValue("INTERVALOS", "IntervaloPerdidaStaminaLluvia"))
+    'FrmInterv.txtIntervaloPerdidaStaminaLluvia.Text = frmMain.tLluvia.Interval
+    
+    MinutosWs = val(Lector.GetValue("INTERVALOS", "IntervaloWS"))
+    If MinutosWs < 1 Then MinutosWs = 10
+    
+    IntervaloCerrarConexion = val(Lector.GetValue("INTERVALOS", "IntervaloCerrarConexion"))
+    IntervaloUserPuedeUsar = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeUsar"))
+    IntervaloFlechasCazadores = val(Lector.GetValue("INTERVALOS", "IntervaloFlechasCazadores"))
+    
+    IntervaloOculto = val(Lector.GetValue("INTERVALOS", "IntervaloOculto"))
+    
+    IntervaloPuedeSerAtacado = val(Lector.GetValue("INTERVALOS", "IntervaloPuedeSerAtacado"))
+    
+    '&&&&&&&&&&&&&&&&&&&&& FIN TIMERS &&&&&&&&&&&&&&&&&&&&&&&
+    
+    Set Lector = Nothing
+End Sub
+
 Sub LoadConfiguraciones()
 ExpMult = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "ExpMult"))
 OroMult = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "OroMult"))
@@ -3493,3 +3506,15 @@ Public Function BinarySearchPeces(ByVal Value As Long) As Long
     Loop
 End Function
 
+Public Sub LoadUserIntervals(ByVal UserIndex As Integer)
+    With UserList(UserIndex).Intervals
+        .Arco = IntervaloFlechasCazadores
+        .Caminar = IntervaloCaminar
+        .Golpe = IntervaloUserPuedeAtacar
+        .magia = IntervaloUserPuedeCastear
+        .GolpeMagia = IntervaloGolpeMagia
+        .MagiaGolpe = IntervaloMagiaGolpe
+        .Trabajar = IntervaloUserPuedeTrabajar
+        .Usar = IntervaloUserPuedeUsar
+    End With
+End Sub

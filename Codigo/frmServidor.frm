@@ -12,14 +12,6 @@ Begin VB.Form frmServidor
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   502
    StartUpPosition =   3  'Windows Default
-   Begin VB.CommandButton Command29 
-      Caption         =   "Recargar"
-      Height          =   495
-      Left            =   6480
-      TabIndex        =   36
-      Top             =   4440
-      Width           =   975
-   End
    Begin VB.Frame Frame4 
       Caption         =   "Apagar - Save"
       BeginProperty Font 
@@ -862,14 +854,6 @@ Private Sub Command28_Click()
 Call LoadConfiguraciones
 End Sub
 
-Private Sub Command29_Click()
-#If Lac Then
-Call LoadAntiCheat
-#End If
-
-
-End Sub
-
 Private Sub Command3_Click()
 If MsgBox("¡¡Atencion!! Si reinicia el servidor puede provocar la perdida de datos de los usarios. ¿Desea reiniciar el servidor de todas maneras?", vbYesNo) = vbYes Then
     Me.Visible = False
@@ -929,6 +913,7 @@ Call FreeNPCs
 Call FreeCharIndexes
 
 Call LoadSini
+Call LoadIntervalos
 Call CargarBackUp
 Call LoadOBJData
 Call LoadPesca

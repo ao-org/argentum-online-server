@@ -25,13 +25,47 @@ Begin VB.Form FrmInterv
       TabIndex        =   59
       Top             =   4200
       Width           =   4455
+      Begin VB.TextBox txtintervalocaminar 
+         Height          =   300
+         Left            =   3735
+         TabIndex        =   66
+         Text            =   "0"
+         Top             =   240
+         Width           =   570
+      End
+      Begin VB.TextBox txtintervalotirar 
+         Height          =   300
+         Left            =   2160
+         TabIndex        =   64
+         Text            =   "0"
+         Top             =   240
+         Width           =   570
+      End
       Begin VB.TextBox txtTrabajo 
          Height          =   300
          Left            =   720
          TabIndex        =   60
          Text            =   "0"
          Top             =   240
-         Width           =   930
+         Width           =   570
+      End
+      Begin VB.Label Label26 
+         AutoSize        =   -1  'True
+         Caption         =   "Caminar"
+         Height          =   195
+         Left            =   3120
+         TabIndex        =   67
+         Top             =   270
+         Width           =   525
+      End
+      Begin VB.Label Label25 
+         AutoSize        =   -1  'True
+         Caption         =   "Tirar"
+         Height          =   195
+         Left            =   1800
+         TabIndex        =   65
+         Top             =   270
+         Width           =   315
       End
       Begin VB.Label Label16 
          AutoSize        =   -1  'True
@@ -264,7 +298,7 @@ Begin VB.Form FrmInterv
       Top             =   0
       Width           =   7455
       Begin VB.Frame Frame9 
-         Caption         =   "Otros"
+         Caption         =   "Conexión"
          BeginProperty Font 
             Name            =   "MS Sans Serif"
             Size            =   8.25
@@ -741,6 +775,8 @@ IntervaloWavFx = val(txtIntervaloWAVFX.Text)
 IntervaloInvocacion = val(txtInvocacion.Text)
 TimeoutPrimerPaquete = val(txtTimeoutPrimerPaquete.Text)
 TimeoutEsperandoLoggear = val(txtTimeoutEsperandoLoggear.Text)
+IntervaloTirar = val(txtintervalotirar.Text)
+IntervaloCaminar = val(txtintervalocaminar.Text)
 
 '///////////////// TIMERS \\\\\\\\\\\\\\\\\\\
 
@@ -766,28 +802,30 @@ Private Sub Command2_Click()
 On Error GoTo Err
 
 'Intervalos
-Call WriteVar(IniPath & "Server.ini", "INTERVALOS", "SanaIntervaloSinDescansar", str(SanaIntervaloSinDescansar))
-Call WriteVar(IniPath & "Server.ini", "INTERVALOS", "StaminaIntervaloSinDescansar", str(StaminaIntervaloSinDescansar))
-Call WriteVar(IniPath & "Server.ini", "INTERVALOS", "SanaIntervaloDescansar", str(SanaIntervaloDescansar))
-Call WriteVar(IniPath & "Server.ini", "INTERVALOS", "StaminaIntervaloDescansar", str(StaminaIntervaloDescansar))
-Call WriteVar(IniPath & "Server.ini", "INTERVALOS", "IntervaloSed", str(IntervaloSed))
-Call WriteVar(IniPath & "Server.ini", "INTERVALOS", "IntervaloHambre", str(IntervaloHambre))
-Call WriteVar(IniPath & "Server.ini", "INTERVALOS", "IntervaloVeneno", str(IntervaloVeneno))
-Call WriteVar(IniPath & "Server.ini", "INTERVALOS", "IntervaloParalizado", str(IntervaloParalizado))
-Call WriteVar(IniPath & "Server.ini", "INTERVALOS", "IntervaloInmovilizado", str(IntervaloInmovilizado))
-Call WriteVar(IniPath & "Server.ini", "INTERVALOS", "IntervaloInvisible", str(IntervaloInvisible))
-Call WriteVar(IniPath & "Server.ini", "INTERVALOS", "IntervaloFrio", str(IntervaloFrio))
-Call WriteVar(IniPath & "Server.ini", "INTERVALOS", "IntervaloWAVFX", str(IntervaloWavFx))
-Call WriteVar(IniPath & "Server.ini", "INTERVALOS", "TimeoutPrimerPaquete", str(TimeoutPrimerPaquete))
-Call WriteVar(IniPath & "Server.ini", "INTERVALOS", "TimeoutEsperandoLoggear", str(TimeoutEsperandoLoggear))
+Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "SanaIntervaloSinDescansar", str(SanaIntervaloSinDescansar))
+Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "StaminaIntervaloSinDescansar", str(StaminaIntervaloSinDescansar))
+Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "SanaIntervaloDescansar", str(SanaIntervaloDescansar))
+Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "StaminaIntervaloDescansar", str(StaminaIntervaloDescansar))
+Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloSed", str(IntervaloSed))
+Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloHambre", str(IntervaloHambre))
+Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloVeneno", str(IntervaloVeneno))
+Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloParalizado", str(IntervaloParalizado))
+Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloInmovilizado", str(IntervaloInmovilizado))
+Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloInvisible", str(IntervaloInvisible))
+Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloFrio", str(IntervaloFrio))
+Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloWAVFX", str(IntervaloWavFx))
+Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "TimeoutPrimerPaquete", str(TimeoutPrimerPaquete))
+Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "TimeoutEsperandoLoggear", str(TimeoutEsperandoLoggear))
+Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloCaminar", str(IntervaloCaminar))
+Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloTirar", str(IntervaloTirar))
 '&&&&&&&&&&&&&&&&&&&&& TIMERS &&&&&&&&&&&&&&&&&&&&&&&
 
-Call WriteVar(IniPath & "Server.ini", "INTERVALOS", "IntervaloLanzaHechizo", str(IntervaloUserPuedeCastear))
-Call WriteVar(IniPath & "Server.ini", "INTERVALOS", "IntervaloNpcAI", frmMain.TIMER_AI.Interval)
-Call WriteVar(IniPath & "Server.ini", "INTERVALOS", "IntervaloNpcPuedeAtacar", frmMain.npcataca.Interval)
-Call WriteVar(IniPath & "Server.ini", "INTERVALOS", "IntervaloTrabajo", str(IntervaloUserPuedeTrabajar))
-Call WriteVar(IniPath & "Server.ini", "INTERVALOS", "IntervaloUserPuedeAtacar", str(IntervaloUserPuedeAtacar))
-'Call WriteVar(IniPath & "Server.ini", "INTERVALOS", "IntervaloPerdidaStaminaLluvia", frmMain.tLluvia.Interval)
+Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloLanzaHechizo", str(IntervaloUserPuedeCastear))
+Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloNpcAI", frmMain.TIMER_AI.Interval)
+Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloNpcPuedeAtacar", frmMain.npcataca.Interval)
+Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloTrabajo", str(IntervaloUserPuedeTrabajar))
+Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloUserPuedeAtacar", str(IntervaloUserPuedeAtacar))
+'Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloPerdidaStaminaLluvia", frmMain.tLluvia.Interval)
 
 
 MsgBox "Los intervalos se han guardado sin problemas"

@@ -1129,17 +1129,17 @@ On Error GoTo Errhandler
          .CurrentInventorySlots = getMaxInventorySlots(UserIndex)
         
         Call WriteInventoryUnlockSlots(UserIndex)
+        
+        Call LoadUserIntervals(UserIndex)
+        Call WriteIntervals(UserIndex)
+        
         Call UpdateUserInv(True, UserIndex, 0)
         Call UpdateUserHechizos(True, UserIndex, 0)
-        
-        
-        
+
         If .Correo.NoLeidos > 0 Then
             Call WriteCorreoPicOn(UserIndex)
         End If
-        
-        
-        
+
         If .flags.Paralizado Then
             Call WriteParalizeOK(UserIndex)
         End If
@@ -1914,9 +1914,7 @@ Sub CloseUser(ByVal UserIndex As Integer)
 
     errordesc = "ERROR AL ERASEUSERCHAR"
     'Borrar el personaje
-    If UserList(UserIndex).Char.CharIndex > 0 Then
-        Call EraseUserChar(UserIndex, True)
-    End If
+    Call EraseUserChar(UserIndex, True)
     
     errordesc = "ERROR Update Map Users"
     'Update Map Users
