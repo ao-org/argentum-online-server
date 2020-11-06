@@ -160,9 +160,14 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, _
         
         'Se entrega la experiencia.
         If .RewardEXP Then
-            UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + .RewardEXP
-           ' Call WriteConsoleMsg(UserIndex, "Has ganado " & .RewardEXP & " puntos de experiencia como recompensa.", FontTypeNames.
-            Call WriteLocaleMsg(UserIndex, "140", FontTypeNames.FONTTYPE_EXP, .RewardEXP)
+            If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then
+                UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + .RewardEXP
+                Call WriteUpdateExp(UserIndex)
+                Call CheckUserLevel(UserIndex)
+                Call WriteLocaleMsg(UserIndex, "140", FontTypeNames.FONTTYPE_EXP, .RewardEXP)
+            Else
+                Call WriteConsoleMsg(UserIndex, "No se te ha dado experiencia porque eres nivel máximo.", FontTypeNames.FONTTYPE_INFO)
+            End If
         End If
         
         'Se entrega el oro.
@@ -183,10 +188,8 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, _
         End If
         
         Call WriteUpdateGold(UserIndex)
-        Call WriteUpdateExp(UserIndex)
     
         'Actualizamos el personaje
-        Call CheckUserLevel(UserIndex)
         Call UpdateUserInv(True, UserIndex, 0)
     
         'Limpiamos el slot de quest.

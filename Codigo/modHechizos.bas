@@ -2909,11 +2909,10 @@ If npc Then
             Call CalcularDarExp(UserIndex, NpcIndex, daño)
                 
                 If Npclist(NpcIndex).Stats.MinHp <= 0 Then
-                    UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + Npclist(NpcIndex).GiveEXP
-                    UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + Npclist(NpcIndex).GiveGLD
+                    'UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + Npclist(NpcIndex).GiveEXP
+                    'UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + Npclist(NpcIndex).GiveGLD
                     Call MuereNpc(NpcIndex, UserIndex)
                 End If
-                Call CheckUserLevel(UserIndex)
                 Exit Sub
     End If
 Else
