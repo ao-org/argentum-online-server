@@ -1594,15 +1594,16 @@ Else
     
     '[Nacho] Le damos la exp al user
     If ExpaDar > 0 Then
+        If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then
             UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + ExpaDar
             If UserList(UserIndex).Stats.Exp > MAXEXP Then _
                 UserList(UserIndex).Stats.Exp = MAXEXP
-            'Call WriteConsoleMsg(UserIndex, "ID*140*" & ExpaDar, FontTypeNames.FONTTYPE_EXP)
-            'Call WriteLocaleMsg(UserIndex, "140", FontTypeNames.FONTTYPE_EXP, ExpaDar)
-            'Call WriteExpOverHead(UserIndex, ExpaDar, Npclist(NpcIndex).Char.CharIndex)
+
+            Call WriteUpdateExp(UserIndex)
+            Call CheckUserLevel(UserIndex)
+        End If
             
         Call WriteRenderValueMsg(UserIndex, Npclist(NpcIndex).Pos.x, Npclist(NpcIndex).Pos.Y - 1, ExpaDar, 6)
-        Call CheckUserLevel(UserIndex)
     End If
 End If
 
@@ -1686,15 +1687,16 @@ Dim BonificacionGrupo As Single
                     
                     ExpUser = ExpUser * UserList(Index).flags.ScrollExp
                 
-                
+                    If UserList(Index).Stats.ELV < STAT_MAXELV Then
                         UserList(Index).Stats.Exp = UserList(Index).Stats.Exp + ExpUser
                         If UserList(Index).Stats.Exp > MAXEXP Then _
                             UserList(Index).Stats.Exp = MAXEXP
                         If UserList(Index).ChatCombate = 1 Then
                             Call WriteLocaleMsg(Index, "141", FontTypeNames.FONTTYPE_EXP, ExpUser)
                         End If
-                    Call WriteUpdateExp(Index)
-                    Call CheckUserLevel(Index)
+                        Call WriteUpdateExp(Index)
+                        Call CheckUserLevel(Index)
+                    End If
                 End If
             Else
                 'Call WriteConsoleMsg(Index, "Estas demasiado lejos del grupo, no has ganado experiencia.", FontTypeNames.FONTTYPE_INFOIAO)
@@ -1702,14 +1704,16 @@ Dim BonificacionGrupo As Single
                     Call WriteLocaleMsg(Index, "69", FontTypeNames.FONTTYPE_New_GRUPO)
                 End If
                 If expbackup > 0 Then
-                    UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + expbackup
-                    If UserList(UserIndex).Stats.Exp > MAXEXP Then _
-                        UserList(UserIndex).Stats.Exp = MAXEXP
-                    If UserList(UserIndex).ChatCombate = 1 Then
-                        Call WriteConsoleMsg(UserIndex, UserList(Index).name & " estas lejos, has ganado " & expbackup & " puntos de experiencia correspondientes a el.", FontTypeNames.FONTTYPE_EXP)
+                    If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then
+                        UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + expbackup
+                        If UserList(UserIndex).Stats.Exp > MAXEXP Then _
+                            UserList(UserIndex).Stats.Exp = MAXEXP
+                        If UserList(UserIndex).ChatCombate = 1 Then
+                            Call WriteConsoleMsg(UserIndex, UserList(Index).name & " estas demasiado lejos de tu grupo, has ganado " & expbackup & " puntos de experiencia.", FontTypeNames.FONTTYPE_EXP)
+                        End If
+                        Call CheckUserLevel(UserIndex)
+                        Call WriteUpdateExp(UserIndex)
                     End If
-                    Call CheckUserLevel(UserIndex)
-                    Call WriteUpdateExp(UserIndex)
                 End If
             End If
         Else
@@ -1717,14 +1721,16 @@ Dim BonificacionGrupo As Single
                 Call WriteConsoleMsg(Index, "Estas muerto, no has ganado experencia del grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
             End If
                 If expbackup > 0 Then
-                    UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + expbackup
-                    If UserList(UserIndex).Stats.Exp > MAXEXP Then _
-                        UserList(UserIndex).Stats.Exp = MAXEXP
-                    If UserList(UserIndex).ChatCombate = 1 Then
-                        Call WriteConsoleMsg(UserIndex, UserList(Index).name & " estas muerto, has ganado " & expbackup & " puntos de experiencia correspondientes a el.", FontTypeNames.FONTTYPE_EXP)
+                    If UserList(Index).Stats.ELV < STAT_MAXELV Then
+                        UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + expbackup
+                        If UserList(UserIndex).Stats.Exp > MAXEXP Then _
+                            UserList(UserIndex).Stats.Exp = MAXEXP
+                        If UserList(UserIndex).ChatCombate = 1 Then
+                            Call WriteConsoleMsg(UserIndex, UserList(Index).name & " estas muerto, has ganado " & expbackup & " puntos de experiencia correspondientes a el.", FontTypeNames.FONTTYPE_EXP)
+                        End If
+                        Call CheckUserLevel(UserIndex)
+                        Call WriteUpdateExp(UserIndex)
                     End If
-                    Call CheckUserLevel(UserIndex)
-                    Call WriteUpdateExp(UserIndex)
                 End If
         End If
     Next i

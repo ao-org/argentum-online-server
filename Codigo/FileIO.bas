@@ -833,31 +833,42 @@ ErrorHandler:
     If fh <> 0 Then Close fh
 
 End Sub
+
 Sub LoadArmasHerreria()
 
-Dim n As Integer, lc As Integer
-
-n = val(GetVar(DatPath & "ArmasHerrero.dat", "INIT", "NumArmas"))
-
-ReDim Preserve ArmasHerrero(1 To n) As Integer
-
-For lc = 1 To n
-    ArmasHerrero(lc) = val(GetVar(DatPath & "ArmasHerrero.dat", "Arma" & lc, "Index"))
-Next lc
+    Dim n As Integer, lc As Integer
+    
+    n = val(GetVar(DatPath & "ArmasHerrero.dat", "INIT", "NumArmas"))
+    
+    If n = 0 Then
+        ReDim ArmasHerrero(0) As Integer
+        Exit Sub
+    End If
+    
+    ReDim Preserve ArmasHerrero(1 To n) As Integer
+    
+    For lc = 1 To n
+        ArmasHerrero(lc) = val(GetVar(DatPath & "ArmasHerrero.dat", "Arma" & lc, "Index"))
+    Next lc
 
 End Sub
 
 Sub LoadArmadurasHerreria()
 
-Dim n As Integer, lc As Integer
-
-n = val(GetVar(DatPath & "ArmadurasHerrero.dat", "INIT", "NumArmaduras"))
-
-ReDim Preserve ArmadurasHerrero(1 To n) As Integer
-
-For lc = 1 To n
-    ArmadurasHerrero(lc) = val(GetVar(DatPath & "ArmadurasHerrero.dat", "Armadura" & lc, "Index"))
-Next lc
+    Dim n As Integer, lc As Integer
+    
+    n = val(GetVar(DatPath & "ArmadurasHerrero.dat", "INIT", "NumArmaduras"))
+    
+    If n = 0 Then
+        ReDim ArmadurasHerrero(0) As Integer
+        Exit Sub
+    End If
+    
+    ReDim Preserve ArmadurasHerrero(1 To n) As Integer
+    
+    For lc = 1 To n
+        ArmadurasHerrero(lc) = val(GetVar(DatPath & "ArmadurasHerrero.dat", "Armadura" & lc, "Index"))
+    Next lc
 
 End Sub
 
@@ -908,42 +919,57 @@ End Sub
 
 Sub LoadObjCarpintero()
 
-Dim n As Integer, lc As Integer
-
-n = val(GetVar(DatPath & "ObjCarpintero.dat", "INIT", "NumObjs"))
-
-ReDim Preserve ObjCarpintero(1 To n) As Integer
-
-For lc = 1 To n
-    ObjCarpintero(lc) = val(GetVar(DatPath & "ObjCarpintero.dat", "Obj" & lc, "Index"))
-Next lc
+    Dim n As Integer, lc As Integer
+    
+    n = val(GetVar(DatPath & "ObjCarpintero.dat", "INIT", "NumObjs"))
+    
+    If n = 0 Then
+        ReDim ObjCarpintero(0) As Integer
+        Exit Sub
+    End If
+    
+    ReDim Preserve ObjCarpintero(1 To n) As Integer
+    
+    For lc = 1 To n
+        ObjCarpintero(lc) = val(GetVar(DatPath & "ObjCarpintero.dat", "Obj" & lc, "Index"))
+    Next lc
 
 End Sub
 
 Sub LoadObjAlquimista()
-
-Dim n As Integer, lc As Integer
-
-n = val(GetVar(DatPath & "ObjAlquimista.dat", "INIT", "NumObjs"))
-
-ReDim Preserve ObjAlquimista(1 To n) As Integer
-
-For lc = 1 To n
-    ObjAlquimista(lc) = val(GetVar(DatPath & "ObjAlquimista.dat", "Obj" & lc, "Index"))
-Next lc
+    
+    Dim n As Integer, lc As Integer
+    
+    n = val(GetVar(DatPath & "ObjAlquimista.dat", "INIT", "NumObjs"))
+    
+    If n = 0 Then
+        ReDim ObjAlquimista(0) As Integer
+        Exit Sub
+    End If
+    
+    ReDim Preserve ObjAlquimista(1 To n) As Integer
+    
+    For lc = 1 To n
+        ObjAlquimista(lc) = val(GetVar(DatPath & "ObjAlquimista.dat", "Obj" & lc, "Index"))
+    Next lc
 
 End Sub
 Sub LoadObjSastre()
 
-Dim n As Integer, lc As Integer
-
-n = val(GetVar(DatPath & "ObjSastre.dat", "INIT", "NumObjs"))
-
-ReDim Preserve ObjSastre(1 To n) As Integer
-
-For lc = 1 To n
-    ObjSastre(lc) = val(GetVar(DatPath & "ObjSastre.dat", "Obj" & lc, "Index"))
-Next lc
+    Dim n As Integer, lc As Integer
+    
+    n = val(GetVar(DatPath & "ObjSastre.dat", "INIT", "NumObjs"))
+    
+    If n = 0 Then
+        ReDim ObjSastre(0) As Integer
+        Exit Sub
+    End If
+    
+    ReDim Preserve ObjSastre(1 To n) As Integer
+    
+    For lc = 1 To n
+        ObjSastre(lc) = val(GetVar(DatPath & "ObjSastre.dat", "Obj" & lc, "Index"))
+    Next lc
 
 End Sub
 Sub LoadObjDonador()

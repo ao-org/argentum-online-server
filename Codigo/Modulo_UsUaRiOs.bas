@@ -37,50 +37,53 @@ Option Explicit
 
 Sub ActStats(ByVal VictimIndex As Integer, ByVal attackerIndex As Integer)
 
-Dim DaExp As Integer
-Dim EraCriminal As Byte
-
-DaExp = CInt(UserList(VictimIndex).Stats.ELV * 2)
-
-UserList(attackerIndex).Stats.Exp = UserList(attackerIndex).Stats.Exp + DaExp
-If UserList(attackerIndex).Stats.Exp > MAXEXP Then _
-    UserList(attackerIndex).Stats.Exp = MAXEXP
-
-'Lo mata
-'Call WriteConsoleMsg(attackerIndex, "Has matado a " & UserList(VictimIndex).name & "!", FontTypeNames.FONTTYPE_FIGHT)
-
-
-Call WriteLocaleMsg(attackerIndex, "184", FontTypeNames.FONTTYPE_FIGHT, UserList(VictimIndex).name)
-Call WriteLocaleMsg(attackerIndex, "140", FontTypeNames.FONTTYPE_EXP, DaExp)
-
-      
-'Call WriteConsoleMsg(VictimIndex, UserList(attackerIndex).name & " te ha matado!", FontTypeNames.FONTTYPE_FIGHT)
-Call WriteLocaleMsg(VictimIndex, "185", FontTypeNames.FONTTYPE_FIGHT, UserList(attackerIndex).name)
-
-
-
-If TriggerZonaPelea(VictimIndex, attackerIndex) <> TRIGGER6_PERMITE Then
-    EraCriminal = Status(attackerIndex)
+    Dim DaExp As Integer
+    Dim EraCriminal As Byte
     
-    If EraCriminal = 2 And Status(attackerIndex) < 2 Then
-        Call RefreshCharStatus(attackerIndex)
-    ElseIf EraCriminal < 2 And Status(attackerIndex) = 2 Then
-        Call RefreshCharStatus(attackerIndex)
+    DaExp = CInt(UserList(VictimIndex).Stats.ELV * 2)
+    
+    If UserList(attackerIndex).Stats.ELV < STAT_MAXELV Then
+        UserList(attackerIndex).Stats.Exp = UserList(attackerIndex).Stats.Exp + DaExp
+        If UserList(attackerIndex).Stats.Exp > MAXEXP Then _
+            UserList(attackerIndex).Stats.Exp = MAXEXP
+
+        Call WriteUpdateExp(attackerIndex)
+        Call CheckUserLevel(attackerIndex)
     End If
-End If
-
-Call UserDie(VictimIndex)
-
-If UserList(attackerIndex).flags.BattleModo = 1 Then
-    Call ContarPuntoBattle(VictimIndex, attackerIndex)
-End If
-
-If UserList(attackerIndex).Stats.UsuariosMatados < MAXUSERMATADOS Then _
-    UserList(attackerIndex).Stats.UsuariosMatados = UserList(attackerIndex).Stats.UsuariosMatados + 1
-    'Call CheckearRecompesas(attackerIndex, 2)
     
-
-Call FlushBuffer(VictimIndex)
+    'Lo mata
+    'Call WriteConsoleMsg(attackerIndex, "Has matado a " & UserList(VictimIndex).name & "!", FontTypeNames.FONTTYPE_FIGHT)
+    
+    
+    Call WriteLocaleMsg(attackerIndex, "184", FontTypeNames.FONTTYPE_FIGHT, UserList(VictimIndex).name)
+    Call WriteLocaleMsg(attackerIndex, "140", FontTypeNames.FONTTYPE_EXP, DaExp)
+    
+          
+    'Call WriteConsoleMsg(VictimIndex, UserList(attackerIndex).name & " te ha matado!", FontTypeNames.FONTTYPE_FIGHT)
+    Call WriteLocaleMsg(VictimIndex, "185", FontTypeNames.FONTTYPE_FIGHT, UserList(attackerIndex).name)
+    
+    If TriggerZonaPelea(VictimIndex, attackerIndex) <> TRIGGER6_PERMITE Then
+        EraCriminal = Status(attackerIndex)
+        
+        If EraCriminal = 2 And Status(attackerIndex) < 2 Then
+            Call RefreshCharStatus(attackerIndex)
+        ElseIf EraCriminal < 2 And Status(attackerIndex) = 2 Then
+            Call RefreshCharStatus(attackerIndex)
+        End If
+    End If
+    
+    Call UserDie(VictimIndex)
+    
+    If UserList(attackerIndex).flags.BattleModo = 1 Then
+        Call ContarPuntoBattle(VictimIndex, attackerIndex)
+    End If
+    
+    If UserList(attackerIndex).Stats.UsuariosMatados < MAXUSERMATADOS Then _
+        UserList(attackerIndex).Stats.UsuariosMatados = UserList(attackerIndex).Stats.UsuariosMatados + 1
+        'Call CheckearRecompesas(attackerIndex, 2)
+        
+    
+    Call FlushBuffer(VictimIndex)
 
 
 End Sub
@@ -1140,18 +1143,18 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
             BonusExp = BonusExp * 1.1
         End If
         
+            If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then
+                UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + BonusExp
+                If UserList(UserIndex).Stats.Exp > MAXEXP Then _
+                    UserList(UserIndex).Stats.Exp = MAXEXP
             
-            UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + BonusExp
-            If UserList(UserIndex).Stats.Exp > MAXEXP Then _
-                UserList(UserIndex).Stats.Exp = MAXEXP
-            
-            'Call WriteConsoleMsg(UserIndex, "¡Has ganado " & BonusExp & " puntos de experiencia!", FontTypeNames.FONTTYPE_EXP)
-            If UserList(UserIndex).ChatCombate = 1 Then
-                Call WriteLocaleMsg(UserIndex, "140", FontTypeNames.FONTTYPE_EXP, BonusExp)
+                If UserList(UserIndex).ChatCombate = 1 Then
+                    Call WriteLocaleMsg(UserIndex, "140", FontTypeNames.FONTTYPE_EXP, BonusExp)
+                End If
+                
+                Call WriteUpdateExp(UserIndex)
+                Call CheckUserLevel(UserIndex)
             End If
-            
-            Call WriteUpdateExp(UserIndex)
-            Call CheckUserLevel(UserIndex)
         End If
     End If
 
@@ -1267,7 +1270,7 @@ On Error GoTo ErrorHandler
  If MapInfo(UserList(UserIndex).Pos.Map).Seguro = 0 Then '  Ladder 06/07/2014 Si el mapa es seguro, no se caen los items
     If TriggerZonaPelea(UserIndex, UserIndex) <> eTrigger6.TRIGGER6_PERMITE Then
         ' << Si es newbie no pierde el inventario >>
-        If UserList(UserIndex).flags.Privilegios = User Then
+        If UserList(UserIndex).flags.Privilegios = user Then
         
             If Not EsNewbie(UserIndex) Then
                 If UserList(UserIndex).flags.PendienteDelSacrificio = 0 Then
@@ -1719,7 +1722,7 @@ Sub Cerrar_Usuario(ByVal UserIndex As Integer)
  
     If UserList(UserIndex).flags.UserLogged And Not UserList(UserIndex).Counters.Saliendo Then
         UserList(UserIndex).Counters.Saliendo = True
-        If UserList(UserIndex).flags.Privilegios = PlayerType.User And MapInfo(UserList(UserIndex).Pos.Map).Seguro = 0 And UserList(UserIndex).flags.Muerto = 0 Then
+        If UserList(UserIndex).flags.Privilegios = PlayerType.user And MapInfo(UserList(UserIndex).Pos.Map).Seguro = 0 And UserList(UserIndex).flags.Muerto = 0 Then
                 UserList(UserIndex).Counters.Salir = IntervaloCerrarConexion
                 Call WriteLocaleMsg(UserIndex, "203", FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Counters.Salir)
                 'Call WriteConsoleMsg(UserIndex, "Saliendo...Se saldrá del juego en " & UserList(UserIndex).Counters.Salir & " segundos...", FontTypeNames.FONTTYPE_INFO)
@@ -1753,7 +1756,7 @@ Public Sub CancelExit(ByVal UserIndex As Integer)
             Call WriteConsoleMsg(UserIndex, "/salir cancelado.", FontTypeNames.FONTTYPE_WARNING)
         Else
             'Simply reset
-            If UserList(UserIndex).flags.Privilegios = PlayerType.User And MapInfo(UserList(UserIndex).Pos.Map).Seguro = 0 Then
+            If UserList(UserIndex).flags.Privilegios = PlayerType.user And MapInfo(UserList(UserIndex).Pos.Map).Seguro = 0 Then
                 UserList(UserIndex).Counters.Salir = IntervaloCerrarConexion
             Else
                 Call WriteConsoleMsg(UserIndex, "Gracias por jugar Argentum20.", FontTypeNames.FONTTYPE_INFO)
@@ -1840,7 +1843,7 @@ Sub VolverCriminal(ByVal UserIndex As Integer)
 '**************************************************************
 If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y).trigger = 6 Then Exit Sub
 
-If UserList(UserIndex).flags.Privilegios And (PlayerType.User Or PlayerType.Consejero) Then
+If UserList(UserIndex).flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then
    
     If UserList(UserIndex).Faccion.ArmadaReal = 1 Then Call ExpulsarFaccionReal(UserIndex)
 End If

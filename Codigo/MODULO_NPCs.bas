@@ -73,14 +73,15 @@ On Error GoTo Errhandler
         '[KEVIN]
         If MiNPC.flags.ExpCount > 0 Then
 
+            If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then
                 UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + MiNPC.flags.ExpCount
                 If UserList(UserIndex).Stats.Exp > MAXEXP Then _
                     UserList(UserIndex).Stats.Exp = MAXEXP
-               ' Call WriteConsoleMsg(UserIndex, "ID*140*" & MiNPC.flags.ExpCount, FontTypeNames.FONTTYPE_EXP)
-               ' Call WriteLocaleMsg(UserIndex, "140", FontTypeNames.FONTTYPE_EXP, MiNPC.flags.ExpCount)
-               'Call WriteExpOverHead(UserIndex, MiNPC.flags.ExpCount, UserList(UserIndex).Char.CharIndex)
-               Call WriteRenderValueMsg(UserIndex, MiNPC.Pos.x, MiNPC.Pos.Y - 1, MiNPC.flags.ExpCount, 6)
-                
+                    
+                Call WriteRenderValueMsg(UserIndex, MiNPC.Pos.x, MiNPC.Pos.Y - 1, MiNPC.flags.ExpCount, 6)
+                Call WriteUpdateExp(UserIndex)
+                Call CheckUserLevel(UserIndex)
+            End If
         
             MiNPC.flags.ExpCount = 0
         End If
@@ -170,10 +171,7 @@ On Error GoTo Errhandler
                 End With
         
             Next i
-
-        
-        
-        Call CheckUserLevel(UserIndex)
+            
     End If ' UserIndex > 0
    
 

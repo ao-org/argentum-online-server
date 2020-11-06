@@ -8705,10 +8705,13 @@ On Error GoTo Errhandler
                     If tUser <= 0 Then
                         Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
                     Else
-                        'Debug.Print "Llego exp:" & val(Arg1)
-                        UserList(tUser).Stats.Exp = UserList(tUser).Stats.Exp + val(Arg1)
-                        Call CheckUserLevel(tUser)
-                        Call WriteUpdateExp(tUser)
+                        If UserList(tUser).Stats.ELV < STAT_MAXELV Then
+                            UserList(tUser).Stats.Exp = UserList(tUser).Stats.Exp + val(Arg1)
+                            Call CheckUserLevel(tUser)
+                            Call WriteUpdateExp(tUser)
+                        Else
+                            Call WriteConsoleMsg(UserIndex, "El usuario es nivel máximo.", FontTypeNames.FONTTYPE_INFO)
+                        End If
                     End If
                 
                 Case eEditOptions.eo_Body
