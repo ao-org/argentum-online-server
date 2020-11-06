@@ -164,62 +164,59 @@ Sub CalcularDarExpCompartida(ByVal UserIndex As Integer, ByVal NpcIndex As Integ
 'Reescribi gran parte del Sub
 'Ahora, da toda la experiencia del npc mientras este vivo.
 '***************************************************
-Dim ExpaDar As Long
+    Dim ExpaDar As Long
 
-
-
-
-
-
-'[Nacho] Chekeamos que las variables sean validas para las operaciones
-If ElDaño <= 0 Then ElDaño = 0
-
-If Npclist(NpcIndex).Stats.MaxHp <= 0 Then Exit Sub
-If ElDaño > Npclist(NpcIndex).Stats.MinHp Then ElDaño = Npclist(NpcIndex).Stats.MinHp
-
-'[Nacho] La experiencia a dar es la porcion de vida quitada * toda la experiencia
-ExpaDar = CLng((ElDaño) * (Npclist(NpcIndex).GiveEXP / Npclist(NpcIndex).Stats.MaxHp))
-
-If ExpaDar <= 0 Then Exit Sub
-
-'[Nacho] Vamos contando cuanta experiencia sacamos, porque se da toda la que no se dio al user que mata al NPC
-        'Esto es porque cuando un elemental ataca, no se da exp, y tambien porque la cuenta que hicimos antes
-        'Podria dar un numero fraccionario, esas fracciones se acumulan hasta formar enteros ;P
-If ExpaDar > Npclist(NpcIndex).flags.ExpCount Then
-    ExpaDar = Npclist(NpcIndex).flags.ExpCount
-    Npclist(NpcIndex).flags.ExpCount = 0
-Else
-    Npclist(NpcIndex).flags.ExpCount = Npclist(NpcIndex).flags.ExpCount - ExpaDar
-End If
-
-
-If ExpMult > 0 Then
-    ExpaDar = ExpaDar * ExpMult
-
-End If
-
-'[Nacho] Le damos la exp al user
-Dim ExpUser As Long
-Dim expPet As Long
-ExpUser = ExpaDar / 2
-expPet = ExpaDar / 2
-If ExpUser > 0 Then
-        UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + ExpUser
-        If UserList(UserIndex).Stats.Exp > MAXEXP Then _
-            UserList(UserIndex).Stats.Exp = MAXEXP
-       ' Call WriteConsoleMsg(UserIndex, "ID*140*" & ExpUser, FontTypeNames.FONTTYPE_EXP)
-        Call WriteLocaleMsg(UserIndex, "140", FontTypeNames.FONTTYPE_EXP, ExpUser)
-        Call CheckUserLevel(UserIndex)
-End If
-
-If expPet > 0 Then
-        UserList(UserIndex).Familiar.Exp = UserList(UserIndex).Familiar.Exp + expPet
-        If UserList(UserIndex).Familiar.Exp > MAXEXP Then _
-            UserList(UserIndex).Familiar.Exp = MAXEXP
-            
-       ' Call WriteConsoleMsg(UserIndex, "ID*52*" & UserList(UserIndex).Familiar.Nombre & "*" & expPet & "*", FontTypeNames.FONTTYPE_EXP)
-        Call CheckFamiliarLevel(UserIndex)
-End If
+    '[Nacho] Chekeamos que las variables sean validas para las operaciones
+    If ElDaño <= 0 Then ElDaño = 0
+    
+    If Npclist(NpcIndex).Stats.MaxHp <= 0 Then Exit Sub
+    If ElDaño > Npclist(NpcIndex).Stats.MinHp Then ElDaño = Npclist(NpcIndex).Stats.MinHp
+    
+    '[Nacho] La experiencia a dar es la porcion de vida quitada * toda la experiencia
+    ExpaDar = CLng((ElDaño) * (Npclist(NpcIndex).GiveEXP / Npclist(NpcIndex).Stats.MaxHp))
+    
+    If ExpaDar <= 0 Then Exit Sub
+    
+    '[Nacho] Vamos contando cuanta experiencia sacamos, porque se da toda la que no se dio al user que mata al NPC
+            'Esto es porque cuando un elemental ataca, no se da exp, y tambien porque la cuenta que hicimos antes
+            'Podria dar un numero fraccionario, esas fracciones se acumulan hasta formar enteros ;P
+    If ExpaDar > Npclist(NpcIndex).flags.ExpCount Then
+        ExpaDar = Npclist(NpcIndex).flags.ExpCount
+        Npclist(NpcIndex).flags.ExpCount = 0
+    Else
+        Npclist(NpcIndex).flags.ExpCount = Npclist(NpcIndex).flags.ExpCount - ExpaDar
+    End If
+    
+    
+    If ExpMult > 0 Then
+        ExpaDar = ExpaDar * ExpMult
+    
+    End If
+    
+    '[Nacho] Le damos la exp al user
+    Dim ExpUser As Long
+    Dim expPet As Long
+    ExpUser = ExpaDar / 2
+    expPet = ExpaDar / 2
+    If ExpUser > 0 Then
+        If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then
+            UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + ExpUser
+            If UserList(UserIndex).Stats.Exp > MAXEXP Then _
+                UserList(UserIndex).Stats.Exp = MAXEXP
+            ' Call WriteConsoleMsg(UserIndex, "ID*140*" & ExpUser, FontTypeNames.FONTTYPE_EXP)
+            Call WriteLocaleMsg(UserIndex, "140", FontTypeNames.FONTTYPE_EXP, ExpUser)
+            Call CheckUserLevel(UserIndex)
+        End If
+    End If
+    
+    If expPet > 0 Then
+         UserList(UserIndex).Familiar.Exp = UserList(UserIndex).Familiar.Exp + expPet
+         If UserList(UserIndex).Familiar.Exp > MAXEXP Then _
+             UserList(UserIndex).Familiar.Exp = MAXEXP
+             
+        ' Call WriteConsoleMsg(UserIndex, "ID*52*" & UserList(UserIndex).Familiar.Nombre & "*" & expPet & "*", FontTypeNames.FONTTYPE_EXP)
+         Call CheckFamiliarLevel(UserIndex)
+    End If
 
 End Sub
 
