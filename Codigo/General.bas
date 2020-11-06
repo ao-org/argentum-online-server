@@ -565,6 +565,9 @@ On Error Resume Next
     'Conecto base de datos
     Call Database_Connect
     
+    'Reinicio los users online
+    Call SetUsersLoggedDatabase(0)
+    
     '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
     'Configuracion de los sockets
     
@@ -674,14 +677,10 @@ End Function
 
 Sub MostrarNumUsers()
 
-Call SendData(SendTarget.ToAll, 0, PrepareMessageOnlineUser(NumUsers))
-frmMain.CantUsuarios.Caption = "Numero de usuarios jugando: " & NumUsers
-'#If DEBUGGING Then
-'Shell App.Path & "\estadisticas.exe" & " " & UltimoChar & "*" & NumUsers & "*" & MaxUsers
-'Shell App.Path & "\estadisticas.exe" & " " & "NUEVACUENTALADDER" & "*" & NumCuentas & "*" & MaxUsers
-'#End If
-
-'Estadisticas Ladder
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageOnlineUser(NumUsers))
+    frmMain.CantUsuarios.Caption = "Numero de usuarios jugando: " & NumUsers
+    
+    Call SetUsersLoggedDatabase(NumUsers)
 
 End Sub
 
