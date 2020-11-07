@@ -893,6 +893,19 @@ Sub LoadBalance()
             .Escudo = val(BalanceIni.GetValue("MODESCUDO", ListaClases(i)))
         End With
     Next i
+    
+    'Modificadores de Raza
+    For i = 1 To NUMRAZAS
+
+        With ModRaza(i)
+            .Fuerza = val(GetVar(DatPath & "Balance.dat", "MODRAZA", ListaRazas(i) + "Fuerza"))
+            .Agilidad = val(GetVar(DatPath & "Balance.dat", "MODRAZA", ListaRazas(i) + "Agilidad"))
+            .Inteligencia = val(GetVar(DatPath & "Balance.dat", "MODRAZA", ListaRazas(i) + "Inteligencia"))
+            '.Carisma = val(GetVar(DatPath & "Balance.dat", "MODRAZA", ListaRazas(i) + "Carisma"))
+            .Constitucion = val(GetVar(DatPath & "Balance.dat", "MODRAZA", ListaRazas(i) + "Constitucion"))
+        End With
+
+    Next i
 
     'Modificadores de Vida
     For i = 1 To NUMCLASES
@@ -913,7 +926,7 @@ Sub LoadBalance()
     
     Set BalanceIni = Nothing
     
-    AgregarAConsola "Se recargó el balance (Balance.dat)"
+    AgregarAConsola "Se cargó el balance (Balance.dat)"
 
 End Sub
 
