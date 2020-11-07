@@ -317,6 +317,11 @@ Sub RellenarInventario(ByVal UserIndex As String)
         .Invent.Object(NumItems).Amount = 100
         NumItems = NumItems + 1
 
+
+        .Invent.Object(NumItems).ObjIndex = 200 ' Cofre Inicial - TODO: Remover
+        .Invent.Object(NumItems).Amount = 1
+        NumItems = NumItems + 1
+
         ' Seteo la cantidad de items
         .Invent.NroItems = NumItems
 
@@ -537,7 +542,7 @@ Sub ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal UserR
     'Resetamos CORREO
     
     UserList(UserIndex).Pos.Map = 37
-    UserList(UserIndex).Pos.x = 76
+    UserList(UserIndex).Pos.X = 76
     UserList(UserIndex).Pos.Y = 82
     
     If Not Database_Enabled Then
@@ -557,19 +562,19 @@ Sub CloseSocket(ByVal UserIndex As Integer)
 
     If UserList(UserIndex).flags.Portal > 0 Then
         Dim Mapa As Integer
-        Dim x As Byte
+        Dim X As Byte
         Dim Y As Byte
         'Call SendData(SendTarget.ToMapButIndex, 0, PrepareMessageParticleFXToFloor(UserList(i).flags.PortalX, UserList(i).flags.PortalY, ParticulasIndex.Intermundia, 0))
         Mapa = UserList(UserIndex).flags.PortalM
-        x = UserList(UserIndex).flags.PortalX
+        X = UserList(UserIndex).flags.PortalX
         Y = UserList(UserIndex).flags.PortalY
         'Call SendData(SendTarget.toMap, UserList(UserIndex).flags.PortalM, PrepareMessageParticleFXToFloor(X, Y, ParticulasIndex.Intermundia, 0))
-        Call SendData(SendTarget.toMap, UserList(UserIndex).flags.PortalM, PrepareMessageParticleFXToFloor(x, Y, ParticulasIndex.TpVerde, 0))
+        Call SendData(SendTarget.toMap, UserList(UserIndex).flags.PortalM, PrepareMessageParticleFXToFloor(X, Y, ParticulasIndex.TpVerde, 0))
         'Call SendData(SendTarget.toMap, 0, PrepareMessageParticleFXToFloor(X, Y, ParticulasIndex.Intermundia, 0))
-        If MapData(Mapa, x, Y).TileExit.Map > 0 Then
-            MapData(Mapa, x, Y).TileExit.Map = 0
-            MapData(Mapa, x, Y).TileExit.x = 0
-            MapData(Mapa, x, Y).TileExit.Y = 0
+        If MapData(Mapa, X, Y).TileExit.Map > 0 Then
+            MapData(Mapa, X, Y).TileExit.Map = 0
+            MapData(Mapa, X, Y).TileExit.X = 0
+            MapData(Mapa, X, Y).TileExit.Y = 0
         End If
     End If
 
@@ -861,16 +866,16 @@ End Function
 Function EstaPCarea(Index As Integer, Index2 As Integer) As Boolean
 
 
-Dim x As Integer, Y As Integer
+Dim X As Integer, Y As Integer
 For Y = UserList(Index).Pos.Y - MinYBorder + 1 To UserList(Index).Pos.Y + MinYBorder - 1
-        For x = UserList(Index).Pos.x - MinXBorder + 1 To UserList(Index).Pos.x + MinXBorder - 1
+        For X = UserList(Index).Pos.X - MinXBorder + 1 To UserList(Index).Pos.X + MinXBorder - 1
 
-            If MapData(UserList(Index).Pos.Map, x, Y).UserIndex = Index2 Then
+            If MapData(UserList(Index).Pos.Map, X, Y).UserIndex = Index2 Then
                 EstaPCarea = True
                 Exit Function
             End If
         
-        Next x
+        Next X
 Next Y
 EstaPCarea = False
 End Function
@@ -878,16 +883,16 @@ End Function
 Function HayPCarea(Pos As WorldPos) As Boolean
 
 
-Dim x As Integer, Y As Integer
+Dim X As Integer, Y As Integer
 For Y = Pos.Y - MinYBorder + 1 To Pos.Y + MinYBorder - 1
-        For x = Pos.x - MinXBorder + 1 To Pos.x + MinXBorder - 1
-            If x > 0 And Y > 0 And x < 101 And Y < 101 Then
-                If MapData(Pos.Map, x, Y).UserIndex > 0 Then
+        For X = Pos.X - MinXBorder + 1 To Pos.X + MinXBorder - 1
+            If X > 0 And Y > 0 And X < 101 And Y < 101 Then
+                If MapData(Pos.Map, X, Y).UserIndex > 0 Then
                     HayPCarea = True
                     Exit Function
                 End If
             End If
-        Next x
+        Next X
 Next Y
 HayPCarea = False
 End Function
@@ -895,15 +900,15 @@ End Function
 Function HayOBJarea(Pos As WorldPos, ObjIndex As Integer) As Boolean
 
 
-Dim x As Integer, Y As Integer
+Dim X As Integer, Y As Integer
 For Y = Pos.Y - MinYBorder + 1 To Pos.Y + MinYBorder - 1
-        For x = Pos.x - MinXBorder + 1 To Pos.x + MinXBorder - 1
-            If MapData(Pos.Map, x, Y).ObjInfo.ObjIndex = ObjIndex Then
+        For X = Pos.X - MinXBorder + 1 To Pos.X + MinXBorder - 1
+            If MapData(Pos.Map, X, Y).ObjInfo.ObjIndex = ObjIndex Then
                 HayOBJarea = True
                 Exit Function
             End If
         
-        Next x
+        Next X
 Next Y
 HayOBJarea = False
 End Function
@@ -1182,12 +1187,12 @@ On Error GoTo Errhandler
             Exit Sub
         End If
         
-        If MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex <> 0 Or MapData(.Pos.Map, .Pos.x, .Pos.Y).NpcIndex <> 0 Then
-            Call WarpToLegalPos(UserIndex, .Pos.Map, .Pos.x, .Pos.Y)
+        If MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex <> 0 Or MapData(.Pos.Map, .Pos.X, .Pos.Y).NpcIndex <> 0 Then
+            Call WarpToLegalPos(UserIndex, .Pos.Map, .Pos.X, .Pos.Y)
         End If
         
         'If in the water, and has a boat, equip it!
-        If .Invent.BarcoObjIndex > 0 And HayAgua(.Pos.Map, .Pos.x, .Pos.Y) Then
+        If .Invent.BarcoObjIndex > 0 And HayAgua(.Pos.Map, .Pos.X, .Pos.Y) Then
             Dim Barco As ObjData
             Barco = ObjData(.Invent.BarcoObjIndex)
             If Barco.Ropaje <> iTraje Then
@@ -1272,7 +1277,7 @@ On Error GoTo Errhandler
         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(.Char.CharIndex, .Char.speeding))
         
         'Crea  el personaje del usuario
-        Call MakeUserChar(True, .Pos.Map, UserIndex, .Pos.Map, .Pos.x, .Pos.Y, 1)
+        Call MakeUserChar(True, .Pos.Map, UserIndex, .Pos.Map, .Pos.X, .Pos.Y, 1)
 
         Call WriteUserCharIndexInServer(UserIndex)
 
@@ -1558,13 +1563,13 @@ Dim LoopC As Integer
     With UserList(UserIndex)
         .name = vbNullString
         .Cuenta = vbNullString
-        .ID = -1
+        .Id = -1
         .AccountID = -1
         .modName = vbNullString
         .Desc = vbNullString
         .DescRM = vbNullString
         .Pos.Map = 0
-        .Pos.x = 0
+        .Pos.X = 0
         .Pos.Y = 0
         .ip = vbNullString
         .clase = 0
