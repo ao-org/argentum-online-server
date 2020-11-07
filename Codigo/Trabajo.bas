@@ -180,7 +180,7 @@ End If
 
 Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
 'Call WriteNadarToggle(UserIndex)
-Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(FXSound.BARCA_SOUND, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(FXSound.BARCA_SOUND, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 End Sub
 
 Public Sub DoNavega(ByVal UserIndex As Integer, ByRef Barco As ObjData, ByVal slot As Integer)
@@ -310,7 +310,7 @@ Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(UserList
     
 Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
 Call WriteNavigateToggle(UserIndex)
-Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(FXSound.BARCA_SOUND, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(FXSound.BARCA_SOUND, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 End Sub
 Public Sub DoReNavega(ByVal UserIndex As Integer, ByRef Barco As ObjData, ByVal slot As Integer)
 
@@ -378,7 +378,7 @@ Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(UserList
 'Call WriteVelocidadToggle(UserIndex)
     
 Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
-Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(FXSound.BARCA_SOUND, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(FXSound.BARCA_SOUND, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 End Sub
 
 Public Sub FundirMineral(ByVal UserIndex As Integer)
@@ -590,16 +590,16 @@ If PuedeConstruir(UserIndex, ItemIndex) And PuedeConstruirHerreria(ItemIndex) Th
     
     If ObjData(ItemIndex).OBJType = eOBJType.otWeapon Then
        ' Call WriteConsoleMsg(UserIndex, "Has construido el arma!", FontTypeNames.FONTTYPE_INFO)
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y, " 1", 5))
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, " 1", 5))
     ElseIf ObjData(ItemIndex).OBJType = eOBJType.otESCUDO Then
        ' Call WriteConsoleMsg(UserIndex, "Has construido el escudo!", FontTypeNames.FONTTYPE_INFO)
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y, " 1", 5))
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, " 1", 5))
     ElseIf ObjData(ItemIndex).OBJType = eOBJType.otCASCO Then
        ' Call WriteConsoleMsg(UserIndex, "Has construido el casco!", FontTypeNames.FONTTYPE_INFO)
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y, " 1", 5))
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, " 1", 5))
     ElseIf ObjData(ItemIndex).OBJType = eOBJType.otArmadura Then
         'Call WriteConsoleMsg(UserIndex, "Has construido la armadura!", FontTypeNames.FONTTYPE_INFO)
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y, " 1", 5))
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, " 1", 5))
     End If
     Dim MiObj As obj
     MiObj.Amount = 1
@@ -615,7 +615,7 @@ If PuedeConstruir(UserIndex, ItemIndex) And PuedeConstruirHerreria(ItemIndex) Th
     
     Call SubirSkill(UserIndex, Manualidades)
     Call UpdateUserInv(True, UserIndex, 0)
-    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(MARTILLOHERRERO, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(MARTILLOHERRERO, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 
 
     UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
@@ -691,7 +691,7 @@ If CarpinteroTieneMateriales(UserIndex, ItemIndex) And _
     Call CarpinteroQuitarMateriales(UserIndex, ItemIndex)
     'Call WriteConsoleMsg(UserIndex, "Has construido un objeto!", FontTypeNames.FONTTYPE_INFO)
     'Call WriteOroOverHead(UserIndex, 1, UserList(UserIndex).Char.CharIndex)
-    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y, " 1", 5))
+    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, " 1", 5))
     
     Dim MiObj As obj
     MiObj.Amount = 1
@@ -707,7 +707,7 @@ If CarpinteroTieneMateriales(UserIndex, ItemIndex) And _
     
     Call SubirSkill(UserIndex, Manualidades)
     Call UpdateUserInv(True, UserIndex, 0)
-    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(LABUROCARPINTERO, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(LABUROCARPINTERO, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 
 
     UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
@@ -738,7 +738,7 @@ If AlquimistaTieneMateriales(UserIndex, ItemIndex) And _
     
     Call AlquimistaQuitarMateriales(UserIndex, ItemIndex)
     'Call WriteConsoleMsg(UserIndex, "Has construido el objeto.", FontTypeNames.FONTTYPE_INFO)
-    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(117, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(117, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 
     
     Dim MiObj As obj
@@ -783,12 +783,12 @@ If SastreTieneMateriales(UserIndex, ItemIndex) And _
     
        ' If Not UserList(UserIndex).flags.UltimoMensaje = 9 Then
            ' Call WriteConsoleMsg(UserIndex, "Has construido el objeto.", FontTypeNames.FONTTYPE_INFO)
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y, " 1", 5))
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, " 1", 5))
            ' UserList(UserIndex).flags.UltimoMensaje = 9
        ' End If
         
         
-    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(63, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(63, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 
     
     Dim MiObj As obj
@@ -881,14 +881,14 @@ Public Sub DoLingotes(ByVal UserIndex As Integer)
     End If
     Call UpdateUserInv(False, UserIndex, slot)
     
-    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y, cant, 5))
+    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, cant, 5))
     'If Not UserList(UserIndex).flags.UltimoMensaje = 5 Then
           '  Call WriteConsoleMsg(UserIndex, "¡Has obtenido lingotes!", FontTypeNames.FONTTYPE_INFO)
             
           '  UserList(UserIndex).flags.UltimoMensaje = 5
         'End If
     
-    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(117, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(117, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
     
     Call SubirSkill(UserIndex, Manualidades)
 
@@ -987,22 +987,22 @@ Sub DoAdminInvisible(ByVal UserIndex As Integer)
     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(UserList(UserIndex).Char.CharIndex, False))
 End Sub
 
-Sub TratarDeHacerFogata(ByVal Map As Integer, ByVal x As Integer, ByVal Y As Integer, ByVal UserIndex As Integer)
+Sub TratarDeHacerFogata(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal UserIndex As Integer)
 
 Dim Suerte As Byte
 Dim exito As Byte
 Dim obj As obj
 Dim posMadera As WorldPos
 
-If Not LegalPos(Map, x, Y) Then Exit Sub
+If Not LegalPos(Map, X, Y) Then Exit Sub
 
 With posMadera
     .Map = Map
-    .x = x
+    .X = X
     .Y = Y
 End With
 
-If MapData(Map, x, Y).ObjInfo.ObjIndex <> 58 Then
+If MapData(Map, X, Y).ObjInfo.ObjIndex <> 58 Then
     Call WriteConsoleMsg(UserIndex, "Necesitas clickear sobre Leña para hacer ramitas", FontTypeNames.FONTTYPE_INFO)
     Exit Sub
 End If
@@ -1018,7 +1018,7 @@ If UserList(UserIndex).flags.Muerto = 1 Then
     Exit Sub
 End If
 
-If MapData(Map, x, Y).ObjInfo.Amount < 3 Then
+If MapData(Map, X, Y).ObjInfo.Amount < 3 Then
     Call WriteConsoleMsg(UserIndex, "Necesitas por lo menos tres troncos para hacer una fogata.", FontTypeNames.FONTTYPE_INFO)
     Exit Sub
 End If
@@ -1036,11 +1036,11 @@ exito = RandomNumber(1, Suerte)
 
 If exito = 1 Then
     obj.ObjIndex = FOGATA_APAG
-    obj.Amount = MapData(Map, x, Y).ObjInfo.Amount \ 3
+    obj.Amount = MapData(Map, X, Y).ObjInfo.Amount \ 3
     
     Call WriteConsoleMsg(UserIndex, "Has hecho " & obj.Amount & " ramitas.", FontTypeNames.FONTTYPE_INFO)
     
-    Call MakeObj(obj, Map, x, Y)
+    Call MakeObj(obj, Map, X, Y)
     
     'Seteamos la fogata como el nuevo TargetObj del user
     UserList(UserIndex).flags.TargetObj = FOGATA_APAG
@@ -1104,7 +1104,7 @@ On Error GoTo Errhandler
         If Not MeterItemEnInventario(UserIndex, MiObj) Then
             Call TirarItemAlPiso(UserList(UserIndex).Pos, MiObj)
         End If
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y, MiObj.Amount, 5))
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, MiObj.Amount, 5))
         
         ' Al pescar también podés sacar cosas raras (se setean desde RecursosEspeciales.dat)
         Dim i As Integer
@@ -1144,7 +1144,7 @@ On Error GoTo Errhandler
 Exit Sub
 
 Errhandler:
-    Call LogError("Error en DoPescar")
+    Call LogError("Error en DoPescar. Error " & Err.Number & " - " & Err.description)
 End Sub
 
 Public Sub DoRobar(ByVal LadrOnIndex As Integer, ByVal victimaindex As Integer)
@@ -1420,66 +1420,66 @@ Public Sub DoApuñalar(ByVal UserIndex As Integer, ByVal VictimNpcIndex As Intege
 'Simplifique la cuenta que hacia para sacar la suerte
 'y arregle la cuenta que hacia para sacar el daño
 '***************************************************
-Dim Suerte As Integer
-Dim Skill As Integer
-
-Skill = UserList(UserIndex).Stats.UserSkills(eSkill.Apuñalar)
-
-Select Case UserList(UserIndex).clase
-    Case eClass.Assasin '35
-        Suerte = Int(((0.00003 * Skill - 0.001) * Skill + 0.098) * Skill + 4.25)
+    Dim Suerte As Integer
+    Dim Skill As Integer
     
-    Case eClass.Cleric, eClass.Paladin ' 15
-        Suerte = Int(((0.000003 * Skill + 0.0006) * Skill + 0.0107) * Skill + 4.93)
+    Skill = UserList(UserIndex).Stats.UserSkills(eSkill.Apuñalar)
     
-    Case eClass.Bard, eClass.Druid '13
-        Suerte = Int(((0.000002 * Skill + 0.0002) * Skill + 0.032) * Skill + 4.81)
+    Select Case UserList(UserIndex).clase
+        Case eClass.Assasin '35
+            Suerte = Int(((0.00003 * Skill - 0.001) * Skill + 0.098) * Skill + 4.25)
+        
+        Case eClass.Cleric, eClass.Paladin ' 15
+            Suerte = Int(((0.000003 * Skill + 0.0006) * Skill + 0.0107) * Skill + 4.93)
+        
+        Case eClass.Bard, eClass.Druid '13
+            Suerte = Int(((0.000002 * Skill + 0.0002) * Skill + 0.032) * Skill + 4.81)
+        
+        Case Else '8
+            Suerte = Int(0.0361 * Skill + 4.39)
+    End Select
     
-    Case Else '8
-        Suerte = Int(0.0361 * Skill + 4.39)
-End Select
+    If RandomNumber(0, 70) < Suerte Then
+        If VictimUserIndex <> 0 Then
+            If UserList(UserIndex).clase = eClass.Assasin Then
+                daño = Round(daño * 1.4, 0)
+            Else
+                daño = Round(daño * 1.2, 0)
+            End If
+            
+            UserList(VictimUserIndex).Stats.MinHp = UserList(VictimUserIndex).Stats.MinHp - daño
 
+            Call SendData(SendTarget.ToPCArea, VictimUserIndex, PrepareMessageEfectOverHead("¡" & daño & "!", UserList(VictimUserIndex).Char.CharIndex, &HFFFF00))
 
-If RandomNumber(0, 70) < Suerte Then
-    If VictimUserIndex <> 0 Then
-        If UserList(UserIndex).clase = eClass.Assasin Then
-            daño = Round(daño * 1.4, 0)
+            If UserList(UserIndex).ChatCombate = 1 Then
+                'Call WriteEfectOverHead(UserIndex, daño, UserList(UserIndex).Char.CharIndex) 'LADDER 21.11.08
+                Call WriteConsoleMsg(UserIndex, "Has apuñalado a " & UserList(VictimUserIndex).name & " por " & daño, FontTypeNames.FONTTYPE_FIGHT)
+            End If
+
+            If UserList(VictimUserIndex).ChatCombate = 1 Then
+                Call WriteConsoleMsg(VictimUserIndex, "Te ha apuñalado " & UserList(UserIndex).name & " por " & daño, FontTypeNames.FONTTYPE_FIGHT)
+            End If
+            
+            Call FlushBuffer(VictimUserIndex)
         Else
-            daño = Round(daño * 1.2, 0)
+            Npclist(VictimNpcIndex).Stats.MinHp = Npclist(VictimNpcIndex).Stats.MinHp - Int(daño * 1.5)
+            If UserList(UserIndex).ChatCombate = 1 Then
+                'Call WriteConsoleMsg(UserIndex, "Has apuñalado la criatura por " & Int(daño * 1.5), FontTypeNames.FONTTYPE_FIGHT)
+                Call WriteLocaleMsg(UserIndex, "212", FontTypeNames.FONTTYPE_FIGHT, Int(daño * 1.5))
+            End If
+            
+            Call SendData(SendTarget.ToNPCArea, VictimNpcIndex, PrepareMessageEfectOverHead("¡" & daño * 1.5 & "!", Npclist(VictimNpcIndex).Char.CharIndex, &HFFFF00))
+
+            '[Alejo]
+            Call CalcularDarExp(UserIndex, VictimNpcIndex, Int(daño * 1.5))
         End If
-        
-        UserList(VictimUserIndex).Stats.MinHp = UserList(VictimUserIndex).Stats.MinHp - daño
-        
-        
-            Call WriteEfectOverHead(UserIndex, daño, UserList(UserIndex).Char.CharIndex, &HFF8000) 'LADDER 21.11.08
-        If UserList(UserIndex).ChatCombate = 1 Then
-            'Call WriteEfectOverHead(UserIndex, daño, UserList(UserIndex).Char.CharIndex) 'LADDER 21.11.08
-            Call WriteConsoleMsg(UserIndex, "Has apuñalado a " & UserList(VictimUserIndex).name & " por " & daño, FontTypeNames.FONTTYPE_FIGHT)
-        End If
-        
-        
-         Call WriteEfectOverHead(VictimUserIndex, daño, UserList(UserIndex).Char.CharIndex) 'LADDER 21.11.08
-        If UserList(VictimUserIndex).ChatCombate = 1 Then
-            Call WriteConsoleMsg(VictimUserIndex, "Te ha apuñalado " & UserList(UserIndex).name & " por " & daño, FontTypeNames.FONTTYPE_FIGHT)
-        End If
-        
-        Call FlushBuffer(VictimUserIndex)
     Else
-        Npclist(VictimNpcIndex).Stats.MinHp = Npclist(VictimNpcIndex).Stats.MinHp - Int(daño * 1.5)
         If UserList(UserIndex).ChatCombate = 1 Then
-            'Call WriteConsoleMsg(UserIndex, "Has apuñalado la criatura por " & Int(daño * 1.5), FontTypeNames.FONTTYPE_FIGHT)
-            Call WriteLocaleMsg(UserIndex, "212", FontTypeNames.FONTTYPE_FIGHT, Int(daño * 1.5))
+            Call WriteConsoleMsg(UserIndex, "¡No has logrado apuñalar a tu enemigo!", FontTypeNames.FONTTYPE_FIGHT)
         End If
-        Call WriteEfectOverHead(UserIndex, daño, UserList(UserIndex).Char.CharIndex, &HFF8000) 'LADDER 21.11.08
-        Call SubirSkill(UserIndex, Apuñalar)
-        '[Alejo]
-        Call CalcularDarExp(UserIndex, VictimNpcIndex, Int(daño * 1.5))
     End If
-Else
-    If UserList(UserIndex).ChatCombate = 1 Then
-        Call WriteConsoleMsg(UserIndex, "¡No has logrado apuñalar a tu enemigo!", FontTypeNames.FONTTYPE_FIGHT)
-    End If
-End If
+    
+    Call SubirSkill(UserIndex, Apuñalar)
 
 End Sub
 
@@ -1522,7 +1522,7 @@ Public Sub QuitarSta(ByVal UserIndex As Integer, ByVal Cantidad As Integer)
     If UserList(UserIndex).Stats.MinSta = 0 Then Exit Sub
     Call WriteUpdateSta(UserIndex)
 End Sub
-Public Sub DoRaices(ByVal UserIndex As Integer, ByVal x As Byte, ByVal Y As Byte)
+Public Sub DoRaices(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte)
 On Error GoTo Errhandler
 
 Dim Suerte As Integer
@@ -1566,10 +1566,10 @@ If res < 7 Then
     
     
     
-    MapData(UserList(UserIndex).Pos.Map, x, Y).ObjInfo.Amount = MapData(UserList(UserIndex).Pos.Map, x, Y).ObjInfo.Amount - MiObj.Amount
+    MapData(UserList(UserIndex).Pos.Map, X, Y).ObjInfo.Amount = MapData(UserList(UserIndex).Pos.Map, X, Y).ObjInfo.Amount - MiObj.Amount
 
-    If MapData(UserList(UserIndex).Pos.Map, x, Y).ObjInfo.Amount < 0 Then
-    MapData(UserList(UserIndex).Pos.Map, x, Y).ObjInfo.Amount = 0
+    If MapData(UserList(UserIndex).Pos.Map, X, Y).ObjInfo.Amount < 0 Then
+    MapData(UserList(UserIndex).Pos.Map, X, Y).ObjInfo.Amount = 0
    ' VidaUtil.Item_ListAdd UserList(UserIndex).Pos.Map, X, Y
     End If
     
@@ -1581,10 +1581,10 @@ If res < 7 Then
     End If
     
     'Call WriteConsoleMsg(UserIndex, "¡Has conseguido algunas raices!", FontTypeNames.FONTTYPE_INFO)
-    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y, MiObj.Amount, 5))
-    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(60, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, MiObj.Amount, 5))
+    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(60, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 Else
-    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(61, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(61, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
     '[CDT 17-02-2004]
     If Not UserList(UserIndex).flags.UltimoMensaje = 8 Then
         Call WriteConsoleMsg(UserIndex, "¡No has obtenido raices!", FontTypeNames.FONTTYPE_INFO)
@@ -1611,7 +1611,7 @@ Errhandler:
 
 End Sub
 
-Public Sub DoTalar(ByVal UserIndex As Integer, ByVal x As Byte, ByVal Y As Byte)
+Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte)
 On Error GoTo Errhandler
 
     Dim Suerte As Integer
@@ -1640,8 +1640,8 @@ On Error GoTo Errhandler
         
         If UserList(UserIndex).flags.TargetObj = 0 Then Exit Sub
         
-        Call ActualizarRecurso(UserList(UserIndex).Pos.Map, x, Y)
-        MapData(UserList(UserIndex).Pos.Map, x, Y).ObjInfo.data = timeGetTime ' Ultimo uso
+        Call ActualizarRecurso(UserList(UserIndex).Pos.Map, X, Y)
+        MapData(UserList(UserIndex).Pos.Map, X, Y).ObjInfo.data = timeGetTime ' Ultimo uso
 
         MiObj.Amount = RandomNumber(4, 7)
         
@@ -1652,11 +1652,11 @@ On Error GoTo Errhandler
         MiObj.Amount = MiObj.Amount * RecoleccionMult
         MiObj.ObjIndex = Leña
         
-        If MiObj.Amount > MapData(UserList(UserIndex).Pos.Map, x, Y).ObjInfo.Amount Then
-            MiObj.Amount = MapData(UserList(UserIndex).Pos.Map, x, Y).ObjInfo.Amount
+        If MiObj.Amount > MapData(UserList(UserIndex).Pos.Map, X, Y).ObjInfo.Amount Then
+            MiObj.Amount = MapData(UserList(UserIndex).Pos.Map, X, Y).ObjInfo.Amount
         End If
         
-        MapData(UserList(UserIndex).Pos.Map, x, Y).ObjInfo.Amount = MapData(UserList(UserIndex).Pos.Map, x, Y).ObjInfo.Amount - MiObj.Amount
+        MapData(UserList(UserIndex).Pos.Map, X, Y).ObjInfo.Amount = MapData(UserList(UserIndex).Pos.Map, X, Y).ObjInfo.Amount - MiObj.Amount
         
         
         If Not MeterItemEnInventario(UserIndex, MiObj) Then
@@ -1668,8 +1668,8 @@ On Error GoTo Errhandler
        ' Call WriteConsoleMsg(UserIndex, "¡Has conseguido algo de leña!", FontTypeNames.FONTTYPE_INFO)
         '        UserList(UserIndex).flags.UltimoMensaje = 5
        ' End If
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y, MiObj.Amount, 5))
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_TALAR, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, MiObj.Amount, 5))
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_TALAR, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
         
         ' Al talar también podés dropear cosas raras (se setean desde RecursosEspeciales.dat)
         Dim i As Integer
@@ -1697,7 +1697,7 @@ On Error GoTo Errhandler
         Next
     Else
         '[CDT 17-02-2004]
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(64, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(64, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
         If Not UserList(UserIndex).flags.UltimoMensaje = 8 Then
             Call WriteConsoleMsg(UserIndex, "¡No has obtenido leña!", FontTypeNames.FONTTYPE_INFO)
             UserList(UserIndex).flags.UltimoMensaje = 8
@@ -1722,7 +1722,7 @@ Errhandler:
 
 End Sub
 
-Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal Y As Byte)
+Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte)
 On Error GoTo Errhandler
 
 Dim Suerte As Integer
@@ -1754,8 +1754,8 @@ Dim metal As Integer
         
         If UserList(UserIndex).flags.TargetObj = 0 Then Exit Sub
         
-        Call ActualizarRecurso(UserList(UserIndex).Pos.Map, x, Y)
-        MapData(UserList(UserIndex).Pos.Map, x, Y).ObjInfo.data = timeGetTime ' Ultimo uso
+        Call ActualizarRecurso(UserList(UserIndex).Pos.Map, X, Y)
+        MapData(UserList(UserIndex).Pos.Map, X, Y).ObjInfo.data = timeGetTime ' Ultimo uso
         
         MiObj.ObjIndex = ObjData(UserList(UserIndex).flags.TargetObj).MineralIndex
         
@@ -1767,17 +1767,17 @@ Dim metal As Integer
         
         MiObj.Amount = MiObj.Amount * RecoleccionMult
         
-        If MiObj.Amount > MapData(UserList(UserIndex).Pos.Map, x, Y).ObjInfo.Amount Then
-            MiObj.Amount = MapData(UserList(UserIndex).Pos.Map, x, Y).ObjInfo.Amount
+        If MiObj.Amount > MapData(UserList(UserIndex).Pos.Map, X, Y).ObjInfo.Amount Then
+            MiObj.Amount = MapData(UserList(UserIndex).Pos.Map, X, Y).ObjInfo.Amount
         End If
         
-        MapData(UserList(UserIndex).Pos.Map, x, Y).ObjInfo.Amount = MapData(UserList(UserIndex).Pos.Map, x, Y).ObjInfo.Amount - MiObj.Amount
+        MapData(UserList(UserIndex).Pos.Map, X, Y).ObjInfo.Amount = MapData(UserList(UserIndex).Pos.Map, X, Y).ObjInfo.Amount - MiObj.Amount
     
         If Not MeterItemEnInventario(UserIndex, MiObj) Then _
             Call TirarItemAlPiso(UserList(UserIndex).Pos, MiObj)
         
         Call WriteConsoleMsg(UserIndex, "¡Has extraido algunos minerales!", FontTypeNames.FONTTYPE_INFO)
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(15, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(15, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
         
         ' Al minar también puede dropear una gema
         Dim i As Integer
@@ -1806,7 +1806,7 @@ Dim metal As Integer
         Next
         
     Else
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(62, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(62, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
         '[CDT 17-02-2004]
         If Not UserList(UserIndex).flags.UltimoMensaje = 9 Then
             
@@ -1983,7 +1983,7 @@ End If
 
 'Ladder 21/11/08
 If UserList(UserIndex).flags.Montado = 0 Then
-    If (MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y).trigger > 10) Then
+    If (MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger > 10) Then
         Call WriteConsoleMsg(UserIndex, "No podés montar aquí.", FontTypeNames.FONTTYPE_INFO)
     Exit Sub
     End If
@@ -2165,17 +2165,17 @@ End If
 
 End Function
 
-Public Sub ActualizarRecurso(ByVal Map As Integer, ByVal x As Integer, ByVal Y As Integer)
+Public Sub ActualizarRecurso(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer)
     Dim ObjIndex As Integer
-    ObjIndex = MapData(Map, x, Y).ObjInfo.ObjIndex
+    ObjIndex = MapData(Map, X, Y).ObjInfo.ObjIndex
 
     Dim TiempoActual As Long
     TiempoActual = timeGetTime
 
     ' Data = Ultimo uso
-    If (TiempoActual - MapData(Map, x, Y).ObjInfo.data) * 0.001 > ObjData(ObjIndex).TiempoRegenerar Then
-        MapData(Map, x, Y).ObjInfo.Amount = ObjData(ObjIndex).VidaUtil
-        MapData(Map, x, Y).ObjInfo.data = &H7FFFFFFF   ' Ultimo uso = Max Long
+    If (TiempoActual - MapData(Map, X, Y).ObjInfo.data) * 0.001 > ObjData(ObjIndex).TiempoRegenerar Then
+        MapData(Map, X, Y).ObjInfo.Amount = ObjData(ObjIndex).VidaUtil
+        MapData(Map, X, Y).ObjInfo.data = &H7FFFFFFF   ' Ultimo uso = Max Long
     End If
 End Sub
 

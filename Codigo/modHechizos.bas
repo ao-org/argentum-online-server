@@ -48,7 +48,7 @@ Dim daño As Integer
 If Hechizos(Spell).SubeHP = 1 Then
 
     daño = RandomNumber(Hechizos(Spell).MinHp, Hechizos(Spell).MaxHp)
-    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(Spell).wav, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(Spell).wav, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
 
     UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp + daño
@@ -74,7 +74,7 @@ ElseIf Hechizos(Spell).SubeHP = 2 Then
         
         If daño < 0 Then daño = 0
         
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(Spell).wav, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(Spell).wav, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
        
         
@@ -120,7 +120,7 @@ ElseIf Hechizos(Spell).SubeHP = 2 Then
     
 ElseIf Hechizos(Spell).Paraliza = 1 Then
      If UserList(UserIndex).flags.Paralizado = 0 Then
-          Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(Spell).wav, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+          Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(Spell).wav, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
           Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
           
 
@@ -133,7 +133,7 @@ ElseIf Hechizos(Spell).Paraliza = 1 Then
 ElseIf Hechizos(Spell).incinera = 1 Then
 Debug.Print "incinerar"
      If UserList(UserIndex).flags.Incinerado = 0 Then
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(Spell).wav, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(Spell).wav, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
         If Hechizos(Spell).Particle > 0 Then '¿Envio Particula?
             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, Hechizos(Spell).Particle, Hechizos(Spell).TimeParticula, False))
         End If
@@ -158,7 +158,7 @@ Dim daño As Integer
 If Hechizos(Spell).SubeHP = 2 Then
     
         daño = RandomNumber(Hechizos(Spell).MinHp, Hechizos(Spell).MaxHp)
-        Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessagePlayWave(Hechizos(Spell).wav, Npclist(TargetNPC).Pos.x, Npclist(TargetNPC).Pos.Y))
+        Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessagePlayWave(Hechizos(Spell).wav, Npclist(TargetNPC).Pos.X, Npclist(TargetNPC).Pos.Y))
         Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessageCreateFX(Npclist(TargetNPC).Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
         
         Npclist(TargetNPC).Stats.MinHp = Npclist(TargetNPC).Stats.MinHp - daño
@@ -234,7 +234,7 @@ Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As Integer, 
 If UserList(UserIndex).flags.Muerto = 0 Then
     Dim wp2 As WorldPos
     wp2.Map = UserList(UserIndex).flags.TargetMap
-    wp2.x = UserList(UserIndex).flags.TargetX
+    wp2.X = UserList(UserIndex).flags.TargetX
     wp2.Y = UserList(UserIndex).flags.TargetY
     
     If Hechizos(HechizoIndex).NecesitaObj > 0 Then
@@ -358,7 +358,7 @@ Dim TempY As Integer
 
 
 
-    Dim x As Long
+    Dim X As Long
     Dim Y As Long
 
     
@@ -397,10 +397,10 @@ Dim TempY As Integer
        
         Select Case Hechizos(h).AreaAfecta
             Case 1
-                    For x = 1 To Hechizos(h).AreaRadio
+                    For X = 1 To Hechizos(h).AreaRadio
                         For Y = 1 To Hechizos(h).AreaRadio
-                            If MapData(UserList(UserIndex).Pos.Map, x + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).UserIndex > 0 Then
-                                NPCIndex2 = MapData(UserList(UserIndex).Pos.Map, x + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).UserIndex
+                            If MapData(UserList(UserIndex).Pos.Map, X + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).UserIndex > 0 Then
+                                NPCIndex2 = MapData(UserList(UserIndex).Pos.Map, X + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).UserIndex
                                     'If NPCIndex2 <> UserIndex Then
                                         If UserList(NPCIndex2).flags.Muerto = 0 Then
                                         
@@ -418,10 +418,10 @@ Dim TempY As Integer
                    '     Call WriteConsoleMsg(UserIndex, "Has alcanzado a " & cuantosuser & " usuarios.", FontTypeNames.FONTTYPE_FIGHT)
                   ' End If
             Case 2
-                    For x = 1 To Hechizos(h).AreaRadio
+                    For X = 1 To Hechizos(h).AreaRadio
                         For Y = 1 To Hechizos(h).AreaRadio
-                            If MapData(UserList(UserIndex).Pos.Map, x + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).NpcIndex > 0 Then
-                                NPCIndex2 = MapData(UserList(UserIndex).Pos.Map, x + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).NpcIndex
+                            If MapData(UserList(UserIndex).Pos.Map, X + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).NpcIndex > 0 Then
+                                NPCIndex2 = MapData(UserList(UserIndex).Pos.Map, X + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).NpcIndex
                                 If Npclist(NPCIndex2).Attackable Then
                                     AreaHechizo UserIndex, NPCIndex2, PosCasteadaX, PosCasteadaY, True
                                     Cuantos = Cuantos + 1
@@ -434,10 +434,10 @@ Dim TempY As Integer
                       '  Call WriteConsoleMsg(UserIndex, "Has alcanzado a " & Cuantos & " criaturas.", FontTypeNames.FONTTYPE_FIGHT)
                   '  End If
             Case 3
-                    For x = 1 To Hechizos(h).AreaRadio
+                    For X = 1 To Hechizos(h).AreaRadio
                         For Y = 1 To Hechizos(h).AreaRadio
-                            If MapData(UserList(UserIndex).Pos.Map, x + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).UserIndex > 0 Then
-                                NPCIndex2 = MapData(UserList(UserIndex).Pos.Map, x + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).UserIndex
+                            If MapData(UserList(UserIndex).Pos.Map, X + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).UserIndex > 0 Then
+                                NPCIndex2 = MapData(UserList(UserIndex).Pos.Map, X + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).UserIndex
                                 'If NPCIndex2 <> UserIndex Then
                                     If UserList(NPCIndex2).flags.Muerto = 0 Then
                                     AreaHechizo UserIndex, NPCIndex2, PosCasteadaX, PosCasteadaY, False
@@ -446,8 +446,8 @@ Dim TempY As Integer
                                ' End If
                             End If
                             
-                            If MapData(UserList(UserIndex).Pos.Map, x + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).NpcIndex > 0 Then
-                                NPCIndex2 = MapData(UserList(UserIndex).Pos.Map, x + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).NpcIndex
+                            If MapData(UserList(UserIndex).Pos.Map, X + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).NpcIndex > 0 Then
+                                NPCIndex2 = MapData(UserList(UserIndex).Pos.Map, X + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).NpcIndex
                                 If Npclist(NPCIndex2).Attackable Then
                                     AreaHechizo UserIndex, NPCIndex2, PosCasteadaX, PosCasteadaY, True
                                     Cuantos = Cuantos + 1
@@ -1430,88 +1430,79 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal Use
 '14/08/2007 Pablo (ToxicWaste) - Orden general.
 '***************************************************
 
-Dim daño As Long
-
-'Salud
-If Hechizos(hIndex).SubeHP = 1 Then
-    daño = RandomNumber(Hechizos(hIndex).MinHp, Hechizos(hIndex).MaxHp)
-    'daño = daño + Porcentaje(daño, 3 * UserList(UserIndex).Stats.ELV)
+    Dim daño As Long
     
-    Call InfoHechizo(UserIndex)
-    Npclist(NpcIndex).Stats.MinHp = Npclist(NpcIndex).Stats.MinHp + daño
-    If Npclist(NpcIndex).Stats.MinHp > Npclist(NpcIndex).Stats.MaxHp Then _
-        Npclist(NpcIndex).Stats.MinHp = Npclist(NpcIndex).Stats.MaxHp
-    Call WriteConsoleMsg(UserIndex, "Has curado " & daño & " puntos de salud a la criatura.", FontTypeNames.FONTTYPE_FIGHT)
-    b = True
+    'Salud
+    If Hechizos(hIndex).SubeHP = 1 Then
+        daño = RandomNumber(Hechizos(hIndex).MinHp, Hechizos(hIndex).MaxHp)
+        'daño = daño + Porcentaje(daño, 3 * UserList(UserIndex).Stats.ELV)
+        
+        Call InfoHechizo(UserIndex)
+        Npclist(NpcIndex).Stats.MinHp = Npclist(NpcIndex).Stats.MinHp + daño
+        If Npclist(NpcIndex).Stats.MinHp > Npclist(NpcIndex).Stats.MaxHp Then _
+            Npclist(NpcIndex).Stats.MinHp = Npclist(NpcIndex).Stats.MaxHp
+        Call WriteConsoleMsg(UserIndex, "Has curado " & daño & " puntos de salud a la criatura.", FontTypeNames.FONTTYPE_FIGHT)
+        Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageEfectOverHead(daño, Npclist(NpcIndex).Char.CharIndex, &HFF00))
+        b = True
+        
+    ElseIf Hechizos(hIndex).SubeHP = 2 Then
+        If Not PuedeAtacarNPC(UserIndex, NpcIndex) Then
+            b = False
+            Exit Sub
+        End If
+        
+        Call NPCAtacado(NpcIndex, UserIndex)
+        daño = RandomNumber(Hechizos(hIndex).MinHp, Hechizos(hIndex).MaxHp)
+        
+        daño = daño + Porcentaje(daño, 3 * UserList(UserIndex).Stats.ELV)
     
-ElseIf Hechizos(hIndex).SubeHP = 2 Then
-    If Not PuedeAtacarNPC(UserIndex, NpcIndex) Then
-        b = False
-        Exit Sub
+       ' If Hechizos(hIndex).StaffAffected Then
+       '     If UserList(UserIndex).clase = eClass.Mage Then
+       '         If UserList(UserIndex).Invent.WeaponEqpObjIndex > 0 Then
+       '             daño = (daño * (ObjData(UserList(UserIndex).Invent.WeaponEqpObjIndex).StaffDamageBonus + 70)) / 100
+       '             'Aumenta daño segun el staff-
+       '             'Daño = (Daño* (70 + BonifBáculo)) / 100
+       '         Else
+       '             daño = daño * 0.7 'Baja daño a 70% del original
+       '         End If
+       '     End If
+       ' End If
+        
+        'If UserList(UserIndex).Invent.AnilloEqpObjIndex = LAUDMAGICO Or UserList(UserIndex).Invent.AnilloEqpObjIndex = FLAUTAMAGICA Then
+        '    daño = daño * 1.04  'laud magico de los bardos
+        'End If
+    
+        If UserList(UserIndex).flags.DañoMagico > 0 Then
+            daño = daño + Porcentaje(daño, UserList(UserIndex).flags.DañoMagico)
+        End If
+    
+        b = True
+        
+        If Npclist(NpcIndex).flags.Snd2 > 0 Then
+            Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessagePlayWave(Npclist(NpcIndex).flags.Snd2, Npclist(NpcIndex).Pos.X, Npclist(NpcIndex).Pos.Y))
+        End If
+        
+        'Quizas tenga defenza magica el NPC. Pablo (ToxicWaste)
+        daño = daño - Npclist(NpcIndex).Stats.defM
+        
+        If daño < 0 Then daño = 0
+        
+        Npclist(NpcIndex).Stats.MinHp = Npclist(NpcIndex).Stats.MinHp - daño
+        Call InfoHechizo(UserIndex)
+        
+        If UserList(UserIndex).ChatCombate = 1 Then
+            Call WriteConsoleMsg(UserIndex, "Le has causado " & daño & " puntos de daño a la criatura!", FontTypeNames.FONTTYPE_FIGHT)
+        End If
+        
+        Call CalcularDarExp(UserIndex, NpcIndex, daño)
+    
+        Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageEfectOverHead(daño, Npclist(NpcIndex).Char.CharIndex))
+    
+        If Npclist(NpcIndex).Stats.MinHp < 1 Then
+            Npclist(NpcIndex).Stats.MinHp = 0
+            Call MuereNpc(NpcIndex, UserIndex)
+        End If
     End If
-    
-    Call NPCAtacado(NpcIndex, UserIndex)
-    daño = RandomNumber(Hechizos(hIndex).MinHp, Hechizos(hIndex).MaxHp)
-    
-    daño = daño + Porcentaje(daño, 3 * UserList(UserIndex).Stats.ELV)
-    
-    
-    
-    
-    
-
-   ' If Hechizos(hIndex).StaffAffected Then
-   '     If UserList(UserIndex).clase = eClass.Mage Then
-   '         If UserList(UserIndex).Invent.WeaponEqpObjIndex > 0 Then
-   '             daño = (daño * (ObjData(UserList(UserIndex).Invent.WeaponEqpObjIndex).StaffDamageBonus + 70)) / 100
-   '             'Aumenta daño segun el staff-
-   '             'Daño = (Daño* (70 + BonifBáculo)) / 100
-   '         Else
-   '             daño = daño * 0.7 'Baja daño a 70% del original
-   '         End If
-   '     End If
-   ' End If
-    
-    'If UserList(UserIndex).Invent.AnilloEqpObjIndex = LAUDMAGICO Or UserList(UserIndex).Invent.AnilloEqpObjIndex = FLAUTAMAGICA Then
-    '    daño = daño * 1.04  'laud magico de los bardos
-    'End If
-    
-    
-
-
-    
-    If UserList(UserIndex).flags.DañoMagico > 0 Then
-    daño = daño + Porcentaje(daño, UserList(UserIndex).flags.DañoMagico)
-    End If
-    
-
-
-    b = True
-    
-    If Npclist(NpcIndex).flags.Snd2 > 0 Then
-        Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessagePlayWave(Npclist(NpcIndex).flags.Snd2, Npclist(NpcIndex).Pos.x, Npclist(NpcIndex).Pos.Y))
-    End If
-    
-    'Quizas tenga defenza magica el NPC. Pablo (ToxicWaste)
-    daño = daño - Npclist(NpcIndex).Stats.defM
-    
-    If daño < 0 Then daño = 0
-    
-    Npclist(NpcIndex).Stats.MinHp = Npclist(NpcIndex).Stats.MinHp - daño
-    Call InfoHechizo(UserIndex)
-    
-    If UserList(UserIndex).ChatCombate = 1 Then
-        Call WriteConsoleMsg(UserIndex, "Le has causado " & daño & " puntos de daño a la criatura!", FontTypeNames.FONTTYPE_FIGHT)
-    End If
-    
-    Call CalcularDarExp(UserIndex, NpcIndex, daño)
-    
-    Call WriteEfectOverHead(UserIndex, daño, CStr(UserList(UserIndex).Char.CharIndex)) 'LADDER 21.11.08
-    If Npclist(NpcIndex).Stats.MinHp < 1 Then
-        Npclist(NpcIndex).Stats.MinHp = 0
-        Call MuereNpc(NpcIndex, UserIndex)
-    End If
-End If
 
 End Sub
 
@@ -1541,7 +1532,7 @@ Sub InfoHechizo(ByVal UserIndex As Integer)
         End If
         
         If Hechizos(h).ParticleViaje = 0 Then
-            Call SendData(SendTarget.ToPCArea, UserList(UserIndex).flags.TargetUser, PrepareMessagePlayWave(Hechizos(h).wav, UserList(UserList(UserIndex).flags.TargetUser).Pos.x, UserList(UserList(UserIndex).flags.TargetUser).Pos.Y)) 'Esta linea faltaba. Pablo (ToxicWaste)
+            Call SendData(SendTarget.ToPCArea, UserList(UserIndex).flags.TargetUser, PrepareMessagePlayWave(Hechizos(h).wav, UserList(UserList(UserIndex).flags.TargetUser).Pos.X, UserList(UserList(UserIndex).flags.TargetUser).Pos.Y)) 'Esta linea faltaba. Pablo (ToxicWaste)
         End If
         
         If Hechizos(h).TimeEfect <> 0 Then 'Envio efecto de screen
@@ -1567,7 +1558,7 @@ Sub InfoHechizo(ByVal UserIndex As Integer)
         
         If Hechizos(h).Particle > 0 Then '¿Envio Particula?
             If Npclist(UserList(UserIndex).flags.TargetNPC).Stats.MinHp < 1 Then
-                Call SendData(SendTarget.ToNPCArea, UserList(UserIndex).flags.TargetNPC, PrepareMessageParticleFXWithDestinoXY(UserList(UserIndex).Char.CharIndex, Hechizos(h).ParticleViaje, Hechizos(h).Particle, Hechizos(h).TimeParticula, Hechizos(h).wav, 0, Npclist(UserList(UserIndex).flags.TargetNPC).Pos.x, Npclist(UserList(UserIndex).flags.TargetNPC).Pos.Y))
+                Call SendData(SendTarget.ToNPCArea, UserList(UserIndex).flags.TargetNPC, PrepareMessageParticleFXWithDestinoXY(UserList(UserIndex).Char.CharIndex, Hechizos(h).ParticleViaje, Hechizos(h).Particle, Hechizos(h).TimeParticula, Hechizos(h).wav, 0, Npclist(UserList(UserIndex).flags.TargetNPC).Pos.X, Npclist(UserList(UserIndex).flags.TargetNPC).Pos.Y))
                 'Call SendData(SendTarget.ToNPCArea, UserList(UserIndex).flags.TargetNPC, PrepareMessageParticleFXToFloor(Npclist(UserList(UserIndex).flags.TargetNPC).Pos.X, Npclist(UserList(UserIndex).flags.TargetNPC).Pos.Y, Hechizos(H).Particle, Hechizos(H).TimeParticula))
             Else
                 If Hechizos(h).ParticleViaje > 0 Then
@@ -1578,7 +1569,7 @@ Sub InfoHechizo(ByVal UserIndex As Integer)
             End If
         End If
         If Hechizos(h).ParticleViaje = 0 Then
-            Call SendData(SendTarget.ToNPCArea, UserList(UserIndex).flags.TargetNPC, PrepareMessagePlayWave(Hechizos(h).wav, Npclist(UserList(UserIndex).flags.TargetNPC).Pos.x, Npclist(UserList(UserIndex).flags.TargetNPC).Pos.Y))
+            Call SendData(SendTarget.ToNPCArea, UserList(UserIndex).flags.TargetNPC, PrepareMessagePlayWave(Hechizos(h).wav, Npclist(UserList(UserIndex).flags.TargetNPC).Pos.X, Npclist(UserList(UserIndex).flags.TargetNPC).Pos.Y))
         End If
     Else ' Entonces debe ser sobre el terreno
         If Hechizos(h).FXgrh > 0 Then 'Envio Fx?
@@ -1910,6 +1901,8 @@ If Hechizos(h).SubeHP = 1 Then
         Call WriteConsoleMsg(UserIndex, "Te has restaurado " & daño & " puntos de vida.", FontTypeNames.FONTTYPE_FIGHT)
     End If
     
+    Call SendData(SendTarget.ToPCArea, tempChr, PrepareMessageEfectOverHead(daño, UserList(tempChr).Char.CharIndex, &HFF00))
+    
     b = True
 ElseIf Hechizos(h).SubeHP = 2 Then
     
@@ -1993,8 +1986,8 @@ ElseIf Hechizos(h).SubeHP = 2 Then
     Call WriteConsoleMsg(tempChr, UserList(UserIndex).name & " te ha quitado " & daño & " puntos de vida.", FontTypeNames.FONTTYPE_FIGHT)
     
     Call SubirSkill(tempChr, Resistencia)
-    Call WriteEfectOverHead(UserIndex, daño, UserList(UserIndex).Char.CharIndex) 'LADDER 21.11.08
-    Call WriteEfectOverHead(tempChr, daño, UserList(UserIndex).Char.CharIndex) 'LADDER 21.11.08
+    
+    Call SendData(SendTarget.ToPCArea, tempChr, PrepareMessageEfectOverHead(daño, UserList(tempChr).Char.CharIndex))
     'Muere
     If UserList(tempChr).Stats.MinHp < 1 Then
         'Store it!
@@ -2284,6 +2277,8 @@ If Hechizos(h).SubeHP = 1 Then
         Call WriteConsoleMsg(UserIndex, "Te has restaurado " & daño & " puntos de vida.", FontTypeNames.FONTTYPE_FIGHT)
     End If
     
+    Call SendData(SendTarget.ToPCArea, tempChr, PrepareMessageEfectOverHead(daño, UserList(tempChr).Char.CharIndex, &HFF00))
+    
     b = True
 ElseIf Hechizos(h).SubeHP = 2 Then
     
@@ -2356,8 +2351,7 @@ ElseIf Hechizos(h).SubeHP = 2 Then
     Call WriteConsoleMsg(UserIndex, "Le has quitado " & daño & " puntos de vida a " & UserList(tempChr).name, FontTypeNames.FONTTYPE_FIGHT)
     Call WriteConsoleMsg(tempChr, UserList(UserIndex).name & " te ha quitado " & daño & " puntos de vida.", FontTypeNames.FONTTYPE_FIGHT)
     Call SubirSkill(tempChr, Resistencia)
-    Call WriteEfectOverHead(UserIndex, daño, UserList(UserIndex).Char.CharIndex) 'LADDER 21.11.08
-    Call WriteEfectOverHead(tempChr, daño, UserList(UserIndex).Char.CharIndex) 'LADDER 21.11.08
+    Call SendData(SendTarget.ToPCArea, tempChr, PrepareMessageEfectOverHead(daño, UserList(tempChr).Char.CharIndex))
     'Muere
     If UserList(tempChr).Stats.MinHp < 1 Then
         'Store it!
@@ -2864,7 +2858,7 @@ Else 'mover abajo
 End If
 End Sub
 
-Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, x As Byte, Y As Byte, npc As Boolean)
+Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y As Byte, npc As Boolean)
 Dim calculo As Integer
 Dim TilesDifUser As Integer
 Dim TilesDifNpc As Integer
@@ -2877,11 +2871,11 @@ h2 = UserList(UserIndex).Stats.UserHechizos(UserList(UserIndex).flags.Hechizo)
 
 
 'Calculo de descuesto de golpe por cercania.
-TilesDifUser = x + Y
+TilesDifUser = X + Y
 
 If npc Then
     If Hechizos(h2).SubeHP = 2 Then
-            TilesDifNpc = Npclist(NpcIndex).Pos.x + Npclist(NpcIndex).Pos.Y
+            TilesDifNpc = Npclist(NpcIndex).Pos.X + Npclist(NpcIndex).Pos.Y
             
             
             
@@ -2917,7 +2911,7 @@ If npc Then
     End If
 Else
 
-                TilesDifNpc = UserList(NpcIndex).Pos.x + UserList(NpcIndex).Pos.Y
+                TilesDifNpc = UserList(NpcIndex).Pos.X + UserList(NpcIndex).Pos.Y
                 tilDif = TilesDifUser - TilesDifNpc
 
                 If Hechizos(h2).SubeHP = 2 Then
