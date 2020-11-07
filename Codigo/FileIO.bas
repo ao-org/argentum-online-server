@@ -1192,7 +1192,7 @@ For Object = 1 To NumObjDatas
             ObjData(Object).Snd2 = val(Leer.GetValue("OBJ" & Object, "SND2"))
             
             
-        Case eOBJType.otAnillo 'Pablo (ToxicWaste)
+        'Case eOBJType.otAnillo 'Pablo (ToxicWaste)
           '  ObjData(Object).LingH = val(Leer.GetValue("OBJ" & Object, "LingH"))
           '  ObjData(Object).LingP = val(Leer.GetValue("OBJ" & Object, "LingP"))
           '  ObjData(Object).LingO = val(Leer.GetValue("OBJ" & Object, "LingO"))
