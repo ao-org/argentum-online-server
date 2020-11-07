@@ -1757,17 +1757,12 @@ If Hechizos(h).SubeAgilidad = 1 Then
     enviarInfoHechizo = True
     daño = RandomNumber(Hechizos(h).MinAgilidad, Hechizos(h).MaxAgilidad)
     UserList(tempChr).flags.DuracionEfecto = Hechizos(h).Duration
-    'UserList(tempChr).Stats.UserAtributos(eAtributos.Agilidad) = UserList(tempChr).Stats.UserAtributos(eAtributos.Agilidad) + daño
-    'If UserList(tempChr).Stats.UserAtributos(eAtributos.Agilidad) > MinimoInt(MAXATRIBUTOS, UserList(tempChr).Stats.UserAtributosBackUP(Agilidad) * 2) Then _
-        UserList(tempChr).Stats.UserAtributos(eAtributos.Agilidad) = MinimoInt(MAXATRIBUTOS, UserList(tempChr).Stats.UserAtributosBackUP(Agilidad) * 2)
-
 
     UserList(tempChr).Stats.UserAtributos(eAtributos.Agilidad) = UserList(tempChr).Stats.UserAtributos(eAtributos.Agilidad) + daño
-                If UserList(tempChr).Stats.UserAtributos(eAtributos.Agilidad) > MAXATRIBUTOS Then _
-                    UserList(tempChr).Stats.UserAtributos(eAtributos.Agilidad) = MAXATRIBUTOS
-        
-        
-        
+         
+    If UserList(tempChr).Stats.UserAtributos(eAtributos.Agilidad) > MinimoInt(MAXATRIBUTOS, UserList(tempChr).Stats.UserAtributosBackUP(Agilidad) * 2) Then _
+        UserList(tempChr).Stats.UserAtributos(eAtributos.Agilidad) = MinimoInt(MAXATRIBUTOS, UserList(tempChr).Stats.UserAtributosBackUP(Agilidad) * 2)
+
     UserList(tempChr).flags.TomoPocion = True
     b = True
     Call WriteFYA(tempChr)
@@ -1785,7 +1780,7 @@ ElseIf Hechizos(h).SubeAgilidad = 2 Then
     UserList(tempChr).flags.TomoPocion = True
     daño = RandomNumber(Hechizos(h).MinAgilidad, Hechizos(h).MaxAgilidad)
     UserList(tempChr).flags.DuracionEfecto = Hechizos(h).Duration
-    If UserList(tempChr).Stats.UserAtributos(eAtributos.Agilidad) - daño < 6 Then
+    If UserList(tempChr).Stats.UserAtributos(eAtributos.Agilidad) - daño < MINATRIBUTOS Then
     UserList(tempChr).Stats.UserAtributos(eAtributos.Agilidad) = MINATRIBUTOS
     Else
     UserList(tempChr).Stats.UserAtributos(eAtributos.Agilidad) = UserList(tempChr).Stats.UserAtributos(eAtributos.Agilidad) - daño
@@ -1823,8 +1818,9 @@ If Hechizos(h).SubeFuerza = 1 Then
   
       
     UserList(tempChr).Stats.UserAtributos(eAtributos.Fuerza) = UserList(tempChr).Stats.UserAtributos(eAtributos.Fuerza) + daño
-    If UserList(tempChr).Stats.UserAtributos(eAtributos.Fuerza) > MAXATRIBUTOS Then _
-    UserList(tempChr).Stats.UserAtributos(eAtributos.Fuerza) = MAXATRIBUTOS
+
+    If UserList(tempChr).Stats.UserAtributos(eAtributos.Fuerza) > MinimoInt(MAXATRIBUTOS, UserList(tempChr).Stats.UserAtributosBackUP(Agilidad) * 2) Then _
+        UserList(tempChr).Stats.UserAtributos(eAtributos.Fuerza) = MinimoInt(MAXATRIBUTOS, UserList(tempChr).Stats.UserAtributosBackUP(Agilidad) * 2)
     
     UserList(tempChr).flags.TomoPocion = True
     b = True
@@ -1844,7 +1840,7 @@ ElseIf Hechizos(h).SubeFuerza = 2 Then
     
     daño = RandomNumber(Hechizos(h).MinFuerza, Hechizos(h).MaxFuerza)
     UserList(tempChr).flags.DuracionEfecto = Hechizos(h).Duration
-    If UserList(tempChr).Stats.UserAtributos(eAtributos.Fuerza) - daño < 6 Then
+    If UserList(tempChr).Stats.UserAtributos(eAtributos.Fuerza) - daño < MINATRIBUTOS Then
         UserList(tempChr).Stats.UserAtributos(eAtributos.Fuerza) = MINATRIBUTOS
     Else
         UserList(tempChr).Stats.UserAtributos(eAtributos.Fuerza) = UserList(tempChr).Stats.UserAtributos(eAtributos.Fuerza) - daño

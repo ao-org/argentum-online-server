@@ -1100,6 +1100,7 @@ For Object = 1 To NumObjDatas
             ObjData(Object).LingP = val(Leer.GetValue("OBJ" & Object, "LingP"))
             ObjData(Object).LingO = val(Leer.GetValue("OBJ" & Object, "LingO"))
             ObjData(Object).SkHerreria = val(Leer.GetValue("OBJ" & Object, "SkHerreria"))
+            ObjData(Object).ResistenciaMagica = val(Leer.GetValue("OBJ" & Object, "ResistenciaMagica"))
         
         Case eOBJType.otESCUDO
             ObjData(Object).ShieldAnim = val(Leer.GetValue("OBJ" & Object, "Anim"))
@@ -1109,6 +1110,7 @@ For Object = 1 To NumObjDatas
             ObjData(Object).SkHerreria = val(Leer.GetValue("OBJ" & Object, "SkHerreria"))
             ObjData(Object).Real = val(Leer.GetValue("OBJ" & Object, "Real"))
             ObjData(Object).Caos = val(Leer.GetValue("OBJ" & Object, "Caos"))
+            ObjData(Object).ResistenciaMagica = val(Leer.GetValue("OBJ" & Object, "ResistenciaMagica"))
         
         Case eOBJType.otCASCO
             ObjData(Object).CascoAnim = val(Leer.GetValue("OBJ" & Object, "Anim"))
@@ -1118,6 +1120,7 @@ For Object = 1 To NumObjDatas
             ObjData(Object).SkHerreria = val(Leer.GetValue("OBJ" & Object, "SkHerreria"))
             ObjData(Object).Real = val(Leer.GetValue("OBJ" & Object, "Real"))
             ObjData(Object).Caos = val(Leer.GetValue("OBJ" & Object, "Caos"))
+            ObjData(Object).ResistenciaMagica = val(Leer.GetValue("OBJ" & Object, "ResistenciaMagica"))
         
         Case eOBJType.otWeapon
             ObjData(Object).WeaponAnim = val(Leer.GetValue("OBJ" & Object, "Anim"))
@@ -1189,7 +1192,7 @@ For Object = 1 To NumObjDatas
             ObjData(Object).Snd2 = val(Leer.GetValue("OBJ" & Object, "SND2"))
             
             
-        'Case eOBJType.otAnillo 'Pablo (ToxicWaste)
+        Case eOBJType.otAnillo 'Pablo (ToxicWaste)
           '  ObjData(Object).LingH = val(Leer.GetValue("OBJ" & Object, "LingH"))
           '  ObjData(Object).LingP = val(Leer.GetValue("OBJ" & Object, "LingP"))
           '  ObjData(Object).LingO = val(Leer.GetValue("OBJ" & Object, "LingO"))
@@ -1343,10 +1346,7 @@ For Object = 1 To NumObjDatas
     
     ObjData(Object).ClaseTipo = val(Leer.GetValue("OBJ" & Object, "ClaseTipo"))
     ObjData(Object).RazaTipo = val(Leer.GetValue("OBJ" & Object, "RazaTipo"))
-    
-    ObjData(Object).ResistenciaMagica = val(Leer.GetValue("OBJ" & Object, "ResistenciaMagica"))
-    
-    
+
     ObjData(Object).RazaEnana = val(Leer.GetValue("OBJ" & Object, "RazaEnana"))
     ObjData(Object).RazaDrow = val(Leer.GetValue("OBJ" & Object, "RazaDrow"))
     ObjData(Object).RazaElfa = val(Leer.GetValue("OBJ" & Object, "RazaElfa"))
