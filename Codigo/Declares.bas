@@ -879,19 +879,19 @@ End Type
 
 
 Public Type Position
-    x As Integer
+    X As Integer
     Y As Integer
 End Type
 
 Public Type WorldPos
     Map As Integer
-    x As Integer
+    X As Integer
     Y As Integer
 End Type
 
 Public Type CityWorldPos
     Map As Integer
-    x As Integer
+    X As Integer
     Y As Integer
     MapaViaje As Integer
     ViajeX As Byte
@@ -1189,15 +1189,6 @@ Public Type ModRaza
     Constitucion As Integer
 
 End Type
-
-Public Type ModVidaBalance
-    Inicial(1 To NUMCLASES) As Byte
-    N1TO15(1 To NUMCLASES) As Byte
-    N16TO35(1 To NUMCLASES) As Byte
-    N36TO45(1 To NUMCLASES) As Byte
-    N46TO50(1 To NUMCLASES) As Byte
-End Type
-
     
 
 '[/Pablo ToxicWaste]
@@ -1592,7 +1583,7 @@ Public Type user
     name As String
     Cuenta As String
     
-    ID As Long
+    Id As Long
     AccountID As Long
     
     Grupo As Tgrupo

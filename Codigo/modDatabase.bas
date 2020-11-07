@@ -388,7 +388,7 @@ On Error GoTo ErrorHandler
             q = q & "("
             q = q & .Id & ", "
             q = q & LoopC & ", "
-            q = q & .Stats.UserAtributos(LoopC) & ")"
+            q = q & .Stats.UserAtributosBackUP(LoopC) & ")"
 
             If LoopC < NUMATRIBUTOS Then
                 q = q & ", "
