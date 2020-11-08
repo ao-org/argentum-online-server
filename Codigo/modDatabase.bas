@@ -1105,6 +1105,17 @@ Public Function GetUserStatusDatabase(name As String) As Integer
     GetUserStatusDatabase = GetUserValue(name, "status")
 End Function
 
+Public Function GetAccountIDDatabase(name As String) As Long
+    Dim Temp As Variant
+    Temp = GetUserValue(name, "account_id")
+    
+    If Temp Is Empty Then
+        GetAccountIDDatabase = -1
+    Else
+        GetAccountIDDatabase = Temp
+    End If
+End Function
+
 Public Sub GetPasswordAndSaltDatabase(CuentaEmail As String, PasswordHash As String, Salt As String)
 On Error GoTo ErrorHandler
     
@@ -1200,6 +1211,10 @@ End Function
 Public Sub SetUserLoggedDatabase(ByVal Id As Long, ByVal AccountID As Long)
     Call SetDBValue("user", "is_logged", 1, "id", Id)
     Call MakeQuery("UPDATE account SET logged = logged + 1 WHERE id = " & AccountID & ";", True)
+End Sub
+
+Public Sub ResetLoggedDatabase(ByVal AccountID As Long)
+    Call MakeQuery("UPDATE account SET logged = 0 WHERE id = " & AccountID & ";", True)
 End Sub
 
 Public Sub SetUsersLoggedDatabase(ByVal NumUsers As Long)

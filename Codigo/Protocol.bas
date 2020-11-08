@@ -437,6 +437,7 @@ Private Enum ClientPacketID
     RecuperandoContraseña
     BorrandoCuenta
     NewPacketID
+    Desbuggear
 End Enum
 
 Private Enum NewPacksID
@@ -1025,6 +1026,9 @@ On Error Resume Next
         
         Case ClientPacketID.GoToChar                '/IRA
             Call HandleGoToChar(UserIndex)
+            
+        Case ClientPacketID.Desbuggear              '/DESBUGGEAR
+            Call HandleDesbuggear(UserIndex)
         
         Case ClientPacketID.invisible               '/INVISIBLE
             Call HandleInvisible(UserIndex)
@@ -2270,8 +2274,8 @@ Private Sub HandleAttack(ByVal UserIndex As Integer)
         End If
         
         If .Invent.HerramientaEqpObjIndex > 0 Then
-                Call WriteConsoleMsg(UserIndex, "Para atacar debes desequipar la herramienta.", FontTypeNames.FONTTYPE_INFOIAO)
-                Exit Sub
+            Call WriteConsoleMsg(UserIndex, "Para atacar debes desequipar la herramienta.", FontTypeNames.FONTTYPE_INFOIAO)
+            Exit Sub
         End If
         
         'If exiting, cancel
@@ -8119,6 +8123,92 @@ On Error GoTo Errhandler
                     
                     Call LogGM(.name, "/IRA " & UserName & " Mapa:" & UserList(tUser).Pos.Map & " X:" & UserList(tUser).Pos.X & " Y:" & UserList(tUser).Pos.Y)
                 End If
+            End If
+        End If
+        
+        'If we got here then packet is complete, copy data back to original queue
+        Call .incomingData.CopyBuffer(buffer)
+    End With
+    
+Errhandler:
+    Dim Error As Long
+    Error = Err.Number
+On Error GoTo 0
+    
+    'Destroy auxiliar buffer
+    Set buffer = Nothing
+    
+    If Error <> 0 Then _
+        Err.raise Error
+End Sub
+
+Private Sub HandleDesbuggear(ByVal UserIndex As Integer)
+'***************************************************
+    If UserList(UserIndex).incomingData.length < 3 Then
+        Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
+        Exit Sub
+    End If
+    
+On Error GoTo Errhandler
+    With UserList(UserIndex)
+        'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
+        Dim buffer As New clsByteQueue
+        Call buffer.CopyBuffer(.incomingData)
+        
+        'Remove packet ID
+        Call buffer.ReadByte
+        
+        Dim UserName As String, tUser As Integer, i As Long, Count As Long
+        
+        UserName = buffer.ReadASCIIString()
+        
+        If .flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin Or PlayerType.SemiDios Or PlayerType.Consejero) Then
+            If Len(UserName) > 0 Then
+                tUser = NameIndex(UserName)
+                
+                If tUser > 0 Then
+                    Call WriteConsoleMsg(UserIndex, "El usuario debe estar offline.", FontTypeNames.FONTTYPE_INFO)
+                Else
+                    Dim AccountID As Long, AccountOnline As Boolean
+                    
+                    AccountID = GetAccountIDDatabase(UserName)
+                    
+                    If AccountID >= 0 Then
+                        For i = 1 To LastUser
+                            If UserList(i).flags.UserLogged Then
+                                 If UserList(i).AccountID = AccountID Then
+                                    AccountOnline = True
+                                 End If
+                                 Count = Count + 1
+                            End If
+                        Next i
+                        
+                        NumUsers = Count
+                        Call MostrarNumUsers
+                        
+                        If AccountOnline Then
+                            Call WriteConsoleMsg(UserIndex, "Hay un usuario de la cuenta conectado. Se actualizaron solo los usuarios online.", FontTypeNames.FONTTYPE_INFO)
+                        Else
+                            Call ResetLoggedDatabase(AccountID)
+                            Call WriteConsoleMsg(UserIndex, "Cuenta del personaje desbuggeada y usuarios online actualizados.", FontTypeNames.FONTTYPE_INFO)
+                        End If
+    
+                        Call LogGM(.name, "/DESBUGGEAR " & UserName)
+                    Else
+                        Call WriteConsoleMsg(UserIndex, "El usuario no existe.", FontTypeNames.FONTTYPE_INFO)
+                    End If
+                End If
+            Else
+                For i = 1 To LastUser
+                    If UserList(i).flags.UserLogged Then
+                         Count = Count + 1
+                    End If
+                Next i
+                
+                NumUsers = Count
+                Call MostrarNumUsers
+                
+                Call WriteConsoleMsg(UserIndex, "Se actualizaron los usuarios online.", FontTypeNames.FONTTYPE_INFO)
             End If
         End If
         
@@ -17284,7 +17374,7 @@ Public Sub WriteGuildDetails(ByVal UserIndex As Integer, ByVal GuildName As Stri
 '***************************************************
 On Error GoTo Errhandler
     Dim i As Long
-    Dim temp As String
+    Dim Temp As String
     
     With UserList(UserIndex).outgoingData
         Call .WriteByte(ServerPacketID.GuildDetails)
