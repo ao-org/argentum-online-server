@@ -1109,7 +1109,7 @@ Public Function GetAccountIDDatabase(name As String) As Long
     Dim Temp As Variant
     Temp = GetUserValue(name, "account_id")
     
-    If Temp Is Empty Then
+    If Temp = Empty Then
         GetAccountIDDatabase = -1
     Else
         GetAccountIDDatabase = Temp
