@@ -1106,13 +1106,13 @@ Public Function GetUserStatusDatabase(name As String) As Integer
 End Function
 
 Public Function GetAccountIDDatabase(name As String) As Long
-    Dim Temp As Variant
-    Temp = GetUserValue(name, "account_id")
+    Dim temp As Variant
+    temp = GetUserValue(name, "account_id")
     
-    If Temp = Empty Then
+    If VBA.IsEmpty(temp) Then
         GetAccountIDDatabase = -1
     Else
-        GetAccountIDDatabase = Temp
+        GetAccountIDDatabase = val(temp)
     End If
 End Function
 
