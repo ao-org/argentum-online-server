@@ -930,7 +930,13 @@ On Error GoTo ErrorHandler
     Exit Sub
     
 ErrorHandler:
-    Call LogDatabaseError("Error en MakeQuery: query = '" & Query & "'. " & Err.Number & " - " & Err.description)
+    If Database_Connection.State = adStateClosed Then
+        Call LogDatabaseError("Alarma en MakeQuery: Se perdió la conexión con la DB. Reconectando.")
+        Database_Connect
+        Resume
+    Else
+        Call LogDatabaseError("Error en MakeQuery: query = '" & Query & "'. " & Err.Number & " - " & Err.description)
+    End If
 
 End Sub
 
