@@ -25,10 +25,6 @@ Public Database_Connection As ADODB.Connection
 
 Public QueryData           As ADODB.Recordset
 
-Private Const TestQuery As String = "SELECT 1;"
-
-Private Database_Error As Boolean
-
 Public Sub Database_Connect()
 
     '************************************************************************************
@@ -942,16 +938,17 @@ End Sub
 
 Private Sub MakeQuery(Query As String, Optional ByVal NoResult As Boolean = False)
     ' 17/10/2020 Autor: Alexis Caraballo (WyroX)
-    ' Hace una o más queries a la db. Si la conexión se pierde, intenta reconectar.
+    ' Hace una unica query a la db. Asume una conexion.
     ' Si NoResult = False, el metodo lee el resultado de la query
     ' Guarda el resultado en QueryData
     
-On Error GoTo ErrorHandler
+    On Error GoTo ErrorHandler
 
     ' Evito memory leaks
     If Not QueryData Is Nothing Then
         Call QueryData.Close
         Set QueryData = Nothing
+
     End If
     
     If NoResult Then
@@ -962,6 +959,7 @@ On Error GoTo ErrorHandler
 
         If QueryData.BOF Or QueryData.EOF Then
             Set QueryData = Nothing
+
         End If
 
     End If
@@ -970,49 +968,16 @@ On Error GoTo ErrorHandler
     
 ErrorHandler:
 
-    ' Si seguimos conectados (lo cual pasa casi siempre; el estado funciona muy mal)
-    If Database_Connection.State = adStateOpen Then
-        ' Probamos si la conexión sigue viva, y sino, reconectamos
-        If Not TestAndReconnect Then
-            ' Una vez conectados, volvemos a intentar la query
-            Resume
-        End If
-        
-    ' Si la conexión murió, tratamos de reconectar
-    Else
-        Call LogDatabaseError("Alerta en MakeQuery: Se perdió la conexión con la DB. Reconectando.")
+    If Database_Connection.State = adStateClosed Then
+        Call LogDatabaseError("Alarma en MakeQuery: Se perdió la conexión con la DB. Reconectando.")
         Database_Connect
-    End If
-    
-    ' Error genérico
-    If Err.Number <> 0 Then
+        Resume
+    Else
         Call LogDatabaseError("Error en MakeQuery: query = '" & Query & "'. " & Err.Number & " - " & Err.description)
-    End If
-    
-    ' Clean up
-    If Not QueryData Is Nothing Then
-        Call QueryData.Close
-        Set QueryData = Nothing
+
     End If
 
 End Sub
-
-Private Function TestAndReconnect() As Boolean
-On Error GoTo ErrorHandler
-    
-    ' Hacemos una query de prueba, que sabemos que es imposible que falle
-    Set QueryData = Database_Connection.Execute(TestQuery)
-    
-    TestAndReconnect = True
-    
-    Exit Function
-
-ErrorHandler:
-    ' Si hay algún error, se perdió la conexión a la db. Reconectamos
-    Call LogDatabaseError("Alerta en MakeQuery: Se perdió la conexión con la DB. Reconectando.")
-    Database_Connect
-
-End Function
 
 Private Function GetDBValue(Tabla As String, ColumnaGet As String, ColumnaTest As String, ValueTest As Variant) As Variant
     ' 17/10/2020 Autor: Alexis Caraballo (WyroX)
@@ -1830,21 +1795,25 @@ Public Function EnterAccountDatabase(ByVal UserIndex As Integer, CuentaEmail As 
     If QueryData Is Nothing Then
         Call WriteShowMessageBox(UserIndex, "La cuenta no existe.")
         Exit Function
+
     End If
     
     If val(QueryData!is_banned) > 0 Then
         Call WriteShowMessageBox(UserIndex, "La cuenta se encuentra baneada debido a: " & QueryData!ban_reason & ". Esta decisión fue tomada por: " & QueryData!banned_by & ".")
         Exit Function
+
     End If
     
     If Not PasswordValida(Password, QueryData!Password, QueryData!Salt) Then
         Call WriteShowMessageBox(UserIndex, "Contraseña inválida.")
         Exit Function
+
     End If
     
     If val(QueryData!validated) = 0 Then
         Call WriteShowMessageBox(UserIndex, "¡La cuenta no ha sido validada aún!")
         Exit Function
+
     End If
     
     UserList(UserIndex).AccountID = QueryData!Id

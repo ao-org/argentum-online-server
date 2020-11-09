@@ -2246,7 +2246,12 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
             If .flags.Meditando Then
                 'Stop meditating, next action will start movement.
                 .flags.Meditando = False
-                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(.Char.CharIndex, 0))
+                
+                Call WriteMeditateToggle(UserIndex)
+                'Call WriteConsoleMsg(UserIndex, "Dejas de meditar.", FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, "123", FontTypeNames.FONTTYPE_INFO)
+                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, .Char.ParticulaFx, 0, True))
+                .Char.ParticulaFx = 0
             
             ElseIf IntervaloPermiteCaminar(UserIndex) Then
             
@@ -2392,6 +2397,12 @@ Private Sub HandleAttack(ByVal UserIndex As Integer)
 
         End If
 
+        'If user meditates, can't attack
+        If .flags.Meditando Then
+            Exit Sub
+
+        End If
+        
         'If equiped weapon is ranged, can't attack this way
         If .Invent.WeaponEqpObjIndex > 0 Then
             If ObjData(.Invent.WeaponEqpObjIndex).proyectil = 1 Then
@@ -2406,11 +2417,6 @@ Private Sub HandleAttack(ByVal UserIndex As Integer)
             Call WriteConsoleMsg(UserIndex, "Para atacar debes desequipar la herramienta.", FontTypeNames.FONTTYPE_INFOIAO)
             Exit Sub
 
-        End If
-        
-        If UserList(UserIndex).flags.Meditando Then
-            UserList(UserIndex).flags.Meditando = False
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(.Char.CharIndex, 0))
         End If
         
         'If exiting, cancel
@@ -3326,7 +3332,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
         
         Skill = .incomingData.ReadByte()
 
-        If .flags.Muerto = 1 Or .flags.Descansar Or Not InMapBounds(.Pos.Map, x, Y) Then
+        If .flags.Muerto = 1 Or .flags.Descansar Or .flags.Meditando Or Not InMapBounds(.Pos.Map, x, Y) Then
             Exit Sub
 
         End If
@@ -3334,11 +3340,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
         If Not InRangoVision(UserIndex, x, Y) Then
             Call WritePosUpdate(UserIndex)
             Exit Sub
-        End If
-        
-        If UserList(UserIndex).flags.Meditando Then
-            UserList(UserIndex).flags.Meditando = False
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(.Char.CharIndex, 0))
+
         End If
         
         'If exiting, cancel
@@ -3656,16 +3658,14 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
                 End If
             
-            Case eSkill.Recoleccion
-            
-                DummyInt = .Invent.HerramientaEqpObjIndex
-
-                If DummyInt = 0 Then Exit Sub
+            Case eSkill.Pescar
+                
+                If .Invent.HerramientaEqpObjIndex = 0 Then Exit Sub
                 
                 'Check interval
                 If Not IntervaloPermiteTrabajar(UserIndex) Then Exit Sub
                 
-                Select Case DummyInt
+                Select Case .Invent.HerramientaEqpObjIndex
                 
                     Case CAÑA_PESCA, CAÑA_PESCA_DORADA
 
@@ -3675,50 +3675,66 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         Else
                             Call WriteConsoleMsg(UserIndex, "No hay agua donde pescar. Busca un lago, rio o mar.", FontTypeNames.FONTTYPE_INFO)
                             Call WriteMacroTrabajoToggle(UserIndex, False)
-
+    
                         End If
-                        
+                    
                     Case RED_PESCA
-
+    
                         If HayAgua(.Pos.Map, x, Y) Then
+                            
                             If Abs(.Pos.x - x) + Abs(.Pos.Y - Y) > 8 Then
                                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                                 'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos para pescar.", FontTypeNames.FONTTYPE_INFO)
                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                 Exit Sub
-
+    
                             End If
-                            
-                            If UserList(UserIndex).Stats.UserSkills(eSkill.Recoleccion) < 80 Then
+                                
+                            If UserList(UserIndex).Stats.UserSkills(eSkill.Pescar) < 80 Then
                                 Call WriteConsoleMsg(UserIndex, "Para utilizar la red de pesca debes tener 80 skills en recoleccion.", FontTypeNames.FONTTYPE_INFO)
                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                 Exit Sub
-
+    
                             End If
-                                
+                                    
                             If MapInfo(UserList(UserIndex).Pos.Map).Seguro = 1 Then
                                 Call WriteConsoleMsg(UserIndex, "Esta prohibida la pesca masiva en las ciudades.", FontTypeNames.FONTTYPE_INFO)
                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                 Exit Sub
-
+    
                             End If
-                                
+                                    
                             If UserList(UserIndex).flags.Navegando = 0 Then
                                 Call WriteConsoleMsg(UserIndex, "Necesitas estar sobre tu barca para utilizar la red de pesca.", FontTypeNames.FONTTYPE_INFO)
                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                 Exit Sub
-
+    
                             End If
-                                
+                                    
                             Call DoPescar(UserIndex, True)
                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .Pos.x, .Pos.Y))
+                        
                         Else
+                        
                             Call WriteConsoleMsg(UserIndex, "No hay agua donde pescar. Busca un lago, rio o mar.", FontTypeNames.FONTTYPE_INFO)
                             Call WriteWorkRequestTarget(UserIndex, 0)
-
+    
                         End If
-                            
+                
+                End Select
+                
+                    
+            Case eSkill.Talar
+            
+                If .Invent.HerramientaEqpObjIndex = 0 Then Exit Sub
+            
+                'Check interval
+                If Not IntervaloPermiteTrabajar(UserIndex) Then Exit Sub
+
+                Select Case .Invent.HerramientaEqpObjIndex
+                
                     Case HACHA_LEÑADOR, HACHA_LEÑADOR_DORADA
+                        
                         'Target whatever is in the tile
                         Call LookatTile(UserIndex, .Pos.Map, x, Y)
 
@@ -3771,7 +3787,18 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                             End If
 
                         End If
-                            
+                
+                End Select
+            
+            Case eSkill.Alquimia
+            
+                If .Invent.HerramientaEqpObjIndex = 0 Then Exit Sub
+                
+                'Check interval
+                If Not IntervaloPermiteTrabajar(UserIndex) Then Exit Sub
+
+                Select Case .Invent.HerramientaEqpObjIndex
+                
                     Case TIJERAS, TIJERAS_DORADAS
 
                         If MapInfo(UserList(UserIndex).Pos.Map).Seguro = 1 Then
@@ -3792,6 +3819,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         DummyInt = MapData(.Pos.Map, x, Y).ObjInfo.ObjIndex
                             
                         If DummyInt > 0 Then
+                            
                             If Abs(.Pos.x - x) + Abs(.Pos.Y - Y) > 2 Then
                                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                                 'Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
@@ -3820,7 +3848,18 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                             Call WriteMacroTrabajoToggle(UserIndex, False)
 
                         End If
-                            
+                
+                End Select
+                
+            Case eSkill.Mineria
+            
+                If .Invent.HerramientaEqpObjIndex = 0 Then Exit Sub
+                
+                'Check interval
+                If Not IntervaloPermiteTrabajar(UserIndex) Then Exit Sub
+
+                Select Case .Invent.HerramientaEqpObjIndex
+                
                     Case PIQUETE_MINERO, PIQUETE_MINERO_DORADA
                 
                         'Target whatever is in the tile
@@ -3930,6 +3969,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
             
                 'Check interval
                 If Not IntervaloPermiteTrabajar(UserIndex) Then Exit Sub
+                
                 Call LookatTile(UserIndex, .Pos.Map, x, Y)
                 
                 'Check there is a proper item there
@@ -3982,15 +4022,6 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
                 End If
 
-            Case eSkill.Manualidades
-            
-                DummyInt = .Invent.HerramientaEqpObjIndex
-
-                If DummyInt = 0 Then Exit Sub
-                
-                'Check interval
-                If Not IntervaloPermiteTrabajar(UserIndex) Then Exit Sub
-            
             Case eSkill.Grupo
                 'If UserList(UserIndex).Grupo.EnGrupo = False Then
                 'Target whatever is in that tile
@@ -6686,53 +6717,154 @@ Private Sub HandleMeditate(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         'Remove packet ID
         Call .incomingData.ReadByte
-
+        
+        'Dead users can't use pets
         If .flags.Muerto = 1 Then
+            'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!! Solo podés meditar cuando estás vivo.", FontTypeNames.FONTTYPE_INFO)
             Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
+
         End If
         
         If .flags.Montado = 1 Then
             Call WriteConsoleMsg(UserIndex, "No podes meditar estando montado.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
+
+        End If
+        
+        If .Stats.MaxMAN = .Stats.MinMAN Then
+            Exit Sub
+
         End If
 
+        Dim actual As Long
+
+        actual = GetTickCount() And &H7FFFFFFF
+
+        If .Counters.TUltimoMeditar + 2000 > actual Then
+            Call WriteConsoleMsg(UserIndex, "Debes esperar unos instantes para volver a meditar.", FontTypeNames.FONTTYPE_INFOBOLD)
+            Exit Sub
+
+        End If
+        
         'Can he meditate?
-        'If .Stats.MaxMAN = 0 Then
-        '    Call WriteConsoleMsg(UserIndex, "Solo las clases mágicas conocen el arte de la meditación", FontTypeNames.FONTTYPE_INFO)
-        '    Exit Sub
-        'End If
+        If .Stats.MaxMAN = 0 Then
+            Call WriteConsoleMsg(UserIndex, "Solo las clases mágicas conocen el arte de la meditación", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+
+        End If
+        
+        Call WriteMeditateToggle(UserIndex)
+        
+        If .flags.Meditando Then
+            'Call WriteConsoleMsg(UserIndex, "Dejas de meditar.", FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, "123", FontTypeNames.FONTTYPE_INFO)
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, UserList(UserIndex).Char.ParticulaFx, 0, True))
+            UserList(UserIndex).Char.ParticulaFx = 0
+            .Counters.TUltimoMeditar = GetTickCount() And &H7FFFFFFF
+
+        End If
 
         .flags.Meditando = Not .flags.Meditando
+        
+        'Barrin 3/10/03 Tiempo de inicio al meditar
 
         If .flags.Meditando Then
+            .Counters.tInicioMeditar = GetTickCount() And &H7FFFFFFF
+            
             .Char.loops = INFINITE_LOOPS
             
             'Show proper FX according to level
-            Select Case .Stats.ELV
+            Select Case Status(UserIndex)
+            
+                Case 1, 3
 
-                Case 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
-                    .Char.FX = Meditaciones.MeditarInicial
+                    Select Case .Stats.ELV
 
-                Case 15, 16, 17, 18, 19, 20, 21, 22, 23, 24
-                    .Char.FX = Meditaciones.MeditarDesde15
+                        Case 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
+                            .Char.ParticulaFx = MeditarParticle.MeditarNewCiuda
 
-                Case 25, 26, 27, 28, 29, 30, 31, 32, 33, 34
-                    .Char.FX = Meditaciones.MeditarDesde25
+                        Case 15, 16, 17, 18, 19, 20, 21, 22, 23, 24
+                            .Char.ParticulaFx = MeditarParticle.Meditar15Ciuda
 
-                Case 35, 36, 37, 38, 39, 40, 41, 42, 43, 44
-                    .Char.FX = Meditaciones.MeditarDesde35
+                        Case 25, 26, 27, 28, 29, 30, 31, 32, 33, 34
+                            .Char.ParticulaFx = MeditarParticle.Meditar25Ciuda
 
-                Case Else
-                    .Char.FX = Meditaciones.MeditarDesde45
+                        Case 35, 36, 37, 38, 39, 40, 41, 42, 43, 44
+                            .Char.ParticulaFx = MeditarParticle.Meditar35Ciuda
+
+                        Case 45, 46, 47, 48, 49
+                            .Char.ParticulaFx = MeditarParticle.Meditar45Ciuda
+
+                        Case 50
+                            .Char.ParticulaFx = MeditarParticle.Meditar50Ciuda
+
+                        Case Else
+                            .Char.ParticulaFx = MeditarParticle.MeditarNewCiuda
+
+                    End Select
+
+                Case 0, 2
+
+                    Select Case .Stats.ELV
+
+                        Case 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
+                            .Char.ParticulaFx = MeditarParticle.meditarNewcrimi
+
+                        Case 15, 16, 17, 18, 19, 20, 21, 22, 23, 24
+                            .Char.ParticulaFx = MeditarParticle.Meditar15crimi
+
+                        Case 25, 26, 27, 28, 29, 30, 31, 32, 33, 34
+                            .Char.ParticulaFx = MeditarParticle.Meditar25crimi
+
+                        Case 35, 36, 37, 38, 39, 40, 41, 42, 43, 44
+                            .Char.ParticulaFx = MeditarParticle.Meditar35crimi
+
+                        Case 45, 46, 47, 48, 49
+                            .Char.ParticulaFx = MeditarParticle.Meditar45crimi
+
+                        Case 50
+                            .Char.ParticulaFx = MeditarParticle.Meditar50crimi
+
+                        Case Else
+                            .Char.ParticulaFx = MeditarParticle.meditarNewcrimi
+
+                    End Select
 
             End Select
+            
+            If .flags.Privilegios <> PlayerType.user Then
+
+                Select Case .flags.Privilegios
+
+                    Case PlayerType.Consejero
+                        .Char.ParticulaFx = MeditarParticle.MeditarConsejero
+
+                    Case PlayerType.SemiDios
+                        .Char.ParticulaFx = MeditarParticle.MeditarGm
+
+                    Case PlayerType.Dios
+                        .Char.ParticulaFx = MeditarParticle.MeditarAdmin
+
+                    Case PlayerType.Admin
+                        .Char.ParticulaFx = MeditarParticle.MeditarAdmin
+
+                End Select
+
+            End If
+                    
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, .Char.ParticulaFx, -1, False))
         Else
-            Call WriteLocaleMsg(UserIndex, "123", FontTypeNames.FONTTYPE_INFO)
-            .Char.FX = 0
+            .Counters.bPuedeMeditar = False
+            
+            'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.CharIndex, 0, 0))
+            ' .Char.FX = 0
+            ' .Char.loops = 0
+          
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, .Char.ParticulaFx, 0, True))
+            .Char.ParticulaFx = 0
+
         End If
-        
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(.Char.CharIndex, .Char.FX))
 
     End With
 
@@ -18888,7 +19020,7 @@ Public Sub WriteBlacksmithWeapons(ByVal UserIndex As Integer)
         For i = 1 To UBound(ArmasHerrero())
 
             ' Can the user create this object? If so add it to the list....
-            If ObjData(ArmasHerrero(i)).SkHerreria <= UserList(UserIndex).Stats.UserSkills(eSkill.Manualidades) Then
+            If ObjData(ArmasHerrero(i)).SkHerreria <= UserList(UserIndex).Stats.UserSkills(eSkill.Herreria) Then
                 Count = Count + 1
                 validIndexes(Count) = i
 
@@ -18954,7 +19086,7 @@ Public Sub WriteBlacksmithArmors(ByVal UserIndex As Integer)
         For i = 1 To UBound(ArmadurasHerrero())
 
             ' Can the user create this object? If so add it to the list....
-            If ObjData(ArmadurasHerrero(i)).SkHerreria <= Round(UserList(UserIndex).Stats.UserSkills(eSkill.Manualidades) / ModHerreriA(UserList(UserIndex).clase), 0) Then
+            If ObjData(ArmadurasHerrero(i)).SkHerreria <= Round(UserList(UserIndex).Stats.UserSkills(eSkill.Herreria) / ModHerreriA(UserList(UserIndex).clase), 0) Then
                 Count = Count + 1
                 validIndexes(Count) = i
 
@@ -19019,8 +19151,8 @@ Public Sub WriteCarpenterObjects(ByVal UserIndex As Integer)
         For i = 1 To UBound(ObjCarpintero())
 
             ' Can the user create this object? If so add it to the list....
-            If ObjData(ObjCarpintero(i)).SkCarpinteria <= UserList(UserIndex).Stats.UserSkills(eSkill.Manualidades) Then
-                If i = 1 Then Debug.Print UserList(UserIndex).Stats.UserSkills(eSkill.Manualidades) \ ModCarpinteria(UserList(UserIndex).clase)
+            If ObjData(ObjCarpintero(i)).SkCarpinteria <= UserList(UserIndex).Stats.UserSkills(eSkill.Carpinteria) Then
+                If i = 1 Then Debug.Print UserList(UserIndex).Stats.UserSkills(eSkill.Carpinteria) \ ModCarpinteria(UserList(UserIndex).clase)
                 Count = Count + 1
                 validIndexes(Count) = i
 
@@ -19074,7 +19206,7 @@ Public Sub WriteAlquimistaObjects(ByVal UserIndex As Integer)
         For i = 1 To UBound(ObjAlquimista())
 
             ' Can the user create this object? If so add it to the list....
-            If ObjData(ObjAlquimista(i)).SkPociones <= UserList(UserIndex).Stats.UserSkills(eSkill.Manualidades) \ ModAlquimia(UserList(UserIndex).clase) Then
+            If ObjData(ObjAlquimista(i)).SkPociones <= UserList(UserIndex).Stats.UserSkills(eSkill.Alquimia) \ ModAlquimia(UserList(UserIndex).clase) Then
                 'If i = 1 Then Debug.Print UserList(UserIndex).Stats.UserSkills(eSkill.alquimia) \ ModAlquimia(UserList(UserIndex).clase)
                 Count = Count + 1
                 validIndexes(Count) = i
@@ -19129,9 +19261,9 @@ Public Sub WriteSastreObjects(ByVal UserIndex As Integer)
         For i = 1 To UBound(ObjSastre())
 
             ' Can the user create this object? If so add it to the list....
-            If ObjData(ObjSastre(i)).SkMAGOria <= UserList(UserIndex).Stats.UserSkills(eSkill.Manualidades) Then
+            If ObjData(ObjSastre(i)).SkMAGOria <= UserList(UserIndex).Stats.UserSkills(eSkill.Sastreria) Then
 
-                ' Round(UserList(UserIndex).Stats.UserSkills(eSkill.Manualidades) / ModSastre(UserList(UserIndex).clase), 0)
+                ' Round(UserList(UserIndex).Stats.UserSkills(eSkill.Sastreria) / ModSastre(UserList(UserIndex).clase), 0)
                 Count = Count + 1
                 validIndexes(Count) = i
 
@@ -19826,6 +19958,34 @@ Public Sub WriteDiceRoll(ByVal UserIndex As Integer)
 
     End With
 
+    Exit Sub
+
+Errhandler:
+
+    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
+        Call FlushBuffer(UserIndex)
+        Resume
+
+    End If
+
+End Sub
+
+''
+' Writes the "MeditateToggle" message to the given user's outgoing data buffer.
+'
+' @param    UserIndex User to which the message is intended.
+' @remarks  The data is not actually sent until the buffer is properly flushed.
+
+Public Sub WriteMeditateToggle(ByVal UserIndex As Integer)
+
+    '***************************************************
+    'Author: Juan Martín Sotuyo Dodero (Maraxus)
+    'Last Modification: 05/17/06
+    'Writes the "MeditateToggle" message to the given user's outgoing data buffer
+    '***************************************************
+    On Error GoTo Errhandler
+
+    Call UserList(UserIndex).outgoingData.WriteByte(ServerPacketID.MeditateToggle)
     Exit Sub
 
 Errhandler:
@@ -21122,19 +21282,6 @@ Public Function PrepareMessageCreateFX(ByVal CharIndex As Integer, ByVal FX As I
         Call .WriteInteger(FXLoops)
         
         PrepareMessageCreateFX = .ReadASCIIStringFixed(.length)
-
-    End With
-
-End Function
-
-Public Function PrepareMessageMeditateToggle(ByVal CharIndex As Integer, ByVal FX As Integer) As String
-    '***************************************************
-    With auxiliarBuffer
-        Call .WriteByte(ServerPacketID.MeditateToggle)
-        Call .WriteInteger(CharIndex)
-        Call .WriteInteger(FX)
-        
-        PrepareMessageMeditateToggle = .ReadASCIIStringFixed(.length)
 
     End With
 
