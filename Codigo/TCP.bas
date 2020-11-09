@@ -1752,7 +1752,6 @@ Sub ResetContadores(ByVal UserIndex As Integer)
         .Veneno = 0
         .Trabajando = 0
         .Ocultando = 0
-        .bPuedeMeditar = False
         .Lava = 0
         .Maldicion = 0
         .Saliendo = False

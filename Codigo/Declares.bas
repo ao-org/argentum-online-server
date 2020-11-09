@@ -292,24 +292,12 @@ Public Enum FXIDs
 
 End Enum
 
-Public Enum MeditarParticle
-
-    MeditarNewCiuda = 81
-    meditarNewcrimi = 211
-    Meditar15Ciuda = 20
-    Meditar15crimi = 212
-    Meditar25Ciuda = 41
-    Meditar25crimi = 213
-    Meditar35Ciuda = 215
-    Meditar35crimi = 214
-    Meditar45Ciuda = 217
-    Meditar45crimi = 216
-    Meditar50Ciuda = 218
-    Meditar50crimi = 219
-    MeditarConsejero = 15
-    MeditarGm = 15
-    MeditarAdmin = 15
-
+Public Enum Meditaciones
+    MeditarInicial = 115
+    MeditarMayor15 = 116
+    MeditarMayor25 = 117
+    MeditarMayor35 = 118
+    MeditarMayor45 = 119
 End Enum
 
 Public Enum ParticulasIndex ' Particulas FX
@@ -1662,13 +1650,7 @@ Public Type UserCounters
     '[/Gonzalo]
     
     Maldicion As Byte
-    
-    'Barrin 3/10/03
-    tInicioMeditar As Long
-    bPuedeMeditar As Boolean
-    TUltimoMeditar As Long
-    'Barrin
-    
+
     TimerLanzarSpell As Long
     TimerPuedeAtacar As Long
     TimerPuedeUsarArco As Long
