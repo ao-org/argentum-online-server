@@ -1067,9 +1067,7 @@ End Sub
 Private Sub GameTimer_Timer()
 
     Dim iUserIndex   As Long
-
     Dim bEnviarStats As Boolean
-
     Dim bEnviarAyS   As Boolean
     
     On Error GoTo hayerror
@@ -1111,10 +1109,13 @@ Private Sub GameTimer_Timer()
                         Call HambreYSed(iUserIndex, bEnviarAyS)
                         
                         If .flags.Hambre = 0 And .flags.Sed = 0 Then
+                            
                             If Lloviendo Then
                             
                                 If Not Intemperie(iUserIndex) Then
+                                    
                                     If Not .flags.Descansar Then
+                                        
                                         'No esta descansando
                                         Call Sanar(iUserIndex, bEnviarStats, SanaIntervaloSinDescansar)
 
@@ -1232,7 +1233,6 @@ Private Sub GameTimer_Timer()
                     'El intervalo cambia según si envió el primer paquete
                     If .Counters.IdleCount > IIf(.flags.FirstPacket, TimeoutEsperandoLoggear, TimeoutPrimerPaquete) Then
                         Call CloseSocket(iUserIndex)
-
                     End If
 
                 End If 'UserLogged
