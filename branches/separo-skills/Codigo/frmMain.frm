@@ -337,12 +337,6 @@ Begin VB.Form frmMain
       Left            =   2160
       Top             =   3360
    End
-   Begin VB.Timer tLluvia 
-      Enabled         =   0   'False
-      Interval        =   500
-      Left            =   2640
-      Top             =   3360
-   End
    Begin VB.Timer AutoSave 
       Enabled         =   0   'False
       Interval        =   60000
@@ -1728,23 +1722,6 @@ Private Sub TimerRespawn_Timer()
 ErrorHandler:
     Call LogError("Error en TIMER_RESPAWN " & Npclist(NpcIndex).name & " mapa:" & Npclist(NpcIndex).Pos.Map)
     Call MuereNpc(NpcIndex, 0)
-
-End Sub
-
-Private Sub tLluvia_Timer()
-
-    On Error GoTo Errhandler
-
-    'Dim iCount As Long
-    ' If Lloviendo Then
-    '   For iCount = 1 To LastUser
-    '        Call EfectoLluvia(iCount)
-    '   Next iCount
-    'End If
-
-    Exit Sub
-Errhandler:
-    Call LogError("tLluvia " & Err.Number & ": " & Err.description)
 
 End Sub
 
