@@ -1914,14 +1914,23 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
             End If
 
             Select Case ObjIndex
-
-                Case CAÑA_PESCA, RED_PESCA, HACHA_LEÑADOR, TIJERAS, PIQUETE_MINERO, CAÑA_PESCA_DORADA, TIJERAS_DORADAS, HACHA_LEÑADOR_DORADA, PIQUETE_MINERO_DORADA
-                    Call WriteWorkRequestTarget(UserIndex, eSkill.Recoleccion)
+                
+                Case CAÑA_PESCA, RED_PESCA, CAÑA_PESCA_DORADA
+                    Call WriteWorkRequestTarget(UserIndex, eSkill.Pescar)
+                
+                Case TIJERAS, TIJERAS_DORADAS
+                    Call WriteWorkRequestTarget(UserIndex, eSkill.Alquimia)
+                
+                Case PIQUETE_MINERO, PIQUETE_MINERO_DORADA
+                    Call WriteWorkRequestTarget(UserIndex, eSkill.Mineria)
+                
+                Case HACHA_LEÑADOR, HACHA_LEÑADOR_DORADA
+                    Call WriteWorkRequestTarget(UserIndex, eSkill.Talar)
 
                 Case MARTILLO_HERRERO
                     Call WriteConsoleMsg(UserIndex, "Debes hacer click derecho sobre el yunke.", FontTypeNames.FONTTYPE_INFOIAO)
 
-                    ' Call WriteWorkRequestTarget(UserIndex, eSkill.Manualidades)
+                    ' Call WriteWorkRequestTarget(UserIndex, eSkill.Herreria)
                 Case SERRUCHO_CARPINTERO
                     Call EnivarObjConstruibles(UserIndex)
                     Call WriteShowCarpenterForm(UserIndex)

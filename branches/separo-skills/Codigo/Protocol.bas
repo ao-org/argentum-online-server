@@ -3658,16 +3658,14 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
                 End If
             
-            Case eSkill.Recoleccion
-            
-                DummyInt = .Invent.HerramientaEqpObjIndex
-
-                If DummyInt = 0 Then Exit Sub
+            Case eSkill.Pescar
+                
+                If .Invent.HerramientaEqpObjIndex = 0 Then Exit Sub
                 
                 'Check interval
                 If Not IntervaloPermiteTrabajar(UserIndex) Then Exit Sub
                 
-                Select Case DummyInt
+                Select Case .Invent.HerramientaEqpObjIndex
                 
                     Case CAÑA_PESCA, CAÑA_PESCA_DORADA
 
@@ -3677,50 +3675,66 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         Else
                             Call WriteConsoleMsg(UserIndex, "No hay agua donde pescar. Busca un lago, rio o mar.", FontTypeNames.FONTTYPE_INFO)
                             Call WriteMacroTrabajoToggle(UserIndex, False)
-
+    
                         End If
-                        
+                    
                     Case RED_PESCA
-
+    
                         If HayAgua(.Pos.Map, x, Y) Then
+                            
                             If Abs(.Pos.x - x) + Abs(.Pos.Y - Y) > 8 Then
                                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                                 'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos para pescar.", FontTypeNames.FONTTYPE_INFO)
                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                 Exit Sub
-
+    
                             End If
-                            
-                            If UserList(UserIndex).Stats.UserSkills(eSkill.Recoleccion) < 80 Then
+                                
+                            If UserList(UserIndex).Stats.UserSkills(eSkill.Pescar) < 80 Then
                                 Call WriteConsoleMsg(UserIndex, "Para utilizar la red de pesca debes tener 80 skills en recoleccion.", FontTypeNames.FONTTYPE_INFO)
                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                 Exit Sub
-
+    
                             End If
-                                
+                                    
                             If MapInfo(UserList(UserIndex).Pos.Map).Seguro = 1 Then
                                 Call WriteConsoleMsg(UserIndex, "Esta prohibida la pesca masiva en las ciudades.", FontTypeNames.FONTTYPE_INFO)
                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                 Exit Sub
-
+    
                             End If
-                                
+                                    
                             If UserList(UserIndex).flags.Navegando = 0 Then
                                 Call WriteConsoleMsg(UserIndex, "Necesitas estar sobre tu barca para utilizar la red de pesca.", FontTypeNames.FONTTYPE_INFO)
                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                 Exit Sub
-
+    
                             End If
-                                
+                                    
                             Call DoPescar(UserIndex, True)
                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .Pos.x, .Pos.Y))
+                        
                         Else
+                        
                             Call WriteConsoleMsg(UserIndex, "No hay agua donde pescar. Busca un lago, rio o mar.", FontTypeNames.FONTTYPE_INFO)
                             Call WriteWorkRequestTarget(UserIndex, 0)
-
+    
                         End If
-                            
+                
+                End Select
+                
+                    
+            Case eSkill.Talar
+            
+                If .Invent.HerramientaEqpObjIndex = 0 Then Exit Sub
+            
+                'Check interval
+                If Not IntervaloPermiteTrabajar(UserIndex) Then Exit Sub
+
+                Select Case .Invent.HerramientaEqpObjIndex
+                
                     Case HACHA_LEÑADOR, HACHA_LEÑADOR_DORADA
+                        
                         'Target whatever is in the tile
                         Call LookatTile(UserIndex, .Pos.Map, x, Y)
 
@@ -3773,7 +3787,18 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                             End If
 
                         End If
-                            
+                
+                End Select
+            
+            Case eSkill.Alquimia
+            
+                If .Invent.HerramientaEqpObjIndex = 0 Then Exit Sub
+                
+                'Check interval
+                If Not IntervaloPermiteTrabajar(UserIndex) Then Exit Sub
+
+                Select Case .Invent.HerramientaEqpObjIndex
+                
                     Case TIJERAS, TIJERAS_DORADAS
 
                         If MapInfo(UserList(UserIndex).Pos.Map).Seguro = 1 Then
@@ -3794,6 +3819,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         DummyInt = MapData(.Pos.Map, x, Y).ObjInfo.ObjIndex
                             
                         If DummyInt > 0 Then
+                            
                             If Abs(.Pos.x - x) + Abs(.Pos.Y - Y) > 2 Then
                                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                                 'Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
@@ -3822,7 +3848,18 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                             Call WriteMacroTrabajoToggle(UserIndex, False)
 
                         End If
-                            
+                
+                End Select
+                
+            Case eSkill.Mineria
+            
+                If .Invent.HerramientaEqpObjIndex = 0 Then Exit Sub
+                
+                'Check interval
+                If Not IntervaloPermiteTrabajar(UserIndex) Then Exit Sub
+
+                Select Case .Invent.HerramientaEqpObjIndex
+                
                     Case PIQUETE_MINERO, PIQUETE_MINERO_DORADA
                 
                         'Target whatever is in the tile
@@ -3932,6 +3969,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
             
                 'Check interval
                 If Not IntervaloPermiteTrabajar(UserIndex) Then Exit Sub
+                
                 Call LookatTile(UserIndex, .Pos.Map, x, Y)
                 
                 'Check there is a proper item there
@@ -3984,15 +4022,6 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
                 End If
 
-            Case eSkill.Manualidades
-            
-                DummyInt = .Invent.HerramientaEqpObjIndex
-
-                If DummyInt = 0 Then Exit Sub
-                
-                'Check interval
-                If Not IntervaloPermiteTrabajar(UserIndex) Then Exit Sub
-            
             Case eSkill.Grupo
                 'If UserList(UserIndex).Grupo.EnGrupo = False Then
                 'Target whatever is in that tile
@@ -18991,7 +19020,7 @@ Public Sub WriteBlacksmithWeapons(ByVal UserIndex As Integer)
         For i = 1 To UBound(ArmasHerrero())
 
             ' Can the user create this object? If so add it to the list....
-            If ObjData(ArmasHerrero(i)).SkHerreria <= UserList(UserIndex).Stats.UserSkills(eSkill.Manualidades) Then
+            If ObjData(ArmasHerrero(i)).SkHerreria <= UserList(UserIndex).Stats.UserSkills(eSkill.Herreria) Then
                 Count = Count + 1
                 validIndexes(Count) = i
 
@@ -19057,7 +19086,7 @@ Public Sub WriteBlacksmithArmors(ByVal UserIndex As Integer)
         For i = 1 To UBound(ArmadurasHerrero())
 
             ' Can the user create this object? If so add it to the list....
-            If ObjData(ArmadurasHerrero(i)).SkHerreria <= Round(UserList(UserIndex).Stats.UserSkills(eSkill.Manualidades) / ModHerreriA(UserList(UserIndex).clase), 0) Then
+            If ObjData(ArmadurasHerrero(i)).SkHerreria <= Round(UserList(UserIndex).Stats.UserSkills(eSkill.Herreria) / ModHerreriA(UserList(UserIndex).clase), 0) Then
                 Count = Count + 1
                 validIndexes(Count) = i
 
@@ -19122,8 +19151,8 @@ Public Sub WriteCarpenterObjects(ByVal UserIndex As Integer)
         For i = 1 To UBound(ObjCarpintero())
 
             ' Can the user create this object? If so add it to the list....
-            If ObjData(ObjCarpintero(i)).SkCarpinteria <= UserList(UserIndex).Stats.UserSkills(eSkill.Manualidades) Then
-                If i = 1 Then Debug.Print UserList(UserIndex).Stats.UserSkills(eSkill.Manualidades) \ ModCarpinteria(UserList(UserIndex).clase)
+            If ObjData(ObjCarpintero(i)).SkCarpinteria <= UserList(UserIndex).Stats.UserSkills(eSkill.Carpinteria) Then
+                If i = 1 Then Debug.Print UserList(UserIndex).Stats.UserSkills(eSkill.Carpinteria) \ ModCarpinteria(UserList(UserIndex).clase)
                 Count = Count + 1
                 validIndexes(Count) = i
 
@@ -19177,7 +19206,7 @@ Public Sub WriteAlquimistaObjects(ByVal UserIndex As Integer)
         For i = 1 To UBound(ObjAlquimista())
 
             ' Can the user create this object? If so add it to the list....
-            If ObjData(ObjAlquimista(i)).SkPociones <= UserList(UserIndex).Stats.UserSkills(eSkill.Manualidades) \ ModAlquimia(UserList(UserIndex).clase) Then
+            If ObjData(ObjAlquimista(i)).SkPociones <= UserList(UserIndex).Stats.UserSkills(eSkill.Alquimia) \ ModAlquimia(UserList(UserIndex).clase) Then
                 'If i = 1 Then Debug.Print UserList(UserIndex).Stats.UserSkills(eSkill.alquimia) \ ModAlquimia(UserList(UserIndex).clase)
                 Count = Count + 1
                 validIndexes(Count) = i
@@ -19232,9 +19261,9 @@ Public Sub WriteSastreObjects(ByVal UserIndex As Integer)
         For i = 1 To UBound(ObjSastre())
 
             ' Can the user create this object? If so add it to the list....
-            If ObjData(ObjSastre(i)).SkMAGOria <= UserList(UserIndex).Stats.UserSkills(eSkill.Manualidades) Then
+            If ObjData(ObjSastre(i)).SkMAGOria <= UserList(UserIndex).Stats.UserSkills(eSkill.Sastreria) Then
 
-                ' Round(UserList(UserIndex).Stats.UserSkills(eSkill.Manualidades) / ModSastre(UserList(UserIndex).clase), 0)
+                ' Round(UserList(UserIndex).Stats.UserSkills(eSkill.Sastreria) / ModSastre(UserList(UserIndex).clase), 0)
                 Count = Count + 1
                 validIndexes(Count) = i
 
