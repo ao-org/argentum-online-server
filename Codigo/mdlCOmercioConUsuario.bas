@@ -91,7 +91,7 @@ Public Sub IniciarComercioConUsuario(ByVal Origen As Integer, ByVal Destino As I
     
     End If
 
-    Call FlushBuffer(Destino)
+    
 
     Exit Sub
 Errhandler:
@@ -123,7 +123,7 @@ Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer)
 
     If ObjInd > 0 And ObjCant > 0 Then
         Call WriteChangeUserTradeSlot(AQuien, ObjInd, ObjCant)
-        Call FlushBuffer(AQuien)
+        
 
     End If
 
@@ -203,8 +203,6 @@ Public Sub AceptarComercioUsu(ByVal UserIndex As Integer)
     
         If OtroUserIndex <= 0 Or OtroUserIndex > MaxUsers Then
             Call FinComerciarUsu(OtroUserIndex)
-            Call Protocol.FlushBuffer(OtroUserIndex)
-
         End If
     
         Exit Sub
@@ -267,12 +265,12 @@ Public Sub AceptarComercioUsu(ByVal UserIndex As Integer)
         Call FinComerciarUsu(UserIndex)
     
         Call FinComerciarUsu(OtroUserIndex)
-        Call FlushBuffer(OtroUserIndex)
+        
         Exit Sub
 
     End If
 
-    Call FlushBuffer(OtroUserIndex)
+    
 
     '[CORREGIDO]
     'Desde acá corregí el bug que cuando se ofrecian mas de

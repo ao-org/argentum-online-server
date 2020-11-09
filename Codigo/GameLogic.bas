@@ -89,7 +89,7 @@ Public Sub FindLegalPos(ByVal UserIndex As Integer, ByVal Map As Integer, ByRef 
                     If UserList(UserList(OtherUserIndex).ComUsu.DestUsu).flags.UserLogged Then
                         Call FinComerciarUsu(UserList(OtherUserIndex).ComUsu.DestUsu)
                         Call WriteConsoleMsg(UserList(OtherUserIndex).ComUsu.DestUsu, "Comercio cancelado. El otro usuario se ha desconectado.", FontTypeNames.FONTTYPE_TALK)
-                        Call FlushBuffer(UserList(OtherUserIndex).ComUsu.DestUsu)
+                        
 
                     End If
 
@@ -97,7 +97,7 @@ Public Sub FindLegalPos(ByVal UserIndex As Integer, ByVal Map As Integer, ByRef 
                     If UserList(OtherUserIndex).flags.UserLogged Then
                         Call FinComerciarUsu(OtherUserIndex)
                         Call WriteErrorMsg(OtherUserIndex, "Alguien se ha conectado donde te encontrabas, por favor reconéctate...")
-                        Call FlushBuffer(OtherUserIndex)
+                        
 
                     End If
 

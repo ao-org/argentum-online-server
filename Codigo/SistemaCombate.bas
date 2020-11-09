@@ -1324,7 +1324,7 @@ Public Sub UserDañoUser(ByVal atacanteindex As Integer, ByVal victimaindex As In
     'Controla el nivel del usuario
     Call CheckUserLevel(atacanteindex)
     
-    Call FlushBuffer(victimaindex)
+    
 
 End Sub
 
@@ -1376,7 +1376,7 @@ Sub UsuarioAtacadoPorUsuario(ByVal attackerIndex As Integer, ByVal VictimIndex A
     
     'Si la victima esta saliendo se cancela la salida
     Call CancelExit(VictimIndex)
-    Call FlushBuffer(VictimIndex)
+    
 
 End Sub
 
@@ -2063,7 +2063,7 @@ Sub UserIncinera(ByVal atacanteindex As Integer, ByVal victimaindex As Integer)
 
     End If
  
-    Call FlushBuffer(victimaindex)
+    
 
 End Sub
 
@@ -2179,7 +2179,7 @@ Sub UserDañoEspecial(ByVal atacanteindex As Integer, ByVal victimaindex As Integ
 
     End If
 
-    Call FlushBuffer(victimaindex)
+    
 
 End Sub
 
