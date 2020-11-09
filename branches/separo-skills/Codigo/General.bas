@@ -467,6 +467,8 @@ Sub Main()
     SkillsNames(eSkill.Mineria) = "Mineria"
     SkillsNames(eSkill.Herreria) = "Herreria"
     SkillsNames(eSkill.Carpinteria) = "Carpinteria"
+    SkillsNames(eSkill.Alquimia) = "Alquimia"
+    SkillsNames(eSkill.Sastreria) = "Sastreria"
    
     ListaAtributos(eAtributos.Fuerza) = "Fuerza"
     ListaAtributos(eAtributos.Agilidad) = "Agilidad"
