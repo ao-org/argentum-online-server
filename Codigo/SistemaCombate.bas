@@ -896,12 +896,9 @@ Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
             Call UsuarioAtacaUsuario(UserIndex, Index)
             Call WriteUpdateUserStats(UserIndex)
             Call WriteUpdateUserStats(Index)
-            Exit Sub
 
-        End If
-            
         'Look for NPC
-        If MapData(AttackPos.Map, AttackPos.x, AttackPos.Y).NpcIndex > 0 Then
+        ElseIf MapData(AttackPos.Map, AttackPos.x, AttackPos.Y).NpcIndex > 0 Then
             
             If Npclist(MapData(AttackPos.Map, AttackPos.x, AttackPos.Y).NpcIndex).Attackable Then
                     
@@ -912,9 +909,9 @@ Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
                 Call WriteConsoleMsg(UserIndex, "No podés atacar a este NPC", FontTypeNames.FONTTYPE_FIGHT)
 
             End If
-                
-            Exit Sub
-
+            
+        Else
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.CharIndex, True, False))
         End If
 
     Else

@@ -3637,7 +3637,7 @@ Public Function BinarySearchPeces(ByVal Value As Long) As Long
 
         End If
 
-        If Value > valor_anterior And Value < Peces(i).data Then
+        If Value >= valor_anterior And Value < Peces(i).data Then
             BinarySearchPeces = i
             Exit Do
             
