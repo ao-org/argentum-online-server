@@ -560,7 +560,7 @@ Public Const MIN_APUÑALAR As Byte = 10
 
 ''
 ' Cantidad de skills
-Public Const NUMSKILLS      As Byte = 18
+Public Const NUMSKILLS      As Byte = 23
 
 ''
 ' Cantidad de Atributos
