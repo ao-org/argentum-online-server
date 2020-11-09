@@ -2097,7 +2097,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 
                         End If
                         
-                        Call FlushBuffer(UserIndex)
+                        
                         
                         Call QuitarUserInvItem(UserIndex, slot, 1)
 
@@ -2390,21 +2390,21 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                         UserList(UserIndex).Counters.Inmovilizado = 0
                         UserList(UserIndex).flags.Inmovilizado = 0
                         Call WriteInmovilizaOK(UserIndex)
-                        Call FlushBuffer(UserIndex)
+                        
 
                     End If
                     
                     If UserList(UserIndex).flags.Paralizado = 1 Then
                         UserList(UserIndex).flags.Paralizado = 0
                         Call WriteParalizeOK(UserIndex)
-                        Call FlushBuffer(UserIndex)
+                        
 
                     End If
                     
                     If UserList(UserIndex).flags.Ceguera = 1 Then
                         UserList(UserIndex).flags.Ceguera = 0
                         Call WriteBlindNoMore(UserIndex)
-                        Call FlushBuffer(UserIndex)
+                        
 
                     End If
                     

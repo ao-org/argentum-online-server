@@ -272,7 +272,7 @@ Public Sub PurgarPenas()
                     Call WarpUserChar(i, Libertad.Map, Libertad.x, Libertad.Y, True)
                     Call WriteConsoleMsg(i, "Has sido liberado!", FontTypeNames.FONTTYPE_INFO)
                     
-                    Call FlushBuffer(i)
+                    
 
                 End If
 
@@ -299,7 +299,7 @@ Public Sub PurgarScroll()
                     UserList(i).flags.ScrollExp = 1
                     Call WriteConsoleMsg(i, "Tu scroll de experiencia a finalizado.", FontTypeNames.FONTTYPE_New_DONADOR)
                     Call WriteContadores(i)
-                    Call FlushBuffer(i)
+                    
 
                 End If
 
@@ -313,7 +313,7 @@ Public Sub PurgarScroll()
                     UserList(i).flags.ScrollOro = 1
                     Call WriteConsoleMsg(i, "Tu scroll de oro a finalizado.", FontTypeNames.FONTTYPE_New_DONADOR)
                     Call WriteContadores(i)
-                    Call FlushBuffer(i)
+                    
 
                 End If
 
@@ -343,7 +343,7 @@ Public Sub PurgarOxigeno()
                             Call WriteConsoleMsg(i, "Te has quedado sin oxigeno.", FontTypeNames.FONTTYPE_EJECUCION)
                             UserList(i).flags.Ahogandose = 1
                             Call WriteContadores(i)
-                            Call FlushBuffer(i)
+                            
 
                         End If
 

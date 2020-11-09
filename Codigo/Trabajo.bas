@@ -1450,7 +1450,7 @@ Public Sub DoRobar(ByVal LadrOnIndex As Integer, ByVal victimaindex As Integer)
         Call WriteConsoleMsg(LadrOnIndex, "¡No has logrado robar nada!", FontTypeNames.FONTTYPE_INFO)
         Call WriteConsoleMsg(victimaindex, "¡" & UserList(LadrOnIndex).name & " ha intentado robarte!", FontTypeNames.FONTTYPE_INFO)
         Call WriteConsoleMsg(victimaindex, "¡" & UserList(LadrOnIndex).name & " es un criminal!", FontTypeNames.FONTTYPE_INFO)
-        Call FlushBuffer(victimaindex)
+        
 
     End If
 
@@ -1620,7 +1620,7 @@ Public Sub DoApuñalar(ByVal UserIndex As Integer, ByVal VictimNpcIndex As Intege
 
             End If
             
-            Call FlushBuffer(VictimUserIndex)
+            
         Else
             Npclist(VictimNpcIndex).Stats.MinHp = Npclist(VictimNpcIndex).Stats.MinHp - Int(daño * 1.5)
 
@@ -2153,7 +2153,7 @@ Public Sub Desarmar(ByVal UserIndex As Integer, ByVal VictimIndex As Integer)
 
         End If
 
-        Call FlushBuffer(VictimIndex)
+        
 
     End If
 
@@ -2345,8 +2345,8 @@ Public Function ApuñalarFunction(ByVal UserIndex As Integer, ByVal VictimNpcInde
         
             Call SendData(SendTarget.ToPCArea, VictimUserIndex, PrepareMessageCreateFX(UserList(VictimUserIndex).Char.CharIndex, 89, 0))
         
-            Call FlushBuffer(VictimUserIndex)
-            Call FlushBuffer(UserIndex)
+            
+            
         
         Else
             Npclist(VictimNpcIndex).Stats.MinHp = Npclist(VictimNpcIndex).Stats.MinHp - daño

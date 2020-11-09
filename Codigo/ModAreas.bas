@@ -210,7 +210,7 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal Head As Byte,
 
                         End If
                        
-                        Call FlushBuffer(TempInt)
+                        
                    
                     ElseIf Head = USER_NUEVO Then
                         Call MakeUserChar(False, UserIndex, UserIndex, Map, x, Y, appear)

@@ -1010,21 +1010,21 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             UserList(UserIndex).Counters.Inmovilizado = 0
             UserList(UserIndex).flags.Inmovilizado = 0
             Call WriteInmovilizaOK(UserIndex)
-            Call FlushBuffer(UserIndex)
+            
 
         End If
     
         If UserList(UserIndex).flags.Paralizado = 1 Then
             UserList(UserIndex).flags.Paralizado = 0
             Call WriteParalizeOK(UserIndex)
-            Call FlushBuffer(UserIndex)
+            
            
         End If
         
         If UserList(UserIndex).flags.Ceguera = 1 Then
             UserList(UserIndex).flags.Ceguera = 0
             Call WriteBlindNoMore(UserIndex)
-            Call FlushBuffer(UserIndex)
+            
 
         End If
     
@@ -1174,7 +1174,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
         If UserList(tU).Invent.AnilloEqpObjIndex = SUPERANILLO Then
             Call WriteConsoleMsg(tU, " Tu anillo rechaza los efectos del hechizo.", FontTypeNames.FONTTYPE_FIGHT)
             Call WriteConsoleMsg(UserIndex, " ¡El hechizo no tiene efecto!", FontTypeNames.FONTTYPE_FIGHT)
-            Call FlushBuffer(tU)
+            
             Exit Sub
 
         End If
@@ -1245,7 +1245,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
         '  If UserList(tU).Invent.AnilloEqpObjIndex = SUPERANILLO Then
         '   Call WriteConsoleMsg(tU, " Tu anillo rechaza los efectos del hechizo.", FontTypeNames.FONTTYPE_FIGHT)
         '   Call WriteConsoleMsg(UserIndex, " ¡El hechizo no tiene efecto!", FontTypeNames.FONTTYPE_FIGHT)
-        '   Call FlushBuffer(tU)
+        '
         '    Exit Sub
         ' End If
             
@@ -1255,7 +1255,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             UserList(tU).flags.Inmovilizado = 1
             Call WriteInmovilizaOK(tU)
             Call WritePosUpdate(tU)
-            Call FlushBuffer(tU)
+            
         End If
 
     End If
@@ -1300,7 +1300,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             Call WriteInmovilizaOK(tU)
             Call WritePosUpdate(tU)
             ' Call InfoHechizo(UserIndex)
-            Call FlushBuffer(tU)
+            
 
             'b = True
         End If
@@ -1309,7 +1309,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             UserList(tU).flags.Paralizado = 0
             'no need to crypt this
             Call WriteParalizeOK(tU)
-            Call FlushBuffer(tU)
+            
 
             '  b = True
         End If
@@ -1350,7 +1350,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             UserList(tU).flags.Estupidez = 0
             'no need to crypt this
             Call WriteDumbNoMore(tU)
-            Call FlushBuffer(tU)
+            
             Call InfoHechizo(UserIndex)
             b = True
 
@@ -1444,7 +1444,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
         UserList(tU).Counters.Ceguera = Hechizos(h).Duration
 
         Call WriteBlind(tU)
-        Call FlushBuffer(tU)
+        
         Call InfoHechizo(UserIndex)
         b = True
 
@@ -1471,7 +1471,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
         End If
 
         Call WriteDumb(tU)
-        Call FlushBuffer(tU)
+        
 
         Call InfoHechizo(UserIndex)
         b = True
@@ -2369,7 +2369,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 
     End If
 
-    Call FlushBuffer(tempChr)
+    
 
 End Sub
 
@@ -2787,21 +2787,21 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
             UserList(UserIndex).Counters.Inmovilizado = 0
             UserList(UserIndex).flags.Inmovilizado = 0
             Call WriteInmovilizaOK(UserIndex)
-            Call FlushBuffer(UserIndex)
+            
 
         End If
     
         If UserList(UserIndex).flags.Paralizado = 1 Then
             UserList(UserIndex).flags.Paralizado = 0
             Call WriteParalizeOK(UserIndex)
-            Call FlushBuffer(UserIndex)
+            
            
         End If
         
         If UserList(UserIndex).flags.Ceguera = 1 Then
             UserList(UserIndex).flags.Ceguera = 0
             Call WriteBlindNoMore(UserIndex)
-            Call FlushBuffer(UserIndex)
+            
 
         End If
     
@@ -2960,7 +2960,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
         If UserList(tU).Invent.AnilloEqpObjIndex = SUPERANILLO Then
             Call WriteConsoleMsg(tU, " Tu anillo rechaza los efectos del hechizo.", FontTypeNames.FONTTYPE_FIGHT)
             Call WriteConsoleMsg(UserIndex, " ¡El hechizo no tiene efecto!", FontTypeNames.FONTTYPE_FIGHT)
-            Call FlushBuffer(tU)
+            
             Exit Sub
 
         End If
@@ -2999,7 +2999,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
             UserList(tU).flags.Inmovilizado = 1
             Call WriteInmovilizaOK(tU)
             Call WritePosUpdate(tU)
-            Call FlushBuffer(tU)
+            
 
         End If
 
@@ -3037,7 +3037,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
             UserList(tU).flags.Inmovilizado = 0
             Call WriteInmovilizaOK(tU)
             enviarInfoHechizo = True
-            Call FlushBuffer(tU)
+            
             b = True
 
         End If
@@ -3047,7 +3047,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
             'no need to crypt this
             Call WriteParalizeOK(tU)
             enviarInfoHechizo = True
-            Call FlushBuffer(tU)
+            
             b = True
 
         End If
@@ -3072,7 +3072,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
         UserList(tU).Counters.Ceguera = Hechizos(h).Duration
 
         Call WriteBlind(tU)
-        Call FlushBuffer(tU)
+        
         enviarInfoHechizo = True
         b = True
 
@@ -3099,7 +3099,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
         End If
 
         Call WriteDumb(tU)
-        Call FlushBuffer(tU)
+        
 
         enviarInfoHechizo = True
         b = True
@@ -3135,7 +3135,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
 
     End If
 
-    Call FlushBuffer(tempChr)
+    
 
 End Sub
 
@@ -3447,7 +3447,7 @@ Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, x As Byte, Y As Byte,
         If UserList(NpcIndex).flags.Paralizado = 0 Then
             UserList(NpcIndex).flags.Paralizado = 1
             Call WriteParalizeOK(NpcIndex)
-            Call FlushBuffer(NpcIndex)
+            
 
         End If
             
@@ -3473,7 +3473,7 @@ Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, x As Byte, Y As Byte,
             UserList(NpcIndex).flags.Inmovilizado = 1
             Call WriteInmovilizaOK(NpcIndex)
             Call WritePosUpdate(NpcIndex)
-            Call FlushBuffer(NpcIndex)
+            
         End If
 
     End If
@@ -3496,7 +3496,7 @@ Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, x As Byte, Y As Byte,
         Call WriteConsoleMsg(NpcIndex, "Te han cegado.", FontTypeNames.FONTTYPE_INFO)
             
         Call WriteBlind(NpcIndex)
-        Call FlushBuffer(NpcIndex)
+        
 
     End If
                 
@@ -3603,7 +3603,7 @@ Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, x As Byte, Y As Byte,
             UserList(NpcIndex).Counters.Inmovilizado = 0
             UserList(NpcIndex).flags.Inmovilizado = 0
             Call WriteInmovilizaOK(NpcIndex)
-            Call FlushBuffer(NpcIndex)
+            
 
         End If
 
@@ -3611,7 +3611,7 @@ Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, x As Byte, Y As Byte,
             UserList(NpcIndex).flags.Paralizado = 0
             'no need to crypt this
             Call WriteParalizeOK(NpcIndex)
-            Call FlushBuffer(NpcIndex)
+            
 
         End If
 
@@ -3627,21 +3627,21 @@ Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, x As Byte, Y As Byte,
             UserList(NpcIndex).Counters.Inmovilizado = 0
             UserList(NpcIndex).flags.Inmovilizado = 0
             Call WriteInmovilizaOK(NpcIndex)
-            Call FlushBuffer(NpcIndex)
+            
 
         End If
                     
         If UserList(NpcIndex).flags.Paralizado = 1 Then
             UserList(NpcIndex).flags.Paralizado = 0
             Call WriteParalizeOK(NpcIndex)
-            Call FlushBuffer(NpcIndex)
+            
                        
         End If
                     
         If UserList(NpcIndex).flags.Ceguera = 1 Then
             UserList(NpcIndex).flags.Ceguera = 0
             Call WriteBlindNoMore(NpcIndex)
-            Call FlushBuffer(NpcIndex)
+            
 
         End If
                     
