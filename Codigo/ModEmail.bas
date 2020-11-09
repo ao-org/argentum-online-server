@@ -5,22 +5,28 @@ Public Function EnviarCorreo(ByVal UserMail As String) As Boolean
     Shell App.Path & "\cuentas.exe *" & UserMail & "*" & ObtenerCodigo(UserMail) & "*" ' & UserName
     
     EnviarCorreo = True
+
 End Function
 
 Public Function EnviarCorreoRecuperacion(ByVal UserNick As String, ByVal UserMail As String) As Boolean
+
     If UserNick = "" Then
         EnviarCorreoRecuperacion = False
         Exit Function
+
     End If
+
     If UserMail = "" Then
         EnviarCorreoRecuperacion = False
         Exit Function
+
     End If
     
     ' WyroX: Desactivo esto, porque ahora las contrasenias se hashean
     ' Hay que reveer el sistema
     'Shell App.Path & "\RecuperarPass.exe" & " " & UserNick & "*" & UserMail & "*" & SDesencriptar(ObtenerPASSWORD(UserNick))
     EnviarCorreoRecuperacion = True
+
 End Function
 
 Public Function ObtenerCodigo(ByVal name As String) As String
@@ -29,6 +35,7 @@ Public Function ObtenerCodigo(ByVal name As String) As String
         ObtenerCodigo = GetCodigoActivacionDatabase(name)
     Else
         ObtenerCodigo = GetVar(CuentasPath & UCase$(name) & ".act", "INIT", "CodigoActivacion")
+
     End If
 
 End Function
@@ -39,6 +46,7 @@ Public Function ObtenerValidacion(ByVal name As String) As Boolean
         ObtenerValidacion = CheckCuentaActivadaDatabase(name)
     Else
         ObtenerValidacion = val(GetVar(CuentasPath & UCase$(name) & ".act", "INIT", "Activada"))
+
     End If
     
 End Function
@@ -49,6 +57,7 @@ Public Function ObtenerEmail(ByVal name As String) As String
         ObtenerEmail = GetEmailDatabase(name)
     Else
         ObtenerEmail = GetVar(CuentasPath & UCase$(name) & ".act", "INIT", "Email")
+
     End If
     
 End Function
@@ -59,6 +68,7 @@ Public Function ObtenerMacAdress(ByVal name As String) As String
         ObtenerMacAdress = GetMacAddressDatabase(name)
     Else
         ObtenerMacAdress = GetVar(CuentasPath & UCase$(name) & ".act", "INIT", "MacAdress")
+
     End If
 
 End Function
@@ -69,6 +79,7 @@ Public Function ObtenerHDserial(ByVal name As String) As Long
         ObtenerHDserial = GetHDSerialDatabase(name)
     Else
         ObtenerHDserial = GetVar(CuentasPath & UCase$(name) & ".act", "INIT", "HDserial")
+
     End If
 
 End Function
@@ -79,6 +90,7 @@ Public Function CuentaExiste(ByVal CuentaEmail As String) As Boolean
         CuentaExiste = CheckCuentaExiste(CuentaEmail)
     Else
         CuentaExiste = FileExist(CuentasPath & LCase$(CuentaEmail) & ".act", vbNormal)
+
     End If
 
 End Function
@@ -86,29 +98,35 @@ End Function
 Public Sub SaveNewAccount(ByVal UserIndex As Integer, ByVal CuentaEmail As String, ByVal Password As String)
 
     Dim Salt As String * 10
+
     Salt = RandomString(10) ' Alfanumerico
     
     Dim oSHA256 As CSHA256
+
     Set oSHA256 = New CSHA256
 
     Dim PasswordHash As String * 64
+
     PasswordHash = oSHA256.SHA256(Password & Salt)
     
     Set oSHA256 = Nothing
 
     Dim Codigo As String * 6
+
     Codigo = RandomString(6, True) ' Letras mayusculas y numeros
 
     If Database_Enabled Then
         Call SaveNewAccountDatabase(CuentaEmail, PasswordHash, Salt, Codigo)
     Else
         Call SaveNewAccountCharfile(CuentaEmail, PasswordHash, Salt, Codigo)
+
     End If
 
 End Sub
 
 Public Sub SaveNewAccountCharfile(CuentaEmail As String, PasswordHash As String, Salt As String, Codigo As String)
-On Error GoTo ErrorHandler
+
+    On Error GoTo ErrorHandler
 
     Dim Manager     As clsIniReader
     
@@ -139,7 +157,6 @@ On Error GoTo ErrorHandler
         'Seguridad Ladder
         Call .ChangeValue("INIT", "MacAdress", "0")
         Call .ChangeValue("INIT", "HDserial", "0")
-
         
         Call .DumpFile(AccountFile)
 
@@ -151,6 +168,7 @@ On Error GoTo ErrorHandler
 
 ErrorHandler:
     Call LogError("Error en SaveNewAccountCharfile. ")
+
 End Sub
 
 Public Function ObtenerCuenta(ByVal name As String) As String
@@ -159,6 +177,7 @@ Public Function ObtenerCuenta(ByVal name As String) As String
         ObtenerCuenta = GetNombreCuentaDatabase(name)
     Else
         ObtenerCuenta = GetVar(CharPath & UCase$(name) & ".chr", "INIT", "Cuenta")
+
     End If
     
 End Function
@@ -181,6 +200,7 @@ Public Function ObtenerBaneo(ByVal name As String) As Boolean
         ObtenerBaneo = CheckBanCuentaDatabase(name)
     Else
         ObtenerBaneo = val(GetVar(CuentasPath & LCase$(name) & ".act", "BAN", "Baneada")) = 1
+
     End If
 
 End Function
@@ -191,6 +211,7 @@ Public Function ObtenerMotivoBaneo(ByVal name As String) As String
         ObtenerMotivoBaneo = GetMotivoBanCuentaDatabase(name)
     Else
         ObtenerMotivoBaneo = GetVar(CuentasPath & UCase$(name) & ".act", "BAN", "Motivo")
+
     End If
 
 End Function
@@ -201,6 +222,7 @@ Public Function ObtenerQuienBaneo(ByVal name As String) As String
         ObtenerQuienBaneo = GetQuienBanCuentaDatabase(name)
     Else
         ObtenerQuienBaneo = GetVar(CuentasPath & UCase$(name) & ".act", "BAN", "BANEO")
+
     End If
 
 End Function
@@ -211,6 +233,7 @@ Public Function ObtenerCantidadDePersonajes(ByVal name As String) As String
         ObtenerCantidadDePersonajes = GetPersonajesCountDatabase(name)
     Else
         ObtenerCantidadDePersonajes = GetVar(CuentasPath & UCase$(name) & ".act", "PERSONAJES", "Total")
+
     End If
 
 End Function
@@ -221,6 +244,7 @@ Public Function ObtenerCantidadDePersonajesByUserIndex(ByVal UserIndex As Intege
         ObtenerCantidadDePersonajesByUserIndex = GetPersonajesCountByIDDatabase(UserList(UserIndex).AccountID)
     Else
         ObtenerCantidadDePersonajesByUserIndex = val(GetVar(CuentasPath & UCase$(UserList(UserIndex).name) & ".act", "PERSONAJES", "Total"))
+
     End If
 
 End Function
@@ -231,49 +255,63 @@ Public Function ObtenerLogeada(ByVal name As String) As Byte
         ObtenerLogeada = GetCuentaLogeadaDatabase(name)
     Else
         ObtenerLogeada = GetVar(CuentasPath & UCase$(name) & ".act", "INIT", "Logeada")
+
     End If
 
 End Function
 
 Public Function ObtenerNombrePJ(ByVal Cuenta As String, ByVal i As Byte) As String
     ObtenerNombrePJ = GetVar(CuentasPath & UCase$(Cuenta) & ".act", "PERSONAJES", "PJ" & i)
+
 End Function
 
 Sub BorrarPJdeCuenta(ByVal name As String)
-    Dim CantpjsNew As Byte
-    Dim CantpjsOld As Byte
-    Dim indice As Byte
+
+    Dim CantpjsNew  As Byte
+
+    Dim CantpjsOld  As Byte
+
+    Dim indice      As Byte
+
     Dim pjs(1 To 8) As String
+
     Dim SiguientePJ As Byte
-    Dim Cuenta As String
+
+    Dim Cuenta      As String
 
     Cuenta = ObtenerCuenta(name)
     
     CantpjsOld = ObtenerCantidadDePersonajes(Cuenta)
     
     Dim i As Integer
+
     For i = 1 To CantpjsOld
         pjs(i) = GetVar(CuentasPath & UCase$(Cuenta) & ".act", "PERSONAJES", "PJ" & i)
+
         If pjs(i) = name Then
             indice = i
             pjs(i) = ""
+
         End If
+
     Next i
     
     Call WriteVar(CuentasPath & UCase$(Cuenta) & ".act", "PERSONAJES", "PJ" & indice, "")
     
-    
     For i = 1 To CantpjsOld
         pjs(i) = GetVar(CuentasPath & UCase$(Cuenta) & ".act", "PERSONAJES", "PJ" & i)
     Next i
     
     For i = 1 To CantpjsOld
+
         If pjs(i) = "" And i + 1 < 9 Then
             pjs(i) = pjs(i + 1)
             pjs(i + 1) = ""
-        Call WriteVar(CuentasPath & UCase$(Cuenta) & ".act", "PERSONAJES", "PJ" & i, pjs(i))
-        Call WriteVar(CuentasPath & UCase$(Cuenta) & ".act", "PERSONAJES", "PJ" & i + 1, "")
+            Call WriteVar(CuentasPath & UCase$(Cuenta) & ".act", "PERSONAJES", "PJ" & i, pjs(i))
+            Call WriteVar(CuentasPath & UCase$(Cuenta) & ".act", "PERSONAJES", "PJ" & i + 1, "")
+
         End If
+
     Next i
     
     SiguientePJ = ObtenerCantidadDePersonajes(Cuenta) - 1
@@ -284,6 +322,7 @@ End Sub
 Sub GrabarNuevoPjEnCuentaCharfile(ByVal UserCuenta As String, ByVal name As String)
 
     Dim cantidaddePersonajes As Byte
+
     cantidaddePersonajes = ObtenerCantidadDePersonajes(UserCuenta)
 
     Call WriteVar(CuentasPath & UCase$(UserCuenta) & ".act", "PERSONAJES", "Total", cantidaddePersonajes + 1)
@@ -296,98 +335,131 @@ Sub BorrarCuenta(ByVal CuentaName As String)
     If Database_Enabled Then
         Call BorrarCuentaDatabase(CuentaName)
     Else
+
         'Primero borramos PJ POR PJ, se copia los personajes a la carpeta de personajes borrados
         Dim Cantpjs As Byte
         
         Cantpjs = ObtenerCantidadDePersonajes(CuentaName)
-        Dim indice As Byte
+
+        Dim indice      As Byte
+
         Dim pjs(1 To 8) As String
         
-        Dim i As Integer
+        Dim i           As Integer
+
         For i = 1 To Cantpjs
             pjs(i) = GetVar(CuentasPath & UCase$(CuentaName) & ".act", "PERSONAJES", "PJ" & i)
+
             If FileExist(CharPath & UCase$(pjs(i)) & ".chr", vbNormal) Then
                 Call FileCopy(CharPath & UCase$(pjs(i)) & ".chr", DeletePath & UCase$(pjs(i)) & ".chr")
                 Call Kill(CharPath & UCase$(pjs(i)) & ".chr")
+
             End If
+
         Next i
     
         If FileExist(CuentasPath & UCase$(CuentaName) & ".act", vbNormal) Then
             Call FileCopy(CuentasPath & UCase$(CuentaName) & ".act", DeleteCuentasPath & UCase$(CuentaName))
             Call Kill(CuentasPath & CuentaName & ".act")
+
         End If
+
     End If
 
 End Sub
 
 Public Function ObtenerNivel(ByVal name As String) As Byte
-On Error GoTo ErrorHandler
-ObtenerNivel = GetVar(CharPath & UCase$(name & ".chr"), "STATS", "ELV")
 
-Exit Function
+    On Error GoTo ErrorHandler
+
+    ObtenerNivel = GetVar(CharPath & UCase$(name & ".chr"), "STATS", "ELV")
+
+    Exit Function
 ErrorHandler:
-ObtenerNivel = 1
+    ObtenerNivel = 1
+
 End Function
+
 Public Function ObtenerCuerpo(ByVal name As String) As Integer
 
-On Error GoTo ErrorHandler
-Dim EstaMuerto As Byte
-Dim cuerpo As Long
+    On Error GoTo ErrorHandler
 
-EstaMuerto = GetVar(CharPath & UCase$(name & ".chr"), "flags", "Muerto")
-If EstaMuerto = 0 Then
-cuerpo = GetVar(CharPath & UCase$(name & ".chr"), "INIT", "Body")
-    ObtenerCuerpo = cuerpo
-Else
-    ObtenerCuerpo = iCuerpoMuerto
-End If
+    Dim EstaMuerto As Byte
 
-Exit Function
+    Dim cuerpo     As Long
+
+    EstaMuerto = GetVar(CharPath & UCase$(name & ".chr"), "flags", "Muerto")
+
+    If EstaMuerto = 0 Then
+        cuerpo = GetVar(CharPath & UCase$(name & ".chr"), "INIT", "Body")
+        ObtenerCuerpo = cuerpo
+    Else
+        ObtenerCuerpo = iCuerpoMuerto
+
+    End If
+
+    Exit Function
 ErrorHandler:
-ObtenerCuerpo = 1
+    ObtenerCuerpo = 1
 
 End Function
+
 Public Function ObtenerCabeza(ByVal name As String) As Integer
-On Error GoTo ErrorHandler
-Dim Head As String
-Dim EstaMuerto As Byte
 
-EstaMuerto = GetVar(CharPath & UCase$(name & ".chr"), "flags", "Muerto")
+    On Error GoTo ErrorHandler
 
-If EstaMuerto = 0 Then
-    Head = GetVar(CharPath & UCase$(name & ".chr"), "INIT", "Head")
-Else
-    Head = iCabezaMuerto
-End If
+    Dim Head       As String
 
-ObtenerCabeza = Head
+    Dim EstaMuerto As Byte
 
+    EstaMuerto = GetVar(CharPath & UCase$(name & ".chr"), "flags", "Muerto")
 
-Exit Function
+    If EstaMuerto = 0 Then
+        Head = GetVar(CharPath & UCase$(name & ".chr"), "INIT", "Head")
+    Else
+        Head = iCabezaMuerto
+
+    End If
+
+    ObtenerCabeza = Head
+
+    Exit Function
 ErrorHandler:
-ObtenerCabeza = 1
+    ObtenerCabeza = 1
 
 End Function
+
 Public Function ObtenerEscudo(ByVal name As String) As Integer
-On Error GoTo ErrorHandler
-ObtenerEscudo = GetVar(CharPath & UCase$(name & ".chr"), "INIT", "Escudo")
-Exit Function
+
+    On Error GoTo ErrorHandler
+
+    ObtenerEscudo = GetVar(CharPath & UCase$(name & ".chr"), "INIT", "Escudo")
+    Exit Function
 ErrorHandler:
-ObtenerEscudo = 0
+    ObtenerEscudo = 0
+
 End Function
+
 Public Function ObtenerArma(ByVal name As String) As Integer
-On Error GoTo ErrorHandler
-ObtenerArma = GetVar(CharPath & UCase$(name & ".chr"), "INIT", "Arma")
-Exit Function
+
+    On Error GoTo ErrorHandler
+
+    ObtenerArma = GetVar(CharPath & UCase$(name & ".chr"), "INIT", "Arma")
+    Exit Function
 ErrorHandler:
-ObtenerArma = 0
+    ObtenerArma = 0
+
 End Function
+
 Public Function ObtenerCasco(ByVal name As String) As Integer
-On Error GoTo ErrorHandler
-ObtenerCasco = GetVar(CharPath & UCase$(name & ".chr"), "INIT", "Casco")
-Exit Function
+
+    On Error GoTo ErrorHandler
+
+    ObtenerCasco = GetVar(CharPath & UCase$(name & ".chr"), "INIT", "Casco")
+    Exit Function
 ErrorHandler:
-ObtenerCasco = 0
+    ObtenerCasco = 0
+
 End Function
 
 Public Function GetUserGuildIndex(ByVal UserName As String) As Integer
@@ -481,8 +553,7 @@ Sub SaveUserGuildIndexCharfile(ByVal UserName As String, ByVal GuildIndex As Int
 
 End Sub
 
-Sub SaveUserGuildAspirantCharfile(ByVal UserName As String, _
-                                  ByVal AspirantIndex As Integer)
+Sub SaveUserGuildAspirantCharfile(ByVal UserName As String, ByVal AspirantIndex As Integer)
     '***************************************************
     'Author: Juan Andres Dalmasso (CHOTS)
     'Last Modification: 26/09/2018
@@ -579,7 +650,7 @@ End Sub
 
 Public Function ObtenerCriminal(ByVal name As String) As Byte
 
-On Error GoTo ErrorHandler
+    On Error GoTo ErrorHandler
     
     Dim Criminal As Byte
 
@@ -587,6 +658,7 @@ On Error GoTo ErrorHandler
         Criminal = GetUserStatusDatabase(name)
     Else
         Criminal = GetVar(CharPath & UCase$(name & ".chr"), "FACCIONES", "Status")
+
     End If
 
     If EsRolesMaster(name) Then
@@ -599,41 +671,39 @@ On Error GoTo ErrorHandler
         Criminal = 6
     ElseIf EsAdmin(name) Then
         Criminal = 7
-    End If
 
+    End If
 
     ObtenerCriminal = Criminal
 
-
-Exit Function
+    Exit Function
 ErrorHandler:
-ObtenerCriminal = 1
-
+    ObtenerCriminal = 1
 
 End Function
+
 Public Function ObtenerMapa(ByVal name As String) As String
 
-On Error GoTo ErrorHandler
+    On Error GoTo ErrorHandler
 
-Dim Mapa As String
+    Dim Mapa As String
 
     ObtenerMapa = GetVar(CharPath & UCase$(name & ".chr"), "INIT", "Position")
     
-    
     Exit Function
 ErrorHandler:
-ObtenerMapa = "1-50-50"
-
+    ObtenerMapa = "1-50-50"
     
 End Function
+
 Public Function ObtenerClase(ByVal name As String) As Byte
 
-On Error GoTo ErrorHandler
+    On Error GoTo ErrorHandler
 
-ObtenerClase = GetVar(CharPath & UCase$(name & ".chr"), "INIT", "Clase")
+    ObtenerClase = GetVar(CharPath & UCase$(name & ".chr"), "INIT", "Clase")
 
-Exit Function
+    Exit Function
 ErrorHandler:
-ObtenerClase = "1"
+    ObtenerClase = "1"
 
 End Function

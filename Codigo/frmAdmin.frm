@@ -97,56 +97,72 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub cboPjs_Change()
-Call ActualizaPjInfo
+    Call ActualizaPjInfo
+
 End Sub
 
 Private Sub cboPjs_Click()
-Call ActualizaPjInfo
+    Call ActualizaPjInfo
+
 End Sub
 
 Private Sub Command1_Click()
-Dim tIndex As Long
 
-tIndex = NameIndex(cboPjs.Text)
-If tIndex > 0 Then
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor> " & UserList(tIndex).Name & " ha sido hechado. ", FontTypeNames.FONTTYPE_SERVER))
-    Call CloseSocket(tIndex)
-End If
+    Dim tIndex As Long
+
+    tIndex = NameIndex(cboPjs.Text)
+
+    If tIndex > 0 Then
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor> " & UserList(tIndex).name & " ha sido hechado. ", FontTypeNames.FONTTYPE_SERVER))
+        Call CloseSocket(tIndex)
+
+    End If
 
 End Sub
 
 Public Sub ActualizaListaPjs()
-Dim LoopC As Long
 
-With cboPjs
-    .Clear
+    Dim LoopC As Long
+
+    With cboPjs
+        .Clear
     
-    For LoopC = 1 To LastUser
-        If UserList(LoopC).flags.UserLogged And UserList(LoopC).ConnID >= 0 And UserList(LoopC).ConnIDValida Then
-            If UserList(LoopC).flags.Privilegios And PlayerType.User Then
-                .AddItem UserList(LoopC).Name
-                .ItemData(.NewIndex) = LoopC
+        For LoopC = 1 To LastUser
+
+            If UserList(LoopC).flags.UserLogged And UserList(LoopC).ConnID >= 0 And UserList(LoopC).ConnIDValida Then
+                If UserList(LoopC).flags.Privilegios And PlayerType.user Then
+                    .AddItem UserList(LoopC).name
+                    .ItemData(.NewIndex) = LoopC
+
+                End If
+
             End If
-        End If
-    Next LoopC
-End With
+
+        Next LoopC
+
+    End With
 
 End Sub
 
 Private Sub Command3_Click()
-Call EcharPjsNoPrivilegiados
+    Call EcharPjsNoPrivilegiados
 
 End Sub
 
 Private Sub ActualizaPjInfo()
-Dim tIndex As Long
 
-tIndex = NameIndex(cboPjs.Text)
-If tIndex > 0 Then
-    With UserList(tIndex)
-        Text1.Text = .outgoingData.length & " elementos en cola." & vbCrLf
-    End With
-End If
+    Dim tIndex As Long
+
+    tIndex = NameIndex(cboPjs.Text)
+
+    If tIndex > 0 Then
+
+        With UserList(tIndex)
+            Text1.Text = .outgoingData.length & " elementos en cola." & vbCrLf
+
+        End With
+
+    End If
 
 End Sub
 

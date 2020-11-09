@@ -129,18 +129,22 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub Command1_Click()
-Me.Visible = False
+    Me.Visible = False
+
 End Sub
 
 Private Sub Command2_Click()
-DebugSocket = Not DebugSocket
+    DebugSocket = Not DebugSocket
+
 End Sub
 
 Private Sub Command3_Click()
-Text1.Text = vbNullString
+    Text1.Text = vbNullString
+
 End Sub
 
 Private Sub Command4_Click()
-Call ReloadSokcet
+    Call ReloadSokcet
+
 End Sub
 

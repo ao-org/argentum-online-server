@@ -13,13 +13,14 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 
-Private Declare Function GetTickCount _
-                Lib "kernel32" () As Long
+Private Declare Function GetTickCount Lib "kernel32" () As Long
 
 Private Const Item_MaxList   As Integer = 10000
+
 Private Const Item_TimeClear As Long = 1800000 '900000 / 60 = 15 minutos
 
 Private Type tItem
+
     Item_Pos As WorldPos 'Pos of item to clear
     Item_Time As Long 'Item 'Time of item to clear
     Item_Enable As Boolean
@@ -27,11 +28,15 @@ Private Type tItem
 End Type
 
 Dim Item_List()      As tItem
+
 Dim Item_ListIndex() As Integer
+
 Dim Item_LastIndex   As Integer
 
 Public Sub Class_Initialize()
-On Error Resume Next
+
+    On Error Resume Next
+
     Dim Maps As Integer
 
     Maps = val(GetVar(DatPath & "Map.dat", "INIT", "NumMaps"))
@@ -81,13 +86,14 @@ hErr:
 
 End Function
 
-Public Sub Item_ListAdd(ByVal Map As Integer, _
-                        ByVal X As Byte, _
-                        ByVal Y As Byte)
-On Error GoTo hErr
-    If Item_ListIndex(Map, X, Y) = 0 Then
+Public Sub Item_ListAdd(ByVal Map As Integer, ByVal x As Byte, ByVal Y As Byte)
+
+    On Error GoTo hErr
+
+    If Item_ListIndex(Map, x, Y) = 0 Then
    
         Dim Item_Index As Integer
+
         Item_Index = Item_FindSlot
    
         'Apuntamos al ultimo Char
@@ -103,16 +109,16 @@ On Error GoTo hErr
 
             With .Item_Pos
                 .Map = Map
-                .X = X
+                .x = x
                 .Y = Y
 
             End With
 
         End With
 
-        Item_ListIndex(Map, X, Y) = Item_Index
+        Item_ListIndex(Map, x, Y) = Item_Index
     Else
-        Item_List(Item_ListIndex(Map, X, Y)).Item_Time = GetTickCount
+        Item_List(Item_ListIndex(Map, x, Y)).Item_Time = GetTickCount
 
     End If
     
@@ -121,18 +127,21 @@ hErr:
 
 End Sub
 
-Public Sub Item_ListErase(ByVal Map As Integer, _
-                          ByVal X As Byte, _
-                          ByVal Y As Byte)
-On Error GoTo hErr
+Public Sub Item_ListErase(ByVal Map As Integer, ByVal x As Byte, ByVal Y As Byte)
+
+    On Error GoTo hErr
+
     Dim Item_Index As Integer
-    Item_Index = Item_ListIndex(Map, X, Y)
+
+    Item_Index = Item_ListIndex(Map, x, Y)
        
     If Item_Index > 0 Then
    
         Dim Item_Data As tItem
-       ' Item_List(Item_Index) = Item_Data
-       Exit Sub
+
+        ' Item_List(Item_Index) = Item_Data
+        Exit Sub
+
         'Update array size
         If Item_Index = Item_LastIndex Then
 
@@ -150,7 +159,7 @@ On Error GoTo hErr
 
         End If
        
-        Item_ListIndex(Map, X, Y) = 0
+        Item_ListIndex(Map, x, Y) = 0
 
     End If
     
@@ -160,8 +169,11 @@ hErr:
 End Sub
 
 Public Sub Item_CheckTime()
-On Error GoTo hErr
+
+    On Error GoTo hErr
+
     Dim LoopC     As Long
+
     Dim TimeClear As Long
    
     TimeClear = GetTickCount
@@ -172,7 +184,7 @@ On Error GoTo hErr
 
             If .Item_Pos.Map > 0 Then
                 If Abs(.Item_Time - TimeClear) >= Item_TimeClear Then
-                    EraseObj 10000, .Item_Pos.Map, .Item_Pos.X, .Item_Pos.Y
+                    EraseObj 10000, .Item_Pos.Map, .Item_Pos.x, .Item_Pos.Y
 
                 End If
 
@@ -182,13 +194,17 @@ On Error GoTo hErr
 
     Next LoopC
 
-
 hErr:
     LogError "Limpieza de mundo, ERROR"
+
 End Sub
+
 Public Sub LimpiezaForzada()
-On Error GoTo hErr
+
+    On Error GoTo hErr
+
     Dim LoopC     As Long
+
     Dim TimeClear As Long
    
     TimeClear = GetTickCount
@@ -199,7 +215,8 @@ On Error GoTo hErr
 
             If .Item_Pos.Map > 0 Then
                 If Abs(.Item_Time - TimeClear) >= Item_TimeClear Then
-                    EraseObj 10000, .Item_Pos.Map, .Item_Pos.X, .Item_Pos.Y
+                    EraseObj 10000, .Item_Pos.Map, .Item_Pos.x, .Item_Pos.Y
+
                 End If
 
             End If
@@ -208,10 +225,8 @@ On Error GoTo hErr
 
     Next LoopC
     
-    
 hErr:
     LogError "Limpieza de mundo, ERROR"
 
 End Sub
-
 

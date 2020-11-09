@@ -670,310 +670,356 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub Command1_Click()
-Call LoadOBJData
-Call LoadPesca
-Call LoadRecursosEspeciales
+    Call LoadOBJData
+    Call LoadPesca
+    Call LoadRecursosEspeciales
+
 End Sub
 
 Private Sub Command10_Click()
-frmTrafic.Show
+    frmTrafic.Show
+
 End Sub
 
 Private Sub Command11_Click()
-frmConID.Show
+    frmConID.Show
+
 End Sub
 
 Private Sub Command12_Click()
-frmDebugNpc.Show
+    frmDebugNpc.Show
+
 End Sub
 
 Private Sub Command13_Click()
-frmDebugSocket.Visible = True
+    frmDebugSocket.Visible = True
+
 End Sub
 
 Private Sub Command14_Click()
-Call LoadMotd
+    Call LoadMotd
+
 End Sub
 
 Private Sub Command15_Click()
-On Error Resume Next
 
-Dim Fn As String
-Dim cad$
-Dim n As Integer, K As Integer
+    On Error Resume Next
 
-Dim sENtrada As String
+    Dim Fn       As String
 
-sENtrada = InputBox("Escribe ""estoy DE acuerdo"" entre comillas y con distición de mayusculas minusculas para desbanear a todos los personajes", "UnBan", "hola")
-If sENtrada = "estoy DE acuerdo" Then
+    Dim cad$
 
-    Fn = App.Path & "\logs\GenteBanned.log"
+    Dim n        As Integer, K As Integer
+
+    Dim sENtrada As String
+
+    sENtrada = InputBox("Escribe ""estoy DE acuerdo"" entre comillas y con distición de mayusculas minusculas para desbanear a todos los personajes", "UnBan", "hola")
+
+    If sENtrada = "estoy DE acuerdo" Then
+
+        Fn = App.Path & "\logs\GenteBanned.log"
     
-    If FileExist(Fn, vbNormal) Then
-        n = FreeFile
-        Open Fn For Input Shared As #n
-        Do While Not EOF(n)
-            K = K + 1
-            Input #n, cad$
-            Call UnBan(cad$)
+        If FileExist(Fn, vbNormal) Then
+            n = FreeFile
+            Open Fn For Input Shared As #n
+
+            Do While Not EOF(n)
+                K = K + 1
+                Input #n, cad$
+                Call UnBan(cad$)
             
-        Loop
-        Close #n
-        MsgBox "Se han habilitado " & K & " personajes."
-        Kill Fn
+            Loop
+            Close #n
+            MsgBox "Se han habilitado " & K & " personajes."
+            Kill Fn
+
+        End If
+
     End If
-End If
 
 End Sub
 
 Private Sub Command16_Click()
-Call LoadSini
+    Call LoadSini
+
 End Sub
 
 Private Sub Command17_Click()
     Call CargaNpcsDat
+
 End Sub
 
 Private Sub Command18_Click()
-Me.MousePointer = 11
-Call GuardarUsuarios
-Me.MousePointer = 0
-MsgBox "Grabado de personajes OK!"
+    Me.MousePointer = 11
+    Call GuardarUsuarios
+    Me.MousePointer = 0
+    MsgBox "Grabado de personajes OK!"
+
 End Sub
 
 Private Sub Command19_Click()
-Dim i As Long, n As Long
 
-Dim sENtrada As String
+    Dim i        As Long, n As Long
 
-sENtrada = InputBox("Escribe ""estoy DE acuerdo"" sin comillas y con distición de mayusculas minusculas para desbanear a todos los personajes", "UnBan", "hola")
-If sENtrada = "estoy DE acuerdo" Then
+    Dim sENtrada As String
+
+    sENtrada = InputBox("Escribe ""estoy DE acuerdo"" sin comillas y con distición de mayusculas minusculas para desbanear a todos los personajes", "UnBan", "hola")
+
+    If sENtrada = "estoy DE acuerdo" Then
     
-    n = BanIps.Count
-    For i = 1 To BanIps.Count
-        BanIps.Remove 1
-    Next i
+        n = BanIps.Count
+
+        For i = 1 To BanIps.Count
+            BanIps.Remove 1
+        Next i
     
-    MsgBox "Se han habilitado " & n & " ipes"
-End If
+        MsgBox "Se han habilitado " & n & " ipes"
+
+    End If
 
 End Sub
 
 Private Sub Command2_Click()
-frmServidor.Visible = False
+    frmServidor.Visible = False
+
 End Sub
 
 Private Sub Command20_Click()
-#If UsarQueSocket = 1 Then
+    #If UsarQueSocket = 1 Then
 
-If MsgBox("Esta seguro que desea reiniciar los sockets ? Se cerrarán todas las conexiones activas.", vbYesNo, "Reiniciar Sockets") = vbYes Then
-    Call WSApiReiniciarSockets
-End If
+        If MsgBox("Esta seguro que desea reiniciar los sockets ? Se cerrarán todas las conexiones activas.", vbYesNo, "Reiniciar Sockets") = vbYes Then
+            Call WSApiReiniciarSockets
 
-#ElseIf UsarQueSocket = 2 Then
-
-Dim LoopC As Integer
-
-If MsgBox("Esta seguro que desea reiniciar los sockets ? Se cerrarán todas las conexiones activas.", vbYesNo, "Reiniciar Sockets") = vbYes Then
-    For LoopC = 1 To MaxUsers
-        If UserList(LoopC).ConnID <> -1 And UserList(LoopC).ConnIDValida Then
-            Call CloseSocket(LoopC)
         End If
-    Next LoopC
-    
-    Call frmMain.Serv.Detener
-    Call frmMain.Serv.Iniciar(Puerto)
-End If
 
-#End If
+    #ElseIf UsarQueSocket = 2 Then
+
+        Dim LoopC As Integer
+
+        If MsgBox("Esta seguro que desea reiniciar los sockets ? Se cerrarán todas las conexiones activas.", vbYesNo, "Reiniciar Sockets") = vbYes Then
+
+            For LoopC = 1 To MaxUsers
+
+                If UserList(LoopC).ConnID <> -1 And UserList(LoopC).ConnIDValida Then
+                    Call CloseSocket(LoopC)
+
+                End If
+
+            Next LoopC
+    
+            Call frmMain.Serv.Detener
+            Call frmMain.Serv.Iniciar(Puerto)
+
+        End If
+
+    #End If
+
 End Sub
 
 'Barrin 29/9/03
 Private Sub Command21_Click()
 
-If EnPausa = False Then
-    EnPausa = True
-    Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
-    Command21.Caption = "Reanudar el servidor"
-Else
-    EnPausa = False
-    Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
-    Command21.Caption = "Pausar el servidor"
-End If
+    If EnPausa = False Then
+        EnPausa = True
+        Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
+        Command21.Caption = "Reanudar el servidor"
+    Else
+        EnPausa = False
+        Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
+        Command21.Caption = "Pausar el servidor"
+
+    End If
 
 End Sub
 
 Private Sub Command22_Click()
     Me.Visible = False
     frmAdmin.Show
+
 End Sub
 
 Private Sub Command23_Click()
-If MsgBox("Esta seguro que desea hacer WorldSave, guardar pjs y cerrar ?", vbYesNo, "Apagar Magicamente") = vbYes Then
-    Me.MousePointer = 11
-    
-    FrmStat.Show
-   
-    'WorldSave
- '   Call DoBackUp
 
-    'Guardar Pjs
-    Call GuardarUsuarios
+    If MsgBox("Esta seguro que desea hacer WorldSave, guardar pjs y cerrar ?", vbYesNo, "Apagar Magicamente") = vbYes Then
+        Me.MousePointer = 11
     
-    'Chauuu
-    Unload frmMain
-End If
+        FrmStat.Show
+   
+        'WorldSave
+        '   Call DoBackUp
+
+        'Guardar Pjs
+        Call GuardarUsuarios
+    
+        'Chauuu
+        Unload frmMain
+
+    End If
+
 End Sub
 
 Private Sub Command24_Click()
-frmEstadisticas.Show
+    frmEstadisticas.Show
 
 End Sub
 
 Private Sub Command25_Click()
-Call MD5sCarga
+    Call MD5sCarga
 
 End Sub
 
 Private Sub Command26_Click()
-#If UsarQueSocket = 1 Then
-    'Cierra el socket de escucha
-    If SockListen >= 0 Then Call apiclosesocket(SockListen)
+    #If UsarQueSocket = 1 Then
+
+        'Cierra el socket de escucha
+        If SockListen >= 0 Then Call apiclosesocket(SockListen)
     
-    'Inicia el socket de escucha
-    SockListen = ListenForConnect(Puerto, hWndMsg, "")
-#End If
+        'Inicia el socket de escucha
+        SockListen = ListenForConnect(Puerto, hWndMsg, "")
+    #End If
+
 End Sub
 
 Private Sub Command27_Click()
-frmUserList.Show
+    frmUserList.Show
 
 End Sub
 
 Private Sub Command28_Click()
-Call LoadConfiguraciones
+    Call LoadConfiguraciones
+
 End Sub
 
 Private Sub Command3_Click()
-If MsgBox("¡¡Atencion!! Si reinicia el servidor puede provocar la perdida de datos de los usarios. ¿Desea reiniciar el servidor de todas maneras?", vbYesNo) = vbYes Then
-    Me.Visible = False
-    Call Restart
-End If
+
+    If MsgBox("¡¡Atencion!! Si reinicia el servidor puede provocar la perdida de datos de los usarios. ¿Desea reiniciar el servidor de todas maneras?", vbYesNo) = vbYes Then
+        Me.Visible = False
+        Call Restart
+
+    End If
+
 End Sub
 
 Private Sub Command4_Click()
-On Error GoTo eh
+
+    On Error GoTo eh
+
     Me.MousePointer = 11
     FrmStat.Show
     Call DoBackUp
     Me.MousePointer = 0
     MsgBox "WORLDSAVE OK!!"
-Exit Sub
+    Exit Sub
 eh:
-Call LogError("Error en WORLDSAVE")
+    Call LogError("Error en WORLDSAVE")
+
 End Sub
 
 Private Sub Command5_Click()
 
-'Se asegura de que los sockets estan cerrados e ignora cualquier err
-On Error Resume Next
+    'Se asegura de que los sockets estan cerrados e ignora cualquier err
+    On Error Resume Next
 
-If frmMain.Visible Then frmMain.txStatus.Caption = "Reiniciando."
+    If frmMain.Visible Then frmMain.txStatus.Caption = "Reiniciando."
 
-FrmStat.Show
+    FrmStat.Show
 
-If FileExist(App.Path & "\logs\errores.log", vbNormal) Then Kill App.Path & "\logs\errores.log"
-If FileExist(App.Path & "\logs\connect.log", vbNormal) Then Kill App.Path & "\logs\Connect.log"
-If FileExist(App.Path & "\logs\HackAttemps.log", vbNormal) Then Kill App.Path & "\logs\HackAttemps.log"
-If FileExist(App.Path & "\logs\Asesinatos.log", vbNormal) Then Kill App.Path & "\logs\Asesinatos.log"
-If FileExist(App.Path & "\logs\Resurrecciones.log", vbNormal) Then Kill App.Path & "\logs\Resurrecciones.log"
-If FileExist(App.Path & "\logs\Teleports.Log", vbNormal) Then Kill App.Path & "\logs\Teleports.Log"
+    If FileExist(App.Path & "\logs\errores.log", vbNormal) Then Kill App.Path & "\logs\errores.log"
+    If FileExist(App.Path & "\logs\connect.log", vbNormal) Then Kill App.Path & "\logs\Connect.log"
+    If FileExist(App.Path & "\logs\HackAttemps.log", vbNormal) Then Kill App.Path & "\logs\HackAttemps.log"
+    If FileExist(App.Path & "\logs\Asesinatos.log", vbNormal) Then Kill App.Path & "\logs\Asesinatos.log"
+    If FileExist(App.Path & "\logs\Resurrecciones.log", vbNormal) Then Kill App.Path & "\logs\Resurrecciones.log"
+    If FileExist(App.Path & "\logs\Teleports.Log", vbNormal) Then Kill App.Path & "\logs\Teleports.Log"
 
+    #If UsarQueSocket = 1 Then
+        Call apiclosesocket(SockListen)
+    #ElseIf UsarQueSocket = 0 Then
+        frmMain.Socket1.Cleanup
+        frmMain.Socket2(0).Cleanup
+    #ElseIf UsarQueSocket = 2 Then
+        frmMain.Serv.Detener
+    #End If
 
-#If UsarQueSocket = 1 Then
-Call apiclosesocket(SockListen)
-#ElseIf UsarQueSocket = 0 Then
-frmMain.Socket1.Cleanup
-frmMain.Socket2(0).Cleanup
-#ElseIf UsarQueSocket = 2 Then
-frmMain.Serv.Detener
-#End If
+    Dim LoopC As Integer
 
-Dim LoopC As Integer
+    For LoopC = 1 To MaxUsers
+        Call CloseSocket(LoopC)
+    Next
 
-For LoopC = 1 To MaxUsers
-    Call CloseSocket(LoopC)
-Next
-  
+    LastUser = 0
+    NumUsers = 0
 
-LastUser = 0
-NumUsers = 0
+    Call FreeNPCs
+    Call FreeCharIndexes
 
-Call FreeNPCs
-Call FreeCharIndexes
+    Call LoadSini
+    Call LoadIntervalos
+    Call CargarBackUp
+    Call LoadOBJData
+    Call LoadPesca
+    Call LoadRecursosEspeciales
 
-Call LoadSini
-Call LoadIntervalos
-Call CargarBackUp
-Call LoadOBJData
-Call LoadPesca
-Call LoadRecursosEspeciales
+    #If UsarQueSocket = 1 Then
+        SockListen = ListenForConnect(Puerto, hWndMsg, "")
 
-#If UsarQueSocket = 1 Then
-SockListen = ListenForConnect(Puerto, hWndMsg, "")
+    #ElseIf UsarQueSocket = 0 Then
+        frmMain.Socket1.AddressFamily = AF_INET
+        frmMain.Socket1.Protocol = IPPROTO_IP
+        frmMain.Socket1.SocketType = SOCK_STREAM
+        frmMain.Socket1.Binary = False
+        frmMain.Socket1.Blocking = False
+        frmMain.Socket1.BufferSize = 1024
 
-#ElseIf UsarQueSocket = 0 Then
-frmMain.Socket1.AddressFamily = AF_INET
-frmMain.Socket1.Protocol = IPPROTO_IP
-frmMain.Socket1.SocketType = SOCK_STREAM
-frmMain.Socket1.Binary = False
-frmMain.Socket1.Blocking = False
-frmMain.Socket1.BufferSize = 1024
+        frmMain.Socket2(0).AddressFamily = AF_INET
+        frmMain.Socket2(0).Protocol = IPPROTO_IP
+        frmMain.Socket2(0).SocketType = SOCK_STREAM
+        frmMain.Socket2(0).Blocking = False
+        frmMain.Socket2(0).BufferSize = 2048
 
-frmMain.Socket2(0).AddressFamily = AF_INET
-frmMain.Socket2(0).Protocol = IPPROTO_IP
-frmMain.Socket2(0).SocketType = SOCK_STREAM
-frmMain.Socket2(0).Blocking = False
-frmMain.Socket2(0).BufferSize = 2048
+        'Escucha
+        frmMain.Socket1.LocalPort = Puerto
+        frmMain.Socket1.listen
+    #End If
 
-'Escucha
-frmMain.Socket1.LocalPort = Puerto
-frmMain.Socket1.listen
-#End If
-
-If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
+    If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
 
 End Sub
 
 Private Sub Command6_Click()
-Call ReSpawnOrigPosNpcs
+    Call ReSpawnOrigPosNpcs
+
 End Sub
 
 Private Sub Command7_Click()
-FrmInterv.Show
+    FrmInterv.Show
+
 End Sub
 
 Private Sub Command8_Click()
-Call CargarHechizos
+    Call CargarHechizos
+
 End Sub
 
 Private Sub Command9_Click()
-Call CargarForbidenWords
+    Call CargarForbidenWords
+
 End Sub
 
 Private Sub Form_Deactivate()
-frmServidor.Visible = False
+    frmServidor.Visible = False
+
 End Sub
 
 Private Sub Form_Load()
-#If UsarQueSocket = 1 Then
-Command20.Visible = True
-Command26.Visible = True
-#ElseIf UsarQueSocket = 0 Then
-Command20.Visible = False
-Command26.Visible = False
-#ElseIf UsarQueSocket = 2 Then
-Command20.Visible = True
-Command26.Visible = False
-#End If
+    #If UsarQueSocket = 1 Then
+        Command20.Visible = True
+        Command26.Visible = True
+    #ElseIf UsarQueSocket = 0 Then
+        Command20.Visible = False
+        Command26.Visible = False
+    #ElseIf UsarQueSocket = 2 Then
+        Command20.Visible = True
+        Command26.Visible = False
+    #End If
+
 End Sub
