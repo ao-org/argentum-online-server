@@ -1360,10 +1360,7 @@ Sub UserDie(ByVal UserIndex As Integer)
     '<<<< Meditando >>>>
     If UserList(UserIndex).flags.Meditando Then
         UserList(UserIndex).flags.Meditando = False
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, UserList(UserIndex).Char.ParticulaFx, 0, True))
-        UserList(UserIndex).Char.ParticulaFx = 0
-        Call WriteMeditateToggle(UserIndex)
-
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(.Char.CharIndex, 0))
     End If
     
     'If UserList(UserIndex).Familiar.Invocado = 1 Then

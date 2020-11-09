@@ -3096,17 +3096,15 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                 Exit Sub
 
             End If
-        
-            If UserList(UserIndex).flags.Meditando = True Then
-                Call WriteConsoleMsg(UserIndex, "No podés subirte a la montura si estas meditando.", FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
 
-            End If
-        
             If MapInfo(UserList(UserIndex).Pos.Map).zone = "DUNGEON" Then
                 Call WriteConsoleMsg(UserIndex, "No podes cabalgar dentro de un dungeon.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
+            End If
+            
+            If UserList(UserIndex).flags.Meditando Then
+                UserList(UserIndex).flags.Meditando = False
+                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(.Char.CharIndex, 0))
             End If
         
             Call DoMontar(UserIndex, obj, slot)

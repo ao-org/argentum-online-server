@@ -2246,12 +2246,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
             If .flags.Meditando Then
                 'Stop meditating, next action will start movement.
                 .flags.Meditando = False
-                
-                Call WriteMeditateToggle(UserIndex)
-                'Call WriteConsoleMsg(UserIndex, "Dejas de meditar.", FontTypeNames.FONTTYPE_INFO)
-                Call WriteLocaleMsg(UserIndex, "123", FontTypeNames.FONTTYPE_INFO)
-                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, .Char.ParticulaFx, 0, True))
-                .Char.ParticulaFx = 0
+                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(.Char.CharIndex, 0))
             
             ElseIf IntervaloPermiteCaminar(UserIndex) Then
             
@@ -2397,12 +2392,6 @@ Private Sub HandleAttack(ByVal UserIndex As Integer)
 
         End If
 
-        'If user meditates, can't attack
-        If .flags.Meditando Then
-            Exit Sub
-
-        End If
-        
         'If equiped weapon is ranged, can't attack this way
         If .Invent.WeaponEqpObjIndex > 0 Then
             If ObjData(.Invent.WeaponEqpObjIndex).proyectil = 1 Then
@@ -2417,6 +2406,11 @@ Private Sub HandleAttack(ByVal UserIndex As Integer)
             Call WriteConsoleMsg(UserIndex, "Para atacar debes desequipar la herramienta.", FontTypeNames.FONTTYPE_INFOIAO)
             Exit Sub
 
+        End If
+        
+        If UserList(UserIndex).flags.Meditando Then
+            UserList(UserIndex).flags.Meditando = False
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(.Char.CharIndex, 0))
         End If
         
         'If exiting, cancel
@@ -3332,7 +3326,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
         
         Skill = .incomingData.ReadByte()
 
-        If .flags.Muerto = 1 Or .flags.Descansar Or .flags.Meditando Or Not InMapBounds(.Pos.Map, x, Y) Then
+        If .flags.Muerto = 1 Or .flags.Descansar Or Not InMapBounds(.Pos.Map, x, Y) Then
             Exit Sub
 
         End If
@@ -3340,7 +3334,11 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
         If Not InRangoVision(UserIndex, x, Y) Then
             Call WritePosUpdate(UserIndex)
             Exit Sub
-
+        End If
+        
+        If UserList(UserIndex).flags.Meditando Then
+            UserList(UserIndex).flags.Meditando = False
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(.Char.CharIndex, 0))
         End If
         
         'If exiting, cancel
@@ -6688,154 +6686,53 @@ Private Sub HandleMeditate(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         'Remove packet ID
         Call .incomingData.ReadByte
-        
-        'Dead users can't use pets
+
         If .flags.Muerto = 1 Then
-            'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!! Solo podés meditar cuando estás vivo.", FontTypeNames.FONTTYPE_INFO)
             Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
-
         End If
         
         If .flags.Montado = 1 Then
             Call WriteConsoleMsg(UserIndex, "No podes meditar estando montado.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
-
-        End If
-        
-        If .Stats.MaxMAN = .Stats.MinMAN Then
-            Exit Sub
-
         End If
 
-        Dim actual As Long
-
-        actual = GetTickCount() And &H7FFFFFFF
-
-        If .Counters.TUltimoMeditar + 2000 > actual Then
-            Call WriteConsoleMsg(UserIndex, "Debes esperar unos instantes para volver a meditar.", FontTypeNames.FONTTYPE_INFOBOLD)
-            Exit Sub
-
-        End If
-        
         'Can he meditate?
-        If .Stats.MaxMAN = 0 Then
-            Call WriteConsoleMsg(UserIndex, "Solo las clases mágicas conocen el arte de la meditación", FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-
-        End If
-        
-        Call WriteMeditateToggle(UserIndex)
-        
-        If .flags.Meditando Then
-            'Call WriteConsoleMsg(UserIndex, "Dejas de meditar.", FontTypeNames.FONTTYPE_INFO)
-            Call WriteLocaleMsg(UserIndex, "123", FontTypeNames.FONTTYPE_INFO)
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, UserList(UserIndex).Char.ParticulaFx, 0, True))
-            UserList(UserIndex).Char.ParticulaFx = 0
-            .Counters.TUltimoMeditar = GetTickCount() And &H7FFFFFFF
-
-        End If
+        'If .Stats.MaxMAN = 0 Then
+        '    Call WriteConsoleMsg(UserIndex, "Solo las clases mágicas conocen el arte de la meditación", FontTypeNames.FONTTYPE_INFO)
+        '    Exit Sub
+        'End If
 
         .flags.Meditando = Not .flags.Meditando
-        
-        'Barrin 3/10/03 Tiempo de inicio al meditar
 
         If .flags.Meditando Then
-            .Counters.tInicioMeditar = GetTickCount() And &H7FFFFFFF
-            
             .Char.loops = INFINITE_LOOPS
             
             'Show proper FX according to level
-            Select Case Status(UserIndex)
-            
-                Case 1, 3
+            Select Case .Stats.ELV
 
-                    Select Case .Stats.ELV
+                Case 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
+                    .Char.FX = Meditaciones.MeditarInicial
 
-                        Case 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
-                            .Char.ParticulaFx = MeditarParticle.MeditarNewCiuda
+                Case 15, 16, 17, 18, 19, 20, 21, 22, 23, 24
+                    .Char.FX = Meditaciones.MeditarDesde15
 
-                        Case 15, 16, 17, 18, 19, 20, 21, 22, 23, 24
-                            .Char.ParticulaFx = MeditarParticle.Meditar15Ciuda
+                Case 25, 26, 27, 28, 29, 30, 31, 32, 33, 34
+                    .Char.FX = Meditaciones.MeditarDesde25
 
-                        Case 25, 26, 27, 28, 29, 30, 31, 32, 33, 34
-                            .Char.ParticulaFx = MeditarParticle.Meditar25Ciuda
+                Case 35, 36, 37, 38, 39, 40, 41, 42, 43, 44
+                    .Char.FX = Meditaciones.MeditarDesde35
 
-                        Case 35, 36, 37, 38, 39, 40, 41, 42, 43, 44
-                            .Char.ParticulaFx = MeditarParticle.Meditar35Ciuda
-
-                        Case 45, 46, 47, 48, 49
-                            .Char.ParticulaFx = MeditarParticle.Meditar45Ciuda
-
-                        Case 50
-                            .Char.ParticulaFx = MeditarParticle.Meditar50Ciuda
-
-                        Case Else
-                            .Char.ParticulaFx = MeditarParticle.MeditarNewCiuda
-
-                    End Select
-
-                Case 0, 2
-
-                    Select Case .Stats.ELV
-
-                        Case 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
-                            .Char.ParticulaFx = MeditarParticle.meditarNewcrimi
-
-                        Case 15, 16, 17, 18, 19, 20, 21, 22, 23, 24
-                            .Char.ParticulaFx = MeditarParticle.Meditar15crimi
-
-                        Case 25, 26, 27, 28, 29, 30, 31, 32, 33, 34
-                            .Char.ParticulaFx = MeditarParticle.Meditar25crimi
-
-                        Case 35, 36, 37, 38, 39, 40, 41, 42, 43, 44
-                            .Char.ParticulaFx = MeditarParticle.Meditar35crimi
-
-                        Case 45, 46, 47, 48, 49
-                            .Char.ParticulaFx = MeditarParticle.Meditar45crimi
-
-                        Case 50
-                            .Char.ParticulaFx = MeditarParticle.Meditar50crimi
-
-                        Case Else
-                            .Char.ParticulaFx = MeditarParticle.meditarNewcrimi
-
-                    End Select
+                Case Else
+                    .Char.FX = Meditaciones.MeditarDesde45
 
             End Select
-            
-            If .flags.Privilegios <> PlayerType.user Then
-
-                Select Case .flags.Privilegios
-
-                    Case PlayerType.Consejero
-                        .Char.ParticulaFx = MeditarParticle.MeditarConsejero
-
-                    Case PlayerType.SemiDios
-                        .Char.ParticulaFx = MeditarParticle.MeditarGm
-
-                    Case PlayerType.Dios
-                        .Char.ParticulaFx = MeditarParticle.MeditarAdmin
-
-                    Case PlayerType.Admin
-                        .Char.ParticulaFx = MeditarParticle.MeditarAdmin
-
-                End Select
-
-            End If
-                    
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, .Char.ParticulaFx, -1, False))
         Else
-            .Counters.bPuedeMeditar = False
-            
-            'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.CharIndex, 0, 0))
-            ' .Char.FX = 0
-            ' .Char.loops = 0
-          
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, .Char.ParticulaFx, 0, True))
-            .Char.ParticulaFx = 0
-
+            Call WriteLocaleMsg(UserIndex, "123", FontTypeNames.FONTTYPE_INFO)
+            .Char.FX = 0
         End If
+        
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(.Char.CharIndex, .Char.FX))
 
     End With
 
@@ -19942,34 +19839,6 @@ Errhandler:
 End Sub
 
 ''
-' Writes the "MeditateToggle" message to the given user's outgoing data buffer.
-'
-' @param    UserIndex User to which the message is intended.
-' @remarks  The data is not actually sent until the buffer is properly flushed.
-
-Public Sub WriteMeditateToggle(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "MeditateToggle" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo Errhandler
-
-    Call UserList(UserIndex).outgoingData.WriteByte(ServerPacketID.MeditateToggle)
-    Exit Sub
-
-Errhandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
-End Sub
-
-''
 ' Writes the "BlindNoMore" message to the given user's outgoing data buffer.
 '
 ' @param    UserIndex User to which the message is intended.
@@ -21253,6 +21122,19 @@ Public Function PrepareMessageCreateFX(ByVal CharIndex As Integer, ByVal FX As I
         Call .WriteInteger(FXLoops)
         
         PrepareMessageCreateFX = .ReadASCIIStringFixed(.length)
+
+    End With
+
+End Function
+
+Public Function PrepareMessageMeditateToggle(ByVal CharIndex As Integer, ByVal FX As Integer) As String
+    '***************************************************
+    With auxiliarBuffer
+        Call .WriteByte(ServerPacketID.MeditateToggle)
+        Call .WriteInteger(CharIndex)
+        Call .WriteInteger(FX)
+        
+        PrepareMessageMeditateToggle = .ReadASCIIStringFixed(.length)
 
     End With
 
