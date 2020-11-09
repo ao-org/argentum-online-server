@@ -84,7 +84,7 @@ Sub ActStats(ByVal VictimIndex As Integer, ByVal attackerIndex As Integer)
     If UserList(attackerIndex).Stats.UsuariosMatados < MAXUSERMATADOS Then UserList(attackerIndex).Stats.UsuariosMatados = UserList(attackerIndex).Stats.UsuariosMatados + 1
     'Call CheckearRecompesas(attackerIndex, 2)
     
-    Call FlushBuffer(VictimIndex)
+    
 
 End Sub
 
@@ -1754,7 +1754,7 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As In
             If UserList(UserList(UserIndex).ComUsu.DestUsu).ComUsu.DestUsu = UserIndex Then
                 Call WriteConsoleMsg(UserList(UserIndex).ComUsu.DestUsu, "Comercio cancelado por el otro usuario", FontTypeNames.FONTTYPE_TALK)
                 Call FinComerciarUsu(UserList(UserIndex).ComUsu.DestUsu)
-                Call FlushBuffer(UserList(UserIndex).ComUsu.DestUsu)
+                
 
             End If
 
@@ -1836,7 +1836,7 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As In
     Call WriteUserCharIndexInServer(UserIndex)
     
     'Force a flush, so user index is in there before it's destroyed for teleporting
-    Call FlushBuffer(UserIndex)
+    
     
     'Seguis invisible al pasar de mapa
     If (UserList(UserIndex).flags.invisible = 1 Or UserList(UserIndex).flags.Oculto = 1) And (Not UserList(UserIndex).flags.AdminInvisible = 1) Then
@@ -1903,7 +1903,7 @@ Sub Cerrar_Usuario(ByVal UserIndex As Integer)
             
             'Call WriteConsoleMsg(UserIndex, "Gracias por jugar Argentum20.", FontTypeNames.FONTTYPE_INFO)
             Call WriteDisconnect(UserIndex)
-            Call FlushBuffer(UserIndex)
+            
   
             Call CloseSocket(UserIndex)
 
@@ -1940,7 +1940,7 @@ Public Sub CancelExit(ByVal UserIndex As Integer)
             Else
                 Call WriteConsoleMsg(UserIndex, "Gracias por jugar Argentum20.", FontTypeNames.FONTTYPE_INFO)
                 Call WriteDisconnect(UserIndex)
-                Call FlushBuffer(UserIndex)
+                
                 Call CloseSocket(UserIndex)
 
             End If

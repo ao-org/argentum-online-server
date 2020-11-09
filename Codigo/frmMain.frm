@@ -335,7 +335,7 @@ Begin VB.Form frmMain
       Enabled         =   0   'False
       Interval        =   6000
       Left            =   2160
-      Top             =   3360
+      Top             =   3120
    End
    Begin VB.Timer AutoSave 
       Enabled         =   0   'False
@@ -353,7 +353,7 @@ Begin VB.Form frmMain
       Enabled         =   0   'False
       Interval        =   60000
       Left            =   1680
-      Top             =   3000
+      Top             =   3120
    End
    Begin VB.Timer TIMER_AI 
       Enabled         =   0   'False
@@ -530,6 +530,8 @@ Attribute VB_Exposed = False
 'Código Postal 1900
 'Pablo Ignacio Márquez
 
+Option Explicit
+
 Public ESCUCHADAS As Long
 
 Private Type NOTIFYICONDATA
@@ -600,7 +602,7 @@ Sub CheckIdleUser()
                         If UserList(UserList(iUserIndex).ComUsu.DestUsu).ComUsu.DestUsu = iUserIndex Then
                             Call WriteConsoleMsg(UserList(iUserIndex).ComUsu.DestUsu, "Comercio cancelado por el otro usuario.", FontTypeNames.FONTTYPE_TALK)
                             Call FinComerciarUsu(UserList(iUserIndex).ComUsu.DestUsu)
-                            Call FlushBuffer(UserList(iUserIndex).ComUsu.DestUsu) 'flush the buffer to send the message right away
+                            
 
                         End If
 
@@ -851,6 +853,8 @@ Private Sub EstadoTimer_Timer()
     On Error Resume Next
 
     Call GetHoraActual
+    
+    Dim i As Long
 
     For i = 1 To Baneos.Count
 
@@ -1053,8 +1057,6 @@ Private Sub Form_Unload(Cancel As Integer)
     Close #n
     
     End
-    
-    Set SonidosMapas = Nothing
 
 End Sub
 
@@ -1232,7 +1234,7 @@ Private Sub GameTimer_Timer()
                 End If 'UserLogged
                 
                 'If there is anything to be sent, we send it
-                Call FlushBuffer(iUserIndex)
+                If UserList(iUserIndex).ConnIDValida Then Call FlushBuffer(iUserIndex)
 
             End If
 
@@ -1412,38 +1414,6 @@ Private Sub npcataca_Timer()
     'For npc = 1 To LastNPC
     '  Npclist(npc).CanAttack = 1
     'Next npc
-
-End Sub
-
-Private Sub packetResend_Timer()
-
-    '***************************************************
-    'Autor: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 04/01/07
-    'Attempts to resend to the user all data that may be enqueued.
-    '***************************************************
-    On Error GoTo Errhandler:
-
-    Dim i As Long
-    
-    For i = 1 To MaxUsers
-
-        If UserList(i).ConnIDValida Then
-            If UserList(i).outgoingData.length > 0 Then
-                Call EnviarDatosASlot(i, UserList(i).outgoingData.ReadASCIIStringFixed(UserList(i).outgoingData.length))
-
-            End If
-
-        End If
-
-    Next i
-
-    Exit Sub
-
-Errhandler:
-    LogError ("Error en packetResend - Error: " & Err.Number & " - Desc: " & Err.description)
-
-    Resume Next
 
 End Sub
 
@@ -1788,7 +1758,7 @@ Private Sub tPiqueteC_Timer()
 
             End If
 
-            Call FlushBuffer(i)
+            
 
         End If
     

@@ -802,7 +802,7 @@ Sub RelogearUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCue
 
     'Call MostrarNumUsers
 
-    Call FlushBuffer(UserIndex)
+    
 
     'Call SaveUser(UserIndex, CharPath & UCase$(UserList(UserIndex).name) & ".chr")
 
@@ -812,7 +812,7 @@ Sub RelogearUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCue
 
 Errhandler:
     Call WriteShowMessageBox(UserIndex, "El personaje contiene un error, comuniquese con un miembro del staff.")
-    Call FlushBuffer(UserIndex)
+    
 
     'N = FreeFile
     'Log

@@ -1402,7 +1402,7 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
         HandleIncomingData = False
     Else
         'Flush buffer - send everything that has been written
-        Call FlushBuffer(UserIndex)
+        
         HandleIncomingData = False
 
     End If
@@ -1640,7 +1640,7 @@ Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
     
     Else
         'Flush buffer - send everything that has been written
-        Call FlushBuffer(UserIndex)
+        
 
     End If
 
@@ -1694,14 +1694,14 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
     
     If Not VersionOK(Version) Then
         Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
-        Call FlushBuffer(UserIndex)
+        
         Call CloseSocket(UserIndex)
         Exit Sub
 
     End If
 
     If Not EntrarCuenta(UserIndex, CuentaEmail, Password, MacAddress, HDserial) Then
-        Call FlushBuffer(UserIndex)
+        
         Call CloseSocket(UserIndex)
         Exit Sub
 
@@ -1709,7 +1709,7 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
     
     If Not AsciiValidos(UserName) Then
         Call WriteShowMessageBox(UserIndex, "Nombre invalido.")
-        Call FlushBuffer(UserIndex)
+        
         Call CloseSocket(UserIndex)
         
         Exit Sub
@@ -1718,7 +1718,7 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
     
     If Not PersonajeExiste(UserName) Then
         Call WriteShowMessageBox(UserIndex, "El personaje no existe.")
-        Call FlushBuffer(UserIndex)
+        
         Call CloseSocket(UserIndex)
         
         Exit Sub
@@ -1733,7 +1733,7 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
 
             If Baneos(LoopC).name = UCase$(UserName) Then
                 Call WriteShowMessageBox(UserIndex, "Se te ha prohibido la entrada a Argentum20 hasta el día " & Format(Baneos(LoopC).FechaLiberacion, "dddddd") & " a las " & Format(Baneos(LoopC).FechaLiberacion, "hh:mm am/pm") & " debido a " & Baneos(LoopC).Causa & " Esta decisión fue tomada por " & Baneos(LoopC).Baneador & ".")
-                Call FlushBuffer(UserIndex)
+                
                 Call CloseSocket(UserIndex)
                 Exit Sub
 
@@ -1759,7 +1759,7 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
         End If
         
         Call WriteShowMessageBox(UserIndex, "Se te ha prohibido la entrada al juego debido a " & BaneoMotivo & ". Esta decisión fue tomada por " & BanNick & ".")
-        Call FlushBuffer(UserIndex)
+        
         Call CloseSocket(UserIndex)
         Exit Sub
 
@@ -1833,7 +1833,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
     
     If PuedeCrearPersonajes = 0 Then
         Call WriteErrorMsg(UserIndex, "La creacion de personajes en este servidor se ha deshabilitado.")
-        Call FlushBuffer(UserIndex)
+        
         Call CloseSocket(UserIndex)
         Exit Sub
 
@@ -1841,7 +1841,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
 
     If aClon.MaxPersonajes(UserList(UserIndex).ip) Then
         Call WriteErrorMsg(UserIndex, "Has creado demasiados personajes.")
-        Call FlushBuffer(UserIndex)
+        
         Call CloseSocket(UserIndex)
         Exit Sub
 
@@ -1866,14 +1866,14 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
     
     If Not VersionOK(Version) Then
         Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
-        Call FlushBuffer(UserIndex)
+        
         Call CloseSocket(UserIndex)
         Exit Sub
 
     End If
 
     If Not EntrarCuenta(UserIndex, CuentaEmail, Password, MacAddress, HDserial) Then
-        Call FlushBuffer(UserIndex)
+        
         Call CloseSocket(UserIndex)
         Exit Sub
 
@@ -2171,7 +2171,7 @@ Private Sub HandleWhisper(ByVal UserIndex As Integer)
                         'Call WriteConsoleMsg(UserIndex, "[" & .Name & "] " & chat, FontTypeNames.FONTTYPE_MP)
                         'Call WriteConsoleMsg(targetUserIndex, "[" & .Name & "] " & chat, FontTypeNames.FONTTYPE_MP)
                         Call WritePlayWave(targetUserIndex, FXSound.MP_SOUND, NO_3D_SOUND, NO_3D_SOUND)
-                        Call FlushBuffer(targetUserIndex)
+                        
 
                     End If
 
@@ -2179,7 +2179,7 @@ Private Sub HandleWhisper(ByVal UserIndex As Integer)
                     Call WriteConsoleMsg(UserIndex, "[" & .name & "] " & chat, FontTypeNames.FONTTYPE_MP)
                     Call WriteConsoleMsg(targetUserIndex, "[" & .name & "] " & chat, FontTypeNames.FONTTYPE_MP)
                     Call WritePlayWave(targetUserIndex, FXSound.MP_SOUND, NO_3D_SOUND, NO_3D_SOUND)
-                    Call FlushBuffer(targetUserIndex)
+                    
                     
                 End If
 
@@ -2677,7 +2677,7 @@ Private Sub HandleUserCommerceEnd(ByVal UserIndex As Integer)
             Call FinComerciarUsu(.ComUsu.DestUsu)
             
             'Send data in the outgoing buffer of the other user
-            Call FlushBuffer(.ComUsu.DestUsu)
+            
 
         End If
         
@@ -2759,7 +2759,7 @@ Private Sub HandleUserCommerceReject(ByVal UserIndex As Integer)
                 Call FinComerciarUsu(otherUser)
                 
                 'Send data in the outgoing buffer of the other user
-                Call FlushBuffer(otherUser)
+                
 
             End If
 
@@ -3117,7 +3117,7 @@ Private Sub HandleUseSpellMacro(ByVal UserIndex As Integer)
         Call .incomingData.ReadByte
         Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg(.name & " fue expulsado por Anti-macro de hechizos", FontTypeNames.FONTTYPE_VENENO))
         Call WriteErrorMsg(UserIndex, "Has sido expulsado por usar macro de hechizos. Recomendamos leer el reglamento sobre el tema macros")
-        Call FlushBuffer(UserIndex)
+        
         Call CloseSocket(UserIndex)
 
     End With
@@ -3992,7 +3992,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                             
                             ''FUISTE
                             Call WriteErrorMsg(UserIndex, "Has sido expulsado por el sistema anti cheats.")
-                            Call FlushBuffer(UserIndex)
+                            
                             Call CloseSocket(UserIndex)
                             Exit Sub
 
@@ -9082,7 +9082,7 @@ Private Sub HandleSilence(ByVal UserIndex As Integer)
                     Call LogGM(.name, "/silenciar " & UserList(tUser).name)
                 
                     'Flush the other user's buffer
-                    Call FlushBuffer(tUser)
+                    
                 Else
                     UserList(tUser).flags.Silenciado = 0
                     Call WriteConsoleMsg(UserIndex, "Usuario des silenciado.", FontTypeNames.FONTTYPE_INFO)
@@ -9250,7 +9250,7 @@ Private Sub HandleGoToChar(ByVal UserIndex As Integer)
                     
                     If .flags.AdminInvisible = 0 Then
                         Call WriteConsoleMsg(tUser, .name & " se ha trasportado hacia donde te encuentras.", FontTypeNames.FONTTYPE_INFO)
-                        Call FlushBuffer(tUser)
+                        
 
                     End If
                     
@@ -10878,7 +10878,7 @@ Private Sub HandleReviveChar(ByVal UserIndex As Integer)
                 'Call WriteVelocidadToggle(tUser)
                 Call SendData(SendTarget.ToPCArea, tUser, PrepareMessageSpeedingACT(UserList(tUser).Char.CharIndex, UserList(tUser).Char.speeding))
                 
-                Call FlushBuffer(tUser)
+                
                 
                 Call LogGM(.name, "Resucito a " & UserName)
 
@@ -12990,7 +12990,7 @@ Private Sub HandleMakeDumbNoMore(ByVal UserIndex As Integer)
                 Call WriteConsoleMsg(UserIndex, "Offline", FontTypeNames.FONTTYPE_INFO)
             Else
                 Call WriteDumbNoMore(tUser)
-                Call FlushBuffer(tUser)
+                
 
             End If
 
@@ -13692,7 +13692,7 @@ Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
                 UserList(tUser).Faccion.Reenlistadas = 200
                 Call WriteConsoleMsg(UserIndex, UserName & " expulsado de las fuerzas del caos y prohibida la reenlistada", FontTypeNames.FONTTYPE_INFO)
                 Call WriteConsoleMsg(tUser, .name & " te ha expulsado en forma definitiva de las fuerzas del caos.", FontTypeNames.FONTTYPE_FIGHT)
-                Call FlushBuffer(tUser)
+                
             Else
 
                 If PersonajeExiste(UserName) Then
@@ -13791,7 +13791,7 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
                 UserList(tUser).Faccion.Reenlistadas = 200
                 Call WriteConsoleMsg(UserIndex, UserName & " expulsado de las fuerzas reales y prohibida la reenlistada", FontTypeNames.FONTTYPE_INFO)
                 Call WriteConsoleMsg(tUser, .name & " te ha expulsado en forma definitiva de las fuerzas reales.", FontTypeNames.FONTTYPE_FIGHT)
-                Call FlushBuffer(tUser)
+                
             Else
 
                 If PersonajeExiste(UserName) Then
@@ -16391,7 +16391,7 @@ Public Sub WriteLoggedMessage(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -16408,7 +16408,7 @@ Public Sub WriteHora(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -16436,7 +16436,7 @@ Public Sub WriteRemoveAllDialogs(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -16465,7 +16465,7 @@ Public Sub WriteRemoveCharDialog(ByVal UserIndex As Integer, ByVal CharIndex As 
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -16492,7 +16492,7 @@ Public Sub WriteNavigateToggle(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -16519,7 +16519,7 @@ Public Sub WriteNadarToggle(ByVal UserIndex As Integer, ByVal Puede As Boolean)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -16536,7 +16536,7 @@ Public Sub WriteEquiteToggle(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -16558,7 +16558,7 @@ Public Sub WriteVelocidadToggle(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -16591,7 +16591,7 @@ Public Sub WriteMacroTrabajoToggle(ByVal UserIndex As Integer, ByVal Activar As 
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -16631,7 +16631,7 @@ Public Sub WriteDisconnect(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -16659,7 +16659,7 @@ Public Sub WriteCommerceEnd(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -16687,7 +16687,7 @@ Public Sub WriteBankEnd(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -16716,7 +16716,7 @@ Public Sub WriteCommerceInit(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -16744,7 +16744,7 @@ Public Sub WriteBankInit(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -16772,7 +16772,7 @@ Public Sub WriteUserCommerceInit(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -16800,7 +16800,7 @@ Public Sub WriteUserCommerceEnd(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -16828,7 +16828,7 @@ Public Sub WriteShowBlacksmithForm(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -16856,7 +16856,7 @@ Public Sub WriteShowCarpenterForm(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -16878,7 +16878,7 @@ Public Sub WriteShowAlquimiaForm(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -16900,7 +16900,7 @@ Public Sub WriteShowSastreForm(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -16928,7 +16928,7 @@ Public Sub WriteNPCKillUser(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -16956,7 +16956,7 @@ Public Sub WriteBlockedWithShieldUser(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -16984,7 +16984,7 @@ Public Sub WriteBlockedWithShieldOther(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -17008,7 +17008,7 @@ Public Sub WriteCharSwing(ByVal UserIndex As Integer, ByVal CharIndex As Integer
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -17051,7 +17051,7 @@ Public Sub WriteSafeModeOn(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -17079,7 +17079,7 @@ Public Sub WriteSafeModeOff(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -17107,7 +17107,7 @@ Public Sub WritePartySafeOn(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -17135,7 +17135,7 @@ Public Sub WritePartySafeOff(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -17158,7 +17158,7 @@ Public Sub WriteClanSeguro(ByVal UserIndex As Integer, ByVal estado As Boolean)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -17186,7 +17186,7 @@ Public Sub WriteCantUseWhileMeditating(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -17219,7 +17219,7 @@ Public Sub WriteUpdateSta(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -17252,7 +17252,7 @@ Public Sub WriteUpdateMana(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -17288,7 +17288,7 @@ Public Sub WriteUpdateHP(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -17321,7 +17321,7 @@ Public Sub WriteUpdateGold(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -17354,7 +17354,7 @@ Public Sub WriteUpdateExp(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -17392,7 +17392,7 @@ Public Sub WriteChangeMap(ByVal UserIndex As Integer, ByVal Map As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -17426,7 +17426,7 @@ Public Sub WritePosUpdate(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -17462,7 +17462,7 @@ Public Sub WriteNPCHitUser(ByVal UserIndex As Integer, ByVal Target As PartesCue
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -17498,7 +17498,7 @@ Public Sub WriteUserHitNPC(ByVal UserIndex As Integer, ByVal damage As Long)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -17532,7 +17532,7 @@ Public Sub WriteUserAttackedSwing(ByVal UserIndex As Integer, ByVal attackerInde
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -17570,7 +17570,7 @@ Public Sub WriteUserHittedByUser(ByVal UserIndex As Integer, ByVal Target As Par
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -17608,7 +17608,7 @@ Public Sub WriteUserHittedUser(ByVal UserIndex As Integer, ByVal Target As Parte
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -17639,7 +17639,7 @@ Public Sub WriteChatOverHead(ByVal UserIndex As Integer, ByVal chat As String, B
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -17661,7 +17661,7 @@ Public Sub WriteEfectOverHead(ByVal UserIndex As Integer, ByVal chat As String, 
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -17683,7 +17683,7 @@ Public Sub WriteExpOverHead(ByVal UserIndex As Integer, ByVal chat As String, By
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -17705,7 +17705,7 @@ Public Sub WriteOroOverHead(ByVal UserIndex As Integer, ByVal chat As String, By
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -17735,7 +17735,7 @@ Public Sub WriteConsoleMsg(ByVal UserIndex As Integer, ByVal chat As String, ByV
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -17752,7 +17752,7 @@ Public Sub WriteRenderValueMsg(ByVal UserIndex As Integer, ByVal x As Byte, ByVa
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -17774,7 +17774,7 @@ Public Sub WriteLocaleMsg(ByVal UserIndex As Integer, ByVal Id As Integer, ByVal
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -17796,7 +17796,7 @@ Public Sub WriteListaCorreo(ByVal UserIndex As Integer, ByVal actualizar As Bool
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -17825,7 +17825,7 @@ Public Sub WriteGuildChat(ByVal UserIndex As Integer, ByVal chat As String)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -17859,7 +17859,7 @@ Public Sub WriteShowMessageBox(ByVal UserIndex As Integer, ByVal message As Stri
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -17885,7 +17885,7 @@ Public Sub WriteMostrarCuenta(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -17918,7 +17918,7 @@ Public Sub WriteUserIndexInServer(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -17951,7 +17951,7 @@ Public Sub WriteUserCharIndexInServer(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -17993,7 +17993,7 @@ Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, ByVal Body As Intege
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -18022,7 +18022,7 @@ Public Sub WriteCharacterRemove(ByVal UserIndex As Integer, ByVal CharIndex As I
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -18053,7 +18053,7 @@ Public Sub WriteCharacterMove(ByVal UserIndex As Integer, ByVal CharIndex As Int
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -18090,7 +18090,7 @@ Public Sub WriteCharacterChange(ByVal UserIndex As Integer, ByVal Body As Intege
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -18124,7 +18124,7 @@ Public Sub WriteObjectCreate(ByVal UserIndex As Integer, ByVal ObjIndex As Integ
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -18142,7 +18142,7 @@ Public Sub WriteParticleFloorCreate(ByVal UserIndex As Integer, ByVal Particula 
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -18163,7 +18163,7 @@ Public Sub WriteLightFloorCreate(ByVal UserIndex As Integer, ByVal LuzColor As L
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -18180,7 +18180,7 @@ Public Sub WriteFxPiso(ByVal UserIndex As Integer, ByVal GrhIndex As Integer, By
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -18210,7 +18210,7 @@ Public Sub WriteObjectDelete(ByVal UserIndex As Integer, ByVal x As Byte, ByVal 
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -18248,7 +18248,7 @@ Public Sub WriteBlockPosition(ByVal UserIndex As Integer, ByVal x As Byte, ByVal
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -18278,7 +18278,7 @@ Public Sub WritePlayMidi(ByVal UserIndex As Integer, ByVal midi As Byte, Optiona
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -18310,7 +18310,7 @@ Public Sub WritePlayWave(ByVal UserIndex As Integer, ByVal wave As Integer, ByVa
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -18356,7 +18356,7 @@ Public Sub WriteGuildList(ByVal UserIndex As Integer, ByRef guildList() As Strin
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -18390,7 +18390,7 @@ Public Sub WriteAreaChanged(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -18418,7 +18418,7 @@ Public Sub WritePauseToggle(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -18446,7 +18446,7 @@ Public Sub WriteRainToggle(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -18468,7 +18468,7 @@ Public Sub WriteNubesToggle(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -18490,7 +18490,7 @@ Public Sub WriteTrofeoToggleOn(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -18512,7 +18512,7 @@ Public Sub WriteTrofeoToggleOff(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -18543,7 +18543,7 @@ Public Sub WriteCreateFX(ByVal UserIndex As Integer, ByVal CharIndex As Integer,
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -18587,7 +18587,7 @@ Public Sub WriteUpdateUserStats(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -18621,7 +18621,7 @@ Public Sub WriteWorkRequestTarget(ByVal UserIndex As Integer, ByVal Skill As eSk
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -18653,7 +18653,7 @@ Public Sub WriteInventoryUnlockSlots(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -18683,7 +18683,7 @@ Public Sub WriteIntervals(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -18733,7 +18733,7 @@ Public Sub WriteChangeInventorySlot(ByVal UserIndex As Integer, ByVal slot As By
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -18794,7 +18794,7 @@ Public Sub WriteChangeBankSlot(ByVal UserIndex As Integer, ByVal slot As Byte)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -18836,7 +18836,7 @@ Public Sub WriteChangeSpellSlot(ByVal UserIndex As Integer, ByVal slot As Intege
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -18872,7 +18872,7 @@ Public Sub WriteAttributes(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -18938,7 +18938,7 @@ Public Sub WriteBlacksmithWeapons(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -19004,7 +19004,7 @@ Public Sub WriteBlacksmithArmors(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -19068,7 +19068,7 @@ Public Sub WriteCarpenterObjects(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -19123,7 +19123,7 @@ Public Sub WriteAlquimistaObjects(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -19184,7 +19184,7 @@ Public Sub WriteSastreObjects(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -19212,7 +19212,7 @@ Public Sub WriteRestOK(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -19241,7 +19241,7 @@ Public Sub WriteErrorMsg(ByVal UserIndex As Integer, ByVal message As String)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -19269,7 +19269,7 @@ Public Sub WriteBlind(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -19297,7 +19297,7 @@ Public Sub WriteDumb(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -19333,7 +19333,7 @@ Public Sub WriteShowSignal(ByVal UserIndex As Integer, ByVal ObjIndex As Integer
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -19391,7 +19391,7 @@ Public Sub WriteChangeNPCInventorySlot(ByVal UserIndex As Integer, ByVal slot As
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -19427,7 +19427,7 @@ Public Sub WriteUpdateHungerAndThirst(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -19453,7 +19453,7 @@ Public Sub WriteLight(ByVal UserIndex As Integer, ByVal Map As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -19477,7 +19477,7 @@ Public Sub WriteEfectToScreen(ByVal UserIndex As Integer, ByVal Color As Long, B
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -19506,7 +19506,7 @@ Public Sub WriteFYA(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -19532,7 +19532,7 @@ Public Sub WriteCerrarleCliente(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -19559,7 +19559,7 @@ Public Sub WriteOxigeno(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -19597,7 +19597,7 @@ Public Sub WriteContadores(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -19626,7 +19626,7 @@ Public Sub WriteBindKeys(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -19683,7 +19683,7 @@ Public Sub WriteMiniStats(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -19716,7 +19716,7 @@ Public Sub WriteLevelUp(ByVal UserIndex As Integer, ByVal skillPoints As Integer
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -19751,7 +19751,7 @@ Public Sub WriteAddForumMsg(ByVal UserIndex As Integer, ByVal title As String, B
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -19779,7 +19779,7 @@ Public Sub WriteShowForumForm(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -19809,7 +19809,7 @@ Public Sub WriteSetInvisible(ByVal UserIndex As Integer, ByVal CharIndex As Inte
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -19853,7 +19853,7 @@ Public Sub WriteDiceRoll(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -19881,7 +19881,7 @@ Public Sub WriteMeditateToggle(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -19909,7 +19909,7 @@ Public Sub WriteBlindNoMore(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -19937,7 +19937,7 @@ Public Sub WriteDumbNoMore(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -19975,7 +19975,7 @@ Public Sub WriteSendSkills(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -20020,7 +20020,7 @@ Public Sub WriteTrainerCreatureList(ByVal UserIndex As Integer, ByVal NpcIndex A
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -20083,7 +20083,7 @@ Public Sub WriteGuildNews(ByVal UserIndex As Integer, ByVal guildNews As String,
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -20120,7 +20120,7 @@ Public Sub WriteOfferDetails(ByVal UserIndex As Integer, ByVal details As String
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -20166,7 +20166,7 @@ Public Sub WriteAlianceProposalsList(ByVal UserIndex As Integer, ByRef guilds() 
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -20212,7 +20212,7 @@ Public Sub WritePeaceProposalsList(ByVal UserIndex As Integer, ByRef guilds() As
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -20277,7 +20277,7 @@ Public Sub WriteCharacterInfo(ByVal UserIndex As Integer, ByVal CharName As Stri
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -20356,7 +20356,7 @@ Public Sub WriteGuildLeaderInfo(ByVal UserIndex As Integer, ByRef guildList() As
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -20420,7 +20420,7 @@ Public Sub WriteGuildDetails(ByVal UserIndex As Integer, ByVal GuildName As Stri
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -20448,7 +20448,7 @@ Public Sub WriteShowGuildFundationForm(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -20474,13 +20474,13 @@ Public Sub WriteParalizeOK(ByVal UserIndex As Integer)
 
     Call UserList(UserIndex).outgoingData.WriteByte(ServerPacketID.ParalizeOK)
 
-    Call FlushBuffer(UserIndex)
+    
     Exit Sub
 
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -20502,7 +20502,7 @@ Public Sub WriteInmovilizaOK(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -20537,7 +20537,7 @@ Public Sub WriteShowUserRequest(ByVal UserIndex As Integer, ByVal details As Str
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -20565,7 +20565,7 @@ Public Sub WriteTradeOK(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -20593,7 +20593,7 @@ Public Sub WriteBankOK(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -20637,7 +20637,7 @@ Public Sub WriteChangeUserTradeSlot(ByVal UserIndex As Integer, ByVal ObjIndex A
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -20683,7 +20683,7 @@ Public Sub WriteSpawnList(ByVal UserIndex As Integer, ByRef npcNames() As String
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -20727,7 +20727,7 @@ Public Sub WriteShowSOSForm(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -20762,7 +20762,7 @@ Public Sub WriteShowMOTDEditionForm(ByVal UserIndex As Integer, ByVal currentMOT
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -20790,7 +20790,7 @@ Public Sub WriteShowGMPanelForm(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -20812,7 +20812,7 @@ Public Sub WriteShowFundarClanForm(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -20859,7 +20859,7 @@ Public Sub WriteUserNameList(ByVal UserIndex As Integer, ByRef userNamesList() A
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -20888,7 +20888,7 @@ Public Sub WritePong(ByVal UserIndex As Integer, ByVal Time As Long)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -20903,19 +20903,22 @@ End Sub
 Public Sub FlushBuffer(ByVal UserIndex As Integer)
 
     '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
     'Sends all data existing in the buffer
     '***************************************************
-    Dim sndData As String
     
     With UserList(UserIndex).outgoingData
 
         If .length = 0 Then Exit Sub
         
-        sndData = .ReadASCIIStringFixed(.length)
-        
-        Call EnviarDatosASlot(UserIndex, sndData)
+        ' Tratamos de enviar los datos.
+        Dim ret As Long: ret = WsApiEnviar(UserIndex, .ReadASCIIStringFixed(.length))
+    
+        ' Si recibimos un error como respuesta de la API, cerramos el socket.
+        If ret <> 0 And ret <> WSAEWOULDBLOCK Then
+            ' Close the socket avoiding any critical error
+            Call CloseSocketSL(UserIndex)
+            Call Cerrar_Usuario(UserIndex)
+        End If
 
     End With
 
@@ -21957,7 +21960,7 @@ Public Sub WriteUpdateNPCSimbolo(ByVal UserIndex As Integer, ByVal NpcIndex As I
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -22433,7 +22436,7 @@ Private Sub HandleCrearCuenta(ByVal UserIndex As Integer)
   
     If Not CheckMailString(CuentaEmail) Then
         Call WriteErrorMsg(UserIndex, "Email inválido.")
-        Call FlushBuffer(UserIndex)
+        
         Call CloseSocket(UserIndex)
         Exit Sub
 
@@ -22450,7 +22453,7 @@ Private Sub HandleCrearCuenta(ByVal UserIndex As Integer)
         Call UserList(UserIndex).incomingData.CopyBuffer(buffer)
     Else
         Call WriteShowMessageBox(UserIndex, "El email ya está en uso.")
-        Call FlushBuffer(UserIndex)
+        
         Call CloseSocket(UserIndex)
 
     End If
@@ -22499,7 +22502,7 @@ Private Sub HandleValidarCuenta(ByVal UserIndex As Integer)
     If Not CheckMailString(CuentaEmail) Then
         Call WriteShowFrmLogear(UserIndex)
         Call WriteShowMessageBox(UserIndex, "Email inválido.")
-        Call FlushBuffer(UserIndex)
+        
         Call CloseSocket(UserIndex)
         Exit Sub
 
@@ -22587,7 +22590,7 @@ Private Sub HandleReValidarCuenta(ByVal UserIndex As Integer)
     If Not AsciiValidos(UserCuenta) Then
         Call WriteShowFrmLogear(UserIndex)
         Call WriteShowMessageBox(UserIndex, "Nombre invalido.")
-        Call FlushBuffer(UserIndex)
+        
         Call CloseSocket(UserIndex)
         Exit Sub
 
@@ -22596,7 +22599,7 @@ Private Sub HandleReValidarCuenta(ByVal UserIndex As Integer)
     'If Useremail <> ObtenerEmail(UserCuenta) Then
     Call WriteShowFrmLogear(UserIndex)
     Call WriteShowMessageBox(UserIndex, "El email introducido no coincide con el email registrador.")
-    Call FlushBuffer(UserIndex)
+    
     Call CloseSocket(UserIndex)
     Exit Sub
     'End If
@@ -22672,7 +22675,7 @@ Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
 
     If Not VersionOK(Version) Then
         Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
-        Call FlushBuffer(UserIndex)
+        
         Call CloseSocket(UserIndex)
         Exit Sub
 
@@ -22681,7 +22684,7 @@ Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
     'If ServerSoloGMs > 0 Then
     '    If Condicion Then
     '        Call WriteShowMessageBox(UserIndex, "El servidor sera habilitado a las 18 horas. Por el momento solo podes crear cuentas. Te esperamos!")
-    '        Call FlushBuffer(UserIndex)
+    '
     '        Call CloseSocket(UserIndex)
     '        Exit Sub
     '    End If
@@ -22696,7 +22699,7 @@ Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
         Call WritePersonajesDeCuenta(UserIndex)
         Call WriteMostrarCuenta(UserIndex)
     Else
-        Call FlushBuffer(UserIndex)
+        
         Call CloseSocket(UserIndex)
         Exit Sub
 
@@ -22758,7 +22761,7 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
     
     If Not VersionOK(Version) Then
         Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
-        Call FlushBuffer(UserIndex)
+        
         Call CloseSocket(UserIndex)
         Exit Sub
 
@@ -22768,7 +22771,7 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
     HDserial = buffer.ReadLong()
     
     If Not EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MacAddress, HDserial) Then
-        Call FlushBuffer(UserIndex)
+        
         Call CloseSocket(UserIndex)
         Exit Sub
 
@@ -22776,7 +22779,7 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
     
     If Not AsciiValidos(UserDelete) Then
         Call WriteShowMessageBox(UserIndex, "Nombre inválido.")
-        Call FlushBuffer(UserIndex)
+        
         Call CloseSocket(UserIndex)
         Exit Sub
 
@@ -22852,7 +22855,7 @@ Private Sub HandleBorrandoCuenta(ByVal UserIndex As Integer)
         If Not AsciiValidos(AccountDelete) Then
             Call WriteShowFrmLogear(UserIndex)
             Call WriteShowMessageBox(UserIndex, "Cuenta invalida.")
-            Call FlushBuffer(UserIndex)
+            
             Call CloseSocket(UserIndex)
             Exit Sub
 
@@ -22861,7 +22864,7 @@ Private Sub HandleBorrandoCuenta(ByVal UserIndex As Integer)
         If UserMail <> ObtenerEmail(AccountDelete) Then
             Call WriteShowFrmLogear(UserIndex)
             Call WriteShowMessageBox(UserIndex, "El email introducido no coincide con el email registrador.")
-            Call FlushBuffer(UserIndex)
+            
             Call CloseSocket(UserIndex)
             Exit Sub
 
@@ -22870,7 +22873,7 @@ Private Sub HandleBorrandoCuenta(ByVal UserIndex As Integer)
         If True Then ' Desactivado
             Call WriteShowFrmLogear(UserIndex)
             Call WriteShowMessageBox(UserIndex, "La contraseña introducida no es correcta.")
-            Call FlushBuffer(UserIndex)
+            
             Call CloseSocket(UserIndex)
             Exit Sub
 
@@ -22883,7 +22886,7 @@ Private Sub HandleBorrandoCuenta(ByVal UserIndex As Integer)
     Else
         Call WriteShowFrmLogear(UserIndex)
         Call WriteShowMessageBox(UserIndex, "La cuenta ingresada no existe.")
-        Call FlushBuffer(UserIndex)
+        
         Call CloseSocket(UserIndex)
         Exit Sub
 
@@ -22939,7 +22942,7 @@ Private Sub HandleRecuperandoContraseña(ByVal UserIndex As Integer)
             Call WriteShowFrmLogear(UserIndex)
             Call WriteShowMessageBox(UserIndex, "Cuenta invalida.")
             
-            Call FlushBuffer(UserIndex)
+            
             Call CloseSocket(UserIndex)
             Exit Sub
 
@@ -22948,7 +22951,7 @@ Private Sub HandleRecuperandoContraseña(ByVal UserIndex As Integer)
         If UserMail <> ObtenerEmail(AcountDelete) Then
             Call WriteShowFrmLogear(UserIndex)
             Call WriteShowMessageBox(UserIndex, "El email introducido no coincide con el email registrador.")
-            Call FlushBuffer(UserIndex)
+            
             Call CloseSocket(UserIndex)
             Exit Sub
 
@@ -22966,7 +22969,7 @@ Private Sub HandleRecuperandoContraseña(ByVal UserIndex As Integer)
     Else
         Call WriteShowFrmLogear(UserIndex)
         Call WriteShowMessageBox(UserIndex, "La cuenta ingresada no existe.")
-        Call FlushBuffer(UserIndex)
+        
         Call CloseSocket(UserIndex)
         Exit Sub
 
@@ -23057,7 +23060,7 @@ Public Sub WritePersonajesDeCuenta(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -23281,7 +23284,7 @@ Public Sub WriteGoliathInit(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -23303,7 +23306,7 @@ Public Sub WriteShowFrmLogear(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -23334,7 +23337,7 @@ Public Sub WriteShowFrmMapa(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -24669,7 +24672,7 @@ Public Sub WriteFamiliar(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -25471,7 +25474,7 @@ Public Sub WritePreguntaBox(ByVal UserIndex As Integer, ByVal message As String)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -25847,7 +25850,7 @@ Public Sub WriteDatosGrupo(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -25953,7 +25956,7 @@ Public Sub WriteUbicacion(ByVal UserIndex As Integer, ByVal Miembro As Byte, ByV
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -26058,7 +26061,7 @@ Public Sub WriteCorreoPicOn(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -26946,7 +26949,7 @@ Public Sub WriteShop(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -26975,7 +26978,7 @@ Public Sub WriteRanking(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -27253,7 +27256,7 @@ Public Sub WriteActShop(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -27290,7 +27293,7 @@ Public Sub WriteViajarForm(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -27538,7 +27541,7 @@ Public Sub WriteQuestDetails(ByVal UserIndex As Integer, ByVal QuestIndex As Int
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If
@@ -27588,7 +27591,7 @@ Public Sub WriteQuestListSend(ByVal UserIndex As Integer)
 Errhandler:
 
     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
+        
         Resume
 
     End If

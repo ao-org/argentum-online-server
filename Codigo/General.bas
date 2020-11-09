@@ -1242,7 +1242,7 @@ Public Sub EfectoLluvia(ByVal UserIndex As Integer)
 
             modifi = Porcentaje(UserList(UserIndex).Stats.MaxSta, 3)
             Call QuitarSta(UserIndex, modifi)
-            Call FlushBuffer(UserIndex)
+            
 
         End If
 
@@ -1814,7 +1814,7 @@ Sub PasarSegundo()
                 If UserList(i).Counters.Salir <= 0 Then
                     Call WriteConsoleMsg(i, "Gracias por jugar Argentum20.", FontTypeNames.FONTTYPE_INFO)
                     Call WriteDisconnect(i)
-                    Call FlushBuffer(i)
+                    
                     Call CloseSocket(i)
 
                 End If

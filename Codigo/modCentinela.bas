@@ -70,7 +70,7 @@ Public Sub CallUserAttention()
                 'Resend the key
                 Call CentinelaSendClave(Centinela.RevisandoUserIndex)
                 
-                Call FlushBuffer(Centinela.RevisandoUserIndex)
+                
 
             End If
 
@@ -104,7 +104,7 @@ Private Sub GoToNextWorkingChar()
                     'Mandamos el mensaje (el centinela habla y aparece en consola para que no haya dudas)
                     Call WriteChatOverHead(LoopC, "Saludos " & UserList(LoopC).name & ", soy el Centinela de estas tierras. Me gustaría que escribas /CENTINELA " & Centinela.clave & " en no más de dos minutos.", CStr(Npclist(CentinelaNPCIndex).Char.CharIndex), vbGreen)
                     Call WriteConsoleMsg(LoopC, "Saludos " & UserList(LoopC).name & ", soy el Centinela de estas tierras. Me gustaría que escribas /CENTINELA " & Centinela.clave & " en no más de dos minutos.", FontTypeNames.FONTTYPE_CENTINELA)
-                    Call FlushBuffer(LoopC)
+                    
 
                 End If
 
@@ -218,7 +218,7 @@ Public Sub CentinelaCheckClave(ByVal UserIndex As Integer, ByVal clave As Intege
         Call WriteConsoleMsg(UserIndex, "¡Muchas gracias " & UserList(Centinela.RevisandoUserIndex).name & "! Espero no haber sido una molestia", FontTypeNames.FONTTYPE_CENTINELA)
         Centinela.RevisandoUserIndex = 0
         Call GoToNextWorkingChar
-        Call FlushBuffer(UserIndex)
+        
     Else
         Call CentinelaSendClave(UserIndex)
         
@@ -303,7 +303,7 @@ Public Sub PasarMinutoCentinela()
             'El centinela habla y se manda a consola para que no quepan dudas
             Call WriteChatOverHead(Centinela.RevisandoUserIndex, "¡" & UserList(Centinela.RevisandoUserIndex).name & ", tienes un minuto más para responder! Debes escribir /CENTINELA " & Centinela.clave & ".", CStr(Npclist(CentinelaNPCIndex).Char.CharIndex), vbRed)
             Call WriteConsoleMsg(Centinela.RevisandoUserIndex, "¡" & UserList(Centinela.RevisandoUserIndex).name & ", tienes un minuto más para responder! Debes escribir /CENTINELA " & Centinela.clave & ".", FontTypeNames.FONTTYPE_CENTINELA)
-            Call FlushBuffer(Centinela.RevisandoUserIndex)
+            
 
         End If
 
