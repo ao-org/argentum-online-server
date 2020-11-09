@@ -2249,8 +2249,9 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
                 Call WriteLocaleMsg(UserIndex, "123", FontTypeNames.FONTTYPE_INFO)
                 UserList(UserIndex).Char.FX = 0
                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(UserList(UserIndex).Char.CharIndex, 0))
+            End If
             
-            ElseIf IntervaloPermiteCaminar(UserIndex) Then
+            If IntervaloPermiteCaminar(UserIndex) Then
             
                 'Move user
                 Call MoveUserChar(UserIndex, heading)
@@ -2334,15 +2335,15 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
         End If
         
         If .flags.Oculto = 1 And .flags.AdminInvisible = 0 Then
-            ' .flags.Oculto = 0
-            '.Counters.TiempoOculto = 0
+            .flags.Oculto = 0
+            .Counters.TiempoOculto = 0
                 
             'If not under a spell effect, show char
-            ' If .flags.invisible = 0 Then
-            'Call WriteConsoleMsg(UserIndex, "Has vuelto a ser visible.", FontTypeNames.FONTTYPE_INFO)
-            '    Call WriteLocaleMsg(UserIndex, "307", FontTypeNames.FONTTYPE_INFO)
-            '      Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, False))
-            '  End If
+            If .flags.invisible = 0 Then
+                Call WriteConsoleMsg(UserIndex, "Has vuelto a ser visible.", FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, "307", FontTypeNames.FONTTYPE_INFO)
+                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, False))
+            End If
         End If
 
     End With

@@ -2050,8 +2050,6 @@ Public Sub DoMeditar(ByVal UserIndex As Integer)
 
     Dim cant         As Integer
 
-    Dim TActual      As Long
-
     Dim MeditarSkill As Byte
 
     With UserList(UserIndex)
@@ -2083,7 +2081,6 @@ Public Sub DoMeditar(ByVal UserIndex As Integer)
             Suerte = 7
         Else
             Suerte = 5
-
         End If
     
         If .flags.RegeneracionMana = 1 Then

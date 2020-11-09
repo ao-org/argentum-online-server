@@ -128,7 +128,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
             UserList(UserIndex).Counters.Paralisis = Hechizos(Spell).Duration / 2
           
             Call WriteParalizeOK(UserIndex)
-
+            Call WritePosUpdate(UserIndex)
         End If
 
     ElseIf Hechizos(Spell).incinera = 1 Then
@@ -1184,7 +1184,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
         If UserList(tU).flags.Paralizado = 0 Then
             UserList(tU).flags.Paralizado = 1
             Call WriteParalizeOK(tU)
-            
+            Call WritePosUpdate(tU)
         End If
 
     End If
@@ -1254,8 +1254,8 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
         If UserList(tU).flags.Inmovilizado = 0 Then
             UserList(tU).flags.Inmovilizado = 1
             Call WriteInmovilizaOK(tU)
+            Call WritePosUpdate(tU)
             Call FlushBuffer(tU)
-
         End If
 
     End If
@@ -1298,6 +1298,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             UserList(tU).Counters.Inmovilizado = 0
             UserList(tU).flags.Inmovilizado = 0
             Call WriteInmovilizaOK(tU)
+            Call WritePosUpdate(tU)
             ' Call InfoHechizo(UserIndex)
             Call FlushBuffer(tU)
 
@@ -2969,7 +2970,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
         If UserList(tU).flags.Paralizado = 0 Then
             UserList(tU).flags.Paralizado = 1
             Call WriteParalizeOK(tU)
-            
+            Call WritePosUpdate(tU)
         End If
 
     End If
@@ -2997,6 +2998,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
         If UserList(tU).flags.Inmovilizado = 0 Then
             UserList(tU).flags.Inmovilizado = 1
             Call WriteInmovilizaOK(tU)
+            Call WritePosUpdate(tU)
             Call FlushBuffer(tU)
 
         End If
@@ -3470,8 +3472,8 @@ Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, x As Byte, Y As Byte,
         If UserList(NpcIndex).flags.Inmovilizado = 0 Then
             UserList(NpcIndex).flags.Inmovilizado = 1
             Call WriteInmovilizaOK(NpcIndex)
+            Call WritePosUpdate(NpcIndex)
             Call FlushBuffer(NpcIndex)
-
         End If
 
     End If
