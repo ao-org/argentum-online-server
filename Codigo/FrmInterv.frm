@@ -759,82 +759,83 @@ Option Explicit
 
 Public Sub AplicarIntervalos()
 
-'¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿ Intervalos del main loop ¿?¿?¿?¿?¿?¿?¿?¿?¿
-SanaIntervaloSinDescansar = val(txtSanaIntervaloSinDescansar.Text)
-StaminaIntervaloSinDescansar = val(txtStaminaIntervaloSinDescansar.Text)
-SanaIntervaloDescansar = val(txtSanaIntervaloDescansar.Text)
-StaminaIntervaloDescansar = val(txtStaminaIntervaloDescansar.Text)
-IntervaloSed = val(txtIntervaloSed.Text)
-IntervaloHambre = val(txtIntervaloHambre.Text)
-IntervaloVeneno = val(txtIntervaloVeneno.Text)
-IntervaloParalizado = val(txtIntervaloParalizado.Text)
-IntervaloInmovilizado = val(txtIntervaloInmovilizado.Text)
-IntervaloInvisible = val(txtIntervaloInvisible.Text)
-IntervaloFrio = val(txtIntervaloFrio.Text)
-IntervaloWavFx = val(txtIntervaloWAVFX.Text)
-IntervaloInvocacion = val(txtInvocacion.Text)
-TimeoutPrimerPaquete = val(txtTimeoutPrimerPaquete.Text)
-TimeoutEsperandoLoggear = val(txtTimeoutEsperandoLoggear.Text)
-IntervaloTirar = val(txtintervalotirar.Text)
-IntervaloCaminar = val(txtintervalocaminar.Text)
+    '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿ Intervalos del main loop ¿?¿?¿?¿?¿?¿?¿?¿?¿
+    SanaIntervaloSinDescansar = val(txtSanaIntervaloSinDescansar.Text)
+    StaminaIntervaloSinDescansar = val(txtStaminaIntervaloSinDescansar.Text)
+    SanaIntervaloDescansar = val(txtSanaIntervaloDescansar.Text)
+    StaminaIntervaloDescansar = val(txtStaminaIntervaloDescansar.Text)
+    IntervaloSed = val(txtIntervaloSed.Text)
+    IntervaloHambre = val(txtIntervaloHambre.Text)
+    IntervaloVeneno = val(txtIntervaloVeneno.Text)
+    IntervaloParalizado = val(txtIntervaloParalizado.Text)
+    IntervaloInmovilizado = val(txtIntervaloInmovilizado.Text)
+    IntervaloInvisible = val(txtIntervaloInvisible.Text)
+    IntervaloFrio = val(txtIntervaloFrio.Text)
+    IntervaloWavFx = val(txtIntervaloWAVFX.Text)
+    IntervaloInvocacion = val(txtInvocacion.Text)
+    TimeoutPrimerPaquete = val(txtTimeoutPrimerPaquete.Text)
+    TimeoutEsperandoLoggear = val(txtTimeoutEsperandoLoggear.Text)
+    IntervaloTirar = val(txtintervalotirar.Text)
+    IntervaloCaminar = val(txtintervalocaminar.Text)
 
-'///////////////// TIMERS \\\\\\\\\\\\\\\\\\\
+    '///////////////// TIMERS \\\\\\\\\\\\\\\\\\\
 
-IntervaloUserPuedeCastear = val(txtIntervaloLanzaHechizo.Text)
-frmMain.npcataca.Interval = val(txtNPCPuedeAtacar.Text)
-frmMain.TIMER_AI.Interval = val(txtAI.Text)
-IntervaloUserPuedeTrabajar = val(txtTrabajo.Text)
-IntervaloUserPuedeAtacar = val(txtPuedeAtacar.Text)
-'frmMain.tLluvia.Interval = val(txtIntervaloPerdidaStaminaLluvia.Text)
-
-
+    IntervaloUserPuedeCastear = val(txtIntervaloLanzaHechizo.Text)
+    frmMain.npcataca.Interval = val(txtNPCPuedeAtacar.Text)
+    frmMain.TIMER_AI.Interval = val(txtAI.Text)
+    IntervaloUserPuedeTrabajar = val(txtTrabajo.Text)
+    IntervaloUserPuedeAtacar = val(txtPuedeAtacar.Text)
+    'frmMain.tLluvia.Interval = val(txtIntervaloPerdidaStaminaLluvia.Text)
 
 End Sub
 
 Private Sub Command1_Click()
-On Error Resume Next
-Call AplicarIntervalos
+
+    On Error Resume Next
+
+    Call AplicarIntervalos
 
 End Sub
 
 Private Sub Command2_Click()
 
-On Error GoTo Err
+    On Error GoTo Err
 
-'Intervalos
-Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "SanaIntervaloSinDescansar", str(SanaIntervaloSinDescansar))
-Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "StaminaIntervaloSinDescansar", str(StaminaIntervaloSinDescansar))
-Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "SanaIntervaloDescansar", str(SanaIntervaloDescansar))
-Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "StaminaIntervaloDescansar", str(StaminaIntervaloDescansar))
-Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloSed", str(IntervaloSed))
-Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloHambre", str(IntervaloHambre))
-Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloVeneno", str(IntervaloVeneno))
-Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloParalizado", str(IntervaloParalizado))
-Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloInmovilizado", str(IntervaloInmovilizado))
-Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloInvisible", str(IntervaloInvisible))
-Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloFrio", str(IntervaloFrio))
-Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloWAVFX", str(IntervaloWavFx))
-Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "TimeoutPrimerPaquete", str(TimeoutPrimerPaquete))
-Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "TimeoutEsperandoLoggear", str(TimeoutEsperandoLoggear))
-Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloCaminar", str(IntervaloCaminar))
-Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloTirar", str(IntervaloTirar))
-'&&&&&&&&&&&&&&&&&&&&& TIMERS &&&&&&&&&&&&&&&&&&&&&&&
+    'Intervalos
+    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "SanaIntervaloSinDescansar", str(SanaIntervaloSinDescansar))
+    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "StaminaIntervaloSinDescansar", str(StaminaIntervaloSinDescansar))
+    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "SanaIntervaloDescansar", str(SanaIntervaloDescansar))
+    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "StaminaIntervaloDescansar", str(StaminaIntervaloDescansar))
+    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloSed", str(IntervaloSed))
+    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloHambre", str(IntervaloHambre))
+    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloVeneno", str(IntervaloVeneno))
+    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloParalizado", str(IntervaloParalizado))
+    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloInmovilizado", str(IntervaloInmovilizado))
+    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloInvisible", str(IntervaloInvisible))
+    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloFrio", str(IntervaloFrio))
+    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloWAVFX", str(IntervaloWavFx))
+    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "TimeoutPrimerPaquete", str(TimeoutPrimerPaquete))
+    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "TimeoutEsperandoLoggear", str(TimeoutEsperandoLoggear))
+    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloCaminar", str(IntervaloCaminar))
+    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloTirar", str(IntervaloTirar))
+    '&&&&&&&&&&&&&&&&&&&&& TIMERS &&&&&&&&&&&&&&&&&&&&&&&
 
-Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloLanzaHechizo", str(IntervaloUserPuedeCastear))
-Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloNpcAI", frmMain.TIMER_AI.Interval)
-Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloNpcPuedeAtacar", frmMain.npcataca.Interval)
-Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloTrabajo", str(IntervaloUserPuedeTrabajar))
-Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloUserPuedeAtacar", str(IntervaloUserPuedeAtacar))
-'Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloPerdidaStaminaLluvia", frmMain.tLluvia.Interval)
+    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloLanzaHechizo", str(IntervaloUserPuedeCastear))
+    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloNpcAI", frmMain.TIMER_AI.Interval)
+    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloNpcPuedeAtacar", frmMain.npcataca.Interval)
+    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloTrabajo", str(IntervaloUserPuedeTrabajar))
+    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloUserPuedeAtacar", str(IntervaloUserPuedeAtacar))
+    'Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloPerdidaStaminaLluvia", frmMain.tLluvia.Interval)
 
+    MsgBox "Los intervalos se han guardado sin problemas"
 
-MsgBox "Los intervalos se han guardado sin problemas"
-
-Exit Sub
+    Exit Sub
 Err:
     MsgBox "Error al intentar grabar los intervalos"
+
 End Sub
 
 Private Sub ok_Click()
-Me.Visible = False
+    Me.Visible = False
+
 End Sub

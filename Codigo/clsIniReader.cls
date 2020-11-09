@@ -84,7 +84,7 @@ End Type
 
 Private Type MainNode
 
-    Name As String
+    name As String
     values() As ChildNode
     numValues As Integer
 
@@ -180,7 +180,7 @@ Public Sub Initialize(ByVal File As String)
                     'Add a main node
                     ReDim Preserve fileData(MainNodes) As MainNode
                     
-                    fileData(MainNodes).Name = UCase$(Trim$(mid$(Text, 2, Pos - 2)))
+                    fileData(MainNodes).name = UCase$(Trim$(mid$(Text, 2, Pos - 2)))
                     
                     MainNodes = MainNodes + 1
 
@@ -241,9 +241,7 @@ End Sub
 ' @param    first The first index to consider when sorting.
 ' @param    last The last index to be considered when sorting.
 
-Private Sub SortChildNodes(ByRef Node As MainNode, _
-                           ByVal First As Integer, _
-                           ByVal Last As Integer)
+Private Sub SortChildNodes(ByRef Node As MainNode, ByVal First As Integer, ByVal Last As Integer)
 
     '**************************************************************
     'Author: Juan Martin Sotuyo Dodero
@@ -317,14 +315,14 @@ Private Sub SortMainNodes(ByVal First As Integer, ByVal Last As Integer)
     min = First
     max = Last
     
-    comp = fileData((min + max) \ 2).Name
+    comp = fileData((min + max) \ 2).name
     
     Do While min <= max
-        Do While fileData(min).Name < comp And min < Last
+        Do While fileData(min).name < comp And min < Last
             min = min + 1
         Loop
 
-        Do While fileData(max).Name > comp And max > First
+        Do While fileData(max).name > comp And max > First
             max = max - 1
         Loop
 
@@ -464,7 +462,7 @@ End Function
 ' @param    name The name of the MainNode we are looking for.
 ' @returns  The index in which the main section we are looking for is stored or the negation of the index in which it should be if not found.
 
-Private Function FindMain(ByVal Name As String) As Long
+Private Function FindMain(ByVal name As String) As Long
 
     '**************************************************************
     'Author: Juan Martin Sotuyo Dodero
@@ -484,9 +482,9 @@ Private Function FindMain(ByVal Name As String) As Long
     Do While min <= max
         mid = (min + max) \ 2
         
-        If fileData(mid).Name < Name Then
+        If fileData(mid).name < name Then
             min = mid + 1
-        ElseIf fileData(mid).Name > Name Then
+        ElseIf fileData(mid).name > name Then
             max = mid - 1
         Else
             'We found it
@@ -509,17 +507,17 @@ End Function
 ' @param    name    The name of the element whose existance is being checked.
 ' @returns  True if the key exists, false otherwise.
 
-Public Function KeyExists(ByVal Name As String) As Boolean
+Public Function KeyExists(ByVal name As String) As Boolean
     '**************************************************************
     'Author: Juan Martin Sotuyo Dodero
     'Last Modify Date: 04/01/2008
     'Returns true of the key exists, false otherwise.
     '**************************************************************
-    KeyExists = FindMain(UCase$(Name)) >= 0
+    KeyExists = FindMain(UCase$(name)) >= 0
 
 End Function
 
-Private Function AddNode(ByRef Name As String) As Long
+Private Function AddNode(ByRef name As String) As Long
 
     '**************************************************************
     'Author: Torres Patricio (Pato)
@@ -530,14 +528,14 @@ Private Function AddNode(ByRef Name As String) As Long
 
     Dim MainPos As Long
 
-    Name = UCase$(Name)
+    name = UCase$(name)
 
     'Add a main node
     ReDim Preserve fileData(MainNodes) As MainNode
 
     If MainNodes Then
         i = MainNodes - 1
-        MainPos = Not FindMain(Name)
+        MainPos = Not FindMain(name)
     
         Do While i >= MainPos
             fileData(i + 1) = fileData(i)
@@ -549,7 +547,7 @@ Private Function AddNode(ByRef Name As String) As Long
 
     End If
 
-    fileData(MainPos).Name = Name
+    fileData(MainPos).name = name
 
     MainNodes = MainNodes + 1
 
@@ -557,9 +555,7 @@ Private Function AddNode(ByRef Name As String) As Long
 
 End Function
 
-Private Function AddKey(ByRef Main As String, _
-                        ByRef Key As String, _
-                        Optional ByRef Value As String = vbNullString) As Long
+Private Function AddKey(ByRef Main As String, ByRef Key As String, Optional ByRef Value As String = vbNullString) As Long
 
     '**************************************************************
     'Author: Torres Patricio (Pato)
@@ -625,7 +621,7 @@ Public Sub DumpFile(ByRef File As String)
     For i = 0 To MainNodes - 1
 
         With fileData(i)
-            Print #hFile, "[" & .Name & "]"
+            Print #hFile, "[" & .name & "]"
             
             For j = 0 To .numValues - 1
                 Print #hFile, .values(j).Key & "=" & .values(j).Value
@@ -640,5 +636,4 @@ Public Sub DumpFile(ByRef File As String)
     Close hFile
 
 End Sub
-
 

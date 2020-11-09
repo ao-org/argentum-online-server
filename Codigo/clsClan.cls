@@ -42,32 +42,52 @@ Option Explicit
 ' by el oso :p
 
 Private p_GuildName             As String
+
 Private p_Alineacion            As ALINEACION_GUILD
+
 Private p_OnlineMembers         As Collection   'Array de UserIndexes!
+
 Private p_GMsOnline             As Collection
+
 Private p_PropuestasDePaz       As Collection
+
 Private p_PropuestasDeAlianza   As Collection
+
 Private p_IteradorRelaciones    As Integer
+
 Private p_IteradorOnlineMembers As Integer
+
 Private p_IteradorPropuesta     As Integer
+
 Private p_IteradorOnlineGMs     As Integer
+
 Private p_GuildNumber           As Integer      'Numero de guild en el mundo
+
 Private p_Relaciones()          As RELACIONES_GUILD 'array de relaciones con los otros clanes
 
 Private GUILDINFOFILE           As String
+
 Private GUILDPATH               As String       'aca pq me es mas comodo setearlo y pq en ningun disenio
+
 Private MEMBERSFILE             As String       'decente la capa de arriba se entera donde estan
+
 Private SOLICITUDESFILE         As String       'los datos fisicamente
+
 Private PROPUESTASFILE          As String
+
 Private RELACIONESFILE          As String
+
 Private VOTACIONESFILE          As String
 
 Private Const NEWSLENGTH        As Integer = 1024
+
 Private Const DESCLENGTH        As Integer = 256
+
 Private Const CODEXLENGTH       As Integer = 256
 
 Public Property Get GuildName() As String
     GuildName = p_GuildName
+
 End Property
 
 '
@@ -76,19 +96,23 @@ End Property
 
 Public Property Get Alineacion() As ALINEACION_GUILD
     Alineacion = p_Alineacion
+
 End Property
 
 Public Property Get PuntosAntifaccion() As Integer
     PuntosAntifaccion = val(GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Antifaccion"))
+
 End Property
 
 Public Property Let PuntosAntifaccion(ByVal p As Integer)
     Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Antifaccion", CStr(p))
+
 End Property
 
 Public Function CambiarAlineacion(ByVal NuevaAlineacion As ALINEACION_GUILD) As Boolean
     p_Alineacion = NuevaAlineacion
     Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Alineacion", Alineacion2String(p_Alineacion))
+
 End Function
 
 '
@@ -98,6 +122,7 @@ End Function
 Private Sub Class_Initialize()
     GUILDPATH = App.Path & "\GUILDS\"
     GUILDINFOFILE = GUILDPATH & "guildsinfo.inf"
+
 End Sub
 
 Private Sub Class_Terminate()
@@ -105,11 +130,10 @@ Private Sub Class_Terminate()
     Set p_GMsOnline = Nothing
     Set p_PropuestasDePaz = Nothing
     Set p_PropuestasDeAlianza = Nothing
+
 End Sub
 
-Public Sub Inicializar(ByVal GuildName As String, _
-                       ByVal GuildNumber As Integer, _
-                       ByVal Alineacion As ALINEACION_GUILD)
+Public Sub Inicializar(ByVal GuildName As String, ByVal GuildNumber As Integer, ByVal Alineacion As ALINEACION_GUILD)
 
     Dim i As Integer
 
@@ -171,10 +195,12 @@ Public Sub InicializarNuevoClan(ByRef Fundador As String)
     'para que genere los archivos
     If Not FileExist(MEMBERSFILE, vbNormal) Then
         Call WriteVar(MEMBERSFILE, "INIT", "NroMembers", "0")
+
     End If
     
     If Not FileExist(SOLICITUDESFILE, vbNormal) Then
         Call WriteVar(SOLICITUDESFILE, "INIT", "CantSolicitudes", "0")
+
     End If
     
     OldQ = GetVar(GUILDINFOFILE, "INIT", "nroguilds")
@@ -183,6 +209,7 @@ Public Sub InicializarNuevoClan(ByRef Fundador As String)
         NewQ = CInt(Trim$(OldQ)) + 1
     Else
         NewQ = 1
+
     End If
 
     Call WriteVar(GUILDINFOFILE, "INIT", "NroGuilds", NewQ & vbNewLine)
@@ -207,6 +234,7 @@ End Sub
 
 Public Property Get Fundador() As String
     Fundador = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Founder")
+
 End Property
 
 'Public Property Get JugadoresOnline() As String
@@ -228,15 +256,18 @@ End Property
 
 Public Sub SetLeader(ByRef leader As String)
     Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Leader", leader)
+
 End Sub
 
 Public Function GetLeader() As String
     GetLeader = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Leader")
+
 End Function
 
 Public Function GetMemberList() As String()
 
     Dim OldQ   As Integer
+
     Dim list() As String
 
     Dim i      As Long
@@ -253,15 +284,15 @@ Public Function GetMemberList() As String()
 
 End Function
 
-Public Sub ConectarMiembro(ByVal Userindex As Integer)
+Public Sub ConectarMiembro(ByVal UserIndex As Integer)
     '***************************************************
     'Autor: Unknown (orginal version)
     'Last Modification: 28/05/2010
     '28/05/2010: ZaMa - No avisa cuando loguea un dios o admin.
     '***************************************************
-    p_OnlineMembers.Add Userindex
+    p_OnlineMembers.Add UserIndex
 
-    With UserList(Userindex)
+    With UserList(UserIndex)
 
         ' No avisa cuando loguea un dios
         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then
@@ -270,9 +301,10 @@ Public Sub ConectarMiembro(ByVal Userindex As Integer)
         End If
 
     End With
+
 End Sub
 
-Public Sub DesConectarMiembro(ByVal Userindex As Integer)
+Public Sub DesConectarMiembro(ByVal UserIndex As Integer)
 
     '***************************************************
     'Autor: Unknown (orginal version)
@@ -283,10 +315,10 @@ Public Sub DesConectarMiembro(ByVal Userindex As Integer)
 
     For i = 1 To p_OnlineMembers.Count
 
-        If p_OnlineMembers.Item(i) = Userindex Then
+        If p_OnlineMembers.Item(i) = UserIndex Then
             p_OnlineMembers.Remove i
             
-            With UserList(Userindex)
+            With UserList(UserIndex)
 
                 ' No avisa cuando se desconecta un dios
                 If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then
@@ -304,15 +336,15 @@ Public Sub DesConectarMiembro(ByVal Userindex As Integer)
 
 End Sub
 
-Public Sub AceptarNuevoMiembro(ByRef Nombre As String)
+Public Sub AceptarNuevoMiembro(ByRef nombre As String)
 
     Dim OldQ  As Integer
 
     Dim OldQs As String
 
-    If PersonajeExiste(Nombre) Then
-        Call SaveUserGuildIndex(Nombre, p_GuildNumber)
-        Call SaveUserGuildAspirant(Nombre, 0)
+    If PersonajeExiste(nombre) Then
+        Call SaveUserGuildIndex(nombre, p_GuildNumber)
+        Call SaveUserGuildAspirant(nombre, 0)
 
         OldQs = GetVar(MEMBERSFILE, "INIT", "NroMembers")
 
@@ -324,13 +356,13 @@ Public Sub AceptarNuevoMiembro(ByRef Nombre As String)
         End If
 
         Call WriteVar(MEMBERSFILE, "INIT", "NroMembers", OldQ + 1)
-        Call WriteVar(MEMBERSFILE, "Members", "Member" & OldQ + 1, Nombre)
+        Call WriteVar(MEMBERSFILE, "Members", "Member" & OldQ + 1, nombre)
 
     End If
 
 End Sub
 
-Public Sub ExpulsarMiembro(ByRef Nombre As String)
+Public Sub ExpulsarMiembro(ByRef nombre As String)
 
     Dim OldQ      As Integer
 
@@ -342,19 +374,19 @@ Public Sub ExpulsarMiembro(ByRef Nombre As String)
 
     Dim MiembroDe As String
 
-    If PersonajeExiste(Nombre) Then
+    If PersonajeExiste(nombre) Then
         OldQ = CInt(GetVar(MEMBERSFILE, "INIT", "NroMembers"))
         i = 1
-        Nombre = UCase$(Nombre)
+        nombre = UCase$(nombre)
 
-        While i <= OldQ And UCase$(Trim$(GetVar(MEMBERSFILE, "Members", "Member" & i))) <> Nombre
+        While i <= OldQ And UCase$(Trim$(GetVar(MEMBERSFILE, "Members", "Member" & i))) <> nombre
 
             i = i + 1
         Wend
         EsMiembro = i <= OldQ
         
         If EsMiembro Then
-            Call SaveUserGuildIndex(Nombre, 0)
+            Call SaveUserGuildIndex(nombre, 0)
 
             While i < OldQ
 
@@ -366,7 +398,7 @@ Public Sub ExpulsarMiembro(ByRef Nombre As String)
             'seteo la cantidad de miembros nueva
             Call WriteVar(MEMBERSFILE, "INIT", "NroMembers", OldQ - 1)
             'lo echo a el
-            MiembroDe = GetUserGuildMember(Nombre)
+            MiembroDe = GetUserGuildMember(nombre)
 
             If Not InStr(1, MiembroDe, p_GuildName, vbTextCompare) > 0 Then
                 If LenB(MiembroDe) <> 0 Then
@@ -375,7 +407,7 @@ Public Sub ExpulsarMiembro(ByRef Nombre As String)
                 End If
 
                 MiembroDe = MiembroDe & p_GuildName
-                Call SaveUserGuildMember(Nombre, MiembroDe)
+                Call SaveUserGuildMember(nombre, MiembroDe)
 
             End If
 
@@ -432,9 +464,10 @@ End Function
 
 Public Function DetallesSolicitudAspirante(ByVal NroAspirante As Integer) As String
     DetallesSolicitudAspirante = GetVar(SOLICITUDESFILE, "SOLICITUD" & NroAspirante, "Detalle")
+
 End Function
 
-Public Function NumeroDeAspirante(ByRef Nombre As String) As Integer
+Public Function NumeroDeAspirante(ByRef nombre As String) As Integer
 
     Dim i As Integer
     
@@ -442,7 +475,7 @@ Public Function NumeroDeAspirante(ByRef Nombre As String) As Integer
     
     For i = 1 To MAXASPIRANTES
 
-        If UCase$(Trim$(GetVar(SOLICITUDESFILE, "SOLICITUD" & i, "Nombre"))) = UCase$(Nombre) Then
+        If UCase$(Trim$(GetVar(SOLICITUDESFILE, "SOLICITUD" & i, "Nombre"))) = UCase$(nombre) Then
             NumeroDeAspirante = i
             Exit Function
 
@@ -452,7 +485,7 @@ Public Function NumeroDeAspirante(ByRef Nombre As String) As Integer
 
 End Function
 
-Public Sub NuevoAspirante(ByRef Nombre As String, ByRef Peticion As String)
+Public Sub NuevoAspirante(ByRef nombre As String, ByRef Peticion As String)
 
     Dim i     As Integer
 
@@ -472,10 +505,10 @@ Public Sub NuevoAspirante(ByRef Nombre As String, ByRef Peticion As String)
     For i = 1 To MAXASPIRANTES
 
         If GetVar(SOLICITUDESFILE, "SOLICITUD" & i, "Nombre") = vbNullString Then
-            Call WriteVar(SOLICITUDESFILE, "SOLICITUD" & i, "Nombre", Nombre)
+            Call WriteVar(SOLICITUDESFILE, "SOLICITUD" & i, "Nombre", nombre)
             Call WriteVar(SOLICITUDESFILE, "SOLICITUD" & i, "Detalle", IIf(Trim$(Peticion) = vbNullString, "Peticion vacia", Peticion))
             Call WriteVar(SOLICITUDESFILE, "INIT", "CantSolicitudes", OldQI + 1)
-            Call SaveUserGuildAspirant(Nombre, p_GuildNumber)
+            Call SaveUserGuildAspirant(nombre, p_GuildNumber)
             Exit Sub
 
         End If
@@ -484,7 +517,7 @@ Public Sub NuevoAspirante(ByRef Nombre As String, ByRef Peticion As String)
 
 End Sub
 
-Public Sub RetirarAspirante(ByRef Nombre As String, ByRef NroAspirante As Integer)
+Public Sub RetirarAspirante(ByRef nombre As String, ByRef NroAspirante As Integer)
 
     Dim OldQ    As String
 
@@ -503,8 +536,8 @@ Public Sub RetirarAspirante(ByRef Nombre As String, ByRef NroAspirante As Intege
 
     End If
 
-    Call SaveUserGuildAspirant(Nombre, 0)
-    Pedidos = GetUserGuildPedidos(Nombre)
+    Call SaveUserGuildAspirant(nombre, 0)
+    Pedidos = GetUserGuildPedidos(nombre)
 
     If Not InStr(1, Pedidos, p_GuildName, vbTextCompare) > 0 Then
         If LenB(Pedidos) <> 0 Then
@@ -513,7 +546,7 @@ Public Sub RetirarAspirante(ByRef Nombre As String, ByRef NroAspirante As Intege
         End If
 
         Pedidos = Pedidos & p_GuildName
-        Call SaveUserGuildPedidos(Nombre, Pedidos)
+        Call SaveUserGuildPedidos(nombre, Pedidos)
 
     End If
     
@@ -535,43 +568,59 @@ End Sub
 
 Public Function GetFechaFundacion() As String
     GetFechaFundacion = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Date")
+
 End Function
 
 Public Sub SetCodex(ByVal CodexNumber As Integer, ByRef codex As String)
     Call ReplaceInvalidChars(codex)
     codex = Left$(codex, CODEXLENGTH)
     Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Codex" & CodexNumber, codex)
+
 End Sub
 
 Public Function GetCodex(ByVal CodexNumber As Integer) As String
     GetCodex = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Codex" & CodexNumber)
+
 End Function
 
 Public Sub SetURL(ByRef URL As String)
     Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "URL", Left$(URL, 40))
+
 End Sub
 
 Public Function GetURL() As String
     GetURL = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "URL")
+
 End Function
 
 Public Sub SetNivelDeClan(ByRef nivel As Byte)
     Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "NivelDeClan", nivel)
+
 End Sub
+
 Public Function GetNivelDeClan() As Byte
     GetNivelDeClan = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "NivelDeClan")
+
 End Function
+
 Public Sub SetExpActual(ByRef Exp As Integer)
     Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "ExpActual", Exp)
+
 End Sub
+
 Public Function GetExpActual() As Integer
     GetExpActual = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "ExpActual")
+
 End Function
+
 Public Sub SetExpNecesaria(ByRef Exp As Integer)
     Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "ExpNecesaria", Exp)
+
 End Sub
+
 Public Function GetExpNecesaria() As Integer
     GetExpNecesaria = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "ExpNecesaria")
+
 End Function
 
 Public Sub SetGuildNews(ByRef News As String)
@@ -580,6 +629,7 @@ Public Sub SetGuildNews(ByRef News As String)
     News = Left$(News, NEWSLENGTH)
     
     Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "GuildNews", News)
+
 End Sub
 
 Public Function GetGuildNews() As String
@@ -587,15 +637,17 @@ Public Function GetGuildNews() As String
 
 End Function
 
-Public Sub SetDesc(ByRef desc As String)
-    Call ReplaceInvalidChars(desc)
-    desc = Left$(desc, DESCLENGTH)
+Public Sub SetDesc(ByRef Desc As String)
+    Call ReplaceInvalidChars(Desc)
+    Desc = Left$(Desc, DESCLENGTH)
     
-    Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Desc", desc)
+    Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Desc", Desc)
+
 End Sub
 
 Public Function GetDesc() As String
     GetDesc = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Desc")
+
 End Function
 
 '
@@ -818,9 +870,7 @@ Public Sub SetRelacion(ByVal GuildIndex As Integer, ByVal Relacion As RELACIONES
 
 End Sub
 
-Public Sub SetPropuesta(ByVal Tipo As RELACIONES_GUILD, _
-                        ByVal OtroGuild As Integer, _
-                        ByRef Detalle As String)
+Public Sub SetPropuesta(ByVal Tipo As RELACIONES_GUILD, ByVal OtroGuild As Integer, ByRef Detalle As String)
     Call WriteVar(PROPUESTASFILE, CStr(OtroGuild), "Detalle", Detalle)
     Call WriteVar(PROPUESTASFILE, CStr(OtroGuild), "Tipo", Relacion2String(Tipo))
     Call WriteVar(PROPUESTASFILE, CStr(OtroGuild), "Pendiente", "1")
@@ -858,16 +908,14 @@ Public Sub AnularPropuestas(ByVal OtroGuild As Integer)
     
 End Sub
 
-Public Function GetPropuesta(ByVal OtroGuild As Integer, _
-                             ByRef Tipo As RELACIONES_GUILD) As String
+Public Function GetPropuesta(ByVal OtroGuild As Integer, ByRef Tipo As RELACIONES_GUILD) As String
     'trae la solicitd que haya, no valida si es actual o de que tipo es
     GetPropuesta = GetVar(PROPUESTASFILE, CStr(OtroGuild), "Detalle")
     Tipo = String2Relacion(GetVar(PROPUESTASFILE, CStr(OtroGuild), "Tipo"))
 
 End Function
 
-Public Function HayPropuesta(ByVal OtroGuild As Integer, _
-                             ByRef Tipo As RELACIONES_GUILD) As Boolean
+Public Function HayPropuesta(ByVal OtroGuild As Integer, ByRef Tipo As RELACIONES_GUILD) As Boolean
 
     Dim i As Integer
 
@@ -1006,18 +1054,18 @@ End Function
 'ADMINISTRATIVAS
 '
 
-Public Sub ConectarGM(ByVal Userindex As Integer)
-    p_GMsOnline.Add Userindex
+Public Sub ConectarGM(ByVal UserIndex As Integer)
+    p_GMsOnline.Add UserIndex
 
 End Sub
 
-Public Sub DesconectarGM(ByVal Userindex As Integer)
+Public Sub DesconectarGM(ByVal UserIndex As Integer)
 
     Dim i As Integer
 
     For i = 1 To p_GMsOnline.Count
 
-        If p_GMsOnline.Item(i) = Userindex Then
+        If p_GMsOnline.Item(i) = UserIndex Then
             p_GMsOnline.Remove (i)
 
         End If
@@ -1048,6 +1096,4 @@ Private Sub ReplaceInvalidChars(ByRef S As String)
     End If
 
 End Sub
- 
-
 

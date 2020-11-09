@@ -536,11 +536,10 @@ Attribute VB_Exposed = False
 'Código Postal 1900
 'Pablo Ignacio Márquez
 
-
-
 Public ESCUCHADAS As Long
 
 Private Type NOTIFYICONDATA
+
     cbSize As Long
     hWnd As Long
     uID As Long
@@ -548,22 +547,31 @@ Private Type NOTIFYICONDATA
     uCallbackMessage As Long
     hIcon As Long
     szTip As String * 64
+
 End Type
    
 Const NIM_ADD = 0
+
 Const NIM_DELETE = 2
+
 Const NIF_MESSAGE = 1
+
 Const NIF_ICON = 2
+
 Const NIF_TIP = 4
 
 Const WM_MOUSEMOVE = &H200
+
 Const WM_LBUTTONDBLCLK = &H203
+
 Const WM_RBUTTONUP = &H205
 
 Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hWnd As Long, lpdwProcessId As Long) As Long
+
 Private Declare Function Shell_NotifyIconA Lib "SHELL32" (ByVal dwMessage As Long, lpData As NOTIFYICONDATA) As Integer
 
 Private Function setNOTIFYICONDATA(hWnd As Long, Id As Long, flags As Long, CallbackMessage As Long, Icon As Long, Tip As String) As NOTIFYICONDATA
+
     Dim nidTemp As NOTIFYICONDATA
 
     nidTemp.cbSize = Len(nidTemp)
@@ -575,18 +583,23 @@ Private Function setNOTIFYICONDATA(hWnd As Long, Id As Long, flags As Long, Call
     nidTemp.szTip = Tip & Chr$(0)
 
     setNOTIFYICONDATA = nidTemp
+
 End Function
 
 Sub CheckIdleUser()
+
     Dim iUserIndex As Long
     
     For iUserIndex = 1 To MaxUsers
-       'Conexion activa? y es un usuario loggeado?
-       If UserList(iUserIndex).ConnID <> -1 And UserList(iUserIndex).flags.UserLogged Then
+
+        'Conexion activa? y es un usuario loggeado?
+        If UserList(iUserIndex).ConnID <> -1 And UserList(iUserIndex).flags.UserLogged Then
             'Actualiza el contador de inactividad
             UserList(iUserIndex).Counters.IdleCount = UserList(iUserIndex).Counters.IdleCount + 1
+
             If UserList(iUserIndex).Counters.IdleCount >= IdleLimit Then
                 Call WriteShowMessageBox(iUserIndex, "Demasiado tiempo inactivo. Has sido desconectado..")
+
                 'mato los comercios seguros
                 If UserList(iUserIndex).ComUsu.DestUsu > 0 Then
                     If UserList(UserList(iUserIndex).ComUsu.DestUsu).flags.UserLogged Then
@@ -594,343 +607,425 @@ Sub CheckIdleUser()
                             Call WriteConsoleMsg(UserList(iUserIndex).ComUsu.DestUsu, "Comercio cancelado por el otro usuario.", FontTypeNames.FONTTYPE_TALK)
                             Call FinComerciarUsu(UserList(iUserIndex).ComUsu.DestUsu)
                             Call FlushBuffer(UserList(iUserIndex).ComUsu.DestUsu) 'flush the buffer to send the message right away
+
                         End If
+
                     End If
+
                     Call FinComerciarUsu(iUserIndex)
+
                 End If
+
                 Call Cerrar_Usuario(iUserIndex)
+
             End If
+
         End If
+
     Next iUserIndex
+
 End Sub
 
 Private Sub addtimeDonador_Click()
-Dim Tmp As String
-Dim tmp2 As String
-Tmp = InputBox("Cuenta?", "Ingrese la cuenta")
-If FileExist(CuentasPath & Tmp & ".act", vbNormal) Then
-    tmp2 = InputBox("¿Dias?", "Ingrese cantidad de días")
-    If IsNumeric(tmp2) Then
-        Call DonadorTiempo(Tmp, tmp2)
+
+    Dim Tmp  As String
+
+    Dim tmp2 As String
+
+    Tmp = InputBox("Cuenta?", "Ingrese la cuenta")
+
+    If FileExist(CuentasPath & Tmp & ".act", vbNormal) Then
+        tmp2 = InputBox("¿Dias?", "Ingrese cantidad de días")
+
+        If IsNumeric(tmp2) Then
+            Call DonadorTiempo(Tmp, tmp2)
+        Else
+            MsgBox ("Cantidad invalida")
+
+        End If
+
     Else
-        MsgBox ("Cantidad invalida")
+        MsgBox ("La cuenta no existe")
+
     End If
-Else
-    MsgBox ("La cuenta no existe")
-End If
+
 End Sub
 
 Private Sub Auditoria_Timer()
-On Error GoTo errhand
- 'Static centinelSecs As Byte
 
- 'centinelSecs = centinelSecs + 1
+    On Error GoTo errhand
 
- 'If centinelSecs = 5 Then
+    'Static centinelSecs As Byte
+
+    'centinelSecs = centinelSecs + 1
+
+    'If centinelSecs = 5 Then
     'Every 5 seconds, we try to call the player's attention so it will report the code.
     ' Call modCentinela.CallUserAttention
     
     ' centinelSecs = 0
- 'End If
+    'End If
 
+    Call PasarSegundo 'sistema de desconexion de 10 segs
+    Call PurgarScroll
 
+    Call PurgarOxigeno
 
+    Call ActualizaStatsES
 
-
-Call PasarSegundo 'sistema de desconexion de 10 segs
-Call PurgarScroll
-
-Call PurgarOxigeno
-
-
-Call ActualizaStatsES
-
-Exit Sub
+    Exit Sub
 
 errhand:
 
-Call LogError("Error en Timer Auditoria. Err: " & Err.description & " - " & Err.Number)
-Resume Next
+    Call LogError("Error en Timer Auditoria. Err: " & Err.description & " - " & Err.Number)
+
+    Resume Next
 
 End Sub
 
 Private Sub AutoSave_Timer()
 
-On Error GoTo Errhandler
-'fired every minute
-Static minutos As Long
-Static MinutosLatsClean As Long
-Static MinsPjesSave As Long
+    On Error GoTo Errhandler
 
-Dim i As Integer
-Dim num As Long
+    'fired every minute
+    Static minutos          As Long
 
-MinsRunning = MinsRunning + 1
+    Static MinutosLatsClean As Long
 
-If MinsRunning = 60 Then
-    horas = horas + 1
-    If horas = 24 Then
-        Call SaveDayStats
-        DayStats.MaxUsuarios = 0
-        DayStats.segundos = 0
-        DayStats.Promedio = 0
+    Static MinsPjesSave     As Long
+
+    Dim i                   As Integer
+
+    Dim num                 As Long
+
+    MinsRunning = MinsRunning + 1
+
+    If MinsRunning = 60 Then
+        horas = horas + 1
+
+        If horas = 24 Then
+            Call SaveDayStats
+            DayStats.MaxUsuarios = 0
+            DayStats.segundos = 0
+            DayStats.Promedio = 0
         
-        horas = 0
+            horas = 0
         
+        End If
+
+        MinsRunning = 0
+
     End If
-    MinsRunning = 0
-End If
-
     
-minutos = minutos + 1
+    minutos = minutos + 1
 
-'¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
-Call ModAreas.AreasOptimizacion
-'¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
+    '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
+    Call ModAreas.AreasOptimizacion
+    '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
 
-'Actualizamos el centinela
-Call modCentinela.PasarMinutoCentinela
+    'Actualizamos el centinela
+    Call modCentinela.PasarMinutoCentinela
 
+    If MinutosLatsClean >= 15 Then
+        MinutosLatsClean = 0
+        Call ReSpawnOrigPosNpcs 'respawn de los guardias en las pos originales
+        'Call LimpiarMundo
+    Else
+        MinutosLatsClean = MinutosLatsClean + 1
 
-If MinutosLatsClean >= 15 Then
-    MinutosLatsClean = 0
-    Call ReSpawnOrigPosNpcs 'respawn de los guardias en las pos originales
-    'Call LimpiarMundo
-Else
-    MinutosLatsClean = MinutosLatsClean + 1
-End If
+    End If
 
-Call PurgarPenas
+    Call PurgarPenas
 
-If IdleLimit > 0 Then
-    Call CheckIdleUser
-End If
+    If IdleLimit > 0 Then
+        Call CheckIdleUser
 
-'<<<<<-------- Log the number of users online ------>>>
-Dim n As Integer
-n = FreeFile()
-Open App.Path & "\logs\numusers.log" For Output Shared As n
-Print #n, NumUsers
-Close #n
-'<<<<<-------- Log the number of users online ------>>>
+    End If
 
-Exit Sub
+    '<<<<<-------- Log the number of users online ------>>>
+    Dim n As Integer
+
+    n = FreeFile()
+    Open App.Path & "\logs\numusers.log" For Output Shared As n
+    Print #n, NumUsers
+    Close #n
+    '<<<<<-------- Log the number of users online ------>>>
+
+    Exit Sub
 Errhandler:
     Call LogError("Error en TimerAutoSave " & Err.Number & ": " & Err.description)
+
     Resume Next
+
 End Sub
 
-
-
 Private Sub CMDDUMP_Click()
-On Error Resume Next
 
-Dim i As Integer
-For i = 1 To MaxUsers
-    Call LogCriticEvent(i & ") ConnID: " & UserList(i).ConnID & ". ConnidValida: " & UserList(i).ConnIDValida & " Name: " & UserList(i).name & " UserLogged: " & UserList(i).flags.UserLogged)
-Next i
+    On Error Resume Next
 
-Call LogCriticEvent("Lastuser: " & LastUser & " NextOpenUser: " & NextOpenUser)
+    Dim i As Integer
+
+    For i = 1 To MaxUsers
+        Call LogCriticEvent(i & ") ConnID: " & UserList(i).ConnID & ". ConnidValida: " & UserList(i).ConnIDValida & " Name: " & UserList(i).name & " UserLogged: " & UserList(i).flags.UserLogged)
+    Next i
+
+    Call LogCriticEvent("Lastuser: " & LastUser & " NextOpenUser: " & NextOpenUser)
 
 End Sub
 
 Private Sub Command1_Click()
-Call SendData(SendTarget.ToAll, 0, PrepareMessageShowMessageBox(BroadMsg.Text))
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageShowMessageBox(BroadMsg.Text))
+
 End Sub
 
 Public Sub InitMain(ByVal f As Byte)
 
-If f = 1 Then
-    Call mnuSystray_Click
-Else
-    frmMain.Show
-End If
+    If f = 1 Then
+        Call mnuSystray_Click
+    Else
+        frmMain.Show
+
+    End If
 
 End Sub
 
 Private Sub Command10_Click()
-Call GuardarUsuarios
+    Call GuardarUsuarios
+
 End Sub
 
 Private Sub Command11_Click()
-Call LoadSini
+    Call LoadSini
+
 End Sub
 
 Private Sub Command12_Click()
-Call LoadConfiguraciones
+    Call LoadConfiguraciones
+
 End Sub
 
 Private Sub Command13_Click()
-Call LoadBalance
+    Call LoadBalance
+
 End Sub
 
 Private Sub Command2_Click()
-Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor> " & BroadMsg.Text, FontTypeNames.FONTTYPE_SERVER))
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor> " & BroadMsg.Text, FontTypeNames.FONTTYPE_SERVER))
+
 End Sub
 
 Private Sub Command4_Click()
-Call GuardarUsuarios
-Call EcharPjsNoPrivilegiados
-Unload frmMain
+    Call GuardarUsuarios
+    Call EcharPjsNoPrivilegiados
+    Unload frmMain
+
 End Sub
 
 Private Sub Command5_Click()
-'Dim tem As String
-'tem = InputBox("Ingreste clave")
-'MsgBox SDesencriptar(tem)
+    'Dim tem As String
+    'tem = InputBox("Ingreste clave")
+    'MsgBox SDesencriptar(tem)
 
-Call GuardarRanking
+    Call GuardarRanking
 
 End Sub
 
 Private Sub Command6_Click()
     Call LoadIntervalos
+
 End Sub
 
 Private Sub Command7_Click()
-Call loadAdministrativeUsers
+    Call loadAdministrativeUsers
+
 End Sub
 
 Private Sub Command8_Click()
-Call LoadOBJData
-Call LoadPesca
-Call LoadRecursosEspeciales
+    Call LoadOBJData
+    Call LoadPesca
+    Call LoadRecursosEspeciales
+
 End Sub
 
 Private Sub Command9_Click()
-Call CargaNpcsDat
+    Call CargaNpcsDat
+
 End Sub
 
 Private Sub EstadoTimer_Timer()
-On Error Resume Next
 
-Call GetHoraActual
+    On Error Resume Next
 
-For i = 1 To Baneos.Count
-    If Baneos(i).FechaLiberacion <= Now Then
-        Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> Se ha concluido la sentencia de ban para " & Baneos(i).name & ".", FontTypeNames.FONTTYPE_SERVER))
-        Call ChangeBan(Baneos(i).name, 0)
-        Call Baneos.Remove(i)
-        Call SaveBans
-    End If
-Next
+    Call GetHoraActual
 
+    For i = 1 To Baneos.Count
 
-For i = 1 To Donadores.Count
-    If Donadores(i).FechaExpiracion <= Now Then
-        Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> Se ha concluido el tiempo de donador para " & Donadores(i).name & ".", FontTypeNames.FONTTYPE_SERVER))
-        Call ChangeDonador(Donadores(i).name, 0)
-        Call Donadores.Remove(i)
-        Call SaveDonadores
-    End If
-Next
+        If Baneos(i).FechaLiberacion <= Now Then
+            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> Se ha concluido la sentencia de ban para " & Baneos(i).name & ".", FontTypeNames.FONTTYPE_SERVER))
+            Call ChangeBan(Baneos(i).name, 0)
+            Call Baneos.Remove(i)
+            Call SaveBans
 
-Select Case frmMain.lblhora.Caption
-    Case "0:00:00"
-        HoraEvento = 0
-    Case "1:00:00"
-        HoraEvento = 1
-    Case "2:00:00"
-        HoraEvento = 2
-    Case "3:00:00"
-        HoraEvento = 3
-    Case "4:00:00"
-        HoraEvento = 4
-    Case "5:00:00"
-        HoraEvento = 5
-    Case "6:00:00"
-        HoraEvento = 6
-    Case "7:00:00"
-        HoraEvento = 7
-    Case "8:00:00"
-        HoraEvento = 8
-    Case "9:00:00"
-        HoraEvento = 9
-    Case "10:00:00"
-        HoraEvento = 10
-    Case "11:00:00"
-        HoraEvento = 11
-    Case "12:00:00"
-        HoraEvento = 12
-    Case "13:00:00"
-        HoraEvento = 13
-    Case "14:00:00"
-        HoraEvento = 14
-    Case "15:00:00"
-        HoraEvento = 15
-    Case "16:00:00"
-        HoraEvento = 16
-    Case "17:00:00"
-        HoraEvento = 17
-    Case "18:00:00"
-        HoraEvento = 18
-    Case "19:00:00"
-        HoraEvento = 19
-    Case "20:00:00"
-        HoraEvento = 20
-    Case "21:00:00"
-        HoraEvento = 21
-    Case "22:00:00"
-        HoraEvento = 22
-    Case "23:00:00"
-        HoraEvento = 23
-    Case Else
-        Exit Sub
+        End If
+
+    Next
+
+    For i = 1 To Donadores.Count
+
+        If Donadores(i).FechaExpiracion <= Now Then
+            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> Se ha concluido el tiempo de donador para " & Donadores(i).name & ".", FontTypeNames.FONTTYPE_SERVER))
+            Call ChangeDonador(Donadores(i).name, 0)
+            Call Donadores.Remove(i)
+            Call SaveDonadores
+
+        End If
+
+    Next
+
+    Select Case frmMain.lblhora.Caption
+
+        Case "0:00:00"
+            HoraEvento = 0
+
+        Case "1:00:00"
+            HoraEvento = 1
+
+        Case "2:00:00"
+            HoraEvento = 2
+
+        Case "3:00:00"
+            HoraEvento = 3
+
+        Case "4:00:00"
+            HoraEvento = 4
+
+        Case "5:00:00"
+            HoraEvento = 5
+
+        Case "6:00:00"
+            HoraEvento = 6
+
+        Case "7:00:00"
+            HoraEvento = 7
+
+        Case "8:00:00"
+            HoraEvento = 8
+
+        Case "9:00:00"
+            HoraEvento = 9
+
+        Case "10:00:00"
+            HoraEvento = 10
+
+        Case "11:00:00"
+            HoraEvento = 11
+
+        Case "12:00:00"
+            HoraEvento = 12
+
+        Case "13:00:00"
+            HoraEvento = 13
+
+        Case "14:00:00"
+            HoraEvento = 14
+
+        Case "15:00:00"
+            HoraEvento = 15
+
+        Case "16:00:00"
+            HoraEvento = 16
+
+        Case "17:00:00"
+            HoraEvento = 17
+
+        Case "18:00:00"
+            HoraEvento = 18
+
+        Case "19:00:00"
+            HoraEvento = 19
+
+        Case "20:00:00"
+            HoraEvento = 20
+
+        Case "21:00:00"
+            HoraEvento = 21
+
+        Case "22:00:00"
+            HoraEvento = 22
+
+        Case "23:00:00"
+            HoraEvento = 23
+
+        Case Else
+            Exit Sub
+
     End Select
 
-
-Call CheckEvento(HoraEvento)
-
-
-
-
+    Call CheckEvento(HoraEvento)
 
 End Sub
 
 Private Sub Evento_Timer()
-TiempoRestanteEvento = TiempoRestanteEvento - 1
-If TiempoRestanteEvento = 0 Then
-    Call FinalizarEvento
-End If
+    TiempoRestanteEvento = TiempoRestanteEvento - 1
+
+    If TiempoRestanteEvento = 0 Then
+        Call FinalizarEvento
+
+    End If
+
 End Sub
 
 Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, Y As Single)
-On Error Resume Next
+
+    On Error Resume Next
    
-   If Not Visible Then
+    If Not Visible Then
+
         Select Case x \ Screen.TwipsPerPixelX
                 
             Case WM_LBUTTONDBLCLK
                 WindowState = vbNormal
                 Visible = True
+
                 Dim hProcess As Long
+
                 GetWindowThreadProcessId hWnd, hProcess
                 AppActivate hProcess
+
             Case WM_RBUTTONUP
                 hHook = SetWindowsHookEx(WH_CALLWNDPROC, AddressOf AppHook, App.hInstance, App.ThreadID)
                 PopupMenu mnuPopUp
-                If hHook Then UnhookWindowsHookEx hHook: hHook = 0
+
+                If hHook Then
+                    UnhookWindowsHookEx hHook
+                    hHook = 0
+                End If
+
+
         End Select
-   End If
+
+    End If
    
 End Sub
 
 Private Sub QuitarIconoSystray()
-On Error Resume Next
 
-'Borramos el icono del systray
-Dim i As Integer
-Dim nid As NOTIFYICONDATA
+    On Error Resume Next
 
-nid = setNOTIFYICONDATA(frmMain.hWnd, vbNull, NIF_MESSAGE Or NIF_ICON Or NIF_TIP, vbNull, frmMain.Icon, "")
+    'Borramos el icono del systray
+    Dim i   As Integer
 
-i = Shell_NotifyIconA(NIM_DELETE, nid)
-    
+    Dim nid As NOTIFYICONDATA
+
+    nid = setNOTIFYICONDATA(frmMain.hWnd, vbNull, NIF_MESSAGE Or NIF_ICON Or NIF_TIP, vbNull, frmMain.Icon, "")
+
+    i = Shell_NotifyIconA(NIM_DELETE, nid)
 
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
-On Error Resume Next
+
+    On Error Resume Next
 
     'Save stats!!!
     Call Statistics.DumpStatistics
@@ -938,16 +1033,17 @@ On Error Resume Next
     Call QuitarIconoSystray
     
     #If UsarQueSocket = 1 Then
-    Call LimpiaWsApi
+        Call LimpiaWsApi
     #ElseIf UsarQueSocket = 0 Then
-    Socket1.Cleanup
+        Socket1.Cleanup
     #ElseIf UsarQueSocket = 2 Then
-    Serv.Detener
+        Serv.Detener
     #End If
     
     Dim LoopC As Integer
     
     For LoopC = 1 To MaxUsers
+
         If UserList(LoopC).ConnID <> -1 Then Call CloseSocket(LoopC)
     Next
     
@@ -956,11 +1052,11 @@ On Error Resume Next
     
     'Log
     Dim n As Integer
+
     n = FreeFile
     Open App.Path & "\logs\Main.log" For Append Shared As #n
     Print #n, Date & " " & Time & " server cerrado."
     Close #n
-    
     
     End
     
@@ -969,17 +1065,22 @@ On Error Resume Next
 End Sub
 
 Private Sub GameTimer_Timer()
-    Dim iUserIndex As Long
+
+    Dim iUserIndex   As Long
+
     Dim bEnviarStats As Boolean
-    Dim bEnviarAyS As Boolean
+
+    Dim bEnviarAyS   As Boolean
     
-On Error GoTo hayerror
+    On Error GoTo hayerror
     
     '<<<<<< Procesa eventos de los usuarios >>>>>>
     For iUserIndex = 1 To MaxUsers 'LastUser
+
         With UserList(iUserIndex)
-           'Conexion activa?
-           If .ConnID <> -1 Then
+
+            'Conexion activa?
+            If .ConnID <> -1 Then
                 '¿User valido?
                 
                 If .ConnIDValida And .flags.UserLogged Then
@@ -991,7 +1092,6 @@ On Error GoTo hayerror
                     .NumeroPaquetesPorMiliSec = 0
                     
                     Call DoTileEvents(iUserIndex, .Pos.Map, .Pos.x, .Pos.Y)
-                    
 
                     If .flags.Muerto = 0 Then
                         
@@ -1004,7 +1104,8 @@ On Error GoTo hayerror
                         If .flags.Ahogandose <> 0 Then Call EfectoAhogo(iUserIndex)
                         If .flags.Incinerado <> 0 Then Call EfectoIncineramiento(iUserIndex, False)
                         If .flags.AdminInvisible <> 1 Then
-                        If .flags.Oculto = 1 Then Call DoPermanecerOculto(iUserIndex)
+                            If .flags.Oculto = 1 Then Call DoPermanecerOculto(iUserIndex)
+
                         End If
                         
                         Call HambreYSed(iUserIndex, bEnviarAyS)
@@ -1014,87 +1115,116 @@ On Error GoTo hayerror
                             
                                 If Not Intemperie(iUserIndex) Then
                                     If Not .flags.Descansar Then
-                                    'No esta descansando
+                                        'No esta descansando
                                         Call Sanar(iUserIndex, bEnviarStats, SanaIntervaloSinDescansar)
+
                                         If bEnviarStats Then
                                             Call WriteUpdateHP(iUserIndex)
                                             bEnviarStats = False
+
                                         End If
+
                                         Call RecStamina(iUserIndex, bEnviarStats, StaminaIntervaloSinDescansar)
-                                        If bEnviarStats Then
-                                           Call WriteUpdateSta(iUserIndex)
-                                            bEnviarStats = False
-                                        End If
-                                    Else
-                                    'esta descansando
-                                        Call Sanar(iUserIndex, bEnviarStats, SanaIntervaloDescansar)
-                                        If bEnviarStats Then
-                                            Call WriteUpdateHP(iUserIndex)
-                                            bEnviarStats = False
-                                        End If
-                                        Call RecStamina(iUserIndex, bEnviarStats, StaminaIntervaloDescansar)
+
                                         If bEnviarStats Then
                                             Call WriteUpdateSta(iUserIndex)
                                             bEnviarStats = False
+
                                         End If
+
+                                    Else
+                                        'esta descansando
+                                        Call Sanar(iUserIndex, bEnviarStats, SanaIntervaloDescansar)
+
+                                        If bEnviarStats Then
+                                            Call WriteUpdateHP(iUserIndex)
+                                            bEnviarStats = False
+
+                                        End If
+
+                                        Call RecStamina(iUserIndex, bEnviarStats, StaminaIntervaloDescansar)
+
+                                        If bEnviarStats Then
+                                            Call WriteUpdateSta(iUserIndex)
+                                            bEnviarStats = False
+
+                                        End If
+
                                         'termina de descansar automaticamente
                                         If .Stats.MaxHp = .Stats.MinHp And .Stats.MaxSta = .Stats.MinSta Then
                                             Call WriteRestOK(iUserIndex)
                                             Call WriteConsoleMsg(iUserIndex, "Has terminado de descansar.", FontTypeNames.FONTTYPE_INFO)
                                             .flags.Descansar = False
+
                                         End If
                                         
                                     End If
+
                                 Else
                                     Call RecStamina(iUserIndex, bEnviarStats, StaminaIntervaloSinDescansar * 4)
                                     Call WriteUpdateSta(iUserIndex)
+
                                 End If
-                                
                                 
                             Else
 
                                 If Not .flags.Descansar Then
-                                'No esta descansando
+                                    'No esta descansando
                                     
                                     Call Sanar(iUserIndex, bEnviarStats, SanaIntervaloSinDescansar)
+
                                     If bEnviarStats Then
                                         Call WriteUpdateHP(iUserIndex)
                                         bEnviarStats = False
+
                                     End If
+
                                     Call RecStamina(iUserIndex, bEnviarStats, StaminaIntervaloSinDescansar)
+
                                     If bEnviarStats Then
-                                    'borrar este
-                                       Call WriteUpdateSta(iUserIndex)
+                                        'borrar este
+                                        Call WriteUpdateSta(iUserIndex)
                                         bEnviarStats = False
+
                                     End If
                                     
                                 Else
-                                'esta descansando
+                                    'esta descansando
                                     
                                     Call Sanar(iUserIndex, bEnviarStats, SanaIntervaloDescansar)
+
                                     If bEnviarStats Then
                                         Call WriteUpdateHP(iUserIndex)
                                         bEnviarStats = False
+
                                     End If
+
                                     Call RecStamina(iUserIndex, bEnviarStats, StaminaIntervaloDescansar)
+
                                     If bEnviarStats Then
-                                     '  Call WriteUpdateSta(iUserIndex)
+                                        '  Call WriteUpdateSta(iUserIndex)
                                         bEnviarStats = False
+
                                     End If
+
                                     'termina de descansar automaticamente
                                     If .Stats.MaxHp = .Stats.MinHp And .Stats.MaxSta = .Stats.MinSta Then
                                         Call WriteRestOK(iUserIndex)
                                         Call WriteConsoleMsg(iUserIndex, "Has terminado de descansar.", FontTypeNames.FONTTYPE_INFO)
                                         .flags.Descansar = False
+
                                     End If
                                     
                                 End If
+
                             End If
+
                         End If
                         
                         If bEnviarAyS Then Call WriteUpdateHungerAndThirst(iUserIndex)
                         
                     End If 'Muerto
+
                 Else 'no esta logeado?
                     'Inactive players will be removed!
                     .Counters.IdleCount = .Counters.IdleCount + 1
@@ -1102,175 +1232,225 @@ On Error GoTo hayerror
                     'El intervalo cambia según si envió el primer paquete
                     If .Counters.IdleCount > IIf(.flags.FirstPacket, TimeoutEsperandoLoggear, TimeoutPrimerPaquete) Then
                         Call CloseSocket(iUserIndex)
+
                     End If
+
                 End If 'UserLogged
                 
                 'If there is anything to be sent, we send it
                 Call FlushBuffer(iUserIndex)
+
             End If
+
         End With
+
     Next iUserIndex
-Exit Sub
+
+    Exit Sub
 
 hayerror:
     LogError ("Error en GameTimer: " & Err.description & " UserIndex = " & iUserIndex)
+
 End Sub
 
 Private Sub HoraFantasia_Timer()
-If Lloviendo Then
-    Label6.Caption = "Lloviendo"
-Else
-    Label6.Caption = "No llueve"
-End If
-If ServidorNublado Then
-    Label7.Caption = "Nublado"
-Else
-    Label7.Caption = "Sin nubes"
-End If
 
-HoraFanstasia = HoraFanstasia + 1
-frmMain.Label4.Caption = GetTimeFormated(HoraFanstasia)
+    If Lloviendo Then
+        Label6.Caption = "Lloviendo"
+    Else
+        Label6.Caption = "No llueve"
 
-If HoraFanstasia = "300" Then
-Call SendData(SendTarget.ToAll, 0, PrepareMessageHora())
-End If
-If HoraFanstasia = "720" Then
-Call SendData(SendTarget.ToAll, 0, PrepareMessageHora())
-End If
-If HoraFanstasia = "1080" Then
-Call SendData(SendTarget.ToAll, 0, PrepareMessageHora())
-End If
-If HoraFanstasia = "1260" Then
-Call SendData(SendTarget.ToAll, 0, PrepareMessageHora())
-End If
+    End If
 
-If HoraFanstasia + 1 = "1440" Then
-HoraFanstasia = 0
-End If
+    If ServidorNublado Then
+        Label7.Caption = "Nublado"
+    Else
+        Label7.Caption = "Sin nubes"
 
+    End If
+
+    HoraFanstasia = HoraFanstasia + 1
+    frmMain.Label4.Caption = GetTimeFormated(HoraFanstasia)
+
+    If HoraFanstasia = "300" Then
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageHora())
+
+    End If
+
+    If HoraFanstasia = "720" Then
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageHora())
+
+    End If
+
+    If HoraFanstasia = "1080" Then
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageHora())
+
+    End If
+
+    If HoraFanstasia = "1260" Then
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageHora())
+
+    End If
+
+    If HoraFanstasia + 1 = "1440" Then
+        HoraFanstasia = 0
+
+    End If
 
 End Sub
 
 Private Sub LimpiezaTimer_Timer()
-lblLimpieza = "Limpieza del mundo en: " & LimpiezaTimerMinutos & " minutos."
+    lblLimpieza = "Limpieza del mundo en: " & LimpiezaTimerMinutos & " minutos."
 
-If Not LimpiezaTimerMinutos = 0 Then
-    LimpiezaTimerMinutos = LimpiezaTimerMinutos - 1
-Else
-    lblLimpieza = "Limpieza del mundo en: ¡Limpiando Mundo!"
-    Call LimpiarMundoEntero
-End If
+    If Not LimpiezaTimerMinutos = 0 Then
+        LimpiezaTimerMinutos = LimpiezaTimerMinutos - 1
+    Else
+        lblLimpieza = "Limpieza del mundo en: ¡Limpiando Mundo!"
+        Call LimpiarMundoEntero
 
-If LimpiezaTimerMinutos = 5 Then
-Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Atencion, 5 minutos para grabado de personajes y limpieza del mundo. Tomar items del piso.", FontTypeNames.FONTTYPE_SERVER))
-End If
+    End If
+
+    If LimpiezaTimerMinutos = 5 Then
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Atencion, 5 minutos para grabado de personajes y limpieza del mundo. Tomar items del piso.", FontTypeNames.FONTTYPE_SERVER))
+
+    End If
 
 End Sub
 
 Private Sub loadcredit_Click()
-Dim Tmp As String
-Dim tmp2 As String
-Tmp = InputBox("¿Cuenta?", "Ingrese la cuenta")
-If FileExist(CuentasPath & Tmp & ".act", vbNormal) Then
-    tmp2 = InputBox("¿Cantidad?", "Ingrese cantidad de creditos a agregar")
-    If IsNumeric(tmp2) Then
-        Call AgregarCreditosDonador(Tmp, CLng(tmp2))
+
+    Dim Tmp  As String
+
+    Dim tmp2 As String
+
+    Tmp = InputBox("¿Cuenta?", "Ingrese la cuenta")
+
+    If FileExist(CuentasPath & Tmp & ".act", vbNormal) Then
+        tmp2 = InputBox("¿Cantidad?", "Ingrese cantidad de creditos a agregar")
+
+        If IsNumeric(tmp2) Then
+            Call AgregarCreditosDonador(Tmp, CLng(tmp2))
+        Else
+            MsgBox ("Cantidad invalida")
+
+        End If
+
     Else
-        MsgBox ("Cantidad invalida")
+        MsgBox ("La cuenta no existe")
+
     End If
-Else
-    MsgBox ("La cuenta no existe")
-End If
 
 End Sub
 
 Private Sub mnuCerrar_Click()
 
+    If MsgBox("¡¡Atencion!! Si cierra el servidor puede provocar la perdida de datos. ¿Desea hacerlo de todas maneras?", vbYesNo) = vbYes Then
 
-If MsgBox("¡¡Atencion!! Si cierra el servidor puede provocar la perdida de datos. ¿Desea hacerlo de todas maneras?", vbYesNo) = vbYes Then
-    Dim f
-    For Each f In Forms
-        Unload f
-    Next
-End If
+        Dim f
+
+        For Each f In Forms
+
+            Unload f
+        Next
+
+    End If
 
 End Sub
 
 Private Sub mnusalir_Click()
     Call mnuCerrar_Click
+
 End Sub
 
 Public Sub mnuMostrar_Click()
-On Error Resume Next
+
+    On Error Resume Next
+
     WindowState = vbNormal
     Form_MouseMove 0, 0, 7725, 0
+
 End Sub
 
 Private Sub KillLog_Timer()
-On Error Resume Next
-If FileExist(App.Path & "\logs\connect.log", vbNormal) Then Kill App.Path & "\logs\connect.log"
-If FileExist(App.Path & "\logs\haciendo.log", vbNormal) Then Kill App.Path & "\logs\haciendo.log"
-If FileExist(App.Path & "\logs\stats.log", vbNormal) Then Kill App.Path & "\logs\stats.log"
-If FileExist(App.Path & "\logs\Asesinatos.log", vbNormal) Then Kill App.Path & "\logs\Asesinatos.log"
-If FileExist(App.Path & "\logs\HackAttemps.log", vbNormal) Then Kill App.Path & "\logs\HackAttemps.log"
-If Not FileExist(App.Path & "\logs\nokillwsapi.txt") Then
-    If FileExist(App.Path & "\logs\wsapi.log", vbNormal) Then Kill App.Path & "\logs\wsapi.log"
-End If
+
+    On Error Resume Next
+
+    If FileExist(App.Path & "\logs\connect.log", vbNormal) Then Kill App.Path & "\logs\connect.log"
+    If FileExist(App.Path & "\logs\haciendo.log", vbNormal) Then Kill App.Path & "\logs\haciendo.log"
+    If FileExist(App.Path & "\logs\stats.log", vbNormal) Then Kill App.Path & "\logs\stats.log"
+    If FileExist(App.Path & "\logs\Asesinatos.log", vbNormal) Then Kill App.Path & "\logs\Asesinatos.log"
+    If FileExist(App.Path & "\logs\HackAttemps.log", vbNormal) Then Kill App.Path & "\logs\HackAttemps.log"
+    If Not FileExist(App.Path & "\logs\nokillwsapi.txt") Then
+        If FileExist(App.Path & "\logs\wsapi.log", vbNormal) Then Kill App.Path & "\logs\wsapi.log"
+
+    End If
 
 End Sub
 
 Private Sub mnuServidor_Click()
-frmServidor.Visible = True
+    frmServidor.Visible = True
+
 End Sub
 
 Private Sub mnuSystray_Click()
 
-Dim i As Integer
-Dim S As String
-Dim nid As NOTIFYICONDATA
+    Dim i   As Integer
 
-S = "ARGENTUM-ONLINE"
-nid = setNOTIFYICONDATA(frmMain.hWnd, vbNull, NIF_MESSAGE Or NIF_ICON Or NIF_TIP, WM_MOUSEMOVE, frmMain.Icon, S)
-i = Shell_NotifyIconA(NIM_ADD, nid)
+    Dim S   As String
+
+    Dim nid As NOTIFYICONDATA
+
+    S = "ARGENTUM-ONLINE"
+    nid = setNOTIFYICONDATA(frmMain.hWnd, vbNull, NIF_MESSAGE Or NIF_ICON Or NIF_TIP, WM_MOUSEMOVE, frmMain.Icon, S)
+    i = Shell_NotifyIconA(NIM_ADD, nid)
     
-If WindowState <> vbMinimized Then WindowState = vbMinimized
-Visible = False
+    If WindowState <> vbMinimized Then WindowState = vbMinimized
+    Visible = False
 
 End Sub
 
 Private Sub npcataca_Timer()
 
-On Error Resume Next
-Dim npc As Integer
+    On Error Resume Next
 
-'For npc = 1 To LastNPC
-  '  Npclist(npc).CanAttack = 1
-'Next npc
+    Dim npc As Integer
+
+    'For npc = 1 To LastNPC
+    '  Npclist(npc).CanAttack = 1
+    'Next npc
 
 End Sub
 
 Private Sub packetResend_Timer()
-'***************************************************
-'Autor: Juan Martín Sotuyo Dodero (Maraxus)
-'Last Modification: 04/01/07
-'Attempts to resend to the user all data that may be enqueued.
-'***************************************************
-On Error GoTo Errhandler:
+
+    '***************************************************
+    'Autor: Juan Martín Sotuyo Dodero (Maraxus)
+    'Last Modification: 04/01/07
+    'Attempts to resend to the user all data that may be enqueued.
+    '***************************************************
+    On Error GoTo Errhandler:
+
     Dim i As Long
     
     For i = 1 To MaxUsers
+
         If UserList(i).ConnIDValida Then
             If UserList(i).outgoingData.length > 0 Then
                 Call EnviarDatosASlot(i, UserList(i).outgoingData.ReadASCIIStringFixed(UserList(i).outgoingData.length))
+
             End If
+
         End If
+
     Next i
 
-Exit Sub
+    Exit Sub
 
 Errhandler:
     LogError ("Error en packetResend - Error: " & Err.Number & " - Desc: " & Err.description)
+
     Resume Next
+
 End Sub
 
 Private Sub securityTimer_Timer()
@@ -1278,11 +1458,13 @@ Private Sub securityTimer_Timer()
 End Sub
 
 Private Sub SubastaTimer_Timer()
+
     'Si ya paso un minuto y todavia no hubo oferta, avisamos que se cancela en un minuto
     If Subasta.TiempoRestanteSubasta = 240 And Subasta.HuboOferta = False Then
         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Quedan 4 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información. La subasta será cancelada si no hay ofertas en el próximo minuto.", FontTypeNames.FONTTYPE_SUBASTA))
         Subasta.MinutosDeSubasta = 4
         Subasta.PosibleCancelo = True
+
     End If
     
     'Si ya pasaron dos minutos y no hubo ofertas, cancelamos la subasta
@@ -1292,107 +1474,132 @@ Private Sub SubastaTimer_Timer()
         'Devolver item antes de resetear datos
         Call DevolverItem
         Exit Sub
+
     End If
 
     If Subasta.PosibleCancelo = True Then
         Subasta.TiempoRestanteSubasta = Subasta.TiempoRestanteSubasta - 1
+
     End If
     
     If Subasta.TiempoRestanteSubasta > 0 And Subasta.PosibleCancelo = False Then
         If Subasta.TiempoRestanteSubasta = 240 Then
             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Quedan 4 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.", FontTypeNames.FONTTYPE_SUBASTA))
-           Subasta.MinutosDeSubasta = "4"
+            Subasta.MinutosDeSubasta = "4"
+
         End If
         
         If Subasta.TiempoRestanteSubasta = 180 Then
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Quedan 3 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.", FontTypeNames.FONTTYPE_SUBASTA))
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Quedan 3 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.", FontTypeNames.FONTTYPE_SUBASTA))
             Subasta.MinutosDeSubasta = "3"
+
         End If
+
         If Subasta.TiempoRestanteSubasta = 120 Then
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Quedan 2 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.", FontTypeNames.FONTTYPE_SUBASTA))
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Quedan 2 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.", FontTypeNames.FONTTYPE_SUBASTA))
             Subasta.MinutosDeSubasta = "2"
+
         End If
+
         If Subasta.TiempoRestanteSubasta = 60 Then
             Subasta.MinutosDeSubasta = "1"
             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Quedan 1 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.", FontTypeNames.FONTTYPE_SUBASTA))
+
         End If
+
         Subasta.TiempoRestanteSubasta = Subasta.TiempoRestanteSubasta - 1
+
     End If
     
     If Subasta.TiempoRestanteSubasta = 1 Then
         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡La subasta a terminado! El ganador fue: " & Subasta.Comprador, FontTypeNames.FONTTYPE_SUBASTA))
         Call FinalizarSubasta
+
     End If
+
 End Sub
-
-
-
-
-
 
 Private Sub TIMER_AI_Timer()
 
-On Error GoTo ErrorHandler
-Dim NpcIndex As Long
-Dim x As Integer
-Dim Y As Integer
-Dim UseAI As Integer
-Dim Mapa As Integer
-Dim e_p As Integer
+    On Error GoTo ErrorHandler
 
-'Barrin 29/9/03
-If Not haciendoBK And Not EnPausa Then
-    'Update NPCs
-    For NpcIndex = 1 To LastNPC
+    Dim NpcIndex As Long
+
+    Dim x        As Integer
+
+    Dim Y        As Integer
+
+    Dim UseAI    As Integer
+
+    Dim Mapa     As Integer
+
+    Dim e_p      As Integer
+
+    'Barrin 29/9/03
+    If Not haciendoBK And Not EnPausa Then
+
+        'Update NPCs
+        For NpcIndex = 1 To LastNPC
         
-        If Npclist(NpcIndex).flags.NPCActive Then 'Nos aseguramos que sea INTELIGENTE!
-            If Npclist(NpcIndex).flags.Paralizado = 1 Then
-                Call EfectoParalisisNpc(NpcIndex)
-            Else
+            If Npclist(NpcIndex).flags.NPCActive Then 'Nos aseguramos que sea INTELIGENTE!
+                If Npclist(NpcIndex).flags.Paralizado = 1 Then
+                    Call EfectoParalisisNpc(NpcIndex)
+                Else
+
                     'Usamos AI si hay algun user en el mapa
                     If Npclist(NpcIndex).flags.Inmovilizado = 1 Then
-                       Call EfectoParalisisNpc(NpcIndex)
+                        Call EfectoParalisisNpc(NpcIndex)
+
                     End If
                     
                     Mapa = Npclist(NpcIndex).Pos.Map
                     
                     If Mapa > 0 Then
                         If MapInfo(Mapa).NumUsers > 0 Then
-                           ' If Npclist(NpcIndex).Movement <> TipoAI.ESTATICO Then
-                           If Not IntervaloPermiteMoverse(NpcIndex) Then
+
+                            ' If Npclist(NpcIndex).Movement <> TipoAI.ESTATICO Then
+                            If Not IntervaloPermiteMoverse(NpcIndex) Then
          
-                           Else
+                            Else
                           
                                 Call NPCAI(NpcIndex)
+
                             End If
-                          ' End If
+
+                            ' End If
                             
                         End If
-                    End If
-            End If
-        End If
-    Next NpcIndex
-End If
 
-Exit Sub
+                    End If
+
+                End If
+
+            End If
+
+        Next NpcIndex
+
+    End If
+
+    Exit Sub
 
 ErrorHandler:
     Call LogError("Error en TIMER_AI_Timer " & Npclist(NpcIndex).name & " mapa:" & Npclist(NpcIndex).Pos.Map)
     Call MuereNpc(NpcIndex, 0)
+
 End Sub
 
-
-
 Private Sub TimerMeteorologia_Timer()
-'Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Timer de lluvia en :" & TimerMeteorologico, FontTypeNames.FONTTYPE_SERVER))
+    'Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Timer de lluvia en :" & TimerMeteorologico, FontTypeNames.FONTTYPE_SERVER))
 
-If TimerMeteorologico > 7 Then
-    TimerMeteorologico = TimerMeteorologico - 1
-    Exit Sub
-End If
+    If TimerMeteorologico > 7 Then
+        TimerMeteorologico = TimerMeteorologico - 1
+        Exit Sub
 
-If TimerMeteorologico = 7 Then
-    ProbabilidadNublar = RandomNumber(1, 3)
+    End If
+
+    If TimerMeteorologico = 7 Then
+        ProbabilidadNublar = RandomNumber(1, 3)
+
         If ProbabilidadNublar = 1 Then
             IntensidadDeNubes = RandomNumber(10, 45)
             ServidorNublado = True
@@ -1400,192 +1607,223 @@ If TimerMeteorologico = 7 Then
             Nieblando = True
             ServidorNublado = True
             Call SendData(SendTarget.ToAll, 0, PrepareMessageNieblandoToggle(IntensidadDeNubes))
-           ' Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Empezaron las nubes con intensidad: " & IntensidadDeNubes & "%.", FontTypeNames.FONTTYPE_SERVER))
-           Call AgregarAConsola("Servidor > Empezaron las nubes")
+            ' Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Empezaron las nubes con intensidad: " & IntensidadDeNubes & "%.", FontTypeNames.FONTTYPE_SERVER))
+            Call AgregarAConsola("Servidor > Empezaron las nubes")
             
             TimerMeteorologico = TimerMeteorologico - 1
         Else
-        ServidorNublado = False
-          ' Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Tranquilo, no hay nubes ni va a llover.", FontTypeNames.FONTTYPE_SERVER))
-          Call AgregarAConsola("Servidor >Tranquilo, no hay nubes ni va a llover.")
+            ServidorNublado = False
+            ' Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Tranquilo, no hay nubes ni va a llover.", FontTypeNames.FONTTYPE_SERVER))
+            Call AgregarAConsola("Servidor >Tranquilo, no hay nubes ni va a llover.")
             Call ResetMeteo
             Exit Sub
+
         End If
-End If
 
+    End If
 
-If TimerMeteorologico < 7 And TimerMeteorologico > 3 Then
-    TimerMeteorologico = TimerMeteorologico - 1
-    'Enviar Truenos y rayos
-    Truenos.Enabled = True
-    'Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Envio un truenito para que te asustes.", FontTypeNames.FONTTYPE_SERVER))
-    Call AgregarAConsola("Servidor >Truenos y nubes activados.")
-    Exit Sub
-End If
+    If TimerMeteorologico < 7 And TimerMeteorologico > 3 Then
+        TimerMeteorologico = TimerMeteorologico - 1
+        'Enviar Truenos y rayos
+        Truenos.Enabled = True
+        'Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Envio un truenito para que te asustes.", FontTypeNames.FONTTYPE_SERVER))
+        Call AgregarAConsola("Servidor >Truenos y nubes activados.")
+        Exit Sub
 
-If TimerMeteorologico = 3 Then
-    ProbabilidadLLuvia = RandomNumber(1, 5)
-    If ProbabilidadLLuvia = 1 Then
+    End If
+
+    If TimerMeteorologico = 3 Then
+        ProbabilidadLLuvia = RandomNumber(1, 5)
+
+        If ProbabilidadLLuvia = 1 Then
             'Envia Lluvia
             Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(404, NO_3D_SOUND, NO_3D_SOUND)) ' Explota un trueno
             Call SendData(SendTarget.ToAll, 0, PrepareMessageEfectToScreen(&HD254D6, 250)) 'Rayo
             Call SendData(SendTarget.ToAll, 0, PrepareMessageRainToggle())
-                    Nebando = True
+            Nebando = True
         
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageNevarToggle())
-          '  Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > LLuvia lluvia y mas lluvia!", FontTypeNames.FONTTYPE_SERVER))
-          Call AgregarAConsola("Servidor >Lloviendo.")
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageNevarToggle())
+            '  Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > LLuvia lluvia y mas lluvia!", FontTypeNames.FONTTYPE_SERVER))
+            Call AgregarAConsola("Servidor >Lloviendo.")
             Lloviendo = True
             TimerMeteorologico = TimerMeteorologico - 1
         Else
             Nieblando = False
             Call SendData(SendTarget.ToAll, 0, PrepareMessageNieblandoToggle(IntensidadDeNubes))
             Call AgregarAConsola("Servidor >Truenos y nubes desactivados.")
-           ' Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Tranquilo, las nubes se fueron.", FontTypeNames.FONTTYPE_SERVER))
+            ' Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Tranquilo, las nubes se fueron.", FontTypeNames.FONTTYPE_SERVER))
             Lloviendo = False
             ServidorNublado = False
             Truenos.Enabled = False
             Call ResetMeteo
             Exit Sub
+
         End If
-End If
 
-If TimerMeteorologico < 3 And TimerMeteorologico > 0 Then
+    End If
 
-TimerMeteorologico = TimerMeteorologico - 1
-Exit Sub
-End If
+    If TimerMeteorologico < 3 And TimerMeteorologico > 0 Then
 
-If TimerMeteorologico = 0 Then
-'dejar de llover y sacar nubes
-            Nieblando = False
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageNieblandoToggle(IntensidadDeNubes))
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageRainToggle())
-                    
+        TimerMeteorologico = TimerMeteorologico - 1
+        Exit Sub
+
+    End If
+
+    If TimerMeteorologico = 0 Then
+        'dejar de llover y sacar nubes
+        Nieblando = False
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageNieblandoToggle(IntensidadDeNubes))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageRainToggle())
         
         Call SendData(SendTarget.ToAll, 0, PrepareMessageNevarToggle())
-           ' Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Se acabo la lluvia señores.", FontTypeNames.FONTTYPE_SERVER))
-           Call AgregarAConsola("Servidor >Lluvia desactivada.")
-            Lloviendo = False
-            Truenos.Enabled = False
-            Nebando = False
-            Call ResetMeteo
-            Exit Sub
-End If
-Exit Sub
+        ' Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Se acabo la lluvia señores.", FontTypeNames.FONTTYPE_SERVER))
+        Call AgregarAConsola("Servidor >Lluvia desactivada.")
+        Lloviendo = False
+        Truenos.Enabled = False
+        Nebando = False
+        Call ResetMeteo
+        Exit Sub
 
+    End If
 
+    Exit Sub
 
 End Sub
 
 Private Sub TimerRespawn_Timer()
-On Error GoTo ErrorHandler
-Dim NpcIndex As Long
+
+    On Error GoTo ErrorHandler
+
+    Dim NpcIndex As Long
+
     'Update NPCs
     For NpcIndex = 1 To MaxRespawn
+
         If RespawnList(NpcIndex).flags.NPCActive Then  'Nos aseguramos que este muerto
             If RespawnList(NpcIndex).Contadores.InvervaloRespawn <> 0 Then
                 RespawnList(NpcIndex).Contadores.InvervaloRespawn = RespawnList(NpcIndex).Contadores.InvervaloRespawn - 1
+
                 If RespawnList(NpcIndex).Contadores.InvervaloRespawn = 0 Then
                     RespawnList(NpcIndex).flags.NPCActive = False
+
                     If RespawnList(NpcIndex).InformarRespawn = 1 Then
                         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(RespawnList(NpcIndex).name & " ha regresado y está listo para enfrentarte.", FontTypeNames.FONTTYPE_EXP))
                         Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(257, NO_3D_SOUND, NO_3D_SOUND)) 'Para evento de respwan
                         
-                        
                         'Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(246, NO_3D_SOUND, NO_3D_SOUND)) 'Para evento de respwan
                     End If
+
                     Call ReSpawnNpc(RespawnList(NpcIndex))
 
                 End If
+
             End If
+
         End If
+
     Next NpcIndex
 
-Exit Sub
+    Exit Sub
 
 ErrorHandler:
     Call LogError("Error en TIMER_RESPAWN " & Npclist(NpcIndex).name & " mapa:" & Npclist(NpcIndex).Pos.Map)
     Call MuereNpc(NpcIndex, 0)
-End Sub
 
+End Sub
 
 Private Sub tLluvia_Timer()
-On Error GoTo Errhandler
 
-'Dim iCount As Long
-' If Lloviendo Then
-'   For iCount = 1 To LastUser
-'        Call EfectoLluvia(iCount)
-'   Next iCount
-'End If
+    On Error GoTo Errhandler
 
-Exit Sub
+    'Dim iCount As Long
+    ' If Lloviendo Then
+    '   For iCount = 1 To LastUser
+    '        Call EfectoLluvia(iCount)
+    '   Next iCount
+    'End If
+
+    Exit Sub
 Errhandler:
-Call LogError("tLluvia " & Err.Number & ": " & Err.description)
+    Call LogError("tLluvia " & Err.Number & ": " & Err.description)
+
 End Sub
+
 Private Sub tPiqueteC_Timer()
-On Error GoTo Errhandler
-Static segundos As Integer
-Dim NuevaA As Boolean
-Dim NuevoL As Boolean
-Dim GI As Integer
 
-segundos = segundos + 6
+    On Error GoTo Errhandler
 
-Dim i As Long
+    Static segundos As Integer
 
-For i = 1 To LastUser
-    If UserList(i).flags.UserLogged Then
-        If MapData(UserList(i).Pos.Map, UserList(i).Pos.x, UserList(i).Pos.Y).trigger = eTrigger.ANTIPIQUETE Then
-            UserList(i).Counters.PiqueteC = UserList(i).Counters.PiqueteC + 1
-            'Call WriteConsoleMsg(i, "Estás obstruyendo la via pública, muévete o serás encarcelado!!!", FontTypeNames.FONTTYPE_INFO)
-            Call WriteLocaleMsg(i, "70", FontTypeNames.FONTTYPE_INFO)
+    Dim NuevaA      As Boolean
+
+    Dim NuevoL      As Boolean
+
+    Dim GI          As Integer
+
+    segundos = segundos + 6
+
+    Dim i As Long
+
+    For i = 1 To LastUser
+
+        If UserList(i).flags.UserLogged Then
+            If MapData(UserList(i).Pos.Map, UserList(i).Pos.x, UserList(i).Pos.Y).trigger = eTrigger.ANTIPIQUETE Then
+                UserList(i).Counters.PiqueteC = UserList(i).Counters.PiqueteC + 1
+                'Call WriteConsoleMsg(i, "Estás obstruyendo la via pública, muévete o serás encarcelado!!!", FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(i, "70", FontTypeNames.FONTTYPE_INFO)
             
-            If UserList(i).Counters.PiqueteC > 15 Then
-                UserList(i).Counters.PiqueteC = 0
-                Call Encarcelar(i, TIEMPO_CARCEL_PIQUETE)
+                If UserList(i).Counters.PiqueteC > 15 Then
+                    UserList(i).Counters.PiqueteC = 0
+                    Call Encarcelar(i, TIEMPO_CARCEL_PIQUETE)
+
+                End If
+
+            Else
+
+                If UserList(i).Counters.PiqueteC > 0 Then UserList(i).Counters.PiqueteC = 0
+
             End If
-        Else
-            If UserList(i).Counters.PiqueteC > 0 Then UserList(i).Counters.PiqueteC = 0
-        End If
 
-        'ustedes se preguntaran que hace esto aca?
-        'bueno la respuesta es simple: el codigo de AO es una mierda y encontrar
-        'todos los puntos en los cuales la alineacion puede cambiar es un dolor de
-        'huevos, asi que lo controlo aca, cada 6 segundos, lo cual es razonable
+            'ustedes se preguntaran que hace esto aca?
+            'bueno la respuesta es simple: el codigo de AO es una mierda y encontrar
+            'todos los puntos en los cuales la alineacion puede cambiar es un dolor de
+            'huevos, asi que lo controlo aca, cada 6 segundos, lo cual es razonable
 
-        'GI = UserList(i).guildIndex
-       ' If GI > 0 Then
-          '  NuevaA = False
-           ' NuevoL = False
-           ' If Not modGuilds.m_ValidarPermanencia(i, True, NuevaA, NuevoL) Then
-              '  Call WriteConsoleMsg(i, "Has sido expulsado del clan. ¡El clan ha sumado un punto de antifacción!", FontTypeNames.FONTTYPE_GUILD)
-           ' End If
+            'GI = UserList(i).guildIndex
+            ' If GI > 0 Then
+            '  NuevaA = False
+            ' NuevoL = False
+            ' If Not modGuilds.m_ValidarPermanencia(i, True, NuevaA, NuevoL) Then
+            '  Call WriteConsoleMsg(i, "Has sido expulsado del clan. ¡El clan ha sumado un punto de antifacción!", FontTypeNames.FONTTYPE_GUILD)
+            ' End If
             'If NuevaA Then
-             '   Call SendData(SendTarget.ToGuildMembers, GI, PrepareMessageConsoleMsg("¡El clan ha pasado a tener alineación neutral!", FontTypeNames.FONTTYPE_GUILD))
-             '   Call LogClanes("El clan cambio de alineacion!")
-           'End If
-          '  If NuevoL Then
-             '   Call SendData(SendTarget.ToGuildMembers, GI, PrepareMessageConsoleMsg("¡El clan tiene un nuevo líder!", FontTypeNames.FONTTYPE_GUILD))
-              '  Call LogClanes("El clan tiene nuevo lider!")
-           ' End If
-       ' End If
+            '   Call SendData(SendTarget.ToGuildMembers, GI, PrepareMessageConsoleMsg("¡El clan ha pasado a tener alineación neutral!", FontTypeNames.FONTTYPE_GUILD))
+            '   Call LogClanes("El clan cambio de alineacion!")
+            'End If
+            '  If NuevoL Then
+            '   Call SendData(SendTarget.ToGuildMembers, GI, PrepareMessageConsoleMsg("¡El clan tiene un nuevo líder!", FontTypeNames.FONTTYPE_GUILD))
+            '  Call LogClanes("El clan tiene nuevo lider!")
+            ' End If
+            ' End If
 
-        If segundos >= 18 Then
-            If segundos >= 18 Then UserList(i).Counters.Pasos = 0
+            If segundos >= 18 Then
+                If segundos >= 18 Then UserList(i).Counters.Pasos = 0
+
+            End If
+
+            Call FlushBuffer(i)
+
         End If
-                Call FlushBuffer(i)
-    End If
     
-Next i
+    Next i
 
-If segundos >= 18 Then segundos = 0
+    If segundos >= 18 Then segundos = 0
 
-Exit Sub
+    Exit Sub
 
 Errhandler:
     Call LogError("Error en tPiqueteC_Timer " & Err.Number & ": " & Err.description)
+
 End Sub
 
 
@@ -1692,15 +1930,17 @@ End Sub
 
 Private Sub Truenos_Timer()
 
-Dim Enviar As Byte
-Dim TruenoWav As Integer
+    Dim Enviar    As Byte
+
+    Dim TruenoWav As Integer
 
     Enviar = RandomNumber(1, 15)
+
     Dim duracion As Long
-    
 
     If Enviar < 8 Then
         TruenoWav = 399 + Enviar
+
         If TruenoWav = 404 Then TruenoWav = 406
         duracion = RandomNumber(80, 250)
         Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(TruenoWav, NO_3D_SOUND, NO_3D_SOUND))
@@ -1708,12 +1948,9 @@ Dim TruenoWav As Integer
         
     End If
 
-    
-
-
-
 End Sub
 
 Private Sub UptimeTimer_Timer()
-SERVER_UPTIME = SERVER_UPTIME + 1
+    SERVER_UPTIME = SERVER_UPTIME + 1
+
 End Sub

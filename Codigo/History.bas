@@ -144,4 +144,3 @@ Option Explicit
 '1) Limité a tres la máxima cantidad de mascotas
 '2) A los newbies se les caen los objetos no newbies
 
-

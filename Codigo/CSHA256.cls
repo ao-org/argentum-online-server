@@ -248,7 +248,7 @@ Private Function LShift(ByVal lValue As Long, ByVal iShiftBits As Integer) As Lo
         
         ' A shift of less than zero or more than 31 is undefined
     ElseIf iShiftBits < 0 Or iShiftBits > 31 Then
-        Err.Raise 6
+        Err.raise 6
 
     End If
     
@@ -318,7 +318,7 @@ Private Function RShift(ByVal lValue As Long, ByVal iShiftBits As Integer) As Lo
         
         ' A shift of less than zero or more than 31 is undefined
     ElseIf iShiftBits < 0 Or iShiftBits > 31 Then
-        Err.Raise 6
+        Err.raise 6
 
     End If
     
@@ -679,6 +679,6 @@ Public Function SHA256(sMessage As String) As String
     Next
     
     ' Output the 256 bit digest
-    SHA256 = LCase(Right("00000000" & Hex(Hash(0)), 8) & Right("00000000" & Hex(Hash(1)), 8) & Right("00000000" & Hex(Hash(2)), 8) & Right("00000000" & Hex(Hash(3)), 8) & Right("00000000" & Hex(Hash(4)), 8) & Right("00000000" & Hex(Hash(5)), 8) & Right("00000000" & Hex(Hash(6)), 8) & Right("00000000" & Hex(Hash(7)), 8))
+    SHA256 = LCase(Right("00000000" & hex(Hash(0)), 8) & Right("00000000" & hex(Hash(1)), 8) & Right("00000000" & hex(Hash(2)), 8) & Right("00000000" & hex(Hash(3)), 8) & Right("00000000" & hex(Hash(4)), 8) & Right("00000000" & hex(Hash(5)), 8) & Right("00000000" & hex(Hash(6)), 8) & Right("00000000" & hex(Hash(7)), 8))
 
 End Function

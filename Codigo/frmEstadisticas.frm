@@ -156,60 +156,64 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub Command1_Click()
-Dim LoopC As Integer, N As Long, M As Long
 
-N = 0 'numero de pjs
-M = 0 'numero total de elementos en cola
-If cboUsusColas.ListCount > 0 Then _
-    cboUsusColas.Clear
+    Dim LoopC As Integer, n As Long, M As Long
 
-For LoopC = 1 To LastUser
-    If UserList(LoopC).flags.UserLogged And UserList(LoopC).ConnID >= 0 And UserList(LoopC).ConnIDValida Then
-        If UserList(LoopC).outgoingData.length > 0 Then
-            N = N + 1
-            M = M + UserList(LoopC).outgoingData.length
-            cboUsusColas.AddItem UserList(LoopC).name
+    n = 0 'numero de pjs
+    M = 0 'numero total de elementos en cola
+
+    If cboUsusColas.ListCount > 0 Then cboUsusColas.Clear
+
+    For LoopC = 1 To LastUser
+
+        If UserList(LoopC).flags.UserLogged And UserList(LoopC).ConnID >= 0 And UserList(LoopC).ConnIDValida Then
+            If UserList(LoopC).outgoingData.length > 0 Then
+                n = n + 1
+                M = M + UserList(LoopC).outgoingData.length
+                cboUsusColas.AddItem UserList(LoopC).name
+
+            End If
+
         End If
-    End If
-Next LoopC
 
-lblColas.Caption = N & " PJs, " & M & " elementos en las colas."
+    Next LoopC
 
-If cboUsusColas.ListCount > 0 Then _
-    cboUsusColas.ListIndex = 0
+    lblColas.Caption = n & " PJs, " & M & " elementos en las colas."
+
+    If cboUsusColas.ListCount > 0 Then cboUsusColas.ListIndex = 0
     
 End Sub
 
 Private Sub Command2_Click()
-frmAdmin.Show
-frmAdmin.cboPjs.Text = cboUsusColas.Text
+    frmAdmin.Show
+    frmAdmin.cboPjs.Text = cboUsusColas.Text
 
 End Sub
 
 Private Sub Form_Activate()
-Call ActualizaStats
+    Call ActualizaStats
 
 End Sub
 
 Public Sub ActualizaStats()
-lblStat(0).Caption = TCPESStats.BytesRecibidosXSEG
-lblStat(1).Caption = TCPESStats.BytesEnviadosXSEG
-lblStat(2).Caption = TCPESStats.BytesRecibidosXSEGMax & vbCrLf & TCPESStats.BytesRecibidosXSEGCuando
-lblStat(3).Caption = TCPESStats.BytesEnviadosXSEGMax & vbCrLf & TCPESStats.BytesEnviadosXSEGCuando
+    lblStat(0).Caption = TCPESStats.BytesRecibidosXSEG
+    lblStat(1).Caption = TCPESStats.BytesEnviadosXSEG
+    lblStat(2).Caption = TCPESStats.BytesRecibidosXSEGMax & vbCrLf & TCPESStats.BytesRecibidosXSEGCuando
+    lblStat(3).Caption = TCPESStats.BytesEnviadosXSEGMax & vbCrLf & TCPESStats.BytesEnviadosXSEGCuando
 
 End Sub
 
 Private Sub Form_Click()
-Call ActualizaStats
+    Call ActualizaStats
 
 End Sub
 
 Private Sub Frame1_Click()
-Call ActualizaStats
+    Call ActualizaStats
 
 End Sub
 
-Private Sub lblStat_Click(index As Integer)
-Call ActualizaStats
+Private Sub lblStat_Click(Index As Integer)
+    Call ActualizaStats
 
 End Sub
