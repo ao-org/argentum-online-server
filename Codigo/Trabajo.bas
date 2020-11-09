@@ -2035,23 +2035,19 @@ Public Sub DoMeditar(ByVal UserIndex As Integer)
     Dim MeditarSkill As Byte
 
     With UserList(UserIndex)
-        .Counters.IdleCount = 0
-
-        If .Counters.bPuedeMeditar = False Then
-            .Counters.bPuedeMeditar = True
-
-        End If
+        '.Counters.IdleCount = 0
         
-        If .Stats.MinMAN >= .Stats.MaxMAN Then
-            .flags.Meditando = False
-            Call WriteMeditateToggle(UserIndex)
+        If .Stats.MinMAN >= .Stats.MaxMAN Then Exit Sub
+           ' .flags.Meditando = False
+            'Call WriteMeditateToggle(UserIndex)
             'Call WriteConsoleMsg(UserIndex, "Dejas de meditar.", FontTypeNames.FONTTYPE_INFO)
-            Call WriteLocaleMsg(UserIndex, "123", FontTypeNames.FONTTYPE_INFO)
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, .Char.ParticulaFx, 0, True))
-            .Char.ParticulaFx = 0
-            Exit Sub
+            'Call WriteLocaleMsg(UserIndex, "123", FontTypeNames.FONTTYPE_INFO)
+            '.Char.FX = 0
+            '.Char.loops = 0
+            'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, .Char.FX, .Char.loops))
+            'Exit Sub
 
-        End If
+        'End If
     
         MeditarSkill = .Stats.UserSkills(eSkill.Meditar)
         
@@ -2191,9 +2187,8 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As ObjData, ByVal 
     End If
 
     If UserList(UserIndex).flags.Meditando Then
-        Call WriteConsoleMsg(UserIndex, "No podés subirte a la montura si estas meditando.", FontTypeNames.FONTTYPE_INFO)
-        Exit Sub
-
+        UserList(UserIndex).flags.Meditando = False
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(.Char.CharIndex, 0))
     End If
 
     If UserList(UserIndex).flags.Montado = 1 Then
