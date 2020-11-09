@@ -13,10 +13,12 @@ Option Explicit
 '?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
 
 Type CWPSTRUCT
+
     lParam As Long
     wParam As Long
     message As Long
     hWnd As Long
+
 End Type
 
 Declare Function CallNextHookEx Lib "user32" (ByVal hHook As Long, ByVal ncode As Long, ByVal wParam As Long, lParam As Any) As Long
@@ -26,21 +28,29 @@ Declare Function SetWindowsHookEx Lib "user32" Alias "SetWindowsHookExA" (ByVal 
 Declare Function UnhookWindowsHookEx Lib "user32" (ByVal hHook As Long) As Long
 
 Public Const WH_CALLWNDPROC = 4
+
 Public Const WM_CREATE = &H1
 
 Public hHook As Long
 
 Public Function AppHook(ByVal idHook As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+
     Dim CWP As CWPSTRUCT
+
     CopyMemory CWP, ByVal lParam, Len(CWP)
+
     Select Case CWP.message
+
         Case WM_CREATE
             SetForegroundWindow CWP.hWnd
             AppHook = CallNextHookEx(hHook, idHook, wParam, ByVal lParam)
             UnhookWindowsHookEx hHook
             hHook = 0
             Exit Function
+
     End Select
+
     AppHook = CallNextHookEx(hHook, idHook, wParam, ByVal lParam)
+
 End Function
 

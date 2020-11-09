@@ -11,7 +11,11 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
-Public Name As String
-Public Causa As String
+
+Public name            As String
+
+Public Causa           As String
+
 Public FechaLiberacion As Date
-Public Baneador As String
+
+Public Baneador        As String

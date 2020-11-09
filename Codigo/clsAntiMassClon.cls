@@ -41,40 +41,44 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Const MaximoPersonajesPorIP = 15
+
 Private m_coleccion As New Collection
 
 Public Function MaxPersonajes(sIp As String) As Boolean
+
     Dim i As Long
 
     For i = 1 To m_coleccion.Count
+
         If m_coleccion.Item(i).ip = sIp Then
             m_coleccion.Item(i).PersonajesCreados = m_coleccion.Item(i).PersonajesCreados + 1
             MaxPersonajes = (m_coleccion.Item(i).PersonajesCreados > MaximoPersonajesPorIP)
+
             If MaxPersonajes Then m_coleccion.Item(i).PersonajesCreados = 16
             Exit Function
+
         End If
+
     Next i
-
-
 
     MaxPersonajes = False
     Exit Function
+
 End Function
 
 Public Function VaciarColeccion()
 
-On Error GoTo Errhandler
+    On Error GoTo Errhandler
 
-Dim i As Integer
+    Dim i As Integer
 
-For i = 1 To m_coleccion.Count
-   Call m_coleccion.Remove(1)
-Next
+    For i = 1 To m_coleccion.Count
+        Call m_coleccion.Remove(1)
+    Next
 
-
-Exit Function
+    Exit Function
 Errhandler:
     Call LogError("Error en RestarConexion " & Err.description)
-End Function
 
+End Function
 

@@ -19,8 +19,7 @@ Option Explicit
 'Constantes de las quests
 Public Const MAXUSERQUESTS As Integer = 5     'Maxima cantidad de quests que puede tener un usuario al mismo tiempo.
 
-Public Function TieneQuest(ByVal UserIndex As Integer, _
-                           ByVal QuestNumber As Integer) As Byte
+Public Function TieneQuest(ByVal UserIndex As Integer, ByVal QuestNumber As Integer) As Byte
 
     '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     'Devuelve el slot de UserQuests en que tiene la quest QuestNumber. En caso contrario devuelve 0.
@@ -64,11 +63,7 @@ Public Function FreeQuestSlot(ByVal UserIndex As Integer) As Byte
 
 End Function
  
-
- 
-Public Sub FinishQuest(ByVal UserIndex As Integer, _
-                       ByVal QuestIndex As Integer, _
-                       ByVal QuestSlot As Byte)
+Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal QuestSlot As Byte)
 
     '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     'Maneja el evento de terminar una quest.
@@ -136,18 +131,9 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, _
         'A esta altura ya cumplio los objetivos, entonces se le entregan las recompensas.
         'Call WriteConsoleMsg(UserIndex, "Has completado la mision " & Chr(34) & QuestList(QuestIndex).Nombre & Chr(34) & "!", FontTypeNames.FONTTYPE_New_Celeste)
         
-        
-        
-        
-        
         Call WriteChatOverHead(UserIndex, "QUESTFIN*" & Npclist(NpcIndex).QuestNumber, Npclist(NpcIndex).Char.CharIndex, vbYellow)
         
-        
-        
         'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead(QuestList(Npclist(NpcIndex).QuestNumber).DescFinal, Npclist(NpcIndex).Char.CharIndex, vbYellow))
-        
-        
-        
 
         'Si la quest pedia objetos, se los saca al personaje.
         If .RequiredOBJs Then
@@ -167,7 +153,9 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, _
                 Call WriteLocaleMsg(UserIndex, "140", FontTypeNames.FONTTYPE_EXP, .RewardEXP)
             Else
                 Call WriteConsoleMsg(UserIndex, "No se te ha dado experiencia porque eres nivel máximo.", FontTypeNames.FONTTYPE_INFO)
+
             End If
+
         End If
         
         'Se entrega el oro.
@@ -179,12 +167,17 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, _
         
         'Si hay recompensa de objetos, se entregan.
         If .RewardOBJs > 0 Then
+
             For i = 1 To .RewardOBJs
+
                 If .RewardOBJ(i).Amount Then
                     Call MeterItemEnInventario(UserIndex, .RewardOBJ(i))
                     Call WriteConsoleMsg(UserIndex, "Has recibido " & QuestList(QuestIndex).RewardOBJ(i).Amount & " " & ObjData(QuestList(QuestIndex).RewardOBJ(i).ObjIndex).name & " como recompensa.", FontTypeNames.FONTTYPE_INFOIAO)
+
                 End If
+
             Next i
+
         End If
         
         Call WriteUpdateGold(UserIndex)
@@ -202,11 +195,8 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, _
             'Se agrega que el usuario ya hizo esta quest.
             Call AddDoneQuest(UserIndex, QuestIndex)
             Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 2)
+
         End If
-        
-        
-        
-        
         
     End With
 
@@ -227,8 +217,7 @@ Public Sub AddDoneQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer)
 
 End Sub
  
-Public Function UserDoneQuest(ByVal UserIndex As Integer, _
-                              ByVal QuestIndex As Integer) As Boolean
+Public Function UserDoneQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer) As Boolean
 
     '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     'Verifica si el usuario hizo la quest QuestIndex.
@@ -304,7 +293,6 @@ Public Sub ResetQuestStats(ByVal UserIndex As Integer)
     End With
 
 End Sub
- 
  
 Public Sub LoadQuests()
 
@@ -414,13 +402,13 @@ Public Sub LoadQuestStats(ByVal UserIndex As Integer, ByRef UserFile As clsIniRe
     'Carga las QuestStats del usuario.
     'Last modified: 28/01/2010 by Amraphen
     '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    Dim i           As Integer
+    Dim i        As Integer
 
-    Dim j           As Integer
+    Dim j        As Integer
 
-    Dim tmpStr      As String
+    Dim tmpStr   As String
 
-    Dim Fields()    As String
+    Dim Fields() As String
  
     For i = 1 To MAXUSERQUESTS
 
@@ -508,7 +496,6 @@ Public Sub SaveQuestStats(ByVal UserIndex As Integer, ByRef UserFile As String)
 
             End If
         
-        
             Call WriteVar(UserFile, "QUESTS", "Q" & i, tmpStr)
 
         End With
@@ -525,7 +512,6 @@ Public Sub SaveQuestStats(ByVal UserIndex As Integer, ByRef UserFile As String)
             Next i
 
         End If
-        
         
         Call WriteVar(UserFile, "QUESTS", "QuestsDone", tmpStr)
 
@@ -544,8 +530,11 @@ Public Sub ArrangeUserQuests(ByVal UserIndex As Integer)
     Dim j As Integer
  
     With UserList(UserIndex).QuestStats
+
         For i = 1 To MAXUSERQUESTS - 1
+
             If .Quests(i).QuestIndex = 0 Then
+
                 For j = i + 1 To MAXUSERQUESTS
 
                     If .Quests(j).QuestIndex Then
@@ -554,6 +543,7 @@ Public Sub ArrangeUserQuests(ByVal UserIndex As Integer)
                         Exit For
 
                     End If
+
                 Next j
 
             End If
@@ -573,7 +563,6 @@ Public Sub EnviarQuest(ByVal UserIndex As Integer)
     Dim NpcIndex As Integer
 
     Dim tmpByte  As Byte
-
  
     NpcIndex = UserList(UserIndex).flags.TargetNPC
     
@@ -583,17 +572,19 @@ Public Sub EnviarQuest(ByVal UserIndex As Integer)
     If Distancia(UserList(UserIndex).Pos, Npclist(NpcIndex).Pos) > 5 Then
         Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
         Exit Sub
+
     End If
     
     'El NPC hace quests?
     If Npclist(NpcIndex).QuestNumber = 0 Then
         Call WriteChatOverHead(UserIndex, "No tengo ninguna mision para ti.", Npclist(NpcIndex).Char.CharIndex, vbYellow)
         Exit Sub
+
     End If
     
     'El personaje ya hizo la quest?
     If UserDoneQuest(UserIndex, Npclist(NpcIndex).QuestNumber) Then
-       ' Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead(QuestList(Npclist(NpcIndex).QuestNumber).NextQuest, Npclist(NpcIndex).Char.CharIndex, vbYellow))
+        ' Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead(QuestList(Npclist(NpcIndex).QuestNumber).NextQuest, Npclist(NpcIndex).Char.CharIndex, vbYellow))
         
         Call WriteChatOverHead(UserIndex, "QUESTNEXT*" & Npclist(NpcIndex).QuestNumber, Npclist(NpcIndex).Char.CharIndex, vbYellow)
         Exit Sub

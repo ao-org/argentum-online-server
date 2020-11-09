@@ -41,8 +41,8 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Public Map As Integer
-Public X As Integer
-Public Y As Integer
 
+Public x   As Integer
 
+Public Y   As Integer
 

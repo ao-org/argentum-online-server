@@ -22,32 +22,39 @@ Attribute VB_Name = "Statistics"
 
 Option Explicit
 
-
 Private Type fragLvlRace
+
     matrix(1 To 50, 1 To 6) As Long
+
 End Type
 
 Private Type fragLvlLvl
+
     matrix(1 To 50, 1 To 50) As Long
+
 End Type
 
+Private fragLvlRaceData(1 To 7)               As fragLvlRace
 
-Private fragLvlRaceData(1 To 7) As fragLvlRace
-Private fragLvlLvlData(1 To 7) As fragLvlLvl
+Private fragLvlLvlData(1 To 7)                As fragLvlLvl
+
 Private fragAlignmentLvlData(1 To 50, 1 To 4) As Long
 
 'Currency just in case.... chats are way TOO often...
-Private keyOcurrencies(255) As Currency
-
+Private keyOcurrencies(255)                   As Currency
 
 Public Sub StoreFrag(ByVal killer As Integer, ByVal victim As Integer)
-    Dim clase As Integer
-    Dim raza As Integer
+
+    Dim clase     As Integer
+
+    Dim raza      As Integer
+
     Dim alignment As Integer
     
     If UserList(victim).Stats.ELV > 50 Or UserList(killer).Stats.ELV > 50 Then Exit Sub
     
     Select Case UserList(killer).clase
+
         Case eClass.Assasin
             clase = 1
         
@@ -71,9 +78,11 @@ Public Sub StoreFrag(ByVal killer As Integer, ByVal victim As Integer)
         
         Case Else
             Exit Sub
+
     End Select
     
     Select Case UserList(killer).raza
+
         Case eRaza.Elfo
             raza = 1
         
@@ -94,6 +103,7 @@ Public Sub StoreFrag(ByVal killer As Integer, ByVal victim As Integer)
         
         Case Else
             Exit Sub
+
     End Select
     
     If UserList(killer).Faccion.ArmadaReal Then
@@ -104,6 +114,7 @@ Public Sub StoreFrag(ByVal killer As Integer, ByVal victim As Integer)
         alignment = 3
     Else
         alignment = 4
+
     End If
     
     fragLvlRaceData(clase).matrix(UserList(killer).Stats.ELV, raza) = fragLvlRaceData(clase).matrix(UserList(killer).Stats.ELV, raza) + 1
@@ -111,15 +122,20 @@ Public Sub StoreFrag(ByVal killer As Integer, ByVal victim As Integer)
     fragLvlLvlData(clase).matrix(UserList(killer).Stats.ELV, UserList(victim).Stats.ELV) = fragLvlLvlData(clase).matrix(UserList(killer).Stats.ELV, UserList(victim).Stats.ELV) + 1
     
     fragAlignmentLvlData(UserList(killer).Stats.ELV, alignment) = fragAlignmentLvlData(UserList(killer).Stats.ELV, alignment) + 1
+
 End Sub
 
 Public Sub DumpStatistics()
+
     Dim handle As Integer
+
     handle = FreeFile()
     
     Dim line As String
-    Dim i As Long
-    Dim j As Long
+
+    Dim i    As Long
+
+    Dim j    As Long
     
     Open App.Path & "\logs\frags.txt" For Output As handle
     
@@ -223,10 +239,6 @@ Public Sub DumpStatistics()
         line = vbNullString
     Next j
     
-    
-    
-    
-    
     'Save lvl vs race frag matrix for each class - we use GNU Octave's ASCII file format
     
     Print #handle, "# name: fragLvlRace_Ase"
@@ -327,11 +339,6 @@ Public Sub DumpStatistics()
         line = vbNullString
     Next j
     
-    
-    
-    
-    
-    
     'Save lvl vs class frag matrix for each race - we use GNU Octave's ASCII file format
     
     Print #handle, "# name: fragLvlClass_Elf"
@@ -404,9 +411,6 @@ Public Sub DumpStatistics()
         line = vbNullString
     Next j
     
-    
-    
-    
     'Save lvl vs alignment frag matrix for each race - we use GNU Octave's ASCII file format
     
     Print #handle, "# name: fragAlignmentLvl"
@@ -425,8 +429,6 @@ Public Sub DumpStatistics()
     
     Close handle
     
-    
-    
     'Dump Chat statistics
     handle = FreeFile()
     
@@ -441,18 +443,23 @@ Public Sub DumpStatistics()
     
     'Show each character's ocurrencies
     If Total <> 0 Then
+
         For i = 0 To 255
             Print #handle, CStr(i) & "    " & CStr(Round(keyOcurrencies(i) / Total, 8))
         Next i
+
     End If
     
     Print #handle, "TOTAL =    " & CStr(Total)
     
     Close handle
+
 End Sub
 
 Public Sub ParseChat(ByRef S As String)
-    Dim i As Long
+
+    Dim i   As Long
+
     Dim Key As Integer
     
     For i = 1 To Len(S)
@@ -463,4 +470,5 @@ Public Sub ParseChat(ByRef S As String)
     
     'Add a NULL-terminated to consider that possibility too....
     keyOcurrencies(0) = keyOcurrencies(0) + 1
+
 End Sub

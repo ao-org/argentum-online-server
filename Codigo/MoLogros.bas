@@ -10,19 +10,22 @@ Attribute VB_Name = "MoLogros"
 'Logro 4, Matar 500 Npcs
 
 'Logro 5, Matar 2000 Npcs
-Public NPcLogros() As TLogros
-Public UserLogros() As TLogros
+Public NPcLogros()   As TLogros
+
+Public UserLogros()  As TLogros
+
 Public LevelLogros() As TLogros
+
 Private Const ARCHIVOCONFIG = "logros.ini"
 
-Private CantNPcLogros As Byte
-Private CantUserLogros As Byte
+Private CantNPcLogros   As Byte
+
+Private CantUserLogros  As Byte
+
 Private CantLevelLogros As Byte
 
-
-
-
 Type TLogros
+
     nombre As String
     Desc As String
     cant As Long
@@ -33,21 +36,25 @@ Type TLogros
     ExpRecompensa As Long
     HechizoRecompensa As Byte
     Finalizada As Boolean
+
 End Type
+
 Public Sub CargarLogros()
-Dim i As Integer
+
+    Dim i As Integer
 
     CantNPcLogros = val(GetVar(DatPath & ARCHIVOCONFIG, "INIT", "NPcLogros"))
     CantUserLogros = val(GetVar(DatPath & ARCHIVOCONFIG, "INIT", "UserLogros"))
     CantLevelLogros = val(GetVar(DatPath & ARCHIVOCONFIG, "INIT", "LevelLogros"))
-    
 
-ReDim NPcLogros(1 To CantNPcLogros)
-ReDim UserLogros(1 To CantUserLogros)
-ReDim LevelLogros(1 To CantLevelLogros)
+    ReDim NPcLogros(1 To CantNPcLogros)
+    ReDim UserLogros(1 To CantUserLogros)
+    ReDim LevelLogros(1 To CantLevelLogros)
 
-i = 1
+    i = 1
+
     If CantNPcLogros > 0 Then
+
         For i = 1 To CantNPcLogros
             NPcLogros(i).nombre = GetVar(DatPath & ARCHIVOCONFIG, "NPcLogros" & i, "Nombre")
             NPcLogros(i).Desc = GetVar(DatPath & ARCHIVOCONFIG, "NPcLogros" & i, "Desc")
@@ -59,10 +66,11 @@ i = 1
             NPcLogros(i).ObjRecompensa = GetVar(DatPath & ARCHIVOCONFIG, "NPcLogros" & i, "ObjRecompensa")
             NPcLogros(i).QueNpc = val(GetVar(DatPath & ARCHIVOCONFIG, "NPcLogros" & i, "QueNPC"))
         Next i
+
     End If
     
-    
     If CantUserLogros > 0 Then
+
         For i = 1 To CantUserLogros
             UserLogros(i).nombre = GetVar(DatPath & ARCHIVOCONFIG, "UserLogros" & i, "Nombre")
             UserLogros(i).Desc = GetVar(DatPath & ARCHIVOCONFIG, "UserLogros" & i, "Desc")
@@ -74,9 +82,11 @@ i = 1
             UserLogros(i).ObjRecompensa = GetVar(DatPath & ARCHIVOCONFIG, "UserLogros" & i, "ObjRecompensa")
             'Debug.Print i & ":" & UserLogros(i).ObjRecompensa
         Next i
+
     End If
     
     If CantLevelLogros > 0 Then
+
         For i = 1 To CantLevelLogros
             LevelLogros(i).nombre = GetVar(DatPath & ARCHIVOCONFIG, "LevelLogros" & i, "Nombre")
             LevelLogros(i).Desc = GetVar(DatPath & ARCHIVOCONFIG, "LevelLogros" & i, "Desc")
@@ -86,103 +96,114 @@ i = 1
             LevelLogros(i).HechizoRecompensa = val(GetVar(DatPath & ARCHIVOCONFIG, "LevelLogros" & i, "HechizoRecompensa"))
             LevelLogros(i).OroRecompensa = val(GetVar(DatPath & ARCHIVOCONFIG, "LevelLogros" & i, "OroRecompensa"))
             LevelLogros(i).ObjRecompensa = GetVar(DatPath & ARCHIVOCONFIG, "LevelLogros" & i, "ObjRecompensa")
-          '  Debug.Print i & ":" & LevelLogros(i).ObjRecompensa
+            '  Debug.Print i & ":" & LevelLogros(i).ObjRecompensa
         Next i
+
     End If
+
 End Sub
-    
     
 Public Sub EnviarRecompensaStat(ByVal UserIndex As Integer)
 
-If UserList(UserIndex).flags.BattleModo = 1 Then
-    Call WriteConsoleMsg(UserIndex, "Aquí no podés utilizar el sistema de recompensas.", FontTypeNames.FONTTYPE_EXP)
-    Exit Sub
-End If
+    If UserList(UserIndex).flags.BattleModo = 1 Then
+        Call WriteConsoleMsg(UserIndex, "Aquí no podés utilizar el sistema de recompensas.", FontTypeNames.FONTTYPE_EXP)
+        Exit Sub
 
+    End If
 
-Call WriteRecompensas(UserIndex)
-
-
+    Call WriteRecompensas(UserIndex)
 
 End Sub
+
 Public Sub CheckearRecompesas(ByVal UserIndex As Integer, ByVal Index As Byte)
 
-If UserList(UserIndex).flags.BattleModo = 1 Then Exit Sub
+    If UserList(UserIndex).flags.BattleModo = 1 Then Exit Sub
 
-Select Case Index
+    Select Case Index
 
-Case 1
-    If UserList(UserIndex).Stats.NPCsMuertos >= NPcLogros(UserList(UserIndex).NPcLogros + 1).cant Then
-        'Call WriteConsoleMsg(UserIndex, "¡Felicitaciones! Ya podes reclamar una nueva recompensa.", FontTypeNames.FONTTYPE_EXP)
-        Call WriteTrofeoToggleOn(UserIndex)
-    End If
-Case 2
-    If UserList(UserIndex).Stats.UsuariosMatados >= UserLogros(UserList(UserIndex).UserLogros + 1).cant Then
-        'Call WriteConsoleMsg(UserIndex, "¡Felicitaciones! Ya podes reclamar una nueva recompensa.", FontTypeNames.FONTTYPE_EXP)
-        Call WriteTrofeoToggleOn(UserIndex)
-    End If
-Case 3
-    If UserList(UserIndex).Stats.ELV >= LevelLogros(UserList(UserIndex).LevelLogros + 1).cant Then
-        'Call WriteConsoleMsg(UserIndex, "¡Felicitaciones! Ya podes reclamar una nueva recompensa.", FontTypeNames.FONTTYPE_EXP)
-        Call WriteTrofeoToggleOn(UserIndex)
-    End If
-End Select
+        Case 1
+
+            If UserList(UserIndex).Stats.NPCsMuertos >= NPcLogros(UserList(UserIndex).NPcLogros + 1).cant Then
+                'Call WriteConsoleMsg(UserIndex, "¡Felicitaciones! Ya podes reclamar una nueva recompensa.", FontTypeNames.FONTTYPE_EXP)
+                Call WriteTrofeoToggleOn(UserIndex)
+
+            End If
+
+        Case 2
+
+            If UserList(UserIndex).Stats.UsuariosMatados >= UserLogros(UserList(UserIndex).UserLogros + 1).cant Then
+                'Call WriteConsoleMsg(UserIndex, "¡Felicitaciones! Ya podes reclamar una nueva recompensa.", FontTypeNames.FONTTYPE_EXP)
+                Call WriteTrofeoToggleOn(UserIndex)
+
+            End If
+
+        Case 3
+
+            If UserList(UserIndex).Stats.ELV >= LevelLogros(UserList(UserIndex).LevelLogros + 1).cant Then
+                'Call WriteConsoleMsg(UserIndex, "¡Felicitaciones! Ya podes reclamar una nueva recompensa.", FontTypeNames.FONTTYPE_EXP)
+                Call WriteTrofeoToggleOn(UserIndex)
+
+            End If
+
+    End Select
 
 End Sub
-
 
 Public Sub EntregarRecompensas(ByVal UserIndex As Integer, ByVal Index As Byte)
 
+    If UserList(UserIndex).flags.BattleModo = 1 Then
+        Call WriteConsoleMsg(UserIndex, "Aquí no podés utilizar el sistema de recompensas.", FontTypeNames.FONTTYPE_EXP)
+        Exit Sub
 
-If UserList(UserIndex).flags.BattleModo = 1 Then
-    Call WriteConsoleMsg(UserIndex, "Aquí no podés utilizar el sistema de recompensas.", FontTypeNames.FONTTYPE_EXP)
-    Exit Sub
-End If
-
-Select Case Index
-
-Case 1
-    If UserList(UserIndex).Stats.NPCsMuertos >= NPcLogros(UserList(UserIndex).NPcLogros + 1).cant Then
-    
-        Call WriteConsoleMsg(UserIndex, "Acá tenes tu recompensa por este logro. ¡Que lo disfrutes y seguí participando!", FontTypeNames.FONTTYPE_EXP)
-        UserList(UserIndex).NPcLogros = UserList(UserIndex).NPcLogros + 1
-        Call WriteRecompensas(UserIndex)
-        Call WriteTrofeoToggleOff(UserIndex)
-        Exit Sub
-    Else
-        Call WriteConsoleMsg(UserIndex, "Aún no has terminado este logro ¡Continua luchando!", FontTypeNames.FONTTYPE_EXP)
-        Exit Sub
-    End If
-Case 2
-    If UserList(UserIndex).Stats.UsuariosMatados >= UserLogros(UserList(UserIndex).UserLogros + 1).cant Then
-    
-        Call WriteConsoleMsg(UserIndex, "Acá tenes tu recompensa por este logro. ¡Que lo disfrutes y seguí participando!", FontTypeNames.FONTTYPE_EXP)
-        UserList(UserIndex).UserLogros = UserList(UserIndex).UserLogros + 1
-        Call WriteRecompensas(UserIndex)
-        Call WriteTrofeoToggleOff(UserIndex)
-        Exit Sub
-    Else
-        Call WriteConsoleMsg(UserIndex, "Aún no has terminado este logro ¡Continua luchando!", FontTypeNames.FONTTYPE_EXP)
-        Exit Sub
     End If
 
-Case 3
-    If UserList(UserIndex).Stats.ELV >= LevelLogros(UserList(UserIndex).LevelLogros + 1).cant Then
+    Select Case Index
+
+        Case 1
+
+            If UserList(UserIndex).Stats.NPCsMuertos >= NPcLogros(UserList(UserIndex).NPcLogros + 1).cant Then
     
-        Call WriteConsoleMsg(UserIndex, "Acá tenes tu recompensa por este logro. ¡Que lo disfrutes y seguí participando!", FontTypeNames.FONTTYPE_EXP)
-        UserList(UserIndex).LevelLogros = UserList(UserIndex).LevelLogros + 1
-        Call WriteRecompensas(UserIndex)
-        Call WriteTrofeoToggleOff(UserIndex)
-        Exit Sub
-    Else
-        Call WriteConsoleMsg(UserIndex, "Aún no has terminado este logro ¡Continua luchando!", FontTypeNames.FONTTYPE_EXP)
-        Exit Sub
-    End If
-End Select
+                Call WriteConsoleMsg(UserIndex, "Acá tenes tu recompensa por este logro. ¡Que lo disfrutes y seguí participando!", FontTypeNames.FONTTYPE_EXP)
+                UserList(UserIndex).NPcLogros = UserList(UserIndex).NPcLogros + 1
+                Call WriteRecompensas(UserIndex)
+                Call WriteTrofeoToggleOff(UserIndex)
+                Exit Sub
+            Else
+                Call WriteConsoleMsg(UserIndex, "Aún no has terminado este logro ¡Continua luchando!", FontTypeNames.FONTTYPE_EXP)
+                Exit Sub
 
+            End If
 
+        Case 2
 
+            If UserList(UserIndex).Stats.UsuariosMatados >= UserLogros(UserList(UserIndex).UserLogros + 1).cant Then
+    
+                Call WriteConsoleMsg(UserIndex, "Acá tenes tu recompensa por este logro. ¡Que lo disfrutes y seguí participando!", FontTypeNames.FONTTYPE_EXP)
+                UserList(UserIndex).UserLogros = UserList(UserIndex).UserLogros + 1
+                Call WriteRecompensas(UserIndex)
+                Call WriteTrofeoToggleOff(UserIndex)
+                Exit Sub
+            Else
+                Call WriteConsoleMsg(UserIndex, "Aún no has terminado este logro ¡Continua luchando!", FontTypeNames.FONTTYPE_EXP)
+                Exit Sub
 
+            End If
 
+        Case 3
+
+            If UserList(UserIndex).Stats.ELV >= LevelLogros(UserList(UserIndex).LevelLogros + 1).cant Then
+    
+                Call WriteConsoleMsg(UserIndex, "Acá tenes tu recompensa por este logro. ¡Que lo disfrutes y seguí participando!", FontTypeNames.FONTTYPE_EXP)
+                UserList(UserIndex).LevelLogros = UserList(UserIndex).LevelLogros + 1
+                Call WriteRecompensas(UserIndex)
+                Call WriteTrofeoToggleOff(UserIndex)
+                Exit Sub
+            Else
+                Call WriteConsoleMsg(UserIndex, "Aún no has terminado este logro ¡Continua luchando!", FontTypeNames.FONTTYPE_EXP)
+                Exit Sub
+
+            End If
+
+    End Select
 
 End Sub
