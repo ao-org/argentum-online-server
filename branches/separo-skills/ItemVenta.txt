@@ -1,0 +1,560 @@
+[26]
+Nombre=Pollo
+[723]
+Nombre=Pase: Banderbill a Nix
+[724]
+Nombre=Pase: Banderbill a Arghâl
+[1066]
+Nombre=Pase: Banderbill a Lindos
+[1063]
+Nombre=Pase: Banderbill a Hillidan
+[38]
+Nombre=Poción Roja
+[37]
+Nombre=Poción Azul
+[36]
+Nombre=Poción Amarilla
+[39]
+Nombre=Poción Verde
+[166]
+Nombre=Antidoto
+[885]
+Nombre=Tijeras
+[887]
+Nombre=Olla
+[1179]
+Nombre=Vestimenta de Noble Rojiza
+[1228]
+Nombre=Vestimenta de Noble Dorada
+[712]
+Nombre=Vestimentas de Gala
+[966]
+Nombre=Traje de Conde
+[964]
+Nombre=Vestimenta Burguesa
+[490]
+Nombre=Indumentaria de Minero
+[950]
+Nombre=Traje de Marqués
+[477]
+Nombre=Traje de Novio
+[55]
+Nombre=Traje de Duque
+[945]
+Nombre=Traje Estival
+[170]
+Nombre=Ropaje de Batida (Mujer)
+[648]
+Nombre=Vestido de Gala
+[468]
+Nombre=Vestido de Condesa
+[571]
+Nombre=Vestido de Marquesa
+[510]
+Nombre=Vestido Insinuante
+[511]
+Nombre=Vestido de Novia
+[56]
+Nombre=Vestido de Duquesa
+[462]
+Nombre=Vestido de Princesa
+[513]
+Nombre=Vestido de Bruja
+[467]
+Nombre=Estivalis
+[503]
+Nombre=Vestido Yamilet
+[550]
+Nombre=Vestido de Novia (Drow)
+[514]
+Nombre=Vestido de Bruja (Drow)
+[238]
+Nombre=Túnica de Aprendiz
+[528]
+Nombre=Túnica de las Penumbras
+[45]
+Nombre=Túnica Infernal
+[491]
+Nombre=Túnica Celestial
+[357]
+Nombre=Túnica de Druida
+[1089]
+Nombre=Túnica de Nigromante
+[1231]
+Nombre=Túnica de Clérigo
+[1275]
+Nombre=Corona de Flores
+[592]
+Nombre=Corona Simple
+[1239]
+Nombre=Gorro de Hechicería
+[1240]
+Nombre=Gorro de Hechicería
+[991]
+Nombre=Gorro de Hechicería
+[240]
+Nombre=Vestimentas de Bajo
+[486]
+Nombre=Vestimentas de Bajo
+[527]
+Nombre=Vestimentas de Baja
+[1309]
+Nombre=Sotana (Bajos)
+[713]
+Nombre=Vestimentas de Gala (Bajos)
+[502]
+Nombre=Vestimenta de Campesino (Bajos)
+[236]
+Nombre=Traje de Novio (Bajos)
+[512]
+Nombre=Vestido Doncella (Bajas)
+[971]
+Nombre=Vestido de Novia (Bajas)
+[525]
+Nombre=Túnica Reforzada (Bajos)
+[1226]
+Nombre=Túnica del Aventurero (Bajos)
+[1363]
+Nombre=Túnica Celestial (Bajos)
+[1210]
+Nombre=Túnica de Druida (Bajos)
+[524]
+Nombre=Túnica Arcana (Bajos)
+[526]
+Nombre=Túnica Reforzada (Bajas)
+[1236]
+Nombre=Gorro de Aprendiz de Mago
+[1238]
+Nombre=Gorro de Aprendiz de Mago
+[1237]
+Nombre=Gorro de Aprendiz de Mago
+[359]
+Nombre=Cota de Mallas
+[499]
+Nombre=Cota de Mallas (Mujer)
+[1271]
+Nombre=Cota de Mallas +1
+[360]
+Nombre=Armadura de Cazador
+[1005]
+Nombre=Armadura de Cazador (Bajos)
+[237]
+Nombre=Armadura de Asesino
+[135]
+Nombre=Coraza Clerical
+[195]
+Nombre=Armadura de Placas Completa
+[243]
+Nombre=Armadura de Placas Completa (Bajos)
+[489]
+Nombre=Armadura de Placas Azul
+[1328]
+Nombre=Armadura de Placas Azul (Mujer)
+[497]
+Nombre=Armadura de Placas Roja
+[493]
+Nombre=Armadura de Placas Roja (Mujer)
+[500]
+Nombre=Armadura Bruñida (Bajos)
+[404]
+Nombre=Escudo de Tortuga
+[128]
+Nombre=Escudo de Hierro
+[996]
+Nombre=Escudo de Hierro +1
+[1000]
+Nombre=Escudo de Hierro +2
+[133]
+Nombre=Escudo Imperial
+[995]
+Nombre=Escudo Imperial +1
+[405]
+Nombre=Celada
+[1277]
+Nombre=Celada Bárbara
+[601]
+Nombre=Yelmo
+[15]
+Nombre=Daga
+[366]
+Nombre=Daga +3
+[123]
+Nombre=Espada Vikinga
+[399]
+Nombre=Cimitarra
+[124]
+Nombre=Katana
+[748]
+Nombre=Kodachi
+[569]
+Nombre=Spatha
+[403]
+Nombre=Espada de Plata
+[398]
+Nombre=Sica
+[159]
+Nombre=Hacha Bárbara
+[126]
+Nombre=Alabarda
+[129]
+Nombre=Hacha de Dos Filos
+[1080]
+Nombre=Hacha de Dos Filos +1
+[1246]
+Nombre=Hacha de Piedra
+[1247]
+Nombre=Hacha de Piedra +1
+[1094]
+Nombre=Hacha Orca
+[401]
+Nombre=Martillo de Piedra
+[1144]
+Nombre=Martillo de Guerra
+[741]
+Nombre=Jabalina
+[980]
+Nombre=Hacha Arrojadiza
+[1241]
+Nombre=Hacha Arrojadiza +1
+[656]
+Nombre=Lanza
+[742]
+Nombre=Lanza +1
+[720]
+Nombre=Shuriken
+[1001]
+Nombre=Arco Simple Reforzado
+[479]
+Nombre=Arco Compuesto
+[709]
+Nombre=Arco Reforzado
+[400]
+Nombre=Báculo Arcano
+[1251]
+Nombre=Báculo Óseo
+[1248]
+Nombre=Báculo de Aquâlin
+[566]
+Nombre=Sanar (Clérigos)
+[1117]
+Nombre=Curar Heridas Críticas (Clérigos)
+[1113]
+Nombre=Palabra Sagrada (Clérigos)
+[1114]
+Nombre=Descarga Flamígera (Clérigos)
+[757]
+Nombre=Resurrección (Clérigos)
+[1116]
+Nombre=Pregonar la Palabra de Dios (Clérigos)
+[1171]
+Nombre=Golpe Certero (Clérigos)
+[1118]
+Nombre=Poder Divino (Clérigos)
+[356]
+Nombre=Tormenta de fuego
+[1170]
+Nombre=Descarga Eléctrica
+[531]
+Nombre=Corriente Eléctrica
+[760]
+Nombre=Tormenta Ácida
+[1178]
+Nombre=Ráfaga Ígnea
+[206]
+Nombre=Paralizar
+[530]
+Nombre=Inmovilizar
+[541]
+Nombre=Ceguera
+[761]
+Nombre=Maldición
+[397]
+Nombre=Torpeza
+[471]
+Nombre=Debilidad
+[567]
+Nombre=Desatar la Ira
+[203]
+Nombre=Curar Heridas Graves
+[200]
+Nombre=Curar Veneno
+[207]
+Nombre=Remover Parálisis
+[319]
+Nombre=Resucitar
+[318]
+Nombre=Invisibilidad
+[1153]
+Nombre=Detectar Invisibilidad
+[363]
+Nombre=Grito de Igôr
+[364]
+Nombre=Furia de Uhkrul
+[396]
+Nombre=Celeridad
+[470]
+Nombre=Fuerza
+[536]
+Nombre=Invocar Elemental de Fuego
+[537]
+Nombre=Invocar Elemental de Agua
+[538]
+Nombre=Invocar Elemental de Tierra
+[370]
+Nombre=Descarga Ancestral
+[372]
+Nombre=Ignicion
+[379]
+Nombre=Vórtice Atávico
+[42]
+Nombre=Vino
+[43]
+Nombre=Botella de Agua
+[160]
+Nombre=Cerveza
+[161]
+Nombre=Jugo de Frutas
+[1]
+Nombre=Manzana Roja
+[21]
+Nombre=Porción de Tarta
+[22]
+Nombre=Frutas del Bosque
+[23]
+Nombre=Pan de Trigo
+[24]
+Nombre=Pan de Maíz
+[25]
+Nombre=Pastel
+[27]
+Nombre=Chuleta
+[28]
+Nombre=Queso de Cabra
+[29]
+Nombre=Sandía
+[158]
+Nombre=Banana
+[881]
+Nombre=Caña de Pesca
+[138]
+Nombre=Red de Pesca
+[139]
+Nombre=Pargo
+[389]
+Nombre=Martillo de Herrero
+[534]
+Nombre=Botella Vacía
+[650]
+Nombre=Mapa
+[886]
+Nombre=Costurero
+[1329]
+Nombre=Anillo Espectral
+[1330]
+Nombre=Anillo de las Penumbras
+[414]
+Nombre=Piel de Lobo
+[415]
+Nombre=Piel de Oso Pardo
+[1145]
+Nombre=Piel de Lobo Invernal
+[31]
+Nombre=Vestimentas de Hombre
+[32]
+Nombre=Vestimentas de Hombre
+[35]
+Nombre=Vestimentas de Hombre
+[1097]
+Nombre=Vestimentas Tribales
+[1098]
+Nombre=Vestimentas Tribales
+[1099]
+Nombre=Vestimentas Tribales
+[1272]
+Nombre=Vestimentas de Mujer
+[1273]
+Nombre=Vestimentas de Mujer
+[1274]
+Nombre=Vestimentas de Mujer
+[501]
+Nombre=Vestimenta de Campesino
+[80]
+Nombre=Ropaje Rinkeliano
+[515]
+Nombre=Vestimenta de Ostentación
+[951]
+Nombre=Indumentaria de Tabernero
+[962]
+Nombre=Traje de Arlequín
+[382]
+Nombre=Vestido Azul
+[508]
+Nombre=Vestimenta Legionaria (Mujer)
+[488]
+Nombre=Vestido Élfico
+[196]
+Nombre=Túnica de Mago
+[381]
+Nombre=Túnica de Monje
+[9]
+Nombre=Horquilla
+[165]
+Nombre=Daga +1
+[365]
+Nombre=Daga +2
+[994]
+Nombre=Daga de Corsario
+[164]
+Nombre=Espada Corta
+[2]
+Nombre=Espada Larga
+[19]
+Nombre=Mandoble
+[125]
+Nombre=Sable
+[3]
+Nombre=Hacha
+[671]
+Nombre=Daga Arrojadiza
+[751]
+Nombre=Daga Arrojadiza +1
+[749]
+Nombre=Ballesta
+[989]
+Nombre=Arco Simple
+[30]
+Nombre=Armadura de Cuero
+[529]
+Nombre=Armadura de Cuero (Mujer)
+[1004]
+Nombre=Armadura de Cuero (Bajos)
+[998]
+Nombre=Armadura de Cuero Endurecido
+[997]
+Nombre=Escudo de Madera
+[132]
+Nombre=Casco de Campeón
+[131]
+Nombre=Almete de Hierro
+[187]
+Nombre=Piquete de Minero
+[880]
+Nombre=Carro de Minería
+[163]
+Nombre=Cuchara de Madera
+[155]
+Nombre=Cama Simple
+[156]
+Nombre=Cama Simple
+[162]
+Nombre=Silla
+[168]
+Nombre=Silla
+[198]
+Nombre=Serrucho
+[127]
+Nombre=Hacha de Leñador
+[589]
+Nombre=Desencantar (Druidas)
+[1109]
+Nombre=Círculo Curativo (Druidas)
+[1110]
+Nombre=Semillas de Fuego (Druidas)
+[1111]
+Nombre=Rayo Solar (Druidas)
+[1112]
+Nombre=Terremoto (Druidas)
+[199]
+Nombre=Proyectil Mágico
+[197]
+Nombre=Saeta Ígnea
+[204]
+Nombre=Proyectil Eléctrico
+[205]
+Nombre=Bomba Mágica
+[1169]
+Nombre=Misil Mágico
+[369]
+Nombre=Rayo Arcano
+[202]
+Nombre=Envenenar
+[1152]
+Nombre=Veneno Crítico
+[201]
+Nombre=Curar Heridas Leves
+[598]
+Nombre=Pase: Nix a Banderbill
+[600]
+Nombre=Pase: Nix a Arghâl
+[1061]
+Nombre=Pase: Nix a Lindos
+[1058]
+Nombre=Pase: Nix a Hillidan
+[1036]
+Nombre=Pase: Lindos a Nix
+[1037]
+Nombre=Pase: Lindos a Arghâl
+[1039]
+Nombre=Pase: Lindos a Banderbill
+[1040]
+Nombre=Pase: Lindos a Hillidan
+[1009]
+Nombre=Pase: Hillidan a Nix
+[1010]
+Nombre=Pase: Hillidan a Arghâl
+[1012]
+Nombre=Pase: Hillidan a Banderbill
+[1015]
+Nombre=Pase: Hillidan a Lindos
+[1282]
+Nombre=Adivinación (Mago)
+[532]
+Nombre=Apocalipsis
+[568]
+Nombre=Implosión
+[361]
+Nombre=Combustion
+[1151]
+Nombre=Lamento de la Banshee
+[647]
+Nombre=Juicio Final
+[759]
+Nombre=Incinerar
+[570]
+Nombre=Lluvia de Mosquitos
+[758]
+Nombre=Materializar: Comida
+[871]
+Nombre=Materializar: Bebida
+[665]
+Nombre=Portal Planar
+[383]
+Nombre=Tormento Ígneo
+[1342]
+Nombre=Montura (Altos)
+[1343]
+Nombre=Montura (Bajos)
+[1344]
+Nombre=Huargo (Orcos)
+[1345]
+Nombre=Montura Reforzada (Altos - Mágicos)
+[1346]
+Nombre=Montura Reforzada (Altos - Guerreros)
+[1347]
+Nombre=Montura Reforzada (Bajos - Mágicos)
+[1348]
+Nombre=Montura Reforzada (Bajos - Guerreros)
+[1349]
+Nombre=Huargo Reforzado (Orcos)
+[484]
+Nombre=Ropaje Reforzado
+[239]
+Nombre=Túnica Ceremonial
+[731]
+Nombre=Pase: Arghâl a Banderbill
+[732]
+Nombre=Pase: Arghâl a Nix
+[1073]
+Nombre=Pase: Arghâl a Hillidan
+[1076]
+Nombre=Pase: Arghâl a Lindos
