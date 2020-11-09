@@ -283,7 +283,7 @@ End Enum
 
 Public Enum FXIDs
 
-    FXWARP = 1
+    FXWARP = 30
     FXMEDITARCHICO = 38
     FXMEDITARMEDIANO = 2
     FXMEDITARGRANDE = 42
