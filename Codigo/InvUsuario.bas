@@ -1785,7 +1785,12 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 
     End If
 
-    If UserList(UserIndex).flags.Meditando Then Exit Sub
+    If UserList(UserIndex).flags.Meditando Then
+        UserList(UserIndex).flags.Meditando = False
+        Call WriteLocaleMsg(UserIndex, "123", FontTypeNames.FONTTYPE_INFO)
+        UserList(UserIndex).Char.FX = 0
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(UserList(UserIndex).Char.CharIndex, 0))
+    End If
 
     If obj.Newbie = 1 And Not EsNewbie(UserIndex) And Not EsGM(UserIndex) Then
         Call WriteConsoleMsg(UserIndex, "Solo los newbies pueden usar estos objetos.", FontTypeNames.FONTTYPE_INFO)
@@ -3105,13 +3110,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                 Exit Sub
 
             End If
-        
-            If UserList(UserIndex).flags.Meditando = True Then
-                Call WriteConsoleMsg(UserIndex, "No podés subirte a la montura si estas meditando.", FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
 
-            End If
-        
             If MapInfo(UserList(UserIndex).Pos.Map).zone = "DUNGEON" Then
                 Call WriteConsoleMsg(UserIndex, "No podes cabalgar dentro de un dungeon.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
