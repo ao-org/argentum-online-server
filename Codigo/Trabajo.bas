@@ -405,10 +405,13 @@ Public Sub FundirMineral(ByVal UserIndex As Integer)
 
     If UserList(UserIndex).flags.TargetObjInvIndex > 0 Then
    
-        If ObjData(UserList(UserIndex).flags.TargetObjInvIndex).OBJType = eOBJType.otMinerales And ObjData(UserList(UserIndex).flags.TargetObjInvIndex).MinSkill <= UserList(UserIndex).Stats.UserSkills(eSkill.Manualidades) Then
+        If ObjData(UserList(UserIndex).flags.TargetObjInvIndex).OBJType = eOBJType.otMinerales And _
+            ObjData(UserList(UserIndex).flags.TargetObjInvIndex).MinSkill <= UserList(UserIndex).Stats.UserSkills(eSkill.Mineria) Then
+            
             Call DoLingotes(UserIndex)
+        
         Else
-            Call WriteConsoleMsg(UserIndex, "No tenes conocimientos de mineria suficientes para trabajar este mineral. Necesitas " & ObjData(UserList(UserIndex).flags.TargetObjInvIndex).MinSkill & " puntos en manualidades.", FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "No tenes conocimientos de mineria suficientes para trabajar este mineral. Necesitas " & ObjData(UserList(UserIndex).flags.TargetObjInvIndex).MinSkill & " puntos en mineria.", FontTypeNames.FONTTYPE_INFO)
 
         End If
 
@@ -622,7 +625,7 @@ Function HerreroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As I
 End Function
 
 Public Function PuedeConstruir(ByVal UserIndex As Integer, ByVal ItemIndex As Integer) As Boolean
-    PuedeConstruir = HerreroTieneMateriales(UserIndex, ItemIndex) And UserList(UserIndex).Stats.UserSkills(eSkill.Manualidades) >= ObjData(ItemIndex).SkHerreria
+    PuedeConstruir = HerreroTieneMateriales(UserIndex, ItemIndex) And UserList(UserIndex).Stats.UserSkills(eSkill.Herreria) >= ObjData(ItemIndex).SkHerreria
 
 End Function
 
@@ -692,7 +695,7 @@ Public Sub HerreroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As I
         '    Call LogDesarrollo(UserList(UserIndex).name & " ha construído " & MiObj.Amount & " " & ObjData(MiObj.ObjIndex).name)
         'End If
     
-        Call SubirSkill(UserIndex, Manualidades)
+        Call SubirSkill(UserIndex, eSkill.Herreria)
         Call UpdateUserInv(True, UserIndex, 0)
         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(MARTILLOHERRERO, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
 
@@ -758,10 +761,14 @@ End Function
 
 Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As Integer)
 
-    If CarpinteroTieneMateriales(UserIndex, ItemIndex) And UserList(UserIndex).Stats.UserSkills(eSkill.Manualidades) >= ObjData(ItemIndex).SkCarpinteria And PuedeConstruirCarpintero(ItemIndex) And UserList(UserIndex).Invent.HerramientaEqpObjIndex = SERRUCHO_CARPINTERO Then
+    If CarpinteroTieneMateriales(UserIndex, ItemIndex) And _
+        UserList(UserIndex).Stats.UserSkills(eSkill.Carpinteria) >= ObjData(ItemIndex).SkCarpinteria And _
+        PuedeConstruirCarpintero(ItemIndex) And _
+        UserList(UserIndex).Invent.HerramientaEqpObjIndex = SERRUCHO_CARPINTERO Then
     
         If UserList(UserIndex).Stats.MinSta > 2 Then
             Call QuitarSta(UserIndex, 2)
+        
         Else
             Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
             'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para trabajar.", FontTypeNames.FONTTYPE_INFO)
@@ -790,7 +797,7 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
         '    Call LogDesarrollo(UserList(UserIndex).name & " ha construído " & MiObj.Amount & " " & ObjData(MiObj.ObjIndex).name)
         ' End If
     
-        Call SubirSkill(UserIndex, Manualidades)
+        Call SubirSkill(UserIndex, eSkill.Carpinteria)
         Call UpdateUserInv(True, UserIndex, 0)
         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(LABUROCARPINTERO, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
 
@@ -810,7 +817,10 @@ Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
 
     End If
 
-    If AlquimistaTieneMateriales(UserIndex, ItemIndex) And UserList(UserIndex).Stats.UserSkills(eSkill.Manualidades) >= ObjData(ItemIndex).SkPociones And PuedeConstruirAlquimista(ItemIndex) And UserList(UserIndex).Invent.HerramientaEqpObjIndex = OLLA_ALQUIMIA Then
+    If AlquimistaTieneMateriales(UserIndex, ItemIndex) And _
+        UserList(UserIndex).Stats.UserSkills(eSkill.Alquimia) >= ObjData(ItemIndex).SkPociones And _
+        PuedeConstruirAlquimista(ItemIndex) And UserList(UserIndex).Invent.HerramientaEqpObjIndex = OLLA_ALQUIMIA Then
+        
         UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - 25
         Call WriteUpdateSta(UserIndex)
     
@@ -833,7 +843,7 @@ Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
         '    Call LogDesarrollo(UserList(UserIndex).name & " ha construído " & MiObj.Amount & " " & ObjData(MiObj.ObjIndex).name)
         'End If
     
-        Call SubirSkill(UserIndex, Manualidades)
+        Call SubirSkill(UserIndex, eSkill.Alquimia)
         Call UpdateUserInv(True, UserIndex, 0)
         'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(LABUROCARPINTERO, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 
@@ -851,8 +861,12 @@ Public Sub SastreConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As In
 
     End If
 
-    If SastreTieneMateriales(UserIndex, ItemIndex) And UserList(UserIndex).Stats.UserSkills(eSkill.Manualidades) >= ObjData(ItemIndex).SkMAGOria And PuedeConstruirSastre(ItemIndex) And UserList(UserIndex).Invent.HerramientaEqpObjIndex = COSTURERO Then
+    If SastreTieneMateriales(UserIndex, ItemIndex) And _
+        UserList(UserIndex).Stats.UserSkills(eSkill.Herreria) >= ObjData(ItemIndex).SkMAGOria And _
+        PuedeConstruirSastre(ItemIndex) And UserList(UserIndex).Invent.HerramientaEqpObjIndex = COSTURERO Then
+        
         UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - 2
+        
         Call WriteUpdateSta(UserIndex)
     
         Call SastreQuitarMateriales(UserIndex, ItemIndex)
@@ -872,10 +886,9 @@ Public Sub SastreConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As In
 
         If Not MeterItemEnInventario(UserIndex, MiObj) Then
             Call TirarItemAlPiso(UserList(UserIndex).Pos, MiObj)
-
         End If
     
-        Call SubirSkill(UserIndex, Manualidades)
+        Call SubirSkill(UserIndex, eSkill.Herreria)
         Call UpdateUserInv(True, UserIndex, 0)
         'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(LABUROCARPINTERO, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 
@@ -910,7 +923,9 @@ Public Sub DoLingotes(ByVal UserIndex As Integer)
 
     If UserList(UserIndex).Stats.MinSta > 5 Then
         Call QuitarSta(UserIndex, 5)
+    
     Else
+        
         Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
         'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para excavar.", FontTypeNames.FONTTYPE_INFO)
         Call WriteMacroTrabajoToggle(UserIndex, False)
@@ -919,15 +934,12 @@ Public Sub DoLingotes(ByVal UserIndex As Integer)
     End If
 
     Dim slot As Integer
-
     Dim obji As Integer
 
     slot = UserList(UserIndex).flags.TargetObjInvSlot
     obji = UserList(UserIndex).Invent.Object(slot).ObjIndex
     
-    Dim cant As Byte
-    
-    cant = RandomNumber(1, 3)
+    Dim cant As Byte: cant = RandomNumber(1, 3)
     
     Dim necesarios As Integer
 
@@ -971,7 +983,7 @@ Public Sub DoLingotes(ByVal UserIndex As Integer)
     
     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(117, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
     
-    Call SubirSkill(UserIndex, Manualidades)
+    Call SubirSkill(UserIndex, eSkill.Herreria)
   
     UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
         
@@ -1170,97 +1182,98 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
     On Error GoTo Errhandler
 
     Dim Suerte       As Integer
-
     Dim res          As Integer
-
     Dim RestaStamina As Byte
 
     RestaStamina = IIf(RedDePesca, 2, 1)
     
-    If UserList(UserIndex).Stats.MinSta > RestaStamina Then
-        Call QuitarSta(UserIndex, RestaStamina)
-    Else
-        Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
-        'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para pescar.", FontTypeNames.FONTTYPE_INFO)
-        Call WriteMacroTrabajoToggle(UserIndex, False)
-        Exit Sub
-
-    End If
-
-    Dim Skill As Integer
-
-    Skill = UserList(UserIndex).Stats.UserSkills(eSkill.Recoleccion)
-    Suerte = Int(-0.00125 * Skill * Skill - 0.3 * Skill + 49)
+    With UserList(UserIndex)
     
-    res = RandomNumber(1, Suerte)
-    
-    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(UserList(UserIndex).Char.CharIndex))
-
-    If res < 6 Then
-
-        Dim nPos  As WorldPos
-
-        Dim MiObj As obj
+        If .Stats.MinSta > RestaStamina Then
+            Call QuitarSta(UserIndex, RestaStamina)
         
-        MiObj.Amount = IIf(RedDePesca, RandomNumber(1, 3), 1)
-        
-        MiObj.ObjIndex = ObtenerPezRandom(ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).Power)
-        
-        If MiObj.ObjIndex = 0 Then Exit Sub
-
-        If ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).donador = 1 Then
-            MiObj.Amount = MiObj.Amount * 2
-
-            MiObj.Amount = MiObj.Amount * RecoleccionMult
         Else
-            ' End If
-            MiObj.Amount = MiObj.Amount * RecoleccionMult
-
-        End If
-        
-        If Not MeterItemEnInventario(UserIndex, MiObj) Then
-            Call TirarItemAlPiso(UserList(UserIndex).Pos, MiObj)
-
-        End If
-
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y, MiObj.Amount, 5))
-        
-        ' Al pescar también podés sacar cosas raras (se setean desde RecursosEspeciales.dat)
-        Dim i As Integer
-
-        ' Por cada drop posible
-        For i = 1 To UBound(EspecialesPesca)
-            ' Tiramos al azar entre 1 y la probabilidad
-            res = RandomNumber(1, IIf(RedDePesca, EspecialesPesca(i).Amount * 2, EspecialesPesca(i).Amount)) ' Red de pesca chance x2 (revisar)
             
-            ' Si tiene suerte y le pega
-            If res = 1 Then
-                MiObj.ObjIndex = EspecialesPesca(i).ObjIndex
-                MiObj.Amount = 1 ' Solo un item por vez
-                
-                If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(UserList(UserIndex).Pos, MiObj)
-                    
-                ' Le mandamos un mensaje
-                Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(EspecialesPesca(i).ObjIndex).name & "!", FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
+            
+            'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para pescar.", FontTypeNames.FONTTYPE_INFO)
+            
+            Call WriteMacroTrabajoToggle(UserIndex, False)
+            
+            Exit Sub
 
-                ' TODO: Sonido ?
-                'Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessagePlayWave(15, UserList(Userindex).Pos.x, UserList(Userindex).Pos.Y))
+        End If
+
+        Dim Skill As Integer
+
+        Skill = .Stats.UserSkills(eSkill.Pescar)
+        
+        Suerte = Int(-0.00125 * Skill * Skill - 0.3 * Skill + 49)
+    
+        res = RandomNumber(1, Suerte)
+    
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
+
+        If res < 6 Then
+
+            Dim nPos  As WorldPos
+            Dim MiObj As obj
+        
+            MiObj.Amount = IIf(RedDePesca, RandomNumber(1, 3), 1)
+            MiObj.ObjIndex = ObtenerPezRandom(ObjData(.Invent.HerramientaEqpObjIndex).Power)
+        
+            If MiObj.ObjIndex = 0 Then Exit Sub
+
+            If ObjData(.Invent.HerramientaEqpObjIndex).donador = 1 Then
+                MiObj.Amount = MiObj.Amount * 2
+                MiObj.Amount = MiObj.Amount * RecoleccionMult
+            Else
+                MiObj.Amount = MiObj.Amount * RecoleccionMult
+            End If
+        
+            If Not MeterItemEnInventario(UserIndex, MiObj) Then
+                Call TirarItemAlPiso(.Pos, MiObj)
             End If
 
-        Next
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(.Pos.x, .Pos.Y, MiObj.Amount, 5))
+        
+            ' Al pescar también podés sacar cosas raras (se setean desde RecursosEspeciales.dat)
+            Dim i As Integer
 
-    End If
-    
-    Call SubirSkill(UserIndex, Recoleccion)
-    
-    UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
-    
-    'Ladder 06/07/14 Activamos el macro de trabajo
-    If UserList(UserIndex).Counters.Trabajando = 1 And Not UserList(UserIndex).flags.UsandoMacro Then
-        Call WriteMacroTrabajoToggle(UserIndex, True)
+            ' Por cada drop posible
+            For i = 1 To UBound(EspecialesPesca)
+                ' Tiramos al azar entre 1 y la probabilidad
+                res = RandomNumber(1, IIf(RedDePesca, EspecialesPesca(i).Amount * 2, EspecialesPesca(i).Amount)) ' Red de pesca chance x2 (revisar)
+            
+                ' Si tiene suerte y le pega
+                If res = 1 Then
+                    MiObj.ObjIndex = EspecialesPesca(i).ObjIndex
+                    MiObj.Amount = 1 ' Solo un item por vez
+                
+                    If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.Pos, MiObj)
+                    
+                    ' Le mandamos un mensaje
+                    Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(EspecialesPesca(i).ObjIndex).name & "!", FontTypeNames.FONTTYPE_INFO)
 
-    End If
+                    ' TODO: Sonido ?
+                    'Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessagePlayWave(15, .Pos.x, .Pos.Y))
+                End If
 
+            Next
+
+        End If
+    
+        Call SubirSkill(UserIndex, eSkill.Pescar)
+    
+        .Counters.Trabajando = .Counters.Trabajando + 1
+    
+        'Ladder 06/07/14 Activamos el macro de trabajo
+        If .Counters.Trabajando = 1 And Not .flags.UsandoMacro Then
+            Call WriteMacroTrabajoToggle(UserIndex, True)
+        End If
+    
+    End With
+    
     Exit Sub
 
 Errhandler:
@@ -1688,87 +1701,89 @@ Public Sub DoRaices(ByVal UserIndex As Integer, ByVal x As Byte, ByVal Y As Byte
     On Error GoTo Errhandler
 
     Dim Suerte As Integer
-
     Dim res    As Integer
-
-    If UserList(UserIndex).Stats.MinSta > 2 Then
-        Call QuitarSta(UserIndex, 2)
-    Else
-        Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
-        'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para obtener raices.", FontTypeNames.FONTTYPE_INFO)
-        Call WriteMacroTrabajoToggle(UserIndex, False)
-        Exit Sub
-
-    End If
-
-    Dim Skill As Integer
-
-    Skill = UserList(UserIndex).Stats.UserSkills(eSkill.Recoleccion)
-    Suerte = Int(-0.00125 * Skill * Skill - 0.3 * Skill + 49)
-    res = RandomNumber(1, Suerte)
-
-    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(UserList(UserIndex).Char.CharIndex))
-
-    Rem Ladder 06/08/14 Subo un poco la probabilidad de sacar raices... porque era muy lento
-    If res < 7 Then
-
-        Dim nPos  As WorldPos
-
-        Dim MiObj As obj
     
-        'If UserList(UserIndex).clase = eClass.Druid Then
-        'MiObj.Amount = RandomNumber(6, 8)
-        ' Else
-        MiObj.Amount = RandomNumber(5, 7)
-        ' End If
-   
-        If ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).donador = 1 Then
-            MiObj.Amount = MiObj.Amount * 2
-
-        End If
-   
-        MiObj.Amount = MiObj.Amount * RecoleccionMult
-        MiObj.ObjIndex = Raices
+    With UserList(UserIndex)
     
-        MapData(UserList(UserIndex).Pos.Map, x, Y).ObjInfo.Amount = MapData(UserList(UserIndex).Pos.Map, x, Y).ObjInfo.Amount - MiObj.Amount
-
-        If MapData(UserList(UserIndex).Pos.Map, x, Y).ObjInfo.Amount < 0 Then
-            MapData(UserList(UserIndex).Pos.Map, x, Y).ObjInfo.Amount = 0
-
-            ' VidaUtil.Item_ListAdd UserList(UserIndex).Pos.Map, X, Y
-        End If
-    
-        If Not MeterItemEnInventario(UserIndex, MiObj) Then
+        If .Stats.MinSta > 2 Then
+            Call QuitarSta(UserIndex, 2)
         
-            Call TirarItemAlPiso(UserList(UserIndex).Pos, MiObj)
+        Else
+            
+            Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
+            'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para obtener raices.", FontTypeNames.FONTTYPE_INFO)
+            Call WriteMacroTrabajoToggle(UserIndex, False)
+            Exit Sub
+    
+        End If
+    
+        Dim Skill As Integer
+            Skill = .Stats.UserSkills(eSkill.Alquimia)
         
+        Suerte = Int(-0.00125 * Skill * Skill - 0.3 * Skill + 49)
+        res = RandomNumber(1, Suerte)
+    
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
+    
+        Rem Ladder 06/08/14 Subo un poco la probabilidad de sacar raices... porque era muy lento
+        If res < 7 Then
+    
+            Dim nPos  As WorldPos
+            Dim MiObj As obj
+        
+            'If .clase = eClass.Druid Then
+            'MiObj.Amount = RandomNumber(6, 8)
+            ' Else
+            MiObj.Amount = RandomNumber(5, 7)
+            ' End If
+       
+            If ObjData(.Invent.HerramientaEqpObjIndex).donador = 1 Then
+                MiObj.Amount = MiObj.Amount * 2
+            End If
+       
+            MiObj.Amount = MiObj.Amount * RecoleccionMult
+            MiObj.ObjIndex = Raices
+        
+            MapData(.Pos.Map, x, Y).ObjInfo.Amount = MapData(.Pos.Map, x, Y).ObjInfo.Amount - MiObj.Amount
+    
+            If MapData(.Pos.Map, x, Y).ObjInfo.Amount < 0 Then
+                MapData(.Pos.Map, x, Y).ObjInfo.Amount = 0
+    
+                ' VidaUtil.Item_ListAdd .Pos.Map, X, Y
+            End If
+        
+            If Not MeterItemEnInventario(UserIndex, MiObj) Then
+            
+                Call TirarItemAlPiso(.Pos, MiObj)
+            
+            End If
+        
+            'Call WriteConsoleMsg(UserIndex, "¡Has conseguido algunas raices!", FontTypeNames.FONTTYPE_INFO)
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(.Pos.x, .Pos.Y, MiObj.Amount, 5))
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(60, .Pos.x, .Pos.Y))
+        Else
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(61, .Pos.x, .Pos.Y))
+    
+            '[CDT 17-02-2004]
+            If Not .flags.UltimoMensaje = 8 Then
+                Call WriteConsoleMsg(UserIndex, "¡No has obtenido raices!", FontTypeNames.FONTTYPE_INFO)
+                .flags.UltimoMensaje = 8
+    
+            End If
+        
+            '[/CDT]
         End If
     
-        'Call WriteConsoleMsg(UserIndex, "¡Has conseguido algunas raices!", FontTypeNames.FONTTYPE_INFO)
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y, MiObj.Amount, 5))
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(60, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
-    Else
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(61, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
-
-        '[CDT 17-02-2004]
-        If Not UserList(UserIndex).flags.UltimoMensaje = 8 Then
-            Call WriteConsoleMsg(UserIndex, "¡No has obtenido raices!", FontTypeNames.FONTTYPE_INFO)
-            UserList(UserIndex).flags.UltimoMensaje = 8
-
+        Call SubirSkill(UserIndex, eSkill.Alquimia)
+    
+        .Counters.Trabajando = .Counters.Trabajando + 1
+    
+        If .Counters.Trabajando = 1 And Not .flags.UsandoMacro Then
+            Call WriteMacroTrabajoToggle(UserIndex, True)
         End If
     
-        '[/CDT]
-    End If
-
-    Call SubirSkill(UserIndex, Recoleccion)
-
-    UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
-
-    If UserList(UserIndex).Counters.Trabajando = 1 And Not UserList(UserIndex).flags.UsandoMacro Then
-        Call WriteMacroTrabajoToggle(UserIndex, True)
-
-    End If
-
+    End With
+    
     Exit Sub
 
 Errhandler:
@@ -1781,116 +1796,120 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal x As Byte, ByVal Y As Byte)
     On Error GoTo Errhandler
 
     Dim Suerte As Integer
-
     Dim res    As Integer
-
-    'EsfuerzoTalarLeñador = 1
-    If UserList(UserIndex).Stats.MinSta > 2 Then
-        Call QuitarSta(UserIndex, 2)
-    Else
-        Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
-        'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para talar.", FontTypeNames.FONTTYPE_INFO)
-        Call WriteMacroTrabajoToggle(UserIndex, False)
-        Exit Sub
-
-    End If
-
-    Dim Skill As Integer
-
-    Skill = UserList(UserIndex).Stats.UserSkills(eSkill.Recoleccion)
-    Suerte = Int(-0.00125 * Skill * Skill - 0.3 * Skill + 49)
     
-    res = RandomNumber(1, Suerte)
-    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(UserList(UserIndex).Char.CharIndex))
+    With UserList(UserIndex)
     
-    If res < 6 Then
-
-        Dim nPos  As WorldPos
-
-        Dim MiObj As obj
+            'EsfuerzoTalarLeñador = 1
+        If .Stats.MinSta > 2 Then
+            Call QuitarSta(UserIndex, 2)
         
-        If UserList(UserIndex).flags.TargetObj = 0 Then Exit Sub
-        
-        Call ActualizarRecurso(UserList(UserIndex).Pos.Map, x, Y)
-        MapData(UserList(UserIndex).Pos.Map, x, Y).ObjInfo.data = timeGetTime ' Ultimo uso
-
-        MiObj.Amount = RandomNumber(4, 7)
-        
-        If ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).donador = 1 Then
-            MiObj.Amount = MiObj.Amount * 2
-
+        Else
+            Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
+            'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para talar.", FontTypeNames.FONTTYPE_INFO)
+            Call WriteMacroTrabajoToggle(UserIndex, False)
+            Exit Sub
+    
         End If
+    
+        Dim Skill As Integer
+    
+        Skill = .Stats.UserSkills(eSkill.Talar)
+        Suerte = Int(-0.00125 * Skill * Skill - 0.3 * Skill + 49)
         
-        MiObj.Amount = MiObj.Amount * RecoleccionMult
-        MiObj.ObjIndex = Leña
+        res = RandomNumber(1, Suerte)
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
         
-        If MiObj.Amount > MapData(UserList(UserIndex).Pos.Map, x, Y).ObjInfo.Amount Then
-            MiObj.Amount = MapData(UserList(UserIndex).Pos.Map, x, Y).ObjInfo.Amount
-
-        End If
-        
-        MapData(UserList(UserIndex).Pos.Map, x, Y).ObjInfo.Amount = MapData(UserList(UserIndex).Pos.Map, x, Y).ObjInfo.Amount - MiObj.Amount
-        
-        If Not MeterItemEnInventario(UserIndex, MiObj) Then
+        If res < 6 Then
+    
+            Dim nPos  As WorldPos
+    
+            Dim MiObj As obj
             
-            Call TirarItemAlPiso(UserList(UserIndex).Pos, MiObj)
+            If .flags.TargetObj = 0 Then Exit Sub
             
-        End If
-
-        'If Not UserList(UserIndex).flags.UltimoMensaje = 5 Then
-        ' Call WriteConsoleMsg(UserIndex, "¡Has conseguido algo de leña!", FontTypeNames.FONTTYPE_INFO)
-        '        UserList(UserIndex).flags.UltimoMensaje = 5
-        ' End If
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y, MiObj.Amount, 5))
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_TALAR, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
-        
-        ' Al talar también podés dropear cosas raras (se setean desde RecursosEspeciales.dat)
-        Dim i As Integer
-
-        ' Por cada drop posible
-        For i = 1 To UBound(EspecialesTala)
-            ' Tiramos al azar entre 1 y la probabilidad
-            res = RandomNumber(1, EspecialesTala(i).Amount)
+            Call ActualizarRecurso(.Pos.Map, x, Y)
+            MapData(.Pos.Map, x, Y).ObjInfo.data = timeGetTime ' Ultimo uso
+    
+            MiObj.Amount = RandomNumber(4, 7)
             
-            ' Si tiene suerte y le pega
-            If res = 1 Then
-                MiObj.ObjIndex = EspecialesTala(i).ObjIndex
-                MiObj.Amount = 1 ' Solo un item por vez
-                
-                'If Not MeterItemEnInventario(Userindex, MiObj) Then _
-                'Call TirarItemAlPiso(UserList(Userindex).Pos, MiObj)
-
-                ' Tiro siempre el item al piso, me parece más rolero, como que cae del árbol :P
-                Call TirarItemAlPiso(UserList(UserIndex).Pos, MiObj)
-
-                ' Oculto el mensaje porque el item cae al piso
-                'Call WriteConsoleMsg(Userindex, "¡Has conseguido " & ObjData(EspecialesTala(i).ObjIndex).Name & "!", FontTypeNames.FONTTYPE_INFO)
-                ' TODO: Sonido ?
-                'Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessagePlayWave(15, UserList(Userindex).Pos.x, UserList(Userindex).Pos.Y))
+            If ObjData(.Invent.HerramientaEqpObjIndex).donador = 1 Then
+                MiObj.Amount = MiObj.Amount * 2
+    
             End If
-
-        Next
-    Else
-        '[CDT 17-02-2004]
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(64, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
-
-        If Not UserList(UserIndex).flags.UltimoMensaje = 8 Then
-            Call WriteConsoleMsg(UserIndex, "¡No has obtenido leña!", FontTypeNames.FONTTYPE_INFO)
-            UserList(UserIndex).flags.UltimoMensaje = 8
-
+            
+            MiObj.Amount = MiObj.Amount * RecoleccionMult
+            MiObj.ObjIndex = Leña
+            
+            If MiObj.Amount > MapData(.Pos.Map, x, Y).ObjInfo.Amount Then
+                MiObj.Amount = MapData(.Pos.Map, x, Y).ObjInfo.Amount
+    
+            End If
+            
+            MapData(.Pos.Map, x, Y).ObjInfo.Amount = MapData(.Pos.Map, x, Y).ObjInfo.Amount - MiObj.Amount
+            
+            If Not MeterItemEnInventario(UserIndex, MiObj) Then
+                
+                Call TirarItemAlPiso(.Pos, MiObj)
+                
+            End If
+    
+            'If Not .flags.UltimoMensaje = 5 Then
+            ' Call WriteConsoleMsg(UserIndex, "¡Has conseguido algo de leña!", FontTypeNames.FONTTYPE_INFO)
+            '        .flags.UltimoMensaje = 5
+            ' End If
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(.Pos.x, .Pos.Y, MiObj.Amount, 5))
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_TALAR, .Pos.x, .Pos.Y))
+            
+            ' Al talar también podés dropear cosas raras (se setean desde RecursosEspeciales.dat)
+            Dim i As Integer
+    
+            ' Por cada drop posible
+            For i = 1 To UBound(EspecialesTala)
+                ' Tiramos al azar entre 1 y la probabilidad
+                res = RandomNumber(1, EspecialesTala(i).Amount)
+                
+                ' Si tiene suerte y le pega
+                If res = 1 Then
+                    MiObj.ObjIndex = EspecialesTala(i).ObjIndex
+                    MiObj.Amount = 1 ' Solo un item por vez
+                    
+                    'If Not MeterItemEnInventario(Userindex, MiObj) Then _
+                    'Call TirarItemAlPiso(.Pos, MiObj)
+    
+                    ' Tiro siempre el item al piso, me parece más rolero, como que cae del árbol :P
+                    Call TirarItemAlPiso(.Pos, MiObj)
+    
+                    ' Oculto el mensaje porque el item cae al piso
+                    'Call WriteConsoleMsg(Userindex, "¡Has conseguido " & ObjData(EspecialesTala(i).ObjIndex).Name & "!", FontTypeNames.FONTTYPE_INFO)
+                    ' TODO: Sonido ?
+                    'Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessagePlayWave(15, .Pos.x, .Pos.Y))
+                End If
+    
+            Next
+        
+        Else
+            '[CDT 17-02-2004]
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(64, .Pos.x, .Pos.Y))
+    
+            If Not .flags.UltimoMensaje = 8 Then
+                Call WriteConsoleMsg(UserIndex, "¡No has obtenido leña!", FontTypeNames.FONTTYPE_INFO)
+                .flags.UltimoMensaje = 8
+    
+            End If
+    
+            '[/CDT]
         End If
-
-        '[/CDT]
-    End If
+        
+        Call SubirSkill(UserIndex, eSkill.Talar)
+        
+        .Counters.Trabajando = .Counters.Trabajando + 1
     
-    Call SubirSkill(UserIndex, Recoleccion)
+        If .Counters.Trabajando = 1 And Not .flags.UsandoMacro Then
+            Call WriteMacroTrabajoToggle(UserIndex, True)
+        End If
     
-    UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
-
-    If UserList(UserIndex).Counters.Trabajando = 1 And Not UserList(UserIndex).flags.UsandoMacro Then
-        Call WriteMacroTrabajoToggle(UserIndex, True)
-
-    End If
+    End With
 
     Exit Sub
 
@@ -1904,116 +1923,117 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal Y As Byt
     On Error GoTo Errhandler
 
     Dim Suerte As Integer
-
     Dim res    As Integer
-
     Dim metal  As Integer
 
-    'Por Ladder 06/07/2014 Cuando la estamina llega a 0 , el macro se desactiva
-    If UserList(UserIndex).Stats.MinSta > 2 Then
-        Call QuitarSta(UserIndex, 2)
-    Else
-        Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
-        'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para excavar.", FontTypeNames.FONTTYPE_INFO)
-        Call WriteMacroTrabajoToggle(UserIndex, False)
-        Exit Sub
-
-    End If
-
-    'Por Ladder 06/07/2014
-
-    Dim Skill As Integer
-
-    Skill = UserList(UserIndex).Stats.UserSkills(eSkill.Recoleccion)
-    Suerte = Int(-0.00125 * Skill * Skill - 0.3 * Skill + 49)
+    With UserList(UserIndex)
     
-    res = RandomNumber(1, Suerte)
+        'Por Ladder 06/07/2014 Cuando la estamina llega a 0 , el macro se desactiva
+        If .Stats.MinSta > 2 Then
+            Call QuitarSta(UserIndex, 2)
+        Else
+            Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
+            'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para excavar.", FontTypeNames.FONTTYPE_INFO)
+            Call WriteMacroTrabajoToggle(UserIndex, False)
+            Exit Sub
     
-    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(UserList(UserIndex).Char.CharIndex))
-    
-    If res <= 5 Then
-
-        Dim MiObj As obj
-
-        Dim nPos  As WorldPos
-        
-        If UserList(UserIndex).flags.TargetObj = 0 Then Exit Sub
-        
-        Call ActualizarRecurso(UserList(UserIndex).Pos.Map, x, Y)
-        MapData(UserList(UserIndex).Pos.Map, x, Y).ObjInfo.data = timeGetTime ' Ultimo uso
-        
-        MiObj.ObjIndex = ObjData(UserList(UserIndex).flags.TargetObj).MineralIndex
-        
-        MiObj.Amount = RandomNumber(2, 3)
-
-        If ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).donador = 1 Then
-            MiObj.Amount = MiObj.Amount * 2
-
         End If
-        
-        MiObj.Amount = MiObj.Amount * RecoleccionMult
-        
-        If MiObj.Amount > MapData(UserList(UserIndex).Pos.Map, x, Y).ObjInfo.Amount Then
-            MiObj.Amount = MapData(UserList(UserIndex).Pos.Map, x, Y).ObjInfo.Amount
-
-        End If
-        
-        MapData(UserList(UserIndex).Pos.Map, x, Y).ObjInfo.Amount = MapData(UserList(UserIndex).Pos.Map, x, Y).ObjInfo.Amount - MiObj.Amount
     
-        If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(UserList(UserIndex).Pos, MiObj)
+        'Por Ladder 06/07/2014
+    
+        Dim Skill As Integer
+    
+        Skill = .Stats.UserSkills(eSkill.Mineria)
+        Suerte = Int(-0.00125 * Skill * Skill - 0.3 * Skill + 49)
         
-        Call WriteConsoleMsg(UserIndex, "¡Has extraido algunos minerales!", FontTypeNames.FONTTYPE_INFO)
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(15, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+        res = RandomNumber(1, Suerte)
         
-        ' Al minar también puede dropear una gema
-        Dim i As Integer
-
-        ' Por cada drop posible
-        For i = 1 To ObjData(UserList(UserIndex).flags.TargetObj).CantItem
-            ' Tiramos al azar entre 1 y la probabilidad
-            res = RandomNumber(1, ObjData(UserList(UserIndex).flags.TargetObj).Item(i).Amount)
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
+        
+        If res <= 5 Then
+    
+            Dim MiObj As obj
+            Dim nPos  As WorldPos
             
-            ' Si tiene suerte y le pega
-            If res = 1 Then
-                ' Se lo metemos al inventario (o lo tiramos al piso)
-                MiObj.ObjIndex = ObjData(UserList(UserIndex).flags.TargetObj).Item(i).ObjIndex
-                MiObj.Amount = 1 ' Solo una gema por vez
-                
-                If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(UserList(UserIndex).Pos, MiObj)
-                    
-                ' Le mandamos un mensaje
-                Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(ObjData(UserList(UserIndex).flags.TargetObj).Item(i).ObjIndex).name & "!", FontTypeNames.FONTTYPE_INFO)
-                ' TODO: Sonido de drop de gema :P
-                'Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessagePlayWave(15, UserList(Userindex).Pos.x, UserList(Userindex).Pos.Y))
-                    
-                ' Como máximo dropea una gema
-                'Exit For ' Lo saco a pedido de Haracin
+            If .flags.TargetObj = 0 Then Exit Sub
+            
+            Call ActualizarRecurso(.Pos.Map, x, Y)
+            MapData(.Pos.Map, x, Y).ObjInfo.data = timeGetTime ' Ultimo uso
+            
+            MiObj.ObjIndex = ObjData(.flags.TargetObj).MineralIndex
+            
+            MiObj.Amount = RandomNumber(2, 3)
+    
+            If ObjData(.Invent.HerramientaEqpObjIndex).donador = 1 Then
+                MiObj.Amount = MiObj.Amount * 2
+    
             End If
-
-        Next
-        
-    Else
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(62, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
-
-        '[CDT 17-02-2004]
-        If Not UserList(UserIndex).flags.UltimoMensaje = 9 Then
             
-            Call WriteConsoleMsg(UserIndex, "¡No has conseguido nada!", FontTypeNames.FONTTYPE_INFO)
-            UserList(UserIndex).flags.UltimoMensaje = 9
-
+            MiObj.Amount = MiObj.Amount * RecoleccionMult
+            
+            If MiObj.Amount > MapData(.Pos.Map, x, Y).ObjInfo.Amount Then
+                MiObj.Amount = MapData(.Pos.Map, x, Y).ObjInfo.Amount
+    
+            End If
+            
+            MapData(.Pos.Map, x, Y).ObjInfo.Amount = MapData(.Pos.Map, x, Y).ObjInfo.Amount - MiObj.Amount
+        
+            If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.Pos, MiObj)
+            
+            Call WriteConsoleMsg(UserIndex, "¡Has extraido algunos minerales!", FontTypeNames.FONTTYPE_INFO)
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(15, .Pos.x, .Pos.Y))
+            
+            ' Al minar también puede dropear una gema
+            Dim i As Integer
+    
+            ' Por cada drop posible
+            For i = 1 To ObjData(.flags.TargetObj).CantItem
+                ' Tiramos al azar entre 1 y la probabilidad
+                res = RandomNumber(1, ObjData(.flags.TargetObj).Item(i).Amount)
+                
+                ' Si tiene suerte y le pega
+                If res = 1 Then
+                    ' Se lo metemos al inventario (o lo tiramos al piso)
+                    MiObj.ObjIndex = ObjData(.flags.TargetObj).Item(i).ObjIndex
+                    MiObj.Amount = 1 ' Solo una gema por vez
+                    
+                    If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.Pos, MiObj)
+                        
+                    ' Le mandamos un mensaje
+                    Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(ObjData(.flags.TargetObj).Item(i).ObjIndex).name & "!", FontTypeNames.FONTTYPE_INFO)
+                    ' TODO: Sonido de drop de gema :P
+                    'Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessagePlayWave(15, .Pos.x, .Pos.Y))
+                        
+                    ' Como máximo dropea una gema
+                    'Exit For ' Lo saco a pedido de Haracin
+                End If
+    
+            Next
+            
+        Else
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(62, .Pos.x, .Pos.Y))
+    
+            '[CDT 17-02-2004]
+            If Not .flags.UltimoMensaje = 9 Then
+                
+                Call WriteConsoleMsg(UserIndex, "¡No has conseguido nada!", FontTypeNames.FONTTYPE_INFO)
+                
+                .flags.UltimoMensaje = 9
+    
+            End If
+    
+            '[/CDT]
         End If
-
-        '[/CDT]
-    End If
+        
+        Call SubirSkill(UserIndex, eSkill.Mineria)
+        
+        .Counters.Trabajando = .Counters.Trabajando + 1
+        
+        If .Counters.Trabajando = 1 And Not .flags.UsandoMacro Then
+            Call WriteMacroTrabajoToggle(UserIndex, True)
+        End If
     
-    Call SubirSkill(UserIndex, Recoleccion)
-    
-    UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
-    
-    If UserList(UserIndex).Counters.Trabajando = 1 And Not UserList(UserIndex).flags.UsandoMacro Then
-        Call WriteMacroTrabajoToggle(UserIndex, True)
-
-    End If
+    End With
     
     Exit Sub
 
@@ -2035,19 +2055,23 @@ Public Sub DoMeditar(ByVal UserIndex As Integer)
     Dim MeditarSkill As Byte
 
     With UserList(UserIndex)
-        '.Counters.IdleCount = 0
-        
-        If .Stats.MinMAN >= .Stats.MaxMAN Then Exit Sub
-           ' .flags.Meditando = False
-            'Call WriteMeditateToggle(UserIndex)
-            'Call WriteConsoleMsg(UserIndex, "Dejas de meditar.", FontTypeNames.FONTTYPE_INFO)
-            'Call WriteLocaleMsg(UserIndex, "123", FontTypeNames.FONTTYPE_INFO)
-            '.Char.FX = 0
-            '.Char.loops = 0
-            'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, .Char.FX, .Char.loops))
-            'Exit Sub
+        .Counters.IdleCount = 0
 
-        'End If
+        If .Counters.bPuedeMeditar = False Then
+            .Counters.bPuedeMeditar = True
+
+        End If
+        
+        If .Stats.MinMAN >= .Stats.MaxMAN Then
+            .flags.Meditando = False
+            Call WriteMeditateToggle(UserIndex)
+            'Call WriteConsoleMsg(UserIndex, "Dejas de meditar.", FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, "123", FontTypeNames.FONTTYPE_INFO)
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, .Char.ParticulaFx, 0, True))
+            .Char.ParticulaFx = 0
+            Exit Sub
+
+        End If
     
         MeditarSkill = .Stats.UserSkills(eSkill.Meditar)
         
@@ -2187,8 +2211,9 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As ObjData, ByVal 
     End If
 
     If UserList(UserIndex).flags.Meditando Then
-        UserList(UserIndex).flags.Meditando = False
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(.Char.CharIndex, 0))
+        Call WriteConsoleMsg(UserIndex, "No podés subirte a la montura si estas meditando.", FontTypeNames.FONTTYPE_INFO)
+        Exit Sub
+
     End If
 
     If UserList(UserIndex).flags.Montado = 1 Then

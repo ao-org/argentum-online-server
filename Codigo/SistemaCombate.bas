@@ -599,9 +599,14 @@ Public Sub NpcDaño(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
     If UserList(UserIndex).flags.Meditando Then
         If daño > Fix(UserList(UserIndex).Stats.MinHp / 100 * UserList(UserIndex).Stats.UserAtributos(eAtributos.Inteligencia) * UserList(UserIndex).Stats.UserSkills(eSkill.Meditar) / 100 * 12 / (RandomNumber(0, 5) + 7)) Then
             UserList(UserIndex).flags.Meditando = False
+            Call WriteMeditateToggle(UserIndex)
             Call WriteLocaleMsg(UserIndex, "123", FontTypeNames.FONTTYPE_INFO)
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(UserList(UserIndex).Char.CharIndex, 0))
+            'Call WriteConsoleMsg(UserIndex, "Dejas de meditar.", FontTypeNames.FONTTYPE_INFO)
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, UserList(UserIndex).Char.ParticulaFx, 0, True))
+            UserList(UserIndex).Char.ParticulaFx = 0
+            
         End If
+
     End If
     
     'Muere el usuario
@@ -891,9 +896,12 @@ Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
             Call UsuarioAtacaUsuario(UserIndex, Index)
             Call WriteUpdateUserStats(UserIndex)
             Call WriteUpdateUserStats(Index)
+            Exit Sub
 
+        End If
+            
         'Look for NPC
-        ElseIf MapData(AttackPos.Map, AttackPos.x, AttackPos.Y).NpcIndex > 0 Then
+        If MapData(AttackPos.Map, AttackPos.x, AttackPos.Y).NpcIndex > 0 Then
             
             If Npclist(MapData(AttackPos.Map, AttackPos.x, AttackPos.Y).NpcIndex).Attackable Then
                     
@@ -904,9 +912,9 @@ Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
                 Call WriteConsoleMsg(UserIndex, "No podés atacar a este NPC", FontTypeNames.FONTTYPE_FIGHT)
 
             End If
-            
-        Else
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.CharIndex, True, False))
+                
+            Exit Sub
+
         End If
 
     Else
@@ -1333,9 +1341,11 @@ Sub UsuarioAtacadoPorUsuario(ByVal attackerIndex As Integer, ByVal VictimIndex A
 
     If UserList(VictimIndex).flags.Meditando Then
         UserList(VictimIndex).flags.Meditando = False
+        Call WriteMeditateToggle(VictimIndex)
         Call WriteLocaleMsg(VictimIndex, "123", FontTypeNames.FONTTYPE_INFO)
         'Call WriteConsoleMsg(VictimIndex, "Dejas de meditar.", FontTypeNames.FONTTYPE_INFO)
-        Call SendData(SendTarget.ToPCArea, VictimIndex, PrepareMessageMeditateToggle(UserList(VictimIndex).Char.CharIndex, 0))
+        Call SendData(SendTarget.ToPCArea, VictimIndex, PrepareMessageParticleFX(UserList(VictimIndex).Char.CharIndex, UserList(VictimIndex).Char.ParticulaFx, 0, True))
+        UserList(VictimIndex).Char.ParticulaFx = 0
         
     End If
     

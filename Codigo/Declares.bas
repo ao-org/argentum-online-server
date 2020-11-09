@@ -292,13 +292,23 @@ Public Enum FXIDs
 
 End Enum
 
-Public Enum Meditaciones
+Public Enum MeditarParticle
 
-    MeditarInicial = 115
-    MeditarDesde15 = 116
-    MeditarDesde25 = 117
-    MeditarDesde35 = 118
-    MeditarDesde45 = 119
+    MeditarNewCiuda = 81
+    meditarNewcrimi = 211
+    Meditar15Ciuda = 20
+    Meditar15crimi = 212
+    Meditar25Ciuda = 41
+    Meditar25crimi = 213
+    Meditar35Ciuda = 215
+    Meditar35crimi = 214
+    Meditar45Ciuda = 217
+    Meditar45crimi = 216
+    Meditar50Ciuda = 218
+    Meditar50crimi = 219
+    MeditarConsejero = 15
+    MeditarGm = 15
+    MeditarAdmin = 15
 
 End Enum
 
@@ -550,7 +560,7 @@ Public Const MIN_APUÑALAR As Byte = 10
 
 ''
 ' Cantidad de skills
-Public Const NUMSKILLS      As Byte = 18
+Public Const NUMSKILLS      As Byte = 23
 
 ''
 ' Cantidad de Atributos
@@ -624,8 +634,15 @@ Public Enum eSkill
     Navegacion = 14
     equitacion = 15
     Resistencia = 16
-    Recoleccion = 17
-    Manualidades = 18
+    
+    Talar = 17
+    Pescar = 18
+    Mineria = 19
+    Herreria = 20
+    Carpinteria = 21
+    Alquimia = 22
+    Sastreria = 23
+    
     Grupo = 90
     MarcaDeClan = 91
     MarcaDeGM = 92
