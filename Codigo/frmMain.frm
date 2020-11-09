@@ -337,12 +337,6 @@ Begin VB.Form frmMain
       Left            =   2160
       Top             =   3360
    End
-   Begin VB.Timer tLluvia 
-      Enabled         =   0   'False
-      Interval        =   500
-      Left            =   2640
-      Top             =   3360
-   End
    Begin VB.Timer AutoSave 
       Enabled         =   0   'False
       Interval        =   60000
@@ -1067,9 +1061,7 @@ End Sub
 Private Sub GameTimer_Timer()
 
     Dim iUserIndex   As Long
-
     Dim bEnviarStats As Boolean
-
     Dim bEnviarAyS   As Boolean
     
     On Error GoTo hayerror
@@ -1111,10 +1103,13 @@ Private Sub GameTimer_Timer()
                         Call HambreYSed(iUserIndex, bEnviarAyS)
                         
                         If .flags.Hambre = 0 And .flags.Sed = 0 Then
+                            
                             If Lloviendo Then
                             
                                 If Not Intemperie(iUserIndex) Then
+                                    
                                     If Not .flags.Descansar Then
+                                        
                                         'No esta descansando
                                         Call Sanar(iUserIndex, bEnviarStats, SanaIntervaloSinDescansar)
 
@@ -1232,7 +1227,6 @@ Private Sub GameTimer_Timer()
                     'El intervalo cambia según si envió el primer paquete
                     If .Counters.IdleCount > IIf(.flags.FirstPacket, TimeoutEsperandoLoggear, TimeoutPrimerPaquete) Then
                         Call CloseSocket(iUserIndex)
-
                     End If
 
                 End If 'UserLogged
@@ -1728,23 +1722,6 @@ Private Sub TimerRespawn_Timer()
 ErrorHandler:
     Call LogError("Error en TIMER_RESPAWN " & Npclist(NpcIndex).name & " mapa:" & Npclist(NpcIndex).Pos.Map)
     Call MuereNpc(NpcIndex, 0)
-
-End Sub
-
-Private Sub tLluvia_Timer()
-
-    On Error GoTo Errhandler
-
-    'Dim iCount As Long
-    ' If Lloviendo Then
-    '   For iCount = 1 To LastUser
-    '        Call EfectoLluvia(iCount)
-    '   Next iCount
-    'End If
-
-    Exit Sub
-Errhandler:
-    Call LogError("tLluvia " & Err.Number & ": " & Err.description)
 
 End Sub
 

@@ -461,16 +461,24 @@ Sub Main()
     SkillsNames(eSkill.Navegacion) = "Navegacion"
     SkillsNames(eSkill.equitacion) = "Equitación"
     SkillsNames(eSkill.Resistencia) = "Resistencia Mágica"
-    SkillsNames(eSkill.Recoleccion) = "Recoleccion"
-    SkillsNames(eSkill.Manualidades) = "Manualidades"
-    
+
+    SkillsNames(eSkill.Talar) = "Tala"
+    SkillsNames(eSkill.Pescar) = "Pesca"
+    SkillsNames(eSkill.Mineria) = "Mineria"
+    SkillsNames(eSkill.Herreria) = "Herreria"
+    SkillsNames(eSkill.Carpinteria) = "Carpinteria"
+    SkillsNames(eSkill.Alquimia) = "Alquimia"
+    SkillsNames(eSkill.Sastreria) = "Sastreria"
+   
     ListaAtributos(eAtributos.Fuerza) = "Fuerza"
     ListaAtributos(eAtributos.Agilidad) = "Agilidad"
     ListaAtributos(eAtributos.Inteligencia) = "Inteligencia"
     ListaAtributos(eAtributos.Constitucion) = "Constitucion"
+    
     centinelaActivado = False
     
     frmCargando.Show
+    
     Call InitTesoro
     Call InitRegalo
     
