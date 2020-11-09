@@ -292,23 +292,13 @@ Public Enum FXIDs
 
 End Enum
 
-Public Enum MeditarParticle
+Public Enum Meditaciones
 
-    MeditarNewCiuda = 81
-    meditarNewcrimi = 211
-    Meditar15Ciuda = 20
-    Meditar15crimi = 212
-    Meditar25Ciuda = 41
-    Meditar25crimi = 213
-    Meditar35Ciuda = 215
-    Meditar35crimi = 214
-    Meditar45Ciuda = 217
-    Meditar45crimi = 216
-    Meditar50Ciuda = 218
-    Meditar50crimi = 219
-    MeditarConsejero = 15
-    MeditarGm = 15
-    MeditarAdmin = 15
+    MeditarInicial = 115
+    MeditarDesde15 = 116
+    MeditarDesde25 = 117
+    MeditarDesde35 = 118
+    MeditarDesde45 = 119
 
 End Enum
 
