@@ -1214,3 +1214,38 @@ Public Function ChangeBan(ByVal name As String, ByVal Baneado As Byte) As Boolea
 
 End Function
 
+Public Function CompararPrivilegios(ByVal Personaje1 As Integer, ByVal Personaje2 As Integer) As Byte
+'**************************************************************************************************************************
+'Author: Jopi
+'Last Modification: 05/07/2020
+'   Funcion encargada de comparar los privilegios entre 2 Game Masters.
+'   Funciona de la misma forma que el operador spaceship de PHP.
+'       - Si los privilegios de el de la izquierda [Personaje1] son MAYORES que el de la derecha [Personaje2], devuelve -1
+'       - Si los privilegios de el de la izquierda [Personaje1] son IGUALES que el de la derecha [Personaje2], devuelve 0
+'       - Si los privilegios de el de la izquierda [Personaje1] son MENORES que el de la derecha [Personaje2], devuelve 1
+'**************************************************************************************************************************
+
+    Dim PrivilegiosGM As PlayerType
+    Dim Izquierda As PlayerType
+    Dim Derecha As PlayerType
+
+    PrivilegiosGM = PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero Or PlayerType.RoleMaster
+
+    ' Obtenemos el rango de los 2 personajes.
+    Izquierda = (UserList(Personaje1).flags.Privilegios And PrivilegiosGM)
+    Derecha = (UserList(Personaje2).flags.Privilegios And PrivilegiosGM)
+
+    Select Case Izquierda
+
+        Case Is > Derecha
+            CompararPrivilegios = -1
+
+        Case Is = Derecha
+            CompararPrivilegios = 0
+
+        Case Is < Derecha
+            CompararPrivilegios = 1
+
+    End Select
+
+End Function
