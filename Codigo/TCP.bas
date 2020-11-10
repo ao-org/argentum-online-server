@@ -440,11 +440,16 @@ Sub RellenarInventario(ByVal UserIndex As String)
 156                 NumItems = NumItems + 1
 
             End Select
+            
+            ' Poción violeta
+158         .Invent.Object(NumItems).ObjIndex = 166 ' Pocion violeta
+159         .Invent.Object(NumItems).Amount = 10
+160         NumItems = NumItems + 1
         
             ' Equipo el arma
-158         .Invent.Object(NumItems).ObjIndex = 460 ' Daga (Newbies)
-160         .Invent.Object(NumItems).Amount = 1
-162         .Invent.Object(NumItems).Equipped = 1
+161         .Invent.Object(NumItems).ObjIndex = 460 ' Daga (Newbies)
+162         .Invent.Object(NumItems).Amount = 1
+163         .Invent.Object(NumItems).Equipped = 1
 164         .Invent.WeaponEqpSlot = NumItems
 166         .Invent.WeaponEqpObjIndex = .Invent.Object(NumItems).ObjIndex
 168         .Char.WeaponAnim = ObjData(NumItems).WeaponAnim
@@ -463,7 +468,6 @@ Sub RellenarInventario(ByVal UserIndex As String)
 186             .Char.Body = ObjData(.Invent.ArmourEqpObjIndex).RopajeBajo
             Else
 188             .Char.Body = ObjData(.Invent.ArmourEqpObjIndex).Ropaje
-
             End If
         
             ' Comida y bebida
@@ -764,14 +768,12 @@ Sub ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal UserR
     
 240     If Not Database_Enabled Then
 242         Call GrabarNuevoPjEnCuentaCharfile(UserCuenta, name)
-
         End If
     
 244     UltimoChar = UCase$(name)
     
 246     Call SaveNewUser(UserIndex)
 248     Call ConnectUser(UserIndex, name, UserCuenta)
-  
         
         Exit Sub
 
