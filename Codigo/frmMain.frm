@@ -1211,12 +1211,15 @@ Private Sub Form_Unload(Cancel As Integer)
     Dim LoopC As Integer
     
     For LoopC = 1 To MaxUsers
-
-        If UserList(LoopC).ConnID <> -1 Then Call CloseSocket(LoopC)
+        If UserList(LoopC).ConnID <> -1 Then
+            Call CloseSocket(LoopC)
+        End If
     Next
     
-    ' Cierro base de datos
-    Call Database_Close
+    If Database_Enabled Then
+        ' Cierro base de datos
+        Call Database_Close
+    End If
     
     'Log
     Dim n As Integer
