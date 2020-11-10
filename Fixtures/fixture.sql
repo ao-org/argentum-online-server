@@ -38,7 +38,7 @@ CREATE TABLE `account` (
   `date_created` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `mac_address` char(17) DEFAULT '',
   `hd_serial` int(11) NOT NULL DEFAULT 0,
-  `is_logged` tinyint(1) DEFAULT 0,
+  `logged` int(11) NOT NULL DEFAULT 0,
   `deleted` tinyint(1) DEFAULT 0,
   `validated` tinyint(1) NOT NULL DEFAULT 0,
   `validate_code` char(32) NOT NULL,
@@ -48,10 +48,10 @@ CREATE TABLE `account` (
   `ban_reason` varchar(255) DEFAULT '',
   `credits` int(10) UNSIGNED DEFAULT 0,
   `is_donor` tinyint(1) DEFAULT 0,
-  `donor_expire` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `donor_expire` timestamp NOT NULL DEFAULT current_timestamp(),
   `credits_used` int(10) UNSIGNED DEFAULT 0,
   `donor_purchases` int(10) UNSIGNED DEFAULT 0,
-  `last_access` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `last_access` timestamp NOT NULL DEFAULT current_timestamp(),
   `last_ip` varchar(16) DEFAULT ''
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -313,6 +313,14 @@ CREATE TABLE `user` (
   `chat_global` tinyint(1) DEFAULT 1,
   `chat_combate` tinyint(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `statistics` (
+  `name` VARCHAR(50) NOT NULL,
+  `value` VARCHAR(50) NULL,
+  PRIMARY KEY (`name`))
+ENGINE = InnoDB;
+
+INSERT INTO `statistics` (`name`, `value`) VALUES ('online', '0');
 
 --
 -- Índices para tablas volcadas
