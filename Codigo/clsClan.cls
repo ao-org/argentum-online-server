@@ -86,8 +86,18 @@ Private Const DESCLENGTH        As Integer = 256
 Private Const CODEXLENGTH       As Integer = 256
 
 Public Property Get GuildName() As String
-    GuildName = p_GuildName
+        
+        On Error GoTo GuildName_Err
+        
+100     GuildName = p_GuildName
 
+        
+        Exit Property
+
+GuildName_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.GuildName", Erl)
+        Resume Next
+        
 End Property
 
 '
@@ -95,24 +105,64 @@ End Property
 '
 
 Public Property Get Alineacion() As ALINEACION_GUILD
-    Alineacion = p_Alineacion
+        
+        On Error GoTo Alineacion_Err
+        
+100     Alineacion = p_Alineacion
 
+        
+        Exit Property
+
+Alineacion_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.Alineacion", Erl)
+        Resume Next
+        
 End Property
 
 Public Property Get PuntosAntifaccion() As Integer
-    PuntosAntifaccion = val(GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Antifaccion"))
+        
+        On Error GoTo PuntosAntifaccion_Err
+        
+100     PuntosAntifaccion = val(GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Antifaccion"))
 
+        
+        Exit Property
+
+PuntosAntifaccion_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.PuntosAntifaccion", Erl)
+        Resume Next
+        
 End Property
 
 Public Property Let PuntosAntifaccion(ByVal p As Integer)
-    Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Antifaccion", CStr(p))
+        
+        On Error GoTo PuntosAntifaccion_Err
+        
+100     Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Antifaccion", CStr(p))
 
+        
+        Exit Property
+
+PuntosAntifaccion_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.PuntosAntifaccion", Erl)
+        Resume Next
+        
 End Property
 
 Public Function CambiarAlineacion(ByVal NuevaAlineacion As ALINEACION_GUILD) As Boolean
-    p_Alineacion = NuevaAlineacion
-    Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Alineacion", Alineacion2String(p_Alineacion))
+        
+        On Error GoTo CambiarAlineacion_Err
+        
+100     p_Alineacion = NuevaAlineacion
+102     Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Alineacion", Alineacion2String(p_Alineacion))
 
+        
+        Exit Function
+
+CambiarAlineacion_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.CambiarAlineacion", Erl)
+        Resume Next
+        
 End Function
 
 '
@@ -120,65 +170,95 @@ End Function
 '
 
 Private Sub Class_Initialize()
-    GUILDPATH = App.Path & "\GUILDS\"
-    GUILDINFOFILE = GUILDPATH & "guildsinfo.inf"
+        
+        On Error GoTo Class_Initialize_Err
+        
+100     GUILDPATH = App.Path & "\GUILDS\"
+102     GUILDINFOFILE = GUILDPATH & "guildsinfo.inf"
 
+        
+        Exit Sub
+
+Class_Initialize_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.Class_Initialize", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Class_Terminate()
-    Set p_OnlineMembers = Nothing
-    Set p_GMsOnline = Nothing
-    Set p_PropuestasDePaz = Nothing
-    Set p_PropuestasDeAlianza = Nothing
+        
+        On Error GoTo Class_Terminate_Err
+        
+100     Set p_OnlineMembers = Nothing
+102     Set p_GMsOnline = Nothing
+104     Set p_PropuestasDePaz = Nothing
+106     Set p_PropuestasDeAlianza = Nothing
 
+        
+        Exit Sub
+
+Class_Terminate_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.Class_Terminate", Erl)
+        Resume Next
+        
 End Sub
 
 Public Sub Inicializar(ByVal GuildName As String, ByVal GuildNumber As Integer, ByVal Alineacion As ALINEACION_GUILD)
+        
+        On Error GoTo Inicializar_Err
+        
 
-    Dim i As Integer
+        Dim i As Integer
 
-    p_GuildName = GuildName
-    p_GuildNumber = GuildNumber
-    p_Alineacion = Alineacion
-    Set p_OnlineMembers = New Collection
-    Set p_GMsOnline = New Collection
-    Set p_PropuestasDePaz = New Collection
-    Set p_PropuestasDeAlianza = New Collection
-    'ALLIESFILE = GUILDPATH & p_GuildName & "-Allied.all"
-    'ENEMIESFILE = GUILDPATH & p_GuildName & "-enemys.ene"
-    RELACIONESFILE = GUILDPATH & p_GuildName & "-relaciones.rel"
-    MEMBERSFILE = GUILDPATH & p_GuildName & "-members.mem"
-    PROPUESTASFILE = GUILDPATH & p_GuildName & "-propositions.pro"
-    SOLICITUDESFILE = GUILDPATH & p_GuildName & "-solicitudes.sol"
-    VOTACIONESFILE = GUILDPATH & p_GuildName & "-votaciones.vot"
-    p_IteradorOnlineMembers = 0
-    p_IteradorPropuesta = 0
-    p_IteradorOnlineGMs = 0
-    p_IteradorRelaciones = 0
-    ReDim Preserve p_Relaciones(1 To CANTIDADDECLANES) As RELACIONES_GUILD
+100     p_GuildName = GuildName
+102     p_GuildNumber = GuildNumber
+104     p_Alineacion = Alineacion
+106     Set p_OnlineMembers = New Collection
+108     Set p_GMsOnline = New Collection
+110     Set p_PropuestasDePaz = New Collection
+112     Set p_PropuestasDeAlianza = New Collection
+        'ALLIESFILE = GUILDPATH & p_GuildName & "-Allied.all"
+        'ENEMIESFILE = GUILDPATH & p_GuildName & "-enemys.ene"
+114     RELACIONESFILE = GUILDPATH & p_GuildName & "-relaciones.rel"
+116     MEMBERSFILE = GUILDPATH & p_GuildName & "-members.mem"
+118     PROPUESTASFILE = GUILDPATH & p_GuildName & "-propositions.pro"
+120     SOLICITUDESFILE = GUILDPATH & p_GuildName & "-solicitudes.sol"
+122     VOTACIONESFILE = GUILDPATH & p_GuildName & "-votaciones.vot"
+124     p_IteradorOnlineMembers = 0
+126     p_IteradorPropuesta = 0
+128     p_IteradorOnlineGMs = 0
+130     p_IteradorRelaciones = 0
+132     ReDim Preserve p_Relaciones(1 To CANTIDADDECLANES) As RELACIONES_GUILD
 
-    For i = 1 To CANTIDADDECLANES
-        p_Relaciones(i) = String2Relacion(GetVar(RELACIONESFILE, "RELACIONES", CStr(i)))
-    Next i
+134     For i = 1 To CANTIDADDECLANES
+136         p_Relaciones(i) = String2Relacion(GetVar(RELACIONESFILE, "RELACIONES", CStr(i)))
+138     Next i
 
-    For i = 1 To CANTIDADDECLANES
+140     For i = 1 To CANTIDADDECLANES
 
-        If Trim$(GetVar(PROPUESTASFILE, CStr(i), "Pendiente")) = "1" Then
+142         If Trim$(GetVar(PROPUESTASFILE, CStr(i), "Pendiente")) = "1" Then
 
-            Select Case String2Relacion(Trim$(GetVar(PROPUESTASFILE, CStr(i), "Tipo")))
+144             Select Case String2Relacion(Trim$(GetVar(PROPUESTASFILE, CStr(i), "Tipo")))
 
-                Case RELACIONES_GUILD.ALIADOS
-                    p_PropuestasDeAlianza.Add i
+                    Case RELACIONES_GUILD.ALIADOS
+146                     p_PropuestasDeAlianza.Add i
 
-                Case RELACIONES_GUILD.PAZ
-                    p_PropuestasDePaz.Add i
+148                 Case RELACIONES_GUILD.PAZ
+150                     p_PropuestasDePaz.Add i
 
-            End Select
+                End Select
 
-        End If
+            End If
 
-    Next i
+152     Next i
 
+        
+        Exit Sub
+
+Inicializar_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.Inicializar", Erl)
+        Resume Next
+        
 End Sub
 
 ''
@@ -187,45 +267,65 @@ End Sub
 ' @param Fundador Nombre del fundador del clan
 '
 Public Sub InicializarNuevoClan(ByRef Fundador As String)
+        
+        On Error GoTo InicializarNuevoClan_Err
+        
 
-    Dim OldQ As String  'string pq al comienzo quizas no hay archivo guildinfo.ini y oldq es ""
+        Dim OldQ As String  'string pq al comienzo quizas no hay archivo guildinfo.ini y oldq es ""
 
-    Dim NewQ As Integer
+        Dim NewQ As Integer
 
-    'para que genere los archivos
-    If Not FileExist(MEMBERSFILE, vbNormal) Then
-        Call WriteVar(MEMBERSFILE, "INIT", "NroMembers", "0")
+        'para que genere los archivos
+100     If Not FileExist(MEMBERSFILE, vbNormal) Then
+102         Call WriteVar(MEMBERSFILE, "INIT", "NroMembers", "0")
 
-    End If
+        End If
     
-    If Not FileExist(SOLICITUDESFILE, vbNormal) Then
-        Call WriteVar(SOLICITUDESFILE, "INIT", "CantSolicitudes", "0")
+104     If Not FileExist(SOLICITUDESFILE, vbNormal) Then
+106         Call WriteVar(SOLICITUDESFILE, "INIT", "CantSolicitudes", "0")
 
-    End If
+        End If
     
-    OldQ = GetVar(GUILDINFOFILE, "INIT", "nroguilds")
+108     OldQ = GetVar(GUILDINFOFILE, "INIT", "nroguilds")
 
-    If IsNumeric(OldQ) Then
-        NewQ = CInt(Trim$(OldQ)) + 1
-    Else
-        NewQ = 1
+110     If IsNumeric(OldQ) Then
+112         NewQ = CInt(Trim$(OldQ)) + 1
+        Else
+114         NewQ = 1
 
-    End If
+        End If
 
-    Call WriteVar(GUILDINFOFILE, "INIT", "NroGuilds", NewQ & vbNewLine)
+116     Call WriteVar(GUILDINFOFILE, "INIT", "NroGuilds", NewQ & vbNewLine)
     
-    Call WriteVar(GUILDINFOFILE, "GUILD" & NewQ, "GuildName", p_GuildName)
-    Call WriteVar(GUILDINFOFILE, "GUILD" & NewQ, "Founder", Fundador)
-    Call WriteVar(GUILDINFOFILE, "GUILD" & NewQ, "Date", Date)
-    Call WriteVar(GUILDINFOFILE, "GUILD" & NewQ, "Antifaccion", "0")
-    Call WriteVar(GUILDINFOFILE, "GUILD" & NewQ, "Alineacion", Alineacion2String(p_Alineacion))
+118     Call WriteVar(GUILDINFOFILE, "GUILD" & NewQ, "GuildName", p_GuildName)
+120     Call WriteVar(GUILDINFOFILE, "GUILD" & NewQ, "Founder", Fundador)
+122     Call WriteVar(GUILDINFOFILE, "GUILD" & NewQ, "Date", Date)
+124     Call WriteVar(GUILDINFOFILE, "GUILD" & NewQ, "Antifaccion", "0")
+126     Call WriteVar(GUILDINFOFILE, "GUILD" & NewQ, "Alineacion", Alineacion2String(p_Alineacion))
 
+        
+        Exit Sub
+
+InicializarNuevoClan_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.InicializarNuevoClan", Erl)
+        Resume Next
+        
 End Sub
 
 Public Sub ProcesarFundacionDeOtroClan()
-    ReDim Preserve p_Relaciones(1 To CANTIDADDECLANES) As RELACIONES_GUILD
-    p_Relaciones(CANTIDADDECLANES) = PAZ
+        
+        On Error GoTo ProcesarFundacionDeOtroClan_Err
+        
+100     ReDim Preserve p_Relaciones(1 To CANTIDADDECLANES) As RELACIONES_GUILD
+102     p_Relaciones(CANTIDADDECLANES) = PAZ
 
+        
+        Exit Sub
+
+ProcesarFundacionDeOtroClan_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.ProcesarFundacionDeOtroClan", Erl)
+        Resume Next
+        
 End Sub
 
 '
@@ -233,8 +333,18 @@ End Sub
 '
 
 Public Property Get Fundador() As String
-    Fundador = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Founder")
+        
+        On Error GoTo Fundador_Err
+        
+100     Fundador = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Founder")
 
+        
+        Exit Property
+
+Fundador_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.Fundador", Erl)
+        Resume Next
+        
 End Property
 
 'Public Property Get JugadoresOnline() As String
@@ -246,175 +356,255 @@ End Property
 'End Property
 
 Public Property Get CantidadDeMiembros() As Integer
+        
+        On Error GoTo CantidadDeMiembros_Err
+        
 
-    Dim OldQ As String
+        Dim OldQ As String
 
-    OldQ = GetVar(MEMBERSFILE, "INIT", "NroMembers")
-    CantidadDeMiembros = IIf(IsNumeric(OldQ), CInt(OldQ), 0)
+100     OldQ = GetVar(MEMBERSFILE, "INIT", "NroMembers")
+102     CantidadDeMiembros = IIf(IsNumeric(OldQ), CInt(OldQ), 0)
 
+        
+        Exit Property
+
+CantidadDeMiembros_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.CantidadDeMiembros", Erl)
+        Resume Next
+        
 End Property
 
 Public Sub SetLeader(ByRef leader As String)
-    Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Leader", leader)
+        
+        On Error GoTo SetLeader_Err
+        
+100     Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Leader", leader)
 
+        
+        Exit Sub
+
+SetLeader_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.SetLeader", Erl)
+        Resume Next
+        
 End Sub
 
 Public Function GetLeader() As String
-    GetLeader = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Leader")
+        
+        On Error GoTo GetLeader_Err
+        
+100     GetLeader = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Leader")
 
+        
+        Exit Function
+
+GetLeader_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.GetLeader", Erl)
+        Resume Next
+        
 End Function
 
 Public Function GetMemberList() As String()
+        
+        On Error GoTo GetMemberList_Err
+        
 
-    Dim OldQ   As Integer
+        Dim OldQ   As Integer
 
-    Dim list() As String
+        Dim list() As String
 
-    Dim i      As Long
+        Dim i      As Long
     
-    OldQ = Me.CantidadDeMiembros
+100     OldQ = Me.CantidadDeMiembros
     
-    ReDim list(OldQ - 1) As String
+102     ReDim list(OldQ - 1) As String
     
-    For i = 1 To OldQ
-        list(i - 1) = UCase$(GetVar(MEMBERSFILE, "Members", "Member" & i))
-    Next i
+104     For i = 1 To OldQ
+106         list(i - 1) = UCase$(GetVar(MEMBERSFILE, "Members", "Member" & i))
+108     Next i
     
-    GetMemberList = list
+110     GetMemberList = list
 
+        
+        Exit Function
+
+GetMemberList_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.GetMemberList", Erl)
+        Resume Next
+        
 End Function
 
 Public Sub ConectarMiembro(ByVal UserIndex As Integer)
-    '***************************************************
-    'Autor: Unknown (orginal version)
-    'Last Modification: 28/05/2010
-    '28/05/2010: ZaMa - No avisa cuando loguea un dios o admin.
-    '***************************************************
-    p_OnlineMembers.Add UserIndex
+        '***************************************************
+        'Autor: Unknown (orginal version)
+        'Last Modification: 28/05/2010
+        '28/05/2010: ZaMa - No avisa cuando loguea un dios o admin.
+        '***************************************************
+        
+        On Error GoTo ConectarMiembro_Err
+        
+100     p_OnlineMembers.Add UserIndex
 
-    With UserList(UserIndex)
+102     With UserList(UserIndex)
 
-        ' No avisa cuando loguea un dios
-        If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then
-            Call SendData(SendTarget.ToDiosesYclan, .GuildIndex, PrepareMessageGuildChat(.name & " se ha conectado."))
+            ' No avisa cuando loguea un dios
+104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then
+106             Call SendData(SendTarget.ToDiosesYclan, .GuildIndex, PrepareMessageGuildChat(.name & " se ha conectado."))
 
-        End If
+            End If
 
-    End With
+        End With
 
+        
+        Exit Sub
+
+ConectarMiembro_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.ConectarMiembro", Erl)
+        Resume Next
+        
 End Sub
 
 Public Sub DesConectarMiembro(ByVal UserIndex As Integer)
+        
+        On Error GoTo DesConectarMiembro_Err
+        
 
-    '***************************************************
-    'Autor: Unknown (orginal version)
-    'Last Modification: 28/05/2010
-    '28/05/2010: ZaMa - No avisa cuando desloguea un dios o admin.
-    '***************************************************
-    Dim i As Integer
+        '***************************************************
+        'Autor: Unknown (orginal version)
+        'Last Modification: 28/05/2010
+        '28/05/2010: ZaMa - No avisa cuando desloguea un dios o admin.
+        '***************************************************
+        Dim i As Integer
 
-    For i = 1 To p_OnlineMembers.Count
+100     For i = 1 To p_OnlineMembers.Count
 
-        If p_OnlineMembers.Item(i) = UserIndex Then
-            p_OnlineMembers.Remove i
+102         If p_OnlineMembers.Item(i) = UserIndex Then
+104             p_OnlineMembers.Remove i
             
-            With UserList(UserIndex)
+106             With UserList(UserIndex)
 
-                ' No avisa cuando se desconecta un dios
-                If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then
-                    Call SendData(SendTarget.ToDiosesYclan, .GuildIndex, PrepareMessageGuildChat(.name & " se ha desconectado."))
+                    ' No avisa cuando se desconecta un dios
+108                 If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then
+110                     Call SendData(SendTarget.ToDiosesYclan, .GuildIndex, PrepareMessageGuildChat(.name & " se ha desconectado."))
 
-                End If
+                    End If
 
-            End With
+                End With
 
-            Exit Sub
+                Exit Sub
 
-        End If
+            End If
 
-    Next i
+112     Next i
 
+        
+        Exit Sub
+
+DesConectarMiembro_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.DesConectarMiembro", Erl)
+        Resume Next
+        
 End Sub
 
 Public Sub AceptarNuevoMiembro(ByRef nombre As String)
+        
+        On Error GoTo AceptarNuevoMiembro_Err
+        
 
-    Dim OldQ  As Integer
+        Dim OldQ  As Integer
 
-    Dim OldQs As String
+        Dim OldQs As String
 
-    If PersonajeExiste(nombre) Then
-        Call SaveUserGuildIndex(nombre, p_GuildNumber)
-        Call SaveUserGuildAspirant(nombre, 0)
+100     If PersonajeExiste(nombre) Then
+102         Call SaveUserGuildIndex(nombre, p_GuildNumber)
+104         Call SaveUserGuildAspirant(nombre, 0)
 
-        OldQs = GetVar(MEMBERSFILE, "INIT", "NroMembers")
+106         OldQs = GetVar(MEMBERSFILE, "INIT", "NroMembers")
 
-        If IsNumeric(OldQs) Then
-            OldQ = CInt(OldQs)
-        Else
-            OldQ = 0
+108         If IsNumeric(OldQs) Then
+110             OldQ = CInt(OldQs)
+            Else
+112             OldQ = 0
+
+            End If
+
+114         Call WriteVar(MEMBERSFILE, "INIT", "NroMembers", OldQ + 1)
+116         Call WriteVar(MEMBERSFILE, "Members", "Member" & OldQ + 1, nombre)
 
         End If
 
-        Call WriteVar(MEMBERSFILE, "INIT", "NroMembers", OldQ + 1)
-        Call WriteVar(MEMBERSFILE, "Members", "Member" & OldQ + 1, nombre)
+        
+        Exit Sub
 
-    End If
-
+AceptarNuevoMiembro_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.AceptarNuevoMiembro", Erl)
+        Resume Next
+        
 End Sub
 
 Public Sub ExpulsarMiembro(ByRef nombre As String)
-
-    Dim OldQ      As Integer
-
-    Dim Temps     As String
-
-    Dim i         As Integer
-
-    Dim EsMiembro As Boolean
-
-    Dim MiembroDe As String
-
-    If PersonajeExiste(nombre) Then
-        OldQ = CInt(GetVar(MEMBERSFILE, "INIT", "NroMembers"))
-        i = 1
-        nombre = UCase$(nombre)
-
-        While i <= OldQ And UCase$(Trim$(GetVar(MEMBERSFILE, "Members", "Member" & i))) <> nombre
-
-            i = i + 1
-        Wend
-        EsMiembro = i <= OldQ
         
-        If EsMiembro Then
-            Call SaveUserGuildIndex(nombre, 0)
+        On Error GoTo ExpulsarMiembro_Err
+        
 
-            While i < OldQ
+        Dim OldQ      As Integer
 
-                Temps = GetVar(MEMBERSFILE, "Members", "Member" & i + 1)
-                Call WriteVar(MEMBERSFILE, "Members", "Member" & i, Temps)
-                i = i + 1
+        Dim Temps     As String
+
+        Dim i         As Integer
+
+        Dim EsMiembro As Boolean
+
+        Dim MiembroDe As String
+
+100     If PersonajeExiste(nombre) Then
+102         OldQ = CInt(GetVar(MEMBERSFILE, "INIT", "NroMembers"))
+104         i = 1
+106         nombre = UCase$(nombre)
+
+108         While i <= OldQ And UCase$(Trim$(GetVar(MEMBERSFILE, "Members", "Member" & i))) <> nombre
+
+110             i = i + 1
             Wend
-            Call WriteVar(MEMBERSFILE, "Members", "Member" & OldQ, vbNullString)
-            'seteo la cantidad de miembros nueva
-            Call WriteVar(MEMBERSFILE, "INIT", "NroMembers", OldQ - 1)
-            'lo echo a el
-            MiembroDe = GetUserGuildMember(nombre)
+112         EsMiembro = i <= OldQ
+        
+114         If EsMiembro Then
+116             Call SaveUserGuildIndex(nombre, 0)
 
-            If Not InStr(1, MiembroDe, p_GuildName, vbTextCompare) > 0 Then
-                If LenB(MiembroDe) <> 0 Then
-                    MiembroDe = MiembroDe & ","
+118             While i < OldQ
+
+120                 Temps = GetVar(MEMBERSFILE, "Members", "Member" & i + 1)
+122                 Call WriteVar(MEMBERSFILE, "Members", "Member" & i, Temps)
+124                 i = i + 1
+                Wend
+126             Call WriteVar(MEMBERSFILE, "Members", "Member" & OldQ, vbNullString)
+                'seteo la cantidad de miembros nueva
+128             Call WriteVar(MEMBERSFILE, "INIT", "NroMembers", OldQ - 1)
+                'lo echo a el
+130             MiembroDe = GetUserGuildMember(nombre)
+
+132             If Not InStr(1, MiembroDe, p_GuildName, vbTextCompare) > 0 Then
+134                 If LenB(MiembroDe) <> 0 Then
+136                     MiembroDe = MiembroDe & ","
+
+                    End If
+
+138                 MiembroDe = MiembroDe & p_GuildName
+140                 Call SaveUserGuildMember(nombre, MiembroDe)
 
                 End If
-
-                MiembroDe = MiembroDe & p_GuildName
-                Call SaveUserGuildMember(nombre, MiembroDe)
 
             End If
 
         End If
 
-    End If
+        
+        Exit Sub
 
+ExpulsarMiembro_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.ExpulsarMiembro", Erl)
+        Resume Next
+        
 End Sub
 
 '
@@ -422,144 +612,204 @@ End Sub
 '
 
 Public Function GetAspirantes() As String()
+        
+        On Error GoTo GetAspirantes_Err
+        
 
-    Dim OldQ   As Integer
+        Dim OldQ   As Integer
 
-    Dim list() As String
+        Dim list() As String
 
-    Dim i      As Long
+        Dim i      As Long
     
-    OldQ = Me.CantidadAspirantes()
+100     OldQ = Me.CantidadAspirantes()
     
-    If OldQ > 1 Then
-        ReDim list(OldQ - 1) As String
-    Else
-        ReDim list(0) As String
+102     If OldQ > 1 Then
+104         ReDim list(OldQ - 1) As String
+        Else
+106         ReDim list(0) As String
 
-    End If
+        End If
     
-    For i = 1 To OldQ
-        list(i - 1) = GetVar(SOLICITUDESFILE, "SOLICITUD" & i, "Nombre")
-    Next i
+108     For i = 1 To OldQ
+110         list(i - 1) = GetVar(SOLICITUDESFILE, "SOLICITUD" & i, "Nombre")
+112     Next i
     
-    GetAspirantes = list
+114     GetAspirantes = list
 
+        
+        Exit Function
+
+GetAspirantes_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.GetAspirantes", Erl)
+        Resume Next
+        
 End Function
 
 Public Function CantidadAspirantes() As Integer
+        
+        On Error GoTo CantidadAspirantes_Err
+        
 
-    Dim Temps As String
+        Dim Temps As String
 
-    CantidadAspirantes = 0
-    Temps = GetVar(SOLICITUDESFILE, "INIT", "CantSolicitudes")
+100     CantidadAspirantes = 0
+102     Temps = GetVar(SOLICITUDESFILE, "INIT", "CantSolicitudes")
 
-    If Not IsNumeric(Temps) Then
-        Exit Function
-
-    End If
-
-    CantidadAspirantes = CInt(Temps)
-
-End Function
-
-Public Function DetallesSolicitudAspirante(ByVal NroAspirante As Integer) As String
-    DetallesSolicitudAspirante = GetVar(SOLICITUDESFILE, "SOLICITUD" & NroAspirante, "Detalle")
-
-End Function
-
-Public Function NumeroDeAspirante(ByRef nombre As String) As Integer
-
-    Dim i As Integer
-    
-    NumeroDeAspirante = 0
-    
-    For i = 1 To MAXASPIRANTES
-
-        If UCase$(Trim$(GetVar(SOLICITUDESFILE, "SOLICITUD" & i, "Nombre"))) = UCase$(nombre) Then
-            NumeroDeAspirante = i
+104     If Not IsNumeric(Temps) Then
             Exit Function
 
         End If
 
-    Next i
+106     CantidadAspirantes = CInt(Temps)
 
+        
+        Exit Function
+
+CantidadAspirantes_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.CantidadAspirantes", Erl)
+        Resume Next
+        
+End Function
+
+Public Function DetallesSolicitudAspirante(ByVal NroAspirante As Integer) As String
+        
+        On Error GoTo DetallesSolicitudAspirante_Err
+        
+100     DetallesSolicitudAspirante = GetVar(SOLICITUDESFILE, "SOLICITUD" & NroAspirante, "Detalle")
+
+        
+        Exit Function
+
+DetallesSolicitudAspirante_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.DetallesSolicitudAspirante", Erl)
+        Resume Next
+        
+End Function
+
+Public Function NumeroDeAspirante(ByRef nombre As String) As Integer
+        
+        On Error GoTo NumeroDeAspirante_Err
+        
+
+        Dim i As Integer
+    
+100     NumeroDeAspirante = 0
+    
+102     For i = 1 To MAXASPIRANTES
+
+104         If UCase$(Trim$(GetVar(SOLICITUDESFILE, "SOLICITUD" & i, "Nombre"))) = UCase$(nombre) Then
+106             NumeroDeAspirante = i
+                Exit Function
+
+            End If
+
+108     Next i
+
+        
+        Exit Function
+
+NumeroDeAspirante_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.NumeroDeAspirante", Erl)
+        Resume Next
+        
 End Function
 
 Public Sub NuevoAspirante(ByRef nombre As String, ByRef Peticion As String)
+        
+        On Error GoTo NuevoAspirante_Err
+        
 
-    Dim i     As Integer
+        Dim i     As Integer
 
-    Dim OldQ  As String
+        Dim OldQ  As String
 
-    Dim OldQI As Integer
+        Dim OldQI As Integer
 
-    OldQ = GetVar(SOLICITUDESFILE, "INIT", "CantSolicitudes")
+100     OldQ = GetVar(SOLICITUDESFILE, "INIT", "CantSolicitudes")
 
-    If IsNumeric(OldQ) Then
-        OldQI = CInt(OldQ)
-    Else
-        OldQI = 0
-
-    End If
-
-    For i = 1 To MAXASPIRANTES
-
-        If GetVar(SOLICITUDESFILE, "SOLICITUD" & i, "Nombre") = vbNullString Then
-            Call WriteVar(SOLICITUDESFILE, "SOLICITUD" & i, "Nombre", nombre)
-            Call WriteVar(SOLICITUDESFILE, "SOLICITUD" & i, "Detalle", IIf(Trim$(Peticion) = vbNullString, "Peticion vacia", Peticion))
-            Call WriteVar(SOLICITUDESFILE, "INIT", "CantSolicitudes", OldQI + 1)
-            Call SaveUserGuildAspirant(nombre, p_GuildNumber)
-            Exit Sub
+102     If IsNumeric(OldQ) Then
+104         OldQI = CInt(OldQ)
+        Else
+106         OldQI = 0
 
         End If
 
-    Next i
+108     For i = 1 To MAXASPIRANTES
 
+110         If GetVar(SOLICITUDESFILE, "SOLICITUD" & i, "Nombre") = vbNullString Then
+112             Call WriteVar(SOLICITUDESFILE, "SOLICITUD" & i, "Nombre", nombre)
+114             Call WriteVar(SOLICITUDESFILE, "SOLICITUD" & i, "Detalle", IIf(Trim$(Peticion) = vbNullString, "Peticion vacia", Peticion))
+116             Call WriteVar(SOLICITUDESFILE, "INIT", "CantSolicitudes", OldQI + 1)
+118             Call SaveUserGuildAspirant(nombre, p_GuildNumber)
+                Exit Sub
+
+            End If
+
+120     Next i
+
+        
+        Exit Sub
+
+NuevoAspirante_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.NuevoAspirante", Erl)
+        Resume Next
+        
 End Sub
 
 Public Sub RetirarAspirante(ByRef nombre As String, ByRef NroAspirante As Integer)
+        
+        On Error GoTo RetirarAspirante_Err
+        
 
-    Dim OldQ    As String
+        Dim OldQ    As String
 
-    Dim OldQI   As String
+        Dim OldQI   As String
 
-    Dim Pedidos As String
+        Dim Pedidos As String
 
-    Dim i       As Integer
+        Dim i       As Integer
 
-    OldQ = GetVar(SOLICITUDESFILE, "INIT", "CantSolicitudes")
+100     OldQ = GetVar(SOLICITUDESFILE, "INIT", "CantSolicitudes")
 
-    If IsNumeric(OldQ) Then
-        OldQI = CInt(OldQ)
-    Else
-        OldQI = 1
-
-    End If
-
-    Call SaveUserGuildAspirant(nombre, 0)
-    Pedidos = GetUserGuildPedidos(nombre)
-
-    If Not InStr(1, Pedidos, p_GuildName, vbTextCompare) > 0 Then
-        If LenB(Pedidos) <> 0 Then
-            Pedidos = Pedidos & ","
+102     If IsNumeric(OldQ) Then
+104         OldQI = CInt(OldQ)
+        Else
+106         OldQI = 1
 
         End If
 
-        Pedidos = Pedidos & p_GuildName
-        Call SaveUserGuildPedidos(nombre, Pedidos)
+108     Call SaveUserGuildAspirant(nombre, 0)
+110     Pedidos = GetUserGuildPedidos(nombre)
 
-    End If
+112     If Not InStr(1, Pedidos, p_GuildName, vbTextCompare) > 0 Then
+114         If LenB(Pedidos) <> 0 Then
+116             Pedidos = Pedidos & ","
+
+            End If
+
+118         Pedidos = Pedidos & p_GuildName
+120         Call SaveUserGuildPedidos(nombre, Pedidos)
+
+        End If
     
-    Call WriteVar(SOLICITUDESFILE, "INIT", "CantSolicitudes", OldQI - 1)
+122     Call WriteVar(SOLICITUDESFILE, "INIT", "CantSolicitudes", OldQI - 1)
 
-    For i = NroAspirante To modGuilds.MAXASPIRANTES - 1
-        Call WriteVar(SOLICITUDESFILE, "SOLICITUD" & i, "Nombre", GetVar(SOLICITUDESFILE, "SOLICITUD" & (i + 1), "Nombre"))
-        Call WriteVar(SOLICITUDESFILE, "SOLICITUD" & i, "Detalle", GetVar(SOLICITUDESFILE, "SOLICITUD" & (i + 1), "Detalle"))
-    Next i
+124     For i = NroAspirante To modGuilds.MAXASPIRANTES - 1
+126         Call WriteVar(SOLICITUDESFILE, "SOLICITUD" & i, "Nombre", GetVar(SOLICITUDESFILE, "SOLICITUD" & (i + 1), "Nombre"))
+128         Call WriteVar(SOLICITUDESFILE, "SOLICITUD" & i, "Detalle", GetVar(SOLICITUDESFILE, "SOLICITUD" & (i + 1), "Detalle"))
+130     Next i
     
-    Call WriteVar(SOLICITUDESFILE, "SOLICITUD" & modGuilds.MAXASPIRANTES, "Nombre", vbNullString)
-    Call WriteVar(SOLICITUDESFILE, "SOLICITUD" & modGuilds.MAXASPIRANTES, "Detalle", vbNullString)
+132     Call WriteVar(SOLICITUDESFILE, "SOLICITUD" & modGuilds.MAXASPIRANTES, "Nombre", vbNullString)
+134     Call WriteVar(SOLICITUDESFILE, "SOLICITUD" & modGuilds.MAXASPIRANTES, "Detalle", vbNullString)
 
+        
+        Exit Sub
+
+RetirarAspirante_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.RetirarAspirante", Erl)
+        Resume Next
+        
 End Sub
 
 '
@@ -567,87 +817,237 @@ End Sub
 '
 
 Public Function GetFechaFundacion() As String
-    GetFechaFundacion = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Date")
+        
+        On Error GoTo GetFechaFundacion_Err
+        
+100     GetFechaFundacion = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Date")
 
+        
+        Exit Function
+
+GetFechaFundacion_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.GetFechaFundacion", Erl)
+        Resume Next
+        
 End Function
 
 Public Sub SetCodex(ByVal CodexNumber As Integer, ByRef codex As String)
-    Call ReplaceInvalidChars(codex)
-    codex = Left$(codex, CODEXLENGTH)
-    Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Codex" & CodexNumber, codex)
+        
+        On Error GoTo SetCodex_Err
+        
+100     Call ReplaceInvalidChars(codex)
+102     codex = Left$(codex, CODEXLENGTH)
+104     Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Codex" & CodexNumber, codex)
 
+        
+        Exit Sub
+
+SetCodex_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.SetCodex", Erl)
+        Resume Next
+        
 End Sub
 
 Public Function GetCodex(ByVal CodexNumber As Integer) As String
-    GetCodex = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Codex" & CodexNumber)
+        
+        On Error GoTo GetCodex_Err
+        
+100     GetCodex = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Codex" & CodexNumber)
 
+        
+        Exit Function
+
+GetCodex_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.GetCodex", Erl)
+        Resume Next
+        
 End Function
 
 Public Sub SetURL(ByRef URL As String)
-    Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "URL", Left$(URL, 40))
+        
+        On Error GoTo SetURL_Err
+        
+100     Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "URL", Left$(URL, 40))
 
+        
+        Exit Sub
+
+SetURL_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.SetURL", Erl)
+        Resume Next
+        
 End Sub
 
 Public Function GetURL() As String
-    GetURL = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "URL")
+        
+        On Error GoTo GetURL_Err
+        
+100     GetURL = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "URL")
 
+        
+        Exit Function
+
+GetURL_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.GetURL", Erl)
+        Resume Next
+        
 End Function
 
 Public Sub SetNivelDeClan(ByRef nivel As Byte)
-    Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "NivelDeClan", nivel)
+        
+        On Error GoTo SetNivelDeClan_Err
+        
+100     Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "NivelDeClan", nivel)
 
+        
+        Exit Sub
+
+SetNivelDeClan_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.SetNivelDeClan", Erl)
+        Resume Next
+        
 End Sub
 
 Public Function GetNivelDeClan() As Byte
-    GetNivelDeClan = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "NivelDeClan")
+        
+        On Error GoTo GetNivelDeClan_Err
+        
+100     GetNivelDeClan = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "NivelDeClan")
 
+        
+        Exit Function
+
+GetNivelDeClan_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.GetNivelDeClan", Erl)
+        Resume Next
+        
 End Function
 
 Public Sub SetExpActual(ByRef Exp As Integer)
-    Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "ExpActual", Exp)
+        
+        On Error GoTo SetExpActual_Err
+        
+100     Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "ExpActual", Exp)
 
+        
+        Exit Sub
+
+SetExpActual_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.SetExpActual", Erl)
+        Resume Next
+        
 End Sub
 
 Public Function GetExpActual() As Integer
-    GetExpActual = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "ExpActual")
+        
+        On Error GoTo GetExpActual_Err
+        
+100     GetExpActual = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "ExpActual")
 
+        
+        Exit Function
+
+GetExpActual_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.GetExpActual", Erl)
+        Resume Next
+        
 End Function
 
 Public Sub SetExpNecesaria(ByRef Exp As Integer)
-    Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "ExpNecesaria", Exp)
+        
+        On Error GoTo SetExpNecesaria_Err
+        
+100     Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "ExpNecesaria", Exp)
 
+        
+        Exit Sub
+
+SetExpNecesaria_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.SetExpNecesaria", Erl)
+        Resume Next
+        
 End Sub
 
 Public Function GetExpNecesaria() As Integer
-    GetExpNecesaria = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "ExpNecesaria")
+        
+        On Error GoTo GetExpNecesaria_Err
+        
+100     GetExpNecesaria = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "ExpNecesaria")
 
+        
+        Exit Function
+
+GetExpNecesaria_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.GetExpNecesaria", Erl)
+        Resume Next
+        
 End Function
 
 Public Sub SetGuildNews(ByRef News As String)
-    Call ReplaceInvalidChars(News)
+        
+        On Error GoTo SetGuildNews_Err
+        
+100     Call ReplaceInvalidChars(News)
     
-    News = Left$(News, NEWSLENGTH)
+102     News = Left$(News, NEWSLENGTH)
     
-    Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "GuildNews", News)
+104     Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "GuildNews", News)
 
+        
+        Exit Sub
+
+SetGuildNews_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.SetGuildNews", Erl)
+        Resume Next
+        
 End Sub
 
 Public Function GetGuildNews() As String
-    GetGuildNews = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "GuildNews")
+        
+        On Error GoTo GetGuildNews_Err
+        
+100     GetGuildNews = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "GuildNews")
 
+        
+        Exit Function
+
+GetGuildNews_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.GetGuildNews", Erl)
+        Resume Next
+        
 End Function
 
 Public Sub SetDesc(ByRef Desc As String)
-    Call ReplaceInvalidChars(Desc)
-    Desc = Left$(Desc, DESCLENGTH)
+        
+        On Error GoTo SetDesc_Err
+        
+100     Call ReplaceInvalidChars(Desc)
+102     Desc = Left$(Desc, DESCLENGTH)
     
-    Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Desc", Desc)
+104     Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Desc", Desc)
 
+        
+        Exit Sub
+
+SetDesc_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.SetDesc", Erl)
+        Resume Next
+        
 End Sub
 
 Public Function GetDesc() As String
-    GetDesc = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Desc")
+        
+        On Error GoTo GetDesc_Err
+        
+100     GetDesc = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Desc")
 
+        
+        Exit Function
+
+GetDesc_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.GetDesc", Erl)
+        Resume Next
+        
 End Function
 
 '
@@ -657,44 +1057,94 @@ End Function
 '
 
 Public Function EleccionesAbiertas() As Boolean
+        
+        On Error GoTo EleccionesAbiertas_Err
+        
 
-    Dim ee As String
+        Dim ee As String
 
-    ee = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "EleccionesAbiertas")
-    EleccionesAbiertas = (ee = "1")     'cualquier otra cosa da falso
+100     ee = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "EleccionesAbiertas")
+102     EleccionesAbiertas = (ee = "1")     'cualquier otra cosa da falso
 
+        
+        Exit Function
+
+EleccionesAbiertas_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.EleccionesAbiertas", Erl)
+        Resume Next
+        
 End Function
 
 Public Sub AbrirElecciones()
-    Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "EleccionesAbiertas", "1")
-    Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "EleccionesFinalizan", DateAdd("d", 1, Now))
-    Call WriteVar(VOTACIONESFILE, "INIT", "NumVotos", "0")
+        
+        On Error GoTo AbrirElecciones_Err
+        
+100     Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "EleccionesAbiertas", "1")
+102     Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "EleccionesFinalizan", DateAdd("d", 1, Now))
+104     Call WriteVar(VOTACIONESFILE, "INIT", "NumVotos", "0")
 
+        
+        Exit Sub
+
+AbrirElecciones_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.AbrirElecciones", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub CerrarElecciones()  'solo pueden cerrarse mediante recuento de votos
-    Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "EleccionesAbiertas", "0")
-    Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "EleccionesFinalizan", vbNullString)
-    Call Kill(VOTACIONESFILE)   'borramos toda la evidencia ;-)
+        
+        On Error GoTo CerrarElecciones_Err
+        
+100     Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "EleccionesAbiertas", "0")
+102     Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "EleccionesFinalizan", vbNullString)
+104     Call Kill(VOTACIONESFILE)   'borramos toda la evidencia ;-)
 
+        
+        Exit Sub
+
+CerrarElecciones_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.CerrarElecciones", Erl)
+        Resume Next
+        
 End Sub
 
 Public Sub ContabilizarVoto(ByRef Votante As String, ByRef Votado As String)
+        
+        On Error GoTo ContabilizarVoto_Err
+        
 
-    Dim q     As Integer
+        Dim q     As Integer
 
-    Dim Temps As String
+        Dim Temps As String
 
-    Temps = GetVar(VOTACIONESFILE, "INIT", "NumVotos")
-    q = IIf(IsNumeric(Temps), CInt(Temps), 0)
-    Call WriteVar(VOTACIONESFILE, "VOTOS", Votante, Votado)
-    Call WriteVar(VOTACIONESFILE, "INIT", "NumVotos", CStr(q + 1))
+100     Temps = GetVar(VOTACIONESFILE, "INIT", "NumVotos")
+102     q = IIf(IsNumeric(Temps), CInt(Temps), 0)
+104     Call WriteVar(VOTACIONESFILE, "VOTOS", Votante, Votado)
+106     Call WriteVar(VOTACIONESFILE, "INIT", "NumVotos", CStr(q + 1))
 
+        
+        Exit Sub
+
+ContabilizarVoto_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.ContabilizarVoto", Erl)
+        Resume Next
+        
 End Sub
 
 Public Function YaVoto(ByRef Votante) As Boolean
-    YaVoto = ((LenB(Trim$(GetVar(VOTACIONESFILE, "VOTOS", Votante)))) <> 0)
+        
+        On Error GoTo YaVoto_Err
+        
+100     YaVoto = ((LenB(Trim$(GetVar(VOTACIONESFILE, "VOTOS", Votante)))) <> 0)
 
+        
+        Exit Function
+
+YaVoto_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.YaVoto", Erl)
+        Resume Next
+        
 End Function
 
 Private Function ContarVotos(ByRef CantGanadores As Integer) As String
@@ -757,64 +1207,74 @@ errh:
 End Function
 
 Public Function RevisarElecciones() As Boolean
+        
+        On Error GoTo RevisarElecciones_Err
+        
 
-    Dim FechaSufragio As Date
+        Dim FechaSufragio As Date
 
-    Dim Temps         As String
+        Dim Temps         As String
 
-    Dim Ganador       As String
+        Dim Ganador       As String
 
-    Dim CantGanadores As Integer
+        Dim CantGanadores As Integer
 
-    Dim list()        As String
+        Dim list()        As String
 
-    Dim i             As Long
+        Dim i             As Long
 
-    RevisarElecciones = False
-    Temps = Trim$(GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "EleccionesFinalizan"))
+100     RevisarElecciones = False
+102     Temps = Trim$(GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "EleccionesFinalizan"))
     
-    If LenB(Temps) = 0 Then Exit Function
+104     If LenB(Temps) = 0 Then Exit Function
 
-    If IsDate(Temps) Then
-        FechaSufragio = CDate(Temps)
+106     If IsDate(Temps) Then
+108         FechaSufragio = CDate(Temps)
 
-        If FechaSufragio < Now Then     'toca!
-            Ganador = ContarVotos(CantGanadores)
+110         If FechaSufragio < Now Then     'toca!
+112             Ganador = ContarVotos(CantGanadores)
 
-            If CantGanadores > 1 Then
-                'empate en la votacion
-                Call SetGuildNews("*Empate en la votacion. " & Ganador & " con " & CantGanadores & " votos ganaron las elecciones del clan.")
-            ElseIf CantGanadores = 1 Then
-                list = Me.GetMemberList()
+114             If CantGanadores > 1 Then
+                    'empate en la votacion
+116                 Call SetGuildNews("*Empate en la votacion. " & Ganador & " con " & CantGanadores & " votos ganaron las elecciones del clan.")
+118             ElseIf CantGanadores = 1 Then
+120                 list = Me.GetMemberList()
                 
-                For i = 0 To UBound(list())
+122                 For i = 0 To UBound(list())
 
-                    If Ganador = list(i) Then Exit For
-                Next i
+124                     If Ganador = list(i) Then Exit For
+126                 Next i
                 
-                If i <= UBound(list()) Then
-                    Call SetGuildNews("*" & Ganador & " gano la eleccion del clan*")
-                    Call Me.SetLeader(Ganador)
-                    RevisarElecciones = True
+128                 If i <= UBound(list()) Then
+130                     Call SetGuildNews("*" & Ganador & " gano la eleccion del clan*")
+132                     Call Me.SetLeader(Ganador)
+134                     RevisarElecciones = True
+                    Else
+136                     Call SetGuildNews("*" & Ganador & " gano la eleccion del clan pero abandono las filas por lo que la votacion queda desierta*")
+
+                    End If
+
                 Else
-                    Call SetGuildNews("*" & Ganador & " gano la eleccion del clan pero abandono las filas por lo que la votacion queda desierta*")
+138                 Call SetGuildNews("*El periodo de votacion se cerro sin votos*")
 
                 End If
-
-            Else
-                Call SetGuildNews("*El periodo de votacion se cerro sin votos*")
-
+            
+140             Call CerrarElecciones
+            
             End If
-            
-            Call CerrarElecciones
-            
+
+        Else
+142         Call LogError("clsClan.RevisarElecciones: tempS is not Date")
+
         End If
 
-    Else
-        Call LogError("clsClan.RevisarElecciones: tempS is not Date")
+        
+        Exit Function
 
-    End If
-
+RevisarElecciones_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.RevisarElecciones", Erl)
+        Resume Next
+        
 End Function
 
 '/VOTACIONES
@@ -824,131 +1284,221 @@ End Function
 '
 
 Public Property Get CantidadPropuestas(ByVal Tipo As RELACIONES_GUILD) As Integer
-
-    Select Case Tipo
-
-        Case RELACIONES_GUILD.ALIADOS
-            CantidadPropuestas = p_PropuestasDeAlianza.Count
-
-        Case RELACIONES_GUILD.GUERRA
         
-        Case RELACIONES_GUILD.PAZ
-            CantidadPropuestas = p_PropuestasDePaz.Count
+        On Error GoTo CantidadPropuestas_Err
+        
 
-    End Select
+100     Select Case Tipo
 
+            Case RELACIONES_GUILD.ALIADOS
+102             CantidadPropuestas = p_PropuestasDeAlianza.Count
+
+104         Case RELACIONES_GUILD.GUERRA
+        
+106         Case RELACIONES_GUILD.PAZ
+108             CantidadPropuestas = p_PropuestasDePaz.Count
+
+        End Select
+
+        
+        Exit Property
+
+CantidadPropuestas_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.CantidadPropuestas", Erl)
+        Resume Next
+        
 End Property
 
 Public Property Get CantidadEnemys() As Integer
+        
+        On Error GoTo CantidadEnemys_Err
+        
 
-    Dim i As Integer
+        Dim i As Integer
 
-    For i = 1 To CANTIDADDECLANES
-        CantidadEnemys = CantidadEnemys + IIf(p_Relaciones(i) = GUERRA, 1, 0)
-    Next i
+100     For i = 1 To CANTIDADDECLANES
+102         CantidadEnemys = CantidadEnemys + IIf(p_Relaciones(i) = GUERRA, 1, 0)
+104     Next i
 
+        
+        Exit Property
+
+CantidadEnemys_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.CantidadEnemys", Erl)
+        Resume Next
+        
 End Property
 
 Public Property Get CantidadAllies() As Integer
+        
+        On Error GoTo CantidadAllies_Err
+        
 
-    Dim i As Integer
+        Dim i As Integer
 
-    For i = 1 To CANTIDADDECLANES
-        CantidadAllies = CantidadAllies + IIf(p_Relaciones(i) = ALIADOS, 1, 0)
-    Next i
+100     For i = 1 To CANTIDADDECLANES
+102         CantidadAllies = CantidadAllies + IIf(p_Relaciones(i) = ALIADOS, 1, 0)
+104     Next i
 
+        
+        Exit Property
+
+CantidadAllies_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.CantidadAllies", Erl)
+        Resume Next
+        
 End Property
 
 Public Function GetRelacion(ByVal OtroGuild As Integer) As RELACIONES_GUILD
-    GetRelacion = p_Relaciones(OtroGuild)
+        
+        On Error GoTo GetRelacion_Err
+        
+100     GetRelacion = p_Relaciones(OtroGuild)
 
+        
+        Exit Function
+
+GetRelacion_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.GetRelacion", Erl)
+        Resume Next
+        
 End Function
 
 Public Sub SetRelacion(ByVal GuildIndex As Integer, ByVal Relacion As RELACIONES_GUILD)
-    p_Relaciones(GuildIndex) = Relacion
-    Call WriteVar(RELACIONESFILE, "RELACIONES", GuildIndex, Relacion2String(Relacion))
+        
+        On Error GoTo SetRelacion_Err
+        
+100     p_Relaciones(GuildIndex) = Relacion
+102     Call WriteVar(RELACIONESFILE, "RELACIONES", GuildIndex, Relacion2String(Relacion))
 
+        
+        Exit Sub
+
+SetRelacion_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.SetRelacion", Erl)
+        Resume Next
+        
 End Sub
 
 Public Sub SetPropuesta(ByVal Tipo As RELACIONES_GUILD, ByVal OtroGuild As Integer, ByRef Detalle As String)
-    Call WriteVar(PROPUESTASFILE, CStr(OtroGuild), "Detalle", Detalle)
-    Call WriteVar(PROPUESTASFILE, CStr(OtroGuild), "Tipo", Relacion2String(Tipo))
-    Call WriteVar(PROPUESTASFILE, CStr(OtroGuild), "Pendiente", "1")
+        
+        On Error GoTo SetPropuesta_Err
+        
+100     Call WriteVar(PROPUESTASFILE, CStr(OtroGuild), "Detalle", Detalle)
+102     Call WriteVar(PROPUESTASFILE, CStr(OtroGuild), "Tipo", Relacion2String(Tipo))
+104     Call WriteVar(PROPUESTASFILE, CStr(OtroGuild), "Pendiente", "1")
 
-    Select Case Tipo
+106     Select Case Tipo
 
-        Case RELACIONES_GUILD.ALIADOS
-            p_PropuestasDeAlianza.Add OtroGuild
+            Case RELACIONES_GUILD.ALIADOS
+108             p_PropuestasDeAlianza.Add OtroGuild
 
-        Case RELACIONES_GUILD.PAZ
-            p_PropuestasDePaz.Add OtroGuild
+110         Case RELACIONES_GUILD.PAZ
+112             p_PropuestasDePaz.Add OtroGuild
 
-    End Select
+        End Select
 
+        
+        Exit Sub
+
+SetPropuesta_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.SetPropuesta", Erl)
+        Resume Next
+        
 End Sub
 
 Public Sub AnularPropuestas(ByVal OtroGuild As Integer)
+        
+        On Error GoTo AnularPropuestas_Err
+        
 
-    Dim i As Integer
+        Dim i As Integer
 
-    Call WriteVar(PROPUESTASFILE, CStr(OtroGuild), "Detalle", vbNullString)
-    Call WriteVar(PROPUESTASFILE, CStr(OtroGuild), "Pendiente", "0")
+100     Call WriteVar(PROPUESTASFILE, CStr(OtroGuild), "Detalle", vbNullString)
+102     Call WriteVar(PROPUESTASFILE, CStr(OtroGuild), "Pendiente", "0")
 
-    For i = 1 To p_PropuestasDePaz.Count
+104     For i = 1 To p_PropuestasDePaz.Count
 
-        If p_PropuestasDePaz.Item(i) = OtroGuild Then p_PropuestasDePaz.Remove (i)
-        Exit Sub
-    Next i
+106         If p_PropuestasDePaz.Item(i) = OtroGuild Then p_PropuestasDePaz.Remove (i)
+            Exit Sub
+108     Next i
 
-    For i = 1 To p_PropuestasDeAlianza.Count
+110     For i = 1 To p_PropuestasDeAlianza.Count
 
-        If p_PropuestasDeAlianza.Item(i) = OtroGuild Then p_PropuestasDeAlianza.Remove (i)
-        Exit Sub
-    Next i
+112         If p_PropuestasDeAlianza.Item(i) = OtroGuild Then p_PropuestasDeAlianza.Remove (i)
+            Exit Sub
+114     Next i
     
+        
+        Exit Sub
+
+AnularPropuestas_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.AnularPropuestas", Erl)
+        Resume Next
+        
 End Sub
 
 Public Function GetPropuesta(ByVal OtroGuild As Integer, ByRef Tipo As RELACIONES_GUILD) As String
-    'trae la solicitd que haya, no valida si es actual o de que tipo es
-    GetPropuesta = GetVar(PROPUESTASFILE, CStr(OtroGuild), "Detalle")
-    Tipo = String2Relacion(GetVar(PROPUESTASFILE, CStr(OtroGuild), "Tipo"))
+        'trae la solicitd que haya, no valida si es actual o de que tipo es
+        
+        On Error GoTo GetPropuesta_Err
+        
+100     GetPropuesta = GetVar(PROPUESTASFILE, CStr(OtroGuild), "Detalle")
+102     Tipo = String2Relacion(GetVar(PROPUESTASFILE, CStr(OtroGuild), "Tipo"))
 
+        
+        Exit Function
+
+GetPropuesta_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.GetPropuesta", Erl)
+        Resume Next
+        
 End Function
 
 Public Function HayPropuesta(ByVal OtroGuild As Integer, ByRef Tipo As RELACIONES_GUILD) As Boolean
+        
+        On Error GoTo HayPropuesta_Err
+        
 
-    Dim i As Integer
+        Dim i As Integer
 
-    HayPropuesta = False
+100     HayPropuesta = False
 
-    Select Case Tipo
+102     Select Case Tipo
 
-        Case RELACIONES_GUILD.ALIADOS
+            Case RELACIONES_GUILD.ALIADOS
 
-            For i = 1 To p_PropuestasDeAlianza.Count
+104             For i = 1 To p_PropuestasDeAlianza.Count
 
-                If p_PropuestasDeAlianza.Item(i) = OtroGuild Then
-                    HayPropuesta = True
+106                 If p_PropuestasDeAlianza.Item(i) = OtroGuild Then
+108                     HayPropuesta = True
 
-                End If
+                    End If
 
-            Next i
+110             Next i
 
-        Case RELACIONES_GUILD.PAZ
+112         Case RELACIONES_GUILD.PAZ
 
-            For i = 1 To p_PropuestasDePaz.Count
+114             For i = 1 To p_PropuestasDePaz.Count
 
-                If p_PropuestasDePaz.Item(i) = OtroGuild Then
-                    HayPropuesta = True
+116                 If p_PropuestasDePaz.Item(i) = OtroGuild Then
+118                     HayPropuesta = True
 
-                End If
+                    End If
 
-            Next i
+120             Next i
 
-        Case RELACIONES_GUILD.GUERRA
+122         Case RELACIONES_GUILD.GUERRA
 
-    End Select
+        End Select
 
+        
+        Exit Function
+
+HayPropuesta_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.HayPropuesta", Erl)
+        Resume Next
+        
 End Function
 
 'Public Function GetEnemy(ByVal EnemyIndex As Integer) As String
@@ -964,86 +1514,126 @@ End Function
 '
 
 Public Function Iterador_ProximaPropuesta(ByVal Tipo As RELACIONES_GUILD) As Integer
+        
+        On Error GoTo Iterador_ProximaPropuesta_Err
+        
     
-    Iterador_ProximaPropuesta = 0
+100     Iterador_ProximaPropuesta = 0
 
-    Select Case Tipo
+102     Select Case Tipo
 
-        Case RELACIONES_GUILD.ALIADOS
+            Case RELACIONES_GUILD.ALIADOS
 
-            If p_IteradorPropuesta < p_PropuestasDeAlianza.Count Then
-                p_IteradorPropuesta = p_IteradorPropuesta + 1
-                Iterador_ProximaPropuesta = p_PropuestasDeAlianza.Item(p_IteradorPropuesta)
+104             If p_IteradorPropuesta < p_PropuestasDeAlianza.Count Then
+106                 p_IteradorPropuesta = p_IteradorPropuesta + 1
+108                 Iterador_ProximaPropuesta = p_PropuestasDeAlianza.Item(p_IteradorPropuesta)
 
-            End If
+                End If
             
-            If p_IteradorPropuesta >= p_PropuestasDeAlianza.Count Then
-                p_IteradorPropuesta = 0
+110             If p_IteradorPropuesta >= p_PropuestasDeAlianza.Count Then
+112                 p_IteradorPropuesta = 0
 
-            End If
+                End If
 
-        Case RELACIONES_GUILD.PAZ
+114         Case RELACIONES_GUILD.PAZ
 
-            If p_IteradorPropuesta < p_PropuestasDePaz.Count Then
-                p_IteradorPropuesta = p_IteradorPropuesta + 1
-                Iterador_ProximaPropuesta = p_PropuestasDePaz.Item(p_IteradorPropuesta)
+116             If p_IteradorPropuesta < p_PropuestasDePaz.Count Then
+118                 p_IteradorPropuesta = p_IteradorPropuesta + 1
+120                 Iterador_ProximaPropuesta = p_PropuestasDePaz.Item(p_IteradorPropuesta)
 
-            End If
+                End If
             
-            If p_IteradorPropuesta >= p_PropuestasDePaz.Count Then
-                p_IteradorPropuesta = 0
+122             If p_IteradorPropuesta >= p_PropuestasDePaz.Count Then
+124                 p_IteradorPropuesta = 0
 
-            End If
+                End If
 
-    End Select
+        End Select
     
+        
+        Exit Function
+
+Iterador_ProximaPropuesta_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.Iterador_ProximaPropuesta", Erl)
+        Resume Next
+        
 End Function
 
 Public Function m_Iterador_ProximoUserIndex() As Integer
-    
-    If p_IteradorOnlineMembers < p_OnlineMembers.Count Then
-        p_IteradorOnlineMembers = p_IteradorOnlineMembers + 1
-        m_Iterador_ProximoUserIndex = p_OnlineMembers.Item(p_IteradorOnlineMembers)
-    Else
-        p_IteradorOnlineMembers = 0
-        m_Iterador_ProximoUserIndex = 0
-
-    End If
-
-End Function
-
-Public Function Iterador_ProximoGM() As Integer
-    
-    If p_IteradorOnlineGMs < p_GMsOnline.Count Then
-        p_IteradorOnlineGMs = p_IteradorOnlineGMs + 1
-        Iterador_ProximoGM = p_GMsOnline.Item(p_IteradorOnlineGMs)
-    Else
-        p_IteradorOnlineGMs = 0
-        Iterador_ProximoGM = 0
-
-    End If
-
-End Function
-
-Public Function Iterador_ProximaRelacion(ByVal R As RELACIONES_GUILD) As Integer
-    
-    While p_IteradorRelaciones < UBound(p_Relaciones)
         
-        p_IteradorRelaciones = p_IteradorRelaciones + 1
-
-        If p_Relaciones(p_IteradorRelaciones) = R Then
-            Iterador_ProximaRelacion = p_IteradorRelaciones
-            Exit Function
+        On Error GoTo m_Iterador_ProximoUserIndex_Err
+        
+    
+100     If p_IteradorOnlineMembers < p_OnlineMembers.Count Then
+102         p_IteradorOnlineMembers = p_IteradorOnlineMembers + 1
+104         m_Iterador_ProximoUserIndex = p_OnlineMembers.Item(p_IteradorOnlineMembers)
+        Else
+106         p_IteradorOnlineMembers = 0
+108         m_Iterador_ProximoUserIndex = 0
 
         End If
 
-    Wend
+        
+        Exit Function
 
-    If p_IteradorRelaciones >= UBound(p_Relaciones) Then
-        p_IteradorRelaciones = 0
+m_Iterador_ProximoUserIndex_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.m_Iterador_ProximoUserIndex", Erl)
+        Resume Next
+        
+End Function
 
-    End If
+Public Function Iterador_ProximoGM() As Integer
+        
+        On Error GoTo Iterador_ProximoGM_Err
+        
+    
+100     If p_IteradorOnlineGMs < p_GMsOnline.Count Then
+102         p_IteradorOnlineGMs = p_IteradorOnlineGMs + 1
+104         Iterador_ProximoGM = p_GMsOnline.Item(p_IteradorOnlineGMs)
+        Else
+106         p_IteradorOnlineGMs = 0
+108         Iterador_ProximoGM = 0
 
+        End If
+
+        
+        Exit Function
+
+Iterador_ProximoGM_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.Iterador_ProximoGM", Erl)
+        Resume Next
+        
+End Function
+
+Public Function Iterador_ProximaRelacion(ByVal R As RELACIONES_GUILD) As Integer
+        
+        On Error GoTo Iterador_ProximaRelacion_Err
+        
+    
+100     While p_IteradorRelaciones < UBound(p_Relaciones)
+        
+102         p_IteradorRelaciones = p_IteradorRelaciones + 1
+
+104         If p_Relaciones(p_IteradorRelaciones) = R Then
+106             Iterador_ProximaRelacion = p_IteradorRelaciones
+                Exit Function
+
+            End If
+
+        Wend
+
+108     If p_IteradorRelaciones >= UBound(p_Relaciones) Then
+110         p_IteradorRelaciones = 0
+
+        End If
+
+        
+        Exit Function
+
+Iterador_ProximaRelacion_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.Iterador_ProximaRelacion", Erl)
+        Resume Next
+        
 End Function
 
 '
@@ -1055,23 +1645,43 @@ End Function
 '
 
 Public Sub ConectarGM(ByVal UserIndex As Integer)
-    p_GMsOnline.Add UserIndex
+        
+        On Error GoTo ConectarGM_Err
+        
+100     p_GMsOnline.Add UserIndex
 
+        
+        Exit Sub
+
+ConectarGM_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.ConectarGM", Erl)
+        Resume Next
+        
 End Sub
 
 Public Sub DesconectarGM(ByVal UserIndex As Integer)
+        
+        On Error GoTo DesconectarGM_Err
+        
 
-    Dim i As Integer
+        Dim i As Integer
 
-    For i = 1 To p_GMsOnline.Count
+100     For i = 1 To p_GMsOnline.Count
 
-        If p_GMsOnline.Item(i) = UserIndex Then
-            p_GMsOnline.Remove (i)
+102         If p_GMsOnline.Item(i) = UserIndex Then
+104             p_GMsOnline.Remove (i)
 
-        End If
+            End If
 
-    Next i
+106     Next i
 
+        
+        Exit Sub
+
+DesconectarGM_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.DesconectarGM", Erl)
+        Resume Next
+        
 End Sub
 
 '
@@ -1079,21 +1689,31 @@ End Sub
 '
 
 Private Sub ReplaceInvalidChars(ByRef S As String)
+        
+        On Error GoTo ReplaceInvalidChars_Err
+        
 
-    If InStrB(S, Chr$(13)) <> 0 Then
-        S = Replace(S, Chr$(13), vbNullString)
+100     If InStrB(S, Chr$(13)) <> 0 Then
+102         S = Replace(S, Chr$(13), vbNullString)
 
-    End If
+        End If
 
-    If InStrB(S, Chr$(10)) <> 0 Then
-        S = Replace(S, Chr$(10), vbNullString)
+104     If InStrB(S, Chr$(10)) <> 0 Then
+106         S = Replace(S, Chr$(10), vbNullString)
 
-    End If
+        End If
 
-    If InStrB(S, "¬") <> 0 Then
-        S = Replace(S, "¬", vbNullString)   'morgo usaba esto como "separador"
+108     If InStrB(S, "¬") <> 0 Then
+110         S = Replace(S, "¬", vbNullString)   'morgo usaba esto como "separador"
 
-    End If
+        End If
 
+        
+        Exit Sub
+
+ReplaceInvalidChars_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsClan.ReplaceInvalidChars", Erl)
+        Resume Next
+        
 End Sub
 

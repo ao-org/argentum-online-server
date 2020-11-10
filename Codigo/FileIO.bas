@@ -195,264 +195,374 @@ Private MapSize As tMapSize
 Private MapDat  As tMapDat
 
 Public Sub CargarSpawnList()
+        
+        On Error GoTo CargarSpawnList_Err
+        
 
-    Dim n As Integer, LoopC As Integer
+        Dim n As Integer, LoopC As Integer
 
-    n = val(GetVar(DatPath & "npcs.dat", "INIT", "NumNPCs"))
-    ReDim SpawnList(n) As tCriaturasEntrenador
+100     n = val(GetVar(DatPath & "npcs.dat", "INIT", "NumNPCs"))
+102     ReDim SpawnList(n) As tCriaturasEntrenador
 
-    For LoopC = 1 To n
-        SpawnList(LoopC).NpcIndex = LoopC
-        SpawnList(LoopC).NpcName = GetVar(DatPath & "npcs.dat", "NPC" & LoopC, "Name")
+104     For LoopC = 1 To n
+106         SpawnList(LoopC).NpcIndex = LoopC
+108         SpawnList(LoopC).NpcName = GetVar(DatPath & "npcs.dat", "NPC" & LoopC, "Name")
 
-        If SpawnList(LoopC).NpcName = "" Then SpawnList(LoopC).NpcName = "Nada"
-    Next LoopC
+110         If SpawnList(LoopC).NpcName = "" Then SpawnList(LoopC).NpcName = "Nada"
+112     Next LoopC
 
+        
+        Exit Sub
+
+CargarSpawnList_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.CargarSpawnList", Erl)
+        Resume Next
+        
 End Sub
 
 Function EsAdmin(ByRef name As String) As Boolean
-    '***************************************************
-    'Author: Unknown
-    'Last Modification: 27/03/2011
-    '27/03/2011 - ZaMa: Utilizo la clase para saber los datos.
-    '***************************************************
-    EsAdmin = (val(Administradores.GetValue("Admin", name)) = 1)
+        '***************************************************
+        'Author: Unknown
+        'Last Modification: 27/03/2011
+        '27/03/2011 - ZaMa: Utilizo la clase para saber los datos.
+        '***************************************************
+        
+        On Error GoTo EsAdmin_Err
+        
+100     EsAdmin = (val(Administradores.GetValue("Admin", name)) = 1)
 
+        
+        Exit Function
+
+EsAdmin_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.EsAdmin", Erl)
+        Resume Next
+        
 End Function
 
 Function EsDios(ByRef name As String) As Boolean
-    '***************************************************
-    'Author: Unknown
-    'Last Modification: 27/03/2011
-    '27/03/2011 - ZaMa: Utilizo la clase para saber los datos.
-    '***************************************************
-    EsDios = (val(Administradores.GetValue("Dios", name)) = 1)
+        '***************************************************
+        'Author: Unknown
+        'Last Modification: 27/03/2011
+        '27/03/2011 - ZaMa: Utilizo la clase para saber los datos.
+        '***************************************************
+        
+        On Error GoTo EsDios_Err
+        
+100     EsDios = (val(Administradores.GetValue("Dios", name)) = 1)
 
+        
+        Exit Function
+
+EsDios_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.EsDios", Erl)
+        Resume Next
+        
 End Function
 
 Function EsSemiDios(ByRef name As String) As Boolean
-    '***************************************************
-    'Author: Unknown
-    'Last Modification: 27/03/2011
-    '27/03/2011 - ZaMa: Utilizo la clase para saber los datos.
-    '***************************************************
-    EsSemiDios = (val(Administradores.GetValue("SemiDios", name)) = 1)
+        '***************************************************
+        'Author: Unknown
+        'Last Modification: 27/03/2011
+        '27/03/2011 - ZaMa: Utilizo la clase para saber los datos.
+        '***************************************************
+        
+        On Error GoTo EsSemiDios_Err
+        
+100     EsSemiDios = (val(Administradores.GetValue("SemiDios", name)) = 1)
 
+        
+        Exit Function
+
+EsSemiDios_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.EsSemiDios", Erl)
+        Resume Next
+        
 End Function
 
 Function EsConsejero(ByRef name As String) As Boolean
-    '***************************************************
-    'Author: Unknown
-    'Last Modification: 27/03/2011
-    '27/03/2011 - ZaMa: Utilizo la clase para saber los datos.
-    '***************************************************
-    EsConsejero = (val(Administradores.GetValue("Consejero", name)) = 1)
+        '***************************************************
+        'Author: Unknown
+        'Last Modification: 27/03/2011
+        '27/03/2011 - ZaMa: Utilizo la clase para saber los datos.
+        '***************************************************
+        
+        On Error GoTo EsConsejero_Err
+        
+100     EsConsejero = (val(Administradores.GetValue("Consejero", name)) = 1)
 
+        
+        Exit Function
+
+EsConsejero_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.EsConsejero", Erl)
+        Resume Next
+        
 End Function
 
 Function EsRolesMaster(ByRef name As String) As Boolean
-    '***************************************************
-    'Author: Unknown
-    'Last Modification: 27/03/2011
-    '27/03/2011 - ZaMa: Utilizo la clase para saber los datos.
-    '***************************************************
-    EsRolesMaster = (val(Administradores.GetValue("RM", name)) = 1)
+        '***************************************************
+        'Author: Unknown
+        'Last Modification: 27/03/2011
+        '27/03/2011 - ZaMa: Utilizo la clase para saber los datos.
+        '***************************************************
+        
+        On Error GoTo EsRolesMaster_Err
+        
+100     EsRolesMaster = (val(Administradores.GetValue("RM", name)) = 1)
 
+        
+        Exit Function
+
+EsRolesMaster_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.EsRolesMaster", Erl)
+        Resume Next
+        
 End Function
 
 Public Function EsGmChar(ByRef name As String) As Boolean
-    '***************************************************
-    'Author: ZaMa
-    'Last Modification: 27/03/2011
-    'Returns true if char is administrative user.
-    '***************************************************
+        '***************************************************
+        'Author: ZaMa
+        'Last Modification: 27/03/2011
+        'Returns true if char is administrative user.
+        '***************************************************
+        
+        On Error GoTo EsGmChar_Err
+        
     
-    Dim EsGM As Boolean
+        Dim EsGM As Boolean
     
-    ' Admin?
-    EsGM = EsAdmin(name)
+        ' Admin?
+100     EsGM = EsAdmin(name)
 
-    ' Dios?
-    If Not EsGM Then EsGM = EsDios(name)
+        ' Dios?
+102     If Not EsGM Then EsGM = EsDios(name)
 
-    ' Semidios?
-    If Not EsGM Then EsGM = EsSemiDios(name)
+        ' Semidios?
+104     If Not EsGM Then EsGM = EsSemiDios(name)
 
-    ' Consejero?
-    If Not EsGM Then EsGM = EsConsejero(name)
+        ' Consejero?
+106     If Not EsGM Then EsGM = EsConsejero(name)
 
-    EsGmChar = EsGM
+108     EsGmChar = EsGM
 
+        
+        Exit Function
+
+EsGmChar_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.EsGmChar", Erl)
+        Resume Next
+        
 End Function
 
 Public Sub loadAdministrativeUsers()
-    'Admines     => Admin
-    'Dioses      => Dios
-    'SemiDioses  => SemiDios
-    'Especiales  => Especial
-    'Consejeros  => Consejero
-    'RoleMasters => RM
-    ' If frmMain.Visible Then frmMain.txtStatus.Text = "Cargando Administradores/Dioses/Gms."
+        'Admines     => Admin
+        'Dioses      => Dios
+        'SemiDioses  => SemiDios
+        'Especiales  => Especial
+        'Consejeros  => Consejero
+        'RoleMasters => RM
+        ' If frmMain.Visible Then frmMain.txtStatus.Text = "Cargando Administradores/Dioses/Gms."
+        
+        On Error GoTo loadAdministrativeUsers_Err
+        
 
-    'Si esta mierda tuviese array asociativos el codigo seria tan lindo.
-    Dim buf  As Integer
+        'Si esta mierda tuviese array asociativos el codigo seria tan lindo.
+        Dim buf  As Integer
 
-    Dim i    As Long
+        Dim i    As Long
 
-    Dim name As String
+        Dim name As String
        
-    ' Public container
-    Set Administradores = New clsIniReader
+        ' Public container
+100     Set Administradores = New clsIniReader
     
-    ' Server ini info file
-    Dim ServerIni As clsIniReader
+        ' Server ini info file
+        Dim ServerIni As clsIniReader
 
-    Set ServerIni = New clsIniReader
+102     Set ServerIni = New clsIniReader
     
-    Call ServerIni.Initialize(IniPath & "Server.ini")
+104     Call ServerIni.Initialize(IniPath & "Server.ini")
        
-    ' Admines
-    buf = val(ServerIni.GetValue("INIT", "Admines"))
+        ' Admines
+106     buf = val(ServerIni.GetValue("INIT", "Admines"))
     
-    For i = 1 To buf
-        name = UCase$(ServerIni.GetValue("Admines", "Admin" & i))
+108     For i = 1 To buf
+110         name = UCase$(ServerIni.GetValue("Admines", "Admin" & i))
         
-        If Left$(name, 1) = "*" Or Left$(name, 1) = "+" Then name = Right$(name, Len(name) - 1)
+112         If Left$(name, 1) = "*" Or Left$(name, 1) = "+" Then name = Right$(name, Len(name) - 1)
         
-        ' Add key
-        Call Administradores.ChangeValue("Admin", name, "1")
+            ' Add key
+114         Call Administradores.ChangeValue("Admin", name, "1")
 
-    Next i
+116     Next i
     
-    ' Dioses
-    buf = val(ServerIni.GetValue("INIT", "Dioses"))
+        ' Dioses
+118     buf = val(ServerIni.GetValue("INIT", "Dioses"))
     
-    For i = 1 To buf
-        name = UCase$(ServerIni.GetValue("Dioses", "Dios" & i))
+120     For i = 1 To buf
+122         name = UCase$(ServerIni.GetValue("Dioses", "Dios" & i))
         
-        If Left$(name, 1) = "*" Or Left$(name, 1) = "+" Then name = Right$(name, Len(name) - 1)
+124         If Left$(name, 1) = "*" Or Left$(name, 1) = "+" Then name = Right$(name, Len(name) - 1)
         
-        ' Add key
-        Call Administradores.ChangeValue("Dios", name, "1")
+            ' Add key
+126         Call Administradores.ChangeValue("Dios", name, "1")
         
-    Next i
+128     Next i
         
-    ' SemiDioses
-    buf = val(ServerIni.GetValue("INIT", "SemiDioses"))
+        ' SemiDioses
+130     buf = val(ServerIni.GetValue("INIT", "SemiDioses"))
     
-    For i = 1 To buf
-        name = UCase$(ServerIni.GetValue("SemiDioses", "SemiDios" & i))
+132     For i = 1 To buf
+134         name = UCase$(ServerIni.GetValue("SemiDioses", "SemiDios" & i))
         
-        If Left$(name, 1) = "*" Or Left$(name, 1) = "+" Then name = Right$(name, Len(name) - 1)
+136         If Left$(name, 1) = "*" Or Left$(name, 1) = "+" Then name = Right$(name, Len(name) - 1)
         
-        ' Add key
-        Call Administradores.ChangeValue("SemiDios", name, "1")
+            ' Add key
+138         Call Administradores.ChangeValue("SemiDios", name, "1")
         
-    Next i
+140     Next i
     
-    ' Consejeros
-    buf = val(ServerIni.GetValue("INIT", "Consejeros"))
+        ' Consejeros
+142     buf = val(ServerIni.GetValue("INIT", "Consejeros"))
         
-    For i = 1 To buf
-        name = UCase$(ServerIni.GetValue("Consejeros", "Consejero" & i))
+144     For i = 1 To buf
+146         name = UCase$(ServerIni.GetValue("Consejeros", "Consejero" & i))
         
-        If Left$(name, 1) = "*" Or Left$(name, 1) = "+" Then name = Right$(name, Len(name) - 1)
+148         If Left$(name, 1) = "*" Or Left$(name, 1) = "+" Then name = Right$(name, Len(name) - 1)
         
-        ' Add key
-        Call Administradores.ChangeValue("Consejero", name, "1")
+            ' Add key
+150         Call Administradores.ChangeValue("Consejero", name, "1")
         
-    Next i
+152     Next i
     
-    ' RolesMasters
-    buf = val(ServerIni.GetValue("INIT", "RolesMasters"))
+        ' RolesMasters
+154     buf = val(ServerIni.GetValue("INIT", "RolesMasters"))
         
-    For i = 1 To buf
-        name = UCase$(ServerIni.GetValue("RolesMasters", "RM" & i))
+156     For i = 1 To buf
+158         name = UCase$(ServerIni.GetValue("RolesMasters", "RM" & i))
         
-        If Left$(name, 1) = "*" Or Left$(name, 1) = "+" Then name = Right$(name, Len(name) - 1)
+160         If Left$(name, 1) = "*" Or Left$(name, 1) = "+" Then name = Right$(name, Len(name) - 1)
         
-        ' Add key
-        Call Administradores.ChangeValue("RM", name, "1")
-    Next i
+            ' Add key
+162         Call Administradores.ChangeValue("RM", name, "1")
+164     Next i
     
-    Set ServerIni = Nothing
+166     Set ServerIni = Nothing
 
-    'If frmMain.Visible Then frmMain.txtStatus.Text = Date & " " & Time & " - Los Administradores/Dioses/Gms se han cargado correctamente."
+        'If frmMain.Visible Then frmMain.txtStatus.Text = Date & " " & Time & " - Los Administradores/Dioses/Gms se han cargado correctamente."
 
+        
+        Exit Sub
+
+loadAdministrativeUsers_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.loadAdministrativeUsers", Erl)
+        Resume Next
+        
 End Sub
 
 Public Function GetCharPrivs(ByRef UserName As String) As PlayerType
-    '****************************************************
-    'Author: ZaMa
-    'Last Modification: 18/11/2010
-    'Reads the user's charfile and retrieves its privs.
-    '***************************************************
-
-    Dim privs As PlayerType
-
-    If EsAdmin(UserName) Then
-        privs = PlayerType.Admin
+        '****************************************************
+        'Author: ZaMa
+        'Last Modification: 18/11/2010
+        'Reads the user's charfile and retrieves its privs.
+        '***************************************************
         
-    ElseIf EsDios(UserName) Then
-        privs = PlayerType.Dios
-
-    ElseIf EsSemiDios(UserName) Then
-        privs = PlayerType.SemiDios
+        On Error GoTo GetCharPrivs_Err
         
-    ElseIf EsConsejero(UserName) Then
-        privs = PlayerType.Consejero
+
+        Dim privs As PlayerType
+
+100     If EsAdmin(UserName) Then
+102         privs = PlayerType.Admin
+        
+104     ElseIf EsDios(UserName) Then
+106         privs = PlayerType.Dios
+
+108     ElseIf EsSemiDios(UserName) Then
+110         privs = PlayerType.SemiDios
+        
+112     ElseIf EsConsejero(UserName) Then
+114         privs = PlayerType.Consejero
     
-    Else
-        privs = PlayerType.user
+        Else
+116         privs = PlayerType.user
 
-    End If
+        End If
 
-    GetCharPrivs = privs
+118     GetCharPrivs = privs
 
+        
+        Exit Function
+
+GetCharPrivs_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.GetCharPrivs", Erl)
+        Resume Next
+        
 End Function
 
 Public Function TxtDimension(ByVal name As String) As Long
+        
+        On Error GoTo TxtDimension_Err
+        
 
-    Dim n As Integer, cad As String, Tam As Long
+        Dim n As Integer, cad As String, Tam As Long
 
-    n = FreeFile(1)
-    Open name For Input As #n
-    Tam = 0
+100     n = FreeFile(1)
+102     Open name For Input As #n
+104     Tam = 0
 
-    Do While Not EOF(n)
-        Tam = Tam + 1
-        Line Input #n, cad
-    Loop
-    Close n
-    TxtDimension = Tam
+106     Do While Not EOF(n)
+108         Tam = Tam + 1
+110         Line Input #n, cad
+        Loop
+112     Close n
+114     TxtDimension = Tam
 
+        
+        Exit Function
+
+TxtDimension_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.TxtDimension", Erl)
+        Resume Next
+        
 End Function
 
 Public Sub CargarForbidenWords()
+        
+        On Error GoTo CargarForbidenWords_Err
+        
 
-    Dim Size As Integer
+        Dim Size As Integer
 
-    Size = TxtDimension(DatPath & "NombresInvalidos.txt")
+100     Size = TxtDimension(DatPath & "NombresInvalidos.txt")
     
-    If Size = 0 Then
-        ReDim ForbidenNames(0)
+102     If Size = 0 Then
+104         ReDim ForbidenNames(0)
+            Exit Sub
+
+        End If
+    
+106     ReDim ForbidenNames(1 To Size)
+
+        Dim n As Integer, i As Integer
+
+108     n = FreeFile(1)
+110     Open DatPath & "NombresInvalidos.txt" For Input As #n
+    
+112     For i = 1 To UBound(ForbidenNames)
+114         Line Input #n, ForbidenNames(i)
+116     Next i
+    
+118     Close n
+
+        
         Exit Sub
 
-    End If
-    
-    ReDim ForbidenNames(1 To Size)
-
-    Dim n As Integer, i As Integer
-
-    n = FreeFile(1)
-    Open DatPath & "NombresInvalidos.txt" For Input As #n
-    
-    For i = 1 To UBound(ForbidenNames)
-        Line Input #n, ForbidenNames(i)
-    Next i
-    
-    Close n
-
+CargarForbidenWords_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.CargarForbidenWords", Erl)
+        Resume Next
+        
 End Sub
 
 Public Sub CargarHechizos()
@@ -630,18 +740,28 @@ Errhandler:
 End Sub
 
 Sub LoadMotd()
+        
+        On Error GoTo LoadMotd_Err
+        
 
-    Dim i As Integer
+        Dim i As Integer
 
-    MaxLines = val(GetVar(DatPath & "Motd.ini", "INIT", "NumLines"))
+100     MaxLines = val(GetVar(DatPath & "Motd.ini", "INIT", "NumLines"))
 
-    ReDim MOTD(1 To MaxLines)
+102     ReDim MOTD(1 To MaxLines)
 
-    For i = 1 To MaxLines
-        MOTD(i).texto = GetVar(DatPath & "Motd.ini", "Motd", "Line" & i)
-        MOTD(i).Formato = vbNullString
-    Next i
+104     For i = 1 To MaxLines
+106         MOTD(i).texto = GetVar(DatPath & "Motd.ini", "Motd", "Line" & i)
+108         MOTD(i).Formato = vbNullString
+110     Next i
 
+        
+        Exit Sub
+
+LoadMotd_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.LoadMotd", Erl)
+        Resume Next
+        
 End Sub
 
 Public Sub DoBackUp()
@@ -877,185 +997,255 @@ ErrorHandler:
 End Sub
 
 Sub LoadArmasHerreria()
+        
+        On Error GoTo LoadArmasHerreria_Err
+        
 
-    Dim n As Integer, lc As Integer
+        Dim n As Integer, lc As Integer
     
-    n = val(GetVar(DatPath & "ArmasHerrero.dat", "INIT", "NumArmas"))
+100     n = val(GetVar(DatPath & "ArmasHerrero.dat", "INIT", "NumArmas"))
     
-    If n = 0 Then
-        ReDim ArmasHerrero(0) As Integer
+102     If n = 0 Then
+104         ReDim ArmasHerrero(0) As Integer
+            Exit Sub
+
+        End If
+    
+106     ReDim Preserve ArmasHerrero(1 To n) As Integer
+    
+108     For lc = 1 To n
+110         ArmasHerrero(lc) = val(GetVar(DatPath & "ArmasHerrero.dat", "Arma" & lc, "Index"))
+112     Next lc
+
+        
         Exit Sub
 
-    End If
-    
-    ReDim Preserve ArmasHerrero(1 To n) As Integer
-    
-    For lc = 1 To n
-        ArmasHerrero(lc) = val(GetVar(DatPath & "ArmasHerrero.dat", "Arma" & lc, "Index"))
-    Next lc
-
+LoadArmasHerreria_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.LoadArmasHerreria", Erl)
+        Resume Next
+        
 End Sub
 
 Sub LoadArmadurasHerreria()
+        
+        On Error GoTo LoadArmadurasHerreria_Err
+        
 
-    Dim n As Integer, lc As Integer
+        Dim n As Integer, lc As Integer
     
-    n = val(GetVar(DatPath & "ArmadurasHerrero.dat", "INIT", "NumArmaduras"))
+100     n = val(GetVar(DatPath & "ArmadurasHerrero.dat", "INIT", "NumArmaduras"))
     
-    If n = 0 Then
-        ReDim ArmadurasHerrero(0) As Integer
+102     If n = 0 Then
+104         ReDim ArmadurasHerrero(0) As Integer
+            Exit Sub
+
+        End If
+    
+106     ReDim Preserve ArmadurasHerrero(1 To n) As Integer
+    
+108     For lc = 1 To n
+110         ArmadurasHerrero(lc) = val(GetVar(DatPath & "ArmadurasHerrero.dat", "Armadura" & lc, "Index"))
+112     Next lc
+
+        
         Exit Sub
 
-    End If
-    
-    ReDim Preserve ArmadurasHerrero(1 To n) As Integer
-    
-    For lc = 1 To n
-        ArmadurasHerrero(lc) = val(GetVar(DatPath & "ArmadurasHerrero.dat", "Armadura" & lc, "Index"))
-    Next lc
-
+LoadArmadurasHerreria_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.LoadArmadurasHerreria", Erl)
+        Resume Next
+        
 End Sub
 
 Sub LoadBalance()
+        
+        On Error GoTo LoadBalance_Err
+        
 
-    Dim BalanceIni As clsIniReader
+        Dim BalanceIni As clsIniReader
 
-    Set BalanceIni = New clsIniReader
+100     Set BalanceIni = New clsIniReader
     
-    BalanceIni.Initialize DatPath & "Balance.dat"
+102     BalanceIni.Initialize DatPath & "Balance.dat"
     
-    Dim i         As Long
+        Dim i         As Long
 
-    Dim SearchVar As String
+        Dim SearchVar As String
 
-    'Modificadores de Clase
-    For i = 1 To NUMCLASES
+        'Modificadores de Clase
+104     For i = 1 To NUMCLASES
 
-        With ModClase(i)
-            .Evasion = val(BalanceIni.GetValue("MODEVASION", ListaClases(i)))
-            .AtaqueArmas = val(BalanceIni.GetValue("MODATAQUEARMAS", ListaClases(i)))
-            .AtaqueProyectiles = val(BalanceIni.GetValue("MODATAQUEPROYECTILES", ListaClases(i)))
-            '.DañoWrestling = val(BalanceIni.GetValue("MODATAQUEWRESTLING", ListaClases(i)))
-            .DañoArmas = val(BalanceIni.GetValue("MODDANOARMAS", ListaClases(i)))
-            .DañoProyectiles = val(BalanceIni.GetValue("MODDANOPROYECTILES", ListaClases(i)))
-            .DañoWrestling = val(BalanceIni.GetValue("MODDANOWRESTLING", ListaClases(i)))
-            .Escudo = val(BalanceIni.GetValue("MODESCUDO", ListaClases(i)))
+106         With ModClase(i)
+108             .Evasion = val(BalanceIni.GetValue("MODEVASION", ListaClases(i)))
+110             .AtaqueArmas = val(BalanceIni.GetValue("MODATAQUEARMAS", ListaClases(i)))
+112             .AtaqueProyectiles = val(BalanceIni.GetValue("MODATAQUEPROYECTILES", ListaClases(i)))
+                '.DañoWrestling = val(BalanceIni.GetValue("MODATAQUEWRESTLING", ListaClases(i)))
+114             .DañoArmas = val(BalanceIni.GetValue("MODDANOARMAS", ListaClases(i)))
+116             .DañoProyectiles = val(BalanceIni.GetValue("MODDANOPROYECTILES", ListaClases(i)))
+118             .DañoWrestling = val(BalanceIni.GetValue("MODDANOWRESTLING", ListaClases(i)))
+120             .Escudo = val(BalanceIni.GetValue("MODESCUDO", ListaClases(i)))
 
-        End With
+            End With
 
-    Next i
+122     Next i
     
-    'Modificadores de Raza
-    For i = 1 To NUMRAZAS
+        'Modificadores de Raza
+124     For i = 1 To NUMRAZAS
 
-        With ModRaza(i)
-            .Fuerza = val(GetVar(DatPath & "Balance.dat", "MODRAZA", ListaRazas(i) + "Fuerza"))
-            .Agilidad = val(GetVar(DatPath & "Balance.dat", "MODRAZA", ListaRazas(i) + "Agilidad"))
-            .Inteligencia = val(GetVar(DatPath & "Balance.dat", "MODRAZA", ListaRazas(i) + "Inteligencia"))
-            '.Carisma = val(GetVar(DatPath & "Balance.dat", "MODRAZA", ListaRazas(i) + "Carisma"))
-            .Constitucion = val(GetVar(DatPath & "Balance.dat", "MODRAZA", ListaRazas(i) + "Constitucion"))
+126         With ModRaza(i)
+128             .Fuerza = val(GetVar(DatPath & "Balance.dat", "MODRAZA", ListaRazas(i) + "Fuerza"))
+130             .Agilidad = val(GetVar(DatPath & "Balance.dat", "MODRAZA", ListaRazas(i) + "Agilidad"))
+132             .Inteligencia = val(GetVar(DatPath & "Balance.dat", "MODRAZA", ListaRazas(i) + "Inteligencia"))
+                '.Carisma = val(GetVar(DatPath & "Balance.dat", "MODRAZA", ListaRazas(i) + "Carisma"))
+134             .Constitucion = val(GetVar(DatPath & "Balance.dat", "MODRAZA", ListaRazas(i) + "Constitucion"))
 
-        End With
+            End With
 
-    Next i
+136     Next i
 
-    'Modificadores de Vida
-    For i = 1 To NUMCLASES
-        ModVida(i) = val(BalanceIni.GetValue("MODVIDA", ListaClases(i)))
-    Next i
+        'Modificadores de Vida
+138     For i = 1 To NUMCLASES
+140         ModVida(i) = val(BalanceIni.GetValue("MODVIDA", ListaClases(i)))
+142     Next i
     
-    'Distribucion de Vida
-    For i = 1 To 5
-        DistribucionEnteraVida(i) = val(BalanceIni.GetValue("DISTRIBUCION", "E" + CStr(i)))
-    Next i
+        'Distribucion de Vida
+144     For i = 1 To 5
+146         DistribucionEnteraVida(i) = val(BalanceIni.GetValue("DISTRIBUCION", "E" + CStr(i)))
+148     Next i
 
-    For i = 1 To 4
-        DistribucionSemienteraVida(i) = val(BalanceIni.GetValue("DISTRIBUCION", "S" + CStr(i)))
-    Next i
+150     For i = 1 To 4
+152         DistribucionSemienteraVida(i) = val(BalanceIni.GetValue("DISTRIBUCION", "S" + CStr(i)))
+154     Next i
     
-    'Extra
-    PorcentajeRecuperoMana = val(BalanceIni.GetValue("EXTRA", "PorcentajeRecuperoMana"))
+        'Extra
+156     PorcentajeRecuperoMana = val(BalanceIni.GetValue("EXTRA", "PorcentajeRecuperoMana"))
     
-    Set BalanceIni = Nothing
+158     Set BalanceIni = Nothing
     
-    AgregarAConsola "Se cargó el balance (Balance.dat)"
+160     AgregarAConsola "Se cargó el balance (Balance.dat)"
 
+        
+        Exit Sub
+
+LoadBalance_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.LoadBalance", Erl)
+        Resume Next
+        
 End Sub
 
 Sub LoadObjCarpintero()
+        
+        On Error GoTo LoadObjCarpintero_Err
+        
 
-    Dim n As Integer, lc As Integer
+        Dim n As Integer, lc As Integer
     
-    n = val(GetVar(DatPath & "ObjCarpintero.dat", "INIT", "NumObjs"))
+100     n = val(GetVar(DatPath & "ObjCarpintero.dat", "INIT", "NumObjs"))
     
-    If n = 0 Then
-        ReDim ObjCarpintero(0) As Integer
+102     If n = 0 Then
+104         ReDim ObjCarpintero(0) As Integer
+            Exit Sub
+
+        End If
+    
+106     ReDim Preserve ObjCarpintero(1 To n) As Integer
+    
+108     For lc = 1 To n
+110         ObjCarpintero(lc) = val(GetVar(DatPath & "ObjCarpintero.dat", "Obj" & lc, "Index"))
+112     Next lc
+
+        
         Exit Sub
 
-    End If
-    
-    ReDim Preserve ObjCarpintero(1 To n) As Integer
-    
-    For lc = 1 To n
-        ObjCarpintero(lc) = val(GetVar(DatPath & "ObjCarpintero.dat", "Obj" & lc, "Index"))
-    Next lc
-
+LoadObjCarpintero_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.LoadObjCarpintero", Erl)
+        Resume Next
+        
 End Sub
 
 Sub LoadObjAlquimista()
+        
+        On Error GoTo LoadObjAlquimista_Err
+        
     
-    Dim n As Integer, lc As Integer
+        Dim n As Integer, lc As Integer
     
-    n = val(GetVar(DatPath & "ObjAlquimista.dat", "INIT", "NumObjs"))
+100     n = val(GetVar(DatPath & "ObjAlquimista.dat", "INIT", "NumObjs"))
     
-    If n = 0 Then
-        ReDim ObjAlquimista(0) As Integer
+102     If n = 0 Then
+104         ReDim ObjAlquimista(0) As Integer
+            Exit Sub
+
+        End If
+    
+106     ReDim Preserve ObjAlquimista(1 To n) As Integer
+    
+108     For lc = 1 To n
+110         ObjAlquimista(lc) = val(GetVar(DatPath & "ObjAlquimista.dat", "Obj" & lc, "Index"))
+112     Next lc
+
+        
         Exit Sub
 
-    End If
-    
-    ReDim Preserve ObjAlquimista(1 To n) As Integer
-    
-    For lc = 1 To n
-        ObjAlquimista(lc) = val(GetVar(DatPath & "ObjAlquimista.dat", "Obj" & lc, "Index"))
-    Next lc
-
+LoadObjAlquimista_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.LoadObjAlquimista", Erl)
+        Resume Next
+        
 End Sub
 
 Sub LoadObjSastre()
+        
+        On Error GoTo LoadObjSastre_Err
+        
 
-    Dim n As Integer, lc As Integer
+        Dim n As Integer, lc As Integer
     
-    n = val(GetVar(DatPath & "ObjSastre.dat", "INIT", "NumObjs"))
+100     n = val(GetVar(DatPath & "ObjSastre.dat", "INIT", "NumObjs"))
     
-    If n = 0 Then
-        ReDim ObjSastre(0) As Integer
+102     If n = 0 Then
+104         ReDim ObjSastre(0) As Integer
+            Exit Sub
+
+        End If
+    
+106     ReDim Preserve ObjSastre(1 To n) As Integer
+    
+108     For lc = 1 To n
+110         ObjSastre(lc) = val(GetVar(DatPath & "ObjSastre.dat", "Obj" & lc, "Index"))
+112     Next lc
+
+        
         Exit Sub
 
-    End If
-    
-    ReDim Preserve ObjSastre(1 To n) As Integer
-    
-    For lc = 1 To n
-        ObjSastre(lc) = val(GetVar(DatPath & "ObjSastre.dat", "Obj" & lc, "Index"))
-    Next lc
-
+LoadObjSastre_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.LoadObjSastre", Erl)
+        Resume Next
+        
 End Sub
 
 Sub LoadObjDonador()
+        
+        On Error GoTo LoadObjDonador_Err
+        
 
-    Dim n As Integer, lc As Integer
+        Dim n As Integer, lc As Integer
 
-    n = val(GetVar(DatPath & "ObjDonador.dat", "INIT", "NumObjs"))
+100     n = val(GetVar(DatPath & "ObjDonador.dat", "INIT", "NumObjs"))
 
-    ReDim Preserve ObjDonador(1 To n) As tObjDonador
+102     ReDim Preserve ObjDonador(1 To n) As tObjDonador
 
-    For lc = 1 To n
-        ObjDonador(lc).ObjIndex = val(GetVar(DatPath & "ObjDonador.dat", "Obj" & lc, "Index"))
-        ObjDonador(lc).Cantidad = val(GetVar(DatPath & "ObjDonador.dat", "Obj" & lc, "Cant"))
-        ObjDonador(lc).Valor = val(GetVar(DatPath & "ObjDonador.dat", "Obj" & lc, "Valor"))
-    Next lc
+104     For lc = 1 To n
+106         ObjDonador(lc).ObjIndex = val(GetVar(DatPath & "ObjDonador.dat", "Obj" & lc, "Index"))
+108         ObjDonador(lc).Cantidad = val(GetVar(DatPath & "ObjDonador.dat", "Obj" & lc, "Cant"))
+110         ObjDonador(lc).Valor = val(GetVar(DatPath & "ObjDonador.dat", "Obj" & lc, "Valor"))
+112     Next lc
 
+        
+        Exit Sub
+
+LoadObjDonador_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.LoadObjDonador", Erl)
+        Resume Next
+        
 End Sub
 
 Sub LoadOBJData()
@@ -1466,324 +1656,364 @@ Errhandler:
 End Sub
 
 Sub LoadUserStats(ByVal UserIndex As Integer, ByRef UserFile As clsIniReader)
+        
+        On Error GoTo LoadUserStats_Err
+        
 
-    Dim LoopC As Long
+        Dim LoopC As Long
 
-    For LoopC = 1 To NUMATRIBUTOS
-        UserList(UserIndex).Stats.UserAtributos(LoopC) = CInt(UserFile.GetValue("ATRIBUTOS", "AT" & LoopC))
-        UserList(UserIndex).Stats.UserAtributosBackUP(LoopC) = UserList(UserIndex).Stats.UserAtributos(LoopC)
-    Next LoopC
+100     For LoopC = 1 To NUMATRIBUTOS
+102         UserList(UserIndex).Stats.UserAtributos(LoopC) = CInt(UserFile.GetValue("ATRIBUTOS", "AT" & LoopC))
+104         UserList(UserIndex).Stats.UserAtributosBackUP(LoopC) = UserList(UserIndex).Stats.UserAtributos(LoopC)
+106     Next LoopC
 
-    For LoopC = 1 To NUMSKILLS
-        UserList(UserIndex).Stats.UserSkills(LoopC) = CInt(UserFile.GetValue("SKILLS", "SK" & LoopC))
-    Next LoopC
+108     For LoopC = 1 To NUMSKILLS
+110         UserList(UserIndex).Stats.UserSkills(LoopC) = CInt(UserFile.GetValue("SKILLS", "SK" & LoopC))
+112     Next LoopC
 
-    For LoopC = 1 To MAXUSERHECHIZOS
-        UserList(UserIndex).Stats.UserHechizos(LoopC) = CInt(UserFile.GetValue("Hechizos", "H" & LoopC))
-    Next LoopC
+114     For LoopC = 1 To MAXUSERHECHIZOS
+116         UserList(UserIndex).Stats.UserHechizos(LoopC) = CInt(UserFile.GetValue("Hechizos", "H" & LoopC))
+118     Next LoopC
 
-    UserList(UserIndex).Stats.GLD = CLng(UserFile.GetValue("STATS", "GLD"))
-    UserList(UserIndex).Stats.Banco = CLng(UserFile.GetValue("STATS", "BANCO"))
+120     UserList(UserIndex).Stats.GLD = CLng(UserFile.GetValue("STATS", "GLD"))
+122     UserList(UserIndex).Stats.Banco = CLng(UserFile.GetValue("STATS", "BANCO"))
 
-    UserList(UserIndex).Stats.MaxHp = CInt(UserFile.GetValue("STATS", "MaxHP"))
-    UserList(UserIndex).Stats.MinHp = CInt(UserFile.GetValue("STATS", "MinHP"))
+124     UserList(UserIndex).Stats.MaxHp = CInt(UserFile.GetValue("STATS", "MaxHP"))
+126     UserList(UserIndex).Stats.MinHp = CInt(UserFile.GetValue("STATS", "MinHP"))
 
-    UserList(UserIndex).Stats.MinSta = CInt(UserFile.GetValue("STATS", "MinSTA"))
-    UserList(UserIndex).Stats.MaxSta = CInt(UserFile.GetValue("STATS", "MaxSTA"))
+128     UserList(UserIndex).Stats.MinSta = CInt(UserFile.GetValue("STATS", "MinSTA"))
+130     UserList(UserIndex).Stats.MaxSta = CInt(UserFile.GetValue("STATS", "MaxSTA"))
 
-    UserList(UserIndex).Stats.MaxMAN = CInt(UserFile.GetValue("STATS", "MaxMAN"))
-    UserList(UserIndex).Stats.MinMAN = CInt(UserFile.GetValue("STATS", "MinMAN"))
+132     UserList(UserIndex).Stats.MaxMAN = CInt(UserFile.GetValue("STATS", "MaxMAN"))
+134     UserList(UserIndex).Stats.MinMAN = CInt(UserFile.GetValue("STATS", "MinMAN"))
 
-    UserList(UserIndex).Stats.MaxHit = CInt(UserFile.GetValue("STATS", "MaxHIT"))
-    UserList(UserIndex).Stats.MinHIT = CInt(UserFile.GetValue("STATS", "MinHIT"))
+136     UserList(UserIndex).Stats.MaxHit = CInt(UserFile.GetValue("STATS", "MaxHIT"))
+138     UserList(UserIndex).Stats.MinHIT = CInt(UserFile.GetValue("STATS", "MinHIT"))
 
-    UserList(UserIndex).Stats.MaxAGU = CByte(UserFile.GetValue("STATS", "MaxAGU"))
-    UserList(UserIndex).Stats.MinAGU = CByte(UserFile.GetValue("STATS", "MinAGU"))
+140     UserList(UserIndex).Stats.MaxAGU = CByte(UserFile.GetValue("STATS", "MaxAGU"))
+142     UserList(UserIndex).Stats.MinAGU = CByte(UserFile.GetValue("STATS", "MinAGU"))
 
-    UserList(UserIndex).Stats.MaxHam = CByte(UserFile.GetValue("STATS", "MaxHAM"))
-    UserList(UserIndex).Stats.MinHam = CByte(UserFile.GetValue("STATS", "MinHAM"))
+144     UserList(UserIndex).Stats.MaxHam = CByte(UserFile.GetValue("STATS", "MaxHAM"))
+146     UserList(UserIndex).Stats.MinHam = CByte(UserFile.GetValue("STATS", "MinHAM"))
 
-    UserList(UserIndex).Stats.SkillPts = CInt(UserFile.GetValue("STATS", "SkillPtsLibres"))
+148     UserList(UserIndex).Stats.SkillPts = CInt(UserFile.GetValue("STATS", "SkillPtsLibres"))
 
-    UserList(UserIndex).Stats.Exp = CDbl(UserFile.GetValue("STATS", "EXP"))
-    UserList(UserIndex).Stats.ELU = CLng(UserFile.GetValue("STATS", "ELU"))
-    UserList(UserIndex).Stats.ELV = CByte(UserFile.GetValue("STATS", "ELV"))
+150     UserList(UserIndex).Stats.Exp = CDbl(UserFile.GetValue("STATS", "EXP"))
+152     UserList(UserIndex).Stats.ELU = CLng(UserFile.GetValue("STATS", "ELU"))
+154     UserList(UserIndex).Stats.ELV = CByte(UserFile.GetValue("STATS", "ELV"))
 
-    UserList(UserIndex).flags.Envenena = CByte(UserFile.GetValue("MAGIA", "ENVENENA"))
-    UserList(UserIndex).flags.Paraliza = CByte(UserFile.GetValue("MAGIA", "PARALIZA"))
-    UserList(UserIndex).flags.incinera = CByte(UserFile.GetValue("MAGIA", "INCINERA")) 'Estupidiza
-    UserList(UserIndex).flags.Estupidiza = CByte(UserFile.GetValue("MAGIA", "Estupidiza"))
+156     UserList(UserIndex).flags.Envenena = CByte(UserFile.GetValue("MAGIA", "ENVENENA"))
+158     UserList(UserIndex).flags.Paraliza = CByte(UserFile.GetValue("MAGIA", "PARALIZA"))
+160     UserList(UserIndex).flags.incinera = CByte(UserFile.GetValue("MAGIA", "INCINERA")) 'Estupidiza
+162     UserList(UserIndex).flags.Estupidiza = CByte(UserFile.GetValue("MAGIA", "Estupidiza"))
 
-    UserList(UserIndex).flags.PendienteDelSacrificio = CByte(UserFile.GetValue("MAGIA", "PENDIENTE"))
-    UserList(UserIndex).flags.CarroMineria = CByte(UserFile.GetValue("MAGIA", "CarroMineria"))
-    UserList(UserIndex).flags.NoPalabrasMagicas = CByte(UserFile.GetValue("MAGIA", "NOPALABRASMAGICAS"))
+164     UserList(UserIndex).flags.PendienteDelSacrificio = CByte(UserFile.GetValue("MAGIA", "PENDIENTE"))
+166     UserList(UserIndex).flags.CarroMineria = CByte(UserFile.GetValue("MAGIA", "CarroMineria"))
+168     UserList(UserIndex).flags.NoPalabrasMagicas = CByte(UserFile.GetValue("MAGIA", "NOPALABRASMAGICAS"))
 
-    If UserList(UserIndex).flags.Muerto = 0 Then
-        UserList(UserIndex).Char.Otra_Aura = CStr(UserFile.GetValue("MAGIA", "OTRA_AURA"))
+170     If UserList(UserIndex).flags.Muerto = 0 Then
+172         UserList(UserIndex).Char.Otra_Aura = CStr(UserFile.GetValue("MAGIA", "OTRA_AURA"))
 
-    End If
+        End If
 
-    UserList(UserIndex).flags.DañoMagico = CByte(UserFile.GetValue("MAGIA", "DañoMagico"))
-    UserList(UserIndex).flags.ResistenciaMagica = CByte(UserFile.GetValue("MAGIA", "ResistenciaMagica"))
+174     UserList(UserIndex).flags.DañoMagico = CByte(UserFile.GetValue("MAGIA", "DañoMagico"))
+176     UserList(UserIndex).flags.ResistenciaMagica = CByte(UserFile.GetValue("MAGIA", "ResistenciaMagica"))
 
-    'Nuevos
-    UserList(UserIndex).flags.RegeneracionMana = CByte(UserFile.GetValue("MAGIA", "RegeneracionMana"))
-    UserList(UserIndex).flags.AnilloOcultismo = CByte(UserFile.GetValue("MAGIA", "AnilloOcultismo"))
-    UserList(UserIndex).flags.NoDetectable = CByte(UserFile.GetValue("MAGIA", "NoDetectable"))
-    UserList(UserIndex).flags.NoMagiaEfeceto = CByte(UserFile.GetValue("MAGIA", "NoMagiaEfeceto"))
-    UserList(UserIndex).flags.RegeneracionHP = CByte(UserFile.GetValue("MAGIA", "RegeneracionHP"))
-    UserList(UserIndex).flags.RegeneracionSta = CByte(UserFile.GetValue("MAGIA", "RegeneracionSta"))
+        'Nuevos
+178     UserList(UserIndex).flags.RegeneracionMana = CByte(UserFile.GetValue("MAGIA", "RegeneracionMana"))
+180     UserList(UserIndex).flags.AnilloOcultismo = CByte(UserFile.GetValue("MAGIA", "AnilloOcultismo"))
+182     UserList(UserIndex).flags.NoDetectable = CByte(UserFile.GetValue("MAGIA", "NoDetectable"))
+184     UserList(UserIndex).flags.NoMagiaEfeceto = CByte(UserFile.GetValue("MAGIA", "NoMagiaEfeceto"))
+186     UserList(UserIndex).flags.RegeneracionHP = CByte(UserFile.GetValue("MAGIA", "RegeneracionHP"))
+188     UserList(UserIndex).flags.RegeneracionSta = CByte(UserFile.GetValue("MAGIA", "RegeneracionSta"))
 
-    UserList(UserIndex).Stats.UsuariosMatados = CLng(UserFile.GetValue("MUERTES", "UserMuertes"))
-    UserList(UserIndex).Stats.NPCsMuertos = CInt(UserFile.GetValue("MUERTES", "NpcsMuertes"))
+190     UserList(UserIndex).Stats.UsuariosMatados = CLng(UserFile.GetValue("MUERTES", "UserMuertes"))
+192     UserList(UserIndex).Stats.NPCsMuertos = CInt(UserFile.GetValue("MUERTES", "NpcsMuertes"))
 
-    UserList(UserIndex).Stats.InventLevel = CInt(UserFile.GetValue("STATS", "InventLevel"))
+194     UserList(UserIndex).Stats.InventLevel = CInt(UserFile.GetValue("STATS", "InventLevel"))
 
-    If CByte(UserFile.GetValue("CONSEJO", "PERTENECE")) Then UserList(UserIndex).flags.Privilegios = UserList(UserIndex).flags.Privilegios Or PlayerType.RoyalCouncil
+196     If CByte(UserFile.GetValue("CONSEJO", "PERTENECE")) Then UserList(UserIndex).flags.Privilegios = UserList(UserIndex).flags.Privilegios Or PlayerType.RoyalCouncil
 
-    If CByte(UserFile.GetValue("CONSEJO", "PERTENECECAOS")) Then UserList(UserIndex).flags.Privilegios = UserList(UserIndex).flags.Privilegios Or PlayerType.ChaosCouncil
+198     If CByte(UserFile.GetValue("CONSEJO", "PERTENECECAOS")) Then UserList(UserIndex).flags.Privilegios = UserList(UserIndex).flags.Privilegios Or PlayerType.ChaosCouncil
 
+        
+        Exit Sub
+
+LoadUserStats_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.LoadUserStats", Erl)
+        Resume Next
+        
 End Sub
 
 Sub LoadUserInit(ByVal UserIndex As Integer, ByRef UserFile As clsIniReader)
+        
+        On Error GoTo LoadUserInit_Err
+        
 
-    '*************************************************
-    'Author: Unknown
-    'Last modified: 19/11/2006
-    'Loads the Users records
-    '23/01/2007 Pablo (ToxicWaste) - Agrego NivelIngreso, FechaIngreso, MatadosIngreso y NextRecompensa.
-    '23/01/2007 Pablo (ToxicWaste) - Quito CriminalesMatados de Stats porque era redundante.
-    '*************************************************
-    Dim LoopC As Long
+        '*************************************************
+        'Author: Unknown
+        'Last modified: 19/11/2006
+        'Loads the Users records
+        '23/01/2007 Pablo (ToxicWaste) - Agrego NivelIngreso, FechaIngreso, MatadosIngreso y NextRecompensa.
+        '23/01/2007 Pablo (ToxicWaste) - Quito CriminalesMatados de Stats porque era redundante.
+        '*************************************************
+        Dim LoopC As Long
 
-    Dim ln    As String
+        Dim ln    As String
 
-    UserList(UserIndex).Faccion.Status = CByte(UserFile.GetValue("FACCIONES", "Status"))
-    UserList(UserIndex).Faccion.ArmadaReal = CByte(UserFile.GetValue("FACCIONES", "EjercitoReal"))
-    UserList(UserIndex).Faccion.FuerzasCaos = CByte(UserFile.GetValue("FACCIONES", "EjercitoCaos"))
-    UserList(UserIndex).Faccion.CiudadanosMatados = CLng(UserFile.GetValue("FACCIONES", "CiudMatados"))
-    UserList(UserIndex).Faccion.CriminalesMatados = CLng(UserFile.GetValue("FACCIONES", "CrimMatados"))
-    UserList(UserIndex).Faccion.RecibioArmaduraCaos = CByte(UserFile.GetValue("FACCIONES", "rArCaos"))
-    UserList(UserIndex).Faccion.RecibioArmaduraReal = CByte(UserFile.GetValue("FACCIONES", "rArReal"))
-    UserList(UserIndex).Faccion.RecibioExpInicialCaos = CByte(UserFile.GetValue("FACCIONES", "rExCaos"))
-    UserList(UserIndex).Faccion.RecibioExpInicialReal = CByte(UserFile.GetValue("FACCIONES", "rExReal"))
-    UserList(UserIndex).Faccion.RecompensasCaos = CLng(UserFile.GetValue("FACCIONES", "recCaos"))
-    UserList(UserIndex).Faccion.RecompensasReal = CLng(UserFile.GetValue("FACCIONES", "recReal"))
-    UserList(UserIndex).Faccion.Reenlistadas = CByte(UserFile.GetValue("FACCIONES", "Reenlistadas"))
-    UserList(UserIndex).Faccion.NivelIngreso = CInt(UserFile.GetValue("FACCIONES", "NivelIngreso"))
-    UserList(UserIndex).Faccion.FechaIngreso = UserFile.GetValue("FACCIONES", "FechaIngreso")
-    UserList(UserIndex).Faccion.MatadosIngreso = CInt(UserFile.GetValue("FACCIONES", "MatadosIngreso"))
-    UserList(UserIndex).Faccion.NextRecompensa = CInt(UserFile.GetValue("FACCIONES", "NextRecompensa"))
+100     UserList(UserIndex).Faccion.Status = CByte(UserFile.GetValue("FACCIONES", "Status"))
+102     UserList(UserIndex).Faccion.ArmadaReal = CByte(UserFile.GetValue("FACCIONES", "EjercitoReal"))
+104     UserList(UserIndex).Faccion.FuerzasCaos = CByte(UserFile.GetValue("FACCIONES", "EjercitoCaos"))
+106     UserList(UserIndex).Faccion.CiudadanosMatados = CLng(UserFile.GetValue("FACCIONES", "CiudMatados"))
+108     UserList(UserIndex).Faccion.CriminalesMatados = CLng(UserFile.GetValue("FACCIONES", "CrimMatados"))
+110     UserList(UserIndex).Faccion.RecibioArmaduraCaos = CByte(UserFile.GetValue("FACCIONES", "rArCaos"))
+112     UserList(UserIndex).Faccion.RecibioArmaduraReal = CByte(UserFile.GetValue("FACCIONES", "rArReal"))
+114     UserList(UserIndex).Faccion.RecibioExpInicialCaos = CByte(UserFile.GetValue("FACCIONES", "rExCaos"))
+116     UserList(UserIndex).Faccion.RecibioExpInicialReal = CByte(UserFile.GetValue("FACCIONES", "rExReal"))
+118     UserList(UserIndex).Faccion.RecompensasCaos = CLng(UserFile.GetValue("FACCIONES", "recCaos"))
+120     UserList(UserIndex).Faccion.RecompensasReal = CLng(UserFile.GetValue("FACCIONES", "recReal"))
+122     UserList(UserIndex).Faccion.Reenlistadas = CByte(UserFile.GetValue("FACCIONES", "Reenlistadas"))
+124     UserList(UserIndex).Faccion.NivelIngreso = CInt(UserFile.GetValue("FACCIONES", "NivelIngreso"))
+126     UserList(UserIndex).Faccion.FechaIngreso = UserFile.GetValue("FACCIONES", "FechaIngreso")
+128     UserList(UserIndex).Faccion.MatadosIngreso = CInt(UserFile.GetValue("FACCIONES", "MatadosIngreso"))
+130     UserList(UserIndex).Faccion.NextRecompensa = CInt(UserFile.GetValue("FACCIONES", "NextRecompensa"))
 
-    UserList(UserIndex).flags.Muerto = CByte(UserFile.GetValue("FLAGS", "Muerto"))
-    UserList(UserIndex).flags.Escondido = CByte(UserFile.GetValue("FLAGS", "Escondido"))
+132     UserList(UserIndex).flags.Muerto = CByte(UserFile.GetValue("FLAGS", "Muerto"))
+134     UserList(UserIndex).flags.Escondido = CByte(UserFile.GetValue("FLAGS", "Escondido"))
 
-    UserList(UserIndex).flags.Hambre = CByte(UserFile.GetValue("FLAGS", "Hambre"))
-    UserList(UserIndex).flags.Sed = CByte(UserFile.GetValue("FLAGS", "Sed"))
-    UserList(UserIndex).flags.Desnudo = CByte(UserFile.GetValue("FLAGS", "Desnudo"))
-    UserList(UserIndex).flags.Navegando = CByte(UserFile.GetValue("FLAGS", "Navegando"))
-    UserList(UserIndex).flags.Envenenado = CByte(UserFile.GetValue("FLAGS", "Envenenado"))
-    UserList(UserIndex).flags.Paralizado = CByte(UserFile.GetValue("FLAGS", "Paralizado"))
-    UserList(UserIndex).flags.Incinerado = CByte(UserFile.GetValue("FLAGS", "Incinerado"))
-    UserList(UserIndex).flags.Inmovilizado = CByte(UserFile.GetValue("FLAGS", "Inmovilizado"))
+136     UserList(UserIndex).flags.Hambre = CByte(UserFile.GetValue("FLAGS", "Hambre"))
+138     UserList(UserIndex).flags.Sed = CByte(UserFile.GetValue("FLAGS", "Sed"))
+140     UserList(UserIndex).flags.Desnudo = CByte(UserFile.GetValue("FLAGS", "Desnudo"))
+142     UserList(UserIndex).flags.Navegando = CByte(UserFile.GetValue("FLAGS", "Navegando"))
+144     UserList(UserIndex).flags.Envenenado = CByte(UserFile.GetValue("FLAGS", "Envenenado"))
+146     UserList(UserIndex).flags.Paralizado = CByte(UserFile.GetValue("FLAGS", "Paralizado"))
+148     UserList(UserIndex).flags.Incinerado = CByte(UserFile.GetValue("FLAGS", "Incinerado"))
+150     UserList(UserIndex).flags.Inmovilizado = CByte(UserFile.GetValue("FLAGS", "Inmovilizado"))
 
-    UserList(UserIndex).flags.ScrollExp = CSng(UserFile.GetValue("FLAGS", "ScrollExp"))
-    UserList(UserIndex).flags.ScrollOro = CSng(UserFile.GetValue("FLAGS", "ScrollOro"))
+152     UserList(UserIndex).flags.ScrollExp = CSng(UserFile.GetValue("FLAGS", "ScrollExp"))
+154     UserList(UserIndex).flags.ScrollOro = CSng(UserFile.GetValue("FLAGS", "ScrollOro"))
 
-    If UserList(UserIndex).flags.Paralizado = 1 Then
-        UserList(UserIndex).Counters.Paralisis = IntervaloParalizado
+156     If UserList(UserIndex).flags.Paralizado = 1 Then
+158         UserList(UserIndex).Counters.Paralisis = IntervaloParalizado
 
-    End If
+        End If
 
-    UserList(UserIndex).flags.BattlePuntos = CLng(UserFile.GetValue("Battle", "Puntos"))
+160     UserList(UserIndex).flags.BattlePuntos = CLng(UserFile.GetValue("Battle", "Puntos"))
 
-    If UserList(UserIndex).flags.Inmovilizado = 1 Then
-        UserList(UserIndex).Counters.Inmovilizado = 20
+162     If UserList(UserIndex).flags.Inmovilizado = 1 Then
+164         UserList(UserIndex).Counters.Inmovilizado = 20
 
-    End If
+        End If
 
-    UserList(UserIndex).Counters.Pena = CLng(UserFile.GetValue("COUNTERS", "Pena"))
+166     UserList(UserIndex).Counters.Pena = CLng(UserFile.GetValue("COUNTERS", "Pena"))
 
-    UserList(UserIndex).Counters.ScrollExperiencia = CLng(UserFile.GetValue("COUNTERS", "ScrollExperiencia"))
-    UserList(UserIndex).Counters.ScrollOro = CLng(UserFile.GetValue("COUNTERS", "ScrollOro"))
+168     UserList(UserIndex).Counters.ScrollExperiencia = CLng(UserFile.GetValue("COUNTERS", "ScrollExperiencia"))
+170     UserList(UserIndex).Counters.ScrollOro = CLng(UserFile.GetValue("COUNTERS", "ScrollOro"))
 
-    UserList(UserIndex).Counters.Oxigeno = CLng(UserFile.GetValue("COUNTERS", "Oxigeno"))
+172     UserList(UserIndex).Counters.Oxigeno = CLng(UserFile.GetValue("COUNTERS", "Oxigeno"))
 
-    UserList(UserIndex).MENSAJEINFORMACION = UserFile.GetValue("INIT", "MENSAJEINFORMACION")
+174     UserList(UserIndex).MENSAJEINFORMACION = UserFile.GetValue("INIT", "MENSAJEINFORMACION")
 
-    UserList(UserIndex).genero = UserFile.GetValue("INIT", "Genero")
-    UserList(UserIndex).clase = UserFile.GetValue("INIT", "Clase")
-    UserList(UserIndex).raza = UserFile.GetValue("INIT", "Raza")
-    UserList(UserIndex).Hogar = UserFile.GetValue("INIT", "Hogar")
-    UserList(UserIndex).Char.heading = CInt(UserFile.GetValue("INIT", "Heading"))
+176     UserList(UserIndex).genero = UserFile.GetValue("INIT", "Genero")
+178     UserList(UserIndex).clase = UserFile.GetValue("INIT", "Clase")
+180     UserList(UserIndex).raza = UserFile.GetValue("INIT", "Raza")
+182     UserList(UserIndex).Hogar = UserFile.GetValue("INIT", "Hogar")
+184     UserList(UserIndex).Char.heading = CInt(UserFile.GetValue("INIT", "Heading"))
 
-    UserList(UserIndex).OrigChar.Head = CInt(UserFile.GetValue("INIT", "Head"))
-    UserList(UserIndex).OrigChar.Body = CInt(UserFile.GetValue("INIT", "Body"))
-    UserList(UserIndex).OrigChar.WeaponAnim = CInt(UserFile.GetValue("INIT", "Arma"))
-    UserList(UserIndex).OrigChar.ShieldAnim = CInt(UserFile.GetValue("INIT", "Escudo"))
-    UserList(UserIndex).OrigChar.CascoAnim = CInt(UserFile.GetValue("INIT", "Casco"))
+186     UserList(UserIndex).OrigChar.Head = CInt(UserFile.GetValue("INIT", "Head"))
+188     UserList(UserIndex).OrigChar.Body = CInt(UserFile.GetValue("INIT", "Body"))
+190     UserList(UserIndex).OrigChar.WeaponAnim = CInt(UserFile.GetValue("INIT", "Arma"))
+192     UserList(UserIndex).OrigChar.ShieldAnim = CInt(UserFile.GetValue("INIT", "Escudo"))
+194     UserList(UserIndex).OrigChar.CascoAnim = CInt(UserFile.GetValue("INIT", "Casco"))
 
-    #If ConUpTime Then
-        UserList(UserIndex).UpTime = CLng(UserFile.GetValue("INIT", "UpTime"))
-    #End If
+        #If ConUpTime Then
+196         UserList(UserIndex).UpTime = CLng(UserFile.GetValue("INIT", "UpTime"))
+        #End If
 
-    UserList(UserIndex).OrigChar.heading = UserList(UserIndex).Char.heading
+198     UserList(UserIndex).OrigChar.heading = UserList(UserIndex).Char.heading
 
-    If UserList(UserIndex).flags.Muerto = 0 Then
-        UserList(UserIndex).Char = UserList(UserIndex).OrigChar
-    Else
-        UserList(UserIndex).Char.Body = iCuerpoMuerto
-        UserList(UserIndex).Char.Head = iCabezaMuerto
-        UserList(UserIndex).Char.WeaponAnim = NingunArma
-        UserList(UserIndex).Char.ShieldAnim = NingunEscudo
-        UserList(UserIndex).Char.CascoAnim = NingunCasco
+200     If UserList(UserIndex).flags.Muerto = 0 Then
+202         UserList(UserIndex).Char = UserList(UserIndex).OrigChar
+        Else
+204         UserList(UserIndex).Char.Body = iCuerpoMuerto
+206         UserList(UserIndex).Char.Head = iCabezaMuerto
+208         UserList(UserIndex).Char.WeaponAnim = NingunArma
+210         UserList(UserIndex).Char.ShieldAnim = NingunEscudo
+212         UserList(UserIndex).Char.CascoAnim = NingunCasco
 
-    End If
+        End If
 
-    UserList(UserIndex).Desc = UserFile.GetValue("INIT", "Desc")
+214     UserList(UserIndex).Desc = UserFile.GetValue("INIT", "Desc")
 
-    UserList(UserIndex).flags.BanMotivo = UserFile.GetValue("BAN", "BanMotivo")
-    UserList(UserIndex).flags.Montado = CByte(UserFile.GetValue("FLAGS", "Montado"))
-    UserList(UserIndex).flags.VecesQueMoriste = CLng(UserFile.GetValue("FLAGS", "VecesQueMoriste"))
+216     UserList(UserIndex).flags.BanMotivo = UserFile.GetValue("BAN", "BanMotivo")
+218     UserList(UserIndex).flags.Montado = CByte(UserFile.GetValue("FLAGS", "Montado"))
+220     UserList(UserIndex).flags.VecesQueMoriste = CLng(UserFile.GetValue("FLAGS", "VecesQueMoriste"))
 
-    UserList(UserIndex).flags.MinutosRestantes = CLng(UserFile.GetValue("FLAGS", "MinutosRestantes"))
-    UserList(UserIndex).flags.Silenciado = CLng(UserFile.GetValue("FLAGS", "Silenciado"))
-    UserList(UserIndex).flags.SegundosPasados = CLng(UserFile.GetValue("FLAGS", "SegundosPasados"))
+222     UserList(UserIndex).flags.MinutosRestantes = CLng(UserFile.GetValue("FLAGS", "MinutosRestantes"))
+224     UserList(UserIndex).flags.Silenciado = CLng(UserFile.GetValue("FLAGS", "Silenciado"))
+226     UserList(UserIndex).flags.SegundosPasados = CLng(UserFile.GetValue("FLAGS", "SegundosPasados"))
 
-    'CASAMIENTO LADDER
-    UserList(UserIndex).flags.Casado = CInt(UserFile.GetValue("FLAGS", "CASADO"))
-    UserList(UserIndex).flags.Pareja = UserFile.GetValue("FLAGS", "PAREJA")
+        'CASAMIENTO LADDER
+228     UserList(UserIndex).flags.Casado = CInt(UserFile.GetValue("FLAGS", "CASADO"))
+230     UserList(UserIndex).flags.Pareja = UserFile.GetValue("FLAGS", "PAREJA")
 
-    UserList(UserIndex).Pos.Map = CInt(ReadField(1, UserFile.GetValue("INIT", "Position"), 45))
-    UserList(UserIndex).Pos.x = CInt(ReadField(2, UserFile.GetValue("INIT", "Position"), 45))
-    UserList(UserIndex).Pos.Y = CInt(ReadField(3, UserFile.GetValue("INIT", "Position"), 45))
+232     UserList(UserIndex).Pos.Map = CInt(ReadField(1, UserFile.GetValue("INIT", "Position"), 45))
+234     UserList(UserIndex).Pos.x = CInt(ReadField(2, UserFile.GetValue("INIT", "Position"), 45))
+236     UserList(UserIndex).Pos.Y = CInt(ReadField(3, UserFile.GetValue("INIT", "Position"), 45))
 
-    UserList(UserIndex).Invent.NroItems = CInt(UserFile.GetValue("Inventory", "CantidadItems"))
+238     UserList(UserIndex).Invent.NroItems = CInt(UserFile.GetValue("Inventory", "CantidadItems"))
 
-    '[KEVIN]--------------------------------------------------------------------
-    '***********************************************************************************
-    UserList(UserIndex).BancoInvent.NroItems = CInt(UserFile.GetValue("BancoInventory", "CantidadItems"))
+        '[KEVIN]--------------------------------------------------------------------
+        '***********************************************************************************
+240     UserList(UserIndex).BancoInvent.NroItems = CInt(UserFile.GetValue("BancoInventory", "CantidadItems"))
 
-    'Lista de objetos del banco
-    For LoopC = 1 To MAX_BANCOINVENTORY_SLOTS
-        ln = UserFile.GetValue("BancoInventory", "Obj" & LoopC)
-        UserList(UserIndex).BancoInvent.Object(LoopC).ObjIndex = CInt(ReadField(1, ln, 45))
-        UserList(UserIndex).BancoInvent.Object(LoopC).Amount = CInt(ReadField(2, ln, 45))
-    Next LoopC
+        'Lista de objetos del banco
+242     For LoopC = 1 To MAX_BANCOINVENTORY_SLOTS
+244         ln = UserFile.GetValue("BancoInventory", "Obj" & LoopC)
+246         UserList(UserIndex).BancoInvent.Object(LoopC).ObjIndex = CInt(ReadField(1, ln, 45))
+248         UserList(UserIndex).BancoInvent.Object(LoopC).Amount = CInt(ReadField(2, ln, 45))
+250     Next LoopC
 
-    '------------------------------------------------------------------------------------
-    '[/KEVIN]*****************************************************************************
+        '------------------------------------------------------------------------------------
+        '[/KEVIN]*****************************************************************************
 
-    'Lista de objetos
-    For LoopC = 1 To UserList(UserIndex).CurrentInventorySlots
-        ln = UserFile.GetValue("Inventory", "Obj" & LoopC)
-        UserList(UserIndex).Invent.Object(LoopC).ObjIndex = CInt(ReadField(1, ln, 45))
-        UserList(UserIndex).Invent.Object(LoopC).Amount = CInt(ReadField(2, ln, 45))
-        UserList(UserIndex).Invent.Object(LoopC).Equipped = CByte(ReadField(3, ln, 45))
-    Next LoopC
+        'Lista de objetos
+252     For LoopC = 1 To UserList(UserIndex).CurrentInventorySlots
+254         ln = UserFile.GetValue("Inventory", "Obj" & LoopC)
+256         UserList(UserIndex).Invent.Object(LoopC).ObjIndex = CInt(ReadField(1, ln, 45))
+258         UserList(UserIndex).Invent.Object(LoopC).Amount = CInt(ReadField(2, ln, 45))
+260         UserList(UserIndex).Invent.Object(LoopC).Equipped = CByte(ReadField(3, ln, 45))
+262     Next LoopC
 
-    UserList(UserIndex).Invent.WeaponEqpSlot = CByte(UserFile.GetValue("Inventory", "WeaponEqpSlot"))
-    UserList(UserIndex).Invent.HerramientaEqpSlot = CByte(UserFile.GetValue("Inventory", "HerramientaEqpSlot"))
-    UserList(UserIndex).Invent.ArmourEqpSlot = CByte(UserFile.GetValue("Inventory", "ArmourEqpSlot"))
-    UserList(UserIndex).Invent.EscudoEqpSlot = CByte(UserFile.GetValue("Inventory", "EscudoEqpSlot"))
-    UserList(UserIndex).Invent.CascoEqpSlot = CByte(UserFile.GetValue("Inventory", "CascoEqpSlot"))
-    UserList(UserIndex).Invent.BarcoSlot = CByte(UserFile.GetValue("Inventory", "BarcoSlot"))
-    UserList(UserIndex).Invent.MonturaSlot = CByte(UserFile.GetValue("Inventory", "MonturaSlot"))
-    UserList(UserIndex).Invent.MunicionEqpSlot = CByte(UserFile.GetValue("Inventory", "MunicionSlot"))
-    UserList(UserIndex).Invent.AnilloEqpSlot = CByte(UserFile.GetValue("Inventory", "AnilloSlot"))
-    UserList(UserIndex).Invent.MagicoSlot = CByte(UserFile.GetValue("Inventory", "MagicoSlot"))
-    UserList(UserIndex).Invent.NudilloSlot = CByte(UserFile.GetValue("Inventory", "NudilloEqpSlot"))
+264     UserList(UserIndex).Invent.WeaponEqpSlot = CByte(UserFile.GetValue("Inventory", "WeaponEqpSlot"))
+266     UserList(UserIndex).Invent.HerramientaEqpSlot = CByte(UserFile.GetValue("Inventory", "HerramientaEqpSlot"))
+268     UserList(UserIndex).Invent.ArmourEqpSlot = CByte(UserFile.GetValue("Inventory", "ArmourEqpSlot"))
+270     UserList(UserIndex).Invent.EscudoEqpSlot = CByte(UserFile.GetValue("Inventory", "EscudoEqpSlot"))
+272     UserList(UserIndex).Invent.CascoEqpSlot = CByte(UserFile.GetValue("Inventory", "CascoEqpSlot"))
+274     UserList(UserIndex).Invent.BarcoSlot = CByte(UserFile.GetValue("Inventory", "BarcoSlot"))
+276     UserList(UserIndex).Invent.MonturaSlot = CByte(UserFile.GetValue("Inventory", "MonturaSlot"))
+278     UserList(UserIndex).Invent.MunicionEqpSlot = CByte(UserFile.GetValue("Inventory", "MunicionSlot"))
+280     UserList(UserIndex).Invent.AnilloEqpSlot = CByte(UserFile.GetValue("Inventory", "AnilloSlot"))
+282     UserList(UserIndex).Invent.MagicoSlot = CByte(UserFile.GetValue("Inventory", "MagicoSlot"))
+284     UserList(UserIndex).Invent.NudilloSlot = CByte(UserFile.GetValue("Inventory", "NudilloEqpSlot"))
 
-    UserList(UserIndex).ChatCombate = CByte(UserFile.GetValue("BINDKEYS", "ChatCombate"))
-    UserList(UserIndex).ChatGlobal = CByte(UserFile.GetValue("BINDKEYS", "ChatGlobal"))
+286     UserList(UserIndex).ChatCombate = CByte(UserFile.GetValue("BINDKEYS", "ChatCombate"))
+288     UserList(UserIndex).ChatGlobal = CByte(UserFile.GetValue("BINDKEYS", "ChatGlobal"))
 
-    UserList(UserIndex).Correo.CantCorreo = CByte(UserFile.GetValue("CORREO", "CantCorreo"))
-    UserList(UserIndex).Correo.NoLeidos = CByte(UserFile.GetValue("CORREO", "NoLeidos"))
+290     UserList(UserIndex).Correo.CantCorreo = CByte(UserFile.GetValue("CORREO", "CantCorreo"))
+292     UserList(UserIndex).Correo.NoLeidos = CByte(UserFile.GetValue("CORREO", "NoLeidos"))
 
-    For LoopC = 1 To UserList(UserIndex).Correo.CantCorreo
-        UserList(UserIndex).Correo.Mensaje(LoopC).Remitente = UserFile.GetValue("CORREO", "REMITENTE" & LoopC)
-        UserList(UserIndex).Correo.Mensaje(LoopC).Mensaje = UserFile.GetValue("CORREO", "MENSAJE" & LoopC)
-        UserList(UserIndex).Correo.Mensaje(LoopC).Item = UserFile.GetValue("CORREO", "Item" & LoopC)
-        UserList(UserIndex).Correo.Mensaje(LoopC).ItemCount = CByte(UserFile.GetValue("CORREO", "ItemCount" & LoopC))
-        UserList(UserIndex).Correo.Mensaje(LoopC).Fecha = UserFile.GetValue("CORREO", "DATE" & LoopC)
-        UserList(UserIndex).Correo.Mensaje(LoopC).Leido = CByte(UserFile.GetValue("CORREO", "LEIDO" & LoopC))
-    Next LoopC
+294     For LoopC = 1 To UserList(UserIndex).Correo.CantCorreo
+296         UserList(UserIndex).Correo.Mensaje(LoopC).Remitente = UserFile.GetValue("CORREO", "REMITENTE" & LoopC)
+298         UserList(UserIndex).Correo.Mensaje(LoopC).Mensaje = UserFile.GetValue("CORREO", "MENSAJE" & LoopC)
+300         UserList(UserIndex).Correo.Mensaje(LoopC).Item = UserFile.GetValue("CORREO", "Item" & LoopC)
+302         UserList(UserIndex).Correo.Mensaje(LoopC).ItemCount = CByte(UserFile.GetValue("CORREO", "ItemCount" & LoopC))
+304         UserList(UserIndex).Correo.Mensaje(LoopC).Fecha = UserFile.GetValue("CORREO", "DATE" & LoopC)
+306         UserList(UserIndex).Correo.Mensaje(LoopC).Leido = CByte(UserFile.GetValue("CORREO", "LEIDO" & LoopC))
+308     Next LoopC
 
-    'Logros Ladder
-    UserList(UserIndex).UserLogros = UserFile.GetValue("LOGROS", "UserLogros")
-    UserList(UserIndex).NPcLogros = UserFile.GetValue("LOGROS", "NPcLogros")
-    UserList(UserIndex).LevelLogros = UserFile.GetValue("LOGROS", "LevelLogros")
-    'Logros Ladder
+        'Logros Ladder
+310     UserList(UserIndex).UserLogros = UserFile.GetValue("LOGROS", "UserLogros")
+312     UserList(UserIndex).NPcLogros = UserFile.GetValue("LOGROS", "NPcLogros")
+314     UserList(UserIndex).LevelLogros = UserFile.GetValue("LOGROS", "LevelLogros")
+        'Logros Ladder
 
-    ln = UserFile.GetValue("Guild", "GUILDINDEX")
+316     ln = UserFile.GetValue("Guild", "GUILDINDEX")
 
-    If IsNumeric(ln) Then
-        UserList(UserIndex).GuildIndex = CInt(ln)
-    Else
-        UserList(UserIndex).GuildIndex = 0
+318     If IsNumeric(ln) Then
+320         UserList(UserIndex).GuildIndex = CInt(ln)
+        Else
+322         UserList(UserIndex).GuildIndex = 0
 
-    End If
+        End If
 
+        
+        Exit Sub
+
+LoadUserInit_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.LoadUserInit", Erl)
+        Resume Next
+        
 End Sub
 
 Function GetVar(ByVal File As String, ByVal Main As String, ByVal Var As String, Optional EmptySpaces As Long = 1024) As String
+        
+        On Error GoTo GetVar_Err
+        
 
-    Dim sSpaces  As String ' This will hold the input that the program will retrieve
+        Dim sSpaces  As String ' This will hold the input that the program will retrieve
 
-    Dim szReturn As String ' This will be the defaul value if the string is not found
+        Dim szReturn As String ' This will be the defaul value if the string is not found
   
-    szReturn = vbNullString
+100     szReturn = vbNullString
   
-    sSpaces = Space$(EmptySpaces) ' This tells the computer how long the longest string can be
+102     sSpaces = Space$(EmptySpaces) ' This tells the computer how long the longest string can be
   
-    GetPrivateProfileString Main, Var, szReturn, sSpaces, EmptySpaces, File
+104     GetPrivateProfileString Main, Var, szReturn, sSpaces, EmptySpaces, File
   
-    GetVar = RTrim$(sSpaces)
-    GetVar = Left$(GetVar, Len(GetVar) - 1)
+106     GetVar = RTrim$(sSpaces)
+108     GetVar = Left$(GetVar, Len(GetVar) - 1)
   
+        
+        Exit Function
+
+GetVar_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.GetVar", Erl)
+        Resume Next
+        
 End Function
 
 Sub CargarBackUp()
+        
+        On Error GoTo CargarBackUp_Err
+        
 
-    If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando backup."
+100     If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando backup."
 
-    Dim Map       As Integer
+        Dim Map       As Integer
 
-    Dim TempInt   As Integer
+        Dim TempInt   As Integer
 
-    Dim tFileName As String
+        Dim tFileName As String
 
-    Dim npcfile   As String
+        Dim npcfile   As String
     
-    NumMaps = val(GetVar(DatPath & "Map.dat", "INIT", "NumMaps"))
-    Call InitAreas
+102     NumMaps = val(GetVar(DatPath & "Map.dat", "INIT", "NumMaps"))
+104     Call InitAreas
     
-    frmCargando.cargar.min = 0
-    frmCargando.cargar.max = NumMaps
-    frmCargando.cargar.Value = 0
-    frmCargando.ToMapLbl.Visible = True
-    ' MapPath = GetVar(DatPath & "Map.dat", "INIT", "MapPath")
+106     frmCargando.cargar.min = 0
+108     frmCargando.cargar.max = NumMaps
+110     frmCargando.cargar.Value = 0
+112     frmCargando.ToMapLbl.Visible = True
+        ' MapPath = GetVar(DatPath & "Map.dat", "INIT", "MapPath")
     
-    ReDim MapData(1 To NumMaps, XMinMapSize To XMaxMapSize, YMinMapSize To YMaxMapSize) As MapBlock
+114     ReDim MapData(1 To NumMaps, XMinMapSize To XMaxMapSize, YMinMapSize To YMaxMapSize) As MapBlock
 
-    ReDim MapInfo(1 To NumMaps) As MapInfo
+116     ReDim MapInfo(1 To NumMaps) As MapInfo
       
-    For Map = 1 To NumMaps
-        frmCargando.ToMapLbl = Map & "/" & NumMaps
-        Rem If val(GetVar(App.Path & MapPath & "Mapa" & map & ".Dat", "Mapa" & map, "BackUp")) <> 0 Then
-        tFileName = App.Path & "\WorldBackUp\Mapa" & Map & ".csm"
-        Rem Else
-        Rem     tFileName = App.Path & MapPath & "Mapa" & map
-        Rem End If
+118     For Map = 1 To NumMaps
+120         frmCargando.ToMapLbl = Map & "/" & NumMaps
+            Rem If val(GetVar(App.Path & MapPath & "Mapa" & map & ".Dat", "Mapa" & map, "BackUp")) <> 0 Then
+122         tFileName = App.Path & "\WorldBackUp\Mapa" & Map & ".csm"
+            Rem Else
+            Rem     tFileName = App.Path & MapPath & "Mapa" & map
+            Rem End If
 
-        Call CargarMapaFormatoCSM(Map, tFileName)
-        frmCargando.cargar.Value = frmCargando.cargar.Value + 1
-        DoEvents
-    Next Map
+124         Call CargarMapaFormatoCSM(Map, tFileName)
+126         frmCargando.cargar.Value = frmCargando.cargar.Value + 1
+128         DoEvents
+130     Next Map
 
-    frmCargando.ToMapLbl.Visible = False
-    Exit Sub
+132     frmCargando.ToMapLbl.Visible = False
+        Exit Sub
 
+        
+        Exit Sub
+
+CargarBackUp_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.CargarBackUp", Erl)
+        Resume Next
+        
 End Sub
 
 Sub LoadMapData()
@@ -2121,315 +2351,355 @@ errh:
 End Sub
 
 Sub LoadSini()
+        
+        On Error GoTo LoadSini_Err
+        
 
-    Dim Lector   As clsIniReader
+        Dim Lector   As clsIniReader
 
-    Dim Temporal As Long
+        Dim Temporal As Long
     
-    If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando info de inicio del server."
+100     If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando info de inicio del server."
     
-    Set Lector = New clsIniReader
-    Call Lector.Initialize(IniPath & "Server.ini")
+102     Set Lector = New clsIniReader
+104     Call Lector.Initialize(IniPath & "Server.ini")
     
-    'Misc
-    BootDelBackUp = val(Lector.GetValue("INIT", "IniciarDesdeBackUp"))
+        'Misc
+106     BootDelBackUp = val(Lector.GetValue("INIT", "IniciarDesdeBackUp"))
     
-    'Directorios
-    DatPath = Lector.GetValue("DIRECTORIOS", "DatPath")
-    MapPath = Lector.GetValue("DIRECTORIOS", "MapPath")
-    CharPath = Lector.GetValue("DIRECTORIOS", "CharPath")
-    DeletePath = Lector.GetValue("DIRECTORIOS", "DeletePath")
-    CuentasPath = Lector.GetValue("DIRECTORIOS", "CuentasPath")
-    DeleteCuentasPath = Lector.GetValue("DIRECTORIOS", "DeleteCuentasPath")
-    'Directorios
+        'Directorios
+108     DatPath = Lector.GetValue("DIRECTORIOS", "DatPath")
+110     MapPath = Lector.GetValue("DIRECTORIOS", "MapPath")
+112     CharPath = Lector.GetValue("DIRECTORIOS", "CharPath")
+114     DeletePath = Lector.GetValue("DIRECTORIOS", "DeletePath")
+116     CuentasPath = Lector.GetValue("DIRECTORIOS", "CuentasPath")
+118     DeleteCuentasPath = Lector.GetValue("DIRECTORIOS", "DeleteCuentasPath")
+        'Directorios
     
-    Puerto = val(Lector.GetValue("INIT", "StartPort"))
-    LastSockListen = val(Lector.GetValue("INIT", "LastSockListen"))
-    HideMe = val(Lector.GetValue("INIT", "Hide"))
-    AllowMultiLogins = val(Lector.GetValue("INIT", "AllowMultiLogins"))
-    MaxUsersPorCuenta = val(Lector.GetValue("INIT", "MaxUsersPorCuenta"))
-    IdleLimit = val(Lector.GetValue("INIT", "IdleLimit"))
-    'Lee la version correcta del cliente
-    ULTIMAVERSION = Lector.GetValue("INIT", "Version")
+120     Puerto = val(Lector.GetValue("INIT", "StartPort"))
+122     LastSockListen = val(Lector.GetValue("INIT", "LastSockListen"))
+124     HideMe = val(Lector.GetValue("INIT", "Hide"))
+126     AllowMultiLogins = val(Lector.GetValue("INIT", "AllowMultiLogins"))
+128     MaxUsersPorCuenta = val(Lector.GetValue("INIT", "MaxUsersPorCuenta"))
+130     IdleLimit = val(Lector.GetValue("INIT", "IdleLimit"))
+        'Lee la version correcta del cliente
+132     ULTIMAVERSION = Lector.GetValue("INIT", "Version")
     
-    PuedeCrearPersonajes = val(Lector.GetValue("INIT", "PuedeCrearPersonajes"))
-    ServerSoloGMs = val(Lector.GetValue("init", "ServerSoloGMs"))
+134     PuedeCrearPersonajes = val(Lector.GetValue("INIT", "PuedeCrearPersonajes"))
+136     ServerSoloGMs = val(Lector.GetValue("init", "ServerSoloGMs"))
     
-    DiceMinimum = val(Lector.GetValue("INIT", "MinDados"))
-    DiceMaximum = val(Lector.GetValue("INIT", "MaxDados"))
+138     DiceMinimum = val(Lector.GetValue("INIT", "MinDados"))
+140     DiceMaximum = val(Lector.GetValue("INIT", "MaxDados"))
     
-    EnTesting = val(Lector.GetValue("INIT", "Testing"))
+142     EnTesting = val(Lector.GetValue("INIT", "Testing"))
     
-    ' Database
-    Database_Enabled = CBool(val(Lector.GetValue("DATABASE", "Enabled")))
-    Database_DataSource = Lector.GetValue("DATABASE", "DSN")
-    Database_Host = Lector.GetValue("DATABASE", "Host")
-    Database_Name = Lector.GetValue("DATABASE", "Name")
-    Database_Username = Lector.GetValue("DATABASE", "Username")
-    Database_Password = Lector.GetValue("DATABASE", "Password")
+        ' Database
+144     Database_Enabled = CBool(val(Lector.GetValue("DATABASE", "Enabled")))
+146     Database_DataSource = Lector.GetValue("DATABASE", "DSN")
+148     Database_Host = Lector.GetValue("DATABASE", "Host")
+150     Database_Name = Lector.GetValue("DATABASE", "Name")
+152     Database_Username = Lector.GetValue("DATABASE", "Username")
+154     Database_Password = Lector.GetValue("DATABASE", "Password")
     
-    'Ressurect pos
-    ResPos.Map = val(ReadField(1, Lector.GetValue("INIT", "ResPos"), 45))
-    ResPos.x = val(ReadField(2, Lector.GetValue("INIT", "ResPos"), 45))
-    ResPos.Y = val(ReadField(3, Lector.GetValue("INIT", "ResPos"), 45))
+        'Ressurect pos
+156     ResPos.Map = val(ReadField(1, Lector.GetValue("INIT", "ResPos"), 45))
+158     ResPos.x = val(ReadField(2, Lector.GetValue("INIT", "ResPos"), 45))
+160     ResPos.Y = val(ReadField(3, Lector.GetValue("INIT", "ResPos"), 45))
       
-    recordusuarios = val(Lector.GetValue("INIT", "Record"))
+162     recordusuarios = val(Lector.GetValue("INIT", "Record"))
       
-    'Max users
-    Temporal = val(Lector.GetValue("INIT", "MaxUsers"))
+        'Max users
+164     Temporal = val(Lector.GetValue("INIT", "MaxUsers"))
 
-    If MaxUsers = 0 Then
-        MaxUsers = Temporal
-        ReDim UserList(1 To MaxUsers) As user
+166     If MaxUsers = 0 Then
+168         MaxUsers = Temporal
+170         ReDim UserList(1 To MaxUsers) As user
 
-    End If
+        End If
 
-    NumCuentas = val(Lector.GetValue("INIT", "NumCuentas"))
-    frmMain.cuentas.Caption = NumCuentas
-    #If DEBUGGING Then
-        'Shell App.Path & "\estadisticas.exe" & " " & "NUEVACUENTALADDER" & "*" & NumCuentas & "*" & MaxUsers
-    #End If
+172     NumCuentas = val(Lector.GetValue("INIT", "NumCuentas"))
+174     frmMain.cuentas.Caption = NumCuentas
+        #If DEBUGGING Then
+            'Shell App.Path & "\estadisticas.exe" & " " & "NUEVACUENTALADDER" & "*" & NumCuentas & "*" & MaxUsers
+        #End If
     
-    '&&&&&&&&&&&&&&&&&&&&& BALANCE &&&&&&&&&&&&&&&&&&&&&&&
-    'Se agregó en LoadBalance y en el Balance.dat
-    'PorcentajeRecuperoMana = val(Lector.GetValue("BALANCE", "PorcentajeRecuperoMana"))
+        '&&&&&&&&&&&&&&&&&&&&& BALANCE &&&&&&&&&&&&&&&&&&&&&&&
+        'Se agregó en LoadBalance y en el Balance.dat
+        'PorcentajeRecuperoMana = val(Lector.GetValue("BALANCE", "PorcentajeRecuperoMana"))
     
-    ''&&&&&&&&&&&&&&&&&&&&& FIN BALANCE &&&&&&&&&&&&&&&&&&&&&&&
-    'Call Statistics.Initialize
+        ''&&&&&&&&&&&&&&&&&&&&& FIN BALANCE &&&&&&&&&&&&&&&&&&&&&&&
+        'Call Statistics.Initialize
     
-    Nix.Map = GetVar(DatPath & "Ciudades.dat", "NIX", "Mapa")
-    Nix.x = GetVar(DatPath & "Ciudades.dat", "NIX", "X")
-    Nix.Y = GetVar(DatPath & "Ciudades.dat", "NIX", "Y")
+176     Nix.Map = GetVar(DatPath & "Ciudades.dat", "NIX", "Mapa")
+178     Nix.x = GetVar(DatPath & "Ciudades.dat", "NIX", "X")
+180     Nix.Y = GetVar(DatPath & "Ciudades.dat", "NIX", "Y")
     
-    Ullathorpe.Map = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "Mapa")
-    Ullathorpe.x = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "X")
-    Ullathorpe.Y = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "Y")
+182     Ullathorpe.Map = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "Mapa")
+184     Ullathorpe.x = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "X")
+186     Ullathorpe.Y = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "Y")
     
-    Banderbill.Map = GetVar(DatPath & "Ciudades.dat", "Banderbill", "Mapa")
-    Banderbill.x = GetVar(DatPath & "Ciudades.dat", "Banderbill", "X")
-    Banderbill.Y = GetVar(DatPath & "Ciudades.dat", "Banderbill", "Y")
+188     Banderbill.Map = GetVar(DatPath & "Ciudades.dat", "Banderbill", "Mapa")
+190     Banderbill.x = GetVar(DatPath & "Ciudades.dat", "Banderbill", "X")
+192     Banderbill.Y = GetVar(DatPath & "Ciudades.dat", "Banderbill", "Y")
     
-    Lindos.Map = GetVar(DatPath & "Ciudades.dat", "Lindos", "Mapa")
-    Lindos.x = GetVar(DatPath & "Ciudades.dat", "Lindos", "X")
-    Lindos.Y = GetVar(DatPath & "Ciudades.dat", "Lindos", "Y")
+194     Lindos.Map = GetVar(DatPath & "Ciudades.dat", "Lindos", "Mapa")
+196     Lindos.x = GetVar(DatPath & "Ciudades.dat", "Lindos", "X")
+198     Lindos.Y = GetVar(DatPath & "Ciudades.dat", "Lindos", "Y")
     
-    Arghal.Map = GetVar(DatPath & "Ciudades.dat", "Arghal", "Mapa")
-    Arghal.x = GetVar(DatPath & "Ciudades.dat", "Arghal", "X")
-    Arghal.Y = GetVar(DatPath & "Ciudades.dat", "Arghal", "Y")
+200     Arghal.Map = GetVar(DatPath & "Ciudades.dat", "Arghal", "Mapa")
+202     Arghal.x = GetVar(DatPath & "Ciudades.dat", "Arghal", "X")
+204     Arghal.Y = GetVar(DatPath & "Ciudades.dat", "Arghal", "Y")
     
-    Hillidan.Map = GetVar(DatPath & "Ciudades.dat", "Hillidan", "Mapa")
-    Hillidan.x = GetVar(DatPath & "Ciudades.dat", "Hillidan", "X")
-    Hillidan.Y = GetVar(DatPath & "Ciudades.dat", "Hillidan", "Y")
+206     Hillidan.Map = GetVar(DatPath & "Ciudades.dat", "Hillidan", "Mapa")
+208     Hillidan.x = GetVar(DatPath & "Ciudades.dat", "Hillidan", "X")
+210     Hillidan.Y = GetVar(DatPath & "Ciudades.dat", "Hillidan", "Y")
 
-    CityNix.Map = GetVar(DatPath & "Ciudades.dat", "NIX", "Mapa")
-    CityNix.x = GetVar(DatPath & "Ciudades.dat", "NIX", "X")
-    CityNix.Y = GetVar(DatPath & "Ciudades.dat", "NIX", "Y")
-    CityNix.MapaViaje = GetVar(DatPath & "Ciudades.dat", "NIX", "MapaViaje")
-    CityNix.ViajeX = GetVar(DatPath & "Ciudades.dat", "NIX", "ViajeX")
-    CityNix.ViajeY = GetVar(DatPath & "Ciudades.dat", "NIX", "ViajeY")
-    CityNix.MapaResu = GetVar(DatPath & "Ciudades.dat", "NIX", "MapaResu")
-    CityNix.ResuX = GetVar(DatPath & "Ciudades.dat", "NIX", "ResuX")
-    CityNix.ResuY = GetVar(DatPath & "Ciudades.dat", "NIX", "ResuY")
-    CityNix.NecesitaNave = GetVar(DatPath & "Ciudades.dat", "NIX", "NecesitaNave")
+212     CityNix.Map = GetVar(DatPath & "Ciudades.dat", "NIX", "Mapa")
+214     CityNix.x = GetVar(DatPath & "Ciudades.dat", "NIX", "X")
+216     CityNix.Y = GetVar(DatPath & "Ciudades.dat", "NIX", "Y")
+218     CityNix.MapaViaje = GetVar(DatPath & "Ciudades.dat", "NIX", "MapaViaje")
+220     CityNix.ViajeX = GetVar(DatPath & "Ciudades.dat", "NIX", "ViajeX")
+222     CityNix.ViajeY = GetVar(DatPath & "Ciudades.dat", "NIX", "ViajeY")
+224     CityNix.MapaResu = GetVar(DatPath & "Ciudades.dat", "NIX", "MapaResu")
+226     CityNix.ResuX = GetVar(DatPath & "Ciudades.dat", "NIX", "ResuX")
+228     CityNix.ResuY = GetVar(DatPath & "Ciudades.dat", "NIX", "ResuY")
+230     CityNix.NecesitaNave = GetVar(DatPath & "Ciudades.dat", "NIX", "NecesitaNave")
 
-    CityUllathorpe.Map = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "Mapa")
-    CityUllathorpe.x = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "X")
-    CityUllathorpe.Y = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "Y")
-    CityUllathorpe.MapaViaje = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "MapaViaje")
-    CityUllathorpe.ViajeX = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "ViajeX")
-    CityUllathorpe.ViajeY = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "ViajeY")
-    CityUllathorpe.MapaResu = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "MapaResu")
-    CityUllathorpe.ResuX = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "ResuX")
-    CityUllathorpe.ResuY = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "ResuY")
-    CityUllathorpe.NecesitaNave = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "NecesitaNave")
+232     CityUllathorpe.Map = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "Mapa")
+234     CityUllathorpe.x = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "X")
+236     CityUllathorpe.Y = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "Y")
+238     CityUllathorpe.MapaViaje = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "MapaViaje")
+240     CityUllathorpe.ViajeX = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "ViajeX")
+242     CityUllathorpe.ViajeY = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "ViajeY")
+244     CityUllathorpe.MapaResu = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "MapaResu")
+246     CityUllathorpe.ResuX = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "ResuX")
+248     CityUllathorpe.ResuY = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "ResuY")
+250     CityUllathorpe.NecesitaNave = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "NecesitaNave")
     
-    CityBanderbill.Map = GetVar(DatPath & "Ciudades.dat", "Banderbill", "Mapa")
-    CityBanderbill.x = GetVar(DatPath & "Ciudades.dat", "Banderbill", "X")
-    CityBanderbill.Y = GetVar(DatPath & "Ciudades.dat", "Banderbill", "Y")
-    CityBanderbill.MapaViaje = GetVar(DatPath & "Ciudades.dat", "Banderbill", "MapaViaje")
-    CityBanderbill.ViajeX = GetVar(DatPath & "Ciudades.dat", "Banderbill", "ViajeX")
-    CityBanderbill.ViajeY = GetVar(DatPath & "Ciudades.dat", "Banderbill", "ViajeY")
-    CityBanderbill.MapaResu = GetVar(DatPath & "Ciudades.dat", "Banderbill", "MapaResu")
-    CityBanderbill.ResuX = GetVar(DatPath & "Ciudades.dat", "Banderbill", "ResuX")
-    CityBanderbill.ResuY = GetVar(DatPath & "Ciudades.dat", "Banderbill", "ResuY")
-    CityBanderbill.NecesitaNave = GetVar(DatPath & "Ciudades.dat", "Banderbill", "NecesitaNave")
+252     CityBanderbill.Map = GetVar(DatPath & "Ciudades.dat", "Banderbill", "Mapa")
+254     CityBanderbill.x = GetVar(DatPath & "Ciudades.dat", "Banderbill", "X")
+256     CityBanderbill.Y = GetVar(DatPath & "Ciudades.dat", "Banderbill", "Y")
+258     CityBanderbill.MapaViaje = GetVar(DatPath & "Ciudades.dat", "Banderbill", "MapaViaje")
+260     CityBanderbill.ViajeX = GetVar(DatPath & "Ciudades.dat", "Banderbill", "ViajeX")
+262     CityBanderbill.ViajeY = GetVar(DatPath & "Ciudades.dat", "Banderbill", "ViajeY")
+264     CityBanderbill.MapaResu = GetVar(DatPath & "Ciudades.dat", "Banderbill", "MapaResu")
+266     CityBanderbill.ResuX = GetVar(DatPath & "Ciudades.dat", "Banderbill", "ResuX")
+268     CityBanderbill.ResuY = GetVar(DatPath & "Ciudades.dat", "Banderbill", "ResuY")
+270     CityBanderbill.NecesitaNave = GetVar(DatPath & "Ciudades.dat", "Banderbill", "NecesitaNave")
     
-    CityLindos.Map = GetVar(DatPath & "Ciudades.dat", "Lindos", "Mapa")
-    CityLindos.x = GetVar(DatPath & "Ciudades.dat", "Lindos", "X")
-    CityLindos.Y = GetVar(DatPath & "Ciudades.dat", "Lindos", "Y")
-    CityLindos.MapaViaje = GetVar(DatPath & "Ciudades.dat", "Lindos", "MapaViaje")
-    CityLindos.ViajeX = GetVar(DatPath & "Ciudades.dat", "Lindos", "ViajeX")
-    CityLindos.ViajeY = GetVar(DatPath & "Ciudades.dat", "Lindos", "ViajeY")
-    CityLindos.MapaResu = GetVar(DatPath & "Ciudades.dat", "Lindos", "MapaResu")
-    CityLindos.ResuX = GetVar(DatPath & "Ciudades.dat", "Lindos", "ResuX")
-    CityLindos.ResuY = GetVar(DatPath & "Ciudades.dat", "Lindos", "ResuY")
-    CityLindos.NecesitaNave = GetVar(DatPath & "Ciudades.dat", "Lindos", "NecesitaNave")
+272     CityLindos.Map = GetVar(DatPath & "Ciudades.dat", "Lindos", "Mapa")
+274     CityLindos.x = GetVar(DatPath & "Ciudades.dat", "Lindos", "X")
+276     CityLindos.Y = GetVar(DatPath & "Ciudades.dat", "Lindos", "Y")
+278     CityLindos.MapaViaje = GetVar(DatPath & "Ciudades.dat", "Lindos", "MapaViaje")
+280     CityLindos.ViajeX = GetVar(DatPath & "Ciudades.dat", "Lindos", "ViajeX")
+282     CityLindos.ViajeY = GetVar(DatPath & "Ciudades.dat", "Lindos", "ViajeY")
+284     CityLindos.MapaResu = GetVar(DatPath & "Ciudades.dat", "Lindos", "MapaResu")
+286     CityLindos.ResuX = GetVar(DatPath & "Ciudades.dat", "Lindos", "ResuX")
+288     CityLindos.ResuY = GetVar(DatPath & "Ciudades.dat", "Lindos", "ResuY")
+290     CityLindos.NecesitaNave = GetVar(DatPath & "Ciudades.dat", "Lindos", "NecesitaNave")
     
-    CityArghal.Map = GetVar(DatPath & "Ciudades.dat", "Arghal", "Mapa")
-    CityArghal.x = GetVar(DatPath & "Ciudades.dat", "Arghal", "X")
-    CityArghal.Y = GetVar(DatPath & "Ciudades.dat", "Arghal", "Y")
-    CityArghal.MapaViaje = GetVar(DatPath & "Ciudades.dat", "Arghal", "MapaViaje")
-    CityArghal.ViajeX = GetVar(DatPath & "Ciudades.dat", "Arghal", "ViajeX")
-    CityArghal.ViajeY = GetVar(DatPath & "Ciudades.dat", "Arghal", "ViajeY")
-    CityArghal.MapaResu = GetVar(DatPath & "Ciudades.dat", "Arghal", "MapaResu")
-    CityArghal.ResuX = GetVar(DatPath & "Ciudades.dat", "Arghal", "ResuX")
-    CityArghal.ResuY = GetVar(DatPath & "Ciudades.dat", "Arghal", "ResuY")
-    CityArghal.NecesitaNave = GetVar(DatPath & "Ciudades.dat", "Arghal", "NecesitaNave")
+292     CityArghal.Map = GetVar(DatPath & "Ciudades.dat", "Arghal", "Mapa")
+294     CityArghal.x = GetVar(DatPath & "Ciudades.dat", "Arghal", "X")
+296     CityArghal.Y = GetVar(DatPath & "Ciudades.dat", "Arghal", "Y")
+298     CityArghal.MapaViaje = GetVar(DatPath & "Ciudades.dat", "Arghal", "MapaViaje")
+300     CityArghal.ViajeX = GetVar(DatPath & "Ciudades.dat", "Arghal", "ViajeX")
+302     CityArghal.ViajeY = GetVar(DatPath & "Ciudades.dat", "Arghal", "ViajeY")
+304     CityArghal.MapaResu = GetVar(DatPath & "Ciudades.dat", "Arghal", "MapaResu")
+306     CityArghal.ResuX = GetVar(DatPath & "Ciudades.dat", "Arghal", "ResuX")
+308     CityArghal.ResuY = GetVar(DatPath & "Ciudades.dat", "Arghal", "ResuY")
+310     CityArghal.NecesitaNave = GetVar(DatPath & "Ciudades.dat", "Arghal", "NecesitaNave")
     
-    CityHillidan.Map = GetVar(DatPath & "Ciudades.dat", "Hillidan", "Mapa")
-    CityHillidan.x = GetVar(DatPath & "Ciudades.dat", "Hillidan", "X")
-    CityHillidan.Y = GetVar(DatPath & "Ciudades.dat", "Hillidan", "Y")
-    CityHillidan.MapaViaje = GetVar(DatPath & "Ciudades.dat", "Hillidan", "MapaViaje")
-    CityHillidan.ViajeX = GetVar(DatPath & "Ciudades.dat", "Hillidan", "ViajeX")
-    CityHillidan.ViajeY = GetVar(DatPath & "Ciudades.dat", "Hillidan", "ViajeY")
-    CityHillidan.MapaResu = GetVar(DatPath & "Ciudades.dat", "Hillidan", "MapaResu")
-    CityHillidan.ResuX = GetVar(DatPath & "Ciudades.dat", "Hillidan", "ResuX")
-    CityHillidan.ResuY = GetVar(DatPath & "Ciudades.dat", "Hillidan", "ResuY")
-    CityHillidan.NecesitaNave = GetVar(DatPath & "Ciudades.dat", "Hillidan", "NecesitaNave")
+312     CityHillidan.Map = GetVar(DatPath & "Ciudades.dat", "Hillidan", "Mapa")
+314     CityHillidan.x = GetVar(DatPath & "Ciudades.dat", "Hillidan", "X")
+316     CityHillidan.Y = GetVar(DatPath & "Ciudades.dat", "Hillidan", "Y")
+318     CityHillidan.MapaViaje = GetVar(DatPath & "Ciudades.dat", "Hillidan", "MapaViaje")
+320     CityHillidan.ViajeX = GetVar(DatPath & "Ciudades.dat", "Hillidan", "ViajeX")
+322     CityHillidan.ViajeY = GetVar(DatPath & "Ciudades.dat", "Hillidan", "ViajeY")
+324     CityHillidan.MapaResu = GetVar(DatPath & "Ciudades.dat", "Hillidan", "MapaResu")
+326     CityHillidan.ResuX = GetVar(DatPath & "Ciudades.dat", "Hillidan", "ResuX")
+328     CityHillidan.ResuY = GetVar(DatPath & "Ciudades.dat", "Hillidan", "ResuY")
+330     CityHillidan.NecesitaNave = GetVar(DatPath & "Ciudades.dat", "Hillidan", "NecesitaNave")
     
-    Call MD5sCarga
+332     Call MD5sCarga
     
-    Call ConsultaPopular.LoadData
+334     Call ConsultaPopular.LoadData
     
-    Set Lector = Nothing
+336     Set Lector = Nothing
 
+        
+        Exit Sub
+
+LoadSini_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.LoadSini", Erl)
+        Resume Next
+        
 End Sub
 
 Sub LoadIntervalos()
+        
+        On Error GoTo LoadIntervalos_Err
+        
 
-    Dim Lector As clsIniReader
+        Dim Lector As clsIniReader
 
-    Set Lector = New clsIniReader
-    Call Lector.Initialize(IniPath & "intervalos.ini")
+100     Set Lector = New clsIniReader
+102     Call Lector.Initialize(IniPath & "intervalos.ini")
     
-    'Intervalos
-    SanaIntervaloSinDescansar = val(Lector.GetValue("INTERVALOS", "SanaIntervaloSinDescansar"))
-    FrmInterv.txtSanaIntervaloSinDescansar.Text = SanaIntervaloSinDescansar
+        'Intervalos
+104     SanaIntervaloSinDescansar = val(Lector.GetValue("INTERVALOS", "SanaIntervaloSinDescansar"))
+106     FrmInterv.txtSanaIntervaloSinDescansar.Text = SanaIntervaloSinDescansar
     
-    StaminaIntervaloSinDescansar = val(Lector.GetValue("INTERVALOS", "StaminaIntervaloSinDescansar"))
-    FrmInterv.txtStaminaIntervaloSinDescansar.Text = StaminaIntervaloSinDescansar
+108     StaminaIntervaloSinDescansar = val(Lector.GetValue("INTERVALOS", "StaminaIntervaloSinDescansar"))
+110     FrmInterv.txtStaminaIntervaloSinDescansar.Text = StaminaIntervaloSinDescansar
     
-    SanaIntervaloDescansar = val(Lector.GetValue("INTERVALOS", "SanaIntervaloDescansar"))
-    FrmInterv.txtSanaIntervaloDescansar.Text = SanaIntervaloDescansar
+112     SanaIntervaloDescansar = val(Lector.GetValue("INTERVALOS", "SanaIntervaloDescansar"))
+114     FrmInterv.txtSanaIntervaloDescansar.Text = SanaIntervaloDescansar
     
-    StaminaIntervaloDescansar = val(Lector.GetValue("INTERVALOS", "StaminaIntervaloDescansar"))
-    FrmInterv.txtStaminaIntervaloDescansar.Text = StaminaIntervaloDescansar
+116     StaminaIntervaloDescansar = val(Lector.GetValue("INTERVALOS", "StaminaIntervaloDescansar"))
+118     FrmInterv.txtStaminaIntervaloDescansar.Text = StaminaIntervaloDescansar
     
-    IntervaloSed = val(Lector.GetValue("INTERVALOS", "IntervaloSed"))
-    FrmInterv.txtIntervaloSed.Text = IntervaloSed
+120     IntervaloSed = val(Lector.GetValue("INTERVALOS", "IntervaloSed"))
+122     FrmInterv.txtIntervaloSed.Text = IntervaloSed
     
-    IntervaloHambre = val(Lector.GetValue("INTERVALOS", "IntervaloHambre"))
-    FrmInterv.txtIntervaloHambre.Text = IntervaloHambre
+124     IntervaloHambre = val(Lector.GetValue("INTERVALOS", "IntervaloHambre"))
+126     FrmInterv.txtIntervaloHambre.Text = IntervaloHambre
     
-    IntervaloVeneno = val(Lector.GetValue("INTERVALOS", "IntervaloVeneno"))
-    FrmInterv.txtIntervaloVeneno.Text = IntervaloVeneno
+128     IntervaloVeneno = val(Lector.GetValue("INTERVALOS", "IntervaloVeneno"))
+130     FrmInterv.txtIntervaloVeneno.Text = IntervaloVeneno
     
-    IntervaloParalizado = val(Lector.GetValue("INTERVALOS", "IntervaloParalizado"))
-    FrmInterv.txtIntervaloParalizado.Text = IntervaloParalizado
+132     IntervaloParalizado = val(Lector.GetValue("INTERVALOS", "IntervaloParalizado"))
+134     FrmInterv.txtIntervaloParalizado.Text = IntervaloParalizado
     
-    IntervaloInmovilizado = val(Lector.GetValue("INTERVALOS", "IntervaloInmovilizado"))
-    FrmInterv.txtIntervaloInmovilizado.Text = IntervaloInmovilizado
+136     IntervaloInmovilizado = val(Lector.GetValue("INTERVALOS", "IntervaloInmovilizado"))
+138     FrmInterv.txtIntervaloInmovilizado.Text = IntervaloInmovilizado
     
-    IntervaloInvisible = val(Lector.GetValue("INTERVALOS", "IntervaloInvisible"))
-    FrmInterv.txtIntervaloInvisible.Text = IntervaloInvisible
+140     IntervaloInvisible = val(Lector.GetValue("INTERVALOS", "IntervaloInvisible"))
+142     FrmInterv.txtIntervaloInvisible.Text = IntervaloInvisible
     
-    IntervaloFrio = val(Lector.GetValue("INTERVALOS", "IntervaloFrio"))
-    FrmInterv.txtIntervaloFrio.Text = IntervaloFrio
+144     IntervaloFrio = val(Lector.GetValue("INTERVALOS", "IntervaloFrio"))
+146     FrmInterv.txtIntervaloFrio.Text = IntervaloFrio
     
-    IntervaloWavFx = val(Lector.GetValue("INTERVALOS", "IntervaloWAVFX"))
-    FrmInterv.txtIntervaloWAVFX.Text = IntervaloWavFx
+148     IntervaloWavFx = val(Lector.GetValue("INTERVALOS", "IntervaloWAVFX"))
+150     FrmInterv.txtIntervaloWAVFX.Text = IntervaloWavFx
     
-    IntervaloInvocacion = val(Lector.GetValue("INTERVALOS", "IntervaloInvocacion"))
-    FrmInterv.txtInvocacion.Text = IntervaloInvocacion
+152     IntervaloInvocacion = val(Lector.GetValue("INTERVALOS", "IntervaloInvocacion"))
+154     FrmInterv.txtInvocacion.Text = IntervaloInvocacion
     
-    TimeoutPrimerPaquete = val(Lector.GetValue("INTERVALOS", "TimeoutPrimerPaquete"))
-    FrmInterv.txtTimeoutPrimerPaquete.Text = TimeoutPrimerPaquete
+156     TimeoutPrimerPaquete = val(Lector.GetValue("INTERVALOS", "TimeoutPrimerPaquete"))
+158     FrmInterv.txtTimeoutPrimerPaquete.Text = TimeoutPrimerPaquete
     
-    TimeoutEsperandoLoggear = val(Lector.GetValue("INTERVALOS", "TimeoutEsperandoLoggear"))
-    FrmInterv.txtTimeoutEsperandoLoggear.Text = TimeoutEsperandoLoggear
+160     TimeoutEsperandoLoggear = val(Lector.GetValue("INTERVALOS", "TimeoutEsperandoLoggear"))
+162     FrmInterv.txtTimeoutEsperandoLoggear.Text = TimeoutEsperandoLoggear
     
-    IntervaloIncineracion = val(Lector.GetValue("INTERVALOS", "IntervaloFuego"))
-    FrmInterv.txtintervalofuego.Text = IntervaloIncineracion
+164     IntervaloIncineracion = val(Lector.GetValue("INTERVALOS", "IntervaloFuego"))
+166     FrmInterv.txtintervalofuego.Text = IntervaloIncineracion
     
-    IntervaloTirar = val(Lector.GetValue("INTERVALOS", "IntervaloTirar"))
-    FrmInterv.txtintervalotirar.Text = IntervaloTirar
+168     IntervaloTirar = val(Lector.GetValue("INTERVALOS", "IntervaloTirar"))
+170     FrmInterv.txtintervalotirar.Text = IntervaloTirar
     
-    IntervaloCaminar = val(Lector.GetValue("INTERVALOS", "IntervaloCaminar"))
-    FrmInterv.txtintervalocaminar.Text = IntervaloCaminar
-    'Ladder
+172     IntervaloCaminar = val(Lector.GetValue("INTERVALOS", "IntervaloCaminar"))
+174     FrmInterv.txtintervalocaminar.Text = IntervaloCaminar
+        'Ladder
     
-    '&&&&&&&&&&&&&&&&&&&&& TIMERS &&&&&&&&&&&&&&&&&&&&&&&
+        '&&&&&&&&&&&&&&&&&&&&& TIMERS &&&&&&&&&&&&&&&&&&&&&&&
     
-    IntervaloUserPuedeCastear = val(Lector.GetValue("INTERVALOS", "IntervaloLanzaHechizo"))
-    FrmInterv.txtIntervaloLanzaHechizo.Text = IntervaloUserPuedeCastear
+176     IntervaloUserPuedeCastear = val(Lector.GetValue("INTERVALOS", "IntervaloLanzaHechizo"))
+178     FrmInterv.txtIntervaloLanzaHechizo.Text = IntervaloUserPuedeCastear
     
-    frmMain.TIMER_AI.Interval = val(Lector.GetValue("INTERVALOS", "IntervaloNpcAI"))
-    FrmInterv.txtAI.Text = frmMain.TIMER_AI.Interval
+180     frmMain.TIMER_AI.Interval = val(Lector.GetValue("INTERVALOS", "IntervaloNpcAI"))
+182     FrmInterv.txtAI.Text = frmMain.TIMER_AI.Interval
     
-    frmMain.npcataca.Interval = val(Lector.GetValue("INTERVALOS", "IntervaloNpcPuedeAtacar"))
-    FrmInterv.txtNPCPuedeAtacar.Text = frmMain.npcataca.Interval
+184     frmMain.npcataca.Interval = val(Lector.GetValue("INTERVALOS", "IntervaloNpcPuedeAtacar"))
+186     FrmInterv.txtNPCPuedeAtacar.Text = frmMain.npcataca.Interval
     
-    IntervaloUserPuedeTrabajar = val(Lector.GetValue("INTERVALOS", "IntervaloTrabajo"))
-    FrmInterv.txtTrabajo.Text = IntervaloUserPuedeTrabajar
+188     IntervaloUserPuedeTrabajar = val(Lector.GetValue("INTERVALOS", "IntervaloTrabajo"))
+190     FrmInterv.txtTrabajo.Text = IntervaloUserPuedeTrabajar
     
-    IntervaloUserPuedeAtacar = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeAtacar"))
-    FrmInterv.txtPuedeAtacar.Text = IntervaloUserPuedeAtacar
+192     IntervaloUserPuedeAtacar = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeAtacar"))
+194     FrmInterv.txtPuedeAtacar.Text = IntervaloUserPuedeAtacar
     
-    'TODO : Agregar estos intervalos al form!!!
-    IntervaloMagiaGolpe = val(Lector.GetValue("INTERVALOS", "IntervaloMagiaGolpe"))
-    IntervaloGolpeMagia = val(Lector.GetValue("INTERVALOS", "IntervaloGolpeMagia"))
+        'TODO : Agregar estos intervalos al form!!!
+196     IntervaloMagiaGolpe = val(Lector.GetValue("INTERVALOS", "IntervaloMagiaGolpe"))
+198     IntervaloGolpeMagia = val(Lector.GetValue("INTERVALOS", "IntervaloGolpeMagia"))
     
-    'frmMain.tLluvia.Interval = val(Lector.GetValue("INTERVALOS", "IntervaloPerdidaStaminaLluvia"))
-    'FrmInterv.txtIntervaloPerdidaStaminaLluvia.Text = frmMain.tLluvia.Interval
+        'frmMain.tLluvia.Interval = val(Lector.GetValue("INTERVALOS", "IntervaloPerdidaStaminaLluvia"))
+        'FrmInterv.txtIntervaloPerdidaStaminaLluvia.Text = frmMain.tLluvia.Interval
     
-    MinutosWs = val(Lector.GetValue("INTERVALOS", "IntervaloWS"))
+200     MinutosWs = val(Lector.GetValue("INTERVALOS", "IntervaloWS"))
 
-    If MinutosWs < 1 Then MinutosWs = 10
+202     If MinutosWs < 1 Then MinutosWs = 10
     
-    IntervaloCerrarConexion = val(Lector.GetValue("INTERVALOS", "IntervaloCerrarConexion"))
-    IntervaloUserPuedeUsar = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeUsar"))
-    IntervaloFlechasCazadores = val(Lector.GetValue("INTERVALOS", "IntervaloFlechasCazadores"))
+204     IntervaloCerrarConexion = val(Lector.GetValue("INTERVALOS", "IntervaloCerrarConexion"))
+206     IntervaloUserPuedeUsar = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeUsar"))
+208     IntervaloFlechasCazadores = val(Lector.GetValue("INTERVALOS", "IntervaloFlechasCazadores"))
     
-    IntervaloOculto = val(Lector.GetValue("INTERVALOS", "IntervaloOculto"))
+210     IntervaloOculto = val(Lector.GetValue("INTERVALOS", "IntervaloOculto"))
     
-    IntervaloPuedeSerAtacado = val(Lector.GetValue("INTERVALOS", "IntervaloPuedeSerAtacado"))
+212     IntervaloPuedeSerAtacado = val(Lector.GetValue("INTERVALOS", "IntervaloPuedeSerAtacado"))
     
-    '&&&&&&&&&&&&&&&&&&&&& FIN TIMERS &&&&&&&&&&&&&&&&&&&&&&&
+        '&&&&&&&&&&&&&&&&&&&&& FIN TIMERS &&&&&&&&&&&&&&&&&&&&&&&
     
-    Set Lector = Nothing
+214     Set Lector = Nothing
 
+        
+        Exit Sub
+
+LoadIntervalos_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.LoadIntervalos", Erl)
+        Resume Next
+        
 End Sub
 
 Sub LoadConfiguraciones()
-    ExpMult = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "ExpMult"))
-    OroMult = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "OroMult"))
-    OroAutoEquipable = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "OroAutoEquipable"))
-    DropMult = val(GetVar(IniPath & "Configuracion.ini", "DROPEO", "DropMult"))
-    DropActive = val(GetVar(IniPath & "Configuracion.ini", "DROPEO", "DropActive"))
-    RecoleccionMult = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "RecoleccionMult"))
+        
+        On Error GoTo LoadConfiguraciones_Err
+        
+100     ExpMult = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "ExpMult"))
+102     OroMult = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "OroMult"))
+104     OroAutoEquipable = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "OroAutoEquipable"))
+106     DropMult = val(GetVar(IniPath & "Configuracion.ini", "DROPEO", "DropMult"))
+108     DropActive = val(GetVar(IniPath & "Configuracion.ini", "DROPEO", "DropActive"))
+110     RecoleccionMult = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "RecoleccionMult"))
 
-    TimerCleanWorld = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "TimerCleanWorld"))
-    OroPorNivel = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "OroPorNivel"))
+112     TimerCleanWorld = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "TimerCleanWorld"))
+114     OroPorNivel = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "OroPorNivel"))
 
-    TimerHoraFantasia = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "TimerHoraFantasia"))
+116     TimerHoraFantasia = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "TimerHoraFantasia"))
 
-    BattleActivado = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "BattleActivado"))
-    BattleMinNivel = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "BattleMinNivel"))
+118     BattleActivado = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "BattleActivado"))
+120     BattleMinNivel = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "BattleMinNivel"))
 
-    frmMain.HoraFantasia.Interval = TimerHoraFantasia
+122     frmMain.HoraFantasia.Interval = TimerHoraFantasia
 
-    LimpiezaTimerMinutos = TimerCleanWorld
-    frmMain.lblLimpieza.Caption = "Limpieza del mundo en: " & LimpiezaTimerMinutos & " minutos."
+124     LimpiezaTimerMinutos = TimerCleanWorld
+126     frmMain.lblLimpieza.Caption = "Limpieza del mundo en: " & LimpiezaTimerMinutos & " minutos."
 
+        
+        Exit Sub
+
+LoadConfiguraciones_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.LoadConfiguraciones", Erl)
+        Resume Next
+        
 End Sub
 
 Sub WriteVar(ByVal File As String, ByVal Main As String, ByVal Var As String, ByVal Value As String)
-    '*****************************************************************
-    'Escribe VAR en un archivo
-    '*****************************************************************
+        '*****************************************************************
+        'Escribe VAR en un archivo
+        '*****************************************************************
+        
+        On Error GoTo WriteVar_Err
+        
 
-    writeprivateprofilestring Main, Var, Value, File
+100     writeprivateprofilestring Main, Var, Value, File
     
+        
+        Exit Sub
+
+WriteVar_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.WriteVar", Erl)
+        Resume Next
+        
 End Sub
 
 Sub LoadUser(ByVal UserIndex As Integer)
@@ -2564,33 +2834,53 @@ ErrorHandler:
 End Sub
 
 Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = False)
+        
+        On Error GoTo SaveUser_Err
+        
 
-    If Database_Enabled Then
-        Call SaveUserDatabase(UserIndex, Logout)
-    Else
-        Call SaveUserBinary(UserIndex, Logout)
+100     If Database_Enabled Then
+102         Call SaveUserDatabase(UserIndex, Logout)
+        Else
+104         Call SaveUserBinary(UserIndex, Logout)
 
-    End If
+        End If
 
+        
+        Exit Sub
+
+SaveUser_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.SaveUser", Erl)
+        Resume Next
+        
 End Sub
 
 Sub LoadUserBinary(ByVal UserIndex As Integer)
+        
+        On Error GoTo LoadUserBinary_Err
+        
 
-    'Cargamos el personaje
-    Dim Leer As New clsIniReader
+        'Cargamos el personaje
+        Dim Leer As New clsIniReader
     
-    Call Leer.Initialize(CharPath & UCase$(UserList(UserIndex).name) & ".chr")
+100     Call Leer.Initialize(CharPath & UCase$(UserList(UserIndex).name) & ".chr")
     
-    'Cargamos los datos del personaje
+        'Cargamos los datos del personaje
 
-    Call LoadUserInit(UserIndex, Leer)
+102     Call LoadUserInit(UserIndex, Leer)
     
-    Call LoadUserStats(UserIndex, Leer)
+104     Call LoadUserStats(UserIndex, Leer)
     
-    Call LoadQuestStats(UserIndex, Leer)
+106     Call LoadQuestStats(UserIndex, Leer)
     
-    Set Leer = Nothing
+108     Set Leer = Nothing
 
+        
+        Exit Sub
+
+LoadUserBinary_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.LoadUserBinary", Erl)
+        Resume Next
+        
 End Sub
 
 Sub SaveUserBinary(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean)
@@ -2936,14 +3226,24 @@ Errhandler:
 End Sub
 
 Sub SaveNewUser(ByVal UserIndex As Integer)
+        
+        On Error GoTo SaveNewUser_Err
+        
     
-    If Database_Enabled Then
-        Call SaveNewUserDatabase(UserIndex)
-    Else
-        Call SaveNewUserCharfile(UserIndex)
+100     If Database_Enabled Then
+102         Call SaveNewUserDatabase(UserIndex)
+        Else
+104         Call SaveNewUserCharfile(UserIndex)
 
-    End If
+        End If
     
+        
+        Exit Sub
+
+SaveNewUser_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.SaveNewUser", Erl)
+        Resume Next
+        
 End Sub
 
 Sub SaveNewUserCharfile(ByVal UserIndex As Integer)
@@ -3239,432 +3539,603 @@ Errhandler:
 End Sub
 
 Sub SetUserLogged(ByVal UserIndex As Integer)
+        
+        On Error GoTo SetUserLogged_Err
+        
 
-    If Database_Enabled Then
-        Call SetUserLoggedDatabase(UserList(UserIndex).Id, UserList(UserIndex).AccountID)
-    Else
-        Call WriteVar(CharPath & UCase$(UserList(UserIndex).name) & ".chr", "INIT", "Logged", 1)
-        Call WriteVar(CuentasPath & UCase$(UserList(UserIndex).Cuenta) & ".act", "INIT", "LOGEADA", 1)
+100     If Database_Enabled Then
+102         Call SetUserLoggedDatabase(UserList(UserIndex).Id, UserList(UserIndex).AccountID)
+        Else
+104         Call WriteVar(CharPath & UCase$(UserList(UserIndex).name) & ".chr", "INIT", "Logged", 1)
+106         Call WriteVar(CuentasPath & UCase$(UserList(UserIndex).Cuenta) & ".act", "INIT", "LOGEADA", 1)
 
-    End If
+        End If
 
+        
+        Exit Sub
+
+SetUserLogged_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.SetUserLogged", Erl)
+        Resume Next
+        
 End Sub
 
 Sub SaveBattlePoints(ByVal UserIndex As Integer)
+        
+        On Error GoTo SaveBattlePoints_Err
+        
     
-    If Database_Enabled Then
-        Call SaveBattlePointsDatabase(UserList(UserIndex).Id, UserList(UserIndex).flags.BattlePuntos)
-    Else
-        Call WriteVar(CharPath & UserList(UserIndex).name & ".chr", "Battle", "Puntos", UserList(UserIndex).flags.BattlePuntos)
+100     If Database_Enabled Then
+102         Call SaveBattlePointsDatabase(UserList(UserIndex).Id, UserList(UserIndex).flags.BattlePuntos)
+        Else
+104         Call WriteVar(CharPath & UserList(UserIndex).name & ".chr", "Battle", "Puntos", UserList(UserIndex).flags.BattlePuntos)
 
-    End If
+        End If
     
+        
+        Exit Sub
+
+SaveBattlePoints_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.SaveBattlePoints", Erl)
+        Resume Next
+        
 End Sub
 
 Function Status(ByVal UserIndex As Integer) As Byte
+        
+        On Error GoTo Status_Err
+        
 
-    Status = UserList(UserIndex).Faccion.Status
+100     Status = UserList(UserIndex).Faccion.Status
 
+        
+        Exit Function
+
+Status_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.Status", Erl)
+        Resume Next
+        
 End Function
 
 Sub BackUPnPc(NpcIndex As Integer)
+        
+        On Error GoTo BackUPnPc_Err
+        
 
-    Dim NpcNumero As Integer
+        Dim NpcNumero As Integer
 
-    Dim npcfile   As String
+        Dim npcfile   As String
 
-    Dim LoopC     As Integer
+        Dim LoopC     As Integer
 
-    NpcNumero = Npclist(NpcIndex).Numero
+100     NpcNumero = Npclist(NpcIndex).Numero
 
-    'If NpcNumero > 499 Then
-    '    npcfile = DatPath & "bkNPCs-HOSTILES.dat"
-    'Else
-    npcfile = DatPath & "bkNPCs.dat"
-    'End If
+        'If NpcNumero > 499 Then
+        '    npcfile = DatPath & "bkNPCs-HOSTILES.dat"
+        'Else
+102     npcfile = DatPath & "bkNPCs.dat"
+        'End If
 
-    'General
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "Name", Npclist(NpcIndex).name)
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "Desc", Npclist(NpcIndex).Desc)
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "Head", val(Npclist(NpcIndex).Char.Head))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "Body", val(Npclist(NpcIndex).Char.Body))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "Heading", val(Npclist(NpcIndex).Char.heading))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "Movement", val(Npclist(NpcIndex).Movement))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "Attackable", val(Npclist(NpcIndex).Attackable))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "Comercia", val(Npclist(NpcIndex).Comercia))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "TipoItems", val(Npclist(NpcIndex).TipoItems))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "Hostil", val(Npclist(NpcIndex).Hostile))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "GiveEXP", val(Npclist(NpcIndex).GiveEXP))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "GiveGLD", val(Npclist(NpcIndex).GiveGLD))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "Hostil", val(Npclist(NpcIndex).Hostile))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "InvReSpawn", val(Npclist(NpcIndex).InvReSpawn))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "NpcType", val(Npclist(NpcIndex).NPCtype))
+        'General
+104     Call WriteVar(npcfile, "NPC" & NpcNumero, "Name", Npclist(NpcIndex).name)
+106     Call WriteVar(npcfile, "NPC" & NpcNumero, "Desc", Npclist(NpcIndex).Desc)
+108     Call WriteVar(npcfile, "NPC" & NpcNumero, "Head", val(Npclist(NpcIndex).Char.Head))
+110     Call WriteVar(npcfile, "NPC" & NpcNumero, "Body", val(Npclist(NpcIndex).Char.Body))
+112     Call WriteVar(npcfile, "NPC" & NpcNumero, "Heading", val(Npclist(NpcIndex).Char.heading))
+114     Call WriteVar(npcfile, "NPC" & NpcNumero, "Movement", val(Npclist(NpcIndex).Movement))
+116     Call WriteVar(npcfile, "NPC" & NpcNumero, "Attackable", val(Npclist(NpcIndex).Attackable))
+118     Call WriteVar(npcfile, "NPC" & NpcNumero, "Comercia", val(Npclist(NpcIndex).Comercia))
+120     Call WriteVar(npcfile, "NPC" & NpcNumero, "TipoItems", val(Npclist(NpcIndex).TipoItems))
+122     Call WriteVar(npcfile, "NPC" & NpcNumero, "Hostil", val(Npclist(NpcIndex).Hostile))
+124     Call WriteVar(npcfile, "NPC" & NpcNumero, "GiveEXP", val(Npclist(NpcIndex).GiveEXP))
+126     Call WriteVar(npcfile, "NPC" & NpcNumero, "GiveGLD", val(Npclist(NpcIndex).GiveGLD))
+128     Call WriteVar(npcfile, "NPC" & NpcNumero, "Hostil", val(Npclist(NpcIndex).Hostile))
+130     Call WriteVar(npcfile, "NPC" & NpcNumero, "InvReSpawn", val(Npclist(NpcIndex).InvReSpawn))
+132     Call WriteVar(npcfile, "NPC" & NpcNumero, "NpcType", val(Npclist(NpcIndex).NPCtype))
 
-    'Stats
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "Alineacion", val(Npclist(NpcIndex).Stats.Alineacion))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "DEF", val(Npclist(NpcIndex).Stats.def))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "MaxHit", val(Npclist(NpcIndex).Stats.MaxHit))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "MaxHp", val(Npclist(NpcIndex).Stats.MaxHp))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "MinHit", val(Npclist(NpcIndex).Stats.MinHIT))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "MinHp", val(Npclist(NpcIndex).Stats.MinHp))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "DEF", val(Npclist(NpcIndex).Stats.UsuariosMatados)) 'Que es ESTO?!!
+        'Stats
+134     Call WriteVar(npcfile, "NPC" & NpcNumero, "Alineacion", val(Npclist(NpcIndex).Stats.Alineacion))
+136     Call WriteVar(npcfile, "NPC" & NpcNumero, "DEF", val(Npclist(NpcIndex).Stats.def))
+138     Call WriteVar(npcfile, "NPC" & NpcNumero, "MaxHit", val(Npclist(NpcIndex).Stats.MaxHit))
+140     Call WriteVar(npcfile, "NPC" & NpcNumero, "MaxHp", val(Npclist(NpcIndex).Stats.MaxHp))
+142     Call WriteVar(npcfile, "NPC" & NpcNumero, "MinHit", val(Npclist(NpcIndex).Stats.MinHIT))
+144     Call WriteVar(npcfile, "NPC" & NpcNumero, "MinHp", val(Npclist(NpcIndex).Stats.MinHp))
+146     Call WriteVar(npcfile, "NPC" & NpcNumero, "DEF", val(Npclist(NpcIndex).Stats.UsuariosMatados)) 'Que es ESTO?!!
 
-    'Flags
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "ReSpawn", val(Npclist(NpcIndex).flags.Respawn))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "BackUp", val(Npclist(NpcIndex).flags.backup))
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "Domable", val(Npclist(NpcIndex).flags.Domable))
+        'Flags
+148     Call WriteVar(npcfile, "NPC" & NpcNumero, "ReSpawn", val(Npclist(NpcIndex).flags.Respawn))
+150     Call WriteVar(npcfile, "NPC" & NpcNumero, "BackUp", val(Npclist(NpcIndex).flags.backup))
+152     Call WriteVar(npcfile, "NPC" & NpcNumero, "Domable", val(Npclist(NpcIndex).flags.Domable))
 
-    'Inventario
-    Call WriteVar(npcfile, "NPC" & NpcNumero, "NroItems", val(Npclist(NpcIndex).Invent.NroItems))
+        'Inventario
+154     Call WriteVar(npcfile, "NPC" & NpcNumero, "NroItems", val(Npclist(NpcIndex).Invent.NroItems))
 
-    If Npclist(NpcIndex).Invent.NroItems > 0 Then
+156     If Npclist(NpcIndex).Invent.NroItems > 0 Then
 
-        For LoopC = 1 To MAX_INVENTORY_SLOTS
-            Call WriteVar(npcfile, "NPC" & NpcNumero, "Obj" & LoopC, Npclist(NpcIndex).Invent.Object(LoopC).ObjIndex & "-" & Npclist(NpcIndex).Invent.Object(LoopC).Amount)
-        Next
+158         For LoopC = 1 To MAX_INVENTORY_SLOTS
+160             Call WriteVar(npcfile, "NPC" & NpcNumero, "Obj" & LoopC, Npclist(NpcIndex).Invent.Object(LoopC).ObjIndex & "-" & Npclist(NpcIndex).Invent.Object(LoopC).Amount)
+            Next
 
-    End If
+        End If
 
+        
+        Exit Sub
+
+BackUPnPc_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.BackUPnPc", Erl)
+        Resume Next
+        
 End Sub
 
 Sub CargarNpcBackUp(NpcIndex As Integer, ByVal NpcNumber As Integer)
+        
+        On Error GoTo CargarNpcBackUp_Err
+        
 
-    'Status
-    If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando backup Npc"
+        'Status
+100     If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando backup Npc"
 
-    Dim npcfile As String
+        Dim npcfile As String
 
-    'If NpcNumber > 499 Then
-    '    npcfile = DatPath & "bkNPCs-HOSTILES.dat"
-    'Else
-    npcfile = DatPath & "bkNPCs.dat"
-    'End If
+        'If NpcNumber > 499 Then
+        '    npcfile = DatPath & "bkNPCs-HOSTILES.dat"
+        'Else
+102     npcfile = DatPath & "bkNPCs.dat"
+        'End If
 
-    Npclist(NpcIndex).Numero = NpcNumber
-    Npclist(NpcIndex).name = GetVar(npcfile, "NPC" & NpcNumber, "Name")
-    Npclist(NpcIndex).Desc = GetVar(npcfile, "NPC" & NpcNumber, "Desc")
-    Npclist(NpcIndex).Movement = val(GetVar(npcfile, "NPC" & NpcNumber, "Movement"))
-    Npclist(NpcIndex).NPCtype = val(GetVar(npcfile, "NPC" & NpcNumber, "NpcType"))
+104     Npclist(NpcIndex).Numero = NpcNumber
+106     Npclist(NpcIndex).name = GetVar(npcfile, "NPC" & NpcNumber, "Name")
+108     Npclist(NpcIndex).Desc = GetVar(npcfile, "NPC" & NpcNumber, "Desc")
+110     Npclist(NpcIndex).Movement = val(GetVar(npcfile, "NPC" & NpcNumber, "Movement"))
+112     Npclist(NpcIndex).NPCtype = val(GetVar(npcfile, "NPC" & NpcNumber, "NpcType"))
 
-    Npclist(NpcIndex).Char.Body = val(GetVar(npcfile, "NPC" & NpcNumber, "Body"))
-    Npclist(NpcIndex).Char.Head = val(GetVar(npcfile, "NPC" & NpcNumber, "Head"))
-    Npclist(NpcIndex).Char.heading = val(GetVar(npcfile, "NPC" & NpcNumber, "Heading"))
+114     Npclist(NpcIndex).Char.Body = val(GetVar(npcfile, "NPC" & NpcNumber, "Body"))
+116     Npclist(NpcIndex).Char.Head = val(GetVar(npcfile, "NPC" & NpcNumber, "Head"))
+118     Npclist(NpcIndex).Char.heading = val(GetVar(npcfile, "NPC" & NpcNumber, "Heading"))
 
-    Npclist(NpcIndex).Attackable = val(GetVar(npcfile, "NPC" & NpcNumber, "Attackable"))
-    Npclist(NpcIndex).Comercia = val(GetVar(npcfile, "NPC" & NpcNumber, "Comercia"))
-    Npclist(NpcIndex).Hostile = val(GetVar(npcfile, "NPC" & NpcNumber, "Hostile"))
-    Npclist(NpcIndex).GiveEXP = val(GetVar(npcfile, "NPC" & NpcNumber, "GiveEXP"))
+120     Npclist(NpcIndex).Attackable = val(GetVar(npcfile, "NPC" & NpcNumber, "Attackable"))
+122     Npclist(NpcIndex).Comercia = val(GetVar(npcfile, "NPC" & NpcNumber, "Comercia"))
+124     Npclist(NpcIndex).Hostile = val(GetVar(npcfile, "NPC" & NpcNumber, "Hostile"))
+126     Npclist(NpcIndex).GiveEXP = val(GetVar(npcfile, "NPC" & NpcNumber, "GiveEXP"))
 
-    Npclist(NpcIndex).GiveGLD = val(GetVar(npcfile, "NPC" & NpcNumber, "GiveGLD"))
+128     Npclist(NpcIndex).GiveGLD = val(GetVar(npcfile, "NPC" & NpcNumber, "GiveGLD"))
 
-    Npclist(NpcIndex).InvReSpawn = val(GetVar(npcfile, "NPC" & NpcNumber, "InvReSpawn"))
+130     Npclist(NpcIndex).InvReSpawn = val(GetVar(npcfile, "NPC" & NpcNumber, "InvReSpawn"))
 
-    Npclist(NpcIndex).Stats.MaxHp = val(GetVar(npcfile, "NPC" & NpcNumber, "MaxHP"))
-    Npclist(NpcIndex).Stats.MinHp = val(GetVar(npcfile, "NPC" & NpcNumber, "MinHP"))
-    Npclist(NpcIndex).Stats.MaxHit = val(GetVar(npcfile, "NPC" & NpcNumber, "MaxHIT"))
-    Npclist(NpcIndex).Stats.MinHIT = val(GetVar(npcfile, "NPC" & NpcNumber, "MinHIT"))
-    Npclist(NpcIndex).Stats.def = val(GetVar(npcfile, "NPC" & NpcNumber, "DEF"))
-    Npclist(NpcIndex).Stats.Alineacion = val(GetVar(npcfile, "NPC" & NpcNumber, "Alineacion"))
+132     Npclist(NpcIndex).Stats.MaxHp = val(GetVar(npcfile, "NPC" & NpcNumber, "MaxHP"))
+134     Npclist(NpcIndex).Stats.MinHp = val(GetVar(npcfile, "NPC" & NpcNumber, "MinHP"))
+136     Npclist(NpcIndex).Stats.MaxHit = val(GetVar(npcfile, "NPC" & NpcNumber, "MaxHIT"))
+138     Npclist(NpcIndex).Stats.MinHIT = val(GetVar(npcfile, "NPC" & NpcNumber, "MinHIT"))
+140     Npclist(NpcIndex).Stats.def = val(GetVar(npcfile, "NPC" & NpcNumber, "DEF"))
+142     Npclist(NpcIndex).Stats.Alineacion = val(GetVar(npcfile, "NPC" & NpcNumber, "Alineacion"))
 
-    Dim LoopC As Integer
+        Dim LoopC As Integer
 
-    Dim ln    As String
+        Dim ln    As String
 
-    Npclist(NpcIndex).Invent.NroItems = val(GetVar(npcfile, "NPC" & NpcNumber, "NROITEMS"))
+144     Npclist(NpcIndex).Invent.NroItems = val(GetVar(npcfile, "NPC" & NpcNumber, "NROITEMS"))
 
-    If Npclist(NpcIndex).Invent.NroItems > 0 Then
+146     If Npclist(NpcIndex).Invent.NroItems > 0 Then
 
-        For LoopC = 1 To MAX_INVENTORY_SLOTS
-            ln = GetVar(npcfile, "NPC" & NpcNumber, "Obj" & LoopC)
-            Npclist(NpcIndex).Invent.Object(LoopC).ObjIndex = val(ReadField(1, ln, 45))
-            Npclist(NpcIndex).Invent.Object(LoopC).Amount = val(ReadField(2, ln, 45))
+148         For LoopC = 1 To MAX_INVENTORY_SLOTS
+150             ln = GetVar(npcfile, "NPC" & NpcNumber, "Obj" & LoopC)
+152             Npclist(NpcIndex).Invent.Object(LoopC).ObjIndex = val(ReadField(1, ln, 45))
+154             Npclist(NpcIndex).Invent.Object(LoopC).Amount = val(ReadField(2, ln, 45))
        
-        Next LoopC
+156         Next LoopC
 
-    Else
+        Else
 
-        For LoopC = 1 To MAX_INVENTORY_SLOTS
-            Npclist(NpcIndex).Invent.Object(LoopC).ObjIndex = 0
-            Npclist(NpcIndex).Invent.Object(LoopC).Amount = 0
-        Next LoopC
+158         For LoopC = 1 To MAX_INVENTORY_SLOTS
+160             Npclist(NpcIndex).Invent.Object(LoopC).ObjIndex = 0
+162             Npclist(NpcIndex).Invent.Object(LoopC).Amount = 0
+164         Next LoopC
 
-    End If
+        End If
 
-    Npclist(NpcIndex).flags.NPCActive = True
-    Npclist(NpcIndex).flags.UseAINow = False
-    Npclist(NpcIndex).flags.Respawn = val(GetVar(npcfile, "NPC" & NpcNumber, "ReSpawn"))
-    Npclist(NpcIndex).flags.backup = val(GetVar(npcfile, "NPC" & NpcNumber, "BackUp"))
-    Npclist(NpcIndex).flags.Domable = val(GetVar(npcfile, "NPC" & NpcNumber, "Domable"))
-    Npclist(NpcIndex).flags.RespawnOrigPos = val(GetVar(npcfile, "NPC" & NpcNumber, "OrigPos"))
+166     Npclist(NpcIndex).flags.NPCActive = True
+168     Npclist(NpcIndex).flags.UseAINow = False
+170     Npclist(NpcIndex).flags.Respawn = val(GetVar(npcfile, "NPC" & NpcNumber, "ReSpawn"))
+172     Npclist(NpcIndex).flags.backup = val(GetVar(npcfile, "NPC" & NpcNumber, "BackUp"))
+174     Npclist(NpcIndex).flags.Domable = val(GetVar(npcfile, "NPC" & NpcNumber, "Domable"))
+176     Npclist(NpcIndex).flags.RespawnOrigPos = val(GetVar(npcfile, "NPC" & NpcNumber, "OrigPos"))
 
-    'Tipo de items con los que comercia
-    Npclist(NpcIndex).TipoItems = val(GetVar(npcfile, "NPC" & NpcNumber, "TipoItems"))
+        'Tipo de items con los que comercia
+178     Npclist(NpcIndex).TipoItems = val(GetVar(npcfile, "NPC" & NpcNumber, "TipoItems"))
 
+        
+        Exit Sub
+
+CargarNpcBackUp_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.CargarNpcBackUp", Erl)
+        Resume Next
+        
 End Sub
 
 Sub LogBan(ByVal BannedIndex As Integer, ByVal UserIndex As Integer, ByVal motivo As String)
+        
+        On Error GoTo LogBan_Err
+        
 
-    Call WriteVar(App.Path & "\logs\" & "BanDetail.log", UserList(BannedIndex).name, "BannedBy", UserList(UserIndex).name)
-    Call WriteVar(App.Path & "\logs\" & "BanDetail.log", UserList(BannedIndex).name, "Reason", motivo)
+100     Call WriteVar(App.Path & "\logs\" & "BanDetail.log", UserList(BannedIndex).name, "BannedBy", UserList(UserIndex).name)
+102     Call WriteVar(App.Path & "\logs\" & "BanDetail.log", UserList(BannedIndex).name, "Reason", motivo)
 
-    'Log interno del servidor, lo usa para hacer un UNBAN general de toda la gente banned
-    Dim mifile As Integer
+        'Log interno del servidor, lo usa para hacer un UNBAN general de toda la gente banned
+        Dim mifile As Integer
 
-    mifile = FreeFile
-    Open App.Path & "\logs\GenteBanned.log" For Append Shared As #mifile
-    Print #mifile, UserList(BannedIndex).name
-    Close #mifile
+104     mifile = FreeFile
+106     Open App.Path & "\logs\GenteBanned.log" For Append Shared As #mifile
+108     Print #mifile, UserList(BannedIndex).name
+110     Close #mifile
 
+        
+        Exit Sub
+
+LogBan_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.LogBan", Erl)
+        Resume Next
+        
 End Sub
 
 Sub LogBanFromName(ByVal BannedName As String, ByVal UserIndex As Integer, ByVal motivo As String)
+        
+        On Error GoTo LogBanFromName_Err
+        
 
-    Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", BannedName, "BannedBy", UserList(UserIndex).name)
-    Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", BannedName, "Reason", motivo)
+100     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", BannedName, "BannedBy", UserList(UserIndex).name)
+102     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", BannedName, "Reason", motivo)
 
-    'Log interno del servidor, lo usa para hacer un UNBAN general de toda la gente banned
-    Dim mifile As Integer
+        'Log interno del servidor, lo usa para hacer un UNBAN general de toda la gente banned
+        Dim mifile As Integer
 
-    mifile = FreeFile
-    Open App.Path & "\logs\GenteBanned.log" For Append Shared As #mifile
-    Print #mifile, BannedName
-    Close #mifile
+104     mifile = FreeFile
+106     Open App.Path & "\logs\GenteBanned.log" For Append Shared As #mifile
+108     Print #mifile, BannedName
+110     Close #mifile
 
+        
+        Exit Sub
+
+LogBanFromName_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.LogBanFromName", Erl)
+        Resume Next
+        
 End Sub
 
 Sub Ban(ByVal BannedName As String, ByVal Baneador As String, ByVal motivo As String)
+        
+        On Error GoTo Ban_Err
+        
 
-    Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", BannedName, "BannedBy", Baneador)
-    Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", BannedName, "Reason", motivo)
+100     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", BannedName, "BannedBy", Baneador)
+102     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", BannedName, "Reason", motivo)
 
-    'Log interno del servidor, lo usa para hacer un UNBAN general de toda la gente banned
-    Dim mifile As Integer
+        'Log interno del servidor, lo usa para hacer un UNBAN general de toda la gente banned
+        Dim mifile As Integer
 
-    mifile = FreeFile
-    Open App.Path & "\logs\GenteBanned.log" For Append Shared As #mifile
-    Print #mifile, BannedName
-    Close #mifile
+104     mifile = FreeFile
+106     Open App.Path & "\logs\GenteBanned.log" For Append Shared As #mifile
+108     Print #mifile, BannedName
+110     Close #mifile
 
+        
+        Exit Sub
+
+Ban_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.Ban", Erl)
+        Resume Next
+        
 End Sub
 
 Public Sub CargaApuestas()
+        
+        On Error GoTo CargaApuestas_Err
+        
 
-    Apuestas.Ganancias = val(GetVar(DatPath & "apuestas.dat", "Main", "Ganancias"))
-    Apuestas.Perdidas = val(GetVar(DatPath & "apuestas.dat", "Main", "Perdidas"))
-    Apuestas.Jugadas = val(GetVar(DatPath & "apuestas.dat", "Main", "Jugadas"))
+100     Apuestas.Ganancias = val(GetVar(DatPath & "apuestas.dat", "Main", "Ganancias"))
+102     Apuestas.Perdidas = val(GetVar(DatPath & "apuestas.dat", "Main", "Perdidas"))
+104     Apuestas.Jugadas = val(GetVar(DatPath & "apuestas.dat", "Main", "Jugadas"))
 
+        
+        Exit Sub
+
+CargaApuestas_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.CargaApuestas", Erl)
+        Resume Next
+        
 End Sub
 
 Public Sub LoadRecursosEspeciales()
+        
+        On Error GoTo LoadRecursosEspeciales_Err
+        
 
-    If Not FileExist(DatPath & "RecursosEspeciales.dat", vbArchive) Then
-        ReDim EspecialesTala(0) As obj
-        ReDim EspecialesPesca(0) As obj
+100     If Not FileExist(DatPath & "RecursosEspeciales.dat", vbArchive) Then
+102         ReDim EspecialesTala(0) As obj
+104         ReDim EspecialesPesca(0) As obj
+            Exit Sub
+
+        End If
+
+        Dim IniFile As clsIniReader
+
+106     Set IniFile = New clsIniReader
+    
+108     Call IniFile.Initialize(DatPath & "RecursosEspeciales.dat")
+    
+        Dim Count As Long, i As Long, str As String, Field() As String
+    
+        ' Tala
+110     Count = val(IniFile.GetValue("Tala", "Items"))
+
+112     If Count > 0 Then
+114         ReDim EspecialesTala(1 To Count) As obj
+
+116         For i = 1 To Count
+118             str = IniFile.GetValue("Tala", "Item" & i)
+120             Field = Split(str, "-")
+            
+122             EspecialesTala(i).ObjIndex = val(Field(0))
+124             EspecialesTala(i).data = val(Field(1))      ' Probabilidad
+            Next
+        Else
+126         ReDim EspecialesTala(0) As obj
+
+        End If
+    
+        ' Pesca
+128     Count = val(IniFile.GetValue("Pesca", "Items"))
+
+130     If Count > 0 Then
+132         ReDim EspecialesPesca(1 To Count) As obj
+
+134         For i = 1 To Count
+136             str = IniFile.GetValue("Pesca", "Item" & i)
+138             Field = Split(str, "-")
+            
+140             EspecialesPesca(i).ObjIndex = val(Field(0))
+142             EspecialesPesca(i).data = val(Field(1))     ' Probabilidad
+            Next
+        Else
+144         ReDim EspecialesPesca(0) As obj
+
+        End If
+    
+146     Set IniFile = Nothing
+
+        
         Exit Sub
 
-    End If
-
-    Dim IniFile As clsIniReader
-
-    Set IniFile = New clsIniReader
-    
-    Call IniFile.Initialize(DatPath & "RecursosEspeciales.dat")
-    
-    Dim Count As Long, i As Long, str As String, Field() As String
-    
-    ' Tala
-    Count = val(IniFile.GetValue("Tala", "Items"))
-
-    If Count > 0 Then
-        ReDim EspecialesTala(1 To Count) As obj
-
-        For i = 1 To Count
-            str = IniFile.GetValue("Tala", "Item" & i)
-            Field = Split(str, "-")
-            
-            EspecialesTala(i).ObjIndex = val(Field(0))
-            EspecialesTala(i).data = val(Field(1))      ' Probabilidad
-        Next
-    Else
-        ReDim EspecialesTala(0) As obj
-
-    End If
-    
-    ' Pesca
-    Count = val(IniFile.GetValue("Pesca", "Items"))
-
-    If Count > 0 Then
-        ReDim EspecialesPesca(1 To Count) As obj
-
-        For i = 1 To Count
-            str = IniFile.GetValue("Pesca", "Item" & i)
-            Field = Split(str, "-")
-            
-            EspecialesPesca(i).ObjIndex = val(Field(0))
-            EspecialesPesca(i).data = val(Field(1))     ' Probabilidad
-        Next
-    Else
-        ReDim EspecialesPesca(0) As obj
-
-    End If
-    
-    Set IniFile = Nothing
-
+LoadRecursosEspeciales_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.LoadRecursosEspeciales", Erl)
+        Resume Next
+        
 End Sub
 
 Public Sub LoadPesca()
+        
+        On Error GoTo LoadPesca_Err
+        
 
-    If Not FileExist(DatPath & "pesca.dat", vbArchive) Then
-        ReDim Peces(0) As obj
-        ReDim PesoPeces(0) As Long
+100     If Not FileExist(DatPath & "pesca.dat", vbArchive) Then
+102         ReDim Peces(0) As obj
+104         ReDim PesoPeces(0) As Long
+            Exit Sub
+
+        End If
+
+        Dim IniFile As clsIniReader
+
+106     Set IniFile = New clsIniReader
+    
+108     Call IniFile.Initialize(DatPath & "pesca.dat")
+    
+        Dim Count As Long, i As Long, str As String, Field() As String, nivel As Integer, MaxLvlCania As Long
+
+110     Count = val(IniFile.GetValue("PECES", "NumPeces"))
+112     MaxLvlCania = val(IniFile.GetValue("PECES", "Maxlvlcaña"))
+    
+114     ReDim PesoPeces(0 To MaxLvlCania) As Long
+    
+116     If Count > 0 Then
+118         ReDim Peces(1 To Count) As obj
+
+            ' Cargo todos los peces
+120         For i = 1 To Count
+122             str = IniFile.GetValue("PECES", "Pez" & i)
+124             Field = Split(str, "-")
+            
+126             Peces(i).ObjIndex = val(Field(0))
+128             Peces(i).data = val(Field(1))       ' Peso
+
+130             nivel = val(Field(2))               ' Nivel de caña
+
+132             If (nivel > MaxLvlCania) Then nivel = MaxLvlCania
+134             Peces(i).Amount = nivel
+            Next
+
+            ' Los ordeno segun nivel de caña (quick sort)
+136         Call QuickSortPeces(1, Count)
+
+            ' Sumo los pesos
+138         For i = 1 To Count
+140             PesoPeces(Peces(i).Amount) = PesoPeces(Peces(i).Amount) + Peces(i).data
+142             Peces(i).data = PesoPeces(Peces(i).Amount)
+            Next
+        Else
+144         ReDim Peces(0) As obj
+
+        End If
+    
+146     For i = 1 To MaxLvlCania
+148         PesoPeces(i) = PesoPeces(i) + PesoPeces(i - 1)
+        Next
+    
+150     Set IniFile = Nothing
+
+        
         Exit Sub
 
-    End If
-
-    Dim IniFile As clsIniReader
-
-    Set IniFile = New clsIniReader
-    
-    Call IniFile.Initialize(DatPath & "pesca.dat")
-    
-    Dim Count As Long, i As Long, str As String, Field() As String, nivel As Integer, MaxLvlCania As Long
-
-    Count = val(IniFile.GetValue("PECES", "NumPeces"))
-    MaxLvlCania = val(IniFile.GetValue("PECES", "Maxlvlcaña"))
-    
-    ReDim PesoPeces(0 To MaxLvlCania) As Long
-    
-    If Count > 0 Then
-        ReDim Peces(1 To Count) As obj
-
-        ' Cargo todos los peces
-        For i = 1 To Count
-            str = IniFile.GetValue("PECES", "Pez" & i)
-            Field = Split(str, "-")
-            
-            Peces(i).ObjIndex = val(Field(0))
-            Peces(i).data = val(Field(1))       ' Peso
-
-            nivel = val(Field(2))               ' Nivel de caña
-
-            If (nivel > MaxLvlCania) Then nivel = MaxLvlCania
-            Peces(i).Amount = nivel
-        Next
-
-        ' Los ordeno segun nivel de caña (quick sort)
-        Call QuickSortPeces(1, Count)
-
-        ' Sumo los pesos
-        For i = 1 To Count
-            PesoPeces(Peces(i).Amount) = PesoPeces(Peces(i).Amount) + Peces(i).data
-            Peces(i).data = PesoPeces(Peces(i).Amount)
-        Next
-    Else
-        ReDim Peces(0) As obj
-
-    End If
-    
-    For i = 1 To MaxLvlCania
-        PesoPeces(i) = PesoPeces(i) + PesoPeces(i - 1)
-    Next
-    
-    Set IniFile = Nothing
-
+LoadPesca_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.LoadPesca", Erl)
+        Resume Next
+        
 End Sub
 
 ' Adaptado de https://www.vbforums.com/showthread.php?231925-VB-Quick-Sort-algorithm-(very-fast-sorting-algorithm)
 Private Sub QuickSortPeces(ByVal First As Long, ByVal Last As Long)
+        
+        On Error GoTo QuickSortPeces_Err
+        
 
-    Dim low      As Long, high As Long
+        Dim low      As Long, high As Long
 
-    Dim MidValue As String
+        Dim MidValue As String
 
-    Dim aux      As obj
+        Dim aux      As obj
     
-    low = First
-    high = Last
-    MidValue = Peces((First + Last) \ 2).Amount
+100     low = First
+102     high = Last
+104     MidValue = Peces((First + Last) \ 2).Amount
     
-    Do
+        Do
 
-        While Peces(low).Amount < MidValue
+106         While Peces(low).Amount < MidValue
 
-            low = low + 1
-        Wend
+108             low = low + 1
+            Wend
 
-        While Peces(high).Amount > MidValue
+110         While Peces(high).Amount > MidValue
 
-            high = high - 1
-        Wend
+112             high = high - 1
+            Wend
 
-        If low <= high Then
-            aux = Peces(low)
-            Peces(low) = Peces(high)
-            Peces(high) = aux
-            low = low + 1
-            high = high - 1
+114         If low <= high Then
+116             aux = Peces(low)
+118             Peces(low) = Peces(high)
+120             Peces(high) = aux
+122             low = low + 1
+124             high = high - 1
 
-        End If
+            End If
 
-    Loop While low <= high
+126     Loop While low <= high
     
-    If First < high Then QuickSortPeces First, high
-    If low < Last Then QuickSortPeces low, Last
+128     If First < high Then QuickSortPeces First, high
+130     If low < Last Then QuickSortPeces low, Last
 
+        
+        Exit Sub
+
+QuickSortPeces_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.QuickSortPeces", Erl)
+        Resume Next
+        
 End Sub
 
 ' Adaptado de https://www.freevbcode.com/ShowCode.asp?ID=9416
 Public Function BinarySearchPeces(ByVal Value As Long) As Long
+        
+        On Error GoTo BinarySearchPeces_Err
+        
 
-    Dim low  As Long
+        Dim low  As Long
 
-    Dim high As Long
+        Dim high As Long
 
-    low = 1
-    high = UBound(Peces)
+100     low = 1
+102     high = UBound(Peces)
 
-    Dim i              As Long
+        Dim i              As Long
 
-    Dim valor_anterior As Long
+        Dim valor_anterior As Long
     
-    Do While low <= high
-        i = (low + high) \ 2
+104     Do While low <= high
+106         i = (low + high) \ 2
 
-        If i > 1 Then
-            valor_anterior = Peces(i - 1).data
-        Else
-            valor_anterior = 0
+108         If i > 1 Then
+110             valor_anterior = Peces(i - 1).data
+            Else
+112             valor_anterior = 0
 
-        End If
+            End If
 
-        If Value > valor_anterior And Value < Peces(i).data Then
-            BinarySearchPeces = i
-            Exit Do
+114         If Value > valor_anterior And Value < Peces(i).data Then
+116             BinarySearchPeces = i
+                Exit Do
             
-        ElseIf Value < valor_anterior Then
-            high = (i - 1)
+118         ElseIf Value < valor_anterior Then
+120             high = (i - 1)
             
-        Else
-            low = (i + 1)
+            Else
+122             low = (i + 1)
 
-        End If
+            End If
 
-    Loop
+        Loop
 
+        
+        Exit Function
+
+BinarySearchPeces_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.BinarySearchPeces", Erl)
+        Resume Next
+        
 End Function
 
 Public Sub LoadUserIntervals(ByVal UserIndex As Integer)
+        
+        On Error GoTo LoadUserIntervals_Err
+        
 
-    With UserList(UserIndex).Intervals
-        .Arco = IntervaloFlechasCazadores
-        .Caminar = IntervaloCaminar
-        .Golpe = IntervaloUserPuedeAtacar
-        .magia = IntervaloUserPuedeCastear
-        .GolpeMagia = IntervaloGolpeMagia
-        .MagiaGolpe = IntervaloMagiaGolpe
-        .Trabajar = IntervaloUserPuedeTrabajar
-        .Usar = IntervaloUserPuedeUsar
+100     With UserList(UserIndex).Intervals
+102         .Arco = IntervaloFlechasCazadores
+104         .Caminar = IntervaloCaminar
+106         .Golpe = IntervaloUserPuedeAtacar
+108         .magia = IntervaloUserPuedeCastear
+110         .GolpeMagia = IntervaloGolpeMagia
+112         .MagiaGolpe = IntervaloMagiaGolpe
+114         .Trabajar = IntervaloUserPuedeTrabajar
+116         .Usar = IntervaloUserPuedeUsar
 
-    End With
+        End With
 
+        
+        Exit Sub
+
+LoadUserIntervals_Err:
+        Call RegistrarError(Err.Number, Err.description, "ES.LoadUserIntervals", Erl)
+        Resume Next
+        
 End Sub
+
+Public Sub RegistrarError(ByVal Numero As Long, ByVal Descripcion As String, ByVal Componente As String, Optional ByVal Linea As Integer)
+    '**********************************************************
+    'Author: Jopi
+    'Guarda una descripcion detallada del error en Errores.log
+    '**********************************************************
+        
+100     Dim File As Integer: File = FreeFile
+        
+102     Open App.Path & "\logs\Errores.log" For Append As #File
+    
+104         Print #File, "Error: " & Numero
+106         Print #File, "Descripcion: " & Descripcion
+        
+108         If LenB(Linea) <> 0 Then
+110             Print #File, "Linea: " & Linea
+            End If
+        
+112         Print #File, "Componente: " & Componente
+114         Print #File, "Fecha y Hora: " & Date$ & "-" & Time$
+        
+116         Print #File, vbNullString
+        
+118     Close #File
+    
+120     Debug.Print "Error: " & Numero & vbNewLine & _
+                    "Descripcion: " & Descripcion & vbNewLine & _
+                    "Componente: " & Componente & vbNewLine & _
+                    "Fecha y Hora: " & Date$ & "-" & Time$ & vbNewLine
+End Sub
+

@@ -45,25 +45,35 @@ Private Const MaximoPersonajesPorIP = 15
 Private m_coleccion As New Collection
 
 Public Function MaxPersonajes(sIp As String) As Boolean
+        
+        On Error GoTo MaxPersonajes_Err
+        
 
-    Dim i As Long
+        Dim i As Long
 
-    For i = 1 To m_coleccion.Count
+100     For i = 1 To m_coleccion.Count
 
-        If m_coleccion.Item(i).ip = sIp Then
-            m_coleccion.Item(i).PersonajesCreados = m_coleccion.Item(i).PersonajesCreados + 1
-            MaxPersonajes = (m_coleccion.Item(i).PersonajesCreados > MaximoPersonajesPorIP)
+102         If m_coleccion.Item(i).ip = sIp Then
+104             m_coleccion.Item(i).PersonajesCreados = m_coleccion.Item(i).PersonajesCreados + 1
+106             MaxPersonajes = (m_coleccion.Item(i).PersonajesCreados > MaximoPersonajesPorIP)
 
-            If MaxPersonajes Then m_coleccion.Item(i).PersonajesCreados = 16
-            Exit Function
+108             If MaxPersonajes Then m_coleccion.Item(i).PersonajesCreados = 16
+                Exit Function
 
-        End If
+            End If
 
-    Next i
+110     Next i
 
-    MaxPersonajes = False
-    Exit Function
+112     MaxPersonajes = False
+        Exit Function
 
+        
+        Exit Function
+
+MaxPersonajes_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsAntiMassClon.MaxPersonajes", Erl)
+        Resume Next
+        
 End Function
 
 Public Function VaciarColeccion()

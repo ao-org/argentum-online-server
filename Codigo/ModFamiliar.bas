@@ -21,251 +21,311 @@ Public Type Family
 End Type
 
 Public Sub LimpiarMascota(UserIndex)
-    Npclist(UserList(UserIndex).Familiar.Id).EsFamiliar = 0
-    UserList(UserIndex).Familiar.Muerto = 1
-    UserList(UserIndex).Familiar.MinHp = 0
-    UserList(UserIndex).Familiar.Invocado = 0
-    UserList(UserIndex).Familiar.Id = 0
-    UserList(UserIndex).Familiar.Paralizado = 0
-    UserList(UserIndex).Familiar.Inmovilizado = 0
-    'Call WriteConsoleMsg(UserIndex, "Tu familiar ha muerto, acercate al templo mas cercano para que sea resucitado.", FontTypeNames.FONTTYPE_WARNING)
-    Call WriteLocaleMsg(UserIndex, "181", FontTypeNames.FONTTYPE_INFOIAO)
+        
+        On Error GoTo LimpiarMascota_Err
+        
+100     Npclist(UserList(UserIndex).Familiar.Id).EsFamiliar = 0
+102     UserList(UserIndex).Familiar.Muerto = 1
+104     UserList(UserIndex).Familiar.MinHp = 0
+106     UserList(UserIndex).Familiar.Invocado = 0
+108     UserList(UserIndex).Familiar.Id = 0
+110     UserList(UserIndex).Familiar.Paralizado = 0
+112     UserList(UserIndex).Familiar.Inmovilizado = 0
+        'Call WriteConsoleMsg(UserIndex, "Tu familiar ha muerto, acercate al templo mas cercano para que sea resucitado.", FontTypeNames.FONTTYPE_WARNING)
+114     Call WriteLocaleMsg(UserIndex, "181", FontTypeNames.FONTTYPE_INFOIAO)
 
+        
+        Exit Sub
+
+LimpiarMascota_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModFamiliar.LimpiarMascota", Erl)
+        Resume Next
+        
 End Sub
 
 Public Sub InvocarFamiliar(ByVal UserIndex As Integer, ByVal b As Boolean)
+        
+        On Error GoTo InvocarFamiliar_Err
+        
 
-    If UserList(UserIndex).Familiar.Muerto = 1 Then
-        Call WriteLocaleMsg(UserIndex, "345", FontTypeNames.FONTTYPE_WARNING)
-        Call WriteConsoleMsg(UserIndex, "Tu familiar esta muerto, acercate al templo mas cercano para que sea resucitado.", FontTypeNames.FONTTYPE_INFOIAO)
-        Exit Sub
-
-    End If
-
-    Dim PosCasteadaX As Byte
-
-    Dim PosCasteadaY As Byte
-
-    Dim PosCasteadaM As Byte
-
-    Dim h            As Integer
-
-    Dim TempX        As Integer
-
-    Dim TempY        As Integer
-
-    Dim Pos          As WorldPos
-
-    Pos.x = UserList(UserIndex).flags.TargetX
-    Pos.Y = UserList(UserIndex).flags.TargetY
-    Pos.Map = UserList(UserIndex).flags.TargetMap
- 
-    h = UserList(UserIndex).Stats.UserHechizos(UserList(UserIndex).flags.Hechizo)
-
-    'If MapInfo(UserList(UserIndex).Pos.map).Pk = True Then
-
-    Dim x As Long
-
-    Dim Y As Long
-
-    x = Pos.x
-    Y = Pos.Y
-    
-    If MapData(UserList(UserIndex).Pos.Map, x, Y).Blocked = 1 Or MapData(UserList(UserIndex).Pos.Map, x, Y).TileExit.Map > 0 Or MapData(UserList(UserIndex).Pos.Map, x, Y).NpcIndex > 0 Or HayAgua(UserList(UserIndex).Pos.Map, x, Y) Then
-        Call WriteLocaleMsg(UserIndex, "262", FontTypeNames.FONTTYPE_INFOIAO)
-        'Call WriteConsoleMsg(UserIndex, "Area invalida para tirar el item.", FontTypeNames.FONTTYPE_INFO)
-    Else
-
-        'Envio Palabras magicas, wavs y fxs.
-        If UserList(UserIndex).flags.NoPalabrasMagicas = 0 Then
-            Call DecirPalabrasMagicas(h, UserIndex)
+100     If UserList(UserIndex).Familiar.Muerto = 1 Then
+102         Call WriteLocaleMsg(UserIndex, "345", FontTypeNames.FONTTYPE_WARNING)
+104         Call WriteConsoleMsg(UserIndex, "Tu familiar esta muerto, acercate al templo mas cercano para que sea resucitado.", FontTypeNames.FONTTYPE_INFOIAO)
+            Exit Sub
 
         End If
+
+        Dim PosCasteadaX As Byte
+
+        Dim PosCasteadaY As Byte
+
+        Dim PosCasteadaM As Byte
+
+        Dim h            As Integer
+
+        Dim TempX        As Integer
+
+        Dim TempY        As Integer
+
+        Dim Pos          As WorldPos
+
+106     Pos.x = UserList(UserIndex).flags.TargetX
+108     Pos.Y = UserList(UserIndex).flags.TargetY
+110     Pos.Map = UserList(UserIndex).flags.TargetMap
+ 
+112     h = UserList(UserIndex).Stats.UserHechizos(UserList(UserIndex).flags.Hechizo)
+
+        'If MapInfo(UserList(UserIndex).Pos.map).Pk = True Then
+
+        Dim x As Long
+
+        Dim Y As Long
+
+114     x = Pos.x
+116     Y = Pos.Y
     
-        '
-    
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(h).wav, Pos.x, Pos.Y))  'Esta linea faltaba. Pablo (ToxicWaste)
-    
-        With UserList(UserIndex)
+118     If MapData(UserList(UserIndex).Pos.Map, x, Y).Blocked = 1 Or MapData(UserList(UserIndex).Pos.Map, x, Y).TileExit.Map > 0 Or MapData(UserList(UserIndex).Pos.Map, x, Y).NpcIndex > 0 Or HayAgua(UserList(UserIndex).Pos.Map, x, Y) Then
+120         Call WriteLocaleMsg(UserIndex, "262", FontTypeNames.FONTTYPE_INFOIAO)
+            'Call WriteConsoleMsg(UserIndex, "Area invalida para tirar el item.", FontTypeNames.FONTTYPE_INFO)
+        Else
 
-            If .Familiar.Invocado = 0 Then
-                .Familiar.Id = SpawnNpc(.Familiar.NpcIndex, Pos, False, True)
-
-                'Controlamos que se sumoneo OK
-                If .Familiar.Id = 0 Then
-                    'Call WriteConsoleMsg(UserIndex, "No hay espacio aquí para tu mascota. Se provoco un ERROR.", FontTypeNames.FONTTYPE_INFO)
-                    Call WriteLocaleMsg(UserIndex, "262", FontTypeNames.FONTTYPE_INFOIAO)
-                    Exit Sub
-
-                End If
-
-                Call CargarFamiliar(UserIndex)
-
-                ' Call FollowAmo(.Familiar.Id)
-                If Hechizos(h).Particle > 0 Then '¿Envio Particula?
-                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFXToFloor(UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY, Hechizos(h).Particle, Hechizos(h).TimeParticula))
-
-                End If
-
-                If Hechizos(h).FXgrh > 0 Then 'Envio Fx?
-                    Call modSendData.SendToAreaByPos(UserList(UserIndex).Pos.Map, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY, PrepareMessageFxPiso(Hechizos(h).FXgrh, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY))
-
-                End If
-
-            Else
-                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageFxPiso(Hechizos(h).FXgrh, Npclist(.Familiar.Id).Pos.x, Npclist(.Familiar.Id).Pos.Y))
-                .Familiar.Invocado = 0
-                Call QuitarNPC(.Familiar.Id)
+            'Envio Palabras magicas, wavs y fxs.
+122         If UserList(UserIndex).flags.NoPalabrasMagicas = 0 Then
+124             Call DecirPalabrasMagicas(h, UserIndex)
 
             End If
+    
+            '
+    
+126         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(h).wav, Pos.x, Pos.Y))  'Esta linea faltaba. Pablo (ToxicWaste)
+    
+128         With UserList(UserIndex)
 
-            b = True
+130             If .Familiar.Invocado = 0 Then
+132                 .Familiar.Id = SpawnNpc(.Familiar.NpcIndex, Pos, False, True)
 
-        End With
+                    'Controlamos que se sumoneo OK
+134                 If .Familiar.Id = 0 Then
+                        'Call WriteConsoleMsg(UserIndex, "No hay espacio aquí para tu mascota. Se provoco un ERROR.", FontTypeNames.FONTTYPE_INFO)
+136                     Call WriteLocaleMsg(UserIndex, "262", FontTypeNames.FONTTYPE_INFOIAO)
+                        Exit Sub
 
-        'Else
-    End If
+                    End If
 
+138                 Call CargarFamiliar(UserIndex)
+
+                    ' Call FollowAmo(.Familiar.Id)
+140                 If Hechizos(h).Particle > 0 Then '¿Envio Particula?
+142                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFXToFloor(UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY, Hechizos(h).Particle, Hechizos(h).TimeParticula))
+
+                    End If
+
+144                 If Hechizos(h).FXgrh > 0 Then 'Envio Fx?
+146                     Call modSendData.SendToAreaByPos(UserList(UserIndex).Pos.Map, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY, PrepareMessageFxPiso(Hechizos(h).FXgrh, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY))
+
+                    End If
+
+                Else
+148                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageFxPiso(Hechizos(h).FXgrh, Npclist(.Familiar.Id).Pos.x, Npclist(.Familiar.Id).Pos.Y))
+150                 .Familiar.Invocado = 0
+152                 Call QuitarNPC(.Familiar.Id)
+
+                End If
+
+154             b = True
+
+            End With
+
+            'Else
+        End If
+
+        
+        Exit Sub
+
+InvocarFamiliar_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModFamiliar.InvocarFamiliar", Erl)
+        Resume Next
+        
 End Sub
 
 Public Sub RevivirFamiliar(ByVal UserIndex As Integer)
+        
+        On Error GoTo RevivirFamiliar_Err
+        
 
-    With UserList(UserIndex)
-        .Familiar.MinHp = .Familiar.MaxHp
-        .Familiar.Muerto = 0
+100     With UserList(UserIndex)
+102         .Familiar.MinHp = .Familiar.MaxHp
+104         .Familiar.Muerto = 0
 
-    End With
+        End With
 
-    'Call WriteConsoleMsg(UserIndex, "Tu familiar a sido revivido.", FontTypeNames.FONTTYPE_VIOLETA)
-    Call WriteLocaleMsg(UserIndex, "159", FontTypeNames.FONTTYPE_INFOIAO)
+        'Call WriteConsoleMsg(UserIndex, "Tu familiar a sido revivido.", FontTypeNames.FONTTYPE_VIOLETA)
+106     Call WriteLocaleMsg(UserIndex, "159", FontTypeNames.FONTTYPE_INFOIAO)
 
+        
+        Exit Sub
+
+RevivirFamiliar_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModFamiliar.RevivirFamiliar", Erl)
+        Resume Next
+        
 End Sub
 
 Public Sub CargarFamiliar(ByVal UserIndex As Integer)
-
-    With UserList(UserIndex)
-        Npclist(.Familiar.Id).name = .Familiar.nombre
-        Npclist(.Familiar.Id).Stats.MinHp = .Familiar.MinHp
-        Npclist(.Familiar.Id).Stats.MaxHp = .Familiar.MaxHp
-        Npclist(.Familiar.Id).Stats.MinHIT = .Familiar.MinHIT
-        Npclist(.Familiar.Id).Stats.MaxHit = .Familiar.MaxHit
-        Npclist(.Familiar.Id).EsFamiliar = 1
-
-        Npclist(.Familiar.Id).Movement = TipoAI.SigueAmo
-        Npclist(.Familiar.Id).Target = 0
-        Npclist(.Familiar.Id).TargetNPC = 0
-        .Familiar.Invocado = 1
         
-    End With
+        On Error GoTo CargarFamiliar_Err
+        
 
+100     With UserList(UserIndex)
+102         Npclist(.Familiar.Id).name = .Familiar.nombre
+104         Npclist(.Familiar.Id).Stats.MinHp = .Familiar.MinHp
+106         Npclist(.Familiar.Id).Stats.MaxHp = .Familiar.MaxHp
+108         Npclist(.Familiar.Id).Stats.MinHIT = .Familiar.MinHIT
+110         Npclist(.Familiar.Id).Stats.MaxHit = .Familiar.MaxHit
+112         Npclist(.Familiar.Id).EsFamiliar = 1
+
+114         Npclist(.Familiar.Id).Movement = TipoAI.SigueAmo
+116         Npclist(.Familiar.Id).Target = 0
+118         Npclist(.Familiar.Id).TargetNPC = 0
+120         .Familiar.Invocado = 1
+        
+        End With
+
+        
+        Exit Sub
+
+CargarFamiliar_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModFamiliar.CargarFamiliar", Erl)
+        Resume Next
+        
 End Sub
 
 Public Function IndexDeFamiliar(ByVal Tipo As Byte) As Byte
+        
+        On Error GoTo IndexDeFamiliar_Err
+        
 
-    '**************************************************************
-    'Author: Pablo Mercavides
-    '**************************************************************
-    Select Case Tipo
+        '**************************************************************
+        'Author: Pablo Mercavides
+        '**************************************************************
+100     Select Case Tipo
 
-        Case 1
-            IndexDeFamiliar = 128
+            Case 1
+102             IndexDeFamiliar = 128
 
-        Case 2
-            IndexDeFamiliar = 127
+104         Case 2
+106             IndexDeFamiliar = 127
 
-        Case 3
-            IndexDeFamiliar = 129
+108         Case 3
+110             IndexDeFamiliar = 129
 
-        Case 4
-            IndexDeFamiliar = 126
+112         Case 4
+114             IndexDeFamiliar = 126
 
-        Case 5
-            IndexDeFamiliar = 132
+116         Case 5
+118             IndexDeFamiliar = 132
 
-        Case 6
-            IndexDeFamiliar = 145
+120         Case 6
+122             IndexDeFamiliar = 145
 
-        Case 7
-            IndexDeFamiliar = 130
+124         Case 7
+126             IndexDeFamiliar = 130
 
-        Case 8
-            IndexDeFamiliar = 133
+128         Case 8
+130             IndexDeFamiliar = 133
 
-        Case 9
-            IndexDeFamiliar = 131
+132         Case 9
+134             IndexDeFamiliar = 131
 
-    End Select
+        End Select
 
+        
+        Exit Function
+
+IndexDeFamiliar_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModFamiliar.IndexDeFamiliar", Erl)
+        Resume Next
+        
 End Function
 
 Sub CalcularDarExpCompartida(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal ElDaño As Integer)
+        
+        On Error GoTo CalcularDarExpCompartida_Err
+        
 
-    '***************************************************
-    'Autor: Nacho (Integer)
-    'Last Modification: 03/09/06 Nacho
-    'Reescribi gran parte del Sub
-    'Ahora, da toda la experiencia del npc mientras este vivo.
-    '***************************************************
-    Dim ExpaDar As Long
+        '***************************************************
+        'Autor: Nacho (Integer)
+        'Last Modification: 03/09/06 Nacho
+        'Reescribi gran parte del Sub
+        'Ahora, da toda la experiencia del npc mientras este vivo.
+        '***************************************************
+        Dim ExpaDar As Long
 
-    '[Nacho] Chekeamos que las variables sean validas para las operaciones
-    If ElDaño <= 0 Then ElDaño = 0
+        '[Nacho] Chekeamos que las variables sean validas para las operaciones
+100     If ElDaño <= 0 Then ElDaño = 0
     
-    If Npclist(NpcIndex).Stats.MaxHp <= 0 Then Exit Sub
-    If ElDaño > Npclist(NpcIndex).Stats.MinHp Then ElDaño = Npclist(NpcIndex).Stats.MinHp
+102     If Npclist(NpcIndex).Stats.MaxHp <= 0 Then Exit Sub
+104     If ElDaño > Npclist(NpcIndex).Stats.MinHp Then ElDaño = Npclist(NpcIndex).Stats.MinHp
     
-    '[Nacho] La experiencia a dar es la porcion de vida quitada * toda la experiencia
-    ExpaDar = CLng((ElDaño) * (Npclist(NpcIndex).GiveEXP / Npclist(NpcIndex).Stats.MaxHp))
+        '[Nacho] La experiencia a dar es la porcion de vida quitada * toda la experiencia
+106     ExpaDar = CLng((ElDaño) * (Npclist(NpcIndex).GiveEXP / Npclist(NpcIndex).Stats.MaxHp))
     
-    If ExpaDar <= 0 Then Exit Sub
+108     If ExpaDar <= 0 Then Exit Sub
     
-    '[Nacho] Vamos contando cuanta experiencia sacamos, porque se da toda la que no se dio al user que mata al NPC
-    'Esto es porque cuando un elemental ataca, no se da exp, y tambien porque la cuenta que hicimos antes
-    'Podria dar un numero fraccionario, esas fracciones se acumulan hasta formar enteros ;P
-    If ExpaDar > Npclist(NpcIndex).flags.ExpCount Then
-        ExpaDar = Npclist(NpcIndex).flags.ExpCount
-        Npclist(NpcIndex).flags.ExpCount = 0
-    Else
-        Npclist(NpcIndex).flags.ExpCount = Npclist(NpcIndex).flags.ExpCount - ExpaDar
+        '[Nacho] Vamos contando cuanta experiencia sacamos, porque se da toda la que no se dio al user que mata al NPC
+        'Esto es porque cuando un elemental ataca, no se da exp, y tambien porque la cuenta que hicimos antes
+        'Podria dar un numero fraccionario, esas fracciones se acumulan hasta formar enteros ;P
+110     If ExpaDar > Npclist(NpcIndex).flags.ExpCount Then
+112         ExpaDar = Npclist(NpcIndex).flags.ExpCount
+114         Npclist(NpcIndex).flags.ExpCount = 0
+        Else
+116         Npclist(NpcIndex).flags.ExpCount = Npclist(NpcIndex).flags.ExpCount - ExpaDar
 
-    End If
+        End If
     
-    If ExpMult > 0 Then
-        ExpaDar = ExpaDar * ExpMult
+118     If ExpMult > 0 Then
+120         ExpaDar = ExpaDar * ExpMult
     
-    End If
+        End If
     
-    '[Nacho] Le damos la exp al user
-    Dim ExpUser As Long
+        '[Nacho] Le damos la exp al user
+        Dim ExpUser As Long
 
-    Dim expPet  As Long
+        Dim expPet  As Long
 
-    ExpUser = ExpaDar / 2
-    expPet = ExpaDar / 2
+122     ExpUser = ExpaDar / 2
+124     expPet = ExpaDar / 2
 
-    If ExpUser > 0 Then
-        If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then
-            UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + ExpUser
+126     If ExpUser > 0 Then
+128         If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then
+130             UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + ExpUser
 
-            If UserList(UserIndex).Stats.Exp > MAXEXP Then UserList(UserIndex).Stats.Exp = MAXEXP
-            ' Call WriteConsoleMsg(UserIndex, "ID*140*" & ExpUser, FontTypeNames.FONTTYPE_EXP)
-            Call WriteLocaleMsg(UserIndex, "140", FontTypeNames.FONTTYPE_EXP, ExpUser)
-            Call CheckUserLevel(UserIndex)
+132             If UserList(UserIndex).Stats.Exp > MAXEXP Then UserList(UserIndex).Stats.Exp = MAXEXP
+                ' Call WriteConsoleMsg(UserIndex, "ID*140*" & ExpUser, FontTypeNames.FONTTYPE_EXP)
+134             Call WriteLocaleMsg(UserIndex, "140", FontTypeNames.FONTTYPE_EXP, ExpUser)
+136             Call CheckUserLevel(UserIndex)
+
+            End If
+
+        End If
+    
+138     If expPet > 0 Then
+140         UserList(UserIndex).Familiar.Exp = UserList(UserIndex).Familiar.Exp + expPet
+
+142         If UserList(UserIndex).Familiar.Exp > MAXEXP Then UserList(UserIndex).Familiar.Exp = MAXEXP
+             
+            ' Call WriteConsoleMsg(UserIndex, "ID*52*" & UserList(UserIndex).Familiar.Nombre & "*" & expPet & "*", FontTypeNames.FONTTYPE_EXP)
+144         Call CheckFamiliarLevel(UserIndex)
 
         End If
 
-    End If
-    
-    If expPet > 0 Then
-        UserList(UserIndex).Familiar.Exp = UserList(UserIndex).Familiar.Exp + expPet
+        
+        Exit Sub
 
-        If UserList(UserIndex).Familiar.Exp > MAXEXP Then UserList(UserIndex).Familiar.Exp = MAXEXP
-             
-        ' Call WriteConsoleMsg(UserIndex, "ID*52*" & UserList(UserIndex).Familiar.Nombre & "*" & expPet & "*", FontTypeNames.FONTTYPE_EXP)
-        Call CheckFamiliarLevel(UserIndex)
-
-    End If
-
+CalcularDarExpCompartida_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModFamiliar.CalcularDarExpCompartida", Erl)
+        Resume Next
+        
 End Sub
 
 Sub CheckFamiliarLevel(ByVal UserIndex As Integer)

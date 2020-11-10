@@ -34,23 +34,33 @@ Public Const WM_CREATE = &H1
 Public hHook As Long
 
 Public Function AppHook(ByVal idHook As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+        
+        On Error GoTo AppHook_Err
+        
 
-    Dim CWP As CWPSTRUCT
+        Dim CWP As CWPSTRUCT
 
-    CopyMemory CWP, ByVal lParam, Len(CWP)
+100     CopyMemory CWP, ByVal lParam, Len(CWP)
 
-    Select Case CWP.message
+102     Select Case CWP.message
 
-        Case WM_CREATE
-            SetForegroundWindow CWP.hWnd
-            AppHook = CallNextHookEx(hHook, idHook, wParam, ByVal lParam)
-            UnhookWindowsHookEx hHook
-            hHook = 0
-            Exit Function
+            Case WM_CREATE
+104             SetForegroundWindow CWP.hWnd
+106             AppHook = CallNextHookEx(hHook, idHook, wParam, ByVal lParam)
+108             UnhookWindowsHookEx hHook
+110             hHook = 0
+                Exit Function
 
-    End Select
+        End Select
 
-    AppHook = CallNextHookEx(hHook, idHook, wParam, ByVal lParam)
+112     AppHook = CallNextHookEx(hHook, idHook, wParam, ByVal lParam)
 
+        
+        Exit Function
+
+AppHook_Err:
+        Call RegistrarError(Err.Number, Err.description, "SysTray.AppHook", Erl)
+        Resume Next
+        
 End Function
 
