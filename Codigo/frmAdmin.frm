@@ -97,72 +97,132 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub cboPjs_Change()
-    Call ActualizaPjInfo
+        
+        On Error GoTo cboPjs_Change_Err
+        
+100     Call ActualizaPjInfo
 
+        
+        Exit Sub
+
+cboPjs_Change_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmAdmin.cboPjs_Change", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub cboPjs_Click()
-    Call ActualizaPjInfo
+        
+        On Error GoTo cboPjs_Click_Err
+        
+100     Call ActualizaPjInfo
 
+        
+        Exit Sub
+
+cboPjs_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmAdmin.cboPjs_Click", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Command1_Click()
+        
+        On Error GoTo Command1_Click_Err
+        
 
-    Dim tIndex As Long
+        Dim tIndex As Long
 
-    tIndex = NameIndex(cboPjs.Text)
+100     tIndex = NameIndex(cboPjs.Text)
 
-    If tIndex > 0 Then
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor> " & UserList(tIndex).name & " ha sido hechado. ", FontTypeNames.FONTTYPE_SERVER))
-        Call CloseSocket(tIndex)
+102     If tIndex > 0 Then
+104         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor> " & UserList(tIndex).name & " ha sido hechado. ", FontTypeNames.FONTTYPE_SERVER))
+106         Call CloseSocket(tIndex)
 
-    End If
+        End If
 
+        
+        Exit Sub
+
+Command1_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmAdmin.Command1_Click", Erl)
+        Resume Next
+        
 End Sub
 
 Public Sub ActualizaListaPjs()
+        
+        On Error GoTo ActualizaListaPjs_Err
+        
 
-    Dim LoopC As Long
+        Dim LoopC As Long
 
-    With cboPjs
-        .Clear
+100     With cboPjs
+102         .Clear
     
-        For LoopC = 1 To LastUser
+104         For LoopC = 1 To LastUser
 
-            If UserList(LoopC).flags.UserLogged And UserList(LoopC).ConnID >= 0 And UserList(LoopC).ConnIDValida Then
-                If UserList(LoopC).flags.Privilegios And PlayerType.user Then
-                    .AddItem UserList(LoopC).name
-                    .ItemData(.NewIndex) = LoopC
+106             If UserList(LoopC).flags.UserLogged And UserList(LoopC).ConnID >= 0 And UserList(LoopC).ConnIDValida Then
+108                 If UserList(LoopC).flags.Privilegios And PlayerType.user Then
+110                     .AddItem UserList(LoopC).name
+112                     .ItemData(.NewIndex) = LoopC
+
+                    End If
 
                 End If
 
-            End If
-
-        Next LoopC
-
-    End With
-
-End Sub
-
-Private Sub Command3_Click()
-    Call EcharPjsNoPrivilegiados
-
-End Sub
-
-Private Sub ActualizaPjInfo()
-
-    Dim tIndex As Long
-
-    tIndex = NameIndex(cboPjs.Text)
-
-    If tIndex > 0 Then
-
-        With UserList(tIndex)
-            Text1.Text = .outgoingData.length & " elementos en cola." & vbCrLf
+114         Next LoopC
 
         End With
 
-    End If
+        
+        Exit Sub
 
+ActualizaListaPjs_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmAdmin.ActualizaListaPjs", Erl)
+        Resume Next
+        
+End Sub
+
+Private Sub Command3_Click()
+        
+        On Error GoTo Command3_Click_Err
+        
+100     Call EcharPjsNoPrivilegiados
+
+        
+        Exit Sub
+
+Command3_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmAdmin.Command3_Click", Erl)
+        Resume Next
+        
+End Sub
+
+Private Sub ActualizaPjInfo()
+        
+        On Error GoTo ActualizaPjInfo_Err
+        
+
+        Dim tIndex As Long
+
+100     tIndex = NameIndex(cboPjs.Text)
+
+102     If tIndex > 0 Then
+
+104         With UserList(tIndex)
+106             Text1.Text = .outgoingData.length & " elementos en cola." & vbCrLf
+
+            End With
+
+        End If
+
+        
+        Exit Sub
+
+ActualizaPjInfo_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmAdmin.ActualizaPjInfo", Erl)
+        Resume Next
+        
 End Sub
 

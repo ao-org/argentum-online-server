@@ -670,35 +670,95 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub Command1_Click()
-    Call LoadOBJData
-    Call LoadPesca
-    Call LoadRecursosEspeciales
+        
+        On Error GoTo Command1_Click_Err
+        
+100     Call LoadOBJData
+102     Call LoadPesca
+104     Call LoadRecursosEspeciales
 
+        
+        Exit Sub
+
+Command1_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command1_Click", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Command10_Click()
-    frmTrafic.Show
+        
+        On Error GoTo Command10_Click_Err
+        
+100     frmTrafic.Show
 
+        
+        Exit Sub
+
+Command10_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command10_Click", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Command11_Click()
-    frmConID.Show
+        
+        On Error GoTo Command11_Click_Err
+        
+100     frmConID.Show
 
+        
+        Exit Sub
+
+Command11_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command11_Click", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Command12_Click()
-    frmDebugNpc.Show
+        
+        On Error GoTo Command12_Click_Err
+        
+100     frmDebugNpc.Show
 
+        
+        Exit Sub
+
+Command12_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command12_Click", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Command13_Click()
-    frmDebugSocket.Visible = True
+        
+        On Error GoTo Command13_Click_Err
+        
+100     frmDebugSocket.Visible = True
 
+        
+        Exit Sub
+
+Command13_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command13_Click", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Command14_Click()
-    Call LoadMotd
+        
+        On Error GoTo Command14_Click_Err
+        
+100     Call LoadMotd
 
+        
+        Exit Sub
+
+Command14_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command14_Click", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Command15_Click()
@@ -740,164 +800,314 @@ Private Sub Command15_Click()
 End Sub
 
 Private Sub Command16_Click()
-    Call LoadSini
+        
+        On Error GoTo Command16_Click_Err
+        
+100     Call LoadSini
 
+        
+        Exit Sub
+
+Command16_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command16_Click", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Command17_Click()
-    Call CargaNpcsDat
+        
+        On Error GoTo Command17_Click_Err
+        
+100     Call CargaNpcsDat
 
+        
+        Exit Sub
+
+Command17_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command17_Click", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Command18_Click()
-    Me.MousePointer = 11
-    Call GuardarUsuarios
-    Me.MousePointer = 0
-    MsgBox "Grabado de personajes OK!"
+        
+        On Error GoTo Command18_Click_Err
+        
+100     Me.MousePointer = 11
+102     Call GuardarUsuarios
+104     Me.MousePointer = 0
+106     MsgBox "Grabado de personajes OK!"
 
+        
+        Exit Sub
+
+Command18_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command18_Click", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Command19_Click()
+        
+        On Error GoTo Command19_Click_Err
+        
 
-    Dim i        As Long, n As Long
+        Dim i        As Long, n As Long
 
-    Dim sENtrada As String
+        Dim sENtrada As String
 
-    sENtrada = InputBox("Escribe ""estoy DE acuerdo"" sin comillas y con distición de mayusculas minusculas para desbanear a todos los personajes", "UnBan", "hola")
+100     sENtrada = InputBox("Escribe ""estoy DE acuerdo"" sin comillas y con distición de mayusculas minusculas para desbanear a todos los personajes", "UnBan", "hola")
 
-    If sENtrada = "estoy DE acuerdo" Then
+102     If sENtrada = "estoy DE acuerdo" Then
     
-        n = BanIps.Count
+104         n = BanIps.Count
 
-        For i = 1 To BanIps.Count
-            BanIps.Remove 1
-        Next i
+106         For i = 1 To BanIps.Count
+108             BanIps.Remove 1
+110         Next i
     
-        MsgBox "Se han habilitado " & n & " ipes"
+112         MsgBox "Se han habilitado " & n & " ipes"
 
-    End If
+        End If
 
+        
+        Exit Sub
+
+Command19_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command19_Click", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Command2_Click()
-    frmServidor.Visible = False
+        
+        On Error GoTo Command2_Click_Err
+        
+100     frmServidor.Visible = False
 
+        
+        Exit Sub
+
+Command2_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command2_Click", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Command20_Click()
-    #If UsarQueSocket = 1 Then
+        
+        On Error GoTo Command20_Click_Err
+        
+        #If UsarQueSocket = 1 Then
 
-        If MsgBox("Esta seguro que desea reiniciar los sockets ? Se cerrarán todas las conexiones activas.", vbYesNo, "Reiniciar Sockets") = vbYes Then
-            Call WSApiReiniciarSockets
+100         If MsgBox("Esta seguro que desea reiniciar los sockets ? Se cerrarán todas las conexiones activas.", vbYesNo, "Reiniciar Sockets") = vbYes Then
+102             Call WSApiReiniciarSockets
 
-        End If
+            End If
 
-    #ElseIf UsarQueSocket = 2 Then
+        #ElseIf UsarQueSocket = 2 Then
 
-        Dim LoopC As Integer
+            Dim LoopC As Integer
 
-        If MsgBox("Esta seguro que desea reiniciar los sockets ? Se cerrarán todas las conexiones activas.", vbYesNo, "Reiniciar Sockets") = vbYes Then
+104         If MsgBox("Esta seguro que desea reiniciar los sockets ? Se cerrarán todas las conexiones activas.", vbYesNo, "Reiniciar Sockets") = vbYes Then
 
-            For LoopC = 1 To MaxUsers
+106             For LoopC = 1 To MaxUsers
 
-                If UserList(LoopC).ConnID <> -1 And UserList(LoopC).ConnIDValida Then
-                    Call CloseSocket(LoopC)
+108                 If UserList(LoopC).ConnID <> -1 And UserList(LoopC).ConnIDValida Then
+110                     Call CloseSocket(LoopC)
 
-                End If
+                    End If
 
-            Next LoopC
+112             Next LoopC
     
-            Call frmMain.Serv.Detener
-            Call frmMain.Serv.Iniciar(Puerto)
+114             Call frmMain.Serv.Detener
+116             Call frmMain.Serv.Iniciar(Puerto)
 
-        End If
+            End If
 
-    #End If
+        #End If
 
+        
+        Exit Sub
+
+Command20_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command20_Click", Erl)
+        Resume Next
+        
 End Sub
 
 'Barrin 29/9/03
 Private Sub Command21_Click()
+        
+        On Error GoTo Command21_Click_Err
+        
 
-    If EnPausa = False Then
-        EnPausa = True
-        Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
-        Command21.Caption = "Reanudar el servidor"
-    Else
-        EnPausa = False
-        Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
-        Command21.Caption = "Pausar el servidor"
+100     If EnPausa = False Then
+102         EnPausa = True
+104         Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
+106         Command21.Caption = "Reanudar el servidor"
+        Else
+108         EnPausa = False
+110         Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
+112         Command21.Caption = "Pausar el servidor"
 
-    End If
+        End If
 
+        
+        Exit Sub
+
+Command21_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command21_Click", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Command22_Click()
-    Me.Visible = False
-    frmAdmin.Show
+        
+        On Error GoTo Command22_Click_Err
+        
+100     Me.Visible = False
+102     frmAdmin.Show
 
+        
+        Exit Sub
+
+Command22_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command22_Click", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Command23_Click()
+        
+        On Error GoTo Command23_Click_Err
+        
 
-    If MsgBox("Esta seguro que desea hacer WorldSave, guardar pjs y cerrar ?", vbYesNo, "Apagar Magicamente") = vbYes Then
-        Me.MousePointer = 11
+100     If MsgBox("Esta seguro que desea hacer WorldSave, guardar pjs y cerrar ?", vbYesNo, "Apagar Magicamente") = vbYes Then
+102         Me.MousePointer = 11
     
-        FrmStat.Show
+104         FrmStat.Show
    
-        'WorldSave
-        '   Call DoBackUp
+            'WorldSave
+            '   Call DoBackUp
 
-        'Guardar Pjs
-        Call GuardarUsuarios
+            'Guardar Pjs
+106         Call GuardarUsuarios
     
-        'Chauuu
-        Unload frmMain
+            'Chauuu
+108         Unload frmMain
 
-    End If
+        End If
 
+        
+        Exit Sub
+
+Command23_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command23_Click", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Command24_Click()
-    frmEstadisticas.Show
+        
+        On Error GoTo Command24_Click_Err
+        
+100     frmEstadisticas.Show
 
+        
+        Exit Sub
+
+Command24_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command24_Click", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Command25_Click()
-    Call MD5sCarga
+        
+        On Error GoTo Command25_Click_Err
+        
+100     Call MD5sCarga
 
+        
+        Exit Sub
+
+Command25_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command25_Click", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Command26_Click()
-    #If UsarQueSocket = 1 Then
+        
+        On Error GoTo Command26_Click_Err
+        
+        #If UsarQueSocket = 1 Then
 
-        'Cierra el socket de escucha
-        If SockListen >= 0 Then Call apiclosesocket(SockListen)
+            'Cierra el socket de escucha
+100         If SockListen >= 0 Then Call apiclosesocket(SockListen)
     
-        'Inicia el socket de escucha
-        SockListen = ListenForConnect(Puerto, hWndMsg, "")
-    #End If
+            'Inicia el socket de escucha
+102         SockListen = ListenForConnect(Puerto, hWndMsg, "")
+        #End If
 
+        
+        Exit Sub
+
+Command26_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command26_Click", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Command27_Click()
-    frmUserList.Show
+        
+        On Error GoTo Command27_Click_Err
+        
+100     frmUserList.Show
 
+        
+        Exit Sub
+
+Command27_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command27_Click", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Command28_Click()
-    Call LoadConfiguraciones
+        
+        On Error GoTo Command28_Click_Err
+        
+100     Call LoadConfiguraciones
 
+        
+        Exit Sub
+
+Command28_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command28_Click", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Command3_Click()
+        
+        On Error GoTo Command3_Click_Err
+        
 
-    If MsgBox("¡¡Atencion!! Si reinicia el servidor puede provocar la perdida de datos de los usarios. ¿Desea reiniciar el servidor de todas maneras?", vbYesNo) = vbYes Then
-        Me.Visible = False
-        Call Restart
+100     If MsgBox("¡¡Atencion!! Si reinicia el servidor puede provocar la perdida de datos de los usarios. ¿Desea reiniciar el servidor de todas maneras?", vbYesNo) = vbYes Then
+102         Me.Visible = False
+104         Call Restart
 
-    End If
+        End If
 
+        
+        Exit Sub
+
+Command3_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command3_Click", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Command4_Click()
@@ -986,40 +1196,100 @@ Private Sub Command5_Click()
 End Sub
 
 Private Sub Command6_Click()
-    Call ReSpawnOrigPosNpcs
+        
+        On Error GoTo Command6_Click_Err
+        
+100     Call ReSpawnOrigPosNpcs
 
+        
+        Exit Sub
+
+Command6_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command6_Click", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Command7_Click()
-    FrmInterv.Show
+        
+        On Error GoTo Command7_Click_Err
+        
+100     FrmInterv.Show
 
+        
+        Exit Sub
+
+Command7_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command7_Click", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Command8_Click()
-    Call CargarHechizos
+        
+        On Error GoTo Command8_Click_Err
+        
+100     Call CargarHechizos
 
+        
+        Exit Sub
+
+Command8_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command8_Click", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Command9_Click()
-    Call CargarForbidenWords
+        
+        On Error GoTo Command9_Click_Err
+        
+100     Call CargarForbidenWords
 
+        
+        Exit Sub
+
+Command9_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command9_Click", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Form_Deactivate()
-    frmServidor.Visible = False
+        
+        On Error GoTo Form_Deactivate_Err
+        
+100     frmServidor.Visible = False
 
+        
+        Exit Sub
+
+Form_Deactivate_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmServidor.Form_Deactivate", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Form_Load()
-    #If UsarQueSocket = 1 Then
-        Command20.Visible = True
-        Command26.Visible = True
-    #ElseIf UsarQueSocket = 0 Then
-        Command20.Visible = False
-        Command26.Visible = False
-    #ElseIf UsarQueSocket = 2 Then
-        Command20.Visible = True
-        Command26.Visible = False
-    #End If
+        
+        On Error GoTo Form_Load_Err
+        
+        #If UsarQueSocket = 1 Then
+100         Command20.Visible = True
+102         Command26.Visible = True
+        #ElseIf UsarQueSocket = 0 Then
+104         Command20.Visible = False
+106         Command26.Visible = False
+        #ElseIf UsarQueSocket = 2 Then
+108         Command20.Visible = True
+110         Command26.Visible = False
+        #End If
 
+        
+        Exit Sub
+
+Form_Load_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmServidor.Form_Load", Erl)
+        Resume Next
+        
 End Sub

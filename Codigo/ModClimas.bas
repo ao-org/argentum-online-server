@@ -17,16 +17,29 @@ Public ProbabilidadNublar  As Byte
 Public ProbabilidadLLuvia  As Byte
 
 Public Sub ResetMeteo()
-    Call AgregarAConsola("Servidor > Meteorologia reseteada")
-    frmMain.TimerMeteorologia.Enabled = True
-    frmMain.Truenos.Enabled = False
-    TimerMeteorologico = 30
-    ServidorNublado = False
-    Lloviendo = False
+        
+        On Error GoTo ResetMeteo_Err
+        
+100     Call AgregarAConsola("Servidor > Meteorologia reseteada")
+102     frmMain.TimerMeteorologia.Enabled = True
+104     frmMain.Truenos.Enabled = False
+106     TimerMeteorologico = 30
+108     ServidorNublado = False
+110     Lloviendo = False
 
+        
+        Exit Sub
+
+ResetMeteo_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModClimas.ResetMeteo", Erl)
+        Resume Next
+        
 End Sub
 
 Public Sub Nublar()
+    
+    On Error GoTo Nublar_Err
+    
 
     Dim ProbabilidadNubes As Long
 
@@ -46,4 +59,11 @@ Public Sub Nublar()
     'no llueve
     'sacar nubes
 
+    
+    Exit Sub
+
+Nublar_Err:
+    Call RegistrarError(Err.Number, Err.description, "ModClimas.Nublar", Erl)
+    Resume Next
+    
 End Sub

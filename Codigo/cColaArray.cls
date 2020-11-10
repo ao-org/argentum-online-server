@@ -51,78 +51,148 @@ Private m_firstelem As Integer
 Private m_size      As Integer
 
 Public Function IsEmpty() As Boolean
-    IsEmpty = m_size = 0
+        
+        On Error GoTo IsEmpty_Err
+        
+100     IsEmpty = m_size = 0
 
+        
+        Exit Function
+
+IsEmpty_Err:
+        Call RegistrarError(Err.Number, Err.description, "CColaArray.IsEmpty", Erl)
+        Resume Next
+        
 End Function
 
 Public Function IsFull() As Boolean
-    'IsFull = m_lastelem = m_maxelem
-    IsFull = m_size = m_maxelem
+        'IsFull = m_lastelem = m_maxelem
+        
+        On Error GoTo IsFull_Err
+        
+100     IsFull = m_size = m_maxelem
 
+        
+        Exit Function
+
+IsFull_Err:
+        Call RegistrarError(Err.Number, Err.description, "CColaArray.IsFull", Erl)
+        Resume Next
+        
 End Function
 
 Public Function Push(ByVal aString As String) As Boolean
+        
+        On Error GoTo Push_Err
+        
 
-    If Not Me.IsFull Then
+100     If Not Me.IsFull Then
     
-        If Me.IsEmpty Then m_firstelem = 1
+102         If Me.IsEmpty Then m_firstelem = 1
     
-        m_lastelem = m_lastelem + 1
+104         m_lastelem = m_lastelem + 1
 
-        If (m_lastelem > m_maxelem) Then m_lastelem = m_lastelem - m_maxelem
-        m_size = m_size + 1
-        m_array(m_lastelem) = aString
+106         If (m_lastelem > m_maxelem) Then m_lastelem = m_lastelem - m_maxelem
+108         m_size = m_size + 1
+110         m_array(m_lastelem) = aString
     
-        Push = True
-    Else
-        Push = False
-
-    End If
-
-End Function
-
-Public Function Pop() As String
-
-    If Not Me.IsEmpty Then
-    
-        Pop = m_array(m_firstelem)
-        m_firstelem = m_firstelem + 1
-
-        If (m_firstelem > m_maxelem) Then m_firstelem = m_firstelem - m_maxelem
-        m_size = m_size - 1
-    
-        'If m_firstelem > m_lastelem And m_size = 0 Then
-        If m_size = 0 Then
-            m_lastelem = 0
-            m_firstelem = 0
-            m_size = 0
+112         Push = True
+        Else
+114         Push = False
 
         End If
 
-    Else
-        Pop = vbNullString
-    
-    End If
+        
+        Exit Function
 
+Push_Err:
+        Call RegistrarError(Err.Number, Err.description, "CColaArray.Push", Erl)
+        Resume Next
+        
+End Function
+
+Public Function Pop() As String
+        
+        On Error GoTo Pop_Err
+        
+
+100     If Not Me.IsEmpty Then
+    
+102         Pop = m_array(m_firstelem)
+104         m_firstelem = m_firstelem + 1
+
+106         If (m_firstelem > m_maxelem) Then m_firstelem = m_firstelem - m_maxelem
+108         m_size = m_size - 1
+    
+            'If m_firstelem > m_lastelem And m_size = 0 Then
+110         If m_size = 0 Then
+112             m_lastelem = 0
+114             m_firstelem = 0
+116             m_size = 0
+
+            End If
+
+        Else
+118         Pop = vbNullString
+    
+        End If
+
+        
+        Exit Function
+
+Pop_Err:
+        Call RegistrarError(Err.Number, Err.description, "CColaArray.Pop", Erl)
+        Resume Next
+        
 End Function
 
 Private Sub Class_Initialize()
-    m_lastelem = 0
-    m_firstelem = 0
-    m_size = 0
-    m_maxelem = 300
+        
+        On Error GoTo Class_Initialize_Err
+        
+100     m_lastelem = 0
+102     m_firstelem = 0
+104     m_size = 0
+106     m_maxelem = 300
 
-    ReDim m_array(1 To m_maxelem)
+108     ReDim m_array(1 To m_maxelem)
 
+        
+        Exit Sub
+
+Class_Initialize_Err:
+        Call RegistrarError(Err.Number, Err.description, "CColaArray.Class_Initialize", Erl)
+        Resume Next
+        
 End Sub
 
 Public Property Get MaxElems() As Long
-    MaxElems = m_maxelem
+        
+        On Error GoTo MaxElems_Err
+        
+100     MaxElems = m_maxelem
 
+        
+        Exit Property
+
+MaxElems_Err:
+        Call RegistrarError(Err.Number, Err.description, "CColaArray.MaxElems", Erl)
+        Resume Next
+        
 End Property
 
 Public Property Let MaxElems(ByVal lNewValue As Long)
-    m_maxelem = lNewValue
-    ReDim Preserve m_array(1 To m_maxelem)
+        
+        On Error GoTo MaxElems_Err
+        
+100     m_maxelem = lNewValue
+102     ReDim Preserve m_array(1 To m_maxelem)
 
+        
+        Exit Property
+
+MaxElems_Err:
+        Call RegistrarError(Err.Number, Err.description, "CColaArray.MaxElems", Erl)
+        Resume Next
+        
 End Property

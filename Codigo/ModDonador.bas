@@ -18,256 +18,386 @@ End Type
 Option Explicit
 
 Public Sub DonadorTiempo(ByVal nombre As String, ByVal dias As Integer)
+        
+        On Error GoTo DonadorTiempo_Err
+        
 
-    If DonadorCheck(nombre) = 0 Then
+100     If DonadorCheck(nombre) = 0 Then
 
-        Dim tDon As TDonador
+            Dim tDon As TDonador
     
-        Set tDon = New TDonador
+102         Set tDon = New TDonador
     
-        tDon.name = nombre
-        tDon.FechaExpiracion = (Now + dias)
+104         tDon.name = nombre
+106         tDon.FechaExpiracion = (Now + dias)
     
-        Call Donadores.Add(tDon)
-        Call SaveDonador(Donadores.Count)
-        Call SendData(SendTarget.ToSuperiores, 0, PrepareMessageConsoleMsg("Servidor> " & nombre & " agrego " & dias & " días de donador.", FontTypeNames.FONTTYPE_New_DONADOR))
-        Call LogearEventoDeDonador("Se agregaron " & dias & " a la cuenta " & nombre & ".")
-    Else
+108         Call Donadores.Add(tDon)
+110         Call SaveDonador(Donadores.Count)
+112         Call SendData(SendTarget.ToSuperiores, 0, PrepareMessageConsoleMsg("Servidor> " & nombre & " agrego " & dias & " días de donador.", FontTypeNames.FONTTYPE_New_DONADOR))
+114         Call LogearEventoDeDonador("Se agregaron " & dias & " a la cuenta " & nombre & ".")
+        Else
 
-        'UserList(UserIndex).donador.FechaExpiracion = UserList(UserIndex).donador.FechaExpiracion + dias
+            'UserList(UserIndex).donador.FechaExpiracion = UserList(UserIndex).donador.FechaExpiracion + dias
     
-        Dim LoopC As Integer
+            Dim LoopC As Integer
 
-        For LoopC = 1 To Donadores.Count
+116         For LoopC = 1 To Donadores.Count
 
-            If UCase$(Donadores(LoopC).name) = UCase$(nombre) Then
-                Donadores(LoopC).FechaExpiracion = Donadores(LoopC).FechaExpiracion + dias
-                Call SaveDonador(LoopC)
-                Exit For
+118             If UCase$(Donadores(LoopC).name) = UCase$(nombre) Then
+120                 Donadores(LoopC).FechaExpiracion = Donadores(LoopC).FechaExpiracion + dias
+122                 Call SaveDonador(LoopC)
+                    Exit For
 
-            End If
+                End If
 
-        Next LoopC
+124         Next LoopC
 
-    End If
+        End If
 
+        
+        Exit Sub
+
+DonadorTiempo_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModDonador.DonadorTiempo", Erl)
+        Resume Next
+        
 End Sub
 
 Sub SaveDonadores()
+        
+        On Error GoTo SaveDonadores_Err
+        
 
-    Dim num As Integer
+        Dim num As Integer
 
-    Call WriteVar(DatPath & "Donadores.dat", "INIT", "NumeroDonadores", val(Donadores.Count))
+100     Call WriteVar(DatPath & "Donadores.dat", "INIT", "NumeroDonadores", val(Donadores.Count))
 
-    For num = 1 To Donadores.Count
-        Call WriteVar(DatPath & "Donadores.dat", "DONADOR" & num, "USER", Donadores(num).name)
-        Call WriteVar(DatPath & "Donadores.dat", "DONADOR" & num, "FECHAEXPIRACION", Donadores(num).FechaExpiracion)
-    Next
+102     For num = 1 To Donadores.Count
+104         Call WriteVar(DatPath & "Donadores.dat", "DONADOR" & num, "USER", Donadores(num).name)
+106         Call WriteVar(DatPath & "Donadores.dat", "DONADOR" & num, "FECHAEXPIRACION", Donadores(num).FechaExpiracion)
+        Next
 
+        
+        Exit Sub
+
+SaveDonadores_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModDonador.SaveDonadores", Erl)
+        Resume Next
+        
 End Sub
 
 Sub SaveDonador(num As Integer)
+        
+        On Error GoTo SaveDonador_Err
+        
 
-    Call WriteVar(DatPath & "Donadores.dat", "INIT", "NumeroDonadores", Donadores.Count)
-    Call WriteVar(DatPath & "Donadores.dat", "DONADOR" & num, "USER", Donadores(num).name)
-    Call WriteVar(DatPath & "Donadores.dat", "DONADOR" & num, "FECHAEXPIRACION", Donadores(num).FechaExpiracion)
+100     Call WriteVar(DatPath & "Donadores.dat", "INIT", "NumeroDonadores", Donadores.Count)
+102     Call WriteVar(DatPath & "Donadores.dat", "DONADOR" & num, "USER", Donadores(num).name)
+104     Call WriteVar(DatPath & "Donadores.dat", "DONADOR" & num, "FECHAEXPIRACION", Donadores(num).FechaExpiracion)
 
-    Call WriteVar(CuentasPath & Donadores(num).name & ".act", "DONADOR", "DONADOR", "1")
-    Call WriteVar(CuentasPath & Donadores(num).name & ".act", "DONADOR", "FECHAEXPIRACION", Donadores(num).FechaExpiracion)
+106     Call WriteVar(CuentasPath & Donadores(num).name & ".act", "DONADOR", "DONADOR", "1")
+108     Call WriteVar(CuentasPath & Donadores(num).name & ".act", "DONADOR", "FECHAEXPIRACION", Donadores(num).FechaExpiracion)
 
+        
+        Exit Sub
+
+SaveDonador_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModDonador.SaveDonador", Erl)
+        Resume Next
+        
 End Sub
 
 Sub AgregarCreditosDonador(name As String, Cantidad As Long)
+        
+        On Error GoTo AgregarCreditosDonador_Err
+        
 
-    Dim creditos As Long
+        Dim creditos As Long
 
-    creditos = CreditosDonadorCheck(name) + Cantidad
+100     creditos = CreditosDonadorCheck(name) + Cantidad
 
-    'Call LogearEventoDeDonador("Se agregaron " & Cantidad & " creditos a la cuenta " & Name & ".")
-    Call WriteVar(CuentasPath & UCase$(name & ".act"), "DONADOR", "CREDITOS", creditos)
+        'Call LogearEventoDeDonador("Se agregaron " & Cantidad & " creditos a la cuenta " & Name & ".")
+102     Call WriteVar(CuentasPath & UCase$(name & ".act"), "DONADOR", "CREDITOS", creditos)
 
-    'Call AgregarCompra(Name, Date & " - Se agregaron " & Cantidad & " creditos a la cuenta " & Name & ".")
+        'Call AgregarCompra(Name, Date & " - Se agregaron " & Cantidad & " creditos a la cuenta " & Name & ".")
+        
+        Exit Sub
+
+AgregarCreditosDonador_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModDonador.AgregarCreditosDonador", Erl)
+        Resume Next
+        
 End Sub
 
 Sub AgregarCompra(ByVal name As String, ByVal Desc As String)
+        
+        On Error GoTo AgregarCompra_Err
+        
 
-    Dim num As Integer
+        Dim num As Integer
 
-    num = ComprasDonadorCheck(name)
+100     num = ComprasDonadorCheck(name)
 
-    Call WriteVar(CuentasPath & UCase$(name & ".act"), "COMPRAS", "CANTIDAD", num + 1)
-    Call WriteVar(CuentasPath & UCase$(name & ".act"), "COMPRAS", num + 1, Desc)
+102     Call WriteVar(CuentasPath & UCase$(name & ".act"), "COMPRAS", "CANTIDAD", num + 1)
+104     Call WriteVar(CuentasPath & UCase$(name & ".act"), "COMPRAS", num + 1, Desc)
 
+        
+        Exit Sub
+
+AgregarCompra_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModDonador.AgregarCompra", Erl)
+        Resume Next
+        
 End Sub
 
 Sub RestarCreditosDonador(name As String, Cantidad As Long)
+        
+        On Error GoTo RestarCreditosDonador_Err
+        
 
-    Dim creditos As Long
+        Dim creditos As Long
 
-    Call AgregarCreditosCanjeados(name, Cantidad)
+100     Call AgregarCreditosCanjeados(name, Cantidad)
 
-    creditos = CreditosDonadorCheck(name) - Cantidad
+102     creditos = CreditosDonadorCheck(name) - Cantidad
 
-    Call WriteVar(CuentasPath & UCase$(name & ".act"), "DONADOR", "CREDITOS", creditos)
+104     Call WriteVar(CuentasPath & UCase$(name & ".act"), "DONADOR", "CREDITOS", creditos)
 
+        
+        Exit Sub
+
+RestarCreditosDonador_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModDonador.RestarCreditosDonador", Erl)
+        Resume Next
+        
 End Sub
 
 Sub AgregarCreditosCanjeados(name As String, Cantidad As Long)
+        
+        On Error GoTo AgregarCreditosCanjeados_Err
+        
 
-    Dim creditos As Long
+        Dim creditos As Long
 
-    creditos = CreditosCanjeadosCheck(name) + Cantidad
+100     creditos = CreditosCanjeadosCheck(name) + Cantidad
 
-    Call WriteVar(CuentasPath & UCase$(name & ".act"), "DONADOR", "CREDITOSCANJEADOS", creditos)
+102     Call WriteVar(CuentasPath & UCase$(name & ".act"), "DONADOR", "CREDITOSCANJEADOS", creditos)
 
+        
+        Exit Sub
+
+AgregarCreditosCanjeados_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModDonador.AgregarCreditosCanjeados", Erl)
+        Resume Next
+        
 End Sub
 
 Sub LoadDonadores()
+        
+        On Error GoTo LoadDonadores_Err
+        
 
-    Dim NumDonadores As Integer
+        Dim NumDonadores As Integer
 
-    Dim tDon         As TDonador, i As Integer
+        Dim tDon         As TDonador, i As Integer
 
-    If Not FileExist(DatPath & "Donadores.dat", vbNormal) Then Exit Sub
+100     If Not FileExist(DatPath & "Donadores.dat", vbNormal) Then Exit Sub
 
-    NumDonadores = val(GetVar(DatPath & "Donadores.dat", "INIT", "NumeroDonadores"))
+102     NumDonadores = val(GetVar(DatPath & "Donadores.dat", "INIT", "NumeroDonadores"))
 
-    For i = 1 To NumDonadores
-        Set tDon = New TDonador
+104     For i = 1 To NumDonadores
+106         Set tDon = New TDonador
 
-        With tDon
-            .name = GetVar(DatPath & "Donadores.dat", "DONADOR" & i, "USER")
-            .FechaExpiracion = GetVar(DatPath & "Donadores.dat", "DONADOR" & i, "FECHAEXPIRACION")
-            Call Donadores.Add(tDon)
+108         With tDon
+110             .name = GetVar(DatPath & "Donadores.dat", "DONADOR" & i, "USER")
+112             .FechaExpiracion = GetVar(DatPath & "Donadores.dat", "DONADOR" & i, "FECHAEXPIRACION")
+114             Call Donadores.Add(tDon)
 
-        End With
+            End With
 
-    Next
+        Next
 
+        
+        Exit Sub
+
+LoadDonadores_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModDonador.LoadDonadores", Erl)
+        Resume Next
+        
 End Sub
 
 Public Function ChangeDonador(ByVal name As String, ByVal Baneado As Byte) As Boolean
+        
+        On Error GoTo ChangeDonador_Err
+        
 
-    If FileExist(CuentasPath & name & ".act", vbNormal) Then
-        Call FinDonador(name)
+100     If FileExist(CuentasPath & name & ".act", vbNormal) Then
+102         Call FinDonador(name)
 
-    End If
+        End If
 
+        
+        Exit Function
+
+ChangeDonador_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModDonador.ChangeDonador", Erl)
+        Resume Next
+        
 End Function
 
 Public Function FinDonador(ByVal name As String) As Boolean
+        
+        On Error GoTo FinDonador_Err
+        
        
-    Call LogearEventoDeDonador("Se finalizo suscripcion de la cuenta " & name & ".")
-    'Unban the character
-    Call WriteVar(CuentasPath & name & ".act", "DONADOR", "DONADOR", "0")
-    Call WriteVar(CuentasPath & name & ".act", "DONADOR", "FECHAEXPIRACION", "")
+100     Call LogearEventoDeDonador("Se finalizo suscripcion de la cuenta " & name & ".")
+        'Unban the character
+102     Call WriteVar(CuentasPath & name & ".act", "DONADOR", "DONADOR", "0")
+104     Call WriteVar(CuentasPath & name & ".act", "DONADOR", "FECHAEXPIRACION", "")
 
+        
+        Exit Function
+
+FinDonador_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModDonador.FinDonador", Erl)
+        Resume Next
+        
 End Function
 
 Public Sub LogearEventoDeDonador(Logeo As String)
+        
+        On Error GoTo LogearEventoDeDonador_Err
+        
 
-    Dim n As Integer
+        Dim n As Integer
 
-    n = FreeFile
-    Open App.Path & "\LOGS\Donaciones.log" For Append Shared As n
-    Print #n, Date & " " & Time & " - " & Logeo
-    Close #n
+100     n = FreeFile
+102     Open App.Path & "\LOGS\Donaciones.log" For Append Shared As n
+104     Print #n, Date & " " & Time & " - " & Logeo
+106     Close #n
 
+        
+        Exit Sub
+
+LogearEventoDeDonador_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModDonador.LogearEventoDeDonador", Erl)
+        Resume Next
+        
 End Sub
 
 Public Sub CargarCodigosDonador()
+        
+        On Error GoTo CargarCodigosDonador_Err
+        
 
-    Dim i          As Integer
+        Dim i          As Integer
 
-    Dim Codigostrg As String
+        Dim Codigostrg As String
 
-    Dim Leer       As New clsIniReader
+        Dim Leer       As New clsIniReader
 
-    Call Leer.Initialize(App.Path & "\codigosDonadores.ini")
+100     Call Leer.Initialize(App.Path & "\codigosDonadores.ini")
 
-    NumeroCodigos = val(Leer.GetValue("INIT", "NumCodigos"))
+102     NumeroCodigos = val(Leer.GetValue("INIT", "NumCodigos"))
 
-    For i = 1 To NumeroCodigos
-        Codigostrg = Leer.GetValue("CODIGOS", i)
-        Codigo(i).Key = ReadField(1, Codigostrg, Asc("-"))
+104     For i = 1 To NumeroCodigos
+106         Codigostrg = Leer.GetValue("CODIGOS", i)
+108         Codigo(i).Key = ReadField(1, Codigostrg, Asc("-"))
 
-        Codigo(i).Tipo = val(ReadField(2, Codigostrg, Asc("-")))
+110         Codigo(i).Tipo = val(ReadField(2, Codigostrg, Asc("-")))
 
-        Codigo(i).Cantidad = val(ReadField(3, Codigostrg, Asc("-")))
+112         Codigo(i).Cantidad = val(ReadField(3, Codigostrg, Asc("-")))
 
-        Codigo(i).Usado = val(ReadField(4, Codigostrg, Asc("-")))
+114         Codigo(i).Usado = val(ReadField(4, Codigostrg, Asc("-")))
 
-    Next i
+116     Next i
 
+        
+        Exit Sub
+
+CargarCodigosDonador_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModDonador.CargarCodigosDonador", Erl)
+        Resume Next
+        
 End Sub
 
 Public Sub CheckearCodigo(ByVal UserIndex As Integer, ByVal CodigoKey As String)
+        
+        On Error GoTo CheckearCodigo_Err
+        
 
-    Dim LogCheckCodigo As String
+        Dim LogCheckCodigo As String
 
-    LogCheckCodigo = vbCrLf & "****************************************************" & vbCrLf
-    LogCheckCodigo = LogCheckCodigo & "El usuario " & UserList(UserIndex).name & " ingresó el codigo: " & CodigoKey & "." & vbCrLf
+100     LogCheckCodigo = vbCrLf & "****************************************************" & vbCrLf
+102     LogCheckCodigo = LogCheckCodigo & "El usuario " & UserList(UserIndex).name & " ingresó el codigo: " & CodigoKey & "." & vbCrLf
 
-    Dim i As Integer
+        Dim i As Integer
 
-    For i = 1 To NumeroCodigos
+104     For i = 1 To NumeroCodigos
 
-        If CodigoKey = Codigo(i).Key Then
+106         If CodigoKey = Codigo(i).Key Then
 
-            'Call WriteConsoleMsg(UserIndex, "¡Tu codigo es valido!", FontTypeNames.FONTTYPE_New_Naranja)
-            If Codigo(i).Usado = 0 Then
+                'Call WriteConsoleMsg(UserIndex, "¡Tu codigo es valido!", FontTypeNames.FONTTYPE_New_Naranja)
+108             If Codigo(i).Usado = 0 Then
 
-                Select Case Codigo(i).Tipo
+110                 Select Case Codigo(i).Tipo
 
-                    Case 1 'Creditos
-                        Call AgregarCreditosDonador(UserList(UserIndex).Cuenta, CLng(Codigo(i).Cantidad))
-                        Call WriteConsoleMsg(UserIndex, "¡Se han añadido " & Codigo(i).Cantidad & " creditos a tu cuenta. Tu saldo actual es de: " & CreditosDonadorCheck(UserList(UserIndex).Cuenta) & " creditos.", FontTypeNames.FONTTYPE_WARNING)
+                        Case 1 'Creditos
+112                         Call AgregarCreditosDonador(UserList(UserIndex).Cuenta, CLng(Codigo(i).Cantidad))
+114                         Call WriteConsoleMsg(UserIndex, "¡Se han añadido " & Codigo(i).Cantidad & " creditos a tu cuenta. Tu saldo actual es de: " & CreditosDonadorCheck(UserList(UserIndex).Cuenta) & " creditos.", FontTypeNames.FONTTYPE_WARNING)
                         
-                    Case 2 ' Tiempo
+116                     Case 2 ' Tiempo
                         
-                        If DonadorCheck(UserList(UserIndex).Cuenta) = 1 Then
-                            Call DonadorTiempo(UserList(UserIndex).Cuenta, Codigo(i).Cantidad)
-                            Call WriteConsoleMsg(UserIndex, "¡Se han añadido " & Codigo(i).Cantidad & " dias de donador a tu cuenta.", FontTypeNames.FONTTYPE_WARNING)
-                            UserList(UserIndex).donador.activo = 1
-                        Else
-                            Call DonadorTiempo(UserList(UserIndex).Cuenta, Codigo(i).Cantidad)
-                            Call WriteConsoleMsg(UserIndex, "¡Felicitaciones! Ya sos donador. Este benefico durara " & Codigo(i).Cantidad & " dias.", FontTypeNames.FONTTYPE_WARNING)
-                            Call WriteConsoleMsg(UserIndex, "¡Se han añadido " & Codigo(i).Cantidad & " dias a tu cuenta.", FontTypeNames.FONTTYPE_WARNING)
-                            Call WriteConsoleMsg(UserIndex, "Te pedimos que relogees tu personaje para empezar a disfrutar los beneficios.", FontTypeNames.FONTTYPE_WARNING)
+118                         If DonadorCheck(UserList(UserIndex).Cuenta) = 1 Then
+120                             Call DonadorTiempo(UserList(UserIndex).Cuenta, Codigo(i).Cantidad)
+122                             Call WriteConsoleMsg(UserIndex, "¡Se han añadido " & Codigo(i).Cantidad & " dias de donador a tu cuenta.", FontTypeNames.FONTTYPE_WARNING)
+124                             UserList(UserIndex).donador.activo = 1
+                            Else
+126                             Call DonadorTiempo(UserList(UserIndex).Cuenta, Codigo(i).Cantidad)
+128                             Call WriteConsoleMsg(UserIndex, "¡Felicitaciones! Ya sos donador. Este benefico durara " & Codigo(i).Cantidad & " dias.", FontTypeNames.FONTTYPE_WARNING)
+130                             Call WriteConsoleMsg(UserIndex, "¡Se han añadido " & Codigo(i).Cantidad & " dias a tu cuenta.", FontTypeNames.FONTTYPE_WARNING)
+132                             Call WriteConsoleMsg(UserIndex, "Te pedimos que relogees tu personaje para empezar a disfrutar los beneficios.", FontTypeNames.FONTTYPE_WARNING)
 
-                        End If
+                            End If
                         
-                End Select
+                    End Select
 
-                Call WriteActShop(UserIndex)
-                '   Call WriteVar(App.Path & "\cuentas\" & name & ".act", "DONADOR", "CREDITOS", creditos)
+134                 Call WriteActShop(UserIndex)
+                    '   Call WriteVar(App.Path & "\cuentas\" & name & ".act", "DONADOR", "CREDITOS", creditos)
                 
-                LogCheckCodigo = LogCheckCodigo & "El usuario " & UserList(UserIndex).name & " canjeo el codigo: " & CodigoKey & "." & vbCrLf
+136                 LogCheckCodigo = LogCheckCodigo & "El usuario " & UserList(UserIndex).name & " canjeo el codigo: " & CodigoKey & "." & vbCrLf
                 
-                Codigo(i).Usado = 1
-                Call WriteVar(App.Path & "\codigosDonadores.ini", "CODIGOS", i, Codigo(i).Key & "-" & Codigo(i).Tipo & "-" & Codigo(i).Cantidad & "-" & Codigo(i).Usado)
-                LogCheckCodigo = LogCheckCodigo & "****************************************************" & vbCrLf
-            Else
-                Call WriteConsoleMsg(UserIndex, "¡Ese codigo ya ha sido usado.", FontTypeNames.FONTTYPE_WARNING)
+138                 Codigo(i).Usado = 1
+140                 Call WriteVar(App.Path & "\codigosDonadores.ini", "CODIGOS", i, Codigo(i).Key & "-" & Codigo(i).Tipo & "-" & Codigo(i).Cantidad & "-" & Codigo(i).Usado)
+142                 LogCheckCodigo = LogCheckCodigo & "****************************************************" & vbCrLf
+                Else
+144                 Call WriteConsoleMsg(UserIndex, "¡Ese codigo ya ha sido usado.", FontTypeNames.FONTTYPE_WARNING)
                 
-                LogCheckCodigo = LogCheckCodigo & "El codigo ya habia sido usado." & vbCrLf
-                LogCheckCodigo = LogCheckCodigo & "****************************************************" & vbCrLf
+146                 LogCheckCodigo = LogCheckCodigo & "El codigo ya habia sido usado." & vbCrLf
+148                 LogCheckCodigo = LogCheckCodigo & "****************************************************" & vbCrLf
 
+                End If
+
+150             Call LogearEventoDeDonador(LogCheckCodigo)
+                Exit Sub
+                Exit For
+        
             End If
 
-            Call LogearEventoDeDonador(LogCheckCodigo)
-            Exit Sub
-            Exit For
+152     Next i
+
+154     LogCheckCodigo = LogCheckCodigo & "El codigo no existe." & vbCrLf
+156     LogCheckCodigo = LogCheckCodigo & "****************************************************" & vbCrLf
+158     Call LogearEventoDeDonador(LogCheckCodigo)
+
+160     Call WriteConsoleMsg(UserIndex, "¡Tu codigo es invalido!", FontTypeNames.FONTTYPE_WARNING)
+
         
-        End If
+        Exit Sub
 
-    Next i
-
-    LogCheckCodigo = LogCheckCodigo & "El codigo no existe." & vbCrLf
-    LogCheckCodigo = LogCheckCodigo & "****************************************************" & vbCrLf
-    Call LogearEventoDeDonador(LogCheckCodigo)
-
-    Call WriteConsoleMsg(UserIndex, "¡Tu codigo es invalido!", FontTypeNames.FONTTYPE_WARNING)
-
+CheckearCodigo_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModDonador.CheckearCodigo", Erl)
+        Resume Next
+        
 End Sub
     

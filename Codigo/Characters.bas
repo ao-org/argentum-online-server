@@ -34,23 +34,33 @@ Public Const INVALID_INDEX As Integer = 0
 ' @see      INVALID_INDEX
 
 Public Function CharIndexToUserIndex(ByVal CharIndex As Integer) As Integer
-    '***************************************************
-    'Autor: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Takes a CharIndex and transforms it into a UserIndex. Returns INVALID_INDEX in case of error.
-    '***************************************************
-    CharIndexToUserIndex = CharList(CharIndex)
+        '***************************************************
+        'Autor: Juan Martín Sotuyo Dodero (Maraxus)
+        'Last Modification: 05/17/06
+        'Takes a CharIndex and transforms it into a UserIndex. Returns INVALID_INDEX in case of error.
+        '***************************************************
+        
+        On Error GoTo CharIndexToUserIndex_Err
+        
+100     CharIndexToUserIndex = CharList(CharIndex)
     
-    If CharIndexToUserIndex < 1 Or CharIndexToUserIndex > MaxUsers Then
-        CharIndexToUserIndex = INVALID_INDEX
+102     If CharIndexToUserIndex < 1 Or CharIndexToUserIndex > MaxUsers Then
+104         CharIndexToUserIndex = INVALID_INDEX
+            Exit Function
+
+        End If
+    
+106     If UserList(CharIndexToUserIndex).Char.CharIndex <> CharIndex Then
+108         CharIndexToUserIndex = INVALID_INDEX
+            Exit Function
+
+        End If
+
+        
         Exit Function
 
-    End If
-    
-    If UserList(CharIndexToUserIndex).Char.CharIndex <> CharIndex Then
-        CharIndexToUserIndex = INVALID_INDEX
-        Exit Function
-
-    End If
-
+CharIndexToUserIndex_Err:
+        Call RegistrarError(Err.Number, Err.description, "Characters.CharIndexToUserIndex", Erl)
+        Resume Next
+        
 End Function

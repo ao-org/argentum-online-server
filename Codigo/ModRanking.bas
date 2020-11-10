@@ -31,138 +31,178 @@ Public Const NumRanks          As Byte = 1 ''Cuantos tipos de rankings existen (
 Public Rankings(1 To NumRanks) As tRanking ''Array con todos los tipos de ranking, para identificar cada uno se usa el enum eRankings
 
 Public Sub CheckRanking(ByVal Tipo As eRankings, ByVal UserIndex As Integer, ByVal Value As Long)
-    ''CheckRanking
-    ''Cada vez que se cambia algun valor de cualquier usuario, se verifica si puede ingresar al ranking, _
-      cambiar de posicion o solamente actualizar el valor.
+        ''CheckRanking
+        ''Cada vez que se cambia algun valor de cualquier usuario, se verifica si puede ingresar al ranking, _
+          cambiar de posicion o solamente actualizar el valor.
+        
+        On Error GoTo CheckRanking_Err
+        
                                                    
-    Dim FindPos As Byte, LoopC As Long, InRank As Byte, backup As tUserRanking
+        Dim FindPos As Byte, LoopC As Long, InRank As Byte, backup As tUserRanking
 
-    InRank = isRank(UserList(UserIndex).name, Tipo) ''Verificamos si esta en el ranking y si esta, en que posicion.
+100     InRank = isRank(UserList(UserIndex).name, Tipo) ''Verificamos si esta en el ranking y si esta, en que posicion.
 
-    With Rankings(Tipo)
+102     With Rankings(Tipo)
 
-        If InRank > 1 Then  ''Si no es el primero del ranking
-            .user(InRank).Value = Value ''Actualizamos el valor ANTES de reordenarlo
+104         If InRank > 1 Then  ''Si no es el primero del ranking
+106             .user(InRank).Value = Value ''Actualizamos el valor ANTES de reordenarlo
 
-            Do While .user(InRank - 1).Value < Value ''Mientras que el usuario que esta arriba en el ranking tenga menos puntos, va a seguir subiendo de posiciones.
-                backup = .user(InRank) ''Guardamos el personaje en cuestion ya que vamos a cambiar los datos
-                .user(InRank) = .user(InRank - 1) ''Reemplazamos al personaje, por el que estaba un puesto arriba
-                .user(InRank - 1) = backup ''En ese puesto, ponemos el personaje que ascendio un puesto
-                InRank = InRank - 1 ''Actualizamos la variable temporal que esta guardando la posicion de el pj que esta actualizando su posicion
+108             Do While .user(InRank - 1).Value < Value ''Mientras que el usuario que esta arriba en el ranking tenga menos puntos, va a seguir subiendo de posiciones.
+110                 backup = .user(InRank) ''Guardamos el personaje en cuestion ya que vamos a cambiar los datos
+112                 .user(InRank) = .user(InRank - 1) ''Reemplazamos al personaje, por el que estaba un puesto arriba
+114                 .user(InRank - 1) = backup ''En ese puesto, ponemos el personaje que ascendio un puesto
+116                 InRank = InRank - 1 ''Actualizamos la variable temporal que esta guardando la posicion de el pj que esta actualizando su posicion
 
-                If InRank = 1 Then ''Si llego al primer puesto
+118                 If InRank = 1 Then ''Si llego al primer puesto
 
-                    Exit Do ''Salimos, ya no puede seguir subiendo.
+                        Exit Do ''Salimos, ya no puede seguir subiendo.
+
+                    End If
+
+                Loop
+120         ElseIf InRank = 1 Then ''Si es el primero del ranking
+122             .user(InRank).Value = Value ''Actualizamos el valor.
+124         ElseIf InRank = 0 Then ''Si no esta en el ranking
+
+126             For LoopC = 10 To 1 Step -1 ''Recorremos todos los usuarios del ranking a ver si puede entrar
+
+128                 If .user(LoopC).Value < Value Then ''El valor del personaje es mayor al del puesto del ranking?
+130                     FindPos = LoopC ''Encontramos una posicion, pero seguimos el bucle para ver si puede seguir subiendo.
+
+                    End If
+
+132             Next LoopC
+
+134             If FindPos > 0 Then ''Encontro alguna posicion?
+136                 If Not FindPos = 10 Then ''Excepto que sea el ultimo puesto, tenemos que reordenar el ranking.
+
+138                     For LoopC = 10 To FindPos + 1 Step -1 ''Recorremos desde el ultimo puesto hasta un puesto abajo de donde va a ingresar el pj
+140                         .user(LoopC).Nick = .user(LoopC - 1).Nick ''Actualizamos los valores para dejarle el lugar
+142                         .user(LoopC).Value = .user(LoopC - 1).Value
+144                     Next LoopC
+
+                    End If
+
+146                 .user(FindPos).Nick = UCase$(UserList(UserIndex).name) ''Ingresa el pj al ranking en el puesto que encontramos.
+148                 .user(FindPos).Value = Value
 
                 End If
-
-            Loop
-        ElseIf InRank = 1 Then ''Si es el primero del ranking
-            .user(InRank).Value = Value ''Actualizamos el valor.
-        ElseIf InRank = 0 Then ''Si no esta en el ranking
-
-            For LoopC = 10 To 1 Step -1 ''Recorremos todos los usuarios del ranking a ver si puede entrar
-
-                If .user(LoopC).Value < Value Then ''El valor del personaje es mayor al del puesto del ranking?
-                    FindPos = LoopC ''Encontramos una posicion, pero seguimos el bucle para ver si puede seguir subiendo.
-
-                End If
-
-            Next LoopC
-
-            If FindPos > 0 Then ''Encontro alguna posicion?
-                If Not FindPos = 10 Then ''Excepto que sea el ultimo puesto, tenemos que reordenar el ranking.
-
-                    For LoopC = 10 To FindPos + 1 Step -1 ''Recorremos desde el ultimo puesto hasta un puesto abajo de donde va a ingresar el pj
-                        .user(LoopC).Nick = .user(LoopC - 1).Nick ''Actualizamos los valores para dejarle el lugar
-                        .user(LoopC).Value = .user(LoopC - 1).Value
-                    Next LoopC
-
-                End If
-
-                .user(FindPos).Nick = UCase$(UserList(UserIndex).name) ''Ingresa el pj al ranking en el puesto que encontramos.
-                .user(FindPos).Value = Value
 
             End If
 
-        End If
+        End With
 
-    End With
+150     Call GuardarRanking
 
-    Call GuardarRanking
+        
+        Exit Sub
 
+CheckRanking_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModRanking.CheckRanking", Erl)
+        Resume Next
+        
 End Sub
 
 Private Function isRank(ByVal Nick As String, ByVal Tipo As eRankings) As Byte
+        
+        On Error GoTo isRank_Err
+        
 
-    'Funcion que devuelve el puesto del ranking si es que esta en el mismo, devuelve 0 si no esta en el ranking.
-    Dim x As Long
+        'Funcion que devuelve el puesto del ranking si es que esta en el mismo, devuelve 0 si no esta en el ranking.
+        Dim x As Long
 
-    For x = 1 To 10 ''Recorremos el ranking
+100     For x = 1 To 10 ''Recorremos el ranking
 
-        If UCase$(Nick) = UCase$(Rankings(Tipo).user(x).Nick) Then ''Esta en este puesto?
-            isRank = CByte(x) ''Devolvemos el valor que encontramos
+102         If UCase$(Nick) = UCase$(Rankings(Tipo).user(x).Nick) Then ''Esta en este puesto?
+104             isRank = CByte(x) ''Devolvemos el valor que encontramos
 
-            Exit Function ''Salimos, ya no hay nada mas que hacer.
+                Exit Function ''Salimos, ya no hay nada mas que hacer.
 
-        End If
+            End If
 
-        ''No esta en este puesto, seguimos buscando
-    Next x
+            ''No esta en este puesto, seguimos buscando
+106     Next x
 
-    ''No esta en el ranking, devolvemos 0 como valor.
-    isRank = 0
+        ''No esta en el ranking, devolvemos 0 como valor.
+108     isRank = 0
 
+        
+        Exit Function
+
+isRank_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModRanking.isRank", Erl)
+        Resume Next
+        
 End Function
 
 Public Sub GuardarRanking()
+        
+        On Error GoTo GuardarRanking_Err
+        
 
-    Dim Tipo     As Long
+        Dim Tipo     As Long
 
-    Dim x        As Long
+        Dim x        As Long
 
-    Dim rankfile As String
+        Dim rankfile As String
 
-    rankfile = App.Path & "\Ranking.ini"
+100     rankfile = App.Path & "\Ranking.ini"
 
-    For Tipo = 1 To NumRanks
+102     For Tipo = 1 To NumRanks
 
-        With Rankings(Tipo)
+104         With Rankings(Tipo)
 
-            For x = 1 To 10 ''Recorremos el ranking
-                Call WriteVar(rankfile, Tipo, x, .user(x).Nick & "*" & .user(x).Value)
-            Next x
+106             For x = 1 To 10 ''Recorremos el ranking
+108                 Call WriteVar(rankfile, Tipo, x, .user(x).Nick & "*" & .user(x).Value)
+110             Next x
 
-        End With
+            End With
 
-    Next Tipo
+112     Next Tipo
 
+        
+        Exit Sub
+
+GuardarRanking_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModRanking.GuardarRanking", Erl)
+        Resume Next
+        
 End Sub
 
 Public Sub CargarRanking()
+        
+        On Error GoTo CargarRanking_Err
+        
 
-    Dim Tipo     As Long
+        Dim Tipo     As Long
 
-    Dim x        As Long
+        Dim x        As Long
 
-    Dim rankfile As String
+        Dim rankfile As String
 
-    rankfile = App.Path & "\Ranking.ini"
+100     rankfile = App.Path & "\Ranking.ini"
 
-    Dim tmpstring As String
+        Dim tmpstring As String
 
-    For Tipo = 1 To NumRanks
+102     For Tipo = 1 To NumRanks
 
-        With Rankings(Tipo)
+104         With Rankings(Tipo)
 
-            For x = 1 To 10 ''Recorremos el ranking
-                tmpstring = GetVar(rankfile, Tipo, x)
-                .user(x).Nick = ReadField(1, tmpstring, Asc("*"))
-                .user(x).Value = ReadField(2, tmpstring, Asc("*"))
-            Next x
+106             For x = 1 To 10 ''Recorremos el ranking
+108                 tmpstring = GetVar(rankfile, Tipo, x)
+110                 .user(x).Nick = ReadField(1, tmpstring, Asc("*"))
+112                 .user(x).Value = ReadField(2, tmpstring, Asc("*"))
+114             Next x
 
-        End With
+            End With
 
-    Next Tipo
+116     Next Tipo
 
+        
+        Exit Sub
+
+CargarRanking_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModRanking.CargarRanking", Erl)
+        Resume Next
+        
 End Sub

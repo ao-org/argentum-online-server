@@ -30,30 +30,70 @@ Attribute VB_Name = "Matematicas"
 Option Explicit
 
 Public Function Porcentaje(ByVal Total As Long, ByVal Porc As Long) As Long
-    Porcentaje = (Total * Porc) / 100
+        
+        On Error GoTo Porcentaje_Err
+        
+100     Porcentaje = (Total * Porc) / 100
 
+        
+        Exit Function
+
+Porcentaje_Err:
+        Call RegistrarError(Err.Number, Err.description, "Matematicas.Porcentaje", Erl)
+        Resume Next
+        
 End Function
 
 Function Distancia(ByRef wp1 As WorldPos, ByRef wp2 As WorldPos) As Long
-    'Encuentra la distancia entre dos WorldPos
-    Distancia = Abs(wp1.x - wp2.x) + Abs(wp1.Y - wp2.Y) + (Abs(wp1.Map - wp2.Map) * 100)
+        'Encuentra la distancia entre dos WorldPos
+        
+        On Error GoTo Distancia_Err
+        
+100     Distancia = Abs(wp1.x - wp2.x) + Abs(wp1.Y - wp2.Y) + (Abs(wp1.Map - wp2.Map) * 100)
 
+        
+        Exit Function
+
+Distancia_Err:
+        Call RegistrarError(Err.Number, Err.description, "Matematicas.Distancia", Erl)
+        Resume Next
+        
 End Function
 
 Function Distance(X1 As Variant, Y1 As Variant, X2 As Variant, Y2 As Variant) As Double
+        
+        On Error GoTo Distance_Err
+        
 
-    'Encuentra la distancia entre dos puntos
+        'Encuentra la distancia entre dos puntos
 
-    Distance = Sqr(((Y1 - Y2) ^ 2 + (X1 - X2) ^ 2))
+100     Distance = Sqr(((Y1 - Y2) ^ 2 + (X1 - X2) ^ 2))
 
+        
+        Exit Function
+
+Distance_Err:
+        Call RegistrarError(Err.Number, Err.description, "Matematicas.Distance", Erl)
+        Resume Next
+        
 End Function
 
 Public Function RandomNumber(ByVal LowerBound As Long, ByVal UpperBound As Long) As Long
-    '**************************************************************
-    'Author: Juan Martín Sotuyo Dodero
-    'Last Modify Date: 3/06/2006
-    'Generates a random number in the range given - recoded to use longs and work properly with ranges
-    '**************************************************************
-    RandomNumber = Fix(Rnd * (UpperBound - LowerBound + 1)) + LowerBound
+        '**************************************************************
+        'Author: Juan Martín Sotuyo Dodero
+        'Last Modify Date: 3/06/2006
+        'Generates a random number in the range given - recoded to use longs and work properly with ranges
+        '**************************************************************
+        
+        On Error GoTo RandomNumber_Err
+        
+100     RandomNumber = Fix(Rnd * (UpperBound - LowerBound + 1)) + LowerBound
 
+        
+        Exit Function
+
+RandomNumber_Err:
+        Call RegistrarError(Err.Number, Err.description, "Matematicas.RandomNumber", Erl)
+        Resume Next
+        
 End Function

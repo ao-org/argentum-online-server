@@ -74,18 +74,48 @@ Public Sub Reset()
 End Sub
 
 Public Property Get Longitud() As Integer
-    Longitud = Cola.Count
+        
+        On Error GoTo Longitud_Err
+        
+100     Longitud = Cola.Count
 
+        
+        Exit Property
+
+Longitud_Err:
+        Call RegistrarError(Err.Number, Err.description, "cCola.Longitud", Erl)
+        Resume Next
+        
 End Property
 
 Private Function IndexValido(ByVal i As Integer) As Boolean
-    IndexValido = i >= 1 And i <= Me.Longitud
+        
+        On Error GoTo IndexValido_Err
+        
+100     IndexValido = i >= 1 And i <= Me.Longitud
 
+        
+        Exit Function
+
+IndexValido_Err:
+        Call RegistrarError(Err.Number, Err.description, "cCola.IndexValido", Erl)
+        Resume Next
+        
 End Function
 
 Private Sub Class_Initialize()
-    Set Cola = New Collection
+        
+        On Error GoTo Class_Initialize_Err
+        
+100     Set Cola = New Collection
 
+        
+        Exit Sub
+
+Class_Initialize_Err:
+        Call RegistrarError(Err.Number, Err.description, "cCola.Class_Initialize", Erl)
+        Resume Next
+        
 End Sub
 
 Public Function VerElemento(ByVal Index As Integer) As String
@@ -210,7 +240,17 @@ Public Sub QuitarIndex(ByVal Index As Integer)
 End Sub
 
 Private Sub Class_Terminate()
-    'Destruimos el objeto Cola
-    Set Cola = Nothing
+        'Destruimos el objeto Cola
+        
+        On Error GoTo Class_Terminate_Err
+        
+100     Set Cola = Nothing
 
+        
+        Exit Sub
+
+Class_Terminate_Err:
+        Call RegistrarError(Err.Number, Err.description, "cCola.Class_Terminate", Erl)
+        Resume Next
+        
 End Sub

@@ -240,465 +240,545 @@ Option Explicit
 #End If
 
 Sub DarCuerpo(ByVal UserIndex As Integer)
+        
+        On Error GoTo DarCuerpo_Err
+        
 
-    '*************************************************
-    'Author: Nacho (Integer)
-    'Last modified: 14/03/2007
-    'Elije una cabeza para el usuario y le da un body
-    '*************************************************
-    Dim NewBody    As Integer
+        '*************************************************
+        'Author: Nacho (Integer)
+        'Last modified: 14/03/2007
+        'Elije una cabeza para el usuario y le da un body
+        '*************************************************
+        Dim NewBody    As Integer
 
-    Dim UserRaza   As Byte
+        Dim UserRaza   As Byte
 
-    Dim UserGenero As Byte
+        Dim UserGenero As Byte
 
-    UserGenero = UserList(UserIndex).genero
-    UserRaza = UserList(UserIndex).raza
+100     UserGenero = UserList(UserIndex).genero
+102     UserRaza = UserList(UserIndex).raza
 
-    Select Case UserGenero
+104     Select Case UserGenero
 
-        Case eGenero.Hombre
+            Case eGenero.Hombre
 
-            Select Case UserRaza
+106             Select Case UserRaza
 
-                Case eRaza.Humano
-                    NewBody = 1
+                    Case eRaza.Humano
+108                     NewBody = 1
 
-                Case eRaza.Elfo
-                    NewBody = 2
+110                 Case eRaza.Elfo
+112                     NewBody = 2
 
-                Case eRaza.Drow
-                    NewBody = 3
+114                 Case eRaza.Drow
+116                     NewBody = 3
 
-                Case eRaza.Enano
-                    NewBody = 300
+118                 Case eRaza.Enano
+120                     NewBody = 300
 
-                Case eRaza.Gnomo
-                    NewBody = 300
+122                 Case eRaza.Gnomo
+124                     NewBody = 300
 
-                Case eRaza.Orco
-                    NewBody = 582
+126                 Case eRaza.Orco
+128                     NewBody = 582
 
-            End Select
+                End Select
 
-        Case eGenero.Mujer
+130         Case eGenero.Mujer
 
-            Select Case UserRaza
+132             Select Case UserRaza
 
-                Case eRaza.Humano
-                    NewBody = 1
+                    Case eRaza.Humano
+134                     NewBody = 1
 
-                Case eRaza.Elfo
-                    NewBody = 2
+136                 Case eRaza.Elfo
+138                     NewBody = 2
 
-                Case eRaza.Drow
-                    NewBody = 3
+140                 Case eRaza.Drow
+142                     NewBody = 3
 
-                Case eRaza.Gnomo
-                    NewBody = 300
+144                 Case eRaza.Gnomo
+146                     NewBody = 300
 
-                Case eRaza.Enano
-                    NewBody = 300
+148                 Case eRaza.Enano
+150                     NewBody = 300
 
-                Case eRaza.Orco
-                    NewBody = 581
+152                 Case eRaza.Orco
+154                     NewBody = 581
 
-            End Select
+                End Select
 
-    End Select
+        End Select
 
-    UserList(UserIndex).Char.Body = NewBody
+156     UserList(UserIndex).Char.Body = NewBody
 
+        
+        Exit Sub
+
+DarCuerpo_Err:
+        Call RegistrarError(Err.Number, Err.description, "TCP.DarCuerpo", Erl)
+        Resume Next
+        
 End Sub
 
 Sub AsignarAtributos(ByVal UserIndex As String)
+        
+        On Error GoTo AsignarAtributos_Err
+        
 
-    Select Case UserList(UserIndex).raza
+100     Select Case UserList(UserIndex).raza
 
-        Case eRaza.Humano
-            UserList(UserIndex).Stats.UserAtributos(1) = 19
-            UserList(UserIndex).Stats.UserAtributos(2) = 19
-            UserList(UserIndex).Stats.UserAtributos(3) = 19
-            UserList(UserIndex).Stats.UserAtributos(4) = 20
+            Case eRaza.Humano
+102             UserList(UserIndex).Stats.UserAtributos(1) = 19
+104             UserList(UserIndex).Stats.UserAtributos(2) = 19
+106             UserList(UserIndex).Stats.UserAtributos(3) = 19
+108             UserList(UserIndex).Stats.UserAtributos(4) = 20
 
-        Case eRaza.Elfo
-            UserList(UserIndex).Stats.UserAtributos(1) = 18
-            UserList(UserIndex).Stats.UserAtributos(2) = 20
-            UserList(UserIndex).Stats.UserAtributos(3) = 21
-            UserList(UserIndex).Stats.UserAtributos(4) = 18
+110         Case eRaza.Elfo
+112             UserList(UserIndex).Stats.UserAtributos(1) = 18
+114             UserList(UserIndex).Stats.UserAtributos(2) = 20
+116             UserList(UserIndex).Stats.UserAtributos(3) = 21
+118             UserList(UserIndex).Stats.UserAtributos(4) = 18
 
-        Case eRaza.Drow
-            UserList(UserIndex).Stats.UserAtributos(1) = 20
-            UserList(UserIndex).Stats.UserAtributos(2) = 18
-            UserList(UserIndex).Stats.UserAtributos(3) = 20
-            UserList(UserIndex).Stats.UserAtributos(4) = 19
+120         Case eRaza.Drow
+122             UserList(UserIndex).Stats.UserAtributos(1) = 20
+124             UserList(UserIndex).Stats.UserAtributos(2) = 18
+126             UserList(UserIndex).Stats.UserAtributos(3) = 20
+128             UserList(UserIndex).Stats.UserAtributos(4) = 19
 
-        Case eRaza.Gnomo
-            UserList(UserIndex).Stats.UserAtributos(1) = 13
-            UserList(UserIndex).Stats.UserAtributos(2) = 21
-            UserList(UserIndex).Stats.UserAtributos(3) = 22
-            UserList(UserIndex).Stats.UserAtributos(4) = 17
+130         Case eRaza.Gnomo
+132             UserList(UserIndex).Stats.UserAtributos(1) = 13
+134             UserList(UserIndex).Stats.UserAtributos(2) = 21
+136             UserList(UserIndex).Stats.UserAtributos(3) = 22
+138             UserList(UserIndex).Stats.UserAtributos(4) = 17
 
-        Case eRaza.Enano
-            UserList(UserIndex).Stats.UserAtributos(1) = 21
-            UserList(UserIndex).Stats.UserAtributos(2) = 17
-            UserList(UserIndex).Stats.UserAtributos(3) = 12
-            UserList(UserIndex).Stats.UserAtributos(4) = 22
+140         Case eRaza.Enano
+142             UserList(UserIndex).Stats.UserAtributos(1) = 21
+144             UserList(UserIndex).Stats.UserAtributos(2) = 17
+146             UserList(UserIndex).Stats.UserAtributos(3) = 12
+148             UserList(UserIndex).Stats.UserAtributos(4) = 22
 
-        Case eRaza.Orco
-            UserList(UserIndex).Stats.UserAtributos(1) = 23
-            UserList(UserIndex).Stats.UserAtributos(2) = 17
-            UserList(UserIndex).Stats.UserAtributos(3) = 12
-            UserList(UserIndex).Stats.UserAtributos(4) = 21
+150         Case eRaza.Orco
+152             UserList(UserIndex).Stats.UserAtributos(1) = 23
+154             UserList(UserIndex).Stats.UserAtributos(2) = 17
+156             UserList(UserIndex).Stats.UserAtributos(3) = 12
+158             UserList(UserIndex).Stats.UserAtributos(4) = 21
 
-    End Select
+        End Select
 
+        
+        Exit Sub
+
+AsignarAtributos_Err:
+        Call RegistrarError(Err.Number, Err.description, "TCP.AsignarAtributos", Erl)
+        Resume Next
+        
 End Sub
 
 Sub RellenarInventario(ByVal UserIndex As String)
-
-    With UserList(UserIndex)
         
-        Dim NumItems As Integer
+        On Error GoTo RellenarInventario_Err
+        
 
-        NumItems = 1
+100     With UserList(UserIndex)
+        
+            Dim NumItems As Integer
+
+102         NumItems = 1
     
-        ' Todos reciben pociones rojas
-        .Invent.Object(NumItems).ObjIndex = 1616 'Pocion Roja
-        .Invent.Object(NumItems).Amount = 100
-        NumItems = NumItems + 1
+            ' Todos reciben pociones rojas
+104         .Invent.Object(NumItems).ObjIndex = 1616 'Pocion Roja
+106         .Invent.Object(NumItems).Amount = 100
+108         NumItems = NumItems + 1
         
-        ' Magicas puras reciben más azules
-        Select Case .clase
+            ' Magicas puras reciben más azules
+110         Select Case .clase
 
-            Case eClass.Mage, eClass.Druid
-                .Invent.Object(NumItems).ObjIndex = 1617 ' Pocion Azul
-                .Invent.Object(NumItems).Amount = 100
-                NumItems = NumItems + 1
+                Case eClass.Mage, eClass.Druid
+112                 .Invent.Object(NumItems).ObjIndex = 1617 ' Pocion Azul
+114                 .Invent.Object(NumItems).Amount = 100
+116                 NumItems = NumItems + 1
 
-        End Select
+            End Select
         
-        ' Semi mágicas reciben menos
-        Select Case .clase
+            ' Semi mágicas reciben menos
+118         Select Case .clase
 
-            Case eClass.Bard, eClass.Cleric, eClass.Paladin, eClass.Assasin
-                .Invent.Object(NumItems).ObjIndex = 1617 ' Pocion Azul
-                .Invent.Object(NumItems).Amount = 50
-                NumItems = NumItems + 1
+                Case eClass.Bard, eClass.Cleric, eClass.Paladin, eClass.Assasin
+120                 .Invent.Object(NumItems).ObjIndex = 1617 ' Pocion Azul
+122                 .Invent.Object(NumItems).Amount = 50
+124                 NumItems = NumItems + 1
 
-        End Select
+            End Select
 
-        ' Arma y hechizos
-        Select Case .clase
+            ' Arma y hechizos
+126         Select Case .clase
 
-            Case eClass.Mage, eClass.Cleric, eClass.Druid, eClass.Bard
-                .Stats.UserHechizos(1) = 1 ' Proyectil
-                .Stats.UserHechizos(2) = 2 ' Saeta
-                .Stats.UserHechizos(3) = 11 ' Curar Veneno
-                .Stats.UserHechizos(4) = 12 ' Heridas Leves
+                Case eClass.Mage, eClass.Cleric, eClass.Druid, eClass.Bard
+128                 .Stats.UserHechizos(1) = 1 ' Proyectil
+130                 .Stats.UserHechizos(2) = 2 ' Saeta
+132                 .Stats.UserHechizos(3) = 11 ' Curar Veneno
+134                 .Stats.UserHechizos(4) = 12 ' Heridas Leves
 
-            Case eClass.Assasin, eClass.Paladin
-                .Stats.UserHechizos(1) = 1 ' Proyectil
-                .Stats.UserHechizos(2) = 2 ' Saeta
-                .Stats.UserHechizos(3) = 11 ' Curar Veneno
+136             Case eClass.Assasin, eClass.Paladin
+138                 .Stats.UserHechizos(1) = 1 ' Proyectil
+140                 .Stats.UserHechizos(2) = 2 ' Saeta
+142                 .Stats.UserHechizos(3) = 11 ' Curar Veneno
 
-        End Select
+            End Select
         
-        ' Pociones amarillas y verdes
-        Select Case .clase
+            ' Pociones amarillas y verdes
+144         Select Case .clase
 
-            Case eClass.Assasin, eClass.Bard, eClass.Cleric, eClass.Hunter, eClass.Paladin, eClass.Trabajador, eClass.Warrior
-                .Invent.Object(NumItems).ObjIndex = 1618 ' Pocion Amarilla
-                .Invent.Object(NumItems).Amount = 25
-                NumItems = NumItems + 1
+                Case eClass.Assasin, eClass.Bard, eClass.Cleric, eClass.Hunter, eClass.Paladin, eClass.Trabajador, eClass.Warrior
+146                 .Invent.Object(NumItems).ObjIndex = 1618 ' Pocion Amarilla
+148                 .Invent.Object(NumItems).Amount = 25
+150                 NumItems = NumItems + 1
 
-                .Invent.Object(NumItems).ObjIndex = 1619 ' Pocion Verde
-                .Invent.Object(NumItems).Amount = 25
-                NumItems = NumItems + 1
+152                 .Invent.Object(NumItems).ObjIndex = 1619 ' Pocion Verde
+154                 .Invent.Object(NumItems).Amount = 25
+156                 NumItems = NumItems + 1
 
-        End Select
+            End Select
         
-        ' Equipo el arma
-        .Invent.Object(NumItems).ObjIndex = 460 ' Daga (Newbies)
-        .Invent.Object(NumItems).Amount = 1
-        .Invent.Object(NumItems).Equipped = 1
-        .Invent.WeaponEqpSlot = NumItems
-        .Invent.WeaponEqpObjIndex = .Invent.Object(NumItems).ObjIndex
-        .Char.WeaponAnim = ObjData(NumItems).WeaponAnim
-        NumItems = NumItems + 1
+            ' Equipo el arma
+158         .Invent.Object(NumItems).ObjIndex = 460 ' Daga (Newbies)
+160         .Invent.Object(NumItems).Amount = 1
+162         .Invent.Object(NumItems).Equipped = 1
+164         .Invent.WeaponEqpSlot = NumItems
+166         .Invent.WeaponEqpObjIndex = .Invent.Object(NumItems).ObjIndex
+168         .Char.WeaponAnim = ObjData(NumItems).WeaponAnim
+170         NumItems = NumItems + 1
         
-        ' Vestimenta común
-        .Invent.Object(NumItems).ObjIndex = 1622 ' Vestimenta Comun
-        .Invent.Object(NumItems).Amount = 1
-        .Invent.Object(NumItems).Equipped = 1
-        .Invent.ArmourEqpSlot = NumItems
-        .Invent.ArmourEqpObjIndex = .Invent.Object(NumItems).ObjIndex
-        NumItems = NumItems + 1
+            ' Vestimenta común
+172         .Invent.Object(NumItems).ObjIndex = 1622 ' Vestimenta Comun
+174         .Invent.Object(NumItems).Amount = 1
+176         .Invent.Object(NumItems).Equipped = 1
+178         .Invent.ArmourEqpSlot = NumItems
+180         .Invent.ArmourEqpObjIndex = .Invent.Object(NumItems).ObjIndex
+182         NumItems = NumItems + 1
 
-        ' Animación según raza
-        If .raza = Enano Or .raza = Gnomo Then
-            .Char.Body = ObjData(.Invent.ArmourEqpObjIndex).RopajeBajo
-        Else
-            .Char.Body = ObjData(.Invent.ArmourEqpObjIndex).Ropaje
+            ' Animación según raza
+184         If .raza = Enano Or .raza = Gnomo Then
+186             .Char.Body = ObjData(.Invent.ArmourEqpObjIndex).RopajeBajo
+            Else
+188             .Char.Body = ObjData(.Invent.ArmourEqpObjIndex).Ropaje
 
-        End If
+            End If
         
-        ' Comida y bebida
-        .Invent.Object(NumItems).ObjIndex = 573 ' Manzana
-        .Invent.Object(NumItems).Amount = 100
-        NumItems = NumItems + 1
+            ' Comida y bebida
+190         .Invent.Object(NumItems).ObjIndex = 573 ' Manzana
+192         .Invent.Object(NumItems).Amount = 100
+194         NumItems = NumItems + 1
 
-        .Invent.Object(NumItems).ObjIndex = 572 ' Agua
-        .Invent.Object(NumItems).Amount = 100
-        NumItems = NumItems + 1
+196         .Invent.Object(NumItems).ObjIndex = 572 ' Agua
+198         .Invent.Object(NumItems).Amount = 100
+200         NumItems = NumItems + 1
 
-        .Invent.Object(NumItems).ObjIndex = 200 ' Cofre Inicial - TODO: Remover
-        .Invent.Object(NumItems).Amount = 1
-        NumItems = NumItems + 1
+202         .Invent.Object(NumItems).ObjIndex = 200 ' Cofre Inicial - TODO: Remover
+204         .Invent.Object(NumItems).Amount = 1
+206         NumItems = NumItems + 1
 
-        ' Seteo la cantidad de items
-        .Invent.NroItems = NumItems
+            ' Seteo la cantidad de items
+208         .Invent.NroItems = NumItems
 
-    End With
+        End With
    
+        
+        Exit Sub
+
+RellenarInventario_Err:
+        Call RegistrarError(Err.Number, Err.description, "TCP.RellenarInventario", Erl)
+        Resume Next
+        
 End Sub
 
 Function AsciiValidos(ByVal cad As String) As Boolean
+        
+        On Error GoTo AsciiValidos_Err
+        
 
-    Dim car As Byte
+        Dim car As Byte
 
-    Dim i   As Integer
+        Dim i   As Integer
 
-    cad = LCase$(cad)
+100     cad = LCase$(cad)
 
-    For i = 1 To Len(cad)
-        car = Asc(mid$(cad, i, 1))
+102     For i = 1 To Len(cad)
+104         car = Asc(mid$(cad, i, 1))
     
-        If (car < 97 Or car > 122) And (car <> 255) And (car <> 32) Then
-            AsciiValidos = False
-            Exit Function
+106         If (car < 97 Or car > 122) And (car <> 255) And (car <> 32) Then
+108             AsciiValidos = False
+                Exit Function
 
-        End If
+            End If
     
-    Next i
+110     Next i
 
-    AsciiValidos = True
+112     AsciiValidos = True
 
+        
+        Exit Function
+
+AsciiValidos_Err:
+        Call RegistrarError(Err.Number, Err.description, "TCP.AsciiValidos", Erl)
+        Resume Next
+        
 End Function
 
 Function Numeric(ByVal cad As String) As Boolean
+        
+        On Error GoTo Numeric_Err
+        
 
-    Dim car As Byte
+        Dim car As Byte
 
-    Dim i   As Integer
+        Dim i   As Integer
 
-    cad = LCase$(cad)
+100     cad = LCase$(cad)
 
-    For i = 1 To Len(cad)
-        car = Asc(mid$(cad, i, 1))
+102     For i = 1 To Len(cad)
+104         car = Asc(mid$(cad, i, 1))
     
-        If (car < 48 Or car > 57) Then
-            Numeric = False
-            Exit Function
+106         If (car < 48 Or car > 57) Then
+108             Numeric = False
+                Exit Function
 
-        End If
+            End If
     
-    Next i
+110     Next i
 
-    Numeric = True
+112     Numeric = True
 
+        
+        Exit Function
+
+Numeric_Err:
+        Call RegistrarError(Err.Number, Err.description, "TCP.Numeric", Erl)
+        Resume Next
+        
 End Function
 
 Function NombrePermitido(ByVal nombre As String) As Boolean
+        
+        On Error GoTo NombrePermitido_Err
+        
 
-    Dim i As Integer
+        Dim i As Integer
 
-    For i = 1 To UBound(ForbidenNames)
+100     For i = 1 To UBound(ForbidenNames)
 
-        If InStr(nombre, ForbidenNames(i)) Then
-            NombrePermitido = False
-            Exit Function
+102         If InStr(nombre, ForbidenNames(i)) Then
+104             NombrePermitido = False
+                Exit Function
 
-        End If
+            End If
 
-    Next i
+106     Next i
 
-    NombrePermitido = True
+108     NombrePermitido = True
 
+        
+        Exit Function
+
+NombrePermitido_Err:
+        Call RegistrarError(Err.Number, Err.description, "TCP.NombrePermitido", Erl)
+        Resume Next
+        
 End Function
 
 Function ValidateSkills(ByVal UserIndex As Integer) As Boolean
+        
+        On Error GoTo ValidateSkills_Err
+        
 
-    Dim LoopC As Integer
+        Dim LoopC As Integer
 
-    For LoopC = 1 To NUMSKILLS
+100     For LoopC = 1 To NUMSKILLS
 
-        If UserList(UserIndex).Stats.UserSkills(LoopC) < 0 Then
-            Exit Function
+102         If UserList(UserIndex).Stats.UserSkills(LoopC) < 0 Then
+                Exit Function
 
-            If UserList(UserIndex).Stats.UserSkills(LoopC) > 100 Then UserList(UserIndex).Stats.UserSkills(LoopC) = 100
+104             If UserList(UserIndex).Stats.UserSkills(LoopC) > 100 Then UserList(UserIndex).Stats.UserSkills(LoopC) = 100
 
-        End If
+            End If
 
-    Next LoopC
+106     Next LoopC
 
-    ValidateSkills = True
+108     ValidateSkills = True
     
+        
+        Exit Function
+
+ValidateSkills_Err:
+        Call RegistrarError(Err.Number, Err.description, "TCP.ValidateSkills", Erl)
+        Resume Next
+        
 End Function
 
 Sub ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal UserRaza As eRaza, ByVal UserSexo As eGenero, ByVal UserClase As eClass, ByVal Head As Integer, ByRef UserCuenta As String)
-    '*************************************************
-    'Author: Unknown
-    'Last modified: 20/4/2007
-    'Conecta un nuevo Usuario
-    '23/01/2007 Pablo (ToxicWaste) - Agregué ResetFaccion al crear usuario
-    '24/01/2007 Pablo (ToxicWaste) - Agregué el nuevo mana inicial de los magos.
-    '12/02/2007 Pablo (ToxicWaste) - Puse + 1 de const al Elfo normal.
-    '20/04/2007 Pablo (ToxicWaste) - Puse -1 de fuerza al Elfo.
-    '09/01/2008 Pablo (ToxicWaste) - Ahora los modificadores de Raza se controlan desde Balance.dat
-    '*************************************************
+        '*************************************************
+        'Author: Unknown
+        'Last modified: 20/4/2007
+        'Conecta un nuevo Usuario
+        '23/01/2007 Pablo (ToxicWaste) - Agregué ResetFaccion al crear usuario
+        '24/01/2007 Pablo (ToxicWaste) - Agregué el nuevo mana inicial de los magos.
+        '12/02/2007 Pablo (ToxicWaste) - Puse + 1 de const al Elfo normal.
+        '20/04/2007 Pablo (ToxicWaste) - Puse -1 de fuerza al Elfo.
+        '09/01/2008 Pablo (ToxicWaste) - Ahora los modificadores de Raza se controlan desde Balance.dat
+        '*************************************************
+        
+        On Error GoTo ConnectNewUser_Err
+        
     
-    If Not AsciiValidos(name) Or LenB(name) = 0 Then
-        Call WriteErrorMsg(UserIndex, "Nombre invalido.")
-        Exit Sub
+100     If Not AsciiValidos(name) Or LenB(name) = 0 Then
+102         Call WriteErrorMsg(UserIndex, "Nombre invalido.")
+            Exit Sub
 
-    End If
+        End If
     
-    If UserList(UserIndex).flags.UserLogged Then
-        Call LogCheating("El usuario " & UserList(UserIndex).name & " ha intentado crear a " & name & " desde la IP " & UserList(UserIndex).ip)
-        Call CloseSocketSL(UserIndex)
-        Call Cerrar_Usuario(UserIndex)
-        Exit Sub
+104     If UserList(UserIndex).flags.UserLogged Then
+106         Call LogCheating("El usuario " & UserList(UserIndex).name & " ha intentado crear a " & name & " desde la IP " & UserList(UserIndex).ip)
+108         Call CloseSocketSL(UserIndex)
+110         Call Cerrar_Usuario(UserIndex)
+            Exit Sub
 
-    End If
+        End If
     
-    Dim LoopC As Long
+        Dim LoopC As Long
     
-    '¿Existe el personaje?
-    If PersonajeExiste(name) Then
-        Call WriteErrorMsg(UserIndex, "Ya existe el personaje.")
-        Exit Sub
+        '¿Existe el personaje?
+112     If PersonajeExiste(name) Then
+114         Call WriteErrorMsg(UserIndex, "Ya existe el personaje.")
+            Exit Sub
 
-    End If
+        End If
     
-    'Prevenimos algun bug con dados inválidos
-    If UserList(UserIndex).Stats.UserAtributos(eAtributos.Fuerza) = 0 Then Exit Sub
+        'Prevenimos algun bug con dados inválidos
+116     If UserList(UserIndex).Stats.UserAtributos(eAtributos.Fuerza) = 0 Then Exit Sub
     
-    UserList(UserIndex).Stats.UserAtributos(eAtributos.Fuerza) = UserList(UserIndex).Stats.UserAtributos(eAtributos.Fuerza) + ModRaza(UserRaza).Fuerza
-    UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad) = UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad) + ModRaza(UserRaza).Agilidad
-    UserList(UserIndex).Stats.UserAtributos(eAtributos.Inteligencia) = UserList(UserIndex).Stats.UserAtributos(eAtributos.Inteligencia) + ModRaza(UserRaza).Inteligencia
-    UserList(UserIndex).Stats.UserAtributos(eAtributos.Constitucion) = UserList(UserIndex).Stats.UserAtributos(eAtributos.Constitucion) + ModRaza(UserRaza).Constitucion
+118     UserList(UserIndex).Stats.UserAtributos(eAtributos.Fuerza) = UserList(UserIndex).Stats.UserAtributos(eAtributos.Fuerza) + ModRaza(UserRaza).Fuerza
+120     UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad) = UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad) + ModRaza(UserRaza).Agilidad
+122     UserList(UserIndex).Stats.UserAtributos(eAtributos.Inteligencia) = UserList(UserIndex).Stats.UserAtributos(eAtributos.Inteligencia) + ModRaza(UserRaza).Inteligencia
+124     UserList(UserIndex).Stats.UserAtributos(eAtributos.Constitucion) = UserList(UserIndex).Stats.UserAtributos(eAtributos.Constitucion) + ModRaza(UserRaza).Constitucion
     
-    UserList(UserIndex).flags.Muerto = 0
-    UserList(UserIndex).flags.Escondido = 0
+126     UserList(UserIndex).flags.Muerto = 0
+128     UserList(UserIndex).flags.Escondido = 0
 
-    UserList(UserIndex).flags.Casado = 0
-    UserList(UserIndex).flags.Pareja = ""
+130     UserList(UserIndex).flags.Casado = 0
+132     UserList(UserIndex).flags.Pareja = ""
 
-    UserList(UserIndex).name = name
-    UserList(UserIndex).clase = UserClase
-    UserList(UserIndex).raza = UserRaza
+134     UserList(UserIndex).name = name
+136     UserList(UserIndex).clase = UserClase
+138     UserList(UserIndex).raza = UserRaza
     
-    UserList(UserIndex).Char.Head = Head
+140     UserList(UserIndex).Char.Head = Head
     
-    UserList(UserIndex).genero = UserSexo
-    UserList(UserIndex).Hogar = 1
+142     UserList(UserIndex).genero = UserSexo
+144     UserList(UserIndex).Hogar = 1
     
-    '%%%%%%%%%%%%% PREVENIR HACKEO DE LOS SKILLS %%%%%%%%%%%%%
-    UserList(UserIndex).Stats.SkillPts = 10
+        '%%%%%%%%%%%%% PREVENIR HACKEO DE LOS SKILLS %%%%%%%%%%%%%
+146     UserList(UserIndex).Stats.SkillPts = 10
     
-    UserList(UserIndex).Char.heading = eHeading.SOUTH
+148     UserList(UserIndex).Char.heading = eHeading.SOUTH
     
-    Call DarCuerpo(UserIndex) 'Ladder REVISAR
+150     Call DarCuerpo(UserIndex) 'Ladder REVISAR
     
-    UserList(UserIndex).OrigChar = UserList(UserIndex).Char
+152     UserList(UserIndex).OrigChar = UserList(UserIndex).Char
 
-    UserList(UserIndex).Char.WeaponAnim = NingunArma
-    UserList(UserIndex).Char.ShieldAnim = NingunEscudo
-    UserList(UserIndex).Char.CascoAnim = NingunCasco
+154     UserList(UserIndex).Char.WeaponAnim = NingunArma
+156     UserList(UserIndex).Char.ShieldAnim = NingunEscudo
+158     UserList(UserIndex).Char.CascoAnim = NingunCasco
 
-    'Call AsignarAtributos(UserIndex)
+        'Call AsignarAtributos(UserIndex)
 
-    Dim MiInt As Integer
+        Dim MiInt As Integer
     
-    MiInt = RandomNumber(1, UserList(UserIndex).Stats.UserAtributos(eAtributos.Constitucion) \ 3)
+160     MiInt = RandomNumber(1, UserList(UserIndex).Stats.UserAtributos(eAtributos.Constitucion) \ 3)
     
-    UserList(UserIndex).Stats.MaxHp = 15 + MiInt
-    UserList(UserIndex).Stats.MinHp = 15 + MiInt
+162     UserList(UserIndex).Stats.MaxHp = 15 + MiInt
+164     UserList(UserIndex).Stats.MinHp = 15 + MiInt
     
-    MiInt = RandomNumber(1, UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad) \ 6)
+166     MiInt = RandomNumber(1, UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad) \ 6)
 
-    If MiInt = 1 Then MiInt = 2
+168     If MiInt = 1 Then MiInt = 2
     
-    UserList(UserIndex).Stats.MaxSta = 20 * MiInt
-    UserList(UserIndex).Stats.MinSta = 20 * MiInt
+170     UserList(UserIndex).Stats.MaxSta = 20 * MiInt
+172     UserList(UserIndex).Stats.MinSta = 20 * MiInt
     
-    UserList(UserIndex).Stats.MaxAGU = 100
-    UserList(UserIndex).Stats.MinAGU = 100
+174     UserList(UserIndex).Stats.MaxAGU = 100
+176     UserList(UserIndex).Stats.MinAGU = 100
     
-    UserList(UserIndex).Stats.MaxHam = 100
-    UserList(UserIndex).Stats.MinHam = 100
+178     UserList(UserIndex).Stats.MaxHam = 100
+180     UserList(UserIndex).Stats.MinHam = 100
 
-    UserList(UserIndex).flags.ScrollExp = 1
-    UserList(UserIndex).flags.ScrollOro = 1
+182     UserList(UserIndex).flags.ScrollExp = 1
+184     UserList(UserIndex).flags.ScrollOro = 1
     
-    '<-----------------MANA----------------------->
-    If UserClase = eClass.Mage Then 'Cambio en mana inicial (ToxicWaste)
-        MiInt = UserList(UserIndex).Stats.UserAtributos(eAtributos.Inteligencia) * 3
-        UserList(UserIndex).Stats.MaxMAN = MiInt
-        UserList(UserIndex).Stats.MinMAN = MiInt
-    ElseIf UserClase = eClass.Cleric Or UserClase = eClass.Druid Or UserClase = eClass.Bard Or UserClase = eClass.Paladin Or UserClase = eClass.Assasin Then
-        UserList(UserIndex).Stats.MaxMAN = 50
-        UserList(UserIndex).Stats.MinMAN = 50
+        '<-----------------MANA----------------------->
+186     If UserClase = eClass.Mage Then 'Cambio en mana inicial (ToxicWaste)
+188         MiInt = UserList(UserIndex).Stats.UserAtributos(eAtributos.Inteligencia) * 3
+190         UserList(UserIndex).Stats.MaxMAN = MiInt
+192         UserList(UserIndex).Stats.MinMAN = MiInt
+194     ElseIf UserClase = eClass.Cleric Or UserClase = eClass.Druid Or UserClase = eClass.Bard Or UserClase = eClass.Paladin Or UserClase = eClass.Assasin Then
+196         UserList(UserIndex).Stats.MaxMAN = 50
+198         UserList(UserIndex).Stats.MinMAN = 50
 
-    End If
+        End If
 
-    UserList(UserIndex).flags.VecesQueMoriste = 0
-    UserList(UserIndex).flags.Montado = 0
+200     UserList(UserIndex).flags.VecesQueMoriste = 0
+202     UserList(UserIndex).flags.Montado = 0
 
-    UserList(UserIndex).Stats.MaxHit = 2
-    UserList(UserIndex).Stats.MinHIT = 1
+204     UserList(UserIndex).Stats.MaxHit = 2
+206     UserList(UserIndex).Stats.MinHIT = 1
     
-    UserList(UserIndex).Stats.GLD = 0
+208     UserList(UserIndex).Stats.GLD = 0
     
-    UserList(UserIndex).Stats.Exp = 0
-    UserList(UserIndex).Stats.ELU = 300
-    UserList(UserIndex).Stats.ELV = 1
+210     UserList(UserIndex).Stats.Exp = 0
+212     UserList(UserIndex).Stats.ELU = 300
+214     UserList(UserIndex).Stats.ELV = 1
     
-    Call RellenarInventario(UserIndex)
+216     Call RellenarInventario(UserIndex)
 
-    #If ConUpTime Then
-        UserList(UserIndex).LogOnTime = Now
-        UserList(UserIndex).UpTime = 0
-    #End If
+        #If ConUpTime Then
+218         UserList(UserIndex).LogOnTime = Now
+220         UserList(UserIndex).UpTime = 0
+        #End If
     
-    'Valores Default de facciones al Activar nuevo usuario
-    Call ResetFacciones(UserIndex)
+        'Valores Default de facciones al Activar nuevo usuario
+222     Call ResetFacciones(UserIndex)
     
-    UserList(UserIndex).Faccion.Status = 1
+224     UserList(UserIndex).Faccion.Status = 1
     
-    UserList(UserIndex).ChatCombate = 1
-    UserList(UserIndex).ChatGlobal = 1
+226     UserList(UserIndex).ChatCombate = 1
+228     UserList(UserIndex).ChatGlobal = 1
     
-    'Resetamos CORREO
-    UserList(UserIndex).Correo.CantCorreo = 0
-    UserList(UserIndex).Correo.NoLeidos = 0
-    'Resetamos CORREO
+        'Resetamos CORREO
+230     UserList(UserIndex).Correo.CantCorreo = 0
+232     UserList(UserIndex).Correo.NoLeidos = 0
+        'Resetamos CORREO
     
-    UserList(UserIndex).Pos.Map = 37
-    UserList(UserIndex).Pos.x = 76
-    UserList(UserIndex).Pos.Y = 82
+234     UserList(UserIndex).Pos.Map = 37
+236     UserList(UserIndex).Pos.x = 76
+238     UserList(UserIndex).Pos.Y = 82
     
-    If Not Database_Enabled Then
-        Call GrabarNuevoPjEnCuentaCharfile(UserCuenta, name)
+240     If Not Database_Enabled Then
+242         Call GrabarNuevoPjEnCuentaCharfile(UserCuenta, name)
 
-    End If
+        End If
     
-    UltimoChar = UCase$(name)
+244     UltimoChar = UCase$(name)
     
-    Call SaveNewUser(UserIndex)
-    Call ConnectUser(UserIndex, name, UserCuenta)
+246     Call SaveNewUser(UserIndex)
+248     Call ConnectUser(UserIndex, name, UserCuenta)
   
+        
+        Exit Sub
+
+ConnectNewUser_Err:
+        Call RegistrarError(Err.Number, Err.description, "TCP.ConnectNewUser", Erl)
+        Resume Next
+        
 End Sub
 
 #If UsarQueSocket = 1 Or UsarQueSocket = 2 Then
@@ -910,35 +990,45 @@ End Sub
 
 '[Alejo-21-5]: Cierra un socket sin limpiar el slot
 Sub CloseSocketSL(ByVal UserIndex As Integer)
+        
+        On Error GoTo CloseSocketSL_Err
+        
 
-    #If UsarQueSocket = 1 Then
+        #If UsarQueSocket = 1 Then
 
-        If UserList(UserIndex).ConnID <> -1 And UserList(UserIndex).ConnIDValida Then
-            Call BorraSlotSock(UserList(UserIndex).ConnID)
-            Call WSApiCloseSocket(UserList(UserIndex).ConnID)
-            UserList(UserIndex).ConnIDValida = False
+100         If UserList(UserIndex).ConnID <> -1 And UserList(UserIndex).ConnIDValida Then
+102             Call BorraSlotSock(UserList(UserIndex).ConnID)
+104             Call WSApiCloseSocket(UserList(UserIndex).ConnID)
+106             UserList(UserIndex).ConnIDValida = False
 
-        End If
+            End If
 
-    #ElseIf UsarQueSocket = 0 Then
+        #ElseIf UsarQueSocket = 0 Then
 
-        If UserList(UserIndex).ConnID <> -1 And UserList(UserIndex).ConnIDValida Then
-            frmMain.Socket2(UserIndex).Cleanup
-            Unload frmMain.Socket2(UserIndex)
-            UserList(UserIndex).ConnIDValida = False
+108         If UserList(UserIndex).ConnID <> -1 And UserList(UserIndex).ConnIDValida Then
+110             frmMain.Socket2(UserIndex).Cleanup
+112             Unload frmMain.Socket2(UserIndex)
+114             UserList(UserIndex).ConnIDValida = False
 
-        End If
+            End If
 
-    #ElseIf UsarQueSocket = 2 Then
+        #ElseIf UsarQueSocket = 2 Then
 
-        If UserList(UserIndex).ConnID <> -1 And UserList(UserIndex).ConnIDValida Then
-            Call frmMain.Serv.CerrarSocket(UserList(UserIndex).ConnID)
-            UserList(UserIndex).ConnIDValida = False
+116         If UserList(UserIndex).ConnID <> -1 And UserList(UserIndex).ConnIDValida Then
+118             Call frmMain.Serv.CerrarSocket(UserList(UserIndex).ConnID)
+120             UserList(UserIndex).ConnIDValida = False
 
-        End If
+            End If
 
-    #End If
+        #End If
 
+        
+        Exit Sub
+
+CloseSocketSL_Err:
+        Call RegistrarError(Err.Number, Err.description, "TCP.CloseSocketSL", Erl)
+        Resume Next
+        
 End Sub
 
 ''
@@ -949,156 +1039,216 @@ End Sub
 ' @remarks If UsarQueSocket is 3 it won`t use the clsByteQueue
 
 Public Sub EnviarDatosASlot(ByVal UserIndex As Integer, ByRef Datos As String)
-    '***************************************************
-    'Author: Unknown
-    'Last Modification: 09/11/20
-    'Last Modified By: Jopi
-    'Se agrega el paquete a la cola, para prevenir errores.
-    '***************************************************
+        '***************************************************
+        'Author: Unknown
+        'Last Modification: 09/11/20
+        'Last Modified By: Jopi
+        'Se agrega el paquete a la cola, para prevenir errores.
+        '***************************************************
+        
+        On Error GoTo EnviarDatosASlot_Err
+        
 
-    Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(Datos)
+100     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(Datos)
 
-    Exit Sub
+        Exit Sub
 
 ErrorHandler:
-    Call LogError("TCP::EnviarDatosASlot. UI/ConnId/Datos: " & UserIndex & "/" & UserList(UserIndex).ConnID & "/" & Datos)
+102     Call LogError("TCP::EnviarDatosASlot. UI/ConnId/Datos: " & UserIndex & "/" & UserList(UserIndex).ConnID & "/" & Datos)
 
+        
+        Exit Sub
+
+EnviarDatosASlot_Err:
+        Call RegistrarError(Err.Number, Err.description, "TCP.EnviarDatosASlot", Erl)
+        Resume Next
+        
 End Sub
 
 Function EstaPCarea(Index As Integer, Index2 As Integer) As Boolean
-
-    Dim x As Integer, Y As Integer
-
-    For Y = UserList(Index).Pos.Y - MinYBorder + 1 To UserList(Index).Pos.Y + MinYBorder - 1
-        For x = UserList(Index).Pos.x - MinXBorder + 1 To UserList(Index).Pos.x + MinXBorder - 1
-
-            If MapData(UserList(Index).Pos.Map, x, Y).UserIndex = Index2 Then
-                EstaPCarea = True
-                Exit Function
-
-            End If
         
-        Next x
-    Next Y
+        On Error GoTo EstaPCarea_Err
+        
 
-    EstaPCarea = False
+        Dim x As Integer, Y As Integer
 
-End Function
+100     For Y = UserList(Index).Pos.Y - MinYBorder + 1 To UserList(Index).Pos.Y + MinYBorder - 1
+102         For x = UserList(Index).Pos.x - MinXBorder + 1 To UserList(Index).Pos.x + MinXBorder - 1
 
-Function HayPCarea(Pos As WorldPos) As Boolean
-
-    Dim x As Integer, Y As Integer
-
-    For Y = Pos.Y - MinYBorder + 1 To Pos.Y + MinYBorder - 1
-        For x = Pos.x - MinXBorder + 1 To Pos.x + MinXBorder - 1
-
-            If x > 0 And Y > 0 And x < 101 And Y < 101 Then
-                If MapData(Pos.Map, x, Y).UserIndex > 0 Then
-                    HayPCarea = True
+104             If MapData(UserList(Index).Pos.Map, x, Y).UserIndex = Index2 Then
+106                 EstaPCarea = True
                     Exit Function
 
                 End If
+        
+108         Next x
+110     Next Y
 
-            End If
+112     EstaPCarea = False
 
-        Next x
-    Next Y
+        
+        Exit Function
 
-    HayPCarea = False
+EstaPCarea_Err:
+        Call RegistrarError(Err.Number, Err.description, "TCP.EstaPCarea", Erl)
+        Resume Next
+        
+End Function
 
+Function HayPCarea(Pos As WorldPos) As Boolean
+        
+        On Error GoTo HayPCarea_Err
+        
+
+        Dim x As Integer, Y As Integer
+
+100     For Y = Pos.Y - MinYBorder + 1 To Pos.Y + MinYBorder - 1
+102         For x = Pos.x - MinXBorder + 1 To Pos.x + MinXBorder - 1
+
+104             If x > 0 And Y > 0 And x < 101 And Y < 101 Then
+106                 If MapData(Pos.Map, x, Y).UserIndex > 0 Then
+108                     HayPCarea = True
+                        Exit Function
+
+                    End If
+
+                End If
+
+110         Next x
+112     Next Y
+
+114     HayPCarea = False
+
+        
+        Exit Function
+
+HayPCarea_Err:
+        Call RegistrarError(Err.Number, Err.description, "TCP.HayPCarea", Erl)
+        Resume Next
+        
 End Function
 
 Function HayOBJarea(Pos As WorldPos, ObjIndex As Integer) As Boolean
-
-    Dim x As Integer, Y As Integer
-
-    For Y = Pos.Y - MinYBorder + 1 To Pos.Y + MinYBorder - 1
-        For x = Pos.x - MinXBorder + 1 To Pos.x + MinXBorder - 1
-
-            If MapData(Pos.Map, x, Y).ObjInfo.ObjIndex = ObjIndex Then
-                HayOBJarea = True
-                Exit Function
-
-            End If
         
-        Next x
-    Next Y
+        On Error GoTo HayOBJarea_Err
+        
 
-    HayOBJarea = False
+        Dim x As Integer, Y As Integer
 
+100     For Y = Pos.Y - MinYBorder + 1 To Pos.Y + MinYBorder - 1
+102         For x = Pos.x - MinXBorder + 1 To Pos.x + MinXBorder - 1
+
+104             If MapData(Pos.Map, x, Y).ObjInfo.ObjIndex = ObjIndex Then
+106                 HayOBJarea = True
+                    Exit Function
+
+                End If
+        
+108         Next x
+110     Next Y
+
+112     HayOBJarea = False
+
+        
+        Exit Function
+
+HayOBJarea_Err:
+        Call RegistrarError(Err.Number, Err.description, "TCP.HayOBJarea", Erl)
+        Resume Next
+        
 End Function
 
 Function ValidateChr(ByVal UserIndex As Integer) As Boolean
+        
+        On Error GoTo ValidateChr_Err
+        
 
-    ValidateChr = UserList(UserIndex).Char.Head <> 0 And UserList(UserIndex).Char.Body <> 0 And ValidateSkills(UserIndex)
+100     ValidateChr = UserList(UserIndex).Char.Head <> 0 And UserList(UserIndex).Char.Body <> 0 And ValidateSkills(UserIndex)
 
+        
+        Exit Function
+
+ValidateChr_Err:
+        Call RegistrarError(Err.Number, Err.description, "TCP.ValidateChr", Erl)
+        Resume Next
+        
 End Function
 
 Function EntrarCuenta(ByVal UserIndex As Integer, CuentaEmail As String, CuentaPassword As String, MacAddress As String, ByVal HDserial As Long) As Boolean
+        
+        On Error GoTo EntrarCuenta_Err
+        
 
-    If CheckMAC(MacAddress) Then
-        Call WriteShowMessageBox(UserIndex, "Su cuenta se encuentra bajo tolerancia 0. Tiene prohibido el acceso. Cod: #0001")
-        Exit Function
+100     If CheckMAC(MacAddress) Then
+102         Call WriteShowMessageBox(UserIndex, "Su cuenta se encuentra bajo tolerancia 0. Tiene prohibido el acceso. Cod: #0001")
+            Exit Function
 
-    End If
+        End If
     
-    If CheckHD(HDserial) Then
-        Call WriteShowMessageBox(UserIndex, "Su cuenta se encuentra bajo tolerancia 0. Tiene prohibido el acceso. Cod: #0002")
-        Exit Function
+104     If CheckHD(HDserial) Then
+106         Call WriteShowMessageBox(UserIndex, "Su cuenta se encuentra bajo tolerancia 0. Tiene prohibido el acceso. Cod: #0002")
+            Exit Function
 
-    End If
+        End If
 
-    If Not CheckMailString(CuentaEmail) Then
-        Call WriteShowMessageBox(UserIndex, "Email inválido.")
-        Exit Function
+108     If Not CheckMailString(CuentaEmail) Then
+110         Call WriteShowMessageBox(UserIndex, "Email inválido.")
+            Exit Function
 
-    End If
+        End If
     
-    If Database_Enabled Then
-        EntrarCuenta = EnterAccountDatabase(UserIndex, CuentaEmail, SDesencriptar(CuentaPassword), MacAddress, HDserial, UserList(UserIndex).ip)
+112     If Database_Enabled Then
+114         EntrarCuenta = EnterAccountDatabase(UserIndex, CuentaEmail, SDesencriptar(CuentaPassword), MacAddress, HDserial, UserList(UserIndex).ip)
     
-    Else
+        Else
 
-        If CuentaExiste(CuentaEmail) Then
-            If Not ObtenerBaneo(CuentaEmail) Then
+116         If CuentaExiste(CuentaEmail) Then
+118             If Not ObtenerBaneo(CuentaEmail) Then
 
-                Dim PasswordHash As String, Salt As String
+                    Dim PasswordHash As String, Salt As String
 
-                PasswordHash = GetVar(CuentasPath & UCase$(CuentaEmail) & ".act", "INIT", "PASSWORD")
-                Salt = GetVar(CuentasPath & UCase$(CuentaEmail) & ".act", "INIT", "SALT")
+120                 PasswordHash = GetVar(CuentasPath & UCase$(CuentaEmail) & ".act", "INIT", "PASSWORD")
+122                 Salt = GetVar(CuentasPath & UCase$(CuentaEmail) & ".act", "INIT", "SALT")
 
-                If PasswordValida(SDesencriptar(CuentaPassword), PasswordHash, Salt) Then
-                    If ObtenerValidacion(CuentaEmail) Then
-                        Call WriteVar(CuentasPath & LCase$(CuentaEmail) & ".act", "INIT", "MacAdress", MacAddress)
-                        Call WriteVar(CuentasPath & LCase$(CuentaEmail) & ".act", "INIT", "HDserial", HDserial)
-                        Call WriteVar(CuentasPath & LCase$(CuentaEmail) & ".act", "INIT", "UltimoAcceso", Date & " " & Time)
-                        Call WriteVar(CuentasPath & LCase$(CuentaEmail) & ".act", "INIT", "UltimaIP", UserList(UserIndex).ip)
+124                 If PasswordValida(SDesencriptar(CuentaPassword), PasswordHash, Salt) Then
+126                     If ObtenerValidacion(CuentaEmail) Then
+128                         Call WriteVar(CuentasPath & LCase$(CuentaEmail) & ".act", "INIT", "MacAdress", MacAddress)
+130                         Call WriteVar(CuentasPath & LCase$(CuentaEmail) & ".act", "INIT", "HDserial", HDserial)
+132                         Call WriteVar(CuentasPath & LCase$(CuentaEmail) & ".act", "INIT", "UltimoAcceso", Date & " " & Time)
+134                         Call WriteVar(CuentasPath & LCase$(CuentaEmail) & ".act", "INIT", "UltimaIP", UserList(UserIndex).ip)
                         
-                        UserList(UserIndex).Cuenta = CuentaEmail
+136                         UserList(UserIndex).Cuenta = CuentaEmail
                         
-                        EntrarCuenta = True
+138                         EntrarCuenta = True
+                        Else
+140                         Call WriteShowMessageBox(UserIndex, "¡La cuenta no ha sido validada aún!")
+
+                        End If
+
                     Else
-                        Call WriteShowMessageBox(UserIndex, "¡La cuenta no ha sido validada aún!")
+142                     Call WriteShowMessageBox(UserIndex, "Contraseña inválida.")
 
                     End If
 
                 Else
-                    Call WriteShowMessageBox(UserIndex, "Contraseña inválida.")
+144                 Call WriteShowMessageBox(UserIndex, "La cuenta se encuentra baneada debido a: " & ObtenerMotivoBaneo(CuentaEmail) & ". Esta decisión fue tomada por: " & ObtenerQuienBaneo(CuentaEmail) & ".")
 
                 End If
 
             Else
-                Call WriteShowMessageBox(UserIndex, "La cuenta se encuentra baneada debido a: " & ObtenerMotivoBaneo(CuentaEmail) & ". Esta decisión fue tomada por: " & ObtenerQuienBaneo(CuentaEmail) & ".")
+146             Call WriteShowMessageBox(UserIndex, "La cuenta no existe.")
 
             End If
 
-        Else
-            Call WriteShowMessageBox(UserIndex, "La cuenta no existe.")
-
         End If
-
-    End If
     
+        
+        Exit Function
+
+EntrarCuenta_Err:
+        Call RegistrarError(Err.Number, Err.description, "TCP.EntrarCuenta", Erl)
+        Resume Next
+        
 End Function
 
 Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuenta As String)
@@ -1614,452 +1764,592 @@ Errhandler:
 End Sub
 
 Sub SendMOTD(ByVal UserIndex As Integer)
+        
+        On Error GoTo SendMOTD_Err
+        
 
-    Dim j As Long
+        Dim j As Long
 
-    For j = 1 To MaxLines
-        Call WriteConsoleMsg(UserIndex, MOTD(j).texto, FontTypeNames.FONTTYPE_EXP)
-    Next j
+100     For j = 1 To MaxLines
+102         Call WriteConsoleMsg(UserIndex, MOTD(j).texto, FontTypeNames.FONTTYPE_EXP)
+104     Next j
     
+        
+        Exit Sub
+
+SendMOTD_Err:
+        Call RegistrarError(Err.Number, Err.description, "TCP.SendMOTD", Erl)
+        Resume Next
+        
 End Sub
 
 Sub ResetFacciones(ByVal UserIndex As Integer)
+        
+        On Error GoTo ResetFacciones_Err
+        
 
-    '*************************************************
-    'Author: Unknown
-    'Last modified: 23/01/2007
-    'Resetea todos los valores generales y las stats
-    '03/15/2006 Maraxus - Uso de With para mayor performance y claridad.
-    '23/01/2007 Pablo (ToxicWaste) - Agrego NivelIngreso, FechaIngreso, MatadosIngreso y NextRecompensa.
-    '*************************************************
-    With UserList(UserIndex).Faccion
-        .ArmadaReal = 0
-        .CiudadanosMatados = 0
-        .CriminalesMatados = 0
-        .Status = 0
-        .FuerzasCaos = 0
-        .FechaIngreso = ""
-        .RecibioArmaduraCaos = 0
-        .RecibioArmaduraReal = 0
-        .RecibioExpInicialCaos = 0
-        .RecibioExpInicialReal = 0
-        .RecompensasCaos = 0
-        .RecompensasReal = 0
-        .Reenlistadas = 0
-        .NivelIngreso = 0
-        .MatadosIngreso = 0
-        .NextRecompensa = 0
+        '*************************************************
+        'Author: Unknown
+        'Last modified: 23/01/2007
+        'Resetea todos los valores generales y las stats
+        '03/15/2006 Maraxus - Uso de With para mayor performance y claridad.
+        '23/01/2007 Pablo (ToxicWaste) - Agrego NivelIngreso, FechaIngreso, MatadosIngreso y NextRecompensa.
+        '*************************************************
+100     With UserList(UserIndex).Faccion
+102         .ArmadaReal = 0
+104         .CiudadanosMatados = 0
+106         .CriminalesMatados = 0
+108         .Status = 0
+110         .FuerzasCaos = 0
+112         .FechaIngreso = ""
+114         .RecibioArmaduraCaos = 0
+116         .RecibioArmaduraReal = 0
+118         .RecibioExpInicialCaos = 0
+120         .RecibioExpInicialReal = 0
+122         .RecompensasCaos = 0
+124         .RecompensasReal = 0
+126         .Reenlistadas = 0
+128         .NivelIngreso = 0
+130         .MatadosIngreso = 0
+132         .NextRecompensa = 0
 
-    End With
+        End With
 
+        
+        Exit Sub
+
+ResetFacciones_Err:
+        Call RegistrarError(Err.Number, Err.description, "TCP.ResetFacciones", Erl)
+        Resume Next
+        
 End Sub
 
 Sub ResetContadores(ByVal UserIndex As Integer)
+        
+        On Error GoTo ResetContadores_Err
+        
 
-    '*************************************************
-    'Author: Unknown
-    'Last modified: 03/15/2006
-    'Resetea todos los valores generales y las stats
-    '03/15/2006 Maraxus - Uso de With para mayor performance y claridad.
-    '05/20/2007 Integer - Agregue todas las variables que faltaban.
-    '*************************************************
-    With UserList(UserIndex).Counters
-        .AGUACounter = 0
-        .AttackCounter = 0
-        .Ceguera = 0
-        .COMCounter = 0
-        .Estupidez = 0
-        .Frio = 0
-        .HPCounter = 0
-        .IdleCount = 0
-        .Invisibilidad = 0
-        .Paralisis = 0
-        .Inmovilizado = 0
-        .Pasos = 0
-        .Pena = 0
-        .PiqueteC = 0
-        .STACounter = 0
-        .Veneno = 0
-        .Trabajando = 0
-        .Ocultando = 0
-        .Lava = 0
-        .Maldicion = 0
-        .Saliendo = False
-        .Salir = 0
-        .TiempoOculto = 0
-        .TimerMagiaGolpe = 0
-        .TimerGolpeMagia = 0
-        .TimerLanzarSpell = 0
-        .TimerPuedeAtacar = 0
-        .TimerPuedeUsarArco = 0
-        .TimerPuedeTrabajar = 0
-        .TimerUsar = 0
-        'Ladder
-        .Incineracion = 0
-        'Ladder
-        .ScrollExperiencia = 0
-        .ScrollOro = 0
-        .Oxigeno = 0
-        .TiempoParaSubastar = 0
-        .TimerPerteneceNpc = 0
-        .TimerPuedeSerAtacado = 0
+        '*************************************************
+        'Author: Unknown
+        'Last modified: 03/15/2006
+        'Resetea todos los valores generales y las stats
+        '03/15/2006 Maraxus - Uso de With para mayor performance y claridad.
+        '05/20/2007 Integer - Agregue todas las variables que faltaban.
+        '*************************************************
+100     With UserList(UserIndex).Counters
+102         .AGUACounter = 0
+104         .AttackCounter = 0
+106         .Ceguera = 0
+108         .COMCounter = 0
+110         .Estupidez = 0
+112         .Frio = 0
+114         .HPCounter = 0
+116         .IdleCount = 0
+118         .Invisibilidad = 0
+120         .Paralisis = 0
+122         .Inmovilizado = 0
+124         .Pasos = 0
+126         .Pena = 0
+128         .PiqueteC = 0
+130         .STACounter = 0
+132         .Veneno = 0
+134         .Trabajando = 0
+136         .Ocultando = 0
+138         .Lava = 0
+140         .Maldicion = 0
+142         .Saliendo = False
+144         .Salir = 0
+146         .TiempoOculto = 0
+148         .TimerMagiaGolpe = 0
+150         .TimerGolpeMagia = 0
+152         .TimerLanzarSpell = 0
+154         .TimerPuedeAtacar = 0
+156         .TimerPuedeUsarArco = 0
+158         .TimerPuedeTrabajar = 0
+160         .TimerUsar = 0
+            'Ladder
+162         .Incineracion = 0
+            'Ladder
+164         .ScrollExperiencia = 0
+166         .ScrollOro = 0
+168         .Oxigeno = 0
+170         .TiempoParaSubastar = 0
+172         .TimerPerteneceNpc = 0
+174         .TimerPuedeSerAtacado = 0
 
-    End With
+        End With
 
+        
+        Exit Sub
+
+ResetContadores_Err:
+        Call RegistrarError(Err.Number, Err.description, "TCP.ResetContadores", Erl)
+        Resume Next
+        
 End Sub
 
 Sub ResetCharInfo(ByVal UserIndex As Integer)
-    '*************************************************
-    'Author: Unknown
-    'Last modified: 03/15/2006
-    'Resetea todos los valores generales y las stats
-    '03/15/2006 Maraxus - Uso de With para mayor performance y claridad.
-    '*************************************************
+        '*************************************************
+        'Author: Unknown
+        'Last modified: 03/15/2006
+        'Resetea todos los valores generales y las stats
+        '03/15/2006 Maraxus - Uso de With para mayor performance y claridad.
+        '*************************************************
+        
+        On Error GoTo ResetCharInfo_Err
+        
 
-    With UserList(UserIndex).Char
-        .Body = 0
-        .CascoAnim = 0
-        .CharIndex = 0
-        .FX = 0
-        .Head = 0
-        .loops = 0
-        .heading = 0
-        .loops = 0
-        .ShieldAnim = 0
-        .WeaponAnim = 0
-        .Arma_Aura = ""
-        .Body_Aura = ""
-        .Head_Aura = ""
-        .Otra_Aura = ""
-        .Escudo_Aura = ""
-        .ParticulaFx = 0
-        .speeding = VelocidadCero
+100     With UserList(UserIndex).Char
+102         .Body = 0
+104         .CascoAnim = 0
+106         .CharIndex = 0
+108         .FX = 0
+110         .Head = 0
+112         .loops = 0
+114         .heading = 0
+116         .loops = 0
+118         .ShieldAnim = 0
+120         .WeaponAnim = 0
+122         .Arma_Aura = ""
+124         .Body_Aura = ""
+126         .Head_Aura = ""
+128         .Otra_Aura = ""
+130         .Escudo_Aura = ""
+132         .ParticulaFx = 0
+134         .speeding = VelocidadCero
 
-    End With
+        End With
 
+        
+        Exit Sub
+
+ResetCharInfo_Err:
+        Call RegistrarError(Err.Number, Err.description, "TCP.ResetCharInfo", Erl)
+        Resume Next
+        
 End Sub
 
 Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
-
-    '*************************************************
-    'Author: Unknown
-    'Last modified: 03/15/2006
-    'Resetea todos los valores generales y las stats
-    '03/15/2006 Maraxus - Uso de With para mayor performance y claridad.
-    'Agregue que se resetee el maná
-    '*************************************************
-    Dim LoopC As Integer
-
-    With UserList(UserIndex)
-        .name = vbNullString
-        .Cuenta = vbNullString
-        .Id = -1
-        .AccountID = -1
-        .modName = vbNullString
-        .Desc = vbNullString
-        .DescRM = vbNullString
-        .Pos.Map = 0
-        .Pos.x = 0
-        .Pos.Y = 0
-        .ip = vbNullString
-        .clase = 0
-        .email = vbNullString
-        .genero = 0
-        .Hogar = 0
-        .raza = 0
-        .EmpoCont = 0
         
-        'Ladder     Reseteo de Correos
-        .Correo.CantCorreo = 0
-        .Correo.NoLeidos = 0
+        On Error GoTo ResetBasicUserInfo_Err
         
-        For LoopC = 1 To MAX_CORREOS_SLOTS
-            .Correo.Mensaje(LoopC).Remitente = ""
-            .Correo.Mensaje(LoopC).Mensaje = ""
-            .Correo.Mensaje(LoopC).Item = 0
-            .Correo.Mensaje(LoopC).ItemCount = 0
-            .Correo.Mensaje(LoopC).Fecha = ""
-            .Correo.Mensaje(LoopC).Leido = 0
-        Next LoopC
 
-        'Ladder     Reseteo de Correos
+        '*************************************************
+        'Author: Unknown
+        'Last modified: 03/15/2006
+        'Resetea todos los valores generales y las stats
+        '03/15/2006 Maraxus - Uso de With para mayor performance y claridad.
+        'Agregue que se resetee el maná
+        '*************************************************
+        Dim LoopC As Integer
+
+100     With UserList(UserIndex)
+102         .name = vbNullString
+104         .Cuenta = vbNullString
+106         .Id = -1
+108         .AccountID = -1
+110         .modName = vbNullString
+112         .Desc = vbNullString
+114         .DescRM = vbNullString
+116         .Pos.Map = 0
+118         .Pos.x = 0
+120         .Pos.Y = 0
+122         .ip = vbNullString
+124         .clase = 0
+126         .email = vbNullString
+128         .genero = 0
+130         .Hogar = 0
+132         .raza = 0
+134         .EmpoCont = 0
         
-        With .Stats
-            .InventLevel = 0
-            .Banco = 0
-            .ELV = 0
-            .ELU = 0
-            .Exp = 0
-            .def = 0
-            '.CriminalesMatados = 0
-            .NPCsMuertos = 0
-            .UsuariosMatados = 0
-            .SkillPts = 0
-            .GLD = 0
-            .UserAtributos(1) = 0
-            .UserAtributos(2) = 0
-            .UserAtributos(3) = 0
-            .UserAtributos(4) = 0
-            .UserAtributosBackUP(1) = 0
-            .UserAtributosBackUP(2) = 0
-            .UserAtributosBackUP(3) = 0
-            .UserAtributosBackUP(4) = 0
-            .MaxMAN = 0
-            .MinMAN = 0
+            'Ladder     Reseteo de Correos
+136         .Correo.CantCorreo = 0
+138         .Correo.NoLeidos = 0
+        
+140         For LoopC = 1 To MAX_CORREOS_SLOTS
+142             .Correo.Mensaje(LoopC).Remitente = ""
+144             .Correo.Mensaje(LoopC).Mensaje = ""
+146             .Correo.Mensaje(LoopC).Item = 0
+148             .Correo.Mensaje(LoopC).ItemCount = 0
+150             .Correo.Mensaje(LoopC).Fecha = ""
+152             .Correo.Mensaje(LoopC).Leido = 0
+154         Next LoopC
+
+            'Ladder     Reseteo de Correos
+        
+156         With .Stats
+158             .InventLevel = 0
+160             .Banco = 0
+162             .ELV = 0
+164             .ELU = 0
+166             .Exp = 0
+168             .def = 0
+                '.CriminalesMatados = 0
+170             .NPCsMuertos = 0
+172             .UsuariosMatados = 0
+174             .SkillPts = 0
+176             .GLD = 0
+178             .UserAtributos(1) = 0
+180             .UserAtributos(2) = 0
+182             .UserAtributos(3) = 0
+184             .UserAtributos(4) = 0
+186             .UserAtributosBackUP(1) = 0
+188             .UserAtributosBackUP(2) = 0
+190             .UserAtributosBackUP(3) = 0
+192             .UserAtributosBackUP(4) = 0
+194             .MaxMAN = 0
+196             .MinMAN = 0
             
-        End With
+            End With
         
-    End With
+        End With
 
+        
+        Exit Sub
+
+ResetBasicUserInfo_Err:
+        Call RegistrarError(Err.Number, Err.description, "TCP.ResetBasicUserInfo", Erl)
+        Resume Next
+        
 End Sub
 
 Sub ResetGuildInfo(ByVal UserIndex As Integer)
-
-    If UserList(UserIndex).EscucheClan > 0 Then
-        Call modGuilds.GMDejaDeEscucharClan(UserIndex, UserList(UserIndex).EscucheClan)
-        UserList(UserIndex).EscucheClan = 0
-
-    End If
-
-    If UserList(UserIndex).GuildIndex > 0 Then
-        Call modGuilds.m_DesconectarMiembroDelClan(UserIndex, UserList(UserIndex).GuildIndex)
-
-    End If
-
-    UserList(UserIndex).GuildIndex = 0
-    
-End Sub
-
-Sub ResetUserFlags(ByVal UserIndex As Integer)
-    '*************************************************
-    'Author: Unknown
-    'Last modified: 03/29/2006
-    'Resetea todos los valores generales y las stats
-    '03/15/2006 Maraxus - Uso de With para mayor performance y claridad.
-    '03/29/2006 Maraxus - Reseteo el CentinelaOK también.
-    '*************************************************
-
-    With UserList(UserIndex).flags
-        .LevelBackup = 0
-        .Comerciando = False
-        .Ban = 0
-        .Escondido = 0
-        .DuracionEfecto = 0
-        .ScrollExp = 1
-        .ScrollOro = 1
-        .NpcInv = 0
-        .StatsChanged = 0
-        .TargetNPC = 0
-        .TargetNpcTipo = eNPCType.Comun
-        .TargetObj = 0
-        .TargetObjMap = 0
-        .TargetObjX = 0
-        .TargetObjY = 0
-        .TargetUser = 0
-        .TipoPocion = 0
-        .TomoPocion = False
-        .Descuento = vbNullString
-        .Hambre = 0
-        .Sed = 0
-        .Descansar = False
-        .Navegando = 0
-        .Oculto = 0
-        .Envenenado = 0
-        .Ahogandose = 0
-        .invisible = 0
-        .Paralizado = 0
-        .Inmovilizado = 0
-        .Maldicion = 0
-        .Bendicion = 0
-        .Meditando = 0
-        .Escribiendo = 0
-        .Privilegios = 0
-        .PuedeMoverse = 0
-        .OldBody = 0
-        .OldHead = 0
-        .AdminInvisible = 0
-        .ValCoDe = 0
-        .Hechizo = 0
-        .TimesWalk = 0
-        .StartWalk = 0
-        .CountSH = 0
-        .Silenciado = 0
-        .CentinelaOK = False
-        .AdminPerseguible = False
-        'Ladder
-        .VecesQueMoriste = 0
-        .MinutosRestantes = 0
-        .SegundosPasados = 0
-        .RetoA = 0
-        .SolicitudPendienteDe = 0
-        .CarroMineria = 0
-        .DañoMagico = 0
-        .Montado = 0
-        .Incinerado = 0
-        .Casado = 0
-        .Pareja = ""
-        .Candidato = 0
-        .UsandoMacro = False
-        .pregunta = 0
-        'Ladder
-        .BattleModo = 0
-        .ResistenciaMagica = 0
-
-        .Subastando = False
-        .Paraliza = 0
-        .Envenena = 0
-        .NoPalabrasMagicas = 0
-        .NoMagiaEfeceto = 0
-        .incinera = 0
-        .Estupidiza = 0
-        .GolpeCertero = 0
-        .PendienteDelExperto = 0
-        .CarroMineria = 0
-        .PendienteDelSacrificio = 0
-        .AnilloOcultismo = 0
-        .RegeneracionMana = 0
-        .RegeneracionHP = 0
-        .RegeneracionSta = 0
-        .NecesitaOxigeno = False
-        .LastCrimMatado = ""
-        .LastCiudMatado = ""
         
-        .UserLogged = False
-        .FirstPacket = False
+        On Error GoTo ResetGuildInfo_Err
         
-    End With
 
-End Sub
-
-Sub ResetAccionesPendientes(ByVal UserIndex As Integer)
-
-    '*************************************************
-    '*************************************************
-    With UserList(UserIndex).accion
-        .AccionPendiente = False
-        .HechizoPendiente = 0
-        .RunaObj = 0
-        .Particula = 0
-        .TipoAccion = 0
-        .ObjSlot = 0
-
-    End With
-
-End Sub
-
-Sub ResetDonadorFlag(ByVal UserIndex As Integer)
-
-    '*************************************************
-    '*************************************************
-    With UserList(UserIndex).donador
-        .activo = 0
-        .CreditoDonador = 0
-        .FechaExpiracion = 0
-
-    End With
-
-End Sub
-
-Sub ResetUserSpells(ByVal UserIndex As Integer)
-
-    Dim LoopC As Long
-
-    For LoopC = 1 To MAXUSERHECHIZOS
-        UserList(UserIndex).Stats.UserHechizos(LoopC) = 0
-        ' UserList(UserIndex).Stats.UserHechizosInterval(LoopC) = 0
-    Next LoopC
-
-End Sub
-
-Sub ResetUserSkills(ByVal UserIndex As Integer)
-
-    Dim LoopC As Long
-
-    For LoopC = 1 To NUMSKILLS
-        UserList(UserIndex).Stats.UserSkills(LoopC) = 0
-    Next LoopC
-
-End Sub
-
-Sub ResetUserBanco(ByVal UserIndex As Integer)
-
-    Dim LoopC As Long
-    
-    For LoopC = 1 To MAX_BANCOINVENTORY_SLOTS
-        UserList(UserIndex).BancoInvent.Object(LoopC).Amount = 0
-        UserList(UserIndex).BancoInvent.Object(LoopC).Equipped = 0
-        UserList(UserIndex).BancoInvent.Object(LoopC).ObjIndex = 0
-    Next LoopC
-    
-    UserList(UserIndex).BancoInvent.NroItems = 0
-
-End Sub
-
-Public Sub LimpiarComercioSeguro(ByVal UserIndex As Integer)
-
-    With UserList(UserIndex).ComUsu
-
-        If .DestUsu > 0 Then
-            Call FinComerciarUsu(.DestUsu)
-            Call FinComerciarUsu(UserIndex)
+100     If UserList(UserIndex).EscucheClan > 0 Then
+102         Call modGuilds.GMDejaDeEscucharClan(UserIndex, UserList(UserIndex).EscucheClan)
+104         UserList(UserIndex).EscucheClan = 0
 
         End If
 
-    End With
+106     If UserList(UserIndex).GuildIndex > 0 Then
+108         Call modGuilds.m_DesconectarMiembroDelClan(UserIndex, UserList(UserIndex).GuildIndex)
 
+        End If
+
+110     UserList(UserIndex).GuildIndex = 0
+    
+        
+        Exit Sub
+
+ResetGuildInfo_Err:
+        Call RegistrarError(Err.Number, Err.description, "TCP.ResetGuildInfo", Erl)
+        Resume Next
+        
+End Sub
+
+Sub ResetUserFlags(ByVal UserIndex As Integer)
+        '*************************************************
+        'Author: Unknown
+        'Last modified: 03/29/2006
+        'Resetea todos los valores generales y las stats
+        '03/15/2006 Maraxus - Uso de With para mayor performance y claridad.
+        '03/29/2006 Maraxus - Reseteo el CentinelaOK también.
+        '*************************************************
+        
+        On Error GoTo ResetUserFlags_Err
+        
+
+100     With UserList(UserIndex).flags
+102         .LevelBackup = 0
+104         .Comerciando = False
+106         .Ban = 0
+108         .Escondido = 0
+110         .DuracionEfecto = 0
+112         .ScrollExp = 1
+114         .ScrollOro = 1
+116         .NpcInv = 0
+118         .StatsChanged = 0
+120         .TargetNPC = 0
+122         .TargetNpcTipo = eNPCType.Comun
+124         .TargetObj = 0
+126         .TargetObjMap = 0
+128         .TargetObjX = 0
+130         .TargetObjY = 0
+132         .TargetUser = 0
+134         .TipoPocion = 0
+136         .TomoPocion = False
+138         .Descuento = vbNullString
+140         .Hambre = 0
+142         .Sed = 0
+144         .Descansar = False
+146         .Navegando = 0
+148         .Oculto = 0
+150         .Envenenado = 0
+152         .Ahogandose = 0
+154         .invisible = 0
+156         .Paralizado = 0
+158         .Inmovilizado = 0
+160         .Maldicion = 0
+162         .Bendicion = 0
+164         .Meditando = 0
+166         .Escribiendo = 0
+168         .Privilegios = 0
+170         .PuedeMoverse = 0
+172         .OldBody = 0
+174         .OldHead = 0
+176         .AdminInvisible = 0
+178         .ValCoDe = 0
+180         .Hechizo = 0
+182         .TimesWalk = 0
+184         .StartWalk = 0
+186         .CountSH = 0
+188         .Silenciado = 0
+190         .CentinelaOK = False
+192         .AdminPerseguible = False
+            'Ladder
+194         .VecesQueMoriste = 0
+196         .MinutosRestantes = 0
+198         .SegundosPasados = 0
+200         .RetoA = 0
+202         .SolicitudPendienteDe = 0
+204         .CarroMineria = 0
+206         .DañoMagico = 0
+208         .Montado = 0
+210         .Incinerado = 0
+212         .Casado = 0
+214         .Pareja = ""
+216         .Candidato = 0
+218         .UsandoMacro = False
+220         .pregunta = 0
+            'Ladder
+222         .BattleModo = 0
+224         .ResistenciaMagica = 0
+
+226         .Subastando = False
+228         .Paraliza = 0
+230         .Envenena = 0
+232         .NoPalabrasMagicas = 0
+234         .NoMagiaEfeceto = 0
+236         .incinera = 0
+238         .Estupidiza = 0
+240         .GolpeCertero = 0
+242         .PendienteDelExperto = 0
+244         .CarroMineria = 0
+246         .PendienteDelSacrificio = 0
+248         .AnilloOcultismo = 0
+250         .RegeneracionMana = 0
+252         .RegeneracionHP = 0
+254         .RegeneracionSta = 0
+256         .NecesitaOxigeno = False
+258         .LastCrimMatado = ""
+260         .LastCiudMatado = ""
+        
+262         .UserLogged = False
+264         .FirstPacket = False
+        
+        End With
+
+        
+        Exit Sub
+
+ResetUserFlags_Err:
+        Call RegistrarError(Err.Number, Err.description, "TCP.ResetUserFlags", Erl)
+        Resume Next
+        
+End Sub
+
+Sub ResetAccionesPendientes(ByVal UserIndex As Integer)
+        
+        On Error GoTo ResetAccionesPendientes_Err
+        
+
+        '*************************************************
+        '*************************************************
+100     With UserList(UserIndex).accion
+102         .AccionPendiente = False
+104         .HechizoPendiente = 0
+106         .RunaObj = 0
+108         .Particula = 0
+110         .TipoAccion = 0
+112         .ObjSlot = 0
+
+        End With
+
+        
+        Exit Sub
+
+ResetAccionesPendientes_Err:
+        Call RegistrarError(Err.Number, Err.description, "TCP.ResetAccionesPendientes", Erl)
+        Resume Next
+        
+End Sub
+
+Sub ResetDonadorFlag(ByVal UserIndex As Integer)
+        
+        On Error GoTo ResetDonadorFlag_Err
+        
+
+        '*************************************************
+        '*************************************************
+100     With UserList(UserIndex).donador
+102         .activo = 0
+104         .CreditoDonador = 0
+106         .FechaExpiracion = 0
+
+        End With
+
+        
+        Exit Sub
+
+ResetDonadorFlag_Err:
+        Call RegistrarError(Err.Number, Err.description, "TCP.ResetDonadorFlag", Erl)
+        Resume Next
+        
+End Sub
+
+Sub ResetUserSpells(ByVal UserIndex As Integer)
+        
+        On Error GoTo ResetUserSpells_Err
+        
+
+        Dim LoopC As Long
+
+100     For LoopC = 1 To MAXUSERHECHIZOS
+102         UserList(UserIndex).Stats.UserHechizos(LoopC) = 0
+            ' UserList(UserIndex).Stats.UserHechizosInterval(LoopC) = 0
+104     Next LoopC
+
+        
+        Exit Sub
+
+ResetUserSpells_Err:
+        Call RegistrarError(Err.Number, Err.description, "TCP.ResetUserSpells", Erl)
+        Resume Next
+        
+End Sub
+
+Sub ResetUserSkills(ByVal UserIndex As Integer)
+        
+        On Error GoTo ResetUserSkills_Err
+        
+
+        Dim LoopC As Long
+
+100     For LoopC = 1 To NUMSKILLS
+102         UserList(UserIndex).Stats.UserSkills(LoopC) = 0
+104     Next LoopC
+
+        
+        Exit Sub
+
+ResetUserSkills_Err:
+        Call RegistrarError(Err.Number, Err.description, "TCP.ResetUserSkills", Erl)
+        Resume Next
+        
+End Sub
+
+Sub ResetUserBanco(ByVal UserIndex As Integer)
+        
+        On Error GoTo ResetUserBanco_Err
+        
+
+        Dim LoopC As Long
+    
+100     For LoopC = 1 To MAX_BANCOINVENTORY_SLOTS
+102         UserList(UserIndex).BancoInvent.Object(LoopC).Amount = 0
+104         UserList(UserIndex).BancoInvent.Object(LoopC).Equipped = 0
+106         UserList(UserIndex).BancoInvent.Object(LoopC).ObjIndex = 0
+108     Next LoopC
+    
+110     UserList(UserIndex).BancoInvent.NroItems = 0
+
+        
+        Exit Sub
+
+ResetUserBanco_Err:
+        Call RegistrarError(Err.Number, Err.description, "TCP.ResetUserBanco", Erl)
+        Resume Next
+        
+End Sub
+
+Public Sub LimpiarComercioSeguro(ByVal UserIndex As Integer)
+        
+        On Error GoTo LimpiarComercioSeguro_Err
+        
+
+100     With UserList(UserIndex).ComUsu
+
+102         If .DestUsu > 0 Then
+104             Call FinComerciarUsu(.DestUsu)
+106             Call FinComerciarUsu(UserIndex)
+
+            End If
+
+        End With
+
+        
+        Exit Sub
+
+LimpiarComercioSeguro_Err:
+        Call RegistrarError(Err.Number, Err.description, "TCP.LimpiarComercioSeguro", Erl)
+        Resume Next
+        
 End Sub
 
 Sub ResetUserSlot(ByVal UserIndex As Integer)
+        
+        On Error GoTo ResetUserSlot_Err
+        
 
-    UserList(UserIndex).ConnIDValida = False
-    UserList(UserIndex).ConnID = -1
+100     UserList(UserIndex).ConnIDValida = False
+102     UserList(UserIndex).ConnID = -1
 
-    If UserList(UserIndex).Grupo.Lider = UserIndex Then
-        Call FinalizarGrupo(UserIndex)
+104     If UserList(UserIndex).Grupo.Lider = UserIndex Then
+106         Call FinalizarGrupo(UserIndex)
 
-    End If
+        End If
 
-    If UserList(UserIndex).Grupo.EnGrupo Then
-        Call SalirDeGrupoForzado(UserIndex)
+108     If UserList(UserIndex).Grupo.EnGrupo Then
+110         Call SalirDeGrupoForzado(UserIndex)
 
-    End If
+        End If
 
-    UserList(UserIndex).Grupo.CantidadMiembros = 0
-    UserList(UserIndex).Grupo.EnGrupo = False
-    UserList(UserIndex).Grupo.Lider = 0
-    UserList(UserIndex).Grupo.PropuestaDe = 0
-    UserList(UserIndex).Grupo.Miembros(6) = 0
-    UserList(UserIndex).Grupo.Miembros(1) = 0
-    UserList(UserIndex).Grupo.Miembros(2) = 0
-    UserList(UserIndex).Grupo.Miembros(3) = 0
-    UserList(UserIndex).Grupo.Miembros(4) = 0
-    UserList(UserIndex).Grupo.Miembros(5) = 0
+112     UserList(UserIndex).Grupo.CantidadMiembros = 0
+114     UserList(UserIndex).Grupo.EnGrupo = False
+116     UserList(UserIndex).Grupo.Lider = 0
+118     UserList(UserIndex).Grupo.PropuestaDe = 0
+120     UserList(UserIndex).Grupo.Miembros(6) = 0
+122     UserList(UserIndex).Grupo.Miembros(1) = 0
+124     UserList(UserIndex).Grupo.Miembros(2) = 0
+126     UserList(UserIndex).Grupo.Miembros(3) = 0
+128     UserList(UserIndex).Grupo.Miembros(4) = 0
+130     UserList(UserIndex).Grupo.Miembros(5) = 0
 
-    Call ResetQuestStats(UserIndex)
-    Call ResetGuildInfo(UserIndex)
-    Call LimpiarComercioSeguro(UserIndex)
-    Call ResetFacciones(UserIndex)
-    Call ResetContadores(UserIndex)
-    Call ResetCharInfo(UserIndex)
-    Call ResetBasicUserInfo(UserIndex)
-    Call ResetUserFlags(UserIndex)
-    Call ResetAccionesPendientes(UserIndex)
-    Call ResetDonadorFlag(UserIndex)
-    Call LimpiarInventario(UserIndex)
-    Call ResetUserSpells(UserIndex)
-    'Call ResetUserPets(UserIndex)
-    Call ResetUserBanco(UserIndex)
-    Call ResetUserSkills(UserIndex)
+132     Call ResetQuestStats(UserIndex)
+134     Call ResetGuildInfo(UserIndex)
+136     Call LimpiarComercioSeguro(UserIndex)
+138     Call ResetFacciones(UserIndex)
+140     Call ResetContadores(UserIndex)
+142     Call ResetCharInfo(UserIndex)
+144     Call ResetBasicUserInfo(UserIndex)
+146     Call ResetUserFlags(UserIndex)
+148     Call ResetAccionesPendientes(UserIndex)
+150     Call ResetDonadorFlag(UserIndex)
+152     Call LimpiarInventario(UserIndex)
+154     Call ResetUserSpells(UserIndex)
+        'Call ResetUserPets(UserIndex)
+156     Call ResetUserBanco(UserIndex)
+158     Call ResetUserSkills(UserIndex)
 
-    With UserList(UserIndex).ComUsu
-        .Acepto = False
-        .cant = 0
-        .DestNick = vbNullString
-        .DestUsu = 0
-        .Objeto = 0
+160     With UserList(UserIndex).ComUsu
+162         .Acepto = False
+164         .cant = 0
+166         .DestNick = vbNullString
+168         .DestUsu = 0
+170         .Objeto = 0
 
-    End With
+        End With
 
+        
+        Exit Sub
+
+ResetUserSlot_Err:
+        Call RegistrarError(Err.Number, Err.description, "TCP.ResetUserSlot", Erl)
+        Resume Next
+        
 End Sub
 
 Sub CloseUser(ByVal UserIndex As Integer)
@@ -2216,19 +2506,29 @@ Errhandler:
 End Sub
 
 Public Sub EcharPjsNoPrivilegiados()
+        
+        On Error GoTo EcharPjsNoPrivilegiados_Err
+        
 
-    Dim LoopC As Long
+        Dim LoopC As Long
 
-    For LoopC = 1 To LastUser
+100     For LoopC = 1 To LastUser
 
-        If UserList(LoopC).flags.UserLogged And UserList(LoopC).ConnID >= 0 And UserList(LoopC).ConnIDValida Then
-            If UserList(LoopC).flags.Privilegios And PlayerType.user Then
-                Call CloseSocket(LoopC)
+102         If UserList(LoopC).flags.UserLogged And UserList(LoopC).ConnID >= 0 And UserList(LoopC).ConnIDValida Then
+104             If UserList(LoopC).flags.Privilegios And PlayerType.user Then
+106                 Call CloseSocket(LoopC)
+
+                End If
 
             End If
 
-        End If
+108     Next LoopC
 
-    Next LoopC
+        
+        Exit Sub
 
+EcharPjsNoPrivilegiados_Err:
+        Call RegistrarError(Err.Number, Err.description, "TCP.EcharPjsNoPrivilegiados", Erl)
+        Resume Next
+        
 End Sub

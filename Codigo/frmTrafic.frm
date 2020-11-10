@@ -65,6 +65,16 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub Command1_Click()
-    Me.Visible = False
+        
+        On Error GoTo Command1_Click_Err
+        
+100     Me.Visible = False
 
+        
+        Exit Sub
+
+Command1_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmTrafic.Command1_Click", Erl)
+        Resume Next
+        
 End Sub

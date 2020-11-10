@@ -758,35 +758,45 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Public Sub AplicarIntervalos()
+        
+        On Error GoTo AplicarIntervalos_Err
+        
 
-    '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿ Intervalos del main loop ¿?¿?¿?¿?¿?¿?¿?¿?¿
-    SanaIntervaloSinDescansar = val(txtSanaIntervaloSinDescansar.Text)
-    StaminaIntervaloSinDescansar = val(txtStaminaIntervaloSinDescansar.Text)
-    SanaIntervaloDescansar = val(txtSanaIntervaloDescansar.Text)
-    StaminaIntervaloDescansar = val(txtStaminaIntervaloDescansar.Text)
-    IntervaloSed = val(txtIntervaloSed.Text)
-    IntervaloHambre = val(txtIntervaloHambre.Text)
-    IntervaloVeneno = val(txtIntervaloVeneno.Text)
-    IntervaloParalizado = val(txtIntervaloParalizado.Text)
-    IntervaloInmovilizado = val(txtIntervaloInmovilizado.Text)
-    IntervaloInvisible = val(txtIntervaloInvisible.Text)
-    IntervaloFrio = val(txtIntervaloFrio.Text)
-    IntervaloWavFx = val(txtIntervaloWAVFX.Text)
-    IntervaloInvocacion = val(txtInvocacion.Text)
-    TimeoutPrimerPaquete = val(txtTimeoutPrimerPaquete.Text)
-    TimeoutEsperandoLoggear = val(txtTimeoutEsperandoLoggear.Text)
-    IntervaloTirar = val(txtintervalotirar.Text)
-    IntervaloCaminar = val(txtintervalocaminar.Text)
+        '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿ Intervalos del main loop ¿?¿?¿?¿?¿?¿?¿?¿?¿
+100     SanaIntervaloSinDescansar = val(txtSanaIntervaloSinDescansar.Text)
+102     StaminaIntervaloSinDescansar = val(txtStaminaIntervaloSinDescansar.Text)
+104     SanaIntervaloDescansar = val(txtSanaIntervaloDescansar.Text)
+106     StaminaIntervaloDescansar = val(txtStaminaIntervaloDescansar.Text)
+108     IntervaloSed = val(txtIntervaloSed.Text)
+110     IntervaloHambre = val(txtIntervaloHambre.Text)
+112     IntervaloVeneno = val(txtIntervaloVeneno.Text)
+114     IntervaloParalizado = val(txtIntervaloParalizado.Text)
+116     IntervaloInmovilizado = val(txtIntervaloInmovilizado.Text)
+118     IntervaloInvisible = val(txtIntervaloInvisible.Text)
+120     IntervaloFrio = val(txtIntervaloFrio.Text)
+122     IntervaloWavFx = val(txtIntervaloWAVFX.Text)
+124     IntervaloInvocacion = val(txtInvocacion.Text)
+126     TimeoutPrimerPaquete = val(txtTimeoutPrimerPaquete.Text)
+128     TimeoutEsperandoLoggear = val(txtTimeoutEsperandoLoggear.Text)
+130     IntervaloTirar = val(txtintervalotirar.Text)
+132     IntervaloCaminar = val(txtintervalocaminar.Text)
 
-    '///////////////// TIMERS \\\\\\\\\\\\\\\\\\\
+        '///////////////// TIMERS \\\\\\\\\\\\\\\\\\\
 
-    IntervaloUserPuedeCastear = val(txtIntervaloLanzaHechizo.Text)
-    frmMain.npcataca.Interval = val(txtNPCPuedeAtacar.Text)
-    frmMain.TIMER_AI.Interval = val(txtAI.Text)
-    IntervaloUserPuedeTrabajar = val(txtTrabajo.Text)
-    IntervaloUserPuedeAtacar = val(txtPuedeAtacar.Text)
-    'frmMain.tLluvia.Interval = val(txtIntervaloPerdidaStaminaLluvia.Text)
+134     IntervaloUserPuedeCastear = val(txtIntervaloLanzaHechizo.Text)
+136     frmMain.npcataca.Interval = val(txtNPCPuedeAtacar.Text)
+138     frmMain.TIMER_AI.Interval = val(txtAI.Text)
+140     IntervaloUserPuedeTrabajar = val(txtTrabajo.Text)
+142     IntervaloUserPuedeAtacar = val(txtPuedeAtacar.Text)
+        'frmMain.tLluvia.Interval = val(txtIntervaloPerdidaStaminaLluvia.Text)
 
+        
+        Exit Sub
+
+AplicarIntervalos_Err:
+        Call RegistrarError(Err.Number, Err.description, "FrmInterv.AplicarIntervalos", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Command1_Click()
@@ -836,6 +846,16 @@ Err:
 End Sub
 
 Private Sub ok_Click()
-    Me.Visible = False
+        
+        On Error GoTo ok_Click_Err
+        
+100     Me.Visible = False
 
+        
+        Exit Sub
+
+ok_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "FrmInterv.ok_Click", Erl)
+        Resume Next
+        
 End Sub
