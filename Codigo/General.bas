@@ -688,13 +688,16 @@ Sub Main()
     
     frmCargando.Label1(2).Caption = "Conectando base de datos y limpiando usuarios logueados"
     
-    'Conecto base de datos
-    Call Database_Connect
-    
-    'Reinicio los users online
-    Call SetUsersLoggedDatabase(0)
-    'Tarea pesada
-    Call LogoutAllUsersAndAccounts
+    If Database_Enabled Then
+        'Conecto base de datos
+        Call Database_Connect
+        
+        'Reinicio los users online
+        Call SetUsersLoggedDatabase(0)
+        
+        'Tarea pesada
+        Call LogoutAllUsersAndAccounts
+    End If
     
     '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
     'Configuracion de los sockets

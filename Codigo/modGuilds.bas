@@ -2083,14 +2083,26 @@ Public Function a_NuevoAspirante(ByVal UserIndex As Integer, ByRef clan As Strin
 116     If Not m_EstadoPermiteEntrar(UserIndex, NuevoGuildIndex) Then
 118         refError = "Tu no podés entrar a un clan de alineación " & Alineacion2String(guilds(NuevoGuildIndex).Alineacion)
             Exit Function
-
         End If
 
 120     If guilds(NuevoGuildIndex).CantidadAspirantes >= MAXASPIRANTES Then
 122         refError = "El clan tiene demasiados aspirantes. Contáctate con un miembro para que procese las solicitudes."
             Exit Function
-
         End If
+        
+        Dim NuevoGuildAspirantes() As String
+        NuevoGuildAspirantes = guilds(NuevoGuildIndex).GetAspirantes()
+
+        Dim i As Long
+        For i = 0 To UBound(NuevoGuildAspirantes)
+            
+            If UserList(UserIndex).name = NuevoGuildAspirantes(i) Then
+                refError = "Ya has enviado una solicitud a este clan."
+                Exit Function
+
+            End If
+                    
+        Next
 
 124     ViejoSolicitado = GetVar(CharPath & UserList(UserIndex).name & ".chr", "GUILD", "ASPIRANTEA")
 
