@@ -2274,7 +2274,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
 122                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(UserList(UserIndex).Char.CharIndex, 0))
                 End If
             
-124             If IntervaloPermiteCaminar(UserIndex) Then
+124             'If IntervaloPermiteCaminar(UserIndex) Then
             
                     'Move user
 126                 Call MoveUserChar(UserIndex, heading)
@@ -2342,7 +2342,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
                 
 180                 Call CancelExit(UserIndex)
 
-                End If
+                'End If
 
             Else    'paralized
 
