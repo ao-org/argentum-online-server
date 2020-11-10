@@ -84,41 +84,71 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub Command1_Click()
-    Unload Me
+        
+        On Error GoTo Command1_Click_Err
+        
+100     Unload Me
 
+        
+        Exit Sub
+
+Command1_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmConID.Command1_Click", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Command2_Click()
+        
+        On Error GoTo Command2_Click_Err
+        
 
-    List1.Clear
+100     List1.Clear
 
-    Dim c As Integer
+        Dim c As Integer
 
-    Dim i As Integer
+        Dim i As Integer
 
-    For i = 1 To MaxUsers
-        List1.AddItem "UserIndex " & i & " -- " & UserList(i).ConnID
+102     For i = 1 To MaxUsers
+104         List1.AddItem "UserIndex " & i & " -- " & UserList(i).ConnID
 
-        If UserList(i).ConnID <> -1 Then c = c + 1
-    Next i
+106         If UserList(i).ConnID <> -1 Then c = c + 1
+108     Next i
 
-    If c = MaxUsers Then
-        Label1.Caption = "No hay slots vacios!"
-    Else
-        Label1.Caption = "Hay " & MaxUsers - c & " slots vacios!"
+110     If c = MaxUsers Then
+112         Label1.Caption = "No hay slots vacios!"
+        Else
+114         Label1.Caption = "Hay " & MaxUsers - c & " slots vacios!"
 
-    End If
+        End If
 
+        
+        Exit Sub
+
+Command2_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmConID.Command2_Click", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Command3_Click()
+        
+        On Error GoTo Command3_Click_Err
+        
 
-    Dim i As Integer
+        Dim i As Integer
 
-    For i = 1 To MaxUsers
+100     For i = 1 To MaxUsers
 
-        If UserList(i).ConnID <> -1 And UserList(i).ConnIDValida And Not UserList(i).flags.UserLogged Then Call CloseSocket(i)
-    Next i
+102         If UserList(i).ConnID <> -1 And UserList(i).ConnIDValida And Not UserList(i).flags.UserLogged Then Call CloseSocket(i)
+104     Next i
 
+        
+        Exit Sub
+
+Command3_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmConID.Command3_Click", Erl)
+        Resume Next
+        
 End Sub
 

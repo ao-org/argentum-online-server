@@ -156,64 +156,134 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub Command1_Click()
+        
+        On Error GoTo Command1_Click_Err
+        
 
-    Dim LoopC As Integer, n As Long, M As Long
+        Dim LoopC As Integer, n As Long, M As Long
 
-    n = 0 'numero de pjs
-    M = 0 'numero total de elementos en cola
+100     n = 0 'numero de pjs
+102     M = 0 'numero total de elementos en cola
 
-    If cboUsusColas.ListCount > 0 Then cboUsusColas.Clear
+104     If cboUsusColas.ListCount > 0 Then cboUsusColas.Clear
 
-    For LoopC = 1 To LastUser
+106     For LoopC = 1 To LastUser
 
-        If UserList(LoopC).flags.UserLogged And UserList(LoopC).ConnID >= 0 And UserList(LoopC).ConnIDValida Then
-            If UserList(LoopC).outgoingData.length > 0 Then
-                n = n + 1
-                M = M + UserList(LoopC).outgoingData.length
-                cboUsusColas.AddItem UserList(LoopC).name
+108         If UserList(LoopC).flags.UserLogged And UserList(LoopC).ConnID >= 0 And UserList(LoopC).ConnIDValida Then
+110             If UserList(LoopC).outgoingData.length > 0 Then
+112                 n = n + 1
+114                 M = M + UserList(LoopC).outgoingData.length
+116                 cboUsusColas.AddItem UserList(LoopC).name
+
+                End If
 
             End If
 
-        End If
+118     Next LoopC
 
-    Next LoopC
+120     lblColas.Caption = n & " PJs, " & M & " elementos en las colas."
 
-    lblColas.Caption = n & " PJs, " & M & " elementos en las colas."
-
-    If cboUsusColas.ListCount > 0 Then cboUsusColas.ListIndex = 0
+122     If cboUsusColas.ListCount > 0 Then cboUsusColas.ListIndex = 0
     
+        
+        Exit Sub
+
+Command1_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmEstadisticas.Command1_Click", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Command2_Click()
-    frmAdmin.Show
-    frmAdmin.cboPjs.Text = cboUsusColas.Text
+        
+        On Error GoTo Command2_Click_Err
+        
+100     frmAdmin.Show
+102     frmAdmin.cboPjs.Text = cboUsusColas.Text
 
+        
+        Exit Sub
+
+Command2_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmEstadisticas.Command2_Click", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Form_Activate()
-    Call ActualizaStats
+        
+        On Error GoTo Form_Activate_Err
+        
+100     Call ActualizaStats
 
+        
+        Exit Sub
+
+Form_Activate_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmEstadisticas.Form_Activate", Erl)
+        Resume Next
+        
 End Sub
 
 Public Sub ActualizaStats()
-    lblStat(0).Caption = TCPESStats.BytesRecibidosXSEG
-    lblStat(1).Caption = TCPESStats.BytesEnviadosXSEG
-    lblStat(2).Caption = TCPESStats.BytesRecibidosXSEGMax & vbCrLf & TCPESStats.BytesRecibidosXSEGCuando
-    lblStat(3).Caption = TCPESStats.BytesEnviadosXSEGMax & vbCrLf & TCPESStats.BytesEnviadosXSEGCuando
+        
+        On Error GoTo ActualizaStats_Err
+        
+100     lblStat(0).Caption = TCPESStats.BytesRecibidosXSEG
+102     lblStat(1).Caption = TCPESStats.BytesEnviadosXSEG
+104     lblStat(2).Caption = TCPESStats.BytesRecibidosXSEGMax & vbCrLf & TCPESStats.BytesRecibidosXSEGCuando
+106     lblStat(3).Caption = TCPESStats.BytesEnviadosXSEGMax & vbCrLf & TCPESStats.BytesEnviadosXSEGCuando
 
+        
+        Exit Sub
+
+ActualizaStats_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmEstadisticas.ActualizaStats", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Form_Click()
-    Call ActualizaStats
+        
+        On Error GoTo Form_Click_Err
+        
+100     Call ActualizaStats
 
+        
+        Exit Sub
+
+Form_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmEstadisticas.Form_Click", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Frame1_Click()
-    Call ActualizaStats
+        
+        On Error GoTo Frame1_Click_Err
+        
+100     Call ActualizaStats
 
+        
+        Exit Sub
+
+Frame1_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmEstadisticas.Frame1_Click", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub lblStat_Click(Index As Integer)
-    Call ActualizaStats
+        
+        On Error GoTo lblStat_Click_Err
+        
+100     Call ActualizaStats
 
+        
+        Exit Sub
+
+lblStat_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmEstadisticas.lblStat_Click", Erl)
+        Resume Next
+        
 End Sub

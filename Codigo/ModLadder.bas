@@ -36,450 +36,490 @@ Public Enum Accion_Barra
 End Enum
 
 Function GetTimeFormated(Mins As Integer) As String
+        
+        On Error GoTo GetTimeFormated_Err
+        
 
-    Dim Horita    As Byte
+        Dim Horita    As Byte
 
-    Dim Minutitos As Byte
+        Dim Minutitos As Byte
 
-    Dim a         As String
+        Dim a         As String
 
-    Horita = Fix(Mins / 60)
-    Minutitos = Mins - 60 * Horita
+100     Horita = Fix(Mins / 60)
+102     Minutitos = Mins - 60 * Horita
 
-    If Minutitos < 10 Then
-        GetTimeFormated = Horita & ":0" & Minutitos
-    Else
-        GetTimeFormated = Horita & ":" & Minutitos
+104     If Minutitos < 10 Then
+106         GetTimeFormated = Horita & ":0" & Minutitos
+        Else
+108         GetTimeFormated = Horita & ":" & Minutitos
 
-    End If
+        End If
 
+        
+        Exit Function
+
+GetTimeFormated_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModLadder.GetTimeFormated", Erl)
+        Resume Next
+        
 End Function
 
 Public Sub GetHoraActual()
-    GetSystemTime theTime
+        
+        On Error GoTo GetHoraActual_Err
+        
+100     GetSystemTime theTime
 
-    HoraActual = (theTime.wHour - 3)
+102     HoraActual = (theTime.wHour - 3)
 
-    If HoraActual = -3 Then HoraActual = 21
-    If HoraActual = -2 Then HoraActual = 22
-    If HoraActual = -1 Then HoraActual = 23
-    frmMain.lblhora.Caption = HoraActual & ":" & Format(theTime.wMinute, "00") & ":" & Format(theTime.wSecond, "00")
-    HoraEvento = HoraActual
+104     If HoraActual = -3 Then HoraActual = 21
+106     If HoraActual = -2 Then HoraActual = 22
+108     If HoraActual = -1 Then HoraActual = 23
+110     frmMain.lblhora.Caption = HoraActual & ":" & Format(theTime.wMinute, "00") & ":" & Format(theTime.wSecond, "00")
+112     HoraEvento = HoraActual
 
+        
+        Exit Sub
+
+GetHoraActual_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModLadder.GetHoraActual", Erl)
+        Resume Next
+        
 End Sub
 
 Public Function DarNameMapa(ByVal Map As Long) As String
-    DarNameMapa = MapInfo(Map).map_name
+        
+        On Error GoTo DarNameMapa_Err
+        
+100     DarNameMapa = MapInfo(Map).map_name
 
+        
+        Exit Function
+
+DarNameMapa_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModLadder.DarNameMapa", Erl)
+        Resume Next
+        
 End Function
 
 Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
-
-    Dim obj  As ObjData
-
-    Dim slot As Byte
-
-    Select Case UserList(UserIndex).accion.TipoAccion
-
-        Case Accion_Barra.Runa
-            obj = ObjData(UserList(UserIndex).accion.RunaObj)
-            slot = UserList(UserIndex).accion.ObjSlot
-
-            Select Case obj.TipoRuna
-
-                Case 1 'Cuando esta muerto lleva al lugar de Origen
-
-                    Dim DeDonde As CityWorldPos
-
-                    Dim Map     As Integer
-
-                    Dim x       As Byte
-
-                    Dim Y       As Byte
         
-                    If UserList(UserIndex).flags.Muerto = 0 Then
+        On Error GoTo CompletarAccionFin_Err
+        
 
-                        Select Case UserList(UserIndex).Hogar
+        Dim obj  As ObjData
 
-                            Case eCiudad.cUllathorpe
-                                DeDonde = CityUllathorpe
-                        
-                            Case eCiudad.cNix
-                                DeDonde = CityNix
-            
-                            Case eCiudad.cBanderbill
-                                DeDonde = CityBanderbill
-                    
-                            Case eCiudad.cLindos 'Vamos a tener que ir por todo el desierto... uff!
-                                DeDonde = CityLindos
-                        
-                            Case eCiudad.cArghal
-                                DeDonde = CityArghal
-                        
-                            Case eCiudad.CHillidan
-                                DeDonde = CityHillidan
-                        
-                            Case Else
-                                DeDonde = CityUllathorpe
+        Dim slot As Byte
 
-                        End Select
+100     Select Case UserList(UserIndex).accion.TipoAccion
 
-                        Map = DeDonde.Map
-                        x = DeDonde.x
-                        Y = DeDonde.Y
-                    Else
+            Case Accion_Barra.Runa
+102             obj = ObjData(UserList(UserIndex).accion.RunaObj)
+104             slot = UserList(UserIndex).accion.ObjSlot
 
-                        If MapInfo(UserList(UserIndex).Pos.Map).extra2 <> 0 Then
+106             Select Case obj.TipoRuna
 
-                            Select Case MapInfo(UserList(UserIndex).Pos.Map).extra2
+                    Case 1 'Cuando esta muerto lleva al lugar de Origen
+
+                        Dim DeDonde As CityWorldPos
+
+                        Dim Map     As Integer
+
+                        Dim x       As Byte
+
+                        Dim Y       As Byte
+        
+108                     If UserList(UserIndex).flags.Muerto = 0 Then
+
+110                         Select Case UserList(UserIndex).Hogar
 
                                 Case eCiudad.cUllathorpe
-                                    DeDonde = CityUllathorpe
+112                                 DeDonde = CityUllathorpe
                         
-                                Case eCiudad.cNix
-                                    DeDonde = CityNix
+114                             Case eCiudad.cNix
+116                                 DeDonde = CityNix
             
-                                Case eCiudad.cBanderbill
-                                    DeDonde = CityBanderbill
+118                             Case eCiudad.cBanderbill
+120                                 DeDonde = CityBanderbill
                     
-                                Case eCiudad.cLindos 'Vamos a tener que ir por todo el desierto... uff!
-                                    DeDonde = CityLindos
+122                             Case eCiudad.cLindos 'Vamos a tener que ir por todo el desierto... uff!
+124                                 DeDonde = CityLindos
                         
-                                Case eCiudad.cArghal
-                                    DeDonde = CityArghal
+126                             Case eCiudad.cArghal
+128                                 DeDonde = CityArghal
                         
-                                Case eCiudad.CHillidan
-                                    DeDonde = CityHillidan
+130                             Case eCiudad.CHillidan
+132                                 DeDonde = CityHillidan
                         
-                                Case Else
-                                    DeDonde = CityUllathorpe
+134                             Case Else
+136                                 DeDonde = CityUllathorpe
 
                             End Select
 
+138                         Map = DeDonde.Map
+140                         x = DeDonde.x
+142                         Y = DeDonde.Y
                         Else
 
-                            Select Case UserList(UserIndex).Hogar
+144                         If MapInfo(UserList(UserIndex).Pos.Map).extra2 <> 0 Then
 
-                                Case eCiudad.cUllathorpe
-                                    DeDonde = CityUllathorpe
+146                             Select Case MapInfo(UserList(UserIndex).Pos.Map).extra2
+
+                                    Case eCiudad.cUllathorpe
+148                                     DeDonde = CityUllathorpe
                         
-                                Case eCiudad.cNix
-                                    DeDonde = CityNix
+150                                 Case eCiudad.cNix
+152                                     DeDonde = CityNix
             
-                                Case eCiudad.cBanderbill
-                                    DeDonde = CityBanderbill
+154                                 Case eCiudad.cBanderbill
+156                                     DeDonde = CityBanderbill
                     
-                                Case eCiudad.cLindos 'Vamos a tener que ir por todo el desierto... uff!
-                                    DeDonde = CityLindos
+158                                 Case eCiudad.cLindos 'Vamos a tener que ir por todo el desierto... uff!
+160                                     DeDonde = CityLindos
                         
-                                Case eCiudad.cArghal
-                                    DeDonde = CityArghal
+162                                 Case eCiudad.cArghal
+164                                     DeDonde = CityArghal
                         
-                                Case eCiudad.CHillidan
-                                    DeDonde = CityHillidan
+166                                 Case eCiudad.CHillidan
+168                                     DeDonde = CityHillidan
                         
-                                Case Else
-                                    DeDonde = CityUllathorpe
+170                                 Case Else
+172                                     DeDonde = CityUllathorpe
 
-                            End Select
+                                End Select
 
-                        End If
-                
-                        Map = DeDonde.MapaResu
-                        x = DeDonde.ResuX
-                        Y = DeDonde.ResuY
-                
-                        Dim Resu As Boolean
-                
-                        Resu = True
+                            Else
+
+174                             Select Case UserList(UserIndex).Hogar
+
+                                    Case eCiudad.cUllathorpe
+176                                     DeDonde = CityUllathorpe
+                        
+178                                 Case eCiudad.cNix
+180                                     DeDonde = CityNix
             
-                    End If
+182                                 Case eCiudad.cBanderbill
+184                                     DeDonde = CityBanderbill
+                    
+186                                 Case eCiudad.cLindos 'Vamos a tener que ir por todo el desierto... uff!
+188                                     DeDonde = CityLindos
+                        
+190                                 Case eCiudad.cArghal
+192                                     DeDonde = CityArghal
+                        
+194                                 Case eCiudad.CHillidan
+196                                     DeDonde = CityHillidan
+                        
+198                                 Case Else
+200                                     DeDonde = CityUllathorpe
+
+                                End Select
+
+                            End If
                 
-                    Call FindLegalPos(UserIndex, Map, x, Y)
-                    Call WarpUserChar(UserIndex, Map, x, Y, True)
-                    Call WriteConsoleMsg(UserIndex, "Has regresado a tu ciudad de origen.", FontTypeNames.FONTTYPE_WARNING)
-
-                    'Call WriteEfectToScreen(UserIndex, &HA4FFFF, 150, True)
-                    If UserList(UserIndex).flags.Navegando = 1 Then
-
-                        Dim barca As ObjData
-
-                        barca = ObjData(UserList(UserIndex).Invent.BarcoObjIndex)
-                        Call DoNavega(UserIndex, barca, UserList(UserIndex).Invent.BarcoSlot)
-
-                    End If
+202                         Map = DeDonde.MapaResu
+204                         x = DeDonde.ResuX
+206                         Y = DeDonde.ResuY
                 
-                    If Resu Then
+                            Dim Resu As Boolean
                 
-                        If UserList(UserIndex).donador.activo = 0 Then ' Donador no espera tiempo
-                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Resucitar, 400, False))
-                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(UserList(UserIndex).Char.CharIndex, 400, Accion_Barra.Resucitar))
-                        Else
-                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Resucitar, 10, False))
-                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(UserList(UserIndex).Char.CharIndex, 10, Accion_Barra.Resucitar))
+208                         Resu = True
+            
+                        End If
+                
+210                     Call FindLegalPos(UserIndex, Map, x, Y)
+212                     Call WarpUserChar(UserIndex, Map, x, Y, True)
+214                     Call WriteConsoleMsg(UserIndex, "Has regresado a tu ciudad de origen.", FontTypeNames.FONTTYPE_WARNING)
+
+                        'Call WriteEfectToScreen(UserIndex, &HA4FFFF, 150, True)
+216                     If UserList(UserIndex).flags.Navegando = 1 Then
+
+                            Dim barca As ObjData
+
+218                         barca = ObjData(UserList(UserIndex).Invent.BarcoObjIndex)
+220                         Call DoNavega(UserIndex, barca, UserList(UserIndex).Invent.BarcoSlot)
 
                         End If
                 
-                        UserList(UserIndex).accion.AccionPendiente = True
-                        UserList(UserIndex).accion.Particula = ParticulasIndex.Resucitar
-                        UserList(UserIndex).accion.TipoAccion = Accion_Barra.Resucitar
-
-                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("104", UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
-                        'Call WriteConsoleMsg(UserIndex, "El Cura lanza unas palabras al aire. Comienzas a sentir como tu cuerpo se vuelve a formar...", FontTypeNames.FONTTYPE_INFO)
-                        Call WriteLocaleMsg(UserIndex, "82", FontTypeNames.FONTTYPE_INFOIAO)
-
-                    End If
+222                     If Resu Then
                 
-                    If Not Resu Then
-                        UserList(UserIndex).accion.AccionPendiente = False
-                        UserList(UserIndex).accion.Particula = 0
-                        UserList(UserIndex).accion.TipoAccion = Accion_Barra.CancelarAccion
+224                         If UserList(UserIndex).donador.activo = 0 Then ' Donador no espera tiempo
+226                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Resucitar, 400, False))
+228                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(UserList(UserIndex).Char.CharIndex, 400, Accion_Barra.Resucitar))
+                            Else
+230                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Resucitar, 10, False))
+232                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(UserList(UserIndex).Char.CharIndex, 10, Accion_Barra.Resucitar))
 
-                    End If
+                            End If
+                
+234                         UserList(UserIndex).accion.AccionPendiente = True
+236                         UserList(UserIndex).accion.Particula = ParticulasIndex.Resucitar
+238                         UserList(UserIndex).accion.TipoAccion = Accion_Barra.Resucitar
 
-                    UserList(UserIndex).accion.HechizoPendiente = 0
-                    UserList(UserIndex).accion.RunaObj = 0
-                    UserList(UserIndex).accion.ObjSlot = 0
+240                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("104", UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+                            'Call WriteConsoleMsg(UserIndex, "El Cura lanza unas palabras al aire. Comienzas a sentir como tu cuerpo se vuelve a formar...", FontTypeNames.FONTTYPE_INFO)
+242                         Call WriteLocaleMsg(UserIndex, "82", FontTypeNames.FONTTYPE_INFOIAO)
+
+                        End If
+                
+244                     If Not Resu Then
+246                         UserList(UserIndex).accion.AccionPendiente = False
+248                         UserList(UserIndex).accion.Particula = 0
+250                         UserList(UserIndex).accion.TipoAccion = Accion_Barra.CancelarAccion
+
+                        End If
+
+252                     UserList(UserIndex).accion.HechizoPendiente = 0
+254                     UserList(UserIndex).accion.RunaObj = 0
+256                     UserList(UserIndex).accion.ObjSlot = 0
               
-                Case 2
-                    Map = obj.HastaMap
-                    x = obj.HastaX
-                    Y = obj.HastaY
+258                 Case 2
+260                     Map = obj.HastaMap
+262                     x = obj.HastaX
+264                     Y = obj.HastaY
             
-                    If obj.DesdeMap = 0 Then
-                        Call FindLegalPos(UserIndex, Map, x, Y)
-                        Call WarpUserChar(UserIndex, Map, x, Y, True)
-                        Call WriteConsoleMsg(UserIndex, "Te has teletransportado por el mundo.", FontTypeNames.FONTTYPE_WARNING)
-                        Call QuitarUserInvItem(UserIndex, slot, 1)
-                        Call UpdateUserInv(False, UserIndex, slot)
-                    Else
-
-                        If UserList(UserIndex).Pos.Map <> obj.DesdeMap Then
-                            Call WriteConsoleMsg(UserIndex, "Esta runa no puede ser usada desde aquí.", FontTypeNames.FONTTYPE_INFO)
+266                     If obj.DesdeMap = 0 Then
+268                         Call FindLegalPos(UserIndex, Map, x, Y)
+270                         Call WarpUserChar(UserIndex, Map, x, Y, True)
+272                         Call WriteConsoleMsg(UserIndex, "Te has teletransportado por el mundo.", FontTypeNames.FONTTYPE_WARNING)
+274                         Call QuitarUserInvItem(UserIndex, slot, 1)
+276                         Call UpdateUserInv(False, UserIndex, slot)
                         Else
-                            Call QuitarUserInvItem(UserIndex, slot, 1)
-                            Call UpdateUserInv(False, UserIndex, slot)
-                            Call FindLegalPos(UserIndex, Map, x, Y)
-                            Call WarpUserChar(UserIndex, Map, x, Y, True)
-                            Call WriteConsoleMsg(UserIndex, "Te has teletransportado por el mundo.", FontTypeNames.FONTTYPE_WARNING)
+
+278                         If UserList(UserIndex).Pos.Map <> obj.DesdeMap Then
+280                             Call WriteConsoleMsg(UserIndex, "Esta runa no puede ser usada desde aquí.", FontTypeNames.FONTTYPE_INFO)
+                            Else
+282                             Call QuitarUserInvItem(UserIndex, slot, 1)
+284                             Call UpdateUserInv(False, UserIndex, slot)
+286                             Call FindLegalPos(UserIndex, Map, x, Y)
+288                             Call WarpUserChar(UserIndex, Map, x, Y, True)
+290                             Call WriteConsoleMsg(UserIndex, "Te has teletransportado por el mundo.", FontTypeNames.FONTTYPE_WARNING)
+
+                            End If
 
                         End If
-
-                    End If
         
-                    UserList(UserIndex).accion.Particula = 0
-                    UserList(UserIndex).accion.TipoAccion = Accion_Barra.CancelarAccion
-                    UserList(UserIndex).accion.HechizoPendiente = 0
-                    UserList(UserIndex).accion.RunaObj = 0
-                    UserList(UserIndex).accion.ObjSlot = 0
-                    UserList(UserIndex).accion.AccionPendiente = False
+292                     UserList(UserIndex).accion.Particula = 0
+294                     UserList(UserIndex).accion.TipoAccion = Accion_Barra.CancelarAccion
+296                     UserList(UserIndex).accion.HechizoPendiente = 0
+298                     UserList(UserIndex).accion.RunaObj = 0
+300                     UserList(UserIndex).accion.ObjSlot = 0
+302                     UserList(UserIndex).accion.AccionPendiente = False
 
-                Case 3
+304                 Case 3
 
-                    Dim parejaindex As Integer
+                        Dim parejaindex As Integer
     
-                    If Not UserList(UserIndex).flags.BattleModo Then
+306                     If Not UserList(UserIndex).flags.BattleModo Then
                     
-                        ' If UserList(UserIndex).donador.activo = 1 Then
-                        If MapInfo(UserList(UserIndex).Pos.Map).Seguro = 1 Then
-                            If UserList(UserIndex).flags.Casado = 1 Then
-                                parejaindex = NameIndex(UserList(UserIndex).flags.Pareja)
+                            ' If UserList(UserIndex).donador.activo = 1 Then
+308                         If MapInfo(UserList(UserIndex).Pos.Map).Seguro = 1 Then
+310                             If UserList(UserIndex).flags.Casado = 1 Then
+312                                 parejaindex = NameIndex(UserList(UserIndex).flags.Pareja)
                             
-                                If parejaindex > 0 Then
-                                    If Not UserList(parejaindex).flags.BattleModo Then
-                                        Call WarpToLegalPos(UserIndex, UserList(parejaindex).Pos.Map, UserList(parejaindex).Pos.x, UserList(parejaindex).Pos.Y, True)
-                                        Call WriteConsoleMsg(UserIndex, "Te has teletransportado hacia tu pareja.", FontTypeNames.FONTTYPE_INFOIAO)
-                                        Call WriteConsoleMsg(parejaindex, "Tu pareja se ha teletransportado hacia vos.", FontTypeNames.FONTTYPE_INFOIAO)
+314                                 If parejaindex > 0 Then
+316                                     If Not UserList(parejaindex).flags.BattleModo Then
+318                                         Call WarpToLegalPos(UserIndex, UserList(parejaindex).Pos.Map, UserList(parejaindex).Pos.x, UserList(parejaindex).Pos.Y, True)
+320                                         Call WriteConsoleMsg(UserIndex, "Te has teletransportado hacia tu pareja.", FontTypeNames.FONTTYPE_INFOIAO)
+322                                         Call WriteConsoleMsg(parejaindex, "Tu pareja se ha teletransportado hacia vos.", FontTypeNames.FONTTYPE_INFOIAO)
+                                        Else
+324                                         Call WriteConsoleMsg(UserIndex, "Tu pareja esta en modo battle. No podés teletransportarte hacia ella.", FontTypeNames.FONTTYPE_INFOIAO)
+
+                                        End If
+                                    
                                     Else
-                                        Call WriteConsoleMsg(UserIndex, "Tu pareja esta en modo battle. No podés teletransportarte hacia ella.", FontTypeNames.FONTTYPE_INFOIAO)
+326                                     Call WriteConsoleMsg(UserIndex, "Tu pareja no esta online.", FontTypeNames.FONTTYPE_INFOIAO)
 
                                     End If
-                                    
+
                                 Else
-                                    Call WriteConsoleMsg(UserIndex, "Tu pareja no esta online.", FontTypeNames.FONTTYPE_INFOIAO)
+328                                 Call WriteConsoleMsg(UserIndex, "No estas casado con nadie.", FontTypeNames.FONTTYPE_INFOIAO)
 
                                 End If
 
                             Else
-                                Call WriteConsoleMsg(UserIndex, "No estas casado con nadie.", FontTypeNames.FONTTYPE_INFOIAO)
+330                             Call WriteConsoleMsg(UserIndex, "Solo disponible en zona segura.", FontTypeNames.FONTTYPE_INFOIAO)
 
                             End If
-
+                    
+                            'Else
+                            '   Call WriteConsoleMsg(UserIndex, "Opcion disponible unicamente para usuarios donadores.", FontTypeNames.FONTTYPE_INFOIAO)
+                            '  End If
                         Else
-                            Call WriteConsoleMsg(UserIndex, "Solo disponible en zona segura.", FontTypeNames.FONTTYPE_INFOIAO)
-
+332                         Call WriteConsoleMsg(UserIndex, "No podés usar esta opción en el battle.", FontTypeNames.FONTTYPE_INFOIAO)
+            
                         End If
-                    
-                        'Else
-                        '   Call WriteConsoleMsg(UserIndex, "Opcion disponible unicamente para usuarios donadores.", FontTypeNames.FONTTYPE_INFOIAO)
-                        '  End If
-                    Else
-                        Call WriteConsoleMsg(UserIndex, "No podés usar esta opción en el battle.", FontTypeNames.FONTTYPE_INFOIAO)
             
-                    End If
-            
-            End Select
+                End Select
 
-        Case Accion_Barra.Intermundia
+334         Case Accion_Barra.Intermundia
         
-            If UserList(UserIndex).flags.Muerto = 0 Then
+336             If UserList(UserIndex).flags.Muerto = 0 Then
 
-                Dim uh As Integer
+                    Dim uh As Integer
 
-                Dim Mapaf, Xf, Yf As Integer
+                    Dim Mapaf, Xf, Yf As Integer
 
-                uh = UserList(UserIndex).accion.HechizoPendiente
+338                 uh = UserList(UserIndex).accion.HechizoPendiente
     
-                Mapaf = Hechizos(uh).TeleportXMap
-                Xf = Hechizos(uh).TeleportXX
-                Yf = Hechizos(uh).TeleportXY
+340                 Mapaf = Hechizos(uh).TeleportXMap
+342                 Xf = Hechizos(uh).TeleportXX
+344                 Yf = Hechizos(uh).TeleportXY
     
-                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(uh).wav, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY))  'Esta linea faltaba. Pablo (ToxicWaste)
-                Call WriteConsoleMsg(UserIndex, "¡Has abierto la puerta a intermundia!", FontTypeNames.FONTTYPE_INFO)
-                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Runa, -1, True))
-                UserList(UserIndex).flags.Portal = 10
-                UserList(UserIndex).flags.PortalMDestino = Mapaf
-                UserList(UserIndex).flags.PortalYDestino = Xf
-                UserList(UserIndex).flags.PortalXDestino = Yf
+346                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(uh).wav, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY))  'Esta linea faltaba. Pablo (ToxicWaste)
+348                 Call WriteConsoleMsg(UserIndex, "¡Has abierto la puerta a intermundia!", FontTypeNames.FONTTYPE_INFO)
+350                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Runa, -1, True))
+352                 UserList(UserIndex).flags.Portal = 10
+354                 UserList(UserIndex).flags.PortalMDestino = Mapaf
+356                 UserList(UserIndex).flags.PortalYDestino = Xf
+358                 UserList(UserIndex).flags.PortalXDestino = Yf
                 
-                Dim Mapa As Integer
+                    Dim Mapa As Integer
 
-                Mapa = UserList(UserIndex).flags.PortalM
-                x = UserList(UserIndex).flags.PortalX
-                Y = UserList(UserIndex).flags.PortalY
-                MapData(Mapa, x, Y).Particula = ParticulasIndex.TpVerde
-                MapData(Mapa, x, Y).TimeParticula = -1
-                MapData(Mapa, x, Y).TileExit.Map = UserList(UserIndex).flags.PortalMDestino
-                MapData(Mapa, x, Y).TileExit.x = UserList(UserIndex).flags.PortalXDestino
-                MapData(Mapa, x, Y).TileExit.Y = UserList(UserIndex).flags.PortalYDestino
+360                 Mapa = UserList(UserIndex).flags.PortalM
+362                 x = UserList(UserIndex).flags.PortalX
+364                 Y = UserList(UserIndex).flags.PortalY
+366                 MapData(Mapa, x, Y).Particula = ParticulasIndex.TpVerde
+368                 MapData(Mapa, x, Y).TimeParticula = -1
+370                 MapData(Mapa, x, Y).TileExit.Map = UserList(UserIndex).flags.PortalMDestino
+372                 MapData(Mapa, x, Y).TileExit.x = UserList(UserIndex).flags.PortalXDestino
+374                 MapData(Mapa, x, Y).TileExit.Y = UserList(UserIndex).flags.PortalYDestino
                 
-                'Call SendData(SendTarget.toMap, UserList(UserIndex).flags.PortalM, PrepareMessageParticleFXToFloor(X, Y, ParticulasIndex.Intermundia, -1))
-                Call SendData(SendTarget.toMap, UserList(UserIndex).flags.PortalM, PrepareMessageParticleFXToFloor(x, Y, ParticulasIndex.TpVerde, -1))
+                    'Call SendData(SendTarget.toMap, UserList(UserIndex).flags.PortalM, PrepareMessageParticleFXToFloor(X, Y, ParticulasIndex.Intermundia, -1))
+376                 Call SendData(SendTarget.toMap, UserList(UserIndex).flags.PortalM, PrepareMessageParticleFXToFloor(x, Y, ParticulasIndex.TpVerde, -1))
                 
-                Call SendData(SendTarget.toMap, UserList(UserIndex).flags.PortalM, PrepareMessageLightFXToFloor(x, Y, &HFF80C0, 105))
-
-            End If
-                    
-            UserList(UserIndex).accion.Particula = 0
-            UserList(UserIndex).accion.TipoAccion = Accion_Barra.CancelarAccion
-            UserList(UserIndex).accion.HechizoPendiente = 0
-            UserList(UserIndex).accion.RunaObj = 0
-            UserList(UserIndex).accion.ObjSlot = 0
-            UserList(UserIndex).accion.AccionPendiente = False
-            
-            '
-        Case Accion_Barra.Resucitar
-            Call WriteConsoleMsg(UserIndex, "¡Has sido resucitado!", FontTypeNames.FONTTYPE_INFO)
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Resucitar, 250, True))
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("204", UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
-            Call RevivirUsuario(UserIndex)
-                
-            UserList(UserIndex).accion.Particula = 0
-            UserList(UserIndex).accion.TipoAccion = Accion_Barra.CancelarAccion
-            UserList(UserIndex).accion.HechizoPendiente = 0
-            UserList(UserIndex).accion.RunaObj = 0
-            UserList(UserIndex).accion.ObjSlot = 0
-            UserList(UserIndex).accion.AccionPendiente = False
-        
-        Case Accion_Barra.BattleModo
-        
-            If UserList(UserIndex).flags.BattleModo = 1 Then
-                Call Cerrar_Usuario(UserIndex)
-                
-                ' Dim mapaa As Integer
-                '  Dim xa As Integer
-                ' Dim ya As Integer
-                ' mapaa = CInt(ReadField(1, GetVar(CharPath & UserList(UserIndex).name & ".chr", "INIT", "Position"), 45))
-                ' xa = CInt(ReadField(2, GetVar(CharPath & UserList(UserIndex).name & ".chr", "INIT", "Position"), 45))
-                ' ya = CInt(ReadField(3, GetVar(CharPath & UserList(UserIndex).name & ".chr", "INIT", "Position"), 45))
-
-                ' Call WarpUserChar(UserIndex, mapaa, xa, ya, False)
-                
-                ' Call RelogearUser(UserIndex, UserList(UserIndex).name, UserList(UserIndex).cuenta)
-            Else
-                
-                If UserList(UserIndex).flags.invisible = 1 Or UserList(UserIndex).flags.Oculto = 1 Then
-
-                    UserList(UserIndex).flags.Oculto = 0
-                    UserList(UserIndex).flags.invisible = 0
-                    UserList(UserIndex).Counters.TiempoOculto = 0
-                    UserList(UserIndex).Counters.Invisibilidad = 0
-                
-                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(UserList(UserIndex).Char.CharIndex, False))
+378                 Call SendData(SendTarget.toMap, UserList(UserIndex).flags.PortalM, PrepareMessageLightFXToFloor(x, Y, &HFF80C0, 105))
 
                 End If
-                
-                Call SaveUser(UserIndex)  'Guardo el PJ
-
-                x = 50
-                Y = 54
-                Call FindLegalPos(UserIndex, 336, x, Y)
-                
-                Call WarpUserChar(UserIndex, 336, x, Y, True)
-                
-                UserList(UserIndex).flags.BattleModo = 1
-
-                If UserList(UserIndex).flags.Subastando Then
-                    Call CancelarSubasta
-
-                End If
-                
-                Call AumentarPJ(UserIndex)
-                Call WriteConsoleMsg(UserIndex, "Battle> Ahora tu personaje se encuentra en modo batalla. Recuerda que todos los cambios que se realicen sobre éste no tendran efecto mientras te encuentres aquí. Cuando desees salir, solamente toca ESC o escribe /SALIR y relogea con tu personaje.", FontTypeNames.FONTTYPE_CITIZEN)
-                
-            End If
-
-            UserList(UserIndex).accion.AccionPendiente = False
-            UserList(UserIndex).accion.Particula = 0
-            UserList(UserIndex).accion.TipoAccion = Accion_Barra.CancelarAccion
-            UserList(UserIndex).accion.HechizoPendiente = 0
-            UserList(UserIndex).accion.RunaObj = 0
-            UserList(UserIndex).accion.ObjSlot = 0
-                
-        Case Accion_Barra.GoToPareja
-    
-            If Not UserList(UserIndex).flags.BattleModo Then
                     
-                ' If UserList(UserIndex).donador.activo = 1 Then
-                If MapInfo(UserList(UserIndex).Pos.Map).Seguro = 1 Then
-                    If UserList(UserIndex).flags.Casado = 1 Then
-                        parejaindex = NameIndex(UserList(UserIndex).flags.Pareja)
-                            
-                        If parejaindex > 0 Then
-                            If Not UserList(parejaindex).flags.BattleModo Then
-                                Call WarpToLegalPos(UserIndex, UserList(parejaindex).Pos.Map, UserList(parejaindex).Pos.x, UserList(parejaindex).Pos.Y, True)
-                                Call WriteConsoleMsg(UserIndex, "Te has teletransportado hacia tu pareja.", FontTypeNames.FONTTYPE_INFOIAO)
-                                Call WriteConsoleMsg(parejaindex, "Tu pareja se ha teletransportado hacia vos.", FontTypeNames.FONTTYPE_INFOIAO)
-                            Else
-                                Call WriteConsoleMsg(UserIndex, "Tu pareja esta en modo battle. No podés teletransportarte hacia ella.", FontTypeNames.FONTTYPE_INFOIAO)
+380             UserList(UserIndex).accion.Particula = 0
+382             UserList(UserIndex).accion.TipoAccion = Accion_Barra.CancelarAccion
+384             UserList(UserIndex).accion.HechizoPendiente = 0
+386             UserList(UserIndex).accion.RunaObj = 0
+388             UserList(UserIndex).accion.ObjSlot = 0
+390             UserList(UserIndex).accion.AccionPendiente = False
+            
+                '
+392         Case Accion_Barra.Resucitar
+394             Call WriteConsoleMsg(UserIndex, "¡Has sido resucitado!", FontTypeNames.FONTTYPE_INFO)
+396             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Resucitar, 250, True))
+398             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("204", UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+400             Call RevivirUsuario(UserIndex)
+                
+402             UserList(UserIndex).accion.Particula = 0
+404             UserList(UserIndex).accion.TipoAccion = Accion_Barra.CancelarAccion
+406             UserList(UserIndex).accion.HechizoPendiente = 0
+408             UserList(UserIndex).accion.RunaObj = 0
+410             UserList(UserIndex).accion.ObjSlot = 0
+412             UserList(UserIndex).accion.AccionPendiente = False
+        
+414         Case Accion_Barra.BattleModo
+        
+416             If UserList(UserIndex).flags.BattleModo = 1 Then
+418                 Call Cerrar_Usuario(UserIndex)
+                
+                    ' Dim mapaa As Integer
+                    '  Dim xa As Integer
+                    ' Dim ya As Integer
+                    ' mapaa = CInt(ReadField(1, GetVar(CharPath & UserList(UserIndex).name & ".chr", "INIT", "Position"), 45))
+                    ' xa = CInt(ReadField(2, GetVar(CharPath & UserList(UserIndex).name & ".chr", "INIT", "Position"), 45))
+                    ' ya = CInt(ReadField(3, GetVar(CharPath & UserList(UserIndex).name & ".chr", "INIT", "Position"), 45))
 
-                            End If
-                                    
-                        Else
-                            Call WriteConsoleMsg(UserIndex, "Tu pareja no esta online.", FontTypeNames.FONTTYPE_INFOIAO)
-
-                        End If
-
-                    Else
-                        Call WriteConsoleMsg(UserIndex, "No estas casado con nadie.", FontTypeNames.FONTTYPE_INFOIAO)
-
-                    End If
-
+                    ' Call WarpUserChar(UserIndex, mapaa, xa, ya, False)
+                
+                    ' Call RelogearUser(UserIndex, UserList(UserIndex).name, UserList(UserIndex).cuenta)
                 Else
-                    Call WriteConsoleMsg(UserIndex, "Solo disponible en zona segura.", FontTypeNames.FONTTYPE_INFOIAO)
+                
+420                 If UserList(UserIndex).flags.invisible = 1 Or UserList(UserIndex).flags.Oculto = 1 Then
 
+422                     UserList(UserIndex).flags.Oculto = 0
+424                     UserList(UserIndex).flags.invisible = 0
+426                     UserList(UserIndex).Counters.TiempoOculto = 0
+428                     UserList(UserIndex).Counters.Invisibilidad = 0
+                
+430                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(UserList(UserIndex).Char.CharIndex, False))
+
+                    End If
+                
+432                 Call SaveUser(UserIndex)  'Guardo el PJ
+
+434                 x = 50
+436                 Y = 54
+438                 Call FindLegalPos(UserIndex, 336, x, Y)
+                
+440                 Call WarpUserChar(UserIndex, 336, x, Y, True)
+                
+442                 UserList(UserIndex).flags.BattleModo = 1
+
+444                 If UserList(UserIndex).flags.Subastando Then
+446                     Call CancelarSubasta
+
+                    End If
+                
+448                 Call AumentarPJ(UserIndex)
+450                 Call WriteConsoleMsg(UserIndex, "Battle> Ahora tu personaje se encuentra en modo batalla. Recuerda que todos los cambios que se realicen sobre éste no tendran efecto mientras te encuentres aquí. Cuando desees salir, solamente toca ESC o escribe /SALIR y relogea con tu personaje.", FontTypeNames.FONTTYPE_CITIZEN)
+                
                 End If
+
+452             UserList(UserIndex).accion.AccionPendiente = False
+454             UserList(UserIndex).accion.Particula = 0
+456             UserList(UserIndex).accion.TipoAccion = Accion_Barra.CancelarAccion
+458             UserList(UserIndex).accion.HechizoPendiente = 0
+460             UserList(UserIndex).accion.RunaObj = 0
+462             UserList(UserIndex).accion.ObjSlot = 0
+                
+464         Case Accion_Barra.GoToPareja
+    
+466             If Not UserList(UserIndex).flags.BattleModo Then
                     
-                ' Else
-                ' Call WriteConsoleMsg(UserIndex, "Opcion disponible unicamente para usuarios donadores.", FontTypeNames.FONTTYPE_INFOIAO)
-                'End If
-            Else
-                Call WriteConsoleMsg(UserIndex, "No podés usar esta opción en el battle.", FontTypeNames.FONTTYPE_INFOIAO)
+                    ' If UserList(UserIndex).donador.activo = 1 Then
+468                 If MapInfo(UserList(UserIndex).Pos.Map).Seguro = 1 Then
+470                     If UserList(UserIndex).flags.Casado = 1 Then
+472                         parejaindex = NameIndex(UserList(UserIndex).flags.Pareja)
+                            
+474                         If parejaindex > 0 Then
+476                             If Not UserList(parejaindex).flags.BattleModo Then
+478                                 Call WarpToLegalPos(UserIndex, UserList(parejaindex).Pos.Map, UserList(parejaindex).Pos.x, UserList(parejaindex).Pos.Y, True)
+480                                 Call WriteConsoleMsg(UserIndex, "Te has teletransportado hacia tu pareja.", FontTypeNames.FONTTYPE_INFOIAO)
+482                                 Call WriteConsoleMsg(parejaindex, "Tu pareja se ha teletransportado hacia vos.", FontTypeNames.FONTTYPE_INFOIAO)
+                                Else
+484                                 Call WriteConsoleMsg(UserIndex, "Tu pareja esta en modo battle. No podés teletransportarte hacia ella.", FontTypeNames.FONTTYPE_INFOIAO)
+
+                                End If
+                                    
+                            Else
+486                             Call WriteConsoleMsg(UserIndex, "Tu pareja no esta online.", FontTypeNames.FONTTYPE_INFOIAO)
+
+                            End If
+
+                        Else
+488                         Call WriteConsoleMsg(UserIndex, "No estas casado con nadie.", FontTypeNames.FONTTYPE_INFOIAO)
+
+                        End If
+
+                    Else
+490                     Call WriteConsoleMsg(UserIndex, "Solo disponible en zona segura.", FontTypeNames.FONTTYPE_INFOIAO)
+
+                    End If
+                    
+                    ' Else
+                    ' Call WriteConsoleMsg(UserIndex, "Opcion disponible unicamente para usuarios donadores.", FontTypeNames.FONTTYPE_INFOIAO)
+                    'End If
+                Else
+492                 Call WriteConsoleMsg(UserIndex, "No podés usar esta opción en el battle.", FontTypeNames.FONTTYPE_INFOIAO)
             
-            End If
+                End If
             
-    End Select
+        End Select
        
+        
+        Exit Sub
+
+CompletarAccionFin_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModLadder.CompletarAccionFin", Erl)
+        Resume Next
+        
 End Sub
 
 Public Function General_Get_Line_Count(ByVal FileName As String) As Long
@@ -514,29 +554,39 @@ ErrorHandler:
 End Function
 
 Public Function Integer_To_String(ByVal Var As Integer) As String
-
-    '**************************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modify Date: 3/12/2005
-    '
-    '**************************************************************
-    Dim temp As String
         
-    'Convertimos a hexa
-    temp = hex$(Var)
-    
-    'Nos aseguramos tenga 4 bytes de largo
-    While Len(temp) < 4
+        On Error GoTo Integer_To_String_Err
+        
 
-        temp = "0" & temp
-    Wend
+        '**************************************************************
+        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Last Modify Date: 3/12/2005
+        '
+        '**************************************************************
+        Dim temp As String
+        
+        'Convertimos a hexa
+100     temp = hex$(Var)
     
-    'Convertimos a string
-    Integer_To_String = Chr$(val("&H" & Left$(temp, 2))) & Chr$(val("&H" & Right$(temp, 2)))
-    Exit Function
+        'Nos aseguramos tenga 4 bytes de largo
+102     While Len(temp) < 4
+
+104         temp = "0" & temp
+        Wend
+    
+        'Convertimos a string
+106     Integer_To_String = Chr$(val("&H" & Left$(temp, 2))) & Chr$(val("&H" & Right$(temp, 2)))
+        Exit Function
 
 ErrorHandler:
 
+        
+        Exit Function
+
+Integer_To_String_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModLadder.Integer_To_String", Erl)
+        Resume Next
+        
 End Function
 
 Public Function String_To_Integer(ByRef str As String, ByVal Start As Integer) As Integer
@@ -572,16 +622,26 @@ Error_Handler:
 End Function
 
 Public Function Byte_To_String(ByVal Var As Byte) As String
-    '**************************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modify Date: 3/12/2005
-    'Convierte un byte a string
-    '**************************************************************
-    Byte_To_String = Chr$(val("&H" & hex$(Var)))
-    Exit Function
+        '**************************************************************
+        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Last Modify Date: 3/12/2005
+        'Convierte un byte a string
+        '**************************************************************
+        
+        On Error GoTo Byte_To_String_Err
+        
+100     Byte_To_String = Chr$(val("&H" & hex$(Var)))
+        Exit Function
 
 ErrorHandler:
 
+        
+        Exit Function
+
+Byte_To_String_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModLadder.Byte_To_String", Erl)
+        Resume Next
+        
 End Function
 
 Public Function String_To_Byte(ByRef str As String, ByVal Start As Integer) As Byte
@@ -604,44 +664,54 @@ Error_Handler:
 End Function
 
 Public Function Long_To_String(ByVal Var As Long) As String
+        
+        On Error GoTo Long_To_String_Err
+        
 
-    '**************************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modify Date: 3/12/2005
-    '
-    '**************************************************************
-    'No aceptamos valores que usen los 4 últimos its
-    If Var > &HFFFFFFF Then GoTo ErrorHandler
+        '**************************************************************
+        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Last Modify Date: 3/12/2005
+        '
+        '**************************************************************
+        'No aceptamos valores que usen los 4 últimos its
+100     If Var > &HFFFFFFF Then GoTo ErrorHandler
     
-    Dim temp As String
+        Dim temp As String
     
-    'Vemos si el cuarto byte es cero
-    If (Var And &HFF&) = 0 Then Var = Var Or &H80000001
+        'Vemos si el cuarto byte es cero
+102     If (Var And &HFF&) = 0 Then Var = Var Or &H80000001
     
-    'Vemos si el tercer byte es cero
-    If (Var And &HFF00&) = 0 Then Var = Var Or &H40000100
+        'Vemos si el tercer byte es cero
+104     If (Var And &HFF00&) = 0 Then Var = Var Or &H40000100
     
-    'Vemos si el segundo byte es cero
-    If (Var And &HFF0000) = 0 Then Var = Var Or &H20010000
+        'Vemos si el segundo byte es cero
+106     If (Var And &HFF0000) = 0 Then Var = Var Or &H20010000
     
-    'Vemos si el primer byte es cero
-    If Var < &H1000000 Then Var = Var Or &H10000000
+        'Vemos si el primer byte es cero
+108     If Var < &H1000000 Then Var = Var Or &H10000000
     
-    'Convertimos a hexa
-    temp = hex$(Var)
+        'Convertimos a hexa
+110     temp = hex$(Var)
     
-    'Nos aseguramos tenga 8 bytes de largo
-    While Len(temp) < 8
+        'Nos aseguramos tenga 8 bytes de largo
+112     While Len(temp) < 8
 
-        temp = "0" & temp
-    Wend
+114         temp = "0" & temp
+        Wend
     
-    'Convertimos a string
-    Long_To_String = Chr$(val("&H" & Left$(temp, 2))) & Chr$(val("&H" & mid$(temp, 3, 2))) & Chr$(val("&H" & mid$(temp, 5, 2))) & Chr$(val("&H" & mid$(temp, 7, 2)))
-    Exit Function
+        'Convertimos a string
+116     Long_To_String = Chr$(val("&H" & Left$(temp, 2))) & Chr$(val("&H" & mid$(temp, 3, 2))) & Chr$(val("&H" & mid$(temp, 5, 2))) & Chr$(val("&H" & mid$(temp, 7, 2)))
+        Exit Function
 
 ErrorHandler:
 
+        
+        Exit Function
+
+Long_To_String_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModLadder.Long_To_String", Erl)
+        Resume Next
+        
 End Function
 
 Public Function String_To_Long(ByRef str As String, ByVal Start As Integer) As Long
@@ -704,168 +774,218 @@ ErrorHandler:
 End Function
 
 Public Function TieneObjEnInv(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, Optional ObjIndex2 As Integer = 0) As Boolean
+        
+        On Error GoTo TieneObjEnInv_Err
+        
 
-    'Devuelve el slot del inventario donde se encuentra el obj
-    'Creaado por Ladder 25/09/2014
-    Dim i As Byte
+        'Devuelve el slot del inventario donde se encuentra el obj
+        'Creaado por Ladder 25/09/2014
+        Dim i As Byte
 
-    For i = 1 To 36
+100     For i = 1 To 36
 
-        If UserList(UserIndex).Invent.Object(i).ObjIndex = ObjIndex Then
-            TieneObjEnInv = True
+102         If UserList(UserIndex).Invent.Object(i).ObjIndex = ObjIndex Then
+104             TieneObjEnInv = True
+                Exit Function
+
+            End If
+
+106         If ObjIndex2 > 0 Then
+108             If UserList(UserIndex).Invent.Object(i).ObjIndex = ObjIndex2 Then
+110                 TieneObjEnInv = True
+                    Exit Function
+
+                End If
+
+            End If
+
+112     Next i
+
+114     TieneObjEnInv = False
+
+        
+        Exit Function
+
+TieneObjEnInv_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModLadder.TieneObjEnInv", Erl)
+        Resume Next
+        
+End Function
+
+Public Function SumarTiempo(segundos As Integer) As String
+        
+        On Error GoTo SumarTiempo_Err
+        
+
+        Dim a As Variant, b As Variant
+
+        Dim x As Integer
+
+        Dim T As String
+
+100     T = "00:00:00" 'Lo inicializamos en 0 horas, 0 minutos, 0 segundos
+102     a = Format("00:00:01", "hh:mm:ss") 'guardamos en una variable el formato de 1 segundos
+
+104     For x = 1 To segundos 'hacemos segundo a segundo
+106         b = Format(T, "hh:mm:ss") 'En B guardamos un formato de hora:minuto:segundo segun lo que tenia T
+108         T = Format(TimeValue(a) + TimeValue(b), "hh:mm:ss") 'asignamos a T la suma de A + B (osea, sumamos logicamente 1 segundo)
+110     Next x
+
+112     SumarTiempo = T 'a la funcion le damos el valor que hallamos en T
+
+        
+        Exit Function
+
+SumarTiempo_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModLadder.SumarTiempo", Erl)
+        Resume Next
+        
+End Function
+
+Public Sub AgregarAConsola(ByVal Text As String)
+        
+        On Error GoTo AgregarAConsola_Err
+        
+
+100     frmMain.List1.AddItem (Text)
+
+        
+        Exit Sub
+
+AgregarAConsola_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModLadder.AgregarAConsola", Erl)
+        Resume Next
+        
+End Sub
+
+Function PuedeUsarObjeto(UserIndex As Integer, ByVal ObjIndex As Integer) As Byte
+        
+        On Error GoTo PuedeUsarObjeto_Err
+        
+
+100     If UserList(UserIndex).Stats.ELV < ObjData(ObjIndex).MinELV Then
+102         PuedeUsarObjeto = 6
             Exit Function
 
         End If
 
-        If ObjIndex2 > 0 Then
-            If UserList(UserIndex).Invent.Object(i).ObjIndex = ObjIndex2 Then
-                TieneObjEnInv = True
-                Exit Function
+104     Select Case ObjData(ObjIndex).OBJType
 
-            End If
+            Case otWeapon
 
-        End If
+106             If Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
+108                 PuedeUsarObjeto = 2
+                    Exit Function
 
-    Next i
+                End If
+       
+110         Case otNUDILLOS
 
-    TieneObjEnInv = False
+112             If Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
+114                 PuedeUsarObjeto = 2
+                    Exit Function
 
-End Function
+                End If
+        
+116         Case otArmadura
+            
+118             If Not CheckRazaUsaRopa(UserIndex, ObjIndex) Then
+120                 PuedeUsarObjeto = 5
+                    Exit Function
 
-Public Function SumarTiempo(segundos As Integer) As String
+                End If
+                
+122             If Not SexoPuedeUsarItem(UserIndex, ObjIndex) Then
+124                 PuedeUsarObjeto = 1
+                    Exit Function
 
-    Dim a As Variant, b As Variant
+                End If
 
-    Dim x As Integer
+126             If Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
+128                 PuedeUsarObjeto = 2
+                    Exit Function
 
-    Dim T As String
+                End If
 
-    T = "00:00:00" 'Lo inicializamos en 0 horas, 0 minutos, 0 segundos
-    a = Format("00:00:01", "hh:mm:ss") 'guardamos en una variable el formato de 1 segundos
+130         Case otCASCO
+            
+132             If Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
+134                 PuedeUsarObjeto = 2
+                    Exit Function
 
-    For x = 1 To segundos 'hacemos segundo a segundo
-        b = Format(T, "hh:mm:ss") 'En B guardamos un formato de hora:minuto:segundo segun lo que tenia T
-        T = Format(TimeValue(a) + TimeValue(b), "hh:mm:ss") 'asignamos a T la suma de A + B (osea, sumamos logicamente 1 segundo)
-    Next x
+                End If
+                
+136         Case otESCUDO
+            
+138             If Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
+140                 PuedeUsarObjeto = 2
+                    Exit Function
 
-    SumarTiempo = T 'a la funcion le damos el valor que hallamos en T
+                End If
+            
+142         Case otPergaminos
+            
+144             If Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
+146                 PuedeUsarObjeto = 2
+                    Exit Function
 
-End Function
+                End If
 
-Public Sub AgregarAConsola(ByVal Text As String)
+148         Case otMonturas
 
-    frmMain.List1.AddItem (Text)
+150             If Not CheckClaseTipo(UserIndex, ObjIndex) Then
+152                 PuedeUsarObjeto = 2
+                    Exit Function
 
-End Sub
+                End If
+                
+154             If Not CheckRazaTipo(UserIndex, ObjIndex) Then
+156                 PuedeUsarObjeto = 5
+                    Exit Function
 
-Function PuedeUsarObjeto(UserIndex As Integer, ByVal ObjIndex As Integer) As Byte
+                End If
+            
+        End Select
 
-    If UserList(UserIndex).Stats.ELV < ObjData(ObjIndex).MinELV Then
-        PuedeUsarObjeto = 6
+158     PuedeUsarObjeto = 0
+
+        
         Exit Function
 
-    End If
-
-    Select Case ObjData(ObjIndex).OBJType
-
-        Case otWeapon
-
-            If Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
-                PuedeUsarObjeto = 2
-                Exit Function
-
-            End If
-       
-        Case otNUDILLOS
-
-            If Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
-                PuedeUsarObjeto = 2
-                Exit Function
-
-            End If
+PuedeUsarObjeto_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModLadder.PuedeUsarObjeto", Erl)
+        Resume Next
         
-        Case otArmadura
-            
-            If Not CheckRazaUsaRopa(UserIndex, ObjIndex) Then
-                PuedeUsarObjeto = 5
-                Exit Function
-
-            End If
-                
-            If Not SexoPuedeUsarItem(UserIndex, ObjIndex) Then
-                PuedeUsarObjeto = 1
-                Exit Function
-
-            End If
-
-            If Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
-                PuedeUsarObjeto = 2
-                Exit Function
-
-            End If
-
-        Case otCASCO
-            
-            If Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
-                PuedeUsarObjeto = 2
-                Exit Function
-
-            End If
-                
-        Case otESCUDO
-            
-            If Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
-                PuedeUsarObjeto = 2
-                Exit Function
-
-            End If
-            
-        Case otPergaminos
-            
-            If Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
-                PuedeUsarObjeto = 2
-                Exit Function
-
-            End If
-
-        Case otMonturas
-
-            If Not CheckClaseTipo(UserIndex, ObjIndex) Then
-                PuedeUsarObjeto = 2
-                Exit Function
-
-            End If
-                
-            If Not CheckRazaTipo(UserIndex, ObjIndex) Then
-                PuedeUsarObjeto = 5
-                Exit Function
-
-            End If
-            
-    End Select
-
-    PuedeUsarObjeto = 0
-
 End Function
 
 Public Function RequiereOxigeno(ByVal UserMap) As Boolean
+        
+        On Error GoTo RequiereOxigeno_Err
+        
 
-    Select Case UserMap
+100     Select Case UserMap
 
-            'Case 55
-            ' RequiereOxigeno = True
-        Case 331
-            RequiereOxigeno = True
+                'Case 55
+                ' RequiereOxigeno = True
+            Case 331
+102             RequiereOxigeno = True
 
-        Case 332
-            RequiereOxigeno = True
+104         Case 332
+106             RequiereOxigeno = True
 
-        Case 333
-            RequiereOxigeno = True
+108         Case 333
+110             RequiereOxigeno = True
 
-        Case Else
-            RequiereOxigeno = False
+112         Case Else
+114             RequiereOxigeno = False
 
-    End Select
+        End Select
 
+        
+        Exit Function
+
+RequiereOxigeno_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModLadder.RequiereOxigeno", Erl)
+        Resume Next
+        
 End Function

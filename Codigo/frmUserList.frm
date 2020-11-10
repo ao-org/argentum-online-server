@@ -80,57 +80,87 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub Command1_Click()
+        
+        On Error GoTo Command1_Click_Err
+        
 
-    Dim LoopC As Integer
+        Dim LoopC As Integer
 
-    Text2.Text = "MaxUsers: " & MaxUsers & vbCrLf
-    Text2.Text = Text2.Text & "LastUser: " & LastUser & vbCrLf
-    Text2.Text = Text2.Text & "NumUsers: " & NumUsers & vbCrLf
-    'Text2.Text = Text2.Text & "" & vbCrLf
+100     Text2.Text = "MaxUsers: " & MaxUsers & vbCrLf
+102     Text2.Text = Text2.Text & "LastUser: " & LastUser & vbCrLf
+104     Text2.Text = Text2.Text & "NumUsers: " & NumUsers & vbCrLf
+        'Text2.Text = Text2.Text & "" & vbCrLf
 
-    List1.Clear
+106     List1.Clear
 
-    For LoopC = 1 To MaxUsers
-        List1.AddItem Format(LoopC, "000") & " " & IIf(UserList(LoopC).flags.UserLogged, UserList(LoopC).name, "")
-        List1.ItemData(List1.NewIndex) = LoopC
-    Next LoopC
+108     For LoopC = 1 To MaxUsers
+110         List1.AddItem Format(LoopC, "000") & " " & IIf(UserList(LoopC).flags.UserLogged, UserList(LoopC).name, "")
+112         List1.ItemData(List1.NewIndex) = LoopC
+114     Next LoopC
 
+        
+        Exit Sub
+
+Command1_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmUserList.Command1_Click", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Command2_Click()
+        
+        On Error GoTo Command2_Click_Err
+        
 
-    Dim LoopC As Integer
+        Dim LoopC As Integer
 
-    For LoopC = 1 To MaxUsers
+100     For LoopC = 1 To MaxUsers
 
-        If UserList(LoopC).ConnID <> -1 And Not UserList(LoopC).flags.UserLogged Then
-            Call CloseSocket(LoopC)
+102         If UserList(LoopC).ConnID <> -1 And Not UserList(LoopC).flags.UserLogged Then
+104             Call CloseSocket(LoopC)
 
-        End If
+            End If
 
-    Next LoopC
+106     Next LoopC
 
+        
+        Exit Sub
+
+Command2_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmUserList.Command2_Click", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub List1_Click()
+        
+        On Error GoTo List1_Click_Err
+        
 
-    Dim UserIndex As Integer
+        Dim UserIndex As Integer
 
-    If List1.ListIndex <> -1 Then
-        UserIndex = List1.ItemData(List1.ListIndex)
+100     If List1.ListIndex <> -1 Then
+102         UserIndex = List1.ItemData(List1.ListIndex)
 
-        If UserIndex > 0 And UserIndex <= MaxUsers Then
+104         If UserIndex > 0 And UserIndex <= MaxUsers Then
 
-            With UserList(UserIndex)
-                Text1.Text = "UserLogged: " & .flags.UserLogged & vbCrLf
-                Text1.Text = Text1.Text & "IdleCount: " & .Counters.IdleCount & vbCrLf
-                Text1.Text = Text1.Text & "ConnId: " & .ConnID & vbCrLf
-                Text1.Text = Text1.Text & "ConnIDValida: " & .ConnIDValida & vbCrLf
+106             With UserList(UserIndex)
+108                 Text1.Text = "UserLogged: " & .flags.UserLogged & vbCrLf
+110                 Text1.Text = Text1.Text & "IdleCount: " & .Counters.IdleCount & vbCrLf
+112                 Text1.Text = Text1.Text & "ConnId: " & .ConnID & vbCrLf
+114                 Text1.Text = Text1.Text & "ConnIDValida: " & .ConnIDValida & vbCrLf
 
-            End With
+                End With
+
+            End If
 
         End If
 
-    End If
+        
+        Exit Sub
 
+List1_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmUserList.List1_Click", Erl)
+        Resume Next
+        
 End Sub

@@ -164,85 +164,105 @@ Sub ResetNpcInv(ByVal NpcIndex As Integer)
 End Sub
 
 Sub QuitarNpcInvItem(ByVal NpcIndex As Integer, ByVal slot As Byte, ByVal Cantidad As Integer)
-
-    Dim ObjIndex As Integer
-
-    ObjIndex = Npclist(NpcIndex).Invent.Object(slot).ObjIndex
-
-    'Quita un Obj
-    If ObjData(Npclist(NpcIndex).Invent.Object(slot).ObjIndex).Crucial = 0 Then
-        Npclist(NpcIndex).Invent.Object(slot).Amount = Npclist(NpcIndex).Invent.Object(slot).Amount - Cantidad
         
-        If Npclist(NpcIndex).Invent.Object(slot).Amount <= 0 Then
-            Npclist(NpcIndex).Invent.NroItems = Npclist(NpcIndex).Invent.NroItems - 1
-            Npclist(NpcIndex).Invent.Object(slot).ObjIndex = 0
-            Npclist(NpcIndex).Invent.Object(slot).Amount = 0
-
-            If Npclist(NpcIndex).Invent.NroItems = 0 And Npclist(NpcIndex).InvReSpawn <> 1 Then
-                Call CargarInvent(NpcIndex) 'Reponemos el inventario
-
-            End If
-
-        End If
-
-    Else
-        Npclist(NpcIndex).Invent.Object(slot).Amount = Npclist(NpcIndex).Invent.Object(slot).Amount - Cantidad
+        On Error GoTo QuitarNpcInvItem_Err
         
-        If Npclist(NpcIndex).Invent.Object(slot).Amount <= 0 Then
-            Npclist(NpcIndex).Invent.NroItems = Npclist(NpcIndex).Invent.NroItems - 1
-            Npclist(NpcIndex).Invent.Object(slot).ObjIndex = 0
-            Npclist(NpcIndex).Invent.Object(slot).Amount = 0
-            
-            If Not QuedanItems(NpcIndex, ObjIndex) Then
 
-                Dim NoEsdeAca As Integer
+        Dim ObjIndex As Integer
 
-                NoEsdeAca = EncontrarCant(NpcIndex, ObjIndex)
+100     ObjIndex = Npclist(NpcIndex).Invent.Object(slot).ObjIndex
 
-                If NoEsdeAca <> 0 Then
-                    Npclist(NpcIndex).Invent.Object(slot).ObjIndex = ObjIndex
-                    Npclist(NpcIndex).Invent.Object(slot).Amount = EncontrarCant(NpcIndex, ObjIndex)
-                    Npclist(NpcIndex).Invent.NroItems = Npclist(NpcIndex).Invent.NroItems + 1
+        'Quita un Obj
+102     If ObjData(Npclist(NpcIndex).Invent.Object(slot).ObjIndex).Crucial = 0 Then
+104         Npclist(NpcIndex).Invent.Object(slot).Amount = Npclist(NpcIndex).Invent.Object(slot).Amount - Cantidad
+        
+106         If Npclist(NpcIndex).Invent.Object(slot).Amount <= 0 Then
+108             Npclist(NpcIndex).Invent.NroItems = Npclist(NpcIndex).Invent.NroItems - 1
+110             Npclist(NpcIndex).Invent.Object(slot).ObjIndex = 0
+112             Npclist(NpcIndex).Invent.Object(slot).Amount = 0
+
+114             If Npclist(NpcIndex).Invent.NroItems = 0 And Npclist(NpcIndex).InvReSpawn <> 1 Then
+116                 Call CargarInvent(NpcIndex) 'Reponemos el inventario
 
                 End If
 
             End If
+
+        Else
+118         Npclist(NpcIndex).Invent.Object(slot).Amount = Npclist(NpcIndex).Invent.Object(slot).Amount - Cantidad
+        
+120         If Npclist(NpcIndex).Invent.Object(slot).Amount <= 0 Then
+122             Npclist(NpcIndex).Invent.NroItems = Npclist(NpcIndex).Invent.NroItems - 1
+124             Npclist(NpcIndex).Invent.Object(slot).ObjIndex = 0
+126             Npclist(NpcIndex).Invent.Object(slot).Amount = 0
             
-            If Npclist(NpcIndex).Invent.NroItems = 0 And Npclist(NpcIndex).InvReSpawn <> 1 Then
-                Call CargarInvent(NpcIndex) 'Reponemos el inventario
+128             If Not QuedanItems(NpcIndex, ObjIndex) Then
+
+                    Dim NoEsdeAca As Integer
+
+130                 NoEsdeAca = EncontrarCant(NpcIndex, ObjIndex)
+
+132                 If NoEsdeAca <> 0 Then
+134                     Npclist(NpcIndex).Invent.Object(slot).ObjIndex = ObjIndex
+136                     Npclist(NpcIndex).Invent.Object(slot).Amount = EncontrarCant(NpcIndex, ObjIndex)
+138                     Npclist(NpcIndex).Invent.NroItems = Npclist(NpcIndex).Invent.NroItems + 1
+
+                    End If
+
+                End If
+            
+140             If Npclist(NpcIndex).Invent.NroItems = 0 And Npclist(NpcIndex).InvReSpawn <> 1 Then
+142                 Call CargarInvent(NpcIndex) 'Reponemos el inventario
+
+                End If
 
             End If
-
-        End If
     
-    End If
+        End If
 
+        
+        Exit Sub
+
+QuitarNpcInvItem_Err:
+        Call RegistrarError(Err.Number, Err.description, "InvNpc.QuitarNpcInvItem", Erl)
+        Resume Next
+        
 End Sub
 
 Sub CargarInvent(ByVal NpcIndex As Integer)
+        
+        On Error GoTo CargarInvent_Err
+        
 
-    'Vuelve a cargar el inventario del npc NpcIndex
-    Dim LoopC   As Integer
+        'Vuelve a cargar el inventario del npc NpcIndex
+        Dim LoopC   As Integer
 
-    Dim ln      As String
+        Dim ln      As String
 
-    Dim npcfile As String
+        Dim npcfile As String
 
-    'If Npclist(NpcIndex).Numero > 499 Then
-    '    npcfile = DatPath & "NPCs-HOSTILES.dat"
-    'Else
-    npcfile = DatPath & "NPCs.dat"
-    'End If
+        'If Npclist(NpcIndex).Numero > 499 Then
+        '    npcfile = DatPath & "NPCs-HOSTILES.dat"
+        'Else
+100     npcfile = DatPath & "NPCs.dat"
+        'End If
 
-    Npclist(NpcIndex).Invent.NroItems = val(GetVar(npcfile, "NPC" & Npclist(NpcIndex).Numero, "NROITEMS"))
+102     Npclist(NpcIndex).Invent.NroItems = val(GetVar(npcfile, "NPC" & Npclist(NpcIndex).Numero, "NROITEMS"))
 
-    For LoopC = 1 To Npclist(NpcIndex).Invent.NroItems
-        ln = GetVar(npcfile, "NPC" & Npclist(NpcIndex).Numero, "Obj" & LoopC)
-        Npclist(NpcIndex).Invent.Object(LoopC).ObjIndex = val(ReadField(1, ln, 45))
-        Npclist(NpcIndex).Invent.Object(LoopC).Amount = val(ReadField(2, ln, 45))
+104     For LoopC = 1 To Npclist(NpcIndex).Invent.NroItems
+106         ln = GetVar(npcfile, "NPC" & Npclist(NpcIndex).Numero, "Obj" & LoopC)
+108         Npclist(NpcIndex).Invent.Object(LoopC).ObjIndex = val(ReadField(1, ln, 45))
+110         Npclist(NpcIndex).Invent.Object(LoopC).Amount = val(ReadField(2, ln, 45))
     
-    Next LoopC
+112     Next LoopC
 
+        
+        Exit Sub
+
+CargarInvent_Err:
+        Call RegistrarError(Err.Number, Err.description, "InvNpc.CargarInvent", Erl)
+        Resume Next
+        
 End Sub
 
 Public Sub NpcDropeo(ByRef npc As npc, ByRef UserIndex As Integer)

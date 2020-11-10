@@ -93,626 +93,856 @@ End Enum
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 Public Sub LoadGuildsDB()
+        
+        On Error GoTo LoadGuildsDB_Err
+        
 
-    Dim CantClanes As String
+        Dim CantClanes As String
 
-    Dim i          As Integer
+        Dim i          As Integer
 
-    Dim TempStr    As String
+        Dim TempStr    As String
 
-    Dim Alin       As ALINEACION_GUILD
+        Dim Alin       As ALINEACION_GUILD
     
-    GUILDINFOFILE = App.Path & "\guilds\guildsinfo.inf"
+100     GUILDINFOFILE = App.Path & "\guilds\guildsinfo.inf"
 
-    CantClanes = GetVar(GUILDINFOFILE, "INIT", "nroGuilds")
+102     CantClanes = GetVar(GUILDINFOFILE, "INIT", "nroGuilds")
     
-    If IsNumeric(CantClanes) Then
-        CANTIDADDECLANES = CInt(CantClanes)
-    Else
-        CANTIDADDECLANES = 0
+104     If IsNumeric(CantClanes) Then
+106         CANTIDADDECLANES = CInt(CantClanes)
+        Else
+108         CANTIDADDECLANES = 0
 
-    End If
+        End If
     
-    For i = 1 To CANTIDADDECLANES
-        Set guilds(i) = New clsClan
-        TempStr = GetVar(GUILDINFOFILE, "GUILD" & i, "GUILDNAME")
-        Alin = String2Alineacion(GetVar(GUILDINFOFILE, "GUILD" & i, "Alineacion"))
-        Call guilds(i).Inicializar(TempStr, i, Alin)
-    Next i
+110     For i = 1 To CANTIDADDECLANES
+112         Set guilds(i) = New clsClan
+114         TempStr = GetVar(GUILDINFOFILE, "GUILD" & i, "GUILDNAME")
+116         Alin = String2Alineacion(GetVar(GUILDINFOFILE, "GUILD" & i, "Alineacion"))
+118         Call guilds(i).Inicializar(TempStr, i, Alin)
+120     Next i
     
+        
+        Exit Sub
+
+LoadGuildsDB_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.LoadGuildsDB", Erl)
+        Resume Next
+        
 End Sub
 
 Public Function m_ConectarMiembroAClan(ByVal UserIndex As Integer, ByVal GuildIndex As Integer) As Boolean
+        
+        On Error GoTo m_ConectarMiembroAClan_Err
+        
 
-    If GuildIndex > CANTIDADDECLANES Or GuildIndex <= 0 Then Exit Function 'x las dudas...
-    If m_EstadoPermiteEntrar(UserIndex, GuildIndex) Then
-        Call guilds(GuildIndex).ConectarMiembro(UserIndex)
-        UserList(UserIndex).GuildIndex = GuildIndex
-        m_ConectarMiembroAClan = True
+100     If GuildIndex > CANTIDADDECLANES Or GuildIndex <= 0 Then Exit Function 'x las dudas...
+102     If m_EstadoPermiteEntrar(UserIndex, GuildIndex) Then
+104         Call guilds(GuildIndex).ConectarMiembro(UserIndex)
+106         UserList(UserIndex).GuildIndex = GuildIndex
+108         m_ConectarMiembroAClan = True
 
-    End If
+        End If
 
+        
+        Exit Function
+
+m_ConectarMiembroAClan_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.m_ConectarMiembroAClan", Erl)
+        Resume Next
+        
 End Function
 
 Public Sub m_DesconectarMiembroDelClan(ByVal UserIndex As Integer, ByVal GuildIndex As Integer)
+        
+        On Error GoTo m_DesconectarMiembroDelClan_Err
+        
 
-    If UserList(UserIndex).GuildIndex > CANTIDADDECLANES Then Exit Sub
-    Call guilds(GuildIndex).DesConectarMiembro(UserIndex)
+100     If UserList(UserIndex).GuildIndex > CANTIDADDECLANES Then Exit Sub
+102     Call guilds(GuildIndex).DesConectarMiembro(UserIndex)
 
+        
+        Exit Sub
+
+m_DesconectarMiembroDelClan_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.m_DesconectarMiembroDelClan", Erl)
+        Resume Next
+        
 End Sub
 
 Private Function m_EsGuildLeader(ByRef PJ As String, ByVal GuildIndex As Integer) As Boolean
-    m_EsGuildLeader = (UCase$(PJ) = UCase$(Trim$(guilds(GuildIndex).GetLeader)))
+        
+        On Error GoTo m_EsGuildLeader_Err
+        
+100     m_EsGuildLeader = (UCase$(PJ) = UCase$(Trim$(guilds(GuildIndex).GetLeader)))
 
+        
+        Exit Function
+
+m_EsGuildLeader_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.m_EsGuildLeader", Erl)
+        Resume Next
+        
 End Function
 
 Private Function m_EsGuildFounder(ByRef PJ As String, ByVal GuildIndex As Integer) As Boolean
-    m_EsGuildFounder = (UCase$(PJ) = UCase$(Trim$(guilds(GuildIndex).Fundador)))
+        
+        On Error GoTo m_EsGuildFounder_Err
+        
+100     m_EsGuildFounder = (UCase$(PJ) = UCase$(Trim$(guilds(GuildIndex).Fundador)))
 
+        
+        Exit Function
+
+m_EsGuildFounder_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.m_EsGuildFounder", Erl)
+        Resume Next
+        
 End Function
 
 Public Function m_EcharMiembroDeClan(ByVal Expulsador As Integer, ByVal Expulsado As String) As Integer
+        
+        On Error GoTo m_EcharMiembroDeClan_Err
+        
 
-    'UI echa a Expulsado del clan de Expulsado
-    Dim UserIndex As Integer
+        'UI echa a Expulsado del clan de Expulsado
+        Dim UserIndex As Integer
 
-    Dim GI        As Integer
+        Dim GI        As Integer
     
-    m_EcharMiembroDeClan = 0
+100     m_EcharMiembroDeClan = 0
 
-    UserIndex = NameIndex(Expulsado)
+102     UserIndex = NameIndex(Expulsado)
 
-    If UserIndex > 0 Then
-        'pj online
-        GI = UserList(UserIndex).GuildIndex
+104     If UserIndex > 0 Then
+            'pj online
+106         GI = UserList(UserIndex).GuildIndex
 
-        If GI > 0 Then
-            If m_PuedeSalirDeClan(Expulsado, GI, Expulsador) Then
-                If m_EsGuildLeader(Expulsado, GI) Then guilds(GI).SetLeader (guilds(GI).Fundador)
-                Call guilds(GI).DesConectarMiembro(UserIndex)
-                Call guilds(GI).ExpulsarMiembro(Expulsado)
-                Call LogClanes(Expulsado & " ha sido expulsado de " & guilds(GI).GuildName & " Expulsador = " & Expulsador)
-                UserList(UserIndex).GuildIndex = 0
-                Call RefreshCharStatus(UserIndex)
-                m_EcharMiembroDeClan = GI
+108         If GI > 0 Then
+110             If m_PuedeSalirDeClan(Expulsado, GI, Expulsador) Then
+112                 If m_EsGuildLeader(Expulsado, GI) Then guilds(GI).SetLeader (guilds(GI).Fundador)
+114                 Call guilds(GI).DesConectarMiembro(UserIndex)
+116                 Call guilds(GI).ExpulsarMiembro(Expulsado)
+118                 Call LogClanes(Expulsado & " ha sido expulsado de " & guilds(GI).GuildName & " Expulsador = " & Expulsador)
+120                 UserList(UserIndex).GuildIndex = 0
+122                 Call RefreshCharStatus(UserIndex)
+124                 m_EcharMiembroDeClan = GI
+                Else
+126                 m_EcharMiembroDeClan = 0
+
+                End If
+
             Else
-                m_EcharMiembroDeClan = 0
+128             m_EcharMiembroDeClan = 0
 
             End If
 
         Else
-            m_EcharMiembroDeClan = 0
+            'pj offline
+130         GI = GetGuildIndexFromChar(Expulsado)
 
-        End If
+132         If GI > 0 Then
+134             If m_PuedeSalirDeClan(Expulsado, GI, Expulsador) Then
+136                 If m_EsGuildLeader(Expulsado, GI) Then guilds(GI).SetLeader (guilds(GI).Fundador)
+138                 Call guilds(GI).ExpulsarMiembro(Expulsado)
+140                 Call LogClanes(Expulsado & " ha sido expulsado de " & guilds(GI).GuildName & " Expulsador = " & Expulsador)
+142                 m_EcharMiembroDeClan = GI
+                Else
+144                 m_EcharMiembroDeClan = 0
 
-    Else
-        'pj offline
-        GI = GetGuildIndexFromChar(Expulsado)
+                End If
 
-        If GI > 0 Then
-            If m_PuedeSalirDeClan(Expulsado, GI, Expulsador) Then
-                If m_EsGuildLeader(Expulsado, GI) Then guilds(GI).SetLeader (guilds(GI).Fundador)
-                Call guilds(GI).ExpulsarMiembro(Expulsado)
-                Call LogClanes(Expulsado & " ha sido expulsado de " & guilds(GI).GuildName & " Expulsador = " & Expulsador)
-                m_EcharMiembroDeClan = GI
             Else
-                m_EcharMiembroDeClan = 0
+146             m_EcharMiembroDeClan = 0
 
             End If
 
-        Else
-            m_EcharMiembroDeClan = 0
-
         End If
 
-    End If
+        
+        Exit Function
 
+m_EcharMiembroDeClan_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.m_EcharMiembroDeClan", Erl)
+        Resume Next
+        
 End Function
 
 Public Sub ActualizarWebSite(ByVal UserIndex As Integer, ByRef Web As String)
+        
+        On Error GoTo ActualizarWebSite_Err
+        
 
-    Dim GI As Integer
+        Dim GI As Integer
 
-    GI = UserList(UserIndex).GuildIndex
+100     GI = UserList(UserIndex).GuildIndex
 
-    If GI <= 0 Or GI > CANTIDADDECLANES Then Exit Sub
+102     If GI <= 0 Or GI > CANTIDADDECLANES Then Exit Sub
     
-    If Not m_EsGuildLeader(UserList(UserIndex).name, GI) Then Exit Sub
+104     If Not m_EsGuildLeader(UserList(UserIndex).name, GI) Then Exit Sub
     
-    Call guilds(GI).SetURL(Web)
+106     Call guilds(GI).SetURL(Web)
     
+        
+        Exit Sub
+
+ActualizarWebSite_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.ActualizarWebSite", Erl)
+        Resume Next
+        
 End Sub
 
 Public Sub ChangeCodexAndDesc(ByRef Desc As String, ByVal GuildIndex As Integer)
+        
+        On Error GoTo ChangeCodexAndDesc_Err
+        
 
-    Dim i As Long
+        Dim i As Long
     
-    If GuildIndex < 1 Or GuildIndex > CANTIDADDECLANES Then Exit Sub
+100     If GuildIndex < 1 Or GuildIndex > CANTIDADDECLANES Then Exit Sub
     
-    With guilds(GuildIndex)
-        Call .SetDesc(Desc)
+102     With guilds(GuildIndex)
+104         Call .SetDesc(Desc)
 
-    End With
+        End With
 
+        
+        Exit Sub
+
+ChangeCodexAndDesc_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.ChangeCodexAndDesc", Erl)
+        Resume Next
+        
 End Sub
 
 Public Sub ActualizarNoticias(ByVal UserIndex As Integer, ByRef Datos As String)
+        
+        On Error GoTo ActualizarNoticias_Err
+        
 
-    Dim GI As Integer
+        Dim GI As Integer
 
-    GI = UserList(UserIndex).GuildIndex
+100     GI = UserList(UserIndex).GuildIndex
     
-    If GI <= 0 Or GI > CANTIDADDECLANES Then Exit Sub
+102     If GI <= 0 Or GI > CANTIDADDECLANES Then Exit Sub
     
-    If Not m_EsGuildLeader(UserList(UserIndex).name, GI) Then Exit Sub
+104     If Not m_EsGuildLeader(UserList(UserIndex).name, GI) Then Exit Sub
     
-    Call guilds(GI).SetGuildNews(Datos)
+106     Call guilds(GI).SetGuildNews(Datos)
+        
+        
+        Exit Sub
+
+ActualizarNoticias_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.ActualizarNoticias", Erl)
+        Resume Next
         
 End Sub
 
 Public Function CrearNuevoClan(ByVal FundadorIndex As Integer, ByRef Desc As String, ByRef GuildName As String, ByVal Alineacion As ALINEACION_GUILD, ByRef refError As String) As Boolean
+        
+        On Error GoTo CrearNuevoClan_Err
+        
 
-    Dim i           As Integer
+        Dim i           As Integer
 
-    Dim DummyString As String
+        Dim DummyString As String
 
-    CrearNuevoClan = False
+100     CrearNuevoClan = False
 
-    If Not PuedeFundarUnClan(FundadorIndex, Alineacion, DummyString) Then
-        refError = DummyString
-        Exit Function
+102     If Not PuedeFundarUnClan(FundadorIndex, Alineacion, DummyString) Then
+104         refError = DummyString
+            Exit Function
 
-    End If
+        End If
 
-    If GuildName = vbNullString Or Not GuildNameValido(GuildName) Then
-        refError = "Nombre de clan inválido."
-        Exit Function
+106     If GuildName = vbNullString Or Not GuildNameValido(GuildName) Then
+108         refError = "Nombre de clan inválido."
+            Exit Function
 
-    End If
+        End If
     
-    If YaExiste(GuildName) Then
-        refError = "Ya existe un clan con ese nombre."
-        Exit Function
+110     If YaExiste(GuildName) Then
+112         refError = "Ya existe un clan con ese nombre."
+            Exit Function
 
-    End If
+        End If
 
-    'tenemos todo para fundar ya
-    If CANTIDADDECLANES < UBound(guilds) Then
-        CANTIDADDECLANES = CANTIDADDECLANES + 1
-        'ReDim Preserve Guilds(1 To CANTIDADDECLANES) As clsClan
+        'tenemos todo para fundar ya
+114     If CANTIDADDECLANES < UBound(guilds) Then
+116         CANTIDADDECLANES = CANTIDADDECLANES + 1
+            'ReDim Preserve Guilds(1 To CANTIDADDECLANES) As clsClan
 
-        'constructor custom de la clase clan
-        Set guilds(CANTIDADDECLANES) = New clsClan
-        Call guilds(CANTIDADDECLANES).Inicializar(GuildName, CANTIDADDECLANES, Alineacion)
+            'constructor custom de la clase clan
+118         Set guilds(CANTIDADDECLANES) = New clsClan
+120         Call guilds(CANTIDADDECLANES).Inicializar(GuildName, CANTIDADDECLANES, Alineacion)
         
-        'Damos de alta al clan como nuevo inicializando sus archivos
-        Call guilds(CANTIDADDECLANES).InicializarNuevoClan(UserList(FundadorIndex).name)
+            'Damos de alta al clan como nuevo inicializando sus archivos
+122         Call guilds(CANTIDADDECLANES).InicializarNuevoClan(UserList(FundadorIndex).name)
         
-        'seteamos codex y descripcion
-        Call guilds(CANTIDADDECLANES).SetDesc(Desc)
-        Call guilds(CANTIDADDECLANES).SetGuildNews("¡Bienvenido a " & GuildName & "! Clan creado con alineación : " & Alineacion2String(Alineacion) & ".")
-        Call guilds(CANTIDADDECLANES).SetLeader(UserList(FundadorIndex).name)
+            'seteamos codex y descripcion
+124         Call guilds(CANTIDADDECLANES).SetDesc(Desc)
+126         Call guilds(CANTIDADDECLANES).SetGuildNews("¡Bienvenido a " & GuildName & "! Clan creado con alineación : " & Alineacion2String(Alineacion) & ".")
+128         Call guilds(CANTIDADDECLANES).SetLeader(UserList(FundadorIndex).name)
         
-        Call guilds(CANTIDADDECLANES).SetNivelDeClan(1)
+130         Call guilds(CANTIDADDECLANES).SetNivelDeClan(1)
         
-        Call guilds(CANTIDADDECLANES).SetExpActual(0)
+132         Call guilds(CANTIDADDECLANES).SetExpActual(0)
         
-        Call guilds(CANTIDADDECLANES).SetExpNecesaria(300)
+134         Call guilds(CANTIDADDECLANES).SetExpNecesaria(300)
         
-        '"conectamos" al nuevo miembro a la lista de la clase
-        Call guilds(CANTIDADDECLANES).AceptarNuevoMiembro(UserList(FundadorIndex).name)
-        Call guilds(CANTIDADDECLANES).ConectarMiembro(FundadorIndex)
-        UserList(FundadorIndex).GuildIndex = CANTIDADDECLANES
-        Call RefreshCharStatus(FundadorIndex)
+            '"conectamos" al nuevo miembro a la lista de la clase
+136         Call guilds(CANTIDADDECLANES).AceptarNuevoMiembro(UserList(FundadorIndex).name)
+138         Call guilds(CANTIDADDECLANES).ConectarMiembro(FundadorIndex)
+140         UserList(FundadorIndex).GuildIndex = CANTIDADDECLANES
+142         Call RefreshCharStatus(FundadorIndex)
         
-        For i = 1 To CANTIDADDECLANES - 1
-            Call guilds(i).ProcesarFundacionDeOtroClan
-        Next i
+144         For i = 1 To CANTIDADDECLANES - 1
+146             Call guilds(i).ProcesarFundacionDeOtroClan
+148         Next i
 
-    Else
-        refError = "No hay mas slots para fundar clanes. Consulte a un administrador."
-        Exit Function
+        Else
+150         refError = "No hay mas slots para fundar clanes. Consulte a un administrador."
+            Exit Function
 
-    End If
+        End If
     
-    CrearNuevoClan = True
+152     CrearNuevoClan = True
 
+        
+        Exit Function
+
+CrearNuevoClan_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.CrearNuevoClan", Erl)
+        Resume Next
+        
 End Function
 
 Public Sub SendGuildNews(ByVal UserIndex As Integer, ByRef guildList() As String)
+        
+        On Error GoTo SendGuildNews_Err
+        
 
-    Dim GuildIndex As Integer
+        Dim GuildIndex As Integer
 
-    Dim i          As Integer
+        Dim i          As Integer
 
-    Dim go         As Integer
+        Dim go         As Integer
 
-    Dim ClanNivel  As Byte
+        Dim ClanNivel  As Byte
 
-    Dim ExpAcu     As Integer
+        Dim ExpAcu     As Integer
 
-    Dim ExpNe      As Integer
+        Dim ExpNe      As Integer
 
-    GuildIndex = UserList(UserIndex).GuildIndex
+100     GuildIndex = UserList(UserIndex).GuildIndex
 
-    If GuildIndex = 0 Then Exit Sub
+102     If GuildIndex = 0 Then Exit Sub
     
-    Dim MemberList() As String
+        Dim MemberList() As String
     
-    MemberList = guilds(GuildIndex).GetMemberList()
+104     MemberList = guilds(GuildIndex).GetMemberList()
     
-    ClanNivel = guilds(GuildIndex).GetNivelDeClan
-    ExpAcu = guilds(GuildIndex).GetExpActual
-    ExpNe = guilds(GuildIndex).GetExpNecesaria
+106     ClanNivel = guilds(GuildIndex).GetNivelDeClan
+108     ExpAcu = guilds(GuildIndex).GetExpActual
+110     ExpNe = guilds(GuildIndex).GetExpNecesaria
 
-    Call WriteGuildNews(UserIndex, guilds(GuildIndex).GetGuildNews, guildList, MemberList, ClanNivel, ExpAcu, ExpNe)
+112     Call WriteGuildNews(UserIndex, guilds(GuildIndex).GetGuildNews, guildList, MemberList, ClanNivel, ExpAcu, ExpNe)
 
+        
+        Exit Sub
+
+SendGuildNews_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.SendGuildNews", Erl)
+        Resume Next
+        
 End Sub
 
 Public Function m_PuedeSalirDeClan(ByRef nombre As String, ByVal GuildIndex As Integer, ByVal QuienLoEchaUI As Integer) As Boolean
-    'sale solo si no es fundador del clan.
+        'sale solo si no es fundador del clan.
+        
+        On Error GoTo m_PuedeSalirDeClan_Err
+        
 
-    m_PuedeSalirDeClan = False
+100     m_PuedeSalirDeClan = False
 
-    If GuildIndex = 0 Then Exit Function
+102     If GuildIndex = 0 Then Exit Function
     
-    'esto es un parche, si viene en -1 es porque la invoca la rutina de expulsion automatica de clanes x antifacciones
-    If QuienLoEchaUI = -1 Then
-        m_PuedeSalirDeClan = True
-        Exit Function
+        'esto es un parche, si viene en -1 es porque la invoca la rutina de expulsion automatica de clanes x antifacciones
+104     If QuienLoEchaUI = -1 Then
+106         m_PuedeSalirDeClan = True
+            Exit Function
 
-    End If
+        End If
 
-    'cuando UI no puede echar a nombre?
-    'si no es gm Y no es lider del clan del pj Y no es el mismo que se va voluntariamente
-    If UserList(QuienLoEchaUI).flags.Privilegios And PlayerType.user Then
-        If Not m_EsGuildLeader(UCase$(UserList(QuienLoEchaUI).name), GuildIndex) Then
-            If UCase$(UserList(QuienLoEchaUI).name) <> UCase$(nombre) Then      'si no sale voluntariamente...
-                Exit Function
+        'cuando UI no puede echar a nombre?
+        'si no es gm Y no es lider del clan del pj Y no es el mismo que se va voluntariamente
+108     If UserList(QuienLoEchaUI).flags.Privilegios And PlayerType.user Then
+110         If Not m_EsGuildLeader(UCase$(UserList(QuienLoEchaUI).name), GuildIndex) Then
+112             If UCase$(UserList(QuienLoEchaUI).name) <> UCase$(nombre) Then      'si no sale voluntariamente...
+                    Exit Function
+
+                End If
 
             End If
 
         End If
 
-    End If
+114     m_PuedeSalirDeClan = UCase$(guilds(GuildIndex).Fundador) <> UCase$(nombre)
 
-    m_PuedeSalirDeClan = UCase$(guilds(GuildIndex).Fundador) <> UCase$(nombre)
+        
+        Exit Function
 
+m_PuedeSalirDeClan_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.m_PuedeSalirDeClan", Erl)
+        Resume Next
+        
 End Function
 
 Public Function PuedeFundarUnClan(ByVal UserIndex As Integer, ByVal Alineacion As ALINEACION_GUILD, ByRef refError As String) As Boolean
-
-    PuedeFundarUnClan = False
-
-    If UserList(UserIndex).GuildIndex > 0 Then
-        refError = "Ya perteneces a un clan, no podés fundar otro"
-        Exit Function
-
-    End If
-    
-    If UserList(UserIndex).Stats.ELV < 45 Or UserList(UserIndex).Stats.UserSkills(eSkill.Liderazgo) < 80 Then
-        refError = "Para fundar un clan debes ser nivel 45, tener 80 en liderazgo y tener en tu inventario las 4 gemas: Gema Azul(1), Gema Naranja(1), Gema Gris(1), Gema Roja(1)."
-        Exit Function
-
-    End If
-    
-    If Not TieneObjetos(407, 1, UserIndex) Then
-        refError = "Para fundar un clan debes ser nivel 45, tener 80 en liderazgo y tener en tu inventario las 4 gemas: Gema Azul(1), Gema Naranja(1), Gema Gris(1), Gema Roja(1)."
-        Exit Function
-
-    End If
-    
-    If Not TieneObjetos(408, 1, UserIndex) Then
-        refError = "Para fundar un clan debes ser nivel 45, tener 80 en liderazgo y tener en tu inventario las 4 gemas: Gema Azul(1), Gema Naranja(1), Gema Gris(1), Gema Roja(1)."
-        Exit Function
-
-    End If
-    
-    If Not TieneObjetos(409, 1, UserIndex) Then
-        refError = "Para fundar un clan debes ser nivel 45, tener 80 en liderazgo y tener en tu inventario las 4 gemas: Gema Azul(1), Gema Naranja(1), Gema Gris(1), Gema Roja(1)."
-        Exit Function
-
-    End If
-    
-    If Not TieneObjetos(411, 1, UserIndex) Then
-        refError = "Para fundar un clan debes ser nivel 45, tener 80 en liderazgo y tener en tu inventario las 4 gemas: Gema Azul(1), Gema Naranja(1), Gema Gris(1), Gema Roja(1)."
-        Exit Function
-
-    End If
-    
-    If UserList(UserIndex).flags.BattleModo = 1 Then
-        refError = "Ya pensamos en eso... No podés fundar un clan acá."
-        Exit Function
-
-    End If
-    
-    Select Case Alineacion
-
-        Case ALINEACION_GUILD.ALINEACION_CIUDA
-
-            If Status(UserIndex) = 0 Or Status(UserIndex) = 2 Then
-                refError = "Para fundar un clan de ciudadanos no debes ser criminal."
-                Exit Function
-
-            End If
-
-        Case ALINEACION_GUILD.ALINEACION_CRIMINAL
-
-            If Status(UserIndex) = 1 Or Status(UserIndex) = 3 Then
-                refError = "Para fundar un clan de criminales no debes ser ciudadano."
-                Exit Function
-
-            End If
-
-    End Select
-
-    PuedeFundarUnClan = True
-    
-End Function
-
-Private Function m_EstadoPermiteEntrarChar(ByRef Personaje As String, ByVal GuildIndex As Integer) As Boolean
-
-    Dim Promedio As Long
-
-    Dim ELV      As Integer
-
-    Dim f        As Byte
-
-    m_EstadoPermiteEntrarChar = False
-    
-    If InStrB(Personaje, "\") <> 0 Then
-        Personaje = Replace(Personaje, "\", vbNullString)
-
-    End If
-
-    If InStrB(Personaje, "/") <> 0 Then
-        Personaje = Replace(Personaje, "/", vbNullString)
-
-    End If
-
-    If InStrB(Personaje, ".") <> 0 Then
-        Personaje = Replace(Personaje, ".", vbNullString)
-
-    End If
-    
-    If PersonajeExiste(Personaje) Then
-        Promedio = ObtenerCriminal(Personaje)
         
-        Select Case guilds(GuildIndex).Alineacion
+        On Error GoTo PuedeFundarUnClan_Err
+        
+
+100     PuedeFundarUnClan = False
+
+102     If UserList(UserIndex).GuildIndex > 0 Then
+104         refError = "Ya perteneces a un clan, no podés fundar otro"
+            Exit Function
+
+        End If
+    
+106     If UserList(UserIndex).Stats.ELV < 45 Or UserList(UserIndex).Stats.UserSkills(eSkill.Liderazgo) < 80 Then
+108         refError = "Para fundar un clan debes ser nivel 45, tener 80 en liderazgo y tener en tu inventario las 4 gemas: Gema Azul(1), Gema Naranja(1), Gema Gris(1), Gema Roja(1)."
+            Exit Function
+
+        End If
+    
+110     If Not TieneObjetos(407, 1, UserIndex) Then
+112         refError = "Para fundar un clan debes ser nivel 45, tener 80 en liderazgo y tener en tu inventario las 4 gemas: Gema Azul(1), Gema Naranja(1), Gema Gris(1), Gema Roja(1)."
+            Exit Function
+
+        End If
+    
+114     If Not TieneObjetos(408, 1, UserIndex) Then
+116         refError = "Para fundar un clan debes ser nivel 45, tener 80 en liderazgo y tener en tu inventario las 4 gemas: Gema Azul(1), Gema Naranja(1), Gema Gris(1), Gema Roja(1)."
+            Exit Function
+
+        End If
+    
+118     If Not TieneObjetos(409, 1, UserIndex) Then
+120         refError = "Para fundar un clan debes ser nivel 45, tener 80 en liderazgo y tener en tu inventario las 4 gemas: Gema Azul(1), Gema Naranja(1), Gema Gris(1), Gema Roja(1)."
+            Exit Function
+
+        End If
+    
+122     If Not TieneObjetos(411, 1, UserIndex) Then
+124         refError = "Para fundar un clan debes ser nivel 45, tener 80 en liderazgo y tener en tu inventario las 4 gemas: Gema Azul(1), Gema Naranja(1), Gema Gris(1), Gema Roja(1)."
+            Exit Function
+
+        End If
+    
+126     If UserList(UserIndex).flags.BattleModo = 1 Then
+128         refError = "Ya pensamos en eso... No podés fundar un clan acá."
+            Exit Function
+
+        End If
+    
+130     Select Case Alineacion
 
             Case ALINEACION_GUILD.ALINEACION_CIUDA
 
-                If Promedio = 1 Or 3 Then
-                    m_EstadoPermiteEntrarChar = True
-                Else
-                    m_EstadoPermiteEntrarChar = False
+132             If Status(UserIndex) = 0 Or Status(UserIndex) = 2 Then
+134                 refError = "Para fundar un clan de ciudadanos no debes ser criminal."
+                    Exit Function
 
                 End If
 
-            Case ALINEACION_GUILD.ALINEACION_CRIMINAL
+136         Case ALINEACION_GUILD.ALINEACION_CRIMINAL
 
-                If Promedio = 0 Or 2 Then
-                    m_EstadoPermiteEntrarChar = True
-                Else
-                    m_EstadoPermiteEntrarChar = False
+138             If Status(UserIndex) = 1 Or Status(UserIndex) = 3 Then
+140                 refError = "Para fundar un clan de criminales no debes ser ciudadano."
+                    Exit Function
 
                 End If
 
         End Select
 
-    End If
+142     PuedeFundarUnClan = True
+    
+        
+        Exit Function
 
+PuedeFundarUnClan_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.PuedeFundarUnClan", Erl)
+        Resume Next
+        
+End Function
+
+Private Function m_EstadoPermiteEntrarChar(ByRef Personaje As String, ByVal GuildIndex As Integer) As Boolean
+        
+        On Error GoTo m_EstadoPermiteEntrarChar_Err
+        
+
+        Dim Promedio As Long
+
+        Dim ELV      As Integer
+
+        Dim f        As Byte
+
+100     m_EstadoPermiteEntrarChar = False
+    
+102     If InStrB(Personaje, "\") <> 0 Then
+104         Personaje = Replace(Personaje, "\", vbNullString)
+
+        End If
+
+106     If InStrB(Personaje, "/") <> 0 Then
+108         Personaje = Replace(Personaje, "/", vbNullString)
+
+        End If
+
+110     If InStrB(Personaje, ".") <> 0 Then
+112         Personaje = Replace(Personaje, ".", vbNullString)
+
+        End If
+    
+114     If PersonajeExiste(Personaje) Then
+116         Promedio = ObtenerCriminal(Personaje)
+        
+118         Select Case guilds(GuildIndex).Alineacion
+
+                Case ALINEACION_GUILD.ALINEACION_CIUDA
+
+120                 If Promedio = 1 Or 3 Then
+122                     m_EstadoPermiteEntrarChar = True
+                    Else
+124                     m_EstadoPermiteEntrarChar = False
+
+                    End If
+
+126             Case ALINEACION_GUILD.ALINEACION_CRIMINAL
+
+128                 If Promedio = 0 Or 2 Then
+130                     m_EstadoPermiteEntrarChar = True
+                    Else
+132                     m_EstadoPermiteEntrarChar = False
+
+                    End If
+
+            End Select
+
+        End If
+
+        
+        Exit Function
+
+m_EstadoPermiteEntrarChar_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.m_EstadoPermiteEntrarChar", Erl)
+        Resume Next
+        
 End Function
 
 Private Function m_EstadoPermiteEntrar(ByVal UserIndex As Integer, ByVal GuildIndex As Integer) As Boolean
+        
+        On Error GoTo m_EstadoPermiteEntrar_Err
+        
 
-    Select Case guilds(GuildIndex).Alineacion
+100     Select Case guilds(GuildIndex).Alineacion
 
-        Case ALINEACION_GUILD.ALINEACION_CIUDA
+            Case ALINEACION_GUILD.ALINEACION_CIUDA
 
-            If Status(UserIndex) = 1 Or Status(UserIndex) = 3 Then
-                m_EstadoPermiteEntrar = True
-            Else
-                m_EstadoPermiteEntrar = False
+102             If Status(UserIndex) = 1 Or Status(UserIndex) = 3 Then
+104                 m_EstadoPermiteEntrar = True
+                Else
+106                 m_EstadoPermiteEntrar = False
 
-            End If
+                End If
 
-        Case ALINEACION_GUILD.ALINEACION_CRIMINAL
+108         Case ALINEACION_GUILD.ALINEACION_CRIMINAL
 
-            If Status(UserIndex) = 0 Or Status(UserIndex) = 2 Then
-                m_EstadoPermiteEntrar = True
-            Else
-                m_EstadoPermiteEntrar = False
+110             If Status(UserIndex) = 0 Or Status(UserIndex) = 2 Then
+112                 m_EstadoPermiteEntrar = True
+                Else
+114                 m_EstadoPermiteEntrar = False
 
-            End If
+                End If
 
-    End Select
+        End Select
 
+        
+        Exit Function
+
+m_EstadoPermiteEntrar_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.m_EstadoPermiteEntrar", Erl)
+        Resume Next
+        
 End Function
 
 Public Function String2Alineacion(ByRef S As String) As ALINEACION_GUILD
+        
+        On Error GoTo String2Alineacion_Err
+        
 
-    Select Case S
+100     Select Case S
 
-        Case "Ciudadano"
-            String2Alineacion = ALINEACION_CIUDA
+            Case "Ciudadano"
+102             String2Alineacion = ALINEACION_CIUDA
 
-        Case "Criminal"
-            String2Alineacion = ALINEACION_CRIMINAL
+104         Case "Criminal"
+106             String2Alineacion = ALINEACION_CRIMINAL
 
-    End Select
+        End Select
 
+        
+        Exit Function
+
+String2Alineacion_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.String2Alineacion", Erl)
+        Resume Next
+        
 End Function
 
 Public Function Alineacion2String(ByVal Alineacion As ALINEACION_GUILD) As String
+        
+        On Error GoTo Alineacion2String_Err
+        
 
-    Select Case Alineacion
+100     Select Case Alineacion
 
-        Case ALINEACION_GUILD.ALINEACION_CIUDA
-            Alineacion2String = "Ciudadano"
+            Case ALINEACION_GUILD.ALINEACION_CIUDA
+102             Alineacion2String = "Ciudadano"
 
-        Case ALINEACION_GUILD.ALINEACION_CRIMINAL
-            Alineacion2String = "Criminal"
+104         Case ALINEACION_GUILD.ALINEACION_CRIMINAL
+106             Alineacion2String = "Criminal"
 
-    End Select
+        End Select
 
+        
+        Exit Function
+
+Alineacion2String_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.Alineacion2String", Erl)
+        Resume Next
+        
 End Function
 
 Public Function Relacion2String(ByVal Relacion As RELACIONES_GUILD) As String
+        
+        On Error GoTo Relacion2String_Err
+        
 
-    Select Case Relacion
+100     Select Case Relacion
 
-        Case RELACIONES_GUILD.ALIADOS
-            Relacion2String = "A"
+            Case RELACIONES_GUILD.ALIADOS
+102             Relacion2String = "A"
 
-        Case RELACIONES_GUILD.GUERRA
-            Relacion2String = "G"
+104         Case RELACIONES_GUILD.GUERRA
+106             Relacion2String = "G"
 
-        Case RELACIONES_GUILD.PAZ
-            Relacion2String = "P"
+108         Case RELACIONES_GUILD.PAZ
+110             Relacion2String = "P"
 
-        Case RELACIONES_GUILD.ALIADOS
-            Relacion2String = "?"
+112         Case RELACIONES_GUILD.ALIADOS
+114             Relacion2String = "?"
 
-    End Select
+        End Select
 
+        
+        Exit Function
+
+Relacion2String_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.Relacion2String", Erl)
+        Resume Next
+        
 End Function
 
 Public Function String2Relacion(ByVal S As String) As RELACIONES_GUILD
+        
+        On Error GoTo String2Relacion_Err
+        
 
-    Select Case UCase$(Trim$(S))
+100     Select Case UCase$(Trim$(S))
 
-        Case vbNullString, "P"
-            String2Relacion = RELACIONES_GUILD.PAZ
+            Case vbNullString, "P"
+102             String2Relacion = RELACIONES_GUILD.PAZ
 
-        Case "G"
-            String2Relacion = RELACIONES_GUILD.GUERRA
+104         Case "G"
+106             String2Relacion = RELACIONES_GUILD.GUERRA
 
-        Case "A"
-            String2Relacion = RELACIONES_GUILD.ALIADOS
+108         Case "A"
+110             String2Relacion = RELACIONES_GUILD.ALIADOS
 
-        Case Else
-            String2Relacion = RELACIONES_GUILD.PAZ
+112         Case Else
+114             String2Relacion = RELACIONES_GUILD.PAZ
 
-    End Select
+        End Select
 
+        
+        Exit Function
+
+String2Relacion_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.String2Relacion", Erl)
+        Resume Next
+        
 End Function
 
 Private Function GuildNameValido(ByVal cad As String) As Boolean
+        
+        On Error GoTo GuildNameValido_Err
+        
 
-    Dim car As Byte
+        Dim car As Byte
 
-    Dim i   As Integer
+        Dim i   As Integer
 
-    'old function by morgo
+        'old function by morgo
 
-    cad = LCase$(cad)
+100     cad = LCase$(cad)
 
-    For i = 1 To Len(cad)
-        car = Asc(mid$(cad, i, 1))
+102     For i = 1 To Len(cad)
+104         car = Asc(mid$(cad, i, 1))
 
-        If (car < 97 Or car > 122) And (car <> 255) And (car <> 32) Then
-            GuildNameValido = False
+106         If (car < 97 Or car > 122) And (car <> 255) And (car <> 32) Then
+108             GuildNameValido = False
+                Exit Function
+
+            End If
+    
+110     Next i
+
+112     GuildNameValido = True
+
+        
+        Exit Function
+
+GuildNameValido_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.GuildNameValido", Erl)
+        Resume Next
+        
+End Function
+
+Private Function YaExiste(ByVal GuildName As String) As Boolean
+        
+        On Error GoTo YaExiste_Err
+        
+
+        Dim i As Integer
+
+100     YaExiste = False
+102     GuildName = UCase$(GuildName)
+
+104     For i = 1 To CANTIDADDECLANES
+106         YaExiste = (UCase$(guilds(i).GuildName) = GuildName)
+
+108         If YaExiste Then Exit Function
+110     Next i
+
+        
+        Exit Function
+
+YaExiste_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.YaExiste", Erl)
+        Resume Next
+        
+End Function
+
+Public Function v_AbrirElecciones(ByVal UserIndex As Integer, ByRef refError As String) As Boolean
+        
+        On Error GoTo v_AbrirElecciones_Err
+        
+
+        Dim GuildIndex As Integer
+
+100     v_AbrirElecciones = False
+102     GuildIndex = UserList(UserIndex).GuildIndex
+    
+104     If GuildIndex = 0 Or GuildIndex > CANTIDADDECLANES Then
+106         refError = "Tu no perteneces a ningún clan"
             Exit Function
 
         End If
     
-    Next i
+108     If Not m_EsGuildLeader(UserList(UserIndex).name, GuildIndex) Then
+110         refError = "No eres el líder de tu clan"
+            Exit Function
 
-    GuildNameValido = True
-
-End Function
-
-Private Function YaExiste(ByVal GuildName As String) As Boolean
-
-    Dim i As Integer
-
-    YaExiste = False
-    GuildName = UCase$(GuildName)
-
-    For i = 1 To CANTIDADDECLANES
-        YaExiste = (UCase$(guilds(i).GuildName) = GuildName)
-
-        If YaExiste Then Exit Function
-    Next i
-
-End Function
-
-Public Function v_AbrirElecciones(ByVal UserIndex As Integer, ByRef refError As String) As Boolean
-
-    Dim GuildIndex As Integer
-
-    v_AbrirElecciones = False
-    GuildIndex = UserList(UserIndex).GuildIndex
+        End If
     
-    If GuildIndex = 0 Or GuildIndex > CANTIDADDECLANES Then
-        refError = "Tu no perteneces a ningún clan"
+112     If guilds(GuildIndex).EleccionesAbiertas Then
+114         refError = "Las elecciones ya están abiertas"
+            Exit Function
+
+        End If
+    
+116     v_AbrirElecciones = True
+118     Call guilds(GuildIndex).AbrirElecciones
+    
+        
         Exit Function
 
-    End If
-    
-    If Not m_EsGuildLeader(UserList(UserIndex).name, GuildIndex) Then
-        refError = "No eres el líder de tu clan"
-        Exit Function
-
-    End If
-    
-    If guilds(GuildIndex).EleccionesAbiertas Then
-        refError = "Las elecciones ya están abiertas"
-        Exit Function
-
-    End If
-    
-    v_AbrirElecciones = True
-    Call guilds(GuildIndex).AbrirElecciones
-    
+v_AbrirElecciones_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.v_AbrirElecciones", Erl)
+        Resume Next
+        
 End Function
 
 Public Function v_UsuarioVota(ByVal UserIndex As Integer, ByRef Votado As String, ByRef refError As String) As Boolean
+        
+        On Error GoTo v_UsuarioVota_Err
+        
 
-    Dim GuildIndex As Integer
+        Dim GuildIndex As Integer
 
-    Dim list()     As String
+        Dim list()     As String
 
-    Dim i          As Long
+        Dim i          As Long
 
-    v_UsuarioVota = False
-    GuildIndex = UserList(UserIndex).GuildIndex
+100     v_UsuarioVota = False
+102     GuildIndex = UserList(UserIndex).GuildIndex
     
-    If GuildIndex = 0 Or GuildIndex > CANTIDADDECLANES Then
-        refError = "Tu no perteneces a ningún clan"
+104     If GuildIndex = 0 Or GuildIndex > CANTIDADDECLANES Then
+106         refError = "Tu no perteneces a ningún clan"
+            Exit Function
+
+        End If
+
+108     If Not guilds(GuildIndex).EleccionesAbiertas Then
+110         refError = "No hay elecciones abiertas en tu clan."
+            Exit Function
+
+        End If
+    
+112     list = guilds(GuildIndex).GetMemberList()
+
+114     For i = 0 To UBound(list())
+
+116         If UCase$(Votado) = list(i) Then Exit For
+118     Next i
+    
+120     If i > UBound(list()) Then
+122         refError = Votado & " no pertenece al clan"
+            Exit Function
+
+        End If
+    
+124     If guilds(GuildIndex).YaVoto(UserList(UserIndex).name) Then
+126         refError = "Ya has votado, no podés cambiar tu voto"
+            Exit Function
+
+        End If
+    
+128     Call guilds(GuildIndex).ContabilizarVoto(UserList(UserIndex).name, Votado)
+130     v_UsuarioVota = True
+
+        
         Exit Function
 
-    End If
-
-    If Not guilds(GuildIndex).EleccionesAbiertas Then
-        refError = "No hay elecciones abiertas en tu clan."
-        Exit Function
-
-    End If
-    
-    list = guilds(GuildIndex).GetMemberList()
-
-    For i = 0 To UBound(list())
-
-        If UCase$(Votado) = list(i) Then Exit For
-    Next i
-    
-    If i > UBound(list()) Then
-        refError = Votado & " no pertenece al clan"
-        Exit Function
-
-    End If
-    
-    If guilds(GuildIndex).YaVoto(UserList(UserIndex).name) Then
-        refError = "Ya has votado, no podés cambiar tu voto"
-        Exit Function
-
-    End If
-    
-    Call guilds(GuildIndex).ContabilizarVoto(UserList(UserIndex).name, Votado)
-    v_UsuarioVota = True
-
+v_UsuarioVota_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.v_UsuarioVota", Erl)
+        Resume Next
+        
 End Function
 
 Public Sub v_RutinaElecciones()
@@ -746,758 +976,988 @@ errh:
 End Sub
 
 Private Function GetGuildIndexFromChar(ByRef PlayerName As String) As Integer
+        
+        On Error GoTo GetGuildIndexFromChar_Err
+        
 
-    'aca si que vamos a violar las capas deliveradamente ya que
-    'visual basic no permite declarar metodos de clase
-    Dim Temps As String
+        'aca si que vamos a violar las capas deliveradamente ya que
+        'visual basic no permite declarar metodos de clase
+        Dim Temps As String
 
-    If InStrB(PlayerName, "\") <> 0 Then
-        PlayerName = Replace(PlayerName, "\", vbNullString)
+100     If InStrB(PlayerName, "\") <> 0 Then
+102         PlayerName = Replace(PlayerName, "\", vbNullString)
 
-    End If
+        End If
 
-    If InStrB(PlayerName, "/") <> 0 Then
-        PlayerName = Replace(PlayerName, "/", vbNullString)
+104     If InStrB(PlayerName, "/") <> 0 Then
+106         PlayerName = Replace(PlayerName, "/", vbNullString)
 
-    End If
+        End If
 
-    If InStrB(PlayerName, ".") <> 0 Then
-        PlayerName = Replace(PlayerName, ".", vbNullString)
+108     If InStrB(PlayerName, ".") <> 0 Then
+110         PlayerName = Replace(PlayerName, ".", vbNullString)
 
-    End If
+        End If
 
-    Temps = GetVar(CharPath & PlayerName & ".chr", "GUILD", "GUILDINDEX")
+112     Temps = GetVar(CharPath & PlayerName & ".chr", "GUILD", "GUILDINDEX")
 
-    If IsNumeric(Temps) Then
-        GetGuildIndexFromChar = CInt(Temps)
-    Else
-        GetGuildIndexFromChar = 0
+114     If IsNumeric(Temps) Then
+116         GetGuildIndexFromChar = CInt(Temps)
+        Else
+118         GetGuildIndexFromChar = 0
 
-    End If
+        End If
 
+        
+        Exit Function
+
+GetGuildIndexFromChar_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.GetGuildIndexFromChar", Erl)
+        Resume Next
+        
 End Function
 
 Public Function GuildIndex(ByRef GuildName As String) As Integer
+        
+        On Error GoTo GuildIndex_Err
+        
 
-    'me da el indice del guildname
-    Dim i As Integer
+        'me da el indice del guildname
+        Dim i As Integer
 
-    GuildIndex = 0
-    GuildName = UCase$(GuildName)
+100     GuildIndex = 0
+102     GuildName = UCase$(GuildName)
 
-    For i = 1 To CANTIDADDECLANES
+104     For i = 1 To CANTIDADDECLANES
 
-        If UCase$(guilds(i).GuildName) = GuildName Then
-            GuildIndex = i
-            Exit Function
+106         If UCase$(guilds(i).GuildName) = GuildName Then
+108             GuildIndex = i
+                Exit Function
 
-        End If
+            End If
 
-    Next i
+110     Next i
 
+        
+        Exit Function
+
+GuildIndex_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.GuildIndex", Erl)
+        Resume Next
+        
 End Function
 
 Public Function m_ListaDeMiembrosOnline(ByVal UserIndex As Integer, ByVal GuildIndex As Integer) As String
+        
+        On Error GoTo m_ListaDeMiembrosOnline_Err
+        
 
-    Dim i As Integer
+        Dim i As Integer
     
-    If GuildIndex > 0 And GuildIndex <= CANTIDADDECLANES Then
-        i = guilds(GuildIndex).m_Iterador_ProximoUserIndex
+100     If GuildIndex > 0 And GuildIndex <= CANTIDADDECLANES Then
+102         i = guilds(GuildIndex).m_Iterador_ProximoUserIndex
 
-        While i > 0
+104         While i > 0
 
-            'No mostramos dioses y admins
-            If i <> UserIndex And ((UserList(i).flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) <> 0 Or (UserList(UserIndex).flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin) <> 0)) Then m_ListaDeMiembrosOnline = m_ListaDeMiembrosOnline & UserList(i).name & ","
-            i = guilds(GuildIndex).m_Iterador_ProximoUserIndex
-        Wend
+                'No mostramos dioses y admins
+106             If i <> UserIndex And ((UserList(i).flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) <> 0 Or (UserList(UserIndex).flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin) <> 0)) Then m_ListaDeMiembrosOnline = m_ListaDeMiembrosOnline & UserList(i).name & ","
+108             i = guilds(GuildIndex).m_Iterador_ProximoUserIndex
+            Wend
 
-    End If
+        End If
 
-    If Len(m_ListaDeMiembrosOnline) > 0 Then
-        m_ListaDeMiembrosOnline = Left$(m_ListaDeMiembrosOnline, Len(m_ListaDeMiembrosOnline) - 1)
+110     If Len(m_ListaDeMiembrosOnline) > 0 Then
+112         m_ListaDeMiembrosOnline = Left$(m_ListaDeMiembrosOnline, Len(m_ListaDeMiembrosOnline) - 1)
 
-    End If
+        End If
 
+        
+        Exit Function
+
+m_ListaDeMiembrosOnline_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.m_ListaDeMiembrosOnline", Erl)
+        Resume Next
+        
 End Function
 
 Public Function PrepareGuildsList() As String()
-
-    Dim tStr() As String
-
-    Dim i      As Long
-    
-    If CANTIDADDECLANES = 0 Then
-        ReDim tStr(0) As String
-    Else
-        ReDim tStr(CANTIDADDECLANES - 1) As String
         
-        For i = 1 To CANTIDADDECLANES
-            tStr(i - 1) = guilds(i).GuildName & "-" & guilds(i).Alineacion
-        Next i
+        On Error GoTo PrepareGuildsList_Err
+        
 
-    End If
+        Dim tStr() As String
+
+        Dim i      As Long
     
-    PrepareGuildsList = tStr
+100     If CANTIDADDECLANES = 0 Then
+102         ReDim tStr(0) As String
+        Else
+104         ReDim tStr(CANTIDADDECLANES - 1) As String
+        
+106         For i = 1 To CANTIDADDECLANES
+108             tStr(i - 1) = guilds(i).GuildName & "-" & guilds(i).Alineacion
+110         Next i
 
+        End If
+    
+112     PrepareGuildsList = tStr
+
+        
+        Exit Function
+
+PrepareGuildsList_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.PrepareGuildsList", Erl)
+        Resume Next
+        
 End Function
 
 Public Sub SendGuildDetails(ByVal UserIndex As Integer, ByRef GuildName As String)
-
-    Dim codex(CANTIDADMAXIMACODEX - 1) As String
-
-    Dim GI                             As Integer
-
-    Dim i                              As Long
-
-    GI = GuildIndex(GuildName)
-
-    If GI = 0 Then Exit Sub
-    
-    With guilds(GI)
-        Call Protocol.WriteGuildDetails(UserIndex, GuildName, .Fundador, .GetFechaFundacion, .GetLeader, .CantidadDeMiembros, Alineacion2String(.Alineacion), .GetDesc, .GetNivelDeClan, .GetExpActual, .GetExpNecesaria)
-
-    End With
-
-End Sub
-
-Public Sub SendGuildLeaderInfo(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Autor: Mariano Barrou (El Oso)
-    'Last Modification: 12/10/06
-    'Las Modified By: Juan Martín Sotuyo Dodero (Maraxus)
-    '***************************************************
-    Dim GI              As Integer
-
-    Dim guildList()     As String
-
-    Dim MemberList()    As String
-
-    Dim aspirantsList() As String
-    
-    If UserList(UserIndex).flags.BattleModo = 1 Then
-        Call WriteConsoleMsg(UserIndex, "No disponible aquí.", FontTypeNames.FONTTYPE_INFOIAO)
-        Exit Sub
-
-    End If
-
-    With UserList(UserIndex)
-        GI = .GuildIndex
         
-        guildList = PrepareGuildsList()
+        On Error GoTo SendGuildDetails_Err
         
-        If GI <= 0 Or GI > CANTIDADDECLANES Then
-            'Send the guild list instead
-            Call Protocol.WriteGuildList(UserIndex, guildList)
-            Exit Sub
 
-        End If
-        
-        If Not m_EsGuildLeader(.name, GI) Then
-            'Send the guild list instead
-            Call modGuilds.SendGuildNews(UserIndex, guildList)
-            '            Call WriteGuildMemberInfo(UserIndex, guildList, MemberList)
-            ' Call Protocol.WriteGuildList(UserIndex, guildList)
-            Exit Sub
+        Dim codex(CANTIDADMAXIMACODEX - 1) As String
 
-        End If
-        
-        MemberList = guilds(GI).GetMemberList()
-        aspirantsList = guilds(GI).GetAspirantes()
-        
-        Call WriteGuildLeaderInfo(UserIndex, guildList, MemberList, guilds(GI).GetGuildNews(), aspirantsList, guilds(GI).GetNivelDeClan, guilds(GI).GetExpActual, guilds(GI).GetExpNecesaria)
+        Dim GI                             As Integer
 
-    End With
+        Dim i                              As Long
 
-End Sub
+100     GI = GuildIndex(GuildName)
 
-Public Function m_Iterador_ProximoUserIndex(ByVal GuildIndex As Integer) As Integer
-    'itera sobre los onlinemembers
-    m_Iterador_ProximoUserIndex = 0
-
-    If GuildIndex > 0 And GuildIndex <= CANTIDADDECLANES Then
-        m_Iterador_ProximoUserIndex = guilds(GuildIndex).m_Iterador_ProximoUserIndex()
-
-    End If
-
-End Function
-
-Public Function Iterador_ProximoGM(ByVal GuildIndex As Integer) As Integer
-    'itera sobre los gms escuchando este clan
-    Iterador_ProximoGM = 0
-
-    If GuildIndex > 0 And GuildIndex <= CANTIDADDECLANES Then
-        Iterador_ProximoGM = guilds(GuildIndex).Iterador_ProximoGM()
-
-    End If
-
-End Function
-
-Public Function r_Iterador_ProximaPropuesta(ByVal GuildIndex As Integer, ByVal Tipo As RELACIONES_GUILD) As Integer
-    'itera sobre las propuestas
-    r_Iterador_ProximaPropuesta = 0
-
-    If GuildIndex > 0 And GuildIndex <= CANTIDADDECLANES Then
-        r_Iterador_ProximaPropuesta = guilds(GuildIndex).Iterador_ProximaPropuesta(Tipo)
-
-    End If
-
-End Function
-
-Public Function GMEscuchaClan(ByVal UserIndex As Integer, ByVal GuildName As String) As Integer
-
-    Dim GI As Integer
-
-    'listen to no guild at all
-    If LenB(GuildName) = 0 And UserList(UserIndex).EscucheClan <> 0 Then
-        'Quit listening to previous guild!!
-        Call WriteConsoleMsg(UserIndex, "Dejas de escuchar a : " & guilds(UserList(UserIndex).EscucheClan).GuildName, FontTypeNames.FONTTYPE_GUILD)
-        guilds(UserList(UserIndex).EscucheClan).DesconectarGM (UserIndex)
-        Exit Function
-
-    End If
+102     If GI = 0 Then Exit Sub
     
-    'devuelve el guildindex
-    GI = GuildIndex(GuildName)
-
-    If GI > 0 Then
-        If UserList(UserIndex).EscucheClan <> 0 Then
-            If UserList(UserIndex).EscucheClan = GI Then
-                'Already listening to them...
-                Call WriteConsoleMsg(UserIndex, "Conectado a : " & GuildName, FontTypeNames.FONTTYPE_GUILD)
-                GMEscuchaClan = GI
-                Exit Function
-            Else
-                'Quit listening to previous guild!!
-                Call WriteConsoleMsg(UserIndex, "Dejas de escuchar a : " & guilds(UserList(UserIndex).EscucheClan).GuildName, FontTypeNames.FONTTYPE_GUILD)
-                guilds(UserList(UserIndex).EscucheClan).DesconectarGM (UserIndex)
-
-            End If
-
-        End If
-        
-        Call guilds(GI).ConectarGM(UserIndex)
-        Call WriteConsoleMsg(UserIndex, "Conectado a : " & GuildName, FontTypeNames.FONTTYPE_GUILD)
-        GMEscuchaClan = GI
-        UserList(UserIndex).EscucheClan = GI
-    Else
-        Call WriteConsoleMsg(UserIndex, "Error, el clan no existe", FontTypeNames.FONTTYPE_GUILD)
-        GMEscuchaClan = 0
-
-    End If
-    
-End Function
-
-Public Sub GMDejaDeEscucharClan(ByVal UserIndex As Integer, ByVal GuildIndex As Integer)
-    'el index lo tengo que tener de cuando me puse a escuchar
-    UserList(UserIndex).EscucheClan = 0
-    Call guilds(GuildIndex).DesconectarGM(UserIndex)
-
-End Sub
-
-Public Function r_DeclararGuerra(ByVal UserIndex As Integer, ByRef GuildGuerra As String, ByRef refError As String) As Integer
-
-    Dim GI  As Integer
-
-    Dim GIG As Integer
-
-    r_DeclararGuerra = 0
-    GI = UserList(UserIndex).GuildIndex
-
-    If GI <= 0 Or GI > CANTIDADDECLANES Then
-        refError = "No eres miembro de ningún clan"
-        Exit Function
-
-    End If
-    
-    If Not m_EsGuildLeader(UserList(UserIndex).name, GI) Then
-        refError = "No eres el líder de tu clan"
-        Exit Function
-
-    End If
-    
-    If Trim$(GuildGuerra) = vbNullString Then
-        refError = "No has seleccionado ningún clan"
-        Exit Function
-
-    End If
-
-    GIG = GuildIndex(GuildGuerra)
-    
-    If GI = GIG Then
-        refError = "No podés declarar la guerra a tu mismo clan"
-        Exit Function
-
-    End If
-
-    If GIG < 1 Or GIG > CANTIDADDECLANES Then
-        Call LogError("ModGuilds.r_DeclararGuerra: " & GI & " declara a " & GuildGuerra)
-        refError = "Inconsistencia en el sistema de clanes. Avise a un administrador (GIG fuera de rango)"
-        Exit Function
-
-    End If
-
-    Call guilds(GI).AnularPropuestas(GIG)
-    Call guilds(GIG).AnularPropuestas(GI)
-    Call guilds(GI).SetRelacion(GIG, RELACIONES_GUILD.GUERRA)
-    Call guilds(GIG).SetRelacion(GI, RELACIONES_GUILD.GUERRA)
-
-    r_DeclararGuerra = GIG
-
-End Function
-
-Public Function r_AceptarPropuestaDePaz(ByVal UserIndex As Integer, ByRef GuildPaz As String, ByRef refError As String) As Integer
-
-    'el clan de userindex acepta la propuesta de paz de guildpaz, con quien esta en guerra
-    Dim GI  As Integer
-
-    Dim GIG As Integer
-
-    GI = UserList(UserIndex).GuildIndex
-
-    If GI <= 0 Or GI > CANTIDADDECLANES Then
-        refError = "No eres miembro de ningún clan"
-        Exit Function
-
-    End If
-    
-    If Not m_EsGuildLeader(UserList(UserIndex).name, GI) Then
-        refError = "No eres el líder de tu clan"
-        Exit Function
-
-    End If
-    
-    If Trim$(GuildPaz) = vbNullString Then
-        refError = "No has seleccionado ningún clan"
-        Exit Function
-
-    End If
-
-    GIG = GuildIndex(GuildPaz)
-    
-    If GIG < 1 Or GIG > CANTIDADDECLANES Then
-        Call LogError("ModGuilds.r_AceptarPropuestaDePaz: " & GI & " acepta de " & GuildPaz)
-        refError = "Inconsistencia en el sistema de clanes. Avise a un administrador (GIG fuera de rango)"
-        Exit Function
-
-    End If
-
-    If guilds(GI).GetRelacion(GIG) <> RELACIONES_GUILD.GUERRA Then
-        refError = "No estás en guerra con ese clan"
-        Exit Function
-
-    End If
-    
-    If Not guilds(GI).HayPropuesta(GIG, RELACIONES_GUILD.PAZ) Then
-        refError = "No hay ninguna propuesta de paz para aceptar"
-        Exit Function
-
-    End If
-
-    Call guilds(GI).AnularPropuestas(GIG)
-    Call guilds(GIG).AnularPropuestas(GI)
-    Call guilds(GI).SetRelacion(GIG, RELACIONES_GUILD.PAZ)
-    Call guilds(GIG).SetRelacion(GI, RELACIONES_GUILD.PAZ)
-    
-    r_AceptarPropuestaDePaz = GIG
-
-End Function
-
-Public Function r_RechazarPropuestaDeAlianza(ByVal UserIndex As Integer, ByRef GuildPro As String, ByRef refError As String) As Integer
-
-    'devuelve el index al clan guildPro
-    Dim GI  As Integer
-
-    Dim GIG As Integer
-
-    r_RechazarPropuestaDeAlianza = 0
-    GI = UserList(UserIndex).GuildIndex
-    
-    If GI <= 0 Or GI > CANTIDADDECLANES Then
-        refError = "No eres miembro de ningún clan"
-        Exit Function
-
-    End If
-    
-    If Not m_EsGuildLeader(UserList(UserIndex).name, GI) Then
-        refError = "No eres el líder de tu clan"
-        Exit Function
-
-    End If
-    
-    If Trim$(GuildPro) = vbNullString Then
-        refError = "No has seleccionado ningún clan"
-        Exit Function
-
-    End If
-
-    GIG = GuildIndex(GuildPro)
-    
-    If GIG < 1 Or GIG > CANTIDADDECLANES Then
-        Call LogError("ModGuilds.r_RechazarPropuestaDeAlianza: " & GI & " acepta de " & GuildPro)
-        refError = "Inconsistencia en el sistema de clanes. Avise a un administrador (GIG fuera de rango)"
-        Exit Function
-
-    End If
-    
-    If Not guilds(GI).HayPropuesta(GIG, ALIADOS) Then
-        refError = "No hay propuesta de alianza del clan " & GuildPro
-        Exit Function
-
-    End If
-    
-    Call guilds(GI).AnularPropuestas(GIG)
-    'avisamos al otro clan
-    Call guilds(GIG).SetGuildNews(guilds(GI).GuildName & " ha rechazado nuestra propuesta de alianza. " & guilds(GIG).GetGuildNews())
-    r_RechazarPropuestaDeAlianza = GIG
-
-End Function
-
-Public Function r_RechazarPropuestaDePaz(ByVal UserIndex As Integer, ByRef GuildPro As String, ByRef refError As String) As Integer
-
-    'devuelve el index al clan guildPro
-    Dim GI  As Integer
-
-    Dim GIG As Integer
-
-    r_RechazarPropuestaDePaz = 0
-    GI = UserList(UserIndex).GuildIndex
-    
-    If GI <= 0 Or GI > CANTIDADDECLANES Then
-        refError = "No eres miembro de ningún clan"
-        Exit Function
-
-    End If
-    
-    If Not m_EsGuildLeader(UserList(UserIndex).name, GI) Then
-        refError = "No eres el líder de tu clan"
-        Exit Function
-
-    End If
-    
-    If Trim$(GuildPro) = vbNullString Then
-        refError = "No has seleccionado ningún clan"
-        Exit Function
-
-    End If
-
-    GIG = GuildIndex(GuildPro)
-    
-    If GIG < 1 Or GIG > CANTIDADDECLANES Then
-        Call LogError("ModGuilds.r_RechazarPropuestaDePaz: " & GI & " acepta de " & GuildPro)
-        refError = "Inconsistencia en el sistema de clanes. Avise a un administrador (GIG fuera de rango)"
-        Exit Function
-
-    End If
-    
-    If Not guilds(GI).HayPropuesta(GIG, RELACIONES_GUILD.PAZ) Then
-        refError = "No hay propuesta de paz del clan " & GuildPro
-        Exit Function
-
-    End If
-    
-    Call guilds(GI).AnularPropuestas(GIG)
-    'avisamos al otro clan
-    Call guilds(GIG).SetGuildNews(guilds(GI).GuildName & " ha rechazado nuestra propuesta de paz. " & guilds(GIG).GetGuildNews())
-    r_RechazarPropuestaDePaz = GIG
-
-End Function
-
-Public Function r_AceptarPropuestaDeAlianza(ByVal UserIndex As Integer, ByRef GuildAllie As String, ByRef refError As String) As Integer
-
-    'el clan de userindex acepta la propuesta de paz de guildpaz, con quien esta en guerra
-    Dim GI  As Integer
-
-    Dim GIG As Integer
-
-    r_AceptarPropuestaDeAlianza = 0
-    GI = UserList(UserIndex).GuildIndex
-
-    If GI <= 0 Or GI > CANTIDADDECLANES Then
-        refError = "No eres miembro de ningún clan"
-        Exit Function
-
-    End If
-    
-    If Not m_EsGuildLeader(UserList(UserIndex).name, GI) Then
-        refError = "No eres el líder de tu clan"
-        Exit Function
-
-    End If
-    
-    If Trim$(GuildAllie) = vbNullString Then
-        refError = "No has seleccionado ningún clan"
-        Exit Function
-
-    End If
-
-    GIG = GuildIndex(GuildAllie)
-    
-    If GIG < 1 Or GIG > CANTIDADDECLANES Then
-        Call LogError("ModGuilds.r_AceptarPropuestaDeAlianza: " & GI & " acepta de " & GuildAllie)
-        refError = "Inconsistencia en el sistema de clanes. Avise a un administrador (GIG fuera de rango)"
-        Exit Function
-
-    End If
-
-    If guilds(GI).GetRelacion(GIG) <> RELACIONES_GUILD.PAZ Then
-        refError = "No estás en paz con el clan, solo podés aceptar propuesas de alianzas con alguien que estes en paz."
-        Exit Function
-
-    End If
-    
-    If Not guilds(GI).HayPropuesta(GIG, RELACIONES_GUILD.ALIADOS) Then
-        refError = "No hay ninguna propuesta de alianza para aceptar."
-        Exit Function
-
-    End If
-
-    Call guilds(GI).AnularPropuestas(GIG)
-    Call guilds(GIG).AnularPropuestas(GI)
-    Call guilds(GI).SetRelacion(GIG, RELACIONES_GUILD.ALIADOS)
-    Call guilds(GIG).SetRelacion(GI, RELACIONES_GUILD.ALIADOS)
-    
-    r_AceptarPropuestaDeAlianza = GIG
-
-End Function
-
-Public Function r_ClanGeneraPropuesta(ByVal UserIndex As Integer, ByRef OtroClan As String, ByVal Tipo As RELACIONES_GUILD, ByRef Detalle As String, ByRef refError As String) As Boolean
-
-    Dim OtroClanGI As Integer
-
-    Dim GI         As Integer
-
-    r_ClanGeneraPropuesta = False
-    
-    GI = UserList(UserIndex).GuildIndex
-
-    If GI <= 0 Or GI > CANTIDADDECLANES Then
-        refError = "No eres miembro de ningún clan"
-        Exit Function
-
-    End If
-    
-    OtroClanGI = GuildIndex(OtroClan)
-    
-    If OtroClanGI = GI Then
-        refError = "No podés declarar relaciones con tu propio clan"
-        Exit Function
-
-    End If
-    
-    If OtroClanGI <= 0 Or OtroClanGI > CANTIDADDECLANES Then
-        refError = "El sistema de clanes esta inconsistente, el otro clan no existe!"
-        Exit Function
-
-    End If
-    
-    If guilds(OtroClanGI).HayPropuesta(GI, Tipo) Then
-        refError = "Ya hay propuesta de " & Relacion2String(Tipo) & " con " & OtroClan
-        Exit Function
-
-    End If
-    
-    If Not m_EsGuildLeader(UserList(UserIndex).name, GI) Then
-        refError = "No eres el líder de tu clan"
-        Exit Function
-
-    End If
-    
-    'de acuerdo al tipo procedemos validando las transiciones
-    If Tipo = RELACIONES_GUILD.PAZ Then
-        If guilds(GI).GetRelacion(OtroClanGI) <> RELACIONES_GUILD.GUERRA Then
-            refError = "No estás en guerra con " & OtroClan
-            Exit Function
-
-        End If
-
-    ElseIf Tipo = RELACIONES_GUILD.GUERRA Then
-        'por ahora no hay propuestas de guerra
-    ElseIf Tipo = RELACIONES_GUILD.ALIADOS Then
-
-        If guilds(GI).GetRelacion(OtroClanGI) <> RELACIONES_GUILD.PAZ Then
-            refError = "Para solicitar alianza no debes estar ni aliado ni en guerra con " & OtroClan
-            Exit Function
-
-        End If
-
-    End If
-    
-    Call guilds(OtroClanGI).SetPropuesta(Tipo, GI, Detalle)
-    r_ClanGeneraPropuesta = True
-
-End Function
-
-Public Function r_VerPropuesta(ByVal UserIndex As Integer, ByRef OtroGuild As String, ByVal Tipo As RELACIONES_GUILD, ByRef refError As String) As String
-
-    Dim OtroClanGI As Integer
-
-    Dim GI         As Integer
-    
-    r_VerPropuesta = vbNullString
-    refError = vbNullString
-    
-    GI = UserList(UserIndex).GuildIndex
-
-    If GI <= 0 Or GI > CANTIDADDECLANES Then
-        refError = "No eres miembro de ningún clan"
-        Exit Function
-
-    End If
-    
-    If Not m_EsGuildLeader(UserList(UserIndex).name, GI) Then
-        refError = "No eres el líder de tu clan"
-        Exit Function
-
-    End If
-    
-    OtroClanGI = GuildIndex(OtroGuild)
-    
-    If Not guilds(GI).HayPropuesta(OtroClanGI, Tipo) Then
-        refError = "No existe la propuesta solicitada"
-        Exit Function
-
-    End If
-    
-    r_VerPropuesta = guilds(GI).GetPropuesta(OtroClanGI, Tipo)
-    
-End Function
-
-Public Function r_ListaDePropuestas(ByVal UserIndex As Integer, ByVal Tipo As RELACIONES_GUILD) As String()
-
-    Dim GI            As Integer
-
-    Dim i             As Integer
-
-    Dim proposalCount As Integer
-
-    Dim proposals()   As String
-    
-    GI = UserList(UserIndex).GuildIndex
-    
-    If GI > 0 And GI <= CANTIDADDECLANES Then
-
-        With guilds(GI)
-            proposalCount = .CantidadPropuestas(Tipo)
-            
-            'Resize array to contain all proposals
-            If proposalCount > 0 Then
-                ReDim proposals(proposalCount - 1) As String
-            Else
-                ReDim proposals(0) As String
-
-            End If
-            
-            'Store each guild name
-            For i = 0 To proposalCount - 1
-                proposals(i) = guilds(.Iterador_ProximaPropuesta(Tipo)).GuildName
-            Next i
+104     With guilds(GI)
+106         Call Protocol.WriteGuildDetails(UserIndex, GuildName, .Fundador, .GetFechaFundacion, .GetLeader, .CantidadDeMiembros, Alineacion2String(.Alineacion), .GetDesc, .GetNivelDeClan, .GetExpActual, .GetExpNecesaria)
 
         End With
 
-    End If
-    
-    r_ListaDePropuestas = proposals
+        
+        Exit Sub
 
+SendGuildDetails_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.SendGuildDetails", Erl)
+        Resume Next
+        
+End Sub
+
+Public Sub SendGuildLeaderInfo(ByVal UserIndex As Integer)
+        
+        On Error GoTo SendGuildLeaderInfo_Err
+        
+
+        '***************************************************
+        'Autor: Mariano Barrou (El Oso)
+        'Last Modification: 12/10/06
+        'Las Modified By: Juan Martín Sotuyo Dodero (Maraxus)
+        '***************************************************
+        Dim GI              As Integer
+
+        Dim guildList()     As String
+
+        Dim MemberList()    As String
+
+        Dim aspirantsList() As String
+    
+100     If UserList(UserIndex).flags.BattleModo = 1 Then
+102         Call WriteConsoleMsg(UserIndex, "No disponible aquí.", FontTypeNames.FONTTYPE_INFOIAO)
+            Exit Sub
+
+        End If
+
+104     With UserList(UserIndex)
+106         GI = .GuildIndex
+        
+108         guildList = PrepareGuildsList()
+        
+110         If GI <= 0 Or GI > CANTIDADDECLANES Then
+                'Send the guild list instead
+112             Call Protocol.WriteGuildList(UserIndex, guildList)
+                Exit Sub
+
+            End If
+        
+114         If Not m_EsGuildLeader(.name, GI) Then
+                'Send the guild list instead
+116             Call modGuilds.SendGuildNews(UserIndex, guildList)
+                '            Call WriteGuildMemberInfo(UserIndex, guildList, MemberList)
+                ' Call Protocol.WriteGuildList(UserIndex, guildList)
+                Exit Sub
+
+            End If
+        
+118         MemberList = guilds(GI).GetMemberList()
+120         aspirantsList = guilds(GI).GetAspirantes()
+        
+122         Call WriteGuildLeaderInfo(UserIndex, guildList, MemberList, guilds(GI).GetGuildNews(), aspirantsList, guilds(GI).GetNivelDeClan, guilds(GI).GetExpActual, guilds(GI).GetExpNecesaria)
+
+        End With
+
+        
+        Exit Sub
+
+SendGuildLeaderInfo_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.SendGuildLeaderInfo", Erl)
+        Resume Next
+        
+End Sub
+
+Public Function m_Iterador_ProximoUserIndex(ByVal GuildIndex As Integer) As Integer
+        'itera sobre los onlinemembers
+        
+        On Error GoTo m_Iterador_ProximoUserIndex_Err
+        
+100     m_Iterador_ProximoUserIndex = 0
+
+102     If GuildIndex > 0 And GuildIndex <= CANTIDADDECLANES Then
+104         m_Iterador_ProximoUserIndex = guilds(GuildIndex).m_Iterador_ProximoUserIndex()
+
+        End If
+
+        
+        Exit Function
+
+m_Iterador_ProximoUserIndex_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.m_Iterador_ProximoUserIndex", Erl)
+        Resume Next
+        
+End Function
+
+Public Function Iterador_ProximoGM(ByVal GuildIndex As Integer) As Integer
+        'itera sobre los gms escuchando este clan
+        
+        On Error GoTo Iterador_ProximoGM_Err
+        
+100     Iterador_ProximoGM = 0
+
+102     If GuildIndex > 0 And GuildIndex <= CANTIDADDECLANES Then
+104         Iterador_ProximoGM = guilds(GuildIndex).Iterador_ProximoGM()
+
+        End If
+
+        
+        Exit Function
+
+Iterador_ProximoGM_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.Iterador_ProximoGM", Erl)
+        Resume Next
+        
+End Function
+
+Public Function r_Iterador_ProximaPropuesta(ByVal GuildIndex As Integer, ByVal Tipo As RELACIONES_GUILD) As Integer
+        'itera sobre las propuestas
+        
+        On Error GoTo r_Iterador_ProximaPropuesta_Err
+        
+100     r_Iterador_ProximaPropuesta = 0
+
+102     If GuildIndex > 0 And GuildIndex <= CANTIDADDECLANES Then
+104         r_Iterador_ProximaPropuesta = guilds(GuildIndex).Iterador_ProximaPropuesta(Tipo)
+
+        End If
+
+        
+        Exit Function
+
+r_Iterador_ProximaPropuesta_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.r_Iterador_ProximaPropuesta", Erl)
+        Resume Next
+        
+End Function
+
+Public Function GMEscuchaClan(ByVal UserIndex As Integer, ByVal GuildName As String) As Integer
+        
+        On Error GoTo GMEscuchaClan_Err
+        
+
+        Dim GI As Integer
+
+        'listen to no guild at all
+100     If LenB(GuildName) = 0 And UserList(UserIndex).EscucheClan <> 0 Then
+            'Quit listening to previous guild!!
+102         Call WriteConsoleMsg(UserIndex, "Dejas de escuchar a : " & guilds(UserList(UserIndex).EscucheClan).GuildName, FontTypeNames.FONTTYPE_GUILD)
+104         guilds(UserList(UserIndex).EscucheClan).DesconectarGM (UserIndex)
+            Exit Function
+
+        End If
+    
+        'devuelve el guildindex
+106     GI = GuildIndex(GuildName)
+
+108     If GI > 0 Then
+110         If UserList(UserIndex).EscucheClan <> 0 Then
+112             If UserList(UserIndex).EscucheClan = GI Then
+                    'Already listening to them...
+114                 Call WriteConsoleMsg(UserIndex, "Conectado a : " & GuildName, FontTypeNames.FONTTYPE_GUILD)
+116                 GMEscuchaClan = GI
+                    Exit Function
+                Else
+                    'Quit listening to previous guild!!
+118                 Call WriteConsoleMsg(UserIndex, "Dejas de escuchar a : " & guilds(UserList(UserIndex).EscucheClan).GuildName, FontTypeNames.FONTTYPE_GUILD)
+120                 guilds(UserList(UserIndex).EscucheClan).DesconectarGM (UserIndex)
+
+                End If
+
+            End If
+        
+122         Call guilds(GI).ConectarGM(UserIndex)
+124         Call WriteConsoleMsg(UserIndex, "Conectado a : " & GuildName, FontTypeNames.FONTTYPE_GUILD)
+126         GMEscuchaClan = GI
+128         UserList(UserIndex).EscucheClan = GI
+        Else
+130         Call WriteConsoleMsg(UserIndex, "Error, el clan no existe", FontTypeNames.FONTTYPE_GUILD)
+132         GMEscuchaClan = 0
+
+        End If
+    
+        
+        Exit Function
+
+GMEscuchaClan_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.GMEscuchaClan", Erl)
+        Resume Next
+        
+End Function
+
+Public Sub GMDejaDeEscucharClan(ByVal UserIndex As Integer, ByVal GuildIndex As Integer)
+        'el index lo tengo que tener de cuando me puse a escuchar
+        
+        On Error GoTo GMDejaDeEscucharClan_Err
+        
+100     UserList(UserIndex).EscucheClan = 0
+102     Call guilds(GuildIndex).DesconectarGM(UserIndex)
+
+        
+        Exit Sub
+
+GMDejaDeEscucharClan_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.GMDejaDeEscucharClan", Erl)
+        Resume Next
+        
+End Sub
+
+Public Function r_DeclararGuerra(ByVal UserIndex As Integer, ByRef GuildGuerra As String, ByRef refError As String) As Integer
+        
+        On Error GoTo r_DeclararGuerra_Err
+        
+
+        Dim GI  As Integer
+
+        Dim GIG As Integer
+
+100     r_DeclararGuerra = 0
+102     GI = UserList(UserIndex).GuildIndex
+
+104     If GI <= 0 Or GI > CANTIDADDECLANES Then
+106         refError = "No eres miembro de ningún clan"
+            Exit Function
+
+        End If
+    
+108     If Not m_EsGuildLeader(UserList(UserIndex).name, GI) Then
+110         refError = "No eres el líder de tu clan"
+            Exit Function
+
+        End If
+    
+112     If Trim$(GuildGuerra) = vbNullString Then
+114         refError = "No has seleccionado ningún clan"
+            Exit Function
+
+        End If
+
+116     GIG = GuildIndex(GuildGuerra)
+    
+118     If GI = GIG Then
+120         refError = "No podés declarar la guerra a tu mismo clan"
+            Exit Function
+
+        End If
+
+122     If GIG < 1 Or GIG > CANTIDADDECLANES Then
+124         Call LogError("ModGuilds.r_DeclararGuerra: " & GI & " declara a " & GuildGuerra)
+126         refError = "Inconsistencia en el sistema de clanes. Avise a un administrador (GIG fuera de rango)"
+            Exit Function
+
+        End If
+
+128     Call guilds(GI).AnularPropuestas(GIG)
+130     Call guilds(GIG).AnularPropuestas(GI)
+132     Call guilds(GI).SetRelacion(GIG, RELACIONES_GUILD.GUERRA)
+134     Call guilds(GIG).SetRelacion(GI, RELACIONES_GUILD.GUERRA)
+
+136     r_DeclararGuerra = GIG
+
+        
+        Exit Function
+
+r_DeclararGuerra_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.r_DeclararGuerra", Erl)
+        Resume Next
+        
+End Function
+
+Public Function r_AceptarPropuestaDePaz(ByVal UserIndex As Integer, ByRef GuildPaz As String, ByRef refError As String) As Integer
+        
+        On Error GoTo r_AceptarPropuestaDePaz_Err
+        
+
+        'el clan de userindex acepta la propuesta de paz de guildpaz, con quien esta en guerra
+        Dim GI  As Integer
+
+        Dim GIG As Integer
+
+100     GI = UserList(UserIndex).GuildIndex
+
+102     If GI <= 0 Or GI > CANTIDADDECLANES Then
+104         refError = "No eres miembro de ningún clan"
+            Exit Function
+
+        End If
+    
+106     If Not m_EsGuildLeader(UserList(UserIndex).name, GI) Then
+108         refError = "No eres el líder de tu clan"
+            Exit Function
+
+        End If
+    
+110     If Trim$(GuildPaz) = vbNullString Then
+112         refError = "No has seleccionado ningún clan"
+            Exit Function
+
+        End If
+
+114     GIG = GuildIndex(GuildPaz)
+    
+116     If GIG < 1 Or GIG > CANTIDADDECLANES Then
+118         Call LogError("ModGuilds.r_AceptarPropuestaDePaz: " & GI & " acepta de " & GuildPaz)
+120         refError = "Inconsistencia en el sistema de clanes. Avise a un administrador (GIG fuera de rango)"
+            Exit Function
+
+        End If
+
+122     If guilds(GI).GetRelacion(GIG) <> RELACIONES_GUILD.GUERRA Then
+124         refError = "No estás en guerra con ese clan"
+            Exit Function
+
+        End If
+    
+126     If Not guilds(GI).HayPropuesta(GIG, RELACIONES_GUILD.PAZ) Then
+128         refError = "No hay ninguna propuesta de paz para aceptar"
+            Exit Function
+
+        End If
+
+130     Call guilds(GI).AnularPropuestas(GIG)
+132     Call guilds(GIG).AnularPropuestas(GI)
+134     Call guilds(GI).SetRelacion(GIG, RELACIONES_GUILD.PAZ)
+136     Call guilds(GIG).SetRelacion(GI, RELACIONES_GUILD.PAZ)
+    
+138     r_AceptarPropuestaDePaz = GIG
+
+        
+        Exit Function
+
+r_AceptarPropuestaDePaz_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.r_AceptarPropuestaDePaz", Erl)
+        Resume Next
+        
+End Function
+
+Public Function r_RechazarPropuestaDeAlianza(ByVal UserIndex As Integer, ByRef GuildPro As String, ByRef refError As String) As Integer
+        
+        On Error GoTo r_RechazarPropuestaDeAlianza_Err
+        
+
+        'devuelve el index al clan guildPro
+        Dim GI  As Integer
+
+        Dim GIG As Integer
+
+100     r_RechazarPropuestaDeAlianza = 0
+102     GI = UserList(UserIndex).GuildIndex
+    
+104     If GI <= 0 Or GI > CANTIDADDECLANES Then
+106         refError = "No eres miembro de ningún clan"
+            Exit Function
+
+        End If
+    
+108     If Not m_EsGuildLeader(UserList(UserIndex).name, GI) Then
+110         refError = "No eres el líder de tu clan"
+            Exit Function
+
+        End If
+    
+112     If Trim$(GuildPro) = vbNullString Then
+114         refError = "No has seleccionado ningún clan"
+            Exit Function
+
+        End If
+
+116     GIG = GuildIndex(GuildPro)
+    
+118     If GIG < 1 Or GIG > CANTIDADDECLANES Then
+120         Call LogError("ModGuilds.r_RechazarPropuestaDeAlianza: " & GI & " acepta de " & GuildPro)
+122         refError = "Inconsistencia en el sistema de clanes. Avise a un administrador (GIG fuera de rango)"
+            Exit Function
+
+        End If
+    
+124     If Not guilds(GI).HayPropuesta(GIG, ALIADOS) Then
+126         refError = "No hay propuesta de alianza del clan " & GuildPro
+            Exit Function
+
+        End If
+    
+128     Call guilds(GI).AnularPropuestas(GIG)
+        'avisamos al otro clan
+130     Call guilds(GIG).SetGuildNews(guilds(GI).GuildName & " ha rechazado nuestra propuesta de alianza. " & guilds(GIG).GetGuildNews())
+132     r_RechazarPropuestaDeAlianza = GIG
+
+        
+        Exit Function
+
+r_RechazarPropuestaDeAlianza_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.r_RechazarPropuestaDeAlianza", Erl)
+        Resume Next
+        
+End Function
+
+Public Function r_RechazarPropuestaDePaz(ByVal UserIndex As Integer, ByRef GuildPro As String, ByRef refError As String) As Integer
+        
+        On Error GoTo r_RechazarPropuestaDePaz_Err
+        
+
+        'devuelve el index al clan guildPro
+        Dim GI  As Integer
+
+        Dim GIG As Integer
+
+100     r_RechazarPropuestaDePaz = 0
+102     GI = UserList(UserIndex).GuildIndex
+    
+104     If GI <= 0 Or GI > CANTIDADDECLANES Then
+106         refError = "No eres miembro de ningún clan"
+            Exit Function
+
+        End If
+    
+108     If Not m_EsGuildLeader(UserList(UserIndex).name, GI) Then
+110         refError = "No eres el líder de tu clan"
+            Exit Function
+
+        End If
+    
+112     If Trim$(GuildPro) = vbNullString Then
+114         refError = "No has seleccionado ningún clan"
+            Exit Function
+
+        End If
+
+116     GIG = GuildIndex(GuildPro)
+    
+118     If GIG < 1 Or GIG > CANTIDADDECLANES Then
+120         Call LogError("ModGuilds.r_RechazarPropuestaDePaz: " & GI & " acepta de " & GuildPro)
+122         refError = "Inconsistencia en el sistema de clanes. Avise a un administrador (GIG fuera de rango)"
+            Exit Function
+
+        End If
+    
+124     If Not guilds(GI).HayPropuesta(GIG, RELACIONES_GUILD.PAZ) Then
+126         refError = "No hay propuesta de paz del clan " & GuildPro
+            Exit Function
+
+        End If
+    
+128     Call guilds(GI).AnularPropuestas(GIG)
+        'avisamos al otro clan
+130     Call guilds(GIG).SetGuildNews(guilds(GI).GuildName & " ha rechazado nuestra propuesta de paz. " & guilds(GIG).GetGuildNews())
+132     r_RechazarPropuestaDePaz = GIG
+
+        
+        Exit Function
+
+r_RechazarPropuestaDePaz_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.r_RechazarPropuestaDePaz", Erl)
+        Resume Next
+        
+End Function
+
+Public Function r_AceptarPropuestaDeAlianza(ByVal UserIndex As Integer, ByRef GuildAllie As String, ByRef refError As String) As Integer
+        
+        On Error GoTo r_AceptarPropuestaDeAlianza_Err
+        
+
+        'el clan de userindex acepta la propuesta de paz de guildpaz, con quien esta en guerra
+        Dim GI  As Integer
+
+        Dim GIG As Integer
+
+100     r_AceptarPropuestaDeAlianza = 0
+102     GI = UserList(UserIndex).GuildIndex
+
+104     If GI <= 0 Or GI > CANTIDADDECLANES Then
+106         refError = "No eres miembro de ningún clan"
+            Exit Function
+
+        End If
+    
+108     If Not m_EsGuildLeader(UserList(UserIndex).name, GI) Then
+110         refError = "No eres el líder de tu clan"
+            Exit Function
+
+        End If
+    
+112     If Trim$(GuildAllie) = vbNullString Then
+114         refError = "No has seleccionado ningún clan"
+            Exit Function
+
+        End If
+
+116     GIG = GuildIndex(GuildAllie)
+    
+118     If GIG < 1 Or GIG > CANTIDADDECLANES Then
+120         Call LogError("ModGuilds.r_AceptarPropuestaDeAlianza: " & GI & " acepta de " & GuildAllie)
+122         refError = "Inconsistencia en el sistema de clanes. Avise a un administrador (GIG fuera de rango)"
+            Exit Function
+
+        End If
+
+124     If guilds(GI).GetRelacion(GIG) <> RELACIONES_GUILD.PAZ Then
+126         refError = "No estás en paz con el clan, solo podés aceptar propuesas de alianzas con alguien que estes en paz."
+            Exit Function
+
+        End If
+    
+128     If Not guilds(GI).HayPropuesta(GIG, RELACIONES_GUILD.ALIADOS) Then
+130         refError = "No hay ninguna propuesta de alianza para aceptar."
+            Exit Function
+
+        End If
+
+132     Call guilds(GI).AnularPropuestas(GIG)
+134     Call guilds(GIG).AnularPropuestas(GI)
+136     Call guilds(GI).SetRelacion(GIG, RELACIONES_GUILD.ALIADOS)
+138     Call guilds(GIG).SetRelacion(GI, RELACIONES_GUILD.ALIADOS)
+    
+140     r_AceptarPropuestaDeAlianza = GIG
+
+        
+        Exit Function
+
+r_AceptarPropuestaDeAlianza_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.r_AceptarPropuestaDeAlianza", Erl)
+        Resume Next
+        
+End Function
+
+Public Function r_ClanGeneraPropuesta(ByVal UserIndex As Integer, ByRef OtroClan As String, ByVal Tipo As RELACIONES_GUILD, ByRef Detalle As String, ByRef refError As String) As Boolean
+        
+        On Error GoTo r_ClanGeneraPropuesta_Err
+        
+
+        Dim OtroClanGI As Integer
+
+        Dim GI         As Integer
+
+100     r_ClanGeneraPropuesta = False
+    
+102     GI = UserList(UserIndex).GuildIndex
+
+104     If GI <= 0 Or GI > CANTIDADDECLANES Then
+106         refError = "No eres miembro de ningún clan"
+            Exit Function
+
+        End If
+    
+108     OtroClanGI = GuildIndex(OtroClan)
+    
+110     If OtroClanGI = GI Then
+112         refError = "No podés declarar relaciones con tu propio clan"
+            Exit Function
+
+        End If
+    
+114     If OtroClanGI <= 0 Or OtroClanGI > CANTIDADDECLANES Then
+116         refError = "El sistema de clanes esta inconsistente, el otro clan no existe!"
+            Exit Function
+
+        End If
+    
+118     If guilds(OtroClanGI).HayPropuesta(GI, Tipo) Then
+120         refError = "Ya hay propuesta de " & Relacion2String(Tipo) & " con " & OtroClan
+            Exit Function
+
+        End If
+    
+122     If Not m_EsGuildLeader(UserList(UserIndex).name, GI) Then
+124         refError = "No eres el líder de tu clan"
+            Exit Function
+
+        End If
+    
+        'de acuerdo al tipo procedemos validando las transiciones
+126     If Tipo = RELACIONES_GUILD.PAZ Then
+128         If guilds(GI).GetRelacion(OtroClanGI) <> RELACIONES_GUILD.GUERRA Then
+130             refError = "No estás en guerra con " & OtroClan
+                Exit Function
+
+            End If
+
+132     ElseIf Tipo = RELACIONES_GUILD.GUERRA Then
+            'por ahora no hay propuestas de guerra
+134     ElseIf Tipo = RELACIONES_GUILD.ALIADOS Then
+
+136         If guilds(GI).GetRelacion(OtroClanGI) <> RELACIONES_GUILD.PAZ Then
+138             refError = "Para solicitar alianza no debes estar ni aliado ni en guerra con " & OtroClan
+                Exit Function
+
+            End If
+
+        End If
+    
+140     Call guilds(OtroClanGI).SetPropuesta(Tipo, GI, Detalle)
+142     r_ClanGeneraPropuesta = True
+
+        
+        Exit Function
+
+r_ClanGeneraPropuesta_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.r_ClanGeneraPropuesta", Erl)
+        Resume Next
+        
+End Function
+
+Public Function r_VerPropuesta(ByVal UserIndex As Integer, ByRef OtroGuild As String, ByVal Tipo As RELACIONES_GUILD, ByRef refError As String) As String
+        
+        On Error GoTo r_VerPropuesta_Err
+        
+
+        Dim OtroClanGI As Integer
+
+        Dim GI         As Integer
+    
+100     r_VerPropuesta = vbNullString
+102     refError = vbNullString
+    
+104     GI = UserList(UserIndex).GuildIndex
+
+106     If GI <= 0 Or GI > CANTIDADDECLANES Then
+108         refError = "No eres miembro de ningún clan"
+            Exit Function
+
+        End If
+    
+110     If Not m_EsGuildLeader(UserList(UserIndex).name, GI) Then
+112         refError = "No eres el líder de tu clan"
+            Exit Function
+
+        End If
+    
+114     OtroClanGI = GuildIndex(OtroGuild)
+    
+116     If Not guilds(GI).HayPropuesta(OtroClanGI, Tipo) Then
+118         refError = "No existe la propuesta solicitada"
+            Exit Function
+
+        End If
+    
+120     r_VerPropuesta = guilds(GI).GetPropuesta(OtroClanGI, Tipo)
+    
+        
+        Exit Function
+
+r_VerPropuesta_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.r_VerPropuesta", Erl)
+        Resume Next
+        
+End Function
+
+Public Function r_ListaDePropuestas(ByVal UserIndex As Integer, ByVal Tipo As RELACIONES_GUILD) As String()
+        
+        On Error GoTo r_ListaDePropuestas_Err
+        
+
+        Dim GI            As Integer
+
+        Dim i             As Integer
+
+        Dim proposalCount As Integer
+
+        Dim proposals()   As String
+    
+100     GI = UserList(UserIndex).GuildIndex
+    
+102     If GI > 0 And GI <= CANTIDADDECLANES Then
+
+104         With guilds(GI)
+106             proposalCount = .CantidadPropuestas(Tipo)
+            
+                'Resize array to contain all proposals
+108             If proposalCount > 0 Then
+110                 ReDim proposals(proposalCount - 1) As String
+                Else
+112                 ReDim proposals(0) As String
+
+                End If
+            
+                'Store each guild name
+114             For i = 0 To proposalCount - 1
+116                 proposals(i) = guilds(.Iterador_ProximaPropuesta(Tipo)).GuildName
+118             Next i
+
+            End With
+
+        End If
+    
+120     r_ListaDePropuestas = proposals
+
+        
+        Exit Function
+
+r_ListaDePropuestas_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.r_ListaDePropuestas", Erl)
+        Resume Next
+        
 End Function
 
 Public Sub a_RechazarAspiranteChar(ByRef Aspirante As String, ByVal guild As Integer, ByRef Detalles As String)
+        
+        On Error GoTo a_RechazarAspiranteChar_Err
+        
 
-    If InStrB(Aspirante, "\") <> 0 Then
-        Aspirante = Replace(Aspirante, "\", "")
+100     If InStrB(Aspirante, "\") <> 0 Then
+102         Aspirante = Replace(Aspirante, "\", "")
 
-    End If
+        End If
 
-    If InStrB(Aspirante, "/") <> 0 Then
-        Aspirante = Replace(Aspirante, "/", "")
+104     If InStrB(Aspirante, "/") <> 0 Then
+106         Aspirante = Replace(Aspirante, "/", "")
 
-    End If
+        End If
 
-    If InStrB(Aspirante, ".") <> 0 Then
-        Aspirante = Replace(Aspirante, ".", "")
+108     If InStrB(Aspirante, ".") <> 0 Then
+110         Aspirante = Replace(Aspirante, ".", "")
 
-    End If
+        End If
 
-    Call SaveUserGuildRejectionReason(Aspirante, Detalles)
+112     Call SaveUserGuildRejectionReason(Aspirante, Detalles)
 
+        
+        Exit Sub
+
+a_RechazarAspiranteChar_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.a_RechazarAspiranteChar", Erl)
+        Resume Next
+        
 End Sub
 
 Public Function a_ObtenerRechazoDeChar(ByRef Aspirante As String) As String
+        
+        On Error GoTo a_ObtenerRechazoDeChar_Err
+        
 
-    If InStrB(Aspirante, "\") <> 0 Then
-        Aspirante = Replace(Aspirante, "\", "")
+100     If InStrB(Aspirante, "\") <> 0 Then
+102         Aspirante = Replace(Aspirante, "\", "")
 
-    End If
+        End If
 
-    If InStrB(Aspirante, "/") <> 0 Then
-        Aspirante = Replace(Aspirante, "/", "")
+104     If InStrB(Aspirante, "/") <> 0 Then
+106         Aspirante = Replace(Aspirante, "/", "")
 
-    End If
+        End If
 
-    If InStrB(Aspirante, ".") <> 0 Then
-        Aspirante = Replace(Aspirante, ".", "")
+108     If InStrB(Aspirante, ".") <> 0 Then
+110         Aspirante = Replace(Aspirante, ".", "")
 
-    End If
+        End If
 
-    a_ObtenerRechazoDeChar = GetUserGuildRejectionReason(Aspirante)
-    Call SaveUserGuildRejectionReason(Aspirante, vbNullString)
+112     a_ObtenerRechazoDeChar = GetUserGuildRejectionReason(Aspirante)
+114     Call SaveUserGuildRejectionReason(Aspirante, vbNullString)
 
+        
+        Exit Function
+
+a_ObtenerRechazoDeChar_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.a_ObtenerRechazoDeChar", Erl)
+        Resume Next
+        
 End Function
 
 Public Function a_RechazarAspirante(ByVal UserIndex As Integer, ByRef nombre As String, ByRef refError As String) As Boolean
+        
+        On Error GoTo a_RechazarAspirante_Err
+        
 
-    Dim GI           As Integer
+        Dim GI           As Integer
 
-    Dim NroAspirante As Integer
+        Dim NroAspirante As Integer
 
-    a_RechazarAspirante = False
-    GI = UserList(UserIndex).GuildIndex
+100     a_RechazarAspirante = False
+102     GI = UserList(UserIndex).GuildIndex
 
-    If GI <= 0 Or GI > CANTIDADDECLANES Then
-        refError = "No perteneces a ningún clan"
+104     If GI <= 0 Or GI > CANTIDADDECLANES Then
+106         refError = "No perteneces a ningún clan"
+            Exit Function
+
+        End If
+
+108     NroAspirante = guilds(GI).NumeroDeAspirante(nombre)
+
+110     If NroAspirante = 0 Then
+112         refError = nombre & " no es aspirante a tu clan"
+            Exit Function
+
+        End If
+
+114     Call guilds(GI).RetirarAspirante(nombre, NroAspirante)
+116     refError = "Fue rechazada tu solicitud de ingreso a " & guilds(GI).GuildName
+118     a_RechazarAspirante = True
+
+        
         Exit Function
 
-    End If
-
-    NroAspirante = guilds(GI).NumeroDeAspirante(nombre)
-
-    If NroAspirante = 0 Then
-        refError = nombre & " no es aspirante a tu clan"
-        Exit Function
-
-    End If
-
-    Call guilds(GI).RetirarAspirante(nombre, NroAspirante)
-    refError = "Fue rechazada tu solicitud de ingreso a " & guilds(GI).GuildName
-    a_RechazarAspirante = True
-
+a_RechazarAspirante_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.a_RechazarAspirante", Erl)
+        Resume Next
+        
 End Function
 
 Public Function a_DetallesAspirante(ByVal UserIndex As Integer, ByRef nombre As String) As String
+        
+        On Error GoTo a_DetallesAspirante_Err
+        
 
-    Dim GI           As Integer
+        Dim GI           As Integer
 
-    Dim NroAspirante As Integer
+        Dim NroAspirante As Integer
 
-    GI = UserList(UserIndex).GuildIndex
+100     GI = UserList(UserIndex).GuildIndex
 
-    If GI <= 0 Or GI > CANTIDADDECLANES Then
+102     If GI <= 0 Or GI > CANTIDADDECLANES Then
+            Exit Function
+
+        End If
+    
+104     If Not m_EsGuildLeader(UserList(UserIndex).name, GI) Then
+            Exit Function
+
+        End If
+    
+106     NroAspirante = guilds(GI).NumeroDeAspirante(nombre)
+
+108     If NroAspirante > 0 Then
+110         a_DetallesAspirante = guilds(GI).DetallesSolicitudAspirante(NroAspirante)
+
+        End If
+    
+        
         Exit Function
 
-    End If
-    
-    If Not m_EsGuildLeader(UserList(UserIndex).name, GI) Then
-        Exit Function
-
-    End If
-    
-    NroAspirante = guilds(GI).NumeroDeAspirante(nombre)
-
-    If NroAspirante > 0 Then
-        a_DetallesAspirante = guilds(GI).DetallesSolicitudAspirante(NroAspirante)
-
-    End If
-    
+a_DetallesAspirante_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.a_DetallesAspirante", Erl)
+        Resume Next
+        
 End Function
 
 Public Sub SendDetallesPersonaje(ByVal UserIndex As Integer, ByVal Personaje As String)
@@ -1586,444 +2046,624 @@ Error:
 End Sub
 
 Public Function a_NuevoAspirante(ByVal UserIndex As Integer, ByRef clan As String, ByRef Solicitud As String, ByRef refError As String) As Boolean
+        
+        On Error GoTo a_NuevoAspirante_Err
+        
 
-    Dim ViejoSolicitado   As String
+        Dim ViejoSolicitado   As String
 
-    Dim ViejoGuildINdex   As Integer
+        Dim ViejoGuildINdex   As Integer
 
-    Dim ViejoNroAspirante As Integer
+        Dim ViejoNroAspirante As Integer
 
-    Dim NuevoGuildIndex   As Integer
+        Dim NuevoGuildIndex   As Integer
 
-    a_NuevoAspirante = False
+100     a_NuevoAspirante = False
 
-    If UserList(UserIndex).GuildIndex > 0 Then
-        refError = "Ya perteneces a un clan, debes salir del mismo antes de solicitar ingresar a otro"
-        Exit Function
+102     If UserList(UserIndex).GuildIndex > 0 Then
+104         refError = "Ya perteneces a un clan, debes salir del mismo antes de solicitar ingresar a otro"
+            Exit Function
 
-    End If
+        End If
     
-    If EsNewbie(UserIndex) Then
-        refError = "Los newbies no tienen derecho a entrar a un clan."
-        Exit Function
+106     If EsNewbie(UserIndex) Then
+108         refError = "Los newbies no tienen derecho a entrar a un clan."
+            Exit Function
 
-    End If
+        End If
 
-    NuevoGuildIndex = GuildIndex(clan)
+110     NuevoGuildIndex = GuildIndex(clan)
 
-    If NuevoGuildIndex = 0 Then
-        refError = "Ese clan no existe! Avise a un administrador."
-        Exit Function
+112     If NuevoGuildIndex = 0 Then
+114         refError = "Ese clan no existe! Avise a un administrador."
+            Exit Function
 
-    End If
+        End If
     
-    If Not m_EstadoPermiteEntrar(UserIndex, NuevoGuildIndex) Then
-        refError = "Tu no podés entrar a un clan de alineación " & Alineacion2String(guilds(NuevoGuildIndex).Alineacion)
+116     If Not m_EstadoPermiteEntrar(UserIndex, NuevoGuildIndex) Then
+118         refError = "Tu no podés entrar a un clan de alineación " & Alineacion2String(guilds(NuevoGuildIndex).Alineacion)
+            Exit Function
+
+        End If
+
+120     If guilds(NuevoGuildIndex).CantidadAspirantes >= MAXASPIRANTES Then
+122         refError = "El clan tiene demasiados aspirantes. Contáctate con un miembro para que procese las solicitudes."
+            Exit Function
+
+        End If
+
+124     ViejoSolicitado = GetVar(CharPath & UserList(UserIndex).name & ".chr", "GUILD", "ASPIRANTEA")
+
+126     If LenB(ViejoSolicitado) <> 0 Then
+            'borramos la vieja solicitud
+128         ViejoGuildINdex = CInt(ViejoSolicitado)
+
+130         If ViejoGuildINdex <> 0 Then
+132             ViejoNroAspirante = guilds(ViejoGuildINdex).NumeroDeAspirante(UserList(UserIndex).name)
+
+134             If ViejoNroAspirante > 0 Then
+136                 Call guilds(ViejoGuildINdex).RetirarAspirante(UserList(UserIndex).name, ViejoNroAspirante)
+
+                End If
+
+            Else
+
+                'RefError = "Inconsistencia en los clanes, avise a un administrador"
+                'Exit Function
+            End If
+
+        End If
+    
+138     Call SendData(SendTarget.ToDiosesYclan, NuevoGuildIndex, PrepareMessageGuildChat("Clan> [" & UserList(UserIndex).name & "] ha enviado solicitud para unirse al clan."))
+    
+140     Call guilds(NuevoGuildIndex).NuevoAspirante(UserList(UserIndex).name, Solicitud)
+142     a_NuevoAspirante = True
+
+        
         Exit Function
 
-    End If
+a_NuevoAspirante_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.a_NuevoAspirante", Erl)
+        Resume Next
+        
+End Function
 
-    If guilds(NuevoGuildIndex).CantidadAspirantes >= MAXASPIRANTES Then
-        refError = "El clan tiene demasiados aspirantes. Contáctate con un miembro para que procese las solicitudes."
-        Exit Function
+Public Function a_AceptarAspirante(ByVal UserIndex As Integer, ByRef Aspirante As String, ByRef refError As String) As Boolean
+        
+        On Error GoTo a_AceptarAspirante_Err
+        
 
-    End If
+        Dim GI           As Integer
 
-    ViejoSolicitado = GetVar(CharPath & UserList(UserIndex).name & ".chr", "GUILD", "ASPIRANTEA")
+        Dim NroAspirante As Integer
 
-    If LenB(ViejoSolicitado) <> 0 Then
-        'borramos la vieja solicitud
-        ViejoGuildINdex = CInt(ViejoSolicitado)
+        Dim AspiranteUI  As Integer
 
-        If ViejoGuildINdex <> 0 Then
-            ViejoNroAspirante = guilds(ViejoGuildINdex).NumeroDeAspirante(UserList(UserIndex).name)
+        'un pj ingresa al clan :D
 
-            If ViejoNroAspirante > 0 Then
-                Call guilds(ViejoGuildINdex).RetirarAspirante(UserList(UserIndex).name, ViejoNroAspirante)
+100     a_AceptarAspirante = False
+    
+102     GI = UserList(UserIndex).GuildIndex
+
+104     If GI <= 0 Or GI > CANTIDADDECLANES Then
+106         refError = "No perteneces a ningún clan"
+            Exit Function
+
+        End If
+    
+108     If Not m_EsGuildLeader(UserList(UserIndex).name, GI) Then
+110         refError = "No eres el líder de tu clan"
+            Exit Function
+
+        End If
+    
+112     NroAspirante = guilds(GI).NumeroDeAspirante(Aspirante)
+    
+114     If NroAspirante = 0 Then
+116         refError = "El Pj no es aspirante al clan"
+            Exit Function
+
+        End If
+    
+118     AspiranteUI = NameIndex(Aspirante)
+
+120     If AspiranteUI > 0 Then
+
+            'pj Online
+122         If Not m_EstadoPermiteEntrar(AspiranteUI, GI) Then
+124             refError = Aspirante & " no puede entrar a un clan " & Alineacion2String(guilds(GI).Alineacion)
+126             Call guilds(GI).RetirarAspirante(Aspirante, NroAspirante)
+                Exit Function
+128         ElseIf Not UserList(AspiranteUI).GuildIndex = 0 Then
+130             refError = Aspirante & " ya es parte de otro clan."
+132             Call guilds(GI).RetirarAspirante(Aspirante, NroAspirante)
+                Exit Function
 
             End If
 
         Else
 
-            'RefError = "Inconsistencia en los clanes, avise a un administrador"
-            'Exit Function
+134         If Not m_EstadoPermiteEntrarChar(Aspirante, GI) Then
+136             refError = Aspirante & " no puede entrar a un clan " & Alineacion2String(guilds(GI).Alineacion)
+138             Call guilds(GI).RetirarAspirante(Aspirante, NroAspirante)
+                Exit Function
+140         ElseIf GetGuildIndexFromChar(Aspirante) Then
+142             refError = Aspirante & " ya es parte de otro clan."
+144             Call guilds(GI).RetirarAspirante(Aspirante, NroAspirante)
+                Exit Function
+
+            End If
+
         End If
-
-    End If
     
-    Call SendData(SendTarget.ToDiosesYclan, NuevoGuildIndex, PrepareMessageGuildChat("Clan> [" & UserList(UserIndex).name & "] ha enviado solicitud para unirse al clan."))
-    
-    Call guilds(NuevoGuildIndex).NuevoAspirante(UserList(UserIndex).name, Solicitud)
-    a_NuevoAspirante = True
-
-End Function
-
-Public Function a_AceptarAspirante(ByVal UserIndex As Integer, ByRef Aspirante As String, ByRef refError As String) As Boolean
-
-    Dim GI           As Integer
-
-    Dim NroAspirante As Integer
-
-    Dim AspiranteUI  As Integer
-
-    'un pj ingresa al clan :D
-
-    a_AceptarAspirante = False
-    
-    GI = UserList(UserIndex).GuildIndex
-
-    If GI <= 0 Or GI > CANTIDADDECLANES Then
-        refError = "No perteneces a ningún clan"
-        Exit Function
-
-    End If
-    
-    If Not m_EsGuildLeader(UserList(UserIndex).name, GI) Then
-        refError = "No eres el líder de tu clan"
-        Exit Function
-
-    End If
-    
-    NroAspirante = guilds(GI).NumeroDeAspirante(Aspirante)
-    
-    If NroAspirante = 0 Then
-        refError = "El Pj no es aspirante al clan"
-        Exit Function
-
-    End If
-    
-    AspiranteUI = NameIndex(Aspirante)
-
-    If AspiranteUI > 0 Then
-
-        'pj Online
-        If Not m_EstadoPermiteEntrar(AspiranteUI, GI) Then
-            refError = Aspirante & " no puede entrar a un clan " & Alineacion2String(guilds(GI).Alineacion)
-            Call guilds(GI).RetirarAspirante(Aspirante, NroAspirante)
-            Exit Function
-        ElseIf Not UserList(AspiranteUI).GuildIndex = 0 Then
-            refError = Aspirante & " ya es parte de otro clan."
-            Call guilds(GI).RetirarAspirante(Aspirante, NroAspirante)
+146     If guilds(GI).CantidadDeMiembros + 1 > MiembrosPermite(GI) Then
+148         refError = "La capacidad del clan esta completa."
             Exit Function
 
         End If
-
-    Else
-
-        If Not m_EstadoPermiteEntrarChar(Aspirante, GI) Then
-            refError = Aspirante & " no puede entrar a un clan " & Alineacion2String(guilds(GI).Alineacion)
-            Call guilds(GI).RetirarAspirante(Aspirante, NroAspirante)
-            Exit Function
-        ElseIf GetGuildIndexFromChar(Aspirante) Then
-            refError = Aspirante & " ya es parte de otro clan."
-            Call guilds(GI).RetirarAspirante(Aspirante, NroAspirante)
-            Exit Function
+    
+        'el pj es aspirante al clan y puede entrar
+    
+150     Call guilds(GI).RetirarAspirante(Aspirante, NroAspirante)
+152     Call guilds(GI).AceptarNuevoMiembro(Aspirante)
+    
+        ' If player is online, update tag
+154     If AspiranteUI > 0 Then
+156         Call RefreshCharStatus(AspiranteUI)
 
         End If
-
-    End If
     
-    If guilds(GI).CantidadDeMiembros + 1 > MiembrosPermite(GI) Then
-        refError = "La capacidad del clan esta completa."
+158     a_AceptarAspirante = True
+
+        
         Exit Function
 
-    End If
-    
-    'el pj es aspirante al clan y puede entrar
-    
-    Call guilds(GI).RetirarAspirante(Aspirante, NroAspirante)
-    Call guilds(GI).AceptarNuevoMiembro(Aspirante)
-    
-    ' If player is online, update tag
-    If AspiranteUI > 0 Then
-        Call RefreshCharStatus(AspiranteUI)
-
-    End If
-    
-    a_AceptarAspirante = True
-
+a_AceptarAspirante_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.a_AceptarAspirante", Erl)
+        Resume Next
+        
 End Function
 
 Public Function GuildName(ByVal GuildIndex As Integer) As String
+        
+        On Error GoTo GuildName_Err
+        
 
-    If GuildIndex <= 0 Or GuildIndex > CANTIDADDECLANES Then Exit Function
+100     If GuildIndex <= 0 Or GuildIndex > CANTIDADDECLANES Then Exit Function
     
-    GuildName = guilds(GuildIndex).GuildName
+102     GuildName = guilds(GuildIndex).GuildName
 
+        
+        Exit Function
+
+GuildName_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.GuildName", Erl)
+        Resume Next
+        
 End Function
 
 Public Function GuildLeader(ByVal GuildIndex As Integer) As String
+        
+        On Error GoTo GuildLeader_Err
+        
 
-    If GuildIndex <= 0 Or GuildIndex > CANTIDADDECLANES Then Exit Function
-    GuildLeader = guilds(GuildIndex).GetLeader
+100     If GuildIndex <= 0 Or GuildIndex > CANTIDADDECLANES Then Exit Function
+102     GuildLeader = guilds(GuildIndex).GetLeader
 
+        
+        Exit Function
+
+GuildLeader_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.GuildLeader", Erl)
+        Resume Next
+        
 End Function
 
 Public Function GuildAlignment(ByVal GuildIndex As Integer) As String
+        
+        On Error GoTo GuildAlignment_Err
+        
 
-    If GuildIndex <= 0 Or GuildIndex > CANTIDADDECLANES Then Exit Function
+100     If GuildIndex <= 0 Or GuildIndex > CANTIDADDECLANES Then Exit Function
     
-    GuildAlignment = Alineacion2String(guilds(GuildIndex).Alineacion)
+102     GuildAlignment = Alineacion2String(guilds(GuildIndex).Alineacion)
 
+        
+        Exit Function
+
+GuildAlignment_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.GuildAlignment", Erl)
+        Resume Next
+        
 End Function
 
 Public Function NivelDeClan(ByVal GuildIndex As Integer) As Byte
+        
+        On Error GoTo NivelDeClan_Err
+        
 
-    If GuildIndex <= 0 Or GuildIndex > CANTIDADDECLANES Then Exit Function
+100     If GuildIndex <= 0 Or GuildIndex > CANTIDADDECLANES Then Exit Function
     
-    NivelDeClan = guilds(GuildIndex).GetNivelDeClan
+102     NivelDeClan = guilds(GuildIndex).GetNivelDeClan
 
+        
+        Exit Function
+
+NivelDeClan_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.NivelDeClan", Erl)
+        Resume Next
+        
 End Function
 
 Public Function Alineacion(ByVal GuildIndex As Integer) As Byte
+        
+        On Error GoTo Alineacion_Err
+        
 
-    If GuildIndex <= 0 Or GuildIndex > CANTIDADDECLANES Then Exit Function
+100     If GuildIndex <= 0 Or GuildIndex > CANTIDADDECLANES Then Exit Function
     
-    Alineacion = guilds(GuildIndex).Alineacion
+102     Alineacion = guilds(GuildIndex).Alineacion
 
+        
+        Exit Function
+
+Alineacion_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.Alineacion", Erl)
+        Resume Next
+        
 End Function
 
 Sub CheckClanExp(ByVal UserIndex As Integer, ByVal ExpDar As Integer)
+        
+        On Error GoTo CheckClanExp_Err
+        
 
-    Dim ExpActual    As Integer
+        Dim ExpActual    As Integer
 
-    Dim ExpNecesaria As Integer
+        Dim ExpNecesaria As Integer
 
-    Dim GI           As Integer
+        Dim GI           As Integer
 
-    Dim nivel        As Byte
+        Dim nivel        As Byte
 
-    GI = UserList(UserIndex).GuildIndex
-    ExpActual = guilds(GI).GetExpActual
-    ExpNecesaria = guilds(GI).GetExpNecesaria
-    nivel = guilds(GI).GetNivelDeClan
+100     GI = UserList(UserIndex).GuildIndex
+102     ExpActual = guilds(GI).GetExpActual
+104     ExpNecesaria = guilds(GI).GetExpNecesaria
+106     nivel = guilds(GI).GetNivelDeClan
 
-    If nivel >= 5 Then
-        Exit Sub
-
-    End If
-
-    If UserList(UserIndex).ChatCombate = 1 Then
-        Call SendData(SendTarget.ToGuildMembers, UserList(UserIndex).GuildIndex, PrepareMessageConsoleMsg("Clan> El clan ha ganado " & ExpDar & " puntos de experiencia.", FontTypeNames.FONTTYPE_GUILD))
-
-    End If
-
-    ExpActual = ExpActual + ExpDar
-
-    If ExpActual >= ExpNecesaria Then
-    
-        'Checkea otra vez, esto sucede si tiene mas EXP y puede saltarse el maximo
-        'nivel
-        If nivel >= 5 Then
-            ExpActual = 0
-            ExpNecesaria = 0
+108     If nivel >= 5 Then
             Exit Sub
 
         End If
 
-        Call SendData(SendTarget.ToGuildMembers, UserList(UserIndex).GuildIndex, PrepareMessagePlayWave(SND_NIVEL, NO_3D_SOUND, NO_3D_SOUND))
-    
-        ' UserList(UserIndex).Familiar.Exp = UserList(UserIndex).Familiar.Exp - UserList(UserIndex).Familiar.ELU
-    
-        ExpActual = ExpActual - ExpNecesaria
-    
-        nivel = nivel + 1
-    
-        Call SendData(SendTarget.ToGuildMembers, UserList(UserIndex).GuildIndex, PrepareMessageConsoleMsg("Clan> El clan ha subido a nivel " & nivel & ". Nuevos beneficios disponibles.", FontTypeNames.FONTTYPE_GUILD))
-    
-        '  UserList(UserIndex).Familiar.Exp = UserList(UserIndex).Familiar.Exp - UserList(UserIndex).Familiar.ELU
-    
-        'Nueva subida de exp x lvl. Pablo (ToxicWaste)
-        If nivel = 2 Then
-            ExpNecesaria = 600
-        ElseIf nivel = 3 Then
-            ExpNecesaria = 1200
-        ElseIf nivel = 4 Then
-            ExpNecesaria = 2100
-        Else
-            ExpNecesaria = 0
-            ExpActual = 0
+110     If UserList(UserIndex).ChatCombate = 1 Then
+112         Call SendData(SendTarget.ToGuildMembers, UserList(UserIndex).GuildIndex, PrepareMessageConsoleMsg("Clan> El clan ha ganado " & ExpDar & " puntos de experiencia.", FontTypeNames.FONTTYPE_GUILD))
 
         End If
+
+114     ExpActual = ExpActual + ExpDar
+
+116     If ExpActual >= ExpNecesaria Then
+    
+            'Checkea otra vez, esto sucede si tiene mas EXP y puede saltarse el maximo
+            'nivel
+118         If nivel >= 5 Then
+120             ExpActual = 0
+122             ExpNecesaria = 0
+                Exit Sub
+
+            End If
+
+124         Call SendData(SendTarget.ToGuildMembers, UserList(UserIndex).GuildIndex, PrepareMessagePlayWave(SND_NIVEL, NO_3D_SOUND, NO_3D_SOUND))
+    
+            ' UserList(UserIndex).Familiar.Exp = UserList(UserIndex).Familiar.Exp - UserList(UserIndex).Familiar.ELU
+    
+126         ExpActual = ExpActual - ExpNecesaria
+    
+128         nivel = nivel + 1
+    
+130         Call SendData(SendTarget.ToGuildMembers, UserList(UserIndex).GuildIndex, PrepareMessageConsoleMsg("Clan> El clan ha subido a nivel " & nivel & ". Nuevos beneficios disponibles.", FontTypeNames.FONTTYPE_GUILD))
+    
+            '  UserList(UserIndex).Familiar.Exp = UserList(UserIndex).Familiar.Exp - UserList(UserIndex).Familiar.ELU
+    
+            'Nueva subida de exp x lvl. Pablo (ToxicWaste)
+132         If nivel = 2 Then
+134             ExpNecesaria = 600
+136         ElseIf nivel = 3 Then
+138             ExpNecesaria = 1200
+140         ElseIf nivel = 4 Then
+142             ExpNecesaria = 2100
+            Else
+144             ExpNecesaria = 0
+146             ExpActual = 0
+
+            End If
    
-        ' guilds(gi).SetExpNecesaria = ExpNecesaria
-        'guilds(gi).SetExpActual = ExpActual
-        ' guilds(gi).SetNivelDeClan = nivel
+            ' guilds(gi).SetExpNecesaria = ExpNecesaria
+            'guilds(gi).SetExpActual = ExpActual
+            ' guilds(gi).SetNivelDeClan = nivel
 
-    End If
+        End If
 
-    guilds(GI).SetExpNecesaria (ExpNecesaria)
-    guilds(GI).SetExpActual (ExpActual)
-    guilds(GI).SetNivelDeClan (nivel)
+148     guilds(GI).SetExpNecesaria (ExpNecesaria)
+150     guilds(GI).SetExpActual (ExpActual)
+152     guilds(GI).SetNivelDeClan (nivel)
 
+        
+        Exit Sub
+
+CheckClanExp_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.CheckClanExp", Erl)
+        Resume Next
+        
 End Sub
 
 Public Function MiembrosPermite(ByVal GI As Integer) As Byte
+        
+        On Error GoTo MiembrosPermite_Err
+        
 
-    Dim nivel As Byte
+        Dim nivel As Byte
 
-    nivel = guilds(GI).GetNivelDeClan
+100     nivel = guilds(GI).GetNivelDeClan
 
-    Select Case nivel
+102     Select Case nivel
 
-        Case 1
-            MiembrosPermite = 5
+            Case 1
+104             MiembrosPermite = 5
 
-        Case 2
-            MiembrosPermite = 10
+106         Case 2
+108             MiembrosPermite = 10
 
-        Case 3
-            MiembrosPermite = 15
+110         Case 3
+112             MiembrosPermite = 15
 
-        Case 4
-            MiembrosPermite = 20
+114         Case 4
+116             MiembrosPermite = 20
 
-        Case Else
-            MiembrosPermite = 25
+118         Case Else
+120             MiembrosPermite = 25
 
-    End Select
+        End Select
 
+        
+        Exit Function
+
+MiembrosPermite_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.MiembrosPermite", Erl)
+        Resume Next
+        
 End Function
 
 Public Function GetUserGuildMember(ByVal UserName As String) As String
+        
+        On Error GoTo GetUserGuildMember_Err
+        
 
-    '***************************************************
-    'Author: Juan Andres Dalmasso
-    'Returns the guilds the user has been member of
-    '***************************************************
-    If Not Database_Enabled Then
-        GetUserGuildMember = GetUserGuildMemberCharfile(UserName)
-    Else
-        GetUserGuildMember = GetUserGuildMemberDatabase(UserName)
+        '***************************************************
+        'Author: Juan Andres Dalmasso
+        'Returns the guilds the user has been member of
+        '***************************************************
+100     If Not Database_Enabled Then
+102         GetUserGuildMember = GetUserGuildMemberCharfile(UserName)
+        Else
+104         GetUserGuildMember = GetUserGuildMemberDatabase(UserName)
 
-    End If
+        End If
 
+        
+        Exit Function
+
+GetUserGuildMember_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.GetUserGuildMember", Erl)
+        Resume Next
+        
 End Function
 
 Public Function GetUserGuildAspirant(ByVal UserName As String) As Integer
+        
+        On Error GoTo GetUserGuildAspirant_Err
+        
 
-    '***************************************************
-    'Author: Juan Andres Dalmasso (CHOTS)
-    'Last Modification: 24/09/2018
-    'Returns the guilds the user has been member of
-    '***************************************************
-    If Not Database_Enabled Then
-        GetUserGuildAspirant = GetUserGuildAspirantCharfile(UserName)
-    Else
-        GetUserGuildAspirant = GetUserGuildAspirantDatabase(UserName)
+        '***************************************************
+        'Author: Juan Andres Dalmasso (CHOTS)
+        'Last Modification: 24/09/2018
+        'Returns the guilds the user has been member of
+        '***************************************************
+100     If Not Database_Enabled Then
+102         GetUserGuildAspirant = GetUserGuildAspirantCharfile(UserName)
+        Else
+104         GetUserGuildAspirant = GetUserGuildAspirantDatabase(UserName)
 
-    End If
+        End If
 
+        
+        Exit Function
+
+GetUserGuildAspirant_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.GetUserGuildAspirant", Erl)
+        Resume Next
+        
 End Function
 
 Public Function GetUserGuildRejectionReason(ByVal UserName As String) As String
+        
+        On Error GoTo GetUserGuildRejectionReason_Err
+        
 
-    '***************************************************
-    'Author: Juan Andres Dalmasso (CHOTS)
-    'Last Modification: 24/09/2018
-    'Returns the reason why the user has not been accepted to the guild
-    '***************************************************
-    If Not Database_Enabled Then
-        GetUserGuildRejectionReason = GetUserGuildRejectionReasonCharfile(UserName)
-    Else
-        GetUserGuildRejectionReason = GetUserGuildRejectionReasonDatabase(UserName)
+        '***************************************************
+        'Author: Juan Andres Dalmasso (CHOTS)
+        'Last Modification: 24/09/2018
+        'Returns the reason why the user has not been accepted to the guild
+        '***************************************************
+100     If Not Database_Enabled Then
+102         GetUserGuildRejectionReason = GetUserGuildRejectionReasonCharfile(UserName)
+        Else
+104         GetUserGuildRejectionReason = GetUserGuildRejectionReasonDatabase(UserName)
 
-    End If
+        End If
 
+        
+        Exit Function
+
+GetUserGuildRejectionReason_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.GetUserGuildRejectionReason", Erl)
+        Resume Next
+        
 End Function
 
 Public Function GetUserGuildPedidos(ByVal UserName As String) As String
+        
+        On Error GoTo GetUserGuildPedidos_Err
+        
 
-    '***************************************************
-    'Author: Juan Andres Dalmasso (CHOTS)
-    'Last Modification: 24/09/2018
-    'Returns the guilds the user asked to be a member of
-    '***************************************************
-    If Not Database_Enabled Then
-        GetUserGuildPedidos = GetUserGuildPedidosCharfile(UserName)
-    Else
-        GetUserGuildPedidos = GetUserGuildPedidosDatabase(UserName)
+        '***************************************************
+        'Author: Juan Andres Dalmasso (CHOTS)
+        'Last Modification: 24/09/2018
+        'Returns the guilds the user asked to be a member of
+        '***************************************************
+100     If Not Database_Enabled Then
+102         GetUserGuildPedidos = GetUserGuildPedidosCharfile(UserName)
+        Else
+104         GetUserGuildPedidos = GetUserGuildPedidosDatabase(UserName)
 
-    End If
+        End If
 
+        
+        Exit Function
+
+GetUserGuildPedidos_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.GetUserGuildPedidos", Erl)
+        Resume Next
+        
 End Function
 
 Public Sub SaveUserGuildRejectionReason(ByVal UserName As String, ByVal Reason As String)
+        
+        On Error GoTo SaveUserGuildRejectionReason_Err
+        
 
-    '***************************************************
-    'Autor: Juan Andres Dalmasso (CHOTS)
-    'Last Modification: 26/09/2018
-    'Updates the rection reason for the user
-    '***************************************************
-    If Not Database_Enabled Then
-        Call SaveUserGuildRejectionReasonCharfile(UserName, Reason)
-    Else
-        Call SaveUserGuildRejectionReasonDatabase(UserName, Reason)
+        '***************************************************
+        'Autor: Juan Andres Dalmasso (CHOTS)
+        'Last Modification: 26/09/2018
+        'Updates the rection reason for the user
+        '***************************************************
+100     If Not Database_Enabled Then
+102         Call SaveUserGuildRejectionReasonCharfile(UserName, Reason)
+        Else
+104         Call SaveUserGuildRejectionReasonDatabase(UserName, Reason)
 
-    End If
+        End If
 
+        
+        Exit Sub
+
+SaveUserGuildRejectionReason_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.SaveUserGuildRejectionReason", Erl)
+        Resume Next
+        
 End Sub
 
 Public Sub SaveUserGuildIndex(ByVal UserName As String, ByVal GuildIndex As Integer)
+        
+        On Error GoTo SaveUserGuildIndex_Err
+        
 
-    '***************************************************
-    'Autor: Juan Andres Dalmasso (CHOTS)
-    'Last Modification: 26/09/2018
-    'Updates the guild index
-    '***************************************************
-    If Not Database_Enabled Then
-        Call SaveUserGuildIndexCharfile(UserName, GuildIndex)
-    Else
-        Call SaveUserGuildIndexDatabase(UserName, GuildIndex)
+        '***************************************************
+        'Autor: Juan Andres Dalmasso (CHOTS)
+        'Last Modification: 26/09/2018
+        'Updates the guild index
+        '***************************************************
+100     If Not Database_Enabled Then
+102         Call SaveUserGuildIndexCharfile(UserName, GuildIndex)
+        Else
+104         Call SaveUserGuildIndexDatabase(UserName, GuildIndex)
 
-    End If
+        End If
 
+        
+        Exit Sub
+
+SaveUserGuildIndex_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.SaveUserGuildIndex", Erl)
+        Resume Next
+        
 End Sub
 
 Public Sub SaveUserGuildAspirant(ByVal UserName As String, ByVal AspirantIndex As Integer)
+        
+        On Error GoTo SaveUserGuildAspirant_Err
+        
 
-    '***************************************************
-    'Autor: Juan Andres Dalmasso (CHOTS)
-    'Last Modification: 26/09/2018
-    'Updates the guild Aspirant index
-    '***************************************************
-    If Not Database_Enabled Then
-        Call SaveUserGuildAspirantCharfile(UserName, AspirantIndex)
-    Else
-        Call SaveUserGuildAspirantDatabase(UserName, AspirantIndex)
+        '***************************************************
+        'Autor: Juan Andres Dalmasso (CHOTS)
+        'Last Modification: 26/09/2018
+        'Updates the guild Aspirant index
+        '***************************************************
+100     If Not Database_Enabled Then
+102         Call SaveUserGuildAspirantCharfile(UserName, AspirantIndex)
+        Else
+104         Call SaveUserGuildAspirantDatabase(UserName, AspirantIndex)
 
-    End If
+        End If
 
+        
+        Exit Sub
+
+SaveUserGuildAspirant_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.SaveUserGuildAspirant", Erl)
+        Resume Next
+        
 End Sub
 
 Public Sub SaveUserGuildMember(ByVal UserName As String, ByVal guilds As String)
+        
+        On Error GoTo SaveUserGuildMember_Err
+        
 
-    '***************************************************
-    'Autor: Juan Andres Dalmasso (CHOTS)
-    'Last Modification: 26/09/2018
-    'Updates the guilds the user has been member of
-    '***************************************************
-    If Not Database_Enabled Then
-        Call SaveUserGuildMemberCharfile(UserName, guilds)
-    Else
-        Call SaveUserGuildMemberDatabase(UserName, guilds)
+        '***************************************************
+        'Autor: Juan Andres Dalmasso (CHOTS)
+        'Last Modification: 26/09/2018
+        'Updates the guilds the user has been member of
+        '***************************************************
+100     If Not Database_Enabled Then
+102         Call SaveUserGuildMemberCharfile(UserName, guilds)
+        Else
+104         Call SaveUserGuildMemberDatabase(UserName, guilds)
 
-    End If
+        End If
 
+        
+        Exit Sub
+
+SaveUserGuildMember_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.SaveUserGuildMember", Erl)
+        Resume Next
+        
 End Sub
 
 Public Sub SaveUserGuildPedidos(ByVal UserName As String, ByVal Pedidos As String)
+        
+        On Error GoTo SaveUserGuildPedidos_Err
+        
 
-    '***************************************************
-    'Autor: Juan Andres Dalmasso (CHOTS)
-    'Last Modification: 26/09/2018
-    'Updates the guilds the user has asked to be a member of
-    '***************************************************
-    If Not Database_Enabled Then
-        Call SaveUserGuildPedidosCharfile(UserName, Pedidos)
-    Else
-        Call SaveUserGuildPedidosDatabase(UserName, Pedidos)
+        '***************************************************
+        'Autor: Juan Andres Dalmasso (CHOTS)
+        'Last Modification: 26/09/2018
+        'Updates the guilds the user has asked to be a member of
+        '***************************************************
+100     If Not Database_Enabled Then
+102         Call SaveUserGuildPedidosCharfile(UserName, Pedidos)
+        Else
+104         Call SaveUserGuildPedidosDatabase(UserName, Pedidos)
 
-    End If
+        End If
 
+        
+        Exit Sub
+
+SaveUserGuildPedidos_Err:
+        Call RegistrarError(Err.Number, Err.description, "modGuilds.SaveUserGuildPedidos", Erl)
+        Resume Next
+        
 End Sub

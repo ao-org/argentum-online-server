@@ -94,23 +94,43 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub Command1_Click()
+        
+        On Error GoTo Command1_Click_Err
+        
 
-    Dim i As Integer, K As Integer
+        Dim i As Integer, K As Integer
 
-    For i = 1 To LastNPC
+100     For i = 1 To LastNPC
 
-        If Npclist(i).flags.NPCActive Then K = K + 1
-    Next i
+102         If Npclist(i).flags.NPCActive Then K = K + 1
+104     Next i
 
-    Label1.Caption = "Npcs Activos:" & K
-    Label2.Caption = "Npcs Libres:" & MAXNPCS - K
-    Label3.Caption = "LastNpcIndex:" & LastNPC
-    Label4.Caption = "MAXNPCS:" & MAXNPCS
+106     Label1.Caption = "Npcs Activos:" & K
+108     Label2.Caption = "Npcs Libres:" & MAXNPCS - K
+110     Label3.Caption = "LastNpcIndex:" & LastNPC
+112     Label4.Caption = "MAXNPCS:" & MAXNPCS
 
+        
+        Exit Sub
+
+Command1_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmDebugNpc.Command1_Click", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Command2_Click()
-    Unload Me
+        
+        On Error GoTo Command2_Click_Err
+        
+100     Unload Me
 
+        
+        Exit Sub
+
+Command2_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmDebugNpc.Command2_Click", Erl)
+        Resume Next
+        
 End Sub
 

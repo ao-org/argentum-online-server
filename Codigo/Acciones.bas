@@ -808,32 +808,42 @@ Sub AccionParaCartel(ByVal Map As Integer, ByVal x As Integer, ByVal Y As Intege
 End Sub
 
 Sub AccionParaCorreo(ByVal Map As Integer, ByVal x As Integer, ByVal Y As Integer, ByVal UserIndex As Integer)
+        
+        On Error GoTo AccionParaCorreo_Err
+        
 
-    Dim Pos As WorldPos
+        Dim Pos As WorldPos
 
-    Pos.Map = Map
-    Pos.x = x
-    Pos.Y = Y
+100     Pos.Map = Map
+102     Pos.x = x
+104     Pos.Y = Y
 
-    If UserList(UserIndex).flags.Muerto = 1 Then
-        'Call WriteConsoleMsg(UserIndex, "Estas muerto.", FontTypeNames.FONTTYPE_INFO)
-        Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
+106     If UserList(UserIndex).flags.Muerto = 1 Then
+            'Call WriteConsoleMsg(UserIndex, "Estas muerto.", FontTypeNames.FONTTYPE_INFO)
+108         Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+
+        End If
+
+110     If Distancia(Pos, UserList(UserIndex).Pos) > 4 Then
+112         Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
+            ' Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+
+        End If
+
+114     If ObjData(MapData(Map, x, Y).ObjInfo.ObjIndex).OBJType = 47 Then
+116         Call WriteListaCorreo(UserIndex, False)
+
+        End If
+
+        
         Exit Sub
 
-    End If
-
-    If Distancia(Pos, UserList(UserIndex).Pos) > 4 Then
-        Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-        ' Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
-        Exit Sub
-
-    End If
-
-    If ObjData(MapData(Map, x, Y).ObjInfo.ObjIndex).OBJType = 47 Then
-        Call WriteListaCorreo(UserIndex, False)
-
-    End If
-
+AccionParaCorreo_Err:
+        Call RegistrarError(Err.Number, Err.description, "Argentum20Server.Acciones.AccionParaCorreo", Erl)
+        Resume Next
+        
 End Sub
 
 Sub AccionParaRamita(ByVal Map As Integer, ByVal x As Integer, ByVal Y As Integer, ByVal UserIndex As Integer)

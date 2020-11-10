@@ -52,9 +52,19 @@ Private p_elementos(1 To MAX_ELEM) As diccElem 'visual basic es una mierda para 
 Private p_cant                     As Integer
 
 Public Sub Class_Initialize()
-    'constructor
-    p_cant = 0
+        'constructor
+        
+        On Error GoTo Class_Initialize_Err
+        
+100     p_cant = 0
 
+        
+        Exit Sub
+
+Class_Initialize_Err:
+        Call RegistrarError(Err.Number, Err.description, "diccionario.Class_Initialize", Erl)
+        Resume Next
+        
 End Sub
 
 Public Sub Class_Terminate()
@@ -64,111 +74,171 @@ Public Sub Class_Terminate()
 End Sub
 
 Public Property Get CantElem() As Integer
-    CantElem = p_cant
+        
+        On Error GoTo CantElem_Err
+        
+100     CantElem = p_cant
 
+        
+        Exit Property
+
+CantElem_Err:
+        Call RegistrarError(Err.Number, Err.description, "diccionario.CantElem", Erl)
+        Resume Next
+        
 End Property
 
 Public Function AtPut(ByVal clave As String, ByRef elem As Variant) As Boolean
+        
+        On Error GoTo AtPut_Err
+        
 
-    Dim i As Integer
+        Dim i As Integer
 
-    AtPut = False
+100     AtPut = False
 
-    If LenB(clave) = 0 Then Exit Function
+102     If LenB(clave) = 0 Then Exit Function
 
-    clave = UCase$(clave)
+104     clave = UCase$(clave)
 
-    If p_cant = MAX_ELEM Then
-        AtPut = False
-    Else
+106     If p_cant = MAX_ELEM Then
+108         AtPut = False
+        Else
 
-        For i = 1 To p_cant
+110         For i = 1 To p_cant
 
-            If clave = p_elementos(i).clave Then
-                p_elementos(i).def = elem
-                AtPut = True
+112             If clave = p_elementos(i).clave Then
+114                 p_elementos(i).def = elem
+116                 AtPut = True
 
-                Exit For    ' epa ;)
+                    Exit For    ' epa ;)
+
+                End If
+
+118         Next i
+
+120         If Not AtPut Then
+122             p_cant = p_cant + 1
+124             p_elementos(p_cant).def = elem
+126             p_elementos(p_cant).clave = clave
+128             AtPut = True
 
             End If
 
-        Next i
-
-        If Not AtPut Then
-            p_cant = p_cant + 1
-            p_elementos(p_cant).def = elem
-            p_elementos(p_cant).clave = clave
-            AtPut = True
-
         End If
 
-    End If
+        
+        Exit Function
 
+AtPut_Err:
+        Call RegistrarError(Err.Number, Err.description, "diccionario.AtPut", Erl)
+        Resume Next
+        
 End Function
 
 Public Function At(ByVal clave As String) As Variant
+        
+        On Error GoTo At_Err
+        
 
-    Dim i As Integer
+        Dim i As Integer
 
-    clave = UCase$(clave)
+100     clave = UCase$(clave)
 
-    At = Null
+102     At = Null
 
-    For i = 1 To p_cant
+104     For i = 1 To p_cant
 
-        If clave = p_elementos(i).clave Then
-            At = p_elementos(i).def
-            Exit Function
+106         If clave = p_elementos(i).clave Then
+108             At = p_elementos(i).def
+                Exit Function
 
-        End If
+            End If
 
-    Next i
+110     Next i
 
+        
+        Exit Function
+
+At_Err:
+        Call RegistrarError(Err.Number, Err.description, "diccionario.At", Erl)
+        Resume Next
+        
 End Function
 
 Public Function AtIndex(ByVal i As Integer) As String
-    AtIndex = p_elementos(i).clave
+        
+        On Error GoTo AtIndex_Err
+        
+100     AtIndex = p_elementos(i).clave
 
+        
+        Exit Function
+
+AtIndex_Err:
+        Call RegistrarError(Err.Number, Err.description, "diccionario.AtIndex", Erl)
+        Resume Next
+        
 End Function
 
 Public Function MayorValor(ByRef cant As Integer) As String
+        
+        On Error GoTo MayorValor_Err
+        
 
-    'parchecito para el AO, me da la clave con mayor valor en valor
-    'y la cantidad de claves con ese valor (por si hay empate)
-    Dim i     As Integer
+        'parchecito para el AO, me da la clave con mayor valor en valor
+        'y la cantidad de claves con ese valor (por si hay empate)
+        Dim i     As Integer
 
-    Dim max   As Integer
+        Dim max   As Integer
 
-    Dim clave As String
+        Dim clave As String
 
-    max = -1
-    cant = 0
-    clave = vbNullString
+100     max = -1
+102     cant = 0
+104     clave = vbNullString
 
-    For i = 1 To p_cant
+106     For i = 1 To p_cant
 
-        If max <= CInt(p_elementos(i).def) Then
-            cant = IIf(max = CInt(p_elementos(i).def), cant + 1, 1)
-            clave = IIf(max = CInt(p_elementos(i).def), clave & "," & p_elementos(i).clave, p_elementos(i).clave)
-            max = CInt(p_elementos(i).def)
+108         If max <= CInt(p_elementos(i).def) Then
+110             cant = IIf(max = CInt(p_elementos(i).def), cant + 1, 1)
+112             clave = IIf(max = CInt(p_elementos(i).def), clave & "," & p_elementos(i).clave, p_elementos(i).clave)
+114             max = CInt(p_elementos(i).def)
 
-        End If
+            End If
 
-    Next i
+116     Next i
 
-    MayorValor = clave
+118     MayorValor = clave
 
+        
+        Exit Function
+
+MayorValor_Err:
+        Call RegistrarError(Err.Number, Err.description, "diccionario.MayorValor", Erl)
+        Resume Next
+        
 End Function
 
 Public Sub DumpAll()
+        
+        On Error GoTo DumpAll_Err
+        
 
-    Dim i As Integer
+        Dim i As Integer
 
-    For i = 1 To MAX_ELEM
-        p_elementos(i).clave = vbNullString
-        p_elementos(i).def = Null
-    Next i
+100     For i = 1 To MAX_ELEM
+102         p_elementos(i).clave = vbNullString
+104         p_elementos(i).def = Null
+106     Next i
 
-    p_cant = 0
+108     p_cant = 0
 
+        
+        Exit Sub
+
+DumpAll_Err:
+        Call RegistrarError(Err.Number, Err.description, "diccionario.DumpAll", Erl)
+        Resume Next
+        
 End Sub

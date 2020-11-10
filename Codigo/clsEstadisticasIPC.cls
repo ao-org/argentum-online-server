@@ -64,63 +64,113 @@ End Enum
 '*************************************************
 
 Private Function BuscaVentana(Wnd As Long, str As String) As Long
+        
+        On Error GoTo BuscaVentana_Err
+        
 
-    Dim W As Long
+        Dim W As Long
 
-    Dim L As Long
+        Dim L As Long
 
-    Dim T As String
+        Dim T As String
 
-    W = GetWindow(Wnd, GW_HWNDFIRST)
+100     W = GetWindow(Wnd, GW_HWNDFIRST)
 
-    While W <> 0
+102     While W <> 0
 
-        L = GetWindowTextLength(W)
+104         L = GetWindowTextLength(W)
 
-        If L > 0 Then
-            T = Space(L + 1)
-            L = GetWindowText(W, T, L + 1)
+106         If L > 0 Then
+108             T = Space(L + 1)
+110             L = GetWindowText(W, T, L + 1)
 
-            If Left$(T, Len(str)) = str Then
-                BuscaVentana = W
-                Exit Function
+112             If Left$(T, Len(str)) = str Then
+114                 BuscaVentana = W
+                    Exit Function
+
+                End If
 
             End If
 
-        End If
+116         W = GetWindow(W, GW_HWNDNEXT)
+        Wend
 
-        W = GetWindow(W, GW_HWNDNEXT)
-    Wend
+118     BuscaVentana = 0
 
-    BuscaVentana = 0
+        
+        Exit Function
 
+BuscaVentana_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsEstadisticasIPC.BuscaVentana", Erl)
+        Resume Next
+        
 End Function
 
 Public Function Informar(ByVal QueCosa As EstaNotificaciones, ByVal Parametro As Long) As Long
-    Call BuscaWndEstadisticas
+        
+        On Error GoTo Informar_Err
+        
+100     Call BuscaWndEstadisticas
 
-    If hVentana <> 0 Then
-        Informar = SendMessageLong(hVentana, sMensaje, QueCosa, Parametro)
+102     If hVentana <> 0 Then
+104         Informar = SendMessageLong(hVentana, sMensaje, QueCosa, Parametro)
 
-    End If
+        End If
 
+        
+        Exit Function
+
+Informar_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsEstadisticasIPC.Informar", Erl)
+        Resume Next
+        
 End Function
 
 Public Function EstadisticasAndando() As Boolean
+        
+        On Error GoTo EstadisticasAndando_Err
+        
 
-    Call BuscaWndEstadisticas
-    'Ret = SendNotifyMessage(hVentana, sMensaje, 0, 0)
-    EstadisticasAndando = (hVentana <> 0)
+100     Call BuscaWndEstadisticas
+        'Ret = SendNotifyMessage(hVentana, sMensaje, 0, 0)
+102     EstadisticasAndando = (hVentana <> 0)
 
+        
+        Exit Function
+
+EstadisticasAndando_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsEstadisticasIPC.EstadisticasAndando", Erl)
+        Resume Next
+        
 End Function
 
 Public Sub Inicializa(ByVal hWnd As Long)
-    hVentanaMia = hWnd
-    sMensaje = RegisterWindowMessage("EstadisticasAO")
+        
+        On Error GoTo Inicializa_Err
+        
+100     hVentanaMia = hWnd
+102     sMensaje = RegisterWindowMessage("EstadisticasAO")
 
+        
+        Exit Sub
+
+Inicializa_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsEstadisticasIPC.Inicializa", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub BuscaWndEstadisticas()
-    hVentana = BuscaVentana(hVentanaMia, "Servidor de estadisticas AO")
+        
+        On Error GoTo BuscaWndEstadisticas_Err
+        
+100     hVentana = BuscaVentana(hVentanaMia, "Servidor de estadisticas AO")
 
+        
+        Exit Sub
+
+BuscaWndEstadisticas_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsEstadisticasIPC.BuscaWndEstadisticas", Erl)
+        Resume Next
+        
 End Sub

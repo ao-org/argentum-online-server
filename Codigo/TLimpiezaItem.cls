@@ -47,10 +47,20 @@ Public Sub Class_Initialize()
 End Sub
 
 Public Sub Class_Terminate()
-    Erase Item_List()
-    Erase Item_ListIndex()
-    Item_LastIndex = 0
+        
+        On Error GoTo Class_Terminate_Err
+        
+100     Erase Item_List()
+102     Erase Item_ListIndex()
+104     Item_LastIndex = 0
 
+        
+        Exit Sub
+
+Class_Terminate_Err:
+        Call RegistrarError(Err.Number, Err.description, "TLimpiezaItem.Class_Terminate", Erl)
+        Resume Next
+        
 End Sub
 
 Private Function Item_FindSlot() As Integer

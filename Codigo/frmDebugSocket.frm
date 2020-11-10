@@ -129,22 +129,62 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub Command1_Click()
-    Me.Visible = False
+        
+        On Error GoTo Command1_Click_Err
+        
+100     Me.Visible = False
 
+        
+        Exit Sub
+
+Command1_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmDebugSocket.Command1_Click", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Command2_Click()
-    DebugSocket = Not DebugSocket
+        
+        On Error GoTo Command2_Click_Err
+        
+100     DebugSocket = Not DebugSocket
 
+        
+        Exit Sub
+
+Command2_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmDebugSocket.Command2_Click", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Command3_Click()
-    Text1.Text = vbNullString
+        
+        On Error GoTo Command3_Click_Err
+        
+100     Text1.Text = vbNullString
 
+        
+        Exit Sub
+
+Command3_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmDebugSocket.Command3_Click", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub Command4_Click()
-    Call ReloadSokcet
+        
+        On Error GoTo Command4_Click_Err
+        
+100     Call ReloadSokcet
 
+        
+        Exit Sub
+
+Command4_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmDebugSocket.Command4_Click", Erl)
+        Resume Next
+        
 End Sub
 

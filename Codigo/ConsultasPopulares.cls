@@ -55,46 +55,96 @@ Private pNivelRequerido    As Integer
 Private pOpciones()        As Integer
 
 Public Property Let Numero(ByVal NumEncuesta As Integer)
-    pEncuestaActualNum = NumEncuesta
+        
+        On Error GoTo Numero_Err
+        
+100     pEncuestaActualNum = NumEncuesta
 
+        
+        Exit Property
+
+Numero_Err:
+        Call RegistrarError(Err.Number, Err.description, "ConsultasPopulares.Numero", Erl)
+        Resume Next
+        
 End Property
 
 Public Property Get Numero() As Integer
-    Numero = pEncuestaActualNum
+        
+        On Error GoTo Numero_Err
+        
+100     Numero = pEncuestaActualNum
 
+        
+        Exit Property
+
+Numero_Err:
+        Call RegistrarError(Err.Number, Err.description, "ConsultasPopulares.Numero", Erl)
+        Resume Next
+        
 End Property
 
 Public Property Let texto(ByVal Descripcion As String)
-    pEncuestaActualTex = Descripcion
+        
+        On Error GoTo texto_Err
+        
+100     pEncuestaActualTex = Descripcion
 
+        
+        Exit Property
+
+texto_Err:
+        Call RegistrarError(Err.Number, Err.description, "ConsultasPopulares.texto", Erl)
+        Resume Next
+        
 End Property
 
 Public Property Get texto() As String
-    texto = pEncuestaActualTex
+        
+        On Error GoTo texto_Err
+        
+100     texto = pEncuestaActualTex
 
+        
+        Exit Property
+
+texto_Err:
+        Call RegistrarError(Err.Number, Err.description, "ConsultasPopulares.texto", Erl)
+        Resume Next
+        
 End Property
 
 Public Sub LoadData()
+        
+        On Error GoTo LoadData_Err
+        
 
-    Dim CantOpciones As Integer
+        Dim CantOpciones As Integer
 
-    Dim i            As Integer
+        Dim i            As Integer
 
-    pEncuestaActualNum = val(GetVar(DatPath & ARCHIVOCONFIG, "INIT", "ConsultaActual"))
-    pEncuestaActualTex = GetVar(DatPath & ARCHIVOCONFIG, "INIT", "ConsultaActualTexto")
-    pNivelRequerido = GetVar(DatPath & ARCHIVOCONFIG, "INIT", "NivelRequerido")
+100     pEncuestaActualNum = val(GetVar(DatPath & ARCHIVOCONFIG, "INIT", "ConsultaActual"))
+102     pEncuestaActualTex = GetVar(DatPath & ARCHIVOCONFIG, "INIT", "ConsultaActualTexto")
+104     pNivelRequerido = GetVar(DatPath & ARCHIVOCONFIG, "INIT", "NivelRequerido")
 
-    If pEncuestaActualNum > 0 Then
-        'cargo todas las opciones
-        CantOpciones = val(GetVar(DatPath & ARCHIVOCONFIG, "ENCUESTA" & pEncuestaActualNum, "CANTOPCIONES"))
-        ReDim pOpciones(1 To CantOpciones) As Integer
+106     If pEncuestaActualNum > 0 Then
+            'cargo todas las opciones
+108         CantOpciones = val(GetVar(DatPath & ARCHIVOCONFIG, "ENCUESTA" & pEncuestaActualNum, "CANTOPCIONES"))
+110         ReDim pOpciones(1 To CantOpciones) As Integer
 
-        For i = 1 To CantOpciones
-            pOpciones(i) = val(GetVar(DatPath & ARCHIVOCONFIG, "ENCUESTA" & pEncuestaActualNum, "OPCION" & i))
-        Next i
+112         For i = 1 To CantOpciones
+114             pOpciones(i) = val(GetVar(DatPath & ARCHIVOCONFIG, "ENCUESTA" & pEncuestaActualNum, "OPCION" & i))
+116         Next i
 
-    End If
+        End If
 
+        
+        Exit Sub
+
+LoadData_Err:
+        Call RegistrarError(Err.Number, Err.description, "ConsultasPopulares.LoadData", Erl)
+        Resume Next
+        
 End Sub
 
 Public Function doVotar(ByVal UserIndex As Integer, ByVal opcion As Integer) As String
@@ -159,76 +209,126 @@ errorh:
 End Function
 
 Public Function SendInfoEncuesta(ByVal UserIndex As Integer) As String
+        
+        On Error GoTo SendInfoEncuesta_Err
+        
 
-    Dim i As Integer
+        Dim i As Integer
 
-    Call WriteConsoleMsg(UserIndex, "CONSULTA POPULAR NUMERO " & pEncuestaActualNum, FontTypeNames.FONTTYPE_GUILD)
-    Call WriteConsoleMsg(UserIndex, pEncuestaActualTex, FontTypeNames.FONTTYPE_GUILD)
-    Call WriteConsoleMsg(UserIndex, " Opciones de voto: ", FontTypeNames.FONTTYPE_GUILDMSG)
+100     Call WriteConsoleMsg(UserIndex, "CONSULTA POPULAR NUMERO " & pEncuestaActualNum, FontTypeNames.FONTTYPE_GUILD)
+102     Call WriteConsoleMsg(UserIndex, pEncuestaActualTex, FontTypeNames.FONTTYPE_GUILD)
+104     Call WriteConsoleMsg(UserIndex, " Opciones de voto: ", FontTypeNames.FONTTYPE_GUILDMSG)
 
-    For i = 1 To UBound(pOpciones)
-        Call WriteConsoleMsg(UserIndex, "(Opcion " & i & "): " & GetVar(DatPath & ARCHIVOCONFIG, "ENCUESTA" & pEncuestaActualNum, "OPCION" & i), FontTypeNames.FONTTYPE_GUILDMSG)
-    Next i
+106     For i = 1 To UBound(pOpciones)
+108         Call WriteConsoleMsg(UserIndex, "(Opcion " & i & "): " & GetVar(DatPath & ARCHIVOCONFIG, "ENCUESTA" & pEncuestaActualNum, "OPCION" & i), FontTypeNames.FONTTYPE_GUILDMSG)
+110     Next i
 
-    Call WriteConsoleMsg(UserIndex, " Para votar una opcion, escribe /encuesta NUMERODEOPCION, por ejemplo para votar la opcion 1, escribe /encuesta 1. Tu voto no podra ser cambiado.", FontTypeNames.FONTTYPE_VENENO)
+112     Call WriteConsoleMsg(UserIndex, " Para votar una opcion, escribe /encuesta NUMERODEOPCION, por ejemplo para votar la opcion 1, escribe /encuesta 1. Tu voto no podra ser cambiado.", FontTypeNames.FONTTYPE_VENENO)
 
+        
+        Exit Function
+
+SendInfoEncuesta_Err:
+        Call RegistrarError(Err.Number, Err.description, "ConsultasPopulares.SendInfoEncuesta", Erl)
+        Resume Next
+        
 End Function
 
 Private Sub MarcarPjComoQueYaVoto(ByVal UserIndex As Integer)
+        
+        On Error GoTo MarcarPjComoQueYaVoto_Err
+        
 
-    If Database_Enabled Then
-        Call SaveVotoDatabase(UserList(UserIndex).Id, pEncuestaActualNum)
-    Else
-        Call WriteVar(CharPath & UserList(UserIndex).name & ".chr", "CONSULTAS", "Voto", str(pEncuestaActualNum))
-
-    End If
-
-End Sub
-
-Private Function MailYaVoto(ByVal email As String) As Boolean
-
-    'abro el archivo, while not eof levnato 1 linea y comparo. Si da true, cierro
-    Dim ArchN As Integer
-
-    Dim Tmp   As String
-
-    MailYaVoto = False
-
-    ArchN = FreeFile()
-
-    Open DatPath & ARCHIVOMAILS For Input As #ArchN
-
-    Do While Not EOF(ArchN)
-        Line Input #ArchN, Tmp
-
-        If email = Tmp Then
-            MailYaVoto = True
-            Close #ArchN
-            Exit Function
+100     If Database_Enabled Then
+102         Call SaveVotoDatabase(UserList(UserIndex).Id, pEncuestaActualNum)
+        Else
+104         Call WriteVar(CharPath & UserList(UserIndex).name & ".chr", "CONSULTAS", "Voto", str(pEncuestaActualNum))
 
         End If
 
-    Loop
+        
+        Exit Sub
 
-    Close #ArchN
+MarcarPjComoQueYaVoto_Err:
+        Call RegistrarError(Err.Number, Err.description, "ConsultasPopulares.MarcarPjComoQueYaVoto", Erl)
+        Resume Next
+        
+End Sub
 
+Private Function MailYaVoto(ByVal email As String) As Boolean
+        
+        On Error GoTo MailYaVoto_Err
+        
+
+        'abro el archivo, while not eof levnato 1 linea y comparo. Si da true, cierro
+        Dim ArchN As Integer
+
+        Dim Tmp   As String
+
+100     MailYaVoto = False
+
+102     ArchN = FreeFile()
+
+104     Open DatPath & ARCHIVOMAILS For Input As #ArchN
+
+106     Do While Not EOF(ArchN)
+108         Line Input #ArchN, Tmp
+
+110         If email = Tmp Then
+112             MailYaVoto = True
+114             Close #ArchN
+                Exit Function
+
+            End If
+
+        Loop
+
+116     Close #ArchN
+
+        
+        Exit Function
+
+MailYaVoto_Err:
+        Call RegistrarError(Err.Number, Err.description, "ConsultasPopulares.MailYaVoto", Erl)
+        Resume Next
+        
 End Function
 
 Private Sub MarcarMailComoQueYaVoto(ByVal email As String)
+        
+        On Error GoTo MarcarMailComoQueYaVoto_Err
+        
 
-    Dim ArchN As Integer
+        Dim ArchN As Integer
 
-    ArchN = FreeFile()
+100     ArchN = FreeFile()
 
-    Open DatPath & ARCHIVOMAILS For Append As #ArchN
-    Print #ArchN, email
+102     Open DatPath & ARCHIVOMAILS For Append As #ArchN
+104     Print #ArchN, email
 
-    Close #ArchN
+106     Close #ArchN
 
+        
+        Exit Sub
+
+MarcarMailComoQueYaVoto_Err:
+        Call RegistrarError(Err.Number, Err.description, "ConsultasPopulares.MarcarMailComoQueYaVoto", Erl)
+        Resume Next
+        
 End Sub
 
 Private Function OpcionValida(ByVal opcion As Integer) As Boolean
-    OpcionValida = opcion > 0 And opcion <= UBound(pOpciones)
+        
+        On Error GoTo OpcionValida_Err
+        
+100     OpcionValida = opcion > 0 And opcion <= UBound(pOpciones)
 
+        
+        Exit Function
+
+OpcionValida_Err:
+        Call RegistrarError(Err.Number, Err.description, "ConsultasPopulares.OpcionValida", Erl)
+        Resume Next
+        
 End Function
 
