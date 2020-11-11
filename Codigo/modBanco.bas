@@ -142,12 +142,13 @@ Sub UserRetiraItem(ByVal UserIndex As Integer, ByVal i As Integer, ByVal Cantida
         Call UpdateBanUserInv(True, UserIndex, 0)
 
     End If
-
-    'Actualizamos la ventana de comercio
-    Call UpdateVentanaBanco(UserIndex)
-
+    
+    Exit Sub
+    
 Errhandler:
-
+    Call RegistrarError(Err.Number, Err.description, "modBanco.UsaRetiraItem")
+    Resume Next
+    
 End Sub
 
 Sub UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal Cantidad As Integer, ByVal slotdestino As Integer)
@@ -277,21 +278,6 @@ QuitarBancoInvItem_Err:
         
 End Sub
 
-Sub UpdateVentanaBanco(ByVal UserIndex As Integer)
-        
-        On Error GoTo UpdateVentanaBanco_Err
-        
-100     Call WriteBankOK(UserIndex)
-
-        
-        Exit Sub
-
-UpdateVentanaBanco_Err:
-        Call RegistrarError(Err.Number, Err.description, "modBanco.UpdateVentanaBanco", Erl)
-        Resume Next
-        
-End Sub
-
 Sub UserDepositaItem(ByVal UserIndex As Integer, ByVal Item As Integer, ByVal Cantidad As Integer, ByVal slotdestino As Integer)
 
     On Error GoTo Errhandler
@@ -310,10 +296,10 @@ Sub UserDepositaItem(ByVal UserIndex As Integer, ByVal Item As Integer, ByVal Ca
 
     End If
     
-    'Actualizamos la ventana del banco
-    Call UpdateVentanaBanco(UserIndex)
 Errhandler:
-
+    Call RegistrarError(Err.Number, Err.description, "modBanco.UserDepositaItem")
+    Resume Next
+    
 End Sub
 
 Sub UserDepositaItemDrop(ByVal UserIndex As Integer, ByVal Item As Integer, ByVal Cantidad As Integer)
@@ -331,6 +317,8 @@ Sub UserDepositaItemDrop(ByVal UserIndex As Integer, ByVal Item As Integer, ByVa
     End If
 
 Errhandler:
+    Call RegistrarError(Err.Number, Err.description, "modBanco.UserDepositaItemDrop")
+    Resume Next
 
 End Sub
 
