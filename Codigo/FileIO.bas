@@ -1116,6 +1116,11 @@ Sub LoadBalance()
 152         DistribucionSemienteraVida(i) = val(BalanceIni.GetValue("DISTRIBUCION", "S" + CStr(i)))
 154     Next i
     
+		'Experiencia por nivel
+    	For i = 1 To STAT_MAXELV
+        	ExpByLevel(i) = val(BalanceIni.GetValue("EXPBYLEVEL", i))
+    	Next i
+
         'Extra
 156     PorcentajeRecuperoMana = val(BalanceIni.GetValue("EXTRA", "PorcentajeRecuperoMana"))
     

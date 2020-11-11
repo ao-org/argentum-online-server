@@ -519,21 +519,8 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
             .Stats.ELV = .Stats.ELV + 1
             
             .Stats.Exp = .Stats.Exp - .Stats.ELU
-
-            If .Stats.ELV < 15 Then
-                .Stats.ELU = .Stats.ELU * 1.4
-            ElseIf .Stats.ELV < 21 Then
-                .Stats.ELU = .Stats.ELU * 1.35
-            ElseIf .Stats.ELV < 26 Then
-                .Stats.ELU = .Stats.ELU * 1.3
-            ElseIf .Stats.ELV < 35 Then
-                .Stats.ELU = .Stats.ELU * 1.2
-            ElseIf .Stats.ELV < 40 Then
-                .Stats.ELU = .Stats.ELU * 1.3
-            Else
-                .Stats.ELU = .Stats.ELU * 1.375
-
-            End If
+            
+            .Stats.ELU = ExpByLevel(.Stats.ELV)
             
             'Calculo subida de vida
             Promedio = ModVida(.clase) - (21 - .Stats.UserAtributos(eAtributos.Constitucion)) * 0.5
