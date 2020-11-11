@@ -114,9 +114,8 @@ Private Enum ServerPacketID
     ShowGuildFundationForm  ' SHOWFUN
     ParalizeOK              ' PARADOK
     ShowUserRequest         ' PETICIO
-    TradeOK                 ' TRANSOK
-    BankOK                  ' BANCOOK
     ChangeUserTradeSlot     ' COMUSUINV
+    SendNight               ' NOC
     Pong '100
     UpdateTagAndStatus
     FYA
@@ -22015,62 +22014,6 @@ Errhandler:
 End Sub
 
 ''
-' Writes the "TradeOK" message to the given user's outgoing data buffer.
-'
-' @param    UserIndex User to which the message is intended.
-' @remarks  The data is not actually sent until the buffer is properly flushed.
-
-Public Sub WriteTradeOK(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "TradeOK" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo Errhandler
-
-    Call UserList(UserIndex).outgoingData.WriteByte(ServerPacketID.TradeOK)
-    Exit Sub
-
-Errhandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        
-        Resume
-
-    End If
-
-End Sub
-
-''
-' Writes the "BankOK" message to the given user's outgoing data buffer.
-'
-' @param    UserIndex User to which the message is intended.
-' @remarks  The data is not actually sent until the buffer is properly flushed.
-
-Public Sub WriteBankOK(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "BankOK" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo Errhandler
-
-    Call UserList(UserIndex).outgoingData.WriteByte(ServerPacketID.BankOK)
-    Exit Sub
-
-Errhandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        
-        Resume
-
-    End If
-
-End Sub
-
-''
 ' Writes the "ChangeUserTradeSlot" message to the given user's outgoing data buffer.
 '
 ' @param    UserIndex User to which the message is intended.
@@ -25650,18 +25593,17 @@ Private Sub HandleBovedaMoveItem(ByVal UserIndex As Integer)
         Call buffer.ReadInteger
         
         Dim SlotViejo As Byte
-
         Dim SlotNuevo As Byte
         
         SlotViejo = buffer.ReadByte()
         SlotNuevo = buffer.ReadByte()
         
-        Dim Objeto    As obj
+        'If we got here then packet is complete, copy data back to original queue
+        Call .incomingData.CopyBuffer(buffer)
         
+        Dim Objeto    As obj
         Dim Equipado  As Boolean
-
         Dim Equipado2 As Boolean
-
         Dim Equipado3 As Boolean
         
         Objeto.ObjIndex = UserList(UserIndex).BancoInvent.Object(SlotViejo).ObjIndex
@@ -25674,20 +25616,13 @@ Private Sub HandleBovedaMoveItem(ByVal UserIndex As Integer)
         UserList(UserIndex).BancoInvent.Object(SlotNuevo).Amount = Objeto.Amount
     
         'Actualizamos el banco
-                
         Call UpdateBanUserInv(False, UserIndex, SlotViejo)
         Call UpdateBanUserInv(False, UserIndex, SlotNuevo)
-      
-        'Actualizamos la ventana de comercio
-        'Call UpdateVentanaBanco(UserIndex)
-            
-        'Call UpdateUserInv(False, UserIndex, SlotViejo)
-        '  Call UpdateUserInv(False, UserIndex, SlotNuevo)
-    
-        'If we got here then packet is complete, copy data back to original queue
-        Call .incomingData.CopyBuffer(buffer)
+        
 
     End With
+    
+    Exit Sub
     
 Errhandler:
 
