@@ -2235,6 +2235,8 @@ Public ModRaza(1 To NUMRAZAS)             As ModRaza
 
 Public ModVida(1 To NUMCLASES)            As Double
 
+Public ExpByLevel(1 To STAT_MAXELV)       As Double
+
 Public DistribucionEnteraVida(1 To 5)     As Integer
 
 Public DistribucionSemienteraVida(1 To 4) As Integer
