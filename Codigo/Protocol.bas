@@ -6768,16 +6768,21 @@ Private Sub HandleOnline(ByVal UserIndex As Integer)
 104         For i = 1 To LastUser
 
 106             If UserList(i).flags.UserLogged Then
-                    'If UserList(i).flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then
-                    '    nombres = nombres & " - " & UserList(i).name
-                    'End If
+                    If UserList(i).flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then
+                        nombres = nombres & " - " & UserList(i).name
+                    End If
 108                 Count = Count + 1
 
                 End If
 
 110         Next i
-        
-112         Call WriteConsoleMsg(UserIndex, "Número de usuarios: " & CStr(Count) & " conectados", FontTypeNames.FONTTYPE_INFOIAO)
+
+
+            If .flags.Privilegios And PlayerType.user Then
+112             Call WriteConsoleMsg(UserIndex, "Número de usuarios: " & CStr(Count) & " conectados", FontTypeNames.FONTTYPE_INFOIAO)
+            Else
+                Call WriteConsoleMsg(UserIndex, "Número de usuarios: " & CStr(Count) & " conectados: " & nombres & ".", FontTypeNames.FONTTYPE_INFOIAO)
+            End If
 
         End With
 
