@@ -1440,7 +1440,7 @@ Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
 120             Call HandlePossUser(UserIndex)
 
 122         Case NewPacksID.Duelo
-124             'Call HandleDuelo(UserIndex)
+124             Call HandleDuelo(UserIndex)
 
 126         Case NewPacksID.NieveToggle
 128             Call HandleNieveToggle(UserIndex)
@@ -25101,15 +25101,15 @@ Errhandler:
 End Sub
 
 Private Sub HandleDuelo(ByVal UserIndex As Integer)
-    'Author: Pablo Mercavides
 
+ 'Author: Pablo Mercavides
     If UserList(UserIndex).incomingData.length < 2 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
     End If
     
-     On Error GoTo Errhandler
+    On Error GoTo Errhandler
 
     With UserList(UserIndex)
 
@@ -25121,6 +25121,8 @@ Private Sub HandleDuelo(ByVal UserIndex As Integer)
         'Remove packet ID
         Call buffer.ReadInteger
         
+        
+        Call WriteConsoleMsg(UserIndex, "Acción sin efecto.", FontTypeNames.FONTTYPE_INFOIAO)
 
         Call .incomingData.CopyBuffer(buffer)
 
