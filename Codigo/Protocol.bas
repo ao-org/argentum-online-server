@@ -633,7 +633,9 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
         End If
 
     Else
+    
         UserList(UserIndex).Counters.IdleCount = 0
+        
         ' Envió el primer paquete
         UserList(UserIndex).flags.FirstPacket = True
 
@@ -1440,7 +1442,7 @@ Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
 120             Call HandlePossUser(UserIndex)
 
 122         Case NewPacksID.Duelo
-124             Call HandleDuelo(UserIndex)
+124             'Call HandleDuelo(UserIndex)
 
 126         Case NewPacksID.NieveToggle
 128             Call HandleNieveToggle(UserIndex)
@@ -4837,18 +4839,18 @@ Private Sub HandleTrain(ByVal UserIndex As Integer)
         
             Dim SpawnedNpc As Integer
 
-            Dim petindex   As Byte
+            Dim PetIndex   As Byte
         
-108         petindex = .incomingData.ReadByte()
+108         PetIndex = .incomingData.ReadByte()
         
 110         If .flags.TargetNPC = 0 Then Exit Sub
         
 112         If Npclist(.flags.TargetNPC).NPCtype <> eNPCType.Entrenador Then Exit Sub
         
 114         If Npclist(.flags.TargetNPC).Mascotas < MAXMASCOTASENTRENADOR Then
-116             If petindex > 0 And petindex < Npclist(.flags.TargetNPC).NroCriaturas + 1 Then
+116             If PetIndex > 0 And PetIndex < Npclist(.flags.TargetNPC).NroCriaturas + 1 Then
                     'Create the creature
-118                 SpawnedNpc = SpawnNpc(Npclist(.flags.TargetNPC).Criaturas(petindex).NpcIndex, Npclist(.flags.TargetNPC).Pos, True, False)
+118                 SpawnedNpc = SpawnNpc(Npclist(.flags.TargetNPC).Criaturas(PetIndex).NpcIndex, Npclist(.flags.TargetNPC).Pos, True, False)
                 
 120                 If SpawnedNpc > 0 Then
 122                     Npclist(SpawnedNpc).MaestroNPC = .flags.TargetNPC
@@ -25101,8 +25103,8 @@ Errhandler:
 End Sub
 
 Private Sub HandleDuelo(ByVal UserIndex As Integer)
+    'Author: Pablo Mercavides
 
- 'Author: Pablo Mercavides
     If UserList(UserIndex).incomingData.length < 2 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
@@ -25114,25 +25116,61 @@ Private Sub HandleDuelo(ByVal UserIndex As Integer)
     With UserList(UserIndex)
 
         'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-        Dim buffer As New clsByteQueue
-
+        Dim buffer As clsByteQueue
+        Set buffer = New clsByteQueue
         Call buffer.CopyBuffer(.incomingData)
         
         'Remove packet ID
         Call buffer.ReadInteger
         
-        
-        Call WriteConsoleMsg(UserIndex, "Acción sin efecto.", FontTypeNames.FONTTYPE_INFOIAO)
-
+        'If we got here then packet is complete, copy data back to original queue
         Call .incomingData.CopyBuffer(buffer)
+        
+        MapaOcupado = False
+
+        Dim UserRetado As Integer: UserRetado = .flags.TargetUser
+
+        If .flags.SolicitudPendienteDe = 0 Then
+            
+            Select Case UserRetado
+            
+                Case 0
+                    Call WriteConsoleMsg(UserIndex, "Duelos> Primero haz click sobre el personaje.", FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                
+                Case Is < 0
+                    Call WriteConsoleMsg(UserIndex, "Duelos> ¡El persona se encuentra offline!", FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                
+            End Select
+
+            If MapaOcupado Then
+                Call WriteConsoleMsg(UserIndex, "Duelos> El mapa de duelos esta ocupado, intentalo mas tarde.", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+
+            End If
+        
+            .flags.RetoA = UserList(UserRetado).name
+            UserList(UserRetado).flags.SolicitudPendienteDe = .name
+        
+            Call WriteConsoleMsg(UserRetado, "Duelos> Has sido retado a duelo por " & .name & " si quieres aceptar el duelo escribe /DUELO.", FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "Duelos> La solicitud a sido enviada al usuario, ahora debes esperar la respuesta de " & UserList(UserRetado).name & ".", FontTypeNames.FONTTYPE_INFO)
+               
+        Else
+
+           Exit Sub
+
+        End If
+
+        Call SendData(UserIndex, 0, PrepareMessageConsoleMsg("Duelo comenzado!", FontTypeNames.FONTTYPE_SERVER))
 
     End With
     
+    Exit Sub
+    
 Errhandler:
 
-    Dim Error As Long
-
-    Error = Err.Number
+    Dim Error As Long: Error = Err.Number
 
     On Error GoTo 0
     
