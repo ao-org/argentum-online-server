@@ -1919,7 +1919,7 @@ Private Sub HandleThrowDice(ByVal UserIndex As Integer)
 104         .UserAtributos(eAtributos.Fuerza) = RandomNumber(DiceMinimum, DiceMaximum)
 106         .UserAtributos(eAtributos.Agilidad) = RandomNumber(DiceMinimum, DiceMaximum)
 108         .UserAtributos(eAtributos.Inteligencia) = RandomNumber(DiceMinimum, DiceMaximum)
-            '.UserAtributos(eAtributos.Carisma) = RandomNumber(DiceMinimum, DiceMaximum)
+            .UserAtributos(eAtributos.Carisma) = RandomNumber(DiceMinimum, DiceMaximum)
 110         .UserAtributos(eAtributos.Constitucion) = RandomNumber(DiceMinimum, DiceMaximum)
 
         End With
@@ -3265,7 +3265,7 @@ Private Sub HandleWork(ByVal UserIndex As Integer)
         
 116         Select Case Skill
 
-                Case Robar, magia
+                Case Robar, magia, Domar
 118                 Call WriteWorkRequestTarget(UserIndex, Skill)
 
 120             Case Ocultarse
@@ -3395,9 +3395,10 @@ Private Sub HandleUseItem(ByVal UserIndex As Integer)
 110         If slot <= UserList(UserIndex).CurrentInventorySlots And slot > 0 Then
 112             If .Invent.Object(slot).ObjIndex = 0 Then Exit Sub
 
+114             Call UseInvItem(UserIndex, slot)
+
             End If
-        
-114         Call UseInvItem(UserIndex, slot)
+
 
         End With
 
@@ -4255,6 +4256,40 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 598                     Call WriteWorkRequestTarget(UserIndex, 0)
 
                     End If
+                    
+                Case eSkill.Domar
+                    'Modificado 25/11/02
+                    'Optimizado y solucionado el bug de la doma de
+                    'criaturas hostiles.
+                    
+                    'Target whatever is that tile
+                    Call LookatTile(UserIndex, .Pos.Map, x, Y)
+                    tN = .flags.TargetNPC
+                    
+                    If tN > 0 Then
+                        If Npclist(tN).flags.Domable > 0 Then
+                            If Abs(.Pos.x - x) + Abs(.Pos.Y - Y) > 2 Then
+                                Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
+                                Exit Sub
+    
+                            End If
+                            
+                            If LenB(Npclist(tN).flags.AttackedBy) <> 0 Then
+                                Call WriteConsoleMsg(UserIndex, "No puedes domar una criatura que esta luchando con un jugador.", FontTypeNames.FONTTYPE_INFO)
+                                Exit Sub
+    
+                            End If
+                            
+                            Call DoDomar(UserIndex, tN)
+                        Else
+                            Call WriteConsoleMsg(UserIndex, "No puedes domar a esa criatura.", FontTypeNames.FONTTYPE_INFO)
+    
+                        End If
+    
+                    Else
+                        Call WriteConsoleMsg(UserIndex, "No hay ninguna criatura alli!", FontTypeNames.FONTTYPE_INFO)
+    
+                    End If
                
 600             Case FundirMetal    'UGLY!!! This is a constant, not a skill!!
             
@@ -4816,7 +4851,7 @@ Private Sub HandleTrain(ByVal UserIndex As Integer)
 118                 SpawnedNpc = SpawnNpc(Npclist(.flags.TargetNPC).Criaturas(petindex).NpcIndex, Npclist(.flags.TargetNPC).Pos, True, False)
                 
 120                 If SpawnedNpc > 0 Then
-122                     Npclist(SpawnedNpc).MaestroNpc = .flags.TargetNPC
+122                     Npclist(SpawnedNpc).MaestroNPC = .flags.TargetNPC
 124                     Npclist(.flags.TargetNPC).Mascotas = Npclist(.flags.TargetNPC).Mascotas + 1
 
                     End If
@@ -20333,7 +20368,7 @@ Public Sub WriteAttributes(ByVal UserIndex As Integer)
         Call .WriteByte(UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad))
         Call .WriteByte(UserList(UserIndex).Stats.UserAtributos(eAtributos.Inteligencia))
         Call .WriteByte(UserList(UserIndex).Stats.UserAtributos(eAtributos.Constitucion))
-
+        Call .WriteByte(UserList(UserIndex).Stats.UserAtributos(eAtributos.Carisma))
     End With
 
     Exit Sub
@@ -21309,12 +21344,12 @@ Public Sub WriteDiceRoll(ByVal UserIndex As Integer)
 
     With UserList(UserIndex).outgoingData
         Call .WriteByte(ServerPacketID.DiceRoll)
-        
+        ' TODO: SACAR ESTE PAQUETE USAR EL DE ATRIBUTOS
         Call .WriteByte(UserList(UserIndex).Stats.UserAtributos(eAtributos.Fuerza))
         Call .WriteByte(UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad))
         Call .WriteByte(UserList(UserIndex).Stats.UserAtributos(eAtributos.Inteligencia))
         Call .WriteByte(UserList(UserIndex).Stats.UserAtributos(eAtributos.Constitucion))
-
+        Call .WriteByte(UserList(UserIndex).Stats.UserAtributos(eAtributos.Carisma))
     End With
 
     Exit Sub
