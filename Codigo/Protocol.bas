@@ -1440,7 +1440,7 @@ Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
 120             Call HandlePossUser(UserIndex)
 
 122         Case NewPacksID.Duelo
-124             Call HandleDuelo(UserIndex)
+124             'Call HandleDuelo(UserIndex)
 
 126         Case NewPacksID.NieveToggle
 128             Call HandleNieveToggle(UserIndex)
@@ -25169,7 +25169,7 @@ Private Sub HandleDuelo(ByVal UserIndex As Integer)
             'End If
             'End If
             Call .incomingData.CopyBuffer(buffer)
-            Exit Sub
+           ' Exit Sub
 
         End If
 
