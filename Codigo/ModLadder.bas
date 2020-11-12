@@ -946,7 +946,7 @@ Function PuedeUsarObjeto(UserIndex As Integer, ByVal ObjIndex As Integer) As Byt
                 End If
                 
             Case otHerramientas
-                If Not CheckClaseTipo(UserIndex, ObjIndex) Then
+                If Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
                     PuedeUsarObjeto = 2
                     Exit Function
 
