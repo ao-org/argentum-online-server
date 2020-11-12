@@ -944,6 +944,13 @@ Function PuedeUsarObjeto(UserIndex As Integer, ByVal ObjIndex As Integer) As Byt
                     Exit Function
 
                 End If
+                
+            Case otHerramientas
+                If Not CheckClaseTipo(UserIndex, ObjIndex) Then
+                    PuedeUsarObjeto = 2
+                    Exit Function
+
+                End If
             
         End Select
 

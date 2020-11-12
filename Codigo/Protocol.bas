@@ -3964,7 +3964,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         Case CAÑA_PESCA, CAÑA_PESCA_DORADA
 
 372                         If HayAgua(.Pos.Map, x, Y) Then
-374                             Call DoPescar(UserIndex)
+374                             Call DoPescar(UserIndex, False, .Invent.HerramientaEqpObjIndex = CAÑA_PESCA_DORADA)
 376                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .Pos.x, .Pos.Y))
                             Else
 378                             Call WriteConsoleMsg(UserIndex, "No hay agua donde pescar. Busca un lago, rio o mar.", FontTypeNames.FONTTYPE_INFO)
@@ -4005,7 +4005,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
     
                                 End If
                                     
-410                             Call DoPescar(UserIndex, True)
+410                             Call DoPescar(UserIndex, True, True)
 412                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .Pos.x, .Pos.Y))
                         
                             Else
@@ -4067,7 +4067,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
                                 '¡Hay un arbol donde clickeo?
 452                             If ObjData(DummyInt).OBJType = eOBJType.otArboles Then
-454                                 Call DoTalar(UserIndex, x, Y)
+454                                 Call DoTalar(UserIndex, x, Y, .Invent.HerramientaEqpObjIndex = HACHA_LEÑADOR_DORADA)
 
                                 End If
 
@@ -4184,7 +4184,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
                                 '¡Hay un yacimiento donde clickeo?
 544                             If ObjData(DummyInt).OBJType = eOBJType.otYacimiento Then
-546                                 Call DoMineria(UserIndex, x, Y)
+546                                 Call DoMineria(UserIndex, x, Y, .Invent.HerramientaEqpObjIndex = PIQUETE_MINERO_DORADA)
                                 Else
 548                                 Call WriteConsoleMsg(UserIndex, "Ahí no hay ningún yacimiento.", FontTypeNames.FONTTYPE_INFO)
 550                                 Call WriteWorkRequestTarget(UserIndex, 0)

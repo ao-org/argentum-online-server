@@ -761,7 +761,7 @@ Public Enum eOBJType
     otESCUDO = 16
     otCASCO = 17
     ' otAnillo = 18
-    OtHerramientas = 18
+    otHerramientas = 18
     otTeleport = 19
     OtDecoraciones = 20
     otmagicos = 21
