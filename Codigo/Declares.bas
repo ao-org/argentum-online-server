@@ -268,6 +268,8 @@ Public Const LAUDMAGICO              As Integer = 696
 
 Public Const FLAUTAMAGICA            As Integer = 208
 
+Public Const FLAUTAELFICA            As Integer = 1050
+
 Public Const MAXMASCOTASENTRENADOR   As Byte = 7
 
 Public Enum FXSound
@@ -548,11 +550,11 @@ Public Const MIN_APUÑALAR As Byte = 10
 
 ''
 ' Cantidad de skills
-Public Const NUMSKILLS      As Byte = 23
+Public Const NUMSKILLS      As Byte = 24
 
 ''
 ' Cantidad de Atributos
-Public Const NUMATRIBUTOS   As Byte = 4
+Public Const NUMATRIBUTOS   As Byte = 5
 
 ''
 ' Cantidad de Clases
@@ -565,6 +567,10 @@ Public Const NUMRAZAS       As Byte = 5
 ''
 ' Valor maximo de cada skill
 Public Const MAXSKILLPOINTS As Byte = 100
+
+''
+' Cantidad maxima de mascotas
+Public Const MAXMASCOTAS   As Byte = 3
 
 ''
 'Direccion
@@ -630,6 +636,7 @@ Public Enum eSkill
     Carpinteria = 21
     Alquimia = 22
     Sastreria = 23
+    Domar = 24
     
     Grupo = 90
     MarcaDeClan = 91
@@ -645,6 +652,7 @@ Public Enum eAtributos
     Agilidad = 2
     Inteligencia = 3
     Constitucion = 4
+    Carisma = 5
 
 End Enum
 
@@ -1793,6 +1801,10 @@ Public Type user
     
     EmpoCont As Byte
     
+    NroMascotas As Integer
+    MascotasType(1 To MAXMASCOTAS) As Integer
+    MascotasIndex(1 To MAXMASCOTAS) As Integer
+    
     GuildIndex As Integer   'puntero al array global de guilds
     FundandoGuildAlineacion As ALINEACION_GUILD     'esto esta aca hasta que se parchee el cliente y se pongan cadenas de datos distintas para cada alineacion
     EscucheClan As Integer
@@ -1885,7 +1897,7 @@ Public Type NPCFlags
     Inmovilizado As Byte
     invisible As Byte
     Bendicion As Byte
-    
+
     Snd1 As Integer
     Snd2 As Integer
     Snd3 As Integer
@@ -1994,7 +2006,8 @@ Public Type npc
     NroCriaturas As Integer
     Criaturas() As tCriaturasEntrenador
     EsFamiliar As Byte
-    MaestroNpc As Integer
+    MaestroNPC As Integer
+    MaestroUser As Integer
     Mascotas As Integer
     
     ' New!! Needed for pathfindig

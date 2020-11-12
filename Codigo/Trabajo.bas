@@ -29,7 +29,7 @@ Attribute VB_Name = "Trabajo"
 
 Option Explicit
 
-Public Sub DoPermanecerOculto(ByVal UserIndex As Integer)
+Public Sub DoPermanecerOculto(ByVal Userindex As Integer)
         '********************************************************
         'Autor: Nacho (Integer)
         'Last Modif: 28/01/2007
@@ -40,22 +40,22 @@ Public Sub DoPermanecerOculto(ByVal UserIndex As Integer)
         On Error GoTo DoPermanecerOculto_Err
         
 
-100     UserList(UserIndex).Counters.TiempoOculto = UserList(UserIndex).Counters.TiempoOculto - 1
+100     UserList(Userindex).Counters.TiempoOculto = UserList(Userindex).Counters.TiempoOculto - 1
 
-102     If UserList(UserIndex).Counters.TiempoOculto <= 0 Then
+102     If UserList(Userindex).Counters.TiempoOculto <= 0 Then
     
             ' UserList(UserIndex).Counters.TiempoOculto = IntervaloOculto
     
-104         UserList(UserIndex).Counters.TiempoOculto = 0
-106         UserList(UserIndex).flags.Oculto = 0
-108         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(UserList(UserIndex).Char.CharIndex, False))
-110         Call WriteConsoleMsg(UserIndex, "¡Has vuelto a ser visible!", FontTypeNames.FONTTYPE_INFO)
+104         UserList(Userindex).Counters.TiempoOculto = 0
+106         UserList(Userindex).flags.Oculto = 0
+108         Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageSetInvisible(UserList(Userindex).Char.CharIndex, False))
+110         Call WriteConsoleMsg(Userindex, "¡Has vuelto a ser visible!", FontTypeNames.FONTTYPE_INFO)
 
         End If
 
         Exit Sub
 
-Errhandler:
+errHandler:
 112     Call LogError("Error en Sub DoPermanecerOculto")
 
         
@@ -67,11 +67,11 @@ DoPermanecerOculto_Err:
         
 End Sub
 
-Public Sub DoOcultarse(ByVal UserIndex As Integer)
+Public Sub DoOcultarse(ByVal Userindex As Integer)
 
     'Pablo (ToxicWaste): No olvidar agregar IntervaloOculto=500 al Server.ini.
     'Modifique la fórmula y ahora anda bien.
-    On Error GoTo Errhandler
+    On Error GoTo errHandler
 
     Dim Suerte As Double
 
@@ -79,7 +79,7 @@ Public Sub DoOcultarse(ByVal UserIndex As Integer)
 
     Dim Skill  As Integer
 
-    Skill = UserList(UserIndex).Stats.UserSkills(eSkill.Ocultarse)
+    Skill = UserList(Userindex).Stats.UserSkills(eSkill.Ocultarse)
 
     Suerte = (((0.000002 * Skill - 0.0002) * Skill + 0.0064) * Skill + 0.1124) * 100
 
@@ -87,113 +87,113 @@ Public Sub DoOcultarse(ByVal UserIndex As Integer)
 
     If res <= Suerte Then
 
-        UserList(UserIndex).flags.Oculto = 1
+        UserList(Userindex).flags.Oculto = 1
         Suerte = (-0.000001 * (100 - Skill) ^ 3)
         Suerte = Suerte + (0.00009229 * (100 - Skill) ^ 2)
         Suerte = Suerte + (-0.0088 * (100 - Skill))
         Suerte = Suerte + (0.9571)
         Suerte = Suerte * IntervaloOculto
     
-        If UserList(UserIndex).flags.AnilloOcultismo = 1 Then
-            UserList(UserIndex).Counters.TiempoOculto = Suerte * 3
+        If UserList(Userindex).flags.AnilloOcultismo = 1 Then
+            UserList(Userindex).Counters.TiempoOculto = Suerte * 3
         Else
-            UserList(UserIndex).Counters.TiempoOculto = Suerte
+            UserList(Userindex).Counters.TiempoOculto = Suerte
 
         End If
   
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(UserList(UserIndex).Char.CharIndex, True))
+        Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageSetInvisible(UserList(Userindex).Char.CharIndex, True))
 
         'Call WriteConsoleMsg(UserIndex, "¡Te has escondido entre las sombras!", FontTypeNames.FONTTYPE_INFO)
-        Call WriteLocaleMsg(UserIndex, "55", FontTypeNames.FONTTYPE_INFO)
-        Call SubirSkill(UserIndex, Ocultarse)
+        Call WriteLocaleMsg(Userindex, "55", FontTypeNames.FONTTYPE_INFO)
+        Call SubirSkill(Userindex, Ocultarse)
     Else
 
         '[CDT 17-02-2004]
-        If Not UserList(UserIndex).flags.UltimoMensaje = 4 Then
+        If Not UserList(Userindex).flags.UltimoMensaje = 4 Then
             'Call WriteConsoleMsg(UserIndex, "¡No has logrado esconderte!", FontTypeNames.FONTTYPE_INFO)
-            Call WriteLocaleMsg(UserIndex, "57", FontTypeNames.FONTTYPE_INFO)
-            UserList(UserIndex).flags.UltimoMensaje = 4
+            Call WriteLocaleMsg(Userindex, "57", FontTypeNames.FONTTYPE_INFO)
+            UserList(Userindex).flags.UltimoMensaje = 4
 
         End If
 
         '[/CDT]
     End If
 
-    UserList(UserIndex).Counters.Ocultando = UserList(UserIndex).Counters.Ocultando + 1
+    UserList(Userindex).Counters.Ocultando = UserList(Userindex).Counters.Ocultando + 1
 
     Exit Sub
 
-Errhandler:
+errHandler:
     Call LogError("Error en Sub DoOcultarse")
 
 End Sub
 
-Public Sub DoNadar(ByVal UserIndex As Integer, ByRef Barco As ObjData, ByVal slot As Integer)
+Public Sub DoNadar(ByVal Userindex As Integer, ByRef Barco As ObjData, ByVal slot As Integer)
         
         On Error GoTo DoNadar_Err
         
 
         Dim ModNave As Long
 
-100     If UserList(UserIndex).flags.Nadando = 0 Then
+100     If UserList(Userindex).flags.Nadando = 0 Then
     
-102         If UserList(UserIndex).flags.Muerto = 0 Then
+102         If UserList(Userindex).flags.Muerto = 0 Then
                 '(Nacho)
     
-104             UserList(UserIndex).Char.Body = 694
+104             UserList(Userindex).Char.Body = 694
                 'If Barco.Ropaje = iGalera Then UserList(UserIndex).Char.body = iGalera
                 'If Barco.Ropaje = iGaleon Then UserList(UserIndex).Char.body = iGaleon
             Else
-106             UserList(UserIndex).Char.Body = iFragataFantasmal
+106             UserList(Userindex).Char.Body = iFragataFantasmal
 
             End If
     
-108         UserList(UserIndex).Char.ShieldAnim = NingunEscudo
-110         UserList(UserIndex).Char.WeaponAnim = NingunArma
-112         UserList(UserIndex).Char.CascoAnim = NingunCasco
-114         UserList(UserIndex).flags.Nadando = 1
+108         UserList(Userindex).Char.ShieldAnim = NingunEscudo
+110         UserList(Userindex).Char.WeaponAnim = NingunArma
+112         UserList(Userindex).Char.CascoAnim = NingunCasco
+114         UserList(Userindex).flags.Nadando = 1
     
         Else
     
-116         UserList(UserIndex).flags.Nadando = 0
+116         UserList(Userindex).flags.Nadando = 0
     
-118         If UserList(UserIndex).flags.Muerto = 0 Then
-120             UserList(UserIndex).Char.Head = UserList(UserIndex).OrigChar.Head
+118         If UserList(Userindex).flags.Muerto = 0 Then
+120             UserList(Userindex).Char.Head = UserList(Userindex).OrigChar.Head
         
-122             If UserList(UserIndex).Invent.ArmourEqpObjIndex > 0 Then
-124                 UserList(UserIndex).Char.Body = ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).Ropaje
+122             If UserList(Userindex).Invent.ArmourEqpObjIndex > 0 Then
+124                 UserList(Userindex).Char.Body = ObjData(UserList(Userindex).Invent.ArmourEqpObjIndex).Ropaje
             
-126                 If UserList(UserIndex).raza = Enano Or UserList(UserIndex).raza = Gnomo Then
-128                     UserList(UserIndex).Char.Body = ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).RopajeBajo
+126                 If UserList(Userindex).raza = Enano Or UserList(Userindex).raza = Gnomo Then
+128                     UserList(Userindex).Char.Body = ObjData(UserList(Userindex).Invent.ArmourEqpObjIndex).RopajeBajo
                     Else
-130                     UserList(UserIndex).Char.Body = ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).Ropaje
+130                     UserList(Userindex).Char.Body = ObjData(UserList(Userindex).Invent.ArmourEqpObjIndex).Ropaje
 
                     End If
             
                 Else
-132                 Call DarCuerpoDesnudo(UserIndex)
+132                 Call DarCuerpoDesnudo(Userindex)
 
                 End If
         
-134             If UserList(UserIndex).Invent.EscudoEqpObjIndex > 0 Then UserList(UserIndex).Char.ShieldAnim = ObjData(UserList(UserIndex).Invent.EscudoEqpObjIndex).ShieldAnim
+134             If UserList(Userindex).Invent.EscudoEqpObjIndex > 0 Then UserList(Userindex).Char.ShieldAnim = ObjData(UserList(Userindex).Invent.EscudoEqpObjIndex).ShieldAnim
 
-136             If UserList(UserIndex).Invent.WeaponEqpObjIndex > 0 Then UserList(UserIndex).Char.WeaponAnim = ObjData(UserList(UserIndex).Invent.WeaponEqpObjIndex).WeaponAnim
+136             If UserList(Userindex).Invent.WeaponEqpObjIndex > 0 Then UserList(Userindex).Char.WeaponAnim = ObjData(UserList(Userindex).Invent.WeaponEqpObjIndex).WeaponAnim
 
-138             If UserList(UserIndex).Invent.CascoEqpObjIndex > 0 Then UserList(UserIndex).Char.CascoAnim = ObjData(UserList(UserIndex).Invent.CascoEqpObjIndex).CascoAnim
+138             If UserList(Userindex).Invent.CascoEqpObjIndex > 0 Then UserList(Userindex).Char.CascoAnim = ObjData(UserList(Userindex).Invent.CascoEqpObjIndex).CascoAnim
             Else
-140             UserList(UserIndex).Char.Body = iCuerpoMuerto
-142             UserList(UserIndex).Char.Head = iCabezaMuerto
-144             UserList(UserIndex).Char.ShieldAnim = NingunEscudo
-146             UserList(UserIndex).Char.WeaponAnim = NingunArma
-148             UserList(UserIndex).Char.CascoAnim = NingunCasco
+140             UserList(Userindex).Char.Body = iCuerpoMuerto
+142             UserList(Userindex).Char.Head = iCabezaMuerto
+144             UserList(Userindex).Char.ShieldAnim = NingunEscudo
+146             UserList(Userindex).Char.WeaponAnim = NingunArma
+148             UserList(Userindex).Char.CascoAnim = NingunCasco
 
             End If
 
         End If
 
-150     Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
+150     Call ChangeUserChar(Userindex, UserList(Userindex).Char.Body, UserList(Userindex).Char.Head, UserList(Userindex).Char.heading, UserList(Userindex).Char.WeaponAnim, UserList(Userindex).Char.ShieldAnim, UserList(Userindex).Char.CascoAnim)
         'Call WriteNadarToggle(UserIndex)
-152     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(FXSound.BARCA_SOUND, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+152     Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessagePlayWave(FXSound.BARCA_SOUND, UserList(Userindex).Pos.x, UserList(Userindex).Pos.Y))
 
         
         Exit Sub
@@ -204,145 +204,145 @@ DoNadar_Err:
         
 End Sub
 
-Public Sub DoNavega(ByVal UserIndex As Integer, ByRef Barco As ObjData, ByVal slot As Integer)
+Public Sub DoNavega(ByVal Userindex As Integer, ByRef Barco As ObjData, ByVal slot As Integer)
         
         On Error GoTo DoNavega_Err
         
 
         Dim ModNave As Long
 
-100     If UserList(UserIndex).Stats.UserSkills(eSkill.Navegacion) < Barco.MinSkill Then
-102         Call WriteConsoleMsg(UserIndex, "No tenes suficientes conocimientos para usar este barco.", FontTypeNames.FONTTYPE_INFO)
-104         Call WriteConsoleMsg(UserIndex, "Para usar este barco necesitas " & Barco.MinSkill & " puntos en navegacion.", FontTypeNames.FONTTYPE_INFO)
+100     If UserList(Userindex).Stats.UserSkills(eSkill.Navegacion) < Barco.MinSkill Then
+102         Call WriteConsoleMsg(Userindex, "No tenes suficientes conocimientos para usar este barco.", FontTypeNames.FONTTYPE_INFO)
+104         Call WriteConsoleMsg(Userindex, "Para usar este barco necesitas " & Barco.MinSkill & " puntos en navegacion.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
 
-106     UserList(UserIndex).Invent.BarcoObjIndex = UserList(UserIndex).Invent.Object(slot).ObjIndex
-108     UserList(UserIndex).Invent.BarcoSlot = slot
+106     UserList(Userindex).Invent.BarcoObjIndex = UserList(Userindex).Invent.Object(slot).ObjIndex
+108     UserList(Userindex).Invent.BarcoSlot = slot
 
-110     If UserList(UserIndex).flags.Montado > 0 Then
-112         Call DoMontar(UserIndex, ObjData(UserList(UserIndex).Invent.MonturaObjIndex), UserList(UserIndex).Invent.MonturaSlot)
+110     If UserList(Userindex).flags.Montado > 0 Then
+112         Call DoMontar(Userindex, ObjData(UserList(Userindex).Invent.MonturaObjIndex), UserList(Userindex).Invent.MonturaSlot)
 
         End If
 
-114     If UserList(UserIndex).flags.Navegando = 0 Then
+114     If UserList(Userindex).flags.Navegando = 0 Then
 
 116         If Barco.Ropaje = iTraje Then
-118             Call WriteNadarToggle(UserIndex, True)
+118             Call WriteNadarToggle(Userindex, True)
         
             Else
-120             Call WriteNadarToggle(UserIndex, False)
+120             Call WriteNadarToggle(Userindex, False)
         
             End If
     
 122         If Barco.Ropaje <> iTraje Then
-124             UserList(UserIndex).Char.Head = 0
-126             UserList(UserIndex).Char.CascoAnim = NingunCasco
+124             UserList(Userindex).Char.Head = 0
+126             UserList(Userindex).Char.CascoAnim = NingunCasco
 
             End If
     
-128         If UserList(UserIndex).flags.Muerto = 0 Then
+128         If UserList(Userindex).flags.Muerto = 0 Then
 
                 '(Nacho)
-130             If UserList(UserIndex).Faccion.ArmadaReal = 1 Then
-132                 If Barco.Ropaje = iTraje Then UserList(UserIndex).Char.Body = iTraje
-134                 If Barco.Ropaje = iBarca Then UserList(UserIndex).Char.Body = iBarcaCiuda
-136                 If Barco.Ropaje = iGalera Then UserList(UserIndex).Char.Body = iGaleraCiuda
-138                 If Barco.Ropaje = iGaleon Then UserList(UserIndex).Char.Body = iGaleonCiuda
-140             ElseIf UserList(UserIndex).Faccion.FuerzasCaos = 1 Then
+130             If UserList(Userindex).Faccion.ArmadaReal = 1 Then
+132                 If Barco.Ropaje = iTraje Then UserList(Userindex).Char.Body = iTraje
+134                 If Barco.Ropaje = iBarca Then UserList(Userindex).Char.Body = iBarcaCiuda
+136                 If Barco.Ropaje = iGalera Then UserList(Userindex).Char.Body = iGaleraCiuda
+138                 If Barco.Ropaje = iGaleon Then UserList(Userindex).Char.Body = iGaleonCiuda
+140             ElseIf UserList(Userindex).Faccion.FuerzasCaos = 1 Then
 
-142                 If Barco.Ropaje = iTraje Then UserList(UserIndex).Char.Body = iTraje
-144                 If Barco.Ropaje = iBarca Then UserList(UserIndex).Char.Body = iBarcaPk
-146                 If Barco.Ropaje = iGalera Then UserList(UserIndex).Char.Body = iGaleraPk
-148                 If Barco.Ropaje = iGaleon Then UserList(UserIndex).Char.Body = iGaleonPk
+142                 If Barco.Ropaje = iTraje Then UserList(Userindex).Char.Body = iTraje
+144                 If Barco.Ropaje = iBarca Then UserList(Userindex).Char.Body = iBarcaPk
+146                 If Barco.Ropaje = iGalera Then UserList(Userindex).Char.Body = iGaleraPk
+148                 If Barco.Ropaje = iGaleon Then UserList(Userindex).Char.Body = iGaleonPk
                 Else
 
-150                 If Barco.Ropaje = iTraje Then UserList(UserIndex).Char.Body = iTraje
-152                 If Barco.Ropaje = iBarca Then UserList(UserIndex).Char.Body = iBarca
-154                 If Barco.Ropaje = iGalera Then UserList(UserIndex).Char.Body = iGalera
-156                 If Barco.Ropaje = iGaleon Then UserList(UserIndex).Char.Body = iGaleon
+150                 If Barco.Ropaje = iTraje Then UserList(Userindex).Char.Body = iTraje
+152                 If Barco.Ropaje = iBarca Then UserList(Userindex).Char.Body = iBarca
+154                 If Barco.Ropaje = iGalera Then UserList(Userindex).Char.Body = iGalera
+156                 If Barco.Ropaje = iGaleon Then UserList(Userindex).Char.Body = iGaleon
 
                 End If
 
             Else
 
 158             If Barco.Ropaje = iTraje Then
-160                 UserList(UserIndex).Char.Body = iRopaBuceoMuerto
+160                 UserList(Userindex).Char.Body = iRopaBuceoMuerto
                 Else
-162                 UserList(UserIndex).Char.Body = iFragataFantasmal
+162                 UserList(Userindex).Char.Body = iFragataFantasmal
 
                 End If
 
-164             UserList(UserIndex).Char.Head = iCabezaMuerto
+164             UserList(Userindex).Char.Head = iCabezaMuerto
 
             End If
     
-166         UserList(UserIndex).Char.ShieldAnim = NingunEscudo
-168         UserList(UserIndex).Char.WeaponAnim = NingunArma
+166         UserList(Userindex).Char.ShieldAnim = NingunEscudo
+168         UserList(Userindex).Char.WeaponAnim = NingunArma
             'UserList(UserIndex).Char.CascoAnim = NingunCasco
-170         UserList(UserIndex).flags.Navegando = 1
+170         UserList(Userindex).flags.Navegando = 1
     
-172         UserList(UserIndex).Char.speeding = Barco.Velocidad
+172         UserList(Userindex).Char.speeding = Barco.Velocidad
     
         Else
 
 174         If Barco.Ropaje = iTraje Then
-176             Call WriteNadarToggle(UserIndex, False)
+176             Call WriteNadarToggle(Userindex, False)
             Else
-178             Call WriteNadarToggle(UserIndex, False)
+178             Call WriteNadarToggle(Userindex, False)
 
             End If
 
-180         UserList(UserIndex).Char.speeding = VelocidadNormal
+180         UserList(Userindex).Char.speeding = VelocidadNormal
     
-182         UserList(UserIndex).flags.Navegando = 0
+182         UserList(Userindex).flags.Navegando = 0
     
-184         If UserList(UserIndex).flags.Muerto = 0 Then
-186             UserList(UserIndex).Char.Head = UserList(UserIndex).OrigChar.Head
+184         If UserList(Userindex).flags.Muerto = 0 Then
+186             UserList(Userindex).Char.Head = UserList(Userindex).OrigChar.Head
         
-188             If UserList(UserIndex).Invent.ArmourEqpObjIndex > 0 Then
-190                 UserList(UserIndex).Char.Body = ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).Ropaje
+188             If UserList(Userindex).Invent.ArmourEqpObjIndex > 0 Then
+190                 UserList(Userindex).Char.Body = ObjData(UserList(Userindex).Invent.ArmourEqpObjIndex).Ropaje
             
-192                 If UserList(UserIndex).raza = Enano Or UserList(UserIndex).raza = Gnomo Then
-194                     UserList(UserIndex).Char.Body = ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).RopajeBajo
+192                 If UserList(Userindex).raza = Enano Or UserList(Userindex).raza = Gnomo Then
+194                     UserList(Userindex).Char.Body = ObjData(UserList(Userindex).Invent.ArmourEqpObjIndex).RopajeBajo
                     Else
-196                     UserList(UserIndex).Char.Body = ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).Ropaje
+196                     UserList(Userindex).Char.Body = ObjData(UserList(Userindex).Invent.ArmourEqpObjIndex).Ropaje
 
                     End If
             
                 Else
-198                 Call DarCuerpoDesnudo(UserIndex)
+198                 Call DarCuerpoDesnudo(Userindex)
 
                 End If
         
-200             If UserList(UserIndex).Invent.EscudoEqpObjIndex > 0 Then UserList(UserIndex).Char.ShieldAnim = ObjData(UserList(UserIndex).Invent.EscudoEqpObjIndex).ShieldAnim
+200             If UserList(Userindex).Invent.EscudoEqpObjIndex > 0 Then UserList(Userindex).Char.ShieldAnim = ObjData(UserList(Userindex).Invent.EscudoEqpObjIndex).ShieldAnim
 
-202             If UserList(UserIndex).Invent.WeaponEqpObjIndex > 0 Then UserList(UserIndex).Char.WeaponAnim = ObjData(UserList(UserIndex).Invent.WeaponEqpObjIndex).WeaponAnim
+202             If UserList(Userindex).Invent.WeaponEqpObjIndex > 0 Then UserList(Userindex).Char.WeaponAnim = ObjData(UserList(Userindex).Invent.WeaponEqpObjIndex).WeaponAnim
 
-204             If UserList(UserIndex).Invent.NudilloObjIndex > 0 Then UserList(UserIndex).Char.WeaponAnim = ObjData(UserList(UserIndex).Invent.NudilloObjIndex).WeaponAnim
+204             If UserList(Userindex).Invent.NudilloObjIndex > 0 Then UserList(Userindex).Char.WeaponAnim = ObjData(UserList(Userindex).Invent.NudilloObjIndex).WeaponAnim
 
-206             If UserList(UserIndex).Invent.HerramientaEqpObjIndex > 0 Then UserList(UserIndex).Char.WeaponAnim = ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).WeaponAnim
+206             If UserList(Userindex).Invent.HerramientaEqpObjIndex > 0 Then UserList(Userindex).Char.WeaponAnim = ObjData(UserList(Userindex).Invent.HerramientaEqpObjIndex).WeaponAnim
 
-208             If UserList(UserIndex).Invent.CascoEqpObjIndex > 0 Then UserList(UserIndex).Char.CascoAnim = ObjData(UserList(UserIndex).Invent.CascoEqpObjIndex).CascoAnim
+208             If UserList(Userindex).Invent.CascoEqpObjIndex > 0 Then UserList(Userindex).Char.CascoAnim = ObjData(UserList(Userindex).Invent.CascoEqpObjIndex).CascoAnim
             Else
-210             UserList(UserIndex).Char.Body = iCuerpoMuerto
-212             UserList(UserIndex).Char.Head = iCabezaMuerto
-214             UserList(UserIndex).Char.ShieldAnim = NingunEscudo
-216             UserList(UserIndex).Char.WeaponAnim = NingunArma
-218             UserList(UserIndex).Char.CascoAnim = NingunCasco
+210             UserList(Userindex).Char.Body = iCuerpoMuerto
+212             UserList(Userindex).Char.Head = iCabezaMuerto
+214             UserList(Userindex).Char.ShieldAnim = NingunEscudo
+216             UserList(Userindex).Char.WeaponAnim = NingunArma
+218             UserList(Userindex).Char.CascoAnim = NingunCasco
 
             End If
 
         End If
 
-220     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(UserList(UserIndex).Char.CharIndex, UserList(UserIndex).Char.speeding))
+220     Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageSpeedingACT(UserList(Userindex).Char.CharIndex, UserList(Userindex).Char.speeding))
 
         'Call WriteVelocidadToggle(UserIndex)
     
-222     Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
-224     Call WriteNavigateToggle(UserIndex)
-226     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(FXSound.BARCA_SOUND, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+222     Call ChangeUserChar(Userindex, UserList(Userindex).Char.Body, UserList(Userindex).Char.Head, UserList(Userindex).Char.heading, UserList(Userindex).Char.WeaponAnim, UserList(Userindex).Char.ShieldAnim, UserList(Userindex).Char.CascoAnim)
+224     Call WriteNavigateToggle(Userindex)
+226     Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessagePlayWave(FXSound.BARCA_SOUND, UserList(Userindex).Pos.x, UserList(Userindex).Pos.Y))
 
         
         Exit Sub
@@ -353,84 +353,84 @@ DoNavega_Err:
         
 End Sub
 
-Public Sub DoReNavega(ByVal UserIndex As Integer, ByRef Barco As ObjData, ByVal slot As Integer)
+Public Sub DoReNavega(ByVal Userindex As Integer, ByRef Barco As ObjData, ByVal slot As Integer)
         
         On Error GoTo DoReNavega_Err
         
 
         Dim ModNave As Long
 
-100     If UserList(UserIndex).Stats.UserSkills(eSkill.Navegacion) < Barco.MinSkill Then
-102         Call WriteConsoleMsg(UserIndex, "No tenes suficientes conocimientos para usar este barco.", FontTypeNames.FONTTYPE_INFO)
-104         Call WriteConsoleMsg(UserIndex, "Para usar este barco necesitas " & Barco.MinSkill & " puntos en navegacion.", FontTypeNames.FONTTYPE_INFO)
+100     If UserList(Userindex).Stats.UserSkills(eSkill.Navegacion) < Barco.MinSkill Then
+102         Call WriteConsoleMsg(Userindex, "No tenes suficientes conocimientos para usar este barco.", FontTypeNames.FONTTYPE_INFO)
+104         Call WriteConsoleMsg(Userindex, "Para usar este barco necesitas " & Barco.MinSkill & " puntos en navegacion.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
 
-106     UserList(UserIndex).Invent.BarcoObjIndex = UserList(UserIndex).Invent.Object(slot).ObjIndex
-108     UserList(UserIndex).Invent.BarcoSlot = slot
+106     UserList(Userindex).Invent.BarcoObjIndex = UserList(Userindex).Invent.Object(slot).ObjIndex
+108     UserList(Userindex).Invent.BarcoSlot = slot
 
-110     If UserList(UserIndex).flags.Montado > 0 Then
-112         Call DoMontar(UserIndex, ObjData(UserList(UserIndex).Invent.MonturaObjIndex), UserList(UserIndex).Invent.MonturaSlot)
+110     If UserList(Userindex).flags.Montado > 0 Then
+112         Call DoMontar(Userindex, ObjData(UserList(Userindex).Invent.MonturaObjIndex), UserList(Userindex).Invent.MonturaSlot)
 
         End If
 
 114     If Barco.Ropaje = iTraje Then
-116         Call WriteNadarToggle(UserIndex, True)
+116         Call WriteNadarToggle(Userindex, True)
         Else
-118         Call WriteNadarToggle(UserIndex, False)
+118         Call WriteNadarToggle(Userindex, False)
 
         End If
     
 120     If Barco.Ropaje <> iTraje Then
-122         UserList(UserIndex).Char.Head = 0
+122         UserList(Userindex).Char.Head = 0
         Else
-124         UserList(UserIndex).Char.Head = UserList(UserIndex).OrigChar.Head
+124         UserList(Userindex).Char.Head = UserList(Userindex).OrigChar.Head
 
         End If
     
-126     If UserList(UserIndex).flags.Muerto = 0 Then
+126     If UserList(Userindex).flags.Muerto = 0 Then
 
             '(Nacho)
-128         If UserList(UserIndex).Faccion.ArmadaReal = 1 Then
-130             If Barco.Ropaje = iTraje Then UserList(UserIndex).Char.Body = iTraje
-132             If Barco.Ropaje = iBarca Then UserList(UserIndex).Char.Body = iBarcaCiuda
-134             If Barco.Ropaje = iGalera Then UserList(UserIndex).Char.Body = iGaleraCiuda
-136             If Barco.Ropaje = iGaleon Then UserList(UserIndex).Char.Body = iGaleonCiuda
-138         ElseIf UserList(UserIndex).Faccion.FuerzasCaos = 1 Then
+128         If UserList(Userindex).Faccion.ArmadaReal = 1 Then
+130             If Barco.Ropaje = iTraje Then UserList(Userindex).Char.Body = iTraje
+132             If Barco.Ropaje = iBarca Then UserList(Userindex).Char.Body = iBarcaCiuda
+134             If Barco.Ropaje = iGalera Then UserList(Userindex).Char.Body = iGaleraCiuda
+136             If Barco.Ropaje = iGaleon Then UserList(Userindex).Char.Body = iGaleonCiuda
+138         ElseIf UserList(Userindex).Faccion.FuerzasCaos = 1 Then
 
-140             If Barco.Ropaje = iTraje Then UserList(UserIndex).Char.Body = iTraje
-142             If Barco.Ropaje = iBarca Then UserList(UserIndex).Char.Body = iBarcaPk
-144             If Barco.Ropaje = iGalera Then UserList(UserIndex).Char.Body = iGaleraPk
-146             If Barco.Ropaje = iGaleon Then UserList(UserIndex).Char.Body = iGaleonPk
+140             If Barco.Ropaje = iTraje Then UserList(Userindex).Char.Body = iTraje
+142             If Barco.Ropaje = iBarca Then UserList(Userindex).Char.Body = iBarcaPk
+144             If Barco.Ropaje = iGalera Then UserList(Userindex).Char.Body = iGaleraPk
+146             If Barco.Ropaje = iGaleon Then UserList(Userindex).Char.Body = iGaleonPk
             Else
 
-148             If Barco.Ropaje = iTraje Then UserList(UserIndex).Char.Body = iTraje
-150             If Barco.Ropaje = iBarca Then UserList(UserIndex).Char.Body = iBarca
-152             If Barco.Ropaje = iGalera Then UserList(UserIndex).Char.Body = iGalera
-154             If Barco.Ropaje = iGaleon Then UserList(UserIndex).Char.Body = iGaleon
+148             If Barco.Ropaje = iTraje Then UserList(Userindex).Char.Body = iTraje
+150             If Barco.Ropaje = iBarca Then UserList(Userindex).Char.Body = iBarca
+152             If Barco.Ropaje = iGalera Then UserList(Userindex).Char.Body = iGalera
+154             If Barco.Ropaje = iGaleon Then UserList(Userindex).Char.Body = iGaleon
 
             End If
 
         Else
-156         UserList(UserIndex).Char.Body = iFragataFantasmal
+156         UserList(Userindex).Char.Body = iFragataFantasmal
 
         End If
     
-158     UserList(UserIndex).Char.ShieldAnim = NingunEscudo
-160     UserList(UserIndex).Char.WeaponAnim = NingunArma
-162     UserList(UserIndex).Char.CascoAnim = NingunCasco
-164     UserList(UserIndex).flags.Navegando = 1
+158     UserList(Userindex).Char.ShieldAnim = NingunEscudo
+160     UserList(Userindex).Char.WeaponAnim = NingunArma
+162     UserList(Userindex).Char.CascoAnim = NingunCasco
+164     UserList(Userindex).flags.Navegando = 1
     
-166     UserList(UserIndex).Char.speeding = Barco.Velocidad
+166     UserList(Userindex).Char.speeding = Barco.Velocidad
 
-168     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(UserList(UserIndex).Char.CharIndex, UserList(UserIndex).Char.speeding))
+168     Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageSpeedingACT(UserList(Userindex).Char.CharIndex, UserList(Userindex).Char.speeding))
 
         '
         'Call WriteVelocidadToggle(UserIndex)
     
-170     Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
-172     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(FXSound.BARCA_SOUND, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+170     Call ChangeUserChar(Userindex, UserList(Userindex).Char.Body, UserList(Userindex).Char.Head, UserList(Userindex).Char.heading, UserList(Userindex).Char.WeaponAnim, UserList(Userindex).Char.ShieldAnim, UserList(Userindex).Char.CascoAnim)
+172     Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessagePlayWave(FXSound.BARCA_SOUND, UserList(Userindex).Pos.x, UserList(Userindex).Pos.Y))
 
         
         Exit Sub
@@ -441,20 +441,20 @@ DoReNavega_Err:
         
 End Sub
 
-Public Sub FundirMineral(ByVal UserIndex As Integer)
+Public Sub FundirMineral(ByVal Userindex As Integer)
         
         On Error GoTo FundirMineral_Err
         
 
-100     If UserList(UserIndex).flags.TargetObjInvIndex > 0 Then
+100     If UserList(Userindex).flags.TargetObjInvIndex > 0 Then
    
-102         If ObjData(UserList(UserIndex).flags.TargetObjInvIndex).OBJType = eOBJType.otMinerales And _
-                ObjData(UserList(UserIndex).flags.TargetObjInvIndex).MinSkill <= UserList(UserIndex).Stats.UserSkills(eSkill.Mineria) Then
+102         If ObjData(UserList(Userindex).flags.TargetObjInvIndex).OBJType = eOBJType.otMinerales And _
+                ObjData(UserList(Userindex).flags.TargetObjInvIndex).MinSkill <= UserList(Userindex).Stats.UserSkills(eSkill.Mineria) Then
             
-104             Call DoLingotes(UserIndex)
+104             Call DoLingotes(Userindex)
         
             Else
-106             Call WriteConsoleMsg(UserIndex, "No tenes conocimientos de mineria suficientes para trabajar este mineral. Necesitas " & ObjData(UserList(UserIndex).flags.TargetObjInvIndex).MinSkill & " puntos en mineria.", FontTypeNames.FONTTYPE_INFO)
+106             Call WriteConsoleMsg(Userindex, "No tenes conocimientos de mineria suficientes para trabajar este mineral. Necesitas " & ObjData(UserList(Userindex).flags.TargetObjInvIndex).MinSkill & " puntos en mineria.", FontTypeNames.FONTTYPE_INFO)
 
             End If
 
@@ -469,7 +469,7 @@ FundirMineral_Err:
         
 End Sub
 
-Function TieneObjetos(ByVal ItemIndex As Integer, ByVal cant As Integer, ByVal UserIndex As Integer) As Boolean
+Function TieneObjetos(ByVal ItemIndex As Integer, ByVal cant As Integer, ByVal Userindex As Integer) As Boolean
         'Call LogTarea("Sub TieneObjetos")
         
         On Error GoTo TieneObjetos_Err
@@ -479,10 +479,10 @@ Function TieneObjetos(ByVal ItemIndex As Integer, ByVal cant As Integer, ByVal U
 
         Dim Total As Long
 
-100     For i = 1 To UserList(UserIndex).CurrentInventorySlots
+100     For i = 1 To UserList(Userindex).CurrentInventorySlots
 
-102         If UserList(UserIndex).Invent.Object(i).ObjIndex = ItemIndex Then
-104             Total = Total + UserList(UserIndex).Invent.Object(i).Amount
+102         If UserList(Userindex).Invent.Object(i).ObjIndex = ItemIndex Then
+104             Total = Total + UserList(Userindex).Invent.Object(i).Amount
 
             End If
 
@@ -503,7 +503,7 @@ TieneObjetos_Err:
         
 End Function
 
-Function QuitarObjetos(ByVal ItemIndex As Integer, ByVal cant As Integer, ByVal UserIndex As Integer) As Boolean
+Function QuitarObjetos(ByVal ItemIndex As Integer, ByVal cant As Integer, ByVal Userindex As Integer) As Boolean
         'Call LogTarea("Sub QuitarObjetos")
         
         On Error GoTo QuitarObjetos_Err
@@ -511,29 +511,29 @@ Function QuitarObjetos(ByVal ItemIndex As Integer, ByVal cant As Integer, ByVal 
 
         Dim i As Long
 
-100     For i = 1 To UserList(UserIndex).CurrentInventorySlots
+100     For i = 1 To UserList(Userindex).CurrentInventorySlots
 102         Debug.Print i
 
-104         If UserList(UserIndex).Invent.Object(i).ObjIndex = ItemIndex Then
-106             Debug.Print UserList(UserIndex).name
+104         If UserList(Userindex).Invent.Object(i).ObjIndex = ItemIndex Then
+106             Debug.Print UserList(Userindex).name
         
-108             If UserList(UserIndex).Invent.Object(i).Equipped Then
-110                 Call Desequipar(UserIndex, i)
+108             If UserList(Userindex).Invent.Object(i).Equipped Then
+110                 Call Desequipar(Userindex, i)
 
                 End If
         
-112             UserList(UserIndex).Invent.Object(i).Amount = UserList(UserIndex).Invent.Object(i).Amount - cant
+112             UserList(Userindex).Invent.Object(i).Amount = UserList(Userindex).Invent.Object(i).Amount - cant
 
-114             If (UserList(UserIndex).Invent.Object(i).Amount <= 0) Then
-116                 cant = Abs(UserList(UserIndex).Invent.Object(i).Amount)
-118                 UserList(UserIndex).Invent.Object(i).Amount = 0
-120                 UserList(UserIndex).Invent.Object(i).ObjIndex = 0
+114             If (UserList(Userindex).Invent.Object(i).Amount <= 0) Then
+116                 cant = Abs(UserList(Userindex).Invent.Object(i).Amount)
+118                 UserList(Userindex).Invent.Object(i).Amount = 0
+120                 UserList(Userindex).Invent.Object(i).ObjIndex = 0
                 Else
 122                 cant = 0
 
                 End If
         
-124             Call UpdateUserInv(False, UserIndex, i)
+124             Call UpdateUserInv(False, Userindex, i)
         
 126             If (cant = 0) Then
 128                 QuitarObjetos = True
@@ -554,14 +554,14 @@ QuitarObjetos_Err:
         
 End Function
 
-Sub HerreroQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Integer)
+Sub HerreroQuitarMateriales(ByVal Userindex As Integer, ByVal ItemIndex As Integer)
         
         On Error GoTo HerreroQuitarMateriales_Err
         
 
-100     If ObjData(ItemIndex).LingH > 0 Then Call QuitarObjetos(LingoteHierro, ObjData(ItemIndex).LingH, UserIndex)
-102     If ObjData(ItemIndex).LingP > 0 Then Call QuitarObjetos(LingotePlata, ObjData(ItemIndex).LingP, UserIndex)
-104     If ObjData(ItemIndex).LingO > 0 Then Call QuitarObjetos(LingoteOro, ObjData(ItemIndex).LingO, UserIndex)
+100     If ObjData(ItemIndex).LingH > 0 Then Call QuitarObjetos(LingoteHierro, ObjData(ItemIndex).LingH, Userindex)
+102     If ObjData(ItemIndex).LingP > 0 Then Call QuitarObjetos(LingotePlata, ObjData(ItemIndex).LingP, Userindex)
+104     If ObjData(ItemIndex).LingO > 0 Then Call QuitarObjetos(LingoteOro, ObjData(ItemIndex).LingO, Userindex)
 
         
         Exit Sub
@@ -572,12 +572,12 @@ HerreroQuitarMateriales_Err:
         
 End Sub
 
-Sub CarpinteroQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Integer)
+Sub CarpinteroQuitarMateriales(ByVal Userindex As Integer, ByVal ItemIndex As Integer)
         
         On Error GoTo CarpinteroQuitarMateriales_Err
         
 
-100     If ObjData(ItemIndex).Madera > 0 Then Call QuitarObjetos(Leña, ObjData(ItemIndex).Madera, UserIndex)
+100     If ObjData(ItemIndex).Madera > 0 Then Call QuitarObjetos(Leña, ObjData(ItemIndex).Madera, Userindex)
 
         
         Exit Sub
@@ -588,12 +588,12 @@ CarpinteroQuitarMateriales_Err:
         
 End Sub
 
-Sub AlquimistaQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Integer)
+Sub AlquimistaQuitarMateriales(ByVal Userindex As Integer, ByVal ItemIndex As Integer)
         
         On Error GoTo AlquimistaQuitarMateriales_Err
         
 
-100     If ObjData(ItemIndex).Raices > 0 Then Call QuitarObjetos(Raices, ObjData(ItemIndex).Raices, UserIndex)
+100     If ObjData(ItemIndex).Raices > 0 Then Call QuitarObjetos(Raices, ObjData(ItemIndex).Raices, Userindex)
 
         
         Exit Sub
@@ -604,14 +604,14 @@ AlquimistaQuitarMateriales_Err:
         
 End Sub
 
-Sub SastreQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Integer)
+Sub SastreQuitarMateriales(ByVal Userindex As Integer, ByVal ItemIndex As Integer)
         
         On Error GoTo SastreQuitarMateriales_Err
         
 
-100     If ObjData(ItemIndex).PielLobo > 0 Then Call QuitarObjetos(PieldeLobo, ObjData(ItemIndex).PielLobo, UserIndex)
-102     If ObjData(ItemIndex).PielOsoPardo > 0 Then Call QuitarObjetos(PieldeOsoPardo, ObjData(ItemIndex).PielOsoPardo, UserIndex)
-104     If ObjData(ItemIndex).PielOsoPolaR > 0 Then Call QuitarObjetos(PieldeOsoPolar, ObjData(ItemIndex).PielOsoPolaR, UserIndex)
+100     If ObjData(ItemIndex).PielLobo > 0 Then Call QuitarObjetos(PieldeLobo, ObjData(ItemIndex).PielLobo, Userindex)
+102     If ObjData(ItemIndex).PielOsoPardo > 0 Then Call QuitarObjetos(PieldeOsoPardo, ObjData(ItemIndex).PielOsoPardo, Userindex)
+104     If ObjData(ItemIndex).PielOsoPolaR > 0 Then Call QuitarObjetos(PieldeOsoPolar, ObjData(ItemIndex).PielOsoPolaR, Userindex)
 
         
         Exit Sub
@@ -622,16 +622,16 @@ SastreQuitarMateriales_Err:
         
 End Sub
 
-Function CarpinteroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Integer) As Boolean
+Function CarpinteroTieneMateriales(ByVal Userindex As Integer, ByVal ItemIndex As Integer) As Boolean
         
         On Error GoTo CarpinteroTieneMateriales_Err
         
     
 100     If ObjData(ItemIndex).Madera > 0 Then
-102         If Not TieneObjetos(Leña, ObjData(ItemIndex).Madera, UserIndex) Then
-104             Call WriteConsoleMsg(UserIndex, "No tenes suficientes madera.", FontTypeNames.FONTTYPE_INFO)
+102         If Not TieneObjetos(Leña, ObjData(ItemIndex).Madera, Userindex) Then
+104             Call WriteConsoleMsg(Userindex, "No tenes suficientes madera.", FontTypeNames.FONTTYPE_INFO)
 106             CarpinteroTieneMateriales = False
-108             Call WriteMacroTrabajoToggle(UserIndex, False)
+108             Call WriteMacroTrabajoToggle(Userindex, False)
                 Exit Function
 
             End If
@@ -649,16 +649,16 @@ CarpinteroTieneMateriales_Err:
         
 End Function
 
-Function AlquimistaTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Integer) As Boolean
+Function AlquimistaTieneMateriales(ByVal Userindex As Integer, ByVal ItemIndex As Integer) As Boolean
         
         On Error GoTo AlquimistaTieneMateriales_Err
         
     
 100     If ObjData(ItemIndex).Raices > 0 Then
-102         If Not TieneObjetos(Raices, ObjData(ItemIndex).Raices, UserIndex) Then
-104             Call WriteConsoleMsg(UserIndex, "No tenes suficientes raices.", FontTypeNames.FONTTYPE_INFO)
+102         If Not TieneObjetos(Raices, ObjData(ItemIndex).Raices, Userindex) Then
+104             Call WriteConsoleMsg(Userindex, "No tenes suficientes raices.", FontTypeNames.FONTTYPE_INFO)
 106             AlquimistaTieneMateriales = False
-108             Call WriteMacroTrabajoToggle(UserIndex, False)
+108             Call WriteMacroTrabajoToggle(Userindex, False)
                 Exit Function
 
             End If
@@ -676,16 +676,16 @@ AlquimistaTieneMateriales_Err:
         
 End Function
 
-Function SastreTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Integer) As Boolean
+Function SastreTieneMateriales(ByVal Userindex As Integer, ByVal ItemIndex As Integer) As Boolean
         
         On Error GoTo SastreTieneMateriales_Err
         
     
 100     If ObjData(ItemIndex).PielLobo > 0 Then
-102         If Not TieneObjetos(PieldeLobo, ObjData(ItemIndex).PielLobo, UserIndex) Then
-104             Call WriteConsoleMsg(UserIndex, "No tenes suficientes pieles de lobo.", FontTypeNames.FONTTYPE_INFO)
+102         If Not TieneObjetos(PieldeLobo, ObjData(ItemIndex).PielLobo, Userindex) Then
+104             Call WriteConsoleMsg(Userindex, "No tenes suficientes pieles de lobo.", FontTypeNames.FONTTYPE_INFO)
 106             SastreTieneMateriales = False
-108             Call WriteMacroTrabajoToggle(UserIndex, False)
+108             Call WriteMacroTrabajoToggle(Userindex, False)
                 Exit Function
 
             End If
@@ -693,10 +693,10 @@ Function SastreTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As In
         End If
     
 110     If ObjData(ItemIndex).PielOsoPardo > 0 Then
-112         If Not TieneObjetos(PieldeOsoPardo, ObjData(ItemIndex).PielOsoPardo, UserIndex) Then
-114             Call WriteConsoleMsg(UserIndex, "No tenes suficientes pieles de oso pardo.", FontTypeNames.FONTTYPE_INFO)
+112         If Not TieneObjetos(PieldeOsoPardo, ObjData(ItemIndex).PielOsoPardo, Userindex) Then
+114             Call WriteConsoleMsg(Userindex, "No tenes suficientes pieles de oso pardo.", FontTypeNames.FONTTYPE_INFO)
 116             SastreTieneMateriales = False
-118             Call WriteMacroTrabajoToggle(UserIndex, False)
+118             Call WriteMacroTrabajoToggle(Userindex, False)
                 Exit Function
 
             End If
@@ -704,10 +704,10 @@ Function SastreTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As In
         End If
     
 120     If ObjData(ItemIndex).PielOsoPolaR > 0 Then
-122         If Not TieneObjetos(PieldeOsoPolar, ObjData(ItemIndex).PielOsoPolaR, UserIndex) Then
-124             Call WriteConsoleMsg(UserIndex, "No tenes suficientes pieles de oso polar.", FontTypeNames.FONTTYPE_INFO)
+122         If Not TieneObjetos(PieldeOsoPolar, ObjData(ItemIndex).PielOsoPolaR, Userindex) Then
+124             Call WriteConsoleMsg(Userindex, "No tenes suficientes pieles de oso polar.", FontTypeNames.FONTTYPE_INFO)
 126             SastreTieneMateriales = False
-128             Call WriteMacroTrabajoToggle(UserIndex, False)
+128             Call WriteMacroTrabajoToggle(Userindex, False)
                 Exit Function
 
             End If
@@ -725,16 +725,16 @@ SastreTieneMateriales_Err:
         
 End Function
 
-Function HerreroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Integer) As Boolean
+Function HerreroTieneMateriales(ByVal Userindex As Integer, ByVal ItemIndex As Integer) As Boolean
         
         On Error GoTo HerreroTieneMateriales_Err
         
 
 100     If ObjData(ItemIndex).LingH > 0 Then
-102         If Not TieneObjetos(LingoteHierro, ObjData(ItemIndex).LingH, UserIndex) Then
-104             Call WriteConsoleMsg(UserIndex, "No tenes suficientes lingotes de hierro.", FontTypeNames.FONTTYPE_INFO)
+102         If Not TieneObjetos(LingoteHierro, ObjData(ItemIndex).LingH, Userindex) Then
+104             Call WriteConsoleMsg(Userindex, "No tenes suficientes lingotes de hierro.", FontTypeNames.FONTTYPE_INFO)
 106             HerreroTieneMateriales = False
-108             Call WriteMacroTrabajoToggle(UserIndex, False)
+108             Call WriteMacroTrabajoToggle(Userindex, False)
                 Exit Function
 
             End If
@@ -742,10 +742,10 @@ Function HerreroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As I
         End If
 
 110     If ObjData(ItemIndex).LingP > 0 Then
-112         If Not TieneObjetos(LingotePlata, ObjData(ItemIndex).LingP, UserIndex) Then
-114             Call WriteConsoleMsg(UserIndex, "No tenes suficientes lingotes de plata.", FontTypeNames.FONTTYPE_INFO)
+112         If Not TieneObjetos(LingotePlata, ObjData(ItemIndex).LingP, Userindex) Then
+114             Call WriteConsoleMsg(Userindex, "No tenes suficientes lingotes de plata.", FontTypeNames.FONTTYPE_INFO)
 116             HerreroTieneMateriales = False
-118             Call WriteMacroTrabajoToggle(UserIndex, False)
+118             Call WriteMacroTrabajoToggle(Userindex, False)
                 Exit Function
 
             End If
@@ -753,10 +753,10 @@ Function HerreroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As I
         End If
 
 120     If ObjData(ItemIndex).LingO > 0 Then
-122         If Not TieneObjetos(LingoteOro, ObjData(ItemIndex).LingO, UserIndex) Then
-124             Call WriteConsoleMsg(UserIndex, "No tenes suficientes lingotes de oro.", FontTypeNames.FONTTYPE_INFO)
+122         If Not TieneObjetos(LingoteOro, ObjData(ItemIndex).LingO, Userindex) Then
+124             Call WriteConsoleMsg(Userindex, "No tenes suficientes lingotes de oro.", FontTypeNames.FONTTYPE_INFO)
 126             HerreroTieneMateriales = False
-128             Call WriteMacroTrabajoToggle(UserIndex, False)
+128             Call WriteMacroTrabajoToggle(Userindex, False)
                 Exit Function
 
             End If
@@ -774,11 +774,11 @@ HerreroTieneMateriales_Err:
         
 End Function
 
-Public Function PuedeConstruir(ByVal UserIndex As Integer, ByVal ItemIndex As Integer) As Boolean
+Public Function PuedeConstruir(ByVal Userindex As Integer, ByVal ItemIndex As Integer) As Boolean
         
         On Error GoTo PuedeConstruir_Err
         
-100     PuedeConstruir = HerreroTieneMateriales(UserIndex, ItemIndex) And UserList(UserIndex).Stats.UserSkills(eSkill.Herreria) >= ObjData(ItemIndex).SkHerreria
+100     PuedeConstruir = HerreroTieneMateriales(Userindex, ItemIndex) And UserList(Userindex).Stats.UserSkills(eSkill.Herreria) >= ObjData(ItemIndex).SkHerreria
 
         
         Exit Function
@@ -827,29 +827,29 @@ PuedeConstruirHerreria_Err:
         
 End Function
 
-Public Sub HerreroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As Integer)
+Public Sub HerreroConstruirItem(ByVal Userindex As Integer, ByVal ItemIndex As Integer)
         
         On Error GoTo HerreroConstruirItem_Err
         
 
-100     If PuedeConstruir(UserIndex, ItemIndex) And PuedeConstruirHerreria(ItemIndex) Then
-102         Call HerreroQuitarMateriales(UserIndex, ItemIndex)
-104         UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - 2
-106         Call WriteUpdateSta(UserIndex)
+100     If PuedeConstruir(Userindex, ItemIndex) And PuedeConstruirHerreria(ItemIndex) Then
+102         Call HerreroQuitarMateriales(Userindex, ItemIndex)
+104         UserList(Userindex).Stats.MinSta = UserList(Userindex).Stats.MinSta - 2
+106         Call WriteUpdateSta(Userindex)
             ' AGREGAR FX
     
 108         If ObjData(ItemIndex).OBJType = eOBJType.otWeapon Then
                 ' Call WriteConsoleMsg(UserIndex, "Has construido el arma!", FontTypeNames.FONTTYPE_INFO)
-110             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y, " 1", 5))
+110             Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageCreateRenderValue(UserList(Userindex).Pos.x, UserList(Userindex).Pos.Y, " 1", 5))
 112         ElseIf ObjData(ItemIndex).OBJType = eOBJType.otESCUDO Then
                 ' Call WriteConsoleMsg(UserIndex, "Has construido el escudo!", FontTypeNames.FONTTYPE_INFO)
-114             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y, " 1", 5))
+114             Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageCreateRenderValue(UserList(Userindex).Pos.x, UserList(Userindex).Pos.Y, " 1", 5))
 116         ElseIf ObjData(ItemIndex).OBJType = eOBJType.otCASCO Then
                 ' Call WriteConsoleMsg(UserIndex, "Has construido el casco!", FontTypeNames.FONTTYPE_INFO)
-118             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y, " 1", 5))
+118             Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageCreateRenderValue(UserList(Userindex).Pos.x, UserList(Userindex).Pos.Y, " 1", 5))
 120         ElseIf ObjData(ItemIndex).OBJType = eOBJType.otArmadura Then
                 'Call WriteConsoleMsg(UserIndex, "Has construido la armadura!", FontTypeNames.FONTTYPE_INFO)
-122             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y, " 1", 5))
+122             Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageCreateRenderValue(UserList(Userindex).Pos.x, UserList(Userindex).Pos.Y, " 1", 5))
 
             End If
 
@@ -858,8 +858,8 @@ Public Sub HerreroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As I
 124         MiObj.Amount = 1
 126         MiObj.ObjIndex = ItemIndex
 
-128         If Not MeterItemEnInventario(UserIndex, MiObj) Then
-130             Call TirarItemAlPiso(UserList(UserIndex).Pos, MiObj)
+128         If Not MeterItemEnInventario(Userindex, MiObj) Then
+130             Call TirarItemAlPiso(UserList(Userindex).Pos, MiObj)
 
             End If
     
@@ -868,11 +868,11 @@ Public Sub HerreroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As I
             '    Call LogDesarrollo(UserList(UserIndex).name & " ha construído " & MiObj.Amount & " " & ObjData(MiObj.ObjIndex).name)
             'End If
     
-132         Call SubirSkill(UserIndex, eSkill.Herreria)
-134         Call UpdateUserInv(True, UserIndex, 0)
-136         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(MARTILLOHERRERO, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+132         Call SubirSkill(Userindex, eSkill.Herreria)
+134         Call UpdateUserInv(True, Userindex, 0)
+136         Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessagePlayWave(MARTILLOHERRERO, UserList(Userindex).Pos.x, UserList(Userindex).Pos.Y))
 
-138         UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
+138         UserList(Userindex).Counters.Trabajando = UserList(Userindex).Counters.Trabajando + 1
 
         End If
 
@@ -969,39 +969,39 @@ PuedeConstruirSastre_Err:
         
 End Function
 
-Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As Integer)
+Public Sub CarpinteroConstruirItem(ByVal Userindex As Integer, ByVal ItemIndex As Integer)
         
         On Error GoTo CarpinteroConstruirItem_Err
         
 
-100     If CarpinteroTieneMateriales(UserIndex, ItemIndex) And _
-            UserList(UserIndex).Stats.UserSkills(eSkill.Carpinteria) >= ObjData(ItemIndex).SkCarpinteria And _
+100     If CarpinteroTieneMateriales(Userindex, ItemIndex) And _
+            UserList(Userindex).Stats.UserSkills(eSkill.Carpinteria) >= ObjData(ItemIndex).SkCarpinteria And _
             PuedeConstruirCarpintero(ItemIndex) And _
-            UserList(UserIndex).Invent.HerramientaEqpObjIndex = SERRUCHO_CARPINTERO Then
+            UserList(Userindex).Invent.HerramientaEqpObjIndex = SERRUCHO_CARPINTERO Then
     
-102         If UserList(UserIndex).Stats.MinSta > 2 Then
-104             Call QuitarSta(UserIndex, 2)
+102         If UserList(Userindex).Stats.MinSta > 2 Then
+104             Call QuitarSta(Userindex, 2)
         
             Else
-106             Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
+106             Call WriteLocaleMsg(Userindex, "93", FontTypeNames.FONTTYPE_INFO)
                 'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para trabajar.", FontTypeNames.FONTTYPE_INFO)
-108             Call WriteMacroTrabajoToggle(UserIndex, False)
+108             Call WriteMacroTrabajoToggle(Userindex, False)
                 Exit Sub
 
             End If
     
-110         Call CarpinteroQuitarMateriales(UserIndex, ItemIndex)
+110         Call CarpinteroQuitarMateriales(Userindex, ItemIndex)
             'Call WriteConsoleMsg(UserIndex, "Has construido un objeto!", FontTypeNames.FONTTYPE_INFO)
             'Call WriteOroOverHead(UserIndex, 1, UserList(UserIndex).Char.CharIndex)
-112         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y, " 1", 5))
+112         Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageCreateRenderValue(UserList(Userindex).Pos.x, UserList(Userindex).Pos.Y, " 1", 5))
     
             Dim MiObj As obj
 
 114         MiObj.Amount = 1
 116         MiObj.ObjIndex = ItemIndex
 
-118         If Not MeterItemEnInventario(UserIndex, MiObj) Then
-120             Call TirarItemAlPiso(UserList(UserIndex).Pos, MiObj)
+118         If Not MeterItemEnInventario(Userindex, MiObj) Then
+120             Call TirarItemAlPiso(UserList(Userindex).Pos, MiObj)
 
             End If
     
@@ -1010,11 +1010,11 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
             '    Call LogDesarrollo(UserList(UserIndex).name & " ha construído " & MiObj.Amount & " " & ObjData(MiObj.ObjIndex).name)
             ' End If
     
-122         Call SubirSkill(UserIndex, eSkill.Carpinteria)
-124         Call UpdateUserInv(True, UserIndex, 0)
-126         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(LABUROCARPINTERO, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+122         Call SubirSkill(Userindex, eSkill.Carpinteria)
+124         Call UpdateUserInv(True, Userindex, 0)
+126         Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessagePlayWave(LABUROCARPINTERO, UserList(Userindex).Pos.x, UserList(Userindex).Pos.Y))
 
-128         UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
+128         UserList(Userindex).Counters.Trabajando = UserList(Userindex).Counters.Trabajando + 1
 
         End If
 
@@ -1027,37 +1027,37 @@ CarpinteroConstruirItem_Err:
         
 End Sub
 
-Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As Integer)
+Public Sub AlquimistaConstruirItem(ByVal Userindex As Integer, ByVal ItemIndex As Integer)
         
         On Error GoTo AlquimistaConstruirItem_Err
         
 
         Rem Debug.Print UserList(UserIndex).Invent.HerramientaEqpObjIndex
 
-100     If Not UserList(UserIndex).Stats.MinSta > 0 Then
-102         Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
+100     If Not UserList(Userindex).Stats.MinSta > 0 Then
+102         Call WriteLocaleMsg(Userindex, "93", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
 
-104     If AlquimistaTieneMateriales(UserIndex, ItemIndex) And _
-            UserList(UserIndex).Stats.UserSkills(eSkill.Alquimia) >= ObjData(ItemIndex).SkPociones And _
-            PuedeConstruirAlquimista(ItemIndex) And UserList(UserIndex).Invent.HerramientaEqpObjIndex = OLLA_ALQUIMIA Then
+104     If AlquimistaTieneMateriales(Userindex, ItemIndex) And _
+            UserList(Userindex).Stats.UserSkills(eSkill.Alquimia) >= ObjData(ItemIndex).SkPociones And _
+            PuedeConstruirAlquimista(ItemIndex) And UserList(Userindex).Invent.HerramientaEqpObjIndex = OLLA_ALQUIMIA Then
         
-106         UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - 25
-108         Call WriteUpdateSta(UserIndex)
+106         UserList(Userindex).Stats.MinSta = UserList(Userindex).Stats.MinSta - 25
+108         Call WriteUpdateSta(Userindex)
     
-110         Call AlquimistaQuitarMateriales(UserIndex, ItemIndex)
+110         Call AlquimistaQuitarMateriales(Userindex, ItemIndex)
             'Call WriteConsoleMsg(UserIndex, "Has construido el objeto.", FontTypeNames.FONTTYPE_INFO)
-112         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(117, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+112         Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessagePlayWave(117, UserList(Userindex).Pos.x, UserList(Userindex).Pos.Y))
     
             Dim MiObj As obj
 
 114         MiObj.Amount = 1
 116         MiObj.ObjIndex = ItemIndex
 
-118         If Not MeterItemEnInventario(UserIndex, MiObj) Then
-120             Call TirarItemAlPiso(UserList(UserIndex).Pos, MiObj)
+118         If Not MeterItemEnInventario(Userindex, MiObj) Then
+120             Call TirarItemAlPiso(UserList(Userindex).Pos, MiObj)
 
             End If
     
@@ -1066,11 +1066,11 @@ Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
             '    Call LogDesarrollo(UserList(UserIndex).name & " ha construído " & MiObj.Amount & " " & ObjData(MiObj.ObjIndex).name)
             'End If
     
-122         Call SubirSkill(UserIndex, eSkill.Alquimia)
-124         Call UpdateUserInv(True, UserIndex, 0)
+122         Call SubirSkill(Userindex, eSkill.Alquimia)
+124         Call UpdateUserInv(True, Userindex, 0)
             'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(LABUROCARPINTERO, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 
-126         UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
+126         UserList(Userindex).Counters.Trabajando = UserList(Userindex).Counters.Trabajando + 1
 
         End If
 
@@ -1083,49 +1083,49 @@ AlquimistaConstruirItem_Err:
         
 End Sub
 
-Public Sub SastreConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As Integer)
+Public Sub SastreConstruirItem(ByVal Userindex As Integer, ByVal ItemIndex As Integer)
         
         On Error GoTo SastreConstruirItem_Err
         
 
-100     If Not UserList(UserIndex).Stats.MinSta > 0 Then
-102         Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
+100     If Not UserList(Userindex).Stats.MinSta > 0 Then
+102         Call WriteLocaleMsg(Userindex, "93", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
 
-104     If SastreTieneMateriales(UserIndex, ItemIndex) And _
-            UserList(UserIndex).Stats.UserSkills(eSkill.Herreria) >= ObjData(ItemIndex).SkMAGOria And _
-            PuedeConstruirSastre(ItemIndex) And UserList(UserIndex).Invent.HerramientaEqpObjIndex = COSTURERO Then
+104     If SastreTieneMateriales(Userindex, ItemIndex) And _
+            UserList(Userindex).Stats.UserSkills(eSkill.Herreria) >= ObjData(ItemIndex).SkMAGOria And _
+            PuedeConstruirSastre(ItemIndex) And UserList(Userindex).Invent.HerramientaEqpObjIndex = COSTURERO Then
         
-106         UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - 2
+106         UserList(Userindex).Stats.MinSta = UserList(Userindex).Stats.MinSta - 2
         
-108         Call WriteUpdateSta(UserIndex)
+108         Call WriteUpdateSta(Userindex)
     
-110         Call SastreQuitarMateriales(UserIndex, ItemIndex)
+110         Call SastreQuitarMateriales(Userindex, ItemIndex)
     
             ' If Not UserList(UserIndex).flags.UltimoMensaje = 9 Then
             ' Call WriteConsoleMsg(UserIndex, "Has construido el objeto.", FontTypeNames.FONTTYPE_INFO)
-112         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y, " 1", 5))
+112         Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageCreateRenderValue(UserList(Userindex).Pos.x, UserList(Userindex).Pos.Y, " 1", 5))
             ' UserList(UserIndex).flags.UltimoMensaje = 9
             ' End If
         
-114         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(63, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+114         Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessagePlayWave(63, UserList(Userindex).Pos.x, UserList(Userindex).Pos.Y))
     
             Dim MiObj As obj
 
 116         MiObj.Amount = 1
 118         MiObj.ObjIndex = ItemIndex
 
-120         If Not MeterItemEnInventario(UserIndex, MiObj) Then
-122             Call TirarItemAlPiso(UserList(UserIndex).Pos, MiObj)
+120         If Not MeterItemEnInventario(Userindex, MiObj) Then
+122             Call TirarItemAlPiso(UserList(Userindex).Pos, MiObj)
             End If
     
-124         Call SubirSkill(UserIndex, eSkill.Herreria)
-126         Call UpdateUserInv(True, UserIndex, 0)
+124         Call SubirSkill(Userindex, eSkill.Herreria)
+126         Call UpdateUserInv(True, Userindex, 0)
             'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(LABUROCARPINTERO, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 
-128         UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
+128         UserList(Userindex).Counters.Trabajando = UserList(Userindex).Counters.Trabajando + 1
 
         End If
     
@@ -1168,20 +1168,20 @@ MineralesParaLingote_Err:
         
 End Function
 
-Public Sub DoLingotes(ByVal UserIndex As Integer)
+Public Sub DoLingotes(ByVal Userindex As Integer)
         '    Call LogTarea("Sub DoLingotes")
         
         On Error GoTo DoLingotes_Err
         
 
-100     If UserList(UserIndex).Stats.MinSta > 5 Then
-102         Call QuitarSta(UserIndex, 5)
+100     If UserList(Userindex).Stats.MinSta > 5 Then
+102         Call QuitarSta(Userindex, 5)
     
         Else
         
-104         Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
+104         Call WriteLocaleMsg(Userindex, "93", FontTypeNames.FONTTYPE_INFO)
             'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para excavar.", FontTypeNames.FONTTYPE_INFO)
-106         Call WriteMacroTrabajoToggle(UserIndex, False)
+106         Call WriteMacroTrabajoToggle(Userindex, False)
             Exit Sub
 
         End If
@@ -1189,8 +1189,8 @@ Public Sub DoLingotes(ByVal UserIndex As Integer)
         Dim slot As Integer
         Dim obji As Integer
 
-108     slot = UserList(UserIndex).flags.TargetObjInvSlot
-110     obji = UserList(UserIndex).Invent.Object(slot).ObjIndex
+108     slot = UserList(Userindex).flags.TargetObjInvSlot
+110     obji = UserList(Userindex).Invent.Object(slot).ObjIndex
     
 112     Dim cant As Byte: cant = RandomNumber(1, 3)
     
@@ -1198,18 +1198,18 @@ Public Sub DoLingotes(ByVal UserIndex As Integer)
 
 114     necesarios = MineralesParaLingote(obji, cant)
     
-116     If UserList(UserIndex).Invent.Object(slot).Amount < MineralesParaLingote(obji, cant) Or ObjData(obji).OBJType <> eOBJType.otMinerales Then
-118         Call WriteConsoleMsg(UserIndex, "No tienes suficientes minerales para hacer un lingote.", FontTypeNames.FONTTYPE_INFO)
-120         Call WriteMacroTrabajoToggle(UserIndex, False)
+116     If UserList(Userindex).Invent.Object(slot).Amount < MineralesParaLingote(obji, cant) Or ObjData(obji).OBJType <> eOBJType.otMinerales Then
+118         Call WriteConsoleMsg(Userindex, "No tienes suficientes minerales para hacer un lingote.", FontTypeNames.FONTTYPE_INFO)
+120         Call WriteMacroTrabajoToggle(Userindex, False)
             Exit Sub
 
         End If
     
-122     UserList(UserIndex).Invent.Object(slot).Amount = UserList(UserIndex).Invent.Object(slot).Amount - MineralesParaLingote(obji, cant)
+122     UserList(Userindex).Invent.Object(slot).Amount = UserList(Userindex).Invent.Object(slot).Amount - MineralesParaLingote(obji, cant)
 
-124     If UserList(UserIndex).Invent.Object(slot).Amount < 1 Then
-126         UserList(UserIndex).Invent.Object(slot).Amount = 0
-128         UserList(UserIndex).Invent.Object(slot).ObjIndex = 0
+124     If UserList(Userindex).Invent.Object(slot).Amount < 1 Then
+126         UserList(Userindex).Invent.Object(slot).Amount = 0
+128         UserList(Userindex).Invent.Object(slot).ObjIndex = 0
 
         End If
     
@@ -1218,30 +1218,30 @@ Public Sub DoLingotes(ByVal UserIndex As Integer)
         Dim MiObj As obj
 
 130     MiObj.Amount = cant
-132     MiObj.ObjIndex = ObjData(UserList(UserIndex).flags.TargetObjInvIndex).LingoteIndex
+132     MiObj.ObjIndex = ObjData(UserList(Userindex).flags.TargetObjInvIndex).LingoteIndex
 
-134     If Not MeterItemEnInventario(UserIndex, MiObj) Then
-136         Call TirarItemAlPiso(UserList(UserIndex).Pos, MiObj)
+134     If Not MeterItemEnInventario(Userindex, MiObj) Then
+136         Call TirarItemAlPiso(UserList(Userindex).Pos, MiObj)
 
         End If
 
-138     Call UpdateUserInv(False, UserIndex, slot)
+138     Call UpdateUserInv(False, Userindex, slot)
     
-140     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y, cant, 5))
+140     Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageCreateRenderValue(UserList(Userindex).Pos.x, UserList(Userindex).Pos.Y, cant, 5))
         'If Not UserList(UserIndex).flags.UltimoMensaje = 5 Then
         '  Call WriteConsoleMsg(UserIndex, "¡Has obtenido lingotes!", FontTypeNames.FONTTYPE_INFO)
             
         '  UserList(UserIndex).flags.UltimoMensaje = 5
         'End If
     
-142     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(117, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+142     Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessagePlayWave(117, UserList(Userindex).Pos.x, UserList(Userindex).Pos.Y))
     
-144     Call SubirSkill(UserIndex, eSkill.Herreria)
+144     Call SubirSkill(Userindex, eSkill.Herreria)
   
-146     UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
+146     UserList(Userindex).Counters.Trabajando = UserList(Userindex).Counters.Trabajando + 1
         
-148     If UserList(UserIndex).Counters.Trabajando = 1 And Not UserList(UserIndex).flags.UsandoMacro Then
-150         Call WriteMacroTrabajoToggle(UserIndex, True)
+148     If UserList(Userindex).Counters.Trabajando = 1 And Not UserList(Userindex).flags.UsandoMacro Then
+150         Call WriteMacroTrabajoToggle(Userindex, True)
 
         End If
     
@@ -1254,12 +1254,12 @@ DoLingotes_Err:
         
 End Sub
 
-Function ModFundicion(ByVal clase As eClass) As Single
+Function ModFundicion(ByVal Clase As eClass) As Single
         
         On Error GoTo ModFundicion_Err
         
 
-100     Select Case clase
+100     Select Case Clase
 
             Case eClass.Trabajador
 102             ModFundicion = 3
@@ -1278,12 +1278,12 @@ ModFundicion_Err:
         
 End Function
 
-Function ModAlquimia(ByVal clase As eClass) As Integer
+Function ModAlquimia(ByVal Clase As eClass) As Integer
         
         On Error GoTo ModAlquimia_Err
         
 
-100     Select Case clase
+100     Select Case Clase
 
             Case eClass.Druid
 102             ModAlquimia = 1
@@ -1305,12 +1305,12 @@ ModAlquimia_Err:
         
 End Function
 
-Function ModSastre(ByVal clase As eClass) As Integer
+Function ModSastre(ByVal Clase As eClass) As Integer
         
         On Error GoTo ModSastre_Err
         
 
-100     Select Case clase
+100     Select Case Clase
 
             Case eClass.Trabajador
 102             ModSastre = 1
@@ -1329,12 +1329,12 @@ ModSastre_Err:
         
 End Function
 
-Function ModCarpinteria(ByVal clase As eClass) As Integer
+Function ModCarpinteria(ByVal Clase As eClass) As Integer
         
         On Error GoTo ModCarpinteria_Err
         
 
-100     Select Case clase
+100     Select Case Clase
 
             Case eClass.Trabajador
 102             ModCarpinteria = 1
@@ -1353,12 +1353,12 @@ ModCarpinteria_Err:
         
 End Function
 
-Function ModHerreriA(ByVal clase As eClass) As Single
+Function ModHerreriA(ByVal Clase As eClass) As Single
         
         On Error GoTo ModHerreriA_Err
         
 
-100     Select Case clase
+100     Select Case Clase
 
             Case eClass.Trabajador
 102             ModHerreriA = 1
@@ -1377,35 +1377,35 @@ ModHerreriA_Err:
         
 End Function
 
-Sub DoAdminInvisible(ByVal UserIndex As Integer)
+Sub DoAdminInvisible(ByVal Userindex As Integer)
         
         On Error GoTo DoAdminInvisible_Err
         
     
-100     If UserList(UserIndex).flags.AdminInvisible = 0 Then
+100     If UserList(Userindex).flags.AdminInvisible = 0 Then
                 
-102         UserList(UserIndex).flags.AdminInvisible = 1
-104         UserList(UserIndex).flags.invisible = 1
-106         UserList(UserIndex).flags.Oculto = 1
-108         UserList(UserIndex).flags.OldBody = UserList(UserIndex).Char.Body
-110         UserList(UserIndex).flags.OldHead = UserList(UserIndex).Char.Head
-112         UserList(UserIndex).Char.Body = 0
-114         UserList(UserIndex).Char.Head = 0
+102         UserList(Userindex).flags.AdminInvisible = 1
+104         UserList(Userindex).flags.invisible = 1
+106         UserList(Userindex).flags.Oculto = 1
+108         UserList(Userindex).flags.OldBody = UserList(Userindex).Char.Body
+110         UserList(Userindex).flags.OldHead = UserList(Userindex).Char.Head
+112         UserList(Userindex).Char.Body = 0
+114         UserList(Userindex).Char.Head = 0
         
         Else
         
-116         UserList(UserIndex).flags.AdminInvisible = 0
-118         UserList(UserIndex).flags.invisible = 0
-120         UserList(UserIndex).flags.Oculto = 0
-122         UserList(UserIndex).Counters.TiempoOculto = 0
-124         UserList(UserIndex).Char.Body = UserList(UserIndex).flags.OldBody
-126         UserList(UserIndex).Char.Head = UserList(UserIndex).flags.OldHead
+116         UserList(Userindex).flags.AdminInvisible = 0
+118         UserList(Userindex).flags.invisible = 0
+120         UserList(Userindex).flags.Oculto = 0
+122         UserList(Userindex).Counters.TiempoOculto = 0
+124         UserList(Userindex).Char.Body = UserList(Userindex).flags.OldBody
+126         UserList(Userindex).Char.Head = UserList(Userindex).flags.OldHead
         
         End If
     
         'vuelve a ser visible por la fuerza
-128     Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
-130     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(UserList(UserIndex).Char.CharIndex, False))
+128     Call ChangeUserChar(Userindex, UserList(Userindex).Char.Body, UserList(Userindex).Char.Head, UserList(Userindex).Char.heading, UserList(Userindex).Char.WeaponAnim, UserList(Userindex).Char.ShieldAnim, UserList(Userindex).Char.CascoAnim)
+130     Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageSetInvisible(UserList(Userindex).Char.CharIndex, False))
 
         
         Exit Sub
@@ -1416,7 +1416,7 @@ DoAdminInvisible_Err:
         
 End Sub
 
-Sub TratarDeHacerFogata(ByVal Map As Integer, ByVal x As Integer, ByVal Y As Integer, ByVal UserIndex As Integer)
+Sub TratarDeHacerFogata(ByVal Map As Integer, ByVal x As Integer, ByVal Y As Integer, ByVal Userindex As Integer)
         
         On Error GoTo TratarDeHacerFogata_Err
         
@@ -1439,35 +1439,35 @@ Sub TratarDeHacerFogata(ByVal Map As Integer, ByVal x As Integer, ByVal Y As Int
         End With
 
 110     If MapData(Map, x, Y).ObjInfo.ObjIndex <> 58 Then
-112         Call WriteConsoleMsg(UserIndex, "Necesitas clickear sobre Leña para hacer ramitas", FontTypeNames.FONTTYPE_INFO)
+112         Call WriteConsoleMsg(Userindex, "Necesitas clickear sobre Leña para hacer ramitas", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
 
-114     If Distancia(posMadera, UserList(UserIndex).Pos) > 2 Then
-116         Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
+114     If Distancia(posMadera, UserList(Userindex).Pos) > 2 Then
+116         Call WriteLocaleMsg(Userindex, "8", FontTypeNames.FONTTYPE_INFO)
             ' Call WriteConsoleMsg(UserIndex, "Estás demasiado lejos para prender la fogata.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
 
-118     If UserList(UserIndex).flags.Muerto = 1 Then
-120         Call WriteConsoleMsg(UserIndex, "No podés hacer fogatas estando muerto.", FontTypeNames.FONTTYPE_INFO)
+118     If UserList(Userindex).flags.Muerto = 1 Then
+120         Call WriteConsoleMsg(Userindex, "No podés hacer fogatas estando muerto.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
 
 122     If MapData(Map, x, Y).ObjInfo.Amount < 3 Then
-124         Call WriteConsoleMsg(UserIndex, "Necesitas por lo menos tres troncos para hacer una fogata.", FontTypeNames.FONTTYPE_INFO)
+124         Call WriteConsoleMsg(Userindex, "Necesitas por lo menos tres troncos para hacer una fogata.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
 
-126     If UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 0 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) < 6 Then
+126     If UserList(Userindex).Stats.UserSkills(eSkill.Supervivencia) >= 0 And UserList(Userindex).Stats.UserSkills(eSkill.Supervivencia) < 6 Then
 128         Suerte = 3
-130     ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 6 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) <= 34 Then
+130     ElseIf UserList(Userindex).Stats.UserSkills(eSkill.Supervivencia) >= 6 And UserList(Userindex).Stats.UserSkills(eSkill.Supervivencia) <= 34 Then
 132         Suerte = 2
-134     ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 35 Then
+134     ElseIf UserList(Userindex).Stats.UserSkills(eSkill.Supervivencia) >= 35 Then
 136         Suerte = 1
 
         End If
@@ -1478,25 +1478,25 @@ Sub TratarDeHacerFogata(ByVal Map As Integer, ByVal x As Integer, ByVal Y As Int
 142         obj.ObjIndex = FOGATA_APAG
 144         obj.Amount = MapData(Map, x, Y).ObjInfo.Amount \ 3
     
-146         Call WriteConsoleMsg(UserIndex, "Has hecho " & obj.Amount & " ramitas.", FontTypeNames.FONTTYPE_INFO)
+146         Call WriteConsoleMsg(Userindex, "Has hecho " & obj.Amount & " ramitas.", FontTypeNames.FONTTYPE_INFO)
     
 148         Call MakeObj(obj, Map, x, Y)
     
             'Seteamos la fogata como el nuevo TargetObj del user
-150         UserList(UserIndex).flags.TargetObj = FOGATA_APAG
+150         UserList(Userindex).flags.TargetObj = FOGATA_APAG
         Else
 
             '[CDT 17-02-2004]
-152         If Not UserList(UserIndex).flags.UltimoMensaje = 10 Then
-154             Call WriteConsoleMsg(UserIndex, "No has podido hacer la fogata.", FontTypeNames.FONTTYPE_INFO)
-156             UserList(UserIndex).flags.UltimoMensaje = 10
+152         If Not UserList(Userindex).flags.UltimoMensaje = 10 Then
+154             Call WriteConsoleMsg(Userindex, "No has podido hacer la fogata.", FontTypeNames.FONTTYPE_INFO)
+156             UserList(Userindex).flags.UltimoMensaje = 10
 
             End If
 
             '[/CDT]
         End If
 
-158     Call SubirSkill(UserIndex, Supervivencia)
+158     Call SubirSkill(Userindex, Supervivencia)
 
         
         Exit Sub
@@ -1507,9 +1507,9 @@ TratarDeHacerFogata_Err:
         
 End Sub
 
-Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boolean = False)
+Public Sub DoPescar(ByVal Userindex As Integer, Optional ByVal RedDePesca As Boolean = False)
 
-    On Error GoTo Errhandler
+    On Error GoTo errHandler
 
     Dim Suerte       As Integer
     Dim res          As Integer
@@ -1517,18 +1517,18 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
 
     RestaStamina = IIf(RedDePesca, 2, 1)
     
-    With UserList(UserIndex)
+    With UserList(Userindex)
     
         If .Stats.MinSta > RestaStamina Then
-            Call QuitarSta(UserIndex, RestaStamina)
+            Call QuitarSta(Userindex, RestaStamina)
         
         Else
             
-            Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(Userindex, "93", FontTypeNames.FONTTYPE_INFO)
             
             'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para pescar.", FontTypeNames.FONTTYPE_INFO)
             
-            Call WriteMacroTrabajoToggle(UserIndex, False)
+            Call WriteMacroTrabajoToggle(Userindex, False)
             
             Exit Sub
 
@@ -1542,7 +1542,7 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
     
         res = RandomNumber(1, Suerte)
     
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
+        Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageArmaMov(.Char.CharIndex))
 
         If res < 6 Then
 
@@ -1561,11 +1561,11 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
                 MiObj.Amount = MiObj.Amount * RecoleccionMult
             End If
         
-            If Not MeterItemEnInventario(UserIndex, MiObj) Then
+            If Not MeterItemEnInventario(Userindex, MiObj) Then
                 Call TirarItemAlPiso(.Pos, MiObj)
             End If
 
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(.Pos.x, .Pos.Y, MiObj.Amount, 5))
+            Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageCreateRenderValue(.Pos.x, .Pos.Y, MiObj.Amount, 5))
         
             ' Al pescar también podés sacar cosas raras (se setean desde RecursosEspeciales.dat)
             Dim i As Integer
@@ -1580,10 +1580,10 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
                     MiObj.ObjIndex = EspecialesPesca(i).ObjIndex
                     MiObj.Amount = 1 ' Solo un item por vez
                 
-                    If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.Pos, MiObj)
+                    If Not MeterItemEnInventario(Userindex, MiObj) Then Call TirarItemAlPiso(.Pos, MiObj)
                     
                     ' Le mandamos un mensaje
-                    Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(EspecialesPesca(i).ObjIndex).name & "!", FontTypeNames.FONTTYPE_INFO)
+                    Call WriteConsoleMsg(Userindex, "¡Has conseguido " & ObjData(EspecialesPesca(i).ObjIndex).name & "!", FontTypeNames.FONTTYPE_INFO)
 
                     ' TODO: Sonido ?
                     'Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessagePlayWave(15, .Pos.x, .Pos.Y))
@@ -1593,20 +1593,20 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
 
         End If
     
-        Call SubirSkill(UserIndex, eSkill.Pescar)
+        Call SubirSkill(Userindex, eSkill.Pescar)
     
         .Counters.Trabajando = .Counters.Trabajando + 1
     
         'Ladder 06/07/14 Activamos el macro de trabajo
         If .Counters.Trabajando = 1 And Not .flags.UsandoMacro Then
-            Call WriteMacroTrabajoToggle(UserIndex, True)
+            Call WriteMacroTrabajoToggle(Userindex, True)
         End If
     
     End With
     
     Exit Sub
 
-Errhandler:
+errHandler:
     Call LogError("Error en DoPescar. Error " & Err.Number & " - " & Err.description)
 
 End Sub
@@ -1926,7 +1926,7 @@ RobarObjeto_Err:
         
 End Sub
 
-Public Sub DoApuñalar(ByVal UserIndex As Integer, ByVal VictimNpcIndex As Integer, ByVal VictimUserIndex As Integer, ByVal daño As Integer)
+Public Sub DoApuñalar(ByVal Userindex As Integer, ByVal VictimNpcIndex As Integer, ByVal VictimUserIndex As Integer, ByVal daño As Integer)
         
         On Error GoTo DoApuñalar_Err
         
@@ -1941,9 +1941,9 @@ Public Sub DoApuñalar(ByVal UserIndex As Integer, ByVal VictimNpcIndex As Intege
 
         Dim Skill  As Integer
     
-100     Skill = UserList(UserIndex).Stats.UserSkills(eSkill.Apuñalar)
+100     Skill = UserList(Userindex).Stats.UserSkills(eSkill.Apuñalar)
     
-102     Select Case UserList(UserIndex).clase
+102     Select Case UserList(Userindex).Clase
 
             Case eClass.Assasin '35
 104             Suerte = Int(((0.00003 * Skill - 0.001) * Skill + 0.098) * Skill + 4.25)
@@ -1961,7 +1961,7 @@ Public Sub DoApuñalar(ByVal UserIndex As Integer, ByVal VictimNpcIndex As Intege
     
 118     If RandomNumber(0, 70) < Suerte Then
 120         If VictimUserIndex <> 0 Then
-122             If UserList(UserIndex).clase = eClass.Assasin Then
+122             If UserList(Userindex).Clase = eClass.Assasin Then
 124                 daño = Round(daño * 1.4, 0)
                 Else
 126                 daño = Round(daño * 1.2, 0)
@@ -1972,14 +1972,14 @@ Public Sub DoApuñalar(ByVal UserIndex As Integer, ByVal VictimNpcIndex As Intege
 
 130             Call SendData(SendTarget.ToPCArea, VictimUserIndex, PrepareMessageEfectOverHead("¡" & daño & "!", UserList(VictimUserIndex).Char.CharIndex, &HFFFF00))
 
-132             If UserList(UserIndex).ChatCombate = 1 Then
+132             If UserList(Userindex).ChatCombate = 1 Then
                     'Call WriteEfectOverHead(UserIndex, daño, UserList(UserIndex).Char.CharIndex) 'LADDER 21.11.08
-134                 Call WriteConsoleMsg(UserIndex, "Has apuñalado a " & UserList(VictimUserIndex).name & " por " & daño, FontTypeNames.FONTTYPE_FIGHT)
+134                 Call WriteConsoleMsg(Userindex, "Has apuñalado a " & UserList(VictimUserIndex).name & " por " & daño, FontTypeNames.FONTTYPE_FIGHT)
 
                 End If
 
 136             If UserList(VictimUserIndex).ChatCombate = 1 Then
-138                 Call WriteConsoleMsg(VictimUserIndex, "Te ha apuñalado " & UserList(UserIndex).name & " por " & daño, FontTypeNames.FONTTYPE_FIGHT)
+138                 Call WriteConsoleMsg(VictimUserIndex, "Te ha apuñalado " & UserList(Userindex).name & " por " & daño, FontTypeNames.FONTTYPE_FIGHT)
 
                 End If
             
@@ -1987,29 +1987,29 @@ Public Sub DoApuñalar(ByVal UserIndex As Integer, ByVal VictimNpcIndex As Intege
             Else
 140             Npclist(VictimNpcIndex).Stats.MinHp = Npclist(VictimNpcIndex).Stats.MinHp - Int(daño * 1.5)
 
-142             If UserList(UserIndex).ChatCombate = 1 Then
+142             If UserList(Userindex).ChatCombate = 1 Then
                     'Call WriteConsoleMsg(UserIndex, "Has apuñalado la criatura por " & Int(daño * 1.5), FontTypeNames.FONTTYPE_FIGHT)
-144                 Call WriteLocaleMsg(UserIndex, "212", FontTypeNames.FONTTYPE_FIGHT, Int(daño * 1.5))
+144                 Call WriteLocaleMsg(Userindex, "212", FontTypeNames.FONTTYPE_FIGHT, Int(daño * 1.5))
 
                 End If
             
 146             Call SendData(SendTarget.ToNPCArea, VictimNpcIndex, PrepareMessageEfectOverHead("¡" & daño * 1.5 & "!", Npclist(VictimNpcIndex).Char.CharIndex, &HFFFF00))
 
                 '[Alejo]
-148             Call CalcularDarExp(UserIndex, VictimNpcIndex, Int(daño * 1.5))
+148             Call CalcularDarExp(Userindex, VictimNpcIndex, Int(daño * 1.5))
 
             End If
 
         Else
 
-150         If UserList(UserIndex).ChatCombate = 1 Then
-152             Call WriteConsoleMsg(UserIndex, "¡No has logrado apuñalar a tu enemigo!", FontTypeNames.FONTTYPE_FIGHT)
+150         If UserList(Userindex).ChatCombate = 1 Then
+152             Call WriteConsoleMsg(Userindex, "¡No has logrado apuñalar a tu enemigo!", FontTypeNames.FONTTYPE_FIGHT)
 
             End If
 
         End If
     
-154     Call SubirSkill(UserIndex, Apuñalar)
+154     Call SubirSkill(Userindex, Apuñalar)
 
         
         Exit Sub
@@ -2020,7 +2020,7 @@ DoApuñalar_Err:
         
 End Sub
 
-Public Sub DoGolpeCritico(ByVal UserIndex As Integer, ByVal VictimNpcIndex As Integer, ByVal VictimUserIndex As Integer, ByVal daño As Integer)
+Public Sub DoGolpeCritico(ByVal Userindex As Integer, ByVal VictimNpcIndex As Integer, ByVal VictimUserIndex As Integer, ByVal daño As Integer)
         
         On Error GoTo DoGolpeCritico_Err
         
@@ -2034,10 +2034,10 @@ Public Sub DoGolpeCritico(ByVal UserIndex As Integer, ByVal VictimNpcIndex As In
         Dim Skill  As Integer
 
         'If UserList(UserIndex).clase <> eClass.Bandit Then Exit Sub
-100     If UserList(UserIndex).Invent.WeaponEqpSlot = 0 Then Exit Sub
-102     If ObjData(UserList(UserIndex).Invent.WeaponEqpObjIndex).name <> "Espada Vikinga" Then Exit Sub
+100     If UserList(Userindex).Invent.WeaponEqpSlot = 0 Then Exit Sub
+102     If ObjData(UserList(Userindex).Invent.WeaponEqpObjIndex).name <> "Espada Vikinga" Then Exit Sub
 
-104     Skill = UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling)
+104     Skill = UserList(Userindex).Stats.UserSkills(eSkill.Wrestling)
 
 106     Suerte = Int((((0.00000003 * Skill + 0.000006) * Skill + 0.000107) * Skill + 0.0493) * 100)
 
@@ -2046,13 +2046,13 @@ Public Sub DoGolpeCritico(ByVal UserIndex As Integer, ByVal VictimNpcIndex As In
 
 112         If VictimUserIndex <> 0 Then
 114             UserList(VictimUserIndex).Stats.MinHp = UserList(VictimUserIndex).Stats.MinHp - daño
-116             Call WriteConsoleMsg(UserIndex, "Has golpeado críticamente a " & UserList(VictimUserIndex).name & " por " & daño, FontTypeNames.FONTTYPE_FIGHT)
-118             Call WriteConsoleMsg(VictimUserIndex, UserList(UserIndex).name & " te ha golpeado críticamente por " & daño, FontTypeNames.FONTTYPE_FIGHT)
+116             Call WriteConsoleMsg(Userindex, "Has golpeado críticamente a " & UserList(VictimUserIndex).name & " por " & daño, FontTypeNames.FONTTYPE_FIGHT)
+118             Call WriteConsoleMsg(VictimUserIndex, UserList(Userindex).name & " te ha golpeado críticamente por " & daño, FontTypeNames.FONTTYPE_FIGHT)
             Else
 120             Npclist(VictimNpcIndex).Stats.MinHp = Npclist(VictimNpcIndex).Stats.MinHp - daño
-122             Call WriteConsoleMsg(UserIndex, "Has golpeado críticamente a la criatura por " & daño, FontTypeNames.FONTTYPE_FIGHT)
+122             Call WriteConsoleMsg(Userindex, "Has golpeado críticamente a la criatura por " & daño, FontTypeNames.FONTTYPE_FIGHT)
                 '[Alejo]
-124             Call CalcularDarExp(UserIndex, VictimNpcIndex, daño)
+124             Call CalcularDarExp(Userindex, VictimNpcIndex, daño)
 
             End If
 
@@ -2067,15 +2067,15 @@ DoGolpeCritico_Err:
         
 End Sub
 
-Public Sub QuitarSta(ByVal UserIndex As Integer, ByVal Cantidad As Integer)
+Public Sub QuitarSta(ByVal Userindex As Integer, ByVal Cantidad As Integer)
         
         On Error GoTo QuitarSta_Err
         
-100     UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - Cantidad
+100     UserList(Userindex).Stats.MinSta = UserList(Userindex).Stats.MinSta - Cantidad
 
-102     If UserList(UserIndex).Stats.MinSta < 0 Then UserList(UserIndex).Stats.MinSta = 0
-104     If UserList(UserIndex).Stats.MinSta = 0 Then Exit Sub
-106     Call WriteUpdateSta(UserIndex)
+102     If UserList(Userindex).Stats.MinSta < 0 Then UserList(Userindex).Stats.MinSta = 0
+104     If UserList(Userindex).Stats.MinSta = 0 Then Exit Sub
+106     Call WriteUpdateSta(Userindex)
 
         
         Exit Sub
@@ -2086,23 +2086,23 @@ QuitarSta_Err:
         
 End Sub
 
-Public Sub DoRaices(ByVal UserIndex As Integer, ByVal x As Byte, ByVal Y As Byte)
+Public Sub DoRaices(ByVal Userindex As Integer, ByVal x As Byte, ByVal Y As Byte)
 
-    On Error GoTo Errhandler
+    On Error GoTo errHandler
 
     Dim Suerte As Integer
     Dim res    As Integer
     
-    With UserList(UserIndex)
+    With UserList(Userindex)
     
         If .Stats.MinSta > 2 Then
-            Call QuitarSta(UserIndex, 2)
+            Call QuitarSta(Userindex, 2)
         
         Else
             
-            Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(Userindex, "93", FontTypeNames.FONTTYPE_INFO)
             'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para obtener raices.", FontTypeNames.FONTTYPE_INFO)
-            Call WriteMacroTrabajoToggle(UserIndex, False)
+            Call WriteMacroTrabajoToggle(Userindex, False)
             Exit Sub
     
         End If
@@ -2113,7 +2113,7 @@ Public Sub DoRaices(ByVal UserIndex As Integer, ByVal x As Byte, ByVal Y As Byte
         Suerte = Int(-0.00125 * Skill * Skill - 0.3 * Skill + 49)
         res = RandomNumber(1, Suerte)
     
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
+        Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageArmaMov(.Char.CharIndex))
     
         Rem Ladder 06/08/14 Subo un poco la probabilidad de sacar raices... porque era muy lento
         If res < 7 Then
@@ -2142,21 +2142,21 @@ Public Sub DoRaices(ByVal UserIndex As Integer, ByVal x As Byte, ByVal Y As Byte
                 ' VidaUtil.Item_ListAdd .Pos.Map, X, Y
             End If
         
-            If Not MeterItemEnInventario(UserIndex, MiObj) Then
+            If Not MeterItemEnInventario(Userindex, MiObj) Then
             
                 Call TirarItemAlPiso(.Pos, MiObj)
             
             End If
         
             'Call WriteConsoleMsg(UserIndex, "¡Has conseguido algunas raices!", FontTypeNames.FONTTYPE_INFO)
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(.Pos.x, .Pos.Y, MiObj.Amount, 5))
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(60, .Pos.x, .Pos.Y))
+            Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageCreateRenderValue(.Pos.x, .Pos.Y, MiObj.Amount, 5))
+            Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessagePlayWave(60, .Pos.x, .Pos.Y))
         Else
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(61, .Pos.x, .Pos.Y))
+            Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessagePlayWave(61, .Pos.x, .Pos.Y))
     
             '[CDT 17-02-2004]
             If Not .flags.UltimoMensaje = 8 Then
-                Call WriteConsoleMsg(UserIndex, "¡No has obtenido raices!", FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(Userindex, "¡No has obtenido raices!", FontTypeNames.FONTTYPE_INFO)
                 .flags.UltimoMensaje = 8
     
             End If
@@ -2164,40 +2164,40 @@ Public Sub DoRaices(ByVal UserIndex As Integer, ByVal x As Byte, ByVal Y As Byte
             '[/CDT]
         End If
     
-        Call SubirSkill(UserIndex, eSkill.Alquimia)
+        Call SubirSkill(Userindex, eSkill.Alquimia)
     
         .Counters.Trabajando = .Counters.Trabajando + 1
     
         If .Counters.Trabajando = 1 And Not .flags.UsandoMacro Then
-            Call WriteMacroTrabajoToggle(UserIndex, True)
+            Call WriteMacroTrabajoToggle(Userindex, True)
         End If
     
     End With
     
     Exit Sub
 
-Errhandler:
+errHandler:
     Call LogError("Error en DoRaices")
 
 End Sub
 
-Public Sub DoTalar(ByVal UserIndex As Integer, ByVal x As Byte, ByVal Y As Byte)
+Public Sub DoTalar(ByVal Userindex As Integer, ByVal x As Byte, ByVal Y As Byte)
 
-    On Error GoTo Errhandler
+    On Error GoTo errHandler
 
     Dim Suerte As Integer
     Dim res    As Integer
     
-    With UserList(UserIndex)
+    With UserList(Userindex)
     
             'EsfuerzoTalarLeñador = 1
         If .Stats.MinSta > 2 Then
-            Call QuitarSta(UserIndex, 2)
+            Call QuitarSta(Userindex, 2)
         
         Else
-            Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(Userindex, "93", FontTypeNames.FONTTYPE_INFO)
             'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para talar.", FontTypeNames.FONTTYPE_INFO)
-            Call WriteMacroTrabajoToggle(UserIndex, False)
+            Call WriteMacroTrabajoToggle(Userindex, False)
             Exit Sub
     
         End If
@@ -2208,7 +2208,7 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal x As Byte, ByVal Y As Byte)
         Suerte = Int(-0.00125 * Skill * Skill - 0.3 * Skill + 49)
         
         res = RandomNumber(1, Suerte)
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
+        Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageArmaMov(.Char.CharIndex))
         
         If res < 6 Then
     
@@ -2238,7 +2238,7 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal x As Byte, ByVal Y As Byte)
             
             MapData(.Pos.Map, x, Y).ObjInfo.Amount = MapData(.Pos.Map, x, Y).ObjInfo.Amount - MiObj.Amount
             
-            If Not MeterItemEnInventario(UserIndex, MiObj) Then
+            If Not MeterItemEnInventario(Userindex, MiObj) Then
                 
                 Call TirarItemAlPiso(.Pos, MiObj)
                 
@@ -2248,8 +2248,8 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal x As Byte, ByVal Y As Byte)
             ' Call WriteConsoleMsg(UserIndex, "¡Has conseguido algo de leña!", FontTypeNames.FONTTYPE_INFO)
             '        .flags.UltimoMensaje = 5
             ' End If
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(.Pos.x, .Pos.Y, MiObj.Amount, 5))
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_TALAR, .Pos.x, .Pos.Y))
+            Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageCreateRenderValue(.Pos.x, .Pos.Y, MiObj.Amount, 5))
+            Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessagePlayWave(SND_TALAR, .Pos.x, .Pos.Y))
             
             ' Al talar también podés dropear cosas raras (se setean desde RecursosEspeciales.dat)
             Dim i As Integer
@@ -2280,10 +2280,10 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal x As Byte, ByVal Y As Byte)
         
         Else
             '[CDT 17-02-2004]
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(64, .Pos.x, .Pos.Y))
+            Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessagePlayWave(64, .Pos.x, .Pos.Y))
     
             If Not .flags.UltimoMensaje = 8 Then
-                Call WriteConsoleMsg(UserIndex, "¡No has obtenido leña!", FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(Userindex, "¡No has obtenido leña!", FontTypeNames.FONTTYPE_INFO)
                 .flags.UltimoMensaje = 8
     
             End If
@@ -2291,40 +2291,40 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal x As Byte, ByVal Y As Byte)
             '[/CDT]
         End If
         
-        Call SubirSkill(UserIndex, eSkill.Talar)
+        Call SubirSkill(Userindex, eSkill.Talar)
         
         .Counters.Trabajando = .Counters.Trabajando + 1
     
         If .Counters.Trabajando = 1 And Not .flags.UsandoMacro Then
-            Call WriteMacroTrabajoToggle(UserIndex, True)
+            Call WriteMacroTrabajoToggle(Userindex, True)
         End If
     
     End With
 
     Exit Sub
 
-Errhandler:
+errHandler:
     Call LogError("Error en DoTalar")
 
 End Sub
 
-Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal Y As Byte)
+Public Sub DoMineria(ByVal Userindex As Integer, ByVal x As Byte, ByVal Y As Byte)
 
-    On Error GoTo Errhandler
+    On Error GoTo errHandler
 
     Dim Suerte As Integer
     Dim res    As Integer
     Dim metal  As Integer
 
-    With UserList(UserIndex)
+    With UserList(Userindex)
     
         'Por Ladder 06/07/2014 Cuando la estamina llega a 0 , el macro se desactiva
         If .Stats.MinSta > 2 Then
-            Call QuitarSta(UserIndex, 2)
+            Call QuitarSta(Userindex, 2)
         Else
-            Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(Userindex, "93", FontTypeNames.FONTTYPE_INFO)
             'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para excavar.", FontTypeNames.FONTTYPE_INFO)
-            Call WriteMacroTrabajoToggle(UserIndex, False)
+            Call WriteMacroTrabajoToggle(Userindex, False)
             Exit Sub
     
         End If
@@ -2338,7 +2338,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal Y As Byt
         
         res = RandomNumber(1, Suerte)
         
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
+        Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageArmaMov(.Char.CharIndex))
         
         If res <= 5 Then
     
@@ -2368,10 +2368,10 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal Y As Byt
             
             MapData(.Pos.Map, x, Y).ObjInfo.Amount = MapData(.Pos.Map, x, Y).ObjInfo.Amount - MiObj.Amount
         
-            If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.Pos, MiObj)
+            If Not MeterItemEnInventario(Userindex, MiObj) Then Call TirarItemAlPiso(.Pos, MiObj)
             
-            Call WriteConsoleMsg(UserIndex, "¡Has extraido algunos minerales!", FontTypeNames.FONTTYPE_INFO)
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(15, .Pos.x, .Pos.Y))
+            Call WriteConsoleMsg(Userindex, "¡Has extraido algunos minerales!", FontTypeNames.FONTTYPE_INFO)
+            Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessagePlayWave(15, .Pos.x, .Pos.Y))
             
             ' Al minar también puede dropear una gema
             Dim i As Integer
@@ -2387,10 +2387,10 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal Y As Byt
                     MiObj.ObjIndex = ObjData(.flags.TargetObj).Item(i).ObjIndex
                     MiObj.Amount = 1 ' Solo una gema por vez
                     
-                    If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.Pos, MiObj)
+                    If Not MeterItemEnInventario(Userindex, MiObj) Then Call TirarItemAlPiso(.Pos, MiObj)
                         
                     ' Le mandamos un mensaje
-                    Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(ObjData(.flags.TargetObj).Item(i).ObjIndex).name & "!", FontTypeNames.FONTTYPE_INFO)
+                    Call WriteConsoleMsg(Userindex, "¡Has conseguido " & ObjData(ObjData(.flags.TargetObj).Item(i).ObjIndex).name & "!", FontTypeNames.FONTTYPE_INFO)
                     ' TODO: Sonido de drop de gema :P
                     'Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessagePlayWave(15, .Pos.x, .Pos.Y))
                         
@@ -2401,12 +2401,12 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal Y As Byt
             Next
             
         Else
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(62, .Pos.x, .Pos.Y))
+            Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessagePlayWave(62, .Pos.x, .Pos.Y))
     
             '[CDT 17-02-2004]
             If Not .flags.UltimoMensaje = 9 Then
                 
-                Call WriteConsoleMsg(UserIndex, "¡No has conseguido nada!", FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(Userindex, "¡No has conseguido nada!", FontTypeNames.FONTTYPE_INFO)
                 
                 .flags.UltimoMensaje = 9
     
@@ -2415,24 +2415,24 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal Y As Byt
             '[/CDT]
         End If
         
-        Call SubirSkill(UserIndex, eSkill.Mineria)
+        Call SubirSkill(Userindex, eSkill.Mineria)
         
         .Counters.Trabajando = .Counters.Trabajando + 1
         
         If .Counters.Trabajando = 1 And Not .flags.UsandoMacro Then
-            Call WriteMacroTrabajoToggle(UserIndex, True)
+            Call WriteMacroTrabajoToggle(Userindex, True)
         End If
     
     End With
     
     Exit Sub
 
-Errhandler:
+errHandler:
     Call LogError("Error en Sub DoMineria")
 
 End Sub
 
-Public Sub DoMeditar(ByVal UserIndex As Integer)
+Public Sub DoMeditar(ByVal Userindex As Integer)
         
         On Error GoTo DoMeditar_Err
         
@@ -2445,7 +2445,7 @@ Public Sub DoMeditar(ByVal UserIndex As Integer)
 
         Dim MeditarSkill As Byte
 
-100     With UserList(UserIndex)
+100     With UserList(Userindex)
             '.Counters.IdleCount = 0
 
 102         If .Stats.MinMAN >= .Stats.MaxMAN Then Exit Sub
@@ -2495,8 +2495,8 @@ Public Sub DoMeditar(ByVal UserIndex As Integer)
                 '     UserList(UserIndex).flags.UltimoMensaje = 22
                 '  End If
             
-164             Call WriteUpdateMana(UserIndex)
-166             Call SubirSkill(UserIndex, Meditar)
+164             Call WriteUpdateMana(Userindex)
+166             Call SubirSkill(Userindex, Meditar)
 
             End If
 
@@ -2511,7 +2511,7 @@ DoMeditar_Err:
         
 End Sub
 
-Public Sub Desarmar(ByVal UserIndex As Integer, ByVal VictimIndex As Integer)
+Public Sub Desarmar(ByVal Userindex As Integer, ByVal VictimIndex As Integer)
         
         On Error GoTo Desarmar_Err
         
@@ -2520,27 +2520,27 @@ Public Sub Desarmar(ByVal UserIndex As Integer, ByVal VictimIndex As Integer)
 
         Dim res    As Integer
 
-100     If UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) <= 10 And UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) >= -1 Then
+100     If UserList(Userindex).Stats.UserSkills(eSkill.Wrestling) <= 10 And UserList(Userindex).Stats.UserSkills(eSkill.Wrestling) >= -1 Then
 102         Suerte = 35
-104     ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) <= 20 And UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) >= 11 Then
+104     ElseIf UserList(Userindex).Stats.UserSkills(eSkill.Wrestling) <= 20 And UserList(Userindex).Stats.UserSkills(eSkill.Wrestling) >= 11 Then
 106         Suerte = 30
-108     ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) <= 30 And UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) >= 21 Then
+108     ElseIf UserList(Userindex).Stats.UserSkills(eSkill.Wrestling) <= 30 And UserList(Userindex).Stats.UserSkills(eSkill.Wrestling) >= 21 Then
 110         Suerte = 28
-112     ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) <= 40 And UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) >= 31 Then
+112     ElseIf UserList(Userindex).Stats.UserSkills(eSkill.Wrestling) <= 40 And UserList(Userindex).Stats.UserSkills(eSkill.Wrestling) >= 31 Then
 114         Suerte = 24
-116     ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) <= 50 And UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) >= 41 Then
+116     ElseIf UserList(Userindex).Stats.UserSkills(eSkill.Wrestling) <= 50 And UserList(Userindex).Stats.UserSkills(eSkill.Wrestling) >= 41 Then
 118         Suerte = 22
-120     ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) <= 60 And UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) >= 51 Then
+120     ElseIf UserList(Userindex).Stats.UserSkills(eSkill.Wrestling) <= 60 And UserList(Userindex).Stats.UserSkills(eSkill.Wrestling) >= 51 Then
 122         Suerte = 20
-124     ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) <= 70 And UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) >= 61 Then
+124     ElseIf UserList(Userindex).Stats.UserSkills(eSkill.Wrestling) <= 70 And UserList(Userindex).Stats.UserSkills(eSkill.Wrestling) >= 61 Then
 126         Suerte = 18
-128     ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) <= 80 And UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) >= 71 Then
+128     ElseIf UserList(Userindex).Stats.UserSkills(eSkill.Wrestling) <= 80 And UserList(Userindex).Stats.UserSkills(eSkill.Wrestling) >= 71 Then
 130         Suerte = 15
-132     ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) <= 90 And UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) >= 81 Then
+132     ElseIf UserList(Userindex).Stats.UserSkills(eSkill.Wrestling) <= 90 And UserList(Userindex).Stats.UserSkills(eSkill.Wrestling) >= 81 Then
 134         Suerte = 10
-136     ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) < 100 And UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) >= 91 Then
+136     ElseIf UserList(Userindex).Stats.UserSkills(eSkill.Wrestling) < 100 And UserList(Userindex).Stats.UserSkills(eSkill.Wrestling) >= 91 Then
 138         Suerte = 7
-140     ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) = 100 Then
+140     ElseIf UserList(Userindex).Stats.UserSkills(eSkill.Wrestling) = 100 Then
 142         Suerte = 5
 
         End If
@@ -2549,7 +2549,7 @@ Public Sub Desarmar(ByVal UserIndex As Integer, ByVal VictimIndex As Integer)
 
 146     If res <= 2 Then
 148         Call Desequipar(VictimIndex, UserList(VictimIndex).Invent.WeaponEqpSlot)
-150         Call WriteConsoleMsg(UserIndex, "Has logrado desarmar a tu oponente!", FontTypeNames.FONTTYPE_FIGHT)
+150         Call WriteConsoleMsg(Userindex, "Has logrado desarmar a tu oponente!", FontTypeNames.FONTTYPE_FIGHT)
 
 152         If UserList(VictimIndex).Stats.ELV < 20 Then
 154             Call WriteConsoleMsg(VictimIndex, "Tu oponente te ha desarmado!", FontTypeNames.FONTTYPE_FIGHT)
@@ -2569,54 +2569,54 @@ Desarmar_Err:
         
 End Sub
 
-Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As ObjData, ByVal slot As Integer)
+Public Sub DoMontar(ByVal Userindex As Integer, ByRef Montura As ObjData, ByVal slot As Integer)
         
         On Error GoTo DoMontar_Err
         
 
-100     If Not CheckRazaTipo(UserIndex, UserList(UserIndex).Invent.Object(slot).ObjIndex) Then
-102         Call WriteConsoleMsg(UserIndex, "Tu raza no te permite usar esta montura.", FontTypeNames.FONTTYPE_INFO)
+100     If Not CheckRazaTipo(Userindex, UserList(Userindex).Invent.Object(slot).ObjIndex) Then
+102         Call WriteConsoleMsg(Userindex, "Tu raza no te permite usar esta montura.", FontTypeNames.FONTTYPE_INFO)
             'Call WriteConsoleMsg(UserIndex, "Para usar esta montura necesitas " & Montura.MinSkill & " puntos en equitacion.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
 
-104     If Not CheckClaseTipo(UserIndex, UserList(UserIndex).Invent.Object(slot).ObjIndex) Then
-106         Call WriteConsoleMsg(UserIndex, "Tu clase no te permite usar esta montura.", FontTypeNames.FONTTYPE_INFO)
+104     If Not CheckClaseTipo(Userindex, UserList(Userindex).Invent.Object(slot).ObjIndex) Then
+106         Call WriteConsoleMsg(Userindex, "Tu clase no te permite usar esta montura.", FontTypeNames.FONTTYPE_INFO)
             'Call WriteConsoleMsg(UserIndex, "Para usar esta montura necesitas " & Montura.MinSkill & " puntos en equitacion.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
 
-108     If UserList(UserIndex).Stats.UserSkills(eSkill.equitacion) < Montura.MinSkill Then
+108     If UserList(Userindex).Stats.UserSkills(eSkill.equitacion) < Montura.MinSkill Then
             'Call WriteConsoleMsg(UserIndex, "No tenes suficientes conocimientos para usar esta montura.", FontTypeNames.FONTTYPE_INFO)
-110         Call WriteConsoleMsg(UserIndex, "Para usar esta montura necesitas " & Montura.MinSkill & " puntos en equitacion.", FontTypeNames.FONTTYPE_INFO)
+110         Call WriteConsoleMsg(Userindex, "Para usar esta montura necesitas " & Montura.MinSkill & " puntos en equitacion.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
 
         'Ladder 21/11/08
-112     If UserList(UserIndex).flags.Montado = 0 Then
-114         If (MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y).trigger > 10) Then
-116             Call WriteConsoleMsg(UserIndex, "No podés montar aquí.", FontTypeNames.FONTTYPE_INFO)
+112     If UserList(Userindex).flags.Montado = 0 Then
+114         If (MapData(UserList(Userindex).Pos.Map, UserList(Userindex).Pos.x, UserList(Userindex).Pos.Y).trigger > 10) Then
+116             Call WriteConsoleMsg(Userindex, "No podés montar aquí.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
 
         End If
 
-118     If UserList(UserIndex).flags.Meditando Then
-120         UserList(UserIndex).flags.Meditando = False
-122         Call WriteLocaleMsg(UserIndex, "123", FontTypeNames.FONTTYPE_INFO)
-124         UserList(UserIndex).Char.FX = 0
-126         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(UserList(UserIndex).Char.CharIndex, 0))
+118     If UserList(Userindex).flags.Meditando Then
+120         UserList(Userindex).flags.Meditando = False
+122         Call WriteLocaleMsg(Userindex, "123", FontTypeNames.FONTTYPE_INFO)
+124         UserList(Userindex).Char.FX = 0
+126         Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageMeditateToggle(UserList(Userindex).Char.CharIndex, 0))
         End If
 
-128     If UserList(UserIndex).flags.Montado = 1 Then
-130         If UserList(UserIndex).Invent.MonturaObjIndex > 0 Then
-132             If ObjData(UserList(UserIndex).Invent.MonturaObjIndex).ResistenciaMagica > 0 Then
-134                 UserList(UserIndex).flags.ResistenciaMagica = UserList(UserIndex).flags.ResistenciaMagica - ObjData(UserList(UserIndex).Invent.MonturaObjIndex).ResistenciaMagica
-136                 Call UpdateUserInv(False, UserIndex, UserList(UserIndex).Invent.MonturaSlot)
+128     If UserList(Userindex).flags.Montado = 1 Then
+130         If UserList(Userindex).Invent.MonturaObjIndex > 0 Then
+132             If ObjData(UserList(Userindex).Invent.MonturaObjIndex).ResistenciaMagica > 0 Then
+134                 UserList(Userindex).flags.ResistenciaMagica = UserList(Userindex).flags.ResistenciaMagica - ObjData(UserList(Userindex).Invent.MonturaObjIndex).ResistenciaMagica
+136                 Call UpdateUserInv(False, Userindex, UserList(Userindex).Invent.MonturaSlot)
 
                 End If
 
@@ -2624,63 +2624,63 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As ObjData, ByVal 
 
         End If
 
-138     UserList(UserIndex).Invent.MonturaObjIndex = UserList(UserIndex).Invent.Object(slot).ObjIndex
-140     UserList(UserIndex).Invent.MonturaSlot = slot
+138     UserList(Userindex).Invent.MonturaObjIndex = UserList(Userindex).Invent.Object(slot).ObjIndex
+140     UserList(Userindex).Invent.MonturaSlot = slot
 
-142     If UserList(UserIndex).flags.Montado = 0 Then
+142     If UserList(Userindex).flags.Montado = 0 Then
 
-144         If ObjData(UserList(UserIndex).Invent.MonturaObjIndex).ResistenciaMagica > 0 Then
-146             UserList(UserIndex).flags.ResistenciaMagica = UserList(UserIndex).flags.ResistenciaMagica + Montura.ResistenciaMagica
+144         If ObjData(UserList(Userindex).Invent.MonturaObjIndex).ResistenciaMagica > 0 Then
+146             UserList(Userindex).flags.ResistenciaMagica = UserList(Userindex).flags.ResistenciaMagica + Montura.ResistenciaMagica
 
             End If
             
-148         If UserList(UserIndex).raza = Enano Or UserList(UserIndex).raza = Gnomo Then
+148         If UserList(Userindex).raza = Enano Or UserList(Userindex).raza = Gnomo Then
                 'UserList(UserIndex).Char.body = ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).RopajeBajo
-150             UserList(UserIndex).Char.Body = Montura.RopajeBajo
+150             UserList(Userindex).Char.Body = Montura.RopajeBajo
             Else
-152             UserList(UserIndex).Char.Body = Montura.Ropaje
+152             UserList(Userindex).Char.Body = Montura.Ropaje
 
             End If
 
             'UserList(UserIndex).Char.body = Montura.Ropaje
-154         UserList(UserIndex).Char.Head = UserList(UserIndex).OrigChar.Head
-156         UserList(UserIndex).Char.ShieldAnim = NingunEscudo
-158         UserList(UserIndex).Char.WeaponAnim = NingunArma
-160         UserList(UserIndex).Char.CascoAnim = UserList(UserIndex).Char.CascoAnim
-162         UserList(UserIndex).flags.Montado = 1
-164         UserList(UserIndex).Char.speeding = VelocidadMontura
+154         UserList(Userindex).Char.Head = UserList(Userindex).OrigChar.Head
+156         UserList(Userindex).Char.ShieldAnim = NingunEscudo
+158         UserList(Userindex).Char.WeaponAnim = NingunArma
+160         UserList(Userindex).Char.CascoAnim = UserList(Userindex).Char.CascoAnim
+162         UserList(Userindex).flags.Montado = 1
+164         UserList(Userindex).Char.speeding = VelocidadMontura
         Else
-166         UserList(UserIndex).flags.Montado = 0
-168         UserList(UserIndex).Char.Head = UserList(UserIndex).OrigChar.Head
-170         UserList(UserIndex).Char.speeding = VelocidadNormal
+166         UserList(Userindex).flags.Montado = 0
+168         UserList(Userindex).Char.Head = UserList(Userindex).OrigChar.Head
+170         UserList(Userindex).Char.speeding = VelocidadNormal
 
-172         If UserList(UserIndex).Invent.ArmourEqpObjIndex > 0 Then
+172         If UserList(Userindex).Invent.ArmourEqpObjIndex > 0 Then
         
-174             If UserList(UserIndex).raza = Enano Or UserList(UserIndex).raza = Gnomo Then
-176                 UserList(UserIndex).Char.Body = ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).RopajeBajo
+174             If UserList(Userindex).raza = Enano Or UserList(Userindex).raza = Gnomo Then
+176                 UserList(Userindex).Char.Body = ObjData(UserList(Userindex).Invent.ArmourEqpObjIndex).RopajeBajo
                 Else
-178                 UserList(UserIndex).Char.Body = ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).Ropaje
+178                 UserList(Userindex).Char.Body = ObjData(UserList(Userindex).Invent.ArmourEqpObjIndex).Ropaje
 
                 End If
 
             Else
-180             Call DarCuerpoDesnudo(UserIndex)
+180             Call DarCuerpoDesnudo(Userindex)
 
             End If
             
-182         If UserList(UserIndex).Invent.EscudoEqpObjIndex > 0 Then UserList(UserIndex).Char.ShieldAnim = ObjData(UserList(UserIndex).Invent.EscudoEqpObjIndex).ShieldAnim
+182         If UserList(Userindex).Invent.EscudoEqpObjIndex > 0 Then UserList(Userindex).Char.ShieldAnim = ObjData(UserList(Userindex).Invent.EscudoEqpObjIndex).ShieldAnim
 
-184         If UserList(UserIndex).Invent.WeaponEqpObjIndex > 0 Then UserList(UserIndex).Char.WeaponAnim = ObjData(UserList(UserIndex).Invent.WeaponEqpObjIndex).WeaponAnim
+184         If UserList(Userindex).Invent.WeaponEqpObjIndex > 0 Then UserList(Userindex).Char.WeaponAnim = ObjData(UserList(Userindex).Invent.WeaponEqpObjIndex).WeaponAnim
 
-186         If UserList(UserIndex).Invent.CascoEqpObjIndex > 0 Then UserList(UserIndex).Char.CascoAnim = ObjData(UserList(UserIndex).Invent.CascoEqpObjIndex).CascoAnim
+186         If UserList(Userindex).Invent.CascoEqpObjIndex > 0 Then UserList(Userindex).Char.CascoAnim = ObjData(UserList(Userindex).Invent.CascoEqpObjIndex).CascoAnim
 
         End If
 
-188     Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
+188     Call ChangeUserChar(Userindex, UserList(Userindex).Char.Body, UserList(Userindex).Char.Head, UserList(Userindex).Char.heading, UserList(Userindex).Char.WeaponAnim, UserList(Userindex).Char.ShieldAnim, UserList(Userindex).Char.CascoAnim)
 
-190     Call UpdateUserInv(False, UserIndex, slot)
-192     Call WriteEquiteToggle(UserIndex)
-194     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(UserList(UserIndex).Char.CharIndex, UserList(UserIndex).Char.speeding))
+190     Call UpdateUserInv(False, Userindex, slot)
+192     Call WriteEquiteToggle(Userindex)
+194     Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageSpeedingACT(UserList(Userindex).Char.CharIndex, UserList(Userindex).Char.speeding))
 
         
         Exit Sub
@@ -2691,7 +2691,7 @@ DoMontar_Err:
         
 End Sub
 
-Public Function ApuñalarFunction(ByVal UserIndex As Integer, ByVal VictimNpcIndex As Integer, ByVal VictimUserIndex As Integer, ByVal daño As Integer) As Integer
+Public Function ApuñalarFunction(ByVal Userindex As Integer, ByVal VictimNpcIndex As Integer, ByVal VictimUserIndex As Integer, ByVal daño As Integer) As Integer
         
         On Error GoTo ApuñalarFunction_Err
         
@@ -2708,15 +2708,15 @@ Public Function ApuñalarFunction(ByVal UserIndex As Integer, ByVal VictimNpcInde
 
         Dim Random As Byte
 
-100     Skill = UserList(UserIndex).Stats.UserSkills(eSkill.Apuñalar)
+100     Skill = UserList(Userindex).Stats.UserSkills(eSkill.Apuñalar)
 
-102     Select Case UserList(UserIndex).clase
+102     Select Case UserList(Userindex).Clase
 
             Case eClass.Assasin '35
 104             Suerte = Int(((0.00003 * Skill - 0.001) * Skill + 0.098) * Skill + 4.25)
         
 106             If VictimNpcIndex = 0 Then
-108                 If UserList(VictimUserIndex).Char.heading = UserList(UserIndex).Char.heading Then
+108                 If UserList(VictimUserIndex).Char.heading = UserList(Userindex).Char.heading Then
 110                     Random = RandomNumber(1, 3)
 
 112                     If Random = 1 Then
@@ -2739,7 +2739,7 @@ Public Function ApuñalarFunction(ByVal UserIndex As Integer, ByVal VictimNpcInde
 
         End Select
 
-128     If UserList(UserIndex).clase = eClass.Assasin Then
+128     If UserList(Userindex).Clase = eClass.Assasin Then
 130         daño = Round(daño * 0.4, 0)
         Else
 132         daño = Round(daño * 0.1, 0)
@@ -2751,20 +2751,20 @@ Public Function ApuñalarFunction(ByVal UserIndex As Integer, ByVal VictimNpcInde
 
 138             ApuñalarFunction = daño
         
-140             If UserList(UserIndex).ChatCombate = 1 Then
-142                 Call WriteConsoleMsg(UserIndex, "Has apuñalado a " & UserList(VictimUserIndex).name & " por " & daño & ".", FontTypeNames.FONTTYPE_FIGHT)
+140             If UserList(Userindex).ChatCombate = 1 Then
+142                 Call WriteConsoleMsg(Userindex, "Has apuñalado a " & UserList(VictimUserIndex).name & " por " & daño & ".", FontTypeNames.FONTTYPE_FIGHT)
 
                 End If
         
 144             If UserList(VictimUserIndex).ChatCombate = 1 Then
-146                 Call WriteConsoleMsg(VictimUserIndex, UserList(UserIndex).name & " te ha apuñalado por " & daño & ".", FontTypeNames.FONTTYPE_FIGHT)
+146                 Call WriteConsoleMsg(VictimUserIndex, UserList(Userindex).name & " te ha apuñalado por " & daño & ".", FontTypeNames.FONTTYPE_FIGHT)
 
                 End If
         
                 'Call SendData(SendTarget.ToAll, 0, PrepareMessageEfectToScreen(&HFF, 350))           'Rayo
         
 148             Call WriteEfectToScreen(VictimUserIndex, &H3C3CFF, 200, True)
-150             Call WriteEfectToScreen(UserIndex, &H3C3CFF, 150, True)
+150             Call WriteEfectToScreen(Userindex, &H3C3CFF, 150, True)
         
 152             Call SendData(SendTarget.ToPCArea, VictimUserIndex, PrepareMessageCreateFX(UserList(VictimUserIndex).Char.CharIndex, 89, 0))
         
@@ -2777,7 +2777,7 @@ Public Function ApuñalarFunction(ByVal UserIndex As Integer, ByVal VictimNpcInde
         
 156             ApuñalarFunction = daño
         
-158             Call CalcularDarExp(UserIndex, VictimNpcIndex, daño)
+158             Call CalcularDarExp(Userindex, VictimNpcIndex, daño)
 
             End If
 
@@ -2843,3 +2843,190 @@ ObtenerPezRandom_Err:
         Resume Next
         
 End Function
+
+Function ModDomar(ByVal Clase As eClass) As Integer
+
+    '***************************************************
+    'Author: Unknown
+    'Last Modification: -
+    '
+    '***************************************************
+    Select Case Clase
+
+        Case eClass.Druid
+            ModDomar = 6
+
+        Case eClass.Hunter
+            ModDomar = 6
+
+        Case eClass.Cleric
+            ModDomar = 7
+
+        Case Else
+            ModDomar = 10
+
+    End Select
+
+End Function
+
+Function FreeMascotaIndex(ByVal Userindex As Integer) As Integer
+
+    '***************************************************
+    'Author: Unknown
+    'Last Modification: 02/03/09
+    '02/03/09: ZaMa - Busca un indice libre de mascotas, revisando los types y no los indices de los npcs
+    '***************************************************
+    Dim j As Integer
+
+    For j = 1 To MAXMASCOTAS
+
+        If UserList(Userindex).MascotasType(j) = 0 Then
+            FreeMascotaIndex = j
+            Exit Function
+
+        End If
+
+    Next j
+
+End Function
+
+Sub DoDomar(ByVal Userindex As Integer, ByVal NpcIndex As Integer)
+    '***************************************************
+    'Author: Nacho (Integer)
+    'Last Modification: 01/05/2010
+    '12/15/2008: ZaMa - Limits the number of the same type of pet to 2.
+    '02/03/2009: ZaMa - Las criaturas domadas en zona segura, esperan afuera (desaparecen).
+    '01/05/2010: ZaMa - Agrego bonificacion 11% para domar con flauta magica.
+    '***************************************************
+
+    On Error GoTo errHandler
+
+    Dim puntosDomar      As Integer
+
+    Dim puntosRequeridos As Integer
+
+    Dim CanStay          As Boolean
+
+    Dim petType          As Integer
+
+    Dim NroPets          As Integer
+    
+    If Npclist(NpcIndex).MaestroUser = Userindex Then
+        Call WriteConsoleMsg(Userindex, "Ya domaste a esa criatura.", FontTypeNames.FONTTYPE_INFO)
+        Exit Sub
+
+    End If
+
+    With UserList(Userindex)
+
+        If .NroMascotas < MAXMASCOTAS Then
+
+            If Npclist(NpcIndex).MaestroNPC > 0 Or Npclist(NpcIndex).MaestroUser > 0 Then
+                Call WriteConsoleMsg(Userindex, "La criatura ya tiene amo.", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+
+            If Not PuedeDomarMascota(Userindex, NpcIndex) Then
+                Call WriteConsoleMsg(Userindex, "No puedes domar mas de dos criaturas del mismo tipo.", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+
+            puntosDomar = CInt(.Stats.UserAtributos(eAtributos.Carisma)) * CInt(.Stats.UserSkills(eSkill.Domar))
+
+            ' 20% de bonificacion
+            If .Invent.AnilloEqpObjIndex = FLAUTAELFICA Then
+                puntosRequeridos = Npclist(NpcIndex).flags.Domable * 0.8
+
+            ' 11% de bonificacion
+            ElseIf .Invent.AnilloEqpObjIndex = FLAUTAMAGICA Then
+                puntosRequeridos = Npclist(NpcIndex).flags.Domable * 0.89
+
+            Else
+                puntosRequeridos = Npclist(NpcIndex).flags.Domable
+            End If
+
+            If puntosRequeridos <= puntosDomar And RandomNumber(1, 5) = 1 Then
+
+                Dim index As Integer
+
+                .NroMascotas = .NroMascotas + 1
+                index = FreeMascotaIndex(Userindex)
+                .MascotasIndex(index) = NpcIndex
+                .MascotasType(index) = Npclist(NpcIndex).Numero
+
+                Npclist(NpcIndex).MaestroUser = Userindex
+
+                Call FollowAmo(NpcIndex)
+                Call ReSpawnNpc(Npclist(NpcIndex))
+
+                Call WriteConsoleMsg(Userindex, "La criatura te ha aceptado como su amo.", FontTypeNames.FONTTYPE_INFO)
+
+                ' Es zona segura?
+                If MapInfo(.Pos.Map).Seguro Then
+                    petType = Npclist(NpcIndex).Numero
+                    NroPets = .NroMascotas
+
+                    Call QuitarNPC(NpcIndex)
+
+                    .MascotasType(index) = petType
+                    .NroMascotas = NroPets
+
+                    Call WriteConsoleMsg(Userindex, "No se permiten mascotas en zona segura. estas te esperaran afuera.", FontTypeNames.FONTTYPE_INFO)
+                End If
+
+            Else
+
+                If Not .flags.UltimoMensaje = 5 Then
+                    Call WriteConsoleMsg(Userindex, "No has logrado domar la criatura.", FontTypeNames.FONTTYPE_INFO)
+                    .flags.UltimoMensaje = 5
+                End If
+
+            End If
+
+            Call SubirSkill(Userindex, eSkill.Domar)
+
+        Else
+            Call WriteConsoleMsg(Userindex, "No puedes controlar mas criaturas.", FontTypeNames.FONTTYPE_INFO)
+        End If
+
+    End With
+    
+    Exit Sub
+
+errHandler:
+    Call LogError("Error en DoDomar. Error " & Err.Number & " : " & Err.description)
+
+End Sub
+
+''
+' Checks if the user can tames a pet.
+'
+' @param integer userIndex The user id from who wants tame the pet.
+' @param integer NPCindex The index of the npc to tome.
+' @return boolean True if can, false if not.
+Private Function PuedeDomarMascota(ByVal Userindex As Integer, _
+                                   ByVal NpcIndex As Integer) As Boolean
+
+    '***************************************************
+    'Author: ZaMa
+    'This function checks how many NPCs of the same type have
+    'been tamed by the user.
+    'Returns True if that amount is less than two.
+    '***************************************************
+    Dim i           As Long
+
+    Dim numMascotas As Long
+    
+    For i = 1 To MAXMASCOTAS
+
+        If UserList(Userindex).MascotasType(i) = Npclist(NpcIndex).Numero Then
+            numMascotas = numMascotas + 1
+
+        End If
+
+    Next i
+    
+    If numMascotas <= 1 Then PuedeDomarMascota = True
+    
+End Function
+
