@@ -837,7 +837,7 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal slot As Byte)
                 '    UserList(UserIndex).Invent.AnilloEqpObjIndex = 0
                 ' UserList(UserIndex).Invent.AnilloEqpSlot = 0
             
-142         Case eOBJType.OtHerramientas
+142         Case eOBJType.otHerramientas
 144             UserList(UserIndex).Invent.Object(slot).Equipped = 0
 146             UserList(UserIndex).Invent.HerramientaEqpObjIndex = 0
 148             UserList(UserIndex).Invent.HerramientaEqpSlot = 0
@@ -1210,7 +1210,9 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 
             End If
       
-        Case eOBJType.OtHerramientas
+        Case eOBJType.otHerramientas
+        
+            If Not ClasePuedeUsarItem(UserIndex, ObjIndex, slot) Then Exit Sub
 
             'Si esta equipado lo quita
             If UserList(UserIndex).Invent.Object(slot).Equipped Then
@@ -1995,7 +1997,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 
             End If
         
-        Case eOBJType.OtHerramientas
+        Case eOBJType.otHerramientas
 
             If UserList(UserIndex).flags.Muerto = 1 Then
                 Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
