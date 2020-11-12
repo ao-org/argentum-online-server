@@ -6779,7 +6779,7 @@ Private Sub HandleOnline(ByVal UserIndex As Integer)
 
 
             If .flags.Privilegios And PlayerType.user Then
-112             Call WriteConsoleMsg(UserIndex, "Número de usuarios: " & CStr(Count) & " conectados", FontTypeNames.FONTTYPE_INFOIAO)
+112             Call WriteConsoleMsg(UserIndex, "Número de usuarios: " & CStr(Count) & " conectados.", FontTypeNames.FONTTYPE_INFOIAO)
             Else
                 Call WriteConsoleMsg(UserIndex, "Número de usuarios: " & CStr(Count) & " conectados: " & nombres & ".", FontTypeNames.FONTTYPE_INFOIAO)
             End If
