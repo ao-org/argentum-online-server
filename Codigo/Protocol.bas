@@ -25109,7 +25109,7 @@ Private Sub HandleDuelo(ByVal UserIndex As Integer)
 
     End If
     
-    On Error GoTo Errhandler
+     On Error GoTo Errhandler
 
     With UserList(UserIndex)
 
@@ -25117,65 +25117,11 @@ Private Sub HandleDuelo(ByVal UserIndex As Integer)
         Dim buffer As New clsByteQueue
 
         Call buffer.CopyBuffer(.incomingData)
+        
         'Remove packet ID
         Call buffer.ReadInteger
-        MapaOcupado = False
- 
-        Dim UserRetado As String
-
-        UserRetado = .flags.TargetUser
-
-        Dim tUser As Integer
-
-        Dim names As Integer
- 
-        If .flags.SolicitudPendienteDe = 0 Then
-   
-            If .flags.TargetUser = 0 Then
-                Call WriteConsoleMsg(UserIndex, "Duelos> Primero haz click sobre el personaje.", FontTypeNames.FONTTYPE_INFO)
-                Call .incomingData.CopyBuffer(buffer)
-                Exit Sub
-
-            End If
         
-            If UserRetado <= 0 Then
-                Call WriteConsoleMsg(UserIndex, "Duelos> íEl persona se encuentra offline!", FontTypeNames.FONTTYPE_INFO)
-                Call .incomingData.CopyBuffer(buffer)
-                Exit Sub
 
-            End If
-        
-            If MapaOcupado Then
-                Call WriteConsoleMsg(UserIndex, "Duelos> El mapa de duelos esta ocupado, intentalo mas tarde.", FontTypeNames.FONTTYPE_INFO)
-                Call .incomingData.CopyBuffer(buffer)
-                Exit Sub
-
-            End If
-        
-            .flags.RetoA = UserList(UserRetado).name
-            UserList(UserRetado).flags.SolicitudPendienteDe = .name
-        
-            Call WriteConsoleMsg(UserRetado, "Duelos> Has sido retado a duelo por " & .name & " si quieres aceptar el duelo escribe /DUELO.", FontTypeNames.FONTTYPE_INFO)
-            Call WriteConsoleMsg(UserIndex, "Duelos> La solicitud a sido enviada al usuario, ahora debes esperar la respuesta de " & UserList(UserRetado).name & ".", FontTypeNames.FONTTYPE_INFO)
-               
-            ' MapaOcupado = True
-            'Call SendData(UserIndex, 0, PrepareMessageConsoleMsg("Duelo comenzado!", FontTypeNames.FONTTYPE_SERVER))
-        Else
-
-            'Call WriteConsoleMsg(UserIndex, "Duelos> La solicitud a sido enviada al usuario, ahora debes esperar la respuesta de " & UserList(UserRetado).name & ".", FontTypeNames.FONTTYPE_INFO)
-            'If UserList(NameIndex(.flags.SolicitudPendienteDe)).flags.RetoA <> 0 Then
-            'If UserList(UserIndex).flags.SolicitudPendienteDe = UserList(NameIndex(.flags.SolicitudPendienteDe)).flags.RetoA Then
-            Rem       Call SendData(UserIndex, 0, PrepareMessageConsoleMsg("Duelo comenzado!", FontTypeNames.FONTTYPE_SERVER))
-            'End If
-            'End If
-            Call .incomingData.CopyBuffer(buffer)
-           ' Exit Sub
-
-        End If
-
-        Call SendData(UserIndex, 0, PrepareMessageConsoleMsg("Duelo comenzado!", FontTypeNames.FONTTYPE_SERVER))
-
-        'If we got here then packet is complete, copy data back to original queue
         Call .incomingData.CopyBuffer(buffer)
 
     End With
