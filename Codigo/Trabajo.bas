@@ -449,7 +449,7 @@ Public Sub FundirMineral(ByVal UserIndex As Integer)
 100     If UserList(UserIndex).flags.TargetObjInvIndex > 0 Then
 
             Dim SkillRequerido As Integer
-            SkillRequerido = UserList(UserIndex).Stats.UserSkills(eSkill.Mineria) * ModFundirMineral(UserList(UserIndex).Clase)
+            SkillRequerido = UserList(UserIndex).Stats.UserSkills(eSkill.Mineria) * ModFundirMineral(UserList(UserIndex).clase)
    
 102         If ObjData(UserList(UserIndex).flags.TargetObjInvIndex).OBJType = eOBJType.otMinerales And _
                 ObjData(UserList(UserIndex).flags.TargetObjInvIndex).MinSkill <= SkillRequerido Then
@@ -1257,12 +1257,12 @@ DoLingotes_Err:
         
 End Sub
 
-Function ModFundicion(ByVal Clase As eClass) As Single
+Function ModFundicion(ByVal clase As eClass) As Single
         
         On Error GoTo ModFundicion_Err
         
 
-100     Select Case Clase
+100     Select Case clase
 
             Case eClass.Trabajador
 102             ModFundicion = 3
@@ -1281,12 +1281,12 @@ ModFundicion_Err:
         
 End Function
 
-Function ModAlquimia(ByVal Clase As eClass) As Integer
+Function ModAlquimia(ByVal clase As eClass) As Integer
         
         On Error GoTo ModAlquimia_Err
         
 
-100     Select Case Clase
+100     Select Case clase
 
             Case eClass.Druid
 102             ModAlquimia = 1
@@ -1308,12 +1308,12 @@ ModAlquimia_Err:
         
 End Function
 
-Function ModSastre(ByVal Clase As eClass) As Integer
+Function ModSastre(ByVal clase As eClass) As Integer
         
         On Error GoTo ModSastre_Err
         
 
-100     Select Case Clase
+100     Select Case clase
 
             Case eClass.Trabajador
 102             ModSastre = 1
@@ -1332,12 +1332,12 @@ ModSastre_Err:
         
 End Function
 
-Function ModCarpinteria(ByVal Clase As eClass) As Integer
+Function ModCarpinteria(ByVal clase As eClass) As Integer
         
         On Error GoTo ModCarpinteria_Err
         
 
-100     Select Case Clase
+100     Select Case clase
 
             Case eClass.Trabajador
 102             ModCarpinteria = 1
@@ -1356,12 +1356,12 @@ ModCarpinteria_Err:
         
 End Function
 
-Function ModHerreriA(ByVal Clase As eClass) As Single
+Function ModHerreriA(ByVal clase As eClass) As Single
         
         On Error GoTo ModHerreriA_Err
         
 
-100     Select Case Clase
+100     Select Case clase
 
             Case eClass.Trabajador
 102             ModHerreriA = 1
@@ -1946,7 +1946,7 @@ Public Sub DoApuñalar(ByVal UserIndex As Integer, ByVal VictimNpcIndex As Intege
     
 100     Skill = UserList(UserIndex).Stats.UserSkills(eSkill.Apuñalar)
     
-102     Select Case UserList(UserIndex).Clase
+102     Select Case UserList(UserIndex).clase
 
             Case eClass.Assasin '35
 104             Suerte = Int(((0.00003 * Skill - 0.001) * Skill + 0.098) * Skill + 4.25)
@@ -1964,12 +1964,7 @@ Public Sub DoApuñalar(ByVal UserIndex As Integer, ByVal VictimNpcIndex As Intege
     
 118     If RandomNumber(0, 70) < Suerte Then
 120         If VictimUserIndex <> 0 Then
-122             If UserList(UserIndex).Clase = eClass.Assasin Then
-124                 daño = Round(daño * 1.4, 0)
-                Else
-126                 daño = Round(daño * 1.2, 0)
-
-                End If
+                daño = daño * 1.5
             
 128             UserList(VictimUserIndex).Stats.MinHp = UserList(VictimUserIndex).Stats.MinHp - daño
 
@@ -1988,18 +1983,20 @@ Public Sub DoApuñalar(ByVal UserIndex As Integer, ByVal VictimNpcIndex As Intege
             
             
             Else
-140             Npclist(VictimNpcIndex).Stats.MinHp = Npclist(VictimNpcIndex).Stats.MinHp - Int(daño * 1.5)
+                daño = daño * 2
+
+140             Npclist(VictimNpcIndex).Stats.MinHp = Npclist(VictimNpcIndex).Stats.MinHp - daño
 
 142             If UserList(UserIndex).ChatCombate = 1 Then
                     'Call WriteConsoleMsg(UserIndex, "Has apuñalado la criatura por " & Int(daño * 1.5), FontTypeNames.FONTTYPE_FIGHT)
-144                 Call WriteLocaleMsg(UserIndex, "212", FontTypeNames.FONTTYPE_FIGHT, Int(daño * 1.5))
+144                 Call WriteLocaleMsg(UserIndex, "212", FontTypeNames.FONTTYPE_FIGHT, daño)
 
                 End If
             
-146             Call SendData(SendTarget.ToNPCArea, VictimNpcIndex, PrepareMessageEfectOverHead("¡" & daño * 1.5 & "!", Npclist(VictimNpcIndex).Char.CharIndex, &HFFFF00))
+146             Call SendData(SendTarget.ToNPCArea, VictimNpcIndex, PrepareMessageEfectOverHead("¡" & daño & "!", Npclist(VictimNpcIndex).Char.CharIndex, &HFFFF00))
 
                 '[Alejo]
-148             Call CalcularDarExp(UserIndex, VictimNpcIndex, Int(daño * 1.5))
+148             Call CalcularDarExp(UserIndex, VictimNpcIndex, daño)
 
             End If
 
@@ -2713,7 +2710,7 @@ Public Function ApuñalarFunction(ByVal UserIndex As Integer, ByVal VictimNpcInde
 
 100     Skill = UserList(UserIndex).Stats.UserSkills(eSkill.Apuñalar)
 
-102     Select Case UserList(UserIndex).Clase
+102     Select Case UserList(UserIndex).clase
 
             Case eClass.Assasin '35
 104             Suerte = Int(((0.00003 * Skill - 0.001) * Skill + 0.098) * Skill + 4.25)
@@ -2742,50 +2739,13 @@ Public Function ApuñalarFunction(ByVal UserIndex As Integer, ByVal VictimNpcInde
 
         End Select
 
-128     If UserList(UserIndex).Clase = eClass.Assasin Then
-130         daño = Round(daño * 0.4, 0)
-        Else
-132         daño = Round(daño * 0.1, 0)
-
-        End If
-
 134     If RandomNumber(0, 70) < Suerte Then
 136         If VictimUserIndex <> 0 Then
-
-138             ApuñalarFunction = daño
-        
-140             If UserList(UserIndex).ChatCombate = 1 Then
-142                 Call WriteConsoleMsg(UserIndex, "Has apuñalado a " & UserList(VictimUserIndex).name & " por " & daño & ".", FontTypeNames.FONTTYPE_FIGHT)
-
-                End If
-        
-144             If UserList(VictimUserIndex).ChatCombate = 1 Then
-146                 Call WriteConsoleMsg(VictimUserIndex, UserList(UserIndex).name & " te ha apuñalado por " & daño & ".", FontTypeNames.FONTTYPE_FIGHT)
-
-                End If
-        
-                'Call SendData(SendTarget.ToAll, 0, PrepareMessageEfectToScreen(&HFF, 350))           'Rayo
-        
-148             Call WriteEfectToScreen(VictimUserIndex, &H3C3CFF, 200, True)
-150             Call WriteEfectToScreen(UserIndex, &H3C3CFF, 150, True)
-        
-152             Call SendData(SendTarget.ToPCArea, VictimUserIndex, PrepareMessageCreateFX(UserList(VictimUserIndex).Char.CharIndex, 89, 0))
-        
-            
-            
-        
+                ApuñalarFunction = daño * 0.5
             Else
-154             Npclist(VictimNpcIndex).Stats.MinHp = Npclist(VictimNpcIndex).Stats.MinHp - daño
-                '[Alejo]
-        
-156             ApuñalarFunction = daño
-        
-158             Call CalcularDarExp(UserIndex, VictimNpcIndex, daño)
-
+                ApuñalarFunction = daño
             End If
-
         End If
-
         
         Exit Function
 
@@ -2847,14 +2807,14 @@ ObtenerPezRandom_Err:
         
 End Function
 
-Function ModDomar(ByVal Clase As eClass) As Integer
+Function ModDomar(ByVal clase As eClass) As Integer
 
     '***************************************************
     'Author: Unknown
     'Last Modification: -
     '
     '***************************************************
-    Select Case Clase
+    Select Case clase
 
         Case eClass.Druid
             ModDomar = 6
@@ -3033,9 +2993,9 @@ Private Function PuedeDomarMascota(ByVal UserIndex As Integer, _
     
 End Function
 
-Private Function ModFundirMineral(ByVal Clase As eClass) As Integer
+Private Function ModFundirMineral(ByVal clase As eClass) As Integer
     
-    If Clase = eClass.Trabajador Then
+    If clase = eClass.Trabajador Then
         ModFundirMineral = 1
     Else
         ModFundirMineral = 3
