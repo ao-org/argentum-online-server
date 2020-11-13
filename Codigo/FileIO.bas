@@ -1291,6 +1291,8 @@ Sub LoadOBJData()
     frmCargando.cargar.Value = 0
 
     ReDim Preserve ObjData(1 To NumObjDatas) As ObjData
+    
+    Dim Str As String, Field() As String
   
     'Llena la lista
     For Object = 1 To NumObjDatas
@@ -1519,11 +1521,9 @@ Sub LoadOBJData()
                 If ObjData(Object).CantItem > 0 Then
                     ReDim ObjData(Object).Item(1 To ObjData(Object).CantItem)
 
-                    Dim str As String, Field() As String
-
                     For i = 1 To ObjData(Object).CantItem
-                        str = Leer.GetValue("OBJ" & Object, "Gema" & i)
-                        Field = Split(str, "-")
+                        Str = Leer.GetValue("OBJ" & Object, "Gema" & i)
+                        Field = Split(Str, "-")
                         ObjData(Object).Item(i).ObjIndex = val(Field(0))    ' ObjIndex
                         ObjData(Object).Item(i).Amount = val(Field(1))      ' Probabilidad de drop (1 en X)
                     Next i
@@ -1633,6 +1633,22 @@ Sub LoadOBJData()
             Loop
             ObjData(Object).ClaseProhibida(i) = IIf(LenB(S) > 0, n, 0)
         Next i
+        
+        ' Skill requerido
+        Str = Leer.GetValue("OBJ" & Object, "SkillRequerido")
+
+        If Len(Str) > 0 Then
+            Field = Split(Str, "-")
+            
+            n = 1
+            Do While LenB(Field(0)) > 0 And UCase$(Tilde(SkillsNames(n))) <> UCase$(Tilde(Field(0)))
+                n = n + 1
+            Loop
+    
+            ObjData(Object).SkillIndex = IIf(LenB(Field(0)) > 0, n, 0)
+            ObjData(Object).SkillRequerido = val(Field(1))
+        End If
+        ' -----------------
     
         ObjData(Object).DefensaMagicaMax = val(Leer.GetValue("OBJ" & Object, "DefensaMagicaMax"))
         ObjData(Object).DefensaMagicaMin = val(Leer.GetValue("OBJ" & Object, "DefensaMagicaMin"))
@@ -2226,7 +2242,7 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
 
                     Case eOBJType.otYacimiento, eOBJType.otArboles
                         MapData(Map, Objetos(i).x, Objetos(i).Y).ObjInfo.Amount = ObjData(Objetos(i).ObjIndex).VidaUtil
-                        MapData(Map, Objetos(i).x, Objetos(i).Y).ObjInfo.data = &H7FFFFFFF ' Ultimo uso = Max Long
+                        MapData(Map, Objetos(i).x, Objetos(i).Y).ObjInfo.Data = &H7FFFFFFF ' Ultimo uso = Max Long
 
                     Case Else
                         MapData(Map, Objetos(i).x, Objetos(i).Y).ObjInfo.Amount = Objetos(i).ObjAmmount
@@ -3867,7 +3883,7 @@ Public Sub LoadRecursosEspeciales()
     
 108     Call IniFile.Initialize(DatPath & "RecursosEspeciales.dat")
     
-        Dim Count As Long, i As Long, str As String, Field() As String
+        Dim Count As Long, i As Long, Str As String, Field() As String
     
         ' Tala
 110     Count = val(IniFile.GetValue("Tala", "Items"))
@@ -3876,11 +3892,11 @@ Public Sub LoadRecursosEspeciales()
 114         ReDim EspecialesTala(1 To Count) As obj
 
 116         For i = 1 To Count
-118             str = IniFile.GetValue("Tala", "Item" & i)
-120             Field = Split(str, "-")
+118             Str = IniFile.GetValue("Tala", "Item" & i)
+120             Field = Split(Str, "-")
             
 122             EspecialesTala(i).ObjIndex = val(Field(0))
-124             EspecialesTala(i).data = val(Field(1))      ' Probabilidad
+124             EspecialesTala(i).Data = val(Field(1))      ' Probabilidad
             Next
         Else
 126         ReDim EspecialesTala(0) As obj
@@ -3894,11 +3910,11 @@ Public Sub LoadRecursosEspeciales()
 132         ReDim EspecialesPesca(1 To Count) As obj
 
 134         For i = 1 To Count
-136             str = IniFile.GetValue("Pesca", "Item" & i)
-138             Field = Split(str, "-")
+136             Str = IniFile.GetValue("Pesca", "Item" & i)
+138             Field = Split(Str, "-")
             
 140             EspecialesPesca(i).ObjIndex = val(Field(0))
-142             EspecialesPesca(i).data = val(Field(1))     ' Probabilidad
+142             EspecialesPesca(i).Data = val(Field(1))     ' Probabilidad
             Next
         Else
 144         ReDim EspecialesPesca(0) As obj
@@ -3934,7 +3950,7 @@ Public Sub LoadPesca()
     
 108     Call IniFile.Initialize(DatPath & "pesca.dat")
     
-        Dim Count As Long, i As Long, str As String, Field() As String, nivel As Integer, MaxLvlCania As Long
+        Dim Count As Long, i As Long, Str As String, Field() As String, nivel As Integer, MaxLvlCania As Long
 
 110     Count = val(IniFile.GetValue("PECES", "NumPeces"))
 112     MaxLvlCania = val(IniFile.GetValue("PECES", "Maxlvlcaña"))
@@ -3946,11 +3962,11 @@ Public Sub LoadPesca()
 
             ' Cargo todos los peces
 120         For i = 1 To Count
-122             str = IniFile.GetValue("PECES", "Pez" & i)
-124             Field = Split(str, "-")
+122             Str = IniFile.GetValue("PECES", "Pez" & i)
+124             Field = Split(Str, "-")
             
 126             Peces(i).ObjIndex = val(Field(0))
-128             Peces(i).data = val(Field(1))       ' Peso
+128             Peces(i).Data = val(Field(1))       ' Peso
 
 130             nivel = val(Field(2))               ' Nivel de caña
 
@@ -3963,8 +3979,8 @@ Public Sub LoadPesca()
 
             ' Sumo los pesos
 138         For i = 1 To Count
-140             PesoPeces(Peces(i).Amount) = PesoPeces(Peces(i).Amount) + Peces(i).data
-142             Peces(i).data = PesoPeces(Peces(i).Amount)
+140             PesoPeces(Peces(i).Amount) = PesoPeces(Peces(i).Amount) + Peces(i).Data
+142             Peces(i).Data = PesoPeces(Peces(i).Amount)
             Next
         Else
 144         ReDim Peces(0) As obj
@@ -4058,13 +4074,13 @@ Public Function BinarySearchPeces(ByVal Value As Long) As Long
 106         i = (low + high) \ 2
 
 108         If i > 1 Then
-110             valor_anterior = Peces(i - 1).data
+110             valor_anterior = Peces(i - 1).Data
             Else
 112             valor_anterior = 0
 
             End If
 
-114         If Value >= valor_anterior And Value < Peces(i).data Then
+114         If Value >= valor_anterior And Value < Peces(i).Data Then
 116             BinarySearchPeces = i
                 Exit Do
             
