@@ -666,15 +666,15 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
             
             ' Call UpdateUserInv(True, UserIndex, 0)
             
-            If EsNewbie(UserIndex) Then
-
-                Dim OroRecompenza As Long
-
-                OroRecompenza = OroPorNivel * .Stats.ELV * OroMult * .flags.ScrollOro
-                .Stats.GLD = .Stats.GLD + OroRecompenza
-                'Call WriteConsoleMsg(UserIndex, "Has ganado " & OroRecompenza & " monedas de oro.", FontTypeNames.FONTTYPE_INFO)
-                Call WriteLocaleMsg(UserIndex, "29", FontTypeNames.FONTTYPE_INFO, OroRecompenza)
-                
+            If OroPorNivel > 0 Then
+                If EsNewbie(UserIndex) Then
+                    Dim OroRecompenza As Long
+    
+                    OroRecompenza = OroPorNivel * .Stats.ELV * OroMult * .flags.ScrollOro
+                    .Stats.GLD = .Stats.GLD + OroRecompenza
+                    'Call WriteConsoleMsg(UserIndex, "Has ganado " & OroRecompenza & " monedas de oro.", FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, "29", FontTypeNames.FONTTYPE_INFO, OroRecompenza)
+                End If
             End If
             
             If Not EsNewbie(UserIndex) And WasNewbie Then
