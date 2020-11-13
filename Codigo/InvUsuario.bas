@@ -1889,6 +1889,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
     Else
 
         If Not IntervaloPermiteUsar(UserIndex) Then Exit Sub
+        If Not IntervaloPermiteGolpeUsar(UserIndex, False) Then Exit Sub
 
     End If
 

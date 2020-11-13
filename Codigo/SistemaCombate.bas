@@ -526,7 +526,7 @@ Public Function CalcularDaño(ByVal UserIndex As Integer, Optional ByVal NpcIndex
 112                 If Npclist(NpcIndex).NPCtype = DRAGON Then 'Ataca Dragon?
 114                     DañoArma = RandomNumber(Arma.MinHIT, Arma.MaxHit)
 116                     DañoMaxArma = Arma.MaxHit
-118                     matoDragon = False ''sacar esto si no queremos q la matadracos mate el Dragon si o si
+118                     matoDragon = True ''sacar esto si no queremos q la matadracos mate el Dragon si o si
                     Else ' Sino es Dragon daño es 1
 120                     DañoArma = 1
 122                     DañoMaxArma = 1
