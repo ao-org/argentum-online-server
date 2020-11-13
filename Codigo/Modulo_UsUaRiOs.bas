@@ -165,15 +165,6 @@ Sub RevivirUsuario(ByVal UserIndex As Integer)
 164         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(UserList(UserIndex).Char.CharIndex, UserList(UserIndex).Char.speeding))
    
         Else
-
-166         If UserList(UserIndex).Invent.ArmourEqpObjIndex > 0 Then
-
-172             UserList(UserIndex).Char.Body = ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).Ropaje
-
-            Else
-174             Call DarCuerpoDesnudo(UserIndex)
-
-            End If
     
 176         UserList(UserIndex).Char.Head = UserList(UserIndex).OrigChar.Head
 
@@ -199,18 +190,16 @@ Sub RevivirUsuario(ByVal UserIndex As Integer)
             End If
 
 196         If UserList(UserIndex).Invent.ArmourEqpObjIndex > 0 Then
-198             If UserList(UserIndex).raza = Enano Or UserList(UserIndex).raza = Gnomo Then
-200                 UserList(UserIndex).Char.Body = ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).RopajeBajo
-                Else
-202                 UserList(UserIndex).Char.Body = ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).Ropaje
-
-                End If
+198             UserList(UserIndex).Char.Body = ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).Ropaje
     
 204             If ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).CreaGRH <> "" Then
 206                 UserList(UserIndex).Char.Arma_Aura = ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).CreaGRH
 208                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(UserList(UserIndex).Char.CharIndex, UserList(UserIndex).Char.Arma_Aura, False, 2))
 
                 End If
+
+            Else
+174             Call DarCuerpoDesnudo(UserIndex)
         
             End If
 
