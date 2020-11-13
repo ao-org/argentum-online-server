@@ -2141,16 +2141,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                 Case 4 'Pocion azul, restaura MANA
             
                     Dim porcentajeRec As Byte
-                
-                    Select Case UserList(UserIndex).clase
-
-                        Case Paladin, Assasin
-                            porcentajeRec = obj.Porcentaje * 1.4
-
-                        Case Else
-                            porcentajeRec = obj.Porcentaje
-
-                    End Select
+                    porcentajeRec = obj.Porcentaje
                 
                     'Usa el item
                     UserList(UserIndex).Stats.MinMAN = UserList(UserIndex).Stats.MinMAN + Porcentaje(UserList(UserIndex).Stats.MaxMAN, porcentajeRec)
