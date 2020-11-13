@@ -455,20 +455,31 @@ Sub RellenarInventario(ByVal UserIndex As String)
 168         .Char.WeaponAnim = ObjData(NumItems).WeaponAnim
 170         NumItems = NumItems + 1
         
-            ' Vestimenta común
-172         .Invent.Object(NumItems).ObjIndex = 1622 ' Vestimenta Comun
+            
+            If .genero = Hombre Then
+                If .raza = Enano Or .raza = Gnomo Then
+                    .Invent.Object(NumItems).ObjIndex = 466 'Vestimentas de Bajo (Newbies)
+                Else
+                
+                    .Invent.Object(NumItems).ObjIndex = RandomNumber(463, 465) ' Vestimentas comunes (Newbies)
+                End If
+            Else
+                If .raza = Enano Or .raza = Gnomo Then
+                    .Invent.Object(NumItems).ObjIndex = 563 'Vestimentas de Baja (Newbies)
+                Else
+                    .Invent.Object(NumItems).ObjIndex = RandomNumber(1283, 1285) ' Vestimentas de Mujer (Newbies)
+                End If
+            End If
+                        
 174         .Invent.Object(NumItems).Amount = 1
 176         .Invent.Object(NumItems).Equipped = 1
 178         .Invent.ArmourEqpSlot = NumItems
 180         .Invent.ArmourEqpObjIndex = .Invent.Object(NumItems).ObjIndex
-182         NumItems = NumItems + 1
+182          NumItems = NumItems + 1
 
             ' Animación según raza
-184         If .raza = Enano Or .raza = Gnomo Then
-186             .Char.Body = ObjData(.Invent.ArmourEqpObjIndex).RopajeBajo
-            Else
-188             .Char.Body = ObjData(.Invent.ArmourEqpObjIndex).Ropaje
-            End If
+184
+188          .Char.Body = ObjData(.Invent.ArmourEqpObjIndex).Ropaje
         
             ' Comida y bebida
 190         .Invent.Object(NumItems).ObjIndex = 573 ' Manzana
