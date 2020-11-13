@@ -452,7 +452,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
 163         .Invent.Object(NumItems).Equipped = 1
 164         .Invent.WeaponEqpSlot = NumItems
 166         .Invent.WeaponEqpObjIndex = .Invent.Object(NumItems).ObjIndex
-168         .Char.WeaponAnim = ObjData(NumItems).WeaponAnim
+168         .Char.WeaponAnim = ObjData(.Invent.WeaponEqpObjIndex).WeaponAnim
 170         NumItems = NumItems + 1
         
             
