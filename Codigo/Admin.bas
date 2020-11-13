@@ -117,7 +117,13 @@ Public IntervaloUserPuedeTrabajar   As Long
 
 Public IntervaloCerrarConexion      As Long '[Gonzalo]
 
-Public IntervaloUserPuedeUsar       As Long
+Public IntervaloUserPuedeUsarU      As Long
+
+Public IntervaloUserPuedeUsarClic   As Long
+
+Public IntervaloGolpeUsar           As Long
+
+Public MargenDeIntervaloPorPing     As Long
 
 Public IntervaloFlechasCazadores    As Long
 

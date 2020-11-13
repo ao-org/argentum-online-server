@@ -84,18 +84,6 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 140             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, Hechizos(Spell).Particle, Hechizos(Spell).TimeParticula, False))
           
             End If
-        
-142         If UserList(UserIndex).Stats.UserSkills(eSkill.Resistencia) > 0 Then
-
-                Dim DefensaMagica As Long
-
-                Dim Absorcion     As Long
-
-144             DefensaMagica = UserList(UserIndex).Stats.UserSkills(eSkill.Resistencia) / 4
-146             Absorcion = daño / 100 * DefensaMagica
-148             daño = daño - Absorcion
-
-            End If
 
 150         UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp - daño
         
@@ -2396,28 +2384,10 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             End If
     
 398         enviarInfoHechizo = True
-    
-            'Skill Resistencia Magica
-400         If UserList(tempChr).Stats.UserSkills(eSkill.Resistencia) > 0 Then
-
-                Dim DefensaMagica As Long
-
-                Dim Absorcion     As Long
-
-402             DefensaMagica = UserList(tempChr).Stats.UserSkills(eSkill.Resistencia) / 4
-404             Absorcion = daño / 100 * DefensaMagica
-406             daño = daño - Absorcion
-        
-            End If
 
             'Defensa Resistencia magica
 408         If UserList(tempChr).flags.ResistenciaMagica > 0 And Hechizos(h).AntiRm = 0 Then
 410             daño = daño - Porcentaje(daño, UserList(tempChr).flags.ResistenciaMagica)
-
-            End If
-    
-412         If UserList(tempChr).flags.ResistenciaMagica > 0 And Hechizos(h).AntiRm = 1 Then
-414             daño = daño + Porcentaje(daño, UserList(tempChr).flags.ResistenciaMagica)
 
             End If
     
@@ -2819,23 +2789,9 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
             End If
     
 292         enviarInfoHechizo = True
-
-            'Resistencia Magica By ladder
-294         If UserList(tempChr).Stats.UserSkills(eSkill.Resistencia) > 0 Then
-
-                Dim DefensaMagica As Long
-
-                Dim Absorcion     As Long
-
-296             DefensaMagica = UserList(tempChr).Stats.UserSkills(eSkill.Resistencia) / 4
-298             Absorcion = daño / 100 * DefensaMagica
-300             daño = daño - Absorcion
-
-            End If
         
 302         If UserList(tempChr).flags.ResistenciaMagica > 0 And Hechizos(h).AntiRm = 0 Then
 304             daño = daño - Porcentaje(daño, UserList(tempChr).flags.ResistenciaMagica)
-
             End If
         
             'Resistencia Magica By ladder
@@ -3549,22 +3505,6 @@ Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, x As Byte, Y As Byte,
                         
 166             If UserList(UserIndex).flags.DañoMagico > 0 Then
 168                 daño = daño + Porcentaje(daño, UserList(UserIndex).flags.DañoMagico)
-
-                End If
-                            
-170             If Hechizos(h2).AntiRm = 1 Then
-                            
-172                 If UserList(NpcIndex).Stats.UserSkills(eSkill.Resistencia) > 0 Then
-
-                        Dim DefensaMagica As Long
-
-                        Dim Absorcion     As Long
-
-174                     DefensaMagica = UserList(NpcIndex).Stats.UserSkills(eSkill.Resistencia) / 4
-176                     Absorcion = daño / 100 * DefensaMagica
-178                     daño = daño - Absorcion
-
-                    End If
 
                 End If
                         
