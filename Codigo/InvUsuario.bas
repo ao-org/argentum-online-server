@@ -84,7 +84,7 @@ Function ClasePuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Intege
     'If ObjData(ObjIndex).ClaseProhibida(1) <> 0 Then
     Dim i As Integer
 
-    For i = 1 To 9
+    For i = 1 To NUMCLASES
 
         If ObjData(ObjIndex).ClaseProhibida(i) = UserList(UserIndex).clase Then
             ClasePuedeUsarItem = False
@@ -1537,7 +1537,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                 End If
 
             Else
-                Call WriteConsoleMsg(UserIndex, "Tu clase,genero o raza no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(UserIndex, "Tu clase, género o raza no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
 
             End If
     
@@ -1724,7 +1724,7 @@ Public Function CheckRazaUsaRopa(ByVal UserIndex As Integer, ItemIndex As Intege
     
         Case eRaza.Gnomo
 
-            If ObjData(ItemIndex).RopajeBajo > 0 Then
+            If ObjData(ItemIndex).RazaEnana > 0 Then
                 CheckRazaUsaRopa = True
                 Exit Function
 
@@ -1732,7 +1732,7 @@ Public Function CheckRazaUsaRopa(ByVal UserIndex As Integer, ItemIndex As Intege
         
         Case eRaza.Enano
 
-            If ObjData(ItemIndex).RopajeBajo > 0 Then
+            If ObjData(ItemIndex).RazaEnana > 0 Then
                 CheckRazaUsaRopa = True
                 Exit Function
 
