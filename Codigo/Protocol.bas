@@ -24653,7 +24653,7 @@ Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
     If ServerSoloGMs > 0 Then
     
      
-        Select Case LCase$(UserCuenta)
+        Select Case LCase$(CuentaEmail)
         
            Case "djpablo@djpablo.com.ar" ' Ladder
            
