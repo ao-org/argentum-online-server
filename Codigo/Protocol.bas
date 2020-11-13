@@ -8778,13 +8778,14 @@ Private Sub HandleBankExtractGold(ByVal UserIndex As Integer)
 124         If Amount > 0 And Amount <= .Stats.Banco Then
 126             .Stats.Banco = .Stats.Banco - Amount
 128             .Stats.GLD = .Stats.GLD + Amount
-130             Call WriteChatOverHead(UserIndex, "Tenés " & .Stats.Banco & " monedas de oro en tu cuenta.", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
+130             'Call WriteChatOverHead(UserIndex, "Tenés " & .Stats.Banco & " monedas de oro en tu cuenta.", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
+
+                Call WriteUpdateGold(UserIndex)
+                Call WriteGoliathInit(UserIndex)
             Else
 132             Call WriteChatOverHead(UserIndex, "No tenés esa cantidad.", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
 
             End If
-        
-134         Call WriteUpdateGold(UserIndex)
 
         End With
 
@@ -8951,9 +8952,10 @@ Private Sub HandleBankDepositGold(ByVal UserIndex As Integer)
 124         If Amount > 0 And Amount <= .Stats.GLD Then
 126             .Stats.Banco = .Stats.Banco + Amount
 128             .Stats.GLD = .Stats.GLD - Amount
-130             Call WriteChatOverHead(UserIndex, "Tenés " & .Stats.Banco & " monedas de oro en tu cuenta.", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
+130             'Call WriteChatOverHead(UserIndex, "Tenés " & .Stats.Banco & " monedas de oro en tu cuenta.", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
             
 132             Call WriteUpdateGold(UserIndex)
+                Call WriteGoliathInit(UserIndex)
             Else
 134             Call WriteChatOverHead(UserIndex, "No tenés esa cantidad.", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
 
@@ -25383,8 +25385,11 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
 
             End If
 
-            Call WriteChatOverHead(UserIndex, "íEl envio se ha realizado con exito! Gracias por utilizar los servicios de Finanzas Goliath", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
+            Call WriteChatOverHead(UserIndex, "¡El envio se ha realizado con exito! Gracias por utilizar los servicios de Finanzas Goliath", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("173", UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+            
+            Call WriteUpdateGold(UserIndex)
+            Call WriteGoliathInit(UserIndex)
         Else
             Call WriteChatOverHead(UserIndex, "El usuario es inexistente.", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
             
