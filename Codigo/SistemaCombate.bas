@@ -660,7 +660,7 @@ Public Sub UserDañoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 108         Call SubirSkill(UserIndex, Apuñalar)
 110         apudaño = ApuñalarFunction(UserIndex, NpcIndex, 0, daño)
 
-            ' daño = daño + apudaño
+            daño = daño + apudaño
         End If
     
 112     daño = daño - Npclist(NpcIndex).Stats.def
@@ -674,12 +674,12 @@ Public Sub UserDañoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
         'End If
     
 116     If apudaño > 0 Then
-118         Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageEfectOverHead("¡" & daño + apudaño & "!", Npclist(NpcIndex).Char.CharIndex, &HFFFF00))
+118         Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageEfectOverHead("¡" & daño & "!", Npclist(NpcIndex).Char.CharIndex, &HFFFF00))
 
 120         If UserList(UserIndex).ChatCombate = 1 Then
                 'Call WriteConsoleMsg(UserIndex, "Has apuñalado la criatura por " & apudaño, FontTypeNames.FONTTYPE_FIGHT)
             
-122             Call WriteLocaleMsg(UserIndex, "212", FontTypeNames.FONTTYPE_FIGHT, apudaño)
+122             Call WriteLocaleMsg(UserIndex, "212", FontTypeNames.FONTTYPE_FIGHT, daño)
 
             End If
 
@@ -1562,9 +1562,21 @@ Public Sub UserDañoUser(ByVal atacanteindex As Integer, ByVal victimaindex As In
     
 178     If apudaño > 0 Then
 180         Call SendData(SendTarget.ToPCArea, victimaindex, PrepareMessageEfectOverHead("¡" & daño & "!", UserList(victimaindex).Char.CharIndex, &HFFFF00))
+            
+            If UserList(atacanteindex).ChatCombate = 1 Then
+                Call WriteConsoleMsg(atacanteindex, "Has apuñalado a " & UserList(victimaindex).name & " por " & daño & ".", FontTypeNames.FONTTYPE_FIGHT)
+            End If
+            
+            If UserList(victimaindex).ChatCombate = 1 Then
+                Call WriteConsoleMsg(victimaindex, UserList(atacanteindex).name & " te ha apuñalado por " & daño & ".", FontTypeNames.FONTTYPE_FIGHT)
+            End If
+
+            Call WriteEfectToScreen(victimaindex, &H3C3CFF, 200, True)
+            Call WriteEfectToScreen(atacanteindex, &H3C3CFF, 150, True)
+            
+            Call SendData(SendTarget.ToPCArea, victimaindex, PrepareMessageCreateFX(UserList(victimaindex).Char.CharIndex, 89, 0))
         Else
 182         Call SendData(SendTarget.ToPCArea, victimaindex, PrepareMessageEfectOverHead(daño, UserList(victimaindex).Char.CharIndex))
-
         End If
     
 184     If UserList(atacanteindex).ChatCombate = 1 Then
