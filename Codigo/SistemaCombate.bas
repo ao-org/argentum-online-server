@@ -1576,17 +1576,15 @@ Public Sub UserDañoUser(ByVal atacanteindex As Integer, ByVal victimaindex As In
             
             Call SendData(SendTarget.ToPCArea, victimaindex, PrepareMessageCreateFX(UserList(victimaindex).Char.CharIndex, 89, 0))
         Else
+            If UserList(atacanteindex).ChatCombate = 1 Then
+                Call WriteUserHittedUser(atacanteindex, Lugar, UserList(victimaindex).Char.CharIndex, daño)
+            End If
+    
+            If UserList(victimaindex).ChatCombate = 1 Then
+                Call WriteUserHittedByUser(victimaindex, Lugar, UserList(atacanteindex).Char.CharIndex, daño)
+            End If
+        
 182         Call SendData(SendTarget.ToPCArea, victimaindex, PrepareMessageEfectOverHead(daño, UserList(victimaindex).Char.CharIndex))
-        End If
-    
-184     If UserList(atacanteindex).ChatCombate = 1 Then
-186         Call WriteUserHittedUser(atacanteindex, Lugar, UserList(victimaindex).Char.CharIndex, daño - apudaño)
-
-        End If
-    
-188     If UserList(victimaindex).ChatCombate = 1 Then
-190         Call WriteUserHittedByUser(victimaindex, Lugar, UserList(atacanteindex).Char.CharIndex, daño - apudaño)
-
         End If
 
 192     UserList(victimaindex).Stats.MinHp = UserList(victimaindex).Stats.MinHp - daño
