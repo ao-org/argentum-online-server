@@ -456,7 +456,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
 170         NumItems = NumItems + 1
         
             
-            If .genero = Hombre Then
+            If .genero = eGenero.Hombre Then
                 If .raza = Enano Or .raza = Gnomo Then
                     .Invent.Object(NumItems).ObjIndex = 466 'Vestimentas de Bajo (Newbies)
                 Else
