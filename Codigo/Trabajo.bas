@@ -2741,9 +2741,9 @@ Public Function ApuñalarFunction(ByVal UserIndex As Integer, ByVal VictimNpcInde
 
 134     If RandomNumber(0, 70) < Suerte Then
 136         If VictimUserIndex <> 0 Then
-                ApuñalarFunction = daño * 0.5
+                ApuñalarFunction = daño * 1.5
             Else
-                ApuñalarFunction = daño
+                ApuñalarFunction = daño * 2
             End If
         End If
         
