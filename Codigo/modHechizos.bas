@@ -1084,6 +1084,16 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                 End If
 
             End If
+            
+            If UserList(tU).flags.invisible = 1 Then
+                If tU = UserIndex Then
+                    Call WriteConsoleMsg(UserIndex, "¡Ya estás invisible!", FontTypeNames.FONTTYPE_INFO)
+                Else
+                    Call WriteConsoleMsg(UserIndex, "¡El objetivo ya se encuentra invisible!", FontTypeNames.FONTTYPE_INFO)
+                End If
+                b = False
+                Exit Sub
+            End If
    
 146         UserList(tU).flags.invisible = 1
             'Ladder
