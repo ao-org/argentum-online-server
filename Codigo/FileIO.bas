@@ -2650,10 +2650,14 @@ Sub LoadIntervalos()
 202     If MinutosWs < 1 Then MinutosWs = 10
     
 204     IntervaloCerrarConexion = val(Lector.GetValue("INTERVALOS", "IntervaloCerrarConexion"))
-206     IntervaloUserPuedeUsar = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeUsar"))
+206     IntervaloUserPuedeUsarU = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeUsarU"))
+207     IntervaloUserPuedeUsarClic = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeUsarClic"))
 208     IntervaloFlechasCazadores = val(Lector.GetValue("INTERVALOS", "IntervaloFlechasCazadores"))
+209     IntervaloGolpeUsar = val(Lector.GetValue("INTERVALOS", "IntervaloGolpeUsar"))
     
 210     IntervaloOculto = val(Lector.GetValue("INTERVALOS", "IntervaloOculto"))
+
+211     MargenDeIntervaloPorPing = val(Lector.GetValue("INTERVALOS", "MargenDeIntervaloPorPing"))
     
 212     IntervaloPuedeSerAtacado = val(Lector.GetValue("INTERVALOS", "IntervaloPuedeSerAtacado"))
     
@@ -4115,8 +4119,10 @@ Public Sub LoadUserIntervals(ByVal UserIndex As Integer)
 108         .magia = IntervaloUserPuedeCastear
 110         .GolpeMagia = IntervaloGolpeMagia
 112         .MagiaGolpe = IntervaloMagiaGolpe
+113         .GolpeUsar = IntervaloGolpeUsar
 114         .Trabajar = IntervaloUserPuedeTrabajar
-116         .Usar = IntervaloUserPuedeUsar
+116         .UsarU = IntervaloUserPuedeUsarU
+            .UsarClic = IntervaloUserPuedeUsarClic
 
         End With
 

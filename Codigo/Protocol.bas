@@ -20189,8 +20189,10 @@ Public Sub WriteIntervals(ByVal UserIndex As Integer)
         Call .outgoingData.WriteLong(.Intervals.GolpeMagia)
         Call .outgoingData.WriteLong(.Intervals.magia)
         Call .outgoingData.WriteLong(.Intervals.MagiaGolpe)
+        Call .outgoingData.WriteLong(.Intervals.GolpeUsar)
         Call .outgoingData.WriteLong(.Intervals.Trabajar)
-        Call .outgoingData.WriteLong(.Intervals.Usar)
+        Call .outgoingData.WriteLong(.Intervals.UsarU)
+        Call .outgoingData.WriteLong(.Intervals.UsarClic)
         Call .outgoingData.WriteLong(IntervaloTirar)
 
     End With

@@ -1669,6 +1669,7 @@ Public Type UserCounters
     TimerUsar As Long
     TimerMagiaGolpe As Long
     TimerGolpeMagia As Long
+    TimerGolpeUsar As Long
     TimerCaminar As Long
     TimerTirar As Long
     
@@ -1686,10 +1687,12 @@ Public Type UserIntervals
     magia As Long
     Golpe As Long
     Arco As Long
-    Usar As Long
+    UsarU As Long
+    UsarClic As Long
     Caminar As Long
     GolpeMagia As Long
     MagiaGolpe As Long
+    GolpeUsar As Long
     Trabajar As Long
 
 End Type
