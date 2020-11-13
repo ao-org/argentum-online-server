@@ -1087,7 +1087,7 @@ Public Type obj
 
     ObjIndex As Integer
     Amount As Integer
-    Data As Long
+    data As Long
 
 End Type
 
@@ -2162,7 +2162,7 @@ Public NumObjDatas                       As Integer
 
 Public NumeroHechizos                    As Integer
 
-Public AllowMultiLogins                  As Byte
+Public MaxConexionesIP                   As Integer
 
 Public MaxUsersPorCuenta                 As Byte
 

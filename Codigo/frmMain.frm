@@ -306,7 +306,7 @@ Begin VB.Form frmMain
       Top             =   4200
    End
    Begin VB.Timer packetResend 
-      Interval        =   10
+      Interval        =   5
       Left            =   240
       Top             =   3060
    End
@@ -1657,16 +1657,14 @@ Private Sub npcataca_Timer()
 
 End Sub
 
-Private Sub securityTimer_Timer()
-
-End Sub
-
 Private Sub packetResend_Timer()
 
     'If there is anything to be sent, we send it
     Dim i As Long
     For i = 1 To LastUser
-        Call FlushBuffer(i)
+        If UserList(i).ConnIDValida Then
+            Call FlushBuffer(i)
+        End If
     Next
     
 End Sub
