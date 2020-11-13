@@ -751,7 +751,7 @@ Function LegalPosNPC(ByVal Map As Integer, ByVal x As Integer, ByVal Y As Intege
 100     If (Map <= 0 Or Map > NumMaps) Or (x < MinXBorder Or x > MaxXBorder Or Y < MinYBorder Or Y > MaxYBorder) Then
 102         LegalPosNPC = False
         
-        If MapData(Map, x, Y).TileExit.Map > 0 Then
+        ElseIf MapData(Map, x, Y).TileExit.Map > 0 Then
             LegalPosNPC = False
         
         Else

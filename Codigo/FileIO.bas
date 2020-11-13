@@ -1073,16 +1073,20 @@ Sub LoadBalance()
 
         'Modificadores de Clase
 104     For i = 1 To NUMCLASES
+            SearchVar = Replace$(ListaClases(i), " ", vbNullString)
 
 106         With ModClase(i)
-108             .Evasion = val(BalanceIni.GetValue("MODEVASION", ListaClases(i)))
-110             .AtaqueArmas = val(BalanceIni.GetValue("MODATAQUEARMAS", ListaClases(i)))
-112             .AtaqueProyectiles = val(BalanceIni.GetValue("MODATAQUEPROYECTILES", ListaClases(i)))
-                '.DañoWrestling = val(BalanceIni.GetValue("MODATAQUEWRESTLING", ListaClases(i)))
-114             .DañoArmas = val(BalanceIni.GetValue("MODDANOARMAS", ListaClases(i)))
-116             .DañoProyectiles = val(BalanceIni.GetValue("MODDANOPROYECTILES", ListaClases(i)))
-118             .DañoWrestling = val(BalanceIni.GetValue("MODDANOWRESTLING", ListaClases(i)))
-120             .Escudo = val(BalanceIni.GetValue("MODESCUDO", ListaClases(i)))
+108             .Evasion = val(BalanceIni.GetValue("MODEVASION", SearchVar))
+110             .AtaqueArmas = val(BalanceIni.GetValue("MODATAQUEARMAS", SearchVar))
+112             .AtaqueProyectiles = val(BalanceIni.GetValue("MODATAQUEPROYECTILES", SearchVar))
+                '.DañoWrestling = val(BalanceIni.GetValue("MODATAQUEWRESTLING", SearchVar))
+114             .DañoArmas = val(BalanceIni.GetValue("MODDANOARMAS", SearchVar))
+116             .DañoProyectiles = val(BalanceIni.GetValue("MODDANOPROYECTILES", SearchVar))
+118             .DañoWrestling = val(BalanceIni.GetValue("MODDANOWRESTLING", SearchVar))
+120             .Escudo = val(BalanceIni.GetValue("MODESCUDO", SearchVar))
+
+                'Modificadores de Vida
+                ModVida(i) = val(BalanceIni.GetValue("MODVIDA", SearchVar))
 
             End With
 
@@ -1090,21 +1094,17 @@ Sub LoadBalance()
     
         'Modificadores de Raza
 124     For i = 1 To NUMRAZAS
+            SearchVar = Replace$(ListaRazas(i), " ", vbNullString)
 
 126         With ModRaza(i)
-128             .Fuerza = val(GetVar(DatPath & "Balance.dat", "MODRAZA", ListaRazas(i) + "Fuerza"))
-130             .Agilidad = val(GetVar(DatPath & "Balance.dat", "MODRAZA", ListaRazas(i) + "Agilidad"))
-132             .Inteligencia = val(GetVar(DatPath & "Balance.dat", "MODRAZA", ListaRazas(i) + "Inteligencia"))
-                .Carisma = val(GetVar(DatPath & "Balance.dat", "MODRAZA", ListaRazas(i) + "Carisma"))
-134             .Constitucion = val(GetVar(DatPath & "Balance.dat", "MODRAZA", ListaRazas(i) + "Constitucion"))
+128             .Fuerza = val(BalanceIni.GetValue("MODRAZA", SearchVar + "Fuerza"))
+130             .Agilidad = val(BalanceIni.GetValue("MODRAZA", SearchVar + "Agilidad"))
+132             .Inteligencia = val(BalanceIni.GetValue("MODRAZA", SearchVar + "Inteligencia"))
+                .Carisma = val(BalanceIni.GetValue("MODRAZA", SearchVar + "Carisma"))
+134             .Constitucion = val(BalanceIni.GetValue("MODRAZA", SearchVar + "Constitucion"))
             End With
 
 136     Next i
-
-        'Modificadores de Vida
-138     For i = 1 To NUMCLASES
-140         ModVida(i) = val(BalanceIni.GetValue("MODVIDA", ListaClases(i)))
-142     Next i
     
         'Distribucion de Vida
 144     For i = 1 To 5
@@ -1115,9 +1115,9 @@ Sub LoadBalance()
 152         DistribucionSemienteraVida(i) = val(BalanceIni.GetValue("DISTRIBUCION", "S" + CStr(i)))
 154     Next i
     
-                'Experiencia por nivel
+            'Experiencia por nivel
         For i = 1 To STAT_MAXELV
-                ExpByLevel(i) = val(BalanceIni.GetValue("EXPBYLEVEL", i))
+            ExpByLevel(i) = val(BalanceIni.GetValue("EXPBYLEVEL", i))
         Next i
 
         'Extra
