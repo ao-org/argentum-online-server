@@ -1344,7 +1344,7 @@ End Type
 
 '[KEVIN]
 'Banco Objs
-Public Const MAX_BANCOINVENTORY_SLOTS As Byte = 48
+Public Const MAX_BANCOINVENTORY_SLOTS As Byte = 42
 
 '[/KEVIN]
 
