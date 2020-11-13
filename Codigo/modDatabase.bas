@@ -102,7 +102,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
         q = q & "free_skillpoints = " & .Stats.SkillPts & ", "
         'Q = Q & "assigned_skillpoints = " & .Counters.AsignedSkills & ", "
         q = q & "pos_map = " & .Pos.Map & ", "
-        q = q & "pos_x = " & .Pos.x & ", "
+        q = q & "pos_x = " & .Pos.X & ", "
         q = q & "pos_y = " & .Pos.Y & ", "
         q = q & "body_id = " & .Char.Body & ", "
         q = q & "head_id = " & .Char.Head & ", "
@@ -265,6 +265,23 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
             End If
 
         Next LoopC
+        
+        'User pets
+        q = q & "INSERT INTO pet (user_id, number, pet_id) VALUES "
+
+        For LoopC = 1 To MAXMASCOTAS
+            q = q & "("
+            q = q & .Id & ", "
+            q = q & LoopC & ", 0)"
+
+            If LoopC < MAXMASCOTAS Then
+                q = q & ", "
+            Else
+                q = q & "; "
+
+            End If
+
+        Next LoopC
 
         'Enviamos todas las queries
         Call MakeQuery(q, True)
@@ -302,7 +319,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
         'Q = Q & "assigned_skillpoints = " & .Counters.AsignedSkills & ", "
         'Q = Q & "pet_Amount = " & .NroMascotas & ", "
         q = q & "pos_map = " & .Pos.Map & ", "
-        q = q & "pos_x = " & .Pos.x & ", "
+        q = q & "pos_x = " & .Pos.X & ", "
         q = q & "pos_y = " & .Pos.Y & ", "
         q = q & "message_info = '" & .MENSAJEINFORMACION & "', "
         q = q & "body_id = " & .Char.Body & ", "
@@ -487,38 +504,38 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
         q = q & " ON DUPLICATE KEY UPDATE value=VALUES(value); "
 
         'User pets
-        'Dim petType As Integer
+        Dim petType As Integer
         
-        'Q = Q & "INSERT INTO pet (user_id, number, pet_id) VALUES "
+        q = q & "INSERT INTO pet (user_id, number, pet_id) VALUES "
 
-        'For LoopC = 1 To MAXMASCOTAS
-        '    Q = Q & "("
-        '    Q = Q & .ID & ", "
-        '    Q = Q & LoopC & ", "
+        For LoopC = 1 To MAXMASCOTAS
+            q = q & "("
+            q = q & .Id & ", "
+            q = q & LoopC & ", "
 
         'CHOTS | I got this logic from SaveUserToCharfile
-        '    If .MascotasIndex(LoopC) > 0 Then
-        '        If Npclist(.MascotasIndex(LoopC)).Contadores.TiempoExistencia = 0 Then
-        '            petType = .MascotasType(LoopC)
-        '        Else
-        '            petType = 0
+            If .MascotasIndex(LoopC) > 0 Then
+                If Npclist(.MascotasIndex(LoopC)).Contadores.TiempoExistencia = 0 Then
+                    petType = .MascotasType(LoopC)
+                Else
+                    petType = 0
 
-        '        End If
+                End If
 
-        '    Else
-        '        petType = .MascotasType(LoopC)
+            Else
+                petType = .MascotasType(LoopC)
 
-        '    End If
+            End If
 
-        '    Q = Q & petType & ")"
+            q = q & petType & ")"
 
-        '    If LoopC < MAXMASCOTAS Then
-        '        Q = Q & ", "
-        '    End If
+            If LoopC < MAXMASCOTAS Then
+                q = q & ", "
+            End If
 
-        'Next LoopC
+        Next LoopC
 
-        'Q = Q & " ON DUPLICATE KEY UPDATE pet_id=VALUES(pet_id); "
+        q = q & " ON DUPLICATE KEY UPDATE pet_id=VALUES(pet_id); "
         
         'User friends
         'Q = "INSERT INTO friend (user_id, number, friend, ignored) VALUES "
@@ -662,7 +679,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
         '.Counters.AsignedSkills = QueryData!assigned_skillpoints
         '.NroMascotas = QueryData!pet_Amount
         .Pos.Map = QueryData!pos_map
-        .Pos.x = QueryData!pos_x
+        .Pos.X = QueryData!pos_x
         .Pos.Y = QueryData!pos_y
         .MENSAJEINFORMACION = QueryData!message_info
         .OrigChar.Body = QueryData!body_id
@@ -791,18 +808,18 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
         End If
 
         'User pets
-        'Call MakeQuery("SELECT * FROM pet WHERE user_id = " & .ID & ";")
+        Call MakeQuery("SELECT * FROM pet WHERE user_id = " & .Id & ";")
 
-        'If Not QueryData Is Nothing Then
-        '    QueryData.MoveFirst
+        If Not QueryData Is Nothing Then
+            QueryData.MoveFirst
 
-        '    While Not QueryData.EOF
+            While Not QueryData.EOF
 
-        '        .MascotasType(QueryData!Number) = QueryData!pet_id
+                .MascotasType(QueryData!Number) = QueryData!pet_id
 
-        '        QueryData.MoveNext
-        '    Wend
-        'End If
+                QueryData.MoveNext
+            Wend
+        End If
 
         'User inventory
         Call MakeQuery("SELECT * FROM inventory_item WHERE user_id = " & .Id & ";")
@@ -2294,6 +2311,30 @@ Public Function GetUsersLoggedAccountDatabase(ByVal AccountID As Integer) As Byt
 
 ErrorHandler:
     Call LogDatabaseError("Error in GetUsersLoggedAccountDatabase. AccountID: " & AccountID & ". " & Err.Number & " - " & Err.description)
+
+End Function
+
+Public Function SetPositionDatabase(UserName As String, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer)
+    On Error GoTo ErrorHandler
+
+    Call MakeQuery("UPDATE user SET pos_map = " & Map & ", pos_x = " & X & ", pos_y = " & X & " WHERE UPPER(name) = '" & UCase$(UserName) & "';", True)
+
+    Exit Function
+
+ErrorHandler:
+    Call LogDatabaseError("Error in SetPositionDatabase. UserName: " & UserName & ". " & Err.Number & " - " & Err.description)
+
+End Function
+
+Public Function AddOroBancoDatabase(UserName As String, ByVal OroGanado As Long)
+    On Error GoTo ErrorHandler
+
+    Call MakeQuery("UPDATE user SET bank_gold = bank_gold + " & OroGanado & " WHERE UPPER(name) = '" & UCase$(UserName) & "';", True)
+
+    Exit Function
+
+ErrorHandler:
+    Call LogDatabaseError("Error in AddOroBancoDatabase. UserName: " & UserName & ". " & Err.Number & " - " & Err.description)
 
 End Function
 
