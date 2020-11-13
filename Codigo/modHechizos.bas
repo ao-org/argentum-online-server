@@ -57,7 +57,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 112         If UserList(UserIndex).Stats.MinHp > UserList(UserIndex).Stats.MaxHp Then UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MaxHp
     
 114         Call WriteConsoleMsg(UserIndex, Npclist(NpcIndex).name & " te ha quitado " & daño & " puntos de vida.", FontTypeNames.FONTTYPE_FIGHT)
-116         Call WriteUpdateUserStats(UserIndex)
+116         Call WriteUpdateHP(UserIndex)
 118         Call SubirSkill(UserIndex, Resistencia)
 
 120     ElseIf Hechizos(Spell).SubeHP = 2 Then
@@ -100,7 +100,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 150         UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp - daño
         
 152         Call WriteConsoleMsg(UserIndex, Npclist(NpcIndex).name & " te ha quitado " & daño & " puntos de vida.", FontTypeNames.FONTTYPE_FIGHT)
-154         Call WriteUpdateUserStats(UserIndex)
+154         Call WriteUpdateHP(UserIndex)
 156         Call SubirSkill(UserIndex, Resistencia)
         
             'Muere
@@ -771,7 +771,8 @@ Sub HandleHechizoTerreno(ByVal UserIndex As Integer, ByVal uh As Integer)
 132         UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - Hechizos(uh).StaRequerido
 
 134         If UserList(UserIndex).Stats.MinSta < 0 Then UserList(UserIndex).Stats.MinSta = 0
-136         Call WriteUpdateUserStats(UserIndex)
+136         Call WriteUpdateMana(UserIndex)
+            Call WriteUpdateSta(UserIndex)
 
         End If
 
@@ -815,16 +816,17 @@ Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
 114         Call SubirSkill(UserIndex, magia)
             'If Hechizos(uh).Resis = 1 Then Call SubirSkill(UserList(UserIndex).Flags.TargetUser, Resis)
 116         UserList(UserIndex).Stats.MinMAN = UserList(UserIndex).Stats.MinMAN - Hechizos(uh).ManaRequerido
-
 118         If UserList(UserIndex).Stats.MinMAN < 0 Then UserList(UserIndex).Stats.MinMAN = 0
-120         UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp - Hechizos(uh).RequiredHP
 
+120         UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp - Hechizos(uh).RequiredHP
 122         If UserList(UserIndex).Stats.MinHp < 0 Then UserList(UserIndex).Stats.MinHp = 1
+
 124         UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - Hechizos(uh).StaRequerido
 
 126         If UserList(UserIndex).Stats.MinSta < 0 Then UserList(UserIndex).Stats.MinSta = 0
-128         Call WriteUpdateUserStats(UserIndex)
-130         Call WriteUpdateUserStats(UserList(UserIndex).flags.TargetUser)
+128         Call WriteUpdateMana(UserIndex)
+            Call WriteUpdateHP(UserIndex)
+            Call WriteUpdateSta(UserIndex)
 132         UserList(UserIndex).flags.TargetUser = 0
 
         End If
@@ -874,7 +876,9 @@ Sub HandleHechizoNPC(ByVal UserIndex As Integer, ByVal uh As Integer)
 122         UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - Hechizos(uh).StaRequerido
 
 124         If UserList(UserIndex).Stats.MinSta < 0 Then UserList(UserIndex).Stats.MinSta = 0
-126         Call WriteUpdateUserStats(UserIndex)
+126         Call WriteUpdateHP(UserIndex)
+            Call WriteUpdateMana(UserIndex)
+            Call WriteUpdateSta(UserIndex)
 
         End If
 
