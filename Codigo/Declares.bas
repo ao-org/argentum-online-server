@@ -1087,7 +1087,7 @@ Public Type obj
 
     ObjIndex As Integer
     Amount As Integer
-    data As Long
+    Data As Long
 
 End Type
 
@@ -1191,6 +1191,9 @@ Public Type ObjData
     CreaLuz As String
     
     MinELV As Byte
+    SkillIndex As Byte
+    SkillRequerido As Byte
+    
     CreaGRH As String
     SndAura As Integer
     Intirable As Byte

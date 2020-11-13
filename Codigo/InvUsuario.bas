@@ -1107,7 +1107,13 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
     If UserList(UserIndex).Stats.ELV < obj.MinELV And Not EsGM(UserIndex) Then
         Call WriteConsoleMsg(UserIndex, "Necesitas ser nivel " & obj.MinELV & " para usar este item.", FontTypeNames.FONTTYPE_INFO)
         Exit Sub
-
+    End If
+    
+    If obj.SkillIndex > 0 Then
+        If UserList(UserIndex).Stats.UserSkills(obj.SkillIndex) < obj.SkillRequerido And Not EsGM(UserIndex) Then
+            Call WriteConsoleMsg(UserIndex, "Necesitas " & obj.SkillRequerido & " puntos en " & SkillsNames(obj.SkillIndex) & " para usar este item.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
     End If
 
     Select Case obj.OBJType
@@ -3293,14 +3299,14 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
         
             If UserList(UserIndex).Pos.Map <> obj.DesdeMap Then
                 Rem  Call WriteConsoleMsg(UserIndex, "El pasaje no lo compraste aquí! Largate!", FontTypeNames.FONTTYPE_INFO)
-                Call WriteChatOverHead(UserIndex, "El pasaje no lo compraste aquí! Largate!", str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
+                Call WriteChatOverHead(UserIndex, "El pasaje no lo compraste aquí! Largate!", Str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
                 Exit Sub
 
             End If
         
             If Not MapaValido(obj.HastaMap) Then
                 Rem Call WriteConsoleMsg(UserIndex, "El pasaje lleva hacia un mapa que ya no esta disponible! Disculpa las molestias.", FontTypeNames.FONTTYPE_INFO)
-                Call WriteChatOverHead(UserIndex, "El pasaje lleva hacia un mapa que ya no esta disponible! Disculpa las molestias.", str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
+                Call WriteChatOverHead(UserIndex, "El pasaje lleva hacia un mapa que ya no esta disponible! Disculpa las molestias.", Str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
                 Exit Sub
 
             End If
@@ -3308,7 +3314,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
             If obj.NecesitaNave > 0 Then
                 If UserList(UserIndex).Stats.UserSkills(eSkill.Navegacion) < 80 Then
                     Rem Call WriteConsoleMsg(UserIndex, "Debido a la peligrosidad del viaje, no puedo llevarte, ya que al menos necesitas saber manejar una barca.", FontTypeNames.FONTTYPE_INFO)
-                    Call WriteChatOverHead(UserIndex, "Debido a la peligrosidad del viaje, no puedo llevarte, ya que al menos necesitas saber manejar una barca.", str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
+                    Call WriteChatOverHead(UserIndex, "Debido a la peligrosidad del viaje, no puedo llevarte, ya que al menos necesitas saber manejar una barca.", Str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
                     Exit Sub
 
                 End If
