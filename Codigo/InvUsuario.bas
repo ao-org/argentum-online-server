@@ -2661,12 +2661,12 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                             Dim FileUser As String
 
                             FileUser = CharPath & UCase$(UserList(UserIndex).flags.Pareja) & ".chr"
-                            Call WriteVar(FileUser, "FLAGS", "CASADO", 0)
-                            Call WriteVar(FileUser, "FLAGS", "PAREJA", "")
+                            'Call WriteVar(FileUser, "FLAGS", "CASADO", 0)
+                            'Call WriteVar(FileUser, "FLAGS", "PAREJA", "")
                             UserList(UserIndex).flags.Casado = 0
                             UserList(UserIndex).flags.Pareja = ""
                             Call WriteConsoleMsg(UserIndex, "Te has divorciado.", FontTypeNames.FONTTYPE_INFOIAO)
-                            Call WriteVar(FileUser, "INIT", "MENSAJEINFORMACION", UserList(UserIndex).name & " se ha divorciado de ti.")
+                            UserList(UserIndex).MENSAJEINFORMACION = UserList(UserIndex).name & " se ha divorciado de ti."
 
                         Else
                             UserList(tUser).flags.Casado = 0
