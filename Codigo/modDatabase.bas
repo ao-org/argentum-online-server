@@ -2192,28 +2192,29 @@ Public Function EnterAccountDatabase(ByVal UserIndex As Integer, CuentaEmail As 
     
     Call MakeQuery("SELECT id, password, salt, validated, is_banned, ban_reason, banned_by FROM account WHERE email = '" & LCase$(CuentaEmail) & "';")
     
+    If Database_Connection.State = adStateClosed Then
+        Call WriteShowMessageBox(UserIndex, "Ha ocurrido un error interno en el servidor. ¡Estamos tratando de resolverlo!")
+        Exit Function
+    End If
+    
     If QueryData Is Nothing Then
         Call WriteShowMessageBox(UserIndex, "La cuenta no existe.")
         Exit Function
-
     End If
     
     If val(QueryData!is_banned) > 0 Then
         Call WriteShowMessageBox(UserIndex, "La cuenta se encuentra baneada debido a: " & QueryData!ban_reason & ". Esta decisión fue tomada por: " & QueryData!banned_by & ".")
         Exit Function
-
     End If
     
     If Not PasswordValida(Password, QueryData!Password, QueryData!Salt) Then
         Call WriteShowMessageBox(UserIndex, "Contraseña inválida.")
         Exit Function
-
     End If
     
     If val(QueryData!validated) = 0 Then
         Call WriteShowMessageBox(UserIndex, "¡La cuenta no ha sido validada aún!")
         Exit Function
-
     End If
     
     UserList(UserIndex).AccountID = QueryData!Id
