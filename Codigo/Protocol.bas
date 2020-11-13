@@ -3636,6 +3636,13 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                 Exit Sub
 
             End If
+            
+            If .flags.Meditando Then
+                .flags.Meditando = False
+                .Char.FX = 0
+                Call WriteLocaleMsg(UserIndex, "123", FontTypeNames.FONTTYPE_INFO)
+                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(.Char.CharIndex, 0))
+            End If
         
             'If exiting, cancel
 120         Call CancelExit(UserIndex)
