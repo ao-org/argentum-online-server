@@ -167,12 +167,8 @@ Sub RevivirUsuario(ByVal UserIndex As Integer)
         Else
 
 166         If UserList(UserIndex).Invent.ArmourEqpObjIndex > 0 Then
-168             If UserList(UserIndex).raza = Enano Or UserList(UserIndex).raza = Gnomo Then
-170                 UserList(UserIndex).Char.Body = ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).RopajeBajo
-                Else
-172                 UserList(UserIndex).Char.Body = ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).Ropaje
 
-                End If
+172             UserList(UserIndex).Char.Body = ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).Ropaje
 
             Else
 174             Call DarCuerpoDesnudo(UserIndex)
