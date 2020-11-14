@@ -995,7 +995,7 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
             ' End If
     
 122         Call SubirSkill(UserIndex, eSkill.Carpinteria)
-124         Call UpdateUserInv(True, UserIndex, 0)
+124         'Call UpdateUserInv(True, UserIndex, 0)
 126         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(LABUROCARPINTERO, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
 
 128         UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
