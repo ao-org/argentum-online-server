@@ -399,13 +399,13 @@ Sub accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer,
 
                 Case eOBJType.otForos 'Foro
                     'Call AccionParaForo(Map, X, Y, UserIndex)
-                    Call WriteConsoleMsg(UserIndex, "Agradecemos tu interes por utilizar el foro...pero esto ya quedo obsoleto en estas tierras!", FontTypeNames.FONTTYPE_EJECUCION)
+                    Call WriteConsoleMsg(UserIndex, "El foro está temporalmente deshabilitado.", FontTypeNames.FONTTYPE_EJECUCION)
 
                 Case eOBJType.OtPozos 'Pozos
-                    Call AccionParaPozos(Map, x, Y, UserIndex)
+                    'Call AccionParaPozos(Map, x, Y, UserIndex)
 
                 Case eOBJType.otArboles 'Pozos
-                    Call AccionParaArboles(Map, x, Y, UserIndex)
+                    'Call AccionParaArboles(Map, x, Y, UserIndex)
 
                 Case eOBJType.otYunque 'Pozos
                     Call AccionParaYunque(Map, x, Y, UserIndex)
@@ -450,8 +450,8 @@ Sub accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer,
 
             End Select
 
-        ElseIf HayAgua(Map, x, Y) Then
-            Call AccionParaAgua(Map, x, Y, UserIndex)
+        'ElseIf HayAgua(Map, x, Y) Then
+            'Call AccionParaAgua(Map, x, Y, UserIndex)
 
         End If
 
