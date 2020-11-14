@@ -1011,37 +1011,36 @@ Sub NPCTirarOro(MiNPC As npc, ByVal UserIndex As Integer)
         
         On Error GoTo NPCTirarOro_Err
 
-100     If MiNPC.GiveGLD > 0 Then
-102         If UserList(UserIndex).Grupo.EnGrupo Then
-104             Call CalcularDarOroGrupal(UserIndex, MiNPC.GiveGLD)
-            Else
-
-106             If MiNPC.GiveGLD * OroMult * UserList(UserIndex).flags.ScrollOro > 99 Then
-108                 UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + MiNPC.GiveGLD * OroMult * UserList(UserIndex).flags.ScrollOro
-                    Call WriteUpdateGold(UserIndex)
-                    'Call WriteConsoleMsg(UserIndex, "¡Has ganado " & MiNPC.GiveGLD * OroMult * UserList(UserIndex).flags.ScrollOro & " monedas de oro!", FontTypeNames.FONTTYPE_INFOIAO)
-                
-110                 Call WriteRenderValueMsg(UserIndex, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y, MiNPC.GiveGLD * OroMult * UserList(UserIndex).flags.ScrollOro, 4)
-
-                    'Call WriteOroOverHead(UserIndex, MiNPC.GiveGLD * OroMult * UserList(UserIndex).flags.ScrollOro, UserList(UserIndex).Char.CharIndex)
-                Else
-
-                    Dim MiObj As obj
-
-                    Dim MiAux As Double
-                
-112                 MiAux = MiNPC.GiveGLD * OroMult * UserList(UserIndex).flags.ScrollOro
-                
-114                 MiObj.Amount = MiAux
-116                 MiObj.ObjIndex = iORO
-118                 Call TirarItemAlPiso(MiNPC.Pos, MiObj)
-                
-120                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageFxPiso("87", MiNPC.Pos.x, MiNPC.Pos.Y))
-
-                End If
-
+        If MiNPC.GiveGLD > 0 Then
+            Dim Oro As Long
+            Oro = MiNPC.GiveGLD * OroMult * UserList(UserIndex).flags.ScrollOro
+        
+            If UserList(UserIndex).Grupo.EnGrupo Then
+                Select Case UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
+                    Case 2: Oro = Oro * 1.2
+                    Case 3: Oro = Oro * 1.4
+                    Case 4: Oro = Oro * 1.6
+                    Case 5: Oro = Oro * 1.8
+                    Case 6: Oro = Oro * 2
+                End Select
             End If
 
+            Dim MiObj As obj
+            MiObj.ObjIndex = iORO
+
+            While (Oro > 0)
+                If Oro > MAX_INVENTORY_OBJS Then
+                    MiObj.Amount = MAX_INVENTORY_OBJS
+                    Oro = Oro - MAX_INVENTORY_OBJS
+                Else
+                    MiObj.Amount = Oro
+                    Oro = 0
+                End If
+
+                Call TirarItemAlPiso(MiNPC.Pos, MiObj)
+            Wend
+
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageFxPiso("87", MiNPC.Pos.x, MiNPC.Pos.Y))
         End If
 
         
