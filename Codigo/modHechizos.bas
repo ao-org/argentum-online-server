@@ -806,14 +806,16 @@ Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
 116         UserList(UserIndex).Stats.MinMAN = UserList(UserIndex).Stats.MinMAN - Hechizos(uh).ManaRequerido
 118         If UserList(UserIndex).Stats.MinMAN < 0 Then UserList(UserIndex).Stats.MinMAN = 0
 
-120         UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp - Hechizos(uh).RequiredHP
-122         If UserList(UserIndex).Stats.MinHp < 0 Then UserList(UserIndex).Stats.MinHp = 1
+            If Hechizos(uh).RequiredHP > 0 Then
+120             UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp - Hechizos(uh).RequiredHP
+122             If UserList(UserIndex).Stats.MinHp < 0 Then UserList(UserIndex).Stats.MinHp = 1
+                Call WriteUpdateHP(UserIndex)
+            End If
 
 124         UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - Hechizos(uh).StaRequerido
-
 126         If UserList(UserIndex).Stats.MinSta < 0 Then UserList(UserIndex).Stats.MinSta = 0
-128         Call WriteUpdateMana(UserIndex)
-            Call WriteUpdateHP(UserIndex)
+128
+            Call WriteUpdateMana(UserIndex)
             Call WriteUpdateSta(UserIndex)
 132         UserList(UserIndex).flags.TargetUser = 0
 
@@ -857,15 +859,17 @@ Sub HandleHechizoNPC(ByVal UserIndex As Integer, ByVal uh As Integer)
 112         UserList(UserIndex).flags.TargetNPC = 0
 114         UserList(UserIndex).Stats.MinMAN = UserList(UserIndex).Stats.MinMAN - Hechizos(uh).ManaRequerido
 
-116         If UserList(UserIndex).Stats.MinMAN < 0 Then UserList(UserIndex).Stats.MinMAN = 0
-118         UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp - Hechizos(uh).RequiredHP
+            If Hechizos(uh).RequiredHP > 0 Then
+116             If UserList(UserIndex).Stats.MinMAN < 0 Then UserList(UserIndex).Stats.MinMAN = 0
+118             UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp - Hechizos(uh).RequiredHP
+                Call WriteUpdateHP(UserIndex)
+            End If
 
 120         If UserList(UserIndex).Stats.MinHp < 0 Then UserList(UserIndex).Stats.MinHp = 1
 122         UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - Hechizos(uh).StaRequerido
 
 124         If UserList(UserIndex).Stats.MinSta < 0 Then UserList(UserIndex).Stats.MinSta = 0
-126         Call WriteUpdateHP(UserIndex)
-            Call WriteUpdateMana(UserIndex)
+126         Call WriteUpdateMana(UserIndex)
             Call WriteUpdateSta(UserIndex)
 
         End If
@@ -2114,6 +2118,8 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 178             Call WriteConsoleMsg(UserIndex, "Te has restaurado " & daño & " puntos de sed.", FontTypeNames.FONTTYPE_FIGHT)
 
             End If
+            
+            Call WriteUpdateHungerAndThirst(tempChr)
     
 180         b = True
     
@@ -2145,6 +2151,8 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 208             UserList(tempChr).flags.Sed = 1
 
             End If
+            
+            Call WriteUpdateHungerAndThirst(tempChr)
     
 210         b = True
 
@@ -2254,10 +2262,14 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 296         If UserList(tempChr).Stats.UserAtributos(eAtributos.Fuerza) > MinimoInt(MAXATRIBUTOS, UserList(tempChr).Stats.UserAtributosBackUP(Agilidad) * 2) Then UserList(tempChr).Stats.UserAtributos(eAtributos.Fuerza) = MinimoInt(MAXATRIBUTOS, UserList(tempChr).Stats.UserAtributosBackUP(Agilidad) * 2)
     
 298         UserList(tempChr).flags.TomoPocion = True
+            
+            Call WriteFYA(tempChr)
+
 300         b = True
     
 302         enviarInfoHechizo = True
 304         Call WriteFYA(tempChr)
+
 306     ElseIf Hechizos(h).SubeFuerza = 2 Then
 
 308         If Not PuedeAtacar(UserIndex, tempChr) Then Exit Sub
@@ -2340,6 +2352,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             End If
     
 372         Call SendData(SendTarget.ToPCArea, tempChr, PrepareMessageEfectOverHead(daño, UserList(tempChr).Char.CharIndex, &HFF00))
+            Call WriteUpdateHP(tempChr)
     
 374         b = True
 376     ElseIf Hechizos(h).SubeHP = 2 Then
@@ -2421,6 +2434,8 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 
                 '  Call UserDie(tempChr)
             End If
+            
+            Call WriteUpdateHP(tempChr)
     
 436         b = True
 
@@ -2441,6 +2456,8 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 452             Call WriteConsoleMsg(UserIndex, "Te has restaurado " & daño & " puntos de mana.", FontTypeNames.FONTTYPE_FIGHT)
 
             End If
+            
+            Call WriteUpdateMana(tempChr)
     
 454         b = True
     
@@ -2466,6 +2483,9 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 474         UserList(tempChr).Stats.MinMAN = UserList(tempChr).Stats.MinMAN - daño
 
 476         If UserList(tempChr).Stats.MinMAN < 1 Then UserList(tempChr).Stats.MinMAN = 0
+
+            Call WriteUpdateMana(tempChr)
+
 478         b = True
     
         End If
@@ -2484,9 +2504,11 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 494             Call WriteConsoleMsg(UserIndex, "Te has restaurado " & daño & " puntos de vitalidad.", FontTypeNames.FONTTYPE_FIGHT)
 
             End If
+            
+            Call WriteUpdateSta(tempChr)
 
 496         b = True
-498     ElseIf Hechizos(h).SubeMana = 2 Then
+498     ElseIf Hechizos(h).SubeSta = 2 Then
 
 500         If Not PuedeAtacar(UserIndex, tempChr) Then Exit Sub
     
@@ -2508,6 +2530,9 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 516         UserList(tempChr).Stats.MinSta = UserList(tempChr).Stats.MinSta - daño
     
 518         If UserList(tempChr).Stats.MinSta < 1 Then UserList(tempChr).Stats.MinSta = 0
+
+            Call WriteUpdateSta(tempChr)
+
 520         b = True
 
         End If
