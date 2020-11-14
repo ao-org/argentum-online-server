@@ -338,7 +338,6 @@ Begin VB.Form frmMain
       Top             =   3120
    End
    Begin VB.Timer AutoSave 
-      Enabled         =   0   'False
       Interval        =   60000
       Left            =   4080
       Top             =   3060
@@ -741,6 +740,13 @@ Private Sub AutoSave_Timer()
 
         MinsRunning = 0
 
+    End If
+    
+    MinsPjesSave = MinsPjesSave + 1
+    
+    If MinsPjesSave >= 10 Then
+        Call GuardarUsuarios
+        MinsPjesSave = 0
     End If
     
     minutos = minutos + 1
