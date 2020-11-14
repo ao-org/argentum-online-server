@@ -1549,7 +1549,6 @@ Sub LoadOBJData()
         ObjData(Object).ParticulaGolpeTime = val(Leer.GetValue("OBJ" & Object, "ParticulaGolpeTime"))
     
         ObjData(Object).Ropaje = val(Leer.GetValue("OBJ" & Object, "NumRopaje"))
-        ObjData(Object).RopajeBajo = val(Leer.GetValue("OBJ" & Object, "NumRopajeBajo"))
         ObjData(Object).HechizoIndex = val(Leer.GetValue("OBJ" & Object, "HechizoIndex"))
     
         ObjData(Object).LingoteIndex = val(Leer.GetValue("OBJ" & Object, "LingoteIndex"))

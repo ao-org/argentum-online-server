@@ -163,13 +163,6 @@ Public Sub DoNadar(ByVal UserIndex As Integer, ByRef Barco As ObjData, ByVal slo
 122             If UserList(UserIndex).Invent.ArmourEqpObjIndex > 0 Then
 124                 UserList(UserIndex).Char.Body = ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).Ropaje
             
-126                 If UserList(UserIndex).raza = Enano Or UserList(UserIndex).raza = Gnomo Then
-128                     UserList(UserIndex).Char.Body = ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).RopajeBajo
-                    Else
-130                     UserList(UserIndex).Char.Body = ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).Ropaje
-
-                    End If
-            
                 Else
 132                 Call DarCuerpoDesnudo(UserIndex)
 
@@ -287,12 +280,7 @@ Public Sub DoNavega(ByVal UserIndex As Integer, ByRef Barco As ObjData, ByVal sl
     
         Else
 
-174         If Barco.Ropaje = iTraje Then
-176             Call WriteNadarToggle(UserIndex, False)
-            Else
-178             Call WriteNadarToggle(UserIndex, False)
-
-            End If
+174         Call WriteNadarToggle(UserIndex, False)
 
 180         UserList(UserIndex).Char.speeding = VelocidadNormal
     
@@ -303,13 +291,6 @@ Public Sub DoNavega(ByVal UserIndex As Integer, ByRef Barco As ObjData, ByVal sl
         
 188             If UserList(UserIndex).Invent.ArmourEqpObjIndex > 0 Then
 190                 UserList(UserIndex).Char.Body = ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).Ropaje
-            
-192                 If UserList(UserIndex).raza = Enano Or UserList(UserIndex).raza = Gnomo Then
-194                     UserList(UserIndex).Char.Body = ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).RopajeBajo
-                    Else
-196                     UserList(UserIndex).Char.Body = ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).Ropaje
-
-                    End If
             
                 Else
 198                 Call DarCuerpoDesnudo(UserIndex)
@@ -2634,13 +2615,7 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As ObjData, ByVal 
 
             End If
             
-148         If UserList(UserIndex).raza = Enano Or UserList(UserIndex).raza = Gnomo Then
-                'UserList(UserIndex).Char.body = ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).RopajeBajo
-150             UserList(UserIndex).Char.Body = Montura.RopajeBajo
-            Else
-152             UserList(UserIndex).Char.Body = Montura.Ropaje
-
-            End If
+148         UserList(UserIndex).Char.Body = Montura.Ropaje
 
             'UserList(UserIndex).Char.body = Montura.Ropaje
 154         UserList(UserIndex).Char.Head = UserList(UserIndex).OrigChar.Head
@@ -2655,13 +2630,7 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As ObjData, ByVal 
 170         UserList(UserIndex).Char.speeding = VelocidadNormal
 
 172         If UserList(UserIndex).Invent.ArmourEqpObjIndex > 0 Then
-        
-174             If UserList(UserIndex).raza = Enano Or UserList(UserIndex).raza = Gnomo Then
-176                 UserList(UserIndex).Char.Body = ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).RopajeBajo
-                Else
-178                 UserList(UserIndex).Char.Body = ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).Ropaje
-
-                End If
+                UserList(UserIndex).Char.Body = ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).Ropaje
 
             Else
 180             Call DarCuerpoDesnudo(UserIndex)

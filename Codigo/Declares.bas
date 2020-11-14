@@ -1243,7 +1243,6 @@ Public Type ObjData
     MaxDef As Integer ' Armaduras
     
     Ropaje As Integer 'Indice del grafico del ropaje
-    RopajeBajo As Integer 'Indice del grafico del ropaje
     
     WeaponAnim As Integer ' Apunta a una anim de armas
     ShieldAnim As Integer ' Apunta a una anim de escudo
