@@ -2337,7 +2337,7 @@ Sub CalcularDarOroGrupal(ByVal UserIndex As Integer, ByVal GiveGold As Long)
 140             If UserList(UserIndex).Pos.Map = UserList(Index).Pos.Map Then
 142                 If OroDar > 0 Then
                     
-144                     OroDar = orobackup * UserList(Index).flags.ScrollOro
+144                     'OroDar = orobackup * UserList(Index).flags.ScrollOro
                 
 146                     UserList(Index).Stats.GLD = UserList(Index).Stats.GLD + OroDar
                         

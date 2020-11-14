@@ -155,10 +155,6 @@ End Sub
 ' @see      GetValue
 
 Public Sub Initialize(ByVal File As String)
-        
-        On Error GoTo Initialize_Err
-        
-
         '**************************************************************
         'Author: Juan Martin Sotuyo Dodero
         'Last Modify Date: 27/07/2006
@@ -229,28 +225,21 @@ Public Sub Initialize(ByVal File As String)
 
         Loop
     
-140     Close handle
+        Close handle
     
         Dim i As Long
     
-142     If MainNodes Then
+        If MainNodes Then
             'Sort main nodes to allow binary search
-144         Call SortMainNodes(0, MainNodes - 1)
+            Call SortMainNodes(0, MainNodes - 1)
         
             'Sort values of each node to allow binary search
-146         For i = 0 To MainNodes - 1
+            For i = 0 To MainNodes - 1
 
-148             If fileData(i).numValues Then Call SortChildNodes(fileData(i), 0, fileData(i).numValues - 1)
-150         Next i
+                If fileData(i).numValues Then Call SortChildNodes(fileData(i), 0, fileData(i).numValues - 1)
+            Next i
 
         End If
-
-        
-        Exit Sub
-
-Initialize_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsIniReader.Initialize", Erl)
-        Resume Next
         
 End Sub
 
