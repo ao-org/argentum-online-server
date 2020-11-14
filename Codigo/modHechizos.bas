@@ -1283,7 +1283,11 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                 'Call WriteConsoleMsg(UserIndex, "No podés atacarte a vos mismo.", FontTypeNames.FONTTYPE_FIGHT)
 308             Call WriteLocaleMsg(UserIndex, "380", FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
-
+            End If
+            
+            If UserList(tU).flags.Paralizado = 1 Then
+309             Call WriteConsoleMsg(UserIndex, UserList(tU).name & " ya está paralizado.", FontTypeNames.FONTTYPE_FIGHT)
+                Exit Sub
             End If
     
 310         If Not PuedeAtacar(UserIndex, tU) Then Exit Sub
@@ -1334,7 +1338,6 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                  
 352         If UserList(tU).Counters.Velocidad = 0 Then
 354             UserList(tU).flags.VelocidadBackup = UserList(tU).Char.speeding
-
             End If
 
 356         UserList(tU).Char.speeding = Hechizos(h).Velocidad
@@ -1349,20 +1352,20 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                 'Call WriteConsoleMsg(UserIndex, "No podés atacarte a vos mismo.", FontTypeNames.FONTTYPE_FIGHT)
 366             Call WriteLocaleMsg(UserIndex, "380", FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
-
             End If
     
-368         If UserList(tU).flags.Inmovilizado = 1 Then
-370             Call WriteConsoleMsg(UserIndex, UserList(tU).name & " ya esta inmovilizado.", FontTypeNames.FONTTYPE_FIGHT)
+            If UserList(tU).flags.Paralizado = 1 Then
+                Call WriteConsoleMsg(UserIndex, UserList(tU).name & " ya está paralizado.", FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
-
+368         ElseIf UserList(tU).flags.Inmovilizado = 1 Then
+370             Call WriteConsoleMsg(UserIndex, UserList(tU).name & " ya está inmovilizado.", FontTypeNames.FONTTYPE_FIGHT)
+                Exit Sub
             End If
     
 372         If Not PuedeAtacar(UserIndex, tU) Then Exit Sub
             
 374         If UserIndex <> tU Then
 376             Call UsuarioAtacadoPorUsuario(UserIndex, tU)
-
             End If
             
 378         Call InfoHechizo(UserIndex)
@@ -1376,12 +1379,10 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             
 382         UserList(tU).Counters.Inmovilizado = Hechizos(h).Duration
 
-384         If UserList(tU).flags.Inmovilizado = 0 Then
-386             UserList(tU).flags.Inmovilizado = 1
-388             Call WriteInmovilizaOK(tU)
-390             Call WritePosUpdate(tU)
+386         UserList(tU).flags.Inmovilizado = 1
+388         Call WriteInmovilizaOK(tU)
+390         Call WritePosUpdate(tU)
             
-            End If
 
         End If
 
