@@ -1646,11 +1646,15 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
         
         If NumUsers > DayStats.MaxUsuarios Then DayStats.MaxUsuarios = NumUsers
         
-        If NumUsers > recordusuarios Then
+        If NumUsers > RecordUsuarios Then
             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Record de usuarios conectados simultáneamente: " & NumUsers & " usuarios.", FontTypeNames.FONTTYPE_INFO))
-            recordusuarios = NumUsers
-            Call WriteVar(IniPath & "Server.ini", "INIT", "Record", str(recordusuarios))
-
+            RecordUsuarios = NumUsers
+            
+            If Database_Enabled Then
+                Call SetRecordUsersDatabase(RecordUsuarios)
+            Else
+                Call WriteVar(IniPath & "Server.ini", "INIT", "Record", str(RecordUsuarios))
+            End If
         End If
         
         Call WriteFYA(UserIndex)
