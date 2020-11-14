@@ -542,19 +542,19 @@ Public Function CalcularDaño(ByVal UserIndex As Integer, Optional ByVal NpcIndex
 
 132                     If Arma.Municion = 1 Then
 134                         proyectil = ObjData(UserList(UserIndex).Invent.MunicionEqpObjIndex)
-136                         DañoArma = DañoArma * 1.35
+136                         DañoArma = DañoArma
 138                         DañoArma = DañoArma + RandomNumber(proyectil.MinHIT, proyectil.MaxHit)
 140                         DañoMaxArma = Arma.MaxHit
-142                         DañoMaxArma = DañoMaxArma * 1.35
+142                         DañoMaxArma = DañoMaxArma
 
                         End If
 
                     Else
 144                     ModifClase = ModicadorDañoClaseArmas(UserList(UserIndex).clase)
 146                     DañoArma = RandomNumber(Arma.MinHIT, Arma.MaxHit)
-148                     DañoArma = DañoArma * 1.35
+148                     DañoArma = DañoArma
 150                     DañoMaxArma = Arma.MaxHit
-152                     DañoMaxArma = DañoMaxArma * 1.35
+152                     DañoMaxArma = DañoMaxArma
 
                     End If
 

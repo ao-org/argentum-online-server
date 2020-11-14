@@ -458,7 +458,7 @@ Public Const MAXEXP         As Long = 1999999999
 
 Public Const MAXUSERMATADOS As Long = 65000
 
-Public Const MAXATRIBUTOS   As Byte = 40
+Public Const MAXATRIBUTOS   As Byte = 38
 
 Public Const MINATRIBUTOS   As Byte = 6
 
