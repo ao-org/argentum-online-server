@@ -1515,24 +1515,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                             
                 If UserList(UserIndex).flags.Montado = 0 Then
                     If UserList(UserIndex).flags.Navegando = 0 Then
-        
-                        If UserList(UserIndex).raza = Enano Or UserList(UserIndex).raza = Gnomo Then
-                            If obj.RopajeBajo <> 0 Then
-                                UserList(UserIndex).Char.Body = obj.RopajeBajo
-                            Else
-                                UserList(UserIndex).Char.Body = obj.Ropaje
-
-                            End If
-                    
-                        Else
-                            UserList(UserIndex).Char.Body = obj.Ropaje
-
-                        End If
-                
-                        If UserList(UserIndex).Char.Body = 0 And EsGM(UserIndex) Then
-                            UserList(UserIndex).Char.Body = obj.RopajeBajo
-
-                        End If
+                        UserList(UserIndex).Char.Body = obj.Ropaje
                 
                         Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
                         UserList(UserIndex).flags.Desnudo = 0
