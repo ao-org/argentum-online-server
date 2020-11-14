@@ -1,0 +1,1 @@
+INSERT INTO statistics VALUES ('record', '0');

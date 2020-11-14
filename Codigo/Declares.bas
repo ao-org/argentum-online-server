@@ -2100,7 +2100,7 @@ Public ListaClases(1 To NUMCLASES)       As String
 
 Public ListaAtributos(1 To NUMATRIBUTOS) As String
 
-Public recordusuarios                    As Long
+Public RecordUsuarios                    As Long
 
 '
 'Directorios

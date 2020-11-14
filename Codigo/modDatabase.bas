@@ -102,7 +102,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
         q = q & "free_skillpoints = " & .Stats.SkillPts & ", "
         'Q = Q & "assigned_skillpoints = " & .Counters.AsignedSkills & ", "
         q = q & "pos_map = " & .Pos.Map & ", "
-        q = q & "pos_x = " & .Pos.X & ", "
+        q = q & "pos_x = " & .Pos.x & ", "
         q = q & "pos_y = " & .Pos.Y & ", "
         q = q & "body_id = " & .Char.Body & ", "
         q = q & "head_id = " & .Char.Head & ", "
@@ -319,7 +319,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
         'Q = Q & "assigned_skillpoints = " & .Counters.AsignedSkills & ", "
         'Q = Q & "pet_Amount = " & .NroMascotas & ", "
         q = q & "pos_map = " & .Pos.Map & ", "
-        q = q & "pos_x = " & .Pos.X & ", "
+        q = q & "pos_x = " & .Pos.x & ", "
         q = q & "pos_y = " & .Pos.Y & ", "
         q = q & "message_info = '" & .MENSAJEINFORMACION & "', "
         q = q & "body_id = " & .Char.Body & ", "
@@ -679,7 +679,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
         '.Counters.AsignedSkills = QueryData!assigned_skillpoints
         '.NroMascotas = QueryData!pet_Amount
         .Pos.Map = QueryData!pos_map
-        .Pos.X = QueryData!pos_x
+        .Pos.x = QueryData!pos_x
         .Pos.Y = QueryData!pos_y
         .MENSAJEINFORMACION = QueryData!message_info
         .OrigChar.Body = QueryData!body_id
@@ -1601,12 +1601,43 @@ Public Sub SetUsersLoggedDatabase(ByVal NumUsers As Long)
         On Error GoTo SetUsersLoggedDatabase_Err
         
 100     Call MakeQuery("UPDATE statistics SET value = '" & NumUsers & "' WHERE name = 'online';", True)
-
         
         Exit Sub
 
 SetUsersLoggedDatabase_Err:
         Call RegistrarError(Err.Number, Err.description, "modDatabase.SetUsersLoggedDatabase", Erl)
+        Resume Next
+        
+End Sub
+
+Public Function LeerRecordUsuariosDatabase() As Long
+        
+        On Error GoTo LeerRecordUsuariosDatabase_Err
+        
+100     Call MakeQuery("SELECT value FROM statistics WHERE name = 'record';")
+
+        If QueryData Is Nothing Then Exit Function
+
+        LeerRecordUsuariosDatabase = val(QueryData!Value)
+
+        Exit Function
+
+LeerRecordUsuariosDatabase_Err:
+        Call RegistrarError(Err.Number, Err.description, "modDatabase.LeerRecordUsuariosDatabase", Erl)
+        Resume Next
+        
+End Function
+
+Public Sub SetRecordUsersDatabase(ByVal Record As Long)
+        
+        On Error GoTo SetRecordUsersDatabase_Err
+        
+100     Call MakeQuery("UPDATE statistics SET value = '" & Record & "' WHERE name = 'record';", True)
+        
+        Exit Sub
+
+SetRecordUsersDatabase_Err:
+        Call RegistrarError(Err.Number, Err.description, "modDatabase.SetRecordUsersDatabase", Erl)
         Resume Next
         
 End Sub
@@ -2314,10 +2345,10 @@ ErrorHandler:
 
 End Function
 
-Public Function SetPositionDatabase(UserName As String, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer)
+Public Function SetPositionDatabase(UserName As String, ByVal Map As Integer, ByVal x As Integer, ByVal Y As Integer)
     On Error GoTo ErrorHandler
 
-    Call MakeQuery("UPDATE user SET pos_map = " & Map & ", pos_x = " & X & ", pos_y = " & X & " WHERE UPPER(name) = '" & UCase$(UserName) & "';", True)
+    Call MakeQuery("UPDATE user SET pos_map = " & Map & ", pos_x = " & x & ", pos_y = " & x & " WHERE UPPER(name) = '" & UCase$(UserName) & "';", True)
 
     Exit Function
 

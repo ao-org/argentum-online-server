@@ -696,6 +696,9 @@ Sub Main()
         'Reinicio los users online
         Call SetUsersLoggedDatabase(0)
         
+        'Leo el record de usuarios
+        RecordUsuarios = LeerRecordUsuariosDatabase()
+        
         'Tarea pesada
         Call LogoutAllUsersAndAccounts
     End If
@@ -1003,7 +1006,7 @@ Errhandler:
 
 End Sub
 
-Public Sub LogClanes(ByVal Str As String)
+Public Sub LogClanes(ByVal str As String)
         
         On Error GoTo LogClanes_Err
         
@@ -1012,7 +1015,7 @@ Public Sub LogClanes(ByVal Str As String)
 
 100     nfile = FreeFile ' obtenemos un canal
 102     Open App.Path & "\logs\clanes.log" For Append Shared As #nfile
-104     Print #nfile, Date & " " & Time & " " & Str
+104     Print #nfile, Date & " " & Time & " " & str
 106     Close #nfile
 
         
@@ -1024,7 +1027,7 @@ LogClanes_Err:
         
 End Sub
 
-Public Sub LogIP(ByVal Str As String)
+Public Sub LogIP(ByVal str As String)
         
         On Error GoTo LogIP_Err
         
@@ -1033,7 +1036,7 @@ Public Sub LogIP(ByVal Str As String)
 
 100     nfile = FreeFile ' obtenemos un canal
 102     Open App.Path & "\logs\IP.log" For Append Shared As #nfile
-104     Print #nfile, Date & " " & Time & " " & Str
+104     Print #nfile, Date & " " & Time & " " & str
 106     Close #nfile
 
         
@@ -1045,7 +1048,7 @@ LogIP_Err:
         
 End Sub
 
-Public Sub LogDesarrollo(ByVal Str As String)
+Public Sub LogDesarrollo(ByVal str As String)
         
         On Error GoTo LogDesarrollo_Err
         
@@ -1054,7 +1057,7 @@ Public Sub LogDesarrollo(ByVal Str As String)
 
 100     nfile = FreeFile ' obtenemos un canal
 102     Open App.Path & "\logs\desarrollo" & Month(Date) & Year(Date) & ".log" For Append Shared As #nfile
-104     Print #nfile, Date & " " & Time & " " & Str
+104     Print #nfile, Date & " " & Time & " " & str
 106     Close #nfile
 
         
@@ -2288,7 +2291,7 @@ Sub InicializaEstadisticas()
 104     Call EstadisticasWeb.Informar(CANTIDAD_MAPAS, NumMaps)
 106     Call EstadisticasWeb.Informar(CANTIDAD_ONLINE, NumUsers)
 108     Call EstadisticasWeb.Informar(UPTIME_SERVER, (Ta - tInicioServer) / 1000)
-110     Call EstadisticasWeb.Informar(RECORD_USUARIOS, recordusuarios)
+110     Call EstadisticasWeb.Informar(RECORD_USUARIOS, RecordUsuarios)
 
         
         Exit Sub
@@ -2441,12 +2444,12 @@ CMSValidateChar__Err:
         
 End Function
 
-Public Function Tilde(ByRef Data As String) As String
+Public Function Tilde(ByRef data As String) As String
 
     Dim temp As String
 
     'Pato
-    temp = UCase$(Data)
+    temp = UCase$(data)
  
     If InStr(1, temp, "Á") Then temp = Replace$(temp, "Á", "A")
    
