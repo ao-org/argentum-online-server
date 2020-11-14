@@ -395,7 +395,7 @@ Sub accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer,
                     Call AccionParaCartel(Map, x, Y, UserIndex)
 
                 Case eOBJType.OtCorreo 'Es un cartel
-                    Call AccionParaCorreo(Map, x, Y, UserIndex)
+                    'Call AccionParaCorreo(Map, x, Y, UserIndex)
 
                 Case eOBJType.otForos 'Foro
                     'Call AccionParaForo(Map, X, Y, UserIndex)
