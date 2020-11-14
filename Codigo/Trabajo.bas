@@ -1557,7 +1557,7 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
             ' Por cada drop posible
             For i = 1 To UBound(EspecialesPesca)
                 ' Tiramos al azar entre 1 y la probabilidad
-                res = RandomNumber(1, IIf(RedDePesca, EspecialesPesca(i).Amount * 2, EspecialesPesca(i).Amount)) ' Red de pesca chance x2 (revisar)
+                res = RandomNumber(1, IIf(RedDePesca, EspecialesPesca(i).data * 2, EspecialesPesca(i).data)) ' Red de pesca chance x2 (revisar)
             
                 ' Si tiene suerte y le pega
                 If res = 1 Then
@@ -2238,7 +2238,7 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal x As Byte, ByVal Y As Byte,
             ' Por cada drop posible
             For i = 1 To UBound(EspecialesTala)
                 ' Tiramos al azar entre 1 y la probabilidad
-                res = RandomNumber(1, EspecialesTala(i).Amount)
+                res = RandomNumber(1, EspecialesTala(i).data)
                 
                 ' Si tiene suerte y le pega
                 If res = 1 Then
