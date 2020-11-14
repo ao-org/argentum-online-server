@@ -2762,12 +2762,11 @@ Public Function ObtenerPezRandom(ByVal PoderCania As Integer) As Long
     
 100     If PoderCania > UBound(PesoPeces) Then PoderCania = UBound(PesoPeces)
 102     SumaPesos = PesoPeces(PoderCania)
-    
-104     ValorGenerado = RandomNumber(1, SumaPesos)
-    
+
+104     ValorGenerado = RandomNumber(0, SumaPesos - 1)
+
 106     ObtenerPezRandom = Peces(BinarySearchPeces(ValorGenerado)).ObjIndex
-    
-        
+
         Exit Function
 
 ObtenerPezRandom_Err:
