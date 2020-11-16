@@ -1361,7 +1361,7 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
 128             Prob = 38
             End If
              
-130         Aumenta = RandomNumber(1, Prob)
+130         Aumenta = RandomNumber(1, Prob * DificultadSubirSkill)
              
 132         If UserList(UserIndex).flags.PendienteDelExperto = 1 Then
 134             Menor = 15
