@@ -3670,9 +3670,9 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
 132                     If .WeaponEqpObjIndex = 0 Then
 134                         DummyInt = 1
-136                     ElseIf .WeaponEqpSlot < 1 Or .WeaponEqpSlot > .CurrentInventorySlots Then
+136                     ElseIf .WeaponEqpSlot < 1 Or .WeaponEqpSlot > UserList(UserIndex).CurrentInventorySlots Then
 138                         DummyInt = 1
-140                     ElseIf .MunicionEqpSlot < 1 Or .MunicionEqpSlot > .CurrentInventorySlots Then
+140                     ElseIf .MunicionEqpSlot < 1 Or .MunicionEqpSlot > UserList(UserIndex).CurrentInventorySlots Then
 142                         DummyInt = 1
 144                     ElseIf .MunicionEqpObjIndex = 0 Then
 146                         DummyInt = 1
@@ -3705,7 +3705,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     'Quitamos stamina
 172                 If .Stats.MinSta >= 10 Then
 174                     Call QuitarSta(UserIndex, RandomNumber(1, 10))
-176                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
+176                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(UserList(UserIndex).Char.CharIndex))
                     Else
 178                     Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
                         ' Call WriteConsoleMsg(UserIndex, "Estís muy cansado para luchar.", FontTypeNames.FONTTYPE_INFO)
@@ -3744,14 +3744,17 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 204                     If Not PuedeAtacar(UserIndex, tU) Then Exit Sub 'TODO: Por ahora pongo esto para solucionar lo anterior.
                     
                         Dim backup    As Byte
+
                         Dim envie     As Boolean
+
                         Dim Particula As Integer
+
                         Dim Tiempo    As Long
                     
 206                     Select Case ObjData(.Invent.MunicionEqpObjIndex).Subtipo
 
                             Case 1 'Paraliza
-208                             backup = .flags.Paraliza
+208                             backup = UserList(UserIndex).flags.Paraliza
 210                             UserList(UserIndex).flags.Paraliza = 1
 
 212                         Case 2 ' Incinera
