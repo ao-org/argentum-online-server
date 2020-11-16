@@ -295,6 +295,7 @@ Begin VB.Form frmMain
       End
    End
    Begin VB.Timer LimpiezaTimer 
+      Enabled         =   0   'False
       Interval        =   60000
       Left            =   1200
       Top             =   4200
@@ -761,7 +762,6 @@ Private Sub AutoSave_Timer()
     If MinutosLatsClean >= 15 Then
         MinutosLatsClean = 0
         Call ReSpawnOrigPosNpcs 'respawn de los guardias en las pos originales
-        'Call LimpiarMundo
     Else
         MinutosLatsClean = MinutosLatsClean + 1
 
@@ -1485,30 +1485,8 @@ HoraFantasia_Timer_Err:
 End Sub
 
 Private Sub LimpiezaTimer_Timer()
-        
-        On Error GoTo LimpiezaTimer_Timer_Err
-        
-100     lblLimpieza = "Limpieza del mundo en: " & LimpiezaTimerMinutos & " minutos."
 
-102     If Not LimpiezaTimerMinutos = 0 Then
-104         LimpiezaTimerMinutos = LimpiezaTimerMinutos - 1
-        Else
-106         lblLimpieza = "Limpieza del mundo en: ¡Limpiando Mundo!"
-108         Call LimpiarMundoEntero
-
-        End If
-
-110     If LimpiezaTimerMinutos = 5 Then
-112         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Atencion, 5 minutos para grabado de personajes y limpieza del mundo. Tomar items del piso.", FontTypeNames.FONTTYPE_SERVER))
-
-        End If
-
-        
-        Exit Sub
-
-LimpiezaTimer_Timer_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmMain.LimpiezaTimer_Timer", Erl)
-        Resume Next
+    Call Limpieza.Item_CheckTime
         
 End Sub
 
@@ -1555,9 +1533,7 @@ Private Sub mnuCerrar_Click()
 100     If MsgBox("¡¡Atencion!! Si cierra el servidor puede provocar la perdida de datos. ¿Desea hacerlo de todas maneras?", vbYesNo) = vbYes Then
 
             Dim f
-
 102         For Each f In Forms
-
 104             Unload f
             Next
 
@@ -1607,7 +1583,6 @@ Private Sub KillLog_Timer()
     If FileExist(App.Path & "\logs\HackAttemps.log", vbNormal) Then Kill App.Path & "\logs\HackAttemps.log"
     If Not FileExist(App.Path & "\logs\nokillwsapi.txt") Then
         If FileExist(App.Path & "\logs\wsapi.log", vbNormal) Then Kill App.Path & "\logs\wsapi.log"
-
     End If
 
 End Sub

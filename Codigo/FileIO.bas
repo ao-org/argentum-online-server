@@ -776,10 +776,11 @@ Public Sub DoBackUp()
 
     Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
 
-    Call LimpiarMundo
-    ' Call WorldSave
+    'Call WorldSave
     'Call modGuilds.v_RutinaElecciones
-    Call ResetCentinelaInfo     'Reseteamos al centinela
+    
+    'Reseteamos al centinela
+    Call ResetCentinelaInfo
 
     Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
 
@@ -790,9 +791,7 @@ Public Sub DoBackUp()
     'Log
     On Error Resume Next
 
-    Dim nfile As Integer
-
-    nfile = FreeFile ' obtenemos un canal
+    Dim nfile As Integer: nfile = FreeFile ' obtenemos un canal
     Open App.Path & "\logs\BackUps.log" For Append Shared As #nfile
     Print #nfile, Date & " " & Time
     Close #nfile
@@ -804,38 +803,26 @@ Public Sub GrabarMapa(ByVal Map As Long, ByVal MAPFILE As String)
 
     On Error GoTo ErrorHandler
 
-    Dim MapRoute As String
-    
-    MapRoute = MAPFILE & ".csm"
+    Dim MapRoute As String: MapRoute = MAPFILE & ".csm"
 
     Dim fh           As Integer
-
     Dim MH           As tMapHeader
 
     Dim Blqs()       As tDatosBloqueados
 
     Dim L1()         As tDatosGrh
-
     Dim L2()         As tDatosGrh
-
     Dim L3()         As tDatosGrh
-
     Dim L4()         As tDatosGrh
 
     Dim Triggers()   As tDatosTrigger
-
     Dim Luces()      As tDatosLuces
-
     Dim Particulas() As tDatosParticulas
-
     Dim Objetos()    As tDatosObjs
-
     Dim NPCs()       As tDatosNPC
-
     Dim TEs()        As tDatosTE
 
     Dim i            As Long
-
     Dim j            As Integer
 
     Dim tmpLng       As Long
@@ -1623,9 +1610,7 @@ Sub LoadOBJData()
         ObjData(Object).ForoID = Leer.GetValue("OBJ" & Object, "ID")
     
         'CHECK: !!! Esto es provisorio hasta que los de Dateo cambien los valores de string a numerico
-
         Dim n As Integer
-
         Dim S As String
 
         For i = 1 To NUMCLASES
