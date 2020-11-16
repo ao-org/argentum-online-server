@@ -826,7 +826,7 @@ End Sub
 
         End If
 
-        On Error GoTo Errhandler
+        On Error GoTo ErrHandler
     
         If UserIndex = LastUser Then
 
@@ -884,7 +884,7 @@ End Sub
 
         Exit Sub
 
-Errhandler:
+ErrHandler:
         UserList(UserIndex).ConnID = -1
         UserList(UserIndex).ConnIDValida = False
         UserList(UserIndex).NumeroPaquetesPorMiliSec = 0
@@ -898,7 +898,7 @@ Errhandler:
 #ElseIf UsarQueSocket = 0 Then
 
 Sub CloseSocket(ByVal UserIndex As Integer)
-On Error GoTo Errhandler
+On Error GoTo ErrHandler
     
     
     
@@ -925,7 +925,7 @@ On Error GoTo Errhandler
 
 Exit Sub
 
-Errhandler:
+ErrHandler:
     UserList(UserIndex).ConnID = -1
     UserList(UserIndex).NumeroPaquetesPorMiliSec = 0
     Call ResetUserSlot(UserIndex)
@@ -941,7 +941,7 @@ End Sub
 
 Sub CloseSocket(ByVal UserIndex As Integer, Optional ByVal cerrarlo As Boolean = True)
 
-On Error GoTo Errhandler
+On Error GoTo ErrHandler
 
 Dim NURestados As Boolean
 Dim CoNnEcTiOnId As Long
@@ -983,7 +983,7 @@ Dim CoNnEcTiOnId As Long
 
 Exit Sub
 
-Errhandler:
+ErrHandler:
     UserList(UserIndex).NumeroPaquetesPorMiliSec = 0
     Call LogError("CLOSESOCKETERR: " & Err.description & " UI:" & UserIndex)
     
@@ -1269,7 +1269,7 @@ End Function
 
 Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuenta As String)
 
-    On Error GoTo Errhandler
+    On Error GoTo ErrHandler
 
     With UserList(UserIndex)
 
@@ -1366,7 +1366,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
             Call SendData(SendTarget.ToSuperiores, 0, PrepareMessageConsoleMsg("Servidor> " & name & " se conecto al juego.", FontTypeNames.FONTTYPE_INFOBOLD))
             '    Call LogGM(name, "Se conecto con ip:" & .ip)
         Else
-            .flags.Privilegios = .flags.Privilegios Or PlayerType.user
+            .flags.Privilegios = .flags.Privilegios Or PlayerType.User
             .flags.AdminPerseguible = True
 
         End If
@@ -1475,6 +1475,8 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
         
         Call UpdateUserInv(True, UserIndex, 0)
         Call UpdateUserHechizos(True, UserIndex, 0)
+        
+        Call EnviarLlaves(UserIndex)
 
         If .Correo.NoLeidos > 0 Then
             Call WriteCorreoPicOn(UserIndex)
@@ -1615,7 +1617,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
 
         Call WriteUserCharIndexInServer(UserIndex)
         
-        If Not (.flags.Privilegios And PlayerType.user) Then
+        If Not (.flags.Privilegios And PlayerType.User) Then
             Call DoAdminInvisible(UserIndex)
         End If
         
@@ -1769,7 +1771,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
     
     Exit Sub
     
-Errhandler:
+ErrHandler:
     Call WriteShowMessageBox(UserIndex, "El personaje contiene un error, comuniquese con un miembro del staff.")
     
     
@@ -1974,7 +1976,7 @@ Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
 120         .Pos.Y = 0
 122         .ip = vbNullString
 124         .clase = 0
-126         .email = vbNullString
+126         .Email = vbNullString
 128         .genero = 0
 130         .Hogar = 0
 132         .raza = 0
@@ -2285,6 +2287,16 @@ ResetUserBanco_Err:
         
 End Sub
 
+Sub ResetUserKeys(ByVal UserIndex As Integer)
+    With UserList(UserIndex)
+        Dim i As Integer
+        
+        For i = 1 To MAXKEYS
+            .Keys(i) = 0
+        Next
+    End With
+End Sub
+
 Public Sub LimpiarComercioSeguro(ByVal UserIndex As Integer)
         
         On Error GoTo LimpiarComercioSeguro_Err
@@ -2353,6 +2365,7 @@ Sub ResetUserSlot(ByVal UserIndex As Integer)
         'Call ResetUserPets(UserIndex)
 156     Call ResetUserBanco(UserIndex)
 158     Call ResetUserSkills(UserIndex)
+        Call ResetUserKeys(UserIndex)
 
 160     With UserList(UserIndex).ComUsu
 162         .Acepto = False
@@ -2375,7 +2388,7 @@ End Sub
 Sub CloseUser(ByVal UserIndex As Integer)
 
     'Call LogTarea("CloseUser " & UserIndex)
-    On Error GoTo Errhandler
+    On Error GoTo ErrHandler
     
     Dim Map As Integer
 
@@ -2487,7 +2500,7 @@ Sub CloseUser(ByVal UserIndex As Integer)
     
     Exit Sub
     
-Errhandler:
+ErrHandler:
     Call LogError("Error en CloseUser. Número " & Err.Number & ". Descripción: " & Err.description & ". Detalle:" & errordesc)
 
     Resume Next ' TODO: Provisional hasta solucionar bugs graves
@@ -2496,7 +2509,7 @@ End Sub
 
 Sub ReloadSokcet()
 
-    On Error GoTo Errhandler
+    On Error GoTo ErrHandler
 
     #If UsarQueSocket = 1 Then
 
@@ -2520,7 +2533,7 @@ Sub ReloadSokcet()
     #End If
 
     Exit Sub
-Errhandler:
+ErrHandler:
     Call LogError("Error en CheckSocketState " & Err.Number & ": " & Err.description)
 
 End Sub
@@ -2535,7 +2548,7 @@ Public Sub EcharPjsNoPrivilegiados()
 100     For LoopC = 1 To LastUser
 
 102         If UserList(LoopC).flags.UserLogged And UserList(LoopC).ConnID >= 0 And UserList(LoopC).ConnIDValida Then
-104             If UserList(LoopC).flags.Privilegios And PlayerType.user Then
+104             If UserList(LoopC).flags.Privilegios And PlayerType.User Then
 106                 Call CloseSocket(LoopC)
 
                 End If
