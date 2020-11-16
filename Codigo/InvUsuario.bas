@@ -1878,7 +1878,6 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 
     If UserList(UserIndex).flags.Meditando Then
         UserList(UserIndex).flags.Meditando = False
-        Call WriteLocaleMsg(UserIndex, "123", FontTypeNames.FONTTYPE_INFO)
         UserList(UserIndex).Char.FX = 0
         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(UserList(UserIndex).Char.CharIndex, 0))
     End If
