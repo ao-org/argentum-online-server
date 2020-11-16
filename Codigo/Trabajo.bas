@@ -2426,9 +2426,10 @@ Public Sub DoMeditar(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
 102         If .Stats.MinMAN >= .Stats.MaxMAN Then
-104             UserList(UserIndex).flags.Meditando = False
-106             UserList(UserIndex).Char.FX = 0
-108             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(UserList(UserIndex).Char.CharIndex, 0))
+104             .flags.Meditando = False
+106             .Char.FX = 0
+                Call WriteLocaleMsg(UserIndex, "123", FontTypeNames.FONTTYPE_INFO)
+108             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(.Char.CharIndex, 0))
                 Exit Sub
             End If
     
