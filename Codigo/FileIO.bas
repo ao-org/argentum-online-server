@@ -1122,6 +1122,7 @@ Sub LoadBalance()
 
         'Extra
 156     PorcentajeRecuperoMana = val(BalanceIni.GetValue("EXTRA", "PorcentajeRecuperoMana"))
+        DificultadSubirSkill = val(BalanceIni.GetValue("EXTRA", "DificultadSubirSkill"))
     
 158     Set BalanceIni = Nothing
     
