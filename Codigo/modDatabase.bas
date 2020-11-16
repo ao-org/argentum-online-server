@@ -2400,7 +2400,21 @@ ErrorHandler:
 
 End Function
 
-Public Function SacarLlaveDatabase(ByVal LlaveObj As Integer, Optional UserName As String = vbNullString) As Boolean
+Public Function DarLlaveACuentaDatabase(Email As String, ByVal LlaveObj As Integer) As Boolean
+    On Error GoTo ErrorHandler
+
+    Call MakeQuery("INSERT INTO house_key SET key_obj = " & LlaveObj & ", account_id = (SELECT id FROM account WHERE UPPER(email) = '" & UCase$(Email) & "');", True)
+    
+    DarLlaveACuentaDatabase = True
+
+    Exit Function
+
+ErrorHandler:
+    Call LogDatabaseError("Error in DarLlaveACuentaDatabase. Email: " & Email & ", LlaveObj: " & LlaveObj & ". " & Err.Number & " - " & Err.description)
+
+End Function
+
+Public Function SacarLlaveDatabase(ByVal LlaveObj As Integer) As Boolean
     On Error GoTo ErrorHandler
 
     Dim i As Integer
@@ -2408,16 +2422,7 @@ Public Function SacarLlaveDatabase(ByVal LlaveObj As Integer, Optional UserName 
     Dim Users() As String
 
     ' Obtengo los usuarios logueados en la cuenta del dueño de la llave
-    If LlaveObj <> 0 Then
-        Call MakeQuery("SELECT name FROM user WHERE is_logged = TRUE AND account_id = (SELECT account_id FROM house_key WHERE key_obj = " & LlaveObj & ");")
-    Else
-        Call MakeQuery("SELECT key_obj FROM house_key WHERE account_id = (SELECT account_id FROM user WHERE UPPER(name) = '" & UCase$(UserName) & "');")
-        If QueryData Is Nothing Then Exit Function
-        
-        LlaveObj = QueryData!key_obj
-    
-        Call MakeQuery("SELECT name FROM user WHERE is_logged = TRUE AND account_id = (SELECT account_id FROM user WHERE UPPER(name) = '" & UCase$(UserName) & "');")
-    End If
+    Call MakeQuery("SELECT name FROM user WHERE is_logged = TRUE AND account_id = (SELECT account_id FROM house_key WHERE key_obj = " & LlaveObj & ");")
     
     If QueryData Is Nothing Then Exit Function
 
@@ -2439,11 +2444,7 @@ Public Function SacarLlaveDatabase(ByVal LlaveObj As Integer, Optional UserName 
     Wend
     
     ' Intento borrar la llave de la db
-    If LlaveObj <> 0 Then
-        Call MakeQuery("DELETE FROM house_key WHERE key_obj = " & LlaveObj & ";", True)
-    Else
-        Call MakeQuery("DELETE FROM house_key WHERE account_id = (SELECT account_id FROM user WHERE UPPER(name) = '" & UCase$(UserName) & "');", True)
-    End If
+    Call MakeQuery("DELETE FROM house_key WHERE key_obj = " & LlaveObj & ";", True)
     
     ' Si pudimos borrar, actualizamos los usuarios logueados
     Dim UserIndex As Integer
@@ -2461,87 +2462,14 @@ Public Function SacarLlaveDatabase(ByVal LlaveObj As Integer, Optional UserName 
     Exit Function
 
 ErrorHandler:
-    Call LogDatabaseError("Error in SacarLlaveDatabase. UserName: '" & UserName & "', LlaveObj: " & LlaveObj & ". " & Err.Number & " - " & Err.description)
-
-End Function
-
-Public Function DarLlaveACuentaDatabase(Email As String, ByVal LlaveObj As Integer) As Boolean
-    On Error GoTo ErrorHandler
-
-    Call MakeQuery("INSERT INTO house_key SET key_obj = " & LlaveObj & ", account_id = (SELECT id FROM account WHERE UPPER(email) = '" & UCase$(Email) & "');", True)
-    
-    DarLlaveACuentaDatabase = True
-
-    Exit Function
-
-ErrorHandler:
-    Call LogDatabaseError("Error in DarLlaveACuentaDatabase. Email: " & Email & ", LlaveObj: " & LlaveObj & ". " & Err.Number & " - " & Err.description)
-
-End Function
-
-Public Function SacarLlaveEmailDatabase(Email As String) As Boolean
-    On Error GoTo ErrorHandler
-    
-    Dim i As Integer
-    Dim UserCount As Integer
-    Dim Users() As String
-    
-    ' Obtengo la llave
-    Call MakeQuery("SELECT key_obj FROM house_key WHERE account_id = (SELECT id FROM account WHERE UPPER(email) = '" & UCase$(Email) & "');")
-    If QueryData Is Nothing Then Exit Function
-    
-    Dim LlaveObj As Integer
-    LlaveObj = QueryData!key_obj
-
-    ' Obtengo los usuarios logueados en la cuenta del dueño de la llave
-    Call MakeQuery("SELECT name FROM user WHERE is_logged = TRUE AND account_id = (SELECT id FROM account WHERE UPPER(email) = '" & UCase$(Email) & "');")
-    
-    If QueryData Is Nothing Then Exit Function
-
-    ' Los almaceno en un array
-    UserCount = QueryData.RecordCount
-    
-    ReDim Users(1 To UserCount) As String
-    
-    QueryData.MoveFirst
-
-    i = 1
-
-    While Not QueryData.EOF
-    
-        Users(i) = QueryData!name
-        i = i + 1
-
-        QueryData.MoveNext
-    Wend
-
-    ' Intento borrar la llave de la db
-    Call MakeQuery("DELETE FROM house_key WHERE account_id = (SELECT id FROM account WHERE UPPER(email) = '" & UCase$(Email) & "');", True)
-    
-    ' Si pudimos borrar, actualizamos los usuarios logueados
-    Dim UserIndex As Integer
-    
-    For i = 1 To UserCount
-        UserIndex = NameIndex(Users(i))
-        
-        If UserIndex <> 0 Then
-            Call SacarLlaveDeLLavero(UserIndex, LlaveObj)
-        End If
-    Next
-    
-    SacarLlaveEmailDatabase = True
-
-    Exit Function
-
-ErrorHandler:
-    Call LogDatabaseError("Error in SacarLlaveEmailDatabase. Email: " & Email & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error in SacarLlaveDatabase. LlaveObj: " & LlaveObj & ". " & Err.Number & " - " & Err.description)
 
 End Function
 
 Public Sub VerLlavesDatabase(ByVal UserIndex As Integer)
     On Error GoTo ErrorHandler
 
-    Call MakeQuery("SELECT (SELECT email FROM account) as email, key_obj FROM house_key;")
+    Call MakeQuery("SELECT (SELECT email FROM account WHERE id = K.account_id) as email, key_obj FROM house_key AS K;")
 
     If QueryData Is Nothing Then
         Call WriteConsoleMsg(UserIndex, "No hay llaves otorgadas por el momento.", FontTypeNames.FONTTYPE_INFO)
