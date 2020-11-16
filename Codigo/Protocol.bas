@@ -10364,85 +10364,35 @@ Private Sub HandleSacarLlave(ByVal UserIndex As Integer)
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
     End If
-    
-    On Error GoTo Errhandler
 
     With UserList(UserIndex)
 
-        'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-        Dim buffer As New clsByteQueue
-
-        Call buffer.CopyBuffer(.incomingData)
-        
         'Remove packet ID
-        Call buffer.ReadByte
+        Call .incomingData.ReadByte
         
-        Dim Param As String, tUser As Integer, Llave As Integer
+        Dim Llave As Integer
         
-        Param = buffer.ReadASCIIString()
+        Llave = .incomingData.ReadInteger()
         
         ' Solo dios o admin
         If .flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin) Then
             ' Me aseguro que esté activada la db
             If Not Database_Enabled Then
                 Call WriteConsoleMsg(UserIndex, "Es necesario que el juego esté corriendo con base de datos.", FontTypeNames.FONTTYPE_INFO)
-            
-            ' Si ingresó un número de llave
-            ElseIf IsNumeric(Param) Then
-                Llave = val(Param)
-                
+
+            Else
                 ' Intento borrarla de la db
                 If SacarLlaveDatabase(Llave) Then
                     Call WriteConsoleMsg(UserIndex, "La llave " & Llave & " fue removida.", FontTypeNames.FONTTYPE_INFO)
                 Else
                     Call WriteConsoleMsg(UserIndex, "No se pudo sacar la llave. Asegúrese de que esté en uso.", FontTypeNames.FONTTYPE_INFO)
                 End If
-            Else
-                ' No es un número, nos fijamos si es un user online
-                tUser = NameIndex(Param)
-                
-                If tUser > 0 Then
-                    ' Es un user online, le sacamos la llave
-                    If SacarLlaveDatabase(0, Param) Then
-                        Call WriteConsoleMsg(UserIndex, "La llave " & Llave & " fue removida de " & UserList(tUser).name & ".", FontTypeNames.FONTTYPE_INFO)
-                    Else
-                        Call WriteConsoleMsg(UserIndex, "No se pudo sacar la llave. El usuario no posee esta llave.", FontTypeNames.FONTTYPE_INFO)
-                    End If
-                Else
-                    ' No es un usuario online, nos fijamos si es un email
-                    If CheckMailString(Param) Then
-                        ' Es un email, intentamos sacar de la db
-                        If SacarLlaveEmailDatabase(Param) Then
-                            Call WriteConsoleMsg(UserIndex, "La llave número " & Llave & " fue removida de " & LCase$(Param) & ".", FontTypeNames.FONTTYPE_INFO)
-                        Else
-                            Call WriteConsoleMsg(UserIndex, "No se pudo sacar la llave. Esa cuenta no posee esta llave.", FontTypeNames.FONTTYPE_INFO)
-                        End If
-                    Else
-                        Call WriteConsoleMsg(UserIndex, "El usuario no está online. Ingrese el email de la cuenta o el número de llave para quitarla offline.", FontTypeNames.FONTTYPE_INFO)
-                    End If
-                End If
-                
-                Call LogGM(.name, "/SACARLLAVE " & Param)
+
+                Call LogGM(.name, "/SACARLLAVE " & Llave)
             End If
         End If
-        
-        'If we got here then packet is complete, copy data back to original queue
-        Call .incomingData.CopyBuffer(buffer)
 
     End With
-    
-Errhandler:
-
-    Dim Error As Long
-
-    Error = Err.Number
-
-    On Error GoTo 0
-    
-    'Destroy auxiliar buffer
-    Set buffer = Nothing
-    
-    If Error <> 0 Then Err.raise Error
 
 End Sub
 
