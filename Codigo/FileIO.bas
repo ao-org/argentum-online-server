@@ -2676,7 +2676,7 @@ Sub LoadConfiguraciones()
 108     DropActive = val(GetVar(IniPath & "Configuracion.ini", "DROPEO", "DropActive"))
 110     RecoleccionMult = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "RecoleccionMult"))
 
-112     TimerCleanWorld = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "TimerCleanWorld"))
+112     TimerLimpiarObjetos = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "TimerLimpiarObjetos"))
 114     OroPorNivel = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "OroPorNivel"))
 
 116     TimerHoraFantasia = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "TimerHoraFantasia"))
@@ -2686,7 +2686,6 @@ Sub LoadConfiguraciones()
 
 122     frmMain.HoraFantasia.Interval = TimerHoraFantasia
 
-124     LimpiezaTimerMinutos = TimerCleanWorld
 126     frmMain.lblLimpieza.Caption = "Limpieza del mundo en: " & LimpiezaTimerMinutos & " minutos."
 
         
