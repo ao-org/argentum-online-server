@@ -141,6 +141,8 @@ Public IntervaloPuedeSerAtacado     As Long
 
 Public PorcentajeRecuperoMana       As Integer
 
+Public DificultadSubirSkill         As Integer
+
 Public MinutosWs                    As Long
 
 Public Puerto                       As Integer
