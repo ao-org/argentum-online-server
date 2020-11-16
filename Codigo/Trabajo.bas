@@ -2419,65 +2419,63 @@ Public Sub DoMeditar(ByVal UserIndex As Integer)
         
 
         Dim Suerte       As Integer
-
         Dim res          As Integer
-
         Dim cant         As Integer
-
         Dim MeditarSkill As Byte
 
 100     With UserList(UserIndex)
-            '.Counters.IdleCount = 0
 
-102         If .Stats.MinMAN >= .Stats.MaxMAN Then Exit Sub
+102         If .Stats.MinMAN >= .Stats.MaxMAN Then
+104             UserList(UserIndex).flags.Meditando = False
+106             UserList(UserIndex).Char.FX = 0
+108             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(UserList(UserIndex).Char.CharIndex, 0))
+                Exit Sub
+            End If
     
-104         MeditarSkill = .Stats.UserSkills(eSkill.Meditar)
-        
-106         If MeditarSkill <= 10 Then
-108             Suerte = 35
-110         ElseIf MeditarSkill <= 20 Then
-112             Suerte = 30
-114         ElseIf MeditarSkill <= 30 Then
-116             Suerte = 28
-118         ElseIf MeditarSkill <= 40 Then
-120             Suerte = 24
-122         ElseIf MeditarSkill <= 50 Then
-124             Suerte = 22
-126         ElseIf MeditarSkill <= 60 Then
-128             Suerte = 20
-130         ElseIf MeditarSkill <= 70 Then
-132             Suerte = 18
-134         ElseIf MeditarSkill <= 80 Then
-136             Suerte = 15
-138         ElseIf MeditarSkill <= 90 Then
-140             Suerte = 10
-142         ElseIf MeditarSkill < 100 Then
-144             Suerte = 7
+110         MeditarSkill = .Stats.UserSkills(eSkill.Meditar)
+            
+112         If MeditarSkill <= 10 Then
+114             Suerte = 35
+116         ElseIf MeditarSkill <= 20 Then
+118             Suerte = 30
+120         ElseIf MeditarSkill <= 30 Then
+122             Suerte = 28
+124         ElseIf MeditarSkill <= 40 Then
+126             Suerte = 24
+128         ElseIf MeditarSkill <= 50 Then
+130             Suerte = 22
+132         ElseIf MeditarSkill <= 60 Then
+134             Suerte = 20
+136         ElseIf MeditarSkill <= 70 Then
+138             Suerte = 18
+140         ElseIf MeditarSkill <= 80 Then
+142             Suerte = 15
+144         ElseIf MeditarSkill <= 90 Then
+146             Suerte = 10
+148         ElseIf MeditarSkill < 100 Then
+150             Suerte = 7
             Else
-146             Suerte = 5
+152             Suerte = 5
             End If
     
-148         If .flags.RegeneracionMana = 1 Then
-150             Suerte = 10
+154         If .flags.RegeneracionMana = 1 Then
+156             Suerte = 10
             End If
         
-152         res = RandomNumber(1, Suerte)
+158         res = RandomNumber(1, Suerte)
     
-154         If res = 1 Then
-156             cant = Porcentaje(.Stats.MaxMAN, PorcentajeRecuperoMana)
+160         If res = 1 Then
 
-158             If cant <= 0 Then cant = 1
-160             .Stats.MinMAN = .Stats.MinMAN + cant
+162             cant = Porcentaje(.Stats.MaxMAN, PorcentajeRecuperoMana)
 
-162             If .Stats.MinMAN > .Stats.MaxMAN Then .Stats.MinMAN = .Stats.MaxMAN
+164             If cant <= 0 Then cant = 1
+
+166             .Stats.MinMAN = .Stats.MinMAN + cant
+
+168             If .Stats.MinMAN > .Stats.MaxMAN Then .Stats.MinMAN = .Stats.MaxMAN
             
-                '  If Not UserList(UserIndex).flags.UltimoMensaje = 22 Then
-                '     Call WriteConsoleMsg(UserIndex, "¡Has recuperado " & cant & " puntos de mana!", FontTypeNames.FONTTYPE_INFO)
-                '     UserList(UserIndex).flags.UltimoMensaje = 22
-                '  End If
-            
-164             Call WriteUpdateMana(UserIndex)
-166             Call SubirSkill(UserIndex, Meditar)
+170             Call WriteUpdateMana(UserIndex)
+172             Call SubirSkill(UserIndex, Meditar)
 
             End If
 
@@ -2487,8 +2485,8 @@ Public Sub DoMeditar(ByVal UserIndex As Integer)
         Exit Sub
 
 DoMeditar_Err:
-        Call RegistrarError(Err.Number, Err.description, "Trabajo.DoMeditar", Erl)
-        Resume Next
+174     Call RegistrarError(Err.Number, Err.description, "Trabajo.DoMeditar", Erl)
+176     Resume Next
         
 End Sub
 

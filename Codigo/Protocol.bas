@@ -2267,6 +2267,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
 110         heading = .incomingData.ReadByte()
         
 112         If .flags.Paralizado = 0 Or .flags.Inmovilizado = 0 Then
+
 114             If .flags.Meditando Then
                     'Stop meditating, next action will start movement.
 116                 .flags.Meditando = False
@@ -2282,7 +2283,6 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
                 
 128                 If UserList(UserIndex).Grupo.EnGrupo = True Then
 130                     Call CompartirUbicacion(UserIndex)
-
                     End If
 
                     'Stop resting if needed
@@ -7279,46 +7279,49 @@ Private Sub HandleMeditate(ByVal UserIndex As Integer)
             'Remove packet ID
 102         Call .incomingData.ReadByte
             
+            'Si ya tiene el mana completo, no lo dejamos meditar.
+104         If .Stats.MinMAN = .Stats.MaxMAN Then Exit Sub
+                           
             'Las clases NO MAGICAS no meditan...
-104         If .clase = eClass.Hunter Or _
+106         If .clase = eClass.Hunter Or _
                .clase = eClass.Trabajador Or _
                .clase = eClass.Warrior Then Exit Sub
 
-106         If .flags.Muerto = 1 Then
-108             Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
+108         If .flags.Muerto = 1 Then
+110             Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         
-110         If .flags.Montado = 1 Then
-112             Call WriteConsoleMsg(UserIndex, "No podes meditar estando montado.", FontTypeNames.FONTTYPE_INFO)
+112         If .flags.Montado = 1 Then
+114             Call WriteConsoleMsg(UserIndex, "No podes meditar estando montado.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
 
-114         .flags.Meditando = Not .flags.Meditando
+116         .flags.Meditando = Not .flags.Meditando
 
-116         If .flags.Meditando Then
+118         If .flags.Meditando Then
 
-118             Select Case .Stats.ELV
+120             Select Case .Stats.ELV
 
                     Case 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
-120                     .Char.FX = Meditaciones.MeditarInicial
+122                     .Char.FX = Meditaciones.MeditarInicial
 
-122                 Case 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29
-124                     .Char.FX = Meditaciones.MeditarMayor15
+124                 Case 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29
+126                     .Char.FX = Meditaciones.MeditarMayor15
 
-126                 Case 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44
-128                     .Char.FX = Meditaciones.MeditarMayor30
+128                 Case 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44
+130                     .Char.FX = Meditaciones.MeditarMayor30
 
-134                 Case Else
-136                     .Char.FX = Meditaciones.MeditarMayor45
+132                 Case Else
+134                     .Char.FX = Meditaciones.MeditarMayor45
 
                 End Select
             Else
-138             .Char.FX = 0
-140             Call WriteLocaleMsg(UserIndex, "123", FontTypeNames.FONTTYPE_INFO)
+136             .Char.FX = 0
+138             Call WriteLocaleMsg(UserIndex, "123", FontTypeNames.FONTTYPE_INFO)
             End If
 
-142         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(.Char.CharIndex, .Char.FX))
+140         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(.Char.CharIndex, .Char.FX))
 
         End With
 
@@ -7326,8 +7329,8 @@ Private Sub HandleMeditate(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleMeditate_Err:
-144     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleMeditate", Erl)
-146     Resume Next
+142     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleMeditate", Erl)
+144     Resume Next
         
 End Sub
 
