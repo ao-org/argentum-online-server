@@ -10,19 +10,13 @@ Attribute VB_Name = "modDatabase"
 Option Explicit
 
 Public Database_Enabled    As Boolean
-
 Public Database_DataSource As String
-
 Public Database_Host       As String
-
 Public Database_Name       As String
-
 Public Database_Username   As String
-
 Public Database_Password   As String
 
 Public Database_Connection As ADODB.Connection
-
 Public QueryData           As ADODB.Recordset
 
 Public Sub Database_Connect()
@@ -43,14 +37,20 @@ Public Sub Database_Connect()
         
     Else
     
-        Database_Connection.ConnectionString = "DRIVER={MySQL ODBC 8.0 ANSI Driver};" & "SERVER=" & Database_Host & ";" & "DATABASE=" & Database_Name & ";" & "USER=" & Database_Username & ";" & "PASSWORD=" & Database_Password & ";" & "OPTION=3;MULTI_STATEMENTS=1"
-
+        Database_Connection.ConnectionString = "DRIVER={MySQL ODBC 8.0 ANSI Driver};" & _
+                                               "SERVER=" & Database_Host & ";" & _
+                                               "DATABASE=" & Database_Name & ";" & _
+                                               "USER=" & Database_Username & ";" & _
+                                               "PASSWORD=" & Database_Password & ";" & _
+                                               "OPTION=3;MULTI_STATEMENTS=1"
+                                               
     End If
     
     Debug.Print Database_Connection.ConnectionString
     
     Database_Connection.CursorLocation = adUseClient
-    Database_Connection.Open
+    
+    Call Database_Connection.Open
 
     Exit Sub
     
@@ -69,7 +69,8 @@ Public Sub Database_Close()
     '***************************************************
     On Error GoTo ErrorHandler
      
-    Database_Connection.Close
+    Call Database_Connection.Close
+    
     Set Database_Connection = Nothing
      
     Exit Sub
@@ -637,7 +638,6 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
         ' Si deslogueó, actualizo la cuenta
         If Logout Then
             q = q & "UPDATE account SET logged = logged - 1 WHERE id = " & .AccountID & ";"
-
         End If
 
         Call MakeQuery(q, True)
