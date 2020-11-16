@@ -237,97 +237,17 @@ HayLava_Err:
         
 End Function
 
-Sub LimpiarMundo()
-
-    '***************************************************
-    'Author: Unknow
-    'Last Modification: 04/15/2008
-    '01/14/2008: Marcos Martinez (ByVal) - La funcion FOR estaba mal. En ves de i habia un 1.
-    '04/15/2008: (NicoNZ) - La funcion FOR estaba mal, de la forma que se hacia tiraba error.
-    '***************************************************
-    On Error GoTo Errhandler
-
-    Dim i As Long
-
-    Dim d As New cGarbage
-
-    For i = TrashCollector.Count To 1 Step -1
-        Set d = TrashCollector(i)
-        Call EraseObj(1, d.Map, d.x, d.Y)
-        Call TrashCollector.Remove(i)
-        Set d = Nothing
-    Next i
-
-    Call SecurityIp.IpSecurityMantenimientoLista
-
-    Exit Sub
-
-Errhandler:
-    Call LogError("Error producido en el sub LimpiarMundo: " & Err.description)
-
-End Sub
-
-Sub LimpiarMundoEntero()
-
-    'Ladder /limpiarmundo
-    On Error GoTo Errhandler
-
-    Call GuardarUsuarios
-
-    If BusquedaTesoroActiva Then Exit Sub
-    If BusquedaRegaloActiva Then Exit Sub
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor> Limpiando mundo....¡Quietos!", FontTypeNames.FONTTYPE_SERVER))
-
-    Dim MapaActual As Long
-
-    Dim Y          As Long
-
-    Dim x          As Long
-
-    For MapaActual = 1 To NumMaps
-        For Y = 10 To 91
-            For x = 12 To 88
-
-                If MapData(MapaActual, x, Y).ObjInfo.ObjIndex > 0 And MapData(MapaActual, x, Y).Blocked = 0 Then
-
-                    ' If MapData(MapaActual, X, Y).ObjInfo.ObjIndex = 315 Then
-                    ' MapData(MapaActual, X, Y).Particula = 0
-                    ' MapData(MapaActual, X, Y).TimeParticula = 0
-                    'End If
-                    If ObjData(MapData(MapaActual, x, Y).ObjInfo.ObjIndex).NoSeLimpia = 0 Then
-                        If ItemNoEsDeMapa(MapData(MapaActual, x, Y).ObjInfo.ObjIndex) Then Call EraseObj(10000, MapaActual, x, Y)
-
-                    End If
-
-                End If
-
-            Next x
-        Next Y
-    Next MapaActual
-
-    LimpiezaTimerMinutos = TimerCleanWorld
-
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor> Limpieza del mundo realizada.", FontTypeNames.FONTTYPE_SERVER))
-    Exit Sub
-Errhandler:
-    Call LogError("Error producido al limpiar las coordenadas " & x & "-" & Y & " del mapa: " & MapaActual & "-" & Err.description)
-
-End Sub
-
 Sub ApagarFogatas()
 
     'Ladder /ApagarFogatas
     On Error GoTo Errhandler
 
     Dim obj As obj
-
-    obj.ObjIndex = FOGATA_APAG
-    obj.Amount = 1
+        obj.ObjIndex = FOGATA_APAG
+        obj.Amount = 1
 
     Dim MapaActual As Long
-
     Dim Y          As Long
-
     Dim x          As Long
 
     For MapaActual = 1 To NumMaps
@@ -335,8 +255,10 @@ Sub ApagarFogatas()
             For x = XMinMapSize To XMaxMapSize
 
                 If MapInfo(MapaActual).lluvia Then
-                    If MapData(MapaActual, x, Y).ObjInfo.ObjIndex = FOGATA Then
-                        Call EraseObj(10000, MapaActual, x, Y)
+                
+                    If MapData(MapaActual, x, Y).ObjInfo.ObjIndex = fogata Then
+                    
+                        Call EraseObj(MAX_INVENTORY_OBJS, MapaActual, x, Y)
                         Call MakeObj(obj, MapaActual, x, Y)
 
                     End If
@@ -348,6 +270,7 @@ Sub ApagarFogatas()
     Next MapaActual
 
     Exit Sub
+    
 Errhandler:
     Call LogError("Error producido al apagar las fogatas de " & x & "-" & Y & " del mapa: " & MapaActual & "    -" & Err.description)
 
@@ -359,7 +282,6 @@ Sub EnviarSpawnList(ByVal UserIndex As Integer)
         
 
         Dim K          As Long
-
         Dim npcNames() As String
 
 100     Debug.Print UBound(SpawnList)
@@ -367,7 +289,6 @@ Sub EnviarSpawnList(ByVal UserIndex As Integer)
 
 104     For K = 1 To UBound(SpawnList)
 106         npcNames(K) = SpawnList(K).NpcName
-    
 108     Next K
 
 110     Call WriteSpawnList(UserIndex, npcNames())

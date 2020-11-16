@@ -2120,7 +2120,8 @@ Public Sub DoRaices(ByVal UserIndex As Integer, ByVal x As Byte, ByVal Y As Byte
             If MapData(.Pos.Map, x, Y).ObjInfo.Amount < 0 Then
                 MapData(.Pos.Map, x, Y).ObjInfo.Amount = 0
     
-                ' VidaUtil.Item_ListAdd .Pos.Map, X, Y
+                Call Limpieza.Item_ListAdd(.Pos.Map, x, Y)
+                
             End If
         
             If Not MeterItemEnInventario(UserIndex, MiObj) Then
