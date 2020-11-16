@@ -477,14 +477,14 @@ Public Function NpcImpacto(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 
                         End If
 
-134                     Call SubirSkill(UserIndex, Defensa)
-
                         'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.CharIndex, 88, 0))
                     End If
 
                 End If
 
             End If
+            
+            Call SubirSkill(UserIndex, Defensa)
 
         End If
 
@@ -1300,12 +1300,12 @@ Public Function UsuarioImpacto(ByVal atacanteindex As Integer, ByVal victimainde
                     End If
 
 166                 Call SendData(SendTarget.ToPCArea, victimaindex, PrepareMessageCreateFX(UserList(victimaindex).Char.CharIndex, 88, 0))
-                
-168                 Call SubirSkill(victimaindex, Defensa)
 
                 End If
 
             End If
+            
+            Call SubirSkill(victimaindex, Defensa)
 
         End If
         
