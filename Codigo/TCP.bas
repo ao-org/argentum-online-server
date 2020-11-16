@@ -1375,7 +1375,10 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
         If EsRolesMaster(name) Then
             .flags.Privilegios = .flags.Privilegios Or PlayerType.RoleMaster
             Call SendData(SendTarget.ToSuperiores, 0, PrepareMessageConsoleMsg("Servidor> " & name & " se conecto al juego.", FontTypeNames.FONTTYPE_INFOBOLD))
-
+        End If
+        
+        If Not (.flags.Privilegios And PlayerType.user) Then
+            Call DoAdminInvisible(UserIndex)
         End If
     
         'If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero)) = 0 Then
