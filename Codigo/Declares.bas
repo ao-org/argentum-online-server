@@ -254,7 +254,7 @@ Public MiCabecera                    As tCabecera
 
 'Barrin 3/10/03
 'Cambiado a 2 segundos el 30/11/07
-Public Const TIEMPO_INICIOMEDITAR    As Integer = 0
+Public Const TIEMPO_INICIOMEDITAR    As Integer = 400
 
 Public Const NingunEscudo            As Integer = 2
 
@@ -1670,6 +1670,8 @@ Public Type UserCounters
     TimerGolpeUsar As Long
     TimerCaminar As Long
     TimerTirar As Long
+    
+    InicioMeditar As Long
     
     'Nuevos de AoLibre
     TimerPuedeSerAtacado As Long

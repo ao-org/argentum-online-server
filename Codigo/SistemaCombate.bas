@@ -802,7 +802,6 @@ Public Sub NpcDaño(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 160     If UserList(UserIndex).flags.Meditando Then
 162         If daño > Fix(UserList(UserIndex).Stats.MinHp / 100 * UserList(UserIndex).Stats.UserAtributos(eAtributos.Inteligencia) * UserList(UserIndex).Stats.UserSkills(eSkill.Meditar) / 100 * 12 / (RandomNumber(0, 5) + 7)) Then
 164             UserList(UserIndex).flags.Meditando = False
-166             Call WriteLocaleMsg(UserIndex, "123", FontTypeNames.FONTTYPE_INFO)
 168             UserList(UserIndex).Char.FX = 0
 170             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(UserList(UserIndex).Char.CharIndex, 0))
             End If
@@ -1661,7 +1660,6 @@ Sub UsuarioAtacadoPorUsuario(ByVal attackerIndex As Integer, ByVal VictimIndex A
 
 100     If UserList(VictimIndex).flags.Meditando Then
 102         UserList(VictimIndex).flags.Meditando = False
-104         Call WriteLocaleMsg(VictimIndex, "123", FontTypeNames.FONTTYPE_INFO)
 106         UserList(VictimIndex).Char.FX = 0
 108         Call SendData(SendTarget.ToPCArea, VictimIndex, PrepareMessageMeditateToggle(UserList(VictimIndex).Char.CharIndex, 0))
         End If

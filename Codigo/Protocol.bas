@@ -2271,7 +2271,6 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
 114             If .flags.Meditando Then
                     'Stop meditating, next action will start movement.
 116                 .flags.Meditando = False
-118                 Call WriteLocaleMsg(UserIndex, "123", FontTypeNames.FONTTYPE_INFO)
 120                 UserList(UserIndex).Char.FX = 0
 122                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(UserList(UserIndex).Char.CharIndex, 0))
                 End If
@@ -2457,7 +2456,6 @@ Private Sub HandleAttack(ByVal UserIndex As Integer)
         
 118         If UserList(UserIndex).flags.Meditando Then
 120             UserList(UserIndex).flags.Meditando = False
-122             Call WriteLocaleMsg(UserIndex, "123", FontTypeNames.FONTTYPE_INFO)
 124             UserList(UserIndex).Char.FX = 0
 126             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(UserList(UserIndex).Char.CharIndex, 0))
             End If
@@ -3643,7 +3641,6 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
             If .flags.Meditando Then
                 .flags.Meditando = False
                 .Char.FX = 0
-                Call WriteLocaleMsg(UserIndex, "123", FontTypeNames.FONTTYPE_INFO)
                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(.Char.CharIndex, 0))
             End If
         
@@ -7304,6 +7301,8 @@ Private Sub HandleMeditate(ByVal UserIndex As Integer)
 
 118         If .flags.Meditando Then
 
+                .Counters.InicioMeditar = GetTickCount And &H7FFFFFFF
+
 120             Select Case .Stats.ELV
 
                     Case 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
@@ -7321,7 +7320,7 @@ Private Sub HandleMeditate(ByVal UserIndex As Integer)
                 End Select
             Else
 136             .Char.FX = 0
-138             Call WriteLocaleMsg(UserIndex, "123", FontTypeNames.FONTTYPE_INFO)
+                'Call WriteLocaleMsg(UserIndex, "123", FontTypeNames.FONTTYPE_INFO)
             End If
 
 140         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(.Char.CharIndex, .Char.FX))
@@ -9853,7 +9852,7 @@ Private Sub HandleWarpChar(ByVal UserIndex As Integer)
                     Call FindLegalPos(tUser, Map, x, Y)
                     Call WarpUserChar(tUser, Map, x, Y, True)
                     Call WriteConsoleMsg(UserIndex, UserList(tUser).name & " transportado.", FontTypeNames.FONTTYPE_INFO)
-                    Call LogGM(.name, "Transportí a " & UserList(tUser).name & " hacia " & "Mapa" & Map & " X:" & x & " Y:" & Y)
+                    If tUser <> UserIndex Then Call LogGM(.name, "Transportí a " & UserList(tUser).name & " hacia " & "Mapa" & Map & " X:" & x & " Y:" & Y)
 
                 End If
 
