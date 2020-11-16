@@ -191,8 +191,12 @@ Private Type tMapDat
 End Type
 
 Private MapSize As tMapSize
-
 Private MapDat  As tMapDat
+
+Private Type UltimoError
+    Componente As String
+    Contador As Byte
+End Type: Private HistorialError As UltimoError
 
 Public Sub CargarSpawnList()
         
@@ -4137,32 +4141,48 @@ LoadUserIntervals_Err:
 End Sub
 
 Public Sub RegistrarError(ByVal Numero As Long, ByVal Descripcion As String, ByVal Componente As String, Optional ByVal Linea As Integer)
-    '**********************************************************
-    'Author: Jopi
-    'Guarda una descripcion detallada del error en Errores.log
-    '**********************************************************
+'**********************************************************
+'Author: Jopi
+'Guarda una descripcion detallada del error en Errores.log
+'**********************************************************
         
-100     Dim File As Integer: File = FreeFile
+    'Si lo del parametro Componente es IGUAL, al Componente del anterior error...
+    If StrComp(Componente, HistorialError.Componente, vbBinaryCompare) = 0 Then
+            
+        'Si ya recibimos el mismo componente 5 veces, es bastante probable que estemos en un bucle
+        'x lo que no hace falta registrar el error.
+        If HistorialError.Contador = 5 Then Exit Sub
+            
+        HistorialError.Contador = HistorialError.Contador + 1
+        HistorialError.Componente = Componente
         
-102     Open App.Path & "\logs\Errores.log" For Append As #File
+    Else 'Si NO es igual, reestablecemos el contador.
+            
+        If HistorialError.Contador <> 0 Then HistorialError.Contador = 0
+            
+    End If
+        
+    Dim File As Integer: File = FreeFile
+        
+    Open App.Path & "\logs\Errores.log" For Append As #File
     
-104         Print #File, "Error: " & Numero
-106         Print #File, "Descripcion: " & Descripcion
+        Print #File, "Error: " & Numero
+        Print #File, "Descripcion: " & Descripcion
         
-108         If LenB(Linea) <> 0 Then
-110             Print #File, "Linea: " & Linea
-            End If
+        If LenB(Linea) <> 0 Then
+            Print #File, "Linea: " & Linea
+        End If
         
-112         Print #File, "Componente: " & Componente
-114         Print #File, "Fecha y Hora: " & Date$ & "-" & Time$
+        Print #File, "Componente: " & Componente
+        Print #File, "Fecha y Hora: " & Date$ & "-" & Time$
         
-116         Print #File, vbNullString
+        Print #File, vbNullString
         
-118     Close #File
+    Close #File
     
-120     Debug.Print "Error: " & Numero & vbNewLine & _
-                    "Descripcion: " & Descripcion & vbNewLine & _
-                    "Componente: " & Componente & vbNewLine & _
-                    "Fecha y Hora: " & Date$ & "-" & Time$ & vbNewLine
+    Debug.Print "Error: " & Numero & vbNewLine & _
+                "Descripcion: " & Descripcion & vbNewLine & _
+                "Componente: " & Componente & vbNewLine & _
+                "Fecha y Hora: " & Date$ & "-" & Time$ & vbNewLine
 End Sub
 
