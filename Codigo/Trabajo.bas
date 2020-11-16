@@ -2428,10 +2428,11 @@ Public Sub DoMeditar(ByVal UserIndex As Integer)
 102         If .Stats.MinMAN >= .Stats.MaxMAN Then
 104             .flags.Meditando = False
 106             .Char.FX = 0
-                Call WriteLocaleMsg(UserIndex, "123", FontTypeNames.FONTTYPE_INFO)
 108             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(.Char.CharIndex, 0))
                 Exit Sub
             End If
+            
+            If (GetTickCount And &H7FFFFFFF) - .Counters.InicioMeditar < TIEMPO_INICIOMEDITAR Then Exit Sub
     
 110         MeditarSkill = .Stats.UserSkills(eSkill.Meditar)
             
@@ -2587,7 +2588,6 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As ObjData, ByVal 
 
 118     If UserList(UserIndex).flags.Meditando Then
 120         UserList(UserIndex).flags.Meditando = False
-122         Call WriteLocaleMsg(UserIndex, "123", FontTypeNames.FONTTYPE_INFO)
 124         UserList(UserIndex).Char.FX = 0
 126         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(UserList(UserIndex).Char.CharIndex, 0))
         End If
