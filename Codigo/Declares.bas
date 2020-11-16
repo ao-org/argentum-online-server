@@ -176,7 +176,7 @@ End Type
 
 Public Enum PlayerType
 
-    user = &H1
+    User = &H1
     Consejero = &H2
     SemiDios = &H4
     Dios = &H8
@@ -569,7 +569,7 @@ Public Const MAXSKILLPOINTS As Byte = 100
 
 ''
 ' Cantidad maxima de mascotas
-Public Const MAXMASCOTAS   As Byte = 3
+Public Const MAXMASCOTAS    As Byte = 3
 
 ''
 'Direccion
@@ -1728,7 +1728,7 @@ Public Type tFacciones
 End Type
 
 'Tipo de los Usuarios
-Public Type user
+Public Type User
 
     name As String
     Cuenta As String
@@ -1757,7 +1757,7 @@ Public Type user
     clase As eClass
     raza As eRaza
     genero As eGenero
-    email As String
+    Email As String
     Hogar As eCiudad
     PosibleHogar As eCiudad
     MENSAJEINFORMACION As String
@@ -1824,6 +1824,8 @@ Public Type user
     incomingData As clsByteQueue
     
     QuestStats As tQuestStats
+
+    Keys(1 To MAXKEYS) As Integer
 
 End Type
 
@@ -2202,7 +2204,7 @@ Public Type tObjDonador
 End Type
 
 '*****************ARRAYS PUBLICOS*************************
-Public UserList()                         As user 'USUARIOS
+Public UserList()                         As User 'USUARIOS
 
 Public Npclist(1 To MAXNPCS)              As npc 'NPCS
 
