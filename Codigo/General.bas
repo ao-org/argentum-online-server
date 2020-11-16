@@ -1418,112 +1418,100 @@ Intemperie_Err:
         
 End Function
 
-Public Sub EfectoLluvia(ByVal UserIndex As Integer)
-
-    On Error GoTo Errhandler
-
-    If UserList(UserIndex).flags.UserLogged Then
-        If Intemperie(UserIndex) Then
-
-            Dim modifi As Long
-
-            modifi = Porcentaje(UserList(UserIndex).Stats.MaxSta, 3)
-            Call QuitarSta(UserIndex, modifi)
-            
-
-        End If
-
-    End If
-
-    Exit Sub
-Errhandler:
-    LogError ("Error en EfectoLluvia")
-
-End Sub
-
 Public Sub EfectoFrio(ByVal UserIndex As Integer)
         
         On Error GoTo EfectoFrio_Err
         
-    
         Dim modifi As Integer
-    
-100     If UserList(UserIndex).Counters.Frio < IntervaloFrio Then
-102         UserList(UserIndex).Counters.Frio = UserList(UserIndex).Counters.Frio + 1
-        Else
+        
+100     With UserList(UserIndex)
+        
+102         If .Counters.Frio < IntervaloFrio Then
+104             .Counters.Frio = .Counters.Frio + 1
 
-104         If MapInfo(UserList(UserIndex).Pos.Map).terrain = Nieve Then
-106             Call WriteConsoleMsg(UserIndex, "¡¡Estas muriendo de frio, abrigate o moriras!!.", FontTypeNames.FONTTYPE_INFO)
-108             modifi = Porcentaje(UserList(UserIndex).Stats.MaxHp, 5)
-110             UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp - modifi
-            
-112             If UserList(UserIndex).Stats.MinHp < 1 Then
-114                 Call WriteConsoleMsg(UserIndex, "¡¡Has muerto de frio!!.", FontTypeNames.FONTTYPE_INFO)
-116                 UserList(UserIndex).Stats.MinHp = 0
-118                 Call UserDie(UserIndex)
-
-                End If
-            
-120             Call WriteUpdateHP(UserIndex)
             Else
-122             modifi = Porcentaje(UserList(UserIndex).Stats.MaxSta, 5)
-124             Call QuitarSta(UserIndex, modifi)
 
-                '  Call WriteUpdateSta(UserIndex)
+106             If MapInfo(.Pos.Map).terrain = Nieve Then
+108                 Call WriteConsoleMsg(UserIndex, "¡¡Estas muriendo de frio, abrigate o moriras!!.", FontTypeNames.FONTTYPE_INFO)
+
+110                 modifi = Porcentaje(.Stats.MaxHp, 5)
+
+112                 .Stats.MinHp = .Stats.MinHp - modifi
+            
+114                 If .Stats.MinHp < 1 Then
+
+116                     Call WriteConsoleMsg(UserIndex, "¡¡Has muerto de frio!!.", FontTypeNames.FONTTYPE_INFO)
+
+118                     .Stats.MinHp = 0
+
+120                     Call UserDie(UserIndex)
+
+                    End If
+            
+122                 Call WriteUpdateHP(UserIndex)
+                End If
+        
+128             .Counters.Frio = 0
+
             End If
         
-126         UserList(UserIndex).Counters.Frio = 0
-
-        End If
-
+        End With
         
         Exit Sub
 
 EfectoFrio_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.EfectoFrio", Erl)
-        Resume Next
+130     Call RegistrarError(Err.Number, Err.description, "General.EfectoFrio", Erl)
+
+132     Resume Next
         
 End Sub
 
 Public Sub EfectoLava(ByVal UserIndex As Integer)
         
         On Error GoTo EfectoLava_Err
-        
 
         '***************************************************
         'Autor: Nacho (Integer)
         'Last Modification: 03/12/07
         'If user is standing on lava, take health points from him
         '***************************************************
-100     If UserList(UserIndex).Counters.Lava < IntervaloFrio Then 'Usamos el mismo intervalo que el del frio
-102         UserList(UserIndex).Counters.Lava = UserList(UserIndex).Counters.Lava + 1
-        Else
+        
+100     With UserList(UserIndex)
+        
+102         If .Counters.Lava < IntervaloFrio Then 'Usamos el mismo intervalo que el del frio
+104             .Counters.Lava = .Counters.Lava + 1
+        
+            Else
 
-104         If HayLava(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y) Then
-106             Call WriteConsoleMsg(UserIndex, "¡¡Quitate de la lava, te estás quemando!!.", FontTypeNames.FONTTYPE_INFO)
-108             UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp - Porcentaje(UserList(UserIndex).Stats.MaxHp, 5)
+106             If HayLava(.Pos.Map, .Pos.x, .Pos.Y) Then
+108                 Call WriteConsoleMsg(UserIndex, "¡¡Quitate de la lava, te estás quemando!!.", FontTypeNames.FONTTYPE_INFO)
+110                 .Stats.MinHp = .Stats.MinHp - Porcentaje(.Stats.MaxHp, 5)
             
-110             If UserList(UserIndex).Stats.MinHp < 1 Then
-112                 Call WriteConsoleMsg(UserIndex, "¡¡Has muerto quemado!!.", FontTypeNames.FONTTYPE_INFO)
-114                 UserList(UserIndex).Stats.MinHp = 0
-116                 Call UserDie(UserIndex)
+112                 If .Stats.MinHp < 1 Then
+114                     Call WriteConsoleMsg(UserIndex, "¡¡Has muerto quemado!!.", FontTypeNames.FONTTYPE_INFO)
+116                     .Stats.MinHp = 0
+118                     Call UserDie(UserIndex)
+
+                    End If
+            
+120                 Call WriteUpdateHP(UserIndex)
 
                 End If
-            
-118             Call WriteUpdateHP(UserIndex)
+        
+122             .Counters.Lava = 0
 
             End If
         
-120         UserList(UserIndex).Counters.Lava = 0
-
-        End If
+        End With
+        
 
         
         Exit Sub
 
 EfectoLava_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.EfectoLava", Erl)
-        Resume Next
+124     Call RegistrarError(Err.Number, Err.description, "General.EfectoLava", Erl)
+
+126     Resume Next
         
 End Sub
 
