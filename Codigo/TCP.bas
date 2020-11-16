@@ -1376,10 +1376,6 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
             .flags.Privilegios = .flags.Privilegios Or PlayerType.RoleMaster
             Call SendData(SendTarget.ToSuperiores, 0, PrepareMessageConsoleMsg("Servidor> " & name & " se conecto al juego.", FontTypeNames.FONTTYPE_INFOBOLD))
         End If
-        
-        If Not (.flags.Privilegios And PlayerType.user) Then
-            Call DoAdminInvisible(UserIndex)
-        End If
     
         'If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero)) = 0 Then
         '    If ObtenerLogeada(UCase$(UserCuenta)) = 1 Then
@@ -1618,8 +1614,10 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
         Call MakeUserChar(True, .Pos.Map, UserIndex, .Pos.Map, .Pos.x, .Pos.Y, 1)
 
         Call WriteUserCharIndexInServer(UserIndex)
-
-        ''[/el oso]
+        
+        If Not (.flags.Privilegios And PlayerType.user) Then
+            Call DoAdminInvisible(UserIndex)
+        End If
         
         Call WriteUpdateUserStats(UserIndex)
         
