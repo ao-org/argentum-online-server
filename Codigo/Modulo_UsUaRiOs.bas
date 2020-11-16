@@ -1352,14 +1352,13 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
 112         If Lvl <= 3 Then
 114             Prob = 25
 116         ElseIf Lvl > 3 And Lvl < 6 Then
-118             Prob = 35
+118             Prob = 27
 120         ElseIf Lvl >= 6 And Lvl < 10 Then
-122             Prob = 40
+122             Prob = 30
 124         ElseIf Lvl >= 10 And Lvl < 20 Then
-126             Prob = 45
+126             Prob = 33
             Else
-128             Prob = 50
-
+128             Prob = 38
             End If
              
 130         Aumenta = RandomNumber(1, Prob)
