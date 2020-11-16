@@ -24,7 +24,7 @@ Option Explicit
 
 Sub IniciarDeposito(ByVal UserIndex As Integer)
 
-    On Error GoTo Errhandler
+    On Error GoTo ErrHandler
 
     'Hacemos un Update del inventario del usuario
     Call UpdateBanUserInv(True, UserIndex, 0)
@@ -34,7 +34,7 @@ Sub IniciarDeposito(ByVal UserIndex As Integer)
     Call WriteBankInit(UserIndex)
     UserList(UserIndex).flags.Comerciando = True
 
-Errhandler:
+ErrHandler:
 
 End Sub
 
@@ -125,7 +125,7 @@ End Sub
 
 Sub UserRetiraItem(ByVal UserIndex As Integer, ByVal i As Integer, ByVal Cantidad As Integer, ByVal slotdestino As Integer)
 
-    On Error GoTo Errhandler
+    On Error GoTo ErrHandler
 
     If Cantidad < 1 Then Exit Sub
 
@@ -145,7 +145,7 @@ Sub UserRetiraItem(ByVal UserIndex As Integer, ByVal i As Integer, ByVal Cantida
     
     Exit Sub
     
-Errhandler:
+ErrHandler:
     Call RegistrarError(Err.Number, Err.description, "modBanco.UsaRetiraItem")
     Resume Next
     
@@ -280,7 +280,7 @@ End Sub
 
 Sub UserDepositaItem(ByVal UserIndex As Integer, ByVal Item As Integer, ByVal Cantidad As Integer, ByVal slotdestino As Integer)
 
-    On Error GoTo Errhandler
+    On Error GoTo ErrHandler
 
     If UserList(UserIndex).Invent.Object(Item).Amount > 0 And Cantidad > 0 Then
         If Cantidad > UserList(UserIndex).Invent.Object(Item).Amount Then Cantidad = UserList(UserIndex).Invent.Object(Item).Amount
@@ -296,7 +296,9 @@ Sub UserDepositaItem(ByVal UserIndex As Integer, ByVal Item As Integer, ByVal Ca
 
     End If
     
-Errhandler:
+    Exit Sub
+    
+ErrHandler:
     Call RegistrarError(Err.Number, Err.description, "modBanco.UserDepositaItem")
     Resume Next
     
@@ -304,7 +306,7 @@ End Sub
 
 Sub UserDepositaItemDrop(ByVal UserIndex As Integer, ByVal Item As Integer, ByVal Cantidad As Integer)
 
-    On Error GoTo Errhandler
+    On Error GoTo ErrHandler
 
     If UserList(UserIndex).Invent.Object(Item).Amount > 0 And Cantidad > 0 Then
         If Cantidad > UserList(UserIndex).Invent.Object(Item).Amount Then Cantidad = UserList(UserIndex).Invent.Object(Item).Amount
@@ -315,8 +317,10 @@ Sub UserDepositaItemDrop(ByVal UserIndex As Integer, ByVal Item As Integer, ByVa
         Call UpdateUserInv(True, UserIndex, 0)
         
     End If
+    
+    Exit Sub
 
-Errhandler:
+ErrHandler:
     Call RegistrarError(Err.Number, Err.description, "modBanco.UserDepositaItemDrop")
     Resume Next
 
