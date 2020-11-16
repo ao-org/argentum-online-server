@@ -16,7 +16,7 @@ Option Explicit
 Private Declare Function GetTickCount Lib "kernel32" () As Long
 
 Private Const Item_MaxList   As Integer = 1000
-Private Const Item_TimeClear As Long = 1800000 '900000 / 60 = 15 minutos
+Private Item_TimeClear As Long
 
 Private Type tItem
     Item_Pos As WorldPos 'Pos of item to clear
@@ -33,10 +33,13 @@ Public Sub Class_Initialize()
     On Error Resume Next
 
     Dim Maps As Integer
-
-    Maps = val(GetVar(DatPath & "Map.dat", "INIT", "NumMaps"))
+        Maps = val(GetVar(DatPath & "Map.dat", "INIT", "NumMaps"))
+    
     ReDim Item_ListIndex(1 To Maps, 1 To 100, 1 To 100) As Integer
- 
+    
+    'Tiempo que puede permanecer un objeto en el suelo (en milisegundos)
+    Item_TimeClear = (TimerLimpiarObjetos * 60000)
+    
     Item_LastIndex = 0
 
 End Sub

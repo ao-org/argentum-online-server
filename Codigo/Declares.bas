@@ -73,9 +73,7 @@ Public OroAutoEquipable     As Integer
 
 Public EstadoGlobal         As Boolean
 
-Public LimpiezaTimerMinutos As Byte
-
-Public TimerCleanWorld      As Byte
+Public TimerLimpiarObjetos  As Byte
 
 Public TimerHoraFantasia    As Integer
 
@@ -176,7 +174,7 @@ End Type
 
 Public Enum PlayerType
 
-    User = &H1
+    user = &H1
     Consejero = &H2
     SemiDios = &H4
     Dios = &H8
@@ -1728,7 +1726,7 @@ Public Type tFacciones
 End Type
 
 'Tipo de los Usuarios
-Public Type User
+Public Type user
 
     name As String
     Cuenta As String
@@ -2204,7 +2202,7 @@ Public Type tObjDonador
 End Type
 
 '*****************ARRAYS PUBLICOS*************************
-Public UserList()                         As User 'USUARIOS
+Public UserList()                         As user 'USUARIOS
 
 Public Npclist(1 To MAXNPCS)              As npc 'NPCS
 
