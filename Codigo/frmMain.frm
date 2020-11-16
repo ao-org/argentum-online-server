@@ -1268,8 +1268,12 @@ Private Sub GameTimer_Timer()
 
                     If .flags.Muerto = 0 Then
                         
-                        '[Consejeros]
-                        'If (.flags.Privilegios And PlayerType.User) Then Call EfectoLava(iUserIndex)
+                        'Efectos en mapas
+                        If (.flags.Privilegios And PlayerType.user) Then
+                            Call EfectoLava(iUserIndex)
+                            Call EfectoFrio(iUserIndex)
+                        End If
+                        
                         If .flags.Desnudo <> 0 And (.flags.Privilegios And PlayerType.user) <> 0 Then Call EfectoFrio(iUserIndex)
    
                         If .flags.Meditando Then Call DoMeditar(iUserIndex)
@@ -1278,7 +1282,6 @@ Private Sub GameTimer_Timer()
                         If .flags.Incinerado <> 0 Then Call EfectoIncineramiento(iUserIndex, False)
                         If .flags.AdminInvisible <> 1 Then
                             If .flags.Oculto = 1 Then Call DoPermanecerOculto(iUserIndex)
-
                         End If
                         
                         Call HambreYSed(iUserIndex, bEnviarAyS)
