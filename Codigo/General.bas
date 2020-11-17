@@ -1349,7 +1349,7 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
         
 100     With UserList(UserIndex)
             
-            If Not .flags.Desnudo Then Exit Sub
+            If .flags.Desnudo = 0 Then Exit Sub
             
 102         If .Counters.Frio < IntervaloFrio Then
 104             .Counters.Frio = .Counters.Frio + 1
