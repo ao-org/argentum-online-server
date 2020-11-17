@@ -1343,10 +1343,14 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
         
         On Error GoTo EfectoFrio_Err
         
+        If Not Intemperie(UserIndex) Then Exit Sub
+        
         Dim modifi As Integer
         
 100     With UserList(UserIndex)
-        
+            
+            If Not .flags.Desnudo Then Exit Sub
+            
 102         If .Counters.Frio < IntervaloFrio Then
 104             .Counters.Frio = .Counters.Frio + 1
 
