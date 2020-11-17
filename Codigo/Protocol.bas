@@ -27577,44 +27577,27 @@ Private Sub HandleInvitarGrupo(ByVal UserIndex As Integer)
         Exit Sub
 
     End If
-    
-    On Error GoTo ErrHandler
+
 
     With UserList(UserIndex)
-
-        Dim buffer As New clsByteQueue
-
-        Call buffer.CopyBuffer(.incomingData)
+        
         'Remove packet ID
-        Call buffer.ReadInteger
-
+        Call .incomingData.ReadInteger
+        
         If .flags.Muerto = 1 Then
             'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!.", FontTypeNames.FONTTYPE_INFO)
             Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
+            
         Else
-            Call WriteWorkRequestTarget(UserIndex, eSkill.Grupo)
+            
+            If .Grupo.CantidadMiembros <= UBound(.Grupo.Miembros) Then
+                Call WriteWorkRequestTarget(UserIndex, eSkill.Grupo)
+            End If
 
         End If
-            
-        Call .incomingData.CopyBuffer(buffer)
 
     End With
 
-    Exit Sub
-    
-ErrHandler:
-    LogError "Error InvitarGrupo"
-
-    Dim Error As Long
-
-    Error = Err.Number
-
-    On Error GoTo 0
-    
-    'Destroy auxiliar buffer
-    Set buffer = Nothing
-    
-    If Error <> 0 Then Err.raise Error
 
 End Sub
 
