@@ -250,7 +250,7 @@ Public MiCabecera                    As tCabecera
 
 'Barrin 3/10/03
 'Cambiado a 2 segundos el 30/11/07
-Public Const TIEMPO_INICIOMEDITAR    As Integer = 400
+Public Const TIEMPO_INICIOMEDITAR    As Integer = 3000
 
 Public Const NingunEscudo            As Integer = 2
 
@@ -2298,7 +2298,7 @@ Public Declare Function writeprivateprofilestring Lib "kernel32" Alias "WritePri
 
 Public Declare Function GetPrivateProfileString Lib "kernel32" Alias "GetPrivateProfileStringA" (ByVal lpApplicationname As String, ByVal lpKeyname As Any, ByVal lpdefault As String, ByVal lpreturnedstring As String, ByVal nsize As Long, ByVal lpfilename As String) As Long
 
-Public Declare Sub ZeroMemory Lib "kernel32.dll" Alias "RtlZeroMemory" (ByRef destination As Any, ByVal length As Long)
+Public Declare Sub ZeroMemory Lib "kernel32.dll" Alias "RtlZeroMemory" (ByRef destination As Any, ByVal Length As Long)
 
 Public Enum e_ObjetosCriticos
 
