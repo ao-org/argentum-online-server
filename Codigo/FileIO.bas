@@ -4130,22 +4130,28 @@ Public Sub RegistrarError(ByVal Numero As Long, ByVal Descripcion As String, ByV
 'Guarda una descripcion detallada del error en Errores.log
 '**********************************************************
         
-    'Si lo del parametro Componente es IGUAL, al Componente del anterior error...
-    If StrComp(Componente, HistorialError.Componente, vbBinaryCompare) = 0 Then
-            
-        'Si ya recibimos el mismo componente 5 veces, es bastante probable que estemos en un bucle
-        'x lo que no hace falta registrar el error.
-        If HistorialError.Contador = 5 Then Exit Sub
-            
+    'Si lo del parametro Componente es ES IGUAL, al Componente del anterior error...
+    If Componente = HistorialError.Componente And _
+       Numero = HistorialError.ErrorCode Then
+        
+        'Agregamos el error al historial.
         HistorialError.Contador = HistorialError.Contador + 1
         HistorialError.Componente = Componente
+        HistorialError.ErrorCode = Numero
         
     Else 'Si NO es igual, reestablecemos el contador.
-            
-        If HistorialError.Contador <> 0 Then HistorialError.Contador = 0
+
+        HistorialError.Contador = 0
+        HistorialError.ErrorCode = 0
+        HistorialError.Componente = vbNullString
             
     End If
-        
+    
+    'Si ya recibimos error en el mismo componente 10 veces, es bastante probable que estemos en un bucle
+    'x lo que no hace falta registrar el error.
+    If HistorialError.Contador = 10 Then Exit Sub
+    
+    'Registramos el error en Errores.log
     Dim File As Integer: File = FreeFile
         
     Open App.Path & "\logs\Errores.log" For Append As #File
