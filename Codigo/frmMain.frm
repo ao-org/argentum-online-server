@@ -710,7 +710,7 @@ End Sub
 
 Private Sub AutoSave_Timer()
 
-    On Error GoTo Errhandler
+    On Error GoTo errHandler
 
     'fired every minute
     Static minutos          As Long
@@ -783,7 +783,7 @@ Private Sub AutoSave_Timer()
     '<<<<<-------- Log the number of users online ------>>>
 
     Exit Sub
-Errhandler:
+errHandler:
     Call LogError("Error en TimerAutoSave " & Err.Number & ": " & Err.description)
 
     Resume Next
@@ -1148,13 +1148,13 @@ Evento_Timer_Err:
         
 End Sub
 
-Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, Y As Single)
+Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
 
     On Error Resume Next
    
     If Not Visible Then
 
-        Select Case x \ Screen.TwipsPerPixelX
+        Select Case X \ Screen.TwipsPerPixelX
                 
             Case WM_LBUTTONDBLCLK
                 WindowState = vbNormal
@@ -1265,7 +1265,7 @@ Private Sub GameTimer_Timer()
                     
                     .NumeroPaquetesPorMiliSec = 0
                     
-                    Call DoTileEvents(iUserIndex, .Pos.Map, .Pos.x, .Pos.Y)
+                    Call DoTileEvents(iUserIndex, .Pos.Map, .Pos.X, .Pos.Y)
 
                     If .flags.Muerto = 0 Then
                         
@@ -1730,7 +1730,7 @@ Private Sub TIMER_AI_Timer()
 
     Dim NpcIndex As Long
 
-    Dim x        As Integer
+    Dim X        As Integer
 
     Dim Y        As Integer
 
@@ -1745,36 +1745,51 @@ Private Sub TIMER_AI_Timer()
 
         'Update NPCs
         For NpcIndex = 1 To LastNPC
-        
-            If Npclist(NpcIndex).flags.NPCActive Then 'Nos aseguramos que sea INTELIGENTE!
-                If Npclist(NpcIndex).flags.Paralizado = 1 Then
-                    Call EfectoParalisisNpc(NpcIndex)
-
-                Else
-                    'Usamos AI si hay algun user en el mapa
-                    If Npclist(NpcIndex).flags.Inmovilizado = 1 Then
+            
+            With Npclist(NpcIndex)
+            
+                If .flags.NPCActive Then 'Nos aseguramos que sea INTELIGENTE!
+                
+                    If .flags.Paralizado = 1 Then
                         Call EfectoParalisisNpc(NpcIndex)
-                    End If
-                    
-                    Mapa = Npclist(NpcIndex).Pos.Map
-                    
-                    If Mapa > 0 Then
-                        If MapInfo(Mapa).NumUsers > 0 Then
 
-                            ' If Npclist(NpcIndex).Movement <> TipoAI.ESTATICO Then
-                            If IntervaloPermiteMoverse(NpcIndex) Then
-                                Call NPCAI(NpcIndex)
+                    Else
+                        
+                        'Si es pretoriano...
+                        If .NPCtype = eNPCType.Pretoriano Then
+                            Call ClanPretoriano(.ClanIndex).PerformPretorianAI(NpcIndex)
+                        
+                        Else ' Si NO es pretoriano.
+                        
+                            'Usamos AI si hay algun user en el mapa
+                            If .flags.Inmovilizado = 1 Then
+                                Call EfectoParalisisNpc(NpcIndex)
                             End If
-
-                            ' End If
+                        
+                            Mapa = .Pos.Map
+                        
+                            If Mapa > 0 Then
+                            
+                                If MapInfo(Mapa).NumUsers > 0 Then
+    
+                                    ' If .Movement <> TipoAI.ESTATICO Then
+                                    If IntervaloPermiteMoverse(NpcIndex) Then
+                                        Call NPCAI(NpcIndex)
+                                    End If
+    
+                                    ' End If
+                                
+                                End If
+    
+                            End If
                             
                         End If
-
+                        
                     End If
 
                 End If
-
-            End If
+            
+            End With
 
         Next NpcIndex
 
@@ -1943,7 +1958,7 @@ End Sub
 
 Private Sub tPiqueteC_Timer()
 
-    On Error GoTo Errhandler
+    On Error GoTo errHandler
 
     Static segundos As Integer
 
@@ -1960,7 +1975,7 @@ Private Sub tPiqueteC_Timer()
     For i = 1 To LastUser
 
         If UserList(i).flags.UserLogged Then
-            If MapData(UserList(i).Pos.Map, UserList(i).Pos.x, UserList(i).Pos.Y).trigger = eTrigger.ANTIPIQUETE Then
+            If MapData(UserList(i).Pos.Map, UserList(i).Pos.X, UserList(i).Pos.Y).trigger = eTrigger.ANTIPIQUETE Then
                 UserList(i).Counters.PiqueteC = UserList(i).Counters.PiqueteC + 1
                 'Call WriteConsoleMsg(i, "Estás obstruyendo la via pública, muévete o serás encarcelado!!!", FontTypeNames.FONTTYPE_INFO)
                 Call WriteLocaleMsg(i, "70", FontTypeNames.FONTTYPE_INFO)
@@ -2014,7 +2029,7 @@ Private Sub tPiqueteC_Timer()
 
     Exit Sub
 
-Errhandler:
+errHandler:
     Call LogError("Error en tPiqueteC_Timer " & Err.Number & ": " & Err.description)
 
 End Sub
