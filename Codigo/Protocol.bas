@@ -1407,7 +1407,7 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
     End Select
 
     'Done with this packet, move on to next one or send everything if no more packets found
-    If UserList(UserIndex).incomingData.length > 0 And Err.Number = 0 Then
+    If UserList(UserIndex).incomingData.Length > 0 And Err.Number = 0 Then
         HandleIncomingData = True
   
     ElseIf Err.Number <> 0 And Not Err.Number = UserList(UserIndex).incomingData.NotEnoughDataErrCode Then
@@ -1648,7 +1648,7 @@ Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
             
         End Select
     
-374     If UserList(UserIndex).incomingData.length > 0 And Err.Number = 0 Then
+374     If UserList(UserIndex).incomingData.Length > 0 And Err.Number = 0 Then
 376         Err.Clear
 378         Call HandleIncomingData(UserIndex)
     
@@ -1683,7 +1683,7 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
     ''Last Modification: 01/12/08 Ladder
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 16 Then
+    If UserList(UserIndex).incomingData.Length < 16 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -1821,7 +1821,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
     '
     '***************************************************
 
-    If UserList(UserIndex).incomingData.length < 21 Then
+    If UserList(UserIndex).incomingData.Length < 21 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -1964,7 +1964,7 @@ Private Sub HandleTalk(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -2058,7 +2058,7 @@ Private Sub HandleYell(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -2154,7 +2154,7 @@ Private Sub HandleWhisper(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 6 Then
+    If UserList(UserIndex).incomingData.Length < 6 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -2263,7 +2263,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
 
 100     demora = timeGetTime
 
-102     If UserList(UserIndex).incomingData.length < 2 Then
+102     If UserList(UserIndex).incomingData.Length < 2 Then
 104         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -2981,7 +2981,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 4 Then
+100     If UserList(UserIndex).incomingData.Length < 4 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -3092,7 +3092,7 @@ Private Sub HandleCastSpell(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 2 Then
+100     If UserList(UserIndex).incomingData.Length < 2 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -3164,7 +3164,7 @@ Private Sub HandleLeftClick(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 3 Then
+100     If UserList(UserIndex).incomingData.Length < 3 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -3209,7 +3209,7 @@ Private Sub HandleDoubleClick(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 3 Then
+100     If UserList(UserIndex).incomingData.Length < 3 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -3254,7 +3254,7 @@ Private Sub HandleWork(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 2 Then
+100     If UserList(UserIndex).incomingData.Length < 2 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -3393,7 +3393,7 @@ Private Sub HandleUseItem(ByVal UserIndex As Integer)
         On Error GoTo HandleUseItem_Err
         
 
-100     If UserList(UserIndex).incomingData.length < 2 Then
+100     If UserList(UserIndex).incomingData.Length < 2 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -3441,7 +3441,7 @@ Private Sub HandleCraftBlacksmith(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 3 Then
+100     If UserList(UserIndex).incomingData.Length < 3 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -3487,7 +3487,7 @@ Private Sub HandleCraftCarpenter(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 3 Then
+100     If UserList(UserIndex).incomingData.Length < 3 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -3528,7 +3528,7 @@ Private Sub HandleCraftAlquimia(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 4 Then
+100     If UserList(UserIndex).incomingData.Length < 4 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -3567,7 +3567,7 @@ Private Sub HandleCraftSastre(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 4 Then
+100     If UserList(UserIndex).incomingData.Length < 4 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -3612,7 +3612,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 4 Then
+100     If UserList(UserIndex).incomingData.Length < 4 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -4520,7 +4520,7 @@ Private Sub HandleCreateNewGuild(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 6 Then
+    If UserList(UserIndex).incomingData.Length < 6 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -4601,7 +4601,7 @@ Private Sub HandleSpellInfo(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 2 Then
+100     If UserList(UserIndex).incomingData.Length < 2 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -4663,7 +4663,7 @@ Private Sub HandleEquipItem(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 2 Then
+100     If UserList(UserIndex).incomingData.Length < 2 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -4718,7 +4718,7 @@ Private Sub HandleChangeHeading(ByVal UserIndex As Integer)
         'Last Modified By: Lucas Tavolaro Ortiz (Tavo)
         ' 10/01/2008: Tavo - Se cancela la salida del juego si el user esta saliendo
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 2 Then
+100     If UserList(UserIndex).incomingData.Length < 2 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -4765,7 +4765,7 @@ Private Sub HandleModifySkills(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 1 + NUMSKILLS Then
+100     If UserList(UserIndex).incomingData.Length < 1 + NUMSKILLS Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -4849,7 +4849,7 @@ Private Sub HandleTrain(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 2 Then
+100     If UserList(UserIndex).incomingData.Length < 2 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -4913,7 +4913,7 @@ Private Sub HandleCommerceBuy(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 4 Then
+100     If UserList(UserIndex).incomingData.Length < 4 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -4984,7 +4984,7 @@ Private Sub HandleBankExtractItem(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 5 Then
+100     If UserList(UserIndex).incomingData.Length < 5 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -5050,7 +5050,7 @@ Private Sub HandleCommerceSell(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 4 Then
+100     If UserList(UserIndex).incomingData.Length < 4 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -5113,7 +5113,7 @@ Private Sub HandleBankDeposit(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 5 Then
+100     If UserList(UserIndex).incomingData.Length < 5 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -5175,7 +5175,7 @@ Private Sub HandleForumPost(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 5 Then
+    If UserList(UserIndex).incomingData.Length < 5 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -5283,7 +5283,7 @@ Private Sub HandleMoveSpell(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 3 Then
+100     If UserList(UserIndex).incomingData.Length < 3 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -5327,7 +5327,7 @@ Private Sub HandleClanCodexUpdate(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -5386,7 +5386,7 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 6 Then
+100     If UserList(UserIndex).incomingData.Length < 6 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -5518,7 +5518,7 @@ Private Sub HandleGuildAcceptPeace(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -5586,7 +5586,7 @@ Private Sub HandleGuildRejectAlliance(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -5654,7 +5654,7 @@ Private Sub HandleGuildRejectPeace(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -5722,7 +5722,7 @@ Private Sub HandleGuildAcceptAlliance(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -5790,7 +5790,7 @@ Private Sub HandleGuildOfferPeace(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 5 Then
+    If UserList(UserIndex).incomingData.Length < 5 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -5856,7 +5856,7 @@ Private Sub HandleGuildOfferAlliance(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 5 Then
+    If UserList(UserIndex).incomingData.Length < 5 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -5922,7 +5922,7 @@ Private Sub HandleGuildAllianceDetails(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -5989,7 +5989,7 @@ Private Sub HandleGuildPeaceDetails(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -6056,7 +6056,7 @@ Private Sub HandleGuildRequestJoinerInfo(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -6177,7 +6177,7 @@ Private Sub HandleGuildDeclareWar(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -6248,7 +6248,7 @@ Private Sub HandleGuildNewWebsite(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -6300,7 +6300,7 @@ Private Sub HandleGuildAcceptNewMember(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -6375,7 +6375,7 @@ Private Sub HandleGuildRejectNewMember(ByVal UserIndex As Integer)
     'Last Modification by: (liquid)
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 5 Then
+    If UserList(UserIndex).incomingData.Length < 5 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -6451,7 +6451,7 @@ Private Sub HandleGuildKickMember(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -6517,7 +6517,7 @@ Private Sub HandleGuildUpdateNews(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -6569,7 +6569,7 @@ Private Sub HandleGuildMemberInfo(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -6660,7 +6660,7 @@ Private Sub HandleGuildRequestMembership(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 5 Then
+    If UserList(UserIndex).incomingData.Length < 5 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -6726,7 +6726,7 @@ Private Sub HandleGuildRequestDetails(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -7087,7 +7087,7 @@ Private Sub HandleGrupoMsg(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -7317,6 +7317,9 @@ Private Sub HandleMeditate(ByVal UserIndex As Integer)
 118         If .flags.Meditando Then
 
                 .Counters.InicioMeditar = GetTickCount And &H7FFFFFFF
+            
+                Call WriteConsoleMsg(UserIndex, "Te estás concentrando. En " & Fix(TIEMPO_INICIOMEDITAR / 1000) & " segundos comenzarás a meditar.", FontTypeNames.FONTTYPE_INFO)
+            
 
 120             Select Case .Stats.ELV
 
@@ -8002,7 +8005,7 @@ Private Sub HandleGuildMessage(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -8072,7 +8075,7 @@ Private Sub HandleCentinelReport(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 3 Then
+100     If UserList(UserIndex).incomingData.Length < 3 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -8148,7 +8151,7 @@ Private Sub HandleCouncilMessage(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -8215,7 +8218,7 @@ Private Sub HandleRoleMasterRequest(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -8315,7 +8318,7 @@ Private Sub HandleChangeDescription(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -8383,7 +8386,7 @@ Private Sub HandleGuildVote(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -8446,7 +8449,7 @@ Private Sub HandlePunishments(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -8546,7 +8549,7 @@ Private Sub HandleChangePassword(ByVal UserIndex As Integer)
     'Ahora cambia la password de la cuenta y no del PJ.
     '***************************************************
 
-    If UserList(UserIndex).incomingData.length < 5 Then
+    If UserList(UserIndex).incomingData.Length < 5 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -8630,7 +8633,7 @@ Private Sub HandleGamble(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 3 Then
+100     If UserList(UserIndex).incomingData.Length < 3 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -8712,7 +8715,7 @@ Private Sub HandleInquiryVote(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 2 Then
+100     If UserList(UserIndex).incomingData.Length < 2 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -8754,7 +8757,7 @@ Private Sub HandleBankExtractGold(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 5 Then
+100     If UserList(UserIndex).incomingData.Length < 5 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -8928,7 +8931,7 @@ Private Sub HandleBankDepositGold(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 5 Then
+100     If UserList(UserIndex).incomingData.Length < 5 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -9037,7 +9040,7 @@ Private Sub HandleGuildMemberList(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -9123,7 +9126,7 @@ Private Sub HandleGMMessage(ByVal UserIndex As Integer)
     'Last Modification: 01/08/07
     'Last Modification by: (liquid)
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -9343,7 +9346,7 @@ Private Sub HandleGoNearby(ByVal UserIndex As Integer)
     'Last Modification: 01/10/07
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -9452,7 +9455,7 @@ Private Sub HandleComment(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -9548,7 +9551,7 @@ Private Sub HandleWhere(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -9624,7 +9627,7 @@ Private Sub HandleCreaturesInMap(ByVal UserIndex As Integer)
         'Last Modification: 30/07/06
         'Pablo (ToxicWaste): modificaciones generales para simplificar la visualizaciín.
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 3 Then
+100     If UserList(UserIndex).incomingData.Length < 3 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -9815,7 +9818,7 @@ Private Sub HandleWarpChar(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 7 Then
+    If UserList(UserIndex).incomingData.Length < 7 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -9907,7 +9910,7 @@ Private Sub HandleSilence(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -10022,7 +10025,7 @@ Private Sub HandleSOSRemove(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -10078,7 +10081,7 @@ Private Sub HandleGoToChar(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -10158,7 +10161,7 @@ End Sub
 Private Sub HandleDesbuggear(ByVal UserIndex As Integer)
 
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -10270,7 +10273,7 @@ End Sub
 Private Sub HandleDarLlaveAUsuario(ByVal UserIndex As Integer)
 
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 5 Then
+    If UserList(UserIndex).incomingData.Length < 5 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
     End If
@@ -10360,7 +10363,7 @@ End Sub
 Private Sub HandleSacarLlave(ByVal UserIndex As Integer)
 
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
     End If
@@ -10420,7 +10423,7 @@ End Sub
 
 Private Sub HandleUseKey(ByVal UserIndex As Integer)
 
-    If UserList(UserIndex).incomingData.length < 2 Then
+    If UserList(UserIndex).incomingData.Length < 2 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
     End If
@@ -10683,7 +10686,7 @@ Private Sub HandleJail(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 6 Then
+    If UserList(UserIndex).incomingData.Length < 6 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -10851,7 +10854,7 @@ Private Sub HandleWarnUser(ByVal UserIndex As Integer)
     'Last Modification: 12/26/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 5 Then
+    If UserList(UserIndex).incomingData.Length < 5 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -10948,7 +10951,7 @@ Private Sub HandleMensajeUser(ByVal UserIndex As Integer)
     'Last Modification: 04/jul/2014
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 6 Then
+    If UserList(UserIndex).incomingData.Length < 6 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -11047,7 +11050,7 @@ Private Sub HandleTraerBoveda(ByVal UserIndex As Integer)
     'Last Modification: 04/jul/2014
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 2 Then
+    If UserList(UserIndex).incomingData.Length < 2 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -11094,7 +11097,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
     'Last Modification: 12/28/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 8 Then
+    If UserList(UserIndex).incomingData.Length < 8 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -11464,7 +11467,7 @@ Private Sub HandleRequestCharInfo(ByVal UserIndex As Integer)
     'Last Modification: 01/08/07
     'Last Modification by: (liquid).. alto bug zapallo..
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -11545,7 +11548,7 @@ Private Sub HandleRequestCharStats(ByVal UserIndex As Integer)
     'Last Modification: 12/29/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -11617,7 +11620,7 @@ Private Sub HandleRequestCharGold(ByVal UserIndex As Integer)
     'Last Modification: 12/29/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -11688,7 +11691,7 @@ Private Sub HandleRequestCharInventory(ByVal UserIndex As Integer)
     'Last Modification: 12/29/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -11759,7 +11762,7 @@ Private Sub HandleRequestCharBank(ByVal UserIndex As Integer)
     'Last Modification: 12/29/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -11830,7 +11833,7 @@ Private Sub HandleRequestCharSkills(ByVal UserIndex As Integer)
     'Last Modification: 12/29/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -11917,7 +11920,7 @@ Private Sub HandleReviveChar(ByVal UserIndex As Integer)
     'Last Modification: 12/29/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -12217,7 +12220,7 @@ Private Sub HandleKick(ByVal UserIndex As Integer)
     'Last Modification: 12/29/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -12297,7 +12300,7 @@ Private Sub HandleExecute(ByVal UserIndex As Integer)
     'Last Modification: 12/29/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -12371,7 +12374,7 @@ Private Sub HandleBanChar(ByVal UserIndex As Integer)
     'Last Modification: 12/29/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 5 Then
+    If UserList(UserIndex).incomingData.Length < 5 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -12428,7 +12431,7 @@ Private Sub HandleSilenciarUser(ByVal UserIndex As Integer)
     'Last Modification: 12/29/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 5 Then
+    If UserList(UserIndex).incomingData.Length < 5 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -12486,7 +12489,7 @@ Private Sub HandleUnbanChar(ByVal UserIndex As Integer)
     'Last Modification: 12/29/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -12622,7 +12625,7 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
     'Last Modification: 12/29/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -12748,7 +12751,7 @@ Private Sub HandleSpawnCreature(ByVal UserIndex As Integer)
         'Last Modification: 12/29/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 3 Then
+100     If UserList(UserIndex).incomingData.Length < 3 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -12863,7 +12866,7 @@ Private Sub HandleServerMessage(ByVal UserIndex As Integer)
     'Last Modification: 12/29/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -12925,7 +12928,7 @@ Private Sub HandleNickToIP(ByVal UserIndex As Integer)
     'Last Modification: 24/07/07
     'Pablo (ToxicWaste): Agrego para uqe el /nick2ip tambien diga los nicks en esa ip por pedido de la DGM.
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -13036,7 +13039,7 @@ Private Sub HandleIPToNick(ByVal UserIndex As Integer)
         'Last Modification: 12/29/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 5 Then
+100     If UserList(UserIndex).incomingData.Length < 5 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -13111,7 +13114,7 @@ Private Sub HandleGuildOnlineMembers(ByVal UserIndex As Integer)
     'Last Modification: 12/29/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -13185,7 +13188,7 @@ Private Sub HandleTeleportCreate(ByVal UserIndex As Integer)
         'Last Modification: 12/29/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 5 Then
+100     If UserList(UserIndex).incomingData.Length < 5 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -13379,7 +13382,7 @@ Private Sub HandleSetCharDescription(ByVal UserIndex As Integer)
     'Last Modification: 12/29/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -13450,7 +13453,7 @@ Private Sub HanldeForceMIDIToMap(ByVal UserIndex As Integer)
         'Last Modification: 12/29/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 4 Then
+100     If UserList(UserIndex).incomingData.Length < 4 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -13513,7 +13516,7 @@ Private Sub HandleForceWAVEToMap(ByVal UserIndex As Integer)
         'Last Modification: 12/29/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 6 Then
+100     If UserList(UserIndex).incomingData.Length < 6 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -13575,7 +13578,7 @@ Private Sub HandleRoyalArmyMessage(ByVal UserIndex As Integer)
     'Last Modification: 12/29/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -13635,7 +13638,7 @@ Private Sub HandleChaosLegionMessage(ByVal UserIndex As Integer)
     'Last Modification: 12/29/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -13695,7 +13698,7 @@ Private Sub HandleCitizenMessage(ByVal UserIndex As Integer)
     'Last Modification: 12/29/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -13755,7 +13758,7 @@ Private Sub HandleCriminalMessage(ByVal UserIndex As Integer)
     'Last Modification: 12/29/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -13815,7 +13818,7 @@ Private Sub HandleTalkAsNPC(ByVal UserIndex As Integer)
     'Last Modification: 12/29/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -13937,7 +13940,7 @@ Private Sub HandleAcceptRoyalCouncilMember(ByVal UserIndex As Integer)
     'Last Modification: 12/30/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -14016,7 +14019,7 @@ Private Sub HandleAcceptChaosCouncilMember(ByVal UserIndex As Integer)
     'Last Modification: 12/30/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -14150,7 +14153,7 @@ Private Sub HandleMakeDumb(ByVal UserIndex As Integer)
     'Last Modification: 12/30/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -14219,7 +14222,7 @@ Private Sub HandleMakeDumbNoMore(ByVal UserIndex As Integer)
     'Last Modification: 12/30/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -14323,7 +14326,7 @@ Private Sub HandleCouncilKick(ByVal UserIndex As Integer)
     'Last Modification: 12/30/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -14430,7 +14433,7 @@ Private Sub HandleSetTrigger(ByVal UserIndex As Integer)
         'Last Modification: 12/30/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 2 Then
+100     If UserList(UserIndex).incomingData.Length < 2 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -14601,7 +14604,7 @@ Private Sub HandleGuildBan(ByVal UserIndex As Integer)
     'Last Modification: 12/30/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -14716,7 +14719,7 @@ Private Sub HandleBanIP(ByVal UserIndex As Integer)
     'Last Modification: 12/30/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 6 Then
+    If UserList(UserIndex).incomingData.Length < 6 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -14827,7 +14830,7 @@ Private Sub HandleUnbanIP(ByVal UserIndex As Integer)
         'Last Modification: 12/30/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 5 Then
+100     If UserList(UserIndex).incomingData.Length < 5 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -14879,7 +14882,7 @@ Private Sub HandleCreateItem(ByVal UserIndex As Integer)
         'Last Modification: 12/30/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 5 Then
+100     If UserList(UserIndex).incomingData.Length < 5 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -14989,7 +14992,7 @@ Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
     'Last Modification: 12/30/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -15088,7 +15091,7 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
     'Last Modification: 12/30/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -15190,7 +15193,7 @@ Private Sub HandleForceMIDIAll(ByVal UserIndex As Integer)
         'Last Modification: 12/30/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 2 Then
+100     If UserList(UserIndex).incomingData.Length < 2 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -15236,7 +15239,7 @@ Private Sub HandleForceWAVEAll(ByVal UserIndex As Integer)
         'Last Modification: 12/30/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 2 Then
+100     If UserList(UserIndex).incomingData.Length < 2 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -15277,7 +15280,7 @@ Private Sub HandleRemovePunishment(ByVal UserIndex As Integer)
     'Last Modification: 1/05/07
     'Pablo (ToxicWaste): 1/05/07, You can now edit the punishment.
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 6 Then
+    If UserList(UserIndex).incomingData.Length < 6 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -15499,7 +15502,7 @@ Private Sub HandleLastIP(ByVal UserIndex As Integer)
     'Last Modification: 12/30/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -15615,7 +15618,7 @@ Public Sub HandleChatColor(ByVal UserIndex As Integer)
         'Last modified by: Juan Martín Sotuyo Dodero (Maraxus)
         'Change the user`s chat color
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 4 Then
+100     If UserList(UserIndex).incomingData.Length < 4 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -15692,7 +15695,7 @@ Public Sub HandleCheckSlot(ByVal UserIndex As Integer)
     'Last Modification: 26/01/2007
     'Check one Users Slot in Particular from Inventory
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 4 Then
+    If UserList(UserIndex).incomingData.Length < 4 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -16027,8 +16030,8 @@ Public Sub HandleRequestTCPStats(ByVal UserIndex As Integer)
 120             With UserList(i)
 
 122                 If .flags.UserLogged And .ConnID >= 0 And .ConnIDValida Then
-124                     If .outgoingData.length > 0 Then
-126                         list = list & .name & " (" & CStr(.outgoingData.length) & "), "
+124                     If .outgoingData.Length > 0 Then
+126                         list = list & .name & " (" & CStr(.outgoingData.Length) & "), "
 128                         Count = Count + 1
 
                         End If
@@ -16246,7 +16249,7 @@ Public Sub HandleChangeMapInfoBackup(ByVal UserIndex As Integer)
         'Last modified by: Juan Martín Sotuyo Dodero (Maraxus)
         'Change the backup`s info of the map
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 2 Then
+100     If UserList(UserIndex).incomingData.Length < 2 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -16304,7 +16307,7 @@ Public Sub HandleChangeMapInfoPK(ByVal UserIndex As Integer)
         'Last modified by: Juan Martín Sotuyo Dodero (Maraxus)
         'Change the pk`s info of the  map
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 2 Then
+100     If UserList(UserIndex).incomingData.Length < 2 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -16352,7 +16355,7 @@ Public Sub HandleChangeMapInfoRestricted(ByVal UserIndex As Integer)
     'Last Modification: 26/01/2007
     'Restringido -> Options: "NEWBIE", "NO", "ARMADA", "CAOS", "FACCION".
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -16422,7 +16425,7 @@ Public Sub HandleChangeMapInfoNoMagic(ByVal UserIndex As Integer)
         'Last Modification: 26/01/2007
         'MagiaSinEfecto -> Options: "1" , "0".
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 2 Then
+100     If UserList(UserIndex).incomingData.Length < 2 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -16470,7 +16473,7 @@ Public Sub HandleChangeMapInfoNoInvi(ByVal UserIndex As Integer)
         'Last Modification: 26/01/2007
         'InviSinEfecto -> Options: "1", "0"
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 2 Then
+100     If UserList(UserIndex).incomingData.Length < 2 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -16518,7 +16521,7 @@ Public Sub HandleChangeMapInfoNoResu(ByVal UserIndex As Integer)
         'Last Modification: 26/01/2007
         'ResuSinEfecto -> Options: "1", "0"
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 2 Then
+100     If UserList(UserIndex).incomingData.Length < 2 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -16563,7 +16566,7 @@ Public Sub HandleChangeMapInfoLand(ByVal UserIndex As Integer)
     'Last Modification: 26/01/2007
     'Terreno -> Opciones: "BOSQUE", "NIEVE", "DESIERTO", "CIUDAD", "CAMPO", "DUNGEON".
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -16631,7 +16634,7 @@ Public Sub HandleChangeMapInfoZone(ByVal UserIndex As Integer)
     'Last Modification: 26/01/2007
     'Zona -> Opciones: "BOSQUE", "NIEVE", "DESIERTO", "CIUDAD", "CAMPO", "DUNGEON".
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -16738,7 +16741,7 @@ Public Sub HandleShowGuildMessages(ByVal UserIndex As Integer)
     'Last modified by: Juan Martín Sotuyo Dodero (Maraxus)
     'Allows admins to read guild messages
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -16888,7 +16891,7 @@ Public Sub HandleAlterName(ByVal UserIndex As Integer)
     'Last Modification: 12/26/06
     'Change user name
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 5 Then
+    If UserList(UserIndex).incomingData.Length < 5 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -17002,7 +17005,7 @@ Public Sub HandleAlterMail(ByVal UserIndex As Integer)
     'Last Modification: 12/26/06
     'Change user password
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 5 Then
+    If UserList(UserIndex).incomingData.Length < 5 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -17078,7 +17081,7 @@ Public Sub HandleAlterPassword(ByVal UserIndex As Integer)
     'Last Modification: 12/26/06
     'Change user password
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 5 Then
+    If UserList(UserIndex).incomingData.Length < 5 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -17161,7 +17164,7 @@ Public Sub HandleCreateNPC(ByVal UserIndex As Integer)
         'Last Modification: 12/24/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 3 Then
+100     If UserList(UserIndex).incomingData.Length < 3 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -17210,7 +17213,7 @@ Public Sub HandleCreateNPCWithRespawn(ByVal UserIndex As Integer)
         'Last Modification: 12/24/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 3 Then
+100     If UserList(UserIndex).incomingData.Length < 3 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -17259,7 +17262,7 @@ Public Sub HandleImperialArmour(ByVal UserIndex As Integer)
         'Last Modification: 12/24/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 4 Then
+100     If UserList(UserIndex).incomingData.Length < 4 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -17320,7 +17323,7 @@ Public Sub HandleChaosArmour(ByVal UserIndex As Integer)
         'Last Modification: 12/24/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.length < 4 Then
+100     If UserList(UserIndex).incomingData.Length < 4 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -17591,7 +17594,7 @@ Public Sub HandleTurnCriminal(ByVal UserIndex As Integer)
     'Last Modification: 12/26/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -17656,7 +17659,7 @@ Public Sub HandleResetFactions(ByVal UserIndex As Integer)
     'Last Modification: 12/26/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -17721,7 +17724,7 @@ Public Sub HandleRemoveCharFromGuild(ByVal UserIndex As Integer)
     'Last Modification: 12/26/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -17792,7 +17795,7 @@ Public Sub HandleRequestCharMail(ByVal UserIndex As Integer)
     'Last Modification: 12/26/06
     'Request user mail
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -17858,7 +17861,7 @@ Public Sub HandleSystemMessage(ByVal UserIndex As Integer)
     'Last Modification: 12/29/06
     'Send a message to all the users
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -17922,7 +17925,7 @@ Public Sub HandleSetMOTD(ByVal UserIndex As Integer)
     '   - Fixed a bug that prevented from properly setting the new number of lines.
     '   - Fixed a bug that caused the player to be kicked.
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -18728,7 +18731,7 @@ Public Function PrepareMessageCharSwing(ByVal CharIndex As Integer, Optional ByV
 106         Call .WriteBoolean(FX)
 108         Call .WriteBoolean(ShowText)
         
-110         PrepareMessageCharSwing = .ReadASCIIStringFixed(.length)
+110         PrepareMessageCharSwing = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -22589,10 +22592,10 @@ Public Sub FlushBuffer(ByVal UserIndex As Integer)
     
 100     With UserList(UserIndex).outgoingData
 
-102         If .length = 0 Then Exit Sub
+102         If .Length = 0 Then Exit Sub
         
             ' Tratamos de enviar los datos.
-104         Dim ret As Long: ret = WsApiEnviar(UserIndex, .ReadASCIIStringFixed(.length))
+104         Dim ret As Long: ret = WsApiEnviar(UserIndex, .ReadASCIIStringFixed(.Length))
     
             ' Si recibimos un error como respuesta de la API, cerramos el socket.
 106         If ret <> 0 And ret <> WSAEWOULDBLOCK Then
@@ -22637,7 +22640,7 @@ Public Function PrepareMessageSetInvisible(ByVal CharIndex As Integer, ByVal inv
 104         Call .WriteInteger(CharIndex)
 106         Call .WriteBoolean(invisible)
         
-108         PrepareMessageSetInvisible = .ReadASCIIStringFixed(.length)
+108         PrepareMessageSetInvisible = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -22666,7 +22669,7 @@ Public Function PrepareMessageSetEscribiendo(ByVal CharIndex As Integer, ByVal E
 104         Call .WriteInteger(CharIndex)
 106         Call .WriteBoolean(Escribiendo)
         
-108         PrepareMessageSetEscribiendo = .ReadASCIIStringFixed(.length)
+108         PrepareMessageSetEscribiendo = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -22720,7 +22723,7 @@ Public Function PrepareMessageChatOverHead(ByVal chat As String, ByVal CharIndex
         
             'Call .WriteASCIIString(name) Anulado gracias a Optimizacion ^^
         
-122         PrepareMessageChatOverHead = .ReadASCIIStringFixed(.length)
+122         PrepareMessageChatOverHead = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -22748,7 +22751,7 @@ Public Function PrepareMessageEfectOverHead(ByVal chat As String, ByVal CharInde
 104         Call .WriteASCIIString(chat)
 106         Call .WriteInteger(CharIndex)
 108         Call .WriteLong(Color)
-110         PrepareMessageEfectOverHead = .ReadASCIIStringFixed(.length)
+110         PrepareMessageEfectOverHead = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -22774,7 +22777,7 @@ Public Function PrepareMessageExpOverHead(ByVal chat As String, ByVal CharIndex 
 102         Call .WriteByte(ServerPacketID.ExpOverHEad)
 104         Call .WriteASCIIString(chat)
 106         Call .WriteInteger(CharIndex)
-108         PrepareMessageExpOverHead = .ReadASCIIStringFixed(.length)
+108         PrepareMessageExpOverHead = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -22800,7 +22803,7 @@ Public Function PrepareMessageOroOverHead(ByVal chat As String, ByVal CharIndex 
 102         Call .WriteByte(ServerPacketID.OroOverHEad)
 104         Call .WriteASCIIString(chat)
 106         Call .WriteInteger(CharIndex)
-108         PrepareMessageOroOverHead = .ReadASCIIStringFixed(.length)
+108         PrepareMessageOroOverHead = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -22836,7 +22839,7 @@ Public Function PrepareMessageConsoleMsg(ByVal chat As String, ByVal FontIndex A
 104         Call .WriteASCIIString(chat)
 106         Call .WriteByte(FontIndex)
         
-108         PrepareMessageConsoleMsg = .ReadASCIIStringFixed(.length)
+108         PrepareMessageConsoleMsg = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -22865,7 +22868,7 @@ Public Function PrepareMessageLocaleMsg(ByVal Id As Integer, ByVal chat As Strin
 106         Call .WriteASCIIString(chat)
 108         Call .WriteByte(FontIndex)
         
-110         PrepareMessageLocaleMsg = .ReadASCIIStringFixed(.length)
+110         PrepareMessageLocaleMsg = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -22916,7 +22919,7 @@ Public Function PrepareMessageListaCorreo(ByVal UserIndex As Integer, ByVal actu
 
 128         Call .WriteBoolean(actualizar)
         
-130         PrepareMessageListaCorreo = .ReadASCIIStringFixed(.length)
+130         PrepareMessageListaCorreo = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -22955,7 +22958,7 @@ Public Function PrepareMessageCreateFX(ByVal CharIndex As Integer, ByVal FX As I
 106         Call .WriteInteger(FX)
 108         Call .WriteInteger(FXLoops)
         
-110         PrepareMessageCreateFX = .ReadASCIIStringFixed(.length)
+110         PrepareMessageCreateFX = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -22978,7 +22981,7 @@ Public Function PrepareMessageMeditateToggle(ByVal CharIndex As Integer, ByVal F
 104         Call .WriteInteger(CharIndex)
 106         Call .WriteInteger(FX)
         
-108         PrepareMessageMeditateToggle = .ReadASCIIStringFixed(.length)
+108         PrepareMessageMeditateToggle = .ReadASCIIStringFixed(.Length)
         End With
 
         
@@ -23007,7 +23010,7 @@ Public Function PrepareMessageParticleFX(ByVal CharIndex As Integer, ByVal Parti
 108         Call .WriteLong(Time)
 110         Call .WriteBoolean(Remove)
         
-112         PrepareMessageParticleFX = .ReadASCIIStringFixed(.length)
+112         PrepareMessageParticleFX = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -23040,7 +23043,7 @@ Public Function PrepareMessageParticleFXWithDestino(ByVal Emisor As Integer, ByV
 114         Call .WriteInteger(wav)
 116         Call .WriteInteger(FX)
         
-118         PrepareMessageParticleFXWithDestino = .ReadASCIIStringFixed(.length)
+118         PrepareMessageParticleFXWithDestino = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -23074,7 +23077,7 @@ Public Function PrepareMessageParticleFXWithDestinoXY(ByVal Emisor As Integer, B
 116         Call .WriteByte(X)
 118         Call .WriteByte(Y)
         
-120         PrepareMessageParticleFXWithDestinoXY = .ReadASCIIStringFixed(.length)
+120         PrepareMessageParticleFXWithDestinoXY = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -23103,7 +23106,7 @@ Public Function PrepareMessageAuraToChar(ByVal CharIndex As Integer, ByVal Aura 
 106         Call .WriteASCIIString(Aura)
 108         Call .WriteBoolean(Remove)
 110         Call .WriteByte(Tipo)
-112         PrepareMessageAuraToChar = .ReadASCIIStringFixed(.length)
+112         PrepareMessageAuraToChar = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -23130,7 +23133,7 @@ Public Function PrepareMessageSpeedingACT(ByVal CharIndex As Integer, ByVal spee
 102         Call .WriteByte(ServerPacketID.SpeedTOChar)
 104         Call .WriteInteger(CharIndex)
 106         Call .WriteSingle(speeding)
-108         PrepareMessageSpeedingACT = .ReadASCIIStringFixed(.length)
+108         PrepareMessageSpeedingACT = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -23156,7 +23159,7 @@ Public Function PrepareMessageParticleFXToFloor(ByVal X As Byte, ByVal Y As Byte
 106         Call .WriteByte(Y)
 108         Call .WriteInteger(Particula)
 110         Call .WriteLong(Time)
-112         PrepareMessageParticleFXToFloor = .ReadASCIIStringFixed(.length)
+112         PrepareMessageParticleFXToFloor = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -23182,7 +23185,7 @@ Public Function PrepareMessageLightFXToFloor(ByVal X As Byte, ByVal Y As Byte, B
 106         Call .WriteByte(Y)
 108         Call .WriteLong(LuzColor)
 110         Call .WriteByte(Rango)
-112         PrepareMessageLightFXToFloor = .ReadASCIIStringFixed(.length)
+112         PrepareMessageLightFXToFloor = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -23221,7 +23224,7 @@ Public Function PrepareMessagePlayWave(ByVal wave As Integer, ByVal X As Byte, B
 106         Call .WriteByte(X)
 108         Call .WriteByte(Y)
         
-110         PrepareMessagePlayWave = .ReadASCIIStringFixed(.length)
+110         PrepareMessagePlayWave = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -23251,7 +23254,7 @@ Public Function PrepareMessageUbicacionLlamada(ByVal Mapa As Integer, ByVal X As
 106         Call .WriteByte(X)
 108         Call .WriteByte(Y)
         
-110         PrepareMessageUbicacionLlamada = .ReadASCIIStringFixed(.length)
+110         PrepareMessageUbicacionLlamada = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -23281,7 +23284,7 @@ Public Function PrepareMessageCharUpdateHP(ByVal UserIndex As Integer) As String
 106         Call .WriteInteger(UserList(UserIndex).Stats.MinHp)
 108         Call .WriteInteger(UserList(UserIndex).Stats.MaxHp)
         
-110         PrepareMessageCharUpdateHP = .ReadASCIIStringFixed(.length)
+110         PrepareMessageCharUpdateHP = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -23304,7 +23307,7 @@ Public Function PrepareMessageArmaMov(ByVal CharIndex As Integer) As String
 102         Call .WriteByte(ServerPacketID.ArmaMov)
 104         Call .WriteInteger(CharIndex)
         
-106         PrepareMessageArmaMov = .ReadASCIIStringFixed(.length)
+106         PrepareMessageArmaMov = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -23327,7 +23330,7 @@ Public Function PrepareMessageEscudoMov(ByVal CharIndex As Integer) As String
 102         Call .WriteByte(ServerPacketID.EscudoMov)
 104         Call .WriteInteger(CharIndex)
         
-106         PrepareMessageEscudoMov = .ReadASCIIStringFixed(.length)
+106         PrepareMessageEscudoMov = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -23356,7 +23359,7 @@ Public Function PrepareMessageEfectToScreen(ByVal Color As Long, ByVal duracion 
 104         Call .WriteLong(Color)
 106         Call .WriteLong(duracion)
 108         Call .WriteBoolean(Ignorar)
-110         PrepareMessageEfectToScreen = .ReadASCIIStringFixed(.length)
+110         PrepareMessageEfectToScreen = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -23390,7 +23393,7 @@ Public Function PrepareMessageGuildChat(ByVal chat As String) As String
 102         Call .WriteByte(ServerPacketID.GuildChat)
 104         Call .WriteASCIIString(chat)
         
-106         PrepareMessageGuildChat = .ReadASCIIStringFixed(.length)
+106         PrepareMessageGuildChat = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -23424,7 +23427,7 @@ Public Function PrepareMessageShowMessageBox(ByVal chat As String) As String
 102         Call .WriteByte(ServerPacketID.ShowMessageBox)
 104         Call .WriteASCIIString(chat)
         
-106         PrepareMessageShowMessageBox = .ReadASCIIStringFixed(.length)
+106         PrepareMessageShowMessageBox = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -23460,7 +23463,7 @@ Public Function PrepareMessagePlayMidi(ByVal midi As Byte, Optional ByVal loops 
 104         Call .WriteByte(midi)
 106         Call .WriteInteger(loops)
         
-108         PrepareMessagePlayMidi = .ReadASCIIStringFixed(.length)
+108         PrepareMessagePlayMidi = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -23484,7 +23487,7 @@ Public Function PrepareMessageOnlineUser(ByVal UserOnline As Integer) As String
 102         Call .WriteByte(ServerPacketID.UserOnline)
 104         Call .WriteInteger(UserOnline)
         
-106         PrepareMessageOnlineUser = .ReadASCIIStringFixed(.length)
+106         PrepareMessageOnlineUser = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -23515,7 +23518,7 @@ Public Function PrepareMessagePauseToggle() As String
         '***************************************************
 100     With auxiliarBuffer
 102         Call .WriteByte(ServerPacketID.PauseToggle)
-104         PrepareMessagePauseToggle = .ReadASCIIStringFixed(.length)
+104         PrepareMessagePauseToggle = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -23547,7 +23550,7 @@ Public Function PrepareMessageRainToggle() As String
 100     With auxiliarBuffer
 102         Call .WriteByte(ServerPacketID.RainToggle)
         
-104         PrepareMessageRainToggle = .ReadASCIIStringFixed(.length)
+104         PrepareMessageRainToggle = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -23573,7 +23576,7 @@ Public Function PrepareMessageTrofeoToggleOn() As String
 100     With auxiliarBuffer
 102         Call .WriteByte(ServerPacketID.TrofeoToggleOn)
         
-104         PrepareMessageTrofeoToggleOn = .ReadASCIIStringFixed(.length)
+104         PrepareMessageTrofeoToggleOn = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -23599,7 +23602,7 @@ Public Function PrepareMessageTrofeoToggleOff() As String
 100     With auxiliarBuffer
 102         Call .WriteByte(ServerPacketID.TrofeoToggleoff)
         
-104         PrepareMessageTrofeoToggleOff = .ReadASCIIStringFixed(.length)
+104         PrepareMessageTrofeoToggleOff = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -23627,7 +23630,7 @@ Public Function PrepareMessageHora() As String
 104         Call .WriteInteger(HoraFanstasia)
 106         Call .WriteInteger(TimerHoraFantasia)
         
-108         PrepareMessageHora = .ReadASCIIStringFixed(.length)
+108         PrepareMessageHora = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -23663,7 +23666,7 @@ Public Function PrepareMessageObjectDelete(ByVal X As Byte, ByVal Y As Byte) As 
 104         Call .WriteByte(X)
 106         Call .WriteByte(Y)
         
-108         PrepareMessageObjectDelete = .ReadASCIIStringFixed(.length)
+108         PrepareMessageObjectDelete = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -23701,7 +23704,7 @@ Public Function PrepareMessageBlockPosition(ByVal X As Byte, ByVal Y As Byte, By
 106         Call .WriteByte(Y)
 108         Call .WriteBoolean(Blocked)
         
-110         PrepareMessageBlockPosition = .ReadASCIIStringFixed(.length)
+110         PrepareMessageBlockPosition = .ReadASCIIStringFixed(.Length)
 
         End With
     
@@ -23739,7 +23742,7 @@ Public Function PrepareMessageObjectCreate(ByVal ObjIndex As Integer, ByVal X As
 106         Call .WriteByte(Y)
 108         Call .WriteInteger(ObjIndex)
         
-110         PrepareMessageObjectCreate = .ReadASCIIStringFixed(.length)
+110         PrepareMessageObjectCreate = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -23768,7 +23771,7 @@ Public Function PrepareMessageFxPiso(ByVal GrhIndex As Integer, ByVal X As Byte,
 106         Call .WriteByte(Y)
 108         Call .WriteInteger(GrhIndex)
         
-110         PrepareMessageFxPiso = .ReadASCIIStringFixed(.length)
+110         PrepareMessageFxPiso = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -23803,7 +23806,7 @@ Public Function PrepareMessageCharacterRemove(ByVal CharIndex As Integer, ByVal 
 104         Call .WriteInteger(CharIndex)
 106         Call .WriteBoolean(Desvanecido)
         
-108         PrepareMessageCharacterRemove = .ReadASCIIStringFixed(.length)
+108         PrepareMessageCharacterRemove = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -23837,7 +23840,7 @@ Public Function PrepareMessageRemoveCharDialog(ByVal CharIndex As Integer) As St
 102         Call .WriteByte(ServerPacketID.RemoveCharDialog)
 104         Call .WriteInteger(CharIndex)
         
-106         PrepareMessageRemoveCharDialog = .ReadASCIIStringFixed(.length)
+106         PrepareMessageRemoveCharDialog = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -23914,7 +23917,7 @@ Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, ByVal Head 
 160         Call .WriteLong(UserMaxHp)
 162         Call .WriteByte(Simbolo)
 
-164         PrepareMessageCharacterCreate = .ReadASCIIStringFixed(.length)
+164         PrepareMessageCharacterCreate = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -23965,7 +23968,7 @@ Public Function PrepareMessageCharacterChange(ByVal Body As Integer, ByVal Head 
 118         Call .WriteInteger(FX)
 120         Call .WriteInteger(FXLoops)
         
-122         PrepareMessageCharacterChange = .ReadASCIIStringFixed(.length)
+122         PrepareMessageCharacterChange = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -24003,7 +24006,7 @@ Public Function PrepareMessageCharacterMove(ByVal CharIndex As Integer, ByVal X 
 106         Call .WriteByte(X)
 108         Call .WriteByte(Y)
         
-110         PrepareMessageCharacterMove = .ReadASCIIStringFixed(.length)
+110         PrepareMessageCharacterMove = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -24044,7 +24047,7 @@ Public Function PrepareMessageUpdateTagAndStatus(ByVal UserIndex As Integer, Sta
 108         Call .WriteASCIIString(Tag)
 110         Call .WriteInteger(UserList(UserIndex).Grupo.Lider)
         
-112         PrepareMessageUpdateTagAndStatus = .ReadASCIIStringFixed(.length)
+112         PrepareMessageUpdateTagAndStatus = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -24105,7 +24108,7 @@ Public Function PrepareMessageErrorMsg(ByVal message As String) As String
 102         Call .WriteByte(ServerPacketID.ErrorMsg)
 104         Call .WriteASCIIString(message)
         
-106         PrepareMessageErrorMsg = .ReadASCIIStringFixed(.length)
+106         PrepareMessageErrorMsg = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -24121,7 +24124,7 @@ End Function
 Private Sub HandleQuestionGM(ByVal UserIndex As Integer)
 
     'Author: Pablo Mercavides
-    If UserList(UserIndex).incomingData.length < 6 Then
+    If UserList(UserIndex).incomingData.Length < 6 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -24186,7 +24189,7 @@ Private Sub HandleOfertaInicial(ByVal UserIndex As Integer)
         
 
         'Author: Pablo Mercavides
-100     If UserList(UserIndex).incomingData.length < 6 Then
+100     If UserList(UserIndex).incomingData.Length < 6 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -24271,7 +24274,7 @@ End Sub
 Private Sub HandleOfertaDeSubasta(ByVal UserIndex As Integer)
 
     'Author: Pablo Mercavides
-    If UserList(UserIndex).incomingData.length < 6 Then
+    If UserList(UserIndex).incomingData.Length < 6 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -24379,7 +24382,7 @@ End Sub
 Private Sub HandleGlobalMessage(ByVal UserIndex As Integer)
 
     'Author: Pablo Mercavides
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -24569,7 +24572,7 @@ End Sub
 Private Sub HandleCrearCuenta(ByVal UserIndex As Integer)
 
     'Author: Pablo Mercavides
-    If UserList(UserIndex).incomingData.length < 18 Then
+    If UserList(UserIndex).incomingData.Length < 18 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -24634,7 +24637,7 @@ End Sub
 Private Sub HandleValidarCuenta(ByVal UserIndex As Integer)
 
     'Author: Pablo Mercavides
-    If UserList(UserIndex).incomingData.length < 7 Then
+    If UserList(UserIndex).incomingData.Length < 7 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -24717,7 +24720,7 @@ End Sub
 Private Sub HandleReValidarCuenta(ByVal UserIndex As Integer)
 
     'Author: Pablo Mercavides
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -24803,7 +24806,7 @@ Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
     Dim Version As String
 
     'Author: Pablo Mercavides
-    If UserList(UserIndex).incomingData.length < 14 Then
+    If UserList(UserIndex).incomingData.Length < 14 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -24923,7 +24926,7 @@ End Sub
 Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
 
     'Author: Pablo Mercavides
-    If UserList(UserIndex).incomingData.length < 15 Then
+    If UserList(UserIndex).incomingData.Length < 15 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -25021,7 +25024,7 @@ End Sub
 Private Sub HandleBorrandoCuenta(ByVal UserIndex As Integer)
 
     'Author: Pablo Mercavides
-    If UserList(UserIndex).incomingData.length < 7 Then
+    If UserList(UserIndex).incomingData.Length < 7 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -25110,7 +25113,7 @@ End Sub
 Private Sub HandleRecuperandoContraseña(ByVal UserIndex As Integer)
 
     'Author: Pablo Mercavides
-    If UserList(UserIndex).incomingData.length < 5 Then
+    If UserList(UserIndex).incomingData.Length < 5 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -25267,7 +25270,7 @@ End Sub
 Private Sub HandleCuentaRegresiva(ByVal UserIndex As Integer)
 
     'Author: Pablo Mercavides
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -25318,7 +25321,7 @@ End Sub
 Private Sub HandlePossUser(ByVal UserIndex As Integer)
 
     'Author: Pablo Mercavides
-    If UserList(UserIndex).incomingData.length < 4 Then
+    If UserList(UserIndex).incomingData.Length < 4 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -25376,7 +25379,7 @@ End Sub
 Private Sub HandleDuelo(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
 
-    If UserList(UserIndex).incomingData.length < 2 Then
+    If UserList(UserIndex).incomingData.Length < 2 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -25586,7 +25589,7 @@ End Sub
 Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
 
-    If UserList(UserIndex).incomingData.length < 8 Then
+    If UserList(UserIndex).incomingData.Length < 8 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -25668,7 +25671,7 @@ End Sub
 Private Sub HandleMoveItem(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
 
-    If UserList(UserIndex).incomingData.length < 4 Then
+    If UserList(UserIndex).incomingData.Length < 4 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -25871,7 +25874,7 @@ End Sub
 Private Sub HandleBovedaMoveItem(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
 
-    If UserList(UserIndex).incomingData.length < 4 Then
+    If UserList(UserIndex).incomingData.Length < 4 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -25938,7 +25941,7 @@ End Sub
 Private Sub HandleQuieroFundarClan(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
 
-    If UserList(UserIndex).incomingData.length < 2 Then
+    If UserList(UserIndex).incomingData.Length < 2 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -26026,7 +26029,7 @@ End Sub
 Private Sub HandleLlamadadeClan(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
 
-    If UserList(UserIndex).incomingData.length < 2 Then
+    If UserList(UserIndex).incomingData.Length < 2 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -26096,7 +26099,7 @@ Public Function PrepareMessageNieblandoToggle(ByVal IntensidadMax As Byte) As St
 102         Call .WriteByte(ServerPacketID.NieblaToggle)
 104         Call .WriteByte(IntensidadMax)
         
-106         PrepareMessageNieblandoToggle = .ReadASCIIStringFixed(.length)
+106         PrepareMessageNieblandoToggle = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -26120,7 +26123,7 @@ Public Function PrepareMessageNevarToggle() As String
 100     With auxiliarBuffer
 102         Call .WriteByte(ServerPacketID.NieveToggle)
         
-104         PrepareMessageNevarToggle = .ReadASCIIStringFixed(.length)
+104         PrepareMessageNevarToggle = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -26136,7 +26139,7 @@ End Function
 Private Sub HandleGenio(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
 
-    If UserList(UserIndex).incomingData.length < 2 Then
+    If UserList(UserIndex).incomingData.Length < 2 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -26187,7 +26190,7 @@ End Sub
 Private Sub HandleCasamiento(ByVal UserIndex As Integer)
 
     'Author: Pablo Mercavides
-    If UserList(UserIndex).incomingData.length < 4 Then
+    If UserList(UserIndex).incomingData.Length < 4 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -26281,7 +26284,7 @@ End Sub
 Private Sub HandleEnviarCodigo(ByVal UserIndex As Integer)
 
     'Author: Pablo Mercavides
-    If UserList(UserIndex).incomingData.length < 4 Then
+    If UserList(UserIndex).incomingData.Length < 4 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -26326,7 +26329,7 @@ End Sub
 Private Sub HandleCrearTorneo(ByVal UserIndex As Integer)
 
     'Author: Pablo Mercavides
-    If UserList(UserIndex).incomingData.length < 26 Then
+    If UserList(UserIndex).incomingData.Length < 26 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -26447,7 +26450,7 @@ End Sub
 Private Sub HandleComenzarTorneo(ByVal UserIndex As Integer)
 
     'Author: Pablo Mercavides
-    If UserList(UserIndex).incomingData.length < 2 Then
+    If UserList(UserIndex).incomingData.Length < 2 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -26494,7 +26497,7 @@ End Sub
 Private Sub HandleCancelarTorneo(ByVal UserIndex As Integer)
 
     'Author: Pablo Mercavides
-    If UserList(UserIndex).incomingData.length < 2 Then
+    If UserList(UserIndex).incomingData.Length < 2 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -26538,7 +26541,7 @@ End Sub
 Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
 
     'Author: Pablo Mercavides
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -26653,7 +26656,7 @@ End Sub
 Private Sub HandleDropItem(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
 
-    If UserList(UserIndex).incomingData.length < 5 Then
+    If UserList(UserIndex).incomingData.Length < 5 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -26770,7 +26773,7 @@ End Sub
 Private Sub HandleFlagTrabajar(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
 
-    If UserList(UserIndex).incomingData.length < 2 Then
+    If UserList(UserIndex).incomingData.Length < 2 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -26814,7 +26817,7 @@ End Sub
 Private Sub HandleEscribiendo(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
 
-    If UserList(UserIndex).incomingData.length < 2 Then
+    If UserList(UserIndex).incomingData.Length < 2 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -26926,7 +26929,7 @@ Public Function PrepareMessageBarFx(ByVal CharIndex As Integer, ByVal BarTime As
 106         Call .WriteInteger(BarTime)
 108         Call .WriteByte(BarAccion)
         
-110         PrepareMessageBarFx = .ReadASCIIStringFixed(.length)
+110         PrepareMessageBarFx = .ReadASCIIStringFixed(.Length)
 
         End With
 
@@ -26942,7 +26945,7 @@ End Function
 Private Sub HandleCompletarAccion(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
 
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -26998,7 +27001,7 @@ End Sub
 Private Sub HandleReclamarRecompensa(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
 
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -27043,7 +27046,7 @@ End Sub
 Private Sub HandleTraerRecompensas(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
 
-    If UserList(UserIndex).incomingData.length < 2 Then
+    If UserList(UserIndex).incomingData.Length < 2 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -27221,7 +27224,7 @@ End Sub
 Private Sub HandleDecimeLaHora(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
 
-    If UserList(UserIndex).incomingData.length < 2 Then
+    If UserList(UserIndex).incomingData.Length < 2 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -27295,7 +27298,7 @@ End Sub
 Private Sub HandleCorreo(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
 
-    If UserList(UserIndex).incomingData.length < 2 Then
+    If UserList(UserIndex).incomingData.Length < 2 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -27337,7 +27340,7 @@ End Sub
 Private Sub HandleSendCorreo(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
 
-    If UserList(UserIndex).incomingData.length < 7 Then
+    If UserList(UserIndex).incomingData.Length < 7 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -27477,7 +27480,7 @@ End Sub
 Private Sub HandleRetirarItemCorreo(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
 
-    If UserList(UserIndex).incomingData.length < 4 Then
+    If UserList(UserIndex).incomingData.Length < 4 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -27524,7 +27527,7 @@ End Sub
 Private Sub HandleBorrarCorreo(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
 
-    If UserList(UserIndex).incomingData.length < 4 Then
+    If UserList(UserIndex).incomingData.Length < 4 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -27572,7 +27575,7 @@ End Sub
 Private Sub HandleInvitarGrupo(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
 
-    If UserList(UserIndex).incomingData.length < 2 Then
+    If UserList(UserIndex).incomingData.Length < 2 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -27606,7 +27609,7 @@ End Sub
 Private Sub HandleMarcaDeClan(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
 
-    If UserList(UserIndex).incomingData.length < 2 Then
+    If UserList(UserIndex).incomingData.Length < 2 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -27653,7 +27656,7 @@ End Sub
 Private Sub HandleMarcaDeGM(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
 
-    If UserList(UserIndex).incomingData.length < 2 Then
+    If UserList(UserIndex).incomingData.Length < 2 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -27720,7 +27723,7 @@ End Sub
 Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
 
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -28096,7 +28099,7 @@ End Sub
 Private Sub HandleAbandonarGrupo(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
 
-    If UserList(UserIndex).incomingData.length < 2 Then
+    If UserList(UserIndex).incomingData.Length < 2 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -28202,7 +28205,7 @@ End Sub
 Private Sub HandleHecharDeGrupo(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
 
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -28248,7 +28251,7 @@ End Sub
 Private Sub HandleMacroPos(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
 
-    If UserList(UserIndex).incomingData.length < 4 Then
+    If UserList(UserIndex).incomingData.Length < 4 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -28307,7 +28310,7 @@ End Sub
 Private Sub HandleSubastaInfo(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
 
-    If UserList(UserIndex).incomingData.length < 2 Then
+    If UserList(UserIndex).incomingData.Length < 2 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -28366,7 +28369,7 @@ End Sub
 Private Sub HandleScrollInfo(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
 
-    If UserList(UserIndex).incomingData.length < 2 Then
+    If UserList(UserIndex).incomingData.Length < 2 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -28482,7 +28485,7 @@ Private Sub HandleBanCuenta(ByVal UserIndex As Integer)
     'Last Modification: 12/29/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 6 Then
+    If UserList(UserIndex).incomingData.Length < 6 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -28539,7 +28542,7 @@ Private Sub HandleUnBanCuenta(ByVal UserIndex As Integer)
     'Last Modification: 12/29/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 4 Then
+    If UserList(UserIndex).incomingData.Length < 4 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -28593,7 +28596,7 @@ Private Sub HandleBanSerial(ByVal UserIndex As Integer)
     'Last Modification: 12/29/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 4 Then
+    If UserList(UserIndex).incomingData.Length < 4 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -28647,7 +28650,7 @@ Private Sub HandleUnBanSerial(ByVal UserIndex As Integer)
     'Last Modification: 12/29/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 4 Then
+    If UserList(UserIndex).incomingData.Length < 4 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -28701,7 +28704,7 @@ Private Sub HandleCerrarCliente(ByVal UserIndex As Integer)
     'Last Modification: 12/29/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 4 Then
+    If UserList(UserIndex).incomingData.Length < 4 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -28765,7 +28768,7 @@ End Sub
 Private Sub HandleEventoInfo(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
 
-    If UserList(UserIndex).incomingData.length < 2 Then
+    If UserList(UserIndex).incomingData.Length < 2 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -28855,7 +28858,7 @@ Private Sub HandleCrearEvento(ByVal UserIndex As Integer)
     '***************************************************
     'Author: Pablo Mercavides
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 5 Then
+    If UserList(UserIndex).incomingData.Length < 5 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -28928,7 +28931,7 @@ Private Sub HandleBanTemporal(ByVal UserIndex As Integer)
     'Last Modification: 12/29/06
     '
     '***************************************************
-    If UserList(UserIndex).incomingData.length < 7 Then
+    If UserList(UserIndex).incomingData.Length < 7 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -28984,7 +28987,7 @@ End Sub
 Private Sub HandleTraerShop(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
 
-    If UserList(UserIndex).incomingData.length < 2 Then
+    If UserList(UserIndex).incomingData.Length < 2 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -29030,7 +29033,7 @@ End Sub
 Private Sub HandleTraerRanking(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
 
-    If UserList(UserIndex).incomingData.length < 2 Then
+    If UserList(UserIndex).incomingData.Length < 2 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -29071,7 +29074,7 @@ End Sub
 Private Sub HandlePareja(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
 
-    If UserList(UserIndex).incomingData.length < 2 Then
+    If UserList(UserIndex).incomingData.Length < 2 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -29234,7 +29237,7 @@ End Sub
 Private Sub HandleComprarItem(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
 
-    If UserList(UserIndex).incomingData.length < 3 Then
+    If UserList(UserIndex).incomingData.Length < 3 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -29325,7 +29328,7 @@ End Sub
 Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
 
-    If UserList(UserIndex).incomingData.length < 7 Then
+    If UserList(UserIndex).incomingData.Length < 7 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -29480,7 +29483,7 @@ Public Function PrepareMessageCreateRenderValue(ByVal X As Byte, ByVal Y As Byte
 108         .WriteDouble rValue
 110         .WriteByte rType
          
-112         PrepareMessageCreateRenderValue = .ReadASCIIStringFixed(.length)
+112         PrepareMessageCreateRenderValue = .ReadASCIIStringFixed(.Length)
          
         End With
      
