@@ -32,8 +32,6 @@ Option Explicit
 ''
 ' Modulo de declaraciones. Aca hay de todo.
 '
-Public Limpieza        As New TLimpiezaItem
-
 Public Administradores As clsIniReader
 
 Public Enum e_SoundIndex
@@ -1021,7 +1019,7 @@ End Type
 
 Public Type Position
 
-    x As Integer
+    X As Integer
     Y As Integer
 
 End Type
@@ -1029,7 +1027,7 @@ End Type
 Public Type WorldPos
 
     Map As Integer
-    x As Integer
+    X As Integer
     Y As Integer
 
 End Type
@@ -1037,7 +1035,7 @@ End Type
 Public Type CityWorldPos
 
     Map As Integer
-    x As Integer
+    X As Integer
     Y As Integer
     MapaViaje As Integer
     ViajeX As Byte
@@ -1755,7 +1753,7 @@ Public Type user
     clase As eClass
     raza As eRaza
     genero As eGenero
-    Email As String
+    email As String
     Hogar As eCiudad
     PosibleHogar As eCiudad
     MENSAJEINFORMACION As String

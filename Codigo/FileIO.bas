@@ -2686,7 +2686,7 @@ Sub LoadConfiguraciones()
 
 122     frmMain.HoraFantasia.Interval = TimerHoraFantasia
 
-126     frmMain.lblLimpieza.Caption = "Limpieza del mundo en: " & LimpiezaTimerMinutos & " minutos."
+126     frmMain.lblLimpieza.Caption = "Limpieza del mundo en: " & TimerLimpiarObjetos & " minutos."
 
         
         Exit Sub
