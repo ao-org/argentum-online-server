@@ -320,9 +320,7 @@ Private Sub IrUsuarioCercano(ByVal NpcIndex As Integer)
 
         Dim UI         As Integer
 
-        Dim SignoNS    As Integer
-
-        Dim SignoEO    As Integer
+        Dim Pos        As WorldPos
 
         Dim i          As Long
     
@@ -345,28 +343,8 @@ Private Sub IrUsuarioCercano(ByVal NpcIndex As Integer)
 
             'If Npclist(NpcIndex).Target = 0 Then Exit Sub
 112         If .flags.Inmovilizado = 1 Then
-
-114             Select Case .Char.heading
-
-                    Case eHeading.NORTH
-116                     SignoNS = -1
-118                     SignoEO = 0
-                
-120                 Case eHeading.EAST
-122                     SignoNS = 0
-124                     SignoEO = 1
-                
-126                 Case eHeading.SOUTH
-128                     SignoNS = 1
-130                     SignoEO = 0
-                
-132                 Case eHeading.WEST
-134                     SignoEO = -1
-136                     SignoNS = 0
-
-                End Select
-            
-138             For i = 1 To ModAreas.ConnGroups(.Pos.Map).CountEntrys
+                If .flags.LanzaSpells <> 0 Then
+                    For i = 1 To ModAreas.ConnGroups(.Pos.Map).CountEntrys
 
 140                 UI = ModAreas.ConnGroups(.Pos.Map).UserEntrys(i)
 
@@ -412,6 +390,20 @@ Private Sub IrUsuarioCercano(ByVal NpcIndex As Integer)
                     End If
 
 170             Next i
+                
+                Else
+                    Pos = .Pos
+                    Call HeadtoPos(.Char.heading, Pos)
+                    
+                    UI = MapData(Pos.Map, Pos.x, Pos.Y).UserIndex
+                    
+                    If UI > 0 Then
+                        If UserList(UI).flags.Muerto = 0 And UserList(UI).flags.AdminPerseguible Then
+171                         Call NpcAtacaUser(NpcIndex, UI)
+                            Exit Sub
+                        End If
+                    End If
+                End If
 
             Else
         
@@ -1235,7 +1227,7 @@ Sub NPCAI(ByVal NpcIndex As Integer)
     Exit Sub
 
 ErrorHandler:
-    Call LogError("NPCAI " & Npclist(NpcIndex).name & " " & Npclist(NpcIndex).MaestroNPC & " mapa:" & Npclist(NpcIndex).Pos.Map & " x:" & Npclist(NpcIndex).Pos.X & " y:" & Npclist(NpcIndex).Pos.Y & " Mov:" & Npclist(NpcIndex).Movement & " TargU:" & Npclist(NpcIndex).Target & " TargN:" & Npclist(NpcIndex).TargetNPC & falladesc)
+    Call LogError("NPCAI " & Npclist(NpcIndex).name & " " & Npclist(NpcIndex).MaestroNPC & " mapa:" & Npclist(NpcIndex).Pos.Map & " x:" & Npclist(NpcIndex).Pos.x & " y:" & Npclist(NpcIndex).Pos.Y & " Mov:" & Npclist(NpcIndex).Movement & " TargU:" & Npclist(NpcIndex).Target & " TargN:" & Npclist(NpcIndex).TargetNPC & falladesc)
 
     Dim MiNPC As npc
 
