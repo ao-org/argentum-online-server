@@ -1533,17 +1533,10 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
             Dim nPos  As WorldPos
             Dim MiObj As obj
         
-            MiObj.Amount = IIf(RedDePesca, RandomNumber(2, 5), IIf(ObjetoDorado, RandomNumber(1, 3), 1))
+            MiObj.Amount = IIf(RedDePesca, RandomNumber(2, 5), IIf(ObjetoDorado, RandomNumber(1, 3), 1)) * RecoleccionMult
             MiObj.ObjIndex = ObtenerPezRandom(ObjData(.Invent.HerramientaEqpObjIndex).Power)
         
             If MiObj.ObjIndex = 0 Then Exit Sub
-
-            If ObjData(.Invent.HerramientaEqpObjIndex).donador = 1 Then
-                MiObj.Amount = MiObj.Amount * 2
-                MiObj.Amount = MiObj.Amount * RecoleccionMult
-            Else
-                MiObj.Amount = MiObj.Amount * RecoleccionMult
-            End If
         
             If Not MeterItemEnInventario(UserIndex, MiObj) Then
                 Call TirarItemAlPiso(.Pos, MiObj)
@@ -2203,27 +2196,17 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
             Call ActualizarRecurso(.Pos.Map, X, Y)
             MapData(.Pos.Map, X, Y).ObjInfo.data = timeGetTime ' Ultimo uso
     
-            MiObj.Amount = IIf(ObjetoDorado, RandomNumber(1, 5), 1)
-            
-            If ObjData(.Invent.HerramientaEqpObjIndex).donador = 1 Then
-                MiObj.Amount = MiObj.Amount * 2
-    
-            End If
-            
-            MiObj.Amount = MiObj.Amount * RecoleccionMult
+            MiObj.Amount = IIf(ObjetoDorado, RandomNumber(1, 5), 1) * RecoleccionMult
             MiObj.ObjIndex = Leña
             
             If MiObj.Amount > MapData(.Pos.Map, X, Y).ObjInfo.Amount Then
                 MiObj.Amount = MapData(.Pos.Map, X, Y).ObjInfo.Amount
-    
             End If
             
             MapData(.Pos.Map, X, Y).ObjInfo.Amount = MapData(.Pos.Map, X, Y).ObjInfo.Amount - MiObj.Amount
             
             If Not MeterItemEnInventario(UserIndex, MiObj) Then
-                
                 Call TirarItemAlPiso(.Pos, MiObj)
-                
             End If
     
             'If Not .flags.UltimoMensaje = 5 Then
@@ -2333,19 +2316,10 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
             MapData(.Pos.Map, X, Y).ObjInfo.data = timeGetTime ' Ultimo uso
             
             MiObj.ObjIndex = ObjData(.flags.TargetObj).MineralIndex
-            
-            MiObj.Amount = IIf(ObjetoDorado, RandomNumber(1, 6), 1)
-    
-            If ObjData(.Invent.HerramientaEqpObjIndex).donador = 1 Then
-                MiObj.Amount = MiObj.Amount * 2
-    
-            End If
-            
-            MiObj.Amount = MiObj.Amount * RecoleccionMult
+            MiObj.Amount = IIf(ObjetoDorado, RandomNumber(1, 6), 1) * RecoleccionMult
             
             If MiObj.Amount > MapData(.Pos.Map, X, Y).ObjInfo.Amount Then
                 MiObj.Amount = MapData(.Pos.Map, X, Y).ObjInfo.Amount
-    
             End If
             
             MapData(.Pos.Map, X, Y).ObjInfo.Amount = MapData(.Pos.Map, X, Y).ObjInfo.Amount - MiObj.Amount
