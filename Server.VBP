@@ -93,6 +93,7 @@ Class=CSHA256; Codigo\CSHA256.cls
 Module=ModLlaves; Codigo\ModLlaves.bas
 Module=ModLimpieza; Codigo\ModLimpieza.bas
 Class=cStringBuilder; Codigo\cStringBuilder.cls
+Class=clsClanPretoriano; Codigo\clsClanPretoriano.cls
 IconForm="frmMain"
 Startup="Sub Main"
 HelpFile=""
