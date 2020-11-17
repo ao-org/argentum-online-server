@@ -1025,7 +1025,7 @@ ErrorHandler:
         Resume
     Else
         Call LogDatabaseError("Error en MakeQuery: query = '" & Query & "'. " & Err.Number & " - " & Err.description)
-
+        Err.raise Err.Number
     End If
 
 End Sub
