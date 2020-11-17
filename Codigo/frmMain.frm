@@ -1751,12 +1751,11 @@ Private Sub TIMER_AI_Timer()
             If Npclist(NpcIndex).flags.NPCActive Then 'Nos aseguramos que sea INTELIGENTE!
                 If Npclist(NpcIndex).flags.Paralizado = 1 Then
                     Call EfectoParalisisNpc(NpcIndex)
-                Else
 
+                Else
                     'Usamos AI si hay algun user en el mapa
                     If Npclist(NpcIndex).flags.Inmovilizado = 1 Then
                         Call EfectoParalisisNpc(NpcIndex)
-
                     End If
                     
                     Mapa = Npclist(NpcIndex).Pos.Map
@@ -1765,12 +1764,8 @@ Private Sub TIMER_AI_Timer()
                         If MapInfo(Mapa).NumUsers > 0 Then
 
                             ' If Npclist(NpcIndex).Movement <> TipoAI.ESTATICO Then
-                            If Not IntervaloPermiteMoverse(NpcIndex) Then
-         
-                            Else
-                          
+                            If IntervaloPermiteMoverse(NpcIndex) Then
                                 Call NPCAI(NpcIndex)
-
                             End If
 
                             ' End If
