@@ -536,7 +536,8 @@ Public Enum eNPCType
     BattleModo = 13
     Subastador = 16
     Quest = 17
-
+    Pretoriano = 18
+    
 End Enum
 
 Public Const MIN_APUÑALAR As Byte = 10
@@ -1777,7 +1778,7 @@ Public Type user
     Stats As UserStats
     flags As UserFlags
     donador As TDonador
-    accion As AccionPendiente
+    Accion As AccionPendiente
     NumeroPaquetesPorMiliSec As Long
     BytesTransmitidosUser As Long
     BytesTransmitidosSvr As Long
@@ -2027,7 +2028,10 @@ Public Type npc
     NumDestinos As Byte
     Dest() As String
     Interface As Byte
-
+    
+    'Para diferenciar entre clanes
+    ClanIndex As Integer
+    
 End Type
 
 '**********************************************************
@@ -2047,7 +2051,7 @@ Public Type MapBlock
 
     Blocked As Byte
     Graphic(1 To 4) As Long
-    UserIndex As Integer
+    Userindex As Integer
     NpcIndex As Integer
     Particula As Byte
     TimeParticula As Integer
