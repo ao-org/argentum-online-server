@@ -196,6 +196,7 @@ Private MapDat  As tMapDat
 Private Type UltimoError
     Componente As String
     Contador As Byte
+    ErrorCode As Long
 End Type: Private HistorialError As UltimoError
 
 Public Sub CargarSpawnList()
