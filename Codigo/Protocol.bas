@@ -27592,6 +27592,8 @@ Private Sub HandleInvitarGrupo(ByVal UserIndex As Integer)
             
             If .Grupo.CantidadMiembros <= UBound(.Grupo.Miembros) Then
                 Call WriteWorkRequestTarget(UserIndex, eSkill.Grupo)
+            Else
+                Call WriteConsoleMsg(UserIndex, "¡No podés invitar a más personas!", FontTypeNames.FONTTYPE_INFO)
             End If
 
         End If
