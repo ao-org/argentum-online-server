@@ -25964,30 +25964,30 @@ Private Sub HandleQuieroFundarClan(ByVal UserIndex As Integer)
             refError = "Ya perteneces a un clan, no podés fundar otro."
         Else
 
-            If UserList(UserIndex).Stats.ELV < 45 Or UserList(UserIndex).Stats.UserSkills(eSkill.Liderazgo) < 80 Then
-                refError = "Para fundar un clan debes ser nivel 45, tener 80 en liderazgo y tener en tu inventario las 4 gemas: Gema Azul(1), Gema Naranja(1), Gema Gris(1), Gema Roja(1)."
+            If UserList(UserIndex).Stats.ELV < 25 Or UserList(UserIndex).Stats.UserSkills(eSkill.Liderazgo) < 80 Then
+                refError = "Para fundar un clan debes ser nivel 25, tener 80 en liderazgo y tener en tu inventario las 4 gemas: Gema Azul(1), Gema Naranja(1), Gema Gris(1), Gema Roja(1)."
             Else
 
                 If Not TieneObjetos(407, 1, UserIndex) Then
-                    refError = "Para fundar un clan debes ser nivel 45, tener 80 en liderazgo y tener en tu inventario las 4 gemas: Gema Azul(1), Gema Naranja(1), Gema Gris(1), Gema Roja(1)."
+                    refError = "Para fundar un clan debes ser nivel 25, tener 80 en liderazgo y tener en tu inventario las 4 gemas: Gema Azul(1), Gema Naranja(1), Gema Gris(1), Gema Roja(1)."
                 Else
 
                     If Not TieneObjetos(408, 1, UserIndex) Then
-                        refError = "Para fundar un clan debes ser nivel 45, tener 80 en liderazgo y tener en tu inventario las 4 gemas: Gema Azul(1), Gema Naranja(1), Gema Gris(1), Gema Roja(1)."
+                        refError = "Para fundar un clan debes ser nivel 25, tener 80 en liderazgo y tener en tu inventario las 4 gemas: Gema Azul(1), Gema Naranja(1), Gema Gris(1), Gema Roja(1)."
                     Else
 
                         If Not TieneObjetos(409, 1, UserIndex) Then
-                            refError = "Para fundar un clan debes ser nivel 45, tener 80 en liderazgo y tener en tu inventario las 4 gemas: Gema Azul(1), Gema Naranja(1), Gema Gris(1), Gema Roja(1)."
+                            refError = "Para fundar un clan debes ser nivel 25, tener 80 en liderazgo y tener en tu inventario las 4 gemas: Gema Azul(1), Gema Naranja(1), Gema Gris(1), Gema Roja(1)."
                         Else
 
                             If Not TieneObjetos(411, 1, UserIndex) Then
-                                refError = "Para fundar un clan debes ser nivel 45, tener 80 en liderazgo y tener en tu inventario las 4 gemas: Gema Azul(1), Gema Naranja(1), Gema Gris(1), Gema Roja(1)."
+                                refError = "Para fundar un clan debes ser nivel 25, tener 80 en liderazgo y tener en tu inventario las 4 gemas: Gema Azul(1), Gema Naranja(1), Gema Gris(1), Gema Roja(1)."
                             Else
 
                                 If UserList(UserIndex).flags.BattleModo = 1 Then
                                     refError = "No podés fundar un clan ací."
                                 Else
-                                    refError = "Servidor> íComenzamos a fundar el clan! Ingresa todos los datos solicitados."
+                                    refError = "Servidor> 'Comenzamos a fundar el clan! Ingresa todos los datos solicitados."
                                     Call WriteShowFundarClanForm(UserIndex)
                                     
                                 End If
