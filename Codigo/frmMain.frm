@@ -1270,13 +1270,11 @@ Private Sub GameTimer_Timer()
                     If .flags.Muerto = 0 Then
                         
                         'Efectos en mapas
-                        If (.flags.Privilegios And PlayerType.user) Then
+                        If (.flags.Privilegios And PlayerType.user) <> 0 Then
                             Call EfectoLava(iUserIndex)
                             Call EfectoFrio(iUserIndex)
                         End If
-                        
-                        If .flags.Desnudo <> 0 And (.flags.Privilegios And PlayerType.user) <> 0 Then Call EfectoFrio(iUserIndex)
-   
+
                         If .flags.Meditando Then Call DoMeditar(iUserIndex)
                         If .flags.Envenenado <> 0 Then Call EfectoVeneno(iUserIndex)
                         If .flags.Ahogandose <> 0 Then Call EfectoAhogo(iUserIndex)
