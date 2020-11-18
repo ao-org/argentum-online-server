@@ -191,14 +191,6 @@ Begin VB.Form frmMain
       TabIndex        =   7
       Top             =   120
       Width           =   4935
-      Begin VB.CommandButton Command3 
-         Caption         =   "Command3"
-         Height          =   495
-         Left            =   3360
-         TabIndex        =   34
-         Top             =   480
-         Width           =   975
-      End
       Begin VB.Label Label7 
          BackColor       =   &H00E0E0E0&
          Caption         =   "Nublado"
@@ -277,7 +269,7 @@ Begin VB.Form frmMain
       End
       Begin VB.Label lblLimpieza 
          BackColor       =   &H00E0E0E0&
-         Caption         =   "Limpieza del mundo en:"
+         Caption         =   "Limpieza de objetos cada: "
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   8.25
@@ -826,6 +818,7 @@ Public Sub InitMain(ByVal f As Byte)
 
 100     If f = 1 Then
 102         Call mnuSystray_Click
+
         Else
 104         frmMain.Show
 
@@ -1187,13 +1180,20 @@ Private Sub QuitarIconoSystray()
 
     'Borramos el icono del systray
     Dim i   As Integer
-
     Dim nid As NOTIFYICONDATA
 
     nid = setNOTIFYICONDATA(frmMain.hWnd, vbNull, NIF_MESSAGE Or NIF_ICON Or NIF_TIP, vbNull, frmMain.Icon, "")
 
     i = Shell_NotifyIconA(NIM_DELETE, nid)
 
+End Sub
+
+Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
+    
+    If MsgBox("¿Deseas FORZAR el CIERRE del servidor?" & vbNewLine & vbNewLine & "Ten en cuenta que ES POSIBLE PIERDAS DATOS!", vbYesNo, "¡FORZAR CIERRE!") = vbNo Then
+        Cancel = True
+    End If
+    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -1607,9 +1607,7 @@ Private Sub mnuSystray_Click()
         
 
         Dim i   As Integer
-
         Dim S   As String
-
         Dim nid As NOTIFYICONDATA
 
 100     S = "ARGENTUM-ONLINE"
@@ -1617,6 +1615,7 @@ Private Sub mnuSystray_Click()
 104     i = Shell_NotifyIconA(NIM_ADD, nid)
     
 106     If WindowState <> vbMinimized Then WindowState = vbMinimized
+
 108     Visible = False
 
         
