@@ -1002,7 +1002,7 @@ Private Sub Command9_Click()
         
         On Error GoTo Command9_Click_Err
         
-100     Call CargaNpcsDat
+100     Call CargaNpcsDat(True)
 
         
         Exit Sub

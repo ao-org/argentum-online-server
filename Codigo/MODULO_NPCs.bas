@@ -1110,7 +1110,9 @@ NPCTirarOro_Err:
         
 End Sub
 
-Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn = True) As Integer
+Function OpenNPC(ByVal NpcNumber As Integer, _
+                 Optional ByVal Respawn = True, _
+                 Optional ByVal Reload As Boolean = False) As Integer
         
         On Error GoTo OpenNPC_Err
         
@@ -1130,9 +1132,8 @@ Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn = True) As I
         '###################################################
 
         Dim NpcIndex As Integer
-
-        Dim Leer     As clsIniReader
-
+    
+        Dim Leer As clsIniReader
 100     Set Leer = LeerNPCs
 
         'If requested index is invalid, abort
@@ -1200,17 +1201,15 @@ Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn = True) As I
 172     Npclist(NpcIndex).InvReSpawn = val(Leer.GetValue("NPC" & NpcNumber, "InvReSpawn"))
 
 174     Npclist(NpcIndex).showName = val(GetVar(DatPath & "NPCs.dat", "NPC" & NpcNumber, "ShowName"))
+    
 176     Npclist(NpcIndex).GobernadorDe = val(GetVar(DatPath & "NPCs.dat", "NPC" & NpcNumber, "GobernadorDe"))
 
 178     Npclist(NpcIndex).SoundOpen = val(GetVar(DatPath & "NPCs.dat", "NPC" & NpcNumber, "SoundOpen"))
 180     Npclist(NpcIndex).SoundClose = val(GetVar(DatPath & "NPCs.dat", "NPC" & NpcNumber, "SoundClose"))
 
 182     Npclist(NpcIndex).IntervaloAtaque = val(Leer.GetValue("NPC" & NpcNumber, "IntervaloAtaque"))
-
 184     Npclist(NpcIndex).IntervaloMovimiento = val(Leer.GetValue("NPC" & NpcNumber, "IntervaloMovimiento"))
-
 186     Npclist(NpcIndex).InvervaloLanzarHechizo = val(Leer.GetValue("NPC" & NpcNumber, "IntervaloLanzarHechizo"))
-
 188     Npclist(NpcIndex).Contadores.InvervaloRespawn = val(Leer.GetValue("NPC" & NpcNumber, "InvervaloRespawn"))
 
 190     Npclist(NpcIndex).InformarRespawn = val(Leer.GetValue("NPC" & NpcNumber, "InformarRespawn"))
@@ -1242,8 +1241,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn = True) As I
 218     Npclist(NpcIndex).Stats.defM = val(Leer.GetValue("NPC" & NpcNumber, "DEFm"))
 220     Npclist(NpcIndex).Stats.Alineacion = val(Leer.GetValue("NPC" & NpcNumber, "Alineacion"))
 
-        Dim LoopC As Integer
-
+        Dim LoopC As Long
         Dim ln    As String
 
 222     Npclist(NpcIndex).Invent.NroItems = val(Leer.GetValue("NPC" & NpcNumber, "NROITEMS"))
@@ -1256,111 +1254,121 @@ Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal Respawn = True) As I
 
 234     Npclist(NpcIndex).flags.LanzaSpells = val(Leer.GetValue("NPC" & NpcNumber, "LanzaSpells"))
 
-236     If Npclist(NpcIndex).flags.LanzaSpells > 0 Then ReDim Npclist(NpcIndex).Spells(1 To Npclist(NpcIndex).flags.LanzaSpells)
+236     If Npclist(NpcIndex).flags.LanzaSpells > 0 Then
+238         ReDim Npclist(NpcIndex).Spells(1 To Npclist(NpcIndex).flags.LanzaSpells)
+        End If
 
-238     For LoopC = 1 To Npclist(NpcIndex).flags.LanzaSpells
-240         Npclist(NpcIndex).Spells(LoopC) = val(Leer.GetValue("NPC" & NpcNumber, "Sp" & LoopC))
-242     Next LoopC
+240     For LoopC = 1 To Npclist(NpcIndex).flags.LanzaSpells
+242         Npclist(NpcIndex).Spells(LoopC) = val(Leer.GetValue("NPC" & NpcNumber, "Sp" & LoopC))
+244     Next LoopC
 
-244     If Npclist(NpcIndex).NPCtype = eNPCType.Entrenador Then
-246         Npclist(NpcIndex).NroCriaturas = val(Leer.GetValue("NPC" & NpcNumber, "NroCriaturas"))
-248         ReDim Npclist(NpcIndex).Criaturas(1 To Npclist(NpcIndex).NroCriaturas) As tCriaturasEntrenador
+246     If Npclist(NpcIndex).NPCtype = eNPCType.Entrenador Then
+    
+248         Npclist(NpcIndex).NroCriaturas = val(Leer.GetValue("NPC" & NpcNumber, "NroCriaturas"))
+        
+250         ReDim Npclist(NpcIndex).Criaturas(1 To Npclist(NpcIndex).NroCriaturas) As tCriaturasEntrenador
 
-250         For LoopC = 1 To Npclist(NpcIndex).NroCriaturas
-252             Npclist(NpcIndex).Criaturas(LoopC).NpcIndex = Leer.GetValue("NPC" & NpcNumber, "CI" & LoopC)
-254             Npclist(NpcIndex).Criaturas(LoopC).NpcName = Leer.GetValue("NPC" & NpcNumber, "CN" & LoopC)
-256         Next LoopC
+252         For LoopC = 1 To Npclist(NpcIndex).NroCriaturas
+254             Npclist(NpcIndex).Criaturas(LoopC).NpcIndex = Leer.GetValue("NPC" & NpcNumber, "CI" & LoopC)
+256             Npclist(NpcIndex).Criaturas(LoopC).NpcName = Leer.GetValue("NPC" & NpcNumber, "CN" & LoopC)
+258         Next LoopC
 
         End If
 
-258     Npclist(NpcIndex).flags.NPCActive = True
 260     Npclist(NpcIndex).flags.NPCActive = True
-262     Npclist(NpcIndex).flags.UseAINow = False
+262     Npclist(NpcIndex).flags.NPCActive = True
+264     Npclist(NpcIndex).flags.UseAINow = False
 
-264     If Respawn Then
-266         Npclist(NpcIndex).flags.Respawn = val(Leer.GetValue("NPC" & NpcNumber, "ReSpawn"))
+266     If Respawn Then
+268         Npclist(NpcIndex).flags.Respawn = val(Leer.GetValue("NPC" & NpcNumber, "ReSpawn"))
         Else
-268         Npclist(NpcIndex).flags.Respawn = 1
-
+270         Npclist(NpcIndex).flags.Respawn = 1
         End If
 
-270     Npclist(NpcIndex).flags.backup = val(Leer.GetValue("NPC" & NpcNumber, "BackUp"))
-272     Npclist(NpcIndex).flags.RespawnOrigPos = val(Leer.GetValue("NPC" & NpcNumber, "OrigPos"))
-274     Npclist(NpcIndex).flags.AfectaParalisis = val(Leer.GetValue("NPC" & NpcNumber, "AfectaParalisis"))
-276     Npclist(NpcIndex).flags.GolpeExacto = val(Leer.GetValue("NPC" & NpcNumber, "GolpeExacto"))
+272     Npclist(NpcIndex).flags.backup = val(Leer.GetValue("NPC" & NpcNumber, "BackUp"))
+274     Npclist(NpcIndex).flags.RespawnOrigPos = val(Leer.GetValue("NPC" & NpcNumber, "OrigPos"))
+276     Npclist(NpcIndex).flags.AfectaParalisis = val(Leer.GetValue("NPC" & NpcNumber, "AfectaParalisis"))
+278     Npclist(NpcIndex).flags.GolpeExacto = val(Leer.GetValue("NPC" & NpcNumber, "GolpeExacto"))
 
-278     Npclist(NpcIndex).flags.Snd1 = val(Leer.GetValue("NPC" & NpcNumber, "Snd1"))
-280     Npclist(NpcIndex).flags.Snd2 = val(Leer.GetValue("NPC" & NpcNumber, "Snd2"))
-282     Npclist(NpcIndex).flags.Snd3 = val(Leer.GetValue("NPC" & NpcNumber, "Snd3"))
+280     Npclist(NpcIndex).flags.Snd1 = val(Leer.GetValue("NPC" & NpcNumber, "Snd1"))
+282     Npclist(NpcIndex).flags.Snd2 = val(Leer.GetValue("NPC" & NpcNumber, "Snd2"))
+284     Npclist(NpcIndex).flags.Snd3 = val(Leer.GetValue("NPC" & NpcNumber, "Snd3"))
 
         '<<<<<<<<<<<<<< Expresiones >>>>>>>>>>>>>>>>
-
         Dim aux As String
+286         aux = Leer.GetValue("NPC" & NpcNumber, "NROEXP")
 
-284     aux = Leer.GetValue("NPC" & NpcNumber, "NROEXP")
-
-286     If LenB(aux) = 0 Then
-288         Npclist(NpcIndex).NroExpresiones = 0
+288     If LenB(aux) = 0 Then
+290         Npclist(NpcIndex).NroExpresiones = 0
+        
         Else
-290         Npclist(NpcIndex).NroExpresiones = val(aux)
-292         ReDim Npclist(NpcIndex).Expresiones(1 To Npclist(NpcIndex).NroExpresiones) As String
+    
+292         Npclist(NpcIndex).NroExpresiones = val(aux)
+        
+294         ReDim Npclist(NpcIndex).Expresiones(1 To Npclist(NpcIndex).NroExpresiones) As String
 
-294         For LoopC = 1 To Npclist(NpcIndex).NroExpresiones
-296             Npclist(NpcIndex).Expresiones(LoopC) = Leer.GetValue("NPC" & NpcNumber, "Exp" & LoopC)
-298         Next LoopC
+296         For LoopC = 1 To Npclist(NpcIndex).NroExpresiones
+298             Npclist(NpcIndex).Expresiones(LoopC) = Leer.GetValue("NPC" & NpcNumber, "Exp" & LoopC)
+300         Next LoopC
 
         End If
 
         '<<<<<<<<<<<<<< Sistema de Dropeo NUEVO >>>>>>>>>>>>>>>>
-300     aux = Leer.GetValue("NPC" & NpcNumber, "NumQuiza")
+302     aux = Leer.GetValue("NPC" & NpcNumber, "NumQuiza")
 
-302     If LenB(aux) = 0 Then
-304         Npclist(NpcIndex).NumQuiza = 0
+304     If LenB(aux) = 0 Then
+306         Npclist(NpcIndex).NumQuiza = 0
+        
         Else
-306         Npclist(NpcIndex).NumQuiza = val(aux)
-308         ReDim Npclist(NpcIndex).QuizaDropea(1 To Npclist(NpcIndex).NumQuiza) As String
+    
+308         Npclist(NpcIndex).NumQuiza = val(aux)
+        
+310         ReDim Npclist(NpcIndex).QuizaDropea(1 To Npclist(NpcIndex).NumQuiza) As String
 
-310         For LoopC = 1 To Npclist(NpcIndex).NumQuiza
-312             Npclist(NpcIndex).QuizaDropea(LoopC) = Leer.GetValue("NPC" & NpcNumber, "QuizaDropea" & LoopC)
-314         Next LoopC
+312         For LoopC = 1 To Npclist(NpcIndex).NumQuiza
+314             Npclist(NpcIndex).QuizaDropea(LoopC) = Leer.GetValue("NPC" & NpcNumber, "QuizaDropea" & LoopC)
+316         Next LoopC
 
         End If
 
         '<<<<<<<<<<<<<< Sistema de Viajes NUEVO >>>>>>>>>>>>>>>>
-316     aux = Leer.GetValue("NPC" & NpcNumber, "NumDestinos")
+318     aux = Leer.GetValue("NPC" & NpcNumber, "NumDestinos")
 
-318     If LenB(aux) = 0 Then
-320         Npclist(NpcIndex).NumDestinos = 0
+320     If LenB(aux) = 0 Then
+322         Npclist(NpcIndex).NumDestinos = 0
+        
         Else
-322         Npclist(NpcIndex).NumDestinos = val(aux)
-324         ReDim Npclist(NpcIndex).Dest(1 To Npclist(NpcIndex).NumDestinos) As String
+    
+324         Npclist(NpcIndex).NumDestinos = val(aux)
+        
+326         ReDim Npclist(NpcIndex).Dest(1 To Npclist(NpcIndex).NumDestinos) As String
 
-326         For LoopC = 1 To Npclist(NpcIndex).NumDestinos
-328             Npclist(NpcIndex).Dest(LoopC) = Leer.GetValue("NPC" & NpcNumber, "Dest" & LoopC)
-330         Next LoopC
+328         For LoopC = 1 To Npclist(NpcIndex).NumDestinos
+330             Npclist(NpcIndex).Dest(LoopC) = Leer.GetValue("NPC" & NpcNumber, "Dest" & LoopC)
+332         Next LoopC
 
         End If
 
         '<<<<<<<<<<<<<< Expresiones >>>>>>>>>>>>>>>>
-
-332     Npclist(NpcIndex).Interface = val(Leer.GetValue("NPC" & NpcNumber, "Interface"))
+334     Npclist(NpcIndex).Interface = val(Leer.GetValue("NPC" & NpcNumber, "Interface"))
 
         'Tipo de items con los que comercia
-334     Npclist(NpcIndex).TipoItems = val(Leer.GetValue("NPC" & NpcNumber, "TipoItems"))
+336     Npclist(NpcIndex).TipoItems = val(Leer.GetValue("NPC" & NpcNumber, "TipoItems"))
 
-        'Update contadores de NPCs
-336     If NpcIndex > LastNPC Then LastNPC = NpcIndex
-338     NumNPCs = NumNPCs + 1
-
+        'Si NO estamos actualizando los NPC's activos, actualizamos el contador.
+338     If Reload = False Then
+340         If NpcIndex > LastNPC Then LastNPC = NpcIndex
+342         NumNPCs = NumNPCs + 1
+        End If
+    
         'Devuelve el nuevo Indice
-340     OpenNPC = NpcIndex
+344     OpenNPC = NpcIndex
 
-        
         Exit Function
 
 OpenNPC_Err:
-        Call RegistrarError(Err.Number, Err.description, "NPCs.OpenNPC", Erl)
-        Resume Next
+346     Call RegistrarError(Err.Number, Err.description, "NPCs.OpenNPC", Erl)
+348     Resume Next
         
 End Function
 
