@@ -551,10 +551,6 @@ Sub Main()
     frmCargando.Label1(2).Caption = "Cargando Balance.Dat"
     Call LoadBalance    '4/01/08 Pablo ToxicWaste
     
-    ' Pretorianos
-    frmCargando.Label1(2).Caption = "Cargando Pretorianos.dat"
-    Call LoadPretorianData
-    
     If BootDelBackUp Then
         frmCargando.Label1(2).Caption = "Cargando BackUp"
         Call CargarBackUp
@@ -562,6 +558,10 @@ Sub Main()
         frmCargando.Label1(2).Caption = "Cargando Mapas"
         Call LoadMapData
     End If
+    
+    ' Pretorianos
+    frmCargando.Label1(2).Caption = "Cargando Pretorianos.dat"
+    Call LoadPretorianData
     
     frmCargando.Label1(2).Caption = "Cargando Logros.ini"
     Call CargarLogros ' Ladder 22/04/2015
@@ -573,7 +573,7 @@ Sub Main()
     Call LoadDonadores
     Call LoadObjDonador
     Call LoadQuests
-    
+
     EstadoGlobal = True
     
     Call InicializarLimpieza
