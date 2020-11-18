@@ -1128,6 +1128,12 @@ Sub EquiparInvItem(ByVal Userindex As Integer, ByVal Slot As Byte)
                     Exit Sub
 
                 End If
+                
+                If Not FaccionPuedeUsarItem(Userindex, ObjIndex) Then
+                    Call WriteConsoleMsg(Userindex, "Tu facción no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                    
+                End If
 
                 'Si esta equipado lo quita
                 If .Invent.Object(Slot).Equipped Then
@@ -1457,7 +1463,6 @@ Sub EquiparInvItem(ByVal Userindex As Integer, ByVal Slot As Byte)
             Case eOBJType.otFlechas
 
                 If ClasePuedeUsarItem(Userindex, .Invent.Object(Slot).ObjIndex) And FaccionPuedeUsarItem(Userindex, .Invent.Object(Slot).ObjIndex) Then
-                        
                     Call WriteConsoleMsg(Userindex, "Tu clase no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
 
@@ -1489,12 +1494,12 @@ Sub EquiparInvItem(ByVal Userindex As Integer, ByVal Slot As Byte)
                 End If
                 
                 'Nos aseguramos que puede usarla
-                If ClasePuedeUsarItem(Userindex, .Invent.Object(Slot).ObjIndex, Slot) And _
-                   SexoPuedeUsarItem(Userindex, .Invent.Object(Slot).ObjIndex) And _
-                   CheckRazaUsaRopa(Userindex, .Invent.Object(Slot).ObjIndex) And _
-                   FaccionPuedeUsarItem(Userindex, .Invent.Object(Slot).ObjIndex) Then
+                If Not ClasePuedeUsarItem(Userindex, .Invent.Object(Slot).ObjIndex, Slot) Or _
+                   Not SexoPuedeUsarItem(Userindex, .Invent.Object(Slot).ObjIndex) Or _
+                   Not CheckRazaUsaRopa(Userindex, .Invent.Object(Slot).ObjIndex) Or _
+                   Not FaccionPuedeUsarItem(Userindex, .Invent.Object(Slot).ObjIndex) Then
                     
-                    Call WriteConsoleMsg(Userindex, "Tu clase, género o raza no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
+                    Call WriteConsoleMsg(Userindex, "Tu clase, género, raza o facción no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
                 
@@ -1556,11 +1561,17 @@ Sub EquiparInvItem(ByVal Userindex As Integer, ByVal Slot As Byte)
                 End If
     
             Case eOBJType.otCASCO
-
-                If ClasePuedeUsarItem(Userindex, .Invent.Object(Slot).ObjIndex, Slot) Then
+                
+                If Not ClasePuedeUsarItem(Userindex, .Invent.Object(Slot).ObjIndex, Slot) Then
                     Call WriteConsoleMsg(Userindex, "Tu clase no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
 
+                End If
+                
+                If Not FaccionPuedeUsarItem(Userindex, .Invent.Object(Slot).ObjIndex) Then
+                    Call WriteConsoleMsg(Userindex, "Tu facción no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                    
                 End If
                 
                 'Si esta equipado lo quita
@@ -1605,10 +1616,16 @@ Sub EquiparInvItem(ByVal Userindex As Integer, ByVal Slot As Byte)
 
             Case eOBJType.otESCUDO
 
-                If ClasePuedeUsarItem(Userindex, .Invent.Object(Slot).ObjIndex, Slot) And FaccionPuedeUsarItem(Userindex, .Invent.Object(Slot).ObjIndex) Then
+                If Not ClasePuedeUsarItem(Userindex, .Invent.Object(Slot).ObjIndex, Slot) Then
                     Call WriteConsoleMsg(Userindex, "Tu clase no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
 
+                End If
+                
+                If Not FaccionPuedeUsarItem(Userindex, .Invent.Object(Slot).ObjIndex) Then
+                    Call WriteConsoleMsg(Userindex, "Tu facción no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                    
                 End If
                 
                 'Si esta equipado lo quita
