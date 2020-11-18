@@ -355,14 +355,13 @@ Sub Main()
 
     Call LeerLineaComandos
     
-    CargarRanking
+    Call CargarRanking
     
     Dim f    As Date
-
     Dim abro As Boolean
     
-    ChDir App.Path
-    ChDrive App.Path
+    Call ChDir(App.Path)
+    Call ChDrive(App.Path)
     
     abro = True
     Prision.Map = 23
