@@ -210,18 +210,22 @@ Public Sub CargarSpawnList()
 102     ReDim SpawnList(n) As tCriaturasEntrenador
 
 104     For LoopC = 1 To n
+
 106         SpawnList(LoopC).NpcIndex = LoopC
 108         SpawnList(LoopC).NpcName = GetVar(DatPath & "npcs.dat", "NPC" & LoopC, "Name")
 
-110         If SpawnList(LoopC).NpcName = "" Then SpawnList(LoopC).NpcName = "Nada"
-112     Next LoopC
+110         If Len(SpawnList(LoopC).NpcName) = 0 Then
+112             SpawnList(LoopC).NpcName = "Nada"
+            End If
+            
+114     Next LoopC
 
         
         Exit Sub
 
 CargarSpawnList_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.CargarSpawnList", Erl)
-        Resume Next
+116     Call RegistrarError(Err.Number, Err.description, "ES.CargarSpawnList", Erl)
+118     Resume Next
         
 End Sub
 
@@ -1272,8 +1276,8 @@ Sub LoadOBJData()
     '*****************************************************************
     Dim Object As Integer
 
-    Dim Leer   As New clsIniReader
-
+    Dim Leer   As clsIniReader
+    Set Leer = New clsIniReader
     Call Leer.Initialize(DatPath & "Obj.dat")
 
     'obtiene el numero de obj

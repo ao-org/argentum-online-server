@@ -1954,18 +1954,32 @@ Sanar_Err:
         
 End Sub
 
-Public Sub CargaNpcsDat()
+Public Sub CargaNpcsDat(Optional ByVal ActualizarNPCsExistentes As Boolean = False)
         
         On Error GoTo CargaNpcsDat_Err
         
-
-        Dim npcfile As String
+        ' Leemos el NPCs.dat y lo almacenamos en la memoria.
+        Set LeerNPCs = New clsIniReader
+        Call LeerNPCs.Initialize(DatPath & "NPCs.dat")
+        
+        ' Cargamos la lista de NPC's hostiles disponibles para spawnear.
+        Call CargarSpawnList
     
-100     npcfile = DatPath & "NPCs.dat"
-102     Call LeerNPCs.Initialize(npcfile)
+        ' Actualizamos la informacion de los NPC's ya spawneados.
+        If ActualizarNPCsExistentes Then
     
-        'npcfile = DatPath & "NPCs-HOSTILES.dat"
-        'Call LeerNPCsHostiles.Initialize(npcfile)
+            Dim i As Long
+            For i = 1 To NumNPCs
+    
+                If Npclist(i).flags.NPCActive Then
+                    Call OpenNPC(CInt(i), False, True)
+                End If
+    
+                DoEvents
+    
+            Next i
+    
+        End If
         
         Exit Sub
 
