@@ -1371,11 +1371,7 @@ Sub DoAdminInvisible(ByVal Userindex As Integer)
 102         UserList(Userindex).flags.AdminInvisible = 1
 104         UserList(Userindex).flags.invisible = 1
 106         UserList(Userindex).flags.Oculto = 1
-108         UserList(Userindex).flags.OldBody = UserList(Userindex).Char.Body
-110         UserList(Userindex).flags.OldHead = UserList(Userindex).Char.Head
-            Call SendData(SendTarget.ToAdmins, Userindex, PrepareMessageSetInvisible(UserList(Userindex).Char.CharIndex, True))
-112         'UserList(Userindex).Char.Body = 0
-114         'UserList(Userindex).Char.Head = 0
+            Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageSetInvisible(UserList(Userindex).Char.CharIndex, True))
         
         Else
         
@@ -1383,9 +1379,7 @@ Sub DoAdminInvisible(ByVal Userindex As Integer)
 118         UserList(Userindex).flags.invisible = 0
 120         UserList(Userindex).flags.Oculto = 0
 122         UserList(Userindex).Counters.TiempoOculto = 0
-124         UserList(Userindex).Char.Body = UserList(Userindex).flags.OldBody
-126         UserList(Userindex).Char.Head = UserList(Userindex).flags.OldHead
-            Call SendData(SendTarget.ToAdmins, Userindex, PrepareMessageSetInvisible(UserList(Userindex).Char.CharIndex, False))
+            Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageSetInvisible(UserList(Userindex).Char.CharIndex, False))
         
         End If
     
