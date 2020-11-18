@@ -2828,7 +2828,17 @@ Sub LoadUser(ByVal UserIndex As Integer)
         End If
 
         If .flags.Muerto = 0 Then
+
             .Char = .OrigChar
+            
+            If .Char.Body = 0 Then
+                Call DarCuerpoDesnudo(Userindex)
+            End If
+            
+            If .Char.Head = 0 Then
+                .Char.Head = 1
+            End If
+            
         Else
             .Char.Body = iCuerpoMuerto
             .Char.Head = iCabezaMuerto
