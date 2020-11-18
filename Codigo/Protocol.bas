@@ -26206,42 +26206,21 @@ Private Sub HandleGenio(ByVal Userindex As Integer)
     On Error GoTo errHandler
 
     With UserList(Userindex)
-
-        'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-        Dim buffer As New clsByteQueue
-
-        Call buffer.CopyBuffer(.incomingData)
+        
         'Remove packet ID
-        Call buffer.ReadInteger
+        Call .incomingData.ReadInteger
         
-        If .flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin) Then
+        'Si no es GM, no pasara nada :P
+        If (.flags.Privilegios And PlayerType.user) <> 0 Then Exit Sub
         
-            Dim i As Byte
+        Dim i As Byte
+        For i = 1 To NUMSKILLS
+            .Stats.UserSkills(i) = 100
+        Next i
         
-            For i = 1 To NUMSKILLS
-                UserList(Userindex).Stats.UserSkills(i) = 100
-            Next i
-        
-            Call WriteConsoleMsg(Userindex, "Tus skills fueron editados.", FontTypeNames.FONTTYPE_INFOIAO)
-
-        End If
-
-        Call .incomingData.CopyBuffer(buffer)
+        Call WriteConsoleMsg(Userindex, "Tus skills fueron editados.", FontTypeNames.FONTTYPE_INFOIAO)
 
     End With
-    
-errHandler:
-
-    Dim Error As Long
-
-    Error = Err.Number
-
-    On Error GoTo 0
-    
-    'Destroy auxiliar buffer
-    Set buffer = Nothing
-    
-    If Error <> 0 Then Err.raise Error
 
 End Sub
 
