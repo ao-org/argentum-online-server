@@ -790,13 +790,13 @@ Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) A
             If .flags.AguaValida = 0 And HayAgua(.Pos.Map, nPos.X, nPos.Y) Then Exit Function
             If .flags.TierraInvalida = 1 And Not HayAgua(.Pos.Map, nPos.X, nPos.Y) Then Exit Function
             
-            UserIndex = MapData(.Pos.Map, nPos.X, nPos.Y).UserIndex
-            
-            'Si soy GM no me persigas!
-            If UserList(UserIndex).flags.AdminPerseguible Then Exit Function
+            Userindex = MapData(.Pos.Map, nPos.X, nPos.Y).Userindex
 
             ' Si hay un usuario a donde se mueve el npc, entonces esta muerto o es un gm invisible
-            If UserIndex > 0 Then
+            If Userindex > 0 Then
+                
+                'Si soy GM no me persigas!
+                If UserList(Userindex).flags.AdminPerseguible Then Exit Function
                 
                 ' No se traslada caspers de agua a tierra
                 If HayAgua(.Pos.Map, nPos.X, nPos.Y) And Not HayAgua(.Pos.Map, .Pos.X, .Pos.Y) Then Exit Function
