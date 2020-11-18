@@ -26202,8 +26202,6 @@ Private Sub HandleGenio(ByVal Userindex As Integer)
         Exit Sub
 
     End If
-    
-    On Error GoTo errHandler
 
     With UserList(Userindex)
         
