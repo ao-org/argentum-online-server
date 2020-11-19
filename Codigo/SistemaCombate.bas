@@ -1156,9 +1156,9 @@ Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
         'Exit if not legal
 124     If AttackPos.x >= XMinMapSize And AttackPos.x <= XMaxMapSize And AttackPos.y >= YMinMapSize And AttackPos.y <= YMaxMapSize Then
 
-            If ((MapData(AttackPos.Map, AttackPos.x, AttackPos.y).Blocked And 2 ^ (Heading - 1)) = 0) Then
+            'If ((MapData(AttackPos.Map, AttackPos.x, AttackPos.y).Blocked And 2 ^ (UserList(UserIndex).Char.Heading - 1)) = 0) Then
                 
-            End If
+            'End If
 
             Dim Index As Integer
 
