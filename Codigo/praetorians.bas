@@ -210,7 +210,8 @@ End Sub
 Public Sub EliminarPretorianos()
 
         On Error GoTo EliminarPretorianos_Err
-
+        
+        Dim Index As Byte
 100     For Index = 1 To UBound(ClanPretoriano)
                  
             ' Search for the clan to be deleted
