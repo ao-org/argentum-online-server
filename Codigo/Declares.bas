@@ -756,7 +756,6 @@ Public Enum eOBJType
     otFogata = 15
     otESCUDO = 16
     otCASCO = 17
-    ' otAnillo = 18
     otHerramientas = 18
     otTeleport = 19
     OtDecoraciones = 20
@@ -767,6 +766,7 @@ Public Enum eOBJType
     otInstrumentos = 26
     otYunque = 27
     otFragua = 28
+    otAnillos = 30
     otBarcos = 31
     otFlechas = 32
     otBotellaVacia = 33
@@ -1074,6 +1074,7 @@ Public Type Char
     Body_Aura As String
     Arma_Aura As String
     Escudo_Aura As String
+    Anillo_Aura As String
     Otra_Aura As String
     speeding As Single
 
@@ -1302,7 +1303,7 @@ Public Type ObjData
     NoSeCae As Integer
     
     Power As Integer
-    StaffDamageBonus As Integer
+    MagicDamageBonus As Integer
     DefensaMagicaMax As Integer
     DefensaMagicaMin As Integer
     Refuerzo As Byte
@@ -1478,7 +1479,6 @@ Public Type UserFlags
     'Duelos
     
     LevelBackup As Byte
-    ResistenciaMagica As Byte
     
     UsandoMacro As Boolean
     PendienteDelSacrificio As Byte
@@ -1490,7 +1490,6 @@ Public Type UserFlags
     Estupidiza As Byte
     NoMagiaEfeceto As Byte
     CarroMineria As Byte
-    DañoMagico As Byte
     GolpeCertero As Byte
     AnilloOcultismo As Byte
     NoDetectable As Byte
@@ -2051,7 +2050,7 @@ Public Type MapBlock
 
     Blocked As Byte
     Graphic(1 To 4) As Long
-    Userindex As Integer
+    UserIndex As Integer
     NpcIndex As Integer
     Particula As Byte
     TimeParticula As Integer

@@ -285,10 +285,8 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
 422             .Paralizado = 0
 424             .Inmovilizado = 0
 426             .CarroMineria = 0
-428             .DañoMagico = 0
 430             .Montado = 0
 432             .Incinerado = 0
-434             .ResistenciaMagica = 0
 436             .Paraliza = 0
 438             .Envenena = 0
 440             .NoPalabrasMagicas = 0
@@ -298,7 +296,6 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
 448             .GolpeCertero = 0
 450             .PendienteDelExperto = 0
 452             .CarroMineria = 0
-454             .DañoMagico = 0
 456             .PendienteDelSacrificio = 0
 458             .AnilloOcultismo = 0
 460             .NoDetectable = 0
@@ -344,7 +341,11 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
 502         If .Char.Otra_Aura <> "" Then
 504             .Char.Otra_Aura = 0
 506             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Otra_Aura, True, 5))
-
+            End If
+            
+            If .Char.Anillo_Aura <> "" Then
+                .Char.Anillo_Aura = 0
+                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Otra_Aura, True, 6))
             End If
         
 508         With .Char
@@ -695,7 +696,7 @@ End Sub
 
 Sub RelogearUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuenta As String)
 
-    On Error GoTo Errhandler
+    On Error GoTo ErrHandler
 
     'Reseteamos los FLAGS
     UserList(UserIndex).flags.Escondido = 0
@@ -820,7 +821,7 @@ Sub RelogearUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCue
 
     Exit Sub
 
-Errhandler:
+ErrHandler:
     Call WriteShowMessageBox(UserIndex, "El personaje contiene un error, comuniquese con un miembro del staff.")
     
 
