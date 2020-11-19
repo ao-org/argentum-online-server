@@ -737,6 +737,10 @@ Public Const INVENTORY_EXTRA_ROWS    As Byte = 3
 ' Constante para indicar que se esta usando ORO
 Public Const FLAGORO                 As Integer = 200
 
+Public Const FLAG_AGUA               As Byte = &H20
+
+Public Const FLAG_ARBOL              As Byte = &H40
+
 ' CATEGORIAS PRINCIPALES
 Public Enum eOBJType
 
@@ -1069,7 +1073,7 @@ Public Type Char
     ParticulaFx As Integer
     FX As Integer
     loops As Integer
-    heading As eHeading
+    Heading As eHeading
     Head_Aura As String
     Body_Aura As String
     Arma_Aura As String

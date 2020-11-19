@@ -70,7 +70,7 @@ Public Sub InvocarFamiliar(ByVal UserIndex As Integer, ByVal b As Boolean)
         Dim Pos          As WorldPos
 
 106     Pos.x = UserList(UserIndex).flags.TargetX
-108     Pos.Y = UserList(UserIndex).flags.TargetY
+108     Pos.y = UserList(UserIndex).flags.TargetY
 110     Pos.Map = UserList(UserIndex).flags.TargetMap
  
 112     h = UserList(UserIndex).Stats.UserHechizos(UserList(UserIndex).flags.Hechizo)
@@ -79,12 +79,12 @@ Public Sub InvocarFamiliar(ByVal UserIndex As Integer, ByVal b As Boolean)
 
         Dim x As Long
 
-        Dim Y As Long
+        Dim y As Long
 
 114     x = Pos.x
-116     Y = Pos.Y
+116     y = Pos.y
     
-118     If MapData(UserList(UserIndex).Pos.Map, x, Y).Blocked = 1 Or MapData(UserList(UserIndex).Pos.Map, x, Y).TileExit.Map > 0 Or MapData(UserList(UserIndex).Pos.Map, x, Y).NpcIndex > 0 Or HayAgua(UserList(UserIndex).Pos.Map, x, Y) Then
+118     If MapData(UserList(UserIndex).Pos.Map, x, y).Blocked = 1 Or MapData(UserList(UserIndex).Pos.Map, x, y).TileExit.Map > 0 Or MapData(UserList(UserIndex).Pos.Map, x, y).NpcIndex > 0 Or (MapData(UserList(UserIndex).Pos.Map, x, y).Blocked And FLAG_AGUA) <> 0 Then
 120         Call WriteLocaleMsg(UserIndex, "262", FontTypeNames.FONTTYPE_INFOIAO)
             'Call WriteConsoleMsg(UserIndex, "Area invalida para tirar el item.", FontTypeNames.FONTTYPE_INFO)
         Else
@@ -97,7 +97,7 @@ Public Sub InvocarFamiliar(ByVal UserIndex As Integer, ByVal b As Boolean)
     
             '
     
-126         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(h).wav, Pos.x, Pos.Y))  'Esta linea faltaba. Pablo (ToxicWaste)
+126         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(h).wav, Pos.x, Pos.y))  'Esta linea faltaba. Pablo (ToxicWaste)
     
 128         With UserList(UserIndex)
 
@@ -126,7 +126,7 @@ Public Sub InvocarFamiliar(ByVal UserIndex As Integer, ByVal b As Boolean)
                     End If
 
                 Else
-148                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageFxPiso(Hechizos(h).FXgrh, Npclist(.Familiar.Id).Pos.x, Npclist(.Familiar.Id).Pos.Y))
+148                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageFxPiso(Hechizos(h).FXgrh, Npclist(.Familiar.Id).Pos.x, Npclist(.Familiar.Id).Pos.y))
 150                 .Familiar.Invocado = 0
 152                 Call QuitarNPC(.Familiar.Id)
 
@@ -332,7 +332,7 @@ Sub CheckFamiliarLevel(ByVal UserIndex As Integer)
 
     '*************************************************
 
-    On Error GoTo Errhandler
+    On Error GoTo ErrHandler
 
     '¿Alcanzo el maximo nivel?
     If UserList(UserIndex).Familiar.nivel >= STAT_MAXELV Then
@@ -353,7 +353,7 @@ Sub CheckFamiliarLevel(ByVal UserIndex As Integer)
 
         End If
     
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_NIVEL, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_NIVEL, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
 
         UserList(UserIndex).Familiar.nivel = UserList(UserIndex).Familiar.nivel + 1
         Call WriteConsoleMsg(UserIndex, UserList(UserIndex).Familiar.nombre & " a subido de nivel!", FontTypeNames.FONTTYPE_INFOBOLD)
@@ -404,7 +404,7 @@ Sub CheckFamiliarLevel(ByVal UserIndex As Integer)
 
     Exit Sub
 
-Errhandler:
+ErrHandler:
     Call LogError("Error en la subrutina de check mascota nivel - Error : " & Err.Number & " - Description : " & Err.description)
 
 End Sub
