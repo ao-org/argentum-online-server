@@ -15477,7 +15477,7 @@ Private Sub HandleKillAllNearbyNPCs(ByVal Userindex As Integer)
 104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
             
             'Si está en el mapa pretoriano, me aseguro de que los saque correctamente antes que nada.
-106         If .Pos.Map = MAPA_PRETORIANO Then Call EliminarPretorianos
+106         If .Pos.Map = MAPA_PRETORIANO Then Call EliminarPretorianos(MAPA_PRETORIANO)
 
             Dim X As Long
             Dim Y As Long
@@ -15486,14 +15486,17 @@ Private Sub HandleKillAllNearbyNPCs(ByVal Userindex As Integer)
 110             For X = .Pos.X - MinXBorder + 1 To .Pos.X + MinXBorder - 1
 
 112                 If X > 0 And Y > 0 And X < 101 And Y < 101 Then
-114                     If MapData(.Pos.Map, X, Y).NpcIndex > 0 Then Call QuitarNPC(MapData(.Pos.Map, X, Y).NpcIndex)
+
+114                     If MapData(.Pos.Map, X, Y).NpcIndex > 0 Then
+116                         Call QuitarNPC(MapData(.Pos.Map, X, Y).NpcIndex)
+                        End If
 
                     End If
 
-116             Next X
-118         Next Y
+118             Next X
+120         Next Y
 
-120         Call LogGM(.name, "/MASSKILL")
+122         Call LogGM(.name, "/MASSKILL")
 
         End With
 
@@ -30046,7 +30049,7 @@ Public Sub HandleDeletePretorianClan(ByVal Userindex As Integer)
         End If
         
         'Los sacamos correctamente.
-        Call EliminarPretorianos
+        Call EliminarPretorianos(Map)
     
     End With
 

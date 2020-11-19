@@ -207,7 +207,7 @@ LoadPretorianData_Err:
         
 End Sub
 
-Public Sub EliminarPretorianos()
+Public Sub EliminarPretorianos(ByVal Mapa As Integer)
 
         On Error GoTo EliminarPretorianos_Err
         
@@ -215,7 +215,7 @@ Public Sub EliminarPretorianos()
 100     For Index = 1 To UBound(ClanPretoriano)
                  
             ' Search for the clan to be deleted
-102         If ClanPretoriano(Index).ClanMap = .Pos.Map Then
+102         If ClanPretoriano(Index).ClanMap = Mapa Then
 104             Call ClanPretoriano(Index).DeleteClan
                 Exit For
         
