@@ -27696,40 +27696,18 @@ End Sub
 Private Sub HandleMarcaDeGM(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
 
-    If UserList(UserIndex).incomingData.Length < 2 Then
-        Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-        Exit Sub
-
-    End If
+    With UserList(Userindex)
     
-    On Error GoTo ErrHandler
+        If .incomingData.Length < 2 Then
+            Err.raise .incomingData.NotEnoughDataErrCode
+            Exit Sub
+        End If
 
-    With UserList(UserIndex)
-
-        Dim buffer As New clsByteQueue
-
-        Call buffer.CopyBuffer(.incomingData)
-        'Remove packet ID
-        Call buffer.ReadInteger
+        Call .incomingData.ReadInteger
           
-        Call WriteWorkRequestTarget(UserIndex, eSkill.MarcaDeGM)
-                
-        Call .incomingData.CopyBuffer(buffer)
+        Call WriteWorkRequestTarget(Userindex, eSkill.MarcaDeGM)
 
     End With
-    
-ErrHandler:
-
-    Dim Error As Long
-
-    Error = Err.Number
-
-    On Error GoTo 0
-    
-    'Destroy auxiliar buffer
-    Set buffer = Nothing
-    
-    If Error <> 0 Then Err.raise Error
 
 End Sub
 
