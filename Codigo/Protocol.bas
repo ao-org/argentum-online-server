@@ -15475,23 +15475,25 @@ Private Sub HandleKillAllNearbyNPCs(ByVal Userindex As Integer)
 102         Call .incomingData.ReadByte
         
 104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
-        
-            Dim X As Long
+            
+            'Si está en el mapa pretoriano, me aseguro de que los saque correctamente antes que nada.
+106         If .Pos.Map = MAPA_PRETORIANO Then Call EliminarPretorianos
 
+            Dim X As Long
             Dim Y As Long
         
-106         For Y = .Pos.Y - MinYBorder + 1 To .Pos.Y + MinYBorder - 1
-108             For X = .Pos.X - MinXBorder + 1 To .Pos.X + MinXBorder - 1
+108         For Y = .Pos.Y - MinYBorder + 1 To .Pos.Y + MinYBorder - 1
+110             For X = .Pos.X - MinXBorder + 1 To .Pos.X + MinXBorder - 1
 
-110                 If X > 0 And Y > 0 And X < 101 And Y < 101 Then
-112                     If MapData(.Pos.Map, X, Y).NpcIndex > 0 Then Call QuitarNPC(MapData(.Pos.Map, X, Y).NpcIndex)
+112                 If X > 0 And Y > 0 And X < 101 And Y < 101 Then
+114                     If MapData(.Pos.Map, X, Y).NpcIndex > 0 Then Call QuitarNPC(MapData(.Pos.Map, X, Y).NpcIndex)
 
                     End If
 
-114             Next X
-116         Next Y
+116             Next X
+118         Next Y
 
-118         Call LogGM(.name, "/MASSKILL")
+120         Call LogGM(.name, "/MASSKILL")
 
         End With
 
@@ -15499,8 +15501,8 @@ Private Sub HandleKillAllNearbyNPCs(ByVal Userindex As Integer)
         Exit Sub
 
 HandleKillAllNearbyNPCs_Err:
-        Call RegistrarError(Err.Number, Err.description, "Protocol.HandleKillAllNearbyNPCs", Erl)
-        Resume Next
+122     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleKillAllNearbyNPCs", Erl)
+124     Resume Next
         
 End Sub
 
@@ -30042,17 +30044,9 @@ Public Sub HandleDeletePretorianClan(ByVal Userindex As Integer)
             Exit Sub
 
         End If
-    
-        For Index = 1 To UBound(ClanPretoriano)
-         
-            ' Search for the clan to be deleted
-            If ClanPretoriano(Index).ClanMap = Map Then
-                ClanPretoriano(Index).DeleteClan
-                Exit For
-
-            End If
         
-        Next Index
+        'Los sacamos correctamente.
+        Call EliminarPretorianos
     
     End With
 
