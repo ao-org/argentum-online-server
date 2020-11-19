@@ -239,7 +239,7 @@ Option Explicit
 
 #End If
 
-Sub DarCuerpo(ByVal Userindex As Integer)
+Sub DarCuerpo(ByVal UserIndex As Integer)
         
         On Error GoTo DarCuerpo_Err
         
@@ -255,8 +255,8 @@ Sub DarCuerpo(ByVal Userindex As Integer)
 
         Dim UserGenero As Byte
 
-100     UserGenero = UserList(Userindex).genero
-102     UserRaza = UserList(Userindex).raza
+100     UserGenero = UserList(UserIndex).genero
+102     UserRaza = UserList(UserIndex).raza
 
 104     Select Case UserGenero
 
@@ -310,7 +310,7 @@ Sub DarCuerpo(ByVal Userindex As Integer)
 
         End Select
 
-156     UserList(Userindex).Char.Body = NewBody
+156     UserList(UserIndex).Char.Body = NewBody
 
         
         Exit Sub
@@ -321,48 +321,48 @@ DarCuerpo_Err:
         
 End Sub
 
-Sub AsignarAtributos(ByVal Userindex As String)
+Sub AsignarAtributos(ByVal UserIndex As String)
         
         On Error GoTo AsignarAtributos_Err
         
 
-100     Select Case UserList(Userindex).raza
+100     Select Case UserList(UserIndex).raza
 
             Case eRaza.Humano
-102             UserList(Userindex).Stats.UserAtributos(1) = 19
-104             UserList(Userindex).Stats.UserAtributos(2) = 19
-106             UserList(Userindex).Stats.UserAtributos(3) = 19
-108             UserList(Userindex).Stats.UserAtributos(4) = 20
+102             UserList(UserIndex).Stats.UserAtributos(1) = 19
+104             UserList(UserIndex).Stats.UserAtributos(2) = 19
+106             UserList(UserIndex).Stats.UserAtributos(3) = 19
+108             UserList(UserIndex).Stats.UserAtributos(4) = 20
 
 110         Case eRaza.Elfo
-112             UserList(Userindex).Stats.UserAtributos(1) = 18
-114             UserList(Userindex).Stats.UserAtributos(2) = 20
-116             UserList(Userindex).Stats.UserAtributos(3) = 21
-118             UserList(Userindex).Stats.UserAtributos(4) = 18
+112             UserList(UserIndex).Stats.UserAtributos(1) = 18
+114             UserList(UserIndex).Stats.UserAtributos(2) = 20
+116             UserList(UserIndex).Stats.UserAtributos(3) = 21
+118             UserList(UserIndex).Stats.UserAtributos(4) = 18
 
 120         Case eRaza.Drow
-122             UserList(Userindex).Stats.UserAtributos(1) = 20
-124             UserList(Userindex).Stats.UserAtributos(2) = 18
-126             UserList(Userindex).Stats.UserAtributos(3) = 20
-128             UserList(Userindex).Stats.UserAtributos(4) = 19
+122             UserList(UserIndex).Stats.UserAtributos(1) = 20
+124             UserList(UserIndex).Stats.UserAtributos(2) = 18
+126             UserList(UserIndex).Stats.UserAtributos(3) = 20
+128             UserList(UserIndex).Stats.UserAtributos(4) = 19
 
 130         Case eRaza.Gnomo
-132             UserList(Userindex).Stats.UserAtributos(1) = 13
-134             UserList(Userindex).Stats.UserAtributos(2) = 21
-136             UserList(Userindex).Stats.UserAtributos(3) = 22
-138             UserList(Userindex).Stats.UserAtributos(4) = 17
+132             UserList(UserIndex).Stats.UserAtributos(1) = 13
+134             UserList(UserIndex).Stats.UserAtributos(2) = 21
+136             UserList(UserIndex).Stats.UserAtributos(3) = 22
+138             UserList(UserIndex).Stats.UserAtributos(4) = 17
 
 140         Case eRaza.Enano
-142             UserList(Userindex).Stats.UserAtributos(1) = 21
-144             UserList(Userindex).Stats.UserAtributos(2) = 17
-146             UserList(Userindex).Stats.UserAtributos(3) = 12
-148             UserList(Userindex).Stats.UserAtributos(4) = 22
+142             UserList(UserIndex).Stats.UserAtributos(1) = 21
+144             UserList(UserIndex).Stats.UserAtributos(2) = 17
+146             UserList(UserIndex).Stats.UserAtributos(3) = 12
+148             UserList(UserIndex).Stats.UserAtributos(4) = 22
 
 150         Case eRaza.Orco
-152             UserList(Userindex).Stats.UserAtributos(1) = 23
-154             UserList(Userindex).Stats.UserAtributos(2) = 17
-156             UserList(Userindex).Stats.UserAtributos(3) = 12
-158             UserList(Userindex).Stats.UserAtributos(4) = 21
+152             UserList(UserIndex).Stats.UserAtributos(1) = 23
+154             UserList(UserIndex).Stats.UserAtributos(2) = 17
+156             UserList(UserIndex).Stats.UserAtributos(3) = 12
+158             UserList(UserIndex).Stats.UserAtributos(4) = 21
 
         End Select
 
@@ -375,12 +375,12 @@ AsignarAtributos_Err:
         
 End Sub
 
-Sub RellenarInventario(ByVal Userindex As String)
+Sub RellenarInventario(ByVal UserIndex As String)
         
         On Error GoTo RellenarInventario_Err
         
 
-100     With UserList(Userindex)
+100     With UserList(UserIndex)
         
             Dim NumItems As Integer
 
@@ -602,7 +602,7 @@ NombrePermitido_Err:
         
 End Function
 
-Function ValidateSkills(ByVal Userindex As Integer) As Boolean
+Function ValidateSkills(ByVal UserIndex As Integer) As Boolean
         
         On Error GoTo ValidateSkills_Err
         
@@ -611,10 +611,10 @@ Function ValidateSkills(ByVal Userindex As Integer) As Boolean
 
 100     For LoopC = 1 To NUMSKILLS
 
-102         If UserList(Userindex).Stats.UserSkills(LoopC) < 0 Then
+102         If UserList(UserIndex).Stats.UserSkills(LoopC) < 0 Then
                 Exit Function
 
-104             If UserList(Userindex).Stats.UserSkills(LoopC) > 100 Then UserList(Userindex).Stats.UserSkills(LoopC) = 100
+104             If UserList(UserIndex).Stats.UserSkills(LoopC) > 100 Then UserList(UserIndex).Stats.UserSkills(LoopC) = 100
 
             End If
 
@@ -631,7 +631,7 @@ ValidateSkills_Err:
         
 End Function
 
-Sub ConnectNewUser(ByVal Userindex As Integer, ByRef name As String, ByVal UserRaza As eRaza, ByVal UserSexo As eGenero, ByVal UserClase As eClass, ByVal Head As Integer, ByRef UserCuenta As String)
+Sub ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal UserRaza As eRaza, ByVal UserSexo As eGenero, ByVal UserClase As eClass, ByVal Head As Integer, ByRef UserCuenta As String)
         '*************************************************
         'Author: Unknown
         'Last modified: 20/4/2007
@@ -647,15 +647,15 @@ Sub ConnectNewUser(ByVal Userindex As Integer, ByRef name As String, ByVal UserR
         
     
 100     If Not AsciiValidos(name) Or LenB(name) = 0 Then
-102         Call WriteErrorMsg(Userindex, "Nombre invalido.")
+102         Call WriteErrorMsg(UserIndex, "Nombre invalido.")
             Exit Sub
 
         End If
     
-104     If UserList(Userindex).flags.UserLogged Then
-106         Call LogCheating("El usuario " & UserList(Userindex).name & " ha intentado crear a " & name & " desde la IP " & UserList(Userindex).ip)
-108         Call CloseSocketSL(Userindex)
-110         Call Cerrar_Usuario(Userindex)
+104     If UserList(UserIndex).flags.UserLogged Then
+106         Call LogCheating("El usuario " & UserList(UserIndex).name & " ha intentado crear a " & name & " desde la IP " & UserList(UserIndex).ip)
+108         Call CloseSocketSL(UserIndex)
+110         Call Cerrar_Usuario(UserIndex)
             Exit Sub
 
         End If
@@ -664,119 +664,119 @@ Sub ConnectNewUser(ByVal Userindex As Integer, ByRef name As String, ByVal UserR
     
         '¿Existe el personaje?
 112     If PersonajeExiste(name) Then
-114         Call WriteErrorMsg(Userindex, "Ya existe el personaje.")
+114         Call WriteErrorMsg(UserIndex, "Ya existe el personaje.")
             Exit Sub
 
         End If
     
         'Prevenimos algun bug con dados inválidos
-116     If UserList(Userindex).Stats.UserAtributos(eAtributos.Fuerza) = 0 Then Exit Sub
+116     If UserList(UserIndex).Stats.UserAtributos(eAtributos.Fuerza) = 0 Then Exit Sub
     
-118     UserList(Userindex).Stats.UserAtributos(eAtributos.Fuerza) = UserList(Userindex).Stats.UserAtributos(eAtributos.Fuerza) + ModRaza(UserRaza).Fuerza
-120     UserList(Userindex).Stats.UserAtributos(eAtributos.Agilidad) = UserList(Userindex).Stats.UserAtributos(eAtributos.Agilidad) + ModRaza(UserRaza).Agilidad
-122     UserList(Userindex).Stats.UserAtributos(eAtributos.Inteligencia) = UserList(Userindex).Stats.UserAtributos(eAtributos.Inteligencia) + ModRaza(UserRaza).Inteligencia
-124     UserList(Userindex).Stats.UserAtributos(eAtributos.Constitucion) = UserList(Userindex).Stats.UserAtributos(eAtributos.Constitucion) + ModRaza(UserRaza).Constitucion
-        UserList(Userindex).Stats.UserAtributos(eAtributos.Carisma) = UserList(Userindex).Stats.UserAtributos(eAtributos.Carisma) + ModRaza(UserRaza).Carisma
+118     UserList(UserIndex).Stats.UserAtributos(eAtributos.Fuerza) = UserList(UserIndex).Stats.UserAtributos(eAtributos.Fuerza) + ModRaza(UserRaza).Fuerza
+120     UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad) = UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad) + ModRaza(UserRaza).Agilidad
+122     UserList(UserIndex).Stats.UserAtributos(eAtributos.Inteligencia) = UserList(UserIndex).Stats.UserAtributos(eAtributos.Inteligencia) + ModRaza(UserRaza).Inteligencia
+124     UserList(UserIndex).Stats.UserAtributos(eAtributos.Constitucion) = UserList(UserIndex).Stats.UserAtributos(eAtributos.Constitucion) + ModRaza(UserRaza).Constitucion
+        UserList(UserIndex).Stats.UserAtributos(eAtributos.Carisma) = UserList(UserIndex).Stats.UserAtributos(eAtributos.Carisma) + ModRaza(UserRaza).Carisma
     
-126     UserList(Userindex).flags.Muerto = 0
-128     UserList(Userindex).flags.Escondido = 0
+126     UserList(UserIndex).flags.Muerto = 0
+128     UserList(UserIndex).flags.Escondido = 0
 
-130     UserList(Userindex).flags.Casado = 0
-132     UserList(Userindex).flags.Pareja = ""
+130     UserList(UserIndex).flags.Casado = 0
+132     UserList(UserIndex).flags.Pareja = ""
 
-134     UserList(Userindex).name = name
-136     UserList(Userindex).clase = UserClase
-138     UserList(Userindex).raza = UserRaza
+134     UserList(UserIndex).name = name
+136     UserList(UserIndex).clase = UserClase
+138     UserList(UserIndex).raza = UserRaza
     
-140     UserList(Userindex).Char.Head = Head
+140     UserList(UserIndex).Char.Head = Head
     
-142     UserList(Userindex).genero = UserSexo
-144     UserList(Userindex).Hogar = 1
+142     UserList(UserIndex).genero = UserSexo
+144     UserList(UserIndex).Hogar = 1
     
         '%%%%%%%%%%%%% PREVENIR HACKEO DE LOS SKILLS %%%%%%%%%%%%%
-146     UserList(Userindex).Stats.SkillPts = 10
+146     UserList(UserIndex).Stats.SkillPts = 10
     
-148     UserList(Userindex).Char.heading = eHeading.SOUTH
+148     UserList(UserIndex).Char.heading = eHeading.SOUTH
     
-150     Call DarCuerpo(Userindex) 'Ladder REVISAR
+150     Call DarCuerpo(UserIndex) 'Ladder REVISAR
     
-152     UserList(Userindex).OrigChar = UserList(Userindex).Char
+152     UserList(UserIndex).OrigChar = UserList(UserIndex).Char
 
-154     UserList(Userindex).Char.WeaponAnim = NingunArma
-156     UserList(Userindex).Char.ShieldAnim = NingunEscudo
-158     UserList(Userindex).Char.CascoAnim = NingunCasco
+154     UserList(UserIndex).Char.WeaponAnim = NingunArma
+156     UserList(UserIndex).Char.ShieldAnim = NingunEscudo
+158     UserList(UserIndex).Char.CascoAnim = NingunCasco
 
         'Call AsignarAtributos(UserIndex)
 
         Dim MiInt As Integer
     
-160     MiInt = RandomNumber(1, UserList(Userindex).Stats.UserAtributos(eAtributos.Constitucion) \ 3)
+160     MiInt = RandomNumber(1, UserList(UserIndex).Stats.UserAtributos(eAtributos.Constitucion) \ 3)
     
-162     UserList(Userindex).Stats.MaxHp = 15 + MiInt
-164     UserList(Userindex).Stats.MinHp = 15 + MiInt
+162     UserList(UserIndex).Stats.MaxHp = 15 + MiInt
+164     UserList(UserIndex).Stats.MinHp = 15 + MiInt
     
-166     MiInt = RandomNumber(1, UserList(Userindex).Stats.UserAtributos(eAtributos.Agilidad) \ 6)
+166     MiInt = RandomNumber(1, UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad) \ 6)
 
 168     If MiInt = 1 Then MiInt = 2
     
-170     UserList(Userindex).Stats.MaxSta = 20 * MiInt
-172     UserList(Userindex).Stats.MinSta = 20 * MiInt
+170     UserList(UserIndex).Stats.MaxSta = 20 * MiInt
+172     UserList(UserIndex).Stats.MinSta = 20 * MiInt
     
-174     UserList(Userindex).Stats.MaxAGU = 100
-176     UserList(Userindex).Stats.MinAGU = 100
+174     UserList(UserIndex).Stats.MaxAGU = 100
+176     UserList(UserIndex).Stats.MinAGU = 100
     
-178     UserList(Userindex).Stats.MaxHam = 100
-180     UserList(Userindex).Stats.MinHam = 100
+178     UserList(UserIndex).Stats.MaxHam = 100
+180     UserList(UserIndex).Stats.MinHam = 100
 
-182     UserList(Userindex).flags.ScrollExp = 1
-184     UserList(Userindex).flags.ScrollOro = 1
+182     UserList(UserIndex).flags.ScrollExp = 1
+184     UserList(UserIndex).flags.ScrollOro = 1
     
         '<-----------------MANA----------------------->
 186     If UserClase = eClass.Mage Then 'Cambio en mana inicial (ToxicWaste)
-188         MiInt = UserList(Userindex).Stats.UserAtributos(eAtributos.Inteligencia) * 3
-190         UserList(Userindex).Stats.MaxMAN = MiInt
-192         UserList(Userindex).Stats.MinMAN = MiInt
+188         MiInt = UserList(UserIndex).Stats.UserAtributos(eAtributos.Inteligencia) * 3
+190         UserList(UserIndex).Stats.MaxMAN = MiInt
+192         UserList(UserIndex).Stats.MinMAN = MiInt
 194     ElseIf UserClase = eClass.Cleric Or UserClase = eClass.Druid Or UserClase = eClass.Bard Or UserClase = eClass.Paladin Or UserClase = eClass.Assasin Then
-196         UserList(Userindex).Stats.MaxMAN = 50
-198         UserList(Userindex).Stats.MinMAN = 50
+196         UserList(UserIndex).Stats.MaxMAN = 50
+198         UserList(UserIndex).Stats.MinMAN = 50
 
         End If
 
-200     UserList(Userindex).flags.VecesQueMoriste = 0
-202     UserList(Userindex).flags.Montado = 0
+200     UserList(UserIndex).flags.VecesQueMoriste = 0
+202     UserList(UserIndex).flags.Montado = 0
 
-204     UserList(Userindex).Stats.MaxHit = 2
-206     UserList(Userindex).Stats.MinHIT = 1
+204     UserList(UserIndex).Stats.MaxHit = 2
+206     UserList(UserIndex).Stats.MinHIT = 1
     
-208     UserList(Userindex).Stats.GLD = 0
+208     UserList(UserIndex).Stats.GLD = 0
     
-210     UserList(Userindex).Stats.Exp = 0
-212     UserList(Userindex).Stats.ELU = 300
-214     UserList(Userindex).Stats.ELV = 1
+210     UserList(UserIndex).Stats.Exp = 0
+212     UserList(UserIndex).Stats.ELU = 300
+214     UserList(UserIndex).Stats.ELV = 1
     
-216     Call RellenarInventario(Userindex)
+216     Call RellenarInventario(UserIndex)
 
         #If ConUpTime Then
-218         UserList(Userindex).LogOnTime = Now
-220         UserList(Userindex).UpTime = 0
+218         UserList(UserIndex).LogOnTime = Now
+220         UserList(UserIndex).UpTime = 0
         #End If
     
         'Valores Default de facciones al Activar nuevo usuario
-222     Call ResetFacciones(Userindex)
+222     Call ResetFacciones(UserIndex)
     
-224     UserList(Userindex).Faccion.Status = 1
+224     UserList(UserIndex).Faccion.Status = 1
     
-226     UserList(Userindex).ChatCombate = 1
-228     UserList(Userindex).ChatGlobal = 1
+226     UserList(UserIndex).ChatCombate = 1
+228     UserList(UserIndex).ChatGlobal = 1
     
         'Resetamos CORREO
-230     UserList(Userindex).Correo.CantCorreo = 0
-232     UserList(Userindex).Correo.NoLeidos = 0
+230     UserList(UserIndex).Correo.CantCorreo = 0
+232     UserList(UserIndex).Correo.NoLeidos = 0
         'Resetamos CORREO
     
-234     UserList(Userindex).Pos.Map = 37
-236     UserList(Userindex).Pos.X = 76
-238     UserList(Userindex).Pos.Y = 82
+234     UserList(UserIndex).Pos.Map = 37
+236     UserList(UserIndex).Pos.X = 76
+238     UserList(UserIndex).Pos.Y = 82
     
 240     If Not Database_Enabled Then
 242         Call GrabarNuevoPjEnCuentaCharfile(UserCuenta, name)
@@ -784,8 +784,8 @@ Sub ConnectNewUser(ByVal Userindex As Integer, ByRef name As String, ByVal UserR
     
 244     UltimoChar = UCase$(name)
     
-246     Call SaveNewUser(Userindex)
-248     Call ConnectUser(Userindex, name, UserCuenta)
+246     Call SaveNewUser(UserIndex)
+248     Call ConnectUser(UserIndex, name, UserCuenta)
         
         Exit Sub
 
@@ -797,13 +797,13 @@ End Sub
 
 #If UsarQueSocket = 1 Or UsarQueSocket = 2 Then
 
-Sub CloseSocket(ByVal Userindex As Integer)
+Sub CloseSocket(ByVal UserIndex As Integer)
 
-On Error GoTo errHandler
+On Error GoTo ErrHandler
 
-    Call FlushBuffer(Userindex)
+    Call FlushBuffer(UserIndex)
 
-    If Userindex = LastUser Then
+    If UserIndex = LastUser Then
 
         Do Until UserList(LastUser).flags.UserLogged
             LastUser = LastUser - 1
@@ -815,22 +815,22 @@ On Error GoTo errHandler
 
     'Call SecurityIp.IpRestarConexion(GetLongIp(UserList(UserIndex).ip))
 
-    If UserList(Userindex).ConnID <> -1 Then
-        Call CloseSocketSL(Userindex)
+    If UserList(UserIndex).ConnID <> -1 Then
+        Call CloseSocketSL(UserIndex)
 
     End If
 
     'Es el mismo user al que está revisando el centinela??
     'IMPORTANTE!!! hacerlo antes de resetear así todavía sabemos el nombre del user
     ' y lo podemos loguear
-    If Centinela.RevisandoUserIndex = Userindex Then Call modCentinela.CentinelaUserLogout
+    If Centinela.RevisandoUserIndex = UserIndex Then Call modCentinela.CentinelaUserLogout
 
     'mato los comercios seguros
-    If UserList(Userindex).ComUsu.DestUsu > 0 Then
-        If UserList(UserList(Userindex).ComUsu.DestUsu).flags.UserLogged Then
-            If UserList(UserList(Userindex).ComUsu.DestUsu).ComUsu.DestUsu = Userindex Then
-                Call WriteConsoleMsg(UserList(Userindex).ComUsu.DestUsu, "Comercio cancelado por el otro usuario", FontTypeNames.FONTTYPE_TALK)
-                Call FinComerciarUsu(UserList(Userindex).ComUsu.DestUsu)
+    If UserList(UserIndex).ComUsu.DestUsu > 0 Then
+        If UserList(UserList(UserIndex).ComUsu.DestUsu).flags.UserLogged Then
+            If UserList(UserList(UserIndex).ComUsu.DestUsu).ComUsu.DestUsu = UserIndex Then
+                Call WriteConsoleMsg(UserList(UserIndex).ComUsu.DestUsu, "Comercio cancelado por el otro usuario", FontTypeNames.FONTTYPE_TALK)
+                Call FinComerciarUsu(UserList(UserIndex).ComUsu.DestUsu)
                 
 
             End If
@@ -840,71 +840,71 @@ On Error GoTo errHandler
     End If
 
     'Empty buffer for reuse
-    Call UserList(Userindex).incomingData.ReadASCIIStringFixed(UserList(Userindex).incomingData.Length)
+    Call UserList(UserIndex).incomingData.ReadASCIIStringFixed(UserList(UserIndex).incomingData.Length)
 
-    If UserList(Userindex).flags.UserLogged Then
-        Call CloseUser(Userindex)
+    If UserList(UserIndex).flags.UserLogged Then
+        Call CloseUser(UserIndex)
     
         If NumUsers > 0 Then NumUsers = NumUsers - 1
         Call MostrarNumUsers
     
     Else
-        Call ResetUserSlot(Userindex)
+        Call ResetUserSlot(UserIndex)
 
     End If
 
-    UserList(Userindex).ConnID = -1
-    UserList(Userindex).ConnIDValida = False
-    UserList(Userindex).NumeroPaquetesPorMiliSec = 0
+    UserList(UserIndex).ConnID = -1
+    UserList(UserIndex).ConnIDValida = False
+    UserList(UserIndex).NumeroPaquetesPorMiliSec = 0
 
     Exit Sub
 
-errHandler:
-    UserList(Userindex).ConnID = -1
-    UserList(Userindex).ConnIDValida = False
-    UserList(Userindex).NumeroPaquetesPorMiliSec = 0
+ErrHandler:
+    UserList(UserIndex).ConnID = -1
+    UserList(UserIndex).ConnIDValida = False
+    UserList(UserIndex).NumeroPaquetesPorMiliSec = 0
 
-    Call ResetUserSlot(Userindex)
+    Call ResetUserSlot(UserIndex)
 
-    Call LogError("CloseSocket - Error = " & Err.Number & " - Descripción = " & Err.description & " - UserIndex = " & Userindex)
+    Call LogError("CloseSocket - Error = " & Err.Number & " - Descripción = " & Err.description & " - UserIndex = " & UserIndex)
     Resume Next
 
 End Sub
 
 #ElseIf UsarQueSocket = 0 Then
 
-Sub CloseSocket(ByVal Userindex As Integer)
-On Error GoTo errHandler
+Sub CloseSocket(ByVal UserIndex As Integer)
+On Error GoTo ErrHandler
     
     
     
-    UserList(Userindex).ConnID = -1
-    UserList(Userindex).NumeroPaquetesPorMiliSec = 0
+    UserList(UserIndex).ConnID = -1
+    UserList(UserIndex).NumeroPaquetesPorMiliSec = 0
 
-    If Userindex = LastUser And LastUser > 1 Then
+    If UserIndex = LastUser And LastUser > 1 Then
         Do Until UserList(LastUser).flags.UserLogged
             LastUser = LastUser - 1
             If LastUser <= 1 Then Exit Do
         Loop
     End If
 
-    If UserList(Userindex).flags.UserLogged Then
+    If UserList(UserIndex).flags.UserLogged Then
         If NumUsers <> 0 Then NumUsers = NumUsers - 1
         Call MostrarNumUsers
 
-        Call CloseUser(Userindex)
+        Call CloseUser(UserIndex)
     End If
 
-    frmMain.Socket2(Userindex).Cleanup
-    Unload frmMain.Socket2(Userindex)
-    Call ResetUserSlot(Userindex)
+    frmMain.Socket2(UserIndex).Cleanup
+    Unload frmMain.Socket2(UserIndex)
+    Call ResetUserSlot(UserIndex)
 
 Exit Sub
 
-errHandler:
-    UserList(Userindex).ConnID = -1
-    UserList(Userindex).NumeroPaquetesPorMiliSec = 0
-    Call ResetUserSlot(Userindex)
+ErrHandler:
+    UserList(UserIndex).ConnID = -1
+    UserList(UserIndex).NumeroPaquetesPorMiliSec = 0
+    Call ResetUserSlot(UserIndex)
 End Sub
 
 
@@ -915,39 +915,39 @@ End Sub
 
 #ElseIf UsarQueSocket = 3 Then
 
-Sub CloseSocket(ByVal Userindex As Integer, Optional ByVal cerrarlo As Boolean = True)
+Sub CloseSocket(ByVal UserIndex As Integer, Optional ByVal cerrarlo As Boolean = True)
 
-On Error GoTo errHandler
+On Error GoTo ErrHandler
 
 Dim NURestados As Boolean
 Dim CoNnEcTiOnId As Long
 
 
     NURestados = False
-    CoNnEcTiOnId = UserList(Userindex).ConnID
+    CoNnEcTiOnId = UserList(UserIndex).ConnID
     
     'call logindex(UserIndex, "******> Sub CloseSocket. ConnId: " & CoNnEcTiOnId & " Cerrarlo: " & Cerrarlo)
     
     
   
-    UserList(Userindex).ConnID = -1 'inabilitamos operaciones en socket
-    UserList(Userindex).NumeroPaquetesPorMiliSec = 0
+    UserList(UserIndex).ConnID = -1 'inabilitamos operaciones en socket
+    UserList(UserIndex).NumeroPaquetesPorMiliSec = 0
 
-    If Userindex = LastUser And LastUser > 1 Then
+    If UserIndex = LastUser And LastUser > 1 Then
         Do
             LastUser = LastUser - 1
             If LastUser <= 1 Then Exit Do
         Loop While UserList(LastUser).flags.UserLogged = True
     End If
 
-    If UserList(Userindex).flags.UserLogged Then
+    If UserList(UserIndex).flags.UserLogged Then
             If NumUsers <> 0 Then NumUsers = NumUsers - 1
             Call MostrarNumUsers
             NURestados = True
-            Call CloseUser(Userindex)
+            Call CloseUser(UserIndex)
     End If
     
-    Call ResetUserSlot(Userindex)
+    Call ResetUserSlot(UserIndex)
     
     'limpiada la userlist... reseteo el socket, si me lo piden
     'Me lo piden desde: cerrada intecional del servidor (casi todas
@@ -959,56 +959,56 @@ Dim CoNnEcTiOnId As Long
 
 Exit Sub
 
-errHandler:
-    UserList(Userindex).NumeroPaquetesPorMiliSec = 0
-    Call LogError("CLOSESOCKETERR: " & Err.description & " UI:" & Userindex)
+ErrHandler:
+    UserList(UserIndex).NumeroPaquetesPorMiliSec = 0
+    Call LogError("CLOSESOCKETERR: " & Err.description & " UI:" & UserIndex)
     
     If Not NURestados Then
-        If UserList(Userindex).flags.UserLogged Then
+        If UserList(UserIndex).flags.UserLogged Then
             If NumUsers > 0 Then
                 NumUsers = NumUsers - 1
                 Call MostrarNumUsers
             End If
-            Call LogError("Cerre sin grabar a: " & UserList(Userindex).name)
+            Call LogError("Cerre sin grabar a: " & UserList(UserIndex).name)
         End If
     End If
     
     Call LogError("El usuario no guardado tenia connid " & CoNnEcTiOnId & ". Socket no liberado.")
-    Call ResetUserSlot(Userindex)
+    Call ResetUserSlot(UserIndex)
 
 End Sub
 
 #End If
 
 '[Alejo-21-5]: Cierra un socket sin limpiar el slot
-Sub CloseSocketSL(ByVal Userindex As Integer)
+Sub CloseSocketSL(ByVal UserIndex As Integer)
         
         On Error GoTo CloseSocketSL_Err
         
 
         #If UsarQueSocket = 1 Then
 
-100         If UserList(Userindex).ConnID <> -1 And UserList(Userindex).ConnIDValida Then
-102             Call BorraSlotSock(UserList(Userindex).ConnID)
-104             Call WSApiCloseSocket(UserList(Userindex).ConnID)
-106             UserList(Userindex).ConnIDValida = False
+100         If UserList(UserIndex).ConnID <> -1 And UserList(UserIndex).ConnIDValida Then
+102             Call BorraSlotSock(UserList(UserIndex).ConnID)
+104             Call WSApiCloseSocket(UserList(UserIndex).ConnID)
+106             UserList(UserIndex).ConnIDValida = False
 
             End If
 
         #ElseIf UsarQueSocket = 0 Then
 
-108         If UserList(Userindex).ConnID <> -1 And UserList(Userindex).ConnIDValida Then
-110             frmMain.Socket2(Userindex).Cleanup
-112             Unload frmMain.Socket2(Userindex)
-114             UserList(Userindex).ConnIDValida = False
+108         If UserList(UserIndex).ConnID <> -1 And UserList(UserIndex).ConnIDValida Then
+110             frmMain.Socket2(UserIndex).Cleanup
+112             Unload frmMain.Socket2(UserIndex)
+114             UserList(UserIndex).ConnIDValida = False
 
             End If
 
         #ElseIf UsarQueSocket = 2 Then
 
-116         If UserList(Userindex).ConnID <> -1 And UserList(Userindex).ConnIDValida Then
-118             Call frmMain.Serv.CerrarSocket(UserList(Userindex).ConnID)
-120             UserList(Userindex).ConnIDValida = False
+116         If UserList(UserIndex).ConnID <> -1 And UserList(UserIndex).ConnIDValida Then
+118             Call frmMain.Serv.CerrarSocket(UserList(UserIndex).ConnID)
+120             UserList(UserIndex).ConnIDValida = False
 
             End If
 
@@ -1030,7 +1030,7 @@ End Sub
 ' @param Datos The string that will be send
 ' @remarks If UsarQueSocket is 3 it won`t use the clsByteQueue
 
-Public Sub EnviarDatosASlot(ByVal Userindex As Integer, ByRef Datos As String)
+Public Sub EnviarDatosASlot(ByVal UserIndex As Integer, ByRef Datos As String)
         '***************************************************
         'Author: Unknown
         'Last Modification: 09/11/20
@@ -1041,12 +1041,12 @@ Public Sub EnviarDatosASlot(ByVal Userindex As Integer, ByRef Datos As String)
         On Error GoTo EnviarDatosASlot_Err
         
 
-100     Call UserList(Userindex).outgoingData.WriteASCIIStringFixed(Datos)
+100     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(Datos)
 
         Exit Sub
 
 ErrorHandler:
-102     Call LogError("TCP::EnviarDatosASlot. UI/ConnId/Datos: " & Userindex & "/" & UserList(Userindex).ConnID & "/" & Datos)
+102     Call LogError("TCP::EnviarDatosASlot. UI/ConnId/Datos: " & UserIndex & "/" & UserList(UserIndex).ConnID & "/" & Datos)
 
         
         Exit Sub
@@ -1067,7 +1067,7 @@ Function EstaPCarea(Index As Integer, Index2 As Integer) As Boolean
 100     For Y = UserList(Index).Pos.Y - MinYBorder + 1 To UserList(Index).Pos.Y + MinYBorder - 1
 102         For X = UserList(Index).Pos.X - MinXBorder + 1 To UserList(Index).Pos.X + MinXBorder - 1
 
-104             If MapData(UserList(Index).Pos.Map, X, Y).Userindex = Index2 Then
+104             If MapData(UserList(Index).Pos.Map, X, Y).UserIndex = Index2 Then
 106                 EstaPCarea = True
                     Exit Function
 
@@ -1098,7 +1098,7 @@ Function HayPCarea(Pos As WorldPos) As Boolean
 102         For X = Pos.X - MinXBorder + 1 To Pos.X + MinXBorder - 1
 
 104             If X > 0 And Y > 0 And X < 101 And Y < 101 Then
-106                 If MapData(Pos.Map, X, Y).Userindex > 0 Then
+106                 If MapData(Pos.Map, X, Y).UserIndex > 0 Then
 108                     HayPCarea = True
                         Exit Function
 
@@ -1150,12 +1150,12 @@ HayOBJarea_Err:
         
 End Function
 
-Function ValidateChr(ByVal Userindex As Integer) As Boolean
+Function ValidateChr(ByVal UserIndex As Integer) As Boolean
         
         On Error GoTo ValidateChr_Err
         
 
-100     ValidateChr = UserList(Userindex).Char.Head <> 0 And UserList(Userindex).Char.Body <> 0 And ValidateSkills(Userindex)
+100     ValidateChr = UserList(UserIndex).Char.Head <> 0 And UserList(UserIndex).Char.Body <> 0 And ValidateSkills(UserIndex)
 
         
         Exit Function
@@ -1166,31 +1166,31 @@ ValidateChr_Err:
         
 End Function
 
-Function EntrarCuenta(ByVal Userindex As Integer, CuentaEmail As String, CuentaPassword As String, MacAddress As String, ByVal HDserial As Long) As Boolean
+Function EntrarCuenta(ByVal UserIndex As Integer, CuentaEmail As String, CuentaPassword As String, MacAddress As String, ByVal HDserial As Long) As Boolean
         
         On Error GoTo EntrarCuenta_Err
         
 
 100     If CheckMAC(MacAddress) Then
-102         Call WriteShowMessageBox(Userindex, "Su cuenta se encuentra bajo tolerancia 0. Tiene prohibido el acceso. Cod: #0001")
+102         Call WriteShowMessageBox(UserIndex, "Su cuenta se encuentra bajo tolerancia 0. Tiene prohibido el acceso. Cod: #0001")
             Exit Function
 
         End If
     
 104     If CheckHD(HDserial) Then
-106         Call WriteShowMessageBox(Userindex, "Su cuenta se encuentra bajo tolerancia 0. Tiene prohibido el acceso. Cod: #0002")
+106         Call WriteShowMessageBox(UserIndex, "Su cuenta se encuentra bajo tolerancia 0. Tiene prohibido el acceso. Cod: #0002")
             Exit Function
 
         End If
 
 108     If Not CheckMailString(CuentaEmail) Then
-110         Call WriteShowMessageBox(Userindex, "Email inválido.")
+110         Call WriteShowMessageBox(UserIndex, "Email inválido.")
             Exit Function
 
         End If
     
 112     If Database_Enabled Then
-114         EntrarCuenta = EnterAccountDatabase(Userindex, CuentaEmail, SDesencriptar(CuentaPassword), MacAddress, HDserial, UserList(Userindex).ip)
+114         EntrarCuenta = EnterAccountDatabase(UserIndex, CuentaEmail, SDesencriptar(CuentaPassword), MacAddress, HDserial, UserList(UserIndex).ip)
     
         Else
 
@@ -1207,28 +1207,28 @@ Function EntrarCuenta(ByVal Userindex As Integer, CuentaEmail As String, CuentaP
 128                         Call WriteVar(CuentasPath & LCase$(CuentaEmail) & ".act", "INIT", "MacAdress", MacAddress)
 130                         Call WriteVar(CuentasPath & LCase$(CuentaEmail) & ".act", "INIT", "HDserial", HDserial)
 132                         Call WriteVar(CuentasPath & LCase$(CuentaEmail) & ".act", "INIT", "UltimoAcceso", Date & " " & Time)
-134                         Call WriteVar(CuentasPath & LCase$(CuentaEmail) & ".act", "INIT", "UltimaIP", UserList(Userindex).ip)
+134                         Call WriteVar(CuentasPath & LCase$(CuentaEmail) & ".act", "INIT", "UltimaIP", UserList(UserIndex).ip)
                         
-136                         UserList(Userindex).Cuenta = CuentaEmail
+136                         UserList(UserIndex).Cuenta = CuentaEmail
                         
 138                         EntrarCuenta = True
                         Else
-140                         Call WriteShowMessageBox(Userindex, "¡La cuenta no ha sido validada aún!")
+140                         Call WriteShowMessageBox(UserIndex, "¡La cuenta no ha sido validada aún!")
 
                         End If
 
                     Else
-142                     Call WriteShowMessageBox(Userindex, "Contraseña inválida.")
+142                     Call WriteShowMessageBox(UserIndex, "Contraseña inválida.")
 
                     End If
 
                 Else
-144                 Call WriteShowMessageBox(Userindex, "La cuenta se encuentra baneada debido a: " & ObtenerMotivoBaneo(CuentaEmail) & ". Esta decisión fue tomada por: " & ObtenerQuienBaneo(CuentaEmail) & ".")
+144                 Call WriteShowMessageBox(UserIndex, "La cuenta se encuentra baneada debido a: " & ObtenerMotivoBaneo(CuentaEmail) & ". Esta decisión fue tomada por: " & ObtenerQuienBaneo(CuentaEmail) & ".")
 
                 End If
 
             Else
-146             Call WriteShowMessageBox(Userindex, "La cuenta no existe.")
+146             Call WriteShowMessageBox(UserIndex, "La cuenta no existe.")
 
             End If
 
@@ -1243,11 +1243,11 @@ EntrarCuenta_Err:
         
 End Function
 
-Sub ConnectUser(ByVal Userindex As Integer, ByRef name As String, ByRef UserCuenta As String)
+Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuenta As String)
 
-    On Error GoTo errHandler
+    On Error GoTo ErrHandler
 
-    With UserList(Userindex)
+    With UserList(UserIndex)
 
         Dim n    As Integer
 
@@ -1257,26 +1257,23 @@ Sub ConnectUser(ByVal Userindex As Integer, ByRef name As String, ByRef UserCuen
             Call LogCheating("El usuario " & .name & " ha intentado loguear a " & name & " desde la IP " & .ip)
             
             'Kick player ( and leave character inside :D )!
-            Call CloseSocketSL(Userindex)
-            Call Cerrar_Usuario(Userindex)
+            Call CloseSocketSL(UserIndex)
+            Call Cerrar_Usuario(UserIndex)
             
             Exit Sub
-
         End If
         
         '¿Supera el máximo de usuarios por cuenta?
         If MaxUsersPorCuenta > 0 Then
             If GetUsersLoggedAccountDatabase(.AccountID) >= MaxUsersPorCuenta Then
                 If MaxUsersPorCuenta = 1 Then
-                    Call WriteShowMessageBox(Userindex, "Ya hay un usuario conectado con esta cuenta.")
+                    Call WriteShowMessageBox(UserIndex, "Ya hay un usuario conectado con esta cuenta.")
                 Else
-                    Call WriteShowMessageBox(Userindex, "La cuenta ya alcanzó el máximo de " & MaxUsersPorCuenta & " usuarios conectados.")
-
+                    Call WriteShowMessageBox(UserIndex, "La cuenta ya alcanzó el máximo de " & MaxUsersPorCuenta & " usuarios conectados.")
                 End If
 
-                
+                Call CloseSocket(UserIndex)
                 Exit Sub
-
             End If
 
         End If
@@ -1291,17 +1288,16 @@ Sub ConnectUser(ByVal Userindex As Integer, ByRef name As String, ByRef UserCuen
         
         'Controlamos no pasar el maximo de usuarios
         If NumUsers >= MaxUsers Then
-            Call WriteShowMessageBox(Userindex, "El servidor ha alcanzado el maximo de usuarios soportado, por favor vuelva a intertarlo mas tarde.")
-            
-            'Call CloseSocket(UserIndex)
+            Call WriteShowMessageBox(UserIndex, "El servidor ha alcanzado el maximo de usuarios soportado, por favor vuelva a intertarlo mas tarde.")
+            Call CloseSocket(UserIndex)
             Exit Sub
-
         End If
         
         '¿Este IP ya esta conectado?
         If MaxConexionesIP > 0 Then
-            If ContarMismaIP(Userindex, .ip) >= MaxConexionesIP Then
-                Call WriteShowMessageBox(Userindex, "Has alcanzado el límite de conexiones por IP.")
+            If ContarMismaIP(UserIndex, .ip) >= MaxConexionesIP Then
+                Call WriteShowMessageBox(UserIndex, "Has alcanzado el límite de conexiones por IP.")
+                Call CloseSocket(UserIndex)
                 Exit Sub
             End If
         End If
@@ -1329,7 +1325,6 @@ Sub ConnectUser(ByVal Userindex As Integer, ByRef name As String, ByRef UserCuen
         Else
             .flags.Privilegios = .flags.Privilegios Or PlayerType.user
             .flags.AdminPerseguible = True
-
         End If
 
         'Add RM flag if needed
@@ -1351,11 +1346,10 @@ Sub ConnectUser(ByVal Userindex As Integer, ByRef name As String, ByRef UserCuen
         If ServerSoloGMs > 0 Then
             If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero)) = 0 Then
                 ' Call WriteErrorMsg(UserIndex, "Servidor restringido a administradores. Por favor reintente en unos momentos.")
-                Call WriteShowMessageBox(Userindex, "Servidor restringido a administradores. Por favor reintente en unos momentos.")
+                Call WriteShowMessageBox(UserIndex, "Servidor restringido a administradores. Por favor reintente en unos momentos.")
                 
-                'Call CloseSocket(UserIndex)
+                Call CloseSocket(UserIndex)
                 Exit Sub
-
             End If
 
         End If
@@ -1363,16 +1357,21 @@ Sub ConnectUser(ByVal Userindex As Integer, ByRef name As String, ByRef UserCuen
         '¿Ya esta conectado el personaje?
         If CheckForSameName(name) Then
             If UserList(NameIndex(name)).Counters.Saliendo Then
-                Call WriteShowMessageBox(Userindex, "El usuario está saliendo.")
+                Call WriteShowMessageBox(UserIndex, "El usuario está saliendo.")
             Else
-                Call WriteShowMessageBox(Userindex, "Perdon, un usuario con el mismo nombre se ha logueado.")
-
+                Call WriteShowMessageBox(UserIndex, "Perdon, un usuario con el mismo nombre se ha logueado.")
             End If
-
             
-            ' Call CloseSocket(UserIndex)
+            Call CloseSocket(UserIndex)
             Exit Sub
 
+        End If
+        
+        If EnPausa Then
+            Call WritePauseToggle(UserIndex)
+            Call WriteConsoleMsg(UserIndex, "Servidor> Lo sentimos mucho pero el servidor se encuentra actualmente detenido. Intenta ingresar más tarde.", FontTypeNames.FONTTYPE_SERVER)
+            Call CloseSocket(UserIndex)
+            Exit Sub
         End If
     
         'Donador
@@ -1397,20 +1396,18 @@ Sub ConnectUser(ByVal Userindex As Integer, ByRef name As String, ByRef UserCuen
         .name = name
         
         ' Cargamos el personaje
-        Call LoadUser(Userindex)
-        
-        If Not ValidateChr(Userindex) Then
-            Call WriteShowMessageBox(Userindex, "Error en el personaje. Comuniquese con el staff.")
-            'Call CloseSocket(UserIndex)
-            Exit Sub
+        Call LoadUser(UserIndex)
 
+        If Not ValidateChr(UserIndex) Then
+            Call WriteShowMessageBox(UserIndex, "Error en el personaje. Comuniquese con el staff.")
+            Call CloseSocket(UserIndex)
+            Exit Sub
         End If
     
         If UCase$(.Cuenta) <> UCase$(UserCuenta) Then
-            Call WriteShowMessageBox(Userindex, "El personaje no corresponde a su cuenta.")
-            ' Call CloseSocket(UserIndex)
+            Call WriteShowMessageBox(UserIndex, "El personaje no corresponde a su cuenta.")
+            Call CloseSocket(UserIndex)
             Exit Sub
-
         End If
         
         If .Invent.EscudoEqpSlot = 0 Then .Char.ShieldAnim = NingunEscudo
@@ -1427,51 +1424,116 @@ Sub ConnectUser(ByVal Userindex As Integer, ByRef name As String, ByRef UserCuen
         
         .flags.SeguroClan = True
         
-        .CurrentInventorySlots = getMaxInventorySlots(Userindex)
+        .CurrentInventorySlots = getMaxInventorySlots(UserIndex)
         
-        Call WriteInventoryUnlockSlots(Userindex)
+        Call WriteInventoryUnlockSlots(UserIndex)
         
-        Call LoadUserIntervals(Userindex)
-        Call WriteIntervals(Userindex)
+        Call LoadUserIntervals(UserIndex)
+        Call WriteIntervals(UserIndex)
         
-        Call UpdateUserInv(True, Userindex, 0)
-        Call UpdateUserHechizos(True, Userindex, 0)
+        Call UpdateUserInv(True, UserIndex, 0)
+        Call UpdateUserHechizos(True, UserIndex, 0)
         
-        Call EnviarLlaves(Userindex)
+        Call EnviarLlaves(UserIndex)
 
         If .Correo.NoLeidos > 0 Then
-            Call WriteCorreoPicOn(Userindex)
-
+            Call WriteCorreoPicOn(UserIndex)
         End If
 
         If .flags.Paralizado Then
-            Call WriteParalizeOK(Userindex)
-
+            Call WriteParalizeOK(UserIndex)
         End If
         
         If .flags.Inmovilizado Then
-            Call WriteInmovilizaOK(Userindex)
-
+            Call WriteInmovilizaOK(UserIndex)
         End If
         
         ''
         'TODO : Feo, esto tiene que ser parche cliente
         If .flags.Estupidez = 0 Then
-            Call WriteDumbNoMore(Userindex)
-
+            Call WriteDumbNoMore(UserIndex)
         End If
         
         'Mapa válido
         If Not MapaValido(.Pos.Map) Then
-            Call WriteErrorMsg(Userindex, "EL PJ se encuenta en un mapa invalido.")
-            
-            Call CloseSocket(Userindex)
+            Call WriteErrorMsg(UserIndex, "EL PJ se encuenta en un mapa invalido.")
+            Call CloseSocket(UserIndex)
             Exit Sub
-
         End If
         
-        If MapData(.Pos.Map, .Pos.X, .Pos.Y).Userindex <> 0 Or MapData(.Pos.Map, .Pos.X, .Pos.Y).NpcIndex <> 0 Then
-            Call WarpToLegalPos(Userindex, .Pos.Map, .Pos.X, .Pos.Y)
+        'Tratamos de evitar en lo posible el "Telefrag". Solo 1 intento de loguear en pos adjacentes.
+        'Codigo por Pablo (ToxicWaste) y revisado por Nacho (Integer), corregido para que realmetne ande y no tire el server por Juan Martin Sotuyo Dodero (Maraxus)
+        If MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex <> 0 Or MapData(.Pos.Map, .Pos.X, .Pos.Y).NpcIndex <> 0 Then
+
+            Dim FoundPlace As Boolean
+
+            Dim esAgua     As Boolean
+
+            Dim tX         As Long
+
+            Dim tY         As Long
+        
+            FoundPlace = False
+            esAgua = HayAgua(.Pos.Map, .Pos.X, .Pos.Y)
+        
+            For tY = .Pos.Y - 1 To .Pos.Y + 1
+                For tX = .Pos.X - 1 To .Pos.X + 1
+
+                    If esAgua Then
+
+                        'reviso que sea pos legal en agua, que no haya User ni NPC para poder loguear.
+                        If LegalPos(.Pos.Map, tX, tY, True, False) Then
+                            FoundPlace = True
+                            Exit For
+
+                        End If
+
+                    Else
+
+                        'reviso que sea pos legal en tierra, que no haya User ni NPC para poder loguear.
+                        If LegalPos(.Pos.Map, tX, tY, False, True) Then
+                            FoundPlace = True
+                            Exit For
+
+                        End If
+
+                    End If
+
+                Next tX
+            
+                If FoundPlace Then Exit For
+            Next tY
+        
+            If FoundPlace Then 'Si encontramos un lugar, listo, nos quedamos ahi
+                .Pos.X = tX
+                .Pos.Y = tY
+            Else
+
+                'Si no encontramos un lugar, sacamos al usuario que tenemos abajo, y si es un NPC, lo pisamos.
+                If MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex <> 0 Then
+
+                    'Si no encontramos lugar, y abajo teniamos a un usuario, lo pisamos y cerramos su comercio seguro
+                    If UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu > 0 Then
+
+                        'Le avisamos al que estaba comerciando que se tuvo que ir.
+                        If UserList(UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu).flags.UserLogged Then
+                            Call FinComerciarUsu(UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu)
+                            Call WriteConsoleMsg(UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu, "Comercio cancelado. El otro usuario se ha desconectado.", FontTypeNames.FONTTYPE_WARNING)
+                        End If
+
+                        'Lo sacamos.
+                        If UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).flags.UserLogged Then
+                            Call FinComerciarUsu(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex)
+                            Call WriteErrorMsg(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex, "Alguien se ha conectado donde te encontrabas, por favor reconectate...")
+                        End If
+
+                    End If
+                
+                    Call CloseSocket(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex)
+
+                End If
+
+            End If
 
         End If
         
@@ -1484,7 +1546,6 @@ Sub ConnectUser(ByVal Userindex As Integer, ByRef name As String, ByRef UserCuen
 
             If Barco.Ropaje <> iTraje Then
                 .Char.Head = 0
-
             End If
 
             If .flags.Muerto = 0 Then
@@ -1512,7 +1573,6 @@ Sub ConnectUser(ByVal Userindex As Integer, ByRef name As String, ByRef UserCuen
 
             Else
                 .Char.Body = iFragataFantasmal
-
             End If
             
             .Char.ShieldAnim = NingunEscudo
@@ -1523,21 +1583,20 @@ Sub ConnectUser(ByVal Userindex As Integer, ByRef name As String, ByRef UserCuen
             .Char.speeding = Barco.Velocidad
             
             If Barco.Ropaje = iTraje Then
-                Call WriteNadarToggle(Userindex, True)
+                Call WriteNadarToggle(UserIndex, True)
             Else
-                Call WriteNadarToggle(Userindex, False)
+                Call WriteNadarToggle(UserIndex, False)
 
             End If
             
-            Call WriteVelocidadToggle(Userindex)
-
+            Call WriteVelocidadToggle(UserIndex)
         End If
 
-        Call WriteUserIndexInServer(Userindex) 'Enviamos el User index
+        Call WriteUserIndexInServer(UserIndex) 'Enviamos el User index
         .flags.NecesitaOxigeno = RequiereOxigeno(.Pos.Map)
         
-        Call WriteChangeMap(Userindex, .Pos.Map) 'Carga el mapa
-        Call WriteHora(Userindex)
+        Call WriteChangeMap(UserIndex, .Pos.Map) 'Carga el mapa
+        Call WriteHora(UserIndex)
         
         'If .flags.Privilegios <> PlayerType.user And .flags.Privilegios <> (PlayerType.user Or PlayerType.ChaosCouncil) And .flags.Privilegios <> (PlayerType.user Or PlayerType.RoyalCouncil) And .flags.Privilegios <> (PlayerType.user Or PlayerType.Admin) And .flags.Privilegios <> (PlayerType.user Or PlayerType.Dios) Then
         ' .flags.ChatColor = RGB(2, 161, 38)
@@ -1553,7 +1612,6 @@ Sub ConnectUser(ByVal Userindex As Integer, ByRef name As String, ByRef UserCuen
             .flags.ChatColor = RGB(2, 161, 38)
         Else
             .flags.ChatColor = vbWhite
-
         End If
         
         ''[EL OSO]: TRAIGO ESTO ACA ARRIBA PARA DARLE EL IP!
@@ -1566,35 +1624,30 @@ Sub ConnectUser(ByVal Userindex As Integer, ByRef name As String, ByRef UserCuen
                 .Char.speeding = VelocidadNormal
             Else
                 .Char.speeding = VelocidadMuerto
-
             End If
-
         End If
-        
-        Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageSpeedingACT(.Char.CharIndex, .Char.speeding))
         
         'Crea  el personaje del usuario
-        Call MakeUserChar(True, .Pos.Map, Userindex, .Pos.Map, .Pos.X, .Pos.Y, 1)
+        Call MakeUserChar(True, .Pos.Map, UserIndex, .Pos.Map, .Pos.X, .Pos.Y, 1)
 
-        Call WriteUserCharIndexInServer(Userindex)
+        Call WriteUserCharIndexInServer(UserIndex)
         
         If (.flags.Privilegios And PlayerType.user) = 0 Then
-            Call DoAdminInvisible(Userindex)
+            Call DoAdminInvisible(UserIndex)
+        Else
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(.Char.CharIndex, .Char.speeding))
         End If
         
-        Call WriteUpdateUserStats(Userindex)
+        Call WriteUpdateUserStats(UserIndex)
         
-        Call WriteUpdateHungerAndThirst(Userindex)
+        Call WriteUpdateHungerAndThirst(UserIndex)
         
-        Call SendMOTD(Userindex)
-
-        If EnPausa Then
-            Call WritePauseToggle(Userindex)
-            Call WriteConsoleMsg(Userindex, "Servidor> Lo sentimos mucho pero el servidor se encuentra actualmente detenido. Intenta ingresar más tarde.", FontTypeNames.FONTTYPE_SERVER)
-
-        End If
+        Call WriteUpdateDM(UserIndex)
+        Call WriteUpdateRM(UserIndex)
         
-        Call SetUserLogged(Userindex)
+        Call SendMOTD(UserIndex)
+        
+        Call SetUserLogged(UserIndex)
         
         'Actualiza el Num de usuarios
         NumUsers = NumUsers + 1
@@ -1603,9 +1656,8 @@ Sub ConnectUser(ByVal Userindex As Integer, ByRef name As String, ByRef UserCuen
         MapInfo(.Pos.Map).NumUsers = MapInfo(.Pos.Map).NumUsers + 1
         
         If .Stats.SkillPts > 0 Then
-            Call WriteSendSkills(Userindex)
-            Call WriteLevelUp(Userindex, .Stats.SkillPts)
-
+            Call WriteSendSkills(UserIndex)
+            Call WriteLevelUp(UserIndex, .Stats.SkillPts)
         End If
         
         If NumUsers > DayStats.MaxUsuarios Then DayStats.MaxUsuarios = NumUsers
@@ -1621,34 +1673,30 @@ Sub ConnectUser(ByVal Userindex As Integer, ByRef name As String, ByRef UserCuen
             End If
         End If
         
-        Call WriteFYA(Userindex)
-        Call WriteBindKeys(Userindex)
+        Call WriteFYA(UserIndex)
+        Call WriteBindKeys(UserIndex)
         
         If .flags.Navegando = 1 Then
-            Call WriteNavigateToggle(Userindex)
-
+            Call WriteNavigateToggle(UserIndex)
         End If
         
         If .flags.Montado = 1 Then
             .Char.speeding = VelocidadMontura
-            Call WriteEquiteToggle(Userindex)
+            Call WriteEquiteToggle(UserIndex)
             'Debug.Print "Montado:" & .Char.speeding
-            Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageSpeedingACT(.Char.CharIndex, .Char.speeding))
-
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(.Char.CharIndex, .Char.speeding))
         End If
         
         If .flags.Muerto = 1 Then
             .Char.speeding = VelocidadMuerto
-            Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageSpeedingACT(.Char.CharIndex, .Char.speeding))
-
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(.Char.CharIndex, .Char.speeding))
         End If
         
         If .GuildIndex > 0 Then
 
             'welcome to the show baby...
-            If Not modGuilds.m_ConectarMiembroAClan(Userindex, .GuildIndex) Then
-                Call WriteConsoleMsg(Userindex, "Tu estado no te permite entrar al clan.", FontTypeNames.FONTTYPE_GUILD)
-
+            If Not modGuilds.m_ConectarMiembroAClan(UserIndex, .GuildIndex) Then
+                Call WriteConsoleMsg(UserIndex, "Tu estado no te permite entrar al clan.", FontTypeNames.FONTTYPE_GUILD)
             End If
 
         End If
@@ -1656,62 +1704,54 @@ Sub ConnectUser(ByVal Userindex As Integer, ByRef name As String, ByRef UserCuen
         tStr = modGuilds.a_ObtenerRechazoDeChar(.name)
     
         If LenB(tStr) <> 0 Then
-            Call WriteShowMessageBox(Userindex, "Tu solicitud de ingreso al clan ha sido rechazada. El clan te explica que: " & tStr)
-
+            Call WriteShowMessageBox(UserIndex, "Tu solicitud de ingreso al clan ha sido rechazada. El clan te explica que: " & tStr)
         End If
         
         .flags.SolicitudPendienteDe = 0
 
         If Lloviendo Then
-            Call WriteRainToggle(Userindex)
-
+            Call WriteRainToggle(UserIndex)
         End If
         
         If ServidorNublado Then
-            Call WriteNubesToggle(Userindex)
-
+            Call WriteNubesToggle(UserIndex)
         End If
 
-        Call WriteLoggedMessage(Userindex)
+        Call WriteLoggedMessage(UserIndex)
         
         If .Stats.ELV = 1 Then
-            Call WriteConsoleMsg(Userindex, "¡Bienvenido a las tierras de AO20! ¡" & .name & " que tengas buen viaje y mucha suerte!", FontTypeNames.FONTTYPE_GUILD)
+            Call WriteConsoleMsg(UserIndex, "¡Bienvenido a las tierras de AO20! ¡" & .name & " que tengas buen viaje y mucha suerte!", FontTypeNames.FONTTYPE_GUILD)
         ElseIf .Stats.ELV < 14 Then
-            Call WriteConsoleMsg(Userindex, "¡Bienvenido de nuevo " & .name & "! Actualmente estas en el nivel " & .Stats.ELV & " en " & DarNameMapa(.Pos.Map) & ", ¡buen viaje y mucha suerte!", FontTypeNames.FONTTYPE_GUILD)
-
+            Call WriteConsoleMsg(UserIndex, "¡Bienvenido de nuevo " & .name & "! Actualmente estas en el nivel " & .Stats.ELV & " en " & DarNameMapa(.Pos.Map) & ", ¡buen viaje y mucha suerte!", FontTypeNames.FONTTYPE_GUILD)
         End If
 
-        If Status(Userindex) = 2 Or Status(Userindex) = 0 Then
-            Call WriteSafeModeOff(Userindex)
+        If Status(UserIndex) = 2 Or Status(UserIndex) = 0 Then
+            Call WriteSafeModeOff(UserIndex)
             .flags.Seguro = False
         Else
             .flags.Seguro = True
-            Call WriteSafeModeOn(Userindex)
-
+            Call WriteSafeModeOn(UserIndex)
         End If
         
         'Call modGuilds.SendGuildNews(UserIndex)
         
         If .MENSAJEINFORMACION <> vbNullString Then
-            Call WriteConsoleMsg(Userindex, .MENSAJEINFORMACION, FontTypeNames.FONTTYPE_CENTINELA)
+            Call WriteConsoleMsg(UserIndex, .MENSAJEINFORMACION, FontTypeNames.FONTTYPE_CENTINELA)
             .MENSAJEINFORMACION = vbNullString
-
         End If
 
         tStr = modGuilds.a_ObtenerRechazoDeChar(.name)
         
         If LenB(tStr) <> 0 Then
-            Call WriteShowMessageBox(Userindex, "Tu solicitud de ingreso al clan ha sido rechazada. El clan te explica que: " & tStr)
-
+            Call WriteShowMessageBox(UserIndex, "Tu solicitud de ingreso al clan ha sido rechazada. El clan te explica que: " & tStr)
         End If
 
         If EventoActivo Then
-            Call WriteConsoleMsg(Userindex, PublicidadEvento & ". Tiempo restante: " & TiempoRestanteEvento & " minuto(s).", FontTypeNames.FONTTYPE_New_Eventos)
-
+            Call WriteConsoleMsg(UserIndex, PublicidadEvento & ". Tiempo restante: " & TiempoRestanteEvento & " minuto(s).", FontTypeNames.FONTTYPE_New_Eventos)
         End If
         
-        Call WriteContadores(Userindex)
-        Call WriteOxigeno(Userindex)
+        Call WriteContadores(UserIndex)
+        Call WriteOxigeno(UserIndex)
 
         'Call SendData(UserIndex, UserIndex, PrepareMessageParticleFXToFloor(.Pos.x, .Pos.y, 209, 10))
         'Call SendData(UserIndex, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, 209, 40, False))
@@ -1732,8 +1772,8 @@ Sub ConnectUser(ByVal Userindex As Integer, ByRef name As String, ByRef UserCuen
     
     Exit Sub
     
-errHandler:
-    Call WriteShowMessageBox(Userindex, "El personaje contiene un error, comuniquese con un miembro del staff.")
+ErrHandler:
+    Call WriteShowMessageBox(UserIndex, "El personaje contiene un error, comuniquese con un miembro del staff.")
     
     
     'N = FreeFile
@@ -1744,7 +1784,7 @@ errHandler:
 
 End Sub
 
-Sub SendMOTD(ByVal Userindex As Integer)
+Sub SendMOTD(ByVal UserIndex As Integer)
         
         On Error GoTo SendMOTD_Err
         
@@ -1752,7 +1792,7 @@ Sub SendMOTD(ByVal Userindex As Integer)
         Dim j As Long
 
 100     For j = 1 To MaxLines
-102         Call WriteConsoleMsg(Userindex, MOTD(j).texto, FontTypeNames.FONTTYPE_EXP)
+102         Call WriteConsoleMsg(UserIndex, MOTD(j).texto, FontTypeNames.FONTTYPE_EXP)
 104     Next j
     
         
@@ -1764,7 +1804,7 @@ SendMOTD_Err:
         
 End Sub
 
-Sub ResetFacciones(ByVal Userindex As Integer)
+Sub ResetFacciones(ByVal UserIndex As Integer)
         
         On Error GoTo ResetFacciones_Err
         
@@ -1776,7 +1816,7 @@ Sub ResetFacciones(ByVal Userindex As Integer)
         '03/15/2006 Maraxus - Uso de With para mayor performance y claridad.
         '23/01/2007 Pablo (ToxicWaste) - Agrego NivelIngreso, FechaIngreso, MatadosIngreso y NextRecompensa.
         '*************************************************
-100     With UserList(Userindex).Faccion
+100     With UserList(UserIndex).Faccion
 102         .ArmadaReal = 0
 104         .CiudadanosMatados = 0
 106         .CriminalesMatados = 0
@@ -1805,7 +1845,7 @@ ResetFacciones_Err:
         
 End Sub
 
-Sub ResetContadores(ByVal Userindex As Integer)
+Sub ResetContadores(ByVal UserIndex As Integer)
         
         On Error GoTo ResetContadores_Err
         
@@ -1817,7 +1857,7 @@ Sub ResetContadores(ByVal Userindex As Integer)
         '03/15/2006 Maraxus - Uso de With para mayor performance y claridad.
         '05/20/2007 Integer - Agregue todas las variables que faltaban.
         '*************************************************
-100     With UserList(Userindex).Counters
+100     With UserList(UserIndex).Counters
 102         .AGUACounter = 0
 104         .AttackCounter = 0
 106         .Ceguera = 0
@@ -1869,7 +1909,7 @@ ResetContadores_Err:
         
 End Sub
 
-Sub ResetCharInfo(ByVal Userindex As Integer)
+Sub ResetCharInfo(ByVal UserIndex As Integer)
         '*************************************************
         'Author: Unknown
         'Last modified: 03/15/2006
@@ -1880,7 +1920,7 @@ Sub ResetCharInfo(ByVal Userindex As Integer)
         On Error GoTo ResetCharInfo_Err
         
 
-100     With UserList(Userindex).Char
+100     With UserList(UserIndex).Char
 102         .Body = 0
 104         .CascoAnim = 0
 106         .CharIndex = 0
@@ -1895,6 +1935,7 @@ Sub ResetCharInfo(ByVal Userindex As Integer)
 124         .Body_Aura = ""
 126         .Head_Aura = ""
 128         .Otra_Aura = ""
+            .Anillo_Aura = ""
 130         .Escudo_Aura = ""
 132         .ParticulaFx = 0
 134         .speeding = VelocidadCero
@@ -1910,7 +1951,7 @@ ResetCharInfo_Err:
         
 End Sub
 
-Sub ResetBasicUserInfo(ByVal Userindex As Integer)
+Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
         
         On Error GoTo ResetBasicUserInfo_Err
         
@@ -1924,7 +1965,7 @@ Sub ResetBasicUserInfo(ByVal Userindex As Integer)
         '*************************************************
         Dim LoopC As Integer
 
-100     With UserList(Userindex)
+100     With UserList(UserIndex)
 102         .name = vbNullString
 104         .Cuenta = vbNullString
 106         .Id = -1
@@ -1996,23 +2037,23 @@ ResetBasicUserInfo_Err:
         
 End Sub
 
-Sub ResetGuildInfo(ByVal Userindex As Integer)
+Sub ResetGuildInfo(ByVal UserIndex As Integer)
         
         On Error GoTo ResetGuildInfo_Err
         
 
-100     If UserList(Userindex).EscucheClan > 0 Then
-102         Call modGuilds.GMDejaDeEscucharClan(Userindex, UserList(Userindex).EscucheClan)
-104         UserList(Userindex).EscucheClan = 0
+100     If UserList(UserIndex).EscucheClan > 0 Then
+102         Call modGuilds.GMDejaDeEscucharClan(UserIndex, UserList(UserIndex).EscucheClan)
+104         UserList(UserIndex).EscucheClan = 0
 
         End If
 
-106     If UserList(Userindex).GuildIndex > 0 Then
-108         Call modGuilds.m_DesconectarMiembroDelClan(Userindex, UserList(Userindex).GuildIndex)
+106     If UserList(UserIndex).GuildIndex > 0 Then
+108         Call modGuilds.m_DesconectarMiembroDelClan(UserIndex, UserList(UserIndex).GuildIndex)
 
         End If
 
-110     UserList(Userindex).GuildIndex = 0
+110     UserList(UserIndex).GuildIndex = 0
     
         
         Exit Sub
@@ -2023,7 +2064,7 @@ ResetGuildInfo_Err:
         
 End Sub
 
-Sub ResetUserFlags(ByVal Userindex As Integer)
+Sub ResetUserFlags(ByVal UserIndex As Integer)
         '*************************************************
         'Author: Unknown
         'Last modified: 03/29/2006
@@ -2035,7 +2076,7 @@ Sub ResetUserFlags(ByVal Userindex As Integer)
         On Error GoTo ResetUserFlags_Err
         
 
-100     With UserList(Userindex).flags
+100     With UserList(UserIndex).flags
 102         .LevelBackup = 0
 104         .Comerciando = False
 106         .Ban = 0
@@ -2089,7 +2130,6 @@ Sub ResetUserFlags(ByVal Userindex As Integer)
 200         .RetoA = 0
 202         .SolicitudPendienteDe = 0
 204         .CarroMineria = 0
-206         .DañoMagico = 0
 208         .Montado = 0
 210         .Incinerado = 0
 212         .Casado = 0
@@ -2099,7 +2139,6 @@ Sub ResetUserFlags(ByVal Userindex As Integer)
 220         .pregunta = 0
             'Ladder
 222         .BattleModo = 0
-224         .ResistenciaMagica = 0
 
 226         .Subastando = False
 228         .Paraliza = 0
@@ -2134,14 +2173,14 @@ ResetUserFlags_Err:
         
 End Sub
 
-Sub ResetAccionesPendientes(ByVal Userindex As Integer)
+Sub ResetAccionesPendientes(ByVal UserIndex As Integer)
         
         On Error GoTo ResetAccionesPendientes_Err
         
 
         '*************************************************
         '*************************************************
-100     With UserList(Userindex).Accion
+100     With UserList(UserIndex).Accion
 102         .AccionPendiente = False
 104         .HechizoPendiente = 0
 106         .RunaObj = 0
@@ -2160,14 +2199,14 @@ ResetAccionesPendientes_Err:
         
 End Sub
 
-Sub ResetDonadorFlag(ByVal Userindex As Integer)
+Sub ResetDonadorFlag(ByVal UserIndex As Integer)
         
         On Error GoTo ResetDonadorFlag_Err
         
 
         '*************************************************
         '*************************************************
-100     With UserList(Userindex).donador
+100     With UserList(UserIndex).donador
 102         .activo = 0
 104         .CreditoDonador = 0
 106         .FechaExpiracion = 0
@@ -2183,7 +2222,7 @@ ResetDonadorFlag_Err:
         
 End Sub
 
-Sub ResetUserSpells(ByVal Userindex As Integer)
+Sub ResetUserSpells(ByVal UserIndex As Integer)
         
         On Error GoTo ResetUserSpells_Err
         
@@ -2191,7 +2230,7 @@ Sub ResetUserSpells(ByVal Userindex As Integer)
         Dim LoopC As Long
 
 100     For LoopC = 1 To MAXUSERHECHIZOS
-102         UserList(Userindex).Stats.UserHechizos(LoopC) = 0
+102         UserList(UserIndex).Stats.UserHechizos(LoopC) = 0
             ' UserList(UserIndex).Stats.UserHechizosInterval(LoopC) = 0
 104     Next LoopC
 
@@ -2204,7 +2243,7 @@ ResetUserSpells_Err:
         
 End Sub
 
-Sub ResetUserSkills(ByVal Userindex As Integer)
+Sub ResetUserSkills(ByVal UserIndex As Integer)
         
         On Error GoTo ResetUserSkills_Err
         
@@ -2212,7 +2251,7 @@ Sub ResetUserSkills(ByVal Userindex As Integer)
         Dim LoopC As Long
 
 100     For LoopC = 1 To NUMSKILLS
-102         UserList(Userindex).Stats.UserSkills(LoopC) = 0
+102         UserList(UserIndex).Stats.UserSkills(LoopC) = 0
 104     Next LoopC
 
         
@@ -2224,7 +2263,7 @@ ResetUserSkills_Err:
         
 End Sub
 
-Sub ResetUserBanco(ByVal Userindex As Integer)
+Sub ResetUserBanco(ByVal UserIndex As Integer)
         
         On Error GoTo ResetUserBanco_Err
         
@@ -2232,12 +2271,12 @@ Sub ResetUserBanco(ByVal Userindex As Integer)
         Dim LoopC As Long
     
 100     For LoopC = 1 To MAX_BANCOINVENTORY_SLOTS
-102         UserList(Userindex).BancoInvent.Object(LoopC).Amount = 0
-104         UserList(Userindex).BancoInvent.Object(LoopC).Equipped = 0
-106         UserList(Userindex).BancoInvent.Object(LoopC).ObjIndex = 0
+102         UserList(UserIndex).BancoInvent.Object(LoopC).Amount = 0
+104         UserList(UserIndex).BancoInvent.Object(LoopC).Equipped = 0
+106         UserList(UserIndex).BancoInvent.Object(LoopC).ObjIndex = 0
 108     Next LoopC
     
-110     UserList(Userindex).BancoInvent.NroItems = 0
+110     UserList(UserIndex).BancoInvent.NroItems = 0
 
         
         Exit Sub
@@ -2248,8 +2287,8 @@ ResetUserBanco_Err:
         
 End Sub
 
-Sub ResetUserKeys(ByVal Userindex As Integer)
-    With UserList(Userindex)
+Sub ResetUserKeys(ByVal UserIndex As Integer)
+    With UserList(UserIndex)
         Dim i As Integer
         
         For i = 1 To MAXKEYS
@@ -2258,16 +2297,16 @@ Sub ResetUserKeys(ByVal Userindex As Integer)
     End With
 End Sub
 
-Public Sub LimpiarComercioSeguro(ByVal Userindex As Integer)
+Public Sub LimpiarComercioSeguro(ByVal UserIndex As Integer)
         
         On Error GoTo LimpiarComercioSeguro_Err
         
 
-100     With UserList(Userindex).ComUsu
+100     With UserList(UserIndex).ComUsu
 
 102         If .DestUsu > 0 Then
 104             Call FinComerciarUsu(.DestUsu)
-106             Call FinComerciarUsu(Userindex)
+106             Call FinComerciarUsu(UserIndex)
 
             End If
 
@@ -2282,53 +2321,53 @@ LimpiarComercioSeguro_Err:
         
 End Sub
 
-Sub ResetUserSlot(ByVal Userindex As Integer)
+Sub ResetUserSlot(ByVal UserIndex As Integer)
         
         On Error GoTo ResetUserSlot_Err
         
 
-100     UserList(Userindex).ConnIDValida = False
-102     UserList(Userindex).ConnID = -1
+100     UserList(UserIndex).ConnIDValida = False
+102     UserList(UserIndex).ConnID = -1
 
-104     If UserList(Userindex).Grupo.Lider = Userindex Then
-106         Call FinalizarGrupo(Userindex)
-
-        End If
-
-108     If UserList(Userindex).Grupo.EnGrupo Then
-110         Call SalirDeGrupoForzado(Userindex)
+104     If UserList(UserIndex).Grupo.Lider = UserIndex Then
+106         Call FinalizarGrupo(UserIndex)
 
         End If
 
-112     UserList(Userindex).Grupo.CantidadMiembros = 0
-114     UserList(Userindex).Grupo.EnGrupo = False
-116     UserList(Userindex).Grupo.Lider = 0
-118     UserList(Userindex).Grupo.PropuestaDe = 0
-120     UserList(Userindex).Grupo.Miembros(6) = 0
-122     UserList(Userindex).Grupo.Miembros(1) = 0
-124     UserList(Userindex).Grupo.Miembros(2) = 0
-126     UserList(Userindex).Grupo.Miembros(3) = 0
-128     UserList(Userindex).Grupo.Miembros(4) = 0
-130     UserList(Userindex).Grupo.Miembros(5) = 0
+108     If UserList(UserIndex).Grupo.EnGrupo Then
+110         Call SalirDeGrupoForzado(UserIndex)
 
-132     Call ResetQuestStats(Userindex)
-134     Call ResetGuildInfo(Userindex)
-136     Call LimpiarComercioSeguro(Userindex)
-138     Call ResetFacciones(Userindex)
-140     Call ResetContadores(Userindex)
-142     Call ResetCharInfo(Userindex)
-144     Call ResetBasicUserInfo(Userindex)
-146     Call ResetUserFlags(Userindex)
-148     Call ResetAccionesPendientes(Userindex)
-150     Call ResetDonadorFlag(Userindex)
-152     Call LimpiarInventario(Userindex)
-154     Call ResetUserSpells(Userindex)
+        End If
+
+112     UserList(UserIndex).Grupo.CantidadMiembros = 0
+114     UserList(UserIndex).Grupo.EnGrupo = False
+116     UserList(UserIndex).Grupo.Lider = 0
+118     UserList(UserIndex).Grupo.PropuestaDe = 0
+120     UserList(UserIndex).Grupo.Miembros(6) = 0
+122     UserList(UserIndex).Grupo.Miembros(1) = 0
+124     UserList(UserIndex).Grupo.Miembros(2) = 0
+126     UserList(UserIndex).Grupo.Miembros(3) = 0
+128     UserList(UserIndex).Grupo.Miembros(4) = 0
+130     UserList(UserIndex).Grupo.Miembros(5) = 0
+
+132     Call ResetQuestStats(UserIndex)
+134     Call ResetGuildInfo(UserIndex)
+136     Call LimpiarComercioSeguro(UserIndex)
+138     Call ResetFacciones(UserIndex)
+140     Call ResetContadores(UserIndex)
+142     Call ResetCharInfo(UserIndex)
+144     Call ResetBasicUserInfo(UserIndex)
+146     Call ResetUserFlags(UserIndex)
+148     Call ResetAccionesPendientes(UserIndex)
+150     Call ResetDonadorFlag(UserIndex)
+152     Call LimpiarInventario(UserIndex)
+154     Call ResetUserSpells(UserIndex)
         'Call ResetUserPets(UserIndex)
-156     Call ResetUserBanco(Userindex)
-158     Call ResetUserSkills(Userindex)
-        Call ResetUserKeys(Userindex)
+156     Call ResetUserBanco(UserIndex)
+158     Call ResetUserSkills(UserIndex)
+        Call ResetUserKeys(UserIndex)
 
-160     With UserList(Userindex).ComUsu
+160     With UserList(UserIndex).ComUsu
 162         .Acepto = False
 164         .cant = 0
 166         .DestNick = vbNullString
@@ -2346,21 +2385,21 @@ ResetUserSlot_Err:
         
 End Sub
 
-Sub CloseUser(ByVal Userindex As Integer)
+Sub CloseUser(ByVal UserIndex As Integer)
 
     'Call LogTarea("CloseUser " & UserIndex)
-    On Error GoTo errHandler
+    On Error GoTo ErrHandler
     
     Dim Map As Integer
 
     Dim aN  As Integer
     
-    Map = UserList(Userindex).Pos.Map
+    Map = UserList(UserIndex).Pos.Map
     
     Dim errordesc As String
     
     errordesc = "ERROR AL SETEAR NPC"
-    aN = UserList(Userindex).flags.AtacadoPorNpc
+    aN = UserList(UserIndex).flags.AtacadoPorNpc
 
     If aN > 0 Then
         Npclist(aN).Movement = Npclist(aN).flags.OldMovement
@@ -2369,53 +2408,53 @@ Sub CloseUser(ByVal Userindex As Integer)
 
     End If
 
-    aN = UserList(Userindex).flags.NPCAtacado
+    aN = UserList(UserIndex).flags.NPCAtacado
 
     If aN > 0 Then
-        If Npclist(aN).flags.AttackedFirstBy = UserList(Userindex).name Then
+        If Npclist(aN).flags.AttackedFirstBy = UserList(UserIndex).name Then
             Npclist(aN).flags.AttackedFirstBy = vbNullString
 
         End If
 
     End If
 
-    UserList(Userindex).flags.AtacadoPorNpc = 0
-    UserList(Userindex).flags.NPCAtacado = 0
+    UserList(UserIndex).flags.AtacadoPorNpc = 0
+    UserList(UserIndex).flags.NPCAtacado = 0
     
     errordesc = "ERROR AL DESMONTAR"
 
-    If UserList(Userindex).flags.Montado > 0 Then
-        Call DoMontar(Userindex, ObjData(UserList(Userindex).Invent.MonturaObjIndex), UserList(Userindex).Invent.MonturaSlot)
+    If UserList(UserIndex).flags.Montado > 0 Then
+        Call DoMontar(UserIndex, ObjData(UserList(UserIndex).Invent.MonturaObjIndex), UserList(UserIndex).Invent.MonturaSlot)
 
     End If
     
     errordesc = "ERROR AL ENVIAR PARTICULA"
-    UserList(Userindex).Char.FX = 0
-    UserList(Userindex).Char.loops = 0
-    UserList(Userindex).Char.ParticulaFx = 0
-    Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageParticleFX(UserList(Userindex).Char.CharIndex, 0, 0, True))
-    Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageCreateFX(UserList(Userindex).Char.CharIndex, 0, 0))
+    UserList(UserIndex).Char.FX = 0
+    UserList(UserIndex).Char.loops = 0
+    UserList(UserIndex).Char.ParticulaFx = 0
+    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, 0, 0, True))
+    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.CharIndex, 0, 0))
     
-    UserList(Userindex).flags.UserLogged = False
-    UserList(Userindex).Counters.Saliendo = False
+    UserList(UserIndex).flags.UserLogged = False
+    UserList(UserIndex).Counters.Saliendo = False
     
     errordesc = "ERROR AL ENVIAR INVI"
     
     'Le devolvemos el body y head originales
-    If UserList(Userindex).flags.AdminInvisible = 1 Then Call DoAdminInvisible(Userindex)
+    If UserList(UserIndex).flags.AdminInvisible = 1 Then Call DoAdminInvisible(UserIndex)
     
     errordesc = "ERROR AL CANCELAR SUBASTA"
 
-    If UserList(Userindex).flags.Subastando = True Then
+    If UserList(UserIndex).flags.Subastando = True Then
         Call CancelarSubasta
 
     End If
     
     errordesc = "ERROR AL BORRAR INDEX DE TORNEO"
 
-    If UserList(Userindex).flags.EnTorneo = True Then
-        Call BorrarIndexInTorneo(Userindex)
-        UserList(Userindex).flags.EnTorneo = False
+    If UserList(UserIndex).flags.EnTorneo = True Then
+        Call BorrarIndexInTorneo(UserIndex)
+        UserList(UserIndex).flags.EnTorneo = False
 
     End If
     
@@ -2426,24 +2465,24 @@ Sub CloseUser(ByVal Userindex As Integer)
     
     errordesc = "ERROR AL GRABAR PJ"
 
-    If UserList(Userindex).flags.BattleModo = 0 Then
-        Call SaveUser(Userindex, True)
+    If UserList(UserIndex).flags.BattleModo = 0 Then
+        Call SaveUser(UserIndex, True)
     Else
         'Call WriteVar(CharPath & UserList(UserIndex).Name & ".chr", "Battle", "Puntos", UserList(UserIndex).flags.BattlePuntos)
-        Call SaveBattlePoints(Userindex)
+        Call SaveBattlePoints(UserIndex)
 
     End If
 
     errordesc = "ERROR AL DESCONTAR USER DE MAPA"
 
     If MapInfo(Map).NumUsers > 0 Then
-        Call SendData(SendTarget.ToPCAreaButIndex, Userindex, PrepareMessageRemoveCharDialog(UserList(Userindex).Char.CharIndex))
+        Call SendData(SendTarget.ToPCAreaButIndex, UserIndex, PrepareMessageRemoveCharDialog(UserList(UserIndex).Char.CharIndex))
 
     End If
 
     errordesc = "ERROR AL ERASEUSERCHAR"
     'Borrar el personaje
-    Call EraseUserChar(Userindex, True)
+    Call EraseUserChar(UserIndex, True)
     
     errordesc = "ERROR Update Map Users"
     'Update Map Users
@@ -2456,12 +2495,12 @@ Sub CloseUser(ByVal Userindex As Integer)
     
     ' Si el usuario habia dejado un msg en la gm's queue lo borramos
     'If Ayuda.Existe(UserList(UserIndex).Name) Then Call Ayuda.Quitar(UserList(UserIndex).Name)
-    errordesc = "ERROR AL RESETSLOT Name:" & UserList(Userindex).name & " cuenta:" & UserList(Userindex).Cuenta
-    Call ResetUserSlot(Userindex)
+    errordesc = "ERROR AL RESETSLOT Name:" & UserList(UserIndex).name & " cuenta:" & UserList(UserIndex).Cuenta
+    Call ResetUserSlot(UserIndex)
     
     Exit Sub
     
-errHandler:
+ErrHandler:
     Call LogError("Error en CloseUser. Número " & Err.Number & ". Descripción: " & Err.description & ". Detalle:" & errordesc)
 
     Resume Next ' TODO: Provisional hasta solucionar bugs graves
@@ -2470,7 +2509,7 @@ End Sub
 
 Sub ReloadSokcet()
 
-    On Error GoTo errHandler
+    On Error GoTo ErrHandler
 
     #If UsarQueSocket = 1 Then
 
@@ -2494,7 +2533,7 @@ Sub ReloadSokcet()
     #End If
 
     Exit Sub
-errHandler:
+ErrHandler:
     Call LogError("Error en CheckSocketState " & Err.Number & ": " & Err.description)
 
 End Sub
