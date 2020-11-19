@@ -187,6 +187,8 @@ Private Enum ServerPacketID
     ClanSeguro
     Intervals
     UpdateUserKey
+    UpdateRM
+    UpdateDM
 End Enum
 
 Private Enum ClientPacketID
@@ -19716,7 +19718,7 @@ End Sub
 ' @param    privileges Sets if the character is a normal one or any kind of administrative character.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, ByVal Body As Integer, ByVal Head As Integer, ByVal heading As eHeading, ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Boolean, ByVal donador As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal Simbolo As Byte)
+Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, ByVal Body As Integer, ByVal Head As Integer, ByVal heading As eHeading, ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal Anillo_Aura As String, ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Boolean, ByVal donador As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal Simbolo As Byte)
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -19725,7 +19727,7 @@ Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, ByVal Body As Intege
     '***************************************************
     On Error GoTo ErrHandler
 
-    Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageCharacterCreate(Body, Head, heading, CharIndex, X, Y, weapon, shield, FX, FXLoops, helmet, name, Status, privileges, ParticulaFx, Head_Aura, Arma_Aura, Body_Aura, Otra_Aura, Escudo_Aura, speeding, EsNPC, donador, appear, group_index, clan_index, clan_nivel, UserMinHp, UserMaxHp, Simbolo))
+    Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageCharacterCreate(Body, Head, heading, CharIndex, X, Y, weapon, shield, FX, FXLoops, helmet, name, Status, privileges, ParticulaFx, Head_Aura, Arma_Aura, Body_Aura, Anillo_Aura, Otra_Aura, Escudo_Aura, speeding, EsNPC, donador, appear, group_index, clan_index, clan_nivel, UserMinHp, UserMaxHp, Simbolo))
     Exit Sub
 
 ErrHandler:
@@ -20375,6 +20377,77 @@ ErrHandler:
 
 End Sub
 
+' Actualiza el indicador de daño mágico
+Public Sub WriteUpdateDM(ByVal UserIndex As Integer)
+    On Error GoTo ErrHandler
+    
+    Dim Valor As Integer
+    
+    With UserList(UserIndex).Invent
+        ' % daño mágico del arma
+        If .WeaponEqpObjIndex > 0 Then
+            Valor = Valor + ObjData(.WeaponEqpObjIndex).MagicDamageBonus
+        End If
+        ' % daño mágico del anillo
+        If .AnilloEqpObjIndex > 0 Then
+            Valor = Valor + ObjData(.AnilloEqpObjIndex).MagicDamageBonus
+        End If
+    End With
+
+    With UserList(UserIndex).outgoingData
+        Call .WriteByte(ServerPacketID.UpdateDM)
+        Call .WriteInteger(Valor)
+    End With
+
+    Exit Sub
+
+ErrHandler:
+    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
+        Resume
+    End If
+End Sub
+
+' Actualiza el indicador de resistencia mágica
+Public Sub WriteUpdateRM(ByVal UserIndex As Integer)
+    On Error GoTo ErrHandler
+    
+    Dim Valor As Integer
+    
+    With UserList(UserIndex).Invent
+        ' Resistencia mágica de la armadura
+        If .ArmourEqpObjIndex > 0 Then
+            Valor = Valor + ObjData(.ArmourEqpObjIndex).ResistenciaMagica
+        End If
+        
+        ' Resistencia mágica del anillo
+        If .AnilloEqpObjIndex > 0 Then
+            Valor = Valor + ObjData(.AnilloEqpObjIndex).ResistenciaMagica
+        End If
+        
+        ' Resistencia mágica del escudo
+        If .EscudoEqpObjIndex > 0 Then
+            Valor = Valor + ObjData(.EscudoEqpObjIndex).ResistenciaMagica
+        End If
+        
+        ' Resistencia mágica del casco
+        If .CascoEqpObjIndex > 0 Then
+            Valor = Valor + ObjData(.CascoEqpObjIndex).ResistenciaMagica
+        End If
+    End With
+
+    With UserList(UserIndex).outgoingData
+        Call .WriteByte(ServerPacketID.UpdateRM)
+        Call .WriteInteger(Valor)
+    End With
+
+    Exit Sub
+
+ErrHandler:
+    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
+        Resume
+    End If
+End Sub
+
 ''
 ' Writes the "WorkRequestTarget" message to the given user's outgoing data buffer.
 '
@@ -20426,7 +20499,6 @@ Public Sub WriteInventoryUnlockSlots(ByVal UserIndex As Integer)
     With UserList(UserIndex).outgoingData
         Call .WriteByte(ServerPacketID.InventoryUnlockSlots)
         Call .WriteByte(UserList(UserIndex).Stats.InventLevel)
-
     End With
 
     Exit Sub
@@ -20506,8 +20578,6 @@ Public Sub WriteChangeInventorySlot(ByVal UserIndex As Integer, ByVal slot As By
         Call .WriteBoolean(UserList(UserIndex).Invent.Object(slot).Equipped)
         Call .WriteSingle(SalePrice(ObjIndex))
         Call .WriteByte(PodraUsarlo)
-        Call .WriteByte(UserList(UserIndex).flags.ResistenciaMagica)
-        Call .WriteByte(UserList(UserIndex).flags.DañoMagico)
 
     End With
 
@@ -23919,7 +23989,7 @@ End Function
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, ByVal Head As Integer, ByVal heading As eHeading, ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Boolean, ByVal donador As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal Simbolo As Byte) As String
+Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, ByVal Head As Integer, ByVal heading As eHeading, ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal Anillo_Aura As String, ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Boolean, ByVal donador As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal Simbolo As Byte) As String
         '***************************************************
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
@@ -23950,6 +24020,7 @@ Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, ByVal Head 
 134         Call .WriteASCIIString(Head_Aura)
 136         Call .WriteASCIIString(Arma_Aura)
 138         Call .WriteASCIIString(Body_Aura)
+139         Call .WriteASCIIString(Anillo_Aura)
 140         Call .WriteASCIIString(Otra_Aura)
 142         Call .WriteASCIIString(Escudo_Aura)
 144         Call .WriteSingle(speeding)
@@ -27696,7 +27767,7 @@ End Sub
 Private Sub HandleMarcaDeGM(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
 
-    With UserList(Userindex)
+    With UserList(UserIndex)
     
         If .incomingData.Length < 2 Then
             Err.raise .incomingData.NotEnoughDataErrCode
@@ -27705,7 +27776,7 @@ Private Sub HandleMarcaDeGM(ByVal UserIndex As Integer)
 
         Call .incomingData.ReadInteger
           
-        Call WriteWorkRequestTarget(Userindex, eSkill.MarcaDeGM)
+        Call WriteWorkRequestTarget(UserIndex, eSkill.MarcaDeGM)
 
     End With
 

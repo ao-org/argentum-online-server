@@ -784,7 +784,6 @@ End Sub
 Sub Desequipar(ByVal UserIndex As Integer, ByVal slot As Byte)
         
         On Error GoTo Desequipar_Err
-        
 
         'Desequipa el item slot del inventario
         Dim obj As ObjData
@@ -811,19 +810,10 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal slot As Byte)
             
 120             If UserList(UserIndex).flags.Montado = 0 Then
 122                 Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
-
                 End If
-        
-124             If obj.EfectoMagico = 14 Then
-126                 UserList(UserIndex).flags.DañoMagico = 0
-
-                End If
-            
-128             If obj.ResistenciaMagica > 0 Then
-130                 UserList(UserIndex).flags.ResistenciaMagica = UserList(UserIndex).flags.ResistenciaMagica - obj.ResistenciaMagica
-
-132                 If UserList(UserIndex).flags.ResistenciaMagica < 0 Then UserList(UserIndex).flags.ResistenciaMagica = 0
-
+                
+                If obj.MagicDamageBonus > 0 Then
+                    Call WriteUpdateDM(UserIndex)
                 End If
     
 134         Case eOBJType.otFlechas
@@ -831,7 +821,7 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal slot As Byte)
 138             UserList(UserIndex).Invent.MunicionEqpObjIndex = 0
 140             UserList(UserIndex).Invent.MunicionEqpSlot = 0
     
-                ' Case eOBJType.otAnillo
+                ' Case eOBJType.otAnillos
                 '    UserList(UserIndex).Invent.Object(slot).Equipped = 0
                 '    UserList(UserIndex).Invent.AnilloEqpObjIndex = 0
                 ' UserList(UserIndex).Invent.AnilloEqpSlot = 0
@@ -843,14 +833,12 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal slot As Byte)
 
 150             If UserList(UserIndex).flags.UsandoMacro = True Then
 152                 Call WriteMacroTrabajoToggle(UserIndex, False)
-
                 End If
         
 154             UserList(UserIndex).Char.WeaponAnim = NingunArma
             
 156             If UserList(UserIndex).flags.Montado = 0 Then
 158                 Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
-
                 End If
        
 160         Case eOBJType.otmagicos
@@ -896,7 +884,7 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal slot As Byte)
 208                     If UserList(UserIndex).flags.Muerto = 0 Then UserList(UserIndex).flags.CarroMineria = 0
                 
 210                 Case 14
-212                     UserList(UserIndex).flags.DañoMagico = 0
+212                     'UserList(UserIndex).flags.DañoMagico = 0
                 
 214                 Case 15 'Pendiete del Sacrificio
 216                     UserList(UserIndex).flags.PendienteDelSacrificio = 0
@@ -917,13 +905,6 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal slot As Byte)
 236                     UserList(UserIndex).flags.AnilloOcultismo = 0
                 
                 End Select
-        
-238             If obj.ResistenciaMagica > 0 Then
-240                 UserList(UserIndex).flags.ResistenciaMagica = UserList(UserIndex).flags.ResistenciaMagica - obj.ResistenciaMagica
-
-242                 If UserList(UserIndex).flags.ResistenciaMagica < 0 Then UserList(UserIndex).flags.ResistenciaMagica = 0
-
-                End If
         
 244             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(UserList(UserIndex).Char.CharIndex, 0, True, 5))
 246             UserList(UserIndex).Char.Otra_Aura = 0
@@ -954,21 +935,16 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal slot As Byte)
 280                 If UserList(UserIndex).flags.Montado = 0 Then
 282                     Call DarCuerpoDesnudo(UserIndex)
 284                     Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
-
                     End If
-
                 End If
         
 286             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(UserList(UserIndex).Char.CharIndex, 0, True, 2))
-    
-288             If obj.ResistenciaMagica > 0 Then
-290                 UserList(UserIndex).flags.ResistenciaMagica = UserList(UserIndex).flags.ResistenciaMagica - obj.ResistenciaMagica
-
-292                 If UserList(UserIndex).flags.ResistenciaMagica < 0 Then UserList(UserIndex).flags.ResistenciaMagica = 0
-
-                End If
         
 294             UserList(UserIndex).Char.Body_Aura = 0
+
+                If obj.ResistenciaMagica > 0 Then
+                    Call WriteUpdateRM(UserIndex)
+                End If
     
 296         Case eOBJType.otCASCO
 298             UserList(UserIndex).Invent.Object(slot).Equipped = 0
@@ -979,12 +955,9 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal slot As Byte)
 
 308             UserList(UserIndex).Char.CascoAnim = NingunCasco
 310             Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
-        
-312             If obj.ResistenciaMagica > 0 Then
-314                 UserList(UserIndex).flags.ResistenciaMagica = UserList(UserIndex).flags.ResistenciaMagica - obj.ResistenciaMagica
-
-316                 If UserList(UserIndex).flags.ResistenciaMagica < 0 Then UserList(UserIndex).flags.ResistenciaMagica = 0
-
+    
+                If obj.ResistenciaMagica > 0 Then
+                    Call WriteUpdateRM(UserIndex)
                 End If
     
 318         Case eOBJType.otESCUDO
@@ -998,14 +971,25 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal slot As Byte)
 
 332             If UserList(UserIndex).flags.Montado = 0 Then
 334                 Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
-
                 End If
-        
-336             If obj.ResistenciaMagica > 0 Then
-338                 UserList(UserIndex).flags.ResistenciaMagica = UserList(UserIndex).flags.ResistenciaMagica - obj.ResistenciaMagica
+                
+                If obj.ResistenciaMagica > 0 Then
+                    Call WriteUpdateRM(UserIndex)
+                End If
+                
+            Case eOBJType.otAnillos
+                UserList(UserIndex).Invent.Object(slot).Equipped = 0
+                UserList(UserIndex).Invent.AnilloEqpObjIndex = 0
+                UserList(UserIndex).Invent.AnilloEqpSlot = 0
+                UserList(UserIndex).Char.Anillo_Aura = 0
+                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(UserList(UserIndex).Char.CharIndex, 0, True, 6))
 
-340                 If UserList(UserIndex).flags.ResistenciaMagica < 0 Then UserList(UserIndex).flags.ResistenciaMagica = 0
-
+                If obj.MagicDamageBonus > 0 Then
+                    Call WriteUpdateDM(UserIndex)
+                End If
+                
+                If obj.ResistenciaMagica > 0 Then
+                    Call WriteUpdateRM(UserIndex)
                 End If
         
         End Select
@@ -1082,9 +1066,9 @@ FaccionPuedeUsarItem_Err:
         
 End Function
 
-Sub EquiparInvItem(ByVal Userindex As Integer, ByVal Slot As Byte)
+Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 
-    On Error GoTo errHandler
+    On Error GoTo ErrHandler
 
     Dim errordesc As String
 
@@ -1092,61 +1076,57 @@ Sub EquiparInvItem(ByVal Userindex As Integer, ByVal Slot As Byte)
     Dim obj       As ObjData
     Dim ObjIndex  As Integer
 
-    ObjIndex = UserList(Userindex).Invent.Object(Slot).ObjIndex
+    ObjIndex = UserList(UserIndex).Invent.Object(slot).ObjIndex
     obj = ObjData(ObjIndex)
 
-    If obj.Newbie = 1 And Not EsNewbie(Userindex) And Not EsGM(Userindex) Then
-        Call WriteConsoleMsg(Userindex, "Solo los newbies pueden usar este objeto.", FontTypeNames.FONTTYPE_INFO)
+    If obj.Newbie = 1 And Not EsNewbie(UserIndex) And Not EsGM(UserIndex) Then
+        Call WriteConsoleMsg(UserIndex, "Solo los newbies pueden usar este objeto.", FontTypeNames.FONTTYPE_INFO)
         Exit Sub
-
     End If
 
-    If UserList(Userindex).Stats.ELV < obj.MinELV And Not EsGM(Userindex) Then
-        Call WriteConsoleMsg(Userindex, "Necesitas ser nivel " & obj.MinELV & " para usar este item.", FontTypeNames.FONTTYPE_INFO)
+    If UserList(UserIndex).Stats.ELV < obj.MinELV And Not EsGM(UserIndex) Then
+        Call WriteConsoleMsg(UserIndex, "Necesitas ser nivel " & obj.MinELV & " para usar este item.", FontTypeNames.FONTTYPE_INFO)
         Exit Sub
-
     End If
     
     If obj.SkillIndex > 0 Then
     
-        If UserList(Userindex).Stats.UserSkills(obj.SkillIndex) < obj.SkillRequerido And Not EsGM(Userindex) Then
-            Call WriteConsoleMsg(Userindex, "Necesitas " & obj.SkillRequerido & " puntos en " & SkillsNames(obj.SkillIndex) & " para usar este item.", FontTypeNames.FONTTYPE_INFO)
+        If UserList(UserIndex).Stats.UserSkills(obj.SkillIndex) < obj.SkillRequerido And Not EsGM(UserIndex) Then
+            Call WriteConsoleMsg(UserIndex, "Necesitas " & obj.SkillRequerido & " puntos en " & SkillsNames(obj.SkillIndex) & " para usar este item.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
-
         End If
 
     End If
     
-    With UserList(Userindex)
+    With UserList(UserIndex)
     
         Select Case obj.OBJType
 
             Case eOBJType.otWeapon
+                
+                errordesc = "Arma"
 
-                If Not ClasePuedeUsarItem(Userindex, ObjIndex, Slot) And FaccionPuedeUsarItem(Userindex, ObjIndex) Then
-                    Call WriteConsoleMsg(Userindex, "Tu clase no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
+                If Not ClasePuedeUsarItem(UserIndex, ObjIndex, slot) And FaccionPuedeUsarItem(UserIndex, ObjIndex) Then
+                    Call WriteConsoleMsg(UserIndex, "Tu clase no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
-
                 End If
                 
-                If Not FaccionPuedeUsarItem(Userindex, ObjIndex) Then
-                    Call WriteConsoleMsg(Userindex, "Tu facción no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
+                If Not FaccionPuedeUsarItem(UserIndex, ObjIndex) Then
+                    Call WriteConsoleMsg(UserIndex, "Tu facción no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
-                    
                 End If
 
                 'Si esta equipado lo quita
-                If .Invent.Object(Slot).Equipped Then
+                If .Invent.Object(slot).Equipped Then
                     
                     'Quitamos del inv el item
-                    Call Desequipar(Userindex, Slot)
+                    Call Desequipar(UserIndex, slot)
                         
                     'Animacion por defecto
                     .Char.WeaponAnim = NingunArma
 
                     If .flags.Montado = 0 Then
-                        Call ChangeUserChar(Userindex, .Char.Body, .Char.Head, .Char.heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
-                        
+                        Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
                     End If
 
                     Exit Sub
@@ -1155,28 +1135,20 @@ Sub EquiparInvItem(ByVal Userindex As Integer, ByVal Slot As Byte)
             
                 'Quitamos el elemento anterior
                 If .Invent.WeaponEqpObjIndex > 0 Then
-                    Call Desequipar(Userindex, .Invent.WeaponEqpSlot)
-
+                    Call Desequipar(UserIndex, .Invent.WeaponEqpSlot)
                 End If
             
                 If .Invent.HerramientaEqpObjIndex > 0 Then
-                    Call Desequipar(Userindex, .Invent.HerramientaEqpSlot)
-
+                    Call Desequipar(UserIndex, .Invent.HerramientaEqpSlot)
                 End If
             
                 If .Invent.NudilloObjIndex > 0 Then
-                    Call Desequipar(Userindex, .Invent.NudilloSlot)
-
+                    Call Desequipar(UserIndex, .Invent.NudilloSlot)
                 End If
             
-                .Invent.Object(Slot).Equipped = 1
-                .Invent.WeaponEqpObjIndex = .Invent.Object(Slot).ObjIndex
-                .Invent.WeaponEqpSlot = Slot
-            
-                If obj.EfectoMagico = 14 Then
-                    .flags.DañoMagico = obj.CuantoAumento
-
-                End If
+                .Invent.Object(slot).Equipped = 1
+                .Invent.WeaponEqpObjIndex = .Invent.Object(slot).ObjIndex
+                .Invent.WeaponEqpSlot = slot
             
                 If obj.proyectil = 1 Then 'Si es un arco, desequipa el escudo.
             
@@ -1190,8 +1162,8 @@ Sub EquiparInvItem(ByVal Userindex As Integer, ByVal Slot As Byte)
                     Else
 
                         If .Invent.EscudoEqpObjIndex > 0 Then
-                            Call Desequipar(Userindex, .Invent.EscudoEqpSlot)
-                            Call WriteConsoleMsg(Userindex, "No podes tirar flechas si tenés un escudo equipado. Tu escudo fue desequipado.", FontTypeNames.FONTTYPE_INFOIAO)
+                            Call Desequipar(UserIndex, .Invent.EscudoEqpSlot)
+                            Call WriteConsoleMsg(UserIndex, "No podes tirar flechas si tenés un escudo equipado. Tu escudo fue desequipado.", FontTypeNames.FONTTYPE_INFOIAO)
 
                         End If
 
@@ -1199,32 +1171,27 @@ Sub EquiparInvItem(ByVal Userindex As Integer, ByVal Slot As Byte)
 
                 End If
             
-                errordesc = "Arma"
-
-                If obj.ResistenciaMagica > 0 Then
-                    .flags.ResistenciaMagica = .flags.ResistenciaMagica + obj.ResistenciaMagica
-
-                End If
-            
                 'Sonido
                 If obj.SndAura = 0 Then
-                    Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessagePlayWave(SND_SACARARMA, .Pos.X, .Pos.Y))
+                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_SACARARMA, .Pos.X, .Pos.Y))
                 Else
-                    Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessagePlayWave(obj.SndAura, .Pos.X, .Pos.Y))
-
+                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.SndAura, .Pos.X, .Pos.Y))
                 End If
             
                 If Len(obj.CreaGRH) <> 0 Then
                     .Char.Arma_Aura = obj.CreaGRH
-                    Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Arma_Aura, False, 1))
-
+                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Arma_Aura, False, 1))
+                End If
+                
+                If obj.MagicDamageBonus > 0 Then
+                    Call WriteUpdateDM(UserIndex)
                 End If
                 
                 If .flags.Montado = 0 Then
                 
                     If .flags.Navegando = 0 Then
                         .Char.WeaponAnim = obj.WeaponAnim
-                        Call ChangeUserChar(Userindex, .Char.Body, .Char.Head, .Char.heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+                        Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
 
                     End If
 
@@ -1232,16 +1199,15 @@ Sub EquiparInvItem(ByVal Userindex As Integer, ByVal Slot As Byte)
       
             Case eOBJType.otHerramientas
         
-                If Not ClasePuedeUsarItem(Userindex, ObjIndex, Slot) Then
-                    Call WriteConsoleMsg(Userindex, "Tu clase no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
+                If Not ClasePuedeUsarItem(UserIndex, ObjIndex, slot) Then
+                    Call WriteConsoleMsg(UserIndex, "Tu clase no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
-
                 End If
                 
                 'Si esta equipado lo quita
-                If .Invent.Object(Slot).Equipped Then
+                If .Invent.Object(slot).Equipped Then
                     'Quitamos del inv el item
-                    Call Desequipar(Userindex, Slot)
+                    Call Desequipar(UserIndex, slot)
                     Exit Sub
 
                 End If
@@ -1249,66 +1215,61 @@ Sub EquiparInvItem(ByVal Userindex As Integer, ByVal Slot As Byte)
                 If obj.MinSkill <> 0 Then
                 
                     If .Stats.UserSkills(obj.QueSkill) < obj.MinSkill Then
-                        Call WriteConsoleMsg(Userindex, "Para podes usar " & obj.name & " necesitas al menos " & obj.MinSkill & " puntos en " & SkillsNames(obj.QueSkill) & ".", FontTypeNames.FONTTYPE_INFOIAO)
+                        Call WriteConsoleMsg(UserIndex, "Para podes usar " & obj.name & " necesitas al menos " & obj.MinSkill & " puntos en " & SkillsNames(obj.QueSkill) & ".", FontTypeNames.FONTTYPE_INFOIAO)
                         Exit Sub
-
                     End If
 
                 End If
 
                 'Quitamos el elemento anterior
                 If .Invent.HerramientaEqpObjIndex > 0 Then
-                    Call Desequipar(Userindex, .Invent.HerramientaEqpSlot)
-
+                    Call Desequipar(UserIndex, .Invent.HerramientaEqpSlot)
                 End If
              
                 If .Invent.WeaponEqpObjIndex > 0 Then
-                    Call Desequipar(Userindex, .Invent.WeaponEqpSlot)
-
+                    Call Desequipar(UserIndex, .Invent.WeaponEqpSlot)
                 End If
              
-                .Invent.Object(Slot).Equipped = 1
+                .Invent.Object(slot).Equipped = 1
                 .Invent.HerramientaEqpObjIndex = ObjIndex
-                .Invent.HerramientaEqpSlot = Slot
+                .Invent.HerramientaEqpSlot = slot
              
                 If .flags.Montado = 0 Then
                 
                     If .flags.Navegando = 0 Then
                         .Char.WeaponAnim = obj.WeaponAnim
-                        Call ChangeUserChar(Userindex, .Char.Body, .Char.Head, .Char.heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+                        Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
 
                     End If
 
                 End If
        
             Case eOBJType.otmagicos
+            
+                errordesc = "Magico"
     
                 If .flags.Muerto = 1 Then
-                    Call WriteLocaleMsg(Userindex, "77", FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
                     'Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
 
                 End If
         
-                errordesc = "Magico"
-        
                 'Si esta equipado lo quita
-                If .Invent.Object(Slot).Equipped Then
+                If .Invent.Object(slot).Equipped Then
                     'Quitamos del inv el item
-                    Call Desequipar(Userindex, Slot)
+                    Call Desequipar(UserIndex, slot)
                     Exit Sub
-
                 End If
                 
                 'Quitamos el elemento anterior
                 If .Invent.MagicoObjIndex > 0 Then
-                    Call Desequipar(Userindex, .Invent.MagicoSlot)
-
+                    Call Desequipar(UserIndex, .Invent.MagicoSlot)
                 End If
         
-                .Invent.Object(Slot).Equipped = 1
-                .Invent.MagicoObjIndex = .Invent.Object(Slot).ObjIndex
-                .Invent.MagicoSlot = Slot
+                .Invent.Object(slot).Equipped = 1
+                .Invent.MagicoObjIndex = .Invent.Object(slot).ObjIndex
+                .Invent.MagicoSlot = slot
                 
                 ' Debug.Print "magico" & obj.EfectoMagico
                 Select Case obj.EfectoMagico
@@ -1326,7 +1287,7 @@ Sub EquiparInvItem(ByVal Userindex As Integer, ByVal Slot As Byte)
                             .Stats.UserAtributos(obj.QueAtributo) = MAXATRIBUTOS
                         End If
                 
-                        Call WriteFYA(Userindex)
+                        Call WriteFYA(UserIndex)
 
                     Case 3 'Modifica los skills
             
@@ -1356,7 +1317,7 @@ Sub EquiparInvItem(ByVal Userindex As Integer, ByVal Slot As Byte)
                         .flags.CarroMineria = 1
                 
                     Case 14
-                        .flags.DañoMagico = obj.CuantoAumento
+                        '.flags.DañoMagico = obj.CuantoAumento
                 
                     Case 15 'Pendiete del Sacrificio
                         .flags.PendienteDelSacrificio = 1
@@ -1377,24 +1338,15 @@ Sub EquiparInvItem(ByVal Userindex As Integer, ByVal Slot As Byte)
                         .flags.AnilloOcultismo = 1
     
                 End Select
-
-                errordesc = "Magico"
-
-                If obj.ResistenciaMagica > 0 Then
-                    .flags.ResistenciaMagica = .flags.ResistenciaMagica + obj.ResistenciaMagica
-
-                End If
             
                 'Sonido
                 If obj.SndAura <> 0 Then
-                    Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessagePlayWave(obj.SndAura, .Pos.X, .Pos.Y))
-
+                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.SndAura, .Pos.X, .Pos.Y))
                 End If
             
                 If Len(obj.CreaGRH) <> 0 Then
                     .Char.Otra_Aura = obj.CreaGRH
-                    Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Otra_Aura, False, 5))
-
+                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Otra_Aura, False, 5))
                 End If
         
                 'Call WriteUpdateExp(UserIndex)
@@ -1403,116 +1355,110 @@ Sub EquiparInvItem(ByVal Userindex As Integer, ByVal Slot As Byte)
             Case eOBJType.otNUDILLOS
     
                 If .flags.Muerto = 1 Then
-                    Call WriteLocaleMsg(Userindex, "77", FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
                     'Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
 
                 End If
                 
-                If Not ClasePuedeUsarItem(Userindex, ObjIndex, Slot) Then
-                    Call WriteConsoleMsg(Userindex, "Tu clase no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
+                If Not ClasePuedeUsarItem(UserIndex, ObjIndex, slot) Then
+                    Call WriteConsoleMsg(UserIndex, "Tu clase no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
 
                 End If
                  
                 If .Invent.WeaponEqpObjIndex > 0 Then
-                    Call Desequipar(Userindex, .Invent.WeaponEqpSlot)
+                    Call Desequipar(UserIndex, .Invent.WeaponEqpSlot)
 
                 End If
 
-                If .Invent.Object(Slot).Equipped Then
-                    Call Desequipar(Userindex, Slot)
+                If .Invent.Object(slot).Equipped Then
+                    Call Desequipar(UserIndex, slot)
                     Exit Sub
-
                 End If
                 
                 'Quitamos el elemento anterior
                 If .Invent.NudilloObjIndex > 0 Then
-                    Call Desequipar(Userindex, .Invent.NudilloSlot)
+                    Call Desequipar(UserIndex, .Invent.NudilloSlot)
 
                 End If
         
-                .Invent.Object(Slot).Equipped = 1
-                .Invent.NudilloObjIndex = .Invent.Object(Slot).ObjIndex
-                .Invent.NudilloSlot = Slot
+                .Invent.Object(slot).Equipped = 1
+                .Invent.NudilloObjIndex = .Invent.Object(slot).ObjIndex
+                .Invent.NudilloSlot = slot
         
                 'Falta enviar anim
                 If .flags.Montado = 0 Then
                 
                     If .flags.Navegando = 0 Then
                         .Char.WeaponAnim = obj.WeaponAnim
-                        Call ChangeUserChar(Userindex, .Char.Body, .Char.Head, .Char.heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+                        Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
 
                     End If
 
                 End If
             
                 If obj.SndAura = 0 Then
-                    Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessagePlayWave(SND_SACARARMA, .Pos.X, .Pos.Y))
+                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_SACARARMA, .Pos.X, .Pos.Y))
                 Else
-                    Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessagePlayWave(obj.SndAura, .Pos.X, .Pos.Y))
-
+                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.SndAura, .Pos.X, .Pos.Y))
                 End If
                  
                 If Len(obj.CreaGRH) <> 0 Then
                     .Char.Arma_Aura = obj.CreaGRH
-                    Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Arma_Aura, False, 1))
-
+                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Arma_Aura, False, 1))
                 End If
     
             Case eOBJType.otFlechas
 
-                If ClasePuedeUsarItem(Userindex, .Invent.Object(Slot).ObjIndex) And FaccionPuedeUsarItem(Userindex, .Invent.Object(Slot).ObjIndex) Then
-                    Call WriteConsoleMsg(Userindex, "Tu clase no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
+                If ClasePuedeUsarItem(UserIndex, .Invent.Object(slot).ObjIndex) And FaccionPuedeUsarItem(UserIndex, .Invent.Object(slot).ObjIndex) Then
+                    Call WriteConsoleMsg(UserIndex, "Tu clase no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
-
                 End If
                 
                 'Si esta equipado lo quita
-                If .Invent.Object(Slot).Equipped Then
+                If .Invent.Object(slot).Equipped Then
                     'Quitamos del inv el item
-                    Call Desequipar(Userindex, Slot)
+                    Call Desequipar(UserIndex, slot)
                     Exit Sub
-
                 End If
                 
                 'Quitamos el elemento anterior
                 If .Invent.MunicionEqpObjIndex > 0 Then
-                    Call Desequipar(Userindex, .Invent.MunicionEqpSlot)
-
+                    Call Desequipar(UserIndex, .Invent.MunicionEqpSlot)
                 End If
         
-                .Invent.Object(Slot).Equipped = 1
-                .Invent.MunicionEqpObjIndex = .Invent.Object(Slot).ObjIndex
-                .Invent.MunicionEqpSlot = Slot
+                .Invent.Object(slot).Equipped = 1
+                .Invent.MunicionEqpObjIndex = .Invent.Object(slot).ObjIndex
+                .Invent.MunicionEqpSlot = slot
 
             Case eOBJType.otArmadura
                 
                 If obj.Ropaje = 0 Then
-                    Call WriteConsoleMsg(Userindex, "Hay un error con este objeto. Infórmale a un administrador", FontTypeNames.FONTTYPE_INFO)
+                    Call WriteConsoleMsg(UserIndex, "Hay un error con este objeto. Infórmale a un administrador.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
                 
                 'Nos aseguramos que puede usarla
-                If Not ClasePuedeUsarItem(Userindex, .Invent.Object(Slot).ObjIndex, Slot) Or _
-                   Not SexoPuedeUsarItem(Userindex, .Invent.Object(Slot).ObjIndex) Or _
-                   Not CheckRazaUsaRopa(Userindex, .Invent.Object(Slot).ObjIndex) Or _
-                   Not FaccionPuedeUsarItem(Userindex, .Invent.Object(Slot).ObjIndex) Then
+                If Not ClasePuedeUsarItem(UserIndex, .Invent.Object(slot).ObjIndex, slot) Or _
+                   Not SexoPuedeUsarItem(UserIndex, .Invent.Object(slot).ObjIndex) Or _
+                   Not CheckRazaUsaRopa(UserIndex, .Invent.Object(slot).ObjIndex) Or _
+                   Not FaccionPuedeUsarItem(UserIndex, .Invent.Object(slot).ObjIndex) Then
                     
-                    Call WriteConsoleMsg(Userindex, "Tu clase, género, raza o facción no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
+                    Call WriteConsoleMsg(UserIndex, "Tu clase, género, raza o facción no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
                 
                 'Si esta equipado lo quita
-                If .Invent.Object(Slot).Equipped Then
+                If .Invent.Object(slot).Equipped Then
                     
-                    Call Desequipar(Userindex, Slot)
+                    Call Desequipar(UserIndex, slot)
 
                     If .flags.Navegando = 0 Then
                         
                         If .flags.Montado = 0 Then
-                            Call DarCuerpoDesnudo(Userindex)
-                            Call ChangeUserChar(Userindex, .Char.Body, .Char.Head, .Char.heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+                            Call DarCuerpoDesnudo(UserIndex)
+                            Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
 
                         End If
 
@@ -1525,26 +1471,21 @@ Sub EquiparInvItem(ByVal Userindex As Integer, ByVal Slot As Byte)
                 'Quita el anterior
                 If .Invent.ArmourEqpObjIndex > 0 Then
                     errordesc = "Armadura 2"
-                    Call Desequipar(Userindex, .Invent.ArmourEqpSlot)
+                    Call Desequipar(UserIndex, .Invent.ArmourEqpSlot)
                     errordesc = "Armadura 3"
-
-                End If
-            
-                If obj.ResistenciaMagica > 0 Then
-                    .flags.ResistenciaMagica = .flags.ResistenciaMagica + obj.ResistenciaMagica
 
                 End If
   
                 'Lo equipa
                 If Len(obj.CreaGRH) <> 0 Then
                     .Char.Body_Aura = obj.CreaGRH
-                    Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Body_Aura, False, 2))
+                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Body_Aura, False, 2))
 
                 End If
             
-                .Invent.Object(Slot).Equipped = 1
-                .Invent.ArmourEqpObjIndex = .Invent.Object(Slot).ObjIndex
-                .Invent.ArmourEqpSlot = Slot
+                .Invent.Object(slot).Equipped = 1
+                .Invent.ArmourEqpObjIndex = .Invent.Object(slot).ObjIndex
+                .Invent.ArmourEqpSlot = slot
                             
                 If .flags.Montado = 0 Then
                 
@@ -1552,46 +1493,45 @@ Sub EquiparInvItem(ByVal Userindex As Integer, ByVal Slot As Byte)
                         
                         .Char.Body = obj.Ropaje
                 
-                        Call ChangeUserChar(Userindex, .Char.Body, .Char.Head, .Char.heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+                        Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
                         
                         .flags.Desnudo = 0
             
                     End If
 
                 End If
+                
+                If obj.ResistenciaMagica > 0 Then
+                    Call WriteUpdateRM(UserIndex)
+                End If
     
             Case eOBJType.otCASCO
                 
-                If Not ClasePuedeUsarItem(Userindex, .Invent.Object(Slot).ObjIndex, Slot) Then
-                    Call WriteConsoleMsg(Userindex, "Tu clase no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
+                If Not ClasePuedeUsarItem(UserIndex, .Invent.Object(slot).ObjIndex, slot) Then
+                    Call WriteConsoleMsg(UserIndex, "Tu clase no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
 
                 End If
                 
-                If Not FaccionPuedeUsarItem(Userindex, .Invent.Object(Slot).ObjIndex) Then
-                    Call WriteConsoleMsg(Userindex, "Tu facción no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
+                If Not FaccionPuedeUsarItem(UserIndex, .Invent.Object(slot).ObjIndex) Then
+                    Call WriteConsoleMsg(UserIndex, "Tu facción no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                     
                 End If
                 
                 'Si esta equipado lo quita
-                If .Invent.Object(Slot).Equipped Then
-                    Call Desequipar(Userindex, Slot)
+                If .Invent.Object(slot).Equipped Then
+                    Call Desequipar(UserIndex, slot)
                 
                     .Char.CascoAnim = NingunCasco
-                    Call ChangeUserChar(Userindex, .Char.Body, .Char.Head, .Char.heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+                    Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
                     Exit Sub
 
                 End If
     
                 'Quita el anterior
                 If .Invent.CascoEqpObjIndex > 0 Then
-                    Call Desequipar(Userindex, .Invent.CascoEqpSlot)
-
-                End If
-            
-                If obj.ResistenciaMagica > 0 Then
-                    .flags.ResistenciaMagica = .flags.ResistenciaMagica + obj.ResistenciaMagica
+                    Call Desequipar(UserIndex, .Invent.CascoEqpSlot)
 
                 End If
             
@@ -1600,42 +1540,42 @@ Sub EquiparInvItem(ByVal Userindex As Integer, ByVal Slot As Byte)
                 'Lo equipa
                 If Len(obj.CreaGRH) <> 0 Then
                     .Char.Head_Aura = obj.CreaGRH
-                    Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Head_Aura, False, 4))
-
+                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Head_Aura, False, 4))
                 End If
             
-                .Invent.Object(Slot).Equipped = 1
-                .Invent.CascoEqpObjIndex = .Invent.Object(Slot).ObjIndex
-                .Invent.CascoEqpSlot = Slot
+                .Invent.Object(slot).Equipped = 1
+                .Invent.CascoEqpObjIndex = .Invent.Object(slot).ObjIndex
+                .Invent.CascoEqpSlot = slot
             
                 If .flags.Navegando = 0 Then
                     .Char.CascoAnim = obj.CascoAnim
-                    Call ChangeUserChar(Userindex, .Char.Body, .Char.Head, .Char.heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
-
+                    Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+                End If
+                
+                If obj.ResistenciaMagica > 0 Then
+                    Call WriteUpdateRM(UserIndex)
                 End If
 
             Case eOBJType.otESCUDO
 
-                If Not ClasePuedeUsarItem(Userindex, .Invent.Object(Slot).ObjIndex, Slot) Then
-                    Call WriteConsoleMsg(Userindex, "Tu clase no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
+                If Not ClasePuedeUsarItem(UserIndex, .Invent.Object(slot).ObjIndex, slot) Then
+                    Call WriteConsoleMsg(UserIndex, "Tu clase no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
-
                 End If
                 
-                If Not FaccionPuedeUsarItem(Userindex, .Invent.Object(Slot).ObjIndex) Then
-                    Call WriteConsoleMsg(Userindex, "Tu facción no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
+                If Not FaccionPuedeUsarItem(UserIndex, .Invent.Object(slot).ObjIndex) Then
+                    Call WriteConsoleMsg(UserIndex, "Tu facción no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
-                    
                 End If
                 
                 'Si esta equipado lo quita
-                If .Invent.Object(Slot).Equipped Then
-                    Call Desequipar(Userindex, Slot)
+                If .Invent.Object(slot).Equipped Then
+                    Call Desequipar(UserIndex, slot)
                  
                     .Char.ShieldAnim = NingunEscudo
 
                     If .flags.Montado = 0 Then
-                        Call ChangeUserChar(Userindex, .Char.Body, .Char.Head, .Char.heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+                        Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
 
                     End If
 
@@ -1645,55 +1585,88 @@ Sub EquiparInvItem(ByVal Userindex As Integer, ByVal Slot As Byte)
      
                 'Quita el anterior
                 If .Invent.EscudoEqpObjIndex > 0 Then
-                    Call Desequipar(Userindex, .Invent.EscudoEqpSlot)
-
+                    Call Desequipar(UserIndex, .Invent.EscudoEqpSlot)
                 End If
      
                 'Lo equipa
              
-                If .Invent.Object(Slot).ObjIndex = 1700 Or _
-                   .Invent.Object(Slot).ObjIndex = 1730 Or _
-                   .Invent.Object(Slot).ObjIndex = 1724 Or _
-                   .Invent.Object(Slot).ObjIndex = 1717 Or _
-                   .Invent.Object(Slot).ObjIndex = 1699 Then
+                If .Invent.Object(slot).ObjIndex = 1700 Or _
+                   .Invent.Object(slot).ObjIndex = 1730 Or _
+                   .Invent.Object(slot).ObjIndex = 1724 Or _
+                   .Invent.Object(slot).ObjIndex = 1717 Or _
+                   .Invent.Object(slot).ObjIndex = 1699 Then
              
                 Else
 
                     If .Invent.WeaponEqpObjIndex > 0 Then
                         If ObjData(.Invent.WeaponEqpObjIndex).proyectil = 1 Then
-                            Call Desequipar(Userindex, .Invent.WeaponEqpSlot)
-                            Call WriteConsoleMsg(Userindex, "No podes sostener el escudo si tenes que tirar flechas. Tu arco fue desequipado.", FontTypeNames.FONTTYPE_INFOIAO)
-
+                            Call Desequipar(UserIndex, .Invent.WeaponEqpSlot)
+                            Call WriteConsoleMsg(UserIndex, "No podes sostener el escudo si tenes que tirar flechas. Tu arco fue desequipado.", FontTypeNames.FONTTYPE_INFOIAO)
                         End If
-
                     End If
 
                 End If
             
                 errordesc = "Escudo"
-
-                If obj.ResistenciaMagica > 0 Then
-                    .flags.ResistenciaMagica = .flags.ResistenciaMagica + obj.ResistenciaMagica
-
-                End If
              
                 If Len(obj.CreaGRH) <> 0 Then
                     .Char.Escudo_Aura = obj.CreaGRH
-                    Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Escudo_Aura, False, 3))
-
+                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Escudo_Aura, False, 3))
                 End If
 
-                .Invent.Object(Slot).Equipped = 1
-                .Invent.EscudoEqpObjIndex = .Invent.Object(Slot).ObjIndex
-                .Invent.EscudoEqpSlot = Slot
+                .Invent.Object(slot).Equipped = 1
+                .Invent.EscudoEqpObjIndex = .Invent.Object(slot).ObjIndex
+                .Invent.EscudoEqpSlot = slot
                  
                 If .flags.Navegando = 0 Then
                     If .flags.Montado = 0 Then
                         .Char.ShieldAnim = obj.ShieldAnim
-                        Call ChangeUserChar(Userindex, .Char.Body, .Char.Head, .Char.heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
-
+                        Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
                     End If
+                End If
+                
+                If obj.ResistenciaMagica > 0 Then
+                    Call WriteUpdateRM(UserIndex)
+                End If
+                
+            Case eOBJType.otAnillos
 
+                If Not ClasePuedeUsarItem(UserIndex, .Invent.Object(slot).ObjIndex, slot) Then
+                    Call WriteConsoleMsg(UserIndex, "Tu clase no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                End If
+
+                If Not FaccionPuedeUsarItem(UserIndex, .Invent.Object(slot).ObjIndex) Then
+                    Call WriteConsoleMsg(UserIndex, "Tu facción no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                End If
+                
+                'Si esta equipado lo quita
+                If .Invent.Object(slot).Equipped Then
+                    Call Desequipar(UserIndex, slot)
+                    Exit Sub
+                End If
+     
+                'Quita el anterior
+                If .Invent.AnilloEqpSlot > 0 Then
+                    Call Desequipar(UserIndex, .Invent.AnilloEqpSlot)
+                End If
+                
+                .Invent.Object(slot).Equipped = 1
+                .Invent.AnilloEqpObjIndex = .Invent.Object(slot).ObjIndex
+                .Invent.AnilloEqpSlot = slot
+                
+                If Len(obj.CreaGRH) <> 0 Then
+                    .Char.Anillo_Aura = obj.CreaGRH
+                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Anillo_Aura, False, 6))
+                End If
+
+                If obj.MagicDamageBonus > 0 Then
+                    Call WriteUpdateDM(UserIndex)
+                End If
+                
+                If obj.ResistenciaMagica > 0 Then
+                    Call WriteUpdateRM(UserIndex)
                 End If
 
         End Select
@@ -1701,13 +1674,13 @@ Sub EquiparInvItem(ByVal Userindex As Integer, ByVal Slot As Byte)
     End With
 
     'Actualiza
-    Call UpdateUserInv(False, Userindex, Slot)
+    Call UpdateUserInv(False, UserIndex, slot)
 
     Exit Sub
     
-errHandler:
+ErrHandler:
     Debug.Print errordesc
-    Call LogError("EquiparInvItem Slot:" & Slot & " - Error: " & Err.Number & " - Error Description : " & Err.description & "- " & errordesc)
+    Call LogError("EquiparInvItem Slot:" & slot & " - Error: " & Err.Number & " - Error Description : " & Err.description & "- " & errordesc)
 
 End Sub
 
@@ -3326,7 +3299,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 
             End If
         
-            If UserList(UserIndex).accion.AccionPendiente Then
+            If UserList(UserIndex).Accion.AccionPendiente Then
                 Exit Sub
 
             End If
@@ -3344,11 +3317,11 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 
                     End If
 
-                    UserList(UserIndex).accion.Particula = ParticulasIndex.Runa
-                    UserList(UserIndex).accion.AccionPendiente = True
-                    UserList(UserIndex).accion.TipoAccion = Accion_Barra.Runa
-                    UserList(UserIndex).accion.RunaObj = ObjIndex
-                    UserList(UserIndex).accion.ObjSlot = slot
+                    UserList(UserIndex).Accion.Particula = ParticulasIndex.Runa
+                    UserList(UserIndex).Accion.AccionPendiente = True
+                    UserList(UserIndex).Accion.TipoAccion = Accion_Barra.Runa
+                    UserList(UserIndex).Accion.RunaObj = ObjIndex
+                    UserList(UserIndex).Accion.ObjSlot = slot
             
                 Case 3
         
@@ -3365,9 +3338,9 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                                     If UserList(parejaindex).flags.BattleModo = 0 Then
                                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Runa, 600, False))
                                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(UserList(UserIndex).Char.CharIndex, 600, Accion_Barra.GoToPareja))
-                                        UserList(UserIndex).accion.AccionPendiente = True
-                                        UserList(UserIndex).accion.Particula = ParticulasIndex.Runa
-                                        UserList(UserIndex).accion.TipoAccion = Accion_Barra.GoToPareja
+                                        UserList(UserIndex).Accion.AccionPendiente = True
+                                        UserList(UserIndex).Accion.Particula = ParticulasIndex.Runa
+                                        UserList(UserIndex).Accion.TipoAccion = Accion_Barra.GoToPareja
                                     Else
                                         Call WriteConsoleMsg(UserIndex, "Tu pareja esta en modo battle. No podés teletransportarte hacia ella.", FontTypeNames.FONTTYPE_INFOIAO)
 
