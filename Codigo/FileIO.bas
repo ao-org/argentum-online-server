@@ -2190,11 +2190,11 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
 
             For i = 1 To .NumeroLayers(3)
                 MapData(Map, L3(i).x, L3(i).y).Graphic(3) = L3(i).GrhIndex
+                
+                If EsArbol(L3(i).GrhIndex) Then
+                    MapData(Map, x, y).Blocked = MapData(Map, x, y).Blocked Or FLAG_ARBOL
+                End If
             Next i
-            
-            If EsArbol(L3(i).GrhIndex) Then
-                MapData(Map, x, y).Blocked = MapData(Map, x, y).Blocked Or FLAG_ARBOL
-            End If
 
         End If
         
