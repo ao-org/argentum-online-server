@@ -1728,16 +1728,10 @@ Private Sub TIMER_AI_Timer()
     On Error GoTo ErrorHandler
 
     Dim NpcIndex As Long
-
-    Dim X        As Integer
-
-    Dim Y        As Integer
-
-    Dim UseAI    As Integer
-
     Dim Mapa     As Integer
-
-    Dim e_p      As Integer
+    
+    Dim X        As Integer
+    Dim Y        As Integer
 
     'Barrin 29/9/03
     If Not haciendoBK And Not EnPausa Then
@@ -1754,36 +1748,35 @@ Private Sub TIMER_AI_Timer()
 
                     Else
                         
-                        'Si es pretoriano...
-                        If .NPCtype = eNPCType.Pretoriano Then
-                            Call ClanPretoriano(.ClanIndex).PerformPretorianAI(NpcIndex)
+                        'Usamos AI si hay algun user en el mapa
+                        If .flags.Inmovilizado = 1 Then
+                            Call EfectoParalisisNpc(NpcIndex)
+                        End If
                         
-                        Else ' Si NO es pretoriano.
+                        Mapa = .Pos.Map
                         
-                            'Usamos AI si hay algun user en el mapa
-                            If .flags.Inmovilizado = 1 Then
-                                Call EfectoParalisisNpc(NpcIndex)
-                            End If
-                        
-                            Mapa = .Pos.Map
-                        
-                            If Mapa > 0 Then
+                        If Mapa > 0 Then
                             
-                                If MapInfo(Mapa).NumUsers > 0 Then
+                            If MapInfo(Mapa).NumUsers > 0 Then
     
-                                    ' If .Movement <> TipoAI.ESTATICO Then
-                                    If IntervaloPermiteMoverse(NpcIndex) Then
+                                If IntervaloPermiteMoverse(NpcIndex) Then
+                                        
+                                    'Si NO es pretoriano...
+                                    If .NPCtype <> eNPCType.Pretoriano Then
                                         Call NPCAI(NpcIndex)
+                                    
+                                    Else '... si es pretoriano.
+                                        Call ClanPretoriano(.ClanIndex).PerformPretorianAI(NpcIndex)
+                                        
                                     End If
-    
-                                    ' End If
-                                
+                                        
+                                        
                                 End If
     
                             End If
-                            
+    
                         End If
-                        
+
                     End If
 
                 End If
