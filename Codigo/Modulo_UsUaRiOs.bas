@@ -251,7 +251,7 @@ Sub RevivirUsuario(ByVal UserIndex As Integer)
 
         End If
 
-246     Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
+246     Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
 
 248     Call WriteUpdateUserStats(UserIndex)
 
@@ -266,7 +266,7 @@ RevivirUsuario_Err:
         
 End Sub
 
-Sub ChangeUserChar(ByVal UserIndex As Integer, ByVal Body As Integer, ByVal Head As Integer, ByVal heading As Byte, ByVal Arma As Integer, ByVal Escudo As Integer, ByVal Casco As Integer)
+Sub ChangeUserChar(ByVal UserIndex As Integer, ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As Byte, ByVal Arma As Integer, ByVal Escudo As Integer, ByVal Casco As Integer)
         
         On Error GoTo ChangeUserChar_Err
         
@@ -274,14 +274,14 @@ Sub ChangeUserChar(ByVal UserIndex As Integer, ByVal Body As Integer, ByVal Head
 100     With UserList(UserIndex).Char
 102         .Body = Body
 104         .Head = Head
-106         .heading = heading
+106         .Heading = Heading
 108         .WeaponAnim = Arma
 110         .ShieldAnim = Escudo
 112         .CascoAnim = Casco
 
         End With
     
-114     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterChange(Body, Head, heading, UserList(UserIndex).Char.CharIndex, Arma, Escudo, UserList(UserIndex).Char.FX, UserList(UserIndex).Char.loops, Casco))
+114     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterChange(Body, Head, Heading, UserList(UserIndex).Char.CharIndex, Arma, Escudo, UserList(UserIndex).Char.FX, UserList(UserIndex).Char.loops, Casco))
 
         
         Exit Sub
@@ -407,7 +407,7 @@ Sub MakeUserChar(ByVal toMap As Boolean, ByVal sndIndex As Integer, ByVal UserIn
         If LenB(klan) <> 0 Then
             If Not toMap Then
                 errort = "5"
-                Call WriteCharacterCreate(sndIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.heading, UserList(UserIndex).Char.CharIndex, X, Y, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.FX, 999, UserList(UserIndex).Char.CascoAnim, UserList(UserIndex).name & " <" & klan & ">", bCr, UserList(UserIndex).flags.Privilegios, UserList(UserIndex).Char.ParticulaFx, UserList(UserIndex).Char.Head_Aura, UserList(UserIndex).Char.Arma_Aura, UserList(UserIndex).Char.Body_Aura, UserList(UserIndex).Char.Anillo_Aura, UserList(UserIndex).Char.Otra_Aura, UserList(UserIndex).Char.Escudo_Aura, UserList(UserIndex).Char.speeding, False, UserList(UserIndex).donador.activo, appear, UserList(UserIndex).Grupo.Lider, UserList(UserIndex).GuildIndex, clan_nivel, UserList(UserIndex).Stats.MinHp, UserList(UserIndex).Stats.MaxHp, 0)
+                Call WriteCharacterCreate(sndIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.CharIndex, X, Y, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.FX, 999, UserList(UserIndex).Char.CascoAnim, UserList(UserIndex).name & " <" & klan & ">", bCr, UserList(UserIndex).flags.Privilegios, UserList(UserIndex).Char.ParticulaFx, UserList(UserIndex).Char.Head_Aura, UserList(UserIndex).Char.Arma_Aura, UserList(UserIndex).Char.Body_Aura, UserList(UserIndex).Char.Anillo_Aura, UserList(UserIndex).Char.Otra_Aura, UserList(UserIndex).Char.Escudo_Aura, UserList(UserIndex).Char.speeding, False, UserList(UserIndex).donador.activo, appear, UserList(UserIndex).Grupo.Lider, UserList(UserIndex).GuildIndex, clan_nivel, UserList(UserIndex).Stats.MinHp, UserList(UserIndex).Stats.MaxHp, 0)
             Else
                 errort = "6"
                 Call AgregarUser(UserIndex, UserList(UserIndex).Pos.Map, appear)
@@ -417,7 +417,7 @@ Sub MakeUserChar(ByVal toMap As Boolean, ByVal sndIndex As Integer, ByVal UserIn
 
             If Not toMap Then
                 errort = "7"
-                Call WriteCharacterCreate(sndIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.heading, UserList(UserIndex).Char.CharIndex, X, Y, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.FX, 999, UserList(UserIndex).Char.CascoAnim, UserList(UserIndex).name, bCr, UserList(UserIndex).flags.Privilegios, UserList(UserIndex).Char.ParticulaFx, UserList(UserIndex).Char.Head_Aura, UserList(UserIndex).Char.Arma_Aura, UserList(UserIndex).Char.Body_Aura, UserList(UserIndex).Char.Anillo_Aura, UserList(UserIndex).Char.Otra_Aura, UserList(UserIndex).Char.Escudo_Aura, UserList(UserIndex).Char.speeding, False, UserList(UserIndex).donador.activo, appear, UserList(UserIndex).Grupo.Lider, 0, 0, UserList(UserIndex).Stats.MinHp, UserList(UserIndex).Stats.MaxHp, 0)
+                Call WriteCharacterCreate(sndIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.CharIndex, X, Y, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.FX, 999, UserList(UserIndex).Char.CascoAnim, UserList(UserIndex).name, bCr, UserList(UserIndex).flags.Privilegios, UserList(UserIndex).Char.ParticulaFx, UserList(UserIndex).Char.Head_Aura, UserList(UserIndex).Char.Arma_Aura, UserList(UserIndex).Char.Body_Aura, UserList(UserIndex).Char.Anillo_Aura, UserList(UserIndex).Char.Otra_Aura, UserList(UserIndex).Char.Escudo_Aura, UserList(UserIndex).Char.speeding, False, UserList(UserIndex).donador.activo, appear, UserList(UserIndex).Grupo.Lider, 0, 0, UserList(UserIndex).Stats.MinHp, UserList(UserIndex).Stats.MaxHp, 0)
             Else
                 errort = "8"
                 Call AgregarUser(UserIndex, UserList(UserIndex).Pos.Map, appear)
@@ -807,7 +807,7 @@ Sub MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As eHeading)
 
         End If
 
-168     If LegalPos(UserList(UserIndex).Pos.Map, nPos.X, nPos.Y, sailing, Not sailing, UserList(UserIndex).flags.Montado) Then
+168     If LegalWalk(UserList(UserIndex).Pos.Map, nPos.X, nPos.Y, nHeading, sailing, Not sailing, UserList(UserIndex).flags.Montado) Then
 170         If MapInfo(UserList(UserIndex).Pos.Map).NumUsers > 1 Then
                 'si no estoy solo en el mapa...
 
@@ -819,7 +819,7 @@ Sub MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As eHeading)
             'Update map and user pos
 174         MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).UserIndex = 0
 176         UserList(UserIndex).Pos = nPos
-178         UserList(UserIndex).Char.heading = nHeading
+178         UserList(UserIndex).Char.Heading = nHeading
 180         MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).UserIndex = UserIndex
         
             'Actualizamos las áreas de ser necesario
@@ -1744,7 +1744,7 @@ Sub UserDie(ByVal UserIndex As Integer)
     End If
     
     '<< Actualizamos clientes >>
-    Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.heading, NingunArma, NingunEscudo, NingunCasco)
+    Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.Heading, NingunArma, NingunEscudo, NingunCasco)
     'Call WriteUpdateUserStats(UserIndex)
     
     'If UCase$(MapInfo(UserList(UserIndex).Pos.Map).restrict_mode) = "NEWBIE" Then

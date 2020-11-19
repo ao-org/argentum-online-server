@@ -67,7 +67,7 @@ Public Sub CallUserAttention()
 100     If (GetTickCount() And &H7FFFFFFF) - Centinela.spawnTime >= 60000 Then
 102         If Centinela.RevisandoUserIndex <> 0 And centinelaActivado Then
 104             If Not UserList(Centinela.RevisandoUserIndex).flags.CentinelaOK Then
-106                 Call WritePlayWave(Centinela.RevisandoUserIndex, SND_WARP, Npclist(CentinelaNPCIndex).Pos.x, Npclist(CentinelaNPCIndex).Pos.Y)
+106                 Call WritePlayWave(Centinela.RevisandoUserIndex, SND_WARP, Npclist(CentinelaNPCIndex).Pos.x, Npclist(CentinelaNPCIndex).Pos.y)
 108                 Call WriteCreateFX(Centinela.RevisandoUserIndex, Npclist(CentinelaNPCIndex).Char.CharIndex, FXIDs.FXWARP, 0)
                 
                     'Resend the key
@@ -386,7 +386,7 @@ Private Sub WarpCentinela(ByVal UserIndex As Integer)
 
         End If
     
-106     If HayAgua(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y) Then
+106     If (MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y).Blocked And FLAG_AGUA) <> 0 Then
 108         CentinelaNPCIndex = SpawnNpc(NPC_CENTINELA_AGUA, UserList(UserIndex).Pos, True, False)
         Else
 110         CentinelaNPCIndex = SpawnNpc(NPC_CENTINELA_TIERRA, UserList(UserIndex).Pos, True, False)
@@ -446,7 +446,7 @@ Private Sub LogCentinela(ByVal texto As String)
     'Last modified: 03/15/2006
     'Loguea un evento del centinela
     '*************************************************
-    On Error GoTo Errhandler
+    On Error GoTo ErrHandler
 
     Dim nfile As Integer
 
@@ -457,6 +457,6 @@ Private Sub LogCentinela(ByVal texto As String)
     Close #nfile
     Exit Sub
 
-Errhandler:
+ErrHandler:
 
 End Sub
