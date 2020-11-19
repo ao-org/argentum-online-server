@@ -3643,21 +3643,12 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 110         Y = .incomingData.ReadByte()
         
 112         Skill = .incomingData.ReadByte()
-            
-            'No te dejo trabajar si tenes el inventario lleno.
-            If .Invent.NroItems = .CurrentInventorySlots Then
-                Call WriteConsoleMsg(UserIndex, "No podés trabajar con el inventario lleno.", FONTTYPE_INFO)
-                Call WriteWorkRequestTarget(UserIndex, 0)
-                Exit Sub
-            End If
-            
+
 114         If .flags.Muerto = 1 Or .flags.Descansar Or Not InMapBounds(.Pos.Map, X, Y) Then Exit Sub
 
-        
 116         If Not InRangoVision(UserIndex, X, Y) Then
 118             Call WritePosUpdate(UserIndex)
                 Exit Sub
-
             End If
             
             If .flags.Meditando Then
