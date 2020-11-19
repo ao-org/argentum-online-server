@@ -206,3 +206,26 @@ LoadPretorianData_Err:
         Resume Next
         
 End Sub
+
+Public Sub EliminarPretorianos()
+
+        On Error GoTo EliminarPretorianos_Err
+
+100     For Index = 1 To UBound(ClanPretoriano)
+                 
+            ' Search for the clan to be deleted
+102         If ClanPretoriano(Index).ClanMap = .Pos.Map Then
+104             Call ClanPretoriano(Index).DeleteClan
+                Exit For
+        
+            End If
+                
+        Next
+
+        Exit Sub
+
+EliminarPretorianos_Err:
+        Call RegistrarError(Err.Number, Err.description, "PraetoriansCoopNPC.EliminarPretorianos", Erl)
+        Resume Next
+        
+End Sub
