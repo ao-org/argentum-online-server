@@ -158,7 +158,7 @@ Sub QuitarNewbieObj(ByVal UserIndex As Integer)
 
             End Select
         
-142         Call WarpUserChar(UserIndex, DeDonde.Map, DeDonde.X, DeDonde.Y, True)
+142         Call WarpUserChar(UserIndex, DeDonde.Map, DeDonde.x, DeDonde.y, True)
     
         End If
 
@@ -284,7 +284,7 @@ Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
 
             AuxPos = TirarItemAlPiso(UserList(UserIndex).Pos, MiObj, True)
                 
-            If AuxPos.X <> 0 And AuxPos.Y <> 0 Then
+            If AuxPos.x <> 0 And AuxPos.y <> 0 Then
                 UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD - MiObj.Amount
 
             End If
@@ -406,7 +406,7 @@ UpdateUserInv_Err:
         
 End Sub
 
-Sub DropObj(ByVal UserIndex As Integer, ByVal slot As Byte, ByVal num As Integer, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer)
+Sub DropObj(ByVal UserIndex As Integer, ByVal slot As Byte, ByVal num As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer)
         
         On Error GoTo DropObj_Err
         
@@ -422,14 +422,14 @@ Sub DropObj(ByVal UserIndex As Integer, ByVal slot As Byte, ByVal num As Integer
 108         If ObjData(obj.ObjIndex).Destruye = 0 Then
 
                 'Check objeto en el suelo
-110             If MapData(UserList(UserIndex).Pos.Map, X, Y).ObjInfo.ObjIndex = 0 Then
+110             If MapData(UserList(UserIndex).Pos.Map, x, y).ObjInfo.ObjIndex = 0 Then
                   
-112                 If num + MapData(UserList(UserIndex).Pos.Map, X, Y).ObjInfo.Amount > MAX_INVENTORY_OBJS Then
-114                     num = MAX_INVENTORY_OBJS - MapData(UserList(UserIndex).Pos.Map, X, Y).ObjInfo.Amount
+112                 If num + MapData(UserList(UserIndex).Pos.Map, x, y).ObjInfo.Amount > MAX_INVENTORY_OBJS Then
+114                     num = MAX_INVENTORY_OBJS - MapData(UserList(UserIndex).Pos.Map, x, y).ObjInfo.Amount
 
                     End If
                   
-116                 Call MakeObj(obj, Map, X, Y)
+116                 Call MakeObj(obj, Map, x, y)
 118                 Call QuitarUserInvItem(UserIndex, slot, num)
 120                 Call UpdateUserInv(False, UserIndex, slot)
                   
@@ -468,16 +468,16 @@ DropObj_Err:
         
 End Sub
 
-Sub EraseObj(ByVal num As Integer, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer)
+Sub EraseObj(ByVal num As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer)
         
         On Error GoTo EraseObj_Err
         
 
         Dim Rango As Byte
 
-100     MapData(Map, X, Y).ObjInfo.Amount = MapData(Map, X, Y).ObjInfo.Amount - num
+100     MapData(Map, x, y).ObjInfo.Amount = MapData(Map, x, y).ObjInfo.Amount - num
 
-102     If MapData(Map, X, Y).ObjInfo.Amount <= 0 Then
+102     If MapData(Map, x, y).ObjInfo.Amount <= 0 Then
 
             'Rango = val(ReadField(1, ObjData(MapData(Map, x, Y).ObjInfo.ObjIndex).CreaLuz, Asc(":")))
     
@@ -492,12 +492,12 @@ Sub EraseObj(ByVal num As Integer, ByVal Map As Integer, ByVal X As Integer, ByV
             '   MapData(Map, x, Y).Particula = 0
             '   MapData(Map, x, Y).TimeParticula = 0
             ' End If
-104         MapData(Map, X, Y).ObjInfo.ObjIndex = 0
-106         MapData(Map, X, Y).ObjInfo.Amount = 0
+104         MapData(Map, x, y).ObjInfo.ObjIndex = 0
+106         MapData(Map, x, y).ObjInfo.Amount = 0
     
-            Call QuitarItemLimpieza(Map, X, Y)
+            Call QuitarItemLimpieza(Map, x, y)
     
-108         Call modSendData.SendToAreaByPos(Map, X, Y, PrepareMessageObjectDelete(X, Y))
+108         Call modSendData.SendToAreaByPos(Map, x, y, PrepareMessageObjectDelete(x, y))
 
         End If
 
@@ -510,7 +510,7 @@ EraseObj_Err:
         
 End Sub
 
-Sub MakeObj(ByRef obj As obj, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, Optional ByVal Limpiar As Boolean = True)
+Sub MakeObj(ByRef obj As obj, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer, Optional ByVal Limpiar As Boolean = True)
         
         On Error GoTo MakeObj_Err
 
@@ -520,18 +520,18 @@ Sub MakeObj(ByRef obj As obj, ByVal Map As Integer, ByVal X As Integer, ByVal Y 
 
 100     If obj.ObjIndex > 0 And obj.ObjIndex <= UBound(ObjData) Then
     
-102         If MapData(Map, X, Y).ObjInfo.ObjIndex = obj.ObjIndex Then
-104             MapData(Map, X, Y).ObjInfo.Amount = MapData(Map, X, Y).ObjInfo.Amount + obj.Amount
+102         If MapData(Map, x, y).ObjInfo.ObjIndex = obj.ObjIndex Then
+104             MapData(Map, x, y).ObjInfo.Amount = MapData(Map, x, y).ObjInfo.Amount + obj.Amount
             Else
                 ' Lo agrego a la limpieza del mundo o reseteo el timer si el objeto ya existía
-                Call AgregarItemLimpiza(Map, X, Y, MapData(Map, X, Y).ObjInfo.ObjIndex <> 0)
+                Call AgregarItemLimpiza(Map, x, y, MapData(Map, x, y).ObjInfo.ObjIndex <> 0)
             
-106             MapData(Map, X, Y).ObjInfo.ObjIndex = obj.ObjIndex
+106             MapData(Map, x, y).ObjInfo.ObjIndex = obj.ObjIndex
 
 108             If ObjData(obj.ObjIndex).VidaUtil <> 0 Then
-110                 MapData(Map, X, Y).ObjInfo.Amount = ObjData(obj.ObjIndex).VidaUtil
+110                 MapData(Map, x, y).ObjInfo.Amount = ObjData(obj.ObjIndex).VidaUtil
                 Else
-112                 MapData(Map, X, Y).ObjInfo.Amount = obj.Amount
+112                 MapData(Map, x, y).ObjInfo.Amount = obj.Amount
 
                 End If
             
@@ -549,7 +549,7 @@ Sub MakeObj(ByRef obj As obj, ByVal Map As Integer, ByVal X As Integer, ByVal Y 
                 ' MapData(Map, x, Y).Particula = ObjData(obj.ObjIndex).CreaParticulaPiso
                 ' MapData(Map, x, Y).TimeParticula = -1
                 ' End If
-114             Call modSendData.SendToAreaByPos(Map, X, Y, PrepareMessageObjectCreate(obj.ObjIndex, X, Y))
+114             Call modSendData.SendToAreaByPos(Map, x, y, PrepareMessageObjectCreate(obj.ObjIndex, x, y))
                 
             End If
     
@@ -570,9 +570,9 @@ Function MeterItemEnInventario(ByVal UserIndex As Integer, ByRef MiObj As obj) A
 
     'Call LogTarea("MeterItemEnInventario")
  
-    Dim X    As Integer
+    Dim x    As Integer
 
-    Dim Y    As Integer
+    Dim y    As Integer
 
     Dim slot As Byte
 
@@ -644,9 +644,9 @@ Function MeterItemEnInventarioDeNpc(ByVal NpcIndex As Integer, ByRef MiObj As ob
 
     'Call LogTarea("MeterItemEnInventario")
  
-    Dim X    As Integer
+    Dim x    As Integer
 
-    Dim Y    As Integer
+    Dim y    As Integer
 
     Dim slot As Byte
 
@@ -700,34 +700,34 @@ Sub GetObj(ByVal UserIndex As Integer)
         Dim MiObj As obj
 
         '¿Hay algun obj?
-100     If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).ObjInfo.ObjIndex > 0 Then
+100     If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y).ObjInfo.ObjIndex > 0 Then
 
             '¿Esta permitido agarrar este obj?
-102         If ObjData(MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).ObjInfo.ObjIndex).Agarrable <> 1 Then
+102         If ObjData(MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y).ObjInfo.ObjIndex).Agarrable <> 1 Then
 
-                Dim X    As Integer
+                Dim x    As Integer
 
-                Dim Y    As Integer
+                Dim y    As Integer
 
                 Dim slot As Byte
         
-104             X = UserList(UserIndex).Pos.X
-106             Y = UserList(UserIndex).Pos.Y
-108             obj = ObjData(MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).ObjInfo.ObjIndex)
-110             MiObj.Amount = MapData(UserList(UserIndex).Pos.Map, X, Y).ObjInfo.Amount
-112             MiObj.ObjIndex = MapData(UserList(UserIndex).Pos.Map, X, Y).ObjInfo.ObjIndex
+104             x = UserList(UserIndex).Pos.x
+106             y = UserList(UserIndex).Pos.y
+108             obj = ObjData(MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y).ObjInfo.ObjIndex)
+110             MiObj.Amount = MapData(UserList(UserIndex).Pos.Map, x, y).ObjInfo.Amount
+112             MiObj.ObjIndex = MapData(UserList(UserIndex).Pos.Map, x, y).ObjInfo.ObjIndex
         
 114             If Not MeterItemEnInventario(UserIndex, MiObj) Then
                     'Call WriteConsoleMsg(UserIndex, "No puedo cargar mas objetos.", FontTypeNames.FONTTYPE_INFO)
                 Else
             
                     'Quitamos el objeto
-116                 Call EraseObj(MapData(UserList(UserIndex).Pos.Map, X, Y).ObjInfo.Amount, UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y)
+116                 Call EraseObj(MapData(UserList(UserIndex).Pos.Map, x, y).ObjInfo.Amount, UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y)
 
 118                 If Not UserList(UserIndex).flags.Privilegios And PlayerType.user Then Call LogGM(UserList(UserIndex).name, "Agarro:" & MiObj.Amount & " Objeto:" & ObjData(MiObj.ObjIndex).name)
     
 120                 If BusquedaTesoroActiva Then
-122                     If UserList(UserIndex).Pos.Map = TesoroNumMapa And UserList(UserIndex).Pos.X = TesoroX And UserList(UserIndex).Pos.Y = TesoroY Then
+122                     If UserList(UserIndex).Pos.Map = TesoroNumMapa And UserList(UserIndex).Pos.x = TesoroX And UserList(UserIndex).Pos.y = TesoroY Then
     
 124                         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> " & UserList(UserIndex).name & " encontro el tesoro ¡Felicitaciones!", FontTypeNames.FONTTYPE_TALK))
 126                         BusquedaTesoroActiva = False
@@ -737,7 +737,7 @@ Sub GetObj(ByVal UserIndex As Integer)
                     End If
                 
 128                 If BusquedaRegaloActiva Then
-130                     If UserList(UserIndex).Pos.Map = RegaloNumMapa And UserList(UserIndex).Pos.X = RegaloX And UserList(UserIndex).Pos.Y = RegaloY Then
+130                     If UserList(UserIndex).Pos.Map = RegaloNumMapa And UserList(UserIndex).Pos.x = RegaloX And UserList(UserIndex).Pos.y = RegaloY Then
 132                         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> " & UserList(UserIndex).name & " fue el valiente que encontro el gran item magico ¡Felicitaciones!", FontTypeNames.FONTTYPE_TALK))
 134                         BusquedaRegaloActiva = False
 
@@ -809,7 +809,7 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal slot As Byte)
 118             UserList(UserIndex).Char.WeaponAnim = NingunArma
             
 120             If UserList(UserIndex).flags.Montado = 0 Then
-122                 Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
+122                 Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
                 End If
                 
                 If obj.MagicDamageBonus > 0 Then
@@ -838,7 +838,7 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal slot As Byte)
 154             UserList(UserIndex).Char.WeaponAnim = NingunArma
             
 156             If UserList(UserIndex).flags.Montado = 0 Then
-158                 Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
+158                 Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
                 End If
        
 160         Case eOBJType.otmagicos
@@ -924,7 +924,7 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal slot As Byte)
 264             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(UserList(UserIndex).Char.CharIndex, 0, True, 1))
         
 266             UserList(UserIndex).Char.WeaponAnim = NingunArma
-268             Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
+268             Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
         
 270         Case eOBJType.otArmadura
 272             UserList(UserIndex).Invent.Object(slot).Equipped = 0
@@ -934,7 +934,7 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal slot As Byte)
 278             If UserList(UserIndex).flags.Navegando = 0 Then
 280                 If UserList(UserIndex).flags.Montado = 0 Then
 282                     Call DarCuerpoDesnudo(UserIndex)
-284                     Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
+284                     Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
                     End If
                 End If
         
@@ -954,7 +954,7 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal slot As Byte)
 306             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(UserList(UserIndex).Char.CharIndex, 0, True, 4))
 
 308             UserList(UserIndex).Char.CascoAnim = NingunCasco
-310             Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
+310             Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
     
                 If obj.ResistenciaMagica > 0 Then
                     Call WriteUpdateRM(UserIndex)
@@ -970,7 +970,7 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal slot As Byte)
 330             UserList(UserIndex).Char.ShieldAnim = NingunEscudo
 
 332             If UserList(UserIndex).flags.Montado = 0 Then
-334                 Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
+334                 Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
                 End If
                 
                 If obj.ResistenciaMagica > 0 Then
@@ -1126,7 +1126,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                     .Char.WeaponAnim = NingunArma
 
                     If .flags.Montado = 0 Then
-                        Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+                        Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
                     End If
 
                     Exit Sub
@@ -1173,9 +1173,9 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
             
                 'Sonido
                 If obj.SndAura = 0 Then
-                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_SACARARMA, .Pos.X, .Pos.Y))
+                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_SACARARMA, .Pos.x, .Pos.y))
                 Else
-                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.SndAura, .Pos.X, .Pos.Y))
+                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.SndAura, .Pos.x, .Pos.y))
                 End If
             
                 If Len(obj.CreaGRH) <> 0 Then
@@ -1191,7 +1191,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                 
                     If .flags.Navegando = 0 Then
                         .Char.WeaponAnim = obj.WeaponAnim
-                        Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+                        Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
 
                     End If
 
@@ -1238,7 +1238,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                 
                     If .flags.Navegando = 0 Then
                         .Char.WeaponAnim = obj.WeaponAnim
-                        Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+                        Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
 
                     End If
 
@@ -1341,7 +1341,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
             
                 'Sonido
                 If obj.SndAura <> 0 Then
-                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.SndAura, .Pos.X, .Pos.Y))
+                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.SndAura, .Pos.x, .Pos.y))
                 End If
             
                 If Len(obj.CreaGRH) <> 0 Then
@@ -1392,16 +1392,16 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                 
                     If .flags.Navegando = 0 Then
                         .Char.WeaponAnim = obj.WeaponAnim
-                        Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+                        Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
 
                     End If
 
                 End If
             
                 If obj.SndAura = 0 Then
-                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_SACARARMA, .Pos.X, .Pos.Y))
+                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_SACARARMA, .Pos.x, .Pos.y))
                 Else
-                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.SndAura, .Pos.X, .Pos.Y))
+                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.SndAura, .Pos.x, .Pos.y))
                 End If
                  
                 If Len(obj.CreaGRH) <> 0 Then
@@ -1458,7 +1458,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                         
                         If .flags.Montado = 0 Then
                             Call DarCuerpoDesnudo(UserIndex)
-                            Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+                            Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
 
                         End If
 
@@ -1493,7 +1493,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                         
                         .Char.Body = obj.Ropaje
                 
-                        Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+                        Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
                         
                         .flags.Desnudo = 0
             
@@ -1524,7 +1524,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                     Call Desequipar(UserIndex, slot)
                 
                     .Char.CascoAnim = NingunCasco
-                    Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+                    Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
                     Exit Sub
 
                 End If
@@ -1549,7 +1549,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
             
                 If .flags.Navegando = 0 Then
                     .Char.CascoAnim = obj.CascoAnim
-                    Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+                    Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
                 End If
                 
                 If obj.ResistenciaMagica > 0 Then
@@ -1575,7 +1575,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                     .Char.ShieldAnim = NingunEscudo
 
                     If .flags.Montado = 0 Then
-                        Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+                        Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
 
                     End If
 
@@ -1621,7 +1621,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                 If .flags.Navegando = 0 Then
                     If .flags.Montado = 0 Then
                         .Char.ShieldAnim = obj.ShieldAnim
-                        Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+                        Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
                     End If
                 End If
                 
@@ -1939,9 +1939,9 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
             'Sonido
         
             If ObjIndex = e_ObjetosCriticos.Manzana Or ObjIndex = e_ObjetosCriticos.Manzana2 Or ObjIndex = e_ObjetosCriticos.ManzanaNewbie Then
-                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_SoundIndex.MORFAR_MANZANA, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_SoundIndex.MORFAR_MANZANA, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
             Else
-                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_SoundIndex.SOUND_COMIDA, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_SoundIndex.SOUND_COMIDA, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
 
             End If
         
@@ -2095,9 +2095,9 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                     Call QuitarUserInvItem(UserIndex, slot, 1)
 
                     If obj.Snd1 <> 0 Then
-                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
                     Else
-                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
 
                     End If
         
@@ -2115,9 +2115,9 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                     Call QuitarUserInvItem(UserIndex, slot, 1)
 
                     If obj.Snd1 <> 0 Then
-                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
                     Else
-                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
 
                     End If
 
@@ -2134,10 +2134,10 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                     Call QuitarUserInvItem(UserIndex, slot, 1)
 
                     If obj.Snd1 <> 0 Then
-                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
                     
                     Else
-                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
 
                     End If
             
@@ -2155,10 +2155,10 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                     Call QuitarUserInvItem(UserIndex, slot, 1)
 
                     If obj.Snd1 <> 0 Then
-                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
                     
                     Else
-                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
 
                     End If
                 
@@ -2171,10 +2171,10 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                         Call QuitarUserInvItem(UserIndex, slot, 1)
 
                         If obj.Snd1 <> 0 Then
-                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
                     
                         Else
-                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
 
                         End If
 
@@ -2204,10 +2204,10 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                         Call QuitarUserInvItem(UserIndex, slot, 1)
 
                         If obj.Snd1 <> 0 Then
-                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
                     
                         Else
-                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(255, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(255, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
 
                         End If
 
@@ -2226,10 +2226,10 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                     Call QuitarUserInvItem(UserIndex, slot, 1)
 
                     If obj.Snd1 <> 0 Then
-                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
                             
                     Else
-                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
 
                     End If
 
@@ -2289,7 +2289,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
             
                     UserList(UserIndex).Char.Head = CabezaFinal
                     UserList(UserIndex).OrigChar.Head = CabezaFinal
-                    Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, CabezaFinal, UserList(UserIndex).Char.heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
+                    Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, CabezaFinal, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
                     'Quitamos del inv el item
                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.CharIndex, 102, 0))
 
@@ -2300,7 +2300,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 
                     End If
 
-                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
                     
                 Case 9  ' Pocion sexo
     
@@ -2368,15 +2368,15 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
             
                     UserList(UserIndex).Char.Head = CabezaFinal
                     UserList(UserIndex).OrigChar.Head = CabezaFinal
-                    Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, CabezaFinal, UserList(UserIndex).Char.heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
+                    Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, CabezaFinal, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
                     'Quitamos del inv el item
                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.CharIndex, 102, 0))
                     Call QuitarUserInvItem(UserIndex, slot, 1)
 
                     If obj.Snd1 <> 0 Then
-                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
                     Else
-                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
 
                     End If
                 
@@ -2390,10 +2390,10 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                         Call QuitarUserInvItem(UserIndex, slot, 1)
 
                         If obj.Snd1 <> 0 Then
-                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
                             
                         Else
-                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("123", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("123", UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
 
                         End If
 
@@ -2441,10 +2441,10 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                     Call WriteContadores(UserIndex)
 
                     If obj.Snd1 <> 0 Then
-                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
                         
                     Else
-                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
 
                     End If
 
@@ -2475,10 +2475,10 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                     Call WriteContadores(UserIndex)
 
                     If obj.Snd1 <> 0 Then
-                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
                         
                     Else
-                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
 
                     End If
 
@@ -2529,10 +2529,10 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                     Call WriteConsoleMsg(UserIndex, "Donador> Te sentis sano y lleno.", FontTypeNames.FONTTYPE_WARNING)
 
                     If obj.Snd1 <> 0 Then
-                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
                         
                     Else
-                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
 
                     End If
 
@@ -2544,7 +2544,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 
                     End If
                     
-                    If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger = CARCEL Then
+                    If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y).trigger = CARCEL Then
                         Call WriteConsoleMsg(UserIndex, "No podes usar la runa estando en la carcel.", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
@@ -2552,9 +2552,9 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                     
                     Dim Map     As Integer
 
-                    Dim X       As Byte
+                    Dim x       As Byte
 
-                    Dim Y       As Byte
+                    Dim y       As Byte
 
                     Dim DeDonde As WorldPos
 
@@ -2586,18 +2586,18 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                     End Select
                     
                     Map = DeDonde.Map
-                    X = DeDonde.X
-                    Y = DeDonde.Y
+                    x = DeDonde.x
+                    y = DeDonde.y
                     
-                    Call FindLegalPos(UserIndex, Map, X, Y)
-                    Call WarpUserChar(UserIndex, Map, X, Y, True)
+                    Call FindLegalPos(UserIndex, Map, x, y)
+                    Call WarpUserChar(UserIndex, Map, x, y, True)
                     Call WriteConsoleMsg(UserIndex, "Ya estas a salvo...", FontTypeNames.FONTTYPE_WARNING)
 
                     If obj.Snd1 <> 0 Then
-                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
                         
                     Else
-                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
 
                     End If
 
@@ -2640,10 +2640,10 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                         Call WriteContadores(UserIndex)
 
                         If obj.Snd1 <> 0 Then
-                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
                             
                         Else
-                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
 
                         End If
 
@@ -2682,10 +2682,10 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                         End If
 
                         If obj.Snd1 <> 0 Then
-                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
                             
                         Else
-                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
 
                         End If
                     
@@ -2752,12 +2752,12 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                         
                     UserList(UserIndex).Char.Head = CabezaFinal
                     UserList(UserIndex).OrigChar.Head = CabezaFinal
-                    Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, CabezaFinal, UserList(UserIndex).Char.heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
+                    Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, CabezaFinal, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
 
                     'Quitamos del inv el item
                     If CabezaActual <> CabezaFinal Then
                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.CharIndex, 102, 0))
-                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
                         Call QuitarUserInvItem(UserIndex, slot, 1)
                     Else
                         Call WriteConsoleMsg(UserIndex, "¡Rayos! No pude asignarte una cabeza nueva, item no consumido. ¡Proba de nuevo!", FontTypeNames.FONTTYPE_INFOIAO)
@@ -2787,7 +2787,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                         End If
                             
                         If sobrechar = 1 Then
-                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFXToFloor(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, Particula, Tiempo))
+                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFXToFloor(UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y, Particula, Tiempo))
                         Else
                             
                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, Particula, Tiempo, False))
@@ -2798,14 +2798,14 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                     End If
                         
                     If obj.CreaFX <> 0 Then
-                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageFxPiso(obj.CreaFX, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageFxPiso(obj.CreaFX, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
                             
                         'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.CharIndex, obj.CreaFX, 0))
                         ' PrepareMessageCreateFX
                     End If
                         
                     If obj.Snd1 <> 0 Then
-                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
 
                     End If
                         
@@ -2874,10 +2874,10 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
             Call QuitarUserInvItem(UserIndex, slot, 1)
         
             If obj.Snd1 <> 0 Then
-                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
             
             Else
-                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
 
             End If
         
@@ -2899,7 +2899,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageConsoleMsg(UserList(UserIndex).name & " ha abierto un " & obj.name & " y obtuvo...", FontTypeNames.FONTTYPE_New_DONADOR))
         
             If obj.Snd1 <> 0 Then
-                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
 
             End If
         
@@ -2949,7 +2949,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 
             End If
 
-            If Not HayAgua(UserList(UserIndex).Pos.Map, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY) Then
+            If (MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY).Blocked And FLAG_AGUA) = 0 Then
                 Call WriteConsoleMsg(UserIndex, "No hay agua allí.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
@@ -3051,7 +3051,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 
                     End If
 
-                    Call SendData(SendTarget.toMap, UserList(UserIndex).Pos.Map, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                    Call SendData(SendTarget.toMap, UserList(UserIndex).Pos.Map, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
                     Exit Sub
                 Else
                     Call WriteConsoleMsg(UserIndex, "Solo Miembros de la Armada Real pueden usar este cuerno.", FontTypeNames.FONTTYPE_INFO)
@@ -3068,7 +3068,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 
                     End If
 
-                    Call SendData(SendTarget.toMap, UserList(UserIndex).Pos.Map, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                    Call SendData(SendTarget.toMap, UserList(UserIndex).Pos.Map, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
                     Exit Sub
                 Else
                     Call WriteConsoleMsg(UserIndex, "Solo Miembros de la Legión Oscura pueden usar este cuerno.", FontTypeNames.FONTTYPE_INFO)
@@ -3079,7 +3079,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
             End If
 
             'Si llega aca es porque es o Laud o Tambor o Flauta
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
        
         Case eOBJType.otBarcos
 
@@ -3092,7 +3092,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
         
             'If obj.Subtipo = 0 Then
             If UserList(UserIndex).flags.Navegando = 0 Then
-                If ((LegalPos(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X - 1, UserList(UserIndex).Pos.Y, True, False) Or LegalPos(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y - 1, True, False) Or LegalPos(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X + 1, UserList(UserIndex).Pos.Y, True, False) Or LegalPos(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y + 1, True, False)) And UserList(UserIndex).flags.Navegando = 0) Or UserList(UserIndex).flags.Navegando = 1 Then
+                If ((LegalPos(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x - 1, UserList(UserIndex).Pos.y, True, False) Or LegalPos(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y - 1, True, False) Or LegalPos(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x + 1, UserList(UserIndex).Pos.y, True, False) Or LegalPos(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y + 1, True, False)) And UserList(UserIndex).flags.Navegando = 0) Or UserList(UserIndex).flags.Navegando = 1 Then
                     Call DoNavega(UserIndex, obj, slot)
                 Else
                     Call WriteConsoleMsg(UserIndex, "¡Debes aproximarte al agua para usar el barco!", FontTypeNames.FONTTYPE_INFO)
@@ -3105,7 +3105,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                     Call DoReNavega(UserIndex, obj, slot)
                 Else
 
-                    If ((LegalPos(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X - 1, UserList(UserIndex).Pos.Y, False, True) Or LegalPos(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y - 1, False, True) Or LegalPos(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X + 1, UserList(UserIndex).Pos.Y, False, True) Or LegalPos(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y + 1, False, True)) And UserList(UserIndex).flags.Navegando = 1) Or UserList(UserIndex).flags.Navegando = 0 Then
+                    If ((LegalPos(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x - 1, UserList(UserIndex).Pos.y, False, True) Or LegalPos(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y - 1, False, True) Or LegalPos(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x + 1, UserList(UserIndex).Pos.y, False, True) Or LegalPos(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y + 1, False, True)) And UserList(UserIndex).flags.Navegando = 1) Or UserList(UserIndex).flags.Navegando = 0 Then
                         Call DoNavega(UserIndex, obj, slot)
                     Else
                         Call WriteConsoleMsg(UserIndex, "¡Debes aproximarte a la costa para dejar la barca!", FontTypeNames.FONTTYPE_INFO)
@@ -3181,7 +3181,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 
                     End If
                 
-                    If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger = CARCEL Then
+                    If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y).trigger = CARCEL Then
                         Call WriteConsoleMsg(UserIndex, "No podes usar la runa estando en la carcel.", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
@@ -3281,7 +3281,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 
             End If
         
-            If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger = CARCEL Then
+            If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y).trigger = CARCEL Then
                 Call WriteConsoleMsg(UserIndex, "No podes usar la runa estando en la carcel.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
@@ -3467,7 +3467,7 @@ Sub TirarTodo(ByVal UserIndex As Integer)
 
     On Error Resume Next
 
-    If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger = 6 Then Exit Sub
+    If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y).trigger = 6 Then Exit Sub
     If UserList(UserIndex).flags.BattleModo = 1 Then Exit Sub
 
     Call TirarTodosLosItems(UserIndex)
@@ -3510,8 +3510,8 @@ Sub TirarTodosLosItems(ByVal UserIndex As Integer)
 104         If ItemIndex > 0 Then
 
 106             If ItemSeCae(ItemIndex) Then
-108                 NuevaPos.X = 0
-110                 NuevaPos.Y = 0
+108                 NuevaPos.x = 0
+110                 NuevaPos.y = 0
  
 112                 If ItemIndex = ORO_MINA And UserList(UserIndex).flags.CarroMineria = 1 Or ItemIndex = PLATA_MINA And UserList(UserIndex).flags.CarroMineria = 1 Or ItemIndex = HIERRO_MINA And UserList(UserIndex).flags.CarroMineria = 1 Then
 114                     MiObj.Amount = UserList(UserIndex).Invent.Object(i).Amount * 0.3
@@ -3519,8 +3519,8 @@ Sub TirarTodosLosItems(ByVal UserIndex As Integer)
                     
 118                     Tilelibre UserList(UserIndex).Pos, NuevaPos, MiObj, True, True
                 
-120                     If NuevaPos.X <> 0 And NuevaPos.Y <> 0 Then
-122                         Call DropObj(UserIndex, i, MiObj.Amount, NuevaPos.Map, NuevaPos.X, NuevaPos.Y)
+120                     If NuevaPos.x <> 0 And NuevaPos.y <> 0 Then
+122                         Call DropObj(UserIndex, i, MiObj.Amount, NuevaPos.Map, NuevaPos.x, NuevaPos.y)
 
                         End If
                 
@@ -3531,8 +3531,8 @@ Sub TirarTodosLosItems(ByVal UserIndex As Integer)
                     
 128                     Tilelibre UserList(UserIndex).Pos, NuevaPos, MiObj, True, True
                 
-130                     If NuevaPos.X <> 0 And NuevaPos.Y <> 0 Then
-132                         Call DropObj(UserIndex, i, MAX_INVENTORY_OBJS, NuevaPos.Map, NuevaPos.X, NuevaPos.Y)
+130                     If NuevaPos.x <> 0 And NuevaPos.y <> 0 Then
+132                         Call DropObj(UserIndex, i, MAX_INVENTORY_OBJS, NuevaPos.Map, NuevaPos.x, NuevaPos.y)
 
                         End If
 
@@ -3582,15 +3582,15 @@ Sub TirarTodosLosItemsNoNewbies(ByVal UserIndex As Integer)
 
         Dim ItemIndex As Integer
 
-100     If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger = 6 Then Exit Sub
+100     If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y).trigger = 6 Then Exit Sub
 
 102     For i = 1 To UserList(UserIndex).CurrentInventorySlots
 104         ItemIndex = UserList(UserIndex).Invent.Object(i).ObjIndex
 
 106         If ItemIndex > 0 Then
 108             If ItemSeCae(ItemIndex) And Not ItemNewbie(ItemIndex) Then
-110                 NuevaPos.X = 0
-112                 NuevaPos.Y = 0
+110                 NuevaPos.x = 0
+112                 NuevaPos.y = 0
             
                     'Creo MiObj
 114                 MiObj.Amount = UserList(UserIndex).Invent.Object(i).ObjIndex
@@ -3599,8 +3599,8 @@ Sub TirarTodosLosItemsNoNewbies(ByVal UserIndex As Integer)
                     'Tira los Items no newbies en todos lados.
 118                 Tilelibre UserList(UserIndex).Pos, NuevaPos, MiObj, True, True
 
-120                 If NuevaPos.X <> 0 And NuevaPos.Y <> 0 Then
-122                     If MapData(NuevaPos.Map, NuevaPos.X, NuevaPos.Y).ObjInfo.ObjIndex = 0 Then Call DropObj(UserIndex, i, MAX_INVENTORY_OBJS, NuevaPos.Map, NuevaPos.X, NuevaPos.Y)
+120                 If NuevaPos.x <> 0 And NuevaPos.y <> 0 Then
+122                     If MapData(NuevaPos.Map, NuevaPos.x, NuevaPos.y).ObjInfo.ObjIndex = 0 Then Call DropObj(UserIndex, i, MAX_INVENTORY_OBJS, NuevaPos.Map, NuevaPos.x, NuevaPos.y)
 
                     End If
 

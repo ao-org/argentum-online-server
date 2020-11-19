@@ -470,7 +470,7 @@ Public Function NpcImpacto(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 
 126                 If Rechazo = True Then
                         'Se rechazo el ataque con el escudo
-128                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_ESCUDO, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+128                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_ESCUDO, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
 
 130                     If UserList(UserIndex).ChatCombate = 1 Then
 132                         Call WriteBlockedWithShieldUser(UserIndex)
@@ -860,12 +860,12 @@ Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integ
 114     Npclist(NpcIndex).CanAttack = 0
     
 116     If Npclist(NpcIndex).flags.Snd1 > 0 Then
-118         Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessagePlayWave(Npclist(NpcIndex).flags.Snd1, Npclist(NpcIndex).Pos.x, Npclist(NpcIndex).Pos.Y))
+118         Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessagePlayWave(Npclist(NpcIndex).flags.Snd1, Npclist(NpcIndex).Pos.x, Npclist(NpcIndex).Pos.y))
 
         End If
     
 120     If NpcImpacto(NpcIndex, UserIndex) Then
-122         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_IMPACTO, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+122         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_IMPACTO, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y))
         
 124         If UserList(UserIndex).flags.Navegando = 0 Or UserList(UserIndex).flags.Montado = 0 Then
 126             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.CharIndex, FXSANGRE, 0))
@@ -976,20 +976,20 @@ Public Sub NpcAtacaNpc(ByVal Atacante As Integer, ByVal Victima As Integer, Opti
         End If
 
 110     If Npclist(Atacante).flags.Snd1 > 0 Then
-112         Call SendData(SendTarget.ToNPCArea, Atacante, PrepareMessagePlayWave(Npclist(Atacante).flags.Snd1, Npclist(Atacante).Pos.x, Npclist(Atacante).Pos.Y))
+112         Call SendData(SendTarget.ToNPCArea, Atacante, PrepareMessagePlayWave(Npclist(Atacante).flags.Snd1, Npclist(Atacante).Pos.x, Npclist(Atacante).Pos.y))
 
         End If
 
 114     If NpcImpactoNpc(Atacante, Victima) Then
     
 116         If Npclist(Victima).flags.Snd2 > 0 Then
-118             Call SendData(SendTarget.ToNPCArea, Victima, PrepareMessagePlayWave(Npclist(Victima).flags.Snd2, Npclist(Victima).Pos.x, Npclist(Victima).Pos.Y))
+118             Call SendData(SendTarget.ToNPCArea, Victima, PrepareMessagePlayWave(Npclist(Victima).flags.Snd2, Npclist(Victima).Pos.x, Npclist(Victima).Pos.y))
             Else
-120             Call SendData(SendTarget.ToNPCArea, Victima, PrepareMessagePlayWave(SND_IMPACTO2, Npclist(Victima).Pos.x, Npclist(Victima).Pos.Y))
+120             Call SendData(SendTarget.ToNPCArea, Victima, PrepareMessagePlayWave(SND_IMPACTO2, Npclist(Victima).Pos.x, Npclist(Victima).Pos.y))
 
             End If
 
-122         Call SendData(SendTarget.ToNPCArea, Victima, PrepareMessagePlayWave(SND_IMPACTO, Npclist(Victima).Pos.x, Npclist(Victima).Pos.Y))
+122         Call SendData(SendTarget.ToNPCArea, Victima, PrepareMessagePlayWave(SND_IMPACTO, Npclist(Victima).Pos.x, Npclist(Victima).Pos.y))
     
 124         Call NpcDañoNpc(Atacante, Victima)
     
@@ -1025,9 +1025,9 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
 106     If UserImpactoNpc(UserIndex, NpcIndex) Then
         
 108         If Npclist(NpcIndex).flags.Snd2 > 0 Then
-110             Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessagePlayWave(Npclist(NpcIndex).flags.Snd2, Npclist(NpcIndex).Pos.x, Npclist(NpcIndex).Pos.Y))
+110             Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessagePlayWave(Npclist(NpcIndex).flags.Snd2, Npclist(NpcIndex).Pos.x, Npclist(NpcIndex).Pos.y))
             Else
-112             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_IMPACTO2, Npclist(NpcIndex).Pos.x, Npclist(NpcIndex).Pos.Y))
+112             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_IMPACTO2, Npclist(NpcIndex).Pos.x, Npclist(NpcIndex).Pos.y))
 
             End If
 
@@ -1151,14 +1151,18 @@ Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
         Dim AttackPos As WorldPos
 
 120     AttackPos = UserList(UserIndex).Pos
-122     Call HeadtoPos(UserList(UserIndex).Char.heading, AttackPos)
+122     Call HeadtoPos(UserList(UserIndex).Char.Heading, AttackPos)
        
         'Exit if not legal
-124     If AttackPos.x >= XMinMapSize And AttackPos.x <= XMaxMapSize And AttackPos.Y >= YMinMapSize And AttackPos.Y <= YMaxMapSize Then
+124     If AttackPos.x >= XMinMapSize And AttackPos.x <= XMaxMapSize And AttackPos.y >= YMinMapSize And AttackPos.y <= YMaxMapSize Then
+
+            If ((MapData(AttackPos.Map, AttackPos.x, AttackPos.y).Blocked And 2 ^ (Heading - 1)) = 0) Then
+                
+            End If
 
             Dim Index As Integer
 
-126         Index = MapData(AttackPos.Map, AttackPos.x, AttackPos.Y).UserIndex
+126         Index = MapData(AttackPos.Map, AttackPos.x, AttackPos.y).UserIndex
             
             'Look for user
 128         If Index > 0 Then
@@ -1170,11 +1174,11 @@ Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
             End If
             
             'Look for NPC
-136         If MapData(AttackPos.Map, AttackPos.x, AttackPos.Y).NpcIndex > 0 Then
+136         If MapData(AttackPos.Map, AttackPos.x, AttackPos.y).NpcIndex > 0 Then
             
-138             If Npclist(MapData(AttackPos.Map, AttackPos.x, AttackPos.Y).NpcIndex).Attackable Then
+138             If Npclist(MapData(AttackPos.Map, AttackPos.x, AttackPos.y).NpcIndex).Attackable Then
                     
-140                 Call UsuarioAtacaNpc(UserIndex, MapData(AttackPos.Map, AttackPos.x, AttackPos.Y).NpcIndex)
+140                 Call UsuarioAtacaNpc(UserIndex, MapData(AttackPos.Map, AttackPos.x, AttackPos.y).NpcIndex)
 142                 Call WriteUpdateUserStats(UserIndex)
                 Else
             
@@ -1285,7 +1289,7 @@ Public Function UsuarioImpacto(ByVal atacanteindex As Integer, ByVal victimainde
           
 152             If Rechazo = True Then
                     'Se rechazo el ataque con el escudo
-154                 Call SendData(SendTarget.ToPCArea, victimaindex, PrepareMessagePlayWave(SND_ESCUDO, UserList(victimaindex).Pos.x, UserList(victimaindex).Pos.Y))
+154                 Call SendData(SendTarget.ToPCArea, victimaindex, PrepareMessagePlayWave(SND_ESCUDO, UserList(victimaindex).Pos.x, UserList(victimaindex).Pos.y))
 156                 Call SendData(SendTarget.ToPCArea, victimaindex, PrepareMessageEscudoMov(UserList(victimaindex).Char.CharIndex))
 
 158                 If UserList(atacanteindex).ChatCombate = 1 Then
@@ -1356,7 +1360,7 @@ Public Sub UsuarioAtacaUsuario(ByVal atacanteindex As Integer, ByVal victimainde
 108     Call UsuarioAtacadoPorUsuario(atacanteindex, victimaindex)
     
 110     If UsuarioImpacto(atacanteindex, victimaindex) Then
-112         Call SendData(SendTarget.ToPCArea, atacanteindex, PrepareMessagePlayWave(SND_IMPACTO, UserList(atacanteindex).Pos.x, UserList(atacanteindex).Pos.Y))
+112         Call SendData(SendTarget.ToPCArea, atacanteindex, PrepareMessagePlayWave(SND_IMPACTO, UserList(atacanteindex).Pos.x, UserList(atacanteindex).Pos.y))
         
 114         If UserList(victimaindex).flags.Navegando = 0 Or UserList(victimaindex).flags.Montado = 0 Then
 116             Call SendData(SendTarget.ToPCArea, victimaindex, PrepareMessageCreateFX(UserList(victimaindex).Char.CharIndex, FXSANGRE, 0))
@@ -1881,7 +1885,7 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
         End If
 
         'Estas atacando desde un trigger seguro? o tu victima esta en uno asi?
-208     If MapData(UserList(VictimIndex).Pos.Map, UserList(VictimIndex).Pos.x, UserList(VictimIndex).Pos.Y).trigger = eTrigger.ZONASEGURA Or MapData(UserList(attackerIndex).Pos.Map, UserList(attackerIndex).Pos.x, UserList(attackerIndex).Pos.Y).trigger = eTrigger.ZONASEGURA Then
+208     If MapData(UserList(VictimIndex).Pos.Map, UserList(VictimIndex).Pos.x, UserList(VictimIndex).Pos.y).trigger = eTrigger.ZONASEGURA Or MapData(UserList(attackerIndex).Pos.Map, UserList(attackerIndex).Pos.x, UserList(attackerIndex).Pos.y).trigger = eTrigger.ZONASEGURA Then
 210         Call WriteConsoleMsg(attackerIndex, "No podes pelear aqui.", FontTypeNames.FONTTYPE_WARNING)
 212         PuedeAtacar = False
             Exit Function
@@ -2075,7 +2079,7 @@ Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal 
 
                 End If
             
-142             Call WriteRenderValueMsg(UserIndex, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y, ExpaDar, 6)
+142             Call WriteRenderValueMsg(UserIndex, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y, ExpaDar, 6)
 
             End If
 
@@ -2378,14 +2382,14 @@ Public Function TriggerZonaPelea(ByVal Origen As Integer, ByVal Destino As Integ
 
     'TODO: Pero que rebuscado!!
     'Nigo:  Te lo rediseñe, pero no te borro el TODO para que lo revises.
-    On Error GoTo Errhandler
+    On Error GoTo ErrHandler
 
     Dim tOrg As eTrigger
 
     Dim tDst As eTrigger
     
-    tOrg = MapData(UserList(Origen).Pos.Map, UserList(Origen).Pos.x, UserList(Origen).Pos.Y).trigger
-    tDst = MapData(UserList(Destino).Pos.Map, UserList(Destino).Pos.x, UserList(Destino).Pos.Y).trigger
+    tOrg = MapData(UserList(Origen).Pos.Map, UserList(Origen).Pos.x, UserList(Origen).Pos.y).trigger
+    tDst = MapData(UserList(Destino).Pos.Map, UserList(Destino).Pos.x, UserList(Destino).Pos.y).trigger
     
     If tOrg = eTrigger.ZONAPELEA Or tDst = eTrigger.ZONAPELEA Then
         If tOrg = tDst Then
@@ -2401,7 +2405,7 @@ Public Function TriggerZonaPelea(ByVal Origen As Integer, ByVal Destino As Integ
     End If
 
     Exit Function
-Errhandler:
+ErrHandler:
     TriggerZonaPelea = TRIGGER6_AUSENTE
     LogError ("Error en TriggerZonaPelea - " & Err.description)
 
