@@ -454,7 +454,7 @@ Public Const MAXEXP         As Long = 1999999999
 
 Public Const MAXUSERMATADOS As Long = 65000
 
-Public Const MAXATRIBUTOS   As Byte = 38
+Public Const MAXATRIBUTOS   As Byte = 40
 
 Public Const MINATRIBUTOS   As Byte = 6
 
@@ -1035,24 +1035,24 @@ End Type
 
 Public Type Position
 
-    x As Integer
-    y As Integer
+    X As Integer
+    Y As Integer
 
 End Type
 
 Public Type WorldPos
 
     Map As Integer
-    x As Integer
-    y As Integer
+    X As Integer
+    Y As Integer
 
 End Type
 
 Public Type CityWorldPos
 
     Map As Integer
-    x As Integer
-    y As Integer
+    X As Integer
+    Y As Integer
     MapaViaje As Integer
     ViajeX As Byte
     ViajeY As Byte
