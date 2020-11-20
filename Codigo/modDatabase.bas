@@ -108,7 +108,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
         QueryBuilder.Append "free_skillpoints = " & .Stats.SkillPts & ", "
         'QueryBuilder.Append "assigned_skillpoints = " & .Counters.AsignedSkills & ", "
         QueryBuilder.Append "pos_map = " & .Pos.Map & ", "
-        QueryBuilder.Append "pos_x = " & .Pos.x & ", "
+        QueryBuilder.Append "pos_x = " & .Pos.X & ", "
         QueryBuilder.Append "pos_y = " & .Pos.Y & ", "
         QueryBuilder.Append "body_id = " & .Char.Body & ", "
         QueryBuilder.Append "head_id = " & .Char.Head & ", "
@@ -333,7 +333,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
         'QueryBuilder.Append "assigned_skillpoints = " & .Counters.AsignedSkills & ", "
         'QueryBuilder.Append "pet_Amount = " & .NroMascotas & ", "
         QueryBuilder.Append "pos_map = " & .Pos.Map & ", "
-        QueryBuilder.Append "pos_x = " & .Pos.x & ", "
+        QueryBuilder.Append "pos_x = " & .Pos.X & ", "
         QueryBuilder.Append "pos_y = " & .Pos.Y & ", "
         QueryBuilder.Append "message_info = '" & .MENSAJEINFORMACION & "', "
         QueryBuilder.Append "body_id = " & .Char.Body & ", "
@@ -341,7 +341,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
         QueryBuilder.Append "weapon_id = " & .Char.WeaponAnim & ", "
         QueryBuilder.Append "helmet_id = " & .Char.CascoAnim & ", "
         QueryBuilder.Append "shield_id = " & .Char.ShieldAnim & ", "
-        QueryBuilder.Append "heading = " & .Char.heading & ", "
+        QueryBuilder.Append "heading = " & .Char.Heading & ", "
         QueryBuilder.Append "items_Amount = " & .Invent.NroItems & ", "
         QueryBuilder.Append "slot_armour = " & .Invent.ArmourEqpSlot & ", "
         QueryBuilder.Append "slot_weapon = " & .Invent.WeaponEqpSlot & ", "
@@ -696,7 +696,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
         '.Counters.AsignedSkills = QueryData!assigned_skillpoints
         '.NroMascotas = QueryData!pet_Amount
         .Pos.Map = QueryData!pos_map
-        .Pos.x = QueryData!pos_x
+        .Pos.X = QueryData!pos_x
         .Pos.Y = QueryData!pos_y
         .MENSAJEINFORMACION = QueryData!message_info
         .OrigChar.Body = QueryData!body_id
@@ -704,7 +704,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
         .OrigChar.WeaponAnim = QueryData!weapon_id
         .OrigChar.CascoAnim = QueryData!helmet_id
         .OrigChar.ShieldAnim = QueryData!shield_id
-        .OrigChar.heading = QueryData!heading
+        .OrigChar.Heading = QueryData!Heading
         .Invent.NroItems = QueryData!items_Amount
         .Invent.ArmourEqpSlot = SanitizeNullValue(QueryData!slot_armour, 0)
         .Invent.WeaponEqpSlot = SanitizeNullValue(QueryData!slot_weapon, 0)
@@ -1025,6 +1025,8 @@ ErrorHandler:
         Resume
     Else
         Call LogDatabaseError("Error en MakeQuery: query = '" & Query & "'. " & Err.Number & " - " & Err.description)
+        
+On Error GoTo 0
         Err.raise Err.Number
     End If
 
@@ -2379,10 +2381,10 @@ ErrorHandler:
 
 End Function
 
-Public Function SetPositionDatabase(UserName As String, ByVal Map As Integer, ByVal x As Integer, ByVal Y As Integer)
+Public Function SetPositionDatabase(UserName As String, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer)
     On Error GoTo ErrorHandler
 
-    Call MakeQuery("UPDATE user SET pos_map = " & Map & ", pos_x = " & x & ", pos_y = " & x & " WHERE UPPER(name) = '" & UCase$(UserName) & "';", True)
+    Call MakeQuery("UPDATE user SET pos_map = " & Map & ", pos_x = " & X & ", pos_y = " & X & " WHERE UPPER(name) = '" & UCase$(UserName) & "';", True)
 
     Exit Function
 
