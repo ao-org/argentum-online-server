@@ -134,6 +134,8 @@ Sub Bloquear(ByVal toMap As Boolean, ByVal sndIndex As Integer, ByVal x As Integ
         
         On Error GoTo Bloquear_Err
         
+        ' Envío sólo los flags de bloq
+        b = b And eBlock.ALL_SIDES
 
 100     If toMap Then
 102         Call SendData(SendTarget.toMap, sndIndex, PrepareMessageBlockPosition(x, y, b))
@@ -165,12 +167,12 @@ End Sub
 
 Sub BloquearPuerta(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer, ByVal Bloquear As Boolean)
     ' Cambio bloqueos superiores
-    MapData(Map, x, y).Blocked = IIf(Bloquear, &H1, 0) ' log2(&H1) = 0 - Heading: 1 - Bloqueo Norte
-    MapData(Map, x - 1, y).Blocked = IIf(Bloquear, &H1, 0)
+    MapData(Map, x, y).Blocked = IIf(Bloquear, eBlock.NORTH, 0)
+    MapData(Map, x - 1, y).Blocked = IIf(Bloquear, eBlock.NORTH, 0)
     
     ' Cambio bloqueos inferiores
-    MapData(Map, x, y + 1).Blocked = IIf(Bloquear, &H4, 0) ' log2(&H4) = 2 - Heading: 3 - Bloqueo Sur
-    MapData(Map, x - 1, y + 1).Blocked = IIf(Bloquear, &H4, 0)
+    MapData(Map, x, y + 1).Blocked = IIf(Bloquear, eBlock.SOUTH, 0)
+    MapData(Map, x - 1, y + 1).Blocked = IIf(Bloquear, eBlock.SOUTH, 0)
     
     ' Mostramos a todos
     Call MostrarBloqueosPuerta(True, Map, x, y)

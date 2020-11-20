@@ -838,12 +838,12 @@ Public Sub GrabarMapa(ByVal Map As Long, ByVal MAPFILE As String)
 
             With MapData(Map, i, j)
             
-                If .Blocked > 0 Then
+                If (.Blocked And eBlock.ALL_SIDES) <> 0 Then
                     MH.NumeroBloqueados = MH.NumeroBloqueados + 1
                     ReDim Preserve Blqs(1 To MH.NumeroBloqueados)
                     Blqs(MH.NumeroBloqueados).x = i
                     Blqs(MH.NumeroBloqueados).y = j
-                    Blqs(MH.NumeroBloqueados).Lados = .Blocked
+                    Blqs(MH.NumeroBloqueados).Lados = .Blocked And eBlock.ALL_SIDES
                 End If
             
                 Rem L1(i, j) = .Graphic(1).grhindex

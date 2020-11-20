@@ -585,6 +585,17 @@ Public Enum eHeading
 
 End Enum
 
+Public Enum eBlock
+
+    NORTH = &H1
+    EAST = &H2
+    SOUTH = &H4
+    WEST = &H8
+    ALL_SIDES = &HF
+    GM = &H10
+
+End Enum
+
 ''
 
 '%%%%%%%%%% CONSTANTES DE INDICES %%%%%%%%%%%%%%%
@@ -1024,24 +1035,24 @@ End Type
 
 Public Type Position
 
-    X As Integer
-    Y As Integer
+    x As Integer
+    y As Integer
 
 End Type
 
 Public Type WorldPos
 
     Map As Integer
-    X As Integer
-    Y As Integer
+    x As Integer
+    y As Integer
 
 End Type
 
 Public Type CityWorldPos
 
     Map As Integer
-    X As Integer
-    Y As Integer
+    x As Integer
+    y As Integer
     MapaViaje As Integer
     ViajeX As Byte
     ViajeY As Byte

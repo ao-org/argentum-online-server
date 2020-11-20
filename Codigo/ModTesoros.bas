@@ -135,7 +135,7 @@ Public Sub PerderTesoro()
 102     TesoroX = RandomNumber(20, 80)
 104     TesoroY = RandomNumber(20, 80)
 
-106     If MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked = 0 Then
+106     If (MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES Then
 108         If (MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked And FLAG_AGUA) = 0 Then
 110             EncontreLugar = True
             Else
@@ -153,7 +153,7 @@ Public Sub PerderTesoro()
         End If
 
 124     If EncontreLugar = False Then
-126         If MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked = 0 Then
+126         If (MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES Then
 128             If (MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked And FLAG_AGUA) = 0 Then
 130                 EncontreLugar = True
                 Else
@@ -173,7 +173,7 @@ Public Sub PerderTesoro()
         End If
 
 144     If EncontreLugar = False Then
-146         If MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked = 0 Then
+146         If (MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES Then
 148             If (MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked And FLAG_AGUA) = 0 Then
 150                 EncontreLugar = True
                 Else
@@ -193,7 +193,7 @@ Public Sub PerderTesoro()
         End If
         
 164     If EncontreLugar = False Then
-166         If MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked = 0 Then
+166         If (MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES Then
 168             If (MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked And FLAG_AGUA) = 0 Then
 170                 EncontreLugar = True
                 Else
@@ -213,7 +213,7 @@ Public Sub PerderTesoro()
         End If
 
 184     If EncontreLugar = False Then
-186         If MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked = 0 Then
+186         If (MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES Then
 188             If (MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked And FLAG_AGUA) = 0 Then
 190                 EncontreLugar = True
                 Else
@@ -233,7 +233,7 @@ Public Sub PerderTesoro()
         End If
 
 204     If EncontreLugar = False Then
-206         If MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked = 0 Then
+206         If (MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES Then
 208             If (MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked And FLAG_AGUA) = 0 Then
 210                 EncontreLugar = True
                 Else
@@ -280,7 +280,7 @@ Public Sub PerderRegalo()
 102     RegaloX = RandomNumber(20, 80)
 104     RegaloY = RandomNumber(20, 80)
 
-106     If MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked = 0 Then
+106     If (MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES Then
 108         If (MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked And FLAG_AGUA) = 0 Then
 110             EncontreLugar = True
             Else
@@ -298,7 +298,7 @@ Public Sub PerderRegalo()
         End If
 
 124     If EncontreLugar = False Then
-126         If MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked = 0 Then
+126         If (MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES Then
 128             If (MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked And FLAG_AGUA) = 0 Then
 130                 EncontreLugar = True
                 Else
@@ -318,7 +318,7 @@ Public Sub PerderRegalo()
         End If
 
 144     If EncontreLugar = False Then
-146         If MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked = 0 Then
+146         If (MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES Then
 148             If (MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked And FLAG_AGUA) = 0 Then
 150                 EncontreLugar = True
                 Else
@@ -338,7 +338,7 @@ Public Sub PerderRegalo()
         End If
 
 164     If EncontreLugar = False Then
-166         If MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked = 0 Then
+166         If (MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES Then
 168             If (MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked And FLAG_AGUA) = 0 Then
 170                 EncontreLugar = True
                 Else
@@ -358,7 +358,7 @@ Public Sub PerderRegalo()
         End If
 
 184     If EncontreLugar = False Then
-186         If MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked = 0 Then
+186         If (MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES Then
 188             If (MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked And FLAG_AGUA) = 0 Then
 190                 EncontreLugar = True
                 Else
@@ -378,7 +378,7 @@ Public Sub PerderRegalo()
         End If
 
 204     If EncontreLugar = False Then
-206         If MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked = 0 Then
+206         If (MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES Then
 208             If (MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked And FLAG_AGUA) = 0 Then
 210                 EncontreLugar = True
                 Else
@@ -398,7 +398,7 @@ Public Sub PerderRegalo()
         End If
 
 224     If EncontreLugar = False Then
-226         If MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked = 0 Then
+226         If (MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES Then
 228             If (MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked And FLAG_AGUA) = 0 Then
 230                 EncontreLugar = True
                 Else
