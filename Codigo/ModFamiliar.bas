@@ -84,7 +84,7 @@ Public Sub InvocarFamiliar(ByVal UserIndex As Integer, ByVal b As Boolean)
 114     x = Pos.x
 116     y = Pos.y
     
-118     If MapData(UserList(UserIndex).Pos.Map, x, y).Blocked = 1 Or MapData(UserList(UserIndex).Pos.Map, x, y).TileExit.Map > 0 Or MapData(UserList(UserIndex).Pos.Map, x, y).NpcIndex > 0 Or (MapData(UserList(UserIndex).Pos.Map, x, y).Blocked And FLAG_AGUA) <> 0 Then
+118     If (MapData(UserList(UserIndex).Pos.Map, x, y).Blocked And eBlock.ALL_SIDES) = eBlock.ALL_SIDES Or MapData(UserList(UserIndex).Pos.Map, x, y).TileExit.Map > 0 Or MapData(UserList(UserIndex).Pos.Map, x, y).NpcIndex > 0 Or (MapData(UserList(UserIndex).Pos.Map, x, y).Blocked And FLAG_AGUA) <> 0 Then
 120         Call WriteLocaleMsg(UserIndex, "262", FontTypeNames.FONTTYPE_INFOIAO)
             'Call WriteConsoleMsg(UserIndex, "Area invalida para tirar el item.", FontTypeNames.FONTTYPE_INFO)
         Else

@@ -15391,13 +15391,13 @@ Private Sub HandleTileBlockedToggle(ByVal UserIndex As Integer)
 106         Call LogGM(.name, "/BLOQ")
         
 108         If MapData(.Pos.Map, .Pos.x, .Pos.y).Blocked = 0 Then
-110             MapData(.Pos.Map, .Pos.x, .Pos.y).Blocked = &HF And &H10 ' &H10 = Flag de bloqueo gm
+110             MapData(.Pos.Map, .Pos.x, .Pos.y).Blocked = eBlock.ALL_SIDES And eBlock.GM
             Else
 112             MapData(.Pos.Map, .Pos.x, .Pos.y).Blocked = 0
 
             End If
         
-114         Call Bloquear(True, .Pos.Map, .Pos.x, .Pos.y, IIf(MapData(.Pos.Map, .Pos.x, .Pos.y).Blocked > 0, &HF, 0))
+114         Call Bloquear(True, .Pos.Map, .Pos.x, .Pos.y, IIf(MapData(.Pos.Map, .Pos.x, .Pos.y).Blocked > 0, eBlock.ALL_SIDES, 0))
 
         End With
 
@@ -26794,7 +26794,7 @@ Private Sub HandleDropItem(ByVal UserIndex As Integer)
             Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
         Else
     
-            If MapData(UserList(UserIndex).Pos.Map, x, y).Blocked = 1 Or MapData(UserList(UserIndex).Pos.Map, x, y).TileExit.Map > 0 Or MapData(UserList(UserIndex).Pos.Map, x, y).NpcIndex > 0 Or (MapData(UserList(UserIndex).Pos.Map, x, y).Blocked And FLAG_AGUA) <> 0 Then
+            If (MapData(UserList(UserIndex).Pos.Map, x, y).Blocked And eBlock.ALL_SIDES) = eBlock.ALL_SIDES Or MapData(UserList(UserIndex).Pos.Map, x, y).TileExit.Map > 0 Or MapData(UserList(UserIndex).Pos.Map, x, y).NpcIndex > 0 Or (MapData(UserList(UserIndex).Pos.Map, x, y).Blocked And FLAG_AGUA) <> 0 Then
             
                 'Call WriteConsoleMsg(UserIndex, "Area invalida para tirar el item.", FontTypeNames.FONTTYPE_INFO)
                 Call WriteLocaleMsg(UserIndex, "262", FontTypeNames.FONTTYPE_INFO)

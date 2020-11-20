@@ -148,9 +148,9 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal Head As Byte,
         'Last Modify Date: Unknow
         'Es la función clave del sistema de areas... Es llamada al mover un user
         '**************************************************************
-100     If UserList(UserIndex).AreasInfo.AreaID = AreasInfo(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y) Then Exit Sub
+100     If UserList(UserIndex).AreasInfo.AreaID = AreasInfo(UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.y) Then Exit Sub
     
-        Dim MinX    As Long, MaxX As Long, MinY As Long, MaxY As Long, X As Long, Y As Long
+        Dim MinX    As Long, MaxX As Long, MinY As Long, MaxY As Long, x As Long, y As Long
 
         Dim TempInt As Long, Map As Long
 
@@ -188,10 +188,10 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal Head As Byte,
            
 156         ElseIf Head = USER_NUEVO Then
                 'Esto pasa por cuando cambiamos de mapa o logeamos...
-158             MinY = ((.Pos.Y \ AREA_DIM) - 1) * AREA_DIM
+158             MinY = ((.Pos.y \ AREA_DIM) - 1) * AREA_DIM
 160             MaxY = MinY + AREA_DIM * 3 - 1 '+ 26
             
-162             MinX = ((.Pos.X \ AREA_DIM) - 1) * AREA_DIM
+162             MinX = ((.Pos.x \ AREA_DIM) - 1) * AREA_DIM
 164             MaxX = MinX + AREA_DIM * 3 - 1 '+ 26
             
 166             .AreasInfo.MinX = CInt(MinX)
@@ -210,17 +210,17 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal Head As Byte,
 180         Call WriteAreaChanged(UserIndex)
        
             'Actualizamos!!!
-182         For X = MinX To MaxX
-184             For Y = MinY To MaxY
+182         For x = MinX To MaxX
+184             For y = MinY To MaxY
                
                     '<<< User >>>
-186                 If MapData(Map, X, Y).UserIndex Then
+186                 If MapData(Map, x, y).UserIndex Then
                    
-188                     TempInt = MapData(Map, X, Y).UserIndex
+188                     TempInt = MapData(Map, x, y).UserIndex
                    
 190                     If UserIndex <> TempInt Then
-192                         Call MakeUserChar(False, UserIndex, TempInt, Map, X, Y, 0)
-194                         Call MakeUserChar(False, TempInt, UserIndex, .Pos.Map, .Pos.X, .Pos.Y, appear)
+192                         Call MakeUserChar(False, UserIndex, TempInt, Map, x, y, 0)
+194                         Call MakeUserChar(False, TempInt, UserIndex, .Pos.Map, .Pos.x, .Pos.y, appear)
                        
                             'Si el user estaba invisible le avisamos al nuevo cliente de eso
 196                         If UserList(TempInt).flags.invisible Or UserList(TempInt).flags.Oculto Then
@@ -236,27 +236,27 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal Head As Byte,
                         
                    
 204                     ElseIf Head = USER_NUEVO Then
-206                         Call MakeUserChar(False, UserIndex, UserIndex, Map, X, Y, appear)
+206                         Call MakeUserChar(False, UserIndex, UserIndex, Map, x, y, appear)
 
                         End If
 
                     End If
                
                     '<<< Npc >>>
-208                 If MapData(Map, X, Y).NpcIndex Then
-210                     Call MakeNPCChar(False, UserIndex, MapData(Map, X, Y).NpcIndex, Map, X, Y)
+208                 If MapData(Map, x, y).NpcIndex Then
+210                     Call MakeNPCChar(False, UserIndex, MapData(Map, x, y).NpcIndex, Map, x, y)
 
                     End If
                  
                     '<<< Item >>>
-212                 If MapData(Map, X, Y).ObjInfo.ObjIndex Then
-214                     TempInt = MapData(Map, X, Y).ObjInfo.ObjIndex
+212                 If MapData(Map, x, y).ObjInfo.ObjIndex Then
+214                     TempInt = MapData(Map, x, y).ObjInfo.ObjIndex
 
 216                     If Not EsObjetoFijo(ObjData(TempInt).OBJType) Then
-218                         Call WriteObjectCreate(UserIndex, TempInt, X, Y)
+218                         Call WriteObjectCreate(UserIndex, TempInt, x, y)
                        
 220                         If ObjData(TempInt).OBJType = eOBJType.otPuertas Then
-222                             Call MostrarBloqueosPuerta(False, UserIndex, X, Y)
+222                             Call MostrarBloqueosPuerta(False, UserIndex, x, y)
                             End If
 
                         End If
@@ -264,8 +264,8 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal Head As Byte,
                     End If
 
                     ' Bloqueo GM
-226                 If (MapData(Map, X, Y).Blocked And &H10) <> 0 Then
-228                     Call Bloquear(False, UserIndex, X, Y, &HF)
+226                 If (MapData(Map, x, y).Blocked And eBlock.GM) <> 0 Then
+228                     Call Bloquear(False, UserIndex, x, y, eBlock.ALL_SIDES)
                     End If
 
                     ' If MapData(Map, x, y).Particula > 0 Then
@@ -275,19 +275,19 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal Head As Byte,
                     'If MapData(Map, x, y).Luz.Rango > 0 Then
                     'Call WriteLightFloorCreate(UserIndex, MapData(Map, x, y).Luz.Color, MapData(Map, x, y).Luz.Rango, Map, x, y)
                     ' End If
-230             Next Y
-232         Next X
+230             Next y
+232         Next x
        
             'Precalculados :P
-234         TempInt = .Pos.X \ AREA_DIM
+234         TempInt = .Pos.x \ AREA_DIM
 236         .AreasInfo.AreaReciveX = AreasRecive(TempInt)
 238         .AreasInfo.AreaPerteneceX = 2 ^ TempInt
         
-240         TempInt = .Pos.Y \ AREA_DIM
+240         TempInt = .Pos.y \ AREA_DIM
 242         .AreasInfo.AreaReciveY = AreasRecive(TempInt)
 244         .AreasInfo.AreaPerteneceY = 2 ^ TempInt
         
-246         .AreasInfo.AreaID = AreasInfo(.Pos.X, .Pos.Y)
+246         .AreasInfo.AreaID = AreasInfo(.Pos.x, .Pos.y)
 
         End With
 
@@ -310,9 +310,9 @@ Public Sub CheckUpdateNeededNpc(ByVal NpcIndex As Integer, ByVal Head As Byte)
         'Last Modify Date: Unknow
         ' Se llama cuando se mueve un Npc
         '**************************************************************
-100     If Npclist(NpcIndex).AreasInfo.AreaID = AreasInfo(Npclist(NpcIndex).Pos.X, Npclist(NpcIndex).Pos.Y) Then Exit Sub
+100     If Npclist(NpcIndex).AreasInfo.AreaID = AreasInfo(Npclist(NpcIndex).Pos.x, Npclist(NpcIndex).Pos.y) Then Exit Sub
     
-        Dim MinX    As Long, MaxX As Long, MinY As Long, MaxY As Long, X As Long, Y As Long
+        Dim MinX    As Long, MaxX As Long, MinY As Long, MaxY As Long, x As Long, y As Long
 
         Dim TempInt As Long
 
@@ -354,10 +354,10 @@ Public Sub CheckUpdateNeededNpc(ByVal NpcIndex As Integer, ByVal Head As Byte)
            
 158         ElseIf Head = USER_NUEVO Then
                 'Esto pasa por cuando cambiamos de mapa o logeamos...
-160             MinY = ((.Pos.Y \ AREA_DIM) - 1) * AREA_DIM
+160             MinY = ((.Pos.y \ AREA_DIM) - 1) * AREA_DIM
 162             MaxY = MinY + AREA_DIM * 3 - 1 '+ 26
             
-164             MinX = ((.Pos.X \ AREA_DIM) - 1) * AREA_DIM
+164             MinX = ((.Pos.x \ AREA_DIM) - 1) * AREA_DIM
 166             MaxX = MinX + AREA_DIM * 3 - 1 '+ 26
             
 168             .AreasInfo.MinX = CInt(MinX)
@@ -375,25 +375,25 @@ Public Sub CheckUpdateNeededNpc(ByVal NpcIndex As Integer, ByVal Head As Byte)
             'Actualizamos!!!
 182         If MapInfo(.Pos.Map).NumUsers <> 0 Then
 
-184             For X = MinX To MaxX
-186                 For Y = MinY To MaxY
+184             For x = MinX To MaxX
+186                 For y = MinY To MaxY
 
-188                     If MapData(.Pos.Map, X, Y).UserIndex Then Call MakeNPCChar(False, MapData(.Pos.Map, X, Y).UserIndex, NpcIndex, .Pos.Map, .Pos.X, .Pos.Y)
-190                 Next Y
-192             Next X
+188                     If MapData(.Pos.Map, x, y).UserIndex Then Call MakeNPCChar(False, MapData(.Pos.Map, x, y).UserIndex, NpcIndex, .Pos.Map, .Pos.x, .Pos.y)
+190                 Next y
+192             Next x
 
             End If
         
             'Precalculados :P
-194         TempInt = .Pos.X \ AREA_DIM
+194         TempInt = .Pos.x \ AREA_DIM
 196         .AreasInfo.AreaReciveX = AreasRecive(TempInt)
 198         .AreasInfo.AreaPerteneceX = 2 ^ TempInt
             
-200         TempInt = .Pos.Y \ AREA_DIM
+200         TempInt = .Pos.y \ AREA_DIM
 202         .AreasInfo.AreaReciveY = AreasRecive(TempInt)
 204         .AreasInfo.AreaPerteneceY = 2 ^ TempInt
         
-206         .AreasInfo.AreaID = AreasInfo(.Pos.X, .Pos.Y)
+206         .AreasInfo.AreaID = AreasInfo(.Pos.x, .Pos.y)
 
         End With
 
