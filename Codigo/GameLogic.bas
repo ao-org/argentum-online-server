@@ -720,13 +720,13 @@ Function LegalPos(ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer, 
         Else
 
 104         If PuedeAgua And PuedeTierra Then
-106             LegalPos = (MapData(Map, x, y).Blocked = 0) And (MapData(Map, x, y).UserIndex = 0) And (MapData(Map, x, y).NpcIndex = 0) And (PuedeTraslado Or MapData(Map, x, y).TileExit.Map = 0)
+106             LegalPos = (MapData(Map, x, y).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES And (MapData(Map, x, y).UserIndex = 0) And (MapData(Map, x, y).NpcIndex = 0) And (PuedeTraslado Or MapData(Map, x, y).TileExit.Map = 0)
 
 108         ElseIf PuedeTierra And Not PuedeAgua Then
-110             LegalPos = (MapData(Map, x, y).Blocked = 0) And (MapData(Map, x, y).UserIndex = 0) And (MapData(Map, x, y).NpcIndex = 0) And ((MapData(Map, x, y).Blocked And FLAG_AGUA) = 0) And (PuedeTraslado Or MapData(Map, x, y).TileExit.Map = 0)
+110             LegalPos = (MapData(Map, x, y).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES And (MapData(Map, x, y).UserIndex = 0) And (MapData(Map, x, y).NpcIndex = 0) And ((MapData(Map, x, y).Blocked And FLAG_AGUA) = 0) And (PuedeTraslado Or MapData(Map, x, y).TileExit.Map = 0)
 
 112         ElseIf PuedeAgua And Not PuedeTierra Then
-114             LegalPos = (MapData(Map, x, y).Blocked = 0) And (MapData(Map, x, y).UserIndex = 0) And (MapData(Map, x, y).NpcIndex = 0) And ((MapData(Map, x, y).Blocked And FLAG_AGUA) <> 0) And (PuedeTraslado Or MapData(Map, x, y).TileExit.Map = 0)
+114             LegalPos = (MapData(Map, x, y).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES And (MapData(Map, x, y).UserIndex = 0) And (MapData(Map, x, y).NpcIndex = 0) And ((MapData(Map, x, y).Blocked And FLAG_AGUA) <> 0) And (PuedeTraslado Or MapData(Map, x, y).TileExit.Map = 0)
             Else
 116             LegalPos = False
 
@@ -788,9 +788,9 @@ Function LegalPosNPC(ByVal Map As Integer, ByVal x As Integer, ByVal y As Intege
         Else
 
 104         If AguaValida = 0 Then
-106             LegalPosNPC = (MapData(Map, x, y).Blocked = 0) And (MapData(Map, x, y).UserIndex = 0) And (MapData(Map, x, y).NpcIndex = 0) And (MapData(Map, x, y).trigger <> eTrigger.POSINVALIDA Or IsPet) And (MapData(Map, x, y).Blocked And FLAG_AGUA) = 0
+106             LegalPosNPC = (MapData(Map, x, y).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES And (MapData(Map, x, y).UserIndex = 0) And (MapData(Map, x, y).NpcIndex = 0) And (MapData(Map, x, y).trigger <> eTrigger.POSINVALIDA Or IsPet) And (MapData(Map, x, y).Blocked And FLAG_AGUA) = 0
             Else
-108             LegalPosNPC = (MapData(Map, x, y).Blocked = 0) And (MapData(Map, x, y).UserIndex = 0) And (MapData(Map, x, y).NpcIndex = 0) And (MapData(Map, x, y).trigger <> eTrigger.POSINVALIDA Or IsPet)
+108             LegalPosNPC = (MapData(Map, x, y).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES And (MapData(Map, x, y).UserIndex = 0) And (MapData(Map, x, y).NpcIndex = 0) And (MapData(Map, x, y).trigger <> eTrigger.POSINVALIDA Or IsPet)
             End If
  
         End If
