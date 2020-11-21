@@ -2645,7 +2645,7 @@ Public Function ApuñalarFunction(ByVal UserIndex As Integer, ByVal VictimNpcInde
 102     Select Case UserList(UserIndex).clase
 
             Case eClass.Assasin '35
-104             Suerte = Int(((0.00003 * Skill - 0.001) * Skill + 0.098) * Skill + 4.25)
+104             Suerte = Int(((0.00003 * Skill - 0.001) * Skill + 0.098) * Skill + 5)
         
 106             If VictimNpcIndex = 0 Then
 108                 If UserList(VictimUserIndex).Char.Heading = UserList(UserIndex).Char.Heading Then
@@ -2671,7 +2671,7 @@ Public Function ApuñalarFunction(ByVal UserIndex As Integer, ByVal VictimNpcInde
 
         End Select
 
-134     If RandomNumber(0, 70) < Suerte Then
+134     If RandomNumber(0, 99) < Suerte Then
 136         If VictimUserIndex <> 0 Then
                 ApuñalarFunction = daño * 1.2
             Else
