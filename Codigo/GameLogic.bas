@@ -1131,9 +1131,9 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                     End If
                     
 358                 If Len(UserList(TempCharIndex).Desc) > 0 Then
-360                     Stat = "Ves a [" & UserList(TempCharIndex).name & "]" & Stat & " - " & UserList(TempCharIndex).Desc
+360                     Stat = "Ves a " & UserList(TempCharIndex).name & Stat & " - " & UserList(TempCharIndex).Desc
                     Else
-362                     Stat = "Ves a [" & UserList(TempCharIndex).name & "]" & Stat
+362                     Stat = "Ves a " & UserList(TempCharIndex).name & Stat
 
                     End If
                  
