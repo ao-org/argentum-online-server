@@ -176,7 +176,7 @@ Sub BloquearPuerta(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer,
     
     ' Cambio bloqueos inferiores
     MapData(Map, X, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X, Y + 1).Blocked Or eBlock.SOUTH, MapData(Map, X, Y + 1).Blocked And Not eBlock.SOUTH)
-    MapData(Map, X - 1, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y + 1).Blocked Or eBlock.SOUTH, MapData(Map, X + 1, Y + 1).Blocked And Not eBlock.SOUTH)
+    MapData(Map, X - 1, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y + 1).Blocked Or eBlock.SOUTH, MapData(Map, X - 1, Y + 1).Blocked And Not eBlock.SOUTH)
     
     ' Mostramos a todos
     Call MostrarBloqueosPuerta(True, Map, X, Y)
