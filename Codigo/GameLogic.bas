@@ -993,8 +993,9 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                 
                         Dim Fragsnick As String
 
-                        'If Abs(CInt(UserList(TempCharIndex).Stats.ELV) - CInt(UserList(UserIndex).Stats.ELV)) < 10 Then
-214                     Stat = Stat & " <" & ListaClases(UserList(TempCharIndex).clase) & " " & ListaRazas(UserList(TempCharIndex).raza) & " Nivel: " & UserList(TempCharIndex).Stats.ELV & ">"
+                        If EsGM(UserIndex) Then
+214                         Stat = Stat & " <" & ListaClases(UserList(TempCharIndex).clase) & " " & ListaRazas(UserList(TempCharIndex).raza) & " Nivel: " & UserList(TempCharIndex).Stats.ELV & ">"
+                        End If
 
                         'End If
 216                     If EsNewbie(TempCharIndex) Then
@@ -1005,77 +1006,62 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 220                     If UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) > 49 Then
 222                         If UserList(TempCharIndex).flags.Envenenado > 0 Then
 224                             Fragsnick = " | Envenenado "
-
                             End If
 
 226                         If UserList(TempCharIndex).flags.Ceguera = 1 Then
 228                             Fragsnick = Fragsnick & " | Ciego "
-
                             End If
 
 230                         If UserList(TempCharIndex).flags.Incinerado = 1 Then
 232                             Fragsnick = Fragsnick & " | Incinerado "
-
                             End If
 
 234                         If UserList(TempCharIndex).flags.Paralizado = 1 Then
 236                             Fragsnick = Fragsnick & " | Paralizado "
-
                             End If
 
 238                         If UserList(TempCharIndex).flags.Inmovilizado = 1 Then
 240                             Fragsnick = Fragsnick & " | Inmovilizado "
-
                             End If
 
 242                         If UserList(TempCharIndex).Counters.Trabajando > 0 Then
 244                             Fragsnick = Fragsnick & " | Trabajando "
-
                             End If
 
 246                         If UserList(TempCharIndex).flags.invisible = 1 Then
 248                             Fragsnick = Fragsnick & " | Invisible "
-
                             End If
 
 250                         If UserList(TempCharIndex).flags.Oculto = 1 Then
 252                             Fragsnick = Fragsnick & " | Oculto "
-
                             End If
 
 254                         If UserList(TempCharIndex).flags.Estupidez = 1 Then
 256                             Fragsnick = Fragsnick & " | Estupido "
-
                             End If
 
 258                         If UserList(TempCharIndex).flags.Maldicion = 1 Then
 260                             Fragsnick = Fragsnick & " | Maldito "
-
                             End If
 
 262                         If UserList(TempCharIndex).flags.Silenciado = 1 Then
 264                             Fragsnick = Fragsnick & " | Silenciado "
-
                             End If
 
 266                         If UserList(TempCharIndex).flags.Comerciando = True Then
 268                             Fragsnick = Fragsnick & " | Comerciando "
-
                             End If
 
 270                         If UserList(TempCharIndex).flags.Descansar = 1 Then
 272                             Fragsnick = Fragsnick & " | Descansando "
-
                             End If
 
 274                         If UserList(TempCharIndex).flags.Meditando = True Then
 276                             Fragsnick = Fragsnick & " | Concentrado "
-            
                             End If
 
 278                         If UserList(TempCharIndex).flags.BattleModo = 1 Then
 280                             Fragsnick = Fragsnick & " | Modo Battle "
-            
                             End If
                         
 282                         If UserList(TempCharIndex).Stats.MinHp = 0 Then
@@ -1090,7 +1076,6 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 300                             Stat = Stat & " <Levemente herido" & Fragsnick & ">"
                             Else
 302                             Stat = Stat & " <Intacto" & Fragsnick & ">"
-
                             End If
 
                         End If
@@ -1101,12 +1086,10 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 310                     ElseIf UserList(TempCharIndex).Faccion.FuerzasCaos = 1 Then
 312                         Stat = Stat & " <" & TituloCaos(TempCharIndex) & ">"
 314                         ft = FontTypeNames.FONTTYPE_CONSEJOCAOSVesA
-
                         End If
                 
 316                     If UserList(TempCharIndex).GuildIndex > 0 Then
 318                         Stat = Stat & " <" & modGuilds.GuildName(UserList(TempCharIndex).GuildIndex) & ">"
-
                         End If
 
                     End If ' If user > 0 then
@@ -1137,10 +1120,9 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                         End If
                     
 346                 ElseIf UserList(TempCharIndex).Faccion.Status = 0 Then
-348                     ft = FontTypeNames.FONTTYPE_New_Gris
+348                     ft = FontTypeNames.FONTTYPE_CRIMINAL
 350                 ElseIf UserList(TempCharIndex).Faccion.Status = 1 Then
 352                     ft = FontTypeNames.FONTTYPE_CITIZEN
-
                     End If
                     
 354                 If UserList(TempCharIndex).flags.Casado = 1 Then
@@ -1162,7 +1144,6 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
             
 364                 If LenB(Stat) > 0 Then
 366                     Call WriteConsoleMsg(UserIndex, Stat, ft)
-
                     End If
             
 368                 FoundSomething = 1
@@ -1177,12 +1158,15 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 376         If FoundChar = 2 Then '¿Encontro un NPC?
 
                 Dim estatus As String
-            
-                'If UserList(UserIndex).flags.Privilegios And (PlayerType.SemiDios Or PlayerType.Dios Or PlayerType.Admin) Then
-                '  estatus = "(" & Npclist(TempCharIndex).Stats.MinHP & "/" & Npclist(TempCharIndex).Stats.MaxHP & ") "
-                '  Else
-                        
-378             If UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) < 75 Then
+
+378             If EsGM(UserIndex) Or UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 75 Then
+                    estatus = "<" & Npclist(TempCharIndex).Stats.MinHp & "/" & Npclist(TempCharIndex).Stats.MaxHp
+                    
+                ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 50 Then
+                    estatus = "<" & Round(Npclist(TempCharIndex).Stats.MinHp / Npclist(TempCharIndex).Stats.MaxHp * 100, 0) & "%"
+
+                ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 25 Then
+                
 380                 If Npclist(TempCharIndex).Stats.MinHp < (Npclist(TempCharIndex).Stats.MaxHp * 0.1) Then
 382                     estatus = "<Agonizando"
 384                 ElseIf Npclist(TempCharIndex).Stats.MinHp < (Npclist(TempCharIndex).Stats.MaxHp * 0.2) Then
@@ -1195,31 +1179,31 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 398                     estatus = "<Levemente herido"
                     Else
 400                     estatus = "<Intacto"
-
                     End If
-
+                    
                 Else
-402                 estatus = "<" & Npclist(TempCharIndex).Stats.MinHp & "/" & Npclist(TempCharIndex).Stats.MaxHp
+                    If Npclist(TempCharIndex).Stats.MinHp < Npclist(TempCharIndex).Stats.MaxHp Then
+401                     estatus = "<Herido"
+402                 Else
+403                     estatus = "<Intacto"
+                    End If
                         
                 End If
                         
 404             If Npclist(TempCharIndex).flags.Envenenado > 0 Then
 406                 estatus = estatus & " | Envenenado"
-
                 End If
                         
 408             If Npclist(TempCharIndex).flags.Paralizado = 1 Then
-410                 If UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) > 49 Then
+410                 If UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 100 Then
 412                     estatus = estatus & " | Paralizado (" & CInt(Npclist(TempCharIndex).Contadores.Paralisis / 6.5) & "s)"
                     Else
 414                     estatus = estatus & " | Paralizado"
-
                     End If
-
                 End If
                         
 416             If Npclist(TempCharIndex).flags.Inmovilizado = 1 Then
-418                 If UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) > 49 Then
+418                 If UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 100 Then
 420                     estatus = estatus & " | Inmovilizado (" & CInt(Npclist(TempCharIndex).Contadores.Paralisis / 6.5) & "s)"
                     Else
 422                     estatus = estatus & " | Inmovilizado"
