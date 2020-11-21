@@ -1411,7 +1411,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
     
             Case eOBJType.otFlechas
 
-                If ClasePuedeUsarItem(UserIndex, .Invent.Object(slot).ObjIndex) And FaccionPuedeUsarItem(UserIndex, .Invent.Object(slot).ObjIndex) Then
+                If Not ClasePuedeUsarItem(UserIndex, .Invent.Object(slot).ObjIndex) Or Not FaccionPuedeUsarItem(UserIndex, .Invent.Object(slot).ObjIndex) Then
                     Call WriteConsoleMsg(UserIndex, "Tu clase no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
