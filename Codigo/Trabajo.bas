@@ -184,7 +184,7 @@ Public Sub DoNadar(ByVal UserIndex As Integer, ByRef Barco As ObjData, ByVal slo
 
         End If
 
-150     Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
+150     Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
         'Call WriteNadarToggle(UserIndex)
 152     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(FXSound.BARCA_SOUND, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 
@@ -321,7 +321,7 @@ Public Sub DoNavega(ByVal UserIndex As Integer, ByRef Barco As ObjData, ByVal sl
 
         'Call WriteVelocidadToggle(UserIndex)
     
-222     Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
+222     Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
 224     Call WriteNavigateToggle(UserIndex)
 226     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(FXSound.BARCA_SOUND, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 
@@ -410,7 +410,7 @@ Public Sub DoReNavega(ByVal UserIndex As Integer, ByRef Barco As ObjData, ByVal 
         '
         'Call WriteVelocidadToggle(UserIndex)
     
-170     Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
+170     Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
 172     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(FXSound.BARCA_SOUND, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 
         
@@ -2608,7 +2608,7 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As ObjData, ByVal 
 
         End If
 
-188     Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
+188     Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
 
 190     Call UpdateUserInv(False, UserIndex, slot)
 192     Call WriteEquiteToggle(UserIndex)
@@ -2648,7 +2648,7 @@ Public Function ApuñalarFunction(ByVal UserIndex As Integer, ByVal VictimNpcInde
 104             Suerte = Int(((0.00003 * Skill - 0.001) * Skill + 0.098) * Skill + 4.25)
         
 106             If VictimNpcIndex = 0 Then
-108                 If UserList(VictimUserIndex).Char.heading = UserList(UserIndex).Char.heading Then
+108                 If UserList(VictimUserIndex).Char.Heading = UserList(UserIndex).Char.Heading Then
 110                     Random = RandomNumber(1, 3)
 
 112                     If Random = 1 Then
@@ -2673,9 +2673,9 @@ Public Function ApuñalarFunction(ByVal UserIndex As Integer, ByVal VictimNpcInde
 
 134     If RandomNumber(0, 70) < Suerte Then
 136         If VictimUserIndex <> 0 Then
-                ApuñalarFunction = daño * 1.5
+                ApuñalarFunction = daño * 1.2
             Else
-                ApuñalarFunction = daño * 2
+                ApuñalarFunction = daño * 1.5
             End If
         End If
         
