@@ -7550,7 +7550,7 @@ Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
                 'Does the NPC want to trade??
 114             If Npclist(.flags.TargetNPC).Comercia = 0 Then
 116                 If LenB(Npclist(.flags.TargetNPC).Desc) <> 0 Then
-118                     Call WriteChatOverHead(UserIndex, "No tengo ningún interís en comerciar.", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
+118                     Call WriteChatOverHead(UserIndex, "No tengo ningún interés en comerciar.", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
 
                     End If
                 
