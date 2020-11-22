@@ -631,7 +631,7 @@ ValidateSkills_Err:
         
 End Function
 
-Sub ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal UserRaza As eRaza, ByVal UserSexo As eGenero, ByVal UserClase As eClass, ByVal Head As Integer, ByRef UserCuenta As String)
+Sub ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal UserRaza As eRaza, ByVal UserSexo As eGenero, ByVal UserClase As eClass, ByVal Head As Integer, ByRef UserCuenta As String, ByVal Hogar As eCiudad)
         '*************************************************
         'Author: Unknown
         'Last modified: 20/4/2007
@@ -691,7 +691,7 @@ Sub ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal UserR
 140     UserList(UserIndex).Char.Head = Head
     
 142     UserList(UserIndex).genero = UserSexo
-144     UserList(UserIndex).Hogar = 1
+144     UserList(UserIndex).Hogar = Hogar
     
         '%%%%%%%%%%%%% PREVENIR HACKEO DE LOS SKILLS %%%%%%%%%%%%%
 146     UserList(UserIndex).Stats.SkillPts = 10
