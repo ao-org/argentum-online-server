@@ -1829,7 +1829,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
     '
     '***************************************************
 
-    If UserList(UserIndex).incomingData.Length < 21 Then
+    If UserList(UserIndex).incomingData.Length < 22 Then
         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
@@ -1850,6 +1850,8 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
     Dim race     As eRaza
 
     Dim gender   As eGenero
+    
+    Dim Hogar   As eCiudad
 
     Dim Class As eClass
 
@@ -1895,6 +1897,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
     gender = buffer.ReadByte()
     Class = buffer.ReadByte()
     Head = buffer.ReadInteger()
+    Hogar = buffer.ReadByte()
     MacAddress = buffer.ReadASCIIString()
     HDserial = buffer.ReadLong()
     
@@ -1913,7 +1916,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
 
     End If
 
-    Call ConnectNewUser(UserIndex, UserName, race, gender, Class, Head, CuentaEmail)
+    Call ConnectNewUser(UserIndex, UserName, race, gender, Class, Head, CuentaEmail, Hogar)
 
     'If we got here then packet is complete, copy data back to original queue
     Call UserList(UserIndex).incomingData.CopyBuffer(buffer)
