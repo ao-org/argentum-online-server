@@ -58,6 +58,10 @@ Public Sub Database_Connect()
     
 ErrorHandler:
     Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.description)
+    
+    Call MsgBox("No se pudo conectar a la base de datos. Mas información en logs/Database.log", vbCritical, "OBDC - Error")
+    
+    End
 
 End Sub
 

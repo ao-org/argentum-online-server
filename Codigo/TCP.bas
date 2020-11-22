@@ -811,50 +811,54 @@ On Error GoTo ErrHandler
         Loop
 
     End If
+    
+    With UserList(UserIndex)
+    
+        'Call SecurityIp.IpRestarConexion(GetLongIp(.ip))
 
-    'Call SecurityIp.IpRestarConexion(GetLongIp(UserList(UserIndex).ip))
-
-    If UserList(UserIndex).ConnID <> -1 Then
-        Call CloseSocketSL(UserIndex)
-
-    End If
-
-    'Es el mismo user al que está revisando el centinela??
-    'IMPORTANTE!!! hacerlo antes de resetear así todavía sabemos el nombre del user
-    ' y lo podemos loguear
-    If Centinela.RevisandoUserIndex = UserIndex Then Call modCentinela.CentinelaUserLogout
-
-    'mato los comercios seguros
-    If UserList(UserIndex).ComUsu.DestUsu > 0 Then
-        If UserList(UserList(UserIndex).ComUsu.DestUsu).flags.UserLogged Then
-            If UserList(UserList(UserIndex).ComUsu.DestUsu).ComUsu.DestUsu = UserIndex Then
-                Call WriteConsoleMsg(UserList(UserIndex).ComUsu.DestUsu, "Comercio cancelado por el otro usuario", FontTypeNames.FONTTYPE_TALK)
-                Call FinComerciarUsu(UserList(UserIndex).ComUsu.DestUsu)
+        If .ConnID <> -1 Then Call CloseSocketSL(UserIndex)
+    
+        'Es el mismo user al que está revisando el centinela??
+        'IMPORTANTE!!! hacerlo antes de resetear así todavía sabemos el nombre del user
+        ' y lo podemos loguear
+        If Centinela.RevisandoUserIndex = UserIndex Then Call modCentinela.CentinelaUserLogout
+    
+        'mato los comercios seguros
+        If .ComUsu.DestUsu > 0 Then
+        
+            If UserList(.ComUsu.DestUsu).flags.UserLogged Then
+            
+                If UserList(.ComUsu.DestUsu).ComUsu.DestUsu = UserIndex Then
                 
-
+                    Call WriteConsoleMsg(.ComUsu.DestUsu, "Comercio cancelado por el otro usuario", FontTypeNames.FONTTYPE_TALK)
+                    Call FinComerciarUsu(.ComUsu.DestUsu)
+                    
+                End If
+    
             End If
-
+    
         End If
-
-    End If
-
-    'Empty buffer for reuse
-    Call UserList(UserIndex).incomingData.ReadASCIIStringFixed(UserList(UserIndex).incomingData.Length)
-
-    If UserList(UserIndex).flags.UserLogged Then
-        Call CloseUser(UserIndex)
     
-        If NumUsers > 0 Then NumUsers = NumUsers - 1
-        Call MostrarNumUsers
+        'Empty buffer for reuse
+        Call .incomingData.ReadASCIIStringFixed(.incomingData.Length)
     
-    Else
-        Call ResetUserSlot(UserIndex)
-
-    End If
-
-    UserList(UserIndex).ConnID = -1
-    UserList(UserIndex).ConnIDValida = False
-    UserList(UserIndex).NumeroPaquetesPorMiliSec = 0
+        If .flags.UserLogged Then
+            Call CloseUser(UserIndex)
+        
+            If NumUsers > 0 Then NumUsers = NumUsers - 1
+            Call MostrarNumUsers
+        
+        Else
+            Call ResetUserSlot(UserIndex)
+    
+        End If
+    
+        .ConnID = -1
+        .ConnIDValida = False
+        .NumeroPaquetesPorMiliSec = 0
+    
+    End With
+    
 
     Exit Sub
 
@@ -2155,8 +2159,8 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 252         .RegeneracionHP = 0
 254         .RegeneracionSta = 0
 256         .NecesitaOxigeno = False
-258         .LastCrimMatado = ""
-260         .LastCiudMatado = ""
+258         .LastCrimMatado = vbNullString
+260         .LastCiudMatado = vbNullString
         
 262         .UserLogged = False
 264         .FirstPacket = False
@@ -2386,18 +2390,16 @@ End Sub
 
 Sub CloseUser(ByVal UserIndex As Integer)
 
-    'Call LogTarea("CloseUser " & UserIndex)
     On Error GoTo ErrHandler
     
+    Dim errordesc As String
     Dim Map As Integer
-
     Dim aN  As Integer
     
     Map = UserList(UserIndex).Pos.Map
     
-    Dim errordesc As String
-    
     errordesc = "ERROR AL SETEAR NPC"
+    
     aN = UserList(UserIndex).flags.AtacadoPorNpc
 
     If aN > 0 Then
@@ -2428,6 +2430,7 @@ Sub CloseUser(ByVal UserIndex As Integer)
     End If
     
     errordesc = "ERROR AL ENVIAR PARTICULA"
+    
     UserList(UserIndex).Char.FX = 0
     UserList(UserIndex).Char.loops = 0
     UserList(UserIndex).Char.ParticulaFx = 0
@@ -2463,7 +2466,7 @@ Sub CloseUser(ByVal UserIndex As Integer)
     ' Grabamos el personaje del usuario
     
     errordesc = "ERROR AL GRABAR PJ"
-
+    
     If UserList(UserIndex).flags.BattleModo = 0 Then
         Call SaveUser(UserIndex, True)
     Else
@@ -2480,21 +2483,27 @@ Sub CloseUser(ByVal UserIndex As Integer)
     End If
 
     errordesc = "ERROR AL ERASEUSERCHAR"
+    
     'Borrar el personaje
     Call EraseUserChar(UserIndex, True)
     
     errordesc = "ERROR Update Map Users"
+    
     'Update Map Users
     MapInfo(Map).NumUsers = MapInfo(Map).NumUsers - 1
     
-    If MapInfo(Map).NumUsers < 0 Then
-        MapInfo(Map).NumUsers = 0
+    If MapInfo(Map).NumUsers < 0 Then MapInfo(Map).NumUsers = 0
 
-    End If
-    
     ' Si el usuario habia dejado un msg en la gm's queue lo borramos
     'If Ayuda.Existe(UserList(UserIndex).Name) Then Call Ayuda.Quitar(UserList(UserIndex).Name)
+    
+    errordesc = "ERROR AL RESETEAR FLAGS Name:" & UserList(UserIndex).name & " cuenta:" & UserList(UserIndex).Cuenta
+    
+    'Reseteo los estados del juagador, fuerza el cierre del cliente.
+    Call ResetUserFlags(UserIndex)
+    
     errordesc = "ERROR AL RESETSLOT Name:" & UserList(UserIndex).name & " cuenta:" & UserList(UserIndex).Cuenta
+    
     Call ResetUserSlot(UserIndex)
     
     Exit Sub
