@@ -1171,11 +1171,9 @@ Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
 132             Call WriteUpdateUserStats(UserIndex)
 134             Call WriteUpdateUserStats(Index)
                 Exit Sub
-
-            End If
             
             'Look for NPC
-136         If MapData(AttackPos.Map, AttackPos.X, AttackPos.Y).NpcIndex > 0 Then
+136         ElseIf MapData(AttackPos.Map, AttackPos.X, AttackPos.Y).NpcIndex > 0 Then
             
 138             If Npclist(MapData(AttackPos.Map, AttackPos.X, AttackPos.Y).NpcIndex).Attackable Then
                     
@@ -1188,12 +1186,13 @@ Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
                 End If
                 
                 Exit Sub
-
+                
+            Else
+                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.CharIndex, True, False))
             End If
 
         Else
 146         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.CharIndex, True, False))
-
         End If
 
         

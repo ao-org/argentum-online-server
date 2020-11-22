@@ -234,7 +234,6 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
 
                         If nPos.X <> 0 And nPos.Y <> 0 Then
                             Call WarpUserChar(UserIndex, nPos.Map, nPos.X, nPos.Y, FxFlag)
-
                         End If
 
                     End If
@@ -245,7 +244,6 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
 
                     If nPos.X <> 0 And nPos.Y <> 0 Then
                         Call WarpUserChar(UserIndex, nPos.Map, nPos.X, nPos.Y, FxFlag)
-
                     End If
 
                 End If
@@ -259,7 +257,6 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
 
                     If nPos.X <> 0 And nPos.Y <> 0 Then
                         Call WarpUserChar(UserIndex, nPos.Map, nPos.X, nPos.Y, FxFlag)
-
                     End If
 
                 End If
