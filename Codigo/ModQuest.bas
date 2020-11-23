@@ -400,6 +400,8 @@ Public Sub LoadQuests()
             .Desc = Reader.GetValue("QUEST" & i, "Desc")
             .RequiredLevel = val(Reader.GetValue("QUEST" & i, "RequiredLevel"))
             
+            .RequiredQuest = val(Reader.GetValue("QUEST" & i, "RequiredQuest"))
+            
             .DescFinal = Reader.GetValue("QUEST" & i, "DescFinal")
             
             .NextQuest = Reader.GetValue("QUEST" & i, "NextQuest")
@@ -693,6 +695,21 @@ Public Sub EnviarQuest(ByVal UserIndex As Integer)
             Exit Sub
 
         End If
+        
+        
+        
+        
+        'El personaje completo la quest que requiere?
+        If QuestList(Npclist(NpcIndex).QuestNumber).RequiredQuest > 0 Then
+            If Not UserDoneQuest(UserIndex, QuestList(Npclist(NpcIndex).QuestNumber).RequiredQuest) Then
+                ' Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead(QuestList(Npclist(NpcIndex).QuestNumber).NextQuest, Npclist(NpcIndex).Char.CharIndex, vbYellow))
+            Call WriteChatOverHead(UserIndex, "Debes completas la quest " & QuestList(Npclist(NpcIndex).QuestNumber).nombre & " para emprender esta mision.", Npclist(NpcIndex).Char.CharIndex, vbYellow)
+                Exit Sub
+    
+            End If
+        End If
+        
+        
  
         'El personaje tiene suficiente nivel?
 116     If UserList(UserIndex).Stats.ELV < QuestList(Npclist(NpcIndex).QuestNumber).RequiredLevel Then

@@ -29682,6 +29682,12 @@ Public Sub HandleQuest(ByVal UserIndex As Integer)
             Exit Sub
 
         End If
+        
+        
+        
+        
+        
+        
  
         'El personaje tiene suficiente nivel?
 118     If UserList(UserIndex).Stats.ELV < QuestList(Npclist(NpcIndex).QuestNumber).RequiredLevel Then
