@@ -218,7 +218,6 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
                 'Se agrega que el usuario ya hizo esta quest.
 188             Call AddDoneQuest(UserIndex, QuestIndex)
 190             Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 2)
-
             End If
         
         End With
@@ -750,3 +749,66 @@ EnviarQuest_Err:
         Resume Next
         
 End Sub
+
+
+
+Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal QuestSlot As Byte) As Boolean
+        
+        On Error GoTo FinishQuestCheck
+        '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        'Funcion para chequear si finalizo una quest
+        'Ladder
+        '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        Dim i              As Integer
+
+        Dim InvSlotsLibres As Byte
+
+        Dim NpcIndex       As Integer
+ 
+100     NpcIndex = UserList(UserIndex).flags.TargetNPC
+    
+102     With QuestList(QuestIndex)
+
+            'Comprobamos que tenga los objetos.
+104         If .RequiredOBJs > 0 Then
+
+106             For i = 1 To .RequiredOBJs
+
+108                 If TieneObjetos(.RequiredOBJ(i).ObjIndex, .RequiredOBJ(i).Amount, UserIndex) = False Then
+110                     FinishQuestCheck = False
+                    
+                        Exit Function
+
+                    End If
+
+112             Next i
+
+            End If
+        
+            'Comprobamos que haya matado todas las criaturas.
+114         If .RequiredNPCs > 0 Then
+
+116             For i = 1 To .RequiredNPCs
+
+118                 If .RequiredNPC(i).Amount > UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsKilled(i) Then
+120                     FinishQuestCheck = False
+                        Exit Function
+
+                    End If
+
+122             Next i
+
+            End If
+            
+        End With
+        
+        
+        FinishQuestCheck = True
+        
+        Exit Function
+
+FinishQuestCheck:
+        Call RegistrarError(Err.Number, Err.description, "ModQuest.FinishQuestCheck", Erl)
+        Resume Next
+        
+End Function

@@ -679,21 +679,34 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
         Dim Simbolo As Byte
     
         Dim GG      As String
+        Dim tmpByte As Byte
    
 110     GG = IIf(Npclist(NpcIndex).showName > 0, Npclist(NpcIndex).name & Npclist(NpcIndex).SubName, vbNullString)
     
 112     If Not toMap Then
 114         If Npclist(NpcIndex).QuestNumber > 0 Then
-116             If UserDoneQuest(sndIndex, Npclist(NpcIndex).QuestNumber) Or UserList(sndIndex).Stats.ELV < QuestList(Npclist(NpcIndex).QuestNumber).RequiredLevel Then
-118                 Simbolo = 2
-                Else
-120                 Simbolo = 1
 
-                End If
+
+            tmpByte = TieneQuest(sndIndex, Npclist(NpcIndex).QuestNumber)
+                
+122                 If tmpByte Then
+                        If FinishQuestCheck(sndIndex, Npclist(NpcIndex).QuestNumber, tmpByte) Then
+                            Simbolo = 3
+                        Else
+                            Simbolo = 4
+                        End If
+                    Else
+116                     If UserDoneQuest(sndIndex, Npclist(NpcIndex).QuestNumber) Or UserList(sndIndex).Stats.ELV < QuestList(Npclist(NpcIndex).QuestNumber).RequiredLevel Then
+118                         Simbolo = 2
+                        Else
+120                         Simbolo = 1
+                        End If
+                    End If
+                
 
             End If
 
-122         Call WriteCharacterCreate(sndIndex, Npclist(NpcIndex).Char.Body, Npclist(NpcIndex).Char.Head, Npclist(NpcIndex).Char.Heading, Npclist(NpcIndex).Char.CharIndex, X, Y, Npclist(NpcIndex).Char.WeaponAnim, Npclist(NpcIndex).Char.ShieldAnim, 0, 0, Npclist(NpcIndex).Char.CascoAnim, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1#, True, False, 0, 0, 0, 0, Npclist(NpcIndex).Stats.MinHp, Npclist(NpcIndex).Stats.MaxHp, Simbolo)
+         Call WriteCharacterCreate(sndIndex, Npclist(NpcIndex).Char.Body, Npclist(NpcIndex).Char.Head, Npclist(NpcIndex).Char.Heading, Npclist(NpcIndex).Char.CharIndex, X, Y, Npclist(NpcIndex).Char.WeaponAnim, Npclist(NpcIndex).Char.ShieldAnim, 0, 0, Npclist(NpcIndex).Char.CascoAnim, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1#, True, False, 0, 0, 0, 0, Npclist(NpcIndex).Stats.MinHp, Npclist(NpcIndex).Stats.MaxHp, Simbolo)
         
         Else
 124         Call AgregarNpc(NpcIndex)
