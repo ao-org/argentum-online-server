@@ -553,6 +553,8 @@ Const WM_LBUTTONDBLCLK = &H203
 
 Const WM_RBUTTONUP = &H205
 
+Private GuardarYCerrar As Boolean
+
 Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hWnd As Long, lpdwProcessId As Long) As Long
 
 Private Declare Function Shell_NotifyIconA Lib "SHELL32" (ByVal dwMessage As Long, lpData As NOTIFYICONDATA) As Integer
@@ -702,7 +704,7 @@ End Sub
 
 Private Sub AutoSave_Timer()
 
-    On Error GoTo errHandler
+    On Error GoTo Errhandler
 
     'fired every minute
     Static minutos          As Long
@@ -775,7 +777,7 @@ Private Sub AutoSave_Timer()
     '<<<<<-------- Log the number of users online ------>>>
 
     Exit Sub
-errHandler:
+Errhandler:
     Call LogError("Error en TimerAutoSave " & Err.Number & ": " & Err.description)
 
     Resume Next
@@ -914,6 +916,8 @@ Private Sub Command4_Click()
         
 100     Call GuardarUsuarios
 102     Call EcharPjsNoPrivilegiados
+
+        GuardarYCerrar = True
 104     Unload frmMain
 
         
@@ -1141,13 +1145,13 @@ Evento_Timer_Err:
         
 End Sub
 
-Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, Y As Single)
 
     On Error Resume Next
    
     If Not Visible Then
 
-        Select Case X \ Screen.TwipsPerPixelX
+        Select Case x \ Screen.TwipsPerPixelX
                 
             Case WM_LBUTTONDBLCLK
                 WindowState = vbNormal
@@ -1174,7 +1178,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y A
    
 End Sub
 
-Private Sub QuitarIconoSystray()
+Public Sub QuitarIconoSystray()
 
     On Error Resume Next
 
@@ -1189,7 +1193,7 @@ Private Sub QuitarIconoSystray()
 End Sub
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
-    
+    If GuardarYCerrar Then Exit Sub
     If MsgBox("¿Deseas FORZAR el CIERRE del servidor?" & vbNewLine & vbNewLine & "Ten en cuenta que ES POSIBLE PIERDAS DATOS!", vbYesNo, "¡FORZAR CIERRE!") = vbNo Then
         Cancel = True
     End If
@@ -1198,45 +1202,7 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
 
-    On Error Resume Next
-
-    'Save stats!!!
-    Call Statistics.DumpStatistics
-    
-    Call QuitarIconoSystray
-    
-    #If UsarQueSocket = 1 Then
-        Call LimpiaWsApi
-    #ElseIf UsarQueSocket = 0 Then
-        Socket1.Cleanup
-    #ElseIf UsarQueSocket = 2 Then
-        Serv.Detener
-    #End If
-    
-    Dim LoopC As Integer
-    
-    For LoopC = 1 To MaxUsers
-        If UserList(LoopC).ConnID <> -1 Then
-            Call CloseSocket(LoopC)
-        End If
-    Next
-    
-    If Database_Enabled Then
-        ' Cierro base de datos
-        Call Database_Close
-    End If
-    
-    LimpiarModuloLimpieza
-    
-    'Log
-    Dim n As Integer
-
-    n = FreeFile
-    Open App.Path & "\logs\Main.log" For Append Shared As #n
-    Print #n, Date & " " & Time & " server cerrado."
-    Close #n
-    
-    End
+    Call CerrarServidor
 
 End Sub
 
@@ -1265,7 +1231,7 @@ Private Sub GameTimer_Timer()
                     
                     .NumeroPaquetesPorMiliSec = 0
                     
-                    Call DoTileEvents(iUserIndex, .Pos.Map, .Pos.X, .Pos.Y)
+                    Call DoTileEvents(iUserIndex, .Pos.Map, .Pos.x, .Pos.Y)
 
                     If .flags.Muerto = 0 Then
                         
@@ -1730,7 +1696,7 @@ Private Sub TIMER_AI_Timer()
     Dim NpcIndex As Long
     Dim Mapa     As Integer
     
-    Dim X        As Integer
+    Dim x        As Integer
     Dim Y        As Integer
 
     'Barrin 29/9/03
@@ -1950,7 +1916,7 @@ End Sub
 
 Private Sub tPiqueteC_Timer()
 
-    On Error GoTo errHandler
+    On Error GoTo Errhandler
 
     Static segundos As Integer
 
@@ -1967,7 +1933,7 @@ Private Sub tPiqueteC_Timer()
     For i = 1 To LastUser
 
         If UserList(i).flags.UserLogged Then
-            If MapData(UserList(i).Pos.Map, UserList(i).Pos.X, UserList(i).Pos.Y).trigger = eTrigger.ANTIPIQUETE Then
+            If MapData(UserList(i).Pos.Map, UserList(i).Pos.x, UserList(i).Pos.Y).trigger = eTrigger.ANTIPIQUETE Then
                 UserList(i).Counters.PiqueteC = UserList(i).Counters.PiqueteC + 1
                 'Call WriteConsoleMsg(i, "Estás obstruyendo la via pública, muévete o serás encarcelado!!!", FontTypeNames.FONTTYPE_INFO)
                 Call WriteLocaleMsg(i, "70", FontTypeNames.FONTTYPE_INFO)
@@ -2021,7 +1987,7 @@ Private Sub tPiqueteC_Timer()
 
     Exit Sub
 
-errHandler:
+Errhandler:
     Call LogError("Error en tPiqueteC_Timer " & Err.Number & ": " & Err.description)
 
 End Sub

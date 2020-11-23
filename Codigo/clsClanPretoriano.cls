@@ -901,7 +901,7 @@ Private Sub KingMeleeAttack(NpcIndex)
 
                 If UserIndex > 0 Then
                     If UserAtacable(UserIndex, False) Then
-                        If NpcAtacaUser(NpcIndex, UserIndex) Then
+                        If NpcAtacaUser(NpcIndex, UserIndex, headingloop) Then
                             Call ChangeNPCChar(NpcIndex, .Char.Body, .Char.Head, headingloop)
 
                         End If
@@ -1898,7 +1898,7 @@ Private Sub SwordMasterAttack(ByVal NpcIndex As Integer)
             
             If UserIndex > 0 Then
                 If UserAtacable(UserIndex, False) Then
-                    If NpcAtacaUser(NpcIndex, UserIndex) Then
+                    If NpcAtacaUser(NpcIndex, UserIndex, headingloop) Then
                         Call ChangeNPCChar(NpcIndex, .Char.Body, .Char.Head, headingloop)
                         Exit For
 

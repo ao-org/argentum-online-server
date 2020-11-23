@@ -801,6 +801,37 @@ LegalPosNPC_Err:
         
 End Function
 
+Function LegalWalkNPC(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal Heading As eHeading, Optional ByVal PuedeAgua As Boolean = False, Optional ByVal PuedeTierra As Boolean = True, Optional ByVal IsPet As Boolean = False) As Boolean
+        On Error GoTo LegalWalkNPC_Err
+        
+
+100     If (Map <= 0 Or Map > NumMaps) Or (X < MinXBorder Or X > MaxXBorder Or Y < MinYBorder Or Y > MaxYBorder) Then
+102         Exit Function
+        End If
+
+104     If PuedeAgua And PuedeTierra Then
+106         LegalWalkNPC = (MapData(Map, X, Y).UserIndex = 0) And (MapData(Map, X, Y).NpcIndex = 0) And MapData(Map, X, Y).TileExit.Map = 0 And (MapData(Map, X, Y).trigger <> eTrigger.POSINVALIDA Or IsPet)
+
+108     ElseIf PuedeTierra And Not PuedeAgua Then
+110         LegalWalkNPC = (MapData(Map, X, Y).UserIndex = 0) And (MapData(Map, X, Y).NpcIndex = 0) And ((MapData(Map, X, Y).Blocked And FLAG_AGUA) = 0) And MapData(Map, X, Y).TileExit.Map = 0 And (MapData(Map, X, Y).trigger <> eTrigger.POSINVALIDA Or IsPet)
+
+112     ElseIf PuedeAgua And Not PuedeTierra Then
+114         LegalWalkNPC = (MapData(Map, X, Y).UserIndex = 0) And (MapData(Map, X, Y).NpcIndex = 0) And ((MapData(Map, X, Y).Blocked And FLAG_AGUA) <> 0) And MapData(Map, X, Y).TileExit.Map = 0 And (MapData(Map, X, Y).trigger <> eTrigger.POSINVALIDA Or IsPet)
+        
+        Else
+116         LegalWalkNPC = False
+        End If
+        
+        LegalWalkNPC = LegalWalkNPC And ((MapData(Map, X, Y).Blocked And 2 ^ (Heading - 1)) = 0)
+        
+        Exit Function
+
+LegalWalkNPC_Err:
+        Call RegistrarError(Err.Number, Err.description, "Extra.LegalWalkNPC", Erl)
+        Resume Next
+        
+End Function
+
 Sub SendHelp(ByVal Index As Integer)
         
         On Error GoTo SendHelp_Err
@@ -1160,7 +1191,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                     estatus = "<" & Npclist(TempCharIndex).Stats.MinHp & "/" & Npclist(TempCharIndex).Stats.MaxHp
                     
                 ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 50 Then
-                    estatus = "<" & Round(Npclist(TempCharIndex).Stats.MinHp / Npclist(TempCharIndex).Stats.MaxHp * 100, 0) & "%"
+                    estatus = "<" & CStr(Round(Npclist(TempCharIndex).Stats.MinHp / Npclist(TempCharIndex).Stats.MaxHp * 100, 0)) & "%"
 
                 ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 25 Then
                 

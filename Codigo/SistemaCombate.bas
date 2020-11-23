@@ -834,7 +834,7 @@ NpcDaño_Err:
         
 End Sub
 
-Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer) As Boolean
+Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, ByVal Heading As eHeading) As Boolean
         
         On Error GoTo NpcAtacaUser_Err
         
@@ -844,24 +844,26 @@ Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integ
     
         ' El npc puede atacar ???
     
-104     If IntervaloPermiteAtacarNPC(NpcIndex) Then
-    
-106         NpcAtacaUser = True
-
-108         If Npclist(NpcIndex).Target = 0 Then Npclist(NpcIndex).Target = UserIndex
-    
-110         If UserList(UserIndex).flags.AtacadoPorNpc = 0 And UserList(UserIndex).flags.AtacadoPorUser = 0 Then UserList(UserIndex).flags.AtacadoPorNpc = NpcIndex
-        Else
-112         NpcAtacaUser = False
+104     If Not IntervaloPermiteAtacarNPC(NpcIndex) Then
+105         NpcAtacaUser = False
             Exit Function
-
         End If
+        
+        If ((MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).Blocked And 2 ^ (Heading - 1)) <> 0) Then
+            NpcAtacaUser = False
+            Exit Function
+        End If
+
+106     NpcAtacaUser = True
+
+108     If Npclist(NpcIndex).Target = 0 Then Npclist(NpcIndex).Target = UserIndex
     
+110     If UserList(UserIndex).flags.AtacadoPorNpc = 0 And UserList(UserIndex).flags.AtacadoPorUser = 0 Then UserList(UserIndex).flags.AtacadoPorNpc = NpcIndex
+
 114     Npclist(NpcIndex).CanAttack = 0
     
 116     If Npclist(NpcIndex).flags.Snd1 > 0 Then
 118         Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessagePlayWave(Npclist(NpcIndex).flags.Snd1, Npclist(NpcIndex).Pos.X, Npclist(NpcIndex).Pos.Y))
-
         End If
     
 120     If NpcImpacto(NpcIndex, UserIndex) Then

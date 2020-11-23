@@ -6825,73 +6825,73 @@ End Sub
 
 Private Sub HandleQuit(ByVal UserIndex As Integer)
         
-        On Error GoTo HandleQuit_Err
+    On Error GoTo HandleQuit_Err
         
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 04/15/2008 (NicoNZ)
-        'If user is invisible, it automatically becomes
-        'visible before doing the countdown to exit
-        '04/15/2008 - No se reseteaban lso contadores de invi ni de ocultar. (NicoNZ)
-        '***************************************************
-        Dim tUser        As Integer
-
-        Dim isNotVisible As Boolean
+    '***************************************************
+    'Author: Juan Martín Sotuyo Dodero (Maraxus)
+    'Last Modification: 04/15/2008 (NicoNZ)
+    'If user is invisible, it automatically becomes
+    'visible before doing the countdown to exit
+    '04/15/2008 - No se reseteaban los contadores de invi ni de ocultar. (NicoNZ)
+    '***************************************************
+    Dim tUser        As Integer
+    Dim isNotVisible As Boolean
     
-100     With UserList(UserIndex)
-            'Remove packet ID
-102         Call .incomingData.ReadByte
+    With UserList(UserIndex)
+        'Remove packet ID
+        Call .incomingData.ReadByte
         
-104         If .flags.Paralizado = 1 Then
-106             Call WriteConsoleMsg(UserIndex, "No podés salir estando paralizado.", FontTypeNames.FONTTYPE_WARNING)
-                Exit Sub
+        If .flags.Paralizado = 1 Then
+            Call WriteConsoleMsg(UserIndex, "No podés salir estando paralizado.", FontTypeNames.FONTTYPE_WARNING)
+            Exit Sub
 
-            End If
+        End If
         
-            'exit secure commerce
-108         If .ComUsu.DestUsu > 0 Then
-110             tUser = .ComUsu.DestUsu
+        'exit secure commerce
+        If .ComUsu.DestUsu > 0 Then
+            tUser = .ComUsu.DestUsu
             
-112             If UserList(tUser).flags.UserLogged Then
-114                 If UserList(tUser).ComUsu.DestUsu = UserIndex Then
-116                     Call WriteConsoleMsg(tUser, "Comercio cancelado por el otro usuario", FontTypeNames.FONTTYPE_TALK)
-118                     Call FinComerciarUsu(tUser)
-
-                    End If
+            If UserList(tUser).flags.UserLogged Then
+                If UserList(tUser).ComUsu.DestUsu = UserIndex Then
+                    Call WriteConsoleMsg(tUser, "Comercio cancelado por el otro usuario", FontTypeNames.FONTTYPE_TALK)
+                    Call FinComerciarUsu(tUser)
 
                 End If
+
+            End If
             
-120             Call WriteConsoleMsg(UserIndex, "Comercio cancelado. ", FontTypeNames.FONTTYPE_TALK)
-122             Call FinComerciarUsu(UserIndex)
+            Call WriteConsoleMsg(UserIndex, "Comercio cancelado. ", FontTypeNames.FONTTYPE_TALK)
+            Call FinComerciarUsu(UserIndex)
 
-            End If
+        End If
         
-124         isNotVisible = (.flags.Oculto Or .flags.invisible)
+        isNotVisible = (.flags.Oculto Or .flags.invisible)
 
-126         If isNotVisible Then
-128             .flags.Oculto = 0
-130             .flags.invisible = 0
-    
-132             .Counters.Invisibilidad = 0
-134             .Counters.TiempoOculto = 0
-                'Call WriteConsoleMsg(UserIndex, "Has vuelto a ser visible.", FontTypeNames.FONTTYPE_INFO)
-136             Call WriteLocaleMsg(UserIndex, "307", FontTypeNames.FONTTYPE_INFO)
-138             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, False))
+        If isNotVisible Then
+            .flags.Oculto = 0
+            .flags.invisible = 0
 
-            End If
+            .Counters.Invisibilidad = 0
+            .Counters.TiempoOculto = 0
+                
+            'Call WriteConsoleMsg(UserIndex, "Has vuelto a ser visible.", FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, "307", FontTypeNames.FONTTYPE_INFO)
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, False))
+
+        End If
         
-            Rem   Call WritePersonajesDeCuenta(UserIndex, .Cuenta)
-140         Call Cerrar_Usuario(UserIndex)
+        Rem   Call WritePersonajesDeCuenta(UserIndex, .Cuenta)
+        Call Cerrar_Usuario(UserIndex)
 
-        End With
+    End With
 
         
-        Exit Sub
+    Exit Sub
 
 HandleQuit_Err:
-        Call RegistrarError(Err.Number, Err.description, "Protocol.HandleQuit", Erl)
-        Resume Next
+    Call RegistrarError(Err.Number, Err.description, "Protocol.HandleQuit", Erl)
+    Resume Next
         
 End Sub
 
@@ -7583,7 +7583,7 @@ Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
             
                 'Is the other one dead??
 132             If UserList(.flags.TargetUser).flags.Muerto = 1 Then
-134                 Call WriteConsoleMsg(UserIndex, "í¡No podés comerciar con los muertos!!", FontTypeNames.FONTTYPE_INFO)
+134                 Call WriteConsoleMsg(UserIndex, "¡¡No podés comerciar con los muertos!!", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
 
                 End If
@@ -20823,7 +20823,7 @@ Public Sub WriteBlacksmithArmors(ByVal UserIndex As Integer)
         For i = 1 To UBound(ArmadurasHerrero())
 
             ' Can the user create this object? If so add it to the list....
-            If ObjData(ArmadurasHerrero(i)).SkHerreria <= Round(UserList(UserIndex).Stats.UserSkills(eSkill.Herreria) / ModHerreriA(UserList(UserIndex).clase), 0) Then
+            If ObjData(ArmadurasHerrero(i)).SkHerreria <= Round(UserList(UserIndex).Stats.UserSkills(eSkill.Herreria) / ModHerreria(UserList(UserIndex).clase), 0) Then
                 Count = Count + 1
                 validIndexes(Count) = i
 
@@ -25474,7 +25474,9 @@ Private Sub HandlePossUser(ByVal UserIndex As Integer)
         If Not .flags.Privilegios And PlayerType.user Then
         
             If Database_Enabled Then
-                Call SetPositionDatabase(UserName, UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y)
+                If Not SetPositionDatabase(UserName, UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y) Then
+                    Call WriteConsoleMsg(UserIndex, "El usuario " & UserName & " no existe.", FontTypeNames.FONTTYPE_INFO)
+                End If
             Else
                 Call WriteVar(CharPath & UCase$(UserName) & ".chr", "INIT", "Position", UserList(UserIndex).Pos.Map & "-" & UserList(UserIndex).Pos.X & "-" & UserList(UserIndex).Pos.Y)
             End If
@@ -25742,42 +25744,39 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
         
         Cantidad = buffer.ReadLong()
         UserName = buffer.ReadASCIIString()
-        tUser = NameIndex(UserName)
         
-        If FileExist(CharPath & UCase$(UserName) & ".chr", vbNormal) Then
-            If tUser <= 0 Then
-
-                If Database_Enabled Then
-                    Call AddOroBancoDatabase(UserName, Cantidad)
-                Else
-                    Dim FileUser  As String
-                    Dim OroenBove As Long
-
-                    FileUser = CharPath & UCase$(UserName) & ".chr"
-                    OroenBove = val(GetVar(FileUser, "STATS", "BANCO"))
-                    OroenBove = OroenBove + val(Cantidad)
-
-                    Call WriteVar(FileUser, "STATS", "BANCO", CLng(OroenBove)) 'Guardamos en bove
-                End If
-                UserList(UserIndex).Stats.Banco = UserList(UserIndex).Stats.Banco - val(Cantidad) 'Quitamos el oro al usuario
-            Else
-                UserList(UserIndex).Stats.Banco = UserList(UserIndex).Stats.Banco - val(Cantidad) 'Quitamos el oro al usuario
-                UserList(tUser).Stats.Banco = UserList(tUser).Stats.Banco + val(Cantidad) 'Se lo damos al otro.
-
-            End If
-
-            Call WriteChatOverHead(UserIndex, "¡El envio se ha realizado con exito! Gracias por utilizar los servicios de Finanzas Goliath", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("173", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
-            
-            Call WriteUpdateGold(UserIndex)
-            Call WriteGoliathInit(UserIndex)
-        Else
-            Call WriteChatOverHead(UserIndex, "El usuario es inexistente.", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
-            
-        End If
-
         'If we got here then packet is complete, copy data back to original queue
         Call .incomingData.CopyBuffer(buffer)
+        
+        tUser = NameIndex(UserName)
+
+        If tUser <= 0 Then
+
+            If Database_Enabled Then
+                If Not AddOroBancoDatabase(UserName, Cantidad) Then
+                    Call WriteChatOverHead(UserIndex, "El usuario no existe.", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
+                    Exit Sub
+                End If
+            Else
+                Dim FileUser  As String
+                Dim OroenBove As Long
+
+                FileUser = CharPath & UCase$(UserName) & ".chr"
+                OroenBove = val(GetVar(FileUser, "STATS", "BANCO"))
+                OroenBove = OroenBove + val(Cantidad)
+
+                Call WriteVar(FileUser, "STATS", "BANCO", CLng(OroenBove)) 'Guardamos en bove
+            End If
+            UserList(UserIndex).Stats.Banco = UserList(UserIndex).Stats.Banco - val(Cantidad) 'Quitamos el oro al usuario
+        Else
+            UserList(UserIndex).Stats.Banco = UserList(UserIndex).Stats.Banco - val(Cantidad) 'Quitamos el oro al usuario
+            UserList(tUser).Stats.Banco = UserList(tUser).Stats.Banco + val(Cantidad) 'Se lo damos al otro.
+        End If
+
+        Call WriteChatOverHead(UserIndex, "¡El envio se ha realizado con exito! Gracias por utilizar los servicios de Finanzas Goliath", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("173", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+        
+        Call WriteUpdateGold(UserIndex)
 
     End With
     

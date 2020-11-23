@@ -11,7 +11,7 @@ Dim Item_List As Collection
 
 Public Sub InicializarLimpieza()
 
-On Error GoTo ErrHandler
+On Error GoTo Errhandler
 
     Set Item_List = New Collection
     
@@ -20,7 +20,7 @@ On Error GoTo ErrHandler
     
     Exit Sub
     
-ErrHandler:
+Errhandler:
     Call RegistrarError(Err.Number, Err.description, "ModLimpieza.InicializarLimpieza")
     Resume Next
 
@@ -40,7 +40,7 @@ Class_Terminate_Err:
         
 End Sub
 
-Public Sub AgregarItemLimpiza(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, Optional ByVal ResetTimer As Boolean = False)
+Public Sub AgregarItemLimpiza(ByVal Map As Integer, ByVal x As Byte, ByVal Y As Byte, Optional ByVal ResetTimer As Boolean = False)
 
     On Error GoTo hErr
     
@@ -57,7 +57,7 @@ Public Sub AgregarItemLimpiza(ByVal Map As Integer, ByVal X As Byte, ByVal Y As 
         With Item
             .Time = GetTickCount And &H7FFFFFFF
             .Map = Map
-            .X = X
+            .x = x
             .Y = Y
         End With
 
@@ -74,16 +74,18 @@ hErr:
 
 End Sub
 
-Public Sub QuitarItemLimpieza(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte)
+Public Sub QuitarItemLimpieza(ByVal Map As Integer, ByVal x As Byte, ByVal Y As Byte)
 
     On Error GoTo hErr
 
-101 Call Item_List.Remove(GetIndiceByPos(Map, X, Y))
+101 Call Item_List.Remove(GetIndiceByPos(Map, x, Y))
     
     Exit Sub
     
 hErr:
-    Call RegistrarError(Err.Number, Err.description, "ModLimpieza.QuitarItemLimpieza", Erl)
+    ' No hace falta registrar el error.
+    ' Si un item no existe en la colección, es porque el item era del mapa y alguien lo agarró.
+    'Call RegistrarError(Err.Number, Err.description, "ModLimpieza.QuitarItemLimpieza", Erl)
     Resume Next
 
 End Sub
@@ -91,9 +93,11 @@ End Sub
 Public Sub LimpiarItemsViejos()
 
     On Error GoTo hErr
-
+    
+    If Item_List Is Nothing Then Exit Sub
+    
     Dim TimeClear As Long
-    TimeClear = GetTickCount And &H7FFFFFFF
+        TimeClear = GetTickCount And &H7FFFFFFF
     
     Dim Item As TLimpiezaItem
 
@@ -101,8 +105,8 @@ Public Sub LimpiarItemsViejos()
 
         With Item
             If TimeClear - .Time >= Item_TimeClear Then
-                If MapData(.Map, .X, .Y).ObjInfo.ObjIndex > 0 Then ' Por las dudas
-                    Call EraseObj(MAX_INVENTORY_OBJS, .Map, .X, .Y)
+                If MapData(.Map, .x, .Y).ObjInfo.ObjIndex > 0 Then ' Por las dudas
+                    Call EraseObj(MAX_INVENTORY_OBJS, .Map, .x, .Y)
                 End If
             End If
         End With
@@ -127,8 +131,8 @@ Public Sub LimpiezaForzada() ' Limpio todo, no importa el tiempo
     For Each Item In Item_List
 
         With Item
-            If MapData(.Map, .X, .Y).ObjInfo.ObjIndex > 0 Then ' Por las dudas
-                Call EraseObj(MAX_INVENTORY_OBJS, .Map, .X, .Y)
+            If MapData(.Map, .x, .Y).ObjInfo.ObjIndex > 0 Then ' Por las dudas
+                Call EraseObj(MAX_INVENTORY_OBJS, .Map, .x, .Y)
             End If
         End With
 
@@ -143,6 +147,6 @@ hErr:
 
 End Sub
 
-Public Function GetIndiceByPos(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As String
-    GetIndiceByPos = Map & S & X & S & Y
+Public Function GetIndiceByPos(ByVal Map As Integer, ByVal x As Integer, ByVal Y As Integer) As String
+    GetIndiceByPos = Map & S & x & S & Y
 End Function
