@@ -55,7 +55,7 @@ Public Sub DoPermanecerOculto(ByVal UserIndex As Integer)
 
         Exit Sub
 
-ErrHandler:
+Errhandler:
 112     Call LogError("Error en Sub DoPermanecerOculto")
 
         
@@ -71,7 +71,7 @@ Public Sub DoOcultarse(ByVal UserIndex As Integer)
 
     'Pablo (ToxicWaste): No olvidar agregar IntervaloOculto=500 al Server.ini.
     'Modifique la fórmula y ahora anda bien.
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim Suerte As Double
 
@@ -123,7 +123,7 @@ Public Sub DoOcultarse(ByVal UserIndex As Integer)
 
     Exit Sub
 
-ErrHandler:
+Errhandler:
     Call LogError("Error en Sub DoOcultarse")
 
 End Sub
@@ -186,7 +186,7 @@ Public Sub DoNadar(ByVal UserIndex As Integer, ByRef Barco As ObjData, ByVal slo
 
 150     Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
         'Call WriteNadarToggle(UserIndex)
-152     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(FXSound.BARCA_SOUND, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+152     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(FXSound.BARCA_SOUND, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
 
         
         Exit Sub
@@ -323,7 +323,7 @@ Public Sub DoNavega(ByVal UserIndex As Integer, ByRef Barco As ObjData, ByVal sl
     
 222     Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
 224     Call WriteNavigateToggle(UserIndex)
-226     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(FXSound.BARCA_SOUND, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+226     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(FXSound.BARCA_SOUND, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
 
         
         Exit Sub
@@ -411,7 +411,7 @@ Public Sub DoReNavega(ByVal UserIndex As Integer, ByRef Barco As ObjData, ByVal 
         'Call WriteVelocidadToggle(UserIndex)
     
 170     Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
-172     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(FXSound.BARCA_SOUND, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+172     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(FXSound.BARCA_SOUND, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
 
         
         Exit Sub
@@ -824,16 +824,16 @@ Public Sub HerreroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As I
     
 108         If ObjData(ItemIndex).OBJType = eOBJType.otWeapon Then
                 ' Call WriteConsoleMsg(UserIndex, "Has construido el arma!", FontTypeNames.FONTTYPE_INFO)
-110             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, " 1", 5))
+110             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y, " 1", 5))
 112         ElseIf ObjData(ItemIndex).OBJType = eOBJType.otESCUDO Then
                 ' Call WriteConsoleMsg(UserIndex, "Has construido el escudo!", FontTypeNames.FONTTYPE_INFO)
-114             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, " 1", 5))
+114             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y, " 1", 5))
 116         ElseIf ObjData(ItemIndex).OBJType = eOBJType.otCASCO Then
                 ' Call WriteConsoleMsg(UserIndex, "Has construido el casco!", FontTypeNames.FONTTYPE_INFO)
-118             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, " 1", 5))
+118             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y, " 1", 5))
 120         ElseIf ObjData(ItemIndex).OBJType = eOBJType.otArmadura Then
                 'Call WriteConsoleMsg(UserIndex, "Has construido la armadura!", FontTypeNames.FONTTYPE_INFO)
-122             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, " 1", 5))
+122             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y, " 1", 5))
 
             End If
 
@@ -854,7 +854,7 @@ Public Sub HerreroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As I
     
 132         Call SubirSkill(UserIndex, eSkill.Herreria)
 134         Call UpdateUserInv(True, UserIndex, 0)
-136         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(MARTILLOHERRERO, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+136         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(MARTILLOHERRERO, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
 
 138         UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
 
@@ -977,7 +977,7 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
 110         Call CarpinteroQuitarMateriales(UserIndex, ItemIndex)
             'Call WriteConsoleMsg(UserIndex, "Has construido un objeto!", FontTypeNames.FONTTYPE_INFO)
             'Call WriteOroOverHead(UserIndex, 1, UserList(UserIndex).Char.CharIndex)
-112         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, " 1", 5))
+112         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y, " 1", 5))
     
             Dim MiObj As obj
 
@@ -996,7 +996,7 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
     
 122         Call SubirSkill(UserIndex, eSkill.Carpinteria)
 124         'Call UpdateUserInv(True, UserIndex, 0)
-126         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(LABUROCARPINTERO, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+126         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(LABUROCARPINTERO, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
 
 128         UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
 
@@ -1033,7 +1033,7 @@ Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
     
 110         Call AlquimistaQuitarMateriales(UserIndex, ItemIndex)
             'Call WriteConsoleMsg(UserIndex, "Has construido el objeto.", FontTypeNames.FONTTYPE_INFO)
-112         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(117, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+112         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(117, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
     
             Dim MiObj As obj
 
@@ -1090,11 +1090,11 @@ Public Sub SastreConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As In
     
             ' If Not UserList(UserIndex).flags.UltimoMensaje = 9 Then
             ' Call WriteConsoleMsg(UserIndex, "Has construido el objeto.", FontTypeNames.FONTTYPE_INFO)
-112         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, " 1", 5))
+112         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y, " 1", 5))
             ' UserList(UserIndex).flags.UltimoMensaje = 9
             ' End If
         
-114         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(63, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+114         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(63, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
     
             Dim MiObj As obj
 
@@ -1211,14 +1211,14 @@ Public Sub DoLingotes(ByVal UserIndex As Integer)
 
 138     Call UpdateUserInv(False, UserIndex, slot)
     
-140     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, cant, 5))
+140     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y, cant, 5))
         'If Not UserList(UserIndex).flags.UltimoMensaje = 5 Then
         '  Call WriteConsoleMsg(UserIndex, "¡Has obtenido lingotes!", FontTypeNames.FONTTYPE_INFO)
             
         '  UserList(UserIndex).flags.UltimoMensaje = 5
         'End If
     
-142     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(117, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+142     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(117, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
     
 144     Call SubirSkill(UserIndex, eSkill.Herreria)
   
@@ -1337,7 +1337,7 @@ ModCarpinteria_Err:
         
 End Function
 
-Function ModHerreriA(ByVal clase As eClass) As Single
+Function ModHerreria(ByVal clase As eClass) As Single
         
         On Error GoTo ModHerreriA_Err
         
@@ -1345,10 +1345,10 @@ Function ModHerreriA(ByVal clase As eClass) As Single
 100     Select Case clase
 
             Case eClass.Trabajador
-102             ModHerreriA = 1
+102             ModHerreria = 1
 
 104         Case Else
-106             ModHerreriA = 3
+106             ModHerreria = 3
 
         End Select
 
@@ -1363,40 +1363,55 @@ End Function
 
 Sub DoAdminInvisible(ByVal UserIndex As Integer)
         
-        On Error GoTo DoAdminInvisible_Err
-        
+    On Error GoTo DoAdminInvisible_Err
     
-100     If UserList(UserIndex).flags.AdminInvisible = 0 Then
+    With UserList(UserIndex)
+    
+        If .flags.AdminInvisible = 0 Then
                 
-102         UserList(UserIndex).flags.AdminInvisible = 1
-104         UserList(UserIndex).flags.invisible = 1
-106         UserList(UserIndex).flags.Oculto = 1
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(UserList(UserIndex).Char.CharIndex, True))
-        
+            .flags.AdminInvisible = 1
+            .flags.invisible = 1
+            .flags.Oculto = 1
+            
+            '.flags.OldBody = .Char.Body
+            '.flags.OldHead = .Char.Head
+            
+            '.Char.Body = 0
+            '.Char.Head = 0
+            
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, True))
+            
+            Call SendData(SendTarget.ToPCAreaButGMs, UserIndex, PrepareMessageCharacterRemove(.Char.CharIndex, True))
+            
         Else
         
-116         UserList(UserIndex).flags.AdminInvisible = 0
-118         UserList(UserIndex).flags.invisible = 0
-120         UserList(UserIndex).flags.Oculto = 0
-122         UserList(UserIndex).Counters.TiempoOculto = 0
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(UserList(UserIndex).Char.CharIndex, False))
-        
+            .flags.AdminInvisible = 0
+            .flags.invisible = 0
+            .flags.Oculto = 0
+            .Counters.TiempoOculto = 0
+            
+            '.Char.Body = .flags.OldBody
+            '.Char.Head = .flags.OldHead
+            
+            Call MakeUserChar(True, 0, UserIndex, .Pos.Map, .Pos.x, .Pos.Y, 1)
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, False))
+            
         End If
-    
-        'vuelve a ser visible por la fuerza
-128     'Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
-130
-
         
-        Exit Sub
+        'Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+    
+    End With
+
+    Exit Sub
 
 DoAdminInvisible_Err:
-        Call RegistrarError(Err.Number, Err.description, "Trabajo.DoAdminInvisible", Erl)
-        Resume Next
+    Call RegistrarError(Err.Number, Err.description, "Trabajo.DoAdminInvisible", Erl)
+
+    Resume Next
         
 End Sub
 
-Sub TratarDeHacerFogata(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal UserIndex As Integer)
+Sub TratarDeHacerFogata(ByVal Map As Integer, ByVal x As Integer, ByVal Y As Integer, ByVal UserIndex As Integer)
         
         On Error GoTo TratarDeHacerFogata_Err
         
@@ -1409,16 +1424,16 @@ Sub TratarDeHacerFogata(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Int
 
         Dim posMadera As WorldPos
 
-100     If Not LegalPos(Map, X, Y) Then Exit Sub
+100     If Not LegalPos(Map, x, Y) Then Exit Sub
 
 102     With posMadera
 104         .Map = Map
-106         .X = X
+106         .x = x
 108         .Y = Y
 
         End With
 
-110     If MapData(Map, X, Y).ObjInfo.ObjIndex <> 58 Then
+110     If MapData(Map, x, Y).ObjInfo.ObjIndex <> 58 Then
 112         Call WriteConsoleMsg(UserIndex, "Necesitas clickear sobre Leña para hacer ramitas", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
@@ -1437,7 +1452,7 @@ Sub TratarDeHacerFogata(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Int
 
         End If
 
-122     If MapData(Map, X, Y).ObjInfo.Amount < 3 Then
+122     If MapData(Map, x, Y).ObjInfo.Amount < 3 Then
 124         Call WriteConsoleMsg(UserIndex, "Necesitas por lo menos tres troncos para hacer una fogata.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
@@ -1456,11 +1471,11 @@ Sub TratarDeHacerFogata(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Int
 
 140     If exito = 1 Then
 142         obj.ObjIndex = FOGATA_APAG
-144         obj.Amount = MapData(Map, X, Y).ObjInfo.Amount \ 3
+144         obj.Amount = MapData(Map, x, Y).ObjInfo.Amount \ 3
     
 146         Call WriteConsoleMsg(UserIndex, "Has hecho " & obj.Amount & " ramitas.", FontTypeNames.FONTTYPE_INFO)
     
-148         Call MakeObj(obj, Map, X, Y)
+148         Call MakeObj(obj, Map, x, Y)
     
             'Seteamos la fogata como el nuevo TargetObj del user
 150         UserList(UserIndex).flags.TargetObj = FOGATA_APAG
@@ -1489,7 +1504,7 @@ End Sub
 
 Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boolean = False, Optional ByVal ObjetoDorado As Boolean = False)
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim Suerte       As Integer
     Dim res          As Integer
@@ -1538,7 +1553,7 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
                 Call TirarItemAlPiso(.Pos, MiObj)
             End If
 
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(.Pos.X, .Pos.Y, MiObj.Amount, 5))
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(.Pos.x, .Pos.Y, MiObj.Amount, 5))
         
             ' Al pescar también podés sacar cosas raras (se setean desde RecursosEspeciales.dat)
             Dim i As Integer
@@ -1579,7 +1594,7 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
     
     Exit Sub
 
-ErrHandler:
+Errhandler:
     Call LogError("Error en DoPescar. Error " & Err.Number & " - " & Err.description)
 
 End Sub
@@ -2056,9 +2071,9 @@ QuitarSta_Err:
         
 End Sub
 
-Public Sub DoRaices(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte)
+Public Sub DoRaices(ByVal UserIndex As Integer, ByVal x As Byte, ByVal Y As Byte)
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim Suerte As Integer
     Dim res    As Integer
@@ -2104,12 +2119,12 @@ Public Sub DoRaices(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte
             MiObj.Amount = MiObj.Amount * RecoleccionMult
             MiObj.ObjIndex = Raices
         
-            MapData(.Pos.Map, X, Y).ObjInfo.Amount = MapData(.Pos.Map, X, Y).ObjInfo.Amount - MiObj.Amount
+            MapData(.Pos.Map, x, Y).ObjInfo.Amount = MapData(.Pos.Map, x, Y).ObjInfo.Amount - MiObj.Amount
     
-            If MapData(.Pos.Map, X, Y).ObjInfo.Amount < 0 Then
-                MapData(.Pos.Map, X, Y).ObjInfo.Amount = 0
+            If MapData(.Pos.Map, x, Y).ObjInfo.Amount < 0 Then
+                MapData(.Pos.Map, x, Y).ObjInfo.Amount = 0
     
-                Call AgregarItemLimpiza(.Pos.Map, X, Y)
+                Call AgregarItemLimpiza(.Pos.Map, x, Y)
                 
             End If
         
@@ -2120,10 +2135,10 @@ Public Sub DoRaices(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte
             End If
         
             'Call WriteConsoleMsg(UserIndex, "¡Has conseguido algunas raices!", FontTypeNames.FONTTYPE_INFO)
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(.Pos.X, .Pos.Y, MiObj.Amount, 5))
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(60, .Pos.X, .Pos.Y))
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(.Pos.x, .Pos.Y, MiObj.Amount, 5))
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(60, .Pos.x, .Pos.Y))
         Else
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(61, .Pos.X, .Pos.Y))
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(61, .Pos.x, .Pos.Y))
     
             '[CDT 17-02-2004]
             If Not .flags.UltimoMensaje = 8 Then
@@ -2147,14 +2162,14 @@ Public Sub DoRaices(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte
     
     Exit Sub
 
-ErrHandler:
+Errhandler:
     Call LogError("Error en DoRaices")
 
 End Sub
 
-Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte, Optional ByVal ObjetoDorado As Boolean = False)
+Public Sub DoTalar(ByVal UserIndex As Integer, ByVal x As Byte, ByVal Y As Byte, Optional ByVal ObjetoDorado As Boolean = False)
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim Suerte As Integer
     Dim res    As Integer
@@ -2189,17 +2204,17 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
             
             If .flags.TargetObj = 0 Then Exit Sub
             
-            Call ActualizarRecurso(.Pos.Map, X, Y)
-            MapData(.Pos.Map, X, Y).ObjInfo.data = timeGetTime ' Ultimo uso
+            Call ActualizarRecurso(.Pos.Map, x, Y)
+            MapData(.Pos.Map, x, Y).ObjInfo.data = timeGetTime ' Ultimo uso
     
             MiObj.Amount = IIf(ObjetoDorado, RandomNumber(1, 5), 1) * RecoleccionMult
             MiObj.ObjIndex = Leña
             
-            If MiObj.Amount > MapData(.Pos.Map, X, Y).ObjInfo.Amount Then
-                MiObj.Amount = MapData(.Pos.Map, X, Y).ObjInfo.Amount
+            If MiObj.Amount > MapData(.Pos.Map, x, Y).ObjInfo.Amount Then
+                MiObj.Amount = MapData(.Pos.Map, x, Y).ObjInfo.Amount
             End If
             
-            MapData(.Pos.Map, X, Y).ObjInfo.Amount = MapData(.Pos.Map, X, Y).ObjInfo.Amount - MiObj.Amount
+            MapData(.Pos.Map, x, Y).ObjInfo.Amount = MapData(.Pos.Map, x, Y).ObjInfo.Amount - MiObj.Amount
             
             If Not MeterItemEnInventario(UserIndex, MiObj) Then
                 Call TirarItemAlPiso(.Pos, MiObj)
@@ -2209,8 +2224,8 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
             ' Call WriteConsoleMsg(UserIndex, "¡Has conseguido algo de leña!", FontTypeNames.FONTTYPE_INFO)
             '        .flags.UltimoMensaje = 5
             ' End If
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(.Pos.X, .Pos.Y, MiObj.Amount, 5))
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_TALAR, .Pos.X, .Pos.Y))
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(.Pos.x, .Pos.Y, MiObj.Amount, 5))
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_TALAR, .Pos.x, .Pos.Y))
             
             ' Al talar también podés dropear cosas raras (se setean desde RecursosEspeciales.dat)
             Dim i As Integer
@@ -2241,7 +2256,7 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
         
         Else
             '[CDT 17-02-2004]
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(64, .Pos.X, .Pos.Y))
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(64, .Pos.x, .Pos.Y))
     
             If Not .flags.UltimoMensaje = 8 Then
                 Call WriteConsoleMsg(UserIndex, "¡No has obtenido leña!", FontTypeNames.FONTTYPE_INFO)
@@ -2264,14 +2279,14 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
 
     Exit Sub
 
-ErrHandler:
+Errhandler:
     Call LogError("Error en DoTalar")
 
 End Sub
 
-Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte, Optional ByVal ObjetoDorado As Boolean = False)
+Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal Y As Byte, Optional ByVal ObjetoDorado As Boolean = False)
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim Suerte As Integer
     Dim res    As Integer
@@ -2308,22 +2323,22 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
             
             If .flags.TargetObj = 0 Then Exit Sub
             
-            Call ActualizarRecurso(.Pos.Map, X, Y)
-            MapData(.Pos.Map, X, Y).ObjInfo.data = timeGetTime ' Ultimo uso
+            Call ActualizarRecurso(.Pos.Map, x, Y)
+            MapData(.Pos.Map, x, Y).ObjInfo.data = timeGetTime ' Ultimo uso
             
             MiObj.ObjIndex = ObjData(.flags.TargetObj).MineralIndex
             MiObj.Amount = IIf(ObjetoDorado, RandomNumber(1, 6), 1) * RecoleccionMult
             
-            If MiObj.Amount > MapData(.Pos.Map, X, Y).ObjInfo.Amount Then
-                MiObj.Amount = MapData(.Pos.Map, X, Y).ObjInfo.Amount
+            If MiObj.Amount > MapData(.Pos.Map, x, Y).ObjInfo.Amount Then
+                MiObj.Amount = MapData(.Pos.Map, x, Y).ObjInfo.Amount
             End If
             
-            MapData(.Pos.Map, X, Y).ObjInfo.Amount = MapData(.Pos.Map, X, Y).ObjInfo.Amount - MiObj.Amount
+            MapData(.Pos.Map, x, Y).ObjInfo.Amount = MapData(.Pos.Map, x, Y).ObjInfo.Amount - MiObj.Amount
         
             If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.Pos, MiObj)
             
             Call WriteConsoleMsg(UserIndex, "¡Has extraido algunos minerales!", FontTypeNames.FONTTYPE_INFO)
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(15, .Pos.X, .Pos.Y))
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(15, .Pos.x, .Pos.Y))
             
             ' Al minar también puede dropear una gema
             Dim i As Integer
@@ -2353,7 +2368,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
             Next
             
         Else
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(62, .Pos.X, .Pos.Y))
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(62, .Pos.x, .Pos.Y))
     
             '[CDT 17-02-2004]
             If Not .flags.UltimoMensaje = 9 Then
@@ -2379,7 +2394,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
     
     Exit Sub
 
-ErrHandler:
+Errhandler:
     Call LogError("Error en Sub DoMineria")
 
 End Sub
@@ -2549,7 +2564,7 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As ObjData, ByVal 
 
         'Ladder 21/11/08
 112     If UserList(UserIndex).flags.Montado = 0 Then
-114         If (MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger > 10) Then
+114         If (MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y).trigger > 10) Then
 116             Call WriteConsoleMsg(UserIndex, "No podés montar aquí.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
@@ -2687,23 +2702,23 @@ ApuñalarFunction_Err:
         
 End Function
 
-Public Sub ActualizarRecurso(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer)
+Public Sub ActualizarRecurso(ByVal Map As Integer, ByVal x As Integer, ByVal Y As Integer)
         
         On Error GoTo ActualizarRecurso_Err
         
 
         Dim ObjIndex As Integer
 
-100     ObjIndex = MapData(Map, X, Y).ObjInfo.ObjIndex
+100     ObjIndex = MapData(Map, x, Y).ObjInfo.ObjIndex
 
         Dim TiempoActual As Long
 
-102     TiempoActual = timeGetTime
+102     TiempoActual = timeGetTime And &H7FFFFFFF
 
         ' Data = Ultimo uso
-104     If (TiempoActual - MapData(Map, X, Y).ObjInfo.data) * 0.001 > ObjData(ObjIndex).TiempoRegenerar Then
-106         MapData(Map, X, Y).ObjInfo.Amount = ObjData(ObjIndex).VidaUtil
-108         MapData(Map, X, Y).ObjInfo.data = &H7FFFFFFF   ' Ultimo uso = Max Long
+104     If (TiempoActual - MapData(Map, x, Y).ObjInfo.data) * 0.001 > ObjData(ObjIndex).TiempoRegenerar Then
+106         MapData(Map, x, Y).ObjInfo.Amount = ObjData(ObjIndex).VidaUtil
+108         MapData(Map, x, Y).ObjInfo.data = &H7FFFFFFF   ' Ultimo uso = Max Long
 
         End If
 
@@ -2793,7 +2808,7 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
     '01/05/2010: ZaMa - Agrego bonificacion 11% para domar con flauta magica.
     '***************************************************
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim puntosDomar      As Integer
 
@@ -2887,7 +2902,7 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
     
     Exit Sub
 
-ErrHandler:
+Errhandler:
     Call LogError("Error en DoDomar. Error " & Err.Number & " : " & Err.description)
 
 End Sub

@@ -757,85 +757,64 @@ Sub MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As eHeading)
 122         sailing = PuedeAtravesarAgua(UserIndex)
 124         nPos = .Pos
 126         Call HeadtoPos(nHeading, nPos)
+        
+128         If MapData(nPos.Map, nPos.X, nPos.Y).TileExit.Map <> 0 And .Counters.TiempoDeMapeo > 0 Then
+130             If .flags.Muerto = 0 Then
+132                 Call WriteConsoleMsg(UserIndex, "Estas en combate, debes aguardar " & .Counters.TiempoDeMapeo & " segundo(s) para escapar...", FontTypeNames.FONTTYPE_INFOBOLD)
+134                 Call WritePosUpdate(UserIndex)
+                    Exit Sub
+    
+                End If
+    
+            End If
+    
+136         If MapData(nPos.Map, nPos.X, nPos.Y).UserIndex <> 0 Then
+                Dim IndexMuerto As Integer
+                IndexMuerto = MapData(nPos.Map, nPos.X, nPos.Y).UserIndex
+
+                If UserList(IndexMuerto).flags.Muerto = 1 Or UserList(IndexMuerto).flags.AdminInvisible = 1 Then
+
+142                 Call WarpToLegalPos(IndexMuerto, UserList(IndexMuerto).Pos.Map, UserList(IndexMuerto).Pos.X, UserList(IndexMuerto).Pos.Y, False)
+    
+                Else
+166                 Call WritePosUpdate(UserIndex)
+    
+                    'Call WritePosUpdate(MapData(nPos.Map, nPos.X, nPos.Y).UserIndex)
+                End If
+    
+            End If
+    
+168         If LegalWalk(.Pos.Map, nPos.X, nPos.Y, nHeading, sailing, Not sailing, .flags.Montado) Then
+170             If MapInfo(.Pos.Map).NumUsers > 1 Then
+                    'si no estoy solo en el mapa...
+    
+172                 Call SendData(SendTarget.ToPCAreaButIndex, UserIndex, PrepareMessageCharacterMove(.Char.CharIndex, nPos.X, nPos.Y))
+            
+                End If
+    
+                'Call RefreshAllUser(UserIndex) '¿Clones? Ladder probar
+                'Update map and user pos
+174             MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex = 0
+176             .Pos = nPos
+178             .Char.Heading = nHeading
+180             MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex = UserIndex
+            
+                'Actualizamos las áreas de ser necesario
+182             Call ModAreas.CheckUpdateNeededUser(UserIndex, nHeading, 0)
+           
+            Else
+184             Call WritePosUpdate(UserIndex)
+    
+            End If
+        
+186         If .Counters.Trabajando Then
+188             Call WriteMacroTrabajoToggle(UserIndex, False)
+    
+            End If
+    
+190         If .Counters.Ocultando Then .Counters.Ocultando = .Counters.Ocultando - 1
 
         End With
-        
-128     If MapData(nPos.Map, nPos.X, nPos.Y).TileExit.Map <> 0 And UserList(UserIndex).Counters.TiempoDeMapeo > 0 Then
-130         If UserList(UserIndex).flags.Muerto = 0 Then
-132             Call WriteConsoleMsg(UserIndex, "Estas en combate, debes aguardar " & UserList(UserIndex).Counters.TiempoDeMapeo & " segundo(s) para escapar...", FontTypeNames.FONTTYPE_INFOBOLD)
-134             Call WritePosUpdate(UserIndex)
-                Exit Sub
-
-            End If
-
-        End If
-
-136     If MapData(nPos.Map, nPos.X, nPos.Y).UserIndex <> 0 Then
-138         If UserList(MapData(nPos.Map, nPos.X, nPos.Y).UserIndex).flags.Muerto = 1 Then
-
-                Dim IndexMuerto As Integer
-
-140             IndexMuerto = MapData(nPos.Map, nPos.X, nPos.Y).UserIndex
-
-142             With UserList(IndexMuerto)
-                    'Call WarpToLegalPos(IndexMuerto, .Pos.Map, .Pos.X, .Pos.Y, False)
-                    
-144                 If .Accion.AccionPendiente = True Then
-146                     Call SendData(SendTarget.ToPCArea, IndexMuerto, PrepareMessageParticleFX(.Char.CharIndex, .Accion.Particula, 1, True))
-148                     Call SendData(SendTarget.ToPCArea, IndexMuerto, PrepareMessageBarFx(.Char.CharIndex, 1, Accion_Barra.CancelarAccion))
-150                     .Accion.AccionPendiente = False
-152                     .Accion.Particula = 0
-154                     .Accion.TipoAccion = Accion_Barra.CancelarAccion
-156                     .Accion.HechizoPendiente = 0
-158                     .Accion.RunaObj = 0
-160                     .Accion.ObjSlot = 0
-162                     .Accion.AccionPendiente = False
-
-                        'Call WritePosUpdate(UserIndex)
-                        'Call WarpToLegalPos(IndexMuerto, .Pos.Map, .Pos.X, .Pos.Y)
-                    End If
-
-164                 Call WarpToLegalPos(IndexMuerto, .Pos.Map, .Pos.X, .Pos.Y, False)
-                    
-                End With
-
-            Else
-166             Call WritePosUpdate(UserIndex)
-
-                'Call WritePosUpdate(MapData(nPos.Map, nPos.X, nPos.Y).UserIndex)
-            End If
-
-        End If
-
-168     If LegalWalk(UserList(UserIndex).Pos.Map, nPos.X, nPos.Y, nHeading, sailing, Not sailing, UserList(UserIndex).flags.Montado) Then
-170         If MapInfo(UserList(UserIndex).Pos.Map).NumUsers > 1 Then
-                'si no estoy solo en el mapa...
-
-172             Call SendData(SendTarget.ToPCAreaButIndex, UserIndex, PrepareMessageCharacterMove(UserList(UserIndex).Char.CharIndex, nPos.X, nPos.Y))
-        
-            End If
-
-            'Call RefreshAllUser(UserIndex) '¿Clones? Ladder probar
-            'Update map and user pos
-174         MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).UserIndex = 0
-176         UserList(UserIndex).Pos = nPos
-178         UserList(UserIndex).Char.Heading = nHeading
-180         MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).UserIndex = UserIndex
-        
-            'Actualizamos las áreas de ser necesario
-182         Call ModAreas.CheckUpdateNeededUser(UserIndex, nHeading, 0)
-       
-        Else
-184         Call WritePosUpdate(UserIndex)
-
-        End If
-    
-186     If UserList(UserIndex).Counters.Trabajando Then
-188         Call WriteMacroTrabajoToggle(UserIndex, False)
-
-        End If
-
-190     If UserList(UserIndex).Counters.Ocultando Then UserList(UserIndex).Counters.Ocultando = UserList(UserIndex).Counters.Ocultando - 1
 
         
         Exit Sub
@@ -2063,9 +2042,13 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As In
 
         'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(UserList(UserIndex).Char.CharIndex, 71, False))
     
-176     If FX And UserList(UserIndex).flags.AdminInvisible = 0 Then 'FX
-178         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_WARP, X, Y))
-180         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.CharIndex, FXIDs.FXWARP, 0))
+        If UserList(UserIndex).flags.AdminInvisible = 0 Then
+176         If FX Then 'FX
+178             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_WARP, X, Y))
+180             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.CharIndex, FXIDs.FXWARP, 0))
+            End If
+        Else
+            Call EnviarDatosASlot(UserIndex, PrepareMessageSetInvisible(UserList(UserIndex).Char.CharIndex, True))
         End If
         
         If UserList(UserIndex).NroMascotas > 0 Then Call WarpMascotas(UserIndex)
