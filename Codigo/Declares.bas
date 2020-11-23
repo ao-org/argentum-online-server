@@ -1127,6 +1127,8 @@ Public Type tQuest
     DescFinal As String
     RequiredLevel As Byte
     
+    RequiredQuest As Byte
+    
     RequiredOBJs As Byte
     RequiredOBJ() As obj
     
