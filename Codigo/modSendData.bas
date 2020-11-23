@@ -35,6 +35,7 @@ Public Enum SendTarget
     ToAll = 1
     toMap
     ToPCArea
+    ToPCAreaButGMs
     ToAllButIndex
     ToMapButIndex
     ToGM
@@ -71,13 +72,16 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, ByV
     On Error Resume Next
 
     Dim LoopC As Long
-
     Dim Map   As Integer
     
     Select Case sndRoute
 
         Case SendTarget.ToPCArea
             Call SendToUserArea(sndIndex, sndData)
+            Exit Sub
+            
+        Case SendTarget.ToPCAreaButGMs
+            Call SendToUserAreaButGMs(sndIndex, sndData)
             Exit Sub
         
         Case SendTarget.ToAdmins
@@ -505,6 +509,66 @@ Private Sub SendToUserAreaButindex(ByVal UserIndex As Integer, ByVal sdData As S
 SendToUserAreaButindex_Err:
         Call RegistrarError(Err.Number, Err.description, "modSendData.SendToUserAreaButindex", Erl)
         Resume Next
+        
+End Sub
+
+Private Sub SendToUserAreaButGMs(ByVal UserIndex As Integer, ByVal sdData As String)
+        
+    On Error GoTo SendToUserAreaButindex_Err
+        
+
+    '**************************************************************
+    'Author: Lucio N. Tourrilhes (DuNga)
+    'Last Modify Date: Unknow
+    '
+    '**************************************************************
+    Dim LoopC     As Long
+        
+    Dim TempInt   As Integer
+    Dim tempIndex As Integer
+    
+    Dim Map       As Integer
+    Dim AreaX     As Integer
+    Dim AreaY     As Integer
+    
+    Map = UserList(UserIndex).Pos.Map
+    AreaX = UserList(UserIndex).AreasInfo.AreaPerteneceX
+    AreaY = UserList(UserIndex).AreasInfo.AreaPerteneceY
+
+    If Not MapaValido(Map) Then Exit Sub
+    
+    For LoopC = 1 To ConnGroups(Map).CountEntrys
+        tempIndex = ConnGroups(Map).UserEntrys(LoopC)
+            
+        TempInt = UserList(tempIndex).AreasInfo.AreaReciveX And AreaX
+
+        If TempInt Then  'Esta en el area?
+            TempInt = UserList(tempIndex).AreasInfo.AreaReciveY And AreaY
+
+            If TempInt Then
+
+                If Not EsGM(tempIndex) Then
+
+                    If UserList(tempIndex).ConnIDValida Then
+
+                        Call EnviarDatosASlot(tempIndex, sdData)
+
+                    End If
+
+                End If
+
+            End If
+
+        End If
+
+    Next LoopC
+
+        
+    Exit Sub
+
+SendToUserAreaButindex_Err:
+    Call RegistrarError(Err.Number, Err.description, "modSendData.SendToUserAreaButindex", Erl)
+    Resume Next
         
 End Sub
 

@@ -152,10 +152,10 @@ Private Sub ProcessAdjacents(ByVal MapIndex As Integer, ByRef T() As tIntermidia
                     'Actualizamos la tabla de calculos intermedios
 108                 T(j, vcolu).DistV = T(vfila, vcolu).DistV + 1
 110                 T(j, vcolu).PrevV.x = vcolu
-112                 T(j, vcolu).PrevV.y = vfila
+112                 T(j, vcolu).PrevV.Y = vfila
                     'Mete el vertice en la cola
 114                 V.x = vcolu
-116                 V.y = j
+116                 V.Y = j
 118                 Call Push(V)
 
                 End If
@@ -175,10 +175,10 @@ Private Sub ProcessAdjacents(ByVal MapIndex As Integer, ByRef T() As tIntermidia
                     'Actualizamos la tabla de calculos intermedios
 128                 T(j, vcolu).DistV = T(vfila, vcolu).DistV + 1
 130                 T(j, vcolu).PrevV.x = vcolu
-132                 T(j, vcolu).PrevV.y = vfila
+132                 T(j, vcolu).PrevV.Y = vfila
                     'Mete el vertice en la cola
 134                 V.x = vcolu
-136                 V.y = j
+136                 V.Y = j
 138                 Call Push(V)
 
                 End If
@@ -196,10 +196,10 @@ Private Sub ProcessAdjacents(ByVal MapIndex As Integer, ByRef T() As tIntermidia
                     'Actualizamos la tabla de calculos intermedios
 146                 T(vfila, vcolu - 1).DistV = T(vfila, vcolu).DistV + 1
 148                 T(vfila, vcolu - 1).PrevV.x = vcolu
-150                 T(vfila, vcolu - 1).PrevV.y = vfila
+150                 T(vfila, vcolu - 1).PrevV.Y = vfila
                     'Mete el vertice en la cola
 152                 V.x = vcolu - 1
-154                 V.y = vfila
+154                 V.Y = vfila
 156                 Call Push(V)
 
                 End If
@@ -217,10 +217,10 @@ Private Sub ProcessAdjacents(ByVal MapIndex As Integer, ByRef T() As tIntermidia
                     'Actualizamos la tabla de calculos intermedios
 164                 T(vfila, vcolu + 1).DistV = T(vfila, vcolu).DistV + 1
 166                 T(vfila, vcolu + 1).PrevV.x = vcolu
-168                 T(vfila, vcolu + 1).PrevV.y = vfila
+168                 T(vfila, vcolu + 1).PrevV.Y = vfila
                     'Mete el vertice en la cola
 170                 V.x = vcolu + 1
-172                 V.y = vfila
+172                 V.Y = vfila
 174                 Call Push(V)
 
                 End If
@@ -263,11 +263,11 @@ Public Sub SeekPath(ByVal NpcIndex As Integer, Optional ByVal MaxSteps As Intege
 
 102     steps = 0
 
-104     cur_npc_pos.x = Npclist(NpcIndex).Pos.y
-106     cur_npc_pos.y = Npclist(NpcIndex).Pos.x
+104     cur_npc_pos.x = Npclist(NpcIndex).Pos.Y
+106     cur_npc_pos.Y = Npclist(NpcIndex).Pos.x
 
 108     tar_npc_pos.x = Npclist(NpcIndex).PFINFO.Target.x '  UserList(NPCList(NpcIndex).PFINFO.TargetUser).Pos.X
-110     tar_npc_pos.y = Npclist(NpcIndex).PFINFO.Target.y '  UserList(NPCList(NpcIndex).PFINFO.TargetUser).Pos.Y
+110     tar_npc_pos.Y = Npclist(NpcIndex).PFINFO.Target.Y '  UserList(NPCList(NpcIndex).PFINFO.TargetUser).Pos.Y
 
 112     Call InitializeTable(TmpArray, cur_npc_pos)
 114     Call InitQueue
@@ -280,8 +280,8 @@ Public Sub SeekPath(ByVal NpcIndex As Integer, Optional ByVal MaxSteps As Intege
 120         If steps > MaxSteps Then Exit Do
 122         V = Pop
 
-124         If V.x = tar_npc_pos.x And V.y = tar_npc_pos.y Then Exit Do
-126         Call ProcessAdjacents(NpcMap, TmpArray, V.y, V.x, NpcIndex)
+124         If V.x = tar_npc_pos.x And V.Y = tar_npc_pos.Y Then Exit Do
+126         Call ProcessAdjacents(NpcMap, TmpArray, V.Y, V.x, NpcIndex)
         Loop
 
 128     Call MakePath(NpcIndex)
@@ -309,7 +309,7 @@ Private Sub MakePath(ByVal NpcIndex As Integer)
 
         Dim i     As Integer
 
-100     Pasos = TmpArray(Npclist(NpcIndex).PFINFO.Target.y, Npclist(NpcIndex).PFINFO.Target.x).DistV
+100     Pasos = TmpArray(Npclist(NpcIndex).PFINFO.Target.Y, Npclist(NpcIndex).PFINFO.Target.x).DistV
 102     Npclist(NpcIndex).PFINFO.PathLenght = Pasos
 
 104     If Pasos = MAXINT Then
@@ -323,11 +323,11 @@ Private Sub MakePath(ByVal NpcIndex As Integer)
 110     ReDim Npclist(NpcIndex).PFINFO.Path(0 To Pasos) As tVertice
 
 112     miV.x = Npclist(NpcIndex).PFINFO.Target.x
-114     miV.y = Npclist(NpcIndex).PFINFO.Target.y
+114     miV.Y = Npclist(NpcIndex).PFINFO.Target.Y
 
 116     For i = Pasos To 1 Step -1
 118         Npclist(NpcIndex).PFINFO.Path(i) = miV
-120         miV = TmpArray(miV.y, miV.x).PrevV
+120         miV = TmpArray(miV.Y, miV.x).PrevV
 122     Next i
 
 124     Npclist(NpcIndex).PFINFO.CurPos = 1
@@ -354,22 +354,22 @@ Private Sub InitializeTable(ByRef T() As tIntermidiateWork, ByRef S As tVertice,
 
         Const anymap = 1
 
-100     For j = S.y - MaxSteps To S.y + MaxSteps
+100     For j = S.Y - MaxSteps To S.Y + MaxSteps
 102         For K = S.x - MaxSteps To S.x + MaxSteps
 
 104             If InMapBounds(anymap, j, K) Then
 106                 T(j, K).Known = False
 108                 T(j, K).DistV = MAXINT
 110                 T(j, K).PrevV.x = 0
-112                 T(j, K).PrevV.y = 0
+112                 T(j, K).PrevV.Y = 0
 
                 End If
 
             Next
         Next
 
-114     T(S.y, S.x).Known = False
-116     T(S.y, S.x).DistV = 0
+114     T(S.Y, S.x).Known = False
+116     T(S.Y, S.x).DistV = 0
 
         
         Exit Sub
@@ -380,7 +380,7 @@ InitializeTable_Err:
         
 End Sub
 
-Function FindDirectionEAO(a As WorldPos, b As WorldPos, Optional PuedeAgu As Boolean) As Byte
+Function FindDirectionEAO(a As WorldPos, b As WorldPos, Optional PuedeAgu As Boolean, Optional PuedeTierra As Boolean = True) As Byte
         
         On Error GoTo FindDirectionEAO_Err
         
@@ -414,130 +414,98 @@ Function FindDirectionEAO(a As WorldPos, b As WorldPos, Optional PuedeAgu As Boo
         'r = RandomNumber(1, 2)
 100     R = RandomNumber(1, 2)
  
-102     If a.x > b.x And a.y > b.y Then
+102     If a.x > b.x And a.Y > b.Y Then
 104         FindDirectionEAO = IIf(R = 1, eHeading.NORTH, eHeading.WEST)
    
-106     ElseIf a.x < b.x And a.y < b.y Then
+106     ElseIf a.x < b.x And a.Y < b.Y Then
 108         FindDirectionEAO = IIf(R = 1, eHeading.SOUTH, eHeading.EAST)
    
-110     ElseIf a.x < b.x And a.y > b.y Then
+110     ElseIf a.x < b.x And a.Y > b.Y Then
 112         FindDirectionEAO = IIf(R = 1, eHeading.NORTH, eHeading.EAST)
    
-114     ElseIf a.x > b.x And a.y < b.y Then
+114     ElseIf a.x > b.x And a.Y < b.Y Then
 116         FindDirectionEAO = IIf(R = 1, eHeading.SOUTH, eHeading.WEST)
    
 118     ElseIf a.x = b.x Then
-120         FindDirectionEAO = IIf(a.y < b.y, eHeading.SOUTH, eHeading.NORTH)
+120         FindDirectionEAO = IIf(a.Y < b.Y, eHeading.SOUTH, eHeading.NORTH)
    
-122     ElseIf a.y = b.y Then
+122     ElseIf a.Y = b.Y Then
 124         FindDirectionEAO = IIf(a.x < b.x, eHeading.EAST, eHeading.WEST)
  
         Else
  
 126         FindDirectionEAO = 0 ' this is imposible!
+            Exit Function
    
         End If
- 
-128     If Distancia(a, b) > 1 Then
- 
-130         Select Case FindDirectionEAO
- 
-                Case eHeading.NORTH
 
-132                 If Not LegalWalk(a.Map, a.x, a.y - 1, eHeading.NORTH, PuedeAgu) Then
- 
-134                     If a.x > b.x Then
-136                         FindDirectionEAO = eHeading.WEST
-138                     ElseIf a.x < b.x Then
-140                         FindDirectionEAO = eHeading.EAST
-                        Else
-142                         FindDirectionEAO = IIf(R > 1, eHeading.WEST, eHeading.EAST)
+130     Select Case FindDirectionEAO
 
-                        End If
+            Case eHeading.NORTH
 
-144                     PV = 1
-       
+132             If Not LegalWalkNPC(a.Map, a.x, a.Y - 1, eHeading.NORTH, PuedeAgu, PuedeTierra) Then
+
+134                 If a.x > b.x Then
+136                     FindDirectionEAO = eHeading.WEST
+138                 ElseIf a.x < b.x Then
+140                     FindDirectionEAO = eHeading.EAST
+                    Else
+142                     FindDirectionEAO = IIf(R > 1, eHeading.WEST, eHeading.EAST)
                     End If
- 
-146             Case eHeading.SOUTH
 
-148                 If Not LegalWalk(a.Map, a.x, a.y + 1, eHeading.SOUTH, PuedeAgu) Then
- 
-150                     If a.x > b.x Then
-152                         FindDirectionEAO = eHeading.WEST
-154                     ElseIf a.x < b.x Then
-156                         FindDirectionEAO = eHeading.EAST
-                        Else
-158                         FindDirectionEAO = IIf(R > 1, eHeading.WEST, eHeading.EAST)
+144                 PV = 1
+    
+                End If
 
-                        End If
+146         Case eHeading.SOUTH
 
-160                     PV = 1
- 
+148             If Not LegalWalkNPC(a.Map, a.x, a.Y + 1, eHeading.SOUTH, PuedeAgu, PuedeTierra) Then
+
+150                 If a.x > b.x Then
+152                     FindDirectionEAO = eHeading.WEST
+154                 ElseIf a.x < b.x Then
+156                     FindDirectionEAO = eHeading.EAST
+                    Else
+158                     FindDirectionEAO = IIf(R > 1, eHeading.WEST, eHeading.EAST)
                     End If
-       
-162             Case eHeading.WEST
 
-164                 If Not LegalWalk(a.Map, a.x - 1, a.y, eHeading.WEST, PuedeAgu) Then
- 
-166                     If a.y > b.y Then
-168                         FindDirectionEAO = eHeading.NORTH
-170                     ElseIf a.y < b.y Then
-172                         FindDirectionEAO = eHeading.SOUTH
-                        Else
-174                         FindDirectionEAO = IIf(R > 1, eHeading.NORTH, eHeading.SOUTH)
+160                 PV = 1
 
-                        End If
+                End If
+    
+162         Case eHeading.WEST
 
-176                     PV = 1
+164             If Not LegalWalkNPC(a.Map, a.x - 1, a.Y, eHeading.WEST, PuedeAgu, PuedeTierra) Then
 
+166                 If a.Y > b.Y Then
+168                      FindDirectionEAO = eHeading.NORTH
+170                 ElseIf a.Y < b.Y Then
+172                      FindDirectionEAO = eHeading.SOUTH
+                    Else
+174                      FindDirectionEAO = IIf(R > 1, eHeading.NORTH, eHeading.SOUTH)
                     End If
-       
-178             Case eHeading.EAST
 
-180                 If Not LegalWalk(a.Map, a.x + 1, a.y, eHeading.EAST, PuedeAgu) Then
-182                     If a.y > b.y Then
-184                         FindDirectionEAO = eHeading.NORTH
-186                     ElseIf a.y < b.y Then
-188                         FindDirectionEAO = eHeading.SOUTH
-                        Else
-190                         FindDirectionEAO = IIf(R > 1, eHeading.NORTH, eHeading.SOUTH)
+176                 PV = 1
 
-                        End If
+                 End If
+    
+178         Case eHeading.EAST
 
-192                     PV = 1
-   
+180             If Not LegalWalkNPC(a.Map, a.x + 1, a.Y, eHeading.EAST, PuedeAgu, PuedeTierra) Then
+182                 If a.Y > b.Y Then
+184                     FindDirectionEAO = eHeading.NORTH
+186                 ElseIf a.Y < b.Y Then
+188                     FindDirectionEAO = eHeading.SOUTH
+                    Else
+190                     FindDirectionEAO = IIf(R > 1, eHeading.NORTH, eHeading.SOUTH)
                     End If
-       
-            End Select
- 
-194         If PV = 2 Then
- 
-196             Select Case FindDirectionEAO
 
-                    Case eHeading.EAST
+192                 PV = 1
 
-198                     If Not LegalWalk(a.Map, a.x + 1, a.y, eHeading.EAST) Then FindDirectionEAO = eHeading.WEST
-       
-200                 Case eHeading.WEST
+                 End If
+    
+        End Select
 
-202                     If Not LegalWalk(a.Map, a.x - 1, a.y, eHeading.WEST) Then FindDirectionEAO = eHeading.EAST
-           
-204                 Case eHeading.NORTH
-
-206                     If Not LegalWalk(a.Map, a.x, a.y - 1, eHeading.NORTH) Then FindDirectionEAO = eHeading.SOUTH
-       
-208                 Case eHeading.SOUTH
-
-210                     If Not LegalWalk(a.Map, a.x, a.y + 1, eHeading.SOUTH) Then FindDirectionEAO = eHeading.NORTH
-       
-                End Select
-   
-            End If
- 
-        End If
- 
-        
         Exit Function
 
 FindDirectionEAO_Err:

@@ -104,7 +104,7 @@ Public TrashCollector As New Collection
 Public Const MAXSPAWNATTEMPS = 60
 
 ' Correo Ladder 22/11/2017
-Public Const MAX_CORREOS_SLOTS = 60
+Public Const MAX_CORREOS_SLOTS = 15
 
 ' Correo Ladder 22/11/2017
 

@@ -2418,21 +2418,54 @@ End Function
 
 Public Function Tilde(ByRef data As String) As String
 
-    Dim temp As String
-
-    'Pato
-    temp = UCase$(data)
+    data = UCase$(data)
  
-    If InStr(1, temp, "√Å") Then temp = Replace$(temp, "√Å", "A")
-   
-    If InStr(1, temp, "e") Then temp = Replace$(temp, "e", "E")
-   
-    If InStr(1, temp, "√ç") Then temp = Replace$(temp, "√ç", "I")
-   
-    If InStr(1, temp, "√ì") Then temp = Replace$(temp, "√ì", "O")
-   
-    If InStr(1, temp, "U") Then temp = Replace$(temp, "U", "U")
-   
-    Tilde = temp
+    data = Replace$(data, "¡Å", "A")
+    data = Replace$(data, "…", "E")
+    data = Replace$(data, "Õç", "I")
+    data = Replace$(data, "”", "O")
+    data = Replace$(data, "⁄", "U")
         
 End Function
+
+Public Sub CerrarServidor()
+On Error Resume Next
+
+    'Save stats!!!
+    Call Statistics.DumpStatistics
+    
+    Call frmMain.QuitarIconoSystray
+    
+    #If UsarQueSocket = 1 Then
+        Call LimpiaWsApi
+    #ElseIf UsarQueSocket = 0 Then
+        Socket1.Cleanup
+    #ElseIf UsarQueSocket = 2 Then
+        Serv.Detener
+    #End If
+    
+    Dim LoopC As Integer
+    
+    For LoopC = 1 To MaxUsers
+        If UserList(LoopC).ConnID <> -1 Then
+            Call CloseSocket(LoopC)
+        End If
+    Next
+    
+    If Database_Enabled Then
+        ' Cierro base de datos
+        Call Database_Close
+    End If
+    
+    LimpiarModuloLimpieza
+    
+    'Log
+    Dim n As Integer
+
+    n = FreeFile
+    Open App.Path & "\logs\Main.log" For Append Shared As #n
+    Print #n, Date & " " & Time & " server cerrado."
+    Close #n
+    
+    End
+End Sub

@@ -20,6 +20,7 @@ Public Database_Connection As ADODB.Connection
 Public QueryData           As ADODB.Recordset
 
 Private QueryBuilder       As cStringBuilder
+Private ConnectedOnce      As Boolean
 
 Public Sub Database_Connect()
 
@@ -53,15 +54,18 @@ Public Sub Database_Connect()
     Database_Connection.CursorLocation = adUseClient
     
     Call Database_Connection.Open
+    
+    ConnectedOnce = True
 
     Exit Sub
     
 ErrorHandler:
     Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.description)
     
-    Call MsgBox("No se pudo conectar a la base de datos. Mas información en logs/Database.log", vbCritical, "OBDC - Error")
-    
-    End
+    If Not ConnectedOnce Then
+        Call MsgBox("No se pudo conectar a la base de datos. Mas información en logs/Database.log", vbCritical, "OBDC - Error")
+        Call CerrarServidor
+    End If
 
 End Sub
 
@@ -112,7 +116,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
         QueryBuilder.Append "free_skillpoints = " & .Stats.SkillPts & ", "
         'QueryBuilder.Append "assigned_skillpoints = " & .Counters.AsignedSkills & ", "
         QueryBuilder.Append "pos_map = " & .Pos.Map & ", "
-        QueryBuilder.Append "pos_x = " & .Pos.X & ", "
+        QueryBuilder.Append "pos_x = " & .Pos.x & ", "
         QueryBuilder.Append "pos_y = " & .Pos.Y & ", "
         QueryBuilder.Append "body_id = " & .Char.Body & ", "
         QueryBuilder.Append "head_id = " & .Char.Head & ", "
@@ -337,7 +341,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
         'QueryBuilder.Append "assigned_skillpoints = " & .Counters.AsignedSkills & ", "
         'QueryBuilder.Append "pet_Amount = " & .NroMascotas & ", "
         QueryBuilder.Append "pos_map = " & .Pos.Map & ", "
-        QueryBuilder.Append "pos_x = " & .Pos.X & ", "
+        QueryBuilder.Append "pos_x = " & .Pos.x & ", "
         QueryBuilder.Append "pos_y = " & .Pos.Y & ", "
         QueryBuilder.Append "message_info = '" & .MENSAJEINFORMACION & "', "
         QueryBuilder.Append "body_id = " & .Char.Body & ", "
@@ -700,7 +704,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
         '.Counters.AsignedSkills = QueryData!assigned_skillpoints
         '.NroMascotas = QueryData!pet_Amount
         .Pos.Map = QueryData!pos_map
-        .Pos.X = QueryData!pos_x
+        .Pos.x = QueryData!pos_x
         .Pos.Y = QueryData!pos_y
         .MENSAJEINFORMACION = QueryData!message_info
         .OrigChar.Body = QueryData!body_id
@@ -2385,10 +2389,12 @@ ErrorHandler:
 
 End Function
 
-Public Function SetPositionDatabase(UserName As String, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer)
+Public Function SetPositionDatabase(UserName As String, ByVal Map As Integer, ByVal x As Integer, ByVal Y As Integer) As Boolean
     On Error GoTo ErrorHandler
 
-    Call MakeQuery("UPDATE user SET pos_map = " & Map & ", pos_x = " & X & ", pos_y = " & X & " WHERE UPPER(name) = '" & UCase$(UserName) & "';", True)
+    Call MakeQuery("UPDATE user SET pos_map = " & Map & ", pos_x = " & x & ", pos_y = " & x & " WHERE UPPER(name) = '" & UCase$(UserName) & "';", True)
+    
+    SetPositionDatabase = True
 
     Exit Function
 
@@ -2397,17 +2403,19 @@ ErrorHandler:
 
 End Function
 
-Public Sub AddOroBancoDatabase(UserName As String, ByVal OroGanado As Long)
+Public Function AddOroBancoDatabase(UserName As String, ByVal OroGanado As Long) As Boolean
     On Error GoTo ErrorHandler
 
     Call MakeQuery("UPDATE user SET bank_gold = bank_gold + " & OroGanado & " WHERE UPPER(name) = '" & UCase$(UserName) & "';", True)
+    
+    AddOroBancoDatabase = True
 
-    Exit Sub
+    Exit Function
 
 ErrorHandler:
     Call LogDatabaseError("Error in AddOroBancoDatabase. UserName: " & UserName & ". " & Err.Number & " - " & Err.description)
 
-End Sub
+End Function
 
 Public Function DarLlaveAUsuarioDatabase(UserName As String, ByVal LlaveObj As Integer) As Boolean
     On Error GoTo ErrorHandler
