@@ -2128,7 +2128,14 @@ Sub PasarSegundo()
         
         If UserList(i).Counters.TiempoDeMapeo > 0 Then
             UserList(i).Counters.TiempoDeMapeo = UserList(i).Counters.TiempoDeMapeo - 1
-
+        End If
+        
+        
+        If UserList(i).Counters.TiempoDeInmunidad > 0 Then
+            UserList(i).Counters.TiempoDeInmunidad = UserList(i).Counters.TiempoDeInmunidad - 1
+            If UserList(i).Counters.TiempoDeInmunidad = 0 Then
+                UserList(i).flags.Inmunidad = 0
+            End If
         End If
         
         If UserList(i).flags.Subastando Then
