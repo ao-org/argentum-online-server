@@ -1457,6 +1457,13 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
             Call WriteDumbNoMore(UserIndex)
         End If
         
+        'Ladder Inmunidad
+        .flags.Inmunidad = 1
+        .Counters.TiempoDeInmunidad = INTERVALO_INMUNIDAD
+        'Ladder Inmunidad
+        
+        
+        
         'Mapa válido
         If Not MapaValido(.Pos.Map) Then
             Call WriteErrorMsg(UserIndex, "EL PJ se encuenta en un mapa invalido.")
@@ -1900,7 +1907,7 @@ Sub ResetContadores(ByVal UserIndex As Integer)
 170         .TiempoParaSubastar = 0
 172         .TimerPerteneceNpc = 0
 174         .TimerPuedeSerAtacado = 0
-
+            .TiempoDeInmunidad = 0
         End With
 
         
@@ -2164,7 +2171,7 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
         
 262         .UserLogged = False
 264         .FirstPacket = False
-        
+            .Inmunidad = 0
         End With
 
         

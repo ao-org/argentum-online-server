@@ -44,7 +44,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
         
         '¿NPC puede ver a través de la invisibilidad?
         If Not IgnoreVisibilityCheck Then
-            If .flags.invisible = 1 Or .flags.Oculto = 1 Then Exit Sub
+            If .flags.invisible = 1 Or .flags.Oculto = 1 Or .flags.Inmunidad = 1 Then Exit Sub
         End If
 
         'Npclist(NpcIndex).CanAttack = 0

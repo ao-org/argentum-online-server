@@ -322,6 +322,10 @@ Public Const VelocidadCero         As Single = 0
 
 Public Const TIEMPO_CARCEL_PIQUETE As Long = 5
 
+
+Public Const INTERVALO_INMUNIDAD As Byte = 3  'en segundos
+
+
 ''
 ' TRIGGERS
 '
@@ -1525,6 +1529,9 @@ Public Type UserFlags
     PortalYDestino As Integer
     'Hechizo de Transportacion
     
+    
+    Inmunidad As Byte
+    
     Inmovilizado As Byte
     
     Montado As Byte
@@ -1633,6 +1640,8 @@ End Type
 
 Public Type UserCounters
 
+
+    TiempoDeInmunidad As Byte
     TiempoDeMapeo As Byte
 
     TiempoParaSubastar As Byte
@@ -1658,6 +1667,7 @@ Public Type UserCounters
     Inmovilizado As Integer
     Ceguera As Integer
     Estupidez As Integer
+    
     
     Invisibilidad As Integer
     TiempoOculto As Integer
