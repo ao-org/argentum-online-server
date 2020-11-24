@@ -1994,6 +1994,9 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As In
                 End If
 
             End If
+            
+            UserList(UserIndex).Counters.TiempoDeInmunidad = INTERVALO_INMUNIDAD
+            UserList(UserIndex).flags.Inmunidad = 1
 
 144         If RequiereOxigeno(OldMap) = True And UserList(UserIndex).flags.NecesitaOxigeno = False Then  'And UserList(UserIndex).Stats.ELV < 35 Then
         
