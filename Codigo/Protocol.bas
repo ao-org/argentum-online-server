@@ -183,6 +183,7 @@ Private Enum ServerPacketID
     PosLLamadaDeClan
     QuestDetails
     QuestListSend
+    NpcQuestListSend
     UpdateNPCSimbolo
     ClanSeguro
     Intervals
@@ -29670,18 +29671,18 @@ Public Sub HandleQuest(ByVal UserIndex As Integer)
         End If
     
         'El NPC hace quests?
-110     If Npclist(NpcIndex).QuestNumber = 0 Then
+110     If Npclist(NpcIndex).NumQuest = 0 Then
 112         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead("No tengo ninguna mision para ti.", Npclist(NpcIndex).Char.CharIndex, vbWhite))
             Exit Sub
 
         End If
     
         'El personaje ya hizo la quest?
-114     If UserDoneQuest(UserIndex, Npclist(NpcIndex).QuestNumber) Then
-116         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead("Ya has hecho una mision para mi.", Npclist(NpcIndex).Char.CharIndex, vbWhite))
-            Exit Sub
+114   '  If UserDoneQuest(UserIndex, Npclist(NpcIndex).QuestNumber) Then
+116     '    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead("Ya has hecho una mision para mi.", Npclist(NpcIndex).Char.CharIndex, vbWhite))
+         '   Exit Sub
 
-        End If
+       ' End If
         
         
         
@@ -29690,34 +29691,34 @@ Public Sub HandleQuest(ByVal UserIndex As Integer)
         
  
         'El personaje tiene suficiente nivel?
-118     If UserList(UserIndex).Stats.ELV < QuestList(Npclist(NpcIndex).QuestNumber).RequiredLevel Then
-120         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead("Debes ser por lo menos nivel " & QuestList(Npclist(NpcIndex).QuestNumber).RequiredLevel & " para emprender esta mision.", Npclist(NpcIndex).Char.CharIndex, vbWhite))
-            Exit Sub
+118    ' If UserList(UserIndex).Stats.ELV < QuestList(Npclist(NpcIndex).QuestNumber).RequiredLevel Then
+120       '  Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead("Debes ser por lo menos nivel " & QuestList(Npclist(NpcIndex).QuestNumber).RequiredLevel & " para emprender esta mision.", Npclist(NpcIndex).Char.CharIndex, vbWhite))
+         '   Exit Sub
 
-        End If
+        'End If
     
         'A esta altura ya analizo todas las restricciones y esta preparado para el handle propiamente dicho
  
-122     tmpByte = TieneQuest(UserIndex, Npclist(NpcIndex).QuestNumber)
+122    ' tmpByte = TieneQuest(UserIndex, Npclist(NpcIndex).QuestNumber)
     
-124     If tmpByte Then
+124   '  If tmpByte Then
             'El usuario esta haciendo la quest, entonces va a hablar con el NPC para recibir la recompensa.
-126         Call FinishQuest(UserIndex, Npclist(NpcIndex).QuestNumber, tmpByte)
-        Else
+126      '   Call FinishQuest(UserIndex, Npclist(NpcIndex).QuestNumber, tmpByte)
+      '  Else
             'El usuario no esta haciendo la quest, entonces primero recibe un informe con los detalles de la mision.
-128         tmpByte = FreeQuestSlot(UserIndex)
+128      '   tmpByte = FreeQuestSlot(UserIndex)
         
             'El personaje tiene algun slot de quest para la nueva quest?
-130         If tmpByte = 0 Then
+130      '   If tmpByte = 0 Then
 132             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead("Estas haciendo demasiadas misiones. Vuelve cuando hayas completado alguna.", Npclist(NpcIndex).Char.CharIndex, vbWhite))
-                Exit Sub
+         ''       Exit Sub
 
-            End If
+       '     End If
         
             'Enviamos los detalles de la quest
-134         Call WriteQuestDetails(UserIndex, Npclist(NpcIndex).QuestNumber)
+134      '   Call WriteQuestDetails(UserIndex, Npclist(NpcIndex).QuestNumber)
 
-        End If
+       ' End If
 
         
         Exit Sub
@@ -29996,7 +29997,114 @@ ErrHandler:
 
 End Sub
 
+Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 
+    '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    'Envía el paquete QuestList y la informaciín correspondiente.
+    'Last modified: 30/01/2010 by Amraphen
+    '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    Dim i       As Integer
+    Dim j       As Integer
+
+    Dim tmpStr  As String
+
+    Dim tmpByte As Byte
+ 
+    On Error GoTo ErrHandler
+    
+    Dim QuestIndex As Integer
+    
+    
+    
+ 
+    With UserList(UserIndex).outgoingData
+        .WriteByte ServerPacketID.NpcQuestListSend
+        
+        
+        Call .WriteByte(Npclist(NpcIndex).NumQuest) 'Escribimos primero cuantas quest tiene el NPC
+    
+        For j = 1 To Npclist(NpcIndex).NumQuest
+        
+        QuestIndex = Npclist(NpcIndex).QuestNumber(j)
+            
+        Call .WriteInteger(QuestIndex)
+        Call .WriteByte(QuestList(QuestIndex).RequiredLevel)
+        
+        'Enviamos la cantidad de npcs requeridos
+        Call .WriteByte(QuestList(QuestIndex).RequiredNPCs)
+
+        If QuestList(QuestIndex).RequiredNPCs Then
+
+            'Si hay npcs entonces enviamos la lista
+            For i = 1 To QuestList(QuestIndex).RequiredNPCs
+                Call .WriteInteger(QuestList(QuestIndex).RequiredNPC(i).Amount)
+                Call .WriteInteger(QuestList(QuestIndex).RequiredNPC(i).NpcIndex)
+
+                'Si es una quest ya empezada, entonces mandamos los NPCs que matí.
+                'If QuestSlot Then
+                   ' Call .WriteInteger(UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsKilled(i))
+
+               ' End If
+
+            Next i
+
+        End If
+        
+        'Enviamos la cantidad de objs requeridos
+        Call .WriteByte(QuestList(QuestIndex).RequiredOBJs)
+
+        If QuestList(QuestIndex).RequiredOBJs Then
+
+            'Si hay objs entonces enviamos la lista
+            For i = 1 To QuestList(QuestIndex).RequiredOBJs
+                Call .WriteInteger(QuestList(QuestIndex).RequiredOBJ(i).Amount)
+                Call .WriteInteger(QuestList(QuestIndex).RequiredOBJ(i).ObjIndex)
+            Next i
+
+        End If
+    
+        'Enviamos la recompensa de oro y experiencia.
+        Call .WriteLong(QuestList(QuestIndex).RewardGLD)
+        Call .WriteLong(QuestList(QuestIndex).RewardEXP)
+        
+        'Enviamos la cantidad de objs de recompensa
+        Call .WriteByte(QuestList(QuestIndex).RewardOBJs)
+
+        If QuestList(QuestIndex).RewardOBJs Then
+
+            'si hay objs entonces enviamos la lista
+            For i = 1 To QuestList(QuestIndex).RewardOBJs
+                Call .WriteInteger(QuestList(QuestIndex).RewardOBJ(i).Amount)
+                Call .WriteInteger(QuestList(QuestIndex).RewardOBJ(i).ObjIndex)
+            Next i
+
+        End If
+                 
+
+        Next j
+        
+        'Escribimos la cantidad de quests
+       ' Call .WriteByte(tmpByte)
+        
+        'Escribimos la lista de quests (sacamos el íltimo caracter)
+       ' If tmpByte Then
+         '   Call .WriteASCIIString(Left$(tmpStr, Len(tmpStr) - 1))
+
+       ' End If
+
+    End With
+
+    Exit Sub
+ 
+ErrHandler:
+
+    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
+        
+        Resume
+
+    End If
+
+End Sub
 
 ''
 ' Handle the "CreatePretorianClan" message

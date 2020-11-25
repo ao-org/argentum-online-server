@@ -2012,7 +2012,8 @@ Public Type npc
     GiveEXP As Long
     GiveGLD As Long
     
-    QuestNumber As Integer
+    NumQuest As Integer
+    QuestNumber() As Byte
 
     Stats As NPCStats
     flags As NPCFlags
