@@ -97,6 +97,8 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
         Dim InvSlotsLibres As Byte
 
         Dim NpcIndex       As Integer
+        
+        Exit Sub
  
 100     NpcIndex = UserList(UserIndex).flags.TargetNPC
     
@@ -154,9 +156,8 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
             'A esta altura ya cumplio los objetivos, entonces se le entregan las recompensas.
             'Call WriteConsoleMsg(UserIndex, "Has completado la mision " & Chr(34) & QuestList(QuestIndex).Nombre & Chr(34) & "!", FontTypeNames.FONTTYPE_New_Celeste)
         
-136         Call WriteChatOverHead(UserIndex, "QUESTFIN*" & Npclist(NpcIndex).QuestNumber, Npclist(NpcIndex).Char.CharIndex, vbYellow)
+136        ' Call WriteChatOverHead(UserIndex, "QUESTFIN*" & Npclist(NpcIndex).QuestNumber, Npclist(NpcIndex).Char.CharIndex, vbYellow)
         
-            'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead(QuestList(Npclist(NpcIndex).QuestNumber).DescFinal, Npclist(NpcIndex).Char.CharIndex, vbYellow))
 
             'Si la quest pedia objetos, se los saca al personaje.
 138         If .RequiredOBJs Then
@@ -680,66 +681,69 @@ Public Sub EnviarQuest(ByVal UserIndex As Integer)
         End If
     
         'El NPC hace quests?
-108     If Npclist(NpcIndex).QuestNumber = 0 Then
+108     If Npclist(NpcIndex).NumQuest = 0 Then
 110         Call WriteChatOverHead(UserIndex, "No tengo ninguna mision para ti.", Npclist(NpcIndex).Char.CharIndex, vbYellow)
             Exit Sub
 
         End If
     
         'El personaje ya hizo la quest?
-112     If UserDoneQuest(UserIndex, Npclist(NpcIndex).QuestNumber) Then
+112    ' If UserDoneQuest(UserIndex, Npclist(NpcIndex).QuestNumber(1)) Then
             ' Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead(QuestList(Npclist(NpcIndex).QuestNumber).NextQuest, Npclist(NpcIndex).Char.CharIndex, vbYellow))
         
-114         Call WriteChatOverHead(UserIndex, "QUESTNEXT*" & Npclist(NpcIndex).QuestNumber, Npclist(NpcIndex).Char.CharIndex, vbYellow)
-            Exit Sub
+114        ' Call WriteChatOverHead(UserIndex, "QUESTNEXT*" & Npclist(NpcIndex).QuestNumber(1), Npclist(NpcIndex).Char.CharIndex, vbYellow)
+           ' Exit Sub
 
-        End If
+       ' End If
         
         
         
+        Call WriteChatOverHead(UserIndex, "te envio lista de quest", Npclist(NpcIndex).Char.CharIndex, vbYellow)
         
         'El personaje completo la quest que requiere?
-        If QuestList(Npclist(NpcIndex).QuestNumber).RequiredQuest > 0 Then
-            If Not UserDoneQuest(UserIndex, QuestList(Npclist(NpcIndex).QuestNumber).RequiredQuest) Then
+       ' If QuestList(Npclist(NpcIndex).QuestNumber(1)).RequiredQuest > 0 Then
+         '   If Not UserDoneQuest(UserIndex, QuestList(Npclist(NpcIndex).QuestNumber(1)).RequiredQuest) Then
                 ' Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead(QuestList(Npclist(NpcIndex).QuestNumber).NextQuest, Npclist(NpcIndex).Char.CharIndex, vbYellow))
-            Call WriteChatOverHead(UserIndex, "Debes completas la quest " & QuestList(Npclist(NpcIndex).QuestNumber).nombre & " para emprender esta mision.", Npclist(NpcIndex).Char.CharIndex, vbYellow)
-                Exit Sub
+                'Call WriteChatOverHead(UserIndex, "Debes completas la quest " & QuestList(Npclist(NpcIndex).QuestNumber(1)).nombre & " para emprender esta mision.", Npclist(NpcIndex).Char.CharIndex, vbYellow)
+                'Exit Sub
     
-            End If
-        End If
+           ' End If
+       ' End If
         
         
  
         'El personaje tiene suficiente nivel?
-116     If UserList(UserIndex).Stats.ELV < QuestList(Npclist(NpcIndex).QuestNumber).RequiredLevel Then
-118         Call WriteChatOverHead(UserIndex, "Debes ser por lo menos nivel " & QuestList(Npclist(NpcIndex).QuestNumber).RequiredLevel & " para emprender esta mision.", Npclist(NpcIndex).Char.CharIndex, vbYellow)
+116    ' If UserList(UserIndex).Stats.ELV < QuestList(Npclist(NpcIndex).QuestNumber(1)).RequiredLevel Then
+118      '   Call WriteChatOverHead(UserIndex, "Debes ser por lo menos nivel " & QuestList(Npclist(NpcIndex).QuestNumber(1)).RequiredLevel & " para emprender esta mision.", Npclist(NpcIndex).Char.CharIndex, vbYellow)
         
-            Exit Sub
+           ' Exit Sub
 
-        End If
+        'End If
     
         'A esta altura ya analizo todas las restricciones y esta preparado para el handle propiamente dicho
  
-120     tmpByte = TieneQuest(UserIndex, Npclist(NpcIndex).QuestNumber)
+120    ' tmpByte = TieneQuest(UserIndex, Npclist(NpcIndex).QuestNumber)
     
-122     If tmpByte Then
+122    ' If tmpByte Then
             'El usuario esta haciendo la quest, entonces va a hablar con el NPC para recibir la recompensa.
-124         Call FinishQuest(UserIndex, Npclist(NpcIndex).QuestNumber, tmpByte)
-        Else
+124       '  Call FinishQuest(UserIndex, Npclist(NpcIndex).QuestNumber, tmpByte)
+       ' Else
             'El usuario no esta haciendo la quest, entonces primero recibe un informe con los detalles de la mision.
-126         tmpByte = FreeQuestSlot(UserIndex)
+126         'tmpByte = FreeQuestSlot(UserIndex)
         
             'El personaje tiene algun slot de quest para la nueva quest?
-128         If tmpByte = 0 Then
-130             Call WriteChatOverHead(UserIndex, "Estas haciendo demasiadas misiones. Vuelve cuando hayas completado alguna.", Npclist(NpcIndex).Char.CharIndex, vbWhite)
-                Exit Sub
+128         'If tmpByte = 0 Then
+130           '  Call WriteChatOverHead(UserIndex, "Estas haciendo demasiadas misiones. Vuelve cuando hayas completado alguna.", Npclist(NpcIndex).Char.CharIndex, vbWhite)
+              '  Exit Sub
 
-            End If
+           ' End If
         
             'Enviamos los detalles de la quest
-132         Call WriteQuestDetails(UserIndex, Npclist(NpcIndex).QuestNumber)
+132         'Call WriteQuestDetails(UserIndex, Npclist(NpcIndex).QuestNumber(1))
 
-        End If
+      '  End If
+      
+      Call WriteNpcQuestListSend(UserIndex, NpcIndex)
 
         
         Exit Sub

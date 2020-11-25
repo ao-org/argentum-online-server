@@ -684,27 +684,27 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
 110     GG = IIf(Npclist(NpcIndex).showName > 0, Npclist(NpcIndex).name & Npclist(NpcIndex).SubName, vbNullString)
     
 112     If Not toMap Then
-114         If Npclist(NpcIndex).QuestNumber > 0 Then
+114         'If Npclist(NpcIndex).NumQuest > 0 Then
 
 
-            tmpByte = TieneQuest(sndIndex, Npclist(NpcIndex).QuestNumber)
+           ' tmpByte = TieneQuest(sndIndex, Npclist(NpcIndex).QuestNumber)
                 
-122                 If tmpByte Then
-                        If FinishQuestCheck(sndIndex, Npclist(NpcIndex).QuestNumber, tmpByte) Then
-                            Simbolo = 3
-                        Else
-                            Simbolo = 4
-                        End If
-                    Else
-116                     If UserDoneQuest(sndIndex, Npclist(NpcIndex).QuestNumber) Or UserList(sndIndex).Stats.ELV < QuestList(Npclist(NpcIndex).QuestNumber).RequiredLevel Then
-118                         Simbolo = 2
-                        Else
-120                         Simbolo = 1
-                        End If
-                    End If
+122               ' If tmpByte Then
+                      '  If FinishQuestCheck(sndIndex, Npclist(NpcIndex).QuestNumber, tmpByte) Then
+                        '    Simbolo = 3
+                       ' Else
+                        '    Simbolo = 4
+                   '    ' End If
+                   ' Else
+116                  ' '  If UserDoneQuest(sndIndex, Npclist(NpcIndex).QuestNumber) Or UserList(sndIndex).Stats.ELV < QuestList(Npclist(NpcIndex).QuestNumber).RequiredLevel Then
+118                        ' Simbolo = 2
+                       ' Else
+120                    '     Simbolo = 1
+                        'End If
+                    'End If
                 
 
-            End If
+           ' End If
 
          Call WriteCharacterCreate(sndIndex, Npclist(NpcIndex).Char.Body, Npclist(NpcIndex).Char.Head, Npclist(NpcIndex).Char.Heading, Npclist(NpcIndex).Char.CharIndex, X, Y, Npclist(NpcIndex).Char.WeaponAnim, Npclist(NpcIndex).Char.ShieldAnim, 0, 0, Npclist(NpcIndex).Char.CascoAnim, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1#, True, False, 0, 0, 0, 0, Npclist(NpcIndex).Stats.MinHp, Npclist(NpcIndex).Stats.MaxHp, Simbolo)
         
@@ -1204,7 +1204,10 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 
 164     Npclist(NpcIndex).GiveGLD = val(Leer.GetValue("NPC" & NpcNumber, "GiveGLD"))
 
-166     Npclist(NpcIndex).QuestNumber = val(Leer.GetValue("NPC" & NpcNumber, "QuestNumber"))
+'166     Npclist(NpcIndex).QuestNumber = val(Leer.GetValue("NPC" & NpcNumber, "QuestNumber"))
+
+
+
 
 168     Npclist(NpcIndex).PoderAtaque = val(Leer.GetValue("NPC" & NpcNumber, "PoderAtaque"))
 170     Npclist(NpcIndex).PoderEvasion = val(Leer.GetValue("NPC" & NpcNumber, "PoderEvasion"))
@@ -1341,6 +1344,33 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 316         Next LoopC
 
         End If
+
+
+'Ladder
+'Nuevo sistema de Quest
+
+        aux = Leer.GetValue("NPC" & NpcNumber, "NumQuest")
+
+        If LenB(aux) = 0 Then
+            Npclist(NpcIndex).NumQuest = 0
+        
+        Else
+    
+            Npclist(NpcIndex).NumQuest = val(aux)
+            
+            ReDim Npclist(NpcIndex).QuestNumber(1 To Npclist(NpcIndex).NumQuest) As Byte
+            
+            For LoopC = 1 To Npclist(NpcIndex).NumQuest
+                Npclist(NpcIndex).QuestNumber(LoopC) = Leer.GetValue("NPC" & NpcNumber, "QuestNumber" & LoopC)
+            Next LoopC
+
+        End If
+
+
+'Ladder
+'Nuevo sistema de Quest
+
+
 
         '<<<<<<<<<<<<<< Sistema de Viajes NUEVO >>>>>>>>>>>>>>>>
 318     aux = Leer.GetValue("NPC" & NpcNumber, "NumDestinos")
