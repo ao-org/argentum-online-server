@@ -116,7 +116,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
         QueryBuilder.Append "free_skillpoints = " & .Stats.SkillPts & ", "
         'QueryBuilder.Append "assigned_skillpoints = " & .Counters.AsignedSkills & ", "
         QueryBuilder.Append "pos_map = " & .Pos.Map & ", "
-        QueryBuilder.Append "pos_x = " & .Pos.x & ", "
+        QueryBuilder.Append "pos_x = " & .Pos.X & ", "
         QueryBuilder.Append "pos_y = " & .Pos.Y & ", "
         QueryBuilder.Append "body_id = " & .Char.Body & ", "
         QueryBuilder.Append "head_id = " & .Char.Head & ", "
@@ -341,7 +341,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
         'QueryBuilder.Append "assigned_skillpoints = " & .Counters.AsignedSkills & ", "
         'QueryBuilder.Append "pet_Amount = " & .NroMascotas & ", "
         QueryBuilder.Append "pos_map = " & .Pos.Map & ", "
-        QueryBuilder.Append "pos_x = " & .Pos.x & ", "
+        QueryBuilder.Append "pos_x = " & .Pos.X & ", "
         QueryBuilder.Append "pos_y = " & .Pos.Y & ", "
         QueryBuilder.Append "message_info = '" & .MENSAJEINFORMACION & "', "
         QueryBuilder.Append "body_id = " & .Char.Body & ", "
@@ -704,7 +704,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
         '.Counters.AsignedSkills = QueryData!assigned_skillpoints
         '.NroMascotas = QueryData!pet_Amount
         .Pos.Map = QueryData!pos_map
-        .Pos.x = QueryData!pos_x
+        .Pos.X = QueryData!pos_x
         .Pos.Y = QueryData!pos_y
         .MENSAJEINFORMACION = QueryData!message_info
         .OrigChar.Body = QueryData!body_id
@@ -1782,6 +1782,21 @@ SaveUserSkillDatabase_Err:
         
 End Sub
 
+Public Sub SaveUserSkillsLibres(UserName As String, ByVal SkillsLibres As Integer)
+        
+        On Error GoTo SaveUserHeadDatabase_Err
+        
+100     Call SetUserValue(UserName, "SaveUserSkillsLibres", SkillsLibres)
+
+        
+        Exit Sub
+
+SaveUserHeadDatabase_Err:
+        Call RegistrarError(Err.Number, Err.description, "modDatabase.SaveUserHeadDatabase", Erl)
+        Resume Next
+        
+End Sub
+
 Public Sub SaveNewAccountDatabase(CuentaEmail As String, PasswordHash As String, Salt As String, Codigo As String)
 
     On Error GoTo ErrorHandler
@@ -2389,10 +2404,10 @@ ErrorHandler:
 
 End Function
 
-Public Function SetPositionDatabase(UserName As String, ByVal Map As Integer, ByVal x As Integer, ByVal Y As Integer) As Boolean
+Public Function SetPositionDatabase(UserName As String, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
     On Error GoTo ErrorHandler
 
-    Call MakeQuery("UPDATE user SET pos_map = " & Map & ", pos_x = " & x & ", pos_y = " & x & " WHERE UPPER(name) = '" & UCase$(UserName) & "';", True)
+    Call MakeQuery("UPDATE user SET pos_map = " & Map & ", pos_x = " & X & ", pos_y = " & X & " WHERE UPPER(name) = '" & UCase$(UserName) & "';", True)
     
     SetPositionDatabase = True
 
