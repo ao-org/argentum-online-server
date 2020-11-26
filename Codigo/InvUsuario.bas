@@ -2029,33 +2029,32 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 
             End If
 
-            Select Case ObjIndex
+            Select Case obj.Subtipo
                 
-                Case CAÑA_PESCA, RED_PESCA, CAÑA_PESCA_DORADA
+                Case 1, 2  ' Herramientas del Pescador - Caña y Red
                     Call WriteWorkRequestTarget(UserIndex, eSkill.Pescar)
                 
-                Case TIJERAS, TIJERAS_DORADAS
+                Case 3     ' Herramientas de Alquimia - Tijeras
                     Call WriteWorkRequestTarget(UserIndex, eSkill.Alquimia)
                 
-                Case PIQUETE_MINERO, PIQUETE_MINERO_DORADA
-                    Call WriteWorkRequestTarget(UserIndex, eSkill.Mineria)
-                
-                Case HACHA_LEÑADOR, HACHA_LEÑADOR_DORADA
-                    Call WriteWorkRequestTarget(UserIndex, eSkill.Talar)
-
-                Case MARTILLO_HERRERO
-                    Call WriteConsoleMsg(UserIndex, "Debes hacer click derecho sobre el yunke.", FontTypeNames.FONTTYPE_INFOIAO)
-
-                    ' Call WriteWorkRequestTarget(UserIndex, eSkill.Herreria)
-                Case SERRUCHO_CARPINTERO
-                    Call EnivarObjConstruibles(UserIndex)
-                    Call WriteShowCarpenterForm(UserIndex)
-
-                Case OLLA_ALQUIMIA
+                Case 4     ' Herramientas de Alquimia - Olla
                     Call EnivarObjConstruiblesAlquimia(UserIndex)
                     Call WriteShowAlquimiaForm(UserIndex)
+                
+                Case 5     ' Herramientas de Carpinteria - Serrucho
+                    Call EnivarObjConstruibles(UserIndex)
+                    Call WriteShowCarpenterForm(UserIndex)
+                
+                Case 6     ' Herramientas de Tala - Hacha
+                    Call WriteWorkRequestTarget(UserIndex, eSkill.Talar)
 
-                Case COSTURERO
+                Case 7     ' Herramientas de Herrero - Martillo
+                    Call WriteConsoleMsg(UserIndex, "Debes hacer click derecho sobre el yunque.", FontTypeNames.FONTTYPE_INFOIAO)
+
+                Case 8     ' Herramientas de Mineria - Piquete
+                    Call WriteWorkRequestTarget(UserIndex, eSkill.Mineria)
+                
+                Case 9     ' Herramientas de Sastreria - Costurero
                     Call EnivarObjConstruiblesSastre(UserIndex)
                     Call WriteShowSastreForm(UserIndex)
 

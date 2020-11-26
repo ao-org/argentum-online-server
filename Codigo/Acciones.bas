@@ -698,8 +698,9 @@ Sub AccionParaYunque(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
         Exit Sub
 
     End If
-
-    If UserList(UserIndex).Invent.HerramientaEqpObjIndex <> MARTILLO_HERRERO Then
+    
+    ' Herramientas: SubTipo 7 - Martillo de Herrero
+    If ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).Subtipo <> 7 Then
         'Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
         Call WriteConsoleMsg(UserIndex, "Antes debes tener equipado un martillo de herrero.", FontTypeNames.FONTTYPE_INFO)
         Exit Sub

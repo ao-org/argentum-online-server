@@ -1331,6 +1331,7 @@ Sub LoadOBJData()
         ObjData(Object).CuantoAumento = val(Leer.GetValue("OBJ" & Object, "cuantoaumento"))
         ObjData(Object).MinELV = val(Leer.GetValue("OBJ" & Object, "MinELV"))
         ObjData(Object).Subtipo = val(Leer.GetValue("OBJ" & Object, "Subtipo"))
+        ObjData(Object).Dorada = val(Leer.GetValue("OBJ" & Object, "Dorada"))
         ObjData(Object).VidaUtil = val(Leer.GetValue("OBJ" & Object, "VidaUtil"))
         ObjData(Object).TiempoRegenerar = val(Leer.GetValue("OBJ" & Object, "TiempoRegenerar"))
     
