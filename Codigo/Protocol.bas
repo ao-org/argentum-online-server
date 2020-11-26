@@ -14895,66 +14895,94 @@ End Sub
 
 Private Sub HandleCreateItem(ByVal UserIndex As Integer)
         
-        On Error GoTo HandleCreateItem_Err
+    On Error GoTo HandleCreateItem_Err
         
 
-        '***************************************************
-        'Author: Nicolas Matias Gonzalez (NIGO)
-        'Last Modification: 12/30/06
-        '
-        '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 5 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
-
-        End If
-    
-104     With UserList(UserIndex)
-            'Remove packet ID
-106         Call .incomingData.ReadByte
-
-            Dim tObj    As Integer
-
-            Dim Cuantos As Integer
-        
-108         tObj = .incomingData.ReadInteger()
-110         Cuantos = .incomingData.ReadInteger()
-        
-112         Call LogGM(.name, "/CI: " & tObj & " Cantidad : " & Cuantos)
-        
-114         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
-        
-116         If ObjData(tObj).donador = 1 Then
-118             If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.Dios) Then Exit Sub
-
-            End If
-         
-            'If MapData(.Pos.Map, .Pos.X, .Pos.y - 1).ObjInfo.ObjIndex > 0 Then _
-             Exit Sub
-
-120         If Cuantos > 10000 Then Call WriteConsoleMsg(UserIndex, "Demasiados, míximo para crear : 10.000", FontTypeNames.FONTTYPE_TALK): Exit Sub
-
-122         If MapData(.Pos.Map, .Pos.X, .Pos.Y - 1).TileExit.Map > 0 Then Exit Sub
-        
-124         If tObj < 1 Or tObj > NumObjDatas Then Exit Sub
-        
-            'Is the object not null?
-126         If LenB(ObjData(tObj).name) = 0 Then Exit Sub
-        
-            Dim Objeto As obj
-        
-128         Objeto.Amount = Cuantos
-130         Objeto.ObjIndex = tObj
-132         Call MakeObj(Objeto, .Pos.Map, .Pos.X, .Pos.Y)
-
-        End With
-
-        
+    '***************************************************
+    'Author: Nicolas Matias Gonzalez (NIGO)
+    'Last Modification: 12/30/06
+    '
+    '***************************************************
+    If UserList(UserIndex).incomingData.Length < 5 Then
+        Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
         Exit Sub
 
+    End If
+    
+    With UserList(UserIndex)
+
+        'Remove packet ID
+        Call .incomingData.ReadByte
+
+        Dim tObj    As Integer
+        Dim Cuantos As Integer
+        
+        tObj = .incomingData.ReadInteger()
+        Cuantos = .incomingData.ReadInteger()
+        
+        ' Si es usuario, consejero o Semi-Dios, lo sacamos cagando.
+        If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
+        
+        If ObjData(tObj).donador = 1 Then
+            ' Si es usuario, consejero o Semi-Dios y trata de crear un objeto para donadores, lo sacamos cagando.
+            If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.Dios) Then Exit Sub
+        End If
+        
+        ' Si hace mas de 10000, lo sacamos cagando.
+        If Cuantos > MAX_INVENTORY_OBJS Then
+            Call WriteConsoleMsg(UserIndex, "Solo podés crear hasta " & CStr(MAX_INVENTORY_OBJS) & " unidades", FontTypeNames.FONTTYPE_TALK)
+            Exit Sub
+        End If
+        
+        ' Hay un TileExit donde estoy creando el objeto?
+        If MapData(.Pos.Map, .Pos.X, .Pos.Y - 1).TileExit.Map > 0 Then Exit Sub
+        
+        ' El indice proporcionado supera la cantidad minima o total de items existentes en el juego?
+        If tObj < 1 Or tObj > NumObjDatas Then Exit Sub
+        
+        ' El nombre del objeto es nulo?
+        If LenB(ObjData(tObj).name) = 0 Then Exit Sub
+        
+        Dim Objeto As obj
+            Objeto.Amount = Cuantos
+            Objeto.ObjIndex = tObj
+
+        ' Chequeo si el objeto es AGARRABLE(para las puertas, arboles y demas objs. que no deberian estar en el inventario)
+        '   0 = SI
+        '   1 = NO
+        If ObjData(tObj).Agarrable = 0 Then
+            
+            ' Trato de meterlo en el inventario.
+            If MeterItemEnInventario(UserIndex, Objeto) Then
+                Call WriteConsoleMsg(UserIndex, "Has creado " & Objeto.Amount & " unidades de " & ObjData(tObj).name & ".", FontTypeNames.FONTTYPE_INFO)
+            
+            Else
+                ' Si no hay espacio, lo tiro al piso.
+                Call TirarItemAlPiso(.Pos, Objeto)
+                Call WriteConsoleMsg(UserIndex, "No tenes espacio en tu inventario para crear el item.", FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(UserIndex, "ATENCION: CREASTE [" & Cuantos & "] ITEMS, TIRE E INGRESE /DEST EN CONSOLA PARA DESTRUIR LOS QUE NO NECESITE!!", FontTypeNames.FONTTYPE_GUILD)
+                
+            End If
+        
+        Else
+        
+            ' Crear el item NO AGARRARBLE y tirarlo al piso.
+            Call TirarItemAlPiso(.Pos, Objeto)
+            Call WriteConsoleMsg(UserIndex, "ATENCION: CREASTE [" & Cuantos & "] ITEMS, TIRE E INGRESE /DEST EN CONSOLA PARA DESTRUIR LOS QUE NO NECESITE!!", FontTypeNames.FONTTYPE_GUILD)
+            
+        End If
+        
+        ' Lo registro en los logs.
+        Call LogGM(.name, "/CI: " & tObj & " Cantidad : " & Cuantos)
+
+    End With
+
+        
+    Exit Sub
+
 HandleCreateItem_Err:
-        Call RegistrarError(Err.Number, Err.description, "Protocol.HandleCreateItem", Erl)
-        Resume Next
+    Call RegistrarError(Err.Number, Err.description, "Protocol.HandleCreateItem", Erl)
+    Resume Next
         
 End Sub
 
