@@ -11138,19 +11138,15 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
         Call buffer.ReadByte
         
         Dim UserName      As String
-
         Dim tUser         As Integer
-
         Dim opcion        As Byte
 
         Dim Arg1          As String
-
         Dim Arg2          As String
 
         Dim valido        As Boolean
 
         Dim LoopC         As Byte
-
         Dim commandString As String
 
         Dim n             As Byte
@@ -11186,8 +11182,9 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                     valido = (opcion = eEditOptions.eo_Level And tUser = UserIndex) Or opcion = eEditOptions.eo_Body Or opcion = eEditOptions.eo_Head Or opcion = eEditOptions.eo_CiticensKilled Or opcion = eEditOptions.eo_CriminalsKilled Or opcion = eEditOptions.eo_Class Or opcion = eEditOptions.eo_Skills
 
             End Select
-            
-        ElseIf .flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios) Then   'Si no es RM debe ser dios para poder usar este comando
+           
+        ' Si sos GM y queres editarte a vos mismo, podes.
+        ElseIf (.flags.Privilegios And PlayerType.user) <> 0 And UserIndex = tUser Then
             valido = True
 
         End If
@@ -14921,8 +14918,11 @@ Private Sub HandleCreateItem(ByVal UserIndex As Integer)
         tObj = .incomingData.ReadInteger()
         Cuantos = .incomingData.ReadInteger()
         
-        ' Si es usuario, consejero o Semi-Dios, lo sacamos cagando.
-        If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
+        ' Si es usuario o consejero, lo sacamos cagando.
+        If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then Exit Sub
+        
+        ' Si es Semi-Dios, dejamos crear un item siempre y cuando pueda estar en el inventario.
+        If (.flags.Privilegios And PlayerType.SemiDios) And ObjData(tObj).Agarrable = 1 Then Exit Sub
         
         If ObjData(tObj).donador = 1 Then
             ' Si es usuario, consejero o Semi-Dios y trata de crear un objeto para donadores, lo sacamos cagando.
