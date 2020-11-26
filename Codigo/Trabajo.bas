@@ -958,10 +958,11 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
         On Error GoTo CarpinteroConstruirItem_Err
         
 
-100     If CarpinteroTieneMateriales(UserIndex, ItemIndex) And _
-            UserList(UserIndex).Stats.UserSkills(eSkill.Carpinteria) >= ObjData(ItemIndex).SkCarpinteria And _
-            PuedeConstruirCarpintero(ItemIndex) And _
-            UserList(UserIndex).Invent.HerramientaEqpObjIndex = SERRUCHO_CARPINTERO Then
+100     If CarpinteroTieneMateriales(UserIndex, ItemIndex) _
+                And UserList(UserIndex).Stats.UserSkills(eSkill.Carpinteria) >= ObjData(ItemIndex).SkCarpinteria _
+                And PuedeConstruirCarpintero(ItemIndex) _
+                And ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).OBJType = eOBJType.otHerramientas _
+                And ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).Subtipo = 5 Then
     
 102         If UserList(UserIndex).Stats.MinSta > 2 Then
 104             Call QuitarSta(UserIndex, 2)
@@ -1024,9 +1025,11 @@ Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
 
         End If
 
-104     If AlquimistaTieneMateriales(UserIndex, ItemIndex) And _
-            UserList(UserIndex).Stats.UserSkills(eSkill.Alquimia) >= ObjData(ItemIndex).SkPociones And _
-            PuedeConstruirAlquimista(ItemIndex) And UserList(UserIndex).Invent.HerramientaEqpObjIndex = OLLA_ALQUIMIA Then
+104     If AlquimistaTieneMateriales(UserIndex, ItemIndex) _
+                And UserList(UserIndex).Stats.UserSkills(eSkill.Alquimia) >= ObjData(ItemIndex).SkPociones _
+                And PuedeConstruirAlquimista(ItemIndex) _
+                And ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).OBJType = eOBJType.otHerramientas _
+                And ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).Subtipo = 4 Then
         
 106         UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - 25
 108         Call WriteUpdateSta(UserIndex)
@@ -1078,9 +1081,11 @@ Public Sub SastreConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As In
 
         End If
 
-104     If SastreTieneMateriales(UserIndex, ItemIndex) And _
-            UserList(UserIndex).Stats.UserSkills(eSkill.Herreria) >= ObjData(ItemIndex).SkMAGOria And _
-            PuedeConstruirSastre(ItemIndex) And UserList(UserIndex).Invent.HerramientaEqpObjIndex = COSTURERO Then
+104     If SastreTieneMateriales(UserIndex, ItemIndex) _
+                And UserList(UserIndex).Stats.UserSkills(eSkill.Herreria) >= ObjData(ItemIndex).SkMAGOria _
+                And PuedeConstruirSastre(ItemIndex) _
+                And ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).OBJType = eOBJType.otHerramientas _
+                And ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).Subtipo = 9 Then
         
 106         UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - 2
         

@@ -482,10 +482,6 @@ Public Const MAXNPCS        As Integer = 10000
 
 Public Const MAXCHARS       As Integer = 10000
 
-Public Const HACHA_LEÑADOR As Integer = 127 'OK
-
-Public Const PIQUETE_MINERO      As Integer = 187 'OK
-
 Public Const DAGA                As Integer = 15 'OK
 
 Public Const FOGATA_APAG         As Integer = 136 'OK
@@ -498,29 +494,8 @@ Public Const PLATA_MINA          As Integer = 193 'OK
 
 Public Const HIERRO_MINA         As Integer = 192 'OK
 
-Public Const MARTILLO_HERRERO    As Integer = 389 'OK
-
-Public Const SERRUCHO_CARPINTERO As Integer = 198 'OK
-
-Public Const OLLA_ALQUIMIA       As Integer = 887  'OK
-
-Public Const COSTURERO           As Integer = 886 'OK
-
 Public Const ObjArboles          As Integer = 4 'OK
 
-Public Const RED_PESCA           As Integer = 138 'OK
-
-Public Const CAÑA_PESCA As Integer = 881 'OK
-
-Public Const TIJERAS As Integer = 885 'OK
-
-Public Const CAÑA_PESCA_DORADA As Integer = 364 'OK
-
-Public Const TIJERAS_DORADAS As Integer = 369 'OK
-
-Public Const HACHA_LEÑADOR_DORADA As Integer = 361 'OK
-
-Public Const PIQUETE_MINERO_DORADA As Integer = 363 'OK
 
 Public Enum eNPCType
 
@@ -1230,6 +1205,9 @@ Public Type ObjData
     QueSkill As Byte
     
     Subtipo As Byte
+    
+    Dorada As Byte
+    
     VidaUtil As Integer
     TiempoRegenerar As Integer
     
