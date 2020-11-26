@@ -29780,12 +29780,17 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
         Dim NpcIndex  As Integer
 
         Dim QuestSlot As Byte
+        
+        Dim Indice As Byte
  
 100     Call UserList(UserIndex).incomingData.ReadInteger
+
+        Indice = UserList(UserIndex).incomingData.ReadByte
  
 102     NpcIndex = UserList(UserIndex).flags.TargetNPC
     
 104     If NpcIndex = 0 Then Exit Sub
+        If Indice = 0 Then Exit Sub
     
         'Esta el personaje en la distancia correcta?
 106     If Distancia(UserList(UserIndex).Pos, Npclist(NpcIndex).Pos) > 5 Then
@@ -29793,12 +29798,44 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
             Exit Sub
 
         End If
+        
+        If TieneQuest(UserIndex, Indice) Then
+            Call WriteConsoleMsg(UserIndex, "La quest ya esta en curso.", FontTypeNames.FONTTYPE_INFOIAO)
+            Exit Sub
+        End If
+        
+        
+        
+        'El personaje completo la quest que requiere?
+        If QuestList(Npclist(NpcIndex).QuestNumber(Indice)).RequiredQuest > 0 Then
+            If Not UserDoneQuest(UserIndex, QuestList(Npclist(NpcIndex).QuestNumber(Indice)).RequiredQuest) Then
+                Call WriteChatOverHead(UserIndex, "Debes completas la quest " & QuestList(QuestList(Npclist(NpcIndex).QuestNumber(Indice)).RequiredQuest).nombre & " para emprender esta mision.", Npclist(NpcIndex).Char.CharIndex, vbYellow)
+                Exit Sub
+            End If
+        End If
+        
+
+        'El personaje tiene suficiente nivel?
+        If UserList(UserIndex).Stats.ELV < QuestList(Npclist(NpcIndex).QuestNumber(Indice)).RequiredLevel Then
+            Call WriteChatOverHead(UserIndex, "Debes ser por lo menos nivel " & QuestList(Npclist(NpcIndex).QuestNumber(Indice)).RequiredLevel & " para emprender esta mision.", Npclist(NpcIndex).Char.CharIndex, vbYellow)
+            Exit Sub
+        End If
+        
+        
+        'El personaje ya hizo la quest?
+        If UserDoneQuest(UserIndex, Npclist(NpcIndex).QuestNumber(Indice)) Then
+            Call WriteChatOverHead(UserIndex, "QUESTNEXT*" & Npclist(NpcIndex).QuestNumber(Indice), Npclist(NpcIndex).Char.CharIndex, vbYellow)
+            Exit Sub
+        End If
     
 110     QuestSlot = FreeQuestSlot(UserIndex)
+
+
+
     
         'Agregamos la quest.
 112     With UserList(UserIndex).QuestStats.Quests(QuestSlot)
-114         .QuestIndex = Npclist(NpcIndex).QuestNumber
+114         .QuestIndex = Npclist(NpcIndex).QuestNumber(Indice)
         
 116         If QuestList(.QuestIndex).RequiredNPCs Then ReDim .NPCsKilled(1 To QuestList(.QuestIndex).RequiredNPCs)
 118         Call WriteConsoleMsg(UserIndex, "Has aceptado la mision " & Chr(34) & QuestList(.QuestIndex).nombre & Chr(34) & ".", FontTypeNames.FONTTYPE_INFOIAO)
@@ -30117,6 +30154,24 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
                 Call .WriteInteger(QuestList(QuestIndex).RewardOBJ(i).ObjIndex)
             Next i
 
+        End If
+        
+        
+        'Enviamos el estado de la QUEST
+        '0 SIN HACER
+        '1 EN CURSO
+        '2 REALIZADA
+        
+        'La tiene aceptada el usuario?
+        If TieneQuest(UserIndex, QuestIndex) Then
+            Call .WriteByte(1)
+        Else
+            If UserDoneQuest(UserIndex, Npclist(NpcIndex).QuestNumber(QuestIndex)) Then
+                Call .WriteByte(2)
+            Else
+                Call .WriteByte(0)
+            End If
+                
         End If
                  
 
