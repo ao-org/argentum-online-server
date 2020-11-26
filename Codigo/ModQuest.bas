@@ -696,10 +696,6 @@ Public Sub EnviarQuest(ByVal UserIndex As Integer)
 
        ' End If
         
-        
-        
-        Call WriteChatOverHead(UserIndex, "te envio lista de quest", Npclist(NpcIndex).Char.CharIndex, vbYellow)
-        
         'El personaje completo la quest que requiere?
        ' If QuestList(Npclist(NpcIndex).QuestNumber(1)).RequiredQuest > 0 Then
          '   If Not UserDoneQuest(UserIndex, QuestList(Npclist(NpcIndex).QuestNumber(1)).RequiredQuest) Then
@@ -721,12 +717,28 @@ Public Sub EnviarQuest(ByVal UserIndex As Integer)
         'End If
     
         'A esta altura ya analizo todas las restricciones y esta preparado para el handle propiamente dicho
- 
-120    ' tmpByte = TieneQuest(UserIndex, Npclist(NpcIndex).QuestNumber)
-    
-122    ' If tmpByte Then
-            'El usuario esta haciendo la quest, entonces va a hablar con el NPC para recibir la recompensa.
-124       '  Call FinishQuest(UserIndex, Npclist(NpcIndex).QuestNumber, tmpByte)
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        'Hago un for para chequear si alguna de las misiones que da el NPC ya se completo.
+        Dim Q As Byte
+        
+        
+        For Q = 1 To Npclist(NpcIndex).NumQuest
+120         tmpByte = TieneQuest(UserIndex, Npclist(NpcIndex).QuestNumber(Q))
+        
+122         If tmpByte Then
+                'El usuario esta haciendo la quest, entonces va a hablar con el NPC para recibir la recompensa.
+124             Call FinishQuest(UserIndex, Npclist(NpcIndex).QuestNumber(Q), tmpByte)
+            End If
+        
+        Next Q
        ' Else
             'El usuario no esta haciendo la quest, entonces primero recibe un informe con los detalles de la mision.
 126         'tmpByte = FreeQuestSlot(UserIndex)
