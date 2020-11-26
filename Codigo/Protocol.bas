@@ -3980,16 +3980,18 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 364             Case eSkill.Pescar
                 
 366                 If .Invent.HerramientaEqpObjIndex = 0 Then Exit Sub
-                
+                    
+                    If ObjData(.Invent.HerramientaEqpObjIndex).OBJType <> eOBJType.otHerramientas Then Exit Sub
+                    
                     'Check interval
 368                 If Not IntervaloPermiteTrabajar(UserIndex) Then Exit Sub
+
+370                 Select Case ObjData(.Invent.MunicionEqpObjIndex).Subtipo
                 
-370                 Select Case .Invent.HerramientaEqpObjIndex
-                
-                        Case CAÑA_PESCA, CAÑA_PESCA_DORADA
+                        Case 1      ' Subtipo: Caña de Pescar
 
 372                         If (MapData(.Pos.Map, X, Y).Blocked And FLAG_AGUA) <> 0 Then
-374                             Call DoPescar(UserIndex, False, .Invent.HerramientaEqpObjIndex = CAÑA_PESCA_DORADA)
+374                             Call DoPescar(UserIndex, False, ObjData(.Invent.MunicionEqpObjIndex).Dorada = 1)
 376                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .Pos.X, .Pos.Y))
                             Else
 378                             Call WriteConsoleMsg(UserIndex, "No hay agua donde pescar. Busca un lago, rio o mar.", FontTypeNames.FONTTYPE_INFO)
@@ -3997,7 +3999,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
     
                             End If
                     
-382                     Case RED_PESCA
+382                     Case 2      ' Subtipo: Red de Pesca
     
 384                         If (MapData(.Pos.Map, X, Y).Blocked And FLAG_AGUA) <> 0 Then
                             
@@ -4046,13 +4048,15 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 418             Case eSkill.Talar
             
 420                 If .Invent.HerramientaEqpObjIndex = 0 Then Exit Sub
-            
+
+                    If ObjData(.Invent.HerramientaEqpObjIndex).OBJType <> eOBJType.otHerramientas Then Exit Sub
+        
                     'Check interval
 422                 If Not IntervaloPermiteTrabajar(UserIndex) Then Exit Sub
 
-424                 Select Case .Invent.HerramientaEqpObjIndex
+424                 Select Case ObjData(.Invent.HerramientaEqpObjIndex).Subtipo
                 
-                        Case HACHA_LEÑADOR, HACHA_LEÑADOR_DORADA
+                        Case 6      ' Herramientas de Carpinteria - Hacha
                         
                             'Target whatever is in the tile
 426                         Call LookatTile(UserIndex, .Pos.Map, X, Y)
@@ -4092,10 +4096,11 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
                                 '¡Hay un arbol donde clickeo?
 452                             If ObjData(DummyInt).OBJType = eOBJType.otArboles Then
-454                                 Call DoTalar(UserIndex, X, Y, .Invent.HerramientaEqpObjIndex = HACHA_LEÑADOR_DORADA)
+454                                 Call DoTalar(UserIndex, X, Y, ObjData(.Invent.HerramientaEqpObjIndex).Dorada = 1)
                                 End If
 
                             Else
+                            
 456                             Call WriteConsoleMsg(UserIndex, "No hay ningún árbol ahí.", FontTypeNames.FONTTYPE_INFO)
 458                             Call WriteWorkRequestTarget(UserIndex, 0)
 
@@ -4111,13 +4116,15 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 464             Case eSkill.Alquimia
             
 466                 If .Invent.HerramientaEqpObjIndex = 0 Then Exit Sub
-                
+                    
+                    If ObjData(.Invent.HerramientaEqpObjIndex).OBJType <> eOBJType.otHerramientas Then Exit Sub
+                    
                     'Check interval
 468                 If Not IntervaloPermiteTrabajar(UserIndex) Then Exit Sub
 
-470                 Select Case .Invent.HerramientaEqpObjIndex
+470                 Select Case ObjData(.Invent.HerramientaEqpObjIndex).Subtipo
                 
-                        Case TIJERAS, TIJERAS_DORADAS
+                        Case 3  ' Herramientas de Alquimia - Tijeras
 
 472                         If MapInfo(UserList(UserIndex).Pos.Map).Seguro = 1 Then
 474                             Call WriteWorkRequestTarget(UserIndex, 0)
@@ -4172,13 +4179,15 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 514             Case eSkill.Mineria
             
 516                 If .Invent.HerramientaEqpObjIndex = 0 Then Exit Sub
-                
+                    
+                    If ObjData(.Invent.HerramientaEqpObjIndex).OBJType <> eOBJType.otHerramientas Then Exit Sub
+                    
                     'Check interval
 518                 If Not IntervaloPermiteTrabajar(UserIndex) Then Exit Sub
 
 520                 Select Case .Invent.HerramientaEqpObjIndex
                 
-                        Case PIQUETE_MINERO, PIQUETE_MINERO_DORADA
+                        Case 8  ' Herramientas de Mineria - Piquete
                 
                             'Target whatever is in the tile
 522                         Call LookatTile(UserIndex, .Pos.Map, X, Y)
@@ -4208,7 +4217,8 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
                                 '¡Hay un yacimiento donde clickeo?
 544                             If ObjData(DummyInt).OBJType = eOBJType.otYacimiento Then
-546                                 Call DoMineria(UserIndex, X, Y, .Invent.HerramientaEqpObjIndex = PIQUETE_MINERO_DORADA)
+546                                 Call DoMineria(UserIndex, X, Y, ObjData(.Invent.HerramientaEqpObjIndex).Dorada = 1)
+
                                 Else
 548                                 Call WriteConsoleMsg(UserIndex, "Ahí no hay ningún yacimiento.", FontTypeNames.FONTTYPE_INFO)
 550                                 Call WriteWorkRequestTarget(UserIndex, 0)
