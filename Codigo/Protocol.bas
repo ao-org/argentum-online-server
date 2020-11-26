@@ -11131,7 +11131,6 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 
         'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
         Dim buffer As New clsByteQueue
-
         Call buffer.CopyBuffer(.incomingData)
         
         'Remove packet ID
@@ -11157,12 +11156,14 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
             tUser = UserIndex
         Else
             tUser = NameIndex(UserName)
-
         End If
         
         opcion = buffer.ReadByte()
         Arg1 = buffer.ReadASCIIString()
         Arg2 = buffer.ReadASCIIString()
+        
+        'If we got here then packet is complete, copy data back to original queue
+        Call .incomingData.CopyBuffer(buffer)
         
         If .flags.Privilegios And PlayerType.RoleMaster Then
 
@@ -11213,6 +11214,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                             UserList(tUser).Stats.Exp = UserList(tUser).Stats.Exp + val(Arg1)
                             Call CheckUserLevel(tUser)
                             Call WriteUpdateExp(tUser)
+                            
                         Else
                             Call WriteConsoleMsg(UserIndex, "El usuario es nivel máximo.", FontTypeNames.FONTTYPE_INFO)
 
@@ -11223,6 +11225,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                 Case eEditOptions.eo_Body
 
                     If tUser <= 0 Then
+                    
                         If Database_Enabled Then
                             Call SaveUserBodyDatabase(UserName, val(Arg1))
                         Else
@@ -11239,6 +11242,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                 Case eEditOptions.eo_Head
 
                     If tUser <= 0 Then
+                    
                         If Database_Enabled Then
                             Call SaveUserHeadDatabase(UserName, val(Arg1))
                         Else
@@ -11307,7 +11311,6 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                     Else
 
                         For LoopC = 1 To NUMCLASES
-
                             If UCase$(ListaClases(LoopC)) = UCase$(Arg1) Then Exit For
                         Next LoopC
                         
@@ -11323,7 +11326,6 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                 Case eEditOptions.eo_Skills
 
                     For LoopC = 1 To NUMSKILLS
-
                         If UCase$(Replace$(SkillsNames(LoopC), " ", "+")) = UCase$(Arg1) Then Exit For
                     Next LoopC
                     
@@ -11332,6 +11334,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                     Else
 
                         If tUser <= 0 Then
+                        
                             If Database_Enabled Then
                                 Call SaveUserSkillDatabase(UserName, LoopC, val(Arg2))
                             Else
@@ -11350,7 +11353,14 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                 Case eEditOptions.eo_SkillPointsLeft
 
                     If tUser <= 0 Then
-                        Call WriteVar(CharPath & UserName & ".chr", "STATS", "SkillPtsLibres", Arg1)
+                    
+                        If Database_Enabled Then
+                            Call SaveUserSkillsLibres(UserName, val(Arg1))
+                        Else
+                            Call WriteVar(CharPath & UserName & ".chr", "STATS", "SkillPtsLibres", Arg1)
+
+                        End If
+                        
                         Call WriteConsoleMsg(UserIndex, "Usuario Offline Alterado: " & UserName, FontTypeNames.FONTTYPE_INFO)
                     Else
                         UserList(tUser).Stats.SkillPts = val(Arg1)
@@ -11361,11 +11371,13 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 
                     If tUser <= 0 Then
                         Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                    
                     Else
                         Arg1 = UCase$(Arg1)
 
                         If (Arg1 = "MUJER") Then
                             UserList(tUser).genero = eGenero.Mujer
+                        
                         ElseIf (Arg1 = "HOMBRE") Then
                             UserList(tUser).genero = eGenero.Hombre
 
@@ -11377,7 +11389,9 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 
                     If tUser <= 0 Then
                         Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                        
                     Else
+                    
                         Arg1 = UCase$(Arg1)
 
                         If (Arg1 = "HUMANO") Then
@@ -11398,6 +11412,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                     End If
                 
                 Case Else
+                
                     Call WriteConsoleMsg(UserIndex, "Comando no permitido.", FontTypeNames.FONTTYPE_INFO)
 
             End Select
@@ -11453,9 +11468,6 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
         commandString = commandString & Arg1 & " " & Arg2
         
         If valido Then Call LogGM(.name, commandString & " " & UserName)
-        
-        'If we got here then packet is complete, copy data back to original queue
-        Call .incomingData.CopyBuffer(buffer)
 
     End With
 
