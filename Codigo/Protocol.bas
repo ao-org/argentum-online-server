@@ -30170,9 +30170,12 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
         
         
         'Enviamos el estado de la QUEST
-        '0 SIN HACER
+        '0 Disponible
         '1 EN CURSO
         '2 REALIZADA
+        '3 no puede hacerla
+        
+        Dim PuedeHacerla As Boolean
         
         'La tiene aceptada el usuario?
         If TieneQuest(UserIndex, QuestIndex) Then
@@ -30181,7 +30184,23 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
             If UserDoneQuest(UserIndex, Npclist(NpcIndex).QuestNumber(QuestIndex)) Then
                 Call .WriteByte(2)
             Else
-                Call .WriteByte(0)
+                PuedeHacerla = True
+                If QuestList(QuestIndex).RequiredQuest > 0 Then
+                    If Not UserDoneQuest(UserIndex, QuestList(QuestIndex).RequiredQuest) Then
+                        PuedeHacerla = False
+                    End If
+                End If
+                
+                If UserList(UserIndex).Stats.ELV < QuestList(QuestIndex).RequiredLevel Then
+                    PuedeHacerla = False
+                End If
+                
+                If PuedeHacerla Then
+                    Call .WriteByte(0)
+                Else
+                    Call .WriteByte(3)
+                End If
+                
             End If
                 
         End If
