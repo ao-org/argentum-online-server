@@ -98,7 +98,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
 
         Dim NpcIndex       As Integer
         
-        Exit Sub
+
  
 100     NpcIndex = UserList(UserIndex).flags.TargetNPC
     
@@ -727,18 +727,19 @@ Public Sub EnviarQuest(ByVal UserIndex As Integer)
         
         
         'Hago un for para chequear si alguna de las misiones que da el NPC ya se completo.
-        Dim Q As Byte
+        Dim q As Byte
         
         
-        For Q = 1 To Npclist(NpcIndex).NumQuest
-120         tmpByte = TieneQuest(UserIndex, Npclist(NpcIndex).QuestNumber(Q))
+        For q = 1 To Npclist(NpcIndex).NumQuest
+120         tmpByte = TieneQuest(UserIndex, Npclist(NpcIndex).QuestNumber(q))
         
 122         If tmpByte Then
                 'El usuario esta haciendo la quest, entonces va a hablar con el NPC para recibir la recompensa.
-124             Call FinishQuest(UserIndex, Npclist(NpcIndex).QuestNumber(Q), tmpByte)
+124             Call FinishQuest(UserIndex, Npclist(NpcIndex).QuestNumber(q), tmpByte)
+
             End If
         
-        Next Q
+        Next q
        ' Else
             'El usuario no esta haciendo la quest, entonces primero recibe un informe con los detalles de la mision.
 126         'tmpByte = FreeQuestSlot(UserIndex)
