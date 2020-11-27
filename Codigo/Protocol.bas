@@ -30181,7 +30181,7 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
         If TieneQuest(UserIndex, QuestIndex) Then
             Call .WriteByte(1)
         Else
-            If UserDoneQuest(UserIndex, Npclist(NpcIndex).QuestNumber(QuestIndex)) Then
+            If UserDoneQuest(UserIndex, QuestIndex) Then
                 Call .WriteByte(2)
             Else
                 PuedeHacerla = True
