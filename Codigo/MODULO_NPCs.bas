@@ -684,27 +684,55 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
 110     GG = IIf(Npclist(NpcIndex).showName > 0, Npclist(NpcIndex).name & Npclist(NpcIndex).SubName, vbNullString)
     
 112     If Not toMap Then
-114         'If Npclist(NpcIndex).NumQuest > 0 Then
+114         If Npclist(NpcIndex).NumQuest > 0 Then
 
-
-           ' tmpByte = TieneQuest(sndIndex, Npclist(NpcIndex).QuestNumber)
+            Dim q As Byte
+            Dim HayFinalizada As Boolean
+            Dim HayDisponible As Boolean
+            Dim HayPendiente As Boolean
+    
+                For q = 1 To Npclist(NpcIndex).NumQuest
+                     tmpByte = TieneQuest(sndIndex, Npclist(NpcIndex).QuestNumber(q))
                 
-122               ' If tmpByte Then
-                      '  If FinishQuestCheck(sndIndex, Npclist(NpcIndex).QuestNumber, tmpByte) Then
-                        '    Simbolo = 3
-                       ' Else
-                        '    Simbolo = 4
-                   '    ' End If
-                   ' Else
-116                  ' '  If UserDoneQuest(sndIndex, Npclist(NpcIndex).QuestNumber) Or UserList(sndIndex).Stats.ELV < QuestList(Npclist(NpcIndex).QuestNumber).RequiredLevel Then
-118                        ' Simbolo = 2
-                       ' Else
-120                    '     Simbolo = 1
-                        'End If
-                    'End If
+                     If tmpByte Then
+                            If FinishQuestCheck(sndIndex, Npclist(NpcIndex).QuestNumber(q), tmpByte) Then
+                                Simbolo = 3
+                                HayFinalizada = True
+                            Else
+                                HayPendiente = True
+                                Simbolo = 4
+                            End If
+                        Else
+116                         If UserDoneQuest(sndIndex, Npclist(NpcIndex).QuestNumber(q)) Or UserList(sndIndex).Stats.ELV < QuestList(Npclist(NpcIndex).QuestNumber(q)).RequiredLevel Then
+118                             Simbolo = 2
+                            Else
+120                             Simbolo = 1
+                                HayDisponible = True
+                            End If
+                    End If
+            
                 
-
-           ' End If
+                Next q
+                
+                
+                'Para darle prioridad a ciertos simbolos
+                
+                If HayDisponible Then
+                    Simbolo = 1
+                End If
+                
+                If HayPendiente Then
+                    Simbolo = 4
+                End If
+                
+                If HayFinalizada Then
+                    Simbolo = 3
+                End If
+                'Para darle prioridad a ciertos simbolos
+                
+            End If
+            
+            
 
          Call WriteCharacterCreate(sndIndex, Npclist(NpcIndex).Char.Body, Npclist(NpcIndex).Char.Head, Npclist(NpcIndex).Char.Heading, Npclist(NpcIndex).Char.CharIndex, X, Y, Npclist(NpcIndex).Char.WeaponAnim, Npclist(NpcIndex).Char.ShieldAnim, 0, 0, Npclist(NpcIndex).Char.CascoAnim, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1#, True, False, 0, 0, 0, 0, Npclist(NpcIndex).Stats.MinHp, Npclist(NpcIndex).Stats.MaxHp, Simbolo)
         
