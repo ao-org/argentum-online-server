@@ -154,9 +154,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
             End If
     
             'A esta altura ya cumplio los objetivos, entonces se le entregan las recompensas.
-            'Call WriteConsoleMsg(UserIndex, "Has completado la mision " & Chr(34) & QuestList(QuestIndex).Nombre & Chr(34) & "!", FontTypeNames.FONTTYPE_New_Celeste)
-        
-136        ' Call WriteChatOverHead(UserIndex, "QUESTFIN*" & Npclist(NpcIndex).QuestNumber, Npclist(NpcIndex).Char.CharIndex, vbYellow)
+136         Call WriteChatOverHead(UserIndex, "QUESTFIN*" & QuestIndex, Npclist(NpcIndex).Char.CharIndex, vbYellow)
         
 
             'Si la quest pedia objetos, se los saca al personaje.
@@ -735,7 +733,10 @@ Public Sub EnviarQuest(ByVal UserIndex As Integer)
         
 122         If tmpByte Then
                 'El usuario esta haciendo la quest, entonces va a hablar con el NPC para recibir la recompensa.
-124             Call FinishQuest(UserIndex, Npclist(NpcIndex).QuestNumber(q), tmpByte)
+                If FinishQuestCheck(UserIndex, Npclist(NpcIndex).QuestNumber(q), tmpByte) Then
+124                 Call FinishQuest(UserIndex, Npclist(NpcIndex).QuestNumber(q), tmpByte)
+                    Exit Sub
+                End If
 
             End If
         
