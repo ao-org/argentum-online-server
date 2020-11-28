@@ -27,7 +27,6 @@ Option Explicit
 #If UsarQueSocket = 1 Then
 
     Private totalProcessTime  As Currency
-
     Private totalProcessCount As Long
 
     'Si la variable esta en TRUE , al iniciar el WsApi se crea
@@ -40,23 +39,15 @@ Option Explicit
     Private Const SD_BOTH As Long = &H2
 
     Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
-
     Public Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
-
     Public Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
-
     Public Declare Function CallWindowProc Lib "user32" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Long, ByVal hWnd As Long, ByVal msg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
-
-    Private Declare Function CreateWindowEx Lib "user32" Alias "CreateWindowExA" (ByVal dwExStyle As Long, ByVal lpClassName As String, ByVal lpWindowName As String, ByVal dwStyle As Long, ByVal x As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hwndParent As Long, ByVal hMenu As Long, ByVal hInstance As Long, lpParam As Any) As Long
-
+    Private Declare Function CreateWindowEx Lib "user32" Alias "CreateWindowExA" (ByVal dwExStyle As Long, ByVal lpClassName As String, ByVal lpWindowName As String, ByVal dwStyle As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hwndParent As Long, ByVal hMenu As Long, ByVal hInstance As Long, lpParam As Any) As Long
     Private Declare Function DestroyWindow Lib "user32" (ByVal hWnd As Long) As Long
 
     Private Const WS_CHILD = &H40000000
-
     Public Const GWL_WNDPROC = (-4)
-
     Private Const SIZE_RCVBUF As Long = 8192
-
     Private Const SIZE_SNDBUF As Long = 8192
 
     ''
@@ -67,10 +58,8 @@ Option Explicit
     ' @param slot slot
     '
     Public Type tSockCache
-
         Sock As Long
         slot As Long
-
     End Type
 
     Public WSAPISock2Usr  As New Collection
@@ -79,16 +68,13 @@ Option Explicit
     ' ====================================================================================
 
     Public OldWProc       As Long
-
     Public ActualWProc    As Long
-
     Public hWndMsg        As Long
 
     ' ====================================================================================
     ' ====================================================================================
 
     Public SockListen     As Long
-
     Public LastSockListen As Long
 
 #End If
@@ -265,20 +251,13 @@ Public Function WndProc(ByVal hWnd As Long, ByVal msg As Long, ByVal wParam As L
 
         On Error Resume Next
 
-        Dim ttt As Long
-
-        ttt = GetTickCount
+        Dim ttt As Long: ttt = GetTickCount
 
         Dim ret      As Long
-
         Dim Tmp()    As Byte
-
         Dim S        As Long, e As Long
-
         Dim n        As Integer
-    
         Dim Dale     As Boolean
-
         Dim UltError As Long
 
         WndProc = 0
@@ -300,7 +279,6 @@ Public Function WndProc(ByVal hWnd As Long, ByVal msg As Long, ByVal wParam As L
                         If S = SockListen Then
                             'If frmMain.SUPERLOG.Value = 1 Then LogCustom ("sockLIsten = " & s & ". Llamo a Eventosocketaccept")
                             Call EventoSockAccept(S)
-
                         End If
         
                         '    Case FD_WRITE
@@ -358,6 +336,7 @@ Public Function WndProc(ByVal hWnd As Long, ByVal msg As Long, ByVal wParam As L
                             If UltError = WSAEMSGSIZE Then
                                 Debug.Print "WSAEMSGSIZE"
                                 ret = SIZE_RCVBUF
+                                
                             Else
                                 Debug.Print "Error en Recv: " & GetWSAErrorString(UltError)
                                 Call LogApiSock("Error en Recv: N=" & n & " S=" & S & " Str=" & GetWSAErrorString(UltError))
@@ -427,11 +406,8 @@ Public Function WsApiEnviar(ByVal slot As Integer, ByRef str As String) As Long
             'If frmMain.SUPERLOG.Value = 1 Then LogCustom ("WsApiEnviar:: slot=" & Slot & " str=" & str & " len(str)=" & Len(str) & " encolar=" & Encolar)
 
             Dim ret      As String
-
             Dim UltError As Long
-
             Dim Retorno  As Long
-
             Dim data()   As Byte
 
 100         ReDim Preserve data(Len(str) - 1) As Byte
@@ -484,7 +460,7 @@ End Function
 Public Sub LogCustom(ByVal str As String)
     #If (UsarQueSocket = 1) Then
 
-        On Error GoTo Errhandler
+        On Error GoTo ErrHandler
 
         Dim nfile As Integer
 
@@ -495,7 +471,7 @@ Public Sub LogCustom(ByVal str As String)
 
         Exit Sub
 
-Errhandler:
+ErrHandler:
 
     #End If
 
@@ -504,7 +480,7 @@ End Sub
 Public Sub LogApiSock(ByVal str As String)
     #If (UsarQueSocket = 1) Then
 
-        On Error GoTo Errhandler
+        On Error GoTo ErrHandler
 
         Dim nfile As Integer
 
@@ -515,7 +491,7 @@ Public Sub LogApiSock(ByVal str As String)
 
         Exit Sub
 
-Errhandler:
+ErrHandler:
 
     #End If
 
@@ -531,15 +507,10 @@ Public Sub EventoSockAccept(ByVal SockID As Long)
             '========================
     
             Dim NewIndex  As Integer
-
             Dim ret       As Long
-
             Dim Tam       As Long, sa As sockaddr
-
             Dim NuevoSock As Long
-
             Dim i         As Long
-
             Dim tStr      As String
     
 100         Tam = sockaddr_size
@@ -638,8 +609,8 @@ Public Sub EventoSockAccept(ByVal SockID As Long)
 136         If NewIndex <= MaxUsers Then
         
                 'Make sure both outgoing and incoming data buffers are clean
-138             Call UserList(NewIndex).incomingData.ReadASCIIStringFixed(UserList(NewIndex).incomingData.length)
-140             Call UserList(NewIndex).outgoingData.ReadASCIIStringFixed(UserList(NewIndex).outgoingData.length)
+138             Call UserList(NewIndex).incomingData.ReadASCIIStringFixed(UserList(NewIndex).incomingData.Length)
+140             Call UserList(NewIndex).outgoingData.ReadASCIIStringFixed(UserList(NewIndex).outgoingData.Length)
         
 142             UserList(NewIndex).ip = GetAscIP(sa.sin_addr)
 
@@ -667,7 +638,6 @@ Public Sub EventoSockAccept(ByVal SockID As Long)
             Else
 
                 Dim str    As String
-
                 Dim data() As Byte
         
 162             str = Protocol.PrepareMessageErrorMsg("El server se encuentra lleno en este momento. Disculpe las molestias ocasionadas.")
@@ -699,7 +669,6 @@ Public Sub EventoSockRead(ByVal slot As Integer, ByRef Datos() As Byte)
         #If UsarQueSocket = 1 Then
 
             Dim a As Currency
-
             Dim f As Currency
 
 100         QueryPerformanceCounter a
@@ -867,8 +836,7 @@ Public Function CondicionSocket(ByRef lpCallerId As WSABUF, ByRef lpCallerData A
             End If
     
             'Get the address
-
-104         CopyMemory sa, ByVal lpCallerId.LpBuffer, lpCallerId.dwBufferLen
+104         Call CopyMemory(sa, ByVal lpCallerId.LpBuffer, lpCallerId.dwBufferLen)
     
 106         If Not SecurityIp.IpSecurityAceptarNuevaConexion(sa.sin_addr) Then
 108             CondicionSocket = CF_REJECT
