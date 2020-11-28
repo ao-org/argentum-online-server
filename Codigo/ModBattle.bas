@@ -242,10 +242,10 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
 
 366         If .Stats.MaxSta > STAT_MAXSTA Then .Stats.MaxSta = STAT_MAXSTA
 
-            'Actualizamos Golpe M醲imo
+            'Actualizamos Golpe M谩ximo
 368         .Stats.MaxHit = maxhitok
     
-            'Actualizamos Golpe M韓imo
+            'Actualizamos Golpe M铆nimo
 370         .Stats.MinHIT = minhitok
     
 372         .Stats.GLD = 25000
@@ -502,7 +502,7 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
                 
 768             Case eClass.Assasin
 770                 .Invent.NroItems = 10
-772                 .Invent.Object(1).ObjIndex = 1903 'Armadura drag髇 Azul
+772                 .Invent.Object(1).ObjIndex = 1903 'Armadura drag贸n Azul
 774                 .Invent.Object(1).Amount = 1 '
 776                 .Invent.Object(2).ObjIndex = 1789 'Daga Infernal
 778                 .Invent.Object(2).Amount = 1 '
@@ -538,7 +538,7 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
                 
 836             Case eClass.Cleric
 838                 .Invent.NroItems = 11
-840                 .Invent.Object(1).ObjIndex = 1904 'Armadura drag髇 blanco
+840                 .Invent.Object(1).ObjIndex = 1904 'Armadura drag贸n blanco
 842                 .Invent.Object(1).Amount = 1 '
 844                 .Invent.Object(2).ObjIndex = 1821 'Lazurt +1
 846                 .Invent.Object(2).Amount = 1 '
@@ -574,12 +574,12 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
 904                 .Stats.UserHechizos(7) = 23 'Furia de Uhkrul
 906                 .Stats.UserHechizos(8) = 52 'Rafaga Ignea
 908                 .Stats.UserHechizos(9) = 131 'Destierro
-910                 .Stats.UserHechizos(10) = 132 'Oraci髇 divina
+910                 .Stats.UserHechizos(10) = 132 'Oraci贸n divina
 912                 .Stats.UserHechizos(11) = 133 'Plegaria
                 
 914             Case eClass.Paladin
 916                 .Invent.NroItems = 10
-918                 .Invent.Object(1).ObjIndex = 1906 'Armadura Drag髇 Negra
+918                 .Invent.Object(1).ObjIndex = 1906 'Armadura Drag贸n Negra
 920                 .Invent.Object(1).Amount = 1 '
 922                 .Invent.Object(2).ObjIndex = 1790 'Espada Saramiana
 924                 .Invent.Object(2).Amount = 1 '
@@ -616,9 +616,9 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
                 
 984             Case eClass.Hunter
 986                 .Invent.NroItems = 11
-988                 .Invent.Object(1).ObjIndex = 1907 'Armadura drag髇 verde
+988                 .Invent.Object(1).ObjIndex = 1907 'Armadura drag贸n verde
 990                 .Invent.Object(1).Amount = 1 '
-992                 .Invent.Object(2).ObjIndex = 1875 'Armadura drag髇 verde
+992                 .Invent.Object(2).ObjIndex = 1875 'Armadura drag贸n verde
 994                 .Invent.Object(2).Amount = 1 '
 996                 .Invent.Object(3).ObjIndex = 1717 'Escudo Gema (Cazador)
 998                 .Invent.Object(3).Amount = 1 '
@@ -647,7 +647,7 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
 
 1044             Case eClass.Warrior
 1046                 .Invent.NroItems = 11
-1048                 .Invent.Object(1).ObjIndex = 1908 'Armadura Drag髇 Legendaria
+1048                 .Invent.Object(1).ObjIndex = 1908 'Armadura Drag贸n Legendaria
 1050                 .Invent.Object(1).Amount = 1 '
 1052                 .Invent.Object(2).ObjIndex = 1830 'Harbinger Kin
 1054                 .Invent.Object(2).Amount = 1 '
@@ -750,7 +750,7 @@ Sub RelogearUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCue
     'Posicion de comienzo
 
     'Tratamos de evitar en lo posible el "Telefrag". Solo 1 intento de loguear en pos adjacentes.
-    'Codigo por Pablo (ToxicWaste) y revisado por Nacho (Integer), corregido para que realmetne ande y no tire el server por Juan Mart韓 Sotuyo Dodero (Maraxus)
+    'Codigo por Pablo (ToxicWaste) y revisado por Nacho (Integer), corregido para que realmetne ande y no tire el server por Juan Mart铆n Sotuyo Dodero (Maraxus)
 
     Rem If UserList(UserIndex).Invent.MonturaObjIndex > 0 Then
     '    Debug.Print "tiene monutra"

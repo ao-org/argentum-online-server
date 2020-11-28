@@ -1,7 +1,7 @@
 Attribute VB_Name = "modHexaStrings"
 'Argentum Online 0.11.6
 '
-'Copyright (C) 2002 Márquez Pablo Ignacio
+'Copyright (C) 2002 MÃ¡rquez Pablo Ignacio
 'Copyright (C) 2002 Otto Perez
 'Copyright (C) 2002 Aaron Perkins
 '
@@ -25,14 +25,14 @@ Attribute VB_Name = "modHexaStrings"
 'You can contact me at:
 'morgolock@speedy.com.ar
 'www.geocities.com/gmorgolock
-'Calle 3 número 983 piso 7 dto A
+'Calle 3 nÃºmero 983 piso 7 dto A
 'La Plata - Pcia, Buenos Aires - Republica Argentina
-'Código Postal 1900
-'Pablo Ignacio Márquez
+'CÃ³digo Postal 1900
+'Pablo Ignacio MÃ¡rquez
 
 'Modulo realizado por Gonzalo Larralde(CDT) <gonzalolarralde@yahoo.com.ar>
 'Para la conversion a caracteres de cadenas MD5 y de
-'semi encriptación de cadenas por ascii table offset
+'semi encriptaciÃ³n de cadenas por ascii table offset
 
 Option Explicit
 

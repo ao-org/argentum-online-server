@@ -175,7 +175,7 @@ Sub UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal C
 
             End If
 
-            '¿Ya tiene un objeto de este tipo?
+            'Â¿Ya tiene un objeto de este tipo?
 
 112         If UserList(UserIndex).Invent.Object(slotdestino).ObjIndex = obji And UserList(UserIndex).Invent.Object(slotdestino).Amount + Cantidad <= MAX_INVENTORY_OBJS Then
     
@@ -187,7 +187,7 @@ Sub UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal C
 
 116     If slotvalido = False Then
 
-            '¿Ya tiene un objeto de este tipo?
+            'Â¿Ya tiene un objeto de este tipo?
 118         slot = 1
 
 120         Do Until UserList(UserIndex).Invent.Object(slot).ObjIndex = obji And UserList(UserIndex).Invent.Object(slot).Amount + Cantidad <= MAX_INVENTORY_OBJS
@@ -209,7 +209,7 @@ Sub UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal C
 132                 slot = slot + 1
 
 134                 If slot > UserList(UserIndex).CurrentInventorySlots Then
-136                     Call WriteConsoleMsg(UserIndex, "No podés tener mas objetos.", FontTypeNames.FONTTYPE_INFO)
+136                     Call WriteConsoleMsg(UserIndex, "No podÃ©s tener mas objetos.", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
                     End If
@@ -236,7 +236,7 @@ Sub UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal C
     
 152         Call QuitarBancoInvItem(UserIndex, CByte(ObjIndex), Cantidad)
         Else
-154         Call WriteConsoleMsg(UserIndex, "No podés tener mas objetos.", FontTypeNames.FONTTYPE_INFO)
+154         Call WriteConsoleMsg(UserIndex, "No podÃ©s tener mas objetos.", FontTypeNames.FONTTYPE_INFO)
 
         End If
 
@@ -348,7 +348,7 @@ Sub UserDejaObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal Can
 
             End If
 
-112         If UserList(UserIndex).BancoInvent.Object(slotdestino).ObjIndex = obji And UserList(UserIndex).BancoInvent.Object(slotdestino).Amount + Cantidad <= MAX_INVENTORY_OBJS Then '¿Ya tiene un objeto de este tipo?
+112         If UserList(UserIndex).BancoInvent.Object(slotdestino).ObjIndex = obji And UserList(UserIndex).BancoInvent.Object(slotdestino).Amount + Cantidad <= MAX_INVENTORY_OBJS Then 'Â¿Ya tiene un objeto de este tipo?
 114             slotvalido = True
 
             End If
@@ -356,7 +356,7 @@ Sub UserDejaObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal Can
         End If
 
 116     If slotvalido = False Then
-            '¿Ya tiene un objeto de este tipo?
+            'Â¿Ya tiene un objeto de este tipo?
 118         slot = 1
 
 120         Do Until UserList(UserIndex).BancoInvent.Object(slot).ObjIndex = obji And UserList(UserIndex).BancoInvent.Object(slot).Amount + Cantidad <= MAX_INVENTORY_OBJS

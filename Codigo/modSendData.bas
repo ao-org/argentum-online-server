@@ -3,7 +3,7 @@ Attribute VB_Name = "modSendData"
 ' SendData.bas - Has all methods to send data to different user groups.
 ' Makes use of the modAreas module.
 '
-' Implemented by Juan Martín Sotuyo Dodero (Maraxus) (juansotuyo@gmail.com)
+' Implemented by Juan MartÃ­n Sotuyo Dodero (Maraxus) (juansotuyo@gmail.com)
 '**************************************************************
 
 '**************************************************************************
@@ -24,7 +24,7 @@ Attribute VB_Name = "modSendData"
 ' Contains all methods to send data to different user groups.
 ' Makes use of the modAreas module.
 '
-' @author Juan Martín Sotuyo Dodero (Maraxus) juansotuyo@gmail.com
+' @author Juan MartÃ­n Sotuyo Dodero (Maraxus) juansotuyo@gmail.com
 ' @version 1.0.0
 ' @date 20070107
 
@@ -65,7 +65,7 @@ End Enum
 Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, ByVal sndData As String)
 
     '**************************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus) - Rewrite of original
+    'Author: Juan MartÃ­n Sotuyo Dodero (Maraxus) - Rewrite of original
     'Last Modify Date: 01/08/2007
     'Last modified by: (liquid)
     '**************************************************************
@@ -578,7 +578,7 @@ Private Sub SendToDeadUserArea(ByVal UserIndex As Integer, ByVal sdData As Strin
         
 
         '**************************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan MartÃ­n Sotuyo Dodero (Maraxus)
         'Last Modify Date: Unknow
         '
         '**************************************************************
@@ -631,7 +631,7 @@ Private Sub SendToUserGuildArea(ByVal UserIndex As Integer, ByVal sdData As Stri
         
 
         '**************************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan MartÃ­n Sotuyo Dodero (Maraxus)
         'Last Modify Date: Unknow
         '
         '**************************************************************
@@ -684,7 +684,7 @@ Private Sub SendToAdminsButConsejerosArea(ByVal UserIndex As Integer, ByVal sdDa
         
 
         '**************************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan MartÃ­n Sotuyo Dodero (Maraxus)
         'Last Modify Date: Unknow
         '
         '**************************************************************
@@ -838,7 +838,7 @@ Public Sub SendToMap(ByVal Map As Integer, ByVal sdData As String)
         
 
         '**************************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan MartÃ­n Sotuyo Dodero (Maraxus)
         'Last Modify Date: 5/24/2007
         '
         '**************************************************************
@@ -873,7 +873,7 @@ Public Sub SendToMapButIndex(ByVal UserIndex As Integer, ByVal sdData As String)
         
 
         '**************************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan MartÃ­n Sotuyo Dodero (Maraxus)
         'Last Modify Date: 5/24/2007
         '
         '**************************************************************

@@ -84,7 +84,7 @@ Public Sub QuitarItemLimpieza(ByVal Map As Integer, ByVal x As Byte, ByVal Y As 
     
 hErr:
     ' No hace falta registrar el error.
-    ' Si un item no existe en la colección, es porque el item era del mapa y alguien lo agarró.
+    ' Si un item no existe en la colecciÃ³n, es porque el item era del mapa y alguien lo agarrÃ³.
     'Call RegistrarError(Err.Number, Err.description, "ModLimpieza.QuitarItemLimpieza", Erl)
     Resume Next
 

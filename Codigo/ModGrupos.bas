@@ -23,15 +23,15 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal Invitado As Integer)
 104             If Abs(CInt(UserList(Invitado).Stats.ELV) - CInt(UserList(UserIndex).Stats.ELV)) < 6 Then
 106                 If UserList(Invitado).Grupo.EnGrupo = False Then
 108                     Call WriteLocaleMsg(UserIndex, "42", FontTypeNames.FONTTYPE_New_GRUPO)
-                        'Call WriteConsoleMsg(userindex, "Se envió la invitación a " & UserList(Invitado).name & ", ahora solo resta aguardar su respuesta.", FontTypeNames.FONTTYPE_INFOIAO)
-110                     Call WriteConsoleMsg(Invitado, UserList(UserIndex).name & " te invitó a unirse a su grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
+                        'Call WriteConsoleMsg(userindex, "Se enviÃ³ la invitaciÃ³n a " & UserList(Invitado).name & ", ahora solo resta aguardar su respuesta.", FontTypeNames.FONTTYPE_INFOIAO)
+110                     Call WriteConsoleMsg(Invitado, UserList(UserIndex).name & " te invitÃ³ a unirse a su grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
 112                     UserList(Invitado).Grupo.PropuestaDe = UserIndex
 114                     UserList(Invitado).flags.pregunta = 1
 116                     UserList(Invitado).Grupo.Lider = UserIndex
 
                         Dim pregunta As String
 
-118                     pregunta = UserList(UserIndex).name & " te invitó a unirse a su grupo. ¿Deseas unirte?"
+118                     pregunta = UserList(UserIndex).name & " te invitÃ³ a unirse a su grupo. Â¿Deseas unirte?"
 120                     Call WritePreguntaBox(Invitado, pregunta)
                     Else
                         'Call WriteConsoleMsg(userindex, "El usuario ya se encuentra en un grupo.", FontTypeNames.FONTTYPE_INFOIAO)
@@ -40,12 +40,12 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal Invitado As Integer)
                     End If
 
                 Else
-124                 Call WriteConsoleMsg(UserIndex, "No podés crear un grupo con personajes con diferencia de mas de 5 niveles.", FontTypeNames.FONTTYPE_New_GRUPO)
+124                 Call WriteConsoleMsg(UserIndex, "No podÃ©s crear un grupo con personajes con diferencia de mas de 5 niveles.", FontTypeNames.FONTTYPE_New_GRUPO)
 
                 End If
 
             Else
-126             Call WriteConsoleMsg(UserIndex, "No podés crear un grupo con personajes de diferentes facciones.", FontTypeNames.FONTTYPE_New_GRUPO)
+126             Call WriteConsoleMsg(UserIndex, "No podÃ©s crear un grupo con personajes de diferentes facciones.", FontTypeNames.FONTTYPE_New_GRUPO)
 
             End If
 
@@ -134,12 +134,12 @@ Public Sub HecharMiembro(ByVal UserIndex As Integer, ByVal indice As Byte)
                     'UserList(UserIndex).Grupo.Lider = 0
 164                 Call RefreshCharStatus(UserIndex)
                 Else
-166                 Call WriteConsoleMsg(UserIndex, "No podés expulsarte a ti mismo.", FontTypeNames.FONTTYPE_New_GRUPO)
+166                 Call WriteConsoleMsg(UserIndex, "No podÃ©s expulsarte a ti mismo.", FontTypeNames.FONTTYPE_New_GRUPO)
 
                 End If
     
             Else
-168             Call WriteConsoleMsg(UserIndex, "Tu no podés hechar usuarios del grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
+168             Call WriteConsoleMsg(UserIndex, "Tu no podÃ©s hechar usuarios del grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
 
             End If
 

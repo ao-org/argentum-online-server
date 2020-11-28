@@ -27,7 +27,7 @@ Public Sub IniciarSubasta(UserIndex)
         
 
 100     If UserList(UserIndex).flags.Subastando = True And Not Subasta.HaySubastaActiva Then
-102         Call WriteChatOverHead(UserIndex, "Escribe /OFERTAINICIAL (cantidad) para comenzar la subasta. Te quedan: " & UserList(UserIndex).Counters.TiempoParaSubastar & " segundos... ¡Apurate!", Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
+102         Call WriteChatOverHead(UserIndex, "Escribe /OFERTAINICIAL (cantidad) para comenzar la subasta. Te quedan: " & UserList(UserIndex).Counters.TiempoParaSubastar & " segundos... Â¡Apurate!", Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
             Exit Sub
 
         End If
@@ -39,13 +39,13 @@ Public Sub IniciarSubasta(UserIndex)
         End If
 
 108     If Not MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y).ObjInfo.ObjIndex > 0 Then
-110         Call WriteChatOverHead(UserIndex, "¿Pues Acaso el aire está en venta ahora? ¡Bribón!", Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
+110         Call WriteChatOverHead(UserIndex, "Â¿Pues Acaso el aire estÃ¡ en venta ahora? Â¡BribÃ³n!", Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
             Exit Sub
 
         End If
     
 112     If Not ObjData(MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y).ObjInfo.ObjIndex).Subastable = 1 Then
-114         Call WriteChatOverHead(UserIndex, "Aquí solo subastamos items que sean valiosos. ¡Largate de acá Bribón!", Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
+114         Call WriteChatOverHead(UserIndex, "AquÃ­ solo subastamos items que sean valiosos. Â¡Largate de acÃ¡ BribÃ³n!", Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
             Exit Sub
 
         End If
@@ -63,7 +63,7 @@ Public Sub IniciarSubasta(UserIndex)
 128         Subasta.ObjSubastadoCantidad = MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y).ObjInfo.Amount
 130         Subasta.Subastador = UserList(UserIndex).name
 132         UserList(UserIndex).Counters.TiempoParaSubastar = 15
-134         Call WriteChatOverHead(UserIndex, "Escribe /OFERTAINICIAL (cantidad) para comenzar la subasta. ¡Tienes 15 segundos!", Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
+134         Call WriteChatOverHead(UserIndex, "Escribe /OFERTAINICIAL (cantidad) para comenzar la subasta. Â¡Tienes 15 segundos!", Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
 136         Call EraseObj(Subasta.ObjSubastadoCantidad, UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y)
 138         UserList(UserIndex).flags.Subastando = True
             Exit Sub
@@ -138,14 +138,14 @@ Public Sub FinalizarSubasta()
                 
 124             Call WriteVar(FileUser, "BancoInventory", "Obj" & SlotEnBoveda, Subasta.ObjSubastado & "-" & Subasta.ObjSubastadoCantidad)
 126             Call WriteVar(FileUser, "BancoInventory", "CantidadItems", SlotEnBoveda)
-128             Call WriteVar(FileUser, "INIT", "MENSAJEINFORMACION", "Subastador te ha dejado un mensaje: ¡Has ganado la subasta! Te deposite el item en la boveda.")
+128             Call WriteVar(FileUser, "INIT", "MENSAJEINFORMACION", "Subastador te ha dejado un mensaje: Â¡Has ganado la subasta! Te deposite el item en la boveda.")
 130             Call LogearEventoDeSubasta("El items fue depositado en la boveda del comprador correctamente.")
             Else
 132             Call LogearEventoDeSubasta("Se esta intentando enviar por correo el item.")
 
-134             If AddCorreoBySubastador("Subastador", Subasta.Comprador, "¡Felicitaciones! Ganaste la subasta.", Subasta.ObjSubastado, Subasta.ObjSubastadoCantidad) Then
+134             If AddCorreoBySubastador("Subastador", Subasta.Comprador, "Â¡Felicitaciones! Ganaste la subasta.", Subasta.ObjSubastado, Subasta.ObjSubastadoCantidad) Then
 136                 Call LogearEventoDeSubasta("El items fue enviado al comprador por correo correctamente.")
-138                 Call WriteVar(FileUser, "INIT", "MENSAJEINFORMACION", "Subastador te ha dejado un mensaje: ¡Has ganado la subasta! Te envie el item por correo.")
+138                 Call WriteVar(FileUser, "INIT", "MENSAJEINFORMACION", "Subastador te ha dejado un mensaje: Â¡Has ganado la subasta! Te envie el item por correo.")
             
                 Else
             
@@ -162,7 +162,7 @@ Public Sub FinalizarSubasta()
 152                 If LenB(ObjData(Subasta.ObjSubastado).name) = 0 Then Exit Sub
 154                 Call MakeObj(ObjVendido, PosMap, posX, posY)
 156                 Call LogearEventoDeSubasta("La boveda del usuario estaba llena, se tiro en la posicion:" & PosMap & "-" & posX & "-" & posY)
-158                 Call WriteVar(FileUser, "INIT", "MENSAJEINFORMACION", "Subastador te ha dejado un mensaje: ¡Has ganado la subasta! Como no tenias espacio ni en tu boveda ni en el correo, tuve que tirarlo en tu ultima posicion.")
+158                 Call WriteVar(FileUser, "INIT", "MENSAJEINFORMACION", "Subastador te ha dejado un mensaje: Â¡Has ganado la subasta! Como no tenias espacio ni en tu boveda ni en el correo, tuve que tirarlo en tu ultima posicion.")
 
                 End If
 
@@ -198,11 +198,11 @@ Public Sub FinalizarSubasta()
 182         Call Leer.Initialize(CharPath & UCase$(Subasta.Subastador) & ".chr")
 184         Call WriteVar(CharPath & UCase$(Subasta.Subastador) & ".chr", "STATS", "Banco", CLng(Leer.GetValue("STATS", "BANCO")) + Subasta.MejorOferta)
 186         Call LogearEventoDeSubasta("El Oro fue depositado en la boveda Correctamente!.")
-188         Call WriteVar(CharPath & UCase$(Subasta.Subastador) & ".chr", "INIT", "MENSAJEINFORMACION", "Subastador te ha dejado un mensaje: ¡Has vendido tu item! Te deposite el oro en el sistema de finanzas Goliath.")
+188         Call WriteVar(CharPath & UCase$(Subasta.Subastador) & ".chr", "INIT", "MENSAJEINFORMACION", "Subastador te ha dejado un mensaje: Â¡Has vendido tu item! Te deposite el oro en el sistema de finanzas Goliath.")
         Else
 190         UserList(NameIndex(Subasta.Subastador)).Stats.GLD = UserList(NameIndex(Subasta.Subastador)).Stats.GLD + Subasta.MejorOferta
         
-192         Call WriteConsoleMsg(NameIndex(Subasta.Subastador), "Felicitaciones, has ganado " & Subasta.MejorOferta & " monedas de oro de tú subasta.", FontTypeNames.FONTTYPE_SUBASTA)
+192         Call WriteConsoleMsg(NameIndex(Subasta.Subastador), "Felicitaciones, has ganado " & Subasta.MejorOferta & " monedas de oro de tÃº subasta.", FontTypeNames.FONTTYPE_SUBASTA)
         
 194         Call WriteUpdateGold(NameIndex(Subasta.Subastador))
 196         Call LogearEventoDeSubasta("Oro entregado en la billetera")

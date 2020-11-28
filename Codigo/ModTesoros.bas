@@ -109,10 +109,10 @@ Public Sub InitRegalo()
 150     RegaloRegalo(4).ObjIndex = 1006 ' Anillo de las Sombras
 152     RegaloRegalo(4).Amount = 1
     
-154     RegaloRegalo(5).ObjIndex = 651 'Orbe de Inhibición
+154     RegaloRegalo(5).ObjIndex = 651 'Orbe de InhibiciÃ³n
 156     RegaloRegalo(5).Amount = 1
     
-        'TesoroRegalo(6).ObjIndex = 1181 'Báculo de Hechicero (DM +10)
+        'TesoroRegalo(6).ObjIndex = 1181 'BÃ¡culo de Hechicero (DM +10)
         'TesoroRegalo(6).Amount = 1
     
         
@@ -255,7 +255,7 @@ Public Sub PerderTesoro()
 224     If EncontreLugar = True Then
 226         BusquedaTesoroActiva = True
 228         Call MakeObj(TesoroRegalo(RandomNumber(1, 5)), TesoroNumMapa, TesoroX, TesoroY, False)
-230         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> Rondan rumores que hay un tesoro enterrado en el mapa: " & DarNameMapa(TesoroNumMapa) & "(" & TesoroNumMapa & ") ¿Quien sera el afortunado que lo encuentre?", FontTypeNames.FONTTYPE_TALK))
+230         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> Rondan rumores que hay un tesoro enterrado en el mapa: " & DarNameMapa(TesoroNumMapa) & "(" & TesoroNumMapa & ") Â¿Quien sera el afortunado que lo encuentre?", FontTypeNames.FONTTYPE_TALK))
 232         Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(257, NO_3D_SOUND, NO_3D_SOUND)) ' Explota un trueno 257
 
         End If
@@ -420,7 +420,7 @@ Public Sub PerderRegalo()
 244     If EncontreLugar = True Then
 246         BusquedaRegaloActiva = True
 248         Call MakeObj(RegaloRegalo(RandomNumber(1, 5)), RegaloNumMapa, RegaloX, RegaloY, False)
-250         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> De repente ha surgido un item maravilloso en el mapa: " & DarNameMapa(RegaloNumMapa) & "(" & RegaloNumMapa & ") ¿Quien sera el valiente que lo encuentre? ¡MUCHO CUIDADO!", FontTypeNames.FONTTYPE_TALK))
+250         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> De repente ha surgido un item maravilloso en el mapa: " & DarNameMapa(RegaloNumMapa) & "(" & RegaloNumMapa & ") Â¿Quien sera el valiente que lo encuentre? Â¡MUCHO CUIDADO!", FontTypeNames.FONTTYPE_TALK))
 252         Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(497, NO_3D_SOUND, NO_3D_SOUND)) ' Explota un trueno
 
         End If

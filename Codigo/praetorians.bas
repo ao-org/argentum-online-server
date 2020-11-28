@@ -70,7 +70,7 @@ Public Sub LoadPretorianData()
 100     Set FileReader = New clsIniReader
 102     Call FileReader.Initialize(DatPath & "Pretorianos.dat")
         
-        'Ubicación predeterminada de los pretorianos.
+        'UbicaciÃ³n predeterminada de los pretorianos.
         MAPA_PRETORIANO = val(FileReader.GetValue("UBICACION", "Mapa"))
         PRETORIANO_X = val(FileReader.GetValue("UBICACION", "X"))
         PRETORIANO_Y = val(FileReader.GetValue("UBICACION", "Y"))

@@ -44,35 +44,35 @@ Public Sub CheckEvento(ByVal Hora As Byte)
 
             Case 1
 108             OroMult = OroMult * Evento(Hora).multiplicacion
-110             aviso = aviso & " Oro multiplicado por " & Evento(Hora).multiplicacion & " - Duraci髇 del evento: " & Evento(Hora).duracion & " minutos."
+110             aviso = aviso & " Oro multiplicado por " & Evento(Hora).multiplicacion & " - Duraci贸n del evento: " & Evento(Hora).duracion & " minutos."
 112             PublicidadEvento = PublicidadEvento & " Oro multiplicado por " & Evento(Hora).multiplicacion
 
 114         Case 2
 116             ExpMult = ExpMult * Evento(Hora).multiplicacion
-118             aviso = aviso & " Experiencia multiplicada por " & Evento(Hora).multiplicacion & " - Duraci髇 del evento: " & Evento(Hora).duracion & " minutos."
+118             aviso = aviso & " Experiencia multiplicada por " & Evento(Hora).multiplicacion & " - Duraci贸n del evento: " & Evento(Hora).duracion & " minutos."
 120             PublicidadEvento = PublicidadEvento & " Experiencia multiplicada por " & Evento(Hora).multiplicacion
 
 122         Case 3
 124             RecoleccionMult = RecoleccionMult * Evento(Hora).multiplicacion
-126             aviso = aviso & " Recoleccion multiplicada por " & Evento(Hora).multiplicacion & " - Duraci髇 del evento: " & Evento(Hora).duracion & " minutos."
+126             aviso = aviso & " Recoleccion multiplicada por " & Evento(Hora).multiplicacion & " - Duraci贸n del evento: " & Evento(Hora).duracion & " minutos."
 128             PublicidadEvento = PublicidadEvento & " Recoleccion multiplicada por " & Evento(Hora).multiplicacion
 
 130         Case 4
 132             DropMult = DropMult / Evento(Hora).multiplicacion
-134             aviso = aviso & " Dropeo multiplicado por " & Evento(Hora).multiplicacion & " - Duraci髇 del evento: " & Evento(Hora).duracion & " minutos."
+134             aviso = aviso & " Dropeo multiplicado por " & Evento(Hora).multiplicacion & " - Duraci贸n del evento: " & Evento(Hora).duracion & " minutos."
 136             PublicidadEvento = PublicidadEvento & " Dropeo multiplicado por " & Evento(Hora).multiplicacion
 
 138         Case 5
 140             ExpMult = ExpMult * Evento(Hora).multiplicacion
 142             OroMult = OroMult * Evento(Hora).multiplicacion
-144             aviso = aviso & " Oro y experiencia multiplicados por " & Evento(Hora).multiplicacion & " - Duraci髇 del evento: " & Evento(Hora).duracion & " minutos."
+144             aviso = aviso & " Oro y experiencia multiplicados por " & Evento(Hora).multiplicacion & " - Duraci贸n del evento: " & Evento(Hora).duracion & " minutos."
 146             PublicidadEvento = PublicidadEvento & " Oro y experiencia multiplicados por " & Evento(Hora).multiplicacion
 
 148         Case 6
 150             ExpMult = ExpMult * Evento(Hora).multiplicacion
 152             OroMult = OroMult * Evento(Hora).multiplicacion
 154             RecoleccionMult = RecoleccionMult * Evento(Hora).multiplicacion
-156             aviso = aviso & " Oro, experiencia y recoleccion multiplicados por " & Evento(Hora).multiplicacion & " - Duraci髇 del evento: " & Evento(Hora).duracion & " minutos."
+156             aviso = aviso & " Oro, experiencia y recoleccion multiplicados por " & Evento(Hora).multiplicacion & " - Duraci贸n del evento: " & Evento(Hora).duracion & " minutos."
 158             PublicidadEvento = PublicidadEvento & " Oro, experiencia y recoleccion multiplicados por " & Evento(Hora).multiplicacion
 
 160         Case 7
@@ -80,7 +80,7 @@ Public Sub CheckEvento(ByVal Hora As Byte)
 164             OroMult = OroMult * Evento(Hora).multiplicacion
 166             DropMult = DropMult / Evento(Hora).multiplicacion
 168             RecoleccionMult = RecoleccionMult * Evento(Hora).multiplicacion
-170             aviso = aviso & " Oro, experiencia, recoleccion y dropeo multiplicados por " & Evento(Hora).multiplicacion & " - Duraci髇 del evento: " & Evento(Hora).duracion & " minutos."
+170             aviso = aviso & " Oro, experiencia, recoleccion y dropeo multiplicados por " & Evento(Hora).multiplicacion & " - Duraci贸n del evento: " & Evento(Hora).duracion & " minutos."
 172             PublicidadEvento = PublicidadEvento & " Oro, experiencia, recoleccion y dropeo multiplicados por " & Evento(Hora).multiplicacion
 
 174         Case Else
@@ -179,30 +179,30 @@ Public Function DescribirEvento(ByVal Hora As Byte) As String
 
             Case 1
 
-104             aviso = aviso & "Oro multiplicado por " & Evento(Hora).multiplicacion & " - Duraci髇: " & Evento(Hora).duracion & " minutos"
+104             aviso = aviso & "Oro multiplicado por " & Evento(Hora).multiplicacion & " - Duraci贸n: " & Evento(Hora).duracion & " minutos"
 
 106         Case 2
         
-108             aviso = aviso & "Experiencia multiplicada por " & Evento(Hora).multiplicacion & " - Duraci髇: " & Evento(Hora).duracion & " minutos"
+108             aviso = aviso & "Experiencia multiplicada por " & Evento(Hora).multiplicacion & " - Duraci贸n: " & Evento(Hora).duracion & " minutos"
 
 110         Case 3
-112             aviso = aviso & "Recoleccion multiplicada por " & Evento(Hora).multiplicacion & " - Duraci髇: " & Evento(Hora).duracion & " minutos"
+112             aviso = aviso & "Recoleccion multiplicada por " & Evento(Hora).multiplicacion & " - Duraci贸n: " & Evento(Hora).duracion & " minutos"
 
 114         Case 4
-116             aviso = aviso & "Dropeo multiplicado por " & Evento(Hora).multiplicacion & " - Duraci髇: " & Evento(Hora).duracion & " minutos"
+116             aviso = aviso & "Dropeo multiplicado por " & Evento(Hora).multiplicacion & " - Duraci贸n: " & Evento(Hora).duracion & " minutos"
        
 118         Case 5
-120             aviso = aviso & "Oro y experiencia multiplicados por " & Evento(Hora).multiplicacion & " - Duraci髇: " & Evento(Hora).duracion & " minutos"
+120             aviso = aviso & "Oro y experiencia multiplicados por " & Evento(Hora).multiplicacion & " - Duraci贸n: " & Evento(Hora).duracion & " minutos"
 
 122         Case 6
 
-124             aviso = aviso & "Oro, experiencia y recoleccion multiplicados por " & Evento(Hora).multiplicacion & " - Duraci髇: " & Evento(Hora).duracion & " minutos"
+124             aviso = aviso & "Oro, experiencia y recoleccion multiplicados por " & Evento(Hora).multiplicacion & " - Duraci贸n: " & Evento(Hora).duracion & " minutos"
 
 126         Case 7
-128             aviso = aviso & "Oro, experiencia, recoleccion y dropeo multiplicados por " & Evento(Hora).multiplicacion & " - Duraci髇: " & Evento(Hora).duracion & " minutos"
+128             aviso = aviso & "Oro, experiencia, recoleccion y dropeo multiplicados por " & Evento(Hora).multiplicacion & " - Duraci贸n: " & Evento(Hora).duracion & " minutos"
 
 130         Case Else
-132             aviso = aviso & "sin informaci髇"
+132             aviso = aviso & "sin informaci贸n"
         
         End Select
 
@@ -281,35 +281,35 @@ Public Sub ForzarEvento(ByVal Tipo As Byte, ByVal duracion As Byte, ByVal multi 
 
             Case 1
 118             OroMult = OroMult * multi
-120             aviso = aviso & " Oro multiplicado por " & multi & " - Duraci髇 del evento: " & duracion & " minutos."
+120             aviso = aviso & " Oro multiplicado por " & multi & " - Duraci贸n del evento: " & duracion & " minutos."
 122             PublicidadEvento = PublicidadEvento & " Oro multiplicado por " & multi
 
 124         Case 2
 126             ExpMult = ExpMult * multi
-128             aviso = aviso & " Experiencia multiplicada por " & multi & " - Duraci髇 del evento: " & duracion & " minutos."
+128             aviso = aviso & " Experiencia multiplicada por " & multi & " - Duraci贸n del evento: " & duracion & " minutos."
 130             PublicidadEvento = PublicidadEvento & " Experiencia multiplicada por " & multi
 
 132         Case 3
 134             RecoleccionMult = RecoleccionMult * multi
-136             aviso = aviso & " Recoleccion multiplicada por " & multi & " - Duraci髇 del evento: " & duracion & " minutos."
+136             aviso = aviso & " Recoleccion multiplicada por " & multi & " - Duraci贸n del evento: " & duracion & " minutos."
 138             PublicidadEvento = PublicidadEvento & " Recoleccion multiplicada por " & multi
 
 140         Case 4
 142             DropMult = DropMult / multi
-144             aviso = aviso & " Dropeo multiplicado por " & multi & " - Duraci髇 del evento: " & duracion & " minutos."
+144             aviso = aviso & " Dropeo multiplicado por " & multi & " - Duraci贸n del evento: " & duracion & " minutos."
 146             PublicidadEvento = PublicidadEvento & " Dropeo multiplicado por " & multi
 
 148         Case 5
 150             ExpMult = ExpMult * multi
 152             OroMult = OroMult * multi
-154             aviso = aviso & " Oro y experiencia multiplicados por " & multi & " - Duraci髇 del evento: " & duracion & " minutos."
+154             aviso = aviso & " Oro y experiencia multiplicados por " & multi & " - Duraci贸n del evento: " & duracion & " minutos."
 156             PublicidadEvento = PublicidadEvento & " Oro y experiencia multiplicados por " & multi
 
 158         Case 6
 160             ExpMult = ExpMult * multi
 162             OroMult = OroMult * multi
 164             RecoleccionMult = RecoleccionMult * multi
-166             aviso = aviso & " Oro, experiencia y recoleccion multiplicados por " & multi & " - Duraci髇 del evento: " & duracion & " minutos."
+166             aviso = aviso & " Oro, experiencia y recoleccion multiplicados por " & multi & " - Duraci贸n del evento: " & duracion & " minutos."
 168             PublicidadEvento = PublicidadEvento & " Oro, experiencia y recoleccion multiplicados por " & multi
 
 170         Case 7
@@ -317,7 +317,7 @@ Public Sub ForzarEvento(ByVal Tipo As Byte, ByVal duracion As Byte, ByVal multi 
 174             OroMult = OroMult * multi
 176             DropMult = DropMult / multi
 178             RecoleccionMult = RecoleccionMult * multi
-180             aviso = aviso & " Oro, experiencia, recoleccion y dropeo multiplicados por " & multi & " - Duraci髇 del evento: " & duracion & " minutos."
+180             aviso = aviso & " Oro, experiencia, recoleccion y dropeo multiplicados por " & multi & " - Duraci贸n del evento: " & duracion & " minutos."
 182             PublicidadEvento = PublicidadEvento & " Oro, experiencia, recoleccion y dropeo multiplicados por " & multi
 
 184         Case Else

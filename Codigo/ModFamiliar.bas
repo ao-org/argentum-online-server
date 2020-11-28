@@ -106,7 +106,7 @@ Public Sub InvocarFamiliar(ByVal UserIndex As Integer, ByVal b As Boolean)
 
                     'Controlamos que se sumoneo OK
 134                 If .Familiar.Id = 0 Then
-                        'Call WriteConsoleMsg(UserIndex, "No hay espacio aquí para tu mascota. Se provoco un ERROR.", FontTypeNames.FONTTYPE_INFO)
+                        'Call WriteConsoleMsg(UserIndex, "No hay espacio aquÃ­ para tu mascota. Se provoco un ERROR.", FontTypeNames.FONTTYPE_INFO)
 136                     Call WriteLocaleMsg(UserIndex, "262", FontTypeNames.FONTTYPE_INFOIAO)
                         Exit Sub
 
@@ -115,7 +115,7 @@ Public Sub InvocarFamiliar(ByVal UserIndex As Integer, ByVal b As Boolean)
 138                 Call CargarFamiliar(UserIndex)
 
                     ' Call FollowAmo(.Familiar.Id)
-140                 If Hechizos(h).Particle > 0 Then '¿Envio Particula?
+140                 If Hechizos(h).Particle > 0 Then 'Â¿Envio Particula?
 142                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFXToFloor(UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY, Hechizos(h).Particle, Hechizos(h).TimeParticula))
 
                     End If
@@ -248,7 +248,7 @@ IndexDeFamiliar_Err:
         
 End Function
 
-Sub CalcularDarExpCompartida(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal ElDaño As Integer)
+Sub CalcularDarExpCompartida(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal ElDaÃ±o As Integer)
         
         On Error GoTo CalcularDarExpCompartida_Err
         
@@ -262,13 +262,13 @@ Sub CalcularDarExpCompartida(ByVal UserIndex As Integer, ByVal NpcIndex As Integ
         Dim ExpaDar As Long
 
         '[Nacho] Chekeamos que las variables sean validas para las operaciones
-100     If ElDaño <= 0 Then ElDaño = 0
+100     If ElDaÃ±o <= 0 Then ElDaÃ±o = 0
     
 102     If Npclist(NpcIndex).Stats.MaxHp <= 0 Then Exit Sub
-104     If ElDaño > Npclist(NpcIndex).Stats.MinHp Then ElDaño = Npclist(NpcIndex).Stats.MinHp
+104     If ElDaÃ±o > Npclist(NpcIndex).Stats.MinHp Then ElDaÃ±o = Npclist(NpcIndex).Stats.MinHp
     
         '[Nacho] La experiencia a dar es la porcion de vida quitada * toda la experiencia
-106     ExpaDar = CLng((ElDaño) * (Npclist(NpcIndex).GiveEXP / Npclist(NpcIndex).Stats.MaxHp))
+106     ExpaDar = CLng((ElDaÃ±o) * (Npclist(NpcIndex).GiveEXP / Npclist(NpcIndex).Stats.MaxHp))
     
 108     If ExpaDar <= 0 Then Exit Sub
     
@@ -334,7 +334,7 @@ Sub CheckFamiliarLevel(ByVal UserIndex As Integer)
 
     On Error GoTo ErrHandler
 
-    '¿Alcanzo el maximo nivel?
+    'Â¿Alcanzo el maximo nivel?
     If UserList(UserIndex).Familiar.nivel >= STAT_MAXELV Then
         UserList(UserIndex).Familiar.ELU = 0
         UserList(UserIndex).Familiar.Exp = 0

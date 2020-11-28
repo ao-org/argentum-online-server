@@ -50,8 +50,8 @@ Public Sub IniciarTorneo()
 
 120     Torneo.HayTorneoaActivo = True
 
-122     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Evento> Se abren las inscripciones para: " & Torneo.nombre & ": características: Nivel entre: " & Torneo.NivelMinimo & "/" & Torneo.nivelmaximo & ". Cupos disponibles: " & Torneo.cupos & " personajes. Precio de inscripción: " & Torneo.costo & " monedas de oro. Reglas: " & Torneo.reglas & ".", FontTypeNames.FONTTYPE_CITIZEN))
-124     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Clases participantes: " & Torneo.ClasesTexto & ". Escribí /PARTICIPAR para ingresar al evento. ", FontTypeNames.FONTTYPE_CITIZEN))
+122     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Evento> Se abren las inscripciones para: " & Torneo.nombre & ": caracterÃ­sticas: Nivel entre: " & Torneo.NivelMinimo & "/" & Torneo.nivelmaximo & ". Cupos disponibles: " & Torneo.cupos & " personajes. Precio de inscripciÃ³n: " & Torneo.costo & " monedas de oro. Reglas: " & Torneo.reglas & ".", FontTypeNames.FONTTYPE_CITIZEN))
+124     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Clases participantes: " & Torneo.ClasesTexto & ". EscribÃ­ /PARTICIPAR para ingresar al evento. ", FontTypeNames.FONTTYPE_CITIZEN))
 
         
         Exit Sub
@@ -75,7 +75,7 @@ Public Sub ParticiparTorneo(ByVal UserIndex As Integer)
 104     Torneo.Participantes = Torneo.Participantes + 1
 106     UserList(UserIndex).flags.EnTorneo = True
     
-108     Call WriteConsoleMsg(UserIndex, "¡Ya estas anotado! Solo debes aguardar hasta que seas enviado a la sala de espera.", FontTypeNames.FONTTYPE_INFOIAO)
+108     Call WriteConsoleMsg(UserIndex, "Â¡Ya estas anotado! Solo debes aguardar hasta que seas enviado a la sala de espera.", FontTypeNames.FONTTYPE_INFOIAO)
     
         
         Exit Sub
@@ -158,7 +158,7 @@ Public Sub ComenzarTorneoOk()
 106         Y = Torneo.Y
 108         Call FindLegalPos(Torneo.IndexParticipantes(i), Torneo.Mapa, x, Y)
 110         Call WarpUserChar(Torneo.IndexParticipantes(i), Torneo.Mapa, x, Y, True)
-            ' Call WriteConsoleMsg(Torneo.IndexParticipantes(i), "¡Ya estas participado! Solo debes aguardar aquí hasta que seas convocado al torneo.", FontTypeNames.FONTTYPE_INFO)
+            ' Call WriteConsoleMsg(Torneo.IndexParticipantes(i), "Â¡Ya estas participado! Solo debes aguardar aquÃ­ hasta que seas convocado al torneo.", FontTypeNames.FONTTYPE_INFO)
 112     Next i
 
 114     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Evento> Los elegidos para participar son: " & nombres & " damos inicio al evento.", FontTypeNames.FONTTYPE_CITIZEN))

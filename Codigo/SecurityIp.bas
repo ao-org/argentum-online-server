@@ -2,14 +2,14 @@ Attribute VB_Name = "SecurityIp"
 '**************************************************************
 ' General_IpSecurity.Bas - Maneja la seguridad de las IPs
 '
-' Escrito y diseñado por DuNga (ltourrilhes@gmail.com)
+' Escrito y diseÃ±ado por DuNga (ltourrilhes@gmail.com)
 '**************************************************************
 Option Explicit
 
 '*************************************************  *************
 ' General_IpSecurity.Bas - Maneja la seguridad de las IPs
 '
-' Escrito y diseñado por DuNga (ltourrilhes@gmail.com)
+' Escrito y diseÃ±ado por DuNga (ltourrilhes@gmail.com)
 '*************************************************  *************
 
 Private IpTables()                     As Long 'USAMOS 2 LONGS: UNO DE LA IP, SEGUIDO DE UNO DE LA INFO
@@ -110,7 +110,7 @@ Public Function IpSecurityAceptarNuevaConexion(ByVal ip As Long) As Boolean
 100     IpTableIndex = FindTableIp(ip, IP_INTERVALOS)
     
 102     If IpTableIndex >= 0 Then
-104         If IpTables(IpTableIndex + 1) + IntervaloEntreConexiones <= GetTickCount Then   'No está saturando de connects?
+104         If IpTables(IpTableIndex + 1) + IntervaloEntreConexiones <= GetTickCount Then   'No estÃ¡ saturando de connects?
 106             IpTables(IpTableIndex + 1) = GetTickCount
 108             IpSecurityAceptarNuevaConexion = True
 110             Debug.Print "CONEXION ACEPTADA"
@@ -250,7 +250,7 @@ Private Sub AddNewIpLimiteConexiones(ByVal ip As Long, ByVal Index As Long)
         '*************************************************    *************
         'Author: (EL OSO)
         'Last Modify Date: 16/2/2006
-        'Modified by Juan Martín Sotuyo Dodero (Maraxus)
+        'Modified by Juan MartÃ­n Sotuyo Dodero (Maraxus)
         '*************************************************    *************
 100     Debug.Print "agrega conexion a " & ip
 102     Debug.Print "(Declaraciones.MaxUsers - index) = " & (Declaraciones.MaxUsers - Index)
@@ -331,7 +331,7 @@ Private Function FindTableIp(ByVal ip As Long, ByVal Tabla As e_SecurityIpTabla)
         '*************************************************  *************
         'Author: Lucio N. Tourrilhes (DuNga)
         'Last Modify Date: Unknow
-        'Modified by Juan Martín Sotuyo Dodero (Maraxus) to use Binary Insertion
+        'Modified by Juan MartÃ­n Sotuyo Dodero (Maraxus) to use Binary Insertion
         '*************************************************  *************
         Dim First  As Long
 

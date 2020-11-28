@@ -261,7 +261,7 @@ Private Function SearchIndexFreeCorreo(ByVal UserIndex As Integer) As Byte
 
 106     Next LoopC
 
-108     SearchIndexFreeCorreo = -1 'No hay más espacio. :P
+108     SearchIndexFreeCorreo = -1 'No hay mÃ¡s espacio. :P
 
         
         Exit Function
@@ -302,7 +302,7 @@ Private Function GrabarNuevoCorreoInChar(ByRef UserName As String, ByVal EmisorI
 124         Call WriteVar(FileUser, "Correo", "NoLeidos", CByte(1))
 126         GrabarNuevoCorreoInChar = True
             
-            'Call WriteChatOverHead(UserIndex, "¡El envio se ha realizado con exito! Gracias por utilizar los servicios de Finanzas Goliath", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
+            'Call WriteChatOverHead(UserIndex, "Â¡El envio se ha realizado con exito! Gracias por utilizar los servicios de Finanzas Goliath", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
         Else
             ' Call WriteChatOverHead(EmisorIndex, "El usuario es inexistente.",
             '  Call WriteConsoleMsg(UserIndex, "El personaje no existe.", FontTypeNames.FONTTYPE_SERVER)
@@ -350,7 +350,7 @@ Private Function GrabarNuevoCorreoInCharBySubasta(ByRef Comprador As String, ByV
 124         Call WriteVar(FileUser, "Correo", "NoLeidos", CByte(1))
 126         GrabarNuevoCorreoInCharBySubasta = True
             
-            'Call WriteChatOverHead(UserIndex, "¡El envio se ha realizado con exito! Gracias por utilizar los servicios de Finanzas Goliath", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
+            'Call WriteChatOverHead(UserIndex, "Â¡El envio se ha realizado con exito! Gracias por utilizar los servicios de Finanzas Goliath", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
         Else
             ' Call WriteChatOverHead(EmisorIndex, "El usuario es inexistente.",
             '  Call WriteConsoleMsg(UserIndex, "El personaje no existe.", FontTypeNames.FONTTYPE_SERVER)

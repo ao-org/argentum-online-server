@@ -1,17 +1,17 @@
 Attribute VB_Name = "NPCs"
-'?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
-'?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
-'?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
+'?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿
+'?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿
+'?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿
 '                        Modulo NPC
-'?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
-'?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
-'?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
+'?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿
+'?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿
+'?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿
 'Contiene todas las rutinas necesarias para cotrolar los
 'NPCs meno la rutina de AI que se encuentra en el modulo
 'AI_NPCs para su mejor comprension.
-'?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
-'?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
-'?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
+'?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿
+'?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿
+'?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿
 
 Public Const MaxRespawn             As Integer = 255
 
@@ -41,7 +41,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
     'Llamado cuando la vida de un NPC llega a cero.
     'Last Modify Date: 24/01/2007
     '22/06/06: (Nacho) Chequeamos si es pretoriano
-    '24/01/2007: Pablo (ToxicWaste): Agrego para actualización de tag si cambia de status.
+    '24/01/2007: Pablo (ToxicWaste): Agrego para actualizaciÃ³n de tag si cambia de status.
     '********************************************************
     On Error GoTo ErrHandler
 
@@ -170,7 +170,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
                                 End If
                                     
                                 If QuestList(.QuestIndex).RequiredNPC(j).Amount = .NPCsKilled(j) Then
-                                    Call WriteConsoleMsg(UserIndex, "Ya has matado todos los " & MiNPC.name & " que la mision " & QuestList(.QuestIndex).nombre & " requeria. Chequeá si ya estas listo para recibir la recompensa.", FontTypeNames.FONTTYPE_INFOIAO)
+                                    Call WriteConsoleMsg(UserIndex, "Ya has matado todos los " & MiNPC.name & " que la mision " & QuestList(.QuestIndex).nombre & " requeria. ChequeÃ¡ si ya estas listo para recibir la recompensa.", FontTypeNames.FONTTYPE_INFOIAO)
                                     
                                 End If
         
@@ -561,7 +561,7 @@ Public Function CrearNPC(NroNPC As Integer, Mapa As Integer, OrigPos As WorldPos
 
 134             If newpos.X <> 0 And newpos.Y <> 0 Then
 136                 altpos.X = newpos.X
-138                 altpos.Y = newpos.Y     'posicion alternativa (para evitar el anti respawn, pero intentando qeu si tenía que ser en el agua, sea en el agua.)
+138                 altpos.Y = newpos.Y     'posicion alternativa (para evitar el anti respawn, pero intentando qeu si tenÃ­a que ser en el agua, sea en el agua.)
                 Else
 140                 Call ClosestLegalPos(Pos, newpos, PuedeAgua)
 
@@ -926,7 +926,7 @@ Sub NpcEnvenenarUser(ByVal UserIndex As Integer, ByVal VenenoNivel As Byte)
 102     If n < 30 Then
 104         UserList(UserIndex).flags.Envenenado = VenenoNivel
 
-            'Call WriteConsoleMsg(UserIndex, "¡¡La criatura te ha envenenado!!", FontTypeNames.FONTTYPE_FIGHT)
+            'Call WriteConsoleMsg(UserIndex, "Â¡Â¡La criatura te ha envenenado!!", FontTypeNames.FONTTYPE_FIGHT)
 106         If UserList(UserIndex).ChatCombate = 1 Then
 108             Call WriteLocaleMsg(UserIndex, "182", FontTypeNames.FONTTYPE_FIGHT)
 
@@ -1039,7 +1039,7 @@ Function SpawnNpc(ByVal NpcIndex As Integer, Pos As WorldPos, ByVal FX As Boolea
         End If
 
 164     If Avisar Then
-166         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(Npclist(nIndex).name & " ha aparecido en " & DarNameMapa(Map) & " , todo indica que puede tener una gran recompensa para el que logre sobrevivir a él.", FontTypeNames.FONTTYPE_CITIZEN))
+166         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(Npclist(nIndex).name & " ha aparecido en " & DarNameMapa(Map) & " , todo indica que puede tener una gran recompensa para el que logre sobrevivir a Ã©l.", FontTypeNames.FONTTYPE_CITIZEN))
 
         End If
 
@@ -1085,7 +1085,7 @@ Function NPCHostiles(ByVal Map As Integer) As Integer
 
 102     For NpcIndex = 1 To LastNPC
 
-            '¿esta vivo?
+            'Â¿esta vivo?
 104         If Npclist(NpcIndex).flags.NPCActive And Npclist(NpcIndex).Pos.Map = Map And Npclist(NpcIndex).Hostile = 1 And Npclist(NpcIndex).Stats.Alineacion = 2 Then
 106             cont = cont + 1
            
@@ -1160,10 +1160,10 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
         '#               ATENCION PELIGRO                  #
         '###################################################
         '
-        '    ¡¡¡¡ NO USAR GetVar PARA LEER LOS NPCS !!!!
+        '    Â¡Â¡Â¡Â¡ NO USAR GetVar PARA LEER LOS NPCS !!!!
         '
-        'El que ose desafiar esta LEY, se las tendrá que ver
-        'conmigo. Para leer los NPCS se deberá usar la
+        'El que ose desafiar esta LEY, se las tendrÃ¡ que ver
+        'conmigo. Para leer los NPCS se deberÃ¡ usar la
         'nueva clase clsIniReader.
         '
         'Alejo

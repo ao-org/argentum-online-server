@@ -174,7 +174,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
 154                 Call CheckUserLevel(UserIndex)
 156                 Call WriteLocaleMsg(UserIndex, "140", FontTypeNames.FONTTYPE_EXP, .RewardEXP)
                 Else
-158                 Call WriteConsoleMsg(UserIndex, "No se te ha dado experiencia porque eres nivel m·ximo.", FontTypeNames.FONTTYPE_INFO)
+158                 Call WriteConsoleMsg(UserIndex, "No se te ha dado experiencia porque eres nivel m√°ximo.", FontTypeNames.FONTTYPE_INFO)
 
                 End If
 

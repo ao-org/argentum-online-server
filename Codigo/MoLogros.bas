@@ -119,7 +119,7 @@ Public Sub EnviarRecompensaStat(ByVal UserIndex As Integer)
         
 
 100     If UserList(UserIndex).flags.BattleModo = 1 Then
-102         Call WriteConsoleMsg(UserIndex, "Aquí no podés utilizar el sistema de recompensas.", FontTypeNames.FONTTYPE_EXP)
+102         Call WriteConsoleMsg(UserIndex, "AquÃ­ no podÃ©s utilizar el sistema de recompensas.", FontTypeNames.FONTTYPE_EXP)
             Exit Sub
 
         End If
@@ -147,7 +147,7 @@ Public Sub CheckearRecompesas(ByVal UserIndex As Integer, ByVal Index As Byte)
             Case 1
 
 104             If UserList(UserIndex).Stats.NPCsMuertos >= NPcLogros(UserList(UserIndex).NPcLogros + 1).cant Then
-                    'Call WriteConsoleMsg(UserIndex, "¡Felicitaciones! Ya podes reclamar una nueva recompensa.", FontTypeNames.FONTTYPE_EXP)
+                    'Call WriteConsoleMsg(UserIndex, "Â¡Felicitaciones! Ya podes reclamar una nueva recompensa.", FontTypeNames.FONTTYPE_EXP)
 106                 Call WriteTrofeoToggleOn(UserIndex)
 
                 End If
@@ -155,7 +155,7 @@ Public Sub CheckearRecompesas(ByVal UserIndex As Integer, ByVal Index As Byte)
 108         Case 2
 
 110             If UserList(UserIndex).Stats.UsuariosMatados >= UserLogros(UserList(UserIndex).UserLogros + 1).cant Then
-                    'Call WriteConsoleMsg(UserIndex, "¡Felicitaciones! Ya podes reclamar una nueva recompensa.", FontTypeNames.FONTTYPE_EXP)
+                    'Call WriteConsoleMsg(UserIndex, "Â¡Felicitaciones! Ya podes reclamar una nueva recompensa.", FontTypeNames.FONTTYPE_EXP)
 112                 Call WriteTrofeoToggleOn(UserIndex)
 
                 End If
@@ -163,7 +163,7 @@ Public Sub CheckearRecompesas(ByVal UserIndex As Integer, ByVal Index As Byte)
 114         Case 3
 
 116             If UserList(UserIndex).Stats.ELV >= LevelLogros(UserList(UserIndex).LevelLogros + 1).cant Then
-                    'Call WriteConsoleMsg(UserIndex, "¡Felicitaciones! Ya podes reclamar una nueva recompensa.", FontTypeNames.FONTTYPE_EXP)
+                    'Call WriteConsoleMsg(UserIndex, "Â¡Felicitaciones! Ya podes reclamar una nueva recompensa.", FontTypeNames.FONTTYPE_EXP)
 118                 Call WriteTrofeoToggleOn(UserIndex)
 
                 End If
@@ -185,7 +185,7 @@ Public Sub EntregarRecompensas(ByVal UserIndex As Integer, ByVal Index As Byte)
         
 
 100     If UserList(UserIndex).flags.BattleModo = 1 Then
-102         Call WriteConsoleMsg(UserIndex, "Aquí no podés utilizar el sistema de recompensas.", FontTypeNames.FONTTYPE_EXP)
+102         Call WriteConsoleMsg(UserIndex, "AquÃ­ no podÃ©s utilizar el sistema de recompensas.", FontTypeNames.FONTTYPE_EXP)
             Exit Sub
 
         End If
@@ -196,13 +196,13 @@ Public Sub EntregarRecompensas(ByVal UserIndex As Integer, ByVal Index As Byte)
 
 106             If UserList(UserIndex).Stats.NPCsMuertos >= NPcLogros(UserList(UserIndex).NPcLogros + 1).cant Then
     
-108                 Call WriteConsoleMsg(UserIndex, "Acá tenes tu recompensa por este logro. ¡Que lo disfrutes y seguí participando!", FontTypeNames.FONTTYPE_EXP)
+108                 Call WriteConsoleMsg(UserIndex, "AcÃ¡ tenes tu recompensa por este logro. Â¡Que lo disfrutes y seguÃ­ participando!", FontTypeNames.FONTTYPE_EXP)
 110                 UserList(UserIndex).NPcLogros = UserList(UserIndex).NPcLogros + 1
 112                 Call WriteRecompensas(UserIndex)
 114                 Call WriteTrofeoToggleOff(UserIndex)
                     Exit Sub
                 Else
-116                 Call WriteConsoleMsg(UserIndex, "Aún no has terminado este logro ¡Continua luchando!", FontTypeNames.FONTTYPE_EXP)
+116                 Call WriteConsoleMsg(UserIndex, "AÃºn no has terminado este logro Â¡Continua luchando!", FontTypeNames.FONTTYPE_EXP)
                     Exit Sub
 
                 End If
@@ -211,13 +211,13 @@ Public Sub EntregarRecompensas(ByVal UserIndex As Integer, ByVal Index As Byte)
 
 120             If UserList(UserIndex).Stats.UsuariosMatados >= UserLogros(UserList(UserIndex).UserLogros + 1).cant Then
     
-122                 Call WriteConsoleMsg(UserIndex, "Acá tenes tu recompensa por este logro. ¡Que lo disfrutes y seguí participando!", FontTypeNames.FONTTYPE_EXP)
+122                 Call WriteConsoleMsg(UserIndex, "AcÃ¡ tenes tu recompensa por este logro. Â¡Que lo disfrutes y seguÃ­ participando!", FontTypeNames.FONTTYPE_EXP)
 124                 UserList(UserIndex).UserLogros = UserList(UserIndex).UserLogros + 1
 126                 Call WriteRecompensas(UserIndex)
 128                 Call WriteTrofeoToggleOff(UserIndex)
                     Exit Sub
                 Else
-130                 Call WriteConsoleMsg(UserIndex, "Aún no has terminado este logro ¡Continua luchando!", FontTypeNames.FONTTYPE_EXP)
+130                 Call WriteConsoleMsg(UserIndex, "AÃºn no has terminado este logro Â¡Continua luchando!", FontTypeNames.FONTTYPE_EXP)
                     Exit Sub
 
                 End If
@@ -226,13 +226,13 @@ Public Sub EntregarRecompensas(ByVal UserIndex As Integer, ByVal Index As Byte)
 
 134             If UserList(UserIndex).Stats.ELV >= LevelLogros(UserList(UserIndex).LevelLogros + 1).cant Then
     
-136                 Call WriteConsoleMsg(UserIndex, "Acá tenes tu recompensa por este logro. ¡Que lo disfrutes y seguí participando!", FontTypeNames.FONTTYPE_EXP)
+136                 Call WriteConsoleMsg(UserIndex, "AcÃ¡ tenes tu recompensa por este logro. Â¡Que lo disfrutes y seguÃ­ participando!", FontTypeNames.FONTTYPE_EXP)
 138                 UserList(UserIndex).LevelLogros = UserList(UserIndex).LevelLogros + 1
 140                 Call WriteRecompensas(UserIndex)
 142                 Call WriteTrofeoToggleOff(UserIndex)
                     Exit Sub
                 Else
-144                 Call WriteConsoleMsg(UserIndex, "Aún no has terminado este logro ¡Continua luchando!", FontTypeNames.FONTTYPE_EXP)
+144                 Call WriteConsoleMsg(UserIndex, "AÃºn no has terminado este logro Â¡Continua luchando!", FontTypeNames.FONTTYPE_EXP)
                     Exit Sub
 
                 End If

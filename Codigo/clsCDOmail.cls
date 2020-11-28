@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 
-' para la conexión a internet
+' para la conexiÃ³n a internet
 Private Declare Function InternetGetConnectedState Lib "wininet.dll" (ByRef lpdwFlags As Long, ByVal dwReserved As Long) As Long
 
 Private Const INTERNET_CONNECTION_MODEM_BUSY As Long = &H8
@@ -42,13 +42,13 @@ Function Enviar_Backup() As Boolean
     ' Variable de objeto Cdo.Message
     Dim oCDO As Object
           
-    ' chequea si hay conexión
+    ' chequea si hay conexiÃ³n
     If InternetGetConnectedState(0&, 0&) = False Then
-       RaiseEvent Error("No se puede enviar el correo. " & "Verificar la conexión a internet si está disponible", 0)
+       RaiseEvent Error("No se puede enviar el correo. " & "Verificar la conexiÃ³n a internet si estÃ¡ disponible", 0)
        Exit Function
     End If
     
-    ' chequea que el puerto sea un número, o que no esté vacío
+    ' chequea que el puerto sea un nÃºmero, o que no estÃ© vacÃ­o
     If Not IsNumeric(Puerto) Then
        RaiseEvent Error("No se ha indicado el puerto del servidor", 0)
        Exit Function
@@ -58,7 +58,7 @@ Function Enviar_Backup() As Boolean
     Set oCDO = CreateObject("CDO.Message")
     
     ' Indica el servidor Smtp para poder enviar el Mail ( puede ser el nombre _
-      del servidor o su dirección IP )
+      del servidor o su direcciÃ³n IP )
     oCDO.Configuration.Fields("http://schemas.microsoft.com/cdo/configuration/smtpserver") = mServidor
     
     oCDO.Configuration.Fields("http://schemas.microsoft.com/cdo/configuration/sendusing") = 2
@@ -68,31 +68,31 @@ Function Enviar_Backup() As Boolean
     oCDO.Configuration.Fields.Item("http://schemas.microsoft.com/cdo/configuration/smtpserverport") = mPuerto
 
     
-    ' Indica el tipo de autentificación con el servidor de correo _
-     El valor 0 no requiere autentificarse, el valor 1 es con autentificación
+    ' Indica el tipo de autentificaciÃ³n con el servidor de correo _
+     El valor 0 no requiere autentificarse, el valor 1 es con autentificaciÃ³n
     oCDO.Configuration.Fields.Item("http://schemas.microsoft.com/cdo/" & "configuration/smtpauthenticate") = Abs(mUseAuntentificacion)
     
-    ' Tiempo máximo de espera en segundos para la conexión
+    ' Tiempo mÃ¡ximo de espera en segundos para la conexiÃ³n
     oCDO.Configuration.Fields.Item("http://schemas.microsoft.com/cdo/configuration/smtpconnectiontimeout") = 10
 
     ' Configura las opciones para el login en el SMTP
     If mUseAuntentificacion Then
-        ' Id de usuario del servidor Smtp ( en el caso de gmail,      debe ser la dirección de correro mas el @gmail.com )
+        ' Id de usuario del servidor Smtp ( en el caso de gmail,      debe ser la direcciÃ³n de correro mas el @gmail.com )
         oCDO.Configuration.Fields.Item("http://schemas.microsoft.com/cdo/configuration/sendusername") = mUsuario
 
     ' Password de la cuenta
         oCDO.Configuration.Fields.Item("http://schemas.microsoft.com/cdo/configuration/sendpassword") = mPassword
 
-    ' Indica si se usa SSL para el envío. En el caso de Gmail requiere que esté en True
+    ' Indica si se usa SSL para el envÃ­o. En el caso de Gmail requiere que estÃ© en True
         oCDO.Configuration.Fields.Item("http://schemas.microsoft.com/cdo/configuration/smtpusessl") = mSSL
     End If
     
     ' Estructura del mail
     '''''''''''''''''''''''''''''''''''''''''''''''
     
-    ' Dirección del Destinatario
+    ' DirecciÃ³n del Destinatario
     oCDO.To = mPara
-    ' Dirección del Remitente
+    ' DirecciÃ³n del Remitente
     oCDO.From = mDe
     ' Asunto del mensaje
     oCDO.Subject = mAsunto
@@ -116,7 +116,7 @@ Function Enviar_Backup() As Boolean
     
     Screen.MousePointer = vbHourglass
     
-    'Envía el email
+    'EnvÃ­a el email
     oCDO.Send
     Screen.MousePointer = 0
     
@@ -125,9 +125,9 @@ Function Enviar_Backup() As Boolean
        Enviar_Backup = True
        RaiseEvent EnvioCompleto
     ElseIf Err.Number = -2147220973 Then
-       RaiseEvent Error("Posible error : nombre del Servidor " & "incorrecto o número de puerto incorrecto", Err.Number)
+       RaiseEvent Error("Posible error : nombre del Servidor " & "incorrecto o nÃºmero de puerto incorrecto", Err.Number)
     ElseIf Err.Number = -2147220975 Then
-       RaiseEvent Error("¡Error! Posible error en el nombre de usuario, " & "ó en la contraseña", Err.Number)
+       RaiseEvent Error("Â¡Error! Posible error en el nombre de usuario, " & "Ã³ en la contraseÃ±a", Err.Number)
     Else
        RaiseEvent Error(Err.Description, Err.Number)
     End If

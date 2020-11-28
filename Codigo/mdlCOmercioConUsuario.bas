@@ -87,7 +87,7 @@ Public Sub IniciarComercioConUsuario(ByVal Origen As Integer, ByVal Destino As I
         UserList(Destino).flags.TargetUser = Origen
     
         UserList(Destino).flags.pregunta = 4
-        Call WritePreguntaBox(Destino, UserList(Origen).name & " desea comerciar contigo. ¿Aceptás?")
+        Call WritePreguntaBox(Destino, UserList(Origen).name & " desea comerciar contigo. Â¿AceptÃ¡s?")
     
     End If
 
@@ -296,7 +296,7 @@ Public Sub AceptarComercioUsu(ByVal UserIndex As Integer)
     
 
         '[CORREGIDO]
-        'Desde acá corregí el bug que cuando se ofrecian mas de
+        'Desde acÃ¡ corregÃ­ el bug que cuando se ofrecian mas de
         '10k de oro no le llegaban al destinatario.
 
         'pone el oro directamente en la billetera
@@ -322,13 +322,13 @@ Public Sub AceptarComercioUsu(ByVal UserIndex As Integer)
     
             'Es un Objeto que tenemos que loguear? Pablo (ToxicWaste) 07/09/07
             'If ObjData(Obj2.ObjIndex).Log = 1 Then
-            '  '   Call LogDesarrollo(UserList(OtroUserIndex).name & " le pasó en comercio seguro a " & UserList(UserIndex).name & " " & Obj2.Amount & " " & ObjData(Obj2.ObjIndex).name)
+            '  '   Call LogDesarrollo(UserList(OtroUserIndex).name & " le pasÃ³ en comercio seguro a " & UserList(UserIndex).name & " " & Obj2.Amount & " " & ObjData(Obj2.ObjIndex).name)
             ' End If
             'Es mucha cantidad?
             ' If Obj2.Amount > MAX_OBJ_LOGUEABLE Then
             'Si no es de los prohibidos de loguear, lo logueamos.
             ' If ObjData(Obj2.ObjIndex).NoLog <> 1 Then
-            '    Call LogDesarrollo(UserList(OtroUserIndex).name & " le pasó en comercio seguro a " & UserList(UserIndex).name & " " & Obj2.Amount & " " & ObjData(Obj2.ObjIndex).name)
+            '    Call LogDesarrollo(UserList(OtroUserIndex).name & " le pasÃ³ en comercio seguro a " & UserList(UserIndex).name & " " & Obj2.Amount & " " & ObjData(Obj2.ObjIndex).name)
             ' End If
             ' End If
         End If
@@ -337,7 +337,7 @@ Public Sub AceptarComercioUsu(ByVal UserIndex As Integer)
 210     If UserList(UserIndex).ComUsu.Objeto = FLAGORO Then
             'quito la cantidad de oro ofrecida
 212         UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD - UserList(UserIndex).ComUsu.cant
-            ' If UserList(UserIndex).ComUsu.cant > MAX_ORO_LOGUEABLE Then Call LogDesarrollo(UserList(UserIndex).name & " soltó oro en comercio seguro con " & UserList(OtroUserIndex).name & ". Cantidad: " & UserList(UserIndex).ComUsu.cant)
+            ' If UserList(UserIndex).ComUsu.cant > MAX_ORO_LOGUEABLE Then Call LogDesarrollo(UserList(UserIndex).name & " soltÃ³ oro en comercio seguro con " & UserList(OtroUserIndex).name & ". Cantidad: " & UserList(UserIndex).ComUsu.cant)
 214         Call WriteUpdateUserStats(UserIndex)
             'y se la doy al otro
 216         UserList(OtroUserIndex).Stats.GLD = UserList(OtroUserIndex).Stats.GLD + UserList(UserIndex).ComUsu.cant
@@ -356,13 +356,13 @@ Public Sub AceptarComercioUsu(ByVal UserIndex As Integer)
     
             'Es un Objeto que tenemos que loguear? Pablo (ToxicWaste) 07/09/07
             ' If ObjData(Obj1.ObjIndex).Log = 1 Then
-            '    Call LogDesarrollo(UserList(UserIndex).name & " le pasó en comercio seguro a " & UserList(OtroUserIndex).name & " " & Obj1.Amount & " " & ObjData(Obj1.ObjIndex).name)
+            '    Call LogDesarrollo(UserList(UserIndex).name & " le pasÃ³ en comercio seguro a " & UserList(OtroUserIndex).name & " " & Obj1.Amount & " " & ObjData(Obj1.ObjIndex).name)
             ' End If
             'Es mucha cantidad?
             ' If Obj1.Amount > MAX_OBJ_LOGUEABLE Then
             'Si no es de los prohibidos de loguear, lo logueamos.
             '  If ObjData(Obj1.ObjIndex).NoLog <> 1 Then
-            ''     Call LogDesarrollo(UserList(OtroUserIndex).name & " le pasó en comercio seguro a " & UserList(UserIndex).name & " " & Obj1.Amount & " " & ObjData(Obj1.ObjIndex).name)
+            ''     Call LogDesarrollo(UserList(OtroUserIndex).name & " le pasÃ³ en comercio seguro a " & UserList(UserIndex).name & " " & Obj1.Amount & " " & ObjData(Obj1.ObjIndex).name)
             '  End If
             ' End If
     

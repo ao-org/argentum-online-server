@@ -1,6 +1,6 @@
 Attribute VB_Name = "Declaraciones"
 'Argentum Online 0.11.6
-'Copyright (C) 2002 Márquez Pablo Ignacio
+'Copyright (C) 2002 MÃ¡rquez Pablo Ignacio
 '
 'This program is free software; you can redistribute it and/or modify
 'it under the terms of the Affero General Public License;
@@ -22,10 +22,10 @@ Attribute VB_Name = "Declaraciones"
 'You can contact me at:
 'morgolock@speedy.com.ar
 'www.geocities.com/gmorgolock
-'Calle 3 número 983 piso 7 dto A
+'Calle 3 nÃºmero 983 piso 7 dto A
 'La Plata - Pcia, Buenos Aires - Republica Argentina
-'Código Postal 1900
-'Pablo Ignacio Márquez
+'CÃ³digo Postal 1900
+'Pablo Ignacio MÃ¡rquez
 
 Option Explicit
 
@@ -186,12 +186,12 @@ End Enum
 Public Enum eClass
 
     Mage = 1    'Mago
-    Cleric      'Clérigo
+    Cleric      'ClÃ©rigo
     Warrior     'Guerrero
     Assasin     'Asesino
     Bard        'Bardo
     Druid       'Druida
-    Paladin     'Paladín
+    Paladin     'PaladÃ­n
     Hunter      'Cazador
     Trabajador  'Trabajador
 
@@ -409,7 +409,7 @@ Public Const MAX_MENSAJES_FORO As Byte = 35
 Public Const MAXUSERHECHIZOS   As Byte = 25
 
 ' TODO: Y ESTO ? LO CONOCE GD ?
-Public Const EsfuerzoTalarLeñador As Byte = 5
+Public Const EsfuerzoTalarLeÃ±ador As Byte = 5
 
 Public Const EsfuerzoTalarGeneral          As Byte = 15
 
@@ -436,7 +436,7 @@ Public Const EsfuerzoExcavarGeneral        As Byte = 15
 
 Public Const FX_TELEPORT_INDEX             As Integer = 1
 
-' La utilidad de esto es casi nula, sólo se revisa si fue a la cabeza...
+' La utilidad de esto es casi nula, sÃ³lo se revisa si fue a la cabeza...
 Public Enum PartesCuerpo
 
     bCabeza = 1
@@ -468,7 +468,7 @@ Public Const LingotePlata   As Integer = 387 'OK
 
 Public Const LingoteOro     As Integer = 388 'OK
 
-Public Const Leña As Integer = 58 'OK
+Public Const LeÃ±a As Integer = 58 'OK
 
 Public Const Raices         As Integer = 888 'OK
 
@@ -519,7 +519,7 @@ Public Enum eNPCType
     
 End Enum
 
-Public Const MIN_APUÑALAR As Byte = 10
+Public Const MIN_APUÃ‘ALAR As Byte = 10
 
 '********** CONSTANTANTES ***********
 
@@ -603,7 +603,7 @@ Public Enum eSkill
     Tacticas = 3
     Armas = 4
     Meditar = 5
-    Apuñalar = 6
+    ApuÃ±alar = 6
     Ocultarse = 7
     Supervivencia = 8
     Comerciar = 9
@@ -650,7 +650,7 @@ Public Const AumentoSTDef        As Byte = 18
 
 Public Const AumentoSTMago       As Byte = AumentoSTDef - 5
 
-'Tamaño del mapa
+'TamaÃ±o del mapa
 Public Const XMaxMapSize         As Byte = 100
 
 Public Const XMinMapSize         As Byte = 1
@@ -659,12 +659,12 @@ Public Const YMaxMapSize         As Byte = 100
 
 Public Const YMinMapSize         As Byte = 1
 
-'Tamaño del tileset
+'TamaÃ±o del tileset
 Public Const TileSizeX           As Byte = 32
 
 Public Const TileSizeY           As Byte = 32
 
-'Tamaño en Tiles de la pantalla de visualizacion
+'TamaÃ±o en Tiles de la pantalla de visualizacion
 Public Const XWindow             As Byte = 23
 
 Public Const YWindow             As Byte = 18
@@ -692,7 +692,7 @@ Public Const SND_IMPACTO         As Byte = 10
 
 Public Const SND_IMPACTO2        As Byte = 12
 
-Public Const SND_LEÑADOR As Byte = 13
+Public Const SND_LEÃ‘ADOR As Byte = 13
 
 Public Const SND_FOGATA              As Byte = 14
 
@@ -714,13 +714,13 @@ Public Const MAX_INVENTORY_OBJS      As Integer = 10000
 ' Cantidad de "slots" en el inventario con todos los slots desbloqueados
 Public Const MAX_INVENTORY_SLOTS     As Byte = 42
 
-' Cantidad de "slots" en el inventario bï¿½sico
+' Cantidad de "slots" en el inventario bÃ¯Â¿Â½sico
 Public Const MAX_USERINVENTORY_SLOTS As Byte = 24
 
 ' Cantidad de "slots" en el inventario por fila
 Public Const SLOTS_PER_ROW_INVENTORY As Byte = 6
 
-' Cantidad mï¿½xima de filas a desbloquear en el inventario
+' Cantidad mÃ¯Â¿Â½xima de filas a desbloquear en el inventario
 Public Const INVENTORY_EXTRA_ROWS    As Byte = 3
 
 ''
@@ -746,7 +746,7 @@ Public Enum eOBJType
     otForos = 10
     otPociones = 11
     otBebidas = 13
-    otLeña = 14
+    otLeÃ±a = 14
     otFogata = 15
     otESCUDO = 16
     otCASCO = 17
@@ -868,7 +868,7 @@ Public Type tHechizo
     TeleportXX As Integer
     TeleportXY As Integer
 
-    'Hechizo de Materialización
+    'Hechizo de MaterializaciÃ³n
     MaterializaObj As Integer
     MaterializaCant As Integer
     
@@ -1150,7 +1150,7 @@ Public Type ObjData
     'Solo contenedores
     MaxItems As Integer
     Conte As Inventario
-    Apuñala As Byte
+    ApuÃ±ala As Byte
     
     Paraliza As Byte
     Estupidiza As Byte
@@ -1318,9 +1318,9 @@ Public Type ModClase
     Evasion As Double
     AtaqueArmas As Double
     AtaqueProyectiles As Double
-    DañoArmas As Double
-    DañoProyectiles As Double
-    DañoWrestling As Double
+    DaÃ±oArmas As Double
+    DaÃ±oProyectiles As Double
+    DaÃ±oWrestling As Double
     Escudo As Double
 
 End Type
@@ -1516,11 +1516,11 @@ Public Type UserFlags
     Subastando As Boolean
     Incinerado As Byte
     'Ladder
-    Muerto As Byte '¿Esta muerto?
-    Escondido As Byte '¿Esta escondido?
-    Comerciando As Boolean '¿Esta comerciando?
-    UserLogged As Boolean '¿Esta online?
-    FirstPacket As Boolean ' ¿El socket envió algun paquete válido?
+    Muerto As Byte 'Â¿Esta muerto?
+    Escondido As Byte 'Â¿Esta escondido?
+    Comerciando As Boolean 'Â¿Esta comerciando?
+    UserLogged As Boolean 'Â¿Esta online?
+    FirstPacket As Boolean ' Â¿El socket enviÃ³ algun paquete vÃ¡lido?
     Meditando As Boolean
     Escribiendo As Boolean
 
@@ -1551,17 +1551,17 @@ Public Type UserFlags
     SeguroClan As Boolean
     
     DuracionEfecto As Long
-    TargetNPC As Integer ' Npc señalado por el usuario
-    TargetNpcTipo As eNPCType ' Tipo del npc señalado
+    TargetNPC As Integer ' Npc seÃ±alado por el usuario
+    TargetNpcTipo As eNPCType ' Tipo del npc seÃ±alado
     NpcInv As Integer
     
     Ban As Byte
     AdministrativeBan As Byte
     BanMotivo As String
     
-    TargetUser As Integer ' Usuario señalado
+    TargetUser As Integer ' Usuario seÃ±alado
     
-    TargetObj As Integer ' Obj señalado
+    TargetObj As Integer ' Obj seÃ±alado
     TargetObjMap As Integer
     TargetObjX As Integer
     TargetObjY As Integer
@@ -1870,7 +1870,7 @@ Public Type NPCFlags
     GolpeExacto As Byte
     Domable As Integer
     Respawn As Byte
-    NPCActive As Boolean '¿Esta vivo?
+    NPCActive As Boolean 'Â¿Esta vivo?
     Follow As Boolean
     Faccion As Byte
     LanzaSpells As Byte

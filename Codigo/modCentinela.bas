@@ -2,7 +2,7 @@ Attribute VB_Name = "modCentinela"
 '*****************************************************************
 'modCentinela.bas - ImperiumAO - v1.2
 '
-'FunciÛnes de control para usuarios que se encuentran trabajando
+'Funci√≥nes de control para usuarios que se encuentran trabajando
 '
 '*****************************************************************
 'Respective portions copyrighted by contributors listed below.
@@ -24,29 +24,29 @@ Attribute VB_Name = "modCentinela"
 '   ImperiumAO 1.2
 '   - First Relase
 '
-'Juan MartÌn Sotuyo Dodero (juansotuyo@gmail.com)
+'Juan Mart√≠n Sotuyo Dodero (juansotuyo@gmail.com)
 '   Alkon AO 0.11.5
 '   - Small improvements and added logs to detect possible cheaters
 '
-'Juan MartÌn Sotuyo Dodero (juansotuyo@gmail.com)
+'Juan Mart√≠n Sotuyo Dodero (juansotuyo@gmail.com)
 '   Alkon AO 0.12.0
 '   - Added several messages to spam users until they reply
 '*****************************************************************
 
 Option Explicit
 
-Private Const NPC_CENTINELA_TIERRA As Integer = 498  'Õndice del NPC en el .dat
+Private Const NPC_CENTINELA_TIERRA As Integer = 498  '√çndice del NPC en el .dat
 
-Private Const NPC_CENTINELA_AGUA   As Integer = 499    'Õdem anterior, pero en mapas de agua
+Private Const NPC_CENTINELA_AGUA   As Integer = 499    '√çdem anterior, pero en mapas de agua
 
-Public CentinelaNPCIndex           As Integer                'Õndice del NPC en el servidor
+Public CentinelaNPCIndex           As Integer                '√çndice del NPC en el servidor
 
 Private Const TIEMPO_INICIAL       As Byte = 2 'Tiempo inicial en minutos. No reducir sin antes revisar el timer que maneja estos datos.
 
 Private Type tCentinela
 
-    RevisandoUserIndex As Integer   'øQuÈ Ìndice revisamos?
-    TiempoRestante As Integer       'øCu·ntos minutos le quedan al usuario?
+    RevisandoUserIndex As Integer   '¬øQu√© √≠ndice revisamos?
+    TiempoRestante As Integer       '¬øCu√°ntos minutos le quedan al usuario?
     clave As Integer                'Clave que debe escribir
     spawnTime As Long
 
@@ -110,13 +110,13 @@ Private Sub GoToNextWorkingChar()
 110                 Centinela.clave = RandomNumber(1, 32000)
 112                 Centinela.spawnTime = GetTickCount() And &H7FFFFFFF
                 
-                    'Ponemos al centinela en posiciÛn
+                    'Ponemos al centinela en posici√≥n
 114                 Call WarpCentinela(LoopC)
                 
 116                 If CentinelaNPCIndex Then
                         'Mandamos el mensaje (el centinela habla y aparece en consola para que no haya dudas)
-118                     Call WriteChatOverHead(LoopC, "Saludos " & UserList(LoopC).name & ", soy el Centinela de estas tierras. Me gustarÌa que escribas /CENTINELA " & Centinela.clave & " en no m·s de dos minutos.", CStr(Npclist(CentinelaNPCIndex).Char.CharIndex), vbGreen)
-120                     Call WriteConsoleMsg(LoopC, "Saludos " & UserList(LoopC).name & ", soy el Centinela de estas tierras. Me gustarÌa que escribas /CENTINELA " & Centinela.clave & " en no m·s de dos minutos.", FontTypeNames.FONTTYPE_CENTINELA)
+118                     Call WriteChatOverHead(LoopC, "Saludos " & UserList(LoopC).name & ", soy el Centinela de estas tierras. Me gustar√≠a que escribas /CENTINELA " & Centinela.clave & " en no m√°s de dos minutos.", CStr(Npclist(CentinelaNPCIndex).Char.CharIndex), vbGreen)
+120                     Call WriteConsoleMsg(LoopC, "Saludos " & UserList(LoopC).name & ", soy el Centinela de estas tierras. Me gustar√≠a que escribas /CENTINELA " & Centinela.clave & " en no m√°s de dos minutos.", FontTypeNames.FONTTYPE_CENTINELA)
                     
 
                     End If
@@ -129,7 +129,7 @@ Private Sub GoToNextWorkingChar()
 
 122     Next LoopC
     
-        'No hay chars trabajando, eliminamos el NPC si todavÌa estaba en alg˙n lado y esperamos otro minuto
+        'No hay chars trabajando, eliminamos el NPC si todav√≠a estaba en alg√∫n lado y esperamos otro minuto
 124     If CentinelaNPCIndex Then
 126         Call QuitarNPC(CentinelaNPCIndex)
 128         CentinelaNPCIndex = 0
@@ -151,7 +151,7 @@ End Sub
 Private Sub CentinelaFinalCheck()
 
     '############################################################
-    'Al finalizar el tiempo, se retira y realiza la acciÛn
+    'Al finalizar el tiempo, se retira y realiza la acci√≥n
     'pertinente dependiendo del caso
     '############################################################
     On Error GoTo Error_Handler
@@ -237,8 +237,8 @@ Public Sub CentinelaCheckClave(ByVal UserIndex As Integer, ByVal clave As Intege
         '############################################################
 100     If clave = Centinela.clave And UserIndex = Centinela.RevisandoUserIndex Then
 102         UserList(Centinela.RevisandoUserIndex).flags.CentinelaOK = True
-            'Call WriteChatOverHead(UserIndex, "°Muchas gracias " & UserList(Centinela.RevisandoUserIndex).name & "! Espero no haber sido una molestia", CStr(Npclist(CentinelaNPCIndex).Char.CharIndex), vbWhite)
-104         Call WriteConsoleMsg(UserIndex, "°Muchas gracias " & UserList(Centinela.RevisandoUserIndex).name & "! Espero no haber sido una molestia", FontTypeNames.FONTTYPE_CENTINELA)
+            'Call WriteChatOverHead(UserIndex, "¬°Muchas gracias " & UserList(Centinela.RevisandoUserIndex).name & "! Espero no haber sido una molestia", CStr(Npclist(CentinelaNPCIndex).Char.CharIndex), vbWhite)
+104         Call WriteConsoleMsg(UserIndex, "¬°Muchas gracias " & UserList(Centinela.RevisandoUserIndex).name & "! Espero no haber sido una molestia", FontTypeNames.FONTTYPE_CENTINELA)
 106         Centinela.RevisandoUserIndex = 0
 108         Call GoToNextWorkingChar
         
@@ -247,9 +247,9 @@ Public Sub CentinelaCheckClave(ByVal UserIndex As Integer, ByVal clave As Intege
         
             'Logueamos el evento
 112         If UserIndex <> Centinela.RevisandoUserIndex Then
-114             Call LogCentinela("El usuario " & UserList(UserIndex).name & " respondiÛ aunque no se le hablaba a Èl.")
+114             Call LogCentinela("El usuario " & UserList(UserIndex).name & " respondi√≥ aunque no se le hablaba a √©l.")
             Else
-116             Call LogCentinela("El usuario " & UserList(UserIndex).name & " respondiÛ una clave incorrecta: " & clave & " - Se esperaba : " & Centinela.clave)
+116             Call LogCentinela("El usuario " & UserList(UserIndex).name & " respondi√≥ una clave incorrecta: " & clave & " - Se esperaba : " & Centinela.clave)
 
             End If
 
@@ -298,23 +298,23 @@ Public Sub CentinelaSendClave(ByVal UserIndex As Integer)
         
 
         '############################################################
-        'Enviamos al usuario la clave vÌa el personaje centinela
+        'Enviamos al usuario la clave v√≠a el personaje centinela
         '############################################################
 100     If CentinelaNPCIndex = 0 Then Exit Sub
     
 102     If UserIndex = Centinela.RevisandoUserIndex Then
 104         If Not UserList(UserIndex).flags.CentinelaOK Then
-106             Call WriteChatOverHead(UserIndex, "°La clave que te he dicho es /CENTINELA " & Centinela.clave & ", escrÌbelo r·pido!", CStr(Npclist(CentinelaNPCIndex).Char.CharIndex), vbGreen)
-108             Call WriteConsoleMsg(UserIndex, "°La clave correcta es /CENTINELA " & Centinela.clave & ", escrÌbelo r·pido!", FontTypeNames.FONTTYPE_CENTINELA)
+106             Call WriteChatOverHead(UserIndex, "¬°La clave que te he dicho es /CENTINELA " & Centinela.clave & ", escr√≠belo r√°pido!", CStr(Npclist(CentinelaNPCIndex).Char.CharIndex), vbGreen)
+108             Call WriteConsoleMsg(UserIndex, "¬°La clave correcta es /CENTINELA " & Centinela.clave & ", escr√≠belo r√°pido!", FontTypeNames.FONTTYPE_CENTINELA)
             Else
                 'Logueamos el evento
-110             Call LogCentinela("El usuario " & UserList(Centinela.RevisandoUserIndex).name & " respondiÛ m·s de una vez la contraseÒa correcta.")
-112             Call WriteChatOverHead(UserIndex, "Te agradezco, pero ya me has respondido. Me retirarÈ pronto.", CStr(Npclist(CentinelaNPCIndex).Char.CharIndex), vbGreen)
+110             Call LogCentinela("El usuario " & UserList(Centinela.RevisandoUserIndex).name & " respondi√≥ m√°s de una vez la contrase√±a correcta.")
+112             Call WriteChatOverHead(UserIndex, "Te agradezco, pero ya me has respondido. Me retirar√© pronto.", CStr(Npclist(CentinelaNPCIndex).Char.CharIndex), vbGreen)
 
             End If
 
         Else
-114         Call WriteChatOverHead(UserIndex, "No es a ti a quien estoy hablando, øno ves?", CStr(Npclist(CentinelaNPCIndex).Char.CharIndex), vbWhite)
+114         Call WriteChatOverHead(UserIndex, "No es a ti a quien estoy hablando, ¬øno ves?", CStr(Npclist(CentinelaNPCIndex).Char.CharIndex), vbWhite)
 
         End If
 
@@ -354,8 +354,8 @@ Public Sub PasarMinutoCentinela()
                 End If
             
                 'El centinela habla y se manda a consola para que no quepan dudas
-118             Call WriteChatOverHead(Centinela.RevisandoUserIndex, "°" & UserList(Centinela.RevisandoUserIndex).name & ", tienes un minuto m·s para responder! Debes escribir /CENTINELA " & Centinela.clave & ".", CStr(Npclist(CentinelaNPCIndex).Char.CharIndex), vbRed)
-120             Call WriteConsoleMsg(Centinela.RevisandoUserIndex, "°" & UserList(Centinela.RevisandoUserIndex).name & ", tienes un minuto m·s para responder! Debes escribir /CENTINELA " & Centinela.clave & ".", FontTypeNames.FONTTYPE_CENTINELA)
+118             Call WriteChatOverHead(Centinela.RevisandoUserIndex, "¬°" & UserList(Centinela.RevisandoUserIndex).name & ", tienes un minuto m√°s para responder! Debes escribir /CENTINELA " & Centinela.clave & ".", CStr(Npclist(CentinelaNPCIndex).Char.CharIndex), vbRed)
+120             Call WriteConsoleMsg(Centinela.RevisandoUserIndex, "¬°" & UserList(Centinela.RevisandoUserIndex).name & ", tienes un minuto m√°s para responder! Debes escribir /CENTINELA " & Centinela.clave & ".", FontTypeNames.FONTTYPE_CENTINELA)
             
 
             End If
@@ -377,9 +377,9 @@ Private Sub WarpCentinela(ByVal UserIndex As Integer)
         
 
         '############################################################
-        'Inciamos la revisiÛn del usuario UserIndex
+        'Inciamos la revisi√≥n del usuario UserIndex
         '############################################################
-        'Evitamos conflictos de Ìndices
+        'Evitamos conflictos de √≠ndices
 100     If CentinelaNPCIndex Then
 102         Call QuitarNPC(CentinelaNPCIndex)
 104         CentinelaNPCIndex = 0
@@ -411,11 +411,11 @@ Public Sub CentinelaUserLogout()
         
 
         '############################################################
-        'El usuario al que revisabamos se desconectÛ
+        'El usuario al que revisabamos se desconect√≥
         '############################################################
 100     If Centinela.RevisandoUserIndex Then
             'Logueamos el evento
-102         Call LogCentinela("El usuario " & UserList(Centinela.RevisandoUserIndex).name & " se desolgueÛ al pedirsele la contraseÒa")
+102         Call LogCentinela("El usuario " & UserList(Centinela.RevisandoUserIndex).name & " se desolgue√≥ al pedirsele la contrase√±a")
         
             'Reseteamos y esperamos a otro PasarMinuto para ir al siguiente user
 104         Centinela.clave = 0
@@ -442,7 +442,7 @@ End Sub
 Private Sub LogCentinela(ByVal texto As String)
 
     '*************************************************
-    'Author: Juan MartÌn Sotuyo Dodero (Maraxus)
+    'Author: Juan Mart√≠n Sotuyo Dodero (Maraxus)
     'Last modified: 03/15/2006
     'Loguea un evento del centinela
     '*************************************************

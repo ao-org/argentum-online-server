@@ -288,7 +288,7 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
                         Else
 
 278                         If UserList(UserIndex).Pos.Map <> obj.DesdeMap Then
-280                             Call WriteConsoleMsg(UserIndex, "Esta runa no puede ser usada desde aquí.", FontTypeNames.FONTTYPE_INFO)
+280                             Call WriteConsoleMsg(UserIndex, "Esta runa no puede ser usada desde aquÃ­.", FontTypeNames.FONTTYPE_INFO)
                             Else
 282                             Call QuitarUserInvItem(UserIndex, slot, 1)
 284                             Call UpdateUserInv(False, UserIndex, slot)
@@ -324,7 +324,7 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 320                                         Call WriteConsoleMsg(UserIndex, "Te has teletransportado hacia tu pareja.", FontTypeNames.FONTTYPE_INFOIAO)
 322                                         Call WriteConsoleMsg(parejaindex, "Tu pareja se ha teletransportado hacia vos.", FontTypeNames.FONTTYPE_INFOIAO)
                                         Else
-324                                         Call WriteConsoleMsg(UserIndex, "Tu pareja esta en modo battle. No podés teletransportarte hacia ella.", FontTypeNames.FONTTYPE_INFOIAO)
+324                                         Call WriteConsoleMsg(UserIndex, "Tu pareja esta en modo battle. No podÃ©s teletransportarte hacia ella.", FontTypeNames.FONTTYPE_INFOIAO)
 
                                         End If
                                     
@@ -347,7 +347,7 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
                             '   Call WriteConsoleMsg(UserIndex, "Opcion disponible unicamente para usuarios donadores.", FontTypeNames.FONTTYPE_INFOIAO)
                             '  End If
                         Else
-332                         Call WriteConsoleMsg(UserIndex, "No podés usar esta opción en el battle.", FontTypeNames.FONTTYPE_INFOIAO)
+332                         Call WriteConsoleMsg(UserIndex, "No podÃ©s usar esta opciÃ³n en el battle.", FontTypeNames.FONTTYPE_INFOIAO)
             
                         End If
             
@@ -368,7 +368,7 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 344                 Yf = Hechizos(uh).TeleportXY
     
 346                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(uh).wav, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY))  'Esta linea faltaba. Pablo (ToxicWaste)
-348                 Call WriteConsoleMsg(UserIndex, "¡Has abierto la puerta a intermundia!", FontTypeNames.FONTTYPE_INFO)
+348                 Call WriteConsoleMsg(UserIndex, "Â¡Has abierto la puerta a intermundia!", FontTypeNames.FONTTYPE_INFO)
 350                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Runa, -1, True))
 352                 UserList(UserIndex).flags.Portal = 10
 354                 UserList(UserIndex).flags.PortalMDestino = Mapaf
@@ -402,7 +402,7 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
             
                 '
 392         Case Accion_Barra.Resucitar
-394             Call WriteConsoleMsg(UserIndex, "¡Has sido resucitado!", FontTypeNames.FONTTYPE_INFO)
+394             Call WriteConsoleMsg(UserIndex, "Â¡Has sido resucitado!", FontTypeNames.FONTTYPE_INFO)
 396             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Resucitar, 250, True))
 398             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("204", UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
 400             Call RevivirUsuario(UserIndex)
@@ -458,7 +458,7 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
                     End If
                 
 448                 Call AumentarPJ(UserIndex)
-450                 Call WriteConsoleMsg(UserIndex, "Battle> Ahora tu personaje se encuentra en modo batalla. Recuerda que todos los cambios que se realicen sobre éste no tendran efecto mientras te encuentres aquí. Cuando desees salir, solamente toca ESC o escribe /SALIR y relogea con tu personaje.", FontTypeNames.FONTTYPE_CITIZEN)
+450                 Call WriteConsoleMsg(UserIndex, "Battle> Ahora tu personaje se encuentra en modo batalla. Recuerda que todos los cambios que se realicen sobre Ã©ste no tendran efecto mientras te encuentres aquÃ­. Cuando desees salir, solamente toca ESC o escribe /SALIR y relogea con tu personaje.", FontTypeNames.FONTTYPE_CITIZEN)
                 
                 End If
 
@@ -484,7 +484,7 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 480                                 Call WriteConsoleMsg(UserIndex, "Te has teletransportado hacia tu pareja.", FontTypeNames.FONTTYPE_INFOIAO)
 482                                 Call WriteConsoleMsg(parejaindex, "Tu pareja se ha teletransportado hacia vos.", FontTypeNames.FONTTYPE_INFOIAO)
                                 Else
-484                                 Call WriteConsoleMsg(UserIndex, "Tu pareja esta en modo battle. No podés teletransportarte hacia ella.", FontTypeNames.FONTTYPE_INFOIAO)
+484                                 Call WriteConsoleMsg(UserIndex, "Tu pareja esta en modo battle. No podÃ©s teletransportarte hacia ella.", FontTypeNames.FONTTYPE_INFOIAO)
 
                                 End If
                                     
@@ -507,7 +507,7 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
                     ' Call WriteConsoleMsg(UserIndex, "Opcion disponible unicamente para usuarios donadores.", FontTypeNames.FONTTYPE_INFOIAO)
                     'End If
                 Else
-492                 Call WriteConsoleMsg(UserIndex, "No podés usar esta opción en el battle.", FontTypeNames.FONTTYPE_INFOIAO)
+492                 Call WriteConsoleMsg(UserIndex, "No podÃ©s usar esta opciÃ³n en el battle.", FontTypeNames.FONTTYPE_INFOIAO)
             
                 End If
             
@@ -525,7 +525,7 @@ End Sub
 Public Function General_Get_Line_Count(ByVal FileName As String) As Long
 
     '**************************************************************
-    'Author: Augusto José Rando
+    'Author: Augusto JosÃ© Rando
     'Last Modify Date: 6/11/2005
     '
     '**************************************************************
@@ -559,7 +559,7 @@ Public Function Integer_To_String(ByVal Var As Integer) As String
         
 
         '**************************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan MartÃ­n Sotuyo Dodero (Maraxus)
         'Last Modify Date: 3/12/2005
         '
         '**************************************************************
@@ -592,7 +592,7 @@ End Function
 Public Function String_To_Integer(ByRef str As String, ByVal Start As Integer) As Integer
 
     '**************************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
+    'Author: Juan MartÃ­n Sotuyo Dodero (Maraxus)
     'Last Modify Date: 3/12/2005
     '
     '**************************************************************
@@ -600,7 +600,7 @@ Public Function String_To_Integer(ByRef str As String, ByVal Start As Integer) A
     
     Dim temp_str As String
     
-    'Asergurarse sea válido
+    'Asergurarse sea vÃ¡lido
     If Len(str) < Start - 1 Or Len(str) = 0 Then Exit Function
     
     'Convertimos a hexa el valor ascii del segundo byte
@@ -623,7 +623,7 @@ End Function
 
 Public Function Byte_To_String(ByVal Var As Byte) As String
         '**************************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan MartÃ­n Sotuyo Dodero (Maraxus)
         'Last Modify Date: 3/12/2005
         'Convierte un byte a string
         '**************************************************************
@@ -647,7 +647,7 @@ End Function
 Public Function String_To_Byte(ByRef str As String, ByVal Start As Integer) As Byte
 
     '**************************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
+    'Author: Juan MartÃ­n Sotuyo Dodero (Maraxus)
     'Last Modify Date: 3/12/2005
     '
     '**************************************************************
@@ -669,11 +669,11 @@ Public Function Long_To_String(ByVal Var As Long) As String
         
 
         '**************************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan MartÃ­n Sotuyo Dodero (Maraxus)
         'Last Modify Date: 3/12/2005
         '
         '**************************************************************
-        'No aceptamos valores que usen los 4 últimos its
+        'No aceptamos valores que usen los 4 Ãºltimos its
 100     If Var > &HFFFFFFF Then GoTo ErrorHandler
     
         Dim temp As String
@@ -716,7 +716,7 @@ End Function
 
 Public Function String_To_Long(ByRef str As String, ByVal Start As Integer) As Long
     '**************************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
+    'Author: Juan MartÃ­n Sotuyo Dodero (Maraxus)
     'Last Modify Date: 3/12/2005
     '
     '**************************************************************
@@ -731,7 +731,7 @@ Public Function String_To_Long(ByRef str As String, ByVal Start As Integer) As L
 
     Dim temp_str3 As String
     
-    'Tomamos los últimos 3 bytes y convertimos sus valroes ASCII a hexa
+    'Tomamos los Ãºltimos 3 bytes y convertimos sus valroes ASCII a hexa
     temp_str = hex$(Asc(mid$(str, Start + 1, 1)))
     temp_str2 = hex$(Asc(mid$(str, Start + 2, 1)))
     temp_str3 = hex$(Asc(mid$(str, Start + 3, 1)))
@@ -752,7 +752,7 @@ Public Function String_To_Long(ByRef str As String, ByVal Start As Integer) As L
         temp_str3 = "0" & temp_str3
     Wend
     
-    'Convertimos a una única cadena hexa
+    'Convertimos a una Ãºnica cadena hexa
     String_To_Long = val("&H" & hex$(Asc(mid$(str, Start, 1))) & temp_str & temp_str2 & temp_str3)
     
     'Si el cuarto byte era cero

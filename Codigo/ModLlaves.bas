@@ -1,7 +1,7 @@
 Attribute VB_Name = "ModLlaves"
 Option Explicit
 
-' Cantidad máxima de llaves
+' Cantidad mÃ¡xima de llaves
 Public Const MAXKEYS As Byte = 10
 
 Public Function MeterLlaveEnLLavero(ByVal UserIndex As Integer, ByVal Llave As Integer) As Boolean
@@ -91,13 +91,13 @@ Public Sub UsarLlave(ByVal UserIndex As Integer, ByVal slot As Integer)
             TargObj = ObjData(.flags.TargetObj)
             LlaveObj = ObjData(.Keys(slot))
 
-            '¿El objeto clickeado es una puerta?
+            'Â¿El objeto clickeado es una puerta?
             If TargObj.OBJType = eOBJType.otPuertas Then
 
-                '¿Esta cerrada?
+                'Â¿Esta cerrada?
                 If TargObj.Cerrada = 1 Then
 
-                    '¿Cerrada con llave?
+                    'Â¿Cerrada con llave?
                     If TargObj.Llave > 0 Then
                         If TargObj.clave = LlaveObj.clave Then
                             MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex = ObjData(MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex).IndexCerrada
