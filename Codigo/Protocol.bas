@@ -11165,30 +11165,48 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
         'If we got here then packet is complete, copy data back to original queue
         Call .incomingData.CopyBuffer(buffer)
         
-        If .flags.Privilegios And PlayerType.RoleMaster Then
-
-            Select Case .flags.Privilegios And (PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero)
-
+        
+        
+       ' If .flags.Privilegios And PlayerType.RoleMaster Then
+            Select Case .flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin Or PlayerType.SemiDios Or PlayerType.Consejero)
                 Case PlayerType.Consejero
-                    ' Los RMs consejeros sílo se pueden editar su head, body y level
-                    valido = tUser = UserIndex And (opcion = eEditOptions.eo_Body Or opcion = eEditOptions.eo_Head Or opcion = eEditOptions.eo_Level)
+                    ' Los RMs consejeros sólo se pueden editar su head, body y level
+                    valido = tUser = UserIndex And _
+                            (opcion = eEditOptions.eo_Body Or opcion = eEditOptions.eo_Head Or opcion = eEditOptions.eo_Level)
                 
                 Case PlayerType.SemiDios
-                    ' Los RMs sílo se pueden editar su level y el head y body de cualquiera
-                    valido = (opcion = eEditOptions.eo_Level And tUser = UserIndex) Or opcion = eEditOptions.eo_Body Or opcion = eEditOptions.eo_Head
+                    ' Los RMs sólo se pueden editar su level y el head y body de cualquiera
+                    valido = (opcion = eEditOptions.eo_Level And tUser = UserIndex) _
+                            Or opcion = eEditOptions.eo_Body Or opcion = eEditOptions.eo_Head
+                            valido = True
                 
                 Case PlayerType.Dios
                     ' Los DRMs pueden aplicar los siguientes comandos sobre cualquiera
-                    ' pero si quiere modificar el level sílo lo puede hacer sobre sí mismo
-                    valido = (opcion = eEditOptions.eo_Level And tUser = UserIndex) Or opcion = eEditOptions.eo_Body Or opcion = eEditOptions.eo_Head Or opcion = eEditOptions.eo_CiticensKilled Or opcion = eEditOptions.eo_CriminalsKilled Or opcion = eEditOptions.eo_Class Or opcion = eEditOptions.eo_Skills
-
+                    ' pero si quiere modificar el level sólo lo puede hacer sobre sí mismo
+                    valido = (opcion = eEditOptions.eo_Level And tUser = UserIndex) Or _
+                            opcion = eEditOptions.eo_Body Or _
+                            opcion = eEditOptions.eo_Head Or _
+                            opcion = eEditOptions.eo_CiticensKilled Or _
+                            opcion = eEditOptions.eo_CriminalsKilled Or _
+                            opcion = eEditOptions.eo_Class Or _
+                            opcion = eEditOptions.eo_Skills
+                            valido = True
+                Case PlayerType.Admin
+                    ' Los DRMs pueden aplicar los siguientes comandos sobre cualquiera
+                    ' pero si quiere modificar el level sólo lo puede hacer sobre sí mismo
+                    valido = (opcion = eEditOptions.eo_Level And tUser = UserIndex) Or _
+                            opcion = eEditOptions.eo_Body Or _
+                            opcion = eEditOptions.eo_Head Or _
+                            opcion = eEditOptions.eo_CiticensKilled Or _
+                            opcion = eEditOptions.eo_CriminalsKilled Or _
+                            opcion = eEditOptions.eo_Class Or _
+                            opcion = eEditOptions.eo_Skills
+                            valido = True
             End Select
-           
-        ' Si sos GM y queres editarte a vos mismo, podes.
-        ElseIf (.flags.Privilegios And PlayerType.user) <> 0 And UserIndex = tUser Then
-            valido = True
-
-        End If
+            
+      '  ElseIf .flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios) Then   'Si no es RM debe ser dios para poder usar este comando
+           ' valido = True
+       ' End If
         
         If valido Then
 
