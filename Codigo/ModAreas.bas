@@ -30,7 +30,7 @@ Public Const USER_NUEVO               As Byte = 255
 Private Const AREA_DIM                As Byte = 12
  
 'Cuidado:
-' °°°LAS AREAS EST¡N HARDCODEADAS!!!
+' ¬°¬°¬°LAS AREAS EST√ÅN HARDCODEADAS!!!
 Private CurDay                        As Byte
 
 Private CurHour                       As Byte
@@ -64,7 +64,7 @@ Public Sub InitAreas()
     
 106     For LoopC = 1 To 100
 108         For LoopX = 1 To 100
-                'Usamos 81 IDs de area para saber si pasasamos de area "m·s r·pido"
+                'Usamos 81 IDs de area para saber si pasasamos de area "m√°s r√°pido"
 110             AreasInfo(LoopC, LoopX) = (LoopC \ AREA_DIM + 1) * (LoopX \ AREA_DIM + 1)
 112         Next LoopX
 114     Next LoopC
@@ -99,7 +99,7 @@ Public Sub AreasOptimizacion()
         '**************************************************************
         'Author: Lucio N. Tourrilhes (DuNga)
         'Last Modify Date: Unknow
-        'Es la funciÛn de autooptimizacion.... la idea es no mandar redimensionando arrays grandes todo el tiempo
+        'Es la funci√≥n de autooptimizacion.... la idea es no mandar redimensionando arrays grandes todo el tiempo
         '**************************************************************
         Dim LoopC      As Long
 
@@ -146,7 +146,7 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal Head As Byte,
     '**************************************************************
     'Author: Lucio N. Tourrilhes (DuNga)
     'Last Modify Date: Unknow
-    'Es la funciÛn clave del sistema de areas... Es llamada al mover un user
+    'Es la funci√≥n clave del sistema de areas... Es llamada al mover un user
     '**************************************************************
     If UserList(UserIndex).AreasInfo.AreaID = AreasInfo(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y) Then Exit Sub
     
@@ -464,7 +464,7 @@ Public Sub AgregarUser(ByVal UserIndex As Integer, ByVal Map As Integer, Optiona
         '**************************************************************
         'Author: Lucio N. Tourrilhes (DuNga)
         'Last Modify Date: 04/01/2007
-        'Modified by Juan MartÌn Sotuyo Dodero (Maraxus)
+        'Modified by Juan Mart√≠n Sotuyo Dodero (Maraxus)
         '   - Now the method checks for repetead users instead of trusting parameters.
         '   - If the character is new to the map, update it
         '**************************************************************

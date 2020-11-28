@@ -24,7 +24,7 @@ Option Explicit
 
 'guilds nueva version. Hecho por el oso, eliminando los problemas
 'de sincronizacion con los datos en el HD... entre varios otros
-'º¬
+'ÂºÂ¬
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -358,7 +358,7 @@ Public Function CrearNuevoClan(ByVal FundadorIndex As Integer, ByRef Desc As Str
         End If
 
 106     If GuildName = vbNullString Or Not GuildNameValido(GuildName) Then
-108         refError = "Nombre de clan inválido."
+108         refError = "Nombre de clan invÃ¡lido."
             Exit Function
 
         End If
@@ -383,7 +383,7 @@ Public Function CrearNuevoClan(ByVal FundadorIndex As Integer, ByRef Desc As Str
         
             'seteamos codex y descripcion
 124         Call guilds(CANTIDADDECLANES).SetDesc(Desc)
-126         Call guilds(CANTIDADDECLANES).SetGuildNews("¡Bienvenido a " & GuildName & "! Clan creado con alineación : " & Alineacion2String(Alineacion) & ".")
+126         Call guilds(CANTIDADDECLANES).SetGuildNews("Â¡Bienvenido a " & GuildName & "! Clan creado con alineaciÃ³n : " & Alineacion2String(Alineacion) & ".")
 128         Call guilds(CANTIDADDECLANES).SetLeader(UserList(FundadorIndex).name)
         
 130         Call guilds(CANTIDADDECLANES).SetNivelDeClan(1)
@@ -508,7 +508,7 @@ Public Function PuedeFundarUnClan(ByVal UserIndex As Integer, ByVal Alineacion A
 100     PuedeFundarUnClan = False
 
 102     If UserList(UserIndex).GuildIndex > 0 Then
-104         refError = "Ya perteneces a un clan, no podés fundar otro"
+104         refError = "Ya perteneces a un clan, no podÃ©s fundar otro"
             Exit Function
 
         End If
@@ -543,7 +543,7 @@ Public Function PuedeFundarUnClan(ByVal UserIndex As Integer, ByVal Alineacion A
         End If
     
 126     If UserList(UserIndex).flags.BattleModo = 1 Then
-128         refError = "Ya pensamos en eso... No podés fundar un clan acá."
+128         refError = "Ya pensamos en eso... No podÃ©s fundar un clan acÃ¡."
             Exit Function
 
         End If
@@ -858,19 +858,19 @@ Public Function v_AbrirElecciones(ByVal UserIndex As Integer, ByRef refError As 
 102     GuildIndex = UserList(UserIndex).GuildIndex
     
 104     If GuildIndex = 0 Or GuildIndex > CANTIDADDECLANES Then
-106         refError = "Tu no perteneces a ningún clan"
+106         refError = "Tu no perteneces a ningÃºn clan"
             Exit Function
 
         End If
     
 108     If Not m_EsGuildLeader(UserList(UserIndex).name, GuildIndex) Then
-110         refError = "No eres el líder de tu clan"
+110         refError = "No eres el lÃ­der de tu clan"
             Exit Function
 
         End If
     
 112     If guilds(GuildIndex).EleccionesAbiertas Then
-114         refError = "Las elecciones ya están abiertas"
+114         refError = "Las elecciones ya estÃ¡n abiertas"
             Exit Function
 
         End If
@@ -902,7 +902,7 @@ Public Function v_UsuarioVota(ByVal UserIndex As Integer, ByRef Votado As String
 102     GuildIndex = UserList(UserIndex).GuildIndex
     
 104     If GuildIndex = 0 Or GuildIndex > CANTIDADDECLANES Then
-106         refError = "Tu no perteneces a ningún clan"
+106         refError = "Tu no perteneces a ningÃºn clan"
             Exit Function
 
         End If
@@ -927,7 +927,7 @@ Public Function v_UsuarioVota(ByVal UserIndex As Integer, ByRef Votado As String
         End If
     
 124     If guilds(GuildIndex).YaVoto(UserList(UserIndex).name) Then
-126         refError = "Ya has votado, no podés cambiar tu voto"
+126         refError = "Ya has votado, no podÃ©s cambiar tu voto"
             Exit Function
 
         End If
@@ -1147,7 +1147,7 @@ Public Sub SendGuildLeaderInfo(ByVal UserIndex As Integer)
         '***************************************************
         'Autor: Mariano Barrou (El Oso)
         'Last Modification: 12/10/06
-        'Las Modified By: Juan Martín Sotuyo Dodero (Maraxus)
+        'Las Modified By: Juan MartÃ­n Sotuyo Dodero (Maraxus)
         '***************************************************
         Dim GI              As Integer
 
@@ -1158,7 +1158,7 @@ Public Sub SendGuildLeaderInfo(ByVal UserIndex As Integer)
         Dim aspirantsList() As String
     
 100     If UserList(UserIndex).flags.BattleModo = 1 Then
-102         Call WriteConsoleMsg(UserIndex, "No disponible aquí.", FontTypeNames.FONTTYPE_INFOIAO)
+102         Call WriteConsoleMsg(UserIndex, "No disponible aquÃ­.", FontTypeNames.FONTTYPE_INFOIAO)
             Exit Sub
 
         End If
@@ -1347,19 +1347,19 @@ Public Function r_DeclararGuerra(ByVal UserIndex As Integer, ByRef GuildGuerra A
 102     GI = UserList(UserIndex).GuildIndex
 
 104     If GI <= 0 Or GI > CANTIDADDECLANES Then
-106         refError = "No eres miembro de ningún clan"
+106         refError = "No eres miembro de ningÃºn clan"
             Exit Function
 
         End If
     
 108     If Not m_EsGuildLeader(UserList(UserIndex).name, GI) Then
-110         refError = "No eres el líder de tu clan"
+110         refError = "No eres el lÃ­der de tu clan"
             Exit Function
 
         End If
     
 112     If Trim$(GuildGuerra) = vbNullString Then
-114         refError = "No has seleccionado ningún clan"
+114         refError = "No has seleccionado ningÃºn clan"
             Exit Function
 
         End If
@@ -1367,7 +1367,7 @@ Public Function r_DeclararGuerra(ByVal UserIndex As Integer, ByRef GuildGuerra A
 116     GIG = GuildIndex(GuildGuerra)
     
 118     If GI = GIG Then
-120         refError = "No podés declarar la guerra a tu mismo clan"
+120         refError = "No podÃ©s declarar la guerra a tu mismo clan"
             Exit Function
 
         End If
@@ -1408,19 +1408,19 @@ Public Function r_AceptarPropuestaDePaz(ByVal UserIndex As Integer, ByRef GuildP
 100     GI = UserList(UserIndex).GuildIndex
 
 102     If GI <= 0 Or GI > CANTIDADDECLANES Then
-104         refError = "No eres miembro de ningún clan"
+104         refError = "No eres miembro de ningÃºn clan"
             Exit Function
 
         End If
     
 106     If Not m_EsGuildLeader(UserList(UserIndex).name, GI) Then
-108         refError = "No eres el líder de tu clan"
+108         refError = "No eres el lÃ­der de tu clan"
             Exit Function
 
         End If
     
 110     If Trim$(GuildPaz) = vbNullString Then
-112         refError = "No has seleccionado ningún clan"
+112         refError = "No has seleccionado ningÃºn clan"
             Exit Function
 
         End If
@@ -1435,7 +1435,7 @@ Public Function r_AceptarPropuestaDePaz(ByVal UserIndex As Integer, ByRef GuildP
         End If
 
 122     If guilds(GI).GetRelacion(GIG) <> RELACIONES_GUILD.GUERRA Then
-124         refError = "No estás en guerra con ese clan"
+124         refError = "No estÃ¡s en guerra con ese clan"
             Exit Function
 
         End If
@@ -1476,19 +1476,19 @@ Public Function r_RechazarPropuestaDeAlianza(ByVal UserIndex As Integer, ByRef G
 102     GI = UserList(UserIndex).GuildIndex
     
 104     If GI <= 0 Or GI > CANTIDADDECLANES Then
-106         refError = "No eres miembro de ningún clan"
+106         refError = "No eres miembro de ningÃºn clan"
             Exit Function
 
         End If
     
 108     If Not m_EsGuildLeader(UserList(UserIndex).name, GI) Then
-110         refError = "No eres el líder de tu clan"
+110         refError = "No eres el lÃ­der de tu clan"
             Exit Function
 
         End If
     
 112     If Trim$(GuildPro) = vbNullString Then
-114         refError = "No has seleccionado ningún clan"
+114         refError = "No has seleccionado ningÃºn clan"
             Exit Function
 
         End If
@@ -1536,19 +1536,19 @@ Public Function r_RechazarPropuestaDePaz(ByVal UserIndex As Integer, ByRef Guild
 102     GI = UserList(UserIndex).GuildIndex
     
 104     If GI <= 0 Or GI > CANTIDADDECLANES Then
-106         refError = "No eres miembro de ningún clan"
+106         refError = "No eres miembro de ningÃºn clan"
             Exit Function
 
         End If
     
 108     If Not m_EsGuildLeader(UserList(UserIndex).name, GI) Then
-110         refError = "No eres el líder de tu clan"
+110         refError = "No eres el lÃ­der de tu clan"
             Exit Function
 
         End If
     
 112     If Trim$(GuildPro) = vbNullString Then
-114         refError = "No has seleccionado ningún clan"
+114         refError = "No has seleccionado ningÃºn clan"
             Exit Function
 
         End If
@@ -1596,19 +1596,19 @@ Public Function r_AceptarPropuestaDeAlianza(ByVal UserIndex As Integer, ByRef Gu
 102     GI = UserList(UserIndex).GuildIndex
 
 104     If GI <= 0 Or GI > CANTIDADDECLANES Then
-106         refError = "No eres miembro de ningún clan"
+106         refError = "No eres miembro de ningÃºn clan"
             Exit Function
 
         End If
     
 108     If Not m_EsGuildLeader(UserList(UserIndex).name, GI) Then
-110         refError = "No eres el líder de tu clan"
+110         refError = "No eres el lÃ­der de tu clan"
             Exit Function
 
         End If
     
 112     If Trim$(GuildAllie) = vbNullString Then
-114         refError = "No has seleccionado ningún clan"
+114         refError = "No has seleccionado ningÃºn clan"
             Exit Function
 
         End If
@@ -1623,7 +1623,7 @@ Public Function r_AceptarPropuestaDeAlianza(ByVal UserIndex As Integer, ByRef Gu
         End If
 
 124     If guilds(GI).GetRelacion(GIG) <> RELACIONES_GUILD.PAZ Then
-126         refError = "No estás en paz con el clan, solo podés aceptar propuesas de alianzas con alguien que estes en paz."
+126         refError = "No estÃ¡s en paz con el clan, solo podÃ©s aceptar propuesas de alianzas con alguien que estes en paz."
             Exit Function
 
         End If
@@ -1664,7 +1664,7 @@ Public Function r_ClanGeneraPropuesta(ByVal UserIndex As Integer, ByRef OtroClan
 102     GI = UserList(UserIndex).GuildIndex
 
 104     If GI <= 0 Or GI > CANTIDADDECLANES Then
-106         refError = "No eres miembro de ningún clan"
+106         refError = "No eres miembro de ningÃºn clan"
             Exit Function
 
         End If
@@ -1672,7 +1672,7 @@ Public Function r_ClanGeneraPropuesta(ByVal UserIndex As Integer, ByRef OtroClan
 108     OtroClanGI = GuildIndex(OtroClan)
     
 110     If OtroClanGI = GI Then
-112         refError = "No podés declarar relaciones con tu propio clan"
+112         refError = "No podÃ©s declarar relaciones con tu propio clan"
             Exit Function
 
         End If
@@ -1690,7 +1690,7 @@ Public Function r_ClanGeneraPropuesta(ByVal UserIndex As Integer, ByRef OtroClan
         End If
     
 122     If Not m_EsGuildLeader(UserList(UserIndex).name, GI) Then
-124         refError = "No eres el líder de tu clan"
+124         refError = "No eres el lÃ­der de tu clan"
             Exit Function
 
         End If
@@ -1698,7 +1698,7 @@ Public Function r_ClanGeneraPropuesta(ByVal UserIndex As Integer, ByRef OtroClan
         'de acuerdo al tipo procedemos validando las transiciones
 126     If Tipo = RELACIONES_GUILD.PAZ Then
 128         If guilds(GI).GetRelacion(OtroClanGI) <> RELACIONES_GUILD.GUERRA Then
-130             refError = "No estás en guerra con " & OtroClan
+130             refError = "No estÃ¡s en guerra con " & OtroClan
                 Exit Function
 
             End If
@@ -1742,13 +1742,13 @@ Public Function r_VerPropuesta(ByVal UserIndex As Integer, ByRef OtroGuild As St
 104     GI = UserList(UserIndex).GuildIndex
 
 106     If GI <= 0 Or GI > CANTIDADDECLANES Then
-108         refError = "No eres miembro de ningún clan"
+108         refError = "No eres miembro de ningÃºn clan"
             Exit Function
 
         End If
     
 110     If Not m_EsGuildLeader(UserList(UserIndex).name, GI) Then
-112         refError = "No eres el líder de tu clan"
+112         refError = "No eres el lÃ­der de tu clan"
             Exit Function
 
         End If
@@ -1896,7 +1896,7 @@ Public Function a_RechazarAspirante(ByVal UserIndex As Integer, ByRef nombre As 
 102     GI = UserList(UserIndex).GuildIndex
 
 104     If GI <= 0 Or GI > CANTIDADDECLANES Then
-106         refError = "No perteneces a ningún clan"
+106         refError = "No perteneces a ningÃºn clan"
             Exit Function
 
         End If
@@ -2080,12 +2080,12 @@ Public Function a_NuevoAspirante(ByVal UserIndex As Integer, ByRef clan As Strin
         End If
     
 116     If Not m_EstadoPermiteEntrar(UserIndex, NuevoGuildIndex) Then
-118         refError = "Tu no podés entrar a un clan de alineación " & Alineacion2String(guilds(NuevoGuildIndex).Alineacion)
+118         refError = "Tu no podÃ©s entrar a un clan de alineaciÃ³n " & Alineacion2String(guilds(NuevoGuildIndex).Alineacion)
             Exit Function
         End If
 
 120     If guilds(NuevoGuildIndex).CantidadAspirantes >= MAXASPIRANTES Then
-122         refError = "El clan tiene demasiados aspirantes. Contáctate con un miembro para que procese las solicitudes."
+122         refError = "El clan tiene demasiados aspirantes. ContÃ¡ctate con un miembro para que procese las solicitudes."
             Exit Function
         End If
         
@@ -2157,13 +2157,13 @@ Public Function a_AceptarAspirante(ByVal UserIndex As Integer, ByRef Aspirante A
 102     GI = UserList(UserIndex).GuildIndex
 
 104     If GI <= 0 Or GI > CANTIDADDECLANES Then
-106         refError = "No perteneces a ningún clan"
+106         refError = "No perteneces a ningÃºn clan"
             Exit Function
 
         End If
     
 108     If Not m_EsGuildLeader(UserList(UserIndex).name, GI) Then
-110         refError = "No eres el líder de tu clan"
+110         refError = "No eres el lÃ­der de tu clan"
             Exit Function
 
         End If

@@ -185,7 +185,7 @@ Begin VB.Form frmMain
    End
    Begin VB.Frame Frame2 
       BackColor       =   &H00E0E0E0&
-      Caption         =   "Información general"
+      Caption         =   "InformaciÃ³n general"
       Height          =   1815
       Left            =   120
       TabIndex        =   7
@@ -494,7 +494,7 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 'Argentum Online 0.11.6
-'Copyright (C) 2002 Márquez Pablo Ignacio
+'Copyright (C) 2002 MÃ¡rquez Pablo Ignacio
 '
 'This program is free software; you can redistribute it and/or modify
 'it under the terms of the Affero General Public License;
@@ -516,10 +516,10 @@ Attribute VB_Exposed = False
 'You can contact me at:
 'morgolock@speedy.com.ar
 'www.geocities.com/gmorgolock
-'Calle 3 número 983 piso 7 dto A
+'Calle 3 nÃºmero 983 piso 7 dto A
 'La Plata - Pcia, Buenos Aires - Republica Argentina
-'Código Postal 1900
-'Pablo Ignacio Márquez
+'CÃ³digo Postal 1900
+'Pablo Ignacio MÃ¡rquez
 
 Option Explicit
 
@@ -647,7 +647,7 @@ Private Sub addtimeDonador_Click()
 100     Tmp = InputBox("Cuenta?", "Ingrese la cuenta")
 
 102     If FileExist(CuentasPath & Tmp & ".act", vbNormal) Then
-104         tmp2 = InputBox("¿Dias?", "Ingrese cantidad de días")
+104         tmp2 = InputBox("Â¿Dias?", "Ingrese cantidad de dÃ­as")
 
 106         If IsNumeric(tmp2) Then
 108             Call DonadorTiempo(Tmp, tmp2)
@@ -745,9 +745,9 @@ Private Sub AutoSave_Timer()
     
     minutos = minutos + 1
 
-    '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
+    'Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿
     Call ModAreas.AreasOptimizacion
-    '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
+    'Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿
 
     'Actualizamos el centinela
     Call modCentinela.PasarMinutoCentinela
@@ -1194,7 +1194,7 @@ End Sub
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     If GuardarYCerrar Then Exit Sub
-    If MsgBox("¿Deseas FORZAR el CIERRE del servidor?" & vbNewLine & vbNewLine & "Ten en cuenta que ES POSIBLE PIERDAS DATOS!", vbYesNo, "¡FORZAR CIERRE!") = vbNo Then
+    If MsgBox("Â¿Deseas FORZAR el CIERRE del servidor?" & vbNewLine & vbNewLine & "Ten en cuenta que ES POSIBLE PIERDAS DATOS!", vbYesNo, "Â¡FORZAR CIERRE!") = vbNo Then
         Cancel = True
     End If
     
@@ -1221,7 +1221,7 @@ Private Sub GameTimer_Timer()
 
             'Conexion activa?
             If .ConnID <> -1 Then
-                '¿User valido?
+                'Â¿User valido?
                 
                 If .ConnIDValida And .flags.UserLogged Then
                     
@@ -1373,7 +1373,7 @@ Private Sub GameTimer_Timer()
                     'Inactive players will be removed!
                     .Counters.IdleCount = .Counters.IdleCount + 1
                     
-                    'El intervalo cambia según si envió el primer paquete
+                    'El intervalo cambia segÃºn si enviÃ³ el primer paquete
                     If .Counters.IdleCount > IIf(.flags.FirstPacket, TimeoutEsperandoLoggear, TimeoutPrimerPaquete) Then
                         Call CloseSocket(iUserIndex)
                     End If
@@ -1464,10 +1464,10 @@ Private Sub loadcredit_Click()
 
         Dim tmp2 As String
 
-100     Tmp = InputBox("¿Cuenta?", "Ingrese la cuenta")
+100     Tmp = InputBox("Â¿Cuenta?", "Ingrese la cuenta")
 
 102     If FileExist(CuentasPath & Tmp & ".act", vbNormal) Then
-104         tmp2 = InputBox("¿Cantidad?", "Ingrese cantidad de creditos a agregar")
+104         tmp2 = InputBox("Â¿Cantidad?", "Ingrese cantidad de creditos a agregar")
 
 106         If IsNumeric(tmp2) Then
 108             Call AgregarCreditosDonador(Tmp, CLng(tmp2))
@@ -1495,7 +1495,7 @@ Private Sub mnuCerrar_Click()
         On Error GoTo mnuCerrar_Click_Err
         
 
-100     If MsgBox("¡¡Atencion!! Si cierra el servidor puede provocar la perdida de datos. ¿Desea hacerlo de todas maneras?", vbYesNo) = vbYes Then
+100     If MsgBox("Â¡Â¡Atencion!! Si cierra el servidor puede provocar la perdida de datos. Â¿Desea hacerlo de todas maneras?", vbYesNo) = vbYes Then
 
             Dim f
 102         For Each f In Forms
@@ -1624,7 +1624,7 @@ Private Sub SubastaTimer_Timer()
 
         'Si ya paso un minuto y todavia no hubo oferta, avisamos que se cancela en un minuto
 100     If Subasta.TiempoRestanteSubasta = 240 And Subasta.HuboOferta = False Then
-102         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Quedan 4 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información. La subasta será cancelada si no hay ofertas en el próximo minuto.", FontTypeNames.FONTTYPE_SUBASTA))
+102         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Â¡Quedan 4 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas informaciÃ³n. La subasta serÃ¡ cancelada si no hay ofertas en el prÃ³ximo minuto.", FontTypeNames.FONTTYPE_SUBASTA))
 104         Subasta.MinutosDeSubasta = 4
 106         Subasta.PosibleCancelo = True
 
@@ -1647,26 +1647,26 @@ Private Sub SubastaTimer_Timer()
     
 120     If Subasta.TiempoRestanteSubasta > 0 And Subasta.PosibleCancelo = False Then
 122         If Subasta.TiempoRestanteSubasta = 240 Then
-124             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Quedan 4 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.", FontTypeNames.FONTTYPE_SUBASTA))
+124             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Â¡Quedan 4 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas informaciÃ³n.", FontTypeNames.FONTTYPE_SUBASTA))
 126             Subasta.MinutosDeSubasta = "4"
 
             End If
         
 128         If Subasta.TiempoRestanteSubasta = 180 Then
-130             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Quedan 3 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.", FontTypeNames.FONTTYPE_SUBASTA))
+130             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Â¡Quedan 3 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas informaciÃ³n.", FontTypeNames.FONTTYPE_SUBASTA))
 132             Subasta.MinutosDeSubasta = "3"
 
             End If
 
 134         If Subasta.TiempoRestanteSubasta = 120 Then
-136             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Quedan 2 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.", FontTypeNames.FONTTYPE_SUBASTA))
+136             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Â¡Quedan 2 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas informaciÃ³n.", FontTypeNames.FONTTYPE_SUBASTA))
 138             Subasta.MinutosDeSubasta = "2"
 
             End If
 
 140         If Subasta.TiempoRestanteSubasta = 60 Then
 142             Subasta.MinutosDeSubasta = "1"
-144             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Quedan 1 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.", FontTypeNames.FONTTYPE_SUBASTA))
+144             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Â¡Quedan 1 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas informaciÃ³n.", FontTypeNames.FONTTYPE_SUBASTA))
 
             End If
 
@@ -1675,7 +1675,7 @@ Private Sub SubastaTimer_Timer()
         End If
     
 148     If Subasta.TiempoRestanteSubasta = 1 Then
-150         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡La subasta a terminado! El ganador fue: " & Subasta.Comprador, FontTypeNames.FONTTYPE_SUBASTA))
+150         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Â¡La subasta a terminado! El ganador fue: " & Subasta.Comprador, FontTypeNames.FONTTYPE_SUBASTA))
 152         Call FinalizarSubasta
 
         End If
@@ -1852,7 +1852,7 @@ Private Sub TimerMeteorologia_Timer()
 184         Call SendData(SendTarget.ToAll, 0, PrepareMessageRainToggle())
         
 186         Call SendData(SendTarget.ToAll, 0, PrepareMessageNevarToggle())
-            ' Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Se acabo la lluvia señores.", FontTypeNames.FONTTYPE_SERVER))
+            ' Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Se acabo la lluvia seÃ±ores.", FontTypeNames.FONTTYPE_SERVER))
 188         Call AgregarAConsola("Servidor >Lluvia desactivada.")
 190         Lloviendo = False
 192         Truenos.Enabled = False
@@ -1890,7 +1890,7 @@ Private Sub TimerRespawn_Timer()
                     RespawnList(NpcIndex).flags.NPCActive = False
 
                     If RespawnList(NpcIndex).InformarRespawn = 1 Then
-                        Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(RespawnList(NpcIndex).name & " ha regresado y está listo para enfrentarte.", FontTypeNames.FONTTYPE_EXP))
+                        Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(RespawnList(NpcIndex).name & " ha regresado y estÃ¡ listo para enfrentarte.", FontTypeNames.FONTTYPE_EXP))
                         Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(257, NO_3D_SOUND, NO_3D_SOUND)) 'Para evento de respwan
                         
                         'Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(246, NO_3D_SOUND, NO_3D_SOUND)) 'Para evento de respwan
@@ -1935,7 +1935,7 @@ Private Sub tPiqueteC_Timer()
         If UserList(i).flags.UserLogged Then
             If MapData(UserList(i).Pos.Map, UserList(i).Pos.x, UserList(i).Pos.Y).trigger = eTrigger.ANTIPIQUETE Then
                 UserList(i).Counters.PiqueteC = UserList(i).Counters.PiqueteC + 1
-                'Call WriteConsoleMsg(i, "Estás obstruyendo la via pública, muévete o serás encarcelado!!!", FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(i, "EstÃ¡s obstruyendo la via pÃºblica, muÃ©vete o serÃ¡s encarcelado!!!", FontTypeNames.FONTTYPE_INFO)
                 Call WriteLocaleMsg(i, "70", FontTypeNames.FONTTYPE_INFO)
             
                 If UserList(i).Counters.PiqueteC > 15 Then
@@ -1960,14 +1960,14 @@ Private Sub tPiqueteC_Timer()
             '  NuevaA = False
             ' NuevoL = False
             ' If Not modGuilds.m_ValidarPermanencia(i, True, NuevaA, NuevoL) Then
-            '  Call WriteConsoleMsg(i, "Has sido expulsado del clan. ¡El clan ha sumado un punto de antifacción!", FontTypeNames.FONTTYPE_GUILD)
+            '  Call WriteConsoleMsg(i, "Has sido expulsado del clan. Â¡El clan ha sumado un punto de antifacciÃ³n!", FontTypeNames.FONTTYPE_GUILD)
             ' End If
             'If NuevaA Then
-            '   Call SendData(SendTarget.ToGuildMembers, GI, PrepareMessageConsoleMsg("¡El clan ha pasado a tener alineación neutral!", FontTypeNames.FONTTYPE_GUILD))
+            '   Call SendData(SendTarget.ToGuildMembers, GI, PrepareMessageConsoleMsg("Â¡El clan ha pasado a tener alineaciÃ³n neutral!", FontTypeNames.FONTTYPE_GUILD))
             '   Call LogClanes("El clan cambio de alineacion!")
             'End If
             '  If NuevoL Then
-            '   Call SendData(SendTarget.ToGuildMembers, GI, PrepareMessageConsoleMsg("¡El clan tiene un nuevo líder!", FontTypeNames.FONTTYPE_GUILD))
+            '   Call SendData(SendTarget.ToGuildMembers, GI, PrepareMessageConsoleMsg("Â¡El clan tiene un nuevo lÃ­der!", FontTypeNames.FONTTYPE_GUILD))
             '  Call LogClanes("El clan tiene nuevo lider!")
             ' End If
             ' End If

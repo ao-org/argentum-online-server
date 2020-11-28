@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 
-' Defino la posición por separado porque vb no me deja usar WorldPos
+' Defino la posiciÃ³n por separado porque vb no me deja usar WorldPos
 Private mMap As Integer
 Private mX As Integer
 Private mY As Integer

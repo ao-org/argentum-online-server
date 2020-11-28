@@ -1,6 +1,6 @@
 Attribute VB_Name = "UsUaRiOs"
 'Argentum Online 0.11.6
-'Copyright (C) 2002 M·rquez Pablo Ignacio
+'Copyright (C) 2002 M√°rquez Pablo Ignacio
 '
 'This program is free software; you can redistribute it and/or modify
 'it under the terms of the Affero General Public License;
@@ -22,18 +22,18 @@ Attribute VB_Name = "UsUaRiOs"
 'You can contact me at:
 'morgolock@speedy.com.ar
 'www.geocities.com/gmorgolock
-'Calle 3 n˙mero 983 piso 7 dto A
+'Calle 3 n√∫mero 983 piso 7 dto A
 'La Plata - Pcia, Buenos Aires - Republica Argentina
-'CÛdigo Postal 1900
-'Pablo Ignacio M·rquez
+'C√≥digo Postal 1900
+'Pablo Ignacio M√°rquez
 
 Option Explicit
 
-'?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø
+'?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø
 '                        Modulo Usuarios
-'?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø
+'?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø
 'Rutinas de los usuarios
-'?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø
+'?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø
 
 Sub ActStats(ByVal VictimIndex As Integer, ByVal attackerIndex As Integer)
         
@@ -316,7 +316,7 @@ Sub EraseUserChar(ByVal UserIndex As Integer, ByVal Desvanecer As Boolean)
 
     Error = "2"
     
-    'Le mandamos el mensaje para que borre el personaje a los clientes que estÈn cerca
+    'Le mandamos el mensaje para que borre el personaje a los clientes que est√©n cerca
     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterRemove(UserList(UserIndex).Char.CharIndex, Desvanecer))
     Error = "3"
     Call QuitarUser(UserIndex, UserList(UserIndex).Pos.Map)
@@ -446,8 +446,8 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
     '01/10/2007 Tavo - Corregido el BUG de STAT_MAXELV
     '24/01/2007 Pablo (ToxicWaste) - Agrego modificaciones en ELU al subir de nivel.
     '24/01/2007 Pablo (ToxicWaste) - Agrego modificaciones de la subida de mana de los magos por lvl.
-    '13/03/2007 Pablo (ToxicWaste) - Agrego diferencias entre el 18 y el 19 en ConstituciÛn.
-    '09/01/2008 Pablo (ToxicWaste) - Ahora el incremento de vida por ConsituciÛn se controla desde Balance.dat
+    '13/03/2007 Pablo (ToxicWaste) - Agrego diferencias entre el 18 y el 19 en Constituci√≥n.
+    '09/01/2008 Pablo (ToxicWaste) - Ahora el incremento de vida por Consituci√≥n se controla desde Balance.dat
     '*************************************************
 
     On Error GoTo ErrHandler
@@ -614,10 +614,10 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
 
             If .Stats.MaxMAN > STAT_MAXMAN Then .Stats.MaxMAN = STAT_MAXMAN
 
-            'Actualizamos Golpe M·ximo
+            'Actualizamos Golpe M√°ximo
             .Stats.MaxHit = .Stats.MaxHit + AumentoHIT
             
-            'Actualizamos Golpe MÌnimo
+            'Actualizamos Golpe M√≠nimo
             .Stats.MinHIT = .Stats.MinHIT + AumentoHIT
         
             'Notificamos al user
@@ -792,14 +792,14 @@ Sub MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As eHeading)
             
                 End If
     
-                'Call RefreshAllUser(UserIndex) 'øClones? Ladder probar
+                'Call RefreshAllUser(UserIndex) '¬øClones? Ladder probar
                 'Update map and user pos
 174             MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex = 0
 176             .Pos = nPos
 178             .Char.Heading = nHeading
 180             MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex = UserIndex
             
-                'Actualizamos las ·reas de ser necesario
+                'Actualizamos las √°reas de ser necesario
 182             Call ModAreas.CheckUpdateNeededUser(UserIndex, nHeading, 0)
            
             Else
@@ -1007,7 +1007,7 @@ Sub SendUserMiniStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
         'Author: Unknown
         'Last modified: 23/01/2007
         'Shows the users Stats when the user is online.
-        '23/01/2007 Pablo (ToxicWaste) - Agrego de funciones y mejora de distribuciÛn de par·metros.
+        '23/01/2007 Pablo (ToxicWaste) - Agrego de funciones y mejora de distribuci√≥n de par√°metros.
         '*************************************************
 100     With UserList(UserIndex)
 102         Call WriteConsoleMsg(sendIndex, "Pj: " & .name, FontTypeNames.FONTTYPE_INFO)
@@ -1048,7 +1048,7 @@ Sub SendUserMiniStatsTxtFromChar(ByVal sendIndex As Integer, ByVal CharName As S
         'Author: Unknown
         'Last modified: 23/01/2007
         'Shows the users Stats when the user is offline.
-        '23/01/2007 Pablo (ToxicWaste) - Agrego de funciones y mejora de distribuciÛn de par·metros.
+        '23/01/2007 Pablo (ToxicWaste) - Agrego de funciones y mejora de distribuci√≥n de par√°metros.
         '*************************************************
         Dim CharFile      As String
 
@@ -1307,23 +1307,23 @@ NPCAtacado_Err:
         
 End Sub
 
-Function PuedeApuÒalar(ByVal UserIndex As Integer) As Boolean
+Function PuedeApu√±alar(ByVal UserIndex As Integer) As Boolean
         
-        On Error GoTo PuedeApuÒalar_Err
+        On Error GoTo PuedeApu√±alar_Err
         
 
 100     If UserList(UserIndex).Invent.WeaponEqpObjIndex > 0 Then
-102         PuedeApuÒalar = ((UserList(UserIndex).Stats.UserSkills(eSkill.ApuÒalar) >= MIN_APU—ALAR) And (ObjData(UserList(UserIndex).Invent.WeaponEqpObjIndex).ApuÒala = 1)) Or ((UserList(UserIndex).clase = eClass.Assasin) And (ObjData(UserList(UserIndex).Invent.WeaponEqpObjIndex).ApuÒala = 1))
+102         PuedeApu√±alar = ((UserList(UserIndex).Stats.UserSkills(eSkill.Apu√±alar) >= MIN_APU√ëALAR) And (ObjData(UserList(UserIndex).Invent.WeaponEqpObjIndex).Apu√±ala = 1)) Or ((UserList(UserIndex).clase = eClass.Assasin) And (ObjData(UserList(UserIndex).Invent.WeaponEqpObjIndex).Apu√±ala = 1))
         Else
-104         PuedeApuÒalar = False
+104         PuedeApu√±alar = False
 
         End If
 
         
         Exit Function
 
-PuedeApuÒalar_Err:
-        Call RegistrarError(Err.Number, Err.description, "UsUaRiOs.PuedeApuÒalar", Erl)
+PuedeApu√±alar_Err:
+        Call RegistrarError(Err.Number, Err.description, "UsUaRiOs.PuedeApu√±alar", Erl)
         Resume Next
         
 End Function
@@ -1375,7 +1375,7 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
 136         If Aumenta < Menor Then
 138             UserList(UserIndex).Stats.UserSkills(Skill) = UserList(UserIndex).Stats.UserSkills(Skill) + 1
     
-140             Call WriteConsoleMsg(UserIndex, "°Has mejorado tu skill " & SkillsNames(Skill) & " en un punto!. Ahora tienes " & UserList(UserIndex).Stats.UserSkills(Skill) & " pts.", FontTypeNames.FONTTYPE_INFO)
+140             Call WriteConsoleMsg(UserIndex, "¬°Has mejorado tu skill " & SkillsNames(Skill) & " en un punto!. Ahora tienes " & UserList(UserIndex).Stats.UserSkills(Skill) & " pts.", FontTypeNames.FONTTYPE_INFO)
             
                 Dim BonusExp As Long
 
@@ -1726,13 +1726,13 @@ Sub UserDie(ByVal UserIndex As Integer)
     
     'If UCase$(MapInfo(UserList(UserIndex).Pos.Map).restrict_mode) = "NEWBIE" Then
     '    UserList(UserIndex).flags.pregunta = 5
-    '    Call WritePreguntaBox(UserIndex, "°Has muerto! øDeseas ser resucitado?")
+    '    Call WritePreguntaBox(UserIndex, "¬°Has muerto! ¬øDeseas ser resucitado?")
     'End If
 
     Exit Sub
 
 ErrorHandler:
-    Call LogError("Error en SUB USERDIE. Error: " & Err.Number & " DescripciÛn: " & Err.description)
+    Call LogError("Error en SUB USERDIE. Error: " & Err.Number & " Descripci√≥n: " & Err.description)
 
 End Sub
 
@@ -1882,7 +1882,7 @@ Tilelibre_Err:
 End Sub
 
 Sub WarpToLegalPos(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, Optional ByVal FX As Boolean = False)
-        'Santo: Sub para buscar la posiciÛn legal mas cercana al objetivo y warpearlo.
+        'Santo: Sub para buscar la posici√≥n legal mas cercana al objetivo y warpearlo.
         
         On Error GoTo WarpToLegalPos_Err
         
@@ -1978,7 +1978,7 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As In
             'End If
         
 128         If MapInfo(OldMap).Seguro = 1 And MapInfo(Map).Seguro = 0 And UserList(UserIndex).Stats.ELV < 42 Then
-130             Call WriteConsoleMsg(UserIndex, "Estas saliendo de una zona segura, recuerda que aquÌ corres riesgo de ser atacado.", FontTypeNames.FONTTYPE_WARNING)
+130             Call WriteConsoleMsg(UserIndex, "Estas saliendo de una zona segura, recuerda que aqu√≠ corres riesgo de ser atacado.", FontTypeNames.FONTTYPE_WARNING)
 
             End If
         
@@ -2088,7 +2088,7 @@ Sub WarpFamiliar(ByVal UserIndex As Integer)
 
                 'Controlamos que se sumoneo OK
 108             If .Familiar.Id = 0 Then
-110                 Call WriteConsoleMsg(UserIndex, "No hay espacio aquÌ para tu mascota. Se provoco un ERROR.", FontTypeNames.FONTTYPE_INFO)
+110                 Call WriteConsoleMsg(UserIndex, "No hay espacio aqu√≠ para tu mascota. Se provoco un ERROR.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
 
                 End If
@@ -2096,7 +2096,7 @@ Sub WarpFamiliar(ByVal UserIndex As Integer)
 112             Call CargarFamiliar(UserIndex)
             Else
 
-                'Call WriteConsoleMsg(UserIndex, "No se permiten familiares en zona segura. " & .Familiar.Nombre & " te esperar· afuera.", FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(UserIndex, "No se permiten familiares en zona segura. " & .Familiar.Nombre & " te esperar√° afuera.", FontTypeNames.FONTTYPE_INFO)
             End If
     
         End With
@@ -2121,7 +2121,7 @@ Sub Cerrar_Usuario(ByVal UserIndex As Integer)
 104         If UserList(UserIndex).flags.Privilegios = PlayerType.user And MapInfo(UserList(UserIndex).Pos.Map).Seguro = 0 And UserList(UserIndex).flags.Muerto = 0 Then
 106             UserList(UserIndex).Counters.Salir = IntervaloCerrarConexion
 108             Call WriteLocaleMsg(UserIndex, "203", FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Counters.Salir)
-                'Call WriteConsoleMsg(UserIndex, "Saliendo...Se saldr· del juego en " & UserList(UserIndex).Counters.Salir & " segundos...", FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(UserIndex, "Saliendo...Se saldr√° del juego en " & UserList(UserIndex).Counters.Salir & " segundos...", FontTypeNames.FONTTYPE_INFO)
             Else
             
                 'Call WriteConsoleMsg(UserIndex, "Gracias por jugar Argentum20.", FontTypeNames.FONTTYPE_INFO)
@@ -2154,7 +2154,7 @@ Public Sub CancelExit(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan MartÌn Sotuyo Dodero (Maraxus)
+        'Author: Juan Mart√≠n Sotuyo Dodero (Maraxus)
         'Last Modification: 04/02/08
         '
         '***************************************************
@@ -2194,7 +2194,7 @@ End Sub
 
 'CambiarNick: Cambia el Nick de un slot.
 '
-'UserIndex: Quien ejecutÛ la orden
+'UserIndex: Quien ejecut√≥ la orden
 'UserIndexDestino: SLot del usuario destino, a quien cambiarle el nick
 'NuevoNick: Nuevo nick de UserIndexDestino
 Public Sub CambiarNick(ByVal UserIndex As Integer, ByVal UserIndexDestino As Integer, ByVal NuevoNick As String)

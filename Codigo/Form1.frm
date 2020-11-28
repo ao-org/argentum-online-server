@@ -458,7 +458,7 @@ For Each fil In Carpeta.Files
     End If
 Next
 If List1.ListCount = 0 Then
-    MsgBox "No se encontró ningún Charfile. Acordate que este programa debe ubicarse en la carpeta 'Charfile' del server."
+    MsgBox "No se encontrÃ³ ningÃºn Charfile. Acordate que este programa debe ubicarse en la carpeta 'Charfile' del server."
     End
 End If
 End Sub

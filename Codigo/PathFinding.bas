@@ -1,6 +1,6 @@
 Attribute VB_Name = "PathFinding"
 'Argentum Online 0.11.6
-'Copyright (C) 2002 M·rquez Pablo Ignacio
+'Copyright (C) 2002 M√°rquez Pablo Ignacio
 '
 'This program is free software; you can redistribute it and/or modify
 'it under the terms of the Affero General Public License;
@@ -22,10 +22,10 @@ Attribute VB_Name = "PathFinding"
 'You can contact me at:
 'morgolock@speedy.com.ar
 'www.geocities.com/gmorgolock
-'Calle 3 n˙mero 983 piso 7 dto A
+'Calle 3 n√∫mero 983 piso 7 dto A
 'La Plata - Pcia, Buenos Aires - Republica Argentina
-'CÛdigo Postal 1900
-'Pablo Ignacio M·rquez
+'C√≥digo Postal 1900
+'Pablo Ignacio M√°rquez
 
 '#######################################################
 'PathFinding Module
@@ -147,7 +147,7 @@ Private Sub ProcessAdjacents(ByVal MapIndex As Integer, ByRef T() As tIntermidia
 102     If Limites(j, vcolu) Then
 104         If IsWalkable(MapIndex, j, vcolu, NpcIndex, eHeading.NORTH) Then
 
-                'Nos aseguramos que no hay un camino m·s corto
+                'Nos aseguramos que no hay un camino m√°s corto
 106             If T(j, vcolu).DistV = MAXINT Then
                     'Actualizamos la tabla de calculos intermedios
 108                 T(j, vcolu).DistV = T(vfila, vcolu).DistV + 1
@@ -170,7 +170,7 @@ Private Sub ProcessAdjacents(ByVal MapIndex As Integer, ByRef T() As tIntermidia
 122     If Limites(j, vcolu) Then
 124         If IsWalkable(MapIndex, j, vcolu, NpcIndex, eHeading.SOUTH) Then
 
-                'Nos aseguramos que no hay un camino m·s corto
+                'Nos aseguramos que no hay un camino m√°s corto
 126             If T(j, vcolu).DistV = MAXINT Then
                     'Actualizamos la tabla de calculos intermedios
 128                 T(j, vcolu).DistV = T(vfila, vcolu).DistV + 1
@@ -191,7 +191,7 @@ Private Sub ProcessAdjacents(ByVal MapIndex As Integer, ByRef T() As tIntermidia
 140     If Limites(vfila, vcolu - 1) Then
 142         If IsWalkable(MapIndex, vfila, vcolu - 1, NpcIndex, eHeading.WEST) Then
 
-                'Nos aseguramos que no hay un camino m·s corto
+                'Nos aseguramos que no hay un camino m√°s corto
 144             If T(vfila, vcolu - 1).DistV = MAXINT Then
                     'Actualizamos la tabla de calculos intermedios
 146                 T(vfila, vcolu - 1).DistV = T(vfila, vcolu).DistV + 1
@@ -212,7 +212,7 @@ Private Sub ProcessAdjacents(ByVal MapIndex As Integer, ByRef T() As tIntermidia
 158     If Limites(vfila, vcolu + 1) Then
 160         If IsWalkable(MapIndex, vfila, vcolu + 1, NpcIndex, eHeading.EAST) Then
 
-                'Nos aseguramos que no hay un camino m·s corto
+                'Nos aseguramos que no hay un camino m√°s corto
 162             If T(vfila, vcolu + 1).DistV = MAXINT Then
                     'Actualizamos la tabla de calculos intermedios
 164                 T(vfila, vcolu + 1).DistV = T(vfila, vcolu).DistV + 1

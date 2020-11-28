@@ -1,6 +1,6 @@
 Attribute VB_Name = "ES"
 'Argentum Online 0.11.6
-'Copyright (C) 2002 Márquez Pablo Ignacio
+'Copyright (C) 2002 MÃ¡rquez Pablo Ignacio
 '
 'This program is free software; you can redistribute it and/or modify
 'it under the terms of the Affero General Public License;
@@ -22,10 +22,10 @@ Attribute VB_Name = "ES"
 'You can contact me at:
 'morgolock@speedy.com.ar
 'www.geocities.com/gmorgolock
-'Calle 3 número 983 piso 7 dto A
+'Calle 3 nÃºmero 983 piso 7 dto A
 'La Plata - Pcia, Buenos Aires - Republica Argentina
-'Código Postal 1900
-'Pablo Ignacio Márquez
+'CÃ³digo Postal 1900
+'Pablo Ignacio MÃ¡rquez
 
 Option Explicit
 
@@ -581,10 +581,10 @@ Public Sub CargarHechizos()
     '#               ATENCION PELIGRO                  #
     '###################################################
     '
-    '  ¡¡¡¡ NO USAR GetVar PARA LEER Hechizos.dat !!!!
+    '  Â¡Â¡Â¡Â¡ NO USAR GetVar PARA LEER Hechizos.dat !!!!
     '
-    'El que ose desafiar esta LEY, se las tendrá que ver
-    'con migo. Para leer Hechizos.dat se deberá usar
+    'El que ose desafiar esta LEY, se las tendrÃ¡ que ver
+    'con migo. Para leer Hechizos.dat se deberÃ¡ usar
     'la nueva clase clsLeerInis.
     '
     'Alejo
@@ -1076,10 +1076,10 @@ Sub LoadBalance()
 108             .Evasion = val(BalanceIni.GetValue("MODEVASION", SearchVar))
 110             .AtaqueArmas = val(BalanceIni.GetValue("MODATAQUEARMAS", SearchVar))
 112             .AtaqueProyectiles = val(BalanceIni.GetValue("MODATAQUEPROYECTILES", SearchVar))
-                '.DañoWrestling = val(BalanceIni.GetValue("MODATAQUEWRESTLING", SearchVar))
-114             .DañoArmas = val(BalanceIni.GetValue("MODDANOARMAS", SearchVar))
-116             .DañoProyectiles = val(BalanceIni.GetValue("MODDANOPROYECTILES", SearchVar))
-118             .DañoWrestling = val(BalanceIni.GetValue("MODDANOWRESTLING", SearchVar))
+                '.DaÃ±oWrestling = val(BalanceIni.GetValue("MODATAQUEWRESTLING", SearchVar))
+114             .DaÃ±oArmas = val(BalanceIni.GetValue("MODDANOARMAS", SearchVar))
+116             .DaÃ±oProyectiles = val(BalanceIni.GetValue("MODDANOPROYECTILES", SearchVar))
+118             .DaÃ±oWrestling = val(BalanceIni.GetValue("MODDANOWRESTLING", SearchVar))
 120             .Escudo = val(BalanceIni.GetValue("MODESCUDO", SearchVar))
 
                 'Modificadores de Vida
@@ -1123,7 +1123,7 @@ Sub LoadBalance()
     
 158     Set BalanceIni = Nothing
     
-160     AgregarAConsola "Se cargó el balance (Balance.dat)"
+160     AgregarAConsola "Se cargÃ³ el balance (Balance.dat)"
 
         
         Exit Sub
@@ -1256,10 +1256,10 @@ Sub LoadOBJData()
     '#               ATENCION PELIGRO                  #
     '###################################################
     '
-    '¡¡¡¡ NO USAR GetVar PARA LEER DESDE EL OBJ.DAT !!!!
+    'Â¡Â¡Â¡Â¡ NO USAR GetVar PARA LEER DESDE EL OBJ.DAT !!!!
     '
-    'El que ose desafiar esta LEY, se las tendrá que ver
-    'con migo. Para leer desde el OBJ.DAT se deberá usar
+    'El que ose desafiar esta LEY, se las tendrÃ¡ que ver
+    'con migo. Para leer desde el OBJ.DAT se deberÃ¡ usar
     'la nueva clase clsLeerInis.
     '
     'Alejo
@@ -1377,7 +1377,7 @@ Sub LoadOBJData()
         
             Case eOBJType.otWeapon
                 ObjData(Object).WeaponAnim = val(Leer.GetValue("OBJ" & Object, "Anim"))
-                ObjData(Object).Apuñala = val(Leer.GetValue("OBJ" & Object, "Apuñala"))
+                ObjData(Object).ApuÃ±ala = val(Leer.GetValue("OBJ" & Object, "ApuÃ±ala"))
                 ObjData(Object).Envenena = val(Leer.GetValue("OBJ" & Object, "Envenena"))
                 ObjData(Object).Paraliza = val(Leer.GetValue("OBJ" & Object, "Paraliza"))
                 ObjData(Object).Estupidiza = val(Leer.GetValue("OBJ" & Object, "Estupidiza"))
@@ -1736,7 +1736,7 @@ Sub LoadUserStats(ByVal UserIndex As Integer, ByRef UserFile As clsIniReader)
 
         End If
 
-174     'UserList(UserIndex).flags.DañoMagico = CByte(UserFile.GetValue("MAGIA", "DañoMagico"))
+174     'UserList(UserIndex).flags.DaÃ±oMagico = CByte(UserFile.GetValue("MAGIA", "DaÃ±oMagico"))
 176     'UserList(UserIndex).flags.ResistenciaMagica = CByte(UserFile.GetValue("MAGIA", "ResistenciaMagica"))
 
         'Nuevos
@@ -2443,7 +2443,7 @@ Sub LoadSini()
         #End If
     
         '&&&&&&&&&&&&&&&&&&&&& BALANCE &&&&&&&&&&&&&&&&&&&&&&&
-        'Se agregó en LoadBalance y en el Balance.dat
+        'Se agregÃ³ en LoadBalance y en el Balance.dat
         'PorcentajeRecuperoMana = val(Lector.GetValue("BALANCE", "PorcentajeRecuperoMana"))
     
         ''&&&&&&&&&&&&&&&&&&&&& FIN BALANCE &&&&&&&&&&&&&&&&&&&&&&&
@@ -3100,7 +3100,7 @@ Sub SaveUserBinary(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean)
     Put n, , "NoPalabrasMagicas=" & CByte(UserList(UserIndex).flags.NoPalabrasMagicas) & vbCrLf
     Put n, , "NoDetectable=" & CByte(UserList(UserIndex).flags.NoDetectable) & vbCrLf
     Put n, , "Otra_Aura=" & CStr(UserList(UserIndex).Char.Otra_Aura) & vbCrLf
-    'Put n, , "DañoMagico=" & CByte(UserList(UserIndex).flags.DañoMagico) & vbCrLf
+    'Put n, , "DaÃ±oMagico=" & CByte(UserList(UserIndex).flags.DaÃ±oMagico) & vbCrLf
     'Put n, , "ResistenciaMagica=" & CByte(UserList(UserIndex).flags.ResistenciaMagica) & vbCrLf
     Put n, , "RegeneracionMana=" & CByte(UserList(UserIndex).flags.RegeneracionMana) & vbCrLf
     Put n, , "NoMagiaEfeceto=" & CByte(UserList(UserIndex).flags.NoMagiaEfeceto) & vbCrLf
@@ -3139,7 +3139,7 @@ Sub SaveUserBinary(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean)
 
     Put n, , "[ATRIBUTOS]" & vbCrLf
 
-    '¿Fueron modificados los atributos del usuario?
+    'Â¿Fueron modificados los atributos del usuario?
     If Not UserList(UserIndex).flags.TomoPocion Then
 
         For LoopC = 1 To UBound(UserList(UserIndex).Stats.UserAtributos)
@@ -3391,7 +3391,7 @@ Sub SaveNewUserCharfile(ByVal UserIndex As Integer)
     Put n, , "CARROMINERIA=0" & vbCrLf
     Put n, , "NOPALABRASMAGICAS=0" & vbCrLf
     Put n, , "OTRA_AURA=0" & vbCrLf
-    Put n, , "DAÑOMAGICO=0" & vbCrLf
+    Put n, , "DAÃ‘OMAGICO=0" & vbCrLf
     Put n, , "ResistenciaMagica=0" & vbCrLf
     Put n, , "NoDetectable=0" & vbCrLf
     Put n, , "AnilloOcultismo=0" & vbCrLf
@@ -3464,7 +3464,7 @@ Sub SaveNewUserCharfile(ByVal UserIndex As Integer)
     
     Put n, , "[ATRIBUTOS]" & vbCrLf
 
-    '¿Fueron modificados los atributos del usuario?
+    'Â¿Fueron modificados los atributos del usuario?
     For LoopC = 1 To UBound(UserList(UserIndex).Stats.UserAtributos)
         Put n, , "AT" & LoopC & "=" & CStr(UserList(UserIndex).Stats.UserAtributos(LoopC)) & vbCrLf
     Next
@@ -3951,7 +3951,7 @@ Public Sub LoadPesca()
         Dim Count As Long, i As Long, str As String, Field() As String, nivel As Integer, MaxLvlCania As Long
 
 110     Count = val(IniFile.GetValue("PECES", "NumPeces"))
-112     MaxLvlCania = val(IniFile.GetValue("PECES", "Maxlvlcaña"))
+112     MaxLvlCania = val(IniFile.GetValue("PECES", "MaxlvlcaÃ±a"))
     
 114     ReDim PesoPeces(0 To MaxLvlCania) As Long
     
@@ -3966,13 +3966,13 @@ Public Sub LoadPesca()
 126             Peces(i).ObjIndex = val(Field(0))
 128             Peces(i).data = val(Field(1))       ' Peso
 
-130             nivel = val(Field(2))               ' Nivel de caña
+130             nivel = val(Field(2))               ' Nivel de caÃ±a
 
 132             If (nivel > MaxLvlCania) Then nivel = MaxLvlCania
 134             Peces(i).Amount = nivel
             Next
 
-            ' Los ordeno segun nivel de caña (quick sort)
+            ' Los ordeno segun nivel de caÃ±a (quick sort)
 136         Call QuickSortPeces(1, Count)
 
             ' Sumo los pesos

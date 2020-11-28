@@ -1,6 +1,6 @@
 Attribute VB_Name = "Admin"
 'Argentum Online 0.11.6
-'Copyright (C) 2002 M·rquez Pablo Ignacio
+'Copyright (C) 2002 M√°rquez Pablo Ignacio
 '
 'This program is free software; you can redistribute it and/or modify
 'it under the terms of the Affero General Public License;
@@ -22,10 +22,10 @@ Attribute VB_Name = "Admin"
 'You can contact me at:
 'morgolock@speedy.com.ar
 'www.geocities.com/gmorgolock
-'Calle 3 n˙mero 983 piso 7 dto A
+'Calle 3 n√∫mero 983 piso 7 dto A
 'La Plata - Pcia, Buenos Aires - Republica Argentina
-'CÛdigo Postal 1900
-'Pablo Ignacio M·rquez
+'C√≥digo Postal 1900
+'Pablo Ignacio M√°rquez
 
 Option Explicit
 
@@ -271,7 +271,7 @@ Sub WorldSave()
     '    End If
     'Next
 
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor> WorldSave ha concluÌdo", FontTypeNames.FONTTYPE_SERVER))
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor> WorldSave ha conclu√≠do", FontTypeNames.FONTTYPE_SERVER))
 
 End Sub
 
@@ -722,7 +722,7 @@ Public Function CheckHD(ByVal hd As String) As Boolean
         '***************************************************
         'Author: Nahuel Casas (Zagen)
         'Last Modify Date: 07/12/2009
-        ' 07/12/2009: Zagen - AgregË la funcion de agregar los digitos de un Serial Baneado.
+        ' 07/12/2009: Zagen - Agreg√® la funcion de agregar los digitos de un Serial Baneado.
         '***************************************************
         Dim handle As Integer
 
@@ -762,7 +762,7 @@ Public Function CheckMAC(ByVal Mac As String) As Boolean
         '***************************************************
         'Author: Nahuel Casas (Zagen)
         'Last Modify Date: 07/12/2009
-        ' 07/12/2009: Zagen - AgregË la funcion de agregar los digitos de un Serial Baneado.
+        ' 07/12/2009: Zagen - Agreg√® la funcion de agregar los digitos de un Serial Baneado.
         '***************************************************
         Dim handle As Integer
 
@@ -1006,7 +1006,7 @@ Public Function UserDarPrivilegioLevel(ByVal name As String) As PlayerType
         '***************************************************
         'Author: Unknown
         'Last Modification: 03/02/07
-        'Last Modified By: Juan MartÌn Sotuyo Dodero (Maraxus)
+        'Last Modified By: Juan Mart√≠n Sotuyo Dodero (Maraxus)
         '***************************************************
 100     If EsAdmin(name) Then
 102         UserDarPrivilegioLevel = PlayerType.Admin
@@ -1036,7 +1036,7 @@ Public Sub BanCharacter(ByVal bannerUserIndex As Integer, ByVal UserName As Stri
         
 
         '***************************************************
-        'Author: Juan MartÌn Sotuyo Dodero (Maraxus)
+        'Author: Juan Mart√≠n Sotuyo Dodero (Maraxus)
         'Last Modification: 03/02/07
         '
         '***************************************************
@@ -1160,7 +1160,7 @@ Public Sub BanAccount(ByVal bannerUserIndex As Integer, ByVal UserName As String
         
 
         '***************************************************
-        'Author: Juan MartÌn Sotuyo Dodero (Maraxus)
+        'Author: Juan Mart√≠n Sotuyo Dodero (Maraxus)
         'Last Modification: 03/02/07
         '
         '***************************************************
@@ -1235,7 +1235,7 @@ Public Sub UnBanAccount(ByVal bannerUserIndex As Integer, ByVal UserName As Stri
         
 
         '***************************************************
-        'Author: Juan MartÌn Sotuyo Dodero (Maraxus)
+        'Author: Juan Mart√≠n Sotuyo Dodero (Maraxus)
         'Last Modification: 03/02/07
         '
         '***************************************************
@@ -1295,7 +1295,7 @@ Public Sub BanSerialOK(ByVal bannerUserIndex As Integer, ByVal UserName As Strin
         
 
         '***************************************************
-        'Author: Juan MartÌn Sotuyo Dodero (Maraxus)
+        'Author: Juan Mart√≠n Sotuyo Dodero (Maraxus)
         'Last Modification: 03/02/07
         '
         '***************************************************
@@ -1370,7 +1370,7 @@ Public Sub UnBanSerialOK(ByVal bannerUserIndex As Integer, ByVal UserName As Str
         
 
         '***************************************************
-        'Author: Juan MartÌn Sotuyo Dodero (Maraxus)
+        'Author: Juan Mart√≠n Sotuyo Dodero (Maraxus)
         'Last Modification: 03/02/07
         '
         '***************************************************
@@ -1438,7 +1438,7 @@ Public Sub BanTemporal(ByVal nombre As String, ByVal dias As Integer, Causa As S
 
 110     Call Baneos.Add(tBan)
 112     Call SaveBan(Baneos.Count)
-114     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> " & nombre & " fue baneado por " & Causa & " durante los prÛximos " & dias & " dÌas. La medida fue tomada por: " & Baneador, FontTypeNames.FONTTYPE_SERVER))
+114     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> " & nombre & " fue baneado por " & Causa & " durante los pr√≥ximos " & dias & " d√≠as. La medida fue tomada por: " & Baneador, FontTypeNames.FONTTYPE_SERVER))
 
         
         Exit Sub

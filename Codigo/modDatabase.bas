@@ -63,7 +63,7 @@ ErrorHandler:
     Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.description)
     
     If Not ConnectedOnce Then
-        Call MsgBox("No se pudo conectar a la base de datos. Mas información en logs/Database.log", vbCritical, "OBDC - Error")
+        Call MsgBox("No se pudo conectar a la base de datos. Mas informaciÃ³n en logs/Database.log", vbCritical, "OBDC - Error")
         Call CerrarServidor
     End If
 
@@ -655,7 +655,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
         'User mail
         'TODO:
         
-        ' Si deslogueó, actualizo la cuenta
+        ' Si deslogueÃ³, actualizo la cuenta
         If Logout Then
             QueryBuilder.Append "UPDATE account SET logged = logged - 1 WHERE id = " & .AccountID & ";"
         End If
@@ -1028,7 +1028,7 @@ Private Sub MakeQuery(Query As String, Optional ByVal NoResult As Boolean = Fals
 ErrorHandler:
 
     If Database_Connection.State = adStateClosed Then
-        Call LogDatabaseError("Alarma en MakeQuery: Se perdió la conexión con la DB. Reconectando.")
+        Call LogDatabaseError("Alarma en MakeQuery: Se perdiÃ³ la conexiÃ³n con la DB. Reconectando.")
         Database_Connect
         Resume
     Else
@@ -2300,7 +2300,7 @@ Public Function EnterAccountDatabase(ByVal UserIndex As Integer, CuentaEmail As 
     Call MakeQuery("SELECT id, password, salt, validated, is_banned, ban_reason, banned_by FROM account WHERE email = '" & LCase$(CuentaEmail) & "';")
     
     If Database_Connection.State = adStateClosed Then
-        Call WriteShowMessageBox(UserIndex, "Ha ocurrido un error interno en el servidor. ¡Estamos tratando de resolverlo!")
+        Call WriteShowMessageBox(UserIndex, "Ha ocurrido un error interno en el servidor. Â¡Estamos tratando de resolverlo!")
         Exit Function
     End If
     
@@ -2310,17 +2310,17 @@ Public Function EnterAccountDatabase(ByVal UserIndex As Integer, CuentaEmail As 
     End If
     
     If val(QueryData!is_banned) > 0 Then
-        Call WriteShowMessageBox(UserIndex, "La cuenta se encuentra baneada debido a: " & QueryData!ban_reason & ". Esta decisión fue tomada por: " & QueryData!banned_by & ".")
+        Call WriteShowMessageBox(UserIndex, "La cuenta se encuentra baneada debido a: " & QueryData!ban_reason & ". Esta decisiÃ³n fue tomada por: " & QueryData!banned_by & ".")
         Exit Function
     End If
     
     If Not PasswordValida(Password, QueryData!Password, QueryData!Salt) Then
-        Call WriteShowMessageBox(UserIndex, "Contraseña inválida.")
+        Call WriteShowMessageBox(UserIndex, "ContraseÃ±a invÃ¡lida.")
         Exit Function
     End If
     
     If val(QueryData!validated) = 0 Then
-        Call WriteShowMessageBox(UserIndex, "¡La cuenta no ha sido validada aún!")
+        Call WriteShowMessageBox(UserIndex, "Â¡La cuenta no ha sido validada aÃºn!")
         Exit Function
     End If
     
@@ -2343,7 +2343,7 @@ Public Sub ChangePasswordDatabase(ByVal UserIndex As Integer, OldPassword As Str
     On Error GoTo ErrorHandler
 
     If LenB(NewPassword) = 0 Then
-        Call WriteConsoleMsg(UserIndex, "Debe especificar una contraseña nueva, inténtelo de nuevo.", FontTypeNames.FONTTYPE_INFO)
+        Call WriteConsoleMsg(UserIndex, "Debe especificar una contraseÃ±a nueva, intÃ©ntelo de nuevo.", FontTypeNames.FONTTYPE_INFO)
         Exit Sub
 
     End If
@@ -2351,13 +2351,13 @@ Public Sub ChangePasswordDatabase(ByVal UserIndex As Integer, OldPassword As Str
     Call MakeQuery("SELECT password, salt FROM account WHERE id = " & UserList(UserIndex).AccountID & ";")
     
     If QueryData Is Nothing Then
-        Call WriteConsoleMsg(UserIndex, "No se ha podido cambiar la contraseña por un error interno. Avise a un administrador.", FontTypeNames.FONTTYPE_INFO)
+        Call WriteConsoleMsg(UserIndex, "No se ha podido cambiar la contraseÃ±a por un error interno. Avise a un administrador.", FontTypeNames.FONTTYPE_INFO)
         Exit Sub
 
     End If
     
     If Not PasswordValida(OldPassword, QueryData!Password, QueryData!Salt) Then
-        Call WriteConsoleMsg(UserIndex, "La contraseña actual proporcionada no es correcta. La contraseña no ha sido cambiada, inténtelo de nuevo.", FontTypeNames.FONTTYPE_INFO)
+        Call WriteConsoleMsg(UserIndex, "La contraseÃ±a actual proporcionada no es correcta. La contraseÃ±a no ha sido cambiada, intÃ©ntelo de nuevo.", FontTypeNames.FONTTYPE_INFO)
         Exit Sub
 
     End If
@@ -2378,7 +2378,7 @@ Public Sub ChangePasswordDatabase(ByVal UserIndex As Integer, OldPassword As Str
     
     Call MakeQuery("UPDATE account SET password = '" & PasswordHash & "', salt = '" & Salt & "' WHERE id = " & UserList(UserIndex).AccountID & ";", True)
     
-    Call WriteConsoleMsg(UserIndex, "La contraseña de su cuenta fue cambiada con éxito.", FontTypeNames.FONTTYPE_INFO)
+    Call WriteConsoleMsg(UserIndex, "La contraseÃ±a de su cuenta fue cambiada con Ã©xito.", FontTypeNames.FONTTYPE_INFO)
     
     Exit Sub
 
@@ -2467,7 +2467,7 @@ Public Function SacarLlaveDatabase(ByVal LlaveObj As Integer) As Boolean
     Dim UserCount As Integer
     Dim Users() As String
 
-    ' Obtengo los usuarios logueados en la cuenta del dueño de la llave
+    ' Obtengo los usuarios logueados en la cuenta del dueÃ±o de la llave
     Call MakeQuery("SELECT name FROM user WHERE is_logged = TRUE AND account_id = (SELECT account_id FROM house_key WHERE key_obj = " & LlaveObj & ");")
     
     If QueryData Is Nothing Then Exit Function

@@ -110,11 +110,11 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
             
             'Es un Objeto que tenemos que loguear?
             'If ObjData(Objeto.ObjIndex).Log = 1 Then
-            '   Call LogDesarrollo(UserList(UserIndex).name & " comprÛ del NPC " & Objeto.Amount & " " & ObjData(Objeto.ObjIndex).name)
+            '   Call LogDesarrollo(UserList(UserIndex).name & " compr√≥ del NPC " & Objeto.Amount & " " & ObjData(Objeto.ObjIndex).name)
             'ElseIf Objeto.Amount = 1000 Then 'Es mucha cantidad?
             'Si no es de los prohibidos de loguear, lo logueamos.
             '   If ObjData(Objeto.ObjIndex).NoLog <> 1 Then
-            ''     Call LogDesarrollo(UserList(UserIndex).name & " comprÛ del NPC " & Objeto.Amount & " " & ObjData(Objeto.ObjIndex).name)
+            ''     Call LogDesarrollo(UserList(UserIndex).name & " compr√≥ del NPC " & Objeto.Amount & " " & ObjData(Objeto.ObjIndex).name)
             '  End If
             'End If
         
@@ -176,7 +176,7 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
 214         ElseIf ObjData(Objeto.ObjIndex).Caos = 1 Then
 
 216             If Npclist(NpcIndex).name <> "SC" Then
-218                 Call WriteConsoleMsg(UserIndex, "Las armaduras de la LegiÛn solo pueden ser vendidas a los sastres del demonio.", FontTypeNames.FONTTYPE_INFO)
+218                 Call WriteConsoleMsg(UserIndex, "Las armaduras de la Legi√≥n solo pueden ser vendidas a los sastres del demonio.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
 
@@ -187,7 +187,7 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
                 Exit Sub
                 
 230         ElseIf UserList(UserIndex).flags.Privilegios And PlayerType.Consejero Then
-232             Call WriteConsoleMsg(UserIndex, "No podÈs vender items.", FontTypeNames.FONTTYPE_WARNING)
+232             Call WriteConsoleMsg(UserIndex, "No pod√©s vender items.", FontTypeNames.FONTTYPE_WARNING)
                 Exit Sub
 
             End If
@@ -236,11 +236,11 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
             'Bien, ahora logueo de ser necesario. Pablo (ToxicWaste) 07/09/07
             'Es un Objeto que tenemos que loguear?
             ' If ObjData(Objeto.ObjIndex).Log = 1 Then
-            '    Call LogDesarrollo(UserList(UserIndex).name & " vendiÛ al NPC " & Objeto.Amount & " " & ObjData(Objeto.ObjIndex).name)
+            '    Call LogDesarrollo(UserList(UserIndex).name & " vendi√≥ al NPC " & Objeto.Amount & " " & ObjData(Objeto.ObjIndex).name)
             ' ElseIf Objeto.Amount = 1000 Then 'Es mucha cantidad?
             'Si no es de los prohibidos de loguear, lo logueamos.
             '     If ObjData(Objeto.ObjIndex).NoLog <> 1 Then
-            '         Call LogDesarrollo(UserList(UserIndex).name & " vendiÛ al NPC " & Objeto.Amount & " " & ObjData(Objeto.ObjIndex).name)
+            '         Call LogDesarrollo(UserList(UserIndex).name & " vendi√≥ al NPC " & Objeto.Amount & " " & ObjData(Objeto.ObjIndex).name)
             '     End If
             ' End If
             
@@ -471,7 +471,7 @@ Public Function SalePrice(ByVal ObjIndex As Integer) As Single
         
 
         '*************************************************
-        'Author: Nicol·s (NicoNZ)
+        'Author: Nicol√°s (NicoNZ)
         '
         '*************************************************
 100     If ObjIndex < 1 Or ObjIndex > UBound(ObjData) Then Exit Function

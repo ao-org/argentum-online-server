@@ -1,6 +1,6 @@
 Attribute VB_Name = "TCP"
 'Argentum Online 0.11.6
-'Copyright (C) 2002 Márquez Pablo Ignacio
+'Copyright (C) 2002 MÃ¡rquez Pablo Ignacio
 '
 'This program is free software; you can redistribute it and/or modify
 'it under the terms of the Affero General Public License;
@@ -22,10 +22,10 @@ Attribute VB_Name = "TCP"
 'You can contact me at:
 'morgolock@speedy.com.ar
 'www.geocities.com/gmorgolock
-'Calle 3 número 983 piso 7 dto A
+'Calle 3 nÃºmero 983 piso 7 dto A
 'La Plata - Pcia, Buenos Aires - Republica Argentina
-'Código Postal 1900
-'Pablo Ignacio Márquez
+'CÃ³digo Postal 1900
+'Pablo Ignacio MÃ¡rquez
 
 Option Explicit
 
@@ -391,7 +391,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
 106         .Invent.Object(NumItems).Amount = 100
 108         NumItems = NumItems + 1
         
-            ' Magicas puras reciben más azules
+            ' Magicas puras reciben mÃ¡s azules
 110         Select Case .clase
 
                 Case eClass.Mage, eClass.Druid
@@ -401,7 +401,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
 
             End Select
         
-            ' Semi mágicas reciben menos
+            ' Semi mÃ¡gicas reciben menos
 118         Select Case .clase
 
                 Case eClass.Bard, eClass.Cleric, eClass.Paladin, eClass.Assasin
@@ -441,7 +441,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
 
             End Select
             
-            ' Poción violeta
+            ' PociÃ³n violeta
 158         .Invent.Object(NumItems).ObjIndex = 166 ' Pocion violeta
 159         .Invent.Object(NumItems).Amount = 10
 160         NumItems = NumItems + 1
@@ -477,7 +477,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
 180         .Invent.ArmourEqpObjIndex = .Invent.Object(NumItems).ObjIndex
 182          NumItems = NumItems + 1
 
-            ' Animación según raza
+            ' AnimaciÃ³n segÃºn raza
 184
 188          .Char.Body = ObjData(.Invent.ArmourEqpObjIndex).Ropaje
         
@@ -636,8 +636,8 @@ Sub ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal UserR
         'Author: Unknown
         'Last modified: 20/4/2007
         'Conecta un nuevo Usuario
-        '23/01/2007 Pablo (ToxicWaste) - Agregué ResetFaccion al crear usuario
-        '24/01/2007 Pablo (ToxicWaste) - Agregué el nuevo mana inicial de los magos.
+        '23/01/2007 Pablo (ToxicWaste) - AgreguÃ© ResetFaccion al crear usuario
+        '24/01/2007 Pablo (ToxicWaste) - AgreguÃ© el nuevo mana inicial de los magos.
         '12/02/2007 Pablo (ToxicWaste) - Puse + 1 de const al Elfo normal.
         '20/04/2007 Pablo (ToxicWaste) - Puse -1 de fuerza al Elfo.
         '09/01/2008 Pablo (ToxicWaste) - Ahora los modificadores de Raza se controlan desde Balance.dat
@@ -662,14 +662,14 @@ Sub ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal UserR
     
         Dim LoopC As Long
     
-        '¿Existe el personaje?
+        'Â¿Existe el personaje?
 112     If PersonajeExiste(name) Then
 114         Call WriteErrorMsg(UserIndex, "Ya existe el personaje.")
             Exit Sub
 
         End If
     
-        'Prevenimos algun bug con dados inválidos
+        'Prevenimos algun bug con dados invÃ¡lidos
 116     If UserList(UserIndex).Stats.UserAtributos(eAtributos.Fuerza) = 0 Then Exit Sub
     
 118     UserList(UserIndex).Stats.UserAtributos(eAtributos.Fuerza) = UserList(UserIndex).Stats.UserAtributos(eAtributos.Fuerza) + ModRaza(UserRaza).Fuerza
@@ -818,8 +818,8 @@ On Error GoTo ErrHandler
 
         If .ConnID <> -1 Then Call CloseSocketSL(UserIndex)
     
-        'Es el mismo user al que está revisando el centinela??
-        'IMPORTANTE!!! hacerlo antes de resetear así todavía sabemos el nombre del user
+        'Es el mismo user al que estÃ¡ revisando el centinela??
+        'IMPORTANTE!!! hacerlo antes de resetear asÃ­ todavÃ­a sabemos el nombre del user
         ' y lo podemos loguear
         If Centinela.RevisandoUserIndex = UserIndex Then Call modCentinela.CentinelaUserLogout
     
@@ -869,7 +869,7 @@ ErrHandler:
 
     Call ResetUserSlot(UserIndex)
 
-    Call LogError("CloseSocket - Error = " & Err.Number & " - Descripción = " & Err.description & " - UserIndex = " & UserIndex)
+    Call LogError("CloseSocket - Error = " & Err.Number & " - DescripciÃ³n = " & Err.description & " - UserIndex = " & UserIndex)
     Resume Next
 
 End Sub
@@ -1187,7 +1187,7 @@ Function EntrarCuenta(ByVal UserIndex As Integer, CuentaEmail As String, CuentaP
         End If
 
 108     If Not CheckMailString(CuentaEmail) Then
-110         Call WriteShowMessageBox(UserIndex, "Email inválido.")
+110         Call WriteShowMessageBox(UserIndex, "Email invÃ¡lido.")
             Exit Function
 
         End If
@@ -1216,17 +1216,17 @@ Function EntrarCuenta(ByVal UserIndex As Integer, CuentaEmail As String, CuentaP
                         
 138                         EntrarCuenta = True
                         Else
-140                         Call WriteShowMessageBox(UserIndex, "¡La cuenta no ha sido validada aún!")
+140                         Call WriteShowMessageBox(UserIndex, "Â¡La cuenta no ha sido validada aÃºn!")
 
                         End If
 
                     Else
-142                     Call WriteShowMessageBox(UserIndex, "Contraseña inválida.")
+142                     Call WriteShowMessageBox(UserIndex, "ContraseÃ±a invÃ¡lida.")
 
                     End If
 
                 Else
-144                 Call WriteShowMessageBox(UserIndex, "La cuenta se encuentra baneada debido a: " & ObtenerMotivoBaneo(CuentaEmail) & ". Esta decisión fue tomada por: " & ObtenerQuienBaneo(CuentaEmail) & ".")
+144                 Call WriteShowMessageBox(UserIndex, "La cuenta se encuentra baneada debido a: " & ObtenerMotivoBaneo(CuentaEmail) & ". Esta decisiÃ³n fue tomada por: " & ObtenerQuienBaneo(CuentaEmail) & ".")
 
                 End If
 
@@ -1266,13 +1266,13 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
             Exit Sub
         End If
         
-        '¿Supera el máximo de usuarios por cuenta?
+        'Â¿Supera el mÃ¡ximo de usuarios por cuenta?
         If MaxUsersPorCuenta > 0 Then
             If GetUsersLoggedAccountDatabase(.AccountID) >= MaxUsersPorCuenta Then
                 If MaxUsersPorCuenta = 1 Then
                     Call WriteShowMessageBox(UserIndex, "Ya hay un usuario conectado con esta cuenta.")
                 Else
-                    Call WriteShowMessageBox(UserIndex, "La cuenta ya alcanzó el máximo de " & MaxUsersPorCuenta & " usuarios conectados.")
+                    Call WriteShowMessageBox(UserIndex, "La cuenta ya alcanzÃ³ el mÃ¡ximo de " & MaxUsersPorCuenta & " usuarios conectados.")
                 End If
 
                 Call CloseSocket(UserIndex)
@@ -1296,10 +1296,10 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
             Exit Sub
         End If
         
-        '¿Este IP ya esta conectado?
+        'Â¿Este IP ya esta conectado?
         If MaxConexionesIP > 0 Then
             If ContarMismaIP(UserIndex, .ip) >= MaxConexionesIP Then
-                Call WriteShowMessageBox(UserIndex, "Has alcanzado el límite de conexiones por IP.")
+                Call WriteShowMessageBox(UserIndex, "Has alcanzado el lÃ­mite de conexiones por IP.")
                 Call CloseSocket(UserIndex)
                 Exit Sub
             End If
@@ -1357,10 +1357,10 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
 
         End If
         
-        '¿Ya esta conectado el personaje?
+        'Â¿Ya esta conectado el personaje?
         If CheckForSameName(name) Then
             If UserList(NameIndex(name)).Counters.Saliendo Then
-                Call WriteShowMessageBox(UserIndex, "El usuario está saliendo.")
+                Call WriteShowMessageBox(UserIndex, "El usuario estÃ¡ saliendo.")
             Else
                 Call WriteShowMessageBox(UserIndex, "Perdon, un usuario con el mismo nombre se ha logueado.")
             End If
@@ -1372,7 +1372,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
         
         If EnPausa Then
             Call WritePauseToggle(UserIndex)
-            Call WriteConsoleMsg(UserIndex, "Servidor> Lo sentimos mucho pero el servidor se encuentra actualmente detenido. Intenta ingresar más tarde.", FontTypeNames.FONTTYPE_SERVER)
+            Call WriteConsoleMsg(UserIndex, "Servidor> Lo sentimos mucho pero el servidor se encuentra actualmente detenido. Intenta ingresar mÃ¡s tarde.", FontTypeNames.FONTTYPE_SERVER)
             Call CloseSocket(UserIndex)
             Exit Sub
         End If
@@ -1464,7 +1464,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
         
         
         
-        'Mapa válido
+        'Mapa vÃ¡lido
         If Not MapaValido(.Pos.Map) Then
             Call WriteErrorMsg(UserIndex, "EL PJ se encuenta en un mapa invalido.")
             Call CloseSocket(UserIndex)
@@ -1673,7 +1673,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
         If NumUsers > DayStats.MaxUsuarios Then DayStats.MaxUsuarios = NumUsers
         
         If NumUsers > RecordUsuarios Then
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Record de usuarios conectados simultáneamente: " & NumUsers & " usuarios.", FontTypeNames.FONTTYPE_INFO))
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Record de usuarios conectados simultÃ¡neamente: " & NumUsers & " usuarios.", FontTypeNames.FONTTYPE_INFO))
             RecordUsuarios = NumUsers
             
             If Database_Enabled Then
@@ -1730,9 +1730,9 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
         Call WriteLoggedMessage(UserIndex)
         
         If .Stats.ELV = 1 Then
-            Call WriteConsoleMsg(UserIndex, "¡Bienvenido a las tierras de AO20! ¡" & .name & " que tengas buen viaje y mucha suerte!", FontTypeNames.FONTTYPE_GUILD)
+            Call WriteConsoleMsg(UserIndex, "Â¡Bienvenido a las tierras de AO20! Â¡" & .name & " que tengas buen viaje y mucha suerte!", FontTypeNames.FONTTYPE_GUILD)
         ElseIf .Stats.ELV < 14 Then
-            Call WriteConsoleMsg(UserIndex, "¡Bienvenido de nuevo " & .name & "! Actualmente estas en el nivel " & .Stats.ELV & " en " & DarNameMapa(.Pos.Map) & ", ¡buen viaje y mucha suerte!", FontTypeNames.FONTTYPE_GUILD)
+            Call WriteConsoleMsg(UserIndex, "Â¡Bienvenido de nuevo " & .name & "! Actualmente estas en el nivel " & .Stats.ELV & " en " & DarNameMapa(.Pos.Map) & ", Â¡buen viaje y mucha suerte!", FontTypeNames.FONTTYPE_GUILD)
         End If
 
         If Status(UserIndex) = 2 Or Status(UserIndex) = 0 Then
@@ -1971,7 +1971,7 @@ Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
         'Last modified: 03/15/2006
         'Resetea todos los valores generales y las stats
         '03/15/2006 Maraxus - Uso de With para mayor performance y claridad.
-        'Agregue que se resetee el maná
+        'Agregue que se resetee el manÃ¡
         '*************************************************
         Dim LoopC As Integer
 
@@ -2080,7 +2080,7 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
         'Last modified: 03/29/2006
         'Resetea todos los valores generales y las stats
         '03/15/2006 Maraxus - Uso de With para mayor performance y claridad.
-        '03/29/2006 Maraxus - Reseteo el CentinelaOK también.
+        '03/29/2006 Maraxus - Reseteo el CentinelaOK tambiÃ©n.
         '*************************************************
         
         On Error GoTo ResetUserFlags_Err
@@ -2516,7 +2516,7 @@ Sub CloseUser(ByVal UserIndex As Integer)
     Exit Sub
     
 ErrHandler:
-    Call LogError("Error en CloseUser. Número " & Err.Number & ". Descripción: " & Err.description & ". Detalle:" & errordesc)
+    Call LogError("Error en CloseUser. NÃºmero " & Err.Number & ". DescripciÃ³n: " & Err.description & ". Detalle:" & errordesc)
 
     Resume Next ' TODO: Provisional hasta solucionar bugs graves
 

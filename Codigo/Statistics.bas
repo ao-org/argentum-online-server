@@ -2,7 +2,7 @@ Attribute VB_Name = "Statistics"
 '**************************************************************
 ' modStatistics.bas - Takes statistics on the game for later study.
 '
-' Implemented by Juan Martín Sotuyo Dodero (Maraxus)
+' Implemented by Juan MartÃ­n Sotuyo Dodero (Maraxus)
 ' (juansotuyo@gmail.com)
 '**************************************************************
 

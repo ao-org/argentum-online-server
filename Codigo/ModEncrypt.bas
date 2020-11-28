@@ -55,7 +55,7 @@ SDesencriptar_Err:
         
 End Function
 
-' GSZAO - Encriptación basica y rapida para Strings
+' GSZAO - EncriptaciÃ³n basica y rapida para Strings
 Public Function RndCrypt(ByVal str As String, ByVal Password As String) As String
         
         On Error GoTo RndCrypt_Err

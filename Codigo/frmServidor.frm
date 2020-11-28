@@ -336,7 +336,7 @@ Begin VB.Form frmServidor
          Width           =   3255
       End
       Begin VB.CommandButton Command22 
-         Caption         =   "Administración"
+         Caption         =   "AdministraciÃ³n"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   8.25
@@ -640,7 +640,7 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 'Argentum Online 0.11.6
-'Copyright (C) 2002 Márquez Pablo Ignacio
+'Copyright (C) 2002 MÃ¡rquez Pablo Ignacio
 '
 'This program is free software; you can redistribute it and/or modify
 'it under the terms of the Affero General Public License;
@@ -662,10 +662,10 @@ Attribute VB_Exposed = False
 'You can contact me at:
 'morgolock@speedy.com.ar
 'www.geocities.com/gmorgolock
-'Calle 3 número 983 piso 7 dto A
+'Calle 3 nÃºmero 983 piso 7 dto A
 'La Plata - Pcia, Buenos Aires - Republica Argentina
-'Código Postal 1900
-'Pablo Ignacio Márquez
+'CÃ³digo Postal 1900
+'Pablo Ignacio MÃ¡rquez
 
 Option Explicit
 
@@ -773,7 +773,7 @@ Private Sub Command15_Click()
 
     Dim sENtrada As String
 
-    sENtrada = InputBox("Escribe ""estoy DE acuerdo"" entre comillas y con distición de mayusculas minusculas para desbanear a todos los personajes", "UnBan", "hola")
+    sENtrada = InputBox("Escribe ""estoy DE acuerdo"" entre comillas y con disticiÃ³n de mayusculas minusculas para desbanear a todos los personajes", "UnBan", "hola")
 
     If sENtrada = "estoy DE acuerdo" Then
 
@@ -856,7 +856,7 @@ Private Sub Command19_Click()
 
         Dim sENtrada As String
 
-100     sENtrada = InputBox("Escribe ""estoy DE acuerdo"" sin comillas y con distición de mayusculas minusculas para desbanear a todos los personajes", "UnBan", "hola")
+100     sENtrada = InputBox("Escribe ""estoy DE acuerdo"" sin comillas y con disticiÃ³n de mayusculas minusculas para desbanear a todos los personajes", "UnBan", "hola")
 
 102     If sENtrada = "estoy DE acuerdo" Then
     
@@ -900,7 +900,7 @@ Private Sub Command20_Click()
         
         #If UsarQueSocket = 1 Then
 
-100         If MsgBox("Esta seguro que desea reiniciar los sockets ? Se cerrarán todas las conexiones activas.", vbYesNo, "Reiniciar Sockets") = vbYes Then
+100         If MsgBox("Esta seguro que desea reiniciar los sockets ? Se cerrarÃ¡n todas las conexiones activas.", vbYesNo, "Reiniciar Sockets") = vbYes Then
 102             Call WSApiReiniciarSockets
 
             End If
@@ -909,7 +909,7 @@ Private Sub Command20_Click()
 
             Dim LoopC As Integer
 
-104         If MsgBox("Esta seguro que desea reiniciar los sockets ? Se cerrarán todas las conexiones activas.", vbYesNo, "Reiniciar Sockets") = vbYes Then
+104         If MsgBox("Esta seguro que desea reiniciar los sockets ? Se cerrarÃ¡n todas las conexiones activas.", vbYesNo, "Reiniciar Sockets") = vbYes Then
 
 106             For LoopC = 1 To MaxUsers
 
@@ -1095,7 +1095,7 @@ Private Sub Command3_Click()
         On Error GoTo Command3_Click_Err
         
 
-100     If MsgBox("¡¡Atencion!! Si reinicia el servidor puede provocar la perdida de datos de los usarios. ¿Desea reiniciar el servidor de todas maneras?", vbYesNo) = vbYes Then
+100     If MsgBox("Â¡Â¡Atencion!! Si reinicia el servidor puede provocar la perdida de datos de los usarios. Â¿Desea reiniciar el servidor de todas maneras?", vbYesNo) = vbYes Then
 102         Me.Visible = False
 104         Call Restart
 
