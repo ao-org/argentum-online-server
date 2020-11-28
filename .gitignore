@@ -12,6 +12,7 @@ Codigo/*.log
 *.OBJ
 *.ldb
 *.exp
+*.lvw
 *.lib
 *.dca
 *.scc
