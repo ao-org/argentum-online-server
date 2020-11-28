@@ -4181,9 +4181,7 @@ Public Sub RegistrarError(ByVal Numero As Long, ByVal Descripcion As String, ByV
 End Sub
 
 Function CountFiles(strFolder As String, strPattern As String) As Integer
-    
-    CountFiles = 1
-        
+   
     Dim strFile As String
         strFile = dir$(strFolder & "\" & strPattern)
     
@@ -4191,5 +4189,7 @@ Function CountFiles(strFolder As String, strPattern As String) As Integer
         CountFiles = CountFiles + 1
         strFile = dir$()
     Loop
+    
+    If CountFiles <> 0 Then CountFiles = CountFiles + 1
     
 End Function
