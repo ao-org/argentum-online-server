@@ -45,7 +45,7 @@ Public Enum e_SoundIndex
 
 End Enum
 
-Public HoraFanstasia        As Integer
+Public HoraMundo            As Long
 
 Public HoraActual           As Integer
 
@@ -73,7 +73,7 @@ Public EstadoGlobal         As Boolean
 
 Public TimerLimpiarObjetos  As Byte
 
-Public TimerHoraFantasia    As Integer
+Public DuracionDia          As Long
 
 Public BattleActivado       As Byte
 
@@ -1014,7 +1014,7 @@ End Type
 
 Public Type Position
 
-    X As Integer
+    x As Integer
     Y As Integer
 
 End Type
@@ -1022,7 +1022,7 @@ End Type
 Public Type WorldPos
 
     Map As Integer
-    X As Integer
+    x As Integer
     Y As Integer
 
 End Type
@@ -1030,7 +1030,7 @@ End Type
 Public Type CityWorldPos
 
     Map As Integer
-    X As Integer
+    x As Integer
     Y As Integer
     MapaViaje As Integer
     ViajeX As Byte

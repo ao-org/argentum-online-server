@@ -35,26 +35,24 @@ Public Enum Accion_Barra
 
 End Enum
 
-Function GetTimeFormated(Mins As Integer) As String
+Function GetTimeFormated() As String
         
         On Error GoTo GetTimeFormated_Err
         
+        Dim Elapsed As Single
+        Elapsed = ((timeGetTime And &H7FFFFFFF) - HoraMundo) / DuracionDia
+        
+        Dim Mins As Long
+        Mins = (Elapsed - Fix(Elapsed)) * 1440
 
         Dim Horita    As Byte
 
         Dim Minutitos As Byte
 
-        Dim a         As String
-
 100     Horita = Fix(Mins / 60)
-102     Minutitos = Mins - 60 * Horita
+102     Minutitos = Mins Mod 60
 
-104     If Minutitos < 10 Then
-106         GetTimeFormated = Horita & ":0" & Minutitos
-        Else
-108         GetTimeFormated = Horita & ":" & Minutitos
-
-        End If
+104     GetTimeFormated = Right$("00" & Horita, 2) & ":" & Right$("00" & Minutitos, 2)
 
         
         Exit Function
@@ -112,11 +110,11 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 
         Dim slot As Byte
 
-100     Select Case UserList(UserIndex).accion.TipoAccion
+100     Select Case UserList(UserIndex).Accion.TipoAccion
 
             Case Accion_Barra.Runa
-102             obj = ObjData(UserList(UserIndex).accion.RunaObj)
-104             slot = UserList(UserIndex).accion.ObjSlot
+102             obj = ObjData(UserList(UserIndex).Accion.RunaObj)
+104             slot = UserList(UserIndex).Accion.ObjSlot
 
 106             Select Case obj.TipoRuna
 
@@ -253,9 +251,9 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 
                             End If
                 
-234                         UserList(UserIndex).accion.AccionPendiente = True
-236                         UserList(UserIndex).accion.Particula = ParticulasIndex.Resucitar
-238                         UserList(UserIndex).accion.TipoAccion = Accion_Barra.Resucitar
+234                         UserList(UserIndex).Accion.AccionPendiente = True
+236                         UserList(UserIndex).Accion.Particula = ParticulasIndex.Resucitar
+238                         UserList(UserIndex).Accion.TipoAccion = Accion_Barra.Resucitar
 
 240                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("104", UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
                             'Call WriteConsoleMsg(UserIndex, "El Cura lanza unas palabras al aire. Comienzas a sentir como tu cuerpo se vuelve a formar...", FontTypeNames.FONTTYPE_INFO)
@@ -264,15 +262,15 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
                         End If
                 
 244                     If Not Resu Then
-246                         UserList(UserIndex).accion.AccionPendiente = False
-248                         UserList(UserIndex).accion.Particula = 0
-250                         UserList(UserIndex).accion.TipoAccion = Accion_Barra.CancelarAccion
+246                         UserList(UserIndex).Accion.AccionPendiente = False
+248                         UserList(UserIndex).Accion.Particula = 0
+250                         UserList(UserIndex).Accion.TipoAccion = Accion_Barra.CancelarAccion
 
                         End If
 
-252                     UserList(UserIndex).accion.HechizoPendiente = 0
-254                     UserList(UserIndex).accion.RunaObj = 0
-256                     UserList(UserIndex).accion.ObjSlot = 0
+252                     UserList(UserIndex).Accion.HechizoPendiente = 0
+254                     UserList(UserIndex).Accion.RunaObj = 0
+256                     UserList(UserIndex).Accion.ObjSlot = 0
               
 258                 Case 2
 260                     Map = obj.HastaMap
@@ -300,12 +298,12 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 
                         End If
         
-292                     UserList(UserIndex).accion.Particula = 0
-294                     UserList(UserIndex).accion.TipoAccion = Accion_Barra.CancelarAccion
-296                     UserList(UserIndex).accion.HechizoPendiente = 0
-298                     UserList(UserIndex).accion.RunaObj = 0
-300                     UserList(UserIndex).accion.ObjSlot = 0
-302                     UserList(UserIndex).accion.AccionPendiente = False
+292                     UserList(UserIndex).Accion.Particula = 0
+294                     UserList(UserIndex).Accion.TipoAccion = Accion_Barra.CancelarAccion
+296                     UserList(UserIndex).Accion.HechizoPendiente = 0
+298                     UserList(UserIndex).Accion.RunaObj = 0
+300                     UserList(UserIndex).Accion.ObjSlot = 0
+302                     UserList(UserIndex).Accion.AccionPendiente = False
 
 304                 Case 3
 
@@ -361,7 +359,7 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 
                     Dim Mapaf, Xf, Yf As Integer
 
-338                 uh = UserList(UserIndex).accion.HechizoPendiente
+338                 uh = UserList(UserIndex).Accion.HechizoPendiente
     
 340                 Mapaf = Hechizos(uh).TeleportXMap
 342                 Xf = Hechizos(uh).TeleportXX
@@ -393,12 +391,12 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 
                 End If
                     
-380             UserList(UserIndex).accion.Particula = 0
-382             UserList(UserIndex).accion.TipoAccion = Accion_Barra.CancelarAccion
-384             UserList(UserIndex).accion.HechizoPendiente = 0
-386             UserList(UserIndex).accion.RunaObj = 0
-388             UserList(UserIndex).accion.ObjSlot = 0
-390             UserList(UserIndex).accion.AccionPendiente = False
+380             UserList(UserIndex).Accion.Particula = 0
+382             UserList(UserIndex).Accion.TipoAccion = Accion_Barra.CancelarAccion
+384             UserList(UserIndex).Accion.HechizoPendiente = 0
+386             UserList(UserIndex).Accion.RunaObj = 0
+388             UserList(UserIndex).Accion.ObjSlot = 0
+390             UserList(UserIndex).Accion.AccionPendiente = False
             
                 '
 392         Case Accion_Barra.Resucitar
@@ -407,12 +405,12 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 398             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("204", UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
 400             Call RevivirUsuario(UserIndex)
                 
-402             UserList(UserIndex).accion.Particula = 0
-404             UserList(UserIndex).accion.TipoAccion = Accion_Barra.CancelarAccion
-406             UserList(UserIndex).accion.HechizoPendiente = 0
-408             UserList(UserIndex).accion.RunaObj = 0
-410             UserList(UserIndex).accion.ObjSlot = 0
-412             UserList(UserIndex).accion.AccionPendiente = False
+402             UserList(UserIndex).Accion.Particula = 0
+404             UserList(UserIndex).Accion.TipoAccion = Accion_Barra.CancelarAccion
+406             UserList(UserIndex).Accion.HechizoPendiente = 0
+408             UserList(UserIndex).Accion.RunaObj = 0
+410             UserList(UserIndex).Accion.ObjSlot = 0
+412             UserList(UserIndex).Accion.AccionPendiente = False
         
 414         Case Accion_Barra.BattleModo
         
@@ -462,12 +460,12 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
                 
                 End If
 
-452             UserList(UserIndex).accion.AccionPendiente = False
-454             UserList(UserIndex).accion.Particula = 0
-456             UserList(UserIndex).accion.TipoAccion = Accion_Barra.CancelarAccion
-458             UserList(UserIndex).accion.HechizoPendiente = 0
-460             UserList(UserIndex).accion.RunaObj = 0
-462             UserList(UserIndex).accion.ObjSlot = 0
+452             UserList(UserIndex).Accion.AccionPendiente = False
+454             UserList(UserIndex).Accion.Particula = 0
+456             UserList(UserIndex).Accion.TipoAccion = Accion_Barra.CancelarAccion
+458             UserList(UserIndex).Accion.HechizoPendiente = 0
+460             UserList(UserIndex).Accion.RunaObj = 0
+462             UserList(UserIndex).Accion.ObjSlot = 0
                 
 464         Case Accion_Barra.GoToPareja
     

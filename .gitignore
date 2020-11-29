@@ -1,11 +1,10 @@
 Account/*
-Logs/*
 Charfile/*
 Logs/*
 Foros/*
 WorldBackup/*
-Guilds/*
 Codigo/*.log
+Guilds/*
 .DS_Store
 *.vbw
 *.csi
@@ -19,6 +18,5 @@ Codigo/*.log
 *.tmp
 bkNpcs.dat
 server.exe
-Guilds/guildsinfo.inf
 
  

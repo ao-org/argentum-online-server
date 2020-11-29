@@ -832,9 +832,6 @@ Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) A
         ' es una posicion legal
         If LegalWalkNPC(nPos.Map, nPos.X, nPos.Y, nHeading, .flags.AguaValida = 1, .flags.TierraInvalida = 0, .MaestroUser <> 0) Then
             
-            If .flags.AguaValida = 0 And (MapData(.Pos.Map, nPos.X, nPos.Y).Blocked And FLAG_AGUA) <> 0 Then Exit Function
-            If .flags.TierraInvalida = 1 And (MapData(.Pos.Map, nPos.X, nPos.Y).Blocked And FLAG_AGUA) = 0 Then Exit Function
-            
             UserIndex = MapData(.Pos.Map, nPos.X, nPos.Y).UserIndex
 
             ' Si hay un usuario a donde se mueve el npc, entonces esta muerto o es un gm invisible

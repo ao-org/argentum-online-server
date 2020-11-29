@@ -1,7 +1,7 @@
 Attribute VB_Name = "General"
 
 'Argentum Online 0.11.6
-'Copyright (C) 2002 M·rquez Pablo Ignacio
+'Copyright (C) 2002 M√°rquez Pablo Ignacio
 '
 'This program is free software; you can redistribute it and/or modify
 'it under the terms of the Affero General Public License;
@@ -23,10 +23,10 @@ Attribute VB_Name = "General"
 'You can contact me at:
 'morgolock@speedy.com.ar
 'www.geocities.com/gmorgolock
-'Calle 3 n˙mero 983 piso 7 dto A
+'Calle 3 n√∫mero 983 piso 7 dto A
 'La Plata - Pcia, Buenos Aires - Republica Argentina
-'CÛdigo Postal 1900
-'Pablo Ignacio M·rquez
+'C√≥digo Postal 1900
+'Pablo Ignacio M√°rquez
 Public Type TDonador
 
     activo As Byte
@@ -122,7 +122,7 @@ DarCuerpoDesnudo_Err:
         
 End Sub
 
-Sub Bloquear(ByVal toMap As Boolean, ByVal sndIndex As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal b As Byte)
+Sub Bloquear(ByVal toMap As Boolean, ByVal sndIndex As Integer, ByVal x As Integer, ByVal Y As Integer, ByVal b As Byte)
         'b ahora es boolean,
         'b=true bloquea el tile en (x,y)
         'b=false desbloquea el tile en (x,y)
@@ -134,13 +134,13 @@ Sub Bloquear(ByVal toMap As Boolean, ByVal sndIndex As Integer, ByVal X As Integ
         
         On Error GoTo Bloquear_Err
         
-        ' EnvÌo sÛlo los flags de bloq
+        ' Env√≠o s√≥lo los flags de bloq
         b = b And eBlock.ALL_SIDES
 
 100     If toMap Then
-102         Call SendData(SendTarget.toMap, sndIndex, PrepareMessageBlockPosition(X, Y, b))
+102         Call SendData(SendTarget.toMap, sndIndex, PrepareMessageBlockPosition(x, Y, b))
         Else
-104         Call WriteBlockPosition(sndIndex, X, Y, b)
+104         Call WriteBlockPosition(sndIndex, x, Y, b)
         End If
 
         
@@ -152,7 +152,7 @@ Bloquear_Err:
         
 End Sub
 
-Sub MostrarBloqueosPuerta(ByVal toMap As Boolean, ByVal sndIndex As Integer, ByVal X As Integer, ByVal Y As Integer)
+Sub MostrarBloqueosPuerta(ByVal toMap As Boolean, ByVal sndIndex As Integer, ByVal x As Integer, ByVal Y As Integer)
     Dim Map As Integer
     If toMap Then
         Map = sndIndex
@@ -161,36 +161,36 @@ Sub MostrarBloqueosPuerta(ByVal toMap As Boolean, ByVal sndIndex As Integer, ByV
     End If
 
     ' Bloqueos superiores
-    Call Bloquear(toMap, sndIndex, X, Y, MapData(Map, X, Y).Blocked)
-    Call Bloquear(toMap, sndIndex, X - 1, Y, MapData(Map, X - 1, Y).Blocked)
+    Call Bloquear(toMap, sndIndex, x, Y, MapData(Map, x, Y).Blocked)
+    Call Bloquear(toMap, sndIndex, x - 1, Y, MapData(Map, x - 1, Y).Blocked)
     
     ' Bloqueos inferiores
-    Call Bloquear(toMap, sndIndex, X, Y + 1, MapData(Map, X, Y + 1).Blocked)
-    Call Bloquear(toMap, sndIndex, X - 1, Y + 1, MapData(Map, X - 1, Y + 1).Blocked)
+    Call Bloquear(toMap, sndIndex, x, Y + 1, MapData(Map, x, Y + 1).Blocked)
+    Call Bloquear(toMap, sndIndex, x - 1, Y + 1, MapData(Map, x - 1, Y + 1).Blocked)
 End Sub
 
-Sub BloquearPuerta(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal Bloquear As Boolean)
+Sub BloquearPuerta(ByVal Map As Integer, ByVal x As Integer, ByVal Y As Integer, ByVal Bloquear As Boolean)
     ' Cambio bloqueos superiores
-    MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked Or eBlock.NORTH, MapData(Map, X, Y).Blocked And Not eBlock.NORTH)
-    MapData(Map, X - 1, Y).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y).Blocked Or eBlock.NORTH, MapData(Map, X - 1, Y).Blocked And Not eBlock.NORTH)
+    MapData(Map, x, Y).Blocked = IIf(Bloquear, MapData(Map, x, Y).Blocked Or eBlock.NORTH, MapData(Map, x, Y).Blocked And Not eBlock.NORTH)
+    MapData(Map, x - 1, Y).Blocked = IIf(Bloquear, MapData(Map, x - 1, Y).Blocked Or eBlock.NORTH, MapData(Map, x - 1, Y).Blocked And Not eBlock.NORTH)
     
     ' Cambio bloqueos inferiores
-    MapData(Map, X, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X, Y + 1).Blocked Or eBlock.SOUTH, MapData(Map, X, Y + 1).Blocked And Not eBlock.SOUTH)
-    MapData(Map, X - 1, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y + 1).Blocked Or eBlock.SOUTH, MapData(Map, X - 1, Y + 1).Blocked And Not eBlock.SOUTH)
+    MapData(Map, x, Y + 1).Blocked = IIf(Bloquear, MapData(Map, x, Y + 1).Blocked Or eBlock.SOUTH, MapData(Map, x, Y + 1).Blocked And Not eBlock.SOUTH)
+    MapData(Map, x - 1, Y + 1).Blocked = IIf(Bloquear, MapData(Map, x - 1, Y + 1).Blocked Or eBlock.SOUTH, MapData(Map, x - 1, Y + 1).Blocked And Not eBlock.SOUTH)
     
     ' Mostramos a todos
-    Call MostrarBloqueosPuerta(True, Map, X, Y)
+    Call MostrarBloqueosPuerta(True, Map, x, Y)
 End Sub
 
-Function HayCosta(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
+Function HayCosta(ByVal Map As Integer, ByVal x As Integer, ByVal Y As Integer) As Boolean
         
         On Error GoTo HayCosta_Err
         
 
         'Ladder 10 - 2 - 2010
         'Chequea si hay costa en los tiles proximos al usuario
-100     If Map > 0 And Map < NumMaps + 1 And X > 0 And X < 101 And Y > 0 And Y < 101 Then
-102         If ((MapData(Map, X, Y).Graphic(1) >= 22552 And MapData(Map, X, Y).Graphic(1) <= 22599) Or (MapData(Map, X, Y).Graphic(1) >= 7283 And MapData(Map, X, Y).Graphic(1) <= 7378) Or (MapData(Map, X, Y).Graphic(1) >= 13387 And MapData(Map, X, Y).Graphic(1) <= 13482)) And MapData(Map, X, Y).Graphic(2) = 0 Then
+100     If Map > 0 And Map < NumMaps + 1 And x > 0 And x < 101 And Y > 0 And Y < 101 Then
+102         If ((MapData(Map, x, Y).Graphic(1) >= 22552 And MapData(Map, x, Y).Graphic(1) <= 22599) Or (MapData(Map, x, Y).Graphic(1) >= 7283 And MapData(Map, x, Y).Graphic(1) <= 7378) Or (MapData(Map, x, Y).Graphic(1) >= 13387 And MapData(Map, x, Y).Graphic(1) <= 13482)) And MapData(Map, x, Y).Graphic(2) = 0 Then
 104             HayCosta = True
             Else
 106             HayCosta = False
@@ -211,31 +211,24 @@ HayCosta_Err:
         
 End Function
 
-Function HayAgua(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
+Function HayAgua(ByVal Map As Integer, ByVal x As Integer, ByVal Y As Integer) As Boolean
         
-        On Error GoTo HayAgua_Err
-        
+    On Error GoTo HayAgua_Err
 
-100     If Map > 0 And Map < NumMaps + 1 And X > 0 And X < 101 And Y > 0 And Y < 101 Then
-102         If ((MapData(Map, X, Y).Graphic(1) >= 1505 And MapData(Map, X, Y).Graphic(1) <= 1520) Or (MapData(Map, X, Y).Graphic(1) >= 24223 And MapData(Map, X, Y).Graphic(1) <= 24238) Or (MapData(Map, X, Y).Graphic(1) >= 24303 And MapData(Map, X, Y).Graphic(1) <= 24318) Or (MapData(Map, X, Y).Graphic(1) >= 468 And MapData(Map, X, Y).Graphic(1) <= 483) Or (MapData(Map, X, Y).Graphic(1) >= 44668 And MapData(Map, X, Y).Graphic(1) <= 44939) Or (MapData(Map, X, Y).Graphic(1) >= 24143 And MapData(Map, X, Y).Graphic(1) <= 24158)) Then
-104             HayAgua = True
-            Else
-106             HayAgua = False
 
-            End If
+    With MapData(Map, x, Y)
+        HayAgua = ((.Graphic(1) >= 1505 And .Graphic(1) <= 1520) Or (.Graphic(1) >= 24223 And .Graphic(1) <= 24238) Or _
+            (.Graphic(1) >= 24143 And .Graphic(1) <= 24158) Or (.Graphic(1) >= 468 And .Graphic(1) <= 483) Or _
+            (.Graphic(1) >= 44668 And .Graphic(1) <= 44939) Or (.Graphic(1) >= 24303 And .Graphic(1) <= 24318))
+    End With
 
-        Else
-108         HayAgua = False
-
-        End If
-
-        
-        Exit Function
+    
+    Exit Function
 
 HayAgua_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.HayAgua", Erl)
-        Resume Next
-        
+    Call RegistrarError(Err.Number, Err.description, "General.HayAgua")
+    Resume Next
+    
 End Function
 
 Function EsArbol(ByVal GrhIndex As Long) As Boolean
@@ -251,7 +244,7 @@ Function EsArbol(ByVal GrhIndex As Long) As Boolean
 
 End Function
 
-Private Function HayLava(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
+Private Function HayLava(ByVal Map As Integer, ByVal x As Integer, ByVal Y As Integer) As Boolean
         
         On Error GoTo HayLava_Err
         
@@ -260,8 +253,8 @@ Private Function HayLava(ByVal Map As Integer, ByVal X As Integer, ByVal Y As In
         'Autor: Nacho (Integer)
         'Last Modification: 03/12/07
         '***************************************************
-100     If Map > 0 And Map < NumMaps + 1 And X > 0 And X < 101 And Y > 0 And Y < 101 Then
-102         If MapData(Map, X, Y).Graphic(1) >= 5837 And MapData(Map, X, Y).Graphic(1) <= 5852 Then
+100     If Map > 0 And Map < NumMaps + 1 And x > 0 And x < 101 And Y > 0 And Y < 101 Then
+102         If MapData(Map, x, Y).Graphic(1) >= 5837 And MapData(Map, x, Y).Graphic(1) <= 5852 Then
 104             HayLava = True
             Else
 106             HayLava = False
@@ -285,7 +278,7 @@ End Function
 Sub ApagarFogatas()
 
     'Ladder /ApagarFogatas
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim obj As obj
         obj.ObjIndex = FOGATA_APAG
@@ -293,31 +286,31 @@ Sub ApagarFogatas()
 
     Dim MapaActual As Long
     Dim Y          As Long
-    Dim X          As Long
+    Dim x          As Long
 
     For MapaActual = 1 To NumMaps
         For Y = YMinMapSize To YMaxMapSize
-            For X = XMinMapSize To XMaxMapSize
+            For x = XMinMapSize To XMaxMapSize
 
                 If MapInfo(MapaActual).lluvia Then
                 
-                    If MapData(MapaActual, X, Y).ObjInfo.ObjIndex = FOGATA Then
+                    If MapData(MapaActual, x, Y).ObjInfo.ObjIndex = FOGATA Then
                     
-                        Call EraseObj(MAX_INVENTORY_OBJS, MapaActual, X, Y)
-                        Call MakeObj(obj, MapaActual, X, Y)
+                        Call EraseObj(MAX_INVENTORY_OBJS, MapaActual, x, Y)
+                        Call MakeObj(obj, MapaActual, x, Y)
 
                     End If
 
                 End If
 
-            Next X
+            Next x
         Next Y
     Next MapaActual
 
     Exit Sub
     
-ErrHandler:
-    Call LogError("Error producido al apagar las fogatas de " & X & "-" & Y & " del mapa: " & MapaActual & "    -" & Err.description)
+Errhandler:
+    Call LogError("Error producido al apagar las fogatas de " & x & "-" & Y & " del mapa: " & MapaActual & "    -" & Err.description)
 
 End Sub
 
@@ -412,9 +405,9 @@ Sub Main()
     Prision.Map = 23
     Libertad.Map = 23
     
-    Prision.X = 72
+    Prision.x = 72
     Prision.Y = 52
-    Libertad.X = 73
+    Libertad.x = 73
     Libertad.Y = 73
     
     LastBackup = Format(Now, "Short Time")
@@ -495,7 +488,7 @@ Sub Main()
     SkillsNames(eSkill.Tacticas) = "Tacticas de combate"
     SkillsNames(eSkill.Armas) = "Combate con armas"
     SkillsNames(eSkill.Meditar) = "Meditar"
-    SkillsNames(eSkill.ApuÒalar) = "ApuÒalar"
+    SkillsNames(eSkill.Apu√±alar) = "Apu√±alar"
     SkillsNames(eSkill.Ocultarse) = "Ocultarse"
     SkillsNames(eSkill.Supervivencia) = "Supervivencia"
     SkillsNames(eSkill.Comerciar) = "Comercio"
@@ -504,8 +497,8 @@ Sub Main()
     SkillsNames(eSkill.Proyectiles) = "Armas de proyectiles"
     SkillsNames(eSkill.Wrestling) = "Artes Marciales"
     SkillsNames(eSkill.Navegacion) = "Navegacion"
-    SkillsNames(eSkill.equitacion) = "EquitaciÛn"
-    SkillsNames(eSkill.Resistencia) = "Resistencia M·gica"
+    SkillsNames(eSkill.equitacion) = "Equitaci√≥n"
+    SkillsNames(eSkill.Resistencia) = "Resistencia M√°gica"
 
     SkillsNames(eSkill.Talar) = "Tala"
     SkillsNames(eSkill.Pescar) = "Pesca"
@@ -549,7 +542,7 @@ Sub Main()
     Call CargarCodigosDonador
     Call loadAdministrativeUsers
 
-    'ø?ø?ø?ø?ø?ø?ø?ø CARGAMOS DATOS DESDE ARCHIVOS ø??ø?ø?ø?ø?ø?ø?ø
+    '¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø CARGAMOS DATOS DESDE ARCHIVOS ¬ø??¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø
     frmCargando.Label1(2).Caption = "Cargando Server.ini"
     
     MaxUsers = 0
@@ -573,11 +566,11 @@ Sub Main()
     frmCargando.Label1(2).Caption = "Cargando Hechizos.Dat"
     Call CargarHechizos
         
-    frmCargando.Label1(2).Caption = "Cargando Objetos de HerrerÌa"
+    frmCargando.Label1(2).Caption = "Cargando Objetos de Herrer√≠a"
     Call LoadArmasHerreria
     Call LoadArmadurasHerreria
     
-    frmCargando.Label1(2).Caption = "Cargando Objetos de CarpinterÌa"
+    frmCargando.Label1(2).Caption = "Cargando Objetos de Carpinter√≠a"
     Call LoadObjCarpintero
     
     frmCargando.Label1(2).Caption = "Cargando Objetos de Alquimista"
@@ -624,7 +617,7 @@ Sub Main()
 
     'Comentado porque hay worldsave en ese mapa!
     'Call CrearClanPretoriano(MAPA_PRETORIANO, ALCOBA2_X, ALCOBA2_Y)
-    'ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?øø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø
+    '¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø
     
     Dim LoopC As Integer
     
@@ -636,7 +629,7 @@ Sub Main()
         Set UserList(LoopC).outgoingData = New clsByteQueue
     Next LoopC
     
-    'ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?øø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø
+    '¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø
     
     With frmMain
         .AutoSave.Enabled = True
@@ -670,7 +663,7 @@ Sub Main()
         Call LogoutAllUsersAndAccounts
     End If
     
-    'ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?øø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø
+    '¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø
     'Configuracion de los sockets
     
     Call SecurityIp.InitIpTables(1000)
@@ -715,13 +708,15 @@ Sub Main()
     #End If
     
     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
-    'ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?øø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø?ø
+    '¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø?¬ø
     
     Call GetHoraActual
-    
-    HoraFanstasia = 720
+
+    ' Iniciamos el mundo al mediodia
+    HoraMundo = (timeGetTime And &H7FFFFFFF) - DuracionDia \ 2
+
     Unload frmCargando
-    
+
     'Log
     Dim n As Integer
 
@@ -767,7 +762,7 @@ Function ReadField(ByVal Pos As Integer, ByRef Text As String, ByVal SepASCII As
 
         '*****************************************************************
         'Gets a field from a string
-        'Author: Juan MartÌn Sotuyo Dodero (Maraxus)
+        'Author: Juan Mart√≠n Sotuyo Dodero (Maraxus)
         'Last Modify Date: 11/15/2004
         'Gets a field from a delimited string
         '*****************************************************************
@@ -838,7 +833,7 @@ End Sub
 
 Public Sub LogCriticEvent(Desc As String)
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim nfile As Integer
 
@@ -849,13 +844,13 @@ Public Sub LogCriticEvent(Desc As String)
 
     Exit Sub
 
-ErrHandler:
+Errhandler:
 
 End Sub
 
 Public Sub LogEjercitoReal(Desc As String)
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim nfile As Integer
 
@@ -866,13 +861,13 @@ Public Sub LogEjercitoReal(Desc As String)
 
     Exit Sub
 
-ErrHandler:
+Errhandler:
 
 End Sub
 
 Public Sub LogEjercitoCaos(Desc As String)
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim nfile As Integer
 
@@ -883,13 +878,13 @@ Public Sub LogEjercitoCaos(Desc As String)
 
     Exit Sub
 
-ErrHandler:
+Errhandler:
 
 End Sub
 
 Public Sub LogIndex(ByVal Index As Integer, ByVal Desc As String)
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim nfile As Integer
 
@@ -900,13 +895,13 @@ Public Sub LogIndex(ByVal Index As Integer, ByVal Desc As String)
 
     Exit Sub
 
-ErrHandler:
+Errhandler:
 
 End Sub
 
 Public Sub LogError(Desc As String)
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim nfile As Integer
 
@@ -917,13 +912,13 @@ Public Sub LogError(Desc As String)
 
     Exit Sub
 
-ErrHandler:
+Errhandler:
 
 End Sub
 
 Public Sub LogConsulta(Desc As String)
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim nfile As Integer
 
@@ -934,13 +929,13 @@ Public Sub LogConsulta(Desc As String)
 
     Exit Sub
 
-ErrHandler:
+Errhandler:
 
 End Sub
 
 Public Sub LogStatic(Desc As String)
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim nfile As Integer
 
@@ -951,13 +946,13 @@ Public Sub LogStatic(Desc As String)
 
     Exit Sub
 
-ErrHandler:
+Errhandler:
 
 End Sub
 
 Public Sub LogTarea(Desc As String)
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim nfile As Integer
 
@@ -968,7 +963,7 @@ Public Sub LogTarea(Desc As String)
 
     Exit Sub
 
-ErrHandler:
+Errhandler:
 
 End Sub
 
@@ -1037,7 +1032,7 @@ End Sub
 
 Public Sub LogGM(nombre As String, texto As String)
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim nfile As Integer
 
@@ -1049,7 +1044,7 @@ Public Sub LogGM(nombre As String, texto As String)
 
     Exit Sub
 
-ErrHandler:
+Errhandler:
 
 End Sub
 
@@ -1059,7 +1054,7 @@ Public Sub LogDatabaseError(Desc As String)
     'Last Modification: 09/10/2018
     '***************************************************
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim nfile As Integer
 
@@ -1073,7 +1068,7 @@ Public Sub LogDatabaseError(Desc As String)
     
     Debug.Print Desc
     
-ErrHandler:
+Errhandler:
 
 End Sub
 
@@ -1100,7 +1095,7 @@ Public Sub SaveDayStats()
     
     Exit Sub
 
-ErrHandler:
+Errhandler:
 
     
     Exit Sub
@@ -1113,7 +1108,7 @@ End Sub
 
 Public Sub LogAsesinato(texto As String)
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim nfile As Integer
 
@@ -1125,13 +1120,13 @@ Public Sub LogAsesinato(texto As String)
 
     Exit Sub
 
-ErrHandler:
+Errhandler:
 
 End Sub
 
 Public Sub logVentaCasa(ByVal texto As String)
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim nfile As Integer
 
@@ -1145,13 +1140,13 @@ Public Sub logVentaCasa(ByVal texto As String)
 
     Exit Sub
 
-ErrHandler:
+Errhandler:
 
 End Sub
 
 Public Sub LogHackAttemp(texto As String)
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim nfile As Integer
 
@@ -1164,13 +1159,13 @@ Public Sub LogHackAttemp(texto As String)
 
     Exit Sub
 
-ErrHandler:
+Errhandler:
 
 End Sub
 
 Public Sub LogCheating(texto As String)
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim nfile As Integer
 
@@ -1181,13 +1176,13 @@ Public Sub LogCheating(texto As String)
 
     Exit Sub
 
-ErrHandler:
+Errhandler:
 
 End Sub
 
 Public Sub LogCriticalHackAttemp(texto As String)
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim nfile As Integer
 
@@ -1200,13 +1195,13 @@ Public Sub LogCriticalHackAttemp(texto As String)
 
     Exit Sub
 
-ErrHandler:
+Errhandler:
 
 End Sub
 
 Public Sub LogAntiCheat(texto As String)
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim nfile As Integer
 
@@ -1218,7 +1213,7 @@ Public Sub LogAntiCheat(texto As String)
 
     Exit Sub
 
-ErrHandler:
+Errhandler:
 
 End Sub
 
@@ -1369,7 +1364,7 @@ Public Function Intemperie(ByVal UserIndex As Integer) As Boolean
         
     
 100     If MapInfo(UserList(UserIndex).Pos.Map).zone <> "DUNGEON" Then
-102         If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger <> 1 And MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger <> 2 And MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger < 10 And MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger <> 4 Then Intemperie = True
+102         If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y).trigger <> 1 And MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y).trigger <> 2 And MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y).trigger < 10 And MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y).trigger <> 4 Then Intemperie = True
         Else
 104         Intemperie = False
 
@@ -1402,7 +1397,7 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
             Else
 
 106             If MapInfo(.Pos.Map).terrain = Nieve Then
-108                 Call WriteConsoleMsg(UserIndex, "°°Estas muriendo de frio, abrigate o moriras!!.", FontTypeNames.FONTTYPE_INFO)
+108                 Call WriteConsoleMsg(UserIndex, "¬°¬°Estas muriendo de frio, abrigate o moriras!!.", FontTypeNames.FONTTYPE_INFO)
 
 110                 modifi = Porcentaje(.Stats.MaxHp, 5)
 
@@ -1410,7 +1405,7 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
             
 114                 If .Stats.MinHp < 1 Then
 
-116                     Call WriteConsoleMsg(UserIndex, "°°Has muerto de frio!!.", FontTypeNames.FONTTYPE_INFO)
+116                     Call WriteConsoleMsg(UserIndex, "¬°¬°Has muerto de frio!!.", FontTypeNames.FONTTYPE_INFO)
 
 118                     .Stats.MinHp = 0
 
@@ -1453,12 +1448,12 @@ Public Sub EfectoLava(ByVal UserIndex As Integer)
         
             Else
 
-106             If HayLava(.Pos.Map, .Pos.X, .Pos.Y) Then
-108                 Call WriteConsoleMsg(UserIndex, "°°Quitate de la lava, te est·s quemando!!.", FontTypeNames.FONTTYPE_INFO)
+106             If HayLava(.Pos.Map, .Pos.x, .Pos.Y) Then
+108                 Call WriteConsoleMsg(UserIndex, "¬°¬°Quitate de la lava, te est√°s quemando!!.", FontTypeNames.FONTTYPE_INFO)
 110                 .Stats.MinHp = .Stats.MinHp - Porcentaje(.Stats.MaxHp, 5)
             
 112                 If .Stats.MinHp < 1 Then
-114                     Call WriteConsoleMsg(UserIndex, "°°Has muerto quemado!!.", FontTypeNames.FONTTYPE_INFO)
+114                     Call WriteConsoleMsg(UserIndex, "¬°¬°Has muerto quemado!!.", FontTypeNames.FONTTYPE_INFO)
 116                     .Stats.MinHp = 0
 118                     Call UserDie(UserIndex)
 
@@ -1648,7 +1643,7 @@ Public Sub EfectoMaldicionUser(ByVal UserIndex As Integer)
     
         Else
 104         UserList(UserIndex).flags.Maldicion = 0
-106         Call WriteConsoleMsg(UserIndex, "°La magia perdiÛ su efecto! Ya podes atacar.", FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
+106         Call WriteConsoleMsg(UserIndex, "¬°La magia perdi√≥ su efecto! Ya podes atacar.", FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
 
             'Call WriteParalizeOK(UserIndex)
         End If
@@ -1690,7 +1685,7 @@ Public Sub RecStamina(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, 
         On Error GoTo RecStamina_Err
         
 
-100     If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger = 1 And MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger = 2 And MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger = 4 Then Exit Sub
+100     If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y).trigger = 1 And MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y).trigger = 2 And MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y).trigger = 4 Then Exit Sub
 
         Dim massta As Integer
 
@@ -1702,8 +1697,8 @@ Public Sub RecStamina(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, 
         
 108             UserList(UserIndex).Counters.STACounter = 0
 
-110             If UserList(UserIndex).flags.Desnudo And Not UserList(UserIndex).flags.Montado Then Exit Sub 'Desnudo no sube energÌa. (ToxicWaste)
-112             If UserList(UserIndex).Counters.Trabajando > 0 Then Exit Sub  'Trabajando no sube energÌa. (ToxicWaste)
+110             If UserList(UserIndex).flags.Desnudo And Not UserList(UserIndex).flags.Montado Then Exit Sub 'Desnudo no sube energ√≠a. (ToxicWaste)
+112             If UserList(UserIndex).Counters.Trabajando > 0 Then Exit Sub  'Trabajando no sube energ√≠a. (ToxicWaste)
          
                 ' If UserList(UserIndex).Stats.MinSta = 0 Then Exit Sub 'Ladder, se ve que esta linea la agregue yo, pero no sirve.
 
@@ -1772,7 +1767,7 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
 100     If UserList(UserIndex).Counters.Veneno < IntervaloVeneno Then
 102         UserList(UserIndex).Counters.Veneno = UserList(UserIndex).Counters.Veneno + 1
         Else
-            'Call WriteConsoleMsg(UserIndex, "Est·s envenenado, si no te curas moriras.", FontTypeNames.FONTTYPE_VENENO)
+            'Call WriteConsoleMsg(UserIndex, "Est√°s envenenado, si no te curas moriras.", FontTypeNames.FONTTYPE_VENENO)
 104         Call WriteLocaleMsg(UserIndex, "47", FontTypeNames.FONTTYPE_VENENO)
 106         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Envenena, 30, False))
 108         UserList(UserIndex).Counters.Veneno = 0
@@ -1962,7 +1957,7 @@ Public Sub Sanar(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, ByVal
         On Error GoTo Sanar_Err
         
 
-100     If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger = 1 And MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger = 2 And MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger = 4 Then Exit Sub
+100     If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y).trigger = 1 And MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y).trigger = 2 And MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y).trigger = 4 Then Exit Sub
 
         Dim mashit As Integer
 
@@ -2035,7 +2030,7 @@ End Sub
 
 Sub PasarSegundo()
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim i    As Long
 
@@ -2043,7 +2038,7 @@ Sub PasarSegundo()
 
     Dim Mapa As Integer
 
-    Dim X    As Byte
+    Dim x    As Byte
 
     Dim Y    As Byte
     
@@ -2098,22 +2093,22 @@ Sub PasarSegundo()
         
             If UserList(i).flags.Portal = 1 Then
                 Mapa = UserList(i).flags.PortalM
-                X = UserList(i).flags.PortalX
+                x = UserList(i).flags.PortalX
                 Y = UserList(i).flags.PortalY
-                Call SendData(SendTarget.toMap, UserList(i).flags.PortalM, PrepareMessageParticleFXToFloor(X, Y, ParticulasIndex.TpVerde, 0))
-                Call SendData(SendTarget.toMap, UserList(i).flags.PortalM, PrepareMessageLightFXToFloor(X, Y, 0, 105))
+                Call SendData(SendTarget.toMap, UserList(i).flags.PortalM, PrepareMessageParticleFXToFloor(x, Y, ParticulasIndex.TpVerde, 0))
+                Call SendData(SendTarget.toMap, UserList(i).flags.PortalM, PrepareMessageLightFXToFloor(x, Y, 0, 105))
 
-                If MapData(Mapa, X, Y).TileExit.Map > 0 Then
-                    MapData(Mapa, X, Y).TileExit.Map = 0
-                    MapData(Mapa, X, Y).TileExit.X = 0
-                    MapData(Mapa, X, Y).TileExit.Y = 0
+                If MapData(Mapa, x, Y).TileExit.Map > 0 Then
+                    MapData(Mapa, x, Y).TileExit.Map = 0
+                    MapData(Mapa, x, Y).TileExit.x = 0
+                    MapData(Mapa, x, Y).TileExit.Y = 0
 
                 End If
 
-                MapData(Mapa, X, Y).Particula = 0
-                MapData(Mapa, X, Y).TimeParticula = 0
-                MapData(Mapa, X, Y).Particula = 0
-                MapData(Mapa, X, Y).TimeParticula = 0
+                MapData(Mapa, x, Y).Particula = 0
+                MapData(Mapa, x, Y).TimeParticula = 0
+                MapData(Mapa, x, Y).Particula = 0
+                MapData(Mapa, x, Y).TimeParticula = 0
                 UserList(i).flags.Portal = 0
                 UserList(i).flags.PortalM = 0
                 UserList(i).flags.PortalY = 0
@@ -2154,7 +2149,7 @@ Sub PasarSegundo()
             If UserList(i).Counters.Saliendo Then
                 '  If UserList(i).flags.Muerto = 1 Then UserList(i).Counters.Salir = 0
                 UserList(i).Counters.Salir = UserList(i).Counters.Salir - 1
-                ' Call WriteConsoleMsg(i, "Se saldr· del juego en " & UserList(i).Counters.Salir & " segundos...", FontTypeNames.FONTTYPE_INFO)
+                ' Call WriteConsoleMsg(i, "Se saldr√° del juego en " & UserList(i).Counters.Salir & " segundos...", FontTypeNames.FONTTYPE_INFO)
                 Call WriteLocaleMsg(i, "203", FontTypeNames.FONTTYPE_INFO, UserList(i).Counters.Salir)
 
                 If UserList(i).Counters.Salir <= 0 Then
@@ -2173,7 +2168,7 @@ Sub PasarSegundo()
 
     Exit Sub
 
-ErrHandler:
+Errhandler:
     Call LogError("Error en PasarSegundo. Err: " & Err.description & " - " & Err.Number & " - UserIndex: " & i)
 
     Resume Next
@@ -2287,7 +2282,7 @@ Public Sub FreeNPCs()
         
 
         '***************************************************
-        'Autor: Juan MartÌn Sotuyo Dodero (Maraxus)
+        'Autor: Juan Mart√≠n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Releases all NPC Indexes
         '***************************************************
@@ -2309,7 +2304,7 @@ End Sub
 
 Public Sub FreeCharIndexes()
         '***************************************************
-        'Autor: Juan MartÌn Sotuyo Dodero (Maraxus)
+        'Autor: Juan Mart√≠n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Releases all char indexes
         '***************************************************
@@ -2365,9 +2360,9 @@ End Function
 
 '[CODE 002]:MatuX
 '
-'  FunciÛn para chequear el email
+'  Funci√≥n para chequear el email
 '
-'  Corregida por Maraxus para que reconozca como v·lidas casillas con puntos antes de la arroba y evitar un chequeo innecesario
+'  Corregida por Maraxus para que reconozca como v√°lidas casillas con puntos antes de la arroba y evitar un chequeo innecesario
 Public Function CheckMailString(ByVal sString As String) As Boolean
 
     On Error GoTo errHnd
@@ -2383,10 +2378,10 @@ Public Function CheckMailString(ByVal sString As String) As Boolean
 
     If (lPos <> 0) Then
 
-        '2do test: Busca un simbolo . despuÈs de @ + 1
+        '2do test: Busca un simbolo . despu√©s de @ + 1
         If Not (InStr(lPos, sString, ".", vbBinaryCompare) > lPos + 1) Then Exit Function
         
-        '3er test: Recorre todos los caracteres y los valÌda
+        '3er test: Recorre todos los caracteres y los val√≠da
         For lX = 0 To Len(sString) - 1
 
             If Not (lX = (lPos - 1)) Then   'No chequeamos la '@'
@@ -2407,7 +2402,7 @@ errHnd:
 
 End Function
 
-'  Corregida por Maraxus para que reconozca como v·lidas casillas con puntos antes de la arroba
+'  Corregida por Maraxus para que reconozca como v√°lidas casillas con puntos antes de la arroba
 Private Function CMSValidateChar_(ByVal iAsc As Integer) As Boolean
         
         On Error GoTo CMSValidateChar__Err
@@ -2427,11 +2422,11 @@ Public Function Tilde(ByRef data As String) As String
 
     data = UCase$(data)
  
-    data = Replace$(data, "¡Å", "A")
-    data = Replace$(data, "…", "E")
-    data = Replace$(data, "Õç", "I")
-    data = Replace$(data, "”", "O")
-    data = Replace$(data, "⁄", "U")
+    data = Replace$(data, "√Å", "A")
+    data = Replace$(data, "√â", "E")
+    data = Replace$(data, "√ç", "I")
+    data = Replace$(data, "√ì", "O")
+    data = Replace$(data, "√ö", "U")
         
 End Function
 
