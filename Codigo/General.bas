@@ -1,7 +1,7 @@
 Attribute VB_Name = "General"
 
 'Argentum Online 0.11.6
-'Copyright (C) 2002 Márquez Pablo Ignacio
+'Copyright (C) 2002 MÃ¡rquez Pablo Ignacio
 '
 'This program is free software; you can redistribute it and/or modify
 'it under the terms of the Affero General Public License;
@@ -23,10 +23,10 @@ Attribute VB_Name = "General"
 'You can contact me at:
 'morgolock@speedy.com.ar
 'www.geocities.com/gmorgolock
-'Calle 3 número 983 piso 7 dto A
+'Calle 3 nÃºmero 983 piso 7 dto A
 'La Plata - Pcia, Buenos Aires - Republica Argentina
-'Código Postal 1900
-'Pablo Ignacio Márquez
+'CÃ³digo Postal 1900
+'Pablo Ignacio MÃ¡rquez
 Public Type TDonador
 
     activo As Byte
@@ -134,7 +134,7 @@ Sub Bloquear(ByVal toMap As Boolean, ByVal sndIndex As Integer, ByVal X As Integ
         
         On Error GoTo Bloquear_Err
         
-        ' Envío sólo los flags de bloq
+        ' EnvÃ­o sÃ³lo los flags de bloq
         b = b And eBlock.ALL_SIDES
 
 100     If toMap Then
@@ -495,7 +495,7 @@ Sub Main()
     SkillsNames(eSkill.Tacticas) = "Tacticas de combate"
     SkillsNames(eSkill.Armas) = "Combate con armas"
     SkillsNames(eSkill.Meditar) = "Meditar"
-    SkillsNames(eSkill.Apuñalar) = "Apuñalar"
+    SkillsNames(eSkill.ApuÃ±alar) = "ApuÃ±alar"
     SkillsNames(eSkill.Ocultarse) = "Ocultarse"
     SkillsNames(eSkill.Supervivencia) = "Supervivencia"
     SkillsNames(eSkill.Comerciar) = "Comercio"
@@ -504,8 +504,8 @@ Sub Main()
     SkillsNames(eSkill.Proyectiles) = "Armas de proyectiles"
     SkillsNames(eSkill.Wrestling) = "Artes Marciales"
     SkillsNames(eSkill.Navegacion) = "Navegacion"
-    SkillsNames(eSkill.equitacion) = "Equitación"
-    SkillsNames(eSkill.Resistencia) = "Resistencia Mágica"
+    SkillsNames(eSkill.equitacion) = "EquitaciÃ³n"
+    SkillsNames(eSkill.Resistencia) = "Resistencia MÃ¡gica"
 
     SkillsNames(eSkill.Talar) = "Tala"
     SkillsNames(eSkill.Pescar) = "Pesca"
@@ -549,7 +549,7 @@ Sub Main()
     Call CargarCodigosDonador
     Call loadAdministrativeUsers
 
-    '¿?¿?¿?¿?¿?¿?¿?¿ CARGAMOS DATOS DESDE ARCHIVOS ¿??¿?¿?¿?¿?¿?¿?¿
+    'Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿ CARGAMOS DATOS DESDE ARCHIVOS Â¿??Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿
     frmCargando.Label1(2).Caption = "Cargando Server.ini"
     
     MaxUsers = 0
@@ -573,11 +573,11 @@ Sub Main()
     frmCargando.Label1(2).Caption = "Cargando Hechizos.Dat"
     Call CargarHechizos
         
-    frmCargando.Label1(2).Caption = "Cargando Objetos de Herrería"
+    frmCargando.Label1(2).Caption = "Cargando Objetos de HerrerÃ­a"
     Call LoadArmasHerreria
     Call LoadArmadurasHerreria
     
-    frmCargando.Label1(2).Caption = "Cargando Objetos de Carpintería"
+    frmCargando.Label1(2).Caption = "Cargando Objetos de CarpinterÃ­a"
     Call LoadObjCarpintero
     
     frmCargando.Label1(2).Caption = "Cargando Objetos de Alquimista"
@@ -624,7 +624,7 @@ Sub Main()
 
     'Comentado porque hay worldsave en ese mapa!
     'Call CrearClanPretoriano(MAPA_PRETORIANO, ALCOBA2_X, ALCOBA2_Y)
-    '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
+    'Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿
     
     Dim LoopC As Integer
     
@@ -636,7 +636,7 @@ Sub Main()
         Set UserList(LoopC).outgoingData = New clsByteQueue
     Next LoopC
     
-    '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
+    'Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿
     
     With frmMain
         .AutoSave.Enabled = True
@@ -670,7 +670,7 @@ Sub Main()
         Call LogoutAllUsersAndAccounts
     End If
     
-    '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
+    'Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿
     'Configuracion de los sockets
     
     Call SecurityIp.InitIpTables(1000)
@@ -715,7 +715,7 @@ Sub Main()
     #End If
     
     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
-    '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
+    'Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿?Â¿
     
     Call GetHoraActual
     
@@ -767,7 +767,7 @@ Function ReadField(ByVal Pos As Integer, ByRef Text As String, ByVal SepASCII As
 
         '*****************************************************************
         'Gets a field from a string
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan MartÃ­n Sotuyo Dodero (Maraxus)
         'Last Modify Date: 11/15/2004
         'Gets a field from a delimited string
         '*****************************************************************
@@ -1402,7 +1402,7 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
             Else
 
 106             If MapInfo(.Pos.Map).terrain = Nieve Then
-108                 Call WriteConsoleMsg(UserIndex, "¡¡Estas muriendo de frio, abrigate o moriras!!.", FontTypeNames.FONTTYPE_INFO)
+108                 Call WriteConsoleMsg(UserIndex, "Â¡Â¡Estas muriendo de frio, abrigate o moriras!!.", FontTypeNames.FONTTYPE_INFO)
 
 110                 modifi = Porcentaje(.Stats.MaxHp, 5)
 
@@ -1410,7 +1410,7 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
             
 114                 If .Stats.MinHp < 1 Then
 
-116                     Call WriteConsoleMsg(UserIndex, "¡¡Has muerto de frio!!.", FontTypeNames.FONTTYPE_INFO)
+116                     Call WriteConsoleMsg(UserIndex, "Â¡Â¡Has muerto de frio!!.", FontTypeNames.FONTTYPE_INFO)
 
 118                     .Stats.MinHp = 0
 
@@ -1454,11 +1454,11 @@ Public Sub EfectoLava(ByVal UserIndex As Integer)
             Else
 
 106             If HayLava(.Pos.Map, .Pos.X, .Pos.Y) Then
-108                 Call WriteConsoleMsg(UserIndex, "¡¡Quitate de la lava, te estás quemando!!.", FontTypeNames.FONTTYPE_INFO)
+108                 Call WriteConsoleMsg(UserIndex, "Â¡Â¡Quitate de la lava, te estÃ¡s quemando!!.", FontTypeNames.FONTTYPE_INFO)
 110                 .Stats.MinHp = .Stats.MinHp - Porcentaje(.Stats.MaxHp, 5)
             
 112                 If .Stats.MinHp < 1 Then
-114                     Call WriteConsoleMsg(UserIndex, "¡¡Has muerto quemado!!.", FontTypeNames.FONTTYPE_INFO)
+114                     Call WriteConsoleMsg(UserIndex, "Â¡Â¡Has muerto quemado!!.", FontTypeNames.FONTTYPE_INFO)
 116                     .Stats.MinHp = 0
 118                     Call UserDie(UserIndex)
 
@@ -1648,7 +1648,7 @@ Public Sub EfectoMaldicionUser(ByVal UserIndex As Integer)
     
         Else
 104         UserList(UserIndex).flags.Maldicion = 0
-106         Call WriteConsoleMsg(UserIndex, "¡La magia perdió su efecto! Ya podes atacar.", FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
+106         Call WriteConsoleMsg(UserIndex, "Â¡La magia perdiÃ³ su efecto! Ya podes atacar.", FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
 
             'Call WriteParalizeOK(UserIndex)
         End If
@@ -1702,8 +1702,8 @@ Public Sub RecStamina(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, 
         
 108             UserList(UserIndex).Counters.STACounter = 0
 
-110             If UserList(UserIndex).flags.Desnudo And Not UserList(UserIndex).flags.Montado Then Exit Sub 'Desnudo no sube energía. (ToxicWaste)
-112             If UserList(UserIndex).Counters.Trabajando > 0 Then Exit Sub  'Trabajando no sube energía. (ToxicWaste)
+110             If UserList(UserIndex).flags.Desnudo And Not UserList(UserIndex).flags.Montado Then Exit Sub 'Desnudo no sube energÃ­a. (ToxicWaste)
+112             If UserList(UserIndex).Counters.Trabajando > 0 Then Exit Sub  'Trabajando no sube energÃ­a. (ToxicWaste)
          
                 ' If UserList(UserIndex).Stats.MinSta = 0 Then Exit Sub 'Ladder, se ve que esta linea la agregue yo, pero no sirve.
 
@@ -1772,7 +1772,7 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
 100     If UserList(UserIndex).Counters.Veneno < IntervaloVeneno Then
 102         UserList(UserIndex).Counters.Veneno = UserList(UserIndex).Counters.Veneno + 1
         Else
-            'Call WriteConsoleMsg(UserIndex, "Estás envenenado, si no te curas moriras.", FontTypeNames.FONTTYPE_VENENO)
+            'Call WriteConsoleMsg(UserIndex, "EstÃ¡s envenenado, si no te curas moriras.", FontTypeNames.FONTTYPE_VENENO)
 104         Call WriteLocaleMsg(UserIndex, "47", FontTypeNames.FONTTYPE_VENENO)
 106         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Envenena, 30, False))
 108         UserList(UserIndex).Counters.Veneno = 0
@@ -2154,7 +2154,7 @@ Sub PasarSegundo()
             If UserList(i).Counters.Saliendo Then
                 '  If UserList(i).flags.Muerto = 1 Then UserList(i).Counters.Salir = 0
                 UserList(i).Counters.Salir = UserList(i).Counters.Salir - 1
-                ' Call WriteConsoleMsg(i, "Se saldrá del juego en " & UserList(i).Counters.Salir & " segundos...", FontTypeNames.FONTTYPE_INFO)
+                ' Call WriteConsoleMsg(i, "Se saldrÃ¡ del juego en " & UserList(i).Counters.Salir & " segundos...", FontTypeNames.FONTTYPE_INFO)
                 Call WriteLocaleMsg(i, "203", FontTypeNames.FONTTYPE_INFO, UserList(i).Counters.Salir)
 
                 If UserList(i).Counters.Salir <= 0 Then
@@ -2287,7 +2287,7 @@ Public Sub FreeNPCs()
         
 
         '***************************************************
-        'Autor: Juan Martín Sotuyo Dodero (Maraxus)
+        'Autor: Juan MartÃ­n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Releases all NPC Indexes
         '***************************************************
@@ -2309,7 +2309,7 @@ End Sub
 
 Public Sub FreeCharIndexes()
         '***************************************************
-        'Autor: Juan Martín Sotuyo Dodero (Maraxus)
+        'Autor: Juan MartÃ­n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Releases all char indexes
         '***************************************************
@@ -2365,9 +2365,9 @@ End Function
 
 '[CODE 002]:MatuX
 '
-'  Función para chequear el email
+'  FunciÃ³n para chequear el email
 '
-'  Corregida por Maraxus para que reconozca como válidas casillas con puntos antes de la arroba y evitar un chequeo innecesario
+'  Corregida por Maraxus para que reconozca como vÃ¡lidas casillas con puntos antes de la arroba y evitar un chequeo innecesario
 Public Function CheckMailString(ByVal sString As String) As Boolean
 
     On Error GoTo errHnd
@@ -2383,10 +2383,10 @@ Public Function CheckMailString(ByVal sString As String) As Boolean
 
     If (lPos <> 0) Then
 
-        '2do test: Busca un simbolo . después de @ + 1
+        '2do test: Busca un simbolo . despuÃ©s de @ + 1
         If Not (InStr(lPos, sString, ".", vbBinaryCompare) > lPos + 1) Then Exit Function
         
-        '3er test: Recorre todos los caracteres y los valída
+        '3er test: Recorre todos los caracteres y los valÃ­da
         For lX = 0 To Len(sString) - 1
 
             If Not (lX = (lPos - 1)) Then   'No chequeamos la '@'
@@ -2407,7 +2407,7 @@ errHnd:
 
 End Function
 
-'  Corregida por Maraxus para que reconozca como válidas casillas con puntos antes de la arroba
+'  Corregida por Maraxus para que reconozca como vÃ¡lidas casillas con puntos antes de la arroba
 Private Function CMSValidateChar_(ByVal iAsc As Integer) As Boolean
         
         On Error GoTo CMSValidateChar__Err
@@ -2427,11 +2427,11 @@ Public Function Tilde(ByRef data As String) As String
 
     data = UCase$(data)
  
-    data = Replace$(data, "Á", "A")
-    data = Replace$(data, "É", "E")
-    data = Replace$(data, "Í", "I")
-    data = Replace$(data, "Ó", "O")
-    data = Replace$(data, "Ú", "U")
+    data = Replace$(data, "Ã", "A")
+    data = Replace$(data, "Ã‰", "E")
+    data = Replace$(data, "Ã", "I")
+    data = Replace$(data, "Ã“", "O")
+    data = Replace$(data, "Ãš", "U")
         
 End Function
 
