@@ -42,24 +42,23 @@ Option Explicit
 '?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
 Public Function TirarItemAlPiso(Pos As WorldPos, obj As obj, Optional NotPirata As Boolean = True) As WorldPos
 
-    On Error GoTo Errhandler
+    On Error GoTo ErrHandler
 
     Dim NuevaPos As WorldPos
 
-    NuevaPos.x = 0
+    NuevaPos.X = 0
     NuevaPos.Y = 0
     
     Tilelibre Pos, NuevaPos, obj, NotPirata, True
 
-    If NuevaPos.x <> 0 And NuevaPos.Y <> 0 Then
-        Call MakeObj(obj, Pos.Map, NuevaPos.x, NuevaPos.Y)
-
+    If NuevaPos.X <> 0 And NuevaPos.Y <> 0 Then
+        Call MakeObj(obj, Pos.Map, NuevaPos.X, NuevaPos.Y)
     End If
 
     TirarItemAlPiso = NuevaPos
 
     Exit Function
-Errhandler:
+ErrHandler:
 
 End Function
 
@@ -267,7 +266,7 @@ End Sub
 
 Public Sub NpcDropeo(ByRef npc As npc, ByRef UserIndex As Integer)
 
-    On Error GoTo Errhandler
+    On Error GoTo ErrHandler
 
     If npc.NumQuiza = 0 Then Exit Sub
     If DropActive = 0 Then Exit Sub 'Esta el Dropeo activado?
@@ -313,7 +312,7 @@ Public Sub NpcDropeo(ByRef npc As npc, ByRef UserIndex As Integer)
     Dropeo.Amount = Cantidad 'Cantidad
     Dropeo.ObjIndex = obj 'NUMERO DEL ITEM EN EL OBJ.DAT
     Call TirarItemAlPiso(npc.Pos, Dropeo)
-    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(FXSound.Dropeo_Sound, npc.Pos.x, npc.Pos.Y))
+    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(FXSound.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
         
     'nfile = FreeFile ' obtenemos un canal
     'Open App.Path & "\logs\Dropeo de items.log" For Append Shared As #nfile
@@ -322,7 +321,7 @@ Public Sub NpcDropeo(ByRef npc As npc, ByRef UserIndex As Integer)
     
     Exit Sub
 
-Errhandler:
+ErrHandler:
     Call LogError("Error al dropear el item " & ObjData(npc.QuizaDropea(objRandom)).name & ", al usuario " & UserList(UserIndex).name & ". " & Err.description & ".")
 
 End Sub
