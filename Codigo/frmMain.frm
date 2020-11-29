@@ -179,7 +179,7 @@ Begin VB.Form frmMain
       Top             =   4200
    End
    Begin VB.Timer HoraFantasia 
-      Interval        =   600
+      Interval        =   1000
       Left            =   2640
       Top             =   4200
    End
@@ -1412,34 +1412,7 @@ Private Sub HoraFantasia_Timer()
 
         End If
 
-112     HoraFanstasia = HoraFanstasia + 1
-114     frmMain.Label4.Caption = GetTimeFormated(HoraFanstasia)
-
-116     If HoraFanstasia = "300" Then
-118         Call SendData(SendTarget.ToAll, 0, PrepareMessageHora())
-
-        End If
-
-120     If HoraFanstasia = "720" Then
-122         Call SendData(SendTarget.ToAll, 0, PrepareMessageHora())
-
-        End If
-
-124     If HoraFanstasia = "1080" Then
-126         Call SendData(SendTarget.ToAll, 0, PrepareMessageHora())
-
-        End If
-
-128     If HoraFanstasia = "1260" Then
-130         Call SendData(SendTarget.ToAll, 0, PrepareMessageHora())
-
-        End If
-
-132     If HoraFanstasia + 1 = "1440" Then
-134         HoraFanstasia = 0
-
-        End If
-
+114     frmMain.Label4.Caption = GetTimeFormated
         
         Exit Sub
 
