@@ -1,0 +1,38 @@
+## [1.0.5] - Fecha: ni idea
+
+- Bajar la probabilidad de subir skills
+- GM nace invisible
+- Ponerle fin a meditar
+- Balance de daños, evasiones y escudos tomados de la 11.2
+- Oro de los NPCs al piso
+- Está muy baja la probabilidad de subir def con escudos en comparación a otros skills
+- Sistema de llaves
+- Poner record onlines en db para guardarlo
+- Sacar record de usuario de server.ini y ponerlo en otro archivo para evitar pisarlo con ci/cd
+- Fix: No equipar objetos con Body = 0
+- Fix: Cuando dejas de trabajar no aumenta la energía si no te movés
+- Fix: Se crean personajes invi y podes atacar a los npc y si te moris y revivis te ven pero no te atacan
+- Fix: Paralizar no permite que los jugadores roten en su lugar, deja a los guerreros inutilizados
+- Fix: Inmovilizar debería dejar a la criatura quieta y solo pegando hacia adelante
+- Fix: Cuando llueve no te consume la energia
+- Fix: Oro Multiplicado al hacer grupo
+- Fix: Corregir tiempo de inmovilizar / paralizar
+- Fix: No figura oro en billetera
+- Fix: Dropea muchisima fruta y manzanas los arboles al talar
+- Fix: Resetear inmo/para en Usuarios
+- Fix: Invisible al subir/bajar de barca
+
+## [1.0.6] - Fecha: ni idea
+
+- Bloqueos parciales
+- Clan Pretoriano
+- Anular poderes a GMS (Atacar/Objetos etc...)
+
+## [1.0.7] - Fecha: ni idea
+
+- Agregar mas ciclos intermedios entre el día y la noche.
+- Deshardcodear herramientas del código.
+- Transferir plata hacerlo que funcione con la DB
+- GM invisible y caspers se atravesan
+- Fix: Al nacer con 0 de maná máxima se oculta el indicador de maná. Pero no se vuelve a mostrar cuando ganás maná.
+- Fix: Desloguear paralizado quedás paralizado para siempre
