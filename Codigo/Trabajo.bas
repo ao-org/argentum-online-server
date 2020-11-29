@@ -2210,7 +2210,7 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal x As Byte, ByVal Y As Byte,
             If .flags.TargetObj = 0 Then Exit Sub
             
             Call ActualizarRecurso(.Pos.Map, x, Y)
-            MapData(.Pos.Map, x, Y).ObjInfo.data = timeGetTime ' Ultimo uso
+            MapData(.Pos.Map, x, Y).ObjInfo.data = (timeGetTime And &H7FFFFFFF) ' Ultimo uso
     
             MiObj.Amount = IIf(ObjetoDorado, RandomNumber(1, 5), 1) * RecoleccionMult
             MiObj.ObjIndex = Leña
@@ -2329,7 +2329,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal x As Byte, ByVal Y As Byt
             If .flags.TargetObj = 0 Then Exit Sub
             
             Call ActualizarRecurso(.Pos.Map, x, Y)
-            MapData(.Pos.Map, x, Y).ObjInfo.data = timeGetTime ' Ultimo uso
+            MapData(.Pos.Map, x, Y).ObjInfo.data = (timeGetTime And &H7FFFFFFF) ' Ultimo uso
             
             MiObj.ObjIndex = ObjData(.flags.TargetObj).MineralIndex
             MiObj.Amount = IIf(ObjetoDorado, RandomNumber(1, 6), 1) * RecoleccionMult
