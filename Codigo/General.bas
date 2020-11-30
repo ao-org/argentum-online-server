@@ -719,7 +719,7 @@ Sub Main()
     
     Call GetHoraActual
     
-    HoraFanstasia = 720
+    HoraMundo = timeGetTime - DuracionDia \ 2
     Unload frmCargando
     
     'Log
