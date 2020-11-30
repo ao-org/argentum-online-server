@@ -718,6 +718,7 @@ Public Sub CargarHechizos()
         Hechizos(Hechizo).Invoca = val(Leer.GetValue("Hechizo" & Hechizo, "Invoca"))
         Hechizos(Hechizo).NumNpc = val(Leer.GetValue("Hechizo" & Hechizo, "NumNpc"))
         Hechizos(Hechizo).cant = val(Leer.GetValue("Hechizo" & Hechizo, "Cant"))
+        'Hechizos(Hechizo).Mimetiza = val(Leer.GetValue("Hechizo" & Hechizo, "Mimetiza"))
     
         Hechizos(Hechizo).GolpeCertero = val(Leer.GetValue("Hechizo" & Hechizo, "GolpeCertero"))
     
@@ -1620,7 +1621,7 @@ Sub LoadOBJData()
         ObjData(Object).Agarrable = val(Leer.GetValue("OBJ" & Object, "Agarrable"))
         ObjData(Object).ForoID = Leer.GetValue("OBJ" & Object, "ID")
     
-        'CHECK: !!! Esto es provisorio hasta que los de Dateo cambien los valores de string a numerico
+        'CHECK: !!! Esto es provisorio hasta que los de Dateo cambien los valores de string a numerico  -  Nunca más papu
         Dim n As Integer
         Dim S As String
 
@@ -4138,20 +4139,18 @@ Public Sub RegistrarError(ByVal Numero As Long, ByVal Descripcion As String, ByV
         
         'Agregamos el error al historial.
         HistorialError.Contador = HistorialError.Contador + 1
-        HistorialError.Componente = Componente
-        HistorialError.ErrorCode = Numero
+        
+        'Si ya recibimos error en el mismo componente 10 veces, es bastante probable que estemos en un bucle
+        'x lo que no hace falta registrar el error.
+        If HistorialError.Contador = 10 Then Exit Sub
         
     Else 'Si NO es igual, reestablecemos el contador.
 
         HistorialError.Contador = 0
-        HistorialError.ErrorCode = 0
-        HistorialError.Componente = vbNullString
+        HistorialError.ErrorCode = Numero
+        HistorialError.Componente = Componente
             
     End If
-    
-    'Si ya recibimos error en el mismo componente 10 veces, es bastante probable que estemos en un bucle
-    'x lo que no hace falta registrar el error.
-    If HistorialError.Contador = 10 Then Exit Sub
     
     'Registramos el error en Errores.log
     Dim File As Integer: File = FreeFile
