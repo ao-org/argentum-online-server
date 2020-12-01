@@ -36,3 +36,4 @@
 - GM invisible y caspers se atravesan
 - Fix: Al nacer con 0 de maná máxima se oculta el indicador de maná. Pero no se vuelve a mostrar cuando ganás maná.
 - Fix: Desloguear paralizado quedás paralizado para siempre
+
