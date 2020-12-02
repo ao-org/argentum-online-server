@@ -124,7 +124,7 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 
                         Dim Map     As Integer
 
-                        Dim x       As Byte
+                        Dim X       As Byte
 
                         Dim Y       As Byte
         
@@ -156,7 +156,7 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
                             End Select
 
 138                         Map = DeDonde.Map
-140                         x = DeDonde.x
+140                         X = DeDonde.X
 142                         Y = DeDonde.Y
                         Else
 
@@ -217,7 +217,7 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
                             End If
                 
 202                         Map = DeDonde.MapaResu
-204                         x = DeDonde.ResuX
+204                         X = DeDonde.ResuX
 206                         Y = DeDonde.ResuY
                 
                             Dim Resu As Boolean
@@ -226,8 +226,8 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
             
                         End If
                 
-210                     Call FindLegalPos(UserIndex, Map, x, Y)
-212                     Call WarpUserChar(UserIndex, Map, x, Y, True)
+210                     Call FindLegalPos(UserIndex, Map, X, Y)
+212                     Call WarpUserChar(UserIndex, Map, X, Y, True)
 214                     Call WriteConsoleMsg(UserIndex, "Has regresado a tu ciudad de origen.", FontTypeNames.FONTTYPE_WARNING)
 
                         'Call WriteEfectToScreen(UserIndex, &HA4FFFF, 150, True)
@@ -255,7 +255,7 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 236                         UserList(UserIndex).Accion.Particula = ParticulasIndex.Resucitar
 238                         UserList(UserIndex).Accion.TipoAccion = Accion_Barra.Resucitar
 
-240                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("104", UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+240                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("104", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
                             'Call WriteConsoleMsg(UserIndex, "El Cura lanza unas palabras al aire. Comienzas a sentir como tu cuerpo se vuelve a formar...", FontTypeNames.FONTTYPE_INFO)
 242                         Call WriteLocaleMsg(UserIndex, "82", FontTypeNames.FONTTYPE_INFOIAO)
 
@@ -274,12 +274,12 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
               
 258                 Case 2
 260                     Map = obj.HastaMap
-262                     x = obj.HastaX
+262                     X = obj.HastaX
 264                     Y = obj.HastaY
             
 266                     If obj.DesdeMap = 0 Then
-268                         Call FindLegalPos(UserIndex, Map, x, Y)
-270                         Call WarpUserChar(UserIndex, Map, x, Y, True)
+268                         Call FindLegalPos(UserIndex, Map, X, Y)
+270                         Call WarpUserChar(UserIndex, Map, X, Y, True)
 272                         Call WriteConsoleMsg(UserIndex, "Te has teletransportado por el mundo.", FontTypeNames.FONTTYPE_WARNING)
 274                         Call QuitarUserInvItem(UserIndex, slot, 1)
 276                         Call UpdateUserInv(False, UserIndex, slot)
@@ -290,8 +290,8 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
                             Else
 282                             Call QuitarUserInvItem(UserIndex, slot, 1)
 284                             Call UpdateUserInv(False, UserIndex, slot)
-286                             Call FindLegalPos(UserIndex, Map, x, Y)
-288                             Call WarpUserChar(UserIndex, Map, x, Y, True)
+286                             Call FindLegalPos(UserIndex, Map, X, Y)
+288                             Call WarpUserChar(UserIndex, Map, X, Y, True)
 290                             Call WriteConsoleMsg(UserIndex, "Te has teletransportado por el mundo.", FontTypeNames.FONTTYPE_WARNING)
 
                             End If
@@ -318,7 +318,7 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
                             
 314                                 If parejaindex > 0 Then
 316                                     If Not UserList(parejaindex).flags.BattleModo Then
-318                                         Call WarpToLegalPos(UserIndex, UserList(parejaindex).Pos.Map, UserList(parejaindex).Pos.x, UserList(parejaindex).Pos.Y, True)
+318                                         Call WarpToLegalPos(UserIndex, UserList(parejaindex).Pos.Map, UserList(parejaindex).Pos.X, UserList(parejaindex).Pos.Y, True)
 320                                         Call WriteConsoleMsg(UserIndex, "Te has teletransportado hacia tu pareja.", FontTypeNames.FONTTYPE_INFOIAO)
 322                                         Call WriteConsoleMsg(parejaindex, "Tu pareja se ha teletransportado hacia vos.", FontTypeNames.FONTTYPE_INFOIAO)
                                         Else
@@ -376,18 +376,18 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
                     Dim Mapa As Integer
 
 360                 Mapa = UserList(UserIndex).flags.PortalM
-362                 x = UserList(UserIndex).flags.PortalX
+362                 X = UserList(UserIndex).flags.PortalX
 364                 Y = UserList(UserIndex).flags.PortalY
-366                 MapData(Mapa, x, Y).Particula = ParticulasIndex.TpVerde
-368                 MapData(Mapa, x, Y).TimeParticula = -1
-370                 MapData(Mapa, x, Y).TileExit.Map = UserList(UserIndex).flags.PortalMDestino
-372                 MapData(Mapa, x, Y).TileExit.x = UserList(UserIndex).flags.PortalXDestino
-374                 MapData(Mapa, x, Y).TileExit.Y = UserList(UserIndex).flags.PortalYDestino
+366                 MapData(Mapa, X, Y).Particula = ParticulasIndex.TpVerde
+368                 MapData(Mapa, X, Y).TimeParticula = -1
+370                 MapData(Mapa, X, Y).TileExit.Map = UserList(UserIndex).flags.PortalMDestino
+372                 MapData(Mapa, X, Y).TileExit.X = UserList(UserIndex).flags.PortalXDestino
+374                 MapData(Mapa, X, Y).TileExit.Y = UserList(UserIndex).flags.PortalYDestino
                 
                     'Call SendData(SendTarget.toMap, UserList(UserIndex).flags.PortalM, PrepareMessageParticleFXToFloor(X, Y, ParticulasIndex.Intermundia, -1))
-376                 Call SendData(SendTarget.toMap, UserList(UserIndex).flags.PortalM, PrepareMessageParticleFXToFloor(x, Y, ParticulasIndex.TpVerde, -1))
+376                 Call SendData(SendTarget.toMap, UserList(UserIndex).flags.PortalM, PrepareMessageParticleFXToFloor(X, Y, ParticulasIndex.TpVerde, -1))
                 
-378                 Call SendData(SendTarget.toMap, UserList(UserIndex).flags.PortalM, PrepareMessageLightFXToFloor(x, Y, &HFF80C0, 105))
+378                 Call SendData(SendTarget.toMap, UserList(UserIndex).flags.PortalM, PrepareMessageLightFXToFloor(X, Y, &HFF80C0, 105))
 
                 End If
                     
@@ -402,7 +402,7 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 392         Case Accion_Barra.Resucitar
 394             Call WriteConsoleMsg(UserIndex, "¡Has sido resucitado!", FontTypeNames.FONTTYPE_INFO)
 396             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Resucitar, 250, True))
-398             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("204", UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+398             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("204", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 400             Call RevivirUsuario(UserIndex)
                 
 402             UserList(UserIndex).Accion.Particula = 0
@@ -442,11 +442,11 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
                 
 432                 Call SaveUser(UserIndex)  'Guardo el PJ
 
-434                 x = 50
+434                 X = 50
 436                 Y = 54
-438                 Call FindLegalPos(UserIndex, 336, x, Y)
+438                 Call FindLegalPos(UserIndex, 336, X, Y)
                 
-440                 Call WarpUserChar(UserIndex, 336, x, Y, True)
+440                 Call WarpUserChar(UserIndex, 336, X, Y, True)
                 
 442                 UserList(UserIndex).flags.BattleModo = 1
 
@@ -478,7 +478,7 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
                             
 474                         If parejaindex > 0 Then
 476                             If Not UserList(parejaindex).flags.BattleModo Then
-478                                 Call WarpToLegalPos(UserIndex, UserList(parejaindex).Pos.Map, UserList(parejaindex).Pos.x, UserList(parejaindex).Pos.Y, True)
+478                                 Call WarpToLegalPos(UserIndex, UserList(parejaindex).Pos.Map, UserList(parejaindex).Pos.X, UserList(parejaindex).Pos.Y, True)
 480                                 Call WriteConsoleMsg(UserIndex, "Te has teletransportado hacia tu pareja.", FontTypeNames.FONTTYPE_INFOIAO)
 482                                 Call WriteConsoleMsg(parejaindex, "Tu pareja se ha teletransportado hacia vos.", FontTypeNames.FONTTYPE_INFOIAO)
                                 Else
@@ -809,6 +809,34 @@ TieneObjEnInv_Err:
         Resume Next
         
 End Function
+Public Function CantidadObjEnInv(ByVal UserIndex As Integer, ByVal ObjIndex As Integer) As Integer
+        
+        On Error GoTo CantidadObjEnInv_Err
+        
+        'Devuelve el amount si tiene el ObjIndex en el inventario, sino devuelve 0
+        'Creaado por Ladder 25/09/2014
+        Dim i As Byte
+
+100     For i = 1 To 36
+
+102         If UserList(UserIndex).Invent.Object(i).ObjIndex = ObjIndex Then
+104             CantidadObjEnInv = UserList(UserIndex).Invent.Object(i).Amount
+                Exit Function
+            End If
+
+
+112     Next i
+
+114     CantidadObjEnInv = 0
+
+        
+        Exit Function
+
+CantidadObjEnInv_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModLadder.CantidadObjEnInv", Erl)
+        Resume Next
+        
+End Function
 
 Public Function SumarTiempo(segundos As Integer) As String
         
@@ -817,17 +845,17 @@ Public Function SumarTiempo(segundos As Integer) As String
 
         Dim a As Variant, b As Variant
 
-        Dim x As Integer
+        Dim X As Integer
 
         Dim T As String
 
 100     T = "00:00:00" 'Lo inicializamos en 0 horas, 0 minutos, 0 segundos
 102     a = Format("00:00:01", "hh:mm:ss") 'guardamos en una variable el formato de 1 segundos
 
-104     For x = 1 To segundos 'hacemos segundo a segundo
+104     For X = 1 To segundos 'hacemos segundo a segundo
 106         b = Format(T, "hh:mm:ss") 'En B guardamos un formato de hora:minuto:segundo segun lo que tenia T
 108         T = Format(TimeValue(a) + TimeValue(b), "hh:mm:ss") 'asignamos a T la suma de A + B (osea, sumamos logicamente 1 segundo)
-110     Next x
+110     Next X
 
 112     SumarTiempo = T 'a la funcion le damos el valor que hallamos en T
 
