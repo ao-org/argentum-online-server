@@ -836,13 +836,7 @@ Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) A
 
             ' Si hay un usuario a donde se mueve el npc, entonces esta muerto o es un gm invisible
             If UserIndex > 0 Then
-                
-                ' No se traslada caspers de agua a tierra
-                If (MapData(.Pos.Map, nPos.X, nPos.Y).Blocked And FLAG_AGUA) <> 0 And (MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Then Exit Function
 
-                ' No se traslada caspers de tierra a agua
-                If (MapData(.Pos.Map, nPos.X, nPos.Y).Blocked And FLAG_AGUA) = 0 And (MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked And FLAG_AGUA) = 0 Then Exit Function
-                
                 With UserList(UserIndex)
                 
                     ' Actualizamos posicion y mapa
