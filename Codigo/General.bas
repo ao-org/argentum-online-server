@@ -887,14 +887,14 @@ ErrHandler:
 
 End Sub
 
-Public Sub LogIndex(ByVal Index As Integer, ByVal Desc As String)
+Public Sub LogIndex(ByVal index As Integer, ByVal Desc As String)
 
     On Error GoTo ErrHandler
 
     Dim nfile As Integer
 
     nfile = FreeFile ' obtenemos un canal
-    Open App.Path & "\logs\" & Index & ".log" For Append Shared As #nfile
+    Open App.Path & "\logs\" & index & ".log" For Append Shared As #nfile
     Print #nfile, Date & " " & Time & " " & Desc
     Close #nfile
 
@@ -1383,6 +1383,19 @@ Intemperie_Err:
         Resume Next
         
 End Function
+
+Public Sub TiempoInvocacion(ByVal UserIndex As Integer)
+    Dim i As Integer
+    For i = 1 To MAXMASCOTAS
+        If UserList(UserIndex).MascotasIndex(i) > 0 Then
+            If Npclist(UserList(UserIndex).MascotasIndex(i)).Contadores.TiempoExistencia > 0 Then
+               Npclist(UserList(UserIndex).MascotasIndex(i)).Contadores.TiempoExistencia = _
+               Npclist(UserList(UserIndex).MascotasIndex(i)).Contadores.TiempoExistencia - 1
+               If Npclist(UserList(UserIndex).MascotasIndex(i)).Contadores.TiempoExistencia = 0 Then Call MuereNpc(UserList(UserIndex).MascotasIndex(i), 0)
+            End If
+        End If
+    Next i
+End Sub
 
 Public Sub EfectoFrio(ByVal UserIndex As Integer)
         
@@ -2039,7 +2052,7 @@ Sub PasarSegundo()
 
     Dim i    As Long
 
-    Dim h    As Byte
+    Dim H    As Byte
 
     Dim Mapa As Integer
 

@@ -370,6 +370,71 @@ PuedeLanzar_Err:
         
 End Function
 
+''
+' Le da propiedades al nuevo npc
+'
+' @param UserIndex  Indice del usuario que invoca.
+' @param b  Indica si se termino la operación.
+
+Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
+    '***************************************************
+    'Author: Uknown
+    'Last modification: 06/15/2008 (NicoNZ)
+    'Sale del sub si no hay una posición valida.
+    '***************************************************
+    Dim h As Integer, j As Integer, ind As Integer, Index As Integer
+    Dim TargetPos As WorldPos
+
+    TargetPos.Map = UserList(UserIndex).flags.TargetMap
+    TargetPos.X = UserList(UserIndex).flags.TargetX
+    TargetPos.Y = UserList(UserIndex).flags.TargetY
+    
+    h = UserList(UserIndex).Stats.UserHechizos(UserList(UserIndex).flags.Hechizo)
+
+    If UserList(UserIndex).NroMascotas >= MAXMASCOTAS Then Exit Sub
+
+    'No deja invocar mas de 1 fatuo
+    If Hechizos(h).NumNpc = FUEGOFATUO And UserList(UserIndex).NroMascotas = 1 Then Exit Sub
+
+    'No permitimos se invoquen criaturas en zonas seguras
+    If MapInfo(UserList(UserIndex).Pos.Map).Seguro Or MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger = eTrigger.ZONASEGURA Then
+        Call WriteConsoleMsg(UserIndex, "En zona segura no puedes invocar criaturas.", FontTypeNames.FONTTYPE_INFO)
+        Exit Sub
+    End If
+
+    For j = 1 To Hechizos(h).cant
+        
+        If UserList(UserIndex).NroMascotas < MAXMASCOTAS Then
+            ind = SpawnNpc(Hechizos(h).NumNpc, TargetPos, True, False)
+            If ind > 0 Then
+                UserList(UserIndex).NroMascotas = UserList(UserIndex).NroMascotas + 1
+                
+                Index = FreeMascotaIndex(UserIndex)
+                
+                UserList(UserIndex).MascotasIndex(Index) = ind
+                UserList(UserIndex).MascotasType(Index) = Npclist(ind).Numero
+                
+                Npclist(ind).MaestroUser = UserIndex
+                Npclist(ind).Contadores.TiempoExistencia = IntervaloInvocacion
+                Npclist(ind).GiveGLD = 0
+                
+                Call FollowAmo(ind)
+            Else
+                Exit Sub
+            End If
+                
+        Else
+            Exit For
+        End If
+        
+    Next j
+    
+    
+    Call InfoHechizo(UserIndex)
+    b = True
+
+End Sub
+
 Sub HechizoTerrenoEstado(ByVal UserIndex As Integer, ByRef b As Boolean)
         
         On Error GoTo HechizoTerrenoEstado_Err
@@ -728,8 +793,8 @@ Sub HandleHechizoTerreno(ByVal UserIndex As Integer, ByVal uh As Integer)
 100     Select Case Hechizos(uh).Tipo
         
             Case TipoHechizo.uInvocacion 'Tipo 1
+                Call HechizoInvocacion(UserIndex, b)
 
-                'Call HechizoInvocacion(UserIndex, b)
 102         Case TipoHechizo.uEstado 'Tipo 2
 104             Call HechizoTerrenoEstado(UserIndex, b)
 

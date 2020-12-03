@@ -1033,63 +1033,63 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 
 220                     If UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) > 49 Then
 222                         If UserList(TempCharIndex).flags.Envenenado > 0 Then
-224                             Fragsnick = " | Envenenado "
+224                             Fragsnick = " | Envenenado"
                             End If
 
 226                         If UserList(TempCharIndex).flags.Ceguera = 1 Then
-228                             Fragsnick = Fragsnick & " | Ciego "
+228                             Fragsnick = Fragsnick & " | Ciego"
                             End If
 
 230                         If UserList(TempCharIndex).flags.Incinerado = 1 Then
-232                             Fragsnick = Fragsnick & " | Incinerado "
+232                             Fragsnick = Fragsnick & " | Incinerado"
                             End If
 
 234                         If UserList(TempCharIndex).flags.Paralizado = 1 Then
-236                             Fragsnick = Fragsnick & " | Paralizado "
+236                             Fragsnick = Fragsnick & " | Paralizado"
                             End If
 
 238                         If UserList(TempCharIndex).flags.Inmovilizado = 1 Then
-240                             Fragsnick = Fragsnick & " | Inmovilizado "
+240                             Fragsnick = Fragsnick & " | Inmovilizado"
                             End If
 
 242                         If UserList(TempCharIndex).Counters.Trabajando > 0 Then
-244                             Fragsnick = Fragsnick & " | Trabajando "
+244                             Fragsnick = Fragsnick & " | Trabajando"
                             End If
 
 246                         If UserList(TempCharIndex).flags.invisible = 1 Then
-248                             Fragsnick = Fragsnick & " | Invisible "
+248                             Fragsnick = Fragsnick & " | Invisible"
                             End If
 
 250                         If UserList(TempCharIndex).flags.Oculto = 1 Then
-252                             Fragsnick = Fragsnick & " | Oculto "
+252                             Fragsnick = Fragsnick & " | Oculto"
                             End If
 
 254                         If UserList(TempCharIndex).flags.Estupidez = 1 Then
-256                             Fragsnick = Fragsnick & " | Estupido "
+256                             Fragsnick = Fragsnick & " | Estupido"
                             End If
 
 258                         If UserList(TempCharIndex).flags.Maldicion = 1 Then
-260                             Fragsnick = Fragsnick & " | Maldito "
+260                             Fragsnick = Fragsnick & " | Maldito"
                             End If
 
 262                         If UserList(TempCharIndex).flags.Silenciado = 1 Then
-264                             Fragsnick = Fragsnick & " | Silenciado "
+264                             Fragsnick = Fragsnick & " | Silenciado"
                             End If
 
 266                         If UserList(TempCharIndex).flags.Comerciando = True Then
-268                             Fragsnick = Fragsnick & " | Comerciando "
+268                             Fragsnick = Fragsnick & " | Comerciando"
                             End If
 
 270                         If UserList(TempCharIndex).flags.Descansar = 1 Then
-272                             Fragsnick = Fragsnick & " | Descansando "
+272                             Fragsnick = Fragsnick & " | Descansando"
                             End If
 
 274                         If UserList(TempCharIndex).flags.Meditando = True Then
-276                             Fragsnick = Fragsnick & " | Concentrado "
+276                             Fragsnick = Fragsnick & " | Concentrado"
                             End If
 
 278                         If UserList(TempCharIndex).flags.BattleModo = 1 Then
-280                             Fragsnick = Fragsnick & " | Modo Battle "
+280                             Fragsnick = Fragsnick & " | Modo Battle"
                             End If
                         
 282                         If UserList(TempCharIndex).Stats.MinHp = 0 Then

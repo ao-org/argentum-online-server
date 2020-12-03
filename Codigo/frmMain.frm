@@ -704,7 +704,7 @@ End Sub
 
 Private Sub AutoSave_Timer()
 
-    On Error GoTo Errhandler
+    On Error GoTo ErrHandler
 
     'fired every minute
     Static minutos          As Long
@@ -777,7 +777,7 @@ Private Sub AutoSave_Timer()
     '<<<<<-------- Log the number of users online ------>>>
 
     Exit Sub
-Errhandler:
+ErrHandler:
     Call LogError("Error en TimerAutoSave " & Err.Number & ": " & Err.description)
 
     Resume Next
@@ -1145,13 +1145,13 @@ Evento_Timer_Err:
         
 End Sub
 
-Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, Y As Single)
+Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
 
     On Error Resume Next
    
     If Not Visible Then
 
-        Select Case x \ Screen.TwipsPerPixelX
+        Select Case X \ Screen.TwipsPerPixelX
                 
             Case WM_LBUTTONDBLCLK
                 WindowState = vbNormal
@@ -1231,7 +1231,7 @@ Private Sub GameTimer_Timer()
                     
                     .NumeroPaquetesPorMiliSec = 0
                     
-                    Call DoTileEvents(iUserIndex, .Pos.Map, .Pos.x, .Pos.Y)
+                    Call DoTileEvents(iUserIndex, .Pos.Map, .Pos.X, .Pos.Y)
 
                     If .flags.Muerto = 0 Then
                         
@@ -1248,6 +1248,8 @@ Private Sub GameTimer_Timer()
                         If .flags.AdminInvisible <> 1 Then
                             If .flags.Oculto = 1 Then Call DoPermanecerOculto(iUserIndex)
                         End If
+                        
+                        If .NroMascotas > 0 Then Call TiempoInvocacion(iUserIndex)
                         
                         Call HambreYSed(iUserIndex, bEnviarAyS)
                         
@@ -1669,7 +1671,7 @@ Private Sub TIMER_AI_Timer()
     Dim NpcIndex As Long
     Dim Mapa     As Integer
     
-    Dim x        As Integer
+    Dim X        As Integer
     Dim Y        As Integer
 
     'Barrin 29/9/03
@@ -1889,7 +1891,7 @@ End Sub
 
 Private Sub tPiqueteC_Timer()
 
-    On Error GoTo Errhandler
+    On Error GoTo ErrHandler
 
     Static segundos As Integer
 
@@ -1906,7 +1908,7 @@ Private Sub tPiqueteC_Timer()
     For i = 1 To LastUser
 
         If UserList(i).flags.UserLogged Then
-            If MapData(UserList(i).Pos.Map, UserList(i).Pos.x, UserList(i).Pos.Y).trigger = eTrigger.ANTIPIQUETE Then
+            If MapData(UserList(i).Pos.Map, UserList(i).Pos.X, UserList(i).Pos.Y).trigger = eTrigger.ANTIPIQUETE Then
                 UserList(i).Counters.PiqueteC = UserList(i).Counters.PiqueteC + 1
                 'Call WriteConsoleMsg(i, "Estás obstruyendo la via pública, muévete o serás encarcelado!!!", FontTypeNames.FONTTYPE_INFO)
                 Call WriteLocaleMsg(i, "70", FontTypeNames.FONTTYPE_INFO)
@@ -1960,7 +1962,7 @@ Private Sub tPiqueteC_Timer()
 
     Exit Sub
 
-Errhandler:
+ErrHandler:
     Call LogError("Error en tPiqueteC_Timer " & Err.Number & ": " & Err.description)
 
 End Sub

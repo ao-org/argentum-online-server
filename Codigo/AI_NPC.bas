@@ -50,11 +50,16 @@ Public Enum TipoAI
 
 End Enum
 
-Public Const ELEMENTALFUEGO  As Integer = 93
+' WyroX: Hardcodeada de la vida...
+Public Const ELEMENTALFUEGO  As Integer = 962
 
-Public Const ELEMENTALTIERRA As Integer = 94
+Public Const ELEMENTALTIERRA As Integer = 961
 
-Public Const ELEMENTALAGUA   As Integer = 92
+Public Const ELEMENTALAGUA   As Integer = 960
+
+Public Const ELEMENTALVIENTO As Integer = 963
+
+Public Const FUEGOFATUO      As Integer = 964
 
 'Damos a los NPCs el mismo rango de visión que un PJ
 Public Const RANGO_VISION_X  As Byte = 11
@@ -617,19 +622,17 @@ Private Sub SeguirAgresor(ByVal NpcIndex As Integer)
 156                             If UserList(UI).flags.Muerto = 0 And UserList(UI).flags.invisible = 0 And UserList(UI).flags.Inmunidad = 0 And UserList(UI).flags.Oculto = 0 Then
 158                                 If .flags.LanzaSpells > 0 Then
 160                                     Call NpcLanzaUnSpell(NpcIndex, UI)
-
                                     End If
                                     
                                     tHeading = FindDirectionEAO(.Pos, UserList(UI).Pos, Npclist(NpcIndex).flags.AguaValida = 1, Npclist(NpcIndex).flags.TierraInvalida = 0)
                                                          
 162                                 If Distancia(.Pos, UserList(UI).Pos) = 1 Then
+                                        Call ChangeNPCChar(NpcIndex, .Char.Body, .Char.Head, tHeading)
 164                                     Call NpcAtacaUser(NpcIndex, UI, tHeading)
                                     Else
 168                                     Call MoveNPCChar(NpcIndex, tHeading)
                                     End If
-
 166
-                                 
                                     Exit Sub
 
                                 End If
@@ -663,9 +666,11 @@ Private Sub RestoreOldMovement(ByVal NpcIndex As Integer)
         
 
 100     With Npclist(NpcIndex)
-102         .Movement = .flags.OldMovement
-104         .Hostile = .flags.OldHostil
-106         .flags.AttackedBy = vbNullString
+            If .MaestroUser = 0 Then
+                .Movement = .flags.OldMovement
+                .Hostile = .flags.OldHostil
+                .flags.AttackedBy = vbNullString
+            End If
 
         End With
 
@@ -946,11 +951,16 @@ Private Sub SeguirAmo(ByVal NpcIndex As Integer)
                                 And UserList(UI).flags.Oculto = 0 _
                                 And Distancia(.Pos, UserList(UI).Pos) > 3 Then
                                 
-112                         tHeading = FindDirection(.Pos, UserList(UI).Pos)
+112                         tHeading = FindDirectionEAO(.Pos, UserList(UI).Pos)
 
 114                         Call MoveNPCChar(NpcIndex, tHeading)
 
                             Exit Sub
+                            
+                        Else
+                            If RandomNumber(1, 12) = 3 Then
+                                Call MoveNPCChar(NpcIndex, CByte(RandomNumber(eHeading.NORTH, eHeading.WEST)))
+                            End If
                             
                         End If
                         
@@ -1226,11 +1236,10 @@ Sub NPCAI(ByVal NpcIndex As Integer)
                 End If
             
             Case TipoAI.SigueAmo
+                falladesc = " fallo SigueAmo"
+            
                 If .flags.Inmovilizado = 1 Or .flags.Paralizado = 1 Then Exit Sub
                 Call SeguirAmo(NpcIndex)
-                If RandomNumber(1, 12) = 3 Then
-                    Call MoveNPCChar(NpcIndex, CByte(RandomNumber(eHeading.NORTH, eHeading.WEST)))
-                End If
             
         End Select
 

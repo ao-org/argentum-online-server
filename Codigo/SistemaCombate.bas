@@ -856,6 +856,8 @@ Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integ
 
 106     NpcAtacaUser = True
 
+107     Call CheckPets(NpcIndex, UserIndex, False)
+
 108     If Npclist(NpcIndex).Target = 0 Then Npclist(NpcIndex).Target = UserIndex
     
 110     If UserList(UserIndex).flags.AtacadoPorNpc = 0 And UserList(UserIndex).flags.AtacadoPorUser = 0 Then UserList(UserIndex).flags.AtacadoPorNpc = NpcIndex
@@ -1021,7 +1023,6 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
     
 102     If UserList(UserIndex).flags.invisible = 0 Then
 104         Call NPCAtacado(NpcIndex, UserIndex)
-
         End If
 
 106     If UserImpactoNpc(UserIndex, NpcIndex) Then
@@ -1681,14 +1682,13 @@ Sub UsuarioAtacadoPorUsuario(ByVal attackerIndex As Integer, ByVal VictimIndex A
 118         Call VolverCriminal(attackerIndex)
 
         End If
-    
+
 120     EraCriminal = Status(attackerIndex)
     
 122     If EraCriminal = 2 And Status(attackerIndex) < 2 Then
 124         Call RefreshCharStatus(attackerIndex)
 126     ElseIf EraCriminal < 2 And Status(attackerIndex) = 2 Then
 128         Call RefreshCharStatus(attackerIndex)
-
         End If
 
 130     If Status(attackerIndex) = 2 Then If UserList(attackerIndex).Faccion.ArmadaReal = 1 Then Call ExpulsarFaccionReal(attackerIndex)
@@ -1700,6 +1700,9 @@ Sub UsuarioAtacadoPorUsuario(ByVal attackerIndex As Integer, ByVal VictimIndex A
         '  Npclist(UserList(VictimIndex).Familiar.Id).Hostile = 1
         ' End If
         ' End If
+        
+        Call AllMascotasAtacanUser(attackerIndex, VictimIndex)
+        Call AllMascotasAtacanUser(VictimIndex, attackerIndex)
     
         'Si la victima esta saliendo se cancela la salida
 132     Call CancelExit(VictimIndex)
@@ -2008,6 +2011,46 @@ Public Function PuedeAtacarNPC(ByVal attackerIndex As Integer, ByVal NpcIndex As
 
             End If
 
+        End If
+        
+        'Es el NPC mascota de alguien?
+        If Npclist(NpcIndex).MaestroUser > 0 Then
+            If UserList(Npclist(NpcIndex).MaestroUser).Faccion.Status = 1 Then
+                'Es mascota de un Ciudadano.
+                If UserList(attackerIndex).Faccion.Status = 1 Then
+                    'El atacante es Ciudadano y esta intentando atacar mascota de un Ciudadano.
+                    If UserList(attackerIndex).flags.Seguro Then
+                        'El atacante tiene el seguro puesto. No puede atacar.
+                        Call WriteConsoleMsg(attackerIndex, "Para atacar mascotas de ciudadanos debes quitarte el seguro de combate.", FontTypeNames.FONTTYPE_INFO)
+                        PuedeAtacarNPC = False
+                        Exit Function
+                    Else
+                        'El atacante no tiene el seguro puesto. Recibe penalización.
+                        Call WriteConsoleMsg(attackerIndex, "Has atacado la mascota de un ciudadano. Eres un Criminal.", FontTypeNames.FONTTYPE_INFO)
+                        Call VolverCriminal(attackerIndex)
+                        PuedeAtacarNPC = True
+                        Exit Function
+                    End If
+                Else
+                    'El atacante es criminal y quiere atacar un elemental ciuda, pero tiene el seguro puesto (NicoNZ)
+                    If UserList(attackerIndex).flags.Seguro Then
+                        Call WriteConsoleMsg(attackerIndex, "Para atacar mascotas de ciudadanos debes quitarte el seguro de combate.", FontTypeNames.FONTTYPE_INFO)
+                        PuedeAtacarNPC = False
+                        Exit Function
+                    End If
+                End If
+            Else
+                'Es mascota de un Criminal.
+                If esCaos(Npclist(NpcIndex).MaestroUser) Then
+                    'Es Caos el Dueño.
+                    If esCaos(attackerIndex) Then
+                        'Un Caos intenta atacar una criatura de un Caos. No puede atacar.
+                        Call WriteConsoleMsg(attackerIndex, "Los miembros de la Legión Oscura no pueden atacar mascotas de otros legionarios. ", FontTypeNames.FONTTYPE_INFO)
+                        PuedeAtacarNPC = False
+                        Exit Function
+                    End If
+                End If
+            End If
         End If
         
         'Es el Rey Preatoriano?
@@ -2597,3 +2640,30 @@ UserDañoEspecial_Err:
         
 End Sub
 
+Sub AllMascotasAtacanUser(ByVal victim As Integer, ByVal Maestro As Integer)
+    'Reaccion de las mascotas
+    Dim iCount As Integer
+    
+    For iCount = 1 To MAXMASCOTAS
+        If UserList(Maestro).MascotasIndex(iCount) > 0 Then
+            Npclist(UserList(Maestro).MascotasIndex(iCount)).flags.AttackedBy = UserList(victim).name
+            Npclist(UserList(Maestro).MascotasIndex(iCount)).Movement = TipoAI.NPCDEFENSA
+            Npclist(UserList(Maestro).MascotasIndex(iCount)).Hostile = 1
+        End If
+    Next iCount
+End Sub
+
+Public Sub CheckPets(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, Optional ByVal CheckElementales As Boolean = True)
+    Dim j As Integer
+    
+    For j = 1 To MAXMASCOTAS
+        If UserList(UserIndex).MascotasIndex(j) > 0 Then
+           If UserList(UserIndex).MascotasIndex(j) <> NpcIndex Then
+            If CheckElementales Or (Npclist(UserList(UserIndex).MascotasIndex(j)).Numero <> ELEMENTALFUEGO And Npclist(UserList(UserIndex).MascotasIndex(j)).Numero <> ELEMENTALAGUA And Npclist(UserList(UserIndex).MascotasIndex(j)).Numero <> ELEMENTALVIENTO) Then
+                If Npclist(UserList(UserIndex).MascotasIndex(j)).TargetNPC = 0 Then Npclist(UserList(UserIndex).MascotasIndex(j)).TargetNPC = NpcIndex
+                Npclist(UserList(UserIndex).MascotasIndex(j)).Movement = TipoAI.NpcAtacaNpc
+            End If
+           End If
+        End If
+    Next j
+End Sub
