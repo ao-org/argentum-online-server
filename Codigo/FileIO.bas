@@ -2450,96 +2450,6 @@ Sub LoadSini()
         ''&&&&&&&&&&&&&&&&&&&&& FIN BALANCE &&&&&&&&&&&&&&&&&&&&&&&
         'Call Statistics.Initialize
     
-176     Nix.Map = GetVar(DatPath & "Ciudades.dat", "NIX", "Mapa")
-178     Nix.X = GetVar(DatPath & "Ciudades.dat", "NIX", "X")
-180     Nix.Y = GetVar(DatPath & "Ciudades.dat", "NIX", "Y")
-    
-182     Ullathorpe.Map = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "Mapa")
-184     Ullathorpe.X = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "X")
-186     Ullathorpe.Y = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "Y")
-    
-188     Banderbill.Map = GetVar(DatPath & "Ciudades.dat", "Banderbill", "Mapa")
-190     Banderbill.X = GetVar(DatPath & "Ciudades.dat", "Banderbill", "X")
-192     Banderbill.Y = GetVar(DatPath & "Ciudades.dat", "Banderbill", "Y")
-    
-194     Lindos.Map = GetVar(DatPath & "Ciudades.dat", "Lindos", "Mapa")
-196     Lindos.X = GetVar(DatPath & "Ciudades.dat", "Lindos", "X")
-198     Lindos.Y = GetVar(DatPath & "Ciudades.dat", "Lindos", "Y")
-    
-200     Arghal.Map = GetVar(DatPath & "Ciudades.dat", "Arghal", "Mapa")
-202     Arghal.X = GetVar(DatPath & "Ciudades.dat", "Arghal", "X")
-204     Arghal.Y = GetVar(DatPath & "Ciudades.dat", "Arghal", "Y")
-    
-206     Hillidan.Map = GetVar(DatPath & "Ciudades.dat", "Hillidan", "Mapa")
-208     Hillidan.X = GetVar(DatPath & "Ciudades.dat", "Hillidan", "X")
-210     Hillidan.Y = GetVar(DatPath & "Ciudades.dat", "Hillidan", "Y")
-
-212     CityNix.Map = GetVar(DatPath & "Ciudades.dat", "NIX", "Mapa")
-214     CityNix.X = GetVar(DatPath & "Ciudades.dat", "NIX", "X")
-216     CityNix.Y = GetVar(DatPath & "Ciudades.dat", "NIX", "Y")
-218     CityNix.MapaViaje = GetVar(DatPath & "Ciudades.dat", "NIX", "MapaViaje")
-220     CityNix.ViajeX = GetVar(DatPath & "Ciudades.dat", "NIX", "ViajeX")
-222     CityNix.ViajeY = GetVar(DatPath & "Ciudades.dat", "NIX", "ViajeY")
-224     CityNix.MapaResu = GetVar(DatPath & "Ciudades.dat", "NIX", "MapaResu")
-226     CityNix.ResuX = GetVar(DatPath & "Ciudades.dat", "NIX", "ResuX")
-228     CityNix.ResuY = GetVar(DatPath & "Ciudades.dat", "NIX", "ResuY")
-230     CityNix.NecesitaNave = GetVar(DatPath & "Ciudades.dat", "NIX", "NecesitaNave")
-
-232     CityUllathorpe.Map = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "Mapa")
-234     CityUllathorpe.X = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "X")
-236     CityUllathorpe.Y = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "Y")
-238     CityUllathorpe.MapaViaje = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "MapaViaje")
-240     CityUllathorpe.ViajeX = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "ViajeX")
-242     CityUllathorpe.ViajeY = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "ViajeY")
-244     CityUllathorpe.MapaResu = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "MapaResu")
-246     CityUllathorpe.ResuX = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "ResuX")
-248     CityUllathorpe.ResuY = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "ResuY")
-250     CityUllathorpe.NecesitaNave = GetVar(DatPath & "Ciudades.dat", "Ullathorpe", "NecesitaNave")
-    
-252     CityBanderbill.Map = GetVar(DatPath & "Ciudades.dat", "Banderbill", "Mapa")
-254     CityBanderbill.X = GetVar(DatPath & "Ciudades.dat", "Banderbill", "X")
-256     CityBanderbill.Y = GetVar(DatPath & "Ciudades.dat", "Banderbill", "Y")
-258     CityBanderbill.MapaViaje = GetVar(DatPath & "Ciudades.dat", "Banderbill", "MapaViaje")
-260     CityBanderbill.ViajeX = GetVar(DatPath & "Ciudades.dat", "Banderbill", "ViajeX")
-262     CityBanderbill.ViajeY = GetVar(DatPath & "Ciudades.dat", "Banderbill", "ViajeY")
-264     CityBanderbill.MapaResu = GetVar(DatPath & "Ciudades.dat", "Banderbill", "MapaResu")
-266     CityBanderbill.ResuX = GetVar(DatPath & "Ciudades.dat", "Banderbill", "ResuX")
-268     CityBanderbill.ResuY = GetVar(DatPath & "Ciudades.dat", "Banderbill", "ResuY")
-270     CityBanderbill.NecesitaNave = GetVar(DatPath & "Ciudades.dat", "Banderbill", "NecesitaNave")
-    
-272     CityLindos.Map = GetVar(DatPath & "Ciudades.dat", "Lindos", "Mapa")
-274     CityLindos.X = GetVar(DatPath & "Ciudades.dat", "Lindos", "X")
-276     CityLindos.Y = GetVar(DatPath & "Ciudades.dat", "Lindos", "Y")
-278     CityLindos.MapaViaje = GetVar(DatPath & "Ciudades.dat", "Lindos", "MapaViaje")
-280     CityLindos.ViajeX = GetVar(DatPath & "Ciudades.dat", "Lindos", "ViajeX")
-282     CityLindos.ViajeY = GetVar(DatPath & "Ciudades.dat", "Lindos", "ViajeY")
-284     CityLindos.MapaResu = GetVar(DatPath & "Ciudades.dat", "Lindos", "MapaResu")
-286     CityLindos.ResuX = GetVar(DatPath & "Ciudades.dat", "Lindos", "ResuX")
-288     CityLindos.ResuY = GetVar(DatPath & "Ciudades.dat", "Lindos", "ResuY")
-290     CityLindos.NecesitaNave = GetVar(DatPath & "Ciudades.dat", "Lindos", "NecesitaNave")
-    
-292     CityArghal.Map = GetVar(DatPath & "Ciudades.dat", "Arghal", "Mapa")
-294     CityArghal.X = GetVar(DatPath & "Ciudades.dat", "Arghal", "X")
-296     CityArghal.Y = GetVar(DatPath & "Ciudades.dat", "Arghal", "Y")
-298     CityArghal.MapaViaje = GetVar(DatPath & "Ciudades.dat", "Arghal", "MapaViaje")
-300     CityArghal.ViajeX = GetVar(DatPath & "Ciudades.dat", "Arghal", "ViajeX")
-302     CityArghal.ViajeY = GetVar(DatPath & "Ciudades.dat", "Arghal", "ViajeY")
-304     CityArghal.MapaResu = GetVar(DatPath & "Ciudades.dat", "Arghal", "MapaResu")
-306     CityArghal.ResuX = GetVar(DatPath & "Ciudades.dat", "Arghal", "ResuX")
-308     CityArghal.ResuY = GetVar(DatPath & "Ciudades.dat", "Arghal", "ResuY")
-310     CityArghal.NecesitaNave = GetVar(DatPath & "Ciudades.dat", "Arghal", "NecesitaNave")
-    
-312     CityHillidan.Map = GetVar(DatPath & "Ciudades.dat", "Hillidan", "Mapa")
-314     CityHillidan.X = GetVar(DatPath & "Ciudades.dat", "Hillidan", "X")
-316     CityHillidan.Y = GetVar(DatPath & "Ciudades.dat", "Hillidan", "Y")
-318     CityHillidan.MapaViaje = GetVar(DatPath & "Ciudades.dat", "Hillidan", "MapaViaje")
-320     CityHillidan.ViajeX = GetVar(DatPath & "Ciudades.dat", "Hillidan", "ViajeX")
-322     CityHillidan.ViajeY = GetVar(DatPath & "Ciudades.dat", "Hillidan", "ViajeY")
-324     CityHillidan.MapaResu = GetVar(DatPath & "Ciudades.dat", "Hillidan", "MapaResu")
-326     CityHillidan.ResuX = GetVar(DatPath & "Ciudades.dat", "Hillidan", "ResuX")
-328     CityHillidan.ResuY = GetVar(DatPath & "Ciudades.dat", "Hillidan", "ResuY")
-330     CityHillidan.NecesitaNave = GetVar(DatPath & "Ciudades.dat", "Hillidan", "NecesitaNave")
-    
 332     Call MD5sCarga
     
 334     Call ConsultaPopular.LoadData
@@ -2553,6 +2463,129 @@ LoadSini_Err:
         Call RegistrarError(Err.Number, Err.description, "ES.LoadSini", Erl)
         Resume Next
         
+End Sub
+
+Sub CargarCiudades()
+    
+    Dim Lector As clsIniReader
+    Set Lector = New clsIniReader
+    Call Lector.Initialize(DatPath & "Ciudades.dat")
+    
+    With Nix
+    
+        .Map = val(Lector.GetValue("Nix", "Mapa"))
+        .X = val(Lector.GetValue("Nix", "X"))
+        .Y = val(Lector.GetValue("Nix", "Y"))
+        .MapaViaje = val(Lector.GetValue("Nix", "MapaViaje"))
+        .ViajeX = val(Lector.GetValue("Nix", "ViajeX"))
+        .ViajeY = val(Lector.GetValue("Nix", "ViajeY"))
+        .MapaResu = val(Lector.GetValue("Nix", "MapaResu"))
+        .ResuX = val(Lector.GetValue("Nix", "ResuX"))
+        .ResuY = val(Lector.GetValue("Nix", "ResuY"))
+        .NecesitaNave = val(Lector.GetValue("Nix", "NecesitaNave"))
+
+    End With
+    
+    With Ullathorpe
+        
+        .Map = val(Lector.GetValue("Ullathorpe", "Mapa"))
+        .X = val(Lector.GetValue("Ullathorpe", "X"))
+        .Y = val(Lector.GetValue("Ullathorpe", "Y"))
+        .MapaViaje = val(Lector.GetValue("Ullathorpe", "MapaViaje"))
+        .ViajeX = val(Lector.GetValue("Ullathorpe", "ViajeX"))
+        .ViajeY = val(Lector.GetValue("Ullathorpe", "ViajeY"))
+        .MapaResu = val(Lector.GetValue("Ullathorpe", "MapaResu"))
+        .ResuX = val(Lector.GetValue("Ullathorpe", "ResuX"))
+        .ResuY = val(Lector.GetValue("Ullathorpe", "ResuY"))
+        .NecesitaNave = val(Lector.GetValue("Ullathorpe", "NecesitaNave"))
+
+    End With
+        
+    With Banderbill
+        
+        .Map = val(Lector.GetValue("Banderbill", "Mapa"))
+        .X = val(Lector.GetValue("Banderbill", "X"))
+        .Y = val(Lector.GetValue("Banderbill", "Y"))
+        .MapaViaje = val(Lector.GetValue("Banderbill", "MapaViaje"))
+        .ViajeX = val(Lector.GetValue("Banderbill", "ViajeX"))
+        .ViajeY = val(Lector.GetValue("Banderbill", "ViajeY"))
+        .MapaResu = val(Lector.GetValue("Banderbill", "MapaResu"))
+        .ResuX = val(Lector.GetValue("Banderbill", "ResuX"))
+        .ResuY = val(Lector.GetValue("Banderbill", "ResuY"))
+        .NecesitaNave = val(Lector.GetValue("Banderbill", "NecesitaNave"))
+
+    End With
+      
+    With Lindos
+    
+        .Map = val(Lector.GetValue("Lindos", "Mapa"))
+        .X = val(Lector.GetValue("Lindos", "X"))
+        .Y = val(Lector.GetValue("Lindos", "Y"))
+        .MapaViaje = val(Lector.GetValue("Lindos", "MapaViaje"))
+        .ViajeX = val(Lector.GetValue("Lindos", "ViajeX"))
+        .ViajeY = val(Lector.GetValue("Lindos", "ViajeY"))
+        .MapaResu = val(Lector.GetValue("Lindos", "MapaResu"))
+        .ResuX = val(Lector.GetValue("Lindos", "ResuX"))
+        .ResuY = val(Lector.GetValue("Lindos", "ResuY"))
+        .NecesitaNave = val(Lector.GetValue("Lindos", "NecesitaNave"))
+
+    End With
+        
+    With Arghal
+        
+        .Map = val(Lector.GetValue("Arghal", "Mapa"))
+        .X = val(Lector.GetValue("Arghal", "X"))
+        .Y = val(Lector.GetValue("Arghal", "Y"))
+        .MapaViaje = val(Lector.GetValue("Arghal", "MapaViaje"))
+        .ViajeX = val(Lector.GetValue("Arghal", "ViajeX"))
+        .ViajeY = val(Lector.GetValue("Arghal", "ViajeY"))
+        .MapaResu = val(Lector.GetValue("Arghal", "MapaResu"))
+        .ResuX = val(Lector.GetValue("Arghal", "ResuX"))
+        .ResuY = val(Lector.GetValue("Arghal", "ResuY"))
+        .NecesitaNave = val(Lector.GetValue("Arghal", "NecesitaNave"))
+
+    End With
+    
+    With Hillidan
+        
+        .Map = val(Lector.GetValue("Hillidan", "Mapa"))
+        .X = val(Lector.GetValue("Hillidan", "X"))
+        .Y = val(Lector.GetValue("Hillidan", "Y"))
+        .MapaViaje = val(Lector.GetValue("Hillidan", "MapaViaje"))
+        .ViajeX = val(Lector.GetValue("Hillidan", "ViajeX"))
+        .ViajeY = val(Lector.GetValue("Hillidan", "ViajeY"))
+        .MapaResu = val(Lector.GetValue("Hillidan", "MapaResu"))
+        .ResuX = val(Lector.GetValue("Hillidan", "ResuX"))
+        .ResuY = val(Lector.GetValue("Hillidan", "ResuY"))
+        .NecesitaNave = val(Lector.GetValue("Hillidan", "NecesitaNave"))
+
+    End With
+    
+    With Prision
+    
+        .Map = val(Lector.GetValue("Prision", "Mapa"))
+        .X = val(Lector.GetValue("Prision", "X"))
+        .Y = val(Lector.GetValue("Prision", "Y"))
+
+    End With
+        
+    With Libertad
+        
+        .Map = val(Lector.GetValue("Libertad", "Mapa"))
+        .X = val(Lector.GetValue("Libertad", "X"))
+        .Y = val(Lector.GetValue("Libertad", "Y"))
+
+    End With
+    
+    Ciudades(eCiudad.cNix) = Nix
+    Ciudades(eCiudad.cUllathorpe) = Ullathorpe
+    Ciudades(eCiudad.cBanderbill) = Banderbill
+    Ciudades(eCiudad.cLindos) = Lindos
+    Ciudades(eCiudad.cArghal) = Arghal
+    Ciudades(eCiudad.CHillidan) = Hillidan
+    
+    Set Lector = Nothing
+    
 End Sub
 
 Sub LoadIntervalos()

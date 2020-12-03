@@ -94,6 +94,7 @@ Module=ModLlaves; Codigo\ModLlaves.bas
 Module=ModLimpieza; Codigo\ModLimpieza.bas
 Class=cStringBuilder; Codigo\cStringBuilder.cls
 Class=clsClanPretoriano; Codigo\clsClanPretoriano.cls
+Module=Hogar; Codigo\Hogar.bas
 IconForm="frmMain"
 Startup="Sub Main"
 HelpFile=""

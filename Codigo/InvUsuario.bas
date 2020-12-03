@@ -131,7 +131,7 @@ Sub QuitarNewbieObj(ByVal UserIndex As Integer)
         'es transportado a su hogar de origen ;)
 112     If UCase$(MapInfo(UserList(UserIndex).Pos.Map).restrict_mode) = "NEWBIE" Then
         
-            Dim DeDonde As WorldPos
+            Dim DeDonde As CityWorldPos
         
 114         Select Case UserList(UserIndex).Hogar
 

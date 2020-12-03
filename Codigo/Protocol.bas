@@ -520,7 +520,8 @@ Private Enum NewPacksID
     SeguroClan
     CreatePretorianClan     '/CREARPRETORIANOS
     RemovePretorianClan     '/ELIMINARPRETORIANOS
-
+    Home
+    
 End Enum
 
 Public Enum FontTypeNames
@@ -1657,7 +1658,10 @@ Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
 370             Call HandleCreatePretorianClan(UserIndex)
          
 372         Case NewPacksID.RemovePretorianClan     '/ELIMINARPRETORIANOS
-374             Call HandleDeletePretorianClan(UserIndex)
+374             Call HandleDeletePretorianClan(Userindex)
+
+            Case NewPacksID.Home
+                Call Hogar.HandleHome(Userindex)
             
 376         Case Else
                 'ERROR : Abort!
@@ -30363,6 +30367,57 @@ Public Sub HandleDeletePretorianClan(ByVal UserIndex As Integer)
 
 ErrHandler:
     Call LogError("Error en HandleDeletePretorianClan. Error: " & Err.Number & " - " & Err.description)
+
+End Sub
+
+''
+' Handles the "Home" message.
+'
+' @param    userIndex The index of the user sending the message.
+Private Sub HandleHome(ByVal Userindex As Integer)
+
+    '***************************************************
+    'Author: Budi
+    'Creation Date: 06/01/2010
+    'Last Modification: 05/06/10
+    'Pato - 05/06/10: Add the Ucase$ to prevent problems.
+    '***************************************************
+    
+    With UserList(Userindex)
+        
+        'Remove packet id
+        Call .incomingData.ReadByte
+
+        If .flags.Muerto = 1 Then
+            Call WriteConsoleMsg(Userindex, "Debes estar muerto para utilizar este comando.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+
+        End If
+        
+        'Si es un mapa comun y no esta en cana
+        If (.Counters.Pena = 0) Then
+            Call WriteConsoleMsg(Userindex, "No puedes usar este comando aqui.", FontTypeNames.FONTTYPE_FIGHT)
+            Exit Sub
+
+        End If
+
+        If .flags.Traveling = 0 Then
+                    
+            If Ciudades(.Hogar).Map <> .Pos.Map Then
+                Call goHome(Userindex)
+            Else
+                Call WriteConsoleMsg(Userindex, "Ya te encuentras en tu hogar.", FontTypeNames.FONTTYPE_INFO)
+            End If
+
+        Else
+        
+            Call WriteConsoleMsg(Userindex, "Estas viajando.", FontTypeNames.FONTTYPE_INFO)
+            .flags.Traveling = 0
+            .Counters.goHome = 0
+
+        End If
+   
+    End With
 
 End Sub
 

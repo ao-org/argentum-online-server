@@ -2016,6 +2016,34 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As In
 156             MapInfo(OldMap).NumUsers = 0
 
             End If
+            
+            'Si el mapa al que entro NO ES superficial AND en el que estaba TAMPOCO ES superficial, ENTONCES
+            Dim nextMap, previousMap As Boolean
+            
+            nextMap = IIf(distanceToCities(Map).distanceToCity(UserList(Userindex).Hogar) >= 0, True, False)
+            previousMap = IIf(distanceToCities(UserList(Userindex).Pos.Map).distanceToCity(UserList(Userindex).Hogar) >= 0, True, False)
+
+            If previousMap And nextMap Then '138 => 139 (Ambos superficiales, no tiene que pasar nada)
+                'NO PASA NADA PORQUE NO ENTRO A UN DUNGEON.
+            
+            ElseIf previousMap And Not nextMap Then '139 => 140 (139 es superficial, 140 no. Por lo tanto 139 es el ultimo mapa superficial)
+                UserList(Userindex).flags.lastMap = UserList(Userindex).Pos.Map
+            
+            ElseIf Not previousMap And nextMap Then '140 => 139 (140 es no es superficial, 139 si. Por lo tanto, el ultimo mapa es 0 ya que no esta en un dungeon)
+                UserList(Userindex).flags.lastMap = 0
+            
+            ElseIf Not previousMap And Not nextMap Then '140 => 141 (Ninguno es superficial, el ultimo mapa es el mismo de antes)
+                UserList(Userindex).flags.lastMap = UserList(Userindex).flags.lastMap
+
+            End If
+        
+
+            If UserList(Userindex).flags.Traveling = 1 Then
+                UserList(Userindex).flags.Traveling = 0
+                UserList(Userindex).Counters.goHome = 0
+                Call WriteConsoleMsg(Userindex, "El viaje ha terminado", FontTypeNames.FONTTYPE_INFOBOLD)
+    
+            End If
 
         End If
     
