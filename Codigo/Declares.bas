@@ -1014,7 +1014,7 @@ End Type
 
 Public Type Position
 
-    x As Integer
+    X As Integer
     Y As Integer
 
 End Type
@@ -1022,7 +1022,7 @@ End Type
 Public Type WorldPos
 
     Map As Integer
-    x As Integer
+    X As Integer
     Y As Integer
 
 End Type
@@ -1030,7 +1030,7 @@ End Type
 Public Type CityWorldPos
 
     Map As Integer
-    x As Integer
+    X As Integer
     Y As Integer
     MapaViaje As Integer
     ViajeX As Byte
@@ -1949,6 +1949,8 @@ End Type
 Public Type npc
     
     Distancia As Byte
+    
+    DropQuest As String
     
     InformarRespawn As Byte
     name As String
