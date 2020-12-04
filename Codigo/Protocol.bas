@@ -191,6 +191,7 @@ Private Enum ServerPacketID
     UpdateUserKey
     UpdateRM
     UpdateDM
+    InmovilizaOK
 End Enum
 
 Private Enum ClientPacketID
