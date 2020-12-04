@@ -1,11 +1,14 @@
 Attribute VB_Name = "Hogar"
 Option Explicit
 
+'Cantidad de Ciudades
+Public Const NUMCIUDADES    As Byte = 6
+
 Type HomeDistance
     distanceToCity(1 To NUMCIUDADES) As Integer
 End Type
 
-Public Ciudades(1 To NUMCIUDADES)         As CityWorldPos
+Public Ciudades(1 To NUMCIUDADES)         As WorldPos
 Public distanceToCities()                 As HomeDistance
 
 Public Const MATRIX_INITIAL_MAP           As Integer = 1
@@ -325,10 +328,24 @@ Public Sub HandleHome(ByVal Userindex As Integer)
             Exit Sub
 
         End If
-
-        'Si es un mapa comUn y no esta en cana
+        
+        'Si el mapa tiene alguna restriccion (newbie, dungeon, etc...), no lo dejamos viajar.
+        If Len(MapInfo(.Pos.Map).restrict_mode) <> 0 Then
+            Call WriteConsoleMsg(Userindex, "No pueder viajar a tu hogar desde este mapa.", FontTypeNames.FONTTYPE_FIGHT)
+            Exit Sub
+            
+        End If
+        
+        '¿Zona Segura?
+        If MapInfo(.Pos.Map).Seguro = 1 Then
+            Call WriteConsoleMsg(Userindex, "No puedes usar este comando en zona segura.", FontTypeNames.FONTTYPE_FIGHT)
+            Exit Sub
+            
+        End If
+        
+        'Si es un mapa comun y no esta en cana
         If .Counters.Pena <> 0 Then
-            Call WriteConsoleMsg(Userindex, "No puedes usar este comando aqui.", FontTypeNames.FONTTYPE_FIGHT)
+            Call WriteConsoleMsg(Userindex, "No puedes usar este comando en prisión.", FontTypeNames.FONTTYPE_FIGHT)
             Exit Sub
 
         End If

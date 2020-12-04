@@ -343,6 +343,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
         QueryBuilder.Append "pos_map = " & .Pos.Map & ", "
         QueryBuilder.Append "pos_x = " & .Pos.X & ", "
         QueryBuilder.Append "pos_y = " & .Pos.Y & ", "
+        QueryBuilder.Append "last_map = " & .flags.lastMap & ", "
         QueryBuilder.Append "message_info = '" & .MENSAJEINFORMACION & "', "
         QueryBuilder.Append "body_id = " & .Char.Body & ", "
         QueryBuilder.Append "head_id = " & .OrigChar.Head & ", "
@@ -725,6 +726,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
         .Pos.Map = QueryData!pos_map
         .Pos.X = QueryData!pos_x
         .Pos.Y = QueryData!pos_y
+        .flags.lastMap = QueryData!last_map
         .MENSAJEINFORMACION = QueryData!message_info
         .OrigChar.Body = QueryData!body_id
         .OrigChar.Head = QueryData!head_id

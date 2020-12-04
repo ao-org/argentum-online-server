@@ -1618,11 +1618,13 @@ Public Type UserFlags
     Silenciado As Byte
     
     CentinelaOK As Boolean 'Centinela
-
+    
+    Traveling As Byte
+    lastMap As Byte
+    
 End Type
 
 Public Type UserCounters
-
 
     TiempoDeInmunidad As Byte
     TiempoDeMapeo As Byte
@@ -1685,7 +1687,9 @@ Public Type UserCounters
     
     Trabajando As Long  ' Para el centinela
     Ocultando As Long   ' Unico trabajo no revisado por el centinela
-
+    
+    goHome As Long
+    
 End Type
 
 Public Type UserIntervals
