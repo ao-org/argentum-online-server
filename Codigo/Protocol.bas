@@ -18,7 +18,7 @@ Private auxiliarBuffer              As New clsByteQueue
 
 Private Enum ServerPacketID
 
-    logged                  ' LOGGED    1
+    logged                  ' LOGGED  0
     RemoveDialogs           ' QTDL
     RemoveCharDialog        ' QDL
     NavigateToggle          ' NAVEG
@@ -27,18 +27,18 @@ Private Enum ServerPacketID
     Disconnect              ' FINOK
     CommerceEnd             ' FINCOMOK
     BankEnd                 ' FINBANOK
-    CommerceInit            ' INITCOM  10
+    CommerceInit            ' INITCOM
     BankInit                ' INITBANCO
-    UserCommerceInit        ' INITCOMUSU
+    UserCommerceInit        ' INITCOMUSU   10
     UserCommerceEnd         ' FINCOMUSUOK
     ShowBlacksmithForm      ' SFH
     ShowCarpenterForm       ' SFC
     NPCKillUser             ' 6
     BlockedWithShieldUser   ' 7
     BlockedWithShieldOther  ' 8
-    CharSwing               ' U1          20
+    CharSwing               ' U1
     SafeModeOn              ' SEGON
-    SafeModeOff             ' SEGOFF
+    SafeModeOff             ' SEGOFF 20
     PartySafeOn
     PartySafeOff
     CantUseWhileMeditating  ' M!
@@ -46,7 +46,7 @@ Private Enum ServerPacketID
     UpdateMana              ' ASM
     UpdateHP                ' ASH
     UpdateGold              ' ASG
-    UpdateExp               ' ASE       30
+    UpdateExp               ' ASE 30
     ChangeMap               ' CM
     PosUpdate               ' PU
     NPCHitUser              ' N2
@@ -54,9 +54,9 @@ Private Enum ServerPacketID
     UserAttackedSwing       ' U3
     UserHittedByUser        ' N4
     UserHittedUser          ' N5
-    ChatOverHead            ' ||        38
+    ChatOverHead            ' ||
     ConsoleMsg              ' || - Beware!! its the same as above, but it was properly splitted
-    GuildChat               ' |+
+    GuildChat               ' |+   40
     ShowMessageBox          ' !!
     MostrarCuenta
     UserIndexInServer       ' IU
@@ -67,29 +67,29 @@ Private Enum ServerPacketID
     ForceCharMove
     CharacterChange         ' CP
     ObjectCreate            ' HO
-    fxpiso                          '50
-    ObjectDelete            ' BO
+    fxpiso
+    ObjectDelete            ' BO  50
     BlockPosition           ' BQ
-    PlayMidi                ' TM
+    PlayMIDI                ' TM
     PlayWave                ' TW
     guildList               ' GL
     AreaChanged             ' CA
     PauseToggle             ' BKW
     RainToggle              ' LLU
     CreateFX                ' CFX
-    UpdateUserStats         ' EST  60
-    WorkRequestTarget       ' T01
+    UpdateUserStats         ' EST
+    WorkRequestTarget       ' T01 60
     ChangeInventorySlot     ' CSI
     InventoryUnlockSlots
     ChangeBankSlot          ' SBO
     ChangeSpellSlot         ' SHS
-    atributes               ' ATR
+    Atributes               ' ATR
     BlacksmithWeapons       ' LAH
     BlacksmithArmors        ' LAR
     CarpenterObjects        ' OBR
     RestOK                  ' DOK
-    ErrorMsg                ' ERR   70
-    Blind                   ' CEGU
+    ErrorMsg                ' ERR
+    Blind                   ' CEGU 70
     Dumb                    ' DUMB
     ShowSignal              ' MCAR
     ChangeNPCInventorySlot  ' NPCI
@@ -98,7 +98,7 @@ Private Enum ServerPacketID
     LevelUp                 ' SUNI
     AddForumMsg             ' FMSG
     ShowForumForm           ' MFOR
-    SetInvisible            ' NOVER   80
+    SetInvisible            ' NOVER 80
     DiceRoll                ' DADOS
     MeditateToggle          ' MEDOK
     BlindNoMore             ' NSEGUE
@@ -108,7 +108,7 @@ Private Enum ServerPacketID
     guildNews               ' GUILDNE
     OfferDetails            ' PEACEDE & ALLIEDE
     AlianceProposalsList    ' ALLIEPR
-    PeaceProposalsList      ' PEACEPR   90
+    PeaceProposalsList      ' PEACEPR 90
     CharacterInfo           ' CHRINFO
     GuildLeaderInfo         ' LEADERI
     GuildDetails            ' CLANDET
@@ -117,20 +117,21 @@ Private Enum ServerPacketID
     ShowUserRequest         ' PETICIO
     ChangeUserTradeSlot     ' COMUSUINV
     SendNight               ' NOC
-    Pong '100
+    Pong
     UpdateTagAndStatus
     FYA
     CerrarleCliente
     Contadores
     
     'GM messages
+   'GM messages
     SpawnList               ' SPL
     ShowSOSForm             ' MSOS
     ShowMOTDEditionForm     ' ZMOTD
     ShowGMPanelForm         ' ABPANEL
     UserNameList            ' LISTUSU
-    PersonajesDeCuenta  '110
-    UserOnline
+    PersonajesDeCuenta
+    UserOnline '110
     ParticleFX
     ParticleFXToFloor
     ParticleFXWithDestino
@@ -138,42 +139,42 @@ Private Enum ServerPacketID
     Hora
     light
     AuraToChar
-    SpeedTOChar
-    LightToFloor  '120
+    SpeedToChar
+    LightToFloor
     NieveToggle
     NieblaToggle
     Goliath
-    EfectOverHead
+    EfectOverHEad '120
     EfectToScreen
     AlquimistaObj
     ShowAlquimiaForm
     Familiar
     SastreObj
-    ShowSastreForm
+    ShowSastreForm ' 126
     VelocidadToggle
     MacroTrabajoToggle
     RefreshAllInventorySlot
     BindKeys
     ShowFrmLogear
     ShowFrmMapa
-    InmovilizaOK
+    InmovilizadoOK
     BarFx
     SetEscribiendo
     Logros
     TrofeoToggleOn
-    TrofeoToggleoff
+    TrofeoToggleOff
     LocaleMsg
     ListaCorreo
     ShowPregunta
     DatosGrupo
-    Ubicacion
+    ubicacion
     CorreoPicOn
     DonadorObj
     ExpOverHEad
     OroOverHEad
     ArmaMov
     EscudoMov
-    ACTSHOP
+    ActShop
     ViajarForm
     Oxigeno
     NadarToggle
@@ -20848,7 +20849,7 @@ Public Sub WriteAttributes(ByVal Userindex As Integer)
     On Error GoTo ErrHandler
 
     With UserList(Userindex).outgoingData
-        Call .WriteByte(ServerPacketID.atributes)
+        Call .WriteByte(ServerPacketID.Atributes)
         Call .WriteByte(UserList(Userindex).Stats.UserAtributos(eAtributos.Fuerza))
         Call .WriteByte(UserList(Userindex).Stats.UserAtributos(eAtributos.Agilidad))
         Call .WriteByte(UserList(Userindex).Stats.UserAtributos(eAtributos.Inteligencia))
@@ -22999,7 +23000,7 @@ Public Function PrepareMessageEfectOverHead(ByVal chat As String, ByVal CharInde
         'Prepares the "ChatOverHead" message and returns it.
         '***************************************************
 100     With auxiliarBuffer
-102         Call .WriteByte(ServerPacketID.EfectOverHead)
+102         Call .WriteByte(ServerPacketID.EfectOverHEad)
 104         Call .WriteASCIIString(chat)
 106         Call .WriteInteger(CharIndex)
 108         Call .WriteLong(Color)
@@ -23382,7 +23383,7 @@ Public Function PrepareMessageSpeedingACT(ByVal CharIndex As Integer, ByVal spee
         'Prepares the "CreateFX" message and returns it
         '***************************************************
 100     With auxiliarBuffer
-102         Call .WriteByte(ServerPacketID.SpeedTOChar)
+102         Call .WriteByte(ServerPacketID.SpeedToChar)
 104         Call .WriteInteger(CharIndex)
 106         Call .WriteSingle(speeding)
 108         PrepareMessageSpeedingACT = .ReadASCIIStringFixed(.Length)
@@ -23711,7 +23712,7 @@ Public Function PrepareMessagePlayMidi(ByVal midi As Byte, Optional ByVal loops 
         'Prepares the "GuildChat" message and returns it
         '***************************************************
 100     With auxiliarBuffer
-102         Call .WriteByte(ServerPacketID.PlayMidi)
+102         Call .WriteByte(ServerPacketID.PlayMIDI)
 104         Call .WriteByte(midi)
 106         Call .WriteInteger(loops)
         
@@ -23852,7 +23853,7 @@ Public Function PrepareMessageTrofeoToggleOff() As String
         'Prepares the "TrofeoToggle" message and returns it
         '***************************************************
 100     With auxiliarBuffer
-102         Call .WriteByte(ServerPacketID.TrofeoToggleoff)
+102         Call .WriteByte(ServerPacketID.TrofeoToggleOff)
         
 104         PrepareMessageTrofeoToggleOff = .ReadASCIIStringFixed(.Length)
 
@@ -28323,7 +28324,7 @@ Public Sub WriteUbicacion(ByVal Userindex As Integer, ByVal Miembro As Byte, ByV
 
     With UserList(Userindex).outgoingData
     
-        Call .WriteByte(ServerPacketID.Ubicacion)
+        Call .WriteByte(ServerPacketID.ubicacion)
         Call .WriteByte(Miembro)
 
         If GPS > 0 Then
@@ -29653,7 +29654,7 @@ Public Sub WriteActShop(ByVal Userindex As Integer)
 
     With UserList(Userindex).outgoingData
     
-        Call .WriteByte(ServerPacketID.ACTSHOP)
+        Call .WriteByte(ServerPacketID.ActShop)
         Call .WriteLong(CreditosDonadorCheck(UserList(Userindex).Cuenta))
         
         Call .WriteInteger(DiasDonadorCheck(UserList(Userindex).Cuenta))
