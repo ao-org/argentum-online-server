@@ -706,12 +706,16 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
                                 Simbolo = 4
                             End If
                         Else
-116                         If UserDoneQuest(sndIndex, Npclist(NpcIndex).QuestNumber(q)) Or UserList(sndIndex).Stats.ELV < QuestList(Npclist(NpcIndex).QuestNumber(q)).RequiredLevel Then
+116                         If UserDoneQuest(sndIndex, Npclist(NpcIndex).QuestNumber(q)) Or Not UserDoneQuest(sndIndex, QuestList(Npclist(NpcIndex).QuestNumber(q)).RequiredQuest) Or UserList(sndIndex).Stats.ELV < QuestList(Npclist(NpcIndex).QuestNumber(q)).RequiredLevel Then
 118                             Simbolo = 2
                             Else
 120                             Simbolo = 1
                                 HayDisponible = True
                             End If
+                            
+                            
+                            
+                            
                     End If
             
                 
