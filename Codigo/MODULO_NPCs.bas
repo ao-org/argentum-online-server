@@ -34,7 +34,7 @@ QuitarMascotaNpc_Err:
         
 End Sub
 
-Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
+Sub MuereNpc(ByVal NpcIndex As Integer, ByVal Userindex As Integer)
 
     '********************************************************
     'Author: Unknown
@@ -68,32 +68,32 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
     'Quitamos el npc
     Call QuitarNPC(NpcIndex)
     
-    If UserIndex > 0 Then ' Lo mato un usuario?
+    If Userindex > 0 Then ' Lo mato un usuario?
         If MiNPC.flags.Snd3 > 0 Then
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(MiNPC.flags.Snd3, MiNPC.Pos.X, MiNPC.Pos.Y))
+            Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessagePlayWave(MiNPC.flags.Snd3, MiNPC.Pos.X, MiNPC.Pos.Y))
         Else
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("28", MiNPC.Pos.X, MiNPC.Pos.Y))
+            Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessagePlayWave("28", MiNPC.Pos.X, MiNPC.Pos.Y))
         
         End If
         
-        UserList(UserIndex).flags.TargetNPC = 0
-        UserList(UserIndex).flags.TargetNpcTipo = eNPCType.Comun
+        UserList(Userindex).flags.TargetNPC = 0
+        UserList(Userindex).flags.TargetNpcTipo = eNPCType.Comun
         
         'If MiNPC.SubeSupervivencia = 1 Then
-        Call SubirSkill(UserIndex, eSkill.Supervivencia)
+        Call SubirSkill(Userindex, eSkill.Supervivencia)
         'End If
         
         '[KEVIN]
         If MiNPC.flags.ExpCount > 0 Then
 
-            If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then
-                UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + MiNPC.flags.ExpCount
+            If UserList(Userindex).Stats.ELV < STAT_MAXELV Then
+                UserList(Userindex).Stats.Exp = UserList(Userindex).Stats.Exp + MiNPC.flags.ExpCount
 
-                If UserList(UserIndex).Stats.Exp > MAXEXP Then UserList(UserIndex).Stats.Exp = MAXEXP
+                If UserList(Userindex).Stats.Exp > MAXEXP Then UserList(Userindex).Stats.Exp = MAXEXP
                     
-                Call WriteRenderValueMsg(UserIndex, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, MiNPC.flags.ExpCount, 6)
-                Call WriteUpdateExp(UserIndex)
-                Call CheckUserLevel(UserIndex)
+                Call WriteRenderValueMsg(Userindex, UserList(Userindex).Pos.X, UserList(Userindex).Pos.Y, MiNPC.flags.ExpCount, 6)
+                Call WriteUpdateExp(Userindex)
+                Call CheckUserLevel(Userindex)
 
             End If
         
@@ -103,8 +103,8 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         
         '[/KEVIN]
         ' Call WriteConsoleMsg(UserIndex, "Has matado a la criatura!", FontTypeNames.FONTTYPE_FIGHT)
-        If UserList(UserIndex).ChatCombate = 1 Then
-            Call WriteLocaleMsg(UserIndex, "184", FontTypeNames.FONTTYPE_FIGHT, "la criatura")
+        If UserList(Userindex).ChatCombate = 1 Then
+            Call WriteLocaleMsg(Userindex, "184", FontTypeNames.FONTTYPE_FIGHT, "la criatura")
 
         End If
         
@@ -114,10 +114,10 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         'Call WriteEfectOverHead(SendTarget.ToPCArea, MiNPC.GiveGLD, CStr(Npclist(NpcIndex).Char.CharIndex))
         ' Call WriteConsoleMsg(UserIndex, MiNPC.GiveGLD, FontTypeNames.FONTTYPE_FIGHT)
         
-        If UserList(UserIndex).Stats.NPCsMuertos < 32000 Then UserList(UserIndex).Stats.NPCsMuertos = UserList(UserIndex).Stats.NPCsMuertos + 1
+        If UserList(Userindex).Stats.NPCsMuertos < 32000 Then UserList(Userindex).Stats.NPCsMuertos = UserList(Userindex).Stats.NPCsMuertos + 1
         ' Call CheckearRecompesas(UserIndex, 1)
         
-        EraCriminal = Status(UserIndex)
+        EraCriminal = Status(Userindex)
         
         'If MiNPC.Stats.Alineacion = 0 Then
         '  If MiNPC.Numero = Guardias Then
@@ -143,8 +143,8 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         'End If
         
         If MiNPC.GiveEXPClan > 0 Then
-            If UserList(UserIndex).GuildIndex > 0 Then
-                Call modGuilds.CheckClanExp(UserIndex, MiNPC.GiveEXPClan)
+            If UserList(Userindex).GuildIndex > 0 Then
+                Call modGuilds.CheckClanExp(Userindex, MiNPC.GiveEXPClan)
 
                 ' Else
                 ' Call WriteConsoleMsg(UserIndex, "No perteneces a ningun clan, experiencia perdida.", FontTypeNames.FONTTYPE_INFOIAO)
@@ -156,7 +156,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         
         For i = 1 To MAXUSERQUESTS
         
-            With UserList(UserIndex).QuestStats.Quests(i)
+            With UserList(Userindex).QuestStats.Quests(i)
         
                 If .QuestIndex Then
                     If QuestList(.QuestIndex).RequiredNPCs Then
@@ -170,7 +170,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
                                 End If
                                     
                                 If QuestList(.QuestIndex).RequiredNPC(j).Amount = .NPCsKilled(j) Then
-                                    Call WriteConsoleMsg(UserIndex, "Ya has matado todos los " & MiNPC.name & " que la mision " & QuestList(.QuestIndex).nombre & " requeria. Chequeá si ya estas listo para recibir la recompensa.", FontTypeNames.FONTTYPE_INFOIAO)
+                                    Call WriteConsoleMsg(Userindex, "Ya has matado todos los " & MiNPC.name & " que la mision " & QuestList(.QuestIndex).nombre & " requeria. Chequeá si ya estas listo para recibir la recompensa.", FontTypeNames.FONTTYPE_INFOIAO)
                                     
                                 End If
         
@@ -191,13 +191,13 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
     If Npclist(NpcIndex).MaestroUser > 0 Then Exit Sub
 
     'Tiramos el oro
-    Call NPCTirarOro(MiNPC, UserIndex)
+    Call NPCTirarOro(MiNPC, Userindex)
     
     
-    Call DropObjQuest(MiNPC, UserIndex)
+    Call DropObjQuest(MiNPC, Userindex)
 
     'Item Magico!
-    Call NpcDropeo(MiNPC, UserIndex)
+    Call NpcDropeo(MiNPC, Userindex)
         
     'Tiramos el inventario
     Call NPC_TIRAR_ITEMS(MiNPC)
@@ -830,7 +830,7 @@ Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) A
     On Error GoTo errh
 
     Dim nPos      As WorldPos
-    Dim UserIndex As Integer
+    Dim Userindex As Integer
     
     With Npclist(NpcIndex)
         nPos = .Pos
@@ -839,10 +839,10 @@ Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) A
         ' es una posicion legal
         If LegalWalkNPC(nPos.Map, nPos.X, nPos.Y, nHeading, .flags.AguaValida = 1, .flags.TierraInvalida = 0, .MaestroUser <> 0) Then
             
-            UserIndex = MapData(.Pos.Map, nPos.X, nPos.Y).UserIndex
+            Userindex = MapData(.Pos.Map, nPos.X, nPos.Y).Userindex
 
             ' Si hay un usuario a donde se mueve el npc, entonces esta muerto o es un gm invisible
-            If UserIndex > 0 Then
+            If Userindex > 0 Then
                 
                 ' No se traslada caspers de agua a tierra
                 If (MapData(.Pos.Map, nPos.X, nPos.Y).Blocked And FLAG_AGUA) <> 0 And (MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Then Exit Function
@@ -850,17 +850,17 @@ Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) A
                 ' No se traslada caspers de tierra a agua
                 If (MapData(.Pos.Map, nPos.X, nPos.Y).Blocked And FLAG_AGUA) = 0 And (MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked And FLAG_AGUA) = 0 Then Exit Function
                 
-                With UserList(UserIndex)
+                With UserList(Userindex)
                 
                     ' Actualizamos posicion y mapa
-                    MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex = 0
+                    MapData(.Pos.Map, .Pos.X, .Pos.Y).Userindex = 0
                     .Pos.X = Npclist(NpcIndex).Pos.X
                     .Pos.Y = Npclist(NpcIndex).Pos.Y
-                    MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex = UserIndex
+                    MapData(.Pos.Map, .Pos.X, .Pos.Y).Userindex = Userindex
                         
                     ' Avisamos a los usuarios del area, y al propio usuario lo forzamos a moverse
-                    Call SendData(SendTarget.ToPCAreaButIndex, UserIndex, PrepareMessageCharacterMove(UserList(UserIndex).Char.CharIndex, .Pos.X, .Pos.Y))
-                    Call WriteForceCharMove(UserIndex, InvertHeading(nHeading))
+                    Call SendData(SendTarget.ToPCAreaButIndex, Userindex, PrepareMessageCharacterMove(UserList(Userindex).Char.CharIndex, .Pos.X, .Pos.Y))
+                    Call WriteForceCharMove(Userindex, InvertHeading(nHeading))
 
                 End With
 
@@ -918,7 +918,7 @@ ErrHandler:
 
 End Function
 
-Sub NpcEnvenenarUser(ByVal UserIndex As Integer, ByVal VenenoNivel As Byte)
+Sub NpcEnvenenarUser(ByVal Userindex As Integer, ByVal VenenoNivel As Byte)
         
         On Error GoTo NpcEnvenenarUser_Err
         
@@ -928,11 +928,11 @@ Sub NpcEnvenenarUser(ByVal UserIndex As Integer, ByVal VenenoNivel As Byte)
 100     n = RandomNumber(1, 100)
 
 102     If n < 30 Then
-104         UserList(UserIndex).flags.Envenenado = VenenoNivel
+104         UserList(Userindex).flags.Envenenado = VenenoNivel
 
             'Call WriteConsoleMsg(UserIndex, "¡¡La criatura te ha envenenado!!", FontTypeNames.FONTTYPE_FIGHT)
-106         If UserList(UserIndex).ChatCombate = 1 Then
-108             Call WriteLocaleMsg(UserIndex, "182", FontTypeNames.FONTTYPE_FIGHT)
+106         If UserList(Userindex).ChatCombate = 1 Then
+108             Call WriteLocaleMsg(Userindex, "182", FontTypeNames.FONTTYPE_FIGHT)
 
             End If
 
@@ -1108,16 +1108,16 @@ NPCHostiles_Err:
         
 End Function
 
-Sub NPCTirarOro(MiNPC As npc, ByVal UserIndex As Integer)
+Sub NPCTirarOro(MiNPC As npc, ByVal Userindex As Integer)
         
         On Error GoTo NPCTirarOro_Err
 
         If MiNPC.GiveGLD > 0 Then
             Dim Oro As Long
-            Oro = MiNPC.GiveGLD * OroMult * UserList(UserIndex).flags.ScrollOro
+            Oro = MiNPC.GiveGLD * OroMult * UserList(Userindex).flags.ScrollOro
         
-            If UserList(UserIndex).Grupo.EnGrupo Then
-                Select Case UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
+            If UserList(Userindex).Grupo.EnGrupo Then
+                Select Case UserList(UserList(Userindex).Grupo.Lider).Grupo.CantidadMiembros
                     Case 2: Oro = Oro * 1.2
                     Case 3: Oro = Oro * 1.4
                     Case 4: Oro = Oro * 1.6
@@ -1141,7 +1141,7 @@ Sub NPCTirarOro(MiNPC As npc, ByVal UserIndex As Integer)
                 Call TirarItemAlPiso(MiNPC.Pos, MiObj)
             Wend
 
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageFxPiso("87", MiNPC.Pos.X, MiNPC.Pos.Y))
+            Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageFxPiso("87", MiNPC.Pos.X, MiNPC.Pos.Y))
         End If
 
         
@@ -1401,13 +1401,30 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 
         End If
         
-        
-        
-        Npclist(NpcIndex).DropQuest = Leer.GetValue("NPC" & NpcNumber, "DropQuest")
-
-
-'Ladder
 'Nuevo sistema de Quest
+
+'Nuevo sistema de Drop Quest
+        
+        aux = Leer.GetValue("NPC" & NpcNumber, "NumDropQuest")
+
+        If LenB(aux) = 0 Then
+            Npclist(NpcIndex).NumDropQuest = 0
+        
+        Else
+    
+            Npclist(NpcIndex).NumDropQuest = val(aux)
+            
+            ReDim Npclist(NpcIndex).DropQuest(1 To Npclist(NpcIndex).NumDropQuest) As String
+            
+            For LoopC = 1 To Npclist(NpcIndex).NumDropQuest
+                Npclist(NpcIndex).DropQuest(LoopC) = Leer.GetValue("NPC" & NpcNumber, "DropQuest" & LoopC)
+            Next LoopC
+
+        End If
+
+'Nuevo sistema de Drop Quest
+'Ladder
+
 
 
 
@@ -1521,7 +1538,7 @@ ErrHandler:
     
 End Function
 
-Sub QuitarMascota(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
+Sub QuitarMascota(ByVal Userindex As Integer, ByVal NpcIndex As Integer)
     '***************************************************
     'Author: Unknown
     'Last Modification: -
@@ -1532,11 +1549,11 @@ Sub QuitarMascota(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
     
     For i = 1 To MAXMASCOTAS
 
-        If UserList(UserIndex).MascotasIndex(i) = NpcIndex Then
-            UserList(UserIndex).MascotasIndex(i) = 0
-            UserList(UserIndex).MascotasType(i) = 0
+        If UserList(Userindex).MascotasIndex(i) = NpcIndex Then
+            UserList(Userindex).MascotasIndex(i) = 0
+            UserList(Userindex).MascotasType(i) = 0
          
-            UserList(UserIndex).NroMascotas = UserList(UserIndex).NroMascotas - 1
+            UserList(Userindex).NroMascotas = UserList(Userindex).NroMascotas - 1
             Exit For
 
         End If

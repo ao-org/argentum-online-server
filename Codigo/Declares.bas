@@ -1959,7 +1959,8 @@ Public Type npc
     
     Distancia As Byte
     
-    DropQuest As String
+    NumDropQuest As Byte
+    DropQuest() As String
     
     InformarRespawn As Byte
     name As String
@@ -2067,7 +2068,7 @@ Public Type MapBlock
 
     Blocked As Byte
     Graphic(1 To 4) As Long
-    UserIndex As Integer
+    Userindex As Integer
     NpcIndex As Integer
     Particula As Byte
     TimeParticula As Integer
