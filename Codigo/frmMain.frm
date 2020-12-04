@@ -1369,12 +1369,8 @@ Private Sub GameTimer_Timer()
                         End If
                         
                         If bEnviarAyS Then Call WriteUpdateHungerAndThirst(iUserIndex)
-                       
-                    Else 'Muerto
                         
-                        If .flags.Traveling <> 0 Then Call TravelingEffect(iUserIndex)
-                        
-                    End If
+                    End If 'Muerto
 
                 Else 'no esta logeado?
                     'Inactive players will be removed!
