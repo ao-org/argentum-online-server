@@ -134,6 +134,21 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
 122             Next i
 
             End If
+            
+            'Comprobamos que haya targeteado todos los npc
+             If .RequiredTargetNPCs > 0 Then
+
+                 For i = 1 To .RequiredTargetNPCs
+    
+                     If .RequiredTargetNPC(i).Amount > UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsTarget(i) Then
+                         Call WriteChatOverHead(UserIndex, "No has visitado al npc que te pedi.", Npclist(NpcIndex).Char.CharIndex, vbYellow)
+                        Exit Sub
+    
+                        End If
+    
+                 Next i
+
+            End If
     
             'Comprobamos que el usuario tenga espacio para recibir los items.
 124         If .RewardOBJs > 0 Then
@@ -265,6 +280,12 @@ Public Function UserDoneQuest(ByVal UserIndex As Integer, ByVal QuestIndex As In
         'Last modified: 28/01/2010 by Amraphen
         '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         Dim i As Integer
+        If QuestIndex = 0 Then
+            UserDoneQuest = True
+            Exit Function
+        End If
+            
+            
 
 100     With UserList(UserIndex).QuestStats
 
@@ -314,6 +335,14 @@ Public Sub CleanQuestSlot(ByVal UserIndex As Integer, ByVal QuestSlot As Integer
 106                 For i = 1 To QuestList(.QuestIndex).RequiredNPCs
 108                     .NPCsKilled(i) = 0
 110                 Next i
+
+                End If
+                
+              If QuestList(.QuestIndex).RequiredTargetNPCs Then
+
+                 For i = 1 To QuestList(.QuestIndex).RequiredTargetNPCs
+                     .NPCsTarget(i) = 0
+                 Next i
 
                 End If
 
@@ -433,6 +462,27 @@ Public Sub LoadQuests()
                 Next j
 
             End If
+            
+            
+            
+            'CARGAMOS NPCS TARGET REQUERIDOS
+            .RequiredTargetNPCs = val(Reader.GetValue("QUEST" & i, "RequiredTargetNPCs"))
+
+            If .RequiredTargetNPCs > 0 Then
+                ReDim .RequiredTargetNPC(1 To .RequiredTargetNPCs)
+
+                For j = 1 To .RequiredTargetNPCs
+                    tmpStr = Reader.GetValue("QUEST" & i, "RequiredTargetNPC" & j)
+                    
+                    .RequiredTargetNPC(j).NpcIndex = val(ReadField(1, tmpStr, 45))
+                    .RequiredTargetNPC(j).Amount = 1
+                Next j
+
+            End If
+            
+            
+            
+            
             
             .RewardGLD = val(Reader.GetValue("QUEST" & i, "RewardGLD"))
             .RewardEXP = val(Reader.GetValue("QUEST" & i, "RewardEXP"))
@@ -576,12 +626,17 @@ Public Sub SaveQuestStats(ByVal UserIndex As Integer, ByRef UserFile As String)
 114                     Next j
 
                     End If
-
+                
                 End If
         
 116             Call WriteVar(UserFile, "QUESTS", "Q" & i, tmpStr)
 
-            End With
+
+           End With
+           
+           
+           
+        
 
 118     Next i
     
@@ -684,45 +739,7 @@ Public Sub EnviarQuest(ByVal UserIndex As Integer)
             Exit Sub
 
         End If
-    
-        'El personaje ya hizo la quest?
-112    ' If UserDoneQuest(UserIndex, Npclist(NpcIndex).QuestNumber(1)) Then
-            ' Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead(QuestList(Npclist(NpcIndex).QuestNumber).NextQuest, Npclist(NpcIndex).Char.CharIndex, vbYellow))
-        
-114        ' Call WriteChatOverHead(UserIndex, "QUESTNEXT*" & Npclist(NpcIndex).QuestNumber(1), Npclist(NpcIndex).Char.CharIndex, vbYellow)
-           ' Exit Sub
-
-       ' End If
-        
-        'El personaje completo la quest que requiere?
-       ' If QuestList(Npclist(NpcIndex).QuestNumber(1)).RequiredQuest > 0 Then
-         '   If Not UserDoneQuest(UserIndex, QuestList(Npclist(NpcIndex).QuestNumber(1)).RequiredQuest) Then
-                ' Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead(QuestList(Npclist(NpcIndex).QuestNumber).NextQuest, Npclist(NpcIndex).Char.CharIndex, vbYellow))
-                'Call WriteChatOverHead(UserIndex, "Debes completas la quest " & QuestList(Npclist(NpcIndex).QuestNumber(1)).nombre & " para emprender esta mision.", Npclist(NpcIndex).Char.CharIndex, vbYellow)
-                'Exit Sub
-    
-           ' End If
-       ' End If
-        
-        
- 
-        'El personaje tiene suficiente nivel?
-116    ' If UserList(UserIndex).Stats.ELV < QuestList(Npclist(NpcIndex).QuestNumber(1)).RequiredLevel Then
-118      '   Call WriteChatOverHead(UserIndex, "Debes ser por lo menos nivel " & QuestList(Npclist(NpcIndex).QuestNumber(1)).RequiredLevel & " para emprender esta mision.", Npclist(NpcIndex).Char.CharIndex, vbYellow)
-        
-           ' Exit Sub
-
-        'End If
-    
-        'A esta altura ya analizo todas las restricciones y esta preparado para el handle propiamente dicho
-        
-        
-        
-        
-        
-        
-        
-        
+            
         
         'Hago un for para chequear si alguna de las misiones que da el NPC ya se completo.
         Dim q As Byte
@@ -771,8 +788,9 @@ End Sub
 
 
 Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal QuestSlot As Byte) As Boolean
-        
-        On Error GoTo FinishQuestCheck
+        '<EhHeader>
+        On Error GoTo FinishQuestCheck_Err
+        '</EhHeader>
         '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         'Funcion para chequear si finalizo una quest
         'Ladder
@@ -818,15 +836,33 @@ Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As
 
             End If
             
+            'Comprobamos que haya targeteado todas las criaturas.
+124      If .RequiredTargetNPCs > 0 Then
+
+126          For i = 1 To .RequiredTargetNPCs
+
+128              If .RequiredTargetNPC(i).Amount > UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsTarget(i) Then
+130                  FinishQuestCheck = False
+                        Exit Function
+
+                    End If
+
+132          Next i
+
+            End If
+            
         End With
         
         
-        FinishQuestCheck = True
+134     FinishQuestCheck = True
         
         Exit Function
 
-FinishQuestCheck:
-        Call RegistrarError(Err.Number, Err.description, "ModQuest.FinishQuestCheck", Erl)
-        Resume Next
-        
+FinishQuestCheck_Err:
+        MsgBox Err.description & vbCrLf & _
+               "in Argentum20Server.ModQuest.FinishQuestCheck " & _
+           "at line " & Erl, _
+           vbExclamation + vbOKOnly, "Application Error"
+    Resume Next
+    '</EhFooter>
 End Function

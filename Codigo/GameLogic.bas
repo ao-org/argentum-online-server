@@ -1269,6 +1269,44 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 440             UserList(UserIndex).flags.TargetNPC = TempCharIndex
 442             UserList(UserIndex).flags.TargetUser = 0
 444             UserList(UserIndex).flags.TargetObj = 0
+
+
+            
+            Dim i As Long, j As Long
+                    
+                    For i = 1 To MAXUSERQUESTS
+                    
+                        With UserList(UserIndex).QuestStats.Quests(i)
+                    
+                            If .QuestIndex Then
+                                If QuestList(.QuestIndex).RequiredTargetNPCs Then
+                    
+                                    For j = 1 To QuestList(.QuestIndex).RequiredTargetNPCs
+                    
+                                        If QuestList(.QuestIndex).RequiredTargetNPC(j).NpcIndex = Npclist(TempCharIndex).Numero Then
+                                            If QuestList(.QuestIndex).RequiredTargetNPC(j).Amount > .NPCsTarget(j) Then
+                                                .NPCsTarget(j) = .NPCsTarget(j) + 1
+                    
+                                            End If
+                                                
+                                            If QuestList(.QuestIndex).RequiredTargetNPC(j).Amount = .NPCsTarget(j) Then
+                                                Call FinishQuest(UserIndex, .QuestIndex, i)
+                                                Call WriteUpdateNPCSimbolo(UserIndex, TempCharIndex, 1)
+                                                Call WriteChatOverHead(UserIndex, "¡Quest Finalizada!", Npclist(TempCharIndex).Char.CharIndex, vbYellow)
+                                                Call WriteConsoleMsg(UserIndex, "Quest Finalizada!", FontTypeNames.FONTTYPE_INFOIAO)
+                                            End If
+                    
+                                        End If
+                    
+                                    Next j
+                    
+                                End If
+                    
+                            End If
+                    
+                        End With
+                    
+                    Next i
         
             End If
     
