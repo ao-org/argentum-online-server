@@ -4165,7 +4165,9 @@ Public Sub RegistrarError(ByVal Numero As Long, ByVal Descripcion As String, ByV
 'Author: Jopi
 'Guarda una descripcion detallada del error en Errores.log
 '**********************************************************
-        
+       
+    On Error GoTo CloseIO:
+       
     'Si lo del parametro Componente es ES IGUAL, al Componente del anterior error...
     If Componente = HistorialError.Componente And _
        Numero = HistorialError.ErrorCode Then
@@ -4202,6 +4204,12 @@ Public Sub RegistrarError(ByVal Numero As Long, ByVal Descripcion As String, ByV
         
         Print #File, vbNullString
         
+    GoTo CloseIO
+    
+    Exit Sub
+    
+CloseIO:
+
     Close #File
     
     Debug.Print "Error: " & Numero & vbNewLine & _
