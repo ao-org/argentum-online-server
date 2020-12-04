@@ -75,7 +75,7 @@ Public Sub generateMatrix(ByVal Mapa As Integer)
             Select Case i
 
                 Case eHeading.NORTH
-                    Call setDistance(getLimit(Ciudades(j).Map, eHeading.NORTH), j, i, 0, 1)
+                    Call setDistance(getLimit(Ciudades(j).Map, eHeading.NORTH), j, i, 0, -1)
 
                 Case eHeading.EAST
                     Call setDistance(getLimit(Ciudades(j).Map, eHeading.EAST), j, i, 1, 0)
@@ -127,13 +127,13 @@ Public Sub setDistance(ByVal Mapa As Integer, _
             Select Case i
 
                 Case eHeading.NORTH
-                    Call setDistance(lim, city, i, X, Y + 1)
+                    Call setDistance(lim, city, i, X, Y - 1)
 
                 Case eHeading.EAST
                     Call setDistance(lim, city, i, X + 1, Y)
 
                 Case eHeading.SOUTH
-                    Call setDistance(lim, city, i, X, Y - 1)
+                    Call setDistance(lim, city, i, X, Y + 1)
 
                 Case eHeading.WEST
                     Call setDistance(lim, city, i, X - 1, Y)
@@ -168,13 +168,13 @@ Public Sub goHome(ByVal Userindex As Integer)
 
             End If
             
-            Tiempo = (Distance + 1) * 20 'seg
+            Tiempo = (Distance + 1) * 13 'seg
             
-            If Tiempo > 60 Then Tiempo = 60
+            'If Tiempo > 60 Then Tiempo = 60
             
             Call IntervaloGoHome(Userindex, Tiempo * 1000, True)
                 
-            Call WriteConsoleMsg(Userindex, "Te encuentras a " & CStr(Distance) & " mapas de " & MapInfo(Ciudades(.Hogar).Map).map_name & ", este viaje durara " & CStr(Tiempo), FontTypeNames.FONTTYPE_FIGHT)
+            Call WriteConsoleMsg(Userindex, "Te encuentras a " & CStr(Distance) & " mapas de " & MapInfo(Ciudades(.Hogar).Map).map_name & ", este viaje durara " & CStr(Tiempo) & " segundos.", FontTypeNames.FONTTYPE_FIGHT)
             
         Else
         
