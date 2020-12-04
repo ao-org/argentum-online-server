@@ -2551,6 +2551,18 @@ Sub CargarCiudades()
         .NecesitaNave = val(Lector.GetValue("Hillidan", "NecesitaNave"))
     End With
     
+    With Prision
+        .Map = val(Lector.GetValue("Prision", "Mapa"))
+        .X = val(Lector.GetValue("Prision", "X"))
+        .Y = val(Lector.GetValue("Prision", "Y"))
+    End With
+    
+    With Libertad
+        .Map = val(Lector.GetValue("Prision", "Mapa"))
+        .X = val(Lector.GetValue("Prision", "X"))
+        .Y = val(Lector.GetValue("Prision", "Y"))
+    End With
+    
     Set Lector = Nothing
     
     Nix.Map = CityNix.Map
@@ -2593,7 +2605,6 @@ Sub LoadIntervalos()
         
 
         Dim Lector As clsIniReader
-
 100     Set Lector = New clsIniReader
 102     Call Lector.Initialize(IniPath & "intervalos.ini")
     
