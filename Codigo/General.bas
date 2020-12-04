@@ -409,13 +409,6 @@ Sub Main()
     Call ChDrive(App.Path)
     
     abro = True
-    Prision.Map = 23
-    Libertad.Map = 23
-    
-    Prision.X = 72
-    Prision.Y = 52
-    Libertad.X = 73
-    Libertad.Y = 73
     
     LastBackup = Format(Now, "Short Time")
     minutos = Format(Now, "Short Time")
