@@ -1016,7 +1016,7 @@ End Type
 
 Public Type Position
 
-    X As Integer
+    x As Integer
     Y As Integer
 
 End Type
@@ -1024,7 +1024,7 @@ End Type
 Public Type WorldPos
 
     Map As Integer
-    X As Integer
+    x As Integer
     Y As Integer
 
 End Type
@@ -1032,7 +1032,7 @@ End Type
 Public Type CityWorldPos
 
     Map As Integer
-    X As Integer
+    x As Integer
     Y As Integer
     MapaViaje As Integer
     ViajeX As Byte
@@ -1551,6 +1551,7 @@ Public Type UserFlags
     TomoPocion As Boolean
     TipoPocion As Byte
     Mimetizado As Byte
+    MascotasGuardadas As Byte
     
     Navegando As Byte
     
