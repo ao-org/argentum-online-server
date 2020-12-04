@@ -264,7 +264,7 @@ CargarInvent_Err:
         
 End Sub
 
-Public Sub NpcDropeo(ByRef npc As npc, ByRef UserIndex As Integer)
+Public Sub NpcDropeo(ByRef npc As npc, ByRef Userindex As Integer)
 
     On Error GoTo ErrHandler
 
@@ -288,7 +288,7 @@ Public Sub NpcDropeo(ByRef npc As npc, ByRef UserIndex As Integer)
 
     End If
 
-    If UserList(UserIndex).Invent.MagicoObjIndex = 383 Then
+    If UserList(Userindex).Invent.MagicoObjIndex = 383 Then
         If npc.QuizaProb = 0 Then
             Probabilidad = RandomNumber(1, DropMult / 2) 'Tiro Item?
         Else
@@ -312,7 +312,7 @@ Public Sub NpcDropeo(ByRef npc As npc, ByRef UserIndex As Integer)
     Dropeo.Amount = Cantidad 'Cantidad
     Dropeo.ObjIndex = obj 'NUMERO DEL ITEM EN EL OBJ.DAT
     Call TirarItemAlPiso(npc.Pos, Dropeo)
-    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(FXSound.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
+    Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessagePlayWave(FXSound.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
         
     'nfile = FreeFile ' obtenemos un canal
     'Open App.Path & "\logs\Dropeo de items.log" For Append Shared As #nfile
@@ -322,18 +322,18 @@ Public Sub NpcDropeo(ByRef npc As npc, ByRef UserIndex As Integer)
     Exit Sub
 
 ErrHandler:
-    Call LogError("Error al dropear el item " & ObjData(npc.QuizaDropea(objRandom)).name & ", al usuario " & UserList(UserIndex).name & ". " & Err.description & ".")
+    Call LogError("Error al dropear el item " & ObjData(npc.QuizaDropea(objRandom)).name & ", al usuario " & UserList(Userindex).name & ". " & Err.description & ".")
 
 End Sub
 
 
-Public Sub DropObjQuest(ByRef npc As npc, ByRef UserIndex As Integer)
+Public Sub DropObjQuest(ByRef npc As npc, ByRef Userindex As Integer)
 'Dropeo por Quest
 'Ladder
 '3/12/2020
     On Error GoTo ErrHandler
 
-    If npc.DropQuest = "" Then Exit Sub
+    If npc.NumDropQuest = 0 Then Exit Sub
         
     
     Dim Dropeo       As obj
@@ -342,30 +342,33 @@ Public Sub DropObjQuest(ByRef npc As npc, ByRef UserIndex As Integer)
     Dim Amount As Integer
     Dim Probabilidad As Byte
 
-    QuestIndex = val(ReadField(1, npc.DropQuest, Asc("-")))
-    ObjIndex = val(ReadField(2, npc.DropQuest, Asc("-")))
-    Amount = val(ReadField(3, npc.DropQuest, Asc("-")))
-    Probabilidad = val(ReadField(4, npc.DropQuest, Asc("-")))
+    Dim i As Byte
     
-    If QuestIndex = 0 Then Exit Sub
     
-    If TieneQuest(UserIndex, QuestIndex) = 0 Then Exit Sub
+    For i = 1 To npc.NumDropQuest
     
-
-    Probabilidad = RandomNumber(1, Probabilidad) 'Tiro Item?
-
-
-    If Probabilidad <> 1 Then Exit Sub
-
-    Dropeo.Amount = Amount
-    Dropeo.ObjIndex = ObjIndex
-    Call TirarItemAlPiso(npc.Pos, Dropeo)
-    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(FXSound.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
+        QuestIndex = val(ReadField(1, npc.DropQuest(i), Asc("-")))
+        ObjIndex = val(ReadField(2, npc.DropQuest(i), Asc("-")))
+        Amount = val(ReadField(3, npc.DropQuest(i), Asc("-")))
+        Probabilidad = val(ReadField(4, npc.DropQuest(i), Asc("-")))
+        
+        If QuestIndex <> 0 Then
+            If TieneQuest(Userindex, QuestIndex) <> 0 Then
+                Probabilidad = RandomNumber(1, Probabilidad) 'Tiro Item?
+                If Probabilidad = 1 Then
+                    Dropeo.Amount = Amount
+                    Dropeo.ObjIndex = ObjIndex
+                    Call TirarItemAlPiso(npc.Pos, Dropeo)
+                    Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessagePlayWave(FXSound.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
+                End If
+            End If
+        End If
+    Next i
 
     Exit Sub
 
 ErrHandler:
-    Call LogError("Error DropObjQuest al dropear el item " & ObjData(ObjIndex).name & ", al usuario " & UserList(UserIndex).name & ". " & Err.description & ".")
+    Call LogError("Error DropObjQuest al dropear el item " & ObjData(ObjIndex).name & ", al usuario " & UserList(Userindex).name & ". " & Err.description & ".")
 
 End Sub
 
