@@ -19524,7 +19524,7 @@ Errhandler:
 
 End Sub
 
-Public Sub WriteEfectOverHead(ByVal Userindex As Integer, ByVal chat As String, ByVal CharIndex As Integer, Optional ByVal Color As Long = &HFF0000)
+Public Sub WriteEfectOverHead(ByVal UserIndex As Integer, ByVal chat As String, ByVal CharIndex As Integer, Optional ByVal Color As Long = vbRed)
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -22990,7 +22990,7 @@ PrepareMessageChatOverHead_Err:
         
 End Function
 
-Public Function PrepareMessageEfectOverHead(ByVal chat As String, ByVal CharIndex As Integer, Optional ByVal Color As Long = &HFF0000) As String
+Public Function PrepareMessageEfectOverHead(ByVal chat As String, ByVal CharIndex As Integer, Optional ByVal Color As Long = vbRed) As String
         
         On Error GoTo PrepareMessageEfectOverHead_Err
         

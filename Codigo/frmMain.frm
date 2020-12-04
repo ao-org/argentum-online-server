@@ -1245,6 +1245,7 @@ Private Sub GameTimer_Timer()
                         If .flags.Envenenado <> 0 Then Call EfectoVeneno(iUserIndex)
                         If .flags.Ahogandose <> 0 Then Call EfectoAhogo(iUserIndex)
                         If .flags.Incinerado <> 0 Then Call EfectoIncineramiento(iUserIndex, False)
+                        If .flags.Mimetizado <> 0 Then Call EfectoMimetismo(iUserIndex)
                         If .flags.AdminInvisible <> 1 Then
                             If .flags.Oculto = 1 Then Call DoPermanecerOculto(iUserIndex)
                         End If

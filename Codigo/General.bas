@@ -45,7 +45,7 @@ Public Declare Sub OutputDebugString Lib "kernel32" Alias "OutputDebugStringA" (
 
 Global LeerNPCs As New clsIniReader
 
-Sub DarCuerpoDesnudo(ByVal Userindex As Integer)
+Sub DarCuerpoDesnudo(ByVal UserIndex As Integer, Optional ByVal Mimetizado As Boolean = False)
         
         On Error GoTo DarCuerpoDesnudo_Err
         
@@ -109,7 +109,11 @@ Sub DarCuerpoDesnudo(ByVal Userindex As Integer)
 
         End Select
 
-152     UserList(Userindex).Char.Body = CuerpoDesnudo
+        If Mimetizado Then
+            UserList(UserIndex).CharMimetizado.Body = CuerpoDesnudo
+        Else
+            UserList(UserIndex).Char.Body = CuerpoDesnudo
+        End If
 
 154     UserList(Userindex).flags.Desnudo = 1
 
@@ -890,14 +894,14 @@ Errhandler:
 
 End Sub
 
-Public Sub LogIndex(ByVal index As Integer, ByVal Desc As String)
+Public Sub LogIndex(ByVal Index As Integer, ByVal Desc As String)
 
     On Error GoTo Errhandler
 
     Dim nfile As Integer
 
     nfile = FreeFile ' obtenemos un canal
-    Open App.Path & "\logs\" & index & ".log" For Append Shared As #nfile
+    Open App.Path & "\logs\" & Index & ".log" For Append Shared As #nfile
     Print #nfile, Date & " " & Time & " " & Desc
     Close #nfile
 
@@ -1501,7 +1505,58 @@ EfectoLava_Err:
         
 End Sub
 
-Public Sub EfectoInvisibilidad(ByVal Userindex As Integer)
+''
+' Maneja el tiempo y el efecto del mimetismo
+'
+' @param UserIndex  El index del usuario a ser afectado por el mimetismo
+'
+
+Public Sub EfectoMimetismo(ByVal UserIndex As Integer)
+'******************************************************
+'Author: Unknown
+'Last Update: 04/11/2008 (NicoNZ)
+'
+'******************************************************
+    Dim Barco As ObjData
+    
+    With UserList(UserIndex)
+        If .Counters.Mimetismo < IntervaloInvisible Then
+            .Counters.Mimetismo = .Counters.Mimetismo + 1
+        Else
+            'restore old char
+            Call WriteConsoleMsg(UserIndex, "Recuperas tu apariencia normal.", FontTypeNames.FONTTYPE_INFO)
+            
+            If .flags.Navegando Then
+                If .flags.Muerto = 0 Then
+                    If Barco.Ropaje = iBarca Then UserList(UserIndex).Char.Body = iBarca
+                    If Barco.Ropaje = iGalera Then UserList(UserIndex).Char.Body = iGalera
+                    If Barco.Ropaje = iGaleon Then UserList(UserIndex).Char.Body = iGaleon
+                Else
+                    .Char.Body = iFragataFantasmal
+                End If
+                
+                .Char.ShieldAnim = NingunEscudo
+                .Char.WeaponAnim = NingunArma
+                .Char.CascoAnim = NingunCasco
+            Else
+                .Char.Body = .CharMimetizado.Body
+                .Char.Head = .CharMimetizado.Head
+                .Char.CascoAnim = .CharMimetizado.CascoAnim
+                .Char.ShieldAnim = .CharMimetizado.ShieldAnim
+                .Char.WeaponAnim = .CharMimetizado.WeaponAnim
+            End If
+            
+            With .Char
+                Call ChangeUserChar(UserIndex, .Body, .Head, .Heading, .WeaponAnim, .ShieldAnim, .CascoAnim)
+            End With
+            
+            .Counters.Mimetismo = 0
+            .flags.Mimetizado = 0
+        End If
+    End With
+End Sub
+
+Public Sub EfectoInvisibilidad(ByVal UserIndex As Integer)
         
         On Error GoTo EfectoInvisibilidad_Err
         
@@ -2055,7 +2110,7 @@ Sub PasarSegundo()
 
     Dim i    As Long
 
-    Dim H    As Byte
+    Dim h    As Byte
 
     Dim Mapa As Integer
 
