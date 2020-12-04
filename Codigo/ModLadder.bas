@@ -130,35 +130,34 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
         
 108                     If UserList(UserIndex).flags.Muerto = 0 Then
 
-110                         Select Case UserList(Userindex).Hogar
+110                         Select Case UserList(UserIndex).Hogar
 
                                 Case eCiudad.cUllathorpe
-112                                 DeDonde = Ullathorpe
+112                                 DeDonde = CityUllathorpe
                         
 114                             Case eCiudad.cNix
-116                                 DeDonde = Nix
+116                                 DeDonde = CityNix
             
 118                             Case eCiudad.cBanderbill
-120                                 DeDonde = Banderbill
+120                                 DeDonde = CityBanderbill
                     
 122                             Case eCiudad.cLindos 'Vamos a tener que ir por todo el desierto... uff!
-124                                 DeDonde = Lindos
+124                                 DeDonde = CityLindos
                         
 126                             Case eCiudad.cArghal
-128                                 DeDonde = Arghal
+128                                 DeDonde = CityArghal
                         
 130                             Case eCiudad.CHillidan
-132                                 DeDonde = Hillidan
+132                                 DeDonde = CityHillidan
                         
 134                             Case Else
-136                                 DeDonde = Ullathorpe
+136                                 DeDonde = CityUllathorpe
 
                             End Select
 
 138                         Map = DeDonde.Map
 140                         X = DeDonde.X
 142                         Y = DeDonde.Y
-
                         Else
 
 144                         If MapInfo(UserList(UserIndex).Pos.Map).extra2 <> 0 Then
@@ -166,25 +165,25 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 146                             Select Case MapInfo(UserList(UserIndex).Pos.Map).extra2
 
                                     Case eCiudad.cUllathorpe
-148                                     DeDonde = Ullathorpe
+148                                     DeDonde = CityUllathorpe
                         
 150                                 Case eCiudad.cNix
-152                                     DeDonde = Nix
+152                                     DeDonde = CityNix
             
 154                                 Case eCiudad.cBanderbill
-156                                     DeDonde = Banderbill
+156                                     DeDonde = CityBanderbill
                     
 158                                 Case eCiudad.cLindos 'Vamos a tener que ir por todo el desierto... uff!
-160                                     DeDonde = Lindos
+160                                     DeDonde = CityLindos
                         
 162                                 Case eCiudad.cArghal
-164                                     DeDonde = Arghal
+164                                     DeDonde = CityArghal
                         
 166                                 Case eCiudad.CHillidan
-168                                     DeDonde = Hillidan
+168                                     DeDonde = CityHillidan
                         
 170                                 Case Else
-172                                     DeDonde = Ullathorpe
+172                                     DeDonde = CityUllathorpe
 
                                 End Select
 
@@ -193,25 +192,25 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 174                             Select Case UserList(UserIndex).Hogar
 
                                     Case eCiudad.cUllathorpe
-176                                     DeDonde = Ullathorpe
+176                                     DeDonde = CityUllathorpe
                         
 178                                 Case eCiudad.cNix
-180                                     DeDonde = Nix
+180                                     DeDonde = CityNix
             
 182                                 Case eCiudad.cBanderbill
-184                                     DeDonde = Banderbill
+184                                     DeDonde = CityBanderbill
                     
 186                                 Case eCiudad.cLindos 'Vamos a tener que ir por todo el desierto... uff!
-188                                     DeDonde = Lindos
+188                                     DeDonde = CityLindos
                         
 190                                 Case eCiudad.cArghal
-192                                     DeDonde = Arghal
+192                                     DeDonde = CityArghal
                         
 194                                 Case eCiudad.CHillidan
-196                                     DeDonde = Hillidan
+196                                     DeDonde = CityHillidan
                         
 198                                 Case Else
-200                                     DeDonde = Ullathorpe
+200                                     DeDonde = CityUllathorpe
 
                                 End Select
 

@@ -595,7 +595,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
         QueryBuilder.Append " ORDER BY date_last_login DESC LIMIT 5) AS d); "
         
         'User quests
-        QueryBuilder.Append "INSERT INTO quest (user_id, number, quest_id, npcs) VALUES "
+        QueryBuilder.Append "INSERT INTO quest (user_id, number, quest_id, npcs, npcstarget) VALUES "
         
         Dim Tmp As Integer, LoopK As Long
 
@@ -618,10 +618,29 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
                         End If
 
                     Next LoopK
+                    
 
                 End If
+                
+                
+                QueryBuilder.Append "', '"
+                 
+                 Tmp = QuestList(.QuestStats.Quests(LoopC).QuestIndex).RequiredTargetNPCs
+                    
+                    For LoopK = 1 To Tmp
+                        QueryBuilder.Append CStr(.QuestStats.Quests(LoopC).NPCsTarget(LoopK))
+                        
+                        If LoopK < Tmp Then
+                            QueryBuilder.Append "-"
+                        End If
+
+                    Next LoopK
+            
+
 
             End If
+            
+            
             
             QueryBuilder.Append "')"
 
@@ -933,6 +952,20 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 
                         For LoopC = 1 To QuestList(.QuestStats.Quests(QueryData!Number).QuestIndex).RequiredNPCs
                             .QuestStats.Quests(QueryData!Number).NPCsKilled(LoopC) = val(NPCs(LoopC - 1))
+                        Next LoopC
+
+                    End If
+                    
+                    
+                    If QuestList(.QuestStats.Quests(QueryData!Number).QuestIndex).RequiredTargetNPCs Then
+
+                        Dim NPCsTarget() As String
+
+                        NPCsTarget = Split(QueryData!NPCsTarget, "-")
+                        ReDim .QuestStats.Quests(QueryData!Number).NPCsTarget(1 To QuestList(.QuestStats.Quests(QueryData!Number).QuestIndex).RequiredTargetNPCs)
+
+                        For LoopC = 1 To QuestList(.QuestStats.Quests(QueryData!Number).QuestIndex).RequiredTargetNPCs
+                            .QuestStats.Quests(QueryData!Number).NPCsTarget(LoopC) = val(NPCsTarget(LoopC - 1))
                         Next LoopC
 
                     End If

@@ -548,10 +548,6 @@ Public Const MAXSKILLPOINTS As Byte = 100
 Public Const MAXMASCOTAS    As Byte = 3
 
 ''
-' Cantidad de Ciudades
-Public Const NUMCIUDADES    As Byte = 6
-
-''
 'Direccion
 '
 ' @param NORTH Norte
@@ -1095,6 +1091,7 @@ End Type
  
 Public Type tUserQuest
 
+    NPCsTarget() As Integer
     NPCsKilled() As Integer
     QuestIndex As Integer
 
@@ -1117,6 +1114,10 @@ Public Type tQuest
     
     RequiredNPCs As Byte
     RequiredNPC() As tQuestNpc
+    
+    
+    RequiredTargetNPCs As Byte
+    RequiredTargetNPC() As tQuestNpc
     
     RewardGLD As Long
     RewardEXP As Long
@@ -1617,10 +1618,7 @@ Public Type UserFlags
     Silenciado As Byte
     
     CentinelaOK As Boolean 'Centinela
-    
-    lastMap As Integer
-    Traveling As Byte 'Travelin Band ?
-    
+
 End Type
 
 Public Type UserCounters
@@ -1687,8 +1685,6 @@ Public Type UserCounters
     
     Trabajando As Long  ' Para el centinela
     Ocultando As Long   ' Unico trabajo no revisado por el centinela
-    
-    goHome As Long
 
 End Type
 
@@ -2280,14 +2276,32 @@ Public DistribucionSemienteraVida(1 To 4) As Integer
 
 '*********************************************************
 
-Public Nix                            As CityWorldPos
-Public Ullathorpe                     As CityWorldPos
-Public Banderbill                     As CityWorldPos
-Public Lindos                         As CityWorldPos
-Public Arghal                         As CityWorldPos
-Public Hillidan                       As CityWorldPos
+Public Nix                                As WorldPos
+
+Public Ullathorpe                         As WorldPos
+
+Public Banderbill                         As WorldPos
+
+Public Lindos                             As WorldPos
+
+Public Arghal                             As WorldPos
+
+Public Hillidan                           As WorldPos
+
+Public CityNix                            As CityWorldPos
+
+Public CityUllathorpe                     As CityWorldPos
+
+Public CityBanderbill                     As CityWorldPos
+
+Public CityLindos                         As CityWorldPos
+
+Public CityArghal                         As CityWorldPos
+
+Public CityHillidan                       As CityWorldPos
 
 Public Prision                            As WorldPos
+
 Public Libertad                           As WorldPos
 
 Public Ayuda                              As New cCola
