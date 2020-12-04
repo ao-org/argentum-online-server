@@ -1952,6 +1952,8 @@ Public Type npc
     
     Distancia As Byte
     
+    DropQuest As String
+    
     InformarRespawn As Byte
     name As String
     SubName As String

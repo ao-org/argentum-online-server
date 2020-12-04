@@ -192,6 +192,9 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 
     'Tiramos el oro
     Call NPCTirarOro(MiNPC, UserIndex)
+    
+    
+    Call DropObjQuest(MiNPC, UserIndex)
 
     'Item Magico!
     Call NpcDropeo(MiNPC, UserIndex)
@@ -1327,6 +1330,9 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 282     Npclist(NpcIndex).flags.Snd2 = val(Leer.GetValue("NPC" & NpcNumber, "Snd2"))
 284     Npclist(NpcIndex).flags.Snd3 = val(Leer.GetValue("NPC" & NpcNumber, "Snd3"))
 
+        
+
+
         '<<<<<<<<<<<<<< Expresiones >>>>>>>>>>>>>>>>
         Dim aux As String
 286         aux = Leer.GetValue("NPC" & NpcNumber, "NROEXP")
@@ -1384,10 +1390,16 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
             Next LoopC
 
         End If
+        
+        
+        
+        Npclist(NpcIndex).DropQuest = Leer.GetValue("NPC" & NpcNumber, "DropQuest")
 
 
 'Ladder
 'Nuevo sistema de Quest
+
+
 
 
 

@@ -326,3 +326,46 @@ ErrHandler:
 
 End Sub
 
+
+Public Sub DropObjQuest(ByRef npc As npc, ByRef UserIndex As Integer)
+'Dropeo por Quest
+'Ladder
+'3/12/2020
+    On Error GoTo ErrHandler
+
+    If npc.DropQuest = "" Then Exit Sub
+        
+    
+    Dim Dropeo       As obj
+    Dim QuestIndex As Integer
+    Dim ObjIndex As Integer
+    Dim Amount As Integer
+    Dim Probabilidad As Byte
+
+    QuestIndex = val(ReadField(1, npc.DropQuest, Asc("-")))
+    ObjIndex = val(ReadField(2, npc.DropQuest, Asc("-")))
+    Amount = val(ReadField(3, npc.DropQuest, Asc("-")))
+    Probabilidad = val(ReadField(4, npc.DropQuest, Asc("-")))
+    
+    If QuestIndex = 0 Then Exit Sub
+    
+    If TieneQuest(UserIndex, QuestIndex) = 0 Then Exit Sub
+    
+
+    Probabilidad = RandomNumber(1, Probabilidad) 'Tiro Item?
+
+
+    If Probabilidad <> 1 Then Exit Sub
+
+    Dropeo.Amount = Amount
+    Dropeo.ObjIndex = ObjIndex
+    Call TirarItemAlPiso(npc.Pos, Dropeo)
+    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(FXSound.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
+
+    Exit Sub
+
+ErrHandler:
+    Call LogError("Error DropObjQuest al dropear el item " & ObjData(ObjIndex).name & ", al usuario " & UserList(UserIndex).name & ". " & Err.description & ".")
+
+End Sub
+
