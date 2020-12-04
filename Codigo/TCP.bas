@@ -442,7 +442,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
             End Select
             
             ' Poción violeta
-158         .Invent.Object(NumItems).ObjIndex = 166 ' Pocion violeta
+158         .Invent.Object(NumItems).ObjIndex = 2332 ' Pocion violeta
 159         .Invent.Object(NumItems).Amount = 10
 160         NumItems = NumItems + 1
         
@@ -774,7 +774,7 @@ Sub ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal UserR
         'Resetamos CORREO
     
 234     UserList(UserIndex).Pos.Map = 37
-236     UserList(UserIndex).Pos.X = 76
+236     UserList(UserIndex).Pos.x = 76
 238     UserList(UserIndex).Pos.Y = 82
     
 240     If Not Database_Enabled Then
@@ -1065,18 +1065,18 @@ Function EstaPCarea(Index As Integer, Index2 As Integer) As Boolean
         On Error GoTo EstaPCarea_Err
         
 
-        Dim X As Integer, Y As Integer
+        Dim x As Integer, Y As Integer
 
 100     For Y = UserList(Index).Pos.Y - MinYBorder + 1 To UserList(Index).Pos.Y + MinYBorder - 1
-102         For X = UserList(Index).Pos.X - MinXBorder + 1 To UserList(Index).Pos.X + MinXBorder - 1
+102         For x = UserList(Index).Pos.x - MinXBorder + 1 To UserList(Index).Pos.x + MinXBorder - 1
 
-104             If MapData(UserList(Index).Pos.Map, X, Y).UserIndex = Index2 Then
+104             If MapData(UserList(Index).Pos.Map, x, Y).UserIndex = Index2 Then
 106                 EstaPCarea = True
                     Exit Function
 
                 End If
         
-108         Next X
+108         Next x
 110     Next Y
 
 112     EstaPCarea = False
@@ -1095,13 +1095,13 @@ Function HayPCarea(Pos As WorldPos) As Boolean
         On Error GoTo HayPCarea_Err
         
 
-        Dim X As Integer, Y As Integer
+        Dim x As Integer, Y As Integer
 
 100     For Y = Pos.Y - MinYBorder + 1 To Pos.Y + MinYBorder - 1
-102         For X = Pos.X - MinXBorder + 1 To Pos.X + MinXBorder - 1
+102         For x = Pos.x - MinXBorder + 1 To Pos.x + MinXBorder - 1
 
-104             If X > 0 And Y > 0 And X < 101 And Y < 101 Then
-106                 If MapData(Pos.Map, X, Y).UserIndex > 0 Then
+104             If x > 0 And Y > 0 And x < 101 And Y < 101 Then
+106                 If MapData(Pos.Map, x, Y).UserIndex > 0 Then
 108                     HayPCarea = True
                         Exit Function
 
@@ -1109,7 +1109,7 @@ Function HayPCarea(Pos As WorldPos) As Boolean
 
                 End If
 
-110         Next X
+110         Next x
 112     Next Y
 
 114     HayPCarea = False
@@ -1128,18 +1128,18 @@ Function HayOBJarea(Pos As WorldPos, ObjIndex As Integer) As Boolean
         On Error GoTo HayOBJarea_Err
         
 
-        Dim X As Integer, Y As Integer
+        Dim x As Integer, Y As Integer
 
 100     For Y = Pos.Y - MinYBorder + 1 To Pos.Y + MinYBorder - 1
-102         For X = Pos.X - MinXBorder + 1 To Pos.X + MinXBorder - 1
+102         For x = Pos.x - MinXBorder + 1 To Pos.x + MinXBorder - 1
 
-104             If MapData(Pos.Map, X, Y).ObjInfo.ObjIndex = ObjIndex Then
+104             If MapData(Pos.Map, x, Y).ObjInfo.ObjIndex = ObjIndex Then
 106                 HayOBJarea = True
                     Exit Function
 
                 End If
         
-108         Next X
+108         Next x
 110     Next Y
 
 112     HayOBJarea = False
@@ -1473,7 +1473,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
         
         'Tratamos de evitar en lo posible el "Telefrag". Solo 1 intento de loguear en pos adjacentes.
         'Codigo por Pablo (ToxicWaste) y revisado por Nacho (Integer), corregido para que realmetne ande y no tire el server por Juan Martin Sotuyo Dodero (Maraxus)
-        If MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex <> 0 Or MapData(.Pos.Map, .Pos.X, .Pos.Y).NpcIndex <> 0 Then
+        If MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex <> 0 Or MapData(.Pos.Map, .Pos.x, .Pos.Y).NpcIndex <> 0 Then
 
             Dim FoundPlace As Boolean
 
@@ -1484,10 +1484,10 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
             Dim tY         As Long
         
             FoundPlace = False
-            esAgua = (MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked And FLAG_AGUA) <> 0
+            esAgua = (MapData(.Pos.Map, .Pos.x, .Pos.Y).Blocked And FLAG_AGUA) <> 0
         
             For tY = .Pos.Y - 1 To .Pos.Y + 1
-                For tX = .Pos.X - 1 To .Pos.X + 1
+                For tX = .Pos.x - 1 To .Pos.x + 1
 
                     If esAgua Then
 
@@ -1515,31 +1515,31 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
             Next tY
         
             If FoundPlace Then 'Si encontramos un lugar, listo, nos quedamos ahi
-                .Pos.X = tX
+                .Pos.x = tX
                 .Pos.Y = tY
             Else
 
                 'Si no encontramos un lugar, sacamos al usuario que tenemos abajo, y si es un NPC, lo pisamos.
-                If MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex <> 0 Then
+                If MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex <> 0 Then
 
                     'Si no encontramos lugar, y abajo teniamos a un usuario, lo pisamos y cerramos su comercio seguro
-                    If UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu > 0 Then
+                    If UserList(MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex).ComUsu.DestUsu > 0 Then
 
                         'Le avisamos al que estaba comerciando que se tuvo que ir.
-                        If UserList(UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu).flags.UserLogged Then
-                            Call FinComerciarUsu(UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu)
-                            Call WriteConsoleMsg(UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu, "Comercio cancelado. El otro usuario se ha desconectado.", FontTypeNames.FONTTYPE_WARNING)
+                        If UserList(UserList(MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex).ComUsu.DestUsu).flags.UserLogged Then
+                            Call FinComerciarUsu(UserList(MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex).ComUsu.DestUsu)
+                            Call WriteConsoleMsg(UserList(MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex).ComUsu.DestUsu, "Comercio cancelado. El otro usuario se ha desconectado.", FontTypeNames.FONTTYPE_WARNING)
                         End If
 
                         'Lo sacamos.
-                        If UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).flags.UserLogged Then
-                            Call FinComerciarUsu(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex)
-                            Call WriteErrorMsg(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex, "Alguien se ha conectado donde te encontrabas, por favor reconectate...")
+                        If UserList(MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex).flags.UserLogged Then
+                            Call FinComerciarUsu(MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex)
+                            Call WriteErrorMsg(MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex, "Alguien se ha conectado donde te encontrabas, por favor reconectate...")
                         End If
 
                     End If
                 
-                    Call CloseSocket(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex)
+                    Call CloseSocket(MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex)
 
                 End If
 
@@ -1548,7 +1548,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
         End If
         
         'If in the water, and has a boat, equip it!
-        If .Invent.BarcoObjIndex > 0 And (MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Then
+        If .Invent.BarcoObjIndex > 0 And (MapData(.Pos.Map, .Pos.x, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Then
 
             Dim Barco As ObjData
 
@@ -1638,7 +1638,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
         End If
         
         'Crea  el personaje del usuario
-        Call MakeUserChar(True, .Pos.Map, UserIndex, .Pos.Map, .Pos.X, .Pos.Y, 1)
+        Call MakeUserChar(True, .Pos.Map, UserIndex, .Pos.Map, .Pos.x, .Pos.Y, 1)
 
         Call WriteUserCharIndexInServer(UserIndex)
         
@@ -1685,6 +1685,22 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
         
         Call WriteFYA(UserIndex)
         Call WriteBindKeys(UserIndex)
+        
+        If UserList(UserIndex).NroMascotas > 0 And Not MapInfo(UserList(UserIndex).Pos.Map).Seguro Then
+            Dim i As Integer
+            For i = 1 To MAXMASCOTAS
+                If UserList(UserIndex).MascotasType(i) > 0 Then
+                    UserList(UserIndex).MascotasIndex(i) = SpawnNpc(UserList(UserIndex).MascotasType(i), UserList(UserIndex).Pos, True, True)
+                    
+                    If UserList(UserIndex).MascotasIndex(i) > 0 Then
+                        Npclist(UserList(UserIndex).MascotasIndex(i)).MaestroUser = UserIndex
+                        Call FollowAmo(UserList(UserIndex).MascotasIndex(i))
+                    Else
+                        UserList(UserIndex).MascotasIndex(i) = 0
+                    End If
+                End If
+            Next i
+        End If
         
         If .flags.Navegando = 1 Then
             Call WriteNavigateToggle(UserIndex)
@@ -1984,7 +2000,7 @@ Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
 112         .Desc = vbNullString
 114         .DescRM = vbNullString
 116         .Pos.Map = 0
-118         .Pos.X = 0
+118         .Pos.x = 0
 120         .Pos.Y = 0
 122         .ip = vbNullString
 124         .clase = 0
@@ -2172,6 +2188,9 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 262         .UserLogged = False
 264         .FirstPacket = False
             .Inmunidad = 0
+            
+            .Mimetizado = 0
+            .MascotasGuardadas = 0
         End With
 
         
