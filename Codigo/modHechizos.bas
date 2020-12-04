@@ -82,6 +82,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
         
             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.Y))
             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageEfectOverHead(daño, .Char.CharIndex))
                 
             If Hechizos(Spell).Particle > 0 Then '¿Envio Particula?
 
@@ -174,6 +175,7 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
 106         daño = RandomNumber(Hechizos(Spell).MinHp, Hechizos(Spell).MaxHp)
 108         Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessagePlayWave(Hechizos(Spell).wav, Npclist(TargetNPC).Pos.X, Npclist(TargetNPC).Pos.Y))
 110         Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessageCreateFX(Npclist(TargetNPC).Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
+111         Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessageEfectOverHead(daño, Npclist(TargetNPC).Char.CharIndex))
         
 112         Npclist(TargetNPC).Stats.MinHp = Npclist(TargetNPC).Stats.MinHp - daño
         
@@ -1184,6 +1186,57 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 156         b = True
 
         End If
+        
+        If Hechizos(h).Mimetiza = 1 Then
+            If UserList(tU).flags.Muerto = 1 Then
+                Exit Sub
+            End If
+            
+            If UserList(tU).flags.Navegando = 1 Then
+                Exit Sub
+            End If
+            If UserList(UserIndex).flags.Navegando = 1 Then
+                Exit Sub
+            End If
+            
+            'Si sos user, no uses este hechizo con GMS.
+            If UserList(UserIndex).flags.Privilegios And PlayerType.user Then
+                If Not UserList(tU).flags.Privilegios And PlayerType.user Then
+                    Exit Sub
+                End If
+            End If
+            
+            If UserList(UserIndex).flags.Mimetizado = 1 Then
+                Call WriteConsoleMsg(UserIndex, "Ya te encuentras transformado. El hechizo no ha tenido efecto", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+            
+            If UserList(UserIndex).flags.AdminInvisible = 1 Then Exit Sub
+            
+            'copio el char original al mimetizado
+            
+            With UserList(UserIndex)
+                .CharMimetizado.Body = .Char.Body
+                .CharMimetizado.Head = .Char.Head
+                .CharMimetizado.CascoAnim = .Char.CascoAnim
+                .CharMimetizado.ShieldAnim = .Char.ShieldAnim
+                .CharMimetizado.WeaponAnim = .Char.WeaponAnim
+                
+                .flags.Mimetizado = 1
+                
+                'ahora pongo local el del enemigo
+                .Char.Body = UserList(tU).Char.Body
+                .Char.Head = UserList(tU).Char.Head
+                .Char.CascoAnim = UserList(tU).Char.CascoAnim
+                .Char.ShieldAnim = UserList(tU).Char.ShieldAnim
+                .Char.WeaponAnim = UserList(tU).Char.WeaponAnim
+            
+                Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+            End With
+           
+           Call InfoHechizo(UserIndex)
+           b = True
+        End If
 
 158     If Hechizos(h).Envenena > 0 Then
             ' If UserIndex = tU Then
@@ -1839,6 +1892,44 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
 
         End If
 
+        If Hechizos(hIndex).Mimetiza = 1 Then
+    
+            If UserList(UserIndex).flags.Mimetizado = 1 Then
+                Call WriteConsoleMsg(UserIndex, "Ya te encuentras transformado. El hechizo no ha tenido efecto", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+            
+            If UserList(UserIndex).flags.AdminInvisible = 1 Then Exit Sub
+            
+                
+            If UserList(UserIndex).clase = eClass.Druid Then
+                'copio el char original al mimetizado
+                With UserList(UserIndex)
+                    .CharMimetizado.Body = .Char.Body
+                    .CharMimetizado.Head = .Char.Head
+                    .CharMimetizado.CascoAnim = .Char.CascoAnim
+                    .CharMimetizado.ShieldAnim = .Char.ShieldAnim
+                    .CharMimetizado.WeaponAnim = .Char.WeaponAnim
+                    
+                    .flags.Mimetizado = 1
+                    
+                    'ahora pongo lo del NPC.
+                    .Char.Body = Npclist(NpcIndex).Char.Body
+                    .Char.Head = Npclist(NpcIndex).Char.Head
+                    .Char.CascoAnim = NingunCasco
+                    .Char.ShieldAnim = NingunEscudo
+                    .Char.WeaponAnim = NingunArma
+                
+                    Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+                End With
+            Else
+                Call WriteConsoleMsg(UserIndex, "Solo los druidas pueden mimetizarse con criaturas.", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+        
+           Call InfoHechizo(UserIndex)
+           b = True
+        End If
         
         Exit Sub
 
@@ -1871,7 +1962,7 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal Use
 
 108         If Npclist(NpcIndex).Stats.MinHp > Npclist(NpcIndex).Stats.MaxHp Then Npclist(NpcIndex).Stats.MinHp = Npclist(NpcIndex).Stats.MaxHp
 110         Call WriteConsoleMsg(UserIndex, "Has curado " & daño & " puntos de salud a la criatura.", FontTypeNames.FONTTYPE_FIGHT)
-112         Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageEfectOverHead(daño, Npclist(NpcIndex).Char.CharIndex, &HFF00))
+112         Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageEfectOverHead(daño, Npclist(NpcIndex).Char.CharIndex, vbGreen))
 114         b = True
         
 116     ElseIf Hechizos(hIndex).SubeHP = 2 Then
@@ -2415,7 +2506,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 
             End If
     
-372         Call SendData(SendTarget.ToPCArea, tempChr, PrepareMessageEfectOverHead(daño, UserList(tempChr).Char.CharIndex, &HFF00))
+372         Call SendData(SendTarget.ToPCArea, tempChr, PrepareMessageEfectOverHead(daño, UserList(tempChr).Char.CharIndex, vbGreen))
             Call WriteUpdateHP(tempChr)
     
 374         b = True
@@ -2832,7 +2923,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
 
             End If
     
-266         Call SendData(SendTarget.ToPCArea, tempChr, PrepareMessageEfectOverHead(daño, UserList(tempChr).Char.CharIndex, &HFF00))
+266         Call SendData(SendTarget.ToPCArea, tempChr, PrepareMessageEfectOverHead(daño, UserList(tempChr).Char.CharIndex, vbGreen))
     
 268         b = True
 270     ElseIf Hechizos(h).SubeHP = 2 Then

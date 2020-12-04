@@ -1549,6 +1549,7 @@ Public Type UserFlags
     Hechizo As Integer
     TomoPocion As Boolean
     TipoPocion As Byte
+    Mimetizado As Byte
     
     Navegando As Byte
     
@@ -1654,7 +1655,7 @@ Public Type UserCounters
     Inmovilizado As Integer
     Ceguera As Integer
     Estupidez As Integer
-    
+    Mimetismo As Integer
     
     Invisibilidad As Integer
     TiempoOculto As Integer
@@ -1761,6 +1762,7 @@ Public Type user
     modName As String
     
     Char As Char 'Define la apariencia
+    CharMimetizado As Char
     OrigChar As Char
     
     Desc As String ' Descripcion

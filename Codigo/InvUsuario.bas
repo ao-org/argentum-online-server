@@ -800,16 +800,18 @@ Sub Desequipar(ByVal Userindex As Integer, ByVal slot As Byte)
 106     Select Case obj.OBJType
 
             Case eOBJType.otWeapon
-108             UserList(Userindex).Invent.Object(slot).Equipped = 0
-110             UserList(Userindex).Invent.WeaponEqpObjIndex = 0
-112             UserList(Userindex).Invent.WeaponEqpSlot = 0
-114             UserList(Userindex).Char.Arma_Aura = ""
-116             Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageAuraToChar(UserList(Userindex).Char.CharIndex, 0, True, 1))
+108             UserList(UserIndex).Invent.Object(slot).Equipped = 0
+110             UserList(UserIndex).Invent.WeaponEqpObjIndex = 0
+112             UserList(UserIndex).Invent.WeaponEqpSlot = 0
+114             UserList(UserIndex).Char.Arma_Aura = ""
+116             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(UserList(UserIndex).Char.CharIndex, 0, True, 1))
         
-118             UserList(Userindex).Char.WeaponAnim = NingunArma
+                If UserList(UserIndex).flags.Mimetizado = 0 Then
+118                 UserList(UserIndex).Char.WeaponAnim = NingunArma
             
-120             If UserList(Userindex).flags.Montado = 0 Then
-122                 Call ChangeUserChar(Userindex, UserList(Userindex).Char.Body, UserList(Userindex).Char.Head, UserList(Userindex).Char.Heading, UserList(Userindex).Char.WeaponAnim, UserList(Userindex).Char.ShieldAnim, UserList(Userindex).Char.CascoAnim)
+120                 If UserList(UserIndex).flags.Montado = 0 Then
+122                     Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
+                    End If
                 End If
                 
                 If obj.MagicDamageBonus > 0 Then
@@ -837,8 +839,8 @@ Sub Desequipar(ByVal Userindex As Integer, ByVal slot As Byte)
         
 154             UserList(Userindex).Char.WeaponAnim = NingunArma
             
-156             If UserList(Userindex).flags.Montado = 0 Then
-158                 Call ChangeUserChar(Userindex, UserList(Userindex).Char.Body, UserList(Userindex).Char.Head, UserList(Userindex).Char.Heading, UserList(Userindex).Char.WeaponAnim, UserList(Userindex).Char.ShieldAnim, UserList(Userindex).Char.CascoAnim)
+156             If UserList(UserIndex).flags.Montado = 0 And UserList(UserIndex).flags.Mimetizado = 0 Then
+158                 Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
                 End If
        
 160         Case eOBJType.otmagicos
@@ -927,14 +929,14 @@ Sub Desequipar(ByVal Userindex As Integer, ByVal slot As Byte)
 268             Call ChangeUserChar(Userindex, UserList(Userindex).Char.Body, UserList(Userindex).Char.Head, UserList(Userindex).Char.Heading, UserList(Userindex).Char.WeaponAnim, UserList(Userindex).Char.ShieldAnim, UserList(Userindex).Char.CascoAnim)
         
 270         Case eOBJType.otArmadura
-272             UserList(Userindex).Invent.Object(slot).Equipped = 0
-274             UserList(Userindex).Invent.ArmourEqpObjIndex = 0
-276             UserList(Userindex).Invent.ArmourEqpSlot = 0
+272             UserList(UserIndex).Invent.Object(slot).Equipped = 0
+274             UserList(UserIndex).Invent.ArmourEqpObjIndex = 0
+276             UserList(UserIndex).Invent.ArmourEqpSlot = 0
         
-278             If UserList(Userindex).flags.Navegando = 0 Then
-280                 If UserList(Userindex).flags.Montado = 0 Then
-282                     Call DarCuerpoDesnudo(Userindex)
-284                     Call ChangeUserChar(Userindex, UserList(Userindex).Char.Body, UserList(Userindex).Char.Head, UserList(Userindex).Char.Heading, UserList(Userindex).Char.WeaponAnim, UserList(Userindex).Char.ShieldAnim, UserList(Userindex).Char.CascoAnim)
+278             If UserList(UserIndex).flags.Navegando = 0 Then
+280                 If UserList(UserIndex).flags.Montado = 0 Then
+282                     Call DarCuerpoDesnudo(UserIndex, UserList(UserIndex).flags.Mimetizado = 1)
+284                     Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
                     End If
                 End If
         
@@ -947,14 +949,16 @@ Sub Desequipar(ByVal Userindex As Integer, ByVal slot As Byte)
                 End If
     
 296         Case eOBJType.otCASCO
-298             UserList(Userindex).Invent.Object(slot).Equipped = 0
-300             UserList(Userindex).Invent.CascoEqpObjIndex = 0
-302             UserList(Userindex).Invent.CascoEqpSlot = 0
-304             UserList(Userindex).Char.Head_Aura = 0
-306             Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageAuraToChar(UserList(Userindex).Char.CharIndex, 0, True, 4))
+298             UserList(UserIndex).Invent.Object(slot).Equipped = 0
+300             UserList(UserIndex).Invent.CascoEqpObjIndex = 0
+302             UserList(UserIndex).Invent.CascoEqpSlot = 0
+304             UserList(UserIndex).Char.Head_Aura = 0
+306             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(UserList(UserIndex).Char.CharIndex, 0, True, 4))
 
-308             UserList(Userindex).Char.CascoAnim = NingunCasco
-310             Call ChangeUserChar(Userindex, UserList(Userindex).Char.Body, UserList(Userindex).Char.Head, UserList(Userindex).Char.Heading, UserList(Userindex).Char.WeaponAnim, UserList(Userindex).Char.ShieldAnim, UserList(Userindex).Char.CascoAnim)
+                If UserList(UserIndex).flags.Mimetizado = 0 Then
+308                 UserList(UserIndex).Char.CascoAnim = NingunCasco
+310                 Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
+                End If
     
                 If obj.ResistenciaMagica > 0 Then
                     Call WriteUpdateRM(Userindex)
@@ -967,10 +971,12 @@ Sub Desequipar(ByVal Userindex As Integer, ByVal slot As Byte)
 326             UserList(Userindex).Char.Escudo_Aura = 0
 328             Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageAuraToChar(UserList(Userindex).Char.CharIndex, 0, True, 3))
         
-330             UserList(Userindex).Char.ShieldAnim = NingunEscudo
+                If UserList(UserIndex).flags.Mimetizado = 0 Then
+330                 UserList(UserIndex).Char.ShieldAnim = NingunEscudo
 
-332             If UserList(Userindex).flags.Montado = 0 Then
-334                 Call ChangeUserChar(Userindex, UserList(Userindex).Char.Body, UserList(Userindex).Char.Head, UserList(Userindex).Char.Heading, UserList(Userindex).Char.WeaponAnim, UserList(Userindex).Char.ShieldAnim, UserList(Userindex).Char.CascoAnim)
+332                 If UserList(UserIndex).flags.Montado = 0 Then
+334                     Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
+                    End If
                 End If
                 
                 If obj.ResistenciaMagica > 0 Then
@@ -1190,9 +1196,12 @@ Sub EquiparInvItem(ByVal Userindex As Integer, ByVal slot As Byte)
                 If .flags.Montado = 0 Then
                 
                     If .flags.Navegando = 0 Then
-                        .Char.WeaponAnim = obj.WeaponAnim
-                        Call ChangeUserChar(Userindex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
-
+                        If .flags.Mimetizado = 1 Then
+                            .CharMimetizado.WeaponAnim = obj.WeaponAnim
+                        Else
+                            .Char.WeaponAnim = obj.WeaponAnim
+                            Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+                        End If
                     End If
 
                 End If
@@ -1237,9 +1246,12 @@ Sub EquiparInvItem(ByVal Userindex As Integer, ByVal slot As Byte)
                 If .flags.Montado = 0 Then
                 
                     If .flags.Navegando = 0 Then
-                        .Char.WeaponAnim = obj.WeaponAnim
-                        Call ChangeUserChar(Userindex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
-
+                        If .flags.Mimetizado = 1 Then
+                            .CharMimetizado.WeaponAnim = obj.WeaponAnim
+                        Else
+                            .Char.WeaponAnim = obj.WeaponAnim
+                            Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+                        End If
                     End If
 
                 End If
@@ -1391,9 +1403,12 @@ Sub EquiparInvItem(ByVal Userindex As Integer, ByVal slot As Byte)
                 If .flags.Montado = 0 Then
                 
                     If .flags.Navegando = 0 Then
-                        .Char.WeaponAnim = obj.WeaponAnim
-                        Call ChangeUserChar(Userindex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
-
+                        If .flags.Mimetizado = 1 Then
+                            .CharMimetizado.WeaponAnim = obj.WeaponAnim
+                        Else
+                            .Char.WeaponAnim = obj.WeaponAnim
+                            Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+                        End If
                     End If
 
                 End If
@@ -1457,8 +1472,8 @@ Sub EquiparInvItem(ByVal Userindex As Integer, ByVal slot As Byte)
                     If .flags.Navegando = 0 Then
                         
                         If .flags.Montado = 0 Then
-                            Call DarCuerpoDesnudo(Userindex)
-                            Call ChangeUserChar(Userindex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+                            Call DarCuerpoDesnudo(UserIndex, UserList(UserIndex).flags.Mimetizado = 1)
+                            Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
 
                         End If
 
@@ -1490,10 +1505,13 @@ Sub EquiparInvItem(ByVal Userindex As Integer, ByVal slot As Byte)
                 If .flags.Montado = 0 Then
                 
                     If .flags.Navegando = 0 Then
-                        
-                        .Char.Body = obj.Ropaje
-                
-                        Call ChangeUserChar(Userindex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+
+                        If .flags.Mimetizado = 1 Then
+                            .CharMimetizado.Body = obj.Ropaje
+                        Else
+                            .Char.Body = obj.Ropaje
+                            Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+                        End If
                         
                         .flags.Desnudo = 0
             
@@ -1521,18 +1539,21 @@ Sub EquiparInvItem(ByVal Userindex As Integer, ByVal slot As Byte)
                 
                 'Si esta equipado lo quita
                 If .Invent.Object(slot).Equipped Then
-                    Call Desequipar(Userindex, slot)
-                
-                    .Char.CascoAnim = NingunCasco
-                    Call ChangeUserChar(Userindex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+                    Call Desequipar(UserIndex, slot)
+
+                    If .flags.Mimetizado = 1 Then
+                        .CharMimetizado.CascoAnim = NingunCasco
+                    Else
+                        .Char.CascoAnim = NingunCasco
+                        Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+                    End If
                     Exit Sub
 
                 End If
     
                 'Quita el anterior
                 If .Invent.CascoEqpObjIndex > 0 Then
-                    Call Desequipar(Userindex, .Invent.CascoEqpSlot)
-
+                    Call Desequipar(UserIndex, .Invent.CascoEqpSlot)
                 End If
             
                 errordesc = "Casco"
@@ -1548,8 +1569,12 @@ Sub EquiparInvItem(ByVal Userindex As Integer, ByVal slot As Byte)
                 .Invent.CascoEqpSlot = slot
             
                 If .flags.Navegando = 0 Then
-                    .Char.CascoAnim = obj.CascoAnim
-                    Call ChangeUserChar(Userindex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+                    If .flags.Mimetizado = 1 Then
+                        .CharMimetizado.CascoAnim = obj.CascoAnim
+                    Else
+                        .Char.CascoAnim = obj.CascoAnim
+                        Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+                    End If
                 End If
                 
                 If obj.ResistenciaMagica > 0 Then
@@ -1570,9 +1595,21 @@ Sub EquiparInvItem(ByVal Userindex As Integer, ByVal slot As Byte)
                 
                 'Si esta equipado lo quita
                 If .Invent.Object(slot).Equipped Then
-                    Call Desequipar(Userindex, slot)
-                 
-                    .Char.ShieldAnim = NingunEscudo
+                    Call Desequipar(UserIndex, slot)
+
+                    If .flags.Mimetizado = 1 Then
+                        .CharMimetizado.ShieldAnim = NingunEscudo
+                    Else
+                        .Char.ShieldAnim = NingunEscudo
+                        Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+                    End If
+
+                    If .flags.Mimetizado = 1 Then
+                        .CharMimetizado.ShieldAnim = NingunEscudo
+                    Else
+                        .Char.ShieldAnim = NingunEscudo
+                        Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+                    End If
 
                     If .flags.Montado = 0 Then
                         Call ChangeUserChar(Userindex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
@@ -1620,8 +1657,12 @@ Sub EquiparInvItem(ByVal Userindex As Integer, ByVal slot As Byte)
                  
                 If .flags.Navegando = 0 Then
                     If .flags.Montado = 0 Then
-                        .Char.ShieldAnim = obj.ShieldAnim
-                        Call ChangeUserChar(Userindex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+                        If .flags.Mimetizado = 1 Then
+                            .CharMimetizado.ShieldAnim = obj.ShieldAnim
+                        Else
+                            .Char.ShieldAnim = obj.ShieldAnim
+                            Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+                        End If
                     End If
                 End If
                 

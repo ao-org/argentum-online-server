@@ -984,153 +984,113 @@ End Sub
 
 
 Private Sub AiNpcAtacaNpc(ByVal NpcIndex As Integer)
-        
-        On Error GoTo AiNpcAtacaNpc_Err
-        
 
-        Dim tHeading As Byte
+    On Error GoTo SeguirAmo_Err
 
-        Dim X        As Long
-
-        Dim Y        As Long
-
-        Dim NI       As Integer
-
-        Dim bNoEsta  As Boolean
+    Dim tHeading As Byte
+    Dim X As Long
+    Dim Y As Long
+    Dim NI As Integer
+    Dim bNoEsta As Boolean
     
-        Dim SignoNS  As Integer
-
-        Dim SignoEO  As Integer
+    Dim SignoNS As Integer
+    Dim SignoEO As Integer
     
-100     With Npclist(NpcIndex)
-
-102         If .flags.Inmovilizado = 1 Then
-
-104             Select Case .Char.Heading
-
-                    Case eHeading.NORTH
-106                     SignoNS = -1
-108                     SignoEO = 0
+    With Npclist(NpcIndex)
+        If .flags.Inmovilizado = 1 Then
+            Select Case .Char.Heading
+                Case eHeading.NORTH
+                    SignoNS = -1
+                    SignoEO = 0
                 
-110                 Case eHeading.EAST
-112                     SignoNS = 0
-114                     SignoEO = 1
+                Case eHeading.EAST
+                    SignoNS = 0
+                    SignoEO = 1
                 
-116                 Case eHeading.SOUTH
-118                     SignoNS = 1
-120                     SignoEO = 0
+                Case eHeading.SOUTH
+                    SignoNS = 1
+                    SignoEO = 0
                 
-122                 Case eHeading.WEST
-124                     SignoEO = -1
-126                     SignoNS = 0
-
-                End Select
+                Case eHeading.WEST
+                    SignoEO = -1
+                    SignoNS = 0
+            End Select
             
-128             For Y = .Pos.Y To .Pos.Y + SignoNS * RANGO_VISION_Y Step IIf(SignoNS = 0, 1, SignoNS)
-130                 For X = .Pos.X To .Pos.X + SignoEO * RANGO_VISION_X Step IIf(SignoEO = 0, 1, SignoEO)
-
-132                     If X >= MinXBorder And X <= MaxXBorder And Y >= MinYBorder And Y <= MaxYBorder Then
-134                         NI = MapData(.Pos.Map, X, Y).NpcIndex
-
-136                         If NI > 0 Then
-138                             If .TargetNPC = NI Then
-140                                 bNoEsta = True
-
-142                                 If .Numero = ELEMENTALFUEGO Then
-144                                     Call NpcLanzaUnSpellSobreNpc(NpcIndex, NI)
-
-146                                     If Npclist(NI).NPCtype = DRAGON Then
-148                                         Npclist(NI).CanAttack = 1
-150                                         Call NpcLanzaUnSpellSobreNpc(NI, NpcIndex)
-
-                                        End If
-
-                                    Else
-
-                                        'aca verificamosss la distancia de ataque
-152                                     If Distancia(.Pos, Npclist(NI).Pos) <= 1 Then
-154                                         Call SistemaCombate.NpcAtacaNpc(NpcIndex, NI)
-
-                                        End If
-
+            For Y = .Pos.Y To .Pos.Y + SignoNS * RANGO_VISION_Y Step IIf(SignoNS = 0, 1, SignoNS)
+                For X = .Pos.X To .Pos.X + SignoEO * RANGO_VISION_X Step IIf(SignoEO = 0, 1, SignoEO)
+                    If X >= MinXBorder And X <= MaxXBorder And Y >= MinYBorder And Y <= MaxYBorder Then
+                        NI = MapData(.Pos.Map, X, Y).NpcIndex
+                        If NI > 0 Then
+                            If .TargetNPC = NI Then
+                                bNoEsta = True
+                                If .Numero = ELEMENTALFUEGO Then
+                                    Call NpcLanzaUnSpellSobreNpc(NpcIndex, NI)
+                                    If Npclist(NI).NPCtype = DRAGON Then
+                                        Npclist(NI).CanAttack = 1
+                                        Call NpcLanzaUnSpellSobreNpc(NI, NpcIndex)
+                                     End If
+                                 Else
+                                    'aca verificamosss la distancia de ataque
+                                    If Distancia(.Pos, Npclist(NI).Pos) <= 1 Then
+                                        Call SistemaCombate.NpcAtacaNpc(NpcIndex, NI)
                                     End If
-
-                                    Exit Sub
-
-                                End If
-
+                                 End If
+                                 Exit Sub
                             End If
+                       End If
+                    End If
+                Next X
+            Next Y
+        Else
+            For Y = .Pos.Y - RANGO_VISION_Y To .Pos.Y + RANGO_VISION_Y
+                For X = .Pos.X - RANGO_VISION_Y To .Pos.X + RANGO_VISION_Y
+                    If X >= MinXBorder And X <= MaxXBorder And Y >= MinYBorder And Y <= MaxYBorder Then
+                       NI = MapData(.Pos.Map, X, Y).NpcIndex
+                       If NI > 0 Then
+                            If .TargetNPC = NI Then
+                                 bNoEsta = True
+                                 If .Numero = ELEMENTALFUEGO Then
+                                     Call NpcLanzaUnSpellSobreNpc(NpcIndex, NI)
+                                     If Npclist(NI).NPCtype = DRAGON Then
+                                        Npclist(NI).CanAttack = 1
+                                        Call NpcLanzaUnSpellSobreNpc(NI, NpcIndex)
+                                     End If
+                                     Exit Sub
+                                 End If
 
-                        End If
-
-156                 Next X
-158             Next Y
-
+                                 If .TargetNPC = 0 Then Exit Sub
+                                 
+                                 tHeading = FindDirectionEAO(.Pos, Npclist(NI).Pos, .flags.AguaValida = 1, .flags.TierraInvalida = 0)
+                                 
+                                If Distancia(.Pos, Npclist(NI).Pos) <= 1 Then
+                                    Call ChangeNPCChar(NpcIndex, .Char.Body, .Char.Head, tHeading)
+                                    Call SistemaCombate.NpcAtacaNpc(NpcIndex, NI)
+                                Else
+                                    Call MoveNPCChar(NpcIndex, tHeading)
+                                End If
+                                Exit Sub
+                            End If
+                       End If
+                    End If
+                Next X
+            Next Y
+        End If
+        
+        If Not bNoEsta Then
+            If .MaestroUser > 0 Then
+                Call FollowAmo(NpcIndex)
             Else
-
-160             For Y = .Pos.Y - RANGO_VISION_Y To .Pos.Y + RANGO_VISION_Y
-162                 For X = .Pos.X - RANGO_VISION_Y To .Pos.X + RANGO_VISION_Y
-
-164                     If X >= MinXBorder And X <= MaxXBorder And Y >= MinYBorder And Y <= MaxYBorder Then
-166                         NI = MapData(.Pos.Map, X, Y).NpcIndex
-
-168                         If NI > 0 Then
-170                             If .TargetNPC = NI Then
-172                                 bNoEsta = True
-
-174                                 If .Numero = ELEMENTALFUEGO Then
-176                                     Call NpcLanzaUnSpellSobreNpc(NpcIndex, NI)
-
-178                                     If Npclist(NI).NPCtype = DRAGON Then
-180                                         Npclist(NI).CanAttack = 1
-182                                         Call NpcLanzaUnSpellSobreNpc(NI, NpcIndex)
-
-                                        End If
-
-                                    Else
-
-                                        'aca verificamosss la distancia de ataque
-184                                     If Distancia(.Pos, Npclist(NI).Pos) <= 1 Then
-186                                         Call SistemaCombate.NpcAtacaNpc(NpcIndex, NI)
-
-                                        End If
-
-                                    End If
-
-188                                 If .flags.Inmovilizado = 1 Then Exit Sub
-190                                 If .TargetNPC = 0 Then Exit Sub
-192                                 tHeading = FindDirectionEAO(.Pos, Npclist(MapData(.Pos.Map, X, Y).NpcIndex).Pos, Npclist(NpcIndex).flags.AguaValida = 1, Npclist(NpcIndex).flags.TierraInvalida = 0)
-                                 
-194                                 Call MoveNPCChar(NpcIndex, tHeading)
-                                 
-                                    Exit Sub
-
-                                End If
-
-                            End If
-
-                        End If
-
-196                 Next X
-198             Next Y
-
+                .Movement = .flags.OldMovement
+                .Hostile = .flags.OldHostil
             End If
-        
-200         If Not bNoEsta Then
-202             .Movement = .flags.OldMovement
-204             .Hostile = .flags.OldHostil
-
-            End If
-
-        End With
-
-        
-        Exit Sub
-
-AiNpcAtacaNpc_Err:
-        Call RegistrarError(Err.Number, Err.description, "AI.AiNpcAtacaNpc", Erl)
-        Resume Next
-        
+        End If
+    End With
+    
+    Exit Sub
+    
+SeguirAmo_Err:
+    Call RegistrarError(Err.Number, Err.description, "AI.SeguirAmo")
+    Resume Next
 End Sub
 
 Sub NPCAI(ByVal NpcIndex As Integer)

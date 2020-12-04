@@ -674,7 +674,7 @@ Public Sub UserDañoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
         'End If
     
 116     If apudaño > 0 Then
-118         Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageEfectOverHead("¡" & daño & "!", Npclist(NpcIndex).Char.CharIndex, &HFFFF00))
+118         Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageEfectOverHead("¡" & daño & "!", Npclist(NpcIndex).Char.CharIndex, vbYellow))
 
 120         If UserList(UserIndex).ChatCombate = 1 Then
                 'Call WriteConsoleMsg(UserIndex, "Has apuñalado la criatura por " & apudaño, FontTypeNames.FONTTYPE_FIGHT)
@@ -927,34 +927,35 @@ End Function
 Public Sub NpcDañoNpc(ByVal Atacante As Integer, ByVal Victima As Integer)
         
         On Error GoTo NpcDañoNpc_Err
-        
 
         Dim daño As Integer
-
-        Dim ANpc As npc
-
-100     ANpc = Npclist(Atacante)
     
-102     daño = RandomNumber(ANpc.Stats.MinHIT, ANpc.Stats.MaxHit)
-104     Npclist(Victima).Stats.MinHp = Npclist(Victima).Stats.MinHp - daño
-    
-106     If Npclist(Victima).Stats.MinHp < 1 Then
-        
-108         If LenB(Npclist(Atacante).flags.AttackedBy) <> 0 Then
-110             Npclist(Atacante).Movement = Npclist(Atacante).flags.OldMovement
-112             Npclist(Atacante).Hostile = Npclist(Atacante).flags.OldHostil
-            Else
-114             Npclist(Atacante).Movement = Npclist(Atacante).flags.OldMovement
-
+        With Npclist(Atacante)
+            daño = RandomNumber(.Stats.MinHIT, .Stats.MaxHit)
+            Npclist(Victima).Stats.MinHp = Npclist(Victima).Stats.MinHp - daño
+            
+            Call SendData(SendTarget.ToNPCArea, Victima, PrepareMessageEfectOverHead(daño, Npclist(Victima).Char.CharIndex))
+            
+            If Npclist(Victima).Stats.MinHp < 1 Then
+                .Movement = .flags.OldMovement
+                
+                If LenB(.flags.AttackedBy) <> 0 Then
+                    .Hostile = .flags.OldHostil
+                End If
+                
+                If .MaestroUser > 0 Then
+                    Call FollowAmo(Atacante)
+                End If
+                
+                Call MuereNpc(Victima, .MaestroUser)
             End If
-        
-        End If
+        End With
 
         
         Exit Sub
 
 NpcDañoNpc_Err:
-        Call RegistrarError(Err.Number, Err.description, "SistemaCombate.NpcDañoNpc", Erl)
+        Call RegistrarError(Err.Number, Err.description, "SistemaCombate.NpcDañoNpc")
         Resume Next
         
 End Sub
@@ -1567,7 +1568,7 @@ Public Sub UserDañoUser(ByVal atacanteindex As Integer, ByVal victimaindex As I
         End Select
     
 178     If apudaño > 0 Then
-180         Call SendData(SendTarget.ToPCArea, victimaindex, PrepareMessageEfectOverHead("¡" & daño & "!", UserList(victimaindex).Char.CharIndex, &HFFFF00))
+180         Call SendData(SendTarget.ToPCArea, victimaindex, PrepareMessageEfectOverHead("¡" & daño & "!", UserList(victimaindex).Char.CharIndex, vbYellow))
             
             If UserList(atacanteindex).ChatCombate = 1 Then
                 Call WriteConsoleMsg(atacanteindex, "Has apuñalado a " & UserList(victimaindex).name & " por " & daño & ".", FontTypeNames.FONTTYPE_FIGHT)

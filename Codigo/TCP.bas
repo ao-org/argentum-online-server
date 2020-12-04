@@ -774,7 +774,7 @@ Sub ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal UserR
         'Resetamos CORREO
     
 234     UserList(UserIndex).Pos.Map = 37
-236     UserList(UserIndex).Pos.x = 76
+236     UserList(UserIndex).Pos.X = 76
 238     UserList(UserIndex).Pos.Y = 82
     
 240     If Not Database_Enabled Then
@@ -798,7 +798,7 @@ End Sub
 
 Sub CloseSocket(ByVal UserIndex As Integer)
 
-On Error GoTo Errhandler
+On Error GoTo ErrHandler
 
     Call FlushBuffer(UserIndex)
 
@@ -862,7 +862,7 @@ On Error GoTo Errhandler
 
     Exit Sub
 
-Errhandler:
+ErrHandler:
     UserList(UserIndex).ConnID = -1
     UserList(UserIndex).ConnIDValida = False
     UserList(UserIndex).NumeroPaquetesPorMiliSec = 0
@@ -877,7 +877,7 @@ End Sub
 #ElseIf UsarQueSocket = 0 Then
 
 Sub CloseSocket(ByVal UserIndex As Integer)
-On Error GoTo Errhandler
+On Error GoTo ErrHandler
     
     
     
@@ -904,7 +904,7 @@ On Error GoTo Errhandler
 
 Exit Sub
 
-Errhandler:
+ErrHandler:
     UserList(UserIndex).ConnID = -1
     UserList(UserIndex).NumeroPaquetesPorMiliSec = 0
     Call ResetUserSlot(UserIndex)
@@ -920,7 +920,7 @@ End Sub
 
 Sub CloseSocket(ByVal UserIndex As Integer, Optional ByVal cerrarlo As Boolean = True)
 
-On Error GoTo Errhandler
+On Error GoTo ErrHandler
 
 Dim NURestados As Boolean
 Dim CoNnEcTiOnId As Long
@@ -962,7 +962,7 @@ Dim CoNnEcTiOnId As Long
 
 Exit Sub
 
-Errhandler:
+ErrHandler:
     UserList(UserIndex).NumeroPaquetesPorMiliSec = 0
     Call LogError("CLOSESOCKETERR: " & Err.description & " UI:" & UserIndex)
     
@@ -1065,18 +1065,18 @@ Function EstaPCarea(Index As Integer, Index2 As Integer) As Boolean
         On Error GoTo EstaPCarea_Err
         
 
-        Dim x As Integer, Y As Integer
+        Dim X As Integer, Y As Integer
 
 100     For Y = UserList(Index).Pos.Y - MinYBorder + 1 To UserList(Index).Pos.Y + MinYBorder - 1
-102         For x = UserList(Index).Pos.x - MinXBorder + 1 To UserList(Index).Pos.x + MinXBorder - 1
+102         For X = UserList(Index).Pos.X - MinXBorder + 1 To UserList(Index).Pos.X + MinXBorder - 1
 
-104             If MapData(UserList(Index).Pos.Map, x, Y).UserIndex = Index2 Then
+104             If MapData(UserList(Index).Pos.Map, X, Y).UserIndex = Index2 Then
 106                 EstaPCarea = True
                     Exit Function
 
                 End If
         
-108         Next x
+108         Next X
 110     Next Y
 
 112     EstaPCarea = False
@@ -1095,13 +1095,13 @@ Function HayPCarea(Pos As WorldPos) As Boolean
         On Error GoTo HayPCarea_Err
         
 
-        Dim x As Integer, Y As Integer
+        Dim X As Integer, Y As Integer
 
 100     For Y = Pos.Y - MinYBorder + 1 To Pos.Y + MinYBorder - 1
-102         For x = Pos.x - MinXBorder + 1 To Pos.x + MinXBorder - 1
+102         For X = Pos.X - MinXBorder + 1 To Pos.X + MinXBorder - 1
 
-104             If x > 0 And Y > 0 And x < 101 And Y < 101 Then
-106                 If MapData(Pos.Map, x, Y).UserIndex > 0 Then
+104             If X > 0 And Y > 0 And X < 101 And Y < 101 Then
+106                 If MapData(Pos.Map, X, Y).UserIndex > 0 Then
 108                     HayPCarea = True
                         Exit Function
 
@@ -1109,7 +1109,7 @@ Function HayPCarea(Pos As WorldPos) As Boolean
 
                 End If
 
-110         Next x
+110         Next X
 112     Next Y
 
 114     HayPCarea = False
@@ -1128,18 +1128,18 @@ Function HayOBJarea(Pos As WorldPos, ObjIndex As Integer) As Boolean
         On Error GoTo HayOBJarea_Err
         
 
-        Dim x As Integer, Y As Integer
+        Dim X As Integer, Y As Integer
 
 100     For Y = Pos.Y - MinYBorder + 1 To Pos.Y + MinYBorder - 1
-102         For x = Pos.x - MinXBorder + 1 To Pos.x + MinXBorder - 1
+102         For X = Pos.X - MinXBorder + 1 To Pos.X + MinXBorder - 1
 
-104             If MapData(Pos.Map, x, Y).ObjInfo.ObjIndex = ObjIndex Then
+104             If MapData(Pos.Map, X, Y).ObjInfo.ObjIndex = ObjIndex Then
 106                 HayOBJarea = True
                     Exit Function
 
                 End If
         
-108         Next x
+108         Next X
 110     Next Y
 
 112     HayOBJarea = False
@@ -1248,7 +1248,7 @@ End Function
 
 Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuenta As String)
 
-    On Error GoTo Errhandler
+    On Error GoTo ErrHandler
 
     With UserList(UserIndex)
 
@@ -1473,7 +1473,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
         
         'Tratamos de evitar en lo posible el "Telefrag". Solo 1 intento de loguear en pos adjacentes.
         'Codigo por Pablo (ToxicWaste) y revisado por Nacho (Integer), corregido para que realmetne ande y no tire el server por Juan Martin Sotuyo Dodero (Maraxus)
-        If MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex <> 0 Or MapData(.Pos.Map, .Pos.x, .Pos.Y).NpcIndex <> 0 Then
+        If MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex <> 0 Or MapData(.Pos.Map, .Pos.X, .Pos.Y).NpcIndex <> 0 Then
 
             Dim FoundPlace As Boolean
 
@@ -1484,10 +1484,10 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
             Dim tY         As Long
         
             FoundPlace = False
-            esAgua = (MapData(.Pos.Map, .Pos.x, .Pos.Y).Blocked And FLAG_AGUA) <> 0
+            esAgua = (MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked And FLAG_AGUA) <> 0
         
             For tY = .Pos.Y - 1 To .Pos.Y + 1
-                For tX = .Pos.x - 1 To .Pos.x + 1
+                For tX = .Pos.X - 1 To .Pos.X + 1
 
                     If esAgua Then
 
@@ -1515,31 +1515,31 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
             Next tY
         
             If FoundPlace Then 'Si encontramos un lugar, listo, nos quedamos ahi
-                .Pos.x = tX
+                .Pos.X = tX
                 .Pos.Y = tY
             Else
 
                 'Si no encontramos un lugar, sacamos al usuario que tenemos abajo, y si es un NPC, lo pisamos.
-                If MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex <> 0 Then
+                If MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex <> 0 Then
 
                     'Si no encontramos lugar, y abajo teniamos a un usuario, lo pisamos y cerramos su comercio seguro
-                    If UserList(MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex).ComUsu.DestUsu > 0 Then
+                    If UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu > 0 Then
 
                         'Le avisamos al que estaba comerciando que se tuvo que ir.
-                        If UserList(UserList(MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex).ComUsu.DestUsu).flags.UserLogged Then
-                            Call FinComerciarUsu(UserList(MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex).ComUsu.DestUsu)
-                            Call WriteConsoleMsg(UserList(MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex).ComUsu.DestUsu, "Comercio cancelado. El otro usuario se ha desconectado.", FontTypeNames.FONTTYPE_WARNING)
+                        If UserList(UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu).flags.UserLogged Then
+                            Call FinComerciarUsu(UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu)
+                            Call WriteConsoleMsg(UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu, "Comercio cancelado. El otro usuario se ha desconectado.", FontTypeNames.FONTTYPE_WARNING)
                         End If
 
                         'Lo sacamos.
-                        If UserList(MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex).flags.UserLogged Then
-                            Call FinComerciarUsu(MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex)
-                            Call WriteErrorMsg(MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex, "Alguien se ha conectado donde te encontrabas, por favor reconectate...")
+                        If UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).flags.UserLogged Then
+                            Call FinComerciarUsu(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex)
+                            Call WriteErrorMsg(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex, "Alguien se ha conectado donde te encontrabas, por favor reconectate...")
                         End If
 
                     End If
                 
-                    Call CloseSocket(MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex)
+                    Call CloseSocket(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex)
 
                 End If
 
@@ -1548,7 +1548,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
         End If
         
         'If in the water, and has a boat, equip it!
-        If .Invent.BarcoObjIndex > 0 And (MapData(.Pos.Map, .Pos.x, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Then
+        If .Invent.BarcoObjIndex > 0 And (MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Then
 
             Dim Barco As ObjData
 
@@ -1638,7 +1638,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
         End If
         
         'Crea  el personaje del usuario
-        Call MakeUserChar(True, .Pos.Map, UserIndex, .Pos.Map, .Pos.x, .Pos.Y, 1)
+        Call MakeUserChar(True, .Pos.Map, UserIndex, .Pos.Map, .Pos.X, .Pos.Y, 1)
 
         Call WriteUserCharIndexInServer(UserIndex)
         
@@ -1782,7 +1782,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
     
     Exit Sub
     
-Errhandler:
+ErrHandler:
     Call WriteShowMessageBox(UserIndex, "El personaje contiene un error, comuniquese con un miembro del staff.")
     
     
@@ -1984,7 +1984,7 @@ Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
 112         .Desc = vbNullString
 114         .DescRM = vbNullString
 116         .Pos.Map = 0
-118         .Pos.x = 0
+118         .Pos.X = 0
 120         .Pos.Y = 0
 122         .ip = vbNullString
 124         .clase = 0
@@ -2397,11 +2397,12 @@ End Sub
 
 Sub CloseUser(ByVal UserIndex As Integer)
 
-    On Error GoTo Errhandler
+    On Error GoTo ErrHandler
     
     Dim errordesc As String
     Dim Map As Integer
     Dim aN  As Integer
+    Dim i   As Integer
     
     Map = UserList(UserIndex).Pos.Map
     
@@ -2433,7 +2434,17 @@ Sub CloseUser(ByVal UserIndex As Integer)
 
     If UserList(UserIndex).flags.Montado > 0 Then
         Call DoMontar(UserIndex, ObjData(UserList(UserIndex).Invent.MonturaObjIndex), UserList(UserIndex).Invent.MonturaSlot)
-
+    End If
+    
+    errordesc = "ERROR AL SACAR MIMETISMO"
+    If UserList(UserIndex).flags.Mimetizado = 1 Then
+        UserList(UserIndex).Char.Body = UserList(UserIndex).CharMimetizado.Body
+        UserList(UserIndex).Char.Head = UserList(UserIndex).CharMimetizado.Head
+        UserList(UserIndex).Char.CascoAnim = UserList(UserIndex).CharMimetizado.CascoAnim
+        UserList(UserIndex).Char.ShieldAnim = UserList(UserIndex).CharMimetizado.ShieldAnim
+        UserList(UserIndex).Char.WeaponAnim = UserList(UserIndex).CharMimetizado.WeaponAnim
+        UserList(UserIndex).Counters.Mimetismo = 0
+        UserList(UserIndex).flags.Mimetizado = 0
     End If
     
     errordesc = "ERROR AL ENVIAR PARTICULA"
@@ -2494,6 +2505,16 @@ Sub CloseUser(ByVal UserIndex As Integer)
     'Borrar el personaje
     Call EraseUserChar(UserIndex, True)
     
+    errordesc = "ERROR AL BORRAR MASCOTAS"
+    
+    'Borrar mascotas
+    For i = 1 To MAXMASCOTAS
+        If UserList(UserIndex).MascotasIndex(i) > 0 Then
+            If Npclist(UserList(UserIndex).MascotasIndex(i)).flags.NPCActive Then _
+                Call QuitarNPC(UserList(UserIndex).MascotasIndex(i))
+        End If
+    Next i
+    
     errordesc = "ERROR Update Map Users"
     
     'Update Map Users
@@ -2515,7 +2536,7 @@ Sub CloseUser(ByVal UserIndex As Integer)
     
     Exit Sub
     
-Errhandler:
+ErrHandler:
     Call LogError("Error en CloseUser. Número " & Err.Number & ". Descripción: " & Err.description & ". Detalle:" & errordesc)
 
     Resume Next ' TODO: Provisional hasta solucionar bugs graves
@@ -2524,7 +2545,7 @@ End Sub
 
 Sub ReloadSokcet()
 
-    On Error GoTo Errhandler
+    On Error GoTo ErrHandler
 
     #If UsarQueSocket = 1 Then
 
@@ -2548,7 +2569,7 @@ Sub ReloadSokcet()
     #End If
 
     Exit Sub
-Errhandler:
+ErrHandler:
     Call LogError("Error en CheckSocketState " & Err.Number & ": " & Err.description)
 
 End Sub
