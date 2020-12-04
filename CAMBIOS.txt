@@ -34,6 +34,7 @@
 - Deshardcodear herramientas del código.
 - Transferir plata hacerlo que funcione con la DB
 - GM invisible y caspers se atravesan
+- Implementado comando /HOGAR (solo muertos) con tiempo en funcion de la distancia de mapas con respecto al hogar elegido.
 - Fix: Al nacer con 0 de maná máxima se oculta el indicador de maná. Pero no se vuelve a mostrar cuando ganás maná.
 - Fix: Desloguear paralizado quedás paralizado para siempre
 
