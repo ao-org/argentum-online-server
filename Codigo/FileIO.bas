@@ -718,7 +718,7 @@ Public Sub CargarHechizos()
         Hechizos(Hechizo).Invoca = val(Leer.GetValue("Hechizo" & Hechizo, "Invoca"))
         Hechizos(Hechizo).NumNpc = val(Leer.GetValue("Hechizo" & Hechizo, "NumNpc"))
         Hechizos(Hechizo).cant = val(Leer.GetValue("Hechizo" & Hechizo, "Cant"))
-        'Hechizos(Hechizo).Mimetiza = val(Leer.GetValue("Hechizo" & Hechizo, "Mimetiza"))
+        Hechizos(Hechizo).Mimetiza = val(Leer.GetValue("Hechizo" & Hechizo, "Mimetiza"))
     
         Hechizos(Hechizo).GolpeCertero = val(Leer.GetValue("Hechizo" & Hechizo, "GolpeCertero"))
     
@@ -2040,8 +2040,6 @@ Sub LoadMapData()
     
     NumMaps = CountFiles(MapPath, "*.csm")
     
-    Call InitAreas
-    
     frmCargando.cargar.min = 0
     frmCargando.cargar.max = NumMaps
     frmCargando.cargar.Value = 0
@@ -2062,6 +2060,8 @@ Sub LoadMapData()
         DoEvents
         
     Next Map
+    
+    Call InitAreas
 
     frmCargando.ToMapLbl.Visible = False
     

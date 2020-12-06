@@ -585,8 +585,11 @@ Sub Main()
     frmCargando.Label1(2).Caption = "Cargando Recursos Especiales"
     Call LoadRecursosEspeciales
     
-    frmCargando.Label1(2).Caption = "Cargando Balance.Dat"
+    frmCargando.Label1(2).Caption = "Cargando Balance.dat"
     Call LoadBalance    '4/01/08 Pablo ToxicWaste
+    
+    frmCargando.Label1(2).Caption = "Cargando Ciudades.dat"
+    Call CargarCiudades
     
     If BootDelBackUp Then
         frmCargando.Label1(2).Caption = "Cargando BackUp"
@@ -1377,6 +1380,19 @@ Intemperie_Err:
         
 End Function
 
+Public Sub TiempoInvocacion(ByVal UserIndex As Integer)
+    Dim i As Integer
+    For i = 1 To MAXMASCOTAS
+        If UserList(UserIndex).MascotasIndex(i) > 0 Then
+            If Npclist(UserList(UserIndex).MascotasIndex(i)).Contadores.TiempoExistencia > 0 Then
+               Npclist(UserList(UserIndex).MascotasIndex(i)).Contadores.TiempoExistencia = _
+               Npclist(UserList(UserIndex).MascotasIndex(i)).Contadores.TiempoExistencia - 1
+               If Npclist(UserList(UserIndex).MascotasIndex(i)).Contadores.TiempoExistencia = 0 Then Call MuereNpc(UserList(UserIndex).MascotasIndex(i), 0)
+            End If
+        End If
+    Next i
+End Sub
+
 Public Sub EfectoFrio(ByVal UserIndex As Integer)
         
         On Error GoTo EfectoFrio_Err
@@ -1476,6 +1492,56 @@ EfectoLava_Err:
 
 126     Resume Next
         
+End Sub
+
+''
+' Maneja el tiempo y el efecto del mimetismo
+'
+' @param UserIndex  El index del usuario a ser afectado por el mimetismo
+'
+
+Public Sub EfectoMimetismo(ByVal UserIndex As Integer)
+'******************************************************
+'Author: Unknown
+'Last Update: 04/11/2008 (NicoNZ)
+'
+'******************************************************
+    Dim Barco As ObjData
+    
+    With UserList(UserIndex)
+        If .Counters.Mimetismo < IntervaloInvisible Then
+            .Counters.Mimetismo = .Counters.Mimetismo + 1
+        Else
+            'restore old char
+            Call WriteConsoleMsg(UserIndex, "Recuperas tu apariencia normal.", FontTypeNames.FONTTYPE_INFO)
+            
+            If .flags.Navegando Then
+                If .flags.Muerto = 0 Then
+                    Barco = ObjData(UserList(UserIndex).Invent.BarcoObjIndex)
+                    .Char.Body = Barco.Ropaje
+                Else
+                    .Char.Body = iFragataFantasmal
+                End If
+                
+                .Char.ShieldAnim = NingunEscudo
+                .Char.WeaponAnim = NingunArma
+                .Char.CascoAnim = NingunCasco
+            Else
+                .Char.Body = .CharMimetizado.Body
+                .Char.Head = .CharMimetizado.Head
+                .Char.CascoAnim = .CharMimetizado.CascoAnim
+                .Char.ShieldAnim = .CharMimetizado.ShieldAnim
+                .Char.WeaponAnim = .CharMimetizado.WeaponAnim
+            End If
+            
+            With .Char
+                Call ChangeUserChar(UserIndex, .Body, .Head, .Heading, .WeaponAnim, .ShieldAnim, .CascoAnim)
+            End With
+            
+            .Counters.Mimetismo = 0
+            .flags.Mimetizado = 0
+        End If
+    End With
 End Sub
 
 Public Sub EfectoInvisibilidad(ByVal UserIndex As Integer)
