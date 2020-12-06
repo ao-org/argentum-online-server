@@ -1532,7 +1532,6 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                 'Quita el anterior
                 If .Invent.CascoEqpObjIndex > 0 Then
                     Call Desequipar(UserIndex, .Invent.CascoEqpSlot)
-
                 End If
             
                 errordesc = "Casco"

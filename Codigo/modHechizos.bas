@@ -53,7 +53,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
         If Hechizos(Spell).SubeHP = 1 Then
 
             daño = RandomNumber(Hechizos(Spell).MinHp, Hechizos(Spell).MaxHp)
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.Y))
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.x, .Pos.Y))
             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
 
             .Stats.MinHp = .Stats.MinHp + daño
@@ -80,8 +80,9 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
         
             If daño < 0 Then daño = 0
         
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.Y))
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.x, .Pos.Y))
             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageEfectOverHead(daño, .Char.CharIndex))
                 
             If Hechizos(Spell).Particle > 0 Then '¿Envio Particula?
 
@@ -117,7 +118,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
         ElseIf Hechizos(Spell).Paraliza = 1 Then
 
             If .flags.Paralizado = 0 Then
-                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.Y))
+                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.x, .Pos.Y))
                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
 
                 .flags.Paralizado = 1
@@ -132,7 +133,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
             Debug.Print "incinerar"
 
             If .flags.Incinerado = 0 Then
-                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.Y))
+                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.x, .Pos.Y))
 
                 If Hechizos(Spell).Particle > 0 Then '¿Envio Particula?
                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, Hechizos(Spell).Particle, Hechizos(Spell).TimeParticula, False))
@@ -172,12 +173,16 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
 104     If Hechizos(Spell).SubeHP = 2 Then
     
 106         daño = RandomNumber(Hechizos(Spell).MinHp, Hechizos(Spell).MaxHp)
-108         Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessagePlayWave(Hechizos(Spell).wav, Npclist(TargetNPC).Pos.X, Npclist(TargetNPC).Pos.Y))
+108         Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessagePlayWave(Hechizos(Spell).wav, Npclist(TargetNPC).Pos.x, Npclist(TargetNPC).Pos.Y))
 110         Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessageCreateFX(Npclist(TargetNPC).Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
+111         Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessageEfectOverHead(daño, Npclist(TargetNPC).Char.CharIndex))
         
 112         Npclist(TargetNPC).Stats.MinHp = Npclist(TargetNPC).Stats.MinHp - daño
-        
-            'Call CalcularDarExp(Npclist(NpcIndex).MaestroUser, TargetNPC, daño)
+
+            ' Mascotas dan experiencia al amo
+            If Npclist(NpcIndex).MaestroUser > 0 Then
+                Call CalcularDarExp(Npclist(NpcIndex).MaestroUser, TargetNPC, daño)
+            End If
         
             'Muere
 114         If Npclist(TargetNPC).Stats.MinHp < 1 Then
@@ -284,7 +289,7 @@ Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As Integer, 
             Dim wp2 As WorldPos
 
 102         wp2.Map = UserList(UserIndex).flags.TargetMap
-104         wp2.X = UserList(UserIndex).flags.TargetX
+104         wp2.x = UserList(UserIndex).flags.TargetX
 106         wp2.Y = UserList(UserIndex).flags.TargetY
     
 108         If Hechizos(HechizoIndex).NecesitaObj > 0 Then
@@ -370,6 +375,149 @@ PuedeLanzar_Err:
         
 End Function
 
+''
+' Le da propiedades al nuevo npc
+'
+' @param UserIndex  Indice del usuario que invoca.
+' @param b  Indica si se termino la operación.
+
+Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
+    '***************************************************
+    'Author: Uknown
+    'Modification: 06/15/2008 (NicoNZ)
+    'Last modification: 01/12/2020 (WyroX)
+    'Sale del sub si no hay una posición valida.
+    '***************************************************
+    
+    On Error GoTo HechizoInvocacion_Err
+    
+    With UserList(UserIndex)
+    
+        Dim h As Integer, j As Integer, ind As Integer, Index As Integer
+        Dim TargetPos As WorldPos
+    
+        TargetPos.Map = .flags.TargetMap
+        TargetPos.x = .flags.TargetX
+        TargetPos.Y = .flags.TargetY
+        
+        h = .Stats.UserHechizos(.flags.Hechizo)
+    
+        If Hechizos(h).Invoca = 1 Then
+    
+            If .NroMascotas >= MAXMASCOTAS Then Exit Sub
+        
+            'No deja invocar mas de 1 fatuo
+            If Hechizos(h).NumNpc = FUEGOFATUO And .NroMascotas >= 1 Then
+                Call WriteConsoleMsg(UserIndex, "Para invocar el fuego fatuo no debes tener otras criaturas.", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+        
+            'No permitimos se invoquen criaturas en zonas seguras
+            If MapInfo(.Pos.Map).Seguro Or MapData(.Pos.Map, .Pos.x, .Pos.Y).trigger = eTrigger.ZONASEGURA Then
+                Call WriteConsoleMsg(UserIndex, "En zona segura no puedes invocar criaturas.", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+        
+            For j = 1 To Hechizos(h).cant
+                
+                If .NroMascotas < MAXMASCOTAS Then
+                    ind = SpawnNpc(Hechizos(h).NumNpc, TargetPos, True, False)
+                    If ind > 0 Then
+                        .NroMascotas = .NroMascotas + 1
+                        
+                        Index = FreeMascotaIndex(UserIndex)
+                        
+                        .MascotasIndex(Index) = ind
+                        .MascotasType(Index) = Npclist(ind).Numero
+                        
+                        Npclist(ind).MaestroUser = UserIndex
+                        Npclist(ind).Contadores.TiempoExistencia = IntervaloInvocacion
+                        Npclist(ind).GiveGLD = 0
+                        
+                        Call FollowAmo(ind)
+                    Else
+                        Exit Sub
+                    End If
+                        
+                Else
+                    Exit For
+                End If
+                
+            Next j
+            
+            Call InfoHechizo(UserIndex)
+            b = True
+        
+        ElseIf Hechizos(h).Invoca = 2 Then
+            
+            ' Si tiene mascotas
+            If .NroMascotas > 0 Then
+                ' Tiene que estar en zona insegura
+                If Not MapInfo(.Pos.Map).Seguro Then
+
+                    Dim i As Integer
+                    
+                    ' Si no están guardadas las mascotas
+                    If .flags.MascotasGuardadas = 0 Then
+                        For i = 1 To MAXMASCOTAS
+                            If .MascotasIndex(i) > 0 Then
+                                ' Si no es un elemental, lo "guardamos"... lo matamos
+                                If Npclist(.MascotasIndex(i)).Contadores.TiempoExistencia = 0 Then
+                                    ' Le saco el maestro, para que no me lo quite de mis mascotas
+                                    Npclist(.MascotasIndex(i)).MaestroUser = 0
+                                    ' Lo borro
+                                    Call QuitarNPC(.MascotasIndex(i))
+                                    ' Saco el índice
+                                    .MascotasIndex(i) = 0
+                                    
+                                    b = True
+                                End If
+                            End If
+                        Next
+                        
+                        .flags.MascotasGuardadas = 1
+
+                    ' Ya están guardadas, así que las invocamos
+                    Else
+                        For i = 1 To MAXMASCOTAS
+                            ' Si está guardada y no está ya en el mapa
+                            If .MascotasType(i) > 0 And .MascotasIndex(i) = 0 Then
+                                .MascotasIndex(i) = SpawnNpc(.MascotasType(i), TargetPos, True, True)
+
+                                Npclist(.MascotasIndex(i)).MaestroUser = UserIndex
+                                Call FollowAmo(.MascotasIndex(i))
+                                
+                                b = True
+                            End If
+                        Next
+                        
+                        .flags.MascotasGuardadas = 0
+                    End If
+                
+                Else
+                    Call WriteConsoleMsg(UserIndex, "No puedes invocar tus mascotas en un mapa seguro.", FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                End If
+            
+            Else
+                Call WriteConsoleMsg(UserIndex, "No tienes mascotas.", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+
+            If b Then Call InfoHechizo(UserIndex)
+            
+        End If
+    
+    End With
+    
+    Exit Sub
+    
+HechizoInvocacion_Err:
+    Call RegistrarError(Err.Number, Err.description, "modHechizos.HechizoTerrenoEstado")
+    Resume Next
+
+End Sub
+
 Sub HechizoTerrenoEstado(ByVal UserIndex As Integer, ByRef b As Boolean)
         
         On Error GoTo HechizoTerrenoEstado_Err
@@ -454,7 +602,7 @@ Sub HechizoSobreArea(ByVal UserIndex As Integer, ByRef b As Boolean)
  
 106     h = UserList(UserIndex).Stats.UserHechizos(UserList(UserIndex).flags.Hechizo)
 
-        Dim X         As Long
+        Dim x         As Long
 
         Dim Y         As Long
     
@@ -498,11 +646,11 @@ Sub HechizoSobreArea(ByVal UserIndex As Integer, ByRef b As Boolean)
 
             Case 1
 
-130             For X = 1 To Hechizos(h).AreaRadio
+130             For x = 1 To Hechizos(h).AreaRadio
 132                 For Y = 1 To Hechizos(h).AreaRadio
 
-134                     If MapData(UserList(UserIndex).Pos.Map, X + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).UserIndex > 0 Then
-136                         NPCIndex2 = MapData(UserList(UserIndex).Pos.Map, X + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).UserIndex
+134                     If MapData(UserList(UserIndex).Pos.Map, x + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).UserIndex > 0 Then
+136                         NPCIndex2 = MapData(UserList(UserIndex).Pos.Map, x + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).UserIndex
 
                             'If NPCIndex2 <> UserIndex Then
 138                         If UserList(NPCIndex2).flags.Muerto = 0 Then
@@ -524,11 +672,11 @@ Sub HechizoSobreArea(ByVal UserIndex As Integer, ByRef b As Boolean)
                 ' End If
 144         Case 2
 
-146             For X = 1 To Hechizos(h).AreaRadio
+146             For x = 1 To Hechizos(h).AreaRadio
 148                 For Y = 1 To Hechizos(h).AreaRadio
 
-150                     If MapData(UserList(UserIndex).Pos.Map, X + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).NpcIndex > 0 Then
-152                         NPCIndex2 = MapData(UserList(UserIndex).Pos.Map, X + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).NpcIndex
+150                     If MapData(UserList(UserIndex).Pos.Map, x + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).NpcIndex > 0 Then
+152                         NPCIndex2 = MapData(UserList(UserIndex).Pos.Map, x + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).NpcIndex
 
 154                         If Npclist(NPCIndex2).Attackable Then
 156                             AreaHechizo UserIndex, NPCIndex2, PosCasteadaX, PosCasteadaY, True
@@ -546,11 +694,11 @@ Sub HechizoSobreArea(ByVal UserIndex As Integer, ByRef b As Boolean)
                 '  End If
 160         Case 3
 
-162             For X = 1 To Hechizos(h).AreaRadio
+162             For x = 1 To Hechizos(h).AreaRadio
 164                 For Y = 1 To Hechizos(h).AreaRadio
 
-166                     If MapData(UserList(UserIndex).Pos.Map, X + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).UserIndex > 0 Then
-168                         NPCIndex2 = MapData(UserList(UserIndex).Pos.Map, X + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).UserIndex
+166                     If MapData(UserList(UserIndex).Pos.Map, x + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).UserIndex > 0 Then
+168                         NPCIndex2 = MapData(UserList(UserIndex).Pos.Map, x + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).UserIndex
 
                             'If NPCIndex2 <> UserIndex Then
 170                         If UserList(NPCIndex2).flags.Muerto = 0 Then
@@ -562,8 +710,8 @@ Sub HechizoSobreArea(ByVal UserIndex As Integer, ByRef b As Boolean)
                             ' End If
                         End If
                             
-176                     If MapData(UserList(UserIndex).Pos.Map, X + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).NpcIndex > 0 Then
-178                         NPCIndex2 = MapData(UserList(UserIndex).Pos.Map, X + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).NpcIndex
+176                     If MapData(UserList(UserIndex).Pos.Map, x + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).NpcIndex > 0 Then
+178                         NPCIndex2 = MapData(UserList(UserIndex).Pos.Map, x + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).NpcIndex
 
 180                         If Npclist(NPCIndex2).Attackable Then
 182                             AreaHechizo UserIndex, NPCIndex2, PosCasteadaX, PosCasteadaY, True
@@ -728,8 +876,8 @@ Sub HandleHechizoTerreno(ByVal UserIndex As Integer, ByVal uh As Integer)
 100     Select Case Hechizos(uh).Tipo
         
             Case TipoHechizo.uInvocacion 'Tipo 1
+                Call HechizoInvocacion(UserIndex, b)
 
-                'Call HechizoInvocacion(UserIndex, b)
 102         Case TipoHechizo.uEstado 'Tipo 2
 104             Call HechizoTerrenoEstado(UserIndex, b)
 
@@ -1118,6 +1266,57 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 154         Call InfoHechizo(UserIndex)
 156         b = True
 
+        End If
+        
+        If Hechizos(h).Mimetiza = 1 Then
+            If UserList(tU).flags.Muerto = 1 Then
+                Exit Sub
+            End If
+            
+            If UserList(tU).flags.Navegando = 1 Then
+                Exit Sub
+            End If
+            If UserList(UserIndex).flags.Navegando = 1 Then
+                Exit Sub
+            End If
+            
+            'Si sos user, no uses este hechizo con GMS.
+            If UserList(UserIndex).flags.Privilegios And PlayerType.user Then
+                If Not UserList(tU).flags.Privilegios And PlayerType.user Then
+                    Exit Sub
+                End If
+            End If
+            
+            If UserList(UserIndex).flags.Mimetizado = 1 Then
+                Call WriteConsoleMsg(UserIndex, "Ya te encuentras transformado. El hechizo no ha tenido efecto", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+            
+            If UserList(UserIndex).flags.AdminInvisible = 1 Then Exit Sub
+            
+            'copio el char original al mimetizado
+            
+            With UserList(UserIndex)
+                .CharMimetizado.Body = .Char.Body
+                .CharMimetizado.Head = .Char.Head
+                .CharMimetizado.CascoAnim = .Char.CascoAnim
+                .CharMimetizado.ShieldAnim = .Char.ShieldAnim
+                .CharMimetizado.WeaponAnim = .Char.WeaponAnim
+                
+                .flags.Mimetizado = 1
+                
+                'ahora pongo local el del enemigo
+                .Char.Body = UserList(tU).Char.Body
+                .Char.Head = UserList(tU).Char.Head
+                .Char.CascoAnim = UserList(tU).Char.CascoAnim
+                .Char.ShieldAnim = UserList(tU).Char.ShieldAnim
+                .Char.WeaponAnim = UserList(tU).Char.WeaponAnim
+            
+                Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+            End With
+           
+           Call InfoHechizo(UserIndex)
+           b = True
         End If
 
 158     If Hechizos(h).Envenena > 0 Then
@@ -1774,6 +1973,44 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
 
         End If
 
+        If Hechizos(hIndex).Mimetiza = 1 Then
+    
+            If UserList(UserIndex).flags.Mimetizado = 1 Then
+                Call WriteConsoleMsg(UserIndex, "Ya te encuentras transformado. El hechizo no ha tenido efecto", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+            
+            If UserList(UserIndex).flags.AdminInvisible = 1 Then Exit Sub
+            
+                
+            If UserList(UserIndex).clase = eClass.Druid Then
+                'copio el char original al mimetizado
+                With UserList(UserIndex)
+                    .CharMimetizado.Body = .Char.Body
+                    .CharMimetizado.Head = .Char.Head
+                    .CharMimetizado.CascoAnim = .Char.CascoAnim
+                    .CharMimetizado.ShieldAnim = .Char.ShieldAnim
+                    .CharMimetizado.WeaponAnim = .Char.WeaponAnim
+                    
+                    .flags.Mimetizado = 1
+                    
+                    'ahora pongo lo del NPC.
+                    .Char.Body = Npclist(NpcIndex).Char.Body
+                    .Char.Head = Npclist(NpcIndex).Char.Head
+                    .Char.CascoAnim = NingunCasco
+                    .Char.ShieldAnim = NingunEscudo
+                    .Char.WeaponAnim = NingunArma
+                
+                    Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+                End With
+            Else
+                Call WriteConsoleMsg(UserIndex, "Solo los druidas pueden mimetizarse con criaturas.", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+        
+           Call InfoHechizo(UserIndex)
+           b = True
+        End If
         
         Exit Sub
 
@@ -1806,7 +2043,7 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal Use
 
 108         If Npclist(NpcIndex).Stats.MinHp > Npclist(NpcIndex).Stats.MaxHp Then Npclist(NpcIndex).Stats.MinHp = Npclist(NpcIndex).Stats.MaxHp
 110         Call WriteConsoleMsg(UserIndex, "Has curado " & daño & " puntos de salud a la criatura.", FontTypeNames.FONTTYPE_FIGHT)
-112         Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageEfectOverHead(daño, Npclist(NpcIndex).Char.CharIndex, &HFF00))
+112         Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageEfectOverHead(daño, Npclist(NpcIndex).Char.CharIndex, vbGreen))
 114         b = True
         
 116     ElseIf Hechizos(hIndex).SubeHP = 2 Then
@@ -1835,7 +2072,7 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal Use
 132         b = True
         
 134         If Npclist(NpcIndex).flags.Snd2 > 0 Then
-136             Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessagePlayWave(Npclist(NpcIndex).flags.Snd2, Npclist(NpcIndex).Pos.X, Npclist(NpcIndex).Pos.Y))
+136             Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessagePlayWave(Npclist(NpcIndex).flags.Snd2, Npclist(NpcIndex).Pos.x, Npclist(NpcIndex).Pos.Y))
             End If
         
             'Quizas tenga defenza magica el NPC.
@@ -1910,7 +2147,7 @@ Sub InfoHechizo(ByVal UserIndex As Integer)
             End If
         
 124         If Hechizos(h).ParticleViaje = 0 Then
-126             Call SendData(SendTarget.ToPCArea, UserList(UserIndex).flags.TargetUser, PrepareMessagePlayWave(Hechizos(h).wav, UserList(UserList(UserIndex).flags.TargetUser).Pos.X, UserList(UserList(UserIndex).flags.TargetUser).Pos.Y)) 'Esta linea faltaba. Pablo (ToxicWaste)
+126             Call SendData(SendTarget.ToPCArea, UserList(UserIndex).flags.TargetUser, PrepareMessagePlayWave(Hechizos(h).wav, UserList(UserList(UserIndex).flags.TargetUser).Pos.x, UserList(UserList(UserIndex).flags.TargetUser).Pos.Y)) 'Esta linea faltaba. Pablo (ToxicWaste)
 
             End If
         
@@ -1947,7 +2184,7 @@ Sub InfoHechizo(ByVal UserIndex As Integer)
         
 150         If Hechizos(h).Particle > 0 Then '¿Envio Particula?
 152             If Npclist(UserList(UserIndex).flags.TargetNPC).Stats.MinHp < 1 Then
-154                 Call SendData(SendTarget.ToNPCArea, UserList(UserIndex).flags.TargetNPC, PrepareMessageParticleFXWithDestinoXY(UserList(UserIndex).Char.CharIndex, Hechizos(h).ParticleViaje, Hechizos(h).Particle, Hechizos(h).TimeParticula, Hechizos(h).wav, 0, Npclist(UserList(UserIndex).flags.TargetNPC).Pos.X, Npclist(UserList(UserIndex).flags.TargetNPC).Pos.Y))
+154                 Call SendData(SendTarget.ToNPCArea, UserList(UserIndex).flags.TargetNPC, PrepareMessageParticleFXWithDestinoXY(UserList(UserIndex).Char.CharIndex, Hechizos(h).ParticleViaje, Hechizos(h).Particle, Hechizos(h).TimeParticula, Hechizos(h).wav, 0, Npclist(UserList(UserIndex).flags.TargetNPC).Pos.x, Npclist(UserList(UserIndex).flags.TargetNPC).Pos.Y))
                     'Call SendData(SendTarget.ToNPCArea, UserList(UserIndex).flags.TargetNPC, PrepareMessageParticleFXToFloor(Npclist(UserList(UserIndex).flags.TargetNPC).Pos.X, Npclist(UserList(UserIndex).flags.TargetNPC).Pos.Y, Hechizos(H).Particle, Hechizos(H).TimeParticula))
                 Else
 
@@ -1963,7 +2200,7 @@ Sub InfoHechizo(ByVal UserIndex As Integer)
             End If
 
 162         If Hechizos(h).ParticleViaje = 0 Then
-164             Call SendData(SendTarget.ToNPCArea, UserList(UserIndex).flags.TargetNPC, PrepareMessagePlayWave(Hechizos(h).wav, Npclist(UserList(UserIndex).flags.TargetNPC).Pos.X, Npclist(UserList(UserIndex).flags.TargetNPC).Pos.Y))
+164             Call SendData(SendTarget.ToNPCArea, UserList(UserIndex).flags.TargetNPC, PrepareMessagePlayWave(Hechizos(h).wav, Npclist(UserList(UserIndex).flags.TargetNPC).Pos.x, Npclist(UserList(UserIndex).flags.TargetNPC).Pos.Y))
 
             End If
 
@@ -1987,7 +2224,10 @@ Sub InfoHechizo(ByVal UserIndex As Integer)
         End If
     
 178     If UserList(UserIndex).ChatCombate = 1 Then
-180         If UserList(UserIndex).flags.TargetUser > 0 Then
+180         If Hechizos(h).Target = TargetType.uTerreno Then
+                Call WriteConsoleMsg(UserIndex, "ProMSG*" & h, FontTypeNames.FONTTYPE_FIGHT)
+            
+            ElseIf UserList(UserIndex).flags.TargetUser > 0 Then
 
                 'Optimizacion de protocolo por Ladder
 182             If UserIndex <> UserList(UserIndex).flags.TargetUser Then
@@ -2001,6 +2241,9 @@ Sub InfoHechizo(ByVal UserIndex As Integer)
 
 190         ElseIf UserList(UserIndex).flags.TargetNPC > 0 Then
 192             Call WriteConsoleMsg(UserIndex, "HecMSG*" & h, FontTypeNames.FONTTYPE_FIGHT)
+
+            Else
+                Call WriteConsoleMsg(UserIndex, "ProMSG*" & h, FontTypeNames.FONTTYPE_FIGHT)
 
             End If
 
@@ -2350,7 +2593,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 
             End If
     
-372         Call SendData(SendTarget.ToPCArea, tempChr, PrepareMessageEfectOverHead(daño, UserList(tempChr).Char.CharIndex, &HFF00))
+372         Call SendData(SendTarget.ToPCArea, tempChr, PrepareMessageEfectOverHead(daño, UserList(tempChr).Char.CharIndex, vbGreen))
             Call WriteUpdateHP(tempChr)
     
 374         b = True
@@ -2767,7 +3010,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
 
             End If
     
-266         Call SendData(SendTarget.ToPCArea, tempChr, PrepareMessageEfectOverHead(daño, UserList(tempChr).Char.CharIndex, &HFF00))
+266         Call SendData(SendTarget.ToPCArea, tempChr, PrepareMessageEfectOverHead(daño, UserList(tempChr).Char.CharIndex, vbGreen))
     
 268         b = True
 270     ElseIf Hechizos(h).SubeHP = 2 Then
@@ -3438,7 +3681,7 @@ DesplazarHechizo_Err:
         
 End Sub
 
-Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y As Byte, npc As Boolean)
+Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, x As Byte, Y As Byte, npc As Boolean)
         
         On Error GoTo AreaHechizo_Err
         
@@ -3462,11 +3705,11 @@ Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y As Byte,
 100     h2 = UserList(UserIndex).Stats.UserHechizos(UserList(UserIndex).flags.Hechizo)
 
         'Calculo de descuesto de golpe por cercania.
-102     TilesDifUser = X + Y
+102     TilesDifUser = x + Y
 
 104     If npc Then
 106         If Hechizos(h2).SubeHP = 2 Then
-108             TilesDifNpc = Npclist(NpcIndex).Pos.X + Npclist(NpcIndex).Pos.Y
+108             TilesDifNpc = Npclist(NpcIndex).Pos.x + Npclist(NpcIndex).Pos.Y
             
 110             tilDif = TilesDifUser - TilesDifNpc
             
@@ -3522,7 +3765,7 @@ Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y As Byte,
 
         Else
 
-140         TilesDifNpc = UserList(NpcIndex).Pos.X + UserList(NpcIndex).Pos.Y
+140         TilesDifNpc = UserList(NpcIndex).Pos.x + UserList(NpcIndex).Pos.Y
 142         tilDif = TilesDifUser - TilesDifNpc
 
 144         If Hechizos(h2).SubeHP = 2 Then
