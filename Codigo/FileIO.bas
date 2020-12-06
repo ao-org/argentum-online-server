@@ -2040,8 +2040,6 @@ Sub LoadMapData()
     
     NumMaps = CountFiles(MapPath, "*.csm")
     
-    Call InitAreas
-    
     frmCargando.cargar.min = 0
     frmCargando.cargar.max = NumMaps
     frmCargando.cargar.Value = 0
@@ -2062,6 +2060,8 @@ Sub LoadMapData()
         DoEvents
         
     Next Map
+    
+    Call InitAreas
 
     frmCargando.ToMapLbl.Visible = False
     
