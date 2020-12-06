@@ -956,6 +956,8 @@ Public Type tHechizo
     '    Materializa As Byte
     '    ItemIndex As Byte
     
+    Mimetiza As Byte
+    
     MinSkill As Integer
     ManaRequerido As Integer
 
@@ -1014,7 +1016,7 @@ End Type
 
 Public Type Position
 
-    X As Integer
+    x As Integer
     Y As Integer
 
 End Type
@@ -1022,7 +1024,7 @@ End Type
 Public Type WorldPos
 
     Map As Integer
-    X As Integer
+    x As Integer
     Y As Integer
 
 End Type
@@ -1030,7 +1032,7 @@ End Type
 Public Type CityWorldPos
 
     Map As Integer
-    X As Integer
+    x As Integer
     Y As Integer
     MapaViaje As Integer
     ViajeX As Byte
@@ -1548,6 +1550,8 @@ Public Type UserFlags
     Hechizo As Integer
     TomoPocion As Boolean
     TipoPocion As Byte
+    Mimetizado As Byte
+    MascotasGuardadas As Byte
     
     Navegando As Byte
     
@@ -1652,7 +1656,7 @@ Public Type UserCounters
     Inmovilizado As Integer
     Ceguera As Integer
     Estupidez As Integer
-    
+    Mimetismo As Integer
     
     Invisibilidad As Integer
     TiempoOculto As Integer
@@ -1759,6 +1763,7 @@ Public Type user
     modName As String
     
     Char As Char 'Define la apariencia
+    CharMimetizado As Char
     OrigChar As Char
     
     Desc As String ' Descripcion

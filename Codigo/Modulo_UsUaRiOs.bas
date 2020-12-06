@@ -450,7 +450,7 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
     '09/01/2008 Pablo (ToxicWaste) - Ahora el incremento de vida por Consitución se controla desde Balance.dat
     '*************************************************
 
-    On Error GoTo Errhandler
+    On Error GoTo ErrHandler
 
     Dim Pts              As Integer
 
@@ -698,7 +698,7 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
     
     Exit Sub
 
-Errhandler:
+ErrHandler:
     Call LogError("Error en la subrutina CheckUserLevel - Error : " & Err.Number & " - Description : " & Err.description)
 
 End Sub
@@ -1246,7 +1246,6 @@ Sub NPCAtacado(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         Dim EraCriminal As Byte
 
         'Guardamos el usuario que ataco el npc.
-
 100     If Npclist(NpcIndex).Movement <> ESTATICO And Npclist(NpcIndex).flags.AttackedFirstBy = vbNullString Then
 102         Npclist(NpcIndex).Target = UserIndex
 104         Npclist(NpcIndex).Movement = TipoAI.NpcMaloAtacaUsersBuenos
@@ -1297,7 +1296,14 @@ Sub NPCAtacado(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
             End If
 
         End If
+        
+        If Npclist(NpcIndex).MaestroUser > 0 Then
+            If Npclist(NpcIndex).MaestroUser <> UserIndex Then
+                Call AllMascotasAtacanUser(UserIndex, Npclist(NpcIndex).MaestroUser)
+            End If
+        End If
 
+        Call CheckPets(NpcIndex, UserIndex, False)
         
         Exit Sub
 
@@ -1433,7 +1439,27 @@ Sub UserDie(ByVal UserIndex As Integer)
 
     Dim aN As Integer
     
-    'Sonido
+    With UserList(UserIndex)
+    
+        'Sonido
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_SoundIndex.MUERTE_HOMBRE, .Pos.x, .Pos.Y))
+        
+        'Quitar el dialogo del user muerto
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageRemoveCharDialog(.Char.CharIndex))
+        
+        .Stats.MinHp = 0
+        .Stats.MinSta = 0
+        .flags.AtacadoPorUser = 0
+        .flags.Envenenado = 0
+        .flags.Ahogandose = 0
+        .flags.Incinerado = 0
+        .flags.incinera = 0
+        .flags.Paraliza = 0
+        .flags.Envenena = 0
+        .flags.Estupidiza = 0
+        .flags.Muerto = 1
+        '.flags.SeguroParty = True
+        'Call WritePartySafeOn(UserIndex)
         
     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_SoundIndex.MUERTE_HOMBRE, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
     
@@ -1597,9 +1623,19 @@ Sub UserDie(ByVal UserIndex As Integer)
                                 Call Desequipar(UserIndex, UserList(UserIndex).Invent.MagicoSlot)
 
                             End If
-
+    
+                        Else
+                    
+                            Dim MiObj As obj
+    
+                            MiObj.Amount = 1
+                            MiObj.ObjIndex = PENDIENTE
+                            Call QuitarObjetos(PENDIENTE, 1, UserIndex)
+                            Call MakeObj(MiObj, .Pos.Map, .Pos.x, .Pos.Y)
+                            Call WriteConsoleMsg(UserIndex, "Has perdido tu pendiente del sacrificio.", FontTypeNames.FONTTYPE_INFO)
+    
                         End If
-
+    
                     Else
                 
                         Dim MiObj As obj
@@ -1617,16 +1653,22 @@ Sub UserDie(ByVal UserIndex As Integer)
                     If EsNewbie(UserIndex) Then Call TirarTodosLosItemsNoNewbies(UserIndex)
 
                 End If
-
+    
             End If
-
+    
         End If
 
     End If
 
     UserList(UserIndex).flags.CarroMineria = 0
     
-    ' DESEQUIPA TODOS LOS OBJETOS
+        .flags.CarroMineria = 0
+        
+        ' DESEQUIPA TODOS LOS OBJETOS
+        
+        If .Char.Arma_Aura <> "" Then
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, 0, True, 1))
+            .Char.Arma_Aura = ""
     
     If UserList(UserIndex).Char.Arma_Aura <> "" Then
         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(UserList(UserIndex).Char.CharIndex, 0, True, 1))
@@ -1669,10 +1711,7 @@ Sub UserDie(ByVal UserIndex As Integer)
 
     End If
     
-    ' If UserList(UserIndex).flags.Navegando > 0 Then
-
-    '  Call DoNavega(UserIndex, ObjData(UserList(UserIndex).Invent.BarcoObjIndex), UserList(UserIndex).Invent.BarcoSlot)
-    'End If
+        End If
         
     UserList(UserIndex).Char.speeding = VelocidadMuerto
     'Call WriteVelocidadToggle(UserIndex)
@@ -1717,17 +1756,64 @@ Sub UserDie(ByVal UserIndex As Integer)
             UserList(UserIndex).Char.Head = 0
 
         End If
-
-    End If
+        
+        .flags.VecesQueMoriste = .flags.VecesQueMoriste + 1
+        
+        ' << Restauramos los atributos >>
+        If .flags.TomoPocion = True And .flags.BattleModo = 0 Then
+    
+            For i = 1 To 4
+                .Stats.UserAtributos(i) = .Stats.UserAtributosBackUP(i)
+            Next i
+    
+            Call WriteFYA(UserIndex)
+    
+        End If
+        
+        '<< Cambiamos la apariencia del char >>
+        If .flags.Navegando = 0 Then
+            .Char.Body = iCuerpoMuerto
+            .Char.Head = iCabezaMuerto
+            .Char.ShieldAnim = NingunEscudo
+            .Char.WeaponAnim = NingunArma
+            .Char.CascoAnim = NingunCasco
+            
+        Else
+    
+            If ObjData(.Invent.BarcoObjIndex).Ropaje = iTraje Then
+                .Char.Body = iRopaBuceoMuerto
+                .Char.Head = iCabezaMuerto
+            Else
+                .Char.Body = iFragataFantasmal ';)
+                .Char.Head = 0
     
     '<< Actualizamos clientes >>
     Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.Heading, NingunArma, NingunEscudo, NingunCasco)
     'Call WriteUpdateUserStats(UserIndex)
     
-    'If UCase$(MapInfo(UserList(UserIndex).Pos.Map).restrict_mode) = "NEWBIE" Then
-    '    UserList(UserIndex).flags.pregunta = 5
-    '    Call WritePreguntaBox(UserIndex, "¡Has muerto! ¿Deseas ser resucitado?")
-    'End If
+        End If
+        
+        For i = 1 To MAXMASCOTAS
+            If .MascotasIndex(i) > 0 Then
+                Call MuereNpc(.MascotasIndex(i), 0)
+            ' Si estan en agua o zona segura
+            Else
+                .MascotasType(i) = 0
+            End If
+        Next i
+        
+        .NroMascotas = 0
+        
+        '<< Actualizamos clientes >>
+        Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)
+        'Call WriteUpdateUserStats(UserIndex)
+        
+        'If UCase$(MapInfo(.Pos.Map).restrict_mode) = "NEWBIE" Then
+        '    .flags.pregunta = 5
+        '    Call WritePreguntaBox(UserIndex, "¡Has muerto! ¿Deseas ser resucitado?")
+        'End If
+        
+    End With
 
     Exit Sub
 
@@ -2015,6 +2101,34 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As In
 154         If MapInfo(OldMap).NumUsers < 0 Then
 156             MapInfo(OldMap).NumUsers = 0
 
+            End If
+            
+            'Si el mapa al que entro NO ES superficial AND en el que estaba TAMPOCO ES superficial, ENTONCES
+            Dim nextMap, previousMap As Boolean
+            
+            nextMap = distanceToCities(Map).distanceToCity(UserList(UserIndex).Hogar) >= 0
+            previousMap = distanceToCities(UserList(UserIndex).Pos.Map).distanceToCity(UserList(UserIndex).Hogar) >= 0
+
+            If previousMap And nextMap Then '138 => 139 (Ambos superficiales, no tiene que pasar nada)
+                'NO PASA NADA PORQUE NO ENTRO A UN DUNGEON.
+            
+            ElseIf previousMap And Not nextMap Then '139 => 140 (139 es superficial, 140 no. Por lo tanto 139 es el ultimo mapa superficial)
+                UserList(UserIndex).flags.lastMap = UserList(UserIndex).Pos.Map
+            
+            ElseIf Not previousMap And nextMap Then '140 => 139 (140 es no es superficial, 139 si. Por lo tanto, el ultimo mapa es 0 ya que no esta en un dungeon)
+                UserList(UserIndex).flags.lastMap = 0
+            
+            ElseIf Not previousMap And Not nextMap Then '140 => 141 (Ninguno es superficial, el ultimo mapa es el mismo de antes)
+                UserList(UserIndex).flags.lastMap = UserList(UserIndex).flags.lastMap
+
+            End If
+        
+
+            If UserList(UserIndex).flags.Traveling = 1 Then
+                UserList(UserIndex).flags.Traveling = 0
+                UserList(UserIndex).Counters.goHome = 0
+                Call WriteConsoleMsg(UserIndex, "El viaje ha terminado", FontTypeNames.FONTTYPE_INFOBOLD)
+    
             End If
 
         End If
@@ -2376,8 +2490,8 @@ Private Sub WarpMascotas(ByVal UserIndex As Integer)
     'Last Modified: 26/10/2010
     '13/02/2009: ZaMa - Arreglado respawn de mascotas al cambiar de mapa.
     '13/02/2009: ZaMa - Las mascotas no regeneran su vida al cambiar de mapa (Solo entre mapas inseguros).
-    '11/05/2009: ZaMa - Chequeo si la mascota pueden spwnear para asiganrle los stats.
-    '26/10/2010: ZaMa - Ahora las mascotas rapswnean de forma aleatoria.
+    '11/05/2009: ZaMa - Chequeo si la mascota pueden spawnear para asiganrle los stats.
+    '26/10/2010: ZaMa - Ahora las mascotas respawnean de forma aleatoria.
     '************************************************
     Dim i                As Integer
 
@@ -2387,160 +2501,62 @@ Private Sub WarpMascotas(ByVal UserIndex As Integer)
 
     Dim PetTiempoDeVida  As Integer
 
-    Dim NroPets          As Integer
-
-    Dim InvocadosMatados As Integer
-
     Dim canWarp          As Boolean
 
     Dim Index            As Integer
 
     Dim iMinHP           As Integer
-    
-    NroPets = UserList(UserIndex).NroMascotas
+
     canWarp = (Not MapInfo(UserList(UserIndex).Pos.Map).Seguro)
-    
+
     For i = 1 To MAXMASCOTAS
         Index = UserList(UserIndex).MascotasIndex(i)
         
         If Index > 0 Then
-
-            ' si la mascota tiene tiempo de vida > 0 significa q fue invocada => we kill it
-            If Npclist(Index).Contadores.TiempoExistencia > 0 Then
-                Call QuitarNPC(Index)
-                UserList(UserIndex).MascotasIndex(i) = 0
-                InvocadosMatados = InvocadosMatados + 1
-                NroPets = NroPets - 1
-                
-                petType = 0
-            Else
-                'Store data and remove NPC to recreate it after warp
-                'PetRespawn = Npclist(index).flags.Respawn = 0
-                petType = UserList(UserIndex).MascotasType(i)
-                'PetTiempoDeVida = Npclist(index).Contadores.TiempoExistencia
-                
-                ' Guardamos el hp, para restaurarlo uando se cree el npc
-                iMinHP = Npclist(Index).Stats.MinHp
-                
-                Call QuitarNPC(Index)
-                
-                ' Restauramos el valor de la variable
-                UserList(UserIndex).MascotasType(i) = petType
-
-            End If
-
-        ElseIf UserList(UserIndex).MascotasType(i) > 0 Then
             'Store data and remove NPC to recreate it after warp
-            PetRespawn = True
             petType = UserList(UserIndex).MascotasType(i)
-            PetTiempoDeVida = 0
-        Else
-            petType = 0
-
-        End If
-        
-        If petType > 0 And canWarp Then
-        
-            Dim SpawnPos As WorldPos
-        
-            SpawnPos.Map = UserList(UserIndex).Pos.Map
-            SpawnPos.x = UserList(UserIndex).Pos.x + RandomNumber(-3, 3)
-            SpawnPos.Y = UserList(UserIndex).Pos.Y + RandomNumber(-3, 3)
-        
-            Index = SpawnNpc(petType, SpawnPos, False, PetRespawn)
+            PetTiempoDeVida = Npclist(Index).Contadores.TiempoExistencia
             
-            'Controlamos que se sumoneo OK - should never happen. Continue to allow removal of other pets if not alone
-            ' Exception: Pets don't spawn in water if they can't swim
-            If Index = 0 Then
-                Call WriteConsoleMsg(UserIndex, "Tus mascotas no pueden transitar este mapa.", FontTypeNames.FONTTYPE_INFO)
-            Else
-                UserList(UserIndex).MascotasIndex(i) = Index
-
-                ' Nos aseguramos de que conserve el hp, si estaba danado
-                Npclist(Index).Stats.MinHp = IIf(iMinHP = 0, Npclist(Index).Stats.MinHp, iMinHP)
+            ' Guardamos el hp, para restaurarlo cuando se cree el npc
+            iMinHP = Npclist(Index).Stats.MinHp
             
-                Npclist(Index).MaestroUser = UserIndex
-                Npclist(Index).Contadores.TiempoExistencia = PetTiempoDeVida
-                Call FollowAmo(Index)
-
+            Call QuitarNPC(Index)
+            
+            ' Restauramos el valor de la variable
+            UserList(UserIndex).MascotasType(i) = petType
+            
+            If petType > 0 And canWarp And UserList(UserIndex).flags.MascotasGuardadas = 0 Then
+        
+                Dim SpawnPos As WorldPos
+            
+                SpawnPos.Map = UserList(UserIndex).Pos.Map
+                SpawnPos.x = UserList(UserIndex).Pos.x + RandomNumber(-3, 3)
+                SpawnPos.Y = UserList(UserIndex).Pos.Y + RandomNumber(-3, 3)
+            
+                Index = SpawnNpc(petType, SpawnPos, False, PetRespawn)
+                
+                'Controlamos que se sumoneo OK - should never happen. Continue to allow removal of other pets if not alone
+                ' Exception: Pets don't spawn in water if they can't swim
+                If Index > 0 Then
+                    UserList(UserIndex).MascotasIndex(i) = Index
+    
+                    ' Nos aseguramos de que conserve el hp, si estaba danado
+                    Npclist(Index).Stats.MinHp = IIf(iMinHP = 0, Npclist(Index).Stats.MinHp, iMinHP)
+                
+                    Npclist(Index).MaestroUser = UserIndex
+                    Npclist(Index).Contadores.TiempoExistencia = PetTiempoDeVida
+                    Call FollowAmo(Index)
+    
+                End If
+    
             End If
-
+            
         End If
 
     Next i
     
-    If InvocadosMatados > 0 Then
-        Call WriteConsoleMsg(UserIndex, "Pierdes el control de tus mascotas invocadas.", FontTypeNames.FONTTYPE_INFO)
-
+    If Not canWarp And UserList(UserIndex).flags.MascotasGuardadas = 0 Then
+        Call WriteConsoleMsg(UserIndex, "No se permiten mascotas en zona segura. Estas te esperarán afuera.", FontTypeNames.FONTTYPE_INFO)
     End If
-    
-    If Not canWarp Then
-        Call WriteConsoleMsg(UserIndex, "No se permiten mascotas en zona segura. estas te esperaran afuera.", FontTypeNames.FONTTYPE_INFO)
-
-    End If
-    
-    UserList(UserIndex).NroMascotas = NroPets
-
-End Sub
-
-Public Sub WarpMascota(ByVal UserIndex As Integer, ByVal PetIndex As Integer)
-
-    '************************************************
-    'Author: ZaMa
-    'Last Modified: 18/11/2009
-    'Warps a pet without changing its stats
-    '************************************************
-    Dim petType   As Integer
-
-    Dim NpcIndex  As Integer
-
-    Dim iMinHP    As Integer
-
-    Dim TargetPos As WorldPos
-    
-    With UserList(UserIndex)
-        
-        TargetPos.Map = .flags.TargetMap
-        TargetPos.x = .flags.TargetX
-        TargetPos.Y = .flags.TargetY
-        
-        NpcIndex = .MascotasIndex(PetIndex)
-            
-        'Store data and remove NPC to recreate it after warp
-        petType = .MascotasType(PetIndex)
-        
-        ' Guardamos el hp, para restaurarlo cuando se cree el npc
-        iMinHP = Npclist(NpcIndex).Stats.MinHp
-        
-        Call QuitarNPC(NpcIndex)
-        
-        ' Restauramos el valor de la variable
-        .MascotasType(PetIndex) = petType
-        .NroMascotas = .NroMascotas + 1
-        NpcIndex = SpawnNpc(petType, TargetPos, False, False)
-        
-        'Controlamos que se sumoneo OK - should never happen. Continue to allow removal of other pets if not alone
-        ' Exception: Pets don't spawn in water if they can't swim
-        If NpcIndex = 0 Then
-            Call WriteConsoleMsg(UserIndex, "Tu mascota no pueden transitar este sector del mapa, intenta invocarla en otra parte.", FontTypeNames.FONTTYPE_INFO)
-        Else
-            .MascotasIndex(PetIndex) = NpcIndex
-
-            With Npclist(NpcIndex)
-                ' Nos aseguramos de que conserve el hp, si estaba danado
-                .Stats.MinHp = IIf(iMinHP = 0, .Stats.MinHp, iMinHP)
-            
-                .MaestroUser = UserIndex
-                .Movement = TipoAI.SigueAmo
-                .Target = 0
-                .TargetNPC = 0
-
-            End With
-            
-            Call FollowAmo(NpcIndex)
-
-        End If
-
-    End With
 
 End Sub
