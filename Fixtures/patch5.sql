@@ -1,0 +1,2 @@
+ALTER TABLE `quest` 
+ADD COLUMN `npcstarget` VARCHAR(64) NOT NULL DEFAULT '' AFTER `npcs`;
