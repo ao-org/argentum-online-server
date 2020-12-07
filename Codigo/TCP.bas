@@ -442,7 +442,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
             End Select
             
             ' Poción violeta
-158         .Invent.Object(NumItems).ObjIndex = 166 ' Pocion violeta
+158         .Invent.Object(NumItems).ObjIndex = 2332 ' Pocion violeta
 159         .Invent.Object(NumItems).Amount = 10
 160         NumItems = NumItems + 1
         
@@ -798,7 +798,7 @@ End Sub
 
 Sub CloseSocket(ByVal UserIndex As Integer)
 
-On Error GoTo Errhandler
+On Error GoTo ErrHandler
 
     Call FlushBuffer(UserIndex)
 
@@ -862,7 +862,7 @@ On Error GoTo Errhandler
 
     Exit Sub
 
-Errhandler:
+ErrHandler:
     UserList(UserIndex).ConnID = -1
     UserList(UserIndex).ConnIDValida = False
     UserList(UserIndex).NumeroPaquetesPorMiliSec = 0
@@ -877,7 +877,7 @@ End Sub
 #ElseIf UsarQueSocket = 0 Then
 
 Sub CloseSocket(ByVal UserIndex As Integer)
-On Error GoTo Errhandler
+On Error GoTo ErrHandler
     
     
     
@@ -904,7 +904,7 @@ On Error GoTo Errhandler
 
 Exit Sub
 
-Errhandler:
+ErrHandler:
     UserList(UserIndex).ConnID = -1
     UserList(UserIndex).NumeroPaquetesPorMiliSec = 0
     Call ResetUserSlot(UserIndex)
@@ -920,7 +920,7 @@ End Sub
 
 Sub CloseSocket(ByVal UserIndex As Integer, Optional ByVal cerrarlo As Boolean = True)
 
-On Error GoTo Errhandler
+On Error GoTo ErrHandler
 
 Dim NURestados As Boolean
 Dim CoNnEcTiOnId As Long
@@ -962,7 +962,7 @@ Dim CoNnEcTiOnId As Long
 
 Exit Sub
 
-Errhandler:
+ErrHandler:
     UserList(UserIndex).NumeroPaquetesPorMiliSec = 0
     Call LogError("CLOSESOCKETERR: " & Err.description & " UI:" & UserIndex)
     
@@ -1248,7 +1248,7 @@ End Function
 
 Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuenta As String)
 
-    On Error GoTo Errhandler
+    On Error GoTo ErrHandler
 
     With UserList(UserIndex)
 
@@ -1686,6 +1686,22 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
         Call WriteFYA(UserIndex)
         Call WriteBindKeys(UserIndex)
         
+        If UserList(UserIndex).NroMascotas > 0 And Not MapInfo(UserList(UserIndex).Pos.Map).Seguro Then
+            Dim i As Integer
+            For i = 1 To MAXMASCOTAS
+                If UserList(UserIndex).MascotasType(i) > 0 Then
+                    UserList(UserIndex).MascotasIndex(i) = SpawnNpc(UserList(UserIndex).MascotasType(i), UserList(UserIndex).Pos, True, True)
+                    
+                    If UserList(UserIndex).MascotasIndex(i) > 0 Then
+                        Npclist(UserList(UserIndex).MascotasIndex(i)).MaestroUser = UserIndex
+                        Call FollowAmo(UserList(UserIndex).MascotasIndex(i))
+                    Else
+                        UserList(UserIndex).MascotasIndex(i) = 0
+                    End If
+                End If
+            Next i
+        End If
+        
         If .flags.Navegando = 1 Then
             Call WriteNavigateToggle(UserIndex)
         End If
@@ -1782,7 +1798,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
     
     Exit Sub
     
-Errhandler:
+ErrHandler:
     Call WriteShowMessageBox(UserIndex, "El personaje contiene un error, comuniquese con un miembro del staff.")
     
     
@@ -2172,6 +2188,9 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 262         .UserLogged = False
 264         .FirstPacket = False
             .Inmunidad = 0
+            
+            .Mimetizado = 0
+            .MascotasGuardadas = 0
         End With
 
         
@@ -2397,11 +2416,12 @@ End Sub
 
 Sub CloseUser(ByVal UserIndex As Integer)
 
-    On Error GoTo Errhandler
+    On Error GoTo ErrHandler
     
     Dim errordesc As String
     Dim Map As Integer
     Dim aN  As Integer
+    Dim i   As Integer
     
     Map = UserList(UserIndex).Pos.Map
     
@@ -2433,7 +2453,17 @@ Sub CloseUser(ByVal UserIndex As Integer)
 
     If UserList(UserIndex).flags.Montado > 0 Then
         Call DoMontar(UserIndex, ObjData(UserList(UserIndex).Invent.MonturaObjIndex), UserList(UserIndex).Invent.MonturaSlot)
-
+    End If
+    
+    errordesc = "ERROR AL SACAR MIMETISMO"
+    If UserList(UserIndex).flags.Mimetizado = 1 Then
+        UserList(UserIndex).Char.Body = UserList(UserIndex).CharMimetizado.Body
+        UserList(UserIndex).Char.Head = UserList(UserIndex).CharMimetizado.Head
+        UserList(UserIndex).Char.CascoAnim = UserList(UserIndex).CharMimetizado.CascoAnim
+        UserList(UserIndex).Char.ShieldAnim = UserList(UserIndex).CharMimetizado.ShieldAnim
+        UserList(UserIndex).Char.WeaponAnim = UserList(UserIndex).CharMimetizado.WeaponAnim
+        UserList(UserIndex).Counters.Mimetismo = 0
+        UserList(UserIndex).flags.Mimetizado = 0
     End If
     
     errordesc = "ERROR AL ENVIAR PARTICULA"
@@ -2494,6 +2524,16 @@ Sub CloseUser(ByVal UserIndex As Integer)
     'Borrar el personaje
     Call EraseUserChar(UserIndex, True)
     
+    errordesc = "ERROR AL BORRAR MASCOTAS"
+    
+    'Borrar mascotas
+    For i = 1 To MAXMASCOTAS
+        If UserList(UserIndex).MascotasIndex(i) > 0 Then
+            If Npclist(UserList(UserIndex).MascotasIndex(i)).flags.NPCActive Then _
+                Call QuitarNPC(UserList(UserIndex).MascotasIndex(i))
+        End If
+    Next i
+    
     errordesc = "ERROR Update Map Users"
     
     'Update Map Users
@@ -2515,7 +2555,7 @@ Sub CloseUser(ByVal UserIndex As Integer)
     
     Exit Sub
     
-Errhandler:
+ErrHandler:
     Call LogError("Error en CloseUser. Número " & Err.Number & ". Descripción: " & Err.description & ". Detalle:" & errordesc)
 
     Resume Next ' TODO: Provisional hasta solucionar bugs graves
@@ -2524,7 +2564,7 @@ End Sub
 
 Sub ReloadSokcet()
 
-    On Error GoTo Errhandler
+    On Error GoTo ErrHandler
 
     #If UsarQueSocket = 1 Then
 
@@ -2548,7 +2588,7 @@ Sub ReloadSokcet()
     #End If
 
     Exit Sub
-Errhandler:
+ErrHandler:
     Call LogError("Error en CheckSocketState " & Err.Number & ": " & Err.description)
 
 End Sub
