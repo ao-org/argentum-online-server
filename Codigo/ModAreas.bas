@@ -82,6 +82,7 @@ Public Sub InitAreas()
 128         ReDim ConnGroups(LoopC).UserEntrys(1 To ConnGroups(LoopC).OptValue) As Long
 130     Next LoopC
 
+        Call generateMatrix(MATRIX_INITIAL_MAP)
         
         Exit Sub
 

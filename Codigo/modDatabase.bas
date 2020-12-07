@@ -116,7 +116,7 @@ Public Sub SaveNewUserDatabase(ByVal Userindex As Integer)
         QueryBuilder.Append "free_skillpoints = " & .Stats.SkillPts & ", "
         'QueryBuilder.Append "assigned_skillpoints = " & .Counters.AsignedSkills & ", "
         QueryBuilder.Append "pos_map = " & .Pos.Map & ", "
-        QueryBuilder.Append "pos_x = " & .Pos.X & ", "
+        QueryBuilder.Append "pos_x = " & .Pos.x & ", "
         QueryBuilder.Append "pos_y = " & .Pos.Y & ", "
         QueryBuilder.Append "body_id = " & .Char.Body & ", "
         QueryBuilder.Append "head_id = " & .Char.Head & ", "
@@ -339,9 +339,10 @@ Public Sub SaveUserDatabase(ByVal Userindex As Integer, Optional ByVal Logout As
         QueryBuilder.Append "bank_gold = " & .Stats.Banco & ", "
         QueryBuilder.Append "free_skillpoints = " & .Stats.SkillPts & ", "
         'QueryBuilder.Append "assigned_skillpoints = " & .Counters.AsignedSkills & ", "
-        'QueryBuilder.Append "pet_Amount = " & .NroMascotas & ", "
+        QueryBuilder.Append "pet_amount = " & .NroMascotas & ", "
+        QueryBuilder.Append "pets_saved = " & .flags.MascotasGuardadas & ", "
         QueryBuilder.Append "pos_map = " & .Pos.Map & ", "
-        QueryBuilder.Append "pos_x = " & .Pos.X & ", "
+        QueryBuilder.Append "pos_x = " & .Pos.x & ", "
         QueryBuilder.Append "pos_y = " & .Pos.Y & ", "
         QueryBuilder.Append "last_map = " & .flags.lastMap & ", "
         QueryBuilder.Append "message_info = '" & .MENSAJEINFORMACION & "', "
@@ -724,9 +725,9 @@ Sub LoadUserDatabase(ByVal Userindex As Integer)
         .Stats.Banco = QueryData!bank_gold
         .Stats.SkillPts = QueryData!free_skillpoints
         '.Counters.AsignedSkills = QueryData!assigned_skillpoints
-        '.NroMascotas = QueryData!pet_Amount
+        .NroMascotas = QueryData!pet_Amount
         .Pos.Map = QueryData!pos_map
-        .Pos.X = QueryData!pos_x
+        .Pos.x = QueryData!pos_x
         .Pos.Y = QueryData!pos_y
         .flags.lastMap = QueryData!last_map
         .MENSAJEINFORMACION = QueryData!message_info
@@ -787,6 +788,7 @@ Sub LoadUserDatabase(ByVal Userindex As Integer)
         .flags.Silenciado = QueryData!is_silenced
         .flags.MinutosRestantes = QueryData!silence_minutes_left
         .flags.SegundosPasados = QueryData!silence_elapsed_seconds
+        .flags.MascotasGuardadas = QueryData!pets_saved
         .flags.ScrollExp = 1 'TODO: sacar
         .flags.ScrollOro = 1 'TODO: sacar
         
@@ -2441,10 +2443,10 @@ ErrorHandler:
 
 End Function
 
-Public Function SetPositionDatabase(UserName As String, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
+Public Function SetPositionDatabase(UserName As String, ByVal Map As Integer, ByVal x As Integer, ByVal Y As Integer) As Boolean
     On Error GoTo ErrorHandler
 
-    Call MakeQuery("UPDATE user SET pos_map = " & Map & ", pos_x = " & X & ", pos_y = " & X & " WHERE UPPER(name) = '" & UCase$(UserName) & "';", True)
+    Call MakeQuery("UPDATE user SET pos_map = " & Map & ", pos_x = " & x & ", pos_y = " & x & " WHERE UPPER(name) = '" & UCase$(UserName) & "';", True)
     
     SetPositionDatabase = True
 
