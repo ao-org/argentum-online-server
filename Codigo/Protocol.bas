@@ -29926,6 +29926,15 @@ Public Sub HandleQuestAccept(ByVal Userindex As Integer)
 110     QuestSlot = FreeQuestSlot(Userindex)
 
 
+        If QuestSlot = 0 Then
+            Call WriteChatOverHead(Userindex, "Debes completar las misiones en curso para poder aceptar más misiones.", Npclist(NpcIndex).Char.CharIndex, vbYellow)
+            Exit Sub
+        End If
+        
+        
+        
+
+
 
     
         'Agregamos la quest.
