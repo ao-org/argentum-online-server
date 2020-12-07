@@ -637,7 +637,7 @@ Sub Main()
     With frmMain
         .AutoSave.Enabled = True
         '.tLluvia.Enabled = True
-        '.tPiqueteC.Enabled = True
+        .tPiqueteC.Enabled = True
         .GameTimer.Enabled = True
         .Auditoria.Enabled = True
         .KillLog.Enabled = True
