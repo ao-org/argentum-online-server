@@ -90,7 +90,7 @@ ErrorHandler:
 
 End Sub
 
-Public Sub SaveNewUserDatabase(ByVal Userindex As Integer)
+Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 
     On Error GoTo ErrorHandler
     
@@ -98,7 +98,7 @@ Public Sub SaveNewUserDatabase(ByVal Userindex As Integer)
     'Me permite concatenar strings MUCHO MAS rapido
     Set QueryBuilder = New cStringBuilder
     
-    With UserList(Userindex)
+    With UserList(UserIndex)
     
         'Basic user data
         QueryBuilder.Append "INSERT INTO user SET "
@@ -116,7 +116,7 @@ Public Sub SaveNewUserDatabase(ByVal Userindex As Integer)
         QueryBuilder.Append "free_skillpoints = " & .Stats.SkillPts & ", "
         'QueryBuilder.Append "assigned_skillpoints = " & .Counters.AsignedSkills & ", "
         QueryBuilder.Append "pos_map = " & .Pos.Map & ", "
-        QueryBuilder.Append "pos_x = " & .Pos.x & ", "
+        QueryBuilder.Append "pos_x = " & .Pos.X & ", "
         QueryBuilder.Append "pos_y = " & .Pos.Y & ", "
         QueryBuilder.Append "body_id = " & .Char.Body & ", "
         QueryBuilder.Append "head_id = " & .Char.Head & ", "
@@ -209,7 +209,7 @@ Public Sub SaveNewUserDatabase(ByVal Userindex As Integer)
         'User inventory
         QueryBuilder.Append "INSERT INTO inventory_item (user_id, number, item_id, Amount, is_equipped) VALUES "
 
-        For LoopC = 1 To UserList(Userindex).CurrentInventorySlots
+        For LoopC = 1 To UserList(UserIndex).CurrentInventorySlots
             QueryBuilder.Append "("
             QueryBuilder.Append .Id & ", "
             QueryBuilder.Append LoopC & ", "
@@ -217,7 +217,7 @@ Public Sub SaveNewUserDatabase(ByVal Userindex As Integer)
             QueryBuilder.Append .Invent.Object(LoopC).Amount & ", "
             QueryBuilder.Append .Invent.Object(LoopC).Equipped & ")"
 
-            If LoopC < UserList(Userindex).CurrentInventorySlots Then
+            If LoopC < UserList(UserIndex).CurrentInventorySlots Then
                 QueryBuilder.Append ", "
             Else
                 QueryBuilder.Append "; "
@@ -311,11 +311,11 @@ ErrorHandler:
     
     Set QueryBuilder = Nothing
     
-    Call LogDatabaseError("Error en SaveNewUserDatabase. UserName: " & UserList(Userindex).name & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error en SaveNewUserDatabase. UserName: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.description)
 
 End Sub
 
-Public Sub SaveUserDatabase(ByVal Userindex As Integer, Optional ByVal Logout As Boolean = False)
+Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = False)
 
     On Error GoTo ErrorHandler
     
@@ -324,7 +324,7 @@ Public Sub SaveUserDatabase(ByVal Userindex As Integer, Optional ByVal Logout As
     Set QueryBuilder = New cStringBuilder
 
     'Basic user data
-    With UserList(Userindex)
+    With UserList(UserIndex)
         QueryBuilder.Append "UPDATE user SET "
         QueryBuilder.Append "name = '" & .name & "', "
         QueryBuilder.Append "level = " & .Stats.ELV & ", "
@@ -342,7 +342,7 @@ Public Sub SaveUserDatabase(ByVal Userindex As Integer, Optional ByVal Logout As
         QueryBuilder.Append "pet_amount = " & .NroMascotas & ", "
         QueryBuilder.Append "pets_saved = " & .flags.MascotasGuardadas & ", "
         QueryBuilder.Append "pos_map = " & .Pos.Map & ", "
-        QueryBuilder.Append "pos_x = " & .Pos.x & ", "
+        QueryBuilder.Append "pos_x = " & .Pos.X & ", "
         QueryBuilder.Append "pos_y = " & .Pos.Y & ", "
         QueryBuilder.Append "last_map = " & .flags.lastMap & ", "
         QueryBuilder.Append "message_info = '" & .MENSAJEINFORMACION & "', "
@@ -468,7 +468,7 @@ Public Sub SaveUserDatabase(ByVal Userindex As Integer, Optional ByVal Logout As
         'User inventory
         QueryBuilder.Append "INSERT INTO inventory_item (user_id, number, item_id, Amount, is_equipped) VALUES "
 
-        For LoopC = 1 To UserList(Userindex).CurrentInventorySlots
+        For LoopC = 1 To UserList(UserIndex).CurrentInventorySlots
         
             QueryBuilder.Append "("
             QueryBuilder.Append .Id & ", "
@@ -477,7 +477,7 @@ Public Sub SaveUserDatabase(ByVal Userindex As Integer, Optional ByVal Logout As
             QueryBuilder.Append .Invent.Object(LoopC).Amount & ", "
             QueryBuilder.Append .Invent.Object(LoopC).Equipped & ")"
 
-            If LoopC < UserList(Userindex).CurrentInventorySlots Then
+            If LoopC < UserList(UserIndex).CurrentInventorySlots Then
                 QueryBuilder.Append ", "
             End If
 
@@ -597,9 +597,7 @@ Public Sub SaveUserDatabase(ByVal Userindex As Integer, Optional ByVal Logout As
         QueryBuilder.Append " ORDER BY date_last_login DESC LIMIT 5) AS d); "
         
         'User quests
-        'QueryBuilder.Append "INSERT INTO quest (user_id, number, quest_id, npcs, npcstarget) VALUES "
-        
-        QueryBuilder.Append "INSERT INTO quest (user_id, number, quest_id, npcs) VALUES "
+        QueryBuilder.Append "INSERT INTO quest (user_id, number, quest_id, npcs, npcstarget) VALUES "
         
         Dim Tmp As Integer, LoopK As Long
 
@@ -625,26 +623,26 @@ Public Sub SaveUserDatabase(ByVal Userindex As Integer, Optional ByVal Logout As
                     
 
                 End If
-                
-                
-               ' QueryBuilder.Append "', '"
-                 
-                ' Tmp = QuestList(.QuestStats.Quests(LoopC).QuestIndex).RequiredTargetNPCs
-                    
-                  '  For LoopK = 1 To Tmp
-                       ' QueryBuilder.Append CStr(.QuestStats.Quests(LoopC).NPCsTarget(LoopK))
-                        
-                       ' If LoopK < Tmp Then
-                         '   QueryBuilder.Append "-"
-                       ' End If
-
-                   ' Next LoopK
-            
-
 
             End If
             
+            QueryBuilder.Append "', '"
             
+            If .QuestStats.Quests(LoopC).QuestIndex > 0 Then
+                
+                Tmp = QuestList(.QuestStats.Quests(LoopC).QuestIndex).RequiredTargetNPCs
+                    
+                For LoopK = 1 To Tmp
+
+                    QueryBuilder.Append CStr(.QuestStats.Quests(LoopC).NPCsTarget(LoopK))
+                    
+                    If LoopK < Tmp Then
+                        QueryBuilder.Append "-"
+                    End If
+                
+                Next LoopK
+            
+            End If
             
             QueryBuilder.Append "')"
 
@@ -695,16 +693,16 @@ ErrorHandler:
 
     Set QueryBuilder = Nothing
     
-    Call LogDatabaseError("Error en SaveUserDatabase. UserName: " & UserList(Userindex).name & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error en SaveUserDatabase. UserName: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.description)
 
 End Sub
 
-Sub LoadUserDatabase(ByVal Userindex As Integer)
+Sub LoadUserDatabase(ByVal UserIndex As Integer)
 
     On Error GoTo ErrorHandler
 
     'Basic user data
-    With UserList(Userindex)
+    With UserList(UserIndex)
 
         Call MakeQuery("SELECT *, DATE_FORMAT(fecha_ingreso, '%Y-%m-%d') as 'fecha_ingreso_format' FROM user WHERE name ='" & .name & "';")
 
@@ -727,7 +725,7 @@ Sub LoadUserDatabase(ByVal Userindex As Integer)
         '.Counters.AsignedSkills = QueryData!assigned_skillpoints
         .NroMascotas = QueryData!pet_Amount
         .Pos.Map = QueryData!pos_map
-        .Pos.x = QueryData!pos_x
+        .Pos.X = QueryData!pos_x
         .Pos.Y = QueryData!pos_y
         .flags.lastMap = QueryData!last_map
         .MENSAJEINFORMACION = QueryData!message_info
@@ -1030,7 +1028,7 @@ Sub LoadUserDatabase(ByVal Userindex As Integer)
     Exit Sub
 
 ErrorHandler:
-    Call LogDatabaseError("Unable to LOAD User from Mysql Database: " & UserList(Userindex).name & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Unable to LOAD User from Mysql Database: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.description)
 
 End Sub
 
@@ -2284,7 +2282,7 @@ ErrorHandler:
 
 End Sub
 
-Public Sub SendCharacterInfoDatabase(ByVal Userindex As Integer, ByVal UserName As String)
+Public Sub SendCharacterInfoDatabase(ByVal UserIndex As Integer, ByVal UserName As String)
 
     '***************************************************
     'Author: Juan Andres Dalmasso (CHOTS)
@@ -2301,7 +2299,7 @@ Public Sub SendCharacterInfoDatabase(ByVal Userindex As Integer, ByVal UserName 
     Call MakeQuery("SELECT race_id, class_id, genre_id, level, gold, bank_gold, guild_requests_history, guild_index, guild_member_history, pertenece_real, pertenece_caos, ciudadanos_matados, criminales_matados FROM user WHERE name = '" & UserName & "';")
 
     If QueryData Is Nothing Then
-        Call WriteConsoleMsg(Userindex, "Pj Inexistente", FontTypeNames.FONTTYPE_INFO)
+        Call WriteConsoleMsg(UserIndex, "Pj Inexistente", FontTypeNames.FONTTYPE_INFO)
         Exit Sub
 
     End If
@@ -2324,7 +2322,7 @@ Public Sub SendCharacterInfoDatabase(ByVal Userindex As Integer, ByVal UserName 
 
     End If
 
-    Call Protocol.WriteCharacterInfo(Userindex, UserName, QueryData!race_id, QueryData!class_id, QueryData!genre_id, QueryData!level, QueryData!gold, QueryData!bank_gold, SanitizeNullValue(QueryData!guild_requests_history, vbNullString), gName, Miembro, QueryData!pertenece_real, QueryData!pertenece_caos, QueryData!ciudadanos_matados, QueryData!criminales_matados)
+    Call Protocol.WriteCharacterInfo(UserIndex, UserName, QueryData!race_id, QueryData!class_id, QueryData!genre_id, QueryData!level, QueryData!gold, QueryData!bank_gold, SanitizeNullValue(QueryData!guild_requests_history, vbNullString), gName, Miembro, QueryData!pertenece_real, QueryData!pertenece_caos, QueryData!ciudadanos_matados, QueryData!criminales_matados)
 
     Exit Sub
 ErrorHandler:
@@ -2332,39 +2330,39 @@ ErrorHandler:
 
 End Sub
 
-Public Function EnterAccountDatabase(ByVal Userindex As Integer, CuentaEmail As String, Password As String, MacAddress As String, ByVal HDserial As Long, ip As String) As Boolean
+Public Function EnterAccountDatabase(ByVal UserIndex As Integer, CuentaEmail As String, Password As String, MacAddress As String, ByVal HDserial As Long, ip As String) As Boolean
 
     On Error GoTo ErrorHandler
     
     Call MakeQuery("SELECT id, password, salt, validated, is_banned, ban_reason, banned_by FROM account WHERE email = '" & LCase$(CuentaEmail) & "';")
     
     If Database_Connection.State = adStateClosed Then
-        Call WriteShowMessageBox(Userindex, "Ha ocurrido un error interno en el servidor. ¡Estamos tratando de resolverlo!")
+        Call WriteShowMessageBox(UserIndex, "Ha ocurrido un error interno en el servidor. ¡Estamos tratando de resolverlo!")
         Exit Function
     End If
     
     If QueryData Is Nothing Then
-        Call WriteShowMessageBox(Userindex, "La cuenta no existe.")
+        Call WriteShowMessageBox(UserIndex, "La cuenta no existe.")
         Exit Function
     End If
     
     If val(QueryData!is_banned) > 0 Then
-        Call WriteShowMessageBox(Userindex, "La cuenta se encuentra baneada debido a: " & QueryData!ban_reason & ". Esta decisión fue tomada por: " & QueryData!banned_by & ".")
+        Call WriteShowMessageBox(UserIndex, "La cuenta se encuentra baneada debido a: " & QueryData!ban_reason & ". Esta decisión fue tomada por: " & QueryData!banned_by & ".")
         Exit Function
     End If
     
     If Not PasswordValida(Password, QueryData!Password, QueryData!Salt) Then
-        Call WriteShowMessageBox(Userindex, "Contraseña inválida.")
+        Call WriteShowMessageBox(UserIndex, "Contraseña inválida.")
         Exit Function
     End If
     
     If val(QueryData!validated) = 0 Then
-        Call WriteShowMessageBox(Userindex, "¡La cuenta no ha sido validada aún!")
+        Call WriteShowMessageBox(UserIndex, "¡La cuenta no ha sido validada aún!")
         Exit Function
     End If
     
-    UserList(Userindex).AccountID = QueryData!Id
-    UserList(Userindex).Cuenta = CuentaEmail
+    UserList(UserIndex).AccountID = QueryData!Id
+    UserList(UserIndex).Cuenta = CuentaEmail
     
     Call MakeQuery("UPDATE account SET mac_address = '" & MacAddress & "', hd_serial = " & HDserial & ", last_ip = '" & ip & "', last_access = NOW() WHERE id = " & QueryData!Id & ";", True)
     
@@ -2377,26 +2375,26 @@ ErrorHandler:
 
 End Function
 
-Public Sub ChangePasswordDatabase(ByVal Userindex As Integer, OldPassword As String, NewPassword As String)
+Public Sub ChangePasswordDatabase(ByVal UserIndex As Integer, OldPassword As String, NewPassword As String)
 
     On Error GoTo ErrorHandler
 
     If LenB(NewPassword) = 0 Then
-        Call WriteConsoleMsg(Userindex, "Debe especificar una contraseña nueva, inténtelo de nuevo.", FontTypeNames.FONTTYPE_INFO)
+        Call WriteConsoleMsg(UserIndex, "Debe especificar una contraseña nueva, inténtelo de nuevo.", FontTypeNames.FONTTYPE_INFO)
         Exit Sub
 
     End If
     
-    Call MakeQuery("SELECT password, salt FROM account WHERE id = " & UserList(Userindex).AccountID & ";")
+    Call MakeQuery("SELECT password, salt FROM account WHERE id = " & UserList(UserIndex).AccountID & ";")
     
     If QueryData Is Nothing Then
-        Call WriteConsoleMsg(Userindex, "No se ha podido cambiar la contraseña por un error interno. Avise a un administrador.", FontTypeNames.FONTTYPE_INFO)
+        Call WriteConsoleMsg(UserIndex, "No se ha podido cambiar la contraseña por un error interno. Avise a un administrador.", FontTypeNames.FONTTYPE_INFO)
         Exit Sub
 
     End If
     
     If Not PasswordValida(OldPassword, QueryData!Password, QueryData!Salt) Then
-        Call WriteConsoleMsg(Userindex, "La contraseña actual proporcionada no es correcta. La contraseña no ha sido cambiada, inténtelo de nuevo.", FontTypeNames.FONTTYPE_INFO)
+        Call WriteConsoleMsg(UserIndex, "La contraseña actual proporcionada no es correcta. La contraseña no ha sido cambiada, inténtelo de nuevo.", FontTypeNames.FONTTYPE_INFO)
         Exit Sub
 
     End If
@@ -2415,14 +2413,14 @@ Public Sub ChangePasswordDatabase(ByVal Userindex As Integer, OldPassword As Str
     
     Set oSHA256 = Nothing
     
-    Call MakeQuery("UPDATE account SET password = '" & PasswordHash & "', salt = '" & Salt & "' WHERE id = " & UserList(Userindex).AccountID & ";", True)
+    Call MakeQuery("UPDATE account SET password = '" & PasswordHash & "', salt = '" & Salt & "' WHERE id = " & UserList(UserIndex).AccountID & ";", True)
     
-    Call WriteConsoleMsg(Userindex, "La contraseña de su cuenta fue cambiada con éxito.", FontTypeNames.FONTTYPE_INFO)
+    Call WriteConsoleMsg(UserIndex, "La contraseña de su cuenta fue cambiada con éxito.", FontTypeNames.FONTTYPE_INFO)
     
     Exit Sub
 
 ErrorHandler:
-    Call LogDatabaseError("Error in ChangePasswordDatabase. Username: " & UserList(Userindex).name & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error in ChangePasswordDatabase. Username: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.description)
 
 End Sub
 
@@ -2443,10 +2441,10 @@ ErrorHandler:
 
 End Function
 
-Public Function SetPositionDatabase(UserName As String, ByVal Map As Integer, ByVal x As Integer, ByVal Y As Integer) As Boolean
+Public Function SetPositionDatabase(UserName As String, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
     On Error GoTo ErrorHandler
 
-    Call MakeQuery("UPDATE user SET pos_map = " & Map & ", pos_x = " & x & ", pos_y = " & x & " WHERE UPPER(name) = '" & UCase$(UserName) & "';", True)
+    Call MakeQuery("UPDATE user SET pos_map = " & Map & ", pos_x = " & X & ", pos_y = " & X & " WHERE UPPER(name) = '" & UCase$(UserName) & "';", True)
     
     SetPositionDatabase = True
 
@@ -2532,13 +2530,13 @@ Public Function SacarLlaveDatabase(ByVal LlaveObj As Integer) As Boolean
     Call MakeQuery("DELETE FROM house_key WHERE key_obj = " & LlaveObj & ";", True)
     
     ' Si pudimos borrar, actualizamos los usuarios logueados
-    Dim Userindex As Integer
+    Dim UserIndex As Integer
     
     For i = 1 To UserCount
-        Userindex = NameIndex(Users(i))
+        UserIndex = NameIndex(Users(i))
         
-        If Userindex <> 0 Then
-            Call SacarLlaveDeLLavero(Userindex, LlaveObj)
+        If UserIndex <> 0 Then
+            Call SacarLlaveDeLLavero(UserIndex, LlaveObj)
         End If
     Next
     
@@ -2551,16 +2549,16 @@ ErrorHandler:
 
 End Function
 
-Public Sub VerLlavesDatabase(ByVal Userindex As Integer)
+Public Sub VerLlavesDatabase(ByVal UserIndex As Integer)
     On Error GoTo ErrorHandler
 
     Call MakeQuery("SELECT (SELECT email FROM account WHERE id = K.account_id) as email, key_obj FROM house_key AS K;")
 
     If QueryData Is Nothing Then
-        Call WriteConsoleMsg(Userindex, "No hay llaves otorgadas por el momento.", FontTypeNames.FONTTYPE_INFO)
+        Call WriteConsoleMsg(UserIndex, "No hay llaves otorgadas por el momento.", FontTypeNames.FONTTYPE_INFO)
 
     ElseIf QueryData.RecordCount = 0 Then
-        Call WriteConsoleMsg(Userindex, "No hay llaves otorgadas por el momento.", FontTypeNames.FONTTYPE_INFO)
+        Call WriteConsoleMsg(UserIndex, "No hay llaves otorgadas por el momento.", FontTypeNames.FONTTYPE_INFO)
     
     Else
         Dim message As String
@@ -2578,13 +2576,13 @@ Public Sub VerLlavesDatabase(ByVal Userindex As Integer)
         
         message = Left$(message, Len(message) - 2)
         
-        Call WriteConsoleMsg(Userindex, message, FontTypeNames.FONTTYPE_INFO)
+        Call WriteConsoleMsg(UserIndex, message, FontTypeNames.FONTTYPE_INFO)
     End If
 
     Exit Sub
 
 ErrorHandler:
-    Call LogDatabaseError("Error in VerLlavesDatabase. UserName: " & UserList(Userindex).name & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error in VerLlavesDatabase. UserName: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.description)
 
 End Sub
 
