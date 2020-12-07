@@ -589,9 +589,9 @@ Public Const vlNoble       As Integer = 5
 Public Const vlProleta     As Integer = 2
 
 '%%%%%%%%%% CONSTANTES DE INDICES %%%%%%%%%%%%%%%
-Public Const iCuerpoMuerto As Integer = 8
+Public Const iCuerpoMuerto As Integer = 830
 
-Public Const iCabezaMuerto As Integer = 621
+Public Const iCabezaMuerto As Integer = 0
 
 Public Const iORO          As Byte = 12
 
@@ -1016,7 +1016,7 @@ End Type
 
 Public Type Position
 
-    x As Integer
+    X As Integer
     Y As Integer
 
 End Type
@@ -1024,7 +1024,7 @@ End Type
 Public Type WorldPos
 
     Map As Integer
-    x As Integer
+    X As Integer
     Y As Integer
 
 End Type
@@ -1032,7 +1032,7 @@ End Type
 Public Type CityWorldPos
 
     Map As Integer
-    x As Integer
+    X As Integer
     Y As Integer
     MapaViaje As Integer
     ViajeX As Byte
@@ -2073,7 +2073,7 @@ Public Type MapBlock
 
     Blocked As Byte
     Graphic(1 To 4) As Long
-    Userindex As Integer
+    UserIndex As Integer
     NpcIndex As Integer
     Particula As Byte
     TimeParticula As Integer
