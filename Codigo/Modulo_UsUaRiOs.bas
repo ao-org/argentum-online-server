@@ -1461,103 +1461,101 @@ Sub UserDie(ByVal UserIndex As Integer)
         '.flags.SeguroParty = True
         'Call WritePartySafeOn(UserIndex)
         
-    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_SoundIndex.MUERTE_HOMBRE, .Pos.X, .Pos.Y))
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_SoundIndex.MUERTE_HOMBRE, .Pos.X, .Pos.Y))
+        
+        'Quitar el dialogo del user muerto
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageRemoveCharDialog(.Char.CharIndex))
+        
+        .Stats.MinHp = 0
+        .Stats.MinSta = 0
+        .flags.AtacadoPorUser = 0
+        .flags.Envenenado = 0
+        .flags.Ahogandose = 0
+        .flags.Incinerado = 0
+        .flags.incinera = 0
+        .flags.Paraliza = 0
+        .flags.Envenena = 0
+        .flags.Estupidiza = 0
+        .flags.Muerto = 1
+        '.flags.SeguroParty = True
+        'Call WritePartySafeOn(UserIndex)
+        
+        aN = .flags.AtacadoPorNpc
     
-    'Quitar el dialogo del user muerto
-    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageRemoveCharDialog(.Char.CharIndex))
+        If aN > 0 Then
+            Npclist(aN).Movement = Npclist(aN).flags.OldMovement
+            Npclist(aN).Hostile = Npclist(aN).flags.OldHostil
+            Npclist(aN).flags.AttackedBy = vbNullString
     
-    .Stats.MinHp = 0
-    .Stats.MinSta = 0
-    .flags.AtacadoPorUser = 0
-    .flags.Envenenado = 0
-    .flags.Ahogandose = 0
-    .flags.Incinerado = 0
-    .flags.incinera = 0
-    .flags.Paraliza = 0
-    .flags.Envenena = 0
-    .flags.Estupidiza = 0
-    .flags.Muerto = 1
-    '.flags.SeguroParty = True
-    'Call WritePartySafeOn(UserIndex)
-    
-    aN = .flags.AtacadoPorNpc
-
-    If aN > 0 Then
-        Npclist(aN).Movement = Npclist(aN).flags.OldMovement
-        Npclist(aN).Hostile = Npclist(aN).flags.OldHostil
-        Npclist(aN).flags.AttackedBy = vbNullString
-
-    End If
-    
-    aN = .flags.NPCAtacado
-
-    If aN > 0 Then
-        If Npclist(aN).flags.AttackedFirstBy = .name Then
-            Npclist(aN).flags.AttackedFirstBy = vbNullString
-
         End If
-
-    End If
-
-    .flags.AtacadoPorNpc = 0
-    .flags.NPCAtacado = 0
+        
+        aN = .flags.NPCAtacado
     
-    '<<<< Paralisis >>>>
-    If .flags.Paralizado = 1 Then
-        .flags.Paralizado = 0
-        Call WriteParalizeOK(UserIndex)
-
-    End If
+        If aN > 0 Then
+            If Npclist(aN).flags.AttackedFirstBy = .name Then
+                Npclist(aN).flags.AttackedFirstBy = vbNullString
     
-    '<<<< Inmovilizado >>>>
-    If .flags.Inmovilizado = 1 Then
-        .flags.Inmovilizado = 0
-        Call WriteInmovilizaOK(UserIndex)
-
-    End If
+            End If
     
-    '<<< Estupidez >>>
-    If .flags.Estupidez = 1 Then
-        .flags.Estupidez = 0
-        Call WriteDumbNoMore(UserIndex)
-
-    End If
+        End If
     
-    '<<<< Descansando >>>>
-    If .flags.Descansar Then
-        .flags.Descansar = False
-        Call WriteRestOK(UserIndex)
-
-    End If
+        .flags.AtacadoPorNpc = 0
+        .flags.NPCAtacado = 0
+        
+        '<<<< Paralisis >>>>
+        If .flags.Paralizado = 1 Then
+            .flags.Paralizado = 0
+            Call WriteParalizeOK(UserIndex)
     
-    '<<<< Meditando >>>>
-    If .flags.Meditando Then
-        .flags.Meditando = False
-        .Char.FX = 0
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(.Char.CharIndex, 0))
-    End If
+        End If
+        
+        '<<<< Inmovilizado >>>>
+        If .flags.Inmovilizado = 1 Then
+            .flags.Inmovilizado = 0
+            Call WriteInmovilizaOK(UserIndex)
     
-    'If .Familiar.Invocado = 1 Then
-    ' Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageFxPiso("17", Npclist(.Familiar.Id).Pos.x, Npclist(.Familiar.Id).Pos.Y))
-    ' .Familiar.Invocado = 0
-    ' Call QuitarNPC(.Familiar.Id)
-    ' End If
+        End If
+        
+        '<<< Estupidez >>>
+        If .flags.Estupidez = 1 Then
+            .flags.Estupidez = 0
+            Call WriteDumbNoMore(UserIndex)
     
-    '<<<< Invisible >>>>
-    If .flags.invisible = 1 Or .flags.Oculto = 1 Then
-        .flags.Oculto = 0
-        .flags.invisible = 0
-        .Counters.TiempoOculto = 0
-        .Counters.Invisibilidad = 0
-        'no hace falta encriptar este NOVER
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, False))
-
-    End If
-
-    If MapInfo(.Pos.Map).Seguro = 0 Then '  Ladder 06/07/2014 Si el mapa es seguro, no se caen los items
+        End If
+        
+        '<<<< Descansando >>>>
+        If .flags.Descansar Then
+            .flags.Descansar = False
+            Call WriteRestOK(UserIndex)
+    
+        End If
+        
+        '<<<< Meditando >>>>
+        If .flags.Meditando Then
+            .flags.Meditando = False
+            .Char.FX = 0
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(.Char.CharIndex, 0))
+        End If
+        
+        'If .Familiar.Invocado = 1 Then
+        ' Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageFxPiso("17", Npclist(.Familiar.Id).Pos.x, Npclist(.Familiar.Id).Pos.Y))
+        ' .Familiar.Invocado = 0
+        ' Call QuitarNPC(.Familiar.Id)
+        ' End If
+        
+        '<<<< Invisible >>>>
+        If .flags.invisible = 1 Or .flags.Oculto = 1 Then
+            .flags.Oculto = 0
+            .flags.invisible = 0
+            .Counters.TiempoOculto = 0
+            .Counters.Invisibilidad = 0
+            'no hace falta encriptar este NOVER
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, False))
+    
+        End If
+    
         If TriggerZonaPelea(UserIndex, UserIndex) <> eTrigger6.TRIGGER6_PERMITE Then
 
-            ' << Si es newbie no pierde el inventario >>
             If (.flags.Privilegios And PlayerType.user) <> 0 Then
         
                 If Not EsNewbie(UserIndex) Then
@@ -1639,111 +1637,87 @@ Sub UserDie(ByVal UserIndex As Integer)
 
                 Else
 
-                    If EsNewbie(UserIndex) Then Call TirarTodosLosItemsNoNewbies(UserIndex)
+                    Call TirarTodosLosItemsNoNewbies(UserIndex)
 
                 End If
     
             End If
     
         End If
-
-    End If
-
-    .flags.CarroMineria = 0
-    
-        .flags.CarroMineria = 0
         
+        .flags.CarroMineria = 0
+            
         ' DESEQUIPA TODOS LOS OBJETOS
+            
+        If .Char.Arma_Aura <> "" Then
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, 0, True, 1))
+            .Char.Arma_Aura = ""
+        End If
         
         If .Char.Arma_Aura <> "" Then
             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, 0, True, 1))
             .Char.Arma_Aura = ""
     
-    If .Char.Arma_Aura <> "" Then
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, 0, True, 1))
-        .Char.Arma_Aura = ""
-
-    End If
-
-    If .Char.Body_Aura <> "" Then
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, 0, True, 2))
-        .Char.Body_Aura = 0
-
-    End If
+        End If
     
-    If .Char.Escudo_Aura <> "" Then
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, 0, True, 3))
-        .Char.Escudo_Aura = 0
-
-    End If
-    
-    If .Char.Head_Aura <> "" Then
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, 0, True, 4))
-        .Char.Head_Aura = 0
-
-    End If
-    
-    If .Char.Anillo_Aura <> "" Then
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, 0, True, 6))
-        .Char.Anillo_Aura = 0
-    End If
-
-    If .Char.Otra_Aura <> "" Then
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, 0, True, 5))
-        .Char.Otra_Aura = 0
-    End If
-                        
-    'desequipar montura
-    If .flags.Montado > 0 Then
-
-        Call DoMontar(UserIndex, ObjData(.Invent.MonturaObjIndex), .Invent.MonturaSlot)
-
-    End If
+        If .Char.Body_Aura <> "" Then
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, 0, True, 2))
+            .Char.Body_Aura = 0
     
         End If
         
-    .Char.speeding = VelocidadMuerto
-    'Call WriteVelocidadToggle(UserIndex)
+        If .Char.Escudo_Aura <> "" Then
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, 0, True, 3))
+            .Char.Escudo_Aura = 0
     
-    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(.Char.CharIndex, .Char.speeding))
-    
-    ' << Reseteamos los posibles FX sobre el personaje >>
-    If .Char.loops = INFINITE_LOOPS Then
-        .Char.FX = 0
-        .Char.loops = 0
-
-    End If
-    
-    .flags.VecesQueMoriste = .flags.VecesQueMoriste + 1
-    
-    ' << Restauramos los atributos >>
-    If .flags.TomoPocion = True And .flags.BattleModo = 0 Then
-
-        For i = 1 To 4
-            .Stats.UserAtributos(i) = .Stats.UserAtributosBackUP(i)
-        Next i
-
-        Call WriteFYA(UserIndex)
-
-    End If
-    
-    '<< Cambiamos la apariencia del char >>
-    If .flags.Navegando = 0 Then
-        .Char.Body = iCuerpoMuerto
-        .Char.Head = iCabezaMuerto
-        .Char.ShieldAnim = NingunEscudo
-        .Char.WeaponAnim = NingunArma
-        .Char.CascoAnim = NingunCasco
+        End If
         
-    Else
-
-        If ObjData(.Invent.BarcoObjIndex).Ropaje = iTraje Then
-            .Char.Body = iRopaBuceoMuerto
-            .Char.Head = iCabezaMuerto
-        Else
-            .Char.Body = iFragataFantasmal ';)
-            .Char.Head = 0
-
+        If .Char.Head_Aura <> "" Then
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, 0, True, 4))
+            .Char.Head_Aura = 0
+    
+        End If
+        
+        If .Char.Anillo_Aura <> "" Then
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, 0, True, 6))
+            .Char.Anillo_Aura = 0
+        End If
+    
+        If .Char.Otra_Aura <> "" Then
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, 0, True, 5))
+            .Char.Otra_Aura = 0
+        End If
+                            
+        'desequipar montura
+        If .flags.Montado > 0 Then
+    
+            Call DoMontar(UserIndex, ObjData(.Invent.MonturaObjIndex), .Invent.MonturaSlot)
+    
+        End If
+            
+        .Char.speeding = VelocidadMuerto
+        'Call WriteVelocidadToggle(UserIndex)
+        
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(.Char.CharIndex, .Char.speeding))
+        
+        ' << Reseteamos los posibles FX sobre el personaje >>
+        If .Char.loops = INFINITE_LOOPS Then
+            .Char.FX = 0
+            .Char.loops = 0
+    
+        End If
+        
+        .flags.VecesQueMoriste = .flags.VecesQueMoriste + 1
+        
+        ' << Restauramos los atributos >>
+        If .flags.TomoPocion = True And .flags.BattleModo = 0 Then
+    
+            For i = 1 To 4
+                .Stats.UserAtributos(i) = .Stats.UserAtributosBackUP(i)
+            Next i
+    
+            Call WriteFYA(UserIndex)
+    
         End If
         
         .flags.VecesQueMoriste = .flags.VecesQueMoriste + 1
@@ -1776,11 +1750,6 @@ Sub UserDie(ByVal UserIndex As Integer)
                 .Char.Body = iFragataFantasmal ';)
                 .Char.Head = 0
             End If
-        End If
-    
-        '<< Actualizamos clientes >>
-        Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)
-    
         End If
         
         For i = 1 To MAXMASCOTAS
