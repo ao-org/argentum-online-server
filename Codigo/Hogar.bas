@@ -306,10 +306,6 @@ Public Function IntervaloGoHome(ByVal Userindex As Integer, _
 
 End Function
 
-''
-' Handles the "Home" message.
-'
-' @param    userIndex The index of the user sending the message.
 Public Sub HandleHome(ByVal Userindex As Integer)
 
     '***************************************************
@@ -329,16 +325,16 @@ Public Sub HandleHome(ByVal Userindex As Integer)
 
         End If
         
-        'Si el mapa tiene alguna restriccion (newbie, dungeon, etc...), no lo dejamos viajar.
-        If Len(MapInfo(.Pos.Map).restrict_mode) <> 0 Then
-            Call WriteConsoleMsg(Userindex, "No pueder viajar a tu hogar desde este mapa.", FontTypeNames.FONTTYPE_FIGHT)
+        '¿Zona Segura?
+        If MapInfo(.Pos.Map).Seguro = 1 Then
+            Call WriteConsoleMsg(Userindex, "No puedes usar este comando en zona segura.", FontTypeNames.FONTTYPE_FIGHT)
             Exit Sub
             
         End If
         
-        '¿Zona Segura?
-        If MapInfo(.Pos.Map).Seguro = 1 Then
-            Call WriteConsoleMsg(Userindex, "No puedes usar este comando en zona segura.", FontTypeNames.FONTTYPE_FIGHT)
+        'Si el mapa tiene alguna restriccion (newbie, dungeon, etc...), no lo dejamos viajar.
+        If MapInfo(.Pos.Map).zone = "NEWBIE" Then
+            Call WriteConsoleMsg(Userindex, "No pueder viajar a tu hogar desde este mapa.", FontTypeNames.FONTTYPE_FIGHT)
             Exit Sub
             
         End If
@@ -350,6 +346,12 @@ Public Sub HandleHome(ByVal Userindex As Integer)
 
         End If
         
+        If .flags.Muerto = 0 Then
+            Call WriteConsoleMsg(Userindex, "Debes estar muerto para utilizar este comando.", FontTypeNames.FONTTYPE_FIGHT)
+            Exit Sub
+
+        End If
+
         If .flags.Traveling = 0 Then
             
             If .Pos.Map <> Ciudades(.Hogar).Map Then
@@ -372,4 +374,3 @@ Public Sub HandleHome(ByVal Userindex As Integer)
     End With
 
 End Sub
-
