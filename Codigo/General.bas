@@ -715,7 +715,7 @@ Sub Main()
     
     Call GetHoraActual
     
-    HoraMundo = timeGetTime - DuracionDia \ 2
+    HoraMundo = (timeGetTime And &H7FFFFFFF) - DuracionDia \ 2
     Unload frmCargando
     
     'Log
