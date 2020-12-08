@@ -1370,6 +1370,9 @@ Private Sub GameTimer_Timer()
                         
                         If bEnviarAyS Then Call WriteUpdateHungerAndThirst(iUserIndex)
                         
+                    Else
+                        If .flags.Traveling <> 0 Then Call TravelingEffect(iUserIndex)
+                                                
                     End If 'Muerto
 
                 Else 'no esta logeado?
