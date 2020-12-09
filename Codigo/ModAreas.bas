@@ -221,7 +221,7 @@ Public Sub CheckUpdateNeededUser(ByVal Userindex As Integer, ByVal Head As Byte,
                    
                     If Userindex <> TempInt Then
                         
-                        If UserList(Userindex).flags.AdminInvisible = False Or EsGM(TempInt) Then
+                        If UserList(Userindex).flags.AdminInvisible = 0 Or EsGM(TempInt) Then
                             Call MakeUserChar(False, TempInt, Userindex, .Pos.Map, .Pos.X, .Pos.Y, 0)
                             
                             If UserList(Userindex).flags.invisible Or UserList(Userindex).flags.Oculto Then
@@ -230,7 +230,7 @@ Public Sub CheckUpdateNeededUser(ByVal Userindex As Integer, ByVal Head As Byte,
                             
                         End If
                             
-                        If UserList(TempInt).flags.AdminInvisible = False Or EsGM(Userindex) Then
+                        If UserList(TempInt).flags.AdminInvisible = 0 Or EsGM(Userindex) Then
                             Call MakeUserChar(False, Userindex, TempInt, Map, X, Y, appear)
                             
                             'Si el user estaba invisible le avisamos al nuevo cliente de eso
