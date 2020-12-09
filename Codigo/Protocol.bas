@@ -191,7 +191,6 @@ Private Enum ServerPacketID
     UpdateUserKey
     UpdateRM
     UpdateDM
-    InmovilizaOK
 End Enum
 
 Private Enum ClientPacketID
@@ -2310,7 +2309,7 @@ Private Sub HandleWalk(ByVal Userindex As Integer)
         
 110         Heading = .incomingData.ReadByte()
         
-112         If .flags.Paralizado = 0 Or .flags.Inmovilizado = 0 Then
+112         If .flags.Paralizado = 0 And .flags.Inmovilizado = 0 Then
 
 114             If .flags.Meditando Then
                     'Stop meditating, next action will start movement.
@@ -2391,7 +2390,6 @@ Private Sub HandleWalk(ByVal Userindex As Integer)
                         .flags.Traveling = 0
                         .Counters.goHome = 0
                         Call WriteConsoleMsg(Userindex, "Has cancelado el viaje a casa.", FontTypeNames.FONTTYPE_INFO)
-                        Exit Sub
                     End If
 
                 'End If
@@ -22562,7 +22560,7 @@ Public Sub WriteInmovilizaOK(ByVal Userindex As Integer)
     '***************************************************
     On Error GoTo ErrHandler
 
-    Call UserList(Userindex).outgoingData.WriteByte(ServerPacketID.InmovilizaOK)
+    Call UserList(Userindex).outgoingData.WriteByte(ServerPacketID.InmovilizadoOK)
     '  Call WritePosUpdate(UserIndex)
     Exit Sub
 
