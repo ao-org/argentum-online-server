@@ -11213,6 +11213,7 @@ Private Sub HandleEditChar(ByVal Userindex As Integer)
 
         'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
         Dim buffer As New clsByteQueue
+
         Call buffer.CopyBuffer(.incomingData)
         
         'Remove packet ID
@@ -11220,8 +11221,8 @@ Private Sub HandleEditChar(ByVal Userindex As Integer)
         
         Dim UserName      As String
         Dim tUser         As Integer
-        Dim opcion        As Byte
 
+        Dim opcion        As Byte
         Dim Arg1          As String
         Dim Arg2          As String
 
@@ -11229,15 +11230,16 @@ Private Sub HandleEditChar(ByVal Userindex As Integer)
 
         Dim LoopC         As Byte
         Dim commandString As String
-
         Dim n             As Byte
         
         UserName = Replace(buffer.ReadASCIIString(), "+", " ")
         
         If UCase$(UserName) = "YO" Then
             tUser = Userindex
+            
         Else
             tUser = NameIndex(UserName)
+
         End If
         
         opcion = buffer.ReadByte()
@@ -11247,256 +11249,249 @@ Private Sub HandleEditChar(ByVal Userindex As Integer)
         'If we got here then packet is complete, copy data back to original queue
         Call .incomingData.CopyBuffer(buffer)
         
-        ' Si sos dios o admin hacé lo que quieras.
-        If .flags.Privilegios And (PlayerType.Dios And PlayerType.Admin) Then
-            
-            valido = True
+        ' Si no es GM, no hacemos nada.
+        If Not EsGM(Userindex) Then Exit Sub
+        
+        ' Si NO sos Dios o Admin,
+        If .flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin) = 0 Then
 
-        Else
-            
             ' Si te editas a vos mismo esta bien ;)
-            If Userindex = tUser Then
-                valido = True
-            Else
-                valido = False
-            End If
+            If Userindex <> tUser Then Exit Sub
             
         End If
         
-        If valido Then
+        Select Case opcion
 
-            Select Case opcion
+            Case eEditOptions.eo_Gold
 
-                Case eEditOptions.eo_Gold
+                If tUser <= 0 Then
+                    Call WriteConsoleMsg(Userindex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                Else
+                    UserList(tUser).Stats.GLD = val(Arg1)
+                    Call WriteUpdateGold(tUser)
 
-                    If tUser <= 0 Then
-                        Call WriteConsoleMsg(Userindex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
-                    Else
-                        UserList(tUser).Stats.GLD = val(Arg1)
-                        Call WriteUpdateGold(tUser)
-
-                    End If
+                End If
                 
-                Case eEditOptions.eo_Experience
+            Case eEditOptions.eo_Experience
 
-                    If tUser <= 0 Then
-                        Call WriteConsoleMsg(Userindex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
-                    Else
+                If tUser <= 0 Then
+                    Call WriteConsoleMsg(Userindex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                Else
 
-                        If UserList(tUser).Stats.ELV < STAT_MAXELV Then
-                            UserList(tUser).Stats.Exp = UserList(tUser).Stats.Exp + val(Arg1)
-                            Call CheckUserLevel(tUser)
-                            Call WriteUpdateExp(tUser)
+                    If UserList(tUser).Stats.ELV < STAT_MAXELV Then
+                        UserList(tUser).Stats.Exp = UserList(tUser).Stats.Exp + val(Arg1)
+                        Call CheckUserLevel(tUser)
+                        Call WriteUpdateExp(tUser)
                             
-                        Else
-                            Call WriteConsoleMsg(Userindex, "El usuario es nivel máximo.", FontTypeNames.FONTTYPE_INFO)
-
-                        End If
+                    Else
+                        Call WriteConsoleMsg(Userindex, "El usuario es nivel máximo.", FontTypeNames.FONTTYPE_INFO)
 
                     End If
-                
-                Case eEditOptions.eo_Body
 
-                    If tUser <= 0 Then
+                End If
+                
+            Case eEditOptions.eo_Body
+
+                If tUser <= 0 Then
                     
-                        If Database_Enabled Then
-                            Call SaveUserBodyDatabase(UserName, val(Arg1))
-                        Else
-                            Call WriteVar(CharPath & UserName & ".chr", "INIT", "Body", Arg1)
-
-                        End If
-
-                        Call WriteConsoleMsg(Userindex, "Usuario Offline Alterado: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                    If Database_Enabled Then
+                        Call SaveUserBodyDatabase(UserName, val(Arg1))
                     Else
-                        Call ChangeUserChar(tUser, val(Arg1), UserList(tUser).Char.Head, UserList(tUser).Char.Heading, UserList(tUser).Char.WeaponAnim, UserList(tUser).Char.ShieldAnim, UserList(tUser).Char.CascoAnim)
+                        Call WriteVar(CharPath & UserName & ".chr", "INIT", "Body", Arg1)
 
                     End If
-                
-                Case eEditOptions.eo_Head
 
-                    If tUser <= 0 Then
+                    Call WriteConsoleMsg(Userindex, "Usuario Offline Alterado: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                Else
+                    Call ChangeUserChar(tUser, val(Arg1), UserList(tUser).Char.Head, UserList(tUser).Char.Heading, UserList(tUser).Char.WeaponAnim, UserList(tUser).Char.ShieldAnim, UserList(tUser).Char.CascoAnim)
+
+                End If
+                
+            Case eEditOptions.eo_Head
+
+                If tUser <= 0 Then
                     
-                        If Database_Enabled Then
-                            Call SaveUserHeadDatabase(UserName, val(Arg1))
-                        Else
-                            Call WriteVar(CharPath & UserName & ".chr", "INIT", "Head", Arg1)
-
-                        End If
-
-                        Call WriteConsoleMsg(Userindex, "Usuario Offline Alterado: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                    If Database_Enabled Then
+                        Call SaveUserHeadDatabase(UserName, val(Arg1))
                     Else
-                        Call ChangeUserChar(tUser, UserList(tUser).Char.Body, val(Arg1), UserList(tUser).Char.Heading, UserList(tUser).Char.WeaponAnim, UserList(tUser).Char.ShieldAnim, UserList(tUser).Char.CascoAnim)
+                        Call WriteVar(CharPath & UserName & ".chr", "INIT", "Head", Arg1)
 
                     End If
+
+                    Call WriteConsoleMsg(Userindex, "Usuario Offline Alterado: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                Else
+                    Call ChangeUserChar(tUser, UserList(tUser).Char.Body, val(Arg1), UserList(tUser).Char.Heading, UserList(tUser).Char.WeaponAnim, UserList(tUser).Char.ShieldAnim, UserList(tUser).Char.CascoAnim)
+
+                End If
                 
-                Case eEditOptions.eo_CriminalsKilled
+            Case eEditOptions.eo_CriminalsKilled
 
-                    If tUser <= 0 Then
-                        Call WriteConsoleMsg(Userindex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                If tUser <= 0 Then
+                    Call WriteConsoleMsg(Userindex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                Else
+
+                    If val(Arg1) > MAXUSERMATADOS Then
+                        UserList(tUser).Faccion.CriminalesMatados = MAXUSERMATADOS
                     Else
-
-                        If val(Arg1) > MAXUSERMATADOS Then
-                            UserList(tUser).Faccion.CriminalesMatados = MAXUSERMATADOS
-                        Else
-                            UserList(tUser).Faccion.CriminalesMatados = val(Arg1)
-
-                        End If
+                        UserList(tUser).Faccion.CriminalesMatados = val(Arg1)
 
                     End If
+
+                End If
                 
-                Case eEditOptions.eo_CiticensKilled
+            Case eEditOptions.eo_CiticensKilled
 
-                    If tUser <= 0 Then
-                        Call WriteConsoleMsg(Userindex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                If tUser <= 0 Then
+                    Call WriteConsoleMsg(Userindex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                Else
+
+                    If val(Arg1) > MAXUSERMATADOS Then
+                        UserList(tUser).Faccion.CiudadanosMatados = MAXUSERMATADOS
                     Else
-
-                        If val(Arg1) > MAXUSERMATADOS Then
-                            UserList(tUser).Faccion.CiudadanosMatados = MAXUSERMATADOS
-                        Else
-                            UserList(tUser).Faccion.CiudadanosMatados = val(Arg1)
-
-                        End If
+                        UserList(tUser).Faccion.CiudadanosMatados = val(Arg1)
 
                     End If
+
+                End If
                 
-                Case eEditOptions.eo_Level
+            Case eEditOptions.eo_Level
 
-                    If tUser <= 0 Then
-                        Call WriteConsoleMsg(Userindex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
-                    Else
+                If tUser <= 0 Then
+                    Call WriteConsoleMsg(Userindex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                Else
 
-                        If val(Arg1) > STAT_MAXELV Then
-                            Arg1 = CStr(STAT_MAXELV)
-                            Call WriteConsoleMsg(Userindex, "No podés tener un nivel superior a " & STAT_MAXELV & ".", FONTTYPE_INFO)
+                    If val(Arg1) > STAT_MAXELV Then
+                        Arg1 = CStr(STAT_MAXELV)
+                        Call WriteConsoleMsg(Userindex, "No podés tener un nivel superior a " & STAT_MAXELV & ".", FONTTYPE_INFO)
 
-                        End If
+                    End If
                         
-                        UserList(tUser).Stats.ELV = val(Arg1)
+                    UserList(tUser).Stats.ELV = val(Arg1)
 
-                    End If
+                End If
                     
-                    Call WriteUpdateUserStats(Userindex)
+                Call WriteUpdateUserStats(Userindex)
                 
-                Case eEditOptions.eo_Class
+            Case eEditOptions.eo_Class
 
-                    If tUser <= 0 Then
-                        Call WriteConsoleMsg(Userindex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
-                    Else
+                If tUser <= 0 Then
+                    Call WriteConsoleMsg(Userindex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                Else
 
-                        For LoopC = 1 To NUMCLASES
-                            If UCase$(ListaClases(LoopC)) = UCase$(Arg1) Then Exit For
-                        Next LoopC
-                        
-                        If LoopC > NUMCLASES Then
-                            Call WriteConsoleMsg(Userindex, "Clase desconocida. Intente nuevamente.", FontTypeNames.FONTTYPE_INFO)
-                        Else
-                            UserList(tUser).clase = LoopC
+                    For LoopC = 1 To NUMCLASES
 
-                        End If
-
-                    End If
-                
-                Case eEditOptions.eo_Skills
-
-                    For LoopC = 1 To NUMSKILLS
-                        If UCase$(Replace$(SkillsNames(LoopC), " ", "+")) = UCase$(Arg1) Then Exit For
+                        If UCase$(ListaClases(LoopC)) = UCase$(Arg1) Then Exit For
                     Next LoopC
-                    
-                    If LoopC > NUMSKILLS Then
-                        Call WriteConsoleMsg(Userindex, "Skill Inexistente!", FontTypeNames.FONTTYPE_INFO)
-                    Else
-
-                        If tUser <= 0 Then
                         
-                            If Database_Enabled Then
-                                Call SaveUserSkillDatabase(UserName, LoopC, val(Arg2))
-                            Else
-                                Call WriteVar(CharPath & UserName & ".chr", "Skills", "SK" & LoopC, Arg2)
-
-                            End If
-
-                            Call WriteConsoleMsg(Userindex, "Usuario Offline Alterado: " & UserName, FontTypeNames.FONTTYPE_INFO)
-                        Else
-                            UserList(tUser).Stats.UserSkills(LoopC) = val(Arg2)
-
-                        End If
+                    If LoopC > NUMCLASES Then
+                        Call WriteConsoleMsg(Userindex, "Clase desconocida. Intente nuevamente.", FontTypeNames.FONTTYPE_INFO)
+                    Else
+                        UserList(tUser).clase = LoopC
 
                     End If
+
+                End If
                 
-                Case eEditOptions.eo_SkillPointsLeft
+            Case eEditOptions.eo_Skills
+
+                For LoopC = 1 To NUMSKILLS
+
+                    If UCase$(Replace$(SkillsNames(LoopC), " ", "+")) = UCase$(Arg1) Then Exit For
+                Next LoopC
+                    
+                If LoopC > NUMSKILLS Then
+                    Call WriteConsoleMsg(Userindex, "Skill Inexistente!", FontTypeNames.FONTTYPE_INFO)
+                Else
 
                     If tUser <= 0 Then
-                    
+                        
                         If Database_Enabled Then
-                            Call SaveUserSkillsLibres(UserName, val(Arg1))
+                            Call SaveUserSkillDatabase(UserName, LoopC, val(Arg2))
                         Else
-                            Call WriteVar(CharPath & UserName & ".chr", "STATS", "SkillPtsLibres", Arg1)
+                            Call WriteVar(CharPath & UserName & ".chr", "Skills", "SK" & LoopC, Arg2)
 
                         End If
-                        
+
                         Call WriteConsoleMsg(Userindex, "Usuario Offline Alterado: " & UserName, FontTypeNames.FONTTYPE_INFO)
                     Else
-                        UserList(tUser).Stats.SkillPts = val(Arg1)
+                        UserList(tUser).Stats.UserSkills(LoopC) = val(Arg2)
 
                     End If
-                
-                Case eEditOptions.eo_Sex
 
-                    If tUser <= 0 Then
-                        Call WriteConsoleMsg(Userindex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                End If
+                
+            Case eEditOptions.eo_SkillPointsLeft
+
+                If tUser <= 0 Then
                     
+                    If Database_Enabled Then
+                        Call SaveUserSkillsLibres(UserName, val(Arg1))
                     Else
-                        Arg1 = UCase$(Arg1)
-
-                        If (Arg1 = "MUJER") Then
-                            UserList(tUser).genero = eGenero.Mujer
-                        
-                        ElseIf (Arg1 = "HOMBRE") Then
-                            UserList(tUser).genero = eGenero.Hombre
-
-                        End If
+                        Call WriteVar(CharPath & UserName & ".chr", "STATS", "SkillPtsLibres", Arg1)
 
                     End If
-                
-                Case eEditOptions.eo_Raza
-
-                    If tUser <= 0 Then
-                        Call WriteConsoleMsg(Userindex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
                         
-                    Else
+                    Call WriteConsoleMsg(Userindex, "Usuario Offline Alterado: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                Else
+                    UserList(tUser).Stats.SkillPts = val(Arg1)
+
+                End If
+                
+            Case eEditOptions.eo_Sex
+
+                If tUser <= 0 Then
+                    Call WriteConsoleMsg(Userindex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
                     
-                        Arg1 = UCase$(Arg1)
+                Else
+                    Arg1 = UCase$(Arg1)
 
-                        If (Arg1 = "HUMANO") Then
-                            UserList(tUser).raza = eRaza.Humano
-                            
-                        ElseIf (Arg1 = "ELFO") Then
-                            UserList(tUser).raza = eRaza.Elfo
-                            
-                        ElseIf (Arg1 = "DROW") Then
-                            UserList(tUser).raza = eRaza.Drow
-                            
-                        ElseIf (Arg1 = "ENANO") Then
-                            UserList(tUser).raza = eRaza.Enano
-                            
-                        ElseIf (Arg1 = "GNOMO") Then
-                            UserList(tUser).raza = eRaza.Gnomo
-                            
-                        ElseIf (Arg1 = "ORCO") Then
-                            UserList(tUser).raza = eRaza.Orco
-
-                        End If
+                    If (Arg1 = "MUJER") Then
+                        UserList(tUser).genero = eGenero.Mujer
+                        
+                    ElseIf (Arg1 = "HOMBRE") Then
+                        UserList(tUser).genero = eGenero.Hombre
 
                     End If
-                
-                Case Else
-                
-                    Call WriteConsoleMsg(Userindex, "Comando no permitido.", FontTypeNames.FONTTYPE_INFO)
 
-            End Select
+                End If
+                
+            Case eEditOptions.eo_Raza
 
-        End If
-        
+                If tUser <= 0 Then
+                    Call WriteConsoleMsg(Userindex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                        
+                Else
+                    
+                    Arg1 = UCase$(Arg1)
+
+                    If (Arg1 = "HUMANO") Then
+                        UserList(tUser).raza = eRaza.Humano
+                            
+                    ElseIf (Arg1 = "ELFO") Then
+                        UserList(tUser).raza = eRaza.Elfo
+                            
+                    ElseIf (Arg1 = "DROW") Then
+                        UserList(tUser).raza = eRaza.Drow
+                            
+                    ElseIf (Arg1 = "ENANO") Then
+                        UserList(tUser).raza = eRaza.Enano
+                            
+                    ElseIf (Arg1 = "GNOMO") Then
+                        UserList(tUser).raza = eRaza.Gnomo
+                            
+                    ElseIf (Arg1 = "ORCO") Then
+                        UserList(tUser).raza = eRaza.Orco
+
+                    End If
+
+                End If
+                
+            Case Else
+                
+                Call WriteConsoleMsg(Userindex, "Comando no permitido.", FontTypeNames.FONTTYPE_INFO)
+
+        End Select
+
         'Log it!
         commandString = "/MOD "
         
@@ -11545,7 +11540,7 @@ Private Sub HandleEditChar(ByVal Userindex As Integer)
         
         commandString = commandString & Arg1 & " " & Arg2
         
-        If valido Then Call LogGM(.name, commandString & " " & UserName)
+        Call LogGM(.name, commandString & " " & UserName)
 
     End With
 
