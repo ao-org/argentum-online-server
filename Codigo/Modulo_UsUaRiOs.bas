@@ -1948,10 +1948,11 @@ Sub WarpToLegalPos(ByVal Userindex As Integer, ByVal Map As Integer, ByVal X As 
 114                         If (.Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES Then
 116                             If .TileExit.Map = 0 Then
 118                                 If .NpcIndex <= 0 Then
-120                                     Call WarpUserChar(Userindex, Map, lX, lY, FX)
-122                                     Find = True
-                                        Exit Sub
-
+                                        If .trigger = 0 Then
+                                            Call WarpUserChar(Userindex, Map, lX, lY, FX)
+                                            Find = True
+                                            Exit Sub
+                                        End If
                                     End If
 
                                 End If
