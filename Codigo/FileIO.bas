@@ -2109,8 +2109,8 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
     
     Dim X As Integer, Y As Integer
     
-    If FileLen(MAPF1) = 0 Then
-        Call RegistrarError(4333, "Se trato de cargar un mapa corrupto o mal generado" & vbNewLine & "Mapa: " & MAPF1, "ES.CargarMapaFormatoCSM")
+    If FileLen(MAPFl) = 0 Then
+        Call RegistrarError(4333, "Se trato de cargar un mapa corrupto o mal generado" & vbNewLine & "Mapa: " & MAPFl, "ES.CargarMapaFormatoCSM")
         Exit Sub
     End If
     
