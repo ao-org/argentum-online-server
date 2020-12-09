@@ -11247,48 +11247,21 @@ Private Sub HandleEditChar(ByVal Userindex As Integer)
         'If we got here then packet is complete, copy data back to original queue
         Call .incomingData.CopyBuffer(buffer)
         
-        
-        
-       ' If .flags.Privilegios And PlayerType.RoleMaster Then
-            Select Case .flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin Or PlayerType.SemiDios Or PlayerType.Consejero)
-                Case PlayerType.Consejero
-                    ' Los RMs consejeros sólo se pueden editar su head, body y level
-                    valido = tUser = Userindex And _
-                            (opcion = eEditOptions.eo_Body Or opcion = eEditOptions.eo_Head Or opcion = eEditOptions.eo_Level)
-                
-                Case PlayerType.SemiDios
-                    ' Los RMs sólo se pueden editar su level y el head y body de cualquiera
-                    valido = (opcion = eEditOptions.eo_Level And tUser = Userindex) _
-                            Or opcion = eEditOptions.eo_Body Or opcion = eEditOptions.eo_Head
-                            valido = True
-                
-                Case PlayerType.Dios
-                    ' Los DRMs pueden aplicar los siguientes comandos sobre cualquiera
-                    ' pero si quiere modificar el level sólo lo puede hacer sobre sí mismo
-                    valido = (opcion = eEditOptions.eo_Level And tUser = Userindex) Or _
-                            opcion = eEditOptions.eo_Body Or _
-                            opcion = eEditOptions.eo_Head Or _
-                            opcion = eEditOptions.eo_CiticensKilled Or _
-                            opcion = eEditOptions.eo_CriminalsKilled Or _
-                            opcion = eEditOptions.eo_Class Or _
-                            opcion = eEditOptions.eo_Skills
-                            valido = True
-                Case PlayerType.Admin
-                    ' Los DRMs pueden aplicar los siguientes comandos sobre cualquiera
-                    ' pero si quiere modificar el level sólo lo puede hacer sobre sí mismo
-                    valido = (opcion = eEditOptions.eo_Level And tUser = Userindex) Or _
-                            opcion = eEditOptions.eo_Body Or _
-                            opcion = eEditOptions.eo_Head Or _
-                            opcion = eEditOptions.eo_CiticensKilled Or _
-                            opcion = eEditOptions.eo_CriminalsKilled Or _
-                            opcion = eEditOptions.eo_Class Or _
-                            opcion = eEditOptions.eo_Skills
-                            valido = True
-            End Select
+        ' Si sos dios o admin hacé lo que quieras.
+        If .flags.Privilegios And (PlayerType.Dios And PlayerType.Admin) Then
             
-      '  ElseIf .flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios) Then   'Si no es RM debe ser dios para poder usar este comando
-           ' valido = True
-       ' End If
+            valido = True
+
+        Else
+            
+            ' Si te editas a vos mismo esta bien ;)
+            If Userindex = tUser Then
+                valido = True
+            Else
+                valido = False
+            End If
+            
+        End If
         
         If valido Then
 
@@ -11496,14 +11469,19 @@ Private Sub HandleEditChar(ByVal Userindex As Integer)
 
                         If (Arg1 = "HUMANO") Then
                             UserList(tUser).raza = eRaza.Humano
+                            
                         ElseIf (Arg1 = "ELFO") Then
                             UserList(tUser).raza = eRaza.Elfo
+                            
                         ElseIf (Arg1 = "DROW") Then
                             UserList(tUser).raza = eRaza.Drow
+                            
                         ElseIf (Arg1 = "ENANO") Then
                             UserList(tUser).raza = eRaza.Enano
+                            
                         ElseIf (Arg1 = "GNOMO") Then
                             UserList(tUser).raza = eRaza.Gnomo
+                            
                         ElseIf (Arg1 = "ORCO") Then
                             UserList(tUser).raza = eRaza.Orco
 
