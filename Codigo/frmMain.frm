@@ -1688,16 +1688,11 @@ Private Sub TIMER_AI_Timer()
             
                 If .flags.NPCActive Then 'Nos aseguramos que sea INTELIGENTE!
                 
-                    If .flags.Paralizado = 1 Then
+                    If .flags.Paralizado = 1 Or .flags.Inmovilizado = 1 Then
                         Call EfectoParalisisNpc(NpcIndex)
 
                     Else
-                        
                         'Usamos AI si hay algun user en el mapa
-                        If .flags.Inmovilizado = 1 Then
-                            Call EfectoParalisisNpc(NpcIndex)
-                        End If
-                        
                         Mapa = .Pos.Map
                         
                         If Mapa > 0 Then
