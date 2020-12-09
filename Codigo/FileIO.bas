@@ -2108,9 +2108,15 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
     Dim j            As Long
     
     Dim X As Integer, Y As Integer
-
+    
+    If FileLen(MAPF1) = 0 Then
+        Call RegistrarError(4333, "Se trato de cargar un mapa corrupto o mal generado" & vbNewLine & "Mapa: " & MAPF1, "ES.CargarMapaFormatoCSM")
+        Exit Sub
+    End If
+    
     fh = FreeFile
     Open MAPFl For Binary As fh
+    
     Get #fh, , MH
     Get #fh, , MapSize
     Get #fh, , MapDat
@@ -2356,19 +2362,11 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
     MapInfo(Map).zone = MapDat.zone
  
     Exit Sub
-    Rem Dim N
 
-    Rem N = FreeFile
-    Rem Open App.Path & "\NameMapas.ini" For Binary Access Write As N
-
-    Rem Put N, , "[Mapas]" & vbCrLf
-    Rem Put N, , map & "=" & MapInfo(map).map_name & vbCrLf
-    Rem Put N, , vbCrLf
-    Rem Close #N
 errh:
-    MsgBox ("Error cargando mapa: " & Map & "." & Err.description & " - ")
-
-    Rem    Call LogError("Error cargando mapa: " & map & "." & Err.description)
+    Close fh
+    Call MsgBox("Error cargando mapa: " & Map & "." & Err.description & " - ")
+    
 End Sub
 
 Sub LoadSini()
