@@ -43,7 +43,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal Userindex As Integer)
     '22/06/06: (Nacho) Chequeamos si es pretoriano
     '24/01/2007: Pablo (ToxicWaste): Agrego para actualización de tag si cambia de status.
     '********************************************************
-    On Error GoTo Errhandler
+    On Error GoTo ErrHandler
 
     Dim MiNPC As npc
 
@@ -229,7 +229,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal Userindex As Integer)
     
     Exit Sub
 
-Errhandler:
+ErrHandler:
     Call LogError("Error en MuereNpc - Error: " & Err.Number & " - Desc: " & Err.description)
 
 End Sub
@@ -457,7 +457,7 @@ End Sub
 
 Sub QuitarNPC(ByVal NpcIndex As Integer)
 
-    On Error GoTo Errhandler
+    On Error GoTo ErrHandler
 
     Npclist(NpcIndex).flags.NPCActive = False
     
@@ -495,7 +495,7 @@ Sub QuitarNPC(ByVal NpcIndex As Integer)
 
     Exit Sub
 
-Errhandler:
+ErrHandler:
     Npclist(NpcIndex).flags.NPCActive = False
     Call LogError("Error en QuitarNPC")
 
@@ -898,7 +898,7 @@ End Function
 Function NextOpenNPC() As Integer
     'Call LogTarea("Sub NextOpenNPC")
 
-    On Error GoTo Errhandler
+    On Error GoTo ErrHandler
 
     Dim LoopC As Integer
   
@@ -911,7 +911,7 @@ Function NextOpenNPC() As Integer
     NextOpenNPC = LoopC
 
     Exit Function
-Errhandler:
+ErrHandler:
     Call LogError("Error en NextOpenNPC")
 
 End Function
@@ -1264,9 +1264,9 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 
 196     If Npclist(NpcIndex).IntervaloMovimiento = 0 Then
 198         Npclist(NpcIndex).IntervaloMovimiento = 380
-            Npclist(NpcIndex).Char.speeding = 0.526315789473684
+            Npclist(NpcIndex).Char.speeding = 0.552631578947368
         Else
-            Npclist(NpcIndex).Char.speeding = 200 / Npclist(NpcIndex).IntervaloMovimiento
+            Npclist(NpcIndex).Char.speeding = 210 / Npclist(NpcIndex).IntervaloMovimiento
         End If
 
 200     If Npclist(NpcIndex).InvervaloLanzarHechizo = 0 Then
@@ -1520,7 +1520,7 @@ End Sub
 
 Public Function ObtenerIndiceRespawn() As Integer
 
-    On Error GoTo Errhandler
+    On Error GoTo ErrHandler
 
     Dim LoopC As Integer
 
@@ -1533,7 +1533,7 @@ Public Function ObtenerIndiceRespawn() As Integer
     ObtenerIndiceRespawn = LoopC
 
     Exit Function
-Errhandler:
+ErrHandler:
     Call LogError("Error en ObtenerIndiceRespawn")
     
 End Function
