@@ -1073,6 +1073,7 @@ Public Type Char
     Anillo_Aura As String
     Otra_Aura As String
     speeding As Single
+    BodyIdle As Integer
 
 End Type
 
@@ -1888,6 +1889,7 @@ Public Type NPCFlags
     Follow As Boolean
     Faccion As Byte
     LanzaSpells As Byte
+    NPCIdle As Boolean
     
     '[KEVIN]
     'DeQuest As Byte
@@ -2073,7 +2075,7 @@ Public Type MapBlock
 
     Blocked As Byte
     Graphic(1 To 4) As Long
-    UserIndex As Integer
+    Userindex As Integer
     NpcIndex As Integer
     Particula As Byte
     TimeParticula As Integer

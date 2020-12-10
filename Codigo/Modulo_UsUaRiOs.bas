@@ -281,7 +281,7 @@ Sub ChangeUserChar(ByVal Userindex As Integer, ByVal Body As Integer, ByVal Head
 
         End With
     
-114     Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageCharacterChange(Body, Head, Heading, UserList(Userindex).Char.CharIndex, Arma, Escudo, UserList(Userindex).Char.FX, UserList(Userindex).Char.loops, Casco))
+114     Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageCharacterChange(Body, Head, Heading, UserList(Userindex).Char.CharIndex, Arma, Escudo, UserList(Userindex).Char.FX, UserList(Userindex).Char.loops, Casco, False))
 
         
         Exit Sub

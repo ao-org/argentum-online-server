@@ -270,6 +270,7 @@ Sub ResetNpcFlags(ByVal NpcIndex As Integer)
 154         .AtacaANPC = 0
 156         .AIAlineacion = e_Alineacion.ninguna
 158         .AIPersonalidad = e_Personalidad.ninguna
+            .NPCIdle = False
         End With
 
         
@@ -677,81 +678,83 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
         
         On Error GoTo MakeNPCChar_Err
         
+        With Npclist(NpcIndex)
 
-        Dim CharIndex As Integer
-
-100     If Npclist(NpcIndex).Char.CharIndex = 0 Then
-102         CharIndex = NextOpenCharIndex
-104         Npclist(NpcIndex).Char.CharIndex = CharIndex
-106         CharList(CharIndex) = NpcIndex
-
-        End If
+            Dim CharIndex As Integer
     
-108     MapData(Map, X, Y).NpcIndex = NpcIndex
+100         If .Char.CharIndex = 0 Then
+102             CharIndex = NextOpenCharIndex
+104             .Char.CharIndex = CharIndex
+106             CharList(CharIndex) = NpcIndex
     
-        Dim Simbolo As Byte
-    
-        Dim GG      As String
-        Dim tmpByte As Byte
-   
-110     GG = IIf(Npclist(NpcIndex).showName > 0, Npclist(NpcIndex).name & Npclist(NpcIndex).SubName, vbNullString)
-    
-112     If Not toMap Then
-114         If Npclist(NpcIndex).NumQuest > 0 Then
-
-                Dim q As Byte
-                Dim HayFinalizada As Boolean
-                Dim HayDisponible As Boolean
-                Dim HayPendiente As Boolean
+            End If
         
-                For q = 1 To Npclist(NpcIndex).NumQuest
-                     tmpByte = TieneQuest(sndIndex, Npclist(NpcIndex).QuestNumber(q))
-                
-                     If tmpByte Then
-                        If FinishQuestCheck(sndIndex, Npclist(NpcIndex).QuestNumber(q), tmpByte) Then
-                            Simbolo = 3
-                            HayFinalizada = True
-                        Else
-                            HayPendiente = True
-                            Simbolo = 4
-                        End If
-                    Else
-116                             If UserDoneQuest(sndIndex, Npclist(NpcIndex).QuestNumber(q)) Or Not UserDoneQuest(sndIndex, QuestList(Npclist(NpcIndex).QuestNumber(q)).RequiredQuest) Or UserList(sndIndex).Stats.ELV < QuestList(Npclist(NpcIndex).QuestNumber(q)).RequiredLevel Then
-118                                 Simbolo = 2
-                        Else
-120                                 Simbolo = 1
-                            HayDisponible = True
-                        End If
+108         MapData(Map, X, Y).NpcIndex = NpcIndex
+        
+            Dim Simbolo As Byte
+        
+            Dim GG      As String
+            Dim tmpByte As Byte
+       
+110         GG = IIf(.showName > 0, .name & .SubName, vbNullString)
+        
+112         If Not toMap Then
+114             If .NumQuest > 0 Then
     
+                    Dim q As Byte
+                    Dim HayFinalizada As Boolean
+                    Dim HayDisponible As Boolean
+                    Dim HayPendiente As Boolean
+            
+                    For q = 1 To .NumQuest
+                         tmpByte = TieneQuest(sndIndex, .QuestNumber(q))
+                    
+                         If tmpByte Then
+                            If FinishQuestCheck(sndIndex, .QuestNumber(q), tmpByte) Then
+                                Simbolo = 3
+                                HayFinalizada = True
+                            Else
+                                HayPendiente = True
+                                Simbolo = 4
+                            End If
+                        Else
+116                                 If UserDoneQuest(sndIndex, .QuestNumber(q)) Or Not UserDoneQuest(sndIndex, QuestList(.QuestNumber(q)).RequiredQuest) Or UserList(sndIndex).Stats.ELV < QuestList(.QuestNumber(q)).RequiredLevel Then
+118                                     Simbolo = 2
+                            Else
+120                                     Simbolo = 1
+                                HayDisponible = True
+                            End If
+        
+                        End If
+        
+                    Next q
+                    
+                    
+                    'Para darle prioridad a ciertos simbolos
+                    
+                    If HayDisponible Then
+                        Simbolo = 1
                     End If
+                    
+                    If HayPendiente Then
+                        Simbolo = 4
+                    End If
+                    
+                    If HayFinalizada Then
+                        Simbolo = 3
+                    End If
+                    'Para darle prioridad a ciertos simbolos
+                    
+                End If
     
-                Next q
-                
-                
-                'Para darle prioridad a ciertos simbolos
-                
-                If HayDisponible Then
-                    Simbolo = 1
-                End If
-                
-                If HayPendiente Then
-                    Simbolo = 4
-                End If
-                
-                If HayFinalizada Then
-                    Simbolo = 3
-                End If
-                'Para darle prioridad a ciertos simbolos
-                
+                Call WriteCharacterCreate(sndIndex, IIf(.flags.NPCIdle, .Char.BodyIdle, .Char.Body), .Char.Head, .Char.Heading, .Char.CharIndex, X, Y, .Char.WeaponAnim, .Char.ShieldAnim, 0, 0, .Char.CascoAnim, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, .Char.speeding, True, False, 0, 0, 0, 0, .Stats.MinHp, .Stats.MaxHp, Simbolo, .flags.NPCIdle)
+            
+            Else
+124             Call AgregarNpc(NpcIndex)
+    
             End If
 
-            Call WriteCharacterCreate(sndIndex, Npclist(NpcIndex).Char.Body, Npclist(NpcIndex).Char.Head, Npclist(NpcIndex).Char.Heading, Npclist(NpcIndex).Char.CharIndex, X, Y, Npclist(NpcIndex).Char.WeaponAnim, Npclist(NpcIndex).Char.ShieldAnim, 0, 0, Npclist(NpcIndex).Char.CascoAnim, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, Npclist(NpcIndex).Char.speeding, True, False, 0, 0, 0, 0, Npclist(NpcIndex).Stats.MinHp, Npclist(NpcIndex).Stats.MaxHp, Simbolo)
-        
-        Else
-124         Call AgregarNpc(NpcIndex)
-
-        End If
-
+        End With
         
         Exit Sub
 
@@ -765,16 +768,21 @@ Sub ChangeNPCChar(ByVal NpcIndex As Integer, ByVal Body As Integer, ByVal Head A
         
         On Error GoTo ChangeNPCChar_Err
         
+        With Npclist(NpcIndex)
 
-100     If NpcIndex > 0 Then
-102         Npclist(NpcIndex).Char.Body = Body
-104         Npclist(NpcIndex).Char.Head = Head
-106         Npclist(NpcIndex).Char.Heading = Heading
+100         If NpcIndex > 0 Then
+                If .flags.NPCIdle Then
+                    Body = .Char.BodyIdle
+                End If
+    
+104             .Char.Head = Head
+106             .Char.Heading = Heading
+            
+108             Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageCharacterChange(Body, Head, Heading, .Char.CharIndex, 0, 0, 0, 0, 0, .flags.NPCIdle))
+    
+            End If
         
-108         Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageCharacterChange(Body, Head, Heading, Npclist(NpcIndex).Char.CharIndex, 0, 0, 0, 0, 0))
-
-        End If
-
+        End With
         
         Exit Sub
 
@@ -863,6 +871,8 @@ Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) A
                 End With
 
             End If
+            
+            Call AnimacionIdle(NpcIndex, False)
             
             Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageCharacterMove(.Char.CharIndex, nPos.X, nPos.Y))
 
@@ -1209,6 +1219,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 132     Npclist(NpcIndex).Char.Body = val(Leer.GetValue("NPC" & NpcNumber, "Body"))
 134     Npclist(NpcIndex).Char.Head = val(Leer.GetValue("NPC" & NpcNumber, "Head"))
 136     Npclist(NpcIndex).Char.Heading = val(Leer.GetValue("NPC" & NpcNumber, "Heading"))
+137     Npclist(NpcIndex).Char.BodyIdle = val(Leer.GetValue("NPC" & NpcNumber, "BodyIdle"))
 
 138     Npclist(NpcIndex).Char.WeaponAnim = val(Leer.GetValue("NPC" & NpcNumber, "Arma"))
 140     Npclist(NpcIndex).Char.ShieldAnim = val(Leer.GetValue("NPC" & NpcNumber, "Escudo"))
@@ -1244,12 +1255,12 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 
 172     Npclist(NpcIndex).InvReSpawn = val(Leer.GetValue("NPC" & NpcNumber, "InvReSpawn"))
 
-174     Npclist(NpcIndex).showName = val(GetVar(DatPath & "NPCs.dat", "NPC" & NpcNumber, "ShowName"))
+174     Npclist(NpcIndex).showName = val(Leer.GetValue("NPC" & NpcNumber, "ShowName"))
     
-176     Npclist(NpcIndex).GobernadorDe = val(GetVar(DatPath & "NPCs.dat", "NPC" & NpcNumber, "GobernadorDe"))
+176     Npclist(NpcIndex).GobernadorDe = val(Leer.GetValue("NPC" & NpcNumber, "GobernadorDe"))
 
-178     Npclist(NpcIndex).SoundOpen = val(GetVar(DatPath & "NPCs.dat", "NPC" & NpcNumber, "SoundOpen"))
-180     Npclist(NpcIndex).SoundClose = val(GetVar(DatPath & "NPCs.dat", "NPC" & NpcNumber, "SoundClose"))
+178     Npclist(NpcIndex).SoundOpen = val(Leer.GetValue("NPC" & NpcNumber, "SoundOpen"))
+180     Npclist(NpcIndex).SoundClose = val(Leer.GetValue("NPC" & NpcNumber, "SoundClose"))
 
 182     Npclist(NpcIndex).IntervaloAtaque = val(Leer.GetValue("NPC" & NpcNumber, "IntervaloAtaque"))
 184     Npclist(NpcIndex).IntervaloMovimiento = val(Leer.GetValue("NPC" & NpcNumber, "IntervaloMovimiento"))
@@ -1454,6 +1465,9 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
         'Tipo de items con los que comercia
 336     Npclist(NpcIndex).TipoItems = val(Leer.GetValue("NPC" & NpcNumber, "TipoItems"))
 
+        ' Por defecto la animación es idle
+        Call AnimacionIdle(NpcIndex, True)
+
         'Si NO estamos actualizando los NPC's activos, actualizamos el contador.
 338     If Reload = False Then
 340         If NpcIndex > LastNPC Then LastNPC = NpcIndex
@@ -1560,5 +1574,27 @@ Sub QuitarMascota(ByVal Userindex As Integer, ByVal NpcIndex As Integer)
 
     Next i
 
+End Sub
+
+Sub AnimacionIdle(ByVal NpcIndex As Integer, ByVal Show As Boolean)
+    
+    On Error GoTo Handler
+    
+    With Npclist(NpcIndex)
+    
+        If .Char.BodyIdle = 0 Then Exit Sub
+        
+        If .flags.NPCIdle = Show Then Exit Sub
+
+        .flags.NPCIdle = Show
+        
+        Call ChangeNPCChar(NpcIndex, .Char.Body, .Char.Head, .Char.Heading)
+        
+    End With
+    
+    Exit Sub
+Handler:
+    Call RegistrarError(Err.Number, Err.description, "NPCs.AnimacionIdle", Erl)
+    Resume Next
 End Sub
 
