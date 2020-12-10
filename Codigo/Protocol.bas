@@ -10823,7 +10823,7 @@ Private Sub HandleJail(ByVal Userindex As Integer)
                 tUser = NameIndex(UserName)
                 
                 If tUser <= 0 Then
-                    Call WriteConsoleMsg(Userindex, "El usuario no estí online.", FontTypeNames.FONTTYPE_INFO)
+                    Call WriteConsoleMsg(Userindex, "El usuario no está online.", FontTypeNames.FONTTYPE_INFO)
                 Else
 
                     If Not UserList(tUser).flags.Privilegios And PlayerType.user Then
@@ -12440,7 +12440,7 @@ Private Sub HandleExecute(ByVal Userindex As Integer)
                 Call LogGM(.name, " ejecuto a " & UserName)
                 'End If
             Else
-                Call WriteConsoleMsg(Userindex, "No estí online", FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(Userindex, "No está online", FontTypeNames.FONTTYPE_INFO)
 
             End If
 
@@ -14859,7 +14859,7 @@ Private Sub HandleBanIP(ByVal Userindex As Integer)
             tUser = NameIndex(buffer.ReadASCIIString())
             
             If tUser <= 0 Then
-                Call WriteConsoleMsg(Userindex, "El personaje no estí online.", FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(Userindex, "El personaje no está online.", FontTypeNames.FONTTYPE_INFO)
             Else
                 bannedIP = UserList(tUser).ip
 
@@ -24566,7 +24566,7 @@ Private Sub HandleOfertaInicial(ByVal Userindex As Integer)
 136             UserList(Userindex).Counters.TiempoParaSubastar = 0
 138             Subasta.OfertaInicial = Oferta
 140             Subasta.MejorOferta = 0
-142             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.name & " estí subastando: " & ObjData(Subasta.ObjSubastado).name & " (Cantidad: " & Subasta.ObjSubastadoCantidad & " ) - con un precio inicial de " & Subasta.OfertaInicial & " monedas. Escribe /OFERTAR (cantidad) para participar.", FontTypeNames.FONTTYPE_SUBASTA))
+142             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.name & " está subastando: " & ObjData(Subasta.ObjSubastado).name & " (Cantidad: " & Subasta.ObjSubastadoCantidad & " ) - con un precio inicial de " & Subasta.OfertaInicial & " monedas. Escribe /OFERTAR (cantidad) para participar.", FontTypeNames.FONTTYPE_SUBASTA))
 144             .flags.Subastando = False
 146             Subasta.HaySubastaActiva = True
 148             Subasta.Subastador = .name
