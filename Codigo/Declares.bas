@@ -589,7 +589,7 @@ Public Const vlNoble       As Integer = 5
 Public Const vlProleta     As Integer = 2
 
 '%%%%%%%%%% CONSTANTES DE INDICES %%%%%%%%%%%%%%%
-Public Const iCuerpoMuerto As Integer = 830
+Public Const iCuerpoMuerto As Integer = 829
 
 Public Const iCabezaMuerto As Integer = 0
 
