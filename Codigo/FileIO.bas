@@ -591,7 +591,7 @@ Public Sub CargarHechizos()
     '
     '###################################################
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando Hechizos."
 
@@ -745,7 +745,7 @@ Public Sub CargarHechizos()
     Set Leer = Nothing
     Exit Sub
 
-ErrHandler:
+Errhandler:
     MsgBox "Error cargando hechizos.dat " & Err.Number & ": " & Err.description
  
 End Sub
@@ -1269,7 +1269,7 @@ Sub LoadOBJData()
 
     'Call LogTarea("Sub LoadOBJData")
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando base de datos de los objetos."
 
@@ -1671,7 +1671,7 @@ Sub LoadOBJData()
 
     Exit Sub
 
-ErrHandler:
+Errhandler:
     MsgBox "error cargando objetos " & Err.Number & ": " & Err.description & ". Error producido al cargar el objeto: " & Object
 
 End Sub
@@ -2952,7 +2952,7 @@ Sub SaveUserBinary(ByVal Userindex As Integer, Optional ByVal Logout As Boolean)
     '23/01/2007 Pablo (ToxicWaste) - Agrego NivelIngreso, FechaIngreso, MatadosIngreso y NextRecompensa.
     '*************************************************
     
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
     
     Dim UserFile    As String
 
@@ -3280,7 +3280,7 @@ Sub SaveUserBinary(ByVal Userindex As Integer, Optional ByVal Logout As Boolean)
         
     Exit Sub
 
-ErrHandler:
+Errhandler:
     Call LogError("Error en SaveUserBinary")
     Close #n
 
@@ -3315,7 +3315,7 @@ Sub SaveNewUserCharfile(ByVal Userindex As Integer)
     '23/01/2007 Pablo (ToxicWaste) - Agrego NivelIngreso, FechaIngreso, MatadosIngreso y NextRecompensa.
     '*************************************************
     
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
     
     Dim UserFile    As String
 
@@ -3593,7 +3593,7 @@ Sub SaveNewUserCharfile(ByVal Userindex As Integer)
     
     Exit Sub
     
-ErrHandler:
+Errhandler:
     Call LogError("Error en SaveNewUserCharfile")
     Close #n
 
