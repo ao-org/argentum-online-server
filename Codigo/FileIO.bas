@@ -1082,7 +1082,7 @@ Sub LoadBalance()
 116             .DañoProyectiles = val(BalanceIni.GetValue("MODDANOPROYECTILES", SearchVar))
 118             .DañoWrestling = val(BalanceIni.GetValue("MODDANOWRESTLING", SearchVar))
 120             .Escudo = val(BalanceIni.GetValue("MODESCUDO", SearchVar))
-
+                .ModApuñalar = val(BalanceIni.GetValue("MODAPUÑALAR", SearchVar))
                 'Modificadores de Vida
                 ModVida(i) = val(BalanceIni.GetValue("MODVIDA", SearchVar))
 

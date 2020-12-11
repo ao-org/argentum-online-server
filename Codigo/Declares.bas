@@ -1329,6 +1329,7 @@ Public Type ModClase
     DañoArmas As Double
     DañoProyectiles As Double
     DañoWrestling As Double
+    ModApuñalar As Double
     Escudo As Double
 
 End Type
