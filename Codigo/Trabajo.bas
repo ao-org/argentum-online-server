@@ -2693,17 +2693,10 @@ Public Function ApuñalarFunction(ByVal Userindex As Integer, ByVal VictimNpcInd
 
 134     If RandomNumber(0, 99) < Suerte Then
 136         If VictimUserIndex <> 0 Then
-                    If UserList(Userindex).clase = eClass.Assasin Then
-                        ApuñalarFunction = daño * 1.4
-                    Else
-                        ApuñalarFunction = daño * 1.1
-                    End If
-            Else
-                    If UserList(Userindex).clase = eClass.Assasin Then
-                        ApuñalarFunction = daño * 1.6
-                    Else
-                        ApuñalarFunction = daño * 1.3
-                    End If
+                    ApuñalarFunction = daño * ModicadorApuñalarClase(UserList(Userindex).clase)
+            Else ' A los npcs el apuñalar es un 20% mas
+                   ApuñalarFunction = (daño * ModicadorApuñalarClase(UserList(Userindex).clase)) * 1.2
+                   Debug.Print ApuñalarFunction
             End If
         End If
         
