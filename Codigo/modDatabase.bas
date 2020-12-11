@@ -863,7 +863,7 @@ Sub LoadUserDatabase(ByVal Userindex As Integer)
 
                 .MascotasType(QueryData!Number) = QueryData!pet_id
                 
-                If QueryData!pet_id <> 0 Then
+                If val(QueryData!pet_id) <> 0 Then
                     .NroMascotas = .NroMascotas + 1
                 End If
 
