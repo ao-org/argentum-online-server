@@ -339,7 +339,6 @@ Public Sub SaveUserDatabase(ByVal Userindex As Integer, Optional ByVal Logout As
         QueryBuilder.Append "bank_gold = " & .Stats.Banco & ", "
         QueryBuilder.Append "free_skillpoints = " & .Stats.SkillPts & ", "
         'QueryBuilder.Append "assigned_skillpoints = " & .Counters.AsignedSkills & ", "
-        QueryBuilder.Append "pet_amount = " & .NroMascotas & ", "
         QueryBuilder.Append "pets_saved = " & .flags.MascotasGuardadas & ", "
         QueryBuilder.Append "pos_map = " & .Pos.Map & ", "
         QueryBuilder.Append "pos_x = " & .Pos.X & ", "
@@ -723,7 +722,6 @@ Sub LoadUserDatabase(ByVal Userindex As Integer)
         .Stats.Banco = QueryData!bank_gold
         .Stats.SkillPts = QueryData!free_skillpoints
         '.Counters.AsignedSkills = QueryData!assigned_skillpoints
-        .NroMascotas = QueryData!pet_Amount
         .Pos.Map = QueryData!pos_map
         .Pos.X = QueryData!pos_x
         .Pos.Y = QueryData!pos_y
@@ -864,6 +862,10 @@ Sub LoadUserDatabase(ByVal Userindex As Integer)
             While Not QueryData.EOF
 
                 .MascotasType(QueryData!Number) = QueryData!pet_id
+                
+                If QueryData!pet_id <> 0 Then
+                    .NroMascotas = .NroMascotas + 1
+                End If
 
                 QueryData.MoveNext
             Wend
@@ -2613,19 +2615,19 @@ Function adoIsConnected(adoCn As ADODB.Connection) As Boolean
     '----------------------------------------------------------------
 
     Dim i As Long
-    Dim cmd As New ADODB.Command
+    Dim Cmd As New ADODB.Command
 
     'Set up SQL command to return 1
-    cmd.CommandText = "SELECT 1"
-    cmd.ActiveConnection = adoCn
+    Cmd.CommandText = "SELECT 1"
+    Cmd.ActiveConnection = adoCn
 
     'Run a simple query, to test the connection
     On Error Resume Next
-    i = cmd.Execute.Fields(0)
+    i = Cmd.Execute.Fields(0)
     On Error GoTo 0
 
     'Tidy up
-    Set cmd = Nothing
+    Set Cmd = Nothing
 
     'If i is 1, connection is open
     If i = 1 Then
