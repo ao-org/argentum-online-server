@@ -298,7 +298,7 @@ End Function
 Sub ApagarFogatas()
 
     'Ladder /ApagarFogatas
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim obj As obj
         obj.ObjIndex = FOGATA_APAG
@@ -329,7 +329,7 @@ Sub ApagarFogatas()
 
     Exit Sub
     
-ErrHandler:
+Errhandler:
     Call LogError("Error producido al apagar las fogatas de " & X & "-" & Y & " del mapa: " & MapaActual & "    -" & Err.description)
 
 End Sub
@@ -847,7 +847,7 @@ End Sub
 
 Public Sub LogCriticEvent(Desc As String)
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim nfile As Integer
 
@@ -858,13 +858,13 @@ Public Sub LogCriticEvent(Desc As String)
 
     Exit Sub
 
-ErrHandler:
+Errhandler:
 
 End Sub
 
 Public Sub LogEjercitoReal(Desc As String)
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim nfile As Integer
 
@@ -875,13 +875,13 @@ Public Sub LogEjercitoReal(Desc As String)
 
     Exit Sub
 
-ErrHandler:
+Errhandler:
 
 End Sub
 
 Public Sub LogEjercitoCaos(Desc As String)
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim nfile As Integer
 
@@ -892,13 +892,13 @@ Public Sub LogEjercitoCaos(Desc As String)
 
     Exit Sub
 
-ErrHandler:
+Errhandler:
 
 End Sub
 
 Public Sub LogIndex(ByVal Index As Integer, ByVal Desc As String)
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim nfile As Integer
 
@@ -909,13 +909,13 @@ Public Sub LogIndex(ByVal Index As Integer, ByVal Desc As String)
 
     Exit Sub
 
-ErrHandler:
+Errhandler:
 
 End Sub
 
 Public Sub LogError(Desc As String)
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim nfile As Integer
 
@@ -926,13 +926,13 @@ Public Sub LogError(Desc As String)
 
     Exit Sub
 
-ErrHandler:
+Errhandler:
 
 End Sub
 
 Public Sub LogConsulta(Desc As String)
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim nfile As Integer
 
@@ -943,13 +943,13 @@ Public Sub LogConsulta(Desc As String)
 
     Exit Sub
 
-ErrHandler:
+Errhandler:
 
 End Sub
 
 Public Sub LogStatic(Desc As String)
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim nfile As Integer
 
@@ -960,13 +960,13 @@ Public Sub LogStatic(Desc As String)
 
     Exit Sub
 
-ErrHandler:
+Errhandler:
 
 End Sub
 
 Public Sub LogTarea(Desc As String)
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim nfile As Integer
 
@@ -977,7 +977,7 @@ Public Sub LogTarea(Desc As String)
 
     Exit Sub
 
-ErrHandler:
+Errhandler:
 
 End Sub
 
@@ -1046,7 +1046,7 @@ End Sub
 
 Public Sub LogGM(nombre As String, texto As String)
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim nfile As Integer
 
@@ -1058,7 +1058,7 @@ Public Sub LogGM(nombre As String, texto As String)
 
     Exit Sub
 
-ErrHandler:
+Errhandler:
 
 End Sub
 
@@ -1068,7 +1068,7 @@ Public Sub LogDatabaseError(Desc As String)
     'Last Modification: 09/10/2018
     '***************************************************
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim nfile As Integer
 
@@ -1082,7 +1082,7 @@ Public Sub LogDatabaseError(Desc As String)
     
     Debug.Print Desc
     
-ErrHandler:
+Errhandler:
 
 End Sub
 
@@ -1109,7 +1109,7 @@ Public Sub SaveDayStats()
     
     Exit Sub
 
-ErrHandler:
+Errhandler:
 
     
     Exit Sub
@@ -1122,7 +1122,7 @@ End Sub
 
 Public Sub LogAsesinato(texto As String)
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim nfile As Integer
 
@@ -1134,13 +1134,13 @@ Public Sub LogAsesinato(texto As String)
 
     Exit Sub
 
-ErrHandler:
+Errhandler:
 
 End Sub
 
 Public Sub logVentaCasa(ByVal texto As String)
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim nfile As Integer
 
@@ -1154,13 +1154,13 @@ Public Sub logVentaCasa(ByVal texto As String)
 
     Exit Sub
 
-ErrHandler:
+Errhandler:
 
 End Sub
 
 Public Sub LogHackAttemp(texto As String)
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim nfile As Integer
 
@@ -1173,13 +1173,13 @@ Public Sub LogHackAttemp(texto As String)
 
     Exit Sub
 
-ErrHandler:
+Errhandler:
 
 End Sub
 
 Public Sub LogCheating(texto As String)
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim nfile As Integer
 
@@ -1190,13 +1190,13 @@ Public Sub LogCheating(texto As String)
 
     Exit Sub
 
-ErrHandler:
+Errhandler:
 
 End Sub
 
 Public Sub LogCriticalHackAttemp(texto As String)
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim nfile As Integer
 
@@ -1209,13 +1209,13 @@ Public Sub LogCriticalHackAttemp(texto As String)
 
     Exit Sub
 
-ErrHandler:
+Errhandler:
 
 End Sub
 
 Public Sub LogAntiCheat(texto As String)
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim nfile As Integer
 
@@ -1227,7 +1227,7 @@ Public Sub LogAntiCheat(texto As String)
 
     Exit Sub
 
-ErrHandler:
+Errhandler:
 
 End Sub
 
@@ -1378,7 +1378,7 @@ Public Function Intemperie(ByVal Userindex As Integer) As Boolean
         
     
 100     If MapInfo(UserList(Userindex).Pos.Map).zone <> "DUNGEON" Then
-102         If MapData(UserList(Userindex).Pos.Map, UserList(Userindex).Pos.X, UserList(Userindex).Pos.Y).trigger <> 1 And MapData(UserList(Userindex).Pos.Map, UserList(Userindex).Pos.X, UserList(Userindex).Pos.Y).trigger <> 2 And MapData(UserList(Userindex).Pos.Map, UserList(Userindex).Pos.X, UserList(Userindex).Pos.Y).trigger < 10 And MapData(UserList(Userindex).Pos.Map, UserList(Userindex).Pos.X, UserList(Userindex).Pos.Y).trigger <> 4 Then Intemperie = True
+102         If MapData(UserList(Userindex).Pos.Map, UserList(Userindex).Pos.X, UserList(Userindex).Pos.Y).trigger <> 1 And MapData(UserList(Userindex).Pos.Map, UserList(Userindex).Pos.X, UserList(Userindex).Pos.Y).trigger <> 2 And MapData(UserList(Userindex).Pos.Map, UserList(Userindex).Pos.X, UserList(Userindex).Pos.Y).trigger < 10 Then Intemperie = True
         Else
 104         Intemperie = False
 
@@ -2107,7 +2107,7 @@ End Sub
 
 Sub PasarSegundo()
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim i    As Long
 
@@ -2245,7 +2245,7 @@ Sub PasarSegundo()
 
     Exit Sub
 
-ErrHandler:
+Errhandler:
     Call LogError("Error en PasarSegundo. Err: " & Err.description & " - " & Err.Number & " - UserIndex: " & i)
 
     Resume Next
