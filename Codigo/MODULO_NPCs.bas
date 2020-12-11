@@ -398,7 +398,7 @@ Sub ResetNpcMainInfo(ByVal NpcIndex As Integer)
         
         On Error GoTo ResetNpcMainInfo_Err
         
-
+    
 100     Npclist(NpcIndex).Attackable = 0
 102     Npclist(NpcIndex).CanAttack = 0
 104     Npclist(NpcIndex).Comercia = 0
@@ -408,6 +408,7 @@ Sub ResetNpcMainInfo(ByVal NpcIndex As Integer)
 112     Npclist(NpcIndex).Hostile = 0
 114     Npclist(NpcIndex).InvReSpawn = 0
 116     Npclist(NpcIndex).level = 0
+
     
 120     Npclist(NpcIndex).MaestroNPC = 0
     
@@ -429,6 +430,7 @@ Sub ResetNpcMainInfo(ByVal NpcIndex As Integer)
 152     Npclist(NpcIndex).TipoItems = 0
 154     Npclist(NpcIndex).Veneno = 0
 156     Npclist(NpcIndex).Desc = vbNullString
+        Npclist(NpcIndex).NumDropQuest = 0
         
         If Npclist(NpcIndex).MaestroUser > 0 Then Call QuitarMascota(Npclist(NpcIndex).MaestroUser, NpcIndex)
         If Npclist(NpcIndex).MaestroNPC > 0 Then Call QuitarMascotaNpc(Npclist(NpcIndex).MaestroNPC)
@@ -441,7 +443,7 @@ Sub ResetNpcMainInfo(ByVal NpcIndex As Integer)
 158     For j = 1 To Npclist(NpcIndex).NroSpells
 160         Npclist(NpcIndex).Spells(j) = 0
 162     Next j
-    
+        
 164     Call ResetNpcCharInfo(NpcIndex)
 166     Call ResetNpcCriatures(NpcIndex)
 168     Call ResetExpresiones(NpcIndex)
