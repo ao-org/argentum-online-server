@@ -450,7 +450,7 @@ Sub CheckUserLevel(ByVal Userindex As Integer)
     '09/01/2008 Pablo (ToxicWaste) - Ahora el incremento de vida por Consitución se controla desde Balance.dat
     '*************************************************
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim Pts              As Integer
 
@@ -598,6 +598,11 @@ Sub CheckUserLevel(ByVal Userindex As Integer)
                 Case eClass.Pirat
                     AumentoHIT = 3
                     AumentoSTA = AumentoSTDef
+                    
+                Case eClass.Bandit
+                    AumentoHIT = IIf(.Stats.ELV > 35, 1, 3)
+                    AumentoMANA = .Stats.UserAtributos(eAtributos.Inteligencia) / 3 * 2
+                    AumentoSTA = AumentoStBandido
 
                 Case eClass.Warrior
                     AumentoHIT = IIf(.Stats.ELV > 35, 2, 3)
@@ -706,7 +711,7 @@ Sub CheckUserLevel(ByVal Userindex As Integer)
     
     Exit Sub
 
-ErrHandler:
+Errhandler:
     Call LogError("Error en la subrutina CheckUserLevel - Error : " & Err.Number & " - Description : " & Err.description)
 
 End Sub
