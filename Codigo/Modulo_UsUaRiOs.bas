@@ -582,6 +582,10 @@ Sub CheckUserLevel(ByVal Userindex As Integer)
                     AumentoHIT = IIf(.Stats.ELV > 35, 1, 3)
                     AumentoMANA = .Stats.UserAtributos(eAtributos.Inteligencia)
                     AumentoSTA = AumentoSTDef
+                
+                Case eClass.Thief
+                    AumentoHIT = 2
+                    AumentoSTA = AumentoSTLadron
 
                 Case eClass.Hunter
                     AumentoHIT = IIf(.Stats.ELV > 35, 2, 3)
@@ -2190,6 +2194,8 @@ End Sub
 
 Sub Cerrar_Usuario(ByVal Userindex As Integer)
 
+    On Error GoTo Cerrar_Usuario_Err
+
     '***************************************************
     'Author: Unknown
     'Last Modification: 16/09/2010
@@ -2202,7 +2208,7 @@ Sub Cerrar_Usuario(ByVal Userindex As Integer)
 
         If .flags.UserLogged And Not .Counters.Saliendo Then
             .Counters.Saliendo = True
-            .Counters.Salir = IIf((.flags.Privilegios And PlayerType.user) And MapInfo(.Pos.Map).Pk, IntervaloCerrarConexion, 0)
+            .Counters.Salir = IIf((.flags.Privilegios And PlayerType.user) And MapInfo(.Pos.Map).Seguro, IntervaloCerrarConexion, 0)
             
             isNotVisible = (.flags.Oculto Or .flags.invisible)
 
@@ -2229,11 +2235,13 @@ Sub Cerrar_Usuario(ByVal Userindex As Integer)
                 .flags.Oculto = 0
                 
                 ' Para no repetir mensajes
-                If Not HiddenPirat Then Call WriteConsoleMsg(Userindex, "Has vuelto a ser visible.", FontTypeNames.FONTTYPE_INFO)
+                If Not HiddenPirat Then
+                    Call WriteConsoleMsg(Userindex, "Has vuelto a ser visible.", FontTypeNames.FONTTYPE_INFO)
+                End If
                 
                 ' Si esta navegando ya esta visible
                 If .flags.Navegando = 0 Then
-                    Call SetInvisible(Userindex, .Char.CharIndex, False)
+                    Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageSetInvisible(.Char.CharIndex, False))
                 End If
 
             End If
@@ -2242,6 +2250,7 @@ Sub Cerrar_Usuario(ByVal Userindex As Integer)
                 Call WriteConsoleMsg(Userindex, "Se ha cancelado el viaje a casa", FontTypeNames.FONTTYPE_INFO)
                 .flags.Traveling = 0
                 .Counters.goHome = 0
+
             End If
             
             Call WriteLocaleMsg(Userindex, "203", FontTypeNames.FONTTYPE_INFO, .Counters.Salir)
@@ -2249,6 +2258,12 @@ Sub Cerrar_Usuario(ByVal Userindex As Integer)
         End If
 
     End With
+
+    Exit Sub
+
+Cerrar_Usuario_Err:
+    Call RegistrarError(Err.Number, Err.description, "UsUaRiOs.Cerrar_Usuario", Erl)
+    Resume Next
 
 End Sub
 

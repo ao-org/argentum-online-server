@@ -283,10 +283,10 @@ Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
             Dim AuxPos As WorldPos
                 AuxPos = TirarItemAlPiso(UserList(Userindex).Pos, MiObj, True)
             
-            If .clase = eClass.Pirat Then
-                AuxPos = TirarItemAlPiso(.Pos, MiObj, False)
+            If UserList(Userindex).clase = eClass.Pirat Then
+                AuxPos = TirarItemAlPiso(UserList(Userindex).Pos, MiObj, False)
             Else
-                AuxPos = TirarItemAlPiso(.Pos, MiObj, True)
+                AuxPos = TirarItemAlPiso(UserList(Userindex).Pos, MiObj, True)
             End If
             
             If AuxPos.X <> 0 And AuxPos.Y <> 0 Then
