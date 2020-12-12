@@ -281,9 +281,14 @@ Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
             MiObj.ObjIndex = iORO
 
             Dim AuxPos As WorldPos
-
-            AuxPos = TirarItemAlPiso(UserList(UserIndex).Pos, MiObj, True)
-                
+                AuxPos = TirarItemAlPiso(UserList(Userindex).Pos, MiObj, True)
+            
+            If .clase = eClass.Pirat Then
+                AuxPos = TirarItemAlPiso(.Pos, MiObj, False)
+            Else
+                AuxPos = TirarItemAlPiso(.Pos, MiObj, True)
+            End If
+            
             If AuxPos.X <> 0 And AuxPos.Y <> 0 Then
                 UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD - MiObj.Amount
 
@@ -3080,10 +3085,17 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
        
         Case eOBJType.otBarcos
+            
+            'Verifica si tiene el nivel requerido para navegar, siendo Trabajador o Pirata
+            If UserList(Userindex).Stats.ELV < 20 And (UserList(Userindex).clase = eClass.Trabajador Or UserList(Userindex).clase = eClass.Pirat) Then
+                Call WriteConsoleMsg(Userindex, "Para recorrer los mares debes ser nivel 20 o superior.", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
 
-            'Verifica si esta aproximado al agua antes de permitirle navegar
-            If UserList(UserIndex).Stats.ELV < 25 Then
-                Call WriteConsoleMsg(UserIndex, "Para recorrer los mares debes ser nivel 25 o superior.", FontTypeNames.FONTTYPE_INFO)
+            End If
+            
+            'Verifica si tiene el nivel requerido para navegar, sin ser Trabajador o Pirata
+            If UserList(Userindex).Stats.ELV < 25 Then
+                Call WriteConsoleMsg(Userindex, "Para recorrer los mares debes ser nivel 25 o superior.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
@@ -3488,66 +3500,77 @@ ItemSeCae_Err:
         
 End Function
 
-Sub TirarTodosLosItems(ByVal UserIndex As Integer)
+Sub TirarTodosLosItems(ByVal Userindex As Integer)
         
-        On Error GoTo TirarTodosLosItems_Err
-        
-
-        Dim i         As Byte
-
-        Dim NuevaPos  As WorldPos
-
-        Dim MiObj     As obj
-
-        Dim ItemIndex As Integer
+    On Error GoTo TirarTodosLosItems_Err
     
-100     For i = 1 To UserList(UserIndex).CurrentInventorySlots
+    '***************************************************
+    'Author: Unknown
+    'Last Modification: 12/01/2010 (ZaMa)
+    '12/01/2010: ZaMa - Ahora los piratas no explotan items solo si estan entre 20 y 25
+    '***************************************************
     
-102         ItemIndex = UserList(UserIndex).Invent.Object(i).ObjIndex
+    Dim i         As Byte
+    Dim NuevaPos  As WorldPos
+    Dim MiObj     As obj
+    Dim ItemIndex As Integer
+    
+    With UserList(Userindex)
+    
+        For i = 1 To .CurrentInventorySlots
+    
+            ItemIndex = .Invent.Object(i).ObjIndex
 
-104         If ItemIndex > 0 Then
+            If ItemIndex > 0 Then
 
-106             If ItemSeCae(ItemIndex) Then
-108                 NuevaPos.X = 0
-110                 NuevaPos.Y = 0
- 
-112                 If ItemIndex = ORO_MINA And UserList(UserIndex).flags.CarroMineria = 1 Or ItemIndex = PLATA_MINA And UserList(UserIndex).flags.CarroMineria = 1 Or ItemIndex = HIERRO_MINA And UserList(UserIndex).flags.CarroMineria = 1 Then
-114                     MiObj.Amount = UserList(UserIndex).Invent.Object(i).Amount * 0.3
-116                     MiObj.ObjIndex = ItemIndex
-                    
-118                     Tilelibre UserList(UserIndex).Pos, NuevaPos, MiObj, True, True
+                If ItemSeCae(ItemIndex) Then
+                    NuevaPos.X = 0
+                    NuevaPos.Y = 0
                 
-120                     If NuevaPos.X <> 0 And NuevaPos.Y <> 0 Then
-122                         Call DropObj(UserIndex, i, MiObj.Amount, NuevaPos.Map, NuevaPos.X, NuevaPos.Y)
+                    If .flags.CarroMineria = 1 Then
+                
+                        If ItemIndex = ORO_MINA Or ItemIndex = PLATA_MINA Or ItemIndex = HIERRO_MINA Then
+                       
+                            MiObj.Amount = .Invent.Object(i).Amount * 0.3
+                            MiObj.ObjIndex = ItemIndex
+                        
+                            Call Tilelibre(.Pos, NuevaPos, MiObj, True, True)
+                    
+                            If NuevaPos.X <> 0 And NuevaPos.Y <> 0 Then
+                                Call DropObj(Userindex, i, MiObj.Amount, NuevaPos.Map, NuevaPos.X, NuevaPos.Y)
+                            End If
 
                         End If
-                
+                    
                     Else
-            
-124                     MiObj.Amount = UserList(UserIndex).Invent.Object(i).Amount
-126                     MiObj.ObjIndex = ItemIndex
                     
-128                     Tilelibre UserList(UserIndex).Pos, NuevaPos, MiObj, True, True
+                        MiObj.Amount = .Invent.Object(i).Amount
+                        MiObj.ObjIndex = ItemIndex
+                        
+                        'TODO: Ahora los piratas no explotan items solo si estan entre 20 y 25
+                        
+                        Call Tilelibre(.Pos, NuevaPos, MiObj, True, True)
                 
-130                     If NuevaPos.X <> 0 And NuevaPos.Y <> 0 Then
-132                         Call DropObj(UserIndex, i, MAX_INVENTORY_OBJS, NuevaPos.Map, NuevaPos.X, NuevaPos.Y)
-
+                        If NuevaPos.X <> 0 And NuevaPos.Y <> 0 Then
+                            Call DropObj(Userindex, i, MAX_INVENTORY_OBJS, NuevaPos.Map, NuevaPos.X, NuevaPos.Y)
                         End If
-
+                    
                     End If
-              
+                
                 End If
 
             End If
     
-134     Next i
-
-        
-        Exit Sub
+        Next i
+    
+    End With
+ 
+    Exit Sub
 
 TirarTodosLosItems_Err:
-        Call RegistrarError(Err.Number, Err.description, "InvUsuario.TirarTodosLosItems", Erl)
-        Resume Next
+    Call RegistrarError(Err.Number, Err.description, "InvUsuario.TirarTodosLosItems", Erl)
+
+    Resume Next
         
 End Sub
 
