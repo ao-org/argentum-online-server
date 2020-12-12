@@ -234,7 +234,7 @@ Public Sub DoNavega(ByVal Userindex As Integer, _
             Exit Sub
         End If
         
-        Select Case Barco.Subtipo
+        Select Case ObjData(.Invent.BarcoObjIndex).Subtipo
         
             Case 2  'Galera
 
