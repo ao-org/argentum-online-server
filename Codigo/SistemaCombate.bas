@@ -1396,10 +1396,8 @@ End Function
 Public Sub UsuarioAtacaUsuario(ByVal atacanteindex As Integer, ByVal victimaindex As Integer)
         
         On Error GoTo UsuarioAtacaUsuario_Err
-        
 
         Dim Probabilidad As Byte
-
         Dim HuboEfecto   As Boolean
     
 100     If Not PuedeAtacar(atacanteindex, victimaindex) Then Exit Sub
@@ -1422,7 +1420,17 @@ Public Sub UsuarioAtacaUsuario(ByVal atacanteindex As Integer, ByVal victimainde
 116             Call SendData(SendTarget.ToPCArea, victimaindex, PrepareMessageCreateFX(UserList(victimaindex).Char.CharIndex, FXSANGRE, 0))
 
             End If
-        
+            
+            'Pablo (ToxicWaste): Guantes de Hurto del Bandido en accion
+            If UserList(atacanteindex).clase = eClass.Bandit Then
+                Call DoDesequipar(atacanteindex, VictimaIndex)
+                
+                'y ahora, el ladron puede llegar a paralizar con el golpe.
+            ElseIf UserList(atacanteindex).clase = eClass.Thief Then
+                Call DoHandInmo(atacanteindex, VictimaIndex)
+
+            End If
+            
 118         If UserList(atacanteindex).flags.incinera = 1 Then
 120             Probabilidad = RandomNumber(1, 6)
 

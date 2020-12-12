@@ -495,6 +495,8 @@ Sub Main()
     ListaClases(eClass.Paladin) = "Paladin"
     ListaClases(eClass.Hunter) = "Cazador"
     ListaClases(eClass.Trabajador) = "Trabajador"
+    ListaClases(eClass.Pirat) = "Pirata"
+    ListaClases(eClass.Thief) = "Ladron"
     
     SkillsNames(eSkill.magia) = "Magia"
     SkillsNames(eSkill.Robar) = "Robar"
