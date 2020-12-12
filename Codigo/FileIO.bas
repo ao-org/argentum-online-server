@@ -2365,7 +2365,7 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
 
 errh:
     Close fh
-    Call MsgBox("Error cargando mapa: " & Map & "." & Err.description & " - ")
+    Call MsgBox("Error cargando mapa: " & Map & ". " & Err.Number & " - " & Err.description & " - ")
     
 End Sub
 
