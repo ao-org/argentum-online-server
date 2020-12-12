@@ -194,7 +194,10 @@ Public Enum eClass
     Paladin     'Paladín
     Hunter      'Cazador
     Trabajador  'Trabajador
-
+    Pirat       'Pirata
+    Thief       'Ladron
+    Bandit      'Bandido
+    
 End Enum
 
 Public Enum eCiudad
@@ -647,6 +650,8 @@ Public Const AdicionalHPGuerrero As Byte = 2 'HP adicionales cuando sube de nive
 Public Const AdicionalHPCazador  As Byte = 1 'HP adicionales cuando sube de nivel
 
 Public Const AumentoSTDef        As Byte = 18
+
+Public Const AumentoSTLadron     As Byte = AumentoSTDef + 3
 
 Public Const AumentoSTMago       As Byte = AumentoSTDef - 5
 
