@@ -2213,7 +2213,7 @@ Sub Cerrar_Usuario(ByVal Userindex As Integer)
 
         If .flags.UserLogged And Not .Counters.Saliendo Then
             .Counters.Saliendo = True
-            .Counters.Salir = IIf((.flags.Privilegios And PlayerType.user) And MapInfo(.Pos.Map).Seguro, IntervaloCerrarConexion, 0)
+            .Counters.Salir = IntervaloCerrarConexion
             
             isNotVisible = (.flags.Oculto Or .flags.invisible)
 
@@ -2226,9 +2226,14 @@ Sub Cerrar_Usuario(ByVal Userindex As Integer)
                     
                         If .clase = eClass.Pirat Then
                             ' Pierde la apariencia de fragata fantasmal
-                            'Call ToggleBoatBody(Userindex)
-                            'Call WriteConsoleMsg(Userindex, "Has recuperado tu apariencia normal!", FontTypeNames.FONTTYPE_INFO)
-                            'Call ChangeUserChar(Userindex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)
+                            .Char.Body = ObjData(.Invent.BarcoObjIndex).Ropaje
+        
+                            .Char.ShieldAnim = NingunEscudo
+                            .Char.WeaponAnim = NingunArma
+                            .Char.CascoAnim = NingunCasco
+        
+                            Call WriteConsoleMsg(Userindex, "Has recuperado tu apariencia normal!", FontTypeNames.FONTTYPE_INFO)
+                            Call ChangeUserChar(Userindex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)
                             HiddenPirat = True
 
                         End If
@@ -2259,6 +2264,11 @@ Sub Cerrar_Usuario(ByVal Userindex As Integer)
             End If
             
             Call WriteLocaleMsg(Userindex, "203", FontTypeNames.FONTTYPE_INFO, .Counters.Salir)
+            
+            If EsGM(Userindex) Or MapInfo(.Pos.Map).Seguro = 1 Then
+                Call WriteDisconnect(Userindex)
+                Call CloseSocket(Userindex)
+            End If
 
         End If
 
