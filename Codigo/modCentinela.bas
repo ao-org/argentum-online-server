@@ -64,7 +64,7 @@ Public Sub CallUserAttention()
         '############################################################
         'Makes noise and FX to call the user's attention.
         '############################################################
-100     If (GetTickCount() And &H7FFFFFFF) - Centinela.spawnTime >= 60000 Then
+100     If (GetTickCount()) - Centinela.spawnTime >= 60000 Then
 102         If Centinela.RevisandoUserIndex <> 0 And centinelaActivado Then
 104             If Not UserList(Centinela.RevisandoUserIndex).flags.CentinelaOK Then
 106                 Call WritePlayWave(Centinela.RevisandoUserIndex, SND_WARP, Npclist(CentinelaNPCIndex).Pos.x, Npclist(CentinelaNPCIndex).Pos.y)
@@ -108,7 +108,7 @@ Private Sub GoToNextWorkingChar()
 106                 Centinela.RevisandoUserIndex = LoopC
 108                 Centinela.TiempoRestante = TIEMPO_INICIAL
 110                 Centinela.clave = RandomNumber(1, 32000)
-112                 Centinela.spawnTime = GetTickCount() And &H7FFFFFFF
+112                 Centinela.spawnTime = GetTickCount()
                 
                     'Ponemos al centinela en posición
 114                 Call WarpCentinela(LoopC)

@@ -219,7 +219,7 @@ Public Function GetHomeArrivalTime(ByVal Userindex As Integer) As Integer
     '**************************************************************
     Dim TActual As Long
     
-    TActual = GetTickCount() And &H7FFFFFFF
+    TActual = GetTickCount()
     
     With UserList(Userindex)
         GetHomeArrivalTime = (.Counters.goHome - TActual) * 0.001
@@ -284,7 +284,7 @@ Public Function IntervaloGoHome(ByVal Userindex As Integer, _
     '**************************************************************
     
     Dim TActual As Long
-        TActual = GetTickCount() And &H7FFFFFFF
+        TActual = GetTickCount()
     
     With UserList(Userindex)
 

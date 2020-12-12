@@ -250,12 +250,12 @@ MaximoInt_Err:
         
 End Function
 
-Function PoderEvasionEscudo(ByVal UserIndex As Integer) As Long
+Function PoderEvasionEscudo(ByVal Userindex As Integer) As Long
         
         On Error GoTo PoderEvasionEscudo_Err
         
 
-100     PoderEvasionEscudo = (UserList(UserIndex).Stats.UserSkills(eSkill.Defensa) * ModEvasionDeEscudoClase(UserList(UserIndex).clase)) / 2
+100     PoderEvasionEscudo = (UserList(Userindex).Stats.UserSkills(eSkill.Defensa) * ModEvasionDeEscudoClase(UserList(Userindex).clase)) / 2
 
         
         Exit Function
@@ -266,14 +266,14 @@ PoderEvasionEscudo_Err:
         
 End Function
 
-Function PoderEvasion(ByVal UserIndex As Integer) As Long
+Function PoderEvasion(ByVal Userindex As Integer) As Long
         
         On Error GoTo PoderEvasion_Err
         
 
         Dim lTemp As Long
 
-100     With UserList(UserIndex)
+100     With UserList(Userindex)
 102         lTemp = (.Stats.UserSkills(eSkill.Tacticas) + .Stats.UserSkills(eSkill.Tacticas) / 33 * .Stats.UserAtributos(eAtributos.Agilidad)) * ModificadorEvasion(.clase)
        
 104         PoderEvasion = (lTemp + (2.5 * Maximo(CInt(.Stats.ELV) - 12, 0)))
@@ -289,25 +289,25 @@ PoderEvasion_Err:
         
 End Function
 
-Function PoderAtaqueArma(ByVal UserIndex As Integer) As Long
+Function PoderAtaqueArma(ByVal Userindex As Integer) As Long
         
         On Error GoTo PoderAtaqueArma_Err
         
 
         Dim PoderAtaqueTemp As Long
 
-100     If UserList(UserIndex).Stats.UserSkills(eSkill.Armas) < 31 Then
-102         PoderAtaqueTemp = (UserList(UserIndex).Stats.UserSkills(eSkill.Armas) * ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
-104     ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Armas) < 61 Then
-106         PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(eSkill.Armas) + UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad)) * ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
-108     ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Armas) < 91 Then
-110         PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(eSkill.Armas) + (2 * UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad))) * ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
+100     If UserList(Userindex).Stats.UserSkills(eSkill.Armas) < 31 Then
+102         PoderAtaqueTemp = (UserList(Userindex).Stats.UserSkills(eSkill.Armas) * ModificadorPoderAtaqueArmas(UserList(Userindex).clase))
+104     ElseIf UserList(Userindex).Stats.UserSkills(eSkill.Armas) < 61 Then
+106         PoderAtaqueTemp = ((UserList(Userindex).Stats.UserSkills(eSkill.Armas) + UserList(Userindex).Stats.UserAtributos(eAtributos.Agilidad)) * ModificadorPoderAtaqueArmas(UserList(Userindex).clase))
+108     ElseIf UserList(Userindex).Stats.UserSkills(eSkill.Armas) < 91 Then
+110         PoderAtaqueTemp = ((UserList(Userindex).Stats.UserSkills(eSkill.Armas) + (2 * UserList(Userindex).Stats.UserAtributos(eAtributos.Agilidad))) * ModificadorPoderAtaqueArmas(UserList(Userindex).clase))
         Else
-112         PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(eSkill.Armas) + (3 * UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad))) * ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
+112         PoderAtaqueTemp = ((UserList(Userindex).Stats.UserSkills(eSkill.Armas) + (3 * UserList(Userindex).Stats.UserAtributos(eAtributos.Agilidad))) * ModificadorPoderAtaqueArmas(UserList(Userindex).clase))
 
         End If
 
-114     PoderAtaqueArma = (PoderAtaqueTemp + (2.5 * Maximo(CInt(UserList(UserIndex).Stats.ELV) - 12, 0)))
+114     PoderAtaqueArma = (PoderAtaqueTemp + (2.5 * Maximo(CInt(UserList(Userindex).Stats.ELV) - 12, 0)))
 
         
         Exit Function
@@ -318,25 +318,25 @@ PoderAtaqueArma_Err:
         
 End Function
 
-Function PoderAtaqueProyectil(ByVal UserIndex As Integer) As Long
+Function PoderAtaqueProyectil(ByVal Userindex As Integer) As Long
         
         On Error GoTo PoderAtaqueProyectil_Err
         
 
         Dim PoderAtaqueTemp As Long
 
-100     If UserList(UserIndex).Stats.UserSkills(eSkill.Proyectiles) < 31 Then
-102         PoderAtaqueTemp = (UserList(UserIndex).Stats.UserSkills(eSkill.Proyectiles) * ModificadorPoderAtaqueProyectiles(UserList(UserIndex).clase))
-104     ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Proyectiles) < 61 Then
-106         PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(eSkill.Proyectiles) + UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad)) * ModificadorPoderAtaqueProyectiles(UserList(UserIndex).clase))
-108     ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Proyectiles) < 91 Then
-110         PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(eSkill.Proyectiles) + (2 * UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad))) * ModificadorPoderAtaqueProyectiles(UserList(UserIndex).clase))
+100     If UserList(Userindex).Stats.UserSkills(eSkill.Proyectiles) < 31 Then
+102         PoderAtaqueTemp = (UserList(Userindex).Stats.UserSkills(eSkill.Proyectiles) * ModificadorPoderAtaqueProyectiles(UserList(Userindex).clase))
+104     ElseIf UserList(Userindex).Stats.UserSkills(eSkill.Proyectiles) < 61 Then
+106         PoderAtaqueTemp = ((UserList(Userindex).Stats.UserSkills(eSkill.Proyectiles) + UserList(Userindex).Stats.UserAtributos(eAtributos.Agilidad)) * ModificadorPoderAtaqueProyectiles(UserList(Userindex).clase))
+108     ElseIf UserList(Userindex).Stats.UserSkills(eSkill.Proyectiles) < 91 Then
+110         PoderAtaqueTemp = ((UserList(Userindex).Stats.UserSkills(eSkill.Proyectiles) + (2 * UserList(Userindex).Stats.UserAtributos(eAtributos.Agilidad))) * ModificadorPoderAtaqueProyectiles(UserList(Userindex).clase))
         Else
-112         PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(eSkill.Proyectiles) + (3 * UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad))) * ModificadorPoderAtaqueProyectiles(UserList(UserIndex).clase))
+112         PoderAtaqueTemp = ((UserList(Userindex).Stats.UserSkills(eSkill.Proyectiles) + (3 * UserList(Userindex).Stats.UserAtributos(eAtributos.Agilidad))) * ModificadorPoderAtaqueProyectiles(UserList(Userindex).clase))
 
         End If
 
-114     PoderAtaqueProyectil = (PoderAtaqueTemp + (2.5 * Maximo(CInt(UserList(UserIndex).Stats.ELV) - 12, 0)))
+114     PoderAtaqueProyectil = (PoderAtaqueTemp + (2.5 * Maximo(CInt(UserList(Userindex).Stats.ELV) - 12, 0)))
 
         
         Exit Function
@@ -347,25 +347,25 @@ PoderAtaqueProyectil_Err:
         
 End Function
 
-Function PoderAtaqueWrestling(ByVal UserIndex As Integer) As Long
+Function PoderAtaqueWrestling(ByVal Userindex As Integer) As Long
         
         On Error GoTo PoderAtaqueWrestling_Err
         
 
         Dim PoderAtaqueTemp As Long
 
-100     If UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) < 31 Then
-102         PoderAtaqueTemp = (UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) * ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
-104     ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) < 61 Then
-106         PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) + UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad)) * ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
-108     ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) < 91 Then
-110         PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) + (2 * UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad))) * ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
+100     If UserList(Userindex).Stats.UserSkills(eSkill.Wrestling) < 31 Then
+102         PoderAtaqueTemp = (UserList(Userindex).Stats.UserSkills(eSkill.Wrestling) * ModificadorPoderAtaqueArmas(UserList(Userindex).clase))
+104     ElseIf UserList(Userindex).Stats.UserSkills(eSkill.Wrestling) < 61 Then
+106         PoderAtaqueTemp = ((UserList(Userindex).Stats.UserSkills(eSkill.Wrestling) + UserList(Userindex).Stats.UserAtributos(eAtributos.Agilidad)) * ModificadorPoderAtaqueArmas(UserList(Userindex).clase))
+108     ElseIf UserList(Userindex).Stats.UserSkills(eSkill.Wrestling) < 91 Then
+110         PoderAtaqueTemp = ((UserList(Userindex).Stats.UserSkills(eSkill.Wrestling) + (2 * UserList(Userindex).Stats.UserAtributos(eAtributos.Agilidad))) * ModificadorPoderAtaqueArmas(UserList(Userindex).clase))
         Else
-112         PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) + (3 * UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad))) * ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
+112         PoderAtaqueTemp = ((UserList(Userindex).Stats.UserSkills(eSkill.Wrestling) + (3 * UserList(Userindex).Stats.UserAtributos(eAtributos.Agilidad))) * ModificadorPoderAtaqueArmas(UserList(Userindex).clase))
 
         End If
 
-114     PoderAtaqueWrestling = (PoderAtaqueTemp + (2.5 * Maximo(CInt(UserList(UserIndex).Stats.ELV) - 12, 0)))
+114     PoderAtaqueWrestling = (PoderAtaqueTemp + (2.5 * Maximo(CInt(UserList(Userindex).Stats.ELV) - 12, 0)))
 
         
         Exit Function
@@ -389,20 +389,20 @@ Public Function UserImpactoNpc(ByVal Userindex As Integer, ByVal NpcIndex As Int
 
         Dim ProbExito   As Long
 
-100     Arma = UserList(UserIndex).Invent.WeaponEqpObjIndex
+100     Arma = UserList(Userindex).Invent.WeaponEqpObjIndex
 
 102     If Arma = 0 Then proyectil = False Else proyectil = ObjData(Arma).proyectil = 1
 
 104     If Arma > 0 Then 'Usando un arma
 106         If proyectil Then
-108             PoderAtaque = PoderAtaqueProyectil(UserIndex)
+108             PoderAtaque = PoderAtaqueProyectil(Userindex)
             Else
-110             PoderAtaque = PoderAtaqueArma(UserIndex)
+110             PoderAtaque = PoderAtaqueArma(Userindex)
 
             End If
 
         Else 'Peleando con puños
-112         PoderAtaque = PoderAtaqueWrestling(UserIndex)
+112         PoderAtaque = PoderAtaqueWrestling(Userindex)
 
         End If
 
@@ -413,14 +413,14 @@ Public Function UserImpactoNpc(ByVal Userindex As Integer, ByVal NpcIndex As Int
 118     If UserImpactoNpc Then
 120         If Arma <> 0 Then
 122             If proyectil Then
-124                 Call SubirSkill(UserIndex, Proyectiles)
+124                 Call SubirSkill(Userindex, Proyectiles)
                 Else
-126                 Call SubirSkill(UserIndex, Armas)
+126                 Call SubirSkill(Userindex, Armas)
 
                 End If
 
             Else
-128             Call SubirSkill(UserIndex, Wrestling)
+128             Call SubirSkill(Userindex, Wrestling)
 
             End If
 
@@ -435,7 +435,7 @@ UserImpactoNpc_Err:
         
 End Function
 
-Public Function NpcImpacto(ByVal NpcIndex As Integer, ByVal UserIndex As Integer) As Boolean
+Public Function NpcImpacto(ByVal NpcIndex As Integer, ByVal Userindex As Integer) As Boolean
         
         On Error GoTo NpcImpacto_Err
         
@@ -462,22 +462,22 @@ Public Function NpcImpacto(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 
         Dim SkillDefensa      As Long
 
-100     UserEvasion = PoderEvasion(UserIndex)
+100     UserEvasion = PoderEvasion(Userindex)
 102     NpcPoderAtaque = Npclist(NpcIndex).PoderAtaque
-104     PoderEvasioEscudo = PoderEvasionEscudo(UserIndex)
+104     PoderEvasioEscudo = PoderEvasionEscudo(Userindex)
 
-106     SkillTacticas = UserList(UserIndex).Stats.UserSkills(eSkill.Tacticas)
-108     SkillDefensa = UserList(UserIndex).Stats.UserSkills(eSkill.Defensa)
+106     SkillTacticas = UserList(Userindex).Stats.UserSkills(eSkill.Tacticas)
+108     SkillDefensa = UserList(Userindex).Stats.UserSkills(eSkill.Defensa)
 
         'Esta usando un escudo ???
-110     If UserList(UserIndex).Invent.EscudoEqpObjIndex > 0 Then UserEvasion = UserEvasion + PoderEvasioEscudo
+110     If UserList(Userindex).Invent.EscudoEqpObjIndex > 0 Then UserEvasion = UserEvasion + PoderEvasioEscudo
 
 112     ProbExito = Maximo(10, Minimo(90, 50 + ((NpcPoderAtaque - UserEvasion) * 0.2)))
 
 114     NpcImpacto = (RandomNumber(1, 100) <= ProbExito)
 
         ' el usuario esta usando un escudo ???
-116     If UserList(UserIndex).Invent.EscudoEqpObjIndex > 0 Then
+116     If UserList(Userindex).Invent.EscudoEqpObjIndex > 0 Then
 118         If Not NpcImpacto Then
 120             If SkillDefensa + SkillTacticas > 0 Then  'Evitamos división por cero
 122                 ProbRechazo = Maximo(10, Minimo(90, 100 * (SkillDefensa / (SkillDefensa + SkillTacticas))))
@@ -485,10 +485,10 @@ Public Function NpcImpacto(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 
 126                 If Rechazo = True Then
                         'Se rechazo el ataque con el escudo
-128                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_ESCUDO, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+128                     Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessagePlayWave(SND_ESCUDO, UserList(Userindex).Pos.X, UserList(Userindex).Pos.Y))
 
-130                     If UserList(UserIndex).ChatCombate = 1 Then
-132                         Call WriteBlockedWithShieldUser(UserIndex)
+130                     If UserList(Userindex).ChatCombate = 1 Then
+132                         Call WriteBlockedWithShieldUser(Userindex)
 
                         End If
 
@@ -1423,11 +1423,11 @@ Public Sub UsuarioAtacaUsuario(ByVal atacanteindex As Integer, ByVal victimainde
             
             'Pablo (ToxicWaste): Guantes de Hurto del Bandido en accion
             If UserList(atacanteindex).clase = eClass.Bandit Then
-                Call DoDesequipar(atacanteindex, VictimaIndex)
+                Call DoDesequipar(atacanteindex, victimaindex)
                 
                 'y ahora, el ladron puede llegar a paralizar con el golpe.
             ElseIf UserList(atacanteindex).clase = eClass.Thief Then
-                Call DoHandInmo(atacanteindex, VictimaIndex)
+                Call DoHandInmo(atacanteindex, victimaindex)
 
             End If
             
@@ -1682,8 +1682,8 @@ Public Sub UserDañoUser(ByVal atacanteindex As Integer, ByVal victimaindex As I
 
             End If
     
-            'e intenta dar un golpe crítico [Pablo (ToxicWaste)]
-            ' Call DoGolpeCritico(atacanteindex, 0, victimaindex, daño)
+            'Se intenta dar un golpe crítico [Pablo (ToxicWaste)]
+            Call DoGolpeCritico(atacanteindex, 0, victimaindex, daño)
         End If
     
 212     If UserList(victimaindex).Stats.MinHp <= 0 Then
@@ -2510,7 +2510,7 @@ Public Function TriggerZonaPelea(ByVal Origen As Integer, ByVal Destino As Integ
 
     'TODO: Pero que rebuscado!!
     'Nigo:  Te lo rediseñe, pero no te borro el TODO para que lo revises.
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim tOrg As eTrigger
 
@@ -2533,7 +2533,7 @@ Public Function TriggerZonaPelea(ByVal Origen As Integer, ByVal Destino As Integ
     End If
 
     Exit Function
-ErrHandler:
+Errhandler:
     TriggerZonaPelea = TRIGGER6_AUSENTE
     LogError ("Error en TriggerZonaPelea - " & Err.description)
 

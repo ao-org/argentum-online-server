@@ -1,7 +1,7 @@
 Attribute VB_Name = "ModLadder"
 Option Explicit
 
-Public Declare Function timeGetTime Lib "winmm.dll" () As Long
+Private Declare Function timeGetTime Lib "winmm.dll" () As Long
 
 Private Declare Sub GetSystemTime Lib "kernel32.dll" (lpSystemTime As SYSTEMTIME)
 
@@ -35,12 +35,18 @@ Public Enum Accion_Barra
 
 End Enum
 
+Public Function GetTickCount() As Long
+    
+    GetTickCount = timeGetTime And &H7FFFFFFF
+    
+End Function
+
 Function GetTimeFormated() As String
         
         On Error GoTo GetTimeFormated_Err
         
         Dim Elapsed As Single
-        Elapsed = ((timeGetTime And &H7FFFFFFF) - HoraMundo) / DuracionDia
+        Elapsed = (GetTickCount() - HoraMundo) / DuracionDia
         
         Dim Mins As Long
         Mins = (Elapsed - Fix(Elapsed)) * 1440
