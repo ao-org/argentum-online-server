@@ -251,7 +251,7 @@ Public Function WndProc(ByVal hWnd As Long, ByVal msg As Long, ByVal wParam As L
 
         On Error Resume Next
 
-        Dim ttt As Long: ttt = GetTickCount
+        Dim ttt As Long: ttt = GetTickCount()
 
         Dim ret      As Long
         Dim Tmp()    As Byte
@@ -391,7 +391,7 @@ Public Function WndProc(ByVal hWnd As Long, ByVal msg As Long, ByVal wParam As L
 
     #End If
 
-    OutputDebugString "SocketProc: " & (GetTickCount - ttt)
+    OutputDebugString "SocketProc: " & (GetTickCount() - ttt)
 
 End Function
 

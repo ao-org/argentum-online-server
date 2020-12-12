@@ -2323,7 +2323,7 @@ Public Sub DoTalar(ByVal Userindex As Integer, ByVal X As Byte, ByVal Y As Byte,
             If .flags.TargetObj = 0 Then Exit Sub
             
             Call ActualizarRecurso(.Pos.Map, X, Y)
-            MapData(.Pos.Map, X, Y).ObjInfo.data = (timeGetTime And &H7FFFFFFF) ' Ultimo uso
+            MapData(.Pos.Map, X, Y).ObjInfo.data = GetTickCount() ' Ultimo uso
     
             MiObj.Amount = IIf(ObjetoDorado, RandomNumber(1, 5), 1) * RecoleccionMult
             MiObj.ObjIndex = Leña
@@ -2442,7 +2442,7 @@ Public Sub DoMineria(ByVal Userindex As Integer, ByVal X As Byte, ByVal Y As Byt
             If .flags.TargetObj = 0 Then Exit Sub
             
             Call ActualizarRecurso(.Pos.Map, X, Y)
-            MapData(.Pos.Map, X, Y).ObjInfo.data = (timeGetTime And &H7FFFFFFF) ' Ultimo uso
+            MapData(.Pos.Map, X, Y).ObjInfo.data = GetTickCount() ' Ultimo uso
             
             MiObj.ObjIndex = ObjData(.flags.TargetObj).MineralIndex
             MiObj.Amount = IIf(ObjetoDorado, RandomNumber(1, 6), 1) * RecoleccionMult
@@ -2536,7 +2536,7 @@ Public Sub DoMeditar(ByVal Userindex As Integer)
                 Exit Sub
             End If
             
-            If (GetTickCount And &H7FFFFFFF) - .Counters.InicioMeditar < TIEMPO_INICIOMEDITAR Then Exit Sub
+            If (GetTickCount()) - .Counters.InicioMeditar < TIEMPO_INICIOMEDITAR Then Exit Sub
     
 110         MeditarSkill = .Stats.UserSkills(eSkill.Meditar)
             
@@ -3016,7 +3016,7 @@ Public Sub ActualizarRecurso(ByVal Map As Integer, ByVal X As Integer, ByVal Y A
 
         Dim TiempoActual As Long
 
-102     TiempoActual = timeGetTime And &H7FFFFFFF
+102     TiempoActual = GetTickCount()
 
         ' Data = Ultimo uso
 104     If (TiempoActual - MapData(Map, X, Y).ObjInfo.data) * 0.001 > ObjData(ObjIndex).TiempoRegenerar Then

@@ -43,7 +43,7 @@ Public Function IntervaloPermiteLanzarSpell(ByVal UserIndex As Integer, Optional
 
         Dim TActual As Long
 
-100     TActual = GetTickCount() And &H7FFFFFFF
+100     TActual = GetTickCount()
 
 102     If TActual - UserList(UserIndex).Counters.TimerLanzarSpell >= UserList(UserIndex).Intervals.magia - MargenDeIntervaloPorPing Then
 104         If actualizar Then
@@ -75,7 +75,7 @@ Public Function IntervaloPermiteAtacar(ByVal UserIndex As Integer, Optional ByVa
 
         Dim TActual As Long
 
-100     TActual = GetTickCount() And &H7FFFFFFF
+100     TActual = GetTickCount()
 
 102     If TActual - UserList(UserIndex).Counters.TimerPuedeAtacar >= UserList(UserIndex).Intervals.Golpe - MargenDeIntervaloPorPing Then
 104         If actualizar Then
@@ -109,7 +109,7 @@ Public Function IntervaloPermiteTirar(ByVal UserIndex As Integer, Optional ByVal
 
         Dim TActual As Long
     
-100     TActual = GetTickCount() And &H7FFFFFFF
+100     TActual = GetTickCount()
     
 102     If TActual - UserList(UserIndex).Counters.TimerTirar >= IntervaloTirar Then
 104         If actualizar Then
@@ -139,7 +139,7 @@ Public Function IntervaloPermiteMagiaGolpe(ByVal UserIndex As Integer, Optional 
 
         Dim TActual As Long
 
-100     TActual = GetTickCount() And &H7FFFFFFF
+100     TActual = GetTickCount()
     
 102     If TActual - UserList(UserIndex).Counters.TimerLanzarSpell >= UserList(UserIndex).Intervals.MagiaGolpe - MargenDeIntervaloPorPing Then
 104         If actualizar Then
@@ -169,7 +169,7 @@ Public Function IntervaloPermiteGolpeMagia(ByVal UserIndex As Integer, Optional 
 
         Dim TActual As Long
 
-100     TActual = GetTickCount() And &H7FFFFFFF
+100     TActual = GetTickCount()
     
 102     If TActual - UserList(UserIndex).Counters.TimerGolpeMagia >= UserList(UserIndex).Intervals.GolpeMagia - MargenDeIntervaloPorPing Then
 104         If actualizar Then
@@ -199,7 +199,7 @@ Public Function IntervaloPermiteGolpeUsar(ByVal UserIndex As Integer, Optional B
 
         Dim TActual As Long
 
-100     TActual = GetTickCount() And &H7FFFFFFF
+100     TActual = GetTickCount()
     
 102     If TActual - UserList(UserIndex).Counters.TimerGolpeUsar >= UserList(UserIndex).Intervals.GolpeUsar - MargenDeIntervaloPorPing Then
 104         If actualizar Then
@@ -226,7 +226,7 @@ End Function
 'Public Function IntervaloPermiteAtacar(ByVal UserIndex As Integer, Optional ByVal Actualizar As Boolean = True) As Boolean
 'Dim TActual As Long
 '
-'TActual = GetTickCount() And &H7FFFFFFF''
+'TActual = GetTickCount()''
 '
 'If TActual - UserList(UserIndex).Counters.TimerPuedeAtacar >= IntervaloUserPuedeAtacar Then
 '    If Actualizar Then UserList(UserIndex).Counters.TimerPuedeAtacar = TActual
@@ -244,7 +244,7 @@ Public Function IntervaloPermiteTrabajar(ByVal UserIndex As Integer, Optional By
 
         Dim TActual As Long
 
-100     TActual = GetTickCount() And &H7FFFFFFF
+100     TActual = GetTickCount()
 
 102     If TActual - UserList(UserIndex).Counters.TimerPuedeTrabajar >= UserList(UserIndex).Intervals.Trabajar - MargenDeIntervaloPorPing Then
 104         If actualizar Then UserList(UserIndex).Counters.TimerPuedeTrabajar = TActual
@@ -271,7 +271,7 @@ Public Function IntervaloPermiteUsar(ByVal UserIndex As Integer, Optional ByVal 
 
         Dim TActual As Long
 
-100     TActual = GetTickCount() And &H7FFFFFFF
+100     TActual = GetTickCount()
 
 102     If TActual - UserList(UserIndex).Counters.TimerUsar >= UserList(UserIndex).Intervals.UsarClic - MargenDeIntervaloPorPing Then
 104         If actualizar Then UserList(UserIndex).Counters.TimerUsar = TActual
@@ -297,7 +297,7 @@ Public Function IntervaloPermiteUsarArcos(ByVal UserIndex As Integer, Optional B
 
         Dim TActual As Long
     
-100     TActual = GetTickCount() And &H7FFFFFFF
+100     TActual = GetTickCount()
     
 102     If TActual - UserList(UserIndex).Counters.TimerPuedeUsarArco >= UserList(UserIndex).Intervals.Arco - MargenDeIntervaloPorPing Then
 104         If actualizar Then
@@ -330,7 +330,7 @@ Public Function IntervaloPermiteCaminar(ByVal UserIndex As Integer) As Boolean
 
         Dim TActual As Long
     
-100     TActual = GetTickCount() And &H7FFFFFFF
+100     TActual = GetTickCount()
     
 102     If TActual - UserList(UserIndex).Counters.TimerCaminar >= UserList(UserIndex).Intervals.Caminar - MargenDeIntervaloPorPing Then
         
@@ -358,7 +358,7 @@ Public Function IntervaloPermiteMoverse(ByVal NpcIndex As Integer) As Boolean
 
         Dim TActual As Long
 
-100     TActual = GetTickCount() And &H7FFFFFFF
+100     TActual = GetTickCount()
 
 102     If TActual - Npclist(NpcIndex).Contadores.IntervaloMovimiento >= Npclist(NpcIndex).IntervaloMovimiento Then
     
@@ -386,7 +386,7 @@ Public Function IntervaloPermiteLanzarHechizo(ByVal NpcIndex As Integer) As Bool
 
         Dim TActual As Long
 
-100     TActual = GetTickCount() And &H7FFFFFFF
+100     TActual = GetTickCount()
 
 102     If TActual - Npclist(NpcIndex).Contadores.InvervaloLanzarHechizo >= Npclist(NpcIndex).InvervaloLanzarHechizo Then
     
@@ -414,7 +414,7 @@ Public Function IntervaloPermiteAtacarNPC(ByVal NpcIndex As Integer) As Boolean
 
         Dim TActual As Long
 
-100     TActual = GetTickCount() And &H7FFFFFFF
+100     TActual = GetTickCount()
 
 102     If TActual - Npclist(NpcIndex).Contadores.IntervaloAtaque >= Npclist(NpcIndex).IntervaloAtaque Then
     
