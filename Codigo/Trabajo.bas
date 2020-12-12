@@ -2150,7 +2150,7 @@ Public Sub DoGolpeCritico(ByVal Userindex As Integer, ByVal VictimNpcIndex As In
 112         If VictimUserIndex <> 0 Then
 114             UserList(VictimUserIndex).Stats.MinHp = UserList(VictimUserIndex).Stats.MinHp - daño
 116             Call WriteConsoleMsg(Userindex, "Has golpeado críticamente a " & UserList(VictimUserIndex).name & " por " & daño, FontTypeNames.FONTTYPE_FIGHT)
-118             Call WriteConsoleMsg(VictimUserIndex, .name & " te ha golpeado críticamente por " & daño, FontTypeNames.FONTTYPE_FIGHT)
+118             Call WriteConsoleMsg(VictimUserIndex, UserList(Userindex).name & " te ha golpeado críticamente por " & daño, FontTypeNames.FONTTYPE_FIGHT)
                 
             Else
 120             Npclist(VictimNpcIndex).Stats.MinHp = Npclist(VictimNpcIndex).Stats.MinHp - daño
