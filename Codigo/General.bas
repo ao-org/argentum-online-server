@@ -407,21 +407,7 @@ LeerLineaComandos_Err:
         
 End Sub
 
-Sub Main()
-
-    On Error Resume Next
-
-    Call LeerLineaComandos
-    
-    Call CargarRanking
-    
-    Dim f    As Date
-    Dim abro As Boolean
-    
-    Call ChDir(App.Path)
-    Call ChDrive(App.Path)
-    
-    abro = True
+Private Sub InicializarConstantes()
     
     LastBackup = Format(Now, "Short Time")
     minutos = Format(Now, "Short Time")
@@ -532,6 +518,31 @@ Sub Main()
     
     centinelaActivado = False
     
+    IniPath = App.Path & "\"
+    
+    'Bordes del mapa
+    MinXBorder = XMinMapSize + (XWindow \ 2)
+    MaxXBorder = XMaxMapSize - (XWindow \ 2)
+    MinYBorder = YMinMapSize + (YWindow \ 2)
+    MaxYBorder = YMaxMapSize - (YWindow \ 2)
+    
+End Sub
+
+Sub Main()
+
+    On Error Resume Next
+
+    Call LeerLineaComandos
+    
+    Call CargarRanking
+    
+    Dim f    As Date
+    
+    Call ChDir(App.Path)
+    Call ChDrive(App.Path)
+
+    Call InicializarConstantes
+    
     frmCargando.Show
     
     Call InitTesoro
@@ -540,13 +551,7 @@ Sub Main()
     'Call PlayWaveAPI(App.Path & "\wav\harp3.wav")
     
     frmMain.Caption = frmMain.Caption & " V." & App.Major & "." & App.Minor & "." & App.Revision
-    IniPath = App.Path & "\"
     
-    'Bordes del mapa
-    MinXBorder = XMinMapSize + (XWindow \ 2)
-    MaxXBorder = XMaxMapSize - (XWindow \ 2)
-    MinYBorder = YMinMapSize + (YWindow \ 2)
-    MaxYBorder = YMaxMapSize - (YWindow \ 2)
     DoEvents
     
     frmCargando.Label1(2).Caption = "Iniciando Arrays..."
