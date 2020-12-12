@@ -2337,7 +2337,7 @@ Private Sub HandleWalk(ByVal Userindex As Integer)
 
         Dim demorafinal As Long
 
-100     demora = (timeGetTime And &H7FFFFFFF)
+100     demora = GetTickCount()
 
 102     If UserList(Userindex).incomingData.Length < 2 Then
 104         Err.raise UserList(Userindex).incomingData.NotEnoughDataErrCode
@@ -2398,7 +2398,7 @@ Private Sub HandleWalk(ByVal Userindex As Integer)
                     
                     'Prevent SpeedHack
 150                 If .flags.TimesWalk >= TiempoDeWalk Then
-152                     TempTick = GetTickCount And &H7FFFFFFF
+152                     TempTick = GetTickCount()
 154                     dummy = (TempTick - .flags.StartWalk)
                         
                         ' 5800 is actually less than what would be needed in perfect conditions to take 30 steps
@@ -2494,7 +2494,7 @@ Private Sub HandleWalk(ByVal Userindex As Integer)
 
         End With
     
-204     demorafinal = (timeGetTime And &H7FFFFFFF) - demora
+204     demorafinal = GetTickCount() - demora
 
         Exit Sub
 
@@ -7510,7 +7510,7 @@ Private Sub HandleMeditate(ByVal Userindex As Integer)
 
 118         If .flags.Meditando Then
 
-                .Counters.InicioMeditar = GetTickCount And &H7FFFFFFF
+                .Counters.InicioMeditar = GetTickCount()
 
 120             Select Case .Stats.ELV
 
@@ -8126,7 +8126,7 @@ Private Sub HandleUpTime(ByVal Userindex As Integer)
         Dim UpTimeStr As String
     
         'Get total time in seconds
-102     Time = ((GetTickCount() And &H7FFFFFFF) - tInicioServer) \ 1000
+102     Time = ((GetTickCount()) - tInicioServer) \ 1000
     
         'Get times in dd:hh:mm:ss format
 104     UpTimeStr = (Time Mod 60) & " segundos."
@@ -16353,7 +16353,7 @@ Public Sub HandleNight(ByVal Userindex As Integer)
         
 104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
 106
-            HoraMundo = (timeGetTime And &H7FFFFFFF)
+            HoraMundo = GetTickCount()
 
             Call SendData(SendTarget.ToAll, 0, PrepareMessageHora())
     
@@ -16383,7 +16383,7 @@ Public Sub HandleDay(ByVal Userindex As Integer)
         
 104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
 106
-            HoraMundo = (timeGetTime And &H7FFFFFFF) - DuracionDia \ 2
+            HoraMundo = GetTickCount() - DuracionDia \ 2
 
             Call SendData(SendTarget.ToAll, 0, PrepareMessageHora())
     
@@ -16416,7 +16416,7 @@ Public Sub HandleSetTime(ByVal Userindex As Integer)
         
 104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
 106
-            HoraMundo = (timeGetTime And &H7FFFFFFF) - HoraDia
+            HoraMundo = GetTickCount() - HoraDia
             
             Call SendData(SendTarget.ToAll, 0, PrepareMessageHora())
     
@@ -24027,7 +24027,7 @@ Public Function PrepareMessageHora() As String
         '***************************************************
 100     With auxiliarBuffer
 102         Call .WriteByte(ServerPacketID.Hora)
-104         Call .WriteLong(((timeGetTime And &H7FFFFFFF) - HoraMundo) Mod DuracionDia)
+104         Call .WriteLong((GetTickCount() - HoraMundo) Mod DuracionDia)
 106         Call .WriteLong(DuracionDia)
         
 108         PrepareMessageHora = .ReadASCIIStringFixed(.Length)

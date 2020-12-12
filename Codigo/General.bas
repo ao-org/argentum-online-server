@@ -731,13 +731,11 @@ Sub Main()
     
     Call GetHoraActual
     
-    HoraMundo = (timeGetTime And &H7FFFFFFF) - DuracionDia \ 2
+    HoraMundo = GetTickCount() - DuracionDia \ 2
     Unload frmCargando
     
     'Log
-    Dim n As Integer
-
-    n = FreeFile
+    Dim n As Integer: n = FreeFile
     Open App.Path & "\logs\Main.log" For Append Shared As #n
     Print #n, Date & " " & Time & " server iniciado " & App.Major & "."; App.Minor & "." & App.Revision
     Close #n
@@ -749,8 +747,7 @@ Sub Main()
         Call frmMain.InitMain(0)
     End If
     
-    tInicioServer = GetTickCount() And &H7FFFFFFF
-    'Call InicializaEstadisticas
+    tInicioServer = GetTickCount()
 
 End Sub
 
@@ -2339,7 +2336,7 @@ Sub InicializaEstadisticas()
 
         Dim Ta As Long
 
-100     Ta = GetTickCount() And &H7FFFFFFF
+100     Ta = GetTickCount()
 
 102     Call EstadisticasWeb.Inicializa(frmMain.hWnd)
 104     Call EstadisticasWeb.Informar(CANTIDAD_MAPAS, NumMaps)

@@ -3,8 +3,6 @@ Option Explicit
 
 Private Const S As String * 1 = ","
 
-Private Declare Function GetTickCount Lib "kernel32" () As Long
-
 Private Item_TimeClear As Long
 
 Dim Item_List As Collection
@@ -49,13 +47,13 @@ Public Sub AgregarItemLimpiza(ByVal Map As Integer, ByVal x As Byte, ByVal Y As 
     If ResetTimer Then
         Set Item = Item_List.Item(Item.Indice)
     
-        Item.Time = GetTickCount And &H7FFFFFFF
+        Item.Time = GetTickCount()
     
     Else
         Set Item = New TLimpiezaItem
        
         With Item
-            .Time = GetTickCount And &H7FFFFFFF
+            .Time = GetTickCount()
             .Map = Map
             .x = x
             .Y = Y
@@ -97,7 +95,7 @@ Public Sub LimpiarItemsViejos()
     If Item_List Is Nothing Then Exit Sub
     
     Dim TimeClear As Long
-        TimeClear = GetTickCount And &H7FFFFFFF
+        TimeClear = GetTickCount()
     
     Dim Item As TLimpiezaItem
 
