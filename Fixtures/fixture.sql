@@ -122,7 +122,7 @@ CREATE TABLE `mail` (
   `sender` varchar(30) NOT NULL DEFAULT '',
   `item_id` smallint(5) UNSIGNED DEFAULT 0,
   `amount` smallint(5) UNSIGNED DEFAULT 0,
-  `date` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `date` timestamp NOT NULL DEFAULT current_timestamp(),
   `is_read` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -314,6 +314,7 @@ CREATE TABLE `user` (
   `chat_combate` tinyint(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+DROP TABLE IF EXISTS `statistics`;
 CREATE TABLE `statistics` (
   `name` VARCHAR(50) NOT NULL,
   `value` VARCHAR(50) NULL,

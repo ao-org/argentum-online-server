@@ -1381,7 +1381,7 @@ Public Function Intemperie(ByVal Userindex As Integer) As Boolean
         
     
 100     If MapInfo(UserList(Userindex).Pos.Map).zone <> "DUNGEON" Then
-102         If MapData(UserList(Userindex).Pos.Map, UserList(Userindex).Pos.X, UserList(Userindex).Pos.Y).trigger <> 1 And MapData(UserList(Userindex).Pos.Map, UserList(Userindex).Pos.X, UserList(Userindex).Pos.Y).trigger <> 2 And MapData(UserList(Userindex).Pos.Map, UserList(Userindex).Pos.X, UserList(Userindex).Pos.Y).trigger < 10 And MapData(UserList(Userindex).Pos.Map, UserList(Userindex).Pos.X, UserList(Userindex).Pos.Y).trigger <> 4 Then Intemperie = True
+102         If MapData(UserList(Userindex).Pos.Map, UserList(Userindex).Pos.X, UserList(Userindex).Pos.Y).trigger <> 1 And MapData(UserList(Userindex).Pos.Map, UserList(Userindex).Pos.X, UserList(Userindex).Pos.Y).trigger <> 2 And MapData(UserList(Userindex).Pos.Map, UserList(Userindex).Pos.X, UserList(Userindex).Pos.Y).trigger < 10 Then Intemperie = True
         Else
 104         Intemperie = False
 
