@@ -4305,7 +4305,7 @@ Private Sub HandleWorkLeftClick(ByVal Userindex As Integer)
                 'Check interval
                 If Not IntervaloPermiteTrabajar(Userindex) Then Exit Sub
 
-                Select Case .Invent.HerramientaEqpObjIndex
+                Select Case ObjData(.Invent.HerramientaEqpObjIndex).Subtipo
                 
                     Case 8  ' Herramientas de Mineria - Piquete
                 
