@@ -1990,8 +1990,9 @@ Private Sub HandleTalk(ByVal Userindex As Integer)
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
     'Last Modification: 05/17/06
-    '
+    '13/01/2010: ZaMa - Now hidden on boat pirats recover the proper boat body.
     '***************************************************
+    
     If UserList(Userindex).incomingData.Length < 3 Then
         Err.raise UserList(Userindex).incomingData.NotEnoughDataErrCode
         Exit Sub
@@ -2004,31 +2005,45 @@ Private Sub HandleTalk(ByVal Userindex As Integer)
     
         'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
         Dim buffer As New clsByteQueue
-
         Call buffer.CopyBuffer(.incomingData)
         
         'Remove packet ID
         Call buffer.ReadByte
         
-        Dim chat As String
+        Dim chat As String: chat = buffer.ReadASCIIString()
         
-        chat = buffer.ReadASCIIString()
+        'If we got here then packet is complete, copy data back to original queue
+        Call .incomingData.CopyBuffer(buffer)
         
         '[Consejeros & GMs]
         If .flags.Privilegios And (PlayerType.Consejero Or PlayerType.SemiDios) Then
             Call LogGM(.name, "Dijo: " & chat)
-
         End If
         
         'I see you....
         If .flags.Oculto > 0 Then
             .flags.Oculto = 0
             .Counters.TiempoOculto = 0
+            
+            If .flags.Navegando = 1 Then
+                
+                'TODO: Revisar con WyroX
+                If .clase = eClass.Pirat Then
+                    ' Pierde la apariencia de fragata fantasmal
+                    'Call ToggleBoatBody(Userindex)
+                    'Call WriteConsoleMsg(Userindex, "Has recuperado tu apariencia normal!", FontTypeNames.FONTTYPE_INFO)
+                    'Call ChangeUserChar(Userindex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)
 
-            If .flags.invisible = 0 Then
-                Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageSetInvisible(.Char.CharIndex, False))
-                'Call WriteConsoleMsg(UserIndex, "¡Has vuelto a ser visible!", FontTypeNames.FONTTYPE_INFO)
-                Call WriteLocaleMsg(Userindex, "307", FontTypeNames.FONTTYPE_INFO)
+                End If
+
+            Else
+
+                If .flags.invisible = 0 Then
+                    Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageSetInvisible(.Char.CharIndex, False))
+                    'Call WriteConsoleMsg(UserIndex, "¡Has vuelto a ser visible!", FontTypeNames.FONTTYPE_INFO)
+                    Call WriteLocaleMsg(Userindex, "307", FontTypeNames.FONTTYPE_INFO)
+    
+                End If
 
             End If
 
@@ -2053,9 +2068,6 @@ Private Sub HandleTalk(ByVal Userindex As Integer)
             End If
 
         End If
-        
-        'If we got here then packet is complete, copy data back to original queue
-        Call .incomingData.CopyBuffer(buffer)
 
     End With
     
@@ -2123,11 +2135,26 @@ Private Sub HandleYell(ByVal Userindex As Integer)
             If .flags.Oculto > 0 Then
                 .flags.Oculto = 0
                 .Counters.TiempoOculto = 0
-
-                If .flags.invisible = 0 Then
-                    Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageSetInvisible(.Char.CharIndex, False))
-                    Call WriteConsoleMsg(Userindex, "¡Has vuelto a ser visible!", FontTypeNames.FONTTYPE_INFO)
-
+                
+                If .flags.Navegando = 1 Then
+                    
+                    'TODO: Revisar con WyroX
+                    If .clase = eClass.Pirat Then
+                        ' Pierde la apariencia de fragata fantasmal
+                        'Call ToggleBoatBody(Userindex)
+                        'Call WriteConsoleMsg(Userindex, "Has recuperado tu apariencia normal!", FontTypeNames.FONTTYPE_INFO)
+                        'Call ChangeUserChar(Userindex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)
+    
+                    End If
+    
+                Else
+    
+                    If .flags.invisible = 0 Then
+                        Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageSetInvisible(.Char.CharIndex, False))
+                        Call WriteConsoleMsg(Userindex, "¡Has vuelto a ser visible!", FontTypeNames.FONTTYPE_INFO)
+    
+                    End If
+    
                 End If
 
             End If
@@ -2406,24 +2433,43 @@ Private Sub HandleWalk(ByVal Userindex As Integer)
 188             .flags.CountSH = 0
 
             End If
-        
+            
+            'Can't move while hidden except he is a thief
 190         If .flags.Oculto = 1 And .flags.AdminInvisible = 0 Then
-192             .flags.Oculto = 0
-194             .Counters.TiempoOculto = 0
                 
-                'If not under a spell effect, show char
-196             If .flags.invisible = 0 Then
-198                 Call WriteConsoleMsg(Userindex, "Has vuelto a ser visible.", FontTypeNames.FONTTYPE_INFO)
-200                 Call WriteLocaleMsg(Userindex, "307", FontTypeNames.FONTTYPE_INFO)
-202                 Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageSetInvisible(.Char.CharIndex, False))
+                If .clase <> eClass.Thief And .clase <> eClass.Bandit Then
+                    .flags.Oculto = 0
+                    .Counters.TiempoOculto = 0
+                
+                    If .flags.Navegando = 1 Then
+                        
+                        If .clase = eClass.Pirat Then
+                            ' Pierde la apariencia de fragata fantasmal
+                            'Call ToggleBoatBody(Userindex)
+                            'Call WriteConsoleMsg(Userindex, "Has recuperado tu apariencia normal!", FontTypeNames.FONTTYPE_INFO)
+                            'Call ChangeUserChar(Userindex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)
+    
+                        End If
+    
+                    Else
+    
+                        'If not under a spell effect, show char
+                        If .flags.invisible = 0 Then
+                            Call WriteConsoleMsg(Userindex, "Has vuelto a ser visible.", FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(Userindex, "307", FontTypeNames.FONTTYPE_INFO)
+                            Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageSetInvisible(.Char.CharIndex, False))
+                        End If
+    
+                    End If
+    
                 End If
+                
             End If
 
         End With
     
 204     demorafinal = (timeGetTime And &H7FFFFFFF) - demora
 
-        
         Exit Sub
 
 HandleWalk_Err:
@@ -2515,24 +2561,39 @@ Private Sub HandleAttack(ByVal Userindex As Integer)
         
             'Attack!
 130         Call UsuarioAtaca(Userindex)
-        
+            
             'I see you...
-132         If .flags.Oculto > 0 And .flags.AdminInvisible = 0 Then
-134             .flags.Oculto = 0
-136             .Counters.TiempoOculto = 0
-
-138             If .flags.invisible = 0 Then
-140                 Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageSetInvisible(.Char.CharIndex, False))
-                    'Call WriteConsoleMsg(UserIndex, "¡Has vuelto a ser visible!", FontTypeNames.FONTTYPE_INFO)
-142                 Call WriteLocaleMsg(Userindex, "307", FontTypeNames.FONTTYPE_INFOIAO)
-
+            If .flags.Oculto > 0 And .flags.AdminInvisible = 0 Then
+                .flags.Oculto = 0
+                .Counters.TiempoOculto = 0
+                
+                If .flags.Navegando = 1 Then
+                    
+                    'TODO: Revisar con WyroX
+                    If .clase = eClass.Pirat Then
+                    
+                        ' Pierde la apariencia de fragata fantasmal
+                        'Call ToggleBoatBody(Userindex)
+                        'Call WriteConsoleMsg(Userindex, "Has recuperado tu apariencia normal!", FontTypeNames.FONTTYPE_INFO)
+                        'Call ChangeUserChar(Userindex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)
+    
+                    End If
+    
+                Else
+    
+                    If .flags.invisible = 0 Then
+                        Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageSetInvisible(.Char.CharIndex, False))
+                        'Call WriteConsoleMsg(UserIndex, "¡Has vuelto a ser visible!", FontTypeNames.FONTTYPE_INFO)
+                        Call WriteLocaleMsg(Userindex, "307", FontTypeNames.FONTTYPE_INFOIAO)
+    
+                    End If
+    
                 End If
-
+    
             End If
 
         End With
 
-        
         Exit Sub
 
 HandleAttack_Err:
@@ -3010,16 +3071,15 @@ Private Sub HandleDrop(ByVal Userindex As Integer)
         
         On Error GoTo HandleDrop_Err
         
-
         '***************************************************
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
+        'Last Modification: 07/25/09
+        '07/25/09: Marco - Agregue un checkeo para patear a los usuarios que tiran items mientras comercian.
         '***************************************************
+        
 100     If UserList(Userindex).incomingData.Length < 4 Then
 102         Err.raise UserList(Userindex).incomingData.NotEnoughDataErrCode
             Exit Sub
-
         End If
     
         Dim slot   As Byte
@@ -3027,6 +3087,7 @@ Private Sub HandleDrop(ByVal Userindex As Integer)
         Dim Amount As Long
     
 104     With UserList(Userindex)
+
             'Remove packet ID
 106         Call .incomingData.ReadByte
 
@@ -3037,7 +3098,16 @@ Private Sub HandleDrop(ByVal Userindex As Integer)
 
             'low rank admins can't drop item. Neither can the dead nor those sailing.
 114         If .flags.Muerto = 1 Or ((.flags.Privilegios And PlayerType.Consejero) <> 0 And (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0) Then Exit Sub
-        
+            
+            'If the user is trading, he can't drop items => He's cheating, we kick him.
+            If .flags.Comerciando Then Exit Sub
+    
+            'Si esta navegando y no es pirata, no dejamos tirar items al agua.
+            If .flags.Navegando = 1 And Not .clase = eClass.Pirat Then
+                Call WriteConsoleMsg(Userindex, "Solo los Piratas pueden tirar items en altamar", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+
             'Are we dropping gold or other items??
 116         If slot = FLAGORO Then
 
@@ -3286,8 +3356,8 @@ Private Sub HandleWork(ByVal Userindex As Integer)
 
         '***************************************************
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
+        'Last Modification: 13/01/2010
+        '13/01/2010: ZaMa - El pirata se puede ocultar en barca
         '***************************************************
 100     If UserList(Userindex).incomingData.Length < 2 Then
 102         Err.raise UserList(Userindex).incomingData.NotEnoughDataErrCode
@@ -3321,17 +3391,18 @@ Private Sub HandleWork(ByVal Userindex As Integer)
 120             Case Ocultarse
 
 122                 If .flags.Navegando = 1 Then
+                        
+                        If .clase <> eClass.Pirat Then
 
-                        '[CDT 17-02-2004]
-124                     If Not .flags.UltimoMensaje = 3 Then
-                            'Call WriteConsoleMsg(UserIndex, "No podés ocultarte si estás navegando.", FontTypeNames.FONTTYPE_INFO)
-126                         Call WriteLocaleMsg(Userindex, "56", FontTypeNames.FONTTYPE_INFO)
-128                         .flags.UltimoMensaje = 3
-
+                            If Not .flags.UltimoMensaje = 3 Then
+                                'Call WriteConsoleMsg(UserIndex, "No podés ocultarte si estás navegando.", FontTypeNames.FONTTYPE_INFO)
+                                Call WriteLocaleMsg(Userindex, "56", FontTypeNames.FONTTYPE_INFO)
+                                .flags.UltimoMensaje = 3
+                            End If
+                            
+                            Exit Sub
+                            
                         End If
-
-                        '[/CDT]
-                        Exit Sub
 
                     End If
                 

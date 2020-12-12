@@ -30,40 +30,54 @@ Attribute VB_Name = "Trabajo"
 Option Explicit
 
 Public Sub DoPermanecerOculto(ByVal Userindex As Integer)
-        '********************************************************
-        'Autor: Nacho (Integer)
-        'Last Modif: 28/01/2007
-        'Chequea si ya debe mostrarse
-        'Pablo (ToxicWaste): Cambie los ordenes de prioridades porque sino no andaba.
-        '********************************************************
+    '********************************************************
+    'Autor: Nacho (Integer)
+    'Last Modif: 28/01/2007
+    'Chequea si ya debe mostrarse
+    'Pablo (ToxicWaste): Cambie los ordenes de prioridades porque sino no andaba.
+    '********************************************************
         
-        On Error GoTo DoPermanecerOculto_Err
-        
-
-100     UserList(Userindex).Counters.TiempoOculto = UserList(Userindex).Counters.TiempoOculto - 1
-
-102     If UserList(Userindex).Counters.TiempoOculto <= 0 Then
+    On Error GoTo DoPermanecerOculto_Err
     
-            ' UserList(UserIndex).Counters.TiempoOculto = IntervaloOculto
+    With UserList(Userindex)
     
-104         UserList(Userindex).Counters.TiempoOculto = 0
-106         UserList(Userindex).flags.Oculto = 0
-108         Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageSetInvisible(UserList(Userindex).Char.CharIndex, False))
-110         Call WriteConsoleMsg(Userindex, "¡Has vuelto a ser visible!", FontTypeNames.FONTTYPE_INFO)
+        .Counters.TiempoOculto = .Counters.TiempoOculto - 1
 
+        If .Counters.TiempoOculto <= 0 Then
+
+            .Counters.TiempoOculto = 0
+            .flags.Oculto = 0
+
+            If .flags.Navegando = 1 Then
+            
+                If .clase = eClass.Pirat Then
+                    ' Pierde la apariencia de fragata fantasmal
+                    'Call ToggleBoatBody(Userindex)
+                    'Call WriteConsoleMsg(Userindex, "Has recuperado tu apariencia normal!", FontTypeNames.FONTTYPE_INFO)
+                    'Call ChangeUserChar(Userindex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)
+
+                End If
+
+            Else
+
+                If .flags.invisible = 0 Then
+                    Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageSetInvisible(.Char.CharIndex, False))
+                    Call WriteConsoleMsg(Userindex, "¡Has vuelto a ser visible!", FontTypeNames.FONTTYPE_INFO)
+
+                End If
+
+            End If
+            
         End If
+    
+    End With
 
-        Exit Sub
-
-ErrHandler:
-112     Call LogError("Error en Sub DoPermanecerOculto")
-
-        
-        Exit Sub
+    Exit Sub
 
 DoPermanecerOculto_Err:
-        Call RegistrarError(Err.Number, Err.description, "Trabajo.DoPermanecerOculto", Erl)
-        Resume Next
+    Call RegistrarError(Err.Number, Err.description, "Trabajo.DoPermanecerOculto", Erl)
+
+    Resume Next
         
 End Sub
 
@@ -1941,7 +1955,7 @@ Public Sub DoApuñalar(ByVal Userindex As Integer, ByVal VictimNpcIndex As Integ
             Case eClass.Assasin '35
 104             Suerte = Int(((0.00003 * Skill - 0.001) * Skill + 0.098) * Skill + 4.25)
         
-106         Case eClass.Cleric, eClass.Paladin ' 15
+106         Case eClass.Cleric, eClass.Paladin, eClass.Pirat ' 15
 108             Suerte = Int(((0.000003 * Skill + 0.0006) * Skill + 0.0107) * Skill + 4.93)
         
 110         Case eClass.Bard, eClass.Druid '13
