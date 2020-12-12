@@ -10654,7 +10654,6 @@ Private Sub HandleInvisible(ByVal Userindex As Integer)
 104         If .flags.Privilegios And PlayerType.user Then Exit Sub
         
 106         Call DoAdminInvisible(Userindex)
-108         Call LogGM(.name, "/INVISIBLE")
 
         End With
 
