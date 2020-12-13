@@ -8543,8 +8543,10 @@ Private Sub HandleChangeDescription(ByVal Userindex As Integer)
         If .flags.Muerto = 1 Then
             Call WriteConsoleMsg(Userindex, "No podés cambiar la descripción estando muerto.", FontTypeNames.FONTTYPE_INFOIAO)
         Else
+            If Len(description) > 128 Then
+                Call WriteConsoleMsg(Userindex, "La descripción es muy larga.", FontTypeNames.FONTTYPE_INFOIAO)
 
-            If Not AsciiValidos(description) Then
+            ElseIf Not DescripcionValida(description) Then
                 Call WriteConsoleMsg(Userindex, "La descripción tiene carácteres inválidos.", FontTypeNames.FONTTYPE_INFOIAO)
             Else
                 .Desc = Trim$(description)
