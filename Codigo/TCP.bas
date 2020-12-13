@@ -404,7 +404,7 @@ Sub RellenarInventario(ByVal Userindex As String)
             ' Semi mágicas reciben menos
 118         Select Case .clase
 
-                Case eClass.Bard, eClass.Cleric, eClass.Paladin, eClass.Assasin
+                Case eClass.Bard, eClass.Cleric, eClass.Paladin, eClass.Assasin, eClass.Bandit
 120                 .Invent.Object(NumItems).ObjIndex = 1617 ' Pocion Azul
 122                 .Invent.Object(NumItems).Amount = 50
 124                 NumItems = NumItems + 1
@@ -415,22 +415,14 @@ Sub RellenarInventario(ByVal Userindex As String)
 126         Select Case .clase
 
                 Case eClass.Mage, eClass.Cleric, eClass.Druid, eClass.Bard
-128                 .Stats.UserHechizos(1) = 1 ' Proyectil
-130                 .Stats.UserHechizos(2) = 2 ' Saeta
-132                 .Stats.UserHechizos(3) = 11 ' Curar Veneno
-134                 .Stats.UserHechizos(4) = 12 ' Heridas Leves
-
-136             Case eClass.Assasin, eClass.Paladin
-138                 .Stats.UserHechizos(1) = 1 ' Proyectil
-140                 .Stats.UserHechizos(2) = 2 ' Saeta
-142                 .Stats.UserHechizos(3) = 11 ' Curar Veneno
+128                 .Stats.UserHechizos(1) = 1 ' Dardo mágico
 
             End Select
         
             ' Pociones amarillas y verdes
 144         Select Case .clase
 
-                Case eClass.Assasin, eClass.Bard, eClass.Cleric, eClass.Hunter, eClass.Paladin, eClass.Trabajador, eClass.Warrior
+                Case eClass.Assasin, eClass.Bard, eClass.Cleric, eClass.Hunter, eClass.Paladin, eClass.Trabajador, eClass.Warrior, eClass.Bandit
 146                 .Invent.Object(NumItems).ObjIndex = 1618 ' Pocion Amarilla
 148                 .Invent.Object(NumItems).Amount = 25
 150                 NumItems = NumItems + 1
