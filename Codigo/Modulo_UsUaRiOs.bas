@@ -801,7 +801,11 @@ Sub MoveUserChar(ByVal Userindex As Integer, ByVal nHeading As eHeading)
 170             If MapInfo(.Pos.Map).NumUsers > 1 Then
                     'si no estoy solo en el mapa...
     
-172                 Call SendData(SendTarget.ToPCAreaButIndex, Userindex, PrepareMessageCharacterMove(.Char.CharIndex, nPos.X, nPos.Y))
+                    If .flags.AdminInvisible = 0 Then
+172                     Call SendData(SendTarget.ToPCAreaButIndex, Userindex, PrepareMessageCharacterMove(.Char.CharIndex, nPos.X, nPos.Y))
+                    Else
+                        Call SendData(SendTarget.ToAdminAreaButIndex, Userindex, PrepareMessageCharacterMove(.Char.CharIndex, nPos.X, nPos.Y))
+                    End If
             
                 End If
     
