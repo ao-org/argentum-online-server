@@ -1939,8 +1939,11 @@ Private Sub tPiqueteC_Timer()
             
                 If UserList(i).Counters.PiqueteC > 15 Then
                     UserList(i).Counters.PiqueteC = 0
-                    Call Encarcelar(i, TIEMPO_CARCEL_PIQUETE)
-
+                    'Call Encarcelar(i, TIEMPO_CARCEL_PIQUETE)
+                    'WyroX: En vez de encarcelarlo, lo sacamos del juego.
+                    'Ojo! No sé si se puede abusar de esto para evitar los 10 segundos al salir
+                    Call WriteDisconnect(Userindex)
+                    Call CloseSocket(Userindex)
                 End If
 
             Else
