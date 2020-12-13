@@ -236,7 +236,7 @@ Sub TirarOro(ByVal Cantidad As Long, ByVal Userindex As Integer)
     'Last Modification: 23/01/2007
     '23/01/2007 -> Pablo (ToxicWaste): Billetera invertida y explotar oro en el agua.
     '***************************************************
-    On Error GoTo Errhandler
+    On Error GoTo ErrHandler
 
     'If Cantidad > 100000 Then Exit Sub
     If UserList(Userindex).flags.BattleModo = 1 Then Exit Sub
@@ -323,7 +323,7 @@ Sub TirarOro(ByVal Cantidad As Long, ByVal Userindex As Integer)
 
     Exit Sub
 
-Errhandler:
+ErrHandler:
 
 End Sub
 
@@ -498,7 +498,9 @@ Sub EraseObj(ByVal num As Integer, ByVal Map As Integer, ByVal X As Integer, ByV
 104         MapData(Map, X, Y).ObjInfo.ObjIndex = 0
 106         MapData(Map, X, Y).ObjInfo.Amount = 0
     
-            Call QuitarItemLimpieza(Map, X, Y)
+            If ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).OBJType <> otTeleport Then
+                Call QuitarItemLimpieza(Map, X, Y)
+            End If
     
 108         Call modSendData.SendToAreaByPos(Map, X, Y, PrepareMessageObjectDelete(X, Y))
 
@@ -527,7 +529,9 @@ Sub MakeObj(ByRef obj As obj, ByVal Map As Integer, ByVal X As Integer, ByVal Y 
 104             MapData(Map, X, Y).ObjInfo.Amount = MapData(Map, X, Y).ObjInfo.Amount + obj.Amount
             Else
                 ' Lo agrego a la limpieza del mundo o reseteo el timer si el objeto ya existía
-                Call AgregarItemLimpiza(Map, X, Y, MapData(Map, X, Y).ObjInfo.ObjIndex <> 0)
+                If ObjData(obj.ObjIndex).OBJType <> otTeleport Then
+                    Call AgregarItemLimpiza(Map, X, Y, MapData(Map, X, Y).ObjInfo.ObjIndex <> 0)
+                End If
             
 106             MapData(Map, X, Y).ObjInfo.ObjIndex = obj.ObjIndex
 
@@ -569,7 +573,7 @@ End Sub
 
 Function MeterItemEnInventario(ByVal Userindex As Integer, ByRef MiObj As obj) As Boolean
 
-    On Error GoTo Errhandler
+    On Error GoTo ErrHandler
 
     'Call LogTarea("MeterItemEnInventario")
  
@@ -637,13 +641,13 @@ Function MeterItemEnInventario(ByVal Userindex As Integer, ByRef MiObj As obj) A
     MeterItemEnInventario = True
 
     Exit Function
-Errhandler:
+ErrHandler:
 
 End Function
 
 Function MeterItemEnInventarioDeNpc(ByVal NpcIndex As Integer, ByRef MiObj As obj) As Boolean
 
-    On Error GoTo Errhandler
+    On Error GoTo ErrHandler
 
     'Call LogTarea("MeterItemEnInventario")
  
@@ -689,7 +693,7 @@ Function MeterItemEnInventarioDeNpc(ByVal NpcIndex As Integer, ByRef MiObj As ob
     MeterItemEnInventarioDeNpc = True
 
     Exit Function
-Errhandler:
+ErrHandler:
 
 End Function
 
@@ -1010,7 +1014,7 @@ End Sub
 
 Function SexoPuedeUsarItem(ByVal Userindex As Integer, ByVal ObjIndex As Integer) As Boolean
 
-    On Error GoTo Errhandler
+    On Error GoTo ErrHandler
 
     If EsGM(Userindex) Then
         SexoPuedeUsarItem = True
@@ -1028,7 +1032,7 @@ Function SexoPuedeUsarItem(ByVal Userindex As Integer, ByVal ObjIndex As Integer
     End If
 
     Exit Function
-Errhandler:
+ErrHandler:
     Call LogError("SexoPuedeUsarItem")
 
 End Function
@@ -1071,7 +1075,7 @@ End Function
 
 Sub EquiparInvItem(ByVal Userindex As Integer, ByVal slot As Byte)
 
-    On Error GoTo Errhandler
+    On Error GoTo ErrHandler
 
     Dim errordesc As String
 
@@ -1680,7 +1684,7 @@ Sub EquiparInvItem(ByVal Userindex As Integer, ByVal slot As Byte)
 
     Exit Sub
     
-Errhandler:
+ErrHandler:
     Debug.Print errordesc
     Call LogError("EquiparInvItem Slot:" & slot & " - Error: " & Err.Number & " - Error Description : " & Err.description & "- " & errordesc)
 
@@ -1688,7 +1692,7 @@ End Sub
 
 Public Function CheckRazaUsaRopa(ByVal Userindex As Integer, ItemIndex As Integer) As Boolean
 
-    On Error GoTo Errhandler
+    On Error GoTo ErrHandler
 
     If EsGM(Userindex) Then
         CheckRazaUsaRopa = True
@@ -1754,14 +1758,14 @@ Public Function CheckRazaUsaRopa(ByVal Userindex As Integer, ItemIndex As Intege
     CheckRazaUsaRopa = False
 
     Exit Function
-Errhandler:
+ErrHandler:
     Call LogError("Error CheckRazaUsaRopa ItemIndex:" & ItemIndex)
 
 End Function
 
 Public Function CheckRazaTipo(ByVal Userindex As Integer, ItemIndex As Integer) As Boolean
 
-    On Error GoTo Errhandler
+    On Error GoTo ErrHandler
 
     If EsGM(Userindex) Then
 
@@ -1809,14 +1813,14 @@ Public Function CheckRazaTipo(ByVal Userindex As Integer, ItemIndex As Integer) 
     End Select
 
     Exit Function
-Errhandler:
+ErrHandler:
     Call LogError("Error CheckRazaTipo ItemIndex:" & ItemIndex)
 
 End Function
 
 Public Function CheckClaseTipo(ByVal Userindex As Integer, ItemIndex As Integer) As Boolean
 
-    On Error GoTo Errhandler
+    On Error GoTo ErrHandler
 
     If EsGM(Userindex) Then
 
@@ -1851,7 +1855,7 @@ Public Function CheckClaseTipo(ByVal Userindex As Integer, ItemIndex As Integer)
     End Select
 
     Exit Function
-Errhandler:
+ErrHandler:
     Call LogError("Error CheckClaseTipo ItemIndex:" & ItemIndex)
 
 End Function
