@@ -1492,7 +1492,7 @@ Sub ConnectUser(ByVal Userindex As Integer, ByRef name As String, ByRef UserCuen
         
         'Ladder Inmunidad
         .flags.Inmunidad = 1
-        .Counters.TiempoDeInmunidad = INTERVALO_INMUNIDAD
+        .Counters.TiempoDeInmunidad = IntervaloPuedeSerAtacado
         'Ladder Inmunidad
         
         

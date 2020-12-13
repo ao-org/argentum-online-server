@@ -1256,6 +1256,11 @@ Sub NPCAtacado(ByVal NpcIndex As Integer, ByVal Userindex As Integer)
         '24/01/2007 -> Pablo (ToxicWaste): Agrego para que se actualize el tag si corresponde.
         '24/07/2007 -> Pablo (ToxicWaste): Guardar primero que ataca NPC y el que atacas ahora.
         '**********************************************
+        
+        ' WyroX: El usuario pierde la protección
+        UserList(Userindex).Counters.TiempoDeInmunidad = 0
+        UserList(Userindex).flags.Inmunidad = 0
+        
         Dim EraCriminal As Byte
 
         'Guardamos el usuario que ataco el npc.
@@ -2054,7 +2059,7 @@ Sub WarpUserChar(ByVal Userindex As Integer, ByVal Map As Integer, ByVal X As In
 
             End If
             
-            UserList(Userindex).Counters.TiempoDeInmunidad = INTERVALO_INMUNIDAD
+            UserList(Userindex).Counters.TiempoDeInmunidad = IntervaloPuedeSerAtacado
             UserList(Userindex).flags.Inmunidad = 1
 
 144         If RequiereOxigeno(OldMap) = True And UserList(Userindex).flags.NecesitaOxigeno = False Then  'And UserList(UserIndex).Stats.ELV < 35 Then
