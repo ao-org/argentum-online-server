@@ -541,6 +541,39 @@ AsciiValidos_Err:
         
 End Function
 
+Function DescripcionValida(ByVal cad As String) As Boolean
+        
+        On Error GoTo AsciiValidos_Err
+        
+
+        Dim car As Byte
+
+        Dim i   As Integer
+
+100     cad = LCase$(cad)
+
+102     For i = 1 To Len(cad)
+104         car = Asc(mid$(cad, i, 1))
+    
+106         If car < 32 Or car >= 126 Then
+108             DescripcionValida = False
+                Exit Function
+
+            End If
+    
+110     Next i
+
+112     DescripcionValida = True
+
+        
+        Exit Function
+
+AsciiValidos_Err:
+        Call RegistrarError(Err.Number, Err.description, "TCP.DescripcionValida", Erl)
+        Resume Next
+        
+End Function
+
 Function Numeric(ByVal cad As String) As Boolean
         
         On Error GoTo Numeric_Err
