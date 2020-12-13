@@ -3146,7 +3146,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
         
                 '04-05-08 Ladder
 122             If (.flags.Privilegios And PlayerType.Admin) <> 16 Then
-124                 If ObjData(.Invent.Object(slot).ObjIndex).Newbie = 1 Then
+124                 If EsNewbie(UserIndex) And ObjData(.Invent.Object(slot).ObjIndex).Newbie = 1 Then
 126                     Call WriteConsoleMsg(UserIndex, "No se pueden tirar los objetos Newbies.", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 

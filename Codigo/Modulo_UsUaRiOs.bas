@@ -2626,7 +2626,7 @@ Function TieneArmaduraCazador(ByVal UserIndex As Integer) As Boolean
 
     If UserList(UserIndex).Invent.ArmourEqpObjIndex > 0 Then
         
-        If ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).Subtipo = 3 Then
+        If ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).Subtipo = 3 Then ' Aguante hardcodear números :D
             TieneArmaduraCazador = True
         End If
         
