@@ -325,10 +325,6 @@ Public Const VelocidadCero         As Single = 0
 
 Public Const TIEMPO_CARCEL_PIQUETE As Long = 5
 
-
-Public Const INTERVALO_INMUNIDAD As Byte = 3  'en segundos
-
-
 ''
 ' TRIGGERS
 '
