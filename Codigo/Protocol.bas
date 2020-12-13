@@ -7752,7 +7752,14 @@ Private Sub HandleCommerceStart(ByVal Userindex As Integer)
         
             'Validate target NPC
 112         If .flags.TargetNPC > 0 Then
+                
+                'VOS, como GM, NO podes COMERCIAR con NPCs. (excepto Dioses y Admins)
+128             If EsGM(Userindex) And (.flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin)) = 0 Then
+130                 Call WriteConsoleMsg(Userindex, "No podés vender items.", FontTypeNames.FONTTYPE_WARNING)
+                    Exit Sub
 
+                End If
+                
                 'Does the NPC want to trade??
 114             If Npclist(.flags.TargetNPC).Comercia = 0 Then
 116                 If LenB(Npclist(.flags.TargetNPC).Desc) <> 0 Then
