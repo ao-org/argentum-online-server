@@ -176,8 +176,12 @@ Public Sub goHome(ByVal Userindex As Integer)
             'If Tiempo > 60 Then Tiempo = 60
             
             Call IntervaloGoHome(Userindex, Tiempo * 1000, True)
-                
-            Call WriteConsoleMsg(Userindex, "Te encuentras a " & CStr(Distance) & " mapas de " & MapInfo(Ciudades(.Hogar).Map).map_name & ", este viaje durara " & CStr(Tiempo) & " segundos.", FontTypeNames.FONTTYPE_FIGHT)
+            
+            If .flags.lastMap = 0 Then
+                Call WriteConsoleMsg(Userindex, "Te encuentras a " & CStr(Distance) & " mapas de " & MapInfo(Ciudades(.Hogar).Map).map_name & ", este viaje durara " & CStr(Tiempo) & " segundos.", FontTypeNames.FONTTYPE_FIGHT)
+            Else
+                Call WriteConsoleMsg(Userindex, "Te encuentras en un dungeon o en las catacumbas, viajarás a " & MapInfo(Ciudades(.Hogar).Map).map_name & " en " & CStr(Tiempo) & " segundos.", FontTypeNames.FONTTYPE_FIGHT)
+            End If
             
         Else
         
