@@ -467,53 +467,53 @@ Private Sub InicializarConstantes()
     
     ListaRazas(eRaza.Humano) = "Humano"
     ListaRazas(eRaza.Elfo) = "Elfo"
-    ListaRazas(eRaza.Drow) = "Elfo Drow"
+    ListaRazas(eRaza.Drow) = "Elfo Oscuro"
     ListaRazas(eRaza.Gnomo) = "Gnomo"
     ListaRazas(eRaza.Enano) = "Enano"
     'ListaRazas(eRaza.Orco) = "Orco"
     
     ListaClases(eClass.Mage) = "Mago"
-    ListaClases(eClass.Cleric) = "Clerigo"
+    ListaClases(eClass.Cleric) = "Clérigo"
     ListaClases(eClass.Warrior) = "Guerrero"
     ListaClases(eClass.Assasin) = "Asesino"
     ListaClases(eClass.Bard) = "Bardo"
     ListaClases(eClass.Druid) = "Druida"
-    ListaClases(eClass.Paladin) = "Paladin"
+    ListaClases(eClass.Paladin) = "Paladín"
     ListaClases(eClass.Hunter) = "Cazador"
     ListaClases(eClass.Trabajador) = "Trabajador"
     ListaClases(eClass.Pirat) = "Pirata"
-    ListaClases(eClass.Thief) = "Ladron"
+    ListaClases(eClass.Thief) = "Ladrón"
     ListaClases(eClass.Bandit) = "Bandido"
     
     SkillsNames(eSkill.magia) = "Magia"
     SkillsNames(eSkill.Robar) = "Robar"
-    SkillsNames(eSkill.Tacticas) = "Tacticas de combate"
+    SkillsNames(eSkill.Tacticas) = "Destreza en combate"
     SkillsNames(eSkill.Armas) = "Combate con armas"
     SkillsNames(eSkill.Meditar) = "Meditar"
     SkillsNames(eSkill.Apuñalar) = "Apuñalar"
     SkillsNames(eSkill.Ocultarse) = "Ocultarse"
     SkillsNames(eSkill.Supervivencia) = "Supervivencia"
     SkillsNames(eSkill.Comerciar) = "Comercio"
-    SkillsNames(eSkill.Defensa) = "Defensa con escudos"
+    SkillsNames(eSkill.Defensa) = "Defensa con escudo"
     SkillsNames(eSkill.Liderazgo) = "Liderazgo"
-    SkillsNames(eSkill.Proyectiles) = "Armas de proyectiles"
-    SkillsNames(eSkill.Wrestling) = "Artes Marciales"
-    SkillsNames(eSkill.Navegacion) = "Navegacion"
+    SkillsNames(eSkill.Proyectiles) = "Armas a distancia"
+    SkillsNames(eSkill.Wrestling) = "Combate sin armas"
+    SkillsNames(eSkill.Navegacion) = "Navegación"
     SkillsNames(eSkill.equitacion) = "Equitación"
-    SkillsNames(eSkill.Resistencia) = "Resistencia Mágica"
-
+    SkillsNames(eSkill.Resistencia) = "Resistencia mágica"
     SkillsNames(eSkill.Talar) = "Tala"
     SkillsNames(eSkill.Pescar) = "Pesca"
-    SkillsNames(eSkill.Mineria) = "Mineria"
-    SkillsNames(eSkill.Herreria) = "Herreria"
-    SkillsNames(eSkill.Carpinteria) = "Carpinteria"
+    SkillsNames(eSkill.Mineria) = "Minería"
+    SkillsNames(eSkill.Herreria) = "Herrería"
+    SkillsNames(eSkill.Carpinteria) = "Carpintería"
     SkillsNames(eSkill.Alquimia) = "Alquimia"
-    SkillsNames(eSkill.Sastreria) = "Sastreria"
+    SkillsNames(eSkill.Sastreria) = "Sastrería"
+    SkillsNames(eSkill.Domar) = "Domar"
    
     ListaAtributos(eAtributos.Fuerza) = "Fuerza"
     ListaAtributos(eAtributos.Agilidad) = "Agilidad"
     ListaAtributos(eAtributos.Inteligencia) = "Inteligencia"
-    ListaAtributos(eAtributos.Constitucion) = "Constitucion"
+    ListaAtributos(eAtributos.Constitucion) = "Constitución"
     ListaAtributos(eAtributos.Carisma) = "Carisma"
     
     centinelaActivado = False
@@ -2509,16 +2509,26 @@ CMSValidateChar__Err:
         
 End Function
 
-Public Function Tilde(ByRef data As String) As String
+Public Function Tilde(ByRef Data As String) As String
+    
+    On Error GoTo Tilde_Err
+    
 
-    data = UCase$(data)
+    Tilde = UCase$(Data)
  
-    data = Replace$(data, "Á", "A")
-    data = Replace$(data, "É", "E")
-    data = Replace$(data, "Í", "I")
-    data = Replace$(data, "Ó", "O")
-    data = Replace$(data, "Ú", "U")
+    Tilde = Replace$(Tilde, "Á", "A")
+    Tilde = Replace$(Tilde, "É", "E")
+    Tilde = Replace$(Tilde, "Í", "I")
+    Tilde = Replace$(Tilde, "Ó", "O")
+    Tilde = Replace$(Tilde, "Ú", "U")
         
+    
+    Exit Function
+
+Tilde_Err:
+    Call RegistrarError(Err.Number, Err.description, "Mod_General.Tilde", Erl)
+    Resume Next
+    
 End Function
 
 Public Sub CerrarServidor()
