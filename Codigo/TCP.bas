@@ -1662,6 +1662,7 @@ Sub ConnectUser(ByVal Userindex As Integer, ByRef name As String, ByRef UserCuen
         'Actualiza el Num de usuarios
         NumUsers = NumUsers + 1
         .flags.UserLogged = True
+        .Counters.LastSave = GetTickCount
         
         MapInfo(.Pos.Map).NumUsers = MapInfo(.Pos.Map).NumUsers + 1
         

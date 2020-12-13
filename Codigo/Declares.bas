@@ -1703,6 +1703,8 @@ Public Type UserCounters
     
     goHome As Long
     
+    LastSave As Long
+    
 End Type
 
 Public Type UserIntervals

@@ -137,6 +137,10 @@ Public IntervaloCaminar             As Long
 
 Public IntervaloPuedeSerAtacado     As Long
 
+Public IntervaloGuardarUsuarios     As Long
+
+Public LimiteSaveUserPorMinuto      As Integer
+
 'BALANCE
 
 Public PorcentajeRecuperoMana       As Integer
@@ -206,7 +210,7 @@ Sub ReSpawnOrigPosNpcs()
         'OJO
         If Npclist(i).flags.NPCActive Then
         
-            If InMapBounds(Npclist(i).Orig.Map, Npclist(i).Orig.x, Npclist(i).Orig.Y) And Npclist(i).Numero = Guardias Then
+            If InMapBounds(Npclist(i).Orig.Map, Npclist(i).Orig.X, Npclist(i).Orig.Y) And Npclist(i).Numero = Guardias Then
                 MiNPC = Npclist(i)
                 Call QuitarNPC(i)
                 Call ReSpawnNpc(MiNPC)
@@ -245,7 +249,7 @@ Sub WorldSave()
     Next j
 
     FrmStat.ProgressBar1.min = 0
-    FrmStat.ProgressBar1.max = K
+    FrmStat.ProgressBar1.Max = K
     FrmStat.ProgressBar1.Value = 0
 
     For LoopX = 1 To NumMaps
@@ -290,7 +294,7 @@ Public Sub PurgarPenas()
                 
 108                 If UserList(i).Counters.Pena < 1 Then
 110                     UserList(i).Counters.Pena = 0
-112                     Call WarpUserChar(i, Libertad.Map, Libertad.x, Libertad.Y, True)
+112                     Call WarpUserChar(i, Libertad.Map, Libertad.X, Libertad.Y, True)
 114                     Call WriteConsoleMsg(i, "Has sido liberado!", FontTypeNames.FONTTYPE_INFO)
                     
                     
@@ -414,7 +418,7 @@ Public Sub Encarcelar(ByVal UserIndex As Integer, ByVal minutos As Long, Optiona
         
 100     UserList(UserIndex).Counters.Pena = minutos
         
-102     Call WarpUserChar(UserIndex, Prision.Map, Prision.x, Prision.Y, True)
+102     Call WarpUserChar(UserIndex, Prision.Map, Prision.X, Prision.Y, True)
         
 104     If LenB(GmName) = 0 Then
 106         Call WriteConsoleMsg(UserIndex, "Has sido encarcelado, deberas permanecer en la carcel " & minutos & " minutos.", FontTypeNames.FONTTYPE_INFO)

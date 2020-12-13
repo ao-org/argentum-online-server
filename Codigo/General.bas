@@ -656,7 +656,8 @@ Sub Main()
     '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
     
     With frmMain
-        .AutoSave.Enabled = True
+        .Minuto.Enabled = True
+        .MedioMinuto.Enabled = True
         '.tLluvia.Enabled = True
         .tPiqueteC.Enabled = True
         .GameTimer.Enabled = True

@@ -27,6 +27,12 @@ Begin VB.Form frmMain
    ScaleWidth      =   6915
    StartUpPosition =   2  'CenterScreen
    WindowState     =   1  'Minimized
+   Begin VB.Timer MedioMinuto 
+      Enabled         =   0   'False
+      Interval        =   30000
+      Left            =   2640
+      Top             =   3120
+   End
    Begin VB.CommandButton Command4 
       Caption         =   "Guardar y cerrar"
       Height          =   975
@@ -329,7 +335,7 @@ Begin VB.Form frmMain
       Left            =   2160
       Top             =   3120
    End
-   Begin VB.Timer AutoSave 
+   Begin VB.Timer Minuto 
       Interval        =   60000
       Left            =   4080
       Top             =   3060
@@ -702,16 +708,42 @@ errhand:
 
 End Sub
 
-Private Sub AutoSave_Timer()
+Private Sub MedioMinuto_Timer()
+    
+    ' Guardar usuarios (solo si pasó el tiempo mínimo para guardar)
+    Dim Userindex As Integer, UserGuardados As Integer
 
-    On Error GoTo ErrHandler
+    For Userindex = 1 To LastUser
+    
+        With UserList(Userindex)
+
+            If .flags.UserLogged Then
+                If GetTickCount - .Counters.LastSave > IntervaloGuardarUsuarios Then
+                
+                    Call SaveUser(Userindex)
+                    
+                    UserGuardados = UserGuardados + 1
+                    
+                    If UserGuardados >= LimiteSaveUserPorMinuto Then Exit For
+    
+                End If
+    
+            End If
+        
+        End With
+
+    Next
+    
+End Sub
+
+Private Sub Minuto_Timer()
+
+    On Error GoTo Errhandler
 
     'fired every minute
     Static minutos          As Long
 
     Static MinutosLatsClean As Long
-
-    Static MinsPjesSave     As Long
 
     Dim i                   As Integer
 
@@ -734,13 +766,6 @@ Private Sub AutoSave_Timer()
 
         MinsRunning = 0
 
-    End If
-    
-    MinsPjesSave = MinsPjesSave + 1
-    
-    If MinsPjesSave >= 10 Then
-        Call GuardarUsuarios
-        MinsPjesSave = 0
     End If
     
     minutos = minutos + 1
@@ -777,8 +802,8 @@ Private Sub AutoSave_Timer()
     '<<<<<-------- Log the number of users online ------>>>
 
     Exit Sub
-ErrHandler:
-    Call LogError("Error en TimerAutoSave " & Err.Number & ": " & Err.description)
+Errhandler:
+    Call LogError("Error en Timer Minuto " & Err.Number & ": " & Err.description)
 
     Resume Next
 
@@ -1890,7 +1915,7 @@ End Sub
 
 Private Sub tPiqueteC_Timer()
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Static segundos As Integer
 
@@ -1961,7 +1986,7 @@ Private Sub tPiqueteC_Timer()
 
     Exit Sub
 
-ErrHandler:
+Errhandler:
     Call LogError("Error en tPiqueteC_Timer " & Err.Number & ": " & Err.description)
 
 End Sub
