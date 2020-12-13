@@ -10324,7 +10324,7 @@ Private Sub HandleGoToChar(ByVal Userindex As Integer)
         If .flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin Or PlayerType.SemiDios Or PlayerType.Consejero) Then
 
             'Si es dios o Admins no podemos salvo que nosotros tambiín lo seamos
-            If Not (EsDios(UserName) Or EsAdmin(UserName)) Or (.flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin)) <> 0 Then
+           ' If Not (EsDios(UserName) Or EsAdmin(UserName)) Or (.flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin)) <> 0 Then
                 If tUser <= 0 Then
                     Call WriteConsoleMsg(Userindex, "Usuario offline.", FontTypeNames.FONTTYPE_INFO)
                 Else
@@ -10345,7 +10345,7 @@ Private Sub HandleGoToChar(ByVal Userindex As Integer)
 
                 End If
 
-            End If
+           ' End If
 
         End If
         
@@ -13431,7 +13431,8 @@ Private Sub HandleTeleportCreate(ByVal Userindex As Integer)
 110         X = .incomingData.ReadByte()
 112         Y = .incomingData.ReadByte()
         
-114         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
+114         'If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
+            'Todos los gms pueden crear teleport
         
 116         Call LogGM(.name, "/CT " & Mapa & "," & X & "," & Y)
         
