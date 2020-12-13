@@ -2308,10 +2308,18 @@ Sub GuardarUsuarios()
 104     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor> Grabando Personajes", FontTypeNames.FONTTYPE_SERVER))
     
         Dim i As Long
+        
+        For i = 1 To LastUser
 
-106     For i = 1 To LastUser
+105         If UserList(i).flags.UserLogged Then
+106             Call FlushBuffer(i)
+            End If
 
-108         If UserList(i).flags.UserLogged Then
+107     Next i
+
+108     For i = 1 To LastUser
+
+109         If UserList(i).flags.UserLogged Then
 110             If UserList(i).flags.BattleModo = 0 Then
 112                 Call SaveUser(i)
 

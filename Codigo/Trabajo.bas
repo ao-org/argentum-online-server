@@ -1599,7 +1599,7 @@ Public Sub DoPescar(ByVal Userindex As Integer, Optional ByVal RedDePesca As Boo
             Dim MiObj As obj
         
             MiObj.Amount = IIf(RedDePesca, RandomNumber(2, 5), IIf(ObjetoDorado, RandomNumber(1, 3), 1)) * RecoleccionMult
-            MiObj.ObjIndex = ObtenerPezRandom(ObjData(.Invent.HerramientaEqpObjIndex).Power)
+            MiObj.ObjIndex = ObtenerPezRandom(2)
         
             If MiObj.ObjIndex = 0 Then Exit Sub
         
