@@ -10944,7 +10944,7 @@ Private Sub HandleJail(ByVal UserIndex As Integer)
                     Call WriteConsoleMsg(UserIndex, "El usuario no está online.", FontTypeNames.FONTTYPE_INFO)
                 Else
 
-                    If False Then
+                    If EsGM(UserIndex) Then
                         Call WriteConsoleMsg(UserIndex, "No podés encarcelar a administradores.", FontTypeNames.FONTTYPE_INFO)
                     
                     ElseIf jailTime > 60 Then
