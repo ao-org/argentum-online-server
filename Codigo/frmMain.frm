@@ -1942,8 +1942,8 @@ Private Sub tPiqueteC_Timer()
                     'Call Encarcelar(i, TIEMPO_CARCEL_PIQUETE)
                     'WyroX: En vez de encarcelarlo, lo sacamos del juego.
                     'Ojo! No sé si se puede abusar de esto para evitar los 10 segundos al salir
-                    Call WriteDisconnect(Userindex)
-                    Call CloseSocket(Userindex)
+                    Call WriteDisconnect(i)
+                    Call CloseSocket(i)
                 End If
 
             Else
