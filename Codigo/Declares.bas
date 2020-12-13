@@ -251,9 +251,7 @@ End Type
 
 Public MiCabecera                    As tCabecera
 
-'Barrin 3/10/03
-'Cambiado a 2 segundos el 30/11/07
-Public Const TIEMPO_INICIOMEDITAR    As Integer = 3000
+Public Const TIEMPO_INICIOMEDITAR    As Integer = 500
 
 Public Const NingunEscudo            As Integer = 2
 
