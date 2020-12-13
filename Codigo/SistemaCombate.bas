@@ -1802,7 +1802,6 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
         '24/01/2007 Pablo (ToxicWaste) - Ordeno todo y agrego situacion de Defensa en ciudad Armada y Caos.
         '***************************************************
         Dim T    As eTrigger6
-
         Dim rank As Integer
 
         'MUY importante el orden de estos "IF"...
@@ -1886,7 +1885,13 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
             End If
 
         End If
-
+        
+        'Solo administradores pueden atacar a usuarios (PARA TESTING)
+        If EsGM(attackerIndex) And (UserList(attackerIndex).flags.Privilegios And PlayerType.Admin) = 0 Then
+            PuedeAtacar = False
+            Exit Function
+        End If
+        
         'Estas queriendo atacar a un GM?
 152     rank = PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero
 
@@ -1917,7 +1922,6 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
         End If
 
         'Es un ciuda queriando atacar un imperial?
-
 174     If UserList(attackerIndex).flags.Seguro Then
 176         If (Status(attackerIndex) = 1) And (esArmada(VictimIndex)) Then
 178             Call WriteConsoleMsg(attackerIndex, "Los ciudadanos no pueden atacar a los soldados imperiales.", FontTypeNames.FONTTYPE_WARNING)
@@ -1930,6 +1934,7 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
 
         'Estas en un Mapa Seguro?
 182     If MapInfo(UserList(VictimIndex).Pos.Map).Seguro = 1 Then
+
 184         If esArmada(attackerIndex) Then
 186             If UserList(attackerIndex).Faccion.RecompensasReal > 11 Then
 188                 If UserList(VictimIndex).Pos.Map = 58 Or UserList(VictimIndex).Pos.Map = 59 Or UserList(VictimIndex).Pos.Map = 60 Then
@@ -2003,27 +2008,12 @@ Public Function PuedeAtacarNPC(ByVal attackerIndex As Integer, ByVal NpcIndex As
 
         End If
 
-        'Sos consejero?
-106     If UserList(attackerIndex).flags.Privilegios And PlayerType.Consejero Then
-            'No pueden atacar NPC los Consejeros.
-108         PuedeAtacarNPC = False
-            Exit Function
-
-        End If
-        
-        'Sos consejero?
-        If UserList(attackerIndex).flags.Privilegios And PlayerType.SemiDios Then
-            'No pueden atacar NPC los Consejeros.
+        'Solo administradores pueden atacar a usuarios (PARA TESTING)
+        If EsGM(attackerIndex) And (UserList(attackerIndex).flags.Privilegios And PlayerType.Admin) = 0 Then
             PuedeAtacarNPC = False
             Exit Function
         End If
         
-        If UserList(attackerIndex).flags.Privilegios And PlayerType.Dios Then
-            'No pueden atacar NPC los Consejeros.
-            PuedeAtacarNPC = False
-            Exit Function
-        End If
-
         'Es una criatura atacable?
 110     If Npclist(NpcIndex).Attackable = 0 Then
             'No es una criatura atacable
