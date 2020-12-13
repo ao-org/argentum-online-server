@@ -194,7 +194,10 @@ Public Enum eClass
     Paladin     'Paladín
     Hunter      'Cazador
     Trabajador  'Trabajador
-
+    Pirat       'Pirata
+    Thief       'Ladron
+    Bandit      'Bandido
+    
 End Enum
 
 Public Enum eCiudad
@@ -533,7 +536,7 @@ Public Const NUMATRIBUTOS   As Byte = 5
 
 ''
 ' Cantidad de Clases
-Public Const NUMCLASES      As Byte = 9
+Public Const NUMCLASES      As Byte = 12
 
 ''
 ' Cantidad de Razas
@@ -646,9 +649,13 @@ Public Const AdicionalHPGuerrero As Byte = 2 'HP adicionales cuando sube de nive
 
 Public Const AdicionalHPCazador  As Byte = 1 'HP adicionales cuando sube de nivel
 
-Public Const AumentoSTDef        As Byte = 18
+Public Const AumentoSTDef        As Byte = 15
 
-Public Const AumentoSTMago       As Byte = AumentoSTDef - 5
+Public Const AumentoSTLadron     As Byte = AumentoSTDef + 3
+
+Public Const AumentoSTMago       As Byte = AumentoSTDef - 1
+
+Public Const AumentoStBandido    As Byte = AumentoSTDef + 3
 
 'Tamaño del mapa
 Public Const XMaxMapSize         As Byte = 100
@@ -1296,7 +1303,7 @@ Public Type ObjData
     texto As String
     
     'Clases que no tienen permitido usar este obj
-    ClaseProhibida(1 To 9) As eClass
+    ClaseProhibida(1 To NUMCLASES) As eClass
     
     ClasePermitida As String
     
@@ -2320,8 +2327,6 @@ Public Libertad                           As WorldPos
 Public Ayuda                              As New cCola
 
 Public ConsultaPopular                    As New ConsultasPopulares
-
-Public Declare Function GetTickCount Lib "kernel32" () As Long
 
 Public Declare Function writeprivateprofilestring Lib "kernel32" Alias "WritePrivateProfileStringA" (ByVal lpApplicationname As String, ByVal lpKeyname As Any, ByVal lpString As String, ByVal lpfilename As String) As Long
 

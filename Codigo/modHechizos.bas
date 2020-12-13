@@ -312,7 +312,7 @@ Function PuedeLanzar(ByVal Userindex As Integer, ByVal HechizoIndex As Integer, 
 
                 Dim segundosFaltantes As Long
 
-120             actual = GetTickCount() And &H7FFFFFFF
+120             actual = GetTickCount()
 
 122             If UserList(Userindex).Counters.UserHechizosInterval(slot) + (Hechizos(HechizoIndex).CoolDown * 1000) > actual Then
 124                 segundosFaltantes = Int((UserList(Userindex).Counters.UserHechizosInterval(slot) + (Hechizos(HechizoIndex).CoolDown * 1000) - actual) / 1000)
@@ -1060,7 +1060,7 @@ Sub LanzarHechizo(Index As Integer, Userindex As Integer)
 110                         Call HandleHechizoUsuario(Userindex, uh)
                     
 112                         If Hechizos(uh).CoolDown > 0 Then
-114                             UserList(Userindex).Counters.UserHechizosInterval(Index) = GetTickCount() And &H7FFFFFFF
+114                             UserList(Userindex).Counters.UserHechizosInterval(Index) = GetTickCount()
 
                             End If
 
@@ -1082,7 +1082,7 @@ Sub LanzarHechizo(Index As Integer, Userindex As Integer)
 126                         Call HandleHechizoNPC(Userindex, uh)
 
 128                         If Hechizos(uh).CoolDown > 0 Then
-130                             UserList(Userindex).Counters.UserHechizosInterval(Index) = GetTickCount() And &H7FFFFFFF
+130                             UserList(Userindex).Counters.UserHechizosInterval(Index) = GetTickCount()
                     
                             End If
                     
@@ -1104,7 +1104,7 @@ Sub LanzarHechizo(Index As Integer, Userindex As Integer)
 142                         Call HandleHechizoUsuario(Userindex, uh)
                     
 144                         If Hechizos(uh).CoolDown > 0 Then
-146                             UserList(Userindex).Counters.UserHechizosInterval(Index) = GetTickCount() And &H7FFFFFFF
+146                             UserList(Userindex).Counters.UserHechizosInterval(Index) = GetTickCount()
 
                             End If
 
@@ -1118,7 +1118,7 @@ Sub LanzarHechizo(Index As Integer, Userindex As Integer)
 
 152                     If Abs(Npclist(UserList(Userindex).flags.TargetNPC).Pos.Y - UserList(Userindex).Pos.Y) <= RANGO_VISION_Y Then
 154                         If Hechizos(uh).CoolDown > 0 Then
-156                             UserList(Userindex).Counters.UserHechizosInterval(Index) = GetTickCount() And &H7FFFFFFF
+156                             UserList(Userindex).Counters.UserHechizosInterval(Index) = GetTickCount()
 
                             End If
 
@@ -1137,7 +1137,7 @@ Sub LanzarHechizo(Index As Integer, Userindex As Integer)
 164             Case TargetType.uTerreno
 
 166                 If Hechizos(uh).CoolDown > 0 Then
-168                     UserList(Userindex).Counters.UserHechizosInterval(Index) = GetTickCount() And &H7FFFFFFF
+168                     UserList(Userindex).Counters.UserHechizosInterval(Index) = GetTickCount()
 
                     End If
 

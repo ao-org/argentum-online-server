@@ -450,7 +450,7 @@ Sub CheckUserLevel(ByVal Userindex As Integer)
     '09/01/2008 Pablo (ToxicWaste) - Ahora el incremento de vida por Consitución se controla desde Balance.dat
     '*************************************************
 
-    On Error GoTo ErrHandler
+    On Error GoTo Errhandler
 
     Dim Pts              As Integer
 
@@ -582,6 +582,10 @@ Sub CheckUserLevel(ByVal Userindex As Integer)
                     AumentoHIT = IIf(.Stats.ELV > 35, 1, 3)
                     AumentoMANA = .Stats.UserAtributos(eAtributos.Inteligencia)
                     AumentoSTA = AumentoSTDef
+                
+                Case eClass.Thief
+                    AumentoHIT = 2
+                    AumentoSTA = AumentoSTLadron
 
                 Case eClass.Hunter
                     AumentoHIT = IIf(.Stats.ELV > 35, 2, 3)
@@ -590,6 +594,15 @@ Sub CheckUserLevel(ByVal Userindex As Integer)
                 Case eClass.Trabajador
                     AumentoHIT = 2
                     AumentoSTA = AumentoSTDef + 5
+                    
+                Case eClass.Pirat
+                    AumentoHIT = 3
+                    AumentoSTA = AumentoSTDef
+                    
+                Case eClass.Bandit
+                    AumentoHIT = IIf(.Stats.ELV > 35, 1, 3)
+                    AumentoMANA = .Stats.UserAtributos(eAtributos.Inteligencia) / 3 * 2
+                    AumentoSTA = AumentoStBandido
 
                 Case eClass.Warrior
                     AumentoHIT = IIf(.Stats.ELV > 35, 2, 3)
@@ -698,7 +711,7 @@ Sub CheckUserLevel(ByVal Userindex As Integer)
     
     Exit Sub
 
-ErrHandler:
+Errhandler:
     Call LogError("Error en la subrutina CheckUserLevel - Error : " & Err.Number & " - Description : " & Err.description)
 
 End Sub
@@ -2185,36 +2198,88 @@ WarpFamiliar_Err:
 End Sub
 
 Sub Cerrar_Usuario(ByVal Userindex As Integer)
-        
-        On Error GoTo Cerrar_Usuario_Err
-        
- 
-100     If UserList(Userindex).flags.UserLogged And Not UserList(Userindex).Counters.Saliendo Then
-102         UserList(Userindex).Counters.Saliendo = True
 
-104         If UserList(Userindex).flags.Privilegios = PlayerType.user And MapInfo(UserList(Userindex).Pos.Map).Seguro = 0 And UserList(Userindex).flags.Muerto = 0 Then
-106             UserList(Userindex).Counters.Salir = IntervaloCerrarConexion
-108             Call WriteLocaleMsg(Userindex, "203", FontTypeNames.FONTTYPE_INFO, UserList(Userindex).Counters.Salir)
-                'Call WriteConsoleMsg(UserIndex, "Saliendo...Se saldrá del juego en " & UserList(UserIndex).Counters.Salir & " segundos...", FontTypeNames.FONTTYPE_INFO)
-            Else
-            
-                'Call WriteConsoleMsg(UserIndex, "Gracias por jugar Argentum20.", FontTypeNames.FONTTYPE_INFO)
-110             Call WriteDisconnect(Userindex)
-            
-  
-112             Call CloseSocket(Userindex)
+    On Error GoTo Cerrar_Usuario_Err
 
+    '***************************************************
+    'Author: Unknown
+    'Last Modification: 16/09/2010
+    '16/09/2010 - ZaMa: Cuando se va el invi estando navegando, no se saca el invi (ya esta visible).
+    '***************************************************
+    Dim isNotVisible As Boolean
+    Dim HiddenPirat  As Boolean
+    
+    With UserList(Userindex)
+
+        If .flags.UserLogged And Not .Counters.Saliendo Then
+            .Counters.Saliendo = True
+            .Counters.Salir = IntervaloCerrarConexion
+            
+            isNotVisible = (.flags.Oculto Or .flags.invisible)
+
+            If isNotVisible Then
+                .flags.invisible = 0
+                
+                If .flags.Oculto Then
+                
+                    If .flags.Navegando = 1 Then
+                    
+                        If .clase = eClass.Pirat Then
+                            ' Pierde la apariencia de fragata fantasmal
+                            .Char.Body = ObjData(.Invent.BarcoObjIndex).Ropaje
+        
+                            .Char.ShieldAnim = NingunEscudo
+                            .Char.WeaponAnim = NingunArma
+                            .Char.CascoAnim = NingunCasco
+        
+                            Call WriteConsoleMsg(Userindex, "Has recuperado tu apariencia normal!", FontTypeNames.FONTTYPE_INFO)
+                            Call ChangeUserChar(Userindex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)
+                            HiddenPirat = True
+
+                        End If
+
+                    End If
+
+                End If
+                
+                .flags.Oculto = 0
+                
+                ' Para no repetir mensajes
+                If Not HiddenPirat Then
+                    Call WriteConsoleMsg(Userindex, "Has vuelto a ser visible.", FontTypeNames.FONTTYPE_INFO)
+                End If
+                
+                ' Si esta navegando ya esta visible
+                If .flags.Navegando = 0 Then
+                    Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageSetInvisible(.Char.CharIndex, False))
+                End If
+
+            End If
+            
+            If .flags.Traveling = 1 Then
+                Call WriteConsoleMsg(Userindex, "Se ha cancelado el viaje a casa", FontTypeNames.FONTTYPE_INFO)
+                .flags.Traveling = 0
+                .Counters.goHome = 0
+
+            End If
+            
+            Call WriteLocaleMsg(Userindex, "203", FontTypeNames.FONTTYPE_INFO, .Counters.Salir)
+            
+            If EsGM(Userindex) Or MapInfo(.Pos.Map).Seguro = 1 Then
+                Call WriteDisconnect(Userindex)
+                Call CloseSocket(Userindex)
             End If
 
         End If
 
-        
-        Exit Sub
+    End With
+
+    Exit Sub
 
 Cerrar_Usuario_Err:
-        Call RegistrarError(Err.Number, Err.description, "UsUaRiOs.Cerrar_Usuario", Erl)
-        Resume Next
-        
+    Call RegistrarError(Err.Number, Err.description, "UsUaRiOs.Cerrar_Usuario", Erl)
+    Resume Next
+
 End Sub
 
 ''

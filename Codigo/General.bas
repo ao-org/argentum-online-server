@@ -407,21 +407,7 @@ LeerLineaComandos_Err:
         
 End Sub
 
-Sub Main()
-
-    On Error Resume Next
-
-    Call LeerLineaComandos
-    
-    Call CargarRanking
-    
-    Dim f    As Date
-    Dim abro As Boolean
-    
-    Call ChDir(App.Path)
-    Call ChDrive(App.Path)
-    
-    abro = True
+Private Sub InicializarConstantes()
     
     LastBackup = Format(Now, "Short Time")
     minutos = Format(Now, "Short Time")
@@ -495,6 +481,9 @@ Sub Main()
     ListaClases(eClass.Paladin) = "Paladin"
     ListaClases(eClass.Hunter) = "Cazador"
     ListaClases(eClass.Trabajador) = "Trabajador"
+    ListaClases(eClass.Pirat) = "Pirata"
+    ListaClases(eClass.Thief) = "Ladron"
+    ListaClases(eClass.Bandit) = "Bandido"
     
     SkillsNames(eSkill.magia) = "Magia"
     SkillsNames(eSkill.Robar) = "Robar"
@@ -529,6 +518,31 @@ Sub Main()
     
     centinelaActivado = False
     
+    IniPath = App.Path & "\"
+    
+    'Bordes del mapa
+    MinXBorder = XMinMapSize + (XWindow \ 2)
+    MaxXBorder = XMaxMapSize - (XWindow \ 2)
+    MinYBorder = YMinMapSize + (YWindow \ 2)
+    MaxYBorder = YMaxMapSize - (YWindow \ 2)
+    
+End Sub
+
+Sub Main()
+
+    On Error Resume Next
+
+    Call LeerLineaComandos
+    
+    Call CargarRanking
+    
+    Dim f    As Date
+    
+    Call ChDir(App.Path)
+    Call ChDrive(App.Path)
+
+    Call InicializarConstantes
+    
     frmCargando.Show
     
     Call InitTesoro
@@ -537,13 +551,7 @@ Sub Main()
     'Call PlayWaveAPI(App.Path & "\wav\harp3.wav")
     
     frmMain.Caption = frmMain.Caption & " V." & App.Major & "." & App.Minor & "." & App.Revision
-    IniPath = App.Path & "\"
     
-    'Bordes del mapa
-    MinXBorder = XMinMapSize + (XWindow \ 2)
-    MaxXBorder = XMaxMapSize - (XWindow \ 2)
-    MinYBorder = YMinMapSize + (YWindow \ 2)
-    MaxYBorder = YMaxMapSize - (YWindow \ 2)
     DoEvents
     
     frmCargando.Label1(2).Caption = "Iniciando Arrays..."
@@ -728,13 +736,11 @@ Sub Main()
     
     Call GetHoraActual
     
-    HoraMundo = (timeGetTime And &H7FFFFFFF) - DuracionDia \ 2
+    HoraMundo = GetTickCount() - DuracionDia \ 2
     Unload frmCargando
     
     'Log
-    Dim n As Integer
-
-    n = FreeFile
+    Dim n As Integer: n = FreeFile
     Open App.Path & "\logs\Main.log" For Append Shared As #n
     Print #n, Date & " " & Time & " server iniciado " & App.Major & "."; App.Minor & "." & App.Revision
     Close #n
@@ -746,8 +752,7 @@ Sub Main()
         Call frmMain.InitMain(0)
     End If
     
-    tInicioServer = GetTickCount() And &H7FFFFFFF
-    'Call InicializaEstadisticas
+    tInicioServer = GetTickCount()
 
 End Sub
 
@@ -2336,7 +2341,7 @@ Sub InicializaEstadisticas()
 
         Dim Ta As Long
 
-100     Ta = GetTickCount() And &H7FFFFFFF
+100     Ta = GetTickCount()
 
 102     Call EstadisticasWeb.Inicializa(frmMain.hWnd)
 104     Call EstadisticasWeb.Informar(CANTIDAD_MAPAS, NumMaps)
@@ -2548,3 +2553,23 @@ On Error Resume Next
     
     End
 End Sub
+
+Function max(ByVal a As Double, ByVal b As Double) As Double
+
+    If a > b Then
+        max = a
+    Else
+        max = b
+    End If
+
+End Function
+
+Function min(ByVal a As Double, ByVal b As Double) As Double
+
+    If a < b Then
+        min = a
+    Else
+        min = b
+    End If
+
+End Function
