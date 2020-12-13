@@ -1948,7 +1948,7 @@ Tilelibre_Err:
         
 End Sub
 
-Sub WarpToLegalPos(ByVal Userindex As Integer, ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, Optional ByVal FX As Boolean = False)
+Sub WarpToLegalPos(ByVal Userindex As Integer, ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, Optional ByVal FX As Boolean = False, Optional ByVal AguaValida As Boolean = False)
         'Santo: Sub para buscar la posición legal mas cercana al objetivo y warpearlo.
         
         On Error GoTo WarpToLegalPos_Err
@@ -1967,7 +1967,7 @@ Sub WarpToLegalPos(ByVal Userindex As Integer, ByVal Map As Integer, ByVal X As 
 110                 With MapData(Map, lX, lY)
 
 112                     If .Userindex <= 0 Then
-114                         If (.Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES Then
+114                         If (.Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES And ((.Blocked And FLAG_AGUA) = 0 Or AguaValida) Then
 116                             If .TileExit.Map = 0 Then
 118                                 If .NpcIndex <= 0 Then
                                         If .trigger = 0 Then
