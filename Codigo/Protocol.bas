@@ -7786,8 +7786,8 @@ Private Sub HandleCommerceStart(ByVal Userindex As Integer)
                 ' **********************  Comercio con Usuarios  *********************
                 
                 'VOS, como GM, NO podes COMERCIAR con usuarios. (excepto Dioses y Admins)
-128             If EsGM(Userindex) And (.flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin)) = 0 Then
-130                 Call WriteConsoleMsg(Userindex, "No podés vender items.", FontTypeNames.FONTTYPE_WARNING)
+                If EsGM(Userindex) And (.flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin)) = 0 Then
+                    Call WriteConsoleMsg(Userindex, "No podés vender items.", FontTypeNames.FONTTYPE_WARNING)
                     Exit Sub
 
                 End If
