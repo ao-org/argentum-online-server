@@ -409,64 +409,78 @@ UpdateUserInv_Err:
         
 End Sub
 
-Sub DropObj(ByVal Userindex As Integer, ByVal slot As Byte, ByVal num As Integer, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer)
+Sub DropObj(ByVal Userindex As Integer, _
+            ByVal slot As Byte, _
+            ByVal num As Integer, _
+            ByVal Map As Integer, _
+            ByVal X As Integer, _
+            ByVal Y As Integer)
         
         On Error GoTo DropObj_Err
-        
 
         Dim obj As obj
 
 100     If num > 0 Then
-      
-102         If num > UserList(Userindex).Invent.Object(slot).Amount Then num = UserList(Userindex).Invent.Object(slot).Amount
-104         obj.ObjIndex = UserList(Userindex).Invent.Object(slot).ObjIndex
-106         obj.Amount = num
+            
+            With UserList(Userindex)
 
-108         If ObjData(obj.ObjIndex).Destruye = 0 Then
-
-                'Check objeto en el suelo
-110             If MapData(UserList(Userindex).Pos.Map, X, Y).ObjInfo.ObjIndex = 0 Then
-                  
-112                 If num + MapData(UserList(Userindex).Pos.Map, X, Y).ObjInfo.Amount > MAX_INVENTORY_OBJS Then
-114                     num = MAX_INVENTORY_OBJS - MapData(UserList(Userindex).Pos.Map, X, Y).ObjInfo.Amount
-
-                    End If
-                  
-116                 Call MakeObj(obj, Map, X, Y)
-118                 Call QuitarUserInvItem(Userindex, slot, num)
-120                 Call UpdateUserInv(False, Userindex, slot)
-                  
-122                 If Not UserList(Userindex).flags.Privilegios And PlayerType.user Then Call LogGM(UserList(Userindex).name, "Tiro cantidad:" & num & " Objeto:" & ObjData(obj.ObjIndex).name)
-                  
-                    'Log de Objetos que se tiran al piso. Pablo (ToxicWaste) 07/09/07
-                    'Es un Objeto que tenemos que loguear?
-                    ' If ObjData(obj.ObjIndex).Log = 1 Then
-                    '    Call LogDesarrollo(UserList(UserIndex).name & " tiró al piso " & obj.Amount & " " & ObjData(obj.ObjIndex).name)
-                    '    ElseIf obj.Amount = 1000 Then 'Es mucha cantidad?
-                    '   'Si no es de los prohibidos de loguear, lo logueamos.
-                    '  If ObjData(obj.ObjIndex).NoLog <> 1 Then
-                    '    Call LogDesarrollo(UserList(UserIndex).name & " tiró del piso " & obj.Amount & " " & ObjData(obj.ObjIndex).name)
-                    ' End If
-                    ' End If
-                Else
-                    'Call WriteConsoleMsg(UserIndex, "No hay espacio en el piso.", FontTypeNames.FONTTYPE_INFO)
-124                 Call WriteLocaleMsg(Userindex, "262", FontTypeNames.FONTTYPE_INFO)
-
+                If num > .Invent.Object(slot).Amount Then
+                    num = .Invent.Object(slot).Amount
                 End If
+    
+104             obj.ObjIndex = .Invent.Object(slot).ObjIndex
+106             obj.Amount = num
+    
+108             If ObjData(obj.ObjIndex).Destruye = 0 Then
+    
+                    'Check objeto en el suelo
+110                 If MapData(.Pos.Map, X, Y).ObjInfo.ObjIndex = 0 Then
+                      
+112                     If num + MapData(.Pos.Map, X, Y).ObjInfo.Amount > MAX_INVENTORY_OBJS Then
+114                         num = MAX_INVENTORY_OBJS - MapData(.Pos.Map, X, Y).ObjInfo.Amount
+                        End If
+                        
+                        ' Si no sos Administrador o Dios, no te dejo dropear item
+                        If EsGM(Userindex) And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then
+                            
+                            ' NO tiramos el item, solo lo borramos
+                            Call EraseObj(num, .Pos.Map, .Pos.X, .Pos.Y)
+                            
+                        Else
+                            
+                            ' Tiramos el item al piso
+                            Call MakeObj(obj, Map, X, Y)
+118                         Call QuitarUserInvItem(Userindex, slot, num)
+120                         Call UpdateUserInv(False, Userindex, slot)
+                        
+                        End If
 
-            Else
-126             Call QuitarUserInvItem(Userindex, slot, num)
-128             Call UpdateUserInv(False, Userindex, slot)
-
-            End If
+122                     If Not .flags.Privilegios And PlayerType.user Then
+                            Call LogGM(.name, "Tiro cantidad:" & num & " Objeto:" & ObjData(obj.ObjIndex).name)
+                        End If
+    
+                    Else
+                    
+                        'Call WriteConsoleMsg(UserIndex, "No hay espacio en el piso.", FontTypeNames.FONTTYPE_INFO)
+124                     Call WriteLocaleMsg(Userindex, "262", FontTypeNames.FONTTYPE_INFO)
+    
+                    End If
+    
+                Else
+126                 Call QuitarUserInvItem(Userindex, slot, num)
+128                 Call UpdateUserInv(False, Userindex, slot)
+    
+                End If
+            
+            End With
 
         End If
-
         
         Exit Sub
 
 DropObj_Err:
         Call RegistrarError(Err.Number, Err.description, "InvUsuario.DropObj", Erl)
+
         Resume Next
         
 End Sub
