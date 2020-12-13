@@ -29060,12 +29060,12 @@ Private Sub HandleCerrarCliente(ByVal Userindex As Integer)
         Call buffer.ReadInteger
         
         Dim UserName As String
-
         Dim tUser    As Integer
          
         UserName = buffer.ReadASCIIString()
         
-        If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) <> 0 Then
+        ' Solo administradores pueden cerrar clientes ajenos
+        If (.flags.Privilegios And PlayerType.Admin) <> 0 Then
 
             tUser = NameIndex(UserName)
             
