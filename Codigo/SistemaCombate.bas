@@ -2010,6 +2010,19 @@ Public Function PuedeAtacarNPC(ByVal attackerIndex As Integer, ByVal NpcIndex As
             Exit Function
 
         End If
+        
+        'Sos consejero?
+        If UserList(attackerIndex).flags.Privilegios And PlayerType.SemiDios Then
+            'No pueden atacar NPC los Consejeros.
+            PuedeAtacarNPC = False
+            Exit Function
+        End If
+        
+        If UserList(attackerIndex).flags.Privilegios And PlayerType.Dios Then
+            'No pueden atacar NPC los Consejeros.
+            PuedeAtacarNPC = False
+            Exit Function
+        End If
 
         'Es una criatura atacable?
 110     If Npclist(NpcIndex).Attackable = 0 Then
@@ -2510,7 +2523,7 @@ Public Function TriggerZonaPelea(ByVal Origen As Integer, ByVal Destino As Integ
 
     'TODO: Pero que rebuscado!!
     'Nigo:  Te lo rediseñe, pero no te borro el TODO para que lo revises.
-    On Error GoTo Errhandler
+    On Error GoTo ErrHandler
 
     Dim tOrg As eTrigger
 
@@ -2533,7 +2546,7 @@ Public Function TriggerZonaPelea(ByVal Origen As Integer, ByVal Destino As Integ
     End If
 
     Exit Function
-Errhandler:
+ErrHandler:
     TriggerZonaPelea = TRIGGER6_AUSENTE
     LogError ("Error en TriggerZonaPelea - " & Err.description)
 
