@@ -1071,7 +1071,7 @@ Sub LoadBalance()
 
         'Modificadores de Clase
 104     For i = 1 To NUMCLASES
-            SearchVar = Replace$(ListaClases(i), " ", vbNullString)
+            SearchVar = Replace$(Tilde(ListaClases(i)), " ", vbNullString)
 
 106         With ModClase(i)
 108             .Evasion = val(BalanceIni.GetValue("MODEVASION", SearchVar))
@@ -1092,7 +1092,7 @@ Sub LoadBalance()
     
         'Modificadores de Raza
 124     For i = 1 To NUMRAZAS
-            SearchVar = Replace$(ListaRazas(i), " ", vbNullString)
+            SearchVar = Replace$(Tilde(ListaRazas(i)), " ", vbNullString)
 
 126         With ModRaza(i)
 128             .Fuerza = val(BalanceIni.GetValue("MODRAZA", SearchVar + "Fuerza"))
@@ -1629,7 +1629,7 @@ Sub LoadOBJData()
             S = UCase$(Leer.GetValue("OBJ" & Object, "CP" & i))
             n = 1
 
-            Do While LenB(S) > 0 And UCase$(ListaClases(n)) <> S
+            Do While LenB(S) > 0 And Tilde(ListaClases(n)) <> Trim$(S)
                 n = n + 1
             Loop
             ObjData(Object).ClaseProhibida(i) = IIf(LenB(S) > 0, n, 0)
