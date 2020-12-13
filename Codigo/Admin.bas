@@ -249,7 +249,7 @@ Sub WorldSave()
     Next j
 
     FrmStat.ProgressBar1.min = 0
-    FrmStat.ProgressBar1.Max = K
+    FrmStat.ProgressBar1.max = K
     FrmStat.ProgressBar1.Value = 0
 
     For LoopX = 1 To NumMaps
@@ -295,10 +295,7 @@ Public Sub PurgarPenas()
 108                 If UserList(i).Counters.Pena < 1 Then
 110                     UserList(i).Counters.Pena = 0
 112                     Call WarpUserChar(i, Libertad.Map, Libertad.X, Libertad.Y, True)
-114                     Call WriteConsoleMsg(i, "Has sido liberado!", FontTypeNames.FONTTYPE_INFO)
-                    
-                    
-
+114                     Call WriteConsoleMsg(i, "Has sido liberado.", FontTypeNames.FONTTYPE_INFO)
                     End If
 
                 End If

@@ -607,7 +607,7 @@ Public Sub CargarHechizos()
     ReDim Hechizos(1 To NumeroHechizos) As tHechizo
 
     frmCargando.cargar.min = 0
-    frmCargando.cargar.Max = NumeroHechizos
+    frmCargando.cargar.max = NumeroHechizos
     frmCargando.cargar.Value = 0
 
     'Llena la lista
@@ -1286,7 +1286,7 @@ Sub LoadOBJData()
     NumObjDatas = val(Leer.GetValue("INIT", "NumObjs"))
 
     frmCargando.cargar.min = 0
-    frmCargando.cargar.Max = NumObjDatas
+    frmCargando.cargar.max = NumObjDatas
     frmCargando.cargar.Value = 0
 
     ReDim Preserve ObjData(1 To NumObjDatas) As ObjData
@@ -1999,7 +1999,7 @@ Sub CargarBackUp()
         NumMaps = NumMaps - 1
     
 106     frmCargando.cargar.min = 0
-108     frmCargando.cargar.Max = NumMaps
+108     frmCargando.cargar.max = NumMaps
 110     frmCargando.cargar.Value = 0
 112     frmCargando.ToMapLbl.Visible = True
     
@@ -2044,7 +2044,7 @@ Sub LoadMapData()
     NumMaps = NumMaps - 1
     
     frmCargando.cargar.min = 0
-    frmCargando.cargar.Max = NumMaps
+    frmCargando.cargar.max = NumMaps
     frmCargando.cargar.Value = 0
     frmCargando.ToMapLbl.Visible = True
 
@@ -2559,9 +2559,9 @@ Sub CargarCiudades()
     End With
     
     With Libertad
-        .Map = val(Lector.GetValue("Prision", "Mapa"))
-        .X = val(Lector.GetValue("Prision", "X"))
-        .Y = val(Lector.GetValue("Prision", "Y"))
+        .Map = val(Lector.GetValue("Libertad", "Mapa"))
+        .X = val(Lector.GetValue("Libertad", "X"))
+        .Y = val(Lector.GetValue("Libertad", "Y"))
     End With
     
     Set Lector = Nothing
