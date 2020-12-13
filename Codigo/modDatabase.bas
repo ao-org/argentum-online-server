@@ -90,7 +90,7 @@ ErrorHandler:
 
 End Sub
 
-Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
+Public Sub SaveNewUserDatabase(ByVal Userindex As Integer)
 
     On Error GoTo ErrorHandler
     
@@ -98,7 +98,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
     'Me permite concatenar strings MUCHO MAS rapido
     Set QueryBuilder = New cStringBuilder
     
-    With UserList(UserIndex)
+    With UserList(Userindex)
     
         'Basic user data
         QueryBuilder.Append "INSERT INTO user SET "
@@ -209,7 +209,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
         'User inventory
         QueryBuilder.Append "INSERT INTO inventory_item (user_id, number, item_id, Amount, is_equipped) VALUES "
 
-        For LoopC = 1 To UserList(UserIndex).CurrentInventorySlots
+        For LoopC = 1 To UserList(Userindex).CurrentInventorySlots
             QueryBuilder.Append "("
             QueryBuilder.Append .Id & ", "
             QueryBuilder.Append LoopC & ", "
@@ -217,7 +217,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
             QueryBuilder.Append .Invent.Object(LoopC).Amount & ", "
             QueryBuilder.Append .Invent.Object(LoopC).Equipped & ")"
 
-            If LoopC < UserList(UserIndex).CurrentInventorySlots Then
+            If LoopC < UserList(Userindex).CurrentInventorySlots Then
                 QueryBuilder.Append ", "
             Else
                 QueryBuilder.Append "; "
@@ -311,11 +311,11 @@ ErrorHandler:
     
     Set QueryBuilder = Nothing
     
-    Call LogDatabaseError("Error en SaveNewUserDatabase. UserName: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error en SaveNewUserDatabase. UserName: " & UserList(Userindex).name & ". " & Err.Number & " - " & Err.description)
 
 End Sub
 
-Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = False)
+Public Sub SaveUserDatabase(ByVal Userindex As Integer, Optional ByVal Logout As Boolean = False)
 
     On Error GoTo ErrorHandler
     
@@ -324,7 +324,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
     Set QueryBuilder = New cStringBuilder
 
     'Basic user data
-    With UserList(UserIndex)
+    With UserList(Userindex)
         QueryBuilder.Append "UPDATE user SET "
         QueryBuilder.Append "name = '" & .name & "', "
         QueryBuilder.Append "level = " & .Stats.ELV & ", "
@@ -467,7 +467,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
         'User inventory
         QueryBuilder.Append "INSERT INTO inventory_item (user_id, number, item_id, Amount, is_equipped) VALUES "
 
-        For LoopC = 1 To UserList(UserIndex).CurrentInventorySlots
+        For LoopC = 1 To UserList(Userindex).CurrentInventorySlots
         
             QueryBuilder.Append "("
             QueryBuilder.Append .Id & ", "
@@ -476,7 +476,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
             QueryBuilder.Append .Invent.Object(LoopC).Amount & ", "
             QueryBuilder.Append .Invent.Object(LoopC).Equipped & ")"
 
-            If LoopC < UserList(UserIndex).CurrentInventorySlots Then
+            If LoopC < UserList(Userindex).CurrentInventorySlots Then
                 QueryBuilder.Append ", "
             End If
 
@@ -692,74 +692,74 @@ ErrorHandler:
 
     Set QueryBuilder = Nothing
     
-    Call LogDatabaseError("Error en SaveUserDatabase. UserName: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error en SaveUserDatabase. UserName: " & UserList(Userindex).name & ". " & Err.Number & " - " & Err.description)
 
 End Sub
 
-Sub LoadUserDatabase(ByVal UserIndex As Integer)
+Sub LoadUserDatabase(ByVal Userindex As Integer)
 
     On Error GoTo ErrorHandler
 
     'Basic user data
-    With UserList(UserIndex)
+    With UserList(Userindex)
 
-        Call MakeQuery("SELECT *, DATE_FORMAT(fecha_ingreso, '%Y-%m-%d') as 'fecha_ingreso_format' FROM user WHERE name ='" & .name & "';")
+100     Call MakeQuery("SELECT *, DATE_FORMAT(fecha_ingreso, '%Y-%m-%d') as 'fecha_ingreso_format' FROM user WHERE name ='" & .name & "';")
 
-        If QueryData Is Nothing Then Exit Sub
+102     If QueryData Is Nothing Then Exit Sub
 
         'Start setting data
-        .Id = QueryData!Id
-        .name = QueryData!name
-        .Stats.ELV = QueryData!level
-        .Stats.Exp = QueryData!Exp
-        .Stats.ELU = QueryData!ELU
-        .genero = QueryData!genre_id
-        .raza = QueryData!race_id
-        .clase = QueryData!class_id
-        .Hogar = QueryData!home_id
-        .Desc = QueryData!description
-        .Stats.GLD = QueryData!gold
-        .Stats.Banco = QueryData!bank_gold
-        .Stats.SkillPts = QueryData!free_skillpoints
-        '.Counters.AsignedSkills = QueryData!assigned_skillpoints
-        .Pos.Map = QueryData!pos_map
-        .Pos.X = QueryData!pos_x
-        .Pos.Y = QueryData!pos_y
-        .flags.lastMap = QueryData!last_map
-        .MENSAJEINFORMACION = QueryData!message_info
-        .OrigChar.Body = QueryData!body_id
-        .OrigChar.Head = QueryData!head_id
-        .OrigChar.WeaponAnim = QueryData!weapon_id
-        .OrigChar.CascoAnim = QueryData!helmet_id
-        .OrigChar.ShieldAnim = QueryData!shield_id
-        .OrigChar.Heading = QueryData!Heading
-        .Invent.NroItems = QueryData!items_Amount
-        .Invent.ArmourEqpSlot = SanitizeNullValue(QueryData!slot_armour, 0)
-        .Invent.WeaponEqpSlot = SanitizeNullValue(QueryData!slot_weapon, 0)
-        .Invent.CascoEqpSlot = SanitizeNullValue(QueryData!slot_helmet, 0)
-        .Invent.EscudoEqpSlot = SanitizeNullValue(QueryData!slot_shield, 0)
-        .Invent.MunicionEqpSlot = SanitizeNullValue(QueryData!slot_ammo, 0)
-        .Invent.BarcoSlot = SanitizeNullValue(QueryData!slot_ship, 0)
-        .Invent.MonturaSlot = SanitizeNullValue(QueryData!slot_mount, 0)
-        .Invent.AnilloEqpSlot = SanitizeNullValue(QueryData!slot_ring, 0)
-        .Invent.NudilloSlot = SanitizeNullValue(QueryData!slot_knuckles, 0)
-        .Invent.HerramientaEqpSlot = SanitizeNullValue(QueryData!slot_tool, 0)
-        .Invent.MagicoSlot = SanitizeNullValue(QueryData!slot_magic, 0)
-        .Stats.MinHp = QueryData!min_hp
-        .Stats.MaxHp = QueryData!max_hp
-        .Stats.MinMAN = QueryData!min_man
-        .Stats.MaxMAN = QueryData!max_man
-        .Stats.MinSta = QueryData!min_sta
-        .Stats.MaxSta = QueryData!max_sta
-        .Stats.MinHam = QueryData!min_ham
-        .Stats.MaxHam = QueryData!max_ham
-        .Stats.MinAGU = QueryData!min_sed
-        .Stats.MaxAGU = QueryData!max_sed
-        .Stats.MinHIT = QueryData!min_hit
-        .Stats.MaxHit = QueryData!max_hit
-        .Stats.NPCsMuertos = QueryData!killed_npcs
-        .Stats.UsuariosMatados = QueryData!killed_users
-        .Stats.InventLevel = QueryData!invent_level
+104     .Id = QueryData!Id
+106     .name = QueryData!name
+108     .Stats.ELV = QueryData!level
+110     .Stats.Exp = QueryData!Exp
+112     .Stats.ELU = QueryData!ELU
+114     .genero = QueryData!genre_id
+116     .raza = QueryData!race_id
+118     .clase = QueryData!class_id
+120     .Hogar = QueryData!home_id
+122     .Desc = QueryData!description
+124     .Stats.GLD = QueryData!gold
+126     .Stats.Banco = QueryData!bank_gold
+128     .Stats.SkillPts = QueryData!free_skillpoints
+130     '.Counters.AsignedSkills = QueryData!assigned_skillpoints
+132     .Pos.Map = QueryData!pos_map
+134     .Pos.X = QueryData!pos_x
+136     .Pos.Y = QueryData!pos_y
+138     .flags.lastMap = QueryData!last_map
+140     .MENSAJEINFORMACION = QueryData!message_info
+142     .OrigChar.Body = QueryData!body_id
+144     .OrigChar.Head = QueryData!head_id
+146     .OrigChar.WeaponAnim = QueryData!weapon_id
+148     .OrigChar.CascoAnim = QueryData!helmet_id
+150     .OrigChar.ShieldAnim = QueryData!shield_id
+152     .OrigChar.Heading = QueryData!Heading
+154     .Invent.NroItems = QueryData!items_Amount
+156     .Invent.ArmourEqpSlot = SanitizeNullValue(QueryData!slot_armour, 0)
+158     .Invent.WeaponEqpSlot = SanitizeNullValue(QueryData!slot_weapon, 0)
+160     .Invent.CascoEqpSlot = SanitizeNullValue(QueryData!slot_helmet, 0)
+162     .Invent.EscudoEqpSlot = SanitizeNullValue(QueryData!slot_shield, 0)
+164     .Invent.MunicionEqpSlot = SanitizeNullValue(QueryData!slot_ammo, 0)
+166     .Invent.BarcoSlot = SanitizeNullValue(QueryData!slot_ship, 0)
+168     .Invent.MonturaSlot = SanitizeNullValue(QueryData!slot_mount, 0)
+170     .Invent.AnilloEqpSlot = SanitizeNullValue(QueryData!slot_ring, 0)
+172     .Invent.NudilloSlot = SanitizeNullValue(QueryData!slot_knuckles, 0)
+174     .Invent.HerramientaEqpSlot = SanitizeNullValue(QueryData!slot_tool, 0)
+176     .Invent.MagicoSlot = SanitizeNullValue(QueryData!slot_magic, 0)
+178     .Stats.MinHp = QueryData!min_hp
+180     .Stats.MaxHp = QueryData!max_hp
+182     .Stats.MinMAN = QueryData!min_man
+184     .Stats.MaxMAN = QueryData!max_man
+186     .Stats.MinSta = QueryData!min_sta
+188     .Stats.MaxSta = QueryData!max_sta
+190     .Stats.MinHam = QueryData!min_ham
+192     .Stats.MaxHam = QueryData!max_ham
+194     .Stats.MinAGU = QueryData!min_sed
+196     .Stats.MaxAGU = QueryData!max_sed
+198     .Stats.MinHIT = QueryData!min_hit
+200     .Stats.MaxHit = QueryData!max_hit
+202     .Stats.NPCsMuertos = QueryData!killed_npcs
+204     .Stats.UsuariosMatados = QueryData!killed_users
+206     .Stats.InventLevel = QueryData!invent_level
         '.Reputacion.AsesinoRep = QueryData!rep_asesino
         '.Reputacion.BandidoRep = QueryData!rep_bandido
         '.Reputacion.BurguesRep = QueryData!rep_burgues
@@ -767,156 +767,156 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
         '.Reputacion.NobleRep = QueryData!rep_noble
         '.Reputacion.PlebeRep = QueryData!rep_plebe
         '.Reputacion.Promedio = QueryData!rep_average
-        .flags.Desnudo = QueryData!is_naked
-        .flags.Envenenado = QueryData!is_poisoned
-        .flags.Escondido = QueryData!is_hidden
-        .flags.Hambre = QueryData!is_hungry
-        .flags.Sed = QueryData!is_thirsty
-        .flags.Ban = QueryData!is_banned
-        .flags.Muerto = QueryData!is_dead
-        .flags.Navegando = QueryData!is_sailing
-        .flags.Paralizado = QueryData!is_paralyzed
-        .flags.VecesQueMoriste = QueryData!deaths
-        .flags.BattlePuntos = QueryData!battle_points
-        .flags.Montado = QueryData!is_mounted
-        .flags.Pareja = QueryData!spouse
-        .flags.Casado = IIf(Len(.flags.Pareja) > 0, 1, 0)
-        .flags.Silenciado = QueryData!is_silenced
-        .flags.MinutosRestantes = QueryData!silence_minutes_left
-        .flags.SegundosPasados = QueryData!silence_elapsed_seconds
-        .flags.MascotasGuardadas = QueryData!pets_saved
-        .flags.ScrollExp = 1 'TODO: sacar
-        .flags.ScrollOro = 1 'TODO: sacar
+208     .flags.Desnudo = QueryData!is_naked
+210     .flags.Envenenado = QueryData!is_poisoned
+212     .flags.Escondido = QueryData!is_hidden
+214     .flags.Hambre = QueryData!is_hungry
+216     .flags.Sed = QueryData!is_thirsty
+218     .flags.Ban = QueryData!is_banned
+220     .flags.Muerto = QueryData!is_dead
+222     .flags.Navegando = QueryData!is_sailing
+224     .flags.Paralizado = QueryData!is_paralyzed
+226     .flags.VecesQueMoriste = QueryData!deaths
+228     .flags.BattlePuntos = QueryData!battle_points
+230     .flags.Montado = QueryData!is_mounted
+232     .flags.Pareja = QueryData!spouse
+234     .flags.Casado = IIf(Len(.flags.Pareja) > 0, 1, 0)
+238     .flags.Silenciado = QueryData!is_silenced
+240     .flags.MinutosRestantes = QueryData!silence_minutes_left
+242     .flags.SegundosPasados = QueryData!silence_elapsed_seconds
+244     .flags.MascotasGuardadas = QueryData!pets_saved
+246     .flags.ScrollExp = 1 'TODO: sacar
+248     .flags.ScrollOro = 1 'TODO: sacar
         
-        .Counters.Pena = QueryData!counter_pena
+250     .Counters.Pena = QueryData!counter_pena
         
-        .ChatGlobal = QueryData!chat_global
-        .ChatCombate = QueryData!chat_combate
+252     .ChatGlobal = QueryData!chat_global
+254     .ChatCombate = QueryData!chat_combate
 
-        If QueryData!pertenece_consejo_real Then
-            .flags.Privilegios = .flags.Privilegios Or PlayerType.RoyalCouncil
+256     If QueryData!pertenece_consejo_real Then
+258         .flags.Privilegios = .flags.Privilegios Or PlayerType.RoyalCouncil
 
         End If
 
-        If QueryData!pertenece_consejo_caos Then
-            .flags.Privilegios = .flags.Privilegios Or PlayerType.ChaosCouncil
+260     If QueryData!pertenece_consejo_caos Then
+262         .flags.Privilegios = .flags.Privilegios Or PlayerType.ChaosCouncil
 
         End If
 
-        .Faccion.ArmadaReal = QueryData!pertenece_real
-        .Faccion.FuerzasCaos = QueryData!pertenece_caos
-        .Faccion.CiudadanosMatados = QueryData!ciudadanos_matados
-        .Faccion.CriminalesMatados = QueryData!criminales_matados
-        .Faccion.RecibioArmaduraReal = QueryData!recibio_armadura_real
-        .Faccion.RecibioArmaduraCaos = QueryData!recibio_armadura_caos
-        .Faccion.RecibioExpInicialReal = QueryData!recibio_exp_real
-        .Faccion.RecibioExpInicialCaos = QueryData!recibio_exp_caos
-        .Faccion.RecompensasReal = QueryData!recompensas_real
-        .Faccion.RecompensasCaos = QueryData!recompensas_caos
-        .Faccion.Reenlistadas = QueryData!Reenlistadas
-        .Faccion.FechaIngreso = SanitizeNullValue(QueryData!fecha_ingreso_format, vbNullString)
-        .Faccion.NivelIngreso = SanitizeNullValue(QueryData!nivel_ingreso, 0)
-        .Faccion.MatadosIngreso = SanitizeNullValue(QueryData!matados_ingreso, 0)
-        .Faccion.NextRecompensa = SanitizeNullValue(QueryData!siguiente_recompensa, 0)
-        .Faccion.Status = QueryData!Status
+264     .Faccion.ArmadaReal = QueryData!pertenece_real
+266     .Faccion.FuerzasCaos = QueryData!pertenece_caos
+268     .Faccion.CiudadanosMatados = QueryData!ciudadanos_matados
+270     .Faccion.CriminalesMatados = QueryData!criminales_matados
+272     .Faccion.RecibioArmaduraReal = QueryData!recibio_armadura_real
+274     .Faccion.RecibioArmaduraCaos = QueryData!recibio_armadura_caos
+276     .Faccion.RecibioExpInicialReal = QueryData!recibio_exp_real
+278     .Faccion.RecibioExpInicialCaos = QueryData!recibio_exp_caos
+280     .Faccion.RecompensasReal = QueryData!recompensas_real
+282     .Faccion.RecompensasCaos = QueryData!recompensas_caos
+284     .Faccion.Reenlistadas = QueryData!Reenlistadas
+286     .Faccion.FechaIngreso = SanitizeNullValue(QueryData!fecha_ingreso_format, vbNullString)
+288     .Faccion.NivelIngreso = SanitizeNullValue(QueryData!nivel_ingreso, 0)
+290     .Faccion.MatadosIngreso = SanitizeNullValue(QueryData!matados_ingreso, 0)
+292     .Faccion.NextRecompensa = SanitizeNullValue(QueryData!siguiente_recompensa, 0)
+294     .Faccion.Status = QueryData!Status
 
-        .GuildIndex = SanitizeNullValue(QueryData!Guild_Index, 0)
+296     .GuildIndex = SanitizeNullValue(QueryData!Guild_Index, 0)
 
         'User attributes
-        Call MakeQuery("SELECT * FROM attribute WHERE user_id = " & .Id & ";")
+298     Call MakeQuery("SELECT * FROM attribute WHERE user_id = " & .Id & ";")
     
-        If Not QueryData Is Nothing Then
-            QueryData.MoveFirst
+300     If Not QueryData Is Nothing Then
+302         QueryData.MoveFirst
 
-            While Not QueryData.EOF
+304         While Not QueryData.EOF
 
-                .Stats.UserAtributos(QueryData!Number) = QueryData!Value
-                .Stats.UserAtributosBackUP(QueryData!Number) = .Stats.UserAtributos(QueryData!Number)
+306             .Stats.UserAtributos(QueryData!Number) = QueryData!Value
+308             .Stats.UserAtributosBackUP(QueryData!Number) = .Stats.UserAtributos(QueryData!Number)
 
-                QueryData.MoveNext
+310             QueryData.MoveNext
             Wend
 
         End If
 
         'User spells
-        Call MakeQuery("SELECT * FROM spell WHERE user_id = " & .Id & ";")
+312     Call MakeQuery("SELECT * FROM spell WHERE user_id = " & .Id & ";")
 
-        If Not QueryData Is Nothing Then
-            QueryData.MoveFirst
+314     If Not QueryData Is Nothing Then
+316         QueryData.MoveFirst
 
-            While Not QueryData.EOF
+318         While Not QueryData.EOF
 
-                .Stats.UserHechizos(QueryData!Number) = QueryData!spell_id
+320             .Stats.UserHechizos(QueryData!Number) = QueryData!spell_id
 
-                QueryData.MoveNext
+322             QueryData.MoveNext
             Wend
 
         End If
 
         'User pets
-        Call MakeQuery("SELECT * FROM pet WHERE user_id = " & .Id & ";")
+324     Call MakeQuery("SELECT * FROM pet WHERE user_id = " & .Id & ";")
 
-        If Not QueryData Is Nothing Then
-            QueryData.MoveFirst
+326     If Not QueryData Is Nothing Then
+328         QueryData.MoveFirst
 
-            While Not QueryData.EOF
+330         While Not QueryData.EOF
 
-                .MascotasType(QueryData!Number) = QueryData!pet_id
+332             .MascotasType(QueryData!Number) = QueryData!pet_id
                 
-                If val(QueryData!pet_id) <> 0 Then
-                    .NroMascotas = .NroMascotas + 1
+334             If val(QueryData!pet_id) <> 0 Then
+336                 .NroMascotas = .NroMascotas + 1
                 End If
 
-                QueryData.MoveNext
+338             QueryData.MoveNext
             Wend
         End If
 
         'User inventory
-        Call MakeQuery("SELECT * FROM inventory_item WHERE user_id = " & .Id & ";")
+340     Call MakeQuery("SELECT * FROM inventory_item WHERE user_id = " & .Id & ";")
 
-        If Not QueryData Is Nothing Then
-            QueryData.MoveFirst
+342     If Not QueryData Is Nothing Then
+344         QueryData.MoveFirst
 
-            While Not QueryData.EOF
+346         While Not QueryData.EOF
 
-                .Invent.Object(QueryData!Number).ObjIndex = QueryData!item_id
-                .Invent.Object(QueryData!Number).Amount = QueryData!Amount
-                .Invent.Object(QueryData!Number).Equipped = QueryData!is_equipped
+348             .Invent.Object(QueryData!Number).ObjIndex = QueryData!item_id
+350             .Invent.Object(QueryData!Number).Amount = QueryData!Amount
+352             .Invent.Object(QueryData!Number).Equipped = QueryData!is_equipped
 
-                QueryData.MoveNext
+354             QueryData.MoveNext
             Wend
 
         End If
 
         'User bank inventory
-        Call MakeQuery("SELECT * FROM bank_item WHERE user_id = " & .Id & ";")
+356     Call MakeQuery("SELECT * FROM bank_item WHERE user_id = " & .Id & ";")
 
-        If Not QueryData Is Nothing Then
-            QueryData.MoveFirst
+358     If Not QueryData Is Nothing Then
+360         QueryData.MoveFirst
 
-            While Not QueryData.EOF
+362         While Not QueryData.EOF
 
-                .BancoInvent.Object(QueryData!Number).ObjIndex = QueryData!item_id
-                .BancoInvent.Object(QueryData!Number).Amount = QueryData!Amount
+364             .BancoInvent.Object(QueryData!Number).ObjIndex = QueryData!item_id
+366             .BancoInvent.Object(QueryData!Number).Amount = QueryData!Amount
 
-                QueryData.MoveNext
+368             QueryData.MoveNext
             Wend
 
         End If
 
         'User skills
-        Call MakeQuery("SELECT * FROM skillpoint WHERE user_id = " & .Id & ";")
+370     Call MakeQuery("SELECT * FROM skillpoint WHERE user_id = " & .Id & ";")
 
-        If Not QueryData Is Nothing Then
-            QueryData.MoveFirst
+372     If Not QueryData Is Nothing Then
+374         QueryData.MoveFirst
 
-            While Not QueryData.EOF
+376         While Not QueryData.EOF
 
-                .Stats.UserSkills(QueryData!Number) = QueryData!Value
+378             .Stats.UserSkills(QueryData!Number) = QueryData!Value
                 '.Stats.ExpSkills(QueryData!Number) = QueryData!Exp
                 '.Stats.EluSkills(QueryData!Number) = QueryData!ELU
 
-                QueryData.MoveNext
+380             QueryData.MoveNext
             Wend
 
         End If
@@ -929,8 +929,8 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 
         '    While Not QueryData.EOF
 
-        '        .Amigos(QueryData!Number).Nombre = QueryData!friend
-        '        .Amigos(QueryData!Number).Ignorado = QueryData!Ignored
+        '200     .Amigos(QueryData!Number).Nombre = QueryData!friend
+        '200     .Amigos(QueryData!Number).Ignorado = QueryData!Ignored
 
         '        QueryData.MoveNext
         '    Wend
@@ -939,68 +939,68 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
         Dim LoopC As Byte
         
         'User quests
-        Call MakeQuery("SELECT * FROM quest WHERE user_id = " & .Id & ";")
+400     Call MakeQuery("SELECT * FROM quest WHERE user_id = " & .Id & ";")
 
-        If Not QueryData Is Nothing Then
-            QueryData.MoveFirst
+402     If Not QueryData Is Nothing Then
+404         QueryData.MoveFirst
 
-            While Not QueryData.EOF
+406         While Not QueryData.EOF
 
-                .QuestStats.Quests(QueryData!Number).QuestIndex = QueryData!quest_id
+408             .QuestStats.Quests(QueryData!Number).QuestIndex = QueryData!quest_id
                 
-                If .QuestStats.Quests(QueryData!Number).QuestIndex > 0 Then
-                    If QuestList(.QuestStats.Quests(QueryData!Number).QuestIndex).RequiredNPCs Then
+410             If .QuestStats.Quests(QueryData!Number).QuestIndex > 0 Then
+412                 If QuestList(.QuestStats.Quests(QueryData!Number).QuestIndex).RequiredNPCs Then
 
                         Dim NPCs() As String
 
-                        NPCs = Split(QueryData!NPCs, "-")
-                        ReDim .QuestStats.Quests(QueryData!Number).NPCsKilled(1 To QuestList(.QuestStats.Quests(QueryData!Number).QuestIndex).RequiredNPCs)
+414                     NPCs = Split(QueryData!NPCs, "-")
+416                     ReDim .QuestStats.Quests(QueryData!Number).NPCsKilled(1 To QuestList(.QuestStats.Quests(QueryData!Number).QuestIndex).RequiredNPCs)
 
-                        For LoopC = 1 To QuestList(.QuestStats.Quests(QueryData!Number).QuestIndex).RequiredNPCs
-                            .QuestStats.Quests(QueryData!Number).NPCsKilled(LoopC) = val(NPCs(LoopC - 1))
+418                     For LoopC = 1 To QuestList(.QuestStats.Quests(QueryData!Number).QuestIndex).RequiredNPCs
+420                         .QuestStats.Quests(QueryData!Number).NPCsKilled(LoopC) = val(NPCs(LoopC - 1))
                         Next LoopC
 
                     End If
                     
                     
-                    If QuestList(.QuestStats.Quests(QueryData!Number).QuestIndex).RequiredTargetNPCs Then
+422                 If QuestList(.QuestStats.Quests(QueryData!Number).QuestIndex).RequiredTargetNPCs Then
 
                         Dim NPCsTarget() As String
 
-                        NPCsTarget = Split(QueryData!NPCsTarget, "-")
-                        ReDim .QuestStats.Quests(QueryData!Number).NPCsTarget(1 To QuestList(.QuestStats.Quests(QueryData!Number).QuestIndex).RequiredTargetNPCs)
+424                     NPCsTarget = Split(QueryData!NPCsTarget, "-")
+426                     ReDim .QuestStats.Quests(QueryData!Number).NPCsTarget(1 To QuestList(.QuestStats.Quests(QueryData!Number).QuestIndex).RequiredTargetNPCs)
 
-                        For LoopC = 1 To QuestList(.QuestStats.Quests(QueryData!Number).QuestIndex).RequiredTargetNPCs
-                            .QuestStats.Quests(QueryData!Number).NPCsTarget(LoopC) = val(NPCsTarget(LoopC - 1))
+428                     For LoopC = 1 To QuestList(.QuestStats.Quests(QueryData!Number).QuestIndex).RequiredTargetNPCs
+430                         .QuestStats.Quests(QueryData!Number).NPCsTarget(LoopC) = val(NPCsTarget(LoopC - 1))
                         Next LoopC
 
                     End If
 
                 End If
 
-                QueryData.MoveNext
+432             QueryData.MoveNext
             Wend
 
         End If
         
         'User quests done
-        Call MakeQuery("SELECT * FROM quest_done WHERE user_id = " & .Id & ";")
+434     Call MakeQuery("SELECT * FROM quest_done WHERE user_id = " & .Id & ";")
 
-        If Not QueryData Is Nothing Then
-            .QuestStats.NumQuestsDone = QueryData.RecordCount
+436     If Not QueryData Is Nothing Then
+438         .QuestStats.NumQuestsDone = QueryData.RecordCount
                 
-            ReDim .QuestStats.QuestsDone(1 To .QuestStats.NumQuestsDone)
+440         ReDim .QuestStats.QuestsDone(1 To .QuestStats.NumQuestsDone)
         
-            QueryData.MoveFirst
+442         QueryData.MoveFirst
             
-            LoopC = 1
+444         LoopC = 1
 
-            While Not QueryData.EOF
+446         While Not QueryData.EOF
             
-                .QuestStats.QuestsDone(LoopC) = QueryData!quest_id
-                LoopC = LoopC + 1
+448             .QuestStats.QuestsDone(LoopC) = QueryData!quest_id
+450             LoopC = LoopC + 1
 
-                QueryData.MoveNext
+452             QueryData.MoveNext
             Wend
 
         End If
@@ -1009,18 +1009,18 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
         'TODO:
         
         ' Llaves
-        Call MakeQuery("SELECT key_obj FROM house_key WHERE account_id = " & .AccountID & ";")
+500     Call MakeQuery("SELECT key_obj FROM house_key WHERE account_id = " & .AccountID & ";")
 
-        If Not QueryData Is Nothing Then
-            QueryData.MoveFirst
+502     If Not QueryData Is Nothing Then
+504         QueryData.MoveFirst
 
-            LoopC = 1
+506         LoopC = 1
 
-            While Not QueryData.EOF
-                .Keys(LoopC) = QueryData!key_obj
-                LoopC = LoopC + 1
+508         While Not QueryData.EOF
+510             .Keys(LoopC) = QueryData!key_obj
+512             LoopC = LoopC + 1
 
-                QueryData.MoveNext
+514             QueryData.MoveNext
             Wend
 
         End If
@@ -1030,7 +1030,8 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
     Exit Sub
 
 ErrorHandler:
-    Call LogDatabaseError("Unable to LOAD User from Mysql Database: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error en LoadUserDatabase: " & UserList(Userindex).name & ". " & Err.Number & " - " & Err.description & ". Línea: " & Erl)
+    Resume Next
 
 End Sub
 
@@ -2049,7 +2050,7 @@ ErrorHandler:
 
 End Function
 
-Public Sub SendUserPunishmentsDatabase(ByVal UserIndex As Integer, ByVal UserName As String)
+Public Sub SendUserPunishmentsDatabase(ByVal Userindex As Integer, ByVal UserName As String)
 
     '***************************************************
     'Author: Juan Andres Dalmasso (CHOTS)
@@ -2066,7 +2067,7 @@ Public Sub SendUserPunishmentsDatabase(ByVal UserIndex As Integer, ByVal UserNam
 
         While Not QueryData.EOF
 
-            Call WriteConsoleMsg(UserIndex, QueryData!Number & " - " & QueryData!Reason, FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(Userindex, QueryData!Number & " - " & QueryData!Reason, FontTypeNames.FONTTYPE_INFO)
 
             QueryData.MoveNext
         Wend
@@ -2315,7 +2316,7 @@ ErrorHandler:
 
 End Sub
 
-Public Sub SendCharacterInfoDatabase(ByVal UserIndex As Integer, ByVal UserName As String)
+Public Sub SendCharacterInfoDatabase(ByVal Userindex As Integer, ByVal UserName As String)
 
     '***************************************************
     'Author: Juan Andres Dalmasso (CHOTS)
@@ -2332,7 +2333,7 @@ Public Sub SendCharacterInfoDatabase(ByVal UserIndex As Integer, ByVal UserName 
     Call MakeQuery("SELECT race_id, class_id, genre_id, level, gold, bank_gold, guild_requests_history, guild_index, guild_member_history, pertenece_real, pertenece_caos, ciudadanos_matados, criminales_matados FROM user WHERE name = '" & UserName & "';")
 
     If QueryData Is Nothing Then
-        Call WriteConsoleMsg(UserIndex, "Pj Inexistente", FontTypeNames.FONTTYPE_INFO)
+        Call WriteConsoleMsg(Userindex, "Pj Inexistente", FontTypeNames.FONTTYPE_INFO)
         Exit Sub
 
     End If
@@ -2355,7 +2356,7 @@ Public Sub SendCharacterInfoDatabase(ByVal UserIndex As Integer, ByVal UserName 
 
     End If
 
-    Call Protocol.WriteCharacterInfo(UserIndex, UserName, QueryData!race_id, QueryData!class_id, QueryData!genre_id, QueryData!level, QueryData!gold, QueryData!bank_gold, SanitizeNullValue(QueryData!guild_requests_history, vbNullString), gName, Miembro, QueryData!pertenece_real, QueryData!pertenece_caos, QueryData!ciudadanos_matados, QueryData!criminales_matados)
+    Call Protocol.WriteCharacterInfo(Userindex, UserName, QueryData!race_id, QueryData!class_id, QueryData!genre_id, QueryData!level, QueryData!gold, QueryData!bank_gold, SanitizeNullValue(QueryData!guild_requests_history, vbNullString), gName, Miembro, QueryData!pertenece_real, QueryData!pertenece_caos, QueryData!ciudadanos_matados, QueryData!criminales_matados)
 
     Exit Sub
 ErrorHandler:
@@ -2363,39 +2364,39 @@ ErrorHandler:
 
 End Sub
 
-Public Function EnterAccountDatabase(ByVal UserIndex As Integer, CuentaEmail As String, Password As String, MacAddress As String, ByVal HDserial As Long, ip As String) As Boolean
+Public Function EnterAccountDatabase(ByVal Userindex As Integer, CuentaEmail As String, Password As String, MacAddress As String, ByVal HDserial As Long, ip As String) As Boolean
 
     On Error GoTo ErrorHandler
     
     Call MakeQuery("SELECT id, password, salt, validated, is_banned, ban_reason, banned_by FROM account WHERE email = '" & LCase$(CuentaEmail) & "';")
     
     If Database_Connection.State = adStateClosed Then
-        Call WriteShowMessageBox(UserIndex, "Ha ocurrido un error interno en el servidor. ¡Estamos tratando de resolverlo!")
+        Call WriteShowMessageBox(Userindex, "Ha ocurrido un error interno en el servidor. ¡Estamos tratando de resolverlo!")
         Exit Function
     End If
     
     If QueryData Is Nothing Then
-        Call WriteShowMessageBox(UserIndex, "La cuenta no existe.")
+        Call WriteShowMessageBox(Userindex, "La cuenta no existe.")
         Exit Function
     End If
     
     If val(QueryData!is_banned) > 0 Then
-        Call WriteShowMessageBox(UserIndex, "La cuenta se encuentra baneada debido a: " & QueryData!ban_reason & ". Esta decisión fue tomada por: " & QueryData!banned_by & ".")
+        Call WriteShowMessageBox(Userindex, "La cuenta se encuentra baneada debido a: " & QueryData!ban_reason & ". Esta decisión fue tomada por: " & QueryData!banned_by & ".")
         Exit Function
     End If
     
     If Not PasswordValida(Password, QueryData!Password, QueryData!Salt) Then
-        Call WriteShowMessageBox(UserIndex, "Contraseña inválida.")
+        Call WriteShowMessageBox(Userindex, "Contraseña inválida.")
         Exit Function
     End If
     
     If val(QueryData!validated) = 0 Then
-        Call WriteShowMessageBox(UserIndex, "¡La cuenta no ha sido validada aún!")
+        Call WriteShowMessageBox(Userindex, "¡La cuenta no ha sido validada aún!")
         Exit Function
     End If
     
-    UserList(UserIndex).AccountID = QueryData!Id
-    UserList(UserIndex).Cuenta = CuentaEmail
+    UserList(Userindex).AccountID = QueryData!Id
+    UserList(Userindex).Cuenta = CuentaEmail
     
     Call MakeQuery("UPDATE account SET mac_address = '" & MacAddress & "', hd_serial = " & HDserial & ", last_ip = '" & ip & "', last_access = NOW() WHERE id = " & QueryData!Id & ";", True)
     
@@ -2408,26 +2409,26 @@ ErrorHandler:
 
 End Function
 
-Public Sub ChangePasswordDatabase(ByVal UserIndex As Integer, OldPassword As String, NewPassword As String)
+Public Sub ChangePasswordDatabase(ByVal Userindex As Integer, OldPassword As String, NewPassword As String)
 
     On Error GoTo ErrorHandler
 
     If LenB(NewPassword) = 0 Then
-        Call WriteConsoleMsg(UserIndex, "Debe especificar una contraseña nueva, inténtelo de nuevo.", FontTypeNames.FONTTYPE_INFO)
+        Call WriteConsoleMsg(Userindex, "Debe especificar una contraseña nueva, inténtelo de nuevo.", FontTypeNames.FONTTYPE_INFO)
         Exit Sub
 
     End If
     
-    Call MakeQuery("SELECT password, salt FROM account WHERE id = " & UserList(UserIndex).AccountID & ";")
+    Call MakeQuery("SELECT password, salt FROM account WHERE id = " & UserList(Userindex).AccountID & ";")
     
     If QueryData Is Nothing Then
-        Call WriteConsoleMsg(UserIndex, "No se ha podido cambiar la contraseña por un error interno. Avise a un administrador.", FontTypeNames.FONTTYPE_INFO)
+        Call WriteConsoleMsg(Userindex, "No se ha podido cambiar la contraseña por un error interno. Avise a un administrador.", FontTypeNames.FONTTYPE_INFO)
         Exit Sub
 
     End If
     
     If Not PasswordValida(OldPassword, QueryData!Password, QueryData!Salt) Then
-        Call WriteConsoleMsg(UserIndex, "La contraseña actual proporcionada no es correcta. La contraseña no ha sido cambiada, inténtelo de nuevo.", FontTypeNames.FONTTYPE_INFO)
+        Call WriteConsoleMsg(Userindex, "La contraseña actual proporcionada no es correcta. La contraseña no ha sido cambiada, inténtelo de nuevo.", FontTypeNames.FONTTYPE_INFO)
         Exit Sub
 
     End If
@@ -2446,14 +2447,14 @@ Public Sub ChangePasswordDatabase(ByVal UserIndex As Integer, OldPassword As Str
     
     Set oSHA256 = Nothing
     
-    Call MakeQuery("UPDATE account SET password = '" & PasswordHash & "', salt = '" & Salt & "' WHERE id = " & UserList(UserIndex).AccountID & ";", True)
+    Call MakeQuery("UPDATE account SET password = '" & PasswordHash & "', salt = '" & Salt & "' WHERE id = " & UserList(Userindex).AccountID & ";", True)
     
-    Call WriteConsoleMsg(UserIndex, "La contraseña de su cuenta fue cambiada con éxito.", FontTypeNames.FONTTYPE_INFO)
+    Call WriteConsoleMsg(Userindex, "La contraseña de su cuenta fue cambiada con éxito.", FontTypeNames.FONTTYPE_INFO)
     
     Exit Sub
 
 ErrorHandler:
-    Call LogDatabaseError("Error in ChangePasswordDatabase. Username: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error in ChangePasswordDatabase. Username: " & UserList(Userindex).name & ". " & Err.Number & " - " & Err.description)
 
 End Sub
 
@@ -2563,13 +2564,13 @@ Public Function SacarLlaveDatabase(ByVal LlaveObj As Integer) As Boolean
     Call MakeQuery("DELETE FROM house_key WHERE key_obj = " & LlaveObj & ";", True)
     
     ' Si pudimos borrar, actualizamos los usuarios logueados
-    Dim UserIndex As Integer
+    Dim Userindex As Integer
     
     For i = 1 To UserCount
-        UserIndex = NameIndex(Users(i))
+        Userindex = NameIndex(Users(i))
         
-        If UserIndex <> 0 Then
-            Call SacarLlaveDeLLavero(UserIndex, LlaveObj)
+        If Userindex <> 0 Then
+            Call SacarLlaveDeLLavero(Userindex, LlaveObj)
         End If
     Next
     
@@ -2582,16 +2583,16 @@ ErrorHandler:
 
 End Function
 
-Public Sub VerLlavesDatabase(ByVal UserIndex As Integer)
+Public Sub VerLlavesDatabase(ByVal Userindex As Integer)
     On Error GoTo ErrorHandler
 
     Call MakeQuery("SELECT (SELECT email FROM account WHERE id = K.account_id) as email, key_obj FROM house_key AS K;")
 
     If QueryData Is Nothing Then
-        Call WriteConsoleMsg(UserIndex, "No hay llaves otorgadas por el momento.", FontTypeNames.FONTTYPE_INFO)
+        Call WriteConsoleMsg(Userindex, "No hay llaves otorgadas por el momento.", FontTypeNames.FONTTYPE_INFO)
 
     ElseIf QueryData.RecordCount = 0 Then
-        Call WriteConsoleMsg(UserIndex, "No hay llaves otorgadas por el momento.", FontTypeNames.FONTTYPE_INFO)
+        Call WriteConsoleMsg(Userindex, "No hay llaves otorgadas por el momento.", FontTypeNames.FONTTYPE_INFO)
     
     Else
         Dim message As String
@@ -2609,13 +2610,13 @@ Public Sub VerLlavesDatabase(ByVal UserIndex As Integer)
         
         message = Left$(message, Len(message) - 2)
         
-        Call WriteConsoleMsg(UserIndex, message, FontTypeNames.FONTTYPE_INFO)
+        Call WriteConsoleMsg(Userindex, message, FontTypeNames.FONTTYPE_INFO)
     End If
 
     Exit Sub
 
 ErrorHandler:
-    Call LogDatabaseError("Error in VerLlavesDatabase. UserName: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error in VerLlavesDatabase. UserName: " & UserList(Userindex).name & ". " & Err.Number & " - " & Err.description)
 
 End Sub
 
