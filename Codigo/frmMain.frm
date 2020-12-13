@@ -711,16 +711,16 @@ End Sub
 Private Sub MedioMinuto_Timer()
     
     ' Guardar usuarios (solo si pasó el tiempo mínimo para guardar)
-    Dim Userindex As Integer, UserGuardados As Integer
+    Dim UserIndex As Integer, UserGuardados As Integer
 
-    For Userindex = 1 To LastUser
+    For UserIndex = 1 To LastUser
     
-        With UserList(Userindex)
+        With UserList(UserIndex)
 
             If .flags.UserLogged Then
                 If GetTickCount - .Counters.LastSave > IntervaloGuardarUsuarios Then
                 
-                    Call SaveUser(Userindex)
+                    Call SaveUser(UserIndex)
                     
                     UserGuardados = UserGuardados + 1
                     
@@ -1935,9 +1935,13 @@ Private Sub tPiqueteC_Timer()
             If MapData(UserList(i).Pos.Map, UserList(i).Pos.X, UserList(i).Pos.Y).trigger = eTrigger.ANTIPIQUETE Then
                 UserList(i).Counters.PiqueteC = UserList(i).Counters.PiqueteC + 1
                 'Call WriteConsoleMsg(i, "Estás obstruyendo la via pública, muévete o serás encarcelado!!!", FontTypeNames.FONTTYPE_INFO)
-                Call WriteLocaleMsg(i, "70", FontTypeNames.FONTTYPE_INFO)
+                
+                'WyroX: Le empiezo a avisar a partir de los 18 segundos, para no spamear
+                If UserList(i).Counters.PiqueteC > 3 Then
+                    Call WriteLocaleMsg(i, "70", FontTypeNames.FONTTYPE_INFO)
+                End If
             
-                If UserList(i).Counters.PiqueteC > 15 Then
+                If UserList(i).Counters.PiqueteC > 10 Then
                     UserList(i).Counters.PiqueteC = 0
                     'Call Encarcelar(i, TIEMPO_CARCEL_PIQUETE)
                     'WyroX: En vez de encarcelarlo, lo sacamos del juego.
