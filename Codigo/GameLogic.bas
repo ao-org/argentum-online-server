@@ -184,6 +184,11 @@ Public Function EsGM(ByVal Userindex As Integer) As Boolean
         
         On Error GoTo EsGM_Err
         
+        If Userindex = 0 Then
+            EsGM = False
+            Exit Function
+        End If
+        
 100     EsGM = (UserList(Userindex).flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero))
 
         

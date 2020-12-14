@@ -505,12 +505,16 @@ Sub EraseObj(ByVal num As Integer, ByVal Map As Integer, ByVal X As Integer, ByV
             '   MapData(Map, x, Y).Particula = 0
             '   MapData(Map, x, Y).TimeParticula = 0
             ' End If
-104         MapData(Map, X, Y).ObjInfo.ObjIndex = 0
-106         MapData(Map, X, Y).ObjInfo.Amount = 0
-    
+
+            
+
             If ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).OBJType <> otTeleport Then
                 Call QuitarItemLimpieza(Map, X, Y)
             End If
+            
+104         MapData(Map, X, Y).ObjInfo.ObjIndex = 0
+106         MapData(Map, X, Y).ObjInfo.Amount = 0
+    
     
 108         Call modSendData.SendToAreaByPos(Map, X, Y, PrepareMessageObjectDelete(X, Y))
 
