@@ -2707,7 +2707,9 @@ Sub LoadIntervalos()
 
 220     IntervaloGuardarUsuarios = val(Lector.GetValue("INTERVALOS", "IntervaloGuardarUsuarios"))
         
-222     LimiteSaveUserPorMinuto = val(Lector.GetValue("INTERVALOS", "LimiteSaveUserPorMinuto"))
+222     LimiteGuardarUsuarios = val(Lector.GetValue("INTERVALOS", "LimiteGuardarUsuarios"))
+
+223     IntervaloTimerGuardarUsuarios = val(Lector.GetValue("INTERVALOS", "IntervaloTimerGuardarUsuarios"))
     
         '&&&&&&&&&&&&&&&&&&&&& FIN TIMERS &&&&&&&&&&&&&&&&&&&&&&&
     
