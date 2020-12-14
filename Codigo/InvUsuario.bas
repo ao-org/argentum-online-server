@@ -544,7 +544,7 @@ Sub MakeObj(ByRef obj As obj, ByVal Map As Integer, ByVal X As Integer, ByVal Y 
             Else
                 ' Lo agrego a la limpieza del mundo o reseteo el timer si el objeto ya existía
 106             If ObjData(obj.ObjIndex).OBJType <> otTeleport Then
-108                 Call AgregarItemLimpiza(Map, X, Y, MapData(Map, X, Y).ObjInfo.ObjIndex <> 0)
+108                 Call AgregarItemLimpieza(Map, X, Y, MapData(Map, X, Y).ObjInfo.ObjIndex <> 0)
                 End If
             
 110             MapData(Map, X, Y).ObjInfo.ObjIndex = obj.ObjIndex

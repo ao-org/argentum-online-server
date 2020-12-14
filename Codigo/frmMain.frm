@@ -27,7 +27,7 @@ Begin VB.Form frmMain
    ScaleWidth      =   6915
    StartUpPosition =   2  'CenterScreen
    WindowState     =   1  'Minimized
-   Begin VB.Timer MedioMinuto 
+   Begin VB.Timer GuardarUsuarios 
       Enabled         =   0   'False
       Interval        =   30000
       Left            =   2640
@@ -708,7 +708,7 @@ errhand:
 
 End Sub
 
-Private Sub MedioMinuto_Timer()
+Private Sub GuardarUsuarios_Timer()
     
     ' Guardar usuarios (solo si pasó el tiempo mínimo para guardar)
     Dim Userindex As Integer, UserGuardados As Integer
@@ -724,7 +724,7 @@ Private Sub MedioMinuto_Timer()
                     
                     UserGuardados = UserGuardados + 1
                     
-                    If UserGuardados >= LimiteSaveUserPorMinuto Then Exit For
+                    If UserGuardados >= LimiteGuardarUsuarios Then Exit For
     
                 End If
     

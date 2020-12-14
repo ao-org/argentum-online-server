@@ -2707,7 +2707,9 @@ Sub LoadIntervalos()
 
 220     IntervaloGuardarUsuarios = val(Lector.GetValue("INTERVALOS", "IntervaloGuardarUsuarios"))
         
-222     LimiteSaveUserPorMinuto = val(Lector.GetValue("INTERVALOS", "LimiteSaveUserPorMinuto"))
+222     LimiteGuardarUsuarios = val(Lector.GetValue("INTERVALOS", "LimiteGuardarUsuarios"))
+
+223     IntervaloTimerGuardarUsuarios = val(Lector.GetValue("INTERVALOS", "IntervaloTimerGuardarUsuarios"))
     
         '&&&&&&&&&&&&&&&&&&&&& FIN TIMERS &&&&&&&&&&&&&&&&&&&&&&&
     
@@ -2894,7 +2896,8 @@ Sub LoadUser(ByVal Userindex As Integer)
         Exit Sub
 
 ErrorHandler:
-212     Call LogError("Error en LoadUser: " & UserList(Userindex).name & " - " & Err.Number & " - " & Err.description)
+212     Call RegistrarError(Err.Number, Err.description & " UserName: " & UserList(Userindex).name, "ES.LoadUser", Erl)
+213     Resume Next
     
 End Sub
 
