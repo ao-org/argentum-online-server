@@ -531,7 +531,9 @@ End Sub
 Sub Main()
 
         On Error Resume Next
-
+        
+        frmMain.auxSocket.connect "localhost", 3100
+        
 100     Call LeerLineaComandos
     
 102     Call CargarRanking

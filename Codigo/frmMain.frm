@@ -28,13 +28,6 @@ Begin VB.Form frmMain
    ScaleWidth      =   6915
    StartUpPosition =   2  'CenterScreen
    WindowState     =   1  'Minimized
-   Begin MSWinsockLib.Winsock Winsock1 
-      Left            =   3240
-      Top             =   3000
-      _ExtentX        =   741
-      _ExtentY        =   741
-      _Version        =   393216
-   End
    Begin VB.Timer TimerGuardarUsuarios 
       Enabled         =   0   'False
       Interval        =   30000
@@ -205,6 +198,13 @@ Begin VB.Form frmMain
       TabIndex        =   7
       Top             =   120
       Width           =   4935
+      Begin MSWinsockLib.Winsock auxSocket 
+         Left            =   3660
+         Top             =   870
+         _ExtentX        =   741
+         _ExtentY        =   741
+         _Version        =   393216
+      End
       Begin VB.Label Label7 
          BackColor       =   &H00E0E0E0&
          Caption         =   "Nublado"
@@ -714,6 +714,41 @@ errhand:
 
     Resume Next
 
+End Sub
+
+Private Sub auxSocket_Connect()
+
+    'auxSocket.SendData "{""header"":{""action"":""LoadUser""},""data"":{""accountId"":1}}"
+    
+End Sub
+
+Private Sub auxSocket_DataArrival(ByVal bytesTotal As Long)
+    
+    Dim strData As String
+    
+    #If False Then
+        Dim action As Variant
+    #End If
+
+    ' Recibimos la info.
+    Call auxSocket.GetData(strData)
+    
+    ' Si no llegó nada, nos vamos alv.
+    If Len(strData) = 0 Then Exit Sub
+    
+    ' Parseamos el JSON que recibimo.
+    Dim response As Object
+    Set response = mod_JSON.parse(strData)
+    
+    Select Case response!header!action
+    
+        Case "LoadUser"
+            'Call MsgBox(response!data)
+            
+    End Select
+    
+    End
+    
 End Sub
 
 Private Sub TimerGuardarUsuarios_Timer()
