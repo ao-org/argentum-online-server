@@ -28,7 +28,7 @@ Attribute VB_Name = "modSendData"
 ' @version 1.0.0
 ' @date 20070107
 
-'Option Explicit
+Option Explicit
 
 Public Enum SendTarget
 
@@ -555,7 +555,9 @@ Private Sub SendToAdminAreaButIndex(ByVal Userindex As Integer, ByVal sdData As 
 116             TempInt = UserList(tempIndex).AreasInfo.AreaReciveY And AreaY
 
 118             If TempInt Then
-120                 If tempIndex <> Userindex And EsGM(tmpIndex) Then
+
+120                 If tempIndex <> Userindex And EsGM(tempIndex) Then
+
 122                     If UserList(tempIndex).ConnIDValida Then
 124                         Call EnviarDatosASlot(tempIndex, sdData)
 
