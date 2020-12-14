@@ -1196,8 +1196,8 @@ Sub LookatTile(ByVal Userindex As Integer, ByVal Map As Integer, ByVal X As Inte
 382                 estatus = "<" & Npclist(TempCharIndex).Stats.MinHp & "/" & Npclist(TempCharIndex).Stats.MaxHp
                     
 384             ElseIf UserList(Userindex).Stats.UserSkills(eSkill.Supervivencia) >= 50 Then
-386                 estatus = "<" & CStr(Round(Npclist(TempCharIndex).Stats.MinHp / Npclist(TempCharIndex).Stats.MaxHp * 100, 0)) & "%"
-
+386                 estatus = "<" & Round(Npclist(TempCharIndex).Stats.MinHp * 100 / Npclist(TempCharIndex).Stats.MaxHp, 0) & "%"
+ 
 388             ElseIf UserList(Userindex).Stats.UserSkills(eSkill.Supervivencia) >= 25 Then
                 
 390                 If Npclist(TempCharIndex).Stats.MinHp < (Npclist(TempCharIndex).Stats.MaxHp * 0.1) Then
