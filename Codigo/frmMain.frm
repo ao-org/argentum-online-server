@@ -733,10 +733,6 @@ Private Sub auxSocket_DataArrival(ByVal bytesTotal As Long)
     
     Dim strData As String
     
-    #If False Then
-        Dim action As Variant
-    #End If
-
     ' Recibimos la info.
     Call auxSocket.GetData(strData)
     
@@ -747,7 +743,7 @@ Private Sub auxSocket_DataArrival(ByVal bytesTotal As Long)
     Dim response As Object
     Set response = mod_JSON.parse(strData)
     
-    Select Case response!header!action
+    Select Case response.Item("header").Item("action")
     
         Case "LoadUser"
             'Call MsgBox(response!data)
