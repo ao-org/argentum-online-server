@@ -16,23 +16,36 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal Invitado As Integer)
         
         On Error GoTo InvitarMiembro_Err
         
-
 100     If UserList(Invitado).flags.SeguroParty = False Then
-        
-102         If Status(UserIndex) = Status(Invitado) Or Status(UserIndex) = 1 And Status(Invitado) = 3 Or Status(UserIndex) = 3 And Status(Invitado) = 1 Or Status(UserIndex) = 0 And Status(Invitado) = 2 Or Status(UserIndex) = 2 And Status(Invitado) = 0 Then
-104             If Abs(CInt(UserList(Invitado).Stats.ELV) - CInt(UserList(UserIndex).Stats.ELV)) < 6 Then
+            
+            If UserList(Userindex).Grupo.CantidadMiembros >= UBound(UserList(Userindex).Grupo.Miembros) Then
+                Call WriteConsoleMsg(Userindex, "No puedes invitar a mas personas. (Límite: " & CStr(UBound(UserList(Userindex).Grupo.Miembros)) & ")", FontTypeNames.FONTTYPE_New_GRUPO)
+                Exit Sub
+            End If
+            
+102         If Status(Userindex) = Status(Invitado) Or _
+                Status(Userindex) = 1 And Status(Invitado) = 3 Or _
+                Status(Userindex) = 3 And Status(Invitado) = 1 Or _
+                Status(Userindex) = 0 And Status(Invitado) = 2 Or _
+                Status(Userindex) = 2 And Status(Invitado) = 0 Then
+
+104             If Abs(CInt(UserList(Invitado).Stats.ELV) - CInt(UserList(Userindex).Stats.ELV)) < 6 Then
+
 106                 If UserList(Invitado).Grupo.EnGrupo = False Then
-108                     Call WriteLocaleMsg(UserIndex, "42", FontTypeNames.FONTTYPE_New_GRUPO)
+
+108                     Call WriteLocaleMsg(Userindex, "42", FontTypeNames.FONTTYPE_New_GRUPO)
                         'Call WriteConsoleMsg(userindex, "Se envió la invitación a " & UserList(Invitado).name & ", ahora solo resta aguardar su respuesta.", FontTypeNames.FONTTYPE_INFOIAO)
-110                     Call WriteConsoleMsg(Invitado, UserList(UserIndex).name & " te invitó a unirse a su grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
-112                     UserList(Invitado).Grupo.PropuestaDe = UserIndex
+110                     Call WriteConsoleMsg(Invitado, UserList(Userindex).name & " te invitó a unirse a su grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
+
+112                     UserList(Invitado).Grupo.PropuestaDe = Userindex
 114                     UserList(Invitado).flags.pregunta = 1
-116                     UserList(Invitado).Grupo.Lider = UserIndex
+116                     UserList(Invitado).Grupo.Lider = Userindex
 
                         Dim pregunta As String
+118                         pregunta = UserList(Userindex).name & " te invitó a unirse a su grupo. ¿Deseas unirte?"
 
-118                     pregunta = UserList(UserIndex).name & " te invitó a unirse a su grupo. ¿Deseas unirte?"
 120                     Call WritePreguntaBox(Invitado, pregunta)
+
                     Else
                         'Call WriteConsoleMsg(userindex, "El usuario ya se encuentra en un grupo.", FontTypeNames.FONTTYPE_INFOIAO)
 122                     Call WriteLocaleMsg(UserIndex, "41", FontTypeNames.FONTTYPE_New_GRUPO)
