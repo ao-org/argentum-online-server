@@ -560,20 +560,20 @@ Public Sub EventoSockAccept(ByVal SockID As Long)
             'Call setsockopt(wsock.SocketHandle, 6, 1, True, 4) 'old: If setsockopt(NuevoSock, SOL_SOCKET, TCP_NODELAY, True, 1) <> 0 Then
             'algoritmo de nagle vb6
             ' If setsockopt(NuevoSock, 6, 1, True, 4) <> 0 Then
-116         If setsockopt(NuevoSock, 6, TCP_NODELAY, True, 4) <> 0 Then
-118             i = Err.LastDllError
-120             Call LogCriticEvent("Error al setear el delay " & i & ": " & GetWSAErrorString(i))
+116        ' If setsockopt(NuevoSock, 6, TCP_NODELAY, True, 4) <> 0 Then
+118        '     i = Err.LastDllError
+120        '     Call LogCriticEvent("Error al setear el delay " & i & ": " & GetWSAErrorString(i))
 
-            End If
+            'End If
 
             'saco nagle
     
             'Nuevo sin nagle
             'NuevoSock = Ret
-            ' If setsockopt(NuevoSock, SOL_SOCKET, SO_LINGER, 0, 4) <> 0 Then
-            '   i = Err.LastDllError
-            '  Call LogCriticEvent("Error al setear lingers." & i & ": " & GetWSAErrorString(i))
-            ' End If
+             If setsockopt(NuevoSock, SOL_SOCKET, SO_LINGER, 0, 4) <> 0 Then
+               i = Err.LastDllError
+              Call LogCriticEvent("Error al setear lingers." & i & ": " & GetWSAErrorString(i))
+             End If
             'Nuevo sin nagle
     
             'Seteamos el tamaño del buffer de entrada
