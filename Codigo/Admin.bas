@@ -139,7 +139,9 @@ Public IntervaloPuedeSerAtacado     As Long
 
 Public IntervaloGuardarUsuarios     As Long
 
-Public LimiteSaveUserPorMinuto      As Integer
+Public LimiteGuardarUsuarios        As Integer
+
+Public IntervaloTimerGuardarUsuarios As Integer
 
 'BALANCE
 

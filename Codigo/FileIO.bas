@@ -1676,7 +1676,7 @@ ErrHandler:
 
 End Sub
 
-Sub LoadUserStats(ByVal UserIndex As Integer, ByRef UserFile As clsIniReader)
+Sub LoadUserStats(ByVal Userindex As Integer, ByRef UserFile As clsIniReader)
         
         On Error GoTo LoadUserStats_Err
         
@@ -1684,56 +1684,56 @@ Sub LoadUserStats(ByVal UserIndex As Integer, ByRef UserFile As clsIniReader)
         Dim LoopC As Long
 
 100     For LoopC = 1 To NUMATRIBUTOS
-102         UserList(UserIndex).Stats.UserAtributos(LoopC) = CInt(UserFile.GetValue("ATRIBUTOS", "AT" & LoopC))
-104         UserList(UserIndex).Stats.UserAtributosBackUP(LoopC) = UserList(UserIndex).Stats.UserAtributos(LoopC)
+102         UserList(Userindex).Stats.UserAtributos(LoopC) = CInt(UserFile.GetValue("ATRIBUTOS", "AT" & LoopC))
+104         UserList(Userindex).Stats.UserAtributosBackUP(LoopC) = UserList(Userindex).Stats.UserAtributos(LoopC)
 106     Next LoopC
 
 108     For LoopC = 1 To NUMSKILLS
-110         UserList(UserIndex).Stats.UserSkills(LoopC) = CInt(UserFile.GetValue("SKILLS", "SK" & LoopC))
+110         UserList(Userindex).Stats.UserSkills(LoopC) = CInt(UserFile.GetValue("SKILLS", "SK" & LoopC))
 112     Next LoopC
 
 114     For LoopC = 1 To MAXUSERHECHIZOS
-116         UserList(UserIndex).Stats.UserHechizos(LoopC) = CInt(UserFile.GetValue("Hechizos", "H" & LoopC))
+116         UserList(Userindex).Stats.UserHechizos(LoopC) = CInt(UserFile.GetValue("Hechizos", "H" & LoopC))
 118     Next LoopC
 
-120     UserList(UserIndex).Stats.GLD = CLng(UserFile.GetValue("STATS", "GLD"))
-122     UserList(UserIndex).Stats.Banco = CLng(UserFile.GetValue("STATS", "BANCO"))
+120     UserList(Userindex).Stats.GLD = CLng(UserFile.GetValue("STATS", "GLD"))
+122     UserList(Userindex).Stats.Banco = CLng(UserFile.GetValue("STATS", "BANCO"))
 
-124     UserList(UserIndex).Stats.MaxHp = CInt(UserFile.GetValue("STATS", "MaxHP"))
-126     UserList(UserIndex).Stats.MinHp = CInt(UserFile.GetValue("STATS", "MinHP"))
+124     UserList(Userindex).Stats.MaxHp = CInt(UserFile.GetValue("STATS", "MaxHP"))
+126     UserList(Userindex).Stats.MinHp = CInt(UserFile.GetValue("STATS", "MinHP"))
 
-128     UserList(UserIndex).Stats.MinSta = CInt(UserFile.GetValue("STATS", "MinSTA"))
-130     UserList(UserIndex).Stats.MaxSta = CInt(UserFile.GetValue("STATS", "MaxSTA"))
+128     UserList(Userindex).Stats.MinSta = CInt(UserFile.GetValue("STATS", "MinSTA"))
+130     UserList(Userindex).Stats.MaxSta = CInt(UserFile.GetValue("STATS", "MaxSTA"))
 
-132     UserList(UserIndex).Stats.MaxMAN = CInt(UserFile.GetValue("STATS", "MaxMAN"))
-134     UserList(UserIndex).Stats.MinMAN = CInt(UserFile.GetValue("STATS", "MinMAN"))
+132     UserList(Userindex).Stats.MaxMAN = CInt(UserFile.GetValue("STATS", "MaxMAN"))
+134     UserList(Userindex).Stats.MinMAN = CInt(UserFile.GetValue("STATS", "MinMAN"))
 
-136     UserList(UserIndex).Stats.MaxHit = CInt(UserFile.GetValue("STATS", "MaxHIT"))
-138     UserList(UserIndex).Stats.MinHIT = CInt(UserFile.GetValue("STATS", "MinHIT"))
+136     UserList(Userindex).Stats.MaxHit = CInt(UserFile.GetValue("STATS", "MaxHIT"))
+138     UserList(Userindex).Stats.MinHIT = CInt(UserFile.GetValue("STATS", "MinHIT"))
 
-140     UserList(UserIndex).Stats.MaxAGU = CByte(UserFile.GetValue("STATS", "MaxAGU"))
-142     UserList(UserIndex).Stats.MinAGU = CByte(UserFile.GetValue("STATS", "MinAGU"))
+140     UserList(Userindex).Stats.MaxAGU = CByte(UserFile.GetValue("STATS", "MaxAGU"))
+142     UserList(Userindex).Stats.MinAGU = CByte(UserFile.GetValue("STATS", "MinAGU"))
 
-144     UserList(UserIndex).Stats.MaxHam = CByte(UserFile.GetValue("STATS", "MaxHAM"))
-146     UserList(UserIndex).Stats.MinHam = CByte(UserFile.GetValue("STATS", "MinHAM"))
+144     UserList(Userindex).Stats.MaxHam = CByte(UserFile.GetValue("STATS", "MaxHAM"))
+146     UserList(Userindex).Stats.MinHam = CByte(UserFile.GetValue("STATS", "MinHAM"))
 
-148     UserList(UserIndex).Stats.SkillPts = CInt(UserFile.GetValue("STATS", "SkillPtsLibres"))
+148     UserList(Userindex).Stats.SkillPts = CInt(UserFile.GetValue("STATS", "SkillPtsLibres"))
 
-150     UserList(UserIndex).Stats.Exp = CDbl(UserFile.GetValue("STATS", "EXP"))
-152     UserList(UserIndex).Stats.ELU = CLng(UserFile.GetValue("STATS", "ELU"))
-154     UserList(UserIndex).Stats.ELV = CByte(UserFile.GetValue("STATS", "ELV"))
+150     UserList(Userindex).Stats.Exp = CDbl(UserFile.GetValue("STATS", "EXP"))
+152     UserList(Userindex).Stats.ELU = CLng(UserFile.GetValue("STATS", "ELU"))
+154     UserList(Userindex).Stats.ELV = CByte(UserFile.GetValue("STATS", "ELV"))
 
-156     UserList(UserIndex).flags.Envenena = CByte(UserFile.GetValue("MAGIA", "ENVENENA"))
-158     UserList(UserIndex).flags.Paraliza = CByte(UserFile.GetValue("MAGIA", "PARALIZA"))
-160     UserList(UserIndex).flags.incinera = CByte(UserFile.GetValue("MAGIA", "INCINERA")) 'Estupidiza
-162     UserList(UserIndex).flags.Estupidiza = CByte(UserFile.GetValue("MAGIA", "Estupidiza"))
+156     UserList(Userindex).flags.Envenena = CByte(UserFile.GetValue("MAGIA", "ENVENENA"))
+158     UserList(Userindex).flags.Paraliza = CByte(UserFile.GetValue("MAGIA", "PARALIZA"))
+160     UserList(Userindex).flags.incinera = CByte(UserFile.GetValue("MAGIA", "INCINERA")) 'Estupidiza
+162     UserList(Userindex).flags.Estupidiza = CByte(UserFile.GetValue("MAGIA", "Estupidiza"))
 
-164     UserList(UserIndex).flags.PendienteDelSacrificio = CByte(UserFile.GetValue("MAGIA", "PENDIENTE"))
-166     UserList(UserIndex).flags.CarroMineria = CByte(UserFile.GetValue("MAGIA", "CarroMineria"))
-168     UserList(UserIndex).flags.NoPalabrasMagicas = CByte(UserFile.GetValue("MAGIA", "NOPALABRASMAGICAS"))
+164     UserList(Userindex).flags.PendienteDelSacrificio = CByte(UserFile.GetValue("MAGIA", "PENDIENTE"))
+166     UserList(Userindex).flags.CarroMineria = CByte(UserFile.GetValue("MAGIA", "CarroMineria"))
+168     UserList(Userindex).flags.NoPalabrasMagicas = CByte(UserFile.GetValue("MAGIA", "NOPALABRASMAGICAS"))
 
-170     If UserList(UserIndex).flags.Muerto = 0 Then
-172         UserList(UserIndex).Char.Otra_Aura = CStr(UserFile.GetValue("MAGIA", "OTRA_AURA"))
+170     If UserList(Userindex).flags.Muerto = 0 Then
+172         UserList(Userindex).Char.Otra_Aura = CStr(UserFile.GetValue("MAGIA", "OTRA_AURA"))
 
         End If
 
@@ -1741,21 +1741,21 @@ Sub LoadUserStats(ByVal UserIndex As Integer, ByRef UserFile As clsIniReader)
         'UserList(UserIndex).flags.ResistenciaMagica = CByte(UserFile.GetValue("MAGIA", "ResistenciaMagica"))
 
         'Nuevos
-174     UserList(UserIndex).flags.RegeneracionMana = CByte(UserFile.GetValue("MAGIA", "RegeneracionMana"))
-176     UserList(UserIndex).flags.AnilloOcultismo = CByte(UserFile.GetValue("MAGIA", "AnilloOcultismo"))
-178     UserList(UserIndex).flags.NoDetectable = CByte(UserFile.GetValue("MAGIA", "NoDetectable"))
-180     UserList(UserIndex).flags.NoMagiaEfeceto = CByte(UserFile.GetValue("MAGIA", "NoMagiaEfeceto"))
-182     UserList(UserIndex).flags.RegeneracionHP = CByte(UserFile.GetValue("MAGIA", "RegeneracionHP"))
-184     UserList(UserIndex).flags.RegeneracionSta = CByte(UserFile.GetValue("MAGIA", "RegeneracionSta"))
+174     UserList(Userindex).flags.RegeneracionMana = CByte(UserFile.GetValue("MAGIA", "RegeneracionMana"))
+176     UserList(Userindex).flags.AnilloOcultismo = CByte(UserFile.GetValue("MAGIA", "AnilloOcultismo"))
+178     UserList(Userindex).flags.NoDetectable = CByte(UserFile.GetValue("MAGIA", "NoDetectable"))
+180     UserList(Userindex).flags.NoMagiaEfeceto = CByte(UserFile.GetValue("MAGIA", "NoMagiaEfeceto"))
+182     UserList(Userindex).flags.RegeneracionHP = CByte(UserFile.GetValue("MAGIA", "RegeneracionHP"))
+184     UserList(Userindex).flags.RegeneracionSta = CByte(UserFile.GetValue("MAGIA", "RegeneracionSta"))
 
-186     UserList(UserIndex).Stats.UsuariosMatados = CLng(UserFile.GetValue("MUERTES", "UserMuertes"))
-188     UserList(UserIndex).Stats.NPCsMuertos = CInt(UserFile.GetValue("MUERTES", "NpcsMuertes"))
+186     UserList(Userindex).Stats.UsuariosMatados = CLng(UserFile.GetValue("MUERTES", "UserMuertes"))
+188     UserList(Userindex).Stats.NPCsMuertos = CInt(UserFile.GetValue("MUERTES", "NpcsMuertes"))
 
-190     UserList(UserIndex).Stats.InventLevel = CInt(UserFile.GetValue("STATS", "InventLevel"))
+190     UserList(Userindex).Stats.InventLevel = CInt(UserFile.GetValue("STATS", "InventLevel"))
 
-192     If CByte(UserFile.GetValue("CONSEJO", "PERTENECE")) Then UserList(UserIndex).flags.Privilegios = UserList(UserIndex).flags.Privilegios Or PlayerType.RoyalCouncil
+192     If CByte(UserFile.GetValue("CONSEJO", "PERTENECE")) Then UserList(Userindex).flags.Privilegios = UserList(Userindex).flags.Privilegios Or PlayerType.RoyalCouncil
 
-194     If CByte(UserFile.GetValue("CONSEJO", "PERTENECECAOS")) Then UserList(UserIndex).flags.Privilegios = UserList(UserIndex).flags.Privilegios Or PlayerType.ChaosCouncil
+194     If CByte(UserFile.GetValue("CONSEJO", "PERTENECECAOS")) Then UserList(Userindex).flags.Privilegios = UserList(Userindex).flags.Privilegios Or PlayerType.ChaosCouncil
 
         
         Exit Sub
@@ -1766,7 +1766,7 @@ LoadUserStats_Err:
         
 End Sub
 
-Sub LoadUserInit(ByVal UserIndex As Integer, ByRef UserFile As clsIniReader)
+Sub LoadUserInit(ByVal Userindex As Integer, ByRef UserFile As clsIniReader)
         
         On Error GoTo LoadUserInit_Err
         
@@ -1782,169 +1782,169 @@ Sub LoadUserInit(ByVal UserIndex As Integer, ByRef UserFile As clsIniReader)
 
         Dim ln    As String
 
-100     UserList(UserIndex).Faccion.Status = CByte(UserFile.GetValue("FACCIONES", "Status"))
-102     UserList(UserIndex).Faccion.ArmadaReal = CByte(UserFile.GetValue("FACCIONES", "EjercitoReal"))
-104     UserList(UserIndex).Faccion.FuerzasCaos = CByte(UserFile.GetValue("FACCIONES", "EjercitoCaos"))
-106     UserList(UserIndex).Faccion.CiudadanosMatados = CLng(UserFile.GetValue("FACCIONES", "CiudMatados"))
-108     UserList(UserIndex).Faccion.CriminalesMatados = CLng(UserFile.GetValue("FACCIONES", "CrimMatados"))
-110     UserList(UserIndex).Faccion.RecibioArmaduraCaos = CByte(UserFile.GetValue("FACCIONES", "rArCaos"))
-112     UserList(UserIndex).Faccion.RecibioArmaduraReal = CByte(UserFile.GetValue("FACCIONES", "rArReal"))
-114     UserList(UserIndex).Faccion.RecibioExpInicialCaos = CByte(UserFile.GetValue("FACCIONES", "rExCaos"))
-116     UserList(UserIndex).Faccion.RecibioExpInicialReal = CByte(UserFile.GetValue("FACCIONES", "rExReal"))
-118     UserList(UserIndex).Faccion.RecompensasCaos = CLng(UserFile.GetValue("FACCIONES", "recCaos"))
-120     UserList(UserIndex).Faccion.RecompensasReal = CLng(UserFile.GetValue("FACCIONES", "recReal"))
-122     UserList(UserIndex).Faccion.Reenlistadas = CByte(UserFile.GetValue("FACCIONES", "Reenlistadas"))
-124     UserList(UserIndex).Faccion.NivelIngreso = CInt(UserFile.GetValue("FACCIONES", "NivelIngreso"))
-126     UserList(UserIndex).Faccion.FechaIngreso = UserFile.GetValue("FACCIONES", "FechaIngreso")
-128     UserList(UserIndex).Faccion.MatadosIngreso = CInt(UserFile.GetValue("FACCIONES", "MatadosIngreso"))
-130     UserList(UserIndex).Faccion.NextRecompensa = CInt(UserFile.GetValue("FACCIONES", "NextRecompensa"))
+100     UserList(Userindex).Faccion.Status = CByte(UserFile.GetValue("FACCIONES", "Status"))
+102     UserList(Userindex).Faccion.ArmadaReal = CByte(UserFile.GetValue("FACCIONES", "EjercitoReal"))
+104     UserList(Userindex).Faccion.FuerzasCaos = CByte(UserFile.GetValue("FACCIONES", "EjercitoCaos"))
+106     UserList(Userindex).Faccion.CiudadanosMatados = CLng(UserFile.GetValue("FACCIONES", "CiudMatados"))
+108     UserList(Userindex).Faccion.CriminalesMatados = CLng(UserFile.GetValue("FACCIONES", "CrimMatados"))
+110     UserList(Userindex).Faccion.RecibioArmaduraCaos = CByte(UserFile.GetValue("FACCIONES", "rArCaos"))
+112     UserList(Userindex).Faccion.RecibioArmaduraReal = CByte(UserFile.GetValue("FACCIONES", "rArReal"))
+114     UserList(Userindex).Faccion.RecibioExpInicialCaos = CByte(UserFile.GetValue("FACCIONES", "rExCaos"))
+116     UserList(Userindex).Faccion.RecibioExpInicialReal = CByte(UserFile.GetValue("FACCIONES", "rExReal"))
+118     UserList(Userindex).Faccion.RecompensasCaos = CLng(UserFile.GetValue("FACCIONES", "recCaos"))
+120     UserList(Userindex).Faccion.RecompensasReal = CLng(UserFile.GetValue("FACCIONES", "recReal"))
+122     UserList(Userindex).Faccion.Reenlistadas = CByte(UserFile.GetValue("FACCIONES", "Reenlistadas"))
+124     UserList(Userindex).Faccion.NivelIngreso = CInt(UserFile.GetValue("FACCIONES", "NivelIngreso"))
+126     UserList(Userindex).Faccion.FechaIngreso = UserFile.GetValue("FACCIONES", "FechaIngreso")
+128     UserList(Userindex).Faccion.MatadosIngreso = CInt(UserFile.GetValue("FACCIONES", "MatadosIngreso"))
+130     UserList(Userindex).Faccion.NextRecompensa = CInt(UserFile.GetValue("FACCIONES", "NextRecompensa"))
 
-132     UserList(UserIndex).flags.Muerto = CByte(UserFile.GetValue("FLAGS", "Muerto"))
-134     UserList(UserIndex).flags.Escondido = CByte(UserFile.GetValue("FLAGS", "Escondido"))
+132     UserList(Userindex).flags.Muerto = CByte(UserFile.GetValue("FLAGS", "Muerto"))
+134     UserList(Userindex).flags.Escondido = CByte(UserFile.GetValue("FLAGS", "Escondido"))
 
-136     UserList(UserIndex).flags.Hambre = CByte(UserFile.GetValue("FLAGS", "Hambre"))
-138     UserList(UserIndex).flags.Sed = CByte(UserFile.GetValue("FLAGS", "Sed"))
-140     UserList(UserIndex).flags.Desnudo = CByte(UserFile.GetValue("FLAGS", "Desnudo"))
-142     UserList(UserIndex).flags.Navegando = CByte(UserFile.GetValue("FLAGS", "Navegando"))
-144     UserList(UserIndex).flags.Envenenado = CByte(UserFile.GetValue("FLAGS", "Envenenado"))
-146     UserList(UserIndex).flags.Paralizado = CByte(UserFile.GetValue("FLAGS", "Paralizado"))
-148     UserList(UserIndex).flags.Incinerado = CByte(UserFile.GetValue("FLAGS", "Incinerado"))
-150     UserList(UserIndex).flags.Inmovilizado = CByte(UserFile.GetValue("FLAGS", "Inmovilizado"))
+136     UserList(Userindex).flags.Hambre = CByte(UserFile.GetValue("FLAGS", "Hambre"))
+138     UserList(Userindex).flags.Sed = CByte(UserFile.GetValue("FLAGS", "Sed"))
+140     UserList(Userindex).flags.Desnudo = CByte(UserFile.GetValue("FLAGS", "Desnudo"))
+142     UserList(Userindex).flags.Navegando = CByte(UserFile.GetValue("FLAGS", "Navegando"))
+144     UserList(Userindex).flags.Envenenado = CByte(UserFile.GetValue("FLAGS", "Envenenado"))
+146     UserList(Userindex).flags.Paralizado = CByte(UserFile.GetValue("FLAGS", "Paralizado"))
+148     UserList(Userindex).flags.Incinerado = CByte(UserFile.GetValue("FLAGS", "Incinerado"))
+150     UserList(Userindex).flags.Inmovilizado = CByte(UserFile.GetValue("FLAGS", "Inmovilizado"))
 
-152     UserList(UserIndex).flags.ScrollExp = CSng(UserFile.GetValue("FLAGS", "ScrollExp"))
-154     UserList(UserIndex).flags.ScrollOro = CSng(UserFile.GetValue("FLAGS", "ScrollOro"))
+152     UserList(Userindex).flags.ScrollExp = CSng(UserFile.GetValue("FLAGS", "ScrollExp"))
+154     UserList(Userindex).flags.ScrollOro = CSng(UserFile.GetValue("FLAGS", "ScrollOro"))
 
-156     If UserList(UserIndex).flags.Paralizado = 1 Then
-158         UserList(UserIndex).Counters.Paralisis = IntervaloParalizado
-
-        End If
-
-160     UserList(UserIndex).flags.BattlePuntos = CLng(UserFile.GetValue("Battle", "Puntos"))
-
-162     If UserList(UserIndex).flags.Inmovilizado = 1 Then
-164         UserList(UserIndex).Counters.Inmovilizado = 20
+156     If UserList(Userindex).flags.Paralizado = 1 Then
+158         UserList(Userindex).Counters.Paralisis = IntervaloParalizado
 
         End If
 
-166     UserList(UserIndex).Counters.Pena = CLng(UserFile.GetValue("COUNTERS", "Pena"))
+160     UserList(Userindex).flags.BattlePuntos = CLng(UserFile.GetValue("Battle", "Puntos"))
 
-168     UserList(UserIndex).Counters.ScrollExperiencia = CLng(UserFile.GetValue("COUNTERS", "ScrollExperiencia"))
-170     UserList(UserIndex).Counters.ScrollOro = CLng(UserFile.GetValue("COUNTERS", "ScrollOro"))
+162     If UserList(Userindex).flags.Inmovilizado = 1 Then
+164         UserList(Userindex).Counters.Inmovilizado = 20
 
-172     UserList(UserIndex).Counters.Oxigeno = CLng(UserFile.GetValue("COUNTERS", "Oxigeno"))
+        End If
 
-174     UserList(UserIndex).MENSAJEINFORMACION = UserFile.GetValue("INIT", "MENSAJEINFORMACION")
+166     UserList(Userindex).Counters.Pena = CLng(UserFile.GetValue("COUNTERS", "Pena"))
 
-176     UserList(UserIndex).genero = UserFile.GetValue("INIT", "Genero")
-178     UserList(UserIndex).clase = UserFile.GetValue("INIT", "Clase")
-180     UserList(UserIndex).raza = UserFile.GetValue("INIT", "Raza")
-182     UserList(UserIndex).Hogar = UserFile.GetValue("INIT", "Hogar")
-184     UserList(UserIndex).Char.Heading = CInt(UserFile.GetValue("INIT", "Heading"))
+168     UserList(Userindex).Counters.ScrollExperiencia = CLng(UserFile.GetValue("COUNTERS", "ScrollExperiencia"))
+170     UserList(Userindex).Counters.ScrollOro = CLng(UserFile.GetValue("COUNTERS", "ScrollOro"))
 
-186     UserList(UserIndex).OrigChar.Head = CInt(UserFile.GetValue("INIT", "Head"))
-188     UserList(UserIndex).OrigChar.Body = CInt(UserFile.GetValue("INIT", "Body"))
-190     UserList(UserIndex).OrigChar.WeaponAnim = CInt(UserFile.GetValue("INIT", "Arma"))
-192     UserList(UserIndex).OrigChar.ShieldAnim = CInt(UserFile.GetValue("INIT", "Escudo"))
-194     UserList(UserIndex).OrigChar.CascoAnim = CInt(UserFile.GetValue("INIT", "Casco"))
+172     UserList(Userindex).Counters.Oxigeno = CLng(UserFile.GetValue("COUNTERS", "Oxigeno"))
+
+174     UserList(Userindex).MENSAJEINFORMACION = UserFile.GetValue("INIT", "MENSAJEINFORMACION")
+
+176     UserList(Userindex).genero = UserFile.GetValue("INIT", "Genero")
+178     UserList(Userindex).clase = UserFile.GetValue("INIT", "Clase")
+180     UserList(Userindex).raza = UserFile.GetValue("INIT", "Raza")
+182     UserList(Userindex).Hogar = UserFile.GetValue("INIT", "Hogar")
+184     UserList(Userindex).Char.Heading = CInt(UserFile.GetValue("INIT", "Heading"))
+
+186     UserList(Userindex).OrigChar.Head = CInt(UserFile.GetValue("INIT", "Head"))
+188     UserList(Userindex).OrigChar.Body = CInt(UserFile.GetValue("INIT", "Body"))
+190     UserList(Userindex).OrigChar.WeaponAnim = CInt(UserFile.GetValue("INIT", "Arma"))
+192     UserList(Userindex).OrigChar.ShieldAnim = CInt(UserFile.GetValue("INIT", "Escudo"))
+194     UserList(Userindex).OrigChar.CascoAnim = CInt(UserFile.GetValue("INIT", "Casco"))
 
         #If ConUpTime Then
-196         UserList(UserIndex).UpTime = CLng(UserFile.GetValue("INIT", "UpTime"))
+196         UserList(Userindex).UpTime = CLng(UserFile.GetValue("INIT", "UpTime"))
         #End If
 
-198     UserList(UserIndex).OrigChar.Heading = UserList(UserIndex).Char.Heading
+198     UserList(Userindex).OrigChar.Heading = UserList(Userindex).Char.Heading
 
-200     If UserList(UserIndex).flags.Muerto = 0 Then
-202         UserList(UserIndex).Char = UserList(UserIndex).OrigChar
+200     If UserList(Userindex).flags.Muerto = 0 Then
+202         UserList(Userindex).Char = UserList(Userindex).OrigChar
         Else
-204         UserList(UserIndex).Char.Body = iCuerpoMuerto
-206         UserList(UserIndex).Char.Head = iCabezaMuerto
-208         UserList(UserIndex).Char.WeaponAnim = NingunArma
-210         UserList(UserIndex).Char.ShieldAnim = NingunEscudo
-212         UserList(UserIndex).Char.CascoAnim = NingunCasco
+204         UserList(Userindex).Char.Body = iCuerpoMuerto
+206         UserList(Userindex).Char.Head = iCabezaMuerto
+208         UserList(Userindex).Char.WeaponAnim = NingunArma
+210         UserList(Userindex).Char.ShieldAnim = NingunEscudo
+212         UserList(Userindex).Char.CascoAnim = NingunCasco
 
         End If
 
-214     UserList(UserIndex).Desc = UserFile.GetValue("INIT", "Desc")
+214     UserList(Userindex).Desc = UserFile.GetValue("INIT", "Desc")
 
-216     UserList(UserIndex).flags.BanMotivo = UserFile.GetValue("BAN", "BanMotivo")
-218     UserList(UserIndex).flags.Montado = CByte(UserFile.GetValue("FLAGS", "Montado"))
-220     UserList(UserIndex).flags.VecesQueMoriste = CLng(UserFile.GetValue("FLAGS", "VecesQueMoriste"))
+216     UserList(Userindex).flags.BanMotivo = UserFile.GetValue("BAN", "BanMotivo")
+218     UserList(Userindex).flags.Montado = CByte(UserFile.GetValue("FLAGS", "Montado"))
+220     UserList(Userindex).flags.VecesQueMoriste = CLng(UserFile.GetValue("FLAGS", "VecesQueMoriste"))
 
-222     UserList(UserIndex).flags.MinutosRestantes = CLng(UserFile.GetValue("FLAGS", "MinutosRestantes"))
-224     UserList(UserIndex).flags.Silenciado = CLng(UserFile.GetValue("FLAGS", "Silenciado"))
-226     UserList(UserIndex).flags.SegundosPasados = CLng(UserFile.GetValue("FLAGS", "SegundosPasados"))
+222     UserList(Userindex).flags.MinutosRestantes = CLng(UserFile.GetValue("FLAGS", "MinutosRestantes"))
+224     UserList(Userindex).flags.Silenciado = CLng(UserFile.GetValue("FLAGS", "Silenciado"))
+226     UserList(Userindex).flags.SegundosPasados = CLng(UserFile.GetValue("FLAGS", "SegundosPasados"))
 
         'CASAMIENTO LADDER
-228     UserList(UserIndex).flags.Casado = CInt(UserFile.GetValue("FLAGS", "CASADO"))
-230     UserList(UserIndex).flags.Pareja = UserFile.GetValue("FLAGS", "PAREJA")
+228     UserList(Userindex).flags.Casado = CInt(UserFile.GetValue("FLAGS", "CASADO"))
+230     UserList(Userindex).flags.Pareja = UserFile.GetValue("FLAGS", "PAREJA")
 
-232     UserList(UserIndex).Pos.Map = CInt(ReadField(1, UserFile.GetValue("INIT", "Position"), 45))
-234     UserList(UserIndex).Pos.X = CInt(ReadField(2, UserFile.GetValue("INIT", "Position"), 45))
-236     UserList(UserIndex).Pos.Y = CInt(ReadField(3, UserFile.GetValue("INIT", "Position"), 45))
+232     UserList(Userindex).Pos.Map = CInt(ReadField(1, UserFile.GetValue("INIT", "Position"), 45))
+234     UserList(Userindex).Pos.X = CInt(ReadField(2, UserFile.GetValue("INIT", "Position"), 45))
+236     UserList(Userindex).Pos.Y = CInt(ReadField(3, UserFile.GetValue("INIT", "Position"), 45))
 
-238     UserList(UserIndex).Invent.NroItems = CInt(UserFile.GetValue("Inventory", "CantidadItems"))
+238     UserList(Userindex).Invent.NroItems = CInt(UserFile.GetValue("Inventory", "CantidadItems"))
 
         '[KEVIN]--------------------------------------------------------------------
         '***********************************************************************************
-240     UserList(UserIndex).BancoInvent.NroItems = CInt(UserFile.GetValue("BancoInventory", "CantidadItems"))
+240     UserList(Userindex).BancoInvent.NroItems = CInt(UserFile.GetValue("BancoInventory", "CantidadItems"))
 
         'Lista de objetos del banco
 242     For LoopC = 1 To MAX_BANCOINVENTORY_SLOTS
 244         ln = UserFile.GetValue("BancoInventory", "Obj" & LoopC)
-246         UserList(UserIndex).BancoInvent.Object(LoopC).ObjIndex = CInt(ReadField(1, ln, 45))
-248         UserList(UserIndex).BancoInvent.Object(LoopC).Amount = CInt(ReadField(2, ln, 45))
+246         UserList(Userindex).BancoInvent.Object(LoopC).ObjIndex = CInt(ReadField(1, ln, 45))
+248         UserList(Userindex).BancoInvent.Object(LoopC).Amount = CInt(ReadField(2, ln, 45))
 250     Next LoopC
 
         '------------------------------------------------------------------------------------
         '[/KEVIN]*****************************************************************************
 
         'Lista de objetos
-252     For LoopC = 1 To UserList(UserIndex).CurrentInventorySlots
+252     For LoopC = 1 To UserList(Userindex).CurrentInventorySlots
 254         ln = UserFile.GetValue("Inventory", "Obj" & LoopC)
-256         UserList(UserIndex).Invent.Object(LoopC).ObjIndex = CInt(ReadField(1, ln, 45))
-258         UserList(UserIndex).Invent.Object(LoopC).Amount = CInt(ReadField(2, ln, 45))
-260         UserList(UserIndex).Invent.Object(LoopC).Equipped = CByte(ReadField(3, ln, 45))
+256         UserList(Userindex).Invent.Object(LoopC).ObjIndex = CInt(ReadField(1, ln, 45))
+258         UserList(Userindex).Invent.Object(LoopC).Amount = CInt(ReadField(2, ln, 45))
+260         UserList(Userindex).Invent.Object(LoopC).Equipped = CByte(ReadField(3, ln, 45))
 262     Next LoopC
 
-264     UserList(UserIndex).Invent.WeaponEqpSlot = CByte(UserFile.GetValue("Inventory", "WeaponEqpSlot"))
-266     UserList(UserIndex).Invent.HerramientaEqpSlot = CByte(UserFile.GetValue("Inventory", "HerramientaEqpSlot"))
-268     UserList(UserIndex).Invent.ArmourEqpSlot = CByte(UserFile.GetValue("Inventory", "ArmourEqpSlot"))
-270     UserList(UserIndex).Invent.EscudoEqpSlot = CByte(UserFile.GetValue("Inventory", "EscudoEqpSlot"))
-272     UserList(UserIndex).Invent.CascoEqpSlot = CByte(UserFile.GetValue("Inventory", "CascoEqpSlot"))
-274     UserList(UserIndex).Invent.BarcoSlot = CByte(UserFile.GetValue("Inventory", "BarcoSlot"))
-276     UserList(UserIndex).Invent.MonturaSlot = CByte(UserFile.GetValue("Inventory", "MonturaSlot"))
-278     UserList(UserIndex).Invent.MunicionEqpSlot = CByte(UserFile.GetValue("Inventory", "MunicionSlot"))
-280     UserList(UserIndex).Invent.AnilloEqpSlot = CByte(UserFile.GetValue("Inventory", "AnilloSlot"))
-282     UserList(UserIndex).Invent.MagicoSlot = CByte(UserFile.GetValue("Inventory", "MagicoSlot"))
-284     UserList(UserIndex).Invent.NudilloSlot = CByte(UserFile.GetValue("Inventory", "NudilloEqpSlot"))
+264     UserList(Userindex).Invent.WeaponEqpSlot = CByte(UserFile.GetValue("Inventory", "WeaponEqpSlot"))
+266     UserList(Userindex).Invent.HerramientaEqpSlot = CByte(UserFile.GetValue("Inventory", "HerramientaEqpSlot"))
+268     UserList(Userindex).Invent.ArmourEqpSlot = CByte(UserFile.GetValue("Inventory", "ArmourEqpSlot"))
+270     UserList(Userindex).Invent.EscudoEqpSlot = CByte(UserFile.GetValue("Inventory", "EscudoEqpSlot"))
+272     UserList(Userindex).Invent.CascoEqpSlot = CByte(UserFile.GetValue("Inventory", "CascoEqpSlot"))
+274     UserList(Userindex).Invent.BarcoSlot = CByte(UserFile.GetValue("Inventory", "BarcoSlot"))
+276     UserList(Userindex).Invent.MonturaSlot = CByte(UserFile.GetValue("Inventory", "MonturaSlot"))
+278     UserList(Userindex).Invent.MunicionEqpSlot = CByte(UserFile.GetValue("Inventory", "MunicionSlot"))
+280     UserList(Userindex).Invent.AnilloEqpSlot = CByte(UserFile.GetValue("Inventory", "AnilloSlot"))
+282     UserList(Userindex).Invent.MagicoSlot = CByte(UserFile.GetValue("Inventory", "MagicoSlot"))
+284     UserList(Userindex).Invent.NudilloSlot = CByte(UserFile.GetValue("Inventory", "NudilloEqpSlot"))
 
-286     UserList(UserIndex).ChatCombate = CByte(UserFile.GetValue("BINDKEYS", "ChatCombate"))
-288     UserList(UserIndex).ChatGlobal = CByte(UserFile.GetValue("BINDKEYS", "ChatGlobal"))
+286     UserList(Userindex).ChatCombate = CByte(UserFile.GetValue("BINDKEYS", "ChatCombate"))
+288     UserList(Userindex).ChatGlobal = CByte(UserFile.GetValue("BINDKEYS", "ChatGlobal"))
 
-290     UserList(UserIndex).Correo.CantCorreo = CByte(UserFile.GetValue("CORREO", "CantCorreo"))
-292     UserList(UserIndex).Correo.NoLeidos = CByte(UserFile.GetValue("CORREO", "NoLeidos"))
+290     UserList(Userindex).Correo.CantCorreo = CByte(UserFile.GetValue("CORREO", "CantCorreo"))
+292     UserList(Userindex).Correo.NoLeidos = CByte(UserFile.GetValue("CORREO", "NoLeidos"))
 
-294     For LoopC = 1 To UserList(UserIndex).Correo.CantCorreo
-296         UserList(UserIndex).Correo.Mensaje(LoopC).Remitente = UserFile.GetValue("CORREO", "REMITENTE" & LoopC)
-298         UserList(UserIndex).Correo.Mensaje(LoopC).Mensaje = UserFile.GetValue("CORREO", "MENSAJE" & LoopC)
-300         UserList(UserIndex).Correo.Mensaje(LoopC).Item = UserFile.GetValue("CORREO", "Item" & LoopC)
-302         UserList(UserIndex).Correo.Mensaje(LoopC).ItemCount = CByte(UserFile.GetValue("CORREO", "ItemCount" & LoopC))
-304         UserList(UserIndex).Correo.Mensaje(LoopC).Fecha = UserFile.GetValue("CORREO", "DATE" & LoopC)
-306         UserList(UserIndex).Correo.Mensaje(LoopC).Leido = CByte(UserFile.GetValue("CORREO", "LEIDO" & LoopC))
+294     For LoopC = 1 To UserList(Userindex).Correo.CantCorreo
+296         UserList(Userindex).Correo.Mensaje(LoopC).Remitente = UserFile.GetValue("CORREO", "REMITENTE" & LoopC)
+298         UserList(Userindex).Correo.Mensaje(LoopC).Mensaje = UserFile.GetValue("CORREO", "MENSAJE" & LoopC)
+300         UserList(Userindex).Correo.Mensaje(LoopC).Item = UserFile.GetValue("CORREO", "Item" & LoopC)
+302         UserList(Userindex).Correo.Mensaje(LoopC).ItemCount = CByte(UserFile.GetValue("CORREO", "ItemCount" & LoopC))
+304         UserList(Userindex).Correo.Mensaje(LoopC).Fecha = UserFile.GetValue("CORREO", "DATE" & LoopC)
+306         UserList(Userindex).Correo.Mensaje(LoopC).Leido = CByte(UserFile.GetValue("CORREO", "LEIDO" & LoopC))
 308     Next LoopC
 
         'Logros Ladder
-310     UserList(UserIndex).UserLogros = UserFile.GetValue("LOGROS", "UserLogros")
-312     UserList(UserIndex).NPcLogros = UserFile.GetValue("LOGROS", "NPcLogros")
-314     UserList(UserIndex).LevelLogros = UserFile.GetValue("LOGROS", "LevelLogros")
+310     UserList(Userindex).UserLogros = UserFile.GetValue("LOGROS", "UserLogros")
+312     UserList(Userindex).NPcLogros = UserFile.GetValue("LOGROS", "NPcLogros")
+314     UserList(Userindex).LevelLogros = UserFile.GetValue("LOGROS", "LevelLogros")
         'Logros Ladder
 
 316     ln = UserFile.GetValue("Guild", "GUILDINDEX")
 
 318     If IsNumeric(ln) Then
-320         UserList(UserIndex).GuildIndex = CInt(ln)
+320         UserList(Userindex).GuildIndex = CInt(ln)
         Else
-322         UserList(UserIndex).GuildIndex = 0
+322         UserList(Userindex).GuildIndex = 0
 
         End If
 
@@ -2707,7 +2707,9 @@ Sub LoadIntervalos()
 
 220     IntervaloGuardarUsuarios = val(Lector.GetValue("INTERVALOS", "IntervaloGuardarUsuarios"))
         
-222     LimiteSaveUserPorMinuto = val(Lector.GetValue("INTERVALOS", "LimiteSaveUserPorMinuto"))
+222     LimiteGuardarUsuarios = val(Lector.GetValue("INTERVALOS", "LimiteGuardarUsuarios"))
+
+223     IntervaloTimerGuardarUsuarios = val(Lector.GetValue("INTERVALOS", "IntervaloTimerGuardarUsuarios"))
     
         '&&&&&&&&&&&&&&&&&&&&& FIN TIMERS &&&&&&&&&&&&&&&&&&&&&&&
     
@@ -2771,17 +2773,17 @@ WriteVar_Err:
         
 End Sub
 
-Sub LoadUser(ByVal UserIndex As Integer)
+Sub LoadUser(ByVal Userindex As Integer)
 
         On Error GoTo ErrorHandler
     
 100     If Database_Enabled Then
-102         Call LoadUserDatabase(UserIndex)
+102         Call LoadUserDatabase(Userindex)
         Else
-104         Call LoadUserBinary(UserIndex)
+104         Call LoadUserBinary(Userindex)
         End If
     
-106     With UserList(UserIndex)
+106     With UserList(Userindex)
 
 108         If .flags.Paralizado = 1 Then
 110             .Counters.Paralisis = IntervaloParalizado
@@ -2791,7 +2793,7 @@ Sub LoadUser(ByVal UserIndex As Integer)
 114             .Char = .OrigChar
             
 116             If .Char.Body = 0 Then
-118                 Call DarCuerpoDesnudo(UserIndex)
+118                 Call DarCuerpoDesnudo(Userindex)
                 End If
             
 120             If .Char.Head = 0 Then
@@ -2894,23 +2896,23 @@ Sub LoadUser(ByVal UserIndex As Integer)
         Exit Sub
 
 ErrorHandler:
-212     Call RegistrarError(Err.Number, Err.description & " UserName: " & UserList(UserIndex).name, "ES.LoadUser", Erl)
+212     Call RegistrarError(Err.Number, Err.description & " UserName: " & UserList(Userindex).name, "ES.LoadUser", Erl)
 213     Resume Next
     
 End Sub
 
-Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = False)
+Sub SaveUser(ByVal Userindex As Integer, Optional ByVal Logout As Boolean = False)
         
         On Error GoTo SaveUser_Err
         
 
 100     If Database_Enabled Then
-102         Call SaveUserDatabase(UserIndex, Logout)
+102         Call SaveUserDatabase(Userindex, Logout)
         Else
-104         Call SaveUserBinary(UserIndex, Logout)
+104         Call SaveUserBinary(Userindex, Logout)
         End If
 
-106     UserList(UserIndex).Counters.LastSave = GetTickCount
+106     UserList(Userindex).Counters.LastSave = GetTickCount
 
         
         Exit Sub
@@ -2921,7 +2923,7 @@ SaveUser_Err:
         
 End Sub
 
-Sub LoadUserBinary(ByVal UserIndex As Integer)
+Sub LoadUserBinary(ByVal Userindex As Integer)
         
         On Error GoTo LoadUserBinary_Err
         
@@ -2929,15 +2931,15 @@ Sub LoadUserBinary(ByVal UserIndex As Integer)
         'Cargamos el personaje
         Dim Leer As New clsIniReader
     
-100     Call Leer.Initialize(CharPath & UCase$(UserList(UserIndex).name) & ".chr")
+100     Call Leer.Initialize(CharPath & UCase$(UserList(Userindex).name) & ".chr")
     
         'Cargamos los datos del personaje
 
-102     Call LoadUserInit(UserIndex, Leer)
+102     Call LoadUserInit(Userindex, Leer)
     
-104     Call LoadUserStats(UserIndex, Leer)
+104     Call LoadUserStats(Userindex, Leer)
     
-106     Call LoadQuestStats(UserIndex, Leer)
+106     Call LoadQuestStats(Userindex, Leer)
     
 108     Set Leer = Nothing
 
@@ -2950,7 +2952,7 @@ LoadUserBinary_Err:
         
 End Sub
 
-Sub SaveUserBinary(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean)
+Sub SaveUserBinary(ByVal Userindex As Integer, Optional ByVal Logout As Boolean)
         '*************************************************
         'Author: Unknown
         'Last modified: 23/01/2007
@@ -2964,12 +2966,12 @@ Sub SaveUserBinary(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean)
 
         Dim OldUserHead As Long
     
-100     UserFile = CharPath & UCase$(UserList(UserIndex).name) & ".chr"
+100     UserFile = CharPath & UCase$(UserList(Userindex).name) & ".chr"
     
         'ESTO TIENE QUE EVITAR ESE BUGAZO QUE NO SE POR QUE GRABA USUARIOS NULOS
         'clase=0 es el error, porq el enum empieza de 1!!
-102     If UserList(UserIndex).clase = 0 Or UserList(UserIndex).Stats.ELV = 0 Then
-104         Call LogCriticEvent("Estoy intentantdo guardar un usuario nulo de nombre: " & UserList(UserIndex).name)
+102     If UserList(Userindex).clase = 0 Or UserList(Userindex).Stats.ELV = 0 Then
+104         Call LogCriticEvent("Estoy intentantdo guardar un usuario nulo de nombre: " & UserList(Userindex).name)
             Exit Sub
 
         End If
@@ -2977,9 +2979,9 @@ Sub SaveUserBinary(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean)
 106     Debug.Print UserFile
     
 108     If FileExist(UserFile, vbNormal) Then
-110         If UserList(UserIndex).flags.Muerto = 1 Then
-112             OldUserHead = UserList(UserIndex).Char.Head
-114             UserList(UserIndex).Char.Head = GetVar(UserFile, "INIT", "Head")
+110         If UserList(Userindex).flags.Muerto = 1 Then
+112             OldUserHead = UserList(Userindex).Char.Head
+114             UserList(Userindex).Char.Head = GetVar(UserFile, "INIT", "Head")
 
             End If
 
@@ -3002,37 +3004,37 @@ Sub SaveUserBinary(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean)
 122     Open File For Binary Access Write As n
         
         'INIT
-124     Put n, , "[INIT]" & vbCrLf & "Cuenta=" & UserList(UserIndex).Cuenta & vbCrLf
-126     Put n, , "Genero=" & UserList(UserIndex).genero & vbCrLf
-128     Put n, , "Raza=" & UserList(UserIndex).raza & vbCrLf
-130     Put n, , "Hogar=" & UserList(UserIndex).Hogar & vbCrLf
-132     Put n, , "Clase=" & UserList(UserIndex).clase & vbCrLf
-134     Put n, , "Desc=" & UserList(UserIndex).Desc & vbCrLf
-136     Put n, , "Heading=" & CStr(UserList(UserIndex).Char.Heading) & vbCrLf
+124     Put n, , "[INIT]" & vbCrLf & "Cuenta=" & UserList(Userindex).Cuenta & vbCrLf
+126     Put n, , "Genero=" & UserList(Userindex).genero & vbCrLf
+128     Put n, , "Raza=" & UserList(Userindex).raza & vbCrLf
+130     Put n, , "Hogar=" & UserList(Userindex).Hogar & vbCrLf
+132     Put n, , "Clase=" & UserList(Userindex).clase & vbCrLf
+134     Put n, , "Desc=" & UserList(Userindex).Desc & vbCrLf
+136     Put n, , "Heading=" & CStr(UserList(Userindex).Char.Heading) & vbCrLf
 
-138     If UserList(UserIndex).Char.Head = 0 Then
-140         Put n, , "Head=" & CStr(UserList(UserIndex).OrigChar.Head) & vbCrLf
+138     If UserList(Userindex).Char.Head = 0 Then
+140         Put n, , "Head=" & CStr(UserList(Userindex).OrigChar.Head) & vbCrLf
         Else
-142         Put n, , "Head=" & CStr(UserList(UserIndex).Char.Head) & vbCrLf
+142         Put n, , "Head=" & CStr(UserList(Userindex).Char.Head) & vbCrLf
 
         End If
 
-144     Put n, , "Arma=" & CStr(UserList(UserIndex).Char.WeaponAnim) & vbCrLf
-146     Put n, , "Escudo=" & CStr(UserList(UserIndex).Char.ShieldAnim) & vbCrLf
-148     Put n, , "Casco=" & CStr(UserList(UserIndex).Char.CascoAnim) & vbCrLf
-150     Put n, , "Position=" & UserList(UserIndex).Pos.Map & "-" & UserList(UserIndex).Pos.X & "-" & UserList(UserIndex).Pos.Y & vbCrLf
+144     Put n, , "Arma=" & CStr(UserList(Userindex).Char.WeaponAnim) & vbCrLf
+146     Put n, , "Escudo=" & CStr(UserList(Userindex).Char.ShieldAnim) & vbCrLf
+148     Put n, , "Casco=" & CStr(UserList(Userindex).Char.CascoAnim) & vbCrLf
+150     Put n, , "Position=" & UserList(Userindex).Pos.Map & "-" & UserList(Userindex).Pos.X & "-" & UserList(Userindex).Pos.Y & vbCrLf
         'If UserList(UserIndex).flags.Muerto = 0 Then
-152     Put n, , "Body=" & CStr(UserList(UserIndex).Char.Body) & vbCrLf
+152     Put n, , "Body=" & CStr(UserList(Userindex).Char.Body) & vbCrLf
         'End If
         #If ConUpTime Then
 
             Dim TempDate As Date
 
-154         TempDate = Now - UserList(UserIndex).LogOnTime
-156         UserList(UserIndex).LogOnTime = Now
-158         UserList(UserIndex).UpTime = UserList(UserIndex).UpTime + (Abs(Day(TempDate) - 30) * 24 * 3600) + Hour(TempDate) * 3600 + Minute(TempDate) * 60 + Second(TempDate)
-160         UserList(UserIndex).UpTime = UserList(UserIndex).UpTime
-162         Put n, , "UpTime=" & UserList(UserIndex).UpTime & vbCrLf
+154         TempDate = Now - UserList(Userindex).LogOnTime
+156         UserList(Userindex).LogOnTime = Now
+158         UserList(Userindex).UpTime = UserList(Userindex).UpTime + (Abs(Day(TempDate) - 30) * 24 * 3600) + Hour(TempDate) * 3600 + Minute(TempDate) * 60 + Second(TempDate)
+160         UserList(Userindex).UpTime = UserList(Userindex).UpTime
+162         Put n, , "UpTime=" & UserList(Userindex).UpTime & vbCrLf
         #End If
         
         'Call WriteVar(CharPath & UserList(UserIndex).Name & ".chr", "INIT", "Logged", "0")
@@ -3044,64 +3046,64 @@ Sub SaveUserBinary(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean)
 
         End If
 
-170     Put n, , "MENSAJEINFORMACION=" & UserList(UserIndex).MENSAJEINFORMACION & vbCrLf
+170     Put n, , "MENSAJEINFORMACION=" & UserList(Userindex).MENSAJEINFORMACION & vbCrLf
 
 172     Put n, , vbCrLf
         
         'baneo
-174     Put n, , "[BAN]" & vbCrLf & "Baneado=" & CStr(UserList(UserIndex).flags.Ban) & vbCrLf
-176     Put n, , "BanMotivo=" & CStr(UserList(UserIndex).flags.BanMotivo) & vbCrLf
+174     Put n, , "[BAN]" & vbCrLf & "Baneado=" & CStr(UserList(Userindex).flags.Ban) & vbCrLf
+176     Put n, , "BanMotivo=" & CStr(UserList(Userindex).flags.BanMotivo) & vbCrLf
         
 178     Put n, , vbCrLf
         
         'STATS
-180     Put n, , "[STATS]" & vbCrLf & "GLD=" & CStr(UserList(UserIndex).Stats.GLD) & vbCrLf
-182     Put n, , "BANCO=" & CStr(UserList(UserIndex).Stats.Banco) & vbCrLf
-184     Put n, , "MaxHP=" & CStr(UserList(UserIndex).Stats.MaxHp) & vbCrLf
-186     Put n, , "MinHP=" & CStr(UserList(UserIndex).Stats.MinHp) & vbCrLf
-188     Put n, , "MaxSTA=" & CStr(UserList(UserIndex).Stats.MaxSta) & vbCrLf
-190     Put n, , "MinSTA=" & CStr(UserList(UserIndex).Stats.MinSta) & vbCrLf
-192     Put n, , "MaxMAN=" & CStr(UserList(UserIndex).Stats.MaxMAN) & vbCrLf
-194     Put n, , "MinMAN=" & CStr(UserList(UserIndex).Stats.MinMAN) & vbCrLf
-196     Put n, , "MaxHIT=" & CStr(UserList(UserIndex).Stats.MaxHit) & vbCrLf
-198     Put n, , "MinHIT=" & CStr(UserList(UserIndex).Stats.MinHIT) & vbCrLf
-200     Put n, , "MaxAGU=" & CStr(UserList(UserIndex).Stats.MaxAGU) & vbCrLf
-202     Put n, , "MinAGU=" & CStr(UserList(UserIndex).Stats.MinAGU) & vbCrLf
-204     Put n, , "MaxHAM=" & CStr(UserList(UserIndex).Stats.MaxHam) & vbCrLf
-206     Put n, , "MinHAM=" & CStr(UserList(UserIndex).Stats.MinHam) & vbCrLf
-208     Put n, , "SkillPtsLibres=" & CStr(UserList(UserIndex).Stats.SkillPts) & vbCrLf
-210     Put n, , "EXP=" & CStr(UserList(UserIndex).Stats.Exp) & vbCrLf
-212     Put n, , "ELV=" & CStr(UserList(UserIndex).Stats.ELV) & vbCrLf
-214     Put n, , "ELU=" & CStr(UserList(UserIndex).Stats.ELU) & vbCrLf
-216     Put n, , "InventLevel=" & CByte(UserList(UserIndex).Stats.InventLevel) & vbCrLf
+180     Put n, , "[STATS]" & vbCrLf & "GLD=" & CStr(UserList(Userindex).Stats.GLD) & vbCrLf
+182     Put n, , "BANCO=" & CStr(UserList(Userindex).Stats.Banco) & vbCrLf
+184     Put n, , "MaxHP=" & CStr(UserList(Userindex).Stats.MaxHp) & vbCrLf
+186     Put n, , "MinHP=" & CStr(UserList(Userindex).Stats.MinHp) & vbCrLf
+188     Put n, , "MaxSTA=" & CStr(UserList(Userindex).Stats.MaxSta) & vbCrLf
+190     Put n, , "MinSTA=" & CStr(UserList(Userindex).Stats.MinSta) & vbCrLf
+192     Put n, , "MaxMAN=" & CStr(UserList(Userindex).Stats.MaxMAN) & vbCrLf
+194     Put n, , "MinMAN=" & CStr(UserList(Userindex).Stats.MinMAN) & vbCrLf
+196     Put n, , "MaxHIT=" & CStr(UserList(Userindex).Stats.MaxHit) & vbCrLf
+198     Put n, , "MinHIT=" & CStr(UserList(Userindex).Stats.MinHIT) & vbCrLf
+200     Put n, , "MaxAGU=" & CStr(UserList(Userindex).Stats.MaxAGU) & vbCrLf
+202     Put n, , "MinAGU=" & CStr(UserList(Userindex).Stats.MinAGU) & vbCrLf
+204     Put n, , "MaxHAM=" & CStr(UserList(Userindex).Stats.MaxHam) & vbCrLf
+206     Put n, , "MinHAM=" & CStr(UserList(Userindex).Stats.MinHam) & vbCrLf
+208     Put n, , "SkillPtsLibres=" & CStr(UserList(Userindex).Stats.SkillPts) & vbCrLf
+210     Put n, , "EXP=" & CStr(UserList(Userindex).Stats.Exp) & vbCrLf
+212     Put n, , "ELV=" & CStr(UserList(Userindex).Stats.ELV) & vbCrLf
+214     Put n, , "ELU=" & CStr(UserList(Userindex).Stats.ELU) & vbCrLf
+216     Put n, , "InventLevel=" & CByte(UserList(Userindex).Stats.InventLevel) & vbCrLf
         
 218     Put n, , vbCrLf
         
         'FLAGS
-220     Put n, , "[FLAGS]" & vbCrLf & "CASADO=" & CStr(UserList(UserIndex).flags.Casado) & vbCrLf
-222     Put n, , "PAREJA=" & CStr(UserList(UserIndex).flags.Pareja) & vbCrLf
-224     Put n, , "Muerto=" & CStr(UserList(UserIndex).flags.Muerto) & vbCrLf
-226     Put n, , "Escondido=" & CStr(UserList(UserIndex).flags.Escondido) & vbCrLf
-228     Put n, , "Hambre=" & CStr(UserList(UserIndex).flags.Hambre) & vbCrLf
-230     Put n, , "Sed=" & CStr(UserList(UserIndex).flags.Sed) & vbCrLf
-232     Put n, , "Desnudo=" & CStr(UserList(UserIndex).flags.Desnudo) & vbCrLf
-234     Put n, , "Navegando=" & CStr(UserList(UserIndex).flags.Navegando) & vbCrLf
-236     Put n, , "Envenenado=" & CStr(UserList(UserIndex).flags.Envenenado) & vbCrLf
-238     Put n, , "Paralizado=" & CStr(UserList(UserIndex).flags.Paralizado) & vbCrLf
-240     Put n, , "Inmovilizado=" & CStr(UserList(UserIndex).flags.Inmovilizado) & vbCrLf
-242     Put n, , "Incinerado=" & CStr(UserList(UserIndex).flags.Incinerado) & vbCrLf
-244     Put n, , "VecesQueMoriste=" & CStr(UserList(UserIndex).flags.VecesQueMoriste) & vbCrLf
-246     Put n, , "ScrollExp=" & CStr(UserList(UserIndex).flags.ScrollExp) & vbCrLf
-248     Put n, , "ScrollOro=" & CStr(UserList(UserIndex).flags.ScrollOro) & vbCrLf
-250     Put n, , "MinutosRestantes=" & CStr(UserList(UserIndex).flags.MinutosRestantes) & vbCrLf
-252     Put n, , "SegundosPasados=" & CStr(UserList(UserIndex).flags.SegundosPasados) & vbCrLf
-254     Put n, , "Silenciado=" & CStr(UserList(UserIndex).flags.Silenciado) & vbCrLf
-256     Put n, , "Montado=" & CStr(UserList(UserIndex).flags.Montado) & vbCrLf
+220     Put n, , "[FLAGS]" & vbCrLf & "CASADO=" & CStr(UserList(Userindex).flags.Casado) & vbCrLf
+222     Put n, , "PAREJA=" & CStr(UserList(Userindex).flags.Pareja) & vbCrLf
+224     Put n, , "Muerto=" & CStr(UserList(Userindex).flags.Muerto) & vbCrLf
+226     Put n, , "Escondido=" & CStr(UserList(Userindex).flags.Escondido) & vbCrLf
+228     Put n, , "Hambre=" & CStr(UserList(Userindex).flags.Hambre) & vbCrLf
+230     Put n, , "Sed=" & CStr(UserList(Userindex).flags.Sed) & vbCrLf
+232     Put n, , "Desnudo=" & CStr(UserList(Userindex).flags.Desnudo) & vbCrLf
+234     Put n, , "Navegando=" & CStr(UserList(Userindex).flags.Navegando) & vbCrLf
+236     Put n, , "Envenenado=" & CStr(UserList(Userindex).flags.Envenenado) & vbCrLf
+238     Put n, , "Paralizado=" & CStr(UserList(Userindex).flags.Paralizado) & vbCrLf
+240     Put n, , "Inmovilizado=" & CStr(UserList(Userindex).flags.Inmovilizado) & vbCrLf
+242     Put n, , "Incinerado=" & CStr(UserList(Userindex).flags.Incinerado) & vbCrLf
+244     Put n, , "VecesQueMoriste=" & CStr(UserList(Userindex).flags.VecesQueMoriste) & vbCrLf
+246     Put n, , "ScrollExp=" & CStr(UserList(Userindex).flags.ScrollExp) & vbCrLf
+248     Put n, , "ScrollOro=" & CStr(UserList(Userindex).flags.ScrollOro) & vbCrLf
+250     Put n, , "MinutosRestantes=" & CStr(UserList(Userindex).flags.MinutosRestantes) & vbCrLf
+252     Put n, , "SegundosPasados=" & CStr(UserList(Userindex).flags.SegundosPasados) & vbCrLf
+254     Put n, , "Silenciado=" & CStr(UserList(Userindex).flags.Silenciado) & vbCrLf
+256     Put n, , "Montado=" & CStr(UserList(Userindex).flags.Montado) & vbCrLf
         
 258     Put n, , vbCrLf
         
         'GRABADO DE CLAN
-260     Put n, , "[GUILD]" & vbCrLf & "GUILDINDEX=" & CInt(UserList(UserIndex).GuildIndex) & vbCrLf
+260     Put n, , "[GUILD]" & vbCrLf & "GUILDINDEX=" & CInt(UserList(Userindex).GuildIndex) & vbCrLf
         
 262     Put n, , vbCrLf
         
@@ -3109,96 +3111,96 @@ Sub SaveUserBinary(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean)
         
         Dim PERTENECEb As Byte
 
-266     PERTENECEb = IIf(UserList(UserIndex).flags.Privilegios And PlayerType.RoyalCouncil, "1", "0")
+266     PERTENECEb = IIf(UserList(Userindex).flags.Privilegios And PlayerType.RoyalCouncil, "1", "0")
         
         Dim PERTENECECAOSb As Byte
 
-268     PERTENECECAOSb = IIf(UserList(UserIndex).flags.Privilegios And PlayerType.ChaosCouncil, "1", "0")
+268     PERTENECECAOSb = IIf(UserList(Userindex).flags.Privilegios And PlayerType.ChaosCouncil, "1", "0")
 
 270     Put n, , "PERTENECE=" & PERTENECEb & vbCrLf
 272     Put n, , "PERTENECECAOS=" & PERTENECECAOSb & vbCrLf
         
 274     Put n, , vbCrLf
-276     Put n, , "[FACCIONES]" & vbCrLf & "EjercitoReal=" & CStr(UserList(UserIndex).Faccion.ArmadaReal) & vbCrLf
-278     Put n, , "Status=" & CStr(UserList(UserIndex).Faccion.Status) & vbCrLf
-280     Put n, , "EjercitoCaos=" & CStr(UserList(UserIndex).Faccion.FuerzasCaos) & vbCrLf
-282     Put n, , "CiudMatados=" & CStr(UserList(UserIndex).Faccion.CiudadanosMatados) & vbCrLf
-284     Put n, , "CrimMatados=" & CStr(UserList(UserIndex).Faccion.CriminalesMatados) & vbCrLf
-286     Put n, , "rArCaos=" & CStr(UserList(UserIndex).Faccion.RecibioArmaduraCaos) & vbCrLf
-288     Put n, , "rArReal=" & CStr(UserList(UserIndex).Faccion.RecibioArmaduraReal) & vbCrLf
-290     Put n, , "rExCaos=" & CStr(UserList(UserIndex).Faccion.RecibioExpInicialCaos) & vbCrLf
-292     Put n, , "rExReal=" & CStr(UserList(UserIndex).Faccion.RecibioExpInicialReal) & vbCrLf
-294     Put n, , "recCaos=" & CStr(UserList(UserIndex).Faccion.RecompensasCaos) & vbCrLf
-296     Put n, , "recReal=" & CStr(UserList(UserIndex).Faccion.RecompensasReal) & vbCrLf
-298     Put n, , "Reenlistadas=" & CStr(UserList(UserIndex).Faccion.Reenlistadas) & vbCrLf
-300     Put n, , "NivelIngreso=" & CStr(UserList(UserIndex).Faccion.NivelIngreso) & vbCrLf
-302     Put n, , "FechaIngreso=" & CStr(UserList(UserIndex).Faccion.FechaIngreso) & vbCrLf
-304     Put n, , "MatadosIngreso=" & CStr(UserList(UserIndex).Faccion.MatadosIngreso) & vbCrLf
-306     Put n, , "NextRecompensa=" & CStr(UserList(UserIndex).Faccion.NextRecompensa) & vbCrLf
+276     Put n, , "[FACCIONES]" & vbCrLf & "EjercitoReal=" & CStr(UserList(Userindex).Faccion.ArmadaReal) & vbCrLf
+278     Put n, , "Status=" & CStr(UserList(Userindex).Faccion.Status) & vbCrLf
+280     Put n, , "EjercitoCaos=" & CStr(UserList(Userindex).Faccion.FuerzasCaos) & vbCrLf
+282     Put n, , "CiudMatados=" & CStr(UserList(Userindex).Faccion.CiudadanosMatados) & vbCrLf
+284     Put n, , "CrimMatados=" & CStr(UserList(Userindex).Faccion.CriminalesMatados) & vbCrLf
+286     Put n, , "rArCaos=" & CStr(UserList(Userindex).Faccion.RecibioArmaduraCaos) & vbCrLf
+288     Put n, , "rArReal=" & CStr(UserList(Userindex).Faccion.RecibioArmaduraReal) & vbCrLf
+290     Put n, , "rExCaos=" & CStr(UserList(Userindex).Faccion.RecibioExpInicialCaos) & vbCrLf
+292     Put n, , "rExReal=" & CStr(UserList(Userindex).Faccion.RecibioExpInicialReal) & vbCrLf
+294     Put n, , "recCaos=" & CStr(UserList(Userindex).Faccion.RecompensasCaos) & vbCrLf
+296     Put n, , "recReal=" & CStr(UserList(Userindex).Faccion.RecompensasReal) & vbCrLf
+298     Put n, , "Reenlistadas=" & CStr(UserList(Userindex).Faccion.Reenlistadas) & vbCrLf
+300     Put n, , "NivelIngreso=" & CStr(UserList(Userindex).Faccion.NivelIngreso) & vbCrLf
+302     Put n, , "FechaIngreso=" & CStr(UserList(Userindex).Faccion.FechaIngreso) & vbCrLf
+304     Put n, , "MatadosIngreso=" & CStr(UserList(Userindex).Faccion.MatadosIngreso) & vbCrLf
+306     Put n, , "NextRecompensa=" & CStr(UserList(Userindex).Faccion.NextRecompensa) & vbCrLf
 
 308     Put n, , vbCrLf
         
         'MAHIA ESTUPIDIZA
-310     Put n, , "[MAGIA]" & vbCrLf & "ENVENENA=" & CByte(UserList(UserIndex).flags.Envenena) & vbCrLf
-312     Put n, , "PARALIZA=" & CByte(UserList(UserIndex).flags.Paraliza) & vbCrLf
-314     Put n, , "AnilloOcultismo=" & CByte(UserList(UserIndex).flags.AnilloOcultismo) & vbCrLf
-316     Put n, , "incinera=" & CByte(UserList(UserIndex).flags.incinera) & vbCrLf
-318     Put n, , "Estupidiza=" & CByte(UserList(UserIndex).flags.Estupidiza) & vbCrLf
-320     Put n, , "Pendiente=" & CByte(UserList(UserIndex).flags.PendienteDelSacrificio) & vbCrLf
-322     Put n, , "CarroMineria=" & CByte(UserList(UserIndex).flags.CarroMineria) & vbCrLf
-324     Put n, , "NoPalabrasMagicas=" & CByte(UserList(UserIndex).flags.NoPalabrasMagicas) & vbCrLf
-326     Put n, , "NoDetectable=" & CByte(UserList(UserIndex).flags.NoDetectable) & vbCrLf
-328     Put n, , "Otra_Aura=" & CStr(UserList(UserIndex).Char.Otra_Aura) & vbCrLf
+310     Put n, , "[MAGIA]" & vbCrLf & "ENVENENA=" & CByte(UserList(Userindex).flags.Envenena) & vbCrLf
+312     Put n, , "PARALIZA=" & CByte(UserList(Userindex).flags.Paraliza) & vbCrLf
+314     Put n, , "AnilloOcultismo=" & CByte(UserList(Userindex).flags.AnilloOcultismo) & vbCrLf
+316     Put n, , "incinera=" & CByte(UserList(Userindex).flags.incinera) & vbCrLf
+318     Put n, , "Estupidiza=" & CByte(UserList(Userindex).flags.Estupidiza) & vbCrLf
+320     Put n, , "Pendiente=" & CByte(UserList(Userindex).flags.PendienteDelSacrificio) & vbCrLf
+322     Put n, , "CarroMineria=" & CByte(UserList(Userindex).flags.CarroMineria) & vbCrLf
+324     Put n, , "NoPalabrasMagicas=" & CByte(UserList(Userindex).flags.NoPalabrasMagicas) & vbCrLf
+326     Put n, , "NoDetectable=" & CByte(UserList(Userindex).flags.NoDetectable) & vbCrLf
+328     Put n, , "Otra_Aura=" & CStr(UserList(Userindex).Char.Otra_Aura) & vbCrLf
         'Put n, , "DañoMagico=" & CByte(UserList(UserIndex).flags.DañoMagico) & vbCrLf
         'Put n, , "ResistenciaMagica=" & CByte(UserList(UserIndex).flags.ResistenciaMagica) & vbCrLf
-330     Put n, , "RegeneracionMana=" & CByte(UserList(UserIndex).flags.RegeneracionMana) & vbCrLf
-332     Put n, , "NoMagiaEfeceto=" & CByte(UserList(UserIndex).flags.NoMagiaEfeceto) & vbCrLf
-334     Put n, , "RegeneracionHP=" & CByte(UserList(UserIndex).flags.RegeneracionHP) & vbCrLf
-336     Put n, , "RegeneracionSta=" & CByte(UserList(UserIndex).flags.RegeneracionSta) & vbCrLf
+330     Put n, , "RegeneracionMana=" & CByte(UserList(Userindex).flags.RegeneracionMana) & vbCrLf
+332     Put n, , "NoMagiaEfeceto=" & CByte(UserList(Userindex).flags.NoMagiaEfeceto) & vbCrLf
+334     Put n, , "RegeneracionHP=" & CByte(UserList(Userindex).flags.RegeneracionHP) & vbCrLf
+336     Put n, , "RegeneracionSta=" & CByte(UserList(Userindex).flags.RegeneracionSta) & vbCrLf
 
 338     Put n, , vbCrLf
         'SKILLS
 340     Put n, , "[SKILLS]" & vbCrLf
 
-342     For LoopC = 1 To UBound(UserList(UserIndex).Stats.UserSkills)
-344         Put n, , "SK" & LoopC & "=" & CStr(UserList(UserIndex).Stats.UserSkills(LoopC)) & vbCrLf
+342     For LoopC = 1 To UBound(UserList(Userindex).Stats.UserSkills)
+344         Put n, , "SK" & LoopC & "=" & CStr(UserList(Userindex).Stats.UserSkills(LoopC)) & vbCrLf
         Next
 
 346     Put n, , vbCrLf
 
         'INVENTARIO
-348     Put n, , "[Inventory]" & vbCrLf & "CantidadItems=" & val(UserList(UserIndex).Invent.NroItems) & vbCrLf
+348     Put n, , "[Inventory]" & vbCrLf & "CantidadItems=" & val(UserList(Userindex).Invent.NroItems) & vbCrLf
 
-350     For LoopC = 1 To UserList(UserIndex).CurrentInventorySlots
-352         Put n, , "Obj" & LoopC & "=" & UserList(UserIndex).Invent.Object(LoopC).ObjIndex & "-" & UserList(UserIndex).Invent.Object(LoopC).Amount & "-" & UserList(UserIndex).Invent.Object(LoopC).Equipped & vbCrLf
+350     For LoopC = 1 To UserList(Userindex).CurrentInventorySlots
+352         Put n, , "Obj" & LoopC & "=" & UserList(Userindex).Invent.Object(LoopC).ObjIndex & "-" & UserList(Userindex).Invent.Object(LoopC).Amount & "-" & UserList(Userindex).Invent.Object(LoopC).Equipped & vbCrLf
         Next
-354     Put n, , "WeaponEqpSlot=" & CStr(UserList(UserIndex).Invent.WeaponEqpSlot) & vbCrLf
-356     Put n, , "HerramientaEqpSlot=" & CStr(UserList(UserIndex).Invent.HerramientaEqpSlot) & vbCrLf
-358     Put n, , "ArmourEqpSlot=" & CStr(UserList(UserIndex).Invent.ArmourEqpSlot) & vbCrLf
-360     Put n, , "CascoEqpSlot=" & CStr(UserList(UserIndex).Invent.CascoEqpSlot) & vbCrLf
-362     Put n, , "EscudoEqpSlot=" & CStr(UserList(UserIndex).Invent.EscudoEqpSlot) & vbCrLf
-364     Put n, , "BarcoSlot=" & CStr(UserList(UserIndex).Invent.BarcoSlot) & vbCrLf
-366     Put n, , "MonturaSlot=" & CStr(UserList(UserIndex).Invent.MonturaSlot) & vbCrLf
-368     Put n, , "MunicionSlot=" & CStr(UserList(UserIndex).Invent.MunicionEqpSlot) & vbCrLf
-370     Put n, , "AnilloSlot=" & CStr(UserList(UserIndex).Invent.AnilloEqpSlot) & vbCrLf
-372     Put n, , "MagicoSlot=" & CStr(UserList(UserIndex).Invent.MagicoSlot) & vbCrLf
-374     Put n, , "NudilloEqpSlot=" & CStr(UserList(UserIndex).Invent.NudilloSlot) & vbCrLf
+354     Put n, , "WeaponEqpSlot=" & CStr(UserList(Userindex).Invent.WeaponEqpSlot) & vbCrLf
+356     Put n, , "HerramientaEqpSlot=" & CStr(UserList(Userindex).Invent.HerramientaEqpSlot) & vbCrLf
+358     Put n, , "ArmourEqpSlot=" & CStr(UserList(Userindex).Invent.ArmourEqpSlot) & vbCrLf
+360     Put n, , "CascoEqpSlot=" & CStr(UserList(Userindex).Invent.CascoEqpSlot) & vbCrLf
+362     Put n, , "EscudoEqpSlot=" & CStr(UserList(Userindex).Invent.EscudoEqpSlot) & vbCrLf
+364     Put n, , "BarcoSlot=" & CStr(UserList(Userindex).Invent.BarcoSlot) & vbCrLf
+366     Put n, , "MonturaSlot=" & CStr(UserList(Userindex).Invent.MonturaSlot) & vbCrLf
+368     Put n, , "MunicionSlot=" & CStr(UserList(Userindex).Invent.MunicionEqpSlot) & vbCrLf
+370     Put n, , "AnilloSlot=" & CStr(UserList(Userindex).Invent.AnilloEqpSlot) & vbCrLf
+372     Put n, , "MagicoSlot=" & CStr(UserList(Userindex).Invent.MagicoSlot) & vbCrLf
+374     Put n, , "NudilloEqpSlot=" & CStr(UserList(Userindex).Invent.NudilloSlot) & vbCrLf
         
 376     Put n, , vbCrLf
 
 378     Put n, , "[ATRIBUTOS]" & vbCrLf
 
         '¿Fueron modificados los atributos del usuario?
-380     If Not UserList(UserIndex).flags.TomoPocion Then
+380     If Not UserList(Userindex).flags.TomoPocion Then
 
-382         For LoopC = 1 To UBound(UserList(UserIndex).Stats.UserAtributos)
-384             Put n, , "AT" & LoopC & "=" & CStr(UserList(UserIndex).Stats.UserAtributos(LoopC)) & vbCrLf
+382         For LoopC = 1 To UBound(UserList(Userindex).Stats.UserAtributos)
+384             Put n, , "AT" & LoopC & "=" & CStr(UserList(Userindex).Stats.UserAtributos(LoopC)) & vbCrLf
             Next
         Else
 
-386         For LoopC = 1 To UBound(UserList(UserIndex).Stats.UserAtributos)
+386         For LoopC = 1 To UBound(UserList(Userindex).Stats.UserAtributos)
                 'UserList(UserIndex).Stats.UserAtributos(LoopC) = UserList(UserIndex).Stats.UserAtributosBackUP(LoopC)
-388             Put n, , "AT" & LoopC & "=" & CStr(UserList(UserIndex).Stats.UserAtributosBackUP(LoopC)) & vbCrLf
+388             Put n, , "AT" & LoopC & "=" & CStr(UserList(Userindex).Stats.UserAtributosBackUP(LoopC)) & vbCrLf
             Next
 
         End If
@@ -3206,37 +3208,37 @@ Sub SaveUserBinary(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean)
 390     Put n, , vbCrLf
             
         'COUNTERS
-392     Put n, , "[COUNTERS]" & vbCrLf & "Pena=" & CStr(UserList(UserIndex).Counters.Pena) & vbCrLf
-394     Put n, , "ScrollOro=" & CStr(UserList(UserIndex).Counters.ScrollOro) & vbCrLf
-396     Put n, , "ScrollExperiencia=" & CStr(UserList(UserIndex).Counters.ScrollExperiencia) & vbCrLf
-398     Put n, , "Oxigeno=" & CStr(UserList(UserIndex).Counters.Oxigeno) & vbCrLf
+392     Put n, , "[COUNTERS]" & vbCrLf & "Pena=" & CStr(UserList(Userindex).Counters.Pena) & vbCrLf
+394     Put n, , "ScrollOro=" & CStr(UserList(Userindex).Counters.ScrollOro) & vbCrLf
+396     Put n, , "ScrollExperiencia=" & CStr(UserList(Userindex).Counters.ScrollExperiencia) & vbCrLf
+398     Put n, , "Oxigeno=" & CStr(UserList(Userindex).Counters.Oxigeno) & vbCrLf
         
 400     Put n, , vbCrLf
 
-402     Put n, , "[MUERTES]" & vbCrLf & "UserMuertes=" & CStr(UserList(UserIndex).Stats.UsuariosMatados) & vbCrLf
-404     Put n, , "NpcsMuertes=" & CStr(UserList(UserIndex).Stats.NPCsMuertos) & vbCrLf
+402     Put n, , "[MUERTES]" & vbCrLf & "UserMuertes=" & CStr(UserList(Userindex).Stats.UsuariosMatados) & vbCrLf
+404     Put n, , "NpcsMuertes=" & CStr(UserList(Userindex).Stats.NPCsMuertos) & vbCrLf
         
 406     Put n, , vbCrLf
         'BANCO
-408     Put n, , "[BancoInventory]" & vbCrLf & "CantidadItems=" & val(UserList(UserIndex).BancoInvent.NroItems) & vbCrLf
+408     Put n, , "[BancoInventory]" & vbCrLf & "CantidadItems=" & val(UserList(Userindex).BancoInvent.NroItems) & vbCrLf
 
         Dim loopd As Integer
 
 410     For loopd = 1 To MAX_BANCOINVENTORY_SLOTS
-412         Put n, , "Obj" & loopd & "=" & UserList(UserIndex).BancoInvent.Object(loopd).ObjIndex & "-" & UserList(UserIndex).BancoInvent.Object(loopd).Amount & vbCrLf
+412         Put n, , "Obj" & loopd & "=" & UserList(Userindex).BancoInvent.Object(loopd).ObjIndex & "-" & UserList(Userindex).BancoInvent.Object(loopd).Amount & vbCrLf
 414     Next loopd
         
 416     Put n, , vbCrLf
         
-418     Put n, , "[LOGROS]" & vbCrLf & "UserLogros=" & CByte(UserList(UserIndex).UserLogros) & vbCrLf
-420     Put n, , "NPcLogros=" & CByte(UserList(UserIndex).NPcLogros) & vbCrLf
-422     Put n, , "LevelLogros=" & CByte(UserList(UserIndex).LevelLogros) & vbCrLf
+418     Put n, , "[LOGROS]" & vbCrLf & "UserLogros=" & CByte(UserList(Userindex).UserLogros) & vbCrLf
+420     Put n, , "NPcLogros=" & CByte(UserList(Userindex).NPcLogros) & vbCrLf
+422     Put n, , "LevelLogros=" & CByte(UserList(Userindex).LevelLogros) & vbCrLf
         
 424     Put n, , vbCrLf
         
 426     Put n, , "[BINDKEYS]" & vbCrLf
-428     Put n, , "ChatCombate=" & CByte(UserList(UserIndex).ChatCombate) & vbCrLf
-430     Put n, , "ChatGlobal=" & CByte(UserList(UserIndex).ChatGlobal) & vbCrLf
+428     Put n, , "ChatCombate=" & CByte(UserList(Userindex).ChatCombate) & vbCrLf
+430     Put n, , "ChatGlobal=" & CByte(UserList(Userindex).ChatGlobal) & vbCrLf
         
 432     Put n, , vbCrLf
 
@@ -3246,41 +3248,41 @@ Sub SaveUserBinary(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean)
         Dim cad As String
 
 436     For LoopC = 1 To MAXUSERHECHIZOS
-438         cad = UserList(UserIndex).Stats.UserHechizos(LoopC)
+438         cad = UserList(Userindex).Stats.UserHechizos(LoopC)
 440         Put n, , "H" & LoopC & "=" & cad & vbCrLf
         Next
         
 442     Put n, , vbCrLf
         
         'BATTLE
-444     Put n, , "[Battle]" & vbCrLf & "Puntos=" & CStr(UserList(UserIndex).flags.BattlePuntos) & vbCrLf
+444     Put n, , "[Battle]" & vbCrLf & "Puntos=" & CStr(UserList(Userindex).flags.BattlePuntos) & vbCrLf
         
 446     Put n, , vbCrLf
         
-448     Put n, , "[CORREO]" & vbCrLf & "NoLeidos=" & CByte(UserList(UserIndex).Correo.NoLeidos) & vbCrLf
-450     Put n, , "CANTCORREO=" & CByte(UserList(UserIndex).Correo.CantCorreo) & vbCrLf
+448     Put n, , "[CORREO]" & vbCrLf & "NoLeidos=" & CByte(UserList(Userindex).Correo.NoLeidos) & vbCrLf
+450     Put n, , "CANTCORREO=" & CByte(UserList(Userindex).Correo.CantCorreo) & vbCrLf
         
 452     Put n, , vbCrLf
         'Correo Ladder
         
-454     For LoopC = 1 To UserList(UserIndex).Correo.CantCorreo
+454     For LoopC = 1 To UserList(Userindex).Correo.CantCorreo
         
-456         Put n, , "REMITENTE" & LoopC & "=" & UserList(UserIndex).Correo.Mensaje(LoopC).Remitente & vbCrLf
-458         Put n, , "MENSAJE" & LoopC & "=" & UserList(UserIndex).Correo.Mensaje(LoopC).Mensaje & vbCrLf
-460         Put n, , "Item" & LoopC & "=" & UserList(UserIndex).Correo.Mensaje(LoopC).Item & vbCrLf
-462         Put n, , "ItemCount" & LoopC & "=" & UserList(UserIndex).Correo.Mensaje(LoopC).ItemCount & vbCrLf
-464         Put n, , "DATE" & LoopC & "=" & UserList(UserIndex).Correo.Mensaje(LoopC).Fecha & vbCrLf
-466         Put n, , "LEIDO" & LoopC & "=" & UserList(UserIndex).Correo.Mensaje(LoopC).Leido & vbCrLf
+456         Put n, , "REMITENTE" & LoopC & "=" & UserList(Userindex).Correo.Mensaje(LoopC).Remitente & vbCrLf
+458         Put n, , "MENSAJE" & LoopC & "=" & UserList(Userindex).Correo.Mensaje(LoopC).Mensaje & vbCrLf
+460         Put n, , "Item" & LoopC & "=" & UserList(Userindex).Correo.Mensaje(LoopC).Item & vbCrLf
+462         Put n, , "ItemCount" & LoopC & "=" & UserList(Userindex).Correo.Mensaje(LoopC).ItemCount & vbCrLf
+464         Put n, , "DATE" & LoopC & "=" & UserList(Userindex).Correo.Mensaje(LoopC).Fecha & vbCrLf
+466         Put n, , "LEIDO" & LoopC & "=" & UserList(Userindex).Correo.Mensaje(LoopC).Leido & vbCrLf
             
 468     Next LoopC
         
 470     Close #n
         
-472     Call SaveQuestStats(UserIndex, UserFile)
+472     Call SaveQuestStats(Userindex, UserFile)
 
         'Devuelve el head de muerto
-474     If UserList(UserIndex).flags.Muerto = 1 Then
-476         UserList(UserIndex).Char.Head = iCabezaMuerto
+474     If UserList(Userindex).flags.Muerto = 1 Then
+476         UserList(Userindex).Char.Head = iCabezaMuerto
 
         End If
         
@@ -3292,15 +3294,15 @@ ErrHandler:
 
 End Sub
 
-Sub SaveNewUser(ByVal UserIndex As Integer)
+Sub SaveNewUser(ByVal Userindex As Integer)
         
         On Error GoTo SaveNewUser_Err
         
     
 100     If Database_Enabled Then
-102         Call SaveNewUserDatabase(UserIndex)
+102         Call SaveNewUserDatabase(Userindex)
         Else
-104         Call SaveNewUserCharfile(UserIndex)
+104         Call SaveNewUserCharfile(Userindex)
 
         End If
     
@@ -3313,7 +3315,7 @@ SaveNewUser_Err:
         
 End Sub
 
-Sub SaveNewUserCharfile(ByVal UserIndex As Integer)
+Sub SaveNewUserCharfile(ByVal Userindex As Integer)
         '*************************************************
         'Author: Unknown
         'Last modified: 23/01/2007
@@ -3327,20 +3329,20 @@ Sub SaveNewUserCharfile(ByVal UserIndex As Integer)
 
         Dim OldUserHead As Long
     
-100     UserFile = CharPath & UCase$(UserList(UserIndex).name) & ".chr"
+100     UserFile = CharPath & UCase$(UserList(Userindex).name) & ".chr"
     
         'ESTO TIENE QUE EVITAR ESE BUGAZO QUE NO SE POR QUE GRABA USUARIOS NULOS
         'clase=0 es el error, porq el enum empieza de 1!!
-102     If UserList(UserIndex).clase = 0 Or UserList(UserIndex).Stats.ELV = 0 Then
-104         Call LogCriticEvent("Estoy intentantdo guardar un usuario nulo de nombre: " & UserList(UserIndex).name)
+102     If UserList(Userindex).clase = 0 Or UserList(Userindex).Stats.ELV = 0 Then
+104         Call LogCriticEvent("Estoy intentantdo guardar un usuario nulo de nombre: " & UserList(Userindex).name)
             Exit Sub
 
         End If
     
 106     If FileExist(UserFile, vbNormal) Then
-108         If UserList(UserIndex).flags.Muerto = 1 Then
-110             OldUserHead = UserList(UserIndex).Char.Head
-112             UserList(UserIndex).Char.Head = GetVar(UserFile, "INIT", "Head")
+108         If UserList(Userindex).flags.Muerto = 1 Then
+110             OldUserHead = UserList(Userindex).Char.Head
+112             UserList(Userindex).Char.Head = GetVar(UserFile, "INIT", "Head")
 
             End If
 
@@ -3357,12 +3359,12 @@ Sub SaveNewUserCharfile(ByVal UserIndex As Integer)
 116     Open UserFile For Binary Access Write As n
     
         'BATTLE
-118     Put n, , "[Battle]" & vbCrLf & "Puntos=" & CStr(UserList(UserIndex).flags.BattlePuntos) & vbCrLf
+118     Put n, , "[Battle]" & vbCrLf & "Puntos=" & CStr(UserList(Userindex).flags.BattlePuntos) & vbCrLf
     
 120     Put n, , vbCrLf
     
         'FLAGS
-122     Put n, , "[FLAGS]" & vbCrLf & "CASADO=" & CStr(UserList(UserIndex).flags.Casado) & vbCrLf
+122     Put n, , "[FLAGS]" & vbCrLf & "CASADO=" & CStr(UserList(Userindex).flags.Casado) & vbCrLf
 124     Put n, , "PAREJA=" & vbCrLf
 126     Put n, , "Muerto=0" & vbCrLf
 128     Put n, , "Escondido=0" & vbCrLf
@@ -3375,8 +3377,8 @@ Sub SaveNewUserCharfile(ByVal UserIndex As Integer)
 142     Put n, , "Inmovilizado=0" & vbCrLf
 144     Put n, , "Incinerado=0" & vbCrLf
 146     Put n, , "VecesQueMoriste=0" & vbCrLf
-148     Put n, , "ScrollExp=" & CStr(UserList(UserIndex).flags.ScrollExp) & vbCrLf
-150     Put n, , "ScrollOro=" & CStr(UserList(UserIndex).flags.ScrollOro) & vbCrLf
+148     Put n, , "ScrollExp=" & CStr(UserList(Userindex).flags.ScrollExp) & vbCrLf
+150     Put n, , "ScrollOro=" & CStr(UserList(Userindex).flags.ScrollOro) & vbCrLf
 152     Put n, , "MinutosRestantes=0" & vbCrLf
 154     Put n, , "SegundosPasados=0" & vbCrLf
 156     Put n, , "Silenciado=0" & vbCrLf
@@ -3390,44 +3392,44 @@ Sub SaveNewUserCharfile(ByVal UserIndex As Integer)
 166     Put n, , "PERTENECE=0" & vbCrLf
 168     Put n, , "PERTENECECAOS=0" & vbCrLf
     
-170     Put n, , "[FACCIONES]" & vbCrLf & "EjercitoReal=" & CStr(UserList(UserIndex).Faccion.ArmadaReal) & vbCrLf
-172     Put n, , "Status=" & CStr(UserList(UserIndex).Faccion.Status) & vbCrLf
-174     Put n, , "EjercitoCaos=" & CStr(UserList(UserIndex).Faccion.FuerzasCaos) & vbCrLf
-176     Put n, , "CiudMatados=" & CStr(UserList(UserIndex).Faccion.CiudadanosMatados) & vbCrLf
-178     Put n, , "CrimMatados=" & CStr(UserList(UserIndex).Faccion.CriminalesMatados) & vbCrLf
-180     Put n, , "rArCaos=" & CStr(UserList(UserIndex).Faccion.RecibioArmaduraCaos) & vbCrLf
-182     Put n, , "rArReal=" & CStr(UserList(UserIndex).Faccion.RecibioArmaduraReal) & vbCrLf
-184     Put n, , "rExCaos=" & CStr(UserList(UserIndex).Faccion.RecibioExpInicialCaos) & vbCrLf
-186     Put n, , "rExReal=" & CStr(UserList(UserIndex).Faccion.RecibioExpInicialReal) & vbCrLf
-188     Put n, , "recCaos=" & CStr(UserList(UserIndex).Faccion.RecompensasCaos) & vbCrLf
-190     Put n, , "recReal=" & CStr(UserList(UserIndex).Faccion.RecompensasReal) & vbCrLf
-192     Put n, , "Reenlistadas=" & CStr(UserList(UserIndex).Faccion.Reenlistadas) & vbCrLf
-194     Put n, , "NivelIngreso=" & CStr(UserList(UserIndex).Faccion.NivelIngreso) & vbCrLf
-196     Put n, , "FechaIngreso=" & CStr(UserList(UserIndex).Faccion.FechaIngreso) & vbCrLf
-198     Put n, , "MatadosIngreso=" & CStr(UserList(UserIndex).Faccion.MatadosIngreso) & vbCrLf
-200     Put n, , "NextRecompensa=" & CStr(UserList(UserIndex).Faccion.NextRecompensa) & vbCrLf
+170     Put n, , "[FACCIONES]" & vbCrLf & "EjercitoReal=" & CStr(UserList(Userindex).Faccion.ArmadaReal) & vbCrLf
+172     Put n, , "Status=" & CStr(UserList(Userindex).Faccion.Status) & vbCrLf
+174     Put n, , "EjercitoCaos=" & CStr(UserList(Userindex).Faccion.FuerzasCaos) & vbCrLf
+176     Put n, , "CiudMatados=" & CStr(UserList(Userindex).Faccion.CiudadanosMatados) & vbCrLf
+178     Put n, , "CrimMatados=" & CStr(UserList(Userindex).Faccion.CriminalesMatados) & vbCrLf
+180     Put n, , "rArCaos=" & CStr(UserList(Userindex).Faccion.RecibioArmaduraCaos) & vbCrLf
+182     Put n, , "rArReal=" & CStr(UserList(Userindex).Faccion.RecibioArmaduraReal) & vbCrLf
+184     Put n, , "rExCaos=" & CStr(UserList(Userindex).Faccion.RecibioExpInicialCaos) & vbCrLf
+186     Put n, , "rExReal=" & CStr(UserList(Userindex).Faccion.RecibioExpInicialReal) & vbCrLf
+188     Put n, , "recCaos=" & CStr(UserList(Userindex).Faccion.RecompensasCaos) & vbCrLf
+190     Put n, , "recReal=" & CStr(UserList(Userindex).Faccion.RecompensasReal) & vbCrLf
+192     Put n, , "Reenlistadas=" & CStr(UserList(Userindex).Faccion.Reenlistadas) & vbCrLf
+194     Put n, , "NivelIngreso=" & CStr(UserList(Userindex).Faccion.NivelIngreso) & vbCrLf
+196     Put n, , "FechaIngreso=" & CStr(UserList(Userindex).Faccion.FechaIngreso) & vbCrLf
+198     Put n, , "MatadosIngreso=" & CStr(UserList(Userindex).Faccion.MatadosIngreso) & vbCrLf
+200     Put n, , "NextRecompensa=" & CStr(UserList(Userindex).Faccion.NextRecompensa) & vbCrLf
     
 202     Put n, , vbCrLf
     
         'STATS
 204     Put n, , "[STATS]" & vbCrLf & "GLD=0" & vbCrLf
 206     Put n, , "BANCO=0" & vbCrLf
-208     Put n, , "MaxHP=" & CStr(UserList(UserIndex).Stats.MaxHp) & vbCrLf
-210     Put n, , "MinHP=" & CStr(UserList(UserIndex).Stats.MinHp) & vbCrLf
-212     Put n, , "MaxSTA=" & CStr(UserList(UserIndex).Stats.MaxSta) & vbCrLf
-214     Put n, , "MinSTA=" & CStr(UserList(UserIndex).Stats.MinSta) & vbCrLf
-216     Put n, , "MaxMAN=" & CStr(UserList(UserIndex).Stats.MaxMAN) & vbCrLf
-218     Put n, , "MinMAN=" & CStr(UserList(UserIndex).Stats.MinMAN) & vbCrLf
-220     Put n, , "MaxHIT=" & CStr(UserList(UserIndex).Stats.MaxHit) & vbCrLf
-222     Put n, , "MinHIT=" & CStr(UserList(UserIndex).Stats.MinHIT) & vbCrLf
-224     Put n, , "MaxAGU=" & CStr(UserList(UserIndex).Stats.MaxAGU) & vbCrLf
-226     Put n, , "MinAGU=" & CStr(UserList(UserIndex).Stats.MinAGU) & vbCrLf
-228     Put n, , "MaxHAM=" & CStr(UserList(UserIndex).Stats.MaxHam) & vbCrLf
-230     Put n, , "MinHAM=" & CStr(UserList(UserIndex).Stats.MinHam) & vbCrLf
-232     Put n, , "SkillPtsLibres=" & CStr(UserList(UserIndex).Stats.SkillPts) & vbCrLf
-234     Put n, , "EXP=" & CStr(UserList(UserIndex).Stats.Exp) & vbCrLf
-236     Put n, , "ELV=" & CStr(UserList(UserIndex).Stats.ELV) & vbCrLf
-238     Put n, , "ELU=" & CStr(UserList(UserIndex).Stats.ELU) & vbCrLf
+208     Put n, , "MaxHP=" & CStr(UserList(Userindex).Stats.MaxHp) & vbCrLf
+210     Put n, , "MinHP=" & CStr(UserList(Userindex).Stats.MinHp) & vbCrLf
+212     Put n, , "MaxSTA=" & CStr(UserList(Userindex).Stats.MaxSta) & vbCrLf
+214     Put n, , "MinSTA=" & CStr(UserList(Userindex).Stats.MinSta) & vbCrLf
+216     Put n, , "MaxMAN=" & CStr(UserList(Userindex).Stats.MaxMAN) & vbCrLf
+218     Put n, , "MinMAN=" & CStr(UserList(Userindex).Stats.MinMAN) & vbCrLf
+220     Put n, , "MaxHIT=" & CStr(UserList(Userindex).Stats.MaxHit) & vbCrLf
+222     Put n, , "MinHIT=" & CStr(UserList(Userindex).Stats.MinHIT) & vbCrLf
+224     Put n, , "MaxAGU=" & CStr(UserList(Userindex).Stats.MaxAGU) & vbCrLf
+226     Put n, , "MinAGU=" & CStr(UserList(Userindex).Stats.MinAGU) & vbCrLf
+228     Put n, , "MaxHAM=" & CStr(UserList(Userindex).Stats.MaxHam) & vbCrLf
+230     Put n, , "MinHAM=" & CStr(UserList(Userindex).Stats.MinHam) & vbCrLf
+232     Put n, , "SkillPtsLibres=" & CStr(UserList(Userindex).Stats.SkillPts) & vbCrLf
+234     Put n, , "EXP=" & CStr(UserList(Userindex).Stats.Exp) & vbCrLf
+236     Put n, , "ELV=" & CStr(UserList(Userindex).Stats.ELV) & vbCrLf
+238     Put n, , "ELU=" & CStr(UserList(Userindex).Stats.ELU) & vbCrLf
     
 240     Put n, , vbCrLf
     
@@ -3454,47 +3456,47 @@ Sub SaveNewUserCharfile(ByVal UserIndex As Integer)
         'SKILLS
 276     Put n, , "[SKILLS]" & vbCrLf
 
-278     For LoopC = 1 To UBound(UserList(UserIndex).Stats.UserSkills)
+278     For LoopC = 1 To UBound(UserList(Userindex).Stats.UserSkills)
 280         Put n, , "SK" & LoopC & "=0" & vbCrLf
         Next
     
 282     Put n, , vbCrLf
     
         'INVENTARIO
-284     Put n, , "[Inventory]" & vbCrLf & "CantidadItems=" & val(UserList(UserIndex).Invent.NroItems) & vbCrLf
+284     Put n, , "[Inventory]" & vbCrLf & "CantidadItems=" & val(UserList(Userindex).Invent.NroItems) & vbCrLf
 
-286     For LoopC = 1 To UserList(UserIndex).CurrentInventorySlots
-288         Put n, , "Obj" & LoopC & "=" & UserList(UserIndex).Invent.Object(LoopC).ObjIndex & "-" & UserList(UserIndex).Invent.Object(LoopC).Amount & "-" & UserList(UserIndex).Invent.Object(LoopC).Equipped & vbCrLf
+286     For LoopC = 1 To UserList(Userindex).CurrentInventorySlots
+288         Put n, , "Obj" & LoopC & "=" & UserList(Userindex).Invent.Object(LoopC).ObjIndex & "-" & UserList(Userindex).Invent.Object(LoopC).Amount & "-" & UserList(Userindex).Invent.Object(LoopC).Equipped & vbCrLf
         Next
-290     Put n, , "WeaponEqpSlot=" & CStr(UserList(UserIndex).Invent.WeaponEqpSlot) & vbCrLf
-292     Put n, , "HerramientaEqpSlot=" & CStr(UserList(UserIndex).Invent.HerramientaEqpSlot) & vbCrLf
-294     Put n, , "ArmourEqpSlot=" & CStr(UserList(UserIndex).Invent.ArmourEqpSlot) & vbCrLf
-296     Put n, , "CascoEqpSlot=" & CStr(UserList(UserIndex).Invent.CascoEqpSlot) & vbCrLf
-298     Put n, , "EscudoEqpSlot=" & CStr(UserList(UserIndex).Invent.EscudoEqpSlot) & vbCrLf
-300     Put n, , "BarcoSlot=" & CStr(UserList(UserIndex).Invent.BarcoSlot) & vbCrLf
-302     Put n, , "MonturaSlot=" & CStr(UserList(UserIndex).Invent.MonturaSlot) & vbCrLf
-304     Put n, , "MunicionSlot=" & CStr(UserList(UserIndex).Invent.MunicionEqpSlot) & vbCrLf
-306     Put n, , "AnilloSlot=" & CStr(UserList(UserIndex).Invent.AnilloEqpSlot) & vbCrLf
-308     Put n, , "MagicoSlot=" & CStr(UserList(UserIndex).Invent.MagicoSlot) & vbCrLf
-310     Put n, , "NudilloEqpSlot=" & CStr(UserList(UserIndex).Invent.NudilloSlot) & vbCrLf
+290     Put n, , "WeaponEqpSlot=" & CStr(UserList(Userindex).Invent.WeaponEqpSlot) & vbCrLf
+292     Put n, , "HerramientaEqpSlot=" & CStr(UserList(Userindex).Invent.HerramientaEqpSlot) & vbCrLf
+294     Put n, , "ArmourEqpSlot=" & CStr(UserList(Userindex).Invent.ArmourEqpSlot) & vbCrLf
+296     Put n, , "CascoEqpSlot=" & CStr(UserList(Userindex).Invent.CascoEqpSlot) & vbCrLf
+298     Put n, , "EscudoEqpSlot=" & CStr(UserList(Userindex).Invent.EscudoEqpSlot) & vbCrLf
+300     Put n, , "BarcoSlot=" & CStr(UserList(Userindex).Invent.BarcoSlot) & vbCrLf
+302     Put n, , "MonturaSlot=" & CStr(UserList(Userindex).Invent.MonturaSlot) & vbCrLf
+304     Put n, , "MunicionSlot=" & CStr(UserList(Userindex).Invent.MunicionEqpSlot) & vbCrLf
+306     Put n, , "AnilloSlot=" & CStr(UserList(Userindex).Invent.AnilloEqpSlot) & vbCrLf
+308     Put n, , "MagicoSlot=" & CStr(UserList(Userindex).Invent.MagicoSlot) & vbCrLf
+310     Put n, , "NudilloEqpSlot=" & CStr(UserList(Userindex).Invent.NudilloSlot) & vbCrLf
     
 312     Put n, , vbCrLf
     
         'INIT
-314     Put n, , "[INIT]" & vbCrLf & "Cuenta=" & UserList(UserIndex).Cuenta & vbCrLf
-316     Put n, , "Genero=" & UserList(UserIndex).genero & vbCrLf
-318     Put n, , "Raza=" & UserList(UserIndex).raza & vbCrLf
-320     Put n, , "Hogar=" & UserList(UserIndex).Hogar & vbCrLf
-322     Put n, , "Clase=" & UserList(UserIndex).clase & vbCrLf
-324     Put n, , "Desc=" & UserList(UserIndex).Desc & vbCrLf
-326     Put n, , "Heading=" & CStr(UserList(UserIndex).Char.Heading) & vbCrLf
-328     Put n, , "Head=" & CStr(UserList(UserIndex).Char.Head) & vbCrLf
-330     Put n, , "Arma=" & CStr(UserList(UserIndex).Char.WeaponAnim) & vbCrLf
-332     Put n, , "Escudo=" & CStr(UserList(UserIndex).Char.ShieldAnim) & vbCrLf
-334     Put n, , "Casco=" & CStr(UserList(UserIndex).Char.CascoAnim) & vbCrLf
-336     Put n, , "Position=" & UserList(UserIndex).Pos.Map & "-" & UserList(UserIndex).Pos.X & "-" & UserList(UserIndex).Pos.Y & vbCrLf
+314     Put n, , "[INIT]" & vbCrLf & "Cuenta=" & UserList(Userindex).Cuenta & vbCrLf
+316     Put n, , "Genero=" & UserList(Userindex).genero & vbCrLf
+318     Put n, , "Raza=" & UserList(Userindex).raza & vbCrLf
+320     Put n, , "Hogar=" & UserList(Userindex).Hogar & vbCrLf
+322     Put n, , "Clase=" & UserList(Userindex).clase & vbCrLf
+324     Put n, , "Desc=" & UserList(Userindex).Desc & vbCrLf
+326     Put n, , "Heading=" & CStr(UserList(Userindex).Char.Heading) & vbCrLf
+328     Put n, , "Head=" & CStr(UserList(Userindex).Char.Head) & vbCrLf
+330     Put n, , "Arma=" & CStr(UserList(Userindex).Char.WeaponAnim) & vbCrLf
+332     Put n, , "Escudo=" & CStr(UserList(Userindex).Char.ShieldAnim) & vbCrLf
+334     Put n, , "Casco=" & CStr(UserList(Userindex).Char.CascoAnim) & vbCrLf
+336     Put n, , "Position=" & UserList(Userindex).Pos.Map & "-" & UserList(Userindex).Pos.X & "-" & UserList(Userindex).Pos.Y & vbCrLf
         ' If UserList(UserIndex).flags.Muerto = 0 Then
-338     Put n, , "Body=" & CStr(UserList(UserIndex).Char.Body) & vbCrLf
+338     Put n, , "Body=" & CStr(UserList(Userindex).Char.Body) & vbCrLf
         'Else
         '   Put N, , "Body=" & iCuerpoMuerto & vbCrLf 'poner body muerto
         '  End If
@@ -3502,11 +3504,11 @@ Sub SaveNewUserCharfile(ByVal UserIndex As Integer)
 
             Dim TempDate As Date
 
-340         TempDate = Now - UserList(UserIndex).LogOnTime
-342         UserList(UserIndex).LogOnTime = Now
-344         UserList(UserIndex).UpTime = UserList(UserIndex).UpTime + (Abs(Day(TempDate) - 30) * 24 * 3600) + Hour(TempDate) * 3600 + Minute(TempDate) * 60 + Second(TempDate)
-346         UserList(UserIndex).UpTime = UserList(UserIndex).UpTime
-348         Put n, , "UpTime=" & UserList(UserIndex).UpTime & vbCrLf
+340         TempDate = Now - UserList(Userindex).LogOnTime
+342         UserList(Userindex).LogOnTime = Now
+344         UserList(Userindex).UpTime = UserList(Userindex).UpTime + (Abs(Day(TempDate) - 30) * 24 * 3600) + Hour(TempDate) * 3600 + Minute(TempDate) * 60 + Second(TempDate)
+346         UserList(Userindex).UpTime = UserList(Userindex).UpTime
+348         Put n, , "UpTime=" & UserList(Userindex).UpTime & vbCrLf
         #End If
     
 350     Put n, , vbCrLf
@@ -3514,22 +3516,22 @@ Sub SaveNewUserCharfile(ByVal UserIndex As Integer)
 352     Put n, , "[ATRIBUTOS]" & vbCrLf
 
         '¿Fueron modificados los atributos del usuario?
-354     For LoopC = 1 To UBound(UserList(UserIndex).Stats.UserAtributos)
-356         Put n, , "AT" & LoopC & "=" & CStr(UserList(UserIndex).Stats.UserAtributos(LoopC)) & vbCrLf
+354     For LoopC = 1 To UBound(UserList(Userindex).Stats.UserAtributos)
+356         Put n, , "AT" & LoopC & "=" & CStr(UserList(Userindex).Stats.UserAtributos(LoopC)) & vbCrLf
         Next
 358     Put n, , vbCrLf
     
         'baneo
-360     Put n, , "[BAN]" & vbCrLf & "Baneado=" & CStr(UserList(UserIndex).flags.Ban) & vbCrLf
-362     Put n, , "BanMotivo=" & CStr(UserList(UserIndex).flags.BanMotivo) & vbCrLf
+360     Put n, , "[BAN]" & vbCrLf & "Baneado=" & CStr(UserList(Userindex).flags.Ban) & vbCrLf
+362     Put n, , "BanMotivo=" & CStr(UserList(Userindex).flags.BanMotivo) & vbCrLf
     
 364     Put n, , vbCrLf
     
         'COUNTERS
-366     Put n, , "[COUNTERS]" & vbCrLf & "Pena=" & CStr(UserList(UserIndex).Counters.Pena) & vbCrLf
-368     Put n, , "ScrollOro=" & CStr(UserList(UserIndex).Counters.ScrollOro) & vbCrLf
-370     Put n, , "ScrollExperiencia=" & CStr(UserList(UserIndex).Counters.ScrollExperiencia) & vbCrLf
-372     Put n, , "Oxigeno=" & CStr(UserList(UserIndex).Counters.Oxigeno) & vbCrLf
+366     Put n, , "[COUNTERS]" & vbCrLf & "Pena=" & CStr(UserList(Userindex).Counters.Pena) & vbCrLf
+368     Put n, , "ScrollOro=" & CStr(UserList(Userindex).Counters.ScrollOro) & vbCrLf
+370     Put n, , "ScrollExperiencia=" & CStr(UserList(Userindex).Counters.ScrollExperiencia) & vbCrLf
+372     Put n, , "Oxigeno=" & CStr(UserList(Userindex).Counters.Oxigeno) & vbCrLf
     
 374     Put n, , vbCrLf
     
@@ -3544,20 +3546,20 @@ Sub SaveNewUserCharfile(ByVal UserIndex As Integer)
         Dim loopd As Integer
 
 384     For loopd = 1 To MAX_BANCOINVENTORY_SLOTS
-386         Put n, , "Obj" & loopd & "=" & UserList(UserIndex).BancoInvent.Object(loopd).ObjIndex & "-" & UserList(UserIndex).BancoInvent.Object(loopd).Amount & vbCrLf
+386         Put n, , "Obj" & loopd & "=" & UserList(Userindex).BancoInvent.Object(loopd).ObjIndex & "-" & UserList(Userindex).BancoInvent.Object(loopd).Amount & vbCrLf
 388     Next loopd
     
 390     Put n, , vbCrLf
     
-392     Put n, , "[LOGROS]" & vbCrLf & "UserLogros=" & CByte(UserList(UserIndex).UserLogros) & vbCrLf
-394     Put n, , "NPcLogros=" & CByte(UserList(UserIndex).NPcLogros) & vbCrLf
-396     Put n, , "LevelLogros=" & CByte(UserList(UserIndex).LevelLogros) & vbCrLf
+392     Put n, , "[LOGROS]" & vbCrLf & "UserLogros=" & CByte(UserList(Userindex).UserLogros) & vbCrLf
+394     Put n, , "NPcLogros=" & CByte(UserList(Userindex).NPcLogros) & vbCrLf
+396     Put n, , "LevelLogros=" & CByte(UserList(Userindex).LevelLogros) & vbCrLf
     
 398     Put n, , vbCrLf
     
 400     Put n, , "[BINDKEYS]" & vbCrLf
-402     Put n, , "ChatCombate=" & CByte(UserList(UserIndex).ChatCombate) & vbCrLf
-404     Put n, , "ChatGlobal=" & CByte(UserList(UserIndex).ChatGlobal) & vbCrLf
+402     Put n, , "ChatCombate=" & CByte(UserList(Userindex).ChatCombate) & vbCrLf
+404     Put n, , "ChatGlobal=" & CByte(UserList(Userindex).ChatGlobal) & vbCrLf
     
 406     Put n, , vbCrLf
     
@@ -3567,7 +3569,7 @@ Sub SaveNewUserCharfile(ByVal UserIndex As Integer)
         Dim cad As String
 
 410     For LoopC = 1 To MAXUSERHECHIZOS
-412         cad = UserList(UserIndex).Stats.UserHechizos(LoopC)
+412         cad = UserList(Userindex).Stats.UserHechizos(LoopC)
 414         Put n, , "H" & LoopC & "=" & cad & vbCrLf
         Next
       
@@ -3578,22 +3580,22 @@ Sub SaveNewUserCharfile(ByVal UserIndex As Integer)
     
         'Correo Ladder
     
-422     For LoopC = 1 To UserList(UserIndex).Correo.CantCorreo
+422     For LoopC = 1 To UserList(Userindex).Correo.CantCorreo
     
-424         Put n, , "REMITENTE" & LoopC & "=" & UserList(UserIndex).Correo.Mensaje(LoopC).Remitente & vbCrLf
-426         Put n, , "MENSAJE" & LoopC & "=" & UserList(UserIndex).Correo.Mensaje(LoopC).Mensaje & vbCrLf
-428         Put n, , "Item" & LoopC & "=" & UserList(UserIndex).Correo.Mensaje(LoopC).Item & vbCrLf
-430         Put n, , "ItemCount" & LoopC & "=" & UserList(UserIndex).Correo.Mensaje(LoopC).ItemCount & vbCrLf
-432         Put n, , "DATE" & LoopC & "=" & UserList(UserIndex).Correo.Mensaje(LoopC).Fecha & vbCrLf
-434         Put n, , "LEIDO" & LoopC & "=" & UserList(UserIndex).Correo.Mensaje(LoopC).Leido & vbCrLf
+424         Put n, , "REMITENTE" & LoopC & "=" & UserList(Userindex).Correo.Mensaje(LoopC).Remitente & vbCrLf
+426         Put n, , "MENSAJE" & LoopC & "=" & UserList(Userindex).Correo.Mensaje(LoopC).Mensaje & vbCrLf
+428         Put n, , "Item" & LoopC & "=" & UserList(Userindex).Correo.Mensaje(LoopC).Item & vbCrLf
+430         Put n, , "ItemCount" & LoopC & "=" & UserList(Userindex).Correo.Mensaje(LoopC).ItemCount & vbCrLf
+432         Put n, , "DATE" & LoopC & "=" & UserList(Userindex).Correo.Mensaje(LoopC).Fecha & vbCrLf
+434         Put n, , "LEIDO" & LoopC & "=" & UserList(Userindex).Correo.Mensaje(LoopC).Leido & vbCrLf
         
 436     Next LoopC
     
 438     Close #n
     
         'Devuelve el head de muerto
-440     If UserList(UserIndex).flags.Muerto = 1 Then
-442         UserList(UserIndex).Char.Head = iCabezaMuerto
+440     If UserList(Userindex).flags.Muerto = 1 Then
+442         UserList(Userindex).Char.Head = iCabezaMuerto
 
         End If
     
@@ -3605,16 +3607,16 @@ ErrHandler:
 
 End Sub
 
-Sub SetUserLogged(ByVal UserIndex As Integer)
+Sub SetUserLogged(ByVal Userindex As Integer)
         
         On Error GoTo SetUserLogged_Err
         
 
 100     If Database_Enabled Then
-102         Call SetUserLoggedDatabase(UserList(UserIndex).Id, UserList(UserIndex).AccountID)
+102         Call SetUserLoggedDatabase(UserList(Userindex).Id, UserList(Userindex).AccountID)
         Else
-104         Call WriteVar(CharPath & UCase$(UserList(UserIndex).name) & ".chr", "INIT", "Logged", 1)
-106         Call WriteVar(CuentasPath & UCase$(UserList(UserIndex).Cuenta) & ".act", "INIT", "LOGEADA", 1)
+104         Call WriteVar(CharPath & UCase$(UserList(Userindex).name) & ".chr", "INIT", "Logged", 1)
+106         Call WriteVar(CuentasPath & UCase$(UserList(Userindex).Cuenta) & ".act", "INIT", "LOGEADA", 1)
 
         End If
 
@@ -3627,15 +3629,15 @@ SetUserLogged_Err:
         
 End Sub
 
-Sub SaveBattlePoints(ByVal UserIndex As Integer)
+Sub SaveBattlePoints(ByVal Userindex As Integer)
         
         On Error GoTo SaveBattlePoints_Err
         
     
 100     If Database_Enabled Then
-102         Call SaveBattlePointsDatabase(UserList(UserIndex).Id, UserList(UserIndex).flags.BattlePuntos)
+102         Call SaveBattlePointsDatabase(UserList(Userindex).Id, UserList(Userindex).flags.BattlePuntos)
         Else
-104         Call WriteVar(CharPath & UserList(UserIndex).name & ".chr", "Battle", "Puntos", UserList(UserIndex).flags.BattlePuntos)
+104         Call WriteVar(CharPath & UserList(Userindex).name & ".chr", "Battle", "Puntos", UserList(Userindex).flags.BattlePuntos)
 
         End If
     
@@ -3648,12 +3650,12 @@ SaveBattlePoints_Err:
         
 End Sub
 
-Function Status(ByVal UserIndex As Integer) As Byte
+Function Status(ByVal Userindex As Integer) As Byte
         
         On Error GoTo Status_Err
         
 
-100     Status = UserList(UserIndex).Faccion.Status
+100     Status = UserList(Userindex).Faccion.Status
 
         
         Exit Function
@@ -3819,12 +3821,12 @@ CargarNpcBackUp_Err:
         
 End Sub
 
-Sub LogBan(ByVal BannedIndex As Integer, ByVal UserIndex As Integer, ByVal motivo As String)
+Sub LogBan(ByVal BannedIndex As Integer, ByVal Userindex As Integer, ByVal motivo As String)
         
         On Error GoTo LogBan_Err
         
 
-100     Call WriteVar(App.Path & "\logs\" & "BanDetail.log", UserList(BannedIndex).name, "BannedBy", UserList(UserIndex).name)
+100     Call WriteVar(App.Path & "\logs\" & "BanDetail.log", UserList(BannedIndex).name, "BannedBy", UserList(Userindex).name)
 102     Call WriteVar(App.Path & "\logs\" & "BanDetail.log", UserList(BannedIndex).name, "Reason", motivo)
 
         'Log interno del servidor, lo usa para hacer un UNBAN general de toda la gente banned
@@ -3844,12 +3846,12 @@ LogBan_Err:
         
 End Sub
 
-Sub LogBanFromName(ByVal BannedName As String, ByVal UserIndex As Integer, ByVal motivo As String)
+Sub LogBanFromName(ByVal BannedName As String, ByVal Userindex As Integer, ByVal motivo As String)
         
         On Error GoTo LogBanFromName_Err
         
 
-100     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", BannedName, "BannedBy", UserList(UserIndex).name)
+100     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", BannedName, "BannedBy", UserList(Userindex).name)
 102     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", BannedName, "Reason", motivo)
 
         'Log interno del servidor, lo usa para hacer un UNBAN general de toda la gente banned
@@ -4148,12 +4150,12 @@ BinarySearchPeces_Err:
         
 End Function
 
-Public Sub LoadUserIntervals(ByVal UserIndex As Integer)
+Public Sub LoadUserIntervals(ByVal Userindex As Integer)
         
         On Error GoTo LoadUserIntervals_Err
         
 
-100     With UserList(UserIndex).Intervals
+100     With UserList(Userindex).Intervals
 102         .Arco = IntervaloFlechasCazadores
 104         .Caminar = IntervaloCaminar
 106         .Golpe = IntervaloUserPuedeAtacar
