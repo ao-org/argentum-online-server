@@ -16,83 +16,83 @@ Public Const GOHOME_PENALTY               As Integer = 5
 
 Public Function getLimit(ByVal Mapa As Integer, ByVal side As Byte) As Integer
 
-    '***************************************************
-    'Author: Budi
-    'Last Modification: 31/01/2010
-    'Retrieves the limit in the given side in the given map.
-    'TODO: This should be set in the .inf map file.
-    '***************************************************
-    Dim X As Long
+        '***************************************************
+        'Author: Budi
+        'Last Modification: 31/01/2010
+        'Retrieves the limit in the given side in the given map.
+        'TODO: This should be set in the .inf map file.
+        '***************************************************
+        Dim X As Long
 
-    Dim Y As Long
+        Dim Y As Long
 
-    If Mapa <= 0 Then Exit Function
+100     If Mapa <= 0 Then Exit Function
 
-    For X = 15 To 87
-        For Y = 0 To 3
+102     For X = 15 To 87
+104         For Y = 0 To 3
 
-            Select Case side
+106             Select Case side
 
-                Case eHeading.NORTH
-                    getLimit = MapData(Mapa, X, 7 + Y).TileExit.Map
+                    Case eHeading.NORTH
+108                     getLimit = MapData(Mapa, X, 7 + Y).TileExit.Map
 
-                Case eHeading.EAST
-                    getLimit = MapData(Mapa, 92 - Y, X).TileExit.Map
+110                 Case eHeading.EAST
+112                     getLimit = MapData(Mapa, 92 - Y, X).TileExit.Map
 
-                Case eHeading.SOUTH
-                    getLimit = MapData(Mapa, X, 94 - Y).TileExit.Map
+114                 Case eHeading.SOUTH
+116                     getLimit = MapData(Mapa, X, 94 - Y).TileExit.Map
 
-                Case eHeading.WEST
-                    getLimit = MapData(Mapa, 9 + Y, X).TileExit.Map
+118                 Case eHeading.WEST
+120                     getLimit = MapData(Mapa, 9 + Y, X).TileExit.Map
 
-            End Select
+                End Select
 
-            If getLimit > 0 Then Exit Function
-        Next Y
-    Next X
+122             If getLimit > 0 Then Exit Function
+124         Next Y
+126     Next X
 
 End Function
 
 Public Sub generateMatrix(ByVal Mapa As Integer)
-    '***************************************************
-    'Author: Unknown
-    'Last Modification: -
-    '
-    '***************************************************
+        '***************************************************
+        'Author: Unknown
+        'Last Modification: -
+        '
+        '***************************************************
 
-    Dim i As Integer
+        Dim i As Integer
 
-    Dim j As Integer
+        Dim j As Integer
     
-    ReDim distanceToCities(1 To NumMaps) As HomeDistance
+100     ReDim distanceToCities(1 To NumMaps) As HomeDistance
     
-    For j = 1 To NUMCIUDADES
-        For i = 1 To NumMaps
-            distanceToCities(i).distanceToCity(j) = -1
-        Next i
-    Next j
+102     For j = 1 To NUMCIUDADES
+104         For i = 1 To NumMaps
+106             distanceToCities(i).distanceToCity(j) = -1
+108         Next i
+110     Next j
     
-    For j = 1 To NUMCIUDADES
-        For i = 1 To 4
+112     For j = 1 To NUMCIUDADES
+114         For i = 1 To 4
 
-            Select Case i
+116             Select Case i
 
-                Case eHeading.NORTH
-                    Call setDistance(getLimit(Ciudades(j).Map, eHeading.NORTH), j, i, 0, -1)
+                    Case eHeading.NORTH
+118                     Call setDistance(getLimit(Ciudades(j).Map, eHeading.NORTH), j, i, 0, -1)
 
-                Case eHeading.EAST
-                    Call setDistance(getLimit(Ciudades(j).Map, eHeading.EAST), j, i, 1, 0)
+120                 Case eHeading.EAST
+122                     Call setDistance(getLimit(Ciudades(j).Map, eHeading.EAST), j, i, 1, 0)
 
-                Case eHeading.SOUTH
-                    Call setDistance(getLimit(Ciudades(j).Map, eHeading.SOUTH), j, i, 0, 1)
+124                 Case eHeading.SOUTH
+126                     Call setDistance(getLimit(Ciudades(j).Map, eHeading.SOUTH), j, i, 0, 1)
 
-                Case eHeading.WEST
-                    Call setDistance(getLimit(Ciudades(j).Map, eHeading.WEST), j, i, -1, 0)
+128                 Case eHeading.WEST
+130                     Call setDistance(getLimit(Ciudades(j).Map, eHeading.WEST), j, i, -1, 0)
 
-            End Select
+                End Select
 
-        Next i
-    Next j
+132         Next i
+134     Next j
 
 End Sub
 
@@ -101,95 +101,95 @@ Public Sub setDistance(ByVal Mapa As Integer, _
                        ByVal side As Integer, _
                        Optional ByVal X As Integer = 0, _
                        Optional ByVal Y As Integer = 0)
-    '***************************************************
-    'Author: Unknown
-    'Last Modification: -
-    '
-    '***************************************************
+        '***************************************************
+        'Author: Unknown
+        'Last Modification: -
+        '
+        '***************************************************
 
-    Dim i   As Integer
+        Dim i   As Integer
 
-    Dim lim As Integer
+        Dim lim As Integer
 
-    If Mapa <= 0 Or Mapa > NumMaps Then Exit Sub
+100     If Mapa <= 0 Or Mapa > NumMaps Then Exit Sub
 
-    If distanceToCities(Mapa).distanceToCity(city) >= 0 Then Exit Sub
+102     If distanceToCities(Mapa).distanceToCity(city) >= 0 Then Exit Sub
 
-    If Mapa = Ciudades(city).Map Then
-        distanceToCities(Mapa).distanceToCity(city) = 0
-    Else
-        distanceToCities(Mapa).distanceToCity(city) = Abs(X) + Abs(Y)
-
-    End If
-
-    For i = 1 To 4
-        lim = getLimit(Mapa, i)
-
-        If lim > 0 Then
-
-            Select Case i
-
-                Case eHeading.NORTH
-                    Call setDistance(lim, city, i, X, Y - 1)
-
-                Case eHeading.EAST
-                    Call setDistance(lim, city, i, X + 1, Y)
-
-                Case eHeading.SOUTH
-                    Call setDistance(lim, city, i, X, Y + 1)
-
-                Case eHeading.WEST
-                    Call setDistance(lim, city, i, X - 1, Y)
-
-            End Select
+104     If Mapa = Ciudades(city).Map Then
+106         distanceToCities(Mapa).distanceToCity(city) = 0
+        Else
+108         distanceToCities(Mapa).distanceToCity(city) = Abs(X) + Abs(Y)
 
         End If
 
-    Next i
+110     For i = 1 To 4
+112         lim = getLimit(Mapa, i)
+
+114         If lim > 0 Then
+
+116             Select Case i
+
+                    Case eHeading.NORTH
+118                     Call setDistance(lim, city, i, X, Y - 1)
+
+120                 Case eHeading.EAST
+122                     Call setDistance(lim, city, i, X + 1, Y)
+
+124                 Case eHeading.SOUTH
+126                     Call setDistance(lim, city, i, X, Y + 1)
+
+128                 Case eHeading.WEST
+130                     Call setDistance(lim, city, i, X - 1, Y)
+
+                End Select
+
+            End If
+
+132     Next i
 
 End Sub
 
 Public Sub goHome(ByVal Userindex As Integer)
-    '***************************************************
-    'Author: Budi
-    'Last Modification: 01/06/2010
-    '01/06/2010: ZaMa - Ahora usa otro tipo de intervalo
-    '***************************************************
+        '***************************************************
+        'Author: Budi
+        'Last Modification: 01/06/2010
+        '01/06/2010: ZaMa - Ahora usa otro tipo de intervalo
+        '***************************************************
 
-    Dim Distance As Long
-    Dim Tiempo   As Long
+        Dim Distance As Long
+        Dim Tiempo   As Long
     
-    With UserList(Userindex)
+100     With UserList(Userindex)
 
-        If .flags.Muerto = 1 Then
+102         If .flags.Muerto = 1 Then
         
-            If .flags.lastMap = 0 Then
-                Distance = distanceToCities(.Pos.Map).distanceToCity(.Hogar)
+104             If .flags.lastMap = 0 Then
+106                 Distance = distanceToCities(.Pos.Map).distanceToCity(.Hogar)
                 
+                Else
+108                 Distance = distanceToCities(.flags.lastMap).distanceToCity(.Hogar) + GOHOME_PENALTY
+
+                End If
+            
+110             Tiempo = (Distance + 1) * 13 'seg
+            
+                'If Tiempo > 60 Then Tiempo = 60
+            
+112             Call IntervaloGoHome(Userindex, Tiempo * 1000, True)
+            
+114             If .flags.lastMap = 0 Then
+116                 Call WriteConsoleMsg(Userindex, "Te encuentras a " & CStr(Distance) & " mapas de " & MapInfo(Ciudades(.Hogar).Map).map_name & ", este viaje durara " & CStr(Tiempo) & " segundos.", FontTypeNames.FONTTYPE_FIGHT)
+                Else
+118                 Call WriteConsoleMsg(Userindex, "Te encuentras en un dungeon o en las catacumbas, viajarás a " & MapInfo(Ciudades(.Hogar).Map).map_name & " en " & CStr(Tiempo) & " segundos.", FontTypeNames.FONTTYPE_FIGHT)
+                End If
+            
             Else
-                Distance = distanceToCities(.flags.lastMap).distanceToCity(.Hogar) + GOHOME_PENALTY
+        
+120             Call WriteConsoleMsg(Userindex, "Debes estar muerto para poder utilizar este comando.", FontTypeNames.FONTTYPE_FIGHT)
 
             End If
-            
-            Tiempo = (Distance + 1) * 13 'seg
-            
-            'If Tiempo > 60 Then Tiempo = 60
-            
-            Call IntervaloGoHome(Userindex, Tiempo * 1000, True)
-            
-            If .flags.lastMap = 0 Then
-                Call WriteConsoleMsg(Userindex, "Te encuentras a " & CStr(Distance) & " mapas de " & MapInfo(Ciudades(.Hogar).Map).map_name & ", este viaje durara " & CStr(Tiempo) & " segundos.", FontTypeNames.FONTTYPE_FIGHT)
-            Else
-                Call WriteConsoleMsg(Userindex, "Te encuentras en un dungeon o en las catacumbas, viajarás a " & MapInfo(Ciudades(.Hogar).Map).map_name & " en " & CStr(Tiempo) & " segundos.", FontTypeNames.FONTTYPE_FIGHT)
-            End If
-            
-        Else
         
-            Call WriteConsoleMsg(Userindex, "Debes estar muerto para poder utilizar este comando.", FontTypeNames.FONTTYPE_FIGHT)
-
-        End If
-        
-    End With
+        End With
     
 End Sub
 
@@ -200,79 +200,79 @@ End Sub
 '
 
 Public Sub TravelingEffect(ByVal Userindex As Integer)
-    '******************************************************
-    'Author: ZaMa
-    'Last Update: 01/06/2010 (ZaMa)
-    '******************************************************
+        '******************************************************
+        'Author: ZaMa
+        'Last Update: 01/06/2010 (ZaMa)
+        '******************************************************
 
-    ' Si ya paso el tiempo de penalizacion
-    If IntervaloGoHome(Userindex) Then
-        Call HomeArrival(Userindex)
-    End If
+        ' Si ya paso el tiempo de penalizacion
+100     If IntervaloGoHome(Userindex) Then
+102         Call HomeArrival(Userindex)
+        End If
 
 End Sub
 
 
 Public Function GetHomeArrivalTime(ByVal Userindex As Integer) As Integer
 
-    '**************************************************************
-    'Author: ZaMa
-    'Last Modify by: ZaMa
-    'Last Modify Date: 01/06/2010
-    'Calculates the time left to arrive home.
-    '**************************************************************
-    Dim TActual As Long
+        '**************************************************************
+        'Author: ZaMa
+        'Last Modify by: ZaMa
+        'Last Modify Date: 01/06/2010
+        'Calculates the time left to arrive home.
+        '**************************************************************
+        Dim TActual As Long
     
-    TActual = GetTickCount()
+100     TActual = GetTickCount()
     
-    With UserList(Userindex)
-        GetHomeArrivalTime = (.Counters.goHome - TActual) * 0.001
-    End With
+102     With UserList(Userindex)
+104         GetHomeArrivalTime = (.Counters.goHome - TActual) * 0.001
+        End With
 
 End Function
 
 Public Sub HomeArrival(ByVal Userindex As Integer)
-    '**************************************************************
-    'Author: ZaMa
-    'Last Modify by: ZaMa
-    'Last Modify Date: 01/06/2010
-    'Teleports user to its home.
-    '**************************************************************
+        '**************************************************************
+        'Author: ZaMa
+        'Last Modify by: ZaMa
+        'Last Modify Date: 01/06/2010
+        'Teleports user to its home.
+        '**************************************************************
     
-    Dim tX   As Integer
-    Dim tY   As Integer
-    Dim tMap As Integer
+        Dim tX   As Integer
+        Dim tY   As Integer
+        Dim tMap As Integer
 
-    With UserList(Userindex)
+100     With UserList(Userindex)
 
-        'Antes de que el pj llegue a la ciudad, lo hacemos dejar de navegar para que no se buguee.
-        If .flags.Navegando = 1 Then
-            .Char.Body = iCuerpoMuerto
-            .Char.Head = iCabezaMuerto
-            .Char.ShieldAnim = NingunEscudo
-            .Char.WeaponAnim = NingunArma
-            .Char.CascoAnim = NingunCasco
+            'Antes de que el pj llegue a la ciudad, lo hacemos dejar de navegar para que no se buguee.
+102         If .flags.Navegando = 1 Then
+104             .Char.Body = iCuerpoMuerto
+106             .Char.Head = iCabezaMuerto
+108             .Char.ShieldAnim = NingunEscudo
+110             .Char.WeaponAnim = NingunArma
+112             .Char.CascoAnim = NingunCasco
             
-            .flags.Navegando = 0
+114             .flags.Navegando = 0
             
-            Call WriteNavigateToggle(Userindex)
+116             Call WriteNavigateToggle(Userindex)
 
-            'Le sacamos el navegando, pero no le mostramos a los demas porque va a ser sumoneado hasta ulla.
-        End If
+                'Le sacamos el navegando, pero no le mostramos a los demas porque va a ser sumoneado hasta ulla.
+            End If
         
-        tX = Ciudades(.Hogar).X
-        tY = Ciudades(.Hogar).Y
-        tMap = Ciudades(.Hogar).Map
+118         tX = Ciudades(.Hogar).X
+120         tY = Ciudades(.Hogar).Y
+122         tMap = Ciudades(.Hogar).Map
         
-        Call FindLegalPos(Userindex, tMap, CByte(tX), CByte(tY))
-        Call WarpUserChar(Userindex, tMap, tX, tY, True)
+124         Call FindLegalPos(Userindex, tMap, CByte(tX), CByte(tY))
+126         Call WarpUserChar(Userindex, tMap, tX, tY, True)
         
-        Call WriteConsoleMsg(Userindex, "El viaje ha terminado.", FontTypeNames.FONTTYPE_INFOBOLD)
+128         Call WriteConsoleMsg(Userindex, "El viaje ha terminado.", FontTypeNames.FONTTYPE_INFOBOLD)
         
-        .flags.Traveling = 0
-        .Counters.goHome = 0
+130         .flags.Traveling = 0
+132         .Counters.goHome = 0
         
-    End With
+        End With
     
 End Sub
 
@@ -280,101 +280,101 @@ Public Function IntervaloGoHome(ByVal Userindex As Integer, _
                                 Optional ByVal TimeInterval As Long, _
                                 Optional ByVal Actualizar As Boolean = False) As Boolean
 
-    '**************************************************************
-    'Author: ZaMa
-    'Last Modify by: ZaMa
-    'Last Modify Date: 01/06/2010
-    '01/06/2010: ZaMa - Add the Timer which determines wether the user can be teleported to its home or not
-    '**************************************************************
+        '**************************************************************
+        'Author: ZaMa
+        'Last Modify by: ZaMa
+        'Last Modify Date: 01/06/2010
+        '01/06/2010: ZaMa - Add the Timer which determines wether the user can be teleported to its home or not
+        '**************************************************************
     
-    Dim TActual As Long
-        TActual = GetTickCount()
+        Dim TActual As Long
+100         TActual = GetTickCount()
     
-    With UserList(Userindex)
+102     With UserList(Userindex)
 
-        ' Inicializa el timer
-        If Actualizar Then
+            ' Inicializa el timer
+104         If Actualizar Then
         
-            .flags.Traveling = 1
-            .Counters.goHome = TActual + TimeInterval
+106             .flags.Traveling = 1
+108             .Counters.goHome = TActual + TimeInterval
             
-        Else
+            Else
 
-            If TActual >= .Counters.goHome Then
-                IntervaloGoHome = True
+110             If TActual >= .Counters.goHome Then
+112                 IntervaloGoHome = True
+                End If
+
             End If
 
-        End If
-
-    End With
+        End With
 
 End Function
 
 Public Sub HandleHome(ByVal Userindex As Integer)
 
-    '***************************************************
-    'Author: Budi
-    'Creation Date: 06/01/2010
-    'Last Modification: 05/06/10
-    'Pato - 05/06/10: Add the UCase$ to prevent problems.
-    '***************************************************
+        '***************************************************
+        'Author: Budi
+        'Creation Date: 06/01/2010
+        'Last Modification: 05/06/10
+        'Pato - 05/06/10: Add the UCase$ to prevent problems.
+        '***************************************************
     
-    With UserList(Userindex)
+100     With UserList(Userindex)
         
-        Call .incomingData.ReadInteger
+102         Call .incomingData.ReadInteger
 
-        If .flags.Muerto = 0 Then
-            Call WriteConsoleMsg(Userindex, "Debes estar muerto para utilizar este comando.", FontTypeNames.FONTTYPE_FIGHT)
-            Exit Sub
+104         If .flags.Muerto = 0 Then
+106             Call WriteConsoleMsg(Userindex, "Debes estar muerto para utilizar este comando.", FontTypeNames.FONTTYPE_FIGHT)
+                Exit Sub
 
-        End If
+            End If
         
-        '¿Zona Segura?
-        If MapInfo(.Pos.Map).Seguro = 1 Then
-            Call WriteConsoleMsg(Userindex, "No puedes usar este comando en zona segura.", FontTypeNames.FONTTYPE_FIGHT)
-            Exit Sub
+            '¿Zona Segura?
+108         If MapInfo(.Pos.Map).Seguro = 1 Then
+110             Call WriteConsoleMsg(Userindex, "No puedes usar este comando en zona segura.", FontTypeNames.FONTTYPE_FIGHT)
+                Exit Sub
             
-        End If
+            End If
         
-        'Si el mapa tiene alguna restriccion (newbie, dungeon, etc...), no lo dejamos viajar.
-        If MapInfo(.Pos.Map).zone = "NEWBIE" Then
-            Call WriteConsoleMsg(Userindex, "No pueder viajar a tu hogar desde este mapa.", FontTypeNames.FONTTYPE_FIGHT)
-            Exit Sub
+            'Si el mapa tiene alguna restriccion (newbie, dungeon, etc...), no lo dejamos viajar.
+112         If MapInfo(.Pos.Map).zone = "NEWBIE" Then
+114             Call WriteConsoleMsg(Userindex, "No pueder viajar a tu hogar desde este mapa.", FontTypeNames.FONTTYPE_FIGHT)
+                Exit Sub
             
-        End If
+            End If
         
-        'Si es un mapa comun y no esta en cana
-        If .Counters.Pena <> 0 Then
-            Call WriteConsoleMsg(Userindex, "No puedes usar este comando en prisión.", FontTypeNames.FONTTYPE_FIGHT)
-            Exit Sub
+            'Si es un mapa comun y no esta en cana
+116         If .Counters.Pena <> 0 Then
+118             Call WriteConsoleMsg(Userindex, "No puedes usar este comando en prisión.", FontTypeNames.FONTTYPE_FIGHT)
+                Exit Sub
 
-        End If
+            End If
         
-        If .flags.Muerto = 0 Then
-            Call WriteConsoleMsg(Userindex, "Debes estar muerto para utilizar este comando.", FontTypeNames.FONTTYPE_FIGHT)
-            Exit Sub
-
-        End If
-
-        If .flags.Traveling = 0 Then
-            
-            If .Pos.Map <> Ciudades(.Hogar).Map Then
-                Call goHome(Userindex)
-                
-            Else
-                Call WriteConsoleMsg(Userindex, "Ya te encuentras en tu hogar.", FontTypeNames.FONTTYPE_INFO)
+120         If .flags.Muerto = 0 Then
+122             Call WriteConsoleMsg(Userindex, "Debes estar muerto para utilizar este comando.", FontTypeNames.FONTTYPE_FIGHT)
+                Exit Sub
 
             End If
 
-        Else
+124         If .flags.Traveling = 0 Then
+            
+126             If .Pos.Map <> Ciudades(.Hogar).Map Then
+128                 Call goHome(Userindex)
+                
+                Else
+130                 Call WriteConsoleMsg(Userindex, "Ya te encuentras en tu hogar.", FontTypeNames.FONTTYPE_INFO)
 
-            .flags.Traveling = 0
-            .Counters.goHome = 0
+                End If
+
+            Else
+
+132             .flags.Traveling = 0
+134             .Counters.goHome = 0
             
-            Call WriteConsoleMsg(Userindex, "Ya hay un viaje en curso.", FontTypeNames.FONTTYPE_INFO)
+136             Call WriteConsoleMsg(Userindex, "Ya hay un viaje en curso.", FontTypeNames.FONTTYPE_INFO)
             
-        End If
+            End If
         
-    End With
+        End With
 
 End Sub

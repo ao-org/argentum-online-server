@@ -56,8 +56,8 @@ Public Function hexMd52Asc(ByVal MD5 As String) As String
         Exit Function
 
 hexMd52Asc_Err:
-        Call RegistrarError(Err.Number, Err.description, "modHexaStrings.hexMd52Asc", Erl)
-        Resume Next
+110     Call RegistrarError(Err.Number, Err.description, "modHexaStrings.hexMd52Asc", Erl)
+112     Resume Next
         
 End Function
 
@@ -71,8 +71,8 @@ Public Function hexHex2Dec(ByVal hex As String) As Long
         Exit Function
 
 hexHex2Dec_Err:
-        Call RegistrarError(Err.Number, Err.description, "modHexaStrings.hexHex2Dec", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "modHexaStrings.hexHex2Dec", Erl)
+104     Resume Next
         
 End Function
 
@@ -94,7 +94,7 @@ Public Function txtOffset(ByVal Text As String, ByVal off As Integer) As String
         Exit Function
 
 txtOffset_Err:
-        Call RegistrarError(Err.Number, Err.description, "modHexaStrings.txtOffset", Erl)
-        Resume Next
+108     Call RegistrarError(Err.Number, Err.description, "modHexaStrings.txtOffset", Erl)
+110     Resume Next
         
 End Function

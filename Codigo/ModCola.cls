@@ -63,13 +63,13 @@ Private Cola As Collection
 
 Public Sub Reset()
 
-    On Error Resume Next
+        On Error Resume Next
 
-    Dim i As Integer
+        Dim i As Integer
 
-    For i = 1 To Me.Longitud
-        Cola.Remove FRENTE
-    Next i
+100     For i = 1 To Me.Longitud
+102         Cola.Remove FRENTE
+104     Next i
 
 End Sub
 
@@ -83,8 +83,8 @@ Public Property Get Longitud() As Integer
         Exit Property
 
 Longitud_Err:
-        Call RegistrarError(Err.Number, Err.description, "cCola.Longitud", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "cCola.Longitud", Erl)
+104     Resume Next
         
 End Property
 
@@ -98,8 +98,8 @@ Private Function IndexValido(ByVal i As Integer) As Boolean
         Exit Function
 
 IndexValido_Err:
-        Call RegistrarError(Err.Number, Err.description, "cCola.IndexValido", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "cCola.IndexValido", Erl)
+104     Resume Next
         
 End Function
 
@@ -113,144 +113,144 @@ Private Sub Class_Initialize()
         Exit Sub
 
 Class_Initialize_Err:
-        Call RegistrarError(Err.Number, Err.description, "cCola.Class_Initialize", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "cCola.Class_Initialize", Erl)
+104     Resume Next
         
 End Sub
 
 Public Function VerElemento(ByVal Index As Integer) As String
 
-    On Error Resume Next
+        On Error Resume Next
 
-    If IndexValido(Index) Then
-        'Pablo
-        'VerElemento = UCase$(Cola.Item(index))
-        '/Pablo
-        VerElemento = Cola(Index)
-    Else
-        VerElemento = 0
+100     If IndexValido(Index) Then
+            'Pablo
+            'VerElemento = UCase$(Cola.Item(index))
+            '/Pablo
+102         VerElemento = Cola(Index)
+        Else
+104         VerElemento = 0
 
-    End If
+        End If
 
 End Function
 
 Public Sub Push(ByVal nombre As String, ByVal Consulta As String, ByVal TipoDeConsulta As String)
 
-    On Error Resume Next
+        On Error Resume Next
 
-    'Mete elemento en la cola
-    Call Cola.Add(nombre & "Ø" & Consulta & "Ø" & TipoDeConsulta)
+        'Mete elemento en la cola
+100     Call Cola.Add(nombre & "Ø" & Consulta & "Ø" & TipoDeConsulta)
 
 End Sub
 
 Public Function Pop() As String
 
-    On Error Resume Next
+        On Error Resume Next
 
-    'Quita elemento de la cola
-    If Cola.Count > 0 Then
-        Pop = Cola(FRENTE)
-        Call Cola.Remove(FRENTE)
-    Else
-        Pop = 0
+        'Quita elemento de la cola
+100     If Cola.Count > 0 Then
+102         Pop = Cola(FRENTE)
+104         Call Cola.Remove(FRENTE)
+        Else
+106         Pop = 0
 
-    End If
+        End If
 
 End Function
 
 Public Function PopByVal() As String
 
-    On Error Resume Next
+        On Error Resume Next
 
-    'Call LogTarea("PopByVal SOS")
+        'Call LogTarea("PopByVal SOS")
 
-    'Quita elemento de la cola
-    If Cola.Count > 0 Then
-        PopByVal = Cola.Item(1)
-    Else
-        PopByVal = 0
+        'Quita elemento de la cola
+100     If Cola.Count > 0 Then
+102         PopByVal = Cola.Item(1)
+        Else
+104         PopByVal = 0
 
-    End If
+        End If
 
 End Function
 
 Public Function Existe(ByVal nombre As String) As Boolean
 
-    On Error Resume Next
+        On Error Resume Next
   
-    Dim V                  As String
+        Dim V                  As String
 
-    Dim i                  As Integer
+        Dim i                  As Integer
 
-    Dim NombreEnMayusculas As String
+        Dim NombreEnMayusculas As String
 
-    NombreEnMayusculas = UCase$(nombre)
+100     NombreEnMayusculas = UCase$(nombre)
  
-    For i = 1 To Me.Longitud
-        'Pablo
-        V = mid$(Me.VerElemento(i), 10, Len(Me.VerElemento(i)))
+102     For i = 1 To Me.Longitud
+            'Pablo
+104         V = mid$(Me.VerElemento(i), 10, Len(Me.VerElemento(i)))
 
-        '/Pablo
-        'V = Me.VerElemento(i)
-        If V = NombreEnMayusculas Then
-            Existe = True
-            Exit Function
+            '/Pablo
+            'V = Me.VerElemento(i)
+106         If V = NombreEnMayusculas Then
+108             Existe = True
+                Exit Function
 
-        End If
+            End If
 
-    Next
-    Existe = False
+        Next
+110     Existe = False
 
 End Function
 
 Public Sub Quitar(ByVal nombre As String)
 
-    On Error Resume Next
+        On Error Resume Next
 
-    Dim V                  As String
+        Dim V                  As String
 
-    Dim i                  As Integer
+        Dim i                  As Integer
 
-    Dim NombreEnMayusculas As String
+        Dim NombreEnMayusculas As String
  
-    'NombreEnMayusculas = UCase$(Nombre)
+        'NombreEnMayusculas = UCase$(Nombre)
  
-    For i = 1 To Me.Longitud
-        'Pablo
-        'V = mid$(Me.VerElemento(i), 10, Len(Me.VerElemento(i)))
-        '/Pablo
-        V = Me.VerElemento(i)
+100     For i = 1 To Me.Longitud
+            'Pablo
+            'V = mid$(Me.VerElemento(i), 10, Len(Me.VerElemento(i)))
+            '/Pablo
+102         V = Me.VerElemento(i)
 
-        If V = nombre Then
-            Call Cola.Remove(i)
-            Exit Sub
+104         If V = nombre Then
+106             Call Cola.Remove(i)
+                Exit Sub
 
-        End If
+            End If
 
-    Next i
+108     Next i
  
 End Sub
 
 Public Sub QuitarIndex(ByVal Index As Integer)
 
-    On Error Resume Next
+        On Error Resume Next
 
-    If IndexValido(Index) Then Call Cola.Remove(Index)
+100     If IndexValido(Index) Then Call Cola.Remove(Index)
 
 End Sub
 
 Private Sub Class_Terminate()
-        'Destruimos el objeto Cola
+    'Destruimos el objeto Cola
         
-        On Error GoTo Class_Terminate_Err
+    On Error GoTo Class_Terminate_Err
         
-100     Set Cola = Nothing
+    Set Cola = Nothing
 
         
-        Exit Sub
+    Exit Sub
 
 Class_Terminate_Err:
-        Call RegistrarError(Err.Number, Err.description, "cCola.Class_Terminate", Erl)
-        Resume Next
+    Call RegistrarError(Err.Number, Err.description, "cCola.Class_Terminate", Erl)
+    Resume Next
         
 End Sub

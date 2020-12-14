@@ -102,8 +102,8 @@ Private Sub Command1_Click()
         Exit Sub
 
 Command1_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmUserList.Command1_Click", Erl)
-        Resume Next
+116     Call RegistrarError(Err.Number, Err.description, "frmUserList.Command1_Click", Erl)
+118     Resume Next
         
 End Sub
 
@@ -127,8 +127,8 @@ Private Sub Command2_Click()
         Exit Sub
 
 Command2_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmUserList.Command2_Click", Erl)
-        Resume Next
+108     Call RegistrarError(Err.Number, Err.description, "frmUserList.Command2_Click", Erl)
+110     Resume Next
         
 End Sub
 
@@ -137,14 +137,14 @@ Private Sub List1_Click()
         On Error GoTo List1_Click_Err
         
 
-        Dim UserIndex As Integer
+        Dim Userindex As Integer
 
 100     If List1.ListIndex <> -1 Then
-102         UserIndex = List1.ItemData(List1.ListIndex)
+102         Userindex = List1.ItemData(List1.ListIndex)
 
-104         If UserIndex > 0 And UserIndex <= MaxUsers Then
+104         If Userindex > 0 And Userindex <= MaxUsers Then
 
-106             With UserList(UserIndex)
+106             With UserList(Userindex)
 108                 Text1.Text = "UserLogged: " & .flags.UserLogged & vbCrLf
 110                 Text1.Text = Text1.Text & "IdleCount: " & .Counters.IdleCount & vbCrLf
 112                 Text1.Text = Text1.Text & "ConnId: " & .ConnID & vbCrLf
@@ -160,7 +160,7 @@ Private Sub List1_Click()
         Exit Sub
 
 List1_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmUserList.List1_Click", Erl)
-        Resume Next
+116     Call RegistrarError(Err.Number, Err.description, "frmUserList.List1_Click", Erl)
+118     Resume Next
         
 End Sub

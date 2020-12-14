@@ -30,7 +30,7 @@ Public Const NumRanks          As Byte = 1 ''Cuantos tipos de rankings existen (
 
 Public Rankings(1 To NumRanks) As tRanking ''Array con todos los tipos de ranking, para identificar cada uno se usa el enum eRankings
 
-Public Sub CheckRanking(ByVal Tipo As eRankings, ByVal UserIndex As Integer, ByVal Value As Long)
+Public Sub CheckRanking(ByVal Tipo As eRankings, ByVal Userindex As Integer, ByVal Value As Long)
         ''CheckRanking
         ''Cada vez que se cambia algun valor de cualquier usuario, se verifica si puede ingresar al ranking, _
           cambiar de posicion o solamente actualizar el valor.
@@ -40,7 +40,7 @@ Public Sub CheckRanking(ByVal Tipo As eRankings, ByVal UserIndex As Integer, ByV
                                                    
         Dim FindPos As Byte, LoopC As Long, InRank As Byte, backup As tUserRanking
 
-100     InRank = isRank(UserList(UserIndex).name, Tipo) ''Verificamos si esta en el ranking y si esta, en que posicion.
+100     InRank = isRank(UserList(Userindex).name, Tipo) ''Verificamos si esta en el ranking y si esta, en que posicion.
 
 102     With Rankings(Tipo)
 
@@ -83,7 +83,7 @@ Public Sub CheckRanking(ByVal Tipo As eRankings, ByVal UserIndex As Integer, ByV
 
                     End If
 
-146                 .user(FindPos).Nick = UCase$(UserList(UserIndex).name) ''Ingresa el pj al ranking en el puesto que encontramos.
+146                 .user(FindPos).Nick = UCase$(UserList(Userindex).name) ''Ingresa el pj al ranking en el puesto que encontramos.
 148                 .user(FindPos).Value = Value
 
                 End If
@@ -98,8 +98,8 @@ Public Sub CheckRanking(ByVal Tipo As eRankings, ByVal UserIndex As Integer, ByV
         Exit Sub
 
 CheckRanking_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModRanking.CheckRanking", Erl)
-        Resume Next
+152     Call RegistrarError(Err.Number, Err.description, "ModRanking.CheckRanking", Erl)
+154     Resume Next
         
 End Sub
 
@@ -109,19 +109,19 @@ Private Function isRank(ByVal Nick As String, ByVal Tipo As eRankings) As Byte
         
 
         'Funcion que devuelve el puesto del ranking si es que esta en el mismo, devuelve 0 si no esta en el ranking.
-        Dim x As Long
+        Dim X As Long
 
-100     For x = 1 To 10 ''Recorremos el ranking
+100     For X = 1 To 10 ''Recorremos el ranking
 
-102         If UCase$(Nick) = UCase$(Rankings(Tipo).user(x).Nick) Then ''Esta en este puesto?
-104             isRank = CByte(x) ''Devolvemos el valor que encontramos
+102         If UCase$(Nick) = UCase$(Rankings(Tipo).user(X).Nick) Then ''Esta en este puesto?
+104             isRank = CByte(X) ''Devolvemos el valor que encontramos
 
                 Exit Function ''Salimos, ya no hay nada mas que hacer.
 
             End If
 
             ''No esta en este puesto, seguimos buscando
-106     Next x
+106     Next X
 
         ''No esta en el ranking, devolvemos 0 como valor.
 108     isRank = 0
@@ -130,8 +130,8 @@ Private Function isRank(ByVal Nick As String, ByVal Tipo As eRankings) As Byte
         Exit Function
 
 isRank_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModRanking.isRank", Erl)
-        Resume Next
+110     Call RegistrarError(Err.Number, Err.description, "ModRanking.isRank", Erl)
+112     Resume Next
         
 End Function
 
@@ -142,7 +142,7 @@ Public Sub GuardarRanking()
 
         Dim Tipo     As Long
 
-        Dim x        As Long
+        Dim X        As Long
 
         Dim rankfile As String
 
@@ -152,9 +152,9 @@ Public Sub GuardarRanking()
 
 104         With Rankings(Tipo)
 
-106             For x = 1 To 10 ''Recorremos el ranking
-108                 Call WriteVar(rankfile, Tipo, x, .user(x).Nick & "*" & .user(x).Value)
-110             Next x
+106             For X = 1 To 10 ''Recorremos el ranking
+108                 Call WriteVar(rankfile, Tipo, X, .user(X).Nick & "*" & .user(X).Value)
+110             Next X
 
             End With
 
@@ -164,8 +164,8 @@ Public Sub GuardarRanking()
         Exit Sub
 
 GuardarRanking_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModRanking.GuardarRanking", Erl)
-        Resume Next
+114     Call RegistrarError(Err.Number, Err.description, "ModRanking.GuardarRanking", Erl)
+116     Resume Next
         
 End Sub
 
@@ -176,7 +176,7 @@ Public Sub CargarRanking()
 
         Dim Tipo     As Long
 
-        Dim x        As Long
+        Dim X        As Long
 
         Dim rankfile As String
 
@@ -188,11 +188,11 @@ Public Sub CargarRanking()
 
 104         With Rankings(Tipo)
 
-106             For x = 1 To 10 ''Recorremos el ranking
-108                 tmpstring = GetVar(rankfile, Tipo, x)
-110                 .user(x).Nick = ReadField(1, tmpstring, Asc("*"))
-112                 .user(x).Value = ReadField(2, tmpstring, Asc("*"))
-114             Next x
+106             For X = 1 To 10 ''Recorremos el ranking
+108                 tmpstring = GetVar(rankfile, Tipo, X)
+110                 .user(X).Nick = ReadField(1, tmpstring, Asc("*"))
+112                 .user(X).Value = ReadField(2, tmpstring, Asc("*"))
+114             Next X
 
             End With
 
@@ -202,7 +202,7 @@ Public Sub CargarRanking()
         Exit Sub
 
 CargarRanking_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModRanking.CargarRanking", Erl)
-        Resume Next
+118     Call RegistrarError(Err.Number, Err.description, "ModRanking.CargarRanking", Erl)
+120     Resume Next
         
 End Sub

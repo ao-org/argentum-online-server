@@ -681,8 +681,8 @@ Private Sub Command1_Click()
         Exit Sub
 
 Command1_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command1_Click", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "frmServidor.Command1_Click", Erl)
+108     Resume Next
         
 End Sub
 
@@ -696,8 +696,8 @@ Private Sub Command10_Click()
         Exit Sub
 
 Command10_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command10_Click", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "frmServidor.Command10_Click", Erl)
+104     Resume Next
         
 End Sub
 
@@ -711,8 +711,8 @@ Private Sub Command11_Click()
         Exit Sub
 
 Command11_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command11_Click", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "frmServidor.Command11_Click", Erl)
+104     Resume Next
         
 End Sub
 
@@ -726,8 +726,8 @@ Private Sub Command12_Click()
         Exit Sub
 
 Command12_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command12_Click", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "frmServidor.Command12_Click", Erl)
+104     Resume Next
         
 End Sub
 
@@ -741,8 +741,8 @@ Private Sub Command13_Click()
         Exit Sub
 
 Command13_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command13_Click", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "frmServidor.Command13_Click", Erl)
+104     Resume Next
         
 End Sub
 
@@ -756,46 +756,46 @@ Private Sub Command14_Click()
         Exit Sub
 
 Command14_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command14_Click", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "frmServidor.Command14_Click", Erl)
+104     Resume Next
         
 End Sub
 
 Private Sub Command15_Click()
 
-    On Error Resume Next
+        On Error Resume Next
 
-    Dim Fn       As String
+        Dim Fn       As String
 
-    Dim cad$
+        Dim cad$
 
-    Dim n        As Integer, K As Integer
+        Dim n        As Integer, K As Integer
 
-    Dim sENtrada As String
+        Dim sENtrada As String
 
-    sENtrada = InputBox("Escribe ""estoy DE acuerdo"" entre comillas y con distición de mayusculas minusculas para desbanear a todos los personajes", "UnBan", "hola")
+100     sENtrada = InputBox("Escribe ""estoy DE acuerdo"" entre comillas y con distición de mayusculas minusculas para desbanear a todos los personajes", "UnBan", "hola")
 
-    If sENtrada = "estoy DE acuerdo" Then
+102     If sENtrada = "estoy DE acuerdo" Then
 
-        Fn = App.Path & "\logs\GenteBanned.log"
+104         Fn = App.Path & "\logs\GenteBanned.log"
     
-        If FileExist(Fn, vbNormal) Then
-            n = FreeFile
-            Open Fn For Input Shared As #n
+106         If FileExist(Fn, vbNormal) Then
+108             n = FreeFile
+110             Open Fn For Input Shared As #n
 
-            Do While Not EOF(n)
-                K = K + 1
-                Input #n, cad$
-                Call UnBan(cad$)
+112             Do While Not EOF(n)
+114                 K = K + 1
+116                 Input #n, cad$
+118                 Call UnBan(cad$)
             
-            Loop
-            Close #n
-            MsgBox "Se han habilitado " & K & " personajes."
-            Kill Fn
+                Loop
+120             Close #n
+122             MsgBox "Se han habilitado " & K & " personajes."
+124             Kill Fn
+
+            End If
 
         End If
-
-    End If
 
 End Sub
 
@@ -809,8 +809,8 @@ Private Sub Command16_Click()
         Exit Sub
 
 Command16_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command16_Click", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "frmServidor.Command16_Click", Erl)
+104     Resume Next
         
 End Sub
 
@@ -824,8 +824,8 @@ Private Sub Command17_Click()
         Exit Sub
 
 Command17_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command17_Click", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "frmServidor.Command17_Click", Erl)
+104     Resume Next
         
 End Sub
 
@@ -842,8 +842,8 @@ Private Sub Command18_Click()
         Exit Sub
 
 Command18_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command18_Click", Erl)
-        Resume Next
+108     Call RegistrarError(Err.Number, Err.description, "frmServidor.Command18_Click", Erl)
+110     Resume Next
         
 End Sub
 
@@ -874,8 +874,8 @@ Private Sub Command19_Click()
         Exit Sub
 
 Command19_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command19_Click", Erl)
-        Resume Next
+114     Call RegistrarError(Err.Number, Err.description, "frmServidor.Command19_Click", Erl)
+116     Resume Next
         
 End Sub
 
@@ -889,8 +889,8 @@ Private Sub Command2_Click()
         Exit Sub
 
 Command2_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command2_Click", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "frmServidor.Command2_Click", Erl)
+104     Resume Next
         
 End Sub
 
@@ -931,8 +931,8 @@ Private Sub Command20_Click()
         Exit Sub
 
 Command20_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command20_Click", Erl)
-        Resume Next
+118     Call RegistrarError(Err.Number, Err.description, "frmServidor.Command20_Click", Erl)
+120     Resume Next
         
 End Sub
 
@@ -957,8 +957,8 @@ Private Sub Command21_Click()
         Exit Sub
 
 Command21_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command21_Click", Erl)
-        Resume Next
+114     Call RegistrarError(Err.Number, Err.description, "frmServidor.Command21_Click", Erl)
+116     Resume Next
         
 End Sub
 
@@ -973,8 +973,8 @@ Private Sub Command22_Click()
         Exit Sub
 
 Command22_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command22_Click", Erl)
-        Resume Next
+104     Call RegistrarError(Err.Number, Err.description, "frmServidor.Command22_Click", Erl)
+106     Resume Next
         
 End Sub
 
@@ -1003,8 +1003,8 @@ Private Sub Command23_Click()
         Exit Sub
 
 Command23_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command23_Click", Erl)
-        Resume Next
+110     Call RegistrarError(Err.Number, Err.description, "frmServidor.Command23_Click", Erl)
+112     Resume Next
         
 End Sub
 
@@ -1018,8 +1018,8 @@ Private Sub Command24_Click()
         Exit Sub
 
 Command24_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command24_Click", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "frmServidor.Command24_Click", Erl)
+104     Resume Next
         
 End Sub
 
@@ -1033,8 +1033,8 @@ Private Sub Command25_Click()
         Exit Sub
 
 Command25_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command25_Click", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "frmServidor.Command25_Click", Erl)
+104     Resume Next
         
 End Sub
 
@@ -1055,8 +1055,8 @@ Private Sub Command26_Click()
         Exit Sub
 
 Command26_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command26_Click", Erl)
-        Resume Next
+104     Call RegistrarError(Err.Number, Err.description, "frmServidor.Command26_Click", Erl)
+106     Resume Next
         
 End Sub
 
@@ -1070,8 +1070,8 @@ Private Sub Command27_Click()
         Exit Sub
 
 Command27_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command27_Click", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "frmServidor.Command27_Click", Erl)
+104     Resume Next
         
 End Sub
 
@@ -1085,8 +1085,8 @@ Private Sub Command28_Click()
         Exit Sub
 
 Command28_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command28_Click", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "frmServidor.Command28_Click", Erl)
+104     Resume Next
         
 End Sub
 
@@ -1105,93 +1105,93 @@ Private Sub Command3_Click()
         Exit Sub
 
 Command3_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command3_Click", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "frmServidor.Command3_Click", Erl)
+108     Resume Next
         
 End Sub
 
 Private Sub Command4_Click()
 
-    On Error GoTo eh
+        On Error GoTo eh
 
-    Me.MousePointer = 11
-    FrmStat.Show
-    Call DoBackUp
-    Me.MousePointer = 0
-    MsgBox "WORLDSAVE OK!!"
-    Exit Sub
+100     Me.MousePointer = 11
+102     FrmStat.Show
+104     Call DoBackUp
+106     Me.MousePointer = 0
+108     MsgBox "WORLDSAVE OK!!"
+        Exit Sub
 eh:
-    Call LogError("Error en WORLDSAVE")
+110     Call LogError("Error en WORLDSAVE")
 
 End Sub
 
 Private Sub Command5_Click()
 
-    'Se asegura de que los sockets estan cerrados e ignora cualquier err
-    On Error Resume Next
+        'Se asegura de que los sockets estan cerrados e ignora cualquier err
+        On Error Resume Next
 
-    If frmMain.Visible Then frmMain.txStatus.Caption = "Reiniciando."
+100     If frmMain.Visible Then frmMain.txStatus.Caption = "Reiniciando."
 
-    FrmStat.Show
+102     FrmStat.Show
 
-    If FileExist(App.Path & "\logs\errores.log", vbNormal) Then Kill App.Path & "\logs\errores.log"
-    If FileExist(App.Path & "\logs\connect.log", vbNormal) Then Kill App.Path & "\logs\Connect.log"
-    If FileExist(App.Path & "\logs\HackAttemps.log", vbNormal) Then Kill App.Path & "\logs\HackAttemps.log"
-    If FileExist(App.Path & "\logs\Asesinatos.log", vbNormal) Then Kill App.Path & "\logs\Asesinatos.log"
-    If FileExist(App.Path & "\logs\Resurrecciones.log", vbNormal) Then Kill App.Path & "\logs\Resurrecciones.log"
-    If FileExist(App.Path & "\logs\Teleports.Log", vbNormal) Then Kill App.Path & "\logs\Teleports.Log"
+104     If FileExist(App.Path & "\logs\errores.log", vbNormal) Then Kill App.Path & "\logs\errores.log"
+106     If FileExist(App.Path & "\logs\connect.log", vbNormal) Then Kill App.Path & "\logs\Connect.log"
+108     If FileExist(App.Path & "\logs\HackAttemps.log", vbNormal) Then Kill App.Path & "\logs\HackAttemps.log"
+110     If FileExist(App.Path & "\logs\Asesinatos.log", vbNormal) Then Kill App.Path & "\logs\Asesinatos.log"
+112     If FileExist(App.Path & "\logs\Resurrecciones.log", vbNormal) Then Kill App.Path & "\logs\Resurrecciones.log"
+114     If FileExist(App.Path & "\logs\Teleports.Log", vbNormal) Then Kill App.Path & "\logs\Teleports.Log"
 
-    #If UsarQueSocket = 1 Then
-        Call apiclosesocket(SockListen)
-    #ElseIf UsarQueSocket = 0 Then
-        frmMain.Socket1.Cleanup
-        frmMain.Socket2(0).Cleanup
-    #ElseIf UsarQueSocket = 2 Then
-        frmMain.Serv.Detener
-    #End If
+        #If UsarQueSocket = 1 Then
+116         Call apiclosesocket(SockListen)
+        #ElseIf UsarQueSocket = 0 Then
+118         frmMain.Socket1.Cleanup
+120         frmMain.Socket2(0).Cleanup
+        #ElseIf UsarQueSocket = 2 Then
+122         frmMain.Serv.Detener
+        #End If
 
-    Dim LoopC As Integer
+        Dim LoopC As Integer
 
-    For LoopC = 1 To MaxUsers
-        Call CloseSocket(LoopC)
-    Next
+124     For LoopC = 1 To MaxUsers
+126         Call CloseSocket(LoopC)
+        Next
 
-    LastUser = 0
-    NumUsers = 0
+128     LastUser = 0
+130     NumUsers = 0
 
-    Call FreeNPCs
-    Call FreeCharIndexes
+132     Call FreeNPCs
+134     Call FreeCharIndexes
 
-    Call LoadSini
-    Call LoadIntervalos
-    Call CargarBackUp
-    Call LoadOBJData
-    Call LoadPesca
-    Call LoadRecursosEspeciales
+136     Call LoadSini
+138     Call LoadIntervalos
+140     Call CargarBackUp
+142     Call LoadOBJData
+144     Call LoadPesca
+146     Call LoadRecursosEspeciales
 
-    #If UsarQueSocket = 1 Then
-        SockListen = ListenForConnect(Puerto, hWndMsg, "")
+        #If UsarQueSocket = 1 Then
+148         SockListen = ListenForConnect(Puerto, hWndMsg, "")
 
-    #ElseIf UsarQueSocket = 0 Then
-        frmMain.Socket1.AddressFamily = AF_INET
-        frmMain.Socket1.Protocol = IPPROTO_IP
-        frmMain.Socket1.SocketType = SOCK_STREAM
-        frmMain.Socket1.Binary = False
-        frmMain.Socket1.Blocking = False
-        frmMain.Socket1.BufferSize = 1024
+        #ElseIf UsarQueSocket = 0 Then
+150         frmMain.Socket1.AddressFamily = AF_INET
+152         frmMain.Socket1.Protocol = IPPROTO_IP
+154         frmMain.Socket1.SocketType = SOCK_STREAM
+156         frmMain.Socket1.Binary = False
+158         frmMain.Socket1.Blocking = False
+160         frmMain.Socket1.BufferSize = 1024
 
-        frmMain.Socket2(0).AddressFamily = AF_INET
-        frmMain.Socket2(0).Protocol = IPPROTO_IP
-        frmMain.Socket2(0).SocketType = SOCK_STREAM
-        frmMain.Socket2(0).Blocking = False
-        frmMain.Socket2(0).BufferSize = 2048
+162         frmMain.Socket2(0).AddressFamily = AF_INET
+164         frmMain.Socket2(0).Protocol = IPPROTO_IP
+166         frmMain.Socket2(0).SocketType = SOCK_STREAM
+168         frmMain.Socket2(0).Blocking = False
+170         frmMain.Socket2(0).BufferSize = 2048
 
-        'Escucha
-        frmMain.Socket1.LocalPort = Puerto
-        frmMain.Socket1.listen
-    #End If
+            'Escucha
+172         frmMain.Socket1.LocalPort = Puerto
+174         frmMain.Socket1.listen
+        #End If
 
-    If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
+176     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
 
 End Sub
 
@@ -1205,8 +1205,8 @@ Private Sub Command6_Click()
         Exit Sub
 
 Command6_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command6_Click", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "frmServidor.Command6_Click", Erl)
+104     Resume Next
         
 End Sub
 
@@ -1220,8 +1220,8 @@ Private Sub Command7_Click()
         Exit Sub
 
 Command7_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command7_Click", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "frmServidor.Command7_Click", Erl)
+104     Resume Next
         
 End Sub
 
@@ -1235,8 +1235,8 @@ Private Sub Command8_Click()
         Exit Sub
 
 Command8_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command8_Click", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "frmServidor.Command8_Click", Erl)
+104     Resume Next
         
 End Sub
 
@@ -1250,8 +1250,8 @@ Private Sub Command9_Click()
         Exit Sub
 
 Command9_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command9_Click", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "frmServidor.Command9_Click", Erl)
+104     Resume Next
         
 End Sub
 
@@ -1265,8 +1265,8 @@ Private Sub Form_Deactivate()
         Exit Sub
 
 Form_Deactivate_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmServidor.Form_Deactivate", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "frmServidor.Form_Deactivate", Erl)
+104     Resume Next
         
 End Sub
 
@@ -1289,7 +1289,7 @@ Private Sub Form_Load()
         Exit Sub
 
 Form_Load_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmServidor.Form_Load", Erl)
-        Resume Next
+112     Call RegistrarError(Err.Number, Err.description, "frmServidor.Form_Load", Erl)
+114     Resume Next
         
 End Sub

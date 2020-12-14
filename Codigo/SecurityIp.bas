@@ -60,8 +60,8 @@ Public Sub InitIpTables(ByVal OptCountersValue As Long)
         Exit Sub
 
 InitIpTables_Err:
-        Call RegistrarError(Err.Number, Err.description, "SecurityIp.InitIpTables", Erl)
-        Resume Next
+112     Call RegistrarError(Err.Number, Err.description, "SecurityIp.InitIpTables", Erl)
+114     Resume Next
         
 End Sub
 
@@ -90,8 +90,8 @@ Public Sub IpSecurityMantenimientoLista()
         Exit Sub
 
 IpSecurityMantenimientoLista_Err:
-        Call RegistrarError(Err.Number, Err.description, "SecurityIp.IpSecurityMantenimientoLista", Erl)
-        Resume Next
+108     Call RegistrarError(Err.Number, Err.description, "SecurityIp.IpSecurityMantenimientoLista", Erl)
+110     Resume Next
         
 End Sub
 
@@ -136,8 +136,8 @@ Public Function IpSecurityAceptarNuevaConexion(ByVal ip As Long) As Boolean
         Exit Function
 
 IpSecurityAceptarNuevaConexion_Err:
-        Call RegistrarError(Err.Number, Err.description, "SecurityIp.IpSecurityAceptarNuevaConexion", Erl)
-        Resume Next
+124     Call RegistrarError(Err.Number, Err.description, "SecurityIp.IpSecurityAceptarNuevaConexion", Erl)
+126     Resume Next
         
 End Function
 
@@ -172,8 +172,8 @@ Private Sub AddNewIpIntervalo(ByVal ip As Long, ByVal Index As Long)
         Exit Sub
 
 AddNewIpIntervalo_Err:
-        Call RegistrarError(Err.Number, Err.description, "SecurityIp.AddNewIpIntervalo", Erl)
-        Resume Next
+116     Call RegistrarError(Err.Number, Err.description, "SecurityIp.AddNewIpIntervalo", Erl)
+118     Resume Next
         
 End Sub
 
@@ -224,8 +224,8 @@ Public Function IPSecuritySuperaLimiteConexiones(ByVal ip As Long) As Boolean
         Exit Function
 
 IPSecuritySuperaLimiteConexiones_Err:
-        Call RegistrarError(Err.Number, Err.description, "SecurityIp.IPSecuritySuperaLimiteConexiones", Erl)
-        Resume Next
+132     Call RegistrarError(Err.Number, Err.description, "SecurityIp.IPSecuritySuperaLimiteConexiones", Erl)
+134     Resume Next
         
 End Function
 
@@ -271,8 +271,8 @@ Private Sub AddNewIpLimiteConexiones(ByVal ip As Long, ByVal Index As Long)
         Exit Sub
 
 AddNewIpLimiteConexiones_Err:
-        Call RegistrarError(Err.Number, Err.description, "SecurityIp.AddNewIpLimiteConexiones", Erl)
-        Resume Next
+116     Call RegistrarError(Err.Number, Err.description, "SecurityIp.AddNewIpLimiteConexiones", Erl)
+118     Resume Next
         
 End Sub
 
@@ -312,8 +312,8 @@ Public Sub IpRestarConexion(ByVal ip As Long)
         Exit Sub
 
 IpRestarConexion_Err:
-        Call RegistrarError(Err.Number, Err.description, "SecurityIp.IpRestarConexion", Erl)
-        Resume Next
+120     Call RegistrarError(Err.Number, Err.description, "SecurityIp.IpRestarConexion", Erl)
+122     Resume Next
         
 End Sub
 
@@ -388,8 +388,8 @@ Private Function FindTableIp(ByVal ip As Long, ByVal Tabla As e_SecurityIpTabla)
         Exit Function
 
 FindTableIp_Err:
-        Call RegistrarError(Err.Number, Err.description, "SecurityIp.FindTableIp", Erl)
-        Resume Next
+144     Call RegistrarError(Err.Number, Err.description, "SecurityIp.FindTableIp", Erl)
+146     Resume Next
         
 End Function
 
@@ -408,7 +408,7 @@ Public Function DumpTables()
         Exit Function
 
 DumpTables_Err:
-        Call RegistrarError(Err.Number, Err.description, "SecurityIp.DumpTables", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "SecurityIp.DumpTables", Erl)
+108     Resume Next
         
 End Function

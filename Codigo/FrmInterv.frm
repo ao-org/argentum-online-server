@@ -794,54 +794,54 @@ Public Sub AplicarIntervalos()
         Exit Sub
 
 AplicarIntervalos_Err:
-        Call RegistrarError(Err.Number, Err.description, "FrmInterv.AplicarIntervalos", Erl)
-        Resume Next
+144     Call RegistrarError(Err.Number, Err.description, "FrmInterv.AplicarIntervalos", Erl)
+146     Resume Next
         
 End Sub
 
 Private Sub Command1_Click()
 
-    On Error Resume Next
+        On Error Resume Next
 
-    Call AplicarIntervalos
+100     Call AplicarIntervalos
 
 End Sub
 
 Private Sub Command2_Click()
 
-    On Error GoTo Err
+        On Error GoTo Err
 
-    'Intervalos
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "SanaIntervaloSinDescansar", str(SanaIntervaloSinDescansar))
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "StaminaIntervaloSinDescansar", str(StaminaIntervaloSinDescansar))
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "SanaIntervaloDescansar", str(SanaIntervaloDescansar))
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "StaminaIntervaloDescansar", str(StaminaIntervaloDescansar))
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloSed", str(IntervaloSed))
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloHambre", str(IntervaloHambre))
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloVeneno", str(IntervaloVeneno))
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloParalizado", str(IntervaloParalizado))
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloInmovilizado", str(IntervaloInmovilizado))
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloInvisible", str(IntervaloInvisible))
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloFrio", str(IntervaloFrio))
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloWAVFX", str(IntervaloWavFx))
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "TimeoutPrimerPaquete", str(TimeoutPrimerPaquete))
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "TimeoutEsperandoLoggear", str(TimeoutEsperandoLoggear))
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloCaminar", str(IntervaloCaminar))
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloTirar", str(IntervaloTirar))
-    '&&&&&&&&&&&&&&&&&&&&& TIMERS &&&&&&&&&&&&&&&&&&&&&&&
+        'Intervalos
+100     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "SanaIntervaloSinDescansar", str(SanaIntervaloSinDescansar))
+102     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "StaminaIntervaloSinDescansar", str(StaminaIntervaloSinDescansar))
+104     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "SanaIntervaloDescansar", str(SanaIntervaloDescansar))
+106     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "StaminaIntervaloDescansar", str(StaminaIntervaloDescansar))
+108     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloSed", str(IntervaloSed))
+110     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloHambre", str(IntervaloHambre))
+112     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloVeneno", str(IntervaloVeneno))
+114     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloParalizado", str(IntervaloParalizado))
+116     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloInmovilizado", str(IntervaloInmovilizado))
+118     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloInvisible", str(IntervaloInvisible))
+120     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloFrio", str(IntervaloFrio))
+122     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloWAVFX", str(IntervaloWavFx))
+124     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "TimeoutPrimerPaquete", str(TimeoutPrimerPaquete))
+126     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "TimeoutEsperandoLoggear", str(TimeoutEsperandoLoggear))
+128     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloCaminar", str(IntervaloCaminar))
+130     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloTirar", str(IntervaloTirar))
+        '&&&&&&&&&&&&&&&&&&&&& TIMERS &&&&&&&&&&&&&&&&&&&&&&&
 
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloLanzaHechizo", str(IntervaloUserPuedeCastear))
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloNpcAI", frmMain.TIMER_AI.Interval)
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloNpcPuedeAtacar", frmMain.npcataca.Interval)
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloTrabajo", str(IntervaloUserPuedeTrabajar))
-    Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloUserPuedeAtacar", str(IntervaloUserPuedeAtacar))
-    'Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloPerdidaStaminaLluvia", frmMain.tLluvia.Interval)
+132     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloLanzaHechizo", str(IntervaloUserPuedeCastear))
+134     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloNpcAI", frmMain.TIMER_AI.Interval)
+136     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloNpcPuedeAtacar", frmMain.npcataca.Interval)
+138     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloTrabajo", str(IntervaloUserPuedeTrabajar))
+140     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloUserPuedeAtacar", str(IntervaloUserPuedeAtacar))
+        'Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloPerdidaStaminaLluvia", frmMain.tLluvia.Interval)
 
-    MsgBox "Los intervalos se han guardado sin problemas"
+142     MsgBox "Los intervalos se han guardado sin problemas"
 
-    Exit Sub
+        Exit Sub
 Err:
-    MsgBox "Error al intentar grabar los intervalos"
+144     MsgBox "Error al intentar grabar los intervalos"
 
 End Sub
 
@@ -855,7 +855,7 @@ Private Sub ok_Click()
         Exit Sub
 
 ok_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "FrmInterv.ok_Click", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "FrmInterv.ok_Click", Erl)
+104     Resume Next
         
 End Sub

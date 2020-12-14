@@ -117,8 +117,8 @@ Sub DarCuerpoDesnudo(ByVal Userindex As Integer)
         Exit Sub
 
 DarCuerpoDesnudo_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.DarCuerpoDesnudo", Erl)
-        Resume Next
+156     Call RegistrarError(Err.Number, Err.description, "General.DarCuerpoDesnudo", Erl)
+158     Resume Next
         
 End Sub
 
@@ -135,64 +135,64 @@ Sub Bloquear(ByVal toMap As Boolean, ByVal sndIndex As Integer, ByVal X As Integ
         On Error GoTo Bloquear_Err
         
         ' Envío sólo los flags de bloq
-        b = b And eBlock.ALL_SIDES
+100     b = b And eBlock.ALL_SIDES
 
-100     If toMap Then
-102         Call SendData(SendTarget.toMap, sndIndex, PrepareMessageBlockPosition(X, Y, b))
+102     If toMap Then
+104         Call SendData(SendTarget.toMap, sndIndex, PrepareMessageBlockPosition(X, Y, b))
         Else
-104         Call WriteBlockPosition(sndIndex, X, Y, b)
+106         Call WriteBlockPosition(sndIndex, X, Y, b)
         End If
 
         
         Exit Sub
 
 Bloquear_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.Bloquear", Erl)
-        Resume Next
+108     Call RegistrarError(Err.Number, Err.description, "General.Bloquear", Erl)
+110     Resume Next
         
 End Sub
 
 Sub MostrarBloqueosPuerta(ByVal toMap As Boolean, ByVal sndIndex As Integer, ByVal X As Integer, ByVal Y As Integer)
-    Dim Map As Integer
-    If toMap Then
-        Map = sndIndex
-    Else
-        Map = UserList(sndIndex).Pos.Map
-    End If
+        Dim Map As Integer
+100     If toMap Then
+102         Map = sndIndex
+        Else
+104         Map = UserList(sndIndex).Pos.Map
+        End If
 
-    ' Bloqueos superiores
-    Call Bloquear(toMap, sndIndex, X, Y, MapData(Map, X, Y).Blocked)
-    Call Bloquear(toMap, sndIndex, X - 1, Y, MapData(Map, X - 1, Y).Blocked)
+        ' Bloqueos superiores
+106     Call Bloquear(toMap, sndIndex, X, Y, MapData(Map, X, Y).Blocked)
+108     Call Bloquear(toMap, sndIndex, X - 1, Y, MapData(Map, X - 1, Y).Blocked)
     
-    ' Bloqueos inferiores
-    Call Bloquear(toMap, sndIndex, X, Y + 1, MapData(Map, X, Y + 1).Blocked)
-    Call Bloquear(toMap, sndIndex, X - 1, Y + 1, MapData(Map, X - 1, Y + 1).Blocked)
+        ' Bloqueos inferiores
+110     Call Bloquear(toMap, sndIndex, X, Y + 1, MapData(Map, X, Y + 1).Blocked)
+112     Call Bloquear(toMap, sndIndex, X - 1, Y + 1, MapData(Map, X - 1, Y + 1).Blocked)
     
-    ' Bloqueos laterales
-    Call Bloquear(toMap, sndIndex, X, Y - 1, MapData(Map, X, Y - 1).Blocked)
-    Call Bloquear(toMap, sndIndex, X + 1, Y, MapData(Map, X + 1, Y).Blocked)
-    Call Bloquear(toMap, sndIndex, X + 1, Y - 1, MapData(Map, X + 1, Y - 1).Blocked)
+        ' Bloqueos laterales
+114     Call Bloquear(toMap, sndIndex, X, Y - 1, MapData(Map, X, Y - 1).Blocked)
+116     Call Bloquear(toMap, sndIndex, X + 1, Y, MapData(Map, X + 1, Y).Blocked)
+118     Call Bloquear(toMap, sndIndex, X + 1, Y - 1, MapData(Map, X + 1, Y - 1).Blocked)
 End Sub
 
 Sub BloquearPuerta(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal Bloquear As Boolean)
-    ' Cambio bloqueos superiores
-    MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked Or eBlock.NORTH, MapData(Map, X, Y).Blocked And Not eBlock.NORTH)
-    MapData(Map, X - 1, Y).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y).Blocked Or eBlock.NORTH, MapData(Map, X - 1, Y).Blocked And Not eBlock.NORTH)
+        ' Cambio bloqueos superiores
+100     MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked Or eBlock.NORTH, MapData(Map, X, Y).Blocked And Not eBlock.NORTH)
+102     MapData(Map, X - 1, Y).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y).Blocked Or eBlock.NORTH, MapData(Map, X - 1, Y).Blocked And Not eBlock.NORTH)
     
-    ' Cambio bloqueos inferiores
-    MapData(Map, X, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X, Y + 1).Blocked Or eBlock.SOUTH, MapData(Map, X, Y + 1).Blocked And Not eBlock.SOUTH)
-    MapData(Map, X - 1, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y + 1).Blocked Or eBlock.SOUTH, MapData(Map, X - 1, Y + 1).Blocked And Not eBlock.SOUTH)
+        ' Cambio bloqueos inferiores
+104     MapData(Map, X, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X, Y + 1).Blocked Or eBlock.SOUTH, MapData(Map, X, Y + 1).Blocked And Not eBlock.SOUTH)
+106     MapData(Map, X - 1, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y + 1).Blocked Or eBlock.SOUTH, MapData(Map, X - 1, Y + 1).Blocked And Not eBlock.SOUTH)
     
-    ' Cambio bloqueos izquierda
-    MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked And Not eBlock.WEST, MapData(Map, X, Y).Blocked Or eBlock.WEST)
-    MapData(Map, X, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X, Y - 1).Blocked And Not eBlock.WEST, MapData(Map, X, Y - 1).Blocked Or eBlock.WEST)
+        ' Cambio bloqueos izquierda
+108     MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked And Not eBlock.WEST, MapData(Map, X, Y).Blocked Or eBlock.WEST)
+110     MapData(Map, X, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X, Y - 1).Blocked And Not eBlock.WEST, MapData(Map, X, Y - 1).Blocked Or eBlock.WEST)
     
-    ' Cambio bloqueos derecha
-    MapData(Map, X + 1, Y).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y).Blocked And Not eBlock.EAST, MapData(Map, X + 1, Y).Blocked Or eBlock.EAST)
-    MapData(Map, X + 1, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y - 1).Blocked And Not eBlock.EAST, MapData(Map, X + 1, Y - 1).Blocked Or eBlock.EAST)
+        ' Cambio bloqueos derecha
+112     MapData(Map, X + 1, Y).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y).Blocked And Not eBlock.EAST, MapData(Map, X + 1, Y).Blocked Or eBlock.EAST)
+114     MapData(Map, X + 1, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y - 1).Blocked And Not eBlock.EAST, MapData(Map, X + 1, Y - 1).Blocked Or eBlock.EAST)
     
-    ' Mostramos a todos
-    Call MostrarBloqueosPuerta(True, Map, X, Y)
+        ' Mostramos a todos
+116     Call MostrarBloqueosPuerta(True, Map, X, Y)
 End Sub
 
 Function HayCosta(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
@@ -219,8 +219,8 @@ Function HayCosta(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) 
         Exit Function
 
 HayCosta_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.HayCosta", Erl)
-        Resume Next
+110     Call RegistrarError(Err.Number, Err.description, "General.HayCosta", Erl)
+112     Resume Next
         
 End Function
 
@@ -246,21 +246,21 @@ Function HayAgua(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) A
         Exit Function
 
 HayAgua_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.HayAgua", Erl)
-        Resume Next
+110     Call RegistrarError(Err.Number, Err.description, "General.HayAgua", Erl)
+112     Resume Next
         
 End Function
 
 Function EsArbol(ByVal GrhIndex As Long) As Boolean
-    EsArbol = GrhIndex = 7000 Or GrhIndex = 7001 Or GrhIndex = 7002 Or GrhIndex = 641 Or GrhIndex = 26075 Or GrhIndex = 643 Or GrhIndex = 644 Or _
-       GrhIndex = 647 Or GrhIndex = 26076 Or GrhIndex = 7222 Or GrhIndex = 7223 Or GrhIndex = 7224 Or GrhIndex = 7225 Or GrhIndex = 7226 Or _
-       GrhIndex = 26077 Or GrhIndex = 26079 Or GrhIndex = 735 Or GrhIndex = 32343 Or GrhIndex = 32344 Or GrhIndex = 26080 Or GrhIndex = 26081 Or _
-       GrhIndex = 32345 Or GrhIndex = 32346 Or GrhIndex = 32347 Or GrhIndex = 32348 Or GrhIndex = 32349 Or GrhIndex = 32350 Or GrhIndex = 32351 Or _
-       GrhIndex = 32352 Or GrhIndex = 14961 Or GrhIndex = 14950 Or GrhIndex = 14951 Or GrhIndex = 14952 Or GrhIndex = 14953 Or GrhIndex = 14954 Or _
-       GrhIndex = 14955 Or GrhIndex = 14956 Or GrhIndex = 14957 Or GrhIndex = 14958 Or GrhIndex = 14959 Or GrhIndex = 14962 Or GrhIndex = 14963 Or _
-       GrhIndex = 14964 Or GrhIndex = 14967 Or GrhIndex = 14968 Or GrhIndex = 14969 Or GrhIndex = 14970 Or GrhIndex = 14971 Or GrhIndex = 14972 Or _
-       GrhIndex = 14973 Or GrhIndex = 14974 Or GrhIndex = 14975 Or GrhIndex = 14976 Or GrhIndex = 14978 Or GrhIndex = 14980 Or GrhIndex = 14982 Or _
-       GrhIndex = 14983 Or GrhIndex = 14984 Or GrhIndex = 14985 Or GrhIndex = 14987 Or GrhIndex = 14988 Or GrhIndex = 26078 Or GrhIndex = 26192
+100     EsArbol = GrhIndex = 7000 Or GrhIndex = 7001 Or GrhIndex = 7002 Or GrhIndex = 641 Or GrhIndex = 26075 Or GrhIndex = 643 Or GrhIndex = 644 Or _
+           GrhIndex = 647 Or GrhIndex = 26076 Or GrhIndex = 7222 Or GrhIndex = 7223 Or GrhIndex = 7224 Or GrhIndex = 7225 Or GrhIndex = 7226 Or _
+           GrhIndex = 26077 Or GrhIndex = 26079 Or GrhIndex = 735 Or GrhIndex = 32343 Or GrhIndex = 32344 Or GrhIndex = 26080 Or GrhIndex = 26081 Or _
+           GrhIndex = 32345 Or GrhIndex = 32346 Or GrhIndex = 32347 Or GrhIndex = 32348 Or GrhIndex = 32349 Or GrhIndex = 32350 Or GrhIndex = 32351 Or _
+           GrhIndex = 32352 Or GrhIndex = 14961 Or GrhIndex = 14950 Or GrhIndex = 14951 Or GrhIndex = 14952 Or GrhIndex = 14953 Or GrhIndex = 14954 Or _
+           GrhIndex = 14955 Or GrhIndex = 14956 Or GrhIndex = 14957 Or GrhIndex = 14958 Or GrhIndex = 14959 Or GrhIndex = 14962 Or GrhIndex = 14963 Or _
+           GrhIndex = 14964 Or GrhIndex = 14967 Or GrhIndex = 14968 Or GrhIndex = 14969 Or GrhIndex = 14970 Or GrhIndex = 14971 Or GrhIndex = 14972 Or _
+           GrhIndex = 14973 Or GrhIndex = 14974 Or GrhIndex = 14975 Or GrhIndex = 14976 Or GrhIndex = 14978 Or GrhIndex = 14980 Or GrhIndex = 14982 Or _
+           GrhIndex = 14983 Or GrhIndex = 14984 Or GrhIndex = 14985 Or GrhIndex = 14987 Or GrhIndex = 14988 Or GrhIndex = 26078 Or GrhIndex = 26192
 
 End Function
 
@@ -290,47 +290,47 @@ Private Function HayLava(ByVal Map As Integer, ByVal X As Integer, ByVal Y As In
         Exit Function
 
 HayLava_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.HayLava", Erl)
-        Resume Next
+110     Call RegistrarError(Err.Number, Err.description, "General.HayLava", Erl)
+112     Resume Next
         
 End Function
 
 Sub ApagarFogatas()
 
-    'Ladder /ApagarFogatas
-    On Error GoTo Errhandler
+        'Ladder /ApagarFogatas
+        On Error GoTo ErrHandler
 
-    Dim obj As obj
-        obj.ObjIndex = FOGATA_APAG
-        obj.Amount = 1
+        Dim obj As obj
+100         obj.ObjIndex = FOGATA_APAG
+102         obj.Amount = 1
 
-    Dim MapaActual As Long
-    Dim Y          As Long
-    Dim X          As Long
+        Dim MapaActual As Long
+        Dim Y          As Long
+        Dim X          As Long
 
-    For MapaActual = 1 To NumMaps
-        For Y = YMinMapSize To YMaxMapSize
-            For X = XMinMapSize To XMaxMapSize
+104     For MapaActual = 1 To NumMaps
+106         For Y = YMinMapSize To YMaxMapSize
+108             For X = XMinMapSize To XMaxMapSize
 
-                If MapInfo(MapaActual).lluvia Then
+110                 If MapInfo(MapaActual).lluvia Then
                 
-                    If MapData(MapaActual, X, Y).ObjInfo.ObjIndex = FOGATA Then
+112                     If MapData(MapaActual, X, Y).ObjInfo.ObjIndex = FOGATA Then
                     
-                        Call EraseObj(MAX_INVENTORY_OBJS, MapaActual, X, Y)
-                        Call MakeObj(obj, MapaActual, X, Y)
+114                         Call EraseObj(MAX_INVENTORY_OBJS, MapaActual, X, Y)
+116                         Call MakeObj(obj, MapaActual, X, Y)
+
+                        End If
 
                     End If
 
-                End If
+118             Next X
+120         Next Y
+122     Next MapaActual
 
-            Next X
-        Next Y
-    Next MapaActual
-
-    Exit Sub
+        Exit Sub
     
-Errhandler:
-    Call LogError("Error producido al apagar las fogatas de " & X & "-" & Y & " del mapa: " & MapaActual & "    -" & Err.description)
+ErrHandler:
+124     Call LogError("Error producido al apagar las fogatas de " & X & "-" & Y & " del mapa: " & MapaActual & "    -" & Err.description)
 
 End Sub
 
@@ -355,8 +355,8 @@ Sub EnviarSpawnList(ByVal Userindex As Integer)
         Exit Sub
 
 EnviarSpawnList_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.EnviarSpawnList", Erl)
-        Resume Next
+112     Call RegistrarError(Err.Number, Err.description, "General.EnviarSpawnList", Erl)
+114     Resume Next
         
 End Sub
 
@@ -382,8 +382,8 @@ Sub ConfigListeningSocket(ByRef obj As Object, ByVal Port As Integer)
         Exit Sub
 
 ConfigListeningSocket_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.ConfigListeningSocket", Erl)
-        Resume Next
+118     Call RegistrarError(Err.Number, Err.description, "General.ConfigListeningSocket", Erl)
+120     Resume Next
         
 End Sub
 
@@ -402,358 +402,358 @@ Public Sub LeerLineaComandos()
         Exit Sub
 
 LeerLineaComandos_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.LeerLineaComandos", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "General.LeerLineaComandos", Erl)
+108     Resume Next
         
 End Sub
 
 Private Sub InicializarConstantes()
     
-    LastBackup = Format(Now, "Short Time")
-    minutos = Format(Now, "Short Time")
+100     LastBackup = Format(Now, "Short Time")
+102     minutos = Format(Now, "Short Time")
     
-    IniPath = App.Path & "\"
+104     IniPath = App.Path & "\"
 
-    LevelSkill(1).LevelValue = 3
-    LevelSkill(2).LevelValue = 5
-    LevelSkill(3).LevelValue = 7
-    LevelSkill(4).LevelValue = 10
-    LevelSkill(5).LevelValue = 13
-    LevelSkill(6).LevelValue = 15
-    LevelSkill(7).LevelValue = 17
-    LevelSkill(8).LevelValue = 20
-    LevelSkill(9).LevelValue = 23
-    LevelSkill(10).LevelValue = 25
-    LevelSkill(11).LevelValue = 27
-    LevelSkill(12).LevelValue = 30
-    LevelSkill(13).LevelValue = 33
-    LevelSkill(14).LevelValue = 35
-    LevelSkill(15).LevelValue = 37
-    LevelSkill(16).LevelValue = 40
-    LevelSkill(17).LevelValue = 43
-    LevelSkill(18).LevelValue = 45
-    LevelSkill(19).LevelValue = 47
-    LevelSkill(20).LevelValue = 50
-    LevelSkill(21).LevelValue = 53
-    LevelSkill(22).LevelValue = 55
-    LevelSkill(23).LevelValue = 57
-    LevelSkill(24).LevelValue = 60
-    LevelSkill(25).LevelValue = 63
-    LevelSkill(26).LevelValue = 65
-    LevelSkill(27).LevelValue = 67
-    LevelSkill(28).LevelValue = 70
-    LevelSkill(29).LevelValue = 73
-    LevelSkill(30).LevelValue = 75
-    LevelSkill(31).LevelValue = 77
-    LevelSkill(32).LevelValue = 80
-    LevelSkill(33).LevelValue = 83
-    LevelSkill(34).LevelValue = 85
-    LevelSkill(35).LevelValue = 87
-    LevelSkill(36).LevelValue = 90
-    LevelSkill(37).LevelValue = 93
-    LevelSkill(38).LevelValue = 95
-    LevelSkill(39).LevelValue = 97
-    LevelSkill(40).LevelValue = 100
-    LevelSkill(41).LevelValue = 100
-    LevelSkill(42).LevelValue = 100
-    LevelSkill(43).LevelValue = 100
-    LevelSkill(44).LevelValue = 100
-    LevelSkill(45).LevelValue = 100
-    LevelSkill(46).LevelValue = 100
-    LevelSkill(47).LevelValue = 100
-    LevelSkill(48).LevelValue = 100
-    LevelSkill(49).LevelValue = 100
-    LevelSkill(50).LevelValue = 100
+106     LevelSkill(1).LevelValue = 3
+108     LevelSkill(2).LevelValue = 5
+110     LevelSkill(3).LevelValue = 7
+112     LevelSkill(4).LevelValue = 10
+114     LevelSkill(5).LevelValue = 13
+116     LevelSkill(6).LevelValue = 15
+118     LevelSkill(7).LevelValue = 17
+120     LevelSkill(8).LevelValue = 20
+122     LevelSkill(9).LevelValue = 23
+124     LevelSkill(10).LevelValue = 25
+126     LevelSkill(11).LevelValue = 27
+128     LevelSkill(12).LevelValue = 30
+130     LevelSkill(13).LevelValue = 33
+132     LevelSkill(14).LevelValue = 35
+134     LevelSkill(15).LevelValue = 37
+136     LevelSkill(16).LevelValue = 40
+138     LevelSkill(17).LevelValue = 43
+140     LevelSkill(18).LevelValue = 45
+142     LevelSkill(19).LevelValue = 47
+144     LevelSkill(20).LevelValue = 50
+146     LevelSkill(21).LevelValue = 53
+148     LevelSkill(22).LevelValue = 55
+150     LevelSkill(23).LevelValue = 57
+152     LevelSkill(24).LevelValue = 60
+154     LevelSkill(25).LevelValue = 63
+156     LevelSkill(26).LevelValue = 65
+158     LevelSkill(27).LevelValue = 67
+160     LevelSkill(28).LevelValue = 70
+162     LevelSkill(29).LevelValue = 73
+164     LevelSkill(30).LevelValue = 75
+166     LevelSkill(31).LevelValue = 77
+168     LevelSkill(32).LevelValue = 80
+170     LevelSkill(33).LevelValue = 83
+172     LevelSkill(34).LevelValue = 85
+174     LevelSkill(35).LevelValue = 87
+176     LevelSkill(36).LevelValue = 90
+178     LevelSkill(37).LevelValue = 93
+180     LevelSkill(38).LevelValue = 95
+182     LevelSkill(39).LevelValue = 97
+184     LevelSkill(40).LevelValue = 100
+186     LevelSkill(41).LevelValue = 100
+188     LevelSkill(42).LevelValue = 100
+190     LevelSkill(43).LevelValue = 100
+192     LevelSkill(44).LevelValue = 100
+194     LevelSkill(45).LevelValue = 100
+196     LevelSkill(46).LevelValue = 100
+198     LevelSkill(47).LevelValue = 100
+200     LevelSkill(48).LevelValue = 100
+202     LevelSkill(49).LevelValue = 100
+204     LevelSkill(50).LevelValue = 100
     
-    ListaRazas(eRaza.Humano) = "Humano"
-    ListaRazas(eRaza.Elfo) = "Elfo"
-    ListaRazas(eRaza.Drow) = "Elfo Oscuro"
-    ListaRazas(eRaza.Gnomo) = "Gnomo"
-    ListaRazas(eRaza.Enano) = "Enano"
-    'ListaRazas(eRaza.Orco) = "Orco"
+206     ListaRazas(eRaza.Humano) = "Humano"
+208     ListaRazas(eRaza.Elfo) = "Elfo"
+210     ListaRazas(eRaza.Drow) = "Elfo Oscuro"
+212     ListaRazas(eRaza.Gnomo) = "Gnomo"
+214     ListaRazas(eRaza.Enano) = "Enano"
+        'ListaRazas(eRaza.Orco) = "Orco"
     
-    ListaClases(eClass.Mage) = "Mago"
-    ListaClases(eClass.Cleric) = "Clérigo"
-    ListaClases(eClass.Warrior) = "Guerrero"
-    ListaClases(eClass.Assasin) = "Asesino"
-    ListaClases(eClass.Bard) = "Bardo"
-    ListaClases(eClass.Druid) = "Druida"
-    ListaClases(eClass.Paladin) = "Paladín"
-    ListaClases(eClass.Hunter) = "Cazador"
-    ListaClases(eClass.Trabajador) = "Trabajador"
-    ListaClases(eClass.Pirat) = "Pirata"
-    ListaClases(eClass.Thief) = "Ladrón"
-    ListaClases(eClass.Bandit) = "Bandido"
+216     ListaClases(eClass.Mage) = "Mago"
+218     ListaClases(eClass.Cleric) = "Clérigo"
+220     ListaClases(eClass.Warrior) = "Guerrero"
+222     ListaClases(eClass.Assasin) = "Asesino"
+224     ListaClases(eClass.Bard) = "Bardo"
+226     ListaClases(eClass.Druid) = "Druida"
+228     ListaClases(eClass.Paladin) = "Paladín"
+230     ListaClases(eClass.Hunter) = "Cazador"
+232     ListaClases(eClass.Trabajador) = "Trabajador"
+234     ListaClases(eClass.Pirat) = "Pirata"
+236     ListaClases(eClass.Thief) = "Ladrón"
+238     ListaClases(eClass.Bandit) = "Bandido"
     
-    SkillsNames(eSkill.magia) = "Magia"
-    SkillsNames(eSkill.Robar) = "Robar"
-    SkillsNames(eSkill.Tacticas) = "Destreza en combate"
-    SkillsNames(eSkill.Armas) = "Combate con armas"
-    SkillsNames(eSkill.Meditar) = "Meditar"
-    SkillsNames(eSkill.Apuñalar) = "Apuñalar"
-    SkillsNames(eSkill.Ocultarse) = "Ocultarse"
-    SkillsNames(eSkill.Supervivencia) = "Supervivencia"
-    SkillsNames(eSkill.Comerciar) = "Comercio"
-    SkillsNames(eSkill.Defensa) = "Defensa con escudo"
-    SkillsNames(eSkill.Liderazgo) = "Liderazgo"
-    SkillsNames(eSkill.Proyectiles) = "Armas a distancia"
-    SkillsNames(eSkill.Wrestling) = "Combate sin armas"
-    SkillsNames(eSkill.Navegacion) = "Navegación"
-    SkillsNames(eSkill.equitacion) = "Equitación"
-    SkillsNames(eSkill.Resistencia) = "Resistencia mágica"
-    SkillsNames(eSkill.Talar) = "Tala"
-    SkillsNames(eSkill.Pescar) = "Pesca"
-    SkillsNames(eSkill.Mineria) = "Minería"
-    SkillsNames(eSkill.Herreria) = "Herrería"
-    SkillsNames(eSkill.Carpinteria) = "Carpintería"
-    SkillsNames(eSkill.Alquimia) = "Alquimia"
-    SkillsNames(eSkill.Sastreria) = "Sastrería"
-    SkillsNames(eSkill.Domar) = "Domar"
+240     SkillsNames(eSkill.magia) = "Magia"
+242     SkillsNames(eSkill.Robar) = "Robar"
+244     SkillsNames(eSkill.Tacticas) = "Destreza en combate"
+246     SkillsNames(eSkill.Armas) = "Combate con armas"
+248     SkillsNames(eSkill.Meditar) = "Meditar"
+250     SkillsNames(eSkill.Apuñalar) = "Apuñalar"
+252     SkillsNames(eSkill.Ocultarse) = "Ocultarse"
+254     SkillsNames(eSkill.Supervivencia) = "Supervivencia"
+256     SkillsNames(eSkill.Comerciar) = "Comercio"
+258     SkillsNames(eSkill.Defensa) = "Defensa con escudo"
+260     SkillsNames(eSkill.Liderazgo) = "Liderazgo"
+262     SkillsNames(eSkill.Proyectiles) = "Armas a distancia"
+264     SkillsNames(eSkill.Wrestling) = "Combate sin armas"
+266     SkillsNames(eSkill.Navegacion) = "Navegación"
+268     SkillsNames(eSkill.equitacion) = "Equitación"
+270     SkillsNames(eSkill.Resistencia) = "Resistencia mágica"
+272     SkillsNames(eSkill.Talar) = "Tala"
+274     SkillsNames(eSkill.Pescar) = "Pesca"
+276     SkillsNames(eSkill.Mineria) = "Minería"
+278     SkillsNames(eSkill.Herreria) = "Herrería"
+280     SkillsNames(eSkill.Carpinteria) = "Carpintería"
+282     SkillsNames(eSkill.Alquimia) = "Alquimia"
+284     SkillsNames(eSkill.Sastreria) = "Sastrería"
+286     SkillsNames(eSkill.Domar) = "Domar"
    
-    ListaAtributos(eAtributos.Fuerza) = "Fuerza"
-    ListaAtributos(eAtributos.Agilidad) = "Agilidad"
-    ListaAtributos(eAtributos.Inteligencia) = "Inteligencia"
-    ListaAtributos(eAtributos.Constitucion) = "Constitución"
-    ListaAtributos(eAtributos.Carisma) = "Carisma"
+288     ListaAtributos(eAtributos.Fuerza) = "Fuerza"
+290     ListaAtributos(eAtributos.Agilidad) = "Agilidad"
+292     ListaAtributos(eAtributos.Inteligencia) = "Inteligencia"
+294     ListaAtributos(eAtributos.Constitucion) = "Constitución"
+296     ListaAtributos(eAtributos.Carisma) = "Carisma"
     
-    centinelaActivado = False
+298     centinelaActivado = False
     
-    IniPath = App.Path & "\"
+300     IniPath = App.Path & "\"
     
-    'Bordes del mapa
-    MinXBorder = XMinMapSize + (XWindow \ 2)
-    MaxXBorder = XMaxMapSize - (XWindow \ 2)
-    MinYBorder = YMinMapSize + (YWindow \ 2)
-    MaxYBorder = YMaxMapSize - (YWindow \ 2)
+        'Bordes del mapa
+302     MinXBorder = XMinMapSize + (XWindow \ 2)
+304     MaxXBorder = XMaxMapSize - (XWindow \ 2)
+306     MinYBorder = YMinMapSize + (YWindow \ 2)
+308     MaxYBorder = YMaxMapSize - (YWindow \ 2)
     
 End Sub
 
 Sub Main()
 
-    On Error Resume Next
+        On Error Resume Next
 
-    Call LeerLineaComandos
+100     Call LeerLineaComandos
     
-    Call CargarRanking
+102     Call CargarRanking
     
-    Dim f    As Date
+        Dim f    As Date
     
-    Call ChDir(App.Path)
-    Call ChDrive(App.Path)
+104     Call ChDir(App.Path)
+106     Call ChDrive(App.Path)
 
-    Call InicializarConstantes
+108     Call InicializarConstantes
     
-    frmCargando.Show
+110     frmCargando.Show
     
-    Call InitTesoro
-    Call InitRegalo
+112     Call InitTesoro
+114     Call InitRegalo
     
-    'Call PlayWaveAPI(App.Path & "\wav\harp3.wav")
+        'Call PlayWaveAPI(App.Path & "\wav\harp3.wav")
     
-    frmMain.Caption = frmMain.Caption & " V." & App.Major & "." & App.Minor & "." & App.Revision
+116     frmMain.Caption = frmMain.Caption & " V." & App.Major & "." & App.Minor & "." & App.Revision
     
-    DoEvents
+118     DoEvents
     
-    frmCargando.Label1(2).Caption = "Iniciando Arrays..."
+120     frmCargando.Label1(2).Caption = "Iniciando Arrays..."
     
-    Call LoadGuildsDB
+122     Call LoadGuildsDB
     
-    Call LoadConfiguraciones
-    Call CargarEventos
-    Call CargarCodigosDonador
-    Call loadAdministrativeUsers
+124     Call LoadConfiguraciones
+126     Call CargarEventos
+128     Call CargarCodigosDonador
+130     Call loadAdministrativeUsers
 
-    '¿?¿?¿?¿?¿?¿?¿?¿ CARGAMOS DATOS DESDE ARCHIVOS ¿??¿?¿?¿?¿?¿?¿?¿
-    frmCargando.Label1(2).Caption = "Cargando Server.ini"
+        '¿?¿?¿?¿?¿?¿?¿?¿ CARGAMOS DATOS DESDE ARCHIVOS ¿??¿?¿?¿?¿?¿?¿?¿
+132     frmCargando.Label1(2).Caption = "Cargando Server.ini"
     
-    MaxUsers = 0
-    Call LoadSini
-    Call LoadIntervalos
-    Call CargarForbidenWords
-    Call CargaApuestas
-    Call CargarSpawnList
-    Call LoadMotd
-    Call BanIpCargar
+134     MaxUsers = 0
+136     Call LoadSini
+138     Call LoadIntervalos
+140     Call CargarForbidenWords
+142     Call CargaApuestas
+144     Call CargarSpawnList
+146     Call LoadMotd
+148     Call BanIpCargar
 
-    '*************************************************
-    frmCargando.Label1(2).Caption = "Cargando NPCs.Dat"
-    Call CargaNpcsDat
-    '*************************************************
+        '*************************************************
+150     frmCargando.Label1(2).Caption = "Cargando NPCs.Dat"
+152     Call CargaNpcsDat
+        '*************************************************
     
-    frmCargando.Label1(2).Caption = "Cargando Obj.Dat"
-    'Call LoadOBJData
-    Call LoadOBJData
+154     frmCargando.Label1(2).Caption = "Cargando Obj.Dat"
+        'Call LoadOBJData
+156     Call LoadOBJData
         
-    frmCargando.Label1(2).Caption = "Cargando Hechizos.Dat"
-    Call CargarHechizos
+158     frmCargando.Label1(2).Caption = "Cargando Hechizos.Dat"
+160     Call CargarHechizos
         
-    frmCargando.Label1(2).Caption = "Cargando Objetos de Herrería"
-    Call LoadArmasHerreria
-    Call LoadArmadurasHerreria
+162     frmCargando.Label1(2).Caption = "Cargando Objetos de Herrería"
+164     Call LoadArmasHerreria
+166     Call LoadArmadurasHerreria
     
-    frmCargando.Label1(2).Caption = "Cargando Objetos de Carpintería"
-    Call LoadObjCarpintero
+168     frmCargando.Label1(2).Caption = "Cargando Objetos de Carpintería"
+170     Call LoadObjCarpintero
     
-    frmCargando.Label1(2).Caption = "Cargando Objetos de Alquimista"
-    Call LoadObjAlquimista
+172     frmCargando.Label1(2).Caption = "Cargando Objetos de Alquimista"
+174     Call LoadObjAlquimista
     
-    frmCargando.Label1(2).Caption = "Cargando Objetos de Sastre"
-    Call LoadObjSastre
+176     frmCargando.Label1(2).Caption = "Cargando Objetos de Sastre"
+178     Call LoadObjSastre
     
-    frmCargando.Label1(2).Caption = "Cargando Pesca"
-    Call LoadPesca
+180     frmCargando.Label1(2).Caption = "Cargando Pesca"
+182     Call LoadPesca
     
-    frmCargando.Label1(2).Caption = "Cargando Recursos Especiales"
-    Call LoadRecursosEspeciales
+184     frmCargando.Label1(2).Caption = "Cargando Recursos Especiales"
+186     Call LoadRecursosEspeciales
     
-    frmCargando.Label1(2).Caption = "Cargando Balance.dat"
-    Call LoadBalance    '4/01/08 Pablo ToxicWaste
+188     frmCargando.Label1(2).Caption = "Cargando Balance.dat"
+190     Call LoadBalance    '4/01/08 Pablo ToxicWaste
     
-    frmCargando.Label1(2).Caption = "Cargando Ciudades.dat"
-    Call CargarCiudades
+192     frmCargando.Label1(2).Caption = "Cargando Ciudades.dat"
+194     Call CargarCiudades
     
-    If BootDelBackUp Then
-        frmCargando.Label1(2).Caption = "Cargando BackUp"
-        Call CargarBackUp
-    Else
-        frmCargando.Label1(2).Caption = "Cargando Mapas"
-        Call LoadMapData
-    End If
-    
-    ' Pretorianos
-    frmCargando.Label1(2).Caption = "Cargando Pretorianos.dat"
-    Call LoadPretorianData
-    
-    frmCargando.Label1(2).Caption = "Cargando Logros.ini"
-    Call CargarLogros ' Ladder 22/04/2015
-    
-    frmCargando.Label1(2).Caption = "Cargando Baneos Temporales"
-    Call LoadBans
-    
-    frmCargando.Label1(2).Caption = "Cargando Usuarios Donadores"
-    Call LoadDonadores
-    Call LoadObjDonador
-    Call LoadQuests
-
-    EstadoGlobal = True
-    
-    Call InicializarLimpieza
-
-    'Comentado porque hay worldsave en ese mapa!
-    'Call CrearClanPretoriano(MAPA_PRETORIANO, ALCOBA2_X, ALCOBA2_Y)
-    '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
-    
-    Dim LoopC As Integer
-    
-    'Resetea las conexiones de los usuarios
-    For LoopC = 1 To MaxUsers
-        UserList(LoopC).ConnID = -1
-        UserList(LoopC).ConnIDValida = False
-        Set UserList(LoopC).incomingData = New clsByteQueue
-        Set UserList(LoopC).outgoingData = New clsByteQueue
-    Next LoopC
-    
-    '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
-    
-    With frmMain
-        .Minuto.Enabled = True
-        .MedioMinuto.Enabled = True
-        '.tLluvia.Enabled = True
-        .tPiqueteC.Enabled = True
-        .GameTimer.Enabled = True
-        .Auditoria.Enabled = True
-        .KillLog.Enabled = True
-        .TIMER_AI.Enabled = True
-
-        '.npcataca.Enabled = True
-    End With
-    
-    Subasta.SubastaHabilitada = True
-    Subasta.HaySubastaActiva = False
-    Call ResetMeteo
-    
-    frmCargando.Label1(2).Caption = "Conectando base de datos y limpiando usuarios logueados"
-    
-    If Database_Enabled Then
-        'Conecto base de datos
-        Call Database_Connect
-        
-        'Reinicio los users online
-        Call SetUsersLoggedDatabase(0)
-        
-        'Leo el record de usuarios
-        RecordUsuarios = LeerRecordUsuariosDatabase()
-        
-        'Tarea pesada
-        Call LogoutAllUsersAndAccounts
-    End If
-    
-    '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
-    'Configuracion de los sockets
-    
-    Call SecurityIp.InitIpTables(1000)
-    
-    #If UsarQueSocket = 1 Then
-    
-        If LastSockListen >= 0 Then Call apiclosesocket(LastSockListen) 'Cierra el socket de escucha
-        Call IniciaWsApi(frmMain.hWnd)
-        SockListen = ListenForConnect(Puerto, hWndMsg, "")
-
-        If SockListen <> -1 Then
-            Call WriteVar(IniPath & "Server.ini", "INIT", "LastSockListen", SockListen) ' Guarda el socket escuchando
+196     If BootDelBackUp Then
+198         frmCargando.Label1(2).Caption = "Cargando BackUp"
+200         Call CargarBackUp
         Else
-            MsgBox "Ha ocurrido un error al iniciar el socket del Servidor.", vbCritical + vbOKOnly
-
+202         frmCargando.Label1(2).Caption = "Cargando Mapas"
+204         Call LoadMapData
         End If
     
-    #ElseIf UsarQueSocket = 0 Then
+        ' Pretorianos
+206     frmCargando.Label1(2).Caption = "Cargando Pretorianos.dat"
+208     Call LoadPretorianData
     
-        frmCargando.Label1(2).Caption = "Configurando Sockets"
+210     frmCargando.Label1(2).Caption = "Cargando Logros.ini"
+212     Call CargarLogros ' Ladder 22/04/2015
     
-        frmMain.Socket2(0).AddressFamily = AF_INET
-        frmMain.Socket2(0).Protocol = IPPROTO_IP
-        frmMain.Socket2(0).SocketType = SOCK_STREAM
-        frmMain.Socket2(0).Binary = False
-        frmMain.Socket2(0).Blocking = False
-        frmMain.Socket2(0).BufferSize = 2048
+214     frmCargando.Label1(2).Caption = "Cargando Baneos Temporales"
+216     Call LoadBans
     
-        Call ConfigListeningSocket(frmMain.Socket1, Puerto)
+218     frmCargando.Label1(2).Caption = "Cargando Usuarios Donadores"
+220     Call LoadDonadores
+222     Call LoadObjDonador
+224     Call LoadQuests
+
+226     EstadoGlobal = True
     
-    #ElseIf UsarQueSocket = 2 Then
+228     Call InicializarLimpieza
+
+        'Comentado porque hay worldsave en ese mapa!
+        'Call CrearClanPretoriano(MAPA_PRETORIANO, ALCOBA2_X, ALCOBA2_Y)
+        '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
     
-        frmMain.Serv.Iniciar Puerto
+        Dim LoopC As Integer
     
-    #ElseIf UsarQueSocket = 3 Then
+        'Resetea las conexiones de los usuarios
+230     For LoopC = 1 To MaxUsers
+232         UserList(LoopC).ConnID = -1
+234         UserList(LoopC).ConnIDValida = False
+236         Set UserList(LoopC).incomingData = New clsByteQueue
+238         Set UserList(LoopC).outgoingData = New clsByteQueue
+240     Next LoopC
     
-        frmMain.TCPServ.Encolar True
-        frmMain.TCPServ.IniciarTabla 1009
-        frmMain.TCPServ.SetQueueLim 51200
-        frmMain.TCPServ.Iniciar Puerto
+        '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
     
-    #End If
+242     With frmMain
+244         .Minuto.Enabled = True
+246         .MedioMinuto.Enabled = True
+            '.tLluvia.Enabled = True
+248         .tPiqueteC.Enabled = True
+250         .GameTimer.Enabled = True
+252         .Auditoria.Enabled = True
+254         .KillLog.Enabled = True
+256         .TIMER_AI.Enabled = True
+
+            '.npcataca.Enabled = True
+        End With
     
-    If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
-    '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
+258     Subasta.SubastaHabilitada = True
+260     Subasta.HaySubastaActiva = False
+262     Call ResetMeteo
     
-    Call GetHoraActual
+264     frmCargando.Label1(2).Caption = "Conectando base de datos y limpiando usuarios logueados"
     
-    HoraMundo = GetTickCount() - DuracionDia \ 2
-    Unload frmCargando
+266     If Database_Enabled Then
+            'Conecto base de datos
+268         Call Database_Connect
+        
+            'Reinicio los users online
+270         Call SetUsersLoggedDatabase(0)
+        
+            'Leo el record de usuarios
+272         RecordUsuarios = LeerRecordUsuariosDatabase()
+        
+            'Tarea pesada
+274         Call LogoutAllUsersAndAccounts
+        End If
     
-    'Log
-    Dim n As Integer: n = FreeFile
-    Open App.Path & "\logs\Main.log" For Append Shared As #n
-    Print #n, Date & " " & Time & " server iniciado " & App.Major & "."; App.Minor & "." & App.Revision
-    Close #n
+        '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
+        'Configuracion de los sockets
     
-    'Ocultar
-    If HideMe = 1 Then
-        Call frmMain.InitMain(1)
-    Else
-        Call frmMain.InitMain(0)
-    End If
+276     Call SecurityIp.InitIpTables(1000)
     
-    tInicioServer = GetTickCount()
+        #If UsarQueSocket = 1 Then
+    
+278         If LastSockListen >= 0 Then Call apiclosesocket(LastSockListen) 'Cierra el socket de escucha
+280         Call IniciaWsApi(frmMain.hWnd)
+282         SockListen = ListenForConnect(Puerto, hWndMsg, "")
+
+284         If SockListen <> -1 Then
+286             Call WriteVar(IniPath & "Server.ini", "INIT", "LastSockListen", SockListen) ' Guarda el socket escuchando
+            Else
+288             MsgBox "Ha ocurrido un error al iniciar el socket del Servidor.", vbCritical + vbOKOnly
+
+            End If
+    
+        #ElseIf UsarQueSocket = 0 Then
+    
+290         frmCargando.Label1(2).Caption = "Configurando Sockets"
+    
+292         frmMain.Socket2(0).AddressFamily = AF_INET
+294         frmMain.Socket2(0).Protocol = IPPROTO_IP
+296         frmMain.Socket2(0).SocketType = SOCK_STREAM
+298         frmMain.Socket2(0).Binary = False
+300         frmMain.Socket2(0).Blocking = False
+302         frmMain.Socket2(0).BufferSize = 2048
+    
+304         Call ConfigListeningSocket(frmMain.Socket1, Puerto)
+    
+        #ElseIf UsarQueSocket = 2 Then
+    
+306         frmMain.Serv.Iniciar Puerto
+    
+        #ElseIf UsarQueSocket = 3 Then
+    
+308         frmMain.TCPServ.Encolar True
+310         frmMain.TCPServ.IniciarTabla 1009
+312         frmMain.TCPServ.SetQueueLim 51200
+314         frmMain.TCPServ.Iniciar Puerto
+    
+        #End If
+    
+316     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
+        '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
+    
+318     Call GetHoraActual
+    
+320     HoraMundo = GetTickCount() - DuracionDia \ 2
+322     Unload frmCargando
+    
+        'Log
+324     Dim n As Integer: n = FreeFile
+326     Open App.Path & "\logs\Main.log" For Append Shared As #n
+328     Print #n, Date & " " & Time & " server iniciado " & App.Major & "."; App.Minor & "." & App.Revision
+330     Close #n
+    
+        'Ocultar
+332     If HideMe = 1 Then
+334         Call frmMain.InitMain(1)
+        Else
+336         Call frmMain.InitMain(0)
+        End If
+    
+338     tInicioServer = GetTickCount()
 
 End Sub
 
@@ -770,8 +770,8 @@ Function FileExist(ByVal File As String, Optional FileType As VbFileAttribute = 
         Exit Function
 
 FileExist_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.FileExist", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "General.FileExist", Erl)
+104     Resume Next
         
 End Function
 
@@ -812,8 +812,8 @@ Function ReadField(ByVal Pos As Integer, ByRef Text As String, ByVal SepASCII As
         Exit Function
 
 ReadField_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.ReadField", Erl)
-        Resume Next
+116     Call RegistrarError(Err.Number, Err.description, "General.ReadField", Erl)
+118     Resume Next
         
 End Function
 
@@ -827,8 +827,8 @@ Function MapaValido(ByVal Map As Integer) As Boolean
         Exit Function
 
 MapaValido_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.MapaValido", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "General.MapaValido", Erl)
+104     Resume Next
         
 End Function
 
@@ -846,144 +846,144 @@ Sub MostrarNumUsers()
         Exit Sub
 
 MostrarNumUsers_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.MostrarNumUsers", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "General.MostrarNumUsers", Erl)
+108     Resume Next
         
 End Sub
 
 Public Sub LogCriticEvent(Desc As String)
 
-    On Error GoTo Errhandler
+        On Error GoTo ErrHandler
 
-    Dim nfile As Integer
+        Dim nfile As Integer
 
-    nfile = FreeFile ' obtenemos un canal
-    Open App.Path & "\logs\Eventos.log" For Append Shared As #nfile
-    Print #nfile, Date & " " & Time & " " & Desc
-    Close #nfile
+100     nfile = FreeFile ' obtenemos un canal
+102     Open App.Path & "\logs\Eventos.log" For Append Shared As #nfile
+104     Print #nfile, Date & " " & Time & " " & Desc
+106     Close #nfile
 
-    Exit Sub
+        Exit Sub
 
-Errhandler:
+ErrHandler:
 
 End Sub
 
 Public Sub LogEjercitoReal(Desc As String)
 
-    On Error GoTo Errhandler
+        On Error GoTo ErrHandler
 
-    Dim nfile As Integer
+        Dim nfile As Integer
 
-    nfile = FreeFile ' obtenemos un canal
-    Open App.Path & "\logs\EjercitoReal.log" For Append Shared As #nfile
-    Print #nfile, Desc
-    Close #nfile
+100     nfile = FreeFile ' obtenemos un canal
+102     Open App.Path & "\logs\EjercitoReal.log" For Append Shared As #nfile
+104     Print #nfile, Desc
+106     Close #nfile
 
-    Exit Sub
+        Exit Sub
 
-Errhandler:
+ErrHandler:
 
 End Sub
 
 Public Sub LogEjercitoCaos(Desc As String)
 
-    On Error GoTo Errhandler
+        On Error GoTo ErrHandler
 
-    Dim nfile As Integer
+        Dim nfile As Integer
 
-    nfile = FreeFile ' obtenemos un canal
-    Open App.Path & "\logs\EjercitoCaos.log" For Append Shared As #nfile
-    Print #nfile, Desc
-    Close #nfile
+100     nfile = FreeFile ' obtenemos un canal
+102     Open App.Path & "\logs\EjercitoCaos.log" For Append Shared As #nfile
+104     Print #nfile, Desc
+106     Close #nfile
 
-    Exit Sub
+        Exit Sub
 
-Errhandler:
+ErrHandler:
 
 End Sub
 
 Public Sub LogIndex(ByVal Index As Integer, ByVal Desc As String)
 
-    On Error GoTo Errhandler
+        On Error GoTo ErrHandler
 
-    Dim nfile As Integer
+        Dim nfile As Integer
 
-    nfile = FreeFile ' obtenemos un canal
-    Open App.Path & "\logs\" & Index & ".log" For Append Shared As #nfile
-    Print #nfile, Date & " " & Time & " " & Desc
-    Close #nfile
+100     nfile = FreeFile ' obtenemos un canal
+102     Open App.Path & "\logs\" & Index & ".log" For Append Shared As #nfile
+104     Print #nfile, Date & " " & Time & " " & Desc
+106     Close #nfile
 
-    Exit Sub
+        Exit Sub
 
-Errhandler:
+ErrHandler:
 
 End Sub
 
 Public Sub LogError(Desc As String)
 
-    On Error GoTo Errhandler
+        On Error GoTo ErrHandler
 
-    Dim nfile As Integer
+        Dim nfile As Integer
 
-    nfile = FreeFile ' obtenemos un canal
-    Open App.Path & "\logs\errores.log" For Append Shared As #nfile
-    Print #nfile, Date & " " & Time & " " & Desc
-    Close #nfile
+100     nfile = FreeFile ' obtenemos un canal
+102     Open App.Path & "\logs\errores.log" For Append Shared As #nfile
+104     Print #nfile, Date & " " & Time & " " & Desc
+106     Close #nfile
 
-    Exit Sub
+        Exit Sub
 
-Errhandler:
+ErrHandler:
 
 End Sub
 
 Public Sub LogConsulta(Desc As String)
 
-    On Error GoTo Errhandler
+        On Error GoTo ErrHandler
 
-    Dim nfile As Integer
+        Dim nfile As Integer
 
-    nfile = FreeFile ' obtenemos un canal
-    Open App.Path & "\logs\ConsultasGM.log" For Append Shared As #nfile
-    Print #nfile, Date & " " & Time & " " & Desc
-    Close #nfile
+100     nfile = FreeFile ' obtenemos un canal
+102     Open App.Path & "\logs\ConsultasGM.log" For Append Shared As #nfile
+104     Print #nfile, Date & " " & Time & " " & Desc
+106     Close #nfile
 
-    Exit Sub
+        Exit Sub
 
-Errhandler:
+ErrHandler:
 
 End Sub
 
 Public Sub LogStatic(Desc As String)
 
-    On Error GoTo Errhandler
+        On Error GoTo ErrHandler
 
-    Dim nfile As Integer
+        Dim nfile As Integer
 
-    nfile = FreeFile ' obtenemos un canal
-    Open App.Path & "\logs\Stats.log" For Append Shared As #nfile
-    Print #nfile, Date & " " & Time & " " & Desc
-    Close #nfile
+100     nfile = FreeFile ' obtenemos un canal
+102     Open App.Path & "\logs\Stats.log" For Append Shared As #nfile
+104     Print #nfile, Date & " " & Time & " " & Desc
+106     Close #nfile
 
-    Exit Sub
+        Exit Sub
 
-Errhandler:
+ErrHandler:
 
 End Sub
 
 Public Sub LogTarea(Desc As String)
 
-    On Error GoTo Errhandler
+        On Error GoTo ErrHandler
 
-    Dim nfile As Integer
+        Dim nfile As Integer
 
-    nfile = FreeFile(1) ' obtenemos un canal
-    Open App.Path & "\logs\haciendo.log" For Append Shared As #nfile
-    Print #nfile, Date & " " & Time & " " & Desc
-    Close #nfile
+100     nfile = FreeFile(1) ' obtenemos un canal
+102     Open App.Path & "\logs\haciendo.log" For Append Shared As #nfile
+104     Print #nfile, Date & " " & Time & " " & Desc
+106     Close #nfile
 
-    Exit Sub
+        Exit Sub
 
-Errhandler:
+ErrHandler:
 
 End Sub
 
@@ -1003,8 +1003,8 @@ Public Sub LogClanes(ByVal str As String)
         Exit Sub
 
 LogClanes_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.LogClanes", Erl)
-        Resume Next
+108     Call RegistrarError(Err.Number, Err.description, "General.LogClanes", Erl)
+110     Resume Next
         
 End Sub
 
@@ -1024,8 +1024,8 @@ Public Sub LogIP(ByVal str As String)
         Exit Sub
 
 LogIP_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.LogIP", Erl)
-        Resume Next
+108     Call RegistrarError(Err.Number, Err.description, "General.LogIP", Erl)
+110     Resume Next
         
 End Sub
 
@@ -1045,195 +1045,195 @@ Public Sub LogDesarrollo(ByVal str As String)
         Exit Sub
 
 LogDesarrollo_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.LogDesarrollo", Erl)
-        Resume Next
+108     Call RegistrarError(Err.Number, Err.description, "General.LogDesarrollo", Erl)
+110     Resume Next
         
 End Sub
 
 Public Sub LogGM(nombre As String, texto As String)
 
-    On Error GoTo Errhandler
+        On Error GoTo ErrHandler
 
-    Dim nfile As Integer
+        Dim nfile As Integer
 
-    nfile = FreeFile ' obtenemos un canal
-    'Guardamos todo en el mismo lugar. Pablo (ToxicWaste) 18/05/07
-    Open App.Path & "\logs\" & nombre & ".log" For Append Shared As #nfile
-    Print #nfile, Date & " " & Time & " " & texto
-    Close #nfile
+100     nfile = FreeFile ' obtenemos un canal
+        'Guardamos todo en el mismo lugar. Pablo (ToxicWaste) 18/05/07
+102     Open App.Path & "\logs\" & nombre & ".log" For Append Shared As #nfile
+104     Print #nfile, Date & " " & Time & " " & texto
+106     Close #nfile
 
-    Exit Sub
+        Exit Sub
 
-Errhandler:
+ErrHandler:
 
 End Sub
 
 Public Sub LogDatabaseError(Desc As String)
-    '***************************************************
-    'Author: Juan Andres Dalmasso (CHOTS)
-    'Last Modification: 09/10/2018
-    '***************************************************
+        '***************************************************
+        'Author: Juan Andres Dalmasso (CHOTS)
+        'Last Modification: 09/10/2018
+        '***************************************************
 
-    On Error GoTo Errhandler
+        On Error GoTo ErrHandler
 
-    Dim nfile As Integer
+        Dim nfile As Integer
 
-    nfile = FreeFile ' obtenemos un canal
+100     nfile = FreeFile ' obtenemos un canal
     
-    Open App.Path & "\logs\Database.log" For Append Shared As #nfile
-    Print #nfile, Date & " " & Time & " - " & Desc
-    Close #nfile
+102     Open App.Path & "\logs\Database.log" For Append Shared As #nfile
+104     Print #nfile, Date & " " & Time & " - " & Desc
+106     Close #nfile
     
-    Exit Sub
+        Exit Sub
     
-    Debug.Print Desc
+108     Debug.Print Desc
     
-Errhandler:
+ErrHandler:
 
 End Sub
 
 Public Sub SaveDayStats()
-    ''On Error GoTo errhandler
-    ''
-    ''Dim nfile As Integer
-    ''nfile = FreeFile ' obtenemos un canal
-    ''Open App.Path & "\logs\" & Replace(Date, "/", "-") & ".log" For Append Shared As #nfile
-    ''
-    ''Print #nfile, "<stats>"
-    ''Print #nfile, "<ao>"
-    ''Print #nfile, "<dia>" & Date & "</dia>"
-    ''Print #nfile, "<hora>" & Time & "</hora>"
-    ''Print #nfile, "<segundos_total>" & DayStats.Segundos & "</segundos_total>"
-    ''Print #nfile, "<max_user>" & DayStats.MaxUsuarios & "</max_user>"
-    ''Print #nfile, "</ao>"
-    ''Print #nfile, "</stats>"
-    ''
-    ''
-    ''Close #nfile
+        ''On Error GoTo errhandler
+        ''
+        ''Dim nfile As Integer
+        ''nfile = FreeFile ' obtenemos un canal
+        ''Open App.Path & "\logs\" & Replace(Date, "/", "-") & ".log" For Append Shared As #nfile
+        ''
+        ''Print #nfile, "<stats>"
+        ''Print #nfile, "<ao>"
+        ''Print #nfile, "<dia>" & Date & "</dia>"
+        ''Print #nfile, "<hora>" & Time & "</hora>"
+        ''Print #nfile, "<segundos_total>" & DayStats.Segundos & "</segundos_total>"
+        ''Print #nfile, "<max_user>" & DayStats.MaxUsuarios & "</max_user>"
+        ''Print #nfile, "</ao>"
+        ''Print #nfile, "</stats>"
+        ''
+        ''
+        ''Close #nfile
     
-    On Error GoTo SaveDayStats_Err
+        On Error GoTo SaveDayStats_Err
     
-    Exit Sub
+        Exit Sub
 
-Errhandler:
+ErrHandler:
 
     
-    Exit Sub
+        Exit Sub
 
 SaveDayStats_Err:
-    Call RegistrarError(Err.Number, Err.description, "General.SaveDayStats", Erl)
-    Resume Next
+100     Call RegistrarError(Err.Number, Err.description, "General.SaveDayStats", Erl)
+102     Resume Next
     
 End Sub
 
 Public Sub LogAsesinato(texto As String)
 
-    On Error GoTo Errhandler
+        On Error GoTo ErrHandler
 
-    Dim nfile As Integer
+        Dim nfile As Integer
 
-    nfile = FreeFile ' obtenemos un canal
+100     nfile = FreeFile ' obtenemos un canal
 
-    Open App.Path & "\logs\asesinatos.log" For Append Shared As #nfile
-    Print #nfile, Date & " " & Time & " " & texto
-    Close #nfile
+102     Open App.Path & "\logs\asesinatos.log" For Append Shared As #nfile
+104     Print #nfile, Date & " " & Time & " " & texto
+106     Close #nfile
 
-    Exit Sub
+        Exit Sub
 
-Errhandler:
+ErrHandler:
 
 End Sub
 
 Public Sub logVentaCasa(ByVal texto As String)
 
-    On Error GoTo Errhandler
+        On Error GoTo ErrHandler
 
-    Dim nfile As Integer
+        Dim nfile As Integer
 
-    nfile = FreeFile ' obtenemos un canal
+100     nfile = FreeFile ' obtenemos un canal
 
-    Open App.Path & "\logs\propiedades.log" For Append Shared As #nfile
-    Print #nfile, "----------------------------------------------------------"
-    Print #nfile, Date & " " & Time & " " & texto
-    Print #nfile, "----------------------------------------------------------"
-    Close #nfile
+102     Open App.Path & "\logs\propiedades.log" For Append Shared As #nfile
+104     Print #nfile, "----------------------------------------------------------"
+106     Print #nfile, Date & " " & Time & " " & texto
+108     Print #nfile, "----------------------------------------------------------"
+110     Close #nfile
 
-    Exit Sub
+        Exit Sub
 
-Errhandler:
+ErrHandler:
 
 End Sub
 
 Public Sub LogHackAttemp(texto As String)
 
-    On Error GoTo Errhandler
+        On Error GoTo ErrHandler
 
-    Dim nfile As Integer
+        Dim nfile As Integer
 
-    nfile = FreeFile ' obtenemos un canal
-    Open App.Path & "\logs\HackAttemps.log" For Append Shared As #nfile
-    Print #nfile, "----------------------------------------------------------"
-    Print #nfile, Date & " " & Time & " " & texto
-    Print #nfile, "----------------------------------------------------------"
-    Close #nfile
+100     nfile = FreeFile ' obtenemos un canal
+102     Open App.Path & "\logs\HackAttemps.log" For Append Shared As #nfile
+104     Print #nfile, "----------------------------------------------------------"
+106     Print #nfile, Date & " " & Time & " " & texto
+108     Print #nfile, "----------------------------------------------------------"
+110     Close #nfile
 
-    Exit Sub
+        Exit Sub
 
-Errhandler:
+ErrHandler:
 
 End Sub
 
 Public Sub LogCheating(texto As String)
 
-    On Error GoTo Errhandler
+        On Error GoTo ErrHandler
 
-    Dim nfile As Integer
+        Dim nfile As Integer
 
-    nfile = FreeFile ' obtenemos un canal
-    Open App.Path & "\logs\CH.log" For Append Shared As #nfile
-    Print #nfile, Date & " " & Time & " " & texto
-    Close #nfile
+100     nfile = FreeFile ' obtenemos un canal
+102     Open App.Path & "\logs\CH.log" For Append Shared As #nfile
+104     Print #nfile, Date & " " & Time & " " & texto
+106     Close #nfile
 
-    Exit Sub
+        Exit Sub
 
-Errhandler:
+ErrHandler:
 
 End Sub
 
 Public Sub LogCriticalHackAttemp(texto As String)
 
-    On Error GoTo Errhandler
+        On Error GoTo ErrHandler
 
-    Dim nfile As Integer
+        Dim nfile As Integer
 
-    nfile = FreeFile ' obtenemos un canal
-    Open App.Path & "\logs\CriticalHackAttemps.log" For Append Shared As #nfile
-    Print #nfile, "----------------------------------------------------------"
-    Print #nfile, Date & " " & Time & " " & texto
-    Print #nfile, "----------------------------------------------------------"
-    Close #nfile
+100     nfile = FreeFile ' obtenemos un canal
+102     Open App.Path & "\logs\CriticalHackAttemps.log" For Append Shared As #nfile
+104     Print #nfile, "----------------------------------------------------------"
+106     Print #nfile, Date & " " & Time & " " & texto
+108     Print #nfile, "----------------------------------------------------------"
+110     Close #nfile
 
-    Exit Sub
+        Exit Sub
 
-Errhandler:
+ErrHandler:
 
 End Sub
 
 Public Sub LogAntiCheat(texto As String)
 
-    On Error GoTo Errhandler
+        On Error GoTo ErrHandler
 
-    Dim nfile As Integer
+        Dim nfile As Integer
 
-    nfile = FreeFile ' obtenemos un canal
-    Open App.Path & "\logs\AntiCheat.log" For Append Shared As #nfile
-    Print #nfile, Date & " " & Time & " " & texto
-    Print #nfile, ""
-    Close #nfile
+100     nfile = FreeFile ' obtenemos un canal
+102     Open App.Path & "\logs\AntiCheat.log" For Append Shared As #nfile
+104     Print #nfile, Date & " " & Time & " " & texto
+106     Print #nfile, ""
+108     Close #nfile
 
-    Exit Sub
+        Exit Sub
 
-Errhandler:
+ErrHandler:
 
 End Sub
 
@@ -1260,121 +1260,121 @@ Function ValidInputNP(ByVal cad As String) As Boolean
         Exit Function
 
 ValidInputNP_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.ValidInputNP", Erl)
-        Resume Next
+110     Call RegistrarError(Err.Number, Err.description, "General.ValidInputNP", Erl)
+112     Resume Next
         
 End Function
 
 Sub Restart()
 
-    'Se asegura de que los sockets estan cerrados e ignora cualquier err
-    On Error Resume Next
+        'Se asegura de que los sockets estan cerrados e ignora cualquier err
+        On Error Resume Next
 
-    If frmMain.Visible Then frmMain.txStatus.Caption = "Reiniciando."
+100     If frmMain.Visible Then frmMain.txStatus.Caption = "Reiniciando."
 
-    Dim LoopC As Long
+        Dim LoopC As Long
   
-    #If UsarQueSocket = 0 Then
+        #If UsarQueSocket = 0 Then
 
-        frmMain.Socket1.Cleanup
-        frmMain.Socket1.Startup
+102         frmMain.Socket1.Cleanup
+104         frmMain.Socket1.Startup
       
-        frmMain.Socket2(0).Cleanup
-        frmMain.Socket2(0).Startup
+106         frmMain.Socket2(0).Cleanup
+108         frmMain.Socket2(0).Startup
 
-    #ElseIf UsarQueSocket = 1 Then
+        #ElseIf UsarQueSocket = 1 Then
 
-        'Cierra el socket de escucha
-        If SockListen >= 0 Then Call apiclosesocket(SockListen)
+            'Cierra el socket de escucha
+110         If SockListen >= 0 Then Call apiclosesocket(SockListen)
     
-        'Inicia el socket de escucha
-        SockListen = ListenForConnect(Puerto, hWndMsg, "")
+            'Inicia el socket de escucha
+112         SockListen = ListenForConnect(Puerto, hWndMsg, "")
 
-    #ElseIf UsarQueSocket = 2 Then
+        #ElseIf UsarQueSocket = 2 Then
 
-    #End If
+        #End If
 
-    For LoopC = 1 To MaxUsers
-        Call CloseSocket(LoopC)
-    Next
+114     For LoopC = 1 To MaxUsers
+116         Call CloseSocket(LoopC)
+        Next
 
-    'Initialize statistics!!
-    'Call Statistics.Initialize
+        'Initialize statistics!!
+        'Call Statistics.Initialize
 
-    For LoopC = 1 To UBound(UserList())
-        Set UserList(LoopC).incomingData = Nothing
-        Set UserList(LoopC).outgoingData = Nothing
-    Next LoopC
+118     For LoopC = 1 To UBound(UserList())
+120         Set UserList(LoopC).incomingData = Nothing
+122         Set UserList(LoopC).outgoingData = Nothing
+124     Next LoopC
 
-    ReDim UserList(1 To MaxUsers) As user
+126     ReDim UserList(1 To MaxUsers) As user
 
-    For LoopC = 1 To MaxUsers
-        UserList(LoopC).ConnID = -1
-        UserList(LoopC).ConnIDValida = False
-        Set UserList(LoopC).incomingData = New clsByteQueue
-        Set UserList(LoopC).outgoingData = New clsByteQueue
-    Next LoopC
+128     For LoopC = 1 To MaxUsers
+130         UserList(LoopC).ConnID = -1
+132         UserList(LoopC).ConnIDValida = False
+134         Set UserList(LoopC).incomingData = New clsByteQueue
+136         Set UserList(LoopC).outgoingData = New clsByteQueue
+138     Next LoopC
 
-    LastUser = 0
-    NumUsers = 0
+140     LastUser = 0
+142     NumUsers = 0
 
-    Call FreeNPCs
-    Call FreeCharIndexes
+144     Call FreeNPCs
+146     Call FreeCharIndexes
 
-    Call LoadSini
-    Call LoadIntervalos
-    Call LoadOBJData
-    Call LoadPesca
-    Call LoadRecursosEspeciales
+148     Call LoadSini
+150     Call LoadIntervalos
+152     Call LoadOBJData
+154     Call LoadPesca
+156     Call LoadRecursosEspeciales
 
-    Call LoadMapData
+158     Call LoadMapData
 
-    Call CargarHechizos
+160     Call CargarHechizos
 
-    #If UsarQueSocket = 0 Then
+        #If UsarQueSocket = 0 Then
 
-        '*****************Setup socket
-        frmMain.Socket1.AddressFamily = AF_INET
-        frmMain.Socket1.Protocol = IPPROTO_IP
-        frmMain.Socket1.SocketType = SOCK_STREAM
-        frmMain.Socket1.Binary = False
-        frmMain.Socket1.Blocking = False
-        frmMain.Socket1.BufferSize = 1024
+            '*****************Setup socket
+162         frmMain.Socket1.AddressFamily = AF_INET
+164         frmMain.Socket1.Protocol = IPPROTO_IP
+166         frmMain.Socket1.SocketType = SOCK_STREAM
+168         frmMain.Socket1.Binary = False
+170         frmMain.Socket1.Blocking = False
+172         frmMain.Socket1.BufferSize = 1024
 
-        frmMain.Socket2(0).AddressFamily = AF_INET
-        frmMain.Socket2(0).Protocol = IPPROTO_IP
-        frmMain.Socket2(0).SocketType = SOCK_STREAM
-        frmMain.Socket2(0).Blocking = False
-        frmMain.Socket2(0).BufferSize = 2048
+174         frmMain.Socket2(0).AddressFamily = AF_INET
+176         frmMain.Socket2(0).Protocol = IPPROTO_IP
+178         frmMain.Socket2(0).SocketType = SOCK_STREAM
+180         frmMain.Socket2(0).Blocking = False
+182         frmMain.Socket2(0).BufferSize = 2048
 
-        'Escucha
-        frmMain.Socket1.LocalPort = val(Puerto)
-        frmMain.Socket1.listen
+            'Escucha
+184         frmMain.Socket1.LocalPort = val(Puerto)
+186         frmMain.Socket1.listen
 
-    #ElseIf UsarQueSocket = 1 Then
+        #ElseIf UsarQueSocket = 1 Then
 
-    #ElseIf UsarQueSocket = 2 Then
+        #ElseIf UsarQueSocket = 2 Then
 
-    #End If
+        #End If
 
-    If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
+188     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
 
-    'Log it
-    Dim n As Integer
+        'Log it
+        Dim n As Integer
 
-    n = FreeFile
-    Open App.Path & "\logs\Main.log" For Append Shared As #n
-    Print #n, Date & " " & Time & " servidor reiniciado."
-    Close #n
+190     n = FreeFile
+192     Open App.Path & "\logs\Main.log" For Append Shared As #n
+194     Print #n, Date & " " & Time & " servidor reiniciado."
+196     Close #n
 
-    'Ocultar
+        'Ocultar
 
-    If HideMe = 1 Then
-        Call frmMain.InitMain(1)
-    Else
-        Call frmMain.InitMain(0)
+198     If HideMe = 1 Then
+200         Call frmMain.InitMain(1)
+        Else
+202         Call frmMain.InitMain(0)
 
-    End If
+        End If
   
 End Sub
 
@@ -1394,59 +1394,59 @@ Public Function Intemperie(ByVal Userindex As Integer) As Boolean
         Exit Function
 
 Intemperie_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.Intemperie", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "General.Intemperie", Erl)
+108     Resume Next
         
 End Function
 
 Public Sub TiempoInvocacion(ByVal Userindex As Integer)
-    Dim i As Integer
-    For i = 1 To MAXMASCOTAS
-        If UserList(Userindex).MascotasIndex(i) > 0 Then
-            If Npclist(UserList(Userindex).MascotasIndex(i)).Contadores.TiempoExistencia > 0 Then
-               Npclist(UserList(Userindex).MascotasIndex(i)).Contadores.TiempoExistencia = _
-               Npclist(UserList(Userindex).MascotasIndex(i)).Contadores.TiempoExistencia - 1
-               If Npclist(UserList(Userindex).MascotasIndex(i)).Contadores.TiempoExistencia = 0 Then Call MuereNpc(UserList(Userindex).MascotasIndex(i), 0)
+        Dim i As Integer
+100     For i = 1 To MAXMASCOTAS
+102         If UserList(Userindex).MascotasIndex(i) > 0 Then
+104             If Npclist(UserList(Userindex).MascotasIndex(i)).Contadores.TiempoExistencia > 0 Then
+106                Npclist(UserList(Userindex).MascotasIndex(i)).Contadores.TiempoExistencia = _
+                   Npclist(UserList(Userindex).MascotasIndex(i)).Contadores.TiempoExistencia - 1
+108                If Npclist(UserList(Userindex).MascotasIndex(i)).Contadores.TiempoExistencia = 0 Then Call MuereNpc(UserList(Userindex).MascotasIndex(i), 0)
+                End If
             End If
-        End If
-    Next i
+110     Next i
 End Sub
 
 Public Sub EfectoFrio(ByVal Userindex As Integer)
         
         On Error GoTo EfectoFrio_Err
         
-        If Not Intemperie(Userindex) Then Exit Sub
+100     If Not Intemperie(Userindex) Then Exit Sub
         
         Dim modifi As Integer
         
-100     With UserList(Userindex)
+102     With UserList(Userindex)
             
-            If .flags.Desnudo = 0 Then Exit Sub
+104         If .flags.Desnudo = 0 Then Exit Sub
             
-102         If .Counters.Frio < IntervaloFrio Then
-104             .Counters.Frio = .Counters.Frio + 1
+106         If .Counters.Frio < IntervaloFrio Then
+108             .Counters.Frio = .Counters.Frio + 1
 
             Else
 
-106             If MapInfo(.Pos.Map).terrain = Nieve Then
-108                 Call WriteConsoleMsg(Userindex, "¡¡Estas muriendo de frio, abrigate o moriras!!.", FontTypeNames.FONTTYPE_INFO)
+110             If MapInfo(.Pos.Map).terrain = Nieve Then
+112                 Call WriteConsoleMsg(Userindex, "¡¡Estas muriendo de frio, abrigate o moriras!!.", FontTypeNames.FONTTYPE_INFO)
 
-110                 modifi = Porcentaje(.Stats.MaxHp, 5)
+114                 modifi = Porcentaje(.Stats.MaxHp, 5)
 
-112                 .Stats.MinHp = .Stats.MinHp - modifi
+116                 .Stats.MinHp = .Stats.MinHp - modifi
             
-114                 If .Stats.MinHp < 1 Then
+118                 If .Stats.MinHp < 1 Then
 
-116                     Call WriteConsoleMsg(Userindex, "¡¡Has muerto de frio!!.", FontTypeNames.FONTTYPE_INFO)
+120                     Call WriteConsoleMsg(Userindex, "¡¡Has muerto de frio!!.", FontTypeNames.FONTTYPE_INFO)
 
-118                     .Stats.MinHp = 0
+122                     .Stats.MinHp = 0
 
-120                     Call UserDie(Userindex)
+124                     Call UserDie(Userindex)
 
                     End If
             
-122                 Call WriteUpdateHP(Userindex)
+126                 Call WriteUpdateHP(Userindex)
                 End If
         
 128             .Counters.Frio = 0
@@ -1520,47 +1520,47 @@ End Sub
 '
 
 Public Sub EfectoMimetismo(ByVal Userindex As Integer)
-'******************************************************
-'Author: Unknown
-'Last Update: 04/11/2008 (NicoNZ)
-'
-'******************************************************
-    Dim Barco As ObjData
+    '******************************************************
+    'Author: Unknown
+    'Last Update: 04/11/2008 (NicoNZ)
+    '
+    '******************************************************
+        Dim Barco As ObjData
     
-    With UserList(Userindex)
-        If .Counters.Mimetismo < IntervaloInvisible Then
-            .Counters.Mimetismo = .Counters.Mimetismo + 1
-        Else
-            'restore old char
-            Call WriteConsoleMsg(Userindex, "Recuperas tu apariencia normal.", FontTypeNames.FONTTYPE_INFO)
-            
-            If .flags.Navegando Then
-                If .flags.Muerto = 0 Then
-                    Barco = ObjData(UserList(Userindex).Invent.BarcoObjIndex)
-                    .Char.Body = Barco.Ropaje
-                Else
-                    .Char.Body = iFragataFantasmal
-                End If
-                
-                .Char.ShieldAnim = NingunEscudo
-                .Char.WeaponAnim = NingunArma
-                .Char.CascoAnim = NingunCasco
+100     With UserList(Userindex)
+102         If .Counters.Mimetismo < IntervaloInvisible Then
+104             .Counters.Mimetismo = .Counters.Mimetismo + 1
             Else
-                .Char.Body = .CharMimetizado.Body
-                .Char.Head = .CharMimetizado.Head
-                .Char.CascoAnim = .CharMimetizado.CascoAnim
-                .Char.ShieldAnim = .CharMimetizado.ShieldAnim
-                .Char.WeaponAnim = .CharMimetizado.WeaponAnim
+                'restore old char
+106             Call WriteConsoleMsg(Userindex, "Recuperas tu apariencia normal.", FontTypeNames.FONTTYPE_INFO)
+            
+108             If .flags.Navegando Then
+110                 If .flags.Muerto = 0 Then
+112                     Barco = ObjData(UserList(Userindex).Invent.BarcoObjIndex)
+114                     .Char.Body = Barco.Ropaje
+                    Else
+116                     .Char.Body = iFragataFantasmal
+                    End If
+                
+118                 .Char.ShieldAnim = NingunEscudo
+120                 .Char.WeaponAnim = NingunArma
+122                 .Char.CascoAnim = NingunCasco
+                Else
+124                 .Char.Body = .CharMimetizado.Body
+126                 .Char.Head = .CharMimetizado.Head
+128                 .Char.CascoAnim = .CharMimetizado.CascoAnim
+130                 .Char.ShieldAnim = .CharMimetizado.ShieldAnim
+132                 .Char.WeaponAnim = .CharMimetizado.WeaponAnim
+                End If
+            
+134             With .Char
+136                 Call ChangeUserChar(Userindex, .Body, .Head, .Heading, .WeaponAnim, .ShieldAnim, .CascoAnim)
+                End With
+            
+138             .Counters.Mimetismo = 0
+140             .flags.Mimetizado = 0
             End If
-            
-            With .Char
-                Call ChangeUserChar(Userindex, .Body, .Head, .Heading, .WeaponAnim, .ShieldAnim, .CascoAnim)
-            End With
-            
-            .Counters.Mimetismo = 0
-            .flags.Mimetizado = 0
-        End If
-    End With
+        End With
 End Sub
 
 Public Sub EfectoInvisibilidad(ByVal Userindex As Integer)
@@ -1588,8 +1588,8 @@ Public Sub EfectoInvisibilidad(ByVal Userindex As Integer)
         Exit Sub
 
 EfectoInvisibilidad_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.EfectoInvisibilidad", Erl)
-        Resume Next
+116     Call RegistrarError(Err.Number, Err.description, "General.EfectoInvisibilidad", Erl)
+118     Resume Next
         
 End Sub
 
@@ -1610,8 +1610,8 @@ Public Sub EfectoParalisisNpc(ByVal NpcIndex As Integer)
         Exit Sub
 
 EfectoParalisisNpc_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.EfectoParalisisNpc", Erl)
-        Resume Next
+108     Call RegistrarError(Err.Number, Err.description, "General.EfectoParalisisNpc", Erl)
+110     Resume Next
         
 End Sub
 
@@ -1636,8 +1636,8 @@ Public Sub EfectoCegueEstu(ByVal Userindex As Integer)
         Exit Sub
 
 EfectoCegueEstu_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.EfectoCegueEstu", Erl)
-        Resume Next
+110     Call RegistrarError(Err.Number, Err.description, "General.EfectoCegueEstu", Erl)
+112     Resume Next
         
 End Sub
 
@@ -1663,8 +1663,8 @@ Public Sub EfectoEstupidez(ByVal Userindex As Integer)
         Exit Sub
 
 EfectoEstupidez_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.EfectoEstupidez", Erl)
-        Resume Next
+110     Call RegistrarError(Err.Number, Err.description, "General.EfectoEstupidez", Erl)
+112     Resume Next
         
 End Sub
 
@@ -1686,8 +1686,8 @@ Public Sub EfectoParalisisUser(ByVal Userindex As Integer)
         Exit Sub
 
 EfectoParalisisUser_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.EfectoParalisisUser", Erl)
-        Resume Next
+108     Call RegistrarError(Err.Number, Err.description, "General.EfectoParalisisUser", Erl)
+110     Resume Next
         
 End Sub
 
@@ -1711,8 +1711,8 @@ Public Sub EfectoVelocidadUser(ByVal Userindex As Integer)
         Exit Sub
 
 EfectoVelocidadUser_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.EfectoVelocidadUser", Erl)
-        Resume Next
+110     Call RegistrarError(Err.Number, Err.description, "General.EfectoVelocidadUser", Erl)
+112     Resume Next
         
 End Sub
 
@@ -1735,8 +1735,8 @@ Public Sub EfectoMaldicionUser(ByVal Userindex As Integer)
         Exit Sub
 
 EfectoMaldicionUser_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.EfectoMaldicionUser", Erl)
-        Resume Next
+108     Call RegistrarError(Err.Number, Err.description, "General.EfectoMaldicionUser", Erl)
+110     Resume Next
         
 End Sub
 
@@ -1758,8 +1758,8 @@ Public Sub EfectoInmoUser(ByVal Userindex As Integer)
         Exit Sub
 
 EfectoInmoUser_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.EfectoInmoUser", Erl)
-        Resume Next
+108     Call RegistrarError(Err.Number, Err.description, "General.EfectoInmoUser", Erl)
+110     Resume Next
         
 End Sub
 
@@ -1835,8 +1835,8 @@ Public Sub RecStamina(ByVal Userindex As Integer, ByRef EnviarStats As Boolean, 
         Exit Sub
 
 RecStamina_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.RecStamina", Erl)
-        Resume Next
+172     Call RegistrarError(Err.Number, Err.description, "General.RecStamina", Erl)
+174     Resume Next
         
 End Sub
 
@@ -1867,8 +1867,8 @@ Public Sub EfectoVeneno(ByVal Userindex As Integer)
         Exit Sub
 
 EfectoVeneno_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.EfectoVeneno", Erl)
-        Resume Next
+120     Call RegistrarError(Err.Number, Err.description, "General.EfectoVeneno", Erl)
+122     Resume Next
         
 End Sub
 
@@ -1908,8 +1908,8 @@ Public Sub EfectoAhogo(ByVal Userindex As Integer)
         Exit Sub
 
 EfectoAhogo_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.EfectoAhogo", Erl)
-        Resume Next
+124     Call RegistrarError(Err.Number, Err.description, "General.EfectoAhogo", Erl)
+126     Resume Next
         
 End Sub
 
@@ -1939,8 +1939,8 @@ Public Sub EfectoIncineramiento(ByVal Userindex As Integer, ByRef EnviarStats As
         Exit Sub
 
 EfectoIncineramiento_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.EfectoIncineramiento", Erl)
-        Resume Next
+118     Call RegistrarError(Err.Number, Err.description, "General.EfectoIncineramiento", Erl)
+120     Resume Next
         
 End Sub
 
@@ -1973,8 +1973,8 @@ Public Sub DuracionPociones(ByVal Userindex As Integer)
         Exit Sub
 
 DuracionPociones_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.DuracionPociones", Erl)
-        Resume Next
+116     Call RegistrarError(Err.Number, Err.description, "General.DuracionPociones", Erl)
+118     Resume Next
         
 End Sub
 
@@ -2030,8 +2030,8 @@ Public Sub HambreYSed(ByVal Userindex As Integer, ByRef fenviarAyS As Boolean)
         Exit Sub
 
 HambreYSed_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.HambreYSed", Erl)
-        Resume Next
+140     Call RegistrarError(Err.Number, Err.description, "General.HambreYSed", Erl)
+142     Resume Next
         
 End Sub
 
@@ -2071,190 +2071,190 @@ Public Sub Sanar(ByVal Userindex As Integer, ByRef EnviarStats As Boolean, ByVal
         Exit Sub
 
 Sanar_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.Sanar", Erl)
-        Resume Next
+124     Call RegistrarError(Err.Number, Err.description, "General.Sanar", Erl)
+126     Resume Next
         
 End Sub
 
 Public Sub CargaNpcsDat(Optional ByVal ActualizarNPCsExistentes As Boolean = False)
         
-        On Error GoTo CargaNpcsDat_Err
+            On Error GoTo CargaNpcsDat_Err
         
-        ' Leemos el NPCs.dat y lo almacenamos en la memoria.
-        Set LeerNPCs = New clsIniReader
-        Call LeerNPCs.Initialize(DatPath & "NPCs.dat")
+            ' Leemos el NPCs.dat y lo almacenamos en la memoria.
+100         Set LeerNPCs = New clsIniReader
+102         Call LeerNPCs.Initialize(DatPath & "NPCs.dat")
         
-        ' Cargamos la lista de NPC's hostiles disponibles para spawnear.
-        Call CargarSpawnList
+            ' Cargamos la lista de NPC's hostiles disponibles para spawnear.
+104         Call CargarSpawnList
     
-        ' Actualizamos la informacion de los NPC's ya spawneados.
-        If ActualizarNPCsExistentes Then
+            ' Actualizamos la informacion de los NPC's ya spawneados.
+106         If ActualizarNPCsExistentes Then
     
-            Dim i As Long
-            For i = 1 To NumNPCs
+                Dim i As Long
+108             For i = 1 To NumNPCs
     
-                If Npclist(i).flags.NPCActive Then
-                    Call OpenNPC(CInt(i), False, True)
-                End If
+110                 If Npclist(i).flags.NPCActive Then
+112                     Call OpenNPC(CInt(i), False, True)
+                    End If
     
-                DoEvents
+114                 DoEvents
     
-            Next i
+116             Next i
     
-        End If
+            End If
         
-        Exit Sub
+            Exit Sub
 
 CargaNpcsDat_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.CargaNpcsDat", Erl)
-        Resume Next
+118         Call RegistrarError(Err.Number, Err.description, "General.CargaNpcsDat", Erl)
+120         Resume Next
         
 End Sub
 
 Sub PasarSegundo()
 
-    On Error GoTo Errhandler
+        On Error GoTo ErrHandler
 
-    Dim i    As Long
+        Dim i    As Long
 
-    Dim h    As Byte
+        Dim h    As Byte
 
-    Dim Mapa As Integer
+        Dim Mapa As Integer
 
-    Dim X    As Byte
+        Dim X    As Byte
 
-    Dim Y    As Byte
+        Dim Y    As Byte
     
-    If CuentaRegresivaTimer > 0 Then
-        If CuentaRegresivaTimer > 1 Then
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(CuentaRegresivaTimer - 1 & " segundos...!", FontTypeNames.FONTTYPE_GUILD))
-        Else
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Ya!!!", FontTypeNames.FONTTYPE_FIGHT))
-
-        End If
-
-        CuentaRegresivaTimer = CuentaRegresivaTimer - 1
-
-    End If
-    
-    For i = 1 To LastUser
-
-        If UserList(i).flags.Silenciado = 1 Then
-            UserList(i).flags.SegundosPasados = UserList(i).flags.SegundosPasados + 1
-
-            If UserList(i).flags.SegundosPasados = 60 Then
-                UserList(i).flags.MinutosRestantes = UserList(i).flags.MinutosRestantes - 1
-                UserList(i).flags.SegundosPasados = 0
+100     If CuentaRegresivaTimer > 0 Then
+102         If CuentaRegresivaTimer > 1 Then
+104             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(CuentaRegresivaTimer - 1 & " segundos...!", FontTypeNames.FONTTYPE_GUILD))
+            Else
+106             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Ya!!!", FontTypeNames.FONTTYPE_FIGHT))
 
             End If
+
+108         CuentaRegresivaTimer = CuentaRegresivaTimer - 1
+
+        End If
+    
+110     For i = 1 To LastUser
+
+112         If UserList(i).flags.Silenciado = 1 Then
+114             UserList(i).flags.SegundosPasados = UserList(i).flags.SegundosPasados + 1
+
+116             If UserList(i).flags.SegundosPasados = 60 Then
+118                 UserList(i).flags.MinutosRestantes = UserList(i).flags.MinutosRestantes - 1
+120                 UserList(i).flags.SegundosPasados = 0
+
+                End If
             
-            If UserList(i).flags.MinutosRestantes = 0 Then
-                UserList(i).flags.SegundosPasados = 0
-                UserList(i).flags.Silenciado = 0
-                UserList(i).flags.MinutosRestantes = 0
-                Call WriteConsoleMsg(i, "Has sido liberado del silencio.", FontTypeNames.FONTTYPE_SERVER)
-
-            End If
-
-        End If
-
-        With UserList(i)
-        
-            If .flags.invisible = 1 Then Call EfectoInvisibilidad(i)
-            If .flags.BattleModo = 0 Then Call DuracionPociones(i)
-            If .flags.Paralizado = 1 Then Call EfectoParalisisUser(i)
-            If .flags.Inmovilizado = 1 Then Call EfectoInmoUser(i)
-            If .flags.Ceguera = 1 Then Call EfectoCegueEstu(i)
-            If .flags.Estupidez = 1 Then Call EfectoEstupidez(i)
-            If .flags.Maldicion = 1 Then Call EfectoMaldicionUser(i)
-            If .flags.VelocidadBackup > 0 Then Call EfectoVelocidadUser(i)
-        
-        End With
-        
-        If UserList(i).flags.Portal > 1 Then
-            UserList(i).flags.Portal = UserList(i).flags.Portal - 1
-        
-            If UserList(i).flags.Portal = 1 Then
-                Mapa = UserList(i).flags.PortalM
-                X = UserList(i).flags.PortalX
-                Y = UserList(i).flags.PortalY
-                Call SendData(SendTarget.toMap, UserList(i).flags.PortalM, PrepareMessageParticleFXToFloor(X, Y, ParticulasIndex.TpVerde, 0))
-                Call SendData(SendTarget.toMap, UserList(i).flags.PortalM, PrepareMessageLightFXToFloor(X, Y, 0, 105))
-
-                If MapData(Mapa, X, Y).TileExit.Map > 0 Then
-                    MapData(Mapa, X, Y).TileExit.Map = 0
-                    MapData(Mapa, X, Y).TileExit.X = 0
-                    MapData(Mapa, X, Y).TileExit.Y = 0
+122             If UserList(i).flags.MinutosRestantes = 0 Then
+124                 UserList(i).flags.SegundosPasados = 0
+126                 UserList(i).flags.Silenciado = 0
+128                 UserList(i).flags.MinutosRestantes = 0
+130                 Call WriteConsoleMsg(i, "Has sido liberado del silencio.", FontTypeNames.FONTTYPE_SERVER)
 
                 End If
 
-                MapData(Mapa, X, Y).Particula = 0
-                MapData(Mapa, X, Y).TimeParticula = 0
-                MapData(Mapa, X, Y).Particula = 0
-                MapData(Mapa, X, Y).TimeParticula = 0
-                UserList(i).flags.Portal = 0
-                UserList(i).flags.PortalM = 0
-                UserList(i).flags.PortalY = 0
-                UserList(i).flags.PortalX = 0
-                UserList(i).flags.PortalMDestino = 0
-                UserList(i).flags.PortalYDestino = 0
-                UserList(i).flags.PortalXDestino = 0
+            End If
+
+132         With UserList(i)
+        
+134             If .flags.invisible = 1 Then Call EfectoInvisibilidad(i)
+136             If .flags.BattleModo = 0 Then Call DuracionPociones(i)
+138             If .flags.Paralizado = 1 Then Call EfectoParalisisUser(i)
+140             If .flags.Inmovilizado = 1 Then Call EfectoInmoUser(i)
+142             If .flags.Ceguera = 1 Then Call EfectoCegueEstu(i)
+144             If .flags.Estupidez = 1 Then Call EfectoEstupidez(i)
+146             If .flags.Maldicion = 1 Then Call EfectoMaldicionUser(i)
+148             If .flags.VelocidadBackup > 0 Then Call EfectoVelocidadUser(i)
+        
+            End With
+        
+150         If UserList(i).flags.Portal > 1 Then
+152             UserList(i).flags.Portal = UserList(i).flags.Portal - 1
+        
+154             If UserList(i).flags.Portal = 1 Then
+156                 Mapa = UserList(i).flags.PortalM
+158                 X = UserList(i).flags.PortalX
+160                 Y = UserList(i).flags.PortalY
+162                 Call SendData(SendTarget.toMap, UserList(i).flags.PortalM, PrepareMessageParticleFXToFloor(X, Y, ParticulasIndex.TpVerde, 0))
+164                 Call SendData(SendTarget.toMap, UserList(i).flags.PortalM, PrepareMessageLightFXToFloor(X, Y, 0, 105))
+
+166                 If MapData(Mapa, X, Y).TileExit.Map > 0 Then
+168                     MapData(Mapa, X, Y).TileExit.Map = 0
+170                     MapData(Mapa, X, Y).TileExit.X = 0
+172                     MapData(Mapa, X, Y).TileExit.Y = 0
+
+                    End If
+
+174                 MapData(Mapa, X, Y).Particula = 0
+176                 MapData(Mapa, X, Y).TimeParticula = 0
+178                 MapData(Mapa, X, Y).Particula = 0
+180                 MapData(Mapa, X, Y).TimeParticula = 0
+182                 UserList(i).flags.Portal = 0
+184                 UserList(i).flags.PortalM = 0
+186                 UserList(i).flags.PortalY = 0
+188                 UserList(i).flags.PortalX = 0
+190                 UserList(i).flags.PortalMDestino = 0
+192                 UserList(i).flags.PortalYDestino = 0
+194                 UserList(i).flags.PortalXDestino = 0
+
+                End If
+
+            End If
+        
+196         If UserList(i).Counters.TiempoDeMapeo > 0 Then
+198             UserList(i).Counters.TiempoDeMapeo = UserList(i).Counters.TiempoDeMapeo - 1
+            End If
+        
+        
+200         If UserList(i).Counters.TiempoDeInmunidad > 0 Then
+202             UserList(i).Counters.TiempoDeInmunidad = UserList(i).Counters.TiempoDeInmunidad - 1
+204             If UserList(i).Counters.TiempoDeInmunidad = 0 Then
+206                 UserList(i).flags.Inmunidad = 0
+                End If
+            End If
+        
+208         If UserList(i).flags.Subastando Then
+210             UserList(i).Counters.TiempoParaSubastar = UserList(i).Counters.TiempoParaSubastar - 1
+
+212             If UserList(i).Counters.TiempoParaSubastar = 0 Then
+214                 Call CancelarSubasta
+
+                End If
 
             End If
 
-        End If
-        
-        If UserList(i).Counters.TiempoDeMapeo > 0 Then
-            UserList(i).Counters.TiempoDeMapeo = UserList(i).Counters.TiempoDeMapeo - 1
-        End If
-        
-        
-        If UserList(i).Counters.TiempoDeInmunidad > 0 Then
-            UserList(i).Counters.TiempoDeInmunidad = UserList(i).Counters.TiempoDeInmunidad - 1
-            If UserList(i).Counters.TiempoDeInmunidad = 0 Then
-                UserList(i).flags.Inmunidad = 0
-            End If
-        End If
-        
-        If UserList(i).flags.Subastando Then
-            UserList(i).Counters.TiempoParaSubastar = UserList(i).Counters.TiempoParaSubastar - 1
+216         If UserList(i).flags.UserLogged Then
 
-            If UserList(i).Counters.TiempoParaSubastar = 0 Then
-                Call CancelarSubasta
+                'Cerrar usuario
+218             If UserList(i).Counters.Saliendo Then
+                    '  If UserList(i).flags.Muerto = 1 Then UserList(i).Counters.Salir = 0
+220                 UserList(i).Counters.Salir = UserList(i).Counters.Salir - 1
+                    ' Call WriteConsoleMsg(i, "Se saldrá del juego en " & UserList(i).Counters.Salir & " segundos...", FontTypeNames.FONTTYPE_INFO)
+222                 Call WriteLocaleMsg(i, "203", FontTypeNames.FONTTYPE_INFO, UserList(i).Counters.Salir)
 
-            End If
-
-        End If
-
-        If UserList(i).flags.UserLogged Then
-
-            'Cerrar usuario
-            If UserList(i).Counters.Saliendo Then
-                '  If UserList(i).flags.Muerto = 1 Then UserList(i).Counters.Salir = 0
-                UserList(i).Counters.Salir = UserList(i).Counters.Salir - 1
-                ' Call WriteConsoleMsg(i, "Se saldrá del juego en " & UserList(i).Counters.Salir & " segundos...", FontTypeNames.FONTTYPE_INFO)
-                Call WriteLocaleMsg(i, "203", FontTypeNames.FONTTYPE_INFO, UserList(i).Counters.Salir)
-
-                If UserList(i).Counters.Salir <= 0 Then
-                    Call WriteConsoleMsg(i, "Gracias por jugar Argentum20.", FontTypeNames.FONTTYPE_INFO)
-                    Call WriteDisconnect(i)
+224                 If UserList(i).Counters.Salir <= 0 Then
+226                     Call WriteConsoleMsg(i, "Gracias por jugar Argentum20.", FontTypeNames.FONTTYPE_INFO)
+228                     Call WriteDisconnect(i)
                     
-                    Call CloseSocket(i)
+230                     Call CloseSocket(i)
+
+                    End If
 
                 End If
 
             End If
 
-        End If
+232     Next i
 
-    Next i
+        Exit Sub
 
-    Exit Sub
+ErrHandler:
+234     Call LogError("Error en PasarSegundo. Err: " & Err.description & " - " & Err.Number & " - UserIndex: " & i)
 
-Errhandler:
-    Call LogError("Error en PasarSegundo. Err: " & Err.description & " - " & Err.Number & " - UserIndex: " & i)
-
-    Resume Next
+236     Resume Next
 
 End Sub
  
@@ -2269,8 +2269,8 @@ Public Function ReiniciarAutoUpdate() As Double
         Exit Function
 
 ReiniciarAutoUpdate_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.ReiniciarAutoUpdate", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "General.ReiniciarAutoUpdate", Erl)
+104     Resume Next
         
 End Function
  
@@ -2293,8 +2293,8 @@ Public Sub ReiniciarServidor(Optional ByVal EjecutarLauncher As Boolean = True)
         Exit Sub
 
 ReiniciarServidor_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.ReiniciarServidor", Erl)
-        Resume Next
+108     Call RegistrarError(Err.Number, Err.description, "General.ReiniciarServidor", Erl)
+110     Resume Next
         
 End Sub
  
@@ -2309,37 +2309,37 @@ Sub GuardarUsuarios()
     
         Dim i As Long
         
-        For i = 1 To LastUser
+106     For i = 1 To LastUser
 
-105         If UserList(i).flags.UserLogged Then
-106             Call FlushBuffer(i)
+108         If UserList(i).flags.UserLogged Then
+110             Call FlushBuffer(i)
             End If
 
-107     Next i
+112     Next i
 
-108     For i = 1 To LastUser
+114     For i = 1 To LastUser
 
-109         If UserList(i).flags.UserLogged Then
-110             If UserList(i).flags.BattleModo = 0 Then
-112                 Call SaveUser(i)
+116         If UserList(i).flags.UserLogged Then
+118             If UserList(i).flags.BattleModo = 0 Then
+120                 Call SaveUser(i)
 
                 End If
 
             End If
 
-114     Next i
+122     Next i
     
-116     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor> Personajes Grabados", FontTypeNames.FONTTYPE_SERVER))
-118     Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
+124     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor> Personajes Grabados", FontTypeNames.FONTTYPE_SERVER))
+126     Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
 
-120     haciendoBK = False
+128     haciendoBK = False
 
         
         Exit Sub
 
 GuardarUsuarios_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.GuardarUsuarios", Erl)
-        Resume Next
+130     Call RegistrarError(Err.Number, Err.description, "General.GuardarUsuarios", Erl)
+132     Resume Next
         
 End Sub
 
@@ -2362,8 +2362,8 @@ Sub InicializaEstadisticas()
         Exit Sub
 
 InicializaEstadisticas_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.InicializaEstadisticas", Erl)
-        Resume Next
+112     Call RegistrarError(Err.Number, Err.description, "General.InicializaEstadisticas", Erl)
+114     Resume Next
         
 End Sub
 
@@ -2388,8 +2388,8 @@ Public Sub FreeNPCs()
         Exit Sub
 
 FreeNPCs_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.FreeNPCs", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "General.FreeNPCs", Erl)
+108     Resume Next
         
 End Sub
 
@@ -2409,8 +2409,8 @@ Public Sub FreeCharIndexes()
         Exit Sub
 
 FreeCharIndexes_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.FreeCharIndexes", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "General.FreeCharIndexes", Erl)
+104     Resume Next
         
 End Sub
 
@@ -2444,8 +2444,8 @@ Function RandomString(cb As Integer, Optional ByVal OnlyUpper As Boolean = False
         Exit Function
 
 RandomString_Err:
-        Call RegistrarError(Err.Number, Err.description, "General.RandomString", Erl)
-        Resume Next
+116     Call RegistrarError(Err.Number, Err.description, "General.RandomString", Erl)
+118     Resume Next
         
 End Function
 
@@ -2456,38 +2456,38 @@ End Function
 '  Corregida por Maraxus para que reconozca como válidas casillas con puntos antes de la arroba y evitar un chequeo innecesario
 Public Function CheckMailString(ByVal sString As String) As Boolean
 
-    On Error GoTo errHnd
+        On Error GoTo errHnd
 
-    Dim lPos As Long
+        Dim lPos As Long
 
-    Dim lX   As Long
+        Dim lX   As Long
 
-    Dim iAsc As Integer
+        Dim iAsc As Integer
     
-    '1er test: Busca un simbolo @
-    lPos = InStr(sString, "@")
+        '1er test: Busca un simbolo @
+100     lPos = InStr(sString, "@")
 
-    If (lPos <> 0) Then
+102     If (lPos <> 0) Then
 
-        '2do test: Busca un simbolo . después de @ + 1
-        If Not (InStr(lPos, sString, ".", vbBinaryCompare) > lPos + 1) Then Exit Function
+            '2do test: Busca un simbolo . después de @ + 1
+104         If Not (InStr(lPos, sString, ".", vbBinaryCompare) > lPos + 1) Then Exit Function
         
-        '3er test: Recorre todos los caracteres y los valída
-        For lX = 0 To Len(sString) - 1
+            '3er test: Recorre todos los caracteres y los valída
+106         For lX = 0 To Len(sString) - 1
 
-            If Not (lX = (lPos - 1)) Then   'No chequeamos la '@'
-                iAsc = Asc(mid$(sString, (lX + 1), 1))
+108             If Not (lX = (lPos - 1)) Then   'No chequeamos la '@'
+110                 iAsc = Asc(mid$(sString, (lX + 1), 1))
 
-                If Not CMSValidateChar_(iAsc) Then Exit Function
+112                 If Not CMSValidateChar_(iAsc) Then Exit Function
 
-            End If
+                End If
 
-        Next lX
+114         Next lX
         
-        'Finale
-        CheckMailString = True
+            'Finale
+116         CheckMailString = True
 
-    End If
+        End If
 
 errHnd:
 
@@ -2504,91 +2504,91 @@ Private Function CMSValidateChar_(ByVal iAsc As Integer) As Boolean
         Exit Function
 
 CMSValidateChar__Err:
-        Call RegistrarError(Err.Number, Err.description, "General.CMSValidateChar_", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "General.CMSValidateChar_", Erl)
+104     Resume Next
         
 End Function
 
-Public Function Tilde(ByRef Data As String) As String
+Public Function Tilde(ByRef data As String) As String
     
-    On Error GoTo Tilde_Err
+        On Error GoTo Tilde_Err
     
 
-    Tilde = UCase$(Data)
+100     Tilde = UCase$(data)
  
-    Tilde = Replace$(Tilde, "Á", "A")
-    Tilde = Replace$(Tilde, "É", "E")
-    Tilde = Replace$(Tilde, "Í", "I")
-    Tilde = Replace$(Tilde, "Ó", "O")
-    Tilde = Replace$(Tilde, "Ú", "U")
+102     Tilde = Replace$(Tilde, "Á", "A")
+104     Tilde = Replace$(Tilde, "É", "E")
+106     Tilde = Replace$(Tilde, "Í", "I")
+108     Tilde = Replace$(Tilde, "Ó", "O")
+110     Tilde = Replace$(Tilde, "Ú", "U")
         
     
-    Exit Function
+        Exit Function
 
 Tilde_Err:
-    Call RegistrarError(Err.Number, Err.description, "Mod_General.Tilde", Erl)
-    Resume Next
+112     Call RegistrarError(Err.Number, Err.description, "Mod_General.Tilde", Erl)
+114     Resume Next
     
 End Function
 
 Public Sub CerrarServidor()
-On Error Resume Next
+    On Error Resume Next
 
-    'Save stats!!!
-    Call Statistics.DumpStatistics
+        'Save stats!!!
+100     Call Statistics.DumpStatistics
     
-    Call frmMain.QuitarIconoSystray
+102     Call frmMain.QuitarIconoSystray
     
-    #If UsarQueSocket = 1 Then
-        Call LimpiaWsApi
-    #ElseIf UsarQueSocket = 0 Then
-        Socket1.Cleanup
-    #ElseIf UsarQueSocket = 2 Then
-        Serv.Detener
-    #End If
+        #If UsarQueSocket = 1 Then
+104         Call LimpiaWsApi
+        #ElseIf UsarQueSocket = 0 Then
+106         Socket1.Cleanup
+        #ElseIf UsarQueSocket = 2 Then
+108         Serv.Detener
+        #End If
     
-    Dim LoopC As Integer
+        Dim LoopC As Integer
     
-    For LoopC = 1 To MaxUsers
-        If UserList(LoopC).ConnID <> -1 Then
-            Call CloseSocket(LoopC)
+110     For LoopC = 1 To MaxUsers
+112         If UserList(LoopC).ConnID <> -1 Then
+114             Call CloseSocket(LoopC)
+            End If
+        Next
+    
+116     If Database_Enabled Then
+            ' Cierro base de datos
+118         Call Database_Close
         End If
-    Next
     
-    If Database_Enabled Then
-        ' Cierro base de datos
-        Call Database_Close
-    End If
+120     LimpiarModuloLimpieza
     
-    LimpiarModuloLimpieza
-    
-    'Log
-    Dim n As Integer
+        'Log
+        Dim n As Integer
 
-    n = FreeFile
-    Open App.Path & "\logs\Main.log" For Append Shared As #n
-    Print #n, Date & " " & Time & " server cerrado."
-    Close #n
+122     n = FreeFile
+124     Open App.Path & "\logs\Main.log" For Append Shared As #n
+126     Print #n, Date & " " & Time & " server cerrado."
+128     Close #n
     
-    End
+130     End
 End Sub
 
 Function max(ByVal a As Double, ByVal b As Double) As Double
 
-    If a > b Then
-        max = a
-    Else
-        max = b
-    End If
+100     If a > b Then
+102         max = a
+        Else
+104         max = b
+        End If
 
 End Function
 
 Function min(ByVal a As Double, ByVal b As Double) As Double
 
-    If a < b Then
-        min = a
-    Else
-        min = b
-    End If
+100     If a < b Then
+102         min = a
+        Else
+104         min = b
+        End If
 
 End Function

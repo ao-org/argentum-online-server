@@ -170,9 +170,9 @@ Private Sub Command1_Click()
 106     For LoopC = 1 To LastUser
 
 108         If UserList(LoopC).flags.UserLogged And UserList(LoopC).ConnID >= 0 And UserList(LoopC).ConnIDValida Then
-110             If UserList(LoopC).outgoingData.length > 0 Then
+110             If UserList(LoopC).outgoingData.Length > 0 Then
 112                 n = n + 1
-114                 M = M + UserList(LoopC).outgoingData.length
+114                 M = M + UserList(LoopC).outgoingData.Length
 116                 cboUsusColas.AddItem UserList(LoopC).name
 
                 End If
@@ -189,8 +189,8 @@ Private Sub Command1_Click()
         Exit Sub
 
 Command1_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmEstadisticas.Command1_Click", Erl)
-        Resume Next
+124     Call RegistrarError(Err.Number, Err.description, "frmEstadisticas.Command1_Click", Erl)
+126     Resume Next
         
 End Sub
 
@@ -205,8 +205,8 @@ Private Sub Command2_Click()
         Exit Sub
 
 Command2_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmEstadisticas.Command2_Click", Erl)
-        Resume Next
+104     Call RegistrarError(Err.Number, Err.description, "frmEstadisticas.Command2_Click", Erl)
+106     Resume Next
         
 End Sub
 
@@ -220,8 +220,8 @@ Private Sub Form_Activate()
         Exit Sub
 
 Form_Activate_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmEstadisticas.Form_Activate", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "frmEstadisticas.Form_Activate", Erl)
+104     Resume Next
         
 End Sub
 
@@ -238,8 +238,8 @@ Public Sub ActualizaStats()
         Exit Sub
 
 ActualizaStats_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmEstadisticas.ActualizaStats", Erl)
-        Resume Next
+108     Call RegistrarError(Err.Number, Err.description, "frmEstadisticas.ActualizaStats", Erl)
+110     Resume Next
         
 End Sub
 
@@ -253,8 +253,8 @@ Private Sub Form_Click()
         Exit Sub
 
 Form_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmEstadisticas.Form_Click", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "frmEstadisticas.Form_Click", Erl)
+104     Resume Next
         
 End Sub
 
@@ -268,8 +268,8 @@ Private Sub Frame1_Click()
         Exit Sub
 
 Frame1_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmEstadisticas.Frame1_Click", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "frmEstadisticas.Frame1_Click", Erl)
+104     Resume Next
         
 End Sub
 
@@ -283,7 +283,7 @@ Private Sub lblStat_Click(Index As Integer)
         Exit Sub
 
 lblStat_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmEstadisticas.lblStat_Click", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "frmEstadisticas.lblStat_Click", Erl)
+104     Resume Next
         
 End Sub

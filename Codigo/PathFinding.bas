@@ -106,8 +106,8 @@ Private Function Limites(ByVal vfila As Integer, ByVal vcolu As Integer)
         Exit Function
 
 Limites_Err:
-        Call RegistrarError(Err.Number, Err.description, "PathFinding.Limites", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "PathFinding.Limites", Erl)
+104     Resume Next
         
 End Function
 
@@ -117,18 +117,18 @@ Private Function IsWalkable(ByVal Map As Integer, ByVal row As Integer, ByVal Co
 
 100     If MapData(Map, row, Col).NpcIndex <> 0 Then Exit Function
 
-102     If MapData(Map, row, Col).UserIndex <> 0 Then
-104         If MapData(Map, row, Col).UserIndex <> Npclist(NpcIndex).PFINFO.TargetUser Then Exit Function
+102     If MapData(Map, row, Col).Userindex <> 0 Then
+104         If MapData(Map, row, Col).Userindex <> Npclist(NpcIndex).PFINFO.TargetUser Then Exit Function
         End If
         
          'Tile Bloqueado?
-        If (MapData(row, Col).Blocked And 2 ^ (Heading - 1)) <> 0 Then Exit Function
+106     If (MapData(row, Col).Blocked And 2 ^ (Heading - 1)) <> 0 Then Exit Function
         
         Exit Function
 
 IsWalkable_Err:
-        Call RegistrarError(Err.Number, Err.description, "PathFinding.IsWalkable", Erl)
-        Resume Next
+108     Call RegistrarError(Err.Number, Err.description, "PathFinding.IsWalkable", Erl)
+110     Resume Next
         
 End Function
 
@@ -233,8 +233,8 @@ Private Sub ProcessAdjacents(ByVal MapIndex As Integer, ByRef T() As tIntermidia
         Exit Sub
 
 ProcessAdjacents_Err:
-        Call RegistrarError(Err.Number, Err.description, "PathFinding.ProcessAdjacents", Erl)
-        Resume Next
+176     Call RegistrarError(Err.Number, Err.description, "PathFinding.ProcessAdjacents", Erl)
+178     Resume Next
         
 End Sub
 
@@ -290,8 +290,8 @@ Public Sub SeekPath(ByVal NpcIndex As Integer, Optional ByVal MaxSteps As Intege
         Exit Sub
 
 SeekPath_Err:
-        Call RegistrarError(Err.Number, Err.description, "PathFinding.SeekPath", Erl)
-        Resume Next
+130     Call RegistrarError(Err.Number, Err.description, "PathFinding.SeekPath", Erl)
+132     Resume Next
         
 End Sub
 
@@ -337,8 +337,8 @@ Private Sub MakePath(ByVal NpcIndex As Integer)
         Exit Sub
 
 MakePath_Err:
-        Call RegistrarError(Err.Number, Err.description, "PathFinding.MakePath", Erl)
-        Resume Next
+128     Call RegistrarError(Err.Number, Err.description, "PathFinding.MakePath", Erl)
+130     Resume Next
         
 End Sub
 
@@ -375,8 +375,8 @@ Private Sub InitializeTable(ByRef T() As tIntermidiateWork, ByRef S As tVertice,
         Exit Sub
 
 InitializeTable_Err:
-        Call RegistrarError(Err.Number, Err.description, "PathFinding.InitializeTable", Erl)
-        Resume Next
+118     Call RegistrarError(Err.Number, Err.description, "PathFinding.InitializeTable", Erl)
+120     Resume Next
         
 End Sub
 
@@ -439,7 +439,7 @@ Function FindDirectionEAO(a As WorldPos, b As WorldPos, Optional PuedeAgu As Boo
    
         End If
         
-        If Distancia(a, b) <= 1 Then Exit Function
+128     If Distancia(a, b) <= 1 Then Exit Function
 
 130     Select Case FindDirectionEAO
 
@@ -511,7 +511,7 @@ Function FindDirectionEAO(a As WorldPos, b As WorldPos, Optional PuedeAgu As Boo
         Exit Function
 
 FindDirectionEAO_Err:
-        Call RegistrarError(Err.Number, Err.description, "PathFinding.FindDirectionEAO", Erl)
-        Resume Next
+194     Call RegistrarError(Err.Number, Err.description, "PathFinding.FindDirectionEAO", Erl)
+196     Resume Next
         
 End Function

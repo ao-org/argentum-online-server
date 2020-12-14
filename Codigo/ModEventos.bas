@@ -107,8 +107,8 @@ Public Sub CheckEvento(ByVal Hora As Byte)
         Exit Sub
 
 CheckEvento_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModEventos.CheckEvento", Erl)
-        Resume Next
+196     Call RegistrarError(Err.Number, Err.description, "ModEventos.CheckEvento", Erl)
+198     Resume Next
         
 End Sub
 
@@ -161,8 +161,8 @@ Public Sub FinalizarEvento()
         Exit Sub
 
 FinalizarEvento_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModEventos.FinalizarEvento", Erl)
-        Resume Next
+152     Call RegistrarError(Err.Number, Err.description, "ModEventos.FinalizarEvento", Erl)
+154     Resume Next
         
 End Sub
 
@@ -214,8 +214,8 @@ Public Function DescribirEvento(ByVal Hora As Byte) As String
         Exit Function
 
 DescribirEvento_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModEventos.DescribirEvento", Erl)
-        Resume Next
+138     Call RegistrarError(Err.Number, Err.description, "ModEventos.DescribirEvento", Erl)
+140     Resume Next
         
 End Function
 
@@ -244,8 +244,8 @@ Public Sub CargarEventos()
         Exit Sub
 
 CargarEventos_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModEventos.CargarEventos", Erl)
-        Resume Next
+120     Call RegistrarError(Err.Number, Err.description, "ModEventos.CargarEventos", Erl)
+122     Resume Next
         
 End Sub
 
@@ -343,8 +343,8 @@ Public Sub ForzarEvento(ByVal Tipo As Byte, ByVal duracion As Byte, ByVal multi 
         Exit Sub
 
 ForzarEvento_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModEventos.ForzarEvento", Erl)
-        Resume Next
+206     Call RegistrarError(Err.Number, Err.description, "ModEventos.ForzarEvento", Erl)
+208     Resume Next
         
 End Sub
 

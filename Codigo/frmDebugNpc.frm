@@ -114,8 +114,8 @@ Private Sub Command1_Click()
         Exit Sub
 
 Command1_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmDebugNpc.Command1_Click", Erl)
-        Resume Next
+114     Call RegistrarError(Err.Number, Err.description, "frmDebugNpc.Command1_Click", Erl)
+116     Resume Next
         
 End Sub
 
@@ -129,8 +129,8 @@ Private Sub Command2_Click()
         Exit Sub
 
 Command2_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmDebugNpc.Command2_Click", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "frmDebugNpc.Command2_Click", Erl)
+104     Resume Next
         
 End Sub
 

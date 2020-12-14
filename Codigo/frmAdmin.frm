@@ -106,8 +106,8 @@ Private Sub cboPjs_Change()
         Exit Sub
 
 cboPjs_Change_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmAdmin.cboPjs_Change", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "frmAdmin.cboPjs_Change", Erl)
+104     Resume Next
         
 End Sub
 
@@ -121,8 +121,8 @@ Private Sub cboPjs_Click()
         Exit Sub
 
 cboPjs_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmAdmin.cboPjs_Click", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "frmAdmin.cboPjs_Click", Erl)
+104     Resume Next
         
 End Sub
 
@@ -145,8 +145,8 @@ Private Sub Command1_Click()
         Exit Sub
 
 Command1_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmAdmin.Command1_Click", Erl)
-        Resume Next
+108     Call RegistrarError(Err.Number, Err.description, "frmAdmin.Command1_Click", Erl)
+110     Resume Next
         
 End Sub
 
@@ -179,8 +179,8 @@ Public Sub ActualizaListaPjs()
         Exit Sub
 
 ActualizaListaPjs_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmAdmin.ActualizaListaPjs", Erl)
-        Resume Next
+116     Call RegistrarError(Err.Number, Err.description, "frmAdmin.ActualizaListaPjs", Erl)
+118     Resume Next
         
 End Sub
 
@@ -194,8 +194,8 @@ Private Sub Command3_Click()
         Exit Sub
 
 Command3_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmAdmin.Command3_Click", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "frmAdmin.Command3_Click", Erl)
+104     Resume Next
         
 End Sub
 
@@ -211,7 +211,7 @@ Private Sub ActualizaPjInfo()
 102     If tIndex > 0 Then
 
 104         With UserList(tIndex)
-106             Text1.Text = .outgoingData.length & " elementos en cola." & vbCrLf
+106             Text1.Text = .outgoingData.Length & " elementos en cola." & vbCrLf
 
             End With
 
@@ -221,8 +221,8 @@ Private Sub ActualizaPjInfo()
         Exit Sub
 
 ActualizaPjInfo_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmAdmin.ActualizaPjInfo", Erl)
-        Resume Next
+108     Call RegistrarError(Err.Number, Err.description, "frmAdmin.ActualizaPjInfo", Erl)
+110     Resume Next
         
 End Sub
 

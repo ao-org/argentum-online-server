@@ -36,7 +36,7 @@ Option Explicit
 '
 
 ' CASTING DE HECHIZOS
-Public Function IntervaloPermiteLanzarSpell(ByVal UserIndex As Integer, Optional ByVal actualizar As Boolean = True) As Boolean
+Public Function IntervaloPermiteLanzarSpell(ByVal Userindex As Integer, Optional ByVal Actualizar As Boolean = True) As Boolean
         
         On Error GoTo IntervaloPermiteLanzarSpell_Err
         
@@ -45,11 +45,11 @@ Public Function IntervaloPermiteLanzarSpell(ByVal UserIndex As Integer, Optional
 
 100     TActual = GetTickCount()
 
-102     If TActual - UserList(UserIndex).Counters.TimerLanzarSpell >= UserList(UserIndex).Intervals.magia - MargenDeIntervaloPorPing Then
-104         If actualizar Then
-106             UserList(UserIndex).Counters.TimerLanzarSpell = TActual
+102     If TActual - UserList(Userindex).Counters.TimerLanzarSpell >= UserList(Userindex).Intervals.magia - MargenDeIntervaloPorPing Then
+104         If Actualizar Then
+106             UserList(Userindex).Counters.TimerLanzarSpell = TActual
                 ' Actualizo spell-attack
-108             UserList(UserIndex).Counters.TimerMagiaGolpe = TActual
+108             UserList(Userindex).Counters.TimerMagiaGolpe = TActual
 
             End If
 
@@ -63,12 +63,12 @@ Public Function IntervaloPermiteLanzarSpell(ByVal UserIndex As Integer, Optional
         Exit Function
 
 IntervaloPermiteLanzarSpell_Err:
-        Call RegistrarError(Err.Number, Err.description, "modNuevoTimer.IntervaloPermiteLanzarSpell", Erl)
-        Resume Next
+114     Call RegistrarError(Err.Number, Err.description, "modNuevoTimer.IntervaloPermiteLanzarSpell", Erl)
+116     Resume Next
         
 End Function
 
-Public Function IntervaloPermiteAtacar(ByVal UserIndex As Integer, Optional ByVal actualizar As Boolean = True) As Boolean
+Public Function IntervaloPermiteAtacar(ByVal Userindex As Integer, Optional ByVal Actualizar As Boolean = True) As Boolean
         
         On Error GoTo IntervaloPermiteAtacar_Err
         
@@ -77,19 +77,19 @@ Public Function IntervaloPermiteAtacar(ByVal UserIndex As Integer, Optional ByVa
 
 100     TActual = GetTickCount()
 
-102     If TActual - UserList(UserIndex).Counters.TimerPuedeAtacar >= UserList(UserIndex).Intervals.Golpe - MargenDeIntervaloPorPing Then
-104         If actualizar Then
-106             UserList(UserIndex).Counters.TimerPuedeAtacar = TActual
+102     If TActual - UserList(Userindex).Counters.TimerPuedeAtacar >= UserList(Userindex).Intervals.Golpe - MargenDeIntervaloPorPing Then
+104         If Actualizar Then
+106             UserList(Userindex).Counters.TimerPuedeAtacar = TActual
                 ' Actualizo attack-spell
-108             UserList(UserIndex).Counters.TimerGolpeMagia = TActual
+108             UserList(Userindex).Counters.TimerGolpeMagia = TActual
                 ' Actualizo attack-use
-109             UserList(UserIndex).Counters.TimerGolpeUsar = TActual
+110             UserList(Userindex).Counters.TimerGolpeUsar = TActual
 
             End If
 
-110         IntervaloPermiteAtacar = True
+112         IntervaloPermiteAtacar = True
         Else
-112         IntervaloPermiteAtacar = False
+114         IntervaloPermiteAtacar = False
 
         End If
 
@@ -97,12 +97,12 @@ Public Function IntervaloPermiteAtacar(ByVal UserIndex As Integer, Optional ByVa
         Exit Function
 
 IntervaloPermiteAtacar_Err:
-        Call RegistrarError(Err.Number, Err.description, "modNuevoTimer.IntervaloPermiteAtacar", Erl)
-        Resume Next
+116     Call RegistrarError(Err.Number, Err.description, "modNuevoTimer.IntervaloPermiteAtacar", Erl)
+118     Resume Next
         
 End Function
 
-Public Function IntervaloPermiteTirar(ByVal UserIndex As Integer, Optional ByVal actualizar As Boolean = True) As Boolean
+Public Function IntervaloPermiteTirar(ByVal Userindex As Integer, Optional ByVal Actualizar As Boolean = True) As Boolean
         
         On Error GoTo IntervaloPermiteTirar_Err
         
@@ -111,9 +111,9 @@ Public Function IntervaloPermiteTirar(ByVal UserIndex As Integer, Optional ByVal
     
 100     TActual = GetTickCount()
     
-102     If TActual - UserList(UserIndex).Counters.TimerTirar >= IntervaloTirar Then
-104         If actualizar Then
-106             UserList(UserIndex).Counters.TimerTirar = TActual
+102     If TActual - UserList(Userindex).Counters.TimerTirar >= IntervaloTirar Then
+104         If Actualizar Then
+106             UserList(Userindex).Counters.TimerTirar = TActual
 
             End If
 
@@ -127,12 +127,12 @@ Public Function IntervaloPermiteTirar(ByVal UserIndex As Integer, Optional ByVal
         Exit Function
 
 IntervaloPermiteTirar_Err:
-        Call RegistrarError(Err.Number, Err.description, "modNuevoTimer.IntervaloPermiteTirar", Erl)
-        Resume Next
+112     Call RegistrarError(Err.Number, Err.description, "modNuevoTimer.IntervaloPermiteTirar", Erl)
+114     Resume Next
         
 End Function
 
-Public Function IntervaloPermiteMagiaGolpe(ByVal UserIndex As Integer, Optional ByVal actualizar As Boolean = True) As Boolean
+Public Function IntervaloPermiteMagiaGolpe(ByVal Userindex As Integer, Optional ByVal Actualizar As Boolean = True) As Boolean
         
         On Error GoTo IntervaloPermiteMagiaGolpe_Err
         
@@ -141,9 +141,9 @@ Public Function IntervaloPermiteMagiaGolpe(ByVal UserIndex As Integer, Optional 
 
 100     TActual = GetTickCount()
     
-102     If TActual - UserList(UserIndex).Counters.TimerLanzarSpell >= UserList(UserIndex).Intervals.MagiaGolpe - MargenDeIntervaloPorPing Then
-104         If actualizar Then
-106             UserList(UserIndex).Counters.TimerMagiaGolpe = TActual
+102     If TActual - UserList(Userindex).Counters.TimerLanzarSpell >= UserList(Userindex).Intervals.MagiaGolpe - MargenDeIntervaloPorPing Then
+104         If Actualizar Then
+106             UserList(Userindex).Counters.TimerMagiaGolpe = TActual
 
             End If
 
@@ -157,12 +157,12 @@ Public Function IntervaloPermiteMagiaGolpe(ByVal UserIndex As Integer, Optional 
         Exit Function
 
 IntervaloPermiteMagiaGolpe_Err:
-        Call RegistrarError(Err.Number, Err.description, "modNuevoTimer.IntervaloPermiteMagiaGolpe", Erl)
-        Resume Next
+112     Call RegistrarError(Err.Number, Err.description, "modNuevoTimer.IntervaloPermiteMagiaGolpe", Erl)
+114     Resume Next
         
 End Function
 
-Public Function IntervaloPermiteGolpeMagia(ByVal UserIndex As Integer, Optional ByVal actualizar As Boolean = True) As Boolean
+Public Function IntervaloPermiteGolpeMagia(ByVal Userindex As Integer, Optional ByVal Actualizar As Boolean = True) As Boolean
         
         On Error GoTo IntervaloPermiteGolpeMagia_Err
         
@@ -171,9 +171,9 @@ Public Function IntervaloPermiteGolpeMagia(ByVal UserIndex As Integer, Optional 
 
 100     TActual = GetTickCount()
     
-102     If TActual - UserList(UserIndex).Counters.TimerGolpeMagia >= UserList(UserIndex).Intervals.GolpeMagia - MargenDeIntervaloPorPing Then
-104         If actualizar Then
-106             UserList(UserIndex).Counters.TimerGolpeMagia = TActual
+102     If TActual - UserList(Userindex).Counters.TimerGolpeMagia >= UserList(Userindex).Intervals.GolpeMagia - MargenDeIntervaloPorPing Then
+104         If Actualizar Then
+106             UserList(Userindex).Counters.TimerGolpeMagia = TActual
 
             End If
 
@@ -187,12 +187,12 @@ Public Function IntervaloPermiteGolpeMagia(ByVal UserIndex As Integer, Optional 
         Exit Function
 
 IntervaloPermiteGolpeMagia_Err:
-        Call RegistrarError(Err.Number, Err.description, "modNuevoTimer.IntervaloPermiteGolpeMagia", Erl)
-        Resume Next
+112     Call RegistrarError(Err.Number, Err.description, "modNuevoTimer.IntervaloPermiteGolpeMagia", Erl)
+114     Resume Next
         
 End Function
 
-Public Function IntervaloPermiteGolpeUsar(ByVal UserIndex As Integer, Optional ByVal actualizar As Boolean = True) As Boolean
+Public Function IntervaloPermiteGolpeUsar(ByVal Userindex As Integer, Optional ByVal Actualizar As Boolean = True) As Boolean
         
         On Error GoTo IntervaloPermiteGolpeUsar_Err
         
@@ -201,9 +201,9 @@ Public Function IntervaloPermiteGolpeUsar(ByVal UserIndex As Integer, Optional B
 
 100     TActual = GetTickCount()
     
-102     If TActual - UserList(UserIndex).Counters.TimerGolpeUsar >= UserList(UserIndex).Intervals.GolpeUsar - MargenDeIntervaloPorPing Then
-104         If actualizar Then
-106             UserList(UserIndex).Counters.TimerGolpeUsar = TActual
+102     If TActual - UserList(Userindex).Counters.TimerGolpeUsar >= UserList(Userindex).Intervals.GolpeUsar - MargenDeIntervaloPorPing Then
+104         If Actualizar Then
+106             UserList(Userindex).Counters.TimerGolpeUsar = TActual
 
             End If
 
@@ -217,8 +217,8 @@ Public Function IntervaloPermiteGolpeUsar(ByVal UserIndex As Integer, Optional B
         Exit Function
 
 IntervaloPermiteGolpeUsar_Err:
-        Call RegistrarError(Err.Number, Err.description, "modNuevoTimer.IntervaloPermiteGolpeUsar", Erl)
-        Resume Next
+112     Call RegistrarError(Err.Number, Err.description, "modNuevoTimer.IntervaloPermiteGolpeUsar", Erl)
+114     Resume Next
         
 End Function
 
@@ -237,7 +237,7 @@ End Function
 'End Function
 
 ' TRABAJO
-Public Function IntervaloPermiteTrabajar(ByVal UserIndex As Integer, Optional ByVal actualizar As Boolean = True) As Boolean
+Public Function IntervaloPermiteTrabajar(ByVal Userindex As Integer, Optional ByVal Actualizar As Boolean = True) As Boolean
         
         On Error GoTo IntervaloPermiteTrabajar_Err
         
@@ -246,8 +246,8 @@ Public Function IntervaloPermiteTrabajar(ByVal UserIndex As Integer, Optional By
 
 100     TActual = GetTickCount()
 
-102     If TActual - UserList(UserIndex).Counters.TimerPuedeTrabajar >= UserList(UserIndex).Intervals.Trabajar - MargenDeIntervaloPorPing Then
-104         If actualizar Then UserList(UserIndex).Counters.TimerPuedeTrabajar = TActual
+102     If TActual - UserList(Userindex).Counters.TimerPuedeTrabajar >= UserList(Userindex).Intervals.Trabajar - MargenDeIntervaloPorPing Then
+104         If Actualizar Then UserList(Userindex).Counters.TimerPuedeTrabajar = TActual
 106         IntervaloPermiteTrabajar = True
         Else
 108         IntervaloPermiteTrabajar = False
@@ -258,13 +258,13 @@ Public Function IntervaloPermiteTrabajar(ByVal UserIndex As Integer, Optional By
         Exit Function
 
 IntervaloPermiteTrabajar_Err:
-        Call RegistrarError(Err.Number, Err.description, "modNuevoTimer.IntervaloPermiteTrabajar", Erl)
-        Resume Next
+110     Call RegistrarError(Err.Number, Err.description, "modNuevoTimer.IntervaloPermiteTrabajar", Erl)
+112     Resume Next
         
 End Function
 
 ' USAR OBJETOS
-Public Function IntervaloPermiteUsar(ByVal UserIndex As Integer, Optional ByVal actualizar As Boolean = True) As Boolean
+Public Function IntervaloPermiteUsar(ByVal Userindex As Integer, Optional ByVal Actualizar As Boolean = True) As Boolean
         
         On Error GoTo IntervaloPermiteUsar_Err
         
@@ -273,8 +273,8 @@ Public Function IntervaloPermiteUsar(ByVal UserIndex As Integer, Optional ByVal 
 
 100     TActual = GetTickCount()
 
-102     If TActual - UserList(UserIndex).Counters.TimerUsar >= UserList(UserIndex).Intervals.UsarClic - MargenDeIntervaloPorPing Then
-104         If actualizar Then UserList(UserIndex).Counters.TimerUsar = TActual
+102     If TActual - UserList(Userindex).Counters.TimerUsar >= UserList(Userindex).Intervals.UsarClic - MargenDeIntervaloPorPing Then
+104         If Actualizar Then UserList(Userindex).Counters.TimerUsar = TActual
 106         IntervaloPermiteUsar = True
         Else
 108         IntervaloPermiteUsar = False
@@ -285,12 +285,12 @@ Public Function IntervaloPermiteUsar(ByVal UserIndex As Integer, Optional ByVal 
         Exit Function
 
 IntervaloPermiteUsar_Err:
-        Call RegistrarError(Err.Number, Err.description, "modNuevoTimer.IntervaloPermiteUsar", Erl)
-        Resume Next
+110     Call RegistrarError(Err.Number, Err.description, "modNuevoTimer.IntervaloPermiteUsar", Erl)
+112     Resume Next
         
 End Function
 
-Public Function IntervaloPermiteUsarArcos(ByVal UserIndex As Integer, Optional ByVal actualizar As Boolean = True) As Boolean
+Public Function IntervaloPermiteUsarArcos(ByVal Userindex As Integer, Optional ByVal Actualizar As Boolean = True) As Boolean
         
         On Error GoTo IntervaloPermiteUsarArcos_Err
         
@@ -299,12 +299,12 @@ Public Function IntervaloPermiteUsarArcos(ByVal UserIndex As Integer, Optional B
     
 100     TActual = GetTickCount()
     
-102     If TActual - UserList(UserIndex).Counters.TimerPuedeUsarArco >= UserList(UserIndex).Intervals.Arco - MargenDeIntervaloPorPing Then
-104         If actualizar Then
-106             UserList(UserIndex).Counters.TimerPuedeUsarArco = TActual
+102     If TActual - UserList(Userindex).Counters.TimerPuedeUsarArco >= UserList(Userindex).Intervals.Arco - MargenDeIntervaloPorPing Then
+104         If Actualizar Then
+106             UserList(Userindex).Counters.TimerPuedeUsarArco = TActual
                 ' Tambien actualizo los otros
-108             UserList(UserIndex).Counters.TimerPuedeAtacar = TActual
-110             UserList(UserIndex).Counters.TimerLanzarSpell = TActual
+108             UserList(Userindex).Counters.TimerPuedeAtacar = TActual
+110             UserList(Userindex).Counters.TimerLanzarSpell = TActual
 
             End If
 
@@ -318,12 +318,12 @@ Public Function IntervaloPermiteUsarArcos(ByVal UserIndex As Integer, Optional B
         Exit Function
 
 IntervaloPermiteUsarArcos_Err:
-        Call RegistrarError(Err.Number, Err.description, "modNuevoTimer.IntervaloPermiteUsarArcos", Erl)
-        Resume Next
+116     Call RegistrarError(Err.Number, Err.description, "modNuevoTimer.IntervaloPermiteUsarArcos", Erl)
+118     Resume Next
         
 End Function
 
-Public Function IntervaloPermiteCaminar(ByVal UserIndex As Integer) As Boolean
+Public Function IntervaloPermiteCaminar(ByVal Userindex As Integer) As Boolean
         
         On Error GoTo IntervaloPermiteCaminar_Err
         
@@ -332,10 +332,10 @@ Public Function IntervaloPermiteCaminar(ByVal UserIndex As Integer) As Boolean
     
 100     TActual = GetTickCount()
     
-102     If TActual - UserList(UserIndex).Counters.TimerCaminar >= UserList(UserIndex).Intervals.Caminar - MargenDeIntervaloPorPing Then
+102     If TActual - UserList(Userindex).Counters.TimerCaminar >= UserList(Userindex).Intervals.Caminar - MargenDeIntervaloPorPing Then
         
             '  Call AddtoRichTextBox(frmMain.RecTxt, "Usar OK.", 255, 0, 0, True, False, False)
-104         UserList(UserIndex).Counters.TimerCaminar = TActual
+104         UserList(Userindex).Counters.TimerCaminar = TActual
 106         IntervaloPermiteCaminar = True
         Else
 108         IntervaloPermiteCaminar = False
@@ -346,8 +346,8 @@ Public Function IntervaloPermiteCaminar(ByVal UserIndex As Integer) As Boolean
         Exit Function
 
 IntervaloPermiteCaminar_Err:
-        Call RegistrarError(Err.Number, Err.description, "modNuevoTimer.IntervaloPermiteCaminar", Erl)
-        Resume Next
+110     Call RegistrarError(Err.Number, Err.description, "modNuevoTimer.IntervaloPermiteCaminar", Erl)
+112     Resume Next
         
 End Function
 
@@ -374,8 +374,8 @@ Public Function IntervaloPermiteMoverse(ByVal NpcIndex As Integer) As Boolean
         Exit Function
 
 IntervaloPermiteMoverse_Err:
-        Call RegistrarError(Err.Number, Err.description, "modNuevoTimer.IntervaloPermiteMoverse", Erl)
-        Resume Next
+110     Call RegistrarError(Err.Number, Err.description, "modNuevoTimer.IntervaloPermiteMoverse", Erl)
+112     Resume Next
         
 End Function
 
@@ -402,8 +402,8 @@ Public Function IntervaloPermiteLanzarHechizo(ByVal NpcIndex As Integer) As Bool
         Exit Function
 
 IntervaloPermiteLanzarHechizo_Err:
-        Call RegistrarError(Err.Number, Err.description, "modNuevoTimer.IntervaloPermiteLanzarHechizo", Erl)
-        Resume Next
+110     Call RegistrarError(Err.Number, Err.description, "modNuevoTimer.IntervaloPermiteLanzarHechizo", Erl)
+112     Resume Next
         
 End Function
 
@@ -430,8 +430,8 @@ Public Function IntervaloPermiteAtacarNPC(ByVal NpcIndex As Integer) As Boolean
         Exit Function
 
 IntervaloPermiteAtacarNPC_Err:
-        Call RegistrarError(Err.Number, Err.description, "modNuevoTimer.IntervaloPermiteAtacarNPC", Erl)
-        Resume Next
+110     Call RegistrarError(Err.Number, Err.description, "modNuevoTimer.IntervaloPermiteAtacarNPC", Erl)
+112     Resume Next
         
 End Function
 
