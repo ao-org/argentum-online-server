@@ -29,8 +29,8 @@ Begin VB.Form frmMain
    StartUpPosition =   2  'CenterScreen
    WindowState     =   1  'Minimized
    Begin MSWinsockLib.Winsock Winsock1 
-      Left            =   3240
-      Top             =   3000
+      Left            =   3600
+      Top             =   1080
       _ExtentX        =   741
       _ExtentY        =   741
       _Version        =   393216
