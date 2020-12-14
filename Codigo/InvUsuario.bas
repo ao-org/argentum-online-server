@@ -440,21 +440,17 @@ Sub DropObj(ByVal Userindex As Integer, _
 114                         num = MAX_INVENTORY_OBJS - MapData(.Pos.Map, X, Y).ObjInfo.Amount
                         End If
                         
-                        ' Si no sos Administrador o Dios, no te dejo dropear item
-                        If EsGM(Userindex) And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then
-                            
-                            ' NO tiramos el item, solo lo borramos
-                            Call EraseObj(num, .Pos.Map, .Pos.X, .Pos.Y)
-                            
-                        Else
-                            
+                        ' Si sos Admin, Dios o Usuario, crea el objeto en el piso.
+                        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Admin Or PlayerType.Dios)) <> 0 Then
+
                             ' Tiramos el item al piso
                             Call MakeObj(obj, Map, X, Y)
-118                         Call QuitarUserInvItem(Userindex, slot, num)
-120                         Call UpdateUserInv(False, Userindex, slot)
-                        
-                        End If
 
+                        End If
+                        
+                        Call QuitarUserInvItem(Userindex, slot, num)
+120                     Call UpdateUserInv(False, Userindex, slot)
+                        
 122                     If Not .flags.Privilegios And PlayerType.user Then
                             Call LogGM(.name, "Tiro cantidad:" & num & " Objeto:" & ObjData(obj.ObjIndex).name)
                         End If
