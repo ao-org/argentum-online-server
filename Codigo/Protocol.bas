@@ -15143,16 +15143,16 @@ Private Sub HandleCreateItem(ByVal Userindex As Integer)
         
         tObj = .incomingData.ReadInteger()
         Cuantos = .incomingData.ReadInteger()
-        
-        ' Si es usuario o consejero, lo sacamos cagando.
-        If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then Exit Sub
+    
+        ' Si es usuario, lo sacamos cagando.
+        If Not EsGM(Userindex) Then Exit Sub
         
         ' Si es Semi-Dios, dejamos crear un item siempre y cuando pueda estar en el inventario.
-        If (.flags.Privilegios And PlayerType.SemiDios) And ObjData(tObj).Agarrable = 1 Then Exit Sub
+        If (.flags.Privilegios And PlayerType.SemiDios) <> 0 And ObjData(tObj).Agarrable = 1 Then Exit Sub
         
         If ObjData(tObj).donador = 1 Then
             ' Si es usuario, consejero o Semi-Dios y trata de crear un objeto para donadores, lo sacamos cagando.
-           'If (.flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin)) = 0 Then Exit Sub
+            If (.flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin)) = 0 Then Exit Sub
         End If
         
         ' Si hace mas de 10000, lo sacamos cagando.
@@ -15184,19 +15184,26 @@ Private Sub HandleCreateItem(ByVal Userindex As Integer)
                 Call WriteConsoleMsg(Userindex, "Has creado " & Objeto.Amount & " unidades de " & ObjData(tObj).name & ".", FontTypeNames.FONTTYPE_INFO)
             
             Else
-                ' Si no hay espacio, lo tiro al piso.
-                Call TirarItemAlPiso(.Pos, Objeto)
+
                 Call WriteConsoleMsg(Userindex, "No tenes espacio en tu inventario para crear el item.", FontTypeNames.FONTTYPE_INFO)
-                Call WriteConsoleMsg(Userindex, "ATENCION: CREASTE [" & Cuantos & "] ITEMS, TIRE E INGRESE /DEST EN CONSOLA PARA DESTRUIR LOS QUE NO NECESITE!!", FontTypeNames.FONTTYPE_GUILD)
+                
+                ' Si no hay espacio y es Dios o Admin, lo tiro al piso.
+                If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) <> 0 Then
+                    Call TirarItemAlPiso(.Pos, Objeto)
+                    Call WriteConsoleMsg(Userindex, "ATENCION: CREASTE [" & Cuantos & "] ITEMS, TIRE E INGRESE /DEST EN CONSOLA PARA DESTRUIR LOS QUE NO NECESITE!!", FontTypeNames.FONTTYPE_GUILD)
+                End If
                 
             End If
         
         Else
         
             ' Crear el item NO AGARRARBLE y tirarlo al piso.
-            Call TirarItemAlPiso(.Pos, Objeto)
-            Call WriteConsoleMsg(Userindex, "ATENCION: CREASTE [" & Cuantos & "] ITEMS, TIRE E INGRESE /DEST EN CONSOLA PARA DESTRUIR LOS QUE NO NECESITE!!", FontTypeNames.FONTTYPE_GUILD)
-            
+            ' Si no hay espacio y es Dios o Admin, lo tiro al piso.
+            If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) <> 0 Then
+                Call TirarItemAlPiso(.Pos, Objeto)
+                Call WriteConsoleMsg(Userindex, "ATENCION: CREASTE [" & Cuantos & "] ITEMS, TIRE E INGRESE /DEST EN CONSOLA PARA DESTRUIR LOS QUE NO NECESITE!!", FontTypeNames.FONTTYPE_GUILD)
+            End If
+
         End If
         
         ' Lo registro en los logs.
