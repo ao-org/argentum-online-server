@@ -28,6 +28,13 @@ Begin VB.Form frmMain
    ScaleWidth      =   6915
    StartUpPosition =   2  'CenterScreen
    WindowState     =   1  'Minimized
+   Begin MSWinsockLib.Winsock Winsock1 
+      Left            =   3600
+      Top             =   1080
+      _ExtentX        =   741
+      _ExtentY        =   741
+      _Version        =   393216
+   End
    Begin VB.Timer TimerGuardarUsuarios 
       Enabled         =   0   'False
       Interval        =   30000
