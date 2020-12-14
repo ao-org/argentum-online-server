@@ -3851,7 +3851,12 @@ Private Sub HandleWorkLeftClick(ByVal Userindex As Integer)
                 'Quitamos stamina
                 If .Stats.MinSta >= 10 Then
                     Call QuitarSta(Userindex, RandomNumber(1, 10))
-                    Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageArmaMov(UserList(Userindex).Char.CharIndex))
+                    
+                    'Si no es GM invisible, le envio el movimiento del arma.
+                    If UserList(Userindex).flags.AdminInvisible = 0 Then
+                        Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageArmaMov(UserList(Userindex).Char.CharIndex))
+                    End If
+                    
                 Else
                     Call WriteLocaleMsg(Userindex, "93", FontTypeNames.FONTTYPE_INFO)
                     ' Call WriteConsoleMsg(UserIndex, "Estís muy cansado para luchar.", FontTypeNames.FONTTYPE_INFO)
