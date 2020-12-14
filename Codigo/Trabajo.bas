@@ -2247,7 +2247,7 @@ Public Sub DoRaices(ByVal Userindex As Integer, ByVal X As Byte, ByVal Y As Byte
 132             If MapData(.Pos.Map, X, Y).ObjInfo.Amount < 0 Then
 134                 MapData(.Pos.Map, X, Y).ObjInfo.Amount = 0
     
-136                 Call AgregarItemLimpiza(.Pos.Map, X, Y)
+136                 Call AgregarItemLimpieza(.Pos.Map, X, Y)
                 
                 End If
         
