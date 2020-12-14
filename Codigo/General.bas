@@ -657,7 +657,8 @@ Sub Main()
     
 242     With frmMain
 244         .Minuto.Enabled = True
-246         .MedioMinuto.Enabled = True
+246         .TimerGuardarUsuarios.Enabled = True
+            .TimerGuardarUsuarios.Interval = IntervaloTimerGuardarUsuarios
             '.tLluvia.Enabled = True
 248         .tPiqueteC.Enabled = True
 250         .GameTimer.Enabled = True
