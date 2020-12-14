@@ -189,7 +189,7 @@ Public Function EsGM(ByVal Userindex As Integer) As Boolean
             Exit Function
         End If
         
-100     EsGM = (UserList(Userindex).flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero) <> 0)
+100     EsGM = (UserList(Userindex).flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero)) <> 0
 
         
         Exit Function
