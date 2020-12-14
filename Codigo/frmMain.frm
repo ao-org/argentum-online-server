@@ -1,4 +1,5 @@
 VERSION 5.00
+Object = "{248DD890-BB45-11CF-9ABC-0080C7E7B78D}#1.0#0"; "MSWINSCK.OCX"
 Begin VB.Form frmMain 
    BackColor       =   &H00E0E0E0&
    BorderStyle     =   4  'Fixed ToolWindow
@@ -27,7 +28,14 @@ Begin VB.Form frmMain
    ScaleWidth      =   6915
    StartUpPosition =   2  'CenterScreen
    WindowState     =   1  'Minimized
-   Begin VB.Timer GuardarUsuarios 
+   Begin MSWinsockLib.Winsock Winsock1 
+      Left            =   3240
+      Top             =   3000
+      _ExtentX        =   741
+      _ExtentY        =   741
+      _Version        =   393216
+   End
+   Begin VB.Timer TimerGuardarUsuarios 
       Enabled         =   0   'False
       Interval        =   30000
       Left            =   2640
@@ -708,7 +716,7 @@ errhand:
 
 End Sub
 
-Private Sub GuardarUsuarios_Timer()
+Private Sub TimerGuardarUsuarios_Timer()
     
     ' Guardar usuarios (solo si pasó el tiempo mínimo para guardar)
     Dim Userindex As Integer, UserGuardados As Integer
