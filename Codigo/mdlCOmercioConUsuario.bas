@@ -143,8 +143,10 @@ Public Sub FinComerciarUsu(ByVal Userindex As Integer)
         
         On Error GoTo FinComerciarUsu_Err
         
+        If Userindex = 0 Then Exit Sub
+        
 
-100     With UserList(Userindex)
+100     With UserList()
 
 102         If .ComUsu.DestUsu > 0 Then
 104             Call WriteUserCommerceEnd(Userindex)
