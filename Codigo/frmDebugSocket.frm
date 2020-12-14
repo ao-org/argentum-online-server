@@ -138,8 +138,8 @@ Private Sub Command1_Click()
         Exit Sub
 
 Command1_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmDebugSocket.Command1_Click", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "frmDebugSocket.Command1_Click", Erl)
+104     Resume Next
         
 End Sub
 
@@ -153,8 +153,8 @@ Private Sub Command2_Click()
         Exit Sub
 
 Command2_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmDebugSocket.Command2_Click", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "frmDebugSocket.Command2_Click", Erl)
+104     Resume Next
         
 End Sub
 
@@ -168,8 +168,8 @@ Private Sub Command3_Click()
         Exit Sub
 
 Command3_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmDebugSocket.Command3_Click", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "frmDebugSocket.Command3_Click", Erl)
+104     Resume Next
         
 End Sub
 
@@ -183,8 +183,8 @@ Private Sub Command4_Click()
         Exit Sub
 
 Command4_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmDebugSocket.Command4_Click", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "frmDebugSocket.Command4_Click", Erl)
+104     Resume Next
         
 End Sub
 

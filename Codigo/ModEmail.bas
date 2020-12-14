@@ -13,8 +13,8 @@ Public Function EnviarCorreo(ByVal UserMail As String) As Boolean
         Exit Function
 
 EnviarCorreo_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModCuentas.EnviarCorreo", Erl)
-        Resume Next
+104     Call RegistrarError(Err.Number, Err.description, "ModCuentas.EnviarCorreo", Erl)
+106     Resume Next
         
 End Function
 
@@ -44,8 +44,8 @@ Public Function EnviarCorreoRecuperacion(ByVal UserNick As String, ByVal UserMai
         Exit Function
 
 EnviarCorreoRecuperacion_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModCuentas.EnviarCorreoRecuperacion", Erl)
-        Resume Next
+110     Call RegistrarError(Err.Number, Err.description, "ModCuentas.EnviarCorreoRecuperacion", Erl)
+112     Resume Next
         
 End Function
 
@@ -65,8 +65,8 @@ Public Function ObtenerCodigo(ByVal name As String) As String
         Exit Function
 
 ObtenerCodigo_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerCodigo", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerCodigo", Erl)
+108     Resume Next
         
 End Function
 
@@ -86,8 +86,8 @@ Public Function ObtenerValidacion(ByVal name As String) As Boolean
         Exit Function
 
 ObtenerValidacion_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerValidacion", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerValidacion", Erl)
+108     Resume Next
         
 End Function
 
@@ -107,8 +107,8 @@ Public Function ObtenerEmail(ByVal name As String) As String
         Exit Function
 
 ObtenerEmail_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerEmail", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerEmail", Erl)
+108     Resume Next
         
 End Function
 
@@ -128,8 +128,8 @@ Public Function ObtenerMacAdress(ByVal name As String) As String
         Exit Function
 
 ObtenerMacAdress_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerMacAdress", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerMacAdress", Erl)
+108     Resume Next
         
 End Function
 
@@ -149,8 +149,8 @@ Public Function ObtenerHDserial(ByVal name As String) As Long
         Exit Function
 
 ObtenerHDserial_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerHDserial", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerHDserial", Erl)
+108     Resume Next
         
 End Function
 
@@ -170,12 +170,12 @@ Public Function CuentaExiste(ByVal CuentaEmail As String) As Boolean
         Exit Function
 
 CuentaExiste_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModCuentas.CuentaExiste", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "ModCuentas.CuentaExiste", Erl)
+108     Resume Next
         
 End Function
 
-Public Sub SaveNewAccount(ByVal UserIndex As Integer, ByVal CuentaEmail As String, ByVal Password As String)
+Public Sub SaveNewAccount(ByVal Userindex As Integer, ByVal CuentaEmail As String, ByVal Password As String)
         
         On Error GoTo SaveNewAccount_Err
         
@@ -209,55 +209,55 @@ Public Sub SaveNewAccount(ByVal UserIndex As Integer, ByVal CuentaEmail As Strin
         Exit Sub
 
 SaveNewAccount_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModCuentas.SaveNewAccount", Erl)
-        Resume Next
+116     Call RegistrarError(Err.Number, Err.description, "ModCuentas.SaveNewAccount", Erl)
+118     Resume Next
         
 End Sub
 
 Public Sub SaveNewAccountCharfile(CuentaEmail As String, PasswordHash As String, Salt As String, Codigo As String)
 
-    On Error GoTo ErrorHandler
+        On Error GoTo ErrorHandler
 
-    Dim Manager     As clsIniReader
+        Dim Manager     As clsIniReader
     
-    Dim AccountFile As String
+        Dim AccountFile As String
 
-    Set Manager = New clsIniReader
-    AccountFile = CuentasPath & LCase$(CuentaEmail) & ".act"
+100     Set Manager = New clsIniReader
+102     AccountFile = CuentasPath & LCase$(CuentaEmail) & ".act"
 
-    With Manager
+104     With Manager
         
-        Call .ChangeValue("INIT", "Email", CuentaEmail)
-        Call .ChangeValue("INIT", "Password", PasswordHash)
-        Call .ChangeValue("INIT", "Salt", Salt)
-        Call .ChangeValue("INIT", "Activada", "0")
-        Call .ChangeValue("INIT", "FechaCreacion", Date)
-        Call .ChangeValue("INIT", "CodigoActivacion", Codigo)
-        Call .ChangeValue("PERSONAJES", "Total", "0")
-        Call .ChangeValue("INIT", "Logeada", "0")
-        Call .ChangeValue("BAN", "Baneada", "0")
-        Call .ChangeValue("BAN", "Motivo", "")
-        Call .ChangeValue("BAN", "BANEO", "")
+106         Call .ChangeValue("INIT", "Email", CuentaEmail)
+108         Call .ChangeValue("INIT", "Password", PasswordHash)
+110         Call .ChangeValue("INIT", "Salt", Salt)
+112         Call .ChangeValue("INIT", "Activada", "0")
+114         Call .ChangeValue("INIT", "FechaCreacion", Date)
+116         Call .ChangeValue("INIT", "CodigoActivacion", Codigo)
+118         Call .ChangeValue("PERSONAJES", "Total", "0")
+120         Call .ChangeValue("INIT", "Logeada", "0")
+122         Call .ChangeValue("BAN", "Baneada", "0")
+124         Call .ChangeValue("BAN", "Motivo", "")
+126         Call .ChangeValue("BAN", "BANEO", "")
         
-        'Grabamos donador
-        Call .ChangeValue("DONADOR", "DONADOR", "0")
-        Call .ChangeValue("DONADOR", "CREDITOS", "0")
-        Call .ChangeValue("DONADOR", "FECHAEXPIRACION", "")
+            'Grabamos donador
+128         Call .ChangeValue("DONADOR", "DONADOR", "0")
+130         Call .ChangeValue("DONADOR", "CREDITOS", "0")
+132         Call .ChangeValue("DONADOR", "FECHAEXPIRACION", "")
         
-        'Seguridad Ladder
-        Call .ChangeValue("INIT", "MacAdress", "0")
-        Call .ChangeValue("INIT", "HDserial", "0")
+            'Seguridad Ladder
+134         Call .ChangeValue("INIT", "MacAdress", "0")
+136         Call .ChangeValue("INIT", "HDserial", "0")
         
-        Call .DumpFile(AccountFile)
+138         Call .DumpFile(AccountFile)
 
-    End With
+        End With
 
-    Set Manager = Nothing
+140     Set Manager = Nothing
 
-    Exit Sub
+        Exit Sub
 
 ErrorHandler:
-    Call LogError("Error en SaveNewAccountCharfile. ")
+142     Call LogError("Error en SaveNewAccountCharfile. ")
 
 End Sub
 
@@ -277,8 +277,8 @@ Public Function ObtenerCuenta(ByVal name As String) As String
         Exit Function
 
 ObtenerCuenta_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerCuenta", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerCuenta", Erl)
+108     Resume Next
         
 End Function
 
@@ -299,8 +299,8 @@ Public Function PasswordValida(Password As String, PasswordHash As String, Salt 
         Exit Function
 
 PasswordValida_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModCuentas.PasswordValida", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "ModCuentas.PasswordValida", Erl)
+108     Resume Next
         
 End Function
 
@@ -320,8 +320,8 @@ Public Function ObtenerBaneo(ByVal name As String) As Boolean
         Exit Function
 
 ObtenerBaneo_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerBaneo", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerBaneo", Erl)
+108     Resume Next
         
 End Function
 
@@ -341,8 +341,8 @@ Public Function ObtenerMotivoBaneo(ByVal name As String) As String
         Exit Function
 
 ObtenerMotivoBaneo_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerMotivoBaneo", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerMotivoBaneo", Erl)
+108     Resume Next
         
 End Function
 
@@ -362,8 +362,8 @@ Public Function ObtenerQuienBaneo(ByVal name As String) As String
         Exit Function
 
 ObtenerQuienBaneo_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerQuienBaneo", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerQuienBaneo", Erl)
+108     Resume Next
         
 End Function
 
@@ -383,20 +383,20 @@ Public Function ObtenerCantidadDePersonajes(ByVal name As String) As String
         Exit Function
 
 ObtenerCantidadDePersonajes_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerCantidadDePersonajes", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerCantidadDePersonajes", Erl)
+108     Resume Next
         
 End Function
 
-Public Function ObtenerCantidadDePersonajesByUserIndex(ByVal UserIndex As Integer) As Byte
+Public Function ObtenerCantidadDePersonajesByUserIndex(ByVal Userindex As Integer) As Byte
         
         On Error GoTo ObtenerCantidadDePersonajesByUserIndex_Err
         
 
 100     If Database_Enabled Then
-102         ObtenerCantidadDePersonajesByUserIndex = GetPersonajesCountByIDDatabase(UserList(UserIndex).AccountID)
+102         ObtenerCantidadDePersonajesByUserIndex = GetPersonajesCountByIDDatabase(UserList(Userindex).AccountID)
         Else
-104         ObtenerCantidadDePersonajesByUserIndex = val(GetVar(CuentasPath & UCase$(UserList(UserIndex).name) & ".act", "PERSONAJES", "Total"))
+104         ObtenerCantidadDePersonajesByUserIndex = val(GetVar(CuentasPath & UCase$(UserList(Userindex).name) & ".act", "PERSONAJES", "Total"))
 
         End If
 
@@ -404,8 +404,8 @@ Public Function ObtenerCantidadDePersonajesByUserIndex(ByVal UserIndex As Intege
         Exit Function
 
 ObtenerCantidadDePersonajesByUserIndex_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerCantidadDePersonajesByUserIndex", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerCantidadDePersonajesByUserIndex", Erl)
+108     Resume Next
         
 End Function
 
@@ -425,8 +425,8 @@ Public Function ObtenerLogeada(ByVal name As String) As Byte
         Exit Function
 
 ObtenerLogeada_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerLogeada", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerLogeada", Erl)
+108     Resume Next
         
 End Function
 
@@ -440,8 +440,8 @@ Public Function ObtenerNombrePJ(ByVal Cuenta As String, ByVal i As Byte) As Stri
         Exit Function
 
 ObtenerNombrePJ_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerNombrePJ", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerNombrePJ", Erl)
+104     Resume Next
         
 End Function
 
@@ -454,7 +454,7 @@ Sub BorrarPJdeCuenta(ByVal name As String)
 
         Dim CantpjsOld  As Byte
 
-        Dim indice      As Byte
+        Dim Indice      As Byte
 
         Dim pjs(1 To 8) As String
 
@@ -472,14 +472,14 @@ Sub BorrarPJdeCuenta(ByVal name As String)
 106         pjs(i) = GetVar(CuentasPath & UCase$(Cuenta) & ".act", "PERSONAJES", "PJ" & i)
 
 108         If pjs(i) = name Then
-110             indice = i
+110             Indice = i
 112             pjs(i) = ""
 
             End If
 
 114     Next i
     
-116     Call WriteVar(CuentasPath & UCase$(Cuenta) & ".act", "PERSONAJES", "PJ" & indice, "")
+116     Call WriteVar(CuentasPath & UCase$(Cuenta) & ".act", "PERSONAJES", "PJ" & Indice, "")
     
 118     For i = 1 To CantpjsOld
 120         pjs(i) = GetVar(CuentasPath & UCase$(Cuenta) & ".act", "PERSONAJES", "PJ" & i)
@@ -504,8 +504,8 @@ Sub BorrarPJdeCuenta(ByVal name As String)
         Exit Sub
 
 BorrarPJdeCuenta_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModCuentas.BorrarPJdeCuenta", Erl)
-        Resume Next
+142     Call RegistrarError(Err.Number, Err.description, "ModCuentas.BorrarPJdeCuenta", Erl)
+144     Resume Next
         
 End Sub
 
@@ -525,8 +525,8 @@ Sub GrabarNuevoPjEnCuentaCharfile(ByVal UserCuenta As String, ByVal name As Stri
         Exit Sub
 
 GrabarNuevoPjEnCuentaCharfile_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModCuentas.GrabarNuevoPjEnCuentaCharfile", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "ModCuentas.GrabarNuevoPjEnCuentaCharfile", Erl)
+108     Resume Next
         
 End Sub
 
@@ -544,7 +544,7 @@ Sub BorrarCuenta(ByVal CuentaName As String)
         
 104         Cantpjs = ObtenerCantidadDePersonajes(CuentaName)
 
-            Dim indice      As Byte
+            Dim Indice      As Byte
 
             Dim pjs(1 To 8) As String
         
@@ -573,102 +573,102 @@ Sub BorrarCuenta(ByVal CuentaName As String)
         Exit Sub
 
 BorrarCuenta_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModCuentas.BorrarCuenta", Erl)
-        Resume Next
+124     Call RegistrarError(Err.Number, Err.description, "ModCuentas.BorrarCuenta", Erl)
+126     Resume Next
         
 End Sub
 
 Public Function ObtenerNivel(ByVal name As String) As Byte
 
-    On Error GoTo ErrorHandler
+        On Error GoTo ErrorHandler
 
-    ObtenerNivel = GetVar(CharPath & UCase$(name & ".chr"), "STATS", "ELV")
+100     ObtenerNivel = GetVar(CharPath & UCase$(name & ".chr"), "STATS", "ELV")
 
-    Exit Function
+        Exit Function
 ErrorHandler:
-    ObtenerNivel = 1
+102     ObtenerNivel = 1
 
 End Function
 
 Public Function ObtenerCuerpo(ByVal name As String) As Integer
 
-    On Error GoTo ErrorHandler
+        On Error GoTo ErrorHandler
 
-    Dim EstaMuerto As Byte
+        Dim EstaMuerto As Byte
 
-    Dim cuerpo     As Long
+        Dim cuerpo     As Long
 
-    EstaMuerto = GetVar(CharPath & UCase$(name & ".chr"), "flags", "Muerto")
+100     EstaMuerto = GetVar(CharPath & UCase$(name & ".chr"), "flags", "Muerto")
 
-    If EstaMuerto = 0 Then
-        cuerpo = GetVar(CharPath & UCase$(name & ".chr"), "INIT", "Body")
-        ObtenerCuerpo = cuerpo
-    Else
-        ObtenerCuerpo = iCuerpoMuerto
+102     If EstaMuerto = 0 Then
+104         cuerpo = GetVar(CharPath & UCase$(name & ".chr"), "INIT", "Body")
+106         ObtenerCuerpo = cuerpo
+        Else
+108         ObtenerCuerpo = iCuerpoMuerto
 
-    End If
+        End If
 
-    Exit Function
+        Exit Function
 ErrorHandler:
-    ObtenerCuerpo = 1
+110     ObtenerCuerpo = 1
 
 End Function
 
 Public Function ObtenerCabeza(ByVal name As String) As Integer
 
-    On Error GoTo ErrorHandler
+        On Error GoTo ErrorHandler
 
-    Dim Head       As String
+        Dim Head       As String
 
-    Dim EstaMuerto As Byte
+        Dim EstaMuerto As Byte
 
-    EstaMuerto = GetVar(CharPath & UCase$(name & ".chr"), "flags", "Muerto")
+100     EstaMuerto = GetVar(CharPath & UCase$(name & ".chr"), "flags", "Muerto")
 
-    If EstaMuerto = 0 Then
-        Head = GetVar(CharPath & UCase$(name & ".chr"), "INIT", "Head")
-    Else
-        Head = iCabezaMuerto
+102     If EstaMuerto = 0 Then
+104         Head = GetVar(CharPath & UCase$(name & ".chr"), "INIT", "Head")
+        Else
+106         Head = iCabezaMuerto
 
-    End If
+        End If
 
-    ObtenerCabeza = Head
+108     ObtenerCabeza = Head
 
-    Exit Function
+        Exit Function
 ErrorHandler:
-    ObtenerCabeza = 1
+110     ObtenerCabeza = 1
 
 End Function
 
 Public Function ObtenerEscudo(ByVal name As String) As Integer
 
-    On Error GoTo ErrorHandler
+        On Error GoTo ErrorHandler
 
-    ObtenerEscudo = GetVar(CharPath & UCase$(name & ".chr"), "INIT", "Escudo")
-    Exit Function
+100     ObtenerEscudo = GetVar(CharPath & UCase$(name & ".chr"), "INIT", "Escudo")
+        Exit Function
 ErrorHandler:
-    ObtenerEscudo = 0
+102     ObtenerEscudo = 0
 
 End Function
 
 Public Function ObtenerArma(ByVal name As String) As Integer
 
-    On Error GoTo ErrorHandler
+        On Error GoTo ErrorHandler
 
-    ObtenerArma = GetVar(CharPath & UCase$(name & ".chr"), "INIT", "Arma")
-    Exit Function
+100     ObtenerArma = GetVar(CharPath & UCase$(name & ".chr"), "INIT", "Arma")
+        Exit Function
 ErrorHandler:
-    ObtenerArma = 0
+102     ObtenerArma = 0
 
 End Function
 
 Public Function ObtenerCasco(ByVal name As String) As Integer
 
-    On Error GoTo ErrorHandler
+        On Error GoTo ErrorHandler
 
-    ObtenerCasco = GetVar(CharPath & UCase$(name & ".chr"), "INIT", "Casco")
-    Exit Function
+100     ObtenerCasco = GetVar(CharPath & UCase$(name & ".chr"), "INIT", "Casco")
+        Exit Function
 ErrorHandler:
-    ObtenerCasco = 0
+102     ObtenerCasco = 0
 
 End Function
 
@@ -708,8 +708,8 @@ Public Function GetUserGuildIndex(ByVal UserName As String) As Integer
         Exit Function
 
 GetUserGuildIndex_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModCuentas.GetUserGuildIndex", Erl)
-        Resume Next
+118     Call RegistrarError(Err.Number, Err.description, "ModCuentas.GetUserGuildIndex", Erl)
+120     Resume Next
         
 End Function
 
@@ -738,8 +738,8 @@ Public Function GetUserGuildIndexCharfile(ByRef UserName As String) As Integer
         Exit Function
 
 GetUserGuildIndexCharfile_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModCuentas.GetUserGuildIndexCharfile", Erl)
-        Resume Next
+108     Call RegistrarError(Err.Number, Err.description, "ModCuentas.GetUserGuildIndexCharfile", Erl)
+110     Resume Next
         
 End Function
 
@@ -758,8 +758,8 @@ Public Function GetUserGuildPedidosCharfile(ByVal UserName As String) As String
         Exit Function
 
 GetUserGuildPedidosCharfile_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModCuentas.GetUserGuildPedidosCharfile", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "ModCuentas.GetUserGuildPedidosCharfile", Erl)
+104     Resume Next
         
 End Function
 
@@ -778,8 +778,8 @@ Sub SaveUserGuildPedidosCharfile(ByVal UserName As String, ByVal Pedidos As Stri
         Exit Sub
 
 SaveUserGuildPedidosCharfile_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModCuentas.SaveUserGuildPedidosCharfile", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "ModCuentas.SaveUserGuildPedidosCharfile", Erl)
+104     Resume Next
         
 End Sub
 
@@ -798,8 +798,8 @@ Sub SaveUserGuildMemberCharfile(ByVal UserName As String, ByVal guilds As String
         Exit Sub
 
 SaveUserGuildMemberCharfile_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModCuentas.SaveUserGuildMemberCharfile", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "ModCuentas.SaveUserGuildMemberCharfile", Erl)
+104     Resume Next
         
 End Sub
 
@@ -818,8 +818,8 @@ Sub SaveUserGuildIndexCharfile(ByVal UserName As String, ByVal GuildIndex As Int
         Exit Sub
 
 SaveUserGuildIndexCharfile_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModCuentas.SaveUserGuildIndexCharfile", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "ModCuentas.SaveUserGuildIndexCharfile", Erl)
+104     Resume Next
         
 End Sub
 
@@ -838,12 +838,12 @@ Sub SaveUserGuildAspirantCharfile(ByVal UserName As String, ByVal AspirantIndex 
         Exit Sub
 
 SaveUserGuildAspirantCharfile_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModCuentas.SaveUserGuildAspirantCharfile", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "ModCuentas.SaveUserGuildAspirantCharfile", Erl)
+104     Resume Next
         
 End Sub
 
-Sub SendCharacterInfoCharfile(ByVal UserIndex As Integer, ByVal UserName As String)
+Sub SendCharacterInfoCharfile(ByVal Userindex As Integer, ByVal UserName As String)
         
         On Error GoTo SendCharacterInfoCharfile_Err
         
@@ -883,7 +883,7 @@ Sub SendCharacterInfoCharfile(ByVal UserIndex As Integer, ByVal UserName As Stri
 116     With UserFile
 118         .Initialize (CharPath & UserName & ".chr")
     
-120         Call WriteCharacterInfo(UserIndex, UserName, .GetValue("INIT", "Raza"), .GetValue("INIT", "Clase"), .GetValue("INIT", "Genero"), .GetValue("STATS", "ELV"), .GetValue("STATS", "GLD"), .GetValue("STATS", "Banco"), .GetValue("GUILD", "Pedidos"), gName, Miembro, .GetValue("FACCIONES", "EjercitoReal"), .GetValue("FACCIONES", "EjercitoCaos"), .GetValue("FACCIONES", "CiudMatados"), .GetValue("FACCIONES", "CrimMatados"))
+120         Call WriteCharacterInfo(Userindex, UserName, .GetValue("INIT", "Raza"), .GetValue("INIT", "Clase"), .GetValue("INIT", "Genero"), .GetValue("STATS", "ELV"), .GetValue("STATS", "GLD"), .GetValue("STATS", "Banco"), .GetValue("GUILD", "Pedidos"), gName, Miembro, .GetValue("FACCIONES", "EjercitoReal"), .GetValue("FACCIONES", "EjercitoCaos"), .GetValue("FACCIONES", "CiudMatados"), .GetValue("FACCIONES", "CrimMatados"))
 
         End With
     
@@ -893,8 +893,8 @@ Sub SendCharacterInfoCharfile(ByVal UserIndex As Integer, ByVal UserName As Stri
         Exit Sub
 
 SendCharacterInfoCharfile_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModCuentas.SendCharacterInfoCharfile", Erl)
-        Resume Next
+124     Call RegistrarError(Err.Number, Err.description, "ModCuentas.SendCharacterInfoCharfile", Erl)
+126     Resume Next
         
 End Sub
 
@@ -913,8 +913,8 @@ Public Function GetUserGuildMemberCharfile(ByVal UserName As String) As String
         Exit Function
 
 GetUserGuildMemberCharfile_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModCuentas.GetUserGuildMemberCharfile", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "ModCuentas.GetUserGuildMemberCharfile", Erl)
+104     Resume Next
         
 End Function
 
@@ -933,8 +933,8 @@ Public Function GetUserGuildAspirantCharfile(ByVal UserName As String) As Intege
         Exit Function
 
 GetUserGuildAspirantCharfile_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModCuentas.GetUserGuildAspirantCharfile", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "ModCuentas.GetUserGuildAspirantCharfile", Erl)
+104     Resume Next
         
 End Function
 
@@ -953,8 +953,8 @@ Public Function GetUserGuildRejectionReasonCharfile(ByVal UserName As String) As
         Exit Function
 
 GetUserGuildRejectionReasonCharfile_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModCuentas.GetUserGuildRejectionReasonCharfile", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "ModCuentas.GetUserGuildRejectionReasonCharfile", Erl)
+104     Resume Next
         
 End Function
 
@@ -973,67 +973,67 @@ Sub SaveUserGuildRejectionReasonCharfile(ByVal UserName As String, ByVal Reason 
         Exit Sub
 
 SaveUserGuildRejectionReasonCharfile_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModCuentas.SaveUserGuildRejectionReasonCharfile", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "ModCuentas.SaveUserGuildRejectionReasonCharfile", Erl)
+104     Resume Next
         
 End Sub
 
 Public Function ObtenerCriminal(ByVal name As String) As Byte
 
-    On Error GoTo ErrorHandler
+        On Error GoTo ErrorHandler
     
-    Dim Criminal As Byte
+        Dim Criminal As Byte
 
-    If Database_Enabled Then
-        Criminal = GetUserStatusDatabase(name)
-    Else
-        Criminal = GetVar(CharPath & UCase$(name & ".chr"), "FACCIONES", "Status")
+100     If Database_Enabled Then
+102         Criminal = GetUserStatusDatabase(name)
+        Else
+104         Criminal = GetVar(CharPath & UCase$(name & ".chr"), "FACCIONES", "Status")
 
-    End If
+        End If
 
-    If EsRolesMaster(name) Then
-        Criminal = 3
-    ElseIf EsConsejero(name) Then
-        Criminal = 4
-    ElseIf EsSemiDios(name) Then
-        Criminal = 5
-    ElseIf EsDios(name) Then
-        Criminal = 6
-    ElseIf EsAdmin(name) Then
-        Criminal = 7
+106     If EsRolesMaster(name) Then
+108         Criminal = 3
+110     ElseIf EsConsejero(name) Then
+112         Criminal = 4
+114     ElseIf EsSemiDios(name) Then
+116         Criminal = 5
+118     ElseIf EsDios(name) Then
+120         Criminal = 6
+122     ElseIf EsAdmin(name) Then
+124         Criminal = 7
 
-    End If
+        End If
 
-    ObtenerCriminal = Criminal
+126     ObtenerCriminal = Criminal
 
-    Exit Function
+        Exit Function
 ErrorHandler:
-    ObtenerCriminal = 1
+128     ObtenerCriminal = 1
 
 End Function
 
 Public Function ObtenerMapa(ByVal name As String) As String
 
-    On Error GoTo ErrorHandler
+        On Error GoTo ErrorHandler
 
-    Dim Mapa As String
+        Dim Mapa As String
 
-    ObtenerMapa = GetVar(CharPath & UCase$(name & ".chr"), "INIT", "Position")
+100     ObtenerMapa = GetVar(CharPath & UCase$(name & ".chr"), "INIT", "Position")
     
-    Exit Function
+        Exit Function
 ErrorHandler:
-    ObtenerMapa = "1-50-50"
+102     ObtenerMapa = "1-50-50"
     
 End Function
 
 Public Function ObtenerClase(ByVal name As String) As Byte
 
-    On Error GoTo ErrorHandler
+        On Error GoTo ErrorHandler
 
-    ObtenerClase = GetVar(CharPath & UCase$(name & ".chr"), "INIT", "Clase")
+100     ObtenerClase = GetVar(CharPath & UCase$(name & ".chr"), "INIT", "Clase")
 
-    Exit Function
+        Exit Function
 ErrorHandler:
-    ObtenerClase = "1"
+102     ObtenerClase = "1"
 
 End Function

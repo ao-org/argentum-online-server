@@ -39,8 +39,8 @@ Public Function Porcentaje(ByVal Total As Long, ByVal Porc As Long) As Long
         Exit Function
 
 Porcentaje_Err:
-        Call RegistrarError(Err.Number, Err.description, "Matematicas.Porcentaje", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "Matematicas.Porcentaje", Erl)
+104     Resume Next
         
 End Function
 
@@ -49,14 +49,14 @@ Function Distancia(ByRef wp1 As WorldPos, ByRef wp2 As WorldPos) As Long
         
         On Error GoTo Distancia_Err
         
-100     Distancia = Abs(wp1.x - wp2.x) + Abs(wp1.Y - wp2.Y) + (Abs(wp1.Map - wp2.Map) * 100)
+100     Distancia = Abs(wp1.X - wp2.X) + Abs(wp1.Y - wp2.Y) + (Abs(wp1.Map - wp2.Map) * 100)
 
         
         Exit Function
 
 Distancia_Err:
-        Call RegistrarError(Err.Number, Err.description, "Matematicas.Distancia", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "Matematicas.Distancia", Erl)
+104     Resume Next
         
 End Function
 
@@ -73,8 +73,8 @@ Function Distance(X1 As Variant, Y1 As Variant, X2 As Variant, Y2 As Variant) As
         Exit Function
 
 Distance_Err:
-        Call RegistrarError(Err.Number, Err.description, "Matematicas.Distance", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "Matematicas.Distance", Erl)
+104     Resume Next
         
 End Function
 
@@ -93,7 +93,7 @@ Public Function RandomNumber(ByVal LowerBound As Long, ByVal UpperBound As Long)
         Exit Function
 
 RandomNumber_Err:
-        Call RegistrarError(Err.Number, Err.description, "Matematicas.RandomNumber", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "Matematicas.RandomNumber", Erl)
+104     Resume Next
         
 End Function

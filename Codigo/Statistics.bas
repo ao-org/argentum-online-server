@@ -130,8 +130,8 @@ Public Sub StoreFrag(ByVal killer As Integer, ByVal victim As Integer)
         Exit Sub
 
 StoreFrag_Err:
-        Call RegistrarError(Err.Number, Err.description, "Statistics.StoreFrag", Erl)
-        Resume Next
+178     Call RegistrarError(Err.Number, Err.description, "Statistics.StoreFrag", Erl)
+180     Resume Next
         
 End Sub
 
@@ -471,8 +471,8 @@ Public Sub DumpStatistics()
         Exit Sub
 
 DumpStatistics_Err:
-        Call RegistrarError(Err.Number, Err.description, "Statistics.DumpStatistics", Erl)
-        Resume Next
+568     Call RegistrarError(Err.Number, Err.description, "Statistics.DumpStatistics", Erl)
+570     Resume Next
         
 End Sub
 
@@ -498,7 +498,7 @@ Public Sub ParseChat(ByRef S As String)
         Exit Sub
 
 ParseChat_Err:
-        Call RegistrarError(Err.Number, Err.description, "Statistics.ParseChat", Erl)
-        Resume Next
+110     Call RegistrarError(Err.Number, Err.description, "Statistics.ParseChat", Erl)
+112     Resume Next
         
 End Sub

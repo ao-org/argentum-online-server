@@ -23,8 +23,8 @@ Public Function SEncriptar(ByVal Cadena As String) As String
         Exit Function
 
 SEncriptar_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModEncrypt.SEncriptar", Erl)
-        Resume Next
+112     Call RegistrarError(Err.Number, Err.description, "ModEncrypt.SEncriptar", Erl)
+114     Resume Next
         
 End Function
 
@@ -50,8 +50,8 @@ Public Function SDesencriptar(ByVal Cadena As String) As String
         Exit Function
 
 SDesencriptar_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModEncrypt.SDesencriptar", Erl)
-        Resume Next
+112     Call RegistrarError(Err.Number, Err.description, "ModEncrypt.SDesencriptar", Erl)
+114     Resume Next
         
 End Function
 
@@ -86,8 +86,8 @@ Public Function RndCrypt(ByVal str As String, ByVal Password As String) As Strin
         Exit Function
 
 RndCrypt_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModEncrypt.RndCrypt", Erl)
-        Resume Next
+122     Call RegistrarError(Err.Number, Err.description, "ModEncrypt.RndCrypt", Erl)
+124     Resume Next
         
 End Function
 

@@ -9,74 +9,74 @@ Dim Item_List As Collection
 
 Public Sub InicializarLimpieza()
 
-On Error GoTo Errhandler
+    On Error GoTo ErrHandler
 
-    Set Item_List = New Collection
+100     Set Item_List = New Collection
     
-    'Tiempo que puede permanecer un objeto en el suelo (en milisegundos)
-    Item_TimeClear = (TimerLimpiarObjetos * 60000)
+        'Tiempo que puede permanecer un objeto en el suelo (en milisegundos)
+102     Item_TimeClear = (TimerLimpiarObjetos * 60000)
     
-    Exit Sub
+        Exit Sub
     
-Errhandler:
-    Call RegistrarError(Err.Number, Err.description, "ModLimpieza.InicializarLimpieza")
-    Resume Next
+ErrHandler:
+104     Call RegistrarError(Err.Number, Err.description, "ModLimpieza.InicializarLimpieza")
+106     Resume Next
 
 End Sub
 
 Public Sub LimpiarModuloLimpieza() ' Valga la redundancia
         
-On Error GoTo Class_Terminate_Err
+    On Error GoTo Class_Terminate_Err
         
 100 Set Item_List = Nothing
 
     Exit Sub
 
 Class_Terminate_Err:
-    Call RegistrarError(Err.Number, Err.description, "ModLimpieza.LimpiarModuloLimpieza", Erl)
-    Resume Next
+102 Call RegistrarError(Err.Number, Err.description, "ModLimpieza.LimpiarModuloLimpieza", Erl)
+104 Resume Next
         
 End Sub
 
-Public Sub AgregarItemLimpiza(ByVal Map As Integer, ByVal x As Byte, ByVal Y As Byte, Optional ByVal ResetTimer As Boolean = False)
+Public Sub AgregarItemLimpiza(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, Optional ByVal ResetTimer As Boolean = False)
 
-    On Error GoTo hErr
+        On Error GoTo hErr
     
-    Dim Item As TLimpiezaItem
+        Dim Item As TLimpiezaItem
 
-    If ResetTimer Then
-        Set Item = Item_List.Item(Item.Indice)
+100     If ResetTimer Then
+102         Set Item = Item_List.Item(Item.Indice)
     
-        Item.Time = GetTickCount()
+104         Item.Time = GetTickCount()
     
-    Else
-        Set Item = New TLimpiezaItem
+        Else
+106         Set Item = New TLimpiezaItem
        
-        With Item
-            .Time = GetTickCount()
-            .Map = Map
-            .x = x
-            .Y = Y
-        End With
+108         With Item
+110             .Time = GetTickCount()
+112             .Map = Map
+114             .X = X
+116             .Y = Y
+            End With
 
-        Call Item_List.Add(Item, Item.Indice)
-    End If
+118         Call Item_List.Add(Item, Item.Indice)
+        End If
     
-    Set Item = Nothing
+120     Set Item = Nothing
     
-    Exit Sub
+        Exit Sub
     
 hErr:
-    Call RegistrarError(Err.Number, Err.description, "ModLimpieza.AgregarItemLimpiza")
-    Resume Next
+122     Call RegistrarError(Err.Number, Err.description, "ModLimpieza.AgregarItemLimpiza")
+124     Resume Next
 
 End Sub
 
-Public Sub QuitarItemLimpieza(ByVal Map As Integer, ByVal x As Byte, ByVal Y As Byte)
+Public Sub QuitarItemLimpieza(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte)
 
     On Error GoTo hErr
 
-101 Call Item_List.Remove(GetIndiceByPos(Map, x, Y))
+100 Call Item_List.Remove(GetIndiceByPos(Map, X, Y))
     
     Exit Sub
     
@@ -84,67 +84,67 @@ hErr:
     ' No hace falta registrar el error.
     ' Si un item no existe en la colección, es porque el item era del mapa y alguien lo agarró.
     'Call RegistrarError(Err.Number, Err.description, "ModLimpieza.QuitarItemLimpieza", Erl)
-    Resume Next
+102 Resume Next
 
 End Sub
 
 Public Sub LimpiarItemsViejos()
 
-    On Error GoTo hErr
+        On Error GoTo hErr
     
-    If Item_List Is Nothing Then Exit Sub
+100     If Item_List Is Nothing Then Exit Sub
     
-    Dim TimeClear As Long
-        TimeClear = GetTickCount()
+        Dim TimeClear As Long
+102         TimeClear = GetTickCount()
     
-    Dim Item As TLimpiezaItem
+        Dim Item As TLimpiezaItem
 
-    For Each Item In Item_List
+104     For Each Item In Item_List
 
-        With Item
-            If TimeClear - .Time >= Item_TimeClear Then
-                If MapData(.Map, .x, .Y).ObjInfo.ObjIndex > 0 Then ' Por las dudas
-                    Call EraseObj(MAX_INVENTORY_OBJS, .Map, .x, .Y)
+106         With Item
+108             If TimeClear - .Time >= Item_TimeClear Then
+110                 If MapData(.Map, .X, .Y).ObjInfo.ObjIndex > 0 Then ' Por las dudas
+112                     Call EraseObj(MAX_INVENTORY_OBJS, .Map, .X, .Y)
+                    End If
                 End If
-            End If
-        End With
+            End With
 
-        Set Item = Nothing
-    Next
+114         Set Item = Nothing
+        Next
     
-    Exit Sub
+        Exit Sub
 
 hErr:
-    Call RegistrarError(Err.Number, Err.description, "ModLimpieza.LimpiarItemsViejos")
-    Resume Next
+116     Call RegistrarError(Err.Number, Err.description, "ModLimpieza.LimpiarItemsViejos")
+118     Resume Next
 
 End Sub
 
 Public Sub LimpiezaForzada() ' Limpio todo, no importa el tiempo
 
-    On Error GoTo hErr
+        On Error GoTo hErr
 
-    Dim Item As TLimpiezaItem
+        Dim Item As TLimpiezaItem
 
-    For Each Item In Item_List
+100     For Each Item In Item_List
 
-        With Item
-            If MapData(.Map, .x, .Y).ObjInfo.ObjIndex > 0 Then ' Por las dudas
-                Call EraseObj(MAX_INVENTORY_OBJS, .Map, .x, .Y)
-            End If
-        End With
+102         With Item
+104             If MapData(.Map, .X, .Y).ObjInfo.ObjIndex > 0 Then ' Por las dudas
+106                 Call EraseObj(MAX_INVENTORY_OBJS, .Map, .X, .Y)
+                End If
+            End With
 
-        Set Item = Nothing
-    Next
+108         Set Item = Nothing
+        Next
     
-    Exit Sub
+        Exit Sub
     
 hErr:
-    Call RegistrarError(Err.Number, Err.description, "ModLimpieza.LimpiezaForzada")
-    Resume Next
+110     Call RegistrarError(Err.Number, Err.description, "ModLimpieza.LimpiezaForzada")
+112     Resume Next
 
 End Sub
 
-Public Function GetIndiceByPos(ByVal Map As Integer, ByVal x As Integer, ByVal Y As Integer) As String
-    GetIndiceByPos = Map & S & x & S & Y
+Public Function GetIndiceByPos(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As String
+100     GetIndiceByPos = Map & S & X & S & Y
 End Function

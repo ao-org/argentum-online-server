@@ -20,37 +20,37 @@ Private mY As Integer
 Private mTime As Long 'Item 'Time of item to clear
 
 Public Property Let Map(ByVal Value As Integer)
-    mMap = Value
+100     mMap = Value
 End Property
 
 Public Property Let X(ByVal Value As Integer)
-    mX = Value
+100     mX = Value
 End Property
 
 Public Property Let Y(ByVal Value As Integer)
-    mY = Value
+100     mY = Value
 End Property
 
 Public Property Get Map() As Integer
-    Map = mMap
+100     Map = mMap
 End Property
 
 Public Property Get X() As Integer
-    X = mX
+100     X = mX
 End Property
 
 Public Property Get Y() As Integer
-    Y = mY
+100     Y = mY
 End Property
 
 Public Property Let Time(Value As Long)
-    mTime = Value
+100     mTime = Value
 End Property
 
 Public Property Get Time() As Long
-    Time = mTime
+100     Time = mTime
 End Property
 
 Public Property Get Indice() As String
-    Indice = GetIndiceByPos(mMap, mX, mY)
+100     Indice = GetIndiceByPos(mMap, mX, mY)
 End Property

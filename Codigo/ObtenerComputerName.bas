@@ -15,7 +15,7 @@ Public Function ComputerName() As String
         Exit Function
 
 ComputerName_Err:
-        Call RegistrarError(Err.Number, Err.description, "ObtenerComputerName.ComputerName", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "ObtenerComputerName.ComputerName", Erl)
+108     Resume Next
         
 End Function

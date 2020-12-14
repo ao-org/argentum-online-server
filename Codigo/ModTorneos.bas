@@ -20,7 +20,7 @@ Public Type tTorneo
     Participantes As Byte
     IndexParticipantes() As Integer
     Mapa As Integer
-    x As Byte
+    X As Byte
     Y As Byte
     nombre As String
     reglas As String
@@ -57,12 +57,12 @@ Public Sub IniciarTorneo()
         Exit Sub
 
 IniciarTorneo_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModTorneos.IniciarTorneo", Erl)
-        Resume Next
+126     Call RegistrarError(Err.Number, Err.description, "ModTorneos.IniciarTorneo", Erl)
+128     Resume Next
         
 End Sub
 
-Public Sub ParticiparTorneo(ByVal UserIndex As Integer)
+Public Sub ParticiparTorneo(ByVal Userindex As Integer)
         
         On Error GoTo ParticiparTorneo_Err
         
@@ -70,19 +70,19 @@ Public Sub ParticiparTorneo(ByVal UserIndex As Integer)
         Dim IndexVacio As Byte
     
 100     IndexVacio = BuscarIndexFreeTorneo
-102     Torneo.IndexParticipantes(IndexVacio) = UserIndex
+102     Torneo.IndexParticipantes(IndexVacio) = Userindex
     
 104     Torneo.Participantes = Torneo.Participantes + 1
-106     UserList(UserIndex).flags.EnTorneo = True
+106     UserList(Userindex).flags.EnTorneo = True
     
-108     Call WriteConsoleMsg(UserIndex, "¡Ya estas anotado! Solo debes aguardar hasta que seas enviado a la sala de espera.", FontTypeNames.FONTTYPE_INFOIAO)
+108     Call WriteConsoleMsg(Userindex, "¡Ya estas anotado! Solo debes aguardar hasta que seas enviado a la sala de espera.", FontTypeNames.FONTTYPE_INFOIAO)
     
         
         Exit Sub
 
 ParticiparTorneo_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModTorneos.ParticiparTorneo", Erl)
-        Resume Next
+110     Call RegistrarError(Err.Number, Err.description, "ModTorneos.ParticiparTorneo", Erl)
+112     Resume Next
         
 End Sub
 
@@ -107,8 +107,8 @@ Public Function BuscarIndexFreeTorneo() As Byte
         Exit Function
 
 BuscarIndexFreeTorneo_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModTorneos.BuscarIndexFreeTorneo", Erl)
-        Resume Next
+108     Call RegistrarError(Err.Number, Err.description, "ModTorneos.BuscarIndexFreeTorneo", Erl)
+110     Resume Next
         
 End Function
 
@@ -135,8 +135,8 @@ Public Sub BorrarIndexInTorneo(ByVal Index As Integer)
         Exit Sub
 
 BorrarIndexInTorneo_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModTorneos.BorrarIndexInTorneo", Erl)
-        Resume Next
+110     Call RegistrarError(Err.Number, Err.description, "ModTorneos.BorrarIndexInTorneo", Erl)
+112     Resume Next
         
 End Sub
 
@@ -147,17 +147,17 @@ Public Sub ComenzarTorneoOk()
 
         Dim nombres As String
 
-        Dim x       As Byte
+        Dim X       As Byte
 
         Dim Y       As Byte
 
 100     For i = 1 To Torneo.Participantes
     
 102         nombres = nombres & UserList(Torneo.IndexParticipantes(i)).name & ", "
-104         x = Torneo.x
+104         X = Torneo.X
 106         Y = Torneo.Y
-108         Call FindLegalPos(Torneo.IndexParticipantes(i), Torneo.Mapa, x, Y)
-110         Call WarpUserChar(Torneo.IndexParticipantes(i), Torneo.Mapa, x, Y, True)
+108         Call FindLegalPos(Torneo.IndexParticipantes(i), Torneo.Mapa, X, Y)
+110         Call WarpUserChar(Torneo.IndexParticipantes(i), Torneo.Mapa, X, Y, True)
             ' Call WriteConsoleMsg(Torneo.IndexParticipantes(i), "¡Ya estas participado! Solo debes aguardar aquí hasta que seas convocado al torneo.", FontTypeNames.FONTTYPE_INFO)
 112     Next i
 
@@ -167,8 +167,8 @@ Public Sub ComenzarTorneoOk()
         Exit Sub
 
 ComenzarTorneoOk_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModTorneos.ComenzarTorneoOk", Erl)
-        Resume Next
+116     Call RegistrarError(Err.Number, Err.description, "ModTorneos.ComenzarTorneoOk", Erl)
+118     Resume Next
         
 End Sub
 
@@ -194,7 +194,7 @@ Public Sub ResetearTorneo()
 124     Torneo.cazador = 0
 126     Torneo.ClasesTexto = ""
 128     Torneo.Mapa = 0
-130     Torneo.x = 0
+130     Torneo.X = 0
 132     Torneo.Y = 0
 134     Torneo.Trabajador = 0
 136     Torneo.nombre = ""
@@ -212,7 +212,7 @@ Public Sub ResetearTorneo()
         Exit Sub
 
 ResetearTorneo_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModTorneos.ResetearTorneo", Erl)
-        Resume Next
+152     Call RegistrarError(Err.Number, Err.description, "ModTorneos.ResetearTorneo", Erl)
+154     Resume Next
         
 End Sub

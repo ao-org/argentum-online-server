@@ -245,8 +245,8 @@ Function EsAdmin(ByRef name As String) As Boolean
         Exit Function
 
 EsAdmin_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.EsAdmin", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "ES.EsAdmin", Erl)
+104     Resume Next
         
 End Function
 
@@ -265,8 +265,8 @@ Function EsDios(ByRef name As String) As Boolean
         Exit Function
 
 EsDios_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.EsDios", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "ES.EsDios", Erl)
+104     Resume Next
         
 End Function
 
@@ -285,8 +285,8 @@ Function EsSemiDios(ByRef name As String) As Boolean
         Exit Function
 
 EsSemiDios_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.EsSemiDios", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "ES.EsSemiDios", Erl)
+104     Resume Next
         
 End Function
 
@@ -305,8 +305,8 @@ Function EsConsejero(ByRef name As String) As Boolean
         Exit Function
 
 EsConsejero_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.EsConsejero", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "ES.EsConsejero", Erl)
+104     Resume Next
         
 End Function
 
@@ -325,8 +325,8 @@ Function EsRolesMaster(ByRef name As String) As Boolean
         Exit Function
 
 EsRolesMaster_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.EsRolesMaster", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "ES.EsRolesMaster", Erl)
+104     Resume Next
         
 End Function
 
@@ -360,8 +360,8 @@ Public Function EsGmChar(ByRef name As String) As Boolean
         Exit Function
 
 EsGmChar_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.EsGmChar", Erl)
-        Resume Next
+110     Call RegistrarError(Err.Number, Err.description, "ES.EsGmChar", Erl)
+112     Resume Next
         
 End Function
 
@@ -466,8 +466,8 @@ Public Sub loadAdministrativeUsers()
         Exit Sub
 
 loadAdministrativeUsers_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.loadAdministrativeUsers", Erl)
-        Resume Next
+168     Call RegistrarError(Err.Number, Err.description, "ES.loadAdministrativeUsers", Erl)
+170     Resume Next
         
 End Sub
 
@@ -506,8 +506,8 @@ Public Function GetCharPrivs(ByRef UserName As String) As PlayerType
         Exit Function
 
 GetCharPrivs_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.GetCharPrivs", Erl)
-        Resume Next
+120     Call RegistrarError(Err.Number, Err.description, "ES.GetCharPrivs", Erl)
+122     Resume Next
         
 End Function
 
@@ -533,8 +533,8 @@ Public Function TxtDimension(ByVal name As String) As Long
         Exit Function
 
 TxtDimension_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.TxtDimension", Erl)
-        Resume Next
+116     Call RegistrarError(Err.Number, Err.description, "ES.TxtDimension", Erl)
+118     Resume Next
         
 End Function
 
@@ -570,183 +570,183 @@ Public Sub CargarForbidenWords()
         Exit Sub
 
 CargarForbidenWords_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.CargarForbidenWords", Erl)
-        Resume Next
+120     Call RegistrarError(Err.Number, Err.description, "ES.CargarForbidenWords", Erl)
+122     Resume Next
         
 End Sub
 
 Public Sub CargarHechizos()
 
-    '###################################################
-    '#               ATENCION PELIGRO                  #
-    '###################################################
-    '
-    '  ¡¡¡¡ NO USAR GetVar PARA LEER Hechizos.dat !!!!
-    '
-    'El que ose desafiar esta LEY, se las tendrá que ver
-    'con migo. Para leer Hechizos.dat se deberá usar
-    'la nueva clase clsLeerInis.
-    '
-    'Alejo
-    '
-    '###################################################
+        '###################################################
+        '#               ATENCION PELIGRO                  #
+        '###################################################
+        '
+        '  ¡¡¡¡ NO USAR GetVar PARA LEER Hechizos.dat !!!!
+        '
+        'El que ose desafiar esta LEY, se las tendrá que ver
+        'con migo. Para leer Hechizos.dat se deberá usar
+        'la nueva clase clsLeerInis.
+        '
+        'Alejo
+        '
+        '###################################################
 
-    On Error GoTo Errhandler
+        On Error GoTo ErrHandler
 
-    If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando Hechizos."
+100     If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando Hechizos."
 
-    Dim Hechizo As Integer
+        Dim Hechizo As Integer
 
-    Dim Leer    As New clsIniReader
+        Dim Leer    As New clsIniReader
 
-    Call Leer.Initialize(DatPath & "Hechizos.dat")
+102     Call Leer.Initialize(DatPath & "Hechizos.dat")
 
-    'obtiene el numero de hechizos
-    NumeroHechizos = val(Leer.GetValue("INIT", "NumeroHechizos"))
+        'obtiene el numero de hechizos
+104     NumeroHechizos = val(Leer.GetValue("INIT", "NumeroHechizos"))
 
-    ReDim Hechizos(1 To NumeroHechizos) As tHechizo
+106     ReDim Hechizos(1 To NumeroHechizos) As tHechizo
 
-    frmCargando.cargar.min = 0
-    frmCargando.cargar.max = NumeroHechizos
-    frmCargando.cargar.Value = 0
+108     frmCargando.cargar.min = 0
+110     frmCargando.cargar.max = NumeroHechizos
+112     frmCargando.cargar.Value = 0
 
-    'Llena la lista
-    For Hechizo = 1 To NumeroHechizos
+        'Llena la lista
+114     For Hechizo = 1 To NumeroHechizos
 
-        Hechizos(Hechizo).Velocidad = val(Leer.GetValue("Hechizo" & Hechizo, "Velocidad"))
+116         Hechizos(Hechizo).Velocidad = val(Leer.GetValue("Hechizo" & Hechizo, "Velocidad"))
     
-        'Materializacion
-        Hechizos(Hechizo).MaterializaObj = val(Leer.GetValue("Hechizo" & Hechizo, "MaterializaObj"))
-        Hechizos(Hechizo).MaterializaCant = val(Leer.GetValue("Hechizo" & Hechizo, "MaterializaCant"))
-        'Materializacion
+            'Materializacion
+118         Hechizos(Hechizo).MaterializaObj = val(Leer.GetValue("Hechizo" & Hechizo, "MaterializaObj"))
+120         Hechizos(Hechizo).MaterializaCant = val(Leer.GetValue("Hechizo" & Hechizo, "MaterializaCant"))
+            'Materializacion
     
-        'Screen Efecto
-        Hechizos(Hechizo).ScreenColor = val(Leer.GetValue("Hechizo" & Hechizo, "ScreenColor"))
-        Hechizos(Hechizo).TimeEfect = val(Leer.GetValue("Hechizo" & Hechizo, "TimeEfect"))
-        'Screen Efecto
+            'Screen Efecto
+122         Hechizos(Hechizo).ScreenColor = val(Leer.GetValue("Hechizo" & Hechizo, "ScreenColor"))
+124         Hechizos(Hechizo).TimeEfect = val(Leer.GetValue("Hechizo" & Hechizo, "TimeEfect"))
+            'Screen Efecto
 
-        Hechizos(Hechizo).TeleportX = val(Leer.GetValue("Hechizo" & Hechizo, "Teleport"))
-        Hechizos(Hechizo).TeleportXMap = val(Leer.GetValue("Hechizo" & Hechizo, "TeleportMap"))
-        Hechizos(Hechizo).TeleportXX = val(Leer.GetValue("Hechizo" & Hechizo, "TeleportX"))
-        Hechizos(Hechizo).TeleportXY = val(Leer.GetValue("Hechizo" & Hechizo, "TeleportY"))
+126         Hechizos(Hechizo).TeleportX = val(Leer.GetValue("Hechizo" & Hechizo, "Teleport"))
+128         Hechizos(Hechizo).TeleportXMap = val(Leer.GetValue("Hechizo" & Hechizo, "TeleportMap"))
+130         Hechizos(Hechizo).TeleportXX = val(Leer.GetValue("Hechizo" & Hechizo, "TeleportX"))
+132         Hechizos(Hechizo).TeleportXY = val(Leer.GetValue("Hechizo" & Hechizo, "TeleportY"))
 
-        Hechizos(Hechizo).nombre = Leer.GetValue("Hechizo" & Hechizo, "Nombre")
-        Hechizos(Hechizo).Desc = Leer.GetValue("Hechizo" & Hechizo, "Desc")
-        Hechizos(Hechizo).PalabrasMagicas = Leer.GetValue("Hechizo" & Hechizo, "PalabrasMagicas")
+134         Hechizos(Hechizo).nombre = Leer.GetValue("Hechizo" & Hechizo, "Nombre")
+136         Hechizos(Hechizo).Desc = Leer.GetValue("Hechizo" & Hechizo, "Desc")
+138         Hechizos(Hechizo).PalabrasMagicas = Leer.GetValue("Hechizo" & Hechizo, "PalabrasMagicas")
     
-        Hechizos(Hechizo).HechizeroMsg = Leer.GetValue("Hechizo" & Hechizo, "HechizeroMsg")
-        Hechizos(Hechizo).TargetMsg = Leer.GetValue("Hechizo" & Hechizo, "TargetMsg")
-        Hechizos(Hechizo).PropioMsg = Leer.GetValue("Hechizo" & Hechizo, "PropioMsg")
+140         Hechizos(Hechizo).HechizeroMsg = Leer.GetValue("Hechizo" & Hechizo, "HechizeroMsg")
+142         Hechizos(Hechizo).TargetMsg = Leer.GetValue("Hechizo" & Hechizo, "TargetMsg")
+144         Hechizos(Hechizo).PropioMsg = Leer.GetValue("Hechizo" & Hechizo, "PropioMsg")
     
-        Hechizos(Hechizo).NecesitaObj = val(Leer.GetValue("Hechizo" & Hechizo, "NecesitaObj"))
-        Hechizos(Hechizo).NecesitaObj2 = val(Leer.GetValue("Hechizo" & Hechizo, "NecesitaObj2"))
+146         Hechizos(Hechizo).NecesitaObj = val(Leer.GetValue("Hechizo" & Hechizo, "NecesitaObj"))
+148         Hechizos(Hechizo).NecesitaObj2 = val(Leer.GetValue("Hechizo" & Hechizo, "NecesitaObj2"))
     
-        Hechizos(Hechizo).Tipo = val(Leer.GetValue("Hechizo" & Hechizo, "Tipo"))
-        Hechizos(Hechizo).wav = val(Leer.GetValue("Hechizo" & Hechizo, "WAV"))
-        Hechizos(Hechizo).FXgrh = val(Leer.GetValue("Hechizo" & Hechizo, "Fxgrh"))
-        Hechizos(Hechizo).Particle = val(Leer.GetValue("Hechizo" & Hechizo, "Particle"))
-        Hechizos(Hechizo).ParticleViaje = val(Leer.GetValue("Hechizo" & Hechizo, "ParticleViaje"))
-        Hechizos(Hechizo).TimeParticula = val(Leer.GetValue("Hechizo" & Hechizo, "TimeParticula"))
-        Hechizos(Hechizo).desencantar = val(Leer.GetValue("Hechizo" & Hechizo, "desencantar"))
-        Hechizos(Hechizo).Sanacion = val(Leer.GetValue("Hechizo" & Hechizo, "Sanacion"))
-        Hechizos(Hechizo).AntiRm = val(Leer.GetValue("Hechizo" & Hechizo, "AntiRm"))
-        'Hechizos de area
-        Hechizos(Hechizo).AreaRadio = val(Leer.GetValue("Hechizo" & Hechizo, "AreaRadio"))
-        Hechizos(Hechizo).AreaAfecta = val(Leer.GetValue("Hechizo" & Hechizo, "AreaAfecta"))
-        'Hechizos de area
+150         Hechizos(Hechizo).Tipo = val(Leer.GetValue("Hechizo" & Hechizo, "Tipo"))
+152         Hechizos(Hechizo).wav = val(Leer.GetValue("Hechizo" & Hechizo, "WAV"))
+154         Hechizos(Hechizo).FXgrh = val(Leer.GetValue("Hechizo" & Hechizo, "Fxgrh"))
+156         Hechizos(Hechizo).Particle = val(Leer.GetValue("Hechizo" & Hechizo, "Particle"))
+158         Hechizos(Hechizo).ParticleViaje = val(Leer.GetValue("Hechizo" & Hechizo, "ParticleViaje"))
+160         Hechizos(Hechizo).TimeParticula = val(Leer.GetValue("Hechizo" & Hechizo, "TimeParticula"))
+162         Hechizos(Hechizo).desencantar = val(Leer.GetValue("Hechizo" & Hechizo, "desencantar"))
+164         Hechizos(Hechizo).Sanacion = val(Leer.GetValue("Hechizo" & Hechizo, "Sanacion"))
+166         Hechizos(Hechizo).AntiRm = val(Leer.GetValue("Hechizo" & Hechizo, "AntiRm"))
+            'Hechizos de area
+168         Hechizos(Hechizo).AreaRadio = val(Leer.GetValue("Hechizo" & Hechizo, "AreaRadio"))
+170         Hechizos(Hechizo).AreaAfecta = val(Leer.GetValue("Hechizo" & Hechizo, "AreaAfecta"))
+            'Hechizos de area
     
-        Hechizos(Hechizo).incinera = val(Leer.GetValue("Hechizo" & Hechizo, "Incinera"))
+172         Hechizos(Hechizo).incinera = val(Leer.GetValue("Hechizo" & Hechizo, "Incinera"))
     
-        Hechizos(Hechizo).AutoLanzar = val(Leer.GetValue("Hechizo" & Hechizo, "AutoLanzar"))
+174         Hechizos(Hechizo).AutoLanzar = val(Leer.GetValue("Hechizo" & Hechizo, "AutoLanzar"))
     
-        Hechizos(Hechizo).CoolDown = val(Leer.GetValue("Hechizo" & Hechizo, "CoolDown"))
+176         Hechizos(Hechizo).CoolDown = val(Leer.GetValue("Hechizo" & Hechizo, "CoolDown"))
     
-        Hechizos(Hechizo).loops = val(Leer.GetValue("Hechizo" & Hechizo, "Loops"))
+178         Hechizos(Hechizo).loops = val(Leer.GetValue("Hechizo" & Hechizo, "Loops"))
     
-        '    Hechizos(Hechizo).Resis = val(Leer.GetValue("Hechizo" & Hechizo, "Resis"))
+            '    Hechizos(Hechizo).Resis = val(Leer.GetValue("Hechizo" & Hechizo, "Resis"))
     
-        Hechizos(Hechizo).SubeHP = val(Leer.GetValue("Hechizo" & Hechizo, "SubeHP"))
-        Hechizos(Hechizo).MinHp = val(Leer.GetValue("Hechizo" & Hechizo, "MinHP"))
-        Hechizos(Hechizo).MaxHp = val(Leer.GetValue("Hechizo" & Hechizo, "MaxHP"))
+180         Hechizos(Hechizo).SubeHP = val(Leer.GetValue("Hechizo" & Hechizo, "SubeHP"))
+182         Hechizos(Hechizo).MinHp = val(Leer.GetValue("Hechizo" & Hechizo, "MinHP"))
+184         Hechizos(Hechizo).MaxHp = val(Leer.GetValue("Hechizo" & Hechizo, "MaxHP"))
     
-        Hechizos(Hechizo).SubeMana = val(Leer.GetValue("Hechizo" & Hechizo, "SubeMana"))
-        Hechizos(Hechizo).MiMana = val(Leer.GetValue("Hechizo" & Hechizo, "MinMana"))
-        Hechizos(Hechizo).MaMana = val(Leer.GetValue("Hechizo" & Hechizo, "MaxMana"))
+186         Hechizos(Hechizo).SubeMana = val(Leer.GetValue("Hechizo" & Hechizo, "SubeMana"))
+188         Hechizos(Hechizo).MiMana = val(Leer.GetValue("Hechizo" & Hechizo, "MinMana"))
+190         Hechizos(Hechizo).MaMana = val(Leer.GetValue("Hechizo" & Hechizo, "MaxMana"))
     
-        Hechizos(Hechizo).SubeSta = val(Leer.GetValue("Hechizo" & Hechizo, "SubeSta"))
-        Hechizos(Hechizo).MinSta = val(Leer.GetValue("Hechizo" & Hechizo, "MinSta"))
-        Hechizos(Hechizo).MaxSta = val(Leer.GetValue("Hechizo" & Hechizo, "MaxSta"))
+192         Hechizos(Hechizo).SubeSta = val(Leer.GetValue("Hechizo" & Hechizo, "SubeSta"))
+194         Hechizos(Hechizo).MinSta = val(Leer.GetValue("Hechizo" & Hechizo, "MinSta"))
+196         Hechizos(Hechizo).MaxSta = val(Leer.GetValue("Hechizo" & Hechizo, "MaxSta"))
     
-        Hechizos(Hechizo).SubeHam = val(Leer.GetValue("Hechizo" & Hechizo, "SubeHam"))
-        Hechizos(Hechizo).MinHam = val(Leer.GetValue("Hechizo" & Hechizo, "MinHam"))
-        Hechizos(Hechizo).MaxHam = val(Leer.GetValue("Hechizo" & Hechizo, "MaxHam"))
+198         Hechizos(Hechizo).SubeHam = val(Leer.GetValue("Hechizo" & Hechizo, "SubeHam"))
+200         Hechizos(Hechizo).MinHam = val(Leer.GetValue("Hechizo" & Hechizo, "MinHam"))
+202         Hechizos(Hechizo).MaxHam = val(Leer.GetValue("Hechizo" & Hechizo, "MaxHam"))
     
-        Hechizos(Hechizo).SubeSed = val(Leer.GetValue("Hechizo" & Hechizo, "SubeSed"))
-        Hechizos(Hechizo).MinSed = val(Leer.GetValue("Hechizo" & Hechizo, "MinSed"))
-        Hechizos(Hechizo).MaxSed = val(Leer.GetValue("Hechizo" & Hechizo, "MaxSed"))
+204         Hechizos(Hechizo).SubeSed = val(Leer.GetValue("Hechizo" & Hechizo, "SubeSed"))
+206         Hechizos(Hechizo).MinSed = val(Leer.GetValue("Hechizo" & Hechizo, "MinSed"))
+208         Hechizos(Hechizo).MaxSed = val(Leer.GetValue("Hechizo" & Hechizo, "MaxSed"))
     
-        Hechizos(Hechizo).SubeAgilidad = val(Leer.GetValue("Hechizo" & Hechizo, "SubeAG"))
-        Hechizos(Hechizo).MinAgilidad = val(Leer.GetValue("Hechizo" & Hechizo, "MinAG"))
-        Hechizos(Hechizo).MaxAgilidad = val(Leer.GetValue("Hechizo" & Hechizo, "MaxAG"))
+210         Hechizos(Hechizo).SubeAgilidad = val(Leer.GetValue("Hechizo" & Hechizo, "SubeAG"))
+212         Hechizos(Hechizo).MinAgilidad = val(Leer.GetValue("Hechizo" & Hechizo, "MinAG"))
+214         Hechizos(Hechizo).MaxAgilidad = val(Leer.GetValue("Hechizo" & Hechizo, "MaxAG"))
     
-        Hechizos(Hechizo).SubeFuerza = val(Leer.GetValue("Hechizo" & Hechizo, "SubeFU"))
-        Hechizos(Hechizo).MinFuerza = val(Leer.GetValue("Hechizo" & Hechizo, "MinFU"))
-        Hechizos(Hechizo).MaxFuerza = val(Leer.GetValue("Hechizo" & Hechizo, "MaxFU"))
+216         Hechizos(Hechizo).SubeFuerza = val(Leer.GetValue("Hechizo" & Hechizo, "SubeFU"))
+218         Hechizos(Hechizo).MinFuerza = val(Leer.GetValue("Hechizo" & Hechizo, "MinFU"))
+220         Hechizos(Hechizo).MaxFuerza = val(Leer.GetValue("Hechizo" & Hechizo, "MaxFU"))
     
-        Hechizos(Hechizo).SubeCarisma = val(Leer.GetValue("Hechizo" & Hechizo, "SubeCA"))
-        Hechizos(Hechizo).MinCarisma = val(Leer.GetValue("Hechizo" & Hechizo, "MinCA"))
-        Hechizos(Hechizo).MaxCarisma = val(Leer.GetValue("Hechizo" & Hechizo, "MaxCA"))
+222         Hechizos(Hechizo).SubeCarisma = val(Leer.GetValue("Hechizo" & Hechizo, "SubeCA"))
+224         Hechizos(Hechizo).MinCarisma = val(Leer.GetValue("Hechizo" & Hechizo, "MinCA"))
+226         Hechizos(Hechizo).MaxCarisma = val(Leer.GetValue("Hechizo" & Hechizo, "MaxCA"))
     
-        Hechizos(Hechizo).Invisibilidad = val(Leer.GetValue("Hechizo" & Hechizo, "Invisibilidad"))
-        Hechizos(Hechizo).Paraliza = val(Leer.GetValue("Hechizo" & Hechizo, "Paraliza"))
-        Hechizos(Hechizo).Inmoviliza = val(Leer.GetValue("Hechizo" & Hechizo, "Inmoviliza"))
+228         Hechizos(Hechizo).Invisibilidad = val(Leer.GetValue("Hechizo" & Hechizo, "Invisibilidad"))
+230         Hechizos(Hechizo).Paraliza = val(Leer.GetValue("Hechizo" & Hechizo, "Paraliza"))
+232         Hechizos(Hechizo).Inmoviliza = val(Leer.GetValue("Hechizo" & Hechizo, "Inmoviliza"))
     
-        Hechizos(Hechizo).RemoverParalisis = val(Leer.GetValue("Hechizo" & Hechizo, "RemoverParalisis"))
-        Hechizos(Hechizo).RemoverEstupidez = val(Leer.GetValue("Hechizo" & Hechizo, "RemoverEstupidez"))
-        Hechizos(Hechizo).RemueveInvisibilidadParcial = val(Leer.GetValue("Hechizo" & Hechizo, "RemueveInvisibilidadParcial"))
+234         Hechizos(Hechizo).RemoverParalisis = val(Leer.GetValue("Hechizo" & Hechizo, "RemoverParalisis"))
+236         Hechizos(Hechizo).RemoverEstupidez = val(Leer.GetValue("Hechizo" & Hechizo, "RemoverEstupidez"))
+238         Hechizos(Hechizo).RemueveInvisibilidadParcial = val(Leer.GetValue("Hechizo" & Hechizo, "RemueveInvisibilidadParcial"))
     
-        Hechizos(Hechizo).CuraVeneno = val(Leer.GetValue("Hechizo" & Hechizo, "CuraVeneno"))
-        Hechizos(Hechizo).Envenena = val(Leer.GetValue("Hechizo" & Hechizo, "Envenena"))
-        Hechizos(Hechizo).Maldicion = val(Leer.GetValue("Hechizo" & Hechizo, "Maldicion"))
-        Hechizos(Hechizo).RemoverMaldicion = val(Leer.GetValue("Hechizo" & Hechizo, "RemoverMaldicion"))
-        Hechizos(Hechizo).Bendicion = val(Leer.GetValue("Hechizo" & Hechizo, "Bendicion"))
-        Hechizos(Hechizo).Revivir = val(Leer.GetValue("Hechizo" & Hechizo, "Revivir"))
+240         Hechizos(Hechizo).CuraVeneno = val(Leer.GetValue("Hechizo" & Hechizo, "CuraVeneno"))
+242         Hechizos(Hechizo).Envenena = val(Leer.GetValue("Hechizo" & Hechizo, "Envenena"))
+244         Hechizos(Hechizo).Maldicion = val(Leer.GetValue("Hechizo" & Hechizo, "Maldicion"))
+246         Hechizos(Hechizo).RemoverMaldicion = val(Leer.GetValue("Hechizo" & Hechizo, "RemoverMaldicion"))
+248         Hechizos(Hechizo).Bendicion = val(Leer.GetValue("Hechizo" & Hechizo, "Bendicion"))
+250         Hechizos(Hechizo).Revivir = val(Leer.GetValue("Hechizo" & Hechizo, "Revivir"))
     
-        Hechizos(Hechizo).Ceguera = val(Leer.GetValue("Hechizo" & Hechizo, "Ceguera"))
-        Hechizos(Hechizo).Estupidez = val(Leer.GetValue("Hechizo" & Hechizo, "Estupidez"))
+252         Hechizos(Hechizo).Ceguera = val(Leer.GetValue("Hechizo" & Hechizo, "Ceguera"))
+254         Hechizos(Hechizo).Estupidez = val(Leer.GetValue("Hechizo" & Hechizo, "Estupidez"))
     
-        Hechizos(Hechizo).Invoca = val(Leer.GetValue("Hechizo" & Hechizo, "Invoca"))
-        Hechizos(Hechizo).NumNpc = val(Leer.GetValue("Hechizo" & Hechizo, "NumNpc"))
-        Hechizos(Hechizo).cant = val(Leer.GetValue("Hechizo" & Hechizo, "Cant"))
-        Hechizos(Hechizo).Mimetiza = val(Leer.GetValue("Hechizo" & Hechizo, "Mimetiza"))
+256         Hechizos(Hechizo).Invoca = val(Leer.GetValue("Hechizo" & Hechizo, "Invoca"))
+258         Hechizos(Hechizo).NumNpc = val(Leer.GetValue("Hechizo" & Hechizo, "NumNpc"))
+260         Hechizos(Hechizo).cant = val(Leer.GetValue("Hechizo" & Hechizo, "Cant"))
+262         Hechizos(Hechizo).Mimetiza = val(Leer.GetValue("Hechizo" & Hechizo, "Mimetiza"))
     
-        Hechizos(Hechizo).GolpeCertero = val(Leer.GetValue("Hechizo" & Hechizo, "GolpeCertero"))
+264         Hechizos(Hechizo).GolpeCertero = val(Leer.GetValue("Hechizo" & Hechizo, "GolpeCertero"))
     
-        '    Hechizos(Hechizo).Materializa = val(Leer.GetValue("Hechizo" & Hechizo, "Materializa"))
-        '    Hechizos(Hechizo).ItemIndex = val(Leer.GetValue("Hechizo" & Hechizo, "ItemIndex"))
+            '    Hechizos(Hechizo).Materializa = val(Leer.GetValue("Hechizo" & Hechizo, "Materializa"))
+            '    Hechizos(Hechizo).ItemIndex = val(Leer.GetValue("Hechizo" & Hechizo, "ItemIndex"))
     
-        Hechizos(Hechizo).MinSkill = val(Leer.GetValue("Hechizo" & Hechizo, "MinSkill"))
-        Hechizos(Hechizo).ManaRequerido = val(Leer.GetValue("Hechizo" & Hechizo, "ManaRequerido"))
-        Hechizos(Hechizo).RequiredHP = val(Leer.GetValue("Hechizo" & Hechizo, "RequiredHP"))
+266         Hechizos(Hechizo).MinSkill = val(Leer.GetValue("Hechizo" & Hechizo, "MinSkill"))
+268         Hechizos(Hechizo).ManaRequerido = val(Leer.GetValue("Hechizo" & Hechizo, "ManaRequerido"))
+270         Hechizos(Hechizo).RequiredHP = val(Leer.GetValue("Hechizo" & Hechizo, "RequiredHP"))
     
-        Hechizos(Hechizo).Duration = val(Leer.GetValue("Hechizo" & Hechizo, "Duration"))
+272         Hechizos(Hechizo).Duration = val(Leer.GetValue("Hechizo" & Hechizo, "Duration"))
     
-        'Barrin 30/9/03
-        Hechizos(Hechizo).StaRequerido = val(Leer.GetValue("Hechizo" & Hechizo, "StaRequerido"))
+            'Barrin 30/9/03
+274         Hechizos(Hechizo).StaRequerido = val(Leer.GetValue("Hechizo" & Hechizo, "StaRequerido"))
     
-        Hechizos(Hechizo).Target = val(Leer.GetValue("Hechizo" & Hechizo, "Target"))
-        frmCargando.cargar.Value = frmCargando.cargar.Value + 1
+276         Hechizos(Hechizo).Target = val(Leer.GetValue("Hechizo" & Hechizo, "Target"))
+278         frmCargando.cargar.Value = frmCargando.cargar.Value + 1
     
-        Hechizos(Hechizo).NeedStaff = val(Leer.GetValue("Hechizo" & Hechizo, "NeedStaff"))
-        Hechizos(Hechizo).StaffAffected = CBool(val(Leer.GetValue("Hechizo" & Hechizo, "StaffAffected")))
+280         Hechizos(Hechizo).NeedStaff = val(Leer.GetValue("Hechizo" & Hechizo, "NeedStaff"))
+282         Hechizos(Hechizo).StaffAffected = CBool(val(Leer.GetValue("Hechizo" & Hechizo, "StaffAffected")))
     
-    Next Hechizo
+284     Next Hechizo
 
-    Set Leer = Nothing
-    Exit Sub
+286     Set Leer = Nothing
+        Exit Sub
 
-Errhandler:
-    MsgBox "Error cargando hechizos.dat " & Err.Number & ": " & Err.description
+ErrHandler:
+288     MsgBox "Error cargando hechizos.dat " & Err.Number & ": " & Err.description
  
 End Sub
 
@@ -770,227 +770,227 @@ Sub LoadMotd()
         Exit Sub
 
 LoadMotd_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.LoadMotd", Erl)
-        Resume Next
+112     Call RegistrarError(Err.Number, Err.description, "ES.LoadMotd", Erl)
+114     Resume Next
         
 End Sub
 
 Public Sub DoBackUp()
-    'Call LogTarea("Sub DoBackUp")
-    haciendoBK = True
+        'Call LogTarea("Sub DoBackUp")
+100     haciendoBK = True
 
-    Dim i As Integer
+        Dim i As Integer
 
-    Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
+102     Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
 
-    'Call WorldSave
-    'Call modGuilds.v_RutinaElecciones
+        'Call WorldSave
+        'Call modGuilds.v_RutinaElecciones
     
-    'Reseteamos al centinela
-    Call ResetCentinelaInfo
+        'Reseteamos al centinela
+104     Call ResetCentinelaInfo
 
-    Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
+106     Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
 
-    'Call EstadisticasWeb.Informar(EVENTO_NUEVO_CLAN, 0)
+        'Call EstadisticasWeb.Informar(EVENTO_NUEVO_CLAN, 0)
 
-    haciendoBK = False
+108     haciendoBK = False
 
-    'Log
-    On Error Resume Next
+        'Log
+        On Error Resume Next
 
-    Dim nfile As Integer: nfile = FreeFile ' obtenemos un canal
-    Open App.Path & "\logs\BackUps.log" For Append Shared As #nfile
-    Print #nfile, Date & " " & Time
-    Close #nfile
+110     Dim nfile As Integer: nfile = FreeFile ' obtenemos un canal
+112     Open App.Path & "\logs\BackUps.log" For Append Shared As #nfile
+114     Print #nfile, Date & " " & Time
+116     Close #nfile
 
 End Sub
 
 Public Sub GrabarMapa(ByVal Map As Long, ByVal MAPFILE As String)
-    Debug.Print "Empezamos a grabar"
+100     Debug.Print "Empezamos a grabar"
 
-    On Error GoTo ErrorHandler
+        On Error GoTo ErrorHandler
 
-    Dim MapRoute As String: MapRoute = MAPFILE & ".csm"
+102     Dim MapRoute As String: MapRoute = MAPFILE & ".csm"
 
-    Dim fh           As Integer
-    Dim MH           As tMapHeader
+        Dim fh           As Integer
+        Dim MH           As tMapHeader
 
-    Dim Blqs()       As tDatosBloqueados
+        Dim Blqs()       As tDatosBloqueados
 
-    Dim L1()         As tDatosGrh
-    Dim L2()         As tDatosGrh
-    Dim L3()         As tDatosGrh
-    Dim L4()         As tDatosGrh
+        Dim L1()         As tDatosGrh
+        Dim L2()         As tDatosGrh
+        Dim L3()         As tDatosGrh
+        Dim L4()         As tDatosGrh
 
-    Dim Triggers()   As tDatosTrigger
-    Dim Luces()      As tDatosLuces
-    Dim Particulas() As tDatosParticulas
-    Dim Objetos()    As tDatosObjs
-    Dim NPCs()       As tDatosNPC
-    Dim TEs()        As tDatosTE
+        Dim Triggers()   As tDatosTrigger
+        Dim Luces()      As tDatosLuces
+        Dim Particulas() As tDatosParticulas
+        Dim Objetos()    As tDatosObjs
+        Dim NPCs()       As tDatosNPC
+        Dim TEs()        As tDatosTE
 
-    Dim i            As Long
-    Dim j            As Integer
+        Dim i            As Long
+        Dim j            As Integer
 
-    Dim tmpLng       As Long
+        Dim tmpLng       As Long
 
-    For j = 1 To 100
-        For i = 1 To 100
+104     For j = 1 To 100
+106         For i = 1 To 100
 
-            With MapData(Map, i, j)
+108             With MapData(Map, i, j)
             
-                If (.Blocked And eBlock.ALL_SIDES) <> 0 Then
-                    MH.NumeroBloqueados = MH.NumeroBloqueados + 1
-                    ReDim Preserve Blqs(1 To MH.NumeroBloqueados)
-                    Blqs(MH.NumeroBloqueados).X = i
-                    Blqs(MH.NumeroBloqueados).Y = j
-                    Blqs(MH.NumeroBloqueados).Lados = .Blocked And eBlock.ALL_SIDES
-                End If
+110                 If (.Blocked And eBlock.ALL_SIDES) <> 0 Then
+112                     MH.NumeroBloqueados = MH.NumeroBloqueados + 1
+114                     ReDim Preserve Blqs(1 To MH.NumeroBloqueados)
+116                     Blqs(MH.NumeroBloqueados).X = i
+118                     Blqs(MH.NumeroBloqueados).Y = j
+120                     Blqs(MH.NumeroBloqueados).Lados = .Blocked And eBlock.ALL_SIDES
+                    End If
             
-                Rem L1(i, j) = .Graphic(1).grhindex
+                    Rem L1(i, j) = .Graphic(1).grhindex
   
-                If .Graphic(1) > 0 Then
-                    MH.NumeroLayers(1) = MH.NumeroLayers(1) + 1
-                    ReDim Preserve L1(1 To MH.NumeroLayers(1))
-                    L1(MH.NumeroLayers(1)).X = i
-                    L1(MH.NumeroLayers(1)).Y = j
-                    L1(MH.NumeroLayers(1)).GrhIndex = .Graphic(1)
+122                 If .Graphic(1) > 0 Then
+124                     MH.NumeroLayers(1) = MH.NumeroLayers(1) + 1
+126                     ReDim Preserve L1(1 To MH.NumeroLayers(1))
+128                     L1(MH.NumeroLayers(1)).X = i
+130                     L1(MH.NumeroLayers(1)).Y = j
+132                     L1(MH.NumeroLayers(1)).GrhIndex = .Graphic(1)
 
-                End If
+                    End If
             
-                If .Graphic(2) > 0 Then
-                    MH.NumeroLayers(2) = MH.NumeroLayers(2) + 1
-                    ReDim Preserve L2(1 To MH.NumeroLayers(2))
-                    L2(MH.NumeroLayers(2)).X = i
-                    L2(MH.NumeroLayers(2)).Y = j
-                    L2(MH.NumeroLayers(2)).GrhIndex = .Graphic(2)
+134                 If .Graphic(2) > 0 Then
+136                     MH.NumeroLayers(2) = MH.NumeroLayers(2) + 1
+138                     ReDim Preserve L2(1 To MH.NumeroLayers(2))
+140                     L2(MH.NumeroLayers(2)).X = i
+142                     L2(MH.NumeroLayers(2)).Y = j
+144                     L2(MH.NumeroLayers(2)).GrhIndex = .Graphic(2)
 
-                End If
+                    End If
             
-                If .Graphic(3) > 0 Then
-                    MH.NumeroLayers(3) = MH.NumeroLayers(3) + 1
-                    ReDim Preserve L3(1 To MH.NumeroLayers(3))
-                    L3(MH.NumeroLayers(3)).X = i
-                    L3(MH.NumeroLayers(3)).Y = j
-                    L3(MH.NumeroLayers(3)).GrhIndex = .Graphic(3)
+146                 If .Graphic(3) > 0 Then
+148                     MH.NumeroLayers(3) = MH.NumeroLayers(3) + 1
+150                     ReDim Preserve L3(1 To MH.NumeroLayers(3))
+152                     L3(MH.NumeroLayers(3)).X = i
+154                     L3(MH.NumeroLayers(3)).Y = j
+156                     L3(MH.NumeroLayers(3)).GrhIndex = .Graphic(3)
 
-                End If
+                    End If
             
-                If .Graphic(4) > 0 Then
-                    MH.NumeroLayers(4) = MH.NumeroLayers(4) + 1
-                    ReDim Preserve L4(1 To MH.NumeroLayers(4))
-                    L4(MH.NumeroLayers(4)).X = i
-                    L4(MH.NumeroLayers(4)).Y = j
-                    L4(MH.NumeroLayers(4)).GrhIndex = .Graphic(4)
+158                 If .Graphic(4) > 0 Then
+160                     MH.NumeroLayers(4) = MH.NumeroLayers(4) + 1
+162                     ReDim Preserve L4(1 To MH.NumeroLayers(4))
+164                     L4(MH.NumeroLayers(4)).X = i
+166                     L4(MH.NumeroLayers(4)).Y = j
+168                     L4(MH.NumeroLayers(4)).GrhIndex = .Graphic(4)
 
-                End If
+                    End If
             
-                If .trigger > 0 Then
-                    MH.NumeroTriggers = MH.NumeroTriggers + 1
-                    ReDim Preserve Triggers(1 To MH.NumeroTriggers)
-                    Triggers(MH.NumeroTriggers).X = i
-                    Triggers(MH.NumeroTriggers).Y = j
-                    Triggers(MH.NumeroTriggers).trigger = .trigger
+170                 If .trigger > 0 Then
+172                     MH.NumeroTriggers = MH.NumeroTriggers + 1
+174                     ReDim Preserve Triggers(1 To MH.NumeroTriggers)
+176                     Triggers(MH.NumeroTriggers).X = i
+178                     Triggers(MH.NumeroTriggers).Y = j
+180                     Triggers(MH.NumeroTriggers).trigger = .trigger
 
-                End If
+                    End If
             
-                If .ParticulaIndex > 0 Then
-                    MH.NumeroParticulas = MH.NumeroParticulas + 1
-                    ReDim Preserve Particulas(1 To MH.NumeroParticulas)
-                    Particulas(MH.NumeroParticulas).X = i
-                    Particulas(MH.NumeroParticulas).Y = j
-                    Particulas(MH.NumeroParticulas).Particula = .ParticulaIndex
+182                 If .ParticulaIndex > 0 Then
+184                     MH.NumeroParticulas = MH.NumeroParticulas + 1
+186                     ReDim Preserve Particulas(1 To MH.NumeroParticulas)
+188                     Particulas(MH.NumeroParticulas).X = i
+190                     Particulas(MH.NumeroParticulas).Y = j
+192                     Particulas(MH.NumeroParticulas).Particula = .ParticulaIndex
 
-                End If
+                    End If
             
-                Rem   If MapData(i, j).luz.Rango > 0 Then
-                Rem      MH.NumeroLuces = MH.NumeroLuces + 1
-                Rem       ReDim Preserve Luces(1 To MH.NumeroLuces)
-                Rem       Luces(MH.NumeroLuces).X = i
-                Rem       Luces(MH.NumeroLuces).Y = j
-                Rem      Luces(MH.NumeroLuces).color = .luz.color
-                Rem       Luces(MH.NumeroLuces).Rango = .luz.Rango
-                Rem  End If
+                    Rem   If MapData(i, j).luz.Rango > 0 Then
+                    Rem      MH.NumeroLuces = MH.NumeroLuces + 1
+                    Rem       ReDim Preserve Luces(1 To MH.NumeroLuces)
+                    Rem       Luces(MH.NumeroLuces).X = i
+                    Rem       Luces(MH.NumeroLuces).Y = j
+                    Rem      Luces(MH.NumeroLuces).color = .luz.color
+                    Rem       Luces(MH.NumeroLuces).Rango = .luz.Rango
+                    Rem  End If
             
-                If .ObjInfo.ObjIndex > 0 Then
-                    MH.NumeroOBJs = MH.NumeroOBJs + 1
-                    ReDim Preserve Objetos(1 To MH.NumeroOBJs)
-                    Objetos(MH.NumeroOBJs).ObjIndex = .ObjInfo.ObjIndex
-                    Objetos(MH.NumeroOBJs).ObjAmmount = .ObjInfo.Amount
+194                 If .ObjInfo.ObjIndex > 0 Then
+196                     MH.NumeroOBJs = MH.NumeroOBJs + 1
+198                     ReDim Preserve Objetos(1 To MH.NumeroOBJs)
+200                     Objetos(MH.NumeroOBJs).ObjIndex = .ObjInfo.ObjIndex
+202                     Objetos(MH.NumeroOBJs).ObjAmmount = .ObjInfo.Amount
                
-                    Objetos(MH.NumeroOBJs).X = i
-                    Objetos(MH.NumeroOBJs).Y = j
+204                     Objetos(MH.NumeroOBJs).X = i
+206                     Objetos(MH.NumeroOBJs).Y = j
                 
-                End If
+                    End If
             
-                If .NpcIndex > 0 Then
-                    MH.NumeroNPCs = MH.NumeroNPCs + 1
-                    ReDim Preserve NPCs(1 To MH.NumeroNPCs)
-                    NPCs(MH.NumeroNPCs).NpcIndex = .NpcIndex
-                    NPCs(MH.NumeroNPCs).X = i
-                    NPCs(MH.NumeroNPCs).Y = j
+208                 If .NpcIndex > 0 Then
+210                     MH.NumeroNPCs = MH.NumeroNPCs + 1
+212                     ReDim Preserve NPCs(1 To MH.NumeroNPCs)
+214                     NPCs(MH.NumeroNPCs).NpcIndex = .NpcIndex
+216                     NPCs(MH.NumeroNPCs).X = i
+218                     NPCs(MH.NumeroNPCs).Y = j
 
-                End If
+                    End If
             
-                If .TileExit.Map > 0 Then
-                    MH.NumeroTE = MH.NumeroTE + 1
-                    ReDim Preserve TEs(1 To MH.NumeroTE)
-                    TEs(MH.NumeroTE).DestM = .TileExit.Map
-                    TEs(MH.NumeroTE).DestX = .TileExit.X
-                    TEs(MH.NumeroTE).DestY = .TileExit.Y
-                    TEs(MH.NumeroTE).X = i
-                    TEs(MH.NumeroTE).Y = j
+220                 If .TileExit.Map > 0 Then
+222                     MH.NumeroTE = MH.NumeroTE + 1
+224                     ReDim Preserve TEs(1 To MH.NumeroTE)
+226                     TEs(MH.NumeroTE).DestM = .TileExit.Map
+228                     TEs(MH.NumeroTE).DestX = .TileExit.X
+230                     TEs(MH.NumeroTE).DestY = .TileExit.Y
+232                     TEs(MH.NumeroTE).X = i
+234                     TEs(MH.NumeroTE).Y = j
 
-                End If
+                    End If
 
-            End With
+                End With
 
-        Next i
-    Next j
+236         Next i
+238     Next j
           
-    fh = FreeFile
-    Open MapRoute For Binary As fh
+240     fh = FreeFile
+242     Open MapRoute For Binary As fh
     
-    Put #fh, , MH
-    Put #fh, , MapSize
-    Put #fh, , MapDat
-    Rem   Put #fh, , L1
+244     Put #fh, , MH
+246     Put #fh, , MapSize
+248     Put #fh, , MapDat
+        Rem   Put #fh, , L1
     
-    With MH
+250     With MH
 
-        If .NumeroBloqueados > 0 Then Put #fh, , Blqs
+252         If .NumeroBloqueados > 0 Then Put #fh, , Blqs
 
-        If .NumeroLayers(1) > 0 Then Put #fh, , L1
+254         If .NumeroLayers(1) > 0 Then Put #fh, , L1
 
-        If .NumeroLayers(2) > 0 Then Put #fh, , L2
+256         If .NumeroLayers(2) > 0 Then Put #fh, , L2
 
-        If .NumeroLayers(3) > 0 Then Put #fh, , L3
+258         If .NumeroLayers(3) > 0 Then Put #fh, , L3
 
-        If .NumeroLayers(4) > 0 Then Put #fh, , L4
+260         If .NumeroLayers(4) > 0 Then Put #fh, , L4
 
-        If .NumeroTriggers > 0 Then Put #fh, , Triggers
+262         If .NumeroTriggers > 0 Then Put #fh, , Triggers
 
-        If .NumeroParticulas > 0 Then Put #fh, , Particulas
+264         If .NumeroParticulas > 0 Then Put #fh, , Particulas
 
-        If .NumeroLuces > 0 Then Put #fh, , Luces
+266         If .NumeroLuces > 0 Then Put #fh, , Luces
 
-        If .NumeroOBJs > 0 Then Put #fh, , Objetos
+268         If .NumeroOBJs > 0 Then Put #fh, , Objetos
 
-        If .NumeroNPCs > 0 Then Put #fh, , NPCs
+270         If .NumeroNPCs > 0 Then Put #fh, , NPCs
 
-        If .NumeroTE > 0 Then Put #fh, , TEs
+272         If .NumeroTE > 0 Then Put #fh, , TEs
 
-    End With
+        End With
 
-    Close fh
+274     Close fh
 
-    Rem MsgBox "Mapa grabado"
+        Rem MsgBox "Mapa grabado"
 
-    Debug.Print "Mapa grabado"
+276     Debug.Print "Mapa grabado"
 
 ErrorHandler:
 
-    If fh <> 0 Then Close fh
+278     If fh <> 0 Then Close fh
 
 End Sub
 
@@ -1019,8 +1019,8 @@ Sub LoadArmasHerreria()
         Exit Sub
 
 LoadArmasHerreria_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.LoadArmasHerreria", Erl)
-        Resume Next
+114     Call RegistrarError(Err.Number, Err.description, "ES.LoadArmasHerreria", Erl)
+116     Resume Next
         
 End Sub
 
@@ -1049,8 +1049,8 @@ Sub LoadArmadurasHerreria()
         Exit Sub
 
 LoadArmadurasHerreria_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.LoadArmadurasHerreria", Erl)
-        Resume Next
+114     Call RegistrarError(Err.Number, Err.description, "ES.LoadArmadurasHerreria", Erl)
+116     Resume Next
         
 End Sub
 
@@ -1071,67 +1071,67 @@ Sub LoadBalance()
 
         'Modificadores de Clase
 104     For i = 1 To NUMCLASES
-            SearchVar = Replace$(Tilde(ListaClases(i)), " ", vbNullString)
+106         SearchVar = Replace$(Tilde(ListaClases(i)), " ", vbNullString)
 
-106         With ModClase(i)
-108             .Evasion = val(BalanceIni.GetValue("MODEVASION", SearchVar))
-110             .AtaqueArmas = val(BalanceIni.GetValue("MODATAQUEARMAS", SearchVar))
-112             .AtaqueProyectiles = val(BalanceIni.GetValue("MODATAQUEPROYECTILES", SearchVar))
+108         With ModClase(i)
+110             .Evasion = val(BalanceIni.GetValue("MODEVASION", SearchVar))
+112             .AtaqueArmas = val(BalanceIni.GetValue("MODATAQUEARMAS", SearchVar))
+114             .AtaqueProyectiles = val(BalanceIni.GetValue("MODATAQUEPROYECTILES", SearchVar))
                 '.DañoWrestling = val(BalanceIni.GetValue("MODATAQUEWRESTLING", SearchVar))
-114             .DañoArmas = val(BalanceIni.GetValue("MODDANOARMAS", SearchVar))
-116             .DañoProyectiles = val(BalanceIni.GetValue("MODDANOPROYECTILES", SearchVar))
-118             .DañoWrestling = val(BalanceIni.GetValue("MODDANOWRESTLING", SearchVar))
-120             .Escudo = val(BalanceIni.GetValue("MODESCUDO", SearchVar))
-                .ModApuñalar = val(BalanceIni.GetValue("MODAPUÑALAR", SearchVar))
+116             .DañoArmas = val(BalanceIni.GetValue("MODDANOARMAS", SearchVar))
+118             .DañoProyectiles = val(BalanceIni.GetValue("MODDANOPROYECTILES", SearchVar))
+120             .DañoWrestling = val(BalanceIni.GetValue("MODDANOWRESTLING", SearchVar))
+122             .Escudo = val(BalanceIni.GetValue("MODESCUDO", SearchVar))
+124             .ModApuñalar = val(BalanceIni.GetValue("MODAPUÑALAR", SearchVar))
                 'Modificadores de Vida
-                ModVida(i) = val(BalanceIni.GetValue("MODVIDA", SearchVar))
+126             ModVida(i) = val(BalanceIni.GetValue("MODVIDA", SearchVar))
 
             End With
 
-122     Next i
+128     Next i
     
         'Modificadores de Raza
-124     For i = 1 To NUMRAZAS
-            SearchVar = Replace$(Tilde(ListaRazas(i)), " ", vbNullString)
+130     For i = 1 To NUMRAZAS
+132         SearchVar = Replace$(Tilde(ListaRazas(i)), " ", vbNullString)
 
-126         With ModRaza(i)
-128             .Fuerza = val(BalanceIni.GetValue("MODRAZA", SearchVar + "Fuerza"))
-130             .Agilidad = val(BalanceIni.GetValue("MODRAZA", SearchVar + "Agilidad"))
-132             .Inteligencia = val(BalanceIni.GetValue("MODRAZA", SearchVar + "Inteligencia"))
-                .Carisma = val(BalanceIni.GetValue("MODRAZA", SearchVar + "Carisma"))
-134             .Constitucion = val(BalanceIni.GetValue("MODRAZA", SearchVar + "Constitucion"))
+134         With ModRaza(i)
+136             .Fuerza = val(BalanceIni.GetValue("MODRAZA", SearchVar + "Fuerza"))
+138             .Agilidad = val(BalanceIni.GetValue("MODRAZA", SearchVar + "Agilidad"))
+140             .Inteligencia = val(BalanceIni.GetValue("MODRAZA", SearchVar + "Inteligencia"))
+142             .Carisma = val(BalanceIni.GetValue("MODRAZA", SearchVar + "Carisma"))
+144             .Constitucion = val(BalanceIni.GetValue("MODRAZA", SearchVar + "Constitucion"))
             End With
 
-136     Next i
+146     Next i
     
         'Distribucion de Vida
-144     For i = 1 To 5
-146         DistribucionEnteraVida(i) = val(BalanceIni.GetValue("DISTRIBUCION", "E" + CStr(i)))
-148     Next i
+148     For i = 1 To 5
+150         DistribucionEnteraVida(i) = val(BalanceIni.GetValue("DISTRIBUCION", "E" + CStr(i)))
+152     Next i
 
-150     For i = 1 To 4
-152         DistribucionSemienteraVida(i) = val(BalanceIni.GetValue("DISTRIBUCION", "S" + CStr(i)))
-154     Next i
+154     For i = 1 To 4
+156         DistribucionSemienteraVida(i) = val(BalanceIni.GetValue("DISTRIBUCION", "S" + CStr(i)))
+158     Next i
     
             'Experiencia por nivel
-        For i = 1 To STAT_MAXELV
-            ExpByLevel(i) = val(BalanceIni.GetValue("EXPBYLEVEL", i))
-        Next i
+160     For i = 1 To STAT_MAXELV
+162         ExpByLevel(i) = val(BalanceIni.GetValue("EXPBYLEVEL", i))
+164     Next i
 
         'Extra
-156     PorcentajeRecuperoMana = val(BalanceIni.GetValue("EXTRA", "PorcentajeRecuperoMana"))
-        DificultadSubirSkill = val(BalanceIni.GetValue("EXTRA", "DificultadSubirSkill"))
+166     PorcentajeRecuperoMana = val(BalanceIni.GetValue("EXTRA", "PorcentajeRecuperoMana"))
+168     DificultadSubirSkill = val(BalanceIni.GetValue("EXTRA", "DificultadSubirSkill"))
     
-158     Set BalanceIni = Nothing
+170     Set BalanceIni = Nothing
     
-160     AgregarAConsola "Se cargó el balance (Balance.dat)"
+172     AgregarAConsola "Se cargó el balance (Balance.dat)"
 
         
         Exit Sub
 
 LoadBalance_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.LoadBalance", Erl)
-        Resume Next
+174     Call RegistrarError(Err.Number, Err.description, "ES.LoadBalance", Erl)
+176     Resume Next
         
 End Sub
 
@@ -1160,8 +1160,8 @@ Sub LoadObjCarpintero()
         Exit Sub
 
 LoadObjCarpintero_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.LoadObjCarpintero", Erl)
-        Resume Next
+114     Call RegistrarError(Err.Number, Err.description, "ES.LoadObjCarpintero", Erl)
+116     Resume Next
         
 End Sub
 
@@ -1190,8 +1190,8 @@ Sub LoadObjAlquimista()
         Exit Sub
 
 LoadObjAlquimista_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.LoadObjAlquimista", Erl)
-        Resume Next
+114     Call RegistrarError(Err.Number, Err.description, "ES.LoadObjAlquimista", Erl)
+116     Resume Next
         
 End Sub
 
@@ -1220,8 +1220,8 @@ Sub LoadObjSastre()
         Exit Sub
 
 LoadObjSastre_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.LoadObjSastre", Erl)
-        Resume Next
+114     Call RegistrarError(Err.Number, Err.description, "ES.LoadObjSastre", Erl)
+116     Resume Next
         
 End Sub
 
@@ -1246,433 +1246,433 @@ Sub LoadObjDonador()
         Exit Sub
 
 LoadObjDonador_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.LoadObjDonador", Erl)
-        Resume Next
+114     Call RegistrarError(Err.Number, Err.description, "ES.LoadObjDonador", Erl)
+116     Resume Next
         
 End Sub
 
 Sub LoadOBJData()
 
-    '###################################################
-    '#               ATENCION PELIGRO                  #
-    '###################################################
-    '
-    '¡¡¡¡ NO USAR GetVar PARA LEER DESDE EL OBJ.DAT !!!!
-    '
-    'El que ose desafiar esta LEY, se las tendrá que ver
-    'con migo. Para leer desde el OBJ.DAT se deberá usar
-    'la nueva clase clsLeerInis.
-    '
-    'Alejo
-    '
-    '###################################################
+        '###################################################
+        '#               ATENCION PELIGRO                  #
+        '###################################################
+        '
+        '¡¡¡¡ NO USAR GetVar PARA LEER DESDE EL OBJ.DAT !!!!
+        '
+        'El que ose desafiar esta LEY, se las tendrá que ver
+        'con migo. Para leer desde el OBJ.DAT se deberá usar
+        'la nueva clase clsLeerInis.
+        '
+        'Alejo
+        '
+        '###################################################
 
-    'Call LogTarea("Sub LoadOBJData")
+        'Call LogTarea("Sub LoadOBJData")
 
-    On Error GoTo Errhandler
+        On Error GoTo ErrHandler
 
-    If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando base de datos de los objetos."
+100     If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando base de datos de los objetos."
 
-    '*****************************************************************
-    'Carga la lista de objetos
-    '*****************************************************************
-    Dim Object As Integer
+        '*****************************************************************
+        'Carga la lista de objetos
+        '*****************************************************************
+        Dim Object As Integer
 
-    Dim Leer   As clsIniReader
-    Set Leer = New clsIniReader
-    Call Leer.Initialize(DatPath & "Obj.dat")
+        Dim Leer   As clsIniReader
+102     Set Leer = New clsIniReader
+104     Call Leer.Initialize(DatPath & "Obj.dat")
 
-    'obtiene el numero de obj
-    NumObjDatas = val(Leer.GetValue("INIT", "NumObjs"))
+        'obtiene el numero de obj
+106     NumObjDatas = val(Leer.GetValue("INIT", "NumObjs"))
 
-    frmCargando.cargar.min = 0
-    frmCargando.cargar.max = NumObjDatas
-    frmCargando.cargar.Value = 0
+108     frmCargando.cargar.min = 0
+110     frmCargando.cargar.max = NumObjDatas
+112     frmCargando.cargar.Value = 0
 
-    ReDim Preserve ObjData(1 To NumObjDatas) As ObjData
+114     ReDim Preserve ObjData(1 To NumObjDatas) As ObjData
     
-    Dim str As String, Field() As String
+        Dim str As String, Field() As String
   
-    'Llena la lista
-    For Object = 1 To NumObjDatas
+        'Llena la lista
+116     For Object = 1 To NumObjDatas
         
-        ObjData(Object).name = Leer.GetValue("OBJ" & Object, "Name")
+118         ObjData(Object).name = Leer.GetValue("OBJ" & Object, "Name")
     
-        ' If ObjData(Object).Name = "" Then
-        '   Call LogError("Objeto libre:" & Object)
-        ' End If
+            ' If ObjData(Object).Name = "" Then
+            '   Call LogError("Objeto libre:" & Object)
+            ' End If
     
-        ' If ObjData(Object).name = "" Then
-        ' Debug.Print Object
-        ' End If
+            ' If ObjData(Object).name = "" Then
+            ' Debug.Print Object
+            ' End If
     
-        'Pablo (ToxicWaste) Log de Objetos.
-        ObjData(Object).Log = val(Leer.GetValue("OBJ" & Object, "Log"))
-        ObjData(Object).NoLog = val(Leer.GetValue("OBJ" & Object, "NoLog"))
-        '07/09/07
+            'Pablo (ToxicWaste) Log de Objetos.
+120         ObjData(Object).Log = val(Leer.GetValue("OBJ" & Object, "Log"))
+122         ObjData(Object).NoLog = val(Leer.GetValue("OBJ" & Object, "NoLog"))
+            '07/09/07
     
-        ObjData(Object).GrhIndex = val(Leer.GetValue("OBJ" & Object, "GrhIndex"))
+124         ObjData(Object).GrhIndex = val(Leer.GetValue("OBJ" & Object, "GrhIndex"))
 
-        If ObjData(Object).GrhIndex = 0 Then
-            ObjData(Object).GrhIndex = ObjData(Object).GrhIndex
+126         If ObjData(Object).GrhIndex = 0 Then
+128             ObjData(Object).GrhIndex = ObjData(Object).GrhIndex
 
-        End If
+            End If
     
-        ObjData(Object).OBJType = val(Leer.GetValue("OBJ" & Object, "ObjType"))
+130         ObjData(Object).OBJType = val(Leer.GetValue("OBJ" & Object, "ObjType"))
     
-        ObjData(Object).Newbie = val(Leer.GetValue("OBJ" & Object, "Newbie"))
-        'Propiedades by Lader 05-05-08
-        ObjData(Object).Instransferible = val(Leer.GetValue("OBJ" & Object, "Instransferible"))
-        ObjData(Object).Destruye = val(Leer.GetValue("OBJ" & Object, "Destruye"))
-        ObjData(Object).Intirable = val(Leer.GetValue("OBJ" & Object, "Intirable"))
+132         ObjData(Object).Newbie = val(Leer.GetValue("OBJ" & Object, "Newbie"))
+            'Propiedades by Lader 05-05-08
+134         ObjData(Object).Instransferible = val(Leer.GetValue("OBJ" & Object, "Instransferible"))
+136         ObjData(Object).Destruye = val(Leer.GetValue("OBJ" & Object, "Destruye"))
+138         ObjData(Object).Intirable = val(Leer.GetValue("OBJ" & Object, "Intirable"))
     
-        ObjData(Object).CantidadSkill = val(Leer.GetValue("OBJ" & Object, "CantidadSkill"))
-        ObjData(Object).QueSkill = val(Leer.GetValue("OBJ" & Object, "QueSkill"))
-        ObjData(Object).QueAtributo = val(Leer.GetValue("OBJ" & Object, "queatributo"))
-        ObjData(Object).CuantoAumento = val(Leer.GetValue("OBJ" & Object, "cuantoaumento"))
-        ObjData(Object).MinELV = val(Leer.GetValue("OBJ" & Object, "MinELV"))
-        ObjData(Object).Subtipo = val(Leer.GetValue("OBJ" & Object, "Subtipo"))
-        ObjData(Object).Dorada = val(Leer.GetValue("OBJ" & Object, "Dorada"))
-        ObjData(Object).VidaUtil = val(Leer.GetValue("OBJ" & Object, "VidaUtil"))
-        ObjData(Object).TiempoRegenerar = val(Leer.GetValue("OBJ" & Object, "TiempoRegenerar"))
+140         ObjData(Object).CantidadSkill = val(Leer.GetValue("OBJ" & Object, "CantidadSkill"))
+142         ObjData(Object).QueSkill = val(Leer.GetValue("OBJ" & Object, "QueSkill"))
+144         ObjData(Object).QueAtributo = val(Leer.GetValue("OBJ" & Object, "queatributo"))
+146         ObjData(Object).CuantoAumento = val(Leer.GetValue("OBJ" & Object, "cuantoaumento"))
+148         ObjData(Object).MinELV = val(Leer.GetValue("OBJ" & Object, "MinELV"))
+150         ObjData(Object).Subtipo = val(Leer.GetValue("OBJ" & Object, "Subtipo"))
+152         ObjData(Object).Dorada = val(Leer.GetValue("OBJ" & Object, "Dorada"))
+154         ObjData(Object).VidaUtil = val(Leer.GetValue("OBJ" & Object, "VidaUtil"))
+156         ObjData(Object).TiempoRegenerar = val(Leer.GetValue("OBJ" & Object, "TiempoRegenerar"))
     
-        ObjData(Object).donador = val(Leer.GetValue("OBJ" & Object, "donador"))
+158         ObjData(Object).donador = val(Leer.GetValue("OBJ" & Object, "donador"))
     
-        Dim i As Integer
+            Dim i As Integer
 
-        'Propiedades by Lader 05-05-08
-        Select Case ObjData(Object).OBJType
+            'Propiedades by Lader 05-05-08
+160         Select Case ObjData(Object).OBJType
 
-            Case eOBJType.otHerramientas
-                ObjData(Object).WeaponAnim = val(Leer.GetValue("OBJ" & Object, "Anim"))
-                ObjData(Object).Power = val(Leer.GetValue("OBJ" & Object, "Poder"))
+                Case eOBJType.otHerramientas
+162                 ObjData(Object).WeaponAnim = val(Leer.GetValue("OBJ" & Object, "Anim"))
+164                 ObjData(Object).Power = val(Leer.GetValue("OBJ" & Object, "Poder"))
             
-            Case eOBJType.otArmadura
-                ObjData(Object).Real = val(Leer.GetValue("OBJ" & Object, "Real"))
-                ObjData(Object).Caos = val(Leer.GetValue("OBJ" & Object, "Caos"))
-                ObjData(Object).LingH = val(Leer.GetValue("OBJ" & Object, "LingH"))
-                ObjData(Object).LingP = val(Leer.GetValue("OBJ" & Object, "LingP"))
-                ObjData(Object).LingO = val(Leer.GetValue("OBJ" & Object, "LingO"))
-                ObjData(Object).SkHerreria = val(Leer.GetValue("OBJ" & Object, "SkHerreria"))
-                ObjData(Object).ResistenciaMagica = val(Leer.GetValue("OBJ" & Object, "ResistenciaMagica"))
+166             Case eOBJType.otArmadura
+168                 ObjData(Object).Real = val(Leer.GetValue("OBJ" & Object, "Real"))
+170                 ObjData(Object).Caos = val(Leer.GetValue("OBJ" & Object, "Caos"))
+172                 ObjData(Object).LingH = val(Leer.GetValue("OBJ" & Object, "LingH"))
+174                 ObjData(Object).LingP = val(Leer.GetValue("OBJ" & Object, "LingP"))
+176                 ObjData(Object).LingO = val(Leer.GetValue("OBJ" & Object, "LingO"))
+178                 ObjData(Object).SkHerreria = val(Leer.GetValue("OBJ" & Object, "SkHerreria"))
+180                 ObjData(Object).ResistenciaMagica = val(Leer.GetValue("OBJ" & Object, "ResistenciaMagica"))
         
-            Case eOBJType.otESCUDO
-                ObjData(Object).ShieldAnim = val(Leer.GetValue("OBJ" & Object, "Anim"))
-                ObjData(Object).LingH = val(Leer.GetValue("OBJ" & Object, "LingH"))
-                ObjData(Object).LingP = val(Leer.GetValue("OBJ" & Object, "LingP"))
-                ObjData(Object).LingO = val(Leer.GetValue("OBJ" & Object, "LingO"))
-                ObjData(Object).SkHerreria = val(Leer.GetValue("OBJ" & Object, "SkHerreria"))
-                ObjData(Object).Real = val(Leer.GetValue("OBJ" & Object, "Real"))
-                ObjData(Object).Caos = val(Leer.GetValue("OBJ" & Object, "Caos"))
-                ObjData(Object).ResistenciaMagica = val(Leer.GetValue("OBJ" & Object, "ResistenciaMagica"))
+182             Case eOBJType.otESCUDO
+184                 ObjData(Object).ShieldAnim = val(Leer.GetValue("OBJ" & Object, "Anim"))
+186                 ObjData(Object).LingH = val(Leer.GetValue("OBJ" & Object, "LingH"))
+188                 ObjData(Object).LingP = val(Leer.GetValue("OBJ" & Object, "LingP"))
+190                 ObjData(Object).LingO = val(Leer.GetValue("OBJ" & Object, "LingO"))
+192                 ObjData(Object).SkHerreria = val(Leer.GetValue("OBJ" & Object, "SkHerreria"))
+194                 ObjData(Object).Real = val(Leer.GetValue("OBJ" & Object, "Real"))
+196                 ObjData(Object).Caos = val(Leer.GetValue("OBJ" & Object, "Caos"))
+198                 ObjData(Object).ResistenciaMagica = val(Leer.GetValue("OBJ" & Object, "ResistenciaMagica"))
         
-            Case eOBJType.otCASCO
-                ObjData(Object).CascoAnim = val(Leer.GetValue("OBJ" & Object, "Anim"))
-                ObjData(Object).LingH = val(Leer.GetValue("OBJ" & Object, "LingH"))
-                ObjData(Object).LingP = val(Leer.GetValue("OBJ" & Object, "LingP"))
-                ObjData(Object).LingO = val(Leer.GetValue("OBJ" & Object, "LingO"))
-                ObjData(Object).SkHerreria = val(Leer.GetValue("OBJ" & Object, "SkHerreria"))
-                ObjData(Object).Real = val(Leer.GetValue("OBJ" & Object, "Real"))
-                ObjData(Object).Caos = val(Leer.GetValue("OBJ" & Object, "Caos"))
-                ObjData(Object).ResistenciaMagica = val(Leer.GetValue("OBJ" & Object, "ResistenciaMagica"))
+200             Case eOBJType.otCASCO
+202                 ObjData(Object).CascoAnim = val(Leer.GetValue("OBJ" & Object, "Anim"))
+204                 ObjData(Object).LingH = val(Leer.GetValue("OBJ" & Object, "LingH"))
+206                 ObjData(Object).LingP = val(Leer.GetValue("OBJ" & Object, "LingP"))
+208                 ObjData(Object).LingO = val(Leer.GetValue("OBJ" & Object, "LingO"))
+210                 ObjData(Object).SkHerreria = val(Leer.GetValue("OBJ" & Object, "SkHerreria"))
+212                 ObjData(Object).Real = val(Leer.GetValue("OBJ" & Object, "Real"))
+214                 ObjData(Object).Caos = val(Leer.GetValue("OBJ" & Object, "Caos"))
+216                 ObjData(Object).ResistenciaMagica = val(Leer.GetValue("OBJ" & Object, "ResistenciaMagica"))
         
-            Case eOBJType.otWeapon
-                ObjData(Object).WeaponAnim = val(Leer.GetValue("OBJ" & Object, "Anim"))
-                ObjData(Object).Apuñala = val(Leer.GetValue("OBJ" & Object, "Apuñala"))
-                ObjData(Object).Envenena = val(Leer.GetValue("OBJ" & Object, "Envenena"))
-                ObjData(Object).Paraliza = val(Leer.GetValue("OBJ" & Object, "Paraliza"))
-                ObjData(Object).Estupidiza = val(Leer.GetValue("OBJ" & Object, "Estupidiza"))
+218             Case eOBJType.otWeapon
+220                 ObjData(Object).WeaponAnim = val(Leer.GetValue("OBJ" & Object, "Anim"))
+222                 ObjData(Object).Apuñala = val(Leer.GetValue("OBJ" & Object, "Apuñala"))
+224                 ObjData(Object).Envenena = val(Leer.GetValue("OBJ" & Object, "Envenena"))
+226                 ObjData(Object).Paraliza = val(Leer.GetValue("OBJ" & Object, "Paraliza"))
+228                 ObjData(Object).Estupidiza = val(Leer.GetValue("OBJ" & Object, "Estupidiza"))
         
-                ObjData(Object).MaxHit = val(Leer.GetValue("OBJ" & Object, "MaxHIT"))
-                ObjData(Object).MinHIT = val(Leer.GetValue("OBJ" & Object, "MinHIT"))
-                ObjData(Object).proyectil = val(Leer.GetValue("OBJ" & Object, "Proyectil"))
-                ObjData(Object).Municion = val(Leer.GetValue("OBJ" & Object, "Municiones"))
-                ObjData(Object).Power = val(Leer.GetValue("OBJ" & Object, "StaffPower"))
-                ObjData(Object).MagicDamageBonus = val(Leer.GetValue("OBJ" & Object, "MagicDamageBonus"))
-                ObjData(Object).Refuerzo = val(Leer.GetValue("OBJ" & Object, "Refuerzo"))
+230                 ObjData(Object).MaxHit = val(Leer.GetValue("OBJ" & Object, "MaxHIT"))
+232                 ObjData(Object).MinHIT = val(Leer.GetValue("OBJ" & Object, "MinHIT"))
+234                 ObjData(Object).proyectil = val(Leer.GetValue("OBJ" & Object, "Proyectil"))
+236                 ObjData(Object).Municion = val(Leer.GetValue("OBJ" & Object, "Municiones"))
+238                 ObjData(Object).Power = val(Leer.GetValue("OBJ" & Object, "StaffPower"))
+240                 ObjData(Object).MagicDamageBonus = val(Leer.GetValue("OBJ" & Object, "MagicDamageBonus"))
+242                 ObjData(Object).Refuerzo = val(Leer.GetValue("OBJ" & Object, "Refuerzo"))
             
-                ObjData(Object).LingH = val(Leer.GetValue("OBJ" & Object, "LingH"))
-                ObjData(Object).LingP = val(Leer.GetValue("OBJ" & Object, "LingP"))
-                ObjData(Object).LingO = val(Leer.GetValue("OBJ" & Object, "LingO"))
-                ObjData(Object).SkHerreria = val(Leer.GetValue("OBJ" & Object, "SkHerreria"))
-                ObjData(Object).Real = val(Leer.GetValue("OBJ" & Object, "Real"))
-                ObjData(Object).Caos = val(Leer.GetValue("OBJ" & Object, "Caos"))
-                ObjData(Object).EfectoMagico = val(Leer.GetValue("OBJ" & Object, "efectomagico"))
+244                 ObjData(Object).LingH = val(Leer.GetValue("OBJ" & Object, "LingH"))
+246                 ObjData(Object).LingP = val(Leer.GetValue("OBJ" & Object, "LingP"))
+248                 ObjData(Object).LingO = val(Leer.GetValue("OBJ" & Object, "LingO"))
+250                 ObjData(Object).SkHerreria = val(Leer.GetValue("OBJ" & Object, "SkHerreria"))
+252                 ObjData(Object).Real = val(Leer.GetValue("OBJ" & Object, "Real"))
+254                 ObjData(Object).Caos = val(Leer.GetValue("OBJ" & Object, "Caos"))
+256                 ObjData(Object).EfectoMagico = val(Leer.GetValue("OBJ" & Object, "efectomagico"))
         
-            Case eOBJType.otInstrumentos
+258             Case eOBJType.otInstrumentos
         
-                'Pablo (ToxicWaste)
-                ObjData(Object).Real = val(Leer.GetValue("OBJ" & Object, "Real"))
-                ObjData(Object).Caos = val(Leer.GetValue("OBJ" & Object, "Caos"))
+                    'Pablo (ToxicWaste)
+260                 ObjData(Object).Real = val(Leer.GetValue("OBJ" & Object, "Real"))
+262                 ObjData(Object).Caos = val(Leer.GetValue("OBJ" & Object, "Caos"))
         
-            Case eOBJType.otPuertas, eOBJType.otBotellaVacia, eOBJType.otBotellaLlena
-                ObjData(Object).IndexAbierta = val(Leer.GetValue("OBJ" & Object, "IndexAbierta"))
-                ObjData(Object).IndexCerrada = val(Leer.GetValue("OBJ" & Object, "IndexCerrada"))
-                ObjData(Object).IndexCerradaLlave = val(Leer.GetValue("OBJ" & Object, "IndexCerradaLlave"))
+264             Case eOBJType.otPuertas, eOBJType.otBotellaVacia, eOBJType.otBotellaLlena
+266                 ObjData(Object).IndexAbierta = val(Leer.GetValue("OBJ" & Object, "IndexAbierta"))
+268                 ObjData(Object).IndexCerrada = val(Leer.GetValue("OBJ" & Object, "IndexCerrada"))
+270                 ObjData(Object).IndexCerradaLlave = val(Leer.GetValue("OBJ" & Object, "IndexCerradaLlave"))
         
-            Case otPociones
-                ObjData(Object).TipoPocion = val(Leer.GetValue("OBJ" & Object, "TipoPocion"))
-                ObjData(Object).MaxModificador = val(Leer.GetValue("OBJ" & Object, "MaxModificador"))
-                ObjData(Object).MinModificador = val(Leer.GetValue("OBJ" & Object, "MinModificador"))
+272             Case otPociones
+274                 ObjData(Object).TipoPocion = val(Leer.GetValue("OBJ" & Object, "TipoPocion"))
+276                 ObjData(Object).MaxModificador = val(Leer.GetValue("OBJ" & Object, "MaxModificador"))
+278                 ObjData(Object).MinModificador = val(Leer.GetValue("OBJ" & Object, "MinModificador"))
             
-                ObjData(Object).DuracionEfecto = val(Leer.GetValue("OBJ" & Object, "DuracionEfecto"))
-                ObjData(Object).Raices = val(Leer.GetValue("OBJ" & Object, "Raices"))
-                ObjData(Object).SkPociones = val(Leer.GetValue("OBJ" & Object, "SkPociones"))
-                ObjData(Object).Porcentaje = val(Leer.GetValue("OBJ" & Object, "Porcentaje"))
+280                 ObjData(Object).DuracionEfecto = val(Leer.GetValue("OBJ" & Object, "DuracionEfecto"))
+282                 ObjData(Object).Raices = val(Leer.GetValue("OBJ" & Object, "Raices"))
+284                 ObjData(Object).SkPociones = val(Leer.GetValue("OBJ" & Object, "SkPociones"))
+286                 ObjData(Object).Porcentaje = val(Leer.GetValue("OBJ" & Object, "Porcentaje"))
         
-            Case eOBJType.otBarcos
-                ObjData(Object).MaxHit = val(Leer.GetValue("OBJ" & Object, "MaxHIT"))
-                ObjData(Object).MinHIT = val(Leer.GetValue("OBJ" & Object, "MinHIT"))
-                ObjData(Object).Subtipo = val(Leer.GetValue("OBJ" & Object, "Subtipo"))
-                ObjData(Object).Velocidad = val(Leer.GetValue("OBJ" & Object, "Velocidad"))
+288             Case eOBJType.otBarcos
+290                 ObjData(Object).MaxHit = val(Leer.GetValue("OBJ" & Object, "MaxHIT"))
+292                 ObjData(Object).MinHIT = val(Leer.GetValue("OBJ" & Object, "MinHIT"))
+294                 ObjData(Object).Subtipo = val(Leer.GetValue("OBJ" & Object, "Subtipo"))
+296                 ObjData(Object).Velocidad = val(Leer.GetValue("OBJ" & Object, "Velocidad"))
 
-            Case eOBJType.otMonturas
-                ObjData(Object).MaxHit = val(Leer.GetValue("OBJ" & Object, "MaxHIT"))
-                ObjData(Object).MinHIT = val(Leer.GetValue("OBJ" & Object, "MinHIT"))
-                ObjData(Object).MinDef = val(Leer.GetValue("OBJ" & Object, "MINDEF"))
-                ObjData(Object).MaxDef = val(Leer.GetValue("OBJ" & Object, "MAXDEF"))
-                ObjData(Object).Real = val(Leer.GetValue("OBJ" & Object, "Real"))
-                ObjData(Object).Caos = val(Leer.GetValue("OBJ" & Object, "Caos"))
+298             Case eOBJType.otMonturas
+300                 ObjData(Object).MaxHit = val(Leer.GetValue("OBJ" & Object, "MaxHIT"))
+302                 ObjData(Object).MinHIT = val(Leer.GetValue("OBJ" & Object, "MinHIT"))
+304                 ObjData(Object).MinDef = val(Leer.GetValue("OBJ" & Object, "MINDEF"))
+306                 ObjData(Object).MaxDef = val(Leer.GetValue("OBJ" & Object, "MAXDEF"))
+308                 ObjData(Object).Real = val(Leer.GetValue("OBJ" & Object, "Real"))
+310                 ObjData(Object).Caos = val(Leer.GetValue("OBJ" & Object, "Caos"))
         
-            Case eOBJType.otFlechas
-                ObjData(Object).MaxHit = val(Leer.GetValue("OBJ" & Object, "MaxHIT"))
-                ObjData(Object).MinHIT = val(Leer.GetValue("OBJ" & Object, "MinHIT"))
-                ObjData(Object).Subtipo = val(Leer.GetValue("OBJ" & Object, "Subtipo"))
+312             Case eOBJType.otFlechas
+314                 ObjData(Object).MaxHit = val(Leer.GetValue("OBJ" & Object, "MaxHIT"))
+316                 ObjData(Object).MinHIT = val(Leer.GetValue("OBJ" & Object, "MinHIT"))
+318                 ObjData(Object).Subtipo = val(Leer.GetValue("OBJ" & Object, "Subtipo"))
             
-                ObjData(Object).Snd1 = val(Leer.GetValue("OBJ" & Object, "SND1"))
-                ObjData(Object).Snd2 = val(Leer.GetValue("OBJ" & Object, "SND2"))
+320                 ObjData(Object).Snd1 = val(Leer.GetValue("OBJ" & Object, "SND1"))
+322                 ObjData(Object).Snd2 = val(Leer.GetValue("OBJ" & Object, "SND2"))
             
-                'Case eOBJType.otAnillos 'Pablo (ToxicWaste)
-                '  ObjData(Object).LingH = val(Leer.GetValue("OBJ" & Object, "LingH"))
-                '  ObjData(Object).LingP = val(Leer.GetValue("OBJ" & Object, "LingP"))
-                '  ObjData(Object).LingO = val(Leer.GetValue("OBJ" & Object, "LingO"))
-                '  ObjData(Object).SkHerreria = val(Leer.GetValue("OBJ" & Object, "SkHerreria"))
+                    'Case eOBJType.otAnillos 'Pablo (ToxicWaste)
+                    '  ObjData(Object).LingH = val(Leer.GetValue("OBJ" & Object, "LingH"))
+                    '  ObjData(Object).LingP = val(Leer.GetValue("OBJ" & Object, "LingP"))
+                    '  ObjData(Object).LingO = val(Leer.GetValue("OBJ" & Object, "LingO"))
+                    '  ObjData(Object).SkHerreria = val(Leer.GetValue("OBJ" & Object, "SkHerreria"))
             
-                'Pasajes Ladder 05-05-08
-            Case eOBJType.otpasajes
-                ObjData(Object).DesdeMap = val(Leer.GetValue("OBJ" & Object, "DesdeMap"))
-                ObjData(Object).HastaMap = val(Leer.GetValue("OBJ" & Object, "Map"))
-                ObjData(Object).HastaX = val(Leer.GetValue("OBJ" & Object, "X"))
-                ObjData(Object).HastaY = val(Leer.GetValue("OBJ" & Object, "Y"))
-                ObjData(Object).NecesitaNave = val(Leer.GetValue("OBJ" & Object, "NecesitaNave"))
+                    'Pasajes Ladder 05-05-08
+324             Case eOBJType.otpasajes
+326                 ObjData(Object).DesdeMap = val(Leer.GetValue("OBJ" & Object, "DesdeMap"))
+328                 ObjData(Object).HastaMap = val(Leer.GetValue("OBJ" & Object, "Map"))
+330                 ObjData(Object).HastaX = val(Leer.GetValue("OBJ" & Object, "X"))
+332                 ObjData(Object).HastaY = val(Leer.GetValue("OBJ" & Object, "Y"))
+334                 ObjData(Object).NecesitaNave = val(Leer.GetValue("OBJ" & Object, "NecesitaNave"))
             
-            Case eOBJType.OtDonador
-                ObjData(Object).Subtipo = val(Leer.GetValue("OBJ" & Object, "Subtipo"))
-                ObjData(Object).HastaMap = val(Leer.GetValue("OBJ" & Object, "Map"))
-                ObjData(Object).HastaX = val(Leer.GetValue("OBJ" & Object, "X"))
-                ObjData(Object).HastaY = val(Leer.GetValue("OBJ" & Object, "Y"))
+336             Case eOBJType.OtDonador
+338                 ObjData(Object).Subtipo = val(Leer.GetValue("OBJ" & Object, "Subtipo"))
+340                 ObjData(Object).HastaMap = val(Leer.GetValue("OBJ" & Object, "Map"))
+342                 ObjData(Object).HastaX = val(Leer.GetValue("OBJ" & Object, "X"))
+344                 ObjData(Object).HastaY = val(Leer.GetValue("OBJ" & Object, "Y"))
         
-            Case eOBJType.otmagicos
-                ObjData(Object).EfectoMagico = val(Leer.GetValue("OBJ" & Object, "efectomagico"))
+346             Case eOBJType.otmagicos
+348                 ObjData(Object).EfectoMagico = val(Leer.GetValue("OBJ" & Object, "efectomagico"))
 
-                If ObjData(Object).EfectoMagico = 15 Then
-                    PENDIENTE = Object
+350                 If ObjData(Object).EfectoMagico = 15 Then
+352                     PENDIENTE = Object
 
-                End If
+                    End If
             
-            Case eOBJType.otRunas
-                ObjData(Object).TipoRuna = val(Leer.GetValue("OBJ" & Object, "TipoRuna"))
-                ObjData(Object).DesdeMap = val(Leer.GetValue("OBJ" & Object, "DesdeMap"))
-                ObjData(Object).HastaMap = val(Leer.GetValue("OBJ" & Object, "Map"))
-                ObjData(Object).HastaX = val(Leer.GetValue("OBJ" & Object, "X"))
-                ObjData(Object).HastaY = val(Leer.GetValue("OBJ" & Object, "Y"))
+354             Case eOBJType.otRunas
+356                 ObjData(Object).TipoRuna = val(Leer.GetValue("OBJ" & Object, "TipoRuna"))
+358                 ObjData(Object).DesdeMap = val(Leer.GetValue("OBJ" & Object, "DesdeMap"))
+360                 ObjData(Object).HastaMap = val(Leer.GetValue("OBJ" & Object, "Map"))
+362                 ObjData(Object).HastaX = val(Leer.GetValue("OBJ" & Object, "X"))
+364                 ObjData(Object).HastaY = val(Leer.GetValue("OBJ" & Object, "Y"))
                     
-            Case eOBJType.otNUDILLOS
-                ObjData(Object).MinHIT = val(Leer.GetValue("OBJ" & Object, "MinHIT"))
-                ObjData(Object).MaxHit = val(Leer.GetValue("OBJ" & Object, "MaxHit"))
-                ObjData(Object).Envenena = val(Leer.GetValue("OBJ" & Object, "Envenena"))
-                ObjData(Object).Paraliza = val(Leer.GetValue("OBJ" & Object, "Paraliza"))
-                ObjData(Object).Estupidiza = val(Leer.GetValue("OBJ" & Object, "Estupidiza"))
-                ObjData(Object).WeaponAnim = val(Leer.GetValue("OBJ" & Object, "Anim"))
-                ObjData(Object).SkHerreria = val(Leer.GetValue("OBJ" & Object, "SkHerreria"))
+366             Case eOBJType.otNUDILLOS
+368                 ObjData(Object).MinHIT = val(Leer.GetValue("OBJ" & Object, "MinHIT"))
+370                 ObjData(Object).MaxHit = val(Leer.GetValue("OBJ" & Object, "MaxHit"))
+372                 ObjData(Object).Envenena = val(Leer.GetValue("OBJ" & Object, "Envenena"))
+374                 ObjData(Object).Paraliza = val(Leer.GetValue("OBJ" & Object, "Paraliza"))
+376                 ObjData(Object).Estupidiza = val(Leer.GetValue("OBJ" & Object, "Estupidiza"))
+378                 ObjData(Object).WeaponAnim = val(Leer.GetValue("OBJ" & Object, "Anim"))
+380                 ObjData(Object).SkHerreria = val(Leer.GetValue("OBJ" & Object, "SkHerreria"))
             
-            Case eOBJType.otPergaminos
+382             Case eOBJType.otPergaminos
         
-                ' ObjData(Object).ClasePermitida = Leer.GetValue("OBJ" & Object, "CP")
+                    ' ObjData(Object).ClasePermitida = Leer.GetValue("OBJ" & Object, "CP")
         
-            Case eOBJType.OtCofre
-                ObjData(Object).CantItem = val(Leer.GetValue("OBJ" & Object, "CantItem"))
-                ObjData(Object).Subtipo = val(Leer.GetValue("OBJ" & Object, "SubTipo"))
+384             Case eOBJType.OtCofre
+386                 ObjData(Object).CantItem = val(Leer.GetValue("OBJ" & Object, "CantItem"))
+388                 ObjData(Object).Subtipo = val(Leer.GetValue("OBJ" & Object, "SubTipo"))
 
-                If ObjData(Object).Subtipo = 1 Then
-                    ReDim ObjData(Object).Item(1 To ObjData(Object).CantItem)
+390                 If ObjData(Object).Subtipo = 1 Then
+392                     ReDim ObjData(Object).Item(1 To ObjData(Object).CantItem)
                 
-                    For i = 1 To ObjData(Object).CantItem
-                        ObjData(Object).Item(i).ObjIndex = val(Leer.GetValue("OBJ" & Object, "Item" & i))
-                        ObjData(Object).Item(i).Amount = val(Leer.GetValue("OBJ" & Object, "Cantidad" & i))
-                    Next i
+394                     For i = 1 To ObjData(Object).CantItem
+396                         ObjData(Object).Item(i).ObjIndex = val(Leer.GetValue("OBJ" & Object, "Item" & i))
+398                         ObjData(Object).Item(i).Amount = val(Leer.GetValue("OBJ" & Object, "Cantidad" & i))
+400                     Next i
 
-                Else
-                    ReDim ObjData(Object).Item(1 To ObjData(Object).CantItem)
+                    Else
+402                     ReDim ObjData(Object).Item(1 To ObjData(Object).CantItem)
                 
-                    ObjData(Object).CantEntrega = val(Leer.GetValue("OBJ" & Object, "CantEntrega"))
+404                     ObjData(Object).CantEntrega = val(Leer.GetValue("OBJ" & Object, "CantEntrega"))
 
-                    For i = 1 To ObjData(Object).CantItem
-                        ObjData(Object).Item(i).ObjIndex = val(Leer.GetValue("OBJ" & Object, "Item" & i))
-                        ObjData(Object).Item(i).Amount = val(Leer.GetValue("OBJ" & Object, "Cantidad" & i))
-                    Next i
+406                     For i = 1 To ObjData(Object).CantItem
+408                         ObjData(Object).Item(i).ObjIndex = val(Leer.GetValue("OBJ" & Object, "Item" & i))
+410                         ObjData(Object).Item(i).Amount = val(Leer.GetValue("OBJ" & Object, "Cantidad" & i))
+412                     Next i
 
-                End If
+                    End If
             
-            Case eOBJType.otYacimiento
-                ' Drop gemas yacimientos
-                ObjData(Object).CantItem = val(Leer.GetValue("OBJ" & Object, "Gemas"))
+414             Case eOBJType.otYacimiento
+                    ' Drop gemas yacimientos
+416                 ObjData(Object).CantItem = val(Leer.GetValue("OBJ" & Object, "Gemas"))
             
-                If ObjData(Object).CantItem > 0 Then
-                    ReDim ObjData(Object).Item(1 To ObjData(Object).CantItem)
+418                 If ObjData(Object).CantItem > 0 Then
+420                     ReDim ObjData(Object).Item(1 To ObjData(Object).CantItem)
 
-                    For i = 1 To ObjData(Object).CantItem
-                        str = Leer.GetValue("OBJ" & Object, "Gema" & i)
-                        Field = Split(str, "-")
-                        ObjData(Object).Item(i).ObjIndex = val(Field(0))    ' ObjIndex
-                        ObjData(Object).Item(i).Amount = val(Field(1))      ' Probabilidad de drop (1 en X)
-                    Next i
+422                     For i = 1 To ObjData(Object).CantItem
+424                         str = Leer.GetValue("OBJ" & Object, "Gema" & i)
+426                         Field = Split(str, "-")
+428                         ObjData(Object).Item(i).ObjIndex = val(Field(0))    ' ObjIndex
+430                         ObjData(Object).Item(i).Amount = val(Field(1))      ' Probabilidad de drop (1 en X)
+432                     Next i
 
-                End If
+                    End If
                 
-            Case eOBJType.otAnillos
-                ObjData(Object).MagicDamageBonus = val(Leer.GetValue("OBJ" & Object, "MagicDamageBonus"))
-                ObjData(Object).ResistenciaMagica = val(Leer.GetValue("OBJ" & Object, "ResistenciaMagica"))
+434             Case eOBJType.otAnillos
+436                 ObjData(Object).MagicDamageBonus = val(Leer.GetValue("OBJ" & Object, "MagicDamageBonus"))
+438                 ObjData(Object).ResistenciaMagica = val(Leer.GetValue("OBJ" & Object, "ResistenciaMagica"))
             
-        End Select
+            End Select
     
-        ObjData(Object).MinSkill = val(Leer.GetValue("OBJ" & Object, "MinSkill"))
+440         ObjData(Object).MinSkill = val(Leer.GetValue("OBJ" & Object, "MinSkill"))
 
-        ObjData(Object).Snd1 = val(Leer.GetValue("OBJ" & Object, "SND1"))
-        ObjData(Object).Snd2 = val(Leer.GetValue("OBJ" & Object, "SND2"))
-        ObjData(Object).Snd3 = val(Leer.GetValue("OBJ" & Object, "SND3"))
-        'DELETE
-        ObjData(Object).SndAura = val(Leer.GetValue("OBJ" & Object, "SndAura"))
-        '
+442         ObjData(Object).Snd1 = val(Leer.GetValue("OBJ" & Object, "SND1"))
+444         ObjData(Object).Snd2 = val(Leer.GetValue("OBJ" & Object, "SND2"))
+446         ObjData(Object).Snd3 = val(Leer.GetValue("OBJ" & Object, "SND3"))
+            'DELETE
+448         ObjData(Object).SndAura = val(Leer.GetValue("OBJ" & Object, "SndAura"))
+            '
     
-        ObjData(Object).NoSeLimpia = val(Leer.GetValue("OBJ" & Object, "NoSeLimpia"))
-        ObjData(Object).Subastable = val(Leer.GetValue("OBJ" & Object, "Subastable"))
+450         ObjData(Object).NoSeLimpia = val(Leer.GetValue("OBJ" & Object, "NoSeLimpia"))
+452         ObjData(Object).Subastable = val(Leer.GetValue("OBJ" & Object, "Subastable"))
     
-        ObjData(Object).ParticulaGolpe = val(Leer.GetValue("OBJ" & Object, "ParticulaGolpe"))
-        ObjData(Object).ParticulaViaje = val(Leer.GetValue("OBJ" & Object, "ParticulaViaje"))
-        ObjData(Object).ParticulaGolpeTime = val(Leer.GetValue("OBJ" & Object, "ParticulaGolpeTime"))
+454         ObjData(Object).ParticulaGolpe = val(Leer.GetValue("OBJ" & Object, "ParticulaGolpe"))
+456         ObjData(Object).ParticulaViaje = val(Leer.GetValue("OBJ" & Object, "ParticulaViaje"))
+458         ObjData(Object).ParticulaGolpeTime = val(Leer.GetValue("OBJ" & Object, "ParticulaGolpeTime"))
     
-        ObjData(Object).Ropaje = val(Leer.GetValue("OBJ" & Object, "NumRopaje"))
-        ObjData(Object).HechizoIndex = val(Leer.GetValue("OBJ" & Object, "HechizoIndex"))
+460         ObjData(Object).Ropaje = val(Leer.GetValue("OBJ" & Object, "NumRopaje"))
+462         ObjData(Object).HechizoIndex = val(Leer.GetValue("OBJ" & Object, "HechizoIndex"))
     
-        ObjData(Object).LingoteIndex = val(Leer.GetValue("OBJ" & Object, "LingoteIndex"))
+464         ObjData(Object).LingoteIndex = val(Leer.GetValue("OBJ" & Object, "LingoteIndex"))
     
-        ObjData(Object).MineralIndex = val(Leer.GetValue("OBJ" & Object, "MineralIndex"))
+466         ObjData(Object).MineralIndex = val(Leer.GetValue("OBJ" & Object, "MineralIndex"))
     
-        ObjData(Object).MaxHp = val(Leer.GetValue("OBJ" & Object, "MaxHP"))
-        ObjData(Object).MinHp = val(Leer.GetValue("OBJ" & Object, "MinHP"))
+468         ObjData(Object).MaxHp = val(Leer.GetValue("OBJ" & Object, "MaxHP"))
+470         ObjData(Object).MinHp = val(Leer.GetValue("OBJ" & Object, "MinHP"))
     
-        ObjData(Object).Mujer = val(Leer.GetValue("OBJ" & Object, "Mujer"))
-        ObjData(Object).Hombre = val(Leer.GetValue("OBJ" & Object, "Hombre"))
+472         ObjData(Object).Mujer = val(Leer.GetValue("OBJ" & Object, "Mujer"))
+474         ObjData(Object).Hombre = val(Leer.GetValue("OBJ" & Object, "Hombre"))
     
-        ObjData(Object).PielLobo = val(Leer.GetValue("OBJ" & Object, "PielLobo"))
-        ObjData(Object).PielOsoPardo = val(Leer.GetValue("OBJ" & Object, "PielOsoPardo"))
-        ObjData(Object).PielOsoPolaR = val(Leer.GetValue("OBJ" & Object, "PielOsoPolaR"))
-        ObjData(Object).SkMAGOria = val(Leer.GetValue("OBJ" & Object, "SKSastreria"))
+476         ObjData(Object).PielLobo = val(Leer.GetValue("OBJ" & Object, "PielLobo"))
+478         ObjData(Object).PielOsoPardo = val(Leer.GetValue("OBJ" & Object, "PielOsoPardo"))
+480         ObjData(Object).PielOsoPolaR = val(Leer.GetValue("OBJ" & Object, "PielOsoPolaR"))
+482         ObjData(Object).SkMAGOria = val(Leer.GetValue("OBJ" & Object, "SKSastreria"))
     
-        ObjData(Object).CreaParticula = Leer.GetValue("OBJ" & Object, "CreaParticula")
+484         ObjData(Object).CreaParticula = Leer.GetValue("OBJ" & Object, "CreaParticula")
     
-        ObjData(Object).CreaFX = val(Leer.GetValue("OBJ" & Object, "CreaFX"))
+486         ObjData(Object).CreaFX = val(Leer.GetValue("OBJ" & Object, "CreaFX"))
   
-        'DELETE
-        ObjData(Object).CreaParticulaPiso = val(Leer.GetValue("OBJ" & Object, "CreaParticulaPiso"))
-        '
+            'DELETE
+488         ObjData(Object).CreaParticulaPiso = val(Leer.GetValue("OBJ" & Object, "CreaParticulaPiso"))
+            '
     
-        ObjData(Object).CreaGRH = Leer.GetValue("OBJ" & Object, "CreaGRH")
-        ObjData(Object).CreaLuz = Leer.GetValue("OBJ" & Object, "CreaLuz")
+490         ObjData(Object).CreaGRH = Leer.GetValue("OBJ" & Object, "CreaGRH")
+492         ObjData(Object).CreaLuz = Leer.GetValue("OBJ" & Object, "CreaLuz")
     
-        ObjData(Object).MinHam = val(Leer.GetValue("OBJ" & Object, "MinHam"))
-        ObjData(Object).MinSed = val(Leer.GetValue("OBJ" & Object, "MinAgu"))
+494         ObjData(Object).MinHam = val(Leer.GetValue("OBJ" & Object, "MinHam"))
+496         ObjData(Object).MinSed = val(Leer.GetValue("OBJ" & Object, "MinAgu"))
     
-        ObjData(Object).MinDef = val(Leer.GetValue("OBJ" & Object, "MINDEF"))
-        ObjData(Object).MaxDef = val(Leer.GetValue("OBJ" & Object, "MAXDEF"))
-        ObjData(Object).def = (ObjData(Object).MinDef + ObjData(Object).MaxDef) / 2
+498         ObjData(Object).MinDef = val(Leer.GetValue("OBJ" & Object, "MINDEF"))
+500         ObjData(Object).MaxDef = val(Leer.GetValue("OBJ" & Object, "MAXDEF"))
+502         ObjData(Object).def = (ObjData(Object).MinDef + ObjData(Object).MaxDef) / 2
     
-        ObjData(Object).ClaseTipo = val(Leer.GetValue("OBJ" & Object, "ClaseTipo"))
-        ObjData(Object).RazaTipo = val(Leer.GetValue("OBJ" & Object, "RazaTipo"))
+504         ObjData(Object).ClaseTipo = val(Leer.GetValue("OBJ" & Object, "ClaseTipo"))
+506         ObjData(Object).RazaTipo = val(Leer.GetValue("OBJ" & Object, "RazaTipo"))
 
-        ObjData(Object).RazaEnana = val(Leer.GetValue("OBJ" & Object, "RazaEnana"))
-        ObjData(Object).RazaDrow = val(Leer.GetValue("OBJ" & Object, "RazaDrow"))
-        ObjData(Object).RazaElfa = val(Leer.GetValue("OBJ" & Object, "RazaElfa"))
-        ObjData(Object).RazaGnoma = val(Leer.GetValue("OBJ" & Object, "RazaGnoma"))
+508         ObjData(Object).RazaEnana = val(Leer.GetValue("OBJ" & Object, "RazaEnana"))
+510         ObjData(Object).RazaDrow = val(Leer.GetValue("OBJ" & Object, "RazaDrow"))
+512         ObjData(Object).RazaElfa = val(Leer.GetValue("OBJ" & Object, "RazaElfa"))
+514         ObjData(Object).RazaGnoma = val(Leer.GetValue("OBJ" & Object, "RazaGnoma"))
     
-        ObjData(Object).RazaOrca = val(Leer.GetValue("OBJ" & Object, "RazaOrca"))
+516         ObjData(Object).RazaOrca = val(Leer.GetValue("OBJ" & Object, "RazaOrca"))
     
-        ObjData(Object).RazaHumana = val(Leer.GetValue("OBJ" & Object, "RazaHumana"))
+518         ObjData(Object).RazaHumana = val(Leer.GetValue("OBJ" & Object, "RazaHumana"))
     
-        ObjData(Object).Valor = val(Leer.GetValue("OBJ" & Object, "Valor"))
+520         ObjData(Object).Valor = val(Leer.GetValue("OBJ" & Object, "Valor"))
     
-        ObjData(Object).Crucial = val(Leer.GetValue("OBJ" & Object, "Crucial"))
+522         ObjData(Object).Crucial = val(Leer.GetValue("OBJ" & Object, "Crucial"))
     
-        'ObjData(Object).Cerrada = val(Leer.GetValue("OBJ" & Object, "abierta")) cerrada = abierta??? WTF???????
-        ObjData(Object).Cerrada = val(Leer.GetValue("OBJ" & Object, "Cerrada"))
+            'ObjData(Object).Cerrada = val(Leer.GetValue("OBJ" & Object, "abierta")) cerrada = abierta??? WTF???????
+524         ObjData(Object).Cerrada = val(Leer.GetValue("OBJ" & Object, "Cerrada"))
 
-        If ObjData(Object).Cerrada = 1 Then
-            ObjData(Object).Llave = val(Leer.GetValue("OBJ" & Object, "Llave"))
-            ObjData(Object).clave = val(Leer.GetValue("OBJ" & Object, "Clave"))
-        End If
+526         If ObjData(Object).Cerrada = 1 Then
+528             ObjData(Object).Llave = val(Leer.GetValue("OBJ" & Object, "Llave"))
+530             ObjData(Object).clave = val(Leer.GetValue("OBJ" & Object, "Clave"))
+            End If
     
-        'Puertas y llaves
-        ObjData(Object).clave = val(Leer.GetValue("OBJ" & Object, "Clave"))
+            'Puertas y llaves
+532         ObjData(Object).clave = val(Leer.GetValue("OBJ" & Object, "Clave"))
     
-        ObjData(Object).texto = Leer.GetValue("OBJ" & Object, "Texto")
-        ObjData(Object).GrhSecundario = val(Leer.GetValue("OBJ" & Object, "VGrande"))
+534         ObjData(Object).texto = Leer.GetValue("OBJ" & Object, "Texto")
+536         ObjData(Object).GrhSecundario = val(Leer.GetValue("OBJ" & Object, "VGrande"))
     
-        ObjData(Object).Agarrable = val(Leer.GetValue("OBJ" & Object, "Agarrable"))
-        ObjData(Object).ForoID = Leer.GetValue("OBJ" & Object, "ID")
+538         ObjData(Object).Agarrable = val(Leer.GetValue("OBJ" & Object, "Agarrable"))
+540         ObjData(Object).ForoID = Leer.GetValue("OBJ" & Object, "ID")
     
-        'CHECK: !!! Esto es provisorio hasta que los de Dateo cambien los valores de string a numerico  -  Nunca más papu
-        Dim n As Integer
-        Dim S As String
+            'CHECK: !!! Esto es provisorio hasta que los de Dateo cambien los valores de string a numerico  -  Nunca más papu
+            Dim n As Integer
+            Dim S As String
 
-        For i = 1 To NUMCLASES
-            S = UCase$(Leer.GetValue("OBJ" & Object, "CP" & i))
-            n = 1
+542         For i = 1 To NUMCLASES
+544             S = UCase$(Leer.GetValue("OBJ" & Object, "CP" & i))
+546             n = 1
 
-            Do While LenB(S) > 0 And Tilde(ListaClases(n)) <> Trim$(S)
-                n = n + 1
-            Loop
-            ObjData(Object).ClaseProhibida(i) = IIf(LenB(S) > 0, n, 0)
-        Next i
+548             Do While LenB(S) > 0 And Tilde(ListaClases(n)) <> Trim$(S)
+550                 n = n + 1
+                Loop
+552             ObjData(Object).ClaseProhibida(i) = IIf(LenB(S) > 0, n, 0)
+554         Next i
         
-        ' Skill requerido
-        str = Leer.GetValue("OBJ" & Object, "SkillRequerido")
+            ' Skill requerido
+556         str = Leer.GetValue("OBJ" & Object, "SkillRequerido")
 
-        If Len(str) > 0 Then
-            Field = Split(str, "-")
+558         If Len(str) > 0 Then
+560             Field = Split(str, "-")
             
-            n = 1
-            Do While LenB(Field(0)) > 0 And Tilde(SkillsNames(n)) <> Tilde(Field(0))
-                n = n + 1
-            Loop
+562             n = 1
+564             Do While LenB(Field(0)) > 0 And Tilde(SkillsNames(n)) <> Tilde(Field(0))
+566                 n = n + 1
+                Loop
     
-            ObjData(Object).SkillIndex = IIf(LenB(Field(0)) > 0, n, 0)
-            ObjData(Object).SkillRequerido = val(Field(1))
-        End If
-        ' -----------------
+568             ObjData(Object).SkillIndex = IIf(LenB(Field(0)) > 0, n, 0)
+570             ObjData(Object).SkillRequerido = val(Field(1))
+            End If
+            ' -----------------
     
-        ObjData(Object).DefensaMagicaMax = val(Leer.GetValue("OBJ" & Object, "DefensaMagicaMax"))
-        ObjData(Object).DefensaMagicaMin = val(Leer.GetValue("OBJ" & Object, "DefensaMagicaMin"))
+572         ObjData(Object).DefensaMagicaMax = val(Leer.GetValue("OBJ" & Object, "DefensaMagicaMax"))
+574         ObjData(Object).DefensaMagicaMin = val(Leer.GetValue("OBJ" & Object, "DefensaMagicaMin"))
     
-        ObjData(Object).SkCarpinteria = val(Leer.GetValue("OBJ" & Object, "SkCarpinteria"))
+576         ObjData(Object).SkCarpinteria = val(Leer.GetValue("OBJ" & Object, "SkCarpinteria"))
     
-        'If ObjData(Object).SkCarpinteria > 0 Then
-        ObjData(Object).Madera = val(Leer.GetValue("OBJ" & Object, "Madera"))
+            'If ObjData(Object).SkCarpinteria > 0 Then
+578         ObjData(Object).Madera = val(Leer.GetValue("OBJ" & Object, "Madera"))
     
-        'Bebidas
-        ObjData(Object).MinSta = val(Leer.GetValue("OBJ" & Object, "MinST"))
+            'Bebidas
+580         ObjData(Object).MinSta = val(Leer.GetValue("OBJ" & Object, "MinST"))
     
-        ObjData(Object).NoSeCae = val(Leer.GetValue("OBJ" & Object, "NoSeCae"))
+582         ObjData(Object).NoSeCae = val(Leer.GetValue("OBJ" & Object, "NoSeCae"))
     
-        frmCargando.cargar.Value = frmCargando.cargar.Value + 1
-    Next Object
+584         frmCargando.cargar.Value = frmCargando.cargar.Value + 1
+586     Next Object
 
-    Set Leer = Nothing
+588     Set Leer = Nothing
 
-    Exit Sub
+        Exit Sub
 
-Errhandler:
-    MsgBox "error cargando objetos " & Err.Number & ": " & Err.description & ". Error producido al cargar el objeto: " & Object
+ErrHandler:
+590     MsgBox "error cargando objetos " & Err.Number & ": " & Err.description & ". Error producido al cargar el objeto: " & Object
 
 End Sub
 
@@ -1737,32 +1737,32 @@ Sub LoadUserStats(ByVal Userindex As Integer, ByRef UserFile As clsIniReader)
 
         End If
 
-174     'UserList(UserIndex).flags.DañoMagico = CByte(UserFile.GetValue("MAGIA", "DañoMagico"))
-176     'UserList(UserIndex).flags.ResistenciaMagica = CByte(UserFile.GetValue("MAGIA", "ResistenciaMagica"))
+        'UserList(UserIndex).flags.DañoMagico = CByte(UserFile.GetValue("MAGIA", "DañoMagico"))
+        'UserList(UserIndex).flags.ResistenciaMagica = CByte(UserFile.GetValue("MAGIA", "ResistenciaMagica"))
 
         'Nuevos
-178     UserList(Userindex).flags.RegeneracionMana = CByte(UserFile.GetValue("MAGIA", "RegeneracionMana"))
-180     UserList(Userindex).flags.AnilloOcultismo = CByte(UserFile.GetValue("MAGIA", "AnilloOcultismo"))
-182     UserList(Userindex).flags.NoDetectable = CByte(UserFile.GetValue("MAGIA", "NoDetectable"))
-184     UserList(Userindex).flags.NoMagiaEfeceto = CByte(UserFile.GetValue("MAGIA", "NoMagiaEfeceto"))
-186     UserList(Userindex).flags.RegeneracionHP = CByte(UserFile.GetValue("MAGIA", "RegeneracionHP"))
-188     UserList(Userindex).flags.RegeneracionSta = CByte(UserFile.GetValue("MAGIA", "RegeneracionSta"))
+174     UserList(Userindex).flags.RegeneracionMana = CByte(UserFile.GetValue("MAGIA", "RegeneracionMana"))
+176     UserList(Userindex).flags.AnilloOcultismo = CByte(UserFile.GetValue("MAGIA", "AnilloOcultismo"))
+178     UserList(Userindex).flags.NoDetectable = CByte(UserFile.GetValue("MAGIA", "NoDetectable"))
+180     UserList(Userindex).flags.NoMagiaEfeceto = CByte(UserFile.GetValue("MAGIA", "NoMagiaEfeceto"))
+182     UserList(Userindex).flags.RegeneracionHP = CByte(UserFile.GetValue("MAGIA", "RegeneracionHP"))
+184     UserList(Userindex).flags.RegeneracionSta = CByte(UserFile.GetValue("MAGIA", "RegeneracionSta"))
 
-190     UserList(Userindex).Stats.UsuariosMatados = CLng(UserFile.GetValue("MUERTES", "UserMuertes"))
-192     UserList(Userindex).Stats.NPCsMuertos = CInt(UserFile.GetValue("MUERTES", "NpcsMuertes"))
+186     UserList(Userindex).Stats.UsuariosMatados = CLng(UserFile.GetValue("MUERTES", "UserMuertes"))
+188     UserList(Userindex).Stats.NPCsMuertos = CInt(UserFile.GetValue("MUERTES", "NpcsMuertes"))
 
-194     UserList(Userindex).Stats.InventLevel = CInt(UserFile.GetValue("STATS", "InventLevel"))
+190     UserList(Userindex).Stats.InventLevel = CInt(UserFile.GetValue("STATS", "InventLevel"))
 
-196     If CByte(UserFile.GetValue("CONSEJO", "PERTENECE")) Then UserList(Userindex).flags.Privilegios = UserList(Userindex).flags.Privilegios Or PlayerType.RoyalCouncil
+192     If CByte(UserFile.GetValue("CONSEJO", "PERTENECE")) Then UserList(Userindex).flags.Privilegios = UserList(Userindex).flags.Privilegios Or PlayerType.RoyalCouncil
 
-198     If CByte(UserFile.GetValue("CONSEJO", "PERTENECECAOS")) Then UserList(Userindex).flags.Privilegios = UserList(Userindex).flags.Privilegios Or PlayerType.ChaosCouncil
+194     If CByte(UserFile.GetValue("CONSEJO", "PERTENECECAOS")) Then UserList(Userindex).flags.Privilegios = UserList(Userindex).flags.Privilegios Or PlayerType.ChaosCouncil
 
         
         Exit Sub
 
 LoadUserStats_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.LoadUserStats", Erl)
-        Resume Next
+196     Call RegistrarError(Err.Number, Err.description, "ES.LoadUserStats", Erl)
+198     Resume Next
         
 End Sub
 
@@ -1952,8 +1952,8 @@ Sub LoadUserInit(ByVal Userindex As Integer, ByRef UserFile As clsIniReader)
         Exit Sub
 
 LoadUserInit_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.LoadUserInit", Erl)
-        Resume Next
+324     Call RegistrarError(Err.Number, Err.description, "ES.LoadUserInit", Erl)
+326     Resume Next
         
 End Sub
 
@@ -1979,8 +1979,8 @@ Function GetVar(ByVal File As String, ByVal Main As String, ByVal Var As String,
         Exit Function
 
 GetVar_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.GetVar", Erl)
-        Resume Next
+110     Call RegistrarError(Err.Number, Err.description, "ES.GetVar", Erl)
+112     Resume Next
         
 End Function
 
@@ -1996,7 +1996,7 @@ Sub CargarBackUp()
         Dim npcfile   As String
     
 102     NumMaps = CountFiles(MapPath, "*.csm")
-        NumMaps = NumMaps - 1
+104     NumMaps = NumMaps - 1
     
 106     frmCargando.cargar.min = 0
 108     frmCargando.cargar.max = NumMaps
@@ -2010,362 +2010,362 @@ Sub CargarBackUp()
 118     For Map = 1 To NumMaps
 120         frmCargando.ToMapLbl = Map & "/" & NumMaps
 
-124         Call CargarMapaFormatoCSM(Map, App.Path & "\WorldBackUp\Mapa" & Map & ".csm")
+122         Call CargarMapaFormatoCSM(Map, App.Path & "\WorldBackUp\Mapa" & Map & ".csm")
 
-126         frmCargando.cargar.Value = frmCargando.cargar.Value + 1
+124         frmCargando.cargar.Value = frmCargando.cargar.Value + 1
 
-128         DoEvents
-130     Next Map
+126         DoEvents
+128     Next Map
 
-        Call InitAreas
+130     Call InitAreas
 
 132     frmCargando.ToMapLbl.Visible = False
 
         Exit Sub
 
 CargarBackUp_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.CargarBackUp", Erl)
-        Resume Next
+134     Call RegistrarError(Err.Number, Err.description, "ES.CargarBackUp", Erl)
+136     Resume Next
         
 End Sub
 
 Sub LoadMapData()
 
-    If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando mapas..."
+100     If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando mapas..."
 
-    Dim Map       As Integer
-    Dim TempInt   As Integer
-    Dim npcfile   As String
+        Dim Map       As Integer
+        Dim TempInt   As Integer
+        Dim npcfile   As String
 
-    On Error GoTo man
+        On Error GoTo man
     
-    NumMaps = CountFiles(MapPath, "*.csm")
+102     NumMaps = CountFiles(MapPath, "*.csm")
     
-    NumMaps = NumMaps - 1
+104     NumMaps = NumMaps - 1
     
-    frmCargando.cargar.min = 0
-    frmCargando.cargar.max = NumMaps
-    frmCargando.cargar.Value = 0
-    frmCargando.ToMapLbl.Visible = True
+106     frmCargando.cargar.min = 0
+108     frmCargando.cargar.max = NumMaps
+110     frmCargando.cargar.Value = 0
+112     frmCargando.ToMapLbl.Visible = True
 
-    ReDim MapData(1 To NumMaps, XMinMapSize To XMaxMapSize, YMinMapSize To YMaxMapSize) As MapBlock
+114     ReDim MapData(1 To NumMaps, XMinMapSize To XMaxMapSize, YMinMapSize To YMaxMapSize) As MapBlock
 
-    ReDim MapInfo(1 To NumMaps) As MapInfo
+116     ReDim MapInfo(1 To NumMaps) As MapInfo
 
-    For Map = 1 To NumMaps
+118     For Map = 1 To NumMaps
     
-        frmCargando.ToMapLbl = Map & "/" & NumMaps
+120         frmCargando.ToMapLbl = Map & "/" & NumMaps
 
-        Call CargarMapaFormatoCSM(Map, MapPath & "Mapa" & Map & ".csm")
+122         Call CargarMapaFormatoCSM(Map, MapPath & "Mapa" & Map & ".csm")
 
-        frmCargando.cargar.Value = frmCargando.cargar.Value + 1
+124         frmCargando.cargar.Value = frmCargando.cargar.Value + 1
         
-        DoEvents
+126         DoEvents
         
-    Next Map
+128     Next Map
     
-    Call InitAreas
+130     Call InitAreas
 
-    frmCargando.ToMapLbl.Visible = False
+132     frmCargando.ToMapLbl.Visible = False
     
-    Exit Sub
+        Exit Sub
 
 man:
-    Call MsgBox("Error durante la carga de mapas, el mapa " & Map & " contiene errores")
-    Call LogError(Date & " " & Err.description & " " & Err.HelpContext & " " & Err.HelpFile & " " & Err.source)
+134     Call MsgBox("Error durante la carga de mapas, el mapa " & Map & " contiene errores")
+136     Call LogError(Date & " " & Err.description & " " & Err.HelpContext & " " & Err.HelpFile & " " & Err.source)
 
 End Sub
 
 Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
 
-    On Error GoTo errh:
+        On Error GoTo errh:
 
-    Dim npcfile      As String
+        Dim npcfile      As String
 
-    Dim fh           As Integer
+        Dim fh           As Integer
     
-    Dim MH           As tMapHeader
+        Dim MH           As tMapHeader
 
-    Dim Blqs()       As tDatosBloqueados
+        Dim Blqs()       As tDatosBloqueados
 
-    Dim L1()         As tDatosGrh
-    Dim L2()         As tDatosGrh
-    Dim L3()         As tDatosGrh
-    Dim L4()         As tDatosGrh
+        Dim L1()         As tDatosGrh
+        Dim L2()         As tDatosGrh
+        Dim L3()         As tDatosGrh
+        Dim L4()         As tDatosGrh
 
-    Dim Triggers()   As tDatosTrigger
-    Dim Luces()      As tDatosLuces
-    Dim Particulas() As tDatosParticulas
-    Dim Objetos()    As tDatosObjs
-    Dim NPCs()       As tDatosNPC
-    Dim TEs()        As tDatosTE
+        Dim Triggers()   As tDatosTrigger
+        Dim Luces()      As tDatosLuces
+        Dim Particulas() As tDatosParticulas
+        Dim Objetos()    As tDatosObjs
+        Dim NPCs()       As tDatosNPC
+        Dim TEs()        As tDatosTE
 
-    Dim Body         As Integer
-    Dim Head         As Integer
-    Dim Heading      As Byte
+        Dim Body         As Integer
+        Dim Head         As Integer
+        Dim Heading      As Byte
 
-    Dim i            As Long
-    Dim j            As Long
+        Dim i            As Long
+        Dim j            As Long
     
-    Dim X As Integer, Y As Integer
+        Dim X As Integer, Y As Integer
     
-    If FileLen(MAPFl) = 0 Then
-        Call RegistrarError(4333, "Se trato de cargar un mapa corrupto o mal generado" & vbNewLine & "Mapa: " & MAPFl, "ES.CargarMapaFormatoCSM")
-        Exit Sub
-    End If
-    
-    fh = FreeFile
-    Open MAPFl For Binary As fh
-    
-    Get #fh, , MH
-    Get #fh, , MapSize
-    Get #fh, , MapDat
-
-    Rem Get #fh, , L1
-
-    With MH
-
-        'Cargamos Bloqueos
-        
-        If .NumeroBloqueados > 0 Then
-
-            ReDim Blqs(1 To .NumeroBloqueados)
-            Get #fh, , Blqs
-
-            For i = 1 To .NumeroBloqueados
-                MapData(Map, Blqs(i).X, Blqs(i).Y).Blocked = Blqs(i).Lados
-            Next i
-
+100     If FileLen(MAPFl) = 0 Then
+102         Call RegistrarError(4333, "Se trato de cargar un mapa corrupto o mal generado" & vbNewLine & "Mapa: " & MAPFl, "ES.CargarMapaFormatoCSM")
+            Exit Sub
         End If
-        
-        'Cargamos Layer 1
-        
-        If .NumeroLayers(1) > 0 Then
-        
-            ReDim L1(1 To .NumeroLayers(1))
-            Get #fh, , L1
+    
+104     fh = FreeFile
+106     Open MAPFl For Binary As fh
+    
+108     Get #fh, , MH
+110     Get #fh, , MapSize
+112     Get #fh, , MapDat
 
-            For i = 1 To .NumeroLayers(1)
+        Rem Get #fh, , L1
+
+114     With MH
+
+            'Cargamos Bloqueos
+        
+116         If .NumeroBloqueados > 0 Then
+
+118             ReDim Blqs(1 To .NumeroBloqueados)
+120             Get #fh, , Blqs
+
+122             For i = 1 To .NumeroBloqueados
+124                 MapData(Map, Blqs(i).X, Blqs(i).Y).Blocked = Blqs(i).Lados
+126             Next i
+
+            End If
+        
+            'Cargamos Layer 1
+        
+128         If .NumeroLayers(1) > 0 Then
+        
+130             ReDim L1(1 To .NumeroLayers(1))
+132             Get #fh, , L1
+
+134             For i = 1 To .NumeroLayers(1)
                 
-                X = L1(i).X
-                Y = L1(i).Y
+136                 X = L1(i).X
+138                 Y = L1(i).Y
                         
-                MapData(Map, X, Y).Graphic(1) = L1(i).GrhIndex
+140                 MapData(Map, X, Y).Graphic(1) = L1(i).GrhIndex
             
-                'InitGrh MapData(L1(i).X, L1(i).Y).Graphic(1), MapData(L1(i).X, L1(i).Y).Graphic(1).GrhIndex
-                ' Call Map_Grh_Set(L2(i).X, L2(i).Y, L2(i).GrhIndex, 2)
-                If HayAgua(Map, X, Y) Then
-                    MapData(Map, X, Y).Blocked = MapData(Map, X, Y).Blocked Or FLAG_AGUA
-                End If
+                    'InitGrh MapData(L1(i).X, L1(i).Y).Graphic(1), MapData(L1(i).X, L1(i).Y).Graphic(1).GrhIndex
+                    ' Call Map_Grh_Set(L2(i).X, L2(i).Y, L2(i).GrhIndex, 2)
+142                 If HayAgua(Map, X, Y) Then
+144                     MapData(Map, X, Y).Blocked = MapData(Map, X, Y).Blocked Or FLAG_AGUA
+                    End If
                 
-            Next i
+146             Next i
 
-        End If
+            End If
         
-        'Cargamos Layer 2
-        If .NumeroLayers(2) > 0 Then
-            ReDim L2(1 To .NumeroLayers(2))
-            Get #fh, , L2
+            'Cargamos Layer 2
+148         If .NumeroLayers(2) > 0 Then
+150             ReDim L2(1 To .NumeroLayers(2))
+152             Get #fh, , L2
 
-            For i = 1 To .NumeroLayers(2)
+154             For i = 1 To .NumeroLayers(2)
                 
-                X = L2(i).X
-                Y = L2(i).Y
+156                 X = L2(i).X
+158                 Y = L2(i).Y
 
-                MapData(Map, X, Y).Graphic(2) = L2(i).GrhIndex
+160                 MapData(Map, X, Y).Graphic(2) = L2(i).GrhIndex
                 
-                MapData(Map, X, Y).Blocked = MapData(Map, X, Y).Blocked And Not FLAG_AGUA
+162                 MapData(Map, X, Y).Blocked = MapData(Map, X, Y).Blocked And Not FLAG_AGUA
                 
-            Next i
+164             Next i
 
-        End If
+            End If
                 
-        If .NumeroLayers(3) > 0 Then
-            ReDim L3(1 To .NumeroLayers(3))
-            Get #fh, , L3
+166         If .NumeroLayers(3) > 0 Then
+168             ReDim L3(1 To .NumeroLayers(3))
+170             Get #fh, , L3
 
-            For i = 1 To .NumeroLayers(3)
-                MapData(Map, L3(i).X, L3(i).Y).Graphic(3) = L3(i).GrhIndex
+172             For i = 1 To .NumeroLayers(3)
+174                 MapData(Map, L3(i).X, L3(i).Y).Graphic(3) = L3(i).GrhIndex
                 
-                If EsArbol(L3(i).GrhIndex) Then
-                    MapData(Map, X, Y).Blocked = MapData(Map, X, Y).Blocked Or FLAG_ARBOL
-                End If
-            Next i
+176                 If EsArbol(L3(i).GrhIndex) Then
+178                     MapData(Map, X, Y).Blocked = MapData(Map, X, Y).Blocked Or FLAG_ARBOL
+                    End If
+180             Next i
 
-        End If
+            End If
         
-        If .NumeroLayers(4) > 0 Then
-            ReDim L4(1 To .NumeroLayers(4))
-            Get #fh, , L4
+182         If .NumeroLayers(4) > 0 Then
+184             ReDim L4(1 To .NumeroLayers(4))
+186             Get #fh, , L4
 
-            For i = 1 To .NumeroLayers(4)
-                MapData(Map, L4(i).X, L4(i).Y).Graphic(4) = L4(i).GrhIndex
-            Next i
+188             For i = 1 To .NumeroLayers(4)
+190                 MapData(Map, L4(i).X, L4(i).Y).Graphic(4) = L4(i).GrhIndex
+192             Next i
 
-        End If
+            End If
 
-        If .NumeroTriggers > 0 Then
-            ReDim Triggers(1 To .NumeroTriggers)
-            Get #fh, , Triggers
+194         If .NumeroTriggers > 0 Then
+196             ReDim Triggers(1 To .NumeroTriggers)
+198             Get #fh, , Triggers
 
-            For i = 1 To .NumeroTriggers
-                MapData(Map, Triggers(i).X, Triggers(i).Y).trigger = Triggers(i).trigger
-            Next i
+200             For i = 1 To .NumeroTriggers
+202                 MapData(Map, Triggers(i).X, Triggers(i).Y).trigger = Triggers(i).trigger
+204             Next i
 
-        End If
+            End If
 
-        If .NumeroParticulas > 0 Then
-            ReDim Particulas(1 To .NumeroParticulas)
-            Get #fh, , Particulas
+206         If .NumeroParticulas > 0 Then
+208             ReDim Particulas(1 To .NumeroParticulas)
+210             Get #fh, , Particulas
 
-            For i = 1 To .NumeroParticulas
-                MapData(Map, Particulas(i).X, Particulas(i).Y).ParticulaIndex = Particulas(i).Particula
-                MapData(Map, Particulas(i).X, Particulas(i).Y).ParticulaIndex = 0
-            Next i
+212             For i = 1 To .NumeroParticulas
+214                 MapData(Map, Particulas(i).X, Particulas(i).Y).ParticulaIndex = Particulas(i).Particula
+216                 MapData(Map, Particulas(i).X, Particulas(i).Y).ParticulaIndex = 0
+218             Next i
 
-        End If
+            End If
 
-        If .NumeroLuces > 0 Then
-            ReDim Luces(1 To .NumeroLuces)
-            Get #fh, , Luces
+220         If .NumeroLuces > 0 Then
+222             ReDim Luces(1 To .NumeroLuces)
+224             Get #fh, , Luces
 
-            For i = 1 To .NumeroLuces
-                MapData(Map, Luces(i).X, Luces(i).Y).Luz.Color = Luces(i).Color
-                MapData(Map, Luces(i).X, Luces(i).Y).Luz.Rango = Luces(i).Rango
-                MapData(Map, Luces(i).X, Luces(i).Y).Luz.Color = 0
-                MapData(Map, Luces(i).X, Luces(i).Y).Luz.Rango = 0
-            Next i
+226             For i = 1 To .NumeroLuces
+228                 MapData(Map, Luces(i).X, Luces(i).Y).Luz.Color = Luces(i).Color
+230                 MapData(Map, Luces(i).X, Luces(i).Y).Luz.Rango = Luces(i).Rango
+232                 MapData(Map, Luces(i).X, Luces(i).Y).Luz.Color = 0
+234                 MapData(Map, Luces(i).X, Luces(i).Y).Luz.Rango = 0
+236             Next i
 
-        End If
+            End If
             
-        If .NumeroOBJs > 0 Then
-            ReDim Objetos(1 To .NumeroOBJs)
-            Get #fh, , Objetos
+238         If .NumeroOBJs > 0 Then
+240             ReDim Objetos(1 To .NumeroOBJs)
+242             Get #fh, , Objetos
 
-            For i = 1 To .NumeroOBJs
-                MapData(Map, Objetos(i).X, Objetos(i).Y).ObjInfo.ObjIndex = Objetos(i).ObjIndex
+244             For i = 1 To .NumeroOBJs
+246                 MapData(Map, Objetos(i).X, Objetos(i).Y).ObjInfo.ObjIndex = Objetos(i).ObjIndex
 
-                Select Case ObjData(Objetos(i).ObjIndex).OBJType
+248                 Select Case ObjData(Objetos(i).ObjIndex).OBJType
 
-                    Case eOBJType.otYacimiento, eOBJType.otArboles
-                        MapData(Map, Objetos(i).X, Objetos(i).Y).ObjInfo.Amount = ObjData(Objetos(i).ObjIndex).VidaUtil
-                        MapData(Map, Objetos(i).X, Objetos(i).Y).ObjInfo.data = &H7FFFFFFF ' Ultimo uso = Max Long
+                        Case eOBJType.otYacimiento, eOBJType.otArboles
+250                         MapData(Map, Objetos(i).X, Objetos(i).Y).ObjInfo.Amount = ObjData(Objetos(i).ObjIndex).VidaUtil
+252                         MapData(Map, Objetos(i).X, Objetos(i).Y).ObjInfo.data = &H7FFFFFFF ' Ultimo uso = Max Long
 
-                    Case Else
-                        MapData(Map, Objetos(i).X, Objetos(i).Y).ObjInfo.Amount = Objetos(i).ObjAmmount
+254                     Case Else
+256                         MapData(Map, Objetos(i).X, Objetos(i).Y).ObjInfo.Amount = Objetos(i).ObjAmmount
 
-                End Select
+                    End Select
 
-            Next i
+258             Next i
 
-        End If
+            End If
 
-        If .NumeroNPCs > 0 Then
-            ReDim NPCs(1 To .NumeroNPCs)
-            Get #fh, , NPCs
+260         If .NumeroNPCs > 0 Then
+262             ReDim NPCs(1 To .NumeroNPCs)
+264             Get #fh, , NPCs
                  
-            For i = 1 To .NumeroNPCs
+266             For i = 1 To .NumeroNPCs
 
-                MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex = NPCs(i).NpcIndex
+268                 MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex = NPCs(i).NpcIndex
                     
-                If MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex > 0 Then
-                    npcfile = DatPath & "NPCs.dat"
+270                 If MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex > 0 Then
+272                     npcfile = DatPath & "NPCs.dat"
 
-                    'Si el npc debe hacer respawn en la pos
-                    'original la guardamos
-                    If val(GetVar(npcfile, "NPC" & MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex, "PosOrig")) = 1 Then
-                        MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex = OpenNPC(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex)
-                        Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Orig.Map = Map
-                        Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Orig.X = NPCs(i).X
-                        Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Orig.Y = NPCs(i).Y
-                    Else
-                        MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex = OpenNPC(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex)
+                        'Si el npc debe hacer respawn en la pos
+                        'original la guardamos
+274                     If val(GetVar(npcfile, "NPC" & MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex, "PosOrig")) = 1 Then
+276                         MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex = OpenNPC(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex)
+278                         Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Orig.Map = Map
+280                         Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Orig.X = NPCs(i).X
+282                         Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Orig.Y = NPCs(i).Y
+                        Else
+284                         MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex = OpenNPC(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex)
 
-                    End If
+                        End If
 
-                    Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Pos.Map = Map
-                    Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Pos.X = NPCs(i).X
-                    Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Pos.Y = NPCs(i).Y
+286                     Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Pos.Map = Map
+288                     Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Pos.X = NPCs(i).X
+290                     Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Pos.Y = NPCs(i).Y
                         
-                    '        If NPCs(i).NpcIndex > 499 Then
+                        '        If NPCs(i).NpcIndex > 499 Then
                                             
-                    '                                           Dim nfile As Integer
-                    '  nfile = FreeFile ' obtenemos un canal
-                    '  Open App.Path & "\logs\npcs.log" For Append Shared As #nfile
-                    ' Print #nfile, NPCs(i).NpcIndex & "(" & Npclist(MapData(Map, NPCs(i).x, NPCs(i).y).NpcIndex).Name & ") "
-                    ' Close #nfile
+                        '                                           Dim nfile As Integer
+                        '  nfile = FreeFile ' obtenemos un canal
+                        '  Open App.Path & "\logs\npcs.log" For Append Shared As #nfile
+                        ' Print #nfile, NPCs(i).NpcIndex & "(" & Npclist(MapData(Map, NPCs(i).x, NPCs(i).y).NpcIndex).Name & ") "
+                        ' Close #nfile
                                             
-                    ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "Nombre", Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Name
-                    ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "MaxHp", Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Stats.MaxHp
-                    ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "GiveEXP", Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).GiveEXP
-                    ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "GiveGLD", Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).GiveGLD
-                    ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "MinHIT", Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Stats.MinHIT
-                    ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "MaxHit", Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Stats.MaxHit
-                    ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "def", Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Stats.def
-                    ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "defM", Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Stats.defM
-                    ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "PoderAtaque", Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).PoderAtaque
-                    ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "PoderEvasion", Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).PoderEvasion
-                    ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "Posicion" & i, Map & "-" & NPCs(i).X & "-" & NPCs(i).Y
-                    'End If
+                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "Nombre", Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Name
+                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "MaxHp", Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Stats.MaxHp
+                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "GiveEXP", Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).GiveEXP
+                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "GiveGLD", Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).GiveGLD
+                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "MinHIT", Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Stats.MinHIT
+                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "MaxHit", Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Stats.MaxHit
+                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "def", Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Stats.def
+                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "defM", Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Stats.defM
+                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "PoderAtaque", Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).PoderAtaque
+                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "PoderEvasion", Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).PoderEvasion
+                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "Posicion" & i, Map & "-" & NPCs(i).X & "-" & NPCs(i).Y
+                        'End If
                             
-                    If Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).name = "" Then
+292                     If Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).name = "" Then
                        
-                        MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex = 0
-                    Else
+294                         MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex = 0
+                        Else
                         
-                        Call MakeNPCChar(True, 0, MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex, Map, NPCs(i).X, NPCs(i).Y)
+296                         Call MakeNPCChar(True, 0, MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex, Map, NPCs(i).X, NPCs(i).Y)
                         
+                        End If
+
                     End If
 
-                End If
-
-            Next i
+298             Next i
                 
-        End If
+            End If
             
-        If .NumeroTE > 0 Then
-            ReDim TEs(1 To .NumeroTE)
-            Get #fh, , TEs
+300         If .NumeroTE > 0 Then
+302             ReDim TEs(1 To .NumeroTE)
+304             Get #fh, , TEs
 
-            For i = 1 To .NumeroTE
-                MapData(Map, TEs(i).X, TEs(i).Y).TileExit.Map = TEs(i).DestM
-                MapData(Map, TEs(i).X, TEs(i).Y).TileExit.X = TEs(i).DestX
-                MapData(Map, TEs(i).X, TEs(i).Y).TileExit.Y = TEs(i).DestY
-            Next i
+306             For i = 1 To .NumeroTE
+308                 MapData(Map, TEs(i).X, TEs(i).Y).TileExit.Map = TEs(i).DestM
+310                 MapData(Map, TEs(i).X, TEs(i).Y).TileExit.X = TEs(i).DestX
+312                 MapData(Map, TEs(i).X, TEs(i).Y).TileExit.Y = TEs(i).DestY
+314             Next i
 
-        End If
+            End If
         
-    End With
+        End With
 
-    Close fh
+316     Close fh
     
-    MapInfo(Map).map_name = MapDat.map_name
-    MapInfo(Map).ambient = MapDat.ambient
-    MapInfo(Map).backup_mode = MapDat.backup_mode
-    MapInfo(Map).base_light = MapDat.base_light
-    MapInfo(Map).extra1 = MapDat.extra1
-    'MapInfo(Map).extra2 = MapDat.extra2
-    MapInfo(Map).extra2 = val(GetVar(DatPath & "Map.dat", "RESUCIUDAD", Map))
+318     MapInfo(Map).map_name = MapDat.map_name
+320     MapInfo(Map).ambient = MapDat.ambient
+322     MapInfo(Map).backup_mode = MapDat.backup_mode
+324     MapInfo(Map).base_light = MapDat.base_light
+326     MapInfo(Map).extra1 = MapDat.extra1
+        'MapInfo(Map).extra2 = MapDat.extra2
+328     MapInfo(Map).extra2 = val(GetVar(DatPath & "Map.dat", "RESUCIUDAD", Map))
     
-    MapInfo(Map).extra3 = MapDat.extra3
-    MapInfo(Map).letter_grh = MapDat.letter_grh
-    MapInfo(Map).lluvia = MapDat.lluvia
-    MapInfo(Map).music_numberHi = MapDat.music_numberHi
-    MapInfo(Map).music_numberLow = MapDat.music_numberLow
-    MapInfo(Map).niebla = MapDat.niebla
-    MapInfo(Map).Nieve = MapDat.Nieve
-    MapInfo(Map).restrict_mode = MapDat.restrict_mode
+330     MapInfo(Map).extra3 = MapDat.extra3
+332     MapInfo(Map).letter_grh = MapDat.letter_grh
+334     MapInfo(Map).lluvia = MapDat.lluvia
+336     MapInfo(Map).music_numberHi = MapDat.music_numberHi
+338     MapInfo(Map).music_numberLow = MapDat.music_numberLow
+340     MapInfo(Map).niebla = MapDat.niebla
+342     MapInfo(Map).Nieve = MapDat.Nieve
+344     MapInfo(Map).restrict_mode = MapDat.restrict_mode
     
-    MapInfo(Map).Seguro = MapDat.Seguro
+346     MapInfo(Map).Seguro = MapDat.Seguro
 
-    MapInfo(Map).terrain = MapDat.terrain
-    MapInfo(Map).zone = MapDat.zone
+348     MapInfo(Map).terrain = MapDat.terrain
+350     MapInfo(Map).zone = MapDat.zone
  
-    Exit Sub
+        Exit Sub
 
 errh:
-    Close fh
-    Call MsgBox("Error cargando mapa: " & Map & ". " & Err.Number & " - " & Err.description & " - ")
+352     Close fh
+354     Call MsgBox("Error cargando mapa: " & Map & ". " & Err.Number & " - " & Err.description & " - ")
     
 End Sub
 
@@ -2425,21 +2425,21 @@ Sub LoadSini()
 158     ResPos.X = val(ReadField(2, Lector.GetValue("INIT", "ResPos"), 45))
 160     ResPos.Y = val(ReadField(3, Lector.GetValue("INIT", "ResPos"), 45))
       
-        If Not Database_Enabled Then
-162         RecordUsuarios = val(Lector.GetValue("INIT", "Record"))
+162     If Not Database_Enabled Then
+164         RecordUsuarios = val(Lector.GetValue("INIT", "Record"))
         End If
       
         'Max users
-164     Temporal = val(Lector.GetValue("INIT", "MaxUsers"))
+166     Temporal = val(Lector.GetValue("INIT", "MaxUsers"))
 
-166     If MaxUsers = 0 Then
-168         MaxUsers = Temporal
-170         ReDim UserList(1 To MaxUsers) As user
+168     If MaxUsers = 0 Then
+170         MaxUsers = Temporal
+172         ReDim UserList(1 To MaxUsers) As user
 
         End If
 
-172     NumCuentas = val(Lector.GetValue("INIT", "NumCuentas"))
-174     frmMain.cuentas.Caption = NumCuentas
+174     NumCuentas = val(Lector.GetValue("INIT", "NumCuentas"))
+176     frmMain.cuentas.Caption = NumCuentas
         #If DEBUGGING Then
             'Shell App.Path & "\estadisticas.exe" & " " & "NUEVACUENTALADDER" & "*" & NumCuentas & "*" & MaxUsers
         #End If
@@ -2451,152 +2451,152 @@ Sub LoadSini()
         ''&&&&&&&&&&&&&&&&&&&&& FIN BALANCE &&&&&&&&&&&&&&&&&&&&&&&
         'Call Statistics.Initialize
     
-        Call CargarCiudades
+178     Call CargarCiudades
             
-332     Call MD5sCarga
+180     Call MD5sCarga
     
-334     Call ConsultaPopular.LoadData
+182     Call ConsultaPopular.LoadData
     
-336     Set Lector = Nothing
+184     Set Lector = Nothing
 
         
         Exit Sub
 
 LoadSini_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.LoadSini", Erl)
-        Resume Next
+186     Call RegistrarError(Err.Number, Err.description, "ES.LoadSini", Erl)
+188     Resume Next
         
 End Sub
 
 Sub CargarCiudades()
 
-    Dim Lector As clsIniReader
-    Set Lector = New clsIniReader
-    Call Lector.Initialize(DatPath & "Ciudades.dat")
+        Dim Lector As clsIniReader
+100     Set Lector = New clsIniReader
+102     Call Lector.Initialize(DatPath & "Ciudades.dat")
     
-    With CityNix
-        .Map = val(Lector.GetValue("NIX", "Mapa"))
-        .X = val(Lector.GetValue("NIX", "X"))
-        .Y = val(Lector.GetValue("NIX", "Y"))
-        .MapaViaje = val(Lector.GetValue("NIX", "MapaViaje"))
-        .ViajeX = val(Lector.GetValue("NIX", "ViajeX"))
-        .ViajeY = val(Lector.GetValue("NIX", "ViajeY"))
-        .MapaResu = val(Lector.GetValue("NIX", "MapaResu"))
-        .ResuX = val(Lector.GetValue("NIX", "ResuX"))
-        .ResuY = val(Lector.GetValue("NIX", "ResuY"))
-        .NecesitaNave = val(Lector.GetValue("NIX", "NecesitaNave"))
-    End With
+104     With CityNix
+106         .Map = val(Lector.GetValue("NIX", "Mapa"))
+108         .X = val(Lector.GetValue("NIX", "X"))
+110         .Y = val(Lector.GetValue("NIX", "Y"))
+112         .MapaViaje = val(Lector.GetValue("NIX", "MapaViaje"))
+114         .ViajeX = val(Lector.GetValue("NIX", "ViajeX"))
+116         .ViajeY = val(Lector.GetValue("NIX", "ViajeY"))
+118         .MapaResu = val(Lector.GetValue("NIX", "MapaResu"))
+120         .ResuX = val(Lector.GetValue("NIX", "ResuX"))
+122         .ResuY = val(Lector.GetValue("NIX", "ResuY"))
+124         .NecesitaNave = val(Lector.GetValue("NIX", "NecesitaNave"))
+        End With
     
-    With CityUllathorpe
-        .Map = val(Lector.GetValue("Ullathorpe", "Mapa"))
-        .X = val(Lector.GetValue("Ullathorpe", "X"))
-        .Y = val(Lector.GetValue("Ullathorpe", "Y"))
-        .MapaViaje = val(Lector.GetValue("Ullathorpe", "MapaViaje"))
-        .ViajeX = val(Lector.GetValue("Ullathorpe", "ViajeX"))
-        .ViajeY = val(Lector.GetValue("Ullathorpe", "ViajeY"))
-        .MapaResu = val(Lector.GetValue("Ullathorpe", "MapaResu"))
-        .ResuX = val(Lector.GetValue("Ullathorpe", "ResuX"))
-        .ResuY = val(Lector.GetValue("Ullathorpe", "ResuY"))
-        .NecesitaNave = val(Lector.GetValue("Ullathorpe", "NecesitaNave"))
-    End With
+126     With CityUllathorpe
+128         .Map = val(Lector.GetValue("Ullathorpe", "Mapa"))
+130         .X = val(Lector.GetValue("Ullathorpe", "X"))
+132         .Y = val(Lector.GetValue("Ullathorpe", "Y"))
+134         .MapaViaje = val(Lector.GetValue("Ullathorpe", "MapaViaje"))
+136         .ViajeX = val(Lector.GetValue("Ullathorpe", "ViajeX"))
+138         .ViajeY = val(Lector.GetValue("Ullathorpe", "ViajeY"))
+140         .MapaResu = val(Lector.GetValue("Ullathorpe", "MapaResu"))
+142         .ResuX = val(Lector.GetValue("Ullathorpe", "ResuX"))
+144         .ResuY = val(Lector.GetValue("Ullathorpe", "ResuY"))
+146         .NecesitaNave = val(Lector.GetValue("Ullathorpe", "NecesitaNave"))
+        End With
     
-    With CityBanderbill
-        .Map = val(Lector.GetValue("Banderbill", "Mapa"))
-        .X = val(Lector.GetValue("Banderbill", "X"))
-        .Y = val(Lector.GetValue("Banderbill", "Y"))
-        .MapaViaje = val(Lector.GetValue("Banderbill", "MapaViaje"))
-        .ViajeX = val(Lector.GetValue("Banderbill", "ViajeX"))
-        .ViajeY = val(Lector.GetValue("Banderbill", "ViajeY"))
-        .MapaResu = val(Lector.GetValue("Banderbill", "MapaResu"))
-        .ResuX = val(Lector.GetValue("Banderbill", "ResuX"))
-        .ResuY = val(Lector.GetValue("Banderbill", "ResuY"))
-        .NecesitaNave = val(Lector.GetValue("Banderbill", "NecesitaNave"))
-    End With
+148     With CityBanderbill
+150         .Map = val(Lector.GetValue("Banderbill", "Mapa"))
+152         .X = val(Lector.GetValue("Banderbill", "X"))
+154         .Y = val(Lector.GetValue("Banderbill", "Y"))
+156         .MapaViaje = val(Lector.GetValue("Banderbill", "MapaViaje"))
+158         .ViajeX = val(Lector.GetValue("Banderbill", "ViajeX"))
+160         .ViajeY = val(Lector.GetValue("Banderbill", "ViajeY"))
+162         .MapaResu = val(Lector.GetValue("Banderbill", "MapaResu"))
+164         .ResuX = val(Lector.GetValue("Banderbill", "ResuX"))
+166         .ResuY = val(Lector.GetValue("Banderbill", "ResuY"))
+168         .NecesitaNave = val(Lector.GetValue("Banderbill", "NecesitaNave"))
+        End With
     
-    With CityLindos
-        .Map = val(Lector.GetValue("Lindos", "Mapa"))
-        .X = val(Lector.GetValue("Lindos", "X"))
-        .Y = val(Lector.GetValue("Lindos", "Y"))
-        .MapaViaje = val(Lector.GetValue("Lindos", "MapaViaje"))
-        .ViajeX = val(Lector.GetValue("Lindos", "ViajeX"))
-        .ViajeY = val(Lector.GetValue("Lindos", "ViajeY"))
-        .MapaResu = val(Lector.GetValue("Lindos", "MapaResu"))
-        .ResuX = val(Lector.GetValue("Lindos", "ResuX"))
-        .ResuY = val(Lector.GetValue("Lindos", "ResuY"))
-        .NecesitaNave = val(Lector.GetValue("Lindos", "NecesitaNave"))
-    End With
+170     With CityLindos
+172         .Map = val(Lector.GetValue("Lindos", "Mapa"))
+174         .X = val(Lector.GetValue("Lindos", "X"))
+176         .Y = val(Lector.GetValue("Lindos", "Y"))
+178         .MapaViaje = val(Lector.GetValue("Lindos", "MapaViaje"))
+180         .ViajeX = val(Lector.GetValue("Lindos", "ViajeX"))
+182         .ViajeY = val(Lector.GetValue("Lindos", "ViajeY"))
+184         .MapaResu = val(Lector.GetValue("Lindos", "MapaResu"))
+186         .ResuX = val(Lector.GetValue("Lindos", "ResuX"))
+188         .ResuY = val(Lector.GetValue("Lindos", "ResuY"))
+190         .NecesitaNave = val(Lector.GetValue("Lindos", "NecesitaNave"))
+        End With
     
-    With CityArghal
-        .Map = val(Lector.GetValue("Arghal", "Mapa"))
-        .X = val(Lector.GetValue("Arghal", "X"))
-        .Y = val(Lector.GetValue("Arghal", "Y"))
-        .MapaViaje = val(Lector.GetValue("Arghal", "MapaViaje"))
-        .ViajeX = val(Lector.GetValue("Arghal", "ViajeX"))
-        .ViajeY = val(Lector.GetValue("Arghal", "ViajeY"))
-        .MapaResu = val(Lector.GetValue("Arghal", "MapaResu"))
-        .ResuX = val(Lector.GetValue("Arghal", "ResuX"))
-        .ResuY = val(Lector.GetValue("Arghal", "ResuY"))
-        .NecesitaNave = val(Lector.GetValue("Arghal", "NecesitaNave"))
-    End With
+192     With CityArghal
+194         .Map = val(Lector.GetValue("Arghal", "Mapa"))
+196         .X = val(Lector.GetValue("Arghal", "X"))
+198         .Y = val(Lector.GetValue("Arghal", "Y"))
+200         .MapaViaje = val(Lector.GetValue("Arghal", "MapaViaje"))
+202         .ViajeX = val(Lector.GetValue("Arghal", "ViajeX"))
+204         .ViajeY = val(Lector.GetValue("Arghal", "ViajeY"))
+206         .MapaResu = val(Lector.GetValue("Arghal", "MapaResu"))
+208         .ResuX = val(Lector.GetValue("Arghal", "ResuX"))
+210         .ResuY = val(Lector.GetValue("Arghal", "ResuY"))
+212         .NecesitaNave = val(Lector.GetValue("Arghal", "NecesitaNave"))
+        End With
     
-    With CityHillidan
-        .Map = val(Lector.GetValue("Hillidan", "Mapa"))
-        .X = val(Lector.GetValue("Hillidan", "X"))
-        .Y = val(Lector.GetValue("Hillidan", "Y"))
-        .MapaViaje = val(Lector.GetValue("Hillidan", "MapaViaje"))
-        .ViajeX = val(Lector.GetValue("Hillidan", "ViajeX"))
-        .ViajeY = val(Lector.GetValue("Hillidan", "ViajeY"))
-        .MapaResu = val(Lector.GetValue("Hillidan", "MapaResu"))
-        .ResuX = val(Lector.GetValue("Hillidan", "ResuX"))
-        .ResuY = val(Lector.GetValue("Hillidan", "ResuY"))
-        .NecesitaNave = val(Lector.GetValue("Hillidan", "NecesitaNave"))
-    End With
+214     With CityHillidan
+216         .Map = val(Lector.GetValue("Hillidan", "Mapa"))
+218         .X = val(Lector.GetValue("Hillidan", "X"))
+220         .Y = val(Lector.GetValue("Hillidan", "Y"))
+222         .MapaViaje = val(Lector.GetValue("Hillidan", "MapaViaje"))
+224         .ViajeX = val(Lector.GetValue("Hillidan", "ViajeX"))
+226         .ViajeY = val(Lector.GetValue("Hillidan", "ViajeY"))
+228         .MapaResu = val(Lector.GetValue("Hillidan", "MapaResu"))
+230         .ResuX = val(Lector.GetValue("Hillidan", "ResuX"))
+232         .ResuY = val(Lector.GetValue("Hillidan", "ResuY"))
+234         .NecesitaNave = val(Lector.GetValue("Hillidan", "NecesitaNave"))
+        End With
     
-    With Prision
-        .Map = val(Lector.GetValue("Prision", "Mapa"))
-        .X = val(Lector.GetValue("Prision", "X"))
-        .Y = val(Lector.GetValue("Prision", "Y"))
-    End With
+236     With Prision
+238         .Map = val(Lector.GetValue("Prision", "Mapa"))
+240         .X = val(Lector.GetValue("Prision", "X"))
+242         .Y = val(Lector.GetValue("Prision", "Y"))
+        End With
     
-    With Libertad
-        .Map = val(Lector.GetValue("Libertad", "Mapa"))
-        .X = val(Lector.GetValue("Libertad", "X"))
-        .Y = val(Lector.GetValue("Libertad", "Y"))
-    End With
+244     With Libertad
+246         .Map = val(Lector.GetValue("Libertad", "Mapa"))
+248         .X = val(Lector.GetValue("Libertad", "X"))
+250         .Y = val(Lector.GetValue("Libertad", "Y"))
+        End With
     
-    Set Lector = Nothing
+252     Set Lector = Nothing
     
-    Nix.Map = CityNix.Map
-    Nix.X = CityNix.X
-    Nix.Y = CityNix.Y
+254     Nix.Map = CityNix.Map
+256     Nix.X = CityNix.X
+258     Nix.Y = CityNix.Y
     
-    Ullathorpe.Map = CityUllathorpe.Map
-    Ullathorpe.X = CityUllathorpe.X
-    Ullathorpe.Y = CityUllathorpe.Y
+260     Ullathorpe.Map = CityUllathorpe.Map
+262     Ullathorpe.X = CityUllathorpe.X
+264     Ullathorpe.Y = CityUllathorpe.Y
     
-    Banderbill.Map = CityBanderbill.Map
-    Banderbill.X = CityBanderbill.X
-    Banderbill.Y = CityBanderbill.Y
+266     Banderbill.Map = CityBanderbill.Map
+268     Banderbill.X = CityBanderbill.X
+270     Banderbill.Y = CityBanderbill.Y
     
-    Lindos.Map = CityLindos.Map
-    Lindos.X = CityLindos.X
-    Lindos.Y = CityLindos.Y
+272     Lindos.Map = CityLindos.Map
+274     Lindos.X = CityLindos.X
+276     Lindos.Y = CityLindos.Y
     
-    Arghal.Map = CityArghal.Map
-    Arghal.X = CityArghal.X
-    Arghal.Y = CityArghal.Y
+278     Arghal.Map = CityArghal.Map
+280     Arghal.X = CityArghal.X
+282     Arghal.Y = CityArghal.Y
     
-    Hillidan.Map = CityHillidan.Map
-    Hillidan.X = CityHillidan.X
-    Hillidan.Y = CityHillidan.Y
+284     Hillidan.Map = CityHillidan.Map
+286     Hillidan.X = CityHillidan.X
+288     Hillidan.Y = CityHillidan.Y
     
-    'Esto es para el /HOGAR
-    Ciudades(eCiudad.cNix) = Nix
-    Ciudades(eCiudad.cUllathorpe) = Ullathorpe
-    Ciudades(eCiudad.cBanderbill) = Banderbill
-    Ciudades(eCiudad.cLindos) = Lindos
-    Ciudades(eCiudad.cArghal) = Arghal
-    Ciudades(eCiudad.CHillidan) = Hillidan
+        'Esto es para el /HOGAR
+290     Ciudades(eCiudad.cNix) = Nix
+292     Ciudades(eCiudad.cUllathorpe) = Ullathorpe
+294     Ciudades(eCiudad.cBanderbill) = Banderbill
+296     Ciudades(eCiudad.cLindos) = Lindos
+298     Ciudades(eCiudad.cArghal) = Arghal
+300     Ciudades(eCiudad.CHillidan) = Hillidan
     
 End Sub
 
@@ -2695,30 +2695,30 @@ Sub LoadIntervalos()
     
 204     IntervaloCerrarConexion = val(Lector.GetValue("INTERVALOS", "IntervaloCerrarConexion"))
 206     IntervaloUserPuedeUsarU = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeUsarU"))
-207     IntervaloUserPuedeUsarClic = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeUsarClic"))
-208     IntervaloFlechasCazadores = val(Lector.GetValue("INTERVALOS", "IntervaloFlechasCazadores"))
-209     IntervaloGolpeUsar = val(Lector.GetValue("INTERVALOS", "IntervaloGolpeUsar"))
+208     IntervaloUserPuedeUsarClic = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeUsarClic"))
+210     IntervaloFlechasCazadores = val(Lector.GetValue("INTERVALOS", "IntervaloFlechasCazadores"))
+212     IntervaloGolpeUsar = val(Lector.GetValue("INTERVALOS", "IntervaloGolpeUsar"))
     
-210     IntervaloOculto = val(Lector.GetValue("INTERVALOS", "IntervaloOculto"))
+214     IntervaloOculto = val(Lector.GetValue("INTERVALOS", "IntervaloOculto"))
 
-211     MargenDeIntervaloPorPing = val(Lector.GetValue("INTERVALOS", "MargenDeIntervaloPorPing"))
+216     MargenDeIntervaloPorPing = val(Lector.GetValue("INTERVALOS", "MargenDeIntervaloPorPing"))
     
-212     IntervaloPuedeSerAtacado = val(Lector.GetValue("INTERVALOS", "IntervaloPuedeSerAtacado"))
+218     IntervaloPuedeSerAtacado = val(Lector.GetValue("INTERVALOS", "IntervaloPuedeSerAtacado"))
 
-        IntervaloGuardarUsuarios = val(Lector.GetValue("INTERVALOS", "IntervaloGuardarUsuarios"))
+220     IntervaloGuardarUsuarios = val(Lector.GetValue("INTERVALOS", "IntervaloGuardarUsuarios"))
         
-        LimiteSaveUserPorMinuto = val(Lector.GetValue("INTERVALOS", "LimiteSaveUserPorMinuto"))
+222     LimiteSaveUserPorMinuto = val(Lector.GetValue("INTERVALOS", "LimiteSaveUserPorMinuto"))
     
         '&&&&&&&&&&&&&&&&&&&&& FIN TIMERS &&&&&&&&&&&&&&&&&&&&&&&
     
-214     Set Lector = Nothing
+224     Set Lector = Nothing
 
         
         Exit Sub
 
 LoadIntervalos_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.LoadIntervalos", Erl)
-        Resume Next
+226     Call RegistrarError(Err.Number, Err.description, "ES.LoadIntervalos", Erl)
+228     Resume Next
         
 End Sub
 
@@ -2741,14 +2741,14 @@ Sub LoadConfiguraciones()
 118     BattleActivado = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "BattleActivado"))
 120     BattleMinNivel = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "BattleMinNivel"))
 
-126     frmMain.lblLimpieza.Caption = "Limpieza de objetos cada: " & TimerLimpiarObjetos & " minutos."
+122     frmMain.lblLimpieza.Caption = "Limpieza de objetos cada: " & TimerLimpiarObjetos & " minutos."
 
         
         Exit Sub
 
 LoadConfiguraciones_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.LoadConfiguraciones", Erl)
-        Resume Next
+124     Call RegistrarError(Err.Number, Err.description, "ES.LoadConfiguraciones", Erl)
+126     Resume Next
         
 End Sub
 
@@ -2766,135 +2766,135 @@ Sub WriteVar(ByVal File As String, ByVal Main As String, ByVal Var As String, By
         Exit Sub
 
 WriteVar_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.WriteVar", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "ES.WriteVar", Erl)
+104     Resume Next
         
 End Sub
 
 Sub LoadUser(ByVal Userindex As Integer)
 
-    On Error GoTo ErrorHandler
+        On Error GoTo ErrorHandler
     
-    If Database_Enabled Then
-        Call LoadUserDatabase(Userindex)
-    Else
-        Call LoadUserBinary(Userindex)
-    End If
+100     If Database_Enabled Then
+102         Call LoadUserDatabase(Userindex)
+        Else
+104         Call LoadUserBinary(Userindex)
+        End If
     
-    With UserList(Userindex)
+106     With UserList(Userindex)
 
-        If .flags.Paralizado = 1 Then
-            .Counters.Paralisis = IntervaloParalizado
-        End If
+108         If .flags.Paralizado = 1 Then
+110             .Counters.Paralisis = IntervaloParalizado
+            End If
 
-        If .flags.Muerto = 0 Then
-            .Char = .OrigChar
+112         If .flags.Muerto = 0 Then
+114             .Char = .OrigChar
             
-            If .Char.Body = 0 Then
-                Call DarCuerpoDesnudo(Userindex)
-            End If
+116             If .Char.Body = 0 Then
+118                 Call DarCuerpoDesnudo(Userindex)
+                End If
             
-            If .Char.Head = 0 Then
-                .Char.Head = 1
+120             If .Char.Head = 0 Then
+122                 .Char.Head = 1
+                End If
+            Else
+124             .Char.Body = iCuerpoMuerto
+126             .Char.Head = iCabezaMuerto
+128             .Char.WeaponAnim = NingunArma
+130             .Char.ShieldAnim = NingunEscudo
+132             .Char.CascoAnim = NingunCasco
+134             .Char.Heading = eHeading.SOUTH
             End If
-        Else
-            .Char.Body = iCuerpoMuerto
-            .Char.Head = iCabezaMuerto
-            .Char.WeaponAnim = NingunArma
-            .Char.ShieldAnim = NingunEscudo
-            .Char.CascoAnim = NingunCasco
-            .Char.Heading = eHeading.SOUTH
-        End If
         
-        'Obtiene el indice-objeto del arma
-        If .Invent.WeaponEqpSlot > 0 Then
-            .Invent.WeaponEqpObjIndex = .Invent.Object(.Invent.WeaponEqpSlot).ObjIndex
+            'Obtiene el indice-objeto del arma
+136         If .Invent.WeaponEqpSlot > 0 Then
+138             .Invent.WeaponEqpObjIndex = .Invent.Object(.Invent.WeaponEqpSlot).ObjIndex
             
-            If .flags.Muerto = 0 Then
-                .Char.Arma_Aura = ObjData(.Invent.WeaponEqpObjIndex).CreaGRH
-            End If
-        End If
-
-        'Obtiene el indice-objeto del armadura
-        If .Invent.ArmourEqpSlot > 0 Then
-            .Invent.ArmourEqpObjIndex = .Invent.Object(.Invent.ArmourEqpSlot).ObjIndex
-            
-            If .flags.Muerto = 0 Then
-                .Char.Body_Aura = ObjData(.Invent.ArmourEqpObjIndex).CreaGRH
+140             If .flags.Muerto = 0 Then
+142                 .Char.Arma_Aura = ObjData(.Invent.WeaponEqpObjIndex).CreaGRH
+                End If
             End If
 
-            .flags.Desnudo = 0
-        Else
-            .flags.Desnudo = 1
-        End If
-
-        'Obtiene el indice-objeto del escudo
-        If .Invent.EscudoEqpSlot > 0 Then
-            .Invent.EscudoEqpObjIndex = .Invent.Object(.Invent.EscudoEqpSlot).ObjIndex
+            'Obtiene el indice-objeto del armadura
+144         If .Invent.ArmourEqpSlot > 0 Then
+146             .Invent.ArmourEqpObjIndex = .Invent.Object(.Invent.ArmourEqpSlot).ObjIndex
             
-            If .flags.Muerto = 0 Then
-                .Char.Escudo_Aura = ObjData(.Invent.EscudoEqpObjIndex).CreaGRH
+148             If .flags.Muerto = 0 Then
+150                 .Char.Body_Aura = ObjData(.Invent.ArmourEqpObjIndex).CreaGRH
+                End If
+
+152             .flags.Desnudo = 0
+            Else
+154             .flags.Desnudo = 1
             End If
-        End If
+
+            'Obtiene el indice-objeto del escudo
+156         If .Invent.EscudoEqpSlot > 0 Then
+158             .Invent.EscudoEqpObjIndex = .Invent.Object(.Invent.EscudoEqpSlot).ObjIndex
+            
+160             If .flags.Muerto = 0 Then
+162                 .Char.Escudo_Aura = ObjData(.Invent.EscudoEqpObjIndex).CreaGRH
+                End If
+            End If
         
-        'Obtiene el indice-objeto del casco
-        If .Invent.CascoEqpSlot > 0 Then
-            .Invent.CascoEqpObjIndex = .Invent.Object(.Invent.CascoEqpSlot).ObjIndex
+            'Obtiene el indice-objeto del casco
+164         If .Invent.CascoEqpSlot > 0 Then
+166             .Invent.CascoEqpObjIndex = .Invent.Object(.Invent.CascoEqpSlot).ObjIndex
             
-            If .flags.Muerto = 0 Then
-                .Char.Head_Aura = ObjData(.Invent.CascoEqpObjIndex).CreaGRH
+168             If .flags.Muerto = 0 Then
+170                 .Char.Head_Aura = ObjData(.Invent.CascoEqpObjIndex).CreaGRH
+                End If
             End If
-        End If
 
-        'Obtiene el indice-objeto barco
-        If .Invent.BarcoSlot > 0 Then
-            .Invent.BarcoObjIndex = .Invent.Object(.Invent.BarcoSlot).ObjIndex
-        End If
+            'Obtiene el indice-objeto barco
+172         If .Invent.BarcoSlot > 0 Then
+174             .Invent.BarcoObjIndex = .Invent.Object(.Invent.BarcoSlot).ObjIndex
+            End If
 
-        'Obtiene el indice-objeto municion
-        If .Invent.MunicionEqpSlot > 0 Then
-            .Invent.MunicionEqpObjIndex = .Invent.Object(.Invent.MunicionEqpSlot).ObjIndex
-        End If
+            'Obtiene el indice-objeto municion
+176         If .Invent.MunicionEqpSlot > 0 Then
+178             .Invent.MunicionEqpObjIndex = .Invent.Object(.Invent.MunicionEqpSlot).ObjIndex
+            End If
 
-        'Obtiene el indice-objeto anilo
-        If .Invent.AnilloEqpSlot > 0 Then
-            .Invent.AnilloEqpObjIndex = .Invent.Object(.Invent.AnilloEqpSlot).ObjIndex
+            'Obtiene el indice-objeto anilo
+180         If .Invent.AnilloEqpSlot > 0 Then
+182             .Invent.AnilloEqpObjIndex = .Invent.Object(.Invent.AnilloEqpSlot).ObjIndex
             
-            If .flags.Muerto = 0 Then
-                .Char.Anillo_Aura = ObjData(.Invent.AnilloEqpObjIndex).CreaGRH
+184             If .flags.Muerto = 0 Then
+186                 .Char.Anillo_Aura = ObjData(.Invent.AnilloEqpObjIndex).CreaGRH
+                End If
             End If
-        End If
 
-        If .Invent.MonturaSlot > 0 Then
-            .Invent.MonturaObjIndex = .Invent.Object(.Invent.MonturaSlot).ObjIndex
-        End If
+188         If .Invent.MonturaSlot > 0 Then
+190             .Invent.MonturaObjIndex = .Invent.Object(.Invent.MonturaSlot).ObjIndex
+            End If
         
-        If .Invent.HerramientaEqpSlot > 0 Then
-            .Invent.HerramientaEqpObjIndex = .Invent.Object(.Invent.HerramientaEqpSlot).ObjIndex
-        End If
+192         If .Invent.HerramientaEqpSlot > 0 Then
+194             .Invent.HerramientaEqpObjIndex = .Invent.Object(.Invent.HerramientaEqpSlot).ObjIndex
+            End If
         
-        If .Invent.NudilloSlot > 0 Then
-            .Invent.NudilloObjIndex = .Invent.Object(.Invent.NudilloSlot).ObjIndex
+196         If .Invent.NudilloSlot > 0 Then
+198             .Invent.NudilloObjIndex = .Invent.Object(.Invent.NudilloSlot).ObjIndex
             
-            If .flags.Muerto = 0 Then
-                .Char.Arma_Aura = ObjData(.Invent.NudilloObjIndex).CreaGRH
+200             If .flags.Muerto = 0 Then
+202                 .Char.Arma_Aura = ObjData(.Invent.NudilloObjIndex).CreaGRH
+                End If
             End If
-        End If
         
-        If .Invent.MagicoSlot > 0 Then
-            .Invent.MagicoObjIndex = .Invent.Object(.Invent.MagicoSlot).ObjIndex
+204         If .Invent.MagicoSlot > 0 Then
+206             .Invent.MagicoObjIndex = .Invent.Object(.Invent.MagicoSlot).ObjIndex
 
-            If .flags.Muerto = 0 Then
-                .Char.Otra_Aura = ObjData(.Invent.MagicoObjIndex).CreaGRH
+208             If .flags.Muerto = 0 Then
+210                 .Char.Otra_Aura = ObjData(.Invent.MagicoObjIndex).CreaGRH
+                End If
             End If
-        End If
 
-    End With
+        End With
 
-    Exit Sub
+        Exit Sub
 
 ErrorHandler:
-    Call LogError("Error en LoadUser: " & UserList(Userindex).name & " - " & Err.Number & " - " & Err.description)
+212     Call LogError("Error en LoadUser: " & UserList(Userindex).name & " - " & Err.Number & " - " & Err.description)
     
 End Sub
 
@@ -2909,14 +2909,14 @@ Sub SaveUser(ByVal Userindex As Integer, Optional ByVal Logout As Boolean = Fals
 104         Call SaveUserBinary(Userindex, Logout)
         End If
 
-        UserList(Userindex).Counters.LastSave = GetTickCount
+106     UserList(Userindex).Counters.LastSave = GetTickCount
 
         
         Exit Sub
 
 SaveUser_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.SaveUser", Erl)
-        Resume Next
+108     Call RegistrarError(Err.Number, Err.description, "ES.SaveUser", Erl)
+110     Resume Next
         
 End Sub
 
@@ -2944,350 +2944,350 @@ Sub LoadUserBinary(ByVal Userindex As Integer)
         Exit Sub
 
 LoadUserBinary_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.LoadUserBinary", Erl)
-        Resume Next
+110     Call RegistrarError(Err.Number, Err.description, "ES.LoadUserBinary", Erl)
+112     Resume Next
         
 End Sub
 
 Sub SaveUserBinary(ByVal Userindex As Integer, Optional ByVal Logout As Boolean)
-    '*************************************************
-    'Author: Unknown
-    'Last modified: 23/01/2007
-    'Saves the Users records
-    '23/01/2007 Pablo (ToxicWaste) - Agrego NivelIngreso, FechaIngreso, MatadosIngreso y NextRecompensa.
-    '*************************************************
+        '*************************************************
+        'Author: Unknown
+        'Last modified: 23/01/2007
+        'Saves the Users records
+        '23/01/2007 Pablo (ToxicWaste) - Agrego NivelIngreso, FechaIngreso, MatadosIngreso y NextRecompensa.
+        '*************************************************
     
-    On Error GoTo Errhandler
+        On Error GoTo ErrHandler
     
-    Dim UserFile    As String
+        Dim UserFile    As String
 
-    Dim OldUserHead As Long
+        Dim OldUserHead As Long
     
-    UserFile = CharPath & UCase$(UserList(Userindex).name) & ".chr"
+100     UserFile = CharPath & UCase$(UserList(Userindex).name) & ".chr"
     
-    'ESTO TIENE QUE EVITAR ESE BUGAZO QUE NO SE POR QUE GRABA USUARIOS NULOS
-    'clase=0 es el error, porq el enum empieza de 1!!
-    If UserList(Userindex).clase = 0 Or UserList(Userindex).Stats.ELV = 0 Then
-        Call LogCriticEvent("Estoy intentantdo guardar un usuario nulo de nombre: " & UserList(Userindex).name)
-        Exit Sub
+        'ESTO TIENE QUE EVITAR ESE BUGAZO QUE NO SE POR QUE GRABA USUARIOS NULOS
+        'clase=0 es el error, porq el enum empieza de 1!!
+102     If UserList(Userindex).clase = 0 Or UserList(Userindex).Stats.ELV = 0 Then
+104         Call LogCriticEvent("Estoy intentantdo guardar un usuario nulo de nombre: " & UserList(Userindex).name)
+            Exit Sub
 
-    End If
+        End If
     
-    Debug.Print UserFile
+106     Debug.Print UserFile
     
-    If FileExist(UserFile, vbNormal) Then
-        If UserList(Userindex).flags.Muerto = 1 Then
-            OldUserHead = UserList(Userindex).Char.Head
-            UserList(Userindex).Char.Head = GetVar(UserFile, "INIT", "Head")
+108     If FileExist(UserFile, vbNormal) Then
+110         If UserList(Userindex).flags.Muerto = 1 Then
+112             OldUserHead = UserList(Userindex).Char.Head
+114             UserList(Userindex).Char.Head = GetVar(UserFile, "INIT", "Head")
+
+            End If
+
+            '       Kill UserFile
+        End If
+    
+        Dim LoopC As Integer
+    
+116     If FileExist(UserFile, vbNormal) Then Kill UserFile
+
+        Dim File As String
+
+118     File = UserFile
+
+        Dim n
+
+        Dim Datos$
+
+120     n = FreeFile
+122     Open File For Binary Access Write As n
+        
+        'INIT
+124     Put n, , "[INIT]" & vbCrLf & "Cuenta=" & UserList(Userindex).Cuenta & vbCrLf
+126     Put n, , "Genero=" & UserList(Userindex).genero & vbCrLf
+128     Put n, , "Raza=" & UserList(Userindex).raza & vbCrLf
+130     Put n, , "Hogar=" & UserList(Userindex).Hogar & vbCrLf
+132     Put n, , "Clase=" & UserList(Userindex).clase & vbCrLf
+134     Put n, , "Desc=" & UserList(Userindex).Desc & vbCrLf
+136     Put n, , "Heading=" & CStr(UserList(Userindex).Char.Heading) & vbCrLf
+
+138     If UserList(Userindex).Char.Head = 0 Then
+140         Put n, , "Head=" & CStr(UserList(Userindex).OrigChar.Head) & vbCrLf
+        Else
+142         Put n, , "Head=" & CStr(UserList(Userindex).Char.Head) & vbCrLf
 
         End If
 
-        '       Kill UserFile
-    End If
-    
-    Dim LoopC As Integer
-    
-    If FileExist(UserFile, vbNormal) Then Kill UserFile
+144     Put n, , "Arma=" & CStr(UserList(Userindex).Char.WeaponAnim) & vbCrLf
+146     Put n, , "Escudo=" & CStr(UserList(Userindex).Char.ShieldAnim) & vbCrLf
+148     Put n, , "Casco=" & CStr(UserList(Userindex).Char.CascoAnim) & vbCrLf
+150     Put n, , "Position=" & UserList(Userindex).Pos.Map & "-" & UserList(Userindex).Pos.X & "-" & UserList(Userindex).Pos.Y & vbCrLf
+        'If UserList(UserIndex).flags.Muerto = 0 Then
+152     Put n, , "Body=" & CStr(UserList(Userindex).Char.Body) & vbCrLf
+        'End If
+        #If ConUpTime Then
 
-    Dim File As String
+            Dim TempDate As Date
 
-    File = UserFile
-
-    Dim n
-
-    Dim Datos$
-
-    n = FreeFile
-    Open File For Binary Access Write As n
+154         TempDate = Now - UserList(Userindex).LogOnTime
+156         UserList(Userindex).LogOnTime = Now
+158         UserList(Userindex).UpTime = UserList(Userindex).UpTime + (Abs(Day(TempDate) - 30) * 24 * 3600) + Hour(TempDate) * 3600 + Minute(TempDate) * 60 + Second(TempDate)
+160         UserList(Userindex).UpTime = UserList(Userindex).UpTime
+162         Put n, , "UpTime=" & UserList(Userindex).UpTime & vbCrLf
+        #End If
         
-    'INIT
-    Put n, , "[INIT]" & vbCrLf & "Cuenta=" & UserList(Userindex).Cuenta & vbCrLf
-    Put n, , "Genero=" & UserList(Userindex).genero & vbCrLf
-    Put n, , "Raza=" & UserList(Userindex).raza & vbCrLf
-    Put n, , "Hogar=" & UserList(Userindex).Hogar & vbCrLf
-    Put n, , "Clase=" & UserList(Userindex).clase & vbCrLf
-    Put n, , "Desc=" & UserList(Userindex).Desc & vbCrLf
-    Put n, , "Heading=" & CStr(UserList(Userindex).Char.Heading) & vbCrLf
-
-    If UserList(Userindex).Char.Head = 0 Then
-        Put n, , "Head=" & CStr(UserList(Userindex).OrigChar.Head) & vbCrLf
-    Else
-        Put n, , "Head=" & CStr(UserList(Userindex).Char.Head) & vbCrLf
-
-    End If
-
-    Put n, , "Arma=" & CStr(UserList(Userindex).Char.WeaponAnim) & vbCrLf
-    Put n, , "Escudo=" & CStr(UserList(Userindex).Char.ShieldAnim) & vbCrLf
-    Put n, , "Casco=" & CStr(UserList(Userindex).Char.CascoAnim) & vbCrLf
-    Put n, , "Position=" & UserList(Userindex).Pos.Map & "-" & UserList(Userindex).Pos.X & "-" & UserList(Userindex).Pos.Y & vbCrLf
-    'If UserList(UserIndex).flags.Muerto = 0 Then
-    Put n, , "Body=" & CStr(UserList(Userindex).Char.Body) & vbCrLf
-    'End If
-    #If ConUpTime Then
-
-        Dim TempDate As Date
-
-        TempDate = Now - UserList(Userindex).LogOnTime
-        UserList(Userindex).LogOnTime = Now
-        UserList(Userindex).UpTime = UserList(Userindex).UpTime + (Abs(Day(TempDate) - 30) * 24 * 3600) + Hour(TempDate) * 3600 + Minute(TempDate) * 60 + Second(TempDate)
-        UserList(Userindex).UpTime = UserList(Userindex).UpTime
-        Put n, , "UpTime=" & UserList(Userindex).UpTime & vbCrLf
-    #End If
+        'Call WriteVar(CharPath & UserList(UserIndex).Name & ".chr", "INIT", "Logged", "0")
         
-    'Call WriteVar(CharPath & UserList(UserIndex).Name & ".chr", "INIT", "Logged", "0")
+164     If Logout Then
+166         Put n, , "Logged=0" & vbCrLf
+        Else
+168         Put n, , "Logged=1" & vbCrLf
+
+        End If
+
+170     Put n, , "MENSAJEINFORMACION=" & UserList(Userindex).MENSAJEINFORMACION & vbCrLf
+
+172     Put n, , vbCrLf
         
-    If Logout Then
-        Put n, , "Logged=0" & vbCrLf
-    Else
-        Put n, , "Logged=1" & vbCrLf
-
-    End If
-
-    Put n, , "MENSAJEINFORMACION=" & UserList(Userindex).MENSAJEINFORMACION & vbCrLf
-
-    Put n, , vbCrLf
+        'baneo
+174     Put n, , "[BAN]" & vbCrLf & "Baneado=" & CStr(UserList(Userindex).flags.Ban) & vbCrLf
+176     Put n, , "BanMotivo=" & CStr(UserList(Userindex).flags.BanMotivo) & vbCrLf
         
-    'baneo
-    Put n, , "[BAN]" & vbCrLf & "Baneado=" & CStr(UserList(Userindex).flags.Ban) & vbCrLf
-    Put n, , "BanMotivo=" & CStr(UserList(Userindex).flags.BanMotivo) & vbCrLf
+178     Put n, , vbCrLf
         
-    Put n, , vbCrLf
+        'STATS
+180     Put n, , "[STATS]" & vbCrLf & "GLD=" & CStr(UserList(Userindex).Stats.GLD) & vbCrLf
+182     Put n, , "BANCO=" & CStr(UserList(Userindex).Stats.Banco) & vbCrLf
+184     Put n, , "MaxHP=" & CStr(UserList(Userindex).Stats.MaxHp) & vbCrLf
+186     Put n, , "MinHP=" & CStr(UserList(Userindex).Stats.MinHp) & vbCrLf
+188     Put n, , "MaxSTA=" & CStr(UserList(Userindex).Stats.MaxSta) & vbCrLf
+190     Put n, , "MinSTA=" & CStr(UserList(Userindex).Stats.MinSta) & vbCrLf
+192     Put n, , "MaxMAN=" & CStr(UserList(Userindex).Stats.MaxMAN) & vbCrLf
+194     Put n, , "MinMAN=" & CStr(UserList(Userindex).Stats.MinMAN) & vbCrLf
+196     Put n, , "MaxHIT=" & CStr(UserList(Userindex).Stats.MaxHit) & vbCrLf
+198     Put n, , "MinHIT=" & CStr(UserList(Userindex).Stats.MinHIT) & vbCrLf
+200     Put n, , "MaxAGU=" & CStr(UserList(Userindex).Stats.MaxAGU) & vbCrLf
+202     Put n, , "MinAGU=" & CStr(UserList(Userindex).Stats.MinAGU) & vbCrLf
+204     Put n, , "MaxHAM=" & CStr(UserList(Userindex).Stats.MaxHam) & vbCrLf
+206     Put n, , "MinHAM=" & CStr(UserList(Userindex).Stats.MinHam) & vbCrLf
+208     Put n, , "SkillPtsLibres=" & CStr(UserList(Userindex).Stats.SkillPts) & vbCrLf
+210     Put n, , "EXP=" & CStr(UserList(Userindex).Stats.Exp) & vbCrLf
+212     Put n, , "ELV=" & CStr(UserList(Userindex).Stats.ELV) & vbCrLf
+214     Put n, , "ELU=" & CStr(UserList(Userindex).Stats.ELU) & vbCrLf
+216     Put n, , "InventLevel=" & CByte(UserList(Userindex).Stats.InventLevel) & vbCrLf
         
-    'STATS
-    Put n, , "[STATS]" & vbCrLf & "GLD=" & CStr(UserList(Userindex).Stats.GLD) & vbCrLf
-    Put n, , "BANCO=" & CStr(UserList(Userindex).Stats.Banco) & vbCrLf
-    Put n, , "MaxHP=" & CStr(UserList(Userindex).Stats.MaxHp) & vbCrLf
-    Put n, , "MinHP=" & CStr(UserList(Userindex).Stats.MinHp) & vbCrLf
-    Put n, , "MaxSTA=" & CStr(UserList(Userindex).Stats.MaxSta) & vbCrLf
-    Put n, , "MinSTA=" & CStr(UserList(Userindex).Stats.MinSta) & vbCrLf
-    Put n, , "MaxMAN=" & CStr(UserList(Userindex).Stats.MaxMAN) & vbCrLf
-    Put n, , "MinMAN=" & CStr(UserList(Userindex).Stats.MinMAN) & vbCrLf
-    Put n, , "MaxHIT=" & CStr(UserList(Userindex).Stats.MaxHit) & vbCrLf
-    Put n, , "MinHIT=" & CStr(UserList(Userindex).Stats.MinHIT) & vbCrLf
-    Put n, , "MaxAGU=" & CStr(UserList(Userindex).Stats.MaxAGU) & vbCrLf
-    Put n, , "MinAGU=" & CStr(UserList(Userindex).Stats.MinAGU) & vbCrLf
-    Put n, , "MaxHAM=" & CStr(UserList(Userindex).Stats.MaxHam) & vbCrLf
-    Put n, , "MinHAM=" & CStr(UserList(Userindex).Stats.MinHam) & vbCrLf
-    Put n, , "SkillPtsLibres=" & CStr(UserList(Userindex).Stats.SkillPts) & vbCrLf
-    Put n, , "EXP=" & CStr(UserList(Userindex).Stats.Exp) & vbCrLf
-    Put n, , "ELV=" & CStr(UserList(Userindex).Stats.ELV) & vbCrLf
-    Put n, , "ELU=" & CStr(UserList(Userindex).Stats.ELU) & vbCrLf
-    Put n, , "InventLevel=" & CByte(UserList(Userindex).Stats.InventLevel) & vbCrLf
+218     Put n, , vbCrLf
         
-    Put n, , vbCrLf
+        'FLAGS
+220     Put n, , "[FLAGS]" & vbCrLf & "CASADO=" & CStr(UserList(Userindex).flags.Casado) & vbCrLf
+222     Put n, , "PAREJA=" & CStr(UserList(Userindex).flags.Pareja) & vbCrLf
+224     Put n, , "Muerto=" & CStr(UserList(Userindex).flags.Muerto) & vbCrLf
+226     Put n, , "Escondido=" & CStr(UserList(Userindex).flags.Escondido) & vbCrLf
+228     Put n, , "Hambre=" & CStr(UserList(Userindex).flags.Hambre) & vbCrLf
+230     Put n, , "Sed=" & CStr(UserList(Userindex).flags.Sed) & vbCrLf
+232     Put n, , "Desnudo=" & CStr(UserList(Userindex).flags.Desnudo) & vbCrLf
+234     Put n, , "Navegando=" & CStr(UserList(Userindex).flags.Navegando) & vbCrLf
+236     Put n, , "Envenenado=" & CStr(UserList(Userindex).flags.Envenenado) & vbCrLf
+238     Put n, , "Paralizado=" & CStr(UserList(Userindex).flags.Paralizado) & vbCrLf
+240     Put n, , "Inmovilizado=" & CStr(UserList(Userindex).flags.Inmovilizado) & vbCrLf
+242     Put n, , "Incinerado=" & CStr(UserList(Userindex).flags.Incinerado) & vbCrLf
+244     Put n, , "VecesQueMoriste=" & CStr(UserList(Userindex).flags.VecesQueMoriste) & vbCrLf
+246     Put n, , "ScrollExp=" & CStr(UserList(Userindex).flags.ScrollExp) & vbCrLf
+248     Put n, , "ScrollOro=" & CStr(UserList(Userindex).flags.ScrollOro) & vbCrLf
+250     Put n, , "MinutosRestantes=" & CStr(UserList(Userindex).flags.MinutosRestantes) & vbCrLf
+252     Put n, , "SegundosPasados=" & CStr(UserList(Userindex).flags.SegundosPasados) & vbCrLf
+254     Put n, , "Silenciado=" & CStr(UserList(Userindex).flags.Silenciado) & vbCrLf
+256     Put n, , "Montado=" & CStr(UserList(Userindex).flags.Montado) & vbCrLf
         
-    'FLAGS
-    Put n, , "[FLAGS]" & vbCrLf & "CASADO=" & CStr(UserList(Userindex).flags.Casado) & vbCrLf
-    Put n, , "PAREJA=" & CStr(UserList(Userindex).flags.Pareja) & vbCrLf
-    Put n, , "Muerto=" & CStr(UserList(Userindex).flags.Muerto) & vbCrLf
-    Put n, , "Escondido=" & CStr(UserList(Userindex).flags.Escondido) & vbCrLf
-    Put n, , "Hambre=" & CStr(UserList(Userindex).flags.Hambre) & vbCrLf
-    Put n, , "Sed=" & CStr(UserList(Userindex).flags.Sed) & vbCrLf
-    Put n, , "Desnudo=" & CStr(UserList(Userindex).flags.Desnudo) & vbCrLf
-    Put n, , "Navegando=" & CStr(UserList(Userindex).flags.Navegando) & vbCrLf
-    Put n, , "Envenenado=" & CStr(UserList(Userindex).flags.Envenenado) & vbCrLf
-    Put n, , "Paralizado=" & CStr(UserList(Userindex).flags.Paralizado) & vbCrLf
-    Put n, , "Inmovilizado=" & CStr(UserList(Userindex).flags.Inmovilizado) & vbCrLf
-    Put n, , "Incinerado=" & CStr(UserList(Userindex).flags.Incinerado) & vbCrLf
-    Put n, , "VecesQueMoriste=" & CStr(UserList(Userindex).flags.VecesQueMoriste) & vbCrLf
-    Put n, , "ScrollExp=" & CStr(UserList(Userindex).flags.ScrollExp) & vbCrLf
-    Put n, , "ScrollOro=" & CStr(UserList(Userindex).flags.ScrollOro) & vbCrLf
-    Put n, , "MinutosRestantes=" & CStr(UserList(Userindex).flags.MinutosRestantes) & vbCrLf
-    Put n, , "SegundosPasados=" & CStr(UserList(Userindex).flags.SegundosPasados) & vbCrLf
-    Put n, , "Silenciado=" & CStr(UserList(Userindex).flags.Silenciado) & vbCrLf
-    Put n, , "Montado=" & CStr(UserList(Userindex).flags.Montado) & vbCrLf
+258     Put n, , vbCrLf
         
-    Put n, , vbCrLf
+        'GRABADO DE CLAN
+260     Put n, , "[GUILD]" & vbCrLf & "GUILDINDEX=" & CInt(UserList(Userindex).GuildIndex) & vbCrLf
         
-    'GRABADO DE CLAN
-    Put n, , "[GUILD]" & vbCrLf & "GUILDINDEX=" & CInt(UserList(Userindex).GuildIndex) & vbCrLf
+262     Put n, , vbCrLf
         
-    Put n, , vbCrLf
+264     Put n, , "[CONSEJO]" & vbCrLf
         
-    Put n, , "[CONSEJO]" & vbCrLf
+        Dim PERTENECEb As Byte
+
+266     PERTENECEb = IIf(UserList(Userindex).flags.Privilegios And PlayerType.RoyalCouncil, "1", "0")
         
-    Dim PERTENECEb As Byte
+        Dim PERTENECECAOSb As Byte
 
-    PERTENECEb = IIf(UserList(Userindex).flags.Privilegios And PlayerType.RoyalCouncil, "1", "0")
+268     PERTENECECAOSb = IIf(UserList(Userindex).flags.Privilegios And PlayerType.ChaosCouncil, "1", "0")
+
+270     Put n, , "PERTENECE=" & PERTENECEb & vbCrLf
+272     Put n, , "PERTENECECAOS=" & PERTENECECAOSb & vbCrLf
         
-    Dim PERTENECECAOSb As Byte
+274     Put n, , vbCrLf
+276     Put n, , "[FACCIONES]" & vbCrLf & "EjercitoReal=" & CStr(UserList(Userindex).Faccion.ArmadaReal) & vbCrLf
+278     Put n, , "Status=" & CStr(UserList(Userindex).Faccion.Status) & vbCrLf
+280     Put n, , "EjercitoCaos=" & CStr(UserList(Userindex).Faccion.FuerzasCaos) & vbCrLf
+282     Put n, , "CiudMatados=" & CStr(UserList(Userindex).Faccion.CiudadanosMatados) & vbCrLf
+284     Put n, , "CrimMatados=" & CStr(UserList(Userindex).Faccion.CriminalesMatados) & vbCrLf
+286     Put n, , "rArCaos=" & CStr(UserList(Userindex).Faccion.RecibioArmaduraCaos) & vbCrLf
+288     Put n, , "rArReal=" & CStr(UserList(Userindex).Faccion.RecibioArmaduraReal) & vbCrLf
+290     Put n, , "rExCaos=" & CStr(UserList(Userindex).Faccion.RecibioExpInicialCaos) & vbCrLf
+292     Put n, , "rExReal=" & CStr(UserList(Userindex).Faccion.RecibioExpInicialReal) & vbCrLf
+294     Put n, , "recCaos=" & CStr(UserList(Userindex).Faccion.RecompensasCaos) & vbCrLf
+296     Put n, , "recReal=" & CStr(UserList(Userindex).Faccion.RecompensasReal) & vbCrLf
+298     Put n, , "Reenlistadas=" & CStr(UserList(Userindex).Faccion.Reenlistadas) & vbCrLf
+300     Put n, , "NivelIngreso=" & CStr(UserList(Userindex).Faccion.NivelIngreso) & vbCrLf
+302     Put n, , "FechaIngreso=" & CStr(UserList(Userindex).Faccion.FechaIngreso) & vbCrLf
+304     Put n, , "MatadosIngreso=" & CStr(UserList(Userindex).Faccion.MatadosIngreso) & vbCrLf
+306     Put n, , "NextRecompensa=" & CStr(UserList(Userindex).Faccion.NextRecompensa) & vbCrLf
 
-    PERTENECECAOSb = IIf(UserList(Userindex).flags.Privilegios And PlayerType.ChaosCouncil, "1", "0")
-
-    Put n, , "PERTENECE=" & PERTENECEb & vbCrLf
-    Put n, , "PERTENECECAOS=" & PERTENECECAOSb & vbCrLf
+308     Put n, , vbCrLf
         
-    Put n, , vbCrLf
-    Put n, , "[FACCIONES]" & vbCrLf & "EjercitoReal=" & CStr(UserList(Userindex).Faccion.ArmadaReal) & vbCrLf
-    Put n, , "Status=" & CStr(UserList(Userindex).Faccion.Status) & vbCrLf
-    Put n, , "EjercitoCaos=" & CStr(UserList(Userindex).Faccion.FuerzasCaos) & vbCrLf
-    Put n, , "CiudMatados=" & CStr(UserList(Userindex).Faccion.CiudadanosMatados) & vbCrLf
-    Put n, , "CrimMatados=" & CStr(UserList(Userindex).Faccion.CriminalesMatados) & vbCrLf
-    Put n, , "rArCaos=" & CStr(UserList(Userindex).Faccion.RecibioArmaduraCaos) & vbCrLf
-    Put n, , "rArReal=" & CStr(UserList(Userindex).Faccion.RecibioArmaduraReal) & vbCrLf
-    Put n, , "rExCaos=" & CStr(UserList(Userindex).Faccion.RecibioExpInicialCaos) & vbCrLf
-    Put n, , "rExReal=" & CStr(UserList(Userindex).Faccion.RecibioExpInicialReal) & vbCrLf
-    Put n, , "recCaos=" & CStr(UserList(Userindex).Faccion.RecompensasCaos) & vbCrLf
-    Put n, , "recReal=" & CStr(UserList(Userindex).Faccion.RecompensasReal) & vbCrLf
-    Put n, , "Reenlistadas=" & CStr(UserList(Userindex).Faccion.Reenlistadas) & vbCrLf
-    Put n, , "NivelIngreso=" & CStr(UserList(Userindex).Faccion.NivelIngreso) & vbCrLf
-    Put n, , "FechaIngreso=" & CStr(UserList(Userindex).Faccion.FechaIngreso) & vbCrLf
-    Put n, , "MatadosIngreso=" & CStr(UserList(Userindex).Faccion.MatadosIngreso) & vbCrLf
-    Put n, , "NextRecompensa=" & CStr(UserList(Userindex).Faccion.NextRecompensa) & vbCrLf
+        'MAHIA ESTUPIDIZA
+310     Put n, , "[MAGIA]" & vbCrLf & "ENVENENA=" & CByte(UserList(Userindex).flags.Envenena) & vbCrLf
+312     Put n, , "PARALIZA=" & CByte(UserList(Userindex).flags.Paraliza) & vbCrLf
+314     Put n, , "AnilloOcultismo=" & CByte(UserList(Userindex).flags.AnilloOcultismo) & vbCrLf
+316     Put n, , "incinera=" & CByte(UserList(Userindex).flags.incinera) & vbCrLf
+318     Put n, , "Estupidiza=" & CByte(UserList(Userindex).flags.Estupidiza) & vbCrLf
+320     Put n, , "Pendiente=" & CByte(UserList(Userindex).flags.PendienteDelSacrificio) & vbCrLf
+322     Put n, , "CarroMineria=" & CByte(UserList(Userindex).flags.CarroMineria) & vbCrLf
+324     Put n, , "NoPalabrasMagicas=" & CByte(UserList(Userindex).flags.NoPalabrasMagicas) & vbCrLf
+326     Put n, , "NoDetectable=" & CByte(UserList(Userindex).flags.NoDetectable) & vbCrLf
+328     Put n, , "Otra_Aura=" & CStr(UserList(Userindex).Char.Otra_Aura) & vbCrLf
+        'Put n, , "DañoMagico=" & CByte(UserList(UserIndex).flags.DañoMagico) & vbCrLf
+        'Put n, , "ResistenciaMagica=" & CByte(UserList(UserIndex).flags.ResistenciaMagica) & vbCrLf
+330     Put n, , "RegeneracionMana=" & CByte(UserList(Userindex).flags.RegeneracionMana) & vbCrLf
+332     Put n, , "NoMagiaEfeceto=" & CByte(UserList(Userindex).flags.NoMagiaEfeceto) & vbCrLf
+334     Put n, , "RegeneracionHP=" & CByte(UserList(Userindex).flags.RegeneracionHP) & vbCrLf
+336     Put n, , "RegeneracionSta=" & CByte(UserList(Userindex).flags.RegeneracionSta) & vbCrLf
 
-    Put n, , vbCrLf
-        
-    'MAHIA ESTUPIDIZA
-    Put n, , "[MAGIA]" & vbCrLf & "ENVENENA=" & CByte(UserList(Userindex).flags.Envenena) & vbCrLf
-    Put n, , "PARALIZA=" & CByte(UserList(Userindex).flags.Paraliza) & vbCrLf
-    Put n, , "AnilloOcultismo=" & CByte(UserList(Userindex).flags.AnilloOcultismo) & vbCrLf
-    Put n, , "incinera=" & CByte(UserList(Userindex).flags.incinera) & vbCrLf
-    Put n, , "Estupidiza=" & CByte(UserList(Userindex).flags.Estupidiza) & vbCrLf
-    Put n, , "Pendiente=" & CByte(UserList(Userindex).flags.PendienteDelSacrificio) & vbCrLf
-    Put n, , "CarroMineria=" & CByte(UserList(Userindex).flags.CarroMineria) & vbCrLf
-    Put n, , "NoPalabrasMagicas=" & CByte(UserList(Userindex).flags.NoPalabrasMagicas) & vbCrLf
-    Put n, , "NoDetectable=" & CByte(UserList(Userindex).flags.NoDetectable) & vbCrLf
-    Put n, , "Otra_Aura=" & CStr(UserList(Userindex).Char.Otra_Aura) & vbCrLf
-    'Put n, , "DañoMagico=" & CByte(UserList(UserIndex).flags.DañoMagico) & vbCrLf
-    'Put n, , "ResistenciaMagica=" & CByte(UserList(UserIndex).flags.ResistenciaMagica) & vbCrLf
-    Put n, , "RegeneracionMana=" & CByte(UserList(Userindex).flags.RegeneracionMana) & vbCrLf
-    Put n, , "NoMagiaEfeceto=" & CByte(UserList(Userindex).flags.NoMagiaEfeceto) & vbCrLf
-    Put n, , "RegeneracionHP=" & CByte(UserList(Userindex).flags.RegeneracionHP) & vbCrLf
-    Put n, , "RegeneracionSta=" & CByte(UserList(Userindex).flags.RegeneracionSta) & vbCrLf
+338     Put n, , vbCrLf
+        'SKILLS
+340     Put n, , "[SKILLS]" & vbCrLf
 
-    Put n, , vbCrLf
-    'SKILLS
-    Put n, , "[SKILLS]" & vbCrLf
-
-    For LoopC = 1 To UBound(UserList(Userindex).Stats.UserSkills)
-        Put n, , "SK" & LoopC & "=" & CStr(UserList(Userindex).Stats.UserSkills(LoopC)) & vbCrLf
-    Next
-
-    Put n, , vbCrLf
-
-    'INVENTARIO
-    Put n, , "[Inventory]" & vbCrLf & "CantidadItems=" & val(UserList(Userindex).Invent.NroItems) & vbCrLf
-
-    For LoopC = 1 To UserList(Userindex).CurrentInventorySlots
-        Put n, , "Obj" & LoopC & "=" & UserList(Userindex).Invent.Object(LoopC).ObjIndex & "-" & UserList(Userindex).Invent.Object(LoopC).Amount & "-" & UserList(Userindex).Invent.Object(LoopC).Equipped & vbCrLf
-    Next
-    Put n, , "WeaponEqpSlot=" & CStr(UserList(Userindex).Invent.WeaponEqpSlot) & vbCrLf
-    Put n, , "HerramientaEqpSlot=" & CStr(UserList(Userindex).Invent.HerramientaEqpSlot) & vbCrLf
-    Put n, , "ArmourEqpSlot=" & CStr(UserList(Userindex).Invent.ArmourEqpSlot) & vbCrLf
-    Put n, , "CascoEqpSlot=" & CStr(UserList(Userindex).Invent.CascoEqpSlot) & vbCrLf
-    Put n, , "EscudoEqpSlot=" & CStr(UserList(Userindex).Invent.EscudoEqpSlot) & vbCrLf
-    Put n, , "BarcoSlot=" & CStr(UserList(Userindex).Invent.BarcoSlot) & vbCrLf
-    Put n, , "MonturaSlot=" & CStr(UserList(Userindex).Invent.MonturaSlot) & vbCrLf
-    Put n, , "MunicionSlot=" & CStr(UserList(Userindex).Invent.MunicionEqpSlot) & vbCrLf
-    Put n, , "AnilloSlot=" & CStr(UserList(Userindex).Invent.AnilloEqpSlot) & vbCrLf
-    Put n, , "MagicoSlot=" & CStr(UserList(Userindex).Invent.MagicoSlot) & vbCrLf
-    Put n, , "NudilloEqpSlot=" & CStr(UserList(Userindex).Invent.NudilloSlot) & vbCrLf
-        
-    Put n, , vbCrLf
-
-    Put n, , "[ATRIBUTOS]" & vbCrLf
-
-    '¿Fueron modificados los atributos del usuario?
-    If Not UserList(Userindex).flags.TomoPocion Then
-
-        For LoopC = 1 To UBound(UserList(Userindex).Stats.UserAtributos)
-            Put n, , "AT" & LoopC & "=" & CStr(UserList(Userindex).Stats.UserAtributos(LoopC)) & vbCrLf
-        Next
-    Else
-
-        For LoopC = 1 To UBound(UserList(Userindex).Stats.UserAtributos)
-            'UserList(UserIndex).Stats.UserAtributos(LoopC) = UserList(UserIndex).Stats.UserAtributosBackUP(LoopC)
-            Put n, , "AT" & LoopC & "=" & CStr(UserList(Userindex).Stats.UserAtributosBackUP(LoopC)) & vbCrLf
+342     For LoopC = 1 To UBound(UserList(Userindex).Stats.UserSkills)
+344         Put n, , "SK" & LoopC & "=" & CStr(UserList(Userindex).Stats.UserSkills(LoopC)) & vbCrLf
         Next
 
-    End If
+346     Put n, , vbCrLf
 
-    Put n, , vbCrLf
+        'INVENTARIO
+348     Put n, , "[Inventory]" & vbCrLf & "CantidadItems=" & val(UserList(Userindex).Invent.NroItems) & vbCrLf
+
+350     For LoopC = 1 To UserList(Userindex).CurrentInventorySlots
+352         Put n, , "Obj" & LoopC & "=" & UserList(Userindex).Invent.Object(LoopC).ObjIndex & "-" & UserList(Userindex).Invent.Object(LoopC).Amount & "-" & UserList(Userindex).Invent.Object(LoopC).Equipped & vbCrLf
+        Next
+354     Put n, , "WeaponEqpSlot=" & CStr(UserList(Userindex).Invent.WeaponEqpSlot) & vbCrLf
+356     Put n, , "HerramientaEqpSlot=" & CStr(UserList(Userindex).Invent.HerramientaEqpSlot) & vbCrLf
+358     Put n, , "ArmourEqpSlot=" & CStr(UserList(Userindex).Invent.ArmourEqpSlot) & vbCrLf
+360     Put n, , "CascoEqpSlot=" & CStr(UserList(Userindex).Invent.CascoEqpSlot) & vbCrLf
+362     Put n, , "EscudoEqpSlot=" & CStr(UserList(Userindex).Invent.EscudoEqpSlot) & vbCrLf
+364     Put n, , "BarcoSlot=" & CStr(UserList(Userindex).Invent.BarcoSlot) & vbCrLf
+366     Put n, , "MonturaSlot=" & CStr(UserList(Userindex).Invent.MonturaSlot) & vbCrLf
+368     Put n, , "MunicionSlot=" & CStr(UserList(Userindex).Invent.MunicionEqpSlot) & vbCrLf
+370     Put n, , "AnilloSlot=" & CStr(UserList(Userindex).Invent.AnilloEqpSlot) & vbCrLf
+372     Put n, , "MagicoSlot=" & CStr(UserList(Userindex).Invent.MagicoSlot) & vbCrLf
+374     Put n, , "NudilloEqpSlot=" & CStr(UserList(Userindex).Invent.NudilloSlot) & vbCrLf
+        
+376     Put n, , vbCrLf
+
+378     Put n, , "[ATRIBUTOS]" & vbCrLf
+
+        '¿Fueron modificados los atributos del usuario?
+380     If Not UserList(Userindex).flags.TomoPocion Then
+
+382         For LoopC = 1 To UBound(UserList(Userindex).Stats.UserAtributos)
+384             Put n, , "AT" & LoopC & "=" & CStr(UserList(Userindex).Stats.UserAtributos(LoopC)) & vbCrLf
+            Next
+        Else
+
+386         For LoopC = 1 To UBound(UserList(Userindex).Stats.UserAtributos)
+                'UserList(UserIndex).Stats.UserAtributos(LoopC) = UserList(UserIndex).Stats.UserAtributosBackUP(LoopC)
+388             Put n, , "AT" & LoopC & "=" & CStr(UserList(Userindex).Stats.UserAtributosBackUP(LoopC)) & vbCrLf
+            Next
+
+        End If
+
+390     Put n, , vbCrLf
             
-    'COUNTERS
-    Put n, , "[COUNTERS]" & vbCrLf & "Pena=" & CStr(UserList(Userindex).Counters.Pena) & vbCrLf
-    Put n, , "ScrollOro=" & CStr(UserList(Userindex).Counters.ScrollOro) & vbCrLf
-    Put n, , "ScrollExperiencia=" & CStr(UserList(Userindex).Counters.ScrollExperiencia) & vbCrLf
-    Put n, , "Oxigeno=" & CStr(UserList(Userindex).Counters.Oxigeno) & vbCrLf
+        'COUNTERS
+392     Put n, , "[COUNTERS]" & vbCrLf & "Pena=" & CStr(UserList(Userindex).Counters.Pena) & vbCrLf
+394     Put n, , "ScrollOro=" & CStr(UserList(Userindex).Counters.ScrollOro) & vbCrLf
+396     Put n, , "ScrollExperiencia=" & CStr(UserList(Userindex).Counters.ScrollExperiencia) & vbCrLf
+398     Put n, , "Oxigeno=" & CStr(UserList(Userindex).Counters.Oxigeno) & vbCrLf
         
-    Put n, , vbCrLf
+400     Put n, , vbCrLf
 
-    Put n, , "[MUERTES]" & vbCrLf & "UserMuertes=" & CStr(UserList(Userindex).Stats.UsuariosMatados) & vbCrLf
-    Put n, , "NpcsMuertes=" & CStr(UserList(Userindex).Stats.NPCsMuertos) & vbCrLf
+402     Put n, , "[MUERTES]" & vbCrLf & "UserMuertes=" & CStr(UserList(Userindex).Stats.UsuariosMatados) & vbCrLf
+404     Put n, , "NpcsMuertes=" & CStr(UserList(Userindex).Stats.NPCsMuertos) & vbCrLf
         
-    Put n, , vbCrLf
-    'BANCO
-    Put n, , "[BancoInventory]" & vbCrLf & "CantidadItems=" & val(UserList(Userindex).BancoInvent.NroItems) & vbCrLf
+406     Put n, , vbCrLf
+        'BANCO
+408     Put n, , "[BancoInventory]" & vbCrLf & "CantidadItems=" & val(UserList(Userindex).BancoInvent.NroItems) & vbCrLf
 
-    Dim loopd As Integer
+        Dim loopd As Integer
 
-    For loopd = 1 To MAX_BANCOINVENTORY_SLOTS
-        Put n, , "Obj" & loopd & "=" & UserList(Userindex).BancoInvent.Object(loopd).ObjIndex & "-" & UserList(Userindex).BancoInvent.Object(loopd).Amount & vbCrLf
-    Next loopd
+410     For loopd = 1 To MAX_BANCOINVENTORY_SLOTS
+412         Put n, , "Obj" & loopd & "=" & UserList(Userindex).BancoInvent.Object(loopd).ObjIndex & "-" & UserList(Userindex).BancoInvent.Object(loopd).Amount & vbCrLf
+414     Next loopd
         
-    Put n, , vbCrLf
+416     Put n, , vbCrLf
         
-    Put n, , "[LOGROS]" & vbCrLf & "UserLogros=" & CByte(UserList(Userindex).UserLogros) & vbCrLf
-    Put n, , "NPcLogros=" & CByte(UserList(Userindex).NPcLogros) & vbCrLf
-    Put n, , "LevelLogros=" & CByte(UserList(Userindex).LevelLogros) & vbCrLf
+418     Put n, , "[LOGROS]" & vbCrLf & "UserLogros=" & CByte(UserList(Userindex).UserLogros) & vbCrLf
+420     Put n, , "NPcLogros=" & CByte(UserList(Userindex).NPcLogros) & vbCrLf
+422     Put n, , "LevelLogros=" & CByte(UserList(Userindex).LevelLogros) & vbCrLf
         
-    Put n, , vbCrLf
+424     Put n, , vbCrLf
         
-    Put n, , "[BINDKEYS]" & vbCrLf
-    Put n, , "ChatCombate=" & CByte(UserList(Userindex).ChatCombate) & vbCrLf
-    Put n, , "ChatGlobal=" & CByte(UserList(Userindex).ChatGlobal) & vbCrLf
+426     Put n, , "[BINDKEYS]" & vbCrLf
+428     Put n, , "ChatCombate=" & CByte(UserList(Userindex).ChatCombate) & vbCrLf
+430     Put n, , "ChatGlobal=" & CByte(UserList(Userindex).ChatGlobal) & vbCrLf
         
-    Put n, , vbCrLf
+432     Put n, , vbCrLf
 
-    'HECHIZOS
-    Put n, , "[HECHIZOS]" & vbCrLf
+        'HECHIZOS
+434     Put n, , "[HECHIZOS]" & vbCrLf
 
-    Dim cad As String
+        Dim cad As String
 
-    For LoopC = 1 To MAXUSERHECHIZOS
-        cad = UserList(Userindex).Stats.UserHechizos(LoopC)
-        Put n, , "H" & LoopC & "=" & cad & vbCrLf
-    Next
+436     For LoopC = 1 To MAXUSERHECHIZOS
+438         cad = UserList(Userindex).Stats.UserHechizos(LoopC)
+440         Put n, , "H" & LoopC & "=" & cad & vbCrLf
+        Next
         
-    Put n, , vbCrLf
+442     Put n, , vbCrLf
         
-    'BATTLE
-    Put n, , "[Battle]" & vbCrLf & "Puntos=" & CStr(UserList(Userindex).flags.BattlePuntos) & vbCrLf
+        'BATTLE
+444     Put n, , "[Battle]" & vbCrLf & "Puntos=" & CStr(UserList(Userindex).flags.BattlePuntos) & vbCrLf
         
-    Put n, , vbCrLf
+446     Put n, , vbCrLf
         
-    Put n, , "[CORREO]" & vbCrLf & "NoLeidos=" & CByte(UserList(Userindex).Correo.NoLeidos) & vbCrLf
-    Put n, , "CANTCORREO=" & CByte(UserList(Userindex).Correo.CantCorreo) & vbCrLf
+448     Put n, , "[CORREO]" & vbCrLf & "NoLeidos=" & CByte(UserList(Userindex).Correo.NoLeidos) & vbCrLf
+450     Put n, , "CANTCORREO=" & CByte(UserList(Userindex).Correo.CantCorreo) & vbCrLf
         
-    Put n, , vbCrLf
-    'Correo Ladder
+452     Put n, , vbCrLf
+        'Correo Ladder
         
-    For LoopC = 1 To UserList(Userindex).Correo.CantCorreo
+454     For LoopC = 1 To UserList(Userindex).Correo.CantCorreo
         
-        Put n, , "REMITENTE" & LoopC & "=" & UserList(Userindex).Correo.Mensaje(LoopC).Remitente & vbCrLf
-        Put n, , "MENSAJE" & LoopC & "=" & UserList(Userindex).Correo.Mensaje(LoopC).Mensaje & vbCrLf
-        Put n, , "Item" & LoopC & "=" & UserList(Userindex).Correo.Mensaje(LoopC).Item & vbCrLf
-        Put n, , "ItemCount" & LoopC & "=" & UserList(Userindex).Correo.Mensaje(LoopC).ItemCount & vbCrLf
-        Put n, , "DATE" & LoopC & "=" & UserList(Userindex).Correo.Mensaje(LoopC).Fecha & vbCrLf
-        Put n, , "LEIDO" & LoopC & "=" & UserList(Userindex).Correo.Mensaje(LoopC).Leido & vbCrLf
+456         Put n, , "REMITENTE" & LoopC & "=" & UserList(Userindex).Correo.Mensaje(LoopC).Remitente & vbCrLf
+458         Put n, , "MENSAJE" & LoopC & "=" & UserList(Userindex).Correo.Mensaje(LoopC).Mensaje & vbCrLf
+460         Put n, , "Item" & LoopC & "=" & UserList(Userindex).Correo.Mensaje(LoopC).Item & vbCrLf
+462         Put n, , "ItemCount" & LoopC & "=" & UserList(Userindex).Correo.Mensaje(LoopC).ItemCount & vbCrLf
+464         Put n, , "DATE" & LoopC & "=" & UserList(Userindex).Correo.Mensaje(LoopC).Fecha & vbCrLf
+466         Put n, , "LEIDO" & LoopC & "=" & UserList(Userindex).Correo.Mensaje(LoopC).Leido & vbCrLf
             
-    Next LoopC
+468     Next LoopC
         
-    Close #n
+470     Close #n
         
-    Call SaveQuestStats(Userindex, UserFile)
+472     Call SaveQuestStats(Userindex, UserFile)
 
-    'Devuelve el head de muerto
-    If UserList(Userindex).flags.Muerto = 1 Then
-        UserList(Userindex).Char.Head = iCabezaMuerto
+        'Devuelve el head de muerto
+474     If UserList(Userindex).flags.Muerto = 1 Then
+476         UserList(Userindex).Char.Head = iCabezaMuerto
 
-    End If
+        End If
         
-    Exit Sub
+        Exit Sub
 
-Errhandler:
-    Call LogError("Error en SaveUserBinary")
-    Close #n
+ErrHandler:
+478     Call LogError("Error en SaveUserBinary")
+480     Close #n
 
 End Sub
 
@@ -3307,300 +3307,300 @@ Sub SaveNewUser(ByVal Userindex As Integer)
         Exit Sub
 
 SaveNewUser_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.SaveNewUser", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "ES.SaveNewUser", Erl)
+108     Resume Next
         
 End Sub
 
 Sub SaveNewUserCharfile(ByVal Userindex As Integer)
-    '*************************************************
-    'Author: Unknown
-    'Last modified: 23/01/2007
-    'Saves the Users records
-    '23/01/2007 Pablo (ToxicWaste) - Agrego NivelIngreso, FechaIngreso, MatadosIngreso y NextRecompensa.
-    '*************************************************
+        '*************************************************
+        'Author: Unknown
+        'Last modified: 23/01/2007
+        'Saves the Users records
+        '23/01/2007 Pablo (ToxicWaste) - Agrego NivelIngreso, FechaIngreso, MatadosIngreso y NextRecompensa.
+        '*************************************************
     
-    On Error GoTo Errhandler
+        On Error GoTo ErrHandler
     
-    Dim UserFile    As String
+        Dim UserFile    As String
 
-    Dim OldUserHead As Long
+        Dim OldUserHead As Long
     
-    UserFile = CharPath & UCase$(UserList(Userindex).name) & ".chr"
+100     UserFile = CharPath & UCase$(UserList(Userindex).name) & ".chr"
     
-    'ESTO TIENE QUE EVITAR ESE BUGAZO QUE NO SE POR QUE GRABA USUARIOS NULOS
-    'clase=0 es el error, porq el enum empieza de 1!!
-    If UserList(Userindex).clase = 0 Or UserList(Userindex).Stats.ELV = 0 Then
-        Call LogCriticEvent("Estoy intentantdo guardar un usuario nulo de nombre: " & UserList(Userindex).name)
-        Exit Sub
-
-    End If
-    
-    If FileExist(UserFile, vbNormal) Then
-        If UserList(Userindex).flags.Muerto = 1 Then
-            OldUserHead = UserList(Userindex).Char.Head
-            UserList(Userindex).Char.Head = GetVar(UserFile, "INIT", "Head")
+        'ESTO TIENE QUE EVITAR ESE BUGAZO QUE NO SE POR QUE GRABA USUARIOS NULOS
+        'clase=0 es el error, porq el enum empieza de 1!!
+102     If UserList(Userindex).clase = 0 Or UserList(Userindex).Stats.ELV = 0 Then
+104         Call LogCriticEvent("Estoy intentantdo guardar un usuario nulo de nombre: " & UserList(Userindex).name)
+            Exit Sub
 
         End If
+    
+106     If FileExist(UserFile, vbNormal) Then
+108         If UserList(Userindex).flags.Muerto = 1 Then
+110             OldUserHead = UserList(Userindex).Char.Head
+112             UserList(Userindex).Char.Head = GetVar(UserFile, "INIT", "Head")
 
-        '       Kill UserFile
-    End If
-    
-    Dim LoopC As Integer
+            End If
 
-    Dim n
+            '       Kill UserFile
+        End If
+    
+        Dim LoopC As Integer
 
-    Dim Datos$
+        Dim n
 
-    n = FreeFile
-    Open UserFile For Binary Access Write As n
-    
-    'BATTLE
-    Put n, , "[Battle]" & vbCrLf & "Puntos=" & CStr(UserList(Userindex).flags.BattlePuntos) & vbCrLf
-    
-    Put n, , vbCrLf
-    
-    'FLAGS
-    Put n, , "[FLAGS]" & vbCrLf & "CASADO=" & CStr(UserList(Userindex).flags.Casado) & vbCrLf
-    Put n, , "PAREJA=" & vbCrLf
-    Put n, , "Muerto=0" & vbCrLf
-    Put n, , "Escondido=0" & vbCrLf
-    Put n, , "Hambre=0" & vbCrLf
-    Put n, , "Sed=0" & vbCrLf
-    Put n, , "Desnudo=0" & vbCrLf
-    Put n, , "Navegando=0" & vbCrLf
-    Put n, , "Envenenado=0" & vbCrLf
-    Put n, , "Paralizado=0" & vbCrLf
-    Put n, , "Inmovilizado=0" & vbCrLf
-    Put n, , "Incinerado=0" & vbCrLf
-    Put n, , "VecesQueMoriste=0" & vbCrLf
-    Put n, , "ScrollExp=" & CStr(UserList(Userindex).flags.ScrollExp) & vbCrLf
-    Put n, , "ScrollOro=" & CStr(UserList(Userindex).flags.ScrollOro) & vbCrLf
-    Put n, , "MinutosRestantes=0" & vbCrLf
-    Put n, , "SegundosPasados=0" & vbCrLf
-    Put n, , "Silenciado=0" & vbCrLf
-    Put n, , "Montado=0" & vbCrLf
-    
-    Put n, , "InventLevel=0" & vbCrLf
-    
-    Put n, , vbCrLf
-    
-    Put n, , "[CONSEJO]" & vbCrLf
-    Put n, , "PERTENECE=0" & vbCrLf
-    Put n, , "PERTENECECAOS=0" & vbCrLf
-    
-    Put n, , "[FACCIONES]" & vbCrLf & "EjercitoReal=" & CStr(UserList(Userindex).Faccion.ArmadaReal) & vbCrLf
-    Put n, , "Status=" & CStr(UserList(Userindex).Faccion.Status) & vbCrLf
-    Put n, , "EjercitoCaos=" & CStr(UserList(Userindex).Faccion.FuerzasCaos) & vbCrLf
-    Put n, , "CiudMatados=" & CStr(UserList(Userindex).Faccion.CiudadanosMatados) & vbCrLf
-    Put n, , "CrimMatados=" & CStr(UserList(Userindex).Faccion.CriminalesMatados) & vbCrLf
-    Put n, , "rArCaos=" & CStr(UserList(Userindex).Faccion.RecibioArmaduraCaos) & vbCrLf
-    Put n, , "rArReal=" & CStr(UserList(Userindex).Faccion.RecibioArmaduraReal) & vbCrLf
-    Put n, , "rExCaos=" & CStr(UserList(Userindex).Faccion.RecibioExpInicialCaos) & vbCrLf
-    Put n, , "rExReal=" & CStr(UserList(Userindex).Faccion.RecibioExpInicialReal) & vbCrLf
-    Put n, , "recCaos=" & CStr(UserList(Userindex).Faccion.RecompensasCaos) & vbCrLf
-    Put n, , "recReal=" & CStr(UserList(Userindex).Faccion.RecompensasReal) & vbCrLf
-    Put n, , "Reenlistadas=" & CStr(UserList(Userindex).Faccion.Reenlistadas) & vbCrLf
-    Put n, , "NivelIngreso=" & CStr(UserList(Userindex).Faccion.NivelIngreso) & vbCrLf
-    Put n, , "FechaIngreso=" & CStr(UserList(Userindex).Faccion.FechaIngreso) & vbCrLf
-    Put n, , "MatadosIngreso=" & CStr(UserList(Userindex).Faccion.MatadosIngreso) & vbCrLf
-    Put n, , "NextRecompensa=" & CStr(UserList(Userindex).Faccion.NextRecompensa) & vbCrLf
-    
-    Put n, , vbCrLf
-    
-    'STATS
-    Put n, , "[STATS]" & vbCrLf & "GLD=0" & vbCrLf
-    Put n, , "BANCO=0" & vbCrLf
-    Put n, , "MaxHP=" & CStr(UserList(Userindex).Stats.MaxHp) & vbCrLf
-    Put n, , "MinHP=" & CStr(UserList(Userindex).Stats.MinHp) & vbCrLf
-    Put n, , "MaxSTA=" & CStr(UserList(Userindex).Stats.MaxSta) & vbCrLf
-    Put n, , "MinSTA=" & CStr(UserList(Userindex).Stats.MinSta) & vbCrLf
-    Put n, , "MaxMAN=" & CStr(UserList(Userindex).Stats.MaxMAN) & vbCrLf
-    Put n, , "MinMAN=" & CStr(UserList(Userindex).Stats.MinMAN) & vbCrLf
-    Put n, , "MaxHIT=" & CStr(UserList(Userindex).Stats.MaxHit) & vbCrLf
-    Put n, , "MinHIT=" & CStr(UserList(Userindex).Stats.MinHIT) & vbCrLf
-    Put n, , "MaxAGU=" & CStr(UserList(Userindex).Stats.MaxAGU) & vbCrLf
-    Put n, , "MinAGU=" & CStr(UserList(Userindex).Stats.MinAGU) & vbCrLf
-    Put n, , "MaxHAM=" & CStr(UserList(Userindex).Stats.MaxHam) & vbCrLf
-    Put n, , "MinHAM=" & CStr(UserList(Userindex).Stats.MinHam) & vbCrLf
-    Put n, , "SkillPtsLibres=" & CStr(UserList(Userindex).Stats.SkillPts) & vbCrLf
-    Put n, , "EXP=" & CStr(UserList(Userindex).Stats.Exp) & vbCrLf
-    Put n, , "ELV=" & CStr(UserList(Userindex).Stats.ELV) & vbCrLf
-    Put n, , "ELU=" & CStr(UserList(Userindex).Stats.ELU) & vbCrLf
-    
-    Put n, , vbCrLf
-    
-    'MAHIA
-    Put n, , "[MAGIA]" & vbCrLf & "ENVENENA=0" & vbCrLf
-    Put n, , "PARALIZA=0" & vbCrLf
-    Put n, , "INCINERA=0" & vbCrLf
-    Put n, , "Estupidiza=0" & vbCrLf
-    Put n, , "PENDIENTE=0" & vbCrLf
-    Put n, , "CARROMINERIA=0" & vbCrLf
-    Put n, , "NOPALABRASMAGICAS=0" & vbCrLf
-    Put n, , "OTRA_AURA=0" & vbCrLf
-    Put n, , "DAÑOMAGICO=0" & vbCrLf
-    Put n, , "ResistenciaMagica=0" & vbCrLf
-    Put n, , "NoDetectable=0" & vbCrLf
-    Put n, , "AnilloOcultismo=0" & vbCrLf
-    Put n, , "RegeneracionMana=0" & vbCrLf
-    Put n, , "NoMagiaEfeceto=0" & vbCrLf
-    Put n, , "RegeneracionHP=0" & vbCrLf
-    Put n, , "RegeneracionSta=0" & vbCrLf
-    
-    Put n, , vbCrLf
-    
-    'SKILLS
-    Put n, , "[SKILLS]" & vbCrLf
+        Dim Datos$
 
-    For LoopC = 1 To UBound(UserList(Userindex).Stats.UserSkills)
-        Put n, , "SK" & LoopC & "=0" & vbCrLf
-    Next
+114     n = FreeFile
+116     Open UserFile For Binary Access Write As n
     
-    Put n, , vbCrLf
+        'BATTLE
+118     Put n, , "[Battle]" & vbCrLf & "Puntos=" & CStr(UserList(Userindex).flags.BattlePuntos) & vbCrLf
     
-    'INVENTARIO
-    Put n, , "[Inventory]" & vbCrLf & "CantidadItems=" & val(UserList(Userindex).Invent.NroItems) & vbCrLf
+120     Put n, , vbCrLf
+    
+        'FLAGS
+122     Put n, , "[FLAGS]" & vbCrLf & "CASADO=" & CStr(UserList(Userindex).flags.Casado) & vbCrLf
+124     Put n, , "PAREJA=" & vbCrLf
+126     Put n, , "Muerto=0" & vbCrLf
+128     Put n, , "Escondido=0" & vbCrLf
+130     Put n, , "Hambre=0" & vbCrLf
+132     Put n, , "Sed=0" & vbCrLf
+134     Put n, , "Desnudo=0" & vbCrLf
+136     Put n, , "Navegando=0" & vbCrLf
+138     Put n, , "Envenenado=0" & vbCrLf
+140     Put n, , "Paralizado=0" & vbCrLf
+142     Put n, , "Inmovilizado=0" & vbCrLf
+144     Put n, , "Incinerado=0" & vbCrLf
+146     Put n, , "VecesQueMoriste=0" & vbCrLf
+148     Put n, , "ScrollExp=" & CStr(UserList(Userindex).flags.ScrollExp) & vbCrLf
+150     Put n, , "ScrollOro=" & CStr(UserList(Userindex).flags.ScrollOro) & vbCrLf
+152     Put n, , "MinutosRestantes=0" & vbCrLf
+154     Put n, , "SegundosPasados=0" & vbCrLf
+156     Put n, , "Silenciado=0" & vbCrLf
+158     Put n, , "Montado=0" & vbCrLf
+    
+160     Put n, , "InventLevel=0" & vbCrLf
+    
+162     Put n, , vbCrLf
+    
+164     Put n, , "[CONSEJO]" & vbCrLf
+166     Put n, , "PERTENECE=0" & vbCrLf
+168     Put n, , "PERTENECECAOS=0" & vbCrLf
+    
+170     Put n, , "[FACCIONES]" & vbCrLf & "EjercitoReal=" & CStr(UserList(Userindex).Faccion.ArmadaReal) & vbCrLf
+172     Put n, , "Status=" & CStr(UserList(Userindex).Faccion.Status) & vbCrLf
+174     Put n, , "EjercitoCaos=" & CStr(UserList(Userindex).Faccion.FuerzasCaos) & vbCrLf
+176     Put n, , "CiudMatados=" & CStr(UserList(Userindex).Faccion.CiudadanosMatados) & vbCrLf
+178     Put n, , "CrimMatados=" & CStr(UserList(Userindex).Faccion.CriminalesMatados) & vbCrLf
+180     Put n, , "rArCaos=" & CStr(UserList(Userindex).Faccion.RecibioArmaduraCaos) & vbCrLf
+182     Put n, , "rArReal=" & CStr(UserList(Userindex).Faccion.RecibioArmaduraReal) & vbCrLf
+184     Put n, , "rExCaos=" & CStr(UserList(Userindex).Faccion.RecibioExpInicialCaos) & vbCrLf
+186     Put n, , "rExReal=" & CStr(UserList(Userindex).Faccion.RecibioExpInicialReal) & vbCrLf
+188     Put n, , "recCaos=" & CStr(UserList(Userindex).Faccion.RecompensasCaos) & vbCrLf
+190     Put n, , "recReal=" & CStr(UserList(Userindex).Faccion.RecompensasReal) & vbCrLf
+192     Put n, , "Reenlistadas=" & CStr(UserList(Userindex).Faccion.Reenlistadas) & vbCrLf
+194     Put n, , "NivelIngreso=" & CStr(UserList(Userindex).Faccion.NivelIngreso) & vbCrLf
+196     Put n, , "FechaIngreso=" & CStr(UserList(Userindex).Faccion.FechaIngreso) & vbCrLf
+198     Put n, , "MatadosIngreso=" & CStr(UserList(Userindex).Faccion.MatadosIngreso) & vbCrLf
+200     Put n, , "NextRecompensa=" & CStr(UserList(Userindex).Faccion.NextRecompensa) & vbCrLf
+    
+202     Put n, , vbCrLf
+    
+        'STATS
+204     Put n, , "[STATS]" & vbCrLf & "GLD=0" & vbCrLf
+206     Put n, , "BANCO=0" & vbCrLf
+208     Put n, , "MaxHP=" & CStr(UserList(Userindex).Stats.MaxHp) & vbCrLf
+210     Put n, , "MinHP=" & CStr(UserList(Userindex).Stats.MinHp) & vbCrLf
+212     Put n, , "MaxSTA=" & CStr(UserList(Userindex).Stats.MaxSta) & vbCrLf
+214     Put n, , "MinSTA=" & CStr(UserList(Userindex).Stats.MinSta) & vbCrLf
+216     Put n, , "MaxMAN=" & CStr(UserList(Userindex).Stats.MaxMAN) & vbCrLf
+218     Put n, , "MinMAN=" & CStr(UserList(Userindex).Stats.MinMAN) & vbCrLf
+220     Put n, , "MaxHIT=" & CStr(UserList(Userindex).Stats.MaxHit) & vbCrLf
+222     Put n, , "MinHIT=" & CStr(UserList(Userindex).Stats.MinHIT) & vbCrLf
+224     Put n, , "MaxAGU=" & CStr(UserList(Userindex).Stats.MaxAGU) & vbCrLf
+226     Put n, , "MinAGU=" & CStr(UserList(Userindex).Stats.MinAGU) & vbCrLf
+228     Put n, , "MaxHAM=" & CStr(UserList(Userindex).Stats.MaxHam) & vbCrLf
+230     Put n, , "MinHAM=" & CStr(UserList(Userindex).Stats.MinHam) & vbCrLf
+232     Put n, , "SkillPtsLibres=" & CStr(UserList(Userindex).Stats.SkillPts) & vbCrLf
+234     Put n, , "EXP=" & CStr(UserList(Userindex).Stats.Exp) & vbCrLf
+236     Put n, , "ELV=" & CStr(UserList(Userindex).Stats.ELV) & vbCrLf
+238     Put n, , "ELU=" & CStr(UserList(Userindex).Stats.ELU) & vbCrLf
+    
+240     Put n, , vbCrLf
+    
+        'MAHIA
+242     Put n, , "[MAGIA]" & vbCrLf & "ENVENENA=0" & vbCrLf
+244     Put n, , "PARALIZA=0" & vbCrLf
+246     Put n, , "INCINERA=0" & vbCrLf
+248     Put n, , "Estupidiza=0" & vbCrLf
+250     Put n, , "PENDIENTE=0" & vbCrLf
+252     Put n, , "CARROMINERIA=0" & vbCrLf
+254     Put n, , "NOPALABRASMAGICAS=0" & vbCrLf
+256     Put n, , "OTRA_AURA=0" & vbCrLf
+258     Put n, , "DAÑOMAGICO=0" & vbCrLf
+260     Put n, , "ResistenciaMagica=0" & vbCrLf
+262     Put n, , "NoDetectable=0" & vbCrLf
+264     Put n, , "AnilloOcultismo=0" & vbCrLf
+266     Put n, , "RegeneracionMana=0" & vbCrLf
+268     Put n, , "NoMagiaEfeceto=0" & vbCrLf
+270     Put n, , "RegeneracionHP=0" & vbCrLf
+272     Put n, , "RegeneracionSta=0" & vbCrLf
+    
+274     Put n, , vbCrLf
+    
+        'SKILLS
+276     Put n, , "[SKILLS]" & vbCrLf
 
-    For LoopC = 1 To UserList(Userindex).CurrentInventorySlots
-        Put n, , "Obj" & LoopC & "=" & UserList(Userindex).Invent.Object(LoopC).ObjIndex & "-" & UserList(Userindex).Invent.Object(LoopC).Amount & "-" & UserList(Userindex).Invent.Object(LoopC).Equipped & vbCrLf
-    Next
-    Put n, , "WeaponEqpSlot=" & CStr(UserList(Userindex).Invent.WeaponEqpSlot) & vbCrLf
-    Put n, , "HerramientaEqpSlot=" & CStr(UserList(Userindex).Invent.HerramientaEqpSlot) & vbCrLf
-    Put n, , "ArmourEqpSlot=" & CStr(UserList(Userindex).Invent.ArmourEqpSlot) & vbCrLf
-    Put n, , "CascoEqpSlot=" & CStr(UserList(Userindex).Invent.CascoEqpSlot) & vbCrLf
-    Put n, , "EscudoEqpSlot=" & CStr(UserList(Userindex).Invent.EscudoEqpSlot) & vbCrLf
-    Put n, , "BarcoSlot=" & CStr(UserList(Userindex).Invent.BarcoSlot) & vbCrLf
-    Put n, , "MonturaSlot=" & CStr(UserList(Userindex).Invent.MonturaSlot) & vbCrLf
-    Put n, , "MunicionSlot=" & CStr(UserList(Userindex).Invent.MunicionEqpSlot) & vbCrLf
-    Put n, , "AnilloSlot=" & CStr(UserList(Userindex).Invent.AnilloEqpSlot) & vbCrLf
-    Put n, , "MagicoSlot=" & CStr(UserList(Userindex).Invent.MagicoSlot) & vbCrLf
-    Put n, , "NudilloEqpSlot=" & CStr(UserList(Userindex).Invent.NudilloSlot) & vbCrLf
+278     For LoopC = 1 To UBound(UserList(Userindex).Stats.UserSkills)
+280         Put n, , "SK" & LoopC & "=0" & vbCrLf
+        Next
     
-    Put n, , vbCrLf
+282     Put n, , vbCrLf
     
-    'INIT
-    Put n, , "[INIT]" & vbCrLf & "Cuenta=" & UserList(Userindex).Cuenta & vbCrLf
-    Put n, , "Genero=" & UserList(Userindex).genero & vbCrLf
-    Put n, , "Raza=" & UserList(Userindex).raza & vbCrLf
-    Put n, , "Hogar=" & UserList(Userindex).Hogar & vbCrLf
-    Put n, , "Clase=" & UserList(Userindex).clase & vbCrLf
-    Put n, , "Desc=" & UserList(Userindex).Desc & vbCrLf
-    Put n, , "Heading=" & CStr(UserList(Userindex).Char.Heading) & vbCrLf
-    Put n, , "Head=" & CStr(UserList(Userindex).Char.Head) & vbCrLf
-    Put n, , "Arma=" & CStr(UserList(Userindex).Char.WeaponAnim) & vbCrLf
-    Put n, , "Escudo=" & CStr(UserList(Userindex).Char.ShieldAnim) & vbCrLf
-    Put n, , "Casco=" & CStr(UserList(Userindex).Char.CascoAnim) & vbCrLf
-    Put n, , "Position=" & UserList(Userindex).Pos.Map & "-" & UserList(Userindex).Pos.X & "-" & UserList(Userindex).Pos.Y & vbCrLf
-    ' If UserList(UserIndex).flags.Muerto = 0 Then
-    Put n, , "Body=" & CStr(UserList(Userindex).Char.Body) & vbCrLf
-    'Else
-    '   Put N, , "Body=" & iCuerpoMuerto & vbCrLf 'poner body muerto
-    '  End If
-    #If ConUpTime Then
+        'INVENTARIO
+284     Put n, , "[Inventory]" & vbCrLf & "CantidadItems=" & val(UserList(Userindex).Invent.NroItems) & vbCrLf
 
-        Dim TempDate As Date
+286     For LoopC = 1 To UserList(Userindex).CurrentInventorySlots
+288         Put n, , "Obj" & LoopC & "=" & UserList(Userindex).Invent.Object(LoopC).ObjIndex & "-" & UserList(Userindex).Invent.Object(LoopC).Amount & "-" & UserList(Userindex).Invent.Object(LoopC).Equipped & vbCrLf
+        Next
+290     Put n, , "WeaponEqpSlot=" & CStr(UserList(Userindex).Invent.WeaponEqpSlot) & vbCrLf
+292     Put n, , "HerramientaEqpSlot=" & CStr(UserList(Userindex).Invent.HerramientaEqpSlot) & vbCrLf
+294     Put n, , "ArmourEqpSlot=" & CStr(UserList(Userindex).Invent.ArmourEqpSlot) & vbCrLf
+296     Put n, , "CascoEqpSlot=" & CStr(UserList(Userindex).Invent.CascoEqpSlot) & vbCrLf
+298     Put n, , "EscudoEqpSlot=" & CStr(UserList(Userindex).Invent.EscudoEqpSlot) & vbCrLf
+300     Put n, , "BarcoSlot=" & CStr(UserList(Userindex).Invent.BarcoSlot) & vbCrLf
+302     Put n, , "MonturaSlot=" & CStr(UserList(Userindex).Invent.MonturaSlot) & vbCrLf
+304     Put n, , "MunicionSlot=" & CStr(UserList(Userindex).Invent.MunicionEqpSlot) & vbCrLf
+306     Put n, , "AnilloSlot=" & CStr(UserList(Userindex).Invent.AnilloEqpSlot) & vbCrLf
+308     Put n, , "MagicoSlot=" & CStr(UserList(Userindex).Invent.MagicoSlot) & vbCrLf
+310     Put n, , "NudilloEqpSlot=" & CStr(UserList(Userindex).Invent.NudilloSlot) & vbCrLf
+    
+312     Put n, , vbCrLf
+    
+        'INIT
+314     Put n, , "[INIT]" & vbCrLf & "Cuenta=" & UserList(Userindex).Cuenta & vbCrLf
+316     Put n, , "Genero=" & UserList(Userindex).genero & vbCrLf
+318     Put n, , "Raza=" & UserList(Userindex).raza & vbCrLf
+320     Put n, , "Hogar=" & UserList(Userindex).Hogar & vbCrLf
+322     Put n, , "Clase=" & UserList(Userindex).clase & vbCrLf
+324     Put n, , "Desc=" & UserList(Userindex).Desc & vbCrLf
+326     Put n, , "Heading=" & CStr(UserList(Userindex).Char.Heading) & vbCrLf
+328     Put n, , "Head=" & CStr(UserList(Userindex).Char.Head) & vbCrLf
+330     Put n, , "Arma=" & CStr(UserList(Userindex).Char.WeaponAnim) & vbCrLf
+332     Put n, , "Escudo=" & CStr(UserList(Userindex).Char.ShieldAnim) & vbCrLf
+334     Put n, , "Casco=" & CStr(UserList(Userindex).Char.CascoAnim) & vbCrLf
+336     Put n, , "Position=" & UserList(Userindex).Pos.Map & "-" & UserList(Userindex).Pos.X & "-" & UserList(Userindex).Pos.Y & vbCrLf
+        ' If UserList(UserIndex).flags.Muerto = 0 Then
+338     Put n, , "Body=" & CStr(UserList(Userindex).Char.Body) & vbCrLf
+        'Else
+        '   Put N, , "Body=" & iCuerpoMuerto & vbCrLf 'poner body muerto
+        '  End If
+        #If ConUpTime Then
 
-        TempDate = Now - UserList(Userindex).LogOnTime
-        UserList(Userindex).LogOnTime = Now
-        UserList(Userindex).UpTime = UserList(Userindex).UpTime + (Abs(Day(TempDate) - 30) * 24 * 3600) + Hour(TempDate) * 3600 + Minute(TempDate) * 60 + Second(TempDate)
-        UserList(Userindex).UpTime = UserList(Userindex).UpTime
-        Put n, , "UpTime=" & UserList(Userindex).UpTime & vbCrLf
-    #End If
-    
-    Put n, , vbCrLf
-    
-    Put n, , "[ATRIBUTOS]" & vbCrLf
+            Dim TempDate As Date
 
-    '¿Fueron modificados los atributos del usuario?
-    For LoopC = 1 To UBound(UserList(Userindex).Stats.UserAtributos)
-        Put n, , "AT" & LoopC & "=" & CStr(UserList(Userindex).Stats.UserAtributos(LoopC)) & vbCrLf
-    Next
-    Put n, , vbCrLf
+340         TempDate = Now - UserList(Userindex).LogOnTime
+342         UserList(Userindex).LogOnTime = Now
+344         UserList(Userindex).UpTime = UserList(Userindex).UpTime + (Abs(Day(TempDate) - 30) * 24 * 3600) + Hour(TempDate) * 3600 + Minute(TempDate) * 60 + Second(TempDate)
+346         UserList(Userindex).UpTime = UserList(Userindex).UpTime
+348         Put n, , "UpTime=" & UserList(Userindex).UpTime & vbCrLf
+        #End If
     
-    'baneo
-    Put n, , "[BAN]" & vbCrLf & "Baneado=" & CStr(UserList(Userindex).flags.Ban) & vbCrLf
-    Put n, , "BanMotivo=" & CStr(UserList(Userindex).flags.BanMotivo) & vbCrLf
+350     Put n, , vbCrLf
     
-    Put n, , vbCrLf
-    
-    'COUNTERS
-    Put n, , "[COUNTERS]" & vbCrLf & "Pena=" & CStr(UserList(Userindex).Counters.Pena) & vbCrLf
-    Put n, , "ScrollOro=" & CStr(UserList(Userindex).Counters.ScrollOro) & vbCrLf
-    Put n, , "ScrollExperiencia=" & CStr(UserList(Userindex).Counters.ScrollExperiencia) & vbCrLf
-    Put n, , "Oxigeno=" & CStr(UserList(Userindex).Counters.Oxigeno) & vbCrLf
-    
-    Put n, , vbCrLf
-    
-    Put n, , "[MUERTES]" & vbCrLf & "UserMuertes=0" & vbCrLf
-    Put n, , "NpcsMuertes=0" & vbCrLf
-    
-    Put n, , vbCrLf
-    
-    'BANCO
-    Put n, , "[BancoInventory]" & vbCrLf & "CantidadItems=0" & vbCrLf
+352     Put n, , "[ATRIBUTOS]" & vbCrLf
 
-    Dim loopd As Integer
+        '¿Fueron modificados los atributos del usuario?
+354     For LoopC = 1 To UBound(UserList(Userindex).Stats.UserAtributos)
+356         Put n, , "AT" & LoopC & "=" & CStr(UserList(Userindex).Stats.UserAtributos(LoopC)) & vbCrLf
+        Next
+358     Put n, , vbCrLf
+    
+        'baneo
+360     Put n, , "[BAN]" & vbCrLf & "Baneado=" & CStr(UserList(Userindex).flags.Ban) & vbCrLf
+362     Put n, , "BanMotivo=" & CStr(UserList(Userindex).flags.BanMotivo) & vbCrLf
+    
+364     Put n, , vbCrLf
+    
+        'COUNTERS
+366     Put n, , "[COUNTERS]" & vbCrLf & "Pena=" & CStr(UserList(Userindex).Counters.Pena) & vbCrLf
+368     Put n, , "ScrollOro=" & CStr(UserList(Userindex).Counters.ScrollOro) & vbCrLf
+370     Put n, , "ScrollExperiencia=" & CStr(UserList(Userindex).Counters.ScrollExperiencia) & vbCrLf
+372     Put n, , "Oxigeno=" & CStr(UserList(Userindex).Counters.Oxigeno) & vbCrLf
+    
+374     Put n, , vbCrLf
+    
+376     Put n, , "[MUERTES]" & vbCrLf & "UserMuertes=0" & vbCrLf
+378     Put n, , "NpcsMuertes=0" & vbCrLf
+    
+380     Put n, , vbCrLf
+    
+        'BANCO
+382     Put n, , "[BancoInventory]" & vbCrLf & "CantidadItems=0" & vbCrLf
 
-    For loopd = 1 To MAX_BANCOINVENTORY_SLOTS
-        Put n, , "Obj" & loopd & "=" & UserList(Userindex).BancoInvent.Object(loopd).ObjIndex & "-" & UserList(Userindex).BancoInvent.Object(loopd).Amount & vbCrLf
-    Next loopd
-    
-    Put n, , vbCrLf
-    
-    Put n, , "[LOGROS]" & vbCrLf & "UserLogros=" & CByte(UserList(Userindex).UserLogros) & vbCrLf
-    Put n, , "NPcLogros=" & CByte(UserList(Userindex).NPcLogros) & vbCrLf
-    Put n, , "LevelLogros=" & CByte(UserList(Userindex).LevelLogros) & vbCrLf
-    
-    Put n, , vbCrLf
-    
-    Put n, , "[BINDKEYS]" & vbCrLf
-    Put n, , "ChatCombate=" & CByte(UserList(Userindex).ChatCombate) & vbCrLf
-    Put n, , "ChatGlobal=" & CByte(UserList(Userindex).ChatGlobal) & vbCrLf
-    
-    Put n, , vbCrLf
-    
-    'HECHIZOS
-    Put n, , "[HECHIZOS]" & vbCrLf
+        Dim loopd As Integer
 
-    Dim cad As String
+384     For loopd = 1 To MAX_BANCOINVENTORY_SLOTS
+386         Put n, , "Obj" & loopd & "=" & UserList(Userindex).BancoInvent.Object(loopd).ObjIndex & "-" & UserList(Userindex).BancoInvent.Object(loopd).Amount & vbCrLf
+388     Next loopd
+    
+390     Put n, , vbCrLf
+    
+392     Put n, , "[LOGROS]" & vbCrLf & "UserLogros=" & CByte(UserList(Userindex).UserLogros) & vbCrLf
+394     Put n, , "NPcLogros=" & CByte(UserList(Userindex).NPcLogros) & vbCrLf
+396     Put n, , "LevelLogros=" & CByte(UserList(Userindex).LevelLogros) & vbCrLf
+    
+398     Put n, , vbCrLf
+    
+400     Put n, , "[BINDKEYS]" & vbCrLf
+402     Put n, , "ChatCombate=" & CByte(UserList(Userindex).ChatCombate) & vbCrLf
+404     Put n, , "ChatGlobal=" & CByte(UserList(Userindex).ChatGlobal) & vbCrLf
+    
+406     Put n, , vbCrLf
+    
+        'HECHIZOS
+408     Put n, , "[HECHIZOS]" & vbCrLf
 
-    For LoopC = 1 To MAXUSERHECHIZOS
-        cad = UserList(Userindex).Stats.UserHechizos(LoopC)
-        Put n, , "H" & LoopC & "=" & cad & vbCrLf
-    Next
+        Dim cad As String
+
+410     For LoopC = 1 To MAXUSERHECHIZOS
+412         cad = UserList(Userindex).Stats.UserHechizos(LoopC)
+414         Put n, , "H" & LoopC & "=" & cad & vbCrLf
+        Next
       
-    Put n, , vbCrLf
+416     Put n, , vbCrLf
     
-    Put n, , "[CORREO]" & vbCrLf & "NoLeidos=0" & vbCrLf
-    Put n, , "CANTCORREO=0" & vbCrLf
+418     Put n, , "[CORREO]" & vbCrLf & "NoLeidos=0" & vbCrLf
+420     Put n, , "CANTCORREO=0" & vbCrLf
     
-    'Correo Ladder
+        'Correo Ladder
     
-    For LoopC = 1 To UserList(Userindex).Correo.CantCorreo
+422     For LoopC = 1 To UserList(Userindex).Correo.CantCorreo
     
-        Put n, , "REMITENTE" & LoopC & "=" & UserList(Userindex).Correo.Mensaje(LoopC).Remitente & vbCrLf
-        Put n, , "MENSAJE" & LoopC & "=" & UserList(Userindex).Correo.Mensaje(LoopC).Mensaje & vbCrLf
-        Put n, , "Item" & LoopC & "=" & UserList(Userindex).Correo.Mensaje(LoopC).Item & vbCrLf
-        Put n, , "ItemCount" & LoopC & "=" & UserList(Userindex).Correo.Mensaje(LoopC).ItemCount & vbCrLf
-        Put n, , "DATE" & LoopC & "=" & UserList(Userindex).Correo.Mensaje(LoopC).Fecha & vbCrLf
-        Put n, , "LEIDO" & LoopC & "=" & UserList(Userindex).Correo.Mensaje(LoopC).Leido & vbCrLf
+424         Put n, , "REMITENTE" & LoopC & "=" & UserList(Userindex).Correo.Mensaje(LoopC).Remitente & vbCrLf
+426         Put n, , "MENSAJE" & LoopC & "=" & UserList(Userindex).Correo.Mensaje(LoopC).Mensaje & vbCrLf
+428         Put n, , "Item" & LoopC & "=" & UserList(Userindex).Correo.Mensaje(LoopC).Item & vbCrLf
+430         Put n, , "ItemCount" & LoopC & "=" & UserList(Userindex).Correo.Mensaje(LoopC).ItemCount & vbCrLf
+432         Put n, , "DATE" & LoopC & "=" & UserList(Userindex).Correo.Mensaje(LoopC).Fecha & vbCrLf
+434         Put n, , "LEIDO" & LoopC & "=" & UserList(Userindex).Correo.Mensaje(LoopC).Leido & vbCrLf
         
-    Next LoopC
+436     Next LoopC
     
-    Close #n
+438     Close #n
     
-    'Devuelve el head de muerto
-    If UserList(Userindex).flags.Muerto = 1 Then
-        UserList(Userindex).Char.Head = iCabezaMuerto
+        'Devuelve el head de muerto
+440     If UserList(Userindex).flags.Muerto = 1 Then
+442         UserList(Userindex).Char.Head = iCabezaMuerto
 
-    End If
+        End If
     
-    Exit Sub
+        Exit Sub
     
-Errhandler:
-    Call LogError("Error en SaveNewUserCharfile")
-    Close #n
+ErrHandler:
+444     Call LogError("Error en SaveNewUserCharfile")
+446     Close #n
 
 End Sub
 
@@ -3621,8 +3621,8 @@ Sub SetUserLogged(ByVal Userindex As Integer)
         Exit Sub
 
 SetUserLogged_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.SetUserLogged", Erl)
-        Resume Next
+108     Call RegistrarError(Err.Number, Err.description, "ES.SetUserLogged", Erl)
+110     Resume Next
         
 End Sub
 
@@ -3642,8 +3642,8 @@ Sub SaveBattlePoints(ByVal Userindex As Integer)
         Exit Sub
 
 SaveBattlePoints_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.SaveBattlePoints", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "ES.SaveBattlePoints", Erl)
+108     Resume Next
         
 End Sub
 
@@ -3658,8 +3658,8 @@ Function Status(ByVal Userindex As Integer) As Byte
         Exit Function
 
 Status_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.Status", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "ES.Status", Erl)
+104     Resume Next
         
 End Function
 
@@ -3728,8 +3728,8 @@ Sub BackUPnPc(NpcIndex As Integer)
         Exit Sub
 
 BackUPnPc_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.BackUPnPc", Erl)
-        Resume Next
+162     Call RegistrarError(Err.Number, Err.description, "ES.BackUPnPc", Erl)
+164     Resume Next
         
 End Sub
 
@@ -3813,8 +3813,8 @@ Sub CargarNpcBackUp(NpcIndex As Integer, ByVal NpcNumber As Integer)
         Exit Sub
 
 CargarNpcBackUp_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.CargarNpcBackUp", Erl)
-        Resume Next
+180     Call RegistrarError(Err.Number, Err.description, "ES.CargarNpcBackUp", Erl)
+182     Resume Next
         
 End Sub
 
@@ -3838,8 +3838,8 @@ Sub LogBan(ByVal BannedIndex As Integer, ByVal Userindex As Integer, ByVal motiv
         Exit Sub
 
 LogBan_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.LogBan", Erl)
-        Resume Next
+112     Call RegistrarError(Err.Number, Err.description, "ES.LogBan", Erl)
+114     Resume Next
         
 End Sub
 
@@ -3863,8 +3863,8 @@ Sub LogBanFromName(ByVal BannedName As String, ByVal Userindex As Integer, ByVal
         Exit Sub
 
 LogBanFromName_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.LogBanFromName", Erl)
-        Resume Next
+112     Call RegistrarError(Err.Number, Err.description, "ES.LogBanFromName", Erl)
+114     Resume Next
         
 End Sub
 
@@ -3888,8 +3888,8 @@ Sub Ban(ByVal BannedName As String, ByVal Baneador As String, ByVal motivo As St
         Exit Sub
 
 Ban_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.Ban", Erl)
-        Resume Next
+112     Call RegistrarError(Err.Number, Err.description, "ES.Ban", Erl)
+114     Resume Next
         
 End Sub
 
@@ -3906,8 +3906,8 @@ Public Sub CargaApuestas()
         Exit Sub
 
 CargaApuestas_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.CargaApuestas", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "ES.CargaApuestas", Erl)
+108     Resume Next
         
 End Sub
 
@@ -3973,8 +3973,8 @@ Public Sub LoadRecursosEspeciales()
         Exit Sub
 
 LoadRecursosEspeciales_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.LoadRecursosEspeciales", Erl)
-        Resume Next
+148     Call RegistrarError(Err.Number, Err.description, "ES.LoadRecursosEspeciales", Erl)
+150     Resume Next
         
 End Sub
 
@@ -4025,25 +4025,25 @@ Public Sub LoadPesca()
 
             ' Sumo los pesos
 138         For i = 1 To Count
-139             For j = Peces(i).Amount To MaxLvlCania
-140                 PesoPeces(j) = PesoPeces(j) + Peces(i).data
-                Next j
+140             For j = Peces(i).Amount To MaxLvlCania
+142                 PesoPeces(j) = PesoPeces(j) + Peces(i).data
+144             Next j
 
-142             Peces(i).data = PesoPeces(Peces(i).Amount)
-            Next i
+146             Peces(i).data = PesoPeces(Peces(i).Amount)
+148         Next i
         Else
-144         ReDim Peces(0) As obj
+150         ReDim Peces(0) As obj
 
         End If
     
-150     Set IniFile = Nothing
+152     Set IniFile = Nothing
 
         
         Exit Sub
 
 LoadPesca_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.LoadPesca", Erl)
-        Resume Next
+154     Call RegistrarError(Err.Number, Err.description, "ES.LoadPesca", Erl)
+156     Resume Next
         
 End Sub
 
@@ -4093,8 +4093,8 @@ Private Sub QuickSortPeces(ByVal First As Long, ByVal Last As Long)
         Exit Sub
 
 QuickSortPeces_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.QuickSortPeces", Erl)
-        Resume Next
+132     Call RegistrarError(Err.Number, Err.description, "ES.QuickSortPeces", Erl)
+134     Resume Next
         
 End Sub
 
@@ -4142,8 +4142,8 @@ Public Function BinarySearchPeces(ByVal Value As Long) As Long
         Exit Function
 
 BinarySearchPeces_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.BinarySearchPeces", Erl)
-        Resume Next
+124     Call RegistrarError(Err.Number, Err.description, "ES.BinarySearchPeces", Erl)
+126     Resume Next
         
 End Function
 
@@ -4159,10 +4159,10 @@ Public Sub LoadUserIntervals(ByVal Userindex As Integer)
 108         .magia = IntervaloUserPuedeCastear
 110         .GolpeMagia = IntervaloGolpeMagia
 112         .MagiaGolpe = IntervaloMagiaGolpe
-113         .GolpeUsar = IntervaloGolpeUsar
-114         .Trabajar = IntervaloUserPuedeTrabajar
-116         .UsarU = IntervaloUserPuedeUsarU
-            .UsarClic = IntervaloUserPuedeUsarClic
+114         .GolpeUsar = IntervaloGolpeUsar
+116         .Trabajar = IntervaloUserPuedeTrabajar
+118         .UsarU = IntervaloUserPuedeUsarU
+120         .UsarClic = IntervaloUserPuedeUsarClic
 
         End With
 
@@ -4170,71 +4170,71 @@ Public Sub LoadUserIntervals(ByVal Userindex As Integer)
         Exit Sub
 
 LoadUserIntervals_Err:
-        Call RegistrarError(Err.Number, Err.description, "ES.LoadUserIntervals", Erl)
-        Resume Next
+122     Call RegistrarError(Err.Number, Err.description, "ES.LoadUserIntervals", Erl)
+124     Resume Next
         
 End Sub
 
 Public Sub RegistrarError(ByVal Numero As Long, ByVal Descripcion As String, ByVal Componente As String, Optional ByVal Linea As Integer)
-'**********************************************************
-'Author: Jopi
-'Guarda una descripcion detallada del error en Errores.log
-'**********************************************************
+    '**********************************************************
+    'Author: Jopi
+    'Guarda una descripcion detallada del error en Errores.log
+    '**********************************************************
         
-    'Si lo del parametro Componente es ES IGUAL, al Componente del anterior error...
-    If Componente = HistorialError.Componente And _
-       Numero = HistorialError.ErrorCode Then
+        'Si lo del parametro Componente es ES IGUAL, al Componente del anterior error...
+100     If Componente = HistorialError.Componente And _
+           Numero = HistorialError.ErrorCode Then
        
-       'Si ya recibimos error en el mismo componente 10 veces, es bastante probable que estemos en un bucle
-        'x lo que no hace falta registrar el error.
-        If HistorialError.Contador = 10 Then Exit Sub
+           'Si ya recibimos error en el mismo componente 10 veces, es bastante probable que estemos en un bucle
+            'x lo que no hace falta registrar el error.
+102         If HistorialError.Contador = 10 Then Exit Sub
         
-        'Agregamos el error al historial.
-        HistorialError.Contador = HistorialError.Contador + 1
+            'Agregamos el error al historial.
+104         HistorialError.Contador = HistorialError.Contador + 1
         
-    Else 'Si NO es igual, reestablecemos el contador.
+        Else 'Si NO es igual, reestablecemos el contador.
 
-        HistorialError.Contador = 0
-        HistorialError.ErrorCode = Numero
-        HistorialError.Componente = Componente
+106         HistorialError.Contador = 0
+108         HistorialError.ErrorCode = Numero
+110         HistorialError.Componente = Componente
             
-    End If
-    
-    'Registramos el error en Errores.log
-    Dim File As Integer: File = FreeFile
-        
-    Open App.Path & "\logs\Errores.log" For Append As #File
-    
-        Print #File, "Error: " & Numero
-        Print #File, "Descripcion: " & Descripcion
-        
-        If LenB(Linea) <> 0 Then
-            Print #File, "Linea: " & Linea
         End If
-        
-        Print #File, "Componente: " & Componente
-        Print #File, "Fecha y Hora: " & Date$ & "-" & Time$
-        
-        Print #File, vbNullString
-        
-    Close #File
     
-    Debug.Print "Error: " & Numero & vbNewLine & _
-                "Descripcion: " & Descripcion & vbNewLine & _
-                "Componente: " & Componente & vbNewLine & _
-                "Fecha y Hora: " & Date$ & "-" & Time$ & vbNewLine
+        'Registramos el error en Errores.log
+112     Dim File As Integer: File = FreeFile
+        
+114     Open App.Path & "\logs\Errores.log" For Append As #File
+    
+116         Print #File, "Error: " & Numero
+118         Print #File, "Descripcion: " & Descripcion
+        
+120         If LenB(Linea) <> 0 Then
+122             Print #File, "Linea: " & Linea
+            End If
+        
+124         Print #File, "Componente: " & Componente
+126         Print #File, "Fecha y Hora: " & Date$ & "-" & Time$
+        
+128         Print #File, vbNullString
+        
+130     Close #File
+    
+132     Debug.Print "Error: " & Numero & vbNewLine & _
+                    "Descripcion: " & Descripcion & vbNewLine & _
+                    "Componente: " & Componente & vbNewLine & _
+                    "Fecha y Hora: " & Date$ & "-" & Time$ & vbNewLine
 End Sub
 
 Function CountFiles(strFolder As String, strPattern As String) As Integer
    
-    Dim strFile As String
-        strFile = dir$(strFolder & "\" & strPattern)
+        Dim strFile As String
+100         strFile = dir$(strFolder & "\" & strPattern)
     
-    Do Until Len(strFile) = 0
-        CountFiles = CountFiles + 1
-        strFile = dir$()
-    Loop
+102     Do Until Len(strFile) = 0
+104         CountFiles = CountFiles + 1
+106         strFile = dir$()
+        Loop
     
-    If CountFiles <> 0 Then CountFiles = CountFiles + 1
+108     If CountFiles <> 0 Then CountFiles = CountFiles + 1
     
 End Function

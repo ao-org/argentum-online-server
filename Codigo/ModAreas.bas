@@ -82,13 +82,13 @@ Public Sub InitAreas()
 128         ReDim ConnGroups(LoopC).UserEntrys(1 To ConnGroups(LoopC).OptValue) As Long
 130     Next LoopC
 
-        Call generateMatrix(MATRIX_INITIAL_MAP)
+132     Call generateMatrix(MATRIX_INITIAL_MAP)
         
         Exit Sub
 
 InitAreas_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModAreas.InitAreas", Erl)
-        Resume Next
+134     Call RegistrarError(Err.Number, Err.description, "ModAreas.InitAreas", Erl)
+136     Resume Next
         
 End Sub
  
@@ -134,174 +134,174 @@ Public Sub AreasOptimizacion()
         Exit Sub
 
 AreasOptimizacion_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModAreas.AreasOptimizacion", Erl)
-        Resume Next
+124     Call RegistrarError(Err.Number, Err.description, "ModAreas.AreasOptimizacion", Erl)
+126     Resume Next
         
 End Sub
  
 Public Sub CheckUpdateNeededUser(ByVal Userindex As Integer, ByVal Head As Byte, ByVal appear As Byte)
         
-    On Error GoTo CheckUpdateNeededUser_Err
+        On Error GoTo CheckUpdateNeededUser_Err
         
 
-    '**************************************************************
-    'Author: Lucio N. Tourrilhes (DuNga)
-    'Last Modify Date: Unknow
-    'Es la función clave del sistema de areas... Es llamada al mover un user
-    '**************************************************************
-    If UserList(Userindex).AreasInfo.AreaID = AreasInfo(UserList(Userindex).Pos.X, UserList(Userindex).Pos.Y) Then Exit Sub
+        '**************************************************************
+        'Author: Lucio N. Tourrilhes (DuNga)
+        'Last Modify Date: Unknow
+        'Es la función clave del sistema de areas... Es llamada al mover un user
+        '**************************************************************
+100     If UserList(Userindex).AreasInfo.AreaID = AreasInfo(UserList(Userindex).Pos.X, UserList(Userindex).Pos.Y) Then Exit Sub
     
-    Dim MinX    As Long, MaxX As Long, MinY As Long, MaxY As Long, X As Long, Y As Long
+        Dim MinX    As Long, MaxX As Long, MinY As Long, MaxY As Long, X As Long, Y As Long
 
-    Dim TempInt As Long, Map As Long
+        Dim TempInt As Long, Map As Long
 
-    With UserList(Userindex)
-        MinX = .AreasInfo.MinX
-        MinY = .AreasInfo.MinY
+102     With UserList(Userindex)
+104         MinX = .AreasInfo.MinX
+106         MinY = .AreasInfo.MinY
         
-        If Head = eHeading.NORTH Then
-            MaxY = MinY - 1
-            MinY = MinY - AREA_DIM
-            MaxX = MinX + AREA_DIM * 3 - 1 '+ 26
-            .AreasInfo.MinX = CInt(MinX)
-            .AreasInfo.MinY = CInt(MinY)
+108         If Head = eHeading.NORTH Then
+110             MaxY = MinY - 1
+112             MinY = MinY - AREA_DIM
+114             MaxX = MinX + AREA_DIM * 3 - 1 '+ 26
+116             .AreasInfo.MinX = CInt(MinX)
+118             .AreasInfo.MinY = CInt(MinY)
         
-        ElseIf Head = eHeading.SOUTH Then
-            MaxY = MinY + 4 * AREA_DIM - 1 ' + 35
-            MinY = MinY + AREA_DIM * 3 '+ 27
-            MaxX = MinX + AREA_DIM * 3 - 1 '+ 26
-            .AreasInfo.MinX = CInt(MinX)
-            .AreasInfo.MinY = CInt(MinY - AREA_DIM * 2) '- 18)
+120         ElseIf Head = eHeading.SOUTH Then
+122             MaxY = MinY + 4 * AREA_DIM - 1 ' + 35
+124             MinY = MinY + AREA_DIM * 3 '+ 27
+126             MaxX = MinX + AREA_DIM * 3 - 1 '+ 26
+128             .AreasInfo.MinX = CInt(MinX)
+130             .AreasInfo.MinY = CInt(MinY - AREA_DIM * 2) '- 18)
         
-        ElseIf Head = eHeading.WEST Then
-            MaxX = MinX - 1
-            MinX = MinX - AREA_DIM
-            MaxY = MinY + AREA_DIM * 3 - 1 '+ 26
-            .AreasInfo.MinX = CInt(MinX)
-            .AreasInfo.MinY = CInt(MinY)
+132         ElseIf Head = eHeading.WEST Then
+134             MaxX = MinX - 1
+136             MinX = MinX - AREA_DIM
+138             MaxY = MinY + AREA_DIM * 3 - 1 '+ 26
+140             .AreasInfo.MinX = CInt(MinX)
+142             .AreasInfo.MinY = CInt(MinY)
         
-        ElseIf Head = eHeading.EAST Then
-            MaxX = MinX + 4 * AREA_DIM - 1 ' + 35
-            MinX = MinX + AREA_DIM * 3 '+ 27
-            MaxY = MinY + AREA_DIM * 3 - 1 '+ 26
-            .AreasInfo.MinX = CInt(MinX - AREA_DIM * 2) '- 18)
-            .AreasInfo.MinY = CInt(MinY)
+144         ElseIf Head = eHeading.EAST Then
+146             MaxX = MinX + 4 * AREA_DIM - 1 ' + 35
+148             MinX = MinX + AREA_DIM * 3 '+ 27
+150             MaxY = MinY + AREA_DIM * 3 - 1 '+ 26
+152             .AreasInfo.MinX = CInt(MinX - AREA_DIM * 2) '- 18)
+154             .AreasInfo.MinY = CInt(MinY)
            
-        ElseIf Head = USER_NUEVO Then
-            'Esto pasa por cuando cambiamos de mapa o logeamos...
-            MinY = ((.Pos.Y \ AREA_DIM) - 1) * AREA_DIM
-            MaxY = MinY + AREA_DIM * 3 - 1 '+ 26
+156         ElseIf Head = USER_NUEVO Then
+                'Esto pasa por cuando cambiamos de mapa o logeamos...
+158             MinY = ((.Pos.Y \ AREA_DIM) - 1) * AREA_DIM
+160             MaxY = MinY + AREA_DIM * 3 - 1 '+ 26
             
-            MinX = ((.Pos.X \ AREA_DIM) - 1) * AREA_DIM
-            MaxX = MinX + AREA_DIM * 3 - 1 '+ 26
+162             MinX = ((.Pos.X \ AREA_DIM) - 1) * AREA_DIM
+164             MaxX = MinX + AREA_DIM * 3 - 1 '+ 26
             
-            .AreasInfo.MinX = CInt(MinX)
-            .AreasInfo.MinY = CInt(MinY)
+166             .AreasInfo.MinX = CInt(MinX)
+168             .AreasInfo.MinY = CInt(MinY)
 
-        End If
+            End If
         
-        If MinY < 1 Then MinY = 1
-        If MinX < 1 Then MinX = 1
-        If MaxY > 100 Then MaxY = 100
-        If MaxX > 100 Then MaxX = 100
+170         If MinY < 1 Then MinY = 1
+172         If MinX < 1 Then MinX = 1
+174         If MaxY > 100 Then MaxY = 100
+176         If MaxX > 100 Then MaxX = 100
        
-        Map = UserList(Userindex).Pos.Map
+178         Map = UserList(Userindex).Pos.Map
        
-        'Esto es para ke el cliente elimine lo "fuera de area..."
-        Call WriteAreaChanged(Userindex)
+            'Esto es para ke el cliente elimine lo "fuera de area..."
+180         Call WriteAreaChanged(Userindex)
        
-        'Actualizamos!!!
-        For X = MinX To MaxX
-            For Y = MinY To MaxY
+            'Actualizamos!!!
+182         For X = MinX To MaxX
+184             For Y = MinY To MaxY
                
-                '<<< User >>>
-                If MapData(Map, X, Y).Userindex Then
+                    '<<< User >>>
+186                 If MapData(Map, X, Y).Userindex Then
                    
-                    TempInt = MapData(Map, X, Y).Userindex
+188                     TempInt = MapData(Map, X, Y).Userindex
                    
-                    If Userindex <> TempInt Then
+190                     If Userindex <> TempInt Then
                         
-                        If UserList(Userindex).flags.AdminInvisible = 0 Or EsGM(TempInt) Then
-                            Call MakeUserChar(False, TempInt, Userindex, .Pos.Map, .Pos.X, .Pos.Y, 0)
+192                         If UserList(Userindex).flags.AdminInvisible = 0 Or EsGM(TempInt) Then
+194                             Call MakeUserChar(False, TempInt, Userindex, .Pos.Map, .Pos.X, .Pos.Y, 0)
                             
-                            If UserList(Userindex).flags.invisible Or UserList(Userindex).flags.Oculto Then
-                                Call WriteSetInvisible(TempInt, UserList(Userindex).Char.CharIndex, True)
+196                             If UserList(Userindex).flags.invisible Or UserList(Userindex).flags.Oculto Then
+198                                 Call WriteSetInvisible(TempInt, UserList(Userindex).Char.CharIndex, True)
+                                End If
+                            
                             End If
                             
-                        End If
+200                         If UserList(TempInt).flags.AdminInvisible = 0 Or EsGM(Userindex) Then
+202                             Call MakeUserChar(False, Userindex, TempInt, Map, X, Y, appear)
                             
-                        If UserList(TempInt).flags.AdminInvisible = 0 Or EsGM(Userindex) Then
-                            Call MakeUserChar(False, Userindex, TempInt, Map, X, Y, appear)
-                            
-                            'Si el user estaba invisible le avisamos al nuevo cliente de eso
-                            If UserList(TempInt).flags.invisible Or UserList(TempInt).flags.Oculto Then
-                                Call WriteSetInvisible(Userindex, UserList(TempInt).Char.CharIndex, True)
+                                'Si el user estaba invisible le avisamos al nuevo cliente de eso
+204                             If UserList(TempInt).flags.invisible Or UserList(TempInt).flags.Oculto Then
+206                                 Call WriteSetInvisible(Userindex, UserList(TempInt).Char.CharIndex, True)
+                                End If
+
                             End If
 
-                        End If
+208                     ElseIf Head = USER_NUEVO Then
+210                         Call MakeUserChar(False, Userindex, Userindex, Map, X, Y, appear)
 
-                    ElseIf Head = USER_NUEVO Then
-                        Call MakeUserChar(False, Userindex, Userindex, Map, X, Y, appear)
+                        End If
 
                     End If
-
-                End If
                
-                '<<< Npc >>>
-                If MapData(Map, X, Y).NpcIndex Then
-                    Call MakeNPCChar(False, Userindex, MapData(Map, X, Y).NpcIndex, Map, X, Y)
+                    '<<< Npc >>>
+212                 If MapData(Map, X, Y).NpcIndex Then
+214                     Call MakeNPCChar(False, Userindex, MapData(Map, X, Y).NpcIndex, Map, X, Y)
 
-                End If
+                    End If
                  
-                '<<< Item >>>
-                If MapData(Map, X, Y).ObjInfo.ObjIndex Then
-                    TempInt = MapData(Map, X, Y).ObjInfo.ObjIndex
+                    '<<< Item >>>
+216                 If MapData(Map, X, Y).ObjInfo.ObjIndex Then
+218                     TempInt = MapData(Map, X, Y).ObjInfo.ObjIndex
 
-                    If Not EsObjetoFijo(ObjData(TempInt).OBJType) Then
-                        Call WriteObjectCreate(Userindex, TempInt, X, Y)
+220                     If Not EsObjetoFijo(ObjData(TempInt).OBJType) Then
+222                         Call WriteObjectCreate(Userindex, TempInt, X, Y)
                        
-                        If ObjData(TempInt).OBJType = eOBJType.otPuertas And InMapBounds(Map, X, Y) Then
-                            Call MostrarBloqueosPuerta(False, Userindex, X, Y)
+224                         If ObjData(TempInt).OBJType = eOBJType.otPuertas And InMapBounds(Map, X, Y) Then
+226                             Call MostrarBloqueosPuerta(False, Userindex, X, Y)
+                            End If
+
                         End If
 
                     End If
 
-                End If
+                    ' Bloqueo GM
+228                 If (MapData(Map, X, Y).Blocked And eBlock.GM) <> 0 Then
+230                     Call Bloquear(False, Userindex, X, Y, eBlock.ALL_SIDES)
+                    End If
 
-                ' Bloqueo GM
-                If (MapData(Map, X, Y).Blocked And eBlock.GM) <> 0 Then
-                    Call Bloquear(False, Userindex, X, Y, eBlock.ALL_SIDES)
-                End If
-
-                ' If MapData(Map, x, y).Particula > 0 Then
-                ' Call WriteParticleFloorCreate(UserIndex, MapData(Map, x, y).Particula, MapData(Map, x, y).TimeParticula, Map, x, y)
-                'End If
+                    ' If MapData(Map, x, y).Particula > 0 Then
+                    ' Call WriteParticleFloorCreate(UserIndex, MapData(Map, x, y).Particula, MapData(Map, x, y).TimeParticula, Map, x, y)
+                    'End If
             
-                'If MapData(Map, x, y).Luz.Rango > 0 Then
-                'Call WriteLightFloorCreate(UserIndex, MapData(Map, x, y).Luz.Color, MapData(Map, x, y).Luz.Rango, Map, x, y)
-                ' End If
-            Next Y
-        Next X
+                    'If MapData(Map, x, y).Luz.Rango > 0 Then
+                    'Call WriteLightFloorCreate(UserIndex, MapData(Map, x, y).Luz.Color, MapData(Map, x, y).Luz.Rango, Map, x, y)
+                    ' End If
+232             Next Y
+234         Next X
        
-        'Precalculados :P
-        TempInt = .Pos.X \ AREA_DIM
-        .AreasInfo.AreaReciveX = AreasRecive(TempInt)
-        .AreasInfo.AreaPerteneceX = 2 ^ TempInt
+            'Precalculados :P
+236         TempInt = .Pos.X \ AREA_DIM
+238         .AreasInfo.AreaReciveX = AreasRecive(TempInt)
+240         .AreasInfo.AreaPerteneceX = 2 ^ TempInt
         
-        TempInt = .Pos.Y \ AREA_DIM
-        .AreasInfo.AreaReciveY = AreasRecive(TempInt)
-        .AreasInfo.AreaPerteneceY = 2 ^ TempInt
+242         TempInt = .Pos.Y \ AREA_DIM
+244         .AreasInfo.AreaReciveY = AreasRecive(TempInt)
+246         .AreasInfo.AreaPerteneceY = 2 ^ TempInt
         
-        .AreasInfo.AreaID = AreasInfo(.Pos.X, .Pos.Y)
+248         .AreasInfo.AreaID = AreasInfo(.Pos.X, .Pos.Y)
 
-    End With
+        End With
 
         
-    Exit Sub
+        Exit Sub
 
 CheckUpdateNeededUser_Err:
-    Call RegistrarError(Err.Number, Err.description, "ModAreas.CheckUpdateNeededUser", Erl)
-    Resume Next
+250     Call RegistrarError(Err.Number, Err.description, "ModAreas.CheckUpdateNeededUser", Erl)
+252     Resume Next
         
 End Sub
 
@@ -406,8 +406,8 @@ Public Sub CheckUpdateNeededNpc(ByVal NpcIndex As Integer, ByVal Head As Byte)
         Exit Sub
 
 CheckUpdateNeededNpc_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModAreas.CheckUpdateNeededNpc", Erl)
-        Resume Next
+208     Call RegistrarError(Err.Number, Err.description, "ModAreas.CheckUpdateNeededNpc", Erl)
+210     Resume Next
         
 End Sub
  
@@ -452,8 +452,8 @@ Public Sub QuitarUser(ByVal Userindex As Integer, ByVal Map As Integer)
         Exit Sub
 
 QuitarUser_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModAreas.QuitarUser", Erl)
-        Resume Next
+122     Call RegistrarError(Err.Number, Err.description, "ModAreas.QuitarUser", Erl)
+124     Resume Next
         
 End Sub
  
@@ -518,8 +518,8 @@ Public Sub AgregarUser(ByVal Userindex As Integer, ByVal Map As Integer, Optiona
         Exit Sub
 
 AgregarUser_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModAreas.AgregarUser", Erl)
-        Resume Next
+136     Call RegistrarError(Err.Number, Err.description, "ModAreas.AgregarUser", Erl)
+138     Resume Next
         
 End Sub
  
@@ -545,8 +545,8 @@ Public Sub AgregarNpc(ByVal NpcIndex As Integer)
         Exit Sub
 
 AgregarNpc_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModAreas.AgregarNpc", Erl)
-        Resume Next
+112     Call RegistrarError(Err.Number, Err.description, "ModAreas.AgregarNpc", Erl)
+114     Resume Next
         
 End Sub
 

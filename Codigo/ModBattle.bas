@@ -1,7 +1,7 @@
 Attribute VB_Name = "ModBattle"
 Option Explicit
 
-Public Sub AumentarPJ(ByVal UserIndex As Integer)
+Public Sub AumentarPJ(ByVal Userindex As Integer)
         
         On Error GoTo AumentarPJ_Err
         
@@ -24,7 +24,7 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
 
         Dim AumentoHIT  As Integer
 
-100     With UserList(UserIndex)
+100     With UserList(Userindex)
  
             Dim i As Byte
 
@@ -254,16 +254,16 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
 376         .Stats.Exp = 0
 378         .Stats.ELU = 0
         
-380         Call RevivirUsuario(UserIndex)
+380         Call RevivirUsuario(Userindex)
         
-382         Call WriteUpdateUserStats(UserIndex)
+382         Call WriteUpdateUserStats(Userindex)
         
 384         .Stats.MinAGU = .Stats.MaxAGU
 386         .flags.Sed = 0 'Bug reparado 27/01/13
 388         .Stats.MinHam = .Stats.MaxHam
 390         .flags.Hambre = 0 'Bug reparado 27/01/13
 
-392         Call WriteUpdateHungerAndThirst(UserIndex)
+392         Call WriteUpdateHungerAndThirst(Userindex)
         
 394         For i = 1 To NUMSKILLS
 396             .Stats.UserSkills(i) = 100
@@ -285,67 +285,67 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
 422             .Paralizado = 0
 424             .Inmovilizado = 0
 426             .CarroMineria = 0
-430             .Montado = 0
-432             .Incinerado = 0
-436             .Paraliza = 0
-438             .Envenena = 0
-440             .NoPalabrasMagicas = 0
-442             .NoMagiaEfeceto = 0
-444             .incinera = 0
-446             .Estupidiza = 0
-448             .GolpeCertero = 0
-450             .PendienteDelExperto = 0
-452             .CarroMineria = 0
-456             .PendienteDelSacrificio = 0
-458             .AnilloOcultismo = 0
-460             .NoDetectable = 0
-462             .RegeneracionMana = 0
-464             .RegeneracionHP = 0
-466             .RegeneracionSta = 0
-468             .Nadando = 0
-470             .NecesitaOxigeno = False
+428             .Montado = 0
+430             .Incinerado = 0
+432             .Paraliza = 0
+434             .Envenena = 0
+436             .NoPalabrasMagicas = 0
+438             .NoMagiaEfeceto = 0
+440             .incinera = 0
+442             .Estupidiza = 0
+444             .GolpeCertero = 0
+446             .PendienteDelExperto = 0
+448             .CarroMineria = 0
+450             .PendienteDelSacrificio = 0
+452             .AnilloOcultismo = 0
+454             .NoDetectable = 0
+456             .RegeneracionMana = 0
+458             .RegeneracionHP = 0
+460             .RegeneracionSta = 0
+462             .Nadando = 0
+464             .NecesitaOxigeno = False
 
             End With
     
             Dim LoopX As Integer
 
-472         For LoopX = 1 To NUMATRIBUTOS
-474             .Stats.UserAtributos(LoopX) = 35
+466         For LoopX = 1 To NUMATRIBUTOS
+468             .Stats.UserAtributos(LoopX) = 35
             Next
-476         Call WriteFYA(UserIndex)
+470         Call WriteFYA(Userindex)
         
-478         If .Char.Body_Aura <> "" Then
-480             .Char.Body_Aura = 0
-482             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Body_Aura, True, 1))
+472         If .Char.Body_Aura <> "" Then
+474             .Char.Body_Aura = 0
+476             Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Body_Aura, True, 1))
 
             End If
         
-484         If .Char.Arma_Aura <> "" Then
-486             .Char.Arma_Aura = ""
-488             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Arma_Aura, True, 2))
+478         If .Char.Arma_Aura <> "" Then
+480             .Char.Arma_Aura = ""
+482             Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Arma_Aura, True, 2))
 
             End If
         
-490         If .Char.Escudo_Aura <> "" Then
-492             .Char.Escudo_Aura = 0
-494             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Escudo_Aura, True, 3))
+484         If .Char.Escudo_Aura <> "" Then
+486             .Char.Escudo_Aura = 0
+488             Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Escudo_Aura, True, 3))
 
             End If
         
-496         If .Char.Head_Aura <> "" Then
-498             .Char.Head_Aura = 0
-500             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Head_Aura, True, 4))
+490         If .Char.Head_Aura <> "" Then
+492             .Char.Head_Aura = 0
+494             Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Head_Aura, True, 4))
 
             End If
         
-502         If .Char.Otra_Aura <> "" Then
-504             .Char.Otra_Aura = 0
-506             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Otra_Aura, True, 5))
+496         If .Char.Otra_Aura <> "" Then
+498             .Char.Otra_Aura = 0
+500             Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Otra_Aura, True, 5))
             End If
             
-            If .Char.Anillo_Aura <> "" Then
-                .Char.Anillo_Aura = 0
-                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Otra_Aura, True, 6))
+502         If .Char.Anillo_Aura <> "" Then
+504             .Char.Anillo_Aura = 0
+506             Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Otra_Aura, True, 6))
             End If
         
 508         With .Char
@@ -370,7 +370,7 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
 538         .Invent.EscudoEqpObjIndex = 0
     
 540         If .flags.Montado > 0 Then
-542             Call DoMontar(UserIndex, ObjData(.Invent.MonturaObjIndex), .Invent.MonturaSlot)
+542             Call DoMontar(Userindex, ObjData(.Invent.MonturaObjIndex), .Invent.MonturaSlot)
 
             End If
 
@@ -408,9 +408,9 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
 592                 .Invent.Object(9).Amount = 10000
 594                 .Invent.Object(10).ObjIndex = 38 'Pocion Roja
 596                 .Invent.Object(10).Amount = 10000
-598                 Call EquiparInvItem(UserIndex, 1)
-600                 Call EquiparInvItem(UserIndex, 2)
-602                 Call EquiparInvItem(UserIndex, 3)
+598                 Call EquiparInvItem(Userindex, 1)
+600                 Call EquiparInvItem(Userindex, 2)
+602                 Call EquiparInvItem(Userindex, 3)
                 
 604                 .Stats.UserHechizos(1) = 26 'Inmovilizar
 606                 .Stats.UserHechizos(2) = 27 'Remover Paralisis
@@ -445,10 +445,10 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
 660                 .Invent.Object(10).Amount = 10000
 662                 .Invent.Object(11).ObjIndex = 39 'Pocion Amarilla
 664                 .Invent.Object(11).Amount = 10000
-666                 Call EquiparInvItem(UserIndex, 1)
-668                 Call EquiparInvItem(UserIndex, 2)
-670                 Call EquiparInvItem(UserIndex, 3)
-672                 Call EquiparInvItem(UserIndex, 4)
+666                 Call EquiparInvItem(Userindex, 1)
+668                 Call EquiparInvItem(Userindex, 2)
+670                 Call EquiparInvItem(Userindex, 3)
+672                 Call EquiparInvItem(Userindex, 4)
 674                 .Stats.UserHechizos(1) = 25 'Paralizar
 676                 .Stats.UserHechizos(2) = 26 'Inmovilizar
 678                 .Stats.UserHechizos(3) = 27 'Remover Paralisis
@@ -484,10 +484,10 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
 736                 .Invent.Object(11).ObjIndex = 39 '
 738                 .Invent.Object(11).Amount = 10000
                 
-740                 Call EquiparInvItem(UserIndex, 1)
-742                 Call EquiparInvItem(UserIndex, 2)
-744                 Call EquiparInvItem(UserIndex, 3)
-746                 Call EquiparInvItem(UserIndex, 4)
+740                 Call EquiparInvItem(Userindex, 1)
+742                 Call EquiparInvItem(Userindex, 2)
+744                 Call EquiparInvItem(Userindex, 3)
+746                 Call EquiparInvItem(Userindex, 4)
                 
 748                 .Stats.UserHechizos(1) = 25 'Paralizar
 750                 .Stats.UserHechizos(2) = 26 'Inmovilizar
@@ -522,10 +522,10 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
 806                 .Invent.Object(9).Amount = 10000
 808                 .Invent.Object(10).ObjIndex = 39 '
 810                 .Invent.Object(10).Amount = 10000
-812                 Call EquiparInvItem(UserIndex, 1)
-814                 Call EquiparInvItem(UserIndex, 2)
-816                 Call EquiparInvItem(UserIndex, 3)
-818                 Call EquiparInvItem(UserIndex, 4)
+812                 Call EquiparInvItem(Userindex, 1)
+814                 Call EquiparInvItem(Userindex, 2)
+816                 Call EquiparInvItem(Userindex, 3)
+818                 Call EquiparInvItem(Userindex, 4)
                 
 820                 .Stats.UserHechizos(1) = 25 'Paralizar
 822                 .Stats.UserHechizos(2) = 26 'Inmovilizar
@@ -560,10 +560,10 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
 878                 .Invent.Object(10).Amount = 10000
 880                 .Invent.Object(11).ObjIndex = 1330 ' Anillo
 882                 .Invent.Object(11).Amount = 1
-884                 Call EquiparInvItem(UserIndex, 1)
-886                 Call EquiparInvItem(UserIndex, 2)
-888                 Call EquiparInvItem(UserIndex, 3)
-890                 Call EquiparInvItem(UserIndex, 4)
+884                 Call EquiparInvItem(Userindex, 1)
+886                 Call EquiparInvItem(Userindex, 2)
+888                 Call EquiparInvItem(Userindex, 3)
+890                 Call EquiparInvItem(Userindex, 4)
                 
 892                 .Stats.UserHechizos(1) = 25 'Paralizar
 894                 .Stats.UserHechizos(2) = 26 'Inmovilizar
@@ -599,10 +599,10 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
 952                 .Invent.Object(9).Amount = 10000
 954                 .Invent.Object(10).ObjIndex = 39 'Pocion Amarilla
 956                 .Invent.Object(10).Amount = 10000
-958                 Call EquiparInvItem(UserIndex, 1)
-960                 Call EquiparInvItem(UserIndex, 2)
-962                 Call EquiparInvItem(UserIndex, 3)
-964                 Call EquiparInvItem(UserIndex, 4)
+958                 Call EquiparInvItem(Userindex, 1)
+960                 Call EquiparInvItem(Userindex, 2)
+962                 Call EquiparInvItem(Userindex, 3)
+964                 Call EquiparInvItem(Userindex, 4)
                 
 966                 .Stats.UserHechizos(1) = 25 'Paralizar
 968                 .Stats.UserHechizos(2) = 26 'Inmovilizar
@@ -638,10 +638,10 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
 1026                 .Invent.Object(10).Amount = 10000
 1028                 .Invent.Object(11).ObjIndex = 39 '
 1030                 .Invent.Object(11).Amount = 10000
-1032                 Call EquiparInvItem(UserIndex, 1)
-1034                 Call EquiparInvItem(UserIndex, 2)
-1036                 Call EquiparInvItem(UserIndex, 3)
-1038                 Call EquiparInvItem(UserIndex, 4)
+1032                 Call EquiparInvItem(Userindex, 1)
+1034                 Call EquiparInvItem(Userindex, 2)
+1036                 Call EquiparInvItem(Userindex, 3)
+1038                 Call EquiparInvItem(Userindex, 4)
 1040                 .Stats.UserHechizos(1) = 152 'Paralizar
 1042                 .Stats.UserHechizos(2) = 151 'Inmovilizar
 
@@ -669,167 +669,167 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
 1086                 .Invent.Object(10).Amount = 10000
 1088                 .Invent.Object(11).ObjIndex = 869 '
 1090                 .Invent.Object(11).Amount = 1
-1092                 Call EquiparInvItem(UserIndex, 1)
-1094                 Call EquiparInvItem(UserIndex, 2)
-1096                 Call EquiparInvItem(UserIndex, 3)
-1098                 Call EquiparInvItem(UserIndex, 4)
-1100                 Call EquiparInvItem(UserIndex, 11)
+1092                 Call EquiparInvItem(Userindex, 1)
+1094                 Call EquiparInvItem(Userindex, 2)
+1096                 Call EquiparInvItem(Userindex, 3)
+1098                 Call EquiparInvItem(Userindex, 4)
+1100                 Call EquiparInvItem(Userindex, 11)
 1102                 .Stats.UserHechizos(1) = 152 'Paralizar
 1104                 .Stats.UserHechizos(2) = 151 'Inmovilizar
 
-             End Select
+              End Select
     
-1106         Call UpdateUserHechizos(True, UserIndex, 0)
+1106         Call UpdateUserHechizos(True, Userindex, 0)
         
-1108         Call UpdateUserInv(True, UserIndex, 0)
+1108         Call UpdateUserInv(True, Userindex, 0)
         
-         End With
+          End With
         
          
-         Exit Sub
+          Exit Sub
 
 AumentarPJ_Err:
-         Call RegistrarError(Err.Number, Err.description, "ModBattle.AumentarPJ", Erl)
-         Resume Next
+1110      Call RegistrarError(Err.Number, Err.description, "ModBattle.AumentarPJ", Erl)
+1112      Resume Next
          
 End Sub
 
-Sub RelogearUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuenta As String)
+Sub RelogearUser(ByVal Userindex As Integer, ByRef name As String, ByRef UserCuenta As String)
 
-    On Error GoTo ErrHandler
+        On Error GoTo ErrHandler
 
-    'Reseteamos los FLAGS
-    UserList(UserIndex).flags.Escondido = 0
-    UserList(UserIndex).flags.TargetNPC = 0
-    UserList(UserIndex).flags.TargetNpcTipo = eNPCType.Comun
-    UserList(UserIndex).flags.TargetObj = 0
-    UserList(UserIndex).flags.TargetUser = 0
-    UserList(UserIndex).Char.FX = 0
+        'Reseteamos los FLAGS
+100     UserList(Userindex).flags.Escondido = 0
+102     UserList(Userindex).flags.TargetNPC = 0
+104     UserList(Userindex).flags.TargetNpcTipo = eNPCType.Comun
+106     UserList(Userindex).flags.TargetObj = 0
+108     UserList(Userindex).flags.TargetUser = 0
+110     UserList(Userindex).Char.FX = 0
 
-    'Cargamos el personaje
-    Dim Leer As New clsIniReader
+        'Cargamos el personaje
+        Dim Leer As New clsIniReader
 
-    Call Leer.Initialize(CharPath & UCase$(name) & ".chr")
+112     Call Leer.Initialize(CharPath & UCase$(name) & ".chr")
 
-    'Cargamos los datos del personaje
-    Call LoadUserInit(UserIndex, Leer)
+        'Cargamos los datos del personaje
+114     Call LoadUserInit(Userindex, Leer)
 
-    Call LoadUserStats(UserIndex, Leer)
+116     Call LoadUserStats(Userindex, Leer)
 
-    Set Leer = Nothing
+118     Set Leer = Nothing
 
-    If UserList(UserIndex).Invent.EscudoEqpSlot = 0 Then UserList(UserIndex).Char.ShieldAnim = NingunEscudo
-    If UserList(UserIndex).Invent.CascoEqpSlot = 0 Then UserList(UserIndex).Char.CascoAnim = NingunCasco
-    If UserList(UserIndex).Invent.WeaponEqpSlot = 0 Then UserList(UserIndex).Char.WeaponAnim = NingunArma
+120     If UserList(Userindex).Invent.EscudoEqpSlot = 0 Then UserList(Userindex).Char.ShieldAnim = NingunEscudo
+122     If UserList(Userindex).Invent.CascoEqpSlot = 0 Then UserList(Userindex).Char.CascoAnim = NingunCasco
+124     If UserList(Userindex).Invent.WeaponEqpSlot = 0 Then UserList(Userindex).Char.WeaponAnim = NingunArma
 
-    Call UpdateUserInv(True, UserIndex, 0)
-    Call UpdateUserHechizos(True, UserIndex, 0)
+126     Call UpdateUserInv(True, Userindex, 0)
+128     Call UpdateUserHechizos(True, Userindex, 0)
 
-    If UserList(UserIndex).Correo.NoLeidos > 0 Then
-        Call WriteCorreoPicOn(UserIndex)
+130     If UserList(Userindex).Correo.NoLeidos > 0 Then
+132         Call WriteCorreoPicOn(Userindex)
 
-    End If
+        End If
 
-    If UserList(UserIndex).flags.Paralizado Then
-        Call WriteParalizeOK(UserIndex)
+134     If UserList(Userindex).flags.Paralizado Then
+136         Call WriteParalizeOK(Userindex)
 
-    End If
+        End If
 
-    If UserList(UserIndex).flags.Inmovilizado Then
-        Call WriteInmovilizaOK(UserIndex)
+138     If UserList(Userindex).flags.Inmovilizado Then
+140         Call WriteInmovilizaOK(Userindex)
 
-    End If
+        End If
 
-    ''
-    'TODO : Feo, esto tiene que ser parche cliente
-    If UserList(UserIndex).flags.Estupidez = 0 Then
-        Call WriteDumbNoMore(UserIndex)
+        ''
+        'TODO : Feo, esto tiene que ser parche cliente
+142     If UserList(Userindex).flags.Estupidez = 0 Then
+144         Call WriteDumbNoMore(Userindex)
 
-    End If
+        End If
 
-    'Posicion de comienzo
+        'Posicion de comienzo
 
-    'Tratamos de evitar en lo posible el "Telefrag". Solo 1 intento de loguear en pos adjacentes.
-    'Codigo por Pablo (ToxicWaste) y revisado por Nacho (Integer), corregido para que realmetne ande y no tire el server por Juan Martín Sotuyo Dodero (Maraxus)
+        'Tratamos de evitar en lo posible el "Telefrag". Solo 1 intento de loguear en pos adjacentes.
+        'Codigo por Pablo (ToxicWaste) y revisado por Nacho (Integer), corregido para que realmetne ande y no tire el server por Juan Martín Sotuyo Dodero (Maraxus)
 
-    Rem If UserList(UserIndex).Invent.MonturaObjIndex > 0 Then
-    '    Debug.Print "tiene monutra"
-    '    Dim Montura As ObjData
-    '   Montura = ObjData(UserList(UserIndex).Invent.MonturaObjIndex)
+        Rem If UserList(UserIndex).Invent.MonturaObjIndex > 0 Then
+        '    Debug.Print "tiene monutra"
+        '    Dim Montura As ObjData
+        '   Montura = ObjData(UserList(UserIndex).Invent.MonturaObjIndex)
 
-    '    UserList(UserIndex).Char.body = ObjData(UserList(UserIndex).Invent.MonturaObjIndex).Ropaje
-    ' UserList(UserIndex).Char.ShieldAnim = NingunEscudo
-    ' UserList(UserIndex).Char.WeaponAnim = NingunArma
-    '  UserList(UserIndex).Char.CascoAnim = NingunCasco
-    '   UserList(UserIndex).flags.Montado = 1
-    '   UserList(UserIndex).Char.Speeding = 1.3
-    'End If
+        '    UserList(UserIndex).Char.body = ObjData(UserList(UserIndex).Invent.MonturaObjIndex).Ropaje
+        ' UserList(UserIndex).Char.ShieldAnim = NingunEscudo
+        ' UserList(UserIndex).Char.WeaponAnim = NingunArma
+        '  UserList(UserIndex).Char.CascoAnim = NingunCasco
+        '   UserList(UserIndex).flags.Montado = 1
+        '   UserList(UserIndex).Char.Speeding = 1.3
+        'End If
 
-    'Call WriteErrorMsg(UserIndex, "LLegue 1")
+        'Call WriteErrorMsg(UserIndex, "LLegue 1")
 
-    'Info
+        'Info
 
-    ''[EL OSO]: TRAIGO ESTO ACA ARRIBA PARA DARLE EL IP!
-    #If ConUpTime Then
-        UserList(UserIndex).LogOnTime = Now
-    #End If
+        ''[EL OSO]: TRAIGO ESTO ACA ARRIBA PARA DARLE EL IP!
+        #If ConUpTime Then
+146         UserList(Userindex).LogOnTime = Now
+        #End If
 
-    UserList(UserIndex).Char.speeding = VelocidadNormal
-    Call WriteVelocidadToggle(UserIndex)
-    'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(UserList(UserIndex).Char.CharIndex))
+148     UserList(Userindex).Char.speeding = VelocidadNormal
+150     Call WriteVelocidadToggle(Userindex)
+        'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(UserList(UserIndex).Char.CharIndex))
 
-    ''[/el oso]
+        ''[/el oso]
 
-    'LADDER NO SE SI QUEDO...
-    'Call WriteErrorMsg(UserIndex, "LLegue 4")
-    Call WriteUpdateUserStats(UserIndex)
+        'LADDER NO SE SI QUEDO...
+        'Call WriteErrorMsg(UserIndex, "LLegue 4")
+152     Call WriteUpdateUserStats(Userindex)
 
-    Call WriteUpdateHungerAndThirst(UserIndex)
+154     Call WriteUpdateHungerAndThirst(Userindex)
 
-    'Actualiza el Num de usuarios
-    'DE ACA EN ADELANTE GRABA EL CHARFILE, OJO!
+        'Actualiza el Num de usuarios
+        'DE ACA EN ADELANTE GRABA EL CHARFILE, OJO!
 
-    Call WriteFYA(UserIndex)
+156     Call WriteFYA(Userindex)
 
-    If UserList(UserIndex).flags.Montado = 1 Then
-        UserList(UserIndex).Char.speeding = VelocidadMontura
-        Call WriteEquiteToggle(UserIndex)
+158     If UserList(Userindex).flags.Montado = 1 Then
+160         UserList(Userindex).Char.speeding = VelocidadMontura
+162         Call WriteEquiteToggle(Userindex)
     
-    End If
+        End If
 
-    If Status(UserIndex) = 2 Or Status(UserIndex) = 0 Then
-        Call WriteSafeModeOff(UserIndex)
-        UserList(UserIndex).flags.Seguro = False
-    Else
-        UserList(UserIndex).flags.Seguro = True
-        Call WriteSafeModeOn(UserIndex)
+164     If Status(Userindex) = 2 Or Status(Userindex) = 0 Then
+166         Call WriteSafeModeOff(Userindex)
+168         UserList(Userindex).flags.Seguro = False
+        Else
+170         UserList(Userindex).flags.Seguro = True
+172         Call WriteSafeModeOn(Userindex)
 
-    End If
+        End If
 
-    'Call modGuilds.SendGuildNews(UserIndex)
+        'Call modGuilds.SendGuildNews(UserIndex)
 
-    'Load the user statistics
-    'Call Statistics.UserConnected(UserIndex)
+        'Load the user statistics
+        'Call Statistics.UserConnected(UserIndex)
 
-    'Call MostrarNumUsers
+        'Call MostrarNumUsers
 
     
 
-    'Call SaveUser(UserIndex, CharPath & UCase$(UserList(UserIndex).name) & ".chr")
+        'Call SaveUser(UserIndex, CharPath & UCase$(UserList(UserIndex).name) & ".chr")
 
-    UserList(UserIndex).flags.BattleModo = 0
+174     UserList(Userindex).flags.BattleModo = 0
 
-    Exit Sub
+        Exit Sub
 
 ErrHandler:
-    Call WriteShowMessageBox(UserIndex, "El personaje contiene un error, comuniquese con un miembro del staff.")
+176     Call WriteShowMessageBox(Userindex, "El personaje contiene un error, comuniquese con un miembro del staff.")
     
 
-    'N = FreeFile
-    'Log
-    'Open App.Path & "\logs\Connect.log" For Append Shared As #N
-    'Print #N, UserList(UserIndex).name & " ha entrado al juego. UserIndex:" & UserIndex & " " & Time & " " & Date
-    'Close #N
+        'N = FreeFile
+        'Log
+        'Open App.Path & "\logs\Connect.log" For Append Shared As #N
+        'Print #N, UserList(UserIndex).name & " ha entrado al juego. UserIndex:" & UserIndex & " " & Time & " " & Date
+        'Close #N
 
 End Sub
 

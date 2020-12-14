@@ -59,8 +59,8 @@ Public Function AppHook(ByVal idHook As Long, ByVal wParam As Long, ByVal lParam
         Exit Function
 
 AppHook_Err:
-        Call RegistrarError(Err.Number, Err.description, "SysTray.AppHook", Erl)
-        Resume Next
+114     Call RegistrarError(Err.Number, Err.description, "SysTray.AppHook", Erl)
+116     Resume Next
         
 End Function
 

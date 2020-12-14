@@ -116,35 +116,35 @@ End Sub
 
 Private Sub Class_Terminate()
         
-        On Error GoTo Class_Terminate_Err
+    On Error GoTo Class_Terminate_Err
         
 
-        '**************************************************************
-        'Author: Juan Martin Sotuyo Dodero
-        'Last Modify Date: 5/01/2006
-        '
-        '**************************************************************
-        Dim i As Long
+    '**************************************************************
+    'Author: Juan Martin Sotuyo Dodero
+    'Last Modify Date: 5/01/2006
+    '
+    '**************************************************************
+    Dim i As Long
     
-        'Clean up
-100     If MainNodes Then
+    'Clean up
+    If MainNodes Then
 
-102         For i = 1 To MainNodes - 1
-104             Erase fileData(i).values
-106         Next i
+        For i = 1 To MainNodes - 1
+            Erase fileData(i).values
+        Next i
         
-108         Erase fileData
+        Erase fileData
 
-        End If
+    End If
     
-110     MainNodes = 0
+    MainNodes = 0
 
         
-        Exit Sub
+    Exit Sub
 
 Class_Terminate_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsIniReader.Class_Terminate", Erl)
-        Resume Next
+    Call RegistrarError(Err.Number, Err.description, "clsIniReader.Class_Terminate", Erl)
+    Resume Next
         
 End Sub
 
@@ -225,19 +225,19 @@ Public Sub Initialize(ByVal File As String)
 
         Loop
     
-        Close handle
+140     Close handle
     
         Dim i As Long
     
-        If MainNodes Then
+142     If MainNodes Then
             'Sort main nodes to allow binary search
-            Call SortMainNodes(0, MainNodes - 1)
+144         Call SortMainNodes(0, MainNodes - 1)
         
             'Sort values of each node to allow binary search
-            For i = 0 To MainNodes - 1
+146         For i = 0 To MainNodes - 1
 
-                If fileData(i).numValues Then Call SortChildNodes(fileData(i), 0, fileData(i).numValues - 1)
-            Next i
+148             If fileData(i).numValues Then Call SortChildNodes(fileData(i), 0, fileData(i).numValues - 1)
+150         Next i
 
         End If
         
@@ -304,8 +304,8 @@ Private Sub SortChildNodes(ByRef Node As MainNode, ByVal First As Integer, ByVal
         Exit Sub
 
 SortChildNodes_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsIniReader.SortChildNodes", Erl)
-        Resume Next
+134     Call RegistrarError(Err.Number, Err.description, "clsIniReader.SortChildNodes", Erl)
+136     Resume Next
         
 End Sub
 
@@ -366,8 +366,8 @@ Private Sub SortMainNodes(ByVal First As Integer, ByVal Last As Integer)
         Exit Sub
 
 SortMainNodes_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsIniReader.SortMainNodes", Erl)
-        Resume Next
+132     Call RegistrarError(Err.Number, Err.description, "clsIniReader.SortMainNodes", Erl)
+134     Resume Next
         
 End Sub
 
@@ -408,8 +408,8 @@ Public Function GetValue(ByVal Main As String, ByVal Key As String) As String
         Exit Function
 
 GetValue_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsIniReader.GetValue", Erl)
-        Resume Next
+108     Call RegistrarError(Err.Number, Err.description, "clsIniReader.GetValue", Erl)
+110     Resume Next
         
 End Function
 
@@ -454,8 +454,8 @@ Public Sub ChangeValue(ByVal Main As String, ByVal Key As String, ByVal Value As
         Exit Sub
 
 ChangeValue_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsIniReader.ChangeValue", Erl)
-        Resume Next
+112     Call RegistrarError(Err.Number, Err.description, "clsIniReader.ChangeValue", Erl)
+114     Resume Next
         
 End Sub
 
@@ -510,8 +510,8 @@ Private Function FindKey(ByRef Node As MainNode, ByVal Key As String) As Long
         Exit Function
 
 FindKey_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsIniReader.FindKey", Erl)
-        Resume Next
+120     Call RegistrarError(Err.Number, Err.description, "clsIniReader.FindKey", Erl)
+122     Resume Next
         
 End Function
 
@@ -565,8 +565,8 @@ Private Function FindMain(ByVal name As String) As Long
         Exit Function
 
 FindMain_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsIniReader.FindMain", Erl)
-        Resume Next
+120     Call RegistrarError(Err.Number, Err.description, "clsIniReader.FindMain", Erl)
+122     Resume Next
         
 End Function
 
@@ -591,8 +591,8 @@ Public Function KeyExists(ByVal name As String) As Boolean
         Exit Function
 
 KeyExists_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsIniReader.KeyExists", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "clsIniReader.KeyExists", Erl)
+104     Resume Next
         
 End Function
 
@@ -639,8 +639,8 @@ Private Function AddNode(ByRef name As String) As Long
         Exit Function
 
 AddNode_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsIniReader.AddNode", Erl)
-        Resume Next
+126     Call RegistrarError(Err.Number, Err.description, "clsIniReader.AddNode", Erl)
+128     Resume Next
         
 End Function
 
@@ -695,8 +695,8 @@ Private Function AddKey(ByRef Main As String, ByRef Key As String, Optional ByRe
         Exit Function
 
 AddKey_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsIniReader.AddKey", Erl)
-        Resume Next
+132     Call RegistrarError(Err.Number, Err.description, "clsIniReader.AddKey", Erl)
+134     Resume Next
         
 End Function
 
@@ -741,8 +741,8 @@ Public Sub DumpFile(ByRef File As String)
         Exit Sub
 
 DumpFile_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsIniReader.DumpFile", Erl)
-        Resume Next
+122     Call RegistrarError(Err.Number, Err.description, "clsIniReader.DumpFile", Erl)
+124     Resume Next
         
 End Sub
 

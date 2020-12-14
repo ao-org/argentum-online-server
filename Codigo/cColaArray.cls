@@ -60,8 +60,8 @@ Public Function IsEmpty() As Boolean
         Exit Function
 
 IsEmpty_Err:
-        Call RegistrarError(Err.Number, Err.description, "CColaArray.IsEmpty", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "CColaArray.IsEmpty", Erl)
+104     Resume Next
         
 End Function
 
@@ -76,8 +76,8 @@ Public Function IsFull() As Boolean
         Exit Function
 
 IsFull_Err:
-        Call RegistrarError(Err.Number, Err.description, "CColaArray.IsFull", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "CColaArray.IsFull", Erl)
+104     Resume Next
         
 End Function
 
@@ -106,8 +106,8 @@ Public Function Push(ByVal aString As String) As Boolean
         Exit Function
 
 Push_Err:
-        Call RegistrarError(Err.Number, Err.description, "CColaArray.Push", Erl)
-        Resume Next
+116     Call RegistrarError(Err.Number, Err.description, "CColaArray.Push", Erl)
+118     Resume Next
         
 End Function
 
@@ -141,8 +141,8 @@ Public Function Pop() As String
         Exit Function
 
 Pop_Err:
-        Call RegistrarError(Err.Number, Err.description, "CColaArray.Pop", Erl)
-        Resume Next
+120     Call RegistrarError(Err.Number, Err.description, "CColaArray.Pop", Erl)
+122     Resume Next
         
 End Function
 
@@ -161,8 +161,8 @@ Private Sub Class_Initialize()
         Exit Sub
 
 Class_Initialize_Err:
-        Call RegistrarError(Err.Number, Err.description, "CColaArray.Class_Initialize", Erl)
-        Resume Next
+110     Call RegistrarError(Err.Number, Err.description, "CColaArray.Class_Initialize", Erl)
+112     Resume Next
         
 End Sub
 
@@ -176,8 +176,8 @@ Public Property Get MaxElems() As Long
         Exit Property
 
 MaxElems_Err:
-        Call RegistrarError(Err.Number, Err.description, "CColaArray.MaxElems", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "CColaArray.MaxElems", Erl)
+104     Resume Next
         
 End Property
 
@@ -192,7 +192,7 @@ Public Property Let MaxElems(ByVal lNewValue As Long)
         Exit Property
 
 MaxElems_Err:
-        Call RegistrarError(Err.Number, Err.description, "CColaArray.MaxElems", Erl)
-        Resume Next
+104     Call RegistrarError(Err.Number, Err.description, "CColaArray.MaxElems", Erl)
+106     Resume Next
         
 End Property

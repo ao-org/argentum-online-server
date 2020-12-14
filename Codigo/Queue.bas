@@ -3,7 +3,7 @@ Option Explicit
 
 Public Type tVertice
 
-    x As Integer
+    X As Integer
     Y As Integer
 
 End Type
@@ -28,8 +28,8 @@ Public Function IsEmpty() As Boolean
         Exit Function
 
 IsEmpty_Err:
-        Call RegistrarError(Err.Number, Err.description, "Queue.IsEmpty", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "Queue.IsEmpty", Erl)
+104     Resume Next
         
 End Function
 
@@ -43,8 +43,8 @@ Public Function IsFull() As Boolean
         Exit Function
 
 IsFull_Err:
-        Call RegistrarError(Err.Number, Err.description, "Queue.IsFull", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "Queue.IsFull", Erl)
+104     Resume Next
         
 End Function
 
@@ -71,8 +71,8 @@ Public Function Push(ByRef Vertice As tVertice) As Boolean
         Exit Function
 
 Push_Err:
-        Call RegistrarError(Err.Number, Err.description, "Queue.Push", Erl)
-        Resume Next
+114     Call RegistrarError(Err.Number, Err.description, "Queue.Push", Erl)
+116     Resume Next
         
 End Function
 
@@ -100,8 +100,8 @@ Public Function Pop() As tVertice
         Exit Function
 
 Pop_Err:
-        Call RegistrarError(Err.Number, Err.description, "Queue.Pop", Erl)
-        Resume Next
+116     Call RegistrarError(Err.Number, Err.description, "Queue.Pop", Erl)
+118     Resume Next
         
 End Function
 
@@ -118,8 +118,8 @@ Public Sub InitQueue()
         Exit Sub
 
 InitQueue_Err:
-        Call RegistrarError(Err.Number, Err.description, "Queue.InitQueue", Erl)
-        Resume Next
+108     Call RegistrarError(Err.Number, Err.description, "Queue.InitQueue", Erl)
+110     Resume Next
         
 End Sub
 

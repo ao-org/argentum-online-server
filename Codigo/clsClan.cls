@@ -95,8 +95,8 @@ Public Property Get GuildName() As String
         Exit Property
 
 GuildName_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.GuildName", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "clsClan.GuildName", Erl)
+104     Resume Next
         
 End Property
 
@@ -114,8 +114,8 @@ Public Property Get Alineacion() As ALINEACION_GUILD
         Exit Property
 
 Alineacion_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.Alineacion", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "clsClan.Alineacion", Erl)
+104     Resume Next
         
 End Property
 
@@ -129,8 +129,8 @@ Public Property Get PuntosAntifaccion() As Integer
         Exit Property
 
 PuntosAntifaccion_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.PuntosAntifaccion", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "clsClan.PuntosAntifaccion", Erl)
+104     Resume Next
         
 End Property
 
@@ -144,8 +144,8 @@ Public Property Let PuntosAntifaccion(ByVal p As Integer)
         Exit Property
 
 PuntosAntifaccion_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.PuntosAntifaccion", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "clsClan.PuntosAntifaccion", Erl)
+104     Resume Next
         
 End Property
 
@@ -160,8 +160,8 @@ Public Function CambiarAlineacion(ByVal NuevaAlineacion As ALINEACION_GUILD) As 
         Exit Function
 
 CambiarAlineacion_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.CambiarAlineacion", Erl)
-        Resume Next
+104     Call RegistrarError(Err.Number, Err.description, "clsClan.CambiarAlineacion", Erl)
+106     Resume Next
         
 End Function
 
@@ -180,26 +180,26 @@ Private Sub Class_Initialize()
         Exit Sub
 
 Class_Initialize_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.Class_Initialize", Erl)
-        Resume Next
+104     Call RegistrarError(Err.Number, Err.description, "clsClan.Class_Initialize", Erl)
+106     Resume Next
         
 End Sub
 
 Private Sub Class_Terminate()
         
-        On Error GoTo Class_Terminate_Err
+    On Error GoTo Class_Terminate_Err
         
-100     Set p_OnlineMembers = Nothing
-102     Set p_GMsOnline = Nothing
-104     Set p_PropuestasDePaz = Nothing
-106     Set p_PropuestasDeAlianza = Nothing
+    Set p_OnlineMembers = Nothing
+    Set p_GMsOnline = Nothing
+    Set p_PropuestasDePaz = Nothing
+    Set p_PropuestasDeAlianza = Nothing
 
         
-        Exit Sub
+    Exit Sub
 
 Class_Terminate_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.Class_Terminate", Erl)
-        Resume Next
+    Call RegistrarError(Err.Number, Err.description, "clsClan.Class_Terminate", Erl)
+    Resume Next
         
 End Sub
 
@@ -256,8 +256,8 @@ Public Sub Inicializar(ByVal GuildName As String, ByVal GuildNumber As Integer, 
         Exit Sub
 
 Inicializar_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.Inicializar", Erl)
-        Resume Next
+154     Call RegistrarError(Err.Number, Err.description, "clsClan.Inicializar", Erl)
+156     Resume Next
         
 End Sub
 
@@ -307,8 +307,8 @@ Public Sub InicializarNuevoClan(ByRef Fundador As String)
         Exit Sub
 
 InicializarNuevoClan_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.InicializarNuevoClan", Erl)
-        Resume Next
+128     Call RegistrarError(Err.Number, Err.description, "clsClan.InicializarNuevoClan", Erl)
+130     Resume Next
         
 End Sub
 
@@ -323,8 +323,8 @@ Public Sub ProcesarFundacionDeOtroClan()
         Exit Sub
 
 ProcesarFundacionDeOtroClan_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.ProcesarFundacionDeOtroClan", Erl)
-        Resume Next
+104     Call RegistrarError(Err.Number, Err.description, "clsClan.ProcesarFundacionDeOtroClan", Erl)
+106     Resume Next
         
 End Sub
 
@@ -342,8 +342,8 @@ Public Property Get Fundador() As String
         Exit Property
 
 Fundador_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.Fundador", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "clsClan.Fundador", Erl)
+104     Resume Next
         
 End Property
 
@@ -369,8 +369,8 @@ Public Property Get CantidadDeMiembros() As Integer
         Exit Property
 
 CantidadDeMiembros_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.CantidadDeMiembros", Erl)
-        Resume Next
+104     Call RegistrarError(Err.Number, Err.description, "clsClan.CantidadDeMiembros", Erl)
+106     Resume Next
         
 End Property
 
@@ -384,8 +384,8 @@ Public Sub SetLeader(ByRef leader As String)
         Exit Sub
 
 SetLeader_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.SetLeader", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "clsClan.SetLeader", Erl)
+104     Resume Next
         
 End Sub
 
@@ -399,8 +399,8 @@ Public Function GetLeader() As String
         Exit Function
 
 GetLeader_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.GetLeader", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "clsClan.GetLeader", Erl)
+104     Resume Next
         
 End Function
 
@@ -429,12 +429,12 @@ Public Function GetMemberList() As String()
         Exit Function
 
 GetMemberList_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.GetMemberList", Erl)
-        Resume Next
+112     Call RegistrarError(Err.Number, Err.description, "clsClan.GetMemberList", Erl)
+114     Resume Next
         
 End Function
 
-Public Sub ConectarMiembro(ByVal UserIndex As Integer)
+Public Sub ConectarMiembro(ByVal Userindex As Integer)
         '***************************************************
         'Autor: Unknown (orginal version)
         'Last Modification: 28/05/2010
@@ -443,9 +443,9 @@ Public Sub ConectarMiembro(ByVal UserIndex As Integer)
         
         On Error GoTo ConectarMiembro_Err
         
-100     p_OnlineMembers.Add UserIndex
+100     p_OnlineMembers.Add Userindex
 
-102     With UserList(UserIndex)
+102     With UserList(Userindex)
 
             ' No avisa cuando loguea un dios
 104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then
@@ -459,12 +459,12 @@ Public Sub ConectarMiembro(ByVal UserIndex As Integer)
         Exit Sub
 
 ConectarMiembro_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.ConectarMiembro", Erl)
-        Resume Next
+108     Call RegistrarError(Err.Number, Err.description, "clsClan.ConectarMiembro", Erl)
+110     Resume Next
         
 End Sub
 
-Public Sub DesConectarMiembro(ByVal UserIndex As Integer)
+Public Sub DesConectarMiembro(ByVal Userindex As Integer)
         
         On Error GoTo DesConectarMiembro_Err
         
@@ -478,10 +478,10 @@ Public Sub DesConectarMiembro(ByVal UserIndex As Integer)
 
 100     For i = 1 To p_OnlineMembers.Count
 
-102         If p_OnlineMembers.Item(i) = UserIndex Then
+102         If p_OnlineMembers.Item(i) = Userindex Then
 104             p_OnlineMembers.Remove i
             
-106             With UserList(UserIndex)
+106             With UserList(Userindex)
 
                     ' No avisa cuando se desconecta un dios
 108                 If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then
@@ -501,8 +501,8 @@ Public Sub DesConectarMiembro(ByVal UserIndex As Integer)
         Exit Sub
 
 DesConectarMiembro_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.DesConectarMiembro", Erl)
-        Resume Next
+114     Call RegistrarError(Err.Number, Err.description, "clsClan.DesConectarMiembro", Erl)
+116     Resume Next
         
 End Sub
 
@@ -537,8 +537,8 @@ Public Sub AceptarNuevoMiembro(ByRef nombre As String)
         Exit Sub
 
 AceptarNuevoMiembro_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.AceptarNuevoMiembro", Erl)
-        Resume Next
+118     Call RegistrarError(Err.Number, Err.description, "clsClan.AceptarNuevoMiembro", Erl)
+120     Resume Next
         
 End Sub
 
@@ -602,8 +602,8 @@ Public Sub ExpulsarMiembro(ByRef nombre As String)
         Exit Sub
 
 ExpulsarMiembro_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.ExpulsarMiembro", Erl)
-        Resume Next
+142     Call RegistrarError(Err.Number, Err.description, "clsClan.ExpulsarMiembro", Erl)
+144     Resume Next
         
 End Sub
 
@@ -641,8 +641,8 @@ Public Function GetAspirantes() As String()
         Exit Function
 
 GetAspirantes_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.GetAspirantes", Erl)
-        Resume Next
+116     Call RegistrarError(Err.Number, Err.description, "clsClan.GetAspirantes", Erl)
+118     Resume Next
         
 End Function
 
@@ -667,8 +667,8 @@ Public Function CantidadAspirantes() As Integer
         Exit Function
 
 CantidadAspirantes_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.CantidadAspirantes", Erl)
-        Resume Next
+108     Call RegistrarError(Err.Number, Err.description, "clsClan.CantidadAspirantes", Erl)
+110     Resume Next
         
 End Function
 
@@ -682,8 +682,8 @@ Public Function DetallesSolicitudAspirante(ByVal NroAspirante As Integer) As Str
         Exit Function
 
 DetallesSolicitudAspirante_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.DetallesSolicitudAspirante", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "clsClan.DetallesSolicitudAspirante", Erl)
+104     Resume Next
         
 End Function
 
@@ -710,8 +710,8 @@ Public Function NumeroDeAspirante(ByRef nombre As String) As Integer
         Exit Function
 
 NumeroDeAspirante_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.NumeroDeAspirante", Erl)
-        Resume Next
+110     Call RegistrarError(Err.Number, Err.description, "clsClan.NumeroDeAspirante", Erl)
+112     Resume Next
         
 End Function
 
@@ -752,8 +752,8 @@ Public Sub NuevoAspirante(ByRef nombre As String, ByRef Peticion As String)
         Exit Sub
 
 NuevoAspirante_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.NuevoAspirante", Erl)
-        Resume Next
+122     Call RegistrarError(Err.Number, Err.description, "clsClan.NuevoAspirante", Erl)
+124     Resume Next
         
 End Sub
 
@@ -807,8 +807,8 @@ Public Sub RetirarAspirante(ByRef nombre As String, ByRef NroAspirante As Intege
         Exit Sub
 
 RetirarAspirante_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.RetirarAspirante", Erl)
-        Resume Next
+136     Call RegistrarError(Err.Number, Err.description, "clsClan.RetirarAspirante", Erl)
+138     Resume Next
         
 End Sub
 
@@ -826,8 +826,8 @@ Public Function GetFechaFundacion() As String
         Exit Function
 
 GetFechaFundacion_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.GetFechaFundacion", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "clsClan.GetFechaFundacion", Erl)
+104     Resume Next
         
 End Function
 
@@ -843,8 +843,8 @@ Public Sub SetCodex(ByVal CodexNumber As Integer, ByRef codex As String)
         Exit Sub
 
 SetCodex_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.SetCodex", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "clsClan.SetCodex", Erl)
+108     Resume Next
         
 End Sub
 
@@ -858,8 +858,8 @@ Public Function GetCodex(ByVal CodexNumber As Integer) As String
         Exit Function
 
 GetCodex_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.GetCodex", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "clsClan.GetCodex", Erl)
+104     Resume Next
         
 End Function
 
@@ -873,8 +873,8 @@ Public Sub SetURL(ByRef URL As String)
         Exit Sub
 
 SetURL_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.SetURL", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "clsClan.SetURL", Erl)
+104     Resume Next
         
 End Sub
 
@@ -888,8 +888,8 @@ Public Function GetURL() As String
         Exit Function
 
 GetURL_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.GetURL", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "clsClan.GetURL", Erl)
+104     Resume Next
         
 End Function
 
@@ -903,8 +903,8 @@ Public Sub SetNivelDeClan(ByRef nivel As Byte)
         Exit Sub
 
 SetNivelDeClan_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.SetNivelDeClan", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "clsClan.SetNivelDeClan", Erl)
+104     Resume Next
         
 End Sub
 
@@ -918,8 +918,8 @@ Public Function GetNivelDeClan() As Byte
         Exit Function
 
 GetNivelDeClan_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.GetNivelDeClan", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "clsClan.GetNivelDeClan", Erl)
+104     Resume Next
         
 End Function
 
@@ -933,8 +933,8 @@ Public Sub SetExpActual(ByRef Exp As Integer)
         Exit Sub
 
 SetExpActual_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.SetExpActual", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "clsClan.SetExpActual", Erl)
+104     Resume Next
         
 End Sub
 
@@ -948,8 +948,8 @@ Public Function GetExpActual() As Integer
         Exit Function
 
 GetExpActual_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.GetExpActual", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "clsClan.GetExpActual", Erl)
+104     Resume Next
         
 End Function
 
@@ -963,8 +963,8 @@ Public Sub SetExpNecesaria(ByRef Exp As Integer)
         Exit Sub
 
 SetExpNecesaria_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.SetExpNecesaria", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "clsClan.SetExpNecesaria", Erl)
+104     Resume Next
         
 End Sub
 
@@ -978,8 +978,8 @@ Public Function GetExpNecesaria() As Integer
         Exit Function
 
 GetExpNecesaria_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.GetExpNecesaria", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "clsClan.GetExpNecesaria", Erl)
+104     Resume Next
         
 End Function
 
@@ -997,8 +997,8 @@ Public Sub SetGuildNews(ByRef News As String)
         Exit Sub
 
 SetGuildNews_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.SetGuildNews", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "clsClan.SetGuildNews", Erl)
+108     Resume Next
         
 End Sub
 
@@ -1012,8 +1012,8 @@ Public Function GetGuildNews() As String
         Exit Function
 
 GetGuildNews_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.GetGuildNews", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "clsClan.GetGuildNews", Erl)
+104     Resume Next
         
 End Function
 
@@ -1030,8 +1030,8 @@ Public Sub SetDesc(ByRef Desc As String)
         Exit Sub
 
 SetDesc_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.SetDesc", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "clsClan.SetDesc", Erl)
+108     Resume Next
         
 End Sub
 
@@ -1045,8 +1045,8 @@ Public Function GetDesc() As String
         Exit Function
 
 GetDesc_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.GetDesc", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "clsClan.GetDesc", Erl)
+104     Resume Next
         
 End Function
 
@@ -1070,8 +1070,8 @@ Public Function EleccionesAbiertas() As Boolean
         Exit Function
 
 EleccionesAbiertas_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.EleccionesAbiertas", Erl)
-        Resume Next
+104     Call RegistrarError(Err.Number, Err.description, "clsClan.EleccionesAbiertas", Erl)
+106     Resume Next
         
 End Function
 
@@ -1087,8 +1087,8 @@ Public Sub AbrirElecciones()
         Exit Sub
 
 AbrirElecciones_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.AbrirElecciones", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "clsClan.AbrirElecciones", Erl)
+108     Resume Next
         
 End Sub
 
@@ -1104,8 +1104,8 @@ Private Sub CerrarElecciones()  'solo pueden cerrarse mediante recuento de votos
         Exit Sub
 
 CerrarElecciones_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.CerrarElecciones", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "clsClan.CerrarElecciones", Erl)
+108     Resume Next
         
 End Sub
 
@@ -1127,8 +1127,8 @@ Public Sub ContabilizarVoto(ByRef Votante As String, ByRef Votado As String)
         Exit Sub
 
 ContabilizarVoto_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.ContabilizarVoto", Erl)
-        Resume Next
+108     Call RegistrarError(Err.Number, Err.description, "clsClan.ContabilizarVoto", Erl)
+110     Resume Next
         
 End Sub
 
@@ -1142,67 +1142,67 @@ Public Function YaVoto(ByRef Votante) As Boolean
         Exit Function
 
 YaVoto_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.YaVoto", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "clsClan.YaVoto", Erl)
+104     Resume Next
         
 End Function
 
 Private Function ContarVotos(ByRef CantGanadores As Integer) As String
 
-    Dim q     As Integer
+        Dim q     As Integer
 
-    Dim i     As Integer
+        Dim i     As Integer
 
-    Dim Temps As String
+        Dim Temps As String
 
-    Dim tempV As String
+        Dim tempV As String
 
-    Dim d     As diccionario
+        Dim d     As diccionario
 
-    On Error GoTo errh
+        On Error GoTo errh
 
-    ContarVotos = vbNullString
-    CantGanadores = 0
-    Temps = GetVar(MEMBERSFILE, "INIT", "NroMembers")
-    q = IIf(IsNumeric(Temps), CInt(Temps), 0)
+100     ContarVotos = vbNullString
+102     CantGanadores = 0
+104     Temps = GetVar(MEMBERSFILE, "INIT", "NroMembers")
+106     q = IIf(IsNumeric(Temps), CInt(Temps), 0)
 
-    If q > 0 Then
-        'el diccionario tiene clave el elegido y valor la #votos
-        Set d = New diccionario
+108     If q > 0 Then
+            'el diccionario tiene clave el elegido y valor la #votos
+110         Set d = New diccionario
         
-        For i = 1 To q
-            'miembro del clan
-            Temps = GetVar(MEMBERSFILE, "MEMBERS", "Member" & i)
+112         For i = 1 To q
+                'miembro del clan
+114             Temps = GetVar(MEMBERSFILE, "MEMBERS", "Member" & i)
             
-            'a quienvoto
-            tempV = GetVar(VOTACIONESFILE, "VOTOS", Temps)
+                'a quienvoto
+116             tempV = GetVar(VOTACIONESFILE, "VOTOS", Temps)
             
-            'si voto a alguien contabilizamos el voto
-            If LenB(tempV) <> 0 Then
-                If Not IsNull(d.At(tempV)) Then  'cuantos votos tiene?
-                    Call d.AtPut(tempV, CInt(d.At(tempV)) + 1)
-                Else
-                    Call d.AtPut(tempV, 1)
+                'si voto a alguien contabilizamos el voto
+118             If LenB(tempV) <> 0 Then
+120                 If Not IsNull(d.At(tempV)) Then  'cuantos votos tiene?
+122                     Call d.AtPut(tempV, CInt(d.At(tempV)) + 1)
+                    Else
+124                     Call d.AtPut(tempV, 1)
+
+                    End If
 
                 End If
 
-            End If
+126         Next i
+    
+            'quien quedo con mas votos, y cuantos tuvieron esos votos?
+128         ContarVotos = d.MayorValor(CantGanadores)
+    
+130         Set d = Nothing
 
-        Next i
+        End If
     
-        'quien quedo con mas votos, y cuantos tuvieron esos votos?
-        ContarVotos = d.MayorValor(CantGanadores)
-    
-        Set d = Nothing
-
-    End If
-    
-    Exit Function
+        Exit Function
 errh:
-    LogError ("clsClan.Contarvotos: " & Err.description)
+132     LogError ("clsClan.Contarvotos: " & Err.description)
 
-    If Not d Is Nothing Then Set d = Nothing
-    ContarVotos = vbNullString
+134     If Not d Is Nothing Then Set d = Nothing
+136     ContarVotos = vbNullString
 
 End Function
 
@@ -1272,8 +1272,8 @@ Public Function RevisarElecciones() As Boolean
         Exit Function
 
 RevisarElecciones_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.RevisarElecciones", Erl)
-        Resume Next
+144     Call RegistrarError(Err.Number, Err.description, "clsClan.RevisarElecciones", Erl)
+146     Resume Next
         
 End Function
 
@@ -1304,8 +1304,8 @@ Public Property Get CantidadPropuestas(ByVal Tipo As RELACIONES_GUILD) As Intege
         Exit Property
 
 CantidadPropuestas_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.CantidadPropuestas", Erl)
-        Resume Next
+110     Call RegistrarError(Err.Number, Err.description, "clsClan.CantidadPropuestas", Erl)
+112     Resume Next
         
 End Property
 
@@ -1324,8 +1324,8 @@ Public Property Get CantidadEnemys() As Integer
         Exit Property
 
 CantidadEnemys_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.CantidadEnemys", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "clsClan.CantidadEnemys", Erl)
+108     Resume Next
         
 End Property
 
@@ -1344,8 +1344,8 @@ Public Property Get CantidadAllies() As Integer
         Exit Property
 
 CantidadAllies_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.CantidadAllies", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "clsClan.CantidadAllies", Erl)
+108     Resume Next
         
 End Property
 
@@ -1359,8 +1359,8 @@ Public Function GetRelacion(ByVal OtroGuild As Integer) As RELACIONES_GUILD
         Exit Function
 
 GetRelacion_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.GetRelacion", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "clsClan.GetRelacion", Erl)
+104     Resume Next
         
 End Function
 
@@ -1375,8 +1375,8 @@ Public Sub SetRelacion(ByVal GuildIndex As Integer, ByVal Relacion As RELACIONES
         Exit Sub
 
 SetRelacion_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.SetRelacion", Erl)
-        Resume Next
+104     Call RegistrarError(Err.Number, Err.description, "clsClan.SetRelacion", Erl)
+106     Resume Next
         
 End Sub
 
@@ -1402,8 +1402,8 @@ Public Sub SetPropuesta(ByVal Tipo As RELACIONES_GUILD, ByVal OtroGuild As Integ
         Exit Sub
 
 SetPropuesta_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.SetPropuesta", Erl)
-        Resume Next
+114     Call RegistrarError(Err.Number, Err.description, "clsClan.SetPropuesta", Erl)
+116     Resume Next
         
 End Sub
 
@@ -1433,8 +1433,8 @@ Public Sub AnularPropuestas(ByVal OtroGuild As Integer)
         Exit Sub
 
 AnularPropuestas_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.AnularPropuestas", Erl)
-        Resume Next
+116     Call RegistrarError(Err.Number, Err.description, "clsClan.AnularPropuestas", Erl)
+118     Resume Next
         
 End Sub
 
@@ -1450,8 +1450,8 @@ Public Function GetPropuesta(ByVal OtroGuild As Integer, ByRef Tipo As RELACIONE
         Exit Function
 
 GetPropuesta_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.GetPropuesta", Erl)
-        Resume Next
+104     Call RegistrarError(Err.Number, Err.description, "clsClan.GetPropuesta", Erl)
+106     Resume Next
         
 End Function
 
@@ -1496,8 +1496,8 @@ Public Function HayPropuesta(ByVal OtroGuild As Integer, ByRef Tipo As RELACIONE
         Exit Function
 
 HayPropuesta_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.HayPropuesta", Erl)
-        Resume Next
+124     Call RegistrarError(Err.Number, Err.description, "clsClan.HayPropuesta", Erl)
+126     Resume Next
         
 End Function
 
@@ -1554,8 +1554,8 @@ Public Function Iterador_ProximaPropuesta(ByVal Tipo As RELACIONES_GUILD) As Int
         Exit Function
 
 Iterador_ProximaPropuesta_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.Iterador_ProximaPropuesta", Erl)
-        Resume Next
+126     Call RegistrarError(Err.Number, Err.description, "clsClan.Iterador_ProximaPropuesta", Erl)
+128     Resume Next
         
 End Function
 
@@ -1577,8 +1577,8 @@ Public Function m_Iterador_ProximoUserIndex() As Integer
         Exit Function
 
 m_Iterador_ProximoUserIndex_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.m_Iterador_ProximoUserIndex", Erl)
-        Resume Next
+110     Call RegistrarError(Err.Number, Err.description, "clsClan.m_Iterador_ProximoUserIndex", Erl)
+112     Resume Next
         
 End Function
 
@@ -1600,8 +1600,8 @@ Public Function Iterador_ProximoGM() As Integer
         Exit Function
 
 Iterador_ProximoGM_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.Iterador_ProximoGM", Erl)
-        Resume Next
+110     Call RegistrarError(Err.Number, Err.description, "clsClan.Iterador_ProximoGM", Erl)
+112     Resume Next
         
 End Function
 
@@ -1631,8 +1631,8 @@ Public Function Iterador_ProximaRelacion(ByVal R As RELACIONES_GUILD) As Integer
         Exit Function
 
 Iterador_ProximaRelacion_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.Iterador_ProximaRelacion", Erl)
-        Resume Next
+112     Call RegistrarError(Err.Number, Err.description, "clsClan.Iterador_ProximaRelacion", Erl)
+114     Resume Next
         
 End Function
 
@@ -1644,22 +1644,22 @@ End Function
 'ADMINISTRATIVAS
 '
 
-Public Sub ConectarGM(ByVal UserIndex As Integer)
+Public Sub ConectarGM(ByVal Userindex As Integer)
         
         On Error GoTo ConectarGM_Err
         
-100     p_GMsOnline.Add UserIndex
+100     p_GMsOnline.Add Userindex
 
         
         Exit Sub
 
 ConectarGM_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.ConectarGM", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "clsClan.ConectarGM", Erl)
+104     Resume Next
         
 End Sub
 
-Public Sub DesconectarGM(ByVal UserIndex As Integer)
+Public Sub DesconectarGM(ByVal Userindex As Integer)
         
         On Error GoTo DesconectarGM_Err
         
@@ -1668,7 +1668,7 @@ Public Sub DesconectarGM(ByVal UserIndex As Integer)
 
 100     For i = 1 To p_GMsOnline.Count
 
-102         If p_GMsOnline.Item(i) = UserIndex Then
+102         If p_GMsOnline.Item(i) = Userindex Then
 104             p_GMsOnline.Remove (i)
 
             End If
@@ -1679,8 +1679,8 @@ Public Sub DesconectarGM(ByVal UserIndex As Integer)
         Exit Sub
 
 DesconectarGM_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.DesconectarGM", Erl)
-        Resume Next
+108     Call RegistrarError(Err.Number, Err.description, "clsClan.DesconectarGM", Erl)
+110     Resume Next
         
 End Sub
 
@@ -1712,8 +1712,8 @@ Private Sub ReplaceInvalidChars(ByRef S As String)
         Exit Sub
 
 ReplaceInvalidChars_Err:
-        Call RegistrarError(Err.Number, Err.description, "clsClan.ReplaceInvalidChars", Erl)
-        Resume Next
+112     Call RegistrarError(Err.Number, Err.description, "clsClan.ReplaceInvalidChars", Erl)
+114     Resume Next
         
 End Sub
 

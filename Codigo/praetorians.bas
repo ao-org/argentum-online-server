@@ -71,139 +71,139 @@ Public Sub LoadPretorianData()
 102     Call FileReader.Initialize(DatPath & "Pretorianos.dat")
         
         'Ubicación predeterminada de los pretorianos.
-        MAPA_PRETORIANO = val(FileReader.GetValue("UBICACION", "Mapa"))
-        PRETORIANO_X = val(FileReader.GetValue("UBICACION", "X"))
-        PRETORIANO_Y = val(FileReader.GetValue("UBICACION", "Y"))
-        PRETORIANO_RESPAWNEA = IIf(val(FileReader.GetValue("UBICACION", "Respawn")) = 1, True, False)
+104     MAPA_PRETORIANO = val(FileReader.GetValue("UBICACION", "Mapa"))
+106     PRETORIANO_X = val(FileReader.GetValue("UBICACION", "X"))
+108     PRETORIANO_Y = val(FileReader.GetValue("UBICACION", "Y"))
+110     PRETORIANO_RESPAWNEA = IIf(val(FileReader.GetValue("UBICACION", "Respawn")) = 1, True, False)
 
         'Configuracion de los NPC's
         Dim NroCombinaciones As Integer
-104         NroCombinaciones = val(FileReader.GetValue("MAIN", "Combinaciones"))
+112         NroCombinaciones = val(FileReader.GetValue("MAIN", "Combinaciones"))
 
-106     ReDim PretorianDatNumbers(1 To NroCombinaciones)
+114     ReDim PretorianDatNumbers(1 To NroCombinaciones)
 
         Dim TempInt        As Integer
         Dim counter        As Long
         Dim PretorianIndex As Integer
 
-108     PretorianIndex = 1
+116     PretorianIndex = 1
 
         ' KINGS
-110     TempInt = val(FileReader.GetValue("KING", "Cantidad"))
-112     PretorianAIOffset(ePretorianAI.King) = 1
+118     TempInt = val(FileReader.GetValue("KING", "Cantidad"))
+120     PretorianAIOffset(ePretorianAI.King) = 1
 
-114     For counter = 1 To TempInt
+122     For counter = 1 To TempInt
 
             ' Alto
-116         PretorianDatNumbers(PretorianIndex) = val(FileReader.GetValue("KING", "Alto" & counter))
-118         PretorianIndex = PretorianIndex + 1
+124         PretorianDatNumbers(PretorianIndex) = val(FileReader.GetValue("KING", "Alto" & counter))
+126         PretorianIndex = PretorianIndex + 1
             ' Bajo
-120         PretorianDatNumbers(PretorianIndex) = val(FileReader.GetValue("KING", "Bajo" & counter))
-122         PretorianIndex = PretorianIndex + 1
+128         PretorianDatNumbers(PretorianIndex) = val(FileReader.GetValue("KING", "Bajo" & counter))
+130         PretorianIndex = PretorianIndex + 1
 
-124     Next counter
+132     Next counter
 
         ' HEALERS
-126     TempInt = val(FileReader.GetValue("HEALER", "Cantidad"))
-128     PretorianAIOffset(ePretorianAI.Healer) = PretorianIndex
+134     TempInt = val(FileReader.GetValue("HEALER", "Cantidad"))
+136     PretorianAIOffset(ePretorianAI.Healer) = PretorianIndex
 
-130     For counter = 1 To TempInt
+138     For counter = 1 To TempInt
 
             ' Alto
-132         PretorianDatNumbers(PretorianIndex) = val(FileReader.GetValue("HEALER", "Alto" & counter))
-134         PretorianIndex = PretorianIndex + 1
+140         PretorianDatNumbers(PretorianIndex) = val(FileReader.GetValue("HEALER", "Alto" & counter))
+142         PretorianIndex = PretorianIndex + 1
             ' Bajo
-136         PretorianDatNumbers(PretorianIndex) = val(FileReader.GetValue("HEALER", "Bajo" & counter))
-138         PretorianIndex = PretorianIndex + 1
+144         PretorianDatNumbers(PretorianIndex) = val(FileReader.GetValue("HEALER", "Bajo" & counter))
+146         PretorianIndex = PretorianIndex + 1
 
-140     Next counter
+148     Next counter
 
         ' SPELLCASTER
-142     TempInt = val(FileReader.GetValue("SPELLCASTER", "Cantidad"))
-144     PretorianAIOffset(ePretorianAI.SpellCaster) = PretorianIndex
+150     TempInt = val(FileReader.GetValue("SPELLCASTER", "Cantidad"))
+152     PretorianAIOffset(ePretorianAI.SpellCaster) = PretorianIndex
 
-146     For counter = 1 To TempInt
+154     For counter = 1 To TempInt
 
             ' Alto
-148         PretorianDatNumbers(PretorianIndex) = val(FileReader.GetValue("SPELLCASTER", "Alto" & counter))
-150         PretorianIndex = PretorianIndex + 1
+156         PretorianDatNumbers(PretorianIndex) = val(FileReader.GetValue("SPELLCASTER", "Alto" & counter))
+158         PretorianIndex = PretorianIndex + 1
             ' Bajo
-152         PretorianDatNumbers(PretorianIndex) = val(FileReader.GetValue("SPELLCASTER", "Bajo" & counter))
-154         PretorianIndex = PretorianIndex + 1
+160         PretorianDatNumbers(PretorianIndex) = val(FileReader.GetValue("SPELLCASTER", "Bajo" & counter))
+162         PretorianIndex = PretorianIndex + 1
 
-156     Next counter
+164     Next counter
 
         ' SWORDSWINGER
-158     TempInt = val(FileReader.GetValue("SWORDSWINGER", "Cantidad"))
-160     PretorianAIOffset(ePretorianAI.SwordMaster) = PretorianIndex
+166     TempInt = val(FileReader.GetValue("SWORDSWINGER", "Cantidad"))
+168     PretorianAIOffset(ePretorianAI.SwordMaster) = PretorianIndex
 
-162     For counter = 1 To TempInt
+170     For counter = 1 To TempInt
 
             ' Alto
-164         PretorianDatNumbers(PretorianIndex) = val(FileReader.GetValue("SWORDSWINGER", "Alto" & counter))
-166         PretorianIndex = PretorianIndex + 1
+172         PretorianDatNumbers(PretorianIndex) = val(FileReader.GetValue("SWORDSWINGER", "Alto" & counter))
+174         PretorianIndex = PretorianIndex + 1
             ' Bajo
-168         PretorianDatNumbers(PretorianIndex) = val(FileReader.GetValue("SWORDSWINGER", "Bajo" & counter))
-170         PretorianIndex = PretorianIndex + 1
+176         PretorianDatNumbers(PretorianIndex) = val(FileReader.GetValue("SWORDSWINGER", "Bajo" & counter))
+178         PretorianIndex = PretorianIndex + 1
 
-172     Next counter
+180     Next counter
 
         ' LONGRANGE
-174     TempInt = val(FileReader.GetValue("LONGRANGE", "Cantidad"))
-176     PretorianAIOffset(ePretorianAI.Shooter) = PretorianIndex
+182     TempInt = val(FileReader.GetValue("LONGRANGE", "Cantidad"))
+184     PretorianAIOffset(ePretorianAI.Shooter) = PretorianIndex
 
-178     For counter = 1 To TempInt
+186     For counter = 1 To TempInt
 
             ' Alto
-180         PretorianDatNumbers(PretorianIndex) = val(FileReader.GetValue("LONGRANGE", "Alto" & counter))
-182         PretorianIndex = PretorianIndex + 1
+188         PretorianDatNumbers(PretorianIndex) = val(FileReader.GetValue("LONGRANGE", "Alto" & counter))
+190         PretorianIndex = PretorianIndex + 1
             ' Bajo
-184         PretorianDatNumbers(PretorianIndex) = val(FileReader.GetValue("LONGRANGE", "Bajo" & counter))
-186         PretorianIndex = PretorianIndex + 1
+192         PretorianDatNumbers(PretorianIndex) = val(FileReader.GetValue("LONGRANGE", "Bajo" & counter))
+194         PretorianIndex = PretorianIndex + 1
 
-188     Next counter
+196     Next counter
 
         ' THIEF
-190     TempInt = val(FileReader.GetValue("THIEF", "Cantidad"))
-192     PretorianAIOffset(ePretorianAI.Thief) = PretorianIndex
+198     TempInt = val(FileReader.GetValue("THIEF", "Cantidad"))
+200     PretorianAIOffset(ePretorianAI.Thief) = PretorianIndex
 
-194     For counter = 1 To TempInt
+202     For counter = 1 To TempInt
 
             ' Alto
-196         PretorianDatNumbers(PretorianIndex) = val(FileReader.GetValue("THIEF", "Alto" & counter))
-198         PretorianIndex = PretorianIndex + 1
+204         PretorianDatNumbers(PretorianIndex) = val(FileReader.GetValue("THIEF", "Alto" & counter))
+206         PretorianIndex = PretorianIndex + 1
             ' Bajo
-200         PretorianDatNumbers(PretorianIndex) = val(FileReader.GetValue("THIEF", "Bajo" & counter))
-202         PretorianIndex = PretorianIndex + 1
+208         PretorianDatNumbers(PretorianIndex) = val(FileReader.GetValue("THIEF", "Bajo" & counter))
+210         PretorianIndex = PretorianIndex + 1
 
-204     Next counter
+212     Next counter
 
         ' Last
-206     PretorianAIOffset(ePretorianAI.Last) = PretorianIndex
+214     PretorianAIOffset(ePretorianAI.Last) = PretorianIndex
 
         ' Inicializa los clanes pretorianos
-208     ReDim ClanPretoriano(ePretorianType.Default To ePretorianType.Custom) As clsClanPretoriano
-210     Set ClanPretoriano(ePretorianType.Default) = New clsClanPretoriano ' Clan default
-212     Set ClanPretoriano(ePretorianType.Custom) = New clsClanPretoriano ' Invocable por gms
+216     ReDim ClanPretoriano(ePretorianType.Default To ePretorianType.Custom) As clsClanPretoriano
+218     Set ClanPretoriano(ePretorianType.Default) = New clsClanPretoriano ' Clan default
+220     Set ClanPretoriano(ePretorianType.Custom) = New clsClanPretoriano ' Invocable por gms
         
         'Invocamos al Clan Pretoriano en su respectivo mapa.
         'Activando su respawn automatico.
-        If Not ClanPretoriano(ePretorianType.Default).SpawnClan(MAPA_PRETORIANO, PRETORIANO_X, PRETORIANO_Y, ePretorianType.Default, PRETORIANO_RESPAWNEA) Then
-            Call LogError("No se pudo invocar al Clan Pretoriano.")
+222     If Not ClanPretoriano(ePretorianType.Default).SpawnClan(MAPA_PRETORIANO, PRETORIANO_X, PRETORIANO_Y, ePretorianType.Default, PRETORIANO_RESPAWNEA) Then
+224         Call LogError("No se pudo invocar al Clan Pretoriano.")
             Exit Sub
         End If
         
-        Set FileReader = Nothing
+226     Set FileReader = Nothing
         
         Exit Sub
 
 LoadPretorianData_Err:
         
-        Set FileReader = Nothing
+228     Set FileReader = Nothing
         
-        Call RegistrarError(Err.Number, Err.description, "PraetoriansCoopNPC.LoadPretorianData", Erl)
+230     Call RegistrarError(Err.Number, Err.description, "PraetoriansCoopNPC.LoadPretorianData", Erl)
         
-        Resume Next
+232     Resume Next
         
 End Sub
 
@@ -226,7 +226,7 @@ Public Sub EliminarPretorianos(ByVal Mapa As Integer)
         Exit Sub
 
 EliminarPretorianos_Err:
-        Call RegistrarError(Err.Number, Err.description, "PraetoriansCoopNPC.EliminarPretorianos", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "PraetoriansCoopNPC.EliminarPretorianos", Erl)
+108     Resume Next
         
 End Sub

@@ -68,8 +68,8 @@ Public Sub InitTesoro()
         Exit Sub
 
 InitTesoro_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModTesoros.InitTesoro", Erl)
-        Resume Next
+160     Call RegistrarError(Err.Number, Err.description, "ModTesoros.InitTesoro", Erl)
+162     Resume Next
         
 End Sub
 
@@ -119,8 +119,8 @@ Public Sub InitRegalo()
         Exit Sub
 
 InitRegalo_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModTesoros.InitRegalo", Erl)
-        Resume Next
+158     Call RegistrarError(Err.Number, Err.description, "ModTesoros.InitRegalo", Erl)
+160     Resume Next
         
 End Sub
 
@@ -264,8 +264,8 @@ Public Sub PerderTesoro()
         Exit Sub
 
 PerderTesoro_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModTesoros.PerderTesoro", Erl)
-        Resume Next
+234     Call RegistrarError(Err.Number, Err.description, "ModTesoros.PerderTesoro", Erl)
+236     Resume Next
         
 End Sub
 
@@ -429,8 +429,8 @@ Public Sub PerderRegalo()
         Exit Sub
 
 PerderRegalo_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModTesoros.PerderRegalo", Erl)
-        Resume Next
+254     Call RegistrarError(Err.Number, Err.description, "ModTesoros.PerderRegalo", Erl)
+256     Resume Next
         
 End Sub
 

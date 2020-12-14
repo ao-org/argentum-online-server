@@ -60,7 +60,7 @@ Public Function CharIndexToUserIndex(ByVal CharIndex As Integer) As Integer
         Exit Function
 
 CharIndexToUserIndex_Err:
-        Call RegistrarError(Err.Number, Err.description, "Characters.CharIndexToUserIndex", Erl)
-        Resume Next
+110     Call RegistrarError(Err.Number, Err.description, "Characters.CharIndexToUserIndex", Erl)
+112     Resume Next
         
 End Function

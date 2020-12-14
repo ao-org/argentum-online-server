@@ -192,90 +192,90 @@ Function VersionOK(ByVal Ver As String) As Boolean
         Exit Function
 
 VersionOK_Err:
-        Call RegistrarError(Err.Number, Err.description, "Admin.VersionOK", Erl)
-        Resume Next
+102     Call RegistrarError(Err.Number, Err.description, "Admin.VersionOK", Erl)
+104     Resume Next
         
 End Function
 
 Sub ReSpawnOrigPosNpcs()
 
-    On Error Resume Next
+        On Error Resume Next
 
-    Dim i     As Integer
+        Dim i     As Integer
 
-    Dim MiNPC As npc
+        Dim MiNPC As npc
    
-    For i = 1 To LastNPC
+100     For i = 1 To LastNPC
 
-        'OJO
-        If Npclist(i).flags.NPCActive Then
+            'OJO
+102         If Npclist(i).flags.NPCActive Then
         
-            If InMapBounds(Npclist(i).Orig.Map, Npclist(i).Orig.X, Npclist(i).Orig.Y) And Npclist(i).Numero = Guardias Then
-                MiNPC = Npclist(i)
-                Call QuitarNPC(i)
-                Call ReSpawnNpc(MiNPC)
+104             If InMapBounds(Npclist(i).Orig.Map, Npclist(i).Orig.X, Npclist(i).Orig.Y) And Npclist(i).Numero = Guardias Then
+106                 MiNPC = Npclist(i)
+108                 Call QuitarNPC(i)
+110                 Call ReSpawnNpc(MiNPC)
 
+                End If
+        
+                'tildada por sugerencia de yind
+                'If Npclist(i).Contadores.TiempoExistencia > 0 Then
+                '        Call MuereNpc(i, 0)
+                'End If
             End If
-        
-            'tildada por sugerencia de yind
-            'If Npclist(i).Contadores.TiempoExistencia > 0 Then
-            '        Call MuereNpc(i, 0)
-            'End If
-        End If
    
-    Next i
+112     Next i
 
 End Sub
 
 Sub WorldSave()
 
-    On Error Resume Next
+        On Error Resume Next
 
-    'Call LogTarea("Sub WorldSave")
+        'Call LogTarea("Sub WorldSave")
 
-    Dim LoopX As Integer
+        Dim LoopX As Integer
 
-    Dim Porc  As Long
+        Dim Porc  As Long
 
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor> Iniciando WorldSave", FontTypeNames.FONTTYPE_SERVER))
+100     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor> Iniciando WorldSave", FontTypeNames.FONTTYPE_SERVER))
 
-    Call ReSpawnOrigPosNpcs 'respawn de los guardias en las pos originales
+102     Call ReSpawnOrigPosNpcs 'respawn de los guardias en las pos originales
 
-    Dim j As Integer, K As Integer
+        Dim j As Integer, K As Integer
 
-    For j = 1 To NumMaps
+104     For j = 1 To NumMaps
 
-        If MapInfo(j).backup_mode = 1 Then K = K + 1
-    Next j
+106         If MapInfo(j).backup_mode = 1 Then K = K + 1
+108     Next j
 
-    FrmStat.ProgressBar1.min = 0
-    FrmStat.ProgressBar1.max = K
-    FrmStat.ProgressBar1.Value = 0
+110     FrmStat.ProgressBar1.min = 0
+112     FrmStat.ProgressBar1.max = K
+114     FrmStat.ProgressBar1.Value = 0
 
-    For LoopX = 1 To NumMaps
-        'DoEvents
+116     For LoopX = 1 To NumMaps
+            'DoEvents
     
-        If MapInfo(LoopX).backup_mode = 1 Then
+118         If MapInfo(LoopX).backup_mode = 1 Then
     
-            '  Call GrabarMapa(LoopX, App.Path & "\WorldBackUp\Mapa" & LoopX)
-            FrmStat.ProgressBar1.Value = FrmStat.ProgressBar1.Value + 1
+                '  Call GrabarMapa(LoopX, App.Path & "\WorldBackUp\Mapa" & LoopX)
+120             FrmStat.ProgressBar1.Value = FrmStat.ProgressBar1.Value + 1
 
-        End If
+            End If
 
-    Next LoopX
+122     Next LoopX
 
-    FrmStat.Visible = False
+124     FrmStat.Visible = False
 
-    'If FileExist(DatPath & "\bkNpc.dat", vbNormal) Then Kill (DatPath & "bkNpc.dat")
-    'If FileExist(DatPath & "\bkNPCs-HOSTILES.dat", vbNormal) Then Kill (DatPath & "bkNPCs-HOSTILES.dat")
+        'If FileExist(DatPath & "\bkNpc.dat", vbNormal) Then Kill (DatPath & "bkNpc.dat")
+        'If FileExist(DatPath & "\bkNPCs-HOSTILES.dat", vbNormal) Then Kill (DatPath & "bkNPCs-HOSTILES.dat")
 
-    'For LoopX = 1 To LastNPC
-    '    If Npclist(LoopX).flags.BackUp = 1 Then
-    '            Call BackUPnPc(LoopX)
-    '    End If
-    'Next
+        'For LoopX = 1 To LastNPC
+        '    If Npclist(LoopX).flags.BackUp = 1 Then
+        '            Call BackUPnPc(LoopX)
+        '    End If
+        'Next
 
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor> WorldSave ha concluído", FontTypeNames.FONTTYPE_SERVER))
+126     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor> WorldSave ha concluído", FontTypeNames.FONTTYPE_SERVER))
 
 End Sub
 
@@ -308,8 +308,8 @@ Public Sub PurgarPenas()
         Exit Sub
 
 PurgarPenas_Err:
-        Call RegistrarError(Err.Number, Err.description, "Admin.PurgarPenas", Erl)
-        Resume Next
+118     Call RegistrarError(Err.Number, Err.description, "Admin.PurgarPenas", Erl)
+120     Resume Next
         
 End Sub
 
@@ -359,8 +359,8 @@ Public Sub PurgarScroll()
         Exit Sub
 
 PurgarScroll_Err:
-        Call RegistrarError(Err.Number, Err.description, "Admin.PurgarScroll", Erl)
-        Resume Next
+134     Call RegistrarError(Err.Number, Err.description, "Admin.PurgarScroll", Erl)
+136     Resume Next
         
 End Sub
 
@@ -403,24 +403,24 @@ Public Sub PurgarOxigeno()
         Exit Sub
 
 PurgarOxigeno_Err:
-        Call RegistrarError(Err.Number, Err.description, "Admin.PurgarOxigeno", Erl)
-        Resume Next
+126     Call RegistrarError(Err.Number, Err.description, "Admin.PurgarOxigeno", Erl)
+128     Resume Next
         
 End Sub
 
-Public Sub Encarcelar(ByVal UserIndex As Integer, ByVal minutos As Long, Optional ByVal GmName As String = vbNullString)
+Public Sub Encarcelar(ByVal Userindex As Integer, ByVal minutos As Long, Optional ByVal GmName As String = vbNullString)
         
         On Error GoTo Encarcelar_Err
         
         
-100     UserList(UserIndex).Counters.Pena = minutos
+100     UserList(Userindex).Counters.Pena = minutos
         
-102     Call WarpUserChar(UserIndex, Prision.Map, Prision.X, Prision.Y, True)
+102     Call WarpUserChar(Userindex, Prision.Map, Prision.X, Prision.Y, True)
         
 104     If LenB(GmName) = 0 Then
-106         Call WriteConsoleMsg(UserIndex, "Has sido encarcelado, deberas permanecer en la carcel " & minutos & " minutos.", FontTypeNames.FONTTYPE_INFO)
+106         Call WriteConsoleMsg(Userindex, "Has sido encarcelado, deberas permanecer en la carcel " & minutos & " minutos.", FontTypeNames.FONTTYPE_INFO)
         Else
-108         Call WriteConsoleMsg(UserIndex, GmName & " te ha encarcelado, deberas permanecer en la carcel " & minutos & " minutos.", FontTypeNames.FONTTYPE_INFO)
+108         Call WriteConsoleMsg(Userindex, GmName & " te ha encarcelado, deberas permanecer en la carcel " & minutos & " minutos.", FontTypeNames.FONTTYPE_INFO)
 
         End If
         
@@ -428,26 +428,26 @@ Public Sub Encarcelar(ByVal UserIndex As Integer, ByVal minutos As Long, Optiona
         Exit Sub
 
 Encarcelar_Err:
-        Call RegistrarError(Err.Number, Err.description, "Admin.Encarcelar", Erl)
-        Resume Next
+110     Call RegistrarError(Err.Number, Err.description, "Admin.Encarcelar", Erl)
+112     Resume Next
         
 End Sub
 
 Public Sub BorrarUsuario(ByVal UserName As String)
     
-    If Database_Enabled Then
-        Call BorrarUsuarioDatabase(UserName)
+100     If Database_Enabled Then
+102         Call BorrarUsuarioDatabase(UserName)
     
-    Else
+        Else
 
-        On Error Resume Next
+            On Error Resume Next
         
-        If FileExist(CharPath & UCase$(UserName) & ".chr", vbNormal) Then
-            Kill CharPath & UCase$(UserName) & ".chr"
+104         If FileExist(CharPath & UCase$(UserName) & ".chr", vbNormal) Then
+106             Kill CharPath & UCase$(UserName) & ".chr"
+
+            End If
 
         End If
-
-    End If
     
 End Sub
 
@@ -467,8 +467,8 @@ Public Function BANCheck(ByVal name As String) As Boolean
         Exit Function
 
 BANCheck_Err:
-        Call RegistrarError(Err.Number, Err.description, "Admin.BANCheck", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "Admin.BANCheck", Erl)
+108     Resume Next
         
 End Function
 
@@ -488,8 +488,8 @@ Public Function DonadorCheck(ByVal name As String) As Boolean
         Exit Function
 
 DonadorCheck_Err:
-        Call RegistrarError(Err.Number, Err.description, "Admin.DonadorCheck", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "Admin.DonadorCheck", Erl)
+108     Resume Next
         
 End Function
 
@@ -509,8 +509,8 @@ Public Function CreditosDonadorCheck(ByVal name As String) As Long
         Exit Function
 
 CreditosDonadorCheck_Err:
-        Call RegistrarError(Err.Number, Err.description, "Admin.CreditosDonadorCheck", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "Admin.CreditosDonadorCheck", Erl)
+108     Resume Next
         
 End Function
 
@@ -530,8 +530,8 @@ Public Function CreditosCanjeadosCheck(ByVal name As String) As Long
         Exit Function
 
 CreditosCanjeadosCheck_Err:
-        Call RegistrarError(Err.Number, Err.description, "Admin.CreditosCanjeadosCheck", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "Admin.CreditosCanjeadosCheck", Erl)
+108     Resume Next
         
 End Function
 
@@ -562,8 +562,8 @@ Public Function DiasDonadorCheck(ByVal name As String) As Integer
         Exit Function
 
 DiasDonadorCheck_Err:
-        Call RegistrarError(Err.Number, Err.description, "Admin.DiasDonadorCheck", Erl)
-        Resume Next
+110     Call RegistrarError(Err.Number, Err.description, "Admin.DiasDonadorCheck", Erl)
+112     Resume Next
         
 End Function
 
@@ -583,8 +583,8 @@ Public Function ComprasDonadorCheck(ByVal name As String) As Long
         Exit Function
 
 ComprasDonadorCheck_Err:
-        Call RegistrarError(Err.Number, Err.description, "Admin.ComprasDonadorCheck", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "Admin.ComprasDonadorCheck", Erl)
+108     Resume Next
         
 End Function
 
@@ -604,8 +604,8 @@ Public Function PersonajeExiste(ByVal name As String) As Boolean
         Exit Function
 
 PersonajeExiste_Err:
-        Call RegistrarError(Err.Number, Err.description, "Admin.PersonajeExiste", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "Admin.PersonajeExiste", Erl)
+108     Resume Next
         
 End Function
 
@@ -631,8 +631,8 @@ Public Function UnBan(ByVal name As String) As Boolean
         Exit Function
 
 UnBan_Err:
-        Call RegistrarError(Err.Number, Err.description, "Admin.UnBan", Erl)
-        Resume Next
+114     Call RegistrarError(Err.Number, Err.description, "Admin.UnBan", Erl)
+116     Resume Next
         
 End Function
 
@@ -665,8 +665,8 @@ Public Function MD5ok(ByVal md5formateado As String) As Boolean
         Exit Function
 
 MD5ok_Err:
-        Call RegistrarError(Err.Number, Err.description, "Admin.MD5ok", Erl)
-        Resume Next
+114     Call RegistrarError(Err.Number, Err.description, "Admin.MD5ok", Erl)
+116     Resume Next
         
 End Function
 
@@ -693,8 +693,8 @@ Public Sub MD5sCarga()
         Exit Sub
 
 MD5sCarga_Err:
-        Call RegistrarError(Err.Number, Err.description, "Admin.MD5sCarga", Erl)
-        Resume Next
+114     Call RegistrarError(Err.Number, Err.description, "Admin.MD5sCarga", Erl)
+116     Resume Next
         
 End Sub
 
@@ -710,8 +710,8 @@ Public Sub BanIpAgrega(ByVal ip As String)
         Exit Sub
 
 BanIpAgrega_Err:
-        Call RegistrarError(Err.Number, Err.description, "Admin.BanIpAgrega", Erl)
-        Resume Next
+104     Call RegistrarError(Err.Number, Err.description, "Admin.BanIpAgrega", Erl)
+106     Resume Next
         
 End Sub
 
@@ -750,8 +750,8 @@ Public Function CheckHD(ByVal hd As String) As Boolean
         Exit Function
 
 CheckHD_Err:
-        Call RegistrarError(Err.Number, Err.description, "Admin.CheckHD", Erl)
-        Resume Next
+116     Call RegistrarError(Err.Number, Err.description, "Admin.CheckHD", Erl)
+118     Resume Next
         
 End Function
 
@@ -790,8 +790,8 @@ Public Function CheckMAC(ByVal Mac As String) As Boolean
         Exit Function
 
 CheckMAC_Err:
-        Call RegistrarError(Err.Number, Err.description, "Admin.CheckMAC", Erl)
-        Resume Next
+116     Call RegistrarError(Err.Number, Err.description, "Admin.CheckMAC", Erl)
+118     Resume Next
         
 End Function
 
@@ -823,27 +823,27 @@ Public Function BanIpBuscar(ByVal ip As String) As Long
         Exit Function
 
 BanIpBuscar_Err:
-        Call RegistrarError(Err.Number, Err.description, "Admin.BanIpBuscar", Erl)
-        Resume Next
+116     Call RegistrarError(Err.Number, Err.description, "Admin.BanIpBuscar", Erl)
+118     Resume Next
         
 End Function
 
 Public Function BanIpQuita(ByVal ip As String) As Boolean
 
-    On Error Resume Next
+        On Error Resume Next
 
-    Dim n As Long
+        Dim n As Long
 
-    n = BanIpBuscar(ip)
+100     n = BanIpBuscar(ip)
 
-    If n > 0 Then
-        BanIps.Remove n
-        BanIpGuardar
-        BanIpQuita = True
-    Else
-        BanIpQuita = False
+102     If n > 0 Then
+104         BanIps.Remove n
+106         BanIpGuardar
+108         BanIpQuita = True
+        Else
+110         BanIpQuita = False
 
-    End If
+        End If
 
 End Function
 
@@ -873,8 +873,8 @@ Public Sub BanIpGuardar()
         Exit Sub
 
 BanIpGuardar_Err:
-        Call RegistrarError(Err.Number, Err.description, "Admin.BanIpGuardar", Erl)
-        Resume Next
+114     Call RegistrarError(Err.Number, Err.description, "Admin.BanIpGuardar", Erl)
+116     Resume Next
         
 End Sub
 
@@ -909,8 +909,8 @@ Public Sub BanIpCargar()
         Exit Sub
 
 BanIpCargar_Err:
-        Call RegistrarError(Err.Number, Err.description, "Admin.BanIpCargar", Erl)
-        Resume Next
+118     Call RegistrarError(Err.Number, Err.description, "Admin.BanIpCargar", Erl)
+120     Resume Next
         
 End Sub
 
@@ -944,8 +944,8 @@ Public Sub ActualizaEstadisticasWeb()
         Exit Sub
 
 ActualizaEstadisticasWeb_Err:
-        Call RegistrarError(Err.Number, Err.description, "Admin.ActualizaEstadisticasWeb", Erl)
-        Resume Next
+114     Call RegistrarError(Err.Number, Err.description, "Admin.ActualizaEstadisticasWeb", Erl)
+116     Resume Next
         
 End Sub
 
@@ -994,8 +994,8 @@ Public Sub ActualizaStatsES()
         Exit Sub
 
 ActualizaStatsES_Err:
-        Call RegistrarError(Err.Number, Err.description, "Admin.ActualizaStatsES", Erl)
-        Resume Next
+132     Call RegistrarError(Err.Number, Err.description, "Admin.ActualizaStatsES", Erl)
+134     Resume Next
         
 End Sub
 
@@ -1026,8 +1026,8 @@ Public Function UserDarPrivilegioLevel(ByVal name As String) As PlayerType
         Exit Function
 
 UserDarPrivilegioLevel_Err:
-        Call RegistrarError(Err.Number, Err.description, "Admin.UserDarPrivilegioLevel", Erl)
-        Resume Next
+118     Call RegistrarError(Err.Number, Err.description, "Admin.UserDarPrivilegioLevel", Erl)
+120     Resume Next
         
 End Function
 
@@ -1150,8 +1150,8 @@ Public Sub BanCharacter(ByVal bannerUserIndex As Integer, ByVal UserName As Stri
         Exit Sub
 
 BanCharacter_Err:
-        Call RegistrarError(Err.Number, Err.description, "Admin.BanCharacter", Erl)
-        Resume Next
+192     Call RegistrarError(Err.Number, Err.description, "Admin.BanCharacter", Erl)
+194     Resume Next
         
 End Sub
 
@@ -1225,8 +1225,8 @@ Public Sub BanAccount(ByVal bannerUserIndex As Integer, ByVal UserName As String
         Exit Sub
 
 BanAccount_Err:
-        Call RegistrarError(Err.Number, Err.description, "Admin.BanAccount", Erl)
-        Resume Next
+144     Call RegistrarError(Err.Number, Err.description, "Admin.BanAccount", Erl)
+146     Resume Next
         
 End Sub
 
@@ -1285,8 +1285,8 @@ Public Sub UnBanAccount(ByVal bannerUserIndex As Integer, ByVal UserName As Stri
         Exit Sub
 
 UnBanAccount_Err:
-        Call RegistrarError(Err.Number, Err.description, "Admin.UnBanAccount", Erl)
-        Resume Next
+126     Call RegistrarError(Err.Number, Err.description, "Admin.UnBanAccount", Erl)
+128     Resume Next
         
 End Sub
 
@@ -1360,8 +1360,8 @@ Public Sub BanSerialOK(ByVal bannerUserIndex As Integer, ByVal UserName As Strin
         Exit Sub
 
 BanSerialOK_Err:
-        Call RegistrarError(Err.Number, Err.description, "Admin.BanSerialOK", Erl)
-        Resume Next
+140     Call RegistrarError(Err.Number, Err.description, "Admin.BanSerialOK", Erl)
+142     Resume Next
         
 End Sub
 
@@ -1419,8 +1419,8 @@ Public Sub UnBanSerialOK(ByVal bannerUserIndex As Integer, ByVal UserName As Str
         Exit Sub
 
 UnBanSerialOK_Err:
-        Call RegistrarError(Err.Number, Err.description, "Admin.UnBanSerialOK", Erl)
-        Resume Next
+122     Call RegistrarError(Err.Number, Err.description, "Admin.UnBanSerialOK", Erl)
+124     Resume Next
         
 End Sub
 
@@ -1445,8 +1445,8 @@ Public Sub BanTemporal(ByVal nombre As String, ByVal dias As Integer, Causa As S
         Exit Sub
 
 BanTemporal_Err:
-        Call RegistrarError(Err.Number, Err.description, "Admin.BanTemporal", Erl)
-        Resume Next
+116     Call RegistrarError(Err.Number, Err.description, "Admin.BanTemporal", Erl)
+118     Resume Next
         
 End Sub
 
@@ -1470,8 +1470,8 @@ Sub SaveBans()
         Exit Sub
 
 SaveBans_Err:
-        Call RegistrarError(Err.Number, Err.description, "Admin.SaveBans", Erl)
-        Resume Next
+112     Call RegistrarError(Err.Number, Err.description, "Admin.SaveBans", Erl)
+114     Resume Next
         
 End Sub
 
@@ -1499,8 +1499,8 @@ Sub SaveBan(num As Integer)
         Exit Sub
 
 SaveBan_Err:
-        Call RegistrarError(Err.Number, Err.description, "Argentum20Server.Admin.SaveBan", Erl)
-        Resume Next
+120     Call RegistrarError(Err.Number, Err.description, "Argentum20Server.Admin.SaveBan", Erl)
+122     Resume Next
         
 End Sub
 
@@ -1536,8 +1536,8 @@ Sub LoadBans()
         Exit Sub
 
 LoadBans_Err:
-        Call RegistrarError(Err.Number, Err.description, "Argentum20Server.Admin.LoadBans", Erl)
-        Resume Next
+120     Call RegistrarError(Err.Number, Err.description, "Argentum20Server.Admin.LoadBans", Erl)
+122     Resume Next
         
 End Sub
 
@@ -1558,8 +1558,8 @@ Public Function ChangeBan(ByVal name As String, ByVal Baneado As Byte) As Boolea
         Exit Function
 
 ChangeBan_Err:
-        Call RegistrarError(Err.Number, Err.description, "Argentum20Server.Admin.ChangeBan", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.description, "Argentum20Server.Admin.ChangeBan", Erl)
+108     Resume Next
         
 End Function
 
@@ -1604,7 +1604,7 @@ Public Function CompararPrivilegios(ByVal Personaje1 As Integer, ByVal Personaje
         Exit Function
 
 CompararPrivilegios_Err:
-        Call RegistrarError(Err.Number, Err.description, "Argentum20Server.Admin.CompararPrivilegios", Erl)
-        Resume Next
+118     Call RegistrarError(Err.Number, Err.description, "Argentum20Server.Admin.CompararPrivilegios", Erl)
+120     Resume Next
         
 End Function
