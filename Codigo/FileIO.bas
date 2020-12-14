@@ -2908,6 +2908,8 @@ Sub SaveUser(ByVal Userindex As Integer, Optional ByVal Logout As Boolean = Fals
         Else
 104         Call SaveUserCharfile(Userindex, Logout)
         End If
+        'TODO: Stringificar UserList() en un super json
+        'auxSocket.sendData SUPER-JSON-STRINGIFICA2
 
 106     UserList(Userindex).Counters.LastSave = GetTickCount
 
