@@ -1192,15 +1192,17 @@ Public Sub UsuarioAtaca(ByVal Userindex As Integer)
         End If
         
 116     If UserList(Userindex).Counters.Ocultando Then UserList(Userindex).Counters.Ocultando = UserList(Userindex).Counters.Ocultando - 1
-
-        'Movimiento de arma
-118     Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageArmaMov(UserList(Userindex).Char.CharIndex))
-     
+        
+        'Movimiento de arma, solo lo envio si no es GM invisible.
+        If UserList(Userindex).flags.AdminInvisible = 0 Then
+118         Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageArmaMov(UserList(Userindex).Char.CharIndex))
+        End If
+        
         'UserList(UserIndex).flags.PuedeAtacar = 0
     
         Dim AttackPos As WorldPos
+120         AttackPos = UserList(Userindex).Pos
 
-120     AttackPos = UserList(Userindex).Pos
 122     Call HeadtoPos(UserList(Userindex).Char.Heading, AttackPos)
        
         'Exit if not legal
