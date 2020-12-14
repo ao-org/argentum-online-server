@@ -38,14 +38,14 @@ Class_Terminate_Err:
         
 End Sub
 
-Public Sub AgregarItemLimpiza(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, Optional ByVal ResetTimer As Boolean = False)
+Public Sub AgregarItemLimpieza(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, Optional ByVal ResetTimer As Boolean = False)
 
         On Error GoTo hErr
     
         Dim Item As TLimpiezaItem
 
 100     If ResetTimer Then
-102         Set Item = Item_List.Item(Item.Indice)
+102         Set Item = Item_List.Item(GetIndiceByPos(Map, X, Y))
     
 104         Item.Time = GetTickCount()
     
