@@ -10051,64 +10051,66 @@ Private Sub HandleWarpChar(ByVal Userindex As Integer)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
             Dim buffer As New clsByteQueue
-
 106         Call buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
 108         Call buffer.ReadByte
         
             Dim UserName As String
-
             Dim Map      As Integer
-
             Dim X        As Byte
-
             Dim Y        As Byte
-
             Dim tUser    As Integer
         
 110         UserName = buffer.ReadASCIIString()
 112         Map = buffer.ReadInteger()
 114         X = buffer.ReadByte()
 116         Y = buffer.ReadByte()
-        
-118         If Not .flags.Privilegios And PlayerType.user Then
-120             If MapaValido(Map) And LenB(UserName) <> 0 Then
-122                 If UCase$(UserName) <> "YO" Then
-124                     If Not .flags.Privilegios And PlayerType.Consejero Then
-126                         tUser = NameIndex(UserName)
 
-                        End If
-
-                    Else
-128                     tUser = Userindex
-
-                    End If
+            'If we got here then packet is complete, copy data back to original queue
+            Call .incomingData.CopyBuffer(buffer)
             
-130                 If tUser <= 0 Then
-132                     Call WriteConsoleMsg(Userindex, "Usuario offline.", FontTypeNames.FONTTYPE_INFO)
-134                 ElseIf InMapBounds(Map, X, Y) Then
-136                     Call FindLegalPos(tUser, Map, X, Y)
-138                     Call WarpUserChar(tUser, Map, X, Y, True)
-140                     Call WriteConsoleMsg(Userindex, UserList(tUser).name & " transportado.", FontTypeNames.FONTTYPE_INFO)
-142                     If tUser <> Userindex Then Call LogGM(.name, "Transportí a " & UserList(tUser).name & " hacia " & "Mapa" & Map & " X:" & X & " Y:" & Y)
+118         If Not EsGM(Userindex) Then Exit Sub
+            
+            '¿Para que te vas a transportar a la misma posicion?
+            If .Pos.Map = Map And .Pos.X = X And .Pos.Y = Y Then Exit Sub
+            
+120         If MapaValido(Map) And LenB(UserName) <> 0 Then
 
+122             If UCase$(UserName) <> "YO" Then
+
+124                 If Not .flags.Privilegios And PlayerType.Consejero Then
+126                     tUser = NameIndex(UserName)
                     End If
 
+                Else
+128                 tUser = Userindex
+
+                End If
+            
+130             If tUser <= 0 Then
+132                 Call WriteConsoleMsg(Userindex, "Usuario offline.", FontTypeNames.FONTTYPE_INFO)
+
+134             ElseIf InMapBounds(Map, X, Y) Then
+136                 Call FindLegalPos(tUser, Map, X, Y)
+138                 Call WarpUserChar(tUser, Map, X, Y, True)
+
+142                 If tUser <> Userindex Then
+                        Call LogGM(.name, "Transportó a " & UserList(tUser).name & " hacia " & "Mapa" & Map & " X:" & X & " Y:" & Y)
+                    End If
+                        
                 End If
 
             End If
-        
-            'If we got here then packet is complete, copy data back to original queue
-144         Call .incomingData.CopyBuffer(buffer)
 
         End With
-    
+        
+        Exit Sub
+        
 ErrHandler:
 
         Dim Error As Long
-
-146     Error = Err.Number
+146         Error = Err.Number
 
         On Error GoTo 0
     
