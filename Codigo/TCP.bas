@@ -1062,26 +1062,23 @@ Public Sub EnviarDatosASlot(ByVal UserIndex As Integer, ByRef Datos As String)
         '***************************************************
         'Author: Unknown
         'Last Modification: 09/11/20
-        'Last Modified By: Jopi
+        'Modified By: Jopi
+        'Last Modified by: WyroX - Si no hay espacio, flusheo el buffer e intento de nuevo
         'Se agrega el paquete a la cola, para prevenir errores.
         '***************************************************
         
         On Error GoTo EnviarDatosASlot_Err
         
 
-100     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(Datos)
+        Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(Datos)
 
-        Exit Sub
-
-ErrorHandler:
-102     Call LogError("TCP::EnviarDatosASlot. UI/ConnId/Datos: " & UserIndex & "/" & UserList(UserIndex).ConnID & "/" & Datos)
-
-        
         Exit Sub
 
 EnviarDatosASlot_Err:
-104     Call RegistrarError(Err.Number, Err.description, "TCP.EnviarDatosASlot", Erl)
-106     Resume Next
+        If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
+            Call FlushBuffer(UserIndex)
+            Resume
+        End If
         
 End Sub
 
