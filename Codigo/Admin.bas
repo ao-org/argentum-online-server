@@ -184,30 +184,6 @@ Public Baneos     As New Collection
 
 'Public ResetThread As New clsThreading
 
-Public Function CompararPrivilegios(ByVal GM_Izquierda As Integer, _
-                                    ByVal GM_Derecha As Integer) As Integer
-    
-    Dim Derecha As Integer, Izquierda As Integer
-
-    Derecha = (UserList(Userindex).flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero))
-    Izquierda = (UserList(Userindex).flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero))
-        
-    If Izquierda > Derecha Then
-        CompararRango = 1
-        Exit Function
-            
-    ElseIf Izquierda = Derecha Then
-        CompararRango = 0
-        Exit Function
-            
-    ElseIf Izquierda < Derecha Then
-        CompararRango = -1
-        Exit Function
-            
-    End If
-        
-End Function
-
 Function VersionOK(ByVal Ver As String) As Boolean
         
         On Error GoTo VersionOK_Err
@@ -1589,20 +1565,19 @@ ChangeBan_Err:
         
 End Function
 
-Public Function CompararPrivilegios(ByVal Personaje1 As Integer, ByVal Personaje2 As Integer) As Byte
+Public Function CompararPrivilegios(ByVal Personaje_1 As Integer, ByVal Personaje_2 As Integer) As Integer
     '**************************************************************************************************************************
     'Author: Jopi
     'Last Modification: 05/07/2020
     '   Funcion encargada de comparar los privilegios entre 2 Game Masters.
     '   Funciona de la misma forma que el operador spaceship de PHP.
-    '       - Si los privilegios de el de la izquierda [Personaje1] son MAYORES que el de la derecha [Personaje2], devuelve -1
+    '       - Si los privilegios de el de la izquierda [Personaje1] son MAYORES que el de la derecha [Personaje2], devuelve 1
     '       - Si los privilegios de el de la izquierda [Personaje1] son IGUALES que el de la derecha [Personaje2], devuelve 0
-    '       - Si los privilegios de el de la izquierda [Personaje1] son MENORES que el de la derecha [Personaje2], devuelve 1
+    '       - Si los privilegios de el de la izquierda [Personaje1] son MENORES que el de la derecha [Personaje2], devuelve -1
     '**************************************************************************************************************************
         
         On Error GoTo CompararPrivilegios_Err
         
-
         Dim PrivilegiosGM As PlayerType
         Dim Izquierda As PlayerType
         Dim Derecha As PlayerType
@@ -1610,19 +1585,19 @@ Public Function CompararPrivilegios(ByVal Personaje1 As Integer, ByVal Personaje
 100     PrivilegiosGM = PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero Or PlayerType.RoleMaster
 
         ' Obtenemos el rango de los 2 personajes.
-102     Izquierda = (UserList(Personaje1).flags.Privilegios And PrivilegiosGM)
-104     Derecha = (UserList(Personaje2).flags.Privilegios And PrivilegiosGM)
+102     Izquierda = (UserList(Personaje_1).flags.Privilegios And PrivilegiosGM)
+104     Derecha = (UserList(Personaje_2).flags.Privilegios And PrivilegiosGM)
 
 106     Select Case Izquierda
 
             Case Is > Derecha
-108             CompararPrivilegios = -1
+108             CompararPrivilegios = 1
 
 110         Case Is = Derecha
 112             CompararPrivilegios = 0
 
 114         Case Is < Derecha
-116             CompararPrivilegios = 1
+116             CompararPrivilegios = -1
 
         End Select
 
@@ -1630,7 +1605,7 @@ Public Function CompararPrivilegios(ByVal Personaje1 As Integer, ByVal Personaje
         Exit Function
 
 CompararPrivilegios_Err:
-118     Call RegistrarError(Err.Number, Err.description, "Argentum20Server.Admin.CompararPrivilegios", Erl)
+118     Call RegistrarError(Err.Number, Err.description, "Admin.CompararPrivilegios", Erl)
 120     Resume Next
         
 End Function
