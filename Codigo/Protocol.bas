@@ -12872,31 +12872,42 @@ Private Sub HandleSummonChar(ByVal Userindex As Integer)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
             Dim buffer As New clsByteQueue
-
 106         Call buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
 108         Call buffer.ReadByte
         
             Dim UserName As String
-
             Dim tUser    As Integer
         
 110         UserName = buffer.ReadASCIIString()
-        
+            
+            'If we got here then packet is complete, copy data back to original queue
+            Call .incomingData.CopyBuffer(buffer)
+            
 112         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
-114             If UserName <> "" Then
+114
+
+                If Len(UserName) <> 0 Then
 116                 tUser = NameIndex(UserName)
                 Else
 118                 tUser = .flags.TargetUser
-
                 End If
             
 120             If tUser <= 0 Then
 122                 Call WriteConsoleMsg(Userindex, "El jugador no esta online.", FontTypeNames.FONTTYPE_INFO)
-                Else
 
-124                 If (.flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin)) <> 0 Or (UserList(tUser).flags.Privilegios And (PlayerType.Consejero Or PlayerType.user)) <> 0 Then
+                Else
+                    
+                    ' Esta tratando de invocar a un Dios o Admin...
+                    If (UserList(tUser).flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin)) Then
+                        Call WriteConsoleMsg(Userindex, "No podés invocar a dioses y admins.", FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
+                    
+                    ' Podes sumonear a consejero como quieras.
+                    ' Pero si querés SUMONEAR a un USUARIO, TENÉS QUE ESTAR EN EL MISMO MAPA.
+                        
 126                     Call WriteConsoleMsg(tUser, .name & " te ha trasportado.", FontTypeNames.FONTTYPE_INFO)
 128                     Call WarpToLegalPos(tUser, .Pos.Map, .Pos.X, .Pos.Y + 1, True, True)
                     
@@ -12914,24 +12925,27 @@ Private Sub HandleSummonChar(ByVal Userindex As Integer)
                     End If
 
                 End If
-
+                
             End If
+            
+            End With
+        
+            Exit Sub
         
             'If we got here then packet is complete, copy data back to original queue
 140         Call .incomingData.CopyBuffer(buffer)
 
-        End With
-
 ErrHandler:
 
         Dim Error As Long
+            Dim Error As Long
 
 142     Error = Err.Number
+142         Error = Err.Number
 
-        On Error GoTo 0
+            On Error GoTo 0
     
-        'Destroy auxiliar buffer
-144     Set buffer = Nothing
+144         Set buffer = Nothing
     
 146     If Error <> 0 Then Err.raise Error
 
