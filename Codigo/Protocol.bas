@@ -12565,7 +12565,7 @@ Private Sub HandleExecute(ByVal UserIndex As Integer)
                     'Call WriteConsoleMsg(UserIndex, "Estís loco?? como vas a piíatear un gm!!!! :@", FontTypeNames.FONTTYPE_INFO)
                     'Else
 118                 Call UserDie(tUser)
-120                 Call SendData(SendTarget.ToSuperiores, 0, PrepareMessageConsoleMsg(.name & " ha ejecutado a " & UserName, FontTypeNames.FONTTYPE_EJECUCION))
+120                 Call SendData(SendTarget.ToSuperiores, 0, PrepareMessageConsoleMsg(.name & " ha ejecutado a " & UserList(tUser).name, FontTypeNames.FONTTYPE_EJECUCION))
 122                 Call LogGM(.name, " ejecuto a " & UserName)
                     'End If
                 Else

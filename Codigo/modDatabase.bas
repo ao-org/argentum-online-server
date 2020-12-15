@@ -1633,8 +1633,7 @@ Public Function GetPersonajesCuentaDatabase(ByVal AccountID As Long, Personaje()
             End If
 
 152         If val(QueryData!is_dead) = 1 Then
-154             Personaje(i).Cabeza = iCabezaMuerto
-
+154             Personaje(i).Cabeza = 0
             End If
         
 156         QueryData.MoveNext

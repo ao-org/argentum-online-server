@@ -627,8 +627,7 @@ Public Function ObtenerCabeza(ByVal name As String) As Integer
 102     If EstaMuerto = 0 Then
 104         Head = GetVar(CharPath & UCase$(name & ".chr"), "INIT", "Head")
         Else
-106         Head = iCabezaMuerto
-
+106         Head = 0
         End If
 
 108     ObtenerCabeza = Head
