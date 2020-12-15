@@ -184,8 +184,8 @@ Public Baneos     As New Collection
 
 'Public ResetThread As New clsThreading
 
-Public Function CompararRango(ByVal GM_Izquierda As Integer, _
-                              ByVal GM_Derecha As Integer) As Integer
+Public Function CompararPrivilegios(ByVal GM_Izquierda As Integer, _
+                                    ByVal GM_Derecha As Integer) As Integer
     
     Dim Derecha As Integer, Izquierda As Integer
 
