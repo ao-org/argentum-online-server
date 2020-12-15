@@ -1316,7 +1316,10 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
         Exit Sub
 
 LookatTile_Err:
-534     Call RegistrarError(Err.Number, Err.description & " Pos: " & X & ", " & Y, "Extra.LookatTile", Erl)
+534         Call RegistrarError(Err.Number, Err.description & " Pos: " & Map & "-" & X & "-" & Y & " Usuario: " & UserList(UserIndex).name & " Extra.LookatTile", Erl)
+        If FoundChar = 2 Then
+            Call RegistrarError(Err.Number, Err.description & " Pos: " & Map & "-" & X & "-" & Y & "Npc: " & Npclist(TempCharIndex).Numero & " Usuario: " & UserList(UserIndex).name & "Extra.LookatTile X LADDER", Erl)
+        End If
 536     Resume Next
         
 End Sub
