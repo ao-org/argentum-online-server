@@ -10051,64 +10051,66 @@ Private Sub HandleWarpChar(ByVal Userindex As Integer)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
             Dim buffer As New clsByteQueue
-
 106         Call buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
 108         Call buffer.ReadByte
         
             Dim UserName As String
-
             Dim Map      As Integer
-
             Dim X        As Byte
-
             Dim Y        As Byte
-
             Dim tUser    As Integer
         
 110         UserName = buffer.ReadASCIIString()
 112         Map = buffer.ReadInteger()
 114         X = buffer.ReadByte()
 116         Y = buffer.ReadByte()
-        
-118         If Not .flags.Privilegios And PlayerType.user Then
-120             If MapaValido(Map) And LenB(UserName) <> 0 Then
-122                 If UCase$(UserName) <> "YO" Then
-124                     If Not .flags.Privilegios And PlayerType.Consejero Then
-126                         tUser = NameIndex(UserName)
 
-                        End If
-
-                    Else
-128                     tUser = Userindex
-
-                    End If
+            'If we got here then packet is complete, copy data back to original queue
+            Call .incomingData.CopyBuffer(buffer)
             
-130                 If tUser <= 0 Then
-132                     Call WriteConsoleMsg(Userindex, "Usuario offline.", FontTypeNames.FONTTYPE_INFO)
-134                 ElseIf InMapBounds(Map, X, Y) Then
-136                     Call FindLegalPos(tUser, Map, X, Y)
-138                     Call WarpUserChar(tUser, Map, X, Y, True)
-140                     Call WriteConsoleMsg(Userindex, UserList(tUser).name & " transportado.", FontTypeNames.FONTTYPE_INFO)
-142                     If tUser <> Userindex Then Call LogGM(.name, "Transportí a " & UserList(tUser).name & " hacia " & "Mapa" & Map & " X:" & X & " Y:" & Y)
+118         If Not EsGM(Userindex) Then Exit Sub
+            
+            '¿Para que te vas a transportar a la misma posicion?
+            If .Pos.Map = Map And .Pos.X = X And .Pos.Y = Y Then Exit Sub
+            
+120         If MapaValido(Map) And LenB(UserName) <> 0 Then
 
+122             If UCase$(UserName) <> "YO" Then
+
+124                 If Not .flags.Privilegios And PlayerType.Consejero Then
+126                     tUser = NameIndex(UserName)
                     End If
 
+                Else
+128                 tUser = Userindex
+
+                End If
+            
+130             If tUser <= 0 Then
+132                 Call WriteConsoleMsg(Userindex, "Usuario offline.", FontTypeNames.FONTTYPE_INFO)
+
+134             ElseIf InMapBounds(Map, X, Y) Then
+136                 Call FindLegalPos(tUser, Map, X, Y)
+138                 Call WarpUserChar(tUser, Map, X, Y, True)
+
+142                 If tUser <> Userindex Then
+                        Call LogGM(.name, "Transportó a " & UserList(tUser).name & " hacia " & "Mapa" & Map & " X:" & X & " Y:" & Y)
+                    End If
+                        
                 End If
 
             End If
-        
-            'If we got here then packet is complete, copy data back to original queue
-144         Call .incomingData.CopyBuffer(buffer)
 
         End With
-    
+        
+        Exit Sub
+        
 ErrHandler:
 
         Dim Error As Long
-
-146     Error = Err.Number
+146         Error = Err.Number
 
         On Error GoTo 0
     
@@ -12870,70 +12872,81 @@ Private Sub HandleSummonChar(ByVal Userindex As Integer)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
             Dim buffer As New clsByteQueue
-
 106         Call buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
 108         Call buffer.ReadByte
         
             Dim UserName As String
-
             Dim tUser    As Integer
         
 110         UserName = buffer.ReadASCIIString()
-        
+            
+            'If we got here then packet is complete, copy data back to original queue
+            Call .incomingData.CopyBuffer(buffer)
+            
 112         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
-114             If UserName <> "" Then
+114
+
+                If Len(UserName) <> 0 Then
 116                 tUser = NameIndex(UserName)
                 Else
 118                 tUser = .flags.TargetUser
-
                 End If
             
 120             If tUser <= 0 Then
 122                 Call WriteConsoleMsg(Userindex, "El jugador no esta online.", FontTypeNames.FONTTYPE_INFO)
-                Else
 
-124                 If (.flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin)) <> 0 Or (UserList(tUser).flags.Privilegios And (PlayerType.Consejero Or PlayerType.user)) <> 0 Then
+                Else
+                    
+                    ' Esta tratando de invocar a un Dios o Admin...
+                    If (UserList(tUser).flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin)) Then
+                        Call WriteConsoleMsg(Userindex, "No podés invocar a dioses y admins.", FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
+                    
+                    ' Podes sumonear a consejero como quieras.
+                    ' Pero si querés SUMONEAR a un USUARIO, TENÉS QUE ESTAR EN EL MISMO MAPA.
+124                 If (UserList(tUser).flags.Privilegios And PlayerType.Consejero) Or _
+                       (UserList(tUser).flags.Privilegios And PlayerType.user) <> 0 And .Pos.Map = UserList(tUser).Pos.Map Then
+                        
 126                     Call WriteConsoleMsg(tUser, .name & " te ha trasportado.", FontTypeNames.FONTTYPE_INFO)
 128                     Call WarpToLegalPos(tUser, .Pos.Map, .Pos.X, .Pos.Y + 1, True, True)
-                    
+                        
+                        ' Si trato de sumonearlo estando en Modo Battle, lo sacamos cagando y lo escrachamos en los logs.
 130                     If UserList(tUser).flags.BattleModo = 1 Then
 132                         Call WriteConsoleMsg(Userindex, "¡¡¡ATENCIÓN!!! [" & UCase(UserList(tUser).name) & "] SE ENCUENTRA EN MODO BATTLE.", FontTypeNames.FONTTYPE_WARNING)
 134                         Call LogGM(.name, "¡¡¡ATENCIÓN /SUM EN MODO BATTLE " & UserName & " Map:" & .Pos.Map & " X:" & .Pos.X & " Y:" & .Pos.Y)
+
                         Else
 136                         Call LogGM(.name, "/SUM " & UserName & " Map:" & .Pos.Map & " X:" & .Pos.X & " Y:" & .Pos.Y)
 
                         End If
-                    
-                    Else
-138                     Call WriteConsoleMsg(Userindex, "No podés invocar a dioses y admins.", FontTypeNames.FONTTYPE_INFO)
 
                     End If
 
                 End If
-
+                
             End If
+            
+            End With
         
-            'If we got here then packet is complete, copy data back to original queue
-140         Call .incomingData.CopyBuffer(buffer)
-
-        End With
-
+            Exit Sub
+        
 ErrHandler:
 
-        Dim Error As Long
+            Dim Error As Long
 
-142     Error = Err.Number
+142         Error = Err.Number
 
-        On Error GoTo 0
+            On Error GoTo 0
     
-        'Destroy auxiliar buffer
-144     Set buffer = Nothing
+            'Destroy auxiliar buffer
+144         Set buffer = Nothing
     
-146     If Error <> 0 Then Err.raise Error
+146         If Error <> 0 Then Err.raise Error
 
-End Sub
+    End Sub
 
 ''
 ' Handles the "SpawnListRequest" message.
@@ -15137,12 +15150,7 @@ Private Sub HandleCreateItem(ByVal Userindex As Integer)
         
             ' Si es Semi-Dios, dejamos crear un item siempre y cuando pueda estar en el inventario.
 114         If (.flags.Privilegios And PlayerType.SemiDios) <> 0 And ObjData(tObj).Agarrable = 1 Then Exit Sub
-        
-116         If ObjData(tObj).donador = 1 Then
-                ' Si es usuario, consejero o Semi-Dios y trata de crear un objeto para donadores, lo sacamos cagando.
-118             If (.flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin)) = 0 Then Exit Sub
-            End If
-        
+
             ' Si hace mas de 10000, lo sacamos cagando.
 120         If Cuantos > MAX_INVENTORY_OBJS Then
 122             Call WriteConsoleMsg(Userindex, "Solo podés crear hasta " & CStr(MAX_INVENTORY_OBJS) & " unidades", FontTypeNames.FONTTYPE_TALK)
