@@ -2444,7 +2444,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
             'Can't move while hidden except he is a thief
 194         If .flags.Oculto = 1 And .flags.AdminInvisible = 0 Then
                 
-196             If .clase <> eClass.Thief And .clase <> eClass.Bandit And (.clase <> eClass.Hunter Or Not TieneArmaduraCazador(UserIndex)) Then
+196             If .clase <> eClass.Thief And .clase <> eClass.Bandit Then
 198                 .flags.Oculto = 0
 200                 .Counters.TiempoOculto = 0
                 
@@ -10068,7 +10068,7 @@ Private Sub HandleWarpChar(ByVal UserIndex As Integer)
             'If we got here then packet is complete, copy data back to original queue
             Call .incomingData.CopyBuffer(buffer)
             
-118         If Not EsGM(Userindex) Then Exit Sub
+118         If Not EsGM(UserIndex) Then Exit Sub
             
             '¿Para que te vas a transportar a la misma posicion?
             If .Pos.Map = Map And .Pos.X = X And .Pos.Y = Y Then Exit Sub
@@ -10082,18 +10082,18 @@ Private Sub HandleWarpChar(ByVal UserIndex As Integer)
                     End If
 
                 Else
-128                 tUser = Userindex
+128                 tUser = UserIndex
 
                 End If
             
 130             If tUser <= 0 Then
-132                 Call WriteConsoleMsg(Userindex, "Usuario offline.", FontTypeNames.FONTTYPE_INFO)
+132                 Call WriteConsoleMsg(UserIndex, "Usuario offline.", FontTypeNames.FONTTYPE_INFO)
 
 134             ElseIf InMapBounds(Map, X, Y) Then
 136                 Call FindLegalPos(tUser, Map, X, Y)
 138                 Call WarpUserChar(tUser, Map, X, Y, True)
 
-142                 If tUser <> Userindex Then
+142                 If tUser <> UserIndex Then
                         Call LogGM(.name, "Transportó a " & UserList(tUser).name & " hacia " & "Mapa" & Map & " X:" & X & " Y:" & Y)
                     End If
                         
@@ -12893,13 +12893,13 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
                 End If
             
 120             If tUser <= 0 Then
-122                 Call WriteConsoleMsg(Userindex, "El jugador no esta online.", FontTypeNames.FONTTYPE_INFO)
+122                 Call WriteConsoleMsg(UserIndex, "El jugador no esta online.", FontTypeNames.FONTTYPE_INFO)
 
                 Else
                     
                     ' Esta tratando de invocar a un Dios o Admin...
                     If (UserList(tUser).flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin)) Then
-                        Call WriteConsoleMsg(Userindex, "No podés invocar a dioses y admins.", FontTypeNames.FONTTYPE_INFO)
+                        Call WriteConsoleMsg(UserIndex, "No podés invocar a dioses y admins.", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                     

@@ -40,6 +40,9 @@ Public Sub DoPermanecerOculto(ByVal UserIndex As Integer)
         On Error GoTo DoPermanecerOculto_Err
     
 100     With UserList(UserIndex)
+
+            ' WyroX: Si tiene armadura de cazador, no se le va nunca lo oculto
+            If .clase = eClass.Hunter And TieneArmaduraCazador(UserIndex) Then Exit Sub
     
 102         .Counters.TiempoOculto = .Counters.TiempoOculto - 1
 
