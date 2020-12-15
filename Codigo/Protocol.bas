@@ -15137,12 +15137,7 @@ Private Sub HandleCreateItem(ByVal Userindex As Integer)
         
             ' Si es Semi-Dios, dejamos crear un item siempre y cuando pueda estar en el inventario.
 114         If (.flags.Privilegios And PlayerType.SemiDios) <> 0 And ObjData(tObj).Agarrable = 1 Then Exit Sub
-        
-116         If ObjData(tObj).donador = 1 Then
-                ' Si es usuario, consejero o Semi-Dios y trata de crear un objeto para donadores, lo sacamos cagando.
-118             If (.flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin)) = 0 Then Exit Sub
-            End If
-        
+
             ' Si hace mas de 10000, lo sacamos cagando.
 120         If Cuantos > MAX_INVENTORY_OBJS Then
 122             Call WriteConsoleMsg(Userindex, "Solo podés crear hasta " & CStr(MAX_INVENTORY_OBJS) & " unidades", FontTypeNames.FONTTYPE_TALK)
