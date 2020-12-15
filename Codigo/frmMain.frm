@@ -28,13 +28,6 @@ Begin VB.Form frmMain
    ScaleWidth      =   6915
    StartUpPosition =   2  'CenterScreen
    WindowState     =   1  'Minimized
-   Begin MSWinsockLib.Winsock Winsock1 
-      Left            =   3600
-      Top             =   1080
-      _ExtentX        =   741
-      _ExtentY        =   741
-      _Version        =   393216
-   End
    Begin VB.Timer TimerGuardarUsuarios 
       Enabled         =   0   'False
       Interval        =   30000
@@ -206,8 +199,8 @@ Begin VB.Form frmMain
       Top             =   120
       Width           =   4935
       Begin MSWinsockLib.Winsock auxSocket 
-         Left            =   3660
-         Top             =   870
+         Left            =   3960
+         Top             =   960
          _ExtentX        =   741
          _ExtentY        =   741
          _Version        =   393216
@@ -755,18 +748,20 @@ Private Sub auxSocket_DataArrival(ByVal bytesTotal As Long)
 End Sub
 
 Private Sub TimerGuardarUsuarios_Timer()
+
+On Error GoTo Handler
     
     ' Guardar usuarios (solo si pasó el tiempo mínimo para guardar)
-    Dim Userindex As Integer, UserGuardados As Integer
+    Dim UserIndex As Integer, UserGuardados As Integer
 
-    For Userindex = 1 To LastUser
+    For UserIndex = 1 To LastUser
     
-        With UserList(Userindex)
+        With UserList(UserIndex)
 
             If .flags.UserLogged Then
                 If GetTickCount - .Counters.LastSave > IntervaloGuardarUsuarios Then
                 
-                    Call SaveUser(Userindex)
+                    Call SaveUser(UserIndex)
                     
                     UserGuardados = UserGuardados + 1
                     
@@ -779,6 +774,12 @@ Private Sub TimerGuardarUsuarios_Timer()
         End With
 
     Next
+    
+    Exit Sub
+    
+Handler:
+    Call RegistrarError(Err.Number, Err.description, "frmMain.TimreGuardarUsuarios_Timer")
+    Resume Next
     
 End Sub
 

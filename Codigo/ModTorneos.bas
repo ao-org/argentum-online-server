@@ -62,7 +62,7 @@ IniciarTorneo_Err:
         
 End Sub
 
-Public Sub ParticiparTorneo(ByVal Userindex As Integer)
+Public Sub ParticiparTorneo(ByVal UserIndex As Integer)
         
         On Error GoTo ParticiparTorneo_Err
         
@@ -70,12 +70,12 @@ Public Sub ParticiparTorneo(ByVal Userindex As Integer)
         Dim IndexVacio As Byte
     
 100     IndexVacio = BuscarIndexFreeTorneo
-102     Torneo.IndexParticipantes(IndexVacio) = Userindex
+102     Torneo.IndexParticipantes(IndexVacio) = UserIndex
     
 104     Torneo.Participantes = Torneo.Participantes + 1
-106     UserList(Userindex).flags.EnTorneo = True
+106     UserList(UserIndex).flags.EnTorneo = True
     
-108     Call WriteConsoleMsg(Userindex, "¡Ya estas anotado! Solo debes aguardar hasta que seas enviado a la sala de espera.", FontTypeNames.FONTTYPE_INFOIAO)
+108     Call WriteConsoleMsg(UserIndex, "¡Ya estas anotado! Solo debes aguardar hasta que seas enviado a la sala de espera.", FontTypeNames.FONTTYPE_INFOIAO)
     
         
         Exit Sub
@@ -112,7 +112,7 @@ BuscarIndexFreeTorneo_Err:
         
 End Function
 
-Public Sub BorrarIndexInTorneo(ByVal Index As Integer)
+Public Sub BorrarIndexInTorneo(ByVal index As Integer)
         
         On Error GoTo BorrarIndexInTorneo_Err
         
@@ -121,7 +121,7 @@ Public Sub BorrarIndexInTorneo(ByVal Index As Integer)
 
 100     For i = 1 To Torneo.cupos
 
-102         If Torneo.IndexParticipantes(i) = Index Then
+102         If Torneo.IndexParticipantes(i) = index Then
 104             Torneo.IndexParticipantes(i) = 0
                 Exit For
 

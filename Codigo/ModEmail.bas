@@ -175,7 +175,7 @@ CuentaExiste_Err:
         
 End Function
 
-Public Sub SaveNewAccount(ByVal Userindex As Integer, ByVal CuentaEmail As String, ByVal Password As String)
+Public Sub SaveNewAccount(ByVal UserIndex As Integer, ByVal CuentaEmail As String, ByVal Password As String)
         
         On Error GoTo SaveNewAccount_Err
         
@@ -388,15 +388,15 @@ ObtenerCantidadDePersonajes_Err:
         
 End Function
 
-Public Function ObtenerCantidadDePersonajesByUserIndex(ByVal Userindex As Integer) As Byte
+Public Function ObtenerCantidadDePersonajesByUserIndex(ByVal UserIndex As Integer) As Byte
         
         On Error GoTo ObtenerCantidadDePersonajesByUserIndex_Err
         
 
 100     If Database_Enabled Then
-102         ObtenerCantidadDePersonajesByUserIndex = GetPersonajesCountByIDDatabase(UserList(Userindex).AccountID)
+102         ObtenerCantidadDePersonajesByUserIndex = GetPersonajesCountByIDDatabase(UserList(UserIndex).AccountID)
         Else
-104         ObtenerCantidadDePersonajesByUserIndex = val(GetVar(CuentasPath & UCase$(UserList(Userindex).name) & ".act", "PERSONAJES", "Total"))
+104         ObtenerCantidadDePersonajesByUserIndex = val(GetVar(CuentasPath & UCase$(UserList(UserIndex).name) & ".act", "PERSONAJES", "Total"))
 
         End If
 
@@ -843,7 +843,7 @@ SaveUserGuildAspirantCharfile_Err:
         
 End Sub
 
-Sub SendCharacterInfoCharfile(ByVal Userindex As Integer, ByVal UserName As String)
+Sub SendCharacterInfoCharfile(ByVal UserIndex As Integer, ByVal UserName As String)
         
         On Error GoTo SendCharacterInfoCharfile_Err
         
@@ -883,7 +883,7 @@ Sub SendCharacterInfoCharfile(ByVal Userindex As Integer, ByVal UserName As Stri
 116     With UserFile
 118         .Initialize (CharPath & UserName & ".chr")
     
-120         Call WriteCharacterInfo(Userindex, UserName, .GetValue("INIT", "Raza"), .GetValue("INIT", "Clase"), .GetValue("INIT", "Genero"), .GetValue("STATS", "ELV"), .GetValue("STATS", "GLD"), .GetValue("STATS", "Banco"), .GetValue("GUILD", "Pedidos"), gName, Miembro, .GetValue("FACCIONES", "EjercitoReal"), .GetValue("FACCIONES", "EjercitoCaos"), .GetValue("FACCIONES", "CiudMatados"), .GetValue("FACCIONES", "CrimMatados"))
+120         Call WriteCharacterInfo(UserIndex, UserName, .GetValue("INIT", "Raza"), .GetValue("INIT", "Clase"), .GetValue("INIT", "Genero"), .GetValue("STATS", "ELV"), .GetValue("STATS", "GLD"), .GetValue("STATS", "Banco"), .GetValue("GUILD", "Pedidos"), gName, Miembro, .GetValue("FACCIONES", "EjercitoReal"), .GetValue("FACCIONES", "EjercitoCaos"), .GetValue("FACCIONES", "CiudMatados"), .GetValue("FACCIONES", "CrimMatados"))
 
         End With
     

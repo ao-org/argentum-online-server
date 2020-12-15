@@ -49,6 +49,8 @@ Option Explicit
     Public Const GWL_WNDPROC = (-4)
     Private Const SIZE_RCVBUF As Long = 8192
     Private Const SIZE_SNDBUF As Long = 8192
+    
+    Private Const MAX_ITERATIONS_HID As Long = 200
 
     ''
     'Esto es para agilizar la busqueda del slot a partir de un socket dado,
@@ -690,7 +692,16 @@ Public Sub EventoSockRead(ByVal slot As Integer, ByRef Datos() As Byte)
 
 114             If .ConnID <> -1 Then
 
+                    ' WyroX: Pongo un límite a este loop... en caso de que por algún error bloquee el server
+                    Dim Iterations As Long
+
 116                 Do While HandleIncomingData(slot)
+                        Iterations = Iterations + 1
+                        If Iterations >= MAX_ITERATIONS_HID Then
+                            Call RegistrarError(-1, "Se supero el maximo de iteraciones de HandleIncomingData.", "wskapiAO.EventoSockRead")
+                            Call CloseSocket(slot)
+                            Exit Do
+                        End If
                     Loop
                 Else
                     Exit Sub

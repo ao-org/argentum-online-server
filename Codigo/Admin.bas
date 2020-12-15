@@ -410,19 +410,19 @@ PurgarOxigeno_Err:
         
 End Sub
 
-Public Sub Encarcelar(ByVal Userindex As Integer, ByVal minutos As Long, Optional ByVal GmName As String = vbNullString)
+Public Sub Encarcelar(ByVal UserIndex As Integer, ByVal minutos As Long, Optional ByVal GmName As String = vbNullString)
         
         On Error GoTo Encarcelar_Err
         
         
-100     UserList(Userindex).Counters.Pena = minutos
+100     UserList(UserIndex).Counters.Pena = minutos
         
-102     Call WarpUserChar(Userindex, Prision.Map, Prision.X, Prision.Y, True)
+102     Call WarpUserChar(UserIndex, Prision.Map, Prision.X, Prision.Y, True)
         
 104     If LenB(GmName) = 0 Then
-106         Call WriteConsoleMsg(Userindex, "Has sido encarcelado, deberas permanecer en la carcel " & minutos & " minutos.", FontTypeNames.FONTTYPE_INFO)
+106         Call WriteConsoleMsg(UserIndex, "Has sido encarcelado, deberas permanecer en la carcel " & minutos & " minutos.", FontTypeNames.FONTTYPE_INFO)
         Else
-108         Call WriteConsoleMsg(Userindex, GmName & " te ha encarcelado, deberas permanecer en la carcel " & minutos & " minutos.", FontTypeNames.FONTTYPE_INFO)
+108         Call WriteConsoleMsg(UserIndex, GmName & " te ha encarcelado, deberas permanecer en la carcel " & minutos & " minutos.", FontTypeNames.FONTTYPE_INFO)
 
         End If
         

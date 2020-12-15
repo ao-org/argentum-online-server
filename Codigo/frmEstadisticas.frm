@@ -273,7 +273,7 @@ Frame1_Click_Err:
         
 End Sub
 
-Private Sub lblStat_Click(Index As Integer)
+Private Sub lblStat_Click(index As Integer)
         
         On Error GoTo lblStat_Click_Err
         

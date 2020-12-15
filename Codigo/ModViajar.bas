@@ -1,13 +1,13 @@
 Attribute VB_Name = "ModViajar"
 
-Public Sub IniciarTransporte(ByVal Userindex As Integer)
+Public Sub IniciarTransporte(ByVal UserIndex As Integer)
         
         On Error GoTo IniciarTransporte_Err
         
 
         Dim destinos As Byte
 
-100     destinos = Npclist(UserList(Userindex).flags.TargetNPC).NumDestinos
+100     destinos = Npclist(UserList(UserIndex).flags.TargetNPC).NumDestinos
 
         
         Exit Sub

@@ -1,7 +1,7 @@
 Attribute VB_Name = "ModCorreo"
 Option Explicit
 
-Public Sub SortCorreos(ByVal Userindex As Integer)
+Public Sub SortCorreos(ByVal UserIndex As Integer)
         
         On Error GoTo SortCorreos_Err
         
@@ -18,20 +18,20 @@ Public Sub SortCorreos(ByVal Userindex As Integer)
 
         Dim i           As Byte
 
-100     UserList(Userindex).Correo.CantCorreo = UserList(Userindex).Correo.CantCorreo - 1
+100     UserList(UserIndex).Correo.CantCorreo = UserList(UserIndex).Correo.CantCorreo - 1
 
 102     For LoopC = 1 To MAX_CORREOS_SLOTS
 
-104         If UserList(Userindex).Correo.Mensaje(LoopC).Remitente = "" Then
+104         If UserList(UserIndex).Correo.Mensaje(LoopC).Remitente = "" Then
 106             indexviejo = LoopC
         
 108             For i = indexviejo To MAX_CORREOS_SLOTS - 1
-110                 UserList(Userindex).Correo.Mensaje(i).Remitente = UserList(Userindex).Correo.Mensaje(i + 1).Remitente
-112                 UserList(Userindex).Correo.Mensaje(i).Fecha = UserList(Userindex).Correo.Mensaje(i + 1).Fecha
-114                 UserList(Userindex).Correo.Mensaje(i).Item = UserList(Userindex).Correo.Mensaje(i + 1).Item
-116                 UserList(Userindex).Correo.Mensaje(i).ItemCount = UserList(Userindex).Correo.Mensaje(i + 1).ItemCount
-118                 UserList(Userindex).Correo.Mensaje(i).Mensaje = UserList(Userindex).Correo.Mensaje(i + 1).Mensaje
-120                 UserList(Userindex).Correo.Mensaje(i).Leido = UserList(Userindex).Correo.Mensaje(i + 1).Leido
+110                 UserList(UserIndex).Correo.Mensaje(i).Remitente = UserList(UserIndex).Correo.Mensaje(i + 1).Remitente
+112                 UserList(UserIndex).Correo.Mensaje(i).Fecha = UserList(UserIndex).Correo.Mensaje(i + 1).Fecha
+114                 UserList(UserIndex).Correo.Mensaje(i).Item = UserList(UserIndex).Correo.Mensaje(i + 1).Item
+116                 UserList(UserIndex).Correo.Mensaje(i).ItemCount = UserList(UserIndex).Correo.Mensaje(i + 1).ItemCount
+118                 UserList(UserIndex).Correo.Mensaje(i).Mensaje = UserList(UserIndex).Correo.Mensaje(i + 1).Mensaje
+120                 UserList(UserIndex).Correo.Mensaje(i).Leido = UserList(UserIndex).Correo.Mensaje(i + 1).Leido
 122             Next i
 
 124             LoopC = MAX_CORREOS_SLOTS
@@ -40,7 +40,7 @@ Public Sub SortCorreos(ByVal Userindex As Integer)
     
 126     Next LoopC
 
-128     Call WriteListaCorreo(Userindex, True)
+128     Call WriteListaCorreo(UserIndex, True)
 
         
         Exit Sub
@@ -52,27 +52,27 @@ SortCorreos_Err:
 End Sub
 
 'Note: UserIndex is Emisor, and UserName is Receptor.
-Public Function AddCorreo(ByVal Userindex As Integer, ByRef UserName As String, ByRef message As String, ByVal ObjArray As String, ByVal FinalCount As Byte) As Boolean
+Public Function AddCorreo(ByVal UserIndex As Integer, ByRef UserName As String, ByRef message As String, ByVal ObjArray As String, ByVal FinalCount As Byte) As Boolean
 
         On Error GoTo ErrHandler
 
         Dim ReceptIndex As Integer
 
-        Dim Index       As Byte
+        Dim index       As Byte
 
 100     ReceptIndex = NameIndex(UserName)
 
-102     If ReceptIndex > 0 And UserList(Userindex).flags.BattleModo = 0 Then
-104         Index = SearchIndexFreeCorreo(ReceptIndex)
+102     If ReceptIndex > 0 And UserList(UserIndex).flags.BattleModo = 0 Then
+104         index = SearchIndexFreeCorreo(ReceptIndex)
     
-106         If Index >= 1 And Index <= MAX_CORREOS_SLOTS Then
+106         If index >= 1 And index <= MAX_CORREOS_SLOTS Then
 108             UserList(ReceptIndex).Correo.CantCorreo = UserList(ReceptIndex).Correo.CantCorreo + 1
-110             UserList(ReceptIndex).Correo.Mensaje(Index).Remitente = UserList(Userindex).name
-112             UserList(ReceptIndex).Correo.Mensaje(Index).Mensaje = message
-114             UserList(ReceptIndex).Correo.Mensaje(Index).Item = ObjArray
-116             UserList(ReceptIndex).Correo.Mensaje(Index).ItemCount = FinalCount
-118             UserList(ReceptIndex).Correo.Mensaje(Index).Leido = 0
-120             UserList(ReceptIndex).Correo.Mensaje(Index).Fecha = Date & " - " & Time
+110             UserList(ReceptIndex).Correo.Mensaje(index).Remitente = UserList(UserIndex).name
+112             UserList(ReceptIndex).Correo.Mensaje(index).Mensaje = message
+114             UserList(ReceptIndex).Correo.Mensaje(index).Item = ObjArray
+116             UserList(ReceptIndex).Correo.Mensaje(index).ItemCount = FinalCount
+118             UserList(ReceptIndex).Correo.Mensaje(index).Leido = 0
+120             UserList(ReceptIndex).Correo.Mensaje(index).Fecha = Date & " - " & Time
         
                 ' UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD - 75
         
@@ -83,19 +83,19 @@ Public Function AddCorreo(ByVal Userindex As Integer, ByRef UserName As String, 
                 ' Call WriteUpdateUserStats(UserIndex)
         
                 '''
-122             Call WriteConsoleMsg(ReceptIndex, "Has recibido un nuevo mensaje de " & UserList(Userindex).name & " ve a un correo local para leerlo.", FontTypeNames.FONTTYPE_INFOIAO)
+122             Call WriteConsoleMsg(ReceptIndex, "Has recibido un nuevo mensaje de " & UserList(UserIndex).name & " ve a un correo local para leerlo.", FontTypeNames.FONTTYPE_INFOIAO)
 124             UserList(ReceptIndex).Correo.NoLeidos = 1
 126             Call WriteCorreoPicOn(ReceptIndex)
                 ' Call WriteCorreoUpdateCount(ReceptIndex, UserList(ReceptIndex).Correo.MensajesSinLeer)
         
                 'El mensaje fue enviado correctamente.
-128             If Userindex <> 0 Then Call WriteConsoleMsg(Userindex, "Mensaje enviado.", FontTypeNames.FONTTYPE_INFOIAO)
+128             If UserIndex <> 0 Then Call WriteConsoleMsg(UserIndex, "Mensaje enviado.", FontTypeNames.FONTTYPE_INFOIAO)
             
 130             AddCorreo = True
                 Exit Function
             Else
 
-132             If Userindex <> 0 Then Call WriteConsoleMsg(Userindex, "No hay mas espacio para correos.", FontTypeNames.FONTTYPE_INFOIAO)
+132             If UserIndex <> 0 Then Call WriteConsoleMsg(UserIndex, "No hay mas espacio para correos.", FontTypeNames.FONTTYPE_INFOIAO)
                 'Logear que no se pudo enviar.
 134             AddCorreo = False
                 Exit Function
@@ -120,7 +120,7 @@ Public Function AddCorreo(ByVal Userindex As Integer, ByRef UserName As String, 
 142             CantCorreo = CByte(Leer.GetValue("Correo", "CantCorreo"))
 
 144             If CantCorreo = 60 Then
-146                 Call WriteConsoleMsg(Userindex, "El correo del personaje esta lleno.", FontTypeNames.FONTTYPE_INFOIAO)
+146                 Call WriteConsoleMsg(UserIndex, "El correo del personaje esta lleno.", FontTypeNames.FONTTYPE_INFOIAO)
                     Exit Function
 
                 End If
@@ -130,21 +130,21 @@ Public Function AddCorreo(ByVal Userindex As Integer, ByRef UserName As String, 
                 ' If FinalCount > 0 Then
                 '  UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD - 1500
                 ' End If
-148             Call WriteUpdateUserStats(Userindex)
+148             Call WriteUpdateUserStats(UserIndex)
         
-150             AddCorreo = GrabarNuevoCorreoInChar(UserName, Userindex, message, ObjArray, FinalCount)
+150             AddCorreo = GrabarNuevoCorreoInChar(UserName, UserIndex, message, ObjArray, FinalCount)
         
-152             If Userindex <> 0 Then
-154                 Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessagePlayWave("174", UserList(Userindex).Pos.X, UserList(Userindex).Pos.Y))
-156                 Call WriteConsoleMsg(Userindex, "Mensaje enviado.", FontTypeNames.FONTTYPE_INFOIAO) 'El mensaje fue enviado correctamente.
-158                 Call WriteUpdateUserStats(Userindex)
+152             If UserIndex <> 0 Then
+154                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("174", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+156                 Call WriteConsoleMsg(UserIndex, "Mensaje enviado.", FontTypeNames.FONTTYPE_INFOIAO) 'El mensaje fue enviado correctamente.
+158                 Call WriteUpdateUserStats(UserIndex)
 
                 End If
 
                 Exit Function
             Else
 
-160             If Userindex <> 0 Then Call WriteConsoleMsg(Userindex, "El personaje no existe.", FontTypeNames.FONTTYPE_INFOIAO) 'El personaje no existe o se encuentra baneado.
+160             If UserIndex <> 0 Then Call WriteConsoleMsg(UserIndex, "El personaje no existe.", FontTypeNames.FONTTYPE_INFOIAO) 'El personaje no existe o se encuentra baneado.
         
 162             AddCorreo = False
                 Exit Function
@@ -158,12 +158,12 @@ ErrHandler:
 
 End Function
 
-Public Sub BorrarCorreoMail(ByVal Userindex As Integer, ByVal Index As Byte)
+Public Sub BorrarCorreoMail(ByVal UserIndex As Integer, ByVal index As Byte)
         
         On Error GoTo BorrarCorreoMail_Err
         
-100     UserList(Userindex).Correo.Mensaje(Index).Remitente = ""
-102     Call SortCorreos(Userindex)
+100     UserList(UserIndex).Correo.Mensaje(index).Remitente = ""
+102     Call SortCorreos(UserIndex)
 
         
         Exit Sub
@@ -174,12 +174,12 @@ BorrarCorreoMail_Err:
         
 End Sub
 
-Public Sub ExtractItemCorreo(ByVal Userindex As Integer, ByVal Index As Byte)
+Public Sub ExtractItemCorreo(ByVal UserIndex As Integer, ByVal index As Byte)
         
         On Error GoTo ExtractItemCorreo_Err
         
 
-100     If UserList(Userindex).Correo.Mensaje(Index).ItemCount <= 0 Then Exit Sub
+100     If UserList(UserIndex).Correo.Mensaje(index).ItemCount <= 0 Then Exit Sub
     
         Dim ObjAMeter As obj
 
@@ -193,9 +193,9 @@ Public Sub ExtractItemCorreo(ByVal Userindex As Integer, ByVal Index As Byte)
 
         Dim Cantidad  As String
     
-102     For i = 1 To UserList(Userindex).Correo.Mensaje(Index).ItemCount
+102     For i = 1 To UserList(UserIndex).Correo.Mensaje(index).ItemCount
     
-104         rdata = Right$(UserList(Userindex).Correo.Mensaje(Index).Item, Len(UserList(Userindex).Correo.Mensaje(Index).Item))
+104         rdata = Right$(UserList(UserIndex).Correo.Mensaje(index).Item, Len(UserList(UserIndex).Correo.Mensaje(index).Item))
 106         Item = (ReadField(i, rdata, Asc("@")))
                 
 108         rdata = Left$(Item, Len(Item))
@@ -207,16 +207,16 @@ Public Sub ExtractItemCorreo(ByVal Userindex As Integer, ByVal Index As Byte)
 116         ObjAMeter.ObjIndex = ObjIndex
 118         ObjAMeter.Amount = Cantidad
         
-120         If Not MeterItemEnInventario(Userindex, ObjAMeter) Then
-122             Call TirarItemAlPiso(UserList(Userindex).Pos, ObjAMeter)
+120         If Not MeterItemEnInventario(UserIndex, ObjAMeter) Then
+122             Call TirarItemAlPiso(UserList(UserIndex).Pos, ObjAMeter)
 
             End If
 
 124     Next i
 
-126     UserList(Userindex).Correo.Mensaje(Index).ItemCount = 0
-128     UserList(Userindex).Correo.Mensaje(Index).Item = 0
-130     Call WriteListaCorreo(Userindex, True)
+126     UserList(UserIndex).Correo.Mensaje(index).ItemCount = 0
+128     UserList(UserIndex).Correo.Mensaje(index).Item = 0
+130     Call WriteListaCorreo(UserIndex, True)
 
         
         Exit Sub
@@ -227,12 +227,12 @@ ExtractItemCorreo_Err:
         
 End Sub
 
-Public Sub ReadMessageCorreo(ByVal Userindex As Integer, ByVal Index As Byte)
+Public Sub ReadMessageCorreo(ByVal UserIndex As Integer, ByVal index As Byte)
         
         On Error GoTo ReadMessageCorreo_Err
         
-100     UserList(Userindex).Correo.Mensaje(Index).Leido = 1
-102     UserList(Userindex).Correo.MensajesSinLeer = UserList(Userindex).Correo.MensajesSinLeer - 1
+100     UserList(UserIndex).Correo.Mensaje(index).Leido = 1
+102     UserList(UserIndex).Correo.MensajesSinLeer = UserList(UserIndex).Correo.MensajesSinLeer - 1
 
         '   Call WriteCorreoUpdateCount(ReceptIndex, UserList(ReceptIndex).Correo.MensajesSinLeer)
         
@@ -244,7 +244,7 @@ ReadMessageCorreo_Err:
         
 End Sub
 
-Private Function SearchIndexFreeCorreo(ByVal Userindex As Integer) As Byte
+Private Function SearchIndexFreeCorreo(ByVal UserIndex As Integer) As Byte
         
         On Error GoTo SearchIndexFreeCorreo_Err
         
@@ -253,7 +253,7 @@ Private Function SearchIndexFreeCorreo(ByVal Userindex As Integer) As Byte
 
 100     For LoopC = 1 To MAX_CORREOS_SLOTS
 
-102         If UserList(Userindex).Correo.Mensaje(LoopC).Remitente = "" Then
+102         If UserList(UserIndex).Correo.Mensaje(LoopC).Remitente = "" Then
 104             SearchIndexFreeCorreo = LoopC
                 Exit Function
 
@@ -374,7 +374,7 @@ Public Function AddCorreoBySubastador(ByVal Vendedor As String, ByRef Comprador 
 
         Dim ReceptIndex As Integer
 
-        Dim Index       As Byte
+        Dim index       As Byte
 
         Dim ObjIndex    As Integer
 
@@ -383,16 +383,16 @@ Public Function AddCorreoBySubastador(ByVal Vendedor As String, ByRef Comprador 
 102     ObjIndex = obj
 
 104     If ReceptIndex > 0 Then
-106         Index = SearchIndexFreeCorreo(ReceptIndex)
+106         index = SearchIndexFreeCorreo(ReceptIndex)
     
-108         If Index >= 1 And Index <= MAX_CORREOS_SLOTS Then
+108         If index >= 1 And index <= MAX_CORREOS_SLOTS Then
 110             UserList(ReceptIndex).Correo.CantCorreo = UserList(ReceptIndex).Correo.CantCorreo + 1
-112             UserList(ReceptIndex).Correo.Mensaje(Index).Remitente = Vendedor
-114             UserList(ReceptIndex).Correo.Mensaje(Index).Mensaje = message
-116             UserList(ReceptIndex).Correo.Mensaje(Index).ItemCount = 1
-118             UserList(ReceptIndex).Correo.Mensaje(Index).Item = ObjIndex & "-" & Cantidad & "@"
-120             UserList(ReceptIndex).Correo.Mensaje(Index).Leido = 0
-122             UserList(ReceptIndex).Correo.Mensaje(Index).Fecha = Date & " - " & Time
+112             UserList(ReceptIndex).Correo.Mensaje(index).Remitente = Vendedor
+114             UserList(ReceptIndex).Correo.Mensaje(index).Mensaje = message
+116             UserList(ReceptIndex).Correo.Mensaje(index).ItemCount = 1
+118             UserList(ReceptIndex).Correo.Mensaje(index).Item = ObjIndex & "-" & Cantidad & "@"
+120             UserList(ReceptIndex).Correo.Mensaje(index).Leido = 0
+122             UserList(ReceptIndex).Correo.Mensaje(index).Fecha = Date & " - " & Time
         
                 '''
 124             Call WriteConsoleMsg(ReceptIndex, "Has recibido un nuevo mensaje de " & Vendedor & " ve a un correo local para leerlo.", FontTypeNames.FONTTYPE_INFOIAO)
