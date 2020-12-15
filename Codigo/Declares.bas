@@ -588,7 +588,7 @@ Public Const vlProleta     As Integer = 2
 '%%%%%%%%%% CONSTANTES DE INDICES %%%%%%%%%%%%%%%
 Public Const iCuerpoMuerto As Integer = 829
 
-Public Const iCabezaMuerto As Integer = 0
+Public Const iCabezaMuerto As Integer = 621
 
 Public Const iORO          As Byte = 12
 
@@ -2079,7 +2079,7 @@ Public Type MapBlock
 
     Blocked As Byte
     Graphic(1 To 4) As Long
-    Userindex As Integer
+    UserIndex As Integer
     NpcIndex As Integer
     Particula As Byte
     TimeParticula As Integer

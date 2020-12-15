@@ -1857,7 +1857,7 @@ Sub LoadUserInit(ByVal UserIndex As Integer, ByRef UserFile As clsIniReader)
 202         UserList(UserIndex).Char = UserList(UserIndex).OrigChar
         Else
 204         UserList(UserIndex).Char.Body = iCuerpoMuerto
-206         UserList(UserIndex).Char.Head = iCabezaMuerto
+206         UserList(UserIndex).Char.Head = 0
 208         UserList(UserIndex).Char.WeaponAnim = NingunArma
 210         UserList(UserIndex).Char.ShieldAnim = NingunEscudo
 212         UserList(UserIndex).Char.CascoAnim = NingunCasco
@@ -2801,7 +2801,7 @@ Sub LoadUser(ByVal UserIndex As Integer)
                 End If
             Else
 124             .Char.Body = iCuerpoMuerto
-126             .Char.Head = iCabezaMuerto
+126             .Char.Head = 0
 128             .Char.WeaponAnim = NingunArma
 130             .Char.ShieldAnim = NingunEscudo
 132             .Char.CascoAnim = NingunCasco
@@ -3407,7 +3407,7 @@ Sub SaveUserCharfile(ByVal UserIndex As Integer, Optional ByVal Logout As Boolea
 
         'Devuelve el head de muerto
         If .flags.Muerto = 1 Then
-            .Char.Head = iCabezaMuerto
+            .Char.Head = 0
         End If
     
     End With
@@ -3721,7 +3721,7 @@ Sub SaveNewUserCharfile(ByVal UserIndex As Integer)
     
         'Devuelve el head de muerto
 440     If UserList(UserIndex).flags.Muerto = 1 Then
-442         UserList(UserIndex).Char.Head = iCabezaMuerto
+442         UserList(UserIndex).Char.Head = 0
 
         End If
     

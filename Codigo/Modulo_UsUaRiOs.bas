@@ -102,161 +102,130 @@ Sub RevivirUsuario(ByVal UserIndex As Integer)
         
         On Error GoTo RevivirUsuario_Err
         
+        With UserList(UserIndex)
 
-100     UserList(UserIndex).Char.speeding = VelocidadNormal
-        'Call WriteVelocidadToggle(UserIndex)
-102     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(UserList(UserIndex).Char.CharIndex, UserList(UserIndex).Char.speeding))
+104         .flags.Muerto = 0
+106         .Stats.MinHp = .Stats.MaxHp
 
-104     UserList(UserIndex).flags.Muerto = 0
-106     UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.UserAtributos(eAtributos.Constitucion)
-
-108     If UserList(UserIndex).Stats.MinHp <> UserList(UserIndex).Stats.MaxHp Then
-110         UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MaxHp
-
-        End If
-
-112     If UserList(UserIndex).flags.Navegando = 1 Then
-
-            Dim Barco As ObjData
-
-114         Barco = ObjData(UserList(UserIndex).Invent.BarcoObjIndex)
-
-116         If Barco.Ropaje <> iTraje Then
-118             UserList(UserIndex).Char.Head = 0
-120             UserList(UserIndex).Char.CascoAnim = NingunCasco
-
-            End If
+            Call WriteUpdateHP(UserIndex)
     
-122         If Barco.Ropaje = iTraje Then
-124             UserList(UserIndex).Char.Head = UserList(UserIndex).OrigChar.Head
-126             Call WriteNadarToggle(UserIndex, True)
+112         If .flags.Navegando = 1 Then
+    
+                Dim Barco As ObjData
+    
+114             Barco = ObjData(.Invent.BarcoObjIndex)
+
+122             If Barco.Subtipo = 0 Then
+124                 .Char.Head = .OrigChar.Head
+                    
+                    If .Invent.CascoEqpObjIndex > 0 Then
+                        .Char.CascoAnim = ObjData(.Invent.CascoEqpObjIndex).CascoAnim
+                    End If
+
+126                 Call WriteNadarToggle(UserIndex, True)
+                Else
+                    .Char.Head = 0
+128                 Call WriteNadarToggle(UserIndex, False)
+                End If
         
+                .Char.Body = Barco.Ropaje
+        
+158             .Char.ShieldAnim = NingunEscudo
+160             .Char.WeaponAnim = NingunArma
+162             .Char.speeding = Barco.Velocidad
+       
             Else
-128             Call WriteNadarToggle(UserIndex, False)
         
-            End If
+166             .Char.Head = .OrigChar.Head
     
-130         If UserList(UserIndex).Faccion.ArmadaReal = 1 Then
-132             If Barco.Ropaje = iTraje Then UserList(UserIndex).Char.Body = iTraje
-134             If Barco.Ropaje = iBarca Then UserList(UserIndex).Char.Body = iBarcaCiuda
-136             If Barco.Ropaje = iGalera Then UserList(UserIndex).Char.Body = iGaleraCiuda
-138             If Barco.Ropaje = iGaleon Then UserList(UserIndex).Char.Body = iGaleonCiuda
-140         ElseIf UserList(UserIndex).Faccion.FuerzasCaos = 1 Then
-
-142             If Barco.Ropaje = iTraje Then UserList(UserIndex).Char.Body = iTraje
-144             If Barco.Ropaje = iBarca Then UserList(UserIndex).Char.Body = iBarcaPk
-146             If Barco.Ropaje = iGalera Then UserList(UserIndex).Char.Body = iGaleraPk
-148             If Barco.Ropaje = iGaleon Then UserList(UserIndex).Char.Body = iGaleonPk
-            Else
-
-150             If Barco.Ropaje = iTraje Then UserList(UserIndex).Char.Body = iTraje
-152             If Barco.Ropaje = iBarca Then UserList(UserIndex).Char.Body = iBarca
-154             If Barco.Ropaje = iGalera Then UserList(UserIndex).Char.Body = iGalera
-156             If Barco.Ropaje = iGaleon Then UserList(UserIndex).Char.Body = iGaleon
-
-            End If
-    
-158         UserList(UserIndex).Char.ShieldAnim = NingunEscudo
-160         UserList(UserIndex).Char.WeaponAnim = NingunArma
-            ' UserList(UserIndex).Char.CascoAnim = NingunCasco
-   
-162         UserList(UserIndex).Char.speeding = Barco.Velocidad
-            'Call WriteVelocidadToggle(UserIndex)
-164         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(UserList(UserIndex).Char.CharIndex, UserList(UserIndex).Char.speeding))
-   
-        Else
-    
-166         UserList(UserIndex).Char.Head = UserList(UserIndex).OrigChar.Head
-
-168         If UserList(UserIndex).Invent.CascoEqpObjIndex > 0 Then
-170             UserList(UserIndex).Char.CascoAnim = ObjData(UserList(UserIndex).Invent.CascoEqpObjIndex).CascoAnim
-
-            End If
-
-172         If UserList(UserIndex).Invent.EscudoEqpObjIndex > 0 Then
-174             UserList(UserIndex).Char.ShieldAnim = ObjData(UserList(UserIndex).Invent.EscudoEqpObjIndex).ShieldAnim
-
-            End If
-
-176         If UserList(UserIndex).Invent.WeaponEqpObjIndex > 0 Then
-178             UserList(UserIndex).Char.WeaponAnim = ObjData(UserList(UserIndex).Invent.WeaponEqpObjIndex).WeaponAnim
-    
-180             If ObjData(UserList(UserIndex).Invent.WeaponEqpObjIndex).CreaGRH <> "" Then
-182                 UserList(UserIndex).Char.Arma_Aura = ObjData(UserList(UserIndex).Invent.WeaponEqpObjIndex).CreaGRH
-184                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(UserList(UserIndex).Char.CharIndex, UserList(UserIndex).Char.Arma_Aura, False, 1))
-
+168             If .Invent.CascoEqpObjIndex > 0 Then
+170                 .Char.CascoAnim = ObjData(.Invent.CascoEqpObjIndex).CascoAnim
                 End If
+    
+172             If .Invent.EscudoEqpObjIndex > 0 Then
+174                 .Char.ShieldAnim = ObjData(.Invent.EscudoEqpObjIndex).ShieldAnim
+    
+                End If
+    
+176             If .Invent.WeaponEqpObjIndex > 0 Then
+178                 .Char.WeaponAnim = ObjData(.Invent.WeaponEqpObjIndex).WeaponAnim
         
-            End If
-
-186         If UserList(UserIndex).Invent.ArmourEqpObjIndex > 0 Then
-188             UserList(UserIndex).Char.Body = ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).Ropaje
+180                 If ObjData(.Invent.WeaponEqpObjIndex).CreaGRH <> "" Then
+182                     .Char.Arma_Aura = ObjData(.Invent.WeaponEqpObjIndex).CreaGRH
+184                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Arma_Aura, False, 1))
     
-190             If ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).CreaGRH <> "" Then
-192                 UserList(UserIndex).Char.Body_Aura = ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).CreaGRH
-194                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(UserList(UserIndex).Char.CharIndex, UserList(UserIndex).Char.Body_Aura, False, 2))
-
-                End If
-
-            Else
-196             Call DarCuerpoDesnudo(UserIndex)
-        
-            End If
-
-198         If UserList(UserIndex).Invent.EscudoEqpObjIndex > 0 Then
-200             UserList(UserIndex).Char.ShieldAnim = ObjData(UserList(UserIndex).Invent.EscudoEqpObjIndex).ShieldAnim
-
-202             If ObjData(UserList(UserIndex).Invent.EscudoEqpObjIndex).CreaGRH <> "" Then
-204                 UserList(UserIndex).Char.Escudo_Aura = ObjData(UserList(UserIndex).Invent.EscudoEqpObjIndex).CreaGRH
-206                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(UserList(UserIndex).Char.CharIndex, UserList(UserIndex).Char.Escudo_Aura, False, 3))
-
-                End If
-        
-            End If
-
-208         If UserList(UserIndex).Invent.CascoEqpObjIndex > 0 Then
-210             UserList(UserIndex).Char.CascoAnim = ObjData(UserList(UserIndex).Invent.CascoEqpObjIndex).CascoAnim
-
-212             If ObjData(UserList(UserIndex).Invent.CascoEqpObjIndex).CreaGRH <> "" Then
-214                 UserList(UserIndex).Char.Head_Aura = ObjData(UserList(UserIndex).Invent.CascoEqpObjIndex).CreaGRH
-216                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(UserList(UserIndex).Char.CharIndex, UserList(UserIndex).Char.Head_Aura, False, 4))
-
-                End If
-        
-            End If
-
-218         If UserList(UserIndex).Invent.MagicoObjIndex > 0 Then
-220             If ObjData(UserList(UserIndex).Invent.MagicoObjIndex).CreaGRH <> "" Then
-222                 UserList(UserIndex).Char.Otra_Aura = ObjData(UserList(UserIndex).Invent.MagicoObjIndex).CreaGRH
-224                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(UserList(UserIndex).Char.CharIndex, UserList(UserIndex).Char.Otra_Aura, False, 5))
-
-                End If
-
-            End If
-
-226         If UserList(UserIndex).Invent.NudilloObjIndex > 0 Then
-228             If ObjData(UserList(UserIndex).Invent.NudilloObjIndex).CreaGRH <> "" Then
-230                 UserList(UserIndex).Char.Arma_Aura = ObjData(UserList(UserIndex).Invent.NudilloObjIndex).CreaGRH
-232                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(UserList(UserIndex).Char.CharIndex, UserList(UserIndex).Char.Arma_Aura, False, 1))
-
-                End If
-            End If
+                    End If
             
-234         If UserList(UserIndex).Invent.AnilloEqpObjIndex > 0 Then
-236             If ObjData(UserList(UserIndex).Invent.AnilloEqpObjIndex).CreaGRH <> "" Then
-238                 UserList(UserIndex).Char.Anillo_Aura = ObjData(UserList(UserIndex).Invent.AnilloEqpObjIndex).CreaGRH
-240                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(UserList(UserIndex).Char.CharIndex, UserList(UserIndex).Char.Anillo_Aura, False, 6))
                 End If
+    
+186             If .Invent.ArmourEqpObjIndex > 0 Then
+188                 .Char.Body = ObjData(.Invent.ArmourEqpObjIndex).Ropaje
+        
+190                 If ObjData(.Invent.ArmourEqpObjIndex).CreaGRH <> "" Then
+192                     .Char.Body_Aura = ObjData(.Invent.ArmourEqpObjIndex).CreaGRH
+194                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Body_Aura, False, 2))
+    
+                    End If
+    
+                Else
+196                 Call DarCuerpoDesnudo(UserIndex)
+            
+                End If
+    
+198             If .Invent.EscudoEqpObjIndex > 0 Then
+200                 .Char.ShieldAnim = ObjData(.Invent.EscudoEqpObjIndex).ShieldAnim
+    
+202                 If ObjData(.Invent.EscudoEqpObjIndex).CreaGRH <> "" Then
+204                     .Char.Escudo_Aura = ObjData(.Invent.EscudoEqpObjIndex).CreaGRH
+206                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Escudo_Aura, False, 3))
+    
+                    End If
+            
+                End If
+    
+208             If .Invent.CascoEqpObjIndex > 0 Then
+210                 .Char.CascoAnim = ObjData(.Invent.CascoEqpObjIndex).CascoAnim
+    
+212                 If ObjData(.Invent.CascoEqpObjIndex).CreaGRH <> "" Then
+214                     .Char.Head_Aura = ObjData(.Invent.CascoEqpObjIndex).CreaGRH
+216                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Head_Aura, False, 4))
+    
+                    End If
+            
+                End If
+    
+218             If .Invent.MagicoObjIndex > 0 Then
+220                 If ObjData(.Invent.MagicoObjIndex).CreaGRH <> "" Then
+222                     .Char.Otra_Aura = ObjData(.Invent.MagicoObjIndex).CreaGRH
+224                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Otra_Aura, False, 5))
+    
+                    End If
+    
+                End If
+    
+226             If .Invent.NudilloObjIndex > 0 Then
+228                 If ObjData(.Invent.NudilloObjIndex).CreaGRH <> "" Then
+230                     .Char.Arma_Aura = ObjData(.Invent.NudilloObjIndex).CreaGRH
+232                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Arma_Aura, False, 1))
+    
+                    End If
+                End If
+                
+234             If .Invent.AnilloEqpObjIndex > 0 Then
+236                 If ObjData(.Invent.AnilloEqpObjIndex).CreaGRH <> "" Then
+238                     .Char.Anillo_Aura = ObjData(.Invent.AnilloEqpObjIndex).CreaGRH
+240                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Anillo_Aura, False, 6))
+                    End If
+                End If
+                
+                .Char.speeding = VelocidadNormal
+    
             End If
+    
+242         Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(.Char.CharIndex, .Char.speeding))
 
-        End If
-
-242     Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
-
-244     Call WriteUpdateUserStats(UserIndex)
-
-        'Call WriteHora(UserIndex)
-
+        End With
         
         Exit Sub
 
@@ -1716,11 +1685,6 @@ Sub UserDie(ByVal UserIndex As Integer)
 330             Call DoMontar(UserIndex, ObjData(.Invent.MonturaObjIndex), .Invent.MonturaSlot)
     
             End If
-            
-332         .Char.speeding = VelocidadMuerto
-            'Call WriteVelocidadToggle(UserIndex)
-        
-334         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(.Char.CharIndex, .Char.speeding))
         
             ' << Reseteamos los posibles FX sobre el personaje >>
 336         If .Char.loops = INFINITE_LOOPS Then
@@ -1758,11 +1722,12 @@ Sub UserDie(ByVal UserIndex As Integer)
             '<< Cambiamos la apariencia del char >>
 366         If .flags.Navegando = 0 Then
 368             .Char.Body = iCuerpoMuerto
-370             .Char.Head = iCabezaMuerto
+370             .Char.Head = 0
 372             .Char.ShieldAnim = NingunEscudo
 374             .Char.WeaponAnim = NingunArma
 376             .Char.CascoAnim = NingunCasco
             
+                .Char.speeding = VelocidadMuerto
             Else
     
 378             If ObjData(.Invent.BarcoObjIndex).Ropaje = iTraje Then
@@ -1772,7 +1737,11 @@ Sub UserDie(ByVal UserIndex As Integer)
 384                 .Char.Body = iFragataFantasmal ';)
 386                 .Char.Head = 0
                 End If
+                
+                .Char.speeding = ObjData(.Invent.BarcoObjIndex).Velocidad
             End If
+            
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(.Char.CharIndex, .Char.speeding))
         
 388         For i = 1 To MAXMASCOTAS
 390             If .MascotasIndex(i) > 0 Then

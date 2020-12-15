@@ -149,7 +149,7 @@ Public Sub setDistance(ByVal Mapa As Integer, _
 
 End Sub
 
-Public Sub goHome(ByVal Userindex As Integer)
+Public Sub goHome(ByVal UserIndex As Integer)
         '***************************************************
         'Author: Budi
         'Last Modification: 01/06/2010
@@ -159,7 +159,7 @@ Public Sub goHome(ByVal Userindex As Integer)
         Dim Distance As Long
         Dim Tiempo   As Long
     
-100     With UserList(Userindex)
+100     With UserList(UserIndex)
 
 102         If .flags.Muerto = 1 Then
         
@@ -175,17 +175,17 @@ Public Sub goHome(ByVal Userindex As Integer)
             
                 'If Tiempo > 60 Then Tiempo = 60
             
-112             Call IntervaloGoHome(Userindex, Tiempo * 1000, True)
+112             Call IntervaloGoHome(UserIndex, Tiempo * 1000, True)
             
 114             If .flags.lastMap = 0 Then
-116                 Call WriteConsoleMsg(Userindex, "Te encuentras a " & CStr(Distance) & " mapas de " & MapInfo(Ciudades(.Hogar).Map).map_name & ", este viaje durara " & CStr(Tiempo) & " segundos.", FontTypeNames.FONTTYPE_FIGHT)
+116                 Call WriteConsoleMsg(UserIndex, "Te encuentras a " & CStr(Distance) & " mapas de " & MapInfo(Ciudades(.Hogar).Map).map_name & ", este viaje durara " & CStr(Tiempo) & " segundos.", FontTypeNames.FONTTYPE_FIGHT)
                 Else
-118                 Call WriteConsoleMsg(Userindex, "Te encuentras en un dungeon o en las catacumbas, viajarás a " & MapInfo(Ciudades(.Hogar).Map).map_name & " en " & CStr(Tiempo) & " segundos.", FontTypeNames.FONTTYPE_FIGHT)
+118                 Call WriteConsoleMsg(UserIndex, "Te encuentras en un dungeon o en las catacumbas, viajarás a " & MapInfo(Ciudades(.Hogar).Map).map_name & " en " & CStr(Tiempo) & " segundos.", FontTypeNames.FONTTYPE_FIGHT)
                 End If
             
             Else
         
-120             Call WriteConsoleMsg(Userindex, "Debes estar muerto para poder utilizar este comando.", FontTypeNames.FONTTYPE_FIGHT)
+120             Call WriteConsoleMsg(UserIndex, "Debes estar muerto para poder utilizar este comando.", FontTypeNames.FONTTYPE_FIGHT)
 
             End If
         
@@ -199,21 +199,21 @@ End Sub
 ' @param UserIndex  El index del usuario a ser afectado por el /hogar
 '
 
-Public Sub TravelingEffect(ByVal Userindex As Integer)
+Public Sub TravelingEffect(ByVal UserIndex As Integer)
         '******************************************************
         'Author: ZaMa
         'Last Update: 01/06/2010 (ZaMa)
         '******************************************************
 
         ' Si ya paso el tiempo de penalizacion
-100     If IntervaloGoHome(Userindex) Then
-102         Call HomeArrival(Userindex)
+100     If IntervaloGoHome(UserIndex) Then
+102         Call HomeArrival(UserIndex)
         End If
 
 End Sub
 
 
-Public Function GetHomeArrivalTime(ByVal Userindex As Integer) As Integer
+Public Function GetHomeArrivalTime(ByVal UserIndex As Integer) As Integer
 
         '**************************************************************
         'Author: ZaMa
@@ -225,13 +225,13 @@ Public Function GetHomeArrivalTime(ByVal Userindex As Integer) As Integer
     
 100     TActual = GetTickCount()
     
-102     With UserList(Userindex)
+102     With UserList(UserIndex)
 104         GetHomeArrivalTime = (.Counters.goHome - TActual) * 0.001
         End With
 
 End Function
 
-Public Sub HomeArrival(ByVal Userindex As Integer)
+Public Sub HomeArrival(ByVal UserIndex As Integer)
         '**************************************************************
         'Author: ZaMa
         'Last Modify by: ZaMa
@@ -243,19 +243,19 @@ Public Sub HomeArrival(ByVal Userindex As Integer)
         Dim tY   As Integer
         Dim tMap As Integer
 
-100     With UserList(Userindex)
+100     With UserList(UserIndex)
 
             'Antes de que el pj llegue a la ciudad, lo hacemos dejar de navegar para que no se buguee.
 102         If .flags.Navegando = 1 Then
 104             .Char.Body = iCuerpoMuerto
-106             .Char.Head = iCabezaMuerto
+106             .Char.Head = 0
 108             .Char.ShieldAnim = NingunEscudo
 110             .Char.WeaponAnim = NingunArma
 112             .Char.CascoAnim = NingunCasco
             
 114             .flags.Navegando = 0
             
-116             Call WriteNavigateToggle(Userindex)
+116             Call WriteNavigateToggle(UserIndex)
 
                 'Le sacamos el navegando, pero no le mostramos a los demas porque va a ser sumoneado hasta ulla.
             End If
@@ -264,10 +264,10 @@ Public Sub HomeArrival(ByVal Userindex As Integer)
 120         tY = Ciudades(.Hogar).Y
 122         tMap = Ciudades(.Hogar).Map
         
-124         Call FindLegalPos(Userindex, tMap, CByte(tX), CByte(tY))
-126         Call WarpUserChar(Userindex, tMap, tX, tY, True)
+124         Call FindLegalPos(UserIndex, tMap, CByte(tX), CByte(tY))
+126         Call WarpUserChar(UserIndex, tMap, tX, tY, True)
         
-128         Call WriteConsoleMsg(Userindex, "El viaje ha terminado.", FontTypeNames.FONTTYPE_INFOBOLD)
+128         Call WriteConsoleMsg(UserIndex, "El viaje ha terminado.", FontTypeNames.FONTTYPE_INFOBOLD)
         
 130         .flags.Traveling = 0
 132         .Counters.goHome = 0
@@ -276,7 +276,7 @@ Public Sub HomeArrival(ByVal Userindex As Integer)
     
 End Sub
 
-Public Function IntervaloGoHome(ByVal Userindex As Integer, _
+Public Function IntervaloGoHome(ByVal UserIndex As Integer, _
                                 Optional ByVal TimeInterval As Long, _
                                 Optional ByVal Actualizar As Boolean = False) As Boolean
 
@@ -290,7 +290,7 @@ Public Function IntervaloGoHome(ByVal Userindex As Integer, _
         Dim TActual As Long
 100         TActual = GetTickCount()
     
-102     With UserList(Userindex)
+102     With UserList(UserIndex)
 
             ' Inicializa el timer
 104         If Actualizar Then
@@ -310,7 +310,7 @@ Public Function IntervaloGoHome(ByVal Userindex As Integer, _
 
 End Function
 
-Public Sub HandleHome(ByVal Userindex As Integer)
+Public Sub HandleHome(ByVal UserIndex As Integer)
 
         '***************************************************
         'Author: Budi
@@ -319,39 +319,39 @@ Public Sub HandleHome(ByVal Userindex As Integer)
         'Pato - 05/06/10: Add the UCase$ to prevent problems.
         '***************************************************
     
-100     With UserList(Userindex)
+100     With UserList(UserIndex)
         
 102         Call .incomingData.ReadInteger
 
 104         If .flags.Muerto = 0 Then
-106             Call WriteConsoleMsg(Userindex, "Debes estar muerto para utilizar este comando.", FontTypeNames.FONTTYPE_FIGHT)
+106             Call WriteConsoleMsg(UserIndex, "Debes estar muerto para utilizar este comando.", FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
 
             End If
         
             '¿Zona Segura?
 108         If MapInfo(.Pos.Map).Seguro = 1 Then
-110             Call WriteConsoleMsg(Userindex, "No puedes usar este comando en zona segura.", FontTypeNames.FONTTYPE_FIGHT)
+110             Call WriteConsoleMsg(UserIndex, "No puedes usar este comando en zona segura.", FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
             
             End If
         
             'Si el mapa tiene alguna restriccion (newbie, dungeon, etc...), no lo dejamos viajar.
 112         If MapInfo(.Pos.Map).zone = "NEWBIE" Then
-114             Call WriteConsoleMsg(Userindex, "No pueder viajar a tu hogar desde este mapa.", FontTypeNames.FONTTYPE_FIGHT)
+114             Call WriteConsoleMsg(UserIndex, "No pueder viajar a tu hogar desde este mapa.", FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
             
             End If
         
             'Si es un mapa comun y no esta en cana
 116         If .Counters.Pena <> 0 Then
-118             Call WriteConsoleMsg(Userindex, "No puedes usar este comando en prisión.", FontTypeNames.FONTTYPE_FIGHT)
+118             Call WriteConsoleMsg(UserIndex, "No puedes usar este comando en prisión.", FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
 
             End If
         
 120         If .flags.Muerto = 0 Then
-122             Call WriteConsoleMsg(Userindex, "Debes estar muerto para utilizar este comando.", FontTypeNames.FONTTYPE_FIGHT)
+122             Call WriteConsoleMsg(UserIndex, "Debes estar muerto para utilizar este comando.", FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
 
             End If
@@ -359,10 +359,10 @@ Public Sub HandleHome(ByVal Userindex As Integer)
 124         If .flags.Traveling = 0 Then
             
 126             If .Pos.Map <> Ciudades(.Hogar).Map Then
-128                 Call goHome(Userindex)
+128                 Call goHome(UserIndex)
                 
                 Else
-130                 Call WriteConsoleMsg(Userindex, "Ya te encuentras en tu hogar.", FontTypeNames.FONTTYPE_INFO)
+130                 Call WriteConsoleMsg(UserIndex, "Ya te encuentras en tu hogar.", FontTypeNames.FONTTYPE_INFO)
 
                 End If
 
@@ -371,7 +371,7 @@ Public Sub HandleHome(ByVal Userindex As Integer)
 132             .flags.Traveling = 0
 134             .Counters.goHome = 0
             
-136             Call WriteConsoleMsg(Userindex, "Ya hay un viaje en curso.", FontTypeNames.FONTTYPE_INFO)
+136             Call WriteConsoleMsg(UserIndex, "Ya hay un viaje en curso.", FontTypeNames.FONTTYPE_INFO)
             
             End If
         

@@ -155,322 +155,137 @@ ErrHandler:
 
 End Sub
 
-Public Sub DoNadar(ByVal UserIndex As Integer, ByRef Barco As ObjData, ByVal slot As Integer)
-        
-        On Error GoTo DoNadar_Err
-        
-
-        Dim ModNave As Long
-
-100     If UserList(UserIndex).flags.Nadando = 0 Then
-    
-102         If UserList(UserIndex).flags.Muerto = 0 Then
-                '(Nacho)
-    
-104             UserList(UserIndex).Char.Body = 694
-                'If Barco.Ropaje = iGalera Then UserList(UserIndex).Char.body = iGalera
-                'If Barco.Ropaje = iGaleon Then UserList(UserIndex).Char.body = iGaleon
-            Else
-106             UserList(UserIndex).Char.Body = iFragataFantasmal
-
-            End If
-    
-108         UserList(UserIndex).Char.ShieldAnim = NingunEscudo
-110         UserList(UserIndex).Char.WeaponAnim = NingunArma
-112         UserList(UserIndex).Char.CascoAnim = NingunCasco
-114         UserList(UserIndex).flags.Nadando = 1
-    
-        Else
-    
-116         UserList(UserIndex).flags.Nadando = 0
-    
-118         If UserList(UserIndex).flags.Muerto = 0 Then
-120             UserList(UserIndex).Char.Head = UserList(UserIndex).OrigChar.Head
-        
-122             If UserList(UserIndex).Invent.ArmourEqpObjIndex > 0 Then
-124                 UserList(UserIndex).Char.Body = ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).Ropaje
-            
-                Else
-126                 Call DarCuerpoDesnudo(UserIndex)
-
-                End If
-        
-128             If UserList(UserIndex).Invent.EscudoEqpObjIndex > 0 Then UserList(UserIndex).Char.ShieldAnim = ObjData(UserList(UserIndex).Invent.EscudoEqpObjIndex).ShieldAnim
-
-130             If UserList(UserIndex).Invent.WeaponEqpObjIndex > 0 Then UserList(UserIndex).Char.WeaponAnim = ObjData(UserList(UserIndex).Invent.WeaponEqpObjIndex).WeaponAnim
-
-132             If UserList(UserIndex).Invent.CascoEqpObjIndex > 0 Then UserList(UserIndex).Char.CascoAnim = ObjData(UserList(UserIndex).Invent.CascoEqpObjIndex).CascoAnim
-            Else
-134             UserList(UserIndex).Char.Body = iCuerpoMuerto
-136             UserList(UserIndex).Char.Head = iCabezaMuerto
-138             UserList(UserIndex).Char.ShieldAnim = NingunEscudo
-140             UserList(UserIndex).Char.WeaponAnim = NingunArma
-142             UserList(UserIndex).Char.CascoAnim = NingunCasco
-
-            End If
-
-        End If
-
-144     Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
-        'Call WriteNadarToggle(UserIndex)
-146     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(FXSound.BARCA_SOUND, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
-
-        
-        Exit Sub
-
-DoNadar_Err:
-148     Call RegistrarError(Err.Number, Err.description, "Trabajo.DoNadar", Erl)
-150     Resume Next
-        
-End Sub
-
 Public Sub DoNavega(ByVal UserIndex As Integer, _
                     ByRef Barco As ObjData, _
                     ByVal slot As Integer)
         
-        On Error GoTo DoNavega_Err
+    On Error GoTo DoNavega_Err
 
-100     With UserList(UserIndex)
-    
-            ' Acordate que el Trabajador solo necesita 60 de Navegacion para usar barca!
-            Dim SkillNecesario As Byte
-102             SkillNecesario = IIf(.clase = eClass.Trabajador, 35, Barco.MinSkill)
+    With UserList(UserIndex)
+
+        If .Invent.BarcoObjIndex <> .Invent.Object(slot).ObjIndex Then
+
+            If Not EsGM(UserIndex) Then
+            
+                Select Case ObjData(.Invent.BarcoObjIndex).Subtipo
         
+                    Case 2  'Galera
+        
+                        If .clase <> eClass.Assasin And .clase <> eClass.Pirat And .clase <> eClass.Bandit And .clase <> eClass.Cleric And .clase <> eClass.Thief And .clase <> eClass.Paladin Then
+                            Call WriteConsoleMsg(UserIndex, "Solo los Piratas, Asesinos, Bandidos, Clérigos, Ladrones y Paladines pueden usar Galera!!", FontTypeNames.FONTTYPE_INFO)
+                            Exit Sub
+                        End If
+                        
+                    Case 3  'Galeón
+                    
+                        If .clase <> eClass.Thief And .clase <> eClass.Pirat Then
+                            Call WriteConsoleMsg(UserIndex, "Solo los Ladrones y Piratas pueden usar Galeón!!", FontTypeNames.FONTTYPE_INFO)
+                            Exit Sub
+                        End If
+                        
+                End Select
+                    
+            End If
+            
+            Dim SkillNecesario As Byte
+            SkillNecesario = IIf(.clase = eClass.Trabajador Or .clase = eClass.Pirat, Barco.MinSkill \ 2, Barco.MinSkill)
+            
             ' Tiene el skill necesario?
-104         If .Stats.UserSkills(eSkill.Navegacion) < SkillNecesario Then
-106             Call WriteConsoleMsg(UserIndex, "No tienes suficientes conocimientos para usar este barco.", FontTypeNames.FONTTYPE_INFO)
+            If .Stats.UserSkills(eSkill.Navegacion) < SkillNecesario Then
+                Call WriteConsoleMsg(UserIndex, "Necesitas al menos " & SkillNecesario & " puntos en navegación para poder usar este " & IIf(Barco.Subtipo = 0, "traje", "barco") & ".", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
-        
-108         Select Case ObjData(.Invent.BarcoObjIndex).Subtipo
-        
-                Case 2  'Galera
-
-110                 If .clase <> eClass.Assasin And _
-                        .clase <> eClass.Pirat And _
-                        .clase <> eClass.Bandit And _
-                        .clase <> eClass.Cleric And _
-                        .clase <> eClass.Thief And _
-                        .clase <> eClass.Paladin Then
-                
-112                     Call WriteConsoleMsg(UserIndex, "Solo los Piratas, Asesinos, Bandidos, Clerigos, Bandidos y Paladines pueden usar Galera!!", FontTypeNames.FONTTYPE_INFO)
-                    
-                        Exit Sub
-                
-                    End If
-                
-114             Case 3  'Galeón
             
-116                 If .clase <> eClass.Thief And .clase <> eClass.Pirat Then
-118                     Call WriteConsoleMsg(UserIndex, "Solo los Ladrones y Piratas pueden usar Galeon!!", FontTypeNames.FONTTYPE_INFO)
-                        Exit Sub
-                    End If
-                
-            End Select
-
-120         .Invent.BarcoObjIndex = .Invent.Object(slot).ObjIndex
-122         .Invent.BarcoSlot = slot
-
-124         If .flags.Montado > 0 Then
-126             Call DoMontar(UserIndex, ObjData(.Invent.MonturaObjIndex), .Invent.MonturaSlot)
+            If .Invent.BarcoObjIndex = 0 Then
+                Call WriteNavigateToggle(UserIndex)
+                .flags.Navegando = 1
+            End If
+    
+            .Invent.BarcoObjIndex = .Invent.Object(slot).ObjIndex
+            .Invent.BarcoSlot = slot
+    
+            If .flags.Montado > 0 Then
+                Call DoMontar(UserIndex, ObjData(.Invent.MonturaObjIndex), .Invent.MonturaSlot)
             End If
 
-128         If .flags.Navegando = 0 Then
-
-130             Call WriteNadarToggle(UserIndex, IIf(Barco.Ropaje = iTraje, True, False))
-
-132             If Barco.Ropaje <> iTraje Then
-134                 .Char.Head = 0
-136                 .Char.CascoAnim = NingunCasco
-
-                End If
+            Call WriteNadarToggle(UserIndex, Barco.Subtipo = 0)
     
-138             If .flags.Muerto = 0 Then
-
-                    '(Nacho)
-140                 If .Faccion.ArmadaReal = 1 Then
-142                     If Barco.Ropaje = iTraje Then .Char.Body = iTraje
-144                     If Barco.Ropaje = iBarca Then .Char.Body = iBarcaCiuda
-146                     If Barco.Ropaje = iGalera Then .Char.Body = iGaleraCiuda
-148                     If Barco.Ropaje = iGaleon Then .Char.Body = iGaleonCiuda
-150                 ElseIf .Faccion.FuerzasCaos = 1 Then
-
-152                     If Barco.Ropaje = iTraje Then .Char.Body = iTraje
-154                     If Barco.Ropaje = iBarca Then .Char.Body = iBarcaPk
-156                     If Barco.Ropaje = iGalera Then .Char.Body = iGaleraPk
-158                     If Barco.Ropaje = iGaleon Then .Char.Body = iGaleonPk
-                    Else
-
-160                     If Barco.Ropaje = iTraje Then .Char.Body = iTraje
-162                     If Barco.Ropaje = iBarca Then .Char.Body = iBarca
-164                     If Barco.Ropaje = iGalera Then .Char.Body = iGalera
-166                     If Barco.Ropaje = iGaleon Then .Char.Body = iGaleon
-
-                    End If
-
+            If .flags.Muerto = 0 Then
+                .Char.Body = Barco.Ropaje
+                
+                If Barco.Subtipo = 0 Then
+                    .Char.Head = .OrigChar.Head
                 Else
-
-168                 If Barco.Ropaje = iTraje Then
-170                     .Char.Body = iRopaBuceoMuerto
-                    Else
-172                     .Char.Body = iFragataFantasmal
-
-                    End If
-
-174                 .Char.Head = iCabezaMuerto
-
+                    .Char.Head = 0
                 End If
-    
-176             .Char.ShieldAnim = NingunEscudo
-178             .Char.WeaponAnim = NingunArma
-                '.Char.CascoAnim = NingunCasco
-180             .flags.Navegando = 1
-    
-182             .Char.speeding = Barco.Velocidad
-    
             Else
-
-184             Call WriteNadarToggle(UserIndex, False)
-
-186             .Char.speeding = VelocidadNormal
-    
-188             .flags.Navegando = 0
-    
-190             If .flags.Muerto = 0 Then
-192                 .Char.Head = .OrigChar.Head
-        
-194                 If .Invent.ArmourEqpObjIndex > 0 Then
-196                     .Char.Body = ObjData(.Invent.ArmourEqpObjIndex).Ropaje
-            
-                    Else
-198                     Call DarCuerpoDesnudo(UserIndex)
-
-                    End If
-        
-200                 If .Invent.EscudoEqpObjIndex > 0 Then .Char.ShieldAnim = ObjData(.Invent.EscudoEqpObjIndex).ShieldAnim
-
-202                 If .Invent.WeaponEqpObjIndex > 0 Then .Char.WeaponAnim = ObjData(.Invent.WeaponEqpObjIndex).WeaponAnim
-
-204                 If .Invent.NudilloObjIndex > 0 Then .Char.WeaponAnim = ObjData(.Invent.NudilloObjIndex).WeaponAnim
-
-206                 If .Invent.HerramientaEqpObjIndex > 0 Then .Char.WeaponAnim = ObjData(.Invent.HerramientaEqpObjIndex).WeaponAnim
-
-208                 If .Invent.CascoEqpObjIndex > 0 Then .Char.CascoAnim = ObjData(.Invent.CascoEqpObjIndex).CascoAnim
+                If Barco.Subtipo = 0 Then
+                    .Char.Body = iRopaBuceoMuerto
+                    .Char.Head = iCabezaMuerto
                 Else
-210                 .Char.Body = iCuerpoMuerto
-212                 .Char.Head = iCabezaMuerto
-214                 .Char.ShieldAnim = NingunEscudo
-216                 .Char.WeaponAnim = NingunArma
-218                 .Char.CascoAnim = NingunCasco
-
+                    .Char.Body = iFragataFantasmal
+                    .Char.Head = 0
                 End If
+            End If
+    
+            .Char.ShieldAnim = NingunEscudo
+            .Char.WeaponAnim = NingunArma
 
+            .Char.speeding = Barco.Velocidad
+            
+        Else
+            Call WriteNadarToggle(UserIndex, False)
+            
+            Call WriteNavigateToggle(UserIndex)
+    
+            .flags.Navegando = 0
+            .Invent.BarcoObjIndex = 0
+            .Invent.BarcoSlot = 0
+    
+            If .flags.Muerto = 0 Then
+                .Char.Head = .OrigChar.Head
+        
+                If .Invent.ArmourEqpObjIndex > 0 Then
+                    .Char.Body = ObjData(.Invent.ArmourEqpObjIndex).Ropaje
+                Else
+                    Call DarCuerpoDesnudo(UserIndex)
+                End If
+        
+                If .Invent.EscudoEqpObjIndex > 0 Then .Char.ShieldAnim = ObjData(.Invent.EscudoEqpObjIndex).ShieldAnim
+
+                If .Invent.WeaponEqpObjIndex > 0 Then .Char.WeaponAnim = ObjData(.Invent.WeaponEqpObjIndex).WeaponAnim
+
+                If .Invent.NudilloObjIndex > 0 Then .Char.WeaponAnim = ObjData(.Invent.NudilloObjIndex).WeaponAnim
+
+                If .Invent.HerramientaEqpObjIndex > 0 Then .Char.WeaponAnim = ObjData(.Invent.HerramientaEqpObjIndex).WeaponAnim
+
+                If .Invent.CascoEqpObjIndex > 0 Then .Char.CascoAnim = ObjData(.Invent.CascoEqpObjIndex).CascoAnim
+                
+                .Char.speeding = VelocidadNormal
+            Else
+                .Char.Body = iCuerpoMuerto
+                .Char.Head = 0
+                .Char.ShieldAnim = NingunEscudo
+                .Char.WeaponAnim = NingunArma
+                .Char.CascoAnim = NingunCasco
+                
+                .Char.speeding = VelocidadMuerto
             End If
 
-220         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(.Char.CharIndex, .Char.speeding))
+        End If
 
-            'Call WriteVelocidadToggle(UserIndex)
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(.Char.CharIndex, .Char.speeding))
+        Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(FXSound.BARCA_SOUND, .Pos.X, .Pos.Y))
     
-222         Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
-224         Call WriteNavigateToggle(UserIndex)
-226         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(FXSound.BARCA_SOUND, .Pos.X, .Pos.Y))
-    
-        End With
+    End With
         
-        Exit Sub
+    Exit Sub
 
 DoNavega_Err:
-228     Call RegistrarError(Err.Number, Err.description, "Trabajo.DoNavega", Erl)
+    Call RegistrarError(Err.Number, Err.description, "Trabajo.DoNavega", Erl)
 
-230     Resume Next
-        
-End Sub
-
-Public Sub DoReNavega(ByVal UserIndex As Integer, ByRef Barco As ObjData, ByVal slot As Integer)
-        
-        On Error GoTo DoReNavega_Err
-        
-
-        Dim ModNave As Long
-
-100     If UserList(UserIndex).Stats.UserSkills(eSkill.Navegacion) < Barco.MinSkill Then
-102         Call WriteConsoleMsg(UserIndex, "No tenes suficientes conocimientos para usar este barco.", FontTypeNames.FONTTYPE_INFO)
-104         Call WriteConsoleMsg(UserIndex, "Para usar este barco necesitas " & Barco.MinSkill & " puntos en navegacion.", FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-
-        End If
-
-106     UserList(UserIndex).Invent.BarcoObjIndex = UserList(UserIndex).Invent.Object(slot).ObjIndex
-108     UserList(UserIndex).Invent.BarcoSlot = slot
-
-110     If UserList(UserIndex).flags.Montado > 0 Then
-112         Call DoMontar(UserIndex, ObjData(UserList(UserIndex).Invent.MonturaObjIndex), UserList(UserIndex).Invent.MonturaSlot)
-
-        End If
-
-114     If Barco.Ropaje = iTraje Then
-116         Call WriteNadarToggle(UserIndex, True)
-        Else
-118         Call WriteNadarToggle(UserIndex, False)
-
-        End If
-    
-120     If Barco.Ropaje <> iTraje Then
-122         UserList(UserIndex).Char.Head = 0
-        Else
-124         UserList(UserIndex).Char.Head = UserList(UserIndex).OrigChar.Head
-
-        End If
-    
-126     If UserList(UserIndex).flags.Muerto = 0 Then
-
-            '(Nacho)
-128         If UserList(UserIndex).Faccion.ArmadaReal = 1 Then
-130             If Barco.Ropaje = iTraje Then UserList(UserIndex).Char.Body = iTraje
-132             If Barco.Ropaje = iBarca Then UserList(UserIndex).Char.Body = iBarcaCiuda
-134             If Barco.Ropaje = iGalera Then UserList(UserIndex).Char.Body = iGaleraCiuda
-136             If Barco.Ropaje = iGaleon Then UserList(UserIndex).Char.Body = iGaleonCiuda
-138         ElseIf UserList(UserIndex).Faccion.FuerzasCaos = 1 Then
-
-140             If Barco.Ropaje = iTraje Then UserList(UserIndex).Char.Body = iTraje
-142             If Barco.Ropaje = iBarca Then UserList(UserIndex).Char.Body = iBarcaPk
-144             If Barco.Ropaje = iGalera Then UserList(UserIndex).Char.Body = iGaleraPk
-146             If Barco.Ropaje = iGaleon Then UserList(UserIndex).Char.Body = iGaleonPk
-            Else
-
-148             If Barco.Ropaje = iTraje Then UserList(UserIndex).Char.Body = iTraje
-150             If Barco.Ropaje = iBarca Then UserList(UserIndex).Char.Body = iBarca
-152             If Barco.Ropaje = iGalera Then UserList(UserIndex).Char.Body = iGalera
-154             If Barco.Ropaje = iGaleon Then UserList(UserIndex).Char.Body = iGaleon
-
-            End If
-
-        Else
-156         UserList(UserIndex).Char.Body = iFragataFantasmal
-
-        End If
-    
-158     UserList(UserIndex).Char.ShieldAnim = NingunEscudo
-160     UserList(UserIndex).Char.WeaponAnim = NingunArma
-162     UserList(UserIndex).Char.CascoAnim = NingunCasco
-164     UserList(UserIndex).flags.Navegando = 1
-    
-166     UserList(UserIndex).Char.speeding = Barco.Velocidad
-
-168     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(UserList(UserIndex).Char.CharIndex, UserList(UserIndex).Char.speeding))
-
-        '
-        'Call WriteVelocidadToggle(UserIndex)
-    
-170     Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
-172     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(FXSound.BARCA_SOUND, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
-
-        
-        Exit Sub
-
-DoReNavega_Err:
-174     Call RegistrarError(Err.Number, Err.description, "Trabajo.DoReNavega", Erl)
-176     Resume Next
+    Resume Next
         
 End Sub
 
