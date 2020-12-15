@@ -19786,7 +19786,9 @@ Public Sub WriteLocaleMsg(ByVal UserIndex As Integer, ByVal Id As Integer, ByVal
         'Writes the "ConsoleMsg" message to the given user's outgoing data buffer
         '***************************************************
         On Error GoTo ErrHandler
-
+        
+        If UserIndex = 0 Then Exit Sub
+        
 100     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageLocaleMsg(Id, strExtra, FontIndex))
         Exit Sub
 
