@@ -2901,6 +2901,26 @@ ErrorHandler:
 End Sub
 
 Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = False)
+
+    On Error GoTo SaveUser_Err
+    
+    If Database_Enabled Then
+        Call SaveUserDatabase(UserIndex, Logout)
+    Else
+        Call SaveUserCharfile(UserIndex, Logout)
+    End If
+    
+    UserList(UserIndex).Counters.LastSave = GetTickCount
+    
+    Exit Sub
+
+SaveUser_Err:
+400     Call RegistrarError(Err.Number, Err.description, "ES.SaveUser", Erl)
+401     Resume Next
+
+End Sub
+
+Sub SaveUserWIP(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = False)
         
         On Error GoTo SaveUser_Err
         
