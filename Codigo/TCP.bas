@@ -1272,20 +1272,40 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
 
         On Error GoTo ErrHandler
 
-100     With UserList(UserIndex)
+1       With UserList(UserIndex)
 
             Dim n    As Integer
 
             Dim tStr As String
         
-102         If .flags.UserLogged Then
-104             Call LogCheating("El usuario " & .name & " ha intentado loguear a " & name & " desde la IP " & .ip)
+2           If .flags.UserLogged Then
+4               Call LogCheating("El usuario " & .name & " ha intentado loguear a " & name & " desde la IP " & .ip)
             
                 'Kick player ( and leave character inside :D )!
-106             Call CloseSocketSL(UserIndex)
-108             Call Cerrar_Usuario(UserIndex)
+5               Call CloseSocketSL(UserIndex)
+6               Call Cerrar_Usuario(UserIndex)
             
                 Exit Sub
+            End If
+            
+            '¿Ya esta conectado el personaje?
+            Dim tIndex As Integer
+            tIndex = NameIndex(name)
+
+7           If tIndex > 0 Then
+8               If UserList(tIndex).Counters.Saliendo Then
+9                   Call WriteShowMessageBox(UserIndex, "El personaje está saliendo.")
+                Else
+10                  Call WriteShowMessageBox(UserIndex, "El personaje ya está conectado. Espere mientras es desconectado.")
+
+                    ' Le avisamos al usuario que está jugando, en caso de que haya uno
+11                  Call WriteShowMessageBox(tIndex, "Alguien está ingresando con tu personaje. Si no has sido tú, por favor cambia la contraseña de tu cuenta.")
+12                  Call Cerrar_Usuario(tIndex)
+                End If
+            
+13              Call CloseSocket(UserIndex)
+                Exit Sub
+
             End If
         
             '¿Supera el máximo de usuarios por cuenta?
@@ -1376,19 +1396,6 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
 190                 Call CloseSocket(UserIndex)
                     Exit Sub
                 End If
-
-            End If
-        
-            '¿Ya esta conectado el personaje?
-192         If CheckForSameName(name) Then
-194             If UserList(NameIndex(name)).Counters.Saliendo Then
-196                 Call WriteShowMessageBox(UserIndex, "El usuario está saliendo.")
-                Else
-198                 Call WriteShowMessageBox(UserIndex, "Perdon, un usuario con el mismo nombre se ha logueado.")
-                End If
-            
-200             Call CloseSocket(UserIndex)
-                Exit Sub
 
             End If
         
