@@ -184,6 +184,30 @@ Public Baneos     As New Collection
 
 'Public ResetThread As New clsThreading
 
+Public Function CompararRango(ByVal GM_Izquierda As Integer, _
+                              ByVal GM_Derecha As Integer) As Integer
+    
+    Dim Derecha As Integer, Izquierda As Integer
+
+    Derecha = (UserList(Userindex).flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero))
+    Izquierda = (UserList(Userindex).flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero))
+        
+    If Izquierda > Derecha Then
+        CompararRango = 1
+        Exit Function
+            
+    ElseIf Izquierda = Derecha Then
+        CompararRango = 0
+        Exit Function
+            
+    ElseIf Izquierda < Derecha Then
+        CompararRango = -1
+        Exit Function
+            
+    End If
+        
+End Function
+
 Function VersionOK(ByVal Ver As String) As Boolean
         
         On Error GoTo VersionOK_Err
