@@ -114,11 +114,6 @@ Begin VB.Form frmMain
       TabIndex        =   22
       Top             =   120
       Width           =   1575
-      Begin VB.Timer grabado 
-         Interval        =   60000
-         Left            =   1080
-         Top             =   3360
-      End
       Begin VB.CommandButton Command5 
          Caption         =   "Command5"
          Height          =   495
@@ -126,22 +121,6 @@ Begin VB.Form frmMain
          TabIndex        =   24
          Top             =   5400
          Width           =   1455
-      End
-      Begin VB.Timer TimerRespawn 
-         Interval        =   1000
-         Left            =   240
-         Top             =   4800
-      End
-      Begin VB.Timer EstadoTimer 
-         Interval        =   1000
-         Left            =   240
-         Top             =   3480
-      End
-      Begin VB.Timer Evento 
-         Enabled         =   0   'False
-         Interval        =   60000
-         Left            =   240
-         Top             =   3960
       End
       Begin VB.Label cuentas 
          Caption         =   "0"
@@ -151,6 +130,22 @@ Begin VB.Form frmMain
          Top             =   240
          Width           =   975
       End
+   End
+   Begin VB.Timer TimerRespawn 
+      Interval        =   1000
+      Left            =   1680
+      Top             =   4200
+   End
+   Begin VB.Timer EstadoTimer 
+      Interval        =   1000
+      Left            =   240
+      Top             =   3480
+   End
+   Begin VB.Timer Evento 
+      Enabled         =   0   'False
+      Interval        =   60000
+      Left            =   720
+      Top             =   3480
    End
    Begin VB.Frame Frame4 
       BackColor       =   &H00E0E0E0&
@@ -752,16 +747,16 @@ Private Sub TimerGuardarUsuarios_Timer()
 On Error GoTo Handler
     
     ' Guardar usuarios (solo si pasó el tiempo mínimo para guardar)
-    Dim UserIndex As Integer, UserGuardados As Integer
+    Dim Userindex As Integer, UserGuardados As Integer
 
-    For UserIndex = 1 To LastUser
+    For Userindex = 1 To LastUser
     
-        With UserList(UserIndex)
+        With UserList(Userindex)
 
             If .flags.UserLogged Then
                 If GetTickCount - .Counters.LastSave > IntervaloGuardarUsuarios Then
                 
-                    Call SaveUser(UserIndex)
+                    Call SaveUser(Userindex)
                     
                     UserGuardados = UserGuardados + 1
                     
