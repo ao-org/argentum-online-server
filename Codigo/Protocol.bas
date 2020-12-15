@@ -12907,20 +12907,21 @@ Private Sub HandleSummonChar(ByVal Userindex As Integer)
                     
                     ' Podes sumonear a consejero como quieras.
                     ' Pero si querés SUMONEAR a un USUARIO, TENÉS QUE ESTAR EN EL MISMO MAPA.
+124                 If (UserList(tUser).flags.Privilegios And PlayerType.Consejero) Or _
+                       (UserList(tUser).flags.Privilegios And PlayerType.user) <> 0 And .Pos.Map = UserList(tUser).Pos.Map Then
                         
 126                     Call WriteConsoleMsg(tUser, .name & " te ha trasportado.", FontTypeNames.FONTTYPE_INFO)
 128                     Call WarpToLegalPos(tUser, .Pos.Map, .Pos.X, .Pos.Y + 1, True, True)
-                    
+                        
+                        ' Si trato de sumonearlo estando en Modo Battle, lo sacamos cagando y lo escrachamos en los logs.
 130                     If UserList(tUser).flags.BattleModo = 1 Then
 132                         Call WriteConsoleMsg(Userindex, "¡¡¡ATENCIÓN!!! [" & UCase(UserList(tUser).name) & "] SE ENCUENTRA EN MODO BATTLE.", FontTypeNames.FONTTYPE_WARNING)
 134                         Call LogGM(.name, "¡¡¡ATENCIÓN /SUM EN MODO BATTLE " & UserName & " Map:" & .Pos.Map & " X:" & .Pos.X & " Y:" & .Pos.Y)
+
                         Else
 136                         Call LogGM(.name, "/SUM " & UserName & " Map:" & .Pos.Map & " X:" & .Pos.X & " Y:" & .Pos.Y)
 
                         End If
-                    
-                    Else
-138                     Call WriteConsoleMsg(Userindex, "No podés invocar a dioses y admins.", FontTypeNames.FONTTYPE_INFO)
 
                     End If
 
@@ -12932,24 +12933,20 @@ Private Sub HandleSummonChar(ByVal Userindex As Integer)
         
             Exit Sub
         
-            'If we got here then packet is complete, copy data back to original queue
-140         Call .incomingData.CopyBuffer(buffer)
-
 ErrHandler:
 
-        Dim Error As Long
             Dim Error As Long
 
-142     Error = Err.Number
 142         Error = Err.Number
 
             On Error GoTo 0
     
+            'Destroy auxiliar buffer
 144         Set buffer = Nothing
     
-146     If Error <> 0 Then Err.raise Error
+146         If Error <> 0 Then Err.raise Error
 
-End Sub
+    End Sub
 
 ''
 ' Handles the "SpawnListRequest" message.
