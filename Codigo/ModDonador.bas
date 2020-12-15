@@ -321,7 +321,7 @@ CargarCodigosDonador_Err:
         
 End Sub
 
-Public Sub CheckearCodigo(ByVal Userindex As Integer, ByVal CodigoKey As String)
+Public Sub CheckearCodigo(ByVal UserIndex As Integer, ByVal CodigoKey As String)
         
         On Error GoTo CheckearCodigo_Err
         
@@ -329,7 +329,7 @@ Public Sub CheckearCodigo(ByVal Userindex As Integer, ByVal CodigoKey As String)
         Dim LogCheckCodigo As String
 
 100     LogCheckCodigo = vbCrLf & "****************************************************" & vbCrLf
-102     LogCheckCodigo = LogCheckCodigo & "El usuario " & UserList(Userindex).name & " ingresó el codigo: " & CodigoKey & "." & vbCrLf
+102     LogCheckCodigo = LogCheckCodigo & "El usuario " & UserList(UserIndex).name & " ingresó el codigo: " & CodigoKey & "." & vbCrLf
 
         Dim i As Integer
 
@@ -343,35 +343,35 @@ Public Sub CheckearCodigo(ByVal Userindex As Integer, ByVal CodigoKey As String)
 110                 Select Case Codigo(i).Tipo
 
                         Case 1 'Creditos
-112                         Call AgregarCreditosDonador(UserList(Userindex).Cuenta, CLng(Codigo(i).Cantidad))
-114                         Call WriteConsoleMsg(Userindex, "¡Se han añadido " & Codigo(i).Cantidad & " creditos a tu cuenta. Tu saldo actual es de: " & CreditosDonadorCheck(UserList(Userindex).Cuenta) & " creditos.", FontTypeNames.FONTTYPE_WARNING)
+112                         Call AgregarCreditosDonador(UserList(UserIndex).Cuenta, CLng(Codigo(i).Cantidad))
+114                         Call WriteConsoleMsg(UserIndex, "¡Se han añadido " & Codigo(i).Cantidad & " creditos a tu cuenta. Tu saldo actual es de: " & CreditosDonadorCheck(UserList(UserIndex).Cuenta) & " creditos.", FontTypeNames.FONTTYPE_WARNING)
                         
 116                     Case 2 ' Tiempo
                         
-118                         If DonadorCheck(UserList(Userindex).Cuenta) = 1 Then
-120                             Call DonadorTiempo(UserList(Userindex).Cuenta, Codigo(i).Cantidad)
-122                             Call WriteConsoleMsg(Userindex, "¡Se han añadido " & Codigo(i).Cantidad & " dias de donador a tu cuenta.", FontTypeNames.FONTTYPE_WARNING)
-124                             UserList(Userindex).donador.activo = 1
+118                         If DonadorCheck(UserList(UserIndex).Cuenta) = 1 Then
+120                             Call DonadorTiempo(UserList(UserIndex).Cuenta, Codigo(i).Cantidad)
+122                             Call WriteConsoleMsg(UserIndex, "¡Se han añadido " & Codigo(i).Cantidad & " dias de donador a tu cuenta.", FontTypeNames.FONTTYPE_WARNING)
+124                             UserList(UserIndex).donador.activo = 1
                             Else
-126                             Call DonadorTiempo(UserList(Userindex).Cuenta, Codigo(i).Cantidad)
-128                             Call WriteConsoleMsg(Userindex, "¡Felicitaciones! Ya sos donador. Este benefico durara " & Codigo(i).Cantidad & " dias.", FontTypeNames.FONTTYPE_WARNING)
-130                             Call WriteConsoleMsg(Userindex, "¡Se han añadido " & Codigo(i).Cantidad & " dias a tu cuenta.", FontTypeNames.FONTTYPE_WARNING)
-132                             Call WriteConsoleMsg(Userindex, "Te pedimos que relogees tu personaje para empezar a disfrutar los beneficios.", FontTypeNames.FONTTYPE_WARNING)
+126                             Call DonadorTiempo(UserList(UserIndex).Cuenta, Codigo(i).Cantidad)
+128                             Call WriteConsoleMsg(UserIndex, "¡Felicitaciones! Ya sos donador. Este benefico durara " & Codigo(i).Cantidad & " dias.", FontTypeNames.FONTTYPE_WARNING)
+130                             Call WriteConsoleMsg(UserIndex, "¡Se han añadido " & Codigo(i).Cantidad & " dias a tu cuenta.", FontTypeNames.FONTTYPE_WARNING)
+132                             Call WriteConsoleMsg(UserIndex, "Te pedimos que relogees tu personaje para empezar a disfrutar los beneficios.", FontTypeNames.FONTTYPE_WARNING)
 
                             End If
                         
                     End Select
 
-134                 Call WriteActShop(Userindex)
+134                 Call WriteActShop(UserIndex)
                     '   Call WriteVar(App.Path & "\cuentas\" & name & ".act", "DONADOR", "CREDITOS", creditos)
                 
-136                 LogCheckCodigo = LogCheckCodigo & "El usuario " & UserList(Userindex).name & " canjeo el codigo: " & CodigoKey & "." & vbCrLf
+136                 LogCheckCodigo = LogCheckCodigo & "El usuario " & UserList(UserIndex).name & " canjeo el codigo: " & CodigoKey & "." & vbCrLf
                 
 138                 Codigo(i).Usado = 1
 140                 Call WriteVar(App.Path & "\codigosDonadores.ini", "CODIGOS", i, Codigo(i).Key & "-" & Codigo(i).Tipo & "-" & Codigo(i).Cantidad & "-" & Codigo(i).Usado)
 142                 LogCheckCodigo = LogCheckCodigo & "****************************************************" & vbCrLf
                 Else
-144                 Call WriteConsoleMsg(Userindex, "¡Ese codigo ya ha sido usado.", FontTypeNames.FONTTYPE_WARNING)
+144                 Call WriteConsoleMsg(UserIndex, "¡Ese codigo ya ha sido usado.", FontTypeNames.FONTTYPE_WARNING)
                 
 146                 LogCheckCodigo = LogCheckCodigo & "El codigo ya habia sido usado." & vbCrLf
 148                 LogCheckCodigo = LogCheckCodigo & "****************************************************" & vbCrLf
@@ -390,7 +390,7 @@ Public Sub CheckearCodigo(ByVal Userindex As Integer, ByVal CodigoKey As String)
 156     LogCheckCodigo = LogCheckCodigo & "****************************************************" & vbCrLf
 158     Call LogearEventoDeDonador(LogCheckCodigo)
 
-160     Call WriteConsoleMsg(Userindex, "¡Tu codigo es invalido!", FontTypeNames.FONTTYPE_WARNING)
+160     Call WriteConsoleMsg(UserIndex, "¡Tu codigo es invalido!", FontTypeNames.FONTTYPE_WARNING)
 
         
         Exit Sub

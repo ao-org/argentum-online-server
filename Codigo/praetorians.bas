@@ -211,12 +211,12 @@ Public Sub EliminarPretorianos(ByVal Mapa As Integer)
 
         On Error GoTo EliminarPretorianos_Err
         
-        Dim Index As Byte
-100     For Index = 1 To UBound(ClanPretoriano)
+        Dim index As Byte
+100     For index = 1 To UBound(ClanPretoriano)
                  
             ' Search for the clan to be deleted
-102         If ClanPretoriano(Index).ClanMap = Mapa Then
-104             Call ClanPretoriano(Index).DeleteClan
+102         If ClanPretoriano(index).ClanMap = Mapa Then
+104             Call ClanPretoriano(index).DeleteClan
                 Exit For
         
             End If

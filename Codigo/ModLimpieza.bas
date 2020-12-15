@@ -84,7 +84,7 @@ hErr:
     ' No hace falta registrar el error.
     ' Si un item no existe en la colección, es porque el item era del mapa y alguien lo agarró.
     'Call RegistrarError(Err.Number, Err.description, "ModLimpieza.QuitarItemLimpieza", Erl)
-102 Resume Next
+    'Resume Next
 
 End Sub
 

@@ -147,7 +147,7 @@ LoadData_Err:
         
 End Sub
 
-Public Function doVotar(ByVal Userindex As Integer, ByVal opcion As Integer) As String
+Public Function doVotar(ByVal UserIndex As Integer, ByVal opcion As Integer) As String
 
         On Error GoTo errorh
 
@@ -166,23 +166,23 @@ Public Function doVotar(ByVal Userindex As Integer, ByVal opcion As Integer) As 
 
         End If
 
-104     CharFile = CharPath & UserList(Userindex).name & ".chr"
+104     CharFile = CharPath & UserList(UserIndex).name & ".chr"
     
-106     If (UserList(Userindex).Stats.ELV >= pNivelRequerido) Then
+106     If (UserList(UserIndex).Stats.ELV >= pNivelRequerido) Then
 108         If (OpcionValida(opcion)) Then
 110             YaVoto = val(GetVar(CharFile, "CONSULTAS", "Voto")) >= pEncuestaActualNum
 
 112             If Not YaVoto Then
-114                 If Not MailYaVoto(UserList(Userindex).email) Then
+114                 If Not MailYaVoto(UserList(UserIndex).email) Then
                         'pj apto para votar
 116                     sufragio = CLng(val(GetVar(DatPath & ARCHIVOCONFIG, "RESULTADOS" & pEncuestaActualNum, "V" & opcion)))
 118                     sufragio = sufragio + 1
 120                     Call WriteVar(DatPath & ARCHIVOCONFIG, "RESULTADOS" & pEncuestaActualNum, "V" & opcion, str(sufragio))
 122                     doVotar = "Tu voto ha sido computado. Opcion: " & opcion
-124                     Call MarcarPjComoQueYaVoto(Userindex)
-126                     Call MarcarMailComoQueYaVoto(UserList(Userindex).email)
+124                     Call MarcarPjComoQueYaVoto(UserIndex)
+126                     Call MarcarMailComoQueYaVoto(UserList(UserIndex).email)
                     Else
-128                     Call MarcarPjComoQueYaVoto(Userindex)
+128                     Call MarcarPjComoQueYaVoto(UserIndex)
 130                     doVotar = "Este email ya voto en la consulta: " & pEncuestaActualTex
 
                     End If
@@ -208,22 +208,22 @@ errorh:
 
 End Function
 
-Public Function SendInfoEncuesta(ByVal Userindex As Integer) As String
+Public Function SendInfoEncuesta(ByVal UserIndex As Integer) As String
         
         On Error GoTo SendInfoEncuesta_Err
         
 
         Dim i As Integer
 
-100     Call WriteConsoleMsg(Userindex, "CONSULTA POPULAR NUMERO " & pEncuestaActualNum, FontTypeNames.FONTTYPE_GUILD)
-102     Call WriteConsoleMsg(Userindex, pEncuestaActualTex, FontTypeNames.FONTTYPE_GUILD)
-104     Call WriteConsoleMsg(Userindex, " Opciones de voto: ", FontTypeNames.FONTTYPE_GUILDMSG)
+100     Call WriteConsoleMsg(UserIndex, "CONSULTA POPULAR NUMERO " & pEncuestaActualNum, FontTypeNames.FONTTYPE_GUILD)
+102     Call WriteConsoleMsg(UserIndex, pEncuestaActualTex, FontTypeNames.FONTTYPE_GUILD)
+104     Call WriteConsoleMsg(UserIndex, " Opciones de voto: ", FontTypeNames.FONTTYPE_GUILDMSG)
 
 106     For i = 1 To UBound(pOpciones)
-108         Call WriteConsoleMsg(Userindex, "(Opcion " & i & "): " & GetVar(DatPath & ARCHIVOCONFIG, "ENCUESTA" & pEncuestaActualNum, "OPCION" & i), FontTypeNames.FONTTYPE_GUILDMSG)
+108         Call WriteConsoleMsg(UserIndex, "(Opcion " & i & "): " & GetVar(DatPath & ARCHIVOCONFIG, "ENCUESTA" & pEncuestaActualNum, "OPCION" & i), FontTypeNames.FONTTYPE_GUILDMSG)
 110     Next i
 
-112     Call WriteConsoleMsg(Userindex, " Para votar una opcion, escribe /encuesta NUMERODEOPCION, por ejemplo para votar la opcion 1, escribe /encuesta 1. Tu voto no podra ser cambiado.", FontTypeNames.FONTTYPE_VENENO)
+112     Call WriteConsoleMsg(UserIndex, " Para votar una opcion, escribe /encuesta NUMERODEOPCION, por ejemplo para votar la opcion 1, escribe /encuesta 1. Tu voto no podra ser cambiado.", FontTypeNames.FONTTYPE_VENENO)
 
         
         Exit Function
@@ -234,15 +234,15 @@ SendInfoEncuesta_Err:
         
 End Function
 
-Private Sub MarcarPjComoQueYaVoto(ByVal Userindex As Integer)
+Private Sub MarcarPjComoQueYaVoto(ByVal UserIndex As Integer)
         
         On Error GoTo MarcarPjComoQueYaVoto_Err
         
 
 100     If Database_Enabled Then
-102         Call SaveVotoDatabase(UserList(Userindex).Id, pEncuestaActualNum)
+102         Call SaveVotoDatabase(UserList(UserIndex).Id, pEncuestaActualNum)
         Else
-104         Call WriteVar(CharPath & UserList(Userindex).name & ".chr", "CONSULTAS", "Voto", str(pEncuestaActualNum))
+104         Call WriteVar(CharPath & UserList(UserIndex).name & ".chr", "CONSULTAS", "Voto", str(pEncuestaActualNum))
 
         End If
 

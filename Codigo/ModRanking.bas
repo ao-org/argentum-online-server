@@ -30,7 +30,7 @@ Public Const NumRanks          As Byte = 1 ''Cuantos tipos de rankings existen (
 
 Public Rankings(1 To NumRanks) As tRanking ''Array con todos los tipos de ranking, para identificar cada uno se usa el enum eRankings
 
-Public Sub CheckRanking(ByVal Tipo As eRankings, ByVal Userindex As Integer, ByVal Value As Long)
+Public Sub CheckRanking(ByVal Tipo As eRankings, ByVal UserIndex As Integer, ByVal Value As Long)
         ''CheckRanking
         ''Cada vez que se cambia algun valor de cualquier usuario, se verifica si puede ingresar al ranking, _
           cambiar de posicion o solamente actualizar el valor.
@@ -40,7 +40,7 @@ Public Sub CheckRanking(ByVal Tipo As eRankings, ByVal Userindex As Integer, ByV
                                                    
         Dim FindPos As Byte, LoopC As Long, InRank As Byte, backup As tUserRanking
 
-100     InRank = isRank(UserList(Userindex).name, Tipo) ''Verificamos si esta en el ranking y si esta, en que posicion.
+100     InRank = isRank(UserList(UserIndex).name, Tipo) ''Verificamos si esta en el ranking y si esta, en que posicion.
 
 102     With Rankings(Tipo)
 
@@ -83,7 +83,7 @@ Public Sub CheckRanking(ByVal Tipo As eRankings, ByVal Userindex As Integer, ByV
 
                     End If
 
-146                 .user(FindPos).Nick = UCase$(UserList(Userindex).name) ''Ingresa el pj al ranking en el puesto que encontramos.
+146                 .user(FindPos).Nick = UCase$(UserList(UserIndex).name) ''Ingresa el pj al ranking en el puesto que encontramos.
 148                 .user(FindPos).Value = Value
 
                 End If

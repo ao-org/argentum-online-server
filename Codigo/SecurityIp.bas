@@ -141,7 +141,7 @@ IpSecurityAceptarNuevaConexion_Err:
         
 End Function
 
-Private Sub AddNewIpIntervalo(ByVal ip As Long, ByVal Index As Long)
+Private Sub AddNewIpIntervalo(ByVal ip As Long, ByVal index As Long)
         
         On Error GoTo AddNewIpIntervalo_Err
         
@@ -162,8 +162,8 @@ Private Sub AddNewIpIntervalo(ByVal ip As Long, ByVal Index As Long)
         End If
     
         '4) Corro todo el array para arriba
-110     Call CopyMemory(IpTables(Index + 2), IpTables(Index), (MaxValue - Index \ 2) * 8)   '*4 (peso del long) * 2(cantidad de elementos por c/u)
-112     IpTables(Index) = ip
+110     Call CopyMemory(IpTables(index + 2), IpTables(index), (MaxValue - index \ 2) * 8)   '*4 (peso del long) * 2(cantidad de elementos por c/u)
+112     IpTables(index) = ip
     
         '3) Subo el indicador de el maximo valor almacenado y listo :)
 114     MaxValue = MaxValue + 1
@@ -229,7 +229,7 @@ IPSecuritySuperaLimiteConexiones_Err:
         
 End Function
 
-Private Sub AddNewIpLimiteConexiones(ByVal ip As Long, ByVal Index As Long)
+Private Sub AddNewIpLimiteConexiones(ByVal ip As Long, ByVal index As Long)
         '*************************************************  *************
         'Author: (EL OSO)
         'Last Modify Date: Unknow
@@ -253,16 +253,16 @@ Private Sub AddNewIpLimiteConexiones(ByVal ip As Long, ByVal Index As Long)
         'Modified by Juan Martín Sotuyo Dodero (Maraxus)
         '*************************************************    *************
 100     Debug.Print "agrega conexion a " & ip
-102     Debug.Print "(Declaraciones.MaxUsers - index) = " & (Declaraciones.MaxUsers - Index)
+102     Debug.Print "(Declaraciones.MaxUsers - index) = " & (Declaraciones.MaxUsers - index)
 104     Debug.Print "Agrega conexion a nueva IP " & ip
 
         '4) Corro todo el array para arriba
         Dim temp() As Long
 
-106     ReDim temp((MaxConTablesEntry - Index \ 2) * 2) As Long  'VB no deja inicializar con rangos variables...
-108     Call CopyMemory(temp(0), MaxConTables(Index), (MaxConTablesEntry - Index \ 2) * 8)    '*4 (peso del long) * 2(cantidad de elementos por c/u)
-110     Call CopyMemory(MaxConTables(Index + 2), temp(0), (MaxConTablesEntry - Index \ 2) * 8)    '*4 (peso del long) * 2(cantidad de elementos por c/u)
-112     MaxConTables(Index) = ip
+106     ReDim temp((MaxConTablesEntry - index \ 2) * 2) As Long  'VB no deja inicializar con rangos variables...
+108     Call CopyMemory(temp(0), MaxConTables(index), (MaxConTablesEntry - index \ 2) * 8)    '*4 (peso del long) * 2(cantidad de elementos por c/u)
+110     Call CopyMemory(MaxConTables(index + 2), temp(0), (MaxConTablesEntry - index \ 2) * 8)    '*4 (peso del long) * 2(cantidad de elementos por c/u)
+112     MaxConTables(index) = ip
 
         '3) Subo el indicador de el maximo valor almacenado y listo :)
 114     MaxConTablesEntry = MaxConTablesEntry + 1

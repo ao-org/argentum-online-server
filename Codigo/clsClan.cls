@@ -434,7 +434,7 @@ GetMemberList_Err:
         
 End Function
 
-Public Sub ConectarMiembro(ByVal Userindex As Integer)
+Public Sub ConectarMiembro(ByVal UserIndex As Integer)
         '***************************************************
         'Autor: Unknown (orginal version)
         'Last Modification: 28/05/2010
@@ -443,9 +443,9 @@ Public Sub ConectarMiembro(ByVal Userindex As Integer)
         
         On Error GoTo ConectarMiembro_Err
         
-100     p_OnlineMembers.Add Userindex
+100     p_OnlineMembers.Add UserIndex
 
-102     With UserList(Userindex)
+102     With UserList(UserIndex)
 
             ' No avisa cuando loguea un dios
 104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then
@@ -464,7 +464,7 @@ ConectarMiembro_Err:
         
 End Sub
 
-Public Sub DesConectarMiembro(ByVal Userindex As Integer)
+Public Sub DesConectarMiembro(ByVal UserIndex As Integer)
         
         On Error GoTo DesConectarMiembro_Err
         
@@ -478,10 +478,10 @@ Public Sub DesConectarMiembro(ByVal Userindex As Integer)
 
 100     For i = 1 To p_OnlineMembers.Count
 
-102         If p_OnlineMembers.Item(i) = Userindex Then
+102         If p_OnlineMembers.Item(i) = UserIndex Then
 104             p_OnlineMembers.Remove i
             
-106             With UserList(Userindex)
+106             With UserList(UserIndex)
 
                     ' No avisa cuando se desconecta un dios
 108                 If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then
@@ -1644,11 +1644,11 @@ End Function
 'ADMINISTRATIVAS
 '
 
-Public Sub ConectarGM(ByVal Userindex As Integer)
+Public Sub ConectarGM(ByVal UserIndex As Integer)
         
         On Error GoTo ConectarGM_Err
         
-100     p_GMsOnline.Add Userindex
+100     p_GMsOnline.Add UserIndex
 
         
         Exit Sub
@@ -1659,7 +1659,7 @@ ConectarGM_Err:
         
 End Sub
 
-Public Sub DesconectarGM(ByVal Userindex As Integer)
+Public Sub DesconectarGM(ByVal UserIndex As Integer)
         
         On Error GoTo DesconectarGM_Err
         
@@ -1668,7 +1668,7 @@ Public Sub DesconectarGM(ByVal Userindex As Integer)
 
 100     For i = 1 To p_GMsOnline.Count
 
-102         If p_GMsOnline.Item(i) = Userindex Then
+102         If p_GMsOnline.Item(i) = UserIndex Then
 104             p_GMsOnline.Remove (i)
 
             End If

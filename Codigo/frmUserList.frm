@@ -137,14 +137,14 @@ Private Sub List1_Click()
         On Error GoTo List1_Click_Err
         
 
-        Dim Userindex As Integer
+        Dim UserIndex As Integer
 
 100     If List1.ListIndex <> -1 Then
-102         Userindex = List1.ItemData(List1.ListIndex)
+102         UserIndex = List1.ItemData(List1.ListIndex)
 
-104         If Userindex > 0 And Userindex <= MaxUsers Then
+104         If UserIndex > 0 And UserIndex <= MaxUsers Then
 
-106             With UserList(Userindex)
+106             With UserList(UserIndex)
 108                 Text1.Text = "UserLogged: " & .flags.UserLogged & vbCrLf
 110                 Text1.Text = Text1.Text & "IdleCount: " & .Counters.IdleCount & vbCrLf
 112                 Text1.Text = Text1.Text & "ConnId: " & .ConnID & vbCrLf

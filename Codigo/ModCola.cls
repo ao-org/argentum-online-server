@@ -118,15 +118,15 @@ Class_Initialize_Err:
         
 End Sub
 
-Public Function VerElemento(ByVal Index As Integer) As String
+Public Function VerElemento(ByVal index As Integer) As String
 
         On Error Resume Next
 
-100     If IndexValido(Index) Then
+100     If IndexValido(index) Then
             'Pablo
             'VerElemento = UCase$(Cola.Item(index))
             '/Pablo
-102         VerElemento = Cola(Index)
+102         VerElemento = Cola(index)
         Else
 104         VerElemento = 0
 
@@ -231,11 +231,11 @@ Public Sub Quitar(ByVal nombre As String)
  
 End Sub
 
-Public Sub QuitarIndex(ByVal Index As Integer)
+Public Sub QuitarIndex(ByVal index As Integer)
 
         On Error Resume Next
 
-100     If IndexValido(Index) Then Call Cola.Remove(Index)
+100     If IndexValido(index) Then Call Cola.Remove(index)
 
 End Sub
 

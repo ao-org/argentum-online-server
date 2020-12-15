@@ -78,7 +78,7 @@ Attribute VB_Name = "PathFinding"
 
 Option Explicit
 
-Private Const ROWS   As Integer = 100
+Private Const rows   As Integer = 100
 
 Private Const COLUMS As Integer = 100
 
@@ -92,7 +92,7 @@ Private Type tIntermidiateWork
 
 End Type
 
-Dim TmpArray(1 To ROWS, 1 To COLUMS) As tIntermidiateWork
+Dim TmpArray(1 To rows, 1 To COLUMS) As tIntermidiateWork
 
 Dim TilePosY                         As Integer
 
@@ -100,7 +100,7 @@ Private Function Limites(ByVal vfila As Integer, ByVal vcolu As Integer)
         
         On Error GoTo Limites_Err
         
-100     Limites = vcolu >= 1 And vcolu <= COLUMS And vfila >= 1 And vfila <= ROWS
+100     Limites = vcolu >= 1 And vcolu <= COLUMS And vfila >= 1 And vfila <= rows
 
         
         Exit Function
@@ -117,8 +117,8 @@ Private Function IsWalkable(ByVal Map As Integer, ByVal row As Integer, ByVal Co
 
 100     If MapData(Map, row, Col).NpcIndex <> 0 Then Exit Function
 
-102     If MapData(Map, row, Col).Userindex <> 0 Then
-104         If MapData(Map, row, Col).Userindex <> Npclist(NpcIndex).PFINFO.TargetUser Then Exit Function
+102     If MapData(Map, row, Col).UserIndex <> 0 Then
+104         If MapData(Map, row, Col).UserIndex <> Npclist(NpcIndex).PFINFO.TargetUser Then Exit Function
         End If
         
          'Tile Bloqueado?
