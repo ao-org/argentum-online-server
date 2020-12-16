@@ -4102,8 +4102,14 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         Case 1      ' Subtipo: Caña de Pescar
 
 384                         If (MapData(.Pos.Map, X, Y).Blocked And FLAG_AGUA) <> 0 Then
-386                             Call DoPescar(UserIndex, False, ObjData(.Invent.HerramientaEqpObjIndex).Dorada = 1)
-388                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .Pos.X, .Pos.Y))
+                                If Abs(.Pos.X - X) + Abs(.Pos.Y - Y) <= 3 Then
+386                                 Call DoPescar(UserIndex, False, ObjData(.Invent.HerramientaEqpObjIndex).Dorada = 1)
+388                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .Pos.X, .Pos.Y))
+                                Else
+                                    'Call WriteConsoleMsg(UserIndex, "Estás demasiado lejos para pescar.", FontTypeNames.FONTTYPE_INFO)
+                                    Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
+389                                 Call WriteMacroTrabajoToggle(UserIndex, False)
+                                End If
                             
                             Else
 390                             Call WriteConsoleMsg(UserIndex, "No hay agua donde pescar. Busca un lago, rio o mar.", FontTypeNames.FONTTYPE_INFO)
@@ -4117,7 +4123,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                             
 398                             If Abs(.Pos.X - X) + Abs(.Pos.Y - Y) > 8 Then
 400                                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-                                    'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos para pescar.", FontTypeNames.FONTTYPE_INFO)
+                                    'Call WriteConsoleMsg(UserIndex, "Estás demasiado lejos para pescar.", FontTypeNames.FONTTYPE_INFO)
 402                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                     Exit Sub
     
