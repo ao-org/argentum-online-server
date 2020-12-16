@@ -785,16 +785,13 @@ EnviarQuest_Err:
         
 End Sub
 
-
-
 Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal QuestSlot As Byte) As Boolean
         '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         'Funcion para chequear si finalizo una quest
         'Ladder
         '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        
+
         On Error GoTo FinishQuestCheck_Err
-    
         
         Dim i              As Integer
 
@@ -856,21 +853,12 @@ Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As
         
         
 134     FinishQuestCheck = True
-        
-        Exit Function
 
-FinishQuestCheck_Err:
-136     Call RegistrarError(Err.description & vbCrLf & _
-               "in Argentum20Server.ModQuest.FinishQuestCheck " & _
-           "at line " & Erl, _
-           vbExclamation + vbOKOnly, "Application Error")
-138 Resume Next
-    
         
+
         Exit Function
 
 FinishQuestCheck_Err:
         Call RegistrarError(Err.Number, Err.description, "ModQuest.FinishQuestCheck", Erl)
 
-        
 End Function
