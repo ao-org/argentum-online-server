@@ -63,9 +63,13 @@ ErrHandler:
 End Function
 
 Public Sub NPC_TIRAR_ITEMS(ByRef npc As npc)
+        
+        On Error GoTo NPC_TIRAR_ITEMS_Err
+    
+        
 
         'TIRA TODOS LOS ITEMS DEL NPC
-        On Error Resume Next
+        
 
 100     If npc.Invent.NroItems > 0 Then
     
@@ -86,11 +90,22 @@ Public Sub NPC_TIRAR_ITEMS(ByRef npc As npc)
 
         End If
 
+        
+        Exit Sub
+
+NPC_TIRAR_ITEMS_Err:
+        Call RegistrarError(Err.Number, Err.description, "InvNpc.NPC_TIRAR_ITEMS", Erl)
+
+        
 End Sub
 
 Function QuedanItems(ByVal NpcIndex As Integer, ByVal ObjIndex As Integer) As Boolean
+        
+        On Error GoTo QuedanItems_Err
+    
+        
 
-        On Error Resume Next
+        
 
         'Call LogTarea("Function QuedanItems npcindex:" & NpcIndex & " objindex:" & ObjIndex)
 
@@ -112,11 +127,22 @@ Function QuedanItems(ByVal NpcIndex As Integer, ByVal ObjIndex As Integer) As Bo
 
 108     QuedanItems = False
 
+        
+        Exit Function
+
+QuedanItems_Err:
+        Call RegistrarError(Err.Number, Err.description, "InvNpc.QuedanItems", Erl)
+
+        
 End Function
 
 Function EncontrarCant(ByVal NpcIndex As Integer, ByVal ObjIndex As Integer) As Integer
+        
+        On Error GoTo EncontrarCant_Err
+    
+        
 
-        On Error Resume Next
+        
 
         'Devuelve la cantidad original del obj de un npc
 
@@ -143,11 +169,22 @@ Function EncontrarCant(ByVal NpcIndex As Integer, ByVal ObjIndex As Integer) As 
                    
 110     EncontrarCant = 0
 
+        
+        Exit Function
+
+EncontrarCant_Err:
+        Call RegistrarError(Err.Number, Err.description, "InvNpc.EncontrarCant", Erl)
+
+        
 End Function
 
 Sub ResetNpcInv(ByVal NpcIndex As Integer)
+        
+        On Error GoTo ResetNpcInv_Err
+    
+        
 
-        On Error Resume Next
+        
 
         Dim i As Integer
 
@@ -160,6 +197,13 @@ Sub ResetNpcInv(ByVal NpcIndex As Integer)
 
 110     Npclist(NpcIndex).InvReSpawn = 0
 
+        
+        Exit Sub
+
+ResetNpcInv_Err:
+        Call RegistrarError(Err.Number, Err.description, "InvNpc.ResetNpcInv", Erl)
+
+        
 End Sub
 
 Sub QuitarNpcInvItem(ByVal NpcIndex As Integer, ByVal slot As Byte, ByVal Cantidad As Integer)

@@ -812,6 +812,10 @@ MoveUserChar_Err:
 End Sub
 
 Public Function InvertHeading(ByVal nHeading As eHeading) As eHeading
+        
+        On Error GoTo InvertHeading_Err
+    
+        
 
         '*************************************************
         'Author: ZaMa
@@ -834,6 +838,13 @@ Public Function InvertHeading(ByVal nHeading As eHeading) As eHeading
 
         End Select
 
+        
+        Exit Function
+
+InvertHeading_Err:
+        Call RegistrarError(Err.Number, Err.description, "UsUaRiOs.InvertHeading", Erl)
+
+        
 End Function
 
 Sub ChangeUserInv(ByVal UserIndex As Integer, ByVal slot As Byte, ByRef Object As UserOBJ)
@@ -1083,8 +1094,12 @@ SendUserMiniStatsTxtFromChar_Err:
 End Sub
 
 Sub SendUserInvTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
+        
+        On Error GoTo SendUserInvTxt_Err
+    
+        
 
-        On Error Resume Next
+        
 
         Dim j As Long
     
@@ -1100,11 +1115,22 @@ Sub SendUserInvTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
 
 110     Next j
 
+        
+        Exit Sub
+
+SendUserInvTxt_Err:
+        Call RegistrarError(Err.Number, Err.description, "UsUaRiOs.SendUserInvTxt", Erl)
+
+        
 End Sub
 
 Sub SendUserInvTxtFromChar(ByVal sendIndex As Integer, ByVal CharName As String)
+        
+        On Error GoTo SendUserInvTxtFromChar_Err
+    
+        
 
-        On Error Resume Next
+        
 
         Dim j        As Long
 
@@ -1135,11 +1161,22 @@ Sub SendUserInvTxtFromChar(ByVal sendIndex As Integer, ByVal CharName As String)
 
         End If
     
+        
+        Exit Sub
+
+SendUserInvTxtFromChar_Err:
+        Call RegistrarError(Err.Number, Err.description, "UsUaRiOs.SendUserInvTxtFromChar", Erl)
+
+        
 End Sub
 
 Sub SendUserSkillsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
+        
+        On Error GoTo SendUserSkillsTxt_Err
+    
+        
 
-        On Error Resume Next
+        
 
         Dim j As Integer
 
@@ -1150,6 +1187,13 @@ Sub SendUserSkillsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
         Next
 106     Call WriteConsoleMsg(sendIndex, " SkillLibres:" & UserList(UserIndex).Stats.SkillPts, FontTypeNames.FONTTYPE_INFO)
 
+        
+        Exit Sub
+
+SendUserSkillsTxt_Err:
+        Call RegistrarError(Err.Number, Err.description, "UsUaRiOs.SendUserSkillsTxt", Erl)
+
+        
 End Sub
 
 Function DameUserIndex(SocketId As Integer) As Integer
@@ -2382,8 +2426,12 @@ SendUserStatsTxtOFF_Err:
 End Sub
 
 Sub SendUserOROTxtFromChar(ByVal sendIndex As Integer, ByVal CharName As String)
+        
+        On Error GoTo SendUserOROTxtFromChar_Err
+    
+        
 
-        On Error Resume Next
+        
 
         Dim j        As Integer
 
@@ -2401,6 +2449,13 @@ Sub SendUserOROTxtFromChar(ByVal sendIndex As Integer, ByVal CharName As String)
 
         End If
 
+        
+        Exit Sub
+
+SendUserOROTxtFromChar_Err:
+        Call RegistrarError(Err.Number, Err.description, "UsUaRiOs.SendUserOROTxtFromChar", Erl)
+
+        
 End Sub
 
 Sub VolverCriminal(ByVal UserIndex As Integer)
@@ -2487,6 +2542,10 @@ getMaxInventorySlots_Err:
 End Function
 
 Private Sub WarpMascotas(ByVal UserIndex As Integer)
+        
+        On Error GoTo WarpMascotas_Err
+    
+        
 
         '************************************************
         'Author: Uknown
@@ -2521,17 +2580,17 @@ Private Sub WarpMascotas(ByVal UserIndex As Integer)
         
 106         If index > 0 Then
 108             iMinHP = Npclist(index).Stats.MinHp
-                PetTiempoDeVida = Npclist(index).Contadores.TiempoExistencia
+110             PetTiempoDeVida = Npclist(index).Contadores.TiempoExistencia
             
 112             Npclist(index).MaestroUser = 0
             
 114             Call QuitarNPC(index)
 
-                If PetTiempoDeVida > 0 Then
-120                 Call QuitarMascota(UserIndex, index)
-122                 ElementalQuitado = True
+116             If PetTiempoDeVida > 0 Then
+118                 Call QuitarMascota(UserIndex, index)
+120                 ElementalQuitado = True
 
-123             ElseIf Not canWarp Then
+122             ElseIf Not canWarp Then
 124                 UserList(UserIndex).MascotasIndex(i) = 0
 126                 MascotaQuitada = True
                 End If
@@ -2562,29 +2621,40 @@ Private Sub WarpMascotas(ByVal UserIndex As Integer)
 148                 If iMinHP Then Npclist(index).Stats.MinHp = iMinHP
             
 150                 Npclist(index).MaestroUser = UserIndex
-154                 Call FollowAmo(index)
+152                 Call FollowAmo(index)
             
                 Else
-156                 SpawnInvalido = True
+154                 SpawnInvalido = True
                 End If
 
             End If
 
-158     Next i
+156     Next i
 
-160     If Not canWarp And MascotaQuitada Then
-            Call WriteConsoleMsg(UserIndex, "No se permiten mascotas en zona segura. Estas te esperarán afuera.", FontTypeNames.FONTTYPE_INFO)
-162
-        ElseIf SpawnInvalido Then
+158     If Not canWarp And MascotaQuitada Then
+160         Call WriteConsoleMsg(UserIndex, "No se permiten mascotas en zona segura. Estas te esperarán afuera.", FontTypeNames.FONTTYPE_INFO)
+
+162     ElseIf SpawnInvalido Then
 164         Call WriteConsoleMsg(UserIndex, "Tus mascotas no pueden transitar este mapa.", FontTypeNames.FONTTYPE_INFO)
 
 166     ElseIf ElementalQuitado Then
-172         Call WriteConsoleMsg(UserIndex, "Pierdes el control de tus mascotas invocadas.", FontTypeNames.FONTTYPE_INFO)
+168         Call WriteConsoleMsg(UserIndex, "Pierdes el control de tus mascotas invocadas.", FontTypeNames.FONTTYPE_INFO)
         End If
 
+        
+        Exit Sub
+
+WarpMascotas_Err:
+        Call RegistrarError(Err.Number, Err.description, "UsUaRiOs.WarpMascotas", Erl)
+
+        
 End Sub
 
 Function TieneArmaduraCazador(ByVal UserIndex As Integer) As Boolean
+        
+        On Error GoTo TieneArmaduraCazador_Err
+    
+        
 
 100     If UserList(UserIndex).Invent.ArmourEqpObjIndex > 0 Then
         
@@ -2594,4 +2664,11 @@ Function TieneArmaduraCazador(ByVal UserIndex As Integer) As Boolean
         
         End If
 
+        
+        Exit Function
+
+TieneArmaduraCazador_Err:
+        Call RegistrarError(Err.Number, Err.description, "UsUaRiOs.TieneArmaduraCazador", Erl)
+
+        
 End Function

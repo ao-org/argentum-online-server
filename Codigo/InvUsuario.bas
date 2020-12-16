@@ -30,11 +30,15 @@ Attribute VB_Name = "InvUsuario"
 Option Explicit
 
 Public Function TieneObjetosRobables(ByVal UserIndex As Integer) As Boolean
+        
+        On Error GoTo TieneObjetosRobables_Err
+    
+        
 
         '17/09/02
         'Agregue que la función se asegure que el objeto no es un barco
 
-        On Error Resume Next
+        
 
         Dim i        As Integer
 
@@ -54,6 +58,13 @@ Public Function TieneObjetosRobables(ByVal UserIndex As Integer) As Boolean
 
 110     Next i
 
+        
+        Exit Function
+
+TieneObjetosRobables_Err:
+        Call RegistrarError(Err.Number, Err.description, "InvUsuario.TieneObjetosRobables", Erl)
+
+        
 End Function
 
 Function ClasePuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, Optional slot As Byte) As Boolean
@@ -3450,14 +3461,25 @@ EnivarArmadurasConstruibles_Err:
 End Sub
 
 Sub TirarTodo(ByVal UserIndex As Integer)
+        
+        On Error GoTo TirarTodo_Err
+    
+        
 
-        On Error Resume Next
+        
 
 100     If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger = 6 Then Exit Sub
 102     If UserList(UserIndex).flags.BattleModo = 1 Then Exit Sub
 
 104     Call TirarTodosLosItems(UserIndex)
 
+        
+        Exit Sub
+
+TirarTodo_Err:
+        Call RegistrarError(Err.Number, Err.description, "InvUsuario.TirarTodo", Erl)
+
+        
 End Sub
 
 Public Function ItemSeCae(ByVal index As Integer) As Boolean
@@ -3477,6 +3499,10 @@ ItemSeCae_Err:
 End Function
 
 Public Function PirataCaeItem(ByVal UserIndex As Integer, ByVal slot As Byte)
+        
+        On Error GoTo PirataCaeItem_Err
+    
+        
 
 100     With UserList(UserIndex)
     
@@ -3504,6 +3530,13 @@ Public Function PirataCaeItem(ByVal UserIndex As Integer, ByVal slot As Byte)
     
 112     PirataCaeItem = True
 
+        
+        Exit Function
+
+PirataCaeItem_Err:
+        Call RegistrarError(Err.Number, Err.description, "InvUsuario.PirataCaeItem", Erl)
+
+        
 End Function
 
 Sub TirarTodosLosItems(ByVal UserIndex As Integer)

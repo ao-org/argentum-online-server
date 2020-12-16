@@ -616,8 +616,6 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
         '
         '***************************************************
 
-        On Error Resume Next
-
         ' Dim packetID As Byte
     
         '  PaquetesCount = PaquetesCount + 1
@@ -1411,7 +1409,7 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
 1116         Case ClientPacketID.CheckSlot               '/SLOT
 1118             Call HandleCheckSlot(UserIndex)
             
-                 'Nuevo Ladder
+                  'Nuevo Ladder
             
 1120         Case ClientPacketID.GlobalMessage     '/CONSOLA
 1122             Call HandleGlobalMessage(UserIndex)
@@ -1423,34 +1421,45 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
 1130             Call HandleIncomingDataNewPacks(UserIndex)
 
 1132         Case Else
-                 'ERROR : Abort!
+                  'ERROR : Abort!
 1134            Call CloseSocket(UserIndex)
-                Exit Function
-         End Select
+                 Exit Function
+          End Select
 
-         'Done with this packet, move on to next one or send everything if no more packets found
+          'Done with this packet, move on to next one or send everything if no more packets found
 1136     If UserList(UserIndex).incomingData.Length > 0 And Err.Number = 0 Then
 1138         HandleIncomingData = True
   
 1140     ElseIf Err.Number <> 0 And Not Err.Number = UserList(UserIndex).incomingData.NotEnoughDataErrCode Then
-             'An error ocurred, log it and kick player.
+              'An error ocurred, log it and kick player.
 1142         Call LogError("Error: " & Err.Number & " [" & Err.description & "] " & _
-                           " Source: " & Err.source & vbTab & _
-                           " HelpFile: " & Err.HelpFile & vbTab & _
-                           " HelpContext: " & Err.HelpContext & vbTab & _
-                           " LastDllError: " & Err.LastDllError & vbTab & _
-                           " - UserIndex: " & UserIndex & " - producido al manejar el paquete: " & CStr(packetID))
+                            " Source: " & Err.source & vbTab & _
+                            " HelpFile: " & Err.HelpFile & vbTab & _
+                            " HelpContext: " & Err.HelpContext & vbTab & _
+                            " LastDllError: " & Err.LastDllError & vbTab & _
+                            " - UserIndex: " & UserIndex & " - producido al manejar el paquete: " & CStr(packetID))
         
 1144         Call CloseSocket(UserIndex)
   
 1146         HandleIncomingData = False
-         Else
+          Else
 1148         HandleIncomingData = False
-         End If
+          End If
 
+         
+         Exit Function
+
+HandleIncomingData_Err:
+         Call RegistrarError(Err.Number, Err.description, "Protocol.HandleIncomingData", Erl)
+
+         
 End Function
 
 Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
+        
+        On Error GoTo HandleIncomingDataNewPacks_Err
+    
+        
 
         '***************************************************
         'Los nuevos Pack ID
@@ -1481,215 +1490,215 @@ Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
 122         Case NewPacksID.Duelo
                 'Call HandleDuelo(UserIndex)
                 ' WyroX: Fix temporal para que no tiren el server
-                Call UserList(UserIndex).incomingData.ReadInteger
+124             Call UserList(UserIndex).incomingData.ReadInteger
 
-124         Case NewPacksID.NieveToggle
-126             Call HandleNieveToggle(UserIndex)
+126         Case NewPacksID.NieveToggle
+128             Call HandleNieveToggle(UserIndex)
 
-128         Case NewPacksID.NieblaToggle
-130             Call HandleNieblaToggle(UserIndex)
+130         Case NewPacksID.NieblaToggle
+132             Call HandleNieblaToggle(UserIndex)
 
-132         Case NewPacksID.TransFerGold
-134             Call HandleTransFerGold(UserIndex)
+134         Case NewPacksID.TransFerGold
+136             Call HandleTransFerGold(UserIndex)
 
-136         Case NewPacksID.Moveitem
-138             Call HandleMoveItem(UserIndex)
+138         Case NewPacksID.Moveitem
+140             Call HandleMoveItem(UserIndex)
 
-140         Case NewPacksID.LlamadadeClan
-142             Call HandleLlamadadeClan(UserIndex)
+142         Case NewPacksID.LlamadadeClan
+144             Call HandleLlamadadeClan(UserIndex)
 
-144         Case NewPacksID.QuieroFundarClan
-146             Call HandleQuieroFundarClan(UserIndex)
+146         Case NewPacksID.QuieroFundarClan
+148             Call HandleQuieroFundarClan(UserIndex)
 
-148         Case NewPacksID.BovedaMoveItem
-150             Call HandleBovedaMoveItem(UserIndex)
+150         Case NewPacksID.BovedaMoveItem
+152             Call HandleBovedaMoveItem(UserIndex)
 
-152         Case NewPacksID.Genio
-154             Call HandleGenio(UserIndex)
+154         Case NewPacksID.Genio
+156             Call HandleGenio(UserIndex)
 
-156         Case NewPacksID.Casarse
-158             Call HandleCasamiento(UserIndex)
+158         Case NewPacksID.Casarse
+160             Call HandleCasamiento(UserIndex)
 
-160         Case NewPacksID.EnviarCodigo
-162             Call HandleEnviarCodigo(UserIndex)
+162         Case NewPacksID.EnviarCodigo
+164             Call HandleEnviarCodigo(UserIndex)
 
-164         Case NewPacksID.CrearTorneo
-166             Call HandleCrearTorneo(UserIndex)
+166         Case NewPacksID.CrearTorneo
+168             Call HandleCrearTorneo(UserIndex)
             
-168         Case NewPacksID.ComenzarTorneo
-170             Call HandleComenzarTorneo(UserIndex)
+170         Case NewPacksID.ComenzarTorneo
+172             Call HandleComenzarTorneo(UserIndex)
             
-172         Case NewPacksID.CancelarTorneo
-174             Call HandleCancelarTorneo(UserIndex)
+174         Case NewPacksID.CancelarTorneo
+176             Call HandleCancelarTorneo(UserIndex)
 
-176         Case NewPacksID.BusquedaTesoro
-178             Call HandleBusquedaTesoro(UserIndex)
+178         Case NewPacksID.BusquedaTesoro
+180             Call HandleBusquedaTesoro(UserIndex)
 
-184         Case NewPacksID.CraftAlquimista
-186             Call HandleCraftAlquimia(UserIndex)
+182         Case NewPacksID.CraftAlquimista
+184             Call HandleCraftAlquimia(UserIndex)
 
-188         Case NewPacksID.DropItem
-190             Call HandleDropItem(UserIndex)
+186         Case NewPacksID.DropItem
+188             Call HandleDropItem(UserIndex)
 
-192         Case NewPacksID.RequestFamiliar
-194             Call HandleRequestFamiliar(UserIndex)
+190         Case NewPacksID.RequestFamiliar
+192             Call HandleRequestFamiliar(UserIndex)
 
-196         Case NewPacksID.FlagTrabajar
-198             Call HandleFlagTrabajar(UserIndex)
+194         Case NewPacksID.FlagTrabajar
+196             Call HandleFlagTrabajar(UserIndex)
 
-200         Case NewPacksID.CraftSastre
-202             Call HandleCraftSastre(UserIndex)
+198         Case NewPacksID.CraftSastre
+200             Call HandleCraftSastre(UserIndex)
 
-204         Case NewPacksID.MensajeUser
-206             Call HandleMensajeUser(UserIndex)
+202         Case NewPacksID.MensajeUser
+204             Call HandleMensajeUser(UserIndex)
 
-208         Case NewPacksID.TraerBoveda
-210             Call HandleTraerBoveda(UserIndex)
+206         Case NewPacksID.TraerBoveda
+208             Call HandleTraerBoveda(UserIndex)
 
-212         Case NewPacksID.CompletarAccion
-214             Call HandleCompletarAccion(UserIndex)
+210         Case NewPacksID.CompletarAccion
+212             Call HandleCompletarAccion(UserIndex)
 
-216         Case NewPacksID.Escribiendo
-218             Call HandleEscribiendo(UserIndex)
+214         Case NewPacksID.Escribiendo
+216             Call HandleEscribiendo(UserIndex)
 
-220         Case NewPacksID.TraerRecompensas
-222             Call HandleTraerRecompensas(UserIndex)
+218         Case NewPacksID.TraerRecompensas
+220             Call HandleTraerRecompensas(UserIndex)
 
-224         Case NewPacksID.ReclamarRecompensa
-226             Call HandleReclamarRecompensa(UserIndex)
+222         Case NewPacksID.ReclamarRecompensa
+224             Call HandleReclamarRecompensa(UserIndex)
 
-228         Case NewPacksID.Correo
-230             Call HandleCorreo(UserIndex)
+226         Case NewPacksID.Correo
+228             Call HandleCorreo(UserIndex)
 
-232         Case NewPacksID.SendCorreo ' ok
-234             Call HandleSendCorreo(UserIndex)
+230         Case NewPacksID.SendCorreo ' ok
+232             Call HandleSendCorreo(UserIndex)
 
-236         Case NewPacksID.RetirarItemCorreo ' ok
-238             Call HandleRetirarItemCorreo(UserIndex)
+234         Case NewPacksID.RetirarItemCorreo ' ok
+236             Call HandleRetirarItemCorreo(UserIndex)
 
-240         Case NewPacksID.BorrarCorreo
-242             Call HandleBorrarCorreo(UserIndex) 'ok
+238         Case NewPacksID.BorrarCorreo
+240             Call HandleBorrarCorreo(UserIndex) 'ok
 
-244         Case NewPacksID.InvitarGrupo
-246             Call HandleInvitarGrupo(UserIndex) 'ok
+242         Case NewPacksID.InvitarGrupo
+244             Call HandleInvitarGrupo(UserIndex) 'ok
 
-248         Case NewPacksID.MarcaDeClanPack
-250             Call HandleMarcaDeClan(UserIndex)
+246         Case NewPacksID.MarcaDeClanPack
+248             Call HandleMarcaDeClan(UserIndex)
 
-252         Case NewPacksID.MarcaDeGMPack
-254             Call HandleMarcaDeGM(UserIndex)
+250         Case NewPacksID.MarcaDeGMPack
+252             Call HandleMarcaDeGM(UserIndex)
 
-256         Case NewPacksID.ResponderPregunta 'ok
-258             Call HandleResponderPregunta(UserIndex)
+254         Case NewPacksID.ResponderPregunta 'ok
+256             Call HandleResponderPregunta(UserIndex)
 
-260         Case NewPacksID.RequestGrupo
-262             Call HandleRequestGrupo(UserIndex) 'ok
+258         Case NewPacksID.RequestGrupo
+260             Call HandleRequestGrupo(UserIndex) 'ok
 
-264         Case NewPacksID.AbandonarGrupo
-266             Call HandleAbandonarGrupo(UserIndex) ' ok
+262         Case NewPacksID.AbandonarGrupo
+264             Call HandleAbandonarGrupo(UserIndex) ' ok
 
-268         Case NewPacksID.HecharDeGrupo
-270             Call HandleHecharDeGrupo(UserIndex) 'ok
+266         Case NewPacksID.HecharDeGrupo
+268             Call HandleHecharDeGrupo(UserIndex) 'ok
 
-272         Case NewPacksID.MacroPossent
-274             Call HandleMacroPos(UserIndex)
+270         Case NewPacksID.MacroPossent
+272             Call HandleMacroPos(UserIndex)
 
-276         Case NewPacksID.SubastaInfo
-278             Call HandleSubastaInfo(UserIndex)
+274         Case NewPacksID.SubastaInfo
+276             Call HandleSubastaInfo(UserIndex)
 
-280         Case NewPacksID.EventoInfo
-282             Call HandleEventoInfo(UserIndex)
+278         Case NewPacksID.EventoInfo
+280             Call HandleEventoInfo(UserIndex)
 
-284         Case NewPacksID.CrearEvento
-286             Call HandleCrearEvento(UserIndex)
+282         Case NewPacksID.CrearEvento
+284             Call HandleCrearEvento(UserIndex)
 
-288         Case NewPacksID.BanCuenta
-290             Call HandleBanCuenta(UserIndex)
+286         Case NewPacksID.BanCuenta
+288             Call HandleBanCuenta(UserIndex)
             
-292         Case NewPacksID.unBanCuenta
-294             Call HandleUnBanCuenta(UserIndex)
+290         Case NewPacksID.unBanCuenta
+292             Call HandleUnBanCuenta(UserIndex)
             
-296         Case NewPacksID.BanSerial
-298             Call HandleBanSerial(UserIndex)
+294         Case NewPacksID.BanSerial
+296             Call HandleBanSerial(UserIndex)
         
-300         Case NewPacksID.unBanSerial
-302             Call HandleUnBanSerial(UserIndex)
+298         Case NewPacksID.unBanSerial
+300             Call HandleUnBanSerial(UserIndex)
             
-304         Case NewPacksID.CerrarCliente
-306             Call HandleCerrarCliente(UserIndex)
+302         Case NewPacksID.CerrarCliente
+304             Call HandleCerrarCliente(UserIndex)
             
-308         Case NewPacksID.BanTemporal
-310             Call HandleBanTemporal(UserIndex)
+306         Case NewPacksID.BanTemporal
+308             Call HandleBanTemporal(UserIndex)
 
-312         Case NewPacksID.Traershop
-314             Call HandleTraerShop(UserIndex)
+310         Case NewPacksID.Traershop
+312             Call HandleTraerShop(UserIndex)
 
-316         Case NewPacksID.TraerRanking
-318             Call HandleTraerRanking(UserIndex)
+314         Case NewPacksID.TraerRanking
+316             Call HandleTraerRanking(UserIndex)
 
-320         Case NewPacksID.Pareja
-322             Call HandlePareja(UserIndex)
+318         Case NewPacksID.Pareja
+320             Call HandlePareja(UserIndex)
             
-324         Case NewPacksID.ComprarItem
-326             Call HandleComprarItem(UserIndex)
+322         Case NewPacksID.ComprarItem
+324             Call HandleComprarItem(UserIndex)
             
-328         Case NewPacksID.CompletarViaje
-330             Call HandleCompletarViaje(UserIndex)
+326         Case NewPacksID.CompletarViaje
+328             Call HandleCompletarViaje(UserIndex)
             
-332         Case NewPacksID.ScrollInfo
-334             Call HandleScrollInfo(UserIndex)
+330         Case NewPacksID.ScrollInfo
+332             Call HandleScrollInfo(UserIndex)
 
-336         Case NewPacksID.CancelarExit
-338             Call HandleCancelarExit(UserIndex)
+334         Case NewPacksID.CancelarExit
+336             Call HandleCancelarExit(UserIndex)
             
-340         Case NewPacksID.Quest
-342             Call HandleQuest(UserIndex)
+338         Case NewPacksID.Quest
+340             Call HandleQuest(UserIndex)
             
-344         Case NewPacksID.QuestAccept
-346             Call HandleQuestAccept(UserIndex)
+342         Case NewPacksID.QuestAccept
+344             Call HandleQuestAccept(UserIndex)
         
-348         Case NewPacksID.QuestListRequest
-350             Call HandleQuestListRequest(UserIndex)
+346         Case NewPacksID.QuestListRequest
+348             Call HandleQuestListRequest(UserIndex)
         
-352         Case NewPacksID.QuestDetailsRequest
-354             Call HandleQuestDetailsRequest(UserIndex)
+350         Case NewPacksID.QuestDetailsRequest
+352             Call HandleQuestDetailsRequest(UserIndex)
         
-356         Case NewPacksID.QuestAbandon
-358             Call HandleQuestAbandon(UserIndex)
+354         Case NewPacksID.QuestAbandon
+356             Call HandleQuestAbandon(UserIndex)
             
-360         Case NewPacksID.SeguroClan
-362             Call HandleSeguroClan(UserIndex)
+358         Case NewPacksID.SeguroClan
+360             Call HandleSeguroClan(UserIndex)
             
-364         Case NewPacksID.CreatePretorianClan     '/CREARPRETORIANOS
-366             Call HandleCreatePretorianClan(UserIndex)
+362         Case NewPacksID.CreatePretorianClan     '/CREARPRETORIANOS
+364             Call HandleCreatePretorianClan(UserIndex)
          
-368         Case NewPacksID.RemovePretorianClan     '/ELIMINARPRETORIANOS
-370             Call HandleDeletePretorianClan(UserIndex)
+366         Case NewPacksID.RemovePretorianClan     '/ELIMINARPRETORIANOS
+368             Call HandleDeletePretorianClan(UserIndex)
 
-372         Case NewPacksID.Home
-374             Call HandleHome(UserIndex)
+370         Case NewPacksID.Home
+372             Call HandleHome(UserIndex)
             
-376         Case Else
+374         Case Else
                 'ERROR : Abort!
-378             Call CloseSocket(UserIndex)
+376             Call CloseSocket(UserIndex)
                 Exit Sub
             
         End Select
     
-380     If UserList(UserIndex).incomingData.Length > 0 And Err.Number = 0 Then
-382         Err.Clear
-384         Call HandleIncomingData(UserIndex)
+378     If UserList(UserIndex).incomingData.Length > 0 And Err.Number = 0 Then
+380         Err.Clear
+382         Call HandleIncomingData(UserIndex)
     
-386     ElseIf Err.Number <> 0 And Not Err.Number = UserList(UserIndex).incomingData.NotEnoughDataErrCode Then
+384     ElseIf Err.Number <> 0 And Not Err.Number = UserList(UserIndex).incomingData.NotEnoughDataErrCode Then
             'An error ocurred, log it and kick player.
-388         Call LogError("Error: " & Err.Number & " [" & Err.description & "] - Linea: " & Erl & _
+386         Call LogError("Error: " & Err.Number & " [" & Err.description & "] - Linea: " & Erl & _
                           " Source: " & Err.source & vbTab & _
                           " HelpFile: " & Err.HelpFile & vbTab & _
                           " HelpContext: " & Err.HelpContext & vbTab & _
                           " LastDllError: " & Err.LastDllError & vbTab & _
                           " - UserIndex: " & UserIndex & " - producido al manejar el paquete: " & CStr(packetID))
                           
-390         Call CloseSocket(UserIndex)
+388         Call CloseSocket(UserIndex)
     
         End If
         
@@ -7164,6 +7173,10 @@ Private Sub HandlePetStand(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
+        
+        On Error GoTo HandlePetStand_Err
+    
+        
 100     With UserList(UserIndex)
             'Remove packet ID
 102         Call .incomingData.ReadByte
@@ -7194,6 +7207,13 @@ Private Sub HandlePetStand(ByVal UserIndex As Integer)
         
 120         Call Expresar(.flags.TargetNPC, UserIndex)
         End With
+        
+        Exit Sub
+
+HandlePetStand_Err:
+        Call RegistrarError(Err.Number, Err.description, "Protocol.HandlePetStand", Erl)
+
+        
 End Sub
 
 ''
@@ -7207,6 +7227,10 @@ Private Sub HandlePetFollow(ByVal UserIndex As Integer)
     'Last Modification: 05/17/06
     '
     '***************************************************
+        
+        On Error GoTo HandlePetFollow_Err
+    
+        
 100     With UserList(UserIndex)
             'Remove packet ID
 102         Call .incomingData.ReadByte
@@ -7237,6 +7261,13 @@ Private Sub HandlePetFollow(ByVal UserIndex As Integer)
         
 120         Call Expresar(.flags.TargetNPC, UserIndex)
         End With
+        
+        Exit Sub
+
+HandlePetFollow_Err:
+        Call RegistrarError(Err.Number, Err.description, "Protocol.HandlePetFollow", Erl)
+
+        
 End Sub
 
 ''
@@ -7246,6 +7277,10 @@ End Sub
 
 Private Sub HandlePetLeave(ByVal UserIndex As Integer)
     '***************************************************
+        
+        On Error GoTo HandlePetLeave_Err
+    
+        
 100     With UserList(UserIndex)
             'Remove packet ID
 102         Call .incomingData.ReadByte
@@ -7267,6 +7302,13 @@ Private Sub HandlePetLeave(ByVal UserIndex As Integer)
 
 114         Call QuitarNPC(.flags.TargetNPC)
         End With
+        
+        Exit Sub
+
+HandlePetLeave_Err:
+        Call RegistrarError(Err.Number, Err.description, "Protocol.HandlePetLeave", Erl)
+
+        
 End Sub
 
 ''
@@ -10582,6 +10624,10 @@ ErrHandler:
 End Sub
 
 Private Sub HandleSacarLlave(ByVal UserIndex As Integer)
+        
+        On Error GoTo HandleSacarLlave_Err
+    
+        
 
         '***************************************************
 100     If UserList(UserIndex).incomingData.Length < 3 Then
@@ -10618,9 +10664,20 @@ Private Sub HandleSacarLlave(ByVal UserIndex As Integer)
 
         End With
 
+        
+        Exit Sub
+
+HandleSacarLlave_Err:
+        Call RegistrarError(Err.Number, Err.description, "Protocol.HandleSacarLlave", Erl)
+
+        
 End Sub
 
 Private Sub HandleVerLlaves(ByVal UserIndex As Integer)
+        
+        On Error GoTo HandleVerLlaves_Err
+    
+        
 
 100     With UserList(UserIndex)
     
@@ -10640,9 +10697,20 @@ Private Sub HandleVerLlaves(ByVal UserIndex As Integer)
                 
         End With
 
+        
+        Exit Sub
+
+HandleVerLlaves_Err:
+        Call RegistrarError(Err.Number, Err.description, "Protocol.HandleVerLlaves", Erl)
+
+        
 End Sub
 
 Private Sub HandleUseKey(ByVal UserIndex As Integer)
+        
+        On Error GoTo HandleUseKey_Err
+    
+        
 
 100     If UserList(UserIndex).incomingData.Length < 2 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
@@ -10660,6 +10728,13 @@ Private Sub HandleUseKey(ByVal UserIndex As Integer)
                 
         End With
 
+        
+        Exit Sub
+
+HandleUseKey_Err:
+        Call RegistrarError(Err.Number, Err.description, "Protocol.HandleUseKey", Erl)
+
+        
 End Sub
 
 ''
@@ -24337,6 +24412,10 @@ PrepareMessageCharacterMove_Err:
 End Function
 
 Public Function PrepareMessageForceCharMove(ByVal Direccion As eHeading) As String
+        
+        On Error GoTo PrepareMessageForceCharMove_Err
+    
+        
 
         '***************************************************
         'Author: ZaMa
@@ -24351,6 +24430,13 @@ Public Function PrepareMessageForceCharMove(ByVal Direccion As eHeading) As Stri
 
         End With
 
+        
+        Exit Function
+
+PrepareMessageForceCharMove_Err:
+        Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageForceCharMove", Erl)
+
+        
 End Function
 
 ''
@@ -26452,6 +26538,10 @@ End Function
 
 Private Sub HandleGenio(ByVal UserIndex As Integer)
         'Author: Pablo Mercavides
+        
+        On Error GoTo HandleGenio_Err
+    
+        
 
 100     If UserList(UserIndex).incomingData.Length < 2 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
@@ -26476,6 +26566,13 @@ Private Sub HandleGenio(ByVal UserIndex As Integer)
 
         End With
 
+        
+        Exit Sub
+
+HandleGenio_Err:
+        Call RegistrarError(Err.Number, Err.description, "Protocol.HandleGenio", Erl)
+
+        
 End Sub
 
 Private Sub HandleCasamiento(ByVal UserIndex As Integer)
@@ -27791,6 +27888,10 @@ End Sub
 
 Private Sub HandleInvitarGrupo(ByVal UserIndex As Integer)
         'Author: Pablo Mercavides
+        
+        On Error GoTo HandleInvitarGrupo_Err
+    
+        
 
 100     If UserList(UserIndex).incomingData.Length < 2 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
@@ -27821,40 +27922,69 @@ Private Sub HandleInvitarGrupo(ByVal UserIndex As Integer)
         End With
 
 
+        
+        Exit Sub
+
+HandleInvitarGrupo_Err:
+        Call RegistrarError(Err.Number, Err.description, "Protocol.HandleInvitarGrupo", Erl)
+
+        
 End Sub
 
 Private Sub HandleMarcaDeClan(ByVal UserIndex As Integer)
         'Author: Pablo Mercavides
+        
+        On Error GoTo HandleMarcaDeClan_Err
+    
+        
 
-104     With UserList(UserIndex)
+100     With UserList(UserIndex)
 
             'Remove packet ID
-108         Call .incomingData.ReadInteger
+102         Call .incomingData.ReadInteger
         
-110         If .flags.Muerto = 1 Then
+104         If .flags.Muerto = 1 Then
                 'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!.", FontTypeNames.FONTTYPE_INFO)
-112             Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
+106             Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
        
-114         Call WriteWorkRequestTarget(UserIndex, eSkill.MarcaDeClan)
+108         Call WriteWorkRequestTarget(UserIndex, eSkill.MarcaDeClan)
 
         End With
 
+        
+        Exit Sub
+
+HandleMarcaDeClan_Err:
+        Call RegistrarError(Err.Number, Err.description, "Protocol.HandleMarcaDeClan", Erl)
+
+        
 End Sub
 
 Private Sub HandleMarcaDeGM(ByVal UserIndex As Integer)
         'Author: Pablo Mercavides
+        
+        On Error GoTo HandleMarcaDeGM_Err
+    
+        
 
 100     With UserList(UserIndex)
 
-106         Call .incomingData.ReadInteger
+102         Call .incomingData.ReadInteger
           
-108         Call WriteWorkRequestTarget(UserIndex, eSkill.MarcaDeGM)
+104         Call WriteWorkRequestTarget(UserIndex, eSkill.MarcaDeGM)
 
         End With
 
+        
+        Exit Sub
+
+HandleMarcaDeGM_Err:
+        Call RegistrarError(Err.Number, Err.description, "Protocol.HandleMarcaDeGM", Erl)
+
+        
 End Sub
 
 Public Sub WritePreguntaBox(ByVal UserIndex As Integer, ByVal message As String)
@@ -28260,35 +28390,46 @@ End Sub
 
 Private Sub HandleAbandonarGrupo(ByVal UserIndex As Integer)
         'Author: Pablo Mercavides
+        
+        On Error GoTo HandleAbandonarGrupo_Err
+    
+        
 
-104     With UserList(UserIndex)
+100     With UserList(UserIndex)
 
             'Remove packet ID
-108         Call .incomingData.ReadInteger
+102         Call .incomingData.ReadInteger
         
-110         If UserList(UserIndex).Grupo.Lider = UserIndex Then
+104         If UserList(UserIndex).Grupo.Lider = UserIndex Then
             
-112             Call FinalizarGrupo(UserIndex)
+106             Call FinalizarGrupo(UserIndex)
 
                 Dim i As Byte
             
-114             For i = 2 To UserList(UserIndex).Grupo.CantidadMiembros
-116                 Call WriteUbicacion(UserIndex, i, 0)
-118             Next i
+108             For i = 2 To UserList(UserIndex).Grupo.CantidadMiembros
+110                 Call WriteUbicacion(UserIndex, i, 0)
+112             Next i
 
-120             UserList(UserIndex).Grupo.CantidadMiembros = 0
-122             UserList(UserIndex).Grupo.EnGrupo = False
-124             UserList(UserIndex).Grupo.Lider = 0
-126             UserList(UserIndex).Grupo.PropuestaDe = 0
-128             Call WriteConsoleMsg(UserIndex, "Has disuelto el grupo.", FontTypeNames.FONTTYPE_INFOIAO)
-130             Call RefreshCharStatus(UserIndex)
+114             UserList(UserIndex).Grupo.CantidadMiembros = 0
+116             UserList(UserIndex).Grupo.EnGrupo = False
+118             UserList(UserIndex).Grupo.Lider = 0
+120             UserList(UserIndex).Grupo.PropuestaDe = 0
+122             Call WriteConsoleMsg(UserIndex, "Has disuelto el grupo.", FontTypeNames.FONTTYPE_INFOIAO)
+124             Call RefreshCharStatus(UserIndex)
             Else
-132             Call SalirDeGrupo(UserIndex)
+126             Call SalirDeGrupo(UserIndex)
 
             End If
 
         End With
 
+        
+        Exit Sub
+
+HandleAbandonarGrupo_Err:
+        Call RegistrarError(Err.Number, Err.description, "Protocol.HandleAbandonarGrupo", Erl)
+
+        
 End Sub
 
 Public Sub WriteUbicacion(ByVal UserIndex As Integer, ByVal Miembro As Byte, ByVal GPS As Integer)
@@ -28336,6 +28477,10 @@ End Sub
 
 Private Sub HandleHecharDeGrupo(ByVal UserIndex As Integer)
         'Author: Pablo Mercavides
+        
+        On Error GoTo HandleHecharDeGrupo_Err
+    
+        
 
 100     If UserList(UserIndex).incomingData.Length < 3 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
@@ -28346,20 +28491,31 @@ Private Sub HandleHecharDeGrupo(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'Remove packet ID
-108         Call .incomingData.ReadInteger
+106         Call .incomingData.ReadInteger
         
             Dim Indice As Byte
 
-110         Indice = .incomingData.ReadByte()
+108         Indice = .incomingData.ReadByte()
         
-112         Call HecharMiembro(UserIndex, Indice)
+110         Call HecharMiembro(UserIndex, Indice)
 
         End With
 
+        
+        Exit Sub
+
+HandleHecharDeGrupo_Err:
+        Call RegistrarError(Err.Number, Err.description, "Protocol.HandleHecharDeGrupo", Erl)
+
+        
 End Sub
 
 Private Sub HandleMacroPos(ByVal UserIndex As Integer)
         'Author: Pablo Mercavides
+        
+        On Error GoTo HandleMacroPos_Err
+    
+        
 
 100     If UserList(UserIndex).incomingData.Length < 4 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
@@ -28368,13 +28524,20 @@ Private Sub HandleMacroPos(ByVal UserIndex As Integer)
 
 104     With UserList(UserIndex)
             'Remove packet ID
-108         Call .incomingData.ReadInteger
+106         Call .incomingData.ReadInteger
 
-110         UserList(UserIndex).ChatCombate = .incomingData.ReadByte()
-112         UserList(UserIndex).ChatGlobal = .incomingData.ReadByte()
+108         UserList(UserIndex).ChatCombate = .incomingData.ReadByte()
+110         UserList(UserIndex).ChatGlobal = .incomingData.ReadByte()
 
         End With
 
+        
+        Exit Sub
+
+HandleMacroPos_Err:
+        Call RegistrarError(Err.Number, Err.description, "Protocol.HandleMacroPos", Erl)
+
+        
 End Sub
 
 Public Sub WriteCorreoPicOn(ByVal UserIndex As Integer)
@@ -28397,34 +28560,45 @@ End Sub
 
 Private Sub HandleSubastaInfo(ByVal UserIndex As Integer)
         'Author: Pablo Mercavides
+        
+        On Error GoTo HandleSubastaInfo_Err
+    
+        
 
-104     With UserList(UserIndex)
+100     With UserList(UserIndex)
 
             'Remove packet ID
-108         Call .incomingData.ReadInteger
+102         Call .incomingData.ReadInteger
         
-110         If Subasta.HaySubastaActiva Then
+104         If Subasta.HaySubastaActiva Then
 
-112             Call WriteConsoleMsg(UserIndex, "Subastador: " & Subasta.Subastador, FontTypeNames.FONTTYPE_SUBASTA)
-114             Call WriteConsoleMsg(UserIndex, "Objeto: " & ObjData(Subasta.ObjSubastado).name & " (" & Subasta.ObjSubastadoCantidad & ")", FontTypeNames.FONTTYPE_SUBASTA)
+106             Call WriteConsoleMsg(UserIndex, "Subastador: " & Subasta.Subastador, FontTypeNames.FONTTYPE_SUBASTA)
+108             Call WriteConsoleMsg(UserIndex, "Objeto: " & ObjData(Subasta.ObjSubastado).name & " (" & Subasta.ObjSubastadoCantidad & ")", FontTypeNames.FONTTYPE_SUBASTA)
 
-116             If Subasta.HuboOferta Then
-118                 Call WriteConsoleMsg(UserIndex, "Mejor oferta: " & Subasta.MejorOferta & " monedas de oro por " & Subasta.Comprador & ".", FontTypeNames.FONTTYPE_SUBASTA)
-120                 Call WriteConsoleMsg(UserIndex, "Podes realizar una oferta escribiendo /OFERTAR " & Subasta.MejorOferta + 100, FontTypeNames.FONTTYPE_SUBASTA)
+110             If Subasta.HuboOferta Then
+112                 Call WriteConsoleMsg(UserIndex, "Mejor oferta: " & Subasta.MejorOferta & " monedas de oro por " & Subasta.Comprador & ".", FontTypeNames.FONTTYPE_SUBASTA)
+114                 Call WriteConsoleMsg(UserIndex, "Podes realizar una oferta escribiendo /OFERTAR " & Subasta.MejorOferta + 100, FontTypeNames.FONTTYPE_SUBASTA)
                 Else
-122                 Call WriteConsoleMsg(UserIndex, "Oferta inicial: " & Subasta.OfertaInicial & " monedas de oro.", FontTypeNames.FONTTYPE_SUBASTA)
-124                 Call WriteConsoleMsg(UserIndex, "Podes realizar una oferta escribiendo /OFERTAR " & Subasta.OfertaInicial + 100, FontTypeNames.FONTTYPE_SUBASTA)
+116                 Call WriteConsoleMsg(UserIndex, "Oferta inicial: " & Subasta.OfertaInicial & " monedas de oro.", FontTypeNames.FONTTYPE_SUBASTA)
+118                 Call WriteConsoleMsg(UserIndex, "Podes realizar una oferta escribiendo /OFERTAR " & Subasta.OfertaInicial + 100, FontTypeNames.FONTTYPE_SUBASTA)
 
                 End If
 
-126             Call WriteConsoleMsg(UserIndex, "Tiempo Restante de subasta:  " & SumarTiempo(Subasta.TiempoRestanteSubasta), FontTypeNames.FONTTYPE_SUBASTA)
+120             Call WriteConsoleMsg(UserIndex, "Tiempo Restante de subasta:  " & SumarTiempo(Subasta.TiempoRestanteSubasta), FontTypeNames.FONTTYPE_SUBASTA)
             
             Else
-128             Call WriteConsoleMsg(UserIndex, "No hay ninguna subasta activa en este momento.", FontTypeNames.FONTTYPE_SUBASTA)
+122             Call WriteConsoleMsg(UserIndex, "No hay ninguna subasta activa en este momento.", FontTypeNames.FONTTYPE_SUBASTA)
 
             End If
 
         End With
+        
+        Exit Sub
+
+HandleSubastaInfo_Err:
+        Call RegistrarError(Err.Number, Err.description, "Protocol.HandleSubastaInfo", Erl)
+
+        
 End Sub
 
 Private Sub HandleScrollInfo(ByVal UserIndex As Integer)
@@ -28828,16 +29002,20 @@ End Sub
 
 Private Sub HandleEventoInfo(ByVal UserIndex As Integer)
         'Author: Pablo Mercavides
+        
+        On Error GoTo HandleEventoInfo_Err
+    
+        
 
-104     With UserList(UserIndex)
+100     With UserList(UserIndex)
 
             'Remove packet ID
-108         Call .incomingData.ReadInteger
+102         Call .incomingData.ReadInteger
 
-110         If EventoActivo Then
-112             Call WriteConsoleMsg(UserIndex, PublicidadEvento & ". Tiempo restante: " & TiempoRestanteEvento & " minuto(s).", FontTypeNames.FONTTYPE_New_Eventos)
+104         If EventoActivo Then
+106             Call WriteConsoleMsg(UserIndex, PublicidadEvento & ". Tiempo restante: " & TiempoRestanteEvento & " minuto(s).", FontTypeNames.FONTTYPE_New_Eventos)
             Else
-114             Call WriteConsoleMsg(UserIndex, "Eventos> Actualmente no hay ningun evento en curso.", FontTypeNames.FONTTYPE_New_Eventos)
+108             Call WriteConsoleMsg(UserIndex, "Eventos> Actualmente no hay ningun evento en curso.", FontTypeNames.FONTTYPE_New_Eventos)
 
             End If
         
@@ -28847,45 +29025,52 @@ Private Sub HandleEventoInfo(ByVal UserIndex As Integer)
 
             Dim HoraProximo As Byte
    
-116         If Not HoraEvento + 1 >= 24 Then
+110         If Not HoraEvento + 1 >= 24 Then
    
-118             For i = HoraEvento + 1 To 23
+112             For i = HoraEvento + 1 To 23
 
-120                 If Evento(i).Tipo <> 0 Then
-122                     encontre = True
-124                     HoraProximo = i
+114                 If Evento(i).Tipo <> 0 Then
+116                     encontre = True
+118                     HoraProximo = i
                         Exit For
 
                     End If
 
-126             Next i
+120             Next i
 
             End If
         
-128         If encontre = False Then
+122         If encontre = False Then
 
-130             For i = 0 To HoraEvento
+124             For i = 0 To HoraEvento
 
-132                 If Evento(i).Tipo <> 0 Then
-134                     encontre = True
-136                     HoraProximo = i
+126                 If Evento(i).Tipo <> 0 Then
+128                     encontre = True
+130                     HoraProximo = i
                         Exit For
 
                     End If
 
-138             Next i
+132             Next i
 
             End If
         
-140         If encontre Then
-142             Call WriteConsoleMsg(UserIndex, "Eventos> El proximo evento " & DescribirEvento(HoraProximo) & " iniciara a las " & HoraProximo & ":00 horas.", FontTypeNames.FONTTYPE_New_Eventos)
+134         If encontre Then
+136             Call WriteConsoleMsg(UserIndex, "Eventos> El proximo evento " & DescribirEvento(HoraProximo) & " iniciara a las " & HoraProximo & ":00 horas.", FontTypeNames.FONTTYPE_New_Eventos)
             Else
-144             Call WriteConsoleMsg(UserIndex, "Eventos> No hay eventos proximos.", FontTypeNames.FONTTYPE_New_Eventos)
+138             Call WriteConsoleMsg(UserIndex, "Eventos> No hay eventos proximos.", FontTypeNames.FONTTYPE_New_Eventos)
 
             End If
 
         End With
 
+        
+        Exit Sub
+
+HandleEventoInfo_Err:
+        Call RegistrarError(Err.Number, Err.description, "Protocol.HandleEventoInfo", Erl)
+
+        
 End Sub
 
 Private Sub HandleCrearEvento(ByVal UserIndex As Integer)
@@ -29020,84 +29205,117 @@ ErrHandler:
 End Sub
 
 Private Sub HandleTraerShop(ByVal UserIndex As Integer)
-    'Author: Pablo Mercavides
+        'Author: Pablo Mercavides
+        
+        On Error GoTo HandleTraerShop_Err
     
-    'Remove packet ID
-    Call UserList(UserIndex).incomingData.ReadInteger
+        
     
-    If UserList(UserIndex).flags.BattleModo = 1 Then
-        Call WriteConsoleMsg(UserIndex, "No disponible aquí.", FontTypeNames.FONTTYPE_INFOIAO)
-    Else
-        Call WriteShop(UserIndex)
-    End If
+        'Remove packet ID
+100     Call UserList(UserIndex).incomingData.ReadInteger
+    
+102     If UserList(UserIndex).flags.BattleModo = 1 Then
+104         Call WriteConsoleMsg(UserIndex, "No disponible aquí.", FontTypeNames.FONTTYPE_INFOIAO)
+        Else
+106         Call WriteShop(UserIndex)
+        End If
 
+        
+        Exit Sub
+
+HandleTraerShop_Err:
+        Call RegistrarError(Err.Number, Err.description, "Protocol.HandleTraerShop", Erl)
+
+        
 End Sub
 
 Private Sub HandleTraerRanking(ByVal UserIndex As Integer)
-    'Author: Pablo Mercavides
-
-    'Remove packet ID
-    Call UserList(UserIndex).incomingData.ReadInteger
+        'Author: Pablo Mercavides
+        
+        On Error GoTo HandleTraerRanking_Err
     
-    Call WriteRanking(UserIndex)
+        
+
+        'Remove packet ID
+100     Call UserList(UserIndex).incomingData.ReadInteger
+    
+102     Call WriteRanking(UserIndex)
+        
+        
+        Exit Sub
+
+HandleTraerRanking_Err:
+        Call RegistrarError(Err.Number, Err.description, "Protocol.HandleTraerRanking", Erl)
+
         
 End Sub
 
 Private Sub HandlePareja(ByVal UserIndex As Integer)
         'Author: Pablo Mercavides
+        
+        On Error GoTo HandlePareja_Err
+    
+        
 
-104     With UserList(UserIndex)
+100     With UserList(UserIndex)
 
             'Remove packet ID
-108         Call .incomingData.ReadInteger
+102         Call .incomingData.ReadInteger
         
             Dim parejaindex As Integer
 
-110         If Not UserList(UserIndex).flags.BattleModo Then
+104         If Not UserList(UserIndex).flags.BattleModo Then
                 
-112             If UserList(UserIndex).donador.activo = 1 Then
-114                 If MapInfo(UserList(UserIndex).Pos.Map).Seguro = 1 Then
-116                     If UserList(UserIndex).flags.Casado = 1 Then
-118                         parejaindex = NameIndex(UserList(UserIndex).flags.Pareja)
+106             If UserList(UserIndex).donador.activo = 1 Then
+108                 If MapInfo(UserList(UserIndex).Pos.Map).Seguro = 1 Then
+110                     If UserList(UserIndex).flags.Casado = 1 Then
+112                         parejaindex = NameIndex(UserList(UserIndex).flags.Pareja)
                         
-120                         If parejaindex > 0 Then
-122                             If Not UserList(parejaindex).flags.BattleModo Then
-124                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Runa, 600, False))
-126                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(UserList(UserIndex).Char.CharIndex, 600, Accion_Barra.GoToPareja))
-128                                 UserList(UserIndex).Accion.AccionPendiente = True
-130                                 UserList(UserIndex).Accion.Particula = ParticulasIndex.Runa
-132                                 UserList(UserIndex).Accion.TipoAccion = Accion_Barra.GoToPareja
+114                         If parejaindex > 0 Then
+116                             If Not UserList(parejaindex).flags.BattleModo Then
+118                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Runa, 600, False))
+120                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(UserList(UserIndex).Char.CharIndex, 600, Accion_Barra.GoToPareja))
+122                                 UserList(UserIndex).Accion.AccionPendiente = True
+124                                 UserList(UserIndex).Accion.Particula = ParticulasIndex.Runa
+126                                 UserList(UserIndex).Accion.TipoAccion = Accion_Barra.GoToPareja
                                 Else
-134                                 Call WriteConsoleMsg(UserIndex, "Tu pareja esta en modo battle. No podés teletransportarte hacia ella.", FontTypeNames.FONTTYPE_INFOIAO)
+128                                 Call WriteConsoleMsg(UserIndex, "Tu pareja esta en modo battle. No podés teletransportarte hacia ella.", FontTypeNames.FONTTYPE_INFOIAO)
 
                                 End If
                                 
                             Else
-136                             Call WriteConsoleMsg(UserIndex, "Tu pareja no esta online.", FontTypeNames.FONTTYPE_INFOIAO)
+130                             Call WriteConsoleMsg(UserIndex, "Tu pareja no esta online.", FontTypeNames.FONTTYPE_INFOIAO)
 
                             End If
 
                         Else
-138                         Call WriteConsoleMsg(UserIndex, "No estas casado con nadie.", FontTypeNames.FONTTYPE_INFOIAO)
+132                         Call WriteConsoleMsg(UserIndex, "No estas casado con nadie.", FontTypeNames.FONTTYPE_INFOIAO)
 
                         End If
 
                     Else
-140                     Call WriteConsoleMsg(UserIndex, "Solo disponible en zona segura.", FontTypeNames.FONTTYPE_INFOIAO)
+134                     Call WriteConsoleMsg(UserIndex, "Solo disponible en zona segura.", FontTypeNames.FONTTYPE_INFOIAO)
 
                     End If
                 
                 Else
-142                 Call WriteConsoleMsg(UserIndex, "Opcion disponible unicamente para usuarios donadores.", FontTypeNames.FONTTYPE_INFOIAO)
+136                 Call WriteConsoleMsg(UserIndex, "Opcion disponible unicamente para usuarios donadores.", FontTypeNames.FONTTYPE_INFOIAO)
 
                 End If
 
             Else
-144             Call WriteConsoleMsg(UserIndex, "No podés usar esta opciín en el battle.", FontTypeNames.FONTTYPE_INFOIAO)
+138             Call WriteConsoleMsg(UserIndex, "No podés usar esta opciín en el battle.", FontTypeNames.FONTTYPE_INFOIAO)
         
             End If
 
         End With
+        
+        Exit Sub
+
+HandlePareja_Err:
+        Call RegistrarError(Err.Number, Err.description, "Protocol.HandlePareja", Erl)
+
+        
 End Sub
 
 Public Sub WriteShop(ByVal UserIndex As Integer)

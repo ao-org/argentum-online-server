@@ -50,471 +50,603 @@ Private m_str()                      As Integer
 Private m_length                     As Long
 
 Public Function GetParserErrors() As String
-    GetParserErrors = m_parserrors
+        
+        On Error GoTo GetParserErrors_Err
+    
+        
+100     GetParserErrors = m_parserrors
+        
+        Exit Function
+
+GetParserErrors_Err:
+        Call RegistrarError(Err.Number, Err.description, "mod_JSON.GetParserErrors", Erl)
+
+        
 End Function
 
 Public Function parse(ByRef str As String) As Object
+        
+        On Error GoTo parse_Err
+    
+        
 
-    m_decSep = GetRegionalSettings(LOCALE_SDECIMAL)
-    m_groupSep = GetRegionalSettings(LOCALE_SGROUPING)
+100     m_decSep = GetRegionalSettings(LOCALE_SDECIMAL)
+102     m_groupSep = GetRegionalSettings(LOCALE_SGROUPING)
 
-    Dim index As Long
-        index = 1
+        Dim index As Long
+104         index = 1
 
-    Call GenerateStringArray(str)
+106     Call GenerateStringArray(str)
 
-    m_parserrors = vbNullString
+108     m_parserrors = vbNullString
 
-    On Error Resume Next
+    
 
-    Call skipChar(index)
+110     Call skipChar(index)
 
-    Select Case m_str(index)
+112     Select Case m_str(index)
 
-        Case A_SQUARE_BRACKET_OPEN
-            Set parse = parseArray(str, index)
+            Case A_SQUARE_BRACKET_OPEN
+114             Set parse = parseArray(str, index)
 
-        Case A_CURLY_BRACKET_OPEN
-            Set parse = parseObject(str, index)
+116         Case A_CURLY_BRACKET_OPEN
+118             Set parse = parseObject(str, index)
 
-        Case Else
-            m_parserrors = "JSON Invalido"
+120         Case Else
+122             m_parserrors = "JSON Invalido"
 
-    End Select
+        End Select
 
-    'clean array
-    ReDim m_str(1)
+        'clean array
+124     ReDim m_str(1)
 
+        
+        Exit Function
+
+parse_Err:
+        Call RegistrarError(Err.Number, Err.description, "mod_JSON.parse", Erl)
+
+        
 End Function
 
 Private Sub GenerateStringArray(ByRef str As String)
+        
+        On Error GoTo GenerateStringArray_Err
+    
+        
 
-    Dim i As Long
+        Dim i As Long
 
-    m_length = Len(str)
-    ReDim m_str(1 To m_length)
+100     m_length = Len(str)
+102     ReDim m_str(1 To m_length)
 
-    For i = 1 To m_length
-        m_str(i) = AscW(mid$(str, i, 1))
-    Next i
+104     For i = 1 To m_length
+106         m_str(i) = AscW(mid$(str, i, 1))
+108     Next i
 
+        
+        Exit Sub
+
+GenerateStringArray_Err:
+        Call RegistrarError(Err.Number, Err.description, "mod_JSON.GenerateStringArray", Erl)
+
+        
 End Sub
 
 Private Function parseObject(ByRef str As String, ByRef index As Long) As Dictionary
-
-    Set parseObject = New Dictionary
-
-    Dim sKey    As String
-    Dim charint As Integer
-
-    Call skipChar(index)
-
-    If m_str(index) <> A_CURLY_BRACKET_OPEN Then
-        m_parserrors = m_parserrors & "Objeto invalido en la posicion " & index & " : " & mid$(str, index) & vbCrLf
-        Exit Function
-
-    End If
-
-    index = index + 1
-
-    Do
-        Call skipChar(index)
+        
+        On Error GoTo parseObject_Err
     
-        charint = m_str(index)
         
-        Select Case charint
-        
-            Case A_COMMA
-                index = index + 1
-                Call skipChar(index)
-            
-            Case A_CURLY_BRACKET_CLOSE
-                index = index + 1
-                Exit Do
-                
-            Case index > m_length
-                m_parserrors = m_parserrors & "Falta '}': " & Right$(str, 20) & vbCrLf
-                Exit Do
-                
-        End Select
 
-        ' add key/value pair
-        sKey = parseKey(index)
+100     Set parseObject = New Dictionary
 
-        On Error Resume Next
+        Dim sKey    As String
+        Dim charint As Integer
 
-        Call parseObject.Add(sKey, parseValue(str, index))
+102     Call skipChar(index)
 
-        If Err.Number <> 0 Then
-            m_parserrors = m_parserrors & Err.description & ": " & sKey & vbCrLf
-            Exit Do
+104     If m_str(index) <> A_CURLY_BRACKET_OPEN Then
+106         m_parserrors = m_parserrors & "Objeto invalido en la posicion " & index & " : " & mid$(str, index) & vbCrLf
+            Exit Function
+
         End If
 
-    Loop
+108     index = index + 1
 
+        Do
+110         Call skipChar(index)
+    
+112         charint = m_str(index)
+        
+114         Select Case charint
+        
+                Case A_COMMA
+116                 index = index + 1
+118                 Call skipChar(index)
+            
+120             Case A_CURLY_BRACKET_CLOSE
+122                 index = index + 1
+                    Exit Do
+                
+124             Case index > m_length
+126                 m_parserrors = m_parserrors & "Falta '}': " & Right$(str, 20) & vbCrLf
+                    Exit Do
+                
+            End Select
+
+            ' add key/value pair
+128         sKey = parseKey(index)
+
+        
+
+130         Call parseObject.Add(sKey, parseValue(str, index))
+
+132         If Err.Number <> 0 Then
+134             m_parserrors = m_parserrors & Err.description & ": " & sKey & vbCrLf
+                Exit Do
+            End If
+
+        Loop
+
+        
+        Exit Function
+
+parseObject_Err:
+        Call RegistrarError(Err.Number, Err.description, "mod_JSON.parseObject", Erl)
+
+        
 End Function
 
 Private Function parseArray(ByRef str As String, ByRef index As Long) As Collection
+        
+        On Error GoTo parseArray_Err
+    
+        
 
-    Dim charint As Integer
+        Dim charint As Integer
 
-    Set parseArray = New Collection
+100     Set parseArray = New Collection
 
-    Call skipChar(index)
+102     Call skipChar(index)
 
-    If mid$(str, index, 1) <> "[" Then
-        m_parserrors = m_parserrors & "Array invalido en la posicion " & index & " : " + mid$(str, index, 20) & vbCrLf
-        Exit Function
-    End If
+104     If mid$(str, index, 1) <> "[" Then
+106         m_parserrors = m_parserrors & "Array invalido en la posicion " & index & " : " + mid$(str, index, 20) & vbCrLf
+            Exit Function
+        End If
    
-    index = index + 1
+108     index = index + 1
 
-    Do
-        Call skipChar(index)
+        Do
+110         Call skipChar(index)
     
-        charint = m_str(index)
+112         charint = m_str(index)
     
-        If charint = A_SQUARE_BRACKET_CLOSE Then
-            index = index + 1
-            Exit Do
-        ElseIf charint = A_COMMA Then
-            index = index + 1
-            Call skipChar(index)
-        ElseIf index > m_length Then
-            m_parserrors = m_parserrors & "Falta ']': " & Right$(str, 20) & vbCrLf
-            Exit Do
-        End If
+114         If charint = A_SQUARE_BRACKET_CLOSE Then
+116             index = index + 1
+                Exit Do
+118         ElseIf charint = A_COMMA Then
+120             index = index + 1
+122             Call skipChar(index)
+124         ElseIf index > m_length Then
+126             m_parserrors = m_parserrors & "Falta ']': " & Right$(str, 20) & vbCrLf
+                Exit Do
+            End If
     
-        'add value
-        On Error Resume Next
+            'add value
+        
 
-        Call parseArray.Add(parseValue(str, index))
+128         Call parseArray.Add(parseValue(str, index))
 
-        If Err.Number <> 0 Then
-            m_parserrors = m_parserrors & Err.description & ": " & mid$(str, index, 20) & vbCrLf
-            Exit Do
+130         If Err.Number <> 0 Then
+132             m_parserrors = m_parserrors & Err.description & ": " & mid$(str, index, 20) & vbCrLf
+                Exit Do
 
-        End If
+            End If
 
-    Loop
+        Loop
 
+        
+        Exit Function
+
+parseArray_Err:
+        Call RegistrarError(Err.Number, Err.description, "mod_JSON.parseArray", Erl)
+
+        
 End Function
 
 Private Function parseValue(ByRef str As String, ByRef index As Long)
+        
+        On Error GoTo parseValue_Err
+    
+        
 
-    Call skipChar(index)
+100     Call skipChar(index)
 
-    Select Case m_str(index)
+102     Select Case m_str(index)
 
-        Case A_DOUBLE_QUOTE, A_SINGLE_QUOTE
-            parseValue = parseString(str, index)
-            Exit Function
+            Case A_DOUBLE_QUOTE, A_SINGLE_QUOTE
+104             parseValue = parseString(str, index)
+                Exit Function
 
-        Case A_SQUARE_BRACKET_OPEN
-            Set parseValue = parseArray(str, index)
-            Exit Function
+106         Case A_SQUARE_BRACKET_OPEN
+108             Set parseValue = parseArray(str, index)
+                Exit Function
 
-        Case A_t, A_f
-            parseValue = parseBoolean(str, index)
-            Exit Function
+110         Case A_t, A_f
+112             parseValue = parseBoolean(str, index)
+                Exit Function
 
-        Case A_n
-            parseValue = parseNull(str, index)
-            Exit Function
+114         Case A_n
+116             parseValue = parseNull(str, index)
+                Exit Function
 
-        Case A_CURLY_BRACKET_OPEN
-            Set parseValue = parseObject(str, index)
-            Exit Function
+118         Case A_CURLY_BRACKET_OPEN
+120             Set parseValue = parseObject(str, index)
+                Exit Function
 
-        Case Else
-            parseValue = parseNumber(str, index)
-            Exit Function
+122         Case Else
+124             parseValue = parseNumber(str, index)
+                Exit Function
 
-    End Select
+        End Select
 
+        
+        Exit Function
+
+parseValue_Err:
+        Call RegistrarError(Err.Number, Err.description, "mod_JSON.parseValue", Erl)
+
+        
 End Function
 
 Private Function parseString(ByRef str As String, ByRef index As Long) As String
+        
+        On Error GoTo parseString_Err
+    
+        
 
-    Dim quoteint As Integer
-    Dim charint  As Integer
-    Dim Code     As String
+        Dim quoteint As Integer
+        Dim charint  As Integer
+        Dim code     As String
    
-    Call skipChar(index)
+100     Call skipChar(index)
    
-    quoteint = m_str(index)
+102     quoteint = m_str(index)
    
-    index = index + 1
+104     index = index + 1
    
-    Do While index > 0 And index <= m_length
+106     Do While index > 0 And index <= m_length
    
-        charint = m_str(index)
+108         charint = m_str(index)
       
-        Select Case charint
+110         Select Case charint
 
-            Case A_BACKSLASH
+                Case A_BACKSLASH
 
-                index = index + 1
-                charint = m_str(index)
+112                 index = index + 1
+114                 charint = m_str(index)
 
-                Select Case charint
+116                 Select Case charint
 
-                    Case A_DOUBLE_QUOTE, A_BACKSLASH, A_FORWARDSLASH, A_SINGLE_QUOTE
-                        parseString = parseString & ChrW$(charint)
-                        index = index + 1
+                        Case A_DOUBLE_QUOTE, A_BACKSLASH, A_FORWARDSLASH, A_SINGLE_QUOTE
+118                         parseString = parseString & ChrW$(charint)
+120                         index = index + 1
 
-                    Case A_b
-                        parseString = parseString & vbBack
-                        index = index + 1
+122                     Case A_b
+124                         parseString = parseString & vbBack
+126                         index = index + 1
 
-                    Case A_f
-                        parseString = parseString & vbFormFeed
-                        index = index + 1
+128                     Case A_f
+130                         parseString = parseString & vbFormFeed
+132                         index = index + 1
 
-                    Case A_n
-                        parseString = parseString & vbLf
-                        index = index + 1
+134                     Case A_n
+136                         parseString = parseString & vbLf
+138                         index = index + 1
 
-                    Case A_r
-                        parseString = parseString & vbCr
-                        index = index + 1
+140                     Case A_r
+142                         parseString = parseString & vbCr
+144                         index = index + 1
 
-                    Case A_t
-                        parseString = parseString & vbTab
-                        index = index + 1
+146                     Case A_t
+148                         parseString = parseString & vbTab
+150                         index = index + 1
 
-                    Case A_u
-                        index = index + 1
-                        Code = mid$(str, index, 4)
+152                     Case A_u
+154                         index = index + 1
+156                         code = mid$(str, index, 4)
 
-                        parseString = parseString & ChrW$(val("&h" + Code))
-                        index = index + 4
+158                         parseString = parseString & ChrW$(val("&h" + code))
+160                         index = index + 4
 
-                End Select
+                    End Select
 
-            Case quoteint
-                index = index + 1
-                Exit Function
+162             Case quoteint
+164                 index = index + 1
+                    Exit Function
 
-            Case Else
-                parseString = parseString & ChrW$(charint)
-                index = index + 1
+166             Case Else
+168                 parseString = parseString & ChrW$(charint)
+170                 index = index + 1
 
-        End Select
+            End Select
 
-    Loop
+        Loop
    
+        
+        Exit Function
+
+parseString_Err:
+        Call RegistrarError(Err.Number, Err.description, "mod_JSON.parseString", Erl)
+
+        
 End Function
 
 Private Function parseNumber(ByRef str As String, ByRef index As Long)
+        
+        On Error GoTo parseNumber_Err
+    
+        
 
-    Dim Value As String
-    Dim Char  As String
+        Dim Value As String
+        Dim Char  As String
 
-    Call skipChar(index)
+100     Call skipChar(index)
 
-    Do While index > 0 And index <= m_length
-        Char = mid$(str, index, 1)
+102     Do While index > 0 And index <= m_length
+104         Char = mid$(str, index, 1)
 
-        If InStr("+-0123456789.eE", Char) Then
-            Value = Value & Char
-            index = index + 1
-        Else
+106         If InStr("+-0123456789.eE", Char) Then
+108             Value = Value & Char
+110             index = index + 1
+            Else
 
-            'check what is the grouping seperator
-            If Not m_decSep = "." Then
-                Value = Replace(Value, ".", m_decSep)
+                'check what is the grouping seperator
+112             If Not m_decSep = "." Then
+114                 Value = Replace(Value, ".", m_decSep)
+
+                End If
+     
+116             If m_groupSep = "." Then
+118                 Value = Replace(Value, ".", m_decSep)
+
+                End If
+     
+120             parseNumber = CDec(Value)
+                Exit Function
 
             End If
-     
-            If m_groupSep = "." Then
-                Value = Replace(Value, ".", m_decSep)
 
-            End If
-     
-            parseNumber = CDec(Value)
-            Exit Function
-
-        End If
-
-    Loop
+        Loop
    
+        
+        Exit Function
+
+parseNumber_Err:
+        Call RegistrarError(Err.Number, Err.description, "mod_JSON.parseNumber", Erl)
+
+        
 End Function
 
 Private Function parseBoolean(ByRef str As String, ByRef index As Long) As Boolean
+        
+        On Error GoTo parseBoolean_Err
+    
+        
 
-    Call skipChar(index)
+100     Call skipChar(index)
    
-    If mid$(str, index, 4) = "true" Then
-        parseBoolean = True
-        index = index + 4
-    ElseIf mid$(str, index, 5) = "false" Then
-        parseBoolean = False
-        index = index + 5
-    Else
-        m_parserrors = m_parserrors & "Boolean invalido en la posicion " & index & " : " & mid$(str, index) & vbCrLf
+102     If mid$(str, index, 4) = "true" Then
+104         parseBoolean = True
+106         index = index + 4
+108     ElseIf mid$(str, index, 5) = "false" Then
+110         parseBoolean = False
+112         index = index + 5
+        Else
+114         m_parserrors = m_parserrors & "Boolean invalido en la posicion " & index & " : " & mid$(str, index) & vbCrLf
 
-    End If
+        End If
 
+        
+        Exit Function
+
+parseBoolean_Err:
+        Call RegistrarError(Err.Number, Err.description, "mod_JSON.parseBoolean", Erl)
+
+        
 End Function
 
 Private Function parseNull(ByRef str As String, ByRef index As Long)
+        
+        On Error GoTo parseNull_Err
+    
+        
 
-    Call skipChar(index)
+100     Call skipChar(index)
    
-    If mid$(str, index, 4) = "null" Then
-        parseNull = Null
-        index = index + 4
-    Else
-        m_parserrors = m_parserrors & "Valor nulo invalido en la posicion " & index & " : " & mid$(str, index) & vbCrLf
+102     If mid$(str, index, 4) = "null" Then
+104         parseNull = Null
+106         index = index + 4
+        Else
+108         m_parserrors = m_parserrors & "Valor nulo invalido en la posicion " & index & " : " & mid$(str, index) & vbCrLf
 
-    End If
+        End If
 
+        
+        Exit Function
+
+parseNull_Err:
+        Call RegistrarError(Err.Number, Err.description, "mod_JSON.parseNull", Erl)
+
+        
 End Function
 
 Private Function parseKey(ByRef index As Long) As String
-
-    Dim dquote  As Boolean
-    Dim squote  As Boolean
-    Dim charint As Integer
-   
-    Call skipChar(index)
-   
-    Do While index > 0 And index <= m_length
+        
+        On Error GoTo parseKey_Err
     
-        charint = m_str(index)
         
-        Select Case charint
 
-            Case A_DOUBLE_QUOTE
-                dquote = Not dquote
-                index = index + 1
+        Dim dquote  As Boolean
+        Dim squote  As Boolean
+        Dim charint As Integer
+   
+100     Call skipChar(index)
+   
+102     Do While index > 0 And index <= m_length
+    
+104         charint = m_str(index)
+        
+106         Select Case charint
 
-                If Not dquote Then
+                Case A_DOUBLE_QUOTE
+108                 dquote = Not dquote
+110                 index = index + 1
+
+112                 If Not dquote Then
             
-                    Call skipChar(index)
+114                     Call skipChar(index)
                 
-                    If m_str(index) <> A_COLON Then
-                        m_parserrors = m_parserrors & "Valor clave invalido en la posicion " & index & " : " & parseKey & vbCrLf
-                        Exit Do
+116                     If m_str(index) <> A_COLON Then
+118                         m_parserrors = m_parserrors & "Valor clave invalido en la posicion " & index & " : " & parseKey & vbCrLf
+                            Exit Do
+
+                        End If
 
                     End If
 
-                End If
+120             Case A_SINGLE_QUOTE
+122                 squote = Not squote
+124                 index = index + 1
 
-            Case A_SINGLE_QUOTE
-                squote = Not squote
-                index = index + 1
-
-                If Not squote Then
-                    Call skipChar(index)
+126                 If Not squote Then
+128                     Call skipChar(index)
                 
-                    If m_str(index) <> A_COLON Then
-                        m_parserrors = m_parserrors & "Valor clave invalido en la posicion " & index & " : " & parseKey & vbCrLf
+130                     If m_str(index) <> A_COLON Then
+132                         m_parserrors = m_parserrors & "Valor clave invalido en la posicion " & index & " : " & parseKey & vbCrLf
+                            Exit Do
+
+                        End If
+                
+                    End If
+        
+134             Case A_COLON
+136                 index = index + 1
+
+138                 If Not dquote And Not squote Then
                         Exit Do
+                    Else
+140                     parseKey = parseKey & ChrW$(charint)
 
                     End If
-                
-                End If
-        
-            Case A_COLON
-                index = index + 1
 
-                If Not dquote And Not squote Then
-                    Exit Do
-                Else
-                    parseKey = parseKey & ChrW$(charint)
-
-                End If
-
-            Case Else
+142             Case Else
             
-                If A_VBCRLF = charint Then
-                ElseIf A_VBCR = charint Then
-                ElseIf A_VBLF = charint Then
-                ElseIf A_VBTAB = charint Then
-                ElseIf A_SPACE = charint Then
-                Else
-                    parseKey = parseKey & ChrW$(charint)
+144                 If A_VBCRLF = charint Then
+146                 ElseIf A_VBCR = charint Then
+148                 ElseIf A_VBLF = charint Then
+150                 ElseIf A_VBTAB = charint Then
+152                 ElseIf A_SPACE = charint Then
+                    Else
+154                     parseKey = parseKey & ChrW$(charint)
 
-                End If
+                    End If
 
-                index = index + 1
+156                 index = index + 1
 
-        End Select
+            End Select
 
-    Loop
+        Loop
 
+        
+        Exit Function
+
+parseKey_Err:
+        Call RegistrarError(Err.Number, Err.description, "mod_JSON.parseKey", Erl)
+
+        
 End Function
 
 Private Sub skipChar(ByRef index As Long)
-
-    Dim bComment      As Boolean
-    Dim bStartComment As Boolean
-    Dim bLongComment  As Boolean
-
-    Do While index > 0 And index <= m_length
-    
-        Select Case m_str(index)
-
-            Case A_VBCR, A_VBLF
-
-                If Not bLongComment Then
-                    bStartComment = False
-                    bComment = False
-
-                End If
-    
-            Case A_VBTAB, A_SPACE, A_BRACKET_OPEN, A_BRACKET_CLOSE
-                'do nothing
         
-            Case A_FORWARDSLASH
+        On Error GoTo skipChar_Err
+    
+        
 
-                If Not bLongComment Then
-                    If bStartComment Then
-                        bStartComment = False
-                        bComment = True
+        Dim bComment      As Boolean
+        Dim bStartComment As Boolean
+        Dim bLongComment  As Boolean
+
+100     Do While index > 0 And index <= m_length
+    
+102         Select Case m_str(index)
+
+                Case A_VBCR, A_VBLF
+
+104                 If Not bLongComment Then
+106                     bStartComment = False
+108                     bComment = False
+
+                    End If
+    
+110             Case A_VBTAB, A_SPACE, A_BRACKET_OPEN, A_BRACKET_CLOSE
+                    'do nothing
+        
+112             Case A_FORWARDSLASH
+
+114                 If Not bLongComment Then
+116                     If bStartComment Then
+118                         bStartComment = False
+120                         bComment = True
+                        Else
+122                         bStartComment = True
+124                         bComment = False
+126                         bLongComment = False
+
+                        End If
+
                     Else
-                        bStartComment = True
-                        bComment = False
-                        bLongComment = False
+
+128                     If bStartComment Then
+130                         bLongComment = False
+132                         bStartComment = False
+134                         bComment = False
+
+                        End If
 
                     End If
 
-                Else
+136             Case A_ASTERIX
 
-                    If bStartComment Then
-                        bLongComment = False
-                        bStartComment = False
-                        bComment = False
+138                 If bStartComment Then
+140                     bStartComment = False
+142                     bComment = True
+144                     bLongComment = True
+                    Else
+146                     bStartComment = True
 
                     End If
 
-                End If
-
-            Case A_ASTERIX
-
-                If bStartComment Then
-                    bStartComment = False
-                    bComment = True
-                    bLongComment = True
-                Else
-                    bStartComment = True
-
-                End If
-
-            Case Else
+148             Case Else
         
-                If Not bComment Then
-                    Exit Do
+150                 If Not bComment Then
+                        Exit Do
 
-                End If
+                    End If
 
-        End Select
+            End Select
 
-        index = index + 1
-    Loop
+152         index = index + 1
+        Loop
 
+        
+        Exit Sub
+
+skipChar_Err:
+        Call RegistrarError(Err.Number, Err.description, "mod_JSON.skipChar", Erl)
+
+        
 End Sub
 
 Public Function GetRegionalSettings(ByVal regionalsetting As Long) As String
@@ -559,92 +691,114 @@ End Function
 '********************************************************************************************************
 
 Private Function Encode(str) As String
+        
+        On Error GoTo Encode_Err
+    
+        
 
-    Dim SB  As New cStringBuilder
+        Dim SB  As New cStringBuilder
 
-    Dim i   As Long
-    Dim j   As Long
+        Dim i   As Long
+        Dim j   As Long
 
-    Dim aL1 As Variant
-    Dim aL2 As Variant
+        Dim aL1 As Variant
+        Dim aL2 As Variant
 
-    Dim c   As String
-    Dim p   As Boolean
+        Dim c   As String
+        Dim p   As Boolean
 
-    aL1 = Array(&H22, &H5C, &H2F, &H8, &HC, &HA, &HD, &H9)
-    aL2 = Array(&H22, &H5C, &H2F, &H62, &H66, &H6E, &H72, &H74)
+100     aL1 = Array(&H22, &H5C, &H2F, &H8, &HC, &HA, &HD, &H9)
+102     aL2 = Array(&H22, &H5C, &H2F, &H62, &H66, &H6E, &H72, &H74)
 
-    For i = 1 To LenB(str)
-        p = True
-        c = mid$(str, i, 1)
+104     For i = 1 To LenB(str)
+106         p = True
+108         c = mid$(str, i, 1)
 
-        For j = 0 To 7
+110         For j = 0 To 7
 
-            If c = Chr$(aL1(j)) Then
-                Call SB.Append("\" & Chr$(aL2(j)))
-                p = False
-                Exit For
+112             If c = Chr$(aL1(j)) Then
+114                 Call SB.Append("\" & Chr$(aL2(j)))
+116                 p = False
+                    Exit For
+
+                End If
+
+            Next
+
+118         If p Then
+
+                Dim a As Integer
+120                 a = AscW(c)
+
+122             If a > 31 And a < 127 Then
+124                 Call SB.Append(c)
+126             ElseIf a > -1 Or a < 65535 Then
+128                 Call SB.Append("\u" & String$(4 - LenB(hex$(a)), "0") & hex$(a))
+                End If
 
             End If
 
         Next
-
-        If p Then
-
-            Dim a As Integer
-                a = AscW(c)
-
-            If a > 31 And a < 127 Then
-                Call SB.Append(c)
-            ElseIf a > -1 Or a < 65535 Then
-                Call SB.Append("\u" & String$(4 - LenB(hex$(a)), "0") & hex$(a))
-            End If
-
-        End If
-
-    Next
    
-    Encode = SB.toString
+130     Encode = SB.toString
     
-    Set SB = Nothing
+132     Set SB = Nothing
    
+        
+        Exit Function
+
+Encode_Err:
+        Call RegistrarError(Err.Number, Err.description, "mod_JSON.Encode", Erl)
+
+        
 End Function
 
 Public Function StringToJSON(st As String) As String
-   
-    Const FIELD_SEP = "~"
-    Const RECORD_SEP = "|"
-
-    Dim sFlds   As String
-    Dim sRecs   As New cStringBuilder
-    Dim lRecCnt As Long
-    Dim lFld    As Long
-    Dim fld     As Variant
-    Dim rows    As Variant
-    
-    Dim Lower_fld As Long, Upper_fld As Long
-
-    lRecCnt = 0
-
-    If LenB(st) = 0 Then
-        StringToJSON = "null"
-    Else
-        rows = Split(st, RECORD_SEP)
         
-        For lRecCnt = LBound(rows) To UBound(rows)
-            sFlds = vbNullString
-            fld = Split(rows(lRecCnt), FIELD_SEP)
+        On Error GoTo StringToJSON_Err
+    
+        
+   
+        Const FIELD_SEP = "~"
+        Const RECORD_SEP = "|"
 
-            For lFld = LBound(fld) To UBound(fld) Step 2
-                sFlds = (sFlds & IIf(sFlds <> "", ",", "") & """" & fld(lFld) & """:""" & toUnicode(fld(lFld + 1) & "") & """")
-            Next 'fld
+        Dim sFlds   As String
+        Dim sRecs   As New cStringBuilder
+        Dim lRecCnt As Long
+        Dim lFld    As Long
+        Dim fld     As Variant
+        Dim rows    As Variant
+    
+        Dim Lower_fld As Long, Upper_fld As Long
 
-            Call sRecs.Append(IIf((Trim$(sRecs.toString) <> ""), "," & vbNewLine, "") & "{" & sFlds & "}")
-        Next 'rec
+100     lRecCnt = 0
 
-        StringToJSON = ("( {""Records"": [" & vbNewLine & sRecs.toString & vbNewLine & "], " & """RecordCount"":""" & lRecCnt & """ } )")
+102     If LenB(st) = 0 Then
+104         StringToJSON = "null"
+        Else
+106         rows = Split(st, RECORD_SEP)
+        
+108         For lRecCnt = LBound(rows) To UBound(rows)
+110             sFlds = vbNullString
+112             fld = Split(rows(lRecCnt), FIELD_SEP)
 
-    End If
+114             For lFld = LBound(fld) To UBound(fld) Step 2
+116                 sFlds = (sFlds & IIf(sFlds <> "", ",", "") & """" & fld(lFld) & """:""" & toUnicode(fld(lFld + 1) & "") & """")
+                Next 'fld
+
+118             Call sRecs.Append(IIf((Trim$(sRecs.toString) <> ""), "," & vbNewLine, "") & "{" & sFlds & "}")
+            Next 'rec
+
+120         StringToJSON = ("( {""Records"": [" & vbNewLine & sRecs.toString & vbNewLine & "], " & """RecordCount"":""" & lRecCnt & """ } )")
+
+        End If
+        
+        Exit Function
+
+StringToJSON_Err:
+        Call RegistrarError(Err.Number, Err.description, "mod_JSON.StringToJSON", Erl)
+
+        
 End Function
 
 Public Function RStoJSON(rs As ADODB.Recordset) As String
@@ -691,55 +845,66 @@ ErrHandler:
 End Function
 
 Public Function toUnicode(str As String) As String
-
-    Dim X        As Long
-    Dim uStr     As New cStringBuilder
-    Dim uChrCode As Integer
-
-    For X = 1 To LenB(str)
-        uChrCode = Asc(mid$(str, X, 1))
-
-        Select Case uChrCode
-
-            Case 8:   ' backspace
-                Call uStr.Append("\b")
-
-            Case 9: ' tab
-                Call uStr.Append("\t")
-
-            Case 10:  ' line feed
-                Call uStr.Append("\n")
-
-            Case 12:  ' formfeed
-                Call uStr.Append("\f")
-
-            Case 13: ' carriage return
-                Call uStr.Append("\r")
-
-            Case 34: ' quote
-                Call uStr.Append("\""")
-
-            Case 39:  ' apostrophe
-                Call uStr.Append("\'")
-
-            Case 92: ' backslash
-                Call uStr.Append("\\")
-
-            Case 123, 125:  ' "{" and "}"
-                Call uStr.Append("\u" & Right$("0000" & hex$(uChrCode), 4))
-
-            Case Is < 32, Is > 127: ' non-ascii characters
-                Call uStr.Append("\u" & Right$("0000" & hex$(uChrCode), 4))
-
-            Case Else
-                Call uStr.Append(Chr$(uChrCode))
-
-        End Select
-
-    Next
+        
+        On Error GoTo toUnicode_Err
     
-    toUnicode = uStr.toString
-    
-    Exit Function
+        
 
+        Dim X        As Long
+        Dim uStr     As New cStringBuilder
+        Dim uChrCode As Integer
+
+100     For X = 1 To LenB(str)
+102         uChrCode = Asc(mid$(str, X, 1))
+
+104         Select Case uChrCode
+
+                Case 8:   ' backspace
+106                 Call uStr.Append("\b")
+
+108             Case 9: ' tab
+110                 Call uStr.Append("\t")
+
+112             Case 10:  ' line feed
+114                 Call uStr.Append("\n")
+
+116             Case 12:  ' formfeed
+118                 Call uStr.Append("\f")
+
+120             Case 13: ' carriage return
+122                 Call uStr.Append("\r")
+
+124             Case 34: ' quote
+126                 Call uStr.Append("\""")
+
+128             Case 39:  ' apostrophe
+130                 Call uStr.Append("\'")
+
+132             Case 92: ' backslash
+134                 Call uStr.Append("\\")
+
+136             Case 123, 125:  ' "{" and "}"
+138                 Call uStr.Append("\u" & Right$("0000" & hex$(uChrCode), 4))
+
+140             Case Is < 32, Is > 127: ' non-ascii characters
+142                 Call uStr.Append("\u" & Right$("0000" & hex$(uChrCode), 4))
+
+144             Case Else
+146                 Call uStr.Append(Chr$(uChrCode))
+
+            End Select
+
+        Next
+    
+148     toUnicode = uStr.toString
+    
+        Exit Function
+
+        
+        Exit Function
+
+toUnicode_Err:
+        Call RegistrarError(Err.Number, Err.description, "mod_JSON.toUnicode", Erl)
+
+        
 End Function

@@ -62,8 +62,12 @@ Private Const FRENTE = 1
 Private Cola As Collection
 
 Public Sub Reset()
+        
+        On Error GoTo Reset_Err
+    
+        
 
-        On Error Resume Next
+        
 
         Dim i As Integer
 
@@ -71,6 +75,13 @@ Public Sub Reset()
 102         Cola.Remove FRENTE
 104     Next i
 
+        
+        Exit Sub
+
+Reset_Err:
+        Call RegistrarError(Err.Number, Err.description, "cCola.Reset", Erl)
+
+        
 End Sub
 
 Public Property Get Longitud() As Integer
@@ -119,8 +130,12 @@ Class_Initialize_Err:
 End Sub
 
 Public Function VerElemento(ByVal index As Integer) As String
+        
+        On Error GoTo VerElemento_Err
+    
+        
 
-        On Error Resume Next
+        
 
 100     If IndexValido(index) Then
             'Pablo
@@ -132,20 +147,42 @@ Public Function VerElemento(ByVal index As Integer) As String
 
         End If
 
+        
+        Exit Function
+
+VerElemento_Err:
+        Call RegistrarError(Err.Number, Err.description, "cCola.VerElemento", Erl)
+
+        
 End Function
 
 Public Sub Push(ByVal nombre As String, ByVal Consulta As String, ByVal TipoDeConsulta As String)
+        
+        On Error GoTo Push_Err
+    
+        
 
-        On Error Resume Next
+        
 
         'Mete elemento en la cola
 100     Call Cola.Add(nombre & "Ø" & Consulta & "Ø" & TipoDeConsulta)
 
+        
+        Exit Sub
+
+Push_Err:
+        Call RegistrarError(Err.Number, Err.description, "cCola.Push", Erl)
+
+        
 End Sub
 
 Public Function Pop() As String
+        
+        On Error GoTo Pop_Err
+    
+        
 
-        On Error Resume Next
+        
 
         'Quita elemento de la cola
 100     If Cola.Count > 0 Then
@@ -156,11 +193,22 @@ Public Function Pop() As String
 
         End If
 
+        
+        Exit Function
+
+Pop_Err:
+        Call RegistrarError(Err.Number, Err.description, "cCola.Pop", Erl)
+
+        
 End Function
 
 Public Function PopByVal() As String
+        
+        On Error GoTo PopByVal_Err
+    
+        
 
-        On Error Resume Next
+        
 
         'Call LogTarea("PopByVal SOS")
 
@@ -172,11 +220,22 @@ Public Function PopByVal() As String
 
         End If
 
+        
+        Exit Function
+
+PopByVal_Err:
+        Call RegistrarError(Err.Number, Err.description, "cCola.PopByVal", Erl)
+
+        
 End Function
 
 Public Function Existe(ByVal nombre As String) As Boolean
+        
+        On Error GoTo Existe_Err
+    
+        
 
-        On Error Resume Next
+        
   
         Dim V                  As String
 
@@ -201,11 +260,22 @@ Public Function Existe(ByVal nombre As String) As Boolean
         Next
 110     Existe = False
 
+        
+        Exit Function
+
+Existe_Err:
+        Call RegistrarError(Err.Number, Err.description, "cCola.Existe", Erl)
+
+        
 End Function
 
 Public Sub Quitar(ByVal nombre As String)
+        
+        On Error GoTo Quitar_Err
+    
+        
 
-        On Error Resume Next
+        
 
         Dim V                  As String
 
@@ -229,14 +299,32 @@ Public Sub Quitar(ByVal nombre As String)
 
 108     Next i
  
+        
+        Exit Sub
+
+Quitar_Err:
+        Call RegistrarError(Err.Number, Err.description, "cCola.Quitar", Erl)
+
+        
 End Sub
 
 Public Sub QuitarIndex(ByVal index As Integer)
+        
+        On Error GoTo QuitarIndex_Err
+    
+        
 
-        On Error Resume Next
+        
 
 100     If IndexValido(index) Then Call Cola.Remove(index)
 
+        
+        Exit Sub
+
+QuitarIndex_Err:
+        Call RegistrarError(Err.Number, Err.description, "cCola.QuitarIndex", Erl)
+
+        
 End Sub
 
 Private Sub Class_Terminate()

@@ -2653,7 +2653,7 @@ Function adoIsConnected(adoCn As ADODB.Connection) As Boolean
 102     Cmd.ActiveConnection = adoCn
 
         'Run a simple query, to test the connection
-        On Error Resume Next
+        
 104     i = Cmd.Execute.Fields(0)
         On Error GoTo 0
 

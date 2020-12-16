@@ -4,11 +4,11 @@ Option Explicit
 ' Cantidad máxima de llaves
 Public Const MAXKEYS As Byte = 10
 
-Public Function MeterLlaveEnLLavero(ByVal Userindex As Integer, ByVal Llave As Integer) As Boolean
+Public Function MeterLlaveEnLLavero(ByVal UserIndex As Integer, ByVal Llave As Integer) As Boolean
 
     On Error GoTo ErrHandler
 
-100     With UserList(Userindex)
+100     With UserList(UserIndex)
 
             Dim i As Integer
         
@@ -23,7 +23,7 @@ Public Function MeterLlaveEnLLavero(ByVal Userindex As Integer, ByVal Llave As I
         
             ' Metemos la llave
 108         .Keys(i) = Llave
-110         Call WriteUpdateUserKey(Userindex, i, Llave)
+110         Call WriteUpdateUserKey(UserIndex, i, Llave)
         
         End With
     
@@ -36,18 +36,18 @@ ErrHandler:
 
 End Function
 
-Public Sub SacarLlaveDeLLavero(ByVal Userindex As Integer, ByVal Llave As Integer)
+Public Sub SacarLlaveDeLLavero(ByVal UserIndex As Integer, ByVal Llave As Integer)
 
         On Error GoTo ErrHandler
     
-100     With UserList(Userindex)
+100     With UserList(UserIndex)
 
             Dim i As Integer
             
 102         For i = 1 To MAXKEYS
 104             If .Keys(i) = Llave Then
 106                 .Keys(i) = 0
-108                 Call WriteUpdateUserKey(Userindex, i, 0)
+108                 Call WriteUpdateUserKey(UserIndex, i, 0)
                     Exit Sub
                 End If
             Next
@@ -61,29 +61,44 @@ ErrHandler:
 
 End Sub
 
-Public Sub EnviarLlaves(ByVal Userindex As Integer)
+Public Sub EnviarLlaves(ByVal UserIndex As Integer)
+        
+        On Error GoTo EnviarLlaves_Err
     
-100     With UserList(Userindex)
+        
+    
+100     With UserList(UserIndex)
 
             Dim i As Integer
             
 102         For i = 1 To MAXKEYS
 104             If .Keys(i) <> 0 Then
-106                 Call WriteUpdateUserKey(Userindex, i, .Keys(i))
+106                 Call WriteUpdateUserKey(UserIndex, i, .Keys(i))
                 End If
             Next
     
         End With
+        
+        Exit Sub
+
+EnviarLlaves_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModLlaves.EnviarLlaves", Erl)
+
+        
 End Sub
 
-Public Sub UsarLlave(ByVal Userindex As Integer, ByVal slot As Integer)
+Public Sub UsarLlave(ByVal UserIndex As Integer, ByVal slot As Integer)
+        
+        On Error GoTo UsarLlave_Err
+    
+        
 
-100     If Not IntervaloPermiteUsar(Userindex) Then Exit Sub
+100     If Not IntervaloPermiteUsar(UserIndex) Then Exit Sub
     
         Dim TargObj As ObjData
         Dim LlaveObj As ObjData
     
-102     With UserList(Userindex)
+102     With UserList(UserIndex)
 
 104         If .Keys(slot) <> 0 Then
 106             If .flags.TargetObj = 0 Then Exit Sub
@@ -103,10 +118,10 @@ Public Sub UsarLlave(ByVal Userindex As Integer, ByVal slot As Integer)
 120                             MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex = ObjData(MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex).IndexCerrada
 122                             .flags.TargetObj = MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex
                             
-124                             Call WriteConsoleMsg(Userindex, "Has abierto la puerta.", FontTypeNames.FONTTYPE_INFO)
+124                             Call WriteConsoleMsg(UserIndex, "Has abierto la puerta.", FontTypeNames.FONTTYPE_INFO)
                             Else
 
-126                             Call WriteConsoleMsg(Userindex, "La llave no sirve.", FontTypeNames.FONTTYPE_INFO)
+126                             Call WriteConsoleMsg(UserIndex, "La llave no sirve.", FontTypeNames.FONTTYPE_INFO)
                             End If
 
                         Else
@@ -114,16 +129,16 @@ Public Sub UsarLlave(ByVal Userindex As Integer, ByVal slot As Integer)
 130                             MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex = ObjData(MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex).IndexCerradaLlave
 132                             .flags.TargetObj = MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex
                             
-134                             Call WriteConsoleMsg(Userindex, "Has cerrado con llave la puerta.", FontTypeNames.FONTTYPE_INFO)
+134                             Call WriteConsoleMsg(UserIndex, "Has cerrado con llave la puerta.", FontTypeNames.FONTTYPE_INFO)
                             Else
 
-136                             Call WriteConsoleMsg(Userindex, "La llave no sirve.", FontTypeNames.FONTTYPE_INFO)
+136                             Call WriteConsoleMsg(UserIndex, "La llave no sirve.", FontTypeNames.FONTTYPE_INFO)
                             End If
 
                         End If
 
                     Else
-138                     Call WriteConsoleMsg(Userindex, "No esta cerrada.", FontTypeNames.FONTTYPE_INFO)
+138                     Call WriteConsoleMsg(UserIndex, "No esta cerrada.", FontTypeNames.FONTTYPE_INFO)
                     End If
 
                 End If
@@ -131,4 +146,11 @@ Public Sub UsarLlave(ByVal Userindex As Integer, ByVal slot As Integer)
     
         End With
 
+        
+        Exit Sub
+
+UsarLlave_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModLlaves.UsarLlave", Erl)
+
+        
 End Sub

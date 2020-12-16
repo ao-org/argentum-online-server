@@ -448,13 +448,17 @@ Encarcelar_Err:
 End Sub
 
 Public Sub BorrarUsuario(ByVal UserName As String)
+        
+        On Error GoTo BorrarUsuario_Err
+    
+        
     
 100     If Database_Enabled Then
 102         Call BorrarUsuarioDatabase(UserName)
     
         Else
 
-            On Error Resume Next
+            
         
 104         If FileExist(CharPath & UCase$(UserName) & ".chr", vbNormal) Then
 106             Kill CharPath & UCase$(UserName) & ".chr"
@@ -463,6 +467,13 @@ Public Sub BorrarUsuario(ByVal UserName As String)
 
         End If
     
+        
+        Exit Sub
+
+BorrarUsuario_Err:
+        Call RegistrarError(Err.Number, Err.description, "Admin.BorrarUsuario", Erl)
+
+        
 End Sub
 
 Public Function BANCheck(ByVal name As String) As Boolean
@@ -843,8 +854,12 @@ BanIpBuscar_Err:
 End Function
 
 Public Function BanIpQuita(ByVal ip As String) As Boolean
+        
+        On Error GoTo BanIpQuita_Err
+    
+        
 
-        On Error Resume Next
+        
 
         Dim n As Long
 
@@ -859,6 +874,13 @@ Public Function BanIpQuita(ByVal ip As String) As Boolean
 
         End If
 
+        
+        Exit Function
+
+BanIpQuita_Err:
+        Call RegistrarError(Err.Number, Err.description, "Admin.BanIpQuita", Erl)
+
+        
 End Function
 
 Public Sub BanIpGuardar()

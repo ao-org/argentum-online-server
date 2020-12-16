@@ -160,6 +160,10 @@ Public Sub Initialize(ByVal File As String)
         'Last Modify Date: 27/07/2006
         'Opens the requested file and loads it's data into memory
         '**************************************************************
+        
+        On Error GoTo Initialize_Err
+    
+        
         Dim handle As Integer
 
         Dim Text   As String
@@ -240,6 +244,13 @@ Public Sub Initialize(ByVal File As String)
 150         Next i
 
         End If
+        
+        
+        Exit Sub
+
+Initialize_Err:
+        Call RegistrarError(Err.Number, Err.description, "clsIniReader.Initialize", Erl)
+
         
 End Sub
 

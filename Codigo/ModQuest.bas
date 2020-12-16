@@ -788,13 +788,14 @@ End Sub
 
 
 Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal QuestSlot As Byte) As Boolean
-        '<EhHeader>
-        On Error GoTo FinishQuestCheck_Err
-        '</EhHeader>
         '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         'Funcion para chequear si finalizo una quest
         'Ladder
         '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        
+        On Error GoTo FinishQuestCheck_Err
+    
+        
         Dim i              As Integer
 
         Dim InvSlotsLibres As Byte
@@ -864,5 +865,12 @@ FinishQuestCheck_Err:
            "at line " & Erl, _
            vbExclamation + vbOKOnly, "Application Error")
 138 Resume Next
-    '</EhFooter>
+    
+        
+        Exit Function
+
+FinishQuestCheck_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModQuest.FinishQuestCheck", Erl)
+
+        
 End Function
