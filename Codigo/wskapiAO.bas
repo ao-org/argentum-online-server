@@ -50,7 +50,7 @@ Option Explicit
     Private Const SIZE_RCVBUF As Long = 8192
     Private Const SIZE_SNDBUF As Long = 8192
     
-    Private Const MAX_ITERATIONS_HID As Long = 100
+    Private Const MAX_ITERATIONS_HID As Long = 200
 
     ''
     'Esto es para agilizar la busqueda del slot a partir de un socket dado,
