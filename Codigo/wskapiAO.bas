@@ -50,7 +50,7 @@ Option Explicit
     Private Const SIZE_RCVBUF As Long = 8192
     Private Const SIZE_SNDBUF As Long = 8192
     
-    Private Const MAX_ITERATIONS_HID As Long = 200
+    Private Const MAX_ITERATIONS_HID As Long = 100
 
     ''
     'Esto es para agilizar la busqueda del slot a partir de un socket dado,
@@ -698,7 +698,7 @@ Public Sub EventoSockRead(ByVal slot As Integer, ByRef Datos() As Byte)
 116                 Do While HandleIncomingData(slot)
                         Iterations = Iterations + 1
                         If Iterations >= MAX_ITERATIONS_HID Then
-                            Call RegistrarError(-1, "Se supero el maximo de iteraciones de HandleIncomingData.", "wskapiAO.EventoSockRead")
+                            Call RegistrarError(-1, "Se supero el maximo de iteraciones de HandleIncomingData. Paquete: " & UserList(slot).incomingData.PeekByte, "wskapiAO.EventoSockRead")
                             Call CloseSocket(slot)
                             Exit Do
                         End If
