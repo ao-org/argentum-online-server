@@ -29,7 +29,7 @@ Attribute VB_Name = "Extra"
 
 Option Explicit
 
-Public Sub FindLegalPos(ByVal UserIndex As Integer, ByVal Map As Integer, ByRef X As Byte, ByRef Y As Byte)
+Public Sub FindLegalPos(ByVal Userindex As Integer, ByVal Map As Integer, ByRef X As Byte, ByRef Y As Byte)
         '***************************************************
         'Autor: ZaMa
         'Last Modification: 26/03/2009
@@ -39,10 +39,10 @@ Public Sub FindLegalPos(ByVal UserIndex As Integer, ByVal Map As Integer, ByRef 
         On Error GoTo FindLegalPos_Err
         
 
-100     If MapData(Map, X, Y).UserIndex <> 0 Or MapData(Map, X, Y).NpcIndex <> 0 Then
+100     If MapData(Map, X, Y).Userindex <> 0 Or MapData(Map, X, Y).NpcIndex <> 0 Then
                     
             ' Se teletransporta a la misma pos a la que estaba
-102         If MapData(Map, X, Y).UserIndex = UserIndex Then Exit Sub
+102         If MapData(Map, X, Y).Userindex = Userindex Then Exit Sub
                             
             Dim FoundPlace     As Boolean
 
@@ -59,7 +59,7 @@ Public Sub FindLegalPos(ByVal UserIndex As Integer, ByVal Map As Integer, ByRef 
 108                 For tX = X - Rango To X + Rango
 
                         'Reviso que no haya User ni NPC
-110                     If MapData(Map, tX, tY).UserIndex = 0 And MapData(Map, tX, tY).NpcIndex = 0 Then
+110                     If MapData(Map, tX, tY).Userindex = 0 And MapData(Map, tX, tY).NpcIndex = 0 Then
                         
 112                         If InMapBounds(Map, tX, tY) Then FoundPlace = True
                         
@@ -81,7 +81,7 @@ Public Sub FindLegalPos(ByVal UserIndex As Integer, ByVal Map As Integer, ByRef 
             Else
                 'Muy poco probable, pero..
                 'Si no encontramos un lugar, sacamos al usuario que tenemos abajo, y si es un NPC, lo pisamos.
-130             OtherUserIndex = MapData(Map, X, Y).UserIndex
+130             OtherUserIndex = MapData(Map, X, Y).Userindex
 
 132             If OtherUserIndex <> 0 Then
 
@@ -123,11 +123,11 @@ FindLegalPos_Err:
         
 End Sub
 
-Public Function EsNewbie(ByVal UserIndex As Integer) As Boolean
+Public Function EsNewbie(ByVal Userindex As Integer) As Boolean
         
         On Error GoTo EsNewbie_Err
         
-100     EsNewbie = UserList(UserIndex).Stats.ELV <= LimiteNewbie
+100     EsNewbie = UserList(Userindex).Stats.ELV <= LimiteNewbie
 
         
         Exit Function
@@ -138,7 +138,7 @@ EsNewbie_Err:
         
 End Function
 
-Public Function esArmada(ByVal UserIndex As Integer) As Boolean
+Public Function esArmada(ByVal Userindex As Integer) As Boolean
         '***************************************************
         'Autor: Pablo (ToxicWaste)
         'Last Modification: 23/01/2007
@@ -146,7 +146,7 @@ Public Function esArmada(ByVal UserIndex As Integer) As Boolean
         
         On Error GoTo esArmada_Err
         
-100     esArmada = (UserList(UserIndex).Faccion.ArmadaReal = 1)
+100     esArmada = (UserList(Userindex).Faccion.ArmadaReal = 1)
 
         
         Exit Function
@@ -157,7 +157,7 @@ esArmada_Err:
         
 End Function
 
-Public Function esCaos(ByVal UserIndex As Integer) As Boolean
+Public Function esCaos(ByVal Userindex As Integer) As Boolean
         '***************************************************
         'Autor: Pablo (ToxicWaste)
         'Last Modification: 23/01/2007
@@ -165,7 +165,7 @@ Public Function esCaos(ByVal UserIndex As Integer) As Boolean
         
         On Error GoTo esCaos_Err
         
-100     esCaos = (UserList(UserIndex).Faccion.FuerzasCaos = 1)
+100     esCaos = (UserList(Userindex).Faccion.FuerzasCaos = 1)
 
         
         Exit Function
@@ -176,7 +176,7 @@ esCaos_Err:
         
 End Function
 
-Public Function EsGM(ByVal UserIndex As Integer) As Boolean
+Public Function EsGM(ByVal Userindex As Integer) As Boolean
         '***************************************************
         'Autor: Pablo (ToxicWaste)
         'Last Modification: 23/01/2007
@@ -184,12 +184,12 @@ Public Function EsGM(ByVal UserIndex As Integer) As Boolean
         
         On Error GoTo EsGM_Err
         
-100     If UserIndex = 0 Then
+100     If Userindex = 0 Then
 102         EsGM = False
             Exit Function
         End If
         
-104     EsGM = (UserList(UserIndex).flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero)) <> 0
+104     EsGM = (UserList(Userindex).flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero)) <> 0
 
         
         Exit Function
@@ -200,7 +200,7 @@ EsGM_Err:
         
 End Function
 
-Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer)
+Public Sub DoTileEvents(ByVal Userindex As Integer, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer)
 
         '***************************************************
         'Autor: Pablo (ToxicWaste) & Unknown (orginal version)
@@ -230,38 +230,38 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
 108             If UCase$(MapInfo(MapData(Map, X, Y).TileExit.Map).restrict_mode) = "NEWBIE" Then
 
                     '¿El usuario es un newbie?
-110                 If EsNewbie(UserIndex) Or EsGM(UserIndex) Then
-112                     If LegalPos(MapData(Map, X, Y).TileExit.Map, MapData(Map, X, Y).TileExit.X, MapData(Map, X, Y).TileExit.Y, PuedeAtravesarAgua(UserIndex), , , False) Then
-114                         Call WarpUserChar(UserIndex, MapData(Map, X, Y).TileExit.Map, MapData(Map, X, Y).TileExit.X, MapData(Map, X, Y).TileExit.Y, FxFlag)
+110                 If EsNewbie(Userindex) Or EsGM(Userindex) Then
+112                     If LegalPos(MapData(Map, X, Y).TileExit.Map, MapData(Map, X, Y).TileExit.X, MapData(Map, X, Y).TileExit.Y, PuedeAtravesarAgua(Userindex), , , False) Then
+114                         Call WarpUserChar(Userindex, MapData(Map, X, Y).TileExit.Map, MapData(Map, X, Y).TileExit.X, MapData(Map, X, Y).TileExit.Y, FxFlag)
                 
                         Else
 116                         Call ClosestLegalPos(MapData(Map, X, Y).TileExit, nPos)
 
 118                         If nPos.X <> 0 And nPos.Y <> 0 Then
-120                             Call WarpUserChar(UserIndex, nPos.Map, nPos.X, nPos.Y, FxFlag)
+120                             Call WarpUserChar(Userindex, nPos.Map, nPos.X, nPos.Y, FxFlag)
                             End If
 
                         End If
 
                     Else 'No es newbie
-122                     Call WriteConsoleMsg(UserIndex, "Mapa exclusivo para newbies.", FontTypeNames.FONTTYPE_INFO)
-124                     Call ClosestStablePos(UserList(UserIndex).Pos, nPos)
+122                     Call WriteConsoleMsg(Userindex, "Mapa exclusivo para newbies.", FontTypeNames.FONTTYPE_INFO)
+124                     Call ClosestStablePos(UserList(Userindex).Pos, nPos)
 
 126                     If nPos.X <> 0 And nPos.Y <> 0 Then
-128                         Call WarpUserChar(UserIndex, nPos.Map, nPos.X, nPos.Y, FxFlag)
+128                         Call WarpUserChar(Userindex, nPos.Map, nPos.X, nPos.Y, FxFlag)
                         End If
 
                     End If
 
                 Else 'No es un mapa de newbies, ni Armadas, ni Caos, ni faccionario.
 
-130                 If LegalPos(MapData(Map, X, Y).TileExit.Map, MapData(Map, X, Y).TileExit.X, MapData(Map, X, Y).TileExit.Y, PuedeAtravesarAgua(UserIndex), , , False) Then
-132                     Call WarpUserChar(UserIndex, MapData(Map, X, Y).TileExit.Map, MapData(Map, X, Y).TileExit.X, MapData(Map, X, Y).TileExit.Y, FxFlag)
+130                 If LegalPos(MapData(Map, X, Y).TileExit.Map, MapData(Map, X, Y).TileExit.X, MapData(Map, X, Y).TileExit.Y, PuedeAtravesarAgua(Userindex), , , False) Then
+132                     Call WarpUserChar(Userindex, MapData(Map, X, Y).TileExit.Map, MapData(Map, X, Y).TileExit.X, MapData(Map, X, Y).TileExit.Y, FxFlag)
                     Else
 134                     Call ClosestLegalPos(MapData(Map, X, Y).TileExit, nPos)
 
 136                     If nPos.X <> 0 And nPos.Y <> 0 Then
-138                         Call WarpUserChar(UserIndex, nPos.Map, nPos.X, nPos.Y, FxFlag)
+138                         Call WarpUserChar(Userindex, nPos.Map, nPos.X, nPos.Y, FxFlag)
                         End If
 
                     End If
@@ -271,7 +271,7 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
                 'Te fusite del mapa. La criatura ya no es más tuya ni te reconoce como que vos la atacaste.
                 Dim aN As Integer
     
-140             aN = UserList(UserIndex).flags.AtacadoPorNpc
+140             aN = UserList(Userindex).flags.AtacadoPorNpc
 
 142             If aN > 0 Then
 144                 Npclist(aN).Movement = Npclist(aN).flags.OldMovement
@@ -280,18 +280,18 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
 
                 End If
     
-150             aN = UserList(UserIndex).flags.NPCAtacado
+150             aN = UserList(Userindex).flags.NPCAtacado
 
 152             If aN > 0 Then
-154                 If Npclist(aN).flags.AttackedFirstBy = UserList(UserIndex).name Then
+154                 If Npclist(aN).flags.AttackedFirstBy = UserList(Userindex).name Then
 156                     Npclist(aN).flags.AttackedFirstBy = vbNullString
 
                     End If
 
                 End If
 
-158             UserList(UserIndex).flags.AtacadoPorNpc = 0
-160             UserList(UserIndex).flags.NPCAtacado = 0
+158             UserList(Userindex).flags.AtacadoPorNpc = 0
+160             UserList(Userindex).flags.NPCAtacado = 0
 
             End If
     
@@ -304,13 +304,13 @@ ErrHandler:
 
 End Sub
 
-Function InRangoVision(ByVal UserIndex As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
+Function InRangoVision(ByVal Userindex As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
         
         On Error GoTo InRangoVision_Err
         
 
-100     If X > UserList(UserIndex).Pos.X - MinXBorder And X < UserList(UserIndex).Pos.X + MinXBorder Then
-102         If Y > UserList(UserIndex).Pos.Y - MinYBorder And Y < UserList(UserIndex).Pos.Y + MinYBorder Then
+100     If X > UserList(Userindex).Pos.X - MinXBorder And X < UserList(Userindex).Pos.X + MinXBorder Then
+102         If Y > UserList(Userindex).Pos.Y - MinYBorder And Y < UserList(Userindex).Pos.Y + MinYBorder Then
 104             InRangoVision = True
                 Exit Function
 
@@ -504,7 +504,7 @@ Function NameIndex(ByVal name As String) As Integer
         On Error GoTo NameIndex_Err
         
 
-        Dim UserIndex As Integer
+        Dim Userindex As Integer
 
         '¿Nombre valido?
 100     If LenB(name) = 0 Then
@@ -518,13 +518,13 @@ Function NameIndex(ByVal name As String) As Integer
 
         End If
 
-108     UserIndex = 1
+108     Userindex = 1
 
-110     Do Until UCase$(UserList(UserIndex).name) = UCase$(name)
+110     Do Until UCase$(UserList(Userindex).name) = UCase$(name)
     
-112         UserIndex = UserIndex + 1
+112         Userindex = Userindex + 1
     
-114         If UserIndex > MaxUsers Then
+114         If Userindex > MaxUsers Then
 116             NameIndex = 0
                 Exit Function
 
@@ -532,7 +532,7 @@ Function NameIndex(ByVal name As String) As Integer
     
         Loop
  
-118     NameIndex = UserIndex
+118     NameIndex = Userindex
  
         
         Exit Function
@@ -548,7 +548,7 @@ Function IP_Index(ByVal inIP As String) As Integer
         On Error GoTo IP_Index_Err
         
  
-        Dim UserIndex As Integer
+        Dim Userindex As Integer
 
         '¿Nombre valido?
 100     If LenB(inIP) = 0 Then
@@ -557,13 +557,13 @@ Function IP_Index(ByVal inIP As String) As Integer
 
         End If
   
-104     UserIndex = 1
+104     Userindex = 1
 
-106     Do Until UserList(UserIndex).ip = inIP
+106     Do Until UserList(Userindex).ip = inIP
     
-108         UserIndex = UserIndex + 1
+108         Userindex = Userindex + 1
     
-110         If UserIndex > MaxUsers Then
+110         If Userindex > MaxUsers Then
 112             IP_Index = 0
                 Exit Function
 
@@ -571,7 +571,7 @@ Function IP_Index(ByVal inIP As String) As Integer
     
         Loop
  
-114     IP_Index = UserIndex
+114     IP_Index = Userindex
 
         Exit Function
 
@@ -584,7 +584,7 @@ IP_Index_Err:
         
 End Function
 
-Function ContarMismaIP(ByVal UserIndex As Integer, ByVal UserIP As String) As Integer
+Function ContarMismaIP(ByVal Userindex As Integer, ByVal UserIP As String) As Integer
         
         On Error GoTo CheckForSameIP_Err
         
@@ -594,7 +594,7 @@ Function ContarMismaIP(ByVal UserIndex As Integer, ByVal UserIP As String) As In
 100     For LoopC = 1 To MaxUsers
 
 102         If UserList(LoopC).flags.UserLogged = True Then
-104             If UserList(LoopC).ip = UserIP And UserIndex <> LoopC Then
+104             If UserList(LoopC).ip = UserIP And Userindex <> LoopC Then
 106                 ContarMismaIP = ContarMismaIP + 1
                 End If
 
@@ -683,13 +683,13 @@ Function LegalPos(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, 
         Else
 
 104         If PuedeAgua And PuedeTierra Then
-106             LegalPos = (MapData(Map, X, Y).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES And (MapData(Map, X, Y).UserIndex = 0) And (MapData(Map, X, Y).NpcIndex = 0) And (PuedeTraslado Or MapData(Map, X, Y).TileExit.Map = 0)
+106             LegalPos = (MapData(Map, X, Y).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES And (MapData(Map, X, Y).Userindex = 0) And (MapData(Map, X, Y).NpcIndex = 0) And (PuedeTraslado Or MapData(Map, X, Y).TileExit.Map = 0)
 
 108         ElseIf PuedeTierra And Not PuedeAgua Then
-110             LegalPos = (MapData(Map, X, Y).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES And (MapData(Map, X, Y).UserIndex = 0) And (MapData(Map, X, Y).NpcIndex = 0) And ((MapData(Map, X, Y).Blocked And FLAG_AGUA) = 0) And (PuedeTraslado Or MapData(Map, X, Y).TileExit.Map = 0)
+110             LegalPos = (MapData(Map, X, Y).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES And (MapData(Map, X, Y).Userindex = 0) And (MapData(Map, X, Y).NpcIndex = 0) And ((MapData(Map, X, Y).Blocked And FLAG_AGUA) = 0) And (PuedeTraslado Or MapData(Map, X, Y).TileExit.Map = 0)
 
 112         ElseIf PuedeAgua And Not PuedeTierra Then
-114             LegalPos = (MapData(Map, X, Y).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES And (MapData(Map, X, Y).UserIndex = 0) And (MapData(Map, X, Y).NpcIndex = 0) And ((MapData(Map, X, Y).Blocked And FLAG_AGUA) <> 0) And (PuedeTraslado Or MapData(Map, X, Y).TileExit.Map = 0)
+114             LegalPos = (MapData(Map, X, Y).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES And (MapData(Map, X, Y).Userindex = 0) And (MapData(Map, X, Y).NpcIndex = 0) And ((MapData(Map, X, Y).Blocked And FLAG_AGUA) <> 0) And (PuedeTraslado Or MapData(Map, X, Y).TileExit.Map = 0)
             Else
 116             LegalPos = False
 
@@ -715,13 +715,13 @@ Function LegalWalk(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer,
         End If
 
 102     If PuedeAgua And PuedeTierra Then
-104         LegalWalk = (MapData(Map, X, Y).UserIndex = 0) And (MapData(Map, X, Y).NpcIndex = 0) And (PuedeTraslado Or MapData(Map, X, Y).TileExit.Map = 0)
+104         LegalWalk = (MapData(Map, X, Y).Userindex = 0) And (MapData(Map, X, Y).NpcIndex = 0) And (PuedeTraslado Or MapData(Map, X, Y).TileExit.Map = 0)
 
 106     ElseIf PuedeTierra And Not PuedeAgua Then
-108         LegalWalk = (MapData(Map, X, Y).UserIndex = 0) And (MapData(Map, X, Y).NpcIndex = 0) And ((MapData(Map, X, Y).Blocked And FLAG_AGUA) = 0) And (PuedeTraslado Or MapData(Map, X, Y).TileExit.Map = 0)
+108         LegalWalk = (MapData(Map, X, Y).Userindex = 0) And (MapData(Map, X, Y).NpcIndex = 0) And ((MapData(Map, X, Y).Blocked And FLAG_AGUA) = 0) And (PuedeTraslado Or MapData(Map, X, Y).TileExit.Map = 0)
 
 110     ElseIf PuedeAgua And Not PuedeTierra Then
-112         LegalWalk = (MapData(Map, X, Y).UserIndex = 0) And (MapData(Map, X, Y).NpcIndex = 0) And ((MapData(Map, X, Y).Blocked And FLAG_AGUA) <> 0) And (PuedeTraslado Or MapData(Map, X, Y).TileExit.Map = 0)
+112         LegalWalk = (MapData(Map, X, Y).Userindex = 0) And (MapData(Map, X, Y).NpcIndex = 0) And ((MapData(Map, X, Y).Blocked And FLAG_AGUA) <> 0) And (PuedeTraslado Or MapData(Map, X, Y).TileExit.Map = 0)
         
         Else
 114         LegalWalk = False
@@ -751,9 +751,9 @@ Function LegalPosNPC(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
         Else
 
 108         If AguaValida = 0 Then
-110             LegalPosNPC = (MapData(Map, X, Y).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES And (MapData(Map, X, Y).UserIndex = 0) And (MapData(Map, X, Y).NpcIndex = 0) And (MapData(Map, X, Y).trigger <> eTrigger.POSINVALIDA Or IsPet) And (MapData(Map, X, Y).Blocked And FLAG_AGUA) = 0
+110             LegalPosNPC = (MapData(Map, X, Y).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES And (MapData(Map, X, Y).Userindex = 0) And (MapData(Map, X, Y).NpcIndex = 0) And (MapData(Map, X, Y).trigger <> eTrigger.POSINVALIDA Or IsPet) And (MapData(Map, X, Y).Blocked And FLAG_AGUA) = 0
             Else
-112             LegalPosNPC = (MapData(Map, X, Y).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES And (MapData(Map, X, Y).UserIndex = 0) And (MapData(Map, X, Y).NpcIndex = 0) And (MapData(Map, X, Y).trigger <> eTrigger.POSINVALIDA Or IsPet)
+112             LegalPosNPC = (MapData(Map, X, Y).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES And (MapData(Map, X, Y).Userindex = 0) And (MapData(Map, X, Y).NpcIndex = 0) And (MapData(Map, X, Y).trigger <> eTrigger.POSINVALIDA Or IsPet)
             End If
  
         End If
@@ -776,13 +776,13 @@ Function LegalWalkNPC(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integ
         End If
 
 102     If PuedeAgua And PuedeTierra Then
-104         LegalWalkNPC = (MapData(Map, X, Y).UserIndex = 0) And (MapData(Map, X, Y).NpcIndex = 0) And MapData(Map, X, Y).TileExit.Map = 0 And (MapData(Map, X, Y).trigger <> eTrigger.POSINVALIDA Or IsPet)
+104         LegalWalkNPC = (MapData(Map, X, Y).Userindex = 0) And (MapData(Map, X, Y).NpcIndex = 0) And MapData(Map, X, Y).TileExit.Map = 0 And (MapData(Map, X, Y).trigger <> eTrigger.POSINVALIDA Or IsPet)
 
 106     ElseIf PuedeTierra And Not PuedeAgua Then
-108         LegalWalkNPC = (MapData(Map, X, Y).UserIndex = 0) And (MapData(Map, X, Y).NpcIndex = 0) And ((MapData(Map, X, Y).Blocked And FLAG_AGUA) = 0) And MapData(Map, X, Y).TileExit.Map = 0 And (MapData(Map, X, Y).trigger <> eTrigger.POSINVALIDA Or IsPet)
+108         LegalWalkNPC = (MapData(Map, X, Y).Userindex = 0) And (MapData(Map, X, Y).NpcIndex = 0) And ((MapData(Map, X, Y).Blocked And FLAG_AGUA) = 0) And MapData(Map, X, Y).TileExit.Map = 0 And (MapData(Map, X, Y).trigger <> eTrigger.POSINVALIDA Or IsPet)
 
 110     ElseIf PuedeAgua And Not PuedeTierra Then
-112         LegalWalkNPC = (MapData(Map, X, Y).UserIndex = 0) And (MapData(Map, X, Y).NpcIndex = 0) And ((MapData(Map, X, Y).Blocked And FLAG_AGUA) <> 0) And MapData(Map, X, Y).TileExit.Map = 0 And (MapData(Map, X, Y).trigger <> eTrigger.POSINVALIDA Or IsPet)
+112         LegalWalkNPC = (MapData(Map, X, Y).Userindex = 0) And (MapData(Map, X, Y).NpcIndex = 0) And ((MapData(Map, X, Y).Blocked And FLAG_AGUA) <> 0) And MapData(Map, X, Y).TileExit.Map = 0 And (MapData(Map, X, Y).trigger <> eTrigger.POSINVALIDA Or IsPet)
         
         Else
 114         LegalWalkNPC = False
@@ -822,7 +822,7 @@ SendHelp_Err:
         
 End Sub
 
-Public Sub Expresar(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
+Public Sub Expresar(ByVal NpcIndex As Integer, ByVal Userindex As Integer)
         
         On Error GoTo Expresar_Err
         
@@ -832,7 +832,7 @@ Public Sub Expresar(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
             Dim randomi
 
 102         randomi = RandomNumber(1, Npclist(NpcIndex).NroExpresiones)
-104         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead(Npclist(NpcIndex).Expresiones(randomi), Npclist(NpcIndex).Char.CharIndex, vbWhite))
+104         Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageChatOverHead(Npclist(NpcIndex).Expresiones(randomi), Npclist(NpcIndex).Char.CharIndex, vbWhite))
 
         End If
 
@@ -845,7 +845,7 @@ Expresar_Err:
         
 End Sub
 
-Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer)
+Sub LookatTile(ByVal Userindex As Integer, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer)
         
         On Error GoTo LookatTile_Err
         
@@ -862,31 +862,31 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
         Dim ft             As FontTypeNames
 
         '¿Rango Visión? (ToxicWaste)
-100     If (Abs(UserList(UserIndex).Pos.Y - Y) > RANGO_VISION_Y) Or (Abs(UserList(UserIndex).Pos.X - X) > RANGO_VISION_X) Then
+100     If (Abs(UserList(Userindex).Pos.Y - Y) > RANGO_VISION_Y) Or (Abs(UserList(Userindex).Pos.X - X) > RANGO_VISION_X) Then
             Exit Sub
 
         End If
 
         '¿Posicion valida?
 102     If InMapBounds(Map, X, Y) Then
-104         UserList(UserIndex).flags.TargetMap = Map
-106         UserList(UserIndex).flags.TargetX = X
-108         UserList(UserIndex).flags.TargetY = Y
+104         UserList(Userindex).flags.TargetMap = Map
+106         UserList(Userindex).flags.TargetX = X
+108         UserList(Userindex).flags.TargetY = Y
 
             '¿Es un obj?
 110         If MapData(Map, X, Y).ObjInfo.ObjIndex > 0 Then
                 'Informa el nombre
-112             UserList(UserIndex).flags.TargetObjMap = Map
-114             UserList(UserIndex).flags.TargetObjX = X
-116             UserList(UserIndex).flags.TargetObjY = Y
+112             UserList(Userindex).flags.TargetObjMap = Map
+114             UserList(Userindex).flags.TargetObjX = X
+116             UserList(Userindex).flags.TargetObjY = Y
 118             FoundSomething = 1
 120         ElseIf MapData(Map, X + 1, Y).ObjInfo.ObjIndex > 0 Then
 
                 'Informa el nombre
 122             If ObjData(MapData(Map, X + 1, Y).ObjInfo.ObjIndex).OBJType = eOBJType.otPuertas Then
-124                 UserList(UserIndex).flags.TargetObjMap = Map
-126                 UserList(UserIndex).flags.TargetObjX = X + 1
-128                 UserList(UserIndex).flags.TargetObjY = Y
+124                 UserList(Userindex).flags.TargetObjMap = Map
+126                 UserList(Userindex).flags.TargetObjX = X + 1
+128                 UserList(Userindex).flags.TargetObjY = Y
 130                 FoundSomething = 1
 
                 End If
@@ -895,9 +895,9 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 
 134             If ObjData(MapData(Map, X + 1, Y + 1).ObjInfo.ObjIndex).OBJType = eOBJType.otPuertas Then
                     'Informa el nombre
-136                 UserList(UserIndex).flags.TargetObjMap = Map
-138                 UserList(UserIndex).flags.TargetObjX = X + 1
-140                 UserList(UserIndex).flags.TargetObjY = Y + 1
+136                 UserList(Userindex).flags.TargetObjMap = Map
+138                 UserList(Userindex).flags.TargetObjX = X + 1
+140                 UserList(Userindex).flags.TargetObjY = Y + 1
 142                 FoundSomething = 1
 
                 End If
@@ -906,9 +906,9 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 
 146             If ObjData(MapData(Map, X, Y + 1).ObjInfo.ObjIndex).OBJType = eOBJType.otPuertas Then
                     'Informa el nombre
-148                 UserList(UserIndex).flags.TargetObjMap = Map
-150                 UserList(UserIndex).flags.TargetObjX = X
-152                 UserList(UserIndex).flags.TargetObjY = Y + 1
+148                 UserList(Userindex).flags.TargetObjMap = Map
+150                 UserList(Userindex).flags.TargetObjX = X
+152                 UserList(Userindex).flags.TargetObjY = Y + 1
 154                 FoundSomething = 1
 
                 End If
@@ -916,25 +916,25 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
             End If
     
 156         If FoundSomething = 1 Then
-158             UserList(UserIndex).flags.TargetObj = MapData(Map, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.ObjIndex
+158             UserList(Userindex).flags.TargetObj = MapData(Map, UserList(Userindex).flags.TargetObjX, UserList(Userindex).flags.TargetObjY).ObjInfo.ObjIndex
 
-160             If UserList(UserIndex).Counters.Trabajando = 0 Then
-162                 If MostrarCantidad(UserList(UserIndex).flags.TargetObj) Then
+160             If UserList(Userindex).Counters.Trabajando = 0 Then
+162                 If MostrarCantidad(UserList(Userindex).flags.TargetObj) Then
 
-164                     Call WriteConsoleMsg(UserIndex, "O*" & UserList(UserIndex).flags.TargetObj & "* - " & MapData(UserList(UserIndex).flags.TargetObjMap, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.Amount & "", FontTypeNames.FONTTYPE_INFO)
+164                     Call WriteConsoleMsg(Userindex, "O*" & UserList(Userindex).flags.TargetObj & "* - " & MapData(UserList(Userindex).flags.TargetObjMap, UserList(Userindex).flags.TargetObjX, UserList(Userindex).flags.TargetObjY).ObjInfo.Amount & "", FontTypeNames.FONTTYPE_INFO)
             
                     Else
 
-166                     If ObjData(UserList(UserIndex).flags.TargetObj).OBJType = eOBJType.otYacimiento Then
-168                         Call ActualizarRecurso(Map, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY)
-170                         Call WriteConsoleMsg(UserIndex, ObjData(UserList(UserIndex).flags.TargetObj).name & " - (Minerales disponibles: " & MapData(Map, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.Amount & ")", FontTypeNames.FONTTYPE_INFO)
+166                     If ObjData(UserList(Userindex).flags.TargetObj).OBJType = eOBJType.otYacimiento Then
+168                         Call ActualizarRecurso(Map, UserList(Userindex).flags.TargetObjX, UserList(Userindex).flags.TargetObjY)
+170                         Call WriteConsoleMsg(Userindex, ObjData(UserList(Userindex).flags.TargetObj).name & " - (Minerales disponibles: " & MapData(Map, UserList(Userindex).flags.TargetObjX, UserList(Userindex).flags.TargetObjY).ObjInfo.Amount & ")", FontTypeNames.FONTTYPE_INFO)
 
-172                     ElseIf ObjData(UserList(UserIndex).flags.TargetObj).OBJType = eOBJType.otArboles Then
-174                         Call ActualizarRecurso(Map, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY)
-176                         Call WriteConsoleMsg(UserIndex, ObjData(UserList(UserIndex).flags.TargetObj).name & " - (Recursos disponibles: " & MapData(Map, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.Amount & ")", FontTypeNames.FONTTYPE_INFO)
+172                     ElseIf ObjData(UserList(Userindex).flags.TargetObj).OBJType = eOBJType.otArboles Then
+174                         Call ActualizarRecurso(Map, UserList(Userindex).flags.TargetObjX, UserList(Userindex).flags.TargetObjY)
+176                         Call WriteConsoleMsg(Userindex, ObjData(UserList(Userindex).flags.TargetObj).name & " - (Recursos disponibles: " & MapData(Map, UserList(Userindex).flags.TargetObjX, UserList(Userindex).flags.TargetObjY).ObjInfo.Amount & ")", FontTypeNames.FONTTYPE_INFO)
                     
                         Else
-178                         Call WriteConsoleMsg(UserIndex, "O*" & UserList(UserIndex).flags.TargetObj & "*", FontTypeNames.FONTTYPE_INFO)
+178                         Call WriteConsoleMsg(Userindex, "O*" & UserList(Userindex).flags.TargetObj & "*", FontTypeNames.FONTTYPE_INFO)
 
                         End If
 
@@ -946,8 +946,8 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 
             '¿Es un personaje?
 180         If Y + 1 <= YMaxMapSize Then
-182             If MapData(Map, X, Y + 1).UserIndex > 0 Then
-184                 TempCharIndex = MapData(Map, X, Y + 1).UserIndex
+182             If MapData(Map, X, Y + 1).Userindex > 0 Then
+184                 TempCharIndex = MapData(Map, X, Y + 1).Userindex
 186                 FoundChar = 1
 
                 End If
@@ -962,8 +962,8 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 
             '¿Es un personaje?
 194         If FoundChar = 0 Then
-196             If MapData(Map, X, Y).UserIndex > 0 Then
-198                 TempCharIndex = MapData(Map, X, Y).UserIndex
+196             If MapData(Map, X, Y).Userindex > 0 Then
+198                 TempCharIndex = MapData(Map, X, Y).Userindex
 200                 FoundChar = 1
 
                 End If
@@ -987,7 +987,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                 
                         Dim Fragsnick As String
 
-214                     If EsGM(UserIndex) Then
+214                     If EsGM(Userindex) Then
 216                         Stat = Stat & " <" & ListaClases(UserList(TempCharIndex).clase) & " " & ListaRazas(UserList(TempCharIndex).raza) & " Nivel: " & UserList(TempCharIndex).Stats.ELV & ">"
                         End If
 
@@ -997,7 +997,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 
                         End If
 
-222                     If UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) > 49 Then
+222                     If UserList(Userindex).Stats.UserSkills(eSkill.Supervivencia) > 49 Then
 224                         If UserList(TempCharIndex).flags.Envenenado > 0 Then
 226                             Fragsnick = " | Envenenado"
                             End If
@@ -1137,13 +1137,13 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                     ' End If
             
 366                 If LenB(Stat) > 0 Then
-368                     Call WriteConsoleMsg(UserIndex, Stat, ft)
+368                     Call WriteConsoleMsg(Userindex, Stat, ft)
                     End If
             
 370                 FoundSomething = 1
-372                 UserList(UserIndex).flags.TargetUser = TempCharIndex
-374                 UserList(UserIndex).flags.TargetNPC = 0
-376                 UserList(UserIndex).flags.TargetNpcTipo = eNPCType.Comun
+372                 UserList(Userindex).flags.TargetUser = TempCharIndex
+374                 UserList(Userindex).flags.TargetNPC = 0
+376                 UserList(Userindex).flags.TargetNpcTipo = eNPCType.Comun
 
                 End If
 
@@ -1153,13 +1153,15 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 
                 Dim estatus As String
 
-380             If EsGM(UserIndex) Or UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 75 Then
+380             If EsGM(Userindex) Or UserList(Userindex).Stats.UserSkills(eSkill.Supervivencia) >= 75 Then
 382                 estatus = "<" & Npclist(TempCharIndex).Stats.MinHp & "/" & Npclist(TempCharIndex).Stats.MaxHp
                     
-384             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 50 Then
-386                 estatus = "<" & Round((Npclist(TempCharIndex).Stats.MinHp / Npclist(TempCharIndex).Stats.MaxHp) * 100#, 0) & "%"
+384             ElseIf UserList(Userindex).Stats.UserSkills(eSkill.Supervivencia) >= 50 Then
+                    If Npclist(TempCharIndex).Stats.MaxHp <> 0 Then
+386                     estatus = "<" & Round((Npclist(TempCharIndex).Stats.MinHp / Npclist(TempCharIndex).Stats.MaxHp) * 100#, 0) & "%"
+                    End If
  
-388             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 25 Then
+388             ElseIf UserList(Userindex).Stats.UserSkills(eSkill.Supervivencia) >= 25 Then
                 
 390                 If Npclist(TempCharIndex).Stats.MinHp < (Npclist(TempCharIndex).Stats.MaxHp * 0.1) Then
 392                     estatus = "<Agonizando"
@@ -1189,7 +1191,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                 End If
                         
 422             If Npclist(TempCharIndex).flags.Paralizado = 1 Then
-424                 If UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 100 Then
+424                 If UserList(Userindex).Stats.UserSkills(eSkill.Supervivencia) >= 100 Then
 426                     estatus = estatus & " | Paralizado (" & CInt(Npclist(TempCharIndex).Contadores.Paralisis / 6.5) & "s)"
                     Else
 428                     estatus = estatus & " | Paralizado"
@@ -1197,7 +1199,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                 End If
                         
 430             If Npclist(TempCharIndex).flags.Inmovilizado = 1 Then
-432                 If UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 100 Then
+432                 If UserList(Userindex).Stats.UserSkills(eSkill.Supervivencia) >= 100 Then
 434                     estatus = estatus & " | Inmovilizado (" & CInt(Npclist(TempCharIndex).Contadores.Paralisis / 6.5) & "s)"
                     Else
 436                     estatus = estatus & " | Inmovilizado"
@@ -1212,17 +1214,17 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
             
 440             If Len(Npclist(TempCharIndex).Desc) > 1 Then
                     'Optimizacion de protocolo por Ladder
-442                 Call WriteChatOverHead(UserIndex, "NPCDESC*" & Npclist(TempCharIndex).Numero, Npclist(TempCharIndex).Char.CharIndex, vbWhite)
+442                 Call WriteChatOverHead(Userindex, "NPCDESC*" & Npclist(TempCharIndex).Numero, Npclist(TempCharIndex).Char.CharIndex, vbWhite)
 444             ElseIf TempCharIndex = CentinelaNPCIndex Then
                     'Enviamos nuevamente el texto del centinela según quien pregunta
-446                 Call modCentinela.CentinelaSendClave(UserIndex)
+446                 Call modCentinela.CentinelaSendClave(Userindex)
                 
 448             ElseIf Npclist(TempCharIndex).MaestroUser > 0 Then
-450                 Call WriteConsoleMsg(UserIndex, "NPCNAME*" & Npclist(TempCharIndex).Numero & "* es mascota de " & UserList(Npclist(TempCharIndex).MaestroUser).name & " " & estatus, FontTypeNames.FONTTYPE_INFO)
+450                 Call WriteConsoleMsg(Userindex, "NPCNAME*" & Npclist(TempCharIndex).Numero & "* es mascota de " & UserList(Npclist(TempCharIndex).MaestroUser).name & " " & estatus, FontTypeNames.FONTTYPE_INFO)
                 
                 Else
                 
-452                 Call WriteConsoleMsg(UserIndex, "NPCNAME*" & Npclist(TempCharIndex).Numero & "*" & " " & estatus, FontTypeNames.FONTTYPE_INFO)
+452                 Call WriteConsoleMsg(Userindex, "NPCNAME*" & Npclist(TempCharIndex).Numero & "*" & " " & estatus, FontTypeNames.FONTTYPE_INFO)
                     ' If UserList(UserIndex).flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin) Then
                     ' Call WriteConsoleMsg(UserIndex, "Le pegó primero: " & Npclist(TempCharIndex).flags.AttackedFirstBy & ".", FontTypeNames.FONTTYPE_INFO)
                     ' Call WriteConsoleMsg(UserIndex, Npclist(TempCharIndex).Char.CharIndex, FontTypeNames.FONTTYPE_INFO)
@@ -1231,10 +1233,10 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                 End If
 
 454             FoundSomething = 1
-456             UserList(UserIndex).flags.TargetNpcTipo = Npclist(TempCharIndex).NPCtype
-458             UserList(UserIndex).flags.TargetNPC = TempCharIndex
-460             UserList(UserIndex).flags.TargetUser = 0
-462             UserList(UserIndex).flags.TargetObj = 0
+456             UserList(Userindex).flags.TargetNpcTipo = Npclist(TempCharIndex).NPCtype
+458             UserList(Userindex).flags.TargetNPC = TempCharIndex
+460             UserList(Userindex).flags.TargetUser = 0
+462             UserList(Userindex).flags.TargetObj = 0
 
 
             
@@ -1242,7 +1244,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                     
 464                 For i = 1 To MAXUSERQUESTS
                     
-466                     With UserList(UserIndex).QuestStats.Quests(i)
+466                     With UserList(Userindex).QuestStats.Quests(i)
                     
 468                         If .QuestIndex Then
 470                             If QuestList(.QuestIndex).RequiredTargetNPCs Then
@@ -1256,10 +1258,10 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                                             End If
                                                 
 480                                         If QuestList(.QuestIndex).RequiredTargetNPC(j).Amount = .NPCsTarget(j) Then
-482                                             Call FinishQuest(UserIndex, .QuestIndex, i)
-484                                             Call WriteUpdateNPCSimbolo(UserIndex, TempCharIndex, 1)
-486                                             Call WriteChatOverHead(UserIndex, "¡Quest Finalizada!", Npclist(TempCharIndex).Char.CharIndex, vbYellow)
-488                                             Call WriteConsoleMsg(UserIndex, "Quest Finalizada!", FontTypeNames.FONTTYPE_INFOIAO)
+482                                             Call FinishQuest(Userindex, .QuestIndex, i)
+484                                             Call WriteUpdateNPCSimbolo(Userindex, TempCharIndex, 1)
+486                                             Call WriteChatOverHead(Userindex, "¡Quest Finalizada!", Npclist(TempCharIndex).Char.CharIndex, vbYellow)
+488                                             Call WriteConsoleMsg(Userindex, "Quest Finalizada!", FontTypeNames.FONTTYPE_INFOIAO)
                                             End If
                     
                                         End If
@@ -1277,21 +1279,21 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
             End If
     
 494         If FoundChar = 0 Then
-496             UserList(UserIndex).flags.TargetNPC = 0
-498             UserList(UserIndex).flags.TargetNpcTipo = eNPCType.Comun
-500             UserList(UserIndex).flags.TargetUser = 0
+496             UserList(Userindex).flags.TargetNPC = 0
+498             UserList(Userindex).flags.TargetNpcTipo = eNPCType.Comun
+500             UserList(Userindex).flags.TargetUser = 0
 
             End If
     
             '*** NO ENCOTRO NADA ***
 502         If FoundSomething = 0 Then
-504             UserList(UserIndex).flags.TargetNPC = 0
-506             UserList(UserIndex).flags.TargetNpcTipo = eNPCType.Comun
-508             UserList(UserIndex).flags.TargetUser = 0
-510             UserList(UserIndex).flags.TargetObj = 0
-512             UserList(UserIndex).flags.TargetObjMap = 0
-514             UserList(UserIndex).flags.TargetObjX = 0
-516             UserList(UserIndex).flags.TargetObjY = 0
+504             UserList(Userindex).flags.TargetNPC = 0
+506             UserList(Userindex).flags.TargetNpcTipo = eNPCType.Comun
+508             UserList(Userindex).flags.TargetUser = 0
+510             UserList(Userindex).flags.TargetObj = 0
+512             UserList(Userindex).flags.TargetObjMap = 0
+514             UserList(Userindex).flags.TargetObjX = 0
+516             UserList(Userindex).flags.TargetObjY = 0
 
                 ' Call WriteConsoleMsg(UserIndex, "No ves nada interesante.", FontTypeNames.FONTTYPE_INFO)
             End If
@@ -1299,13 +1301,13 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
         Else
 
 518         If FoundSomething = 0 Then
-520             UserList(UserIndex).flags.TargetNPC = 0
-522             UserList(UserIndex).flags.TargetNpcTipo = eNPCType.Comun
-524             UserList(UserIndex).flags.TargetUser = 0
-526             UserList(UserIndex).flags.TargetObj = 0
-528             UserList(UserIndex).flags.TargetObjMap = 0
-530             UserList(UserIndex).flags.TargetObjX = 0
-532             UserList(UserIndex).flags.TargetObjY = 0
+520             UserList(Userindex).flags.TargetNPC = 0
+522             UserList(Userindex).flags.TargetNpcTipo = eNPCType.Comun
+524             UserList(Userindex).flags.TargetUser = 0
+526             UserList(Userindex).flags.TargetObj = 0
+528             UserList(Userindex).flags.TargetObjMap = 0
+530             UserList(Userindex).flags.TargetObjX = 0
+532             UserList(Userindex).flags.TargetObjY = 0
 
                 '  Call WriteConsoleMsg(UserIndex, "No ves nada interesante.", FontTypeNames.FONTTYPE_INFO)
             End If
@@ -1316,9 +1318,9 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
         Exit Sub
 
 LookatTile_Err:
-534         Call RegistrarError(Err.Number, Err.description & " Pos: " & Map & "-" & X & "-" & Y & " Usuario: " & UserList(UserIndex).name & " Extra.LookatTile", Erl)
+534         Call RegistrarError(Err.Number, Err.description & " Pos: " & Map & "-" & X & "-" & Y & " Usuario: " & UserList(Userindex).name & " Extra.LookatTile", Erl)
         If FoundChar = 2 Then
-            Call RegistrarError(Err.Number, Err.description & " Pos: " & Map & "-" & X & "-" & Y & "Npc: " & Npclist(TempCharIndex).Numero & " Usuario: " & UserList(UserIndex).name & "Extra.LookatTile X LADDER", Erl)
+            Call RegistrarError(Err.Number, Err.description & " Pos: " & Map & "-" & X & "-" & Y & "Npc: " & Npclist(TempCharIndex).Numero & " Usuario: " & UserList(Userindex).name & "Extra.LookatTile X LADDER", Erl)
         End If
 536     Resume Next
         
