@@ -12883,7 +12883,7 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
             'If we got here then packet is complete, copy data back to original queue
             Call .incomingData.CopyBuffer(buffer)
             
-112         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
+112         If EsGM(UserIndex) Then
 114
 
                 If Len(UserName) <> 0 Then
@@ -12898,15 +12898,15 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
                 Else
                     
                     ' Esta tratando de invocar a un Dios o Admin...
-                    If (UserList(tUser).flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin)) Then
-                        Call WriteConsoleMsg(UserIndex, "No podés invocar a dioses y admins.", FontTypeNames.FONTTYPE_INFO)
-                        Exit Sub
-                    End If
+                   ' If (UserList(tUser).flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin)) Then
+                      '  Call WriteConsoleMsg(UserIndex, "No podés invocar a dioses y admins.", FontTypeNames.FONTTYPE_INFO)
+                      '  Exit Sub
+                    'End If
                     
                     ' Podes sumonear a consejero como quieras.
                     ' Pero si querés SUMONEAR a un USUARIO, TENÉS QUE ESTAR EN EL MISMO MAPA.
-124                 If (UserList(tUser).flags.Privilegios And PlayerType.Consejero) Or _
-                       (UserList(tUser).flags.Privilegios And PlayerType.user) <> 0 And .Pos.Map = UserList(tUser).Pos.Map Then
+124                 If (UserList(tUser).flags.Privilegios And PlayerType.Consejero) = 0 Or _
+                        .Pos.Map = UserList(tUser).Pos.Map Then
                         
 126                     Call WriteConsoleMsg(tUser, .name & " te ha trasportado.", FontTypeNames.FONTTYPE_INFO)
 128                     Call WarpToLegalPos(tUser, .Pos.Map, .Pos.X, .Pos.Y + 1, True, True)
@@ -12920,7 +12920,7 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
 136                         Call LogGM(.name, "/SUM " & UserName & " Map:" & .Pos.Map & " X:" & .Pos.X & " Y:" & .Pos.Y)
 
                         End If
-
+                    
                     End If
 
                 End If
