@@ -2897,6 +2897,7 @@ Sub LoadUser(ByVal Userindex As Integer)
 
 ErrorHandler:
 212     Call RegistrarError(Err.Number, Err.description & " UserName: " & UserList(Userindex).name, "ES.LoadUser", Erl)
+        Resume Next
     
 End Sub
 

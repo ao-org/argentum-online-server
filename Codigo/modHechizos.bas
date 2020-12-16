@@ -41,6 +41,8 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal Userindex As Integer
         On Error GoTo NpcLanzaSpellSobreUser_Err
         
 100     With UserList(Userindex)
+
+            If Spell = 0 Then Exit Sub
         
             '¿NPC puede ver a través de la invisibilidad?
 102         If Not IgnoreVisibilityCheck Then
