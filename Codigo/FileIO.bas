@@ -2089,7 +2089,7 @@ End Sub
 
 Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
 
-        On Error GoTo errh:
+        On Error GoTo ErrorHandler:
 
         Dim npcfile      As String
 
@@ -2119,9 +2119,14 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
         Dim j            As Long
     
         Dim X As Integer, Y As Integer
-    
+        
+        If Not FileExist(MAPFl, vbNormal) Then
+            Call RegistrarError(404, "Estas tratando de cargar un MAPA que NO EXISTE" & vbNewLine & "Mapa: " & MAPFl, "ES.CargarMapaFormatoCSM")
+            Exit Sub
+        End If
+        
 100     If FileLen(MAPFl) = 0 Then
-102         Call RegistrarError(4333, "Se trato de cargar un mapa corrupto o mal generado" & vbNewLine & "Mapa: " & MAPFl, "ES.CargarMapaFormatoCSM")
+102         Call RegistrarError(500, "Se trato de cargar un mapa corrupto o mal generado" & vbNewLine & "Mapa: " & MAPFl, "ES.CargarMapaFormatoCSM")
             Exit Sub
         End If
     
@@ -2374,9 +2379,9 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
  
         Exit Sub
 
-errh:
+ErrorHandler:
 352     Close fh
-354     Call MsgBox("Error cargando mapa: " & Map & ". " & Err.Number & " - " & Err.description & " - ")
+        Call RegistrarError(Err.Number, Err.description, "ES.CargarMapaFormatoCSM", Erl)
     
 End Sub
 
