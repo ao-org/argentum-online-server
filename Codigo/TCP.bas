@@ -1830,13 +1830,7 @@ Sub ConnectUser(ByVal Userindex As Integer, ByRef name As String, ByRef UserCuen
     
 ErrHandler:
 586     Call WriteShowMessageBox(Userindex, "El personaje contiene un error, comuniquese con un miembro del staff.")
-    
-    
-        'N = FreeFile
-        'Log
-        'Open App.Path & "\logs\Connect.log" For Append Shared As #N
-        'Print #N, UserList(UserIndex).name & " ha entrado al juego. UserIndex:" & UserIndex & " " & Time & " " & Date
-        'Close #N
+        Call RegistrarError(Err.Number, Err.description, "TCP.ConnectUser", Erl)
 
 End Sub
 
