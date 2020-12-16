@@ -656,7 +656,7 @@ ValidateSkills_Err:
         
 End Function
 
-Sub ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal UserRaza As eRaza, ByVal UserSexo As eGenero, ByVal UserClase As eClass, ByVal Head As Integer, ByRef UserCuenta As String, ByVal Hogar As eCiudad)
+Function ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal UserRaza As eRaza, ByVal UserSexo As eGenero, ByVal UserClase As eClass, ByVal Head As Integer, ByRef UserCuenta As String, ByVal Hogar As eCiudad) As Boolean
         '*************************************************
         'Author: Unknown
         'Last modified: 20/4/2007
@@ -670,32 +670,39 @@ Sub ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal UserR
         
         On Error GoTo ConnectNewUser_Err
         
-    
-100     If Not AsciiValidos(name) Or LenB(name) = 0 Then
-102         Call WriteErrorMsg(UserIndex, "Nombre invalido.")
-            Exit Sub
-
-        End If
+        Dim LoopC As Long
     
 104     If UserList(UserIndex).flags.UserLogged Then
 106         Call LogCheating("El usuario " & UserList(UserIndex).name & " ha intentado crear a " & name & " desde la IP " & UserList(UserIndex).ip)
 108         Call CloseSocketSL(UserIndex)
 110         Call Cerrar_Usuario(UserIndex)
-            Exit Sub
-
+            Exit Function
         End If
-    
-        Dim LoopC As Long
-    
+        
+        ' Nombre válido
+        If LenB(name) < 1 Or LenB(name) > 18 Then Exit Function
+        If Not AsciiValidos(name) Then Exit Function
+
         '¿Existe el personaje?
 112     If PersonajeExiste(name) Then
 114         Call WriteErrorMsg(UserIndex, "Ya existe el personaje.")
-            Exit Sub
-
+            Exit Function
         End If
-    
+        
+        ' Raza válida
+        If UserRaza <= 0 Or UserRaza > NUMRAZAS Then Exit Function
+        
+        ' Género válido
+        If UserSexo < Hombre Or UserSexo > Mujer Then Exit Function
+        
+        ' Ciudad válida
+        If Hogar <= 0 Or Hogar > NUMCIUDADES Then Exit Function
+        
+        ' Cabeza válida
+        If Not ValidarCabeza(UserRaza, UserSexo, Head) Then Exit Function
+        
         'Prevenimos algun bug con dados inválidos
-116     If UserList(UserIndex).Stats.UserAtributos(eAtributos.Fuerza) = 0 Then Exit Sub
+116     If UserList(UserIndex).Stats.UserAtributos(eAtributos.Fuerza) = 0 Then Exit Function
     
 118     UserList(UserIndex).Stats.UserAtributos(eAtributos.Fuerza) = UserList(UserIndex).Stats.UserAtributos(eAtributos.Fuerza) + ModRaza(UserRaza).Fuerza
 120     UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad) = UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad) + ModRaza(UserRaza).Agilidad
@@ -809,15 +816,18 @@ Sub ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal UserR
 246     UltimoChar = UCase$(name)
     
 248     Call SaveNewUser(UserIndex)
+
+        ConnectNewUser = True
+
 250     Call ConnectUser(UserIndex, name, UserCuenta)
         
-        Exit Sub
+        Exit Function
 
 ConnectNewUser_Err:
 252     Call RegistrarError(Err.Number, Err.description, "TCP.ConnectNewUser", Erl)
 254     Resume Next
         
-End Sub
+End Function
 
 #If UsarQueSocket = 1 Or UsarQueSocket = 2 Then
 
@@ -2655,3 +2665,59 @@ EcharPjsNoPrivilegiados_Err:
 112     Resume Next
         
 End Sub
+
+Function ValidarCabeza(ByVal UserRaza As eRaza, ByVal UserSexo As eGenero, ByVal Head As Integer) As Boolean
+
+    Select Case UserSexo
+    
+        Case eGenero.Hombre
+        
+            Select Case UserRaza
+                
+                Case eRaza.Humano
+                    ValidarCabeza = Head >= 1 And Head <= 41
+                    
+                Case eRaza.Elfo
+                    ValidarCabeza = Head >= 101 And Head <= 132
+                    
+                Case eRaza.Drow
+                    ValidarCabeza = Head >= 200 And Head <= 229
+                    
+                Case eRaza.Enano
+                    ValidarCabeza = Head >= 300 And Head <= 329
+                    
+                Case eRaza.Gnomo
+                    ValidarCabeza = Head >= 400 And Head <= 429
+                    
+                Case eRaza.Orco
+                    ValidarCabeza = Head >= 500 And Head <= 529
+                
+            End Select
+        
+        Case eGenero.Mujer
+        
+            Select Case UserRaza
+                
+                Case eRaza.Humano
+                    ValidarCabeza = Head >= 50 And Head <= 80
+                    
+                Case eRaza.Elfo
+                    ValidarCabeza = Head >= 150 And Head <= 179
+                    
+                Case eRaza.Drow
+                    ValidarCabeza = Head >= 250 And Head <= 279
+                    
+                Case eRaza.Enano
+                    ValidarCabeza = Head >= 350 And Head <= 379
+                    
+                Case eRaza.Gnomo
+                    ValidarCabeza = Head >= 450 And Head <= 479
+                    
+                Case eRaza.Orco
+                    ValidarCabeza = Head >= 550 And Head <= 579
+                
+            End Select
+    
+    End Select
+
+End Function
