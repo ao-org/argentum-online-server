@@ -1422,7 +1422,7 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
 
 1132         Case Else
                   'ERROR : Abort!
-1134            Call CloseSocket(UserIndex)
+1134             Call CloseSocket(UserIndex)
                  Exit Function
           End Select
 
@@ -1446,13 +1446,6 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
 1148         HandleIncomingData = False
           End If
 
-         
-         Exit Function
-
-HandleIncomingData_Err:
-         Call RegistrarError(Err.Number, Err.description, "Protocol.HandleIncomingData", Erl)
-
-         
 End Function
 
 Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
@@ -1889,24 +1882,19 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
     
 108     If PuedeCrearPersonajes = 0 Then
 110         Call WriteErrorMsg(UserIndex, "La creacion de personajes en este servidor se ha deshabilitado.")
-        
 112         Call CloseSocket(UserIndex)
             Exit Sub
-
         End If
 
 114     If aClon.MaxPersonajes(UserList(UserIndex).ip) Then
 116         Call WriteErrorMsg(UserIndex, "Has creado demasiados personajes.")
-        
 118         Call CloseSocket(UserIndex)
             Exit Sub
-
         End If
     
 120     If ObtenerCantidadDePersonajesByUserIndex(UserIndex) >= MAX_PERSONAJES Then
 122         Call CloseSocket(UserIndex)
             Exit Sub
-
         End If
     
 124     CuentaEmail = buffer.ReadASCIIString()
@@ -1923,20 +1911,19 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
     
 146     If Not VersionOK(Version) Then
 148         Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
-        
 150         Call CloseSocket(UserIndex)
             Exit Sub
-
         End If
 
 152     If Not EntrarCuenta(UserIndex, CuentaEmail, Password, MacAddress, HDserial) Then
-        
 154         Call CloseSocket(UserIndex)
             Exit Sub
-
         End If
 
-156     Call ConnectNewUser(UserIndex, UserName, race, gender, Class, Head, CuentaEmail, Hogar)
+156     If Not ConnectNewUser(UserIndex, UserName, race, gender, Class, Head, CuentaEmail, Hogar) Then
+            Call CloseSocket(UserIndex)
+            Exit Sub
+        End If
 
         'If we got here then packet is complete, copy data back to original queue
 158     Call UserList(UserIndex).incomingData.CopyBuffer(buffer)

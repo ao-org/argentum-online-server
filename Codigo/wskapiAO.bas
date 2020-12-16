@@ -703,9 +703,8 @@ Public Sub EventoSockRead(ByVal slot As Integer, ByRef Datos() As Byte)
 
 104                 If UserList(slot).flags.UserLogged Then
 106                     Security.NAC_D_Byte Datos, UserList(slot).Redundance
-108                     Elsete
+108                 Else
 110                     Security.NAC_D_Byte Datos, 13 'DEFAULT
-
                     End If
 
                 #End If
