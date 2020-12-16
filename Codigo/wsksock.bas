@@ -325,6 +325,10 @@ Attribute VB_Name = "WSKSOCK"
     Public WSAStartedUp As Boolean     'Flag to keep track of whether winsock WSAStartup wascalled
 
 Public Function WSAGetAsyncBufLen(ByVal lParam As Long) As Long
+        
+        On Error GoTo WSAGetAsyncBufLen_Err
+    
+        
 
 100     If (lParam And &HFFFF&) > &H7FFF Then
 102         WSAGetAsyncBufLen = (lParam And &HFFFF&) - &H10000
@@ -332,9 +336,20 @@ Public Function WSAGetAsyncBufLen(ByVal lParam As Long) As Long
 104         WSAGetAsyncBufLen = lParam And &HFFFF&
         End If
 
+        
+        Exit Function
+
+WSAGetAsyncBufLen_Err:
+        Call RegistrarError(Err.Number, Err.description, "WSKSOCK.WSAGetAsyncBufLen", Erl)
+
+        
 End Function
 
 Public Function WSAGetSelectEvent(ByVal lParam As Long) As Integer
+        
+        On Error GoTo WSAGetSelectEvent_Err
+    
+        
         
 100     If (lParam And &HFFFF&) > &H7FFF Then
 102         WSAGetSelectEvent = (lParam And &HFFFF&) - &H10000
@@ -342,15 +357,37 @@ Public Function WSAGetSelectEvent(ByVal lParam As Long) As Integer
 104         WSAGetSelectEvent = lParam And &HFFFF&
         End If
         
+        
+        Exit Function
+
+WSAGetSelectEvent_Err:
+        Call RegistrarError(Err.Number, Err.description, "WSKSOCK.WSAGetSelectEvent", Erl)
+
+        
 End Function
 
 Public Function WSAGetAsyncError(ByVal lParam As Long) As Integer
+        
+        On Error GoTo WSAGetAsyncError_Err
+    
+        
 
 100     WSAGetAsyncError = (lParam And &HFFFF0000) \ &H10000
+        
+        
+        Exit Function
+
+WSAGetAsyncError_Err:
+        Call RegistrarError(Err.Number, Err.description, "WSKSOCK.WSAGetAsyncError", Erl)
+
         
 End Function
 
 Public Function AddrToIP(ByVal AddrOrIP$) As String
+        
+        On Error GoTo AddrToIP_Err
+    
+        
     
         Dim T() As String
         Dim Tmp As String
@@ -359,10 +396,21 @@ Public Function AddrToIP(ByVal AddrOrIP$) As String
 102     T = Split(Tmp, ".")
 104     AddrToIP = T(3) & "." & T(2) & "." & T(1) & "." & T(0)
         
+        
+        Exit Function
+
+AddrToIP_Err:
+        Call RegistrarError(Err.Number, Err.description, "WSKSOCK.AddrToIP", Erl)
+
+        
 End Function
 
 'this function should work on 16 and 32 bit systems
 Function ConnectSock(ByVal Host$, ByVal Port&, retIpPort$, ByVal HWndToMsg&, ByVal Async%) As Long
+        
+        On Error GoTo ConnectSock_Err
+    
+        
 
         Dim S&, SelectOps&, dummy&
         Dim sockin As sockaddr
@@ -465,9 +513,20 @@ Function ConnectSock(ByVal Host$, ByVal Port&, retIpPort$, ByVal HWndToMsg&, ByV
 
 174     ConnectSock = S
     
+        
+        Exit Function
+
+ConnectSock_Err:
+        Call RegistrarError(Err.Number, Err.description, "WSKSOCK.ConnectSock", Erl)
+
+        
 End Function
 
 Public Function SetSockLinger(ByVal SockNum&, ByVal OnOff%, ByVal LingerTime%) As Long
+        
+        On Error GoTo SetSockLinger_Err
+    
+        
     
         Dim Linger As LingerType
 
@@ -491,9 +550,20 @@ Public Function SetSockLinger(ByVal SockNum&, ByVal OnOff%, ByVal LingerTime%) A
 
         End If
 
+        
+        Exit Function
+
+SetSockLinger_Err:
+        Call RegistrarError(Err.Number, Err.description, "WSKSOCK.SetSockLinger", Erl)
+
+        
 End Function
 
 Sub EndWinsock()
+        
+        On Error GoTo EndWinsock_Err
+    
+        
         
         Dim ret&
 
@@ -505,9 +575,20 @@ Sub EndWinsock()
     
 106     WSAStartedUp = False
            
+        
+        Exit Sub
+
+EndWinsock_Err:
+        Call RegistrarError(Err.Number, Err.description, "WSKSOCK.EndWinsock", Erl)
+
+        
 End Sub
 
 Public Function GetAscIP(ByVal inn As Long) As String
+        
+        On Error GoTo GetAscIP_Err
+    
+        
 
         Dim nStr&
         Dim lpStr&
@@ -534,9 +615,20 @@ Public Function GetAscIP(ByVal inn As Long) As String
 
         End If
 
+        
+        Exit Function
+
+GetAscIP_Err:
+        Call RegistrarError(Err.Number, Err.description, "WSKSOCK.GetAscIP", Erl)
+
+        
 End Function
 
 Public Function GetHostByAddress(ByVal addr As Long) As String
+        
+        On Error GoTo GetHostByAddress_Err
+    
+        
 
         Dim phe&
         Dim heDestHost As HostEnt
@@ -560,10 +652,21 @@ Public Function GetHostByAddress(ByVal addr As Long) As String
 
         End If
 
+        
+        Exit Function
+
+GetHostByAddress_Err:
+        Call RegistrarError(Err.Number, Err.description, "WSKSOCK.GetHostByAddress", Erl)
+
+        
 End Function
 
 'returns IP as long, in network byte order
 Public Function GetHostByNameAlias(ByVal HostName$) As Long
+        
+        On Error GoTo GetHostByNameAlias_Err
+    
+        
 
         'Return IP address as a long, in network byte order
         Dim phe&
@@ -590,10 +693,21 @@ Public Function GetHostByNameAlias(ByVal HostName$) As Long
 
 116     GetHostByNameAlias = retIP
         
+        
+        Exit Function
+
+GetHostByNameAlias_Err:
+        Call RegistrarError(Err.Number, Err.description, "WSKSOCK.GetHostByNameAlias", Erl)
+
+        
 End Function
 
 'returns your local machines name
 Public Function GetLocalHostName() As String
+        
+        On Error GoTo GetLocalHostName_Err
+    
+        
 
         Dim sName$
 
@@ -612,9 +726,20 @@ Public Function GetLocalHostName() As String
 
 110     GetLocalHostName = sName
 
+        
+        Exit Function
+
+GetLocalHostName_Err:
+        Call RegistrarError(Err.Number, Err.description, "WSKSOCK.GetLocalHostName", Erl)
+
+        
 End Function
 
 Public Function GetPeerAddress(ByVal S&) As String
+        
+        On Error GoTo GetPeerAddress_Err
+    
+        
 
         Dim AddrLen&
         Dim sa As sockaddr
@@ -629,9 +754,20 @@ Public Function GetPeerAddress(ByVal S&) As String
 
         End If
         
+        
+        Exit Function
+
+GetPeerAddress_Err:
+        Call RegistrarError(Err.Number, Err.description, "WSKSOCK.GetPeerAddress", Erl)
+
+        
 End Function
 
 Public Function GetPortFromString(ByVal PortStr$) As Long
+        
+        On Error GoTo GetPortFromString_Err
+    
+        
 
         'sometimes users provide ports outside the range of a VB
         'integer, so this function returns an integer for a string
@@ -647,9 +783,20 @@ Public Function GetPortFromString(ByVal PortStr$) As Long
 
 106     If Err Then GetPortFromString = 0
         
+        
+        Exit Function
+
+GetPortFromString_Err:
+        Call RegistrarError(Err.Number, Err.description, "WSKSOCK.GetPortFromString", Erl)
+
+        
 End Function
 
 Function GetProtocolByName(ByVal Protocol$) As Long
+        
+        On Error GoTo GetProtocolByName_Err
+    
+        
 
         Dim tmpShort&
         Dim ppe&
@@ -677,9 +824,20 @@ Function GetProtocolByName(ByVal Protocol$) As Long
 
         End If
 
+        
+        Exit Function
+
+GetProtocolByName_Err:
+        Call RegistrarError(Err.Number, Err.description, "WSKSOCK.GetProtocolByName", Erl)
+
+        
 End Function
 
 Function GetServiceByName(ByVal service$, ByVal Protocol$) As Long
+        
+        On Error GoTo GetServiceByName_Err
+    
+        
 
         Dim Serv&
         Dim pse&
@@ -706,9 +864,20 @@ Function GetServiceByName(ByVal service$, ByVal Protocol$) As Long
 
         End If
 
+        
+        Exit Function
+
+GetServiceByName_Err:
+        Call RegistrarError(Err.Number, Err.description, "WSKSOCK.GetServiceByName", Erl)
+
+        
 End Function
 
 Function GetSockAddress(ByVal S&) As String
+        
+        On Error GoTo GetSockAddress_Err
+    
+        
 
         Dim AddrLen&
         Dim ret&
@@ -726,12 +895,23 @@ Function GetSockAddress(ByVal S&) As String
 
         End If
 
+        
+        Exit Function
+
+GetSockAddress_Err:
+        Call RegistrarError(Err.Number, Err.description, "WSKSOCK.GetSockAddress", Erl)
+
+        
 End Function
 
 'this function should work on 16 and 32 bit systems
 Function GetWSAErrorString(ByVal errnum&) As String
+        
+        On Error GoTo GetWSAErrorString_Err
+    
+        
 
-        On Error Resume Next
+        
 
 100     Select Case errnum
 
@@ -892,17 +1072,35 @@ Function GetWSAErrorString(ByVal errnum&) As String
 
         End Select
 
+        
+        Exit Function
+
+GetWSAErrorString_Err:
+        Call RegistrarError(Err.Number, Err.description, "WSKSOCK.GetWSAErrorString", Erl)
+
+        
 End Function
 
 'this function DOES work on 16 and 32 bit systems
 Function IpToAddr(ByVal AddrOrIP$) As String
+        
+        On Error GoTo IpToAddr_Err
+    
+        
 
-        On Error Resume Next
+        
 
 100     IpToAddr = GetHostByAddress(GetHostByNameAlias(AddrOrIP$))
 
 102     If Err Then IpToAddr = WSA_NoName
 
+        
+        Exit Function
+
+IpToAddr_Err:
+        Call RegistrarError(Err.Number, Err.description, "WSKSOCK.IpToAddr", Erl)
+
+        
 End Function
 
 'this function DOES work on 16 and 32 bit systems
@@ -953,9 +1151,20 @@ IrcGetAscIPError:
 End Function
 
 Public Function GetLongIp(ByVal IPS As String) As Long
+        
+        On Error GoTo GetLongIp_Err
+    
+        
 
 100     GetLongIp = inet_addr(IPS)
 
+        
+        Exit Function
+
+GetLongIp_Err:
+        Call RegistrarError(Err.Number, Err.description, "WSKSOCK.GetLongIp", Erl)
+
+        
 End Function
 
 'this function DOES work on 16 and 32 bit systems
@@ -992,6 +1201,10 @@ End Function
 'this function should work on 16 and 32 bit systems
 
 Public Function ListenForConnect(ByVal Port&, ByVal HWndToMsg&, ByVal Enlazar As String) As Long
+        
+        On Error GoTo ListenForConnect_Err
+    
+        
 
         Dim S&, dummy&
         Dim SelectOps&
@@ -1083,9 +1296,20 @@ ListenForConnect_Err:
 
 156     Resume Next
         
+        
+        Exit Function
+
+ListenForConnect_Err:
+        Call RegistrarError(Err.Number, Err.description, "WSKSOCK.ListenForConnect", Erl)
+
+        
 End Function
 
 Public Function kSendData(ByVal S&, vMessage As Variant) As Long
+        
+        On Error GoTo kSendData_Err
+    
+        
 
         Dim TheMsg() As Byte, sTemp$
 
@@ -1119,12 +1343,30 @@ kSendData_Err:
 
 126     Resume Next
         
+        
+        Exit Function
+
+kSendData_Err:
+        Call RegistrarError(Err.Number, Err.description, "WSKSOCK.kSendData", Erl)
+
+        
 End Function
 
 Public Function SockAddressToString(sa As sockaddr) As String
+        
+        On Error GoTo SockAddressToString_Err
+    
+        
 
 100     SockAddressToString = GetAscIP(sa.sin_addr) & ":" & ntohs(sa.sin_port)
 
+        
+        Exit Function
+
+SockAddressToString_Err:
+        Call RegistrarError(Err.Number, Err.description, "WSKSOCK.SockAddressToString", Erl)
+
+        
 End Function
 
 Public Function StartWinsock(sDescription As String) As Boolean
@@ -1163,9 +1405,20 @@ StartWinsock_Err:
 End Function
 
 Public Function WSAMakeSelectReply(TheEvent%, TheError%) As Long
+        
+        On Error GoTo WSAMakeSelectReply_Err
+    
+        
 
 100     WSAMakeSelectReply = (TheError * &H10000) + (TheEvent And &HFFFF&)
 
+        
+        Exit Function
+
+WSAMakeSelectReply_Err:
+        Call RegistrarError(Err.Number, Err.description, "WSKSOCK.WSAMakeSelectReply", Erl)
+
+        
 End Function
 
 #End If

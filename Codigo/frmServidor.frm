@@ -762,8 +762,12 @@ Command14_Click_Err:
 End Sub
 
 Private Sub Command15_Click()
+        
+        On Error GoTo Command15_Click_Err
+    
+        
 
-        On Error Resume Next
+        
 
         Dim Fn       As String
 
@@ -797,6 +801,13 @@ Private Sub Command15_Click()
 
         End If
 
+        
+        Exit Sub
+
+Command15_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command15_Click", Erl)
+
+        
 End Sub
 
 Private Sub Command16_Click()
@@ -1126,9 +1137,13 @@ eh:
 End Sub
 
 Private Sub Command5_Click()
+        
+        On Error GoTo Command5_Click_Err
+    
+        
 
         'Se asegura de que los sockets estan cerrados e ignora cualquier err
-        On Error Resume Next
+        
 
 100     If frmMain.Visible Then frmMain.txStatus.Caption = "Reiniciando."
 
@@ -1193,6 +1208,13 @@ Private Sub Command5_Click()
 
 176     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
 
+        
+        Exit Sub
+
+Command5_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command5_Click", Erl)
+
+        
 End Sub
 
 Private Sub Command6_Click()

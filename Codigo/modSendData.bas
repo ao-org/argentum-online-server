@@ -64,13 +64,17 @@ Public Enum SendTarget
 End Enum
 
 Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, ByVal sndData As String)
+        
+        On Error GoTo SendData_Err
+    
+        
 
         '**************************************************************
         'Author: Juan Martín Sotuyo Dodero (Maraxus) - Rewrite of original
         'Last Modify Date: 01/08/2007
         'Last modified by: (liquid)
         '**************************************************************
-        On Error Resume Next
+        
 
         Dim LoopC As Long
         Dim Map   As Integer
@@ -403,6 +407,13 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, ByV
 
         End Select
 
+        
+        Exit Sub
+
+SendData_Err:
+        Call RegistrarError(Err.Number, Err.description, "modSendData.SendData", Erl)
+
+        
 End Sub
 
 Private Sub SendToUserArea(ByVal UserIndex As Integer, ByVal sdData As String)

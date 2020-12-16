@@ -36,9 +36,20 @@ Public Enum Accion_Barra
 End Enum
 
 Public Function GetTickCount() As Long
+        
+        On Error GoTo GetTickCount_Err
+    
+        
     
 100     GetTickCount = timeGetTime And &H7FFFFFFF
     
+        
+        Exit Function
+
+GetTickCount_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModLadder.GetTickCount", Erl)
+
+        
 End Function
 
 Function GetTimeFormated() As String

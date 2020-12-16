@@ -146,5 +146,16 @@ hErr:
 End Sub
 
 Public Function GetIndiceByPos(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As String
+        
+        On Error GoTo GetIndiceByPos_Err
+    
+        
 100     GetIndiceByPos = Map & S & X & S & Y
+        
+        Exit Function
+
+GetIndiceByPos_Err:
+        Call RegistrarError(Err.Number, Err.description, "ModLimpieza.GetIndiceByPos", Erl)
+
+        
 End Function

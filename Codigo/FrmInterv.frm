@@ -800,11 +800,22 @@ AplicarIntervalos_Err:
 End Sub
 
 Private Sub Command1_Click()
+        
+        On Error GoTo Command1_Click_Err
+    
+        
 
-        On Error Resume Next
+        
 
 100     Call AplicarIntervalos
 
+        
+        Exit Sub
+
+Command1_Click_Err:
+        Call RegistrarError(Err.Number, Err.description, "FrmInterv.Command1_Click", Erl)
+
+        
 End Sub
 
 Private Sub Command2_Click()

@@ -15,6 +15,10 @@ Public Const MATRIX_INITIAL_MAP           As Integer = 1
 Public Const GOHOME_PENALTY               As Integer = 5
 
 Public Function getLimit(ByVal Mapa As Integer, ByVal side As Byte) As Integer
+        
+        On Error GoTo getLimit_Err
+    
+        
 
         '***************************************************
         'Author: Budi
@@ -51,6 +55,13 @@ Public Function getLimit(ByVal Mapa As Integer, ByVal side As Byte) As Integer
 124         Next Y
 126     Next X
 
+        
+        Exit Function
+
+getLimit_Err:
+        Call RegistrarError(Err.Number, Err.description, "Hogar.getLimit", Erl)
+
+        
 End Function
 
 Public Sub generateMatrix(ByVal Mapa As Integer)
@@ -59,6 +70,10 @@ Public Sub generateMatrix(ByVal Mapa As Integer)
         'Last Modification: -
         '
         '***************************************************
+        
+        On Error GoTo generateMatrix_Err
+    
+        
 
         Dim i As Integer
 
@@ -94,6 +109,13 @@ Public Sub generateMatrix(ByVal Mapa As Integer)
 132         Next i
 134     Next j
 
+        
+        Exit Sub
+
+generateMatrix_Err:
+        Call RegistrarError(Err.Number, Err.description, "Hogar.generateMatrix", Erl)
+
+        
 End Sub
 
 Public Sub setDistance(ByVal Mapa As Integer, _
@@ -106,6 +128,10 @@ Public Sub setDistance(ByVal Mapa As Integer, _
         'Last Modification: -
         '
         '***************************************************
+        
+        On Error GoTo setDistance_Err
+    
+        
 
         Dim i   As Integer
 
@@ -147,6 +173,13 @@ Public Sub setDistance(ByVal Mapa As Integer, _
 
 132     Next i
 
+        
+        Exit Sub
+
+setDistance_Err:
+        Call RegistrarError(Err.Number, Err.description, "Hogar.setDistance", Erl)
+
+        
 End Sub
 
 Public Sub goHome(ByVal UserIndex As Integer)
@@ -155,6 +188,10 @@ Public Sub goHome(ByVal UserIndex As Integer)
         'Last Modification: 01/06/2010
         '01/06/2010: ZaMa - Ahora usa otro tipo de intervalo
         '***************************************************
+        
+        On Error GoTo goHome_Err
+    
+        
 
         Dim Distance As Long
         Dim Tiempo   As Long
@@ -191,6 +228,13 @@ Public Sub goHome(ByVal UserIndex As Integer)
         
         End With
     
+        
+        Exit Sub
+
+goHome_Err:
+        Call RegistrarError(Err.Number, Err.description, "Hogar.goHome", Erl)
+
+        
 End Sub
 
 ''
@@ -204,16 +248,31 @@ Public Sub TravelingEffect(ByVal UserIndex As Integer)
         'Author: ZaMa
         'Last Update: 01/06/2010 (ZaMa)
         '******************************************************
+        
+        On Error GoTo TravelingEffect_Err
+    
+        
 
         ' Si ya paso el tiempo de penalizacion
 100     If IntervaloGoHome(UserIndex) Then
 102         Call HomeArrival(UserIndex)
         End If
 
+        
+        Exit Sub
+
+TravelingEffect_Err:
+        Call RegistrarError(Err.Number, Err.description, "Hogar.TravelingEffect", Erl)
+
+        
 End Sub
 
 
 Public Function GetHomeArrivalTime(ByVal UserIndex As Integer) As Integer
+        
+        On Error GoTo GetHomeArrivalTime_Err
+    
+        
 
         '**************************************************************
         'Author: ZaMa
@@ -229,6 +288,13 @@ Public Function GetHomeArrivalTime(ByVal UserIndex As Integer) As Integer
 104         GetHomeArrivalTime = (.Counters.goHome - TActual) * 0.001
         End With
 
+        
+        Exit Function
+
+GetHomeArrivalTime_Err:
+        Call RegistrarError(Err.Number, Err.description, "Hogar.GetHomeArrivalTime", Erl)
+
+        
 End Function
 
 Public Sub HomeArrival(ByVal UserIndex As Integer)
@@ -238,6 +304,10 @@ Public Sub HomeArrival(ByVal UserIndex As Integer)
         'Last Modify Date: 01/06/2010
         'Teleports user to its home.
         '**************************************************************
+        
+        On Error GoTo HomeArrival_Err
+    
+        
     
         Dim tX   As Integer
         Dim tY   As Integer
@@ -274,11 +344,22 @@ Public Sub HomeArrival(ByVal UserIndex As Integer)
         
         End With
     
+        
+        Exit Sub
+
+HomeArrival_Err:
+        Call RegistrarError(Err.Number, Err.description, "Hogar.HomeArrival", Erl)
+
+        
 End Sub
 
 Public Function IntervaloGoHome(ByVal UserIndex As Integer, _
                                 Optional ByVal TimeInterval As Long, _
                                 Optional ByVal Actualizar As Boolean = False) As Boolean
+        
+        On Error GoTo IntervaloGoHome_Err
+    
+        
 
         '**************************************************************
         'Author: ZaMa
@@ -308,9 +389,20 @@ Public Function IntervaloGoHome(ByVal UserIndex As Integer, _
 
         End With
 
+        
+        Exit Function
+
+IntervaloGoHome_Err:
+        Call RegistrarError(Err.Number, Err.description, "Hogar.IntervaloGoHome", Erl)
+
+        
 End Function
 
 Public Sub HandleHome(ByVal UserIndex As Integer)
+        
+        On Error GoTo HandleHome_Err
+    
+        
 
         '***************************************************
         'Author: Budi
@@ -377,4 +469,11 @@ Public Sub HandleHome(ByVal UserIndex As Integer)
         
         End With
 
+        
+        Exit Sub
+
+HandleHome_Err:
+        Call RegistrarError(Err.Number, Err.description, "Hogar.HandleHome", Erl)
+
+        
 End Sub

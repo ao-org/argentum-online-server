@@ -1520,6 +1520,10 @@ Public Sub FollowAmo(ByVal NpcIndex As Integer)
         'Last Modification: -
         '
         '***************************************************
+        
+        On Error GoTo FollowAmo_Err
+    
+        
 
 100     With Npclist(NpcIndex)
 102         .flags.Follow = True
@@ -1532,6 +1536,13 @@ Public Sub FollowAmo(ByVal NpcIndex As Integer)
 116         .TargetNPC = 0
         End With
 
+        
+        Exit Sub
+
+FollowAmo_Err:
+        Call RegistrarError(Err.Number, Err.description, "NPCs.FollowAmo", Erl)
+
+        
 End Sub
 
 Public Function ObtenerIndiceRespawn() As Integer
@@ -1560,6 +1571,10 @@ Sub QuitarMascota(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
         'Last Modification: -
         '
         '***************************************************
+        
+        On Error GoTo QuitarMascota_Err
+    
+        
 
         Dim i As Integer
     
@@ -1576,6 +1591,13 @@ Sub QuitarMascota(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 
 110     Next i
 
+        
+        Exit Sub
+
+QuitarMascota_Err:
+        Call RegistrarError(Err.Number, Err.description, "NPCs.QuitarMascota", Erl)
+
+        
 End Sub
 
 Sub AnimacionIdle(ByVal NpcIndex As Integer, ByVal Show As Boolean)

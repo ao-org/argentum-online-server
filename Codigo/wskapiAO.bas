@@ -232,13 +232,17 @@ AgregaSlotSock_Err:
 End Sub
 
 Public Sub BorraSlotSock(ByVal Sock As Long)
+        
+        On Error GoTo BorraSlotSock_Err
+    
+        
         #If (UsarQueSocket = 1) Then
 
             Dim cant As Long
 
 100         cant = WSAPISock2Usr.Count
 
-            On Error Resume Next
+            
 
 102         WSAPISock2Usr.Remove CStr(Sock)
 
@@ -246,12 +250,23 @@ Public Sub BorraSlotSock(ByVal Sock As Long)
 
         #End If
 
+        
+        Exit Sub
+
+BorraSlotSock_Err:
+        Call RegistrarError(Err.Number, Err.description, "wskapiAO.BorraSlotSock", Erl)
+
+        
 End Sub
 
 Public Function WndProc(ByVal hWnd As Long, ByVal msg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+        
+        On Error GoTo WndProc_Err
+    
+        
         #If UsarQueSocket = 1 Then
 
-            On Error Resume Next
+            
 
 100         Dim ttt As Long: ttt = GetTickCount()
 
@@ -395,6 +410,13 @@ Public Function WndProc(ByVal hWnd As Long, ByVal msg As Long, ByVal wParam As L
 
 178     OutputDebugString "SocketProc: " & (GetTickCount() - ttt)
 
+        
+        Exit Function
+
+WndProc_Err:
+        Call RegistrarError(Err.Number, Err.description, "wskapiAO.WndProc", Erl)
+
+        
 End Function
 
 'Retorna 0 cuando se envió o se metio en la cola,

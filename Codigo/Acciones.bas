@@ -43,8 +43,12 @@ Option Explicit
 ' @param Y Y
 
 Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer)
+        
+        On Error GoTo Accion_Err
+    
+        
 
-        On Error Resume Next
+        
 
         '¿Rango Visión? (ToxicWaste)
 100     If (Abs(UserList(UserIndex).Pos.Y - Y) > RANGO_VISION_Y) Or (Abs(UserList(UserIndex).Pos.X - X) > RANGO_VISION_X) Then
@@ -457,11 +461,22 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 
         End If
 
+        
+        Exit Sub
+
+Accion_Err:
+        Call RegistrarError(Err.Number, Err.description, "Acciones.Accion", Erl)
+
+        
 End Sub
 
 Sub AccionParaForo(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal UserIndex As Integer)
+        
+        On Error GoTo AccionParaForo_Err
+    
+        
 
-        On Error Resume Next
+        
 
         Dim Pos As WorldPos
 
@@ -513,11 +528,22 @@ Sub AccionParaForo(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer,
 
 142     Call WriteShowForumForm(UserIndex)
 
+        
+        Exit Sub
+
+AccionParaForo_Err:
+        Call RegistrarError(Err.Number, Err.description, "Acciones.AccionParaForo", Erl)
+
+        
 End Sub
 
 Sub AccionParaPozos(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal UserIndex As Integer)
+        
+        On Error GoTo AccionParaPozos_Err
+    
+        
 
-        On Error Resume Next
+        
 
         Dim Pos As WorldPos
 
@@ -571,11 +597,22 @@ Sub AccionParaPozos(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer
 
         End If
 
+        
+        Exit Sub
+
+AccionParaPozos_Err:
+        Call RegistrarError(Err.Number, Err.description, "Acciones.AccionParaPozos", Erl)
+
+        
 End Sub
 
 Sub AccionParaArboles(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal UserIndex As Integer)
+        
+        On Error GoTo AccionParaArboles_Err
+    
+        
 
-        On Error Resume Next
+        
 
         Dim Pos As WorldPos
 
@@ -630,11 +667,22 @@ Sub AccionParaArboles(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integ
 142     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_SoundIndex.MORFAR_MANZANA, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 144     Call WriteUpdateHungerAndThirst(UserIndex)
 
+        
+        Exit Sub
+
+AccionParaArboles_Err:
+        Call RegistrarError(Err.Number, Err.description, "Acciones.AccionParaArboles", Erl)
+
+        
 End Sub
 
 Sub AccionParaAgua(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal UserIndex As Integer)
+        
+        On Error GoTo AccionParaAgua_Err
+    
+        
 
-        On Error Resume Next
+        
 
         Dim Pos As WorldPos
 
@@ -680,11 +728,22 @@ Sub AccionParaAgua(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer,
 134     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 136     Call WriteUpdateHungerAndThirst(UserIndex)
 
+        
+        Exit Sub
+
+AccionParaAgua_Err:
+        Call RegistrarError(Err.Number, Err.description, "Acciones.AccionParaAgua", Erl)
+
+        
 End Sub
 
 Sub AccionParaYunque(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal UserIndex As Integer)
+        
+        On Error GoTo AccionParaYunque_Err
+    
+        
 
-        On Error Resume Next
+        
 
         Dim Pos As WorldPos
 
@@ -714,6 +773,13 @@ Sub AccionParaYunque(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
         'UserList(UserIndex).Invent.HerramientaEqpObjIndex = objindex
         'UserList(UserIndex).Invent.HerramientaEqpSlot = slot
 
+        
+        Exit Sub
+
+AccionParaYunque_Err:
+        Call RegistrarError(Err.Number, Err.description, "Acciones.AccionParaYunque", Erl)
+
+        
 End Sub
 
 Sub AccionParaPuerta(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal UserIndex As Integer)

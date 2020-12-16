@@ -153,6 +153,10 @@ Bloquear_Err:
 End Sub
 
 Sub MostrarBloqueosPuerta(ByVal toMap As Boolean, ByVal sndIndex As Integer, ByVal X As Integer, ByVal Y As Integer)
+        
+        On Error GoTo MostrarBloqueosPuerta_Err
+    
+        
         Dim Map As Integer
 100     If toMap Then
 102         Map = sndIndex
@@ -172,10 +176,21 @@ Sub MostrarBloqueosPuerta(ByVal toMap As Boolean, ByVal sndIndex As Integer, ByV
 114     Call Bloquear(toMap, sndIndex, X, Y - 1, MapData(Map, X, Y - 1).Blocked)
 116     Call Bloquear(toMap, sndIndex, X + 1, Y, MapData(Map, X + 1, Y).Blocked)
 118     Call Bloquear(toMap, sndIndex, X + 1, Y - 1, MapData(Map, X + 1, Y - 1).Blocked)
+        
+        Exit Sub
+
+MostrarBloqueosPuerta_Err:
+        Call RegistrarError(Err.Number, Err.description, "General.MostrarBloqueosPuerta", Erl)
+
+        
 End Sub
 
 Sub BloquearPuerta(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal Bloquear As Boolean)
         ' Cambio bloqueos superiores
+        
+        On Error GoTo BloquearPuerta_Err
+    
+        
 100     MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked Or eBlock.NORTH, MapData(Map, X, Y).Blocked And Not eBlock.NORTH)
 102     MapData(Map, X - 1, Y).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y).Blocked Or eBlock.NORTH, MapData(Map, X - 1, Y).Blocked And Not eBlock.NORTH)
     
@@ -193,6 +208,13 @@ Sub BloquearPuerta(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer,
     
         ' Mostramos a todos
 116     Call MostrarBloqueosPuerta(True, Map, X, Y)
+        
+        Exit Sub
+
+BloquearPuerta_Err:
+        Call RegistrarError(Err.Number, Err.description, "General.BloquearPuerta", Erl)
+
+        
 End Sub
 
 Function HayCosta(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
@@ -252,6 +274,10 @@ HayAgua_Err:
 End Function
 
 Function EsArbol(ByVal GrhIndex As Long) As Boolean
+        
+        On Error GoTo EsArbol_Err
+    
+        
 100     EsArbol = GrhIndex = 7000 Or GrhIndex = 7001 Or GrhIndex = 7002 Or GrhIndex = 641 Or GrhIndex = 26075 Or GrhIndex = 643 Or GrhIndex = 644 Or _
            GrhIndex = 647 Or GrhIndex = 26076 Or GrhIndex = 7222 Or GrhIndex = 7223 Or GrhIndex = 7224 Or GrhIndex = 7225 Or GrhIndex = 7226 Or _
            GrhIndex = 26077 Or GrhIndex = 26079 Or GrhIndex = 735 Or GrhIndex = 32343 Or GrhIndex = 32344 Or GrhIndex = 26080 Or GrhIndex = 26081 Or _
@@ -262,6 +288,13 @@ Function EsArbol(ByVal GrhIndex As Long) As Boolean
            GrhIndex = 14973 Or GrhIndex = 14974 Or GrhIndex = 14975 Or GrhIndex = 14976 Or GrhIndex = 14978 Or GrhIndex = 14980 Or GrhIndex = 14982 Or _
            GrhIndex = 14983 Or GrhIndex = 14984 Or GrhIndex = 14985 Or GrhIndex = 14987 Or GrhIndex = 14988 Or GrhIndex = 26078 Or GrhIndex = 26192
 
+        
+        Exit Function
+
+EsArbol_Err:
+        Call RegistrarError(Err.Number, Err.description, "General.EsArbol", Erl)
+
+        
 End Function
 
 Private Function HayLava(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
@@ -408,6 +441,10 @@ LeerLineaComandos_Err:
 End Sub
 
 Private Sub InicializarConstantes()
+        
+        On Error GoTo InicializarConstantes_Err
+    
+        
     
 100     LastBackup = Format(Now, "Short Time")
 102     minutos = Format(Now, "Short Time")
@@ -526,6 +563,13 @@ Private Sub InicializarConstantes()
 306     MinYBorder = YMinMapSize + (YWindow \ 2)
 308     MaxYBorder = YMaxMapSize - (YWindow \ 2)
     
+        
+        Exit Sub
+
+InicializarConstantes_Err:
+        Call RegistrarError(Err.Number, Err.description, "General.InicializarConstantes", Erl)
+
+        
 End Sub
 
 Sub Main()
@@ -1273,9 +1317,13 @@ ValidInputNP_Err:
 End Function
 
 Sub Restart()
+        
+        On Error GoTo Restart_Err
+    
+        
 
         'Se asegura de que los sockets estan cerrados e ignora cualquier err
-        On Error Resume Next
+        
 
 100     If frmMain.Visible Then frmMain.txStatus.Caption = "Reiniciando."
 
@@ -1383,6 +1431,13 @@ Sub Restart()
 
         End If
   
+        
+        Exit Sub
+
+Restart_Err:
+        Call RegistrarError(Err.Number, Err.description, "General.Restart", Erl)
+
+        
 End Sub
 
 Public Function Intemperie(ByVal UserIndex As Integer) As Boolean
@@ -1407,6 +1462,10 @@ Intemperie_Err:
 End Function
 
 Public Sub TiempoInvocacion(ByVal UserIndex As Integer)
+        
+        On Error GoTo TiempoInvocacion_Err
+    
+        
         Dim i As Integer
 100     For i = 1 To MAXMASCOTAS
 102         If UserList(UserIndex).MascotasIndex(i) > 0 Then
@@ -1417,6 +1476,13 @@ Public Sub TiempoInvocacion(ByVal UserIndex As Integer)
                 End If
             End If
 110     Next i
+        
+        Exit Sub
+
+TiempoInvocacion_Err:
+        Call RegistrarError(Err.Number, Err.description, "General.TiempoInvocacion", Erl)
+
+        
 End Sub
 
 Public Sub EfectoFrio(ByVal UserIndex As Integer)
@@ -1532,6 +1598,10 @@ Public Sub EfectoMimetismo(ByVal UserIndex As Integer)
     'Last Update: 04/11/2008 (NicoNZ)
     '
     '******************************************************
+        
+        On Error GoTo EfectoMimetismo_Err
+    
+        
         Dim Barco As ObjData
     
 100     With UserList(UserIndex)
@@ -1568,6 +1638,13 @@ Public Sub EfectoMimetismo(ByVal UserIndex As Integer)
 140             .flags.Mimetizado = 0
             End If
         End With
+        
+        Exit Sub
+
+EfectoMimetismo_Err:
+        Call RegistrarError(Err.Number, Err.description, "General.EfectoMimetismo", Erl)
+
+        
 End Sub
 
 Public Sub EfectoInvisibilidad(ByVal UserIndex As Integer)
@@ -2539,7 +2616,11 @@ Tilde_Err:
 End Function
 
 Public Sub CerrarServidor()
-    On Error Resume Next
+        
+        On Error GoTo CerrarServidor_Err
+    
+        
+    
 
         'Save stats!!!
 100     Call Statistics.DumpStatistics
@@ -2578,9 +2659,20 @@ Public Sub CerrarServidor()
 128     Close #n
     
 130     End
+        
+        Exit Sub
+
+CerrarServidor_Err:
+        Call RegistrarError(Err.Number, Err.description, "General.CerrarServidor", Erl)
+
+        
 End Sub
 
 Function max(ByVal a As Double, ByVal b As Double) As Double
+        
+        On Error GoTo max_Err
+    
+        
 
 100     If a > b Then
 102         max = a
@@ -2588,9 +2680,20 @@ Function max(ByVal a As Double, ByVal b As Double) As Double
 104         max = b
         End If
 
+        
+        Exit Function
+
+max_Err:
+        Call RegistrarError(Err.Number, Err.description, "General.max", Erl)
+
+        
 End Function
 
 Function min(ByVal a As Double, ByVal b As Double) As Double
+        
+        On Error GoTo min_Err
+    
+        
 
 100     If a < b Then
 102         min = a
@@ -2598,4 +2701,11 @@ Function min(ByVal a As Double, ByVal b As Double) As Double
 104         min = b
         End If
 
+        
+        Exit Function
+
+min_Err:
+        Call RegistrarError(Err.Number, Err.description, "General.min", Erl)
+
+        
 End Function

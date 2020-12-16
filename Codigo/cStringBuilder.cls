@@ -53,29 +53,77 @@ Private m_iPos       As Long
 Private m_iLen       As Long
 
 Public Property Get Length() As Long
+        
+        On Error GoTo Length_Err
+    
+        
 100     Length = m_iPos \ 2
 
+        
+        Exit Property
+
+Length_Err:
+        Call RegistrarError(Err.Number, Err.description, "cStringBuilder.Length", Erl)
+
+        
 End Property
 
 Public Property Get Capacity() As Long
+        
+        On Error GoTo Capacity_Err
+    
+        
 100     Capacity = m_iLen \ 2
 
+        
+        Exit Property
+
+Capacity_Err:
+        Call RegistrarError(Err.Number, Err.description, "cStringBuilder.Capacity", Erl)
+
+        
 End Property
 
 Public Property Get ChunkSize() As Long
         ' Return the unicode character chunk size:
+        
+        On Error GoTo ChunkSize_Err
+    
+        
 100     ChunkSize = m_iChunkSize \ 2
 
+        
+        Exit Property
+
+ChunkSize_Err:
+        Call RegistrarError(Err.Number, Err.description, "cStringBuilder.ChunkSize", Erl)
+
+        
 End Property
 
 Public Property Let ChunkSize(ByVal iChunkSize As Long)
         ' Set the chunksize.  We multiply by 2 because internally
         ' we are considering bytes:
+        
+        On Error GoTo ChunkSize_Err
+    
+        
 100     m_iChunkSize = iChunkSize * 2
 
+        
+        Exit Property
+
+ChunkSize_Err:
+        Call RegistrarError(Err.Number, Err.description, "cStringBuilder.ChunkSize", Erl)
+
+        
 End Property
 
 Public Property Get toString() As String
+        
+        On Error GoTo toString_Err
+    
+        
 
         ' The internal string:
 100     If m_iPos > 0 Then
@@ -83,9 +131,20 @@ Public Property Get toString() As String
 
         End If
 
+        
+        Exit Property
+
+toString_Err:
+        Call RegistrarError(Err.Number, Err.description, "cStringBuilder.toString", Erl)
+
+        
 End Property
 
 Public Property Let TheString(ByRef sThis As String)
+        
+        On Error GoTo TheString_Err
+    
+        
 
         Dim lLen As Long
    
@@ -113,22 +172,55 @@ Public Property Let TheString(ByRef sThis As String)
 
         End If
    
+        
+        Exit Property
+
+TheString_Err:
+        Call RegistrarError(Err.Number, Err.description, "cStringBuilder.TheString", Erl)
+
+        
 End Property
 
 Public Sub Clear()
+        
+        On Error GoTo Clear_Err
+    
+        
 100     m_sString = ""
 102     m_iPos = 0
 104     m_iLen = 0
 
+        
+        Exit Sub
+
+Clear_Err:
+        Call RegistrarError(Err.Number, Err.description, "cStringBuilder.Clear", Erl)
+
+        
 End Sub
 
 Public Sub AppendNL(ByRef sThis As String)
+        
+        On Error GoTo AppendNL_Err
+    
+        
 100     Append sThis
 102     Append vbCrLf
 
+        
+        Exit Sub
+
+AppendNL_Err:
+        Call RegistrarError(Err.Number, Err.description, "cStringBuilder.AppendNL", Erl)
+
+        
 End Sub
 
 Public Sub Append(ByRef sThis As String)
+        
+        On Error GoTo Append_Err
+    
+        
 
         Dim lLen        As Long
 
@@ -156,14 +248,36 @@ Public Sub Append(ByRef sThis As String)
 116     CopyMemory ByVal UnsignedAdd(StrPtr(m_sString), m_iPos), ByVal StrPtr(sThis), lLen
 118     m_iPos = m_iPos + lLen
 
+        
+        Exit Sub
+
+Append_Err:
+        Call RegistrarError(Err.Number, Err.description, "cStringBuilder.Append", Erl)
+
+        
 End Sub
 
 Public Sub AppendByVal(ByVal sThis As String)
+        
+        On Error GoTo AppendByVal_Err
+    
+        
 100     Append sThis
 
+        
+        Exit Sub
+
+AppendByVal_Err:
+        Call RegistrarError(Err.Number, Err.description, "cStringBuilder.AppendByVal", Erl)
+
+        
 End Sub
 
 Public Sub Insert(ByVal iIndex As Long, ByRef sThis As String)
+        
+        On Error GoTo Insert_Err
+    
+        
 
         Dim lLen  As Long
 
@@ -198,14 +312,36 @@ Public Sub Insert(ByVal iIndex As Long, ByRef sThis As String)
 
         End If
 
+        
+        Exit Sub
+
+Insert_Err:
+        Call RegistrarError(Err.Number, Err.description, "cStringBuilder.Insert", Erl)
+
+        
 End Sub
 
 Public Sub InsertByVal(ByVal iIndex As Long, ByVal sThis As String)
+        
+        On Error GoTo InsertByVal_Err
+    
+        
 100     Insert iIndex, sThis
 
+        
+        Exit Sub
+
+InsertByVal_Err:
+        Call RegistrarError(Err.Number, Err.description, "cStringBuilder.InsertByVal", Erl)
+
+        
 End Sub
 
 Public Sub Remove(ByVal iIndex As Long, ByVal lLen As Long)
+        
+        On Error GoTo Remove_Err
+    
+        
 
         Dim lSrc  As Long
 
@@ -233,11 +369,22 @@ Public Sub Remove(ByVal iIndex As Long, ByVal lLen As Long)
 
         End If
 
+        
+        Exit Sub
+
+Remove_Err:
+        Call RegistrarError(Err.Number, Err.description, "cStringBuilder.Remove", Erl)
+
+        
 End Sub
 
 Public Function Find(ByVal sToFind As String, _
                      Optional ByVal lStartIndex As Long = 1, _
                      Optional ByVal compare As VbCompareMethod = vbTextCompare) As Long
+        
+        On Error GoTo Find_Err
+    
+        
    
         Dim lInstr As Long
 
@@ -253,9 +400,20 @@ Public Function Find(ByVal sToFind As String, _
 
         End If
 
+        
+        Exit Function
+
+Find_Err:
+        Call RegistrarError(Err.Number, Err.description, "cStringBuilder.Find", Erl)
+
+        
 End Function
 
 Public Sub HeapMinimize()
+        
+        On Error GoTo HeapMinimize_Err
+    
+        
 
         Dim iLen As Long
    
@@ -272,11 +430,22 @@ Public Sub HeapMinimize()
 
         End If
    
+        
+        Exit Sub
+
+HeapMinimize_Err:
+        Call RegistrarError(Err.Number, Err.description, "cStringBuilder.HeapMinimize", Erl)
+
+        
 End Sub
 
 Private Function UnsignedAdd(Start As Long, Incr As Long) As Long
         ' This function is useful when doing pointer arithmetic,
         ' but note it only works for positive values of Incr
+        
+        On Error GoTo UnsignedAdd_Err
+    
+        
 
 100     If Start And &H80000000 Then 'Start < 0
 102         UnsignedAdd = Start + Incr
@@ -287,11 +456,29 @@ Private Function UnsignedAdd(Start As Long, Incr As Long) As Long
 
         End If
    
+        
+        Exit Function
+
+UnsignedAdd_Err:
+        Call RegistrarError(Err.Number, Err.description, "cStringBuilder.UnsignedAdd", Erl)
+
+        
 End Function
 
 Private Sub Class_Initialize()
         ' The default allocation: 8192 characters.
+        
+        On Error GoTo Class_Initialize_Err
+    
+        
 100     m_iChunkSize = 16384
 
+        
+        Exit Sub
+
+Class_Initialize_Err:
+        Call RegistrarError(Err.Number, Err.description, "cStringBuilder.Class_Initialize", Erl)
+
+        
 End Sub
 
