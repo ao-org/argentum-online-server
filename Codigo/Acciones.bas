@@ -718,7 +718,7 @@ End Sub
 
 Sub AccionParaPuerta(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal UserIndex As Integer)
 
-        On Error Resume Next
+        On Error GoTo Handler
 
         Dim MiObj As obj
 
@@ -768,12 +768,18 @@ Sub AccionParaPuerta(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, ByV
 
             ' Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
         End If
+        
+        Exit Sub
+        
+Handler:
+    Call RegistrarError(Err.Number, Err.description, "Acciones.AccionParaPuerta", Erl)
+    Resume Next
 
 End Sub
 
 Sub AccionParaCartel(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal UserIndex As Integer)
 
-        On Error Resume Next
+        On Error GoTo Handler
 
         Dim MiObj As obj
 
@@ -785,6 +791,12 @@ Sub AccionParaCartel(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
             End If
   
         End If
+        
+        Exit Sub
+        
+Handler:
+    Call RegistrarError(Err.Number, Err.description, "Acciones.AccionParaCartel", Erl)
+    Resume Next
 
 End Sub
 
@@ -829,7 +841,7 @@ End Sub
 
 Sub AccionParaRamita(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal UserIndex As Integer)
 
-        On Error Resume Next
+On Error GoTo Handler
 
         Dim Suerte As Byte
         Dim exito  As Byte
@@ -914,5 +926,11 @@ Sub AccionParaRamita(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
         End With
 
 154     Call SubirSkill(UserIndex, Supervivencia)
+
+        Exit Sub
+        
+Handler:
+    Call RegistrarError(Err.Number, Err.description, "Acciones.AccionParaRamita", Erl)
+    Resume Next
 
 End Sub

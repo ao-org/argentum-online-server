@@ -1653,6 +1653,8 @@ End Sub
 
 Private Sub packetResend_Timer()
 
+On Error GoTo Handler
+
     'If there is anything to be sent, we send it
     Dim i As Long
     For i = 1 To LastUser
@@ -1660,6 +1662,12 @@ Private Sub packetResend_Timer()
             Call FlushBuffer(i)
         End If
     Next
+    
+    Exit Sub
+    
+Handler:
+    Call RegistrarError(Err.Number, Err.description, "frmMain.packetResend_Timer")
+    Resume Next
     
 End Sub
 

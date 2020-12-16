@@ -201,7 +201,7 @@ End Function
 
 Sub ReSpawnOrigPosNpcs()
 
-        On Error Resume Next
+        On Error GoTo Handler
 
         Dim i     As Integer
 
@@ -227,11 +227,17 @@ Sub ReSpawnOrigPosNpcs()
    
 112     Next i
 
+        Exit Sub
+        
+Handler:
+    Call RegistrarError(Err.Number, Err.description, "Admin.ReSpawnOrigPosNpcs", Erl)
+    Resume Next
+
 End Sub
 
 Sub WorldSave()
 
-        On Error Resume Next
+        On Error GoTo Handler
 
         'Call LogTarea("Sub WorldSave")
 
@@ -278,6 +284,12 @@ Sub WorldSave()
         'Next
 
 126     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor> WorldSave ha concluído", FontTypeNames.FONTTYPE_SERVER))
+
+        Exit Sub
+        
+Handler:
+    Call RegistrarError(Err.Number, Err.description, "Admin.WorldSave", Erl)
+    Resume Next
 
 End Sub
 

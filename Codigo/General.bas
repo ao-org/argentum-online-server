@@ -530,7 +530,7 @@ End Sub
 
 Sub Main()
 
-        On Error Resume Next
+        On Error GoTo Handler
         
         frmMain.auxSocket.connect "localhost", 3100
         
@@ -755,6 +755,12 @@ Sub Main()
         End If
     
 338     tInicioServer = GetTickCount()
+
+        Exit Sub
+        
+Handler:
+    Call RegistrarError(Err.Number, Err.description, "General.Main", Erl)
+    Resume Next
 
 End Sub
 
