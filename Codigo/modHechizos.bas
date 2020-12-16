@@ -152,7 +152,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal Userindex As Integer
         Exit Sub
 
 NpcLanzaSpellSobreUser_Err:
-194     Call RegistrarError(Err.Number, Err.description, "modHechizos.NpcLanzaSpellSobreUser", Erl)
+194     Call RegistrarError(Err.Number, Err.description & " Hechizo: " & Spell, "modHechizos.NpcLanzaSpellSobreUser", Erl)
 
 196     Resume Next
         
