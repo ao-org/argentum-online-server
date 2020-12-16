@@ -1891,7 +1891,7 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
 154             Call InfoHechizo(Userindex)
 156             Npclist(NpcIndex).flags.Paralizado = 1
 158             Npclist(NpcIndex).flags.Inmovilizado = 0
-160             Npclist(NpcIndex).Contadores.Paralisis = (Hechizos(hIndex).Duration * 6.5) * 2
+160             Npclist(NpcIndex).Contadores.Paralisis = (Hechizos(hIndex).Duration * 6.5) * 6
 
 162             Call AnimacionIdle(NpcIndex, False)
                 
@@ -1965,7 +1965,7 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
 222             Call NPCAtacado(NpcIndex, Userindex)
 224             Npclist(NpcIndex).flags.Inmovilizado = 1
 226             Npclist(NpcIndex).flags.Paralizado = 0
-228             Npclist(NpcIndex).Contadores.Paralisis = (Hechizos(hIndex).Duration * 6.5) * 2
+228             Npclist(NpcIndex).Contadores.Paralisis = (Hechizos(hIndex).Duration * 6.5) * 6
 
 230             Call AnimacionIdle(NpcIndex, True)
 
