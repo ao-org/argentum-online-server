@@ -1456,10 +1456,6 @@ HandleIncomingData_Err:
 End Function
 
 Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
-        
-        On Error GoTo HandleIncomingDataNewPacks_Err
-    
-        
 
         '***************************************************
         'Los nuevos Pack ID
