@@ -422,7 +422,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
             ' Pociones amarillas y verdes
 130         Select Case .clase
 
-                Case eClass.Assasin, eClass.Bard, eClass.Cleric, eClass.Hunter, eClass.Paladin, eClass.Trabajador, eClass.Warrior, eClass.Bandit
+                Case eClass.Assasin, eClass.Bard, eClass.Cleric, eClass.Hunter, eClass.Paladin, eClass.Trabajador, eClass.Warrior, eClass.Bandit, eClass.Pirat, eClass.Thief
 132                 .Invent.Object(NumItems).ObjIndex = 1618 ' Pocion Amarilla
 134                 .Invent.Object(NumItems).Amount = 25
 136                 NumItems = NumItems + 1
@@ -1302,7 +1302,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
             Dim tIndex As Integer
             tIndex = NameIndex(name)
 
-7           If tIndex > 0 Then
+7           If tIndex > 0 And tIndex <> UserIndex Then
 8               If UserList(tIndex).Counters.Saliendo Then
 9                   Call WriteShowMessageBox(UserIndex, "El personaje está saliendo.")
                 Else

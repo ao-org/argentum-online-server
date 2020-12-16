@@ -1134,10 +1134,11 @@ Public Sub LogDatabaseError(Desc As String)
 102     Open App.Path & "\logs\Database.log" For Append Shared As #nfile
 104     Print #nfile, Date & " " & Time & " - " & Desc
 106     Close #nfile
-    
+     
+108     Debug.Print "Error en la BD: " & Desc & vbNewLine & _
+            "Fecha y Hora: " & Date$ & "-" & Time$ & vbNewLine
+            
         Exit Sub
-    
-108     Debug.Print Desc
     
 ErrHandler:
 
