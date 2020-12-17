@@ -417,6 +417,7 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
         '24/01/2007 Pablo (ToxicWaste) - Agrego modificaciones de la subida de mana de los magos por lvl.
         '13/03/2007 Pablo (ToxicWaste) - Agrego diferencias entre el 18 y el 19 en Constitución.
         '09/01/2008 Pablo (ToxicWaste) - Ahora el incremento de vida por Consitución se controla desde Balance.dat
+        '17/12/2020 WyroX: Distribución normal de las vidas
         '*************************************************
 
         On Error GoTo ErrHandler
@@ -434,10 +435,10 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
         Dim WasNewbie        As Boolean
 
         Dim Promedio         As Double
+        
+        Dim Value            As Double
 
         Dim aux              As Integer
-
-        Dim DistVida(1 To 5) As Integer
     
         Dim PasoDeNivel      As Boolean
     
@@ -470,50 +471,15 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
             
 140             .Stats.ELV = .Stats.ELV + 1
             
-                'Calculo subida de vida
+                ' Calculo subida de vida by WyroX
+                ' Obtengo el promedio como siempre
 141             Promedio = ModVida(.clase) - (21 - .Stats.UserAtributos(eAtributos.Constitucion)) * 0.5
-142             aux = RandomNumber(0, 100)
-            
-144             If Promedio - Int(Promedio) = 0.5 Then
-                    'Es promedio semientero
-146                 DistVida(1) = DistribucionSemienteraVida(1)
-148                 DistVida(2) = DistVida(1) + DistribucionSemienteraVida(2)
-150                 DistVida(3) = DistVida(2) + DistribucionSemienteraVida(3)
-152                 DistVida(4) = DistVida(3) + DistribucionSemienteraVida(4)
-                
-154                 If aux <= DistVida(1) Then
-156                     AumentoHP = Promedio + 1.5
-158                 ElseIf aux <= DistVida(2) Then
-160                     AumentoHP = Promedio + 0.5
-162                 ElseIf aux <= DistVida(3) Then
-164                     AumentoHP = Promedio - 0.5
-                    Else
-166                     AumentoHP = Promedio - 1.5
-
-                    End If
-
-                Else
-                    'Es promedio entero
-168                 DistVida(1) = DistribucionEnteraVida(1)
-170                 DistVida(2) = DistVida(1) + DistribucionEnteraVida(2)
-172                 DistVida(3) = DistVida(2) + DistribucionEnteraVida(3)
-174                 DistVida(4) = DistVida(3) + DistribucionEnteraVida(4)
-176                 DistVida(5) = DistVida(4) + DistribucionEnteraVida(5)
-                
-178                 If aux <= DistVida(1) Then
-180                     AumentoHP = Promedio + 2
-182                 ElseIf aux <= DistVida(2) Then
-184                     AumentoHP = Promedio + 1
-186                 ElseIf aux <= DistVida(3) Then
-188                     AumentoHP = Promedio
-190                 ElseIf aux <= DistVida(4) Then
-192                     AumentoHP = Promedio - 1
-                    Else
-194                     AumentoHP = Promedio - 2
-
-                    End If
-                
-                End If
+                ' Lo modifico para compensar si está muy bajo o muy alto
+142             Promedio = Promedio + (Promedio - .Stats.MaxHp / .Stats.ELV)
+                ' Obtengo un double al azar alrededor de este promedio
+143             Value = RandomNormalDist(Promedio, 0.8)
+                ' Redondeo hacia el entero más cercano
+                AumentoHP = Round(Value)
             
 196             Select Case .clase
 

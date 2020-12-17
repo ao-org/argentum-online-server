@@ -42,56 +42,23 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
 
             Dim Promedio         As Double
 
+            Dim Value            As Double
+
             Dim aux              As Integer
 
             Dim DistVida(1 To 5) As Integer
         
 114         For i = .Stats.ELV + 1 To 50
         
-                'Calculo subida de vida
-116             Promedio = ModVida(.clase) - (21 - .Stats.UserAtributos(eAtributos.Constitucion)) * 0.5
-118             aux = RandomNumber(0, 100)
-            
-120             If Promedio - Int(Promedio) = 0.5 Then
-                    'Es promedio semientero
-122                 DistVida(1) = DistribucionSemienteraVida(1)
-124                 DistVida(2) = DistVida(1) + DistribucionSemienteraVida(2)
-126                 DistVida(3) = DistVida(2) + DistribucionSemienteraVida(3)
-128                 DistVida(4) = DistVida(3) + DistribucionSemienteraVida(4)
-                
-130                 If aux <= DistVida(1) Then
-132                     AumentoHP = Promedio + 1.5
-134                 ElseIf aux <= DistVida(2) Then
-136                     AumentoHP = Promedio + 0.5
-138                 ElseIf aux <= DistVida(3) Then
-140                     AumentoHP = Promedio - 0.5
-                    Else
-142                     AumentoHP = Promedio - 1.5
-
-                    End If
-
-                Else
-                    'Es promedio entero
-144                 DistVida(1) = DistribucionEnteraVida(1)
-146                 DistVida(2) = DistVida(1) + DistribucionEnteraVida(2)
-148                 DistVida(3) = DistVida(2) + DistribucionEnteraVida(3)
-150                 DistVida(4) = DistVida(3) + DistribucionEnteraVida(4)
-152                 DistVida(5) = DistVida(4) + DistribucionEnteraVida(5)
-                
-154                 If aux <= DistVida(1) Then
-156                     AumentoHP = Promedio + 2
-158                 ElseIf aux <= DistVida(2) Then
-160                     AumentoHP = Promedio + 1
-162                 ElseIf aux <= DistVida(3) Then
-164                     AumentoHP = Promedio
-166                 ElseIf aux <= DistVida(4) Then
-168                     AumentoHP = Promedio - 1
-                    Else
-170                     AumentoHP = Promedio - 2
-
-                    End If
-                
-                End If
+                ' Calculo subida de vida by WyroX
+                ' Obtengo el promedio como siempre
+141             Promedio = ModVida(.clase) - (21 - .Stats.UserAtributos(eAtributos.Constitucion)) * 0.5
+                ' Lo modifico para compensar si está muy bajo o muy alto
+142             Promedio = Promedio + (Promedio - .Stats.MaxHp / .Stats.ELV)
+                ' Obtengo un double al azar alrededor de este promedio
+143             Value = RandomNormalDist(Promedio, 0.8)
+                ' Redondeo hacia el entero más cercano
+                AumentoHP = Round(Value)
             
 172             Select Case .clase
 
