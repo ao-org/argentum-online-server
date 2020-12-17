@@ -4430,7 +4430,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     
 624                 If tN > 0 Then
 626                     If Npclist(tN).flags.Domable > 0 Then
-628                         If Abs(.Pos.X - X) + Abs(.Pos.Y - Y) > 2 Then
+628                         If Abs(.Pos.X - X) + Abs(.Pos.Y - Y) > 4 Then
 630                             Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
                                 Exit Sub
     
