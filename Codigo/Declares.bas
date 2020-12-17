@@ -1017,24 +1017,24 @@ End Type
 
 Public Type Position
 
-    X As Integer
-    Y As Integer
+    x As Integer
+    y As Integer
 
 End Type
 
 Public Type WorldPos
 
     Map As Integer
-    X As Integer
-    Y As Integer
+    x As Integer
+    y As Integer
 
 End Type
 
 Public Type CityWorldPos
 
     Map As Integer
-    X As Integer
-    Y As Integer
+    x As Integer
+    y As Integer
     MapaViaje As Integer
     ViajeX As Byte
     ViajeY As Byte
@@ -2283,11 +2283,6 @@ Public ModClase(1 To NUMCLASES)           As ModClase
 Public ModRaza(1 To NUMRAZAS)             As ModRaza
 
 Public ModVida(1 To NUMCLASES)            As Double
-
-Public DistribucionEnteraVida(1 To 5)     As Integer
-
-Public DistribucionSemienteraVida(1 To 4) As Integer
-
 '*********************************************************
 
 Public Nix                                As WorldPos
