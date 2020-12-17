@@ -198,7 +198,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
             'Se entrega el oro.
 170         If .RewardGLD Then
 172             UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + .RewardGLD
-174             Call WriteConsoleMsg(UserIndex, "Has ganado " & .RewardGLD & " monedas de oro como recompensa.", FontTypeNames.FONTTYPE_INFOIAO)
+174             Call WriteConsoleMsg(UserIndex, "Has ganado " & PonerPuntos(.RewardGLD) & " monedas de oro como recompensa.", FontTypeNames.FONTTYPE_INFOIAO)
 
             End If
         

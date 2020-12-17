@@ -50,7 +50,7 @@ Public Sub IniciarTorneo()
 
 120     Torneo.HayTorneoaActivo = True
 
-122     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Evento> Se abren las inscripciones para: " & Torneo.nombre & ": características: Nivel entre: " & Torneo.NivelMinimo & "/" & Torneo.nivelmaximo & ". Cupos disponibles: " & Torneo.cupos & " personajes. Precio de inscripción: " & Torneo.costo & " monedas de oro. Reglas: " & Torneo.reglas & ".", FontTypeNames.FONTTYPE_CITIZEN))
+122     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Evento> Se abren las inscripciones para: " & Torneo.nombre & ": características: Nivel entre: " & Torneo.NivelMinimo & "/" & Torneo.nivelmaximo & ". Cupos disponibles: " & Torneo.cupos & " personajes. Precio de inscripción: " & PonerPuntos(Torneo.costo) & " monedas de oro. Reglas: " & Torneo.reglas & ".", FontTypeNames.FONTTYPE_CITIZEN))
 124     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Clases participantes: " & Torneo.ClasesTexto & ". Escribí /PARTICIPAR para ingresar al evento. ", FontTypeNames.FONTTYPE_CITIZEN))
 
         

@@ -2477,7 +2477,7 @@ Sub CalcularDarOroGrupal(ByVal UserIndex As Integer, ByVal GiveGold As Long)
 144                     UserList(index).Stats.GLD = UserList(index).Stats.GLD + OroDar
                         
 146                     If UserList(index).ChatCombate = 1 Then
-148                         Call WriteConsoleMsg(index, "¡El grupo ha ganado " & OroDar & " monedas de oro!", FontTypeNames.FONTTYPE_New_GRUPO)
+148                         Call WriteConsoleMsg(index, "¡El grupo ha ganado " & PonerPuntos(OroDar) & " monedas de oro!", FontTypeNames.FONTTYPE_New_GRUPO)
 
                         End If
                         

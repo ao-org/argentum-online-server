@@ -316,7 +316,7 @@ Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
         
 144         If EsGM(UserIndex) Then
 146             If MiObj.ObjIndex = iORO Then
-148                 Call LogGM(UserList(UserIndex).name, "Tiro: " & Logs & " monedas de oro.")
+148                 Call LogGM(UserList(UserIndex).name, "Tiro: " & PonerPuntos(Logs) & " monedas de oro.")
                 Else
 150                 Call LogGM(UserList(UserIndex).name, "Tiro cantidad:" & Logs & " Objeto:" & ObjData(MiObj.ObjIndex).name)
 

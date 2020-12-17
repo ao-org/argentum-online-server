@@ -642,7 +642,7 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
 328                     OroRecompenza = OroPorNivel * .Stats.ELV * OroMult * .flags.ScrollOro
 330                     .Stats.GLD = .Stats.GLD + OroRecompenza
                         'Call WriteConsoleMsg(UserIndex, "Has ganado " & OroRecompenza & " monedas de oro.", FontTypeNames.FONTTYPE_INFO)
-332                     Call WriteLocaleMsg(UserIndex, "29", FontTypeNames.FONTTYPE_INFO, OroRecompenza)
+332                     Call WriteLocaleMsg(UserIndex, "29", FontTypeNames.FONTTYPE_INFO, PonerPuntos(OroRecompenza))
                     End If
                 End If
             

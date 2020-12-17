@@ -2710,3 +2710,47 @@ min_Err:
 
         
 End Function
+
+Public Function PonerPuntos(ByVal Numero As Long) As String
+    
+    On Error GoTo PonerPuntos_Err
+    
+
+    Dim i     As Integer
+
+    Dim Cifra As String
+ 
+    Cifra = str(Numero)
+    Cifra = Right$(Cifra, Len(Cifra) - 1)
+
+    For i = 0 To 4
+
+        If Len(Cifra) - 3 * i >= 3 Then
+            If mid$(Cifra, Len(Cifra) - (2 + 3 * i), 3) <> "" Then
+                PonerPuntos = mid$(Cifra, Len(Cifra) - (2 + 3 * i), 3) & "." & PonerPuntos
+
+            End If
+
+        Else
+
+            If Len(Cifra) - 3 * i > 0 Then
+                PonerPuntos = Left$(Cifra, Len(Cifra) - 3 * i) & "." & PonerPuntos
+
+            End If
+
+            Exit For
+
+        End If
+
+    Next
+ 
+    PonerPuntos = Left$(PonerPuntos, Len(PonerPuntos) - 1)
+ 
+    
+    Exit Function
+
+PonerPuntos_Err:
+    Call RegistrarError(Err.Number, Err.description, "ModLadder.PonerPuntos", Erl)
+    Resume Next
+    
+End Function
