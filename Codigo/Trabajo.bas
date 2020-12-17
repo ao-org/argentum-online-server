@@ -304,7 +304,7 @@ Public Sub FundirMineral(ByVal UserIndex As Integer)
             
 106             Call DoLingotes(UserIndex)
         
-            If SkillRequerido > 100 Then
+            ElseIf SkillRequerido > 100 Then
                 Call WriteConsoleMsg(UserIndex, "Tu clase no tiene el conocimiento suficiente para trabajar este mineral.", FontTypeNames.FONTTYPE_INFO)
                 
             Else
@@ -1679,7 +1679,7 @@ Public Sub DoRobar(ByVal LadrOnIndex As Integer, ByVal victimaindex As Integer)
 
 236                         If .Stats.GLD > MAXORO Then .Stats.GLD = MAXORO
                         
-238                         Call WriteConsoleMsg(LadrOnIndex, "Le has robado " & n & " monedas de oro a " & UserList(victimaindex).name, FontTypeNames.FONTTYPE_INFO)
+238                         Call WriteConsoleMsg(LadrOnIndex, "Le has robado " & PonerPuntos(n) & " monedas de oro a " & UserList(victimaindex).name, FontTypeNames.FONTTYPE_INFO)
 240                         Call WriteUpdateGold(LadrOnIndex) 'Le actualizamos la billetera al ladron
                         
 242                         Call WriteUpdateGold(victimaindex) 'Le actualizamos la billetera a la victima

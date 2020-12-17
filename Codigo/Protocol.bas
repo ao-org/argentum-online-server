@@ -452,6 +452,7 @@ Private Enum ClientPacketID
     UseKey
     Day
     SetTime
+    DonateGold              '/DONAR
 End Enum
 
 Private Enum NewPacksID
@@ -1375,6 +1376,9 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
 
 1072         Case ClientPacketID.SetTime                 '/HORA X
 1074             Call HandleSetTime(UserIndex)
+
+            Case ClientPacketID.DonateGold              '/DONAR
+                Call HandleDonateGold(UserIndex)
 
 1076         Case ClientPacketID.KickAllChars            '/ECHARTODOSPJS
 1078             Call HandleKickAllChars(UserIndex)
@@ -7121,7 +7125,7 @@ Private Sub HandleRequestAccountState(ByVal UserIndex As Integer)
 116         Select Case Npclist(.flags.TargetNPC).NPCtype
 
                 Case eNPCType.Banquero
-118                 Call WriteChatOverHead(UserIndex, "Tenes " & .Stats.Banco & " monedas de oro en tu cuenta.", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
+118                 Call WriteChatOverHead(UserIndex, "Tenes " & PonerPuntos(.Stats.Banco) & " monedas de oro en tu cuenta.", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
             
 120             Case eNPCType.Timbero
 
@@ -7138,7 +7142,7 @@ Private Sub HandleRequestAccountState(ByVal UserIndex As Integer)
 
                         End If
                     
-134                     Call WriteConsoleMsg(UserIndex, "Entradas: " & Apuestas.Ganancias & " Salida: " & Apuestas.Perdidas & " Ganancia Neta: " & earnings & " (" & percentage & "%) Jugadas: " & Apuestas.Jugadas, FontTypeNames.FONTTYPE_INFO)
+134                     Call WriteConsoleMsg(UserIndex, "Entradas: " & PonerPuntos(Apuestas.Ganancias) & " Salida: " & PonerPuntos(Apuestas.Perdidas) & " Ganancia Neta: " & PonerPuntos(earnings) & " (" & percentage & "%) Jugadas: " & Apuestas.Jugadas, FontTypeNames.FONTTYPE_INFO)
 
                     End If
 
@@ -8915,20 +8919,20 @@ Private Sub HandleGamble(ByVal UserIndex As Integer)
 126         ElseIf Amount < 1 Then
 128             Call WriteChatOverHead(UserIndex, "El mínimo de apuesta es 1 moneda.", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
 130         ElseIf Amount > 10000 Then
-132             Call WriteChatOverHead(UserIndex, "El míximo de apuesta es 10000 monedas.", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
+132             Call WriteChatOverHead(UserIndex, "El míximo de apuesta es 10.000 monedas.", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
 134         ElseIf .Stats.GLD < Amount Then
 136             Call WriteChatOverHead(UserIndex, "No tienes esa cantidad.", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
             Else
 
 138             If RandomNumber(1, 100) <= 45 Then
 140                 .Stats.GLD = .Stats.GLD + Amount
-142                 Call WriteChatOverHead(UserIndex, "Felicidades! Has ganado " & CStr(Amount) & " monedas de oro!", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
+142                 Call WriteChatOverHead(UserIndex, "Felicidades! Has ganado " & PonerPuntos(Amount) & " monedas de oro!", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
                 
 144                 Apuestas.Perdidas = Apuestas.Perdidas + Amount
 146                 Call WriteVar(DatPath & "apuestas.dat", "Main", "Perdidas", CStr(Apuestas.Perdidas))
                 Else
 148                 .Stats.GLD = .Stats.GLD - Amount
-150                 Call WriteChatOverHead(UserIndex, "Lo siento, has perdido " & CStr(Amount) & " monedas de oro.", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
+150                 Call WriteChatOverHead(UserIndex, "Lo siento, has perdido " & PonerPuntos(Amount) & " monedas de oro.", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
                 
 152                 Apuestas.Ganancias = Apuestas.Ganancias + Amount
 154                 Call WriteVar(DatPath & "apuestas.dat", "Main", "Ganancias", CStr(Apuestas.Ganancias))
@@ -12458,24 +12462,30 @@ Private Sub HandleForgive(ByVal UserIndex As Integer)
 108         If (Npclist(.flags.TargetNPC).NPCtype <> eNPCType.Revividor And (Npclist(.flags.TargetNPC).NPCtype <> eNPCType.ResucitadorNewbie Or Not EsNewbie(UserIndex))) Or .flags.Muerto = 1 Then Exit Sub
         
             'Make sure it's close enough
-110         If Distancia(.Pos, Npclist(.flags.TargetNPC).Pos) > 10 Then
+110         If Distancia(.Pos, Npclist(.flags.TargetNPC).Pos) > 3 Then
                 'Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
 112             Call WriteConsoleMsg(UserIndex, "El sacerdote no puede escuchar tus pecados debido a que estás demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
         
 114         If UserList(UserIndex).Faccion.Status = 1 Or UserList(UserIndex).Faccion.ArmadaReal = 1 Then
                 'Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
 116             Call WriteChatOverHead(UserIndex, "Tu alma ya esta libre de pecados hijo mio.", Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
                 Exit Sub
-
             End If
         
-118         If UserList(UserIndex).Faccion.CiudadanosMatados > 0 Or UserList(UserIndex).Faccion.ArmadaReal > 0 Then
-120             Call WriteChatOverHead(UserIndex, "Has matado gente inocente, lamentablemente no podre concebirte el perdon.", Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
+118         If UserList(UserIndex).Faccion.FuerzasCaos > 0 Then
+120             Call WriteChatOverHead(UserIndex, "¡¡Dios no te perdonará mientras seas fiel al Demonio!!", Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
                 Exit Sub
-
+            End If
+            
+            If UserList(UserIndex).Faccion.CiudadanosMatados > 0 Then
+                Dim Donacion As Long
+                Donacion = UserList(UserIndex).Faccion.CiudadanosMatados * OroMult * CostoPerdonPorCiudadano
+                
+                Call WriteChatOverHead(UserIndex, "Has matado a ciudadanos inocentes, Dios no puede perdonarte lo que has hecho. " & _
+                        "Pero si haces una generosa donación de, digamos, " & PonerPuntos(Donacion) & " monedas de oro, tal vez cambie de opinión...", Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
+                Exit Sub
             End If
         
             Dim Clanalineacion As Byte
@@ -12491,7 +12501,7 @@ Private Sub HandleForgive(ByVal UserIndex As Integer)
 
             End If
         
-130         Call WriteChatOverHead(UserIndex, "Con estas palabras, te libero de todo tipo de pecados. íQue dios te acompaíe hijo mio!", Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbYellow)
+130         Call WriteChatOverHead(UserIndex, "Con estas palabras, te libero de todo tipo de pecados. ¡Que Dios te acompañe hijo mío!", Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbYellow)
 
 132         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, "80", 100, False))
 134         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("100", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
@@ -16539,6 +16549,82 @@ Public Sub HandleSetTime(ByVal UserIndex As Integer)
 HandleSetTime_Err:
 112     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleSetTime", Erl)
 114     Resume Next
+        
+End Sub
+
+Public Sub HandleDonateGold(ByVal UserIndex As Integer)
+        
+        On Error GoTo HandleSetTime_Err
+
+99      With UserList(UserIndex)
+            'Remove Packet ID
+100         Call .incomingData.ReadByte
+
+            Dim Oro As Long
+101         Oro = .incomingData.ReadLong
+
+102         If Oro <= 0 Then Exit Sub
+
+            'Se asegura que el target es un npc
+103         If .flags.TargetNPC = 0 Then
+106             Call WriteConsoleMsg(UserIndex, "Primero tenés que seleccionar al sacerdote.", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+        
+            'Validate NPC and make sure player is dead
+108         If (Npclist(.flags.TargetNPC).NPCtype <> eNPCType.Revividor And (Npclist(.flags.TargetNPC).NPCtype <> eNPCType.ResucitadorNewbie Or Not EsNewbie(UserIndex))) Or .flags.Muerto = 1 Then Exit Sub
+        
+            'Make sure it's close enough
+110         If Distancia(.Pos, Npclist(.flags.TargetNPC).Pos) > 3 Then
+                Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+        
+114         If .Faccion.Status = 1 Or .Faccion.ArmadaReal = 1 Or .Faccion.FuerzasCaos > 0 Or .Faccion.CiudadanosMatados = 0 Then
+                Call WriteChatOverHead(UserIndex, "No puedo aceptar tu donación en este momento...", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
+                Exit Sub
+            End If
+            
+            Dim Clanalineacion As Byte
+                        
+122         If .GuildIndex <> 0 Then
+126             If modGuilds.Alineacion(.GuildIndex) = 1 Then Exit Sub
+            End If
+            
+            If .Stats.GLD < Oro Then
+                Call WriteConsoleMsg(UserIndex, "No tienes suficiente dinero.", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+
+            Dim Donacion As Long
+            Donacion = .Faccion.CiudadanosMatados * OroMult * CostoPerdonPorCiudadano
+            
+            If Oro < Donacion Then
+                Call WriteChatOverHead(UserIndex, "Dios no puede perdonarte si eres una persona avara.", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
+                Exit Sub
+            End If
+            
+            .Stats.GLD = .Stats.GLD - Oro
+
+            Call WriteUpdateGold(UserIndex)
+
+            Call WriteConsoleMsg(UserIndex, "Has donado " & PonerPuntos(Oro) & " monedas de oro.", FontTypeNames.FONTTYPE_INFO)
+
+130         Call WriteChatOverHead(UserIndex, "¡Gracias por tu generosa donación! Con estas palabras, te libero de todo tipo de pecados. ¡Que Dios te acompañe hijo mío!", Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbYellow)
+
+132         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, "80", 100, False))
+134         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("100", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+136         UserList(UserIndex).Faccion.Status = 1
+138         Call RefreshCharStatus(UserIndex)
+    
+        End With
+
+        
+        Exit Sub
+
+HandleSetTime_Err:
+142     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleDonateGold", Erl)
+144     Resume Next
         
 End Sub
 
@@ -24657,7 +24743,7 @@ Private Sub HandleOfertaInicial(ByVal UserIndex As Integer)
 136             UserList(UserIndex).Counters.TiempoParaSubastar = 0
 138             Subasta.OfertaInicial = Oferta
 140             Subasta.MejorOferta = 0
-142             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.name & " está subastando: " & ObjData(Subasta.ObjSubastado).name & " (Cantidad: " & Subasta.ObjSubastadoCantidad & " ) - con un precio inicial de " & Subasta.OfertaInicial & " monedas. Escribe /OFERTAR (cantidad) para participar.", FontTypeNames.FONTTYPE_SUBASTA))
+142             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.name & " está subastando: " & ObjData(Subasta.ObjSubastado).name & " (Cantidad: " & Subasta.ObjSubastadoCantidad & " ) - con un precio inicial de " & PonerPuntos(Subasta.OfertaInicial) & " monedas. Escribe /OFERTAR (cantidad) para participar.", FontTypeNames.FONTTYPE_SUBASTA))
 144             .flags.Subastando = False
 146             Subasta.HaySubastaActiva = True
 148             Subasta.Subastador = .name
@@ -24665,7 +24751,7 @@ Private Sub HandleOfertaInicial(ByVal UserIndex As Integer)
 152             Subasta.TiempoRestanteSubasta = 300
 154             Call LogearEventoDeSubasta("#################################################################################################################################################################################################")
 156             Call LogearEventoDeSubasta("El dia: " & Date & " a las " & Time)
-158             Call LogearEventoDeSubasta(.name & ": Esta subastando el item numero " & Subasta.ObjSubastado & " con una cantidad de " & Subasta.ObjSubastadoCantidad & " y con un precio inicial de " & Subasta.OfertaInicial & " monedas.")
+158             Call LogearEventoDeSubasta(.name & ": Esta subastando el item numero " & Subasta.ObjSubastado & " con una cantidad de " & Subasta.ObjSubastadoCantidad & " y con un precio inicial de " & PonerPuntos(Subasta.OfertaInicial) & " monedas.")
 160             frmMain.SubastaTimer.Enabled = True
 162             Call WarpUserChar(UserIndex, 14, 27, 64, True)
 
@@ -24755,12 +24841,12 @@ Private Sub HandleOfertaDeSubasta(ByVal UserIndex As Integer)
 152             Call WriteUpdateGold(UserIndex)
             
 154             If Subasta.TiempoRestanteSubasta < 60 Then
-156                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Oferta mejorada por: " & .name & " (Ofrece " & Oferta & " Monedas de oro) - Tiempo Extendido. Escribe /SUBASTA para mas informaciín.", FontTypeNames.FONTTYPE_SUBASTA))
-158                 Call LogearEventoDeSubasta(.name & ": Mejoro la oferta en el ultimo minuto ofreciendo " & Oferta & " monedas.")
+156                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Oferta mejorada por: " & .name & " (Ofrece " & PonerPuntos(Oferta) & " monedas de oro) - Tiempo Extendido. Escribe /SUBASTA para mas informaciín.", FontTypeNames.FONTTYPE_SUBASTA))
+158                 Call LogearEventoDeSubasta(.name & ": Mejoro la oferta en el ultimo minuto ofreciendo " & PonerPuntos(Oferta) & " monedas.")
 160                 Subasta.TiempoRestanteSubasta = Subasta.TiempoRestanteSubasta + 30
                 Else
-162                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Oferta mejorada por: " & .name & " (Ofrece " & Oferta & " Monedas de oro). Escribe /SUBASTA para mas informaciín.", FontTypeNames.FONTTYPE_SUBASTA))
-164                 Call LogearEventoDeSubasta(.name & ": Mejoro la oferta ofreciendo " & Oferta & " monedas.")
+162                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Oferta mejorada por: " & .name & " (Ofrece " & PonerPuntos(Oferta) & " monedas de oro). Escribe /SUBASTA para mas informaciín.", FontTypeNames.FONTTYPE_SUBASTA))
+164                 Call LogearEventoDeSubasta(.name & ": Mejoro la oferta ofreciendo " & PonerPuntos(Oferta) & " monedas.")
 166                 Subasta.HuboOferta = True
 168                 Subasta.PosibleCancelo = False
 
@@ -28569,11 +28655,11 @@ Private Sub HandleSubastaInfo(ByVal UserIndex As Integer)
 108             Call WriteConsoleMsg(UserIndex, "Objeto: " & ObjData(Subasta.ObjSubastado).name & " (" & Subasta.ObjSubastadoCantidad & ")", FontTypeNames.FONTTYPE_SUBASTA)
 
 110             If Subasta.HuboOferta Then
-112                 Call WriteConsoleMsg(UserIndex, "Mejor oferta: " & Subasta.MejorOferta & " monedas de oro por " & Subasta.Comprador & ".", FontTypeNames.FONTTYPE_SUBASTA)
-114                 Call WriteConsoleMsg(UserIndex, "Podes realizar una oferta escribiendo /OFERTAR " & Subasta.MejorOferta + 100, FontTypeNames.FONTTYPE_SUBASTA)
+112                 Call WriteConsoleMsg(UserIndex, "Mejor oferta: " & PonerPuntos(Subasta.MejorOferta) & " monedas de oro por " & Subasta.Comprador & ".", FontTypeNames.FONTTYPE_SUBASTA)
+114                 Call WriteConsoleMsg(UserIndex, "Podes realizar una oferta escribiendo /OFERTAR " & PonerPuntos(Subasta.MejorOferta + 100), FontTypeNames.FONTTYPE_SUBASTA)
                 Else
-116                 Call WriteConsoleMsg(UserIndex, "Oferta inicial: " & Subasta.OfertaInicial & " monedas de oro.", FontTypeNames.FONTTYPE_SUBASTA)
-118                 Call WriteConsoleMsg(UserIndex, "Podes realizar una oferta escribiendo /OFERTAR " & Subasta.OfertaInicial + 100, FontTypeNames.FONTTYPE_SUBASTA)
+116                 Call WriteConsoleMsg(UserIndex, "Oferta inicial: " & PonerPuntos(Subasta.OfertaInicial) & " monedas de oro.", FontTypeNames.FONTTYPE_SUBASTA)
+118                 Call WriteConsoleMsg(UserIndex, "Podes realizar una oferta escribiendo /OFERTAR " & PonerPuntos(Subasta.OfertaInicial + 100), FontTypeNames.FONTTYPE_SUBASTA)
 
                 End If
 

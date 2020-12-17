@@ -87,6 +87,8 @@ Public CuentaRegresivaTimer As Byte
 
 Public PENDIENTE            As Integer
 
+Public CostoPerdonPorCiudadano As Long
+
 Type tEstadisticasDiarias
 
     segundos As Double

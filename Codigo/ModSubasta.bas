@@ -202,7 +202,7 @@ Public Sub FinalizarSubasta()
         Else
 190         UserList(NameIndex(Subasta.Subastador)).Stats.GLD = UserList(NameIndex(Subasta.Subastador)).Stats.GLD + Subasta.MejorOferta
         
-192         Call WriteConsoleMsg(NameIndex(Subasta.Subastador), "Felicitaciones, has ganado " & Subasta.MejorOferta & " monedas de oro de tú subasta.", FontTypeNames.FONTTYPE_SUBASTA)
+192         Call WriteConsoleMsg(NameIndex(Subasta.Subastador), "Felicitaciones, has ganado " & PonerPuntos(Subasta.MejorOferta) & " monedas de oro de tú subasta.", FontTypeNames.FONTTYPE_SUBASTA)
         
 194         Call WriteUpdateGold(NameIndex(Subasta.Subastador))
 196         Call LogearEventoDeSubasta("Oro entregado en la billetera")

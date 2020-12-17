@@ -2770,6 +2770,8 @@ Sub LoadConfiguraciones()
 118     BattleActivado = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "BattleActivado"))
 120     BattleMinNivel = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "BattleMinNivel"))
 
+        CostoPerdonPorCiudadano = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "CostoPerdonPorCiudadano"))
+
 122     frmMain.lblLimpieza.Caption = "Limpieza de objetos cada: " & TimerLimpiarObjetos & " minutos."
 
         
