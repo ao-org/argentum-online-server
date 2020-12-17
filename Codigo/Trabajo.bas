@@ -99,7 +99,12 @@ Public Sub DoOcultarse(ByVal UserIndex As Integer)
         Dim res    As Integer
         Dim Skill  As Integer
     
-100     With UserList(UserIndex)
+        With UserList(UserIndex)
+
+            If .flags.Navegando = 1 And .clase <> eClass.Pirat Then
+                Call WriteLocaleMsg(UserIndex, "56", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
     
 102         Skill = .Stats.UserSkills(eSkill.Ocultarse)
 104         Suerte = (((0.000002 * Skill - 0.0002) * Skill + 0.0064) * Skill + 0.1124) * 100
@@ -118,20 +123,31 @@ Public Sub DoOcultarse(ByVal UserIndex As Integer)
 124                 .Counters.TiempoOculto = Int(Suerte / 2)
                 Else
 126                 .Counters.TiempoOculto = Suerte
-
                 End If
     
 128             If .flags.AnilloOcultismo = 1 Then
 130                 .Counters.TiempoOculto = Suerte * 3
                 Else
 132                 .Counters.TiempoOculto = Suerte
-
                 End If
   
-134             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, True))
+                If .flags.Navegando = 1 Then
+                    If .clase = eClass.Pirat Then
+                        .Char.Body = iFragataFantasmal
+                        .flags.Oculto = 1
+                        .Counters.TiempoOculto = IntervaloOculto
+                         
+                        Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)
+                        Call WriteConsoleMsg(UserIndex, "¡Te has camuflado como barco fantasma!", FontTypeNames.FONTTYPE_INFO)
+                    End If
+                Else
+                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, True))
+                    
+                    'Call WriteConsoleMsg(UserIndex, "¡Te has escondido entre las sombras!", FontTypeNames.FONTTYPE_INFO)
+136                 Call WriteLocaleMsg(UserIndex, "55", FontTypeNames.FONTTYPE_INFO)
+                End If
 
-                'Call WriteConsoleMsg(UserIndex, "¡Te has escondido entre las sombras!", FontTypeNames.FONTTYPE_INFO)
-136             Call WriteLocaleMsg(UserIndex, "55", FontTypeNames.FONTTYPE_INFO)
+
 138             Call SubirSkill(UserIndex, Ocultarse)
             Else
 
@@ -139,7 +155,6 @@ Public Sub DoOcultarse(ByVal UserIndex As Integer)
                     'Call WriteConsoleMsg(UserIndex, "¡No has logrado esconderte!", FontTypeNames.FONTTYPE_INFO)
 142                 Call WriteLocaleMsg(UserIndex, "57", FontTypeNames.FONTTYPE_INFO)
 144                 .flags.UltimoMensaje = 4
-
                 End If
 
             End If
