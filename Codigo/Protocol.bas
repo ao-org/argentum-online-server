@@ -6918,9 +6918,14 @@ Private Sub HandleOnline(ByVal UserIndex As Integer)
         
 
         '***************************************************
+        'Ladder 17/12/20 : Envio records de usuarios y uptime
         Dim i     As Long
 
         Dim Count As Long
+        
+        Dim Time      As Long
+    
+        Dim UpTimeStr As String
     
 100     With UserList(UserIndex)
             'Remove packet ID
@@ -6940,11 +6945,36 @@ Private Sub HandleOnline(ByVal UserIndex As Integer)
 
 114         Next i
 
+        
+            'Get total time in seconds
+         Time = ((GetTickCount()) - tInicioServer) \ 1000
+        
+            'Get times in dd:hh:mm:ss format
+         UpTimeStr = (Time Mod 60) & " segundos."
+         Time = Time \ 60
+        
+         UpTimeStr = (Time Mod 60) & " minutos, " & UpTimeStr
+         Time = Time \ 60
+        
+         UpTimeStr = (Time Mod 24) & " horas, " & UpTimeStr
+         Time = Time \ 24
+        
+         If Time = 1 Then
+             UpTimeStr = Time & " día, " & UpTimeStr
+            Else
+             UpTimeStr = Time & " días, " & UpTimeStr
+    
+            End If
+    
+     Call WriteConsoleMsg(UserIndex, "Server Online: " & UpTimeStr, FontTypeNames.FONTTYPE_INFO)
+
 
 116         If .flags.Privilegios And PlayerType.user Then
 118             Call WriteConsoleMsg(UserIndex, "Número de usuarios: " & CStr(Count) & " conectados.", FontTypeNames.FONTTYPE_INFOIAO)
+                Call WriteConsoleMsg(UserIndex, "Tiempo en línea: " & UpTimeStr & " Record de usuarios en simultaneo: " & RecordUsuarios & ".", FontTypeNames.FONTTYPE_INFOIAO)
             Else
 120             Call WriteConsoleMsg(UserIndex, "Número de usuarios: " & CStr(Count) & " conectados: " & nombres & ".", FontTypeNames.FONTTYPE_INFOIAO)
+                Call WriteConsoleMsg(UserIndex, "Tiempo en línea: " & UpTimeStr & " Record de usuarios en simultaneo: " & RecordUsuarios & ".", FontTypeNames.FONTTYPE_INFOIAO)
             End If
 
         End With
