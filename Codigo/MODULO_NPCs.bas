@@ -1148,7 +1148,7 @@ Sub NPCTirarOro(MiNPC As npc, ByVal UserIndex As Integer)
 128                     Oro = 0
                     End If
 
-130                 Call TirarItemAlPiso(MiNPC.Pos, MiObj)
+130                 Call TirarItemAlPiso(MiNPC.Pos, MiObj, MiNPC.flags.AguaValida = 1)
                 Wend
 
 132             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageFxPiso("87", MiNPC.Pos.X, MiNPC.Pos.Y))
