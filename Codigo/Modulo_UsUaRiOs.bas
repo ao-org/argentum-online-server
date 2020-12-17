@@ -454,29 +454,24 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
 108             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_NIVEL, .Pos.X, .Pos.Y))
 110             Call WriteLocaleMsg(UserIndex, "186", FontTypeNames.FONTTYPE_INFO)
             
-112             Pts = Pts + 5
-            
-114             .Stats.ELV = .Stats.ELV + 1
-            
 116             .Stats.Exp = .Stats.Exp - .Stats.ELU
 
-118             If .Stats.ELV < 15 Then
-120                 .Stats.ELU = .Stats.ELU * 1.4
-122             ElseIf .Stats.ELV < 21 Then
-124                 .Stats.ELU = .Stats.ELU * 1.35
-126             ElseIf .Stats.ELV < 26 Then
-128                 .Stats.ELU = .Stats.ELU * 1.3
-130             ElseIf .Stats.ELV < 35 Then
+118             If .Stats.ELV < 10 Then
+120                 .Stats.ELU = .Stats.ELU * 1.5
+122             ElseIf .Stats.ELV < 25 Then
+124                 .Stats.ELU = .Stats.ELU * 1.3
+130             ElseIf .Stats.ELV < 48 Then
 132                 .Stats.ELU = .Stats.ELU * 1.2
-134             ElseIf .Stats.ELV < 40 Then
-136                 .Stats.ELU = .Stats.ELU * 1.3
                 Else
-138                 .Stats.ELU = .Stats.ELU * 1.375
-
+138                 .Stats.ELU = .Stats.ELU * 1.3
                 End If
+                
+139             Pts = Pts + 5
+            
+140             .Stats.ELV = .Stats.ELV + 1
             
                 'Calculo subida de vida
-140             Promedio = ModVida(.clase) - (21 - .Stats.UserAtributos(eAtributos.Constitucion)) * 0.5
+141             Promedio = ModVida(.clase) - (21 - .Stats.UserAtributos(eAtributos.Constitucion)) * 0.5
 142             aux = RandomNumber(0, 100)
             
 144             If Promedio - Int(Promedio) = 0.5 Then
