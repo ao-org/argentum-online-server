@@ -24983,7 +24983,7 @@ Public Sub HandleGlobalOnOff(ByVal UserIndex As Integer)
             'Remove Packet ID
 102         Call .incomingData.ReadByte
         
-104         If .flags.Privilegios And (PlayerType.user Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
+104         If Not EsGM(UserIndex) Then Exit Sub
 106         Call LogGM(.name, "/GLOBAL")
         
 108         If EstadoGlobal = False Then
