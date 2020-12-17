@@ -561,34 +561,18 @@ Public Sub EventoSockAccept(ByVal SockID As Long)
 
             End If
 
-            'If Ret = INVALID_SOCKET Then
-            '    If Err.LastDllError = 11002 Then
-            '        ' We couldn't decide if to accept or reject the connection
-            '        'Force reject so we can get it out of the queue
-            '        LogCustom ("Pre WSAAccept CallbackData=1")
-            '        Ret = WSAAccept(SockID, sa, Tam, AddressOf CondicionSocket, 1)
-            '        LogCustom ("WSAccept Callbackdata 1, devuelve " & Ret)
-            '        Call LogCriticEvent("Error en WSAAccept() API 11002: No se pudo decidir si aceptar o rechazar la conexión.")
-            '    Else
-            '        i = Err.LastDllError
-            '        LogCustom ("Error en WSAAccept() API " & i & ": " & GetWSAErrorString(i))
-            '        Call LogCriticEvent("Error en WSAAccept() API " & i & ": " & GetWSAErrorString(i))
-            '        Exit Sub
-            '    End If
-            'End If
-
-            'saco nagle
     
 114         NuevoSock = ret
 
             'Call setsockopt(wsock.SocketHandle, 6, 1, True, 4) 'old: If setsockopt(NuevoSock, SOL_SOCKET, TCP_NODELAY, True, 1) <> 0 Then
             'algoritmo de nagle vb6
-            ' If setsockopt(NuevoSock, 6, 1, True, 4) <> 0 Then
-116        ' If setsockopt(NuevoSock, 6, TCP_NODELAY, True, 4) <> 0 Then
-118        '     i = Err.LastDllError
-120        '     Call LogCriticEvent("Error al setear el delay " & i & ": " & GetWSAErrorString(i))
+             'If setsockopt(NuevoSock, 6, 1, True, 4) <> 0 Then
+             
+116         If setsockopt(NuevoSock, 6, TCP_NODELAY, True, 4) <> 0 Then
+118             i = Err.LastDllError
+120             Call LogCriticEvent("Error al setear el delay " & i & ": " & GetWSAErrorString(i))
 
-            'End If
+            End If
 
             'saco nagle
     
