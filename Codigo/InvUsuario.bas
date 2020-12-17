@@ -1313,11 +1313,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                             ' .Stats.UserAtributos(obj.QueAtributo) = .Stats.UserAtributos(obj.QueAtributo)
 260                         .Stats.UserAtributosBackUP(obj.QueAtributo) = .Stats.UserAtributosBackUP(obj.QueAtributo) + obj.CuantoAumento
                         
-262                         .Stats.UserAtributos(obj.QueAtributo) = .Stats.UserAtributos(obj.QueAtributo) + obj.CuantoAumento
-                        
-264                         If .Stats.UserAtributos(obj.QueAtributo) > MAXATRIBUTOS Then
-266                             .Stats.UserAtributos(obj.QueAtributo) = MAXATRIBUTOS
-                            End If
+262                         .Stats.UserAtributos(obj.QueAtributo) = MinimoInt(.Stats.UserAtributos(obj.QueAtributo) + obj.CuantoAumento, .Stats.UserAtributosBackUP(obj.QueAtributo) * 2)
                 
 268                         Call WriteFYA(UserIndex)
 
@@ -2115,11 +2111,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 266                         .flags.DuracionEfecto = obj.DuracionEfecto
             
                             'Usa el item
-268                         .Stats.UserAtributos(eAtributos.Agilidad) = .Stats.UserAtributos(eAtributos.Agilidad) + RandomNumber(obj.MinModificador, obj.MaxModificador)
-                    
-270                         If .Stats.UserAtributos(eAtributos.Agilidad) > MAXATRIBUTOS Then .Stats.UserAtributos(eAtributos.Agilidad) = MAXATRIBUTOS
-                        
-272                         If .Stats.UserAtributos(eAtributos.Agilidad) > 2 * .Stats.UserAtributosBackUP(Agilidad) Then .Stats.UserAtributos(eAtributos.Agilidad) = 2 * .Stats.UserAtributosBackUP(Agilidad)
+268                         .Stats.UserAtributos(eAtributos.Agilidad) = MinimoInt(.Stats.UserAtributos(eAtributos.Agilidad) + RandomNumber(obj.MinModificador, obj.MaxModificador), .Stats.UserAtributosBackUP(eAtributos.Agilidad) * 2)
                     
 274                         Call WriteFYA(UserIndex)
                     
@@ -2137,11 +2129,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 286                         .flags.DuracionEfecto = obj.DuracionEfecto
             
                             'Usa el item
-288                         .Stats.UserAtributos(eAtributos.Fuerza) = .Stats.UserAtributos(eAtributos.Fuerza) + RandomNumber(obj.MinModificador, obj.MaxModificador)
-                    
-290                         If .Stats.UserAtributos(eAtributos.Fuerza) > MAXATRIBUTOS Then .Stats.UserAtributos(eAtributos.Fuerza) = MAXATRIBUTOS
-                    
-292                         If .Stats.UserAtributos(eAtributos.Fuerza) > 2 * .Stats.UserAtributosBackUP(Fuerza) Then .Stats.UserAtributos(eAtributos.Fuerza) = 2 * .Stats.UserAtributosBackUP(Fuerza)
+288                         .Stats.UserAtributos(eAtributos.Fuerza) = MinimoInt(.Stats.UserAtributos(eAtributos.Fuerza) + RandomNumber(obj.MinModificador, obj.MaxModificador), .Stats.UserAtributosBackUP(eAtributos.Fuerza) * 2)
                     
                             'Quitamos del inv el item
 294                         Call QuitarUserInvItem(UserIndex, slot, 1)

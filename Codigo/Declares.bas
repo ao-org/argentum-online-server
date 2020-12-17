@@ -457,8 +457,6 @@ Public Const MAXEXP         As Long = 1999999999
 
 Public Const MAXUSERMATADOS As Long = 65000
 
-Public Const MAXATRIBUTOS   As Byte = 40
-
 Public Const MINATRIBUTOS   As Byte = 6
 
 Public Const LingoteHierro  As Integer = 386 'OK
