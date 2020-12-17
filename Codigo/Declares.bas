@@ -830,7 +830,7 @@ Public Const FONTTYPE_VIOLETA         As String = "~99~0~198~0~0"
 Public Const FONTTYPE_INFOIAO         As String = "~204~193~115~0~0"
 
 'Estadisticas
-Public Const STAT_MAXELV              As Byte = 47
+Public Const STAT_MAXELV              As Byte = 50
 
 Public Const STAT_MAXHP               As Integer = 32000
 
@@ -2285,8 +2285,6 @@ Public ModClase(1 To NUMCLASES)           As ModClase
 Public ModRaza(1 To NUMRAZAS)             As ModRaza
 
 Public ModVida(1 To NUMCLASES)            As Double
-
-Public ExpByLevel(1 To STAT_MAXELV)       As Double
 
 Public DistribucionEnteraVida(1 To 5)     As Integer
 
