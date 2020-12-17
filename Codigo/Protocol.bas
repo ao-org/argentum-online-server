@@ -3428,33 +3428,8 @@ Private Sub HandleWork(ByVal UserIndex As Integer)
                         Exit Sub
 
                     End If
-                    
-138                 If .flags.Navegando = 1 Then
-                        
-140                     If .clase = eClass.Pirat Then
-142                         .Char.Body = iFragataFantasmal
-144                         .flags.Oculto = 1
-146                         .Counters.TiempoOculto = IntervaloOculto
-                            
-148                         Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)
-                        
-                        Else
 
-150                         If Not .flags.UltimoMensaje = 3 Then
-                                'Call WriteConsoleMsg(UserIndex, "No podés ocultarte si estás navegando.", FontTypeNames.FONTTYPE_INFO)
-152                             Call WriteLocaleMsg(UserIndex, "56", FontTypeNames.FONTTYPE_INFO)
-154                             .flags.UltimoMensaje = 3
-                            End If
-                            
-                            Exit Sub
-                            
-                        End If
-
-                    Else
-                
-156                     Call DoOcultarse(UserIndex)
-
-                    End If
+156                 Call DoOcultarse(UserIndex)
 
             End Select
 
