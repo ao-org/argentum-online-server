@@ -297,13 +297,16 @@ Public Sub FundirMineral(ByVal UserIndex As Integer)
 100     If UserList(UserIndex).flags.TargetObjInvIndex > 0 Then
 
             Dim SkillRequerido As Integer
-102         SkillRequerido = UserList(UserIndex).Stats.UserSkills(eSkill.Mineria) * ModFundirMineral(UserList(UserIndex).clase)
+102         SkillRequerido = ObjData(UserList(UserIndex).flags.TargetObjInvIndex).MinSkill * ModFundirMineral(UserList(UserIndex).clase)
    
 104         If ObjData(UserList(UserIndex).flags.TargetObjInvIndex).OBJType = eOBJType.otMinerales And _
-                ObjData(UserList(UserIndex).flags.TargetObjInvIndex).MinSkill <= SkillRequerido Then
+                UserList(UserIndex).Stats.UserSkills(eSkill.Mineria) >= SkillRequerido Then
             
 106             Call DoLingotes(UserIndex)
         
+            If SkillRequerido > 100 Then
+                Call WriteConsoleMsg(UserIndex, "Tu clase no tiene el conocimiento suficiente para trabajar este mineral.", FontTypeNames.FONTTYPE_INFO)
+                
             Else
 108             Call WriteConsoleMsg(UserIndex, "No tenés conocimientos de minería suficientes para trabajar este mineral. Necesitas " & SkillRequerido & " puntos en minería.", FontTypeNames.FONTTYPE_INFO)
 
