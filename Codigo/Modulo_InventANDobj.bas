@@ -40,7 +40,7 @@ Option Explicit
 '?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
 '?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
 '?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
-Public Function TirarItemAlPiso(Pos As WorldPos, obj As obj, Optional NotPirata As Boolean = True) As WorldPos
+Public Function TirarItemAlPiso(Pos As WorldPos, obj As obj, Optional PuedeAgua As Boolean = True) As WorldPos
 
         On Error GoTo ErrHandler
 
@@ -49,7 +49,7 @@ Public Function TirarItemAlPiso(Pos As WorldPos, obj As obj, Optional NotPirata 
 100     NuevaPos.X = 0
 102     NuevaPos.Y = 0
     
-104     Tilelibre Pos, NuevaPos, obj, NotPirata, True
+104     Tilelibre Pos, NuevaPos, obj, PuedeAgua, True
 
 106     If NuevaPos.X <> 0 And NuevaPos.Y <> 0 Then
 108         Call MakeObj(obj, Pos.Map, NuevaPos.X, NuevaPos.Y)
@@ -82,7 +82,7 @@ Public Sub NPC_TIRAR_ITEMS(ByRef npc As npc)
 104             If npc.Invent.Object(i).ObjIndex > 0 Then
 106                 MiObj.Amount = npc.Invent.Object(i).Amount
 108                 MiObj.ObjIndex = npc.Invent.Object(i).ObjIndex
-110                 Call TirarItemAlPiso(npc.Pos, MiObj)
+110                 Call TirarItemAlPiso(npc.Pos, MiObj, npc.flags.AguaValida = 1)
 
                 End If
       
