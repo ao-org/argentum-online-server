@@ -3030,10 +3030,10 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
                     Exit Sub
                 End If
 
-112             If Not PuedeDomarMascota(UserIndex, NpcIndex) Then
-114                 Call WriteConsoleMsg(UserIndex, "No puedes domar más de dos criaturas del mismo tipo.", FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-                End If
+112             'If Not PuedeDomarMascota(UserIndex, NpcIndex) Then
+114             '    Call WriteConsoleMsg(UserIndex, "No puedes domar más de dos criaturas del mismo tipo.", FontTypeNames.FONTTYPE_INFO)
+                '    Exit Sub
+                'End If
 
 116             puntosDomar = CInt(.Stats.UserAtributos(eAtributos.Carisma)) * CInt(.Stats.UserSkills(eSkill.Domar))
 
