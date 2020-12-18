@@ -700,6 +700,7 @@ Public Sub HerreroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As I
         
         On Error GoTo HerreroConstruirItem_Err
         
+        If Not IntervaloPermiteTrabajarConstruir(UserIndex) Then Exit Sub
 
 100     If PuedeConstruir(UserIndex, ItemIndex) And PuedeConstruirHerreria(ItemIndex) Then
 102         Call HerreroQuitarMateriales(UserIndex, ItemIndex)
@@ -842,6 +843,7 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
         
         On Error GoTo CarpinteroConstruirItem_Err
         
+        If Not IntervaloPermiteTrabajarConstruir(UserIndex) Then Exit Sub
 
 100     If CarpinteroTieneMateriales(UserIndex, ItemIndex) _
                 And UserList(UserIndex).Stats.UserSkills(eSkill.Carpinteria) >= ObjData(ItemIndex).SkCarpinteria _
@@ -959,6 +961,7 @@ Public Sub SastreConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As In
         
         On Error GoTo SastreConstruirItem_Err
         
+        If Not IntervaloPermiteTrabajarConstruir(UserIndex) Then Exit Sub
 
 100     If Not UserList(UserIndex).Stats.MinSta > 0 Then
 102         Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)

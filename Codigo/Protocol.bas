@@ -4085,7 +4085,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 378                 If ObjData(.Invent.HerramientaEqpObjIndex).OBJType <> eOBJType.otHerramientas Then Exit Sub
                     
                     'Check interval
-380                 If Not IntervaloPermiteTrabajar(UserIndex) Then Exit Sub
+380                 If Not IntervaloPermiteTrabajarExtraer(UserIndex) Then Exit Sub
 
 382                 Select Case ObjData(.Invent.HerramientaEqpObjIndex).Subtipo
                 
@@ -4164,7 +4164,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 434                 If ObjData(.Invent.HerramientaEqpObjIndex).OBJType <> eOBJType.otHerramientas Then Exit Sub
         
                     'Check interval
-436                 If Not IntervaloPermiteTrabajar(UserIndex) Then Exit Sub
+436                 If Not IntervaloPermiteTrabajarExtraer(UserIndex) Then Exit Sub
 
 438                 Select Case ObjData(.Invent.HerramientaEqpObjIndex).Subtipo
                 
@@ -4232,7 +4232,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 482                 If ObjData(.Invent.HerramientaEqpObjIndex).OBJType <> eOBJType.otHerramientas Then Exit Sub
                     
                     'Check interval
-484                 If Not IntervaloPermiteTrabajar(UserIndex) Then Exit Sub
+484                 If Not IntervaloPermiteTrabajarExtraer(UserIndex) Then Exit Sub
 
 486                 Select Case ObjData(.Invent.HerramientaEqpObjIndex).Subtipo
                 
@@ -4295,7 +4295,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 534                 If ObjData(.Invent.HerramientaEqpObjIndex).OBJType <> eOBJType.otHerramientas Then Exit Sub
                     
                     'Check interval
-536                 If Not IntervaloPermiteTrabajar(UserIndex) Then Exit Sub
+536                 If Not IntervaloPermiteTrabajarExtraer(UserIndex) Then Exit Sub
 
 538                 Select Case ObjData(.Invent.HerramientaEqpObjIndex).Subtipo
                 
@@ -4351,7 +4351,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 576                 If MapInfo(.Pos.Map).Seguro = 0 Then
                     
                         'Check interval
-578                     If Not IntervaloPermiteTrabajar(UserIndex) Then Exit Sub
+578                     If Not IntervaloPermiteTrabajarExtraer(UserIndex) Then Exit Sub
                     
                         'Target whatever is in that tile
 580                     Call LookatTile(UserIndex, UserList(UserIndex).Pos.Map, X, Y)
@@ -4442,7 +4442,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 642             Case FundirMetal    'UGLY!!! This is a constant, not a skill!!
             
                     'Check interval
-644                 If Not IntervaloPermiteTrabajar(UserIndex) Then Exit Sub
+644                 If Not IntervaloPermiteTrabajarConstruir(UserIndex) Then Exit Sub
                 
 646                 Call LookatTile(UserIndex, .Pos.Map, X, Y)
                 
@@ -21067,7 +21067,8 @@ Public Sub WriteIntervals(ByVal UserIndex As Integer)
 112         Call .outgoingData.WriteLong(.Intervals.magia)
 114         Call .outgoingData.WriteLong(.Intervals.MagiaGolpe)
 116         Call .outgoingData.WriteLong(.Intervals.GolpeUsar)
-118         Call .outgoingData.WriteLong(.Intervals.Trabajar)
+118         Call .outgoingData.WriteLong(.Intervals.TrabajarExtraer)
+119         Call .outgoingData.WriteLong(.Intervals.TrabajarConstruir)
 120         Call .outgoingData.WriteLong(.Intervals.UsarU)
 122         Call .outgoingData.WriteLong(.Intervals.UsarClic)
 124         Call .outgoingData.WriteLong(IntervaloTirar)
