@@ -439,12 +439,13 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
         Dim PromedioObjetivo As Double
         
         Dim PromedioUser     As Double
-        
-        Dim Value            As Double
 
         Dim aux              As Integer
     
         Dim PasoDeNivel      As Boolean
+
+        ' Randomizo las vidas
+        Randomize Time
     
 100     With UserList(UserIndex)
 
@@ -473,8 +474,6 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
                 
 139             Pts = Pts + 5
             
-140             .Stats.ELV = .Stats.ELV + 1
-            
                 ' Calculo subida de vida by WyroX
                 ' Obtengo el promedio según clase y constitución
 141             PromedioObjetivo = ModVida(.clase) - (21 - .Stats.UserAtributos(eAtributos.Constitucion)) * 0.5
@@ -482,10 +481,10 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
                 PromedioUser = CalcularPromedioVida(UserIndex)
                 ' Lo modifico para compensar si está muy bajo o muy alto
 142             Promedio = PromedioObjetivo + (PromedioObjetivo - PromedioUser)
-                ' Obtengo un double al azar alrededor de este promedio
-143             Value = RandomNormalDist(Promedio, 0.8)
-                ' Redondeo hacia el entero más cercano
-                AumentoHP = Round(Value)
+                ' Obtengo un entero al azar con más tendencia al promedio
+143             AumentoHP = RandomIntBiased(PromedioObjetivo - 1.5, PromedioObjetivo + 1.5, Promedio, 1)
+                
+150             .Stats.ELV = .Stats.ELV + 1
             
 196             Select Case .clase
 

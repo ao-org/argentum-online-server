@@ -2645,6 +2645,9 @@ Function adoIsConnected(adoCn As ADODB.Connection) As Boolean
         '#AUTHOR:  Belladonna
         '----------------------------------------------------------------
 
+        ' No sacar
+        On Error Resume Next
+
         Dim i As Long
         Dim Cmd As New ADODB.Command
 
