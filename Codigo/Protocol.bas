@@ -586,7 +586,10 @@ Public Enum eEditOptions
     eo_SkillPointsLeft
     eo_Sex
     eo_Raza
-
+    eo_Arma
+    eo_Escudo
+    eo_Casco
+    eo_Particula
 End Enum
 
 Public Type PersonajeCuenta
@@ -11512,6 +11515,78 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 170                     Call ChangeUserChar(tUser, val(Arg1), UserList(tUser).Char.Head, UserList(tUser).Char.Heading, UserList(tUser).Char.WeaponAnim, UserList(tUser).Char.ShieldAnim, UserList(tUser).Char.CascoAnim)
 
                     End If
+                   
+                Case eEditOptions.eo_Arma
+                
+                    If tUser <= 0 Then
+                       
+                        If Database_Enabled Then
+                           'Call SaveUserBodyDatabase(UserName, val(Arg1))
+                           Else
+                            'Call WriteVar(CharPath & UserName & ".chr", "INIT", "Arma", Arg1)
+                    
+                           End If
+                    
+                            Call WriteConsoleMsg(UserIndex, "Usuario Offline Alterado: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                        Else
+                            Call ChangeUserChar(tUser, UserList(tUser).Char.Body, UserList(tUser).Char.Head, UserList(tUser).Char.Heading, val(Arg1), UserList(tUser).Char.ShieldAnim, UserList(tUser).Char.CascoAnim)
+                    
+                       End If
+                       
+                Case eEditOptions.eo_Escudo
+                
+                    If tUser <= 0 Then
+                       
+                        If Database_Enabled Then
+                           'Call SaveUserBodyDatabase(UserName, val(Arg1))
+                           Else
+                            'Call WriteVar(CharPath & UserName & ".chr", "INIT", "Arma", Arg1)
+                    
+                           End If
+                    
+                            Call WriteConsoleMsg(UserIndex, "Usuario Offline Alterado: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                        Else
+                            Call ChangeUserChar(tUser, UserList(tUser).Char.Body, UserList(tUser).Char.Head, UserList(tUser).Char.Heading, UserList(tUser).Char.WeaponAnim, val(Arg1), UserList(tUser).Char.CascoAnim)
+                    
+                       End If
+                       
+                Case eEditOptions.eo_Casco
+                
+                    If tUser <= 0 Then
+                       
+                        If Database_Enabled Then
+                           'Call SaveUserBodyDatabase(UserName, val(Arg1))
+                           Else
+                            'Call WriteVar(CharPath & UserName & ".chr", "INIT", "Arma", Arg1)
+                    
+                           End If
+                    
+                            Call WriteConsoleMsg(UserIndex, "Usuario Offline Alterado: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                        Else
+                            Call ChangeUserChar(tUser, UserList(tUser).Char.Body, UserList(tUser).Char.Head, UserList(tUser).Char.Heading, UserList(tUser).Char.WeaponAnim, UserList(tUser).Char.ShieldAnim, val(Arg1))
+                    
+                       End If
+                       
+                Case eEditOptions.eo_Particula
+                
+                    If tUser <= 0 Then
+                       
+                        If Database_Enabled Then
+                           'Call SaveUserBodyDatabase(UserName, val(Arg1))
+                           Else
+                            'Call WriteVar(CharPath & UserName & ".chr", "INIT", "Arma", Arg1)
+                    
+                           End If
+                    
+                            Call WriteConsoleMsg(UserIndex, "Usuario Offline Alterado: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                        Else
+                            'Call ChangeUserChar(tUser, UserList(tUser).Char.Body, UserList(tUser).Char.Head, UserList(tUser).Char.Heading, UserList(tUser).Char.WeaponAnim, UserList(tUser).Char.ShieldAnim, val(Arg1))
+                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, val(Arg1), 9999, False))
+                            .Char.ParticulaFx = val(Arg1)
+                            .Char.loops = 9999
+                       End If
+                       
+                       
                 
 172             Case eEditOptions.eo_Head
 
