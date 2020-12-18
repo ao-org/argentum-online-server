@@ -16733,7 +16733,17 @@ Public Sub HandlePromedio(ByVal UserIndex As Integer)
 
             Promedio = CalcularPromedioVida(UserIndex)
 
-            Call WriteConsoleMsg(UserIndex, "Vida actual: " & Vida & ". Promedio: " & Promedio, IIf(Vida = .Stats.MaxHp, FONTTYPE_PROMEDIO_IGUAL, IIf(Vida > .Stats.MaxHp, FONTTYPE_PROMEDIO_MENOR, FONTTYPE_PROMEDIO_MAYOR)))
+            Dim Color As FontTypeNames
+            
+            If .Stats.MaxHp < Vida Then
+                Color = FONTTYPE_PROMEDIO_MENOR
+            ElseIf .Stats.MaxHp > Vida Then
+                Color = FONTTYPE_PROMEDIO_MAYOR
+            Else
+                Color = FONTTYPE_PROMEDIO_IGUAL
+            End If
+
+            Call WriteConsoleMsg(UserIndex, "Vida actual: " & Vida & ". Promedio: " & Round(Promedio, 2), Color)
 
         End With
         
