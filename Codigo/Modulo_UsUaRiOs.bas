@@ -1194,7 +1194,7 @@ DameUserIndex_Err:
         
 End Function
 
-Function DameUserIndexConNombre(ByVal nombre As String) As Integer
+Function DameUserIndexConNombre(ByVal Nombre As String) As Integer
         
         On Error GoTo DameUserIndexConNombre_Err
         
@@ -1203,9 +1203,9 @@ Function DameUserIndexConNombre(ByVal nombre As String) As Integer
   
 100     LoopC = 1
   
-102     nombre = UCase$(nombre)
+102     Nombre = UCase$(Nombre)
 
-104     Do Until UCase$(UserList(LoopC).name) = nombre
+104     Do Until UCase$(UserList(LoopC).name) = Nombre
 
 106         LoopC = LoopC + 1
     
@@ -2352,30 +2352,30 @@ CambiarNick_Err:
         
 End Sub
 
-Sub SendUserStatsTxtOFF(ByVal sendIndex As Integer, ByVal nombre As String)
+Sub SendUserStatsTxtOFF(ByVal sendIndex As Integer, ByVal Nombre As String)
         
         On Error GoTo SendUserStatsTxtOFF_Err
         
 
-100     If FileExist(CharPath & nombre & ".chr", vbArchive) = False Then
+100     If FileExist(CharPath & Nombre & ".chr", vbArchive) = False Then
 102         Call WriteConsoleMsg(sendIndex, "Pj Inexistente", FontTypeNames.FONTTYPE_INFO)
         Else
-104         Call WriteConsoleMsg(sendIndex, "Estadisticas de: " & nombre, FontTypeNames.FONTTYPE_INFO)
-106         Call WriteConsoleMsg(sendIndex, "Nivel: " & GetVar(CharPath & nombre & ".chr", "stats", "elv") & "  EXP: " & GetVar(CharPath & nombre & ".chr", "stats", "Exp") & "/" & GetVar(CharPath & nombre & ".chr", "stats", "elu"), FontTypeNames.FONTTYPE_INFO)
-108         Call WriteConsoleMsg(sendIndex, "Vitalidad: " & GetVar(CharPath & nombre & ".chr", "stats", "minsta") & "/" & GetVar(CharPath & nombre & ".chr", "stats", "maxSta"), FontTypeNames.FONTTYPE_INFO)
-110         Call WriteConsoleMsg(sendIndex, "Salud: " & GetVar(CharPath & nombre & ".chr", "stats", "MinHP") & "/" & GetVar(CharPath & nombre & ".chr", "Stats", "MaxHP") & "  Mana: " & GetVar(CharPath & nombre & ".chr", "Stats", "MinMAN") & "/" & GetVar(CharPath & nombre & ".chr", "Stats", "MaxMAN"), FontTypeNames.FONTTYPE_INFO)
+104         Call WriteConsoleMsg(sendIndex, "Estadisticas de: " & Nombre, FontTypeNames.FONTTYPE_INFO)
+106         Call WriteConsoleMsg(sendIndex, "Nivel: " & GetVar(CharPath & Nombre & ".chr", "stats", "elv") & "  EXP: " & GetVar(CharPath & Nombre & ".chr", "stats", "Exp") & "/" & GetVar(CharPath & Nombre & ".chr", "stats", "elu"), FontTypeNames.FONTTYPE_INFO)
+108         Call WriteConsoleMsg(sendIndex, "Vitalidad: " & GetVar(CharPath & Nombre & ".chr", "stats", "minsta") & "/" & GetVar(CharPath & Nombre & ".chr", "stats", "maxSta"), FontTypeNames.FONTTYPE_INFO)
+110         Call WriteConsoleMsg(sendIndex, "Salud: " & GetVar(CharPath & Nombre & ".chr", "stats", "MinHP") & "/" & GetVar(CharPath & Nombre & ".chr", "Stats", "MaxHP") & "  Mana: " & GetVar(CharPath & Nombre & ".chr", "Stats", "MinMAN") & "/" & GetVar(CharPath & Nombre & ".chr", "Stats", "MaxMAN"), FontTypeNames.FONTTYPE_INFO)
     
-112         Call WriteConsoleMsg(sendIndex, "Menor Golpe/Mayor Golpe: " & GetVar(CharPath & nombre & ".chr", "stats", "MaxHIT"), FontTypeNames.FONTTYPE_INFO)
+112         Call WriteConsoleMsg(sendIndex, "Menor Golpe/Mayor Golpe: " & GetVar(CharPath & Nombre & ".chr", "stats", "MaxHIT"), FontTypeNames.FONTTYPE_INFO)
     
-114         Call WriteConsoleMsg(sendIndex, "Oro: " & GetVar(CharPath & nombre & ".chr", "stats", "GLD"), FontTypeNames.FONTTYPE_INFO)
-116         Call WriteConsoleMsg(sendIndex, "Veces Que Murio: " & GetVar(CharPath & nombre & ".chr", "Flags", "VecesQueMoriste"), FontTypeNames.FONTTYPE_INFO)
+114         Call WriteConsoleMsg(sendIndex, "Oro: " & GetVar(CharPath & Nombre & ".chr", "stats", "GLD"), FontTypeNames.FONTTYPE_INFO)
+116         Call WriteConsoleMsg(sendIndex, "Veces Que Murio: " & GetVar(CharPath & Nombre & ".chr", "Flags", "VecesQueMoriste"), FontTypeNames.FONTTYPE_INFO)
             #If ConUpTime Then
 
                 Dim TempSecs As Long
 
                 Dim TempStr  As String
 
-118             TempSecs = GetVar(CharPath & nombre & ".chr", "INIT", "UpTime")
+118             TempSecs = GetVar(CharPath & Nombre & ".chr", "INIT", "UpTime")
 120             TempStr = (TempSecs \ 86400) & " Dias, " & ((TempSecs Mod 86400) \ 3600) & " Horas, " & ((TempSecs Mod 86400) Mod 3600) \ 60 & " Minutos, " & (((TempSecs Mod 86400) Mod 3600) Mod 60) & " Segundos."
 122             Call WriteConsoleMsg(sendIndex, "Tiempo Logeado: " & TempStr, FontTypeNames.FONTTYPE_INFO)
             #End If
@@ -2525,8 +2525,6 @@ Private Sub WarpMascotas(ByVal UserIndex As Integer)
 
         Dim petType          As Integer
 
-        Dim PetRespawn       As Boolean
-
         Dim canWarp          As Boolean
 
         Dim index            As Integer
@@ -2576,7 +2574,7 @@ Private Sub WarpMascotas(ByVal UserIndex As Integer)
 138             SpawnPos.X = UserList(UserIndex).Pos.X + RandomNumber(-3, 3)
 140             SpawnPos.Y = UserList(UserIndex).Pos.Y + RandomNumber(-3, 3)
         
-142             index = SpawnNpc(petType, SpawnPos, False, PetRespawn)
+142             index = SpawnNpc(petType, SpawnPos, False, False)
             
                 'Controlamos que se sumoneo OK - should never happen. Continue to allow removal of other pets if not alone
                 ' Exception: Pets don't spawn in water if they can't swim
