@@ -1729,7 +1729,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
                 Dim i As Integer
 488             For i = 1 To MAXMASCOTAS
 490                 If UserList(UserIndex).MascotasType(i) > 0 Then
-492                     UserList(UserIndex).MascotasIndex(i) = SpawnNpc(UserList(UserIndex).MascotasType(i), UserList(UserIndex).Pos, True, True)
+492                     UserList(UserIndex).MascotasIndex(i) = SpawnNpc(UserList(UserIndex).MascotasType(i), UserList(UserIndex).Pos, False, False)
                     
 494                     If UserList(UserIndex).MascotasIndex(i) > 0 Then
 496                         Npclist(UserList(UserIndex).MascotasIndex(i)).MaestroUser = UserIndex

@@ -466,7 +466,7 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
                 ' Si tiene mascotas
 154             If .NroMascotas > 0 Then
                     ' Tiene que estar en zona insegura
-156                 If MapInfo(.Pos.Map).Seguro = 1 Then
+156                 If MapInfo(.Pos.Map).Seguro = 0 Then
 
                         Dim i As Integer
                     
