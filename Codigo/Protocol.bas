@@ -11459,7 +11459,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 126         If Not EsGM(UserIndex) Then Exit Sub
         
             ' Si NO sos Dios o Admin,
-128         If .flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin) = 0 Then
+128         If (.flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin)) = 0 Then
 
                 ' Si te editas a vos mismo esta bien ;)
 130             If UserIndex <> tUser Then Exit Sub
