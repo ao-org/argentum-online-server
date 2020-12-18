@@ -237,7 +237,7 @@ End Function
 'End Function
 
 ' TRABAJO
-Public Function IntervaloPermiteTrabajar(ByVal UserIndex As Integer, Optional ByVal Actualizar As Boolean = True) As Boolean
+Public Function IntervaloPermiteTrabajarExtraer(ByVal UserIndex As Integer, Optional ByVal Actualizar As Boolean = True) As Boolean
         
         On Error GoTo IntervaloPermiteTrabajar_Err
         
@@ -246,11 +246,37 @@ Public Function IntervaloPermiteTrabajar(ByVal UserIndex As Integer, Optional By
 
 100     TActual = GetTickCount()
 
-102     If TActual - UserList(UserIndex).Counters.TimerPuedeTrabajar >= UserList(UserIndex).Intervals.Trabajar - MargenDeIntervaloPorPing Then
+102     If TActual - UserList(UserIndex).Counters.TimerPuedeTrabajar >= UserList(UserIndex).Intervals.TrabajarExtraer - MargenDeIntervaloPorPing Then
 104         If Actualizar Then UserList(UserIndex).Counters.TimerPuedeTrabajar = TActual
-106         IntervaloPermiteTrabajar = True
+106         IntervaloPermiteTrabajarExtraer = True
         Else
-108         IntervaloPermiteTrabajar = False
+108         IntervaloPermiteTrabajarExtraer = False
+
+        End If
+
+        
+        Exit Function
+
+IntervaloPermiteTrabajar_Err:
+110     Call RegistrarError(Err.Number, Err.description, "modNuevoTimer.IntervaloPermiteTrabajar", Erl)
+112     Resume Next
+        
+End Function
+
+Public Function IntervaloPermiteTrabajarConstruir(ByVal UserIndex As Integer, Optional ByVal Actualizar As Boolean = True) As Boolean
+        
+        On Error GoTo IntervaloPermiteTrabajar_Err
+        
+
+        Dim TActual As Long
+
+100     TActual = GetTickCount()
+
+102     If TActual - UserList(UserIndex).Counters.TimerPuedeTrabajar >= UserList(UserIndex).Intervals.TrabajarConstruir - MargenDeIntervaloPorPing Then
+104         If Actualizar Then UserList(UserIndex).Counters.TimerPuedeTrabajar = TActual
+106         IntervaloPermiteTrabajarConstruir = True
+        Else
+108         IntervaloPermiteTrabajarConstruir = False
 
         End If
 

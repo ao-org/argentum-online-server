@@ -1017,24 +1017,24 @@ End Type
 
 Public Type Position
 
-    x As Integer
-    y As Integer
+    X As Integer
+    Y As Integer
 
 End Type
 
 Public Type WorldPos
 
     Map As Integer
-    x As Integer
-    y As Integer
+    X As Integer
+    Y As Integer
 
 End Type
 
 Public Type CityWorldPos
 
     Map As Integer
-    x As Integer
-    y As Integer
+    X As Integer
+    Y As Integer
     MapaViaje As Integer
     ViajeX As Byte
     ViajeY As Byte
@@ -1712,7 +1712,8 @@ Public Type UserIntervals
     GolpeMagia As Long
     MagiaGolpe As Long
     GolpeUsar As Long
-    Trabajar As Long
+    TrabajarExtraer As Long
+    TrabajarConstruir As Long
 
 End Type
 
