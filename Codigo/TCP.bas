@@ -599,7 +599,7 @@ Numeric_Err:
         
 End Function
 
-Function NombrePermitido(ByVal nombre As String) As Boolean
+Function NombrePermitido(ByVal Nombre As String) As Boolean
         
         On Error GoTo NombrePermitido_Err
         
@@ -608,7 +608,7 @@ Function NombrePermitido(ByVal nombre As String) As Boolean
 
 100     For i = 1 To UBound(ForbidenNames)
 
-102         If InStr(nombre, ForbidenNames(i)) Then
+102         If InStr(Nombre, ForbidenNames(i)) Then
 104             NombrePermitido = False
                 Exit Function
 
@@ -680,8 +680,7 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal 
         End If
         
         ' Nombre válido
-        If LenB(name) < 1 Or LenB(name) > 18 Then Exit Function
-        If Not AsciiValidos(name) Then Exit Function
+        If Not ValidarNombre(name) Then Exit Function
 
         '¿Existe el personaje?
 112     If PersonajeExiste(name) Then
@@ -2719,5 +2718,34 @@ Function ValidarCabeza(ByVal UserRaza As eRaza, ByVal UserSexo As eGenero, ByVal
             End Select
     
     End Select
+
+End Function
+
+Function ValidarNombre(Nombre As String) As Boolean
+    
+    If Len(Nombre) < 1 Or Len(Nombre) > 18 Then Exit Function
+    
+    Dim Temp As String
+    Temp = UCase$(Nombre)
+    
+    Dim i As Long, Char As Integer, LastChar As Integer
+    For i = 1 To Len(Temp)
+        Char = Asc(mid$(Temp, i, 1))
+        
+        If (Char < 65 Or Char > 90) And Char <> 32 Then
+            Exit Function
+        
+        ElseIf Char = 32 And LastChar = 32 Then
+            Exit Function
+        End If
+        
+        LastChar = Char
+    Next
+
+    If Asc(mid$(Temp, 1, 1)) = 32 Or Asc(mid$(Temp, Len(Temp), 1)) = 32 Then
+        Exit Function
+    End If
+    
+    ValidarNombre = True
 
 End Function
