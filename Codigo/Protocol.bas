@@ -16727,7 +16727,7 @@ Public Sub HandlePromedio(ByVal UserIndex As Integer)
             
             Dim Promedio As Double, Vida As Long
             Promedio = ModVida(.clase) - (21 - .Stats.UserAtributos(eAtributos.Constitucion)) * 0.5
-            Vida = 18.5 + ModRaza(.raza).Constitucion / 6 + Promedio * (STAT_MAXELV - 1)
+            Vida = 18.5 + ModRaza(.raza).Constitucion / 6 + Promedio * (.Stats.ELV - 1)
 
             Call WriteConsoleMsg(UserIndex, "Vida esperada: " & Vida & ". Promedio: " & Promedio, FONTTYPE_INFOBOLD)
 
