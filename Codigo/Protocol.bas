@@ -453,6 +453,7 @@ Private Enum ClientPacketID
     Day
     SetTime
     DonateGold              '/DONAR
+    Promedio                '/PROMEDIO
 End Enum
 
 Private Enum NewPacksID
@@ -569,6 +570,10 @@ Public Enum FontTypeNames
     FONTTYPE_New_DONADOR
     FONTTYPE_New_GRUPO
     FONTTYPE_New_Eventos
+    
+    FONTTYPE_PROMEDIO_IGUAL
+    FONTTYPE_PROMEDIO_MENOR
+    FONTTYPE_PROMEDIO_MAYOR
     
 End Enum
 
@@ -1382,6 +1387,9 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
 
             Case ClientPacketID.DonateGold              '/DONAR
                 Call HandleDonateGold(UserIndex)
+                
+            Case ClientPacketID.Promedio                '/PROMEDIO
+                Call HandlePromedio(UserIndex)
 
 1076         Case ClientPacketID.KickAllChars            '/ECHARTODOSPJS
 1078             Call HandleKickAllChars(UserIndex)
@@ -5320,7 +5328,7 @@ Private Sub HandleForumPost(ByVal UserIndex As Integer)
 
             Dim postFile As String
         
-            Dim handle   As Integer
+            Dim Handle   As Integer
 
             Dim i        As Long
 
@@ -5353,14 +5361,14 @@ Private Sub HandleForumPost(ByVal UserIndex As Integer)
 
                 End If
             
-136             handle = FreeFile()
+136             Handle = FreeFile()
 138             postFile = Left$(File, Len(File) - 4) & CStr(Count + 1) & ".for"
             
                 'Create file
-140             Open postFile For Output As handle
-142             Print #handle, title
-144             Print #handle, msg
-146             Close #handle
+140             Open postFile For Output As Handle
+142             Print #Handle, title
+144             Print #Handle, msg
+146             Close #Handle
             
                 'Update post count
 148             Call WriteVar(File, "INFO", "CantMSG", Count + 1)
@@ -16634,7 +16642,7 @@ End Sub
 
 Public Sub HandleDonateGold(ByVal UserIndex As Integer)
         
-        On Error GoTo HandleSetTime_Err
+        On Error GoTo Handle
 
 99      With UserList(UserIndex)
             'Remove Packet ID
@@ -16702,8 +16710,37 @@ Public Sub HandleDonateGold(ByVal UserIndex As Integer)
         
         Exit Sub
 
-HandleSetTime_Err:
+Handle:
 142     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleDonateGold", Erl)
+144     Resume Next
+        
+End Sub
+
+Public Sub HandlePromedio(ByVal UserIndex As Integer)
+        
+        On Error GoTo Handle
+
+100     With UserList(UserIndex)
+            .incomingData.ReadByte
+            
+            Call WriteConsoleMsg(UserIndex, ListaClases(.clase) & " " & ListaRazas(.raza) & " nivel " & .Stats.ELV & ".", FONTTYPE_INFOBOLD)
+            
+            Dim Promedio As Double, Vida As Long
+            Promedio = ModVida(.clase) - (21 - .Stats.UserAtributos(eAtributos.Constitucion)) * 0.5
+            Vida = 18.5 + ModRaza(.raza).Constitucion / 6 + Promedio * (STAT_MAXELV - 1)
+
+            Call WriteConsoleMsg(UserIndex, "Vida esperada: " & Vida & ". Promedio: " & Promedio, FONTTYPE_INFOBOLD)
+
+            Promedio = CalcularPromedioVida(UserIndex)
+
+            Call WriteConsoleMsg(UserIndex, "Vida actual: " & Vida & ". Promedio: " & Promedio, IIf(Vida = .Stats.MaxHp, FONTTYPE_PROMEDIO_IGUAL, IIf(Vida > .Stats.MaxHp, FONTTYPE_PROMEDIO_MENOR, FONTTYPE_PROMEDIO_MAYOR)))
+
+        End With
+        
+        Exit Sub
+
+Handle:
+142     Call RegistrarError(Err.Number, Err.description, "Protocol.HandlePromedio", Erl)
 144     Resume Next
         
 End Sub
@@ -18054,7 +18091,7 @@ Public Sub HandleParticipar(ByVal UserIndex As Integer)
         'Last Modification: 12/24/06
         'Turns off the server
         '***************************************************
-        Dim handle As Integer
+        Dim Handle As Integer
     
 100     With UserList(UserIndex)
             'Remove Packet ID

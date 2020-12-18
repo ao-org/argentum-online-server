@@ -23,6 +23,12 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
         Dim AumentoSTA  As Integer
 
         Dim AumentoHIT  As Integer
+        
+        Dim PromedioObjetivo As Double
+        
+        Dim PromedioUser As Double
+        
+        Dim Promedio As Double
 
 100     With UserList(UserIndex)
  
@@ -40,8 +46,6 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
         
             Dim level            As Byte
 
-            Dim Promedio         As Double
-
             Dim Value            As Double
 
             Dim aux              As Integer
@@ -51,10 +55,12 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
 114         For i = .Stats.ELV + 1 To 50
         
                 ' Calculo subida de vida by WyroX
-                ' Obtengo el promedio como siempre
-141             Promedio = ModVida(.clase) - (21 - .Stats.UserAtributos(eAtributos.Constitucion)) * 0.5
+                ' Obtengo el promedio según clase y constitución
+141             PromedioObjetivo = ModVida(.clase) - (21 - .Stats.UserAtributos(eAtributos.Constitucion)) * 0.5
+                ' Obtengo el promedio actual del user
+                PromedioUser = CalcularPromedioVida(UserIndex)
                 ' Lo modifico para compensar si está muy bajo o muy alto
-142             Promedio = Promedio + (Promedio - .Stats.MaxHp / .Stats.ELV)
+142             Promedio = PromedioObjetivo + (PromedioObjetivo - PromedioUser)
                 ' Obtengo un double al azar alrededor de este promedio
 143             Value = RandomNormalDist(Promedio, 0.8)
                 ' Redondeo hacia el entero más cercano
