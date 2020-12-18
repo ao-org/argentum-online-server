@@ -2669,16 +2669,16 @@ CerrarServidor_Err:
         
 End Sub
 
-Function max(ByVal a As Double, ByVal b As Double) As Double
+Function Max(ByVal a As Double, ByVal b As Double) As Double
         
         On Error GoTo max_Err
     
         
 
 100     If a > b Then
-102         max = a
+102         Max = a
         Else
-104         max = b
+104         Max = b
         End If
 
         
@@ -2690,16 +2690,16 @@ max_Err:
         
 End Function
 
-Function min(ByVal a As Double, ByVal b As Double) As Double
+Function Min(ByVal a As Double, ByVal b As Double) As Double
         
         On Error GoTo min_Err
     
         
 
 100     If a < b Then
-102         min = a
+102         Min = a
         Else
-104         min = b
+104         Min = b
         End If
 
         
@@ -2758,53 +2758,31 @@ End Function
 Function CalcularPromedioVida(ByVal UserIndex As Integer) As Double
 
     With UserList(UserIndex)
-        CalcularPromedioVida = (.Stats.MaxHp - 18.5 - ModRaza(.raza).Constitucion / 6) / (.Stats.ELV - 1)
+        If .Stats.ELV = 1 Then
+            CalcularPromedioVida = ModVida(.clase) - (21 - .Stats.UserAtributos(eAtributos.Constitucion)) * 0.5 + (.Stats.MaxHp - (18.5 + ModRaza(.raza).Constitucion / 6))
+        Else
+            CalcularPromedioVida = (.Stats.MaxHp - 18.5 - ModRaza(.raza).Constitucion / 6) / (.Stats.ELV - 1)
+        End If
     End With
 
 End Function
 
-' Box muller method
-' Adaptado de https://stackoverflow.com/a/28551411/6924915
-Function RandomNormalDist(ByVal mean As Double, ByVal stddev As Double) As Double
+' Adaptado desde https://stackoverflow.com/questions/29325069/how-to-generate-random-numbers-biased-towards-one-value-in-a-range/29325222#29325222
+Function RandomIntBiased(ByVal Min As Double, ByVal Max As Double, ByVal Bias As Double, ByVal Influence As Double) As Double
 
     On Error GoTo Handle
 
-    Static n2 As Double
-    Static n2_cached As Integer
+    Dim RandomRango As Double, Mix As Double
     
-    Randomize Time
+    RandomRango = Rnd * (Max - Min) + Min
+    Mix = Rnd * Influence
     
-    If n2_cached = 0 Then
-        Dim X As Double, Y As Double, R As Double
-        
-        Do
-            X = 2# * Rnd - 1
-            Y = 2# * Rnd - 1
-            
-            R = X * X + Y * Y
-
-        Loop While R = 0 Or R > 1
-        
-        Dim d As Double
-        d = Math.Sqr(-2# * Math.Log(R) / R)
-        
-        Dim n1 As Double
-        n1 = X * d
-        n2 = Y * d
-        
-        RandomNormalDist = n1 * stddev + mean
-        
-        n2_cached = 1
-    Else
-        n2_cached = 0
-        
-        RandomNormalDist = n2 * stddev + mean
-    End If
+    RandomIntBiased = RandomRango * (1 - Mix) + Bias * Mix
     
     Exit Function
     
 Handle:
-    Call RegistrarError(Err.Number, Err.description, "General.RandomNormalDist")
-    RandomNormalDist = mean
+    Call RegistrarError(Err.Number, Err.description, "General.RandomIntBiased")
+    RandomIntBiased = Bias
 
 End Function

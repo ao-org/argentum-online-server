@@ -29,6 +29,9 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
         Dim PromedioUser As Double
         
         Dim Promedio As Double
+        
+        ' Randomizo las vidas
+        Randomize Time
 
 100     With UserList(UserIndex)
  
@@ -46,8 +49,6 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
         
             Dim level            As Byte
 
-            Dim Value            As Double
-
             Dim aux              As Integer
 
             Dim DistVida(1 To 5) As Integer
@@ -61,10 +62,8 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
                 PromedioUser = CalcularPromedioVida(UserIndex)
                 ' Lo modifico para compensar si está muy bajo o muy alto
 142             Promedio = PromedioObjetivo + (PromedioObjetivo - PromedioUser)
-                ' Obtengo un double al azar alrededor de este promedio
-143             Value = RandomNormalDist(Promedio, 0.8)
-                ' Redondeo hacia el entero más cercano
-                AumentoHP = Round(Value)
+                ' Obtengo un entero al azar con más tendencia al promedio
+143             AumentoHP = RandomIntBiased(PromedioObjetivo - 1.5, PromedioObjetivo + 1.5, Promedio, 1)
             
 172             Select Case .clase
 
