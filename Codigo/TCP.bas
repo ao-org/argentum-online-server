@@ -599,7 +599,7 @@ Numeric_Err:
         
 End Function
 
-Function NombrePermitido(ByVal Nombre As String) As Boolean
+Function NombrePermitido(ByVal nombre As String) As Boolean
         
         On Error GoTo NombrePermitido_Err
         
@@ -608,7 +608,7 @@ Function NombrePermitido(ByVal Nombre As String) As Boolean
 
 100     For i = 1 To UBound(ForbidenNames)
 
-102         If InStr(Nombre, ForbidenNames(i)) Then
+102         If InStr(nombre, ForbidenNames(i)) Then
 104             NombrePermitido = False
                 Exit Function
 
@@ -1838,8 +1838,9 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
         Exit Sub
     
 ErrHandler:
-586     Call WriteShowMessageBox(UserIndex, "El personaje contiene un error, comuniquese con un miembro del staff.")
         Call RegistrarError(Err.Number, Err.description, "TCP.ConnectUser", Erl)
+586     Call WriteShowMessageBox(UserIndex, "El personaje contiene un error, comuniquese con un miembro del staff.")
+        Call CloseSocket(UserIndex)
 
 End Sub
 
@@ -2721,16 +2722,16 @@ Function ValidarCabeza(ByVal UserRaza As eRaza, ByVal UserSexo As eGenero, ByVal
 
 End Function
 
-Function ValidarNombre(Nombre As String) As Boolean
+Function ValidarNombre(nombre As String) As Boolean
     
-    If Len(Nombre) < 1 Or Len(Nombre) > 18 Then Exit Function
+    If Len(nombre) < 1 Or Len(nombre) > 18 Then Exit Function
     
-    Dim Temp As String
-    Temp = UCase$(Nombre)
+    Dim temp As String
+    temp = UCase$(nombre)
     
     Dim i As Long, Char As Integer, LastChar As Integer
-    For i = 1 To Len(Temp)
-        Char = Asc(mid$(Temp, i, 1))
+    For i = 1 To Len(temp)
+        Char = Asc(mid$(temp, i, 1))
         
         If (Char < 65 Or Char > 90) And Char <> 32 Then
             Exit Function
@@ -2742,7 +2743,7 @@ Function ValidarNombre(Nombre As String) As Boolean
         LastChar = Char
     Next
 
-    If Asc(mid$(Temp, 1, 1)) = 32 Or Asc(mid$(Temp, Len(Temp), 1)) = 32 Then
+    If Asc(mid$(temp, 1, 1)) = 32 Or Asc(mid$(temp, Len(temp), 1)) = 32 Then
         Exit Function
     End If
     
