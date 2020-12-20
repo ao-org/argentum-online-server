@@ -680,11 +680,16 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal 
         End If
         
         ' Nombre válido
-        If Not ValidarNombre(name) Then Exit Function
+111     If Not ValidarNombre(name) Then Exit Function
+        
+112     If Not NombrePermitido(name) Then
+113         Call WriteShowMessageBox(UserIndex, "El nombre no está permitido.")
+            Exit Function
+        End If
 
         '¿Existe el personaje?
-112     If PersonajeExiste(name) Then
-114         Call WriteErrorMsg(UserIndex, "Ya existe el personaje.")
+114     If PersonajeExiste(name) Then
+115         Call WriteShowMessageBox(UserIndex, "Ya existe el personaje.")
             Exit Function
         End If
         

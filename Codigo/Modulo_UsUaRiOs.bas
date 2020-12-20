@@ -651,29 +651,6 @@ ErrHandler:
 
 End Sub
 
-Function PuedeAtravesarAgua(ByVal UserIndex As Integer) As Boolean
-        
-        On Error GoTo PuedeAtravesarAgua_Err
-        
-
-100     PuedeAtravesarAgua = UserList(UserIndex).flags.Navegando = 1
-        'If PuedeAtravesarAgua = True Then
-        '  Exit Function
-        'Else
-        '  If UserList(UserIndex).flags.Nadando = 1 Then
-        ' PuedeAtravesarAgua = True
-        'End If
-        'End If
-
-        
-        Exit Function
-
-PuedeAtravesarAgua_Err:
-102     Call RegistrarError(Err.Number, Err.description, "UsUaRiOs.PuedeAtravesarAgua", Erl)
-104     Resume Next
-        
-End Function
-
 Sub MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As eHeading)
         
         On Error GoTo MoveUserChar_Err
@@ -684,8 +661,10 @@ Sub MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As eHeading)
         Dim nPosOriginal As WorldPos
 
         Dim nPosMuerto   As WorldPos
-
-        Dim sailing      As Boolean
+    
+        Dim IndexMover As Integer
+    
+        Dim OppositeHeading As eHeading
 
 100     With UserList(UserIndex)
 
@@ -699,72 +678,88 @@ Sub MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As eHeading)
 116             .Accion.RunaObj = 0
 118             .Accion.ObjSlot = 0
 120             .Accion.AccionPendiente = False
-
             End If
 
-122         sailing = PuedeAtravesarAgua(UserIndex)
-124         nPos = .Pos
-126         Call HeadtoPos(nHeading, nPos)
-        
-128         If MapData(nPos.Map, nPos.X, nPos.Y).TileExit.Map <> 0 And .Counters.TiempoDeMapeo > 0 Then
-130             If .flags.Muerto = 0 Then
-132                 Call WriteConsoleMsg(UserIndex, "Estas en combate, debes aguardar " & .Counters.TiempoDeMapeo & " segundo(s) para escapar...", FontTypeNames.FONTTYPE_INFOBOLD)
-134                 Call WritePosUpdate(UserIndex)
-                    Exit Sub
-    
+122         nPos = .Pos
+124         Call HeadtoPos(nHeading, nPos)
+
+126         If LegalWalk(.Pos.Map, nPos.X, nPos.Y, nHeading, .flags.Navegando = 1, .flags.Navegando = 0, .flags.Montado) Then
+            
+128             If MapData(nPos.Map, nPos.X, nPos.Y).TileExit.Map <> 0 And .Counters.TiempoDeMapeo > 0 Then
+130                 If .flags.Muerto = 0 Then
+132                     Call WriteConsoleMsg(UserIndex, "Estas en combate, debes aguardar " & .Counters.TiempoDeMapeo & " segundo(s) para escapar...", FontTypeNames.FONTTYPE_INFOBOLD)
+134                     Call WritePosUpdate(UserIndex)
+                        Exit Sub
+                    End If
                 End If
-    
-            End If
-    
-136         If MapData(nPos.Map, nPos.X, nPos.Y).UserIndex <> 0 Then
-                Dim IndexMuerto As Integer
-138             IndexMuerto = MapData(nPos.Map, nPos.X, nPos.Y).UserIndex
+            
+                'Si no estoy solo en el mapa...
+136             If MapInfo(.Pos.Map).NumUsers > 1 Then
+                    ' Intercambia posición si hay un casper o gm invisible
+138                 IndexMover = MapData(nPos.Map, nPos.X, nPos.Y).UserIndex
 
-140             If UserList(IndexMuerto).flags.Muerto = 1 Or UserList(IndexMuerto).flags.AdminInvisible = 1 Then
-
-142                 Call WarpToLegalPos(IndexMuerto, UserList(IndexMuerto).Pos.Map, UserList(IndexMuerto).Pos.X, UserList(IndexMuerto).Pos.Y, False)
+140                 If IndexMover <> 0 Then
+                    
+                        ' Sólo puedo patear caspers/gms invisibles si no es él un gm invisible
+142                     If .flags.AdminInvisible = 0 Then
+                
+144                         Call WritePosUpdate(IndexMover)
     
-                Else
-144                 Call WritePosUpdate(UserIndex)
+146                         OppositeHeading = InvertHeading(nHeading)
+148                         Call HeadtoPos(OppositeHeading, UserList(IndexMover).Pos)
+                    
+                            ' Si es un admin invisible, no se avisa a los demas clientes
+150                         If UserList(IndexMover).flags.AdminInvisible = 0 Then
+152                             Call SendData(SendTarget.ToPCAreaButIndex, IndexMover, PrepareMessageCharacterMove(UserList(IndexMover).Char.CharIndex, UserList(IndexMover).Pos.X, UserList(IndexMover).Pos.Y))
+                            Else
+154                             Call SendData(SendTarget.ToAdminAreaButIndex, IndexMover, PrepareMessageCharacterMove(UserList(IndexMover).Char.CharIndex, UserList(IndexMover).Pos.X, UserList(IndexMover).Pos.Y))
+                            End If
     
-                    'Call WritePosUpdate(MapData(nPos.Map, nPos.X, nPos.Y).UserIndex)
-                End If
+156                         Call WriteForceCharMove(IndexMover, OppositeHeading)
+                            
+                            'Update map and char
+158                         UserList(IndexMover).Char.Heading = OppositeHeading
+160                         MapData(UserList(IndexMover).Pos.Map, UserList(IndexMover).Pos.X, UserList(IndexMover).Pos.Y).UserIndex = IndexMover
+                    
+                            'Actualizamos las areas de ser necesario
+162                         Call ModAreas.CheckUpdateNeededUser(IndexMover, OppositeHeading, 0)
+                        
+                        Else
+164                         Call WritePosUpdate(UserIndex)
+                            Exit Sub
+                        End If
+            
+                    End If
     
-            End If
-    
-146         If LegalWalk(.Pos.Map, nPos.X, nPos.Y, nHeading, sailing, Not sailing, .flags.Montado) Then
-148             If MapInfo(.Pos.Map).NumUsers > 1 Then
-                    'si no estoy solo en el mapa...
-    
-150                 If .flags.AdminInvisible = 0 Then
-152                     Call SendData(SendTarget.ToPCAreaButIndex, UserIndex, PrepareMessageCharacterMove(.Char.CharIndex, nPos.X, nPos.Y))
+166                 If .flags.AdminInvisible = 0 Then
+168                     Call SendData(SendTarget.ToPCAreaButIndex, UserIndex, PrepareMessageCharacterMove(.Char.CharIndex, nPos.X, nPos.Y))
                     Else
-154                     Call SendData(SendTarget.ToAdminAreaButIndex, UserIndex, PrepareMessageCharacterMove(.Char.CharIndex, nPos.X, nPos.Y))
+170                     Call SendData(SendTarget.ToAdminAreaButIndex, UserIndex, PrepareMessageCharacterMove(.Char.CharIndex, nPos.X, nPos.Y))
                     End If
             
                 End If
-    
-                'Call RefreshAllUser(UserIndex) '¿Clones? Ladder probar
+
                 'Update map and user pos
-156             MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex = 0
-158             .Pos = nPos
-160             .Char.Heading = nHeading
-162             MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex = UserIndex
+172             If MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex = UserIndex Then
+174                 MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex = 0
+                End If
+            
+176             .Pos = nPos
+178             .Char.Heading = nHeading
+180             MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex = UserIndex
             
                 'Actualizamos las áreas de ser necesario
-164             Call ModAreas.CheckUpdateNeededUser(UserIndex, nHeading, 0)
+182             Call ModAreas.CheckUpdateNeededUser(UserIndex, nHeading, 0)
            
             Else
-166             Call WritePosUpdate(UserIndex)
-    
+184             Call WritePosUpdate(UserIndex)
             End If
         
-168         If .Counters.Trabajando Then
-170             Call WriteMacroTrabajoToggle(UserIndex, False)
-    
+186         If .Counters.Trabajando Then
+188             Call WriteMacroTrabajoToggle(UserIndex, False)
             End If
     
-172         If .Counters.Ocultando Then .Counters.Ocultando = .Counters.Ocultando - 1
+190         If .Counters.Ocultando Then .Counters.Ocultando = .Counters.Ocultando - 1
 
         End With
 
@@ -772,8 +767,8 @@ Sub MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As eHeading)
         Exit Sub
 
 MoveUserChar_Err:
-174     Call RegistrarError(Err.Number, Err.description, "UsUaRiOs.MoveUserChar", Erl)
-176     Resume Next
+192     Call RegistrarError(Err.Number, Err.description, "UsUaRiOs.MoveUserChar", Erl)
+194     Resume Next
         
 End Sub
 
@@ -1194,7 +1189,7 @@ DameUserIndex_Err:
         
 End Function
 
-Function DameUserIndexConNombre(ByVal Nombre As String) As Integer
+Function DameUserIndexConNombre(ByVal nombre As String) As Integer
         
         On Error GoTo DameUserIndexConNombre_Err
         
@@ -1203,9 +1198,9 @@ Function DameUserIndexConNombre(ByVal Nombre As String) As Integer
   
 100     LoopC = 1
   
-102     Nombre = UCase$(Nombre)
+102     nombre = UCase$(nombre)
 
-104     Do Until UCase$(UserList(LoopC).name) = Nombre
+104     Do Until UCase$(UserList(LoopC).name) = nombre
 
 106         LoopC = LoopC + 1
     
@@ -2352,30 +2347,30 @@ CambiarNick_Err:
         
 End Sub
 
-Sub SendUserStatsTxtOFF(ByVal sendIndex As Integer, ByVal Nombre As String)
+Sub SendUserStatsTxtOFF(ByVal sendIndex As Integer, ByVal nombre As String)
         
         On Error GoTo SendUserStatsTxtOFF_Err
         
 
-100     If FileExist(CharPath & Nombre & ".chr", vbArchive) = False Then
+100     If FileExist(CharPath & nombre & ".chr", vbArchive) = False Then
 102         Call WriteConsoleMsg(sendIndex, "Pj Inexistente", FontTypeNames.FONTTYPE_INFO)
         Else
-104         Call WriteConsoleMsg(sendIndex, "Estadisticas de: " & Nombre, FontTypeNames.FONTTYPE_INFO)
-106         Call WriteConsoleMsg(sendIndex, "Nivel: " & GetVar(CharPath & Nombre & ".chr", "stats", "elv") & "  EXP: " & GetVar(CharPath & Nombre & ".chr", "stats", "Exp") & "/" & GetVar(CharPath & Nombre & ".chr", "stats", "elu"), FontTypeNames.FONTTYPE_INFO)
-108         Call WriteConsoleMsg(sendIndex, "Vitalidad: " & GetVar(CharPath & Nombre & ".chr", "stats", "minsta") & "/" & GetVar(CharPath & Nombre & ".chr", "stats", "maxSta"), FontTypeNames.FONTTYPE_INFO)
-110         Call WriteConsoleMsg(sendIndex, "Salud: " & GetVar(CharPath & Nombre & ".chr", "stats", "MinHP") & "/" & GetVar(CharPath & Nombre & ".chr", "Stats", "MaxHP") & "  Mana: " & GetVar(CharPath & Nombre & ".chr", "Stats", "MinMAN") & "/" & GetVar(CharPath & Nombre & ".chr", "Stats", "MaxMAN"), FontTypeNames.FONTTYPE_INFO)
+104         Call WriteConsoleMsg(sendIndex, "Estadisticas de: " & nombre, FontTypeNames.FONTTYPE_INFO)
+106         Call WriteConsoleMsg(sendIndex, "Nivel: " & GetVar(CharPath & nombre & ".chr", "stats", "elv") & "  EXP: " & GetVar(CharPath & nombre & ".chr", "stats", "Exp") & "/" & GetVar(CharPath & nombre & ".chr", "stats", "elu"), FontTypeNames.FONTTYPE_INFO)
+108         Call WriteConsoleMsg(sendIndex, "Vitalidad: " & GetVar(CharPath & nombre & ".chr", "stats", "minsta") & "/" & GetVar(CharPath & nombre & ".chr", "stats", "maxSta"), FontTypeNames.FONTTYPE_INFO)
+110         Call WriteConsoleMsg(sendIndex, "Salud: " & GetVar(CharPath & nombre & ".chr", "stats", "MinHP") & "/" & GetVar(CharPath & nombre & ".chr", "Stats", "MaxHP") & "  Mana: " & GetVar(CharPath & nombre & ".chr", "Stats", "MinMAN") & "/" & GetVar(CharPath & nombre & ".chr", "Stats", "MaxMAN"), FontTypeNames.FONTTYPE_INFO)
     
-112         Call WriteConsoleMsg(sendIndex, "Menor Golpe/Mayor Golpe: " & GetVar(CharPath & Nombre & ".chr", "stats", "MaxHIT"), FontTypeNames.FONTTYPE_INFO)
+112         Call WriteConsoleMsg(sendIndex, "Menor Golpe/Mayor Golpe: " & GetVar(CharPath & nombre & ".chr", "stats", "MaxHIT"), FontTypeNames.FONTTYPE_INFO)
     
-114         Call WriteConsoleMsg(sendIndex, "Oro: " & GetVar(CharPath & Nombre & ".chr", "stats", "GLD"), FontTypeNames.FONTTYPE_INFO)
-116         Call WriteConsoleMsg(sendIndex, "Veces Que Murio: " & GetVar(CharPath & Nombre & ".chr", "Flags", "VecesQueMoriste"), FontTypeNames.FONTTYPE_INFO)
+114         Call WriteConsoleMsg(sendIndex, "Oro: " & GetVar(CharPath & nombre & ".chr", "stats", "GLD"), FontTypeNames.FONTTYPE_INFO)
+116         Call WriteConsoleMsg(sendIndex, "Veces Que Murio: " & GetVar(CharPath & nombre & ".chr", "Flags", "VecesQueMoriste"), FontTypeNames.FONTTYPE_INFO)
             #If ConUpTime Then
 
                 Dim TempSecs As Long
 
                 Dim TempStr  As String
 
-118             TempSecs = GetVar(CharPath & Nombre & ".chr", "INIT", "UpTime")
+118             TempSecs = GetVar(CharPath & nombre & ".chr", "INIT", "UpTime")
 120             TempStr = (TempSecs \ 86400) & " Dias, " & ((TempSecs Mod 86400) \ 3600) & " Horas, " & ((TempSecs Mod 86400) Mod 3600) \ 60 & " Minutos, " & (((TempSecs Mod 86400) Mod 3600) Mod 60) & " Segundos."
 122             Call WriteConsoleMsg(sendIndex, "Tiempo Logeado: " & TempStr, FontTypeNames.FONTTYPE_INFO)
             #End If

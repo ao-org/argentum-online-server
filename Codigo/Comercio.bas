@@ -75,7 +75,7 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
 110             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(UserList(UserIndex).name & " ha sido baneado por el sistema anti-cheats.", FontTypeNames.FONTTYPE_FIGHT))
 112             Call Ban(UserList(UserIndex).name, "Sistema Anti Cheats", "Intentar hackear el sistema de comercio. Quiso comprar demasiados items:" & Cantidad)
 114             UserList(UserIndex).flags.Ban = 1
-116             Call WriteErrorMsg(UserIndex, "Has sido baneado por el Sistema AntiCheat.")
+116             Call WriteShowMessageBox(UserIndex, "Has sido baneado por el Sistema AntiCheat.")
             
 118             Call CloseSocket(UserIndex)
                 Exit Sub

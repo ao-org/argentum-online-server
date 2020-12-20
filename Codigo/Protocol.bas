@@ -1896,13 +1896,13 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
         Dim Version     As String
     
 108     If PuedeCrearPersonajes = 0 Then
-110         Call WriteErrorMsg(UserIndex, "La creacion de personajes en este servidor se ha deshabilitado.")
+110         Call WriteShowMessageBox(UserIndex, "La creacion de personajes en este servidor se ha deshabilitado.")
 112         Call CloseSocket(UserIndex)
             Exit Sub
         End If
 
 114     If aClon.MaxPersonajes(UserList(UserIndex).ip) Then
-116         Call WriteErrorMsg(UserIndex, "Has creado demasiados personajes.")
+116         Call WriteShowMessageBox(UserIndex, "Has creado demasiados personajes.")
 118         Call CloseSocket(UserIndex)
             Exit Sub
         End If
@@ -3474,7 +3474,7 @@ Private Sub HandleUseSpellMacro(ByVal UserIndex As Integer)
             'Remove packet ID
 102         Call .incomingData.ReadByte
 104         Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg(.name & " fue expulsado por Anti-macro de hechizos", FontTypeNames.FONTTYPE_VENENO))
-106         Call WriteErrorMsg(UserIndex, "Has sido expulsado por usar macro de hechizos. Recomendamos leer el reglamento sobre el tema macros")
+106         Call WriteShowMessageBox(UserIndex, "Has sido expulsado por usar macro de hechizos. Recomendamos leer el reglamento sobre el tema macros")
         
 108         Call CloseSocket(UserIndex)
 
@@ -4466,7 +4466,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                                 End If
                             
                                 ''FUISTE
-662                             Call WriteErrorMsg(UserIndex, "Has sido expulsado por el sistema anti cheats.")
+662                             Call WriteShowMessageBox(UserIndex, "Has sido expulsado por el sistema anti cheats.")
                             
 664                             Call CloseSocket(UserIndex)
                                 Exit Sub
