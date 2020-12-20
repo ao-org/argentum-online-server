@@ -5328,7 +5328,7 @@ Private Sub HandleForumPost(ByVal UserIndex As Integer)
 
             Dim postFile As String
         
-            Dim Handle   As Integer
+            Dim handle   As Integer
 
             Dim i        As Long
 
@@ -5361,14 +5361,14 @@ Private Sub HandleForumPost(ByVal UserIndex As Integer)
 
                 End If
             
-136             Handle = FreeFile()
+136             handle = FreeFile()
 138             postFile = Left$(File, Len(File) - 4) & CStr(Count + 1) & ".for"
             
                 'Create file
-140             Open postFile For Output As Handle
-142             Print #Handle, title
-144             Print #Handle, msg
-146             Close #Handle
+140             Open postFile For Output As handle
+142             Print #handle, title
+144             Print #handle, msg
+146             Close #handle
             
                 'Update post count
 148             Call WriteVar(File, "INFO", "CantMSG", Count + 1)
@@ -16642,7 +16642,7 @@ End Sub
 
 Public Sub HandleDonateGold(ByVal UserIndex As Integer)
         
-        On Error GoTo Handle
+        On Error GoTo handle
 
 99      With UserList(UserIndex)
             'Remove Packet ID
@@ -16710,7 +16710,7 @@ Public Sub HandleDonateGold(ByVal UserIndex As Integer)
         
         Exit Sub
 
-Handle:
+handle:
 142     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleDonateGold", Erl)
 144     Resume Next
         
@@ -16718,7 +16718,7 @@ End Sub
 
 Public Sub HandlePromedio(ByVal UserIndex As Integer)
         
-        On Error GoTo Handle
+        On Error GoTo handle
 
 100     With UserList(UserIndex)
             .incomingData.ReadByte
@@ -16757,7 +16757,7 @@ Public Sub HandlePromedio(ByVal UserIndex As Integer)
         
         Exit Sub
 
-Handle:
+handle:
 142     Call RegistrarError(Err.Number, Err.description, "Protocol.HandlePromedio", Erl)
 144     Resume Next
         
@@ -18109,7 +18109,7 @@ Public Sub HandleParticipar(ByVal UserIndex As Integer)
         'Last Modification: 12/24/06
         'Turns off the server
         '***************************************************
-        Dim Handle As Integer
+        Dim handle As Integer
     
 100     With UserList(UserIndex)
             'Remove Packet ID
@@ -26255,7 +26255,6 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
 116         tUser = NameIndex(UserName)
 
 118         If tUser <= 0 Then
-
 120             If Database_Enabled Then
 122                 If Not AddOroBancoDatabase(UserName, Cantidad) Then
 124                     Call WriteChatOverHead(UserIndex, "El usuario no existe.", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
@@ -26277,7 +26276,7 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
 138             UserList(tUser).Stats.Banco = UserList(tUser).Stats.Banco + val(Cantidad) 'Se lo damos al otro.
             End If
 
-140         Call WriteChatOverHead(UserIndex, "¡El envio se ha realizado con exito! Gracias por utilizar los servicios de Finanzas Goliath", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
+140         Call WriteChatOverHead(UserIndex, "¡El envío se ha realizado con éxito! Gracias por utilizar los servicios de Finanzas Goliath", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
 142         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("173", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 
         End With

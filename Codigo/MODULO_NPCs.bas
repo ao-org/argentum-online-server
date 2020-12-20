@@ -182,7 +182,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
                                     End If
                                     
 178                                 If QuestList(.QuestIndex).RequiredNPC(j).Amount = .NPCsKilled(j) Then
-180                                     Call WriteConsoleMsg(UserIndex, "Ya has matado todos los " & MiNPC.name & " que la mision " & QuestList(.QuestIndex).Nombre & " requeria. Chequeá si ya estas listo para recibir la recompensa.", FontTypeNames.FONTTYPE_INFOIAO)
+180                                     Call WriteConsoleMsg(UserIndex, "Ya has matado todos los " & MiNPC.name & " que la mision " & QuestList(.QuestIndex).nombre & " requeria. Chequeá si ya estas listo para recibir la recompensa.", FontTypeNames.FONTTYPE_INFOIAO)
                                     
                                     End If
         
@@ -917,7 +917,9 @@ Function NextOpenNPC() As Integer
 100     For LoopC = 1 To MAXNPCS + 1
 
 102         If LoopC > MAXNPCS Then Exit For
+
 104         If Not Npclist(LoopC).flags.NPCActive Then Exit For
+
 106     Next LoopC
   
 108     NextOpenNPC = LoopC
@@ -1193,7 +1195,6 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 102     If Not Leer.KeyExists("NPC" & NpcNumber) Then
 104         OpenNPC = MAXNPCS + 1
             Exit Function
-
         End If
 
 106     NpcIndex = NextOpenNPC
@@ -1201,7 +1202,6 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 108     If NpcIndex > MAXNPCS Then 'Limite de npcs
 110         OpenNPC = NpcIndex
             Exit Function
-
         End If
 
 112     Npclist(NpcIndex).Numero = NpcNumber
