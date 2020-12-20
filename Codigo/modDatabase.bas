@@ -18,6 +18,7 @@ Public Database_Password   As String
 
 Public Database_Connection As ADODB.Connection
 Public QueryData           As ADODB.Recordset
+Public RecordsAffected     As Long
 
 Private QueryBuilder       As cStringBuilder
 Private ConnectedOnce      As Boolean
@@ -1051,10 +1052,10 @@ Private Sub MakeQuery(query As String, Optional ByVal NoResult As Boolean = Fals
         End If
     
 106     If NoResult Then
-108         Call Database_Connection.Execute(query)
+108         Call Database_Connection.Execute(query, RecordsAffected)
 
         Else
-110         Set QueryData = Database_Connection.Execute(query)
+110         Set QueryData = Database_Connection.Execute(query, RecordsAffected)
 
 112         If QueryData.BOF Or QueryData.EOF Then
 114             Set QueryData = Nothing
@@ -2479,7 +2480,7 @@ Public Function SetPositionDatabase(UserName As String, ByVal Map As Integer, By
 
 100     Call MakeQuery("UPDATE user SET pos_map = " & Map & ", pos_x = " & X & ", pos_y = " & X & " WHERE UPPER(name) = '" & UCase$(UserName) & "';", True)
     
-102     SetPositionDatabase = True
+102     SetPositionDatabase = RecordsAffected > 0
 
         Exit Function
 
@@ -2493,7 +2494,7 @@ Public Function AddOroBancoDatabase(UserName As String, ByVal OroGanado As Long)
 
 100     Call MakeQuery("UPDATE user SET bank_gold = bank_gold + " & OroGanado & " WHERE UPPER(name) = '" & UCase$(UserName) & "';", True)
     
-102     AddOroBancoDatabase = True
+102     AddOroBancoDatabase = RecordsAffected > 0
 
         Exit Function
 
@@ -2507,7 +2508,7 @@ Public Function DarLlaveAUsuarioDatabase(UserName As String, ByVal LlaveObj As I
 
 100     Call MakeQuery("INSERT INTO house_key SET key_obj = " & LlaveObj & ", account_id = (SELECT account_id FROM user WHERE UPPER(name) = '" & UCase$(UserName) & "');", True)
     
-102     DarLlaveAUsuarioDatabase = True
+102     DarLlaveAUsuarioDatabase = RecordsAffected > 0
 
         Exit Function
 
@@ -2521,8 +2522,7 @@ Public Function DarLlaveACuentaDatabase(email As String, ByVal LlaveObj As Integ
 
 100     Call MakeQuery("INSERT INTO house_key SET key_obj = " & LlaveObj & ", account_id = (SELECT id FROM account WHERE UPPER(email) = '" & UCase$(email) & "');", True)
     
-102     DarLlaveACuentaDatabase = True
-
+102     DarLlaveACuentaDatabase = RecordsAffected > 0
         Exit Function
 
 ErrorHandler:
@@ -2573,7 +2573,7 @@ Public Function SacarLlaveDatabase(ByVal LlaveObj As Integer) As Boolean
             End If
         Next
     
-130     SacarLlaveDatabase = True
+130     SacarLlaveDatabase = RecordsAffected > 0
 
         Exit Function
 
