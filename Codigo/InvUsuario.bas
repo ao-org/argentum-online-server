@@ -249,99 +249,102 @@ Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
         '***************************************************
         On Error GoTo ErrHandler
         
-        ' GM's (excepto Dioses y Admins) no pueden tirar oro
-        If EsGM(UserIndex) And (UserList(UserIndex).flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then
-            Call LogGM(UserList(UserIndex).name, " trató de tirar " & Cantidad & " de oro")
-            Exit Sub
-        End If
+100     With UserList(UserIndex)
         
-        'If Cantidad > 100000 Then Exit Sub
-100     If UserList(UserIndex).flags.BattleModo = 1 Then Exit Sub
-        
-        'SI EL Pjta TIENE ORO LO TIRAMOS
-102     If (Cantidad > 0) And (Cantidad <= UserList(UserIndex).Stats.GLD) Then
-
-            Dim i     As Byte
-
-            Dim MiObj As obj
-
-            Dim Logs  As Long
-
-            'info debug
-            Dim loops As Integer
-        
-104         Logs = Cantidad
-
-            Dim Extra    As Long
-
-            Dim TeniaOro As Long
-
-106         TeniaOro = UserList(UserIndex).Stats.GLD
-
-108         If Cantidad > 500000 Then 'Para evitar explotar demasiado
-110             Extra = Cantidad - 500000
-112             Cantidad = 500000
+            ' GM's (excepto Dioses y Admins) no pueden tirar oro
+102         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Admin Or PlayerType.Dios)) = 0 Then
+104             Call LogGM(.name, " trató de tirar " & PonerPuntos(Cantidad) & " de oro en " & .Pos.Map & "-" & .Pos.X & "-" & .Pos.Y)
+                Exit Sub
 
             End If
         
-114         Do While (Cantidad > 0)
-            
-116             If Cantidad > MAX_INVENTORY_OBJS And UserList(UserIndex).Stats.GLD > MAX_INVENTORY_OBJS Then
-118                 MiObj.Amount = MAX_INVENTORY_OBJS
-120                 Cantidad = Cantidad - MiObj.Amount
-                Else
-122                 MiObj.Amount = Cantidad
-124                 Cantidad = Cantidad - MiObj.Amount
+            'If Cantidad > 100000 Then Exit Sub
+106         If .flags.BattleModo = 1 Then Exit Sub
+        
+            'SI EL Pjta TIENE ORO LO TIRAMOS
+108         If (Cantidad > 0) And (Cantidad <= .Stats.GLD) Then
 
-                End If
+                Dim i     As Byte
+                Dim MiObj As obj
 
-126             MiObj.ObjIndex = iORO
-
-                Dim AuxPos As WorldPos
-128             If UserList(UserIndex).clase = eClass.Pirat Then
-130                 AuxPos = TirarItemAlPiso(UserList(UserIndex).Pos, MiObj, False)
-                Else
-132                 AuxPos = TirarItemAlPiso(UserList(UserIndex).Pos, MiObj, True)
-                End If
-            
-134             If AuxPos.X <> 0 And AuxPos.Y <> 0 Then
-136                 UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD - MiObj.Amount
-
-                End If
-            
                 'info debug
-138             loops = loops + 1
+                Dim loops As Integer
+                Dim Extra    As Long
+                Dim TeniaOro As Long
 
-140             If loops > 100 Then
-142                 LogError ("Error en tiraroro")
-                    Exit Sub
+110             TeniaOro = .Stats.GLD
+
+112             If Cantidad > 500000 Then 'Para evitar explotar demasiado
+114                 Extra = Cantidad - 500000
+116                 Cantidad = 500000
 
                 End If
+        
+118             Do While (Cantidad > 0)
             
-            Loop
-        
-144         If EsGM(UserIndex) Then
-146             If MiObj.ObjIndex = iORO Then
-148                 Call LogGM(UserList(UserIndex).name, "Tiro: " & PonerPuntos(Logs) & " monedas de oro.")
-                Else
-150                 Call LogGM(UserList(UserIndex).name, "Tiro cantidad:" & Logs & " Objeto:" & ObjData(MiObj.ObjIndex).name)
+120                 If Cantidad > MAX_INVENTORY_OBJS And .Stats.GLD > MAX_INVENTORY_OBJS Then
+122                     MiObj.Amount = MAX_INVENTORY_OBJS
+124                     Cantidad = Cantidad - MiObj.Amount
+                    Else
+126                     MiObj.Amount = Cantidad
+128                     Cantidad = Cantidad - MiObj.Amount
+
+                    End If
+
+130                 MiObj.ObjIndex = iORO
+
+                    Dim AuxPos As WorldPos
+
+132                 If .clase = eClass.Pirat Then
+134                     AuxPos = TirarItemAlPiso(.Pos, MiObj, False)
+                    Else
+136                     AuxPos = TirarItemAlPiso(.Pos, MiObj, True)
+                    End If
+            
+138                 If AuxPos.X <> 0 And AuxPos.Y <> 0 Then
+140                     .Stats.GLD = .Stats.GLD - MiObj.Amount
+
+                    End If
+            
+                    'info debug
+142                 loops = loops + 1
+
+144                 If loops > 100 Then
+146                     Call LogError("Se ha superado el limite de iteraciones(100) permitido en el Sub TirarOro()")
+                        Exit Sub
+
+                    End If
+            
+                Loop
+                
+                ' Si es GM, registramos lo q hizo incluso si es Horacio
+148             If EsGM(UserIndex) Then
+
+150                 If MiObj.ObjIndex = iORO Then
+152                     Call LogGM(.name, "Tiro: " & PonerPuntos(Cantidad) & " monedas de oro.")
+
+                    Else
+154                     Call LogGM(.name, "Tiro cantidad:" & PonerPuntos(Cantidad) & " Objeto:" & ObjData(MiObj.ObjIndex).name)
+
+                    End If
 
                 End If
+        
+156             If TeniaOro = .Stats.GLD Then Extra = 0
 
+158             If Extra > 0 Then
+160                 .Stats.GLD = .Stats.GLD - Extra
+                End If
+    
             End If
         
-152         If TeniaOro = UserList(UserIndex).Stats.GLD Then Extra = 0
-154         If Extra > 0 Then
-156             UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD - Extra
-
-            End If
-    
-        End If
+        End With
 
         Exit Sub
 
 ErrHandler:
-
+    Call RegistrarError(Err.Number, Err.description, "InvUsuario.TirarOro", Erl())
+    
 End Sub
 
 Sub QuitarUserInvItem(ByVal UserIndex As Integer, ByVal slot As Byte, ByVal Cantidad As Integer)
@@ -1907,124 +1910,124 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 
         Dim MiObj    As obj
         
-        With UserList(UserIndex)
+100     With UserList(UserIndex)
 
-100         If .Invent.Object(slot).Amount = 0 Then Exit Sub
+102         If .Invent.Object(slot).Amount = 0 Then Exit Sub
     
-102         obj = ObjData(.Invent.Object(slot).ObjIndex)
+104         obj = ObjData(.Invent.Object(slot).ObjIndex)
     
-104         If obj.OBJType = eOBJType.otWeapon Then
-106             If obj.proyectil = 1 Then
+106         If obj.OBJType = eOBJType.otWeapon Then
+108             If obj.proyectil = 1 Then
     
                     'valido para evitar el flood pero no bloqueo. El bloqueo se hace en WLC con proyectiles.
-108                 If Not IntervaloPermiteUsar(UserIndex, False) Then Exit Sub
+110                 If Not IntervaloPermiteUsar(UserIndex, False) Then Exit Sub
                 Else
     
                     'dagas
-110                 If Not IntervaloPermiteUsar(UserIndex) Then Exit Sub
+112                 If Not IntervaloPermiteUsar(UserIndex) Then Exit Sub
     
                 End If
     
             Else
     
-112             If Not IntervaloPermiteUsar(UserIndex) Then Exit Sub
-114             If Not IntervaloPermiteGolpeUsar(UserIndex, False) Then Exit Sub
+114             If Not IntervaloPermiteUsar(UserIndex) Then Exit Sub
+116             If Not IntervaloPermiteGolpeUsar(UserIndex, False) Then Exit Sub
     
             End If
     
-116         If .flags.Meditando Then
-118             .flags.Meditando = False
-120             .Char.FX = 0
-122             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(.Char.CharIndex, 0))
+118         If .flags.Meditando Then
+120             .flags.Meditando = False
+122             .Char.FX = 0
+124             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(.Char.CharIndex, 0))
             End If
     
-124         If obj.Newbie = 1 And Not EsNewbie(UserIndex) And Not EsGM(UserIndex) Then
-126             Call WriteConsoleMsg(UserIndex, "Solo los newbies pueden usar estos objetos.", FontTypeNames.FONTTYPE_INFO)
+126         If obj.Newbie = 1 And Not EsNewbie(UserIndex) And Not EsGM(UserIndex) Then
+128             Call WriteConsoleMsg(UserIndex, "Solo los newbies pueden usar estos objetos.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
     
             End If
     
-128         If .Stats.ELV < obj.MinELV Then
-130             Call WriteConsoleMsg(UserIndex, "Necesitas ser nivel " & obj.MinELV & " para usar este item.", FontTypeNames.FONTTYPE_INFO)
+130         If .Stats.ELV < obj.MinELV Then
+132             Call WriteConsoleMsg(UserIndex, "Necesitas ser nivel " & obj.MinELV & " para usar este item.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
     
             End If
     
-132         ObjIndex = .Invent.Object(slot).ObjIndex
-134         .flags.TargetObjInvIndex = ObjIndex
-136         .flags.TargetObjInvSlot = slot
+134         ObjIndex = .Invent.Object(slot).ObjIndex
+136         .flags.TargetObjInvIndex = ObjIndex
+138         .flags.TargetObjInvSlot = slot
     
-138         Select Case obj.OBJType
+140         Select Case obj.OBJType
     
                 Case eOBJType.otUseOnce
     
-140                 If .flags.Muerto = 1 Then
-142                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
+142                 If .flags.Muerto = 1 Then
+144                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
                         ' Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
     
                     End If
     
                     'Usa el item
-144                 .Stats.MinHam = .Stats.MinHam + obj.MinHam
+146                 .Stats.MinHam = .Stats.MinHam + obj.MinHam
     
-146                 If .Stats.MinHam > .Stats.MaxHam Then .Stats.MinHam = .Stats.MaxHam
-148                 .flags.Hambre = 0
-150                 Call WriteUpdateHungerAndThirst(UserIndex)
+148                 If .Stats.MinHam > .Stats.MaxHam Then .Stats.MinHam = .Stats.MaxHam
+150                 .flags.Hambre = 0
+152                 Call WriteUpdateHungerAndThirst(UserIndex)
                     'Sonido
             
-152                 If ObjIndex = e_ObjetosCriticos.Manzana Or ObjIndex = e_ObjetosCriticos.Manzana2 Or ObjIndex = e_ObjetosCriticos.ManzanaNewbie Then
-154                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_SoundIndex.MORFAR_MANZANA, .Pos.X, .Pos.Y))
+154                 If ObjIndex = e_ObjetosCriticos.Manzana Or ObjIndex = e_ObjetosCriticos.Manzana2 Or ObjIndex = e_ObjetosCriticos.ManzanaNewbie Then
+156                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_SoundIndex.MORFAR_MANZANA, .Pos.X, .Pos.Y))
                     Else
-156                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_SoundIndex.SOUND_COMIDA, .Pos.X, .Pos.Y))
+158                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_SoundIndex.SOUND_COMIDA, .Pos.X, .Pos.Y))
     
                     End If
             
                     'Quitamos del inv el item
-158                 Call QuitarUserInvItem(UserIndex, slot, 1)
+160                 Call QuitarUserInvItem(UserIndex, slot, 1)
             
-160                 Call UpdateUserInv(False, UserIndex, slot)
+162                 Call UpdateUserInv(False, UserIndex, slot)
     
-162             Case eOBJType.otGuita
+164             Case eOBJType.otGuita
     
-164                 If .flags.Muerto = 1 Then
-166                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
+166                 If .flags.Muerto = 1 Then
+168                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
                         ' Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
     
                     End If
             
-168                 .Stats.GLD = .Stats.GLD + .Invent.Object(slot).Amount
-170                 .Invent.Object(slot).Amount = 0
-172                 .Invent.Object(slot).ObjIndex = 0
-174                 .Invent.NroItems = .Invent.NroItems - 1
+170                 .Stats.GLD = .Stats.GLD + .Invent.Object(slot).Amount
+172                 .Invent.Object(slot).Amount = 0
+174                 .Invent.Object(slot).ObjIndex = 0
+176                 .Invent.NroItems = .Invent.NroItems - 1
             
-176                 Call UpdateUserInv(False, UserIndex, slot)
-178                 Call WriteUpdateGold(UserIndex)
+178                 Call UpdateUserInv(False, UserIndex, slot)
+180                 Call WriteUpdateGold(UserIndex)
             
-180             Case eOBJType.otWeapon
+182             Case eOBJType.otWeapon
     
-182                 If .flags.Muerto = 1 Then
-184                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
+184                 If .flags.Muerto = 1 Then
+186                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
                         ' Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
     
                     End If
             
-186                 If Not .Stats.MinSta > 0 Then
-188                     Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
+188                 If Not .Stats.MinSta > 0 Then
+190                     Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
     
                     End If
             
-190                 If ObjData(ObjIndex).proyectil = 1 Then
+192                 If ObjData(ObjIndex).proyectil = 1 Then
                         'liquid: muevo esto aca adentro, para que solo pida modo combate si estamos por usar el arco
-192                     Call WriteWorkRequestTarget(UserIndex, Proyectiles)
+194                     Call WriteWorkRequestTarget(UserIndex, Proyectiles)
                     Else
     
-194                     If .flags.TargetObj = Leña Then
-196                         If .Invent.Object(slot).ObjIndex = DAGA Then
-198                             Call TratarDeHacerFogata(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY, UserIndex)
+196                     If .flags.TargetObj = Leña Then
+198                         If .Invent.Object(slot).ObjIndex = DAGA Then
+200                             Call TratarDeHacerFogata(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY, UserIndex)
     
                             End If
     
@@ -2034,404 +2037,404 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
             
                     'REVISAR LADDER
                     'Solo si es herramienta ;) (en realidad si no es ni proyectil ni daga)
-200                 If .Invent.Object(slot).Equipped = 0 Then
+202                 If .Invent.Object(slot).Equipped = 0 Then
                         'Call WriteConsoleMsg(UserIndex, "Antes de usar la herramienta deberias equipartela.", FontTypeNames.FONTTYPE_INFO)
                         'Call WriteLocaleMsg(UserIndex, "376", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
     
                     End If
             
-202             Case eOBJType.otHerramientas
+204             Case eOBJType.otHerramientas
     
-204                 If .flags.Muerto = 1 Then
-206                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
+206                 If .flags.Muerto = 1 Then
+208                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
                         'Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
     
                     End If
             
-208                 If Not .Stats.MinSta > 0 Then
-210                     Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
+210                 If Not .Stats.MinSta > 0 Then
+212                     Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
     
                     End If
     
                     'Solo si es herramienta ;) (en realidad si no es ni proyectil ni daga)
-212                 If .Invent.Object(slot).Equipped = 0 Then
+214                 If .Invent.Object(slot).Equipped = 0 Then
                         'Call WriteConsoleMsg(UserIndex, "Antes de usar la herramienta deberias equipartela.", FontTypeNames.FONTTYPE_INFO)
-214                     Call WriteLocaleMsg(UserIndex, "376", FontTypeNames.FONTTYPE_INFO)
+216                     Call WriteLocaleMsg(UserIndex, "376", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
     
                     End If
     
-216                 Select Case obj.Subtipo
+218                 Select Case obj.Subtipo
                     
                         Case 1, 2  ' Herramientas del Pescador - Caña y Red
-218                         Call WriteWorkRequestTarget(UserIndex, eSkill.Pescar)
+220                         Call WriteWorkRequestTarget(UserIndex, eSkill.Pescar)
                     
-220                     Case 3     ' Herramientas de Alquimia - Tijeras
-222                         Call WriteWorkRequestTarget(UserIndex, eSkill.Alquimia)
+222                     Case 3     ' Herramientas de Alquimia - Tijeras
+224                         Call WriteWorkRequestTarget(UserIndex, eSkill.Alquimia)
                     
-224                     Case 4     ' Herramientas de Alquimia - Olla
-226                         Call EnivarObjConstruiblesAlquimia(UserIndex)
-228                         Call WriteShowAlquimiaForm(UserIndex)
+226                     Case 4     ' Herramientas de Alquimia - Olla
+228                         Call EnivarObjConstruiblesAlquimia(UserIndex)
+230                         Call WriteShowAlquimiaForm(UserIndex)
                     
-230                     Case 5     ' Herramientas de Carpinteria - Serrucho
-232                         Call EnivarObjConstruibles(UserIndex)
-234                         Call WriteShowCarpenterForm(UserIndex)
+232                     Case 5     ' Herramientas de Carpinteria - Serrucho
+234                         Call EnivarObjConstruibles(UserIndex)
+236                         Call WriteShowCarpenterForm(UserIndex)
                     
-236                     Case 6     ' Herramientas de Tala - Hacha
-238                         Call WriteWorkRequestTarget(UserIndex, eSkill.Talar)
+238                     Case 6     ' Herramientas de Tala - Hacha
+240                         Call WriteWorkRequestTarget(UserIndex, eSkill.Talar)
     
-240                     Case 7     ' Herramientas de Herrero - Martillo
-242                         Call WriteConsoleMsg(UserIndex, "Debes hacer click derecho sobre el yunque.", FontTypeNames.FONTTYPE_INFOIAO)
+242                     Case 7     ' Herramientas de Herrero - Martillo
+244                         Call WriteConsoleMsg(UserIndex, "Debes hacer click derecho sobre el yunque.", FontTypeNames.FONTTYPE_INFOIAO)
     
-244                     Case 8     ' Herramientas de Mineria - Piquete
-246                         Call WriteWorkRequestTarget(UserIndex, eSkill.Mineria)
+246                     Case 8     ' Herramientas de Mineria - Piquete
+248                         Call WriteWorkRequestTarget(UserIndex, eSkill.Mineria)
                     
-248                     Case 9     ' Herramientas de Sastreria - Costurero
-250                         Call EnivarObjConstruiblesSastre(UserIndex)
-252                         Call WriteShowSastreForm(UserIndex)
+250                     Case 9     ' Herramientas de Sastreria - Costurero
+252                         Call EnivarObjConstruiblesSastre(UserIndex)
+254                         Call WriteShowSastreForm(UserIndex)
     
                     End Select
         
-254             Case eOBJType.otPociones
+256             Case eOBJType.otPociones
     
-256                 If .flags.Muerto = 1 Then
-258                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
+258                 If .flags.Muerto = 1 Then
+260                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
                         'Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
     
                     End If
             
-260                 .flags.TomoPocion = True
-262                 .flags.TipoPocion = obj.TipoPocion
+262                 .flags.TomoPocion = True
+264                 .flags.TipoPocion = obj.TipoPocion
                     
                     Dim CabezaFinal  As Integer
     
                     Dim CabezaActual As Integer
     
-264                 Select Case .flags.TipoPocion
+266                 Select Case .flags.TipoPocion
             
                         Case 1 'Modif la agilidad
-266                         .flags.DuracionEfecto = obj.DuracionEfecto
+268                         .flags.DuracionEfecto = obj.DuracionEfecto
             
                             'Usa el item
-268                         .Stats.UserAtributos(eAtributos.Agilidad) = MinimoInt(.Stats.UserAtributos(eAtributos.Agilidad) + RandomNumber(obj.MinModificador, obj.MaxModificador), .Stats.UserAtributosBackUP(eAtributos.Agilidad) * 2)
+270                         .Stats.UserAtributos(eAtributos.Agilidad) = MinimoInt(.Stats.UserAtributos(eAtributos.Agilidad) + RandomNumber(obj.MinModificador, obj.MaxModificador), .Stats.UserAtributosBackUP(eAtributos.Agilidad) * 2)
                     
-274                         Call WriteFYA(UserIndex)
+272                         Call WriteFYA(UserIndex)
                     
                             'Quitamos del inv el item
-276                         Call QuitarUserInvItem(UserIndex, slot, 1)
+274                         Call QuitarUserInvItem(UserIndex, slot, 1)
     
-278                         If obj.Snd1 <> 0 Then
-280                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
+276                         If obj.Snd1 <> 0 Then
+278                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
                             Else
-282                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .Pos.X, .Pos.Y))
+280                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .Pos.X, .Pos.Y))
     
                             End If
             
-284                     Case 2 'Modif la fuerza
-286                         .flags.DuracionEfecto = obj.DuracionEfecto
+282                     Case 2 'Modif la fuerza
+284                         .flags.DuracionEfecto = obj.DuracionEfecto
             
                             'Usa el item
-288                         .Stats.UserAtributos(eAtributos.Fuerza) = MinimoInt(.Stats.UserAtributos(eAtributos.Fuerza) + RandomNumber(obj.MinModificador, obj.MaxModificador), .Stats.UserAtributosBackUP(eAtributos.Fuerza) * 2)
+286                         .Stats.UserAtributos(eAtributos.Fuerza) = MinimoInt(.Stats.UserAtributos(eAtributos.Fuerza) + RandomNumber(obj.MinModificador, obj.MaxModificador), .Stats.UserAtributosBackUP(eAtributos.Fuerza) * 2)
                     
                             'Quitamos del inv el item
-294                         Call QuitarUserInvItem(UserIndex, slot, 1)
+288                         Call QuitarUserInvItem(UserIndex, slot, 1)
     
-296                         If obj.Snd1 <> 0 Then
-298                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
+290                         If obj.Snd1 <> 0 Then
+292                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
                             Else
-300                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .Pos.X, .Pos.Y))
+294                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .Pos.X, .Pos.Y))
     
                             End If
     
-302                         Call WriteFYA(UserIndex)
+296                         Call WriteFYA(UserIndex)
     
-304                     Case 3 'Pocion roja, restaura HP
+298                     Case 3 'Pocion roja, restaura HP
                     
                             'Usa el item
-306                         .Stats.MinHp = .Stats.MinHp + RandomNumber(obj.MinModificador, obj.MaxModificador)
+300                         .Stats.MinHp = .Stats.MinHp + RandomNumber(obj.MinModificador, obj.MaxModificador)
     
-308                         If .Stats.MinHp > .Stats.MaxHp Then .Stats.MinHp = .Stats.MaxHp
+302                         If .Stats.MinHp > .Stats.MaxHp Then .Stats.MinHp = .Stats.MaxHp
                     
                             'Quitamos del inv el item
-310                         Call QuitarUserInvItem(UserIndex, slot, 1)
+304                         Call QuitarUserInvItem(UserIndex, slot, 1)
     
-312                         If obj.Snd1 <> 0 Then
-314                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
+306                         If obj.Snd1 <> 0 Then
+308                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
                         
                             Else
-316                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .Pos.X, .Pos.Y))
+310                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .Pos.X, .Pos.Y))
     
                             End If
                 
-318                     Case 4 'Pocion azul, restaura MANA
+312                     Case 4 'Pocion azul, restaura MANA
                 
                             Dim porcentajeRec As Byte
-320                         porcentajeRec = obj.Porcentaje
+314                         porcentajeRec = obj.Porcentaje
                     
                             'Usa el item
-322                         .Stats.MinMAN = .Stats.MinMAN + Porcentaje(.Stats.MaxMAN, porcentajeRec)
+316                         .Stats.MinMAN = .Stats.MinMAN + Porcentaje(.Stats.MaxMAN, porcentajeRec)
     
-324                         If .Stats.MinMAN > .Stats.MaxMAN Then .Stats.MinMAN = .Stats.MaxMAN
+318                         If .Stats.MinMAN > .Stats.MaxMAN Then .Stats.MinMAN = .Stats.MaxMAN
                     
                             'Quitamos del inv el item
-326                         Call QuitarUserInvItem(UserIndex, slot, 1)
+320                         Call QuitarUserInvItem(UserIndex, slot, 1)
     
-328                         If obj.Snd1 <> 0 Then
-330                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
+322                         If obj.Snd1 <> 0 Then
+324                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
                         
                             Else
-332                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .Pos.X, .Pos.Y))
+326                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .Pos.X, .Pos.Y))
     
                             End If
                     
-334                     Case 5 ' Pocion violeta
+328                     Case 5 ' Pocion violeta
     
-336                         If .flags.Envenenado > 0 Then
-338                             .flags.Envenenado = 0
-340                             Call WriteConsoleMsg(UserIndex, "Te has curado del envenenamiento.", FontTypeNames.FONTTYPE_INFO)
+330                         If .flags.Envenenado > 0 Then
+332                             .flags.Envenenado = 0
+334                             Call WriteConsoleMsg(UserIndex, "Te has curado del envenenamiento.", FontTypeNames.FONTTYPE_INFO)
                                 'Quitamos del inv el item
-342                             Call QuitarUserInvItem(UserIndex, slot, 1)
+336                             Call QuitarUserInvItem(UserIndex, slot, 1)
     
-344                             If obj.Snd1 <> 0 Then
-346                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
+338                             If obj.Snd1 <> 0 Then
+340                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
                         
                                 Else
-348                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .Pos.X, .Pos.Y))
+342                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .Pos.X, .Pos.Y))
     
                                 End If
     
                             Else
-350                             Call WriteConsoleMsg(UserIndex, "¡No te encuentras envenenado!", FontTypeNames.FONTTYPE_INFO)
+344                             Call WriteConsoleMsg(UserIndex, "¡No te encuentras envenenado!", FontTypeNames.FONTTYPE_INFO)
     
                             End If
                     
-352                     Case 6  ' Remueve Parálisis
+346                     Case 6  ' Remueve Parálisis
     
-354                         If .flags.Paralizado = 1 Or .flags.Inmovilizado = 1 Then
-356                             If .flags.Paralizado = 1 Then
-358                                 .flags.Paralizado = 0
-360                                 Call WriteParalizeOK(UserIndex)
-    
-                                End If
-                            
-362                             If .flags.Inmovilizado = 1 Then
-364                                 .Counters.Inmovilizado = 0
-366                                 .flags.Inmovilizado = 0
-368                                 Call WriteInmovilizaOK(UserIndex)
+348                         If .flags.Paralizado = 1 Or .flags.Inmovilizado = 1 Then
+350                             If .flags.Paralizado = 1 Then
+352                                 .flags.Paralizado = 0
+354                                 Call WriteParalizeOK(UserIndex)
     
                                 End If
                             
-                            
-                            
-370                             Call QuitarUserInvItem(UserIndex, slot, 1)
+356                             If .flags.Inmovilizado = 1 Then
+358                                 .Counters.Inmovilizado = 0
+360                                 .flags.Inmovilizado = 0
+362                                 Call WriteInmovilizaOK(UserIndex)
     
-372                             If obj.Snd1 <> 0 Then
-374                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
+                                End If
+                            
+                            
+                            
+364                             Call QuitarUserInvItem(UserIndex, slot, 1)
+    
+366                             If obj.Snd1 <> 0 Then
+368                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
                         
                                 Else
-376                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(255, .Pos.X, .Pos.Y))
+370                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(255, .Pos.X, .Pos.Y))
     
                                 End If
     
-378                             Call WriteConsoleMsg(UserIndex, "Te has removido la paralizis.", FontTypeNames.FONTTYPE_INFOIAO)
+372                             Call WriteConsoleMsg(UserIndex, "Te has removido la paralizis.", FontTypeNames.FONTTYPE_INFOIAO)
                             Else
-380                             Call WriteConsoleMsg(UserIndex, "No estas paralizado.", FontTypeNames.FONTTYPE_INFOIAO)
+374                             Call WriteConsoleMsg(UserIndex, "No estas paralizado.", FontTypeNames.FONTTYPE_INFOIAO)
     
                             End If
                     
-382                     Case 7  ' Pocion Naranja
-384                         .Stats.MinSta = .Stats.MinSta + RandomNumber(obj.MinModificador, obj.MaxModificador)
+376                     Case 7  ' Pocion Naranja
+378                         .Stats.MinSta = .Stats.MinSta + RandomNumber(obj.MinModificador, obj.MaxModificador)
     
-386                         If .Stats.MinSta > .Stats.MaxSta Then .Stats.MinSta = .Stats.MaxSta
+380                         If .Stats.MinSta > .Stats.MaxSta Then .Stats.MinSta = .Stats.MaxSta
                         
                             'Quitamos del inv el item
-388                         Call QuitarUserInvItem(UserIndex, slot, 1)
+382                         Call QuitarUserInvItem(UserIndex, slot, 1)
     
-390                         If obj.Snd1 <> 0 Then
-392                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
+384                         If obj.Snd1 <> 0 Then
+386                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
                                 
                             Else
-394                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .Pos.X, .Pos.Y))
+388                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .Pos.X, .Pos.Y))
     
                             End If
     
-396                     Case 8  ' Pocion cambio cara
+390                     Case 8  ' Pocion cambio cara
     
-398                         Select Case .genero
+392                         Select Case .genero
     
                                 Case eGenero.Hombre
     
-400                                 Select Case .raza
+394                                 Select Case .raza
     
                                         Case eRaza.Humano
-402                                         CabezaFinal = RandomNumber(1, 40)
+396                                         CabezaFinal = RandomNumber(1, 40)
     
-404                                     Case eRaza.Elfo
-406                                         CabezaFinal = RandomNumber(101, 132)
+398                                     Case eRaza.Elfo
+400                                         CabezaFinal = RandomNumber(101, 132)
     
-408                                     Case eRaza.Drow
-410                                         CabezaFinal = RandomNumber(201, 229)
+402                                     Case eRaza.Drow
+404                                         CabezaFinal = RandomNumber(201, 229)
     
-412                                     Case eRaza.Enano
-414                                         CabezaFinal = RandomNumber(301, 329)
+406                                     Case eRaza.Enano
+408                                         CabezaFinal = RandomNumber(301, 329)
     
-416                                     Case eRaza.Gnomo
-418                                         CabezaFinal = RandomNumber(401, 429)
+410                                     Case eRaza.Gnomo
+412                                         CabezaFinal = RandomNumber(401, 429)
     
-420                                     Case eRaza.Orco
-422                                         CabezaFinal = RandomNumber(501, 529)
+414                                     Case eRaza.Orco
+416                                         CabezaFinal = RandomNumber(501, 529)
     
                                     End Select
     
-424                             Case eGenero.Mujer
+418                             Case eGenero.Mujer
     
-426                                 Select Case .raza
+420                                 Select Case .raza
     
                                         Case eRaza.Humano
-428                                         CabezaFinal = RandomNumber(50, 80)
+422                                         CabezaFinal = RandomNumber(50, 80)
     
-430                                     Case eRaza.Elfo
-432                                         CabezaFinal = RandomNumber(150, 179)
+424                                     Case eRaza.Elfo
+426                                         CabezaFinal = RandomNumber(150, 179)
     
-434                                     Case eRaza.Drow
-436                                         CabezaFinal = RandomNumber(250, 279)
+428                                     Case eRaza.Drow
+430                                         CabezaFinal = RandomNumber(250, 279)
     
-438                                     Case eRaza.Gnomo
-440                                         CabezaFinal = RandomNumber(350, 379)
+432                                     Case eRaza.Gnomo
+434                                         CabezaFinal = RandomNumber(350, 379)
     
-442                                     Case eRaza.Enano
-444                                         CabezaFinal = RandomNumber(450, 479)
+436                                     Case eRaza.Enano
+438                                         CabezaFinal = RandomNumber(450, 479)
     
-446                                     Case eRaza.Orco
-448                                         CabezaFinal = RandomNumber(550, 579)
+440                                     Case eRaza.Orco
+442                                         CabezaFinal = RandomNumber(550, 579)
     
                                     End Select
     
                             End Select
                 
-450                         .Char.Head = CabezaFinal
-452                         .OrigChar.Head = CabezaFinal
-454                         Call ChangeUserChar(UserIndex, .Char.Body, CabezaFinal, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+444                         .Char.Head = CabezaFinal
+446                         .OrigChar.Head = CabezaFinal
+448                         Call ChangeUserChar(UserIndex, .Char.Body, CabezaFinal, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
                             'Quitamos del inv el item
-456                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, 102, 0))
+450                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, 102, 0))
     
-458                         If CabezaActual <> CabezaFinal Then
-460                             Call QuitarUserInvItem(UserIndex, slot, 1)
+452                         If CabezaActual <> CabezaFinal Then
+454                             Call QuitarUserInvItem(UserIndex, slot, 1)
                             Else
-462                             Call WriteConsoleMsg(UserIndex, "¡Rayos! Te tocó la misma cabeza, item no consumido. Tienes otra oportunidad.", FontTypeNames.FONTTYPE_INFOIAO)
+456                             Call WriteConsoleMsg(UserIndex, "¡Rayos! Te tocó la misma cabeza, item no consumido. Tienes otra oportunidad.", FontTypeNames.FONTTYPE_INFOIAO)
     
                             End If
     
-464                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
+458                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
                         
-466                     Case 9  ' Pocion sexo
+460                     Case 9  ' Pocion sexo
         
-468                         Select Case .genero
+462                         Select Case .genero
     
                                 Case eGenero.Hombre
-470                                 .genero = eGenero.Mujer
+464                                 .genero = eGenero.Mujer
                         
-472                             Case eGenero.Mujer
-474                                 .genero = eGenero.Hombre
+466                             Case eGenero.Mujer
+468                                 .genero = eGenero.Hombre
                         
                             End Select
                 
-476                         Select Case .genero
+470                         Select Case .genero
     
                                 Case eGenero.Hombre
     
-478                                 Select Case .raza
+472                                 Select Case .raza
     
                                         Case eRaza.Humano
-480                                         CabezaFinal = RandomNumber(1, 40)
+474                                         CabezaFinal = RandomNumber(1, 40)
     
-482                                     Case eRaza.Elfo
-484                                         CabezaFinal = RandomNumber(101, 132)
+476                                     Case eRaza.Elfo
+478                                         CabezaFinal = RandomNumber(101, 132)
     
-486                                     Case eRaza.Drow
-488                                         CabezaFinal = RandomNumber(201, 229)
+480                                     Case eRaza.Drow
+482                                         CabezaFinal = RandomNumber(201, 229)
     
-490                                     Case eRaza.Enano
-492                                         CabezaFinal = RandomNumber(301, 329)
+484                                     Case eRaza.Enano
+486                                         CabezaFinal = RandomNumber(301, 329)
     
-494                                     Case eRaza.Gnomo
-496                                         CabezaFinal = RandomNumber(401, 429)
+488                                     Case eRaza.Gnomo
+490                                         CabezaFinal = RandomNumber(401, 429)
     
-498                                     Case eRaza.Orco
-500                                         CabezaFinal = RandomNumber(501, 529)
+492                                     Case eRaza.Orco
+494                                         CabezaFinal = RandomNumber(501, 529)
     
                                     End Select
     
-502                             Case eGenero.Mujer
+496                             Case eGenero.Mujer
     
-504                                 Select Case .raza
+498                                 Select Case .raza
     
                                         Case eRaza.Humano
-506                                         CabezaFinal = RandomNumber(50, 80)
+500                                         CabezaFinal = RandomNumber(50, 80)
     
-508                                     Case eRaza.Elfo
-510                                         CabezaFinal = RandomNumber(150, 179)
+502                                     Case eRaza.Elfo
+504                                         CabezaFinal = RandomNumber(150, 179)
     
-512                                     Case eRaza.Drow
-514                                         CabezaFinal = RandomNumber(250, 279)
+506                                     Case eRaza.Drow
+508                                         CabezaFinal = RandomNumber(250, 279)
     
-516                                     Case eRaza.Gnomo
-518                                         CabezaFinal = RandomNumber(350, 379)
+510                                     Case eRaza.Gnomo
+512                                         CabezaFinal = RandomNumber(350, 379)
     
-520                                     Case eRaza.Enano
-522                                         CabezaFinal = RandomNumber(450, 479)
+514                                     Case eRaza.Enano
+516                                         CabezaFinal = RandomNumber(450, 479)
     
-524                                     Case eRaza.Orco
-526                                         CabezaFinal = RandomNumber(550, 579)
+518                                     Case eRaza.Orco
+520                                         CabezaFinal = RandomNumber(550, 579)
     
                                     End Select
     
                             End Select
                 
-528                         .Char.Head = CabezaFinal
-530                         .OrigChar.Head = CabezaFinal
-532                         Call ChangeUserChar(UserIndex, .Char.Body, CabezaFinal, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+522                         .Char.Head = CabezaFinal
+524                         .OrigChar.Head = CabezaFinal
+526                         Call ChangeUserChar(UserIndex, .Char.Body, CabezaFinal, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
                             'Quitamos del inv el item
-534                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, 102, 0))
-536                         Call QuitarUserInvItem(UserIndex, slot, 1)
+528                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, 102, 0))
+530                         Call QuitarUserInvItem(UserIndex, slot, 1)
     
-538                         If obj.Snd1 <> 0 Then
-540                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
+532                         If obj.Snd1 <> 0 Then
+534                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
                             Else
-542                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .Pos.X, .Pos.Y))
+536                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .Pos.X, .Pos.Y))
     
                             End If
                     
-544                     Case 10  ' Invisibilidad
+538                     Case 10  ' Invisibilidad
                 
-546                         If .flags.invisible = 0 Then
-548                             .flags.invisible = 1
-550                             .Counters.Invisibilidad = obj.DuracionEfecto
-552                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, True))
-554                             Call WriteContadores(UserIndex)
-556                             Call QuitarUserInvItem(UserIndex, slot, 1)
+540                         If .flags.invisible = 0 Then
+542                             .flags.invisible = 1
+544                             .Counters.Invisibilidad = obj.DuracionEfecto
+546                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, True))
+548                             Call WriteContadores(UserIndex)
+550                             Call QuitarUserInvItem(UserIndex, slot, 1)
     
-558                             If obj.Snd1 <> 0 Then
-560                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
+552                             If obj.Snd1 <> 0 Then
+554                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
                                 
                                 Else
-562                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("123", .Pos.X, .Pos.Y))
+556                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("123", .Pos.X, .Pos.Y))
     
                                 End If
     
-564                             Call WriteConsoleMsg(UserIndex, "Te has escondido entre las sombras...", FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
+558                             Call WriteConsoleMsg(UserIndex, "Te has escondido entre las sombras...", FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
                             
                             Else
-566                             Call WriteConsoleMsg(UserIndex, "Ya estas invisible.", FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
+560                             Call WriteConsoleMsg(UserIndex, "Ya estas invisible.", FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
                                 Exit Sub
     
                             End If
                         
-568                     Case 11  ' Experiencia
+562                     Case 11  ' Experiencia
     
                             Dim HR   As Integer
     
@@ -2441,137 +2444,137 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
     
                             Dim secs As Integer
     
-570                         If .flags.ScrollExp = 1 Then
-572                             .flags.ScrollExp = obj.CuantoAumento
-574                             .Counters.ScrollExperiencia = obj.DuracionEfecto
-576                             Call QuitarUserInvItem(UserIndex, slot, 1)
+564                         If .flags.ScrollExp = 1 Then
+566                             .flags.ScrollExp = obj.CuantoAumento
+568                             .Counters.ScrollExperiencia = obj.DuracionEfecto
+570                             Call QuitarUserInvItem(UserIndex, slot, 1)
                             
-578                             secs = obj.DuracionEfecto
-580                             HR = secs \ 3600
-582                             MS = (secs Mod 3600) \ 60
-584                             SS = (secs Mod 3600) Mod 60
+572                             secs = obj.DuracionEfecto
+574                             HR = secs \ 3600
+576                             MS = (secs Mod 3600) \ 60
+578                             SS = (secs Mod 3600) Mod 60
     
-586                             If SS > 9 Then
-588                                 Call WriteConsoleMsg(UserIndex, "Tu scroll de experiencia ha comenzado. Este beneficio durara: " & MS & ":" & SS & " minuto(s).", FontTypeNames.FONTTYPE_New_DONADOR)
+580                             If SS > 9 Then
+582                                 Call WriteConsoleMsg(UserIndex, "Tu scroll de experiencia ha comenzado. Este beneficio durara: " & MS & ":" & SS & " minuto(s).", FontTypeNames.FONTTYPE_New_DONADOR)
                                 Else
-590                                 Call WriteConsoleMsg(UserIndex, "Tu scroll de experiencia ha comenzado. Este beneficio durara: " & MS & ":0" & SS & " minuto(s).", FontTypeNames.FONTTYPE_New_DONADOR)
+584                                 Call WriteConsoleMsg(UserIndex, "Tu scroll de experiencia ha comenzado. Este beneficio durara: " & MS & ":0" & SS & " minuto(s).", FontTypeNames.FONTTYPE_New_DONADOR)
     
                                 End If
     
                             Else
-592                             Call WriteConsoleMsg(UserIndex, "Solo podes usar un scroll a la vez.", FontTypeNames.FONTTYPE_New_DONADOR)
+586                             Call WriteConsoleMsg(UserIndex, "Solo podes usar un scroll a la vez.", FontTypeNames.FONTTYPE_New_DONADOR)
                                 Exit Sub
     
                             End If
     
-594                         Call WriteContadores(UserIndex)
+588                         Call WriteContadores(UserIndex)
     
-596                         If obj.Snd1 <> 0 Then
-598                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
+590                         If obj.Snd1 <> 0 Then
+592                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
                             
                             Else
-600                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .Pos.X, .Pos.Y))
+594                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .Pos.X, .Pos.Y))
     
                             End If
     
-602                     Case 12  ' Oro
+596                     Case 12  ' Oro
                 
-604                         If .flags.ScrollOro = 1 Then
-606                             .flags.ScrollOro = obj.CuantoAumento
-608                             .Counters.ScrollOro = obj.DuracionEfecto
-610                             Call QuitarUserInvItem(UserIndex, slot, 1)
-612                             secs = obj.DuracionEfecto
-614                             HR = secs \ 3600
-616                             MS = (secs Mod 3600) \ 60
-618                             SS = (secs Mod 3600) Mod 60
+598                         If .flags.ScrollOro = 1 Then
+600                             .flags.ScrollOro = obj.CuantoAumento
+602                             .Counters.ScrollOro = obj.DuracionEfecto
+604                             Call QuitarUserInvItem(UserIndex, slot, 1)
+606                             secs = obj.DuracionEfecto
+608                             HR = secs \ 3600
+610                             MS = (secs Mod 3600) \ 60
+612                             SS = (secs Mod 3600) Mod 60
     
-620                             If SS > 9 Then
-622                                 Call WriteConsoleMsg(UserIndex, "Tu scroll de oro ha comenzado. Este beneficio durara: " & MS & ":" & SS & " minuto(s).", FontTypeNames.FONTTYPE_New_DONADOR)
+614                             If SS > 9 Then
+616                                 Call WriteConsoleMsg(UserIndex, "Tu scroll de oro ha comenzado. Este beneficio durara: " & MS & ":" & SS & " minuto(s).", FontTypeNames.FONTTYPE_New_DONADOR)
                                 Else
-624                                 Call WriteConsoleMsg(UserIndex, "Tu scroll de oro ha comenzado. Este beneficio durara: " & MS & ":0" & SS & " minuto(s).", FontTypeNames.FONTTYPE_New_DONADOR)
+618                                 Call WriteConsoleMsg(UserIndex, "Tu scroll de oro ha comenzado. Este beneficio durara: " & MS & ":0" & SS & " minuto(s).", FontTypeNames.FONTTYPE_New_DONADOR)
     
                                 End If
                             
                             Else
-626                             Call WriteConsoleMsg(UserIndex, "Solo podes usar un scroll a la vez.", FontTypeNames.FONTTYPE_New_DONADOR)
+620                             Call WriteConsoleMsg(UserIndex, "Solo podes usar un scroll a la vez.", FontTypeNames.FONTTYPE_New_DONADOR)
                                 Exit Sub
     
                             End If
     
-628                         Call WriteContadores(UserIndex)
+622                         Call WriteContadores(UserIndex)
     
-630                         If obj.Snd1 <> 0 Then
-632                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
+624                         If obj.Snd1 <> 0 Then
+626                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
                             
                             Else
-634                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .Pos.X, .Pos.Y))
+628                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .Pos.X, .Pos.Y))
     
                             End If
     
-636                     Case 13
+630                     Case 13
                     
-638                         Call QuitarUserInvItem(UserIndex, slot, 1)
-640                         .flags.Envenenado = 0
-642                         .flags.Incinerado = 0
+632                         Call QuitarUserInvItem(UserIndex, slot, 1)
+634                         .flags.Envenenado = 0
+636                         .flags.Incinerado = 0
                         
-644                         If .flags.Inmovilizado = 1 Then
-646                             .Counters.Inmovilizado = 0
-648                             .flags.Inmovilizado = 0
-650                             Call WriteInmovilizaOK(UserIndex)
+638                         If .flags.Inmovilizado = 1 Then
+640                             .Counters.Inmovilizado = 0
+642                             .flags.Inmovilizado = 0
+644                             Call WriteInmovilizaOK(UserIndex)
                             
     
                             End If
                         
-652                         If .flags.Paralizado = 1 Then
-654                             .flags.Paralizado = 0
-656                             Call WriteParalizeOK(UserIndex)
+646                         If .flags.Paralizado = 1 Then
+648                             .flags.Paralizado = 0
+650                             Call WriteParalizeOK(UserIndex)
                             
     
                             End If
                         
-658                         If .flags.Ceguera = 1 Then
-660                             .flags.Ceguera = 0
-662                             Call WriteBlindNoMore(UserIndex)
+652                         If .flags.Ceguera = 1 Then
+654                             .flags.Ceguera = 0
+656                             Call WriteBlindNoMore(UserIndex)
                             
     
                             End If
                         
-664                         If .flags.Maldicion = 1 Then
-666                             .flags.Maldicion = 0
-668                             .Counters.Maldicion = 0
+658                         If .flags.Maldicion = 1 Then
+660                             .flags.Maldicion = 0
+662                             .Counters.Maldicion = 0
     
                             End If
                         
-670                         .Stats.MinSta = .Stats.MaxSta
-672                         .Stats.MinAGU = .Stats.MaxAGU
-674                         .Stats.MinMAN = .Stats.MaxMAN
-676                         .Stats.MinHp = .Stats.MaxHp
-678                         .Stats.MinHam = .Stats.MaxHam
+664                         .Stats.MinSta = .Stats.MaxSta
+666                         .Stats.MinAGU = .Stats.MaxAGU
+668                         .Stats.MinMAN = .Stats.MaxMAN
+670                         .Stats.MinHp = .Stats.MaxHp
+672                         .Stats.MinHam = .Stats.MaxHam
                         
-680                         .flags.Hambre = 0
-682                         .flags.Sed = 0
+674                         .flags.Hambre = 0
+676                         .flags.Sed = 0
                         
-684                         Call WriteUpdateHungerAndThirst(UserIndex)
-686                         Call WriteConsoleMsg(UserIndex, "Donador> Te sentis sano y lleno.", FontTypeNames.FONTTYPE_WARNING)
+678                         Call WriteUpdateHungerAndThirst(UserIndex)
+680                         Call WriteConsoleMsg(UserIndex, "Donador> Te sentis sano y lleno.", FontTypeNames.FONTTYPE_WARNING)
     
-688                         If obj.Snd1 <> 0 Then
-690                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
+682                         If obj.Snd1 <> 0 Then
+684                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
                             
                             Else
-692                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .Pos.X, .Pos.Y))
+686                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .Pos.X, .Pos.Y))
     
                             End If
     
-694                     Case 14
+688                     Case 14
                     
-696                         If .flags.BattleModo = 1 Then
-698                             Call WriteConsoleMsg(UserIndex, "No podes usarlo aquí.", FontTypeNames.FONTTYPE_WARNING)
+690                         If .flags.BattleModo = 1 Then
+692                             Call WriteConsoleMsg(UserIndex, "No podes usarlo aquí.", FontTypeNames.FONTTYPE_WARNING)
                                 Exit Sub
     
                             End If
                         
-700                         If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = CARCEL Then
-702                             Call WriteConsoleMsg(UserIndex, "No podes usar la runa estando en la carcel.", FontTypeNames.FONTTYPE_INFO)
+694                         If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = CARCEL Then
+696                             Call WriteConsoleMsg(UserIndex, "No podes usar la runa estando en la carcel.", FontTypeNames.FONTTYPE_INFO)
                                 Exit Sub
     
                             End If
@@ -2584,70 +2587,70 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
     
                             Dim DeDonde As WorldPos
     
-704                         Call QuitarUserInvItem(UserIndex, slot, 1)
+698                         Call QuitarUserInvItem(UserIndex, slot, 1)
                 
-706                         Select Case .Hogar
+700                         Select Case .Hogar
     
                                 Case eCiudad.cUllathorpe
-708                                 DeDonde = Ullathorpe
+702                                 DeDonde = Ullathorpe
                                 
-710                             Case eCiudad.cNix
-712                                 DeDonde = Nix
+704                             Case eCiudad.cNix
+706                                 DeDonde = Nix
                     
-714                             Case eCiudad.cBanderbill
-716                                 DeDonde = Banderbill
+708                             Case eCiudad.cBanderbill
+710                                 DeDonde = Banderbill
                             
-718                             Case eCiudad.cLindos
-720                                 DeDonde = Lindos
+712                             Case eCiudad.cLindos
+714                                 DeDonde = Lindos
                                 
-722                             Case eCiudad.cArghal
-724                                 DeDonde = Arghal
+716                             Case eCiudad.cArghal
+718                                 DeDonde = Arghal
                                 
-726                             Case eCiudad.CHillidan
-728                                 DeDonde = Hillidan
+720                             Case eCiudad.CHillidan
+722                                 DeDonde = Hillidan
                                 
-730                             Case Else
-732                                 DeDonde = Ullathorpe
+724                             Case Else
+726                                 DeDonde = Ullathorpe
     
                             End Select
                         
-734                         Map = DeDonde.Map
-736                         X = DeDonde.X
-738                         Y = DeDonde.Y
+728                         Map = DeDonde.Map
+730                         X = DeDonde.X
+732                         Y = DeDonde.Y
                         
-740                         Call FindLegalPos(UserIndex, Map, X, Y)
-742                         Call WarpUserChar(UserIndex, Map, X, Y, True)
-744                         Call WriteConsoleMsg(UserIndex, "Ya estas a salvo...", FontTypeNames.FONTTYPE_WARNING)
+734                         Call FindLegalPos(UserIndex, Map, X, Y)
+736                         Call WarpUserChar(UserIndex, Map, X, Y, True)
+738                         Call WriteConsoleMsg(UserIndex, "Ya estas a salvo...", FontTypeNames.FONTTYPE_WARNING)
     
-746                         If obj.Snd1 <> 0 Then
-748                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
+740                         If obj.Snd1 <> 0 Then
+742                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
                             
                             Else
-750                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .Pos.X, .Pos.Y))
+744                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .Pos.X, .Pos.Y))
     
                             End If
     
-752                     Case 15  ' Aliento de sirena
+746                     Case 15  ' Aliento de sirena
                             
-754                         If .Counters.Oxigeno >= 3540 Then
+748                         If .Counters.Oxigeno >= 3540 Then
                             
-756                             Call WriteConsoleMsg(UserIndex, "No podes acumular más de 59 minutos de oxigeno.", FontTypeNames.FONTTYPE_INFOIAO)
-758                             secs = .Counters.Oxigeno
-760                             HR = secs \ 3600
-762                             MS = (secs Mod 3600) \ 60
-764                             SS = (secs Mod 3600) Mod 60
+750                             Call WriteConsoleMsg(UserIndex, "No podes acumular más de 59 minutos de oxigeno.", FontTypeNames.FONTTYPE_INFOIAO)
+752                             secs = .Counters.Oxigeno
+754                             HR = secs \ 3600
+756                             MS = (secs Mod 3600) \ 60
+758                             SS = (secs Mod 3600) Mod 60
     
-766                             If SS > 9 Then
-768                                 Call WriteConsoleMsg(UserIndex, "Tu reserva de oxigeno es de " & HR & ":" & MS & ":" & SS & " segundos.", FontTypeNames.FONTTYPE_New_Blanco)
+760                             If SS > 9 Then
+762                                 Call WriteConsoleMsg(UserIndex, "Tu reserva de oxigeno es de " & HR & ":" & MS & ":" & SS & " segundos.", FontTypeNames.FONTTYPE_New_Blanco)
                                 Else
-770                                 Call WriteConsoleMsg(UserIndex, "Tu reserva de oxigeno es de " & HR & ":" & MS & ":0" & SS & " minuto(s).", FontTypeNames.FONTTYPE_New_Blanco)
+764                                 Call WriteConsoleMsg(UserIndex, "Tu reserva de oxigeno es de " & HR & ":" & MS & ":0" & SS & " minuto(s).", FontTypeNames.FONTTYPE_New_Blanco)
     
                                 End If
     
                             Else
                                 
-772                             .Counters.Oxigeno = .Counters.Oxigeno + obj.DuracionEfecto
-774                             Call QuitarUserInvItem(UserIndex, slot, 1)
+766                             .Counters.Oxigeno = .Counters.Oxigeno + obj.DuracionEfecto
+768                             Call QuitarUserInvItem(UserIndex, slot, 1)
                                 
                                 'secs = .Counters.Oxigeno
                                 ' HR = secs \ 3600
@@ -2660,137 +2663,137 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                                 ' Call WriteConsoleMsg(UserIndex, "Tu reserva de oxigeno es de " & MS & ":0" & SS & " minuto(s).", FontTypeNames.FONTTYPE_New_Blanco)
                                 ' End If
                                 
-776                             .flags.Ahogandose = 0
-778                             Call WriteOxigeno(UserIndex)
+770                             .flags.Ahogandose = 0
+772                             Call WriteOxigeno(UserIndex)
                                 
-780                             Call WriteContadores(UserIndex)
+774                             Call WriteContadores(UserIndex)
     
-782                             If obj.Snd1 <> 0 Then
-784                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
+776                             If obj.Snd1 <> 0 Then
+778                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
                                 
                                 Else
-786                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .Pos.X, .Pos.Y))
+780                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .Pos.X, .Pos.Y))
     
                                 End If
     
                             End If
     
-788                     Case 16 ' Divorcio
+782                     Case 16 ' Divorcio
     
-790                         If .flags.Casado = 1 Then
+784                         If .flags.Casado = 1 Then
     
                                 Dim tUser As Integer
     
                                 '.flags.Pareja
-792                             tUser = NameIndex(.flags.Pareja)
-794                             Call QuitarUserInvItem(UserIndex, slot, 1)
+786                             tUser = NameIndex(.flags.Pareja)
+788                             Call QuitarUserInvItem(UserIndex, slot, 1)
                             
-796                             If tUser <= 0 Then
+790                             If tUser <= 0 Then
     
                                     Dim FileUser As String
     
-798                                 FileUser = CharPath & UCase$(.flags.Pareja) & ".chr"
+792                                 FileUser = CharPath & UCase$(.flags.Pareja) & ".chr"
                                     'Call WriteVar(FileUser, "FLAGS", "CASADO", 0)
                                     'Call WriteVar(FileUser, "FLAGS", "PAREJA", "")
-800                                 .flags.Casado = 0
-802                                 .flags.Pareja = ""
-804                                 Call WriteConsoleMsg(UserIndex, "Te has divorciado.", FontTypeNames.FONTTYPE_INFOIAO)
-806                                 .MENSAJEINFORMACION = .name & " se ha divorciado de ti."
+794                                 .flags.Casado = 0
+796                                 .flags.Pareja = ""
+798                                 Call WriteConsoleMsg(UserIndex, "Te has divorciado.", FontTypeNames.FONTTYPE_INFOIAO)
+800                                 .MENSAJEINFORMACION = .name & " se ha divorciado de ti."
     
                                 Else
-808                                 UserList(tUser).flags.Casado = 0
-810                                 UserList(tUser).flags.Pareja = ""
-812                                 .flags.Casado = 0
-814                                 .flags.Pareja = ""
-816                                 Call WriteConsoleMsg(UserIndex, "Te has divorciado.", FontTypeNames.FONTTYPE_INFOIAO)
-818                                 Call WriteConsoleMsg(tUser, .name & " se ha divorciado de ti.", FontTypeNames.FONTTYPE_INFOIAO)
+802                                 UserList(tUser).flags.Casado = 0
+804                                 UserList(tUser).flags.Pareja = ""
+806                                 .flags.Casado = 0
+808                                 .flags.Pareja = ""
+810                                 Call WriteConsoleMsg(UserIndex, "Te has divorciado.", FontTypeNames.FONTTYPE_INFOIAO)
+812                                 Call WriteConsoleMsg(tUser, .name & " se ha divorciado de ti.", FontTypeNames.FONTTYPE_INFOIAO)
                                 
                                 End If
     
-820                             If obj.Snd1 <> 0 Then
-822                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
+814                             If obj.Snd1 <> 0 Then
+816                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
                                 
                                 Else
-824                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .Pos.X, .Pos.Y))
+818                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .Pos.X, .Pos.Y))
     
                                 End If
                         
                             Else
-826                             Call WriteConsoleMsg(UserIndex, "No estas casado.", FontTypeNames.FONTTYPE_INFOIAO)
+820                             Call WriteConsoleMsg(UserIndex, "No estas casado.", FontTypeNames.FONTTYPE_INFOIAO)
     
                             End If
     
-828                     Case 17 'Cara legendaria
+822                     Case 17 'Cara legendaria
     
-830                         Select Case .genero
+824                         Select Case .genero
     
                                 Case eGenero.Hombre
     
-832                                 Select Case .raza
+826                                 Select Case .raza
     
                                         Case eRaza.Humano
-834                                         CabezaFinal = RandomNumber(684, 686)
+828                                         CabezaFinal = RandomNumber(684, 686)
     
-836                                     Case eRaza.Elfo
-838                                         CabezaFinal = RandomNumber(690, 692)
+830                                     Case eRaza.Elfo
+832                                         CabezaFinal = RandomNumber(690, 692)
     
-840                                     Case eRaza.Drow
-842                                         CabezaFinal = RandomNumber(696, 698)
+834                                     Case eRaza.Drow
+836                                         CabezaFinal = RandomNumber(696, 698)
     
-844                                     Case eRaza.Enano
-846                                         CabezaFinal = RandomNumber(702, 704)
+838                                     Case eRaza.Enano
+840                                         CabezaFinal = RandomNumber(702, 704)
     
-848                                     Case eRaza.Gnomo
-850                                         CabezaFinal = RandomNumber(708, 710)
+842                                     Case eRaza.Gnomo
+844                                         CabezaFinal = RandomNumber(708, 710)
     
-852                                     Case eRaza.Orco
-854                                         CabezaFinal = RandomNumber(714, 716)
+846                                     Case eRaza.Orco
+848                                         CabezaFinal = RandomNumber(714, 716)
     
                                     End Select
     
-856                             Case eGenero.Mujer
+850                             Case eGenero.Mujer
     
-858                                 Select Case .raza
+852                                 Select Case .raza
     
                                         Case eRaza.Humano
-860                                         CabezaFinal = RandomNumber(687, 689)
+854                                         CabezaFinal = RandomNumber(687, 689)
     
-862                                     Case eRaza.Elfo
-864                                         CabezaFinal = RandomNumber(693, 695)
+856                                     Case eRaza.Elfo
+858                                         CabezaFinal = RandomNumber(693, 695)
     
-866                                     Case eRaza.Drow
-868                                         CabezaFinal = RandomNumber(699, 701)
+860                                     Case eRaza.Drow
+862                                         CabezaFinal = RandomNumber(699, 701)
     
-870                                     Case eRaza.Gnomo
-872                                         CabezaFinal = RandomNumber(705, 707)
+864                                     Case eRaza.Gnomo
+866                                         CabezaFinal = RandomNumber(705, 707)
     
-874                                     Case eRaza.Enano
-876                                         CabezaFinal = RandomNumber(711, 713)
+868                                     Case eRaza.Enano
+870                                         CabezaFinal = RandomNumber(711, 713)
     
-878                                     Case eRaza.Orco
-880                                         CabezaFinal = RandomNumber(717, 719)
+872                                     Case eRaza.Orco
+874                                         CabezaFinal = RandomNumber(717, 719)
     
                                     End Select
     
                             End Select
     
-882                         CabezaActual = .OrigChar.Head
+876                         CabezaActual = .OrigChar.Head
                             
-884                         .Char.Head = CabezaFinal
-886                         .OrigChar.Head = CabezaFinal
-888                         Call ChangeUserChar(UserIndex, .Char.Body, CabezaFinal, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+878                         .Char.Head = CabezaFinal
+880                         .OrigChar.Head = CabezaFinal
+882                         Call ChangeUserChar(UserIndex, .Char.Body, CabezaFinal, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
     
                             'Quitamos del inv el item
-890                         If CabezaActual <> CabezaFinal Then
-892                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, 102, 0))
-894                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
-896                             Call QuitarUserInvItem(UserIndex, slot, 1)
+884                         If CabezaActual <> CabezaFinal Then
+886                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, 102, 0))
+888                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
+890                             Call QuitarUserInvItem(UserIndex, slot, 1)
                             Else
-898                             Call WriteConsoleMsg(UserIndex, "¡Rayos! No pude asignarte una cabeza nueva, item no consumido. ¡Proba de nuevo!", FontTypeNames.FONTTYPE_INFOIAO)
+892                             Call WriteConsoleMsg(UserIndex, "¡Rayos! No pude asignarte una cabeza nueva, item no consumido. ¡Proba de nuevo!", FontTypeNames.FONTTYPE_INFOIAO)
     
                             End If
     
-900                     Case 18  ' tan solo crea una particula por determinado tiempo
+894                     Case 18  ' tan solo crea una particula por determinado tiempo
     
                             Dim Particula           As Integer
     
@@ -2800,143 +2803,141 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
     
                             Dim sobrechar           As Byte
     
-902                         If obj.CreaParticula <> "" Then
-904                             Particula = val(ReadField(1, obj.CreaParticula, Asc(":")))
-906                             Tiempo = val(ReadField(2, obj.CreaParticula, Asc(":")))
-908                             ParticulaPermanente = val(ReadField(3, obj.CreaParticula, Asc(":")))
-910                             sobrechar = val(ReadField(4, obj.CreaParticula, Asc(":")))
+896                         If obj.CreaParticula <> "" Then
+898                             Particula = val(ReadField(1, obj.CreaParticula, Asc(":")))
+900                             Tiempo = val(ReadField(2, obj.CreaParticula, Asc(":")))
+902                             ParticulaPermanente = val(ReadField(3, obj.CreaParticula, Asc(":")))
+904                             sobrechar = val(ReadField(4, obj.CreaParticula, Asc(":")))
                                 
-912                             If ParticulaPermanente = 1 Then
-914                                 .Char.ParticulaFx = Particula
-916                                 .Char.loops = Tiempo
+906                             If ParticulaPermanente = 1 Then
+908                                 .Char.ParticulaFx = Particula
+910                                 .Char.loops = Tiempo
     
                                 End If
                                 
-918                             If sobrechar = 1 Then
-920                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFXToFloor(.Pos.X, .Pos.Y, Particula, Tiempo))
+912                             If sobrechar = 1 Then
+914                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFXToFloor(.Pos.X, .Pos.Y, Particula, Tiempo))
                                 Else
                                 
-922                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, Particula, Tiempo, False))
+916                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, Particula, Tiempo, False))
     
                                     'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFXToFloor(.Pos.x, .Pos.Y, Particula, Tiempo))
                                 End If
     
                             End If
                             
-924                         If obj.CreaFX <> 0 Then
-926                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageFxPiso(obj.CreaFX, .Pos.X, .Pos.Y))
+918                         If obj.CreaFX <> 0 Then
+920                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageFxPiso(obj.CreaFX, .Pos.X, .Pos.Y))
                                 
                                 'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, obj.CreaFX, 0))
                                 ' PrepareMessageCreateFX
                             End If
                             
-928                         If obj.Snd1 <> 0 Then
-930                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
+922                         If obj.Snd1 <> 0 Then
+924                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
     
                             End If
                             
-932                         Call QuitarUserInvItem(UserIndex, slot, 1)
+926                         Call QuitarUserInvItem(UserIndex, slot, 1)
     
-934                     Case 19 ' Reseteo de skill
+928                     Case 19 ' Reseteo de skill
     
                             Dim S As Byte
                     
-936                         If .Stats.UserSkills(eSkill.Liderazgo) >= 80 Then
-938                             Call WriteConsoleMsg(UserIndex, "Has fundado un clan, no podes resetar tus skills. ", FontTypeNames.FONTTYPE_INFOIAO)
+930                         If .Stats.UserSkills(eSkill.Liderazgo) >= 80 Then
+932                             Call WriteConsoleMsg(UserIndex, "Has fundado un clan, no podes resetar tus skills. ", FontTypeNames.FONTTYPE_INFOIAO)
                                 Exit Sub
     
                             End If
                         
-940                         For S = 1 To NUMSKILLS
-942                             .Stats.UserSkills(S) = 0
-944                         Next S
+934                         For S = 1 To NUMSKILLS
+936                             .Stats.UserSkills(S) = 0
+938                         Next S
                         
                             Dim SkillLibres As Integer
                         
-946                         SkillLibres = 5
-948                         SkillLibres = SkillLibres + (5 * .Stats.ELV)
+940                         SkillLibres = 5
+942                         SkillLibres = SkillLibres + (5 * .Stats.ELV)
                          
-950                         .Stats.SkillPts = SkillLibres
-952                         Call WriteLevelUp(UserIndex, .Stats.SkillPts)
+944                         .Stats.SkillPts = SkillLibres
+946                         Call WriteLevelUp(UserIndex, .Stats.SkillPts)
                         
-954                         Call WriteConsoleMsg(UserIndex, "Tus skills han sido reseteados.", FontTypeNames.FONTTYPE_INFOIAO)
-956                         Call QuitarUserInvItem(UserIndex, slot, 1)
+948                         Call WriteConsoleMsg(UserIndex, "Tus skills han sido reseteados.", FontTypeNames.FONTTYPE_INFOIAO)
+950                         Call QuitarUserInvItem(UserIndex, slot, 1)
     
-958                     Case 20
+952                     Case 20
                     
-960                         If .Stats.InventLevel < INVENTORY_EXTRA_ROWS Then
-962                             .Stats.InventLevel = .Stats.InventLevel + 1
-964                             .CurrentInventorySlots = getMaxInventorySlots(UserIndex)
-966                             Call WriteInventoryUnlockSlots(UserIndex)
-968                             Call WriteConsoleMsg(UserIndex, "Has aumentado el espacio de tu inventario!", FontTypeNames.FONTTYPE_INFO)
-970                             Call QuitarUserInvItem(UserIndex, slot, 1)
+954                         If .Stats.InventLevel < INVENTORY_EXTRA_ROWS Then
+956                             .Stats.InventLevel = .Stats.InventLevel + 1
+958                             .CurrentInventorySlots = getMaxInventorySlots(UserIndex)
+960                             Call WriteInventoryUnlockSlots(UserIndex)
+962                             Call WriteConsoleMsg(UserIndex, "Has aumentado el espacio de tu inventario!", FontTypeNames.FONTTYPE_INFO)
+964                             Call QuitarUserInvItem(UserIndex, slot, 1)
                             Else
-972                             Call WriteConsoleMsg(UserIndex, "Ya has desbloqueado todos los casilleros disponibles.", FontTypeNames.FONTTYPE_INFO)
+966                             Call WriteConsoleMsg(UserIndex, "Ya has desbloqueado todos los casilleros disponibles.", FontTypeNames.FONTTYPE_INFO)
                                 Exit Sub
     
                             End If
                     
                     End Select
     
-974                 Call WriteUpdateUserStats(UserIndex)
-976                 Call UpdateUserInv(False, UserIndex, slot)
+968                 Call WriteUpdateUserStats(UserIndex)
+970                 Call UpdateUserInv(False, UserIndex, slot)
     
-978             Case eOBJType.otBebidas
+972             Case eOBJType.otBebidas
     
-980                 If .flags.Muerto = 1 Then
-982                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
+974                 If .flags.Muerto = 1 Then
+976                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
                         'Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
     
                     End If
     
-984                 .Stats.MinAGU = .Stats.MinAGU + obj.MinSed
+978                 .Stats.MinAGU = .Stats.MinAGU + obj.MinSed
     
-986                 If .Stats.MinAGU > .Stats.MaxAGU Then .Stats.MinAGU = .Stats.MaxAGU
-988                 .flags.Sed = 0
-990                 Call WriteUpdateHungerAndThirst(UserIndex)
+980                 If .Stats.MinAGU > .Stats.MaxAGU Then .Stats.MinAGU = .Stats.MaxAGU
+982                 .flags.Sed = 0
+984                 Call WriteUpdateHungerAndThirst(UserIndex)
             
                     'Quitamos del inv el item
-992                 Call QuitarUserInvItem(UserIndex, slot, 1)
+986                 Call QuitarUserInvItem(UserIndex, slot, 1)
             
-994                 If obj.Snd1 <> 0 Then
-996                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
+988                 If obj.Snd1 <> 0 Then
+990                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
                 
                     Else
-998                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .Pos.X, .Pos.Y))
+992                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .Pos.X, .Pos.Y))
     
                      End If
             
-1000                 Call UpdateUserInv(False, UserIndex, slot)
+994                 Call UpdateUserInv(False, UserIndex, slot)
             
-1002             Case eOBJType.OtCofre
+996             Case eOBJType.OtCofre
     
-1004                 If .flags.Muerto = 1 Then
-1006                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
-                         'Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", FontTypeNames.FONTTYPE_INFO)
-                         Exit Sub
+998                 If .flags.Muerto = 1 Then
+1000                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
+                          'Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", FontTypeNames.FONTTYPE_INFO)
+                          Exit Sub
     
-                     End If
+                      End If
     
-                     'Quitamos del inv el item
-1008                 Call QuitarUserInvItem(UserIndex, slot, 1)
-1010                 Call UpdateUserInv(False, UserIndex, slot)
+                      'Quitamos del inv el item
+1002                 Call QuitarUserInvItem(UserIndex, slot, 1)
+1004                 Call UpdateUserInv(False, UserIndex, slot)
             
-1012                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageConsoleMsg(.name & " ha abierto un " & obj.name & " y obtuvo...", FontTypeNames.FONTTYPE_New_DONADOR))
+1006                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageConsoleMsg(.name & " ha abierto un " & obj.name & " y obtuvo...", FontTypeNames.FONTTYPE_New_DONADOR))
             
-1014                 If obj.Snd1 <> 0 Then
-1016                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
-    
-                     End If
+1008                 If obj.Snd1 <> 0 Then
+1010                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
+                      End If
             
-1018                 If obj.CreaFX <> 0 Then
-1020                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, obj.CreaFX, 0))
-    
-                     End If
+1012                 If obj.CreaFX <> 0 Then
+1014                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, obj.CreaFX, 0))
+                      End If
             
-                     Dim i As Byte
+                      Dim i As Byte
     
-1022                 If obj.Subtipo = 1 Then
+1016                 If obj.Subtipo = 1 Then
     
 1018                     For i = 1 To obj.CantItem
 
@@ -2954,16 +2955,15 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
             
                       Else
             
-1032                     For i = 1 To obj.CantEntrega
+1030                     For i = 1 To obj.CantEntrega
     
-                             Dim indexobj As Byte
-                    
-1034                         indexobj = RandomNumber(1, obj.CantItem)
+                              Dim indexobj As Byte
+1032                            indexobj = RandomNumber(1, obj.CantItem)
                 
-                             Dim index As obj
+                              Dim index As obj
     
-1036                         index.ObjIndex = obj.Item(indexobj).ObjIndex
-1038                         index.Amount = obj.Item(indexobj).Amount
+1034                         index.ObjIndex = obj.Item(indexobj).ObjIndex
+1036                         index.Amount = obj.Item(indexobj).Amount
     
 1038                         If Not MeterItemEnInventario(UserIndex, index) Then
 
@@ -2978,414 +2978,414 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
     
                       End If
         
-1046             Case eOBJType.otLlaves
-1048                 Call WriteConsoleMsg(UserIndex, "Las llaves en el inventario están desactivadas. Sólo se permiten en el llavero.", FontTypeNames.FONTTYPE_INFO)
+1048             Case eOBJType.otLlaves
+1050                 Call WriteConsoleMsg(UserIndex, "Las llaves en el inventario están desactivadas. Sólo se permiten en el llavero.", FontTypeNames.FONTTYPE_INFO)
         
-1050             Case eOBJType.otBotellaVacia
+1052             Case eOBJType.otBotellaVacia
     
-1052                 If .flags.Muerto = 1 Then
-1054                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
-                         'Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", FontTypeNames.FONTTYPE_INFO)
-                         Exit Sub
+1054                 If .flags.Muerto = 1 Then
+1056                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
+                          'Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", FontTypeNames.FONTTYPE_INFO)
+                          Exit Sub
     
-                     End If
+                      End If
     
-1056                 If (MapData(.Pos.Map, .flags.TargetX, .flags.TargetY).Blocked And FLAG_AGUA) = 0 Then
-1058                     Call WriteConsoleMsg(UserIndex, "No hay agua allí.", FontTypeNames.FONTTYPE_INFO)
-                         Exit Sub
+1058                 If (MapData(.Pos.Map, .flags.TargetX, .flags.TargetY).Blocked And FLAG_AGUA) = 0 Then
+1060                     Call WriteConsoleMsg(UserIndex, "No hay agua allí.", FontTypeNames.FONTTYPE_INFO)
+                          Exit Sub
     
-                     End If
+                      End If
     
-1060                 MiObj.Amount = 1
-1062                 MiObj.ObjIndex = ObjData(.Invent.Object(slot).ObjIndex).IndexAbierta
-1064                 Call QuitarUserInvItem(UserIndex, slot, 1)
+1062                 MiObj.Amount = 1
+1064                 MiObj.ObjIndex = ObjData(.Invent.Object(slot).ObjIndex).IndexAbierta
+
+1066                 Call QuitarUserInvItem(UserIndex, slot, 1)
     
-1066                 If Not MeterItemEnInventario(UserIndex, MiObj) Then
-1068                     Call TirarItemAlPiso(.Pos, MiObj)
-    
-                     End If
+1068                 If Not MeterItemEnInventario(UserIndex, MiObj) Then
+1070                     Call TirarItemAlPiso(.Pos, MiObj)
+                      End If
             
-1070                 Call UpdateUserInv(False, UserIndex, slot)
+1072                 Call UpdateUserInv(False, UserIndex, slot)
         
-1072             Case eOBJType.otBotellaLlena
+1074             Case eOBJType.otBotellaLlena
     
-1074                 If .flags.Muerto = 1 Then
-1076                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
-                         ' Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", FontTypeNames.FONTTYPE_INFO)
-                         Exit Sub
+1076                 If .flags.Muerto = 1 Then
+1078                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
+                          ' Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", FontTypeNames.FONTTYPE_INFO)
+                          Exit Sub
     
-                     End If
+                      End If
     
-1078                 .Stats.MinAGU = .Stats.MinAGU + obj.MinSed
+1080                 .Stats.MinAGU = .Stats.MinAGU + obj.MinSed
     
-1080                 If .Stats.MinAGU > .Stats.MaxAGU Then .Stats.MinAGU = .Stats.MaxAGU
-1082                 .flags.Sed = 0
-1084                 Call WriteUpdateHungerAndThirst(UserIndex)
-1086                 MiObj.Amount = 1
-1088                 MiObj.ObjIndex = ObjData(.Invent.Object(slot).ObjIndex).IndexCerrada
-1090                 Call QuitarUserInvItem(UserIndex, slot, 1)
+1082                 If .Stats.MinAGU > .Stats.MaxAGU Then .Stats.MinAGU = .Stats.MaxAGU
+1084                 .flags.Sed = 0
+1086                 Call WriteUpdateHungerAndThirst(UserIndex)
+1088                 MiObj.Amount = 1
+1090                 MiObj.ObjIndex = ObjData(.Invent.Object(slot).ObjIndex).IndexCerrada
+1092                 Call QuitarUserInvItem(UserIndex, slot, 1)
     
-1092                 If Not MeterItemEnInventario(UserIndex, MiObj) Then
-1094                     Call TirarItemAlPiso(.Pos, MiObj)
+1094                 If Not MeterItemEnInventario(UserIndex, MiObj) Then
+1096                     Call TirarItemAlPiso(.Pos, MiObj)
     
-                     End If
+                      End If
             
-1096                 Call UpdateUserInv(False, UserIndex, slot)
+1098                 Call UpdateUserInv(False, UserIndex, slot)
         
-1098             Case eOBJType.otPergaminos
+1100             Case eOBJType.otPergaminos
     
-1100                 If .flags.Muerto = 1 Then
-1102                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
-                         ' Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", FontTypeNames.FONTTYPE_INFO)
-                         Exit Sub
+1102                 If .flags.Muerto = 1 Then
+1104                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
+                          ' Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", FontTypeNames.FONTTYPE_INFO)
+                          Exit Sub
     
-                     End If
+                      End If
             
-                     'Call LogError(.Name & " intento aprender el hechizo " & ObjData(.Invent.Object(slot).ObjIndex).HechizoIndex)
+                      'Call LogError(.Name & " intento aprender el hechizo " & ObjData(.Invent.Object(slot).ObjIndex).HechizoIndex)
             
-1104                 If ClasePuedeUsarItem(UserIndex, .Invent.Object(slot).ObjIndex, slot) Then
+1106                 If ClasePuedeUsarItem(UserIndex, .Invent.Object(slot).ObjIndex, slot) Then
     
-                         'If .Stats.MaxMAN > 0 Then
-1106                     If .flags.Hambre = 0 And .flags.Sed = 0 Then
-1108                         Call AgregarHechizo(UserIndex, slot)
-1110                         Call UpdateUserInv(False, UserIndex, slot)
-                             ' Call LogError(.Name & " lo aprendio.")
-                         Else
-1112                         Call WriteConsoleMsg(UserIndex, "Estas demasiado hambriento y sediento.", FontTypeNames.FONTTYPE_INFO)
+                          'If .Stats.MaxMAN > 0 Then
+1108                     If .flags.Hambre = 0 And .flags.Sed = 0 Then
+1110                         Call AgregarHechizo(UserIndex, slot)
+1112                         Call UpdateUserInv(False, UserIndex, slot)
+                              ' Call LogError(.Name & " lo aprendio.")
+                          Else
+1114                         Call WriteConsoleMsg(UserIndex, "Estas demasiado hambriento y sediento.", FontTypeNames.FONTTYPE_INFO)
     
-                         End If
+                          End If
     
-                         ' Else
-                         '    Call WriteConsoleMsg(UserIndex, "No tienes conocimientos de las Artes Arcanas.", FontTypeNames.FONTTYPE_WARNING)
-                         'End If
-                     Else
+                          ' Else
+                          '    Call WriteConsoleMsg(UserIndex, "No tienes conocimientos de las Artes Arcanas.", FontTypeNames.FONTTYPE_WARNING)
+                          'End If
+                      Else
                  
-1114                     Call WriteConsoleMsg(UserIndex, "Por mas que lo intentas, no podés comprender el manuescrito.", FontTypeNames.FONTTYPE_INFO)
+1116                     Call WriteConsoleMsg(UserIndex, "Por mas que lo intentas, no podés comprender el manuescrito.", FontTypeNames.FONTTYPE_INFO)
        
-                     End If
+                      End If
             
-1116             Case eOBJType.otMinerales
+1118             Case eOBJType.otMinerales
     
-1118                 If .flags.Muerto = 1 Then
-1120                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
-                         'Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", FontTypeNames.FONTTYPE_INFO)
-                         Exit Sub
+1120                 If .flags.Muerto = 1 Then
+1122                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
+                          'Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", FontTypeNames.FONTTYPE_INFO)
+                          Exit Sub
     
-                     End If
+                      End If
     
-1122                 Call WriteWorkRequestTarget(UserIndex, FundirMetal)
+1124                 Call WriteWorkRequestTarget(UserIndex, FundirMetal)
            
-1124             Case eOBJType.otInstrumentos
+1126             Case eOBJType.otInstrumentos
     
-1126                 If .flags.Muerto = 1 Then
-1128                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
-                         'Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", FontTypeNames.FONTTYPE_INFO)
-                         Exit Sub
+1128                 If .flags.Muerto = 1 Then
+1130                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
+                          'Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", FontTypeNames.FONTTYPE_INFO)
+                          Exit Sub
     
-                     End If
+                      End If
             
-1130                 If obj.Real Then '¿Es el Cuerno Real?
-1132                     If FaccionPuedeUsarItem(UserIndex, ObjIndex) Then
-1134                         If MapInfo(.Pos.Map).Seguro = 1 Then
-1136                             Call WriteConsoleMsg(UserIndex, "No hay Peligro aquí. Es Zona Segura ", FontTypeNames.FONTTYPE_INFO)
-                                 Exit Sub
+1132                 If obj.Real Then '¿Es el Cuerno Real?
+1134                     If FaccionPuedeUsarItem(UserIndex, ObjIndex) Then
+1136                         If MapInfo(.Pos.Map).Seguro = 1 Then
+1138                             Call WriteConsoleMsg(UserIndex, "No hay Peligro aquí. Es Zona Segura ", FontTypeNames.FONTTYPE_INFO)
+                                  Exit Sub
     
-                             End If
+                              End If
     
-1138                         Call SendData(SendTarget.toMap, .Pos.Map, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
-                             Exit Sub
-                         Else
-1140                         Call WriteConsoleMsg(UserIndex, "Solo Miembros de la Armada Real pueden usar este cuerno.", FontTypeNames.FONTTYPE_INFO)
-                             Exit Sub
+1140                         Call SendData(SendTarget.toMap, .Pos.Map, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
+                              Exit Sub
+                          Else
+1142                         Call WriteConsoleMsg(UserIndex, "Solo Miembros de la Armada Real pueden usar este cuerno.", FontTypeNames.FONTTYPE_INFO)
+                              Exit Sub
     
-                         End If
+                          End If
     
-1142                 ElseIf obj.Caos Then '¿Es el Cuerno Legión?
+1144                 ElseIf obj.Caos Then '¿Es el Cuerno Legión?
     
-1144                     If FaccionPuedeUsarItem(UserIndex, ObjIndex) Then
-1146                         If MapInfo(.Pos.Map).Seguro = 1 Then
-1148                             Call WriteConsoleMsg(UserIndex, "No hay Peligro aquí. Es Zona Segura ", FontTypeNames.FONTTYPE_INFO)
-                                 Exit Sub
+1146                     If FaccionPuedeUsarItem(UserIndex, ObjIndex) Then
+1148                         If MapInfo(.Pos.Map).Seguro = 1 Then
+1150                             Call WriteConsoleMsg(UserIndex, "No hay Peligro aquí. Es Zona Segura ", FontTypeNames.FONTTYPE_INFO)
+                                  Exit Sub
     
-                             End If
+                              End If
     
-1150                         Call SendData(SendTarget.toMap, .Pos.Map, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
-                             Exit Sub
-                         Else
-1152                         Call WriteConsoleMsg(UserIndex, "Solo Miembros de la Legión Oscura pueden usar este cuerno.", FontTypeNames.FONTTYPE_INFO)
-                             Exit Sub
+1152                         Call SendData(SendTarget.toMap, .Pos.Map, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
+                              Exit Sub
+                          Else
+1154                         Call WriteConsoleMsg(UserIndex, "Solo Miembros de la Legión Oscura pueden usar este cuerno.", FontTypeNames.FONTTYPE_INFO)
+                              Exit Sub
     
-                         End If
+                          End If
     
-                     End If
+                      End If
     
-                     'Si llega aca es porque es o Laud o Tambor o Flauta
-1154                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
+                      'Si llega aca es porque es o Laud o Tambor o Flauta
+1156                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
            
-1156             Case eOBJType.otBarcos
+1158             Case eOBJType.otBarcos
                 
-                    ' Nivel mínimo para navegar, si no sos pirata ni trabajador
-                    If .Stats.ELV < 25 And Not (.clase = eClass.Trabajador Or .clase = eClass.Pirat) Then
-1164                    Call WriteConsoleMsg(UserIndex, "Para recorrer los mares debes ser nivel 25 o superior.", FontTypeNames.FONTTYPE_INFO)
-                        Exit Sub
-                    End If
+                     ' Nivel mínimo para navegar, si no sos pirata ni trabajador
+1160                 If .Stats.ELV < 25 And Not (.clase = eClass.Trabajador Or .clase = eClass.Pirat) Then
+1162                    Call WriteConsoleMsg(UserIndex, "Para recorrer los mares debes ser nivel 25 o superior.", FontTypeNames.FONTTYPE_INFO)
+                         Exit Sub
+                     End If
 
-1166                If .flags.Navegando = 0 Then
-1168                    If LegalPos(.Pos.Map, .Pos.X - 1, .Pos.Y, True, False) Or LegalPos(.Pos.Map, .Pos.X, .Pos.Y - 1, True, False) Or LegalPos(.Pos.Map, .Pos.X + 1, .Pos.Y, True, False) Or LegalPos(.Pos.Map, .Pos.X, .Pos.Y + 1, True, False) Then
-1170                        Call DoNavega(UserIndex, obj, slot)
-                        Else
-1172                        Call WriteConsoleMsg(UserIndex, "¡Debes aproximarte al agua para usar el barco!", FontTypeNames.FONTTYPE_INFO)
-                        End If
+1164                If .flags.Navegando = 0 Then
+1166                    If LegalPos(.Pos.Map, .Pos.X - 1, .Pos.Y, True, False) Or LegalPos(.Pos.Map, .Pos.X, .Pos.Y - 1, True, False) Or LegalPos(.Pos.Map, .Pos.X + 1, .Pos.Y, True, False) Or LegalPos(.Pos.Map, .Pos.X, .Pos.Y + 1, True, False) Then
+1168                        Call DoNavega(UserIndex, obj, slot)
+                         Else
+1170                        Call WriteConsoleMsg(UserIndex, "¡Debes aproximarte al agua para usar el barco!", FontTypeNames.FONTTYPE_INFO)
+                         End If
                     
-                    Else 'Ladder 10-02-2010
-                        If .Invent.BarcoObjIndex <> .Invent.Object(slot).ObjIndex Then
-1176                        Call DoNavega(UserIndex, obj, slot)
-                        Else
-1178                        If LegalPos(.Pos.Map, .Pos.X - 1, .Pos.Y, False, True) Or LegalPos(.Pos.Map, .Pos.X, .Pos.Y - 1, False, True) Or LegalPos(.Pos.Map, .Pos.X + 1, .Pos.Y, False, True) Or LegalPos(.Pos.Map, .Pos.X, .Pos.Y + 1, False, True) Then
-1180                            Call DoNavega(UserIndex, obj, slot)
-                            Else
-1182                            Call WriteConsoleMsg(UserIndex, "¡Debes aproximarte a la costa para dejar la barca!", FontTypeNames.FONTTYPE_INFO)
-                            End If
-                        End If
-                    End If
-            
-1184             Case eOBJType.otMonturas
-                     'Verifica todo lo que requiere la montura
-        
-1186                 If .flags.Muerto = 1 Then
-1188                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
-                         'Call WriteConsoleMsg(UserIndex, "¡Estas muerto! Los fantasmas no pueden montar.", FontTypeNames.FONTTYPE_INFO)
-                         Exit Sub
-    
-                     End If
-                
-1190                 If .flags.Navegando = 1 Then
-1192                     Call WriteConsoleMsg(UserIndex, "Debes dejar de navegar para poder montarté.", FontTypeNames.FONTTYPE_INFO)
-                         Exit Sub
-    
-                     End If
-    
-1194                 If MapInfo(.Pos.Map).zone = "DUNGEON" Then
-1196                     Call WriteConsoleMsg(UserIndex, "No podes cabalgar dentro de un dungeon.", FontTypeNames.FONTTYPE_INFO)
-                         Exit Sub
-    
-                     End If
-            
-1198                 Call DoMontar(UserIndex, obj, slot)
-    
-1200             Case eOBJType.OtDonador
-    
-1202                 Select Case obj.Subtipo
-    
-                         Case 1
-                
-1204                         If .Counters.Pena <> 0 Then
-1206                             Call WriteConsoleMsg(UserIndex, "No podes usar la runa estando en la carcel.", FontTypeNames.FONTTYPE_INFO)
-                                 Exit Sub
-    
-                             End If
-                    
-1208                         If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = CARCEL Then
-1210                             Call WriteConsoleMsg(UserIndex, "No podes usar la runa estando en la carcel.", FontTypeNames.FONTTYPE_INFO)
-                                 Exit Sub
-    
-                             End If
-                
-1212                         Call WarpUserChar(UserIndex, obj.HastaMap, obj.HastaX, obj.HastaY, True)
-1214                         Call WriteConsoleMsg(UserIndex, "Has viajado por el mundo.", FontTypeNames.FONTTYPE_WARNING)
-1216                         Call QuitarUserInvItem(UserIndex, slot, 1)
-1218                         Call UpdateUserInv(False, UserIndex, slot)
-                    
-1220                     Case 2
-    
-1222                         If DonadorCheck(.Cuenta) = 0 Then
-1224                             Call DonadorTiempo(.Cuenta, CLng(obj.CuantoAumento))
-1226                             Call WriteConsoleMsg(UserIndex, "Donación> Se han agregado " & obj.CuantoAumento & " dias de donador a tu cuenta. Relogea tu personaje para empezar a disfrutar la experiencia.", FontTypeNames.FONTTYPE_WARNING)
-1228                             Call QuitarUserInvItem(UserIndex, slot, 1)
-1230                             Call UpdateUserInv(False, UserIndex, slot)
+                     Else 'Ladder 10-02-2010
+1172                     If .Invent.BarcoObjIndex <> .Invent.Object(slot).ObjIndex Then
+1174                        Call DoNavega(UserIndex, obj, slot)
+                         Else
+1176                        If LegalPos(.Pos.Map, .Pos.X - 1, .Pos.Y, False, True) Or LegalPos(.Pos.Map, .Pos.X, .Pos.Y - 1, False, True) Or LegalPos(.Pos.Map, .Pos.X + 1, .Pos.Y, False, True) Or LegalPos(.Pos.Map, .Pos.X, .Pos.Y + 1, False, True) Then
+1178                            Call DoNavega(UserIndex, obj, slot)
                              Else
-1232                             Call DonadorTiempo(.Cuenta, CLng(obj.CuantoAumento))
-1234                             Call WriteConsoleMsg(UserIndex, "¡Se han añadido " & CLng(obj.CuantoAumento) & " dias de donador a tu cuenta.", FontTypeNames.FONTTYPE_WARNING)
-1236                             .donador.activo = 1
-1238                             Call QuitarUserInvItem(UserIndex, slot, 1)
-1240                             Call UpdateUserInv(False, UserIndex, slot)
-    
-                                 'Call WriteConsoleMsg(UserIndex, "Donación> Debes esperar a que finalice el periodo existente para renovar tu suscripción.", FontTypeNames.FONTTYPE_INFOIAO)
+1180                            Call WriteConsoleMsg(UserIndex, "¡Debes aproximarte a la costa para dejar la barca!", FontTypeNames.FONTTYPE_INFO)
                              End If
+                         End If
+                     End If
+            
+1182             Case eOBJType.otMonturas
+                      'Verifica todo lo que requiere la montura
+        
+1184                 If .flags.Muerto = 1 Then
+1186                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
+                          'Call WriteConsoleMsg(UserIndex, "¡Estas muerto! Los fantasmas no pueden montar.", FontTypeNames.FONTTYPE_INFO)
+                          Exit Sub
     
-1242                     Case 3
-1244                         Call AgregarCreditosDonador(.Cuenta, CLng(obj.CuantoAumento))
-1246                         Call WriteConsoleMsg(UserIndex, "Donación> Tu credito ahora es de " & CreditosDonadorCheck(.Cuenta) & " creditos.", FontTypeNames.FONTTYPE_WARNING)
-1248                         Call QuitarUserInvItem(UserIndex, slot, 1)
-1250                         Call UpdateUserInv(False, UserIndex, slot)
+                      End If
+                
+1188                 If .flags.Navegando = 1 Then
+1190                     Call WriteConsoleMsg(UserIndex, "Debes dejar de navegar para poder montarté.", FontTypeNames.FONTTYPE_INFO)
+                          Exit Sub
     
-                     End Select
+                      End If
+    
+1192                 If MapInfo(.Pos.Map).zone = "DUNGEON" Then
+1194                     Call WriteConsoleMsg(UserIndex, "No podes cabalgar dentro de un dungeon.", FontTypeNames.FONTTYPE_INFO)
+                          Exit Sub
+    
+                      End If
+            
+1196                 Call DoMontar(UserIndex, obj, slot)
+    
+1198             Case eOBJType.OtDonador
+    
+1200                 Select Case obj.Subtipo
+    
+                          Case 1
+                
+1202                         If .Counters.Pena <> 0 Then
+1204                             Call WriteConsoleMsg(UserIndex, "No podes usar la runa estando en la carcel.", FontTypeNames.FONTTYPE_INFO)
+                                  Exit Sub
+    
+                              End If
+                    
+1206                         If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = CARCEL Then
+1208                             Call WriteConsoleMsg(UserIndex, "No podes usar la runa estando en la carcel.", FontTypeNames.FONTTYPE_INFO)
+                                  Exit Sub
+    
+                              End If
+                
+1210                         Call WarpUserChar(UserIndex, obj.HastaMap, obj.HastaX, obj.HastaY, True)
+1212                         Call WriteConsoleMsg(UserIndex, "Has viajado por el mundo.", FontTypeNames.FONTTYPE_WARNING)
+1214                         Call QuitarUserInvItem(UserIndex, slot, 1)
+1216                         Call UpdateUserInv(False, UserIndex, slot)
+                    
+1218                     Case 2
+    
+1220                         If DonadorCheck(.Cuenta) = 0 Then
+1222                             Call DonadorTiempo(.Cuenta, CLng(obj.CuantoAumento))
+1224                             Call WriteConsoleMsg(UserIndex, "Donación> Se han agregado " & obj.CuantoAumento & " dias de donador a tu cuenta. Relogea tu personaje para empezar a disfrutar la experiencia.", FontTypeNames.FONTTYPE_WARNING)
+1226                             Call QuitarUserInvItem(UserIndex, slot, 1)
+1228                             Call UpdateUserInv(False, UserIndex, slot)
+                              Else
+1230                             Call DonadorTiempo(.Cuenta, CLng(obj.CuantoAumento))
+1232                             Call WriteConsoleMsg(UserIndex, "¡Se han añadido " & CLng(obj.CuantoAumento) & " dias de donador a tu cuenta.", FontTypeNames.FONTTYPE_WARNING)
+1234                             .donador.activo = 1
+1236                             Call QuitarUserInvItem(UserIndex, slot, 1)
+1238                             Call UpdateUserInv(False, UserIndex, slot)
+    
+                                  'Call WriteConsoleMsg(UserIndex, "Donación> Debes esperar a que finalice el periodo existente para renovar tu suscripción.", FontTypeNames.FONTTYPE_INFOIAO)
+                              End If
+    
+1240                     Case 3
+1242                         Call AgregarCreditosDonador(.Cuenta, CLng(obj.CuantoAumento))
+1244                         Call WriteConsoleMsg(UserIndex, "Donación> Tu credito ahora es de " & CreditosDonadorCheck(.Cuenta) & " creditos.", FontTypeNames.FONTTYPE_WARNING)
+1246                         Call QuitarUserInvItem(UserIndex, slot, 1)
+1248                         Call UpdateUserInv(False, UserIndex, slot)
+    
+                      End Select
          
-1252             Case eOBJType.otpasajes
+1250             Case eOBJType.otpasajes
     
-1254                 If .flags.Muerto = 1 Then
-1256                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
-                         'Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", FontTypeNames.FONTTYPE_INFO)
-                         Exit Sub
+1252                 If .flags.Muerto = 1 Then
+1254                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
+                          'Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", FontTypeNames.FONTTYPE_INFO)
+                          Exit Sub
     
-                     End If
+                      End If
             
-1258                 If .flags.TargetNpcTipo <> Pirata Then
-1260                     Call WriteConsoleMsg(UserIndex, "Primero debes hacer click sobre el pirata.", FontTypeNames.FONTTYPE_INFO)
-                         Exit Sub
+1256                 If .flags.TargetNpcTipo <> Pirata Then
+1258                     Call WriteConsoleMsg(UserIndex, "Primero debes hacer click sobre el pirata.", FontTypeNames.FONTTYPE_INFO)
+                          Exit Sub
     
-                     End If
+                      End If
             
-1262                 If Distancia(Npclist(.flags.TargetNPC).Pos, .Pos) > 3 Then
-1264                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-                         'Call WriteConsoleMsg(UserIndex, "Estás demasiado lejos del vendedor.", FontTypeNames.FONTTYPE_INFO)
-                         Exit Sub
+1260                 If Distancia(Npclist(.flags.TargetNPC).Pos, .Pos) > 3 Then
+1262                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
+                          'Call WriteConsoleMsg(UserIndex, "Estás demasiado lejos del vendedor.", FontTypeNames.FONTTYPE_INFO)
+                          Exit Sub
     
-                     End If
+                      End If
             
-1266                 If .Pos.Map <> obj.DesdeMap Then
-                         Rem  Call WriteConsoleMsg(UserIndex, "El pasaje no lo compraste aquí! Largate!", FontTypeNames.FONTTYPE_INFO)
-1268                     Call WriteChatOverHead(UserIndex, "El pasaje no lo compraste aquí! Largate!", str(Npclist(.flags.TargetNPC).Char.CharIndex), vbWhite)
-                         Exit Sub
+1264                 If .Pos.Map <> obj.DesdeMap Then
+                          Rem  Call WriteConsoleMsg(UserIndex, "El pasaje no lo compraste aquí! Largate!", FontTypeNames.FONTTYPE_INFO)
+1266                     Call WriteChatOverHead(UserIndex, "El pasaje no lo compraste aquí! Largate!", str(Npclist(.flags.TargetNPC).Char.CharIndex), vbWhite)
+                          Exit Sub
     
-                     End If
+                      End If
             
-1270                 If Not MapaValido(obj.HastaMap) Then
-                         Rem Call WriteConsoleMsg(UserIndex, "El pasaje lleva hacia un mapa que ya no esta disponible! Disculpa las molestias.", FontTypeNames.FONTTYPE_INFO)
-1272                     Call WriteChatOverHead(UserIndex, "El pasaje lleva hacia un mapa que ya no esta disponible! Disculpa las molestias.", str(Npclist(.flags.TargetNPC).Char.CharIndex), vbWhite)
-                         Exit Sub
+1268                 If Not MapaValido(obj.HastaMap) Then
+                          Rem Call WriteConsoleMsg(UserIndex, "El pasaje lleva hacia un mapa que ya no esta disponible! Disculpa las molestias.", FontTypeNames.FONTTYPE_INFO)
+1270                     Call WriteChatOverHead(UserIndex, "El pasaje lleva hacia un mapa que ya no esta disponible! Disculpa las molestias.", str(Npclist(.flags.TargetNPC).Char.CharIndex), vbWhite)
+                          Exit Sub
     
-                     End If
+                      End If
     
-1274                 If obj.NecesitaNave > 0 Then
-1276                     If .Stats.UserSkills(eSkill.Navegacion) < 80 Then
-                             Rem Call WriteConsoleMsg(UserIndex, "Debido a la peligrosidad del viaje, no puedo llevarte, ya que al menos necesitas saber manejar una barca.", FontTypeNames.FONTTYPE_INFO)
-1278                         Call WriteChatOverHead(UserIndex, "Debido a la peligrosidad del viaje, no puedo llevarte, ya que al menos necesitas saber manejar una barca.", str(Npclist(.flags.TargetNPC).Char.CharIndex), vbWhite)
-                             Exit Sub
+1272                 If obj.NecesitaNave > 0 Then
+1274                     If .Stats.UserSkills(eSkill.Navegacion) < 80 Then
+                              Rem Call WriteConsoleMsg(UserIndex, "Debido a la peligrosidad del viaje, no puedo llevarte, ya que al menos necesitas saber manejar una barca.", FontTypeNames.FONTTYPE_INFO)
+1276                         Call WriteChatOverHead(UserIndex, "Debido a la peligrosidad del viaje, no puedo llevarte, ya que al menos necesitas saber manejar una barca.", str(Npclist(.flags.TargetNPC).Char.CharIndex), vbWhite)
+                              Exit Sub
     
-                         End If
+                          End If
     
-                     End If
+                      End If
                 
-1280                 Call WarpUserChar(UserIndex, obj.HastaMap, obj.HastaX, obj.HastaY, True)
-1282                 Call WriteConsoleMsg(UserIndex, "Has viajado por varios días, te sientes exhausto!", FontTypeNames.FONTTYPE_WARNING)
-1284                 .Stats.MinAGU = 0
-1286                 .Stats.MinHam = 0
-1288                 .flags.Sed = 1
-1290                 .flags.Hambre = 1
-1292                 Call WriteUpdateHungerAndThirst(UserIndex)
-1294                 Call QuitarUserInvItem(UserIndex, slot, 1)
-1296                 Call UpdateUserInv(False, UserIndex, slot)
+1278                 Call WarpUserChar(UserIndex, obj.HastaMap, obj.HastaX, obj.HastaY, True)
+1280                 Call WriteConsoleMsg(UserIndex, "Has viajado por varios días, te sientes exhausto!", FontTypeNames.FONTTYPE_WARNING)
+1282                 .Stats.MinAGU = 0
+1284                 .Stats.MinHam = 0
+1286                 .flags.Sed = 1
+1288                 .flags.Hambre = 1
+1290                 Call WriteUpdateHungerAndThirst(UserIndex)
+1292                 Call QuitarUserInvItem(UserIndex, slot, 1)
+1294                 Call UpdateUserInv(False, UserIndex, slot)
             
-1298             Case eOBJType.otRunas
+1296             Case eOBJType.otRunas
         
-1300                 If .Counters.Pena <> 0 Then
-1302                     Call WriteConsoleMsg(UserIndex, "No podes usar la runa estando en la carcel.", FontTypeNames.FONTTYPE_INFO)
-                         Exit Sub
+1298                 If .Counters.Pena <> 0 Then
+1300                     Call WriteConsoleMsg(UserIndex, "No podes usar la runa estando en la carcel.", FontTypeNames.FONTTYPE_INFO)
+                          Exit Sub
     
-                     End If
+                      End If
             
-1304                 If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = CARCEL Then
-1306                     Call WriteConsoleMsg(UserIndex, "No podes usar la runa estando en la carcel.", FontTypeNames.FONTTYPE_INFO)
-                         Exit Sub
+1302                 If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = CARCEL Then
+1304                     Call WriteConsoleMsg(UserIndex, "No podes usar la runa estando en la carcel.", FontTypeNames.FONTTYPE_INFO)
+                          Exit Sub
     
-                     End If
+                      End If
             
-1308                 If .flags.BattleModo = 1 Then
-1310                     Call WriteConsoleMsg(UserIndex, "No podes usarlo aquí.", FontTypeNames.FONTTYPE_WARNING)
-                         Exit Sub
+1306                 If .flags.BattleModo = 1 Then
+1308                     Call WriteConsoleMsg(UserIndex, "No podes usarlo aquí.", FontTypeNames.FONTTYPE_WARNING)
+                          Exit Sub
     
-                     End If
+                      End If
             
-1312                 If MapInfo(.Pos.Map).Seguro = 0 And .flags.Muerto = 0 Then
-1314                     Call WriteConsoleMsg(UserIndex, "Solo podes usar tu runa en zonas seguras.", FontTypeNames.FONTTYPE_INFO)
-                         Exit Sub
+1310                 If MapInfo(.Pos.Map).Seguro = 0 And .flags.Muerto = 0 Then
+1312                     Call WriteConsoleMsg(UserIndex, "Solo podes usar tu runa en zonas seguras.", FontTypeNames.FONTTYPE_INFO)
+                          Exit Sub
     
-                     End If
+                      End If
             
-1316                 If .Accion.AccionPendiente Then
-                         Exit Sub
+1314                 If .Accion.AccionPendiente Then
+                          Exit Sub
     
-                     End If
+                      End If
             
-1318                 Select Case ObjData(ObjIndex).TipoRuna
+1316                 Select Case ObjData(ObjIndex).TipoRuna
             
-                         Case 1, 2
+                          Case 1, 2
     
-1320                         If .donador.activo = 0 Then ' Donador no espera tiempo
-1322                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Runa, 400, False))
-1324                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.CharIndex, 350, Accion_Barra.Runa))
-                             Else
-1326                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Runa, 50, False))
-1328                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.CharIndex, 100, Accion_Barra.Runa))
+1318                         If .donador.activo = 0 Then ' Donador no espera tiempo
+1320                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Runa, 400, False))
+1322                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.CharIndex, 350, Accion_Barra.Runa))
+                              Else
+1324                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Runa, 50, False))
+1326                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.CharIndex, 100, Accion_Barra.Runa))
     
-                             End If
+                              End If
     
-1330                         .Accion.Particula = ParticulasIndex.Runa
-1332                         .Accion.AccionPendiente = True
-1334                         .Accion.TipoAccion = Accion_Barra.Runa
-1336                         .Accion.RunaObj = ObjIndex
-1338                         .Accion.ObjSlot = slot
+1328                         .Accion.Particula = ParticulasIndex.Runa
+1330                         .Accion.AccionPendiente = True
+1332                         .Accion.TipoAccion = Accion_Barra.Runa
+1334                         .Accion.RunaObj = ObjIndex
+1336                         .Accion.ObjSlot = slot
                 
-1340                     Case 3
+1338                     Case 3
             
-                             Dim parejaindex As Integer
+                              Dim parejaindex As Integer
     
-1342                         If Not .flags.BattleModo Then
+1340                         If Not .flags.BattleModo Then
                     
-                                 'If .donador.activo = 1 Then
-1344                             If MapInfo(.Pos.Map).Seguro = 1 Then
-1346                                 If .flags.Casado = 1 Then
-1348                                     parejaindex = NameIndex(.flags.Pareja)
+                                  'If .donador.activo = 1 Then
+1342                             If MapInfo(.Pos.Map).Seguro = 1 Then
+1344                                 If .flags.Casado = 1 Then
+1346                                     parejaindex = NameIndex(.flags.Pareja)
                             
-1350                                     If parejaindex > 0 Then
-1352                                         If UserList(parejaindex).flags.BattleModo = 0 Then
-1354                                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Runa, 600, False))
-1356                                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.CharIndex, 600, Accion_Barra.GoToPareja))
-1358                                             .Accion.AccionPendiente = True
-1360                                             .Accion.Particula = ParticulasIndex.Runa
-1362                                             .Accion.TipoAccion = Accion_Barra.GoToPareja
-                                             Else
-1364                                             Call WriteConsoleMsg(UserIndex, "Tu pareja esta en modo battle. No podés teletransportarte hacia ella.", FontTypeNames.FONTTYPE_INFOIAO)
+1348                                     If parejaindex > 0 Then
+1350                                         If UserList(parejaindex).flags.BattleModo = 0 Then
+1352                                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Runa, 600, False))
+1354                                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.CharIndex, 600, Accion_Barra.GoToPareja))
+1356                                             .Accion.AccionPendiente = True
+1358                                             .Accion.Particula = ParticulasIndex.Runa
+1360                                             .Accion.TipoAccion = Accion_Barra.GoToPareja
+                                              Else
+1362                                             Call WriteConsoleMsg(UserIndex, "Tu pareja esta en modo battle. No podés teletransportarte hacia ella.", FontTypeNames.FONTTYPE_INFOIAO)
     
-                                             End If
+                                              End If
                                     
-                                         Else
-1366                                         Call WriteConsoleMsg(UserIndex, "Tu pareja no esta online.", FontTypeNames.FONTTYPE_INFOIAO)
+                                          Else
+1364                                         Call WriteConsoleMsg(UserIndex, "Tu pareja no esta online.", FontTypeNames.FONTTYPE_INFOIAO)
     
-                                         End If
+                                          End If
     
-                                     Else
-1368                                     Call WriteConsoleMsg(UserIndex, "No estas casado con nadie.", FontTypeNames.FONTTYPE_INFOIAO)
+                                      Else
+1366                                     Call WriteConsoleMsg(UserIndex, "No estas casado con nadie.", FontTypeNames.FONTTYPE_INFOIAO)
     
-                                     End If
+                                      End If
     
-                                 Else
-1370                                 Call WriteConsoleMsg(UserIndex, "Solo disponible en zona segura.", FontTypeNames.FONTTYPE_INFOIAO)
+                                  Else
+1368                                 Call WriteConsoleMsg(UserIndex, "Solo disponible en zona segura.", FontTypeNames.FONTTYPE_INFOIAO)
     
-                                 End If
+                                  End If
                     
-                                 ' Else
-                                 '  Call WriteConsoleMsg(UserIndex, "Opcion disponible unicamente para usuarios donadores.", FontTypeNames.FONTTYPE_INFOIAO)
-                                 ' End If
-                             Else
-1372                             Call WriteConsoleMsg(UserIndex, "No podés usar esta opción en el battle.", FontTypeNames.FONTTYPE_INFOIAO)
+                                  ' Else
+                                  '  Call WriteConsoleMsg(UserIndex, "Opcion disponible unicamente para usuarios donadores.", FontTypeNames.FONTTYPE_INFOIAO)
+                                  ' End If
+                              Else
+1370                             Call WriteConsoleMsg(UserIndex, "No podés usar esta opción en el battle.", FontTypeNames.FONTTYPE_INFOIAO)
             
-                             End If
+                              End If
         
-                     End Select
+                      End Select
             
-1374             Case eOBJType.otmapa
-1376                 Call WriteShowFrmMapa(UserIndex)
+1372             Case eOBJType.otmapa
+1374                 Call WriteShowFrmMapa(UserIndex)
             
-             End Select
+              End Select
              
-        End With
+         End With
 
-        Exit Sub
+         Exit Sub
 
 hErr:
-1378    LogError "Error en useinvitem Usuario: " & UserList(UserIndex).name & " item:" & obj.name & " index: " & UserList(UserIndex).Invent.Object(slot).ObjIndex
+1376    LogError "Error en useinvitem Usuario: " & UserList(UserIndex).name & " item:" & obj.name & " index: " & UserList(UserIndex).Invent.Object(slot).ObjIndex
 
 End Sub
 
