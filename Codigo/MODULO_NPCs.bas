@@ -198,25 +198,25 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         
 184         Next i
             
+            If Npclist(NpcIndex).MaestroUser > 0 Then Exit Sub
+
+            'Tiramos el oro
+188         Call NPCTirarOro(MiNPC, UserIndex)
+
+190         Call DropObjQuest(MiNPC, UserIndex)
+    
+            'Item Magico!
+192         Call NpcDropeo(MiNPC, UserIndex)
+            
+            'Tiramos el inventario
+194         Call NPC_TIRAR_ITEMS(MiNPC)
+            
         End If ' UserIndex > 0
-    
-186     If Npclist(NpcIndex).MaestroUser > 0 Then Exit Sub
 
-        'Tiramos el oro
-188     Call NPCTirarOro(MiNPC, UserIndex)
-    
-    
-190     Call DropObjQuest(MiNPC, UserIndex)
-
-        'Item Magico!
-192     Call NpcDropeo(MiNPC, UserIndex)
-        
-        'Tiramos el inventario
-194     Call NPC_TIRAR_ITEMS(MiNPC)
         'ReSpawn o no
-
 196     If TiempoRespw = 0 Then
 198         Call ReSpawnNpc(MiNPC)
+
         Else
 
             Dim Indice As Integer
@@ -230,7 +230,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         Exit Sub
 
 ErrHandler:
-206     Call LogError("Error en MuereNpc - Error: " & Err.Number & " - Desc: " & Err.description)
+        Call RegistrarError(Err.Number, Err.description, "NPCs.MuereNpc", Erl())
 
 End Sub
 
@@ -1125,17 +1125,20 @@ Sub NPCTirarOro(MiNPC As npc, ByVal UserIndex As Integer)
             On Error GoTo NPCTirarOro_Err
 
 100         If MiNPC.GiveGLD > 0 Then
+
                 Dim Oro As Long
-102             Oro = MiNPC.GiveGLD * OroMult * UserList(UserIndex).flags.ScrollOro
+102                 Oro = MiNPC.GiveGLD * OroMult * UserList(UserIndex).flags.ScrollOro
         
 104             If UserList(UserIndex).Grupo.EnGrupo Then
-106                 Select Case UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
+106
+                    Select Case UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
                         Case 2: Oro = Oro * 1.2
 108                     Case 3: Oro = Oro * 1.4
 110                     Case 4: Oro = Oro * 1.6
 112                     Case 5: Oro = Oro * 1.8
 114                     Case 6: Oro = Oro * 2
                     End Select
+                    
                 End If
 
                 Dim MiObj As obj
