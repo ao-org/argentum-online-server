@@ -30676,15 +30676,29 @@ Private Sub HandleConsulta(ByVal UserIndex As String)
         ' Comando exclusivo para gms
         If Not EsGM(UserIndex) Then Exit Sub
         
-        UserConsulta = NameIndex(Nick)
+        If Len(Nick) <> 0 Then
+            UserConsulta = NameIndex(Nick)
+            
+            'Se asegura que el target exista
+            If UserConsulta <= 0 Then
+                Call WriteConsoleMsg(UserIndex, "El usuario se encuentra offline.", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+    
+            End If
+            
+        Else
         
-        'Se asegura que el target este online
-        If UserConsulta <= 0 Then
-            Call WriteConsoleMsg(UserIndex, "Primero tienes que seleccionar un usuario, haz click izquierdo sobre el.", FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-
+            UserConsulta = .flags.TargetUser
+            
+            'Se asegura que el target exista
+            If UserConsulta <= 0 Then
+                Call WriteConsoleMsg(UserIndex, "Primero tienes que seleccionar un usuario, haz click izquierdo sobre el.", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+    
+            End If
+            
         End If
-        
+
         ' No podes ponerte a vos mismo en modo consulta.
         If UserConsulta = UserIndex Then Exit Sub
         
