@@ -30657,6 +30657,12 @@ Private Sub HandleConsulta(ByVal UserIndex As String)
     '16/09/2010: ZaMa - No se hace visible en los clientes si estaba navegando (porque ya lo estaba).
     '***************************************************
     
+    If UserList(UserIndex).incomingData.Length < 4 Then
+        Call Err.raise(UserList(UserIndex).incomingData.NotEnoughDataErrCode)
+        Exit Sub
+
+    End If
+    
     Dim UserConsulta As Integer
     
     With UserList(UserIndex)
@@ -30721,9 +30727,9 @@ Private Sub HandleConsulta(ByVal UserIndex As String)
             ' Sino la inicia
         Else
         
-            Call WriteConsoleMsg(UserIndex, "Has iniciado el modo consulta con " & UserName & ".", FontTypeNames.FONTTYPE_INFOBOLD)
+            Call WriteConsoleMsg(UserIndex, "Has iniciado el modo consulta con " & Nick & ".", FontTypeNames.FONTTYPE_INFOBOLD)
             Call WriteConsoleMsg(UserConsulta, "Has iniciado el modo consulta.", FontTypeNames.FONTTYPE_INFOBOLD)
-            Call LogGM(.name, "Inicio consulta con " & UserName)
+            Call LogGM(.name, "Inicio consulta con " & Nick)
             
             With UserList(UserConsulta)
                 .flags.EnConsulta = True
@@ -30751,5 +30757,18 @@ Private Sub HandleConsulta(ByVal UserIndex As String)
         Call SetModoConsulta(UserConsulta)
 
     End With
+    
+    Exit Sub
+    
+ErrHandler:
+
+    Dim Error As Long: Error = Err.Number
+
+    On Error GoTo 0
+    
+    'Destroy auxiliar buffer
+    Set Buffer = Nothing
+    
+    If Error <> 0 Then Err.raise Error
 
 End Sub
