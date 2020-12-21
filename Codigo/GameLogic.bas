@@ -710,8 +710,7 @@ Function LegalPos(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, 
         Exit Function
 
 LegalPos_Err:
-118     Call RegistrarError(Err.Number, Err.description, "Extra.LegalPos", Erl)
-120     Resume Next
+        Call RegistrarError(Err.Number, Err.description, "Extra.LegalPos", Erl)
         
 End Function
 
