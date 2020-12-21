@@ -3085,8 +3085,8 @@ Private Function UserAtacable(ByVal UserIndex As Integer, _
         On Error GoTo UserAtacable_Err
         
 
-100     With UserList(UserIndex).flags
-102         UserAtacable = .AdminInvisible = 0 And .Muerto = 0
+100     With UserList(Userindex).flags
+102         UserAtacable = Not .EnConsulta And .AdminInvisible = 0 And .Muerto = 0
                        
 104         If CheckVisibility Then
 106             UserAtacable = UserAtacable And .Oculto = 0 And .invisible = 0

@@ -525,7 +525,8 @@ Private Enum NewPacksID
     SeguroClan
     CreatePretorianClan     '/CREARPRETORIANOS
     RemovePretorianClan     '/ELIMINARPRETORIANOS
-    Home
+    Home                    '/HOGAR
+    Consulta                '/CONSULTA
 End Enum
 
 Public Enum FontTypeNames
@@ -1682,6 +1683,9 @@ Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
 370         Case NewPacksID.Home
 372             Call HandleHome(UserIndex)
             
+            Case NewPacksID.Consulta
+                Call HandleConsulta(UserIndex)
+            
 374         Case Else
                 'ERROR : Abort!
 376             Call CloseSocket(UserIndex)
@@ -1728,12 +1732,12 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
         On Error GoTo ErrHandler
 
         'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-        Dim buffer As New clsByteQueue
+        Dim Buffer As New clsByteQueue
 
-104     Call buffer.CopyBuffer(UserList(UserIndex).incomingData)
+104     Call Buffer.CopyBuffer(UserList(UserIndex).incomingData)
     
         'Remove packet ID
-106     Call buffer.ReadByte
+106     Call Buffer.ReadByte
 
         Dim UserName    As String
 
@@ -1747,12 +1751,12 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
 
         Dim HDserial    As Long
 
-108     CuentaEmail = buffer.ReadASCIIString()
-110     Password = buffer.ReadASCIIString()
-112     Version = CStr(buffer.ReadByte()) & "." & CStr(buffer.ReadByte()) & "." & CStr(buffer.ReadByte())
-114     UserName = buffer.ReadASCIIString()
-116     MacAddress = buffer.ReadASCIIString()
-118     HDserial = buffer.ReadLong()
+108     CuentaEmail = Buffer.ReadASCIIString()
+110     Password = Buffer.ReadASCIIString()
+112     Version = CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte())
+114     UserName = Buffer.ReadASCIIString()
+116     MacAddress = Buffer.ReadASCIIString()
+118     HDserial = Buffer.ReadLong()
     
 120     If Not VersionOK(Version) Then
 122         Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
@@ -1830,7 +1834,7 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
 170     Call ConnectUser(UserIndex, UserName, CuentaEmail)
 
         'If we got here then packet is complete, copy data back to original queue
-172     Call UserList(UserIndex).incomingData.CopyBuffer(buffer)
+172     Call UserList(UserIndex).incomingData.CopyBuffer(Buffer)
     
 ErrHandler:
 
@@ -1841,7 +1845,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-176     Set buffer = Nothing
+176     Set Buffer = Nothing
     
 178     If Error <> 0 Then Err.raise Error
 
@@ -1866,12 +1870,12 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
         On Error GoTo ErrHandler
 
         'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-        Dim buffer As New clsByteQueue
+        Dim Buffer As New clsByteQueue
 
-104     Call buffer.CopyBuffer(UserList(UserIndex).incomingData)
+104     Call Buffer.CopyBuffer(UserList(UserIndex).incomingData)
     
         'Remove packet ID
-106     Call buffer.ReadByte
+106     Call Buffer.ReadByte
 
         Dim UserName As String
 
@@ -1912,17 +1916,17 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
             Exit Sub
         End If
     
-124     CuentaEmail = buffer.ReadASCIIString()
-126     Password = buffer.ReadASCIIString()
-128     Version = CStr(buffer.ReadByte()) & "." & CStr(buffer.ReadByte()) & "." & CStr(buffer.ReadByte())
-130     UserName = buffer.ReadASCIIString()
-132     race = buffer.ReadByte()
-134     gender = buffer.ReadByte()
-136     Class = buffer.ReadByte()
-138     Head = buffer.ReadInteger()
-140     Hogar = buffer.ReadByte()
-142     MacAddress = buffer.ReadASCIIString()
-144     HDserial = buffer.ReadLong()
+124     CuentaEmail = Buffer.ReadASCIIString()
+126     Password = Buffer.ReadASCIIString()
+128     Version = CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte())
+130     UserName = Buffer.ReadASCIIString()
+132     race = Buffer.ReadByte()
+134     gender = Buffer.ReadByte()
+136     Class = Buffer.ReadByte()
+138     Head = Buffer.ReadInteger()
+140     Hogar = Buffer.ReadByte()
+142     MacAddress = Buffer.ReadASCIIString()
+144     HDserial = Buffer.ReadLong()
     
 146     If Not VersionOK(Version) Then
 148         Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
@@ -1941,7 +1945,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
         End If
 
         'If we got here then packet is complete, copy data back to original queue
-158     Call UserList(UserIndex).incomingData.CopyBuffer(buffer)
+158     Call UserList(UserIndex).incomingData.CopyBuffer(Buffer)
     
 ErrHandler:
 
@@ -1952,7 +1956,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-162     Set buffer = Nothing
+162     Set Buffer = Nothing
     
 164     If Error <> 0 Then Err.raise Error
 
@@ -2009,16 +2013,16 @@ Private Sub HandleTalk(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
     
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
-106         Call buffer.CopyBuffer(.incomingData)
+            Dim Buffer As New clsByteQueue
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
-110         Dim chat As String: chat = buffer.ReadASCIIString()
+110         Dim chat As String: chat = Buffer.ReadASCIIString()
         
             'If we got here then packet is complete, copy data back to original queue
-112         Call .incomingData.CopyBuffer(buffer)
+112         Call .incomingData.CopyBuffer(Buffer)
         
             '[Consejeros & GMs]
 114         If .flags.Privilegios And (PlayerType.Consejero Or PlayerType.SemiDios) Then
@@ -2089,7 +2093,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-162     Set buffer = Nothing
+162     Set Buffer = Nothing
     
 164     If Error <> 0 Then Err.raise Error
 
@@ -2118,16 +2122,16 @@ Private Sub HandleYell(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
     
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim chat As String
         
-110         chat = buffer.ReadASCIIString()
+110         chat = Buffer.ReadASCIIString()
         
 112         If UserList(UserIndex).flags.Muerto = 1 Then
 114             Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
@@ -2192,7 +2196,7 @@ Private Sub HandleYell(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-158         Call .incomingData.CopyBuffer(buffer)
+158         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -2205,7 +2209,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-162     Set buffer = Nothing
+162     Set Buffer = Nothing
     
 164     If Error <> 0 Then Err.raise Error
 
@@ -2234,12 +2238,11 @@ Private Sub HandleWhisper(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
-
-106         Call buffer.CopyBuffer(.incomingData)
+            Dim Buffer As New clsByteQueue
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim chat            As String
 
@@ -2251,20 +2254,25 @@ Private Sub HandleWhisper(ByVal UserIndex As Integer)
         
 110         rank = UserList(UserIndex).flags.Privilegios
 
-112         targetCharIndex = buffer.ReadASCIIString()
-114         chat = buffer.ReadASCIIString()
-        
+112         targetCharIndex = Buffer.ReadASCIIString()
+114         chat = Buffer.ReadASCIIString()
+            
+            Call .incomingData.CopyBuffer(Buffer)
+            
 116         targetUserIndex = NameIndex(targetCharIndex)
 
 118         If targetUserIndex <= 0 Then 'existe el usuario destino?
 120             Call WriteConsoleMsg(UserIndex, "Usuario offline o inexistente.", FontTypeNames.FONTTYPE_INFO)
+
             Else
         
-122             If rank = 1 And (UserList(targetUserIndex).flags.Privilegios) > 1 Then
+122             If (UserList(UserIndex).flags.Privilegios And PlayerType.Admin) And (UserList(targetUserIndex).flags.Privilegios And PlayerType.Admin) Then
 124                 Call WriteConsoleMsg(UserIndex, "No podes hablar por privado con administradores del juego.", FontTypeNames.FONTTYPE_WARNING)
+
                 Else
 
 126                 If EstaPCarea(UserIndex, targetUserIndex) Then
+
 128                     If LenB(chat) <> 0 Then
                             'Analize chat...
 130                         Call Statistics.ParseChat(chat)
@@ -2285,14 +2293,11 @@ Private Sub HandleWhisper(ByVal UserIndex As Integer)
 142                     Call WriteConsoleMsg(targetUserIndex, "[" & .name & "] " & chat, FontTypeNames.FONTTYPE_MP)
 144                     Call WritePlayWave(targetUserIndex, FXSound.MP_SOUND, NO_3D_SOUND, NO_3D_SOUND)
                     
-                    
                     End If
 
                 End If
 
             End If
-
-146         Call .incomingData.CopyBuffer(buffer)
 
         End With
     
@@ -2305,7 +2310,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-150     Set buffer = Nothing
+150     Set Buffer = Nothing
     
 152     If Error <> 0 Then Err.raise Error
 
@@ -3439,7 +3444,13 @@ Private Sub HandleWork(ByVal UserIndex As Integer)
                         Exit Sub
 
                     End If
-
+                    
+                    If .flags.EnConsulta Then
+                        Call WriteConsoleMsg(UserIndex, "No puedes ocultarte si estas en consulta.", FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+    
+                    End If
+                    
 156                 Call DoOcultarse(UserIndex)
 
             End Select
@@ -4662,12 +4673,12 @@ Private Sub HandleCreateNewGuild(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim Desc       As String
 
@@ -4677,9 +4688,9 @@ Private Sub HandleCreateNewGuild(ByVal UserIndex As Integer)
 
             Dim Alineacion As Byte
         
-110         Desc = buffer.ReadASCIIString()
-112         GuildName = buffer.ReadASCIIString()
-114         Alineacion = buffer.ReadByte()
+110         Desc = Buffer.ReadASCIIString()
+112         GuildName = Buffer.ReadASCIIString()
+114         Alineacion = Buffer.ReadByte()
         
 116         If modGuilds.CrearNuevoClan(UserIndex, Desc, GuildName, Alineacion, errorStr) Then
 
@@ -4698,7 +4709,7 @@ Private Sub HandleCreateNewGuild(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-134         Call .incomingData.CopyBuffer(buffer)
+134         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -4711,7 +4722,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-138     Set buffer = Nothing
+138     Set Buffer = Nothing
     
 140     If Error <> 0 Then Err.raise Error
 
@@ -5317,12 +5328,12 @@ Private Sub HandleForumPost(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim File     As String
 
@@ -5338,8 +5349,8 @@ Private Sub HandleForumPost(ByVal UserIndex As Integer)
 
             Dim Count    As Integer
         
-110         title = buffer.ReadASCIIString()
-112         msg = buffer.ReadASCIIString()
+110         title = Buffer.ReadASCIIString()
+112         msg = Buffer.ReadASCIIString()
         
 114         If .flags.TargetObj > 0 Then
 116             File = App.Path & "\foros\" & UCase$(ObjData(.flags.TargetObj).ForoID) & ".for"
@@ -5380,7 +5391,7 @@ Private Sub HandleForumPost(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-150         Call .incomingData.CopyBuffer(buffer)
+150         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -5393,7 +5404,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-154     Set buffer = Nothing
+154     Set Buffer = Nothing
     
 156     If Error <> 0 Then Err.raise Error
 
@@ -5469,21 +5480,21 @@ Private Sub HandleClanCodexUpdate(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim Desc As String
         
-110         Desc = buffer.ReadASCIIString()
+110         Desc = Buffer.ReadASCIIString()
         
 112         Call modGuilds.ChangeCodexAndDesc(Desc, .GuildIndex)
         
             'If we got here then packet is complete, copy data back to original queue
-114         Call .incomingData.CopyBuffer(buffer)
+114         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -5496,7 +5507,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-118     Set buffer = Nothing
+118     Set Buffer = Nothing
     
 120     If Error <> 0 Then Err.raise Error
 
@@ -5660,12 +5671,12 @@ Private Sub HandleGuildAcceptPeace(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim guild          As String
 
@@ -5673,7 +5684,7 @@ Private Sub HandleGuildAcceptPeace(ByVal UserIndex As Integer)
 
             Dim otherClanIndex As String
         
-110         guild = buffer.ReadASCIIString()
+110         guild = Buffer.ReadASCIIString()
         
 112         otherClanIndex = modGuilds.r_AceptarPropuestaDePaz(UserIndex, guild, errorStr)
         
@@ -5686,7 +5697,7 @@ Private Sub HandleGuildAcceptPeace(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-122         Call .incomingData.CopyBuffer(buffer)
+122         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -5699,7 +5710,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-126     Set buffer = Nothing
+126     Set Buffer = Nothing
     
 128     If Error <> 0 Then Err.raise Error
 
@@ -5728,12 +5739,12 @@ Private Sub HandleGuildRejectAlliance(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim guild          As String
 
@@ -5741,7 +5752,7 @@ Private Sub HandleGuildRejectAlliance(ByVal UserIndex As Integer)
 
             Dim otherClanIndex As String
         
-110         guild = buffer.ReadASCIIString()
+110         guild = Buffer.ReadASCIIString()
         
 112         otherClanIndex = modGuilds.r_RechazarPropuestaDeAlianza(UserIndex, guild, errorStr)
         
@@ -5754,7 +5765,7 @@ Private Sub HandleGuildRejectAlliance(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-122         Call .incomingData.CopyBuffer(buffer)
+122         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -5767,7 +5778,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-126     Set buffer = Nothing
+126     Set Buffer = Nothing
     
 128     If Error <> 0 Then Err.raise Error
 
@@ -5796,12 +5807,12 @@ Private Sub HandleGuildRejectPeace(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim guild          As String
 
@@ -5809,7 +5820,7 @@ Private Sub HandleGuildRejectPeace(ByVal UserIndex As Integer)
 
             Dim otherClanIndex As String
         
-110         guild = buffer.ReadASCIIString()
+110         guild = Buffer.ReadASCIIString()
         
 112         otherClanIndex = modGuilds.r_RechazarPropuestaDePaz(UserIndex, guild, errorStr)
         
@@ -5822,7 +5833,7 @@ Private Sub HandleGuildRejectPeace(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-122         Call .incomingData.CopyBuffer(buffer)
+122         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -5835,7 +5846,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-126     Set buffer = Nothing
+126     Set Buffer = Nothing
     
 128     If Error <> 0 Then Err.raise Error
 
@@ -5864,12 +5875,12 @@ Private Sub HandleGuildAcceptAlliance(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim guild          As String
 
@@ -5877,7 +5888,7 @@ Private Sub HandleGuildAcceptAlliance(ByVal UserIndex As Integer)
 
             Dim otherClanIndex As String
         
-110         guild = buffer.ReadASCIIString()
+110         guild = Buffer.ReadASCIIString()
         
 112         otherClanIndex = modGuilds.r_AceptarPropuestaDeAlianza(UserIndex, guild, errorStr)
         
@@ -5890,7 +5901,7 @@ Private Sub HandleGuildAcceptAlliance(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-122         Call .incomingData.CopyBuffer(buffer)
+122         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -5903,7 +5914,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-126     Set buffer = Nothing
+126     Set Buffer = Nothing
     
 128     If Error <> 0 Then Err.raise Error
 
@@ -5932,12 +5943,12 @@ Private Sub HandleGuildOfferPeace(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim guild    As String
 
@@ -5945,8 +5956,8 @@ Private Sub HandleGuildOfferPeace(ByVal UserIndex As Integer)
 
             Dim errorStr As String
         
-110         guild = buffer.ReadASCIIString()
-112         proposal = buffer.ReadASCIIString()
+110         guild = Buffer.ReadASCIIString()
+112         proposal = Buffer.ReadASCIIString()
         
 114         If modGuilds.r_ClanGeneraPropuesta(UserIndex, guild, RELACIONES_GUILD.PAZ, proposal, errorStr) Then
 116             Call WriteConsoleMsg(UserIndex, "Propuesta de paz enviada", FontTypeNames.FONTTYPE_GUILD)
@@ -5956,7 +5967,7 @@ Private Sub HandleGuildOfferPeace(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-120         Call .incomingData.CopyBuffer(buffer)
+120         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -5969,7 +5980,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-124     Set buffer = Nothing
+124     Set Buffer = Nothing
     
 126     If Error <> 0 Then Err.raise Error
 
@@ -5998,12 +6009,12 @@ Private Sub HandleGuildOfferAlliance(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim guild    As String
 
@@ -6011,8 +6022,8 @@ Private Sub HandleGuildOfferAlliance(ByVal UserIndex As Integer)
 
             Dim errorStr As String
         
-110         guild = buffer.ReadASCIIString()
-112         proposal = buffer.ReadASCIIString()
+110         guild = Buffer.ReadASCIIString()
+112         proposal = Buffer.ReadASCIIString()
         
 114         If modGuilds.r_ClanGeneraPropuesta(UserIndex, guild, RELACIONES_GUILD.ALIADOS, proposal, errorStr) Then
 116             Call WriteConsoleMsg(UserIndex, "Propuesta de alianza enviada", FontTypeNames.FONTTYPE_GUILD)
@@ -6022,7 +6033,7 @@ Private Sub HandleGuildOfferAlliance(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-120         Call .incomingData.CopyBuffer(buffer)
+120         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -6035,7 +6046,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-124     Set buffer = Nothing
+124     Set Buffer = Nothing
     
 126     If Error <> 0 Then Err.raise Error
 
@@ -6064,12 +6075,12 @@ Private Sub HandleGuildAllianceDetails(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim guild    As String
 
@@ -6077,7 +6088,7 @@ Private Sub HandleGuildAllianceDetails(ByVal UserIndex As Integer)
 
             Dim details  As String
         
-110         guild = buffer.ReadASCIIString()
+110         guild = Buffer.ReadASCIIString()
         
 112         details = modGuilds.r_VerPropuesta(UserIndex, guild, RELACIONES_GUILD.ALIADOS, errorStr)
         
@@ -6089,7 +6100,7 @@ Private Sub HandleGuildAllianceDetails(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-120         Call .incomingData.CopyBuffer(buffer)
+120         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -6102,7 +6113,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-124     Set buffer = Nothing
+124     Set Buffer = Nothing
     
 126     If Error <> 0 Then Err.raise Error
 
@@ -6131,12 +6142,12 @@ Private Sub HandleGuildPeaceDetails(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim guild    As String
 
@@ -6144,7 +6155,7 @@ Private Sub HandleGuildPeaceDetails(ByVal UserIndex As Integer)
 
             Dim details  As String
         
-110         guild = buffer.ReadASCIIString()
+110         guild = Buffer.ReadASCIIString()
         
 112         details = modGuilds.r_VerPropuesta(UserIndex, guild, RELACIONES_GUILD.PAZ, errorStr)
         
@@ -6156,7 +6167,7 @@ Private Sub HandleGuildPeaceDetails(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-120         Call .incomingData.CopyBuffer(buffer)
+120         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -6169,7 +6180,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-124     Set buffer = Nothing
+124     Set Buffer = Nothing
     
 126     If Error <> 0 Then Err.raise Error
 
@@ -6198,18 +6209,18 @@ Private Sub HandleGuildRequestJoinerInfo(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim user    As String
 
             Dim details As String
         
-110         user = buffer.ReadASCIIString()
+110         user = Buffer.ReadASCIIString()
         
 112         details = modGuilds.a_DetallesAspirante(UserIndex, user)
         
@@ -6221,7 +6232,7 @@ Private Sub HandleGuildRequestJoinerInfo(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-120         Call .incomingData.CopyBuffer(buffer)
+120         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -6234,7 +6245,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-124     Set buffer = Nothing
+124     Set Buffer = Nothing
     
 126     If Error <> 0 Then Err.raise Error
 
@@ -6319,12 +6330,12 @@ Private Sub HandleGuildDeclareWar(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim guild           As String
 
@@ -6332,7 +6343,7 @@ Private Sub HandleGuildDeclareWar(ByVal UserIndex As Integer)
 
             Dim otherGuildIndex As Integer
         
-110         guild = buffer.ReadASCIIString()
+110         guild = Buffer.ReadASCIIString()
         
 112         otherGuildIndex = modGuilds.r_DeclararGuerra(UserIndex, guild, errorStr)
         
@@ -6348,7 +6359,7 @@ Private Sub HandleGuildDeclareWar(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-126         Call .incomingData.CopyBuffer(buffer)
+126         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -6361,7 +6372,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-130     Set buffer = Nothing
+130     Set Buffer = Nothing
     
 132     If Error <> 0 Then Err.raise Error
 
@@ -6390,17 +6401,17 @@ Private Sub HandleGuildNewWebsite(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
-110         Call modGuilds.ActualizarWebSite(UserIndex, buffer.ReadASCIIString())
+110         Call modGuilds.ActualizarWebSite(UserIndex, Buffer.ReadASCIIString())
         
             'If we got here then packet is complete, copy data back to original queue
-112         Call .incomingData.CopyBuffer(buffer)
+112         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -6413,7 +6424,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-116     Set buffer = Nothing
+116     Set Buffer = Nothing
     
 118     If Error <> 0 Then Err.raise Error
 
@@ -6442,12 +6453,12 @@ Private Sub HandleGuildAcceptNewMember(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim errorStr As String
 
@@ -6455,7 +6466,7 @@ Private Sub HandleGuildAcceptNewMember(ByVal UserIndex As Integer)
 
             Dim tUser    As Integer
         
-110         UserName = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
         
 112         If Not modGuilds.a_AceptarAspirante(UserIndex, UserName, errorStr) Then
 114             Call WriteConsoleMsg(UserIndex, errorStr, FontTypeNames.FONTTYPE_GUILD)
@@ -6474,7 +6485,7 @@ Private Sub HandleGuildAcceptNewMember(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-128         Call .incomingData.CopyBuffer(buffer)
+128         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -6487,7 +6498,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-132     Set buffer = Nothing
+132     Set Buffer = Nothing
     
 134     If Error <> 0 Then Err.raise Error
 
@@ -6517,12 +6528,12 @@ Private Sub HandleGuildRejectNewMember(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim errorStr As String
 
@@ -6532,8 +6543,8 @@ Private Sub HandleGuildRejectNewMember(ByVal UserIndex As Integer)
 
             Dim tUser    As Integer
         
-110         UserName = buffer.ReadASCIIString()
-112         Reason = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
+112         Reason = Buffer.ReadASCIIString()
         
 114         If Not modGuilds.a_RechazarAspirante(UserIndex, UserName, errorStr) Then
 116             Call WriteConsoleMsg(UserIndex, errorStr, FontTypeNames.FONTTYPE_GUILD)
@@ -6551,7 +6562,7 @@ Private Sub HandleGuildRejectNewMember(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-126         Call .incomingData.CopyBuffer(buffer)
+126         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -6564,7 +6575,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-130     Set buffer = Nothing
+130     Set Buffer = Nothing
     
 132     If Error <> 0 Then Err.raise Error
 
@@ -6593,18 +6604,18 @@ Private Sub HandleGuildKickMember(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName   As String
 
             Dim GuildIndex As Integer
         
-110         UserName = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
         
 112         GuildIndex = modGuilds.m_EcharMiembroDeClan(UserIndex, UserName)
         
@@ -6617,7 +6628,7 @@ Private Sub HandleGuildKickMember(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-122         Call .incomingData.CopyBuffer(buffer)
+122         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -6630,7 +6641,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-126     Set buffer = Nothing
+126     Set Buffer = Nothing
     
 128     If Error <> 0 Then Err.raise Error
 
@@ -6659,17 +6670,17 @@ Private Sub HandleGuildUpdateNews(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
-110         Call modGuilds.ActualizarNoticias(UserIndex, buffer.ReadASCIIString())
+110         Call modGuilds.ActualizarNoticias(UserIndex, Buffer.ReadASCIIString())
         
             'If we got here then packet is complete, copy data back to original queue
-112         Call .incomingData.CopyBuffer(buffer)
+112         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -6682,7 +6693,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-116     Set buffer = Nothing
+116     Set Buffer = Nothing
     
 118     If Error <> 0 Then Err.raise Error
 
@@ -6711,17 +6722,17 @@ Private Sub HandleGuildMemberInfo(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
-110         Call modGuilds.SendDetallesPersonaje(UserIndex, buffer.ReadASCIIString())
+110         Call modGuilds.SendDetallesPersonaje(UserIndex, Buffer.ReadASCIIString())
         
             'If we got here then packet is complete, copy data back to original queue
-112         Call .incomingData.CopyBuffer(buffer)
+112         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -6734,7 +6745,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-116     Set buffer = Nothing
+116     Set Buffer = Nothing
     
 118     If Error <> 0 Then Err.raise Error
 
@@ -6802,12 +6813,12 @@ Private Sub HandleGuildRequestMembership(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim guild       As String
 
@@ -6815,8 +6826,8 @@ Private Sub HandleGuildRequestMembership(ByVal UserIndex As Integer)
 
             Dim errorStr    As String
         
-110         guild = buffer.ReadASCIIString()
-112         application = buffer.ReadASCIIString()
+110         guild = Buffer.ReadASCIIString()
+112         application = Buffer.ReadASCIIString()
         
 114         If Not modGuilds.a_NuevoAspirante(UserIndex, guild, application, errorStr) Then
 116             Call WriteConsoleMsg(UserIndex, errorStr, FontTypeNames.FONTTYPE_GUILD)
@@ -6826,7 +6837,7 @@ Private Sub HandleGuildRequestMembership(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-120         Call .incomingData.CopyBuffer(buffer)
+120         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -6839,7 +6850,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-124     Set buffer = Nothing
+124     Set Buffer = Nothing
     
 126     If Error <> 0 Then Err.raise Error
 
@@ -6868,17 +6879,17 @@ Private Sub HandleGuildRequestDetails(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
-110         Call modGuilds.SendGuildDetails(UserIndex, buffer.ReadASCIIString())
+110         Call modGuilds.SendGuildDetails(UserIndex, Buffer.ReadASCIIString())
         
             'If we got here then packet is complete, copy data back to original queue
-112         Call .incomingData.CopyBuffer(buffer)
+112         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -6891,7 +6902,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-116     Set buffer = Nothing
+116     Set Buffer = Nothing
     
 118     If Error <> 0 Then Err.raise Error
 
@@ -7351,16 +7362,16 @@ Private Sub HandleGrupoMsg(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim chat As String
         
-110         chat = buffer.ReadASCIIString()
+110         chat = Buffer.ReadASCIIString()
         
 112         If LenB(chat) <> 0 Then
                 'Analize chat...
@@ -7387,7 +7398,7 @@ Private Sub HandleGrupoMsg(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-128         Call .incomingData.CopyBuffer(buffer)
+128         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -7400,7 +7411,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-132     Set buffer = Nothing
+132     Set Buffer = Nothing
     
 134     If Error <> 0 Then Err.raise Error
 
@@ -8285,16 +8296,16 @@ Private Sub HandleGuildMessage(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim chat As String
         
-110         chat = buffer.ReadASCIIString()
+110         chat = Buffer.ReadASCIIString()
         
 112         If LenB(chat) <> 0 Then
                 'Analize chat...
@@ -8310,7 +8321,7 @@ Private Sub HandleGuildMessage(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-120         Call .incomingData.CopyBuffer(buffer)
+120         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -8323,7 +8334,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-124     Set buffer = Nothing
+124     Set Buffer = Nothing
     
 126     If Error <> 0 Then Err.raise Error
 
@@ -8431,16 +8442,16 @@ Private Sub HandleCouncilMessage(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim chat As String
         
-110         chat = buffer.ReadASCIIString()
+110         chat = Buffer.ReadASCIIString()
         
 112         If LenB(chat) <> 0 Then
                 'Analize chat...
@@ -8456,7 +8467,7 @@ Private Sub HandleCouncilMessage(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-124         Call .incomingData.CopyBuffer(buffer)
+124         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -8469,7 +8480,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-128     Set buffer = Nothing
+128     Set Buffer = Nothing
     
 130     If Error <> 0 Then Err.raise Error
 
@@ -8498,16 +8509,16 @@ Private Sub HandleRoleMasterRequest(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim request As String
         
-110         request = buffer.ReadASCIIString()
+110         request = Buffer.ReadASCIIString()
         
 112         If LenB(request) <> 0 Then
 114             Call WriteConsoleMsg(UserIndex, "Su solicitud ha sido enviada", FontTypeNames.FONTTYPE_INFO)
@@ -8516,7 +8527,7 @@ Private Sub HandleRoleMasterRequest(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-118         Call .incomingData.CopyBuffer(buffer)
+118         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -8529,7 +8540,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-122     Set buffer = Nothing
+122     Set Buffer = Nothing
     
 124     If Error <> 0 Then Err.raise Error
 
@@ -8598,16 +8609,16 @@ Private Sub HandleChangeDescription(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim description As String
         
-110         description = buffer.ReadASCIIString()
+110         description = Buffer.ReadASCIIString()
         
 112         If .flags.Muerto = 1 Then
 114             Call WriteConsoleMsg(UserIndex, "No podés cambiar la descripción estando muerto.", FontTypeNames.FONTTYPE_INFOIAO)
@@ -8626,7 +8637,7 @@ Private Sub HandleChangeDescription(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-128         Call .incomingData.CopyBuffer(buffer)
+128         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -8639,7 +8650,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-132     Set buffer = Nothing
+132     Set Buffer = Nothing
     
 134     If Error <> 0 Then Err.raise Error
 
@@ -8668,18 +8679,18 @@ Private Sub HandleGuildVote(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim vote     As String
 
             Dim errorStr As String
         
-110         vote = buffer.ReadASCIIString()
+110         vote = Buffer.ReadASCIIString()
         
 112         If Not modGuilds.v_UsuarioVota(UserIndex, vote, errorStr) Then
 114             Call WriteConsoleMsg(UserIndex, "Voto NO contabilizado: " & errorStr, FontTypeNames.FONTTYPE_GUILD)
@@ -8689,7 +8700,7 @@ Private Sub HandleGuildVote(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-118         Call .incomingData.CopyBuffer(buffer)
+118         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -8702,7 +8713,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-122     Set buffer = Nothing
+122     Set Buffer = Nothing
     
 124     If Error <> 0 Then Err.raise Error
 
@@ -8731,18 +8742,18 @@ Private Sub HandlePunishments(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim name  As String
 
             Dim Count As Integer
         
-110         name = buffer.ReadASCIIString()
+110         name = Buffer.ReadASCIIString()
         
 112         If LenB(name) <> 0 Then
 114             If (InStrB(name, "\") <> 0) Then
@@ -8797,7 +8808,7 @@ Private Sub HandlePunishments(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-154         Call .incomingData.CopyBuffer(buffer)
+154         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -8810,7 +8821,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-158     Set buffer = Nothing
+158     Set Buffer = Nothing
     
 160     If Error <> 0 Then Err.raise Error
 
@@ -8840,9 +8851,9 @@ Private Sub HandleChangePassword(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             Dim oldPass  As String
 
@@ -8851,10 +8862,10 @@ Private Sub HandleChangePassword(ByVal UserIndex As Integer)
             Dim oldPass2 As String
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
-110         oldPass = buffer.ReadASCIIString()
-112         newPass = buffer.ReadASCIIString()
+110         oldPass = Buffer.ReadASCIIString()
+112         newPass = Buffer.ReadASCIIString()
 
 114         If Database_Enabled Then
 116             Call ChangePasswordDatabase(UserIndex, SDesencriptar(oldPass), SDesencriptar(newPass))
@@ -8879,7 +8890,7 @@ Private Sub HandleChangePassword(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-132         Call .incomingData.CopyBuffer(buffer)
+132         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -8892,7 +8903,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-136     Set buffer = Nothing
+136     Set Buffer = Nothing
     
 138     If Error <> 0 Then Err.raise Error
 
@@ -9331,12 +9342,12 @@ Private Sub HandleGuildMemberList(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim guild       As String
 
@@ -9346,7 +9357,7 @@ Private Sub HandleGuildMemberList(ByVal UserIndex As Integer)
 
             Dim UserName    As String
         
-110         guild = buffer.ReadASCIIString()
+110         guild = Buffer.ReadASCIIString()
         
 112         If .flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios) Then
 114             If (InStrB(guild, "\") <> 0) Then
@@ -9375,7 +9386,7 @@ Private Sub HandleGuildMemberList(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-136         Call .incomingData.CopyBuffer(buffer)
+136         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -9388,7 +9399,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-140     Set buffer = Nothing
+140     Set Buffer = Nothing
     
 142     If Error <> 0 Then Err.raise Error
 
@@ -9417,16 +9428,16 @@ Private Sub HandleGMMessage(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim message As String
         
-110         message = buffer.ReadASCIIString()
+110         message = Buffer.ReadASCIIString()
         
 112         If Not .flags.Privilegios And PlayerType.user Then
 114             Call LogGM(.name, "Mensaje a Gms:" & message)
@@ -9442,7 +9453,7 @@ Private Sub HandleGMMessage(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-122         Call .incomingData.CopyBuffer(buffer)
+122         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -9455,7 +9466,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-126     Set buffer = Nothing
+126     Set Buffer = Nothing
     
 128     If Error <> 0 Then Err.raise Error
 
@@ -9637,16 +9648,16 @@ Private Sub HandleGoNearby(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName As String
         
-110         UserName = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
         
             Dim tIndex As Integer
 
@@ -9704,7 +9715,7 @@ Private Sub HandleGoNearby(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-150         Call .incomingData.CopyBuffer(buffer)
+150         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -9717,7 +9728,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-154     Set buffer = Nothing
+154     Set Buffer = Nothing
     
 156     If Error <> 0 Then Err.raise Error
 
@@ -9746,16 +9757,16 @@ Private Sub HandleComment(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim comment As String
 
-110         comment = buffer.ReadASCIIString()
+110         comment = Buffer.ReadASCIIString()
         
 112         If Not .flags.Privilegios And PlayerType.user Then
 114             Call LogGM(.name, "Comentario: " & comment)
@@ -9764,7 +9775,7 @@ Private Sub HandleComment(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-118         Call .incomingData.CopyBuffer(buffer)
+118         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -9777,7 +9788,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-122     Set buffer = Nothing
+122     Set Buffer = Nothing
     
 124     If Error <> 0 Then Err.raise Error
 
@@ -9842,18 +9853,18 @@ Private Sub HandleWhere(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName As String
 
             Dim tUser    As Integer
         
-110         UserName = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
         
 112         If Not .flags.Privilegios And PlayerType.user Then
 114             tUser = NameIndex(UserName)
@@ -9873,7 +9884,7 @@ Private Sub HandleWhere(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-126         Call .incomingData.CopyBuffer(buffer)
+126         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -9886,7 +9897,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-130     Set buffer = Nothing
+130     Set Buffer = Nothing
     
 132     If Error <> 0 Then Err.raise Error
 
@@ -10109,11 +10120,11 @@ Private Sub HandleWarpChar(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
-106         Call buffer.CopyBuffer(.incomingData)
+            Dim Buffer As New clsByteQueue
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName As String
             Dim Map      As Integer
@@ -10121,13 +10132,13 @@ Private Sub HandleWarpChar(ByVal UserIndex As Integer)
             Dim Y        As Byte
             Dim tUser    As Integer
         
-110         UserName = buffer.ReadASCIIString()
-112         Map = buffer.ReadInteger()
-114         X = buffer.ReadByte()
-116         Y = buffer.ReadByte()
+110         UserName = Buffer.ReadASCIIString()
+112         Map = Buffer.ReadInteger()
+114         X = Buffer.ReadByte()
+116         Y = Buffer.ReadByte()
 
             'If we got here then packet is complete, copy data back to original queue
-            Call .incomingData.CopyBuffer(buffer)
+            Call .incomingData.CopyBuffer(Buffer)
             
 118         If Not EsGM(UserIndex) Then Exit Sub
             
@@ -10174,7 +10185,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-148     Set buffer = Nothing
+148     Set Buffer = Nothing
     
 150     If Error <> 0 Then Err.raise Error
 
@@ -10203,18 +10214,18 @@ Private Sub HandleSilence(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName As String
 
             Dim tUser    As Integer
         
-110         UserName = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
         
 112         If Not .flags.Privilegios And PlayerType.user Then
 114             tUser = NameIndex(UserName)
@@ -10243,7 +10254,7 @@ Private Sub HandleSilence(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-136         Call .incomingData.CopyBuffer(buffer)
+136         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -10256,7 +10267,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-140     Set buffer = Nothing
+140     Set Buffer = Nothing
     
 142     If Error <> 0 Then Err.raise Error
 
@@ -10318,21 +10329,21 @@ Private Sub HandleSOSRemove(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName As String
 
-110         UserName = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
         
 112         If Not .flags.Privilegios And PlayerType.user Then Call Ayuda.Quitar(UserName)
         
             'If we got here then packet is complete, copy data back to original queue
-114         Call .incomingData.CopyBuffer(buffer)
+114         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -10345,7 +10356,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-118     Set buffer = Nothing
+118     Set Buffer = Nothing
     
 120     If Error <> 0 Then Err.raise Error
 
@@ -10374,12 +10385,12 @@ Private Sub HandleGoToChar(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName As String
 
@@ -10389,7 +10400,7 @@ Private Sub HandleGoToChar(ByVal UserIndex As Integer)
 
             Dim Y        As Byte
         
-110         UserName = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
 112         tUser = NameIndex(UserName)
         
 114         If .flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin Or PlayerType.SemiDios Or PlayerType.Consejero) Then
@@ -10421,7 +10432,7 @@ Private Sub HandleGoToChar(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-136         Call .incomingData.CopyBuffer(buffer)
+136         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -10434,7 +10445,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-140     Set buffer = Nothing
+140     Set Buffer = Nothing
     
 142     If Error <> 0 Then Err.raise Error
 
@@ -10454,16 +10465,16 @@ Private Sub HandleDesbuggear(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName As String, tUser As Integer, i As Long, Count As Long
         
-110         UserName = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
         
 112         If .flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin Or PlayerType.SemiDios Or PlayerType.Consejero) Then
 114             If Len(UserName) > 0 Then
@@ -10533,7 +10544,7 @@ Private Sub HandleDesbuggear(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-168         Call .incomingData.CopyBuffer(buffer)
+168         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -10546,7 +10557,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-172     Set buffer = Nothing
+172     Set Buffer = Nothing
     
 174     If Error <> 0 Then Err.raise Error
 
@@ -10565,17 +10576,17 @@ Private Sub HandleDarLlaveAUsuario(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName As String, tUser As Integer, Llave As Integer
         
-110         UserName = buffer.ReadASCIIString()
-112         Llave = buffer.ReadInteger()
+110         UserName = Buffer.ReadASCIIString()
+112         Llave = Buffer.ReadInteger()
         
             ' Solo dios o admin
 114         If .flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin) Then
@@ -10623,7 +10634,7 @@ Private Sub HandleDarLlaveAUsuario(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-154         Call .incomingData.CopyBuffer(buffer)
+154         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -10636,7 +10647,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-158     Set buffer = Nothing
+158     Set Buffer = Nothing
     
 160     If Error <> 0 Then Err.raise Error
 
@@ -11011,12 +11022,12 @@ Private Sub HandleJail(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName As String
 
@@ -11028,9 +11039,9 @@ Private Sub HandleJail(ByVal UserIndex As Integer)
 
             Dim tUser    As Integer
         
-110         UserName = buffer.ReadASCIIString()
-112         Reason = buffer.ReadASCIIString()
-114         jailTime = buffer.ReadByte()
+110         UserName = Buffer.ReadASCIIString()
+112         Reason = Buffer.ReadASCIIString()
+114         jailTime = Buffer.ReadByte()
         
 116         If InStr(1, UserName, "+") Then
 118             UserName = Replace(UserName, "+", " ")
@@ -11089,7 +11100,7 @@ Private Sub HandleJail(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-164         Call .incomingData.CopyBuffer(buffer)
+164         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -11102,7 +11113,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-168     Set buffer = Nothing
+168     Set Buffer = Nothing
     
 170     If Error <> 0 Then Err.raise Error
 
@@ -11192,12 +11203,12 @@ Private Sub HandleWarnUser(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName As String
 
@@ -11207,8 +11218,8 @@ Private Sub HandleWarnUser(ByVal UserIndex As Integer)
 
             Dim Count    As Byte
         
-110         UserName = buffer.ReadASCIIString()
-112         Reason = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
+112         Reason = Buffer.ReadASCIIString()
         
 114         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (Not .flags.Privilegios And PlayerType.user) <> 0 Then
 116             If LenB(UserName) = 0 Or LenB(Reason) = 0 Then
@@ -11252,7 +11263,7 @@ Private Sub HandleWarnUser(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-150         Call .incomingData.CopyBuffer(buffer)
+150         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -11265,7 +11276,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-154     Set buffer = Nothing
+154     Set Buffer = Nothing
     
 156     If Error <> 0 Then Err.raise Error
 
@@ -11289,12 +11300,12 @@ Private Sub HandleMensajeUser(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadInteger
+108         Call Buffer.ReadInteger
         
             Dim UserName As String
 
@@ -11306,8 +11317,8 @@ Private Sub HandleMensajeUser(ByVal UserIndex As Integer)
 
             Dim tUser    As Integer
         
-110         UserName = buffer.ReadASCIIString()
-112         Mensaje = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
+112         Mensaje = Buffer.ReadASCIIString()
         
 114         tUser = NameIndex(UserName)
         
@@ -11347,7 +11358,7 @@ Private Sub HandleMensajeUser(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-134         Call .incomingData.CopyBuffer(buffer)
+134         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -11360,7 +11371,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-138     Set buffer = Nothing
+138     Set Buffer = Nothing
     
 140     If Error <> 0 Then Err.raise Error
 
@@ -11388,17 +11399,17 @@ Private Sub HandleTraerBoveda(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadInteger
+108         Call Buffer.ReadInteger
 110         Call UpdateUserHechizos(True, UserIndex, 0)
        
 112         Call UpdateUserInv(True, UserIndex, 0)
             'If we got here then packet is complete, copy data back to original queue
-114         Call .incomingData.CopyBuffer(buffer)
+114         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -11411,7 +11422,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-118     Set buffer = Nothing
+118     Set Buffer = Nothing
     
 120     If Error <> 0 Then Err.raise Error
 
@@ -11435,12 +11446,12 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName      As String
             Dim tUser         As Integer
@@ -11455,7 +11466,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
             Dim commandString As String
             Dim n             As Byte
         
-110         UserName = Replace(buffer.ReadASCIIString(), "+", " ")
+110         UserName = Replace(Buffer.ReadASCIIString(), "+", " ")
         
 112         If UCase$(UserName) = "YO" Then
 114             tUser = UserIndex
@@ -11465,12 +11476,12 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 
             End If
         
-118         opcion = buffer.ReadByte()
-120         Arg1 = buffer.ReadASCIIString()
-122         Arg2 = buffer.ReadASCIIString()
+118         opcion = Buffer.ReadByte()
+120         Arg1 = Buffer.ReadASCIIString()
+122         Arg2 = Buffer.ReadASCIIString()
         
             'If we got here then packet is complete, copy data back to original queue
-124         Call .incomingData.CopyBuffer(buffer)
+124         Call .incomingData.CopyBuffer(Buffer)
         
             ' Si no es GM, no hacemos nada.
 126         If Not EsGM(UserIndex) Then Exit Sub
@@ -11848,7 +11859,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-394     Set buffer = Nothing
+394     Set Buffer = Nothing
     
 396     If Error <> 0 Then Err.raise Error
 
@@ -11877,18 +11888,18 @@ Private Sub HandleRequestCharInfo(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
                 
             Dim targetName  As String
 
             Dim targetIndex As Integer
         
-110         targetName = Replace$(buffer.ReadASCIIString(), "+", " ")
+110         targetName = Replace$(Buffer.ReadASCIIString(), "+", " ")
 112         targetIndex = NameIndex(targetName)
         
 114         If .flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios) Then
@@ -11916,7 +11927,7 @@ Private Sub HandleRequestCharInfo(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-128         Call .incomingData.CopyBuffer(buffer)
+128         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -11929,7 +11940,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-132     Set buffer = Nothing
+132     Set Buffer = Nothing
     
 134     If Error <> 0 Then Err.raise Error
 
@@ -11958,18 +11969,18 @@ Private Sub HandleRequestCharStats(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName As String
 
             Dim tUser    As Integer
 
-110         UserName = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
         
 112         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) <> 0 Then
 114             Call LogGM(.name, "/STAT " & UserName)
@@ -11988,7 +11999,7 @@ Private Sub HandleRequestCharStats(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-126         Call .incomingData.CopyBuffer(buffer)
+126         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -12001,7 +12012,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-130     Set buffer = Nothing
+130     Set Buffer = Nothing
     
 132     If Error <> 0 Then Err.raise Error
 
@@ -12030,18 +12041,18 @@ Private Sub HandleRequestCharGold(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName As String
 
             Dim tUser    As Integer
         
-110         UserName = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
 112         tUser = NameIndex(UserName)
         
 114         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
@@ -12059,7 +12070,7 @@ Private Sub HandleRequestCharGold(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-126         Call .incomingData.CopyBuffer(buffer)
+126         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -12072,7 +12083,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-130     Set buffer = Nothing
+130     Set Buffer = Nothing
     
 132     If Error <> 0 Then Err.raise Error
 
@@ -12101,18 +12112,18 @@ Private Sub HandleRequestCharInventory(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName As String
 
             Dim tUser    As Integer
         
-110         UserName = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
 112         tUser = NameIndex(UserName)
         
 114         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
@@ -12130,7 +12141,7 @@ Private Sub HandleRequestCharInventory(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-126         Call .incomingData.CopyBuffer(buffer)
+126         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -12143,7 +12154,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-130     Set buffer = Nothing
+130     Set Buffer = Nothing
     
 132     If Error <> 0 Then Err.raise Error
 
@@ -12172,18 +12183,18 @@ Private Sub HandleRequestCharBank(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName As String
 
             Dim tUser    As Integer
         
-110         UserName = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
 112         tUser = NameIndex(UserName)
         
 114         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
@@ -12201,7 +12212,7 @@ Private Sub HandleRequestCharBank(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-126         Call .incomingData.CopyBuffer(buffer)
+126         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -12214,7 +12225,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-130     Set buffer = Nothing
+130     Set Buffer = Nothing
     
 132     If Error <> 0 Then Err.raise Error
 
@@ -12243,12 +12254,12 @@ Private Sub HandleRequestCharSkills(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName As String
 
@@ -12258,7 +12269,7 @@ Private Sub HandleRequestCharSkills(ByVal UserIndex As Integer)
 
             Dim message  As String
         
-110         UserName = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
 112         tUser = NameIndex(UserName)
         
 114         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
@@ -12288,7 +12299,7 @@ Private Sub HandleRequestCharSkills(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-138         Call .incomingData.CopyBuffer(buffer)
+138         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -12301,7 +12312,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-142     Set buffer = Nothing
+142     Set Buffer = Nothing
     
 144     If Error <> 0 Then Err.raise Error
 
@@ -12330,12 +12341,12 @@ Private Sub HandleReviveChar(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName As String
 
@@ -12343,7 +12354,7 @@ Private Sub HandleReviveChar(ByVal UserIndex As Integer)
 
             Dim LoopC    As Byte
         
-110         UserName = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
         
 112         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
 114             If UCase$(UserName) <> "YO" Then
@@ -12393,7 +12404,7 @@ Private Sub HandleReviveChar(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-146         Call .incomingData.CopyBuffer(buffer)
+146         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -12406,7 +12417,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-150     Set buffer = Nothing
+150     Set Buffer = Nothing
     
 152     If Error <> 0 Then Err.raise Error
 
@@ -12636,12 +12647,12 @@ Private Sub HandleKick(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName As String
 
@@ -12651,7 +12662,7 @@ Private Sub HandleKick(ByVal UserIndex As Integer)
         
 110         rank = PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero
         
-112         UserName = buffer.ReadASCIIString()
+112         UserName = Buffer.ReadASCIIString()
         
 114         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
 116             tUser = NameIndex(UserName)
@@ -12674,7 +12685,7 @@ Private Sub HandleKick(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-132         Call .incomingData.CopyBuffer(buffer)
+132         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -12687,7 +12698,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-136     Set buffer = Nothing
+136     Set Buffer = Nothing
     
 138     If Error <> 0 Then Err.raise Error
 
@@ -12716,18 +12727,18 @@ Private Sub HandleExecute(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName As String
 
             Dim tUser    As Integer
         
-110         UserName = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
         
 112         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) <> 0 Then
 114             tUser = NameIndex(UserName)
@@ -12748,7 +12759,7 @@ Private Sub HandleExecute(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-126         Call .incomingData.CopyBuffer(buffer)
+126         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -12761,7 +12772,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-130     Set buffer = Nothing
+130     Set Buffer = Nothing
     
 132     If Error <> 0 Then Err.raise Error
 
@@ -12790,19 +12801,19 @@ Private Sub HandleBanChar(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName As String
 
             Dim Reason   As String
         
-110         UserName = buffer.ReadASCIIString()
-112         Reason = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
+112         Reason = Buffer.ReadASCIIString()
         
 114         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) <> 0 Then
 116             Call BanCharacter(UserIndex, UserName, Reason)
@@ -12810,7 +12821,7 @@ Private Sub HandleBanChar(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-118         Call .incomingData.CopyBuffer(buffer)
+118         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -12823,7 +12834,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-122     Set buffer = Nothing
+122     Set Buffer = Nothing
     
 124     If Error <> 0 Then Err.raise Error
 
@@ -12847,23 +12858,23 @@ Private Sub HandleSilenciarUser(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName As String
 
             Dim Time     As Byte
         
-110         UserName = buffer.ReadASCIIString()
-112         Time = buffer.ReadByte()
+110         UserName = Buffer.ReadASCIIString()
+112         Time = Buffer.ReadByte()
     
 114         Call SilenciarUserName(UserIndex, UserName, Time)
             'If we got here then packet is complete, copy data back to original queue
-116         Call .incomingData.CopyBuffer(buffer)
+116         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -12876,7 +12887,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-120     Set buffer = Nothing
+120     Set Buffer = Nothing
     
 122     If Error <> 0 Then Err.raise Error
 
@@ -12905,16 +12916,16 @@ Private Sub HandleUnbanChar(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName As String
         
-110         UserName = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
         
 112         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) <> 0 Then
 114             If (InStrB(UserName, "\") <> 0) Then
@@ -12959,7 +12970,7 @@ Private Sub HandleUnbanChar(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-146         Call .incomingData.CopyBuffer(buffer)
+146         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -12972,7 +12983,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-150     Set buffer = Nothing
+150     Set Buffer = Nothing
     
 152     If Error <> 0 Then Err.raise Error
 
@@ -13041,19 +13052,19 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
-106         Call buffer.CopyBuffer(.incomingData)
+            Dim Buffer As New clsByteQueue
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName As String
             Dim tUser    As Integer
         
-110         UserName = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
             
             'If we got here then packet is complete, copy data back to original queue
-            Call .incomingData.CopyBuffer(buffer)
+            Call .incomingData.CopyBuffer(Buffer)
             
 112         If EsGM(UserIndex) Then
 114
@@ -13112,7 +13123,7 @@ ErrHandler:
             On Error GoTo 0
     
             'Destroy auxiliar buffer
-144         Set buffer = Nothing
+144         Set Buffer = Nothing
     
 146         If Error <> 0 Then Err.raise Error
 
@@ -13293,15 +13304,15 @@ Private Sub HandleServerMessage(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
-106         Call buffer.CopyBuffer(.incomingData)
+            Dim Buffer As New clsByteQueue
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim message As String
 
-110         message = buffer.ReadASCIIString()
+110         message = Buffer.ReadASCIIString()
         
 112         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
 114             If LenB(message) <> 0 Then
@@ -13313,7 +13324,7 @@ Private Sub HandleServerMessage(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-120         Call .incomingData.CopyBuffer(buffer)
+120         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -13326,7 +13337,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-124     Set buffer = Nothing
+124     Set Buffer = Nothing
     
 126     If Error <> 0 Then Err.raise Error
 
@@ -13355,12 +13366,12 @@ Private Sub HandleNickToIP(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName As String
 
@@ -13368,7 +13379,7 @@ Private Sub HandleNickToIP(ByVal UserIndex As Integer)
 
             Dim priv     As PlayerType
         
-110         UserName = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
         
 112         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) <> 0 Then
 114             tUser = NameIndex(UserName)
@@ -13421,7 +13432,7 @@ Private Sub HandleNickToIP(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-150         Call .incomingData.CopyBuffer(buffer)
+150         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -13434,7 +13445,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-154     Set buffer = Nothing
+154     Set Buffer = Nothing
     
 156     If Error <> 0 Then Err.raise Error
 
@@ -13541,18 +13552,18 @@ Private Sub HandleGuildOnlineMembers(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim GuildName As String
 
             Dim tGuild    As Integer
         
-110         GuildName = buffer.ReadASCIIString()
+110         GuildName = Buffer.ReadASCIIString()
         
 112         If (InStrB(GuildName, "+") <> 0) Then
 114             GuildName = Replace(GuildName, "+", " ")
@@ -13570,7 +13581,7 @@ Private Sub HandleGuildOnlineMembers(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-124         Call .incomingData.CopyBuffer(buffer)
+124         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -13583,7 +13594,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-128     Set buffer = Nothing
+128     Set Buffer = Nothing
     
 130     If Error <> 0 Then Err.raise Error
 
@@ -13809,18 +13820,18 @@ Private Sub HandleSetCharDescription(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim tUser As Integer
 
             Dim Desc  As String
         
-110         Desc = buffer.ReadASCIIString()
+110         Desc = Buffer.ReadASCIIString()
         
 112         If (.flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin)) <> 0 Or (.flags.Privilegios And PlayerType.RoleMaster) <> 0 Then
 114             tUser = .flags.TargetUser
@@ -13835,7 +13846,7 @@ Private Sub HandleSetCharDescription(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-122         Call .incomingData.CopyBuffer(buffer)
+122         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -13848,7 +13859,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-126     Set buffer = Nothing
+126     Set Buffer = Nothing
     
 128     If Error <> 0 Then Err.raise Error
 
@@ -14005,16 +14016,16 @@ Private Sub HandleRoyalArmyMessage(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim message As String
 
-110         message = buffer.ReadASCIIString()
+110         message = Buffer.ReadASCIIString()
         
             'Solo dioses, admins y RMS
 112         If .flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin Or PlayerType.RoleMaster) Then
@@ -14023,7 +14034,7 @@ Private Sub HandleRoyalArmyMessage(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-116         Call .incomingData.CopyBuffer(buffer)
+116         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -14036,7 +14047,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-120     Set buffer = Nothing
+120     Set Buffer = Nothing
     
 122     If Error <> 0 Then Err.raise Error
 
@@ -14065,16 +14076,16 @@ Private Sub HandleChaosLegionMessage(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim message As String
 
-110         message = buffer.ReadASCIIString()
+110         message = Buffer.ReadASCIIString()
         
             'Solo dioses, admins y RMS
 112         If .flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin Or PlayerType.RoleMaster) Then
@@ -14083,7 +14094,7 @@ Private Sub HandleChaosLegionMessage(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-116         Call .incomingData.CopyBuffer(buffer)
+116         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -14096,7 +14107,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-120     Set buffer = Nothing
+120     Set Buffer = Nothing
     
 122     If Error <> 0 Then Err.raise Error
 
@@ -14125,16 +14136,16 @@ Private Sub HandleCitizenMessage(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim message As String
 
-110         message = buffer.ReadASCIIString()
+110         message = Buffer.ReadASCIIString()
         
             'Solo dioses, admins y RMS
 112         If .flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin Or PlayerType.RoleMaster) Then
@@ -14143,7 +14154,7 @@ Private Sub HandleCitizenMessage(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-116         Call .incomingData.CopyBuffer(buffer)
+116         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -14156,7 +14167,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-120     Set buffer = Nothing
+120     Set Buffer = Nothing
     
 122     If Error <> 0 Then Err.raise Error
 
@@ -14185,16 +14196,16 @@ Private Sub HandleCriminalMessage(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim message As String
 
-110         message = buffer.ReadASCIIString()
+110         message = Buffer.ReadASCIIString()
         
             'Solo dioses, admins y RMS
 112         If .flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin Or PlayerType.RoleMaster) Then
@@ -14203,7 +14214,7 @@ Private Sub HandleCriminalMessage(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-116         Call .incomingData.CopyBuffer(buffer)
+116         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -14216,7 +14227,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-120     Set buffer = Nothing
+120     Set Buffer = Nothing
     
 122     If Error <> 0 Then Err.raise Error
 
@@ -14245,16 +14256,16 @@ Private Sub HandleTalkAsNPC(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim message As String
 
-110         message = buffer.ReadASCIIString()
+110         message = Buffer.ReadASCIIString()
         
             'Solo dioses, admins y RMS
 112         If .flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin Or PlayerType.RoleMaster) Then
@@ -14270,7 +14281,7 @@ Private Sub HandleTalkAsNPC(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-120         Call .incomingData.CopyBuffer(buffer)
+120         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -14283,7 +14294,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-124     Set buffer = Nothing
+124     Set Buffer = Nothing
     
 126     If Error <> 0 Then Err.raise Error
 
@@ -14367,12 +14378,12 @@ Private Sub HandleAcceptRoyalCouncilMember(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName As String
 
@@ -14380,7 +14391,7 @@ Private Sub HandleAcceptRoyalCouncilMember(ByVal UserIndex As Integer)
 
             Dim LoopC    As Byte
         
-110         UserName = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
         
 112         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) Then
 114             tUser = NameIndex(UserName)
@@ -14404,7 +14415,7 @@ Private Sub HandleAcceptRoyalCouncilMember(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-130         Call .incomingData.CopyBuffer(buffer)
+130         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -14417,7 +14428,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-134     Set buffer = Nothing
+134     Set Buffer = Nothing
     
 136     If Error <> 0 Then Err.raise Error
 
@@ -14446,12 +14457,12 @@ Private Sub HandleAcceptChaosCouncilMember(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName As String
 
@@ -14459,7 +14470,7 @@ Private Sub HandleAcceptChaosCouncilMember(ByVal UserIndex As Integer)
 
             Dim LoopC    As Byte
         
-110         UserName = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
         
 112         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) Then
 114             tUser = NameIndex(UserName)
@@ -14483,7 +14494,7 @@ Private Sub HandleAcceptChaosCouncilMember(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-130         Call .incomingData.CopyBuffer(buffer)
+130         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -14496,7 +14507,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-134     Set buffer = Nothing
+134     Set Buffer = Nothing
     
 136     If Error <> 0 Then Err.raise Error
 
@@ -14580,18 +14591,18 @@ Private Sub HandleMakeDumb(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName As String
 
             Dim tUser    As Integer
         
-110         UserName = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
         
 112         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) Then
 114             tUser = NameIndex(UserName)
@@ -14607,7 +14618,7 @@ Private Sub HandleMakeDumb(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-122         Call .incomingData.CopyBuffer(buffer)
+122         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -14620,7 +14631,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-126     Set buffer = Nothing
+126     Set Buffer = Nothing
     
 128     If Error <> 0 Then Err.raise Error
 
@@ -14649,18 +14660,18 @@ Private Sub HandleMakeDumbNoMore(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName As String
 
             Dim tUser    As Integer
         
-110         UserName = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
         
 112         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) Then
 114             tUser = NameIndex(UserName)
@@ -14677,7 +14688,7 @@ Private Sub HandleMakeDumbNoMore(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-122         Call .incomingData.CopyBuffer(buffer)
+122         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -14690,7 +14701,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-126     Set buffer = Nothing
+126     Set Buffer = Nothing
     
 128     If Error <> 0 Then Err.raise Error
 
@@ -14753,18 +14764,18 @@ Private Sub HandleCouncilKick(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName As String
 
             Dim tUser    As Integer
         
-110         UserName = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
         
 112         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) <> 0 Then
 114             tUser = NameIndex(UserName)
@@ -14815,7 +14826,7 @@ Private Sub HandleCouncilKick(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-154         Call .incomingData.CopyBuffer(buffer)
+154         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -14828,7 +14839,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-158     Set buffer = Nothing
+158     Set Buffer = Nothing
     
 160     If Error <> 0 Then Err.raise Error
 
@@ -15031,12 +15042,12 @@ Private Sub HandleGuildBan(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim GuildName   As String
 
@@ -15052,7 +15063,7 @@ Private Sub HandleGuildBan(ByVal UserIndex As Integer)
 
             Dim tFile       As String
         
-110         GuildName = buffer.ReadASCIIString()
+110         GuildName = Buffer.ReadASCIIString()
         
 112         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) Then
 114             tFile = App.Path & "\guilds\" & GuildName & "-members.mem"
@@ -15104,7 +15115,7 @@ Private Sub HandleGuildBan(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-160         Call .incomingData.CopyBuffer(buffer)
+160         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -15117,7 +15128,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-164     Set buffer = Nothing
+164     Set Buffer = Nothing
     
 166     If Error <> 0 Then Err.raise Error
 
@@ -15146,12 +15157,12 @@ Private Sub HandleBanIP(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim bannedIP As String
 
@@ -15162,13 +15173,13 @@ Private Sub HandleBanIP(ByVal UserIndex As Integer)
             Dim i        As Long
         
             ' Is it by ip??
-110         If buffer.ReadBoolean() Then
-112             bannedIP = buffer.ReadByte() & "."
-114             bannedIP = bannedIP & buffer.ReadByte() & "."
-116             bannedIP = bannedIP & buffer.ReadByte() & "."
-118             bannedIP = bannedIP & buffer.ReadByte()
+110         If Buffer.ReadBoolean() Then
+112             bannedIP = Buffer.ReadByte() & "."
+114             bannedIP = bannedIP & Buffer.ReadByte() & "."
+116             bannedIP = bannedIP & Buffer.ReadByte() & "."
+118             bannedIP = bannedIP & Buffer.ReadByte()
             Else
-120             tUser = NameIndex(buffer.ReadASCIIString())
+120             tUser = NameIndex(Buffer.ReadASCIIString())
             
 122             If tUser <= 0 Then
 124                 Call WriteConsoleMsg(UserIndex, "El personaje no está online.", FontTypeNames.FONTTYPE_INFO)
@@ -15179,7 +15190,7 @@ Private Sub HandleBanIP(ByVal UserIndex As Integer)
 
             End If
         
-128         Reason = buffer.ReadASCIIString()
+128         Reason = Buffer.ReadASCIIString()
         
 130         If LenB(bannedIP) > 0 Then
 132             If .flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios) Then
@@ -15212,7 +15223,7 @@ Private Sub HandleBanIP(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-154         Call .incomingData.CopyBuffer(buffer)
+154         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -15225,7 +15236,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-158     Set buffer = Nothing
+158     Set Buffer = Nothing
     
 160     If Error <> 0 Then Err.raise Error
 
@@ -15449,18 +15460,18 @@ Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName As String
 
             Dim tUser    As Integer
         
-110         UserName = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
         
 112         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) <> 0 Then
 114             If (InStrB(UserName, "\") <> 0) Then
@@ -15506,7 +15517,7 @@ Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-152         Call .incomingData.CopyBuffer(buffer)
+152         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -15519,7 +15530,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-156     Set buffer = Nothing
+156     Set Buffer = Nothing
     
 158     If Error <> 0 Then Err.raise Error
 
@@ -15548,18 +15559,18 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName As String
 
             Dim tUser    As Integer
         
-110         UserName = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
         
 112         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) <> 0 Then
 114             If (InStrB(UserName, "\") <> 0) Then
@@ -15605,7 +15616,7 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-152         Call .incomingData.CopyBuffer(buffer)
+152         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -15618,7 +15629,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-156     Set buffer = Nothing
+156     Set Buffer = Nothing
     
 158     If Error <> 0 Then Err.raise Error
 
@@ -15737,12 +15748,12 @@ Private Sub HandleRemovePunishment(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName   As String
 
@@ -15750,9 +15761,9 @@ Private Sub HandleRemovePunishment(ByVal UserIndex As Integer)
 
             Dim NewText    As String
         
-110         UserName = buffer.ReadASCIIString()
-112         punishment = buffer.ReadByte
-114         NewText = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
+112         punishment = Buffer.ReadByte
+114         NewText = Buffer.ReadASCIIString()
         
 116         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) Then
 118             If LenB(UserName) = 0 Then
@@ -15788,7 +15799,7 @@ Private Sub HandleRemovePunishment(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-142         Call .incomingData.CopyBuffer(buffer)
+142         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -15801,7 +15812,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-146     Set buffer = Nothing
+146     Set Buffer = Nothing
     
 148     If Error <> 0 Then Err.raise Error
 
@@ -15964,12 +15975,12 @@ Private Sub HandleLastIP(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName   As String
 
@@ -15982,7 +15993,7 @@ Private Sub HandleLastIP(ByVal UserIndex As Integer)
             Dim validCheck As Boolean
         
 110         priv = PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero
-112         UserName = buffer.ReadASCIIString()
+112         UserName = Buffer.ReadASCIIString()
         
 114         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) <> 0 Then
 
@@ -16034,7 +16045,7 @@ Private Sub HandleLastIP(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-154         Call .incomingData.CopyBuffer(buffer)
+154         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -16047,7 +16058,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-158     Set buffer = Nothing
+158     Set Buffer = Nothing
     
 160     If Error <> 0 Then Err.raise Error
 
@@ -16157,12 +16168,12 @@ Public Sub HandleCheckSlot(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             'Reads the UserName and Slot Packets
             Dim UserName As String
@@ -16171,8 +16182,8 @@ Public Sub HandleCheckSlot(ByVal UserIndex As Integer)
 
             Dim tIndex   As Integer
         
-110         UserName = buffer.ReadASCIIString() 'Que UserName?
-112         slot = buffer.ReadByte() 'Que Slot?
+110         UserName = Buffer.ReadASCIIString() 'Que UserName?
+112         slot = Buffer.ReadByte() 'Que Slot?
 114         tIndex = NameIndex(UserName)  'Que user index?
         
 116         Call LogGM(.name, .name & " Checkeo el slot " & slot & " de " & UserName)
@@ -16197,7 +16208,7 @@ Public Sub HandleCheckSlot(ByVal UserIndex As Integer)
             End If
 
             'If we got here then packet is complete, copy data back to original queue
-132         Call .incomingData.CopyBuffer(buffer)
+132         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -16210,7 +16221,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-136     Set buffer = Nothing
+136     Set Buffer = Nothing
     
 138     If Error <> 0 Then Err.raise Error
 
@@ -16778,12 +16789,12 @@ Public Sub HandleGiveItem(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName    As String
             Dim ObjIndex    As Integer
@@ -16791,13 +16802,13 @@ Public Sub HandleGiveItem(ByVal UserIndex As Integer)
             Dim Motivo      As String
             Dim tIndex      As Integer
         
-110         UserName = buffer.ReadASCIIString()
-112         ObjIndex = buffer.ReadInteger()
-114         Cantidad = buffer.ReadInteger()
-115         Motivo = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
+112         ObjIndex = Buffer.ReadInteger()
+114         Cantidad = Buffer.ReadInteger()
+115         Motivo = Buffer.ReadASCIIString()
 
             'If we got here then packet is complete, copy data back to original queue
-116         Call .incomingData.CopyBuffer(buffer)
+116         Call .incomingData.CopyBuffer(Buffer)
         
 118         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) <> 0 Then
 
@@ -16845,7 +16856,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-146     Set buffer = Nothing
+146     Set Buffer = Nothing
     
 148     If Error <> 0 Then Err.raise Error
         
@@ -17093,14 +17104,14 @@ Public Sub HandleChangeMapInfoRestricted(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove Packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
-110         tStr = buffer.ReadASCIIString()
+110         tStr = Buffer.ReadASCIIString()
         
 112         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) <> 0 Then
 114             If tStr = "NEWBIE" Or tStr = "NO" Or tStr = "ARMADA" Or tStr = "CAOS" Or tStr = "FACCION" Then
@@ -17116,7 +17127,7 @@ Public Sub HandleChangeMapInfoRestricted(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-126         Call .incomingData.CopyBuffer(buffer)
+126         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -17129,7 +17140,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-130     Set buffer = Nothing
+130     Set Buffer = Nothing
     
 132     If Error <> 0 Then Err.raise Error
 
@@ -17304,14 +17315,14 @@ Public Sub HandleChangeMapInfoLand(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove Packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
-110         tStr = buffer.ReadASCIIString()
+110         tStr = Buffer.ReadASCIIString()
         
 112         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) <> 0 Then
 114             If tStr = "BOSQUE" Or tStr = "NIEVE" Or tStr = "DESIERTO" Or tStr = "CIUDAD" Or tStr = "CAMPO" Or tStr = "DUNGEON" Then
@@ -17328,7 +17339,7 @@ Public Sub HandleChangeMapInfoLand(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-128         Call .incomingData.CopyBuffer(buffer)
+128         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -17341,7 +17352,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-132     Set buffer = Nothing
+132     Set Buffer = Nothing
     
 134     If Error <> 0 Then Err.raise Error
 
@@ -17372,14 +17383,14 @@ Public Sub HandleChangeMapInfoZone(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove Packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
-110         tStr = buffer.ReadASCIIString()
+110         tStr = Buffer.ReadASCIIString()
         
 112         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) <> 0 Then
 114             If tStr = "BOSQUE" Or tStr = "NIEVE" Or tStr = "DESIERTO" Or tStr = "CIUDAD" Or tStr = "CAMPO" Or tStr = "DUNGEON" Then
@@ -17396,7 +17407,7 @@ Public Sub HandleChangeMapInfoZone(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-128         Call .incomingData.CopyBuffer(buffer)
+128         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -17409,7 +17420,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-132     Set buffer = Nothing
+132     Set Buffer = Nothing
     
 134     If Error <> 0 Then Err.raise Error
 
@@ -17477,16 +17488,16 @@ Public Sub HandleShowGuildMessages(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim guild As String
         
-110         guild = buffer.ReadASCIIString()
+110         guild = Buffer.ReadASCIIString()
         
 112         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) Then
 114             Call modGuilds.GMEscuchaClan(UserIndex, guild)
@@ -17494,7 +17505,7 @@ Public Sub HandleShowGuildMessages(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-116         Call .incomingData.CopyBuffer(buffer)
+116         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -17507,7 +17518,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-120     Set buffer = Nothing
+120     Set Buffer = Nothing
     
 122     If Error <> 0 Then Err.raise Error
 
@@ -17572,12 +17583,12 @@ Public Sub HandleAlterName(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             'Reads the userName and newUser Packets
             Dim UserName     As String
@@ -17588,8 +17599,8 @@ Public Sub HandleAlterName(ByVal UserIndex As Integer)
 
             Dim GuildIndex   As Integer
         
-110         UserName = buffer.ReadASCIIString()
-112         newName = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
+112         newName = Buffer.ReadASCIIString()
         
 114         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) Then
 116             If LenB(UserName) = 0 Or LenB(newName) = 0 Then
@@ -17644,7 +17655,7 @@ Public Sub HandleAlterName(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-158         Call .incomingData.CopyBuffer(buffer)
+158         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -17657,7 +17668,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-162     Set buffer = Nothing
+162     Set Buffer = Nothing
     
 164     If Error <> 0 Then Err.raise Error
 
@@ -17686,19 +17697,19 @@ Public Sub HandleAlterMail(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName As String
 
             Dim newMail  As String
         
-110         UserName = buffer.ReadASCIIString()
-112         newMail = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
+112         newMail = Buffer.ReadASCIIString()
         
 114         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) Then
 116             If LenB(UserName) = 0 Or LenB(newMail) = 0 Then
@@ -17720,7 +17731,7 @@ Public Sub HandleAlterMail(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-130         Call .incomingData.CopyBuffer(buffer)
+130         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -17733,7 +17744,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-134     Set buffer = Nothing
+134     Set Buffer = Nothing
     
 136     If Error <> 0 Then Err.raise Error
 
@@ -17762,12 +17773,12 @@ Public Sub HandleAlterPassword(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName As String
 
@@ -17775,8 +17786,8 @@ Public Sub HandleAlterPassword(ByVal UserIndex As Integer)
 
             Dim Password As String
         
-110         UserName = Replace(buffer.ReadASCIIString(), "+", " ")
-112         copyFrom = Replace(buffer.ReadASCIIString(), "+", " ")
+110         UserName = Replace(Buffer.ReadASCIIString(), "+", " ")
+112         copyFrom = Replace(Buffer.ReadASCIIString(), "+", " ")
         
 114         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) Then
 116             Call LogGM(.name, "Ha alterado la contraseña de " & UserName)
@@ -17800,7 +17811,7 @@ Public Sub HandleAlterPassword(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-132         Call .incomingData.CopyBuffer(buffer)
+132         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -17813,7 +17824,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-136     Set buffer = Nothing
+136     Set Buffer = Nothing
     
 138     If Error <> 0 Then Err.raise Error
 
@@ -18280,18 +18291,18 @@ Public Sub HandleTurnCriminal(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName As String
 
             Dim tUser    As Integer
         
-110         UserName = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
         
 112         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) Then
 114             Call LogGM(.name, "/CONDEN " & UserName)
@@ -18303,7 +18314,7 @@ Public Sub HandleTurnCriminal(ByVal UserIndex As Integer)
             End If
                 
             'If we got here then packet is complete, copy data back to original queue
-120         Call .incomingData.CopyBuffer(buffer)
+120         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -18316,7 +18327,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-124     Set buffer = Nothing
+124     Set Buffer = Nothing
     
 126     If Error <> 0 Then Err.raise Error
 
@@ -18345,18 +18356,18 @@ Public Sub HandleResetFactions(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName As String
 
             Dim tUser    As Integer
         
-110         UserName = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
         
 112         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) Then
 114             Call LogGM(.name, "/RAJAR " & UserName)
@@ -18368,7 +18379,7 @@ Public Sub HandleResetFactions(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-120         Call .incomingData.CopyBuffer(buffer)
+120         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -18381,7 +18392,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-124     Set buffer = Nothing
+124     Set Buffer = Nothing
     
 126     If Error <> 0 Then Err.raise Error
 
@@ -18410,18 +18421,18 @@ Public Sub HandleRemoveCharFromGuild(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName   As String
 
             Dim GuildIndex As Integer
         
-110         UserName = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
         
 112         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) Then
 114             Call LogGM(.name, "/RAJARCLAN " & UserName)
@@ -18439,7 +18450,7 @@ Public Sub HandleRemoveCharFromGuild(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-126         Call .incomingData.CopyBuffer(buffer)
+126         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -18452,7 +18463,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-130     Set buffer = Nothing
+130     Set Buffer = Nothing
     
 132     If Error <> 0 Then Err.raise Error
 
@@ -18481,18 +18492,18 @@ Public Sub HandleRequestCharMail(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim UserName As String
 
             Dim mail     As String
         
-110         UserName = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
         
 112         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) Then
 114             If FileExist(CharPath & UserName & ".chr") Then
@@ -18505,7 +18516,7 @@ Public Sub HandleRequestCharMail(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-120         Call .incomingData.CopyBuffer(buffer)
+120         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -18518,7 +18529,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-124     Set buffer = Nothing
+124     Set Buffer = Nothing
     
 126     If Error <> 0 Then Err.raise Error
 
@@ -18547,16 +18558,16 @@ Public Sub HandleSystemMessage(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim message As String
 
-110         message = buffer.ReadASCIIString()
+110         message = Buffer.ReadASCIIString()
         
 112         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) Then
 114             Call LogGM(.name, "Mensaje de sistema:" & message)
@@ -18566,7 +18577,7 @@ Public Sub HandleSystemMessage(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-118         Call .incomingData.CopyBuffer(buffer)
+118         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -18579,7 +18590,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-122     Set buffer = Nothing
+122     Set Buffer = Nothing
     
 124     If Error <> 0 Then Err.raise Error
 
@@ -18611,12 +18622,12 @@ Public Sub HandleSetMOTD(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim newMOTD           As String
 
@@ -18624,7 +18635,7 @@ Public Sub HandleSetMOTD(ByVal UserIndex As Integer)
 
             Dim LoopC             As Long
         
-110         newMOTD = buffer.ReadASCIIString()
+110         newMOTD = Buffer.ReadASCIIString()
 112         auxiliaryString = Split(newMOTD, vbCrLf)
         
 114         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) Then
@@ -18647,7 +18658,7 @@ Public Sub HandleSetMOTD(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-134         Call .incomingData.CopyBuffer(buffer)
+134         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -18660,7 +18671,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-138     Set buffer = Nothing
+138     Set Buffer = Nothing
     
 140     If Error <> 0 Then Err.raise Error
 
@@ -24804,18 +24815,18 @@ Private Sub HandleQuestionGM(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
             'Remove packet ID
-108         Call buffer.ReadInteger
+108         Call Buffer.ReadInteger
         
             Dim Consulta       As String
 
             Dim TipoDeConsulta As String
 
-110         Consulta = buffer.ReadASCIIString()
-112         TipoDeConsulta = buffer.ReadASCIIString()
+110         Consulta = Buffer.ReadASCIIString()
+112         TipoDeConsulta = Buffer.ReadASCIIString()
 
 114         If UserList(UserIndex).donador.activo = 1 Then
 116             Call Ayuda.Push(.name, Consulta, TipoDeConsulta & "-Prioritario")
@@ -24833,7 +24844,7 @@ Private Sub HandleQuestionGM(ByVal UserIndex As Integer)
 126         Call LogConsulta(.name & "(" & TipoDeConsulta & ") " & Consulta)
         
             'If we got here then packet is complete, copy data back to original queue
-128         Call .incomingData.CopyBuffer(buffer)
+128         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -24846,7 +24857,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-132     Set buffer = Nothing
+132     Set Buffer = Nothing
     
 134     If Error <> 0 Then Err.raise Error
 
@@ -24954,42 +24965,42 @@ Private Sub HandleOfertaDeSubasta(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
             'Remove packet ID
-108         Call buffer.ReadInteger
+108         Call Buffer.ReadInteger
 
             Dim Oferta   As Long
 
             Dim ExOferta As Long
         
-110         Oferta = buffer.ReadLong()
+110         Oferta = Buffer.ReadLong()
         
 112         If Subasta.HaySubastaActiva = False Then
 114             Call WriteConsoleMsg(UserIndex, "No hay ninguna subasta en curso.", FontTypeNames.FONTTYPE_INFOIAO)
-116             Call .incomingData.CopyBuffer(buffer)
+116             Call .incomingData.CopyBuffer(Buffer)
                 Exit Sub
 
             End If
         
 118         If UserList(UserIndex).flags.BattleModo = 1 Then
 120             Call WriteConsoleMsg(UserIndex, "Subastador > íComo vas a ofertar con dinero que no es tuyo? Bríbon.", FontTypeNames.FONTTYPE_INFOIAO)
-122             Call .incomingData.CopyBuffer(buffer)
+122             Call .incomingData.CopyBuffer(Buffer)
                 Exit Sub
 
             End If
         
 124         If Oferta < Subasta.MejorOferta + 100 Then
 126             Call WriteConsoleMsg(UserIndex, "Debe haber almenos una diferencia de 100 monedas a la ultima oferta!", FontTypeNames.FONTTYPE_INFOIAO)
-128             Call .incomingData.CopyBuffer(buffer)
+128             Call .incomingData.CopyBuffer(Buffer)
                 Exit Sub
 
             End If
         
 130         If .name = Subasta.Subastador Then
 132             Call WriteConsoleMsg(UserIndex, "No podés auto ofertar en tus subastas. La proxima vez iras a la carcel...", FontTypeNames.FONTTYPE_INFOIAO)
-134             Call .incomingData.CopyBuffer(buffer)
+134             Call .incomingData.CopyBuffer(Buffer)
                 Exit Sub
 
             End If
@@ -25029,7 +25040,7 @@ Private Sub HandleOfertaDeSubasta(ByVal UserIndex As Integer)
             End If
 
             'If we got here then packet is complete, copy data back to original queue
-172         Call .incomingData.CopyBuffer(buffer)
+172         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -25042,7 +25053,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-176     Set buffer = Nothing
+176     Set Buffer = Nothing
     
 178     If Error <> 0 Then Err.raise Error
 
@@ -25062,16 +25073,16 @@ Private Sub HandleGlobalMessage(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadByte
+108         Call Buffer.ReadByte
         
             Dim chat As String
 
-110         chat = buffer.ReadASCIIString()
+110         chat = Buffer.ReadASCIIString()
 
 112         If .flags.Silenciado = 1 Then
 114             Call WriteLocaleMsg(UserIndex, "110", FontTypeNames.FONTTYPE_VENENO, .flags.MinutosRestantes)
@@ -25095,7 +25106,7 @@ Private Sub HandleGlobalMessage(ByVal UserIndex As Integer)
 
             End If
     
-126         Call .incomingData.CopyBuffer(buffer)
+126         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -25108,7 +25119,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-130     Set buffer = Nothing
+130     Set Buffer = Nothing
     
 132     If Error <> 0 Then Err.raise Error
 
@@ -25250,19 +25261,19 @@ Private Sub HandleCrearCuenta(ByVal UserIndex As Integer)
         On Error GoTo ErrHandler
 
         'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-        Dim buffer As New clsByteQueue
+        Dim Buffer As New clsByteQueue
 
-104     Call buffer.CopyBuffer(UserList(UserIndex).incomingData)
+104     Call Buffer.CopyBuffer(UserList(UserIndex).incomingData)
     
         'Remove packet ID
-106     Call buffer.ReadByte
+106     Call Buffer.ReadByte
 
         Dim CuentaEmail    As String
 
         Dim CuentaPassword As String
     
-108     CuentaEmail = buffer.ReadASCIIString()
-110     CuentaPassword = buffer.ReadASCIIString()
+108     CuentaEmail = Buffer.ReadASCIIString()
+110     CuentaPassword = Buffer.ReadASCIIString()
   
 112     If Not CheckMailString(CuentaEmail) Then
 114         Call WriteErrorMsg(UserIndex, "Email inválido.")
@@ -25280,7 +25291,7 @@ Private Sub HandleCrearCuenta(ByVal UserIndex As Integer)
 124         Call WriteShowFrmLogear(UserIndex)
 126         Call WriteShowMessageBox(UserIndex, "Cuenta creada. Se ha enviado un código de validación a su email, debe activar la cuenta antes de poder usarla. Recuerde revisar SPAM en caso de no encontrar el mail.")
         
-128         Call UserList(UserIndex).incomingData.CopyBuffer(buffer)
+128         Call UserList(UserIndex).incomingData.CopyBuffer(Buffer)
         Else
 130         Call WriteShowMessageBox(UserIndex, "El email ya está en uso.")
         
@@ -25297,7 +25308,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-136     Set buffer = Nothing
+136     Set Buffer = Nothing
     
 138     If Error <> 0 Then Err.raise Error
 
@@ -25315,19 +25326,19 @@ Private Sub HandleValidarCuenta(ByVal UserIndex As Integer)
         On Error GoTo ErrHandler
 
         'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-        Dim buffer As New clsByteQueue
+        Dim Buffer As New clsByteQueue
 
-104     Call buffer.CopyBuffer(UserList(UserIndex).incomingData)
+104     Call Buffer.CopyBuffer(UserList(UserIndex).incomingData)
     
         'Remove packet ID
-106     Call buffer.ReadByte
+106     Call Buffer.ReadByte
 
         Dim CuentaEmail    As String
 
         Dim ValidacionCode As String
     
-108     CuentaEmail = buffer.ReadASCIIString()
-110     ValidacionCode = buffer.ReadASCIIString()
+108     CuentaEmail = Buffer.ReadASCIIString()
+110     ValidacionCode = Buffer.ReadASCIIString()
 
 112     If Not CheckMailString(CuentaEmail) Then
 114         Call WriteShowFrmLogear(UserIndex)
@@ -25369,7 +25380,7 @@ Private Sub HandleValidarCuenta(ByVal UserIndex As Integer)
         End If
     
         'If we got here then packet is complete, copy data back to original queue
-148     Call UserList(UserIndex).incomingData.CopyBuffer(buffer)
+148     Call UserList(UserIndex).incomingData.CopyBuffer(Buffer)
     
 ErrHandler:
 
@@ -25380,7 +25391,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-152     Set buffer = Nothing
+152     Set Buffer = Nothing
     
 154     If Error <> 0 Then Err.raise Error
 
@@ -25398,20 +25409,20 @@ Private Sub HandleReValidarCuenta(ByVal UserIndex As Integer)
         On Error GoTo ErrHandler
 
         'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-        Dim buffer As New clsByteQueue
+        Dim Buffer As New clsByteQueue
 
-104     Call buffer.CopyBuffer(UserList(UserIndex).incomingData)
+104     Call Buffer.CopyBuffer(UserList(UserIndex).incomingData)
     
         'Remove packet ID
-106     Call buffer.ReadByte
+106     Call Buffer.ReadByte
 
         Dim UserCuenta As String
 
         Dim Useremail  As String
     
-108     UserCuenta = buffer.ReadASCIIString()
+108     UserCuenta = Buffer.ReadASCIIString()
     
-110     Useremail = buffer.ReadASCIIString()
+110     Useremail = Buffer.ReadASCIIString()
     
         'WyroX: TODO:
         'Saco este paquete, por el momento
@@ -25453,7 +25464,7 @@ Private Sub HandleReValidarCuenta(ByVal UserIndex As Integer)
         End If
     
         'If we got here then packet is complete, copy data back to original queue
-142     Call UserList(UserIndex).incomingData.CopyBuffer(buffer)
+142     Call UserList(UserIndex).incomingData.CopyBuffer(Buffer)
     
 ErrHandler:
 
@@ -25464,7 +25475,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-146     Set buffer = Nothing
+146     Set Buffer = Nothing
     
 148     If Error <> 0 Then Err.raise Error
 
@@ -25484,12 +25495,12 @@ Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
         On Error GoTo ErrHandler
 
         'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-        Dim buffer As New clsByteQueue
+        Dim Buffer As New clsByteQueue
 
-104     Call buffer.CopyBuffer(UserList(UserIndex).incomingData)
+104     Call Buffer.CopyBuffer(UserList(UserIndex).incomingData)
     
         'Remove packet ID
-106     Call buffer.ReadByte
+106     Call Buffer.ReadByte
 
         Dim CuentaEmail    As String
 
@@ -25499,9 +25510,9 @@ Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
 
         Dim HDserial       As Long
     
-108     CuentaEmail = buffer.ReadASCIIString()
-110     CuentaPassword = buffer.ReadASCIIString()
-112     Version = CStr(buffer.ReadByte()) & "." & CStr(buffer.ReadByte()) & "." & CStr(buffer.ReadByte())
+108     CuentaEmail = Buffer.ReadASCIIString()
+110     CuentaPassword = Buffer.ReadASCIIString()
+112     Version = CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte())
 
 114     If Not VersionOK(Version) Then
 116         Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
@@ -25521,8 +25532,8 @@ Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
         'End If
     
         'Seguridad Ladder
-120     MacAddress = buffer.ReadASCIIString()
-122     HDserial = buffer.ReadLong()
+120     MacAddress = Buffer.ReadASCIIString()
+122     HDserial = Buffer.ReadLong()
         'Seguridad Ladder
     
   
@@ -25575,7 +25586,7 @@ Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
         End If
     
         'If we got here then packet is complete, copy data back to original queue
-160     Call UserList(UserIndex).incomingData.CopyBuffer(buffer)
+160     Call UserList(UserIndex).incomingData.CopyBuffer(Buffer)
     
 ErrHandler:
 
@@ -25586,7 +25597,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-164     Set buffer = Nothing
+164     Set Buffer = Nothing
     
 166     If Error <> 0 Then Err.raise Error
 
@@ -25604,12 +25615,12 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
         On Error GoTo ErrHandler
 
         'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-        Dim buffer As New clsByteQueue
+        Dim Buffer As New clsByteQueue
 
-104     Call buffer.CopyBuffer(UserList(UserIndex).incomingData)
+104     Call Buffer.CopyBuffer(UserList(UserIndex).incomingData)
     
         'Remove packet ID
-106     Call buffer.ReadByte
+106     Call Buffer.ReadByte
 
         Dim UserDelete     As String
 
@@ -25623,10 +25634,10 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
 
         Dim Version        As String
     
-108     UserDelete = buffer.ReadASCIIString()
-110     CuentaEmail = buffer.ReadASCIIString()
-112     CuentaPassword = buffer.ReadASCIIString()
-114     Version = CStr(buffer.ReadByte()) & "." & CStr(buffer.ReadByte()) & "." & CStr(buffer.ReadByte())
+108     UserDelete = Buffer.ReadASCIIString()
+110     CuentaEmail = Buffer.ReadASCIIString()
+112     CuentaPassword = Buffer.ReadASCIIString()
+114     Version = CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte())
     
 116     If Not VersionOK(Version) Then
 118         Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
@@ -25636,8 +25647,8 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
 
         End If
 
-122     MacAddress = buffer.ReadASCIIString()
-124     HDserial = buffer.ReadLong()
+122     MacAddress = Buffer.ReadASCIIString()
+124     HDserial = Buffer.ReadLong()
     
 126     If Not EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MacAddress, HDserial) Then
         
@@ -25673,7 +25684,7 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
 148     Call WritePersonajesDeCuenta(UserIndex)
   
         'If we got here then packet is complete, copy data back to original queue
-150     Call UserList(UserIndex).incomingData.CopyBuffer(buffer)
+150     Call UserList(UserIndex).incomingData.CopyBuffer(Buffer)
     
 ErrHandler:
 
@@ -25684,7 +25695,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-154     Set buffer = Nothing
+154     Set Buffer = Nothing
     
 156     If Error <> 0 Then Err.raise Error
 
@@ -25702,12 +25713,12 @@ Private Sub HandleBorrandoCuenta(ByVal UserIndex As Integer)
         On Error GoTo ErrHandler
 
         'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-        Dim buffer As New clsByteQueue
+        Dim Buffer As New clsByteQueue
 
-104     Call buffer.CopyBuffer(UserList(UserIndex).incomingData)
+104     Call Buffer.CopyBuffer(UserList(UserIndex).incomingData)
     
         'Remove packet ID
-106     Call buffer.ReadByte
+106     Call Buffer.ReadByte
 
         Dim AccountDelete As String
 
@@ -25715,9 +25726,9 @@ Private Sub HandleBorrandoCuenta(ByVal UserIndex As Integer)
 
         Dim Password      As String
     
-108     AccountDelete = buffer.ReadASCIIString()
-110     UserMail = buffer.ReadASCIIString()
-112     Password = buffer.ReadASCIIString()
+108     AccountDelete = Buffer.ReadASCIIString()
+110     UserMail = Buffer.ReadASCIIString()
+112     Password = Buffer.ReadASCIIString()
     
 114     If CuentaExiste(AccountDelete) Then
     
@@ -25762,7 +25773,7 @@ Private Sub HandleBorrandoCuenta(ByVal UserIndex As Integer)
         End If
     
         'If we got here then packet is complete, copy data back to original queue
-152     Call UserList(UserIndex).incomingData.CopyBuffer(buffer)
+152     Call UserList(UserIndex).incomingData.CopyBuffer(Buffer)
     
 ErrHandler:
 
@@ -25773,7 +25784,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-156     Set buffer = Nothing
+156     Set Buffer = Nothing
     
 158     If Error <> 0 Then Err.raise Error
 
@@ -25791,19 +25802,19 @@ Private Sub HandleRecuperandoContraseña(ByVal UserIndex As Integer)
         On Error GoTo ErrHandler
 
         'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-        Dim buffer As New clsByteQueue
+        Dim Buffer As New clsByteQueue
 
-104     Call buffer.CopyBuffer(UserList(UserIndex).incomingData)
+104     Call Buffer.CopyBuffer(UserList(UserIndex).incomingData)
     
         'Remove packet ID
-106     Call buffer.ReadByte
+106     Call Buffer.ReadByte
 
         Dim AcountDelete As String
 
         Dim UserMail     As String
     
-108     AcountDelete = buffer.ReadASCIIString()
-110     UserMail = buffer.ReadASCIIString()
+108     AcountDelete = Buffer.ReadASCIIString()
+110     UserMail = Buffer.ReadASCIIString()
     
 112     If FileExist(CuentasPath & UCase$(AcountDelete) & ".act", vbNormal) Then
     
@@ -25845,7 +25856,7 @@ Private Sub HandleRecuperandoContraseña(ByVal UserIndex As Integer)
         End If
     
         'If we got here then packet is complete, copy data back to original queue
-146     Call UserList(UserIndex).incomingData.CopyBuffer(buffer)
+146     Call UserList(UserIndex).incomingData.CopyBuffer(Buffer)
     
 ErrHandler:
 
@@ -25856,7 +25867,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-150     Set buffer = Nothing
+150     Set Buffer = Nothing
     
 152     If Error <> 0 Then Err.raise Error
 
@@ -25949,16 +25960,16 @@ Private Sub HandleCuentaRegresiva(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadInteger
+108         Call Buffer.ReadInteger
         
             Dim Seconds As Byte
         
-110         Seconds = buffer.ReadByte()
+110         Seconds = Buffer.ReadByte()
 
 112         If Not .flags.Privilegios And PlayerType.user Then
 114             CuentaRegresivaTimer = Seconds
@@ -25967,7 +25978,7 @@ Private Sub HandleCuentaRegresiva(ByVal UserIndex As Integer)
                 'If we got here then packet is complete, copy data back to original queue
             End If
 
-118         Call .incomingData.CopyBuffer(buffer)
+118         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -25980,7 +25991,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-122     Set buffer = Nothing
+122     Set Buffer = Nothing
     
 124     If Error <> 0 Then Err.raise Error
 
@@ -26000,16 +26011,16 @@ Private Sub HandlePossUser(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadInteger
+108         Call Buffer.ReadInteger
         
             Dim UserName As String
         
-110         UserName = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
         
 112         If Not .flags.Privilegios And PlayerType.user Then
         
@@ -26027,7 +26038,7 @@ Private Sub HandlePossUser(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-124         Call .incomingData.CopyBuffer(buffer)
+124         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -26040,7 +26051,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-128     Set buffer = Nothing
+128     Set Buffer = Nothing
     
 130     If Error <> 0 Then Err.raise Error
 
@@ -26060,15 +26071,15 @@ Private Sub HandleDuelo(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As clsByteQueue
-106         Set buffer = New clsByteQueue
-108         Call buffer.CopyBuffer(.incomingData)
+            Dim Buffer As clsByteQueue
+106         Set Buffer = New clsByteQueue
+108         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-110         Call buffer.ReadInteger
+110         Call Buffer.ReadInteger
         
             'If we got here then packet is complete, copy data back to original queue
-112         Call .incomingData.CopyBuffer(buffer)
+112         Call .incomingData.CopyBuffer(Buffer)
         
 114         MapaOcupado = False
 
@@ -26119,7 +26130,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-144     Set buffer = Nothing
+144     Set Buffer = Nothing
     
 146     If Error <> 0 Then Err.raise Error
 
@@ -26267,11 +26278,11 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
             'Remove packet ID
-108         Call buffer.ReadInteger
+108         Call Buffer.ReadInteger
         
             Dim UserName As String
 
@@ -26279,11 +26290,11 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
 
             Dim tUser    As Integer
         
-110         Cantidad = buffer.ReadLong()
-112         UserName = buffer.ReadASCIIString()
+110         Cantidad = Buffer.ReadLong()
+112         UserName = Buffer.ReadASCIIString()
         
             'If we got here then packet is complete, copy data back to original queue
-114         Call .incomingData.CopyBuffer(buffer)
+114         Call .incomingData.CopyBuffer(Buffer)
         
 116         tUser = NameIndex(UserName)
 
@@ -26323,7 +26334,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-148     Set buffer = Nothing
+148     Set Buffer = Nothing
     
 150     If Error <> 0 Then Err.raise Error
 
@@ -26343,18 +26354,18 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
             'Remove packet ID
-108         Call buffer.ReadInteger
+108         Call Buffer.ReadInteger
         
             Dim SlotViejo As Byte
 
             Dim SlotNuevo As Byte
         
-110         SlotViejo = buffer.ReadByte()
-112         SlotNuevo = buffer.ReadByte()
+110         SlotViejo = Buffer.ReadByte()
+112         SlotNuevo = Buffer.ReadByte()
         
             Dim Objeto    As obj
         
@@ -26513,7 +26524,7 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
             End If
     
             'If we got here then packet is complete, copy data back to original queue
-258         Call .incomingData.CopyBuffer(buffer)
+258         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -26526,7 +26537,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-262     Set buffer = Nothing
+262     Set Buffer = Nothing
     
 264     If Error <> 0 Then Err.raise Error
 
@@ -26546,20 +26557,20 @@ Private Sub HandleBovedaMoveItem(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
             'Remove packet ID
-108         Call buffer.ReadInteger
+108         Call Buffer.ReadInteger
         
             Dim SlotViejo As Byte
             Dim SlotNuevo As Byte
         
-110         SlotViejo = buffer.ReadByte()
-112         SlotNuevo = buffer.ReadByte()
+110         SlotViejo = Buffer.ReadByte()
+112         SlotNuevo = Buffer.ReadByte()
         
             'If we got here then packet is complete, copy data back to original queue
-114         Call .incomingData.CopyBuffer(buffer)
+114         Call .incomingData.CopyBuffer(Buffer)
         
             Dim Objeto    As obj
             Dim Equipado  As Boolean
@@ -26593,7 +26604,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-134     Set buffer = Nothing
+134     Set Buffer = Nothing
     
 136     If Error <> 0 Then Err.raise Error
 
@@ -26613,11 +26624,11 @@ Private Sub HandleQuieroFundarClan(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
             'Remove packet ID
-108         Call buffer.ReadInteger
+108         Call Buffer.ReadInteger
         
             Dim refError As String
         
@@ -26656,7 +26667,7 @@ Private Sub HandleQuieroFundarClan(ByVal UserIndex As Integer)
 142         Call WriteConsoleMsg(UserIndex, refError, FontTypeNames.FONTTYPE_INFOIAO)
     
             'If we got here then packet is complete, copy data back to original queue
-144         Call .incomingData.CopyBuffer(buffer)
+144         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -26669,7 +26680,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-148     Set buffer = Nothing
+148     Set Buffer = Nothing
     
 150     If Error <> 0 Then Err.raise Error
 
@@ -26689,11 +26700,11 @@ Private Sub HandleLlamadadeClan(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
             'Remove packet ID
-108         Call buffer.ReadInteger
+108         Call Buffer.ReadInteger
         
             Dim refError   As String
         
@@ -26717,7 +26728,7 @@ Private Sub HandleLlamadadeClan(ByVal UserIndex As Integer)
             End If
 
             'If we got here then packet is complete, copy data back to original queue
-126         Call .incomingData.CopyBuffer(buffer)
+126         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -26730,7 +26741,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-130     Set buffer = Nothing
+130     Set Buffer = Nothing
     
 132     If Error <> 0 Then Err.raise Error
 
@@ -26837,17 +26848,17 @@ Private Sub HandleCasamiento(ByVal UserIndex As Integer)
 
 104     With UserList(UserIndex)
 
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
             'Remove packet ID
-108         Call buffer.ReadInteger
+108         Call Buffer.ReadInteger
         
             Dim UserName As String
 
             Dim tUser    As Integer
 
-110         UserName = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
 112         tUser = NameIndex(UserName)
         
 114         If .flags.TargetNPC > 0 Then
@@ -26899,7 +26910,7 @@ Private Sub HandleCasamiento(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-158         Call .incomingData.CopyBuffer(buffer)
+158         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -26912,7 +26923,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-162     Set buffer = Nothing
+162     Set Buffer = Nothing
     
 164     If Error <> 0 Then Err.raise Error
 
@@ -26931,20 +26942,20 @@ Private Sub HandleEnviarCodigo(ByVal UserIndex As Integer)
 
 104     With UserList(UserIndex)
 
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
             'Remove packet ID
-108         Call buffer.ReadInteger
+108         Call Buffer.ReadInteger
         
             Dim Codigo As String
 
-110         Codigo = buffer.ReadASCIIString()
+110         Codigo = Buffer.ReadASCIIString()
 
 112         Call CheckearCodigo(UserIndex, Codigo)
         
             'If we got here then packet is complete, copy data back to original queue
-114         Call .incomingData.CopyBuffer(buffer)
+114         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -26957,7 +26968,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-118     Set buffer = Nothing
+118     Set Buffer = Nothing
     
 120     If Error <> 0 Then Err.raise Error
 
@@ -26976,11 +26987,11 @@ Private Sub HandleCrearTorneo(ByVal UserIndex As Integer)
 
 104     With UserList(UserIndex)
 
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
             'Remove packet ID
-108         Call buffer.ReadInteger
+108         Call Buffer.ReadInteger
         
             Dim NivelMinimo As Byte
 
@@ -27018,26 +27029,26 @@ Private Sub HandleCrearTorneo(ByVal UserIndex As Integer)
 
             Dim reglas      As String
 
-110         NivelMinimo = buffer.ReadByte
-112         nivelmaximo = buffer.ReadByte
-114         cupos = buffer.ReadByte
-116         costo = buffer.ReadLong
-118         mago = buffer.ReadByte
-120         clerico = buffer.ReadByte
-122         guerrero = buffer.ReadByte
-124         asesino = buffer.ReadByte
-126         bardo = buffer.ReadByte
-128         druido = buffer.ReadByte
-130         Paladin = buffer.ReadByte
-132         cazador = buffer.ReadByte
+110         NivelMinimo = Buffer.ReadByte
+112         nivelmaximo = Buffer.ReadByte
+114         cupos = Buffer.ReadByte
+116         costo = Buffer.ReadLong
+118         mago = Buffer.ReadByte
+120         clerico = Buffer.ReadByte
+122         guerrero = Buffer.ReadByte
+124         asesino = Buffer.ReadByte
+126         bardo = Buffer.ReadByte
+128         druido = Buffer.ReadByte
+130         Paladin = Buffer.ReadByte
+132         cazador = Buffer.ReadByte
  
-134         Trabajador = buffer.ReadByte
+134         Trabajador = Buffer.ReadByte
 
-136         Mapa = buffer.ReadInteger
-138         X = buffer.ReadByte
-140         Y = buffer.ReadByte
-142         nombre = buffer.ReadASCIIString
-144         reglas = buffer.ReadASCIIString
+136         Mapa = Buffer.ReadInteger
+138         X = Buffer.ReadByte
+140         Y = Buffer.ReadByte
+142         nombre = Buffer.ReadASCIIString
+144         reglas = Buffer.ReadASCIIString
   
 146         If EsGM(UserIndex) Then
 148             Torneo.NivelMinimo = NivelMinimo
@@ -27065,7 +27076,7 @@ Private Sub HandleCrearTorneo(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-186         Call .incomingData.CopyBuffer(buffer)
+186         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -27078,7 +27089,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-190     Set buffer = Nothing
+190     Set Buffer = Nothing
     
 192     If Error <> 0 Then Err.raise Error
 
@@ -27097,11 +27108,11 @@ Private Sub HandleComenzarTorneo(ByVal UserIndex As Integer)
 
 104     With UserList(UserIndex)
 
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
             'Remove packet ID
-108         Call buffer.ReadInteger
+108         Call Buffer.ReadInteger
 
             'NivelMinimo = buffer.ReadByte
   
@@ -27112,7 +27123,7 @@ Private Sub HandleComenzarTorneo(ByVal UserIndex As Integer)
             End If
             
             'If we got here then packet is complete, copy data back to original queue
-114         Call .incomingData.CopyBuffer(buffer)
+114         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -27125,7 +27136,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-118     Set buffer = Nothing
+118     Set Buffer = Nothing
     
 120     If Error <> 0 Then Err.raise Error
 
@@ -27144,11 +27155,11 @@ Private Sub HandleCancelarTorneo(ByVal UserIndex As Integer)
 
 104     With UserList(UserIndex)
 
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
             'Remove packet ID
-108         Call buffer.ReadInteger
+108         Call Buffer.ReadInteger
   
 110         If EsGM(UserIndex) Then
 112             Call ResetearTorneo
@@ -27156,7 +27167,7 @@ Private Sub HandleCancelarTorneo(ByVal UserIndex As Integer)
             End If
             
             'If we got here then packet is complete, copy data back to original queue
-114         Call .incomingData.CopyBuffer(buffer)
+114         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -27169,7 +27180,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-118     Set buffer = Nothing
+118     Set Buffer = Nothing
     
 120     If Error <> 0 Then Err.raise Error
 
@@ -27188,15 +27199,15 @@ Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
 
 104     With UserList(UserIndex)
 
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
             'Remove packet ID
-108         Call buffer.ReadInteger
+108         Call Buffer.ReadInteger
         
             Dim Tipo As Byte
 
-110         Tipo = buffer.ReadByte()
+110         Tipo = Buffer.ReadByte()
         
             Dim Mapa As Byte
   
@@ -27271,7 +27282,7 @@ Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
             End If
             
             'If we got here then packet is complete, copy data back to original queue
-180         Call .incomingData.CopyBuffer(buffer)
+180         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -27284,7 +27295,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-184     Set buffer = Nothing
+184     Set Buffer = Nothing
     
 186     If Error <> 0 Then Err.raise Error
 
@@ -27303,11 +27314,11 @@ Private Sub HandleDropItem(ByVal UserIndex As Integer)
 
 104     With UserList(UserIndex)
 
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
             'Remove packet ID
-108         Call buffer.ReadInteger
+108         Call Buffer.ReadInteger
         
             Dim Item         As Byte
 
@@ -27319,10 +27330,10 @@ Private Sub HandleDropItem(ByVal UserIndex As Integer)
 
             Dim DropCantidad As Integer
 
-110         Item = buffer.ReadByte()
-112         X = buffer.ReadByte()
-114         Y = buffer.ReadByte()
-116         DropCantidad = buffer.ReadInteger()
+110         Item = Buffer.ReadByte()
+112         X = Buffer.ReadByte()
+114         Y = Buffer.ReadByte()
+116         DropCantidad = Buffer.ReadInteger()
 118         Depositado = 0
 
 120         If UserList(UserIndex).flags.Muerto = 1 Then
@@ -27388,7 +27399,7 @@ Private Sub HandleDropItem(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-158         Call .incomingData.CopyBuffer(buffer)
+158         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -27401,7 +27412,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-162     Set buffer = Nothing
+162     Set Buffer = Nothing
     
 164     If Error <> 0 Then Err.raise Error
 
@@ -27420,11 +27431,11 @@ Private Sub HandleFlagTrabajar(ByVal UserIndex As Integer)
 
 104     With UserList(UserIndex)
 
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
             'Remove packet ID
-108         Call buffer.ReadInteger
+108         Call Buffer.ReadInteger
         
 110         UserList(UserIndex).Counters.Trabajando = 0
 112         UserList(UserIndex).flags.UsandoMacro = False
@@ -27432,7 +27443,7 @@ Private Sub HandleFlagTrabajar(ByVal UserIndex As Integer)
 116         UserList(UserIndex).flags.UltimoMensaje = 0
         
             'If we got here then packet is complete, copy data back to original queue
-118         Call .incomingData.CopyBuffer(buffer)
+118         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -27445,7 +27456,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-122     Set buffer = Nothing
+122     Set Buffer = Nothing
     
 124     If Error <> 0 Then Err.raise Error
 
@@ -27464,11 +27475,11 @@ Private Sub HandleEscribiendo(ByVal UserIndex As Integer)
 
 104     With UserList(UserIndex)
 
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
             'Remove packet ID
-108         Call buffer.ReadInteger
+108         Call Buffer.ReadInteger
         
 110         If .flags.Escribiendo = False Then
 112             .flags.Escribiendo = True
@@ -27480,7 +27491,7 @@ Private Sub HandleEscribiendo(ByVal UserIndex As Integer)
             End If
 
             'If we got here then packet is complete, copy data back to original queue
-120         Call .incomingData.CopyBuffer(buffer)
+120         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -27493,7 +27504,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-124     Set buffer = Nothing
+124     Set Buffer = Nothing
     
 126     If Error <> 0 Then Err.raise Error
 
@@ -27591,15 +27602,15 @@ Private Sub HandleCompletarAccion(ByVal UserIndex As Integer)
 
 104     With UserList(UserIndex)
 
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
             'Remove packet ID
-108         Call buffer.ReadInteger
+108         Call Buffer.ReadInteger
         
             Dim Accion As Byte
 
-110         Accion = buffer.ReadByte()
+110         Accion = Buffer.ReadByte()
         
 112         If .Accion.AccionPendiente = True Then
 114             If .Accion.TipoAccion = Accion Then
@@ -27615,7 +27626,7 @@ Private Sub HandleCompletarAccion(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-122         Call .incomingData.CopyBuffer(buffer)
+122         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -27628,7 +27639,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-126     Set buffer = Nothing
+126     Set Buffer = Nothing
     
 128     If Error <> 0 Then Err.raise Error
 
@@ -27647,20 +27658,20 @@ Private Sub HandleReclamarRecompensa(ByVal UserIndex As Integer)
 
 104     With UserList(UserIndex)
 
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
             Dim index  As Byte
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
             'Remove packet ID
-108         Call buffer.ReadInteger
+108         Call Buffer.ReadInteger
         
-110         index = buffer.ReadByte()
+110         index = Buffer.ReadByte()
         
 112         Call EntregarRecompensas(UserIndex, index)
         
             'If we got here then packet is complete, copy data back to original queue
-114         Call .incomingData.CopyBuffer(buffer)
+114         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -27673,7 +27684,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-118     Set buffer = Nothing
+118     Set Buffer = Nothing
     
 120     If Error <> 0 Then Err.raise Error
 
@@ -27692,16 +27703,16 @@ Private Sub HandleTraerRecompensas(ByVal UserIndex As Integer)
 
 104     With UserList(UserIndex)
 
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
             'Remove packet ID
-108         Call buffer.ReadInteger
+108         Call Buffer.ReadInteger
 
 110         Call EnviarRecompensaStat(UserIndex)
         
             'If we got here then packet is complete, copy data back to original queue
-112         Call .incomingData.CopyBuffer(buffer)
+112         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -27714,7 +27725,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-116     Set buffer = Nothing
+116     Set Buffer = Nothing
     
 118     If Error <> 0 Then Err.raise Error
 
@@ -27870,17 +27881,17 @@ Private Sub HandleCorreo(ByVal UserIndex As Integer)
 
 104     With UserList(UserIndex)
 
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
             'Remove packet ID
-108         Call buffer.ReadInteger
+108         Call Buffer.ReadInteger
         
 110         'Call WriteListaCorreo(Userindex, False)
             '    Call EnviarRecompensaStat(UserIndex)
         
             'If we got here then packet is complete, copy data back to original queue
-112         Call .incomingData.CopyBuffer(buffer)
+112         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -27893,7 +27904,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-116     Set buffer = Nothing
+116     Set Buffer = Nothing
     
 118     If Error <> 0 Then Err.raise Error
 
@@ -27912,11 +27923,11 @@ Private Sub HandleSendCorreo(ByVal UserIndex As Integer)
 
 104     With UserList(UserIndex)
 
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
             'Remove packet ID
-108         Call buffer.ReadInteger
+108         Call Buffer.ReadInteger
 
             Dim Nick               As String
 
@@ -27930,9 +27941,9 @@ Private Sub HandleSendCorreo(ByVal UserIndex As Integer)
 
             Dim Itemlista(1 To 10) As obj
 
-110         Nick = buffer.ReadASCIIString()
-112         msg = buffer.ReadASCIIString()
-114         ItemCount = buffer.ReadByte()
+110         Nick = Buffer.ReadASCIIString()
+112         msg = Buffer.ReadASCIIString()
+114         ItemCount = Buffer.ReadByte()
         
             Dim ObjIndex   As Integer
 
@@ -27945,8 +27956,8 @@ Private Sub HandleSendCorreo(ByVal UserIndex As Integer)
                 Dim i As Byte
 
 118             For i = 1 To ItemCount
-120                 Itemlista(i).ObjIndex = buffer.ReadByte
-122                 Itemlista(i).Amount = buffer.ReadInteger
+120                 Itemlista(i).ObjIndex = Buffer.ReadByte
+122                 Itemlista(i).Amount = Buffer.ReadInteger
 124             Next i
 
             Else 'Si es solo texto
@@ -28019,7 +28030,7 @@ Private Sub HandleSendCorreo(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-176         Call .incomingData.CopyBuffer(buffer)
+176         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -28034,7 +28045,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-182     Set buffer = Nothing
+182     Set Buffer = Nothing
     
 184     If Error <> 0 Then Err.raise Error
 
@@ -28053,19 +28064,19 @@ Private Sub HandleRetirarItemCorreo(ByVal UserIndex As Integer)
 
 104     With UserList(UserIndex)
 
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
             'Remove packet ID
-108         Call buffer.ReadInteger
+108         Call Buffer.ReadInteger
 
             Dim MsgIndex As Integer
 
-110         MsgIndex = buffer.ReadInteger()
+110         MsgIndex = Buffer.ReadInteger()
         
 112         'Call ExtractItemCorreo(Userindex, MsgIndex)
         
-114         Call .incomingData.CopyBuffer(buffer)
+114         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -28081,7 +28092,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-120     Set buffer = Nothing
+120     Set Buffer = Nothing
     
 122     If Error <> 0 Then Err.raise Error
 
@@ -28100,19 +28111,19 @@ Private Sub HandleBorrarCorreo(ByVal UserIndex As Integer)
 
 104     With UserList(UserIndex)
 
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
             'Remove packet ID
-108         Call buffer.ReadInteger
+108         Call Buffer.ReadInteger
 
             Dim MsgIndex As Integer
 
-110         MsgIndex = buffer.ReadInteger()
+110         MsgIndex = Buffer.ReadInteger()
         
 112         'Call BorrarCorreoMail(Userindex, MsgIndex)
         
-114         Call .incomingData.CopyBuffer(buffer)
+114         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -28129,7 +28140,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-120     Set buffer = Nothing
+120     Set Buffer = Nothing
     
 122     If Error <> 0 Then Err.raise Error
 
@@ -28275,17 +28286,17 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
 
 104     With UserList(UserIndex)
 
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
             'Remove packet ID
-108         Call buffer.ReadInteger
+108         Call Buffer.ReadInteger
 
             Dim respuesta As Boolean
 
             Dim DeDonde   As String
 
-110         respuesta = buffer.ReadBoolean()
+110         respuesta = Buffer.ReadBoolean()
         
             Dim Log As String
 
@@ -28539,7 +28550,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-360         Call .incomingData.CopyBuffer(buffer)
+360         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -28556,7 +28567,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-366     Set buffer = Nothing
+366     Set Buffer = Nothing
     
 368     If Error <> 0 Then Err.raise Error
 
@@ -28863,11 +28874,11 @@ Private Sub HandleScrollInfo(ByVal UserIndex As Integer)
 
 104     With UserList(UserIndex)
 
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
             'Remove packet ID
-108         Call buffer.ReadInteger
+108         Call Buffer.ReadInteger
         
             Dim activo As Boolean
 
@@ -28918,7 +28929,7 @@ Private Sub HandleScrollInfo(ByVal UserIndex As Integer)
 
             End If
                 
-150         Call .incomingData.CopyBuffer(buffer)
+150         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -28931,7 +28942,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-154     Set buffer = Nothing
+154     Set Buffer = Nothing
     
 156     If Error <> 0 Then Err.raise Error
 
@@ -28980,19 +28991,19 @@ Private Sub HandleBanCuenta(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadInteger
+108         Call Buffer.ReadInteger
         
             Dim UserName As String
 
             Dim Reason   As String
         
-110         UserName = buffer.ReadASCIIString()
-112         Reason = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
+112         Reason = Buffer.ReadASCIIString()
         
 114         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) <> 0 Then
 116             Call BanAccount(UserIndex, UserName, Reason)
@@ -29000,7 +29011,7 @@ Private Sub HandleBanCuenta(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-118         Call .incomingData.CopyBuffer(buffer)
+118         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -29013,7 +29024,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-122     Set buffer = Nothing
+122     Set Buffer = Nothing
     
 124     If Error <> 0 Then Err.raise Error
 
@@ -29037,16 +29048,16 @@ Private Sub HandleUnBanCuenta(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadInteger
+108         Call Buffer.ReadInteger
         
             Dim UserName As String
         
-110         UserName = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
         
 112         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) <> 0 Then
 114             Call UnBanAccount(UserIndex, UserName)
@@ -29054,7 +29065,7 @@ Private Sub HandleUnBanCuenta(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-116         Call .incomingData.CopyBuffer(buffer)
+116         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -29067,7 +29078,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-120     Set buffer = Nothing
+120     Set Buffer = Nothing
     
 122     If Error <> 0 Then Err.raise Error
 
@@ -29091,16 +29102,16 @@ Private Sub HandleBanSerial(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadInteger
+108         Call Buffer.ReadInteger
         
             Dim UserName As String
          
-110         UserName = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
         
 112         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) <> 0 Then
 114             Call BanSerialOK(UserIndex, UserName)
@@ -29108,7 +29119,7 @@ Private Sub HandleBanSerial(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-116         Call .incomingData.CopyBuffer(buffer)
+116         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -29121,7 +29132,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-120     Set buffer = Nothing
+120     Set Buffer = Nothing
     
 122     If Error <> 0 Then Err.raise Error
 
@@ -29145,16 +29156,16 @@ Private Sub HandleUnBanSerial(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadInteger
+108         Call Buffer.ReadInteger
         
             Dim UserName As String
          
-110         UserName = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
         
 112         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) <> 0 Then
 114             Call UnBanSerialOK(UserIndex, UserName)
@@ -29162,7 +29173,7 @@ Private Sub HandleUnBanSerial(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-116         Call .incomingData.CopyBuffer(buffer)
+116         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -29175,7 +29186,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-120     Set buffer = Nothing
+120     Set Buffer = Nothing
     
 122     If Error <> 0 Then Err.raise Error
 
@@ -29199,17 +29210,17 @@ Private Sub HandleCerrarCliente(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadInteger
+108         Call Buffer.ReadInteger
         
             Dim UserName As String
             Dim tUser    As Integer
          
-110         UserName = buffer.ReadASCIIString()
+110         UserName = Buffer.ReadASCIIString()
         
             ' Solo administradores pueden cerrar clientes ajenos
 112         If (.flags.Privilegios And PlayerType.Admin) <> 0 Then
@@ -29230,7 +29241,7 @@ Private Sub HandleCerrarCliente(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-126         Call .incomingData.CopyBuffer(buffer)
+126         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -29243,7 +29254,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-130     Set buffer = Nothing
+130     Set Buffer = Nothing
     
 132     If Error <> 0 Then Err.raise Error
 
@@ -29338,12 +29349,12 @@ Private Sub HandleCrearEvento(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadInteger
+108         Call Buffer.ReadInteger
         
             Dim Tipo           As Byte
 
@@ -29351,9 +29362,9 @@ Private Sub HandleCrearEvento(ByVal UserIndex As Integer)
 
             Dim multiplicacion As Byte
         
-110         Tipo = buffer.ReadByte()
-112         duracion = buffer.ReadByte()
-114         multiplicacion = buffer.ReadByte()
+110         Tipo = Buffer.ReadByte()
+112         duracion = Buffer.ReadByte()
+114         multiplicacion = Buffer.ReadByte()
         
             '/
 116         If .flags.Privilegios >= PlayerType.Admin Then
@@ -29374,7 +29385,7 @@ Private Sub HandleCrearEvento(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-128         Call .incomingData.CopyBuffer(buffer)
+128         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -29387,7 +29398,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-132     Set buffer = Nothing
+132     Set Buffer = Nothing
     
 134     If Error <> 0 Then Err.raise Error
 
@@ -29411,12 +29422,12 @@ Private Sub HandleBanTemporal(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call buffer.ReadInteger
+108         Call Buffer.ReadInteger
         
             Dim UserName As String
 
@@ -29424,9 +29435,9 @@ Private Sub HandleBanTemporal(ByVal UserIndex As Integer)
 
             Dim dias     As Byte
         
-110         UserName = buffer.ReadASCIIString()
-112         Reason = buffer.ReadASCIIString()
-114         dias = buffer.ReadByte()
+110         UserName = Buffer.ReadASCIIString()
+112         Reason = Buffer.ReadASCIIString()
+114         dias = Buffer.ReadByte()
         
 116         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) <> 0 Then
 118             Call Admin.BanTemporal(UserName, dias, Reason, UserList(UserIndex).name)
@@ -29434,7 +29445,7 @@ Private Sub HandleBanTemporal(ByVal UserIndex As Integer)
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-120         Call .incomingData.CopyBuffer(buffer)
+120         Call .incomingData.CopyBuffer(Buffer)
 
         End With
 
@@ -29447,7 +29458,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-124     Set buffer = Nothing
+124     Set Buffer = Nothing
     
 126     If Error <> 0 Then Err.raise Error
 
@@ -29656,11 +29667,11 @@ Private Sub HandleComprarItem(ByVal UserIndex As Integer)
 
 104     With UserList(UserIndex)
 
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
             'Remove packet ID
-108         Call buffer.ReadInteger
+108         Call Buffer.ReadInteger
 
             Dim ItemIndex    As Byte
         
@@ -29668,7 +29679,7 @@ Private Sub HandleComprarItem(ByVal UserIndex As Integer)
 
             Dim LogeoDonador As String
 
-110         ItemIndex = buffer.ReadByte()
+110         ItemIndex = Buffer.ReadByte()
         
             Dim i              As Byte
 
@@ -29715,7 +29726,7 @@ Private Sub HandleComprarItem(ByVal UserIndex As Integer)
             End If
     
             'If we got here then packet is complete, copy data back to original queue
-158         Call .incomingData.CopyBuffer(buffer)
+158         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -29728,7 +29739,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-162     Set buffer = Nothing
+162     Set Buffer = Nothing
     
 164     If Error <> 0 Then Err.raise Error
 
@@ -29747,18 +29758,18 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
 
 104     With UserList(UserIndex)
 
-            Dim buffer As New clsByteQueue
+            Dim Buffer As New clsByteQueue
 
-106         Call buffer.CopyBuffer(.incomingData)
+106         Call Buffer.CopyBuffer(.incomingData)
             'Remove packet ID
-108         Call buffer.ReadInteger
+108         Call Buffer.ReadInteger
 
             Dim Destino As Byte
 
             Dim costo   As Long
 
-110         Destino = buffer.ReadByte()
-112         costo = buffer.ReadLong()
+110         Destino = Buffer.ReadByte()
+112         costo = Buffer.ReadLong()
         
             Dim DeDonde As CityWorldPos
 
@@ -29855,7 +29866,7 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
             End If
     
             'If we got here then packet is complete, copy data back to original queue
-206         Call .incomingData.CopyBuffer(buffer)
+206         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -29868,7 +29879,7 @@ ErrHandler:
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-210     Set buffer = Nothing
+210     Set Buffer = Nothing
     
 212     If Error <> 0 Then Err.raise Error
 
@@ -30632,3 +30643,113 @@ ErrHandler:
 
 End Sub
 
+''
+' Handles the "Consulta" message.
+'
+' @param    userIndex The index of the user sending the message.
+
+Private Sub HandleConsulta(ByVal UserIndex As String)
+    '***************************************************
+    'Author: ZaMa
+    'Last Modification: 01/05/2010
+    'Habilita/Deshabilita el modo consulta.
+    '01/05/2010: ZaMa - Agrego validaciones.
+    '16/09/2010: ZaMa - No se hace visible en los clientes si estaba navegando (porque ya lo estaba).
+    '***************************************************
+    
+    Dim UserConsulta As Integer
+    
+    With UserList(UserIndex)
+
+        Dim Buffer As clsByteQueue
+        Set Buffer = New clsByteQueue
+        Call Buffer.CopyBuffer(.incomingData)
+        
+        'Remove packet ID
+        Call Buffer.ReadInteger
+        
+        Dim Nick As String: Nick = Buffer.ReadASCIIString
+        
+        ' De aca en adelante podes meter Exit Sub sin q esplote todo alv. ;)
+        Call .incomingData.CopyBuffer(Buffer)
+        
+        ' Comando exclusivo para gms
+        If Not EsGM(UserIndex) Then Exit Sub
+        
+        If Len(Nick) <> 0 Then
+            UserConsulta = NameIndex(Nick)
+            
+            'Se asegura que el target exista
+            If UserConsulta <= 0 Then
+                Call WriteConsoleMsg(UserIndex, "El usuario se encuentra offline.", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+    
+            End If
+            
+        Else
+        
+            UserConsulta = .flags.TargetUser
+            
+            'Se asegura que el target exista
+            If UserConsulta <= 0 Then
+                Call WriteConsoleMsg(UserIndex, "Primero tienes que seleccionar un usuario, haz click izquierdo sobre el.", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+    
+            End If
+            
+        End If
+
+        ' No podes ponerte a vos mismo en modo consulta.
+        If UserConsulta = UserIndex Then Exit Sub
+        
+        ' No podes estra en consulta con otro gm
+        If EsGM(UserConsulta) Then
+            Call WriteConsoleMsg(UserIndex, "No puedes iniciar el modo consulta con otro administrador.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+
+        End If
+
+        ' Si ya estaba en consulta, termina la consulta
+        If UserList(UserConsulta).flags.EnConsulta Then
+            Call WriteConsoleMsg(UserIndex, "Has terminado el modo consulta con " & Nick & ".", FontTypeNames.FONTTYPE_INFOBOLD)
+            Call WriteConsoleMsg(UserConsulta, "Has terminado el modo consulta.", FontTypeNames.FONTTYPE_INFOBOLD)
+            
+            Call LogGM(.name, "Termino consulta con " & Nick)
+            
+            UserList(UserConsulta).flags.EnConsulta = False
+        
+            ' Sino la inicia
+        Else
+        
+            Call WriteConsoleMsg(UserIndex, "Has iniciado el modo consulta con " & UserName & ".", FontTypeNames.FONTTYPE_INFOBOLD)
+            Call WriteConsoleMsg(UserConsulta, "Has iniciado el modo consulta.", FontTypeNames.FONTTYPE_INFOBOLD)
+            Call LogGM(.name, "Inicio consulta con " & UserName)
+            
+            With UserList(UserConsulta)
+                .flags.EnConsulta = True
+                
+                ' Pierde invi u ocu
+                If .flags.invisible = 1 Or .flags.Oculto = 1 Then
+                
+                    .flags.Oculto = 0
+                    .flags.invisible = 0
+                    .Counters.TiempoOculto = 0
+                    .Counters.Invisibilidad = 0
+                    
+                    If UserList(UserConsulta).flags.Navegando = 0 Then
+                            
+                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, False))
+
+                    End If
+
+                End If
+
+            End With
+
+        End If
+        
+        Call SetModoConsulta(UserConsulta)
+
+    End With
+
+End Sub

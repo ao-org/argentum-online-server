@@ -1624,10 +1624,13 @@ Public Type UserFlags
     
     Silenciado As Byte
     
-    CentinelaOK As Boolean 'Centinela
+    'Centinela
+    CentinelaOK As Boolean
     
     Traveling As Byte
     lastMap As Integer
+    
+    EnConsulta As Boolean
     
 End Type
 
@@ -1792,10 +1795,8 @@ Public Type user
     
     CurrentInventorySlots As Byte
     
-    '[KEVIN]
     BancoInvent As BancoInventario
-    '[/KEVIN]
-    
+
     Counters As UserCounters
     Intervals As UserIntervals
     
@@ -1803,6 +1804,7 @@ Public Type user
     flags As UserFlags
     donador As TDonador
     Accion As AccionPendiente
+    
     NumeroPaquetesPorMiliSec As Long
     BytesTransmitidosUser As Long
     BytesTransmitidosSvr As Long
@@ -1810,7 +1812,7 @@ Public Type user
     Correo As UserCorreo
     Faccion As tFacciones
     Familiar As Family
-        
+
     ChatCombate As Byte
     ChatGlobal As Byte
     'Macros
