@@ -677,27 +677,36 @@ Function LegalPos(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, 
         
         On Error GoTo LegalPos_Err
         
-
-100     If (Map <= 0 Or Map > NumMaps) Or (X < MinXBorder Or X > MaxXBorder Or Y < MinYBorder Or Y > MaxYBorder) Then
-102         LegalPos = False
-        Else
-
-104         If PuedeAgua And PuedeTierra Then
-106             LegalPos = (MapData(Map, X, Y).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES And (MapData(Map, X, Y).UserIndex = 0) And (MapData(Map, X, Y).NpcIndex = 0) And (PuedeTraslado Or MapData(Map, X, Y).TileExit.Map = 0)
-
-108         ElseIf PuedeTierra And Not PuedeAgua Then
-110             LegalPos = (MapData(Map, X, Y).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES And (MapData(Map, X, Y).UserIndex = 0) And (MapData(Map, X, Y).NpcIndex = 0) And ((MapData(Map, X, Y).Blocked And FLAG_AGUA) = 0) And (PuedeTraslado Or MapData(Map, X, Y).TileExit.Map = 0)
-
-112         ElseIf PuedeAgua And Not PuedeTierra Then
-114             LegalPos = (MapData(Map, X, Y).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES And (MapData(Map, X, Y).UserIndex = 0) And (MapData(Map, X, Y).NpcIndex = 0) And ((MapData(Map, X, Y).Blocked And FLAG_AGUA) <> 0) And (PuedeTraslado Or MapData(Map, X, Y).TileExit.Map = 0)
-            Else
-116             LegalPos = False
-
-            End If
-   
-        End If
-
+100     If Map <= 0 Or Map > NumMaps Then Exit Function
         
+102     If X < MinXBorder Or X > MaxXBorder Then Exit Function
+        
+104     If Y < MinYBorder Or Y > MaxYBorder Then Exit Function
+        
+106     With MapData(Map, X, Y)
+        
+108         If .NpcIndex <> 0 Then Exit Function
+
+110         If .UserIndex <> 0 Then Exit Function
+            
+114         If Not PuedeTraslado Then
+116             If .TileExit.Map > 0 Then Exit Function
+            End If
+            
+118         If Not PuedeAgua Then
+120             If (.Blocked And FLAG_AGUA) <> 0 Then Exit Function
+            End If
+            
+122         If Not PuedeTierra Then
+124             If (.Blocked And FLAG_AGUA) = 0 Then Exit Function
+            End If
+            
+126         If (.Blocked And eBlock.ALL_SIDES) = eBlock.ALL_SIDES Then Exit Function
+        
+        End With
+        
+        LegalPos = True
+
         Exit Function
 
 LegalPos_Err:

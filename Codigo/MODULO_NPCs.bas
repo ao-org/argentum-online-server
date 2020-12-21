@@ -552,8 +552,8 @@ Public Function CrearNPC(NroNPC As Integer, Mapa As Integer, OrigPos As WorldPos
         ' Cabeza customizada
 104     If CustomHead <> 0 Then Npclist(nIndex).Char.Head = CustomHead
 
-106     PuedeAgua = Npclist(nIndex).flags.AguaValida
-108     PuedeTierra = IIf(Npclist(nIndex).flags.TierraInvalida = 1, False, True)
+106     PuedeAgua = Npclist(nIndex).flags.AguaValida = 1
+108     PuedeTierra = Npclist(nIndex).flags.TierraInvalida = 0
     
         'Necesita ser respawned en un lugar especifico
 110     If InMapBounds(OrigPos.Map, OrigPos.X, OrigPos.Y) Then
@@ -997,8 +997,8 @@ Function SpawnNpc(ByVal NpcIndex As Integer, Pos As WorldPos, ByVal FX As Boolea
 
         End If
 
-106     PuedeAgua = Npclist(nIndex).flags.AguaValida
-108     PuedeTierra = IIf(Npclist(nIndex).flags.TierraInvalida = 1, False, True)
+106     PuedeAgua = Npclist(nIndex).flags.AguaValida = 1
+108     PuedeTierra = Npclist(nIndex).flags.TierraInvalida = 0
 
 110     it = 0
 
