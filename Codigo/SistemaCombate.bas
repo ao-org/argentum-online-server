@@ -1824,7 +1824,21 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
             Exit Function
 
         End If
-
+        
+        ' No podes atacar si estas en consulta
+        If UserList(attackerIndex).flags.EnConsulta Then
+            Call WriteConsoleMsg(attackerIndex, "No puedes atacar usuarios mientras estas en consulta.", FontTypeNames.FONTTYPE_INFO)
+            Exit Function
+    
+        End If
+        
+        ' No podes atacar si esta en consulta
+        If UserList(VictimIndex).flags.EnConsulta Then
+            Call WriteConsoleMsg(attackerIndex, "No puedes atacar usuarios mientras estan en consulta.", FontTypeNames.FONTTYPE_INFO)
+            Exit Function
+    
+        End If
+        
 112     If UserList(attackerIndex).flags.Maldicion = 1 Then
 114         Call WriteConsoleMsg(attackerIndex, "¡Estas maldito! No podes atacar.", FontTypeNames.FONTTYPE_INFOIAO)
 116         PuedeAtacar = False
@@ -1889,7 +1903,7 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
         End If
         
         'Solo administradores pueden atacar a usuarios (PARA TESTING)
-152     If EsGM(attackerIndex) And (UserList(attackerIndex).flags.Privilegios And PlayerType.Admin) = 0 Then
+152     If (UserList(attackerIndex).flags.Privilegios And (PlayerType.user Or PlayerType.Admin)) = 0 Then
 154         PuedeAtacar = False
             Exit Function
         End If
@@ -2011,9 +2025,16 @@ Public Function PuedeAtacarNPC(ByVal attackerIndex As Integer, ByVal NpcIndex As
         End If
 
         'Solo administradores pueden atacar a usuarios (PARA TESTING)
-106     If EsGM(attackerIndex) And (UserList(attackerIndex).flags.Privilegios And PlayerType.Admin) = 0 Then
+106     If (UserList(attackerIndex).flags.Privilegios And PlayerType.Admin) = 0 Then
 108         PuedeAtacarNPC = False
             Exit Function
+        End If
+        
+        ' No podes atacar si estas en consulta
+        If UserList(attackerIndex).flags.EnConsulta Then
+            Call WriteConsoleMsg(attackerIndex, "No puedes atacar npcs mientras estas en consulta.", FontTypeNames.FONTTYPE_INFO)
+            Exit Function
+
         End If
         
         'Es una criatura atacable?

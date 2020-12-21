@@ -1521,10 +1521,10 @@ Public Sub DoRobar(ByVal LadrOnIndex As Integer, ByVal victimaindex As Integer)
 
 100     If MapInfo(UserList(victimaindex).Pos.Map).Seguro = 1 Then Exit Sub
     
-        'If UserList(VictimaIndex).flags.EnConsulta Then
-            'Call WriteConsoleMsg(LadrOnIndex, "No puedes robar a usuarios en consulta!!!", FontTypeNames.FONTTYPE_INFO)
-            'Exit Sub
-        'End If
+        If UserList(victimaindex).flags.EnConsulta Then
+            Call WriteConsoleMsg(LadrOnIndex, "No puedes robar a usuarios en consulta!!!", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
     
 102     With UserList(LadrOnIndex)
     

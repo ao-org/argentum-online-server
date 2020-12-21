@@ -2230,6 +2230,8 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
             
 264         .Mimetizado = 0
 266         .MascotasGuardadas = 0
+
+            .EnConsulta = False
         End With
 
         

@@ -1057,12 +1057,16 @@ Sub LanzarHechizo(index As Integer, UserIndex As Integer)
         
         On Error GoTo LanzarHechizo_Err
         
+        If UserList(Userindex).flags.EnConsulta Then
+            Call WriteConsoleMsg(Userindex, "No puedes lanzar hechizos si estas en consulta.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+
+        End If
 
         Dim uh As Integer
+100         uh = UserList(Userindex).Stats.UserHechizos(index)
 
-100     uh = UserList(UserIndex).Stats.UserHechizos(index)
-
-102     If PuedeLanzar(UserIndex, uh, index) Then
+102     If PuedeLanzar(Userindex, uh, index) Then
 
 104         Select Case Hechizos(uh).Target
 
