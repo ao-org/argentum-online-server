@@ -335,80 +335,86 @@ End Sub
 
 Sub MakeUserChar(ByVal toMap As Boolean, _
                  ByVal sndIndex As Integer, _
-                 ByVal Userindex As Integer, _
+                 ByVal UserIndex As Integer, _
                  ByVal Map As Integer, _
                  ByVal X As Integer, _
                  ByVal Y As Integer, _
                  Optional ByVal appear As Byte = 0)
 
-    On Error GoTo hayerror
+        On Error GoTo hayerror
 
-    Dim CharIndex As Integer
+        Dim CharIndex As Integer
 
-    Dim TempName  As String
+        Dim TempName  As String
     
-    If InMapBounds(Map, X, Y) Then
+100     If InMapBounds(Map, X, Y) Then
         
-        With UserList(Userindex)
+102         With UserList(UserIndex)
         
-            'If needed make a new character in list
-            If .Char.CharIndex = 0 Then
-                CharIndex = NextOpenCharIndex
-                .Char.CharIndex = CharIndex
-                CharList(CharIndex) = Userindex
-            End If
-
-            'Place character on map if needed
-            If toMap Then MapData(Map, X, Y).Userindex = Userindex
-
-            'Send make character command to clients
-            Dim klan       As String
-            Dim clan_nivel As Byte
-
-            If Not toMap Then
-                
-                If .GuildIndex > 0 Then
-            
-                    klan = modGuilds.GuildName(.GuildIndex)
-                    clan_nivel = modGuilds.NivelDeClan(.GuildIndex)
-                    TempName = .name & " <" & klan & ">"
-            
-                Else
-                
-                    klan = vbNullString
-                    clan_nivel = 0
-                    
-                    If .flags.EnConsulta Then
-                        
-                        TempName = .name & " [CONSULTA]"
-                        
-                    Else
-                    
-                        TempName = .name
-                    
-                    End If
-                    
+                'If needed make a new character in list
+104             If .Char.CharIndex = 0 Then
+106                 CharIndex = NextOpenCharIndex
+108                 .Char.CharIndex = CharIndex
+110                 CharList(CharIndex) = UserIndex
                 End If
 
-                Call WriteCharacterCreate(sndIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.CharIndex, X, Y, .Char.WeaponAnim, .Char.ShieldAnim, .Char.FX, 999, .Char.CascoAnim, TempName, .Faccion.Status, .flags.Privilegios, .Char.ParticulaFx, .Char.Head_Aura, .Char.Arma_Aura, .Char.Body_Aura, .Char.Anillo_Aura, .Char.Otra_Aura, .Char.Escudo_Aura, .Char.speeding, False, .donador.activo, appear, .Grupo.Lider, .GuildIndex, clan_nivel, .Stats.MinHp, .Stats.MaxHp, 0, False, .flags.Navegando)
-                                         
-            Else
-            
-                'Hide the name and clan - set privs as normal user
-                Call AgregarUser(Userindex, .Pos.Map, appear)
-                
-            End If
-            
-        End With
-        
-    End If
+                'Place character on map if needed
+112             If toMap Then MapData(Map, X, Y).UserIndex = UserIndex
 
-    Exit Sub
+                'Send make character command to clients
+                Dim klan       As String
+                Dim clan_nivel As Byte
+
+114             If Not toMap Then
+                
+116                 If .GuildIndex > 0 Then
+            
+118                     klan = modGuilds.GuildName(.GuildIndex)
+120                     clan_nivel = modGuilds.NivelDeClan(.GuildIndex)
+122                     TempName = .name & " <" & klan & ">"
+            
+                    Else
+                
+124                     klan = vbNullString
+126                     clan_nivel = 0
+                    
+128                     If .flags.EnConsulta Then
+                        
+130                         TempName = .name & " [CONSULTA]"
+                        
+                        Else
+                    
+132                         TempName = .name
+                    
+                        End If
+                    
+                    End If
+
+134                 Call WriteCharacterCreate(sndIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.CharIndex, X, Y, .Char.WeaponAnim, .Char.ShieldAnim, .Char.FX, 999, .Char.CascoAnim, TempName, .Faccion.Status, .flags.Privilegios, .Char.ParticulaFx, .Char.Head_Aura, .Char.Arma_Aura, .Char.Body_Aura, .Char.Anillo_Aura, .Char.Otra_Aura, .Char.Escudo_Aura, .Char.speeding, False, .donador.activo, appear, .Grupo.Lider, .GuildIndex, clan_nivel, .Stats.MinHp, .Stats.MaxHp, 0, False, .flags.Navegando)
+                                         
+                Else
+            
+                    'Hide the name and clan - set privs as normal user
+136                 Call AgregarUser(UserIndex, .Pos.Map, appear)
+                
+                End If
+            
+            End With
+        
+        End If
+
+        Exit Sub
 
 hayerror:
-    LogError ("MakeUserChar: num: " & Err.Number & " desc: " & Err.description & " - Nombre del usuario " & UserList(Userindex).name) & " - " & "- Pos: M: " & Map & " X: " & X & " Y: " & Y
-    'Resume Next
-    Call CloseSocket(Userindex)
+        
+        Dim desc As String
+            desc = Err.description & vbNewLine & _
+                    " Usuario: " & UserList(UserIndex).name & vbNewLine & _
+                    "Pos: " & Map & "-" & X & "-" & Y
+            
+        Call RegistrarError(Err.Number, Err.description, "Usuarios.MakeUserChar", Erl())
+        
+140     Call CloseSocket(UserIndex)
 
 End Sub
 
@@ -2637,7 +2643,7 @@ TieneArmaduraCazador_Err:
         
 End Function
 
-Public Sub SetModoConsulta(ByVal Userindex As Integer)
+Public Sub SetModoConsulta(ByVal UserIndex As Integer)
     '***************************************************
     'Author: Torres Patricio (Pato)
     'Last Modification: 05/06/10
@@ -2646,7 +2652,7 @@ Public Sub SetModoConsulta(ByVal Userindex As Integer)
 
     Dim sndNick As String
 
-    With UserList(Userindex)
+    With UserList(UserIndex)
         sndNick = .name
     
         If .flags.EnConsulta Then
@@ -2659,10 +2665,8 @@ Public Sub SetModoConsulta(ByVal Userindex As Integer)
             End If
 
         End If
-        
-        Call RefreshCharStatus(Userindex)
-        
-        Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageUpdateTagAndStatus(Userindex, .Faccion.Status, sndNick))
+
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageUpdateTagAndStatus(UserIndex, .Faccion.Status, sndNick))
 
     End With
 
