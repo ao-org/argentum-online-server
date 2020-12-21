@@ -1730,17 +1730,17 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
 482         Call WriteFYA(UserIndex)
 484         Call WriteBindKeys(UserIndex)
         
-486         If UserList(UserIndex).NroMascotas > 0 And MapInfo(UserList(UserIndex).Pos.Map).Seguro = 0 Then
+486         If .NroMascotas > 0 And MapInfo(.Pos.Map).Seguro = 0 And .flags.MascotasGuardadas = 0 Then
                 Dim i As Integer
 488             For i = 1 To MAXMASCOTAS
-490                 If UserList(UserIndex).MascotasType(i) > 0 Then
-492                     UserList(UserIndex).MascotasIndex(i) = SpawnNpc(UserList(UserIndex).MascotasType(i), UserList(UserIndex).Pos, False, False)
+490                 If .MascotasType(i) > 0 Then
+492                     .MascotasIndex(i) = SpawnNpc(.MascotasType(i), .Pos, False, False)
                     
-494                     If UserList(UserIndex).MascotasIndex(i) > 0 Then
-496                         Npclist(UserList(UserIndex).MascotasIndex(i)).MaestroUser = UserIndex
-498                         Call FollowAmo(UserList(UserIndex).MascotasIndex(i))
+494                     If .MascotasIndex(i) > 0 Then
+496                         Npclist(.MascotasIndex(i)).MaestroUser = UserIndex
+498                         Call FollowAmo(.MascotasIndex(i))
                         Else
-500                         UserList(UserIndex).MascotasIndex(i) = 0
+500                         .MascotasIndex(i) = 0
                         End If
                     End If
 502             Next i
