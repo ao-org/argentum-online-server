@@ -248,10 +248,16 @@ Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
         '23/01/2007 -> Pablo (ToxicWaste): Billetera invertida y explotar oro en el agua.
         '***************************************************
         On Error GoTo ErrHandler
-
+        
+        ' GM's (excepto Dioses y Admins) no pueden tirar oro
+        If EsGM(UserIndex) And (UserList(UserIndex).flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then
+            Call LogGM(UserList(UserIndex).name, " trató de tirar " & Cantidad & " de oro")
+            Exit Sub
+        End If
+        
         'If Cantidad > 100000 Then Exit Sub
 100     If UserList(UserIndex).flags.BattleModo = 1 Then Exit Sub
-
+        
         'SI EL Pjta TIENE ORO LO TIRAMOS
 102     If (Cantidad > 0) And (Cantidad <= UserList(UserIndex).Stats.GLD) Then
 
