@@ -2241,6 +2241,12 @@ Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, 
         Dim ExpaDar           As Long
 
         Dim BonificacionGrupo As Single
+        
+        Dim CantidadMiembrosValidos As Integer
+        
+        Dim i     As Byte
+
+        Dim index As Byte
 
         'If UserList(UserIndex).Grupo.EnGrupo Then
         '[Nacho] Chekeamos que las variables sean validas para las operaciones
@@ -2261,10 +2267,21 @@ Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, 
 114         Npclist(NpcIndex).flags.ExpCount = 0
         Else
 116         Npclist(NpcIndex).flags.ExpCount = Npclist(NpcIndex).flags.ExpCount - ExpaDar
-
         End If
+        
+        For i = 1 To UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
+            If UserList(index).flags.Muerto = 0 Then
+                If UserList(UserIndex).Pos.Map = UserList(index).Pos.Map Then
+                    If Abs(UserList(UserIndex).Pos.X - UserList(index).Pos.X) < 20 Then
+                        If Abs(UserList(UserIndex).Pos.Y - UserList(index).Pos.Y) < 20 Then
+                            CantidadMiembrosValidos = CantidadMiembrosValidos + 1
+                        End If
+                    End If
+                End If
+            End If
+        Next
     
-118     Select Case UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
+118     Select Case CantidadMiembrosValidos
     
             Case 1
 120             BonificacionGrupo = 1
@@ -2288,18 +2305,11 @@ Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, 
  
 142     If ExpMult > 0 Then
 144         ExpaDar = ExpaDar * ExpMult
-        
         End If
-    
-        Dim expbackup As Long
 
 148     ExpaDar = ExpaDar * BonificacionGrupo
 
-        Dim i     As Byte
-
-        Dim index As Byte
-
-152     ExpaDar = ExpaDar / UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
+152     ExpaDar = ExpaDar / CantidadMiembrosValidos
     
         Dim ExpUser As Long
     

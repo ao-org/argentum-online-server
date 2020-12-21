@@ -7553,7 +7553,9 @@ Private Sub HandleMeditate(ByVal UserIndex As Integer)
             'Las clases NO MAGICAS no meditan...
 106         If .clase = eClass.Hunter Or _
                .clase = eClass.Trabajador Or _
-               .clase = eClass.Warrior Then Exit Sub
+               .clase = eClass.Warrior Or _
+               .clase = eClass.Pirat Or _
+               .clase = eClass.Thief Then Exit Sub
 
 108         If .flags.Muerto = 1 Then
 110             Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
