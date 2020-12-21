@@ -945,9 +945,13 @@ Private Sub SeguirAmo(ByVal NpcIndex As Integer)
 
         Dim tHeading As Byte
         Dim UI As Integer
+        
+        If NpcIndex = 0 Then Exit Sub
     
 100     With Npclist(NpcIndex)
-
+            
+            If .MaestroUser = 0 Then Exit Sub
+            
 102         If .Target = 0 And .TargetNPC = 0 Then
 104             UI = .MaestroUser
             
@@ -968,6 +972,7 @@ Private Sub SeguirAmo(ByVal NpcIndex As Integer)
                             Exit Sub
                             
                         Else
+                        
 116                         If RandomNumber(1, 12) = 3 Then
 118                             Call MoveNPCChar(NpcIndex, CByte(RandomNumber(eHeading.NORTH, eHeading.WEST)))
                             Else
@@ -1010,6 +1015,7 @@ Private Sub AiNpcAtacaNpc(ByVal NpcIndex As Integer)
     
 100     With Npclist(NpcIndex)
 102         If .flags.Inmovilizado = 1 Then
+
 104             Select Case .Char.Heading
                     Case eHeading.NORTH
 106                     SignoNS = -1
