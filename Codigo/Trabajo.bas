@@ -1689,8 +1689,24 @@ Public Sub DoRobar(ByVal LadrOnIndex As Integer, ByVal victimaindex As Integer)
 226                     If UserList(victimaindex).Stats.GLD > 0 Then
 
                             Dim n As Long
-                        
-228                         If .clase = eClass.Thief Then n = RandomNumber(1, 100)
+
+                            If .clase = eClass.Thief Then
+
+                                ' Si no tine puestos los guantes de hurto roba un 50% menos.
+                                If .Invent.AnilloEqpObjIndex > 0 Then
+                                    If ObjData(.Invent.AnilloEqpObjIndex).Subtipo = 5 Then
+                                        n = RandomNumber(.Stats.ELV * 50, .Stats.ELV * 100) * OroMult
+                                    Else
+                                        n = RandomNumber(.Stats.ELV * 25, .Stats.ELV * 50) * OroMult
+                                    End If
+                                Else
+                                    n = RandomNumber(.Stats.ELV * 25, .Stats.ELV * 50) * OroMult
+                                End If
+    
+                            Else
+                                n = RandomNumber(1, 100)
+    
+                            End If
 
 230                         If n > UserList(victimaindex).Stats.GLD Then n = UserList(victimaindex).Stats.GLD
                         
