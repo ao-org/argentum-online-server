@@ -4363,12 +4363,18 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                             'Can't steal administrative players
 586                         If UserList(tU).flags.Privilegios And PlayerType.user Then
 588                             If UserList(tU).flags.Muerto = 0 Then
-590                                 If Abs(.Pos.X - X) + Abs(.Pos.Y - Y) > 2 Then
+                                    Dim DistanciaMaxima As Integer
+                                    If .clase = eClass.Thief Then
+                                        DistanciaMaxima = 2
+                                    Else
+                                        DistanciaMaxima = 1
+                                    End If
+
+590                                 If Abs(.Pos.X - X) + Abs(.Pos.Y - Y) > DistanciaMaxima Then
 592                                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                                         'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
 594                                     Call WriteWorkRequestTarget(UserIndex, 0)
                                         Exit Sub
-
                                     End If
                                  
                                     '17/09/02
@@ -4377,14 +4383,12 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 598                                     Call WriteConsoleMsg(UserIndex, "No podés robar aquí.", FontTypeNames.FONTTYPE_WARNING)
 600                                     Call WriteWorkRequestTarget(UserIndex, 0)
                                         Exit Sub
-
                                     End If
                                  
 602                                 If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = eTrigger.ZONASEGURA Then
 604                                     Call WriteConsoleMsg(UserIndex, "No podés robar aquí.", FontTypeNames.FONTTYPE_WARNING)
 606                                     Call WriteWorkRequestTarget(UserIndex, 0)
                                         Exit Sub
-
                                     End If
                                  
 608                                 Call DoRobar(UserIndex, tU)
