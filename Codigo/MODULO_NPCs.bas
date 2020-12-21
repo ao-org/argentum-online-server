@@ -1123,7 +1123,9 @@ End Function
 Sub NPCTirarOro(MiNPC As npc, ByVal UserIndex As Integer)
         
             On Error GoTo NPCTirarOro_Err
-
+            
+            If UserIndex = 0 Then Exit Sub
+            
 100         If MiNPC.GiveGLD > 0 Then
 
                 Dim Oro As Long
