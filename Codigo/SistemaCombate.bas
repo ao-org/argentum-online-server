@@ -2281,7 +2281,7 @@ Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, 
 134         Case 5
 136             BonificacionGrupo = 1.8
 
-138         Case 6
+138         Case Else
 140             BonificacionGrupo = 2
                 
         End Select
@@ -2293,31 +2293,29 @@ Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, 
     
         Dim expbackup As Long
 
-146     expbackup = ExpaDar
 148     ExpaDar = ExpaDar * BonificacionGrupo
 
         Dim i     As Byte
 
         Dim index As Byte
 
-150     expbackup = expbackup / UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
 152     ExpaDar = ExpaDar / UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
     
         Dim ExpUser As Long
     
-154     For i = 1 To UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
-156         index = UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(i)
-
-158         If UserList(index).flags.Muerto = 0 Then
-160             If UserList(UserIndex).Pos.Map = UserList(index).Pos.Map Then
-162                 If ExpaDar > 0 Then
+        If ExpaDar > 0 Then
+154         For i = 1 To UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
+156             index = UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(i)
+    
+158             If UserList(index).flags.Muerto = 0 Then
+160                 If Distancia(UserList(UserIndex).Pos, UserList(index).Pos) < 20 Then
+162
 164                     ExpUser = 0
 
 166                     If UserList(index).donador.activo = 1 Then
 168                         ExpUser = ExpaDar * 1.1
                         Else
 170                         ExpUser = ExpaDar
-
                         End If
                     
 172                     ExpUser = ExpUser * UserList(index).flags.ScrollExp
@@ -2336,65 +2334,28 @@ Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, 
 186                         Call CheckUserLevel(index)
 
                         End If
-
+    
+                    Else
+    
+                        'Call WriteConsoleMsg(Index, "Estas demasiado lejos del grupo, no has ganado experiencia.", FontTypeNames.FONTTYPE_INFOIAO)
+188                     If UserList(index).ChatCombate = 1 Then
+190                         Call WriteLocaleMsg(index, "69", FontTypeNames.FONTTYPE_New_GRUPO)
+    
+                        End If
+    
                     End If
-
+    
                 Else
-
-                    'Call WriteConsoleMsg(Index, "Estas demasiado lejos del grupo, no has ganado experiencia.", FontTypeNames.FONTTYPE_INFOIAO)
-188                 If UserList(index).ChatCombate = 1 Then
-190                     Call WriteLocaleMsg(index, "69", FontTypeNames.FONTTYPE_New_GRUPO)
-
+    
+208                 If UserList(index).ChatCombate = 1 Then
+210                     Call WriteConsoleMsg(index, "Estás muerto, no has ganado experencia del grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
+    
                     End If
-
-192                 If expbackup > 0 Then
-194                     If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then
-196                         UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + expbackup
-
-198                         If UserList(UserIndex).Stats.Exp > MAXEXP Then UserList(UserIndex).Stats.Exp = MAXEXP
-
-200                         If UserList(UserIndex).ChatCombate = 1 Then
-202                             Call WriteConsoleMsg(UserIndex, UserList(index).name & " estas demasiado lejos de tu grupo, has ganado " & expbackup & " puntos de experiencia.", FontTypeNames.FONTTYPE_EXP)
-
-                            End If
-
-204                         Call CheckUserLevel(UserIndex)
-206                         Call WriteUpdateExp(UserIndex)
-
-                        End If
-
-                    End If
-
+    
                 End If
-
-            Else
-
-208             If UserList(index).ChatCombate = 1 Then
-210                 Call WriteConsoleMsg(index, "Estas muerto, no has ganado experencia del grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
-
-                End If
-
-212             If expbackup > 0 Then
-214                 If UserList(index).Stats.ELV < STAT_MAXELV Then
-216                     UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + expbackup
-
-218                     If UserList(UserIndex).Stats.Exp > MAXEXP Then UserList(UserIndex).Stats.Exp = MAXEXP
-
-220                     If UserList(UserIndex).ChatCombate = 1 Then
-222                         Call WriteConsoleMsg(UserIndex, UserList(index).name & " estas muerto, has ganado " & expbackup & " puntos de experiencia correspondientes a el.", FontTypeNames.FONTTYPE_EXP)
-
-                        End If
-
-224                     Call CheckUserLevel(UserIndex)
-226                     Call WriteUpdateExp(UserIndex)
-
-                    End If
-
-                End If
-
-            End If
-
-228     Next i
+    
+228         Next i
+        End If
 
         'Else
         '    Call WriteConsoleMsg(UserIndex, "No te encontras en ningun grupo, experencia perdida.", FontTypeNames.FONTTYPE_New_GRUPO)
