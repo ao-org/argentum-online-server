@@ -333,75 +333,82 @@ RefreshCharStatus_Err:
         
 End Sub
 
-Sub MakeUserChar(ByVal toMap As Boolean, ByVal sndIndex As Integer, ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, Optional ByVal appear As Byte = 0)
+Sub MakeUserChar(ByVal toMap As Boolean, _
+                 ByVal sndIndex As Integer, _
+                 ByVal Userindex As Integer, _
+                 ByVal Map As Integer, _
+                 ByVal X As Integer, _
+                 ByVal Y As Integer, _
+                 Optional ByVal appear As Byte = 0)
 
-        On Error GoTo hayerror
+    On Error GoTo hayerror
 
-        Dim CharIndex As Integer
+    Dim CharIndex As Integer
 
-        Dim errort    As String
-
-100     If InMapBounds(Map, X, Y) Then
-
+    Dim TempName  As String
+    
+    If InMapBounds(Map, X, Y) Then
+        
+        With UserList(Userindex)
+        
             'If needed make a new character in list
-102         If UserList(UserIndex).Char.CharIndex = 0 Then
-104             CharIndex = NextOpenCharIndex
-106             UserList(UserIndex).Char.CharIndex = CharIndex
-108             CharList(CharIndex) = UserIndex
+            If .Char.CharIndex = 0 Then
+                CharIndex = NextOpenCharIndex
+                .Char.CharIndex = CharIndex
+                CharList(CharIndex) = Userindex
             End If
 
-110         errort = "1"
-        
             'Place character on map if needed
-112         If toMap Then MapData(Map, X, Y).UserIndex = UserIndex
-114         errort = "2"
-        
+            If toMap Then MapData(Map, X, Y).Userindex = Userindex
+
             'Send make character command to clients
             Dim klan       As String
-
             Dim clan_nivel As Byte
 
-116         If UserList(UserIndex).GuildIndex > 0 Then
-118             klan = modGuilds.GuildName(UserList(UserIndex).GuildIndex)
-120             clan_nivel = modGuilds.NivelDeClan(UserList(UserIndex).GuildIndex)
+            If Not toMap Then
+                
+                If .GuildIndex > 0 Then
+            
+                    klan = modGuilds.GuildName(.GuildIndex)
+                    clan_nivel = modGuilds.NivelDeClan(.GuildIndex)
+                    TempName = .name & " <" & klan & ">"
+            
+                Else
+                
+                    klan = vbNullString
+                    clan_nivel = 0
+                    
+                    If .flags.EnConsulta Then
+                        
+                        TempName = .name & " [CONSULTA]"
+                        
+                    Else
+                    
+                        TempName = .name
+                    
+                    End If
+                    
+                End If
+
+                Call WriteCharacterCreate(sndIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.CharIndex, X, Y, .Char.WeaponAnim, .Char.ShieldAnim, .Char.FX, 999, .Char.CascoAnim, TempName, .Faccion.Status, .flags.Privilegios, .Char.ParticulaFx, .Char.Head_Aura, .Char.Arma_Aura, .Char.Body_Aura, .Char.Anillo_Aura, .Char.Otra_Aura, .Char.Escudo_Aura, .Char.speeding, False, .donador.activo, appear, .Grupo.Lider, .GuildIndex, clan_nivel, .Stats.MinHp, .Stats.MaxHp, 0, False, .flags.Navegando)
+                                         
+            Else
+            
+                'Hide the name and clan - set privs as normal user
+                Call AgregarUser(Userindex, .Pos.Map, appear)
+                
             End If
-
-122         errort = "3"
+            
+        End With
         
-            Dim bCr As Byte
-        
-124         bCr = UserList(UserIndex).Faccion.Status
-126         errort = "4"
-        
-128         If LenB(klan) <> 0 Then
-130             If Not toMap Then
-132                 errort = "5"
-134                 Call WriteCharacterCreate(sndIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.CharIndex, X, Y, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.FX, 999, UserList(UserIndex).Char.CascoAnim, UserList(UserIndex).name & " <" & klan & ">", bCr, UserList(UserIndex).flags.Privilegios, UserList(UserIndex).Char.ParticulaFx, UserList(UserIndex).Char.Head_Aura, UserList(UserIndex).Char.Arma_Aura, UserList(UserIndex).Char.Body_Aura, UserList(UserIndex).Char.Anillo_Aura, UserList(UserIndex).Char.Otra_Aura, UserList(UserIndex).Char.Escudo_Aura, UserList(UserIndex).Char.speeding, False, UserList(UserIndex).donador.activo, appear, UserList(UserIndex).Grupo.Lider, UserList(UserIndex).GuildIndex, clan_nivel, UserList(UserIndex).Stats.MinHp, UserList(UserIndex).Stats.MaxHp, 0, False, UserList(UserIndex).flags.Navegando)
-                Else
-136                 errort = "6"
-138                 Call AgregarUser(UserIndex, UserList(UserIndex).Pos.Map, appear)
-                End If
+    End If
 
-            Else 'if tiene clan
-
-140             If Not toMap Then
-142                 errort = "7"
-144                 Call WriteCharacterCreate(sndIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.CharIndex, X, Y, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.FX, 999, UserList(UserIndex).Char.CascoAnim, UserList(UserIndex).name, bCr, UserList(UserIndex).flags.Privilegios, UserList(UserIndex).Char.ParticulaFx, UserList(UserIndex).Char.Head_Aura, UserList(UserIndex).Char.Arma_Aura, UserList(UserIndex).Char.Body_Aura, UserList(UserIndex).Char.Anillo_Aura, UserList(UserIndex).Char.Otra_Aura, UserList(UserIndex).Char.Escudo_Aura, UserList(UserIndex).Char.speeding, False, UserList(UserIndex).donador.activo, appear, UserList(UserIndex).Grupo.Lider, 0, 0, UserList(UserIndex).Stats.MinHp, UserList(UserIndex).Stats.MaxHp, 0, False, UserList(UserIndex).flags.Navegando)
-                Else
-146                 errort = "8"
-148                 Call AgregarUser(UserIndex, UserList(UserIndex).Pos.Map, appear)
-                End If
-
-            End If 'if clan
-
-        End If
-
-        Exit Sub
+    Exit Sub
 
 hayerror:
-150     LogError ("MakeUserChar: num: " & Err.Number & " desc: " & Err.description & " - Nombre del usuario " & UserList(UserIndex).name) & " - " & errort & "- Pos: M: " & Map & " X: " & X & " Y: " & Y
-        'Resume Next
-152     Call CloseSocket(UserIndex)
+    LogError ("MakeUserChar: num: " & Err.Number & " desc: " & Err.description & " - Nombre del usuario " & UserList(Userindex).name) & " - " & "- Pos: M: " & Map & " X: " & X & " Y: " & Y
+    'Resume Next
+    Call CloseSocket(Userindex)
 
 End Sub
 
@@ -2629,3 +2636,34 @@ TieneArmaduraCazador_Err:
 
         
 End Function
+
+Public Sub SetModoConsulta(ByVal Userindex As Integer)
+    '***************************************************
+    'Author: Torres Patricio (Pato)
+    'Last Modification: 05/06/10
+    '
+    '***************************************************
+
+    Dim sndNick As String
+
+    With UserList(Userindex)
+        sndNick = .name
+    
+        If .flags.EnConsulta Then
+            sndNick = sndNick & " [CONSULTA]"
+            
+        Else
+
+            If .GuildIndex > 0 Then
+                sndNick = sndNick & " <" & modGuilds.GuildName(.GuildIndex) & ">"
+            End If
+
+        End If
+        
+        Call RefreshCharStatus(Userindex)
+        
+        Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageUpdateTagAndStatus(Userindex, .Faccion.Status, sndNick))
+
+    End With
+
+End Sub

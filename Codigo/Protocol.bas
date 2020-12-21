@@ -525,7 +525,8 @@ Private Enum NewPacksID
     SeguroClan
     CreatePretorianClan     '/CREARPRETORIANOS
     RemovePretorianClan     '/ELIMINARPRETORIANOS
-    Home
+    Home                    '/HOGAR
+    Consulta                '/CONSULTA
 End Enum
 
 Public Enum FontTypeNames
@@ -618,7 +619,6 @@ End Type
 '
 ' @param    UserIndex The index of the user sending the message.
 
-Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
         '***************************************************
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         'Last Modification: 01/09/07
@@ -1680,7 +1680,10 @@ Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
 368             Call HandleDeletePretorianClan(UserIndex)
 
 370         Case NewPacksID.Home
-372             Call HandleHome(UserIndex)
+372             Call HandleHome(Userindex)
+            
+            Case NewPacksID.Consulta
+                Call HandleConsulta(Userindex)
             
 374         Case Else
                 'ERROR : Abort!
@@ -3439,8 +3442,14 @@ Private Sub HandleWork(ByVal UserIndex As Integer)
                         Exit Sub
 
                     End If
-
-156                 Call DoOcultarse(UserIndex)
+                    
+                    If .flags.EnConsulta Then
+                        Call WriteConsoleMsg(Userindex, "No puedes ocultarte si estas en consulta.", FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+    
+                    End If
+                    
+156                 Call DoOcultarse(Userindex)
 
             End Select
 
@@ -30632,3 +30641,92 @@ ErrHandler:
 
 End Sub
 
+''
+' Handles the "Consulta" message.
+'
+' @param    userIndex The index of the user sending the message.
+
+Private Sub HandleConsulta(ByVal Userindex As String)
+    '***************************************************
+    'Author: ZaMa
+    'Last Modification: 01/05/2010
+    'Habilita/Deshabilita el modo consulta.
+    '01/05/2010: ZaMa - Agrego validaciones.
+    '16/09/2010: ZaMa - No se hace visible en los clientes si estaba navegando (porque ya lo estaba).
+    '***************************************************
+    
+    Dim UserConsulta As Integer
+    
+    With UserList(Userindex)
+    
+        'Remove packet ID
+        Call .incomingData.ReadInteger
+        
+        ' Comando exclusivo para gms
+        If Not EsGM(Userindex) Then Exit Sub
+        
+        UserConsulta = .flags.TargetUser
+        
+        'Se asegura que el target es un usuario
+        If UserConsulta = 0 Then
+            Call WriteConsoleMsg(Userindex, "Primero tienes que seleccionar un usuario, haz click izquierdo sobre el.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+
+        End If
+        
+        ' No podes ponerte a vos mismo en modo consulta.
+        If UserConsulta = Userindex Then Exit Sub
+        
+        ' No podes estra en consulta con otro gm
+        If EsGM(UserConsulta) Then
+            Call WriteConsoleMsg(Userindex, "No puedes iniciar el modo consulta con otro administrador.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+
+        End If
+        
+        Dim UserName As String: UserName = UserList(UserConsulta).name
+        
+        ' Si ya estaba en consulta, termina la consulta
+        If UserList(UserConsulta).flags.EnConsulta Then
+            Call WriteConsoleMsg(Userindex, "Has terminado el modo consulta con " & UserName & ".", FontTypeNames.FONTTYPE_INFOBOLD)
+            Call WriteConsoleMsg(UserConsulta, "Has terminado el modo consulta.", FontTypeNames.FONTTYPE_INFOBOLD)
+            
+            Call LogGM(.name, "Termino consulta con " & UserName)
+            
+            UserList(UserConsulta).flags.EnConsulta = False
+        
+            ' Sino la inicia
+        Else
+        
+            Call WriteConsoleMsg(Userindex, "Has iniciado el modo consulta con " & UserName & ".", FontTypeNames.FONTTYPE_INFOBOLD)
+            Call WriteConsoleMsg(UserConsulta, "Has iniciado el modo consulta.", FontTypeNames.FONTTYPE_INFOBOLD)
+            Call LogGM(.name, "Inicio consulta con " & UserName)
+            
+            With UserList(UserConsulta)
+                .flags.EnConsulta = True
+                
+                ' Pierde invi u ocu
+                If .flags.invisible = 1 Or .flags.Oculto = 1 Then
+                
+                    .flags.Oculto = 0
+                    .flags.invisible = 0
+                    .Counters.TiempoOculto = 0
+                    .Counters.Invisibilidad = 0
+                    
+                    If UserList(UserConsulta).flags.Navegando = 0 Then
+                            
+                        Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessageSetInvisible(.Char.CharIndex, False))
+
+                    End If
+
+                End If
+
+            End With
+
+        End If
+        
+        Call SetModoConsulta(UserConsulta)
+
+    End With
+
+End Sub
