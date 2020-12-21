@@ -1980,9 +1980,7 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As In
         
 
         Dim OldMap As Integer
-
         Dim OldX   As Integer
-
         Dim OldY   As Integer
     
 100     If UserList(UserIndex).ComUsu.DestUsu > 0 Then
