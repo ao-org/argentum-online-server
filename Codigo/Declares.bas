@@ -1627,7 +1627,7 @@ Public Type UserFlags
     CentinelaOK As Boolean 'Centinela
     
     Traveling As Byte
-    lastMap As Byte
+    lastMap As Integer
     
 End Type
 
