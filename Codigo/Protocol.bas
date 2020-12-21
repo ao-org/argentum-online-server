@@ -406,7 +406,6 @@ Private Enum ClientPacketID
     AlterPassword           '/APASS
     AlterMail               '/AEMAIL
     AlterName               '/ANAME
-    ToggleCentinelActivated '/CENTINELAACTIVADO
     DoBackUp                '/DOBACKUP
     ShowGuildMessages       '/SHOWCMSG
     SaveMap                 '/GUARDAMAPA
@@ -454,6 +453,7 @@ Private Enum ClientPacketID
     SetTime
     DonateGold              '/DONAR
     Promedio                '/PROMEDIO
+    GiveItem                '/DAR
 End Enum
 
 Private Enum NewPacksID
@@ -1331,9 +1331,6 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
 1000         Case ClientPacketID.AlterName               '/ANAME
 1002             Call HandleAlterName(UserIndex)
         
-1004         Case ClientPacketID.ToggleCentinelActivated '/CENTINELAACTIVADO
-1006             Call HandleToggleCentinelActivated(UserIndex)
-        
 1008         Case ClientPacketID.DoBackUp                '/DOBACKUP
 1010             Call HandleDoBackUp(UserIndex)
         
@@ -1390,6 +1387,9 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
                 
             Case ClientPacketID.Promedio                '/PROMEDIO
                 Call HandlePromedio(UserIndex)
+                
+            Case ClientPacketID.GiveItem                '/DAR
+                Call HandleGiveItem(UserIndex)
 
 1076         Case ClientPacketID.KickAllChars            '/ECHARTODOSPJS
 1078             Call HandleKickAllChars(UserIndex)
@@ -15321,9 +15321,6 @@ Private Sub HandleCreateItem(ByVal UserIndex As Integer)
                 Exit Sub
             End If
         
-            ' Hay un TileExit donde estoy creando el objeto?
-124         If MapData(.Pos.Map, .Pos.X, .Pos.Y - 1).TileExit.Map > 0 Then Exit Sub
-        
             ' El indice proporcionado supera la cantidad minima o total de items existentes en el juego?
 126         If tObj < 1 Or tObj > NumObjDatas Then Exit Sub
         
@@ -16763,6 +16760,91 @@ handle:
         
 End Sub
 
+Public Sub HandleGiveItem(ByVal UserIndex As Integer)
+        
+100     If UserList(UserIndex).incomingData.Length < 9 Then
+102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
+            Exit Sub
+        End If
+    
+        On Error GoTo ErrHandler
+
+104     With UserList(UserIndex)
+
+            'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
+            Dim buffer As New clsByteQueue
+
+106         Call buffer.CopyBuffer(.incomingData)
+        
+            'Remove packet ID
+108         Call buffer.ReadByte
+        
+            Dim UserName    As String
+            Dim ObjIndex    As Integer
+            Dim Cantidad    As Integer
+            Dim Motivo      As String
+            Dim tIndex      As Integer
+        
+110         UserName = buffer.ReadASCIIString()
+112         ObjIndex = buffer.ReadInteger()
+114         Cantidad = buffer.ReadInteger()
+115         Motivo = buffer.ReadASCIIString()
+
+            'If we got here then packet is complete, copy data back to original queue
+116         Call .incomingData.CopyBuffer(buffer)
+        
+118         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) <> 0 Then
+
+120             If ObjData(ObjIndex).Agarrable = 1 Then Exit Sub
+
+121             If Cantidad > MAX_INVENTORY_OBJS Then Cantidad = MAX_INVENTORY_OBJS
+
+                ' El indice proporcionado supera la cantidad minima o total de items existentes en el juego?
+122             If ObjIndex < 1 Or ObjIndex > NumObjDatas Then Exit Sub
+            
+                ' El nombre del objeto es nulo?
+123             If LenB(ObjData(ObjIndex).name) = 0 Then Exit Sub
+
+                ' Está online?
+124             tIndex = NameIndex(UserName)
+125             If tIndex = 0 Then
+126                 Call WriteConsoleMsg(UserIndex, "El usuario " & UserName & " no está conectado.", FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                End If
+
+                Dim Objeto As obj
+130             Objeto.Amount = Cantidad
+132             Objeto.ObjIndex = ObjIndex
+
+                ' Trato de meterlo en el inventario.
+136             If MeterItemEnInventario(tIndex, Objeto) Then
+138                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.name & " ha otorgado a " & UserList(tIndex).name & " " & Cantidad & " " & ObjData(ObjIndex).name & ": " & Motivo, FontTypeNames.FONTTYPE_ROSA))
+                Else
+140                 Call WriteConsoleMsg(UserIndex, "El usuario no tiene espacio en el inventario.", FontTypeNames.FONTTYPE_INFO)
+                End If
+
+                ' Lo registro en los logs.
+141             Call LogGM(.name, "/DAR " & UserName & " - Item: " & ObjData(ObjIndex).name & "(" & ObjIndex & ") Cantidad : " & Cantidad)
+142             Call LogPremios(.name, UserName, ObjIndex, Cantidad, Motivo)
+            
+            End If
+        End With
+
+ErrHandler:
+
+        Dim Error As Long
+
+144     Error = Err.Number
+
+        On Error GoTo 0
+    
+        'Destroy auxiliar buffer
+146     Set buffer = Nothing
+    
+148     If Error <> 0 Then Err.raise Error
+        
+End Sub
+
 ''
 ' Handle the "ShowServerForm" message
 '
@@ -17458,61 +17540,6 @@ Public Sub HandleDoBackUp(ByVal UserIndex As Integer)
 HandleDoBackUp_Err:
 110     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleDoBackUp", Erl)
 112     Resume Next
-        
-End Sub
-
-''
-' Handle the "ToggleCentinelActivated" message
-'
-' @param UserIndex The index of the user sending the message
-
-Public Sub HandleToggleCentinelActivated(ByVal UserIndex As Integer)
-        
-        On Error GoTo HandleToggleCentinelActivated_Err
-        
-
-        '***************************************************
-        'Author: Lucas Tavolaro Ortiz (Tavo)
-        'Last Modification: 12/26/06
-        'Last modified by: Juan Martín Sotuyo Dodero (Maraxus)
-        'Activate or desactivate the Centinel
-        '***************************************************
-100     With UserList(UserIndex)
-            'Remove Packet ID
-102         Call .incomingData.ReadByte
-        
-104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
-        
-106         centinelaActivado = Not centinelaActivado
-        
-108         With Centinela
-110             .RevisandoUserIndex = 0
-112             .clave = 0
-114             .TiempoRestante = 0
-
-            End With
-    
-116         If CentinelaNPCIndex Then
-118             Call QuitarNPC(CentinelaNPCIndex)
-120             CentinelaNPCIndex = 0
-
-            End If
-        
-122         If centinelaActivado Then
-124             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("El centinela ha sido activado.", FontTypeNames.FONTTYPE_SERVER))
-            Else
-126             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("El centinela ha sido desactivado.", FontTypeNames.FONTTYPE_SERVER))
-
-            End If
-
-        End With
-
-        
-        Exit Sub
-
-HandleToggleCentinelActivated_Err:
-128     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleToggleCentinelActivated", Erl)
-130     Resume Next
         
 End Sub
 
