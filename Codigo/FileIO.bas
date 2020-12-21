@@ -606,8 +606,8 @@ Public Sub CargarHechizos()
 
 106     ReDim Hechizos(1 To NumeroHechizos) As tHechizo
 
-108     frmCargando.cargar.Min = 0
-110     frmCargando.cargar.Max = NumeroHechizos
+108     frmCargando.cargar.min = 0
+110     frmCargando.cargar.max = NumeroHechizos
 112     frmCargando.cargar.Value = 0
 
         'Llena la lista
@@ -1282,8 +1282,8 @@ Sub LoadOBJData()
         'obtiene el numero de obj
 106     NumObjDatas = val(Leer.GetValue("INIT", "NumObjs"))
 
-108     frmCargando.cargar.Min = 0
-110     frmCargando.cargar.Max = NumObjDatas
+108     frmCargando.cargar.min = 0
+110     frmCargando.cargar.max = NumObjDatas
 112     frmCargando.cargar.Value = 0
 
 114     ReDim Preserve ObjData(1 To NumObjDatas) As ObjData
@@ -1995,8 +1995,8 @@ Sub CargarBackUp()
 102     NumMaps = CountFiles(MapPath, "*.csm")
 104     NumMaps = NumMaps - 1
     
-106     frmCargando.cargar.Min = 0
-108     frmCargando.cargar.Max = NumMaps
+106     frmCargando.cargar.min = 0
+108     frmCargando.cargar.max = NumMaps
 110     frmCargando.cargar.Value = 0
 112     frmCargando.ToMapLbl.Visible = True
     
@@ -2040,8 +2040,8 @@ Sub LoadMapData()
     
 104     NumMaps = NumMaps - 1
     
-106     frmCargando.cargar.Min = 0
-108     frmCargando.cargar.Max = NumMaps
+106     frmCargando.cargar.min = 0
+108     frmCargando.cargar.max = NumMaps
 110     frmCargando.cargar.Value = 0
 112     frmCargando.ToMapLbl.Visible = True
 
@@ -3966,13 +3966,13 @@ CargarNpcBackUp_Err:
         
 End Sub
 
-Sub LogBan(ByVal BannedIndex As Integer, ByVal UserIndex As Integer, ByVal motivo As String)
+Sub LogBan(ByVal BannedIndex As Integer, ByVal UserIndex As Integer, ByVal Motivo As String)
         
         On Error GoTo LogBan_Err
         
 
 100     Call WriteVar(App.Path & "\logs\" & "BanDetail.log", UserList(BannedIndex).name, "BannedBy", UserList(UserIndex).name)
-102     Call WriteVar(App.Path & "\logs\" & "BanDetail.log", UserList(BannedIndex).name, "Reason", motivo)
+102     Call WriteVar(App.Path & "\logs\" & "BanDetail.log", UserList(BannedIndex).name, "Reason", Motivo)
 
         'Log interno del servidor, lo usa para hacer un UNBAN general de toda la gente banned
         Dim mifile As Integer
@@ -3991,13 +3991,13 @@ LogBan_Err:
         
 End Sub
 
-Sub LogBanFromName(ByVal BannedName As String, ByVal UserIndex As Integer, ByVal motivo As String)
+Sub LogBanFromName(ByVal BannedName As String, ByVal UserIndex As Integer, ByVal Motivo As String)
         
         On Error GoTo LogBanFromName_Err
         
 
 100     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", BannedName, "BannedBy", UserList(UserIndex).name)
-102     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", BannedName, "Reason", motivo)
+102     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", BannedName, "Reason", Motivo)
 
         'Log interno del servidor, lo usa para hacer un UNBAN general de toda la gente banned
         Dim mifile As Integer
@@ -4016,13 +4016,13 @@ LogBanFromName_Err:
         
 End Sub
 
-Sub Ban(ByVal BannedName As String, ByVal Baneador As String, ByVal motivo As String)
+Sub Ban(ByVal BannedName As String, ByVal Baneador As String, ByVal Motivo As String)
         
         On Error GoTo Ban_Err
         
 
 100     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", BannedName, "BannedBy", Baneador)
-102     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", BannedName, "Reason", motivo)
+102     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", BannedName, "Reason", Motivo)
 
         'Log interno del servidor, lo usa para hacer un UNBAN general de toda la gente banned
         Dim mifile As Integer

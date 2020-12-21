@@ -1119,6 +1119,27 @@ ErrHandler:
 
 End Sub
 
+Public Sub LogPremios(GM As String, UserName As String, ByVal ObjIndex As Integer, ByVal Cantidad As Integer, Motivo As String)
+
+        On Error GoTo ErrHandler
+
+        Dim nfile As Integer
+
+100     nfile = FreeFile ' obtenemos un canal
+
+102     Open App.Path & "\logs\PremiosOtorgados.log" For Append Shared As #nfile
+        Print #nfile, "[" & GM & "]" & vbNewLine
+104     Print #nfile, Date & " " & Time & vbNewLine
+        Print #nfile, "Item: " & ObjData(ObjIndex).name & " (" & ObjIndex & ") Cantidad: " & Cantidad & vbNewLine
+        Print #nfile, "Motivo: " & Motivo & vbNewLine & vbNewLine
+106     Close #nfile
+
+        Exit Sub
+
+ErrHandler:
+
+End Sub
+
 Public Sub LogDatabaseError(Desc As String)
         '***************************************************
         'Author: Juan Andres Dalmasso (CHOTS)
@@ -2669,16 +2690,16 @@ CerrarServidor_Err:
         
 End Sub
 
-Function Max(ByVal a As Double, ByVal b As Double) As Double
+Function max(ByVal a As Double, ByVal b As Double) As Double
         
         On Error GoTo max_Err
     
         
 
 100     If a > b Then
-102         Max = a
+102         max = a
         Else
-104         Max = b
+104         max = b
         End If
 
         
@@ -2690,16 +2711,16 @@ max_Err:
         
 End Function
 
-Function Min(ByVal a As Double, ByVal b As Double) As Double
+Function min(ByVal a As Double, ByVal b As Double) As Double
         
         On Error GoTo min_Err
     
         
 
 100     If a < b Then
-102         Min = a
+102         min = a
         Else
-104         Min = b
+104         min = b
         End If
 
         
@@ -2768,20 +2789,20 @@ Function CalcularPromedioVida(ByVal UserIndex As Integer) As Double
 End Function
 
 ' Adaptado desde https://stackoverflow.com/questions/29325069/how-to-generate-random-numbers-biased-towards-one-value-in-a-range/29325222#29325222
-Function RandomIntBiased(ByVal Min As Double, ByVal Max As Double, ByVal Bias As Double, ByVal Influence As Double) As Double
+Function RandomIntBiased(ByVal min As Double, ByVal max As Double, ByVal Bias As Double, ByVal Influence As Double) As Double
 
-    On Error GoTo Handle
+    On Error GoTo handle
 
     Dim RandomRango As Double, Mix As Double
     
-    RandomRango = Rnd * (Max - Min) + Min
+    RandomRango = Rnd * (max - min) + min
     Mix = Rnd * Influence
     
     RandomIntBiased = RandomRango * (1 - Mix) + Bias * Mix
     
     Exit Function
     
-Handle:
+handle:
     Call RegistrarError(Err.Number, Err.description, "General.RandomIntBiased")
     RandomIntBiased = Bias
 
