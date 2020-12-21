@@ -2938,13 +2938,21 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
     
 1022                 If obj.Subtipo = 1 Then
     
-1024                     For i = 1 To obj.CantItem
-    
-1026                         If Not MeterItemEnInventario(UserIndex, obj.Item(i)) Then Call TirarItemAlPiso(.Pos, obj.Item(i))
-1028                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageConsoleMsg(ObjData(obj.Item(i).ObjIndex).name & " (" & obj.Item(i).Amount & ")", FontTypeNames.FONTTYPE_INFOBOLD))
-1030                     Next i
+1018                     For i = 1 To obj.CantItem
+
+1020                        If Not MeterItemEnInventario(UserIndex, obj.Item(i)) Then
+                                
+1022                             If (.flags.Privilegios And (PlayerType.user Or PlayerType.Dios Or PlayerType.Admin)) Then
+1024                                 Call TirarItemAlPiso(.Pos, obj.Item(i))
+                                 End If
+                                
+                             End If
+                            
+1026                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageConsoleMsg(ObjData(obj.Item(i).ObjIndex).name & " (" & obj.Item(i).Amount & ")", FontTypeNames.FONTTYPE_INFOBOLD))
+
+1028                     Next i
             
-                     Else
+                      Else
             
 1032                     For i = 1 To obj.CantEntrega
     
@@ -2957,11 +2965,18 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 1036                         index.ObjIndex = obj.Item(indexobj).ObjIndex
 1038                         index.Amount = obj.Item(indexobj).Amount
     
-1040                         If Not MeterItemEnInventario(UserIndex, index) Then Call TirarItemAlPiso(.Pos, index)
-1042                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageConsoleMsg(ObjData(index.ObjIndex).name & " (" & index.Amount & ")", FontTypeNames.FONTTYPE_INFOBOLD))
-1044                     Next i
+1038                         If Not MeterItemEnInventario(UserIndex, index) Then
+
+1040                            If (.flags.Privilegios And (PlayerType.user Or PlayerType.Dios Or PlayerType.Admin)) Then
+1042                                 Call TirarItemAlPiso(.Pos, index)
+                                 End If
+                                
+                              End If
+
+1044                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageConsoleMsg(ObjData(index.ObjIndex).name & " (" & index.Amount & ")", FontTypeNames.FONTTYPE_INFOBOLD))
+1046                     Next i
     
-                     End If
+                      End If
         
 1046             Case eOBJType.otLlaves
 1048                 Call WriteConsoleMsg(UserIndex, "Las llaves en el inventario están desactivadas. Sólo se permiten en el llavero.", FontTypeNames.FONTTYPE_INFO)
