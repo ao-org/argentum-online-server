@@ -7646,7 +7646,7 @@ Private Sub HandleResucitate(ByVal UserIndex As Integer)
 114         Call RevivirUsuario(UserIndex)
 116         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Curar, 100, False))
 118         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("104", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
-120         Call WriteConsoleMsg(UserIndex, "¡Has sido resucitado!!", FontTypeNames.FONTTYPE_INFO)
+120         Call WriteConsoleMsg(UserIndex, "¡Has sido resucitado!", FontTypeNames.FONTTYPE_INFO)
 
         End With
 
