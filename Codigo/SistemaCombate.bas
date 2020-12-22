@@ -710,6 +710,8 @@ Public Sub UserDañoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 132     Call CalcularDarExp(UserIndex, NpcIndex, daño)
 134     Npclist(NpcIndex).Stats.MinHp = Npclist(NpcIndex).Stats.MinHp - daño
         '[/KEVIN]
+        
+        Call DoGolpeCritico(UserIndex, NpcIndex, 0, daño)
      
 136     If Npclist(NpcIndex).Stats.MinHp <= 0 Then
             
