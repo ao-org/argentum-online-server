@@ -135,6 +135,8 @@ Public TimeoutEsperandoLoggear      As Long
 
 Public IntervaloTirar               As Long
 
+Public IntervaloMeditar             As Long
+
 Public IntervaloCaminar             As Long
 
 Public IntervaloPuedeSerAtacado     As Long
@@ -258,8 +260,8 @@ Sub WorldSave()
 106         If MapInfo(j).backup_mode = 1 Then K = K + 1
 108     Next j
 
-110     FrmStat.ProgressBar1.Min = 0
-112     FrmStat.ProgressBar1.Max = K
+110     FrmStat.ProgressBar1.min = 0
+112     FrmStat.ProgressBar1.max = K
 114     FrmStat.ProgressBar1.Value = 0
 
 116     For LoopX = 1 To NumMaps
@@ -752,19 +754,19 @@ Public Function CheckHD(ByVal hd As String) As Boolean
         'Last Modify Date: 07/12/2009
         ' 07/12/2009: Zagen - Agregè la funcion de agregar los digitos de un Serial Baneado.
         '***************************************************
-        Dim Handle As Integer
+        Dim handle As Integer
 
-100     Handle = FreeFile
+100     handle = FreeFile
 
-102     Open DatPath & "\BanHds.dat" For Input As #Handle
+102     Open DatPath & "\BanHds.dat" For Input As #handle
 
         Dim Linea As String, Total As String
 
-104     Do Until EOF(Handle)
-106         Line Input #Handle, Linea
+104     Do Until EOF(handle)
+106         Line Input #handle, Linea
 108         Total = Total + Linea + vbCrLf
         Loop
-110     Close #Handle
+110     Close #handle
     
         Dim ret As String
 
@@ -792,19 +794,19 @@ Public Function CheckMAC(ByVal Mac As String) As Boolean
         'Last Modify Date: 07/12/2009
         ' 07/12/2009: Zagen - Agregè la funcion de agregar los digitos de un Serial Baneado.
         '***************************************************
-        Dim Handle As Integer
+        Dim handle As Integer
 
-100     Handle = FreeFile
+100     handle = FreeFile
 
-102     Open DatPath & "\BanMacs.dat" For Input As #Handle
+102     Open DatPath & "\BanMacs.dat" For Input As #handle
 
         Dim Linea As String, Total As String
 
-104     Do Until EOF(Handle)
-106         Line Input #Handle, Linea
+104     Do Until EOF(handle)
+106         Line Input #handle, Linea
 108         Total = Total + Linea + vbCrLf
         Loop
-110     Close #Handle
+110     Close #handle
 
         Dim ret As String
 

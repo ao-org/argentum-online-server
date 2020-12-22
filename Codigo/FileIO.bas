@@ -2673,6 +2673,9 @@ Sub LoadIntervalos()
     
 168     IntervaloTirar = val(Lector.GetValue("INTERVALOS", "IntervaloTirar"))
 170     FrmInterv.txtintervalotirar.Text = IntervaloTirar
+
+        IntervaloMeditar = val(Lector.GetValue("INTERVALOS", "IntervaloMeditar"))
+        FrmInterv.txtIntervaloMeditar.Text = IntervaloMeditar
     
 172     IntervaloCaminar = val(Lector.GetValue("INTERVALOS", "IntervaloCaminar"))
 174     FrmInterv.txtintervalocaminar.Text = IntervaloCaminar

@@ -7582,7 +7582,7 @@ Private Sub HandleMeditate(ByVal UserIndex As Integer)
 
 118         If .flags.Meditando Then
 
-120             .Counters.InicioMeditar = GetTickCount()
+120             .Counters.TimerMeditar = 0
 
 122             Select Case .Stats.ELV
 

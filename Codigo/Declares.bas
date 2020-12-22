@@ -253,8 +253,6 @@ End Type
 
 Public MiCabecera                    As tCabecera
 
-Public Const TIEMPO_INICIOMEDITAR    As Integer = 500
-
 Public Const NingunEscudo            As Integer = 2
 
 Public Const NingunCasco             As Integer = 2
@@ -1688,8 +1686,7 @@ Public Type UserCounters
     TimerGolpeUsar As Long
     TimerCaminar As Long
     TimerTirar As Long
-    
-    InicioMeditar As Long
+    TimerMeditar As Long
     
     'Nuevos de AoLibre
     TimerPuedeSerAtacado As Long
