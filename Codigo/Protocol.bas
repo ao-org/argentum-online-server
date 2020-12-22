@@ -596,6 +596,18 @@ Public Enum eEditOptions
     eo_Escudo
     eo_Casco
     eo_Particula
+    eo_Vida
+    eo_Mana
+    eo_Energia
+    eo_MinHP
+    eo_MinMP
+    eo_Hit
+    eo_MinHit
+    eo_MaxHit
+    eo_Desc
+    eo_Intervalo
+    eo_Hogar
+
 End Enum
 
 Public Type PersonajeCuenta
@@ -11472,6 +11484,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
             Dim LoopC         As Byte
             Dim commandString As String
             Dim n             As Byte
+            Dim tmpLong       As Long
         
 110         UserName = Replace(Buffer.ReadASCIIString(), "+", " ")
         
@@ -11798,6 +11811,211 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                         End If
 
                     End If
+                    
+                Case eEditOptions.eo_Vida
+                    If tUser <= 0 Then
+                        Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                    
+                    Else
+                        tmpLong = val(Arg1)
+                        
+                        If tmpLong > 0 Then
+                            UserList(tUser).Stats.MaxHp = min(tmpLong, STAT_MAXHP)
+                            UserList(tUser).Stats.MinHp = UserList(tUser).Stats.MaxHp
+                            
+                            Call WriteUpdateUserStats(UserIndex)
+                        End If
+                    End If
+                    
+                Case eEditOptions.eo_Mana
+                    If tUser <= 0 Then
+                        Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                    
+                    Else
+                        tmpLong = val(Arg1)
+                        
+                        If tmpLong > 0 Then
+                            UserList(tUser).Stats.MaxMAN = min(tmpLong, STAT_MAXMP)
+                            UserList(tUser).Stats.MinMAN = UserList(tUser).Stats.MaxMAN
+                            
+                            Call WriteUpdateUserStats(UserIndex)
+                        End If
+                    End If
+                    
+                Case eEditOptions.eo_Energia
+                    If tUser <= 0 Then
+                        Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                    
+                    Else
+                        tmpLong = val(Arg1)
+                        
+                        If tmpLong > 0 Then
+                            UserList(tUser).Stats.MaxSta = min(tmpLong, STAT_MAXSTA)
+                            UserList(tUser).Stats.MinSta = UserList(tUser).Stats.MaxSta
+                            
+                            Call WriteUpdateUserStats(UserIndex)
+                        End If
+                    End If
+                        
+                Case eEditOptions.eo_MinHP
+                    If tUser <= 0 Then
+                        Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                    
+                    Else
+                        tmpLong = val(Arg1)
+                        
+                        If tmpLong >= 0 Then
+                            UserList(tUser).Stats.MinHp = min(tmpLong, STAT_MAXHP)
+                            
+                            Call WriteUpdateHP(UserIndex)
+                        End If
+                    End If
+                    
+                Case eEditOptions.eo_MinMP
+                    If tUser <= 0 Then
+                        Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                    
+                    Else
+                        tmpLong = val(Arg1)
+                        
+                        If tmpLong >= 0 Then
+                            UserList(tUser).Stats.MinMAN = min(tmpLong, STAT_MAXMP)
+                            
+                            Call WriteUpdateMana(UserIndex)
+                        End If
+                    End If
+                    
+                Case eEditOptions.eo_Hit
+                    If tUser <= 0 Then
+                        Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                    
+                    Else
+                        tmpLong = val(Arg1)
+                        
+                        If tmpLong >= 0 Then
+                            UserList(tUser).Stats.MaxHit = min(tmpLong, STAT_MAXHIT_OVER36)
+                            UserList(tUser).Stats.MinHIT = UserList(tUser).Stats.MaxHit
+                        End If
+                    End If
+                    
+                Case eEditOptions.eo_MinHit
+                    If tUser <= 0 Then
+                        Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                    
+                    Else
+                        tmpLong = val(Arg1)
+                        
+                        If tmpLong >= 0 Then
+                            UserList(tUser).Stats.MinHIT = min(tmpLong, STAT_MAXHIT_OVER36)
+                        End If
+                    End If
+                    
+                Case eEditOptions.eo_MaxHit
+                    If tUser <= 0 Then
+                        Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                    
+                    Else
+                        tmpLong = val(Arg1)
+                        
+                        If tmpLong >= 0 Then
+                            UserList(tUser).Stats.MaxHit = min(tmpLong, STAT_MAXHIT_OVER36)
+                        End If
+                    End If
+                    
+                Case eEditOptions.eo_Desc
+                    If tUser <= 0 Then
+                        Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                    
+                    ElseIf DescripcionValida(Arg1) Then
+                        UserList(tUser).Desc = Arg1
+                        
+                    Else
+                        Call WriteConsoleMsg(UserIndex, "Caracteres inválidos en la descripción.", FontTypeNames.FONTTYPE_INFO)
+                    End If
+                    
+                Case eEditOptions.eo_Intervalo
+                    If tUser <= 0 Then
+                        Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                    Else
+                        Arg1 = UCase$(Arg1)
+                        
+                        tmpLong = val(Arg2)
+                        
+                        If tmpLong >= 0 Then
+                    
+                            Select Case Arg1
+                                Case "USAR"
+                                    UserList(tUser).Intervals.UsarClic = tmpLong
+                                    UserList(tUser).Intervals.UsarU = tmpLong
+                                    
+                                Case "USAR_U", "USAR+U", "USAR-U"
+                                    UserList(tUser).Intervals.UsarU = tmpLong
+                                    
+                                Case "USAR_CLIC", "USAR+CLIC", "USAR-CLIC", "USAR_CLICK", "USAR+CLICK", "USAR-CLICK"
+                                    UserList(tUser).Intervals.UsarClic = tmpLong
+                                    
+                                Case "ARCO", "PROYECTILES"
+                                    UserList(tUser).Intervals.Arco = tmpLong
+                                    
+                                Case "GOLPE", "GOLPES", "GOLPEAR"
+                                    UserList(tUser).Intervals.Golpe = tmpLong
+                                    
+                                Case "MAGIA", "HECHIZO", "HECHIZOS", "LANZAR"
+                                    UserList(tUser).Intervals.magia = tmpLong
+
+                                Case "COMBO"
+                                    UserList(tUser).Intervals.GolpeMagia = tmpLong
+                                    UserList(tUser).Intervals.MagiaGolpe = tmpLong
+
+                                Case "GOLPE-MAGIA", "GOLPE-HECHIZO"
+                                    UserList(tUser).Intervals.GolpeMagia = tmpLong
+
+                                Case "MAGIA-GOLPE", "HECHIZO-GOLPE"
+                                    UserList(tUser).Intervals.MagiaGolpe = tmpLong
+                                    
+                                Case "GOLPE-USAR"
+                                    UserList(tUser).Intervals.GolpeUsar = tmpLong
+                                    
+                                Case "TRABAJAR", "WORK", "TRABAJO"
+                                    UserList(tUser).Intervals.TrabajarConstruir = tmpLong
+                                    UserList(tUser).Intervals.TrabajarExtraer = tmpLong
+                                    
+                                Case "TRABAJAR_EXTRAER", "EXTRAER", "TRABAJO_EXTRAER"
+                                    UserList(tUser).Intervals.TrabajarExtraer = tmpLong
+                                    
+                                Case "TRABAJAR_CONSTRUIR", "CONSTRUIR", "TRABAJO_CONSTRUIR"
+                                    UserList(tUser).Intervals.TrabajarConstruir = tmpLong
+                                    
+                                Case Else
+                                    Exit Sub
+                            End Select
+                            
+                            Call WriteIntervals(tUser)
+                            
+                        End If
+                    End If
+                    
+                Case eEditOptions.eo_Hogar
+                    If tUser <= 0 Then
+                        Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                    Else
+                        Arg1 = UCase$(Arg1)
+                    
+                        Select Case Arg1
+                            Case "NIX"
+                                UserList(tUser).Hogar = eCiudad.cNix
+                            Case "ULLA", "ULLATHORPE"
+                                UserList(tUser).Hogar = eCiudad.cUllathorpe
+                            Case "BANDER", "BANDERBILL"
+                                UserList(tUser).Hogar = eCiudad.cBanderbill
+                            Case "LINDOS"
+                                UserList(tUser).Hogar = eCiudad.cLindos
+                            Case "ARGHAL"
+                                UserList(tUser).Hogar = eCiudad.cArghal
+                            Case "HILLIDAN"
+                                UserList(tUser).Hogar = eCiudad.CHillidan
+                        End Select
+                    End If
                 
 330             Case Else
                 
@@ -11845,15 +12063,48 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                 
 380             Case eEditOptions.eo_Raza
 382                 commandString = commandString & "RAZA "
+
+384             Case eEditOptions.eo_Vida
+386                 commandString = commandString & "VIDA "
+                    
+388             Case eEditOptions.eo_Mana
+390                 commandString = commandString & "MANA "
+                    
+392             Case eEditOptions.eo_Energia
+394                 commandString = commandString & "ENERGIA "
+                    
+396             Case eEditOptions.eo_MinHP
+398                 commandString = commandString & "MINHP "
+                    
+400             Case eEditOptions.eo_MinMP
+402                 commandString = commandString & "MINMP "
+                    
+               Case eEditOptions.eo_Hit
+                    commandString = commandString & "HIT "
+                    
+404             Case eEditOptions.eo_MinHit
+406                 commandString = commandString & "MINHIT "
+                    
+408             Case eEditOptions.eo_MaxHit
+410                 commandString = commandString & "MAXHIT "
+                    
+412             Case eEditOptions.eo_Desc
+414                 commandString = commandString & "DESC "
+                    
+416             Case eEditOptions.eo_Intervalo
+418                 commandString = commandString & "INTERVALO "
+                    
+420             Case eEditOptions.eo_Hogar
+422                 commandString = commandString & "HOGAR "
                 
-384             Case Else
-386                 commandString = commandString & "UNKOWN "
+424             Case Else
+426                 commandString = commandString & "UNKOWN "
 
             End Select
         
-388         commandString = commandString & Arg1 & " " & Arg2
+428         commandString = commandString & Arg1 & " " & Arg2
         
-390         Call LogGM(.name, commandString & " " & UserName)
+430         Call LogGM(.name, commandString & " " & UserName)
 
         End With
 
@@ -11861,14 +12112,14 @@ ErrHandler:
 
         Dim Error As Long
 
-392     Error = Err.Number
+432     Error = Err.Number
 
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-394     Set Buffer = Nothing
+434     Set Buffer = Nothing
     
-396     If Error <> 0 Then Err.raise Error
+436     If Error <> 0 Then Err.raise Error
 
 End Sub
 

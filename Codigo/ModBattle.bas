@@ -204,7 +204,7 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
 356             .Stats.MaxMAN = manaok
 358             .Stats.MinMAN = manaok
 
-360             If .Stats.MaxMAN > 9999 Then .Stats.MaxMAN = 9999
+360             If .Stats.MaxMAN > STAT_MAXMP Then .Stats.MaxMAN = STAT_MAXMP
 
             End If
 

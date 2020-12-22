@@ -830,6 +830,8 @@ Public Const STAT_MAXELV              As Byte = 50
 
 Public Const STAT_MAXHP               As Integer = 32000
 
+Public Const STAT_MAXMP               As Integer = 32000
+
 Public Const STAT_MAXSTA              As Integer = 32000
 
 Public Const STAT_MAXMAN              As Integer = 32000
