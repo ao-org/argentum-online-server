@@ -3312,7 +3312,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
             
                           Case 1, 2
     
-1318                         If .donador.activo = 0 Then ' Donador no espera tiempo
+1318                         If .donador.activo = 0 And Not EsGM(UserIndex) Then ' Donador no espera tiempo
 1320                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Runa, 400, False))
 1322                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.CharIndex, 350, Accion_Barra.Runa))
                               Else
