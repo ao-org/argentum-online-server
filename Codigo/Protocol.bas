@@ -30648,7 +30648,7 @@ End Sub
 '
 ' @param    userIndex The index of the user sending the message.
 
-Private Sub HandleConsulta(ByVal UserIndex As String)
+Private Sub HandleConsulta(ByVal UserIndex As Integer)
     '***************************************************
     'Author: ZaMa
     'Last Modification: 01/05/2010
@@ -30717,21 +30717,26 @@ Private Sub HandleConsulta(ByVal UserIndex As String)
 
         ' Si ya estaba en consulta, termina la consulta
         If UserList(UserConsulta).flags.EnConsulta Then
-            Call WriteConsoleMsg(UserIndex, "Has terminado el modo consulta con " & Nick & ".", FontTypeNames.FONTTYPE_INFOBOLD)
+            Call WriteConsoleMsg(UserIndex, "Has terminado el modo consulta con " & UserList(UserConsulta).name & ".", FontTypeNames.FONTTYPE_INFOBOLD)
             Call WriteConsoleMsg(UserConsulta, "Has terminado el modo consulta.", FontTypeNames.FONTTYPE_INFOBOLD)
             
-            Call LogGM(.name, "Termino consulta con " & Nick)
+            Call LogGM(.name, "Termino consulta con " & UserList(UserConsulta).name)
             
             UserList(UserConsulta).flags.EnConsulta = False
         
             ' Sino la inicia
         Else
         
-            Call WriteConsoleMsg(UserIndex, "Has iniciado el modo consulta con " & Nick & ".", FontTypeNames.FONTTYPE_INFOBOLD)
+            Call WriteConsoleMsg(UserIndex, "Has iniciado el modo consulta con " & UserList(UserConsulta).name & ".", FontTypeNames.FONTTYPE_INFOBOLD)
             Call WriteConsoleMsg(UserConsulta, "Has iniciado el modo consulta.", FontTypeNames.FONTTYPE_INFOBOLD)
-            Call LogGM(.name, "Inicio consulta con " & Nick)
+            
+            Call LogGM(.name, "Inicio consulta con " & UserList(UserConsulta).name)
             
             With UserList(UserConsulta)
+                If Not EstaPCarea(UserIndex, UserConsulta) Then
+                    Call WarpUserChar(UserIndex, .Pos.Map, .Pos.X, .Pos.Y, True)
+                End If
+            
                 .flags.EnConsulta = True
                 
                 ' Pierde invi u ocu
