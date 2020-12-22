@@ -534,12 +534,20 @@ Begin VB.Form FrmInterv
          TabIndex        =   4
          Top             =   210
          Width           =   1410
+         Begin VB.TextBox txtIntervaloPerderStamina 
+            Height          =   285
+            Left            =   120
+            TabIndex        =   72
+            Text            =   "0"
+            Top             =   1350
+            Width           =   1050
+         End
          Begin VB.TextBox txtStaminaIntervaloSinDescansar 
             Height          =   285
             Left            =   150
             TabIndex        =   6
             Text            =   "0"
-            Top             =   1185
+            Top             =   840
             Width           =   1050
          End
          Begin VB.TextBox txtStaminaIntervaloDescansar 
@@ -547,8 +555,17 @@ Begin VB.Form FrmInterv
             Left            =   165
             TabIndex        =   5
             Text            =   "0"
-            Top             =   510
+            Top             =   360
             Width           =   1050
+         End
+         Begin VB.Label Label29 
+            AutoSize        =   -1  'True
+            Caption         =   "Desnudo (pierde)"
+            Height          =   195
+            Left            =   135
+            TabIndex        =   73
+            Top             =   1125
+            Width           =   1215
          End
          Begin VB.Label Label2 
             AutoSize        =   -1  'True
@@ -556,16 +573,17 @@ Begin VB.Form FrmInterv
             Height          =   195
             Left            =   165
             TabIndex        =   8
-            Top             =   930
+            Top             =   650
             Width           =   1005
          End
          Begin VB.Label Label4 
             AutoSize        =   -1  'True
+            BackStyle       =   0  'Transparent
             Caption         =   "Descansando"
             Height          =   195
             Left            =   180
             TabIndex        =   7
-            Top             =   255
+            Top             =   150
             Width           =   990
          End
       End
@@ -801,6 +819,7 @@ Public Sub AplicarIntervalos()
 102     StaminaIntervaloSinDescansar = val(txtStaminaIntervaloSinDescansar.Text)
 104     SanaIntervaloDescansar = val(txtSanaIntervaloDescansar.Text)
 106     StaminaIntervaloDescansar = val(txtStaminaIntervaloDescansar.Text)
+107     IntervaloPerderStamina = val(txtIntervaloPerderStamina.Text)
 108     IntervaloSed = val(txtIntervaloSed.Text)
 110     IntervaloHambre = val(txtIntervaloHambre.Text)
 112     IntervaloVeneno = val(txtIntervaloVeneno.Text)
@@ -863,6 +882,7 @@ Private Sub Command2_Click()
 102     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "StaminaIntervaloSinDescansar", CStr(StaminaIntervaloSinDescansar))
 104     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "SanaIntervaloDescansar", CStr(SanaIntervaloDescansar))
 106     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "StaminaIntervaloDescansar", CStr(StaminaIntervaloDescansar))
+107     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloPerderStamina", CStr(IntervaloPerderStamina))
 108     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloSed", CStr(IntervaloSed))
 110     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloHambre", CStr(IntervaloHambre))
 112     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloVeneno", CStr(IntervaloVeneno))
