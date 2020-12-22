@@ -10421,15 +10421,17 @@ Private Sub HandleGoToChar(ByVal UserIndex As Integer)
 
 116             If LenB(UserName) <> 0 Then
                     tUser = NameIndex(UserName)
+                    
+118                 If tUser <= 0 Then
+119                     Call WriteConsoleMsg(UserIndex, "El jugador no está online.", FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
                 Else
-118                 tUser = .flags.TargetUser
+120                 tUser = .flags.TargetUser
+
+121                 If tUser <= 0 Then Exit Sub
                 End If
-                
-120             If tUser <= 0 Then
-122                 Call WriteConsoleMsg(UserIndex, "El jugador no está online.", FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-                End If
-                
+      
 124             If CompararPrivilegios(tUser, UserIndex) > 0 Then
 126                 Call WriteConsoleMsg(UserIndex, "Se le ha avisado a " & UserList(tUser).name & " que quieres ir a su posición.", FontTypeNames.FONTTYPE_INFO)
 128                 Call WriteConsoleMsg(tUser, .name & " quiere transportarse a tu ubicación. Escribe /sum " & .name & " para traerlo.", FontTypeNames.FONTTYPE_INFO)
@@ -11823,7 +11825,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                             UserList(tUser).Stats.MaxHp = min(tmpLong, STAT_MAXHP)
                             UserList(tUser).Stats.MinHp = UserList(tUser).Stats.MaxHp
                             
-                            Call WriteUpdateUserStats(UserIndex)
+                            Call WriteUpdateUserStats(tUser)
                         End If
                     End If
                     
@@ -11838,7 +11840,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                             UserList(tUser).Stats.MaxMAN = min(tmpLong, STAT_MAXMP)
                             UserList(tUser).Stats.MinMAN = UserList(tUser).Stats.MaxMAN
                             
-                            Call WriteUpdateUserStats(UserIndex)
+                            Call WriteUpdateUserStats(tUser)
                         End If
                     End If
                     
@@ -11853,7 +11855,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                             UserList(tUser).Stats.MaxSta = min(tmpLong, STAT_MAXSTA)
                             UserList(tUser).Stats.MinSta = UserList(tUser).Stats.MaxSta
                             
-                            Call WriteUpdateUserStats(UserIndex)
+                            Call WriteUpdateUserStats(tUser)
                         End If
                     End If
                         
@@ -11867,7 +11869,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                         If tmpLong >= 0 Then
                             UserList(tUser).Stats.MinHp = min(tmpLong, STAT_MAXHP)
                             
-                            Call WriteUpdateHP(UserIndex)
+                            Call WriteUpdateHP(tUser)
                         End If
                     End If
                     
@@ -11881,7 +11883,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                         If tmpLong >= 0 Then
                             UserList(tUser).Stats.MinMAN = min(tmpLong, STAT_MAXMP)
                             
-                            Call WriteUpdateMana(UserIndex)
+                            Call WriteUpdateMana(tUser)
                         End If
                     End If
                     
@@ -13326,51 +13328,51 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
             
 112         If EsGM(UserIndex) Then
 114
-                If LenB(UserName) <> 0 Then
+115             If LenB(UserName) <> 0 Then
 116                 tUser = NameIndex(UserName)
-                Else
-118                 tUser = .flags.TargetUser
-                End If
-            
-120             If tUser <= 0 Then
-122                 Call WriteConsoleMsg(UserIndex, "El jugador no está online.", FontTypeNames.FONTTYPE_INFO)
-                Else
-                    
-124                 If CompararPrivilegios(tUser, UserIndex) > 0 Then
-126                     Call WriteConsoleMsg(UserIndex, "Se le ha avisado a " & UserList(tUser).name & " que quieres traerlo a tu posición.", FontTypeNames.FONTTYPE_INFO)
-128                     Call WriteConsoleMsg(tUser, .name & " quiere transportarte a su ubicación. Escribe /ira " & .name & " para ir.", FontTypeNames.FONTTYPE_INFO)
+
+117                 If tUser <= 0 Then
+118                     Call WriteConsoleMsg(UserIndex, "El jugador no está online.", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
+                Else
+119                 tUser = .flags.TargetUser
+
+120                 If tUser <= 0 Then Exit Sub
+                End If
+
+124             If CompararPrivilegios(tUser, UserIndex) > 0 Then
+126                 Call WriteConsoleMsg(UserIndex, "Se le ha avisado a " & UserList(tUser).name & " que quieres traerlo a tu posición.", FontTypeNames.FONTTYPE_INFO)
+128                 Call WriteConsoleMsg(tUser, .name & " quiere transportarte a su ubicación. Escribe /ira " & .name & " para ir.", FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                End If
+                
+                Dim NotConsejero As Boolean
+130             NotConsejero = (.flags.Privilegios And PlayerType.Consejero) = 0
+                
+                ' Consejeros sólo pueden traer en el mismo mapa
+132             If NotConsejero Or .Pos.Map = UserList(tUser).Pos.Map Then
                     
-                    Dim NotConsejero As Boolean
-130                 NotConsejero = (.flags.Privilegios And PlayerType.Consejero) = 0
-                    
-                    ' Consejeros sólo pueden traer en el mismo mapa
-132                 If NotConsejero Or .Pos.Map = UserList(tUser).Pos.Map Then
-                        
-                        ' Si el admin está invisible no mostramos el nombre
-134                     If NotConsejero And .flags.AdminInvisible = 1 Then
-136                         Call WriteConsoleMsg(tUser, "Te han trasportado.", FontTypeNames.FONTTYPE_INFO)
-                        Else
-138                         Call WriteConsoleMsg(tUser, .name & " te ha trasportado.", FontTypeNames.FONTTYPE_INFO)
-                        End If
-
-140                     Call WarpToLegalPos(tUser, .Pos.Map, .Pos.X, .Pos.Y + 1, True, True)
-
-142                     Call WriteConsoleMsg(UserIndex, "Has traído a " & UserList(tUser).name & ".", FontTypeNames.FONTTYPE_INFO)
-                        
-                        ' Si trato de sumonearlo estando en Modo Battle, lo sacamos cagando y lo escrachamos en los logs.
-144                     If UserList(tUser).flags.BattleModo = 1 Then
-146                         Call WriteConsoleMsg(UserIndex, "¡¡¡ATENCIÓN!!! [" & UCase(UserList(tUser).name) & "] SE ENCUENTRA EN MODO BATTLE.", FontTypeNames.FONTTYPE_WARNING)
-148                         Call LogGM(.name, "¡¡¡ATENCIÓN /SUM EN MODO BATTLE " & UserName & " Map:" & .Pos.Map & " X:" & .Pos.X & " Y:" & .Pos.Y)
-
-                        Else
-150                         Call LogGM(.name, "/SUM " & UserName & " Map:" & .Pos.Map & " X:" & .Pos.X & " Y:" & .Pos.Y)
-
-                        End If
-                    
+                    ' Si el admin está invisible no mostramos el nombre
+134                 If NotConsejero And .flags.AdminInvisible = 1 Then
+136                     Call WriteConsoleMsg(tUser, "Te han trasportado.", FontTypeNames.FONTTYPE_INFO)
+                    Else
+138                     Call WriteConsoleMsg(tUser, .name & " te ha trasportado.", FontTypeNames.FONTTYPE_INFO)
                     End If
 
+140                 Call WarpToLegalPos(tUser, .Pos.Map, .Pos.X, .Pos.Y + 1, True, True)
+
+142                 Call WriteConsoleMsg(UserIndex, "Has traído a " & UserList(tUser).name & ".", FontTypeNames.FONTTYPE_INFO)
+                    
+                    ' Si trato de sumonearlo estando en Modo Battle, lo sacamos cagando y lo escrachamos en los logs.
+144                 If UserList(tUser).flags.BattleModo = 1 Then
+146                     Call WriteConsoleMsg(UserIndex, "¡¡¡ATENCIÓN!!! [" & UCase(UserList(tUser).name) & "] SE ENCUENTRA EN MODO BATTLE.", FontTypeNames.FONTTYPE_WARNING)
+148                     Call LogGM(.name, "¡¡¡ATENCIÓN /SUM EN MODO BATTLE " & UserName & " Map:" & .Pos.Map & " X:" & .Pos.X & " Y:" & .Pos.Y)
+
+                    Else
+150                     Call LogGM(.name, "/SUM " & UserName & " Map:" & .Pos.Map & " X:" & .Pos.X & " Y:" & .Pos.Y)
+                    End If
+                
                 End If
                 
             End If
