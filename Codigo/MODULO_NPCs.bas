@@ -1627,3 +1627,30 @@ Handler:
 112     Resume Next
 End Sub
 
+Sub WarpNpcChar(ByVal NpcIndex As Integer, ByVal Map As Byte, ByVal X As Integer, ByVal Y As Integer, Optional ByVal FX As Boolean = False)
+
+    Dim NuevaPos                    As WorldPos
+    Dim FuturePos                   As WorldPos
+
+    Call EraseNPCChar(NpcIndex)
+
+    FuturePos.Map = Map
+    FuturePos.X = X
+    FuturePos.Y = Y
+    Call ClosestLegalPos(FuturePos, NuevaPos, True, True)
+
+    If NuevaPos.Map = 0 Or NuevaPos.X = 0 Or NuevaPos.Y = 0 Then
+        Debug.Print "Error al tepear NPC"
+        Call QuitarNPC(NpcIndex)
+    Else
+        Npclist(NpcIndex).Pos = NuevaPos
+        Call MakeNPCChar(True, 0, NpcIndex, NuevaPos.Map, NuevaPos.X, NuevaPos.Y)
+
+        If FX Then                                    'FX
+            Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessagePlayWave(SND_WARP, NuevaPos.X, NuevaPos.Y))
+            Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageCreateFX(Npclist(NpcIndex).Char.CharIndex, FXIDs.FXWARP, 0))
+        End If
+
+    End If
+
+End Sub
