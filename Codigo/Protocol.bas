@@ -2496,7 +2496,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
     
                         'If not under a spell effect, show char
 218                     If .flags.invisible = 0 Then
-220                         Call WriteConsoleMsg(UserIndex, "Has vuelto a ser visible.", FontTypeNames.FONTTYPE_INFO)
+220                         'Call WriteConsoleMsg(UserIndex, "Has vuelto a ser visible.", FontTypeNames.FONTTYPE_INFO)
 222                         Call WriteLocaleMsg(UserIndex, "307", FontTypeNames.FONTTYPE_INFO)
 224                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, False))
                         End If
