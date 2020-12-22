@@ -407,8 +407,8 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
 
 hayerror:
         
-        Dim desc As String
-            desc = Err.description & vbNewLine & _
+        Dim Desc As String
+            Desc = Err.description & vbNewLine & _
                     " Usuario: " & UserList(UserIndex).name & vbNewLine & _
                     "Pos: " & Map & "-" & X & "-" & Y
             
@@ -1944,7 +1944,7 @@ Sub WarpToLegalPos(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As 
         Dim ALoop As Byte, Find As Boolean, lX As Long, lY As Long
 
 100     Find = False
-102     ALoop = 1
+102     ALoop = 0
 
 104     Do Until Find = True
 

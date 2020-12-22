@@ -10401,38 +10401,45 @@ Private Sub HandleGoToChar(ByVal UserIndex As Integer)
             Dim Y        As Byte
         
 110         UserName = Buffer.ReadASCIIString()
-112         tUser = NameIndex(UserName)
+
+            'If we got here then packet is complete, copy data back to original queue
+112         Call .incomingData.CopyBuffer(Buffer)
         
-114         If .flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin Or PlayerType.SemiDios Or PlayerType.Consejero) Then
+114         If EsGM(UserIndex) Then
 
-                'Si es dios o Admins no podemos salvo que nosotros tambiín lo seamos
-116             If Not (EsDios(UserName) Or EsAdmin(UserName)) Or (.flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin)) <> 0 Then
-118                 If tUser <= 0 Then
-120                     Call WriteConsoleMsg(UserIndex, "Usuario offline.", FontTypeNames.FONTTYPE_INFO)
-                    Else
+116             If LenB(UserName) <> 0 Then
+                    tUser = NameIndex(UserName)
+                Else
+118                 tUser = .flags.TargetUser
+                End If
                 
-122                     X = UserList(tUser).Pos.X
-124                     Y = UserList(tUser).Pos.Y + 1
-126                     Call FindLegalPos(UserIndex, UserList(tUser).Pos.Map, X, Y)
+120             If tUser <= 0 Then
+122                 Call WriteConsoleMsg(UserIndex, "El jugador no está online.", FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                End If
                 
-128                     Call WarpUserChar(UserIndex, UserList(tUser).Pos.Map, X, Y, True)
-                    
-130                     If .flags.AdminInvisible = 0 Then
-132                         Call WriteConsoleMsg(tUser, .name & " se ha trasportado hacia donde te encuentras.", FontTypeNames.FONTTYPE_INFO)
-                        
-
-                        End If
-                    
-134                     Call LogGM(.name, "/IRA " & UserName & " Mapa:" & UserList(tUser).Pos.Map & " X:" & UserList(tUser).Pos.X & " Y:" & UserList(tUser).Pos.Y)
-
-                    End If
-
+124             If CompararPrivilegios(tUser, UserIndex) > 0 Then
+126                 Call WriteConsoleMsg(UserIndex, "Se le ha avisado a " & UserList(tUser).name & " que quieres ir a su posición.", FontTypeNames.FONTTYPE_INFO)
+128                 Call WriteConsoleMsg(tUser, .name & " quiere transportarse a tu ubicación. Escribe /sum " & .name & " para traerlo.", FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
                 End If
 
+130             X = UserList(tUser).Pos.X
+132             Y = UserList(tUser).Pos.Y + 1
+
+134             Call FindLegalPos(UserIndex, UserList(tUser).Pos.Map, X, Y)
+                
+136             Call WarpUserChar(UserIndex, UserList(tUser).Pos.Map, X, Y, True)
+                    
+138             If .flags.AdminInvisible = 0 Then
+140                 Call WriteConsoleMsg(tUser, .name & " se ha trasportado hacia donde te encuentras.", FontTypeNames.FONTTYPE_INFO)
+                End If
+                
+142             Call WriteConsoleMsg(UserIndex, "Te has transportado hacia " & UserList(tUser).name & ".", FontTypeNames.FONTTYPE_INFO)
+                    
+144             Call LogGM(.name, "/IRA " & UserName & " Mapa:" & UserList(tUser).Pos.Map & " X:" & UserList(tUser).Pos.X & " Y:" & UserList(tUser).Pos.Y)
+
             End If
-        
-            'If we got here then packet is complete, copy data back to original queue
-136         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -10440,14 +10447,14 @@ ErrHandler:
 
         Dim Error As Long
 
-138     Error = Err.Number
+146     Error = Err.Number
 
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-140     Set Buffer = Nothing
+148     Set Buffer = Nothing
     
-142     If Error <> 0 Then Err.raise Error
+150     If Error <> 0 Then Err.raise Error
 
 End Sub
 
@@ -13068,39 +13075,46 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
             
 112         If EsGM(UserIndex) Then
 114
-
-                If Len(UserName) <> 0 Then
+                If LenB(UserName) <> 0 Then
 116                 tUser = NameIndex(UserName)
                 Else
 118                 tUser = .flags.TargetUser
                 End If
             
 120             If tUser <= 0 Then
-122                 Call WriteConsoleMsg(UserIndex, "El jugador no esta online.", FontTypeNames.FONTTYPE_INFO)
-
+122                 Call WriteConsoleMsg(UserIndex, "El jugador no está online.", FontTypeNames.FONTTYPE_INFO)
                 Else
                     
-                    ' Esta tratando de invocar a un Dios o Admin...
-                   ' If (UserList(tUser).flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin)) Then
-                      '  Call WriteConsoleMsg(UserIndex, "No podés invocar a dioses y admins.", FontTypeNames.FONTTYPE_INFO)
-                      '  Exit Sub
-                    'End If
+124                 If CompararPrivilegios(tUser, UserIndex) > 0 Then
+126                     Call WriteConsoleMsg(UserIndex, "Se le ha avisado a " & UserList(tUser).name & " que quieres traerlo a tu posición.", FontTypeNames.FONTTYPE_INFO)
+128                     Call WriteConsoleMsg(tUser, .name & " quiere transportarte a su ubicación. Escribe /ira " & .name & " para ir.", FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
                     
-                    ' Podes sumonear a consejero como quieras.
-                    ' Pero si querés SUMONEAR a un USUARIO, TENÉS QUE ESTAR EN EL MISMO MAPA.
-124                 If (UserList(tUser).flags.Privilegios And PlayerType.Consejero) = 0 Or _
-                        .Pos.Map = UserList(tUser).Pos.Map Then
+                    Dim NotConsejero As Boolean
+130                 NotConsejero = (.flags.Privilegios And PlayerType.Consejero) = 0
+                    
+                    ' Consejeros sólo pueden traer en el mismo mapa
+132                 If NotConsejero Or .Pos.Map = UserList(tUser).Pos.Map Then
                         
-126                     Call WriteConsoleMsg(tUser, .name & " te ha trasportado.", FontTypeNames.FONTTYPE_INFO)
-128                     Call WarpToLegalPos(tUser, .Pos.Map, .Pos.X, .Pos.Y + 1, True, True)
+                        ' Si el admin está invisible no mostramos el nombre
+134                     If NotConsejero And .flags.AdminInvisible = 1 Then
+136                         Call WriteConsoleMsg(tUser, "Te han trasportado.", FontTypeNames.FONTTYPE_INFO)
+                        Else
+138                         Call WriteConsoleMsg(tUser, .name & " te ha trasportado.", FontTypeNames.FONTTYPE_INFO)
+                        End If
+
+140                     Call WarpToLegalPos(tUser, .Pos.Map, .Pos.X, .Pos.Y + 1, True, True)
+
+142                     Call WriteConsoleMsg(UserIndex, "Has traído a " & UserList(tUser).name & ".", FontTypeNames.FONTTYPE_INFO)
                         
                         ' Si trato de sumonearlo estando en Modo Battle, lo sacamos cagando y lo escrachamos en los logs.
-130                     If UserList(tUser).flags.BattleModo = 1 Then
-132                         Call WriteConsoleMsg(UserIndex, "¡¡¡ATENCIÓN!!! [" & UCase(UserList(tUser).name) & "] SE ENCUENTRA EN MODO BATTLE.", FontTypeNames.FONTTYPE_WARNING)
-134                         Call LogGM(.name, "¡¡¡ATENCIÓN /SUM EN MODO BATTLE " & UserName & " Map:" & .Pos.Map & " X:" & .Pos.X & " Y:" & .Pos.Y)
+144                     If UserList(tUser).flags.BattleModo = 1 Then
+146                         Call WriteConsoleMsg(UserIndex, "¡¡¡ATENCIÓN!!! [" & UCase(UserList(tUser).name) & "] SE ENCUENTRA EN MODO BATTLE.", FontTypeNames.FONTTYPE_WARNING)
+148                         Call LogGM(.name, "¡¡¡ATENCIÓN /SUM EN MODO BATTLE " & UserName & " Map:" & .Pos.Map & " X:" & .Pos.X & " Y:" & .Pos.Y)
 
                         Else
-136                         Call LogGM(.name, "/SUM " & UserName & " Map:" & .Pos.Map & " X:" & .Pos.X & " Y:" & .Pos.Y)
+150                         Call LogGM(.name, "/SUM " & UserName & " Map:" & .Pos.Map & " X:" & .Pos.X & " Y:" & .Pos.Y)
 
                         End If
                     
@@ -13118,14 +13132,14 @@ ErrHandler:
 
             Dim Error As Long
 
-142         Error = Err.Number
+152         Error = Err.Number
 
             On Error GoTo 0
     
             'Destroy auxiliar buffer
-144         Set Buffer = Nothing
+154         Set Buffer = Nothing
     
-146         If Error <> 0 Then Err.raise Error
+156         If Error <> 0 Then Err.raise Error
 
     End Sub
 
