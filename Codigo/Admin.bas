@@ -75,6 +75,8 @@ Public SanaIntervaloDescansar       As Integer
 
 Public StaminaIntervaloDescansar    As Integer
 
+Public IntervaloPerderStamina       As Integer
+
 Public IntervaloSed                 As Integer
 
 Public IntervaloHambre              As Integer

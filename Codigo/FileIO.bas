@@ -2633,7 +2633,10 @@ Sub LoadIntervalos()
 114     FrmInterv.txtSanaIntervaloDescansar.Text = SanaIntervaloDescansar
     
 116     StaminaIntervaloDescansar = val(Lector.GetValue("INTERVALOS", "StaminaIntervaloDescansar"))
-118     FrmInterv.txtStaminaIntervaloDescansar.Text = StaminaIntervaloDescansar
+117     FrmInterv.txtStaminaIntervaloDescansar.Text = StaminaIntervaloDescansar
+
+118     IntervaloPerderStamina = val(Lector.GetValue("INTERVALOS", "IntervaloPerderStamina"))
+119     FrmInterv.txtIntervaloPerderStamina.Text = IntervaloPerderStamina
     
 120     IntervaloSed = val(Lector.GetValue("INTERVALOS", "IntervaloSed"))
 122     FrmInterv.txtIntervaloSed.Text = IntervaloSed

@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{248DD890-BB45-11CF-9ABC-0080C7E7B78D}#1.0#0"; "MSWINSCK.OCX"
+Object = "{248DD890-BB45-11CF-9ABC-0080C7E7B78D}#1.0#0"; "mswinsck.ocx"
 Begin VB.Form frmMain 
    BackColor       =   &H00E0E0E0&
    BorderStyle     =   4  'Fixed ToolWindow
@@ -1404,23 +1404,25 @@ Private Sub GameTimer_Timer()
                             
                                 If Not Intemperie(iUserIndex) Then
                                     
+                                    'No esta descansando
                                     If Not .flags.Descansar Then
-                                        
-                                        'No esta descansando
+
                                         Call Sanar(iUserIndex, bEnviarStats, SanaIntervaloSinDescansar)
 
                                         If bEnviarStats Then
                                             Call WriteUpdateHP(iUserIndex)
                                             bEnviarStats = False
-
                                         End If
-
-                                        Call RecStamina(iUserIndex, bEnviarStats, StaminaIntervaloSinDescansar)
+    
+                                        If .flags.Desnudo = 0 Then
+                                            Call RecStamina(iUserIndex, bEnviarStats, StaminaIntervaloSinDescansar)
+                                        Else
+                                            Call PierdeEnergia(iUserIndex, bEnviarStats, IntervaloPerderStamina)
+                                        End If
 
                                         If bEnviarStats Then
                                             Call WriteUpdateSta(iUserIndex)
                                             bEnviarStats = False
-
                                         End If
 
                                     Else
@@ -1430,15 +1432,17 @@ Private Sub GameTimer_Timer()
                                         If bEnviarStats Then
                                             Call WriteUpdateHP(iUserIndex)
                                             bEnviarStats = False
-
                                         End If
 
-                                        Call RecStamina(iUserIndex, bEnviarStats, StaminaIntervaloDescansar)
+                                        If .flags.Desnudo = 0 Then
+                                            Call RecStamina(iUserIndex, bEnviarStats, StaminaIntervaloDescansar)
+                                        Else
+                                            Call PierdeEnergia(iUserIndex, bEnviarStats, IntervaloPerderStamina * 2)
+                                        End If
 
                                         If bEnviarStats Then
                                             Call WriteUpdateSta(iUserIndex)
                                             bEnviarStats = False
-
                                         End If
 
                                         'termina de descansar automaticamente
@@ -1446,14 +1450,21 @@ Private Sub GameTimer_Timer()
                                             Call WriteRestOK(iUserIndex)
                                             Call WriteConsoleMsg(iUserIndex, "Has terminado de descansar.", FontTypeNames.FONTTYPE_INFO)
                                             .flags.Descansar = False
-
                                         End If
                                         
                                     End If
 
                                 Else
-                                    Call RecStamina(iUserIndex, bEnviarStats, StaminaIntervaloSinDescansar * 4)
-                                    Call WriteUpdateSta(iUserIndex)
+                                    If .flags.Desnudo = 0 Then
+                                        Call RecStamina(iUserIndex, bEnviarStats, StaminaIntervaloSinDescansar * 4)
+                                    Else
+                                        Call PierdeEnergia(iUserIndex, bEnviarStats, IntervaloPerderStamina * 0.5)
+                                    End If
+
+                                    If bEnviarStats Then
+                                        Call WriteUpdateSta(iUserIndex)
+                                        bEnviarStats = False
+                                    End If
 
                                 End If
                                 
@@ -1467,16 +1478,18 @@ Private Sub GameTimer_Timer()
                                     If bEnviarStats Then
                                         Call WriteUpdateHP(iUserIndex)
                                         bEnviarStats = False
-
                                     End If
 
-                                    Call RecStamina(iUserIndex, bEnviarStats, StaminaIntervaloSinDescansar)
+                                    If .flags.Desnudo = 0 Then
+                                        Call RecStamina(iUserIndex, bEnviarStats, StaminaIntervaloSinDescansar)
+                                    Else
+                                        Call PierdeEnergia(iUserIndex, bEnviarStats, IntervaloPerderStamina)
+                                    End If
 
                                     If bEnviarStats Then
                                         'borrar este
                                         Call WriteUpdateSta(iUserIndex)
                                         bEnviarStats = False
-
                                     End If
                                     
                                 Else
@@ -1487,15 +1500,17 @@ Private Sub GameTimer_Timer()
                                     If bEnviarStats Then
                                         Call WriteUpdateHP(iUserIndex)
                                         bEnviarStats = False
-
                                     End If
 
-                                    Call RecStamina(iUserIndex, bEnviarStats, StaminaIntervaloDescansar)
+                                    If .flags.Desnudo = 0 Then
+                                        Call RecStamina(iUserIndex, bEnviarStats, StaminaIntervaloDescansar)
+                                    Else
+                                        Call PierdeEnergia(iUserIndex, bEnviarStats, IntervaloPerderStamina * 2)
+                                    End If
 
                                     If bEnviarStats Then
                                         '  Call WriteUpdateSta(iUserIndex)
                                         bEnviarStats = False
-
                                     End If
 
                                     'termina de descansar automaticamente
@@ -1503,7 +1518,6 @@ Private Sub GameTimer_Timer()
                                         Call WriteRestOK(iUserIndex)
                                         Call WriteConsoleMsg(iUserIndex, "Has terminado de descansar.", FontTypeNames.FONTTYPE_INFO)
                                         .flags.Descansar = False
-
                                     End If
                                     
                                 End If
