@@ -54,7 +54,7 @@ Public Sub FindLegalPos(ByVal UserIndex As Integer, ByVal Map As Integer, ByRef 
 
             Dim OtherUserIndex As Integer
     
-104         For Rango = 1 To 5
+104         For Rango = 0 To 5
 106             For tY = Y - Rango To Y + Rango
 108                 For tX = X - Rango To X + Rango
 
