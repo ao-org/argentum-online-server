@@ -1950,6 +1950,11 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
 154         Call CloseSocket(UserIndex)
             Exit Sub
         End If
+        
+        If GetPersonajesCountByIDDatabase(UserList(UserIndex).AccountID) >= MAX_PERSONAJES Then
+            Call CloseSocket(UserIndex)
+            Exit Sub
+        End If
 
 156     If Not ConnectNewUser(UserIndex, UserName, race, gender, Class, Head, CuentaEmail, Hogar) Then
             Call CloseSocket(UserIndex)
