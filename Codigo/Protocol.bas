@@ -13335,10 +13335,22 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
 118                     Call WriteConsoleMsg(UserIndex, "El jugador no está online.", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
-                Else
+                
+                ElseIf .flags.TargetUser > 0 Then
 119                 tUser = .flags.TargetUser
 
-120                 If tUser <= 0 Then Exit Sub
+                ' Mover NPCs
+                ElseIf .flags.TargetNPC > 0 Then
+                    If Npclist(.flags.TargetNPC).Pos.Map = .Pos.Map Then
+                        Call WarpNpcChar(.flags.TargetNPC, .Pos.Map, .Pos.X, .Pos.Y + 1, True)
+                        Call WriteConsoleMsg(UserIndex, "Has desplazado a la criatura.", FontTypeNames.FONTTYPE_INFO)
+                    Else
+                        Call WriteConsoleMsg(UserIndex, "Sólo puedes mover NPCs dentro del mismo mapa.", FontTypeNames.FONTTYPE_INFO)
+                    End If
+                    Exit Sub
+
+                Else
+120                 Exit Sub
                 End If
 
 124             If CompararPrivilegios(tUser, UserIndex) > 0 Then
