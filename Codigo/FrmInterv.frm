@@ -602,12 +602,20 @@ Begin VB.Form FrmInterv
          TabIndex        =   27
          Top             =   240
          Width           =   3240
+         Begin VB.TextBox txtIntervaloMeditar 
+            Height          =   375
+            Left            =   1185
+            TabIndex        =   70
+            Text            =   "0"
+            Top             =   1800
+            Width           =   735
+         End
          Begin VB.TextBox txtIntervaloInmovilizado 
             Height          =   375
             Left            =   240
             TabIndex        =   57
             Text            =   "0"
-            Top             =   1680
+            Top             =   1800
             Width           =   735
          End
          Begin VB.TextBox txtintervalofuego 
@@ -658,13 +666,22 @@ Begin VB.Form FrmInterv
             Top             =   510
             Width           =   795
          End
+         Begin VB.Label Label28 
+            AutoSize        =   -1  'True
+            Caption         =   "Meditar"
+            Height          =   195
+            Left            =   1185
+            TabIndex        =   71
+            Top             =   1560
+            Width           =   525
+         End
          Begin VB.Label Label23 
             AutoSize        =   -1  'True
             Caption         =   "Inmovilzado"
             Height          =   195
             Left            =   240
             TabIndex        =   58
-            Top             =   1440
+            Top             =   1560
             Width           =   840
          End
          Begin VB.Label Label22 
@@ -796,6 +813,7 @@ Public Sub AplicarIntervalos()
 126     TimeoutPrimerPaquete = val(txtTimeoutPrimerPaquete.Text)
 128     TimeoutEsperandoLoggear = val(txtTimeoutEsperandoLoggear.Text)
 130     IntervaloTirar = val(txtintervalotirar.Text)
+131     IntervaloMeditar = val(txtIntervaloMeditar.Text)
 132     IntervaloCaminar = val(txtintervalocaminar.Text)
 
         '///////////////// TIMERS \\\\\\\\\\\\\\\\\\\
@@ -857,6 +875,7 @@ Private Sub Command2_Click()
 126     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "TimeoutEsperandoLoggear", CStr(TimeoutEsperandoLoggear))
 128     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloCaminar", CStr(IntervaloCaminar))
 130     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloTirar", CStr(IntervaloTirar))
+131     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloMeditar", CStr(IntervaloMeditar))
         '&&&&&&&&&&&&&&&&&&&&& TIMERS &&&&&&&&&&&&&&&&&&&&&&&
 
 132     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloLanzaHechizo", CStr(IntervaloUserPuedeCastear))

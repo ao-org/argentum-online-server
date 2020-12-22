@@ -2394,69 +2394,32 @@ End Sub
 Public Sub DoMeditar(ByVal UserIndex As Integer)
         
         On Error GoTo DoMeditar_Err
-        
 
-        Dim Suerte       As Integer
-        Dim res          As Integer
-        Dim cant         As Integer
-        Dim MeditarSkill As Byte
+        Dim Mana As Long
 
 100     With UserList(UserIndex)
 
-102         If .Stats.MinMAN >= .Stats.MaxMAN Then
-104             .flags.Meditando = False
-106             .Char.FX = 0
-108             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(.Char.CharIndex, 0))
-                Exit Sub
-            End If
+102         .Counters.TimerMeditar = .Counters.TimerMeditar + 1
+
+104         If .Counters.TimerMeditar >= IntervaloMeditar Then
+
+106             Mana = Porcentaje(.Stats.MaxMAN, Porcentaje(PorcentajeRecuperoMana, .Stats.UserSkills(eSkill.Meditar)))
+
+108             If Mana <= 0 Then Mana = 1
+
+110             .Stats.MinMAN = .Stats.MinMAN + Mana
+
+112             If .Stats.MinMAN >= .Stats.MaxMAN Then
+                    .Stats.MinMAN = .Stats.MaxMAN
+114                 .flags.Meditando = False
+116                 .Char.FX = 0
+                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(.Char.CharIndex, 0))
+                End If
             
-110         If (GetTickCount()) - .Counters.InicioMeditar < TIEMPO_INICIOMEDITAR Then Exit Sub
-    
-112         MeditarSkill = .Stats.UserSkills(eSkill.Meditar)
-            
-114         If MeditarSkill <= 10 Then
-116             Suerte = 35
-118         ElseIf MeditarSkill <= 20 Then
-120             Suerte = 30
-122         ElseIf MeditarSkill <= 30 Then
-124             Suerte = 28
-126         ElseIf MeditarSkill <= 40 Then
-128             Suerte = 24
-130         ElseIf MeditarSkill <= 50 Then
-132             Suerte = 22
-134         ElseIf MeditarSkill <= 60 Then
-136             Suerte = 20
-138         ElseIf MeditarSkill <= 70 Then
-140             Suerte = 18
-142         ElseIf MeditarSkill <= 80 Then
-144             Suerte = 15
-146         ElseIf MeditarSkill <= 90 Then
-148             Suerte = 10
-150         ElseIf MeditarSkill < 100 Then
-152             Suerte = 7
-            Else
-154             Suerte = 5
-            End If
-    
-156         If .flags.RegeneracionMana = 1 Then
-158             Suerte = 10
-            End If
-        
-160         res = RandomNumber(1, Suerte)
-    
-162         If res = 1 Then
+118             Call WriteUpdateMana(UserIndex)
+120             Call SubirSkill(UserIndex, Meditar)
 
-164             cant = Porcentaje(.Stats.MaxMAN, PorcentajeRecuperoMana)
-
-166             If cant <= 0 Then cant = 1
-
-168             .Stats.MinMAN = .Stats.MinMAN + cant
-
-170             If .Stats.MinMAN > .Stats.MaxMAN Then .Stats.MinMAN = .Stats.MaxMAN
-            
-172             Call WriteUpdateMana(UserIndex)
-174             Call SubirSkill(UserIndex, Meditar)
-
+                .Counters.TimerMeditar = 0
             End If
 
         End With
