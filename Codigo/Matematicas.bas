@@ -29,7 +29,7 @@ Attribute VB_Name = "Matematicas"
 
 Option Explicit
 
-Public Function Porcentaje(ByVal Total As Long, ByVal Porc As Long) As Long
+Public Function Porcentaje(ByVal Total As Double, ByVal Porc As Double) As Double
         
         On Error GoTo Porcentaje_Err
         
