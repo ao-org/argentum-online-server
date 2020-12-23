@@ -1886,7 +1886,6 @@ Public Sub RecStamina(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, 
         
 108             UserList(UserIndex).Counters.STACounter = 0
 
-110             If UserList(UserIndex).flags.Desnudo And Not UserList(UserIndex).flags.Montado Then Exit Sub 'Desnudo no sube energía. (ToxicWaste)
 112             If UserList(UserIndex).Counters.Trabajando > 0 Then Exit Sub  'Trabajando no sube energía. (ToxicWaste)
          
                 ' If UserList(UserIndex).Stats.MinSta = 0 Then Exit Sub 'Ladder, se ve que esta linea la agregue yo, pero no sirve.
@@ -1942,6 +1941,45 @@ Public Sub RecStamina(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, 
 
 RecStamina_Err:
 172     Call RegistrarError(Err.Number, Err.description, "General.RecStamina", Erl)
+174     Resume Next
+        
+End Sub
+
+Public Sub PierdeEnergia(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, ByVal Intervalo As Integer)
+
+        On Error GoTo RecStamina_Err
+
+        With UserList(UserIndex)
+
+102         If .Stats.MinSta > 0 And .flags.RegeneracionSta = 0 Then
+    
+104             If .Counters.STACounter < Intervalo Then
+106                 .Counters.STACounter = .Counters.STACounter + 1
+                Else
+            
+108                 .Counters.STACounter = 0
+    
+114                 EnviarStats = True
+            
+                    Dim Cantidad As Integer
+    
+164                 Cantidad = RandomNumber(1, Porcentaje(.Stats.MaxSta, (MAXSKILLPOINTS * 1.5 - .Stats.UserSkills(eSkill.Supervivencia)) * 0.25))
+166                 .Stats.MinSta = .Stats.MinSta - Cantidad
+    
+168                 If .Stats.MinSta < 0 Then
+170                     .Stats.MinSta = 0
+                    End If
+    
+                End If
+    
+            End If
+
+        End With
+        
+        Exit Sub
+
+RecStamina_Err:
+172     Call RegistrarError(Err.Number, Err.description, "General.PierdeEnergia", Erl)
 174     Resume Next
         
 End Sub
@@ -2145,7 +2183,9 @@ Public Sub Sanar(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, ByVal
         
         On Error GoTo Sanar_Err
         
-
+        ' Desnudo no regenera vida
+        If UserList(UserIndex).flags.Desnudo = 1 Then Exit Sub
+        
 100     If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger = 1 And MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger = 2 And MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger = 4 Then Exit Sub
 
         Dim mashit As Integer

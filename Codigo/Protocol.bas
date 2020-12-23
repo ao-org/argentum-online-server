@@ -1950,6 +1950,11 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
 154         Call CloseSocket(UserIndex)
             Exit Sub
         End If
+        
+        If GetPersonajesCountByIDDatabase(UserList(UserIndex).AccountID) >= MAX_PERSONAJES Then
+            Call CloseSocket(UserIndex)
+            Exit Sub
+        End If
 
 156     If Not ConnectNewUser(UserIndex, UserName, race, gender, Class, Head, CuentaEmail, Hogar) Then
             Call CloseSocket(UserIndex)
@@ -2491,7 +2496,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
     
                         'If not under a spell effect, show char
 218                     If .flags.invisible = 0 Then
-220                         Call WriteConsoleMsg(UserIndex, "Has vuelto a ser visible.", FontTypeNames.FONTTYPE_INFO)
+220                         'Call WriteConsoleMsg(UserIndex, "Has vuelto a ser visible.", FontTypeNames.FONTTYPE_INFO)
 222                         Call WriteLocaleMsg(UserIndex, "307", FontTypeNames.FONTTYPE_INFO)
 224                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, False))
                         End If
