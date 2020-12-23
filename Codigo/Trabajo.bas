@@ -1126,7 +1126,7 @@ Public Sub DoLingotes(ByVal UserIndex As Integer)
     
 142     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(117, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
     
-144     Call SubirSkill(UserIndex, eSkill.Herreria)
+144     Call SubirSkill(UserIndex, eSkill.Mineria)
   
 146     UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
         
