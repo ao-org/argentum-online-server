@@ -2413,7 +2413,7 @@ Public Sub DoMeditar(ByVal UserIndex As Integer)
 
 104         If .Counters.TimerMeditar >= IntervaloMeditar Then
 
-106             Mana = Porcentaje(.Stats.MaxMAN, Porcentaje(PorcentajeRecuperoMana, .Stats.UserSkills(eSkill.Meditar)))
+106             Mana = Porcentaje(.Stats.MaxMAN, Porcentaje(PorcentajeRecuperoMana, 50 + .Stats.UserSkills(eSkill.Meditar) * 0.5))
 
 108             If Mana <= 0 Then Mana = 1
 
@@ -2423,13 +2423,18 @@ Public Sub DoMeditar(ByVal UserIndex As Integer)
                     .Stats.MinMAN = .Stats.MaxMAN
 114                 .flags.Meditando = False
 116                 .Char.FX = 0
-                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(.Char.CharIndex, 0))
-                End If
-            
-118             Call WriteUpdateMana(UserIndex)
-120             Call SubirSkill(UserIndex, Meditar)
+                    
+118                 Call WriteUpdateMana(UserIndex)
+120                 Call SubirSkill(UserIndex, Meditar)
 
-                .Counters.TimerMeditar = 0
+                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(.Char.CharIndex, 0))
+                
+                Else
+122                 Call WriteUpdateMana(UserIndex)
+124             Call SubirSkill(UserIndex, Meditar)
+                End If
+
+126             .Counters.TimerMeditar = 0
             End If
 
         End With
