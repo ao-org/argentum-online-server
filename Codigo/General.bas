@@ -171,12 +171,12 @@ Sub MostrarBloqueosPuerta(ByVal toMap As Boolean, ByVal sndIndex As Integer, ByV
         ' Bloqueos inferiores
 110     Call Bloquear(toMap, sndIndex, X, Y + 1, MapData(Map, X, Y + 1).Blocked)
 112     Call Bloquear(toMap, sndIndex, X - 1, Y + 1, MapData(Map, X - 1, Y + 1).Blocked)
-    
-        ' Bloqueos laterales
-114     Call Bloquear(toMap, sndIndex, X, Y - 1, MapData(Map, X, Y - 1).Blocked)
-116     Call Bloquear(toMap, sndIndex, X + 1, Y, MapData(Map, X + 1, Y).Blocked)
-118     Call Bloquear(toMap, sndIndex, X + 1, Y - 1, MapData(Map, X + 1, Y - 1).Blocked)
-        
+
+        ' Bloqueos laterales / Comentado porque causaba problemas con las paredes de las casas comunes
+114     'Call Bloquear(toMap, sndIndex, X, Y - 1, MapData(Map, X, Y - 1).Blocked)
+116     'Call Bloquear(toMap, sndIndex, X + 1, Y, MapData(Map, X + 1, Y).Blocked)
+118     'Call Bloquear(toMap, sndIndex, X + 1, Y - 1, MapData(Map, X + 1, Y - 1).Blocked)
+
         Exit Sub
 
 MostrarBloqueosPuerta_Err:
@@ -186,11 +186,10 @@ MostrarBloqueosPuerta_Err:
 End Sub
 
 Sub BloquearPuerta(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal Bloquear As Boolean)
-        ' Cambio bloqueos superiores
         
         On Error GoTo BloquearPuerta_Err
     
-        
+        ' Cambio bloqueos superiores
 100     MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked Or eBlock.NORTH, MapData(Map, X, Y).Blocked And Not eBlock.NORTH)
 102     MapData(Map, X - 1, Y).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y).Blocked Or eBlock.NORTH, MapData(Map, X - 1, Y).Blocked And Not eBlock.NORTH)
     
@@ -198,13 +197,13 @@ Sub BloquearPuerta(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer,
 104     MapData(Map, X, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X, Y + 1).Blocked Or eBlock.SOUTH, MapData(Map, X, Y + 1).Blocked And Not eBlock.SOUTH)
 106     MapData(Map, X - 1, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y + 1).Blocked Or eBlock.SOUTH, MapData(Map, X - 1, Y + 1).Blocked And Not eBlock.SOUTH)
     
-        ' Cambio bloqueos izquierda
-108     MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked And Not eBlock.WEST, MapData(Map, X, Y).Blocked Or eBlock.WEST)
-110     MapData(Map, X, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X, Y - 1).Blocked And Not eBlock.WEST, MapData(Map, X, Y - 1).Blocked Or eBlock.WEST)
+        ' Cambio bloqueos izquierda / Comentado porque causaba problemas con las paredes de las casas comunes
+108     'MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked And Not eBlock.WEST, MapData(Map, X, Y).Blocked Or eBlock.WEST)
+110     'MapData(Map, X, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X, Y - 1).Blocked And Not eBlock.WEST, MapData(Map, X, Y - 1).Blocked Or eBlock.WEST)
     
-        ' Cambio bloqueos derecha
-112     MapData(Map, X + 1, Y).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y).Blocked And Not eBlock.EAST, MapData(Map, X + 1, Y).Blocked Or eBlock.EAST)
-114     MapData(Map, X + 1, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y - 1).Blocked And Not eBlock.EAST, MapData(Map, X + 1, Y - 1).Blocked Or eBlock.EAST)
+        ' Cambio bloqueos derecha / Comentado porque causaba problemas con las paredes de las casas comunes
+112     'MapData(Map, X + 1, Y).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y).Blocked And Not eBlock.EAST, MapData(Map, X + 1, Y).Blocked Or eBlock.EAST)
+114     'MapData(Map, X + 1, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y - 1).Blocked And Not eBlock.EAST, MapData(Map, X + 1, Y - 1).Blocked Or eBlock.EAST)
     
         ' Mostramos a todos
 116     Call MostrarBloqueosPuerta(True, Map, X, Y)
