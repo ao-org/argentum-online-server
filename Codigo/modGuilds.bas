@@ -240,7 +240,11 @@ Public Function m_EcharMiembroDeClan(ByVal Expulsador As Integer, ByVal Expulsad
 
         Else
             'pj offline
-130         GI = GetGuildIndexFromChar(Expulsado)
+            If Database_Enabled Then
+129             GI = GetUserGuildIndexDatabase(Expulsado)
+            Else
+130             GI = GetGuildIndexFromChar(Expulsado)
+            End If
 
 132         If GI > 0 Then
 134             If m_PuedeSalirDeClan(Expulsado, GI, Expulsador) Then
@@ -2133,6 +2137,8 @@ Public Function a_AceptarAspirante(ByVal UserIndex As Integer, ByRef Aspirante A
         
 
         Dim GI           As Integer
+        
+        Dim tGI          As Integer
 
         Dim NroAspirante As Integer
 
@@ -2186,10 +2192,18 @@ Public Function a_AceptarAspirante(ByVal UserIndex As Integer, ByRef Aspirante A
 136             refError = Aspirante & " no puede entrar a un clan " & Alineacion2String(guilds(GI).Alineacion)
 138             Call guilds(GI).RetirarAspirante(Aspirante, NroAspirante)
                 Exit Function
-140         ElseIf GetGuildIndexFromChar(Aspirante) Then
-142             refError = Aspirante & " ya es parte de otro clan."
-144             Call guilds(GI).RetirarAspirante(Aspirante, NroAspirante)
-                Exit Function
+140         Else
+                If Database_Enabled Then
+                    tGI = GetUserGuildIndexDatabase(Aspirante)
+                Else
+                    tGI = GetGuildIndexFromChar(Aspirante)
+                End If
+                
+                If tGI <> 0 Then
+142                 refError = Aspirante & " ya es parte de otro clan."
+144                 Call guilds(GI).RetirarAspirante(Aspirante, NroAspirante)
+                    Exit Function
+                End If
 
             End If
 
