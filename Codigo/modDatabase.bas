@@ -1597,7 +1597,7 @@ Public Function GetPersonajesCuentaDatabase(ByVal AccountID As Long, Personaje()
         On Error GoTo GetPersonajesCuentaDatabase_Err
         
 
-100     Call MakeQuery("SELECT name, head_id, class_id, body_id, pos_map, level, status, helmet_id, shield_id, weapon_id, guild_index, is_dead FROM user WHERE deleted = FALSE AND account_id = " & AccountID & ";")
+100     Call MakeQuery("SELECT name, head_id, class_id, body_id, pos_map, level, status, helmet_id, shield_id, weapon_id, guild_index, is_dead, is_sailing FROM user WHERE deleted = FALSE AND account_id = " & AccountID & ";")
 
 102     If QueryData Is Nothing Then Exit Function
     
@@ -1605,11 +1605,13 @@ Public Function GetPersonajesCuentaDatabase(ByVal AccountID As Long, Personaje()
         
 106     QueryData.MoveFirst
     
-        Dim i As Integer
+        Dim i As Integer, Navegando As Boolean
+        
+        Navegando = CBool(QueryData!is_sailing)
 
 108     For i = 1 To GetPersonajesCuentaDatabase
 110         Personaje(i).nombre = QueryData!name
-112         Personaje(i).Cabeza = QueryData!head_id
+112         Personaje(i).Cabeza = IIf(Navegando, 0, QueryData!head_id)
 114         Personaje(i).clase = QueryData!class_id
 116         Personaje(i).cuerpo = QueryData!body_id
 118         Personaje(i).Mapa = QueryData!pos_map
