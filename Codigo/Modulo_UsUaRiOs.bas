@@ -1630,9 +1630,6 @@ Sub UserDie(ByVal UserIndex As Integer)
 388         For i = 1 To MAXMASCOTAS
 390             If .MascotasIndex(i) > 0 Then
 392                 Call MuereNpc(.MascotasIndex(i), 0)
-                ' Si estan en agua o zona segura
-                Else
-394                 .MascotasType(i) = 0
                 End If
 396         Next i
         
