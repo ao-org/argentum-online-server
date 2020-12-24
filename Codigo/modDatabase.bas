@@ -1605,13 +1605,11 @@ Public Function GetPersonajesCuentaDatabase(ByVal AccountID As Long, Personaje()
         
 106     QueryData.MoveFirst
     
-        Dim i As Integer, Navegando As Boolean
-        
-        Navegando = CBool(QueryData!is_sailing)
+        Dim i As Integer
 
 108     For i = 1 To GetPersonajesCuentaDatabase
 110         Personaje(i).nombre = QueryData!name
-112         Personaje(i).Cabeza = IIf(Navegando, 0, QueryData!head_id)
+112         Personaje(i).Cabeza = QueryData!head_id
 114         Personaje(i).clase = QueryData!class_id
 116         Personaje(i).cuerpo = QueryData!body_id
 118         Personaje(i).Mapa = QueryData!pos_map
@@ -1635,7 +1633,7 @@ Public Function GetPersonajesCuentaDatabase(ByVal AccountID As Long, Personaje()
 
             End If
 
-152         If val(QueryData!is_dead) = 1 Then
+152         If val(QueryData!is_dead) = 1 Or val(QueryData!is_sailing) = 1 Then
 154             Personaje(i).Cabeza = 0
             End If
         
