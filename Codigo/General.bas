@@ -1535,13 +1535,11 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
 
 120                     Call WriteConsoleMsg(UserIndex, "¡¡Has muerto de frio!!.", FontTypeNames.FONTTYPE_INFO)
 
-122                     .Stats.MinHp = 0
-
 124                     Call UserDie(UserIndex)
 
+                    Else
+126                     Call WriteUpdateHP(UserIndex)
                     End If
-            
-126                 Call WriteUpdateHP(UserIndex)
                 End If
         
 128             .Counters.Frio = 0
@@ -1582,13 +1580,10 @@ Public Sub EfectoLava(ByVal UserIndex As Integer)
             
 112                 If .Stats.MinHp < 1 Then
 114                     Call WriteConsoleMsg(UserIndex, "¡¡Has muerto quemado!!.", FontTypeNames.FONTTYPE_INFO)
-116                     .Stats.MinHp = 0
 118                     Call UserDie(UserIndex)
-
+                    Else
+120                     Call WriteUpdateHP(UserIndex)
                     End If
-            
-120                 Call WriteUpdateHP(UserIndex)
-
                 End If
         
 122             .Counters.Lava = 0
@@ -2002,8 +1997,11 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
 112         n = n * UserList(UserIndex).flags.Envenenado
 114         UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp - n
 
-116         If UserList(UserIndex).Stats.MinHp < 1 Then Call UserDie(UserIndex)
-118         Call WriteUpdateHP(UserIndex)
+116         If UserList(UserIndex).Stats.MinHp < 1 Then
+                Call UserDie(UserIndex)
+            Else
+118             Call WriteUpdateHP(UserIndex)
+            End If
 
         End If
 
@@ -2036,10 +2034,9 @@ Public Sub EfectoAhogo(ByVal UserIndex As Integer)
 114             If UserList(UserIndex).Stats.MinHp < 1 Then
 116                 Call UserDie(UserIndex)
 118                 UserList(UserIndex).flags.Ahogandose = 0
-
+                Else
+120                 Call WriteUpdateHP(UserIndex)
                 End If
-
-120             Call WriteUpdateHP(UserIndex)
 
             End If
 
@@ -2074,8 +2071,11 @@ Public Sub EfectoIncineramiento(ByVal UserIndex As Integer, ByRef EnviarStats As
 110         n = RandomNumber(40, 80)
 112         UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp - n
 
-114         If UserList(UserIndex).Stats.MinHp < 1 Then Call UserDie(UserIndex)
-116         Call WriteUpdateHP(UserIndex)
+114         If UserList(UserIndex).Stats.MinHp < 1 Then
+                Call UserDie(UserIndex)
+            Else
+116             Call WriteUpdateHP(UserIndex)
+            End If
 
         End If
  

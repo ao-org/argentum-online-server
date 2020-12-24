@@ -3124,11 +3124,18 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
            
 1158             Case eOBJType.otBarcos
                 
-                     ' Nivel mínimo para navegar, si no sos pirata ni trabajador
-1160                 If .Stats.ELV < 25 And Not (.clase = eClass.Trabajador Or .clase = eClass.Pirat) Then
+                    ' Piratas y trabajadores navegan al nivel 20
+                    If .clase = eClass.Trabajador Or .clase = eClass.Pirat Then
+                        If .Stats.ELV < 20 Then
+                            Call WriteConsoleMsg(UserIndex, "Para recorrer los mares debes ser nivel 20 o superior.", FontTypeNames.FONTTYPE_INFO)
+                            Exit Sub
+                        End If
+                    
+                    ' Nivel mínimo 25 para navegar, si no sos pirata ni trabajador
+1160                ElseIf .Stats.ELV < 25 Then
 1162                    Call WriteConsoleMsg(UserIndex, "Para recorrer los mares debes ser nivel 25 o superior.", FontTypeNames.FONTTYPE_INFO)
-                         Exit Sub
-                     End If
+                        Exit Sub
+                    End If
 
 1164                If .flags.Navegando = 0 Then
 1166                    If LegalPos(.Pos.Map, .Pos.X - 1, .Pos.Y, True, False) Or LegalPos(.Pos.Map, .Pos.X, .Pos.Y - 1, True, False) Or LegalPos(.Pos.Map, .Pos.X + 1, .Pos.Y, True, False) Or LegalPos(.Pos.Map, .Pos.X, .Pos.Y + 1, True, False) Then
@@ -3137,7 +3144,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 1170                        Call WriteConsoleMsg(UserIndex, "¡Debes aproximarte al agua para usar el barco!", FontTypeNames.FONTTYPE_INFO)
                          End If
                     
-                     Else 'Ladder 10-02-2010
+                     Else
 1172                     If .Invent.BarcoObjIndex <> .Invent.Object(slot).ObjIndex Then
 1174                        Call DoNavega(UserIndex, obj, slot)
                          Else
@@ -3469,28 +3476,6 @@ EnivarArmadurasConstruibles_Err:
         
 End Sub
 
-Sub TirarTodo(ByVal UserIndex As Integer)
-        
-        On Error GoTo TirarTodo_Err
-    
-        
-
-        
-
-100     If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger = 6 Then Exit Sub
-102     If UserList(UserIndex).flags.BattleModo = 1 Then Exit Sub
-
-104     Call TirarTodosLosItems(UserIndex)
-
-        
-        Exit Sub
-
-TirarTodo_Err:
-        Call RegistrarError(Err.Number, Err.description, "InvUsuario.TirarTodo", Erl)
-
-        
-End Sub
-
 Public Function ItemSeCae(ByVal index As Integer) As Boolean
         
         On Error GoTo ItemSeCae_Err
@@ -3516,21 +3501,26 @@ Public Function PirataCaeItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 100     With UserList(UserIndex)
     
 102         If .clase = eClass.Pirat Then
+
+                ' Si no está navegando, se caen los items
+                If .Invent.BarcoObjIndex > 0 Then
             
-                ' El pirata con galera no pierde los últimos 6 * (cada 10 niveles; max 1) slots
-104             If ObjData(.Invent.BarcoObjIndex).Ropaje = iGalera Then
-            
-106                 If slot > .CurrentInventorySlots - 6 * min(.Stats.ELV \ 10, 1) Then
-                        Exit Function
+                    ' El pirata con galera no pierde los últimos 6 * (cada 10 niveles; max 1) slots
+104                 If ObjData(.Invent.BarcoObjIndex).Ropaje = iGalera Then
+                
+106                     If slot > .CurrentInventorySlots - 6 * min(.Stats.ELV \ 10, 1) Then
+                            Exit Function
+                        End If
+                
+                    ' Con galeón no pierde los últimos 6 * (cada 10 niveles; max 3) slots
+108                 ElseIf ObjData(.Invent.BarcoObjIndex).Ropaje = iGaleon Then
+                
+110                     If slot > .CurrentInventorySlots - 6 * min(.Stats.ELV \ 10, 3) Then
+                            Exit Function
+                        End If
+                
                     End If
-            
-                ' Con galeón no pierde los últimos 6 * (cada 10 niveles; max 3) slots
-108             ElseIf ObjData(.Invent.BarcoObjIndex).Ropaje = iGaleon Then
-            
-110                 If slot > .CurrentInventorySlots - 6 * min(.Stats.ELV \ 10, 3) Then
-                        Exit Function
-                    End If
-            
+                
                 End If
             
             End If
@@ -3551,13 +3541,7 @@ End Function
 Sub TirarTodosLosItems(ByVal UserIndex As Integer)
         
         On Error GoTo TirarTodosLosItems_Err
-    
-        '***************************************************
-        'Author: Unknown
-        'Last Modification: 12/01/2010 (ZaMa)
-        '12/01/2010: ZaMa - Ahora los piratas no explotan items solo si estan entre 20 y 25
-        '***************************************************
-    
+
         Dim i         As Byte
         Dim NuevaPos  As WorldPos
         Dim MiObj     As obj
@@ -3571,7 +3555,7 @@ Sub TirarTodosLosItems(ByVal UserIndex As Integer)
 
 106             If ItemIndex > 0 Then
 
-108                 If ItemSeCae(ItemIndex) And PirataCaeItem(UserIndex, i) Then
+108                 If ItemSeCae(ItemIndex) And PirataCaeItem(UserIndex, i) And (Not EsNewbie(UserIndex) Or Not ItemNewbie(ItemIndex)) Then
 110                     NuevaPos.X = 0
 112                     NuevaPos.Y = 0
                 
@@ -3635,53 +3619,3 @@ ItemNewbie_Err:
 104     Resume Next
         
 End Function
-
-Sub TirarTodosLosItemsNoNewbies(ByVal UserIndex As Integer)
-        
-        On Error GoTo TirarTodosLosItemsNoNewbies_Err
-        
-
-        Dim i         As Byte
-
-        Dim NuevaPos  As WorldPos
-
-        Dim MiObj     As obj
-
-        Dim ItemIndex As Integer
-
-100     If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger = 6 Then Exit Sub
-
-102     For i = 1 To UserList(UserIndex).CurrentInventorySlots
-104         ItemIndex = UserList(UserIndex).Invent.Object(i).ObjIndex
-
-106         If ItemIndex > 0 Then
-108             If ItemSeCae(ItemIndex) And Not ItemNewbie(ItemIndex) Then
-110                 NuevaPos.X = 0
-112                 NuevaPos.Y = 0
-            
-                    'Creo MiObj
-114                 MiObj.Amount = UserList(UserIndex).Invent.Object(i).ObjIndex
-116                 MiObj.ObjIndex = ItemIndex
-                    'Pablo (ToxicWaste) 24/01/2007
-                    'Tira los Items no newbies en todos lados.
-118                 Tilelibre UserList(UserIndex).Pos, NuevaPos, MiObj, True, True
-
-120                 If NuevaPos.X <> 0 And NuevaPos.Y <> 0 Then
-122                     If MapData(NuevaPos.Map, NuevaPos.X, NuevaPos.Y).ObjInfo.ObjIndex = 0 Then Call DropObj(UserIndex, i, MAX_INVENTORY_OBJS, NuevaPos.Map, NuevaPos.X, NuevaPos.Y)
-
-                    End If
-
-                End If
-
-            End If
-
-124     Next i
-
-        
-        Exit Sub
-
-TirarTodosLosItemsNoNewbies_Err:
-126     Call RegistrarError(Err.Number, Err.description, "InvUsuario.TirarTodosLosItemsNoNewbies", Erl)
-128     Resume Next
-        
-End Sub

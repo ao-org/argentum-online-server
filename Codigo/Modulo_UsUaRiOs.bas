@@ -1451,7 +1451,7 @@ Sub UserDie(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
     
             'Sonido
-102         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_SoundIndex.MUERTE_HOMBRE, .Pos.X, .Pos.Y))
+102         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(IIf(.genero = eGenero.Hombre, e_SoundIndex.MUERTE_HOMBRE, e_SoundIndex.MUERTE_MUJER), .Pos.X, .Pos.Y))
         
             'Quitar el dialogo del user muerto
 104         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageRemoveCharDialog(.Char.CharIndex))
@@ -1469,25 +1469,9 @@ Sub UserDie(ByVal UserIndex As Integer)
 126         .flags.Muerto = 1
             '.flags.SeguroParty = True
             'Call WritePartySafeOn(UserIndex)
-        
-128         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_SoundIndex.MUERTE_HOMBRE, .Pos.X, .Pos.Y))
-        
-            'Quitar el dialogo del user muerto
-130         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageRemoveCharDialog(.Char.CharIndex))
-        
-132         .Stats.MinHp = 0
-134         .Stats.MinSta = 0
-136         .flags.AtacadoPorUser = 0
-138         .flags.Envenenado = 0
-140         .flags.Ahogandose = 0
-142         .flags.Incinerado = 0
-144         .flags.incinera = 0
-146         .flags.Paraliza = 0
-148         .flags.Envenena = 0
-150         .flags.Estupidiza = 0
-152         .flags.Muerto = 1
-            '.flags.SeguroParty = True
-            'Call WritePartySafeOn(UserIndex)
+            
+            Call WriteUpdateHP(UserIndex)
+            Call WriteUpdateSta(UserIndex)
         
 154         aN = .flags.AtacadoPorNpc
     
@@ -1495,7 +1479,6 @@ Sub UserDie(ByVal UserIndex As Integer)
 158             Npclist(aN).Movement = Npclist(aN).flags.OldMovement
 160             Npclist(aN).Hostile = Npclist(aN).flags.OldHostil
 162             Npclist(aN).flags.AttackedBy = vbNullString
-    
             End If
         
 164         aN = .flags.NPCAtacado
@@ -1503,9 +1486,7 @@ Sub UserDie(ByVal UserIndex As Integer)
 166         If aN > 0 Then
 168             If Npclist(aN).flags.AttackedFirstBy = .name Then
 170                 Npclist(aN).flags.AttackedFirstBy = vbNullString
-    
                 End If
-    
             End If
     
 172         .flags.AtacadoPorNpc = 0
@@ -1515,28 +1496,24 @@ Sub UserDie(ByVal UserIndex As Integer)
 176         If .flags.Paralizado = 1 Then
 178             .flags.Paralizado = 0
 180             Call WriteParalizeOK(UserIndex)
-    
             End If
         
             '<<<< Inmovilizado >>>>
 182         If .flags.Inmovilizado = 1 Then
 184             .flags.Inmovilizado = 0
 186             Call WriteInmovilizaOK(UserIndex)
-    
             End If
         
             '<<< Estupidez >>>
 188         If .flags.Estupidez = 1 Then
 190             .flags.Estupidez = 0
 192             Call WriteDumbNoMore(UserIndex)
-    
             End If
         
             '<<<< Descansando >>>>
 194         If .flags.Descansar Then
 196             .flags.Descansar = False
 198             Call WriteRestOK(UserIndex)
-    
             End If
         
             '<<<< Meditando >>>>
@@ -1560,93 +1537,25 @@ Sub UserDie(ByVal UserIndex As Integer)
 216             .Counters.Invisibilidad = 0
                 'no hace falta encriptar este NOVER
 218             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, False))
-    
             End If
     
-220         If TriggerZonaPelea(UserIndex, UserIndex) <> eTrigger6.TRIGGER6_PERMITE Then
+220         If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger <> eTrigger6.TRIGGER6_PERMITE And .flags.BattleModo = 0 Then
 
 222             If (.flags.Privilegios And PlayerType.user) <> 0 Then
-        
-224                 If Not EsNewbie(UserIndex) Then
-226                     If .flags.PendienteDelSacrificio = 0 Then
+
+226                 If .flags.PendienteDelSacrificio = 0 Then
                 
-228                         Call TirarTodo(UserIndex)
-                    
-230                         If .Invent.ArmourEqpObjIndex > 0 Then
-232                             If ItemSeCae(.Invent.ArmourEqpObjIndex) Then
-234                                 Call Desequipar(UserIndex, .Invent.ArmourEqpSlot)
-
-                                End If
-
-                            End If
-
-                            'desequipar arma
-236                         If .Invent.WeaponEqpObjIndex > 0 Then
-238                             If ItemSeCae(.Invent.WeaponEqpObjIndex) Then
-240                                 Call Desequipar(UserIndex, .Invent.WeaponEqpSlot)
-
-                                End If
-
-                            End If
-
-                            'desequipar casco
-242                         If .Invent.CascoEqpObjIndex > 0 Then
-244                             If ItemSeCae(.Invent.CascoEqpObjIndex) Then
-246                                 Call Desequipar(UserIndex, .Invent.CascoEqpSlot)
-
-                                End If
-
-                            End If
-
-                            'desequipar herramienta
-248                         If .Invent.AnilloEqpObjIndex > 0 Then
-250                             If ItemSeCae(.Invent.AnilloEqpObjIndex) Then
-252                                 Call Desequipar(UserIndex, .Invent.AnilloEqpSlot)
-
-                                End If
-
-                            End If
-
-                            'desequipar municiones
-254                         If .Invent.MunicionEqpObjIndex > 0 Then
-256                             If ItemSeCae(.Invent.MunicionEqpObjIndex) Then
-258                                 Call Desequipar(UserIndex, .Invent.MunicionEqpSlot)
-
-                                End If
-
-                            End If
-
-                            'desequipar escudo
-260                         If .Invent.EscudoEqpObjIndex > 0 Then
-262                             If ItemSeCae(.Invent.EscudoEqpObjIndex) Then
-264                                 Call Desequipar(UserIndex, .Invent.EscudoEqpSlot)
-
-                                End If
-
-                            End If
-                    
-266                         If .Invent.MagicoObjIndex > 0 Then
-268                             If ItemSeCae(.Invent.MagicoObjIndex) Then
-270                                 Call Desequipar(UserIndex, .Invent.MagicoSlot)
-
-                                End If
-                            End If
+228                     Call TirarTodosLosItems(UserIndex)
     
-                        Else
-                
-                            Dim MiObj As obj
-
-272                         MiObj.Amount = 1
-274                         MiObj.ObjIndex = PENDIENTE
-276                         Call QuitarObjetos(PENDIENTE, 1, UserIndex)
-278                         Call MakeObj(MiObj, .Pos.Map, .Pos.X, .Pos.Y)
-280                         Call WriteConsoleMsg(UserIndex, "Has perdido tu pendiente del sacrificio.", FontTypeNames.FONTTYPE_INFO)
-
-                        End If
-
                     Else
+                
+                        Dim MiObj As obj
 
-282                     Call TirarTodosLosItemsNoNewbies(UserIndex)
+272                     MiObj.Amount = 1
+274                     MiObj.ObjIndex = PENDIENTE
+276                     Call QuitarObjetos(PENDIENTE, 1, UserIndex)
+278                     Call MakeObj(MiObj, .Pos.Map, .Pos.X, .Pos.Y)
+280                     Call WriteConsoleMsg(UserIndex, "Has perdido tu pendiente del sacrificio.", FontTypeNames.FONTTYPE_INFO)
 
                     End If
     
@@ -1655,53 +1564,10 @@ Sub UserDie(ByVal UserIndex As Integer)
             End If
         
 284         .flags.CarroMineria = 0
-            
-            ' DESEQUIPA TODOS LOS OBJETOS
-            
-286         If .Char.Arma_Aura <> "" Then
-288             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, 0, True, 1))
-290             .Char.Arma_Aura = ""
-            End If
-        
-292         If .Char.Arma_Aura <> "" Then
-294             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, 0, True, 1))
-296             .Char.Arma_Aura = ""
-    
-            End If
-    
-298         If .Char.Body_Aura <> "" Then
-300             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, 0, True, 2))
-302             .Char.Body_Aura = 0
-    
-            End If
-        
-304         If .Char.Escudo_Aura <> "" Then
-306             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, 0, True, 3))
-308             .Char.Escudo_Aura = 0
-    
-            End If
-        
-310         If .Char.Head_Aura <> "" Then
-312             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, 0, True, 4))
-314             .Char.Head_Aura = 0
-    
-            End If
-        
-316         If .Char.Anillo_Aura <> "" Then
-318             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, 0, True, 6))
-320             .Char.Anillo_Aura = 0
-            End If
-    
-322         If .Char.Otra_Aura <> "" Then
-324             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, 0, True, 5))
-326             .Char.Otra_Aura = 0
-            End If
-                            
+   
             'desequipar montura
 328         If .flags.Montado > 0 Then
-    
 330             Call DoMontar(UserIndex, ObjData(.Invent.MonturaObjIndex), .Invent.MonturaSlot)
-    
             End If
         
             ' << Reseteamos los posibles FX sobre el personaje >>

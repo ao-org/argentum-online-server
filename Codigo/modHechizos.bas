@@ -99,23 +99,10 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
         
                 'Muere
 154             If .Stats.MinHp < 1 Then
-156                 .Stats.MinHp = 0
-                    'If Npclist(NpcIndex).NPCtype = eNPCType.GuardiaReal Then
-                    'restarCriminalidad (UserIndex)
-                    ' End If
 158                 Call UserDie(UserIndex)
-                    '[Barrin 1-12-03]
-                    ' If Npclist(NpcIndex).MaestroUser > 0 Then
-                    'Store it!
-                    'Call Statistics.StoreFrag(Npclist(NpcIndex).MaestroUser, UserIndex)
-                
-                    'Call ContarMuerte(UserIndex, Npclist(NpcIndex).MaestroUser)
-                    ' Call ActStats(UserIndex, Npclist(NpcIndex).MaestroUser)
-                    '  End If
-                    '[/Barrin]
+                Else
+160                 Call WriteUpdateHP(UserIndex)
                 End If
-            
-160             Call WriteUpdateHP(UserIndex)
     
 162         ElseIf Hechizos(Spell).Paraliza = 1 Then
 
@@ -1057,16 +1044,16 @@ Sub LanzarHechizo(index As Integer, UserIndex As Integer)
         
         On Error GoTo LanzarHechizo_Err
         
-        If UserList(Userindex).flags.EnConsulta Then
-            Call WriteConsoleMsg(Userindex, "No puedes lanzar hechizos si estas en consulta.", FontTypeNames.FONTTYPE_INFO)
+        If UserList(UserIndex).flags.EnConsulta Then
+            Call WriteConsoleMsg(UserIndex, "No puedes lanzar hechizos si estas en consulta.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
 
         Dim uh As Integer
-100         uh = UserList(Userindex).Stats.UserHechizos(index)
+100         uh = UserList(UserIndex).Stats.UserHechizos(index)
 
-102     If PuedeLanzar(Userindex, uh, index) Then
+102     If PuedeLanzar(UserIndex, uh, index) Then
 
 104         Select Case Hechizos(uh).Target
 
@@ -2688,13 +2675,11 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                 'Store it!
 442             Call Statistics.StoreFrag(UserIndex, tempChr)
 444             Call ContarMuerte(tempChr, UserIndex)
-446             UserList(tempChr).Stats.MinHp = 0
 448             Call ActStats(tempChr, UserIndex)
-
-                '  Call UserDie(tempChr)
+            Else
+450             Call WriteUpdateHP(tempChr)
             End If
-            
-450         Call WriteUpdateHP(tempChr)
+
     
 452         b = True
 
@@ -3098,7 +3083,6 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
 328             Call Statistics.StoreFrag(UserIndex, tempChr)
         
 330             Call ContarMuerte(tempChr, UserIndex)
-332             UserList(tempChr).Stats.MinHp = 0
 334             Call ActStats(tempChr, UserIndex)
 
                 'Call UserDie(tempChr)
@@ -3855,7 +3839,6 @@ Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y As Byte,
 220                 Call Statistics.StoreFrag(UserIndex, NpcIndex)
                         
 222                 Call ContarMuerte(NpcIndex, UserIndex)
-224                 UserList(NpcIndex).Stats.MinHp = 0
 226                 Call ActStats(NpcIndex, UserIndex)
 
                     'Call UserDie(NpcIndex)
