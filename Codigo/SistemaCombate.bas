@@ -608,8 +608,8 @@ Public Function CalcularDaño(ByVal UserIndex As Integer, Optional ByVal NpcInde
                     ModifClase = ModicadorDañoClaseWrestling(.clase)
     
                     ' Dano sin guantes
-                    DañoMinArma = 4
-                    DañoMaxArma = 9
+                    DañoMinArma = 2
+                    DañoMaxArma = 3
                     
                     ' Plus de guantes (en slot de anillo)
                     If .Invent.AnilloEqpObjIndex > 0 Then
