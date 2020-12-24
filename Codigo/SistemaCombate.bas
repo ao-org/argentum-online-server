@@ -521,129 +521,122 @@ Public Function CalcularDaño(ByVal UserIndex As Integer, Optional ByVal NpcInde
 
         Dim proyectil As ObjData
 
-        Dim DañoMaxArma As Long
+        Dim DañoMaxArma As Long, DañoMinArma As Long
 
         ''sacar esto si no queremos q la matadracos mate el Dragon si o si
         Dim matoDragon As Boolean
 
-100     matoDragon = False
+100     With UserList(UserIndex)
 
-102     If UserList(UserIndex).Invent.WeaponEqpObjIndex > 0 Then
-104         Arma = ObjData(UserList(UserIndex).Invent.WeaponEqpObjIndex)
+102         If .Invent.WeaponEqpObjIndex > 0 Then
+104             Arma = ObjData(.Invent.WeaponEqpObjIndex)
+        
+                ' Ataca a un npc?
+106             If NpcIndex > 0 Then
     
-            ' Ataca a un npc?
-106         If NpcIndex > 0 Then
-
-                'Usa la mata Dragones?
-108             If UserList(UserIndex).Invent.WeaponEqpObjIndex = EspadaMataDragonesIndex Then ' Usa la mataDragones?
-110                 ModifClase = ModicadorDañoClaseArmas(UserList(UserIndex).clase)
-            
-112                 If Npclist(NpcIndex).NPCtype = DRAGON Then 'Ataca Dragon?
-114                     DañoArma = RandomNumber(Arma.MinHIT, Arma.MaxHit)
-116                     DañoMaxArma = Arma.MaxHit
-118                     matoDragon = True ''sacar esto si no queremos q la matadracos mate el Dragon si o si
-                    Else ' Sino es Dragon daño es 1
-120                     DañoArma = 1
-122                     DañoMaxArma = 1
-
-                    End If
-
-                Else ' daño comun
-
-124                 If Arma.proyectil = 1 Then
-126                     ModifClase = ModicadorDañoClaseProyectiles(UserList(UserIndex).clase)
-128                     DañoArma = RandomNumber(Arma.MinHIT, Arma.MaxHit)
-130                     DañoMaxArma = Arma.MaxHit
-
-132                     If Arma.Municion = 1 Then
-134                         proyectil = ObjData(UserList(UserIndex).Invent.MunicionEqpObjIndex)
-136                         DañoArma = DañoArma
-138                         DañoArma = DañoArma + RandomNumber(proyectil.MinHIT, proyectil.MaxHit)
-140                         DañoMaxArma = Arma.MaxHit
-142                         DañoMaxArma = DañoMaxArma
-
-                        End If
-
-                    Else
-144                     ModifClase = ModicadorDañoClaseArmas(UserList(UserIndex).clase)
-146                     DañoArma = RandomNumber(Arma.MinHIT, Arma.MaxHit)
-148                     DañoArma = DañoArma
-150                     DañoMaxArma = Arma.MaxHit
-152                     DañoMaxArma = DañoMaxArma
-
-                    End If
-
-                End If
-    
-            Else ' Ataca usuario
-
-154             If UserList(UserIndex).Invent.WeaponEqpObjIndex = EspadaMataDragonesIndex Then
-156                 ModifClase = ModicadorDañoClaseArmas(UserList(UserIndex).clase)
-158                 DañoArma = 1 ' Si usa la espada mataDragones daño es 1
-160                 DañoMaxArma = 1
-                Else
-
-162                 If Arma.proyectil = 1 Then
-164                     ModifClase = ModicadorDañoClaseProyectiles(UserList(UserIndex).clase)
-166                     DañoArma = RandomNumber(Arma.MinHIT, Arma.MaxHit)
-168                     DañoMaxArma = Arma.MaxHit
+                    'Usa la mata Dragones?
+108                 If .Invent.WeaponEqpObjIndex = EspadaMataDragonesIndex Then ' Usa la mataDragones?
+110                     ModifClase = ModicadorDañoClaseArmas(.clase)
                 
-170                     If Arma.Municion = 1 Then
-172                         proyectil = ObjData(UserList(UserIndex).Invent.MunicionEqpObjIndex)
-174                         DañoArma = DañoArma + RandomNumber(proyectil.MinHIT, proyectil.MaxHit)
-176                         DañoMaxArma = Arma.MaxHit
-
+112                     If Npclist(NpcIndex).NPCtype = DRAGON Then 'Ataca Dragon?
+114                         DañoArma = RandomNumber(Arma.MinHIT, Arma.MaxHit)
+116                         DañoMaxArma = Arma.MaxHit
+118                         matoDragon = True ''sacar esto si no queremos q la matadracos mate el Dragon si o si
+                        Else ' Sino es Dragon daño es 1
+120                         DañoArma = 1
+122                         DañoMaxArma = 1
                         End If
-
-                    Else
-178                     ModifClase = ModicadorDañoClaseArmas(UserList(UserIndex).clase)
-180                     DañoArma = RandomNumber(Arma.MinHIT, Arma.MaxHit)
-182                     DañoMaxArma = Arma.MaxHit
-
+    
+                    Else ' daño comun
+    
+124                     If Arma.proyectil = 1 Then
+126                         ModifClase = ModicadorDañoClaseProyectiles(.clase)
+128                         DañoArma = RandomNumber(Arma.MinHIT, Arma.MaxHit)
+130                         DañoMaxArma = Arma.MaxHit
+    
+132                         If Arma.Municion = 1 Then
+134                             proyectil = ObjData(.Invent.MunicionEqpObjIndex)
+138                             DañoArma = DañoArma + RandomNumber(proyectil.MinHIT, proyectil.MaxHit)
+140                             DañoMaxArma = Arma.MaxHit + proyectil.MaxHit
+                            End If
+    
+                        Else
+144                         ModifClase = ModicadorDañoClaseArmas(.clase)
+146                         DañoArma = RandomNumber(Arma.MinHIT, Arma.MaxHit)
+150                         DañoMaxArma = Arma.MaxHit
+                        End If
+    
                     End If
-
+        
+                Else ' Ataca usuario
+    
+154                 If .Invent.WeaponEqpObjIndex = EspadaMataDragonesIndex Then
+156                     ModifClase = ModicadorDañoClaseArmas(.clase)
+158                     DañoArma = 1 ' Si usa la espada mataDragones daño es 1
+160                     DañoMaxArma = 1
+                    Else
+    
+162                     If Arma.proyectil = 1 Then
+164                         ModifClase = ModicadorDañoClaseProyectiles(.clase)
+166                         DañoArma = RandomNumber(Arma.MinHIT, Arma.MaxHit)
+168                         DañoMaxArma = Arma.MaxHit
+                    
+170                         If Arma.Municion = 1 Then
+172                             proyectil = ObjData(.Invent.MunicionEqpObjIndex)
+174                             DañoArma = DañoArma + RandomNumber(proyectil.MinHIT, proyectil.MaxHit)
+176                             DañoMaxArma = Arma.MaxHit + proyectil.MaxHit
+                            End If
+    
+                        Else
+178                         ModifClase = ModicadorDañoClaseArmas(.clase)
+180                         DañoArma = RandomNumber(Arma.MinHIT, Arma.MaxHit)
+182                         DañoMaxArma = Arma.MaxHit
+                        End If
+    
+                    End If
+    
                 End If
-
-            End If
-
-        Else
-
-            'Pablo (ToxicWaste)
-184         If UserList(UserIndex).Invent.NudilloSlot = 0 Then
-186             ModifClase = ModicadorDañoClaseWrestling(UserList(UserIndex).clase)
-188             DañoArma = RandomNumber(UserList(UserIndex).Stats.MinHIT, UserList(UserIndex).Stats.MaxHit)
-190             DañoMaxArma = UserList(UserIndex).Stats.MaxHit
+    
             Else
     
-192             ModifClase = ModicadorDañoClaseArmas(UserList(UserIndex).clase)
-194             Arma = ObjData(UserList(UserIndex).Invent.NudilloObjIndex)
-196             DañoArma = RandomNumber(Arma.MinHIT, Arma.MaxHit)
-198             DañoMaxArma = Arma.MaxHit
-
+184             If .Invent.NudilloSlot > 0 Then
+192                 ModifClase = ModicadorDañoClaseArmas(.clase)
+194                 Arma = ObjData(.Invent.NudilloObjIndex)
+196                 DañoArma = RandomNumber(Arma.MinHIT, Arma.MaxHit)
+198                 DañoMaxArma = Arma.MaxHit
+                Else
+                    ModifClase = ModicadorDañoClaseWrestling(.clase)
+    
+                    ' Dano sin guantes
+                    DañoMinArma = 4
+                    DañoMaxArma = 9
+                    
+                    ' Plus de guantes (en slot de anillo)
+                    If .Invent.AnilloEqpObjIndex > 0 Then
+                        If ObjData(.Invent.AnilloEqpObjIndex).Subtipo = 4 Then
+                            DañoMinArma = DañoMinArma + ObjData(.Invent.AnilloEqpObjIndex).MinHIT
+                            DañoMaxArma = DañoMaxArma + ObjData(.Invent.AnilloEqpObjIndex).MaxHit
+                        End If
+                    End If
+                    
+                    DañoArma = RandomNumber(DañoMinArma, DañoMaxArma)
+                End If
+    
+            End If
+    
+200         If .Invent.MagicoObjIndex = 707 And NpcIndex = 0 Then
+202             DañoUsuario = RandomNumber((.Stats.MinHIT - ObjData(.Invent.MagicoObjIndex).CuantoAumento), (.Stats.MaxHit - ObjData(.Invent.MagicoObjIndex).CuantoAumento))
+            Else
+204             DañoUsuario = RandomNumber(.Stats.MinHIT, .Stats.MaxHit)
+            End If
+    
+206         If matoDragon Then
+208             CalcularDaño = Npclist(NpcIndex).Stats.MinHp + Npclist(NpcIndex).Stats.def
+            Else
+210             CalcularDaño = (3 * DañoArma + DañoMaxArma * 0.2 * Maximo(0, .Stats.UserAtributos(Fuerza) - 15) + DañoUsuario) * ModifClase
             End If
 
-        End If
-
-200     If UserList(UserIndex).Invent.MagicoObjIndex = 707 And NpcIndex = 0 Then
-202         DañoUsuario = RandomNumber((UserList(UserIndex).Stats.MinHIT - ObjData(UserList(UserIndex).Invent.MagicoObjIndex).CuantoAumento), (UserList(UserIndex).Stats.MaxHit - ObjData(UserList(UserIndex).Invent.MagicoObjIndex).CuantoAumento))
-        Else
-204         DañoUsuario = RandomNumber(UserList(UserIndex).Stats.MinHIT, UserList(UserIndex).Stats.MaxHit)
-
-        End If
-
-        ''sacar esto si no queremos q la matadracos mate el Dragon si o si
-206     If matoDragon Then
-208         CalcularDaño = Npclist(NpcIndex).Stats.MinHp + Npclist(NpcIndex).Stats.def
-        Else
-210         CalcularDaño = ((3 * DañoArma) + ((DañoMaxArma / 5) * Maximo(0, (UserList(UserIndex).Stats.UserAtributos(Fuerza) - 15))) + DañoUsuario) * ModifClase
-    
-            'CalcularDaño = ((3 * 14) + ((14 / 5) * 20) + DañoUsuario) * ModifClase
-            'CalcularDaño = (42 + (56 + 104) * ModifClase
-            'CalcularDaño = 202 * 0.95  = 191      - defensas
-    
-            'CalcularDaño = 136
-        End If
-
+        End With
         
         Exit Function
 

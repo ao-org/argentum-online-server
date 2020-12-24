@@ -721,10 +721,10 @@ Public Sub HerreroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As I
 108         If ObjData(ItemIndex).OBJType = eOBJType.otWeapon Then
                 ' Call WriteConsoleMsg(UserIndex, "Has construido el arma!", FontTypeNames.FONTTYPE_INFO)
 110             Call WriteRenderValueMsg(UserIndex, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, " 1", 5)
-112         ElseIf ObjData(ItemIndex).OBJType = eOBJType.otESCUDO Then
+112         ElseIf ObjData(ItemIndex).OBJType = eOBJType.otEscudo Then
                 ' Call WriteConsoleMsg(UserIndex, "Has construido el escudo!", FontTypeNames.FONTTYPE_INFO)
 114             Call WriteRenderValueMsg(UserIndex, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, " 1", 5)
-116         ElseIf ObjData(ItemIndex).OBJType = eOBJType.otCASCO Then
+116         ElseIf ObjData(ItemIndex).OBJType = eOBJType.otCasco Then
                 ' Call WriteConsoleMsg(UserIndex, "Has construido el casco!", FontTypeNames.FONTTYPE_INFO)
 118             Call WriteRenderValueMsg(UserIndex, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, " 1", 5)
 120         ElseIf ObjData(ItemIndex).OBJType = eOBJType.otArmadura Then
@@ -2026,7 +2026,9 @@ Public Sub DoGolpeCritico(ByVal UserIndex As Integer, ByVal VictimNpcIndex As In
         
         End With
 
-110     Suerte = Int((((0.00000003 * Skill + 0.000006) * Skill + 0.000107) * Skill + 0.0493) * 100)
+110     Suerte = Int(((0.000003 * Skill + 0.0006) * Skill + 0.0107) * Skill + 4.93)
+
+        If VictimNpcIndex <> 0 Then Suerte = Suerte * 2
 
 112     If RandomNumber(0, 100) < Suerte Then
 114         daño = Int(daño * 0.5)
