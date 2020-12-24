@@ -1353,7 +1353,7 @@ Sub LoadOBJData()
 178                 ObjData(Object).SkHerreria = val(Leer.GetValue("OBJ" & Object, "SkHerreria"))
 180                 ObjData(Object).ResistenciaMagica = val(Leer.GetValue("OBJ" & Object, "ResistenciaMagica"))
         
-182             Case eOBJType.otESCUDO
+182             Case eOBJType.otEscudo
 184                 ObjData(Object).ShieldAnim = val(Leer.GetValue("OBJ" & Object, "Anim"))
 186                 ObjData(Object).LingH = val(Leer.GetValue("OBJ" & Object, "LingH"))
 188                 ObjData(Object).LingP = val(Leer.GetValue("OBJ" & Object, "LingP"))
@@ -1363,7 +1363,7 @@ Sub LoadOBJData()
 196                 ObjData(Object).Caos = val(Leer.GetValue("OBJ" & Object, "Caos"))
 198                 ObjData(Object).ResistenciaMagica = val(Leer.GetValue("OBJ" & Object, "ResistenciaMagica"))
         
-200             Case eOBJType.otCASCO
+200             Case eOBJType.otCasco
 202                 ObjData(Object).CascoAnim = val(Leer.GetValue("OBJ" & Object, "Anim"))
 204                 ObjData(Object).LingH = val(Leer.GetValue("OBJ" & Object, "LingH"))
 206                 ObjData(Object).LingP = val(Leer.GetValue("OBJ" & Object, "LingP"))
@@ -1420,7 +1420,6 @@ Sub LoadOBJData()
 288             Case eOBJType.otBarcos
 290                 ObjData(Object).MaxHit = val(Leer.GetValue("OBJ" & Object, "MaxHIT"))
 292                 ObjData(Object).MinHIT = val(Leer.GetValue("OBJ" & Object, "MinHIT"))
-294                 ObjData(Object).Subtipo = val(Leer.GetValue("OBJ" & Object, "Subtipo"))
 296                 ObjData(Object).Velocidad = val(Leer.GetValue("OBJ" & Object, "Velocidad"))
 
 298             Case eOBJType.otMonturas
@@ -1434,7 +1433,6 @@ Sub LoadOBJData()
 312             Case eOBJType.otFlechas
 314                 ObjData(Object).MaxHit = val(Leer.GetValue("OBJ" & Object, "MaxHIT"))
 316                 ObjData(Object).MinHIT = val(Leer.GetValue("OBJ" & Object, "MinHIT"))
-318                 ObjData(Object).Subtipo = val(Leer.GetValue("OBJ" & Object, "Subtipo"))
             
 320                 ObjData(Object).Snd1 = val(Leer.GetValue("OBJ" & Object, "SND1"))
 322                 ObjData(Object).Snd2 = val(Leer.GetValue("OBJ" & Object, "SND2"))
@@ -1454,7 +1452,6 @@ Sub LoadOBJData()
 334                 ObjData(Object).NecesitaNave = val(Leer.GetValue("OBJ" & Object, "NecesitaNave"))
             
 336             Case eOBJType.OtDonador
-338                 ObjData(Object).Subtipo = val(Leer.GetValue("OBJ" & Object, "Subtipo"))
 340                 ObjData(Object).HastaMap = val(Leer.GetValue("OBJ" & Object, "Map"))
 342                 ObjData(Object).HastaX = val(Leer.GetValue("OBJ" & Object, "X"))
 344                 ObjData(Object).HastaY = val(Leer.GetValue("OBJ" & Object, "Y"))
@@ -1474,7 +1471,7 @@ Sub LoadOBJData()
 362                 ObjData(Object).HastaX = val(Leer.GetValue("OBJ" & Object, "X"))
 364                 ObjData(Object).HastaY = val(Leer.GetValue("OBJ" & Object, "Y"))
                     
-366             Case eOBJType.otNUDILLOS
+366             Case eOBJType.otNudillos
 368                 ObjData(Object).MinHIT = val(Leer.GetValue("OBJ" & Object, "MinHIT"))
 370                 ObjData(Object).MaxHit = val(Leer.GetValue("OBJ" & Object, "MaxHit"))
 372                 ObjData(Object).Envenena = val(Leer.GetValue("OBJ" & Object, "Envenena"))
@@ -1489,7 +1486,6 @@ Sub LoadOBJData()
         
 384             Case eOBJType.OtCofre
 386                 ObjData(Object).CantItem = val(Leer.GetValue("OBJ" & Object, "CantItem"))
-388                 ObjData(Object).Subtipo = val(Leer.GetValue("OBJ" & Object, "SubTipo"))
 
 390                 If ObjData(Object).Subtipo = 1 Then
 392                     ReDim ObjData(Object).Item(1 To ObjData(Object).CantItem)
@@ -1529,7 +1525,9 @@ Sub LoadOBJData()
                 
 434             Case eOBJType.otAnillos
 436                 ObjData(Object).MagicDamageBonus = val(Leer.GetValue("OBJ" & Object, "MagicDamageBonus"))
-438                 ObjData(Object).ResistenciaMagica = val(Leer.GetValue("OBJ" & Object, "ResistenciaMagica"))
+437                 ObjData(Object).ResistenciaMagica = val(Leer.GetValue("OBJ" & Object, "ResistenciaMagica"))
+438                 ObjData(Object).MinHIT = val(Leer.GetValue("OBJ" & Object, "MinHIT"))
+439                 ObjData(Object).MaxHit = val(Leer.GetValue("OBJ" & Object, "MaxHIT"))
             
             End Select
     
