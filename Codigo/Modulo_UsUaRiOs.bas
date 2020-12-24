@@ -1530,7 +1530,7 @@ Sub UserDie(ByVal UserIndex As Integer)
             ' End If
         
             '<<<< Invisible >>>>
-208         If .flags.invisible = 1 Or .flags.Oculto = 1 Then
+208         If (.flags.invisible = 1 Or .flags.Oculto = 1) And .flags.AdminInvisible = 0 Then
 210             .flags.Oculto = 0
 212             .flags.invisible = 0
 214             .Counters.TiempoOculto = 0
@@ -2074,7 +2074,7 @@ Sub Cerrar_Usuario(ByVal UserIndex As Integer)
             
 108             isNotVisible = (.flags.Oculto Or .flags.invisible)
 
-110             If isNotVisible Then
+110             If isNotVisible And .flags.AdminInvisible = 0 Then
 112                 .flags.invisible = 0
                 
 114                 If .flags.Oculto Then

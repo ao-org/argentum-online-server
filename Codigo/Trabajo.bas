@@ -68,7 +68,7 @@ Public Sub DoPermanecerOculto(ByVal UserIndex As Integer)
 
                 Else
 
-126                 If .flags.invisible = 0 Then
+126                 If .flags.invisible = 0 And .flags.AdminInvisible = 0 Then
 128                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, False))
 130                     Call WriteConsoleMsg(UserIndex, "¡Has vuelto a ser visible!", FontTypeNames.FONTTYPE_INFO)
 

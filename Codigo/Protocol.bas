@@ -2047,7 +2047,7 @@ Private Sub HandleTalk(ByVal UserIndex As Integer)
             End If
         
             'I see you....
-118         If .flags.Oculto > 0 Then
+118         If .flags.Oculto > 0 And .flags.AdminInvisible = 0 Then
 120             .flags.Oculto = 0
 122             .Counters.TiempoOculto = 0
             
@@ -2162,7 +2162,7 @@ Private Sub HandleYell(ByVal UserIndex As Integer)
                 End If
             
                 'I see you....
-120             If .flags.Oculto > 0 Then
+120             If .flags.Oculto > 0 And .flags.AdminInvisible = 0 Then
 122                 .flags.Oculto = 0
 124                 .Counters.TiempoOculto = 0
                 
@@ -7053,7 +7053,7 @@ Private Sub HandleQuit(ByVal UserIndex As Integer)
         
 124         isNotVisible = (.flags.Oculto Or .flags.invisible)
 
-126         If isNotVisible Then
+126         If isNotVisible And .flags.AdminInvisible = 0 Then
 128             .flags.Oculto = 0
 130             .flags.invisible = 0
 
