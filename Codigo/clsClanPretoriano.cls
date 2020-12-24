@@ -1614,7 +1614,6 @@ Private Sub DealWandDamage(ByVal NpcIndex As Integer, ByVal SpellIndex As Intege
 126                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, Hechizos(SpellIndex).FXgrh, Hechizos(SpellIndex).loops))
                         
 128                         If .Stats.MinHp < 1 Then
-130                             .Stats.MinHp = 0
 132                             Call UserDie(UserIndex)
                             Else
                                 'Updates user's hp:
@@ -3085,7 +3084,7 @@ Private Function UserAtacable(ByVal UserIndex As Integer, _
         On Error GoTo UserAtacable_Err
         
 
-100     With UserList(Userindex).flags
+100     With UserList(UserIndex).flags
 102         UserAtacable = Not .EnConsulta And .AdminInvisible = 0 And .Muerto = 0
                        
 104         If CheckVisibility Then

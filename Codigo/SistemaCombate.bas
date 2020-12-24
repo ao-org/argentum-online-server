@@ -865,6 +865,9 @@ Public Sub NpcDaño(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
             End If
         
 190         Call UserDie(UserIndex)
+
+        Else
+            Call WriteUpdateHP(UserIndex)
     
         End If
 
@@ -920,7 +923,6 @@ Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integ
             End If
         
 134         Call NpcDaño(NpcIndex, UserIndex)
-136         Call WriteUpdateHP(UserIndex)
 
             '¿Puede envenenar?
 138         If Npclist(NpcIndex).Veneno > 0 Then Call NpcEnvenenarUser(UserIndex, Npclist(NpcIndex).Veneno)

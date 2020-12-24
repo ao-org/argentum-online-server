@@ -205,6 +205,7 @@ Private Sub IrUsuarioCercano(ByVal NpcIndex As Integer)
 
 178                                 tHeading = FindDirectionEAO(.Pos, UserList(Npclist(NpcIndex).Target).Pos, Npclist(NpcIndex).flags.AguaValida = 1, Npclist(NpcIndex).flags.TierraInvalida = 0)
 
+                                    Call AnimacionIdle(NpcIndex, True)
 180                                 Call ChangeNPCChar(NpcIndex, .Char.Body, .Char.Head, tHeading)
 
 182                                 If .flags.LanzaSpells <> 0 Then
