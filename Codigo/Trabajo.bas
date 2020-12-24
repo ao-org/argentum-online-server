@@ -721,10 +721,10 @@ Public Sub HerreroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As I
 108         If ObjData(ItemIndex).OBJType = eOBJType.otWeapon Then
                 ' Call WriteConsoleMsg(UserIndex, "Has construido el arma!", FontTypeNames.FONTTYPE_INFO)
 110             Call WriteRenderValueMsg(UserIndex, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, " 1", 5)
-112         ElseIf ObjData(ItemIndex).OBJType = eOBJType.otEscudo Then
+112         ElseIf ObjData(ItemIndex).OBJType = eOBJType.otESCUDO Then
                 ' Call WriteConsoleMsg(UserIndex, "Has construido el escudo!", FontTypeNames.FONTTYPE_INFO)
 114             Call WriteRenderValueMsg(UserIndex, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, " 1", 5)
-116         ElseIf ObjData(ItemIndex).OBJType = eOBJType.otCasco Then
+116         ElseIf ObjData(ItemIndex).OBJType = eOBJType.otCASCO Then
                 ' Call WriteConsoleMsg(UserIndex, "Has construido el casco!", FontTypeNames.FONTTYPE_INFO)
 118             Call WriteRenderValueMsg(UserIndex, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, " 1", 5)
 120         ElseIf ObjData(ItemIndex).OBJType = eOBJType.otArmadura Then
@@ -2206,8 +2206,6 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
     
                 Dim MiObj As obj
             
-120             If .flags.TargetObj = 0 Then Exit Sub
-            
 122             Call ActualizarRecurso(.Pos.Map, X, Y)
 124             MapData(.Pos.Map, X, Y).ObjInfo.data = GetTickCount() ' Ultimo uso
     
@@ -2292,9 +2290,10 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
 
         On Error GoTo ErrHandler
 
-        Dim Suerte As Integer
-        Dim res    As Integer
-        Dim metal  As Integer
+        Dim Suerte      As Integer
+        Dim res         As Integer
+        Dim Metal       As Integer
+        Dim Yacimiento  As ObjData
 
 100     With UserList(UserIndex)
     
@@ -2325,12 +2324,12 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
                 Dim MiObj As obj
                 Dim nPos  As WorldPos
             
-120             If .flags.TargetObj = 0 Then Exit Sub
-            
 122             Call ActualizarRecurso(.Pos.Map, X, Y)
 124             MapData(.Pos.Map, X, Y).ObjInfo.data = GetTickCount() ' Ultimo uso
+
+                Yacimiento = ObjData(MapData(.Pos.Map, X, Y).ObjInfo.ObjIndex)
             
-126             MiObj.ObjIndex = ObjData(.flags.TargetObj).MineralIndex
+126             MiObj.ObjIndex = Yacimiento.MineralIndex
 128             MiObj.Amount = IIf(ObjetoDorado, RandomNumber(1, 6), 1) * RecoleccionMult
             
 130             If MiObj.Amount > MapData(.Pos.Map, X, Y).ObjInfo.Amount Then
@@ -2348,20 +2347,20 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
                 Dim i As Integer
     
                 ' Por cada drop posible
-142             For i = 1 To ObjData(.flags.TargetObj).CantItem
+142             For i = 1 To Yacimiento.CantItem
                     ' Tiramos al azar entre 1 y la probabilidad
-144                 res = RandomNumber(1, ObjData(.flags.TargetObj).Item(i).Amount)
+144                 res = RandomNumber(1, Yacimiento.Item(i).Amount)
                 
                     ' Si tiene suerte y le pega
 146                 If res = 1 Then
                         ' Se lo metemos al inventario (o lo tiramos al piso)
-148                     MiObj.ObjIndex = ObjData(.flags.TargetObj).Item(i).ObjIndex
+148                     MiObj.ObjIndex = Yacimiento.Item(i).ObjIndex
 150                     MiObj.Amount = 1 ' Solo una gema por vez
                     
 152                     If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.Pos, MiObj)
                         
                         ' Le mandamos un mensaje
-154                     Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(ObjData(.flags.TargetObj).Item(i).ObjIndex).name & "!", FontTypeNames.FONTTYPE_INFO)
+154                     Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(Yacimiento.Item(i).ObjIndex).name & "!", FontTypeNames.FONTTYPE_INFO)
                         ' TODO: Sonido de drop de gema :P
                         'Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessagePlayWave(15, .Pos.x, .Pos.Y))
                         

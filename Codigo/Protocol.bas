@@ -4197,9 +4197,6 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 438                 Select Case ObjData(.Invent.HerramientaEqpObjIndex).Subtipo
                 
                         Case 6      ' Herramientas de Carpinteria - Hacha
-                        
-                            'Target whatever is in the tile
-440                         Call LookatTile(UserIndex, .Pos.Map, X, Y)
 
                             ' Ahora se puede talar en la ciudad
                             'If MapInfo(UserList(UserIndex).Pos.Map).Seguro = 1 Then
