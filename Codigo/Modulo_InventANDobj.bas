@@ -380,39 +380,33 @@ Public Sub DropObjQuest(ByRef npc As npc, ByRef UserIndex As Integer)
 100     If npc.NumDropQuest = 0 Then Exit Sub
         
     
-        Dim Dropeo       As obj
-        Dim QuestIndex As Integer
-        Dim ObjIndex As Integer
-        Dim Amount As Integer
-        Dim Probabilidad As Byte
-
+        Dim Dropeo As obj
+        Dim Probabilidad As Long
         Dim i As Byte
     
-    
 102     For i = 1 To npc.NumDropQuest
-    
-104         QuestIndex = val(ReadField(1, npc.DropQuest(i), Asc("-")))
-106         ObjIndex = val(ReadField(2, npc.DropQuest(i), Asc("-")))
-108         Amount = val(ReadField(3, npc.DropQuest(i), Asc("-")))
-110         Probabilidad = val(ReadField(4, npc.DropQuest(i), Asc("-")))
-        
-112         If QuestIndex <> 0 Then
-114             If TieneQuest(UserIndex, QuestIndex) <> 0 Then
-116                 Probabilidad = RandomNumber(1, Probabilidad) 'Tiro Item?
-118                 If Probabilidad = 1 Then
-120                     Dropeo.Amount = Amount
-122                     Dropeo.ObjIndex = ObjIndex
-124                     Call TirarItemAlPiso(npc.Pos, Dropeo)
-126                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(FXSound.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
+
+            With npc.DropQuest(i)
+
+112             If .QuestIndex > 0 <> 0 Then
+114                 If TieneQuest(UserIndex, .QuestIndex) <> 0 Then
+116                     Probabilidad = RandomNumber(1, .Probabilidad) 'Tiro Item?
+118                     If Probabilidad = 1 Then
+120                         Dropeo.Amount = .Amount
+122                         Dropeo.ObjIndex = .ObjIndex
+124                         Call TirarItemAlPiso(npc.Pos, Dropeo)
+126                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(FXSound.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
+                        End If
                     End If
                 End If
-            End If
+
+            End With
 128     Next i
 
         Exit Sub
 
 ErrHandler:
-130     Call LogError("Error DropObjQuest al dropear el item " & ObjData(ObjIndex).name & ", al usuario " & UserList(UserIndex).name & ". " & Err.description & ".")
+130     Call LogError("Error DropObjQuest al dropear el item " & ObjData(npc.DropQuest(i).ObjIndex).name & ", al usuario " & UserList(UserIndex).name & ". " & Err.description & ".")
 
 End Sub
 
