@@ -956,6 +956,16 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 174                     Call ActualizarRecurso(Map, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY)
 176                     Call WriteConsoleMsg(UserIndex, ObjData(UserList(UserIndex).flags.TargetObj).name & " - (Recursos disponibles: " & MapData(Map, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.Amount & ")", FontTypeNames.FONTTYPE_INFO)
                     
+                    ElseIf ObjData(UserList(UserIndex).flags.TargetObj).OBJType = eOBJType.otTeleport Then
+                        If MapData(Map, X, Y).TileExit.Map > 0 Then
+                            If LenB(MapInfo(MapData(Map, X, Y).TileExit.Map).map_name) <> 0 Then
+                                Call WriteConsoleMsg(UserIndex, "Portal a " & MapInfo(MapData(Map, X, Y).TileExit.Map).map_name, FontTypeNames.FONTTYPE_INFO)
+                            Else
+                                Call WriteConsoleMsg(UserIndex, "Portal a un mapa desconocido...", FontTypeNames.FONTTYPE_INFO)
+                            End If
+                        Else
+                            Call WriteConsoleMsg(UserIndex, "Portal hacia la quinta dimensión", FontTypeNames.FONTTYPE_INFO)
+                        End If
                     Else
 178                     Call WriteConsoleMsg(UserIndex, "O*" & UserList(UserIndex).flags.TargetObj & "*", FontTypeNames.FONTTYPE_INFO)
 
