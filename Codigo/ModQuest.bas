@@ -880,7 +880,7 @@ Function FaltanItemsQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Intege
                 If ObjIndex = .RequiredOBJ(i).ObjIndex Then
 
                     ' Devolvemos si ya tiene todos los que la quest pide
-                    FaltanItemsQuest = TieneObjetos(ObjIndex, .RequiredOBJ(i).Amount, UserIndex)
+                    FaltanItemsQuest = Not TieneObjetos(ObjIndex, .RequiredOBJ(i).Amount, UserIndex)
                     Exit Function
 
                 End If
