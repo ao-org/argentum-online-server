@@ -387,43 +387,41 @@ Function QuitarObjetos(ByVal ItemIndex As Integer, ByVal cant As Integer, ByVal 
         
         On Error GoTo QuitarObjetos_Err
         
+        With UserList(UserIndex)
 
-        Dim i As Long
-
-100     For i = 1 To UserList(UserIndex).CurrentInventorySlots
-102         Debug.Print i
-
-104         If UserList(UserIndex).Invent.Object(i).ObjIndex = ItemIndex Then
-106             Debug.Print UserList(UserIndex).name
-        
-108             If UserList(UserIndex).Invent.Object(i).Equipped Then
-110                 Call Desequipar(UserIndex, i)
-
+            Dim i As Long
+    
+100         For i = 1 To .CurrentInventorySlots
+    
+104             If .Invent.Object(i).ObjIndex = ItemIndex Then
+    
+112                 .Invent.Object(i).Amount = .Invent.Object(i).Amount - cant
+    
+114                 If .Invent.Object(i).Amount <= 0 Then
+                        If .Invent.Object(i).Equipped Then
+110                         Call Desequipar(UserIndex, i)
+                        End If
+    
+116                     cant = Abs(.Invent.Object(i).Amount)
+118                     .Invent.Object(i).Amount = 0
+120                     .Invent.Object(i).ObjIndex = 0
+                    Else
+122                     cant = 0
+    
+                    End If
+            
+124                 Call UpdateUserInv(False, UserIndex, i)
+            
+126                 If cant = 0 Then
+128                     QuitarObjetos = True
+                        Exit Function
+                    End If
+    
                 End If
-        
-112             UserList(UserIndex).Invent.Object(i).Amount = UserList(UserIndex).Invent.Object(i).Amount - cant
+    
+130         Next i
 
-114             If (UserList(UserIndex).Invent.Object(i).Amount <= 0) Then
-116                 cant = Abs(UserList(UserIndex).Invent.Object(i).Amount)
-118                 UserList(UserIndex).Invent.Object(i).Amount = 0
-120                 UserList(UserIndex).Invent.Object(i).ObjIndex = 0
-                Else
-122                 cant = 0
-
-                End If
-        
-124             Call UpdateUserInv(False, UserIndex, i)
-        
-126             If (cant = 0) Then
-128                 QuitarObjetos = True
-                    Exit Function
-
-                End If
-
-            End If
-
-130     Next i
-
+        End With
         
         Exit Function
 
