@@ -1432,10 +1432,13 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
     
 344         Npclist(NpcIndex).NumDropQuest = val(aux)
             
-346         ReDim Npclist(NpcIndex).DropQuest(1 To Npclist(NpcIndex).NumDropQuest) As String
+346         ReDim Npclist(NpcIndex).DropQuest(1 To Npclist(NpcIndex).NumDropQuest) As tQuestObj
             
 348         For LoopC = 1 To Npclist(NpcIndex).NumDropQuest
-350             Npclist(NpcIndex).DropQuest(LoopC) = Leer.GetValue("NPC" & NpcNumber, "DropQuest" & LoopC)
+                Npclist(NpcIndex).DropQuest(LoopC).QuestIndex = val(ReadField(1, Leer.GetValue("NPC" & NpcNumber, "DropQuest" & LoopC), Asc("-")))
+350             Npclist(NpcIndex).DropQuest(LoopC).ObjIndex = val(ReadField(2, Leer.GetValue("NPC" & NpcNumber, "DropQuest" & LoopC), Asc("-")))
+351             Npclist(NpcIndex).DropQuest(LoopC).Amount = val(ReadField(3, Leer.GetValue("NPC" & NpcNumber, "DropQuest" & LoopC), Asc("-")))
+                Npclist(NpcIndex).DropQuest(LoopC).Probabilidad = val(ReadField(4, Leer.GetValue("NPC" & NpcNumber, "DropQuest" & LoopC), Asc("-")))
 352         Next LoopC
 
         End If

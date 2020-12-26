@@ -747,8 +747,8 @@ Public Enum eOBJType
     otBebidas = 13
     otLeña = 14
     otFogata = 15
-    otEscudo = 16
-    otCasco = 17
+    otESCUDO = 16
+    otCASCO = 17
     otHerramientas = 18
     otTeleport = 19
     OtDecoraciones = 20
@@ -770,7 +770,7 @@ Public Enum eOBJType
     OtPozos = 40
     otMonturas = 44
     otRunas = 45
-    otNudillos = 46
+    otNUDILLOS = 46
     OtCorreo = 47
     OtCofre = 48
     OtDonador = 50
@@ -1090,6 +1090,15 @@ Public Type tQuestNpc
 
     NpcIndex As Integer
     Amount As Integer
+
+End Type
+
+Public Type tQuestObj
+
+    QuestIndex As Integer
+    ObjIndex As Integer
+    Amount As Integer
+    Probabilidad As Long
 
 End Type
  
@@ -1973,7 +1982,7 @@ Public Type npc
     Distancia As Byte
     
     NumDropQuest As Byte
-    DropQuest() As String
+    DropQuest() As tQuestObj
     
     InformarRespawn As Byte
     name As String
