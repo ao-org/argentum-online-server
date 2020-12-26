@@ -378,10 +378,10 @@ Public Sub DropObjQuest(ByRef npc As npc, ByRef UserIndex As Integer)
         On Error GoTo ErrHandler
 
 100     If npc.NumDropQuest = 0 Then Exit Sub
-        
     
         Dim Dropeo As obj
         Dim Probabilidad As Long
+        
         Dim i As Byte
     
 102     For i = 1 To npc.NumDropQuest
@@ -389,13 +389,19 @@ Public Sub DropObjQuest(ByRef npc As npc, ByRef UserIndex As Integer)
             With npc.DropQuest(i)
 
 112             If .QuestIndex > 0 <> 0 Then
+                    ' Tiene la quest?
 114                 If TieneQuest(UserIndex, .QuestIndex) <> 0 Then
-116                     Probabilidad = RandomNumber(1, .Probabilidad) 'Tiro Item?
-118                     If Probabilidad = 1 Then
-120                         Dropeo.Amount = .Amount
-122                         Dropeo.ObjIndex = .ObjIndex
-124                         Call TirarItemAlPiso(npc.Pos, Dropeo)
-126                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(FXSound.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
+                        ' Si aún me faltan más de estos items de esta quest
+                        If FaltanItemsQuest(UserIndex, .QuestIndex, .ObjIndex) Then
+
+116                         Probabilidad = RandomNumber(1, .Probabilidad) 'Tiro Item?
+    
+118                         If Probabilidad = 1 Then
+120                             Dropeo.Amount = .Amount
+122                             Dropeo.ObjIndex = .ObjIndex
+124                             Call TirarItemAlPiso(npc.Pos, Dropeo)
+126                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(FXSound.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
+                            End If
                         End If
                     End If
                 End If
