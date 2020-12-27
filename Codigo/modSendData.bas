@@ -408,7 +408,7 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, ByV
         Exit Sub
 
 SendData_Err:
-        Call RegistrarError(Err.Number, Err.description, "modSendData.SendData", Erl)
+356     Call RegistrarError(Err.Number, Err.description, "modSendData.SendData", Erl)
 
         
 End Sub
@@ -429,21 +429,21 @@ Private Sub SendToUserArea(ByVal UserIndex As Integer, ByVal sndData As String)
         Dim AreaX     As Integer
         Dim AreaY     As Integer
         
-        If UserIndex = 0 Then Exit Sub
+100     If UserIndex = 0 Then Exit Sub
         
-100     Map = UserList(UserIndex).Pos.Map
-102     AreaX = UserList(UserIndex).AreasInfo.AreaPerteneceX
-104     AreaY = UserList(UserIndex).AreasInfo.AreaPerteneceY
+102     Map = UserList(UserIndex).Pos.Map
+104     AreaX = UserList(UserIndex).AreasInfo.AreaPerteneceX
+106     AreaY = UserList(UserIndex).AreasInfo.AreaPerteneceY
     
-106     If Not MapaValido(Map) Then Exit Sub
+108     If Not MapaValido(Map) Then Exit Sub
     
-108     For LoopC = 1 To ConnGroups(Map).CountEntrys
-110         tempIndex = ConnGroups(Map).UserEntrys(LoopC)
+110     For LoopC = 1 To ConnGroups(Map).CountEntrys
+112         tempIndex = ConnGroups(Map).UserEntrys(LoopC)
 
-112         If UserList(tempIndex).AreasInfo.AreaReciveX And AreaX Then  'Esta en el area?
-114             If UserList(tempIndex).AreasInfo.AreaReciveY And AreaY Then
-116                 If UserList(tempIndex).ConnIDValida Then
-118                     Call EnviarDatosASlot(tempIndex, sndData)
+114         If UserList(tempIndex).AreasInfo.AreaReciveX And AreaX Then  'Esta en el area?
+116             If UserList(tempIndex).AreasInfo.AreaReciveY And AreaY Then
+118                 If UserList(tempIndex).ConnIDValida Then
+120                     Call EnviarDatosASlot(tempIndex, sndData)
 
                     End If
 
@@ -451,14 +451,14 @@ Private Sub SendToUserArea(ByVal UserIndex As Integer, ByVal sndData As String)
 
             End If
 
-120     Next LoopC
+122     Next LoopC
 
         
         Exit Sub
 
 SendToUserArea_Err:
-122     Call RegistrarError(Err.Number, Err.description, "modSendData.SendToUserArea", Erl)
-124     Resume Next
+124     Call RegistrarError(Err.Number, Err.description, "modSendData.SendToUserArea", Erl)
+126     Resume Next
         
 End Sub
 
@@ -479,27 +479,27 @@ Private Sub SendToUserAreaButindex(ByVal UserIndex As Integer, ByVal sndData As 
         Dim AreaX     As Integer
         Dim AreaY     As Integer
         
-        If UserIndex = 0 Then Exit Sub
+100     If UserIndex = 0 Then Exit Sub
         
-100     Map = UserList(UserIndex).Pos.Map
-102     AreaX = UserList(UserIndex).AreasInfo.AreaPerteneceX
-104     AreaY = UserList(UserIndex).AreasInfo.AreaPerteneceY
+102     Map = UserList(UserIndex).Pos.Map
+104     AreaX = UserList(UserIndex).AreasInfo.AreaPerteneceX
+106     AreaY = UserList(UserIndex).AreasInfo.AreaPerteneceY
 
 
-106     If Not MapaValido(Map) Then Exit Sub
+108     If Not MapaValido(Map) Then Exit Sub
     
-108     For LoopC = 1 To ConnGroups(Map).CountEntrys
-110         tempIndex = ConnGroups(Map).UserEntrys(LoopC)
+110     For LoopC = 1 To ConnGroups(Map).CountEntrys
+112         tempIndex = ConnGroups(Map).UserEntrys(LoopC)
             
-112         TempInt = UserList(tempIndex).AreasInfo.AreaReciveX And AreaX
+114         TempInt = UserList(tempIndex).AreasInfo.AreaReciveX And AreaX
 
-114         If TempInt Then  'Esta en el area?
-116             TempInt = UserList(tempIndex).AreasInfo.AreaReciveY And AreaY
+116         If TempInt Then  'Esta en el area?
+118             TempInt = UserList(tempIndex).AreasInfo.AreaReciveY And AreaY
 
-118             If TempInt Then
-120                 If tempIndex <> UserIndex Then
-122                     If UserList(tempIndex).ConnIDValida Then
-124                         Call EnviarDatosASlot(tempIndex, sndData)
+120             If TempInt Then
+122                 If tempIndex <> UserIndex Then
+124                     If UserList(tempIndex).ConnIDValida Then
+126                         Call EnviarDatosASlot(tempIndex, sndData)
 
                         End If
 
@@ -509,14 +509,14 @@ Private Sub SendToUserAreaButindex(ByVal UserIndex As Integer, ByVal sndData As 
 
             End If
 
-126     Next LoopC
+128     Next LoopC
 
         
         Exit Sub
 
 SendToUserAreaButindex_Err:
-128     Call RegistrarError(Err.Number, Err.description, "modSendData.SendToUserAreaButindex", Erl)
-130     Resume Next
+130     Call RegistrarError(Err.Number, Err.description, "modSendData.SendToUserAreaButindex", Erl)
+132     Resume Next
         
 End Sub
 
@@ -537,29 +537,29 @@ Private Sub SendToAdminAreaButIndex(ByVal UserIndex As Integer, ByVal sndData As
         Dim AreaX     As Integer
         Dim AreaY     As Integer
         
-        If UserIndex = 0 Then Exit Sub
+100     If UserIndex = 0 Then Exit Sub
         
-100     Map = UserList(UserIndex).Pos.Map
-102     AreaX = UserList(UserIndex).AreasInfo.AreaPerteneceX
-104     AreaY = UserList(UserIndex).AreasInfo.AreaPerteneceY
+102     Map = UserList(UserIndex).Pos.Map
+104     AreaX = UserList(UserIndex).AreasInfo.AreaPerteneceX
+106     AreaY = UserList(UserIndex).AreasInfo.AreaPerteneceY
         'sndData = sndData & ENDC
 
-106     If Not MapaValido(Map) Then Exit Sub
+108     If Not MapaValido(Map) Then Exit Sub
     
-108     For LoopC = 1 To ConnGroups(Map).CountEntrys
-110         tempIndex = ConnGroups(Map).UserEntrys(LoopC)
+110     For LoopC = 1 To ConnGroups(Map).CountEntrys
+112         tempIndex = ConnGroups(Map).UserEntrys(LoopC)
             
-112         TempInt = UserList(tempIndex).AreasInfo.AreaReciveX And AreaX
+114         TempInt = UserList(tempIndex).AreasInfo.AreaReciveX And AreaX
 
-114         If TempInt Then  'Esta en el area?
-116             TempInt = UserList(tempIndex).AreasInfo.AreaReciveY And AreaY
+116         If TempInt Then  'Esta en el area?
+118             TempInt = UserList(tempIndex).AreasInfo.AreaReciveY And AreaY
 
-118             If TempInt Then
+120             If TempInt Then
 
-120                 If tempIndex <> UserIndex And EsGM(tempIndex) Then
+122                 If tempIndex <> UserIndex And EsGM(tempIndex) Then
 
-122                     If UserList(tempIndex).ConnIDValida Then
-124                         Call EnviarDatosASlot(tempIndex, sndData)
+124                     If UserList(tempIndex).ConnIDValida Then
+126                         Call EnviarDatosASlot(tempIndex, sndData)
 
                         End If
 
@@ -569,14 +569,14 @@ Private Sub SendToAdminAreaButIndex(ByVal UserIndex As Integer, ByVal sndData As
 
             End If
 
-126     Next LoopC
+128     Next LoopC
 
         
         Exit Sub
 
 SendToUserAreaButindex_Err:
-128     Call RegistrarError(Err.Number, Err.description, "modSendData.SendToAdminAreaButIndex", Erl)
-130     Resume Next
+130     Call RegistrarError(Err.Number, Err.description, "modSendData.SendToAdminAreaButIndex", Erl)
+132     Resume Next
         
 End Sub
 
@@ -599,29 +599,29 @@ Private Sub SendToUserAreaButGMs(ByVal UserIndex As Integer, ByVal sndData As St
         Dim AreaX     As Integer
         Dim AreaY     As Integer
         
-        If UserIndex = 0 Then Exit Sub
+100     If UserIndex = 0 Then Exit Sub
         
-100     Map = UserList(UserIndex).Pos.Map
-102     AreaX = UserList(UserIndex).AreasInfo.AreaPerteneceX
-104     AreaY = UserList(UserIndex).AreasInfo.AreaPerteneceY
+102     Map = UserList(UserIndex).Pos.Map
+104     AreaX = UserList(UserIndex).AreasInfo.AreaPerteneceX
+106     AreaY = UserList(UserIndex).AreasInfo.AreaPerteneceY
 
-106     If Not MapaValido(Map) Then Exit Sub
+108     If Not MapaValido(Map) Then Exit Sub
     
-108     For LoopC = 1 To ConnGroups(Map).CountEntrys
-110         tempIndex = ConnGroups(Map).UserEntrys(LoopC)
+110     For LoopC = 1 To ConnGroups(Map).CountEntrys
+112         tempIndex = ConnGroups(Map).UserEntrys(LoopC)
             
-112         TempInt = UserList(tempIndex).AreasInfo.AreaReciveX And AreaX
+114         TempInt = UserList(tempIndex).AreasInfo.AreaReciveX And AreaX
 
-114         If TempInt Then  'Esta en el area?
-116             TempInt = UserList(tempIndex).AreasInfo.AreaReciveY And AreaY
+116         If TempInt Then  'Esta en el area?
+118             TempInt = UserList(tempIndex).AreasInfo.AreaReciveY And AreaY
 
-118             If TempInt Then
+120             If TempInt Then
 
-120                 If Not EsGM(tempIndex) Then
+122                 If Not EsGM(tempIndex) Then
 
-122                     If UserList(tempIndex).ConnIDValida Then
+124                     If UserList(tempIndex).ConnIDValida Then
 
-124                         Call EnviarDatosASlot(tempIndex, sndData)
+126                         Call EnviarDatosASlot(tempIndex, sndData)
 
                         End If
 
@@ -631,14 +631,14 @@ Private Sub SendToUserAreaButGMs(ByVal UserIndex As Integer, ByVal sndData As St
 
             End If
 
-126     Next LoopC
+128     Next LoopC
 
         
         Exit Sub
 
 SendToUserAreaButindex_Err:
-128     Call RegistrarError(Err.Number, Err.description, "modSendData.SendToUserAreaButindex", Erl)
-130     Resume Next
+130     Call RegistrarError(Err.Number, Err.description, "modSendData.SendToUserAreaButindex", Erl)
+132     Resume Next
         
 End Sub
 
@@ -657,23 +657,23 @@ Private Sub SendToDeadUserArea(ByVal UserIndex As Integer, ByVal sndData As Stri
         Dim AreaX     As Integer
         Dim AreaY     As Integer
         
-        If UserIndex = 0 Then Exit Sub
+100     If UserIndex = 0 Then Exit Sub
         
-100     Map = UserList(UserIndex).Pos.Map
-102     AreaX = UserList(UserIndex).AreasInfo.AreaPerteneceX
-104     AreaY = UserList(UserIndex).AreasInfo.AreaPerteneceY
+102     Map = UserList(UserIndex).Pos.Map
+104     AreaX = UserList(UserIndex).AreasInfo.AreaPerteneceX
+106     AreaY = UserList(UserIndex).AreasInfo.AreaPerteneceY
     
-106     If Not MapaValido(Map) Then Exit Sub
+108     If Not MapaValido(Map) Then Exit Sub
     
-108     For LoopC = 1 To ConnGroups(Map).CountEntrys
-110         tempIndex = ConnGroups(Map).UserEntrys(LoopC)
+110     For LoopC = 1 To ConnGroups(Map).CountEntrys
+112         tempIndex = ConnGroups(Map).UserEntrys(LoopC)
         
-112         If UserList(tempIndex).AreasInfo.AreaReciveX And AreaX Then  'Esta en el area?
-114             If UserList(tempIndex).AreasInfo.AreaReciveY And AreaY Then
+114         If UserList(tempIndex).AreasInfo.AreaReciveX And AreaX Then  'Esta en el area?
+116             If UserList(tempIndex).AreasInfo.AreaReciveY And AreaY Then
 
                     'Dead and admins read
-116                 If UserList(tempIndex).ConnIDValida = True And (UserList(tempIndex).flags.Muerto = 1 Or (UserList(tempIndex).flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero)) <> 0) Then
-118                     Call EnviarDatosASlot(tempIndex, sndData)
+118                 If UserList(tempIndex).ConnIDValida = True And (UserList(tempIndex).flags.Muerto = 1 Or (UserList(tempIndex).flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero)) <> 0) Then
+120                     Call EnviarDatosASlot(tempIndex, sndData)
 
                     End If
 
@@ -681,14 +681,14 @@ Private Sub SendToDeadUserArea(ByVal UserIndex As Integer, ByVal sndData As Stri
 
             End If
 
-120     Next LoopC
+122     Next LoopC
 
         
         Exit Sub
 
 SendToDeadUserArea_Err:
-122     Call RegistrarError(Err.Number, Err.description, "modSendData.SendToDeadUserArea", Erl)
-124     Resume Next
+124     Call RegistrarError(Err.Number, Err.description, "modSendData.SendToDeadUserArea", Erl)
+126     Resume Next
         
 End Sub
 
@@ -708,23 +708,23 @@ Private Sub SendToUserGuildArea(ByVal UserIndex As Integer, ByVal sndData As Str
         Dim AreaX     As Integer
         Dim AreaY     As Integer
         
-        If UserIndex = 0 Then Exit Sub
+100     If UserIndex = 0 Then Exit Sub
         
-100     Map = UserList(UserIndex).Pos.Map
-102     AreaX = UserList(UserIndex).AreasInfo.AreaPerteneceX
-104     AreaY = UserList(UserIndex).AreasInfo.AreaPerteneceY
+102     Map = UserList(UserIndex).Pos.Map
+104     AreaX = UserList(UserIndex).AreasInfo.AreaPerteneceX
+106     AreaY = UserList(UserIndex).AreasInfo.AreaPerteneceY
     
-106     If Not MapaValido(Map) Then Exit Sub
+108     If Not MapaValido(Map) Then Exit Sub
     
-108     If UserList(UserIndex).GuildIndex = 0 Then Exit Sub
+110     If UserList(UserIndex).GuildIndex = 0 Then Exit Sub
     
-110     For LoopC = 1 To ConnGroups(Map).CountEntrys
-112         tempIndex = ConnGroups(Map).UserEntrys(LoopC)
+112     For LoopC = 1 To ConnGroups(Map).CountEntrys
+114         tempIndex = ConnGroups(Map).UserEntrys(LoopC)
         
-114         If UserList(tempIndex).AreasInfo.AreaReciveX And AreaX Then  'Esta en el area?
-116             If UserList(tempIndex).AreasInfo.AreaReciveY And AreaY Then
-118                 If UserList(tempIndex).ConnIDValida And UserList(tempIndex).GuildIndex = UserList(UserIndex).GuildIndex Then
-120                     Call EnviarDatosASlot(tempIndex, sndData)
+116         If UserList(tempIndex).AreasInfo.AreaReciveX And AreaX Then  'Esta en el area?
+118             If UserList(tempIndex).AreasInfo.AreaReciveY And AreaY Then
+120                 If UserList(tempIndex).ConnIDValida And UserList(tempIndex).GuildIndex = UserList(UserIndex).GuildIndex Then
+122                     Call EnviarDatosASlot(tempIndex, sndData)
 
                     End If
 
@@ -732,14 +732,14 @@ Private Sub SendToUserGuildArea(ByVal UserIndex As Integer, ByVal sndData As Str
 
             End If
 
-122     Next LoopC
+124     Next LoopC
 
         
         Exit Sub
 
 SendToUserGuildArea_Err:
-124     Call RegistrarError(Err.Number, Err.description, "modSendData.SendToUserGuildArea", Erl)
-126     Resume Next
+126     Call RegistrarError(Err.Number, Err.description, "modSendData.SendToUserGuildArea", Erl)
+128     Resume Next
         
 End Sub
 
@@ -759,21 +759,21 @@ Private Sub SendToAdminsButConsejerosArea(ByVal UserIndex As Integer, ByVal sndD
         Dim AreaX     As Integer
         Dim AreaY     As Integer
         
-        If UserIndex = 0 Then Exit Sub
+100     If UserIndex = 0 Then Exit Sub
         
-100     Map = UserList(UserIndex).Pos.Map
-102     AreaX = UserList(UserIndex).AreasInfo.AreaPerteneceX
-104     AreaY = UserList(UserIndex).AreasInfo.AreaPerteneceY
+102     Map = UserList(UserIndex).Pos.Map
+104     AreaX = UserList(UserIndex).AreasInfo.AreaPerteneceX
+106     AreaY = UserList(UserIndex).AreasInfo.AreaPerteneceY
     
-106     If Not MapaValido(Map) Then Exit Sub
+108     If Not MapaValido(Map) Then Exit Sub
     
-108     For LoopC = 1 To ConnGroups(Map).CountEntrys
-110         tempIndex = ConnGroups(Map).UserEntrys(LoopC)
+110     For LoopC = 1 To ConnGroups(Map).CountEntrys
+112         tempIndex = ConnGroups(Map).UserEntrys(LoopC)
         
-112         If UserList(tempIndex).AreasInfo.AreaReciveX And AreaX Then  'Esta en el area?
-114             If UserList(tempIndex).AreasInfo.AreaReciveY And AreaY Then
-116                 If UserList(tempIndex).ConnIDValida Then
-118                     If UserList(tempIndex).flags.Privilegios And (PlayerType.SemiDios Or PlayerType.Dios Or PlayerType.Admin) Then Call EnviarDatosASlot(tempIndex, sndData)
+114         If UserList(tempIndex).AreasInfo.AreaReciveX And AreaX Then  'Esta en el area?
+116             If UserList(tempIndex).AreasInfo.AreaReciveY And AreaY Then
+118                 If UserList(tempIndex).ConnIDValida Then
+120                     If UserList(tempIndex).flags.Privilegios And (PlayerType.SemiDios Or PlayerType.Dios Or PlayerType.Admin) Then Call EnviarDatosASlot(tempIndex, sndData)
 
                     End If
 
@@ -781,14 +781,14 @@ Private Sub SendToAdminsButConsejerosArea(ByVal UserIndex As Integer, ByVal sndD
 
             End If
 
-120     Next LoopC
+122     Next LoopC
 
         
         Exit Sub
 
 SendToAdminsButConsejerosArea_Err:
-122     Call RegistrarError(Err.Number, Err.description, "modSendData.SendToAdminsButConsejerosArea", Erl)
-124     Resume Next
+124     Call RegistrarError(Err.Number, Err.description, "modSendData.SendToAdminsButConsejerosArea", Erl)
+126     Resume Next
         
 End Sub
 
@@ -809,25 +809,25 @@ Private Sub SendToNpcArea(ByVal NpcIndex As Long, ByVal sndData As String)
         Dim AreaX     As Integer
         Dim AreaY     As Integer
         
-        If NpcIndex = 0 Then Exit Sub
+100     If NpcIndex = 0 Then Exit Sub
         
-100     Map = Npclist(NpcIndex).Pos.Map
-102     AreaX = Npclist(NpcIndex).AreasInfo.AreaPerteneceX
-104     AreaY = Npclist(NpcIndex).AreasInfo.AreaPerteneceY
+102     Map = Npclist(NpcIndex).Pos.Map
+104     AreaX = Npclist(NpcIndex).AreasInfo.AreaPerteneceX
+106     AreaY = Npclist(NpcIndex).AreasInfo.AreaPerteneceY
     
-106     If Not MapaValido(Map) Then Exit Sub
+108     If Not MapaValido(Map) Then Exit Sub
     
-108     For LoopC = 1 To ConnGroups(Map).CountEntrys
-110         tempIndex = ConnGroups(Map).UserEntrys(LoopC)
+110     For LoopC = 1 To ConnGroups(Map).CountEntrys
+112         tempIndex = ConnGroups(Map).UserEntrys(LoopC)
         
-112         TempInt = UserList(tempIndex).AreasInfo.AreaReciveX And AreaX
+114         TempInt = UserList(tempIndex).AreasInfo.AreaReciveX And AreaX
 
-114         If TempInt Then  'Esta en el area?
-116             TempInt = UserList(tempIndex).AreasInfo.AreaReciveY And AreaY
+116         If TempInt Then  'Esta en el area?
+118             TempInt = UserList(tempIndex).AreasInfo.AreaReciveY And AreaY
 
-118             If TempInt Then
-120                 If UserList(tempIndex).ConnIDValida Then
-122                     Call EnviarDatosASlot(tempIndex, sndData)
+120             If TempInt Then
+122                 If UserList(tempIndex).ConnIDValida Then
+124                     Call EnviarDatosASlot(tempIndex, sndData)
 
                     End If
 
@@ -835,14 +835,14 @@ Private Sub SendToNpcArea(ByVal NpcIndex As Long, ByVal sndData As String)
 
             End If
 
-124     Next LoopC
+126     Next LoopC
 
         
         Exit Sub
 
 SendToNpcArea_Err:
-126     Call RegistrarError(Err.Number, Err.description, "modSendData.SendToNpcArea", Erl)
-128     Resume Next
+128     Call RegistrarError(Err.Number, Err.description, "modSendData.SendToNpcArea", Erl)
+130     Resume Next
         
 End Sub
 
@@ -936,28 +936,28 @@ Public Sub SendToMapButIndex(ByVal UserIndex As Integer, ByVal sndData As String
         Dim Map       As Integer
         Dim tempIndex As Integer
         
-        If UserIndex = 0 Then Exit Sub
+100     If UserIndex = 0 Then Exit Sub
         
-100     Map = UserList(UserIndex).Pos.Map
+102     Map = UserList(UserIndex).Pos.Map
     
-102     If Not MapaValido(Map) Then Exit Sub
+104     If Not MapaValido(Map) Then Exit Sub
 
-104     For LoopC = 1 To ConnGroups(Map).CountEntrys
-106         tempIndex = ConnGroups(Map).UserEntrys(LoopC)
+106     For LoopC = 1 To ConnGroups(Map).CountEntrys
+108         tempIndex = ConnGroups(Map).UserEntrys(LoopC)
         
-108         If tempIndex <> UserIndex And UserList(tempIndex).ConnIDValida Then
-110             Call EnviarDatosASlot(tempIndex, sndData)
+110         If tempIndex <> UserIndex And UserList(tempIndex).ConnIDValida Then
+112             Call EnviarDatosASlot(tempIndex, sndData)
 
             End If
 
-112     Next LoopC
+114     Next LoopC
 
         
         Exit Sub
 
 SendToMapButIndex_Err:
-114     Call RegistrarError(Err.Number, Err.description, "modSendData.SendToMapButIndex", Erl)
-116     Resume Next
+116     Call RegistrarError(Err.Number, Err.description, "modSendData.SendToMapButIndex", Erl)
+118     Resume Next
         
 End Sub
 

@@ -236,8 +236,8 @@ Sub ReSpawnOrigPosNpcs()
         Exit Sub
         
 Handler:
-    Call RegistrarError(Err.Number, Err.description, "Admin.ReSpawnOrigPosNpcs", Erl)
-    Resume Next
+114 Call RegistrarError(Err.Number, Err.description, "Admin.ReSpawnOrigPosNpcs", Erl)
+116 Resume Next
 
 End Sub
 
@@ -294,8 +294,8 @@ Sub WorldSave()
         Exit Sub
         
 Handler:
-    Call RegistrarError(Err.Number, Err.description, "Admin.WorldSave", Erl)
-    Resume Next
+128 Call RegistrarError(Err.Number, Err.description, "Admin.WorldSave", Erl)
+130 Resume Next
 
 End Sub
 
@@ -477,7 +477,7 @@ Public Sub BorrarUsuario(ByVal UserName As String)
         Exit Sub
 
 BorrarUsuario_Err:
-        Call RegistrarError(Err.Number, Err.description, "Admin.BorrarUsuario", Erl)
+108     Call RegistrarError(Err.Number, Err.description, "Admin.BorrarUsuario", Erl)
 
         
 End Sub
@@ -884,7 +884,7 @@ Public Function BanIpQuita(ByVal ip As String) As Boolean
         Exit Function
 
 BanIpQuita_Err:
-        Call RegistrarError(Err.Number, Err.description, "Admin.BanIpQuita", Erl)
+112     Call RegistrarError(Err.Number, Err.description, "Admin.BanIpQuita", Erl)
 
         
 End Function

@@ -254,7 +254,7 @@ Public Sub BorraSlotSock(ByVal Sock As Long)
         Exit Sub
 
 BorraSlotSock_Err:
-        Call RegistrarError(Err.Number, Err.description, "wskapiAO.BorraSlotSock", Erl)
+106     Call RegistrarError(Err.Number, Err.description, "wskapiAO.BorraSlotSock", Erl)
 
         
 End Sub
@@ -414,7 +414,7 @@ Public Function WndProc(ByVal hWnd As Long, ByVal msg As Long, ByVal wParam As L
         Exit Function
 
 WndProc_Err:
-        Call RegistrarError(Err.Number, Err.description, "wskapiAO.WndProc", Erl)
+180     Call RegistrarError(Err.Number, Err.description, "wskapiAO.WndProc", Erl)
 
         
 End Function
@@ -578,23 +578,23 @@ Public Sub EventoSockAccept(ByVal SockID As Long)
     
             'Nuevo sin nagle
             'NuevoSock = Ret
-             If setsockopt(NuevoSock, SOL_SOCKET, SO_LINGER, 0, 4) <> 0 Then
-               i = Err.LastDllError
-              Call LogCriticEvent("Error al setear lingers." & i & ": " & GetWSAErrorString(i))
+122          If setsockopt(NuevoSock, SOL_SOCKET, SO_LINGER, 0, 4) <> 0 Then
+124            i = Err.LastDllError
+126           Call LogCriticEvent("Error al setear lingers." & i & ": " & GetWSAErrorString(i))
              End If
             'Nuevo sin nagle
     
             'Seteamos el tamaño del buffer de entrada
-122         If setsockopt(NuevoSock, SOL_SOCKET, SO_RCVBUFFER, SIZE_RCVBUF, 4) <> 0 Then
-124             i = Err.LastDllError
-126             Call LogCriticEvent("Error al setear el tamaño del buffer de entrada " & i & ": " & GetWSAErrorString(i))
+128         If setsockopt(NuevoSock, SOL_SOCKET, SO_RCVBUFFER, SIZE_RCVBUF, 4) <> 0 Then
+130             i = Err.LastDllError
+132             Call LogCriticEvent("Error al setear el tamaño del buffer de entrada " & i & ": " & GetWSAErrorString(i))
 
             End If
 
             'Seteamos el tamaño del buffer de salida
-128         If setsockopt(NuevoSock, SOL_SOCKET, SO_SNDBUFFER, SIZE_SNDBUF, 4) <> 0 Then
-130             i = Err.LastDllError
-132             Call LogCriticEvent("Error al setear el tamaño del buffer de salida " & i & ": " & GetWSAErrorString(i))
+134         If setsockopt(NuevoSock, SOL_SOCKET, SO_SNDBUFFER, SIZE_SNDBUF, 4) <> 0 Then
+136             i = Err.LastDllError
+138             Call LogCriticEvent("Error al setear el tamaño del buffer de salida " & i & ": " & GetWSAErrorString(i))
 
             End If
 
@@ -612,50 +612,50 @@ Public Sub EventoSockAccept(ByVal SockID As Long)
             '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
     
             'Mariano: Baje la busqueda de slot abajo de CondicionSocket y limite x ip
-134         NewIndex = NextOpenUser ' Nuevo indice
+140         NewIndex = NextOpenUser ' Nuevo indice
     
-136         If NewIndex <= MaxUsers Then
+142         If NewIndex <= MaxUsers Then
         
                 'Make sure both outgoing and incoming data buffers are clean
-138             Call UserList(NewIndex).incomingData.ReadASCIIStringFixed(UserList(NewIndex).incomingData.Length)
-140             Call UserList(NewIndex).outgoingData.ReadASCIIStringFixed(UserList(NewIndex).outgoingData.Length)
+144             Call UserList(NewIndex).incomingData.ReadASCIIStringFixed(UserList(NewIndex).incomingData.Length)
+146             Call UserList(NewIndex).outgoingData.ReadASCIIStringFixed(UserList(NewIndex).outgoingData.Length)
         
-142             UserList(NewIndex).ip = GetAscIP(sa.sin_addr)
+148             UserList(NewIndex).ip = GetAscIP(sa.sin_addr)
 
                 'Busca si esta banneada la ip
-144             For i = 1 To BanIps.Count
+150             For i = 1 To BanIps.Count
 
-146                 If BanIps.Item(i) = UserList(NewIndex).ip Then
+152                 If BanIps.Item(i) = UserList(NewIndex).ip Then
                         'Call apiclosesocket(NuevoSock)
-148                     Call WriteErrorMsg(NewIndex, "Su IP se encuentra bloqueada en este servidor.")
+154                     Call WriteErrorMsg(NewIndex, "Su IP se encuentra bloqueada en este servidor.")
                     
                         'Call SecurityIp.IpRestarConexion(sa.sin_addr)
-150                     Call WSApiCloseSocket(NuevoSock)
+156                     Call WSApiCloseSocket(NuevoSock)
                         Exit Sub
 
                     End If
 
-152             Next i
+158             Next i
         
-154             If NewIndex > LastUser Then LastUser = NewIndex
+160             If NewIndex > LastUser Then LastUser = NewIndex
         
-156             UserList(NewIndex).ConnID = NuevoSock
-158             UserList(NewIndex).ConnIDValida = True
+162             UserList(NewIndex).ConnID = NuevoSock
+164             UserList(NewIndex).ConnIDValida = True
         
-160             Call AgregaSlotSock(NuevoSock, NewIndex)
+166             Call AgregaSlotSock(NuevoSock, NewIndex)
             Else
 
                 Dim str    As String
                 Dim data() As Byte
         
-162             str = Protocol.PrepareMessageErrorMsg("El server se encuentra lleno en este momento. Disculpe las molestias ocasionadas.")
+168             str = Protocol.PrepareMessageErrorMsg("El server se encuentra lleno en este momento. Disculpe las molestias ocasionadas.")
         
-164             ReDim Preserve data(Len(str) - 1) As Byte
+170             ReDim Preserve data(Len(str) - 1) As Byte
         
-166             data = StrConv(str, vbFromUnicode)
+172             data = StrConv(str, vbFromUnicode)
         
-168             Call send(ByVal NuevoSock, data(0), ByVal UBound(data()) + 1, ByVal 0)
-170             Call WSApiCloseSocket(NuevoSock)
+174             Call send(ByVal NuevoSock, data(0), ByVal UBound(data()) + 1, ByVal 0)
+176             Call WSApiCloseSocket(NuevoSock)
 
             End If
     
@@ -665,8 +665,8 @@ Public Sub EventoSockAccept(ByVal SockID As Long)
         Exit Sub
 
 EventoSockAccept_Err:
-172     Call RegistrarError(Err.Number, Err.description, "wskapiAO.EventoSockAccept", Erl)
-174     Resume Next
+178     Call RegistrarError(Err.Number, Err.description, "wskapiAO.EventoSockAccept", Erl)
+180     Resume Next
         
 End Sub
  
@@ -687,24 +687,24 @@ Public Sub EventoSockRead(ByVal slot As Integer, ByRef Datos() As Byte)
 
 104                 If UserList(slot).flags.UserLogged Then
 106                     Security.NAC_D_Byte Datos, UserList(slot).Redundance
-108                 Else
-110                     Security.NAC_D_Byte Datos, 13 'DEFAULT
+                    Else
+108                     Security.NAC_D_Byte Datos, 13 'DEFAULT
                     End If
 
                 #End If
  
-112             Call .incomingData.WriteBlock(Datos)
+110             Call .incomingData.WriteBlock(Datos)
 
-114             If .ConnID <> -1 Then
+112             If .ConnID <> -1 Then
 
                     ' WyroX: Pongo un límite a este loop... en caso de que por algún error bloquee el server
                     Dim Iterations As Long
 
-116                 Do While HandleIncomingData(slot)
-                        Iterations = Iterations + 1
-                        If Iterations >= MAX_ITERATIONS_HID Then
-                            Call RegistrarError(-1, "Se supero el maximo de iteraciones de HandleIncomingData. Paquete: " & UserList(slot).incomingData.PeekByte, "wskapiAO.EventoSockRead")
-                            Call CloseSocket(slot)
+114                 Do While HandleIncomingData(slot)
+116                     Iterations = Iterations + 1
+118                     If Iterations >= MAX_ITERATIONS_HID Then
+120                         Call RegistrarError(-1, "Se supero el maximo de iteraciones de HandleIncomingData. Paquete: " & UserList(slot).incomingData.PeekByte, "wskapiAO.EventoSockRead")
+122                         Call CloseSocket(slot)
                             Exit Do
                         End If
                     Loop
@@ -715,10 +715,10 @@ Public Sub EventoSockRead(ByVal slot As Integer, ByRef Datos() As Byte)
    
             End With
 
-118         QueryPerformanceCounter f
+124         QueryPerformanceCounter f
 
-120         totalProcessTime = totalProcessTime + (f - a)
-122         totalProcessCount = totalProcessCount + 1
+126         totalProcessTime = totalProcessTime + (f - a)
+128         totalProcessCount = totalProcessCount + 1
 
         #End If
 
@@ -726,8 +726,8 @@ Public Sub EventoSockRead(ByVal slot As Integer, ByRef Datos() As Byte)
         Exit Sub
 
 EventoSockRead_Err:
-124     Call RegistrarError(Err.Number, Err.description, "wskapiAO.EventoSockRead", Erl)
-126     Resume Next
+130     Call RegistrarError(Err.Number, Err.description, "wskapiAO.EventoSockRead", Erl)
+132     Resume Next
         
 End Sub
 

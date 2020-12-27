@@ -94,7 +94,7 @@ Public Sub NPC_TIRAR_ITEMS(ByRef npc As npc)
         Exit Sub
 
 NPC_TIRAR_ITEMS_Err:
-        Call RegistrarError(Err.Number, Err.description, "InvNpc.NPC_TIRAR_ITEMS", Erl)
+114     Call RegistrarError(Err.Number, Err.description, "InvNpc.NPC_TIRAR_ITEMS", Erl)
 
         
 End Sub
@@ -131,7 +131,7 @@ Function QuedanItems(ByVal NpcIndex As Integer, ByVal ObjIndex As Integer) As Bo
         Exit Function
 
 QuedanItems_Err:
-        Call RegistrarError(Err.Number, Err.description, "InvNpc.QuedanItems", Erl)
+110     Call RegistrarError(Err.Number, Err.description, "InvNpc.QuedanItems", Erl)
 
         
 End Function
@@ -173,7 +173,7 @@ Function EncontrarCant(ByVal NpcIndex As Integer, ByVal ObjIndex As Integer) As 
         Exit Function
 
 EncontrarCant_Err:
-        Call RegistrarError(Err.Number, Err.description, "InvNpc.EncontrarCant", Erl)
+112     Call RegistrarError(Err.Number, Err.description, "InvNpc.EncontrarCant", Erl)
 
         
 End Function
@@ -201,7 +201,7 @@ Sub ResetNpcInv(ByVal NpcIndex As Integer)
         Exit Sub
 
 ResetNpcInv_Err:
-        Call RegistrarError(Err.Number, Err.description, "InvNpc.ResetNpcInv", Erl)
+112     Call RegistrarError(Err.Number, Err.description, "InvNpc.ResetNpcInv", Erl)
 
         
 End Sub
@@ -386,38 +386,38 @@ Public Sub DropObjQuest(ByRef npc As npc, ByRef UserIndex As Integer)
     
 102     For i = 1 To npc.NumDropQuest
 
-            With npc.DropQuest(i)
+104         With npc.DropQuest(i)
 
-112             If .QuestIndex > 0 <> 0 Then
+106             If .QuestIndex > 0 <> 0 Then
                     ' Tiene la quest?
-114                 If TieneQuest(UserIndex, .QuestIndex) <> 0 Then
+108                 If TieneQuest(UserIndex, .QuestIndex) <> 0 Then
                         ' Si aún me faltan más de estos items de esta quest
-                        If FaltanItemsQuest(UserIndex, .QuestIndex, .ObjIndex) Then
+110                     If FaltanItemsQuest(UserIndex, .QuestIndex, .ObjIndex) Then
 
-116                         Probabilidad = RandomNumber(1, .Probabilidad) 'Tiro Item?
+112                         Probabilidad = RandomNumber(1, .Probabilidad) 'Tiro Item?
     
-118                         If Probabilidad = 1 Then
-120                             Dropeo.Amount = .Amount
-122                             Dropeo.ObjIndex = .ObjIndex
+114                         If Probabilidad = 1 Then
+116                             Dropeo.Amount = .Amount
+118                             Dropeo.ObjIndex = .ObjIndex
 
-124                             'Call TirarItemAlPiso(npc.Pos, Dropeo)
-126                             'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(FXSound.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
+                                'Call TirarItemAlPiso(npc.Pos, Dropeo)
+                                'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(FXSound.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
 
                                 ' WyroX: Ahora te lo da en el inventario, si hay espacio, y el sonido lo escuchas vos solo
-                                Call MeterItemEnInventario(UserIndex, Dropeo)
-                                Call EnviarDatosASlot(UserIndex, PrepareMessagePlayWave(FXSound.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
+120                             Call MeterItemEnInventario(UserIndex, Dropeo)
+122                             Call EnviarDatosASlot(UserIndex, PrepareMessagePlayWave(FXSound.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
                             End If
                         End If
                     End If
                 End If
 
             End With
-128     Next i
+124     Next i
 
         Exit Sub
 
 ErrHandler:
-130     Call LogError("Error DropObjQuest al dropear el item " & ObjData(npc.DropQuest(i).ObjIndex).name & ", al usuario " & UserList(UserIndex).name & ". " & Err.description & ".")
+126     Call LogError("Error DropObjQuest al dropear el item " & ObjData(npc.DropQuest(i).ObjIndex).name & ", al usuario " & UserList(UserIndex).name & ". " & Err.description & ".")
 
 End Sub
 

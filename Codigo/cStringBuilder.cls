@@ -63,7 +63,7 @@ Public Property Get Length() As Long
         Exit Property
 
 Length_Err:
-        Call RegistrarError(Err.Number, Err.description, "cStringBuilder.Length", Erl)
+102     Call RegistrarError(Err.Number, Err.description, "cStringBuilder.Length", Erl)
 
         
 End Property
@@ -79,7 +79,7 @@ Public Property Get Capacity() As Long
         Exit Property
 
 Capacity_Err:
-        Call RegistrarError(Err.Number, Err.description, "cStringBuilder.Capacity", Erl)
+102     Call RegistrarError(Err.Number, Err.description, "cStringBuilder.Capacity", Erl)
 
         
 End Property
@@ -96,7 +96,7 @@ Public Property Get ChunkSize() As Long
         Exit Property
 
 ChunkSize_Err:
-        Call RegistrarError(Err.Number, Err.description, "cStringBuilder.ChunkSize", Erl)
+102     Call RegistrarError(Err.Number, Err.description, "cStringBuilder.ChunkSize", Erl)
 
         
 End Property
@@ -114,7 +114,7 @@ Public Property Let ChunkSize(ByVal iChunkSize As Long)
         Exit Property
 
 ChunkSize_Err:
-        Call RegistrarError(Err.Number, Err.description, "cStringBuilder.ChunkSize", Erl)
+102     Call RegistrarError(Err.Number, Err.description, "cStringBuilder.ChunkSize", Erl)
 
         
 End Property
@@ -135,7 +135,7 @@ Public Property Get toString() As String
         Exit Property
 
 toString_Err:
-        Call RegistrarError(Err.Number, Err.description, "cStringBuilder.toString", Erl)
+104     Call RegistrarError(Err.Number, Err.description, "cStringBuilder.toString", Erl)
 
         
 End Property
@@ -176,7 +176,7 @@ Public Property Let TheString(ByRef sThis As String)
         Exit Property
 
 TheString_Err:
-        Call RegistrarError(Err.Number, Err.description, "cStringBuilder.TheString", Erl)
+122     Call RegistrarError(Err.Number, Err.description, "cStringBuilder.TheString", Erl)
 
         
 End Property
@@ -194,7 +194,7 @@ Public Sub Clear()
         Exit Sub
 
 Clear_Err:
-        Call RegistrarError(Err.Number, Err.description, "cStringBuilder.Clear", Erl)
+106     Call RegistrarError(Err.Number, Err.description, "cStringBuilder.Clear", Erl)
 
         
 End Sub
@@ -211,7 +211,7 @@ Public Sub AppendNL(ByRef sThis As String)
         Exit Sub
 
 AppendNL_Err:
-        Call RegistrarError(Err.Number, Err.description, "cStringBuilder.AppendNL", Erl)
+104     Call RegistrarError(Err.Number, Err.description, "cStringBuilder.AppendNL", Erl)
 
         
 End Sub
@@ -252,7 +252,7 @@ Public Sub Append(ByRef sThis As String)
         Exit Sub
 
 Append_Err:
-        Call RegistrarError(Err.Number, Err.description, "cStringBuilder.Append", Erl)
+120     Call RegistrarError(Err.Number, Err.description, "cStringBuilder.Append", Erl)
 
         
 End Sub
@@ -268,7 +268,7 @@ Public Sub AppendByVal(ByVal sThis As String)
         Exit Sub
 
 AppendByVal_Err:
-        Call RegistrarError(Err.Number, Err.description, "cStringBuilder.AppendByVal", Erl)
+102     Call RegistrarError(Err.Number, Err.description, "cStringBuilder.AppendByVal", Erl)
 
         
 End Sub
@@ -316,7 +316,7 @@ Public Sub Insert(ByVal iIndex As Long, ByRef sThis As String)
         Exit Sub
 
 Insert_Err:
-        Call RegistrarError(Err.Number, Err.description, "cStringBuilder.Insert", Erl)
+122     Call RegistrarError(Err.Number, Err.description, "cStringBuilder.Insert", Erl)
 
         
 End Sub
@@ -332,7 +332,7 @@ Public Sub InsertByVal(ByVal iIndex As Long, ByVal sThis As String)
         Exit Sub
 
 InsertByVal_Err:
-        Call RegistrarError(Err.Number, Err.description, "cStringBuilder.InsertByVal", Erl)
+102     Call RegistrarError(Err.Number, Err.description, "cStringBuilder.InsertByVal", Erl)
 
         
 End Sub
@@ -373,7 +373,7 @@ Public Sub Remove(ByVal iIndex As Long, ByVal lLen As Long)
         Exit Sub
 
 Remove_Err:
-        Call RegistrarError(Err.Number, Err.description, "cStringBuilder.Remove", Erl)
+118     Call RegistrarError(Err.Number, Err.description, "cStringBuilder.Remove", Erl)
 
         
 End Sub
@@ -404,7 +404,7 @@ Public Function Find(ByVal sToFind As String, _
         Exit Function
 
 Find_Err:
-        Call RegistrarError(Err.Number, Err.description, "cStringBuilder.Find", Erl)
+110     Call RegistrarError(Err.Number, Err.description, "cStringBuilder.Find", Erl)
 
         
 End Function
@@ -434,7 +434,7 @@ Public Sub HeapMinimize()
         Exit Sub
 
 HeapMinimize_Err:
-        Call RegistrarError(Err.Number, Err.description, "cStringBuilder.HeapMinimize", Erl)
+112     Call RegistrarError(Err.Number, Err.description, "cStringBuilder.HeapMinimize", Erl)
 
         
 End Sub
@@ -460,7 +460,7 @@ Private Function UnsignedAdd(Start As Long, Incr As Long) As Long
         Exit Function
 
 UnsignedAdd_Err:
-        Call RegistrarError(Err.Number, Err.description, "cStringBuilder.UnsignedAdd", Erl)
+110     Call RegistrarError(Err.Number, Err.description, "cStringBuilder.UnsignedAdd", Erl)
 
         
 End Function
@@ -477,7 +477,7 @@ Private Sub Class_Initialize()
         Exit Sub
 
 Class_Initialize_Err:
-        Call RegistrarError(Err.Number, Err.description, "cStringBuilder.Class_Initialize", Erl)
+102     Call RegistrarError(Err.Number, Err.description, "cStringBuilder.Class_Initialize", Erl)
 
         
 End Sub

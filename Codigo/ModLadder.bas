@@ -47,7 +47,7 @@ Public Function GetTickCount() As Long
         Exit Function
 
 GetTickCount_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModLadder.GetTickCount", Erl)
+102     Call RegistrarError(Err.Number, Err.description, "ModLadder.GetTickCount", Erl)
 
         
 End Function
