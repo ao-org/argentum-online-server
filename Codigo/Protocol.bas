@@ -2263,14 +2263,8 @@ Private Sub HandleWhisper(ByVal UserIndex As Integer)
 108         Call buffer.ReadByte
         
             Dim chat            As String
-
             Dim targetCharIndex As String
-
             Dim targetUserIndex As Integer
-
-            Dim rank            As Integer
-        
-110         rank = UserList(UserIndex).flags.Privilegios
 
 112         targetCharIndex = buffer.ReadASCIIString()
 114         chat = buffer.ReadASCIIString()
@@ -2284,8 +2278,8 @@ Private Sub HandleWhisper(ByVal UserIndex As Integer)
 
             Else
         
-122             If (UserList(UserIndex).flags.Privilegios And PlayerType.Admin) And (UserList(targetUserIndex).flags.Privilegios And PlayerType.Admin) Then
-124                 Call WriteConsoleMsg(UserIndex, "No podes hablar por privado con administradores del juego.", FontTypeNames.FONTTYPE_WARNING)
+122             If Not EsGM(UserIndex) And EsGM(targetUserIndex) Then
+124                 Call WriteConsoleMsg(UserIndex, "No podes hablar por privado con Game Masters.", FontTypeNames.FONTTYPE_WARNING)
 
                 Else
 
@@ -2295,7 +2289,7 @@ Private Sub HandleWhisper(ByVal UserIndex As Integer)
                             'Analize chat...
 130                         Call Statistics.ParseChat(chat)
             
-132                         Call SendData(SendTarget.ToSuperiores, UserIndex, PrepareMessageChatOverHead(chat, .Char.CharIndex, RGB(157, 226, 20)))
+132                         Call SendData(SendTarget.ToSuperioresArea, UserIndex, PrepareMessageChatOverHead(chat, .Char.CharIndex, RGB(157, 226, 20)))
                         
 134                         Call WriteChatOverHead(UserIndex, chat, .Char.CharIndex, RGB(157, 226, 20))
 136                         Call WriteChatOverHead(targetUserIndex, chat, .Char.CharIndex, RGB(157, 226, 20))
