@@ -2264,6 +2264,8 @@ Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, 
 
         'If UserList(UserIndex).Grupo.EnGrupo Then
         '[Nacho] Chekeamos que las variables sean validas para las operaciones
+        If NpcIndex = 0 Then Exit Sub
+        If UserIndex = 0 Then Exit Sub
 100     If ElDaño <= 0 Then ElDaño = 0
 102     If Npclist(NpcIndex).Stats.MaxHp <= 0 Then Exit Sub
 104     If ElDaño > Npclist(NpcIndex).Stats.MinHp Then ElDaño = Npclist(NpcIndex).Stats.MinHp
