@@ -59,7 +59,7 @@ Public Function GetParserErrors() As String
         Exit Function
 
 GetParserErrors_Err:
-102     Call RegistrarError(Err.Number, Err.description, "mod_JSON.GetParserErrors", Erl)
+        Call RegistrarError(Err.Number, Err.description, "mod_JSON.GetParserErrors", Erl)
 
         
 End Function
@@ -104,7 +104,7 @@ Public Function parse(ByRef str As String) As Object
         Exit Function
 
 parse_Err:
-126     Call RegistrarError(Err.Number, Err.description, "mod_JSON.parse", Erl)
+        Call RegistrarError(Err.Number, Err.description, "mod_JSON.parse", Erl)
 
         
 End Function
@@ -128,7 +128,7 @@ Private Sub GenerateStringArray(ByRef str As String)
         Exit Sub
 
 GenerateStringArray_Err:
-110     Call RegistrarError(Err.Number, Err.description, "mod_JSON.GenerateStringArray", Erl)
+        Call RegistrarError(Err.Number, Err.description, "mod_JSON.GenerateStringArray", Erl)
 
         
 End Sub
@@ -193,7 +193,7 @@ Private Function parseObject(ByRef str As String, ByRef index As Long) As Dictio
         Exit Function
 
 parseObject_Err:
-136     Call RegistrarError(Err.Number, Err.description, "mod_JSON.parseObject", Erl)
+        Call RegistrarError(Err.Number, Err.description, "mod_JSON.parseObject", Erl)
 
         
 End Function
@@ -250,7 +250,7 @@ Private Function parseArray(ByRef str As String, ByRef index As Long) As Collect
         Exit Function
 
 parseArray_Err:
-134     Call RegistrarError(Err.Number, Err.description, "mod_JSON.parseArray", Erl)
+        Call RegistrarError(Err.Number, Err.description, "mod_JSON.parseArray", Erl)
 
         
 End Function
@@ -295,7 +295,7 @@ Private Function parseValue(ByRef str As String, ByRef index As Long)
         Exit Function
 
 parseValue_Err:
-126     Call RegistrarError(Err.Number, Err.description, "mod_JSON.parseValue", Erl)
+        Call RegistrarError(Err.Number, Err.description, "mod_JSON.parseValue", Erl)
 
         
 End Function
@@ -378,7 +378,7 @@ Private Function parseString(ByRef str As String, ByRef index As Long) As String
         Exit Function
 
 parseString_Err:
-172     Call RegistrarError(Err.Number, Err.description, "mod_JSON.parseString", Erl)
+        Call RegistrarError(Err.Number, Err.description, "mod_JSON.parseString", Erl)
 
         
 End Function
@@ -424,7 +424,7 @@ Private Function parseNumber(ByRef str As String, ByRef index As Long)
         Exit Function
 
 parseNumber_Err:
-122     Call RegistrarError(Err.Number, Err.description, "mod_JSON.parseNumber", Erl)
+        Call RegistrarError(Err.Number, Err.description, "mod_JSON.parseNumber", Erl)
 
         
 End Function
@@ -452,7 +452,7 @@ Private Function parseBoolean(ByRef str As String, ByRef index As Long) As Boole
         Exit Function
 
 parseBoolean_Err:
-116     Call RegistrarError(Err.Number, Err.description, "mod_JSON.parseBoolean", Erl)
+        Call RegistrarError(Err.Number, Err.description, "mod_JSON.parseBoolean", Erl)
 
         
 End Function
@@ -477,7 +477,7 @@ Private Function parseNull(ByRef str As String, ByRef index As Long)
         Exit Function
 
 parseNull_Err:
-110     Call RegistrarError(Err.Number, Err.description, "mod_JSON.parseNull", Erl)
+        Call RegistrarError(Err.Number, Err.description, "mod_JSON.parseNull", Erl)
 
         
 End Function
@@ -563,7 +563,7 @@ Private Function parseKey(ByRef index As Long) As String
         Exit Function
 
 parseKey_Err:
-158     Call RegistrarError(Err.Number, Err.description, "mod_JSON.parseKey", Erl)
+        Call RegistrarError(Err.Number, Err.description, "mod_JSON.parseKey", Erl)
 
         
 End Function
@@ -644,45 +644,45 @@ Private Sub skipChar(ByRef index As Long)
         Exit Sub
 
 skipChar_Err:
-154     Call RegistrarError(Err.Number, Err.description, "mod_JSON.skipChar", Erl)
+        Call RegistrarError(Err.Number, Err.description, "mod_JSON.skipChar", Erl)
 
         
 End Sub
 
 Public Function GetRegionalSettings(ByVal regionalsetting As Long) As String
-        ' Devuelve la configuracion regional del sistema
+    ' Devuelve la configuracion regional del sistema
 
-        On Error GoTo ErrorHandler
+    On Error GoTo ErrorHandler
 
-        Dim Locale      As Long
-        Dim Symbol      As String
-        Dim iRet1       As Long
-        Dim iRet2       As Long
-        Dim lpLCDataVar As String
-        Dim Pos         As Integer
+    Dim Locale      As Long
+    Dim Symbol      As String
+    Dim iRet1       As Long
+    Dim iRet2       As Long
+    Dim lpLCDataVar As String
+    Dim Pos         As Integer
       
-100     Locale = GetUserDefaultLCID()
+    Locale = GetUserDefaultLCID()
 
-102     iRet1 = GetLocaleInfo(Locale, regionalsetting, lpLCDataVar, 0)
-104     Symbol = String$(iRet1, 0)
-106     iRet2 = GetLocaleInfo(Locale, regionalsetting, Symbol, iRet1)
-108     Pos = InStr(Symbol, Chr$(0))
+    iRet1 = GetLocaleInfo(Locale, regionalsetting, lpLCDataVar, 0)
+    Symbol = String$(iRet1, 0)
+    iRet2 = GetLocaleInfo(Locale, regionalsetting, Symbol, iRet1)
+    Pos = InStr(Symbol, Chr$(0))
 
-110     If Pos > 0 Then
-112         Symbol = Left$(Symbol, Pos - 1)
-        End If
+    If Pos > 0 Then
+        Symbol = Left$(Symbol, Pos - 1)
+    End If
       
 ErrorHandler:
-114     GetRegionalSettings = Symbol
+    GetRegionalSettings = Symbol
 
-116     Select Case Err.Number
+    Select Case Err.Number
 
-            Case 0
+        Case 0
 
-118         Case Else
-120             Call Err.raise(123, "GetRegionalSetting", "GetRegionalSetting: " & regionalsetting)
+        Case Else
+            Call Err.raise(123, "GetRegionalSetting", "GetRegionalSetting: " & regionalsetting)
 
-        End Select
+    End Select
 
 End Function
 
@@ -748,7 +748,7 @@ Private Function Encode(str) As String
         Exit Function
 
 Encode_Err:
-134     Call RegistrarError(Err.Number, Err.description, "mod_JSON.Encode", Erl)
+        Call RegistrarError(Err.Number, Err.description, "mod_JSON.Encode", Erl)
 
         
 End Function
@@ -796,50 +796,50 @@ Public Function StringToJSON(st As String) As String
         Exit Function
 
 StringToJSON_Err:
-122     Call RegistrarError(Err.Number, Err.description, "mod_JSON.StringToJSON", Erl)
+        Call RegistrarError(Err.Number, Err.description, "mod_JSON.StringToJSON", Erl)
 
         
 End Function
 
 Public Function RStoJSON(rs As ADODB.Recordset) As String
 
-        On Error GoTo ErrHandler
+    On Error GoTo ErrHandler
 
-        Dim sFlds   As String
-        Dim sRecs   As New cStringBuilder
-        Dim lRecCnt As Long
-        Dim fld     As ADODB.Field
+    Dim sFlds   As String
+    Dim sRecs   As New cStringBuilder
+    Dim lRecCnt As Long
+    Dim fld     As ADODB.Field
 
-100     lRecCnt = 0
+    lRecCnt = 0
 
-102     If rs.State = adStateClosed Then
-104         RStoJSON = "null"
+    If rs.State = adStateClosed Then
+        RStoJSON = "null"
+    Else
+
+        If rs.EOF Or rs.BOF Then
+            RStoJSON = "null"
+            
         Else
 
-106         If rs.EOF Or rs.BOF Then
-108             RStoJSON = "null"
+            Do While Not rs.EOF And Not rs.BOF
+                lRecCnt = lRecCnt + 1
+                sFlds = vbNullString
+
+                For Each fld In rs.Fields
+                    sFlds = (sFlds & IIf(sFlds <> "", ",", "") & """" & fld.name & """:""" & toUnicode(fld.Value & "") & """")
+                Next 'fld
+
+                Call sRecs.Append(IIf((Trim$(sRecs.toString) <> ""), "," & vbNewLine, "") & "{" & sFlds & "}")
+                Call rs.MoveNext
+            Loop
             
-            Else
-
-110             Do While Not rs.EOF And Not rs.BOF
-112                 lRecCnt = lRecCnt + 1
-114                 sFlds = vbNullString
-
-116                 For Each fld In rs.Fields
-118                     sFlds = (sFlds & IIf(sFlds <> "", ",", "") & """" & fld.name & """:""" & toUnicode(fld.Value & "") & """")
-                    Next 'fld
-
-120                 Call sRecs.Append(IIf((Trim$(sRecs.toString) <> ""), "," & vbNewLine, "") & "{" & sFlds & "}")
-122                 Call rs.MoveNext
-                Loop
-            
-124             RStoJSON = ("( {""Records"": [" & vbNewLine & sRecs.toString & vbNewLine & "], " & """RecordCount"":""" & lRecCnt & """ } )")
-
-            End If
+            RStoJSON = ("( {""Records"": [" & vbNewLine & sRecs.toString & vbNewLine & "], " & """RecordCount"":""" & lRecCnt & """ } )")
 
         End If
 
-        Exit Function
+    End If
+
+    Exit Function
 ErrHandler:
 
 End Function
@@ -904,7 +904,7 @@ Public Function toUnicode(str As String) As String
         Exit Function
 
 toUnicode_Err:
-150     Call RegistrarError(Err.Number, Err.description, "mod_JSON.toUnicode", Erl)
+        Call RegistrarError(Err.Number, Err.description, "mod_JSON.toUnicode", Erl)
 
         
 End Function

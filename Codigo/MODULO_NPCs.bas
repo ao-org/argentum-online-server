@@ -198,7 +198,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         
 184         Next i
             
-186         If Npclist(NpcIndex).MaestroUser > 0 Then Exit Sub
+            If Npclist(NpcIndex).MaestroUser > 0 Then Exit Sub
 
             'Tiramos el oro
 188         Call NPCTirarOro(MiNPC, UserIndex)
@@ -230,7 +230,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         Exit Sub
 
 ErrHandler:
-206     Call RegistrarError(Err.Number, Err.description, "NPCs.MuereNpc", Erl())
+        Call RegistrarError(Err.Number, Err.description, "NPCs.MuereNpc", Erl())
 
 End Sub
 
@@ -1124,49 +1124,49 @@ Sub NPCTirarOro(MiNPC As npc, ByVal UserIndex As Integer)
         
             On Error GoTo NPCTirarOro_Err
             
-100         If UserIndex = 0 Then Exit Sub
+            If UserIndex = 0 Then Exit Sub
             
-102         If MiNPC.GiveGLD > 0 Then
+100         If MiNPC.GiveGLD > 0 Then
 
                 Dim Oro As Long
-104                 Oro = MiNPC.GiveGLD * OroMult * UserList(UserIndex).flags.ScrollOro
+102                 Oro = MiNPC.GiveGLD * OroMult * UserList(UserIndex).flags.ScrollOro
         
-106             If UserList(UserIndex).Grupo.EnGrupo Then
-
-108                 Select Case UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
+104             If UserList(UserIndex).Grupo.EnGrupo Then
+106
+                    Select Case UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
                         Case 2: Oro = Oro * 1.2
-110                     Case 3: Oro = Oro * 1.4
-112                     Case 4: Oro = Oro * 1.6
-114                     Case 5: Oro = Oro * 1.8
-116                     Case 6: Oro = Oro * 2
+108                     Case 3: Oro = Oro * 1.4
+110                     Case 4: Oro = Oro * 1.6
+112                     Case 5: Oro = Oro * 1.8
+114                     Case 6: Oro = Oro * 2
                     End Select
                     
                 End If
 
                 Dim MiObj As obj
-118             MiObj.ObjIndex = iORO
+116             MiObj.ObjIndex = iORO
 
-120             While (Oro > 0)
-122                 If Oro > MAX_INVENTORY_OBJS Then
-124                     MiObj.Amount = MAX_INVENTORY_OBJS
-126                     Oro = Oro - MAX_INVENTORY_OBJS
+118             While (Oro > 0)
+120                 If Oro > MAX_INVENTORY_OBJS Then
+122                     MiObj.Amount = MAX_INVENTORY_OBJS
+124                     Oro = Oro - MAX_INVENTORY_OBJS
                     Else
-128                     MiObj.Amount = Oro
-130                     Oro = 0
+126                     MiObj.Amount = Oro
+128                     Oro = 0
                     End If
 
-132                 Call TirarItemAlPiso(MiNPC.Pos, MiObj, MiNPC.flags.AguaValida = 1)
+130                 Call TirarItemAlPiso(MiNPC.Pos, MiObj, MiNPC.flags.AguaValida = 1)
                 Wend
 
-134             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageFxPiso("87", MiNPC.Pos.X, MiNPC.Pos.Y))
+132             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageFxPiso("87", MiNPC.Pos.X, MiNPC.Pos.Y))
             End If
 
         
             Exit Sub
 
 NPCTirarOro_Err:
-136         Call RegistrarError(Err.Number, Err.description, "NPCs.NPCTirarOro", Erl)
-138         Resume Next
+134         Call RegistrarError(Err.Number, Err.description, "NPCs.NPCTirarOro", Erl)
+136         Resume Next
         
 End Sub
 
@@ -1435,11 +1435,11 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 346         ReDim Npclist(NpcIndex).DropQuest(1 To Npclist(NpcIndex).NumDropQuest) As tQuestObj
             
 348         For LoopC = 1 To Npclist(NpcIndex).NumDropQuest
-350             Npclist(NpcIndex).DropQuest(LoopC).QuestIndex = val(ReadField(1, Leer.GetValue("NPC" & NpcNumber, "DropQuest" & LoopC), Asc("-")))
-352             Npclist(NpcIndex).DropQuest(LoopC).ObjIndex = val(ReadField(2, Leer.GetValue("NPC" & NpcNumber, "DropQuest" & LoopC), Asc("-")))
-354             Npclist(NpcIndex).DropQuest(LoopC).Amount = val(ReadField(3, Leer.GetValue("NPC" & NpcNumber, "DropQuest" & LoopC), Asc("-")))
-356             Npclist(NpcIndex).DropQuest(LoopC).Probabilidad = val(ReadField(4, Leer.GetValue("NPC" & NpcNumber, "DropQuest" & LoopC), Asc("-")))
-358         Next LoopC
+                Npclist(NpcIndex).DropQuest(LoopC).QuestIndex = val(ReadField(1, Leer.GetValue("NPC" & NpcNumber, "DropQuest" & LoopC), Asc("-")))
+350             Npclist(NpcIndex).DropQuest(LoopC).ObjIndex = val(ReadField(2, Leer.GetValue("NPC" & NpcNumber, "DropQuest" & LoopC), Asc("-")))
+351             Npclist(NpcIndex).DropQuest(LoopC).Amount = val(ReadField(3, Leer.GetValue("NPC" & NpcNumber, "DropQuest" & LoopC), Asc("-")))
+                Npclist(NpcIndex).DropQuest(LoopC).Probabilidad = val(ReadField(4, Leer.GetValue("NPC" & NpcNumber, "DropQuest" & LoopC), Asc("-")))
+352         Next LoopC
 
         End If
 
@@ -1452,46 +1452,46 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 
 
         '<<<<<<<<<<<<<< Sistema de Viajes NUEVO >>>>>>>>>>>>>>>>
-360     aux = Leer.GetValue("NPC" & NpcNumber, "NumDestinos")
+354     aux = Leer.GetValue("NPC" & NpcNumber, "NumDestinos")
 
-362     If LenB(aux) = 0 Then
-364         Npclist(NpcIndex).NumDestinos = 0
+356     If LenB(aux) = 0 Then
+358         Npclist(NpcIndex).NumDestinos = 0
         
         Else
     
-366         Npclist(NpcIndex).NumDestinos = val(aux)
+360         Npclist(NpcIndex).NumDestinos = val(aux)
         
-368         ReDim Npclist(NpcIndex).Dest(1 To Npclist(NpcIndex).NumDestinos) As String
+362         ReDim Npclist(NpcIndex).Dest(1 To Npclist(NpcIndex).NumDestinos) As String
 
-370         For LoopC = 1 To Npclist(NpcIndex).NumDestinos
-372             Npclist(NpcIndex).Dest(LoopC) = Leer.GetValue("NPC" & NpcNumber, "Dest" & LoopC)
-374         Next LoopC
+364         For LoopC = 1 To Npclist(NpcIndex).NumDestinos
+366             Npclist(NpcIndex).Dest(LoopC) = Leer.GetValue("NPC" & NpcNumber, "Dest" & LoopC)
+368         Next LoopC
 
         End If
 
         '<<<<<<<<<<<<<< Expresiones >>>>>>>>>>>>>>>>
-376     Npclist(NpcIndex).Interface = val(Leer.GetValue("NPC" & NpcNumber, "Interface"))
+370     Npclist(NpcIndex).Interface = val(Leer.GetValue("NPC" & NpcNumber, "Interface"))
 
         'Tipo de items con los que comercia
-378     Npclist(NpcIndex).TipoItems = val(Leer.GetValue("NPC" & NpcNumber, "TipoItems"))
+372     Npclist(NpcIndex).TipoItems = val(Leer.GetValue("NPC" & NpcNumber, "TipoItems"))
 
         ' Por defecto la animación es idle
-380     Call AnimacionIdle(NpcIndex, True)
+374     Call AnimacionIdle(NpcIndex, True)
 
         'Si NO estamos actualizando los NPC's activos, actualizamos el contador.
-382     If Reload = False Then
-384         If NpcIndex > LastNPC Then LastNPC = NpcIndex
-386         NumNPCs = NumNPCs + 1
+376     If Reload = False Then
+378         If NpcIndex > LastNPC Then LastNPC = NpcIndex
+380         NumNPCs = NumNPCs + 1
         End If
     
         'Devuelve el nuevo Indice
-388     OpenNPC = NpcIndex
+382     OpenNPC = NpcIndex
 
         Exit Function
 
 OpenNPC_Err:
-390     Call RegistrarError(Err.Number, Err.description, "NPCs.OpenNPC", Erl)
-392     Resume Next
+384     Call RegistrarError(Err.Number, Err.description, "NPCs.OpenNPC", Erl)
+386     Resume Next
         
 End Function
 
@@ -1548,7 +1548,7 @@ Public Sub FollowAmo(ByVal NpcIndex As Integer)
         Exit Sub
 
 FollowAmo_Err:
-118     Call RegistrarError(Err.Number, Err.description, "NPCs.FollowAmo", Erl)
+        Call RegistrarError(Err.Number, Err.description, "NPCs.FollowAmo", Erl)
 
         
 End Sub
@@ -1603,7 +1603,7 @@ Sub QuitarMascota(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
         Exit Sub
 
 QuitarMascota_Err:
-112     Call RegistrarError(Err.Number, Err.description, "NPCs.QuitarMascota", Erl)
+        Call RegistrarError(Err.Number, Err.description, "NPCs.QuitarMascota", Erl)
 
         
 End Sub
@@ -1632,28 +1632,28 @@ End Sub
 
 Sub WarpNpcChar(ByVal NpcIndex As Integer, ByVal Map As Byte, ByVal X As Integer, ByVal Y As Integer, Optional ByVal FX As Boolean = False)
 
-        Dim NuevaPos                    As WorldPos
-        Dim FuturePos                   As WorldPos
+    Dim NuevaPos                    As WorldPos
+    Dim FuturePos                   As WorldPos
 
-100     Call EraseNPCChar(NpcIndex)
+    Call EraseNPCChar(NpcIndex)
 
-102     FuturePos.Map = Map
-104     FuturePos.X = X
-106     FuturePos.Y = Y
-108     Call ClosestLegalPos(FuturePos, NuevaPos, True, True)
+    FuturePos.Map = Map
+    FuturePos.X = X
+    FuturePos.Y = Y
+    Call ClosestLegalPos(FuturePos, NuevaPos, True, True)
 
-110     If NuevaPos.Map = 0 Or NuevaPos.X = 0 Or NuevaPos.Y = 0 Then
-112         Debug.Print "Error al tepear NPC"
-114         Call QuitarNPC(NpcIndex)
-        Else
-116         Npclist(NpcIndex).Pos = NuevaPos
-118         Call MakeNPCChar(True, 0, NpcIndex, NuevaPos.Map, NuevaPos.X, NuevaPos.Y)
+    If NuevaPos.Map = 0 Or NuevaPos.X = 0 Or NuevaPos.Y = 0 Then
+        Debug.Print "Error al tepear NPC"
+        Call QuitarNPC(NpcIndex)
+    Else
+        Npclist(NpcIndex).Pos = NuevaPos
+        Call MakeNPCChar(True, 0, NpcIndex, NuevaPos.Map, NuevaPos.X, NuevaPos.Y)
 
-120         If FX Then                                    'FX
-122             Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessagePlayWave(SND_WARP, NuevaPos.X, NuevaPos.Y))
-124             Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageCreateFX(Npclist(NpcIndex).Char.CharIndex, FXIDs.FXWARP, 0))
-            End If
-
+        If FX Then                                    'FX
+            Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessagePlayWave(SND_WARP, NuevaPos.X, NuevaPos.Y))
+            Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageCreateFX(Npclist(NpcIndex).Char.CharIndex, FXIDs.FXWARP, 0))
         End If
+
+    End If
 
 End Sub

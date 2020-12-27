@@ -79,7 +79,7 @@ Public Sub Reset()
         Exit Sub
 
 Reset_Err:
-106     Call RegistrarError(Err.Number, Err.description, "cCola.Reset", Erl)
+        Call RegistrarError(Err.Number, Err.description, "cCola.Reset", Erl)
 
         
 End Sub
@@ -151,7 +151,7 @@ Public Function VerElemento(ByVal index As Integer) As String
         Exit Function
 
 VerElemento_Err:
-106     Call RegistrarError(Err.Number, Err.description, "cCola.VerElemento", Erl)
+        Call RegistrarError(Err.Number, Err.description, "cCola.VerElemento", Erl)
 
         
 End Function
@@ -171,7 +171,7 @@ Public Sub Push(ByVal nombre As String, ByVal Consulta As String, ByVal TipoDeCo
         Exit Sub
 
 Push_Err:
-102     Call RegistrarError(Err.Number, Err.description, "cCola.Push", Erl)
+        Call RegistrarError(Err.Number, Err.description, "cCola.Push", Erl)
 
         
 End Sub
@@ -197,7 +197,7 @@ Public Function Pop() As String
         Exit Function
 
 Pop_Err:
-108     Call RegistrarError(Err.Number, Err.description, "cCola.Pop", Erl)
+        Call RegistrarError(Err.Number, Err.description, "cCola.Pop", Erl)
 
         
 End Function
@@ -224,7 +224,7 @@ Public Function PopByVal() As String
         Exit Function
 
 PopByVal_Err:
-106     Call RegistrarError(Err.Number, Err.description, "cCola.PopByVal", Erl)
+        Call RegistrarError(Err.Number, Err.description, "cCola.PopByVal", Erl)
 
         
 End Function
@@ -264,7 +264,7 @@ Public Function Existe(ByVal nombre As String) As Boolean
         Exit Function
 
 Existe_Err:
-112     Call RegistrarError(Err.Number, Err.description, "cCola.Existe", Erl)
+        Call RegistrarError(Err.Number, Err.description, "cCola.Existe", Erl)
 
         
 End Function
@@ -303,7 +303,7 @@ Public Sub Quitar(ByVal nombre As String)
         Exit Sub
 
 Quitar_Err:
-110     Call RegistrarError(Err.Number, Err.description, "cCola.Quitar", Erl)
+        Call RegistrarError(Err.Number, Err.description, "cCola.Quitar", Erl)
 
         
 End Sub
@@ -322,23 +322,23 @@ Public Sub QuitarIndex(ByVal index As Integer)
         Exit Sub
 
 QuitarIndex_Err:
-102     Call RegistrarError(Err.Number, Err.description, "cCola.QuitarIndex", Erl)
+        Call RegistrarError(Err.Number, Err.description, "cCola.QuitarIndex", Erl)
 
         
 End Sub
 
 Private Sub Class_Terminate()
-        'Destruimos el objeto Cola
+    'Destruimos el objeto Cola
         
-        On Error GoTo Class_Terminate_Err
+    On Error GoTo Class_Terminate_Err
         
-100     Set Cola = Nothing
+    Set Cola = Nothing
 
         
-        Exit Sub
+    Exit Sub
 
 Class_Terminate_Err:
-102     Call RegistrarError(Err.Number, Err.description, "cCola.Class_Terminate", Erl)
-104     Resume Next
+    Call RegistrarError(Err.Number, Err.description, "cCola.Class_Terminate", Erl)
+    Resume Next
         
 End Sub

@@ -859,40 +859,40 @@ Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As
         Exit Function
 
 FinishQuestCheck_Err:
-136     Call RegistrarError(Err.Number, Err.description, "ModQuest.FinishQuestCheck", Erl)
+        Call RegistrarError(Err.Number, Err.description, "ModQuest.FinishQuestCheck", Erl)
 
 End Function
 
 Function FaltanItemsQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal ObjIndex As Integer) As Boolean
 
-        On Error GoTo Handler
+    On Error GoTo Handler
 
-100     With QuestList(QuestIndex)
+    With QuestList(QuestIndex)
 
-            ' Por las dudas...
-102         If .RequiredOBJs > 0 Then
+        ' Por las dudas...
+        If .RequiredOBJs > 0 Then
         
-                Dim i As Integer
+            Dim i As Integer
         
-104             For i = 1 To .RequiredOBJs
+            For i = 1 To .RequiredOBJs
             
-                    ' Encontramos el objeto
-106                 If ObjIndex = .RequiredOBJ(i).ObjIndex Then
+                ' Encontramos el objeto
+                If ObjIndex = .RequiredOBJ(i).ObjIndex Then
 
-                        ' Devolvemos si ya tiene todos los que la quest pide
-108                     FaltanItemsQuest = Not TieneObjetos(ObjIndex, .RequiredOBJ(i).Amount, UserIndex)
-                        Exit Function
+                    ' Devolvemos si ya tiene todos los que la quest pide
+                    FaltanItemsQuest = Not TieneObjetos(ObjIndex, .RequiredOBJ(i).Amount, UserIndex)
+                    Exit Function
 
-                    End If
+                End If
             
-110             Next i
+            Next i
         
-            End If
+        End If
 
-        End With
+    End With
             
 Handler:
-112     Call RegistrarError(Err.Number, Err.description, "ModQuest.FaltanItemsQuest", Erl)
-114     Resume Next
+    Call RegistrarError(Err.Number, Err.description, "ModQuest.FaltanItemsQuest", Erl)
+    Resume Next
 
 End Function

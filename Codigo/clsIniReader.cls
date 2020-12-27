@@ -116,35 +116,35 @@ End Sub
 
 Private Sub Class_Terminate()
         
-        On Error GoTo Class_Terminate_Err
+    On Error GoTo Class_Terminate_Err
         
 
-        '**************************************************************
-        'Author: Juan Martin Sotuyo Dodero
-        'Last Modify Date: 5/01/2006
-        '
-        '**************************************************************
-        Dim i As Long
+    '**************************************************************
+    'Author: Juan Martin Sotuyo Dodero
+    'Last Modify Date: 5/01/2006
+    '
+    '**************************************************************
+    Dim i As Long
     
-        'Clean up
-100     If MainNodes Then
+    'Clean up
+    If MainNodes Then
 
-102         For i = 1 To MainNodes - 1
-104             Erase fileData(i).values
-106         Next i
+        For i = 1 To MainNodes - 1
+            Erase fileData(i).values
+        Next i
         
-108         Erase fileData
+        Erase fileData
 
-        End If
+    End If
     
-110     MainNodes = 0
+    MainNodes = 0
 
         
-        Exit Sub
+    Exit Sub
 
 Class_Terminate_Err:
-112     Call RegistrarError(Err.Number, Err.description, "clsIniReader.Class_Terminate", Erl)
-114     Resume Next
+    Call RegistrarError(Err.Number, Err.description, "clsIniReader.Class_Terminate", Erl)
+    Resume Next
         
 End Sub
 
@@ -249,7 +249,7 @@ Public Sub Initialize(ByVal File As String)
         Exit Sub
 
 Initialize_Err:
-152     Call RegistrarError(Err.Number, Err.description, "clsIniReader.Initialize", Erl)
+        Call RegistrarError(Err.Number, Err.description, "clsIniReader.Initialize", Erl)
 
         
 End Sub

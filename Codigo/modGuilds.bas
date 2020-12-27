@@ -240,25 +240,25 @@ Public Function m_EcharMiembroDeClan(ByVal Expulsador As Integer, ByVal Expulsad
 
         Else
             'pj offline
-130         If Database_Enabled Then
-132             GI = GetUserGuildIndexDatabase(Expulsado)
+            If Database_Enabled Then
+129             GI = GetUserGuildIndexDatabase(Expulsado)
             Else
-134             GI = GetGuildIndexFromChar(Expulsado)
+130             GI = GetGuildIndexFromChar(Expulsado)
             End If
 
-136         If GI > 0 Then
-138             If m_PuedeSalirDeClan(Expulsado, GI, Expulsador) Then
-140                 If m_EsGuildLeader(Expulsado, GI) Then guilds(GI).SetLeader (guilds(GI).Fundador)
-142                 Call guilds(GI).ExpulsarMiembro(Expulsado)
-144                 Call LogClanes(Expulsado & " ha sido expulsado de " & guilds(GI).GuildName & " Expulsador = " & Expulsador)
-146                 m_EcharMiembroDeClan = GI
+132         If GI > 0 Then
+134             If m_PuedeSalirDeClan(Expulsado, GI, Expulsador) Then
+136                 If m_EsGuildLeader(Expulsado, GI) Then guilds(GI).SetLeader (guilds(GI).Fundador)
+138                 Call guilds(GI).ExpulsarMiembro(Expulsado)
+140                 Call LogClanes(Expulsado & " ha sido expulsado de " & guilds(GI).GuildName & " Expulsador = " & Expulsador)
+142                 m_EcharMiembroDeClan = GI
                 Else
-148                 m_EcharMiembroDeClan = 0
+144                 m_EcharMiembroDeClan = 0
 
                 End If
 
             Else
-150             m_EcharMiembroDeClan = 0
+146             m_EcharMiembroDeClan = 0
 
             End If
 
@@ -268,8 +268,8 @@ Public Function m_EcharMiembroDeClan(ByVal Expulsador As Integer, ByVal Expulsad
         Exit Function
 
 m_EcharMiembroDeClan_Err:
-152     Call RegistrarError(Err.Number, Err.description, "modGuilds.m_EcharMiembroDeClan", Erl)
-154     Resume Next
+148     Call RegistrarError(Err.Number, Err.description, "modGuilds.m_EcharMiembroDeClan", Erl)
+150     Resume Next
         
 End Function
 
@@ -534,40 +534,40 @@ Public Function PuedeFundarUnClan(ByVal UserIndex As Integer, ByVal Alineacion A
 
         End If
     
-118     If UserList(UserIndex).flags.BattleModo = 1 Then
-120         refError = "Ya pensamos en eso... No podés fundar un clan acá."
+126     If UserList(UserIndex).flags.BattleModo = 1 Then
+128         refError = "Ya pensamos en eso... No podés fundar un clan acá."
             Exit Function
 
         End If
     
-122     Select Case Alineacion
+130     Select Case Alineacion
 
             Case ALINEACION_GUILD.ALINEACION_CIUDA
 
-124             If Status(UserIndex) = 0 Or Status(UserIndex) = 2 Then
-126                 refError = "Para fundar un clan de ciudadanos no debes ser criminal."
+132             If Status(UserIndex) = 0 Or Status(UserIndex) = 2 Then
+134                 refError = "Para fundar un clan de ciudadanos no debes ser criminal."
                     Exit Function
 
                 End If
 
-128         Case ALINEACION_GUILD.ALINEACION_CRIMINAL
+136         Case ALINEACION_GUILD.ALINEACION_CRIMINAL
 
-130             If Status(UserIndex) = 1 Or Status(UserIndex) = 3 Then
-132                 refError = "Para fundar un clan de criminales no debes ser ciudadano."
+138             If Status(UserIndex) = 1 Or Status(UserIndex) = 3 Then
+140                 refError = "Para fundar un clan de criminales no debes ser ciudadano."
                     Exit Function
 
                 End If
 
         End Select
 
-134     PuedeFundarUnClan = True
+142     PuedeFundarUnClan = True
     
         
         Exit Function
 
 PuedeFundarUnClan_Err:
-136     Call RegistrarError(Err.Number, Err.description, "modGuilds.PuedeFundarUnClan", Erl)
-138     Resume Next
+144     Call RegistrarError(Err.Number, Err.description, "modGuilds.PuedeFundarUnClan", Erl)
+146     Resume Next
         
 End Function
 
@@ -2192,16 +2192,16 @@ Public Function a_AceptarAspirante(ByVal UserIndex As Integer, ByRef Aspirante A
 136             refError = Aspirante & " no puede entrar a un clan " & Alineacion2String(guilds(GI).Alineacion)
 138             Call guilds(GI).RetirarAspirante(Aspirante, NroAspirante)
                 Exit Function
-            Else
-140             If Database_Enabled Then
-142                 tGI = GetUserGuildIndexDatabase(Aspirante)
+140         Else
+                If Database_Enabled Then
+                    tGI = GetUserGuildIndexDatabase(Aspirante)
                 Else
-144                 tGI = GetGuildIndexFromChar(Aspirante)
+                    tGI = GetGuildIndexFromChar(Aspirante)
                 End If
                 
-146             If tGI <> 0 Then
-148                 refError = Aspirante & " ya es parte de otro clan."
-150                 Call guilds(GI).RetirarAspirante(Aspirante, NroAspirante)
+                If tGI <> 0 Then
+142                 refError = Aspirante & " ya es parte de otro clan."
+144                 Call guilds(GI).RetirarAspirante(Aspirante, NroAspirante)
                     Exit Function
                 End If
 
@@ -2209,31 +2209,31 @@ Public Function a_AceptarAspirante(ByVal UserIndex As Integer, ByRef Aspirante A
 
         End If
     
-152     If guilds(GI).CantidadDeMiembros + 1 > MiembrosPermite(GI) Then
-154         refError = "La capacidad del clan esta completa."
+146     If guilds(GI).CantidadDeMiembros + 1 > MiembrosPermite(GI) Then
+148         refError = "La capacidad del clan esta completa."
             Exit Function
 
         End If
     
         'el pj es aspirante al clan y puede entrar
     
-156     Call guilds(GI).RetirarAspirante(Aspirante, NroAspirante)
-158     Call guilds(GI).AceptarNuevoMiembro(Aspirante)
+150     Call guilds(GI).RetirarAspirante(Aspirante, NroAspirante)
+152     Call guilds(GI).AceptarNuevoMiembro(Aspirante)
     
         ' If player is online, update tag
-160     If AspiranteUI > 0 Then
-162         Call RefreshCharStatus(AspiranteUI)
+154     If AspiranteUI > 0 Then
+156         Call RefreshCharStatus(AspiranteUI)
 
         End If
     
-164     a_AceptarAspirante = True
+158     a_AceptarAspirante = True
 
         
         Exit Function
 
 a_AceptarAspirante_Err:
-166     Call RegistrarError(Err.Number, Err.description, "modGuilds.a_AceptarAspirante", Erl)
-168     Resume Next
+160     Call RegistrarError(Err.Number, Err.description, "modGuilds.a_AceptarAspirante", Erl)
+162     Resume Next
         
 End Function
 

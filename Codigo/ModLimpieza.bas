@@ -155,7 +155,7 @@ Public Function GetIndiceByPos(ByVal Map As Integer, ByVal X As Integer, ByVal Y
         Exit Function
 
 GetIndiceByPos_Err:
-102     Call RegistrarError(Err.Number, Err.description, "ModLimpieza.GetIndiceByPos", Erl)
+        Call RegistrarError(Err.Number, Err.description, "ModLimpieza.GetIndiceByPos", Erl)
 
         
 End Function

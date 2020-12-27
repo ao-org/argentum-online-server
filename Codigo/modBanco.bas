@@ -448,7 +448,7 @@ Sub SendUserBovedaTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
         Exit Sub
 
 SendUserBovedaTxt_Err:
-110     Call RegistrarError(Err.Number, Err.description, "modBanco.SendUserBovedaTxt", Erl)
+        Call RegistrarError(Err.Number, Err.description, "modBanco.SendUserBovedaTxt", Erl)
 
         
 End Sub
@@ -493,7 +493,7 @@ Sub SendUserBovedaTxtFromChar(ByVal sendIndex As Integer, ByVal CharName As Stri
         Exit Sub
 
 SendUserBovedaTxtFromChar_Err:
-122     Call RegistrarError(Err.Number, Err.description, "modBanco.SendUserBovedaTxtFromChar", Erl)
+        Call RegistrarError(Err.Number, Err.description, "modBanco.SendUserBovedaTxtFromChar", Erl)
 
         
 End Sub
