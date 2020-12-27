@@ -432,6 +432,7 @@ Public Sub Encarcelar(ByVal UserIndex As Integer, ByVal minutos As Long, Optiona
         
         On Error GoTo Encarcelar_Err
         
+        If EsGM(UserIndex) Then Exit Sub
         
 100     UserList(UserIndex).Counters.Pena = minutos
         
