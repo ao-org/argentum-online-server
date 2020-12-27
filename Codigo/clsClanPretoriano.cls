@@ -1614,13 +1614,13 @@ Private Sub DealWandDamage(ByVal NpcIndex As Integer, ByVal SpellIndex As Intege
 126                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, Hechizos(SpellIndex).FXgrh, Hechizos(SpellIndex).loops))
                         
 128                         If .Stats.MinHp < 1 Then
-132                             Call UserDie(UserIndex)
+130                             Call UserDie(UserIndex)
                             Else
                                 'Updates user's hp:
-134                             Call WriteUpdateHP(UserIndex)
+132                             Call WriteUpdateHP(UserIndex)
 
                                 ' Also hit pets
-136                             If .NroMascotas > 0 Then Call DealWandDamageToPets(NpcIndex, UserIndex, SpellIndex)
+134                             If .NroMascotas > 0 Then Call DealWandDamageToPets(NpcIndex, UserIndex, SpellIndex)
                             
                             End If
                         
@@ -1630,14 +1630,14 @@ Private Sub DealWandDamage(ByVal NpcIndex As Integer, ByVal SpellIndex As Intege
             
                 End If
             
-138         Next counter
+136         Next counter
         
         End With
     
         Exit Sub
     
 ErrHandler:
-140     LogError ("Error en DealWandDamage. Error: " & Err.Number & " - " & Err.description)
+138     LogError ("Error en DealWandDamage. Error: " & Err.Number & " - " & Err.description)
 
 End Sub
 
@@ -1945,8 +1945,8 @@ Public Sub AI_Shooter(ByVal NpcIndex As Integer)
         Exit Sub
 
 AI_Shooter_Err:
-110     Call RegistrarError(Err.Number, Err.description, "clsClanPretoriano.AI_Shooter", Erl)
-112     Resume Next
+108     Call RegistrarError(Err.Number, Err.description, "clsClanPretoriano.AI_Shooter", Erl)
+110     Resume Next
         
 End Sub
 

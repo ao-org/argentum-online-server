@@ -465,7 +465,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
         Exit Sub
 
 Accion_Err:
-        Call RegistrarError(Err.Number, Err.description, "Acciones.Accion", Erl)
+400     Call RegistrarError(Err.Number, Err.description, "Acciones.Accion", Erl)
 
         
 End Sub
@@ -532,7 +532,7 @@ Sub AccionParaForo(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer,
         Exit Sub
 
 AccionParaForo_Err:
-        Call RegistrarError(Err.Number, Err.description, "Acciones.AccionParaForo", Erl)
+144     Call RegistrarError(Err.Number, Err.description, "Acciones.AccionParaForo", Erl)
 
         
 End Sub
@@ -601,7 +601,7 @@ Sub AccionParaPozos(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer
         Exit Sub
 
 AccionParaPozos_Err:
-        Call RegistrarError(Err.Number, Err.description, "Acciones.AccionParaPozos", Erl)
+148     Call RegistrarError(Err.Number, Err.description, "Acciones.AccionParaPozos", Erl)
 
         
 End Sub
@@ -671,7 +671,7 @@ Sub AccionParaArboles(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integ
         Exit Sub
 
 AccionParaArboles_Err:
-        Call RegistrarError(Err.Number, Err.description, "Acciones.AccionParaArboles", Erl)
+146     Call RegistrarError(Err.Number, Err.description, "Acciones.AccionParaArboles", Erl)
 
         
 End Sub
@@ -732,7 +732,7 @@ Sub AccionParaAgua(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer,
         Exit Sub
 
 AccionParaAgua_Err:
-        Call RegistrarError(Err.Number, Err.description, "Acciones.AccionParaAgua", Erl)
+138     Call RegistrarError(Err.Number, Err.description, "Acciones.AccionParaAgua", Erl)
 
         
 End Sub
@@ -777,7 +777,7 @@ Sub AccionParaYunque(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
         Exit Sub
 
 AccionParaYunque_Err:
-        Call RegistrarError(Err.Number, Err.description, "Acciones.AccionParaYunque", Erl)
+120     Call RegistrarError(Err.Number, Err.description, "Acciones.AccionParaYunque", Erl)
 
         
 End Sub
@@ -838,8 +838,8 @@ Sub AccionParaPuerta(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, ByV
         Exit Sub
         
 Handler:
-    Call RegistrarError(Err.Number, Err.description, "Acciones.AccionParaPuerta", Erl)
-    Resume Next
+132 Call RegistrarError(Err.Number, Err.description, "Acciones.AccionParaPuerta", Erl)
+134 Resume Next
 
 End Sub
 
@@ -861,8 +861,8 @@ Sub AccionParaCartel(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
         Exit Sub
         
 Handler:
-    Call RegistrarError(Err.Number, Err.description, "Acciones.AccionParaCartel", Erl)
-    Resume Next
+106 Call RegistrarError(Err.Number, Err.description, "Acciones.AccionParaCartel", Erl)
+108 Resume Next
 
 End Sub
 
@@ -907,7 +907,7 @@ End Sub
 
 Sub AccionParaRamita(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal UserIndex As Integer)
 
-On Error GoTo Handler
+    On Error GoTo Handler
 
         Dim Suerte As Byte
         Dim exito  As Byte
@@ -996,7 +996,7 @@ On Error GoTo Handler
         Exit Sub
         
 Handler:
-    Call RegistrarError(Err.Number, Err.description, "Acciones.AccionParaRamita", Erl)
-    Resume Next
+156 Call RegistrarError(Err.Number, Err.description, "Acciones.AccionParaRamita", Erl)
+158 Resume Next
 
 End Sub
