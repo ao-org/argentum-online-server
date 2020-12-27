@@ -1438,6 +1438,8 @@ Public Type UserStats
     NPCsMuertos As Integer
     SkillPts As Integer
     
+    Advertencias As Byte
+    
 End Type
 
 'Sistema de Barras
@@ -1579,7 +1581,7 @@ Public Type UserFlags
     Ban As Byte
     AdministrativeBan As Byte
     BanMotivo As String
-    
+
     TargetUser As Integer ' Usuario señalado
     
     TargetObj As Integer ' Obj señalado

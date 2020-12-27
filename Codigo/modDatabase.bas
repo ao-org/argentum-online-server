@@ -424,7 +424,8 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 276         QueryBuilder.Append "guild_index = " & .GuildIndex & ", "
 278         QueryBuilder.Append "chat_combate = " & .ChatCombate & ", "
 280         QueryBuilder.Append "chat_global = " & .ChatGlobal & ", "
-282         QueryBuilder.Append "is_logged = " & IIf(Logout, "FALSE", "TRUE")
+282         QueryBuilder.Append "is_logged = " & IIf(Logout, "FALSE", "TRUE") & ", "
+            QueryBuilder.Append "warnings = " & .Stats.Advertencias
 284         QueryBuilder.Append " WHERE id = " & .Id & "; "
         
             Dim LoopC As Long
@@ -822,7 +823,9 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 292     .Faccion.Status = QueryData!Status
 
 294     .GuildIndex = SanitizeNullValue(QueryData!Guild_Index, 0)
-
+        
+        .Stats.Advertencias = QueryData!warnings
+        
         'User attributes
 296     Call MakeQuery("SELECT * FROM attribute WHERE user_id = " & .Id & ";")
     
@@ -1934,6 +1937,32 @@ Public Sub SaveBanDatabase(ByVal UserName As String, ByVal Reason As String, ByV
 
 ErrorHandler:
 112     Call LogDatabaseError("Error in SaveBanDatabase: " & UserName & ". " & Err.Number & " - " & Err.description)
+
+End Sub
+
+Public Sub SaveWarnDatabase(ByVal UserName As String, ByVal Reason As String, ByVal WarnedBy As String)
+
+        '***************************************************
+        'Author: Juan Andres Dalmasso (CHOTS)
+        'Last Modification: 10/10/2018
+        '***************************************************
+        On Error GoTo ErrorHandler
+
+        Dim query As String
+
+100     query = "UPDATE user SET warnings = warnings + 1 WHERE name = '" & UserName & "'; "
+
+102     query = query & "INSERT INTO punishment SET "
+104     query = query & "user_id = (SELECT id from user WHERE name = '" & UserName & "'), "
+106     query = query & "number = number + 1, "
+108     query = query & "reason = '" & WarnedBy & ": " & LCase$(Reason) & " " & Date & " " & Time & "';"
+
+110     Call MakeQuery(query, True)
+
+        Exit Sub
+
+ErrorHandler:
+112     Call LogDatabaseError("Error in SaveWarnDatabase: " & UserName & ". " & Err.Number & " - " & Err.description)
 
 End Sub
 
