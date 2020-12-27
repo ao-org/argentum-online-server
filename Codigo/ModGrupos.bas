@@ -106,58 +106,58 @@ Public Sub HecharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
 118                             UserList(UserIndex).Grupo.Miembros(LoopC) = UserList(UserIndex).Grupo.Miembros(LoopC + 1)
 120                         Next LoopC
 
-                            Exit For
+122                         Exit For
 
                         End If
 
-122                 Next i
+124                 Next i
             
-124                 UserList(UserIndex).Grupo.CantidadMiembros = UserList(UserIndex).Grupo.CantidadMiembros - 1
+126                 UserList(UserIndex).Grupo.CantidadMiembros = UserList(UserIndex).Grupo.CantidadMiembros - 1
                     
                     Dim a As Byte
                                
-126                 For a = 1 To UserList(UserIndex).Grupo.CantidadMiembros
-128                     Call WriteUbicacion(UserList(UserIndex).Grupo.Miembros(a), indexviejo, 0)
+128                 For a = 1 To UserList(UserIndex).Grupo.CantidadMiembros
+130                     Call WriteUbicacion(UserList(UserIndex).Grupo.Miembros(a), indexviejo, 0)
                         
-130                 Next a
+132                 Next a
                     
-132                 Call WriteConsoleMsg(UserIndex, UserList(UserIndexHechar).name & " fue expulsado del grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
+134                 Call WriteConsoleMsg(UserIndex, UserList(UserIndexHechar).name & " fue expulsado del grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
                     'Call WriteConsoleMsg(UserIndexHechar, "Fuiste eliminado del grupo.", FontTypeNames.FONTTYPE_INFOIAO)
-134                 Call WriteLocaleMsg(UserIndexHechar, "37", FontTypeNames.FONTTYPE_New_GRUPO)
-136                 UserList(UserIndexHechar).Grupo.EnGrupo = False
-138                 UserList(UserIndexHechar).Grupo.Lider = 0
-140                 UserList(UserIndexHechar).Grupo.PropuestaDe = 0
-142                 UserList(UserIndexHechar).Grupo.CantidadMiembros = 0
-144                 UserList(UserIndexHechar).Grupo.Miembros(1) = 0
+136                 Call WriteLocaleMsg(UserIndexHechar, "37", FontTypeNames.FONTTYPE_New_GRUPO)
+138                 UserList(UserIndexHechar).Grupo.EnGrupo = False
+140                 UserList(UserIndexHechar).Grupo.Lider = 0
+142                 UserList(UserIndexHechar).Grupo.PropuestaDe = 0
+144                 UserList(UserIndexHechar).Grupo.CantidadMiembros = 0
+146                 UserList(UserIndexHechar).Grupo.Miembros(1) = 0
                             
-146                 Call RefreshCharStatus(UserIndexHechar)
+148                 Call RefreshCharStatus(UserIndexHechar)
                     
-148                 If UserList(UserIndex).Grupo.CantidadMiembros = 1 Then
+150                 If UserList(UserIndex).Grupo.CantidadMiembros = 1 Then
                         ' Call WriteConsoleMsg(userindex, "El grupo se quedo sin miembros, grupo finalizado.", FontTypeNames.FONTTYPE_INFOIAO)
-150                     Call WriteLocaleMsg(UserIndex, "35", FontTypeNames.FONTTYPE_New_GRUPO)
-152                     UserList(UserIndex).Grupo.EnGrupo = False
-154                     UserList(UserIndex).Grupo.Lider = 0
-156                     UserList(UserIndex).Grupo.PropuestaDe = 0
-158                     UserList(UserIndex).Grupo.CantidadMiembros = 0
-160                     UserList(UserIndex).Grupo.Miembros(1) = 0
+152                     Call WriteLocaleMsg(UserIndex, "35", FontTypeNames.FONTTYPE_New_GRUPO)
+154                     UserList(UserIndex).Grupo.EnGrupo = False
+156                     UserList(UserIndex).Grupo.Lider = 0
+158                     UserList(UserIndex).Grupo.PropuestaDe = 0
+160                     UserList(UserIndex).Grupo.CantidadMiembros = 0
+162                     UserList(UserIndex).Grupo.Miembros(1) = 0
 
                     End If
             
                     'sera esto?
                     'UserList(UserIndex).Grupo.Lider = 0
-162                 Call RefreshCharStatus(UserIndex)
+164                 Call RefreshCharStatus(UserIndex)
                 Else
-164                 Call WriteConsoleMsg(UserIndex, "No podés expulsarte a ti mismo.", FontTypeNames.FONTTYPE_New_GRUPO)
+166                 Call WriteConsoleMsg(UserIndex, "No podés expulsarte a ti mismo.", FontTypeNames.FONTTYPE_New_GRUPO)
 
                 End If
     
             Else
-166             Call WriteConsoleMsg(UserIndex, "Tu no podés hechar usuarios del grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
+168             Call WriteConsoleMsg(UserIndex, "Tu no podés hechar usuarios del grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
 
             End If
 
         Else
-168         Call WriteConsoleMsg(UserIndex, "No estas en ningun grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
+170         Call WriteConsoleMsg(UserIndex, "No estas en ningun grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
 
         End If
 
@@ -165,8 +165,8 @@ Public Sub HecharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
         Exit Sub
 
 HecharMiembro_Err:
-170     Call RegistrarError(Err.Number, Err.description, "ModGrupos.HecharMiembro", Erl)
-172     Resume Next
+172     Call RegistrarError(Err.Number, Err.description, "ModGrupos.HecharMiembro", Erl)
+174     Resume Next
         
 End Sub
 
@@ -194,47 +194,47 @@ Public Sub SalirDeGrupo(ByVal UserIndex As Integer)
 114                     UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(LoopC) = UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(LoopC + 1)
 116                 Next LoopC
 
-                    Exit For
+118                 Exit For
 
                 End If
 
-118         Next i
+120         Next i
 
-120         UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros = UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros - 1
+122         UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros = UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros - 1
         
             Dim a As Byte
                    
-122         For a = 1 To UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
-124             Call WriteUbicacion(UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(a), indexviejo, 0)
+124         For a = 1 To UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
+126             Call WriteUbicacion(UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(a), indexviejo, 0)
             
-126         Next a
+128         Next a
         
             'Call WriteConsoleMsg(userindex, "Has salido del grupo.", FontTypeNames.FONTTYPE_INFOIAO)
-128         Call WriteLocaleMsg(UserIndex, "37", FontTypeNames.FONTTYPE_New_GRUPO)
+130         Call WriteLocaleMsg(UserIndex, "37", FontTypeNames.FONTTYPE_New_GRUPO)
             'Call WriteConsoleMsg(UserList(userindex).Grupo.Lider, UserList(userindex).name & " a salido del grupo.", FontTypeNames.FONTTYPE_INFOIAO)
-130         Call WriteLocaleMsg(UserList(UserIndex).Grupo.Lider, "202", FontTypeNames.FONTTYPE_New_GRUPO, UserList(UserIndex).name)
+132         Call WriteLocaleMsg(UserList(UserIndex).Grupo.Lider, "202", FontTypeNames.FONTTYPE_New_GRUPO, UserList(UserIndex).name)
         
-132         If UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros = 1 Then
+134         If UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros = 1 Then
                 'Call WriteConsoleMsg(UserList(userindex).Grupo.Lider, "El grupo se quedo sin miembros, grupo finalizado.", FontTypeNames.FONTTYPE_INFOIAO)
-134             Call WriteLocaleMsg(UserList(UserIndex).Grupo.Lider, "35", FontTypeNames.FONTTYPE_New_GRUPO)
+136             Call WriteLocaleMsg(UserList(UserIndex).Grupo.Lider, "35", FontTypeNames.FONTTYPE_New_GRUPO)
             
-136             Call WriteUbicacion(UserList(UserIndex).Grupo.Lider, 1, 0)
+138             Call WriteUbicacion(UserList(UserIndex).Grupo.Lider, 1, 0)
                 
-138             UserList(UserList(UserIndex).Grupo.Lider).Grupo.EnGrupo = False
-140             UserList(UserList(UserIndex).Grupo.Lider).Grupo.Lider = 0
-142             UserList(UserList(UserIndex).Grupo.Lider).Grupo.PropuestaDe = 0
-144             UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros = 0
-146             UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(1) = 0
+140             UserList(UserList(UserIndex).Grupo.Lider).Grupo.EnGrupo = False
+142             UserList(UserList(UserIndex).Grupo.Lider).Grupo.Lider = 0
+144             UserList(UserList(UserIndex).Grupo.Lider).Grupo.PropuestaDe = 0
+146             UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros = 0
+148             UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(1) = 0
                 
-148             Call RefreshCharStatus(UserList(UserIndex).Grupo.Lider)
+150             Call RefreshCharStatus(UserList(UserIndex).Grupo.Lider)
 
             End If
 
-150         Call WriteUbicacion(UserIndex, 1, 0)
-152         UserList(UserIndex).Grupo.Lider = 0
-154         Call RefreshCharStatus(UserIndex)
+152         Call WriteUbicacion(UserIndex, 1, 0)
+154         UserList(UserIndex).Grupo.Lider = 0
+156         Call RefreshCharStatus(UserIndex)
         Else
-156         Call WriteConsoleMsg(UserIndex, "No estas en ningun grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
+158         Call WriteConsoleMsg(UserIndex, "No estas en ningun grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
 
         End If
 
@@ -242,8 +242,8 @@ Public Sub SalirDeGrupo(ByVal UserIndex As Integer)
         Exit Sub
 
 SalirDeGrupo_Err:
-158     Call RegistrarError(Err.Number, Err.description, "ModGrupos.SalirDeGrupo", Erl)
-160     Resume Next
+160     Call RegistrarError(Err.Number, Err.description, "ModGrupos.SalirDeGrupo", Erl)
+162     Resume Next
         
 End Sub
 
@@ -270,37 +270,37 @@ Public Sub SalirDeGrupoForzado(ByVal UserIndex As Integer)
 112                 UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(LoopC) = UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(LoopC + 1)
 114             Next LoopC
 
-                Exit For
+116             Exit For
 
             End If
 
-116     Next i
+118     Next i
 
-118     UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros = UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros - 1
+120     UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros = UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros - 1
         
         Dim a As Byte
                    
-120     For a = 1 To UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
-122         Call WriteUbicacion(UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(a), indexviejo, 0)
+122     For a = 1 To UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
+124         Call WriteUbicacion(UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(a), indexviejo, 0)
             
-124     Next a
+126     Next a
 
         'Call WriteConsoleMsg(UserList(userindex).Grupo.Lider, UserList(userindex).name & " a salido del grupo.", FontTypeNames.FONTTYPE_INFOIAO)
-126     Call WriteLocaleMsg(UserList(UserIndex).Grupo.Lider, "202", FontTypeNames.FONTTYPE_New_GRUPO, UserList(UserIndex).name)
+128     Call WriteLocaleMsg(UserList(UserIndex).Grupo.Lider, "202", FontTypeNames.FONTTYPE_New_GRUPO, UserList(UserIndex).name)
         
-128     If UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros = 1 Then
+130     If UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros = 1 Then
             'Call WriteConsoleMsg(UserList(userindex).Grupo.Lider, "El grupo se quedo sin miembros, grupo finalizado.", FontTypeNames.FONTTYPE_INFOIAO)
-130         Call WriteLocaleMsg(UserList(UserIndex).Grupo.Lider, "35", FontTypeNames.FONTTYPE_New_GRUPO)
+132         Call WriteLocaleMsg(UserList(UserIndex).Grupo.Lider, "35", FontTypeNames.FONTTYPE_New_GRUPO)
             
-132         Call WriteUbicacion(UserList(UserIndex).Grupo.Lider, 1, 0)
+134         Call WriteUbicacion(UserList(UserIndex).Grupo.Lider, 1, 0)
                 
-134         UserList(UserList(UserIndex).Grupo.Lider).Grupo.EnGrupo = False
-136         UserList(UserList(UserIndex).Grupo.Lider).Grupo.Lider = 0
-138         UserList(UserList(UserIndex).Grupo.Lider).Grupo.PropuestaDe = 0
-140         UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros = 0
-142         UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(1) = 0
+136         UserList(UserList(UserIndex).Grupo.Lider).Grupo.EnGrupo = False
+138         UserList(UserList(UserIndex).Grupo.Lider).Grupo.Lider = 0
+140         UserList(UserList(UserIndex).Grupo.Lider).Grupo.PropuestaDe = 0
+142         UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros = 0
+144         UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(1) = 0
                 
-144         Call RefreshCharStatus(UserList(UserIndex).Grupo.Lider)
+146         Call RefreshCharStatus(UserList(UserIndex).Grupo.Lider)
 
         End If
 
@@ -308,8 +308,8 @@ Public Sub SalirDeGrupoForzado(ByVal UserIndex As Integer)
         Exit Sub
 
 SalirDeGrupoForzado_Err:
-146     Call RegistrarError(Err.Number, Err.description, "ModGrupos.SalirDeGrupoForzado", Erl)
-148     Resume Next
+148     Call RegistrarError(Err.Number, Err.description, "ModGrupos.SalirDeGrupoForzado", Erl)
+150     Resume Next
         
 End Sub
 

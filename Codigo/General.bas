@@ -173,14 +173,14 @@ Sub MostrarBloqueosPuerta(ByVal toMap As Boolean, ByVal sndIndex As Integer, ByV
 112     Call Bloquear(toMap, sndIndex, X - 1, Y + 1, MapData(Map, X - 1, Y + 1).Blocked)
 
         ' Bloqueos laterales / Comentado porque causaba problemas con las paredes de las casas comunes
-        'Call Bloquear(toMap, sndIndex, X, Y - 1, MapData(Map, X, Y - 1).Blocked)
-        'Call Bloquear(toMap, sndIndex, X + 1, Y, MapData(Map, X + 1, Y).Blocked)
-        'Call Bloquear(toMap, sndIndex, X + 1, Y - 1, MapData(Map, X + 1, Y - 1).Blocked)
+114     'Call Bloquear(toMap, sndIndex, X, Y - 1, MapData(Map, X, Y - 1).Blocked)
+116     'Call Bloquear(toMap, sndIndex, X + 1, Y, MapData(Map, X + 1, Y).Blocked)
+118     'Call Bloquear(toMap, sndIndex, X + 1, Y - 1, MapData(Map, X + 1, Y - 1).Blocked)
 
         Exit Sub
 
 MostrarBloqueosPuerta_Err:
-114     Call RegistrarError(Err.Number, Err.description, "General.MostrarBloqueosPuerta", Erl)
+        Call RegistrarError(Err.Number, Err.description, "General.MostrarBloqueosPuerta", Erl)
 
         
 End Sub
@@ -198,20 +198,20 @@ Sub BloquearPuerta(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer,
 106     MapData(Map, X - 1, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y + 1).Blocked Or eBlock.SOUTH, MapData(Map, X - 1, Y + 1).Blocked And Not eBlock.SOUTH)
     
         ' Cambio bloqueos izquierda / Comentado porque causaba problemas con las paredes de las casas comunes
-        'MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked And Not eBlock.WEST, MapData(Map, X, Y).Blocked Or eBlock.WEST)
-        'MapData(Map, X, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X, Y - 1).Blocked And Not eBlock.WEST, MapData(Map, X, Y - 1).Blocked Or eBlock.WEST)
+108     'MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked And Not eBlock.WEST, MapData(Map, X, Y).Blocked Or eBlock.WEST)
+110     'MapData(Map, X, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X, Y - 1).Blocked And Not eBlock.WEST, MapData(Map, X, Y - 1).Blocked Or eBlock.WEST)
     
         ' Cambio bloqueos derecha / Comentado porque causaba problemas con las paredes de las casas comunes
-        'MapData(Map, X + 1, Y).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y).Blocked And Not eBlock.EAST, MapData(Map, X + 1, Y).Blocked Or eBlock.EAST)
-        'MapData(Map, X + 1, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y - 1).Blocked And Not eBlock.EAST, MapData(Map, X + 1, Y - 1).Blocked Or eBlock.EAST)
+112     'MapData(Map, X + 1, Y).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y).Blocked And Not eBlock.EAST, MapData(Map, X + 1, Y).Blocked Or eBlock.EAST)
+114     'MapData(Map, X + 1, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y - 1).Blocked And Not eBlock.EAST, MapData(Map, X + 1, Y - 1).Blocked Or eBlock.EAST)
     
         ' Mostramos a todos
-108     Call MostrarBloqueosPuerta(True, Map, X, Y)
+116     Call MostrarBloqueosPuerta(True, Map, X, Y)
         
         Exit Sub
 
 BloquearPuerta_Err:
-110     Call RegistrarError(Err.Number, Err.description, "General.BloquearPuerta", Erl)
+        Call RegistrarError(Err.Number, Err.description, "General.BloquearPuerta", Erl)
 
         
 End Sub
@@ -291,7 +291,7 @@ Function EsArbol(ByVal GrhIndex As Long) As Boolean
         Exit Function
 
 EsArbol_Err:
-102     Call RegistrarError(Err.Number, Err.description, "General.EsArbol", Erl)
+        Call RegistrarError(Err.Number, Err.description, "General.EsArbol", Erl)
 
         
 End Function
@@ -566,7 +566,7 @@ Private Sub InicializarConstantes()
         Exit Sub
 
 InicializarConstantes_Err:
-310     Call RegistrarError(Err.Number, Err.description, "General.InicializarConstantes", Erl)
+        Call RegistrarError(Err.Number, Err.description, "General.InicializarConstantes", Erl)
 
         
 End Sub
@@ -575,27 +575,27 @@ Sub Main()
 
         On Error GoTo Handler
         
-100     frmMain.auxSocket.connect "localhost", 3100
+        frmMain.auxSocket.connect "localhost", 3100
         
-102     Call LeerLineaComandos
+100     Call LeerLineaComandos
     
-104     Call CargarRanking
+102     Call CargarRanking
     
         Dim f    As Date
     
-106     Call ChDir(App.Path)
-108     Call ChDrive(App.Path)
+104     Call ChDir(App.Path)
+106     Call ChDrive(App.Path)
 
-110     Call InicializarConstantes
+108     Call InicializarConstantes
     
-112     frmCargando.Show
+110     frmCargando.Show
     
-114     Call InitTesoro
-116     Call InitRegalo
+112     Call InitTesoro
+114     Call InitRegalo
     
         'Call PlayWaveAPI(App.Path & "\wav\harp3.wav")
     
-118     frmMain.Caption = frmMain.Caption & " V." & App.Major & "." & App.Minor & "." & App.Revision
+116     frmMain.Caption = frmMain.Caption & " V." & App.Major & "." & App.Minor & "." & App.Revision
     
 120     frmCargando.Label1(2).Caption = "Iniciando Arrays..."
     
@@ -701,109 +701,109 @@ Sub Main()
 242     With frmMain
 244         .Minuto.Enabled = True
 246         .TimerGuardarUsuarios.Enabled = True
-248         .TimerGuardarUsuarios.Interval = IntervaloTimerGuardarUsuarios
+            .TimerGuardarUsuarios.Interval = IntervaloTimerGuardarUsuarios
             '.tLluvia.Enabled = True
-250         .tPiqueteC.Enabled = True
-252         .GameTimer.Enabled = True
-254         .Auditoria.Enabled = True
-256         .KillLog.Enabled = True
-258         .TIMER_AI.Enabled = True
+248         .tPiqueteC.Enabled = True
+250         .GameTimer.Enabled = True
+252         .Auditoria.Enabled = True
+254         .KillLog.Enabled = True
+256         .TIMER_AI.Enabled = True
 
             '.npcataca.Enabled = True
         End With
     
-260     Subasta.SubastaHabilitada = True
-262     Subasta.HaySubastaActiva = False
-264     Call ResetMeteo
+258     Subasta.SubastaHabilitada = True
+260     Subasta.HaySubastaActiva = False
+262     Call ResetMeteo
     
-266     frmCargando.Label1(2).Caption = "Conectando base de datos y limpiando usuarios logueados"
+264     frmCargando.Label1(2).Caption = "Conectando base de datos y limpiando usuarios logueados"
     
-268     If Database_Enabled Then
+266     If Database_Enabled Then
             'Conecto base de datos
-270         Call Database_Connect
+268         Call Database_Connect
         
             'Reinicio los users online
-272         Call SetUsersLoggedDatabase(0)
+270         Call SetUsersLoggedDatabase(0)
         
             'Leo el record de usuarios
-274         RecordUsuarios = LeerRecordUsuariosDatabase()
+272         RecordUsuarios = LeerRecordUsuariosDatabase()
         
             'Tarea pesada
-276         Call LogoutAllUsersAndAccounts
+274         Call LogoutAllUsersAndAccounts
         End If
     
         '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
         'Configuracion de los sockets
     
-278     Call SecurityIp.InitIpTables(1000)
+276     Call SecurityIp.InitIpTables(1000)
     
         #If UsarQueSocket = 1 Then
     
-280         If LastSockListen >= 0 Then Call apiclosesocket(LastSockListen) 'Cierra el socket de escucha
-282         Call IniciaWsApi(frmMain.hWnd)
-284         SockListen = ListenForConnect(Puerto, hWndMsg, "")
+278         If LastSockListen >= 0 Then Call apiclosesocket(LastSockListen) 'Cierra el socket de escucha
+280         Call IniciaWsApi(frmMain.hWnd)
+282         SockListen = ListenForConnect(Puerto, hWndMsg, "")
 
-286         If SockListen <> -1 Then
-288             Call WriteVar(IniPath & "Server.ini", "INIT", "LastSockListen", SockListen) ' Guarda el socket escuchando
+284         If SockListen <> -1 Then
+286             Call WriteVar(IniPath & "Server.ini", "INIT", "LastSockListen", SockListen) ' Guarda el socket escuchando
             Else
-290             MsgBox "Ha ocurrido un error al iniciar el socket del Servidor.", vbCritical + vbOKOnly
+288             MsgBox "Ha ocurrido un error al iniciar el socket del Servidor.", vbCritical + vbOKOnly
 
             End If
     
         #ElseIf UsarQueSocket = 0 Then
     
-292         frmCargando.Label1(2).Caption = "Configurando Sockets"
+290         frmCargando.Label1(2).Caption = "Configurando Sockets"
     
-294         frmMain.Socket2(0).AddressFamily = AF_INET
-296         frmMain.Socket2(0).Protocol = IPPROTO_IP
-298         frmMain.Socket2(0).SocketType = SOCK_STREAM
-300         frmMain.Socket2(0).Binary = False
-302         frmMain.Socket2(0).Blocking = False
-304         frmMain.Socket2(0).BufferSize = 2048
+292         frmMain.Socket2(0).AddressFamily = AF_INET
+294         frmMain.Socket2(0).Protocol = IPPROTO_IP
+296         frmMain.Socket2(0).SocketType = SOCK_STREAM
+298         frmMain.Socket2(0).Binary = False
+300         frmMain.Socket2(0).Blocking = False
+302         frmMain.Socket2(0).BufferSize = 2048
     
-306         Call ConfigListeningSocket(frmMain.Socket1, Puerto)
+304         Call ConfigListeningSocket(frmMain.Socket1, Puerto)
     
         #ElseIf UsarQueSocket = 2 Then
     
-308         frmMain.Serv.Iniciar Puerto
+306         frmMain.Serv.Iniciar Puerto
     
         #ElseIf UsarQueSocket = 3 Then
     
-310         frmMain.TCPServ.Encolar True
-312         frmMain.TCPServ.IniciarTabla 1009
-314         frmMain.TCPServ.SetQueueLim 51200
-316         frmMain.TCPServ.Iniciar Puerto
+308         frmMain.TCPServ.Encolar True
+310         frmMain.TCPServ.IniciarTabla 1009
+312         frmMain.TCPServ.SetQueueLim 51200
+314         frmMain.TCPServ.Iniciar Puerto
     
         #End If
     
-318     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
+316     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
         '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
     
-320     Call GetHoraActual
+318     Call GetHoraActual
     
-322     HoraMundo = GetTickCount() - DuracionDia \ 2
-324     Unload frmCargando
+320     HoraMundo = GetTickCount() - DuracionDia \ 2
+322     Unload frmCargando
     
         'Log
-326     Dim n As Integer: n = FreeFile
-328     Open App.Path & "\logs\Main.log" For Append Shared As #n
-330     Print #n, Date & " " & Time & " server iniciado " & App.Major & "."; App.Minor & "." & App.Revision
-332     Close #n
+324     Dim n As Integer: n = FreeFile
+326     Open App.Path & "\logs\Main.log" For Append Shared As #n
+328     Print #n, Date & " " & Time & " server iniciado " & App.Major & "."; App.Minor & "." & App.Revision
+330     Close #n
     
         'Ocultar
-334     If HideMe = 1 Then
-336         Call frmMain.InitMain(1)
+332     If HideMe = 1 Then
+334         Call frmMain.InitMain(1)
         Else
-338         Call frmMain.InitMain(0)
+336         Call frmMain.InitMain(0)
         End If
     
-340     tInicioServer = GetTickCount()
+338     tInicioServer = GetTickCount()
 
         Exit Sub
         
 Handler:
-342 Call RegistrarError(Err.Number, Err.description, "General.Main", Erl)
-344 Resume Next
+    Call RegistrarError(Err.Number, Err.description, "General.Main", Erl)
+    Resume Next
 
 End Sub
 
@@ -1127,11 +1127,11 @@ Public Sub LogPremios(GM As String, UserName As String, ByVal ObjIndex As Intege
 100     nfile = FreeFile ' obtenemos un canal
 
 102     Open App.Path & "\logs\PremiosOtorgados.log" For Append Shared As #nfile
-104     Print #nfile, "[" & GM & "]" & vbNewLine
-106     Print #nfile, Date & " " & Time & vbNewLine
-108     Print #nfile, "Item: " & ObjData(ObjIndex).name & " (" & ObjIndex & ") Cantidad: " & Cantidad & vbNewLine
-110     Print #nfile, "Motivo: " & Motivo & vbNewLine & vbNewLine
-112     Close #nfile
+        Print #nfile, "[" & GM & "]" & vbNewLine
+104     Print #nfile, Date & " " & Time & vbNewLine
+        Print #nfile, "Item: " & ObjData(ObjIndex).name & " (" & ObjIndex & ") Cantidad: " & Cantidad & vbNewLine
+        Print #nfile, "Motivo: " & Motivo & vbNewLine & vbNewLine
+106     Close #nfile
 
         Exit Sub
 
@@ -1456,7 +1456,7 @@ Sub Restart()
         Exit Sub
 
 Restart_Err:
-204     Call RegistrarError(Err.Number, Err.description, "General.Restart", Erl)
+        Call RegistrarError(Err.Number, Err.description, "General.Restart", Erl)
 
         
 End Sub
@@ -1501,7 +1501,7 @@ Public Sub TiempoInvocacion(ByVal UserIndex As Integer)
         Exit Sub
 
 TiempoInvocacion_Err:
-112     Call RegistrarError(Err.Number, Err.description, "General.TiempoInvocacion", Erl)
+        Call RegistrarError(Err.Number, Err.description, "General.TiempoInvocacion", Erl)
 
         
 End Sub
@@ -1534,14 +1534,14 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
 
 120                     Call WriteConsoleMsg(UserIndex, "¡¡Has muerto de frio!!.", FontTypeNames.FONTTYPE_INFO)
 
-122                     Call UserDie(UserIndex)
+124                     Call UserDie(UserIndex)
 
                     Else
-124                     Call WriteUpdateHP(UserIndex)
+126                     Call WriteUpdateHP(UserIndex)
                     End If
                 End If
         
-126             .Counters.Frio = 0
+128             .Counters.Frio = 0
 
             End If
         
@@ -1550,9 +1550,9 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
         Exit Sub
 
 EfectoFrio_Err:
-128     Call RegistrarError(Err.Number, Err.description, "General.EfectoFrio", Erl)
+130     Call RegistrarError(Err.Number, Err.description, "General.EfectoFrio", Erl)
 
-130     Resume Next
+132     Resume Next
         
 End Sub
 
@@ -1579,13 +1579,13 @@ Public Sub EfectoLava(ByVal UserIndex As Integer)
             
 112                 If .Stats.MinHp < 1 Then
 114                     Call WriteConsoleMsg(UserIndex, "¡¡Has muerto quemado!!.", FontTypeNames.FONTTYPE_INFO)
-116                     Call UserDie(UserIndex)
+118                     Call UserDie(UserIndex)
                     Else
-118                     Call WriteUpdateHP(UserIndex)
+120                     Call WriteUpdateHP(UserIndex)
                     End If
                 End If
         
-120             .Counters.Lava = 0
+122             .Counters.Lava = 0
 
             End If
         
@@ -1596,9 +1596,9 @@ Public Sub EfectoLava(ByVal UserIndex As Integer)
         Exit Sub
 
 EfectoLava_Err:
-122     Call RegistrarError(Err.Number, Err.description, "General.EfectoLava", Erl)
+124     Call RegistrarError(Err.Number, Err.description, "General.EfectoLava", Erl)
 
-124     Resume Next
+126     Resume Next
         
 End Sub
 
@@ -1658,7 +1658,7 @@ Public Sub EfectoMimetismo(ByVal UserIndex As Integer)
         Exit Sub
 
 EfectoMimetismo_Err:
-142     Call RegistrarError(Err.Number, Err.description, "General.EfectoMimetismo", Erl)
+        Call RegistrarError(Err.Number, Err.description, "General.EfectoMimetismo", Erl)
 
         
 End Sub
@@ -1880,49 +1880,49 @@ Public Sub RecStamina(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, 
         
 108             UserList(UserIndex).Counters.STACounter = 0
 
-110             If UserList(UserIndex).Counters.Trabajando > 0 Then Exit Sub  'Trabajando no sube energía. (ToxicWaste)
+112             If UserList(UserIndex).Counters.Trabajando > 0 Then Exit Sub  'Trabajando no sube energía. (ToxicWaste)
          
                 ' If UserList(UserIndex).Stats.MinSta = 0 Then Exit Sub 'Ladder, se ve que esta linea la agregue yo, pero no sirve.
 
-112             EnviarStats = True
+114             EnviarStats = True
         
                 Dim Suerte As Integer
 
-114             If UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) <= 10 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= -1 Then
-116                 Suerte = 5
-118             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) <= 20 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 11 Then
-120                 Suerte = 7
-122             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) <= 30 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 21 Then
-124                 Suerte = 9
-126             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) <= 40 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 31 Then
-128                 Suerte = 11
-130             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) <= 50 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 41 Then
-132                 Suerte = 13
-134             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) <= 60 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 51 Then
-136                 Suerte = 15
-138             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) <= 70 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 61 Then
-140                 Suerte = 17
-142             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) <= 80 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 71 Then
-144                 Suerte = 19
-146             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) <= 90 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 81 Then
-148                 Suerte = 21
-150             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) < 100 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 91 Then
-152                 Suerte = 23
-154             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) = 100 Then
-156                 Suerte = 25
+116             If UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) <= 10 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= -1 Then
+118                 Suerte = 5
+120             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) <= 20 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 11 Then
+122                 Suerte = 7
+124             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) <= 30 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 21 Then
+126                 Suerte = 9
+128             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) <= 40 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 31 Then
+130                 Suerte = 11
+132             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) <= 50 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 41 Then
+134                 Suerte = 13
+136             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) <= 60 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 51 Then
+138                 Suerte = 15
+140             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) <= 70 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 61 Then
+142                 Suerte = 17
+144             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) <= 80 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 71 Then
+146                 Suerte = 19
+148             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) <= 90 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 81 Then
+150                 Suerte = 21
+152             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) < 100 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 91 Then
+154                 Suerte = 23
+156             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) = 100 Then
+158                 Suerte = 25
 
                 End If
         
-158             If UserList(UserIndex).flags.RegeneracionSta = 1 Then
-160                 Suerte = 45
+160             If UserList(UserIndex).flags.RegeneracionSta = 1 Then
+162                 Suerte = 45
 
                 End If
         
-162             massta = RandomNumber(1, Porcentaje(UserList(UserIndex).Stats.MaxSta, Suerte))
-164             UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta + massta
+164             massta = RandomNumber(1, Porcentaje(UserList(UserIndex).Stats.MaxSta, Suerte))
+166             UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta + massta
 
-166             If UserList(UserIndex).Stats.MinSta > UserList(UserIndex).Stats.MaxSta Then
-168                 UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MaxSta
+168             If UserList(UserIndex).Stats.MinSta > UserList(UserIndex).Stats.MaxSta Then
+170                 UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MaxSta
 
                 End If
 
@@ -1934,8 +1934,8 @@ Public Sub RecStamina(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, 
         Exit Sub
 
 RecStamina_Err:
-170     Call RegistrarError(Err.Number, Err.description, "General.RecStamina", Erl)
-172     Resume Next
+172     Call RegistrarError(Err.Number, Err.description, "General.RecStamina", Erl)
+174     Resume Next
         
 End Sub
 
@@ -1943,7 +1943,7 @@ Public Sub PierdeEnergia(ByVal UserIndex As Integer, ByRef EnviarStats As Boolea
 
         On Error GoTo RecStamina_Err
 
-100     With UserList(UserIndex)
+        With UserList(UserIndex)
 
 102         If .Stats.MinSta > 0 And .flags.RegeneracionSta = 0 Then
     
@@ -1953,15 +1953,15 @@ Public Sub PierdeEnergia(ByVal UserIndex As Integer, ByRef EnviarStats As Boolea
             
 108                 .Counters.STACounter = 0
     
-110                 EnviarStats = True
+114                 EnviarStats = True
             
                     Dim Cantidad As Integer
     
-112                 Cantidad = RandomNumber(1, Porcentaje(.Stats.MaxSta, (MAXSKILLPOINTS * 1.5 - .Stats.UserSkills(eSkill.Supervivencia)) * 0.25))
-114                 .Stats.MinSta = .Stats.MinSta - Cantidad
+164                 Cantidad = RandomNumber(1, Porcentaje(.Stats.MaxSta, (MAXSKILLPOINTS * 1.5 - .Stats.UserSkills(eSkill.Supervivencia)) * 0.25))
+166                 .Stats.MinSta = .Stats.MinSta - Cantidad
     
-116                 If .Stats.MinSta < 0 Then
-118                     .Stats.MinSta = 0
+168                 If .Stats.MinSta < 0 Then
+170                     .Stats.MinSta = 0
                     End If
     
                 End If
@@ -1973,8 +1973,8 @@ Public Sub PierdeEnergia(ByVal UserIndex As Integer, ByRef EnviarStats As Boolea
         Exit Sub
 
 RecStamina_Err:
-120     Call RegistrarError(Err.Number, Err.description, "General.PierdeEnergia", Erl)
-122     Resume Next
+172     Call RegistrarError(Err.Number, Err.description, "General.PierdeEnergia", Erl)
+174     Resume Next
         
 End Sub
 
@@ -1997,9 +1997,9 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
 114         UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp - n
 
 116         If UserList(UserIndex).Stats.MinHp < 1 Then
-118             Call UserDie(UserIndex)
+                Call UserDie(UserIndex)
             Else
-120             Call WriteUpdateHP(UserIndex)
+118             Call WriteUpdateHP(UserIndex)
             End If
 
         End If
@@ -2008,8 +2008,8 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
         Exit Sub
 
 EfectoVeneno_Err:
-122     Call RegistrarError(Err.Number, Err.description, "General.EfectoVeneno", Erl)
-124     Resume Next
+120     Call RegistrarError(Err.Number, Err.description, "General.EfectoVeneno", Erl)
+122     Resume Next
         
 End Sub
 
@@ -2071,9 +2071,9 @@ Public Sub EfectoIncineramiento(ByVal UserIndex As Integer, ByRef EnviarStats As
 112         UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp - n
 
 114         If UserList(UserIndex).Stats.MinHp < 1 Then
-116             Call UserDie(UserIndex)
+                Call UserDie(UserIndex)
             Else
-118             Call WriteUpdateHP(UserIndex)
+116             Call WriteUpdateHP(UserIndex)
             End If
 
         End If
@@ -2082,8 +2082,8 @@ Public Sub EfectoIncineramiento(ByVal UserIndex As Integer, ByRef EnviarStats As
         Exit Sub
 
 EfectoIncineramiento_Err:
-120     Call RegistrarError(Err.Number, Err.description, "General.EfectoIncineramiento", Erl)
-122     Resume Next
+118     Call RegistrarError(Err.Number, Err.description, "General.EfectoIncineramiento", Erl)
+120     Resume Next
         
 End Sub
 
@@ -2183,30 +2183,30 @@ Public Sub Sanar(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, ByVal
         On Error GoTo Sanar_Err
         
         ' Desnudo no regenera vida
-100     If UserList(UserIndex).flags.Desnudo = 1 Then Exit Sub
+        If UserList(UserIndex).flags.Desnudo = 1 Then Exit Sub
         
-102     If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger = 1 And MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger = 2 And MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger = 4 Then Exit Sub
+100     If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger = 1 And MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger = 2 And MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger = 4 Then Exit Sub
 
         Dim mashit As Integer
 
         'con el paso del tiempo va sanando....pero muy lentamente ;-)
-104     If UserList(UserIndex).Stats.MinHp < UserList(UserIndex).Stats.MaxHp Then
-106         If UserList(UserIndex).flags.RegeneracionHP = 1 Then
-108             Intervalo = 400
+102     If UserList(UserIndex).Stats.MinHp < UserList(UserIndex).Stats.MaxHp Then
+104         If UserList(UserIndex).flags.RegeneracionHP = 1 Then
+106             Intervalo = 400
 
             End If
     
-110         If UserList(UserIndex).Counters.HPCounter < Intervalo Then
-112             UserList(UserIndex).Counters.HPCounter = UserList(UserIndex).Counters.HPCounter + 1
+108         If UserList(UserIndex).Counters.HPCounter < Intervalo Then
+110             UserList(UserIndex).Counters.HPCounter = UserList(UserIndex).Counters.HPCounter + 1
             Else
-114             mashit = RandomNumber(2, Porcentaje(UserList(UserIndex).Stats.MaxSta, 5))
+112             mashit = RandomNumber(2, Porcentaje(UserList(UserIndex).Stats.MaxSta, 5))
         
-116             UserList(UserIndex).Counters.HPCounter = 0
-118             UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp + mashit
+114             UserList(UserIndex).Counters.HPCounter = 0
+116             UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp + mashit
 
-120             If UserList(UserIndex).Stats.MinHp > UserList(UserIndex).Stats.MaxHp Then UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MaxHp
-122             Call WriteConsoleMsg(UserIndex, "Has sanado.", FontTypeNames.FONTTYPE_INFO)
-124             EnviarStats = True
+118             If UserList(UserIndex).Stats.MinHp > UserList(UserIndex).Stats.MaxHp Then UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MaxHp
+120             Call WriteConsoleMsg(UserIndex, "Has sanado.", FontTypeNames.FONTTYPE_INFO)
+122             EnviarStats = True
 
             End If
 
@@ -2216,8 +2216,8 @@ Public Sub Sanar(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, ByVal
         Exit Sub
 
 Sanar_Err:
-126     Call RegistrarError(Err.Number, Err.description, "General.Sanar", Erl)
-128     Resume Next
+124     Call RegistrarError(Err.Number, Err.description, "General.Sanar", Erl)
+126     Resume Next
         
 End Sub
 
@@ -2724,7 +2724,7 @@ Public Sub CerrarServidor()
         Exit Sub
 
 CerrarServidor_Err:
-132     Call RegistrarError(Err.Number, Err.description, "General.CerrarServidor", Erl)
+        Call RegistrarError(Err.Number, Err.description, "General.CerrarServidor", Erl)
 
         
 End Sub
@@ -2745,7 +2745,7 @@ Function max(ByVal a As Double, ByVal b As Double) As Double
         Exit Function
 
 max_Err:
-106     Call RegistrarError(Err.Number, Err.description, "General.max", Erl)
+        Call RegistrarError(Err.Number, Err.description, "General.max", Erl)
 
         
 End Function
@@ -2766,83 +2766,83 @@ Function min(ByVal a As Double, ByVal b As Double) As Double
         Exit Function
 
 min_Err:
-106     Call RegistrarError(Err.Number, Err.description, "General.min", Erl)
+        Call RegistrarError(Err.Number, Err.description, "General.min", Erl)
 
         
 End Function
 
 Public Function PonerPuntos(ByVal Numero As Long) As String
     
-        On Error GoTo PonerPuntos_Err
+    On Error GoTo PonerPuntos_Err
     
 
-        Dim i     As Integer
+    Dim i     As Integer
 
-        Dim Cifra As String
+    Dim Cifra As String
  
-100     Cifra = str(Numero)
-102     Cifra = Right$(Cifra, Len(Cifra) - 1)
+    Cifra = str(Numero)
+    Cifra = Right$(Cifra, Len(Cifra) - 1)
 
-104     For i = 0 To 4
+    For i = 0 To 4
 
-106         If Len(Cifra) - 3 * i >= 3 Then
-108             If mid$(Cifra, Len(Cifra) - (2 + 3 * i), 3) <> "" Then
-110                 PonerPuntos = mid$(Cifra, Len(Cifra) - (2 + 3 * i), 3) & "." & PonerPuntos
-
-                End If
-
-            Else
-
-112             If Len(Cifra) - 3 * i > 0 Then
-114                 PonerPuntos = Left$(Cifra, Len(Cifra) - 3 * i) & "." & PonerPuntos
-
-                End If
-
-                Exit For
+        If Len(Cifra) - 3 * i >= 3 Then
+            If mid$(Cifra, Len(Cifra) - (2 + 3 * i), 3) <> "" Then
+                PonerPuntos = mid$(Cifra, Len(Cifra) - (2 + 3 * i), 3) & "." & PonerPuntos
 
             End If
 
-        Next
+        Else
+
+            If Len(Cifra) - 3 * i > 0 Then
+                PonerPuntos = Left$(Cifra, Len(Cifra) - 3 * i) & "." & PonerPuntos
+
+            End If
+
+            Exit For
+
+        End If
+
+    Next
  
-116     PonerPuntos = Left$(PonerPuntos, Len(PonerPuntos) - 1)
+    PonerPuntos = Left$(PonerPuntos, Len(PonerPuntos) - 1)
  
     
-        Exit Function
+    Exit Function
 
 PonerPuntos_Err:
-118     Call RegistrarError(Err.Number, Err.description, "ModLadder.PonerPuntos", Erl)
-120     Resume Next
+    Call RegistrarError(Err.Number, Err.description, "ModLadder.PonerPuntos", Erl)
+    Resume Next
     
 End Function
 
 Function CalcularPromedioVida(ByVal UserIndex As Integer) As Double
 
-100     With UserList(UserIndex)
-102         If .Stats.ELV = 1 Then
-104             CalcularPromedioVida = ModVida(.clase) - (21 - .Stats.UserAtributos(eAtributos.Constitucion)) * 0.5 + (.Stats.MaxHp - (18.5 + ModRaza(.raza).Constitucion / 6))
-            Else
-106             CalcularPromedioVida = (.Stats.MaxHp - 18.5 - ModRaza(.raza).Constitucion / 6) / (.Stats.ELV - 1)
-            End If
-        End With
+    With UserList(UserIndex)
+        If .Stats.ELV = 1 Then
+            CalcularPromedioVida = ModVida(.clase) - (21 - .Stats.UserAtributos(eAtributos.Constitucion)) * 0.5 + (.Stats.MaxHp - (18.5 + ModRaza(.raza).Constitucion / 6))
+        Else
+            CalcularPromedioVida = (.Stats.MaxHp - 18.5 - ModRaza(.raza).Constitucion / 6) / (.Stats.ELV - 1)
+        End If
+    End With
 
 End Function
 
 ' Adaptado desde https://stackoverflow.com/questions/29325069/how-to-generate-random-numbers-biased-towards-one-value-in-a-range/29325222#29325222
 Function RandomIntBiased(ByVal min As Double, ByVal max As Double, ByVal Bias As Double, ByVal Influence As Double) As Double
 
-        On Error GoTo handle
+    On Error GoTo handle
 
-        Dim RandomRango As Double, Mix As Double
+    Dim RandomRango As Double, Mix As Double
     
-100     RandomRango = Rnd * (max - min) + min
-102     Mix = Rnd * Influence
+    RandomRango = Rnd * (max - min) + min
+    Mix = Rnd * Influence
     
-104     RandomIntBiased = RandomRango * (1 - Mix) + Bias * Mix
+    RandomIntBiased = RandomRango * (1 - Mix) + Bias * Mix
     
-        Exit Function
+    Exit Function
     
 handle:
-106     Call RegistrarError(Err.Number, Err.description, "General.RandomIntBiased")
-108     RandomIntBiased = Bias
+    Call RegistrarError(Err.Number, Err.description, "General.RandomIntBiased")
+    RandomIntBiased = Bias
 
 End Function

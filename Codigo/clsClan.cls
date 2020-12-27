@@ -187,19 +187,19 @@ End Sub
 
 Private Sub Class_Terminate()
         
-        On Error GoTo Class_Terminate_Err
+    On Error GoTo Class_Terminate_Err
         
-100     Set p_OnlineMembers = Nothing
-102     Set p_GMsOnline = Nothing
-104     Set p_PropuestasDePaz = Nothing
-106     Set p_PropuestasDeAlianza = Nothing
+    Set p_OnlineMembers = Nothing
+    Set p_GMsOnline = Nothing
+    Set p_PropuestasDePaz = Nothing
+    Set p_PropuestasDeAlianza = Nothing
 
         
-        Exit Sub
+    Exit Sub
 
 Class_Terminate_Err:
-108     Call RegistrarError(Err.Number, Err.description, "clsClan.Class_Terminate", Erl)
-110     Resume Next
+    Call RegistrarError(Err.Number, Err.description, "clsClan.Class_Terminate", Erl)
+    Resume Next
         
 End Sub
 

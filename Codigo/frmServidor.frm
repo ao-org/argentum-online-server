@@ -805,7 +805,7 @@ Private Sub Command15_Click()
         Exit Sub
 
 Command15_Click_Err:
-126     Call RegistrarError(Err.Number, Err.description, "frmServidor.Command15_Click", Erl)
+        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command15_Click", Erl)
 
         
 End Sub
@@ -1212,7 +1212,7 @@ Private Sub Command5_Click()
         Exit Sub
 
 Command5_Click_Err:
-178     Call RegistrarError(Err.Number, Err.description, "frmServidor.Command5_Click", Erl)
+        Call RegistrarError(Err.Number, Err.description, "frmServidor.Command5_Click", Erl)
 
         
 End Sub
