@@ -11290,6 +11290,7 @@ Private Sub HandleWarnUser(ByVal UserIndex As Integer)
             
             ' Para el GM
             Call WriteConsoleMsg(UserIndex, "Has advertido a " & UserName, FontTypeNames.FONTTYPE_CENTINELA)
+            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.name & " ha advertido a " & UserName & " por " & Reason, FontTypeNames.FONTTYPE_GM))
             Call LogGM(.name, " advirtio a " & UserName & " por " & Reason)
 
             ' Si esta online...
