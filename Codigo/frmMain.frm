@@ -3,7 +3,7 @@ Object = "{248DD890-BB45-11CF-9ABC-0080C7E7B78D}#1.0#0"; "mswinsck.ocx"
 Begin VB.Form frmMain 
    BackColor       =   &H00E0E0E0&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   "RevolucionAo Server by Ladder -  Pablo Mercavides 2008-2017"
+   Caption         =   "Servidor Argentum 20 - Basado en RAO de Pablo Mercavides"
    ClientHeight    =   6315
    ClientLeft      =   1950
    ClientTop       =   1695
@@ -27,7 +27,6 @@ Begin VB.Form frmMain
    ScaleHeight     =   6315
    ScaleWidth      =   6915
    StartUpPosition =   2  'CenterScreen
-   WindowState     =   1  'Minimized
    Begin VB.Timer TimerGuardarUsuarios 
       Enabled         =   0   'False
       Interval        =   30000
@@ -909,10 +908,8 @@ Public Sub InitMain(ByVal f As Byte)
 
 100     If f = 1 Then
 102         Call mnuSystray_Click
-
         Else
-104         frmMain.Show
-
+104         Call frmMain.Show
         End If
 
         
