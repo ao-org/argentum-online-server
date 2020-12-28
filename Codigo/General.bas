@@ -782,20 +782,18 @@ Sub Main()
 318     Call GetHoraActual
     
 320     HoraMundo = GetTickCount() - DuracionDia \ 2
+
+321     frmCargando.Visible = False
 322     Unload frmCargando
-    
+
         'Log
 324     Dim n As Integer: n = FreeFile
 326     Open App.Path & "\logs\Main.log" For Append Shared As #n
-328     Print #n, Date & " " & Time & " server iniciado " & App.Major & "."; App.Minor & "." & App.Revision
+328     Print #n, Date & " " & Time & " server iniciado " & App.Major & "." & App.Minor & "." & App.Revision
 330     Close #n
     
         'Ocultar
-332     If HideMe = 1 Then
-334         Call frmMain.InitMain(1)
-        Else
-336         Call frmMain.InitMain(0)
-        End If
+332     Call frmMain.InitMain(HideMe)
     
 338     tInicioServer = GetTickCount()
 
