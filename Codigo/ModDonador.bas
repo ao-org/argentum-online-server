@@ -33,7 +33,7 @@ Public Sub DonadorTiempo(ByVal nombre As String, ByVal dias As Integer)
     
 108         Call Donadores.Add(tDon)
 110         Call SaveDonador(Donadores.Count)
-112         Call SendData(SendTarget.ToSuperiores, 0, PrepareMessageConsoleMsg("Servidor> " & nombre & " agrego " & dias & " días de donador.", FontTypeNames.FONTTYPE_New_DONADOR))
+112         Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> " & nombre & " agrego " & dias & " días de donador.", FontTypeNames.FONTTYPE_New_DONADOR))
 114         Call LogearEventoDeDonador("Se agregaron " & dias & " a la cuenta " & nombre & ".")
         Else
 

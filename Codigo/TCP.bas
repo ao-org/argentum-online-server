@@ -1361,56 +1361,25 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
                 End If
             End If
 
-            'Reseteamos los privilegios
-148         .flags.Privilegios = 0
-        
-            'Vemos que clase de user es (se lo usa para setear los privilegios al loguear el PJ)
-150         If EsAdmin(name) Then
-152             .flags.Privilegios = .flags.Privilegios Or PlayerType.Admin
-154             Call SendData(SendTarget.ToSuperiores, 0, PrepareMessageConsoleMsg("Servidor> " & name & " se conecto al juego.", FontTypeNames.FONTTYPE_INFOBOLD))
-                '    Call LogGM(name, "Se conecto con ip:" & .ip)
-156         ElseIf EsDios(name) Then
-158             .flags.Privilegios = .flags.Privilegios Or PlayerType.Dios
-160             Call SendData(SendTarget.ToSuperiores, 0, PrepareMessageConsoleMsg("Servidor> " & name & " se conecto al juego.", FontTypeNames.FONTTYPE_INFOBOLD))
-                '    Call LogGM(name, "Se conecto con ip:" & .ip)
-162         ElseIf EsSemiDios(name) Then
-164             .flags.Privilegios = .flags.Privilegios Or PlayerType.SemiDios
-166             Call SendData(SendTarget.ToSuperiores, 0, PrepareMessageConsoleMsg("Servidor> " & name & " se conecto al juego.", FontTypeNames.FONTTYPE_INFOBOLD))
-                '    Call LogGM(name, "Se conecto con ip:" & .ip)
-168         ElseIf EsConsejero(name) Then
-170             .flags.Privilegios = .flags.Privilegios Or PlayerType.Consejero
-172             Call SendData(SendTarget.ToSuperiores, 0, PrepareMessageConsoleMsg("Servidor> " & name & " se conecto al juego.", FontTypeNames.FONTTYPE_INFOBOLD))
-                '    Call LogGM(name, "Se conecto con ip:" & .ip)
-            Else
-174             .flags.Privilegios = .flags.Privilegios Or PlayerType.user
-176             .flags.AdminPerseguible = True
-            End If
+            'Le damos los privilegios
+148         .flags.Privilegios = UserDarPrivilegioLevel(name)
 
             'Add RM flag if needed
 178         If EsRolesMaster(name) Then
 180             .flags.Privilegios = .flags.Privilegios Or PlayerType.RoleMaster
-182             Call SendData(SendTarget.ToSuperiores, 0, PrepareMessageConsoleMsg("Servidor> " & name & " se conecto al juego.", FontTypeNames.FONTTYPE_INFOBOLD))
             End If
-    
-            'If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero)) = 0 Then
-            '    If ObtenerLogeada(UCase$(UserCuenta)) = 1 Then
-            ' Call WriteErrorMsg(UserIndex, "Servidor restringido a administradores. Por favor reintente en unos momentos.")
-            'Call WriteShowMessageBox(UserIndex, "Solo se puede conectar un personaje por cuenta.")
-            '
-            'Call CloseSocket(UserIndex)
-            'Exit Sub
-            '    End If
-            'End If
+
         
-184         If ServerSoloGMs > 0 Then
-186             If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero)) = 0 Then
+184         If EsGM(UserIndex) Then
+185             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> " & name & " se conecto al juego.", FontTypeNames.FONTTYPE_INFOBOLD))
+
+            Else
+186             If ServerSoloGMs > 0 Then
                     ' Call WriteErrorMsg(UserIndex, "Servidor restringido a administradores. Por favor reintente en unos momentos.")
 188                 Call WriteShowMessageBox(UserIndex, "Servidor restringido a administradores. Por favor reintente en unos momentos.")
-                
 190                 Call CloseSocket(UserIndex)
                     Exit Sub
                 End If
-
             End If
         
 202         If EnPausa Then
@@ -2232,6 +2201,10 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 266         .MascotasGuardadas = 0
 
             .EnConsulta = False
+            
+            .ProcesosPara = vbNullString
+            .ScreenShotPara = vbNullString
+            Set .ScreenShot = Nothing
         End With
 
         

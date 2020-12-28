@@ -47,8 +47,8 @@ Option Explicit
 
     Private Const WS_CHILD = &H40000000
     Public Const GWL_WNDPROC = (-4)
-    Private Const SIZE_RCVBUF As Long = 8192
-    Private Const SIZE_SNDBUF As Long = 8192
+    Private Const SIZE_RCVBUF As Long = 10240
+    Private Const SIZE_SNDBUF As Long = 10240
     
     Private Const MAX_ITERATIONS_HID As Long = 200
 
@@ -340,10 +340,13 @@ Public Function WndProc(ByVal hWnd As Long, ByVal msg As Long, ByVal wParam As L
         
                             'Call WSAAsyncSelect(s, hWndMsg, ByVal 1025, ByVal (0))
         
-                            '4k de buffer
-124                         ReDim Preserve Tmp(SIZE_RCVBUF - 1) As Byte
+                            ' WyroX: Leo hasta llenar el buffer, ni un byte más!!
+                            Dim AvaiableSpace As Long
+                            AvaiableSpace = UserList(n).incomingData.Capacity - UserList(n).incomingData.Length
+
+124                         ReDim Preserve Tmp(AvaiableSpace - 1) As Byte
         
-126                         ret = recv(S, Tmp(0), SIZE_RCVBUF, 0)
+126                         ret = recv(S, Tmp(0), AvaiableSpace, 0)
 
                             ' Comparo por = 0 ya que esto es cuando se cierra
                             ' "gracefully". (mas abajo)
@@ -352,7 +355,7 @@ Public Function WndProc(ByVal hWnd As Long, ByVal msg As Long, ByVal wParam As L
 
 132                             If UltError = WSAEMSGSIZE Then
 134                                 Debug.Print "WSAEMSGSIZE"
-136                                 ret = SIZE_RCVBUF
+136                                 ret = AvaiableSpace
                                 
                                 Else
 138                                 Debug.Print "Error en Recv: " & GetWSAErrorString(UltError)
@@ -692,20 +695,31 @@ Public Sub EventoSockRead(ByVal slot As Integer, ByRef Datos() As Byte)
                     End If
 
                 #End If
- 
+
 112             Call .incomingData.WriteBlock(Datos)
 
 114             If .ConnID <> -1 Then
 
                     ' WyroX: Pongo un límite a este loop... en caso de que por algún error bloquee el server
                     Dim Iterations As Long
+                    Dim packetId As Byte
+                    Dim LastPacket As Byte
 
 116                 Do While HandleIncomingData(slot)
-                        Iterations = Iterations + 1
-                        If Iterations >= MAX_ITERATIONS_HID Then
-                            Call RegistrarError(-1, "Se supero el maximo de iteraciones de HandleIncomingData. Paquete: " & UserList(slot).incomingData.PeekByte, "wskapiAO.EventoSockRead")
-                            Call CloseSocket(slot)
-                            Exit Do
+                        packetId = UserList(slot).incomingData.PeekByte
+
+                        If packetId = LastPacket Then
+
+                            Iterations = Iterations + 1
+
+                            If Iterations >= MAX_ITERATIONS_HID Then
+117                             Call RegistrarError(-1, "Se supero el maximo de iteraciones de HandleIncomingData. Paquete: " & packetId, "wskapiAO.EventoSockRead", Erl)
+118                             Call CloseSocket(slot)
+                                Exit Do
+                            End If
+                        Else
+                            Iterations = 0
+                            LastPacket = packetId
                         End If
                     Loop
                 Else
@@ -715,7 +729,7 @@ Public Sub EventoSockRead(ByVal slot As Integer, ByRef Datos() As Byte)
    
             End With
 
-118         QueryPerformanceCounter f
+119         QueryPerformanceCounter f
 
 120         totalProcessTime = totalProcessTime + (f - a)
 122         totalProcessCount = totalProcessCount + 1
