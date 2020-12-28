@@ -1643,6 +1643,11 @@ Public Type UserFlags
     
     EnConsulta As Boolean
     
+    ProcesosPara As String
+    ScreenShotPara As String
+    
+    ScreenShot As clsByteQueue
+    
 End Type
 
 Public Type UserCounters

@@ -1353,7 +1353,7 @@ Sub LoadOBJData()
 178                 ObjData(Object).SkHerreria = val(Leer.GetValue("OBJ" & Object, "SkHerreria"))
 180                 ObjData(Object).ResistenciaMagica = val(Leer.GetValue("OBJ" & Object, "ResistenciaMagica"))
         
-182             Case eOBJType.otEscudo
+182             Case eOBJType.otESCUDO
 184                 ObjData(Object).ShieldAnim = val(Leer.GetValue("OBJ" & Object, "Anim"))
 186                 ObjData(Object).LingH = val(Leer.GetValue("OBJ" & Object, "LingH"))
 188                 ObjData(Object).LingP = val(Leer.GetValue("OBJ" & Object, "LingP"))
@@ -1363,7 +1363,7 @@ Sub LoadOBJData()
 196                 ObjData(Object).Caos = val(Leer.GetValue("OBJ" & Object, "Caos"))
 198                 ObjData(Object).ResistenciaMagica = val(Leer.GetValue("OBJ" & Object, "ResistenciaMagica"))
         
-200             Case eOBJType.otCasco
+200             Case eOBJType.otCASCO
 202                 ObjData(Object).CascoAnim = val(Leer.GetValue("OBJ" & Object, "Anim"))
 204                 ObjData(Object).LingH = val(Leer.GetValue("OBJ" & Object, "LingH"))
 206                 ObjData(Object).LingP = val(Leer.GetValue("OBJ" & Object, "LingP"))
@@ -1471,7 +1471,7 @@ Sub LoadOBJData()
 362                 ObjData(Object).HastaX = val(Leer.GetValue("OBJ" & Object, "X"))
 364                 ObjData(Object).HastaY = val(Leer.GetValue("OBJ" & Object, "Y"))
                     
-366             Case eOBJType.otNudillos
+366             Case eOBJType.otNUDILLOS
 368                 ObjData(Object).MinHIT = val(Leer.GetValue("OBJ" & Object, "MinHIT"))
 370                 ObjData(Object).MaxHit = val(Leer.GetValue("OBJ" & Object, "MaxHit"))
 372                 ObjData(Object).Envenena = val(Leer.GetValue("OBJ" & Object, "Envenena"))
@@ -4344,7 +4344,10 @@ Public Sub RegistrarError(ByVal Numero As Long, ByVal Descripcion As String, ByV
        
            'Si ya recibimos error en el mismo componente 10 veces, es bastante probable que estemos en un bucle
             'x lo que no hace falta registrar el error.
-102         If HistorialError.Contador = 10 Then Exit Sub
+102         If HistorialError.Contador = 10 Then
+                Debug.Print "Mismo error"
+                Exit Sub
+            End If
         
             'Agregamos el error al historial.
 104         HistorialError.Contador = HistorialError.Contador + 1
@@ -4365,11 +4368,12 @@ Public Sub RegistrarError(ByVal Numero As Long, ByVal Descripcion As String, ByV
 116         Print #File, "Error: " & Numero
 118         Print #File, "Descripcion: " & Descripcion
         
-120         If LenB(Linea) <> 0 Then
-122             Print #File, "Linea: " & Linea
+120         Print #File, "Componente: " & Componente
+
+122         If LenB(Linea) <> 0 Then
+124             Print #File, "Linea: " & Linea
             End If
-        
-124         Print #File, "Componente: " & Componente
+
 126         Print #File, "Fecha y Hora: " & Date$ & "-" & Time$
         
 128         Print #File, vbNullString
@@ -4379,6 +4383,7 @@ Public Sub RegistrarError(ByVal Numero As Long, ByVal Descripcion As String, ByV
 132     Debug.Print "Error: " & Numero & vbNewLine & _
                     "Descripcion: " & Descripcion & vbNewLine & _
                     "Componente: " & Componente & vbNewLine & _
+                    "Linea: " & Linea & vbNewLine & _
                     "Fecha y Hora: " & Date$ & "-" & Time$ & vbNewLine
         
         Exit Sub
