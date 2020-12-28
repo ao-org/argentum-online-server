@@ -2068,6 +2068,11 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal Use
 124         daño = RandomNumber(Hechizos(hIndex).MinHp, Hechizos(hIndex).MaxHp)
         
 126         daño = daño + Porcentaje(daño, 3 * UserList(UserIndex).Stats.ELV)
+
+            ' Los magos tienen 30% de daño reducido
+            If UserList(UserIndex).clase = eClass.Mage Then
+                daño = daño * 0.7
+            End If
     
             ' Daño mágico arma
 128         If UserList(UserIndex).Invent.WeaponEqpObjIndex > 0 Then
@@ -2619,6 +2624,11 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
     
 394         daño = daño + Porcentaje(daño, 3 * UserList(UserIndex).Stats.ELV)
 
+            ' Los magos tienen 30% de daño reducido
+            If UserList(UserIndex).clase = eClass.Mage Then
+                daño = daño * 0.7
+            End If
+
             ' Daño mágico arma
 396         If UserList(UserIndex).Invent.WeaponEqpObjIndex > 0 Then
 398             daño = daño + Porcentaje(daño, ObjData(UserList(UserIndex).Invent.WeaponEqpObjIndex).MagicDamageBonus)
@@ -3024,6 +3034,11 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
 276         daño = RandomNumber(Hechizos(h).MinHp, Hechizos(h).MaxHp)
     
 278         daño = daño + Porcentaje(daño, 3 * UserList(UserIndex).Stats.ELV)
+
+            ' Los magos tienen 30% de daño reducido
+            If UserList(UserIndex).clase = eClass.Mage Then
+                daño = daño * 0.7
+            End If
             
             ' Daño mágico arma
 280         If UserList(UserIndex).Invent.WeaponEqpObjIndex > 0 Then
