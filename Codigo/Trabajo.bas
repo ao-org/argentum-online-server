@@ -456,6 +456,8 @@ Sub CarpinteroQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As In
 
 100     If ObjData(ItemIndex).Madera > 0 Then Call QuitarObjetos(Leña, ObjData(ItemIndex).Madera, UserIndex)
 
+        If ObjData(ItemIndex).MaderaElfica > 0 Then Call QuitarObjetos(LeñaElfica, ObjData(ItemIndex).MaderaElfica, UserIndex)
+
         
         Exit Sub
 
@@ -511,6 +513,16 @@ Function CarpinteroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex A
 108             Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
 
+            End If
+
+        End If
+        
+        If ObjData(ItemIndex).MaderaElfica > 0 Then
+            If Not TieneObjetos(LeñaElfica, ObjData(ItemIndex).MaderaElfica, UserIndex) Then
+                Call WriteConsoleMsg(UserIndex, "No tenes suficiente madera elfica.", FontTypeNames.FONTTYPE_INFO)
+                CarpinteroTieneMateriales = False
+                Call WriteMacroTrabajoToggle(UserIndex, False)
+                Exit Function
             End If
 
         End If
@@ -2208,7 +2220,13 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
 124             MapData(.Pos.Map, X, Y).ObjInfo.data = GetTickCount() ' Ultimo uso
     
 126             MiObj.Amount = IIf(ObjetoDorado, RandomNumber(1, 5), 1) * RecoleccionMult
-128             MiObj.ObjIndex = Leña
+
+                If ObjData(MapData(.Pos.Map, X, Y).ObjInfo.ObjIndex).Elfico = 0 Then
+128                 MiObj.ObjIndex = Leña
+                Else
+                    MiObj.ObjIndex = LeñaElfica
+                End If
+
             
 130             If MiObj.Amount > MapData(.Pos.Map, X, Y).ObjInfo.Amount Then
 132                 MiObj.Amount = MapData(.Pos.Map, X, Y).ObjInfo.Amount
