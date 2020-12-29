@@ -1533,6 +1533,9 @@ Sub LoadOBJData()
     
 440         ObjData(Object).MinSkill = val(Leer.GetValue("OBJ" & Object, "MinSkill"))
 
+
+            ObjData(Object).Elfico = val(Leer.GetValue("OBJ" & Object, "Elfico"))
+
 442         ObjData(Object).Snd1 = val(Leer.GetValue("OBJ" & Object, "SND1"))
 444         ObjData(Object).Snd2 = val(Leer.GetValue("OBJ" & Object, "SND2"))
 446         ObjData(Object).Snd3 = val(Leer.GetValue("OBJ" & Object, "SND3"))
@@ -1653,6 +1656,8 @@ Sub LoadOBJData()
     
             'If ObjData(Object).SkCarpinteria > 0 Then
 578         ObjData(Object).Madera = val(Leer.GetValue("OBJ" & Object, "Madera"))
+
+            ObjData(Object).MaderaElfica = val(Leer.GetValue("OBJ" & Object, "MaderaElfica"))
     
             'Bebidas
 580         ObjData(Object).MinSta = val(Leer.GetValue("OBJ" & Object, "MinST"))

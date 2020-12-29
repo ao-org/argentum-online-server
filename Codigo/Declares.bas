@@ -465,6 +465,8 @@ Public Const LingoteOro     As Integer = 388 'OK
 
 Public Const Leña As Integer = 58 'OK
 
+Public Const LeñaElfica As Integer = 2781 'PONER
+
 Public Const Raices         As Integer = 888 'OK
 
 Public Const PieldeLobo     As Integer = 414 'OK
@@ -1143,7 +1145,7 @@ End Type
 
 'Tipos de objetos
 Public Type ObjData
-
+    Elfico As Byte
     Velocidad As Single
     CantEntrega As Byte
     CantItem As Byte
@@ -1291,6 +1293,7 @@ Public Type ObjData
     LingO As Integer
     LingP As Integer
     Madera As Integer
+    MaderaElfica As Integer
     
     Raices As Integer
     SkPociones As Byte
