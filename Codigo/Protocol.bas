@@ -21252,6 +21252,7 @@ Public Sub WriteUpdateUserStats(ByVal UserIndex As Integer)
 120         Call .WriteByte(UserList(UserIndex).Stats.ELV)
 122         Call .WriteLong(UserList(UserIndex).Stats.ELU)
 124         Call .WriteLong(UserList(UserIndex).Stats.Exp)
+            Call .WriteByte(UserList(UserIndex).clase)
 
         End With
 
