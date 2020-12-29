@@ -1429,15 +1429,9 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
 240         If .Invent.CascoEqpSlot = 0 Then .Char.CascoAnim = NingunCasco
 242         If .Invent.WeaponEqpSlot = 0 And .Invent.NudilloSlot = 0 And .Invent.HerramientaEqpSlot = 0 Then .Char.WeaponAnim = NingunArma
         
-            'If (.flags.Muerto = 0) Then
-            '    .flags.SeguroResu = False
-            '    Call WritePartySafeOff(UserIndex)
-            'Else
 244         .flags.SeguroParty = True
-            '    Call WritePartySafeOn(UserIndex)
-            'End If
-        
 246         .flags.SeguroClan = True
+
         
 248         .CurrentInventorySlots = getMaxInventorySlots(UserIndex)
         
