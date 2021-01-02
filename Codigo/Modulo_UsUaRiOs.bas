@@ -1820,7 +1820,7 @@ Sub WarpToLegalPos(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As 
 114                         If (.Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES And ((.Blocked And FLAG_AGUA) = 0 Or AguaValida) Then
 116                             If .TileExit.Map = 0 Then
 118                                 If .NpcIndex <= 0 Then
-120                                     If .trigger < 50 Then
+120                                     If .trigger = 0 Then
 122                                         Call WarpUserChar(UserIndex, Map, lX, lY, FX)
 124                                         Find = True
                                             Exit Sub
