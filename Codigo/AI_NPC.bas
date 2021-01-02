@@ -1252,7 +1252,7 @@ End Sub
 Function PuedeAtacarUser(ByVal targetUserIndex As Integer) As Boolean
     
     With UserList(targetUserIndex)
-        PuedeAtacarUser = (.flags.Muerto = 0 And .flags.invisible = 0 And .flags.Inmunidad = 0 And .flags.Oculto = 0 And .flags.AdminPerseguible And Not .flags.EnConsulta)
+        PuedeAtacarUser = (.flags.Muerto = 0 And .flags.invisible = 0 And .flags.Inmunidad = 0 And .flags.Oculto = 0 And Not .flags.AdminPerseguible And Not .flags.EnConsulta)
     End With
 
 End Function
