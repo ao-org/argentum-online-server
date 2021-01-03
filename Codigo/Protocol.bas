@@ -30631,8 +30631,8 @@ Public Sub WriteQuestDetails(ByVal UserIndex As Integer, ByVal QuestIndex As Int
             End If
     
             'Enviamos la recompensa de oro y experiencia.
-142         Call .WriteLong(QuestList(QuestIndex).RewardGLD)
-144         Call .WriteLong(QuestList(QuestIndex).RewardEXP)
+142         Call .WriteLong((QuestList(QuestIndex).RewardGLD * OroMult))
+144         Call .WriteLong((QuestList(QuestIndex).RewardEXP * ExpMult))
         
             'Enviamos la cantidad de objs de recompensa
 146         Call .WriteByte(QuestList(QuestIndex).RewardOBJs)
@@ -30779,8 +30779,8 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
             End If
     
             'Enviamos la recompensa de oro y experiencia.
-140         Call .WriteLong(QuestList(QuestIndex).RewardGLD)
-142         Call .WriteLong(QuestList(QuestIndex).RewardEXP)
+140         Call .WriteLong(QuestList(QuestIndex).RewardGLD * OroMult)
+142         Call .WriteLong(QuestList(QuestIndex).RewardEXP * ExpMult)
         
             'Enviamos la cantidad de objs de recompensa
 144         Call .WriteByte(QuestList(QuestIndex).RewardOBJs)
