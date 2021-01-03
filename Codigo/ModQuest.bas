@@ -184,10 +184,10 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
             'Se entrega la experiencia.
 156         If .RewardEXP Then
 158             If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then
-160                 UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + .RewardEXP
+160                 UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + (.RewardEXP * ExpMult)
 162                 Call WriteUpdateExp(UserIndex)
 164                 Call CheckUserLevel(UserIndex)
-166                 Call WriteLocaleMsg(UserIndex, "140", FontTypeNames.FONTTYPE_EXP, .RewardEXP)
+166                 Call WriteLocaleMsg(UserIndex, "140", FontTypeNames.FONTTYPE_EXP, (.RewardEXP * ExpMult))
                 Else
 168                 Call WriteConsoleMsg(UserIndex, "No se te ha dado experiencia porque eres nivel máximo.", FontTypeNames.FONTTYPE_INFO)
 
@@ -197,9 +197,9 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
         
             'Se entrega el oro.
 170         If .RewardGLD Then
-172             UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + .RewardGLD
-174             Call WriteConsoleMsg(UserIndex, "Has ganado " & PonerPuntos(.RewardGLD) & " monedas de oro como recompensa.", FontTypeNames.FONTTYPE_INFOIAO)
-
+172             UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + (.RewardGLD * OroMult)
+174             Call WriteConsoleMsg(UserIndex, "Has ganado " & PonerPuntos((.RewardGLD * OroMult)) & " monedas de oro como recompensa.", FontTypeNames.FONTTYPE_INFOIAO)
+188             Call WriteUpdateGold(UserIndex)
             End If
         
             'Si hay recompensa de objetos, se entregan.
@@ -217,7 +217,6 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
 
             End If
         
-188         Call WriteUpdateGold(UserIndex)
     
             'Actualizamos el personaje
 190         Call UpdateUserInv(True, UserIndex, 0)
