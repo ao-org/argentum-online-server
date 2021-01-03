@@ -16241,7 +16241,7 @@ Private Sub HandleKillAllNearbyNPCs(ByVal UserIndex As Integer)
             'Remove packet ID
 102         Call .incomingData.ReadByte
         
-104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
+104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then Exit Sub
             
             'Si está en el mapa pretoriano, me aseguro de que los saque correctamente antes que nada.
 106         If .Pos.Map = MAPA_PRETORIANO Then Call EliminarPretorianos(MAPA_PRETORIANO)
