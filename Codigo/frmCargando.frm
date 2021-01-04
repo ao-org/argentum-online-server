@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{6B7E6392-850A-101B-AFC0-4210102A8DA7}#1.3#0"; "comctl32.ocx"
+Object = "{6B7E6392-850A-101B-AFC0-4210102A8DA7}#1.4#0"; "comctl32.Ocx"
 Begin VB.Form frmCargando 
    BackColor       =   &H00C0C0C0&
    BorderStyle     =   0  'None
@@ -71,6 +71,15 @@ Begin VB.Form frmCargando
       Top             =   1920
       Width           =   3255
    End
+   Begin VB.Label lblDragForm 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Height          =   1905
+      Left            =   0
+      TabIndex        =   3
+      Top             =   0
+      Width           =   6525
+   End
 End
 Attribute VB_Name = "frmCargando"
 Attribute VB_GlobalNameSpace = False
@@ -105,15 +114,36 @@ Attribute VB_Exposed = False
 'Código Postal 1900
 'Pablo Ignacio Márquez
 
-Private Declare Function SetWindowPos Lib "user32" (ByVal hwnd As Long, ByVal hWndInsertAfter As Long, ByVal X As Long, ByVal Y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
-  
+' Form Always On Top
+Private Declare Function SetWindowPos Lib "user32" (ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal X As Long, ByVal Y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
 Private Const HWND_TOPMOST = -1
 Private Const HWND_NOTOPMOST = -2
-Private Const SWP_NOMOVE = &H2
 Private Const SWP_NOSIZE = &H1
+
+' For the label that allows yo to move the form
+Private mlngX As Long
+Private mlngY As Long
 
 Private Sub Form_Load()
     ' Mostramos este form arriba de todo.
-    Call SetWindowPos(Me.hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE Or SWP_NOSIZE)
+    Call SetWindowPos(Me.hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE)
     Call Me.ZOrder(0)
+End Sub
+
+Private Sub lblDragForm_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    If Button = vbLeftButton Then
+        mlngX = X
+        mlngY = Y
+    End If
+End Sub
+
+Private Sub lblDragForm_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    Dim lngLeft As Long
+    Dim lngTop As Long
+    
+    If Button = vbLeftButton Then
+        lngLeft = Me.Left + X - mlngX
+        lngTop = Me.Top + Y - mlngY
+        Call Me.Move(lngLeft, lngTop)
+    End If
 End Sub
