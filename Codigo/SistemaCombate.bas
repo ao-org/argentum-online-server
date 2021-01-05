@@ -1115,7 +1115,16 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
 136         Call UserDañoNpc(UserIndex, NpcIndex)
        
         Else
-138         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.CharIndex))
+            
+            Dim SendTo As SendTarget
+
+            If UserList(UserIndex).clase = eClass.Hunter And UserList(UserIndex).flags.Oculto = 0 Then
+                SendTo = SendTarget.ToPCArea
+            Else
+                SendTo = SendTarget.ToIndex
+            End If
+
+            Call SendData(SendTo, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.CharIndex))
 
         End If
 
@@ -1144,8 +1153,19 @@ Public Function UsuarioAtacaNpcFunction(ByVal UserIndex As Integer, ByVal NpcInd
 106     If UserImpactoNpc(UserIndex, NpcIndex) Then
 108         Call UserDañoNpc(UserIndex, NpcIndex)
 110         UsuarioAtacaNpcFunction = 1
+
         Else
-112         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.CharIndex))
+            
+            Dim SendTo As SendTarget
+
+            If UserList(UserIndex).clase = eClass.Hunter And UserList(UserIndex).flags.Oculto = 0 Then
+                SendTo = SendTarget.ToPCArea
+            Else
+                SendTo = SendTarget.ToIndex
+            End If
+            
+            Call SendData(SendTo, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.CharIndex))
+            
 114         UsuarioAtacaNpcFunction = 2
 
         End If
@@ -1513,7 +1533,16 @@ Public Sub UsuarioAtacaUsuario(ByVal atacanteindex As Integer, ByVal victimainde
 192         Call UserDañoUser(atacanteindex, victimaindex)
 
         Else
-194         Call SendData(SendTarget.ToPCArea, atacanteindex, PrepareMessageCharSwing(UserList(atacanteindex).Char.CharIndex))
+        
+            Dim SendTo As SendTarget
+   
+            If UserList(UserIndex).clase = eClass.Hunter And UserList(UserIndex).flags.Oculto = 0 Then
+                SendTo = SendTarget.ToPCArea
+            Else
+                SendTo = SendTarget.ToIndex
+            End If
+            
+            Call SendData(SendTo, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.CharIndex))
 
         End If
 

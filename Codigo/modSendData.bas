@@ -33,6 +33,7 @@ Option Explicit
 Public Enum SendTarget
 
     ToAll = 1
+    ToIndex
     toMap
     ToPCArea
     ToPCAreaButGMs
@@ -78,7 +79,11 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, ByV
         Dim Map   As Integer
 
 100     Select Case sndRoute
-
+            
+            Case SendTarget.ToIndex
+                Call EnviarDatosASlot(sndIndex, sndData)
+                Exit Sub
+            
             Case SendTarget.ToPCArea
 102             Call SendToUserArea(sndIndex, sndData)
                 Exit Sub
