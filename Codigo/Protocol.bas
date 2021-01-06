@@ -27941,12 +27941,12 @@ Private Sub HandleCompletarAccion(ByVal UserIndex As Integer)
 114             If .Accion.TipoAccion = Accion Then
 116                 Call CompletarAccionFin(UserIndex)
                 Else
-118                 Call WriteConsoleMsg(UserIndex, "Servidor> La acciín que solicitas no se corresponde.", FontTypeNames.FONTTYPE_SERVER)
+118                 Call WriteConsoleMsg(UserIndex, "Servidor> La acción que solicitas no se corresponde.", FontTypeNames.FONTTYPE_SERVER)
 
                 End If
 
             Else
-120             Call WriteConsoleMsg(UserIndex, "Servidor> Tu no tenias ninguna acciín pendiente. ", FontTypeNames.FONTTYPE_SERVER)
+120             Call WriteConsoleMsg(UserIndex, "Servidor> Tu no tenias ninguna acción pendiente. ", FontTypeNames.FONTTYPE_SERVER)
 
             End If
         

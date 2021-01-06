@@ -199,26 +199,17 @@ Public Sub goHome(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
 102         If .flags.Muerto = 1 Then
-        
-104             If .flags.lastMap = 0 Then
-106                 Distance = distanceToCities(.Pos.Map).distanceToCity(.Hogar)
+                If .donador.activo = 0 And Not EsGM(UserIndex) Then  ' Donador no espera tiempo
+                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Runa, 800, False))
+                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.CharIndex, 800, Accion_Barra.Hogar))
+                Else
+                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Runa, 100, False))
+                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.CharIndex, 100, Accion_Barra.Hogar))
+                  End If
                 
-                Else
-108                 Distance = distanceToCities(.flags.lastMap).distanceToCity(.Hogar) + GOHOME_PENALTY
-
-                End If
-            
-110             Tiempo = (Distance + 1) * 13 'seg
-            
-                'If Tiempo > 60 Then Tiempo = 60
-            
-112             Call IntervaloGoHome(UserIndex, Tiempo * 1000, True)
-            
-114             If .flags.lastMap = 0 Then
-116                 Call WriteConsoleMsg(UserIndex, "Te encuentras a " & CStr(Distance) & " mapas de " & MapInfo(Ciudades(.Hogar).Map).map_name & ", este viaje durara " & CStr(Tiempo) & " segundos.", FontTypeNames.FONTTYPE_FIGHT)
-                Else
-118                 Call WriteConsoleMsg(UserIndex, "Te encuentras en un dungeon o en las catacumbas, viajarás a " & MapInfo(Ciudades(.Hogar).Map).map_name & " en " & CStr(Tiempo) & " segundos.", FontTypeNames.FONTTYPE_FIGHT)
-                End If
+                .Accion.Particula = ParticulasIndex.Runa
+                .Accion.AccionPendiente = True
+                .Accion.TipoAccion = Accion_Barra.Hogar
             
             Else
         
@@ -337,7 +328,7 @@ Public Sub HomeArrival(ByVal UserIndex As Integer)
 124         Call FindLegalPos(UserIndex, tMap, CByte(tX), CByte(tY))
 126         Call WarpUserChar(UserIndex, tMap, tX, tY, True)
         
-128         Call WriteConsoleMsg(UserIndex, "El viaje ha terminado.", FontTypeNames.FONTTYPE_INFOBOLD)
+128         Call WriteConsoleMsg(UserIndex, "Has regresado a tu ciudad de origen.", FontTypeNames.FONTTYPE_WARNING)
         
 130         .flags.Traveling = 0
 132         .Counters.goHome = 0
@@ -420,14 +411,7 @@ Public Sub HandleHome(ByVal UserIndex As Integer)
                 Exit Sub
 
             End If
-        
-            '¿Zona Segura?
-108         If MapInfo(.Pos.Map).Seguro = 1 Then
-110             Call WriteConsoleMsg(UserIndex, "No puedes usar este comando en zona segura.", FontTypeNames.FONTTYPE_FIGHT)
-                Exit Sub
-            
-            End If
-        
+                
             'Si el mapa tiene alguna restriccion (newbie, dungeon, etc...), no lo dejamos viajar.
 112         If MapInfo(.Pos.Map).zone = "NEWBIE" Then
 114             Call WriteConsoleMsg(UserIndex, "No pueder viajar a tu hogar desde este mapa.", FontTypeNames.FONTTYPE_FIGHT)
