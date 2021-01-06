@@ -31,6 +31,7 @@ Public Enum Accion_Barra
     Intermundia = 3
     BattleModo = 4
     GoToPareja = 5
+    Hogar = 6
     CancelarAccion = 99
 
 End Enum
@@ -367,6 +368,13 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
                         End If
             
                 End Select
+                
+            Case Accion_Barra.Hogar
+                Call HomeArrival(UserIndex)
+                UserList(UserIndex).Accion.AccionPendiente = False
+                UserList(UserIndex).Accion.Particula = 0
+                UserList(UserIndex).Accion.TipoAccion = Accion_Barra.CancelarAccion
+            
 
 334         Case Accion_Barra.Intermundia
         
