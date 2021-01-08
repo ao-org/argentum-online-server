@@ -1953,6 +1953,11 @@ Public Sub DoApuñalar(ByVal UserIndex As Integer, ByVal VictimNpcIndex As Integ
 116             Suerte = 0.11 * Skill + 4
 
         End Select
+        
+        ' Daga especial da +5 de prob. de apu
+        If ObjData(UserList(UserIndex).Invent.WeaponEqpObjIndex).Subtipo = 42 Then
+            Suerte = Suerte + 5
+        End If
     
 118     If RandomNumber(1, 100) < Suerte Then
 120         If VictimUserIndex <> 0 Then
