@@ -637,7 +637,7 @@ Public Function CalcularDaño(ByVal UserIndex As Integer, Optional ByVal NpcInde
 
                 ' WyroX: Idea de los de balace. El pirata navegando pega un 20% más
                 If .clase = eClass.Pirat And .flags.Navegando Then
-                    CalcularDaño = CalcularDaño * 1.2
+                    CalcularDaño = CalcularDaño * 1.15
                 End If
             End If
 

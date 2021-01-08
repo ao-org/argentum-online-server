@@ -2894,7 +2894,7 @@ Public Function ApuñalarFunction(ByVal UserIndex As Integer, ByVal VictimNpcInd
 130         If VictimUserIndex <> 0 Then
 132                 ApuñalarFunction = daño * ModicadorApuñalarClase(UserList(UserIndex).clase)
             Else ' A los npcs el apuñalar es un 20% mas
-134                ApuñalarFunction = (daño * ModicadorApuñalarClase(UserList(UserIndex).clase)) * 1.15
+134                ApuñalarFunction = (daño * ModicadorApuñalarClase(UserList(UserIndex).clase)) * 1.2
 136                Debug.Print ApuñalarFunction
             End If
         End If
