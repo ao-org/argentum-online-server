@@ -17418,12 +17418,11 @@ Public Sub HandleChangeMapInfoRestricted(ByVal UserIndex As Integer)
         '***************************************************
         'Author: Pablo (ToxicWaste)
         'Last Modification: 26/01/2007
-        'Restringido -> Options: "NEWBIE", "NO", "ARMADA", "CAOS", "FACCION".
+        'Restringido -> Options: "NEWBIE", "SINMAGIA", "SININVI", "NOPKS", "NOCIUD".
         '***************************************************
 100     If UserList(UserIndex).incomingData.Length < 3 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
-
         End If
     
         On Error GoTo ErrHandler
@@ -17444,7 +17443,7 @@ Public Sub HandleChangeMapInfoRestricted(ByVal UserIndex As Integer)
         
 112         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) <> 0 Then
 
-                Select Case tStr
+                Select Case UCase$(tStr)
                 
                     Case "NEWBIE"
                         MapInfo(.Pos.Map).Newbie = Not MapInfo(.Pos.Map).Newbie
