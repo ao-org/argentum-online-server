@@ -280,9 +280,9 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
             
                 ' Si hay un teleport: movemos al usuario para que no se quede bloqueándolo
                 ElseIf EsTeleport Then
-                    Call ClosestLegalPos(MapData(Map, X, Y).TileExit, nPos)
+                    Call ClosestLegalPos(UserList(UserIndex).Pos, nPos)
 
-                    If nPos.X <> 0 And nPos.Y <> 0 Then
+                     If nPos.X <> 0 And nPos.Y <> 0 Then
                          Call WarpUserChar(UserIndex, nPos.Map, nPos.X, nPos.Y, EsTeleport)
                     End If
                 End If
