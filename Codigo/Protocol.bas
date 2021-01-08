@@ -3482,6 +3482,11 @@ Private Sub HandleWork(ByVal UserIndex As Integer)
     
                     End If
                     
+                    If MapInfo(.Pos.Map).SinInviOcul Then
+                        Call WriteConsoleMsg(UserIndex, "Una fuerza divina te impide ocultarte en esta zona.", FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
+                    
 156                 Call DoOcultarse(UserIndex)
 
             End Select
@@ -4636,10 +4641,17 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     
 752                 If tU > 0 And tU <> UserIndex Then
 
+                        ' WyroX: No puede marcar admins invisibles
+                        If UserList(tU).flags.AdminInvisible <> 0 Then Exit Sub
+
                         'Can't steal administrative players
 754                     If UserList(tU).flags.Muerto = 0 Then
                             'call marcar
-756                         Call SendData(SendTarget.ToClanArea, UserIndex, PrepareMessageParticleFX(UserList(tU).Char.CharIndex, 210, 700, False))
+                            If UserList(tU).flags.invisible = 1 Or UserList(tU).flags.Oculto = 1 Then
+756                             Call SendData(SendTarget.ToClanArea, UserIndex, PrepareMessageParticleFX(UserList(tU).Char.CharIndex, 210, 50, False))
+                            Else
+757                             Call SendData(SendTarget.ToClanArea, UserIndex, PrepareMessageParticleFX(UserList(tU).Char.CharIndex, 210, 150, False))
+                            End If
 758                         Call SendData(SendTarget.ToClanArea, UserIndex, PrepareMessageConsoleMsg("Clan> [" & UserList(UserIndex).name & "] marco a " & UserList(tU).name & ".", FontTypeNames.FONTTYPE_GUILD))
                         Else
 760                         Call WriteLocaleMsg(UserIndex, "7", FontTypeNames.FONTTYPE_INFO)
@@ -9902,7 +9914,7 @@ Private Sub HandleWhere(ByVal UserIndex As Integer)
                 Else
 
 120                 If (UserList(tUser).flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) <> 0 Or ((UserList(tUser).flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin) <> 0) And (.flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin)) <> 0) Then
-122                     Call WriteConsoleMsg(UserIndex, "Ubicaciín  " & UserName & ": " & UserList(tUser).Pos.Map & ", " & UserList(tUser).Pos.X & ", " & UserList(tUser).Pos.Y & ".", FontTypeNames.FONTTYPE_INFO)
+122                     Call WriteConsoleMsg(UserIndex, "Ubicación  " & UserName & ": " & UserList(tUser).Pos.Map & ", " & UserList(tUser).Pos.X & ", " & UserList(tUser).Pos.Y & ".", FontTypeNames.FONTTYPE_INFO)
 124                     Call LogGM(.name, "/Donde " & UserName)
 
                     End If
@@ -17413,12 +17425,11 @@ Public Sub HandleChangeMapInfoRestricted(ByVal UserIndex As Integer)
         '***************************************************
         'Author: Pablo (ToxicWaste)
         'Last Modification: 26/01/2007
-        'Restringido -> Options: "NEWBIE", "NO", "ARMADA", "CAOS", "FACCION".
+        'Restringido -> Options: "NEWBIE", "SINMAGIA", "SININVI", "NOPKS", "NOCIUD".
         '***************************************************
 100     If UserList(UserIndex).incomingData.Length < 3 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
-
         End If
     
         On Error GoTo ErrHandler
@@ -17438,15 +17449,37 @@ Public Sub HandleChangeMapInfoRestricted(ByVal UserIndex As Integer)
 110         tStr = Buffer.ReadASCIIString()
         
 112         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) <> 0 Then
-114             If tStr = "NEWBIE" Or tStr = "NO" Or tStr = "ARMADA" Or tStr = "CAOS" Or tStr = "FACCION" Then
-116                 Call LogGM(.name, .name & " ha cambiado la informacion sobre si es Restringido el mapa.")
-118                 MapInfo(UserList(UserIndex).Pos.Map).restrict_mode = tStr
-120                 Call WriteVar(MapPath & "mapa" & UserList(UserIndex).Pos.Map & ".dat", "Mapa" & UserList(UserIndex).Pos.Map, "Restringir", tStr)
-122                 Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & " Restringido: " & MapInfo(.Pos.Map).restrict_mode, FontTypeNames.FONTTYPE_INFO)
-                Else
-124                 Call WriteConsoleMsg(UserIndex, "Opciones para restringir: 'NEWBIE', 'NO', 'ARMADA', 'CAOS', 'FACCION'", FontTypeNames.FONTTYPE_INFO)
 
-                End If
+                Select Case UCase$(tStr)
+                
+                    Case "NEWBIE"
+                        MapInfo(.Pos.Map).Newbie = Not MapInfo(.Pos.Map).Newbie
+                        Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & ": Newbie = " & MapInfo(.Pos.Map).Newbie, FontTypeNames.FONTTYPE_INFO)
+                        Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .Pos.Map & ": Newbie = " & MapInfo(.Pos.Map).Newbie)
+                        
+                    Case "SINMAGIA"
+                        MapInfo(.Pos.Map).SinMagia = Not MapInfo(.Pos.Map).SinMagia
+                        Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & ": SinMagia = " & MapInfo(.Pos.Map).SinMagia, FontTypeNames.FONTTYPE_INFO)
+                        Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .Pos.Map & ": SinMagia = " & MapInfo(.Pos.Map).SinMagia)
+                        
+                    Case "NOPKS"
+                        MapInfo(.Pos.Map).NoPKs = Not MapInfo(.Pos.Map).NoPKs
+                        Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & ": NoPKs = " & MapInfo(.Pos.Map).NoPKs, FontTypeNames.FONTTYPE_INFO)
+                        Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .Pos.Map & ": NoPKs = " & MapInfo(.Pos.Map).NoPKs)
+                        
+                    Case "NOCIUD"
+                        MapInfo(.Pos.Map).NoCiudadanos = Not MapInfo(.Pos.Map).NoCiudadanos
+                        Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & ": NoCiudadanos = " & MapInfo(.Pos.Map).NoCiudadanos, FontTypeNames.FONTTYPE_INFO)
+                        Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .Pos.Map & ": NoCiudadanos = " & MapInfo(.Pos.Map).NoCiudadanos)
+                        
+                    Case "SININVI"
+                        MapInfo(.Pos.Map).SinInviOcul = Not MapInfo(.Pos.Map).SinInviOcul
+                        Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & ": SinInvi = " & MapInfo(.Pos.Map).SinInviOcul, FontTypeNames.FONTTYPE_INFO)
+                        Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .Pos.Map & ": SinInvi = " & MapInfo(.Pos.Map).SinInviOcul)
+                
+                    Case Else
+                        Call WriteConsoleMsg(UserIndex, "Opciones para restringir: 'NEWBIE', 'SINMAGIA', 'SININVI', 'NOPKS', 'NOCIUD'", FontTypeNames.FONTTYPE_INFO)
+                End Select
 
             End If
         
@@ -27039,11 +27072,11 @@ Private Sub HandleLlamadadeClan(ByVal UserIndex As Integer)
 112             clan_nivel = modGuilds.NivelDeClan(.GuildIndex)
 
 114             If clan_nivel > 1 Then
-116                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Clan> [" & .name & "] solicita apoyo de su clan en " & DarNameMapa(.Pos.Map) & " (" & .Pos.Map & "-" & .Pos.X & "-" & .Pos.Y & "). Puedes ver su ubicaciín en el mapa del mundo.", FontTypeNames.FONTTYPE_GUILD))
+116                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Clan> [" & .name & "] solicita apoyo de su clan en " & DarNameMapa(.Pos.Map) & " (" & .Pos.Map & "-" & .Pos.X & "-" & .Pos.Y & "). Puedes ver su ubicación en el mapa del mundo.", FontTypeNames.FONTTYPE_GUILD))
 118                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessagePlayWave("43", NO_3D_SOUND, NO_3D_SOUND))
 120                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageUbicacionLlamada(.Pos.Map, .Pos.X, .Pos.Y))
                 Else
-122                 Call WriteConsoleMsg(UserIndex, "Servidor> El nivel de tu clan debe ser 2 para utilizar esta opciín.", FontTypeNames.FONTTYPE_INFOIAO)
+122                 Call WriteConsoleMsg(UserIndex, "Servidor> El nivel de tu clan debe ser 2 para utilizar esta opción.", FontTypeNames.FONTTYPE_INFOIAO)
 
                 End If
 
@@ -27941,12 +27974,12 @@ Private Sub HandleCompletarAccion(ByVal UserIndex As Integer)
 114             If .Accion.TipoAccion = Accion Then
 116                 Call CompletarAccionFin(UserIndex)
                 Else
-118                 Call WriteConsoleMsg(UserIndex, "Servidor> La acciín que solicitas no se corresponde.", FontTypeNames.FONTTYPE_SERVER)
+118                 Call WriteConsoleMsg(UserIndex, "Servidor> La acción que solicitas no se corresponde.", FontTypeNames.FONTTYPE_SERVER)
 
                 End If
 
             Else
-120             Call WriteConsoleMsg(UserIndex, "Servidor> Tu no tenias ninguna acciín pendiente. ", FontTypeNames.FONTTYPE_SERVER)
+120             Call WriteConsoleMsg(UserIndex, "Servidor> Tu no tenias ninguna acción pendiente. ", FontTypeNames.FONTTYPE_SERVER)
 
             End If
         
@@ -28769,7 +28802,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
 248                 Case 5
 250                     Log = "Repuesta Afirmativa 5"
                 
-252                     If UCase$(MapInfo(UserList(UserIndex).Pos.Map).restrict_mode) = "NEWBIE" Then
+252                     If MapInfo(UserList(UserIndex).Pos.Map).Newbie Then
 254                         Call WarpToLegalPos(UserIndex, 140, 53, 58)
                     
 256                         If UserList(UserIndex).donador.activo = 0 Then ' Donador no espera tiempo
