@@ -506,9 +506,9 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
                 ' Obtengo el promedio actual del user
                 PromedioUser = CalcularPromedioVida(UserIndex)
                 ' Lo modifico para compensar si está muy bajo o muy alto
-142             Promedio = PromedioObjetivo + (PromedioObjetivo - PromedioUser)
+142             Promedio = PromedioObjetivo + (PromedioObjetivo - PromedioUser) * DesbalancePromedioVidas
                 ' Obtengo un entero al azar con más tendencia al promedio
-143             AumentoHP = RandomIntBiased(PromedioObjetivo - 1.5, PromedioObjetivo + 1.5, Promedio, 1)
+143             AumentoHP = RandomIntBiased(PromedioObjetivo - 1.5, PromedioObjetivo + 1.5, Promedio, InfluenciaPromedioVidas)
                 
 150             .Stats.ELV = .Stats.ELV + 1
             
