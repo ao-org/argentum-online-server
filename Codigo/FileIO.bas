@@ -1094,9 +1094,12 @@ Sub LoadBalance()
 120             .DañoWrestling = val(BalanceIni.GetValue("MODDANOWRESTLING", SearchVar))
 122             .Escudo = val(BalanceIni.GetValue("MODESCUDO", SearchVar))
 124             .ModApuñalar = val(BalanceIni.GetValue("MODAPUÑALAR", SearchVar))
-                'Modificadores de Vida
-126             ModVida(i) = val(BalanceIni.GetValue("MODVIDA", SearchVar))
-
+126             .Vida = val(BalanceIni.GetValue("MODVIDA", SearchVar))
+                .ManaInicial = val(BalanceIni.GetValue("MANA_INICIAL", SearchVar))
+                .MultMana = val(BalanceIni.GetValue("MULT_MANA", SearchVar))
+                .AumentoSta = val(BalanceIni.GetValue("AUMENTO_STA", SearchVar))
+                .HitPre36 = val(BalanceIni.GetValue("GOLPE_PRE_36", SearchVar))
+                .HitPost36 = val(BalanceIni.GetValue("GOLPE_POST_36", SearchVar))
             End With
 
 128     Next i

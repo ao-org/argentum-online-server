@@ -1335,8 +1335,10 @@ Public Type ObjData
 End Type
 
 '[Pablo ToxicWaste]
+' Mod. by WyroX
 Public Type ModClase
 
+    Vida As Double
     Evasion As Double
     AtaqueArmas As Double
     AtaqueProyectiles As Double
@@ -1345,6 +1347,11 @@ Public Type ModClase
     DañoWrestling As Double
     ModApuñalar As Double
     Escudo As Double
+    ManaInicial As Double
+    AumentoSta As Integer
+    MultMana As Double
+    HitPre36 As Integer
+    HitPost36 As Integer
 
 End Type
 
@@ -2306,8 +2313,6 @@ Public BanIps                             As New Collection
 Public ModClase(1 To NUMCLASES)           As ModClase
 
 Public ModRaza(1 To NUMRAZAS)             As ModRaza
-
-Public ModVida(1 To NUMCLASES)            As Double
 '*********************************************************
 
 Public Nix                                As WorldPos

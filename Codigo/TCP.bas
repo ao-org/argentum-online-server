@@ -670,160 +670,154 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal 
         
         On Error GoTo ConnectNewUser_Err
         
-        Dim LoopC As Long
-    
-104     If UserList(UserIndex).flags.UserLogged Then
-106         Call LogCheating("El usuario " & UserList(UserIndex).name & " ha intentado crear a " & name & " desde la IP " & UserList(UserIndex).ip)
-108         Call CloseSocketSL(UserIndex)
-110         Call Cerrar_Usuario(UserIndex)
-            Exit Function
-        End If
+        With UserList(UserIndex)
         
-        ' Nombre válido
-111     If Not ValidarNombre(name) Then Exit Function
+            Dim LoopC As Long
         
-112     If Not NombrePermitido(name) Then
-113         Call WriteShowMessageBox(UserIndex, "El nombre no está permitido.")
-            Exit Function
-        End If
-
-        '¿Existe el personaje?
-114     If PersonajeExiste(name) Then
-115         Call WriteShowMessageBox(UserIndex, "Ya existe el personaje.")
-            Exit Function
-        End If
+104         If .flags.UserLogged Then
+106             Call LogCheating("El usuario " & .name & " ha intentado crear a " & name & " desde la IP " & .ip)
+108             Call CloseSocketSL(UserIndex)
+110             Call Cerrar_Usuario(UserIndex)
+                Exit Function
+            End If
+            
+            ' Nombre válido
+111         If Not ValidarNombre(name) Then Exit Function
+            
+112         If Not NombrePermitido(name) Then
+113             Call WriteShowMessageBox(UserIndex, "El nombre no está permitido.")
+                Exit Function
+            End If
+    
+            '¿Existe el personaje?
+114         If PersonajeExiste(name) Then
+115             Call WriteShowMessageBox(UserIndex, "Ya existe el personaje.")
+                Exit Function
+            End If
+            
+            ' Raza válida
+            If UserRaza <= 0 Or UserRaza > NUMRAZAS Then Exit Function
+            
+            ' Género válido
+            If UserSexo < Hombre Or UserSexo > Mujer Then Exit Function
+            
+            ' Ciudad válida
+            If Hogar <= 0 Or Hogar > NUMCIUDADES Then Exit Function
+            
+            ' Cabeza válida
+            If Not ValidarCabeza(UserRaza, UserSexo, Head) Then Exit Function
+            
+            'Prevenimos algun bug con dados inválidos
+116         If .Stats.UserAtributos(eAtributos.Fuerza) = 0 Then Exit Function
         
-        ' Raza válida
-        If UserRaza <= 0 Or UserRaza > NUMRAZAS Then Exit Function
+118         .Stats.UserAtributos(eAtributos.Fuerza) = .Stats.UserAtributos(eAtributos.Fuerza) + ModRaza(UserRaza).Fuerza
+120         .Stats.UserAtributos(eAtributos.Agilidad) = .Stats.UserAtributos(eAtributos.Agilidad) + ModRaza(UserRaza).Agilidad
+122         .Stats.UserAtributos(eAtributos.Inteligencia) = .Stats.UserAtributos(eAtributos.Inteligencia) + ModRaza(UserRaza).Inteligencia
+124         .Stats.UserAtributos(eAtributos.Constitucion) = .Stats.UserAtributos(eAtributos.Constitucion) + ModRaza(UserRaza).Constitucion
+126         .Stats.UserAtributos(eAtributos.Carisma) = .Stats.UserAtributos(eAtributos.Carisma) + ModRaza(UserRaza).Carisma
         
-        ' Género válido
-        If UserSexo < Hombre Or UserSexo > Mujer Then Exit Function
+128         .flags.Muerto = 0
+130         .flags.Escondido = 0
+    
+132         .flags.Casado = 0
+134         .flags.Pareja = ""
+    
+136         .name = name
+138         .clase = UserClase
+140         .raza = UserRaza
         
-        ' Ciudad válida
-        If Hogar <= 0 Or Hogar > NUMCIUDADES Then Exit Function
+142         .Char.Head = Head
         
-        ' Cabeza válida
-        If Not ValidarCabeza(UserRaza, UserSexo, Head) Then Exit Function
+144         .genero = UserSexo
+146         .Hogar = Hogar
         
-        'Prevenimos algun bug con dados inválidos
-116     If UserList(UserIndex).Stats.UserAtributos(eAtributos.Fuerza) = 0 Then Exit Function
+            '%%%%%%%%%%%%% PREVENIR HACKEO DE LOS SKILLS %%%%%%%%%%%%%
+148         .Stats.SkillPts = 10
+        
+150         .Char.Heading = eHeading.SOUTH
+        
+152         Call DarCuerpo(UserIndex) 'Ladder REVISAR
+        
+154         .OrigChar = .Char
     
-118     UserList(UserIndex).Stats.UserAtributos(eAtributos.Fuerza) = UserList(UserIndex).Stats.UserAtributos(eAtributos.Fuerza) + ModRaza(UserRaza).Fuerza
-120     UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad) = UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad) + ModRaza(UserRaza).Agilidad
-122     UserList(UserIndex).Stats.UserAtributos(eAtributos.Inteligencia) = UserList(UserIndex).Stats.UserAtributos(eAtributos.Inteligencia) + ModRaza(UserRaza).Inteligencia
-124     UserList(UserIndex).Stats.UserAtributos(eAtributos.Constitucion) = UserList(UserIndex).Stats.UserAtributos(eAtributos.Constitucion) + ModRaza(UserRaza).Constitucion
-126     UserList(UserIndex).Stats.UserAtributos(eAtributos.Carisma) = UserList(UserIndex).Stats.UserAtributos(eAtributos.Carisma) + ModRaza(UserRaza).Carisma
-    
-128     UserList(UserIndex).flags.Muerto = 0
-130     UserList(UserIndex).flags.Escondido = 0
+156         .Char.WeaponAnim = NingunArma
+158         .Char.ShieldAnim = NingunEscudo
+160         .Char.CascoAnim = NingunCasco
 
-132     UserList(UserIndex).flags.Casado = 0
-134     UserList(UserIndex).flags.Pareja = ""
+            ' WyroX: Vida inicial
+164         .Stats.MaxHp = .Stats.UserAtributos(eAtributos.Constitucion)
+165         .Stats.MinHp = .Stats.MaxHp
 
-136     UserList(UserIndex).name = name
-138     UserList(UserIndex).clase = UserClase
-140     UserList(UserIndex).raza = UserRaza
+            ' WyroX: Maná inicial
+166         .Stats.MaxMAN = .Stats.UserAtributos(eAtributos.Inteligencia) * ModClase(.clase).ManaInicial
+167         .Stats.MinMAN = .Stats.MaxMAN
+        
+            Dim MiInt As Integer
+168         MiInt = RandomNumber(1, .Stats.UserAtributos(eAtributos.Agilidad) \ 6)
     
-142     UserList(UserIndex).Char.Head = Head
+170         If MiInt = 1 Then MiInt = 2
+        
+172         .Stats.MaxSta = 20 * MiInt
+174         .Stats.MinSta = 20 * MiInt
+        
+176         .Stats.MaxAGU = 100
+178         .Stats.MinAGU = 100
+        
+180         .Stats.MaxHam = 100
+182         .Stats.MinHam = 100
     
-144     UserList(UserIndex).genero = UserSexo
-146     UserList(UserIndex).Hogar = Hogar
+184         .flags.ScrollExp = 1
+186         .flags.ScrollOro = 1
     
-        '%%%%%%%%%%%%% PREVENIR HACKEO DE LOS SKILLS %%%%%%%%%%%%%
-148     UserList(UserIndex).Stats.SkillPts = 10
+202         .flags.VecesQueMoriste = 0
+204         .flags.Montado = 0
     
-150     UserList(UserIndex).Char.Heading = eHeading.SOUTH
+206         .Stats.MaxHit = 2
+208         .Stats.MinHIT = 1
+        
+210         .Stats.GLD = 0
+        
+212         .Stats.Exp = 0
+214         .Stats.ELU = 300
+216         .Stats.ELV = 1
+        
+218         Call RellenarInventario(UserIndex)
     
-152     Call DarCuerpo(UserIndex) 'Ladder REVISAR
+            #If ConUpTime Then
+220             .LogOnTime = Now
+222             .UpTime = 0
+            #End If
+        
+            'Valores Default de facciones al Activar nuevo usuario
+224         Call ResetFacciones(UserIndex)
+        
+226         .Faccion.Status = 1
+        
+228         .ChatCombate = 1
+230         .ChatGlobal = 1
+        
+            'Resetamos CORREO
+232         .Correo.CantCorreo = 0
+234         .Correo.NoLeidos = 0
+            'Resetamos CORREO
+        
+236         .Pos.Map = 37
+238         .Pos.X = 76
+240         .Pos.Y = 82
+        
+242         If Not Database_Enabled Then
+244             Call GrabarNuevoPjEnCuentaCharfile(UserCuenta, name)
+            End If
+        
+246         UltimoChar = UCase$(name)
+        
+248         Call SaveNewUser(UserIndex)
     
-154     UserList(UserIndex).OrigChar = UserList(UserIndex).Char
+            ConnectNewUser = True
+    
+250         Call ConnectUser(UserIndex, name, UserCuenta)
 
-156     UserList(UserIndex).Char.WeaponAnim = NingunArma
-158     UserList(UserIndex).Char.ShieldAnim = NingunEscudo
-160     UserList(UserIndex).Char.CascoAnim = NingunCasco
-
-        'Call AsignarAtributos(UserIndex)
-
-        Dim MiInt As Integer
-    
-162     MiInt = RandomNumber(1, UserList(UserIndex).Stats.UserAtributos(eAtributos.Constitucion) \ 3)
-    
-164     UserList(UserIndex).Stats.MaxHp = 15 + MiInt
-166     UserList(UserIndex).Stats.MinHp = 15 + MiInt
-    
-168     MiInt = RandomNumber(1, UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad) \ 6)
-
-170     If MiInt = 1 Then MiInt = 2
-    
-172     UserList(UserIndex).Stats.MaxSta = 20 * MiInt
-174     UserList(UserIndex).Stats.MinSta = 20 * MiInt
-    
-176     UserList(UserIndex).Stats.MaxAGU = 100
-178     UserList(UserIndex).Stats.MinAGU = 100
-    
-180     UserList(UserIndex).Stats.MaxHam = 100
-182     UserList(UserIndex).Stats.MinHam = 100
-
-184     UserList(UserIndex).flags.ScrollExp = 1
-186     UserList(UserIndex).flags.ScrollOro = 1
-    
-        '<-----------------MANA----------------------->
-188     If UserClase = eClass.Mage Then 'Cambio en mana inicial (ToxicWaste)
-190         MiInt = UserList(UserIndex).Stats.UserAtributos(eAtributos.Inteligencia) * 3
-192         UserList(UserIndex).Stats.MaxMAN = MiInt
-194         UserList(UserIndex).Stats.MinMAN = MiInt
-196     ElseIf UserClase = eClass.Cleric Or UserClase = eClass.Druid Or UserClase = eClass.Bard Then
-198         UserList(UserIndex).Stats.MaxMAN = 50
-200         UserList(UserIndex).Stats.MinMAN = 50
-        End If
-
-202     UserList(UserIndex).flags.VecesQueMoriste = 0
-204     UserList(UserIndex).flags.Montado = 0
-
-206     UserList(UserIndex).Stats.MaxHit = 2
-208     UserList(UserIndex).Stats.MinHIT = 1
-    
-210     UserList(UserIndex).Stats.GLD = 0
-    
-212     UserList(UserIndex).Stats.Exp = 0
-214     UserList(UserIndex).Stats.ELU = 300
-216     UserList(UserIndex).Stats.ELV = 1
-    
-218     Call RellenarInventario(UserIndex)
-
-        #If ConUpTime Then
-220         UserList(UserIndex).LogOnTime = Now
-222         UserList(UserIndex).UpTime = 0
-        #End If
-    
-        'Valores Default de facciones al Activar nuevo usuario
-224     Call ResetFacciones(UserIndex)
-    
-226     UserList(UserIndex).Faccion.Status = 1
-    
-228     UserList(UserIndex).ChatCombate = 1
-230     UserList(UserIndex).ChatGlobal = 1
-    
-        'Resetamos CORREO
-232     UserList(UserIndex).Correo.CantCorreo = 0
-234     UserList(UserIndex).Correo.NoLeidos = 0
-        'Resetamos CORREO
-    
-236     UserList(UserIndex).Pos.Map = 37
-238     UserList(UserIndex).Pos.X = 76
-240     UserList(UserIndex).Pos.Y = 82
-    
-242     If Not Database_Enabled Then
-244         Call GrabarNuevoPjEnCuentaCharfile(UserCuenta, name)
-        End If
-    
-246     UltimoChar = UCase$(name)
-    
-248     Call SaveNewUser(UserIndex)
-
-        ConnectNewUser = True
-
-250     Call ConnectUser(UserIndex, name, UserCuenta)
+        End With
         
         Exit Function
 
