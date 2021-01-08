@@ -1641,16 +1641,16 @@ Public Sub EfectoMimetismo(ByVal UserIndex As Integer)
 126                 .Char.Head = .CharMimetizado.Head
 128                 .Char.CascoAnim = .CharMimetizado.CascoAnim
 130                 .Char.ShieldAnim = .CharMimetizado.ShieldAnim
-132                 .Char.WeaponAnim = .CharMimetizado.WeaponAnim
+131                 .Char.WeaponAnim = .CharMimetizado.WeaponAnim
                 End If
+                
+132             .Counters.Mimetismo = 0
+133             .flags.Mimetizado = 0
             
 134             With .Char
 136                 Call ChangeUserChar(UserIndex, .Body, .Head, .Heading, .WeaponAnim, .ShieldAnim, .CascoAnim)
                     Call RefreshCharStatus(UserIndex)
                 End With
-            
-138             .Counters.Mimetismo = 0
-140             .flags.Mimetizado = 0
             End If
         End With
         
