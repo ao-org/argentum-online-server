@@ -20,7 +20,7 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
 
         Dim AumentoHP   As Integer
         
-        Dim AumentoSTA  As Integer
+        Dim AumentoSta  As Integer
 
         Dim AumentoHIT  As Integer
         
@@ -57,61 +57,61 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
         
                 ' Calculo subida de vida by WyroX
                 ' Obtengo el promedio según clase y constitución
-141             PromedioObjetivo = ModVida(.clase) - (21 - .Stats.UserAtributos(eAtributos.Constitucion)) * 0.5
+141             PromedioObjetivo = ModClase(.clase).Vida - (21 - .Stats.UserAtributos(eAtributos.Constitucion)) * 0.5
                 ' Obtengo el promedio actual del user
                 PromedioUser = CalcularPromedioVida(UserIndex)
                 ' Lo modifico para compensar si está muy bajo o muy alto
 142             Promedio = PromedioObjetivo + (PromedioObjetivo - PromedioUser) * DesbalancePromedioVidas
                 ' Obtengo un entero al azar con más tendencia al promedio
 143             AumentoHP = RandomIntBiased(PromedioObjetivo - RangoVidas, PromedioObjetivo + RangoVidas, Promedio, InfluenciaPromedioVidas)
-            
+
 172             Select Case .clase
 
                     Case eClass.Mage '
 174                     AumentoHIT = 1
 176                     AumentoMANA = 3 * .Stats.UserAtributos(eAtributos.Inteligencia)
-178                     AumentoSTA = AumentoSTMago
+178                     AumentoSta = AumentoSTMago
             
 180                 Case eClass.Bard 'Balanceda Mana
 182                     AumentoHIT = 2
 184                     AumentoMANA = 2.6 * .Stats.UserAtributos(eAtributos.Inteligencia)
-186                     AumentoSTA = AumentoSTDef - 4
+186                     AumentoSta = AumentoSTDef - 4
                     
 188                 Case eClass.Druid 'Balanceda Mana
 190                     AumentoHIT = 2
 192                     AumentoMANA = 2.6 * .Stats.UserAtributos(eAtributos.Inteligencia)
-194                     AumentoSTA = AumentoSTDef - 4
+194                     AumentoSta = AumentoSTDef - 4
             
 196                 Case eClass.Assasin
 198                     AumentoHIT = IIf(.Stats.ELV > 35, 1, 3)
 200                     AumentoMANA = 1.1 * .Stats.UserAtributos(eAtributos.Inteligencia)
-202                     AumentoSTA = AumentoSTDef - 3
+202                     AumentoSta = AumentoSTDef - 3
                     
 204                 Case eClass.Cleric 'Balanceda Mana
 206                     AumentoHIT = 2
 208                     AumentoMANA = 2 * .Stats.UserAtributos(eAtributos.Inteligencia)
-210                     AumentoSTA = AumentoSTDef - 4
+210                     AumentoSta = AumentoSTDef - 4
                     
 212                 Case eClass.Paladin
 214                     AumentoHIT = IIf(.Stats.ELV > 39, 1, 3)
 216                     AumentoMANA = 1.1 * .Stats.UserAtributos(eAtributos.Inteligencia)
-218                     AumentoSTA = AumentoSTDef - 2
+218                     AumentoSta = AumentoSTDef - 2
                     
 220                 Case eClass.Hunter
 222                     AumentoHIT = IIf(.Stats.ELV > 35, 2, 3)
-224                     AumentoSTA = AumentoSTDef - 2
+224                     AumentoSta = AumentoSTDef - 2
                     
 226                 Case eClass.Trabajador
 228                     AumentoHIT = 2
-230                     AumentoSTA = AumentoSTDef + 5
+230                     AumentoSta = AumentoSTDef + 5
             
 232                 Case eClass.Warrior
 234                     AumentoHIT = IIf(.Stats.ELV > 35, 2, 3)
-236                     AumentoSTA = AumentoSTDef
+236                     AumentoSta = AumentoSTDef
                         
 238                 Case Else
 240                     AumentoHIT = 2
-242                     AumentoSTA = AumentoSTDef
+242                     AumentoSta = AumentoSTDef
 
                 End Select
         
@@ -122,7 +122,7 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
 246                     AumentoMANA = 3.5 * .Stats.UserAtributos(eAtributos.Inteligencia)
                         ' AumentoHP = RandomNumber(MagoVidaMin, MagoVidaMax)
 248                     AumentoHIT = 1 'Nueva dist de mana para mago (ToxicWaste)
-250                     AumentoSTA = AumentoSTMago
+250                     AumentoSta = AumentoSTMago
 252                     magia = True
                                 
 254                 Case eClass.Bard 'Balanceda Mana
@@ -130,53 +130,53 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
                         ' AumentoHP = RandomNumber(BardoVidaMin, BardoVidaMax)
 258                     magia = True
 260                     AumentoHIT = 2
-262                     AumentoSTA = AumentoSTDef - 4
+262                     AumentoSta = AumentoSTDef - 4
                                         
 264                 Case eClass.Druid 'Balanceda Mana
 266                     AumentoMANA = 2.9 * .Stats.UserAtributos(eAtributos.Inteligencia)
                         '  AumentoHP = RandomNumber(DruidaVidaMin, DruidaVidaMax)
 268                     AumentoHIT = 2
-270                     AumentoSTA = AumentoSTDef - 4
+270                     AumentoSta = AumentoSTDef - 4
 272                     magia = True
                                 
 274                 Case eClass.Assasin
 276                     AumentoMANA = 1.1 * .Stats.UserAtributos(eAtributos.Inteligencia)
                         ' AumentoHP = RandomNumber(AsesinoVidaMin, AsesinoVidaMax)
 278                     AumentoHIT = IIf(.Stats.ELV > 35, 1, 3)
-280                     AumentoSTA = AumentoSTDef - 3
+280                     AumentoSta = AumentoSTDef - 3
 282                     magia = True
 
 284                 Case eClass.Cleric 'Balanceda Mana
 286                     AumentoHIT = 2
 288                     AumentoMANA = 2 * .Stats.UserAtributos(eAtributos.Inteligencia)
-290                     AumentoSTA = AumentoSTDef - 4
+290                     AumentoSta = AumentoSTDef - 4
                         ' AumentoHP = RandomNumber(ClerigoVidaMin, ClerigoVidaMax)
 292                     magia = True
                                         
 294                 Case eClass.Paladin
 296                     AumentoHIT = IIf(.Stats.ELV > 39, 1, 3)
 298                     AumentoMANA = 1.1 * .Stats.UserAtributos(eAtributos.Inteligencia)
-300                     AumentoSTA = AumentoSTDef - 2
+300                     AumentoSta = AumentoSTDef - 2
                         ' AumentoHP = RandomNumber(PaladinVidaMin, PaladinVidaMax)
 302                     magia = True
                                         
 304                 Case eClass.Hunter
 306                     AumentoHIT = IIf(.Stats.ELV > 35, 2, 3)
-308                     AumentoSTA = AumentoSTDef - 2
+308                     AumentoSta = AumentoSTDef - 2
                         '   AumentoHP = RandomNumber(CazadorVidaMin, CazadorVidaMax)
 310                     manaok = 0
 312                     magia = False
                                         
 314                 Case eClass.Trabajador
 316                     AumentoHIT = 2
-318                     AumentoSTA = AumentoSTDef + 8
+318                     AumentoSta = AumentoSTDef + 8
                         '     AumentoHP = RandomNumber(TrabajadorVidaMin, TrabajadorVidaMax)
 320                     manaok = 0
 322                     magia = False
                                 
 324                 Case eClass.Warrior
 326                     AumentoHIT = IIf(.Stats.ELV > 35, 2, 3)
-328                     AumentoSTA = AumentoSTDef
+328                     AumentoSta = AumentoSTDef
                         '    AumentoHP = RandomNumber(GuerreroVidaMin, GuerreroVidaMax)
 330                     manaok = 0
 332                     magia = False
@@ -187,7 +187,7 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
                             
 336             manaok = manaok + AumentoMANA
                              
-338             staok = staok + AumentoSTA
+338             staok = staok + AumentoSta
 340             maxhitok = maxhitok + AumentoHIT
 342             minhitok = minhitok + AumentoHIT
 344             .Stats.ELV = .Stats.ELV + 1

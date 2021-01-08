@@ -2816,19 +2816,22 @@ PonerPuntos_Err:
     
 End Function
 
+' Autor: WyroX
 Function CalcularPromedioVida(ByVal UserIndex As Integer) As Double
 
     With UserList(UserIndex)
         If .Stats.ELV = 1 Then
-            CalcularPromedioVida = ModVida(.clase) - (21 - .Stats.UserAtributos(eAtributos.Constitucion)) * 0.5 + (.Stats.MaxHp - (18.5 + ModRaza(.raza).Constitucion / 6))
+            ' Siempre estamos promedio al lvl 1
+            CalcularPromedioVida = ModClase(.clase).Vida - (21 - .Stats.UserAtributos(eAtributos.Constitucion)) * 0.5
         Else
-            CalcularPromedioVida = (.Stats.MaxHp - 18.5 - ModRaza(.raza).Constitucion / 6) / (.Stats.ELV - 1)
+            CalcularPromedioVida = (.Stats.MaxHp - .Stats.UserAtributos(eAtributos.Constitucion)) / (.Stats.ELV - 1)
         End If
     End With
 
 End Function
 
 ' Adaptado desde https://stackoverflow.com/questions/29325069/how-to-generate-random-numbers-biased-towards-one-value-in-a-range/29325222#29325222
+' By WyroX
 Function RandomIntBiased(ByVal min As Double, ByVal max As Double, ByVal Bias As Double, ByVal Influence As Double) As Double
 
     On Error GoTo handle

@@ -461,7 +461,7 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
 
         Dim AumentoMANA      As Integer
 
-        Dim AumentoSTA       As Integer
+        Dim AumentoSta       As Integer
 
         Dim AumentoHP        As Integer
 
@@ -509,85 +509,27 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
             
                 ' Calculo subida de vida by WyroX
                 ' Obtengo el promedio según clase y constitución
-141             PromedioObjetivo = ModVida(.clase) - (21 - .Stats.UserAtributos(eAtributos.Constitucion)) * 0.5
+141             PromedioObjetivo = ModClase(.clase).Vida - (21 - .Stats.UserAtributos(eAtributos.Constitucion)) * 0.5
                 ' Obtengo el promedio actual del user
                 PromedioUser = CalcularPromedioVida(UserIndex)
                 ' Lo modifico para compensar si está muy bajo o muy alto
 142             Promedio = PromedioObjetivo + (PromedioObjetivo - PromedioUser) * DesbalancePromedioVidas
                 ' Obtengo un entero al azar con más tendencia al promedio
 143             AumentoHP = RandomIntBiased(PromedioObjetivo - RangoVidas, PromedioObjetivo + RangoVidas, Promedio, InfluenciaPromedioVidas)
+
+                ' WyroX: Aumento del resto de stats
+150             AumentoSta = ModClase(.clase).AumentoSta
+152             AumentoMANA = ModClase(.clase).MultMana * .Stats.UserAtributos(eAtributos.Inteligencia)
+154             AumentoHIT = IIf(.Stats.ELV < 36, ModClase(.clase).HitPre36, ModClase(.clase).HitPost36)
+
+160             .Stats.ELV = .Stats.ELV + 1
                 
-150             .Stats.ELV = .Stats.ELV + 1
-            
-196             Select Case .clase
-
-                    Case eClass.Mage '
-198                     AumentoHIT = 1
-200                     AumentoMANA = 2.8 * .Stats.UserAtributos(eAtributos.Inteligencia)
-202                     AumentoSTA = AumentoSTMago
-
-204                 Case eClass.Bard 'Balanceda Mana
-206                     AumentoHIT = 2
-208                     AumentoMANA = 2 * .Stats.UserAtributos(eAtributos.Inteligencia)
-210                     AumentoSTA = AumentoSTDef
-
-212                 Case eClass.Druid 'Balanceda Mana
-214                     AumentoHIT = 2
-216                     AumentoMANA = 2 * .Stats.UserAtributos(eAtributos.Inteligencia)
-218                     AumentoSTA = AumentoSTDef
-
-220                 Case eClass.Assasin
-222                     AumentoHIT = IIf(.Stats.ELV > 35, 1, 3)
-224                     AumentoMANA = .Stats.UserAtributos(eAtributos.Inteligencia)
-226                     AumentoSTA = AumentoSTDef
-
-228                 Case eClass.Cleric 'Balanceda Mana
-230                     AumentoHIT = 2
-232                     AumentoMANA = 2 * .Stats.UserAtributos(eAtributos.Inteligencia)
-234                     AumentoSTA = AumentoSTDef
-
-236                 Case eClass.Paladin
-238                     AumentoHIT = IIf(.Stats.ELV > 35, 1, 3)
-240                     AumentoMANA = .Stats.UserAtributos(eAtributos.Inteligencia)
-242                     AumentoSTA = AumentoSTDef
-                
-244                 Case eClass.Thief
-246                     AumentoHIT = 2
-248                     AumentoSTA = AumentoSTLadron
-
-250                 Case eClass.Hunter
-252                     AumentoHIT = IIf(.Stats.ELV > 35, 2, 3)
-254                     AumentoSTA = AumentoSTDef
-
-256                 Case eClass.Trabajador
-258                     AumentoHIT = 2
-260                     AumentoSTA = AumentoSTDef + 5
-                    
-262                 Case eClass.Pirat
-264                     AumentoHIT = 3
-266                     AumentoSTA = AumentoSTDef
-                    
-268                 Case eClass.Bandit
-270                     AumentoHIT = IIf(.Stats.ELV > 35, 1, 3)
-272                     AumentoMANA = .Stats.UserAtributos(eAtributos.Inteligencia) / 3 * 2
-274                     AumentoSTA = AumentoStBandido
-
-276                 Case eClass.Warrior
-278                     AumentoHIT = IIf(.Stats.ELV > 35, 2, 3)
-280                     AumentoSTA = AumentoSTDef
-
-282                 Case Else
-284                     AumentoHIT = 2
-286                     AumentoSTA = AumentoSTDef
-
-                End Select
-            
                 'Actualizamos HitPoints
 288             .Stats.MaxHp = .Stats.MaxHp + AumentoHP
 
 290             If .Stats.MaxHp > STAT_MAXHP Then .Stats.MaxHp = STAT_MAXHP
                 'Actualizamos Stamina
-292             .Stats.MaxSta = .Stats.MaxSta + AumentoSTA
+292             .Stats.MaxSta = .Stats.MaxSta + AumentoSta
 
 294             If .Stats.MaxSta > STAT_MAXSTA Then .Stats.MaxSta = STAT_MAXSTA
                 'Actualizamos Mana
@@ -608,9 +550,9 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
 
                 End If
 
-308             If AumentoSTA > 0 Then
+308             If AumentoSta > 0 Then
                     'Call WriteConsoleMsg(UserIndex, "Has ganado " & AumentoSTA & " puntos de vitalidad.", FontTypeNames.FONTTYPE_INFO)
-310                 Call WriteLocaleMsg(UserIndex, "198", FontTypeNames.FONTTYPE_INFO, AumentoSTA)
+310                 Call WriteLocaleMsg(UserIndex, "198", FontTypeNames.FONTTYPE_INFO, AumentoSta)
 
                 End If
 
