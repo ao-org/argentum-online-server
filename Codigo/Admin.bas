@@ -155,6 +155,10 @@ Public PorcentajeRecuperoMana       As Integer
 
 Public DificultadSubirSkill         As Integer
 
+Public DesbalancePromedioVidas      As Single
+
+Public RangoVidas                   As Single
+
 Public InfluenciaPromedioVidas      As Single
 
 Public MinutosWs                    As Long
