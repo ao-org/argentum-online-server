@@ -1295,11 +1295,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             End If
             
             'Si sos user, no uses este hechizo con GMS.
-176         If UserList(UserIndex).flags.Privilegios And PlayerType.user Then
-178             If Not UserList(tU).flags.Privilegios And PlayerType.user Then
-                    Exit Sub
-                End If
-            End If
+176         If Not EsGM(UserIndex) And EsGM(tU) Then Exit Sub
             
 180         If UserList(UserIndex).flags.Mimetizado = 1 Then
 182             Call WriteConsoleMsg(UserIndex, "Ya te encuentras transformado. El hechizo no ha tenido efecto", FontTypeNames.FONTTYPE_INFO)
@@ -2022,8 +2018,9 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
 266                 .Char.CascoAnim = NingunCasco
 268                 .Char.ShieldAnim = NingunEscudo
 270                 .Char.WeaponAnim = NingunArma
-                
+
 272                 Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+                    Call RefreshCharStatus(UserIndex)
                 End With
             Else
 274             Call WriteConsoleMsg(UserIndex, "Solo los druidas pueden mimetizarse con criaturas.", FontTypeNames.FONTTYPE_INFO)

@@ -316,7 +316,7 @@ Sub RefreshCharStatus(ByVal UserIndex As Integer)
         '*************************************************
         Dim klan As String, name As String
 
-        If UserList(UserIndex).showName Then
+        If UserList(UserIndex).showName And UserList(UserIndex).flags.Mimetizado = 0 Then
 100         If UserList(UserIndex).GuildIndex > 0 Then
 102             klan = modGuilds.GuildName(UserList(UserIndex).GuildIndex)
 104             klan = " <" & klan & ">"
@@ -370,7 +370,7 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
 
 114             If Not toMap Then
                 
-                    If .showName Then
+                    If .showName And .flags.Mimetizado = 0 Then
 116                     If .GuildIndex > 0 Then
                 
 118                         klan = modGuilds.GuildName(.GuildIndex)
