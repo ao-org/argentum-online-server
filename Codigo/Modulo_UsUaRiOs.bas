@@ -314,15 +314,18 @@ Sub RefreshCharStatus(ByVal UserIndex As Integer)
         'Last modified: 6/04/2007
         'Refreshes the status and tag of UserIndex.
         '*************************************************
-        Dim klan As String
+        Dim klan As String, name As String
 
-100     If UserList(UserIndex).GuildIndex > 0 Then
-102         klan = modGuilds.GuildName(UserList(UserIndex).GuildIndex)
-104         klan = " <" & klan & ">"
-
+        If UserList(UserIndex).showName Then
+100         If UserList(UserIndex).GuildIndex > 0 Then
+102             klan = modGuilds.GuildName(UserList(UserIndex).GuildIndex)
+104             klan = " <" & klan & ">"
+            End If
+            
+            name = UserList(UserIndex).name & klan
         End If
     
-106     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageUpdateTagAndStatus(UserIndex, UserList(UserIndex).Faccion.Status, UserList(UserIndex).name & klan))
+106     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageUpdateTagAndStatus(UserIndex, UserList(UserIndex).Faccion.Status, name))
 
         
         Exit Sub
@@ -367,27 +370,29 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
 
 114             If Not toMap Then
                 
-116                 If .GuildIndex > 0 Then
-            
-118                     klan = modGuilds.GuildName(.GuildIndex)
-120                     clan_nivel = modGuilds.NivelDeClan(.GuildIndex)
-122                     TempName = .name & " <" & klan & ">"
-            
-                    Else
+                    If .showName Then
+116                     If .GuildIndex > 0 Then
                 
-124                     klan = vbNullString
-126                     clan_nivel = 0
-                    
-128                     If .flags.EnConsulta Then
-                        
-130                         TempName = .name & " [CONSULTA]"
-                        
+118                         klan = modGuilds.GuildName(.GuildIndex)
+120                         clan_nivel = modGuilds.NivelDeClan(.GuildIndex)
+122                         TempName = .name & " <" & klan & ">"
+                
                         Else
                     
-132                         TempName = .name
-                    
+124                         klan = vbNullString
+126                         clan_nivel = 0
+                        
+128                         If .flags.EnConsulta Then
+                            
+130                             TempName = .name & " [CONSULTA]"
+                            
+                            Else
+                        
+132                             TempName = .name
+                        
+                            End If
+                        
                         End If
-                    
                     End If
 
 134                 Call WriteCharacterCreate(sndIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.CharIndex, X, Y, .Char.WeaponAnim, .Char.ShieldAnim, .Char.FX, 999, .Char.CascoAnim, TempName, .Faccion.Status, .flags.Privilegios, .Char.ParticulaFx, .Char.Head_Aura, .Char.Arma_Aura, .Char.Body_Aura, .Char.Anillo_Aura, .Char.Otra_Aura, .Char.Escudo_Aura, .Char.speeding, False, .donador.activo, appear, .Grupo.Lider, .GuildIndex, clan_nivel, .Stats.MinHp, .Stats.MaxHp, 0, False, .flags.Navegando)

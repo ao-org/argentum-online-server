@@ -1029,174 +1029,182 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
             'Reaccion al personaje
 208         If FoundChar = 1 Then '  ¿Encontro un Usuario?
             
-210             If UserList(TempCharIndex).flags.AdminInvisible = 0 Then
+210             If UserList(TempCharIndex).flags.AdminInvisible = 0 Or CompararPrivilegios(UserIndex, TempCharIndex) >= 0 Then
             
                     'If LenB(UserList(TempCharIndex).DescRM) = 0 Then 'No tiene descRM y quiere que se vea su nombre.
+                    
+                    If UserList(TempCharIndex).showName Or CompararPrivilegios(UserIndex, TempCharIndex) >= 0 Then
                 
-212                 If UserList(TempCharIndex).flags.Privilegios = user Then
-                
-                        Dim Fragsnick As String
-
-214                     If EsGM(UserIndex) Then
-216                         Stat = Stat & " <" & ListaClases(UserList(TempCharIndex).clase) & " " & ListaRazas(UserList(TempCharIndex).raza) & " Nivel: " & UserList(TempCharIndex).Stats.ELV & ">"
-                        End If
-
-                        'End If
-218                     If EsNewbie(TempCharIndex) Then
-220                         Stat = Stat & " <Newbie>"
-
-                        End If
-
-222                     If UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) > 49 Then
-224                         If UserList(TempCharIndex).flags.Envenenado > 0 Then
-226                             Fragsnick = " | Envenenado"
+212                     If UserList(TempCharIndex).flags.Privilegios = user Then
+                    
+                            Dim Fragsnick As String
+    
+214                         If EsGM(UserIndex) Then
+216                             Stat = Stat & " <" & ListaClases(UserList(TempCharIndex).clase) & " " & ListaRazas(UserList(TempCharIndex).raza) & " Nivel: " & UserList(TempCharIndex).Stats.ELV & ">"
                             End If
-
-228                         If UserList(TempCharIndex).flags.Ceguera = 1 Then
-230                             Fragsnick = Fragsnick & " | Ciego"
+    
+                            'End If
+218                         If EsNewbie(TempCharIndex) Then
+220                             Stat = Stat & " <Newbie>"
                             End If
-
-232                         If UserList(TempCharIndex).flags.Incinerado = 1 Then
-234                             Fragsnick = Fragsnick & " | Incinerado"
-                            End If
-
-236                         If UserList(TempCharIndex).flags.Paralizado = 1 Then
-238                             Fragsnick = Fragsnick & " | Paralizado"
-                            End If
-
-240                         If UserList(TempCharIndex).flags.Inmovilizado = 1 Then
-242                             Fragsnick = Fragsnick & " | Inmovilizado"
-                            End If
-
-244                         If UserList(TempCharIndex).Counters.Trabajando > 0 Then
-246                             Fragsnick = Fragsnick & " | Trabajando"
-                            End If
-
-248                         If UserList(TempCharIndex).flags.invisible = 1 Then
-250                             Fragsnick = Fragsnick & " | Invisible"
-                            End If
-
-252                         If UserList(TempCharIndex).flags.Oculto = 1 Then
-254                             Fragsnick = Fragsnick & " | Oculto"
-                            End If
-
-256                         If UserList(TempCharIndex).flags.Estupidez = 1 Then
-258                             Fragsnick = Fragsnick & " | Estupido"
-                            End If
-
-260                         If UserList(TempCharIndex).flags.Maldicion = 1 Then
-262                             Fragsnick = Fragsnick & " | Maldito"
-                            End If
-
-264                         If UserList(TempCharIndex).flags.Silenciado = 1 Then
-266                             Fragsnick = Fragsnick & " | Silenciado"
-                            End If
-
-268                         If UserList(TempCharIndex).flags.Comerciando = True Then
-270                             Fragsnick = Fragsnick & " | Comerciando"
-                            End If
-
-272                         If UserList(TempCharIndex).flags.Descansar = 1 Then
-274                             Fragsnick = Fragsnick & " | Descansando"
-                            End If
-
-276                         If UserList(TempCharIndex).flags.Meditando = True Then
-278                             Fragsnick = Fragsnick & " | Concentrado"
-                            End If
-
-280                         If UserList(TempCharIndex).flags.BattleModo = 1 Then
-282                             Fragsnick = Fragsnick & " | Modo Battle"
-                            End If
-                        
-284                         If UserList(TempCharIndex).Stats.MinHp = 0 Then
-286                             Stat = Stat & " <Muerto>"
-288                         ElseIf UserList(TempCharIndex).Stats.MinHp < (UserList(TempCharIndex).Stats.MaxHp * 0.1) Then
-290                             Stat = Stat & " <Casi muerto" & Fragsnick & ">"
-292                         ElseIf UserList(TempCharIndex).Stats.MinHp < (UserList(TempCharIndex).Stats.MaxHp * 0.5) Then
-294                             Stat = Stat & " <Malherido" & Fragsnick & ">"
-296                         ElseIf UserList(TempCharIndex).Stats.MinHp < (UserList(TempCharIndex).Stats.MaxHp * 0.75) Then
-298                             Stat = Stat & " <Herido" & Fragsnick & ">"
-300                         ElseIf UserList(TempCharIndex).Stats.MinHp < (UserList(TempCharIndex).Stats.MaxHp * 0.99) Then
-302                             Stat = Stat & " <Levemente herido" & Fragsnick & ">"
-                            Else
-304                             Stat = Stat & " <Intacto" & Fragsnick & ">"
-                            End If
-
-                        End If
-                
-306                     If UserList(TempCharIndex).Faccion.ArmadaReal = 1 Then
-308                         Stat = Stat & " <" & TituloReal(TempCharIndex) & ">"
-310                         ft = FontTypeNames.FONTTYPE_CONSEJOVesA
-312                     ElseIf UserList(TempCharIndex).Faccion.FuerzasCaos = 1 Then
-314                         Stat = Stat & " <" & TituloCaos(TempCharIndex) & ">"
-316                         ft = FontTypeNames.FONTTYPE_CONSEJOCAOSVesA
-                        End If
-                
-318                     If UserList(TempCharIndex).GuildIndex > 0 Then
-320                         Stat = Stat & " <" & modGuilds.GuildName(UserList(TempCharIndex).GuildIndex) & ">"
-                        End If
-
-                    End If ' If user > 0 then
+    
+222                         If UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) > 49 Then
+224                             If UserList(TempCharIndex).flags.Envenenado > 0 Then
+226                                 Fragsnick = " | Envenenado"
+                                End If
+    
+228                             If UserList(TempCharIndex).flags.Ceguera = 1 Then
+230                                 Fragsnick = Fragsnick & " | Ciego"
+                                End If
+    
+232                             If UserList(TempCharIndex).flags.Incinerado = 1 Then
+234                                 Fragsnick = Fragsnick & " | Incinerado"
+                                End If
+    
+236                             If UserList(TempCharIndex).flags.Paralizado = 1 Then
+238                                 Fragsnick = Fragsnick & " | Paralizado"
+                                End If
+    
+240                             If UserList(TempCharIndex).flags.Inmovilizado = 1 Then
+242                                 Fragsnick = Fragsnick & " | Inmovilizado"
+                                End If
+    
+244                             If UserList(TempCharIndex).Counters.Trabajando > 0 Then
+246                                 Fragsnick = Fragsnick & " | Trabajando"
+                                End If
+    
+248                             If UserList(TempCharIndex).flags.invisible = 1 Then
+250                                 Fragsnick = Fragsnick & " | Invisible"
+                                End If
+    
+252                             If UserList(TempCharIndex).flags.Oculto = 1 Then
+254                                 Fragsnick = Fragsnick & " | Oculto"
+                                End If
+    
+256                             If UserList(TempCharIndex).flags.Estupidez = 1 Then
+258                                 Fragsnick = Fragsnick & " | Estupido"
+                                End If
+    
+260                             If UserList(TempCharIndex).flags.Maldicion = 1 Then
+262                                 Fragsnick = Fragsnick & " | Maldito"
+                                End If
+    
+264                             If UserList(TempCharIndex).flags.Silenciado = 1 Then
+266                                 Fragsnick = Fragsnick & " | Silenciado"
+                                End If
+    
+268                             If UserList(TempCharIndex).flags.Comerciando = True Then
+270                                 Fragsnick = Fragsnick & " | Comerciando"
+                                End If
+    
+272                             If UserList(TempCharIndex).flags.Descansar = 1 Then
+274                                 Fragsnick = Fragsnick & " | Descansando"
+                                End If
+    
+276                             If UserList(TempCharIndex).flags.Meditando = True Then
+278                                 Fragsnick = Fragsnick & " | Concentrado"
+                                End If
+    
+280                             If UserList(TempCharIndex).flags.BattleModo = 1 Then
+282                                 Fragsnick = Fragsnick & " | Modo Battle"
+                                End If
                             
-322                 If Not UserList(TempCharIndex).flags.Privilegios And PlayerType.user Then
-324                     If UserList(TempCharIndex).flags.Privilegios = Consejero Then
-326                         Stat = Stat & " <Game Desing>"
-328                         ft = FontTypeNames.FONTTYPE_GM
-
-                        End If
-
-330                     If UserList(TempCharIndex).flags.Privilegios = SemiDios Then
-332                         Stat = Stat & " <Game Master>"
-334                         ft = FontTypeNames.FONTTYPE_GM
-
-                        End If
-
-336                     If UserList(TempCharIndex).flags.Privilegios = Dios Then
-338                         Stat = Stat & " <Administrador>"
-340                         ft = FontTypeNames.FONTTYPE_DIOS
-
+284                             If UserList(TempCharIndex).Stats.MinHp = 0 Then
+286                                 Stat = Stat & " <Muerto>"
+288                             ElseIf UserList(TempCharIndex).Stats.MinHp < (UserList(TempCharIndex).Stats.MaxHp * 0.1) Then
+290                                 Stat = Stat & " <Casi muerto" & Fragsnick & ">"
+292                             ElseIf UserList(TempCharIndex).Stats.MinHp < (UserList(TempCharIndex).Stats.MaxHp * 0.5) Then
+294                                 Stat = Stat & " <Malherido" & Fragsnick & ">"
+296                             ElseIf UserList(TempCharIndex).Stats.MinHp < (UserList(TempCharIndex).Stats.MaxHp * 0.75) Then
+298                                 Stat = Stat & " <Herido" & Fragsnick & ">"
+300                             ElseIf UserList(TempCharIndex).Stats.MinHp < (UserList(TempCharIndex).Stats.MaxHp * 0.99) Then
+302                                 Stat = Stat & " <Levemente herido" & Fragsnick & ">"
+                                Else
+304                                 Stat = Stat & " <Intacto" & Fragsnick & ">"
+                                End If
+    
+                            End If
+                    
+306                         If UserList(TempCharIndex).Faccion.ArmadaReal = 1 Then
+308                             Stat = Stat & " <" & TituloReal(TempCharIndex) & ">"
+310                             ft = FontTypeNames.FONTTYPE_CONSEJOVesA
+312                         ElseIf UserList(TempCharIndex).Faccion.FuerzasCaos = 1 Then
+314                             Stat = Stat & " <" & TituloCaos(TempCharIndex) & ">"
+316                             ft = FontTypeNames.FONTTYPE_CONSEJOCAOSVesA
+                            End If
+                    
+318                         If UserList(TempCharIndex).GuildIndex > 0 Then
+320                             Stat = Stat & " <" & modGuilds.GuildName(UserList(TempCharIndex).GuildIndex) & ">"
+                            End If
+    
+                        End If ' If user > 0 then
+                                
+322                     If Not UserList(TempCharIndex).flags.Privilegios And PlayerType.user Then
+324                         If UserList(TempCharIndex).flags.Privilegios = Consejero Then
+326                             Stat = Stat & " <Game Desing>"
+328                             ft = FontTypeNames.FONTTYPE_GM
+    
+                            End If
+    
+330                         If UserList(TempCharIndex).flags.Privilegios = SemiDios Then
+332                             Stat = Stat & " <Game Master>"
+334                             ft = FontTypeNames.FONTTYPE_GM
+    
+                            End If
+    
+336                         If UserList(TempCharIndex).flags.Privilegios = Dios Then
+338                             Stat = Stat & " <Administrador>"
+340                             ft = FontTypeNames.FONTTYPE_DIOS
+    
+                            End If
+                            
+342                         If UserList(TempCharIndex).flags.Privilegios = PlayerType.Admin Then
+344                             Stat = Stat & " <Administrador>"
+346                             ft = FontTypeNames.FONTTYPE_DIOS
+    
+                            End If
+                        
+348                     ElseIf UserList(TempCharIndex).Faccion.Status = 0 Then
+350                         ft = FontTypeNames.FONTTYPE_CRIMINAL
+352                     ElseIf UserList(TempCharIndex).Faccion.Status = 1 Then
+354                         ft = FontTypeNames.FONTTYPE_CITIZEN
                         End If
                         
-342                     If UserList(TempCharIndex).flags.Privilegios = PlayerType.Admin Then
-344                         Stat = Stat & " <Administrador>"
-346                         ft = FontTypeNames.FONTTYPE_DIOS
-
+356                     If UserList(TempCharIndex).flags.Casado = 1 Then
+358                         Stat = Stat & " <Pareja de " & UserList(TempCharIndex).flags.Pareja & ">"
+    
                         End If
-                    
-348                 ElseIf UserList(TempCharIndex).Faccion.Status = 0 Then
-350                     ft = FontTypeNames.FONTTYPE_CRIMINAL
-352                 ElseIf UserList(TempCharIndex).Faccion.Status = 1 Then
-354                     ft = FontTypeNames.FONTTYPE_CITIZEN
-                    End If
-                    
-356                 If UserList(TempCharIndex).flags.Casado = 1 Then
-358                     Stat = Stat & " <Pareja de " & UserList(TempCharIndex).flags.Pareja & ">"
+                        
+360                     If Len(UserList(TempCharIndex).Desc) > 0 Then
+362                         Stat = "Ves a " & UserList(TempCharIndex).name & Stat & " - " & UserList(TempCharIndex).Desc
+                        Else
+364                         Stat = "Ves a " & UserList(TempCharIndex).name & Stat
+    
+                        End If
+                     
+                        ' Else  'Si tiene descRM la muestro siempre.
+                        '   Stat = UserList(TempCharIndex).DescRM
+                        '   ft = FontTypeNames.FONTTYPE_INFOBOLD
+                        ' End If
+                
+366                     If LenB(Stat) > 0 Then
+368                         Call WriteConsoleMsg(UserIndex, Stat, ft)
+                        End If
+                
+370                     FoundSomething = 1
+372                     UserList(UserIndex).flags.TargetUser = TempCharIndex
+374                     UserList(UserIndex).flags.TargetNPC = 0
+376                     UserList(UserIndex).flags.TargetNpcTipo = eNPCType.Comun
 
-                    End If
-                    
-360                 If Len(UserList(TempCharIndex).Desc) > 0 Then
-362                     Stat = "Ves a " & UserList(TempCharIndex).name & Stat & " - " & UserList(TempCharIndex).Desc
                     Else
-364                     Stat = "Ves a " & UserList(TempCharIndex).name & Stat
-
+                        Call WriteConsoleMsg(UserIndex, "Ves a ??? <Game Master>", FontTypeNames.FONTTYPE_GM)
+    
+                        UserList(UserIndex).flags.TargetUser = TempCharIndex
+                        UserList(UserIndex).flags.TargetNPC = 0
+                        UserList(UserIndex).flags.TargetNpcTipo = eNPCType.Comun
+    
                     End If
-                 
-                    ' Else  'Si tiene descRM la muestro siempre.
-                    '   Stat = UserList(TempCharIndex).DescRM
-                    '   ft = FontTypeNames.FONTTYPE_INFOBOLD
-                    ' End If
-            
-366                 If LenB(Stat) > 0 Then
-368                     Call WriteConsoleMsg(UserIndex, Stat, ft)
-                    End If
-            
-370                 FoundSomething = 1
-372                 UserList(UserIndex).flags.TargetUser = TempCharIndex
-374                 UserList(UserIndex).flags.TargetNPC = 0
-376                 UserList(UserIndex).flags.TargetNpcTipo = eNPCType.Comun
-
                 End If
-
             End If
 
 378         If FoundChar = 2 Then '¿Encontro un NPC?
