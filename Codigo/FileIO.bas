@@ -1356,7 +1356,7 @@ Sub LoadOBJData()
 178                 ObjData(Object).SkHerreria = val(Leer.GetValue("OBJ" & Object, "SkHerreria"))
 180                 ObjData(Object).ResistenciaMagica = val(Leer.GetValue("OBJ" & Object, "ResistenciaMagica"))
         
-182             Case eOBJType.otESCUDO
+182             Case eOBJType.otEscudo
 184                 ObjData(Object).ShieldAnim = val(Leer.GetValue("OBJ" & Object, "Anim"))
 186                 ObjData(Object).LingH = val(Leer.GetValue("OBJ" & Object, "LingH"))
 188                 ObjData(Object).LingP = val(Leer.GetValue("OBJ" & Object, "LingP"))
@@ -1366,7 +1366,7 @@ Sub LoadOBJData()
 196                 ObjData(Object).Caos = val(Leer.GetValue("OBJ" & Object, "Caos"))
 198                 ObjData(Object).ResistenciaMagica = val(Leer.GetValue("OBJ" & Object, "ResistenciaMagica"))
         
-200             Case eOBJType.otCASCO
+200             Case eOBJType.otCasco
 202                 ObjData(Object).CascoAnim = val(Leer.GetValue("OBJ" & Object, "Anim"))
 204                 ObjData(Object).LingH = val(Leer.GetValue("OBJ" & Object, "LingH"))
 206                 ObjData(Object).LingP = val(Leer.GetValue("OBJ" & Object, "LingP"))
@@ -1459,7 +1459,7 @@ Sub LoadOBJData()
 342                 ObjData(Object).HastaX = val(Leer.GetValue("OBJ" & Object, "X"))
 344                 ObjData(Object).HastaY = val(Leer.GetValue("OBJ" & Object, "Y"))
         
-346             Case eOBJType.otmagicos
+346             Case eOBJType.otMagicos
 348                 ObjData(Object).EfectoMagico = val(Leer.GetValue("OBJ" & Object, "efectomagico"))
 
 350                 If ObjData(Object).EfectoMagico = 15 Then
@@ -1474,7 +1474,7 @@ Sub LoadOBJData()
 362                 ObjData(Object).HastaX = val(Leer.GetValue("OBJ" & Object, "X"))
 364                 ObjData(Object).HastaY = val(Leer.GetValue("OBJ" & Object, "Y"))
                     
-366             Case eOBJType.otNUDILLOS
+366             Case eOBJType.otNudillos
 368                 ObjData(Object).MinHIT = val(Leer.GetValue("OBJ" & Object, "MinHIT"))
 370                 ObjData(Object).MaxHit = val(Leer.GetValue("OBJ" & Object, "MaxHit"))
 372                 ObjData(Object).Envenena = val(Leer.GetValue("OBJ" & Object, "Envenena"))
@@ -1526,11 +1526,13 @@ Sub LoadOBJData()
 
                     End If
                 
-434             Case eOBJType.otAnillos
+434             Case eOBJType.otDañoMagico
 436                 ObjData(Object).MagicDamageBonus = val(Leer.GetValue("OBJ" & Object, "MagicDamageBonus"))
-437                 ObjData(Object).ResistenciaMagica = val(Leer.GetValue("OBJ" & Object, "ResistenciaMagica"))
 438                 ObjData(Object).MinHIT = val(Leer.GetValue("OBJ" & Object, "MinHIT"))
 439                 ObjData(Object).MaxHit = val(Leer.GetValue("OBJ" & Object, "MaxHIT"))
+
+                Case eOBJType.otResistencia
+                    ObjData(Object).ResistenciaMagica = val(Leer.GetValue("OBJ" & Object, "ResistenciaMagica"))
             
             End Select
     
@@ -1651,9 +1653,6 @@ Sub LoadOBJData()
 570             ObjData(Object).SkillRequerido = val(Field(1))
             End If
             ' -----------------
-    
-572         ObjData(Object).DefensaMagicaMax = val(Leer.GetValue("OBJ" & Object, "DefensaMagicaMax"))
-574         ObjData(Object).DefensaMagicaMin = val(Leer.GetValue("OBJ" & Object, "DefensaMagicaMin"))
     
 576         ObjData(Object).SkCarpinteria = val(Leer.GetValue("OBJ" & Object, "SkCarpinteria"))
     
@@ -1917,7 +1916,8 @@ Sub LoadUserInit(ByVal UserIndex As Integer, ByRef UserFile As clsIniReader)
 274     UserList(UserIndex).Invent.BarcoSlot = CByte(UserFile.GetValue("Inventory", "BarcoSlot"))
 276     UserList(UserIndex).Invent.MonturaSlot = CByte(UserFile.GetValue("Inventory", "MonturaSlot"))
 278     UserList(UserIndex).Invent.MunicionEqpSlot = CByte(UserFile.GetValue("Inventory", "MunicionSlot"))
-280     UserList(UserIndex).Invent.AnilloEqpSlot = CByte(UserFile.GetValue("Inventory", "AnilloSlot"))
+280     UserList(UserIndex).Invent.DañoMagicoEqpSlot = CByte(UserFile.GetValue("Inventory", "DMSlot"))
+281     UserList(UserIndex).Invent.ResistenciaEqpSlot = CByte(UserFile.GetValue("Inventory", "RMSlot"))
 282     UserList(UserIndex).Invent.MagicoSlot = CByte(UserFile.GetValue("Inventory", "MagicoSlot"))
 284     UserList(UserIndex).Invent.NudilloSlot = CByte(UserFile.GetValue("Inventory", "NudilloEqpSlot"))
 
@@ -2898,12 +2898,21 @@ Sub LoadUser(ByVal UserIndex As Integer)
 178             .Invent.MunicionEqpObjIndex = .Invent.Object(.Invent.MunicionEqpSlot).ObjIndex
             End If
 
-            'Obtiene el indice-objeto anilo
-180         If .Invent.AnilloEqpSlot > 0 Then
-182             .Invent.AnilloEqpObjIndex = .Invent.Object(.Invent.AnilloEqpSlot).ObjIndex
+            ' DM
+180         If .Invent.DañoMagicoEqpSlot > 0 Then
+182             .Invent.DañoMagicoEqpObjIndex = .Invent.Object(.Invent.DañoMagicoEqpSlot).ObjIndex
             
 184             If .flags.Muerto = 0 Then
-186                 .Char.Anillo_Aura = ObjData(.Invent.AnilloEqpObjIndex).CreaGRH
+186                 .Char.DM_Aura = ObjData(.Invent.DañoMagicoEqpObjIndex).CreaGRH
+                End If
+            End If
+            
+            ' RM
+            If .Invent.ResistenciaEqpSlot > 0 Then
+               .Invent.ResistenciaEqpObjIndex = .Invent.Object(.Invent.ResistenciaEqpSlot).ObjIndex
+             
+                If .flags.Muerto = 0 Then
+                    .Char.RM_Aura = ObjData(.Invent.ResistenciaEqpObjIndex).CreaGRH
                 End If
             End If
 
@@ -3000,7 +3009,8 @@ Sub SaveUserWIP(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = F
 160         S.Append "slot_shield: " & .Invent.EscudoEqpSlot & ", "
 162         S.Append "slot_helmet: " & .Invent.CascoEqpSlot & ", "
 164         S.Append "slot_ammo: " & .Invent.MunicionEqpSlot & ", "
-166         S.Append "slot_ring: " & .Invent.AnilloEqpSlot & ", "
+166         S.Append "slot_dm: " & .Invent.DañoMagicoEqpSlot & ", "
+167         S.Append "slot_rm: " & .Invent.ResistenciaEqpSlot & ", "
 168         S.Append "slot_tool: " & .Invent.HerramientaEqpSlot & ", "
 170         S.Append "slot_magic: " & .Invent.MagicoSlot & ", "
 172         S.Append "slot_knuckles: " & .Invent.NudilloSlot & ", "
@@ -3338,7 +3348,8 @@ Sub SaveUserCharfile(ByVal UserIndex As Integer, Optional ByVal Logout As Boolea
             Print #n, , "BarcoSlot=" & CStr(.BarcoSlot) & vbCrLf
             Print #n, , "MonturaSlot=" & CStr(.MonturaSlot) & vbCrLf
             Print #n, , "MunicionSlot=" & CStr(.MunicionEqpSlot) & vbCrLf
-            Print #n, , "AnilloSlot=" & CStr(.AnilloEqpSlot) & vbCrLf
+            Print #n, , "DMSlot=" & CStr(.DañoMagicoEqpSlot) & vbCrLf
+            Print #n, , "RMSlot=" & CStr(.ResistenciaEqpSlot) & vbCrLf
             Print #n, , "MagicoSlot=" & CStr(.MagicoSlot) & vbCrLf
             Print #n, , "NudilloEqpSlot=" & CStr(.NudilloSlot) & vbCrLf
         End With
@@ -3643,7 +3654,8 @@ Sub SaveNewUserCharfile(ByVal UserIndex As Integer)
 300     Put n, , "BarcoSlot=" & CStr(UserList(UserIndex).Invent.BarcoSlot) & vbCrLf
 302     Put n, , "MonturaSlot=" & CStr(UserList(UserIndex).Invent.MonturaSlot) & vbCrLf
 304     Put n, , "MunicionSlot=" & CStr(UserList(UserIndex).Invent.MunicionEqpSlot) & vbCrLf
-306     Put n, , "AnilloSlot=" & CStr(UserList(UserIndex).Invent.AnilloEqpSlot) & vbCrLf
+306     Put n, , "DMSlot=" & CStr(UserList(UserIndex).Invent.DañoMagicoEqpSlot) & vbCrLf
+307     Put n, , "RMSlot=" & CStr(UserList(UserIndex).Invent.ResistenciaEqpSlot) & vbCrLf
 308     Put n, , "MagicoSlot=" & CStr(UserList(UserIndex).Invent.MagicoSlot) & vbCrLf
 310     Put n, , "NudilloEqpSlot=" & CStr(UserList(UserIndex).Invent.NudilloSlot) & vbCrLf
     

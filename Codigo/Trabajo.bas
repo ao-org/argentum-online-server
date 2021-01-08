@@ -731,10 +731,10 @@ Public Sub HerreroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As I
 108         If ObjData(ItemIndex).OBJType = eOBJType.otWeapon Then
                 ' Call WriteConsoleMsg(UserIndex, "Has construido el arma!", FontTypeNames.FONTTYPE_INFO)
 110             Call WriteRenderValueMsg(UserIndex, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, " 1", 5)
-112         ElseIf ObjData(ItemIndex).OBJType = eOBJType.otESCUDO Then
+112         ElseIf ObjData(ItemIndex).OBJType = eOBJType.otEscudo Then
                 ' Call WriteConsoleMsg(UserIndex, "Has construido el escudo!", FontTypeNames.FONTTYPE_INFO)
 114             Call WriteRenderValueMsg(UserIndex, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, " 1", 5)
-116         ElseIf ObjData(ItemIndex).OBJType = eOBJType.otCASCO Then
+116         ElseIf ObjData(ItemIndex).OBJType = eOBJType.otCasco Then
                 ' Call WriteConsoleMsg(UserIndex, "Has construido el casco!", FontTypeNames.FONTTYPE_INFO)
 118             Call WriteRenderValueMsg(UserIndex, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, " 1", 5)
 120         ElseIf ObjData(ItemIndex).OBJType = eOBJType.otArmadura Then
@@ -1713,8 +1713,8 @@ Public Sub DoRobar(ByVal LadrOnIndex As Integer, ByVal victimaIndex As Integer)
                             If .clase = eClass.Thief Then
 
                                 ' Si no tine puestos los guantes de hurto roba un 50% menos.
-                                If .Invent.AnilloEqpObjIndex > 0 Then
-                                    If ObjData(.Invent.AnilloEqpObjIndex).Subtipo = 5 Then
+                                If .Invent.DañoMagicoEqpObjIndex > 0 Then
+                                    If ObjData(.Invent.DañoMagicoEqpObjIndex).Subtipo = 5 Then
                                         n = RandomNumber(.Stats.ELV * 50, .Stats.ELV * 100) * OroMult
                                     Else
                                         n = RandomNumber(.Stats.ELV * 25, .Stats.ELV * 50) * OroMult
@@ -3072,11 +3072,11 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 116             puntosDomar = CInt(.Stats.UserAtributos(eAtributos.Carisma)) * CInt(.Stats.UserSkills(eSkill.Domar))
 
                 ' 20% de bonificacion
-118             If .Invent.AnilloEqpObjIndex = FLAUTAELFICA Then
+118             If .Invent.DañoMagicoEqpObjIndex = FLAUTAELFICA Then
 120                 puntosRequeridos = Npclist(NpcIndex).flags.Domable * 0.8
 
                 ' 11% de bonificacion
-122             ElseIf .Invent.AnilloEqpObjIndex = FLAUTAMAGICA Then
+122             ElseIf .Invent.DañoMagicoEqpObjIndex = FLAUTAMAGICA Then
 124                 puntosRequeridos = Npclist(NpcIndex).flags.Domable * 0.89
 
                 Else

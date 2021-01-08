@@ -749,30 +749,30 @@ Public Enum eOBJType
     otBebidas = 13
     otLeña = 14
     otFogata = 15
-    otESCUDO = 16
-    otCASCO = 17
+    otEscudo = 16
+    otCasco = 17
     otHerramientas = 18
     otTeleport = 19
     OtDecoraciones = 20
-    otmagicos = 21
+    otMagicos = 21
     otYacimiento = 22
     otMinerales = 23
     otPergaminos = 24
     otInstrumentos = 26
     otYunque = 27
     otFragua = 28
-    otAnillos = 30
+    otDañoMagico = 30
     otBarcos = 31
     otFlechas = 32
     otBotellaVacia = 33
     otBotellaLlena = 34
-    otManchas = 35          'No se usa
+    otResistencia = 35
     otpasajes = 36
     otmapa = 38
     OtPozos = 40
     otMonturas = 44
     otRunas = 45
-    otNUDILLOS = 46
+    otNudillos = 46
     OtCorreo = 47
     OtCofre = 48
     OtDonador = 50
@@ -1001,8 +1001,10 @@ Public Type Inventario
     CascoEqpSlot As Byte
     MunicionEqpObjIndex As Integer
     MunicionEqpSlot As Byte
-    AnilloEqpObjIndex As Integer
-    AnilloEqpSlot As Byte
+    DañoMagicoEqpObjIndex As Integer
+    DañoMagicoEqpSlot As Byte
+    ResistenciaEqpObjIndex As Integer
+    ResistenciaEqpSlot As Byte
     HerramientaEqpObjIndex As Integer
     HerramientaEqpSlot As Byte
     BarcoObjIndex As Integer
@@ -1073,7 +1075,8 @@ Public Type Char
     Body_Aura As String
     Arma_Aura As String
     Escudo_Aura As String
-    Anillo_Aura As String
+    DM_Aura As String
+    RM_Aura As String
     Otra_Aura As String
     speeding As Single
     BodyIdle As Integer
@@ -1275,8 +1278,6 @@ Public Type ObjData
     IndexCerradaLlave As Integer
     
     RazaEnana As Byte
-    
-    ResistenciaMagica As Byte
     RazaDrow As Byte
     RazaElfa As Byte
     RazaGnoma As Byte
@@ -1324,8 +1325,7 @@ Public Type ObjData
     
     Power As Integer
     MagicDamageBonus As Integer
-    DefensaMagicaMax As Integer
-    DefensaMagicaMin As Integer
+    ResistenciaMagica As Integer
     Refuerzo As Byte
     
     Log As Byte 'es un objeto que queremos loguear? Pablo (ToxicWaste) 07/09/07

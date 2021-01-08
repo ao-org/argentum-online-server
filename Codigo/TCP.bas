@@ -1324,7 +1324,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
         
             '¿Supera el máximo de usuarios por cuenta?
 110         If MaxUsersPorCuenta > 0 Then
-112             If GetUsersLoggedAccountDatabase(.AccountID) >= MaxUsersPorCuenta Then
+112             If ContarUsuariosMismaCuenta(.AccountID) >= MaxUsersPorCuenta Then
 114                 If MaxUsersPorCuenta = 1 Then
 116                     Call WriteShowMessageBox(UserIndex, "Ya hay un usuario conectado con esta cuenta.")
                     Else
@@ -1964,7 +1964,8 @@ Sub ResetCharInfo(ByVal UserIndex As Integer)
 124         .Body_Aura = ""
 126         .Head_Aura = ""
 128         .Otra_Aura = ""
-130         .Anillo_Aura = ""
+129         .DM_Aura = ""
+130         .RM_Aura = ""
 132         .Escudo_Aura = ""
 134         .ParticulaFx = 0
 136         .speeding = VelocidadCero
@@ -2723,5 +2724,19 @@ Function ValidarNombre(nombre As String) As Boolean
     End If
     
     ValidarNombre = True
+
+End Function
+
+Function ContarUsuariosMismaCuenta(ByVal AccountID As Integer) As Integer
+
+    Dim i As Integer
+    
+    For i = 1 To LastUser
+        
+        If UserList(i).flags.UserLogged And UserList(i).AccountID = AccountID Then
+            ContarUsuariosMismaCuenta = ContarUsuariosMismaCuenta + 1
+        End If
+        
+    Next
 
 End Function

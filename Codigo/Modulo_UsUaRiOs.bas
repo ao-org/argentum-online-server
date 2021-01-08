@@ -211,10 +211,17 @@ Sub RevivirUsuario(ByVal UserIndex As Integer)
                     End If
                 End If
                 
-234             If .Invent.AnilloEqpObjIndex > 0 Then
-236                 If ObjData(.Invent.AnilloEqpObjIndex).CreaGRH <> "" Then
-238                     .Char.Anillo_Aura = ObjData(.Invent.AnilloEqpObjIndex).CreaGRH
-240                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Anillo_Aura, False, 6))
+234             If .Invent.DañoMagicoEqpObjIndex > 0 Then
+236                 If ObjData(.Invent.DañoMagicoEqpObjIndex).CreaGRH <> "" Then
+238                     .Char.DM_Aura = ObjData(.Invent.DañoMagicoEqpObjIndex).CreaGRH
+240                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.DM_Aura, False, 6))
+                    End If
+                End If
+                
+                If .Invent.ResistenciaEqpObjIndex > 0 Then
+                    If ObjData(.Invent.ResistenciaEqpObjIndex).CreaGRH <> "" Then
+                        .Char.RM_Aura = ObjData(.Invent.ResistenciaEqpObjIndex).CreaGRH
+                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.RM_Aura, False, 7))
                     End If
                 End If
                 
@@ -403,7 +410,7 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
                         End If
                     End If
 
-134                 Call WriteCharacterCreate(sndIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.CharIndex, X, Y, .Char.WeaponAnim, .Char.ShieldAnim, .Char.FX, 999, .Char.CascoAnim, TempName, .Faccion.Status, .flags.Privilegios, .Char.ParticulaFx, .Char.Head_Aura, .Char.Arma_Aura, .Char.Body_Aura, .Char.Anillo_Aura, .Char.Otra_Aura, .Char.Escudo_Aura, .Char.speeding, False, .donador.activo, appear, .Grupo.Lider, .GuildIndex, clan_nivel, .Stats.MinHp, .Stats.MaxHp, 0, False, .flags.Navegando)
+134                 Call WriteCharacterCreate(sndIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.CharIndex, X, Y, .Char.WeaponAnim, .Char.ShieldAnim, .Char.FX, 999, .Char.CascoAnim, TempName, .Faccion.Status, .flags.Privilegios, .Char.ParticulaFx, .Char.Head_Aura, .Char.Arma_Aura, .Char.Body_Aura, .Char.DM_Aura, .Char.RM_Aura, .Char.Otra_Aura, .Char.Escudo_Aura, .Char.speeding, False, .donador.activo, appear, .Grupo.Lider, .GuildIndex, clan_nivel, .Stats.MinHp, .Stats.MaxHp, 0, False, .flags.Navegando)
                                          
                 Else
             
