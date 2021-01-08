@@ -1298,7 +1298,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 176         If Not EsGM(UserIndex) And EsGM(tU) Then Exit Sub
             
 180         If UserList(UserIndex).flags.Mimetizado = 1 Then
-182             Call WriteConsoleMsg(UserIndex, "Ya te encuentras transformado. El hechizo no ha tenido efecto", FontTypeNames.FONTTYPE_INFO)
+182             Call WriteConsoleMsg(UserIndex, "Ya te encuentras transformado. El hechizo no tuvo efecto", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
             
@@ -1995,7 +1995,7 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
 238     If Hechizos(hIndex).Mimetiza = 1 Then
     
 240         If UserList(UserIndex).flags.Mimetizado = 1 Then
-242             Call WriteConsoleMsg(UserIndex, "Ya te encuentras transformado. El hechizo no ha tenido efecto", FontTypeNames.FONTTYPE_INFO)
+242             Call WriteConsoleMsg(UserIndex, "Ya te encuentras transformado. El hechizo no tuvo efecto", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
             

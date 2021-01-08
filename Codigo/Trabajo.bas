@@ -1943,21 +1943,18 @@ Public Sub DoApuñalar(ByVal UserIndex As Integer, ByVal VictimNpcIndex As Integ
     
 102     Select Case UserList(UserIndex).clase
 
-            Case eClass.Assasin '35
-104             Suerte = Int(((0.00003 * Skill - 0.001) * Skill + 0.098) * Skill + 4.25)
-        
-106         Case eClass.Cleric, eClass.Paladin, eClass.Pirat ' 15
-108             Suerte = Int(((0.000003 * Skill + 0.0006) * Skill + 0.0107) * Skill + 4.93)
-        
-110         Case eClass.Bard, eClass.Druid '13
-112             Suerte = Int(((0.000002 * Skill + 0.0002) * Skill + 0.032) * Skill + 4.81)
-        
-114         Case Else '8
-116             Suerte = Int(0.0361 * Skill + 4.39)
+            Case eClass.Assasin '25
+104             Suerte = 0.2 * Skill + 5
+
+            Case eClass.Pirat, eClass.Hunter '20
+                Suerte = 0.155 * Skill + 4.5
+
+114         Case Else ' 15
+116             Suerte = 0.11 * Skill + 4
 
         End Select
     
-118     If RandomNumber(0, 70) < Suerte Then
+118     If RandomNumber(1, 100) < Suerte Then
 120         If VictimUserIndex <> 0 Then
 122             daño = daño * 1.5
             
@@ -2036,11 +2033,11 @@ Public Sub DoGolpeCritico(ByVal UserIndex As Integer, ByVal VictimNpcIndex As In
         
         End With
 
-110     Suerte = Int(((0.000003 * Skill + 0.0006) * Skill + 0.0107) * Skill + 4.93)
+110     Suerte = 0.2 * Skill + 5
 
         If VictimNpcIndex <> 0 Then Suerte = Suerte * 2
 
-112     If RandomNumber(0, 100) < Suerte Then
+112     If RandomNumber(1, 100) < Suerte Then
 114         daño = Int(daño * 0.5)
 
 116         If VictimUserIndex <> 0 Then
