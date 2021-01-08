@@ -2019,7 +2019,7 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
 266                 .Char.CascoAnim = NingunCasco
 268                 .Char.ShieldAnim = NingunEscudo
 270                 .Char.WeaponAnim = NingunArma
-                    .NameMimetizado = IIf(Npclist(NpcIndex).showName, Npclist(NpcIndex).name, vbNullString)
+                    .NameMimetizado = IIf(Npclist(NpcIndex).showName = 1, Npclist(NpcIndex).name, vbNullString)
 
 272                 Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
                     Call RefreshCharStatus(UserIndex)
