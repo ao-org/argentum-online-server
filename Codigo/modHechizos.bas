@@ -1325,8 +1325,10 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 204             .Char.CascoAnim = UserList(tU).Char.CascoAnim
 206             .Char.ShieldAnim = UserList(tU).Char.ShieldAnim
 208             .Char.WeaponAnim = UserList(tU).Char.WeaponAnim
+                .name = UserList(tU).name
             
 210             Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+                Call RefreshCharStatus(UserIndex)
             End With
            
 212        Call InfoHechizo(UserIndex)
