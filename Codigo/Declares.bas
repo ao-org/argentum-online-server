@@ -1772,7 +1772,6 @@ End Type
 Public Type user
 
     name As String
-    OrigName As String
     Cuenta As String
     
     Id As Long
@@ -1792,6 +1791,7 @@ Public Type user
     
     Char As Char 'Define la apariencia
     CharMimetizado As Char
+    NameMimetizado As String
     OrigChar As Char
     
     Desc As String ' Descripcion
