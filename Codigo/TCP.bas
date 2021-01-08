@@ -721,6 +721,7 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal 
 134     UserList(UserIndex).flags.Pareja = ""
 
 136     UserList(UserIndex).name = name
+137     UserList(UserIndex).OrigName = name
 138     UserList(UserIndex).clase = UserClase
 140     UserList(UserIndex).raza = UserRaza
     

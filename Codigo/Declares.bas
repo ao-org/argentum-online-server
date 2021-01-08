@@ -1772,6 +1772,7 @@ End Type
 Public Type user
 
     name As String
+    OrigName As String
     Cuenta As String
     
     Id As Long
