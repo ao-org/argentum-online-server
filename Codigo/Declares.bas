@@ -2117,18 +2117,20 @@ Type MapInfo
 
     map_name As String
     backup_mode As Byte
-    restrict_mode As String
     music_numberHi As Long
     music_numberLow As Long
     Seguro As Byte
     zone As String
     terrain As String
+    Newbie As Boolean
+    SinMagia As Boolean
+    SinInviOcul As Boolean
+    NoPKs As Boolean
+    NoCiudadanos As Boolean
+    ResuCiudad As Boolean
     ambient As String
     base_light As Long
     letter_grh As Long
-    extra1 As Long
-    extra2 As Long
-    extra3 As String
     lluvia As Byte
     Nieve As Byte
     niebla As Byte

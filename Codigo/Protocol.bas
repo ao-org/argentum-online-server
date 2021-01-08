@@ -3482,6 +3482,11 @@ Private Sub HandleWork(ByVal UserIndex As Integer)
     
                     End If
                     
+                    If MapInfo(.Pos.Map).SinInviOcul Then
+                        Call WriteConsoleMsg(UserIndex, "Una fuerza divina te impide ocultarte en esta zona.", FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
+                    
 156                 Call DoOcultarse(UserIndex)
 
             End Select
@@ -17438,15 +17443,37 @@ Public Sub HandleChangeMapInfoRestricted(ByVal UserIndex As Integer)
 110         tStr = Buffer.ReadASCIIString()
         
 112         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) <> 0 Then
-114             If tStr = "NEWBIE" Or tStr = "NO" Or tStr = "ARMADA" Or tStr = "CAOS" Or tStr = "FACCION" Then
-116                 Call LogGM(.name, .name & " ha cambiado la informacion sobre si es Restringido el mapa.")
-118                 MapInfo(UserList(UserIndex).Pos.Map).restrict_mode = tStr
-120                 Call WriteVar(MapPath & "mapa" & UserList(UserIndex).Pos.Map & ".dat", "Mapa" & UserList(UserIndex).Pos.Map, "Restringir", tStr)
-122                 Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & " Restringido: " & MapInfo(.Pos.Map).restrict_mode, FontTypeNames.FONTTYPE_INFO)
-                Else
-124                 Call WriteConsoleMsg(UserIndex, "Opciones para restringir: 'NEWBIE', 'NO', 'ARMADA', 'CAOS', 'FACCION'", FontTypeNames.FONTTYPE_INFO)
 
-                End If
+                Select Case tStr
+                
+                    Case "NEWBIE"
+                        MapInfo(.Pos.Map).Newbie = Not MapInfo(.Pos.Map).Newbie
+                        Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & ": Newbie = " & MapInfo(.Pos.Map).Newbie, FontTypeNames.FONTTYPE_INFO)
+                        Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .Pos.Map & ": Newbie = " & MapInfo(.Pos.Map).Newbie)
+                        
+                    Case "SINMAGIA"
+                        MapInfo(.Pos.Map).SinMagia = Not MapInfo(.Pos.Map).SinMagia
+                        Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & ": SinMagia = " & MapInfo(.Pos.Map).SinMagia, FontTypeNames.FONTTYPE_INFO)
+                        Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .Pos.Map & ": SinMagia = " & MapInfo(.Pos.Map).SinMagia)
+                        
+                    Case "NOPKS"
+                        MapInfo(.Pos.Map).NoPKs = Not MapInfo(.Pos.Map).NoPKs
+                        Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & ": NoPKs = " & MapInfo(.Pos.Map).NoPKs, FontTypeNames.FONTTYPE_INFO)
+                        Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .Pos.Map & ": NoPKs = " & MapInfo(.Pos.Map).NoPKs)
+                        
+                    Case "NOCIUD"
+                        MapInfo(.Pos.Map).NoCiudadanos = Not MapInfo(.Pos.Map).NoCiudadanos
+                        Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & ": NoCiudadanos = " & MapInfo(.Pos.Map).NoCiudadanos, FontTypeNames.FONTTYPE_INFO)
+                        Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .Pos.Map & ": NoCiudadanos = " & MapInfo(.Pos.Map).NoCiudadanos)
+                        
+                    Case "SININVI"
+                        MapInfo(.Pos.Map).SinInviOcul = Not MapInfo(.Pos.Map).SinInviOcul
+                        Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & ": SinInvi = " & MapInfo(.Pos.Map).SinInviOcul, FontTypeNames.FONTTYPE_INFO)
+                        Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .Pos.Map & ": SinInvi = " & MapInfo(.Pos.Map).SinInviOcul)
+                
+                    Case Else
+                        Call WriteConsoleMsg(UserIndex, "Opciones para restringir: 'NEWBIE', 'SINMAGIA', 'SININVI', 'NOPKS', 'NOCIUD'", FontTypeNames.FONTTYPE_INFO)
+                End Select
 
             End If
         
@@ -28769,7 +28796,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
 248                 Case 5
 250                     Log = "Repuesta Afirmativa 5"
                 
-252                     If UCase$(MapInfo(UserList(UserIndex).Pos.Map).restrict_mode) = "NEWBIE" Then
+252                     If MapInfo(UserList(UserIndex).Pos.Map).Newbie Then
 254                         Call WarpToLegalPos(UserIndex, 140, 53, 58)
                     
 256                         If UserList(UserIndex).donador.activo = 0 Then ' Donador no espera tiempo

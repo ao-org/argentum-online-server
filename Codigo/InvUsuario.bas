@@ -140,7 +140,7 @@ Sub QuitarNewbieObj(ByVal UserIndex As Integer)
     
         'Si el usuario dejó de ser Newbie, y estaba en el Newbie Dungeon
         'es transportado a su hogar de origen ;)
-112     If UCase$(MapInfo(UserList(UserIndex).Pos.Map).restrict_mode) = "NEWBIE" Then
+112     If MapInfo(UserList(UserIndex).Pos.Map).Newbie Then
         
             Dim DeDonde As WorldPos
         

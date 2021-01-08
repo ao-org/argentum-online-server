@@ -2343,23 +2343,33 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
         End With
 
 316     Close fh
+
+        ' WyroX: Nuevo sistema de restricciones
+        If Not IsNumeric(MapDat.restrict_mode) Then
+            ' Solo se usaba el "NEWBIE"
+            If UCase$(MapDat.restrict_mode) = "NEWBIE" Then
+                MapDat.restrict_mode = "1"
+            Else
+                MapDat.restrict_mode = "0"
+            End If
+        End If
     
 318     MapInfo(Map).map_name = MapDat.map_name
 320     MapInfo(Map).ambient = MapDat.ambient
 322     MapInfo(Map).backup_mode = MapDat.backup_mode
 324     MapInfo(Map).base_light = MapDat.base_light
-326     MapInfo(Map).extra1 = MapDat.extra1
-        'MapInfo(Map).extra2 = MapDat.extra2
-328     MapInfo(Map).extra2 = val(GetVar(DatPath & "Map.dat", "RESUCIUDAD", Map))
-    
-330     MapInfo(Map).extra3 = MapDat.extra3
+        MapInfo(Map).Newbie = (val(MapDat.restrict_mode) And 1) <> 0
+        MapInfo(Map).SinMagia = (val(MapDat.restrict_mode) And 2) <> 0
+        MapInfo(Map).NoPKs = (val(MapDat.restrict_mode) And 4) <> 0
+        MapInfo(Map).NoCiudadanos = (val(MapDat.restrict_mode) And 8) <> 0
+        MapInfo(Map).SinInviOcul = (val(MapDat.restrict_mode) And 16) <> 0
+328     MapInfo(Map).ResuCiudad = val(GetVar(DatPath & "Map.dat", "RESUCIUDAD", Map)) <> 0
 332     MapInfo(Map).letter_grh = MapDat.letter_grh
 334     MapInfo(Map).lluvia = MapDat.lluvia
 336     MapInfo(Map).music_numberHi = MapDat.music_numberHi
 338     MapInfo(Map).music_numberLow = MapDat.music_numberLow
 340     MapInfo(Map).niebla = MapDat.niebla
 342     MapInfo(Map).Nieve = MapDat.Nieve
-344     MapInfo(Map).restrict_mode = MapDat.restrict_mode
     
 346     MapInfo(Map).Seguro = MapDat.Seguro
 
