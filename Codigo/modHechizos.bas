@@ -285,6 +285,11 @@ Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As Integer, 
         
 
 100     If UserList(UserIndex).flags.Muerto = 0 Then
+            
+            If MapInfo(UserList(UserIndex).Pos.Map).SinMagia Then
+                Call WriteConsoleMsg(UserIndex, "Una fuerza mística te impide lanzar hechizos en esta zona.", FontTypeNames.FONTTYPE_FIGHT)
+                Exit Function
+            End If
 
             Dim wp2 As WorldPos
 
@@ -1250,6 +1255,11 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 
             End If
             
+            If MapInfo(UserList(tU).Pos.Map).SinInviOcul Then
+                Call WriteConsoleMsg(UserIndex, "Una fuerza divina te impide usar invisibilidad en esta zona.", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+            
 146         If UserList(tU).flags.invisible = 1 Then
 148             If tU = UserIndex Then
 150                 Call WriteConsoleMsg(UserIndex, "¡Ya estás invisible!", FontTypeNames.FONTTYPE_INFO)
@@ -1285,11 +1295,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             End If
             
             'Si sos user, no uses este hechizo con GMS.
-176         If UserList(UserIndex).flags.Privilegios And PlayerType.user Then
-178             If Not UserList(tU).flags.Privilegios And PlayerType.user Then
-                    Exit Sub
-                End If
-            End If
+176         If Not EsGM(UserIndex) And EsGM(tU) Then Exit Sub
             
 180         If UserList(UserIndex).flags.Mimetizado = 1 Then
 182             Call WriteConsoleMsg(UserIndex, "Ya te encuentras transformado. El hechizo no ha tenido efecto", FontTypeNames.FONTTYPE_INFO)
@@ -1315,8 +1321,10 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 204             .Char.CascoAnim = UserList(tU).Char.CascoAnim
 206             .Char.ShieldAnim = UserList(tU).Char.ShieldAnim
 208             .Char.WeaponAnim = UserList(tU).Char.WeaponAnim
+                .name = UserList(tU).name
             
 210             Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+                Call RefreshCharStatus(UserIndex)
             End With
            
 212        Call InfoHechizo(UserIndex)
@@ -2010,8 +2018,9 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
 266                 .Char.CascoAnim = NingunCasco
 268                 .Char.ShieldAnim = NingunEscudo
 270                 .Char.WeaponAnim = NingunArma
-                
+
 272                 Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+                    Call RefreshCharStatus(UserIndex)
                 End With
             Else
 274             Call WriteConsoleMsg(UserIndex, "Solo los druidas pueden mimetizarse con criaturas.", FontTypeNames.FONTTYPE_INFO)

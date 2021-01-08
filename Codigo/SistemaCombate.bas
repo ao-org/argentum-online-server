@@ -634,6 +634,11 @@ Public Function CalcularDaño(ByVal UserIndex As Integer, Optional ByVal NpcInde
 208             CalcularDaño = Npclist(NpcIndex).Stats.MinHp + Npclist(NpcIndex).Stats.def
             Else
 210             CalcularDaño = (3 * DañoArma + DañoMaxArma * 0.2 * Maximo(0, .Stats.UserAtributos(Fuerza) - 15) + DañoUsuario) * ModifClase
+
+                ' WyroX: Idea de los de balace. El pirata navegando pega un 20% más
+                If .clase = eClass.Pirat And .flags.Navegando Then
+                    CalcularDaño = CalcularDaño * 1.2
+                End If
             End If
 
         End With
@@ -1116,15 +1121,15 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
        
         Else
             
-            Dim SendTo As SendTarget
+            Dim sendto As SendTarget
 
             If UserList(UserIndex).clase = eClass.Hunter And UserList(UserIndex).flags.Oculto = 0 Then
-                SendTo = SendTarget.ToPCArea
+                sendto = SendTarget.ToPCArea
             Else
-                SendTo = SendTarget.ToIndex
+                sendto = SendTarget.ToIndex
             End If
 
-            Call SendData(SendTo, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.CharIndex))
+            Call SendData(sendto, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.CharIndex))
 
         End If
 
@@ -1156,15 +1161,15 @@ Public Function UsuarioAtacaNpcFunction(ByVal UserIndex As Integer, ByVal NpcInd
 
         Else
             
-            Dim SendTo As SendTarget
+            Dim sendto As SendTarget
 
             If UserList(UserIndex).clase = eClass.Hunter And UserList(UserIndex).flags.Oculto = 0 Then
-                SendTo = SendTarget.ToPCArea
+                sendto = SendTarget.ToPCArea
             Else
-                SendTo = SendTarget.ToIndex
+                sendto = SendTarget.ToIndex
             End If
             
-            Call SendData(SendTo, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.CharIndex))
+            Call SendData(sendto, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.CharIndex))
             
 114         UsuarioAtacaNpcFunction = 2
 
@@ -1534,15 +1539,15 @@ Public Sub UsuarioAtacaUsuario(ByVal atacanteIndex As Integer, ByVal victimaInde
 
         Else
         
-            Dim SendTo As SendTarget
+            Dim sendto As SendTarget
    
             If UserList(atacanteIndex).clase = eClass.Hunter And UserList(atacanteIndex).flags.Oculto = 0 Then
-                SendTo = SendTarget.ToPCArea
+                sendto = SendTarget.ToPCArea
             Else
-                SendTo = SendTarget.ToIndex
+                sendto = SendTarget.ToIndex
             End If
             
-            Call SendData(SendTo, atacanteIndex, PrepareMessageCharSwing(UserList(atacanteIndex).Char.CharIndex))
+            Call SendData(sendto, atacanteIndex, PrepareMessageCharSwing(UserList(atacanteIndex).Char.CharIndex))
 
         End If
 

@@ -1409,6 +1409,8 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
         
             ' Seteamos el nombre
 222         .name = name
+            .OrigName = name
+            .showName = True
         
             ' Cargamos el personaje
 224         Call LoadUser(UserIndex)

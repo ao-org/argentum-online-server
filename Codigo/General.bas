@@ -1643,9 +1643,12 @@ Public Sub EfectoMimetismo(ByVal UserIndex As Integer)
 130                 .Char.ShieldAnim = .CharMimetizado.ShieldAnim
 132                 .Char.WeaponAnim = .CharMimetizado.WeaponAnim
                 End If
+                
+                .name = .OrigName
             
 134             With .Char
 136                 Call ChangeUserChar(UserIndex, .Body, .Head, .Heading, .WeaponAnim, .ShieldAnim, .CascoAnim)
+                    Call RefreshCharStatus(UserIndex)
                 End With
             
 138             .Counters.Mimetismo = 0
@@ -2311,6 +2314,8 @@ Sub PasarSegundo()
 144             If .flags.Estupidez = 1 Then Call EfectoEstupidez(i)
 146             If .flags.Maldicion = 1 Then Call EfectoMaldicionUser(i)
 148             If .flags.VelocidadBackup > 0 Then Call EfectoVelocidadUser(i)
+
+                .flags.UltimoMensaje = 0
         
             End With
         
