@@ -1637,13 +1637,7 @@ Sub UserDie(ByVal UserIndex As Integer)
         
             '<< Actualizamos clientes >>
 400         Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)
-            'Call WriteUpdateUserStats(UserIndex)
-        
-            'If UCase$(MapInfo(.Pos.Map).restrict_mode) = "NEWBIE" Then
-            '    .flags.pregunta = 5
-            '    Call WritePreguntaBox(UserIndex, "¡Has muerto! ¿Deseas ser resucitado?")
-            'End If
-        
+
         End With
 
         Exit Sub
@@ -1976,12 +1970,17 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As In
     
 198     Call WriteUserCharIndexInServer(UserIndex)
     
-        'Force a flush, so user index is in there before it's destroyed for teleporting
-    
-    
         'Seguis invisible al pasar de mapa
 200     If (UserList(UserIndex).flags.invisible = 1 Or UserList(UserIndex).flags.Oculto = 1) And (Not UserList(UserIndex).flags.AdminInvisible = 1) Then
-202         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(UserList(UserIndex).Char.CharIndex, True))
+            ' Si el mapa lo permite
+            If MapInfo(Map).SinInviOcul Then
+                UserList(UserIndex).flags.invisible = 0
+                UserList(UserIndex).flags.Oculto = 0
+                UserList(UserIndex).Counters.TiempoOculto = 0
+                Call WriteConsoleMsg(UserIndex, "Una fuerza divina que vigila esta zona te ha vuelto visible.", FontTypeNames.FONTTYPE_INFO)
+            Else
+202             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(UserList(UserIndex).Char.CharIndex, True))
+            End If
 
         End If
     

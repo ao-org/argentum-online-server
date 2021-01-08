@@ -285,6 +285,11 @@ Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As Integer, 
         
 
 100     If UserList(UserIndex).flags.Muerto = 0 Then
+            
+            If MapInfo(UserList(UserIndex).Pos.Map).SinMagia Then
+                Call WriteConsoleMsg(UserIndex, "Una fuerza mística te impide lanzar hechizos en esta zona.", FontTypeNames.FONTTYPE_FIGHT)
+                Exit Function
+            End If
 
             Dim wp2 As WorldPos
 
@@ -1248,6 +1253,11 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 
                 End If
 
+            End If
+            
+            If MapInfo(UserList(tU).Pos.Map).SinInviOcul Then
+                Call WriteConsoleMsg(UserIndex, "Una fuerza divina te impide usar invisibilidad en esta zona.", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
             End If
             
 146         If UserList(tU).flags.invisible = 1 Then

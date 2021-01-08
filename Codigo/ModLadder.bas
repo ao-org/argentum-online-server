@@ -178,9 +178,9 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 142                         Y = DeDonde.Y
                         Else
 
-144                         If MapInfo(UserList(UserIndex).Pos.Map).extra2 <> 0 Then
+144                         If MapInfo(UserList(UserIndex).Pos.Map).ResuCiudad <> 0 Then
 
-146                             Select Case MapInfo(UserList(UserIndex).Pos.Map).extra2
+146                             Select Case MapInfo(UserList(UserIndex).Pos.Map).ResuCiudad
 
                                     Case eCiudad.cUllathorpe
 148                                     DeDonde = CityUllathorpe

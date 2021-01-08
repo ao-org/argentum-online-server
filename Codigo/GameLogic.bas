@@ -200,6 +200,45 @@ EsGM_Err:
         
 End Function
 
+Private Function CheckMapRestrictions(ByVal UserIndex As Integer, ByVal Map As Integer) As Boolean
+    
+    With UserList(UserIndex)
+        
+        If EsGM(UserIndex) Then
+            CheckMapRestrictions = True
+            Exit Function
+        End If
+        
+        If MapInfo(Map).Newbie And Not EsNewbie(UserIndex) Then
+            If .flags.UltimoMensaje <> 101 Then
+                Call WriteConsoleMsg(UserIndex, "Sólo los newbies pueden entrar a este mapa.", FontTypeNames.FONTTYPE_INFO)
+                .flags.UltimoMensaje = 101
+            End If
+            Exit Function
+        End If
+        
+        If MapInfo(Map).NoPKs And (Status(UserIndex) = 0 Or Status(UserIndex) = 2) Then
+            If .flags.UltimoMensaje <> 102 Then
+                Call WriteConsoleMsg(UserIndex, "Sólo los ciudadanos pueden entrar a este mapa.", FontTypeNames.FONTTYPE_INFO)
+                .flags.UltimoMensaje = 102
+            End If
+            Exit Function
+        End If
+        
+        If MapInfo(Map).NoCiudadanos And (Status(UserIndex) = 1 Or Status(UserIndex) = 3) Then
+            If .flags.UltimoMensaje <> 103 Then
+                Call WriteConsoleMsg(UserIndex, "Sólo los criminales pueden entrar a este mapa.", FontTypeNames.FONTTYPE_INFO)
+                .flags.UltimoMensaje = 103
+            End If
+            Exit Function
+        End If
+        
+        CheckMapRestrictions = True
+        
+    End With
+    
+End Function
+
 Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer)
 
         '***************************************************
@@ -225,47 +264,20 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
             End If
 
 106         If (MapData(Map, X, Y).TileExit.Map > 0) And (MapData(Map, X, Y).TileExit.Map <= NumMaps) Then
-    
-                '¿Es mapa de newbies?
-108             If UCase$(MapInfo(MapData(Map, X, Y).TileExit.Map).restrict_mode) = "NEWBIE" Then
 
-                    '¿El usuario es un newbie?
-110                 If EsNewbie(UserIndex) Or EsGM(UserIndex) Then
-112                     If LegalPos(MapData(Map, X, Y).TileExit.Map, MapData(Map, X, Y).TileExit.X, MapData(Map, X, Y).TileExit.Y, UserList(UserIndex).flags.Navegando = 1, , , False) Then
-114                         Call WarpUserChar(UserIndex, MapData(Map, X, Y).TileExit.Map, MapData(Map, X, Y).TileExit.X, MapData(Map, X, Y).TileExit.Y, FxFlag)
-                
-                        Else
-116                         Call ClosestLegalPos(MapData(Map, X, Y).TileExit, nPos)
-
-118                         If nPos.X <> 0 And nPos.Y <> 0 Then
-120                             Call WarpUserChar(UserIndex, nPos.Map, nPos.X, nPos.Y, FxFlag)
-                            End If
-
-                        End If
-
-                    Else 'No es newbie
-122                     Call WriteConsoleMsg(UserIndex, "Mapa exclusivo para newbies.", FontTypeNames.FONTTYPE_INFO)
-124                     Call ClosestStablePos(UserList(UserIndex).Pos, nPos)
-
-126                     If nPos.X <> 0 And nPos.Y <> 0 Then
-128                         Call WarpUserChar(UserIndex, nPos.Map, nPos.X, nPos.Y, FxFlag)
-                        End If
-
-                    End If
-
-                Else 'No es un mapa de newbies, ni Armadas, ni Caos, ni faccionario.
-
-130                 If LegalPos(MapData(Map, X, Y).TileExit.Map, MapData(Map, X, Y).TileExit.X, MapData(Map, X, Y).TileExit.Y, UserList(UserIndex).flags.Navegando = 1, , , False) Then
-132                     Call WarpUserChar(UserIndex, MapData(Map, X, Y).TileExit.Map, MapData(Map, X, Y).TileExit.X, MapData(Map, X, Y).TileExit.Y, FxFlag)
+                ' WyroX: Restricciones de mapas
+                If CheckMapRestrictions(UserIndex, Map) Then
+                    If LegalPos(MapData(Map, X, Y).TileExit.Map, MapData(Map, X, Y).TileExit.X, MapData(Map, X, Y).TileExit.Y, UserList(UserIndex).flags.Navegando = 1, , , False) Then
+114                     Call WarpUserChar(UserIndex, MapData(Map, X, Y).TileExit.Map, MapData(Map, X, Y).TileExit.X, MapData(Map, X, Y).TileExit.Y, FxFlag)
+            
                     Else
-134                     Call ClosestLegalPos(MapData(Map, X, Y).TileExit, nPos)
+116                     Call ClosestLegalPos(MapData(Map, X, Y).TileExit, nPos)
 
-136                     If nPos.X <> 0 And nPos.Y <> 0 Then
-138                         Call WarpUserChar(UserIndex, nPos.Map, nPos.X, nPos.Y, FxFlag)
+118                     If nPos.X <> 0 And nPos.Y <> 0 Then
+120                         Call WarpUserChar(UserIndex, nPos.Map, nPos.X, nPos.Y, FxFlag)
                         End If
 
                     End If
-
                 End If
 
                 'Te fusite del mapa. La criatura ya no es más tuya ni te reconoce como que vos la atacaste.
