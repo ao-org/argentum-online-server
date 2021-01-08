@@ -1118,10 +1118,13 @@ Sub LoadBalance()
         'Extra
 166     PorcentajeRecuperoMana = val(BalanceIni.GetValue("EXTRA", "PorcentajeRecuperoMana"))
 168     DificultadSubirSkill = val(BalanceIni.GetValue("EXTRA", "DificultadSubirSkill"))
+169     InfluenciaPromedioVidas = val(BalanceIni.GetValue("EXTRA", "InfluenciaPromedioVidas"))
+170     DesbalancePromedioVidas = val(BalanceIni.GetValue("EXTRA", "DesbalancePromedioVidas"))
+171     RangoVidas = val(BalanceIni.GetValue("EXTRA", "RangoVidas"))
     
-170     Set BalanceIni = Nothing
+172     Set BalanceIni = Nothing
     
-172     AgregarAConsola "Se cargó el balance (Balance.dat)"
+173     AgregarAConsola "Se cargó el balance (Balance.dat)"
 
         
         Exit Sub

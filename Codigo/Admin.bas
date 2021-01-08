@@ -155,6 +155,8 @@ Public PorcentajeRecuperoMana       As Integer
 
 Public DificultadSubirSkill         As Integer
 
+Public InfluenciaPromedioVidas      As Single
+
 Public MinutosWs                    As Long
 
 Public Puerto                       As Integer
