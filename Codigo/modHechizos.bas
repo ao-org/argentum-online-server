@@ -1321,7 +1321,8 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 204             .Char.CascoAnim = UserList(tU).Char.CascoAnim
 206             .Char.ShieldAnim = UserList(tU).Char.ShieldAnim
 208             .Char.WeaponAnim = UserList(tU).Char.WeaponAnim
-                .name = UserList(tU).name
+                .NameMimetizado = UserList(tU).name
+                If UserList(tU).GuildIndex > 0 Then .NameMimetizado = .NameMimetizado & " <" & modGuilds.GuildName(UserList(tU).GuildIndex) & ">"
             
 210             Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
                 Call RefreshCharStatus(UserIndex)
@@ -2018,6 +2019,7 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
 266                 .Char.CascoAnim = NingunCasco
 268                 .Char.ShieldAnim = NingunEscudo
 270                 .Char.WeaponAnim = NingunArma
+                    .NameMimetizado = IIf(Npclist(NpcIndex).showName, Npclist(NpcIndex).name, vbNullString)
 
 272                 Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
                     Call RefreshCharStatus(UserIndex)
