@@ -2311,6 +2311,8 @@ Sub PasarSegundo()
 144             If .flags.Estupidez = 1 Then Call EfectoEstupidez(i)
 146             If .flags.Maldicion = 1 Then Call EfectoMaldicionUser(i)
 148             If .flags.VelocidadBackup > 0 Then Call EfectoVelocidadUser(i)
+
+                .flags.UltimoMensaje = 0
         
             End With
         

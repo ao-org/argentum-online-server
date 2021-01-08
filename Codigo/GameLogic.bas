@@ -266,7 +266,7 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
 106         If (MapData(Map, X, Y).TileExit.Map > 0) And (MapData(Map, X, Y).TileExit.Map <= NumMaps) Then
 
                 ' WyroX: Restricciones de mapas
-                If CheckMapRestrictions(UserIndex, Map) Then
+                If CheckMapRestrictions(UserIndex, MapData(Map, X, Y).TileExit.Map) Then
                     If LegalPos(MapData(Map, X, Y).TileExit.Map, MapData(Map, X, Y).TileExit.X, MapData(Map, X, Y).TileExit.Y, UserList(UserIndex).flags.Navegando = 1, , , False) Then
 114                     Call WarpUserChar(UserIndex, MapData(Map, X, Y).TileExit.Map, MapData(Map, X, Y).TileExit.X, MapData(Map, X, Y).TileExit.Y, FxFlag)
             
