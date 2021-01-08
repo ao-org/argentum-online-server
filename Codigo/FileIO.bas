@@ -1356,7 +1356,7 @@ Sub LoadOBJData()
 178                 ObjData(Object).SkHerreria = val(Leer.GetValue("OBJ" & Object, "SkHerreria"))
 180                 ObjData(Object).ResistenciaMagica = val(Leer.GetValue("OBJ" & Object, "ResistenciaMagica"))
         
-182             Case eOBJType.otEscudo
+182             Case eOBJType.otESCUDO
 184                 ObjData(Object).ShieldAnim = val(Leer.GetValue("OBJ" & Object, "Anim"))
 186                 ObjData(Object).LingH = val(Leer.GetValue("OBJ" & Object, "LingH"))
 188                 ObjData(Object).LingP = val(Leer.GetValue("OBJ" & Object, "LingP"))
@@ -1366,7 +1366,7 @@ Sub LoadOBJData()
 196                 ObjData(Object).Caos = val(Leer.GetValue("OBJ" & Object, "Caos"))
 198                 ObjData(Object).ResistenciaMagica = val(Leer.GetValue("OBJ" & Object, "ResistenciaMagica"))
         
-200             Case eOBJType.otCasco
+200             Case eOBJType.otCASCO
 202                 ObjData(Object).CascoAnim = val(Leer.GetValue("OBJ" & Object, "Anim"))
 204                 ObjData(Object).LingH = val(Leer.GetValue("OBJ" & Object, "LingH"))
 206                 ObjData(Object).LingP = val(Leer.GetValue("OBJ" & Object, "LingP"))
@@ -1474,7 +1474,7 @@ Sub LoadOBJData()
 362                 ObjData(Object).HastaX = val(Leer.GetValue("OBJ" & Object, "X"))
 364                 ObjData(Object).HastaY = val(Leer.GetValue("OBJ" & Object, "Y"))
                     
-366             Case eOBJType.otNudillos
+366             Case eOBJType.otNUDILLOS
 368                 ObjData(Object).MinHIT = val(Leer.GetValue("OBJ" & Object, "MinHIT"))
 370                 ObjData(Object).MaxHit = val(Leer.GetValue("OBJ" & Object, "MaxHit"))
 372                 ObjData(Object).Envenena = val(Leer.GetValue("OBJ" & Object, "Envenena"))
@@ -2193,7 +2193,10 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
 170             Get #fh, , L3
 
 172             For i = 1 To .NumeroLayers(3)
-174                 MapData(Map, L3(i).X, L3(i).Y).Graphic(3) = L3(i).GrhIndex
+                    X = L3(i).X
+                    Y = L3(i).Y
+
+174                 MapData(Map, X, Y).Graphic(3) = L3(i).GrhIndex
                 
 176                 If EsArbol(L3(i).GrhIndex) Then
 178                     MapData(Map, X, Y).Blocked = MapData(Map, X, Y).Blocked Or FLAG_ARBOL
@@ -2217,7 +2220,16 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
 198             Get #fh, , Triggers
 
 200             For i = 1 To .NumeroTriggers
-202                 MapData(Map, Triggers(i).X, Triggers(i).Y).trigger = Triggers(i).trigger
+                    X = Triggers(i).X
+                    Y = Triggers(i).Y
+
+202                 MapData(Map, X, Y).trigger = Triggers(i).trigger
+
+                    ' Trigger detalles en agua
+                    If Triggers(i).trigger = eTrigger.DETALLEAGUA Then
+                        ' Vuelvo a poner flag agua
+                        MapData(Map, X, Y).Blocked = MapData(Map, X, Y).Blocked Or FLAG_AGUA
+                    End If
 204             Next i
 
             End If
