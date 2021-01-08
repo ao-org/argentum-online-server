@@ -71,13 +71,11 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 126             daño = RandomNumber(Hechizos(Spell).MinHp, Hechizos(Spell).MaxHp)
         
 128             If .Invent.CascoEqpObjIndex > 0 Then
-130                 daño = daño - RandomNumber(ObjData(.Invent.CascoEqpObjIndex).DefensaMagicaMin, ObjData(.Invent.CascoEqpObjIndex).DefensaMagicaMax)
-
+130                 daño = daño - ObjData(.Invent.CascoEqpObjIndex).ResistenciaMagica
                 End If
         
-132             If .Invent.AnilloEqpObjIndex > 0 Then
-134                 daño = daño - RandomNumber(ObjData(.Invent.AnilloEqpObjIndex).DefensaMagicaMin, ObjData(.Invent.AnilloEqpObjIndex).DefensaMagicaMax)
-
+132             If .Invent.ResistenciaEqpObjIndex > 0 Then
+134                 daño = daño - ObjData(.Invent.ResistenciaEqpObjIndex).ResistenciaMagica
                 End If
         
 136             If daño < 0 Then daño = 0
@@ -910,7 +908,7 @@ Sub HandleHechizoTerreno(ByVal UserIndex As Integer, ByVal uh As Integer)
 124         Call SubirSkill(UserIndex, magia)
 
             'If Hechizos(uh).Resis = 1 Then Call SubirSkill(UserList(UserIndex).Flags.TargetUser, Resis)
-126         If UserList(UserIndex).clase = eClass.Druid And UserList(UserIndex).Invent.AnilloEqpObjIndex = FLAUTAMAGICA Then
+126         If UserList(UserIndex).clase = eClass.Druid And UserList(UserIndex).Invent.DañoMagicoEqpObjIndex = FLAUTAMAGICA Then
 128             UserList(UserIndex).Stats.MinMAN = UserList(UserIndex).Stats.MinMAN - Hechizos(uh).ManaRequerido * 0.7
             Else
 130             UserList(UserIndex).Stats.MinMAN = UserList(UserIndex).Stats.MinMAN - Hechizos(uh).ManaRequerido
@@ -1525,7 +1523,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 378         Call InfoHechizo(UserIndex)
 380         b = True
 
-382         If UserList(tU).Invent.AnilloEqpObjIndex = SUPERANILLO Then
+382         If UserList(tU).Invent.ResistenciaEqpObjIndex = SUPERANILLO Then
 384             Call WriteConsoleMsg(tU, " Tu anillo rechaza los efectos del hechizo.", FontTypeNames.FONTTYPE_FIGHT)
 386             Call WriteConsoleMsg(UserIndex, " ¡El hechizo no tiene efecto!", FontTypeNames.FONTTYPE_FIGHT)
             
@@ -2091,8 +2089,8 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal Use
             End If
             
             ' Daño mágico anillo
-132         If UserList(UserIndex).Invent.AnilloEqpObjIndex > 0 Then
-134             daño = daño + Porcentaje(daño, ObjData(UserList(UserIndex).Invent.AnilloEqpObjIndex).MagicDamageBonus)
+132         If UserList(UserIndex).Invent.DañoMagicoEqpObjIndex > 0 Then
+134             daño = daño + Porcentaje(daño, ObjData(UserList(UserIndex).Invent.DañoMagicoEqpObjIndex).MagicDamageBonus)
             End If
 
 136         b = True
@@ -2646,8 +2644,8 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             End If
             
             ' Daño mágico anillo
-400         If UserList(UserIndex).Invent.AnilloEqpObjIndex > 0 Then
-402             daño = daño + Porcentaje(daño, ObjData(UserList(UserIndex).Invent.AnilloEqpObjIndex).MagicDamageBonus)
+400         If UserList(UserIndex).Invent.DañoMagicoEqpObjIndex > 0 Then
+402             daño = daño + Porcentaje(daño, ObjData(UserList(UserIndex).Invent.DañoMagicoEqpObjIndex).MagicDamageBonus)
             End If
             
             ' Si el hechizo no ignora la RM
@@ -2658,8 +2656,8 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                 End If
                 
                 ' Resistencia mágica anillo
-410             If UserList(tempChr).Invent.AnilloEqpObjIndex > 0 Then
-412                 daño = daño - Porcentaje(daño, ObjData(UserList(tempChr).Invent.AnilloEqpObjIndex).ResistenciaMagica)
+410             If UserList(tempChr).Invent.ResistenciaEqpObjIndex > 0 Then
+412                 daño = daño - Porcentaje(daño, ObjData(UserList(tempChr).Invent.ResistenciaEqpObjIndex).ResistenciaMagica)
                 End If
                 
                 ' Resistencia mágica escudo
@@ -3057,8 +3055,8 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
             End If
             
             ' Daño mágico anillo
-284         If UserList(UserIndex).Invent.AnilloEqpObjIndex > 0 Then
-286             daño = daño + Porcentaje(daño, ObjData(UserList(UserIndex).Invent.AnilloEqpObjIndex).MagicDamageBonus)
+284         If UserList(UserIndex).Invent.DañoMagicoEqpObjIndex > 0 Then
+286             daño = daño + Porcentaje(daño, ObjData(UserList(UserIndex).Invent.DañoMagicoEqpObjIndex).MagicDamageBonus)
             End If
             
             ' Si el hechizo no ignora la RM
@@ -3069,8 +3067,8 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
                 End If
                 
                 ' Resistencia mágica anillo
-294             If UserList(tempChr).Invent.AnilloEqpObjIndex > 0 Then
-296                 daño = daño - Porcentaje(daño, ObjData(UserList(tempChr).Invent.AnilloEqpObjIndex).ResistenciaMagica)
+294             If UserList(tempChr).Invent.ResistenciaEqpObjIndex > 0 Then
+296                 daño = daño - Porcentaje(daño, ObjData(UserList(tempChr).Invent.ResistenciaEqpObjIndex).ResistenciaMagica)
                 End If
                 
                 ' Resistencia mágica escudo
@@ -3389,7 +3387,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
 564         enviarInfoHechizo = True
 566         b = True
 
-568         If UserList(tU).Invent.AnilloEqpObjIndex = SUPERANILLO Then
+568         If UserList(tU).Invent.ResistenciaEqpObjIndex = SUPERANILLO Then
 570             Call WriteConsoleMsg(tU, " Tu anillo rechaza los efectos del hechizo.", FontTypeNames.FONTTYPE_FIGHT)
 572             Call WriteConsoleMsg(UserIndex, " ¡El hechizo no tiene efecto!", FontTypeNames.FONTTYPE_FIGHT)
             
@@ -3747,8 +3745,8 @@ Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y As Byte,
                 End If
                 
                 ' Daño mágico anillo
-120             If UserList(UserIndex).Invent.AnilloEqpObjIndex > 0 Then
-122                 Hit = Hit + Porcentaje(Hit, ObjData(UserList(UserIndex).Invent.AnilloEqpObjIndex).MagicDamageBonus)
+120             If UserList(UserIndex).Invent.DañoMagicoEqpObjIndex > 0 Then
+122                 Hit = Hit + Porcentaje(Hit, ObjData(UserList(UserIndex).Invent.DañoMagicoEqpObjIndex).MagicDamageBonus)
                 End If
 
                 ' Disminuir daño con distancia
@@ -3814,8 +3812,8 @@ Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y As Byte,
                 End If
                 
                 ' Daño mágico anillo
-174             If UserList(UserIndex).Invent.AnilloEqpObjIndex > 0 Then
-176                 Hit = Hit + Porcentaje(Hit, ObjData(UserList(UserIndex).Invent.AnilloEqpObjIndex).MagicDamageBonus)
+174             If UserList(UserIndex).Invent.DañoMagicoEqpObjIndex > 0 Then
+176                 Hit = Hit + Porcentaje(Hit, ObjData(UserList(UserIndex).Invent.DañoMagicoEqpObjIndex).MagicDamageBonus)
                 End If
 
 178             If tilDif <> 0 Then
@@ -3834,8 +3832,8 @@ Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y As Byte,
                     End If
                     
                     ' Resistencia mágica anillo
-194                 If UserList(NpcIndex).Invent.AnilloEqpObjIndex > 0 Then
-196                     daño = daño - Porcentaje(daño, ObjData(UserList(NpcIndex).Invent.AnilloEqpObjIndex).ResistenciaMagica)
+194                 If UserList(NpcIndex).Invent.ResistenciaEqpObjIndex > 0 Then
+196                     daño = daño - Porcentaje(daño, ObjData(UserList(NpcIndex).Invent.ResistenciaEqpObjIndex).ResistenciaMagica)
                     End If
                     
                     ' Resistencia mágica escudo

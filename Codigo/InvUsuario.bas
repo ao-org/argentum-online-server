@@ -213,10 +213,13 @@ Sub LimpiarInventario(ByVal UserIndex As Integer)
 126     UserList(UserIndex).Invent.EscudoEqpObjIndex = 0
 128     UserList(UserIndex).Invent.EscudoEqpSlot = 0
 
-130     UserList(UserIndex).Invent.AnilloEqpObjIndex = 0
-132     UserList(UserIndex).Invent.AnilloEqpSlot = 0
+130     UserList(UserIndex).Invent.DañoMagicoEqpObjIndex = 0
+132     UserList(UserIndex).Invent.DañoMagicoEqpSlot = 0
 
-134     UserList(UserIndex).Invent.NudilloObjIndex = 0
+133     UserList(UserIndex).Invent.ResistenciaEqpObjIndex = 0
+134     UserList(UserIndex).Invent.ResistenciaEqpSlot = 0
+
+135     UserList(UserIndex).Invent.NudilloObjIndex = 0
 136     UserList(UserIndex).Invent.NudilloSlot = 0
 
 138     UserList(UserIndex).Invent.MunicionEqpObjIndex = 0
@@ -882,7 +885,7 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal slot As Byte)
 152                 Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
                 End If
        
-154         Case eOBJType.otmagicos
+154         Case eOBJType.otMagicos
     
 156             Select Case obj.EfectoMagico
 
@@ -953,7 +956,7 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal slot As Byte)
 236             UserList(UserIndex).Invent.MagicoObjIndex = 0
 238             UserList(UserIndex).Invent.MagicoSlot = 0
         
-240         Case eOBJType.otNUDILLOS
+240         Case eOBJType.otNudillos
     
                 'falta mandar animacion
             
@@ -987,7 +990,7 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal slot As Byte)
 278                 Call WriteUpdateRM(UserIndex)
                 End If
     
-280         Case eOBJType.otCASCO
+280         Case eOBJType.otCasco
 282             UserList(UserIndex).Invent.Object(slot).Equipped = 0
 284             UserList(UserIndex).Invent.CascoEqpObjIndex = 0
 286             UserList(UserIndex).Invent.CascoEqpSlot = 0
@@ -1001,7 +1004,7 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal slot As Byte)
 298                 Call WriteUpdateRM(UserIndex)
                 End If
     
-300         Case eOBJType.otESCUDO
+300         Case eOBJType.otEscudo
 302             UserList(UserIndex).Invent.Object(slot).Equipped = 0
 304             UserList(UserIndex).Invent.EscudoEqpObjIndex = 0
 306             UserList(UserIndex).Invent.EscudoEqpSlot = 0
@@ -1018,20 +1021,21 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal slot As Byte)
 320                 Call WriteUpdateRM(UserIndex)
                 End If
                 
-322         Case eOBJType.otAnillos
+322         Case eOBJType.otDañoMagico
 324             UserList(UserIndex).Invent.Object(slot).Equipped = 0
-326             UserList(UserIndex).Invent.AnilloEqpObjIndex = 0
-328             UserList(UserIndex).Invent.AnilloEqpSlot = 0
-330             UserList(UserIndex).Char.Anillo_Aura = 0
+326             UserList(UserIndex).Invent.DañoMagicoEqpObjIndex = 0
+328             UserList(UserIndex).Invent.DañoMagicoEqpSlot = 0
+330             UserList(UserIndex).Char.DM_Aura = 0
 332             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(UserList(UserIndex).Char.CharIndex, 0, True, 6))
-
-334             If obj.MagicDamageBonus > 0 Then
-336                 Call WriteUpdateDM(UserIndex)
-                End If
+334             Call WriteUpdateDM(UserIndex)
                 
-338             If obj.ResistenciaMagica > 0 Then
-340                 Call WriteUpdateRM(UserIndex)
-                End If
+335         Case eOBJType.otResistencia
+336             UserList(UserIndex).Invent.Object(slot).Equipped = 0
+337             UserList(UserIndex).Invent.ResistenciaEqpObjIndex = 0
+338             UserList(UserIndex).Invent.ResistenciaEqpSlot = 0
+339             UserList(UserIndex).Char.RM_Aura = 0
+340             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(UserList(UserIndex).Char.CharIndex, 0, True, 7))
+341             Call WriteUpdateRM(UserIndex)
         
         End Select
 
@@ -1074,6 +1078,11 @@ End Function
 Function FaccionPuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Integer) As Boolean
         
         On Error GoTo FaccionPuedeUsarItem_Err
+        
+        If EsGM(UserIndex) Then
+            FaccionPuedeUsarItem = True
+            Exit Function
+        End If
         
 
 100     If ObjData(ObjIndex).Real = 1 Then
@@ -1285,7 +1294,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 
                     End If
        
-232             Case eOBJType.otmagicos
+232             Case eOBJType.otMagicos
             
 234                 errordesc = "Magico"
     
@@ -1389,7 +1398,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                     'Call WriteUpdateExp(UserIndex)
                     'Call CheckUserLevel(UserIndex)
             
-340             Case eOBJType.otNUDILLOS
+340             Case eOBJType.otNudillos
     
 342                 If .flags.Muerto = 1 Then
 344                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
@@ -1542,7 +1551,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 462                     Call WriteUpdateRM(UserIndex)
                     End If
     
-464             Case eOBJType.otCASCO
+464             Case eOBJType.otCasco
                 
 466                 If Not ClasePuedeUsarItem(UserIndex, .Invent.Object(slot).ObjIndex, slot) Then
 468                     Call WriteConsoleMsg(UserIndex, "Tu clase no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
@@ -1592,7 +1601,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 508                     Call WriteUpdateRM(UserIndex)
                     End If
 
-510             Case eOBJType.otESCUDO
+510             Case eOBJType.otEscudo
 
 512                 If Not ClasePuedeUsarItem(UserIndex, .Invent.Object(slot).ObjIndex, slot) Then
 514                     Call WriteConsoleMsg(UserIndex, "Tu clase no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
@@ -1665,7 +1674,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 568                     Call WriteUpdateRM(UserIndex)
                     End If
                 
-570             Case eOBJType.otAnillos
+570             Case eOBJType.otDañoMagico
 
 572                 If Not ClasePuedeUsarItem(UserIndex, .Invent.Object(slot).ObjIndex, slot) Then
 574                     Call WriteConsoleMsg(UserIndex, "Tu clase no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
@@ -1684,39 +1693,67 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                     End If
      
                     'Quita el anterior
-584                 If .Invent.AnilloEqpSlot > 0 Then
-586                     Call Desequipar(UserIndex, .Invent.AnilloEqpSlot)
+584                 If .Invent.DañoMagicoEqpSlot > 0 Then
+586                     Call Desequipar(UserIndex, .Invent.DañoMagicoEqpSlot)
                     End If
                 
 588                 .Invent.Object(slot).Equipped = 1
-590                 .Invent.AnilloEqpObjIndex = .Invent.Object(slot).ObjIndex
-592                 .Invent.AnilloEqpSlot = slot
+590                 .Invent.DañoMagicoEqpObjIndex = .Invent.Object(slot).ObjIndex
+592                 .Invent.DañoMagicoEqpSlot = slot
                 
 594                 If Len(obj.CreaGRH) <> 0 Then
-596                     .Char.Anillo_Aura = obj.CreaGRH
-598                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Anillo_Aura, False, 6))
+596                     .Char.DM_Aura = obj.CreaGRH
+598                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.DM_Aura, False, 6))
                     End If
 
-600                 If obj.MagicDamageBonus > 0 Then
-602                     Call WriteUpdateDM(UserIndex)
+                    Call WriteUpdateDM(UserIndex)
+                    
+599             Case eOBJType.otResistencia
+
+600                 If Not ClasePuedeUsarItem(UserIndex, .Invent.Object(slot).ObjIndex, slot) Then
+602                     Call WriteConsoleMsg(UserIndex, "Tu clase no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
+
+604                 If Not FaccionPuedeUsarItem(UserIndex, .Invent.Object(slot).ObjIndex) Then
+606                     Call WriteConsoleMsg(UserIndex, "Tu facción no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
                     End If
                 
-604                 If obj.ResistenciaMagica > 0 Then
-606                     Call WriteUpdateRM(UserIndex)
+                    'Si esta equipado lo quita
+608                 If .Invent.Object(slot).Equipped Then
+610                     Call Desequipar(UserIndex, slot)
+                        Exit Sub
                     End If
+     
+                    'Quita el anterior
+612                 If .Invent.ResistenciaEqpSlot > 0 Then
+614                     Call Desequipar(UserIndex, .Invent.ResistenciaEqpSlot)
+                    End If
+                
+616                 .Invent.Object(slot).Equipped = 1
+618                 .Invent.ResistenciaEqpObjIndex = .Invent.Object(slot).ObjIndex
+620                 .Invent.ResistenciaEqpSlot = slot
+                
+622                 If Len(obj.CreaGRH) <> 0 Then
+624                     .Char.RM_Aura = obj.CreaGRH
+626                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.RM_Aura, False, 7))
+                    End If
+
+                    Call WriteUpdateRM(UserIndex)
 
             End Select
     
         End With
 
         'Actualiza
-608     Call UpdateUserInv(False, UserIndex, slot)
+628     Call UpdateUserInv(False, UserIndex, slot)
 
         Exit Sub
     
 ErrHandler:
-610     Debug.Print errordesc
-612     Call LogError("EquiparInvItem Slot:" & slot & " - Error: " & Err.Number & " - Error Description : " & Err.description & "- " & errordesc)
+630     Debug.Print errordesc
+632     Call LogError("EquiparInvItem Slot:" & slot & " - Error: " & Err.Number & " - Error Description : " & Err.description & "- " & errordesc)
 
 End Sub
 

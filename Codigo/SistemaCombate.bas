@@ -612,10 +612,10 @@ Public Function CalcularDaño(ByVal UserIndex As Integer, Optional ByVal NpcInde
                     DañoMaxArma = 3
                     
                     ' Plus de guantes (en slot de anillo)
-                    If .Invent.AnilloEqpObjIndex > 0 Then
-                        If ObjData(.Invent.AnilloEqpObjIndex).Subtipo = 4 Then
-                            DañoMinArma = DañoMinArma + ObjData(.Invent.AnilloEqpObjIndex).MinHIT
-                            DañoMaxArma = DañoMaxArma + ObjData(.Invent.AnilloEqpObjIndex).MaxHit
+                    If .Invent.DañoMagicoEqpObjIndex > 0 Then
+                        If ObjData(.Invent.DañoMagicoEqpObjIndex).Subtipo = 4 Then
+                            DañoMinArma = DañoMinArma + ObjData(.Invent.DañoMagicoEqpObjIndex).MinHIT
+                            DañoMaxArma = DañoMaxArma + ObjData(.Invent.DañoMagicoEqpObjIndex).MaxHit
                         End If
                     End If
                     

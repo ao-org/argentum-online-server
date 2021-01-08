@@ -130,7 +130,8 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 152         QueryBuilder.Append "slot_shield = " & .Invent.EscudoEqpSlot & ", "
 154         QueryBuilder.Append "slot_helmet = " & .Invent.CascoEqpSlot & ", "
 156         QueryBuilder.Append "slot_ammo = " & .Invent.MunicionEqpSlot & ", "
-158         QueryBuilder.Append "slot_ring = " & .Invent.AnilloEqpSlot & ", "
+158         QueryBuilder.Append "slot_dm = " & .Invent.DañoMagicoEqpSlot & ", "
+159         QueryBuilder.Append "slot_rm = " & .Invent.ResistenciaEqpSlot & ", "
 160         QueryBuilder.Append "slot_tool = " & .Invent.HerramientaEqpSlot & ", "
 162         QueryBuilder.Append "slot_magic = " & .Invent.MagicoSlot & ", "
 164         QueryBuilder.Append "slot_knuckles = " & .Invent.NudilloSlot & ", "
@@ -358,7 +359,8 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 160         QueryBuilder.Append "slot_shield = " & .Invent.EscudoEqpSlot & ", "
 162         QueryBuilder.Append "slot_helmet = " & .Invent.CascoEqpSlot & ", "
 164         QueryBuilder.Append "slot_ammo = " & .Invent.MunicionEqpSlot & ", "
-166         QueryBuilder.Append "slot_ring = " & .Invent.AnilloEqpSlot & ", "
+166         QueryBuilder.Append "slot_dm = " & .Invent.DañoMagicoEqpSlot & ", "
+167         QueryBuilder.Append "slot_rm = " & .Invent.ResistenciaEqpSlot & ", "
 168         QueryBuilder.Append "slot_tool = " & .Invent.HerramientaEqpSlot & ", "
 170         QueryBuilder.Append "slot_magic = " & .Invent.MagicoSlot & ", "
 172         QueryBuilder.Append "slot_knuckles = " & .Invent.NudilloSlot & ", "
@@ -743,7 +745,8 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 164     .Invent.MunicionEqpSlot = SanitizeNullValue(QueryData!slot_ammo, 0)
 166     .Invent.BarcoSlot = SanitizeNullValue(QueryData!slot_ship, 0)
 168     .Invent.MonturaSlot = SanitizeNullValue(QueryData!slot_mount, 0)
-170     .Invent.AnilloEqpSlot = SanitizeNullValue(QueryData!slot_ring, 0)
+170     .Invent.DañoMagicoEqpSlot = SanitizeNullValue(QueryData!slot_dm, 0)
+171     .Invent.ResistenciaEqpSlot = SanitizeNullValue(QueryData!slot_rm, 0)
 172     .Invent.NudilloSlot = SanitizeNullValue(QueryData!slot_knuckles, 0)
 174     .Invent.HerramientaEqpSlot = SanitizeNullValue(QueryData!slot_tool, 0)
 176     .Invent.MagicoSlot = SanitizeNullValue(QueryData!slot_magic, 0)

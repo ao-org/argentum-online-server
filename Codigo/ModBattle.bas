@@ -315,9 +315,14 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
 500             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Otra_Aura, True, 5))
             End If
             
-502         If .Char.Anillo_Aura <> "" Then
-504             .Char.Anillo_Aura = 0
-506             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Otra_Aura, True, 6))
+502         If .Char.DM_Aura <> "" Then
+504             .Char.DM_Aura = 0
+506             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.DM_Aura, True, 6))
+            End If
+            
+            If .Char.RM_Aura <> "" Then
+                .Char.RM_Aura = 0
+                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.RM_Aura, True, 7))
             End If
         
 508         With .Char
@@ -337,7 +342,8 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
 528         .Invent.ArmourEqpObjIndex = 0
 530         .Invent.WeaponEqpObjIndex = 0
 532         .Invent.CascoEqpObjIndex = 0
-534         .Invent.AnilloEqpSlot = 0
+534         .Invent.DañoMagicoEqpObjIndex = 0
+535         .Invent.ResistenciaEqpObjIndex = 0
 536         .Invent.MunicionEqpObjIndex = 0
 538         .Invent.EscudoEqpObjIndex = 0
     

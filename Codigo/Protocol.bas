@@ -20682,7 +20682,7 @@ End Sub
 ' @param    privileges Sets if the character is a normal one or any kind of administrative character.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As eHeading, ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal Anillo_Aura As String, ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Boolean, ByVal donador As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal Simbolo As Byte, Optional ByVal Idle As Boolean = False, Optional ByVal Navegando As Boolean = False)
+Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As eHeading, ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal DM_Aura As String, ByVal RM_Aura As String, ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Boolean, ByVal donador As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal Simbolo As Byte, Optional ByVal Idle As Boolean = False, Optional ByVal Navegando As Boolean = False)
 
         '***************************************************
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -20691,7 +20691,7 @@ Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, ByVal Body As Intege
         '***************************************************
         On Error GoTo ErrHandler
 
-100     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageCharacterCreate(Body, Head, Heading, CharIndex, X, Y, weapon, shield, FX, FXLoops, helmet, name, Status, privileges, ParticulaFx, Head_Aura, Arma_Aura, Body_Aura, Anillo_Aura, Otra_Aura, Escudo_Aura, speeding, EsNPC, donador, appear, group_index, clan_index, clan_nivel, UserMinHp, UserMaxHp, Simbolo, Idle, Navegando))
+100     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageCharacterCreate(Body, Head, Heading, CharIndex, X, Y, weapon, shield, FX, FXLoops, helmet, name, Status, privileges, ParticulaFx, Head_Aura, Arma_Aura, Body_Aura, DM_Aura, RM_Aura, Otra_Aura, Escudo_Aura, speeding, EsNPC, donador, appear, group_index, clan_index, clan_nivel, UserMinHp, UserMaxHp, Simbolo, Idle, Navegando))
         Exit Sub
 
 ErrHandler:
@@ -21332,8 +21332,8 @@ Public Sub WriteUpdateDM(ByVal UserIndex As Integer)
 104             Valor = Valor + ObjData(.WeaponEqpObjIndex).MagicDamageBonus
             End If
             ' % daño mágico del anillo
-106         If .AnilloEqpObjIndex > 0 Then
-108             Valor = Valor + ObjData(.AnilloEqpObjIndex).MagicDamageBonus
+106         If .DañoMagicoEqpObjIndex > 0 Then
+108             Valor = Valor + ObjData(.DañoMagicoEqpObjIndex).MagicDamageBonus
             End If
         End With
 
@@ -21364,8 +21364,8 @@ Public Sub WriteUpdateRM(ByVal UserIndex As Integer)
             End If
         
             ' Resistencia mágica del anillo
-106         If .AnilloEqpObjIndex > 0 Then
-108             Valor = Valor + ObjData(.AnilloEqpObjIndex).ResistenciaMagica
+106         If .ResistenciaEqpObjIndex > 0 Then
+108             Valor = Valor + ObjData(.ResistenciaEqpObjIndex).ResistenciaMagica
             End If
         
             ' Resistencia mágica del escudo
@@ -24879,7 +24879,7 @@ End Function
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As eHeading, ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal Anillo_Aura As String, ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Boolean, ByVal donador As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal Simbolo As Byte, ByVal Idle As Boolean, ByVal Navegando As Boolean) As String
+Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As eHeading, ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal DM_Aura As String, ByVal RM_Aura As String, ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Boolean, ByVal donador As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal Simbolo As Byte, ByVal Idle As Boolean, ByVal Navegando As Boolean) As String
         '***************************************************
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
@@ -24910,7 +24910,8 @@ Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, ByVal Head 
 134         Call .WriteASCIIString(Head_Aura)
 136         Call .WriteASCIIString(Arma_Aura)
 138         Call .WriteASCIIString(Body_Aura)
-140         Call .WriteASCIIString(Anillo_Aura)
+140         Call .WriteASCIIString(DM_Aura)
+141         Call .WriteASCIIString(RM_Aura)
 142         Call .WriteASCIIString(Otra_Aura)
 144         Call .WriteASCIIString(Escudo_Aura)
 146         Call .WriteSingle(speeding)
@@ -26778,11 +26779,15 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
                 End If
 
                 'Cambiamos si alguno es un anillo
-152             If .Invent.AnilloEqpSlot = SlotViejo Then
-154                 .Invent.AnilloEqpSlot = SlotNuevo
-156             ElseIf .Invent.AnilloEqpSlot = SlotNuevo Then
-158                 .Invent.AnilloEqpSlot = SlotViejo
-
+152             If .Invent.DañoMagicoEqpSlot = SlotViejo Then
+154                 .Invent.DañoMagicoEqpSlot = SlotNuevo
+156             ElseIf .Invent.DañoMagicoEqpSlot = SlotNuevo Then
+158                 .Invent.DañoMagicoEqpSlot = SlotViejo
+                End If
+                If .Invent.ResistenciaEqpSlot = SlotViejo Then
+                    .Invent.ResistenciaEqpSlot = SlotNuevo
+                ElseIf .Invent.ResistenciaEqpSlot = SlotNuevo Then
+                    .Invent.ResistenciaEqpSlot = SlotViejo
                 End If
                 
                 'Cambiamos si alguno es un armor
