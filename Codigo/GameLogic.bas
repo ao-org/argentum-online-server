@@ -253,14 +253,13 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
 
         Dim nPos   As WorldPos
 
-        Dim FxFlag As Boolean
+        Dim EsTeleport As Boolean
 
         'Controla las salidas
 100     If InMapBounds(Map, X, Y) Then
     
 102         If MapData(Map, X, Y).ObjInfo.ObjIndex > 0 Then
-104             FxFlag = ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).OBJType = eOBJType.otTeleport
-
+104             EsTeleport = ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).OBJType = eOBJType.otTeleport
             End If
 
 106         If (MapData(Map, X, Y).TileExit.Map > 0) And (MapData(Map, X, Y).TileExit.Map <= NumMaps) Then
@@ -268,15 +267,23 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
                 ' WyroX: Restricciones de mapas
                 If CheckMapRestrictions(UserIndex, MapData(Map, X, Y).TileExit.Map) Then
                     If LegalPos(MapData(Map, X, Y).TileExit.Map, MapData(Map, X, Y).TileExit.X, MapData(Map, X, Y).TileExit.Y, UserList(UserIndex).flags.Navegando = 1, , , False) Then
-114                     Call WarpUserChar(UserIndex, MapData(Map, X, Y).TileExit.Map, MapData(Map, X, Y).TileExit.X, MapData(Map, X, Y).TileExit.Y, FxFlag)
+114                     Call WarpUserChar(UserIndex, MapData(Map, X, Y).TileExit.Map, MapData(Map, X, Y).TileExit.X, MapData(Map, X, Y).TileExit.Y, EsTeleport)
             
                     Else
 116                     Call ClosestLegalPos(MapData(Map, X, Y).TileExit, nPos)
 
 118                     If nPos.X <> 0 And nPos.Y <> 0 Then
-120                         Call WarpUserChar(UserIndex, nPos.Map, nPos.X, nPos.Y, FxFlag)
+120                         Call WarpUserChar(UserIndex, nPos.Map, nPos.X, nPos.Y, EsTeleport)
                         End If
 
+                    End If
+            
+                ' Si hay un teleport: movemos al usuario para que no se quede bloqueándolo
+                ElseIf EsTeleport Then
+                    Call ClosestLegalPos(MapData(Map, X, Y).TileExit, nPos)
+
+                    If nPos.X <> 0 And nPos.Y <> 0 Then
+                         Call WarpUserChar(UserIndex, nPos.Map, nPos.X, nPos.Y, EsTeleport)
                     End If
                 End If
 
