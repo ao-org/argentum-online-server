@@ -14,7 +14,7 @@ TRUNCATE TABLE ao_server_prod.quest_done;
 TRUNCATE TABLE ao_server_prod.skillpoint;
 TRUNCATE TABLE ao_server_prod.spell;
 
--- En vez de truncar la tabla, seteamos los valores a 0 para no romper la Web
+-- En vez de vaciar la tabla, seteamos los valores a 0 para no romper la Web.
 REPLACE INTO ao_server_prod.statistics (name, value) VALUES ('online', '0');
 REPLACE INTO ao_server_prod.statistics (name, value) VALUES ('record', '0');
 
