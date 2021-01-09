@@ -1,1 +1,0 @@
-ALTER TABLE `user` ADD `warnings` TINYINT(5) UNSIGNED NOT NULL DEFAULT '0' AFTER `chat_combate`;

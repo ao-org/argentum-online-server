@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 31-10-2020 a las 04:39:20
+-- Tiempo de generación: 09-01-2021 a las 04:26:22
 -- Versión del servidor: 10.4.14-MariaDB
 -- Versión de PHP: 7.4.10
 
@@ -35,7 +35,7 @@ CREATE TABLE `account` (
   `email` varchar(320) NOT NULL,
   `password` char(64) NOT NULL,
   `salt` char(32) NOT NULL,
-  `date_created` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `date_created` timestamp NOT NULL DEFAULT current_timestamp(),
   `mac_address` char(17) DEFAULT '',
   `hd_serial` int(11) NOT NULL DEFAULT 0,
   `logged` int(11) NOT NULL DEFAULT 0,
@@ -60,7 +60,6 @@ CREATE TABLE `account` (
 --
 -- Estructura de tabla para la tabla `attribute`
 --
-
 DROP TABLE IF EXISTS `attribute`;
 CREATE TABLE `attribute` (
   `user_id` mediumint(8) UNSIGNED NOT NULL,
@@ -68,12 +67,10 @@ CREATE TABLE `attribute` (
   `value` tinyint(3) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `bank_item`
 --
-
 DROP TABLE IF EXISTS `bank_item`;
 CREATE TABLE `bank_item` (
   `user_id` mediumint(8) UNSIGNED NOT NULL,
@@ -82,12 +79,9 @@ CREATE TABLE `bank_item` (
   `amount` smallint(5) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- --------------------------------------------------------
-
 --
 -- Estructura de tabla para la tabla `connection`
 --
-
 DROP TABLE IF EXISTS `connection`;
 CREATE TABLE `connection` (
   `user_id` mediumint(8) UNSIGNED NOT NULL,
@@ -95,12 +89,21 @@ CREATE TABLE `connection` (
   `date_last_login` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Estructura de tabla para la tabla `house_key`
+--
+DROP TABLE IF EXISTS `house_key`;
+CREATE TABLE `house_key` (
+  `key_obj` smallint(5) UNSIGNED NOT NULL,
+  `account_id` mediumint(8) UNSIGNED NOT NULL,
+  `assigned_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `inventory_item`
 --
-
 DROP TABLE IF EXISTS `inventory_item`;
 CREATE TABLE `inventory_item` (
   `user_id` mediumint(8) UNSIGNED NOT NULL,
@@ -110,14 +113,15 @@ CREATE TABLE `inventory_item` (
   `is_equipped` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+
 -- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `mail`
 --
-
 DROP TABLE IF EXISTS `mail`;
 CREATE TABLE `mail` (
+  `id` mediumint(8) UNSIGNED NOT NULL,
   `user_id` mediumint(8) UNSIGNED NOT NULL,
   `sender` varchar(30) NOT NULL DEFAULT '',
   `item_id` smallint(5) UNSIGNED DEFAULT 0,
@@ -131,7 +135,6 @@ CREATE TABLE `mail` (
 --
 -- Estructura de tabla para la tabla `pet`
 --
-
 DROP TABLE IF EXISTS `pet`;
 CREATE TABLE `pet` (
   `user_id` mediumint(8) UNSIGNED NOT NULL,
@@ -139,12 +142,9 @@ CREATE TABLE `pet` (
   `pet_id` smallint(5) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- --------------------------------------------------------
-
 --
 -- Estructura de tabla para la tabla `punishment`
 --
-
 DROP TABLE IF EXISTS `punishment`;
 CREATE TABLE `punishment` (
   `user_id` mediumint(8) UNSIGNED NOT NULL,
@@ -157,33 +157,28 @@ CREATE TABLE `punishment` (
 --
 -- Estructura de tabla para la tabla `quest`
 --
-
 DROP TABLE IF EXISTS `quest`;
 CREATE TABLE `quest` (
   `user_id` mediumint(8) UNSIGNED NOT NULL,
   `number` tinyint(3) UNSIGNED NOT NULL,
   `quest_id` tinyint(3) UNSIGNED NOT NULL DEFAULT 0,
-  `npcs` varchar(64) NOT NULL DEFAULT ''
+  `npcs` varchar(64) NOT NULL DEFAULT '',
+  `npcstarget` varchar(64) NOT NULL DEFAULT ''
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `quest_done`
 --
-
 DROP TABLE IF EXISTS `quest_done`;
 CREATE TABLE `quest_done` (
   `user_id` mediumint(8) UNSIGNED NOT NULL,
   `quest_id` tinyint(3) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `skillpoint`
 --
-
 DROP TABLE IF EXISTS `skillpoint`;
 CREATE TABLE `skillpoint` (
   `user_id` mediumint(8) UNSIGNED NOT NULL,
@@ -191,12 +186,9 @@ CREATE TABLE `skillpoint` (
   `value` tinyint(3) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- --------------------------------------------------------
-
 --
 -- Estructura de tabla para la tabla `spell`
 --
-
 DROP TABLE IF EXISTS `spell`;
 CREATE TABLE `spell` (
   `user_id` mediumint(8) UNSIGNED NOT NULL,
@@ -204,12 +196,27 @@ CREATE TABLE `spell` (
   `spell_id` smallint(5) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Estructura de tabla para la tabla `statistics`
+--
+DROP TABLE IF EXISTS `statistics`;
+CREATE TABLE `statistics` (
+  `name` varchar(50) NOT NULL,
+  `value` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Volcado de datos para la tabla `statistics`
+--
+
+INSERT INTO `statistics` (`name`, `value`) VALUES ('online', '0');
+INSERT INTO `statistics` (`name`, `value`) VALUES ('record', '0');
+
 -- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `user`
 --
-
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `id` mediumint(8) UNSIGNED NOT NULL,
@@ -227,7 +234,7 @@ CREATE TABLE `user` (
   `gold` int(10) UNSIGNED NOT NULL,
   `bank_gold` int(10) UNSIGNED NOT NULL DEFAULT 0,
   `free_skillpoints` smallint(5) UNSIGNED NOT NULL,
-  `pet_amount` tinyint(3) UNSIGNED NOT NULL DEFAULT 0,
+  `pets_saved` tinyint(1) NOT NULL DEFAULT 0,
   `votes_amount` smallint(5) UNSIGNED DEFAULT 0,
   `battle_points` smallint(5) UNSIGNED DEFAULT 0,
   `spouse` varchar(30) NOT NULL DEFAULT '',
@@ -235,6 +242,7 @@ CREATE TABLE `user` (
   `pos_map` smallint(5) UNSIGNED NOT NULL,
   `pos_x` tinyint(3) UNSIGNED NOT NULL,
   `pos_y` tinyint(3) UNSIGNED NOT NULL,
+  `last_map` tinyint(3) UNSIGNED NOT NULL DEFAULT 0,
   `body_id` smallint(5) UNSIGNED NOT NULL,
   `head_id` smallint(5) UNSIGNED NOT NULL,
   `weapon_id` smallint(5) UNSIGNED NOT NULL,
@@ -249,7 +257,8 @@ CREATE TABLE `user` (
   `slot_ammo` tinyint(3) UNSIGNED DEFAULT NULL,
   `slot_ship` tinyint(3) UNSIGNED DEFAULT NULL,
   `slot_mount` tinyint(3) UNSIGNED DEFAULT NULL,
-  `slot_ring` tinyint(3) UNSIGNED DEFAULT NULL,
+  `slot_dm` tinyint(3) UNSIGNED DEFAULT NULL,
+  `slot_rm` tinyint(3) UNSIGNED DEFAULT NULL,
   `slot_magic` tinyint(3) UNSIGNED DEFAULT NULL,
   `slot_knuckles` tinyint(3) UNSIGNED DEFAULT NULL,
   `slot_tool` tinyint(3) UNSIGNED DEFAULT NULL,
@@ -311,17 +320,17 @@ CREATE TABLE `user` (
   `guild_requests_history` varchar(1024) DEFAULT NULL,
   `guild_rejected_because` varchar(255) DEFAULT NULL,
   `chat_global` tinyint(1) DEFAULT 1,
-  `chat_combate` tinyint(1) DEFAULT 1
+  `chat_combate` tinyint(1) DEFAULT 1,
+  `warnings` tinyint(3) UNSIGNED NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `statistics`;
-CREATE TABLE `statistics` (
-  `name` VARCHAR(50) NOT NULL,
-  `value` VARCHAR(50) NULL,
-  PRIMARY KEY (`name`))
-ENGINE = InnoDB;
-
-INSERT INTO `statistics` (`name`, `value`) VALUES ('online', '0');
+--
+-- Estructura de tabla para la tabla `whitelist`
+--
+DROP TABLE IF EXISTS `whitelist`;
+CREATE TABLE `whitelist` (
+  `code` varchar(64) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 --
 -- Índices para tablas volcadas
@@ -353,6 +362,13 @@ ALTER TABLE `connection`
   ADD PRIMARY KEY (`user_id`,`ip`);
 
 --
+-- Indices de la tabla `house_key`
+--
+ALTER TABLE `house_key`
+  ADD PRIMARY KEY (`key_obj`),
+  ADD KEY `fk_account` (`account_id`);
+
+--
 -- Indices de la tabla `inventory_item`
 --
 ALTER TABLE `inventory_item`
@@ -362,6 +378,7 @@ ALTER TABLE `inventory_item`
 -- Indices de la tabla `mail`
 --
 ALTER TABLE `mail`
+  ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`);
 
 --
@@ -401,12 +418,24 @@ ALTER TABLE `spell`
   ADD PRIMARY KEY (`user_id`,`number`);
 
 --
+-- Indices de la tabla `statistics`
+--
+ALTER TABLE `statistics`
+  ADD PRIMARY KEY (`name`);
+
+--
 -- Indices de la tabla `user`
 --
 ALTER TABLE `user`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_user_account` (`account_id`),
   ADD KEY `name` (`name`);
+
+--
+-- Indices de la tabla `whitelist`
+--
+ALTER TABLE `whitelist`
+  ADD PRIMARY KEY (`code`) USING BTREE;
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
@@ -416,13 +445,19 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT de la tabla `account`
 --
 ALTER TABLE `account`
+  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2139;
+
+--
+-- AUTO_INCREMENT de la tabla `mail`
+--
+ALTER TABLE `mail`
   MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=157;
 
 --
 -- Restricciones para tablas volcadas
@@ -432,73 +467,79 @@ ALTER TABLE `user`
 -- Filtros para la tabla `attribute`
 --
 ALTER TABLE `attribute`
-  ADD CONSTRAINT `fk_attribute_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
+  ADD CONSTRAINT `fk_attribute_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `bank_item`
 --
 ALTER TABLE `bank_item`
-  ADD CONSTRAINT `fk_bank_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
+  ADD CONSTRAINT `fk_bank_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `connection`
 --
 ALTER TABLE `connection`
-  ADD CONSTRAINT `fk_ip_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
+  ADD CONSTRAINT `fk_ip_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `house_key`
+--
+ALTER TABLE `house_key`
+  ADD CONSTRAINT `fk_account` FOREIGN KEY (`account_id`) REFERENCES `account` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `inventory_item`
 --
 ALTER TABLE `inventory_item`
-  ADD CONSTRAINT `fk_inventory_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
+  ADD CONSTRAINT `fk_inventory_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `mail`
 --
 ALTER TABLE `mail`
-  ADD CONSTRAINT `fk_mail` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
+  ADD CONSTRAINT `fk_mail` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `pet`
 --
 ALTER TABLE `pet`
-  ADD CONSTRAINT `fk_pet_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
+  ADD CONSTRAINT `fk_pet_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `punishment`
 --
 ALTER TABLE `punishment`
-  ADD CONSTRAINT `fk_punishment_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
+  ADD CONSTRAINT `fk_punishment_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `quest`
 --
 ALTER TABLE `quest`
-  ADD CONSTRAINT `fk_quest_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
+  ADD CONSTRAINT `fk_quest_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `quest_done`
 --
 ALTER TABLE `quest_done`
-  ADD CONSTRAINT `fk_quest_done_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
+  ADD CONSTRAINT `fk_quest_done_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `skillpoint`
 --
 ALTER TABLE `skillpoint`
-  ADD CONSTRAINT `fk_skillpoint_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
+  ADD CONSTRAINT `fk_skillpoint_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `spell`
 --
 ALTER TABLE `spell`
-  ADD CONSTRAINT `fk_spell_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
+  ADD CONSTRAINT `fk_spell_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `user`
 --
 ALTER TABLE `user`
-  ADD CONSTRAINT `fk_user_account` FOREIGN KEY (`account_id`) REFERENCES `account` (`id`);
+  ADD CONSTRAINT `fk_user_account` FOREIGN KEY (`account_id`) REFERENCES `account` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
