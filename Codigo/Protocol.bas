@@ -15545,7 +15545,7 @@ Private Sub HandleBanIP(ByVal UserIndex As Integer)
                     End If
                 
 140                 Call BanIpAgrega(bannedIP)
-142                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.name & " baneí la IP " & bannedIP & " por " & Reason, FontTypeNames.FONTTYPE_FIGHT))
+142                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.name & " baneó la IP " & bannedIP & " por " & Reason, FontTypeNames.FONTTYPE_FIGHT))
                 
                     'Find every player with that ip and ban him!
 144                 For i = 1 To LastUser

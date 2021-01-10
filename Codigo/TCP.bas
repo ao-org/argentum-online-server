@@ -1217,19 +1217,16 @@ Function EntrarCuenta(ByVal UserIndex As Integer, CuentaEmail As String, CuentaP
 106     If CheckMAC(MacAddress) Then
 108         Call WriteShowMessageBox(UserIndex, "Su cuenta se encuentra bajo tolerancia 0. Tiene prohibido el acceso. Cod: #0001")
             Exit Function
-
         End If
     
 110     If CheckHD(HDserial) Then
 112         Call WriteShowMessageBox(UserIndex, "Su cuenta se encuentra bajo tolerancia 0. Tiene prohibido el acceso. Cod: #0002")
             Exit Function
-
         End If
 
 114     If Not CheckMailString(CuentaEmail) Then
 116         Call WriteShowMessageBox(UserIndex, "Email inválido.")
             Exit Function
-
         End If
     
 118     If Database_Enabled Then
