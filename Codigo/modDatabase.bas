@@ -104,7 +104,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
             'Basic user data
 104         QueryBuilder.Append "INSERT INTO user SET "
 106         QueryBuilder.Append "name = '" & .name & "', "
-108         QueryBuilder.Append "account_id = " & .AccountID & ", "
+108         QueryBuilder.Append "account_id = " & .AccountId & ", "
 110         QueryBuilder.Append "level = " & .Stats.ELV & ", "
 112         QueryBuilder.Append "exp = " & .Stats.Exp & ", "
 114         QueryBuilder.Append "elu = " & .Stats.ELU & ", "
@@ -681,7 +681,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
         
             ' Si deslogueó, actualizo la cuenta
 522         If Logout Then
-524             QueryBuilder.Append "UPDATE account SET logged = logged - 1 WHERE id = " & .AccountID & ";"
+524             QueryBuilder.Append "UPDATE account SET logged = logged - 1 WHERE id = " & .AccountId & ";"
             End If
 526         Debug.Print
 528         Call MakeQuery(QueryBuilder.toString, True)
@@ -1016,7 +1016,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
         'TODO:
         
         ' Llaves
-442     Call MakeQuery("SELECT key_obj FROM house_key WHERE account_id = " & .AccountID & ";")
+442     Call MakeQuery("SELECT key_obj FROM house_key WHERE account_id = " & .AccountId & ";")
 
 444     If Not QueryData Is Nothing Then
 446         QueryData.MoveFirst
@@ -1209,14 +1209,14 @@ SetUserValue_Err:
         
 End Sub
 
-Private Sub SetCuentaValueByID(AccountID As Long, Columna As String, Value As Variant)
+Private Sub SetCuentaValueByID(AccountId As Long, Columna As String, Value As Variant)
         ' 18/10/2020 Autor: Alexis Caraballo (WyroX)
         ' Para cuando hay que escribir un unico valor de la cuenta
         ' Por ID
         
         On Error GoTo SetCuentaValueByID_Err
         
-100     Call SetDBValue("account", Columna, Value, "id", AccountID)
+100     Call SetDBValue("account", Columna, Value, "id", AccountId)
 
         
         Exit Sub
@@ -1581,11 +1581,11 @@ ErrorHandler:
     
 End Function
 
-Public Function GetPersonajesCountByIDDatabase(ByVal AccountID As Long) As Byte
+Public Function GetPersonajesCountByIDDatabase(ByVal AccountId As Long) As Byte
 
         On Error GoTo ErrorHandler
     
-100     Call MakeQuery("SELECT COUNT(*) FROM user WHERE deleted = FALSE AND account_id = " & AccountID & ";")
+100     Call MakeQuery("SELECT COUNT(*) FROM user WHERE deleted = FALSE AND account_id = " & AccountId & ";")
     
 102     If QueryData Is Nothing Then Exit Function
     
@@ -1594,16 +1594,16 @@ Public Function GetPersonajesCountByIDDatabase(ByVal AccountID As Long) As Byte
         Exit Function
     
 ErrorHandler:
-106     Call LogDatabaseError("Error in GetPersonajesCountByIDDatabase. AccountID: " & AccountID & ". " & Err.Number & " - " & Err.description)
+106     Call LogDatabaseError("Error in GetPersonajesCountByIDDatabase. AccountID: " & AccountId & ". " & Err.Number & " - " & Err.description)
     
 End Function
 
-Public Function GetPersonajesCuentaDatabase(ByVal AccountID As Long, Personaje() As PersonajeCuenta) As Byte
+Public Function GetPersonajesCuentaDatabase(ByVal AccountId As Long, Personaje() As PersonajeCuenta) As Byte
         
         On Error GoTo GetPersonajesCuentaDatabase_Err
         
 
-100     Call MakeQuery("SELECT name, head_id, class_id, body_id, pos_map, level, status, helmet_id, shield_id, weapon_id, guild_index, is_dead, is_sailing FROM user WHERE deleted = FALSE AND account_id = " & AccountID & ";")
+100     Call MakeQuery("SELECT name, head_id, class_id, body_id, pos_map, level, status, helmet_id, shield_id, weapon_id, guild_index, is_dead, is_sailing FROM user WHERE deleted = FALSE AND account_id = " & AccountId & ";")
 
 102     If QueryData Is Nothing Then Exit Function
     
@@ -1655,12 +1655,12 @@ GetPersonajesCuentaDatabase_Err:
         
 End Function
 
-Public Sub SetUserLoggedDatabase(ByVal Id As Long, ByVal AccountID As Long)
+Public Sub SetUserLoggedDatabase(ByVal Id As Long, ByVal AccountId As Long)
         
         On Error GoTo SetUserLoggedDatabase_Err
         
 100     Call SetDBValue("user", "is_logged", 1, "id", Id)
-102     Call MakeQuery("UPDATE account SET logged = logged + 1 WHERE id = " & AccountID & ";", True)
+102     Call MakeQuery("UPDATE account SET logged = logged + 1 WHERE id = " & AccountId & ";", True)
 
         
         Exit Sub
@@ -1671,11 +1671,11 @@ SetUserLoggedDatabase_Err:
         
 End Sub
 
-Public Sub ResetLoggedDatabase(ByVal AccountID As Long)
+Public Sub ResetLoggedDatabase(ByVal AccountId As Long)
         
         On Error GoTo ResetLoggedDatabase_Err
         
-100     Call MakeQuery("UPDATE account SET logged = 0 WHERE id = " & AccountID & ";", True)
+100     Call MakeQuery("UPDATE account SET logged = 0 WHERE id = " & AccountId & ";", True)
 
         
         Exit Sub
@@ -1880,6 +1880,12 @@ ValidarCuentaDatabase_Err:
 104     Resume Next
         
 End Sub
+
+Public Function CheckUserAccount(name As String, ByVal AccountId As Integer) As Boolean
+
+    CheckUserAccount = (val(GetUserValue(name, "account_id")) = AccountId)
+
+End Function
 
 Public Sub BorrarUsuarioDatabase(name As String)
 
@@ -2427,7 +2433,7 @@ Public Function EnterAccountDatabase(ByVal UserIndex As Integer, CuentaEmail As 
             Exit Function
         End If
     
-122     UserList(UserIndex).AccountID = QueryData!Id
+122     UserList(UserIndex).AccountId = QueryData!Id
 124     UserList(UserIndex).Cuenta = CuentaEmail
     
 126     Call MakeQuery("UPDATE account SET mac_address = '" & MacAddress & "', hd_serial = " & HDserial & ", last_ip = '" & ip & "', last_access = NOW() WHERE id = " & QueryData!Id & ";", True)
@@ -2451,7 +2457,7 @@ Public Sub ChangePasswordDatabase(ByVal UserIndex As Integer, OldPassword As Str
 
         End If
     
-104     Call MakeQuery("SELECT password, salt FROM account WHERE id = " & UserList(UserIndex).AccountID & ";")
+104     Call MakeQuery("SELECT password, salt FROM account WHERE id = " & UserList(UserIndex).AccountId & ";")
     
 106     If QueryData Is Nothing Then
 108         Call WriteConsoleMsg(UserIndex, "No se ha podido cambiar la contraseña por un error interno. Avise a un administrador.", FontTypeNames.FONTTYPE_INFO)
@@ -2479,7 +2485,7 @@ Public Sub ChangePasswordDatabase(ByVal UserIndex As Integer, OldPassword As Str
     
 120     Set oSHA256 = Nothing
     
-122     Call MakeQuery("UPDATE account SET password = '" & PasswordHash & "', salt = '" & Salt & "' WHERE id = " & UserList(UserIndex).AccountID & ";", True)
+122     Call MakeQuery("UPDATE account SET password = '" & PasswordHash & "', salt = '" & Salt & "' WHERE id = " & UserList(UserIndex).AccountId & ";", True)
     
 124     Call WriteConsoleMsg(UserIndex, "La contraseña de su cuenta fue cambiada con éxito.", FontTypeNames.FONTTYPE_INFO)
     
@@ -2490,11 +2496,11 @@ ErrorHandler:
 
 End Sub
 
-Public Function GetUsersLoggedAccountDatabase(ByVal AccountID As Integer) As Byte
+Public Function GetUsersLoggedAccountDatabase(ByVal AccountId As Integer) As Byte
 
         On Error GoTo ErrorHandler
 
-100     Call GetDBValue("account", "logged", "id", AccountID)
+100     Call GetDBValue("account", "logged", "id", AccountId)
     
 102     If QueryData Is Nothing Then Exit Function
     
@@ -2503,7 +2509,7 @@ Public Function GetUsersLoggedAccountDatabase(ByVal AccountID As Integer) As Byt
         Exit Function
 
 ErrorHandler:
-106     Call LogDatabaseError("Error in GetUsersLoggedAccountDatabase. AccountID: " & AccountID & ". " & Err.Number & " - " & Err.description)
+106     Call LogDatabaseError("Error in GetUsersLoggedAccountDatabase. AccountID: " & AccountId & ". " & Err.Number & " - " & Err.description)
 
 End Function
 
