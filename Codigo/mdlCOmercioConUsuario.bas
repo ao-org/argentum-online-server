@@ -143,22 +143,22 @@ Public Sub FinComerciarUsu(ByVal UserIndex As Integer)
         
         On Error GoTo FinComerciarUsu_Err
         
-        If UserIndex = 0 Then Exit Sub
+100     If UserIndex = 0 Then Exit Sub
         
 
-100     With UserList(UserIndex)
+102     With UserList(UserIndex)
 
-102         If .ComUsu.DestUsu > 0 Then
-104             Call WriteUserCommerceEnd(UserIndex)
+104         If .ComUsu.DestUsu > 0 Then
+106             Call WriteUserCommerceEnd(UserIndex)
 
             End If
         
-106         .ComUsu.Acepto = False
-108         .ComUsu.cant = 0
-110         .ComUsu.DestUsu = 0
-112         .ComUsu.Objeto = 0
-114         .ComUsu.DestNick = vbNullString
-116         .flags.Comerciando = False
+108         .ComUsu.Acepto = False
+110         .ComUsu.cant = 0
+112         .ComUsu.DestUsu = 0
+114         .ComUsu.Objeto = 0
+116         .ComUsu.DestNick = vbNullString
+118         .flags.Comerciando = False
 
         End With
 
@@ -166,8 +166,8 @@ Public Sub FinComerciarUsu(ByVal UserIndex As Integer)
         Exit Sub
 
 FinComerciarUsu_Err:
-118     Call RegistrarError(Err.Number, Err.description, "mdlCOmercioConUsuario.FinComerciarUsu", Erl)
-120     Resume Next
+120     Call RegistrarError(Err.Number, Err.description, "mdlCOmercioConUsuario.FinComerciarUsu", Erl)
+122     Resume Next
         
 End Sub
 
