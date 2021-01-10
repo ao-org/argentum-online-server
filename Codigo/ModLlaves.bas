@@ -82,7 +82,7 @@ Public Sub EnviarLlaves(ByVal UserIndex As Integer)
         Exit Sub
 
 EnviarLlaves_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModLlaves.EnviarLlaves", Erl)
+108     Call RegistrarError(Err.Number, Err.description, "ModLlaves.EnviarLlaves", Erl)
 
         
 End Sub
@@ -150,7 +150,7 @@ Public Sub UsarLlave(ByVal UserIndex As Integer, ByVal slot As Integer)
         Exit Sub
 
 UsarLlave_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModLlaves.UsarLlave", Erl)
+140     Call RegistrarError(Err.Number, Err.description, "ModLlaves.UsarLlave", Erl)
 
         
 End Sub
