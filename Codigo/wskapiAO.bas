@@ -613,6 +613,9 @@ Public Sub EventoSockAccept(ByVal SockID As Long)
             '   BIENVENIDO AL SERVIDOR!!!!!!!!
             '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
             '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+            
+            Dim str    As String
+            Dim data() As Byte
     
             'Mariano: Baje la busqueda de slot abajo de CondicionSocket y limite x ip
 140         NewIndex = NextOpenUser ' Nuevo indice
@@ -626,19 +629,19 @@ Public Sub EventoSockAccept(ByVal SockID As Long)
 148             UserList(NewIndex).ip = GetAscIP(sa.sin_addr)
 
                 'Busca si esta banneada la ip
-150             For i = 1 To BanIps.Count
-
-152                 If BanIps.Item(i) = UserList(NewIndex).ip Then
-                        'Call apiclosesocket(NuevoSock)
-154                     Call WriteErrorMsg(NewIndex, "Su IP se encuentra bloqueada en este servidor.")
+150             If BanIpBuscar(UserList(NewIndex).ip) <> 0 Then
+                    Call WriteShowMessageBox(NewIndex, "Se te ha prohibido la entrada al servidor. Cod: #0003")
                     
-                        'Call SecurityIp.IpRestarConexion(sa.sin_addr)
-156                     Call WSApiCloseSocket(NuevoSock)
-                        Exit Sub
+                    'Call FlushBuffer(NewIndex)
+                    str = UserList(NewIndex).outgoingData.ReadASCIIStringFixed(UserList(NewIndex).outgoingData.Length)
 
-                    End If
+                    ReDim Preserve data(Len(str) - 1)
+                    data = StrConv(str, vbFromUnicode)
+                    Call send(NuevoSock, data(0), ByVal UBound(data()) + 1, ByVal 0)
 
-158             Next i
+                    Call WSApiCloseSocket(NuevoSock)
+                    Exit Sub
+                End If
         
 160             If NewIndex > LastUser Then LastUser = NewIndex
         
@@ -646,10 +649,8 @@ Public Sub EventoSockAccept(ByVal SockID As Long)
 164             UserList(NewIndex).ConnIDValida = True
         
 166             Call AgregaSlotSock(NuevoSock, NewIndex)
+            
             Else
-
-                Dim str    As String
-                Dim data() As Byte
         
 168             str = Protocol.PrepareMessageErrorMsg("El server se encuentra lleno en este momento. Disculpe las molestias ocasionadas.")
         
