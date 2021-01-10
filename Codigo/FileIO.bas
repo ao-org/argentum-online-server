@@ -366,108 +366,133 @@ EsGmChar_Err:
 End Function
 
 Public Sub loadAdministrativeUsers()
-        'Admines     => Admin
-        'Dioses      => Dios
-        'SemiDioses  => SemiDios
-        'Especiales  => Especial
-        'Consejeros  => Consejero
-        'RoleMasters => RM
-        ' If frmMain.Visible Then frmMain.txtStatus.Text = "Cargando Administradores/Dioses/Gms."
+    'Admines     => Admin
+    'Dioses      => Dios
+    'SemiDioses  => SemiDios
+    'Especiales  => Especial
+    'Consejeros  => Consejero
+    'RoleMasters => RM
+    ' If frmMain.Visible Then frmMain.txtStatus.Text = "Cargando Administradores/Dioses/Gms."
         
-        On Error GoTo loadAdministrativeUsers_Err
+    On Error GoTo loadAdministrativeUsers_Err
+
+    'Si esta mierda tuviese array asociativos el codigo seria tan lindo.
+    Dim buf  As Integer
+    Dim i    As Long
+    Dim name As String
         
-
-        'Si esta mierda tuviese array asociativos el codigo seria tan lindo.
-        Dim buf  As Integer
-
-        Dim i    As Long
-
-        Dim name As String
+    ' Anti-choreo de GM's
+    Set AdministratorAccounts = New Dictionary
+    Dim TempName() As String
        
-        ' Public container
-100     Set Administradores = New clsIniReader
+    ' Public container
+    Set Administradores = New clsIniReader
     
-        ' Server ini info file
-        Dim ServerIni As clsIniReader
-
-102     Set ServerIni = New clsIniReader
-    
-104     Call ServerIni.Initialize(IniPath & "Server.ini")
+    ' Server ini info file
+    Dim ServerIni As clsIniReader
+    Set ServerIni = New clsIniReader
+    Call ServerIni.Initialize(IniPath & "Server.ini")
        
-        ' Admines
-106     buf = val(ServerIni.GetValue("INIT", "Admines"))
+    ' Admines
+    buf = val(ServerIni.GetValue("INIT", "Admines"))
     
-108     For i = 1 To buf
-110         name = UCase$(ServerIni.GetValue("Admines", "Admin" & i))
+    For i = 1 To buf
+        name = UCase$(ServerIni.GetValue("Admines", "Admin" & i))
+        TempName = Split(name, "|", , vbTextCompare)
         
-112         If Left$(name, 1) = "*" Or Left$(name, 1) = "+" Then name = Right$(name, Len(name) - 1)
-        
+        ' Si NO declara el mail de la cuenta en el Server.ini, NO le doy privilegios.
+        If UBound(TempName()) > 0 Then
+            ' AdministratorAccounts("Nick") = Email
+            AdministratorAccounts(TempName(1)) = TempName(0)
+            
             ' Add key
-114         Call Administradores.ChangeValue("Admin", name, "1")
+            Call Administradores.ChangeValue("Admin", TempName(0), "1")
+        End If
+        
+    Next i
+    
+    ' Dioses
+    buf = val(ServerIni.GetValue("INIT", "Dioses"))
+    
+    For i = 1 To buf
+        name = UCase$(ServerIni.GetValue("Dioses", "Dios" & i))
+        TempName = Split(name, "|", , vbTextCompare)
+        
+        ' Si NO declara el mail de la cuenta en el Server.ini, NO le doy privilegios.
+        If UBound(TempName()) > 0 Then
+            ' AdministratorAccounts("Nick") = Email
+            AdministratorAccounts(TempName(1)) = TempName(0)
+            
+            ' Add key
+            Call Administradores.ChangeValue("Dios", TempName(0), "1")
+        End If
+        
+    Next i
+        
+    ' SemiDioses
+    buf = val(ServerIni.GetValue("INIT", "SemiDioses"))
+    
+    For i = 1 To buf
+        name = UCase$(ServerIni.GetValue("SemiDioses", "SemiDios" & i))
+        TempName = Split(name, "|", , vbTextCompare)
+        
+        ' Si NO declara el mail de la cuenta en el Server.ini, NO le doy privilegios.
+        If UBound(TempName()) > 0 Then
+            ' AdministratorAccounts("Nick") = Email
+            AdministratorAccounts(TempName(1)) = TempName(0)
+            
+            ' Add key
+            Call Administradores.ChangeValue("SemiDios", TempName(0), "1")
+        End If
+        
+    Next i
+    
+    ' Consejeros
+    buf = val(ServerIni.GetValue("INIT", "Consejeros"))
+        
+    For i = 1 To buf
+        name = UCase$(ServerIni.GetValue("Consejeros", "Consejero" & i))
+        TempName = Split(name, "|", , vbTextCompare)
+        
+        ' Si NO declara el mail de la cuenta en el Server.ini, NO le doy privilegios.
+        If UBound(TempName()) > 0 Then
+            ' AdministratorAccounts("Nick") = Email
+            AdministratorAccounts(TempName(1)) = TempName(0)
+            
+            ' Add key
+            Call Administradores.ChangeValue("Consejero", TempName(0), "1")
+        End If
+        
+    Next i
+    
+    ' RolesMasters
+    buf = val(ServerIni.GetValue("INIT", "RolesMasters"))
+        
+    For i = 1 To buf
+        name = UCase$(ServerIni.GetValue("RolesMasters", "RM" & i))
+        TempName = Split(name, "|", , vbTextCompare)
+        
+        ' Si NO declara el mail de la cuenta en el Server.ini, NO le doy privilegios.
+        If UBound(TempName()) > 0 Then
+            ' AdministratorAccounts("Nick") = Email
+            AdministratorAccounts(TempName(1)) = TempName(0)
+            
+            ' Add key
+            Call Administradores.ChangeValue("RM", TempName(0), "1")
+        End If
+        
+    Next i
 
-116     Next i
-    
-        ' Dioses
-118     buf = val(ServerIni.GetValue("INIT", "Dioses"))
-    
-120     For i = 1 To buf
-122         name = UCase$(ServerIni.GetValue("Dioses", "Dios" & i))
-        
-124         If Left$(name, 1) = "*" Or Left$(name, 1) = "+" Then name = Right$(name, Len(name) - 1)
-        
-            ' Add key
-126         Call Administradores.ChangeValue("Dios", name, "1")
-        
-128     Next i
-        
-        ' SemiDioses
-130     buf = val(ServerIni.GetValue("INIT", "SemiDioses"))
-    
-132     For i = 1 To buf
-134         name = UCase$(ServerIni.GetValue("SemiDioses", "SemiDios" & i))
-        
-136         If Left$(name, 1) = "*" Or Left$(name, 1) = "+" Then name = Right$(name, Len(name) - 1)
-        
-            ' Add key
-138         Call Administradores.ChangeValue("SemiDios", name, "1")
-        
-140     Next i
-    
-        ' Consejeros
-142     buf = val(ServerIni.GetValue("INIT", "Consejeros"))
-        
-144     For i = 1 To buf
-146         name = UCase$(ServerIni.GetValue("Consejeros", "Consejero" & i))
-        
-148         If Left$(name, 1) = "*" Or Left$(name, 1) = "+" Then name = Right$(name, Len(name) - 1)
-        
-            ' Add key
-150         Call Administradores.ChangeValue("Consejero", name, "1")
-        
-152     Next i
-    
-        ' RolesMasters
-154     buf = val(ServerIni.GetValue("INIT", "RolesMasters"))
-        
-156     For i = 1 To buf
-158         name = UCase$(ServerIni.GetValue("RolesMasters", "RM" & i))
-        
-160         If Left$(name, 1) = "*" Or Left$(name, 1) = "+" Then name = Right$(name, Len(name) - 1)
-        
-            ' Add key
-162         Call Administradores.ChangeValue("RM", name, "1")
-164     Next i
-    
-166     Set ServerIni = Nothing
+    Set ServerIni = Nothing
 
-        'If frmMain.Visible Then frmMain.txtStatus.Text = Date & " " & Time & " - Los Administradores/Dioses/Gms se han cargado correctamente."
+    'If frmMain.Visible Then frmMain.txtStatus.Text = Date & " " & Time & " - Los Administradores/Dioses/Gms se han cargado correctamente."
 
         
-        Exit Sub
+    Exit Sub
 
 loadAdministrativeUsers_Err:
-168     Call RegistrarError(Err.Number, Err.description, "ES.loadAdministrativeUsers", Erl)
-170     Resume Next
+    Call RegistrarError(Err.Number, Err.description, "ES.loadAdministrativeUsers", Erl)
+    Resume Next
         
 End Sub
 

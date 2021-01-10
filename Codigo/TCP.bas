@@ -1203,76 +1203,96 @@ Function EntrarCuenta(ByVal UserIndex As Integer, CuentaEmail As String, CuentaP
         
         On Error GoTo EntrarCuenta_Err
         
-
-100     If CheckMAC(MacAddress) Then
-102         Call WriteShowMessageBox(UserIndex, "Su cuenta se encuentra bajo tolerancia 0. Tiene prohibido el acceso. Cod: #0001")
-            Exit Function
-
-        End If
-    
-104     If CheckHD(HDserial) Then
-106         Call WriteShowMessageBox(UserIndex, "Su cuenta se encuentra bajo tolerancia 0. Tiene prohibido el acceso. Cod: #0002")
-            Exit Function
-
-        End If
-
-108     If Not CheckMailString(CuentaEmail) Then
-110         Call WriteShowMessageBox(UserIndex, "Email inválido.")
-            Exit Function
-
-        End If
-    
-112     If Database_Enabled Then
-114         EntrarCuenta = EnterAccountDatabase(UserIndex, CuentaEmail, SDesencriptar(CuentaPassword), MacAddress, HDserial, UserList(UserIndex).ip)
-    
-        Else
-
-116         If CuentaExiste(CuentaEmail) Then
-118             If Not ObtenerBaneo(CuentaEmail) Then
-
-                    Dim PasswordHash As String, Salt As String
-
-120                 PasswordHash = GetVar(CuentasPath & UCase$(CuentaEmail) & ".act", "INIT", "PASSWORD")
-122                 Salt = GetVar(CuentasPath & UCase$(CuentaEmail) & ".act", "INIT", "SALT")
-
-124                 If PasswordValida(SDesencriptar(CuentaPassword), PasswordHash, Salt) Then
-126                     If ObtenerValidacion(CuentaEmail) Then
-128                         Call WriteVar(CuentasPath & LCase$(CuentaEmail) & ".act", "INIT", "MacAdress", MacAddress)
-130                         Call WriteVar(CuentasPath & LCase$(CuentaEmail) & ".act", "INIT", "HDserial", HDserial)
-132                         Call WriteVar(CuentasPath & LCase$(CuentaEmail) & ".act", "INIT", "UltimoAcceso", Date & " " & Time)
-134                         Call WriteVar(CuentasPath & LCase$(CuentaEmail) & ".act", "INIT", "UltimaIP", UserList(UserIndex).ip)
-                        
-136                         UserList(UserIndex).Cuenta = CuentaEmail
-                        
-138                         EntrarCuenta = True
-                        Else
-140                         Call WriteShowMessageBox(UserIndex, "¡La cuenta no ha sido validada aún!")
-
-                        End If
-
-                    Else
-142                     Call WriteShowMessageBox(UserIndex, "Contraseña inválida.")
-
-                    End If
-
-                Else
-144                 Call WriteShowMessageBox(UserIndex, "La cuenta se encuentra baneada debido a: " & ObtenerMotivoBaneo(CuentaEmail) & ". Esta decisión fue tomada por: " & ObtenerQuienBaneo(CuentaEmail) & ".")
-
-                End If
-
-            Else
-146             Call WriteShowMessageBox(UserIndex, "La cuenta no existe.")
+100     If ServerSoloGMs > 0 Then
+        
+            ' Si el e-mail está declarado junto al nick de la cuenta donde esta el PJ GM en el Server.ini te dejo entrar.
+102         If Not AdministratorAccounts.Exists(UCase$(CuentaEmail)) Then
+104             Call WriteShowMessageBox(UserIndex, "El servidor se encuentra habilitado solo para administradores por el momento.")
+                Exit Function
 
             End If
 
         End If
+
+106     If CheckMAC(MacAddress) Then
+108         Call WriteShowMessageBox(UserIndex, "Su cuenta se encuentra bajo tolerancia 0. Tiene prohibido el acceso. Cod: #0001")
+            Exit Function
+
+        End If
     
+110     If CheckHD(HDserial) Then
+112         Call WriteShowMessageBox(UserIndex, "Su cuenta se encuentra bajo tolerancia 0. Tiene prohibido el acceso. Cod: #0002")
+            Exit Function
+
+        End If
+
+114     If Not CheckMailString(CuentaEmail) Then
+116         Call WriteShowMessageBox(UserIndex, "Email inválido.")
+            Exit Function
+
+        End If
+    
+118     If Database_Enabled Then
+120         EntrarCuenta = EnterAccountDatabase(UserIndex, CuentaEmail, SDesencriptar(CuentaPassword), MacAddress, HDserial, UserList(UserIndex).ip)
+    
+        Else
+
+122         If CuentaExiste(CuentaEmail) Then
+124             If Not ObtenerBaneo(CuentaEmail) Then
+
+                    Dim PasswordHash As String, Salt As String
+
+126                 PasswordHash = GetVar(CuentasPath & UCase$(CuentaEmail) & ".act", "INIT", "PASSWORD")
+128                 Salt = GetVar(CuentasPath & UCase$(CuentaEmail) & ".act", "INIT", "SALT")
+
+130                 If PasswordValida(SDesencriptar(CuentaPassword), PasswordHash, _
+                            Salt) Then
+132                     If ObtenerValidacion(CuentaEmail) Then
+134                         Call WriteVar(CuentasPath & LCase$(CuentaEmail) & ".act", _
+                                    "INIT", "MacAdress", MacAddress)
+136                         Call WriteVar(CuentasPath & LCase$(CuentaEmail) & ".act", _
+                                    "INIT", "HDserial", HDserial)
+138                         Call WriteVar(CuentasPath & LCase$(CuentaEmail) & ".act", _
+                                    "INIT", "UltimoAcceso", Date & " " & Time)
+140                         Call WriteVar(CuentasPath & LCase$(CuentaEmail) & ".act", _
+                                    "INIT", "UltimaIP", UserList(UserIndex).ip)
+                        
+142                         UserList(UserIndex).Cuenta = CuentaEmail
+                        
+144                         EntrarCuenta = True
+                        Else
+146                         Call WriteShowMessageBox(UserIndex, _
+                                    "¡La cuenta no ha sido validada aún!")
+
+                        End If
+
+                    Else
+148                     Call WriteShowMessageBox(UserIndex, "Contraseña inválida.")
+
+                    End If
+
+                Else
+150                 Call WriteShowMessageBox(UserIndex, _
+                            "La cuenta se encuentra baneada debido a: " & _
+                            ObtenerMotivoBaneo(CuentaEmail) & _
+                            ". Esta decisión fue tomada por: " & ObtenerQuienBaneo( _
+                            CuentaEmail) & ".")
+
+                End If
+
+            Else
+152             Call WriteShowMessageBox(UserIndex, "La cuenta no existe.")
+
+            End If
+
+        End If
         
         Exit Function
 
 EntrarCuenta_Err:
-148     Call RegistrarError(Err.Number, Err.description, "TCP.EntrarCuenta", Erl)
-150     Resume Next
+154     Call RegistrarError(Err.Number, Err.description, "TCP.EntrarCuenta", Erl)
+
+156     Resume Next
         
 End Function
 

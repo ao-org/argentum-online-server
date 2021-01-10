@@ -1797,89 +1797,99 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
             Exit Sub
 
         End If
-
-126     If Not EntrarCuenta(UserIndex, CuentaEmail, Password, MacAddress, HDserial) Then
         
-128         Call CloseSocket(UserIndex)
+126     If EsGmChar(UserName) Then
+            
+128         If AdministratorAccounts(UCase$(CuentaEmail)) <> UCase$(UserName) Then
+130             Call WriteShowMessageBox(UserIndex, "¡ESTE PERSONAJE NO TE PERTENECE!")
+132             Call CloseSocket(UserIndex)
+                Exit Sub
+            End If
+            
+        End If
+        
+134     If Not EntrarCuenta(UserIndex, CuentaEmail, Password, MacAddress, HDserial) Then
+        
+136         Call CloseSocket(UserIndex)
             Exit Sub
 
         End If
     
-130     If Not AsciiValidos(UserName) Then
-132         Call WriteShowMessageBox(UserIndex, "Nombre invalido.")
+138     If Not AsciiValidos(UserName) Then
+140         Call WriteShowMessageBox(UserIndex, "Nombre invalido.")
         
-134         Call CloseSocket(UserIndex)
-        
-            Exit Sub
-
-        End If
-    
-136     If Not PersonajeExiste(UserName) Then
-138         Call WriteShowMessageBox(UserIndex, "El personaje no existe.")
-        
-140         Call CloseSocket(UserIndex)
+142         Call CloseSocket(UserIndex)
         
             Exit Sub
 
         End If
     
-142     If BANCheck(UserName) Then
+144     If Not PersonajeExiste(UserName) Then
+146         Call WriteShowMessageBox(UserIndex, "El personaje no existe.")
+        
+148         Call CloseSocket(UserIndex)
+        
+            Exit Sub
+
+        End If
+    
+150     If BANCheck(UserName) Then
 
             Dim LoopC As Integer
         
-144         For LoopC = 1 To Baneos.Count
+152         For LoopC = 1 To Baneos.Count
 
-146             If Baneos(LoopC).name = UCase$(UserName) Then
-148                 Call WriteShowMessageBox(UserIndex, "Se te ha prohibido la entrada a Argentum20 hasta el día " & Format(Baneos(LoopC).FechaLiberacion, "dddddd") & " a las " & Format(Baneos(LoopC).FechaLiberacion, "hh:mm am/pm") & " debido a " & Baneos(LoopC).Causa & " Esta decisión fue tomada por " & Baneos(LoopC).Baneador & ".")
+154             If Baneos(LoopC).name = UCase$(UserName) Then
+156                 Call WriteShowMessageBox(UserIndex, "Se te ha prohibido la entrada a Argentum20 hasta el día " & Format(Baneos(LoopC).FechaLiberacion, "dddddd") & " a las " & Format(Baneos(LoopC).FechaLiberacion, "hh:mm am/pm") & " debido a " & Baneos(LoopC).Causa & " Esta decisión fue tomada por " & Baneos(LoopC).Baneador & ".")
                 
-150                 Call CloseSocket(UserIndex)
+158                 Call CloseSocket(UserIndex)
                     Exit Sub
 
                 End If
 
-152         Next LoopC
+160         Next LoopC
         
             Dim BanNick     As String
 
             Dim BaneoMotivo As String
 
-154         BanNick = GetVar(CharPath & UserName & ".chr", "BAN", "BannedBy")
-156         BaneoMotivo = GetVar(CharPath & UserName & ".chr", "BAN", "BanMotivo")
+162         BanNick = GetVar(CharPath & UserName & ".chr", "BAN", "BannedBy")
+164         BaneoMotivo = GetVar(CharPath & UserName & ".chr", "BAN", "BanMotivo")
 
-158         If BanNick = "" Then
-160             BanNick = "*Error en la base de datos*"
-
-            End If
-        
-162         If BaneoMotivo = "" Then
-164             BaneoMotivo = "*No se registra el motivo del baneo.*"
+166         If BanNick = "" Then
+168             BanNick = "*Error en la base de datos*"
 
             End If
         
-166         Call WriteShowMessageBox(UserIndex, "Se te ha prohibido la entrada al juego debido a " & BaneoMotivo & ". Esta decisión fue tomada por " & BanNick & ".")
+170         If BaneoMotivo = "" Then
+172             BaneoMotivo = "*No se registra el motivo del baneo.*"
+
+            End If
         
-168         Call CloseSocket(UserIndex)
+174         Call WriteShowMessageBox(UserIndex, "Se te ha prohibido la entrada al juego debido a " & BaneoMotivo & ". Esta decisión fue tomada por " & BanNick & ".")
+        
+176         Call CloseSocket(UserIndex)
             Exit Sub
 
         End If
         
-170     Call ConnectUser(UserIndex, UserName, CuentaEmail)
+178     Call ConnectUser(UserIndex, UserName, CuentaEmail)
 
         'If we got here then packet is complete, copy data back to original queue
-172     Call UserList(UserIndex).incomingData.CopyBuffer(Buffer)
+180     Call UserList(UserIndex).incomingData.CopyBuffer(Buffer)
     
 ErrHandler:
 
         Dim Error As Long
 
-174     Error = Err.Number
+182     Error = Err.Number
 
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-176     Set Buffer = Nothing
+184     Set Buffer = Nothing
     
-178     If Error <> 0 Then Err.raise Error
+186     If Error <> 0 Then Err.raise Error
 
 End Sub
 
@@ -1910,25 +1920,15 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
 106     Call Buffer.ReadByte
 
         Dim UserName As String
-
         Dim race     As eRaza
-
         Dim gender   As eGenero
-    
         Dim Hogar   As eCiudad
-
         Dim Class As eClass
-
         Dim Head        As Integer
-
         Dim CuentaEmail As String
-
         Dim Password    As String
-
         Dim MacAddress  As String
-
         Dim HDserial    As Long
-
         Dim Version     As String
     
 108     If PuedeCrearPersonajes = 0 Then
@@ -1965,37 +1965,47 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
 150         Call CloseSocket(UserIndex)
             Exit Sub
         End If
-
-152     If Not EntrarCuenta(UserIndex, CuentaEmail, Password, MacAddress, HDserial) Then
-154         Call CloseSocket(UserIndex)
-            Exit Sub
+        
+152     If EsGmChar(UserName) Then
+            
+154         If AdministratorAccounts(UCase$(CuentaEmail)) <> UCase$(UserName) Then
+156             Call WriteShowMessageBox(UserIndex, "El nombre de usuario ingresado está siendo ocupado por un miembro del Staff.")
+158             Call CloseSocket(UserIndex)
+                Exit Sub
+            End If
+            
         End If
         
-        If GetPersonajesCountByIDDatabase(UserList(UserIndex).AccountID) >= MAX_PERSONAJES Then
-            Call CloseSocket(UserIndex)
+160     If Not EntrarCuenta(UserIndex, CuentaEmail, Password, MacAddress, HDserial) Then
+162         Call CloseSocket(UserIndex)
+            Exit Sub
+        End If
+            
+164     If GetPersonajesCountByIDDatabase(UserList(UserIndex).AccountID) >= MAX_PERSONAJES Then
+166         Call CloseSocket(UserIndex)
             Exit Sub
         End If
 
-156     If Not ConnectNewUser(UserIndex, UserName, race, gender, Class, Head, CuentaEmail, Hogar) Then
-            Call CloseSocket(UserIndex)
+168     If Not ConnectNewUser(UserIndex, UserName, race, gender, Class, Head, CuentaEmail, Hogar) Then
+170         Call CloseSocket(UserIndex)
             Exit Sub
         End If
 
         'If we got here then packet is complete, copy data back to original queue
-158     Call UserList(UserIndex).incomingData.CopyBuffer(Buffer)
+172     Call UserList(UserIndex).incomingData.CopyBuffer(Buffer)
     
 ErrHandler:
 
         Dim Error As Long
 
-160     Error = Err.Number
+174     Error = Err.Number
 
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-162     Set Buffer = Nothing
+176     Set Buffer = Nothing
     
-164     If Error <> 0 Then Err.raise Error
+178     If Error <> 0 Then Err.raise Error
 
 End Sub
 
@@ -25838,123 +25848,69 @@ End Sub
 
 Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
 
-        Dim Version As String
+    Dim Version As String
 
-        'Author: Pablo Mercavides
-100     If UserList(UserIndex).incomingData.Length < 14 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
+    'Author: Pablo Mercavides
+    If UserList(UserIndex).incomingData.Length < 14 Then
+        Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
+        Exit Sub
 
-        End If
+    End If
 
-        On Error GoTo ErrHandler
+    On Error GoTo ErrHandler
 
-        'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-        Dim Buffer As New clsByteQueue
-
-104     Call Buffer.CopyBuffer(UserList(UserIndex).incomingData)
+    'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
+    Dim Buffer As New clsByteQueue
+    Call Buffer.CopyBuffer(UserList(UserIndex).incomingData)
     
-        'Remove packet ID
-106     Call Buffer.ReadByte
+    'Remove packet ID
+    Call Buffer.ReadByte
 
-        Dim CuentaEmail    As String
-
-        Dim CuentaPassword As String
-
-        Dim MacAddress     As String
-
-        Dim HDserial       As Long
+    Dim CuentaEmail    As String
+    Dim CuentaPassword As String
+    Dim MacAddress     As String
+    Dim HDserial       As Long
     
-108     CuentaEmail = Buffer.ReadASCIIString()
-110     CuentaPassword = Buffer.ReadASCIIString()
-112     Version = CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte())
+    CuentaEmail = Buffer.ReadASCIIString()
+    CuentaPassword = Buffer.ReadASCIIString()
+    Version = CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte())
+    MacAddress = Buffer.ReadASCIIString()
+    HDserial = Buffer.ReadLong()
+    
+    'If we got here then packet is complete, copy data back to original queue
+    Call UserList(UserIndex).incomingData.CopyBuffer(Buffer)
+    
+    If Not VersionOK(Version) Then
+        Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
+        Call CloseSocket(UserIndex)
+        Exit Sub
 
-114     If Not VersionOK(Version) Then
-116         Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
+    End If
+
+    If EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MacAddress, HDserial) Then
+        Call WritePersonajesDeCuenta(UserIndex)
+        Call WriteMostrarCuenta(UserIndex)
+    Else
         
-118         Call CloseSocket(UserIndex)
-            Exit Sub
+        Call CloseSocket(UserIndex)
+        Exit Sub
 
-        End If
+    End If
     
-        'If ServerSoloGMs > 0 Then
-        '    If Condicion Then
-        '        Call WriteShowMessageBox(UserIndex, "El servidor sera habilitado a las 18 horas. Por el momento solo podes crear cuentas. Te esperamos!")
-        '
-        '        Call CloseSocket(UserIndex)
-        '        Exit Sub
-        '    End If
-        'End If
-    
-        'Seguridad Ladder
-120     MacAddress = Buffer.ReadASCIIString()
-122     HDserial = Buffer.ReadLong()
-        'Seguridad Ladder
-    
-  
-
-    
-124     If ServerSoloGMs > 0 Then
-    
-     
-126         Select Case LCase$(CuentaEmail)
-        
-               Case "djpablo@djpablo.com.ar" ' Ladder
-           
-128            Case "reformasapef@gmail.com" 'Sensui
-            
-130            Case "gulfas@gmail.com" 'Morgolock
-            
-132            Case "alexiscaraballo96@gmail.com" 'Wyrox
-            
-134            Case "jopiodz00@gmail.com" 'jopi
-    
-136            Case "juanitonelli@gmail.com" 'Danv
-           
-           
-138            Case "lucas.recoaro@gmail.com" 'Recox
-           
-           
-140            Case "reyarb@fibertel.com.ar" 'Recox
-           
-           
-142            Case "hgarofalo79@gmail.com" 'Haracin
-        
-144             Case Else
-146                     Call WriteShowMessageBox(UserIndex, "El servidor se encuentra habilitado solo para administradores. ¡Te esperamos pronto!")
-148                     Call FlushBuffer(UserIndex)
-150                     Call CloseSocket(UserIndex)
-                        Exit Sub
-                End Select
-        End If
-    
-    
-    
-152     If EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MacAddress, HDserial) Then
-154         Call WritePersonajesDeCuenta(UserIndex)
-156         Call WriteMostrarCuenta(UserIndex)
-        Else
-        
-158         Call CloseSocket(UserIndex)
-            Exit Sub
-
-        End If
-    
-        'If we got here then packet is complete, copy data back to original queue
-160     Call UserList(UserIndex).incomingData.CopyBuffer(Buffer)
+    Exit Sub
     
 ErrHandler:
 
-        Dim Error As Long
+    Dim Error As Long
 
-162     Error = Err.Number
+    Error = Err.Number
 
-        On Error GoTo 0
+    On Error GoTo 0
     
-        'Destroy auxiliar buffer
-164     Set Buffer = Nothing
+    'Destroy auxiliar buffer
+    Set Buffer = Nothing
     
-166     If Error <> 0 Then Err.raise Error
+    If Error <> 0 Then Err.raise Error
 
 End Sub
 
@@ -26006,7 +25962,6 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
 124     HDserial = Buffer.ReadLong()
     
 126     If Not EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MacAddress, HDserial) Then
-        
 128         Call CloseSocket(UserIndex)
             Exit Sub
 
