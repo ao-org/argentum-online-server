@@ -1338,7 +1338,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
         
               '¿Supera el máximo de usuarios por cuenta?
 126         If MaxUsersPorCuenta > 0 Then
-128             If ContarUsuariosMismaCuenta(.AccountID) >= MaxUsersPorCuenta Then
+128             If ContarUsuariosMismaCuenta(.AccountId) >= MaxUsersPorCuenta Then
 130                 If MaxUsersPorCuenta = 1 Then
 132                     Call WriteShowMessageBox(UserIndex, "Ya hay un usuario conectado con esta cuenta.")
                       Else
@@ -1371,9 +1371,9 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
 158             If ContarMismaIP(UserIndex, .ip) >= MaxConexionesIP Then
 160                 Call WriteShowMessageBox(UserIndex, "Has alcanzado el límite de conexiones por IP.")
 162                 Call CloseSocket(UserIndex)
-                      Exit Sub
-                  End If
-              End If
+                    Exit Sub
+                End If
+            End If
 
               'Le damos los privilegios
 164         .flags.Privilegios = UserDarPrivilegioLevel(name)
@@ -1381,20 +1381,21 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
               'Add RM flag if needed
 166         If EsRolesMaster(name) Then
 168             .flags.Privilegios = .flags.Privilegios Or PlayerType.RoleMaster
-              End If
+            End If
 
         
 170         If EsGM(UserIndex) Then
 172             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> " & name & " se conecto al juego.", FontTypeNames.FONTTYPE_INFOBOLD))
+                Call LogGM(.name, "Se conectó con IP: " & .ip)
 
-              Else
+            Else
 174             If ServerSoloGMs > 0 Then
                       ' Call WriteErrorMsg(UserIndex, "Servidor restringido a administradores. Por favor reintente en unos momentos.")
 176                 Call WriteShowMessageBox(UserIndex, "Servidor restringido a administradores. Por favor reintente en unos momentos.")
 178                 Call CloseSocket(UserIndex)
-                      Exit Sub
-                  End If
-              End If
+                    Exit Sub
+                End If
+            End If
         
 180         If EnPausa Then
 182             Call WritePauseToggle(UserIndex)
@@ -2013,7 +2014,7 @@ Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
 102         .name = vbNullString
 104         .Cuenta = vbNullString
 106         .Id = -1
-108         .AccountID = -1
+108         .AccountId = -1
 110         .modName = vbNullString
 112         .Desc = vbNullString
 114         .DescRM = vbNullString
@@ -2741,13 +2742,13 @@ Function ValidarNombre(nombre As String) As Boolean
 
 End Function
 
-Function ContarUsuariosMismaCuenta(ByVal AccountID As Integer) As Integer
+Function ContarUsuariosMismaCuenta(ByVal AccountId As Integer) As Integer
 
         Dim i As Integer
     
 100     For i = 1 To LastUser
         
-102         If UserList(i).flags.UserLogged And UserList(i).AccountID = AccountID Then
+102         If UserList(i).flags.UserLogged And UserList(i).AccountId = AccountId Then
 104             ContarUsuariosMismaCuenta = ContarUsuariosMismaCuenta + 1
             End If
         
