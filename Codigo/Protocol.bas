@@ -26652,32 +26652,38 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
 114         Call .incomingData.CopyBuffer(Buffer)
         
 116         tUser = NameIndex(UserName)
+    
+            If Not EsGM(UserIndex) Then
 
-118         If tUser <= 0 Then
-120             If Database_Enabled Then
-122                 If Not AddOroBancoDatabase(UserName, Cantidad) Then
-124                     Call WriteChatOverHead(UserIndex, "El usuario no existe.", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
-                        Exit Sub
+118             If tUser <= 0 Then
+120                 If Database_Enabled Then
+122                     If Not AddOroBancoDatabase(UserName, Cantidad) Then
+124                         Call WriteChatOverHead(UserIndex, "El usuario no existe.", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
+                            Exit Sub
+                        End If
+                    Else
+                        Dim FileUser  As String
+                        Dim OroenBove As Long
+    
+126                     FileUser = CharPath & UCase$(UserName) & ".chr"
+128                     OroenBove = val(GetVar(FileUser, "STATS", "BANCO"))
+130                     OroenBove = OroenBove + val(Cantidad)
+    
+132                     Call WriteVar(FileUser, "STATS", "BANCO", CLng(OroenBove)) 'Guardamos en bove
                     End If
+134                 UserList(UserIndex).Stats.Banco = UserList(UserIndex).Stats.Banco - val(Cantidad) 'Quitamos el oro al usuario
                 Else
-                    Dim FileUser  As String
-                    Dim OroenBove As Long
-
-126                 FileUser = CharPath & UCase$(UserName) & ".chr"
-128                 OroenBove = val(GetVar(FileUser, "STATS", "BANCO"))
-130                 OroenBove = OroenBove + val(Cantidad)
-
-132                 Call WriteVar(FileUser, "STATS", "BANCO", CLng(OroenBove)) 'Guardamos en bove
+136                 UserList(UserIndex).Stats.Banco = UserList(UserIndex).Stats.Banco - val(Cantidad) 'Quitamos el oro al usuario
+138                 UserList(tUser).Stats.Banco = UserList(tUser).Stats.Banco + val(Cantidad) 'Se lo damos al otro.
                 End If
-134             UserList(UserIndex).Stats.Banco = UserList(UserIndex).Stats.Banco - val(Cantidad) 'Quitamos el oro al usuario
+    
+140             Call WriteChatOverHead(UserIndex, "¡El envío se ha realizado con éxito! Gracias por utilizar los servicios de Finanzas Goliath", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
+142             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("173", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
             Else
-136             UserList(UserIndex).Stats.Banco = UserList(UserIndex).Stats.Banco - val(Cantidad) 'Quitamos el oro al usuario
-138             UserList(tUser).Stats.Banco = UserList(tUser).Stats.Banco + val(Cantidad) 'Se lo damos al otro.
+                Call WriteChatOverHead(UserIndex, "Los administradores no pueden transferir oro.", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
+                Call LogGM(.name, "Quizo transferirle oro a: " & UserName)
+            
             End If
-
-140         Call WriteChatOverHead(UserIndex, "¡El envío se ha realizado con éxito! Gracias por utilizar los servicios de Finanzas Goliath", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
-142         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("173", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
-
         End With
     
 ErrHandler:
