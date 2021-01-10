@@ -29,6 +29,8 @@ Attribute VB_Name = "Admin"
 
 Option Explicit
 
+Public AdministratorAccounts As Dictionary
+
 Public Type tMotd
 
     texto As String
@@ -68,53 +70,32 @@ Public EstadisticasWeb              As New clsEstadisticasIPC
 
 'INTERVALOS
 Public SanaIntervaloSinDescansar    As Integer
-
 Public StaminaIntervaloSinDescansar As Integer
-
 Public SanaIntervaloDescansar       As Integer
-
 Public StaminaIntervaloDescansar    As Integer
-
 Public IntervaloPerderStamina       As Integer
-
 Public IntervaloSed                 As Integer
-
 Public IntervaloHambre              As Integer
-
 Public IntervaloVeneno              As Integer
 
 'Ladder
 Public IntervaloIncineracion        As Integer
-
 Public IntervaloInmovilizado        As Integer
-
 Public IntervaloMaldicion           As Integer
 'Ladder
 
 Public IntervaloParalizado          As Integer
-
 Public IntervaloInvisible           As Integer
-
 Public IntervaloFrio                As Integer
-
 Public IntervaloWavFx               As Integer
-
 Public IntervaloNPCPuedeAtacar      As Integer
-
 Public IntervaloNPCAI               As Integer
-
 Public IntervaloInvocacion          As Integer
-
 Public IntervaloOculto              As Integer '[Nacho]
-
 Public IntervaloUserPuedeAtacar     As Long
-
 Public IntervaloMagiaGolpe          As Long
-
 Public IntervaloGolpeMagia          As Long
-
 Public IntervaloUserPuedeCastear    As Long
-
 Public IntervaloTrabajarExtraer     As Long
 
 Public IntervaloTrabajarConstruir   As Long
