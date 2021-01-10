@@ -1981,7 +1981,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
             Exit Sub
         End If
             
-164     If GetPersonajesCountByIDDatabase(UserList(UserIndex).AccountID) >= MAX_PERSONAJES Then
+164     If GetPersonajesCountByIDDatabase(UserList(UserIndex).AccountId) >= MAX_PERSONAJES Then
 166         Call CloseSocket(UserIndex)
             Exit Sub
         End If
@@ -10543,16 +10543,16 @@ Private Sub HandleDesbuggear(ByVal UserIndex As Integer)
 120                     Call WriteConsoleMsg(UserIndex, "El usuario debe estar offline.", FontTypeNames.FONTTYPE_INFO)
                     Else
 
-                        Dim AccountID As Long, AccountOnline As Boolean
+                        Dim AccountId As Long, AccountOnline As Boolean
                     
-122                     AccountID = GetAccountIDDatabase(UserName)
+122                     AccountId = GetAccountIDDatabase(UserName)
                     
-124                     If AccountID >= 0 Then
+124                     If AccountId >= 0 Then
 
 126                         For i = 1 To LastUser
 
 128                             If UserList(i).flags.UserLogged Then
-130                                 If UserList(i).AccountID = AccountID Then
+130                                 If UserList(i).AccountId = AccountId Then
 132                                     AccountOnline = True
 
                                     End If
@@ -10569,7 +10569,7 @@ Private Sub HandleDesbuggear(ByVal UserIndex As Integer)
 142                         If AccountOnline Then
 144                             Call WriteConsoleMsg(UserIndex, "Hay un usuario de la cuenta conectado. Se actualizaron solo los usuarios online.", FontTypeNames.FONTTYPE_INFO)
                             Else
-146                             Call ResetLoggedDatabase(AccountID)
+146                             Call ResetLoggedDatabase(AccountId)
 148                             Call WriteConsoleMsg(UserIndex, "Cuenta del personaje desbuggeada y usuarios online actualizados.", FontTypeNames.FONTTYPE_INFO)
 
                             End If
@@ -25964,15 +25964,12 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
 126     If Not EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MacAddress, HDserial) Then
 128         Call CloseSocket(UserIndex)
             Exit Sub
-
         End If
     
-130     If Not AsciiValidos(UserDelete) Then
-132         Call WriteShowMessageBox(UserIndex, "Nombre inválido.")
-        
+130     If Not CheckUserAccount(UserDelete, UserList(UserIndex).AccountId) Then
+132         Call LogHackAttemp(CuentaEmail & " intentó borrar el pj " & UserList(UserIndex).AccountId)
 134         Call CloseSocket(UserIndex)
             Exit Sub
-
         End If
     
 136     If Database_Enabled Then
@@ -26201,7 +26198,7 @@ Public Sub WritePersonajesDeCuenta(ByVal UserIndex As Integer)
 102     donador = DonadorCheck(UserCuenta)
 
 104     If Database_Enabled Then
-106         CantPersonajes = GetPersonajesCuentaDatabase(UserList(UserIndex).AccountID, Personaje)
+106         CantPersonajes = GetPersonajesCuentaDatabase(UserList(UserIndex).AccountId, Personaje)
         Else
 108         CantPersonajes = ObtenerCantidadDePersonajes(UserCuenta)
         
