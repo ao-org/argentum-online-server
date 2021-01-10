@@ -199,21 +199,21 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
 170         If .RewardGLD Then
 172             UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + (.RewardGLD * OroMult)
 174             Call WriteConsoleMsg(UserIndex, "Has ganado " & PonerPuntos((.RewardGLD * OroMult)) & " monedas de oro como recompensa.", FontTypeNames.FONTTYPE_INFOIAO)
-188             Call WriteUpdateGold(UserIndex)
+176             Call WriteUpdateGold(UserIndex)
             End If
         
             'Si hay recompensa de objetos, se entregan.
-176         If .RewardOBJs > 0 Then
+178         If .RewardOBJs > 0 Then
 
-178             For i = 1 To .RewardOBJs
+180             For i = 1 To .RewardOBJs
 
-180                 If .RewardOBJ(i).Amount Then
-182                     Call MeterItemEnInventario(UserIndex, .RewardOBJ(i))
-184                     Call WriteConsoleMsg(UserIndex, "Has recibido " & QuestList(QuestIndex).RewardOBJ(i).Amount & " " & ObjData(QuestList(QuestIndex).RewardOBJ(i).ObjIndex).name & " como recompensa.", FontTypeNames.FONTTYPE_INFOIAO)
+182                 If .RewardOBJ(i).Amount Then
+184                     Call MeterItemEnInventario(UserIndex, .RewardOBJ(i))
+186                     Call WriteConsoleMsg(UserIndex, "Has recibido " & QuestList(QuestIndex).RewardOBJ(i).Amount & " " & ObjData(QuestList(QuestIndex).RewardOBJ(i).ObjIndex).name & " como recompensa.", FontTypeNames.FONTTYPE_INFOIAO)
 
                     End If
 
-186             Next i
+188             Next i
 
             End If
         
@@ -858,40 +858,40 @@ Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As
         Exit Function
 
 FinishQuestCheck_Err:
-        Call RegistrarError(Err.Number, Err.description, "ModQuest.FinishQuestCheck", Erl)
+136     Call RegistrarError(Err.Number, Err.description, "ModQuest.FinishQuestCheck", Erl)
 
 End Function
 
 Function FaltanItemsQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal ObjIndex As Integer) As Boolean
 
-    On Error GoTo Handler
+        On Error GoTo Handler
 
-    With QuestList(QuestIndex)
+100     With QuestList(QuestIndex)
 
-        ' Por las dudas...
-        If .RequiredOBJs > 0 Then
+            ' Por las dudas...
+102         If .RequiredOBJs > 0 Then
         
-            Dim i As Integer
+                Dim i As Integer
         
-            For i = 1 To .RequiredOBJs
+104             For i = 1 To .RequiredOBJs
             
-                ' Encontramos el objeto
-                If ObjIndex = .RequiredOBJ(i).ObjIndex Then
+                    ' Encontramos el objeto
+106                 If ObjIndex = .RequiredOBJ(i).ObjIndex Then
 
-                    ' Devolvemos si ya tiene todos los que la quest pide
-                    FaltanItemsQuest = Not TieneObjetos(ObjIndex, .RequiredOBJ(i).Amount, UserIndex)
-                    Exit Function
+                        ' Devolvemos si ya tiene todos los que la quest pide
+108                     FaltanItemsQuest = Not TieneObjetos(ObjIndex, .RequiredOBJ(i).Amount, UserIndex)
+                        Exit Function
 
-                End If
+                    End If
             
-            Next i
+110             Next i
         
-        End If
+            End If
 
-    End With
+        End With
             
 Handler:
-    Call RegistrarError(Err.Number, Err.description, "ModQuest.FaltanItemsQuest", Erl)
-    Resume Next
+112     Call RegistrarError(Err.Number, Err.description, "ModQuest.FaltanItemsQuest", Erl)
+114     Resume Next
 
 End Function

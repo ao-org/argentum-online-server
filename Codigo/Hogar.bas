@@ -59,7 +59,7 @@ Public Function getLimit(ByVal Mapa As Integer, ByVal side As Byte) As Integer
         Exit Function
 
 getLimit_Err:
-        Call RegistrarError(Err.Number, Err.description, "Hogar.getLimit", Erl)
+128     Call RegistrarError(Err.Number, Err.description, "Hogar.getLimit", Erl)
 
         
 End Function
@@ -113,7 +113,7 @@ Public Sub generateMatrix(ByVal Mapa As Integer)
         Exit Sub
 
 generateMatrix_Err:
-        Call RegistrarError(Err.Number, Err.description, "Hogar.generateMatrix", Erl)
+136     Call RegistrarError(Err.Number, Err.description, "Hogar.generateMatrix", Erl)
 
         
 End Sub
@@ -177,7 +177,7 @@ Public Sub setDistance(ByVal Mapa As Integer, _
         Exit Sub
 
 setDistance_Err:
-        Call RegistrarError(Err.Number, Err.description, "Hogar.setDistance", Erl)
+134     Call RegistrarError(Err.Number, Err.description, "Hogar.setDistance", Erl)
 
         
 End Sub
@@ -199,17 +199,17 @@ Public Sub goHome(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
 102         If .flags.Muerto = 1 Then
-                If .donador.activo = 0 And Not EsGM(UserIndex) Then  ' Donador no espera tiempo
-                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Runa, 800, False))
-                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.CharIndex, 800, Accion_Barra.Hogar))
+104             If .donador.activo = 0 And Not EsGM(UserIndex) Then  ' Donador no espera tiempo
+106                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Runa, 800, False))
+108                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.CharIndex, 800, Accion_Barra.Hogar))
                 Else
-                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Runa, 100, False))
-                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.CharIndex, 100, Accion_Barra.Hogar))
+110                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Runa, 100, False))
+112                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.CharIndex, 100, Accion_Barra.Hogar))
                   End If
                 
-                .Accion.Particula = ParticulasIndex.Runa
-                .Accion.AccionPendiente = True
-                .Accion.TipoAccion = Accion_Barra.Hogar
+114             .Accion.Particula = ParticulasIndex.Runa
+116             .Accion.AccionPendiente = True
+118             .Accion.TipoAccion = Accion_Barra.Hogar
             
             Else
         
@@ -223,7 +223,7 @@ Public Sub goHome(ByVal UserIndex As Integer)
         Exit Sub
 
 goHome_Err:
-        Call RegistrarError(Err.Number, Err.description, "Hogar.goHome", Erl)
+122     Call RegistrarError(Err.Number, Err.description, "Hogar.goHome", Erl)
 
         
 End Sub
@@ -253,7 +253,7 @@ Public Sub TravelingEffect(ByVal UserIndex As Integer)
         Exit Sub
 
 TravelingEffect_Err:
-        Call RegistrarError(Err.Number, Err.description, "Hogar.TravelingEffect", Erl)
+104     Call RegistrarError(Err.Number, Err.description, "Hogar.TravelingEffect", Erl)
 
         
 End Sub
@@ -283,7 +283,7 @@ Public Function GetHomeArrivalTime(ByVal UserIndex As Integer) As Integer
         Exit Function
 
 GetHomeArrivalTime_Err:
-        Call RegistrarError(Err.Number, Err.description, "Hogar.GetHomeArrivalTime", Erl)
+106     Call RegistrarError(Err.Number, Err.description, "Hogar.GetHomeArrivalTime", Erl)
 
         
 End Function
@@ -339,7 +339,7 @@ Public Sub HomeArrival(ByVal UserIndex As Integer)
         Exit Sub
 
 HomeArrival_Err:
-        Call RegistrarError(Err.Number, Err.description, "Hogar.HomeArrival", Erl)
+134     Call RegistrarError(Err.Number, Err.description, "Hogar.HomeArrival", Erl)
 
         
 End Sub
@@ -384,7 +384,7 @@ Public Function IntervaloGoHome(ByVal UserIndex As Integer, _
         Exit Function
 
 IntervaloGoHome_Err:
-        Call RegistrarError(Err.Number, Err.description, "Hogar.IntervaloGoHome", Erl)
+114     Call RegistrarError(Err.Number, Err.description, "Hogar.IntervaloGoHome", Erl)
 
         
 End Function
@@ -413,41 +413,41 @@ Public Sub HandleHome(ByVal UserIndex As Integer)
             End If
                 
             'Si el mapa tiene alguna restriccion (newbie, dungeon, etc...), no lo dejamos viajar.
-112         If MapInfo(.Pos.Map).zone = "NEWBIE" Then
-114             Call WriteConsoleMsg(UserIndex, "No pueder viajar a tu hogar desde este mapa.", FontTypeNames.FONTTYPE_FIGHT)
+108         If MapInfo(.Pos.Map).zone = "NEWBIE" Then
+110             Call WriteConsoleMsg(UserIndex, "No pueder viajar a tu hogar desde este mapa.", FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
             
             End If
         
             'Si es un mapa comun y no esta en cana
-116         If .Counters.Pena <> 0 Then
-118             Call WriteConsoleMsg(UserIndex, "No puedes usar este comando en prisión.", FontTypeNames.FONTTYPE_FIGHT)
+112         If .Counters.Pena <> 0 Then
+114             Call WriteConsoleMsg(UserIndex, "No puedes usar este comando en prisión.", FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
 
             End If
         
-120         If .flags.Muerto = 0 Then
-122             Call WriteConsoleMsg(UserIndex, "Debes estar muerto para utilizar este comando.", FontTypeNames.FONTTYPE_FIGHT)
+116         If .flags.Muerto = 0 Then
+118             Call WriteConsoleMsg(UserIndex, "Debes estar muerto para utilizar este comando.", FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
 
             End If
 
-124         If .flags.Traveling = 0 Then
+120         If .flags.Traveling = 0 Then
             
-126             If .Pos.Map <> Ciudades(.Hogar).Map Then
-128                 Call goHome(UserIndex)
+122             If .Pos.Map <> Ciudades(.Hogar).Map Then
+124                 Call goHome(UserIndex)
                 
                 Else
-130                 Call WriteConsoleMsg(UserIndex, "Ya te encuentras en tu hogar.", FontTypeNames.FONTTYPE_INFO)
+126                 Call WriteConsoleMsg(UserIndex, "Ya te encuentras en tu hogar.", FontTypeNames.FONTTYPE_INFO)
 
                 End If
 
             Else
 
-132             .flags.Traveling = 0
-134             .Counters.goHome = 0
+128             .flags.Traveling = 0
+130             .Counters.goHome = 0
             
-136             Call WriteConsoleMsg(UserIndex, "Ya hay un viaje en curso.", FontTypeNames.FONTTYPE_INFO)
+132             Call WriteConsoleMsg(UserIndex, "Ya hay un viaje en curso.", FontTypeNames.FONTTYPE_INFO)
             
             End If
         
@@ -457,7 +457,7 @@ Public Sub HandleHome(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleHome_Err:
-        Call RegistrarError(Err.Number, Err.description, "Hogar.HandleHome", Erl)
+134     Call RegistrarError(Err.Number, Err.description, "Hogar.HandleHome", Erl)
 
         
 End Sub
