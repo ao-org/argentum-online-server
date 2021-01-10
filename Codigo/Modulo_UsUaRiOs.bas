@@ -1600,6 +1600,8 @@ Sub UserDie(ByVal UserIndex As Integer)
             '<< Actualizamos clientes >>
 290         Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)
 
+            Call WriteConsoleMsg(UserIndex, "Escribe /HOGAR si deseas regresar rápido a tu hogar.", FontTypeNames.FONTTYPE_New_Naranja)
+
         End With
 
         Exit Sub
