@@ -25967,7 +25967,7 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
         End If
     
 130     If Not CheckUserAccount(UserDelete, UserList(UserIndex).AccountId) Then
-132         Call LogHackAttemp(CuentaEmail & " intentó borrar el pj " & UserList(UserIndex).AccountId)
+132         Call LogHackAttemp(CuentaEmail & "[" & UserList(UserIndex).ip & "] intentó borrar el pj " & UserDelete)
 134         Call CloseSocket(UserIndex)
             Exit Sub
         End If
