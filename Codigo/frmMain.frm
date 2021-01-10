@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{248DD890-BB45-11CF-9ABC-0080C7E7B78D}#1.0#0"; "mswinsck.ocx"
+Object = "{248DD890-BB45-11CF-9ABC-0080C7E7B78D}#1.0#0"; "MSWINSCK.ocx"
 Begin VB.Form frmMain 
    BackColor       =   &H00E0E0E0&
    BorderStyle     =   4  'Fixed ToolWindow
@@ -747,7 +747,7 @@ Private Sub auxSocket_DataArrival(ByVal bytesTotal As Long)
         Exit Sub
 
 auxSocket_DataArrival_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmMain.auxSocket_DataArrival", Erl)
+110     Call RegistrarError(Err.Number, Err.description, "frmMain.auxSocket_DataArrival", Erl)
 
         
 End Sub
@@ -881,7 +881,7 @@ Private Sub CMDDUMP_Click()
         Exit Sub
 
 CMDDUMP_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmMain.CMDDUMP_Click", Erl)
+108     Call RegistrarError(Err.Number, Err.description, "frmMain.CMDDUMP_Click", Erl)
 
         
 End Sub
@@ -1098,126 +1098,126 @@ End Sub
 
 Private Sub EstadoTimer_Timer()
         
-        On Error GoTo EstadoTimer_Timer_Err
+    On Error GoTo EstadoTimer_Timer_Err
     
         
 
     
 
-100     Call GetHoraActual
+    Call GetHoraActual
     
-        Dim i As Long
+    Dim i As Long
 
-102     For i = 1 To Baneos.Count
+    For i = 1 To Baneos.Count
 
-104         If Baneos(i).FechaLiberacion <= Now Then
-106             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> Se ha concluido la sentencia de ban para " & Baneos(i).name & ".", FontTypeNames.FONTTYPE_SERVER))
-108             Call ChangeBan(Baneos(i).name, 0)
-110             Call Baneos.Remove(i)
-112             Call SaveBans
+        If Baneos(i).FechaLiberacion <= Now Then
+            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> Se ha concluido la sentencia de ban para " & Baneos(i).name & ".", FontTypeNames.FONTTYPE_SERVER))
+            Call ChangeBan(Baneos(i).name, 0)
+            Call Baneos.Remove(i)
+            Call SaveBans
 
-            End If
+        End If
 
-        Next
+    Next
 
-114     For i = 1 To Donadores.Count
+    For i = 1 To Donadores.Count
 
-116         If Donadores(i).FechaExpiracion <= Now Then
-118             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> Se ha concluido el tiempo de donador para " & Donadores(i).name & ".", FontTypeNames.FONTTYPE_SERVER))
-120             Call ChangeDonador(Donadores(i).name, 0)
-122             Call Donadores.Remove(i)
-124             Call SaveDonadores
+        If Donadores(i).FechaExpiracion <= Now Then
+            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> Se ha concluido el tiempo de donador para " & Donadores(i).name & ".", FontTypeNames.FONTTYPE_SERVER))
+            Call ChangeDonador(Donadores(i).name, 0)
+            Call Donadores.Remove(i)
+            Call SaveDonadores
 
-            End If
+        End If
 
-        Next
+    Next
 
-126     Select Case frmMain.lblhora.Caption
+    Select Case frmMain.lblhora.Caption
 
-            Case "0:00:00"
-128             HoraEvento = 0
+        Case "0:00:00"
+            HoraEvento = 0
 
-130         Case "1:00:00"
-132             HoraEvento = 1
+        Case "1:00:00"
+            HoraEvento = 1
 
-134         Case "2:00:00"
-136             HoraEvento = 2
+        Case "2:00:00"
+            HoraEvento = 2
 
-138         Case "3:00:00"
-140             HoraEvento = 3
+        Case "3:00:00"
+            HoraEvento = 3
 
-142         Case "4:00:00"
-144             HoraEvento = 4
+        Case "4:00:00"
+            HoraEvento = 4
 
-146         Case "5:00:00"
-148             HoraEvento = 5
+        Case "5:00:00"
+            HoraEvento = 5
 
-150         Case "6:00:00"
-152             HoraEvento = 6
+        Case "6:00:00"
+            HoraEvento = 6
 
-154         Case "7:00:00"
-156             HoraEvento = 7
+        Case "7:00:00"
+            HoraEvento = 7
 
-158         Case "8:00:00"
-160             HoraEvento = 8
+        Case "8:00:00"
+            HoraEvento = 8
 
-162         Case "9:00:00"
-164             HoraEvento = 9
+        Case "9:00:00"
+            HoraEvento = 9
 
-166         Case "10:00:00"
-168             HoraEvento = 10
+        Case "10:00:00"
+            HoraEvento = 10
 
-170         Case "11:00:00"
-172             HoraEvento = 11
+        Case "11:00:00"
+            HoraEvento = 11
 
-174         Case "12:00:00"
-176             HoraEvento = 12
+        Case "12:00:00"
+            HoraEvento = 12
 
-178         Case "13:00:00"
-180             HoraEvento = 13
+        Case "13:00:00"
+            HoraEvento = 13
 
-182         Case "14:00:00"
-184             HoraEvento = 14
+        Case "14:00:00"
+            HoraEvento = 14
 
-186         Case "15:00:00"
-188             HoraEvento = 15
+        Case "15:00:00"
+            HoraEvento = 15
 
-190         Case "16:00:00"
-192             HoraEvento = 16
+        Case "16:00:00"
+            HoraEvento = 16
 
-194         Case "17:00:00"
-196             HoraEvento = 17
+        Case "17:00:00"
+            HoraEvento = 17
 
-198         Case "18:00:00"
-200             HoraEvento = 18
+        Case "18:00:00"
+            HoraEvento = 18
 
-202         Case "19:00:00"
-204             HoraEvento = 19
+        Case "19:00:00"
+            HoraEvento = 19
 
-206         Case "20:00:00"
-208             HoraEvento = 20
+        Case "20:00:00"
+            HoraEvento = 20
 
-210         Case "21:00:00"
-212             HoraEvento = 21
+        Case "21:00:00"
+            HoraEvento = 21
 
-214         Case "22:00:00"
-216             HoraEvento = 22
+        Case "22:00:00"
+            HoraEvento = 22
 
-218         Case "23:00:00"
-220             HoraEvento = 23
+        Case "23:00:00"
+            HoraEvento = 23
 
-222         Case Else
-                Exit Sub
+        Case Else
+            Exit Sub
 
-        End Select
+    End Select
 
-224     Call CheckEvento(HoraEvento)
+    Call CheckEvento(HoraEvento)
 
         
-        Exit Sub
+    Exit Sub
 
 EstadoTimer_Timer_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmMain.EstadoTimer_Timer", Erl)
+    Call RegistrarError(Err.Number, Err.description, "frmMain.EstadoTimer_Timer", Erl)
 
         
 End Sub
@@ -1281,7 +1281,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y A
         Exit Sub
 
 Form_MouseMove_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmMain.Form_MouseMove", Erl)
+124     Call RegistrarError(Err.Number, Err.description, "frmMain.Form_MouseMove", Erl)
 
         
 End Sub
@@ -1306,7 +1306,7 @@ Public Sub QuitarIconoSystray()
         Exit Sub
 
 QuitarIconoSystray_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmMain.QuitarIconoSystray", Erl)
+104     Call RegistrarError(Err.Number, Err.description, "frmMain.QuitarIconoSystray", Erl)
 
         
 End Sub
@@ -1325,7 +1325,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
         Exit Sub
 
 Form_QueryUnload_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmMain.Form_QueryUnload", Erl)
+106     Call RegistrarError(Err.Number, Err.description, "frmMain.Form_QueryUnload", Erl)
 
         
 End Sub
@@ -1342,7 +1342,7 @@ Private Sub Form_Unload(Cancel As Integer)
         Exit Sub
 
 Form_Unload_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmMain.Form_Unload", Erl)
+102     Call RegistrarError(Err.Number, Err.description, "frmMain.Form_Unload", Erl)
 
         
 End Sub
@@ -1585,17 +1585,17 @@ End Sub
 
 Private Sub LimpiezaTimer_Timer()
         
-        On Error GoTo LimpiezaTimer_Timer_Err
+    On Error GoTo LimpiezaTimer_Timer_Err
     
         
 
-100     Call LimpiarItemsViejos
+    Call LimpiarItemsViejos
         
         
-        Exit Sub
+    Exit Sub
 
 LimpiezaTimer_Timer_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmMain.LimpiezaTimer_Timer", Erl)
+    Call RegistrarError(Err.Number, Err.description, "frmMain.LimpiezaTimer_Timer", Erl)
 
         
 End Sub
@@ -1688,33 +1688,33 @@ Public Sub mnuMostrar_Click()
         Exit Sub
 
 mnuMostrar_Click_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmMain.mnuMostrar_Click", Erl)
+104     Call RegistrarError(Err.Number, Err.description, "frmMain.mnuMostrar_Click", Erl)
 
         
 End Sub
 
 Private Sub KillLog_Timer()
         
-        On Error GoTo KillLog_Timer_Err
+    On Error GoTo KillLog_Timer_Err
     
         
 
     
 
-100     If FileExist(App.Path & "\logs\connect.log", vbNormal) Then Kill App.Path & "\logs\connect.log"
-102     If FileExist(App.Path & "\logs\haciendo.log", vbNormal) Then Kill App.Path & "\logs\haciendo.log"
-104     If FileExist(App.Path & "\logs\stats.log", vbNormal) Then Kill App.Path & "\logs\stats.log"
-106     If FileExist(App.Path & "\logs\Asesinatos.log", vbNormal) Then Kill App.Path & "\logs\Asesinatos.log"
-108     If FileExist(App.Path & "\logs\HackAttemps.log", vbNormal) Then Kill App.Path & "\logs\HackAttemps.log"
-110     If Not FileExist(App.Path & "\logs\nokillwsapi.txt") Then
-112         If FileExist(App.Path & "\logs\wsapi.log", vbNormal) Then Kill App.Path & "\logs\wsapi.log"
-        End If
+    If FileExist(App.Path & "\logs\connect.log", vbNormal) Then Kill App.Path & "\logs\connect.log"
+    If FileExist(App.Path & "\logs\haciendo.log", vbNormal) Then Kill App.Path & "\logs\haciendo.log"
+    If FileExist(App.Path & "\logs\stats.log", vbNormal) Then Kill App.Path & "\logs\stats.log"
+    If FileExist(App.Path & "\logs\Asesinatos.log", vbNormal) Then Kill App.Path & "\logs\Asesinatos.log"
+    If FileExist(App.Path & "\logs\HackAttemps.log", vbNormal) Then Kill App.Path & "\logs\HackAttemps.log"
+    If Not FileExist(App.Path & "\logs\nokillwsapi.txt") Then
+        If FileExist(App.Path & "\logs\wsapi.log", vbNormal) Then Kill App.Path & "\logs\wsapi.log"
+    End If
 
         
-        Exit Sub
+    Exit Sub
 
 KillLog_Timer_Err:
-        Call RegistrarError(Err.Number, Err.description, "frmMain.KillLog_Timer", Erl)
+    Call RegistrarError(Err.Number, Err.description, "frmMain.KillLog_Timer", Erl)
 
         
 End Sub

@@ -223,8 +223,8 @@ Sub ReSpawnOrigPosNpcs()
         Exit Sub
         
 Handler:
-    Call RegistrarError(Err.Number, Err.description, "Admin.ReSpawnOrigPosNpcs", Erl)
-    Resume Next
+114 Call RegistrarError(Err.Number, Err.description, "Admin.ReSpawnOrigPosNpcs", Erl)
+116 Resume Next
 
 End Sub
 
@@ -281,8 +281,8 @@ Sub WorldSave()
         Exit Sub
         
 Handler:
-    Call RegistrarError(Err.Number, Err.description, "Admin.WorldSave", Erl)
-    Resume Next
+128 Call RegistrarError(Err.Number, Err.description, "Admin.WorldSave", Erl)
+130 Resume Next
 
 End Sub
 
@@ -419,16 +419,16 @@ Public Sub Encarcelar(ByVal UserIndex As Integer, ByVal minutos As Long, Optiona
         
         On Error GoTo Encarcelar_Err
         
-        If EsGM(UserIndex) Then Exit Sub
+100     If EsGM(UserIndex) Then Exit Sub
         
-100     UserList(UserIndex).Counters.Pena = minutos
+102     UserList(UserIndex).Counters.Pena = minutos
         
-102     Call WarpUserChar(UserIndex, Prision.Map, Prision.X, Prision.Y, True)
+104     Call WarpUserChar(UserIndex, Prision.Map, Prision.X, Prision.Y, True)
         
-104     If LenB(GmName) = 0 Then
-106         Call WriteConsoleMsg(UserIndex, "Has sido encarcelado, deberas permanecer en la carcel " & minutos & " minutos.", FontTypeNames.FONTTYPE_INFO)
+106     If LenB(GmName) = 0 Then
+108         Call WriteConsoleMsg(UserIndex, "Has sido encarcelado, deberas permanecer en la carcel " & minutos & " minutos.", FontTypeNames.FONTTYPE_INFO)
         Else
-108         Call WriteConsoleMsg(UserIndex, GmName & " te ha encarcelado, deberas permanecer en la carcel " & minutos & " minutos.", FontTypeNames.FONTTYPE_INFO)
+110         Call WriteConsoleMsg(UserIndex, GmName & " te ha encarcelado, deberas permanecer en la carcel " & minutos & " minutos.", FontTypeNames.FONTTYPE_INFO)
 
         End If
         
@@ -436,8 +436,8 @@ Public Sub Encarcelar(ByVal UserIndex As Integer, ByVal minutos As Long, Optiona
         Exit Sub
 
 Encarcelar_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Admin.Encarcelar", Erl)
-112     Resume Next
+112     Call RegistrarError(Err.Number, Err.description, "Admin.Encarcelar", Erl)
+114     Resume Next
         
 End Sub
 
@@ -465,7 +465,7 @@ Public Sub BorrarUsuario(ByVal UserName As String)
         Exit Sub
 
 BorrarUsuario_Err:
-        Call RegistrarError(Err.Number, Err.description, "Admin.BorrarUsuario", Erl)
+108     Call RegistrarError(Err.Number, Err.description, "Admin.BorrarUsuario", Erl)
 
         
 End Sub
@@ -872,7 +872,7 @@ Public Function BanIpQuita(ByVal ip As String) As Boolean
         Exit Function
 
 BanIpQuita_Err:
-        Call RegistrarError(Err.Number, Err.description, "Admin.BanIpQuita", Erl)
+112     Call RegistrarError(Err.Number, Err.description, "Admin.BanIpQuita", Erl)
 
         
 End Function

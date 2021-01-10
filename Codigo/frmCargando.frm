@@ -125,25 +125,25 @@ Private mlngX As Long
 Private mlngY As Long
 
 Private Sub Form_Load()
-    ' Mostramos este form arriba de todo.
-    Call SetWindowPos(Me.hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE)
-    Call Me.ZOrder(0)
+        ' Mostramos este form arriba de todo.
+100     Call SetWindowPos(Me.hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE)
+102     Call Me.ZOrder(0)
 End Sub
 
 Private Sub lblDragForm_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
-    If Button = vbLeftButton Then
-        mlngX = X
-        mlngY = Y
-    End If
+100     If Button = vbLeftButton Then
+102         mlngX = X
+104         mlngY = Y
+        End If
 End Sub
 
 Private Sub lblDragForm_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
-    Dim lngLeft As Long
-    Dim lngTop As Long
+        Dim lngLeft As Long
+        Dim lngTop As Long
     
-    If Button = vbLeftButton Then
-        lngLeft = Me.Left + X - mlngX
-        lngTop = Me.Top + Y - mlngY
-        Call Me.Move(lngLeft, lngTop)
-    End If
+100     If Button = vbLeftButton Then
+102         lngLeft = Me.Left + X - mlngX
+104         lngTop = Me.Top + Y - mlngY
+106         Call Me.Move(lngLeft, lngTop)
+        End If
 End Sub
