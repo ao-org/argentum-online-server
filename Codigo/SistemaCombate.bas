@@ -2290,15 +2290,11 @@ Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, 
         'Reescribi gran parte del Sub
         'Ahora, da toda la experiencia del npc mientras este vivo.
         '***************************************************
-        Dim ExpaDar           As Long
-
-        Dim BonificacionGrupo As Single
-        
+        Dim ExpaDar                 As Long
+        Dim BonificacionGrupo       As Single
         Dim CantidadMiembrosValidos As Integer
-        
-        Dim i     As Byte
-
-        Dim index As Byte
+        Dim i                       As Long
+        Dim index                   As Integer
 
         'If UserList(UserIndex).Grupo.EnGrupo Then
         '[Nacho] Chekeamos que las variables sean validas para las operaciones
@@ -2324,6 +2320,7 @@ Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, 
         End If
         
         For i = 1 To UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
+            index = UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(i)
             If UserList(index).flags.Muerto = 0 Then
                 If UserList(UserIndex).Pos.Map = UserList(index).Pos.Map Then
                     If Abs(UserList(UserIndex).Pos.X - UserList(index).Pos.X) < 20 Then
