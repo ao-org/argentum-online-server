@@ -176,7 +176,7 @@ End Type
 
 Public Enum PlayerType
 
-    user = &H1
+    User = &H1
     Consejero = &H2
     SemiDios = &H4
     Dios = &H8
@@ -1775,7 +1775,7 @@ Public Type tFacciones
 End Type
 
 'Tipo de los Usuarios
-Public Type user
+Public Type User
 
     name As String
     Cuenta As String
@@ -1874,7 +1874,9 @@ Public Type user
     QuestStats As tQuestStats
 
     Keys(1 To MAXKEYS) As Integer
-
+    
+    Redundance As Byte
+    
 End Type
 
 '*********************************************************
@@ -2258,7 +2260,7 @@ Public Type tObjDonador
 End Type
 
 '*****************ARRAYS PUBLICOS*************************
-Public UserList()                         As user 'USUARIOS
+Public UserList()                         As User 'USUARIOS
 
 Public Npclist(1 To MAXNPCS)              As npc 'NPCS
 

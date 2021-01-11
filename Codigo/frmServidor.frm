@@ -891,35 +891,10 @@ End Sub
 Private Sub Command20_Click()
         
         On Error GoTo Command20_Click_Err
-        
-        #If UsarQueSocket = 1 Then
 
-100         If MsgBox("Esta seguro que desea reiniciar los sockets ? Se cerrarán todas las conexiones activas.", vbYesNo, "Reiniciar Sockets") = vbYes Then
-102             Call WSApiReiniciarSockets
-
-            End If
-
-        #ElseIf UsarQueSocket = 2 Then
-
-            Dim LoopC As Integer
-
-104         If MsgBox("Esta seguro que desea reiniciar los sockets ? Se cerrarán todas las conexiones activas.", vbYesNo, "Reiniciar Sockets") = vbYes Then
-
-106             For LoopC = 1 To MaxUsers
-
-108                 If UserList(LoopC).ConnID <> -1 And UserList(LoopC).ConnIDValida Then
-110                     Call CloseSocket(LoopC)
-
-                    End If
-
-112             Next LoopC
-    
-114             Call frmMain.Serv.Detener
-116             Call frmMain.Serv.Iniciar(Puerto)
-
-            End If
-
-        #End If
+100     If MsgBox("Esta seguro que desea reiniciar los sockets ? Se cerrarán todas las conexiones activas.", vbYesNo, "Reiniciar Sockets") = vbYes Then
+102         Call WSApiReiniciarSockets
+        End If
 
         
         Exit Sub
@@ -1020,15 +995,12 @@ End Sub
 Private Sub Command26_Click()
         
         On Error GoTo Command26_Click_Err
-        
-        #If UsarQueSocket = 1 Then
 
-            'Cierra el socket de escucha
-100         If SockListen >= 0 Then Call apiclosesocket(SockListen)
+        'Cierra el socket de escucha
+100     If SockListen >= 0 Then Call apiclosesocket(SockListen)
     
-            'Inicia el socket de escucha
-102         SockListen = ListenForConnect(Puerto, hWndMsg, "")
-        #End If
+        'Inicia el socket de escucha
+102     SockListen = ListenForConnect(Puerto, hWndMsg, "")
 
         
         Exit Sub
@@ -1124,14 +1096,8 @@ Private Sub Command5_Click()
 112     If FileExist(App.Path & "\logs\Resurrecciones.log", vbNormal) Then Kill App.Path & "\logs\Resurrecciones.log"
 114     If FileExist(App.Path & "\logs\Teleports.Log", vbNormal) Then Kill App.Path & "\logs\Teleports.Log"
 
-        #If UsarQueSocket = 1 Then
-116         Call apiclosesocket(SockListen)
-        #ElseIf UsarQueSocket = 0 Then
-118         frmMain.Socket1.Cleanup
-120         frmMain.Socket2(0).Cleanup
-        #ElseIf UsarQueSocket = 2 Then
-122         frmMain.Serv.Detener
-        #End If
+
+116     Call apiclosesocket(SockListen)
 
         Dim LoopC As Integer
 
@@ -1152,27 +1118,8 @@ Private Sub Command5_Click()
 144     Call LoadPesca
 146     Call LoadRecursosEspeciales
 
-        #If UsarQueSocket = 1 Then
-148         SockListen = ListenForConnect(Puerto, hWndMsg, "")
+148     SockListen = ListenForConnect(Puerto, hWndMsg, "")
 
-        #ElseIf UsarQueSocket = 0 Then
-150         frmMain.Socket1.AddressFamily = AF_INET
-152         frmMain.Socket1.Protocol = IPPROTO_IP
-154         frmMain.Socket1.SocketType = SOCK_STREAM
-156         frmMain.Socket1.Binary = False
-158         frmMain.Socket1.Blocking = False
-160         frmMain.Socket1.BufferSize = 1024
-
-162         frmMain.Socket2(0).AddressFamily = AF_INET
-164         frmMain.Socket2(0).Protocol = IPPROTO_IP
-166         frmMain.Socket2(0).SocketType = SOCK_STREAM
-168         frmMain.Socket2(0).Blocking = False
-170         frmMain.Socket2(0).BufferSize = 2048
-
-            'Escucha
-172         frmMain.Socket1.LocalPort = Puerto
-174         frmMain.Socket1.listen
-        #End If
 
 176     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
 
@@ -1263,19 +1210,10 @@ End Sub
 Private Sub Form_Load()
         
         On Error GoTo Form_Load_Err
-        
-        #If UsarQueSocket = 1 Then
-100         Command20.Visible = True
-102         Command26.Visible = True
-        #ElseIf UsarQueSocket = 0 Then
-104         Command20.Visible = False
-106         Command26.Visible = False
-        #ElseIf UsarQueSocket = 2 Then
-108         Command20.Visible = True
-110         Command26.Visible = False
-        #End If
 
-        
+100     Command20.Visible = True
+102     Command26.Visible = True
+      
         Exit Sub
 
 Form_Load_Err:
