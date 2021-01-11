@@ -5,7 +5,7 @@ Public Function EnviarCorreo(ByVal UserMail As String) As Boolean
         
         On Error GoTo EnviarCorreo_Err
         
-100     Shell App.Path & "\cuentas.exe *" & UserMail & "*" & ObtenerCodigo(UserMail) & "*" ' & UserName
+100     'Shell App.Path & "\cuentas.exe *" & UserMail & "*" & ObtenerCodigo(UserMail) & "*" ' & UserName
     
 102     EnviarCorreo = True
 
