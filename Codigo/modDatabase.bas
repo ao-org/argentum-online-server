@@ -23,9 +23,6 @@ Public RecordsAffected     As Long
 Private QueryBuilder       As cStringBuilder
 Private ConnectedOnce      As Boolean
 
-Private CommandObject      As ADODB.Command
-Private ParamObject        As ADODB.Parameter
-
 Public Sub Database_Connect()
 
     '************************************************************************************
@@ -1136,14 +1133,12 @@ Private Sub MakeQuery(query As String, ByVal NoResult As Boolean, ByVal UnSafeQu
 ErrorHandler:
 
     If Not adoIsConnected(Database_Connection) Then
-        Call LogDatabaseError( _
-                "Alarma en MakeQuery: Se perdió la conexión con la DB. Reconectando.")
+        Call LogDatabaseError("Alarma en MakeQuery: Se perdió la conexión con la DB. Reconectando.")
         Call Database_Connect
         Resume
         
     Else
-        Call LogDatabaseError("Error en MakeQuery: query = '" & query & "'. " & _
-                Err.Number & " - " & Err.description)
+        Call LogDatabaseError("Error en MakeQuery: query = '" & query & "'. " & Err.Number & " - " & Err.description)
         
         On Error GoTo 0
 
