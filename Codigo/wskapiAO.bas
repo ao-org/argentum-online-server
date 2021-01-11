@@ -609,12 +609,11 @@ Public Sub EventoSockRead(ByVal slot As Integer, ByRef Datos() As Byte)
  
             #If AntiExternos Then
 
-104             If UserList(slot).flags.UserLogged Then
-106                 Security.NAC_D_Byte Datos, UserList(slot).Redundance
-                Else
-108                 Security.NAC_D_Byte Datos, 13 'DEFAULT
+                If UserList(slot).Redundance = 0 Then UserList(slot).Redundance = 13
 
-                End If
+                UserList(slot).Redundance = CLng(UserList(slot).Redundance * 3) Mod 255
+
+104             Security.NAC_D_Byte Datos, UserList(slot).Redundance
 
             #End If
 
@@ -648,6 +647,7 @@ Public Sub EventoSockRead(ByVal slot As Integer, ByRef Datos() As Byte)
                     End If
 
                 Loop
+                
             Else
                 Exit Sub
 

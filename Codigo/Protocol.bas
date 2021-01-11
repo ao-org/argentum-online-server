@@ -197,6 +197,8 @@ Private Enum ServerPacketID
     ShowScreenShot
     ScreenShotData
     Tolerancia0
+    Redundancia
+
 End Enum
 
 Private Enum ClientPacketID
@@ -685,6 +687,10 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
         
             ' Envió el primer paquete
 114         UserList(UserIndex).flags.FirstPacket = True
+    
+            UserList(UserIndex).Redundance = RandomNumber(2, 255)
+            
+            Call WriteRedundancia(UserIndex)
 
         End If
     
@@ -1760,7 +1766,7 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         ''Last Modification: 01/12/08 Ladder
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 16 Then
+100     If UserList(UserIndex).incomingData.Length < 18 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -1908,7 +1914,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-100     If UserList(UserIndex).incomingData.Length < 22 Then
+100     If UserList(UserIndex).incomingData.Length < 24 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -25858,7 +25864,7 @@ Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
         Dim Version As String
 
         'Author: Pablo Mercavides
-100     If UserList(UserIndex).incomingData.Length < 14 Then
+100     If UserList(UserIndex).incomingData.Length < 16 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -25926,7 +25932,7 @@ End Sub
 Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
 
         'Author: Pablo Mercavides
-100     If UserList(UserIndex).incomingData.Length < 15 Then
+100     If UserList(UserIndex).incomingData.Length < 17 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -31574,6 +31580,25 @@ Private Sub WriteTolerancia0(ByVal UserIndex As Integer)
 100     With UserList(UserIndex).outgoingData
 
 102         Call .WriteByte(ServerPacketID.Tolerancia0)
+
+        End With
+
+        Exit Sub
+
+ErrHandler:
+106     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
+108         Call FlushBuffer(UserIndex)
+110         Resume
+        End If
+End Sub
+
+Private Sub WriteRedundancia(ByVal UserIndex As Integer)
+    On Error GoTo ErrHandler
+
+100     With UserList(UserIndex).outgoingData
+
+102         Call .WriteByte(ServerPacketID.Redundancia)
+            Call .WriteByte(UserList(UserIndex).Redundance)
 
         End With
 
