@@ -176,7 +176,7 @@ End Type
 
 Public Enum PlayerType
 
-    User = &H1
+    user = &H1
     Consejero = &H2
     SemiDios = &H4
     Dios = &H8
@@ -1769,7 +1769,7 @@ Public Type tFacciones
 End Type
 
 'Tipo de los Usuarios
-Public Type User
+Public Type user
 
     name As String
     Cuenta As String
@@ -1782,12 +1782,8 @@ Public Type User
     NPcLogros As Byte
     UserLogros As Byte
     LevelLogros As Byte
-    
-    Reduasdndance As Byte
 
     showName As Boolean 'Permite que los GMs oculten su nick con el comando /SHOWNAME
-    
-    modName As String
     
     Char As Char 'Define la apariencia
     CharMimetizado As Char
@@ -2254,7 +2250,7 @@ Public Type tObjDonador
 End Type
 
 '*****************ARRAYS PUBLICOS*************************
-Public UserList()                         As User 'USUARIOS
+Public UserList()                         As user 'USUARIOS
 
 Public Npclist(1 To MAXNPCS)              As npc 'NPCS
 

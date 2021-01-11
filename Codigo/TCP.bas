@@ -1668,7 +1668,6 @@ Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
 104         .Cuenta = vbNullString
 106         .Id = -1
 108         .AccountId = -1
-110         .modName = vbNullString
 112         .Desc = vbNullString
 114         .DescRM = vbNullString
 116         .Pos.Map = 0
@@ -1723,7 +1722,8 @@ Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
             End With
             
 198         .NroMascotas = 0
-        
+            .Redundance = 0
+
         End With
 
         
