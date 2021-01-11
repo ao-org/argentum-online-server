@@ -1782,6 +1782,8 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
         Dim MacAddress  As String
 
         Dim HDserial    As Long
+        
+        Dim Md5         As String
 
 108     CuentaEmail = Buffer.ReadASCIIString()
 110     Password = Buffer.ReadASCIIString()
@@ -1789,6 +1791,7 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
 114     UserName = Buffer.ReadASCIIString()
 116     MacAddress = Buffer.ReadASCIIString()
 118     HDserial = Buffer.ReadLong()
+119     Md5 = Buffer.ReadASCIIString()
     
 120     If Not VersionOK(Version) Then
 122         Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
@@ -1808,11 +1811,9 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
             
         End If
         
-134     If Not EntrarCuenta(UserIndex, CuentaEmail, Password, MacAddress, HDserial) Then
-        
+134     If Not EntrarCuenta(UserIndex, CuentaEmail, Password, MacAddress, HDserial, Md5) Then
 136         Call CloseSocket(UserIndex)
             Exit Sub
-
         End If
     
 138     If Not AsciiValidos(UserName) Then
@@ -1821,7 +1822,6 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
 142         Call CloseSocket(UserIndex)
         
             Exit Sub
-
         End If
     
 144     If Not PersonajeExiste(UserName) Then
@@ -1929,6 +1929,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
         Dim Password    As String
         Dim MacAddress  As String
         Dim HDserial    As Long
+        Dim Md5         As String
         Dim Version     As String
     
 108     If PuedeCrearPersonajes = 0 Then
@@ -1959,6 +1960,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
 140     Hogar = Buffer.ReadByte()
 142     MacAddress = Buffer.ReadASCIIString()
 144     HDserial = Buffer.ReadLong()
+145     Md5 = Buffer.ReadASCIIString()
     
 146     If Not VersionOK(Version) Then
 148         Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
@@ -1976,7 +1978,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
             
         End If
         
-160     If Not EntrarCuenta(UserIndex, CuentaEmail, Password, MacAddress, HDserial) Then
+160     If Not EntrarCuenta(UserIndex, CuentaEmail, Password, MacAddress, HDserial, Md5) Then
 162         Call CloseSocket(UserIndex)
             Exit Sub
         End If
@@ -25870,12 +25872,14 @@ Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
         Dim CuentaPassword As String
         Dim MacAddress     As String
         Dim HDserial       As Long
+        Dim Md5            As String
     
 108     CuentaEmail = Buffer.ReadASCIIString()
 110     CuentaPassword = Buffer.ReadASCIIString()
 112     Version = CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte())
 114     MacAddress = Buffer.ReadASCIIString()
 116     HDserial = Buffer.ReadLong()
+117     Md5 = Buffer.ReadASCIIString()
     
         'If we got here then packet is complete, copy data back to original queue
 118     Call UserList(UserIndex).incomingData.CopyBuffer(Buffer)
@@ -25887,7 +25891,7 @@ Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
 
         End If
 
-126     If EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MacAddress, HDserial) Then
+126     If EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MacAddress, HDserial, Md5) Then
 128         Call WritePersonajesDeCuenta(UserIndex)
 130         Call WriteMostrarCuenta(UserIndex)
         Else
@@ -25942,12 +25946,15 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
         Dim MacAddress     As String
 
         Dim HDserial       As Long
+        
+        Dim Md5            As String
 
         Dim Version        As String
     
 108     UserDelete = Buffer.ReadASCIIString()
 110     CuentaEmail = Buffer.ReadASCIIString()
 112     CuentaPassword = Buffer.ReadASCIIString()
+113     Md5 = Buffer.ReadASCIIString()
 114     Version = CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte())
     
 116     If Not VersionOK(Version) Then
@@ -25961,7 +25968,7 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
 122     MacAddress = Buffer.ReadASCIIString()
 124     HDserial = Buffer.ReadLong()
     
-126     If Not EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MacAddress, HDserial) Then
+126     If Not EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MacAddress, HDserial, Md5) Then
 128         Call CloseSocket(UserIndex)
             Exit Sub
         End If
