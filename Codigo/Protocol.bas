@@ -196,6 +196,7 @@ Private Enum ServerPacketID
     ShowProcesses
     ShowScreenShot
     ScreenShotData
+    Tolerancia0
 End Enum
 
 Private Enum ClientPacketID
@@ -381,7 +382,7 @@ Private Enum ClientPacketID
     BannedIPReload          '/BANIPRELOAD
     GuildMemberList         '/MIEMBROSCLAN
     GuildBan                '/BANCLAN
-    BanIP                   '/BANIP
+    banip                   '/BANIP
     UnbanIP                 '/UNBANIP
     CreateItem              '/CI
     DestroyItems            '/DEST
@@ -536,6 +537,7 @@ Private Enum NewPacksID
     RequestProcesses        '/VERPROCESOS
     SendScreenShot
     SendProcesses
+    Tolerancia0             '/T0
 End Enum
 
 Public Enum FontTypeNames
@@ -1265,7 +1267,7 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
 880         Case ClientPacketID.GuildBan                '/BANCLAN
 882             Call HandleGuildBan(UserIndex)
         
-884         Case ClientPacketID.BanIP                   '/BANIP
+884         Case ClientPacketID.banip                   '/BANIP
 886             Call HandleBanIP(UserIndex)
         
 888         Case ClientPacketID.UnbanIP                 '/UNBANIP
@@ -1710,7 +1712,10 @@ Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
 380             Call HandleRequestScreenShot(UserIndex)
                 
 382         Case NewPacksID.RequestProcesses        '/VERPROCESOS
-384             Call HandleRequestProcesses(UserIndex)
+383             Call HandleRequestProcesses(UserIndex)
+                
+384         Case NewPacksID.Tolerancia0             '/T0
+385             Call HandleTolerancia0(UserIndex)
                 
 386         Case NewPacksID.SendScreenShot
 388             Call HandleScreenShot(UserIndex)
@@ -1783,7 +1788,7 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
 
         Dim HDserial    As Long
         
-        Dim Md5         As String
+        Dim MD5         As String
 
 108     CuentaEmail = Buffer.ReadASCIIString()
 110     Password = Buffer.ReadASCIIString()
@@ -1791,7 +1796,7 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
 114     UserName = Buffer.ReadASCIIString()
 116     MacAddress = Buffer.ReadASCIIString()
 118     HDserial = Buffer.ReadLong()
-119     Md5 = Buffer.ReadASCIIString()
+119     MD5 = Buffer.ReadASCIIString()
     
 120     If Not VersionOK(Version) Then
 122         Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
@@ -1811,7 +1816,7 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
             
         End If
         
-134     If Not EntrarCuenta(UserIndex, CuentaEmail, Password, MacAddress, HDserial, Md5) Then
+134     If Not EntrarCuenta(UserIndex, CuentaEmail, Password, MacAddress, HDserial, MD5) Then
 136         Call CloseSocket(UserIndex)
             Exit Sub
         End If
@@ -1929,7 +1934,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
         Dim Password    As String
         Dim MacAddress  As String
         Dim HDserial    As Long
-        Dim Md5         As String
+        Dim MD5         As String
         Dim Version     As String
     
 108     If PuedeCrearPersonajes = 0 Then
@@ -1960,7 +1965,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
 140     Hogar = Buffer.ReadByte()
 142     MacAddress = Buffer.ReadASCIIString()
 144     HDserial = Buffer.ReadLong()
-145     Md5 = Buffer.ReadASCIIString()
+145     MD5 = Buffer.ReadASCIIString()
     
 146     If Not VersionOK(Version) Then
 148         Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
@@ -1978,7 +1983,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
             
         End If
         
-160     If Not EntrarCuenta(UserIndex, CuentaEmail, Password, MacAddress, HDserial, Md5) Then
+160     If Not EntrarCuenta(UserIndex, CuentaEmail, Password, MacAddress, HDserial, MD5) Then
 162         Call CloseSocket(UserIndex)
             Exit Sub
         End If
@@ -25872,14 +25877,14 @@ Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
         Dim CuentaPassword As String
         Dim MacAddress     As String
         Dim HDserial       As Long
-        Dim Md5            As String
+        Dim MD5            As String
     
 108     CuentaEmail = Buffer.ReadASCIIString()
 110     CuentaPassword = Buffer.ReadASCIIString()
 112     Version = CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte())
 114     MacAddress = Buffer.ReadASCIIString()
 116     HDserial = Buffer.ReadLong()
-117     Md5 = Buffer.ReadASCIIString()
+117     MD5 = Buffer.ReadASCIIString()
     
         'If we got here then packet is complete, copy data back to original queue
 118     Call UserList(UserIndex).incomingData.CopyBuffer(Buffer)
@@ -25891,7 +25896,7 @@ Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
 
         End If
 
-126     If EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MacAddress, HDserial, Md5) Then
+126     If EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MacAddress, HDserial, MD5) Then
 128         Call WritePersonajesDeCuenta(UserIndex)
 130         Call WriteMostrarCuenta(UserIndex)
         Else
@@ -25947,14 +25952,14 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
 
         Dim HDserial       As Long
         
-        Dim Md5            As String
+        Dim MD5            As String
 
         Dim Version        As String
     
 108     UserDelete = Buffer.ReadASCIIString()
 110     CuentaEmail = Buffer.ReadASCIIString()
 112     CuentaPassword = Buffer.ReadASCIIString()
-113     Md5 = Buffer.ReadASCIIString()
+113     MD5 = Buffer.ReadASCIIString()
 114     Version = CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte())
     
 116     If Not VersionOK(Version) Then
@@ -25968,7 +25973,7 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
 122     MacAddress = Buffer.ReadASCIIString()
 124     HDserial = Buffer.ReadLong()
     
-126     If Not EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MacAddress, HDserial, Md5) Then
+126     If Not EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MacAddress, HDserial, MD5) Then
 128         Call CloseSocket(UserIndex)
             Exit Sub
         End If
@@ -31260,6 +31265,63 @@ ErrHandler:
 
 End Sub
 
+Private Sub HandleTolerancia0(ByVal UserIndex As Integer)
+
+100     If UserList(UserIndex).incomingData.Length < 4 Then
+102         Call Err.raise(UserList(UserIndex).incomingData.NotEnoughDataErrCode)
+            Exit Sub
+        End If
+
+104     With UserList(UserIndex)
+
+            Dim Buffer As clsByteQueue
+106         Set Buffer = New clsByteQueue
+108         Call Buffer.CopyBuffer(.incomingData)
+        
+            'Remove packet ID
+110         Call Buffer.ReadInteger
+        
+112         Dim Nick As String: Nick = Buffer.ReadASCIIString
+        
+            ' De aca en adelante podes meter Exit Sub sin q esplote todo alv. ;)
+114         Call .incomingData.CopyBuffer(Buffer)
+116         Set Buffer = Nothing
+        
+            ' Comando exclusivo para admins
+118         If (UserList(UserIndex).flags.Privilegios And PlayerType.Admin) = 0 Then Exit Sub
+        
+            Dim tUser As Integer
+
+122         tUser = NameIndex(Nick)
+        
+            'Se asegura que el target exista
+124         If tUser <= 0 Then
+126             Call WriteConsoleMsg(UserIndex, "El usuario se encuentra offline.", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+        
+            Call WriteTolerancia0(tUser)
+138         Call BanIpAgrega(UserList(tUser).ip)
+            Call BanSerialOK(UserIndex, Nick)
+            Call BanAccount(UserIndex, Nick, "Tolerancia cero")
+
+        End With
+    
+        Exit Sub
+    
+ErrHandler:
+
+144     Dim Error As Long: Error = Err.Number
+
+        On Error GoTo 0
+    
+        'Destroy auxiliar buffer
+146     Set Buffer = Nothing
+    
+148     If Error <> 0 Then Err.raise Error
+
+End Sub
+
 Private Sub WriteRequestScreenShot(ByVal UserIndex As Integer)
 
         On Error GoTo ErrHandler
@@ -31492,6 +31554,24 @@ Private Sub WriteScreenShotData(ByVal UserIndex As Integer, Buffer As clsByteQue
 102         Call .WriteByte(ServerPacketID.ScreenShotData)
 
 104         Call .WriteSubBuffer(Buffer, Offset, Size)
+
+        End With
+
+        Exit Sub
+
+ErrHandler:
+106     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
+108         Call FlushBuffer(UserIndex)
+110         Resume
+        End If
+End Sub
+
+Private Sub WriteTolerancia0(ByVal UserIndex As Integer)
+    On Error GoTo ErrHandler
+
+100     With UserList(UserIndex).outgoingData
+
+102         Call .WriteByte(ServerPacketID.Tolerancia0)
 
         End With
 
