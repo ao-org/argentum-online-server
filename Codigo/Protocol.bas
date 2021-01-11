@@ -687,10 +687,11 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
         
             ' Envió el primer paquete
 114         UserList(UserIndex).flags.FirstPacket = True
-    
-            UserList(UserIndex).Redundance = RandomNumber(2, 255)
             
-            Call WriteRedundancia(UserIndex)
+            #If AntiExternos = 1 Then
+                UserList(UserIndex).Redundance = RandomNumber(2, 255)
+                Call WriteRedundancia(UserIndex)
+            #End If
 
         End If
     
