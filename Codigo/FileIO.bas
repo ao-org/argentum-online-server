@@ -402,7 +402,7 @@ Public Sub loadAdministrativeUsers()
         
             ' Si NO declara el mail de la cuenta en el Server.ini, NO le doy privilegios.
 116         If UBound(TempName()) > 0 Then
-                ' AdministratorAccounts("Nick") = Email
+                ' AdministratorAccounts("Email") = Nick
 118             AdministratorAccounts(TempName(1)) = TempName(0)
             
                 ' Add key
@@ -420,7 +420,7 @@ Public Sub loadAdministrativeUsers()
         
             ' Si NO declara el mail de la cuenta en el Server.ini, NO le doy privilegios.
 132         If UBound(TempName()) > 0 Then
-                ' AdministratorAccounts("Nick") = Email
+                ' AdministratorAccounts("Email") = Nick
 134             AdministratorAccounts(TempName(1)) = TempName(0)
             
                 ' Add key
@@ -438,7 +438,7 @@ Public Sub loadAdministrativeUsers()
         
             ' Si NO declara el mail de la cuenta en el Server.ini, NO le doy privilegios.
 148         If UBound(TempName()) > 0 Then
-                ' AdministratorAccounts("Nick") = Email
+                ' AdministratorAccounts("Email") = Nick
 150             AdministratorAccounts(TempName(1)) = TempName(0)
             
                 ' Add key
@@ -456,7 +456,7 @@ Public Sub loadAdministrativeUsers()
         
             ' Si NO declara el mail de la cuenta en el Server.ini, NO le doy privilegios.
 164         If UBound(TempName()) > 0 Then
-                ' AdministratorAccounts("Nick") = Email
+                ' AdministratorAccounts("Email") = Nick
 166             AdministratorAccounts(TempName(1)) = TempName(0)
             
                 ' Add key
@@ -474,7 +474,7 @@ Public Sub loadAdministrativeUsers()
         
             ' Si NO declara el mail de la cuenta en el Server.ini, NO le doy privilegios.
 180         If UBound(TempName()) > 0 Then
-                ' AdministratorAccounts("Nick") = Email
+                ' AdministratorAccounts("Email") = Nick
 182             AdministratorAccounts(TempName(1)) = TempName(0)
             
                 ' Add key
