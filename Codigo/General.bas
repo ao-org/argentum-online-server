@@ -392,33 +392,6 @@ EnviarSpawnList_Err:
         
 End Sub
 
-Sub ConfigListeningSocket(ByRef obj As Object, ByVal Port As Integer)
-        
-        On Error GoTo ConfigListeningSocket_Err
-        
-        #If UsarQueSocket = 0 Then
-
-100         obj.AddressFamily = AF_INET
-102         obj.Protocol = IPPROTO_IP
-104         obj.SocketType = SOCK_STREAM
-106         obj.Binary = False
-108         obj.Blocking = False
-110         obj.BufferSize = 1024
-112         obj.LocalPort = Port
-114         obj.backlog = 5
-116         obj.listen
-
-        #End If
-
-        
-        Exit Sub
-
-ConfigListeningSocket_Err:
-118     Call RegistrarError(Err.Number, Err.description, "General.ConfigListeningSocket", Erl)
-120     Resume Next
-        
-End Sub
-
 Public Sub LeerLineaComandos()
         
         On Error GoTo LeerLineaComandos_Err
@@ -581,7 +554,7 @@ Sub Main()
     
 104     Call CargarRanking
     
-        Dim f    As Date
+        Dim f As Date
     
 106     Call ChDir(App.Path)
 108     Call ChDrive(App.Path)
@@ -661,6 +634,7 @@ Sub Main()
         Else
 202         frmCargando.Label1(2).Caption = "Cargando Mapas"
 204         Call LoadMapData
+
         End If
     
         ' Pretorianos
@@ -730,51 +704,27 @@ Sub Main()
         
             'Tarea pesada
 276         Call LogoutAllUsersAndAccounts
+
         End If
     
         '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
         'Configuracion de los sockets
     
 278     Call SecurityIp.InitIpTables(1000)
-    
-        #If UsarQueSocket = 1 Then
-    
-280         If LastSockListen >= 0 Then Call apiclosesocket(LastSockListen) 'Cierra el socket de escucha
-282         Call IniciaWsApi(frmMain.hWnd)
-284         SockListen = ListenForConnect(Puerto, hWndMsg, "")
+        
+        'Cierra el socket de escucha
+280     If LastSockListen >= 0 Then Call apiclosesocket(LastSockListen)
 
-286         If SockListen <> -1 Then
-288             Call WriteVar(IniPath & "Server.ini", "INIT", "LastSockListen", SockListen) ' Guarda el socket escuchando
-            Else
-290             MsgBox "Ha ocurrido un error al iniciar el socket del Servidor.", vbCritical + vbOKOnly
+282     Call IniciaWsApi(frmMain.hWnd)
+284     SockListen = ListenForConnect(Puerto, hWndMsg, "")
 
-            End If
-    
-        #ElseIf UsarQueSocket = 0 Then
-    
-292         frmCargando.Label1(2).Caption = "Configurando Sockets"
-    
-294         frmMain.Socket2(0).AddressFamily = AF_INET
-296         frmMain.Socket2(0).Protocol = IPPROTO_IP
-298         frmMain.Socket2(0).SocketType = SOCK_STREAM
-300         frmMain.Socket2(0).Binary = False
-302         frmMain.Socket2(0).Blocking = False
-304         frmMain.Socket2(0).BufferSize = 2048
-    
-306         Call ConfigListeningSocket(frmMain.Socket1, Puerto)
-    
-        #ElseIf UsarQueSocket = 2 Then
-    
-308         frmMain.Serv.Iniciar Puerto
-    
-        #ElseIf UsarQueSocket = 3 Then
-    
-310         frmMain.TCPServ.Encolar True
-312         frmMain.TCPServ.IniciarTabla 1009
-314         frmMain.TCPServ.SetQueueLim 51200
-316         frmMain.TCPServ.Iniciar Puerto
-    
-        #End If
+286     If SockListen <> -1 Then
+288         Call WriteVar(IniPath & "Server.ini", "INIT", "LastSockListen", SockListen) _
+                    ' Guarda el socket escuchando
+        Else
+290         Call MsgBox("Ha ocurrido un error al iniciar el socket del Servidor.", vbCritical + vbOKOnly)
+
+        End If
     
 318     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
         '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
@@ -787,7 +737,8 @@ Sub Main()
 326     Unload frmCargando
 
         'Log
-328     Dim n As Integer: n = FreeFile
+328     Dim n As Integer
+        n = FreeFile
 330     Open App.Path & "\logs\Main.log" For Append Shared As #n
 332     Print #n, Date & " " & Time & " server iniciado " & App.Major & "." & App.Minor & "." & App.Revision
 334     Close #n
@@ -800,8 +751,9 @@ Sub Main()
         Exit Sub
         
 Handler:
-340 Call RegistrarError(Err.Number, Err.description, "General.Main", Erl)
-342 Resume Next
+340     Call RegistrarError(Err.Number, Err.description, "General.Main", Erl)
+
+342     Resume Next
 
 End Sub
 
@@ -1338,35 +1290,18 @@ End Function
 Sub Restart()
         
         On Error GoTo Restart_Err
-    
         
-
         'Se asegura de que los sockets estan cerrados e ignora cualquier err
-        
 
 100     If frmMain.Visible Then frmMain.txStatus.Caption = "Reiniciando."
 
         Dim LoopC As Long
-  
-        #If UsarQueSocket = 0 Then
 
-102         frmMain.Socket1.Cleanup
-104         frmMain.Socket1.Startup
-      
-106         frmMain.Socket2(0).Cleanup
-108         frmMain.Socket2(0).Startup
-
-        #ElseIf UsarQueSocket = 1 Then
-
-            'Cierra el socket de escucha
-110         If SockListen >= 0 Then Call apiclosesocket(SockListen)
+        'Cierra el socket de escucha
+110     If SockListen >= 0 Then Call apiclosesocket(SockListen)
     
-            'Inicia el socket de escucha
-112         SockListen = ListenForConnect(Puerto, hWndMsg, "")
-
-        #ElseIf UsarQueSocket = 2 Then
-
-        #End If
+        'Inicia el socket de escucha
+112     SockListen = ListenForConnect(Puerto, hWndMsg, "")
 
 114     For LoopC = 1 To MaxUsers
 116         Call CloseSocket(LoopC)
@@ -1405,32 +1340,6 @@ Sub Restart()
 
 160     Call CargarHechizos
 
-        #If UsarQueSocket = 0 Then
-
-            '*****************Setup socket
-162         frmMain.Socket1.AddressFamily = AF_INET
-164         frmMain.Socket1.Protocol = IPPROTO_IP
-166         frmMain.Socket1.SocketType = SOCK_STREAM
-168         frmMain.Socket1.Binary = False
-170         frmMain.Socket1.Blocking = False
-172         frmMain.Socket1.BufferSize = 1024
-
-174         frmMain.Socket2(0).AddressFamily = AF_INET
-176         frmMain.Socket2(0).Protocol = IPPROTO_IP
-178         frmMain.Socket2(0).SocketType = SOCK_STREAM
-180         frmMain.Socket2(0).Blocking = False
-182         frmMain.Socket2(0).BufferSize = 2048
-
-            'Escucha
-184         frmMain.Socket1.LocalPort = val(Puerto)
-186         frmMain.Socket1.listen
-
-        #ElseIf UsarQueSocket = 1 Then
-
-        #ElseIf UsarQueSocket = 2 Then
-
-        #End If
-
 188     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
 
         'Log it
@@ -1442,15 +1351,8 @@ Sub Restart()
 196     Close #n
 
         'Ocultar
-
-198     If HideMe = 1 Then
-200         Call frmMain.InitMain(1)
-        Else
-202         Call frmMain.InitMain(0)
-
-        End If
-  
-        
+        Call frmMain.InitMain(HideMe)
+    
         Exit Sub
 
 Restart_Err:
@@ -2689,13 +2591,7 @@ Public Sub CerrarServidor()
     
 102     Call frmMain.QuitarIconoSystray
     
-        #If UsarQueSocket = 1 Then
-104         Call LimpiaWsApi
-        #ElseIf UsarQueSocket = 0 Then
-106         Socket1.Cleanup
-        #ElseIf UsarQueSocket = 2 Then
-108         Serv.Detener
-        #End If
+104     Call LimpiaWsApi
     
         Dim LoopC As Integer
     

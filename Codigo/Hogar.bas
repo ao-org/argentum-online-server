@@ -88,6 +88,7 @@ Public Sub generateMatrix(ByVal Mapa As Integer)
 110     Next j
     
 112     For j = 1 To NUMCIUDADES
+
 114         For i = 1 To 4
 
 116             Select Case i
@@ -199,13 +200,14 @@ Public Sub goHome(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
 102         If .flags.Muerto = 1 Then
+
 104             If .donador.activo = 0 And Not EsGM(UserIndex) Then  ' Donador no espera tiempo
 106                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Runa, 800, False))
 108                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.CharIndex, 800, Accion_Barra.Hogar))
                 Else
 110                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Runa, 100, False))
 112                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.CharIndex, 100, Accion_Barra.Hogar))
-                  End If
+                End If
                 
 114             .Accion.Particula = ParticulasIndex.Runa
 116             .Accion.AccionPendiente = True

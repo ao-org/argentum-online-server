@@ -18,7 +18,6 @@ Attribute VB_Name = "WSKSOCK"
 'along with this program; if not, you can find it at http://www.affero.org/oagpl.html
 '**************************************************************************
 
-#If UsarQueSocket = 1 Then
 
     'date stamp: sept 1, 1996 (for version control, please don't remove)
 
@@ -38,6 +37,7 @@ Attribute VB_Name = "WSKSOCK"
     '   also appear correct. Some are declared to return integers instead of
     '   longs (breaking MS's rules.) however after testing these functions I
     '   have come to the conclusion that they do not work properly when declared
+    
     '   following MS's rules.
     '
     'NOTES:
@@ -264,7 +264,7 @@ Attribute VB_Name = "WSKSOCK"
     Public Declare Function bind Lib "wsock32.dll" (ByVal S As Long, addr As sockaddr, ByVal namelen As Long) As Long
     Public Declare Function apiclosesocket Lib "wsock32.dll" Alias "closesocket" (ByVal S As Long) As Long
     Public Declare Function connect Lib "wsock32.dll" (ByVal S As Long, addr As sockaddr, ByVal namelen As Long) As Long
-    Public Declare Function ioctlsocket Lib "wsock32.dll" (ByVal S As Long, ByVal Cmd As Long, argp As Long) As Long
+    Public Declare Function ioctlsocket Lib "wsock32.dll" (ByVal S As Long, ByVal cmd As Long, argp As Long) As Long
     Public Declare Function getpeername Lib "wsock32.dll" (ByVal S As Long, sName As sockaddr, namelen As Long) As Long
     Public Declare Function getsockname Lib "wsock32.dll" (ByVal S As Long, sName As sockaddr, namelen As Long) As Long
     Public Declare Function getsockopt Lib "wsock32.dll" (ByVal S As Long, ByVal level As Long, ByVal optname As Long, optval As Any, optlen As Long) As Long
@@ -1366,4 +1366,4 @@ Public Function WSAMakeSelectReply(TheEvent%, TheError%) As Long
 100     WSAMakeSelectReply = (TheError * &H10000) + (TheEvent And &HFFFF&)
     
 End Function
-#End If
+
