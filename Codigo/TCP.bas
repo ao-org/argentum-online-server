@@ -1199,7 +1199,7 @@ ValidateChr_Err:
         
 End Function
 
-Function EntrarCuenta(ByVal UserIndex As Integer, CuentaEmail As String, CuentaPassword As String, MacAddress As String, ByVal HDserial As Long, Md5 As String) As Boolean
+Function EntrarCuenta(ByVal UserIndex As Integer, CuentaEmail As String, CuentaPassword As String, MacAddress As String, ByVal HDserial As Long, MD5 As String) As Boolean
         
         On Error GoTo EntrarCuenta_Err
         
@@ -1221,7 +1221,7 @@ Function EntrarCuenta(ByVal UserIndex As Integer, CuentaEmail As String, CuentaP
             Exit Function
         End If
         
-        If Md5Cliente <> Md5 Then
+        If Md5Cliente <> vbNullString And Md5Cliente <> MD5 Then
             Call WriteShowMessageBox(UserIndex, "Error al comprobar el cliente del juego, por favor reinstale y vuelva a intentar.")
             Exit Function
         End If

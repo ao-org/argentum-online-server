@@ -1631,11 +1631,7 @@ Public Type UserFlags
     SegundosPasados As Byte
     
     ChatColor As Long
-    
-    '[el oso]
-    MD5Reportado As String
-    '[/el oso]
-    
+
     '[Barrin 30-11-03]
     TimesWalk As Long
     StartWalk As Long
@@ -2249,10 +2245,6 @@ Public PuedeCrearPersonajes              As Integer
 
 Public ServerSoloGMs                     As Integer
 
-''
-'Esta activada la verificacion MD5 ?
-Public MD5ClientesActivado               As Byte
-
 Public EnPausa                           As Boolean
 
 Public EnTesting                         As Boolean
@@ -2307,8 +2299,6 @@ Public Peces()                            As obj
 Public PesoPeces()                        As Long
 
 Public ObjDonador()                       As tObjDonador
-
-Public MD5s()                             As String
 
 Public BanIps                             As New Collection
 

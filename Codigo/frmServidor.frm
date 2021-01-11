@@ -25,7 +25,7 @@ Begin VB.Form frmServidor
       EndProperty
       Height          =   1575
       Left            =   3840
-      TabIndex        =   27
+      TabIndex        =   26
       Top             =   2400
       Width           =   3615
       Begin VB.CommandButton Command4 
@@ -41,7 +41,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   31
+         TabIndex        =   30
          Top             =   240
          Width           =   3255
       End
@@ -58,7 +58,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   30
+         TabIndex        =   29
          Top             =   520
          Width           =   3255
       End
@@ -75,7 +75,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   29
+         TabIndex        =   28
          Top             =   820
          Width           =   3255
       End
@@ -92,7 +92,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   28
+         TabIndex        =   27
          Top             =   1120
          Width           =   3255
       End
@@ -110,7 +110,7 @@ Begin VB.Form frmServidor
       EndProperty
       Height          =   2415
       Left            =   3840
-      TabIndex        =   19
+      TabIndex        =   18
       Top             =   0
       Width           =   3615
       Begin VB.CommandButton Command6 
@@ -126,7 +126,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   26
+         TabIndex        =   25
          Top             =   240
          Width           =   3255
       End
@@ -144,7 +144,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   25
+         TabIndex        =   24
          Top             =   510
          Width           =   3255
       End
@@ -161,7 +161,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   24
+         TabIndex        =   23
          Top             =   800
          Width           =   3255
       End
@@ -178,7 +178,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   23
+         TabIndex        =   22
          Top             =   1080
          Width           =   3255
       End
@@ -195,7 +195,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   22
+         TabIndex        =   21
          Top             =   1360
          Width           =   3255
       End
@@ -212,7 +212,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   21
+         TabIndex        =   20
          Top             =   1650
          Width           =   3255
       End
@@ -229,7 +229,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   20
+         TabIndex        =   19
          Top             =   1940
          Width           =   3255
       End
@@ -247,7 +247,7 @@ Begin VB.Form frmServidor
       EndProperty
       Height          =   2415
       Left            =   120
-      TabIndex        =   10
+      TabIndex        =   9
       Top             =   2400
       Width           =   3735
       Begin VB.CommandButton Command20 
@@ -263,7 +263,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   240
-         TabIndex        =   18
+         TabIndex        =   17
          Top             =   1800
          Width           =   3255
       End
@@ -280,7 +280,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   240
-         TabIndex        =   17
+         TabIndex        =   16
          Top             =   2040
          Width           =   3255
       End
@@ -297,7 +297,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   240
-         TabIndex        =   16
+         TabIndex        =   15
          Top             =   360
          Width           =   3255
       End
@@ -314,7 +314,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   240
-         TabIndex        =   15
+         TabIndex        =   14
          Top             =   600
          Width           =   3255
       End
@@ -331,7 +331,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   240
-         TabIndex        =   14
+         TabIndex        =   13
          Top             =   840
          Width           =   3255
       End
@@ -348,7 +348,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   240
-         TabIndex        =   13
+         TabIndex        =   12
          Top             =   1080
          Width           =   3255
       End
@@ -365,7 +365,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   240
-         TabIndex        =   12
+         TabIndex        =   11
          Top             =   1320
          Width           =   3255
       End
@@ -382,7 +382,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   240
-         TabIndex        =   11
+         TabIndex        =   10
          Top             =   1560
          Width           =   3255
       End
@@ -416,7 +416,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   240
-         TabIndex        =   9
+         TabIndex        =   8
          Top             =   1920
          Width           =   3255
       End
@@ -433,7 +433,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   240
-         TabIndex        =   8
+         TabIndex        =   7
          Top             =   1680
          Width           =   3255
       End
@@ -450,25 +450,8 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   240
-         TabIndex        =   7
-         Top             =   960
-         Width           =   3255
-      End
-      Begin VB.CommandButton Command25 
-         Caption         =   "Reload MD5s"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Left            =   240
          TabIndex        =   6
-         Top             =   1200
+         Top             =   960
          Width           =   3255
       End
       Begin VB.CommandButton Command17 
@@ -573,7 +556,7 @@ Begin VB.Form frmServidor
       ForeColor       =   &H000000FF&
       Height          =   255
       Left            =   3960
-      TabIndex        =   35
+      TabIndex        =   34
       Top             =   4560
       Width           =   2295
    End
@@ -591,7 +574,7 @@ Begin VB.Form frmServidor
       EndProperty
       Height          =   255
       Left            =   5520
-      TabIndex        =   34
+      TabIndex        =   33
       Top             =   4080
       Width           =   495
    End
@@ -610,7 +593,7 @@ Begin VB.Form frmServidor
       ForeColor       =   &H000000FF&
       Height          =   255
       Left            =   3960
-      TabIndex        =   33
+      TabIndex        =   32
       Top             =   4320
       Width           =   2295
    End
@@ -629,7 +612,7 @@ Begin VB.Form frmServidor
       ForeColor       =   &H0000C000&
       Height          =   255
       Left            =   3960
-      TabIndex        =   32
+      TabIndex        =   31
       Top             =   4080
       Width           =   2295
    End
@@ -1030,21 +1013,6 @@ Private Sub Command24_Click()
 
 Command24_Click_Err:
 102     Call RegistrarError(Err.Number, Err.description, "frmServidor.Command24_Click", Erl)
-104     Resume Next
-        
-End Sub
-
-Private Sub Command25_Click()
-        
-        On Error GoTo Command25_Click_Err
-        
-100     Call MD5sCarga
-
-        
-        Exit Sub
-
-Command25_Click_Err:
-102     Call RegistrarError(Err.Number, Err.description, "frmServidor.Command25_Click", Erl)
 104     Resume Next
         
 End Sub
