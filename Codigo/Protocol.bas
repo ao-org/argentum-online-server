@@ -25959,7 +25959,6 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
 108     UserDelete = Buffer.ReadASCIIString()
 110     CuentaEmail = Buffer.ReadASCIIString()
 112     CuentaPassword = Buffer.ReadASCIIString()
-113     MD5 = Buffer.ReadASCIIString()
 114     Version = CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte())
     
 116     If Not VersionOK(Version) Then
@@ -25972,6 +25971,7 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
 
 122     MacAddress = Buffer.ReadASCIIString()
 124     HDserial = Buffer.ReadLong()
+125     MD5 = Buffer.ReadASCIIString()
     
 126     If Not EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MacAddress, HDserial, MD5) Then
 128         Call CloseSocket(UserIndex)
@@ -31155,10 +31155,11 @@ Private Sub HandleRequestProcesses(ByVal UserIndex As Integer)
 
             End If
 
-            ' No podes estra en consulta con otro gm
-134         If EsGM(tUser) And tUser <> UserIndex Then
-136             Call WriteConsoleMsg(UserIndex, "No podés invadir la privacidad de otro administrador.", FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
+134         If tUser <> UserIndex Then
+135             If AdministratorAccounts.Exists(UCase$(UserList(tUser).Cuenta)) Then
+136                 Call WriteConsoleMsg(UserIndex, "No podés invadir la privacidad de otro administrador.", FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                End If
             End If
         
 138         If LenB(UserList(tUser).flags.ProcesosPara) = 0 Then
@@ -31232,10 +31233,11 @@ Private Sub HandleRequestScreenShot(ByVal UserIndex As Integer)
 
             End If
 
-            ' No podes estra en consulta con otro gm
-134         If EsGM(tUser) And tUser <> UserIndex Then
-136             Call WriteConsoleMsg(UserIndex, "No podés invadir la privacidad de otro administrador.", FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
+134         If tUser <> UserIndex Then
+135             If AdministratorAccounts.Exists(UCase$(UserList(tUser).Cuenta)) Then
+136                 Call WriteConsoleMsg(UserIndex, "No podés invadir la privacidad de otro administrador.", FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                End If
             End If
         
 138         If LenB(UserList(tUser).flags.ScreenShotPara) = 0 Then
