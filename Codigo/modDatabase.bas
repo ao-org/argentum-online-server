@@ -17,7 +17,7 @@ Public Database_Username   As String
 Public Database_Password   As String
 
 Public Database_Connection As ADODB.Connection
-Public QueryData           As ADODB.RecordSet
+Public QueryData           As ADODB.Recordset
 Public RecordsAffected     As Long
 
 Private QueryBuilder       As cStringBuilder
@@ -2172,7 +2172,7 @@ Public Function GetUserGuildIndexDatabase(ByVal UserName As String) As Integer
     '***************************************************
     On Error GoTo ErrorHandler
 
-    Call MakeQuery("SELECT guild_index FROM user WHERE UPPER(name) = '" & UCase$(UserName) & "';")
+    Call MakeQuery("SELECT guild_index FROM user WHERE UPPER(name) = ?;", False, False, UCase$(UserName))
 
     If QueryData Is Nothing Then Exit Function
 
@@ -2193,7 +2193,7 @@ Public Function GetUserGuildMemberDatabase(ByVal UserName As String) As String
     '***************************************************
     On Error GoTo ErrorHandler
 
-    Call MakeQuery("SELECT guild_member_history FROM user WHERE name = '" & UserName & "';")
+    Call MakeQuery("SELECT guild_member_history FROM user WHERE upper(name) = ?;", False, False, UserName)
 
     If QueryData Is Nothing Then Exit Function
 
@@ -2214,7 +2214,7 @@ Public Function GetUserGuildAspirantDatabase(ByVal UserName As String) As Intege
     '***************************************************
     On Error GoTo ErrorHandler
 
-    Call MakeQuery("SELECT guild_aspirant_index FROM user WHERE name = '" & UserName & "';")
+    Call MakeQuery("SELECT guild_aspirant_index FROM user WHERE upper(name) = ?;", False, False, UserName)
 
     If QueryData Is Nothing Then Exit Function
 
@@ -2234,8 +2234,8 @@ Public Function GetUserGuildRejectionReasonDatabase(ByVal UserName As String) As
     'Last Modification: 11/10/2018
     '***************************************************
     On Error GoTo ErrorHandler
-    
-    Call MakeQuery("SELECT guild_rejected_because FROM user WHERE name = '" & UserName & "';")
+
+    Call MakeQuery("SELECT guild_rejected_because FROM user WHERE upper(name) = ?;", False, False, UserName)
 
     If QueryData Is Nothing Then Exit Function
 
@@ -2256,7 +2256,7 @@ Public Function GetUserGuildPedidosDatabase(ByVal UserName As String) As String
     '***************************************************
     On Error GoTo ErrorHandler
 
-    Call MakeQuery("SELECT guild_requests_history FROM user WHERE name = '" & UserName & "';")
+    Call MakeQuery("SELECT guild_requests_history FROM user WHERE upper(name) = ?;", False, False, UserName)
 
     If QueryData Is Nothing Then Exit Function
 
@@ -2277,13 +2277,7 @@ Public Sub SaveUserGuildRejectionReasonDatabase(ByVal UserName As String, ByVal 
     '***************************************************
     On Error GoTo ErrorHandler
 
-    Dim query As String
-
-    query = "UPDATE user SET "
-    query = query & "guild_rejected_because = '" & Reason & "' "
-    query = query & "WHERE name = '" & UserName & "';"
-
-    Call MakeQuery(query, True)
+    Call SetUserValue(UserName, "guild_rejected_because", Reason)
 
     Exit Sub
 ErrorHandler:
@@ -2299,13 +2293,7 @@ Public Sub SaveUserGuildIndexDatabase(ByVal UserName As String, ByVal GuildIndex
     '***************************************************
     On Error GoTo ErrorHandler
 
-    Dim query As String
-
-    query = "UPDATE user SET "
-    query = query & "guild_index = " & GuildIndex & " "
-    query = query & "WHERE name = '" & UserName & "';"
-    
-    Call MakeQuery(query, True)
+    Call SetUserValue(UserName, "guild_index", GuildIndex)
 
     Exit Sub
 ErrorHandler:
@@ -2321,13 +2309,7 @@ Public Sub SaveUserGuildAspirantDatabase(ByVal UserName As String, ByVal Aspiran
     '***************************************************
     On Error GoTo ErrorHandler
 
-    Dim query As String
-
-    query = "UPDATE user SET "
-    query = query & "guild_aspirant_index = " & AspirantIndex & " "
-    query = query & "WHERE name = '" & UserName & "';"
-
-    Call MakeQuery(query, True)
+    Call SetUserValue(UserName, "guild_aspirant_index", AspirantIndex)
 
     Exit Sub
 ErrorHandler:
@@ -2343,13 +2325,7 @@ Public Sub SaveUserGuildMemberDatabase(ByVal UserName As String, ByVal guilds As
     '***************************************************
     On Error GoTo ErrorHandler
 
-    Dim query As String
-
-    query = "UPDATE user SET "
-    query = query & "guild_member_history = '" & guilds & "' "
-    query = query & "WHERE name = '" & UserName & "';"
-
-    Call MakeQuery(query, True)
+    Call SetUserValue(UserName, "guild_member_history", guilds)
 
     Exit Sub
 ErrorHandler:
@@ -2365,13 +2341,7 @@ Public Sub SaveUserGuildPedidosDatabase(ByVal UserName As String, ByVal Pedidos 
     '***************************************************
     On Error GoTo ErrorHandler
 
-    Dim query As String
-
-    query = "UPDATE user SET "
-    query = query & "guild_requests_history = '" & Pedidos & "' "
-    query = query & "WHERE name = '" & UserName & "';"
-
-    Call MakeQuery(query, True)
+    Call SetUserValue(UserName, "guild_requests_history", Pedidos)
 
     Exit Sub
 ErrorHandler:
@@ -2393,7 +2363,7 @@ Public Sub SendCharacterInfoDatabase(ByVal UserIndex As Integer, ByVal UserName 
 
     Dim GuildActual As Integer
 
-    Call MakeQuery("SELECT race_id, class_id, genre_id, level, gold, bank_gold, guild_requests_history, guild_index, guild_member_history, pertenece_real, pertenece_caos, ciudadanos_matados, criminales_matados FROM user WHERE name = '" & UserName & "';")
+    Call MakeQuery("SELECT race_id, class_id, genre_id, level, gold, bank_gold, guild_requests_history, guild_index, guild_member_history, pertenece_real, pertenece_caos, ciudadanos_matados, criminales_matados FROM user WHERE upper(name) = ?;", False, False, UCase$(UserName))
 
     If QueryData Is Nothing Then
         Call WriteConsoleMsg(UserIndex, "Pj Inexistente", FontTypeNames.FONTTYPE_INFO)
@@ -2431,7 +2401,7 @@ Public Function EnterAccountDatabase(ByVal UserIndex As Integer, CuentaEmail As 
 
     On Error GoTo ErrorHandler
     
-    Call MakeQuery("SELECT id, password, salt, validated, is_banned, ban_reason, banned_by FROM account WHERE email = '" & LCase$(CuentaEmail) & "';")
+    Call MakeQuery("SELECT id, password, salt, validated, is_banned, ban_reason, banned_by FROM account WHERE email = ?;", False, False, LCase$(CuentaEmail))
     
     If Database_Connection.State = adStateClosed Then
         Call WriteShowMessageBox(UserIndex, "Ha ocurrido un error interno en el servidor. ¡Estamos tratando de resolverlo!")
@@ -2461,7 +2431,7 @@ Public Function EnterAccountDatabase(ByVal UserIndex As Integer, CuentaEmail As 
     UserList(UserIndex).AccountId = QueryData!Id
     UserList(UserIndex).Cuenta = CuentaEmail
     
-    Call MakeQuery("UPDATE account SET mac_address = '" & MacAddress & "', hd_serial = " & HDserial & ", last_ip = '" & ip & "', last_access = NOW() WHERE id = " & QueryData!Id & ";", True)
+    Call MakeQuery("UPDATE account SET mac_address = ?, hd_serial = ?, last_ip = ?, last_access = NOW() WHERE id = ?;", True, False, MacAddress, HDserial, ip, QueryData!Id)
     
     EnterAccountDatabase = True
     
@@ -2482,7 +2452,7 @@ Public Sub ChangePasswordDatabase(ByVal UserIndex As Integer, OldPassword As Str
 
     End If
     
-    Call MakeQuery("SELECT password, salt FROM account WHERE id = " & UserList(UserIndex).AccountId & ";")
+    Call MakeQuery("SELECT password, salt FROM account WHERE id = ?;", False, False, UserList(UserIndex).AccountId)
     
     If QueryData Is Nothing Then
         Call WriteConsoleMsg(UserIndex, "No se ha podido cambiar la contraseña por un error interno. Avise a un administrador.", FontTypeNames.FONTTYPE_INFO)
@@ -2510,7 +2480,7 @@ Public Sub ChangePasswordDatabase(ByVal UserIndex As Integer, OldPassword As Str
     
     Set oSHA256 = Nothing
     
-    Call MakeQuery("UPDATE account SET password = '" & PasswordHash & "', salt = '" & Salt & "' WHERE id = " & UserList(UserIndex).AccountId & ";", True)
+    Call MakeQuery("UPDATE account SET password = ?, salt = ? WHERE id = ?;", True, False, PasswordHash, Salt, UserList(UserIndex).AccountId)
     
     Call WriteConsoleMsg(UserIndex, "La contraseña de su cuenta fue cambiada con éxito.", FontTypeNames.FONTTYPE_INFO)
     
@@ -2541,7 +2511,7 @@ End Function
 Public Function SetPositionDatabase(UserName As String, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
     On Error GoTo ErrorHandler
 
-    Call MakeQuery("UPDATE user SET pos_map = " & Map & ", pos_x = " & X & ", pos_y = " & X & " WHERE UPPER(name) = '" & UCase$(UserName) & "';", True)
+    Call MakeQuery("UPDATE user SET pos_map = ?, pos_x = ?, pos_y = ? WHERE UPPER(name) = ?;", True, False, Map, X, Y, UCase$(UserName))
     
     SetPositionDatabase = RecordsAffected > 0
 
@@ -2555,7 +2525,7 @@ End Function
 Public Function AddOroBancoDatabase(UserName As String, ByVal OroGanado As Long) As Boolean
     On Error GoTo ErrorHandler
 
-    Call MakeQuery("UPDATE user SET bank_gold = bank_gold + " & OroGanado & " WHERE UPPER(name) = '" & UCase$(UserName) & "';", True)
+    Call MakeQuery("UPDATE user SET bank_gold = bank_gold + ? WHERE UPPER(name) = ?;", True, False, OroGanado, UCase$(UserName))
     
     AddOroBancoDatabase = RecordsAffected > 0
 
@@ -2569,7 +2539,7 @@ End Function
 Public Function DarLlaveAUsuarioDatabase(UserName As String, ByVal LlaveObj As Integer) As Boolean
     On Error GoTo ErrorHandler
 
-    Call MakeQuery("INSERT INTO house_key SET key_obj = " & LlaveObj & ", account_id = (SELECT account_id FROM user WHERE UPPER(name) = '" & UCase$(UserName) & "');", True)
+    Call MakeQuery("INSERT INTO house_key SET key_obj = ?, account_id = (SELECT account_id FROM user WHERE UPPER(name) = ?);", True, False, LlaveObj, UCase$(UserName))
     
     DarLlaveAUsuarioDatabase = RecordsAffected > 0
 
@@ -2583,7 +2553,7 @@ End Function
 Public Function DarLlaveACuentaDatabase(email As String, ByVal LlaveObj As Integer) As Boolean
     On Error GoTo ErrorHandler
 
-    Call MakeQuery("INSERT INTO house_key SET key_obj = " & LlaveObj & ", account_id = (SELECT id FROM account WHERE UPPER(email) = '" & UCase$(email) & "');", True)
+    Call MakeQuery("INSERT INTO house_key SET key_obj = ?, account_id = (SELECT id FROM account WHERE UPPER(email) = ?);", True, False, LlaveObj, UCase$(email))
     
     DarLlaveACuentaDatabase = RecordsAffected > 0
     Exit Function
@@ -2601,7 +2571,7 @@ Public Function SacarLlaveDatabase(ByVal LlaveObj As Integer) As Boolean
     Dim Users() As String
 
     ' Obtengo los usuarios logueados en la cuenta del dueño de la llave
-    Call MakeQuery("SELECT name FROM user WHERE is_logged = TRUE AND account_id = (SELECT account_id FROM house_key WHERE key_obj = " & LlaveObj & ");")
+    Call MakeQuery("SELECT name FROM user WHERE is_logged = TRUE AND account_id = (SELECT account_id FROM house_key WHERE key_obj = ?);", False, False, LlaveObj)
     
     If QueryData Is Nothing Then Exit Function
 
@@ -2623,7 +2593,7 @@ Public Function SacarLlaveDatabase(ByVal LlaveObj As Integer) As Boolean
     Wend
     
     ' Intento borrar la llave de la db
-    Call MakeQuery("DELETE FROM house_key WHERE key_obj = " & LlaveObj & ";", True)
+    Call MakeQuery("DELETE FROM house_key WHERE key_obj = ?;", True, True, LlaveObj)
     
     ' Si pudimos borrar, actualizamos los usuarios logueados
     Dim UserIndex As Integer
@@ -2648,7 +2618,7 @@ End Function
 Public Sub VerLlavesDatabase(ByVal UserIndex As Integer)
     On Error GoTo ErrorHandler
 
-    Call MakeQuery("SELECT (SELECT email FROM account WHERE id = K.account_id) as email, key_obj FROM house_key AS K;")
+    Call MakeQuery("SELECT (SELECT email FROM account WHERE id = K.account_id) as email, key_obj FROM house_key AS K;", False, True)
 
     If QueryData Is Nothing Then
         Call WriteConsoleMsg(UserIndex, "No hay llaves otorgadas por el momento.", FontTypeNames.FONTTYPE_INFO)
