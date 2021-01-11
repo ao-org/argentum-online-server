@@ -1199,19 +1199,16 @@ ValidateChr_Err:
         
 End Function
 
-Function EntrarCuenta(ByVal UserIndex As Integer, CuentaEmail As String, CuentaPassword As String, MacAddress As String, ByVal HDserial As Long) As Boolean
+Function EntrarCuenta(ByVal UserIndex As Integer, CuentaEmail As String, CuentaPassword As String, MacAddress As String, ByVal HDserial As Long, Md5 As String) As Boolean
         
         On Error GoTo EntrarCuenta_Err
         
 100     If ServerSoloGMs > 0 Then
-        
             ' Si el e-mail está declarado junto al nick de la cuenta donde esta el PJ GM en el Server.ini te dejo entrar.
 102         If Not AdministratorAccounts.Exists(UCase$(CuentaEmail)) Then
 104             Call WriteShowMessageBox(UserIndex, "El servidor se encuentra habilitado solo para administradores por el momento.")
                 Exit Function
-
             End If
-
         End If
 
 106     If CheckMAC(MacAddress) Then
@@ -1223,6 +1220,11 @@ Function EntrarCuenta(ByVal UserIndex As Integer, CuentaEmail As String, CuentaP
 112         Call WriteShowMessageBox(UserIndex, "Su cuenta se encuentra bajo tolerancia 0. Tiene prohibido el acceso. Cod: #0002")
             Exit Function
         End If
+        
+        If Md5Cliente <> Md5 Then
+            Call WriteShowMessageBox(UserIndex, "Error al comprobar el cliente del juego, por favor reinstale y vuelva a intentar.")
+            Exit Function
+        End If
 
 114     If Not CheckMailString(CuentaEmail) Then
 116         Call WriteShowMessageBox(UserIndex, "Email inválido.")
@@ -1231,9 +1233,7 @@ Function EntrarCuenta(ByVal UserIndex As Integer, CuentaEmail As String, CuentaP
     
 118     If Database_Enabled Then
 120         EntrarCuenta = EnterAccountDatabase(UserIndex, CuentaEmail, SDesencriptar(CuentaPassword), MacAddress, HDserial, UserList(UserIndex).ip)
-    
         Else
-
 122         If CuentaExiste(CuentaEmail) Then
 124             If Not ObtenerBaneo(CuentaEmail) Then
 
