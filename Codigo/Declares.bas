@@ -45,6 +45,8 @@ Public Enum e_SoundIndex
 
 End Enum
 
+Public Md5Cliente           As String
+
 Public HoraMundo            As Long
 
 Public HoraActual           As Integer
@@ -1783,7 +1785,7 @@ Public Type user
     Cuenta As String
     
     Id As Long
-    AccountID As Long
+    AccountId As Long
     
     Grupo As Tgrupo
 
