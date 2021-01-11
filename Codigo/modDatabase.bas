@@ -106,69 +106,62 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
     
     With UserList(UserIndex)
     
+        'Basic user data
         QueryBuilder.Append "INSERT INTO user SET "
-        QueryBuilder.Append "name = ?"
-        QueryBuilder.Append "account_id = ?, "
-        QueryBuilder.Append "level = ?, "
-        QueryBuilder.Append "exp = ?, "
-        QueryBuilder.Append "elu = ?, "
-        QueryBuilder.Append "genre_id = ?, "
-        QueryBuilder.Append "race_id = ?, "
-        QueryBuilder.Append "class_id = ?, "
-        QueryBuilder.Append "home_id = ?, "
+        QueryBuilder.Append "name = ?, "
+        QueryBuilder.Append "account_id = " & .AccountId & ", "
+        QueryBuilder.Append "level = " & .Stats.ELV & ", "
+        QueryBuilder.Append "exp = " & .Stats.Exp & ", "
+        QueryBuilder.Append "elu = " & .Stats.ELU & ", "
+        QueryBuilder.Append "genre_id = " & .genero & ", "
+        QueryBuilder.Append "race_id = " & .raza & ", "
+        QueryBuilder.Append "class_id = " & .clase & ", "
+        QueryBuilder.Append "home_id = " & .Hogar & ", "
         QueryBuilder.Append "description = ?, "
-        QueryBuilder.Append "gold = ?, "
-        QueryBuilder.Append "free_skillpoints = ?, "
-        'QueryBuilder.Append "assigned_skillpoints = ?, "
-        QueryBuilder.Append "pos_map = ?, "
-        QueryBuilder.Append "pos_x = ?, "
-        QueryBuilder.Append "pos_y = ?, "
-        QueryBuilder.Append "body_id = ?, "
-        QueryBuilder.Append "head_id = ?, "
-        QueryBuilder.Append "weapon_id = ?, "
-        QueryBuilder.Append "helmet_id = ?, "
-        QueryBuilder.Append "shield_id = ?, "
-        QueryBuilder.Append "items_Amount = ?, "
-        QueryBuilder.Append "slot_armour = ?, "
-        QueryBuilder.Append "slot_weapon = ?, "
-        QueryBuilder.Append "slot_shield = ?, "
-        QueryBuilder.Append "slot_helmet = ?, "
-        QueryBuilder.Append "slot_ammo = ?, "
-        QueryBuilder.Append "slot_dm = ?, "
-        QueryBuilder.Append "slot_rm = ?, "
-        QueryBuilder.Append "slot_tool = ?, "
-        QueryBuilder.Append "slot_magic = ?, "
-        QueryBuilder.Append "slot_knuckles = ?, "
-        QueryBuilder.Append "slot_ship = ?, "
-        QueryBuilder.Append "slot_mount = ?, "
-        QueryBuilder.Append "min_hp = ?, "
-        QueryBuilder.Append "max_hp = ?, "
-        QueryBuilder.Append "min_man = ?, "
-        QueryBuilder.Append "max_man = ?, "
-        QueryBuilder.Append "min_sta = ?, "
-        QueryBuilder.Append "max_sta = ?, "
-        QueryBuilder.Append "min_ham = ?, "
-        QueryBuilder.Append "max_ham = ?, "
-        QueryBuilder.Append "min_sed = ?, "
-        QueryBuilder.Append "max_sed = ?, "
-        QueryBuilder.Append "min_hit = ?, "
-        QueryBuilder.Append "max_hit = ?, "
-        'QueryBuilder.Append "rep_noble = ?, "
-        'QueryBuilder.Append "rep_plebe = ?, "
-        'QueryBuilder.Append "rep_average = ?, "
-        QueryBuilder.Append "is_naked = ?, "
-        QueryBuilder.Append "status = ?, "
+        QueryBuilder.Append "gold = " & .Stats.GLD & ", "
+        QueryBuilder.Append "free_skillpoints = " & .Stats.SkillPts & ", "
+        'QueryBuilder.Append "assigned_skillpoints = " & .Counters.AsignedSkills & ", "
+        QueryBuilder.Append "pos_map = " & .Pos.Map & ", "
+        QueryBuilder.Append "pos_x = " & .Pos.X & ", "
+        QueryBuilder.Append "pos_y = " & .Pos.Y & ", "
+        QueryBuilder.Append "body_id = " & .Char.Body & ", "
+        QueryBuilder.Append "head_id = " & .Char.Head & ", "
+        QueryBuilder.Append "weapon_id = " & .Char.WeaponAnim & ", "
+        QueryBuilder.Append "helmet_id = " & .Char.CascoAnim & ", "
+        QueryBuilder.Append "shield_id = " & .Char.ShieldAnim & ", "
+        QueryBuilder.Append "items_Amount = " & .Invent.NroItems & ", "
+        QueryBuilder.Append "slot_armour = " & .Invent.ArmourEqpSlot & ", "
+        QueryBuilder.Append "slot_weapon = " & .Invent.WeaponEqpSlot & ", "
+        QueryBuilder.Append "slot_shield = " & .Invent.EscudoEqpSlot & ", "
+        QueryBuilder.Append "slot_helmet = " & .Invent.CascoEqpSlot & ", "
+        QueryBuilder.Append "slot_ammo = " & .Invent.MunicionEqpSlot & ", "
+        QueryBuilder.Append "slot_dm = " & .Invent.DañoMagicoEqpSlot & ", "
+        QueryBuilder.Append "slot_rm = " & .Invent.ResistenciaEqpSlot & ", "
+        QueryBuilder.Append "slot_tool = " & .Invent.HerramientaEqpSlot & ", "
+        QueryBuilder.Append "slot_magic = " & .Invent.MagicoSlot & ", "
+        QueryBuilder.Append "slot_knuckles = " & .Invent.NudilloSlot & ", "
+        QueryBuilder.Append "slot_ship = " & .Invent.BarcoSlot & ", "
+        QueryBuilder.Append "slot_mount = " & .Invent.MonturaSlot & ", "
+        QueryBuilder.Append "min_hp = " & .Stats.MinHp & ", "
+        QueryBuilder.Append "max_hp = " & .Stats.MaxHp & ", "
+        QueryBuilder.Append "min_man = " & .Stats.MinMAN & ", "
+        QueryBuilder.Append "max_man = " & .Stats.MaxMAN & ", "
+        QueryBuilder.Append "min_sta = " & .Stats.MinSta & ", "
+        QueryBuilder.Append "max_sta = " & .Stats.MaxSta & ", "
+        QueryBuilder.Append "min_ham = " & .Stats.MinHam & ", "
+        QueryBuilder.Append "max_ham = " & .Stats.MaxHam & ", "
+        QueryBuilder.Append "min_sed = " & .Stats.MinAGU & ", "
+        QueryBuilder.Append "max_sed = " & .Stats.MaxAGU & ", "
+        QueryBuilder.Append "min_hit = " & .Stats.MinHIT & ", "
+        QueryBuilder.Append "max_hit = " & .Stats.MaxHit & ", "
+        'QueryBuilder.Append "rep_noble = " & .NobleRep & ", "
+        'QueryBuilder.Append "rep_plebe = " & .Reputacion.PlebeRep & ", "
+        'QueryBuilder.Append "rep_average = " & .Reputacion.Promedio & ", "
+        QueryBuilder.Append "is_naked = " & .flags.Desnudo & ", "
+        QueryBuilder.Append "status = " & .Faccion.Status & ", "
         QueryBuilder.Append "is_logged = TRUE; "
         
-        Call MakeQuery(QueryBuilder.toString, True, False, .name, .AccountId, .Stats.ELV, .Stats.Exp, .genero, .raza, .clase, .Hogar, _
-                                                            .Desc, .Stats.GLD, .Stats.SkillPts, .Counters.AsignedSkills, _
-                                                            .Pos.Map, .Pos.X, .Pos.Y, _
-                                                            .Char.Body, .Char.Head, .Char.WeaponAnim, .Char.CascoAnim, .Char.ShieldAnim, _
-                                                            .Invent.NroItems, .Invent.ArmourEqpSlot, .Invent.WeaponEqpSlot, .Invent.EscudoEqpSlot, _
-                                                            .Invent.CascoEqpSlot, .Invent.MunicionEqpSlot, .Invent.DañoMagicoEqpSlot, .Invent.ResistenciaEqpSlot, _
-                                                            .Invent.HerramientaEqpSlot, .Invent.MagicoSlot, .Invent.NudilloSlot, .Invent.BarcoSlot, .Invent.MonturaSlot, _
-                                                            .Stats.MinHp, .Stats.MaxHp, .Stats.MinMAN, .Stats.MaxMAN, .Stats.MinSta, .Stats.MaxSta, .Stats.MinHam, .Stats.MaxHam, _
-                                                            .Stats.MinAGU, .Stats.MaxAGU, .Stats.MinHIT, .Stats.MaxHit, .Reputacion.Promedio, .Faccion.Status)
+        Call MakeQuery(QueryBuilder.toString, True, False, .name, .Desc)
         
         'Borramos la query construida.
         Call QueryBuilder.Clear
@@ -340,7 +333,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
     'Basic user data
     With UserList(UserIndex)
         QueryBuilder.Append "UPDATE user SET "
-        QueryBuilder.Append "name = '" & .name & "', "
+        QueryBuilder.Append "name = ?, "
         QueryBuilder.Append "level = " & .Stats.ELV & ", "
         QueryBuilder.Append "exp = " & CLng(.Stats.Exp) & ", "
         QueryBuilder.Append "elu = " & .Stats.ELU & ", "
@@ -348,7 +341,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
         QueryBuilder.Append "race_id = " & .raza & ", "
         QueryBuilder.Append "class_id = " & .clase & ", "
         QueryBuilder.Append "home_id = " & .Hogar & ", "
-        QueryBuilder.Append "description = '" & .Desc & "', "
+        QueryBuilder.Append "description = ?, "
         QueryBuilder.Append "gold = " & .Stats.GLD & ", "
         QueryBuilder.Append "bank_gold = " & .Stats.Banco & ", "
         QueryBuilder.Append "free_skillpoints = " & .Stats.SkillPts & ", "
@@ -358,7 +351,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
         QueryBuilder.Append "pos_x = " & .Pos.X & ", "
         QueryBuilder.Append "pos_y = " & .Pos.Y & ", "
         QueryBuilder.Append "last_map = " & .flags.lastMap & ", "
-        QueryBuilder.Append "message_info = '" & .MENSAJEINFORMACION & "', "
+        QueryBuilder.Append "message_info = ?, "
         QueryBuilder.Append "body_id = " & .Char.Body & ", "
         QueryBuilder.Append "head_id = " & .OrigChar.Head & ", "
         QueryBuilder.Append "weapon_id = " & .Char.WeaponAnim & ", "
@@ -695,8 +688,8 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
         If Logout Then
             QueryBuilder.Append "UPDATE account SET logged = logged - 1 WHERE id = " & .AccountId & ";"
         End If
-        Debug.Print
-        Call MakeQuery(QueryBuilder.toString, True)
+        
+        Call MakeQuery(QueryBuilder.toString, True, False, .name, .Desc, .MENSAJEINFORMACION)
 
     End With
     
@@ -719,7 +712,7 @@ On Error GoTo ErrorHandler
 'Basic user data
 With UserList(UserIndex)
 
-    Call MakeQuery("SELECT *, DATE_FORMAT(fecha_ingreso, '%Y-%m-%d') as 'fecha_ingreso_format' FROM user WHERE name ='" & .name & "';")
+    Call MakeQuery("SELECT *, DATE_FORMAT(fecha_ingreso, '%Y-%m-%d') as 'fecha_ingreso_format' FROM user WHERE name = ?;", True, False, .name)
 
     If QueryData Is Nothing Then Exit Sub
 
@@ -842,7 +835,7 @@ With UserList(UserIndex)
     .Stats.Advertencias = QueryData!warnings
         
     'User attributes
-    Call MakeQuery("SELECT * FROM attribute WHERE user_id = " & .Id & ";")
+    Call MakeQuery("SELECT * FROM attribute WHERE user_id = ?;", True, False, .Id)
     
     If Not QueryData Is Nothing Then
         QueryData.MoveFirst
@@ -858,7 +851,7 @@ With UserList(UserIndex)
     End If
 
     'User spells
-    Call MakeQuery("SELECT * FROM spell WHERE user_id = " & .Id & ";")
+    Call MakeQuery("SELECT * FROM spell WHERE user_id = ?;", True, False, .Id)
 
     If Not QueryData Is Nothing Then
         QueryData.MoveFirst
@@ -873,7 +866,7 @@ With UserList(UserIndex)
     End If
 
     'User pets
-    Call MakeQuery("SELECT * FROM pet WHERE user_id = " & .Id & ";")
+    Call MakeQuery("SELECT * FROM pet WHERE user_id = ?;", True, False, .Id)
 
     If Not QueryData Is Nothing Then
         QueryData.MoveFirst
@@ -891,7 +884,7 @@ With UserList(UserIndex)
     End If
 
     'User inventory
-    Call MakeQuery("SELECT * FROM inventory_item WHERE user_id = " & .Id & ";")
+    Call MakeQuery("SELECT * FROM inventory_item WHERE user_id = ?;", True, False, .Id)
 
     If Not QueryData Is Nothing Then
         QueryData.MoveFirst
@@ -908,7 +901,7 @@ With UserList(UserIndex)
     End If
 
     'User bank inventory
-    Call MakeQuery("SELECT * FROM bank_item WHERE user_id = " & .Id & ";")
+    Call MakeQuery("SELECT * FROM bank_item WHERE user_id = ?;", True, False, .Id)
 
     If Not QueryData Is Nothing Then
         QueryData.MoveFirst
@@ -924,7 +917,7 @@ With UserList(UserIndex)
     End If
 
     'User skills
-    Call MakeQuery("SELECT * FROM skillpoint WHERE user_id = " & .Id & ";")
+    Call MakeQuery("SELECT * FROM skillpoint WHERE user_id = ?;", True, False, .Id)
 
     If Not QueryData Is Nothing Then
         QueryData.MoveFirst
@@ -941,7 +934,7 @@ With UserList(UserIndex)
     End If
 
     'User friends
-    'Call MakeQuery("SELECT * FROM friend WHERE user_id = " & .ID & ";")
+    'Call MakeQuery("SELECT * FROM friend WHERE user_id = ?;", True, False, .Id)
 
     'If Not QueryData Is Nothing Then
     '    QueryData.MoveFirst
@@ -958,7 +951,7 @@ With UserList(UserIndex)
     Dim LoopC As Byte
         
     'User quests
-    Call MakeQuery("SELECT * FROM quest WHERE user_id = " & .Id & ";")
+    Call MakeQuery("SELECT * FROM quest WHERE user_id = ?;", True, False, .Id)
 
     If Not QueryData Is Nothing Then
         QueryData.MoveFirst
@@ -1003,7 +996,7 @@ With UserList(UserIndex)
     End If
         
     'User quests done
-    Call MakeQuery("SELECT * FROM quest_done WHERE user_id = " & .Id & ";")
+    Call MakeQuery("SELECT * FROM quest_done WHERE user_id = ?;", True, False, .Id)
 
     If Not QueryData Is Nothing Then
         .QuestStats.NumQuestsDone = QueryData.RecordCount
@@ -1028,7 +1021,7 @@ With UserList(UserIndex)
     'TODO:
         
     ' Llaves
-    Call MakeQuery("SELECT key_obj FROM house_key WHERE account_id = ?", .AccountId)
+    Call MakeQuery("SELECT key_obj FROM house_key WHERE account_id = ?", True, False, .AccountId)
 
     If Not QueryData Is Nothing Then
         QueryData.MoveFirst
@@ -1168,9 +1161,9 @@ Private Function GetDBValue(Tabla As String, ColumnaGet As String, ColumnaTest A
     
     'Hacemos la query segun el tipo de variable.
     If VarType(ValueTest) = vbString Then
-        Call MakeQuery("SELECT " & ColumnaGet & " FROM " & Tabla & " WHERE " & ColumnaTest & " = '" & ValueTest & "';")
+        Call MakeQuery("SELECT " & ColumnaGet & " FROM " & Tabla & " WHERE " & ColumnaTest & " = '" & ValueTest & "';", False, True)
     Else
-        Call MakeQuery("SELECT " & ColumnaGet & " FROM " & Tabla & " WHERE " & ColumnaTest & " = " & ValueTest & ";")  ' Sin comillas
+        Call MakeQuery("SELECT " & ColumnaGet & " FROM " & Tabla & " WHERE " & ColumnaTest & " = " & ValueTest & ";", False, True)  ' Sin comillas
 
     End If
     
@@ -1239,7 +1232,7 @@ Private Sub SetDBValue(Tabla As String, ColumnaSet As String, ByVal ValueSet As 
     End If
     
     'Hacemos la query
-    Call MakeQuery("UPDATE " & Tabla & " SET " & ColumnaSet & " = " & ValueSet & " WHERE " & ColumnaTest & " = " & ValueTest & ";", True)
+    Call MakeQuery("UPDATE " & Tabla & " SET " & ColumnaSet & " = ? WHERE " & ColumnaTest & " = ?;", True, False, ValueSet, ValueTest)
 
     Exit Sub
     
@@ -1623,7 +1616,7 @@ Public Sub GetPasswordAndSaltDatabase(CuentaEmail As String, PasswordHash As Str
 
     On Error GoTo ErrorHandler
     
-    Call MakeQuery("SELECT password, salt FROM account WHERE deleted = FALSE AND email = '" & LCase$(CuentaEmail) & "';")
+    Call MakeQuery("SELECT password, salt FROM account WHERE deleted = FALSE AND email = '" & LCase$(CuentaEmail) & "';", False, True)
 
     If QueryData Is Nothing Then Exit Sub
     
@@ -1658,7 +1651,7 @@ Public Function GetPersonajesCountByIDDatabase(ByVal AccountId As Long) As Byte
 
     On Error GoTo ErrorHandler
     
-    Call MakeQuery("SELECT COUNT(*) FROM user WHERE deleted = FALSE AND account_id = " & AccountId & ";")
+    Call MakeQuery("SELECT COUNT(*) FROM user WHERE deleted = FALSE AND account_id = ?;", False, False, AccountId)
     
     If QueryData Is Nothing Then Exit Function
     
@@ -1676,7 +1669,7 @@ Public Function GetPersonajesCuentaDatabase(ByVal AccountId As Long, Personaje()
     On Error GoTo GetPersonajesCuentaDatabase_Err
         
 
-    Call MakeQuery("SELECT name, head_id, class_id, body_id, pos_map, level, status, helmet_id, shield_id, weapon_id, guild_index, is_dead, is_sailing FROM user WHERE deleted = FALSE AND account_id = " & AccountId & ";")
+    Call MakeQuery("SELECT name, head_id, class_id, body_id, pos_map, level, status, helmet_id, shield_id, weapon_id, guild_index, is_dead, is_sailing FROM user WHERE deleted = FALSE AND account_id = ?;", False, False, AccountId)
 
     If QueryData Is Nothing Then Exit Function
     
@@ -1733,7 +1726,7 @@ Public Sub SetUserLoggedDatabase(ByVal Id As Long, ByVal AccountId As Long)
     On Error GoTo SetUserLoggedDatabase_Err
         
     Call SetDBValue("user", "is_logged", 1, "id", Id)
-    Call MakeQuery("UPDATE account SET logged = logged + 1 WHERE id = " & AccountId & ";", True)
+    Call MakeQuery("UPDATE account SET logged = logged + 1 WHERE id = ?;", True, False, AccountId)
 
         
     Exit Sub
@@ -1748,7 +1741,7 @@ Public Sub ResetLoggedDatabase(ByVal AccountId As Long)
         
     On Error GoTo ResetLoggedDatabase_Err
         
-    Call MakeQuery("UPDATE account SET logged = 0 WHERE id = " & AccountId & ";", True)
+    Call MakeQuery("UPDATE account SET logged = 0 WHERE id = ?;", True, False, AccountId)
 
         
     Exit Sub
@@ -1763,7 +1756,7 @@ Public Sub SetUsersLoggedDatabase(ByVal NumUsers As Long)
         
     On Error GoTo SetUsersLoggedDatabase_Err
         
-    Call MakeQuery("UPDATE statistics SET value = '" & NumUsers & "' WHERE name = 'online';", True)
+    Call MakeQuery("UPDATE statistics SET value = '" & NumUsers & "' WHERE name = 'online';", True, True)
         
     Exit Sub
 
@@ -1777,7 +1770,7 @@ Public Function LeerRecordUsuariosDatabase() As Long
         
     On Error GoTo LeerRecordUsuariosDatabase_Err
         
-    Call MakeQuery("SELECT value FROM statistics WHERE name = 'record';")
+    Call MakeQuery("SELECT value FROM statistics WHERE name = 'record';", False, True)
 
     If QueryData Is Nothing Then Exit Function
 
@@ -1795,7 +1788,7 @@ Public Sub SetRecordUsersDatabase(ByVal Record As Long)
         
     On Error GoTo SetRecordUsersDatabase_Err
         
-    Call MakeQuery("UPDATE statistics SET value = '" & Record & "' WHERE name = 'record';", True)
+    Call MakeQuery("UPDATE statistics SET value = '" & Record & "' WHERE name = 'record';", True, True)
         
     Exit Sub
 
@@ -1815,7 +1808,7 @@ Public Sub LogoutAllUsersAndAccounts()
     query = "UPDATE user SET is_logged = FALSE; "
     query = query & "UPDATE account SET logged = 0;"
 
-    Call MakeQuery(query, True)
+    Call MakeQuery(query, True, True)
 
         
     Exit Sub
@@ -1890,7 +1883,7 @@ Public Sub SaveUserSkillDatabase(UserName As String, ByVal Skill As Integer, ByV
         
     On Error GoTo SaveUserSkillDatabase_Err
         
-    Call MakeQuery("UPDATE skillpoints SET value = " & Value & " WHERE number = " & Skill & " AND user_id = (SELECT id FROM user WHERE name = '" & UserName & "');", True)
+    Call MakeQuery("UPDATE skillpoints SET value = " & Value & " WHERE number = " & Skill & " AND user_id = (SELECT id FROM user WHERE name = ?);", True, False, UserName)
 
         
     Exit Sub
@@ -1919,23 +1912,9 @@ End Sub
 Public Sub SaveNewAccountDatabase(CuentaEmail As String, PasswordHash As String, Salt As String, Codigo As String)
 
     On Error GoTo ErrorHandler
-
-    Dim Command As New ADODB.Command
-
-    With Command
-        .ActiveConnection = Database_Connection
-        .CommandText = "INSERT INTO `account` SET email = ?, password = ?, salt = ?, validate_code = ?, date_created = ?;"
-        .CommandType = adCmdText
-            
-        .Parameters.Append .CreateParameter("email", adVarChar, adParamInput, Len(CuentaEmail), LCase$(CuentaEmail))
-        .Parameters.Append .CreateParameter("password", adVarChar, adParamInput, Len(PasswordHash), PasswordHash)
-        .Parameters.Append .CreateParameter("salt", adVarChar, adParamInput, Len(PasswordHash), Salt)
-        .Parameters.Append .CreateParameter("validate_code", adVarChar, adParamInput, Len(Codigo), Codigo)
-        .Parameters.Append .CreateParameter("date_created", adDBTimeStamp, adParamInput, Len(Date), Now())
-   
-        Call .Execute
-    End With
-
+    
+    Call MakeQuery("INSERT INTO `account` SET email = ?, password = ?, salt = ?, validate_code = ?, date_created = ?;", True, False, LCase$(CuentaEmail), PasswordHash, Salt, Codigo, Now())
+    
     Exit Sub
         
 ErrorHandler:
@@ -1968,7 +1947,7 @@ Public Sub BorrarUsuarioDatabase(name As String)
 
     On Error GoTo ErrorHandler
     
-    Call MakeQuery("UPDATE user SET name = CONCAT('DELETED_', name), deleted = TRUE WHERE name = '" & name & "';", True)
+    Call MakeQuery("UPDATE user SET name = CONCAT('DELETED_', name), deleted = TRUE WHERE name = ?;", True, False, name)
 
     Exit Sub
     
@@ -1987,11 +1966,11 @@ Public Sub BorrarCuentaDatabase(CuentaEmail As String)
 
     Dim query As String
     
-    query = "UPDATE account SET email = CONCAT('DELETED_', email), deleted = TRUE WHERE email = '" & LCase$(CuentaEmail) & "'; "
+    query = "UPDATE account SET email = CONCAT('DELETED_', email), deleted = TRUE WHERE email = ?; "
     
-    query = query & "UPDATE user SET name = CONCAT('DELETED_', name), deleted = TRUE WHERE account_id = '" & Id & "';"
+    query = query & "UPDATE user SET name = CONCAT('DELETED_', name), deleted = TRUE WHERE account_id = ?;"
     
-    Call MakeQuery(query, True)
+    Call MakeQuery(query, True, False, LCase$(CuentaEmail), Id)
 
     Exit Sub
     
@@ -2013,11 +1992,11 @@ Public Sub SaveBanDatabase(ByVal UserName As String, ByVal Reason As String, ByV
     query = "UPDATE user SET is_banned = TRUE WHERE name = '" & UserName & "'; "
 
     query = query & "INSERT INTO punishment SET "
-    query = query & "user_id = (SELECT id from user WHERE name = '" & UserName & "'), "
+    query = query & "user_id = (SELECT id from user WHERE name = ?), "
     query = query & "number = number + 1, "
-    query = query & "reason = '" & BannedBy & ": " & LCase$(Reason) & " " & Date & " " & Time & "';"
+    query = query & "reason = ?: " & LCase$(Reason) & " " & Date & " " & Time & "';"
 
-    Call MakeQuery(query, True)
+    Call MakeQuery(query, True, False, UserName, BannedBy)
 
     Exit Sub
 
@@ -2039,11 +2018,11 @@ Public Sub SaveWarnDatabase(ByVal UserName As String, ByVal Reason As String, By
     query = "UPDATE user SET warnings = warnings + 1 WHERE name = '" & UserName & "'; "
 
     query = query & "INSERT INTO punishment SET "
-    query = query & "user_id = (SELECT id from user WHERE name = '" & UserName & "'), "
+    query = query & "user_id = (SELECT id from user WHERE name = ?), "
     query = query & "number = number + 1, "
-    query = query & "reason = '" & WarnedBy & ": " & LCase$(Reason) & " " & Date & " " & Time & "';"
+    query = query & "reason = ?: " & LCase$(Reason) & " " & Date & " " & Time & "';"
 
-    Call MakeQuery(query, True)
+    Call MakeQuery(query, True, False, UserName, WarnedBy)
 
     Exit Sub
 
@@ -2059,11 +2038,11 @@ Public Sub SavePenaDatabase(UserName As String, Reason As String)
     Dim query As String
 
     query = query & "INSERT INTO punishment SET "
-    query = query & "user_id = (SELECT id from user WHERE name = '" & UserName & "'), "
+    query = query & "user_id = (SELECT id from user WHERE name = ?), "
     query = query & "number = number + 1, "
-    query = query & "reason = '" & Reason & "';"
+    query = query & "reason = ?;"
 
-    Call MakeQuery(query, True)
+    Call MakeQuery(query, True, False, UserName, Reason)
 
     Exit Sub
 
@@ -2076,7 +2055,7 @@ Public Sub UnBanDatabase(UserName As String)
 
     On Error GoTo ErrorHandler
 
-    Call MakeQuery("UPDATE user SET is_banned = FALSE WHERE name = '" & UserName & "';", True)
+    Call MakeQuery("UPDATE user SET is_banned = FALSE WHERE name = ?;", True, False, UserName)
 
     Exit Sub
 
@@ -2089,7 +2068,7 @@ Public Sub EcharConsejoDatabase(UserName As String)
         
     On Error GoTo EcharConsejoDatabase_Err
         
-    Call MakeQuery("UPDATE user SET pertenece_consejo_real = FALSE, pertenece_consejo_caos = FALSE WHERE name = '" & UserName & "';", True)
+    Call MakeQuery("UPDATE user SET pertenece_consejo_real = FALSE, pertenece_consejo_caos = FALSE WHERE name = ?;", True, False, UserName)
 
         
     Exit Sub
@@ -2104,7 +2083,7 @@ Public Sub EcharLegionDatabase(UserName As String)
         
     On Error GoTo EcharLegionDatabase_Err
         
-    Call MakeQuery("UPDATE user SET pertenece_caos = FALSE, reenlistadas = 200 WHERE name = '" & UserName & "';", True)
+    Call MakeQuery("UPDATE user SET pertenece_caos = FALSE, reenlistadas = 200 WHERE name = ?;", True, False, UserName)
 
         
     Exit Sub
@@ -2119,7 +2098,7 @@ Public Sub EcharArmadaDatabase(UserName As String)
         
     On Error GoTo EcharArmadaDatabase_Err
         
-    Call MakeQuery("UPDATE user SET pertenece_real = FALSE, reenlistadas = 200 WHERE name = '" & UserName & "';", True)
+    Call MakeQuery("UPDATE user SET pertenece_real = FALSE, reenlistadas = 200 WHERE name = ?;", True, False, UserName)
 
         
     Exit Sub
@@ -2134,7 +2113,7 @@ Public Sub CambiarPenaDatabase(UserName As String, ByVal Numero As Integer, Pena
         
     On Error GoTo CambiarPenaDatabase_Err
         
-    Call MakeQuery("UPDATE punishment SET reason = '" & Pena & "' WHERE number = " & Numero & " AND user_id = (SELECT id from user WHERE name = '" & UserName & "');", True)
+    Call MakeQuery("UPDATE punishment SET reason = ? WHERE number = ? AND user_id = (SELECT id from user WHERE name = ?);", True, False, Pena, Numero, UserName)
 
         
     Exit Sub
@@ -2153,7 +2132,7 @@ Public Function GetUserAmountOfPunishmentsDatabase(ByVal UserName As String) As 
     '***************************************************
     On Error GoTo ErrorHandler
 
-    Call MakeQuery("SELECT COUNT(*) as punishments FROM punishment WHERE user_id = (SELECT id from user WHERE name = '" & UserName & "');")
+    Call MakeQuery("SELECT COUNT(*) as punishments FROM punishment WHERE user_id = (SELECT id from user WHERE name = ?);", False, False, UserName)
 
     If QueryData Is Nothing Then Exit Function
 
@@ -2173,7 +2152,7 @@ Public Sub SendUserPunishmentsDatabase(ByVal UserIndex As Integer, ByVal UserNam
     '***************************************************
     On Error GoTo ErrorHandler
 
-    Call MakeQuery("SELECT * FROM punishment WHERE user_id = (SELECT id from user WHERE UPPER(name) = '" & UCase$(UserName) & "');")
+    Call MakeQuery("SELECT * FROM punishment WHERE user_id = (SELECT id from user WHERE UPPER(name) = ?);", False, True, UCase$(UserName))
     
     If QueryData Is Nothing Then Exit Sub
 
@@ -2201,7 +2180,7 @@ Public Function GetNombreCuentaDatabase(name As String) As String
     On Error GoTo ErrorHandler
 
     'Hacemos la query.
-    Call MakeQuery("SELECT email FROM account WHERE id = (SELECT account_id FROM user WHERE name = '" & name & "');")
+    Call MakeQuery("SELECT email FROM account WHERE id = (SELECT account_id FROM user WHERE name = ?);", False, False, name)
     
     'Verificamos que la query no devuelva un resultado vacio.
     If QueryData Is Nothing Then Exit Function
@@ -2519,16 +2498,13 @@ Public Sub ChangePasswordDatabase(ByVal UserIndex As Integer, OldPassword As Str
     End If
     
     Dim Salt As String * 10
-
-    Salt = RandomString(10) ' Alfanumerico
+        Salt = RandomString(10) ' Alfanumerico
     
     Dim oSHA256 As CSHA256
-
     Set oSHA256 = New CSHA256
 
     Dim PasswordHash As String * 64
-
-    PasswordHash = oSHA256.SHA256(NewPassword & Salt)
+        PasswordHash = oSHA256.SHA256(NewPassword & Salt)
     
     Set oSHA256 = Nothing
     
@@ -2755,15 +2731,4 @@ Function adoIsConnected(adoCn As ADODB.Connection) As Boolean
         adoIsConnected = False
     End If
 
-End Function
-
-Private Function Parameter(ByRef Param_Name As String, ByRef Param_Type As ADODB.DataTypeEnum, ByRef Value As Variant) As ADODB.Parameter
-    
-    Set ParamObject = New ADODB.Parameter
-    Set CommandObject = New ADODB.Command
-    
-    Set ParamObject = CommandObject.CreateParameter(Param_Name, Param_Type, adParamInput)
-        ParamObject.Value = Value
-    
-    Set Parameter = ParamObject
 End Function
