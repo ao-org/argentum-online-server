@@ -1865,9 +1865,8 @@ Public Type user
 
     Keys(1 To MAXKEYS) As Integer
     
-    #If AntiExternos = 1 Then
-        Redundance As Byte
-    #End If
+    ' Solo se usa si la variable de compilación AntiExternos = 1
+    Redundance As Byte
     
 End Type
 
