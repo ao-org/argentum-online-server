@@ -2806,6 +2806,7 @@ Sub LoadConfiguraciones()
         
         On Error GoTo LoadConfiguraciones_Err
         
+        Md5Cliente = GetVar(IniPath & "Configuracion.ini", "CHECKSUM", "Cliente")
 100     ExpMult = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "ExpMult"))
 102     OroMult = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "OroMult"))
 104     OroAutoEquipable = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "OroAutoEquipable"))
@@ -3832,7 +3833,7 @@ Sub SetUserLogged(ByVal UserIndex As Integer)
         
 
 100     If Database_Enabled Then
-102         Call SetUserLoggedDatabase(UserList(UserIndex).Id, UserList(UserIndex).AccountID)
+102         Call SetUserLoggedDatabase(UserList(UserIndex).Id, UserList(UserIndex).AccountId)
         Else
 104         Call WriteVar(CharPath & UCase$(UserList(UserIndex).name) & ".chr", "INIT", "Logged", 1)
 106         Call WriteVar(CuentasPath & UCase$(UserList(UserIndex).Cuenta) & ".act", "INIT", "LOGEADA", 1)
