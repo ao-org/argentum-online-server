@@ -1054,7 +1054,8 @@ Resume Next
 
 End Sub
 
-Private Sub MakeQuery(query As String, ByVal NoResult As Boolean, ByVal UnSafeQuery As Boolean, ParamArray Query_Parameters() As Variant)
+Private Sub MakeQuery(query As String, ByVal NoResult As Boolean, ByVal UnSafeQuery As _
+        Boolean, ParamArray Query_Parameters() As Variant)
     ' 17/10/2020 Autor: Alexis Caraballo (WyroX)
     ' Hace una unica query a la db. Asume una conexion.
     ' Si NoResult = False, el metodo lee el resultado de la query
@@ -1086,7 +1087,54 @@ Private Sub MakeQuery(query As String, ByVal NoResult As Boolean, ByVal UnSafeQu
         
     Else
         
+        Dim Command     As New ADODB.Command
+        Dim DB_DataType As ADODB.DataTypeEnum
+        Dim Param       As Variant
+
+        With Command
+            .ActiveConnection = Database_Connection
+            .CommandText = query
+            .CommandType = adCmdText
+                
+            For Each Param In Query_Parameters()
+             
+                Select Case VarType(Param)
+                
+                    Case vbString
+                        DB_DataType = DataTypeEnum.adVarChar
+                    
+                    Case vbInteger
+                        DB_DataType = DataTypeEnum.adSmallInt
+                    
+                    Case vbLong
+                        DB_DataType = DataTypeEnum.adInteger
+                        
+                    Case vbByte
+                        DB_DataType = DataTypeEnum.adTinyInt
+                        
+                    Case vbBoolean
+                        DB_DataType = DataTypeEnum.adBoolean
+
+                End Select
+                
+                Call .Parameters.Append(.CreateParameter(vbNullString, DB_DataType, adParamInput, Len(Param), Param))
+                
+            Next
+
+            If NoResult Then
+                Call .Execute(query, RecordsAffected)
         
+            Else
+                Set QueryData = .Execute(query, RecordsAffected)
+        
+                If QueryData.BOF Or QueryData.EOF Then
+                    Set QueryData = Nothing
+
+                End If
+        
+            End If
+            
+        End With
         
     End If
     
@@ -1095,15 +1143,19 @@ Private Sub MakeQuery(query As String, ByVal NoResult As Boolean, ByVal UnSafeQu
 ErrorHandler:
 
     If Not adoIsConnected(Database_Connection) Then
-        Call LogDatabaseError("Alarma en MakeQuery: Se perdió la conexión con la DB. Reconectando.")
+        Call LogDatabaseError( _
+                "Alarma en MakeQuery: Se perdió la conexión con la DB. Reconectando.")
         Call Database_Connect
         Resume
         
     Else
-        Call LogDatabaseError("Error en MakeQuery: query = '" & query & "'. " & Err.Number & " - " & Err.description)
+        Call LogDatabaseError("Error en MakeQuery: query = '" & query & "'. " & _
+                Err.Number & " - " & Err.description)
         
         On Error GoTo 0
+
         Err.raise Err.Number
+
     End If
 
 End Sub
