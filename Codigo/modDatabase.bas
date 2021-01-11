@@ -1997,6 +1997,19 @@ ErrorHandler:
 
 End Sub
 
+Public Sub SaveBanCuentaDatabase(ByVal AccountId As Integer, Reason As String, BannedBy As String)
+
+    On Error GoTo ErrorHandler
+
+    Call MakeQuery("UPDATE account SET is_banned = TRUE, banned_by = ?, ban_reason = ? WHERE id = ?;", True, BannedBy, Reason, AccountId)
+
+    Exit Sub
+
+ErrorHandler:
+    Call LogDatabaseError("Error in SaveBanCuentaDatabase: AccountId=" & AccountId & ". " & Err.Number & " - " & Err.description)
+
+End Sub
+
 Public Sub EcharConsejoDatabase(UserName As String)
         
     On Error GoTo EcharConsejoDatabase_Err

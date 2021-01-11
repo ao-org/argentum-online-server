@@ -1197,60 +1197,72 @@ Public Sub BanAccount(ByVal bannerUserIndex As Integer, ByVal UserName As String
         '***************************************************
         Dim tUser     As Integer
 
-        Dim userPriv  As Byte
-
         Dim cantPenas As Byte
 
-        Dim rank      As Integer
-
         Dim Cuenta    As String
+        
+        Dim AccountId As Integer
     
 100     If InStrB(UserName, "+") Then
 102         UserName = Replace(UserName, "+", " ")
-
         End If
     
 104     tUser = NameIndex(UserName)
-    
-106     rank = PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero
-    
+
 108     With UserList(bannerUserIndex)
 
 110         If tUser <= 0 Then
 112             Call WriteConsoleMsg(bannerUserIndex, "El usuario no esta online.", FontTypeNames.FONTTYPE_SERVER)
             
 114             If PersonajeExiste(UserName) Then
-116                 userPriv = UserDarPrivilegioLevel(UserName)
-                
-118                 Cuenta = ObtenerCuenta(UserName)
 
-                    'Call LogBanFromName(UserName, bannerUserIndex, reason)
-120                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> " & .name & " ha baneado la cuenta de " & UserName & "(" & Cuenta & ") debido a: " & LCase$(Reason) & ".", FontTypeNames.FONTTYPE_SERVER))
+120                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & .name & " ha baneado la cuenta de " & UserName & " debido a: " & Reason & ".", FontTypeNames.FONTTYPE_SERVER))
                 
-122                 Call WriteVar(CuentasPath & Cuenta & ".act", "BAN", "Baneada", "1")
-124                 Call WriteVar(CuentasPath & Cuenta & ".act", "BAN", "Motivo", Reason)
-126                 Call WriteVar(CuentasPath & Cuenta & ".act", "BAN", "BANEO", .name)
-            
-128                 Call LogGM(.name, "Baneo la cuenta de " & UserName & " por: " & Reason)
+                    If Database_Enabled Then
+                        AccountId = GetAccountIDDatabase(UserName)
+                        Call SaveBanCuentaDatabase(AccountId, Reason, .name)
+                    Else
+                        Cuenta = ObtenerCuenta(UserName)
+122                     Call WriteVar(CuentasPath & Cuenta & ".act", "BAN", "Baneada", "1")
+124                     Call WriteVar(CuentasPath & Cuenta & ".act", "BAN", "Motivo", Reason)
+126                     Call WriteVar(CuentasPath & Cuenta & ".act", "BAN", "BANEO", .name)
+                    End If
+
+128                 Call LogGM(.name, "Baneó la cuenta de " & UserName & " por: " & Reason)
 
                 Else
 130                 Call WriteConsoleMsg(bannerUserIndex, "El pj " & UserName & " no existe.", FontTypeNames.FONTTYPE_INFO)
-
                 End If
 
             Else
-132             Call WriteConsoleMsg(bannerUserIndex, "Servidor> Cuenta baneada.", FontTypeNames.FONTTYPE_SERVER)
-134             Cuenta = ObtenerCuenta(UserName)
+132             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & .name & " ha baneado la cuenta de " & UserName & " debido a: " & Reason & ".", FontTypeNames.FONTTYPE_SERVER))
             
-136             Call WriteVar(CuentasPath & Cuenta & ".act", "BAN", "Baneada", "1")
-138             Call WriteVar(CuentasPath & Cuenta & ".act", "BAN", "Motivo", Reason)
-140             Call WriteVar(CuentasPath & Cuenta & ".act", "BAN", "BANEO", .name)
-142             Call CloseSocket(tUser)
+                If Database_Enabled Then
+                    AccountId = UserList(tUser).AccountId
+                    Call SaveBanCuentaDatabase(AccountId, Reason, .name)
+                Else
+                    Cuenta = ObtenerCuenta(UserName)
+136                 Call WriteVar(CuentasPath & Cuenta & ".act", "BAN", "Baneada", "1")
+138                 Call WriteVar(CuentasPath & Cuenta & ".act", "BAN", "Motivo", Reason)
+140                 Call WriteVar(CuentasPath & Cuenta & ".act", "BAN", "BANEO", .name)
+                End If
+                
+                Call LogGM(.name, "Baneó la cuenta de " & UserName & " por: " & Reason)
 
+            End If
+            
+            ' Echo a todos los logueados en esta cuenta
+            If Database_Enabled Then
+                Dim i As Integer
+                For i = 1 To LastUser
+                    If UserList(i).AccountId = AccountId Then
+                        Call WriteShowMessageBox(i, "Has sido baneado del servidor. Motivo: " & Reason)
+                        Call CloseSocket(i)
+                    End If
+                Next
             End If
 
         End With
-
         
         Exit Sub
 
