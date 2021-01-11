@@ -2443,6 +2443,7 @@ Sub LoadSini()
     
         'Misc
 106     BootDelBackUp = val(Lector.GetValue("INIT", "IniciarDesdeBackUp"))
+107     Md5Cliente = Lector.GetValue("CHECKSUM", "Cliente")
     
         'Directorios
 108     DatPath = Lector.GetValue("DIRECTORIOS", "DatPath")
@@ -2510,9 +2511,7 @@ Sub LoadSini()
         'Call Statistics.Initialize
     
 178     Call CargarCiudades
-            
-180     Call MD5sCarga
-    
+
 182     Call ConsultaPopular.LoadData
     
 184     Set Lector = Nothing
@@ -2805,8 +2804,7 @@ End Sub
 Sub LoadConfiguraciones()
         
         On Error GoTo LoadConfiguraciones_Err
-        
-        Md5Cliente = GetVar(IniPath & "Configuracion.ini", "CHECKSUM", "Cliente")
+
 100     ExpMult = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "ExpMult"))
 102     OroMult = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "OroMult"))
 104     OroAutoEquipable = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "OroAutoEquipable"))

@@ -655,68 +655,6 @@ UnBan_Err:
         
 End Function
 
-Public Function MD5ok(ByVal md5formateado As String) As Boolean
-        
-        On Error GoTo MD5ok_Err
-        
-
-        Dim i As Integer
-
-100     If MD5ClientesActivado = 1 Then
-
-102         For i = 0 To UBound(MD5s)
-
-104             If (md5formateado = MD5s(i)) Then
-106                 MD5ok = True
-                    Exit Function
-
-                End If
-
-108         Next i
-
-110         MD5ok = False
-        Else
-112         MD5ok = True
-
-        End If
-
-        
-        Exit Function
-
-MD5ok_Err:
-114     Call RegistrarError(Err.Number, Err.description, "Admin.MD5ok", Erl)
-116     Resume Next
-        
-End Function
-
-Public Sub MD5sCarga()
-        
-        On Error GoTo MD5sCarga_Err
-        
-
-        Dim LoopC As Integer
-
-100     MD5ClientesActivado = val(GetVar(IniPath & "Server.ini", "MD5Hush", "Activado"))
-
-102     If MD5ClientesActivado = 1 Then
-104         ReDim MD5s(val(GetVar(IniPath & "Server.ini", "MD5Hush", "MD5Aceptados")))
-
-106         For LoopC = 0 To UBound(MD5s)
-108             MD5s(LoopC) = GetVar(IniPath & "Server.ini", "MD5Hush", "MD5Aceptado" & (LoopC + 1))
-110             MD5s(LoopC) = txtOffset(hexMd52Asc(MD5s(LoopC)), 55)
-112         Next LoopC
-
-        End If
-
-        
-        Exit Sub
-
-MD5sCarga_Err:
-114     Call RegistrarError(Err.Number, Err.description, "Admin.MD5sCarga", Erl)
-116     Resume Next
-        
-End Sub
-
 Public Sub BanIpAgrega(ByVal ip As String)
         
         On Error GoTo BanIpAgrega_Err
