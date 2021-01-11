@@ -3041,8 +3041,6 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 
         Dim puntosDomar      As Integer
 
-        Dim puntosRequeridos As Integer
-
         Dim CanStay          As Boolean
 
         Dim petType          As Integer
@@ -3052,7 +3050,6 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 100     If Npclist(NpcIndex).MaestroUser = UserIndex Then
 102         Call WriteConsoleMsg(UserIndex, "Ya domaste a esa criatura.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
-
         End If
 
 104     With UserList(UserIndex)
@@ -3071,19 +3068,13 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 
 112             puntosDomar = CInt(.Stats.UserAtributos(eAtributos.Carisma)) * CInt(.Stats.UserSkills(eSkill.Domar))
 
-                ' 20% de bonificacion
-114             If .Invent.DañoMagicoEqpObjIndex = FLAUTAELFICA Then
-116                 puntosRequeridos = Npclist(NpcIndex).flags.Domable * 0.8
-
-                ' 11% de bonificacion
-118             ElseIf .Invent.DañoMagicoEqpObjIndex = FLAUTAMAGICA Then
-120                 puntosRequeridos = Npclist(NpcIndex).flags.Domable * 0.89
-
+114             If .clase = eClass.Druid Then
+                    puntosDomar = puntosDomar / 6
                 Else
-122                 puntosRequeridos = Npclist(NpcIndex).flags.Domable
+122                 puntosDomar = puntosDomar / 11
                 End If
 
-124             If puntosRequeridos <= puntosDomar And RandomNumber(1, 5) = 1 Then
+124             If Npclist(NpcIndex).flags.Domable <= puntosDomar And RandomNumber(1, 5) = 1 Then
 
                     Dim index As Integer
 

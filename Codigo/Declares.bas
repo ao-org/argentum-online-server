@@ -263,12 +263,6 @@ Public Const NingunArma              As Integer = 2
 
 Public Const EspadaMataDragonesIndex As Integer = 402
 
-Public Const LAUDMAGICO              As Integer = 696
-
-Public Const FLAUTAMAGICA            As Integer = 208
-
-Public Const FLAUTAELFICA            As Integer = 1050
-
 Public Const MAXMASCOTASENTRENADOR   As Byte = 7
 
 Public Enum FXSound
