@@ -1865,7 +1865,9 @@ Public Type user
 
     Keys(1 To MAXKEYS) As Integer
     
-    Redundance As Byte
+    #If AntiExternos = 1 Then
+        Redundance As Byte
+    #End If
     
 End Type
 
