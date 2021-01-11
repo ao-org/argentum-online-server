@@ -27185,50 +27185,67 @@ Private Sub HandleCasamiento(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             Dim Buffer As New clsByteQueue
-
 106         Call Buffer.CopyBuffer(.incomingData)
+
             'Remove packet ID
 108         Call Buffer.ReadInteger
         
             Dim UserName As String
-
             Dim tUser    As Integer
 
 110         UserName = Buffer.ReadASCIIString()
 112         tUser = NameIndex(UserName)
-        
+            
+            'If we got here then packet is complete, copy data back to original queue
+            Call .incomingData.CopyBuffer(Buffer)
+            
 114         If .flags.TargetNPC > 0 Then
+
 116             If Npclist(.flags.TargetNPC).NPCtype <> eNPCType.Revividor Then
 118                 Call WriteConsoleMsg(UserIndex, "Primero haz click sobre un sacerdote.", FontTypeNames.FONTTYPE_INFO)
+
                 Else
 
 120                 If Distancia(.Pos, Npclist(.flags.TargetNPC).Pos) > 10 Then
 122                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                         'Call WriteConsoleMsg(UserIndex, "El sacerdote no puede casarte debido a que estás demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
+                        
                     Else
             
 124                     If tUser = UserIndex Then
 126                         Call WriteConsoleMsg(UserIndex, "No podés casarte contigo mismo.", FontTypeNames.FONTTYPE_INFO)
+                        
+                        ElseIf .flags.Casado = 1 Then
+                            Call WriteConsoleMsg(UserIndex, "¡Ya estás casado! Debes divorciarte de tu actual pareja para casarte nuevamente.", FontTypeNames.FONTTYPE_INFO)
+                            
+                        ElseIf UserList(tUser).flags.Casado = 1 Then
+                            Call WriteConsoleMsg(UserIndex, "Tu pareja debe divorciarse antes de tomar tu mano en matrimonio.", FontTypeNames.FONTTYPE_INFO)
+                            
                         Else
 
 128                         If tUser <= 0 Then
 130                             Call WriteConsoleMsg(UserIndex, "El usuario no esta online.", FontTypeNames.FONTTYPE_INFO)
+
                             Else
 
 132                             If UserList(tUser).flags.Candidato = UserIndex Then
+
 134                                 UserList(tUser).flags.Casado = 1
 136                                 UserList(tUser).flags.Pareja = UserList(UserIndex).name
-138                                 UserList(UserIndex).flags.Casado = 1
-140                                 UserList(UserIndex).flags.Pareja = UserList(tUser).name
+138                                 .flags.Casado = 1
+140                                 .flags.Pareja = UserList(tUser).name
+
 142                                 Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(FXSound.Casamiento_sound, NO_3D_SOUND, NO_3D_SOUND))
 144                                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("El sacerdote de " & DarNameMapa(.Pos.Map) & " celebra el casamiento entre " & UserList(UserIndex).name & " y " & UserList(tUser).name & ".", FontTypeNames.FONTTYPE_WARNING))
-146                                 Call WriteChatOverHead(UserIndex, "Los declaro unidos en legal matrimonio íFelicidades!", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
-148                                 Call WriteChatOverHead(tUser, "Los declaro unidos en legal matrimonio íFelicidades!", Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
+146                                 Call WriteChatOverHead(UserIndex, "Los declaro unidos en legal matrimonio ¡Felicidades!", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
+148                                 Call WriteChatOverHead(tUser, "Los declaro unidos en legal matrimonio ¡Felicidades!", Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
                                 
                                 Else
+                                
 150                                 Call WriteChatOverHead(UserIndex, "La solicitud de casamiento a sido enviada a " & UserName & ".", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
 152                                 Call WriteConsoleMsg(tUser, .name & " desea casarse contigo, para permitirlo haz click en el sacerdote y escribe /PROPONER " & .name & ".", FontTypeNames.FONTTYPE_TALK)
-154                                 UserList(UserIndex).flags.Candidato = tUser
+
+154                                 .flags.Candidato = tUser
 
                                 End If
 
@@ -27244,9 +27261,6 @@ Private Sub HandleCasamiento(ByVal UserIndex As Integer)
 156             Call WriteConsoleMsg(UserIndex, "Primero haz click sobre el sacerdote.", FontTypeNames.FONTTYPE_INFO)
 
             End If
-        
-            'If we got here then packet is complete, copy data back to original queue
-158         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
