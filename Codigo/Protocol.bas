@@ -687,10 +687,11 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
         
             ' Envió el primer paquete
 114         UserList(UserIndex).flags.FirstPacket = True
-    
-            UserList(UserIndex).Redundance = RandomNumber(2, 255)
             
-            Call WriteRedundancia(UserIndex)
+            #If AntiExternos = 1 Then
+                UserList(UserIndex).Redundance = RandomNumber(2, 255)
+                Call WriteRedundancia(UserIndex)
+            #End If
 
         End If
     
@@ -25942,87 +25943,87 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
 
         'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
         Dim Buffer As New clsByteQueue
-
 104     Call Buffer.CopyBuffer(UserList(UserIndex).incomingData)
     
         'Remove packet ID
 106     Call Buffer.ReadByte
 
         Dim UserDelete     As String
-
         Dim CuentaEmail    As String
-
         Dim CuentaPassword As String
-
         Dim MacAddress     As String
-
         Dim HDserial       As Long
-        
         Dim MD5            As String
-
         Dim Version        As String
     
 108     UserDelete = Buffer.ReadASCIIString()
 110     CuentaEmail = Buffer.ReadASCIIString()
 112     CuentaPassword = Buffer.ReadASCIIString()
 114     Version = CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte())
+116     MacAddress = Buffer.ReadASCIIString()
+118     HDserial = Buffer.ReadLong()
+120     MD5 = Buffer.ReadASCIIString()
     
-116     If Not VersionOK(Version) Then
-118         Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
-        
-120         Call CloseSocket(UserIndex)
-            Exit Sub
-
-        End If
-
-122     MacAddress = Buffer.ReadASCIIString()
-124     HDserial = Buffer.ReadLong()
-125     MD5 = Buffer.ReadASCIIString()
+        'If we got here then packet is complete, copy data back to original queue
+122     Call UserList(UserIndex).incomingData.CopyBuffer(Buffer)
     
-126     If Not EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MacAddress, HDserial, MD5) Then
+124     If Not VersionOK(Version) Then
+126         Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
 128         Call CloseSocket(UserIndex)
             Exit Sub
         End If
     
-130     If Not CheckUserAccount(UserDelete, UserList(UserIndex).AccountId) Then
-132         Call LogHackAttemp(CuentaEmail & "[" & UserList(UserIndex).ip & "] intentó borrar el pj " & UserDelete)
-134         Call CloseSocket(UserIndex)
+130     If Not EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MacAddress, HDserial, MD5) Then
+132         Call CloseSocket(UserIndex)
             Exit Sub
         End If
     
-136     If Database_Enabled Then
-138         Call BorrarUsuarioDatabase(UserDelete)
+134     If Not CheckUserAccount(UserDelete, UserList(UserIndex).AccountId) Then
+136         Call LogHackAttemp(CuentaEmail & "[" & UserList(UserIndex).ip & "] intentó borrar el pj " & UserDelete)
+138         Call CloseSocket(UserIndex)
+            Exit Sub
+        End If
+    
+        ' Si está online el personaje a borrar, lo kickeo para prevenir dupeos.
+140     Dim TargetUserIndex As Integer: TargetUserIndex = NameIndex(UserDelete)
+142     If TargetUserIndex > 0 Then
+144         Call LogHackAttemp("Se trató de eliminar al personaje " & UserDelete & " cuando este estaba conectado desde la IP " & UserList(UserIndex).ip)
+146         Call CloseSocket(TargetUserIndex)
+            Exit Sub
+        End If
+    
+148     If Database_Enabled Then
+150         Call BorrarUsuarioDatabase(UserDelete)
+        
         Else
 
-140         If PersonajeExiste(UserDelete) Then
-142             Call FileCopy(CharPath & UserDelete & ".chr", DeletePath & UCase$(UserDelete) & ".chr")
-         
-144             Call BorrarPJdeCuenta(UserDelete)
+152         If PersonajeExiste(UserDelete) Then
+154             Call FileCopy(CharPath & UserDelete & ".chr", DeletePath & UCase$(UserDelete) & ".chr")
+156             Call BorrarPJdeCuenta(UserDelete)
         
                 'Call WriteShowMessageBox(UserIndex, "El personaje " & UserDelete & " a sido borrado de la cuenta.")
-146             Call Kill(CharPath & UserDelete & ".chr")
+158             Call Kill(CharPath & UserDelete & ".chr")
 
             End If
 
         End If
     
-148     Call WritePersonajesDeCuenta(UserIndex)
+160     Call WritePersonajesDeCuenta(UserIndex)
   
-        'If we got here then packet is complete, copy data back to original queue
-150     Call UserList(UserIndex).incomingData.CopyBuffer(Buffer)
+        Exit Sub
     
 ErrHandler:
 
         Dim Error As Long
 
-152     Error = Err.Number
+162     Error = Err.Number
 
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-154     Set Buffer = Nothing
+164     Set Buffer = Nothing
     
-156     If Error <> 0 Then Err.raise Error
+166     If Error <> 0 Then Err.raise Error
 
 End Sub
 
@@ -27184,50 +27185,67 @@ Private Sub HandleCasamiento(ByVal UserIndex As Integer)
 104     With UserList(UserIndex)
 
             Dim Buffer As New clsByteQueue
-
 106         Call Buffer.CopyBuffer(.incomingData)
+
             'Remove packet ID
 108         Call Buffer.ReadInteger
         
             Dim UserName As String
-
             Dim tUser    As Integer
 
 110         UserName = Buffer.ReadASCIIString()
 112         tUser = NameIndex(UserName)
-        
+            
+            'If we got here then packet is complete, copy data back to original queue
+            Call .incomingData.CopyBuffer(Buffer)
+            
 114         If .flags.TargetNPC > 0 Then
+
 116             If Npclist(.flags.TargetNPC).NPCtype <> eNPCType.Revividor Then
 118                 Call WriteConsoleMsg(UserIndex, "Primero haz click sobre un sacerdote.", FontTypeNames.FONTTYPE_INFO)
+
                 Else
 
 120                 If Distancia(.Pos, Npclist(.flags.TargetNPC).Pos) > 10 Then
 122                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                         'Call WriteConsoleMsg(UserIndex, "El sacerdote no puede casarte debido a que estás demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
+                        
                     Else
             
 124                     If tUser = UserIndex Then
 126                         Call WriteConsoleMsg(UserIndex, "No podés casarte contigo mismo.", FontTypeNames.FONTTYPE_INFO)
+                        
+                        ElseIf .flags.Casado = 1 Then
+                            Call WriteConsoleMsg(UserIndex, "¡Ya estás casado! Debes divorciarte de tu actual pareja para casarte nuevamente.", FontTypeNames.FONTTYPE_INFO)
+                            
+                        ElseIf UserList(tUser).flags.Casado = 1 Then
+                            Call WriteConsoleMsg(UserIndex, "Tu pareja debe divorciarse antes de tomar tu mano en matrimonio.", FontTypeNames.FONTTYPE_INFO)
+                            
                         Else
 
 128                         If tUser <= 0 Then
 130                             Call WriteConsoleMsg(UserIndex, "El usuario no esta online.", FontTypeNames.FONTTYPE_INFO)
+
                             Else
 
 132                             If UserList(tUser).flags.Candidato = UserIndex Then
+
 134                                 UserList(tUser).flags.Casado = 1
 136                                 UserList(tUser).flags.Pareja = UserList(UserIndex).name
-138                                 UserList(UserIndex).flags.Casado = 1
-140                                 UserList(UserIndex).flags.Pareja = UserList(tUser).name
+138                                 .flags.Casado = 1
+140                                 .flags.Pareja = UserList(tUser).name
+
 142                                 Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(FXSound.Casamiento_sound, NO_3D_SOUND, NO_3D_SOUND))
 144                                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("El sacerdote de " & DarNameMapa(.Pos.Map) & " celebra el casamiento entre " & UserList(UserIndex).name & " y " & UserList(tUser).name & ".", FontTypeNames.FONTTYPE_WARNING))
-146                                 Call WriteChatOverHead(UserIndex, "Los declaro unidos en legal matrimonio íFelicidades!", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
-148                                 Call WriteChatOverHead(tUser, "Los declaro unidos en legal matrimonio íFelicidades!", Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
+146                                 Call WriteChatOverHead(UserIndex, "Los declaro unidos en legal matrimonio ¡Felicidades!", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
+148                                 Call WriteChatOverHead(tUser, "Los declaro unidos en legal matrimonio ¡Felicidades!", Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
                                 
                                 Else
+                                
 150                                 Call WriteChatOverHead(UserIndex, "La solicitud de casamiento a sido enviada a " & UserName & ".", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
 152                                 Call WriteConsoleMsg(tUser, .name & " desea casarse contigo, para permitirlo haz click en el sacerdote y escribe /PROPONER " & .name & ".", FontTypeNames.FONTTYPE_TALK)
-154                                 UserList(UserIndex).flags.Candidato = tUser
+
+154                                 .flags.Candidato = tUser
 
                                 End If
 
@@ -27243,9 +27261,6 @@ Private Sub HandleCasamiento(ByVal UserIndex As Integer)
 156             Call WriteConsoleMsg(UserIndex, "Primero haz click sobre el sacerdote.", FontTypeNames.FONTTYPE_INFO)
 
             End If
-        
-            'If we got here then packet is complete, copy data back to original queue
-158         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     

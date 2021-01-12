@@ -603,17 +603,20 @@ Public Sub EventoSockRead(ByVal slot As Integer, ByRef Datos() As Byte)
         Dim a As Currency
         Dim f As Currency
 
-100     QueryPerformanceCounter a
+100     Call QueryPerformanceCounter(a)
 
 102     With UserList(slot)
  
-            #If AntiExternos Then
-
-                If UserList(slot).Redundance = 0 Then UserList(slot).Redundance = 13
-
-                UserList(slot).Redundance = CLng(UserList(slot).Redundance * 3) Mod 255
-
-104             Security.NAC_D_Byte Datos, UserList(slot).Redundance
+            #If AntiExternos = 1 Then
+                
+                ' HOTFIX: Cuando recién abrís el servidor, se inicializan todas las variables en 0
+                If UserList(slot).Redundance = 0 Then UserList(slot).Redundance = Security.DefaultRedundance
+                
+                ' Aca seteamos la Redundancia REAL.
+                UserList(slot).Redundance = CLng(UserList(slot).Redundance * Security.MultiplicationFactor) Mod 255
+                
+                ' Acá aplicamos la encriptacion Xor al paquete
+104             Call Security.NAC_D_Byte(Datos, UserList(slot).Redundance)
 
             #End If
 
@@ -655,7 +658,7 @@ Public Sub EventoSockRead(ByVal slot As Integer, ByRef Datos() As Byte)
    
         End With
 
-132     QueryPerformanceCounter f
+132     Call QueryPerformanceCounter(f)
 
 134     totalProcessTime = totalProcessTime + (f - a)
 136     totalProcessCount = totalProcessCount + 1
