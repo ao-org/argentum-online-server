@@ -2299,26 +2299,26 @@ Private Sub HandleWhisper(ByVal UserIndex As Integer)
         
             Dim chat            As String
             Dim targetCharIndex As String
-            Dim targetUserIndex As Integer
+            Dim TargetUserIndex As Integer
 
 110         targetCharIndex = Buffer.ReadASCIIString()
 112         chat = Buffer.ReadASCIIString()
             
 114         Call .incomingData.CopyBuffer(Buffer)
             
-116         targetUserIndex = NameIndex(targetCharIndex)
+116         TargetUserIndex = NameIndex(targetCharIndex)
 
-118         If targetUserIndex <= 0 Then 'existe el usuario destino?
+118         If TargetUserIndex <= 0 Then 'existe el usuario destino?
 120             Call WriteConsoleMsg(UserIndex, "Usuario offline o inexistente.", FontTypeNames.FONTTYPE_INFO)
 
             Else
         
-122             If Not EsGM(UserIndex) And EsGM(targetUserIndex) Then
+122             If Not EsGM(UserIndex) And EsGM(TargetUserIndex) Then
 124                 Call WriteConsoleMsg(UserIndex, "No podes hablar por privado con Game Masters.", FontTypeNames.FONTTYPE_WARNING)
 
                 Else
 
-126                 If EstaPCarea(UserIndex, targetUserIndex) Then
+126                 If EstaPCarea(UserIndex, TargetUserIndex) Then
 
 128                     If LenB(chat) <> 0 Then
                             'Analize chat...
@@ -2327,18 +2327,18 @@ Private Sub HandleWhisper(ByVal UserIndex As Integer)
 132                         Call SendData(SendTarget.ToSuperioresArea, UserIndex, PrepareMessageChatOverHead(chat, .Char.CharIndex, RGB(157, 226, 20)))
                         
 134                         Call WriteChatOverHead(UserIndex, chat, .Char.CharIndex, RGB(157, 226, 20))
-136                         Call WriteChatOverHead(targetUserIndex, chat, .Char.CharIndex, RGB(157, 226, 20))
+136                         Call WriteChatOverHead(TargetUserIndex, chat, .Char.CharIndex, RGB(157, 226, 20))
                             'Call WriteConsoleMsg(UserIndex, "[" & .Name & "] " & chat, FontTypeNames.FONTTYPE_MP)
                             'Call WriteConsoleMsg(targetUserIndex, "[" & .Name & "] " & chat, FontTypeNames.FONTTYPE_MP)
-138                         Call WritePlayWave(targetUserIndex, FXSound.MP_SOUND, NO_3D_SOUND, NO_3D_SOUND)
+138                         Call WritePlayWave(TargetUserIndex, FXSound.MP_SOUND, NO_3D_SOUND, NO_3D_SOUND)
                         
 
                         End If
 
                     Else
 140                     Call WriteConsoleMsg(UserIndex, "[" & .name & "] " & chat, FontTypeNames.FONTTYPE_MP)
-142                     Call WriteConsoleMsg(targetUserIndex, "[" & .name & "] " & chat, FontTypeNames.FONTTYPE_MP)
-144                     Call WritePlayWave(targetUserIndex, FXSound.MP_SOUND, NO_3D_SOUND, NO_3D_SOUND)
+142                     Call WriteConsoleMsg(TargetUserIndex, "[" & .name & "] " & chat, FontTypeNames.FONTTYPE_MP)
+144                     Call WritePlayWave(TargetUserIndex, FXSound.MP_SOUND, NO_3D_SOUND, NO_3D_SOUND)
                     
                     End If
 
@@ -12956,8 +12956,7 @@ Private Sub HandleForgive(ByVal UserIndex As Integer)
 
 138         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, "80", 100, False))
 140         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("100", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
-142         UserList(UserIndex).Faccion.Status = 1
-144         Call RefreshCharStatus(UserIndex)
+142         Call VolverCiudadano(UserIndex)
 
         End With
 
@@ -17081,8 +17080,7 @@ Public Sub HandleDonateGold(ByVal UserIndex As Integer)
 
 144         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, "80", 100, False))
 146         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("100", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
-148         UserList(UserIndex).Faccion.Status = 1
-150         Call RefreshCharStatus(UserIndex)
+148         Call VolverCiudadano(UserIndex)
     
          End With
 
@@ -28724,9 +28722,8 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                         'unirlo
 174                 Case 2
 176                     Log = "Repuesta Afirmativa 2"
-178                     UserList(UserIndex).Faccion.Status = 1
-180                     Call WriteConsoleMsg(UserIndex, "íAhora sos un ciudadano!", FontTypeNames.FONTTYPE_INFOIAO)
-182                     Call RefreshCharStatus(UserIndex)
+180                     Call WriteConsoleMsg(UserIndex, "¡Ahora sos un ciudadano!", FontTypeNames.FONTTYPE_INFOIAO)
+182                     Call VolverCiudadano(UserIndex)
                     
 184                 Case 3
 186                     Log = "Repuesta Afirmativa 3"
@@ -28842,9 +28839,8 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                 
 296                 Case 2
 298                     Log = "Repuesta negativa 2"
-300                     UserList(UserIndex).Faccion.Status = 0
 302                     Call WriteConsoleMsg(UserIndex, "¡Continuas siendo neutral!", FontTypeNames.FONTTYPE_INFOIAO)
-304                     Call RefreshCharStatus(UserIndex)
+304                     Call VolverCriminal(UserIndex)
 
 306                 Case 3
 308                     Log = "Repuesta negativa 3"

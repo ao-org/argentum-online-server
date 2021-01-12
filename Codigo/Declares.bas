@@ -2127,6 +2127,7 @@ Type MapInfo
     SinInviOcul As Boolean
     NoPKs As Boolean
     NoCiudadanos As Boolean
+    SoloClanes As Boolean
     ResuCiudad As Boolean
     ambient As String
     base_light As Long
@@ -2135,6 +2136,9 @@ Type MapInfo
     Nieve As Byte
     niebla As Byte
     NumUsers As Long
+    MinLevel As Integer
+    MaxLevel As Integer
+    Salida As WorldPos
 
 End Type
 

@@ -2502,6 +2502,18 @@ ErrorHandler:
 
 End Function
 
+Public Function GetMapDatabase(UserName As String) As Integer
+    On Error GoTo ErrorHandler
+
+    GetMapDatabase = val(GetUserValue(UserName, "pos_map"))
+
+    Exit Function
+
+ErrorHandler:
+    Call LogDatabaseError("Error in SetPositionDatabase. UserName: " & UserName & ". " & Err.Number & " - " & Err.description)
+
+End Function
+
 Public Function AddOroBancoDatabase(UserName As String, ByVal OroGanado As Long) As Boolean
     On Error GoTo ErrorHandler
 

@@ -182,9 +182,9 @@ Private Type tMapDat
     ambient As String
     base_light As Long
     letter_grh As Long
-    extra1 As Long
+    level As Long
     extra2 As Long
-    extra3 As String
+    Salida As String
     lluvia As Byte
     Nieve As Byte
     niebla As Byte
@@ -2406,6 +2406,7 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
 354     MapInfo(Map).NoPKs = (val(MapDat.restrict_mode) And 4) <> 0
 356     MapInfo(Map).NoCiudadanos = (val(MapDat.restrict_mode) And 8) <> 0
 358     MapInfo(Map).SinInviOcul = (val(MapDat.restrict_mode) And 16) <> 0
+359     MapInfo(Map).SoloClanes = (val(MapDat.restrict_mode) And 32) <> 0
 360     MapInfo(Map).ResuCiudad = val(GetVar(DatPath & "Map.dat", "RESUCIUDAD", Map)) <> 0
 362     MapInfo(Map).letter_grh = MapDat.letter_grh
 364     MapInfo(Map).lluvia = MapDat.lluvia
@@ -2413,11 +2414,21 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
 368     MapInfo(Map).music_numberLow = MapDat.music_numberLow
 370     MapInfo(Map).niebla = MapDat.niebla
 372     MapInfo(Map).Nieve = MapDat.Nieve
+373     MapInfo(Map).MinLevel = MapDat.level And &HFF
+374     MapInfo(Map).MaxLevel = (MapDat.level And &HFF00) / &H100
     
-374     MapInfo(Map).Seguro = MapDat.Seguro
+375     MapInfo(Map).Seguro = MapDat.Seguro
 
 376     MapInfo(Map).terrain = MapDat.terrain
 378     MapInfo(Map).zone = MapDat.zone
+
+        If LenB(MapDat.Salida) <> 0 Then
+            Dim Fields() As String
+            Fields = Split(MapDat.Salida, "-")
+            MapInfo(Map).Salida.Map = val(Fields(0))
+            MapInfo(Map).Salida.X = val(Fields(1))
+            MapInfo(Map).Salida.Y = val(Fields(2))
+        End If
  
         Exit Sub
 

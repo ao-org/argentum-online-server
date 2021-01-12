@@ -355,7 +355,7 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
                  ByVal Y As Integer, _
                  Optional ByVal appear As Byte = 0)
 
-        On Error GoTo hayerror
+        On Error GoTo HayError
 
         Dim CharIndex As Integer
 
@@ -425,7 +425,7 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
 
         Exit Sub
 
-hayerror:
+HayError:
         
         Dim Desc As String
 144         Desc = Err.description & vbNewLine & _
@@ -614,6 +614,13 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
 
                     'Call WriteConsoleMsg(UserIndex, "Has ganado un total de " & Pts & " skillpoints.", FontTypeNames.FONTTYPE_INFO)
                 End If
+                
+218             If .Stats.ELV >= MapInfo(.Pos.Map).MaxLevel And Not EsGM(UserIndex) Then
+220                 If MapInfo(.Pos.Map).Salida.Map <> 0 Then
+222                     Call WriteConsoleMsg(UserIndex, "Tu nivel no te permite seguir en el mapa.", FontTypeNames.FONTTYPE_INFO)
+224                     Call WarpUserChar(UserIndex, MapInfo(.Pos.Map).Salida.Map, MapInfo(.Pos.Map).Salida.X, MapInfo(.Pos.Map).Salida.Y, True)
+                    End If
+                End If
 
             End If
     
@@ -622,7 +629,7 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
         Exit Sub
 
 ErrHandler:
-218     Call LogError("Error en la subrutina CheckUserLevel - Error : " & Err.Number & " - Description : " & Err.description)
+226     Call LogError("Error en la subrutina CheckUserLevel - Error : " & Err.Number & " - Description : " & Err.description)
 
 End Sub
 
@@ -2258,30 +2265,39 @@ End Sub
 
 Sub VolverCriminal(ByVal UserIndex As Integer)
         
-        On Error GoTo VolverCriminal_Err
+    On Error GoTo VolverCriminal_Err
         
 
-        '**************************************************************
-        'Author: Unknown
-        'Last Modify Date: 21/06/2006
-        'Nacho: Actualiza el tag al cliente
-        '**************************************************************
-100     If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger = 6 Then Exit Sub
+    '**************************************************************
+    'Author: Unknown
+    'Last Modify Date: 21/06/2006
+    'Nacho: Actualiza el tag al cliente
+    '**************************************************************
+        
+    With UserList(UserIndex)
+        
+100     If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = 6 Then Exit Sub
 
-102     If UserList(UserIndex).flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then
+102     If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then
    
-104         If UserList(UserIndex).Faccion.ArmadaReal = 1 Then Call ExpulsarFaccionReal(UserIndex)
+104         If .Faccion.ArmadaReal = 1 Then Call ExpulsarFaccionReal(UserIndex)
 
         End If
 
-106     If UserList(UserIndex).Faccion.FuerzasCaos = 1 Then Exit Sub
+106     If .Faccion.FuerzasCaos = 1 Then Exit Sub
 
-108     UserList(UserIndex).Faccion.Status = 0
-
-110     Call RefreshCharStatus(UserIndex)
-
+108     .Faccion.Status = 0
         
-        Exit Sub
+        If MapInfo(.Pos.Map).NoPKs And Not EsGM(UserIndex) And MapInfo(Map).Salida.Map <> 0 Then
+            Call WriteConsoleMsg(UserIndex, "En este mapa no se admiten criminales.", FontTypeNames.FONTTYPE_INFO)
+            Call WarpUserChar(UserIndex, MapInfo(.Pos.Map).Salida.Map, MapInfo(.Pos.Map).Salida.X, MapInfo(.Pos.Map).Salida.Y, True)
+        Else
+            Call RefreshCharStatus(UserIndex)
+        End If
+
+    End With
+        
+    Exit Sub
 
 VolverCriminal_Err:
 112     Call RegistrarError(Err.Number, Err.description, "UsUaRiOs.VolverCriminal", Erl)
@@ -2290,22 +2306,30 @@ VolverCriminal_Err:
 End Sub
 
 Sub VolverCiudadano(ByVal UserIndex As Integer)
-        '**************************************************************
-        'Author: Unknown
-        'Last Modify Date: 21/06/2006
-        'Nacho: Actualiza el tag al cliente.
-        '**************************************************************
+    '**************************************************************
+    'Author: Unknown
+    'Last Modify Date: 21/06/2006
+    'Nacho: Actualiza el tag al cliente.
+    '**************************************************************
         
-        On Error GoTo VolverCiudadano_Err
+    On Error GoTo VolverCiudadano_Err
         
+    With UserList(UserIndex)
 
-100     If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger = 6 Then Exit Sub
+100     If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = 6 Then Exit Sub
 
-102     UserList(UserIndex).Faccion.Status = 1
-104     Call RefreshCharStatus(UserIndex)
+102     .Faccion.Status = 1
 
+        If MapInfo(.Pos.Map).NoCiudadanos And Not EsGM(UserIndex) And MapInfo(Map).Salida.Map <> 0 Then
+            Call WriteConsoleMsg(UserIndex, "En este mapa no se admiten ciudadanos.", FontTypeNames.FONTTYPE_INFO)
+            Call WarpUserChar(UserIndex, MapInfo(.Pos.Map).Salida.Map, MapInfo(.Pos.Map).Salida.X, MapInfo(.Pos.Map).Salida.Y, True)
+        Else
+            Call RefreshCharStatus(UserIndex)
+        End If
+
+    End With
         
-        Exit Sub
+    Exit Sub
 
 VolverCiudadano_Err:
 106     Call RegistrarError(Err.Number, Err.description, "UsUaRiOs.VolverCiudadano", Erl)
