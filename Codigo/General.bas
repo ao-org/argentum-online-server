@@ -2215,7 +2215,13 @@ Sub PasarSegundo()
 146             If .flags.Maldicion = 1 Then Call EfectoMaldicionUser(i)
 148             If .flags.VelocidadBackup > 0 Then Call EfectoVelocidadUser(i)
 
-150             .flags.UltimoMensaje = 0
+150             If .flags.UltimoMensaje > 0 Then
+                    .Counters.RepetirMensaje = .Counters.RepetirMensaje + 1
+                    If .Counters.RepetirMensaje >= 3 Then
+                        .flags.UltimoMensaje = 0
+                        .Counters.RepetirMensaje = 0
+                    End If
+                End If
         
             End With
         
