@@ -25943,87 +25943,87 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
 
         'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
         Dim Buffer As New clsByteQueue
-
 104     Call Buffer.CopyBuffer(UserList(UserIndex).incomingData)
     
         'Remove packet ID
 106     Call Buffer.ReadByte
 
         Dim UserDelete     As String
-
         Dim CuentaEmail    As String
-
         Dim CuentaPassword As String
-
         Dim MacAddress     As String
-
         Dim HDserial       As Long
-        
         Dim MD5            As String
-
         Dim Version        As String
     
 108     UserDelete = Buffer.ReadASCIIString()
 110     CuentaEmail = Buffer.ReadASCIIString()
 112     CuentaPassword = Buffer.ReadASCIIString()
 114     Version = CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte())
+116     MacAddress = Buffer.ReadASCIIString()
+118     HDserial = Buffer.ReadLong()
+120     MD5 = Buffer.ReadASCIIString()
     
-116     If Not VersionOK(Version) Then
-118         Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
-        
-120         Call CloseSocket(UserIndex)
-            Exit Sub
-
-        End If
-
-122     MacAddress = Buffer.ReadASCIIString()
-124     HDserial = Buffer.ReadLong()
-125     MD5 = Buffer.ReadASCIIString()
+        'If we got here then packet is complete, copy data back to original queue
+122     Call UserList(UserIndex).incomingData.CopyBuffer(Buffer)
     
-126     If Not EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MacAddress, HDserial, MD5) Then
+124     If Not VersionOK(Version) Then
+126         Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
 128         Call CloseSocket(UserIndex)
             Exit Sub
         End If
     
-130     If Not CheckUserAccount(UserDelete, UserList(UserIndex).AccountId) Then
-132         Call LogHackAttemp(CuentaEmail & "[" & UserList(UserIndex).ip & "] intentó borrar el pj " & UserDelete)
-134         Call CloseSocket(UserIndex)
+130     If Not EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MacAddress, HDserial, MD5) Then
+132         Call CloseSocket(UserIndex)
             Exit Sub
         End If
     
-136     If Database_Enabled Then
-138         Call BorrarUsuarioDatabase(UserDelete)
+134     If Not CheckUserAccount(UserDelete, UserList(UserIndex).AccountId) Then
+136         Call LogHackAttemp(CuentaEmail & "[" & UserList(UserIndex).ip & "] intentó borrar el pj " & UserDelete)
+138         Call CloseSocket(UserIndex)
+            Exit Sub
+        End If
+    
+        ' Si está online el personaje a borrar, lo kickeo para prevenir dupeos.
+140     Dim TargetUserIndex As Integer: TargetUserIndex = NameIndex(UserDelete)
+142     If TargetUserIndex > 0 Then
+144         Call LogHackAttemp("Se trató de eliminar al personaje " & UserDelete & " cuando este estaba conectado desde la IP " & UserList(UserIndex).ip)
+146         Call CloseSocket(TargetUserIndex)
+            Exit Sub
+        End If
+    
+148     If Database_Enabled Then
+150         Call BorrarUsuarioDatabase(UserDelete)
+        
         Else
 
-140         If PersonajeExiste(UserDelete) Then
-142             Call FileCopy(CharPath & UserDelete & ".chr", DeletePath & UCase$(UserDelete) & ".chr")
-         
-144             Call BorrarPJdeCuenta(UserDelete)
+152         If PersonajeExiste(UserDelete) Then
+154             Call FileCopy(CharPath & UserDelete & ".chr", DeletePath & UCase$(UserDelete) & ".chr")
+156             Call BorrarPJdeCuenta(UserDelete)
         
                 'Call WriteShowMessageBox(UserIndex, "El personaje " & UserDelete & " a sido borrado de la cuenta.")
-146             Call Kill(CharPath & UserDelete & ".chr")
+158             Call Kill(CharPath & UserDelete & ".chr")
 
             End If
 
         End If
     
-148     Call WritePersonajesDeCuenta(UserIndex)
+160     Call WritePersonajesDeCuenta(UserIndex)
   
-        'If we got here then packet is complete, copy data back to original queue
-150     Call UserList(UserIndex).incomingData.CopyBuffer(Buffer)
+        Exit Sub
     
 ErrHandler:
 
         Dim Error As Long
 
-152     Error = Err.Number
+162     Error = Err.Number
 
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-154     Set Buffer = Nothing
+164     Set Buffer = Nothing
     
-156     If Error <> 0 Then Err.raise Error
+166     If Error <> 0 Then Err.raise Error
 
 End Sub
 
