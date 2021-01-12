@@ -1824,6 +1824,19 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
         Call CloseSocket(UserIndex)
         Exit Sub
     End If
+
+    If Not AsciiValidos(UserName) Then
+        Call WriteShowMessageBox(UserIndex, "Nombre invalido.")
+        Call CloseSocket(UserIndex)
+        Exit Sub
+    End If
+    
+    If Not PersonajeExiste(UserName) Then
+        Call WriteShowMessageBox(UserIndex, "El personaje no existe.")
+        Call CloseSocket(UserIndex)
+        Exit Sub
+
+    End If
     
     If Not PersonajePerteneceID(UserName, UserList(UserIndex).AccountID) Then
         'Call WriteShowMessageBox(UserIndex, "¡ESTE PERSONAJE NO TE PERTENECE!")
@@ -1832,23 +1845,6 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
         Call CloseSocket(UserIndex)
         Exit Sub
             
-    End If
-    
-    If Not AsciiValidos(UserName) Then
-        Call WriteShowMessageBox(UserIndex, "Nombre invalido.")
-        
-        Call CloseSocket(UserIndex)
-        
-        Exit Sub
-    End If
-    
-    If Not PersonajeExiste(UserName) Then
-        Call WriteShowMessageBox(UserIndex, "El personaje no existe.")
-        
-        Call CloseSocket(UserIndex)
-        
-        Exit Sub
-
     End If
     
     If BANCheck(UserName) Then
