@@ -222,6 +222,12 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
 134             If .flags.Montado > 0 Then
 136                 Call DoMontar(UserIndex, ObjData(.Invent.MonturaObjIndex), .Invent.MonturaSlot)
                 End If
+                
+                If .flags.Mimetizado = 1 Then
+                    Call WriteConsoleMsg(UserIndex, "Pierdes el efecto del mimetismo.", FontTypeNames.FONTTYPE_INFO)
+                    .Counters.Mimetismo = 0
+                    .flags.Mimetizado = 0
+                End If
 
 138             Call WriteNadarToggle(UserIndex, Barco.Subtipo = 0)
     
