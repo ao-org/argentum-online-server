@@ -1784,17 +1784,11 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
 106     Call Buffer.ReadByte
 
         Dim UserName    As String
-
         Dim CuentaEmail As String
-
         Dim Password    As String
-
         Dim Version     As String
-
         Dim MacAddress  As String
-
         Dim HDserial    As Long
-        
         Dim MD5         As String
 
 108     CuentaEmail = Buffer.ReadASCIIString()
@@ -1807,7 +1801,6 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
     
 120     If Not VersionOK(Version) Then
 122         Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
-        
 124         Call CloseSocket(UserIndex)
             Exit Sub
 
@@ -1822,7 +1815,7 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
             End If
             
         End If
-        
+ 
 134     If Not EntrarCuenta(UserIndex, CuentaEmail, Password, MacAddress, HDserial, MD5) Then
 136         Call CloseSocket(UserIndex)
             Exit Sub
@@ -8790,104 +8783,121 @@ End Sub
 
 Private Sub HandlePunishments(ByVal UserIndex As Integer)
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 3 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
+    '***************************************************
+    'Author: Juan Martín Sotuyo Dodero (Maraxus)
+    'Last Modification: 05/17/06
+    '
+    '***************************************************
+    If UserList(UserIndex).incomingData.Length < 3 Then
+        Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
+        Exit Sub
+
+    End If
+    
+    On Error GoTo ErrHandler
+
+    With UserList(UserIndex)
+
+        'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
+        Dim Buffer As New clsByteQueue
+        Call Buffer.CopyBuffer(.incomingData)
+        
+        'Remove packet ID
+        Call Buffer.ReadByte
+        
+        Dim name As String
+        name = Buffer.ReadASCIIString()
+        
+        'If we got here then packet is complete, copy data back to original queue
+        Call .incomingData.CopyBuffer(Buffer)
+        
+        ' Si un GM usa este comando, me fijo que me haya dado el nick del PJ a analizar.
+        If EsGM(UserIndex) And LenB(name) = 0 Then Exit Sub
+        
+        Dim Count As Integer
+
+        If (InStrB(name, "\") <> 0) Then
+            name = Replace(name, "\", vbNullString)
 
         End If
-    
-        On Error GoTo ErrHandler
 
-104     With UserList(UserIndex)
+        If (InStrB(name, "/") <> 0) Then
+            name = Replace(name, "/", vbNullString)
 
-            'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim Buffer As New clsByteQueue
+        End If
 
-106         Call Buffer.CopyBuffer(.incomingData)
+        If (InStrB(name, ":") <> 0) Then
+            name = Replace(name, ":", vbNullString)
+
+        End If
+
+        If (InStrB(name, "|") <> 0) Then
+            name = Replace(name, "|", vbNullString)
+
+        End If
+           
+        Dim TargetUserName As String
+
+        If EsGM(UserIndex) Then
         
-            'Remove packet ID
-108         Call Buffer.ReadByte
-        
-            Dim name  As String
-
-            Dim Count As Integer
-        
-110         name = Buffer.ReadASCIIString()
-        
-112         If LenB(name) <> 0 Then
-114             If (InStrB(name, "\") <> 0) Then
-116                 name = Replace(name, "\", "")
-
-                End If
-
-118             If (InStrB(name, "/") <> 0) Then
-120                 name = Replace(name, "/", "")
-
-                End If
-
-122             If (InStrB(name, ":") <> 0) Then
-124                 name = Replace(name, ":", "")
-
-                End If
-
-126             If (InStrB(name, "|") <> 0) Then
-128                 name = Replace(name, "|", "")
-
-                End If
-            
-130             If PersonajeExiste(name) Then
-132                 If Database_Enabled Then
-134                     Count = GetUserAmountOfPunishmentsDatabase(name)
-                    Else
-136                     Count = val(GetVar(CharPath & name & ".chr", "PENAS", "Cant"))
-                    End If
-
-138                 If Count = 0 Then
-140                     Call WriteConsoleMsg(UserIndex, "Sin prontuario..", FontTypeNames.FONTTYPE_INFO)
-                    Else
+            If PersonajeExiste(name) Then
+                TargetUserName = name
                 
-142                     If Database_Enabled Then
-144                         Call SendUserPunishmentsDatabase(UserIndex, name)
-                        
-                        Else
-146                         While Count > 0
-    
-148                             Call WriteConsoleMsg(UserIndex, Count & " - " & GetVar(CharPath & name & ".chr", "PENAS", "P" & Count), FontTypeNames.FONTTYPE_INFO)
-150                             Count = Count - 1
-                            Wend
-                        End If
-
-                    End If
-
-                Else
-152                 Call WriteConsoleMsg(UserIndex, "Personaje """ & name & """ inexistente.", FontTypeNames.FONTTYPE_INFO)
-
-                End If
+            Else
+                Call WriteConsoleMsg(UserIndex, "El personaje " & TargetUserName & " no existe.", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
 
             End If
+            
+        Else
         
-            'If we got here then packet is complete, copy data back to original queue
-154         Call .incomingData.CopyBuffer(Buffer)
+            TargetUserName = .name
+            
+        End If
 
-        End With
+        If Database_Enabled Then
+            Count = GetUserAmountOfPunishmentsDatabase(TargetUserName)
+                
+        Else
+            Count = val(GetVar(CharPath & name & ".chr", "PENAS", "Cant"))
+
+        End If
+
+        If Count = 0 Then
+            Call WriteConsoleMsg(UserIndex, "Sin prontuario..", FontTypeNames.FONTTYPE_INFO)
+
+        Else
+                
+            If Database_Enabled Then
+                Call SendUserPunishmentsDatabase(UserIndex, TargetUserName)
+                        
+            Else
+                        
+                While Count > 0
+                    Call WriteConsoleMsg(UserIndex, Count & " - " & GetVar(CharPath & TargetUserName & ".chr", "PENAS", "P" & Count), FontTypeNames.FONTTYPE_INFO)
+                    Count = Count - 1
+                Wend
+                            
+            End If
+
+        End If
+
+    End With
+    
+    Exit Sub
     
 ErrHandler:
 
-        Dim Error As Long
+    Dim Error As Long
 
-156     Error = Err.Number
+    Error = Err.Number
 
-        On Error GoTo 0
+    On Error GoTo 0
     
-        'Destroy auxiliar buffer
-158     Set Buffer = Nothing
+    'Destroy auxiliar buffer
+    Set Buffer = Nothing
     
-160     If Error <> 0 Then Err.raise Error
+    If Error <> 0 Then Err.raise Error
 
 End Sub
 
