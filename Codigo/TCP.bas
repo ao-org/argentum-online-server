@@ -1595,6 +1595,7 @@ Sub ResetContadores(ByVal UserIndex As Integer)
 172         .TimerPerteneceNpc = 0
 174         .TimerPuedeSerAtacado = 0
 176         .TiempoDeInmunidad = 0
+177         .RepetirMensaje = 0
         End With
 
         

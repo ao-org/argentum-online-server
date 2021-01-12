@@ -1694,6 +1694,7 @@ Public Type UserCounters
     Saliendo As Boolean
     Salir As Integer
     '[/Gonzalo]
+    RepetirMensaje As Integer
     
     Maldicion As Byte
 
