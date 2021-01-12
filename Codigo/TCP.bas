@@ -1722,7 +1722,10 @@ Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
             End With
             
 198         .NroMascotas = 0
-            .Redundance = 0
+            
+            #If AntiExternos = 1 Then
+                .Redundance = Security.DefaultRedundance
+            #End If
 
         End With
 
