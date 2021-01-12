@@ -679,8 +679,7 @@ Public Sub UserDañoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 114     daño = daño - Npclist(NpcIndex).Stats.def
     
 116     If daño < 0 Then daño = 0
-    
-        '[KEVIN]
+
     
         'If UserList(UserIndex).ChatCombate = 1 Then
         '    Call WriteUserHitNPC(UserIndex, daño)
@@ -705,9 +704,11 @@ Public Sub UserDañoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 130         Call WriteConsoleMsg(UserIndex, "Le has causado " & daño & " puntos de daño a la criatura!", FontTypeNames.FONTTYPE_FIGHT)
         End If
     
-132     Call CalcularDarExp(UserIndex, NpcIndex, daño)
+        If Npclist(NpcIndex).MaestroUser <= 0 Then
+132         Call CalcularDarExp(UserIndex, NpcIndex, daño)
+        End If
+
 134     Npclist(NpcIndex).Stats.MinHp = Npclist(NpcIndex).Stats.MinHp - daño
-        '[/KEVIN]
         
 136     Call DoGolpeCritico(UserIndex, NpcIndex, 0, daño)
      

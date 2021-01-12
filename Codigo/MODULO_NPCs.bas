@@ -54,17 +54,12 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         Dim TiempoRespw As Integer
 
 102     TiempoRespw = Npclist(NpcIndex).Contadores.InvervaloRespawn
-        'Familiares
-        '  If UserList(UserIndex).Familiar.Existe = 1 Then
-        '  If UserList(UserIndex).Familiar.Invocado = 1 Then
-        '   If NpcIndex = UserList(UserIndex).Familiar.Id Then
-        'Call WriteConsoleMsg(UserIndex, "Tu familiar a muerto, deberas resucitarlo.", FontTypeNames.FONTTYPE_WARNING)
-        '   Call WriteLocaleMsg(UserIndex, "181", FontTypeNames.FONTTYPE_WARNING)
-        '   UserList(UserIndex).Familiar.Muerto = 1
-        ' End If
-        ' End If
-        ' End If
-        'Familiares
+
+        ' Es pretoriano?
+        If MiNPC.NPCtype = eNPCType.Pretoriano Then
+            Call ClanPretoriano(MiNPC.ClanIndex).MuerePretoriano(NpcIndex)
+        End If
+
         'Quitamos el npc
 104     Call QuitarNPC(NpcIndex)
     
@@ -73,29 +68,33 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 110             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(MiNPC.flags.Snd3, MiNPC.Pos.X, MiNPC.Pos.Y))
             Else
 112             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("28", MiNPC.Pos.X, MiNPC.Pos.Y))
-        
             End If
-        
+
 114         UserList(UserIndex).flags.TargetNPC = 0
 116         UserList(UserIndex).flags.TargetNpcTipo = eNPCType.Comun
-        
-            'If MiNPC.SubeSupervivencia = 1 Then
-118         Call SubirSkill(UserIndex, eSkill.Supervivencia)
-            'End If
         
             'El user que lo mato tiene mascotas?
 120         If UserList(UserIndex).NroMascotas > 0 Then
                 Dim T As Integer
 122             For T = 1 To MAXMASCOTAS
-124                   If UserList(UserIndex).MascotasIndex(T) > 0 Then
-126                       If Npclist(UserList(UserIndex).MascotasIndex(T)).TargetNPC = NpcIndex Then
-128                               Call FollowAmo(UserList(UserIndex).MascotasIndex(T))
-                          End If
-                      End If
+124                  If UserList(UserIndex).MascotasIndex(T) > 0 Then
+126                     If Npclist(UserList(UserIndex).MascotasIndex(T)).TargetNPC = NpcIndex Then
+128                         Call FollowAmo(UserList(UserIndex).MascotasIndex(T))
+                        End If
+                    End If
 130             Next T
             End If
-        
-            '[KEVIN]
+            
+140         If UserList(UserIndex).ChatCombate = 1 Then
+150             Call WriteLocaleMsg(UserIndex, "184", FontTypeNames.FONTTYPE_FIGHT, "la criatura")
+            End If
+
+152         If UserList(UserIndex).Stats.NPCsMuertos < 32000 Then UserList(UserIndex).Stats.NPCsMuertos = UserList(UserIndex).Stats.NPCsMuertos + 1
+            
+            If MiNPC.MaestroUser > 0 Then Exit Sub
+            
+118         Call SubirSkill(UserIndex, eSkill.Supervivencia)
+
 132         If MiNPC.flags.ExpCount > 0 Then
 
 134             If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then
@@ -103,7 +102,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 
 138                 If UserList(UserIndex).Stats.Exp > MAXEXP Then UserList(UserIndex).Stats.Exp = MAXEXP
                     
-140                 Call WriteRenderValueMsg(UserIndex, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, MiNPC.flags.ExpCount, 6)
+                 Call WriteRenderValueMsg(UserIndex, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, MiNPC.flags.ExpCount, 6)
 142                 Call WriteUpdateExp(UserIndex)
 144                 Call CheckUserLevel(UserIndex)
 
@@ -112,22 +111,6 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 146             MiNPC.flags.ExpCount = 0
 
             End If
-        
-            '[/KEVIN]
-            ' Call WriteConsoleMsg(UserIndex, "Has matado a la criatura!", FontTypeNames.FONTTYPE_FIGHT)
-148         If UserList(UserIndex).ChatCombate = 1 Then
-150             Call WriteLocaleMsg(UserIndex, "184", FontTypeNames.FONTTYPE_FIGHT, "la criatura")
-
-            End If
-        
-            'Particula al matar
-            ' Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFXToFloor(MiNPC.Pos.X, MiNPC.Pos.Y, 84, 2))
-        
-            'Call WriteEfectOverHead(SendTarget.ToPCArea, MiNPC.GiveGLD, CStr(Npclist(NpcIndex).Char.CharIndex))
-            ' Call WriteConsoleMsg(UserIndex, MiNPC.GiveGLD, FontTypeNames.FONTTYPE_FIGHT)
-        
-152         If UserList(UserIndex).Stats.NPCsMuertos < 32000 Then UserList(UserIndex).Stats.NPCsMuertos = UserList(UserIndex).Stats.NPCsMuertos + 1
-            ' Call CheckearRecompesas(UserIndex, 1)
         
 154         EraCriminal = Status(UserIndex)
         
@@ -197,8 +180,6 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
                 End With
         
 184         Next i
-            
-186         If Npclist(NpcIndex).MaestroUser > 0 Then Exit Sub
 
             'Tiramos el oro
 188         Call NPCTirarOro(MiNPC, UserIndex)
