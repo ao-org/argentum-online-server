@@ -210,6 +210,8 @@ Public Function m_EcharMiembroDeClan(ByVal Expulsador As Integer, ByVal Expulsad
         Dim UserIndex As Integer
 
         Dim GI        As Integer
+        
+        Dim Map       As Integer
     
 100     m_EcharMiembroDeClan = 0
 
@@ -225,9 +227,18 @@ Public Function m_EcharMiembroDeClan(ByVal Expulsador As Integer, ByVal Expulsad
 114                 Call guilds(GI).DesConectarMiembro(UserIndex)
 116                 Call guilds(GI).ExpulsarMiembro(Expulsado)
 118                 Call LogClanes(Expulsado & " ha sido expulsado de " & guilds(GI).GuildName & " Expulsador = " & Expulsador)
-120                 UserList(UserIndex).GuildIndex = 0
-122                 Call RefreshCharStatus(UserIndex)
-124                 m_EcharMiembroDeClan = GI
+119                 UserList(UserIndex).GuildIndex = 0
+
+120                 Map = UserList(UserIndex).Pos.Map
+
+121                 If MapInfo(Map).SoloClanes And MapInfo(Map).Salida.Map <> 0 Then
+122                     Call WriteConsoleMsg(UserIndex, "Necesitas un clan para pertenecer en este mapa.", FontTypeNames.FONTTYPE_INFO)
+123                     Call WarpUserChar(UserIndex, MapInfo(Map).Salida.Map, MapInfo(Map).Salida.X, MapInfo(Map).Salida.Y, True)
+                    Else
+124                     Call RefreshCharStatus(UserIndex)
+                    End If
+
+125                 m_EcharMiembroDeClan = GI
                 Else
 126                 m_EcharMiembroDeClan = 0
 
@@ -251,14 +262,20 @@ Public Function m_EcharMiembroDeClan(ByVal Expulsador As Integer, ByVal Expulsad
 140                 If m_EsGuildLeader(Expulsado, GI) Then guilds(GI).SetLeader (guilds(GI).Fundador)
 142                 Call guilds(GI).ExpulsarMiembro(Expulsado)
 144                 Call LogClanes(Expulsado & " ha sido expulsado de " & guilds(GI).GuildName & " Expulsador = " & Expulsador)
-146                 m_EcharMiembroDeClan = GI
-                Else
-148                 m_EcharMiembroDeClan = 0
 
+                    Map = GetMapDatabase(Expulsado)
+
+145                 If MapInfo(Map).SoloClanes And MapInfo(Map).Salida.Map <> 0 Then
+147                     Call SetPositionDatabase(Expulsado, MapInfo(Map).Salida.Map, MapInfo(Map).Salida.X, MapInfo(Map).Salida.Y)
+                    End If
+
+149                 m_EcharMiembroDeClan = GI
+                Else
+150                 m_EcharMiembroDeClan = 0
                 End If
 
             Else
-150             m_EcharMiembroDeClan = 0
+151             m_EcharMiembroDeClan = 0
 
             End If
 

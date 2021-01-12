@@ -1085,14 +1085,14 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
 206         If Not ValidateChr(UserIndex) Then
 208             Call WriteShowMessageBox(UserIndex, "Error en el personaje. Comuniquese con el staff.")
 210             Call CloseSocket(UserIndex)
-                  Exit Sub
-              End If
+                Exit Sub
+            End If
     
 212         If UCase$(.Cuenta) <> UCase$(UserCuenta) Then
 214             Call WriteShowMessageBox(UserIndex, "El personaje no corresponde a su cuenta.")
 216             Call CloseSocket(UserIndex)
-                  Exit Sub
-              End If
+                Exit Sub
+            End If
         
 218         If .Invent.EscudoEqpSlot = 0 Then .Char.ShieldAnim = NingunEscudo
 220         If .Invent.CascoEqpSlot = 0 Then .Char.CascoAnim = NingunCasco
@@ -1722,9 +1722,9 @@ Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
             End With
             
 198         .NroMascotas = 0
-            
-            #If AntiExternos = 1 Then
-                .Redundance = Security.DefaultRedundance
+
+            #If AntiExternos Then
+                .Redundance = 0
             #End If
 
         End With

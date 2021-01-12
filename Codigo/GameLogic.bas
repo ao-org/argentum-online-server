@@ -201,14 +201,14 @@ EsGM_Err:
 End Function
 
 Private Function CheckMapRestrictions(ByVal UserIndex As Integer, ByVal Map As Integer) As Boolean
-    
+
 100     With UserList(UserIndex)
-        
+
 102         If EsGM(UserIndex) Then
 104             CheckMapRestrictions = True
                 Exit Function
             End If
-        
+
 106         If MapInfo(Map).Newbie And Not EsNewbie(UserIndex) Then
 108             If .flags.UltimoMensaje <> 101 Then
 110                 Call WriteConsoleMsg(UserIndex, "Sólo los newbies pueden entrar a este mapa.", FontTypeNames.FONTTYPE_INFO)
@@ -216,7 +216,7 @@ Private Function CheckMapRestrictions(ByVal UserIndex As Integer, ByVal Map As I
                 End If
                 Exit Function
             End If
-        
+
 114         If MapInfo(Map).NoPKs And (Status(UserIndex) = 0 Or Status(UserIndex) = 2) Then
 116             If .flags.UltimoMensaje <> 102 Then
 118                 Call WriteConsoleMsg(UserIndex, "Sólo los ciudadanos pueden entrar a este mapa.", FontTypeNames.FONTTYPE_INFO)
@@ -224,7 +224,7 @@ Private Function CheckMapRestrictions(ByVal UserIndex As Integer, ByVal Map As I
                 End If
                 Exit Function
             End If
-        
+
 122         If MapInfo(Map).NoCiudadanos And (Status(UserIndex) = 1 Or Status(UserIndex) = 3) Then
 124             If .flags.UltimoMensaje <> 103 Then
 126                 Call WriteConsoleMsg(UserIndex, "Sólo los criminales pueden entrar a este mapa.", FontTypeNames.FONTTYPE_INFO)
@@ -232,11 +232,35 @@ Private Function CheckMapRestrictions(ByVal UserIndex As Integer, ByVal Map As I
                 End If
                 Exit Function
             End If
-        
-130         CheckMapRestrictions = True
-        
+
+130         If MapInfo(Map).SoloClanes And .GuildIndex <= 0 Then
+132             If .flags.UltimoMensaje <> 104 Then
+134                 Call WriteConsoleMsg(UserIndex, "Necesitas pertenecer a un clan para entrar a este mapa.", FontTypeNames.FONTTYPE_INFO)
+136                 .flags.UltimoMensaje = 104
+                End If
+                Exit Function
+            End If
+
+138         If MapInfo(Map).MinLevel <> 0 And .Stats.ELV < MapInfo(Map).MinLevel Then
+140             If .flags.UltimoMensaje <> 105 Then
+142                 Call WriteConsoleMsg(UserIndex, "Necesitas ser al menos nivel " & MapInfo(Map).MinLevel & " para entrar a este mapa.", FontTypeNames.FONTTYPE_INFO)
+144                 .flags.UltimoMensaje = 105
+                End If
+                Exit Function
+            End If
+
+146         If MapInfo(Map).MaxLevel <> 0 And .Stats.ELV >= MapInfo(Map).MaxLevel Then
+148             If .flags.UltimoMensaje <> 106 Then
+150                 Call WriteConsoleMsg(UserIndex, "Sólo los personajes inferiores a nivel " & MapInfo(Map).MaxLevel & " pueden entrar a este mapa.", FontTypeNames.FONTTYPE_INFO)
+152                 .flags.UltimoMensaje = 106
+                End If
+                Exit Function
+            End If
+
+154         CheckMapRestrictions = True
+
         End With
-    
+
 End Function
 
 Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer)
