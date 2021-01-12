@@ -2399,6 +2399,32 @@ ErrorHandler:
 
 End Function
 
+Public Function PersonajePerteneceEmail(ByVal UserName As String, ByVal AccountEmail As String) As Boolean
+    
+    Call MakeQuery("SELECT id FROM user INNER JOIN account ON user.account_id = account.id WHERE user.name = ? AND account.email = ?;", False, UserName, AccountEmail)
+    
+    If QueryData Is Nothing Then
+        PersonajePerteneceEmail = False
+        Exit Function
+    End If
+    
+    PersonajePerteneceEmail = True
+    
+End Function
+
+Public Function PersonajePerteneceID(ByVal UserName As String, ByVal AccountID As Integer) As Boolean
+    
+    Call MakeQuery("SELECT id FROM user WHERE name = ? AND account_id = ?;", False, UserName, AccountID)
+    
+    If QueryData Is Nothing Then
+        PersonajePerteneceID = False
+        Exit Function
+    End If
+    
+    PersonajePerteneceID = True
+    
+End Function
+
 Public Sub ChangePasswordDatabase(ByVal UserIndex As Integer, OldPassword As String, NewPassword As String)
 
     On Error GoTo ErrorHandler
