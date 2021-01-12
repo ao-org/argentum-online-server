@@ -2293,10 +2293,6 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
         Dim daño As Integer
 
         Dim tempChr           As Integer
-
-        Dim enviarInfoHechizo As Boolean
-
-100     enviarInfoHechizo = False
     
 102     h = UserList(UserIndex).Stats.UserHechizos(UserList(UserIndex).flags.Hechizo)
 104     tempChr = UserList(UserIndex).flags.TargetUser
@@ -2304,7 +2300,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
         'Hambre
 106     If Hechizos(h).SubeHam = 1 Then
     
-108         enviarInfoHechizo = True
+108         Call InfoHechizo(UserIndex)
     
 110         daño = RandomNumber(Hechizos(h).MinHam, Hechizos(h).MaxHam)
     
@@ -2334,7 +2330,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 
             End If
     
-136         enviarInfoHechizo = True
+136         Call InfoHechizo(UserIndex)
     
 138         daño = RandomNumber(Hechizos(h).MinHam, Hechizos(h).MaxHam)
     
@@ -2365,7 +2361,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
         'Sed
 162     If Hechizos(h).SubeSed = 1 Then
     
-164         enviarInfoHechizo = True
+164         Call InfoHechizo(UserIndex)
     
 166         daño = RandomNumber(Hechizos(h).MinSed, Hechizos(h).MaxSed)
     
@@ -2394,7 +2390,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 
             End If
     
-192         enviarInfoHechizo = True
+192         Call InfoHechizo(UserIndex)
     
 194         daño = RandomNumber(Hechizos(h).MinSed, Hechizos(h).MaxSed)
     
@@ -2448,7 +2444,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 
             End If
     
-234         enviarInfoHechizo = True
+234         Call InfoHechizo(UserIndex)
 236         daño = RandomNumber(Hechizos(h).MinAgilidad, Hechizos(h).MaxAgilidad)
 238         UserList(tempChr).flags.DuracionEfecto = Hechizos(h).Duration
 
@@ -2467,7 +2463,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 
             End If
     
-256         enviarInfoHechizo = True
+256         Call InfoHechizo(UserIndex)
     
 258         UserList(tempChr).flags.TomoPocion = True
 260         daño = RandomNumber(Hechizos(h).MinAgilidad, Hechizos(h).MaxAgilidad)
@@ -2525,7 +2521,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 
 302         b = True
     
-304         enviarInfoHechizo = True
+304         Call InfoHechizo(UserIndex)
 306         Call WriteFYA(tempChr)
 
 308     ElseIf Hechizos(h).SubeFuerza = 2 Then
@@ -2550,7 +2546,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             End If
 
 328         b = True
-330         enviarInfoHechizo = True
+330         Call InfoHechizo(UserIndex)
 332         Call WriteFYA(tempChr)
 
         End If
@@ -2595,7 +2591,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 358         daño = RandomNumber(Hechizos(h).MinHp, Hechizos(h).MaxHp)
             ' daño = daño + Porcentaje(daño, 2 * UserList(UserIndex).Stats.ELV)
     
-360         enviarInfoHechizo = True
+360         Call InfoHechizo(UserIndex)
 
 362         UserList(tempChr).Stats.MinHp = UserList(tempChr).Stats.MinHp + daño
 
@@ -2674,7 +2670,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 426             Call UsuarioAtacadoPorUsuario(UserIndex, tempChr)
             End If
     
-428         enviarInfoHechizo = True
+428         Call InfoHechizo(UserIndex)
     
 430         UserList(tempChr).Stats.MinHp = UserList(tempChr).Stats.MinHp - daño
     
@@ -2703,7 +2699,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
         'Mana
 452     If Hechizos(h).SubeMana = 1 Then
     
-454         enviarInfoHechizo = True
+454         Call InfoHechizo(UserIndex)
 456         UserList(tempChr).Stats.MinMAN = UserList(tempChr).Stats.MinMAN + daño
 
 458         If UserList(tempChr).Stats.MinMAN > UserList(tempChr).Stats.MaxMAN Then UserList(tempChr).Stats.MinMAN = UserList(tempChr).Stats.MaxMAN
@@ -2729,7 +2725,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 
             End If
     
-480         enviarInfoHechizo = True
+480         Call InfoHechizo(UserIndex)
     
 482         If UserIndex <> tempChr Then
 484             Call WriteConsoleMsg(UserIndex, "Le has quitado " & daño & " puntos de mana a " & UserList(tempChr).name, FontTypeNames.FONTTYPE_FIGHT)
@@ -2776,7 +2772,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 
             End If
     
-526         enviarInfoHechizo = True
+526         Call InfoHechizo(UserIndex)
     
 528         If UserIndex <> tempChr Then
 530             Call WriteConsoleMsg(UserIndex, "Le has quitado " & daño & " puntos de vitalidad a " & UserList(tempChr).name, FontTypeNames.FONTTYPE_FIGHT)
@@ -2796,14 +2792,6 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 
         End If
 
-544     If enviarInfoHechizo Then
-546         Call InfoHechizo(UserIndex)
-
-        End If
-
-    
-
-        
         Exit Sub
 
 HechizoPropUsuario_Err:
