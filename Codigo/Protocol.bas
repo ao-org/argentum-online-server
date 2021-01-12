@@ -1763,138 +1763,141 @@ End Sub
 
 Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        ''Last Modification: 01/12/08 Ladder
-        '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 18 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
+    '***************************************************
+    'Author: Juan Martín Sotuyo Dodero (Maraxus)
+    ''Last Modification: 01/12/08 Ladder
+    '***************************************************
+    If UserList(UserIndex).incomingData.Length < 18 Then
+        Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
+        Exit Sub
 
-        End If
+    End If
     
-        On Error GoTo ErrHandler
+    On Error GoTo ErrHandler
 
-        'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-        Dim Buffer As New clsByteQueue
+    'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
+    Dim Buffer As New clsByteQueue
 
-104     Call Buffer.CopyBuffer(UserList(UserIndex).incomingData)
+    Call Buffer.CopyBuffer(UserList(UserIndex).incomingData)
     
-        'Remove packet ID
-106     Call Buffer.ReadByte
+    'Remove packet ID
+    Call Buffer.ReadByte
 
-        Dim UserName    As String
-        Dim CuentaEmail As String
-        Dim Password    As String
-        Dim Version     As String
-        Dim MacAddress  As String
-        Dim HDserial    As Long
-        Dim MD5         As String
+    Dim UserName    As String
+    Dim CuentaEmail As String
+    Dim Password    As String
+    Dim Version     As String
+    Dim MacAddress  As String
+    Dim HDserial    As Long
+    Dim MD5         As String
 
-108     CuentaEmail = Buffer.ReadASCIIString()
-110     Password = Buffer.ReadASCIIString()
-112     Version = CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte())
-114     UserName = Buffer.ReadASCIIString()
-116     MacAddress = Buffer.ReadASCIIString()
-118     HDserial = Buffer.ReadLong()
-119     MD5 = Buffer.ReadASCIIString()
+    CuentaEmail = Buffer.ReadASCIIString()
+    Password = Buffer.ReadASCIIString()
+    Version = CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte())
+    UserName = Buffer.ReadASCIIString()
+    MacAddress = Buffer.ReadASCIIString()
+    HDserial = Buffer.ReadLong()
+    MD5 = Buffer.ReadASCIIString()
     
-120     If Not VersionOK(Version) Then
-122         Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
-124         Call CloseSocket(UserIndex)
-            Exit Sub
+    'If we got here then packet is complete, copy data back to original queue
+    Call UserList(UserIndex).incomingData.CopyBuffer(Buffer)
+    
+    If Not VersionOK(Version) Then
+        Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
+        Call CloseSocket(UserIndex)
+        Exit Sub
 
-        End If
+    End If
         
-126     If EsGmChar(UserName) Then
+    If EsGmChar(UserName) Then
             
-128         If AdministratorAccounts(UCase$(CuentaEmail)) <> UCase$(UserName) Then
-130             Call WriteShowMessageBox(UserIndex, "¡ESTE PERSONAJE NO TE PERTENECE!")
-132             Call CloseSocket(UserIndex)
+        If AdministratorAccounts(UCase$(CuentaEmail)) <> UCase$(UserName) Then
+            Call WriteShowMessageBox(UserIndex, "¡ESTE PERSONAJE NO TE PERTENECE!")
+            Call SaveBanCuentaDatabase(UserList(UserIndex).AccountID, "Intento de hackeo de personajes ajenos", "El Servidor")
+            Call CloseSocket(UserIndex)
+            Exit Sub
+        End If
+            
+    End If
+  
+    If Not EntrarCuenta(UserIndex, CuentaEmail, Password, MacAddress, HDserial, MD5) Then
+        Call CloseSocket(UserIndex)
+        Exit Sub
+    End If
+    
+    If Not PersonajePerteneceID(UserName, UserList(UserIndex).AccountID) Then
+        'Call WriteShowMessageBox(UserIndex, "¡ESTE PERSONAJE NO TE PERTENECE!")
+        Call LogHackAttemp("Alguien ha tratado de ingresar con el PJ '" & UserName & "' desde una cuenta ajena ID: " & UserList(UserIndex).AccountID & " desde la IP: " & UserList(UserIndex).ip)
+        Call SaveBanCuentaDatabase(UserList(UserIndex).AccountID, "Intento de hackeo de personajes ajenos", "El Servidor")
+        Call CloseSocket(UserIndex)
+        Exit Sub
+            
+    End If
+    
+    If Not AsciiValidos(UserName) Then
+        Call WriteShowMessageBox(UserIndex, "Nombre invalido.")
+        
+        Call CloseSocket(UserIndex)
+        
+        Exit Sub
+    End If
+    
+    If Not PersonajeExiste(UserName) Then
+        Call WriteShowMessageBox(UserIndex, "El personaje no existe.")
+        
+        Call CloseSocket(UserIndex)
+        
+        Exit Sub
+
+    End If
+    
+    If BANCheck(UserName) Then
+
+        Dim LoopC As Integer
+        
+        For LoopC = 1 To Baneos.Count
+
+            If Baneos(LoopC).name = UCase$(UserName) Then
+                Call WriteShowMessageBox(UserIndex, "Se te ha prohibido la entrada a Argentum20 hasta el día " & Format(Baneos(LoopC).FechaLiberacion, "dddddd") & " a las " & Format(Baneos(LoopC).FechaLiberacion, "hh:mm am/pm") & " debido a " & Baneos(LoopC).Causa & " Esta decisión fue tomada por " & Baneos(LoopC).Baneador & ".")
+                Call CloseSocket(UserIndex)
                 Exit Sub
-            End If
-            
-        End If
- 
-134     If Not EntrarCuenta(UserIndex, CuentaEmail, Password, MacAddress, HDserial, MD5) Then
-136         Call CloseSocket(UserIndex)
-            Exit Sub
-        End If
-    
-138     If Not AsciiValidos(UserName) Then
-140         Call WriteShowMessageBox(UserIndex, "Nombre invalido.")
-        
-142         Call CloseSocket(UserIndex)
-        
-            Exit Sub
-        End If
-    
-144     If Not PersonajeExiste(UserName) Then
-146         Call WriteShowMessageBox(UserIndex, "El personaje no existe.")
-        
-148         Call CloseSocket(UserIndex)
-        
-            Exit Sub
-
-        End If
-    
-150     If BANCheck(UserName) Then
-
-            Dim LoopC As Integer
-        
-152         For LoopC = 1 To Baneos.Count
-
-154             If Baneos(LoopC).name = UCase$(UserName) Then
-156                 Call WriteShowMessageBox(UserIndex, "Se te ha prohibido la entrada a Argentum20 hasta el día " & Format(Baneos(LoopC).FechaLiberacion, "dddddd") & " a las " & Format(Baneos(LoopC).FechaLiberacion, "hh:mm am/pm") & " debido a " & Baneos(LoopC).Causa & " Esta decisión fue tomada por " & Baneos(LoopC).Baneador & ".")
-                
-158                 Call CloseSocket(UserIndex)
-                    Exit Sub
-
-                End If
-
-160         Next LoopC
-        
-            Dim BanNick     As String
-
-            Dim BaneoMotivo As String
-
-162         BanNick = GetVar(CharPath & UserName & ".chr", "BAN", "BannedBy")
-164         BaneoMotivo = GetVar(CharPath & UserName & ".chr", "BAN", "BanMotivo")
-
-166         If BanNick = "" Then
-168             BanNick = "*Error en la base de datos*"
 
             End If
-        
-170         If BaneoMotivo = "" Then
-172             BaneoMotivo = "*No se registra el motivo del baneo.*"
 
-            End If
+        Next LoopC
         
-174         Call WriteShowMessageBox(UserIndex, "Se te ha prohibido la entrada al juego debido a " & BaneoMotivo & ". Esta decisión fue tomada por " & BanNick & ".")
-        
-176         Call CloseSocket(UserIndex)
-            Exit Sub
+        Dim BanNick     As String
+        Dim BaneoMotivo As String
 
-        End If
-        
-178     Call ConnectUser(UserIndex, UserName, CuentaEmail)
+        BanNick = GetVar(CharPath & UserName & ".chr", "BAN", "BannedBy")
+        BaneoMotivo = GetVar(CharPath & UserName & ".chr", "BAN", "BanMotivo")
 
-        'If we got here then packet is complete, copy data back to original queue
-180     Call UserList(UserIndex).incomingData.CopyBuffer(Buffer)
+        If LenB(BanNick) = 0 Then BanNick = "*Error en la base de datos*"
+        If LenB(BaneoMotivo) = 0 Then BaneoMotivo = "*No se registra el motivo del baneo.*"
+        
+        Call WriteShowMessageBox(UserIndex, "Se te ha prohibido la entrada al juego debido a " & BaneoMotivo & ". Esta decisión fue tomada por " & BanNick & ".")
+        
+        Call CloseSocket(UserIndex)
+        Exit Sub
+
+    End If
+        
+    Call ConnectUser(UserIndex, UserName, CuentaEmail)
+
+    Exit Sub
     
 ErrHandler:
 
-        Dim Error As Long
+    Dim Error As Long
 
-182     Error = Err.Number
+    Error = Err.Number
 
-        On Error GoTo 0
+    On Error GoTo 0
     
-        'Destroy auxiliar buffer
-184     Set Buffer = Nothing
+    'Destroy auxiliar buffer
+    Set Buffer = Nothing
     
-186     If Error <> 0 Then Err.raise Error
+    If Error <> 0 Then Err.raise Error
 
 End Sub
 
@@ -1988,7 +1991,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
             Exit Sub
         End If
             
-164     If GetPersonajesCountByIDDatabase(UserList(UserIndex).AccountId) >= MAX_PERSONAJES Then
+164     If GetPersonajesCountByIDDatabase(UserList(UserIndex).AccountID) >= MAX_PERSONAJES Then
 166         Call CloseSocket(UserIndex)
             Exit Sub
         End If
@@ -10567,16 +10570,16 @@ Private Sub HandleDesbuggear(ByVal UserIndex As Integer)
 120                     Call WriteConsoleMsg(UserIndex, "El usuario debe estar offline.", FontTypeNames.FONTTYPE_INFO)
                     Else
 
-                        Dim AccountId As Long, AccountOnline As Boolean
+                        Dim AccountID As Long, AccountOnline As Boolean
                     
-122                     AccountId = GetAccountIDDatabase(UserName)
+122                     AccountID = GetAccountIDDatabase(UserName)
                     
-124                     If AccountId >= 0 Then
+124                     If AccountID >= 0 Then
 
 126                         For i = 1 To LastUser
 
 128                             If UserList(i).flags.UserLogged Then
-130                                 If UserList(i).AccountId = AccountId Then
+130                                 If UserList(i).AccountID = AccountID Then
 132                                     AccountOnline = True
 
                                     End If
@@ -10593,7 +10596,7 @@ Private Sub HandleDesbuggear(ByVal UserIndex As Integer)
 142                         If AccountOnline Then
 144                             Call WriteConsoleMsg(UserIndex, "Hay un usuario de la cuenta conectado. Se actualizaron solo los usuarios online.", FontTypeNames.FONTTYPE_INFO)
                             Else
-146                             Call ResetLoggedDatabase(AccountId)
+146                             Call ResetLoggedDatabase(AccountID)
 148                             Call WriteConsoleMsg(UserIndex, "Cuenta del personaje desbuggeada y usuarios online actualizados.", FontTypeNames.FONTTYPE_INFO)
 
                             End If
@@ -25988,7 +25991,7 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
             Exit Sub
         End If
     
-134     If Not CheckUserAccount(UserDelete, UserList(UserIndex).AccountId) Then
+134     If Not CheckUserAccount(UserDelete, UserList(UserIndex).AccountID) Then
 136         Call LogHackAttemp(CuentaEmail & "[" & UserList(UserIndex).ip & "] intentó borrar el pj " & UserDelete)
 138         Call CloseSocket(UserIndex)
             Exit Sub
@@ -26226,7 +26229,7 @@ Public Sub WritePersonajesDeCuenta(ByVal UserIndex As Integer)
 102     donador = DonadorCheck(UserCuenta)
 
 104     If Database_Enabled Then
-106         CantPersonajes = GetPersonajesCuentaDatabase(UserList(UserIndex).AccountId, Personaje)
+106         CantPersonajes = GetPersonajesCuentaDatabase(UserList(UserIndex).AccountID, Personaje)
         Else
 108         CantPersonajes = ObtenerCantidadDePersonajes(UserCuenta)
         
