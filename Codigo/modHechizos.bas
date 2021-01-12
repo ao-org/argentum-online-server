@@ -2108,7 +2108,9 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal Use
 
             End If
         
-160         Call CalcularDarExp(UserIndex, NpcIndex, daño)
+            If Npclist(NpcIndex).MaestroUser <= 0 Then
+160             Call CalcularDarExp(UserIndex, NpcIndex, daño)
+            End If
     
 162         Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageEfectOverHead(daño, Npclist(NpcIndex).Char.CharIndex))
     
