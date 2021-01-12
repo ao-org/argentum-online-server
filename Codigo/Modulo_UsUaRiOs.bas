@@ -2288,7 +2288,7 @@ Sub VolverCriminal(ByVal UserIndex As Integer)
 
 108     .Faccion.Status = 0
         
-        If MapInfo(.Pos.Map).NoPKs And Not EsGM(UserIndex) And MapInfo(Map).Salida.Map <> 0 Then
+        If MapInfo(.Pos.Map).NoPKs And Not EsGM(UserIndex) And MapInfo(.Pos.Map).Salida.Map <> 0 Then
             Call WriteConsoleMsg(UserIndex, "En este mapa no se admiten criminales.", FontTypeNames.FONTTYPE_INFO)
             Call WarpUserChar(UserIndex, MapInfo(.Pos.Map).Salida.Map, MapInfo(.Pos.Map).Salida.X, MapInfo(.Pos.Map).Salida.Y, True)
         Else
@@ -2320,7 +2320,7 @@ Sub VolverCiudadano(ByVal UserIndex As Integer)
 
 102     .Faccion.Status = 1
 
-        If MapInfo(.Pos.Map).NoCiudadanos And Not EsGM(UserIndex) And MapInfo(Map).Salida.Map <> 0 Then
+        If MapInfo(.Pos.Map).NoCiudadanos And Not EsGM(UserIndex) And MapInfo(.Pos.Map).Salida.Map <> 0 Then
             Call WriteConsoleMsg(UserIndex, "En este mapa no se admiten ciudadanos.", FontTypeNames.FONTTYPE_INFO)
             Call WarpUserChar(UserIndex, MapInfo(.Pos.Map).Salida.Map, MapInfo(.Pos.Map).Salida.X, MapInfo(.Pos.Map).Salida.Y, True)
         Else
