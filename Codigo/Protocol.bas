@@ -25995,11 +25995,10 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
         End If
     
         ' Si está online el personaje a borrar, lo kickeo para prevenir dupeos.
-140     Dim TargetUserIndex As Integer: TargetUserIndex = NameIndex(UserDelete)
-142     If TargetUserIndex > 0 Then
+140     Dim targetUserIndex As Integer: targetUserIndex = NameIndex(UserDelete)
+142     If targetUserIndex > 0 Then
 144         Call LogHackAttemp("Se trató de eliminar al personaje " & UserDelete & " cuando este estaba conectado desde la IP " & UserList(UserIndex).ip)
-146         Call CloseSocket(TargetUserIndex)
-            Exit Sub
+146         Call CloseSocket(targetUserIndex)
         End If
     
 148     If Database_Enabled Then
