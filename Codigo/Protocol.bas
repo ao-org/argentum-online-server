@@ -26955,78 +26955,73 @@ ErrHandler:
 End Sub
 
 Private Sub HandleQuieroFundarClan(ByVal UserIndex As Integer)
-        'Author: Pablo Mercavides
+    'Author: Pablo Mercavides
 
-100     If UserList(UserIndex).incomingData.Length < 2 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
+    If UserList(UserIndex).incomingData.Length < 2 Then
+        Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
+        Exit Sub
+
+    End If
+    
+    On Error GoTo ErrHandler
+
+    With UserList(UserIndex)
+
+        'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
+        Dim Buffer As New clsByteQueue
+        Call Buffer.CopyBuffer(.incomingData)
+        
+        'Remove packet ID
+        Call Buffer.ReadInteger
+        
+        'If we got here then packet is complete, copy data back to original queue
+        Call .incomingData.CopyBuffer(Buffer)
+        
+        Dim refError As String
+        
+        If UserList(UserIndex).GuildIndex > 0 Then
+            Call WriteConsoleMsg(UserIndex, "Ya perteneces a un clan, no podés fundar otro.", FontTypeNames.FONTTYPE_INFOIAO)
             Exit Sub
 
         End If
-    
-        On Error GoTo ErrHandler
 
-104     With UserList(UserIndex)
+        If UserList(UserIndex).Stats.ELV < 35 Or UserList(UserIndex).Stats.UserSkills(eSkill.Liderazgo) < 100 Then
+            Call WriteConsoleMsg(UserIndex, "Para fundar un clan debes ser nivel 35, tener 100 en liderazgo y tener en tu inventario las 2 gemas: Gema Azul(1), Gema Naranja(1).", FontTypeNames.FONTTYPE_INFOIAO)
+            Exit Sub
 
-            'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim Buffer As New clsByteQueue
+        End If
 
-106         Call Buffer.CopyBuffer(.incomingData)
-            'Remove packet ID
-108         Call Buffer.ReadInteger
+        If Not TieneObjetos(407, 1, UserIndex) Or Not TieneObjetos(408, 1, UserIndex) Then
+            Call WriteConsoleMsg(UserIndex, "Para fundar un clan debes ser nivel 35, tener 100 en liderazgo y tener en tu inventario las 2 gemas: Gema Azul(1), Gema Naranja(1).", FontTypeNames.FONTTYPE_INFOIAO)
+            Exit Sub
+
+        End If
+
+        If UserList(UserIndex).flags.BattleModo = 1 Then
+            Call WriteConsoleMsg(UserIndex, "No podés fundar un clan en Modo Battle.", FontTypeNames.FONTTYPE_INFOIAO)
+            Exit Sub
+        End If
+
+        Call WriteConsoleMsg(UserIndex, "Servidor> ¡Comenzamos a fundar el clan! Ingresa todos los datos solicitados.", FontTypeNames.FONTTYPE_INFOIAO)
         
-            Dim refError As String
-        
-110         If UserList(UserIndex).GuildIndex > 0 Then
-112             refError = "Ya perteneces a un clan, no podés fundar otro."
-            Else
+        Call WriteShowFundarClanForm(UserIndex)
 
-114             If UserList(UserIndex).Stats.ELV < 25 Or UserList(UserIndex).Stats.UserSkills(eSkill.Liderazgo) < 80 Then
-116                 refError = "Para fundar un clan debes ser nivel 25, tener 80 en liderazgo y tener en tu inventario las 2 gemas: Gema Azul(1), Gema Naranja(1)."
-                Else
-
-118                 If Not TieneObjetos(407, 1, UserIndex) Then
-120                     refError = "Para fundar un clan debes ser nivel 25, tener 80 en liderazgo y tener en tu inventario las 2 gemas: Gema Azul(1), Gema Naranja(1)."
-                    Else
-
-122                     If Not TieneObjetos(408, 1, UserIndex) Then
-124                         refError = "Para fundar un clan debes ser nivel 25, tener 80 en liderazgo y tener en tu inventario las 2 gemas: Gema Azul(1), Gema Naranja(1)."
-                        Else
-
-126                                 If UserList(UserIndex).flags.BattleModo = 1 Then
-128                                     refError = "No podés fundar un clan ací."
-                                    Else
-130                                     refError = "Servidor> íComenzamos a fundar el clan! Ingresa todos los datos solicitados."
-132                                     Call WriteShowFundarClanForm(UserIndex)
-                                    
-                                    End If
-
-                        End If
-
-                    End If
-
-                End If
-
-            End If
-                    
-134         Call WriteConsoleMsg(UserIndex, refError, FontTypeNames.FONTTYPE_INFOIAO)
+    End With
     
-            'If we got here then packet is complete, copy data back to original queue
-136         Call .incomingData.CopyBuffer(Buffer)
-
-        End With
+    Exit Sub
     
 ErrHandler:
 
-        Dim Error As Long
+    Dim Error As Long
 
-138     Error = Err.Number
+    Error = Err.Number
 
-        On Error GoTo 0
+    On Error GoTo 0
     
-        'Destroy auxiliar buffer
-140     Set Buffer = Nothing
+    'Destroy auxiliar buffer
+    Set Buffer = Nothing
     
-142     If Error <> 0 Then Err.raise Error
+    If Error <> 0 Then Err.raise Error
 
 End Sub
 
