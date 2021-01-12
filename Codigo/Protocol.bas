@@ -26976,9 +26976,7 @@ Private Sub HandleQuieroFundarClan(ByVal UserIndex As Integer)
         
         'If we got here then packet is complete, copy data back to original queue
         Call .incomingData.CopyBuffer(Buffer)
-        
-        Dim refError As String
-        
+
         If UserList(UserIndex).GuildIndex > 0 Then
             Call WriteConsoleMsg(UserIndex, "Ya perteneces a un clan, no podés fundar otro.", FontTypeNames.FONTTYPE_INFOIAO)
             Exit Sub
