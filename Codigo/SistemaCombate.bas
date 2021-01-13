@@ -1981,7 +1981,7 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
         End If
 
         'Estas en un Mapa Seguro?
-194     If MapInfo(UserList(VictimIndex).Pos.Map).Seguro = 1 Then
+194     If MapInfo(UserList(VictimIndex).Pos.Map).Seguro Then
 
 196         If esArmada(attackerIndex) Then
 198             If UserList(attackerIndex).Faccion.RecompensasReal > 11 Then
