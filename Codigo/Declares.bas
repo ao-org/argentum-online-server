@@ -1651,6 +1651,8 @@ Public Type UserFlags
     
     ScreenShot As clsByteQueue
     
+    ChatHistory(1 To 5) As String
+    
 End Type
 
 Public Type UserCounters
