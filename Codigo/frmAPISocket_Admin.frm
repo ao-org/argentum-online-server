@@ -261,14 +261,14 @@ Private Sub Socket_DataArrival(ByVal bytesTotal As Long)
     
     Call Socket.GetData(recievedData, vbString, bytesTotal)
     
-    ' Si no llegÃ³ nada, nos vamos alv.
+    ' Si no llego nada, nos vamos alv.
     If Len(recievedData) = 0 Then Exit Sub
 
     'Process the data we recieved from the API
     Call HandleIncomingAPIData(recievedData)
     
     Debug.Print vbNewLine
-    Debug.Print "TamaÃ±o: " & bytesTotal
+    Debug.Print "Tamaño: " & bytesTotal
     Debug.Print recievedData
     Debug.Print vbNewLine
     

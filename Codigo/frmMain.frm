@@ -756,7 +756,7 @@ auxSocket_DataArrival_Err:
 End Sub
 
 Private Sub mnuConsolaAPI_Click()
-    frmAPISocket.Show
+    frmAPISocket.Show vbModeless
 End Sub
 
 Private Sub TimerGuardarUsuarios_Timer()
