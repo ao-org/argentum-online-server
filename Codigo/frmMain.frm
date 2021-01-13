@@ -485,6 +485,9 @@ Begin VB.Form frmMain
          Caption         =   "Cargar Creditos"
       End
    End
+   Begin VB.Menu mnuConsolaAPI 
+      Caption         =   "Consola API"
+   End
    Begin VB.Menu mnuPopUp 
       Caption         =   "PopUpMenu"
       Visible         =   0   'False
@@ -536,7 +539,7 @@ Public ESCUCHADAS As Long
 Private Type NOTIFYICONDATA
 
     cbSize As Long
-    hWnd As Long
+    hwnd As Long
     uID As Long
     uFlags As Long
     uCallbackMessage As Long
@@ -563,11 +566,11 @@ Const WM_RBUTTONUP = &H205
 
 Private GuardarYCerrar As Boolean
 
-Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hWnd As Long, lpdwProcessId As Long) As Long
+Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hwnd As Long, lpdwProcessId As Long) As Long
 
 Private Declare Function Shell_NotifyIconA Lib "SHELL32" (ByVal dwMessage As Long, lpData As NOTIFYICONDATA) As Integer
 
-Private Function setNOTIFYICONDATA(hWnd As Long, Id As Long, flags As Long, CallbackMessage As Long, Icon As Long, Tip As String) As NOTIFYICONDATA
+Private Function setNOTIFYICONDATA(hwnd As Long, Id As Long, flags As Long, CallbackMessage As Long, Icon As Long, Tip As String) As NOTIFYICONDATA
         
         On Error GoTo setNOTIFYICONDATA_Err
         
@@ -575,7 +578,7 @@ Private Function setNOTIFYICONDATA(hWnd As Long, Id As Long, flags As Long, Call
         Dim nidTemp As NOTIFYICONDATA
 
 100     nidTemp.cbSize = Len(nidTemp)
-102     nidTemp.hWnd = hWnd
+102     nidTemp.hwnd = hwnd
 104     nidTemp.uID = Id
 106     nidTemp.uFlags = flags
 108     nidTemp.uCallbackMessage = CallbackMessage
@@ -588,7 +591,7 @@ Private Function setNOTIFYICONDATA(hWnd As Long, Id As Long, flags As Long, Call
         Exit Function
 
 setNOTIFYICONDATA_Err:
-116     Call RegistrarError(Err.Number, Err.description, "frmMain.setNOTIFYICONDATA", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "frmMain.setNOTIFYICONDATA", Erl)
 118     Resume Next
         
 End Function
@@ -638,7 +641,7 @@ Sub CheckIdleUser()
         Exit Sub
 
 CheckIdleUser_Err:
-126     Call RegistrarError(Err.Number, Err.description, "frmMain.CheckIdleUser", Erl)
+126     Call RegistrarError(Err.Number, Err.Description, "frmMain.CheckIdleUser", Erl)
 128     Resume Next
         
 End Sub
@@ -673,7 +676,7 @@ Private Sub addtimeDonador_Click()
         Exit Sub
 
 addtimeDonador_Click_Err:
-114     Call RegistrarError(Err.Number, Err.description, "frmMain.addtimeDonador_Click", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "frmMain.addtimeDonador_Click", Erl)
 116     Resume Next
         
 End Sub
@@ -704,7 +707,7 @@ Private Sub Auditoria_Timer()
 
 errhand:
 
-    Call LogError("Error en Timer Auditoria. Err: " & Err.description & " - " & Err.Number)
+    Call LogError("Error en Timer Auditoria. Err: " & Err.Description & " - " & Err.Number)
 
     Resume Next
 
@@ -747,9 +750,13 @@ Private Sub auxSocket_DataArrival(ByVal bytesTotal As Long)
         Exit Sub
 
 auxSocket_DataArrival_Err:
-110     Call RegistrarError(Err.Number, Err.description, "frmMain.auxSocket_DataArrival", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "frmMain.auxSocket_DataArrival", Erl)
 
         
+End Sub
+
+Private Sub mnuConsolaAPI_Click()
+    frmAPISocket.Show
 End Sub
 
 Private Sub TimerGuardarUsuarios_Timer()
@@ -783,7 +790,7 @@ On Error GoTo Handler
     Exit Sub
     
 Handler:
-    Call RegistrarError(Err.Number, Err.description, "frmMain.TimreGuardarUsuarios_Timer")
+    Call RegistrarError(Err.Number, Err.Description, "frmMain.TimreGuardarUsuarios_Timer")
     Resume Next
     
 End Sub
@@ -855,7 +862,7 @@ Private Sub Minuto_Timer()
 
     Exit Sub
 ErrHandler:
-    Call LogError("Error en Timer Minuto " & Err.Number & ": " & Err.description)
+    Call LogError("Error en Timer Minuto " & Err.Number & ": " & Err.Description)
 
     Resume Next
 
@@ -881,7 +888,7 @@ Private Sub CMDDUMP_Click()
         Exit Sub
 
 CMDDUMP_Click_Err:
-108     Call RegistrarError(Err.Number, Err.description, "frmMain.CMDDUMP_Click", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "frmMain.CMDDUMP_Click", Erl)
 
         
 End Sub
@@ -896,7 +903,7 @@ Private Sub Command1_Click()
         Exit Sub
 
 Command1_Click_Err:
-102     Call RegistrarError(Err.Number, Err.description, "frmMain.Command1_Click", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "frmMain.Command1_Click", Erl)
 104     Resume Next
         
 End Sub
@@ -916,7 +923,7 @@ Public Sub InitMain(ByVal f As Byte)
         Exit Sub
 
 InitMain_Err:
-106     Call RegistrarError(Err.Number, Err.description, "frmMain.InitMain", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "frmMain.InitMain", Erl)
 108     Resume Next
         
 End Sub
@@ -931,7 +938,7 @@ Private Sub Command10_Click()
         Exit Sub
 
 Command10_Click_Err:
-102     Call RegistrarError(Err.Number, Err.description, "frmMain.Command10_Click", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "frmMain.Command10_Click", Erl)
 104     Resume Next
         
 End Sub
@@ -946,7 +953,7 @@ Private Sub Command11_Click()
         Exit Sub
 
 Command11_Click_Err:
-102     Call RegistrarError(Err.Number, Err.description, "frmMain.Command11_Click", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "frmMain.Command11_Click", Erl)
 104     Resume Next
         
 End Sub
@@ -961,7 +968,7 @@ Private Sub Command12_Click()
         Exit Sub
 
 Command12_Click_Err:
-102     Call RegistrarError(Err.Number, Err.description, "frmMain.Command12_Click", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "frmMain.Command12_Click", Erl)
 104     Resume Next
         
 End Sub
@@ -976,7 +983,7 @@ Private Sub Command13_Click()
         Exit Sub
 
 Command13_Click_Err:
-102     Call RegistrarError(Err.Number, Err.description, "frmMain.Command13_Click", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "frmMain.Command13_Click", Erl)
 104     Resume Next
         
 End Sub
@@ -991,7 +998,7 @@ Private Sub Command2_Click()
         Exit Sub
 
 Command2_Click_Err:
-102     Call RegistrarError(Err.Number, Err.description, "frmMain.Command2_Click", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "frmMain.Command2_Click", Erl)
 104     Resume Next
         
 End Sub
@@ -1010,7 +1017,7 @@ Private Sub Command4_Click()
         Exit Sub
 
 Command4_Click_Err:
-108     Call RegistrarError(Err.Number, Err.description, "frmMain.Command4_Click", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "frmMain.Command4_Click", Erl)
 110     Resume Next
         
 End Sub
@@ -1029,7 +1036,7 @@ Private Sub Command5_Click()
         Exit Sub
 
 Command5_Click_Err:
-102     Call RegistrarError(Err.Number, Err.description, "frmMain.Command5_Click", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "frmMain.Command5_Click", Erl)
 104     Resume Next
         
 End Sub
@@ -1044,7 +1051,7 @@ Private Sub Command6_Click()
         Exit Sub
 
 Command6_Click_Err:
-102     Call RegistrarError(Err.Number, Err.description, "frmMain.Command6_Click", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "frmMain.Command6_Click", Erl)
 104     Resume Next
         
 End Sub
@@ -1059,7 +1066,7 @@ Private Sub Command7_Click()
         Exit Sub
 
 Command7_Click_Err:
-102     Call RegistrarError(Err.Number, Err.description, "frmMain.Command7_Click", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "frmMain.Command7_Click", Erl)
 104     Resume Next
         
 End Sub
@@ -1076,7 +1083,7 @@ Private Sub Command8_Click()
         Exit Sub
 
 Command8_Click_Err:
-106     Call RegistrarError(Err.Number, Err.description, "frmMain.Command8_Click", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "frmMain.Command8_Click", Erl)
 108     Resume Next
         
 End Sub
@@ -1091,7 +1098,7 @@ Private Sub Command9_Click()
         Exit Sub
 
 Command9_Click_Err:
-102     Call RegistrarError(Err.Number, Err.description, "frmMain.Command9_Click", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "frmMain.Command9_Click", Erl)
 104     Resume Next
         
 End Sub
@@ -1217,7 +1224,7 @@ Private Sub EstadoTimer_Timer()
     Exit Sub
 
 EstadoTimer_Timer_Err:
-    Call RegistrarError(Err.Number, Err.description, "frmMain.EstadoTimer_Timer", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "frmMain.EstadoTimer_Timer", Erl)
 
         
 End Sub
@@ -1237,7 +1244,7 @@ Private Sub Evento_Timer()
     Exit Sub
 
 Evento_Timer_Err:
-    Call RegistrarError(Err.Number, Err.description, "frmMain.Evento_Timer", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "frmMain.Evento_Timer", Erl)
     Resume Next
         
 End Sub
@@ -1260,7 +1267,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y A
 
                     Dim hProcess As Long
 
-108                 GetWindowThreadProcessId hWnd, hProcess
+108                 GetWindowThreadProcessId hwnd, hProcess
 110                 AppActivate hProcess
 
 112             Case WM_RBUTTONUP
@@ -1281,7 +1288,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y A
         Exit Sub
 
 Form_MouseMove_Err:
-124     Call RegistrarError(Err.Number, Err.description, "frmMain.Form_MouseMove", Erl)
+124     Call RegistrarError(Err.Number, Err.Description, "frmMain.Form_MouseMove", Erl)
 
         
 End Sub
@@ -1298,7 +1305,7 @@ Public Sub QuitarIconoSystray()
         Dim i   As Integer
         Dim nid As NOTIFYICONDATA
 
-100     nid = setNOTIFYICONDATA(frmMain.hWnd, vbNull, NIF_MESSAGE Or NIF_ICON Or NIF_TIP, vbNull, frmMain.Icon, "")
+100     nid = setNOTIFYICONDATA(frmMain.hwnd, vbNull, NIF_MESSAGE Or NIF_ICON Or NIF_TIP, vbNull, frmMain.Icon, "")
 
 102     i = Shell_NotifyIconA(NIM_DELETE, nid)
 
@@ -1306,7 +1313,7 @@ Public Sub QuitarIconoSystray()
         Exit Sub
 
 QuitarIconoSystray_Err:
-104     Call RegistrarError(Err.Number, Err.description, "frmMain.QuitarIconoSystray", Erl)
+104     Call RegistrarError(Err.Number, Err.Description, "frmMain.QuitarIconoSystray", Erl)
 
         
 End Sub
@@ -1325,7 +1332,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
         Exit Sub
 
 Form_QueryUnload_Err:
-106     Call RegistrarError(Err.Number, Err.description, "frmMain.Form_QueryUnload", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "frmMain.Form_QueryUnload", Erl)
 
         
 End Sub
@@ -1342,7 +1349,7 @@ Private Sub Form_Unload(Cancel As Integer)
         Exit Sub
 
 Form_Unload_Err:
-102     Call RegistrarError(Err.Number, Err.description, "frmMain.Form_Unload", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "frmMain.Form_Unload", Erl)
 
         
 End Sub
@@ -1550,7 +1557,11 @@ Private Sub GameTimer_Timer()
     Exit Sub
 
 HayError:
+<<<<<<< HEAD
     LogError ("Error en GameTimer: " & Err.description & " UserIndex = " & iUserIndex)
+=======
+    LogError ("Error en GameTimer: " & Err.Description & " UserIndex = " & iUserIndex)
+>>>>>>> 14fa9ea... Fix: line-endings y algun q otro error al buildear.
 
 End Sub
 
@@ -1578,7 +1589,7 @@ Private Sub HoraFantasia_Timer()
     Exit Sub
 
 HoraFantasia_Timer_Err:
-    Call RegistrarError(Err.Number, Err.description, "frmMain.HoraFantasia_Timer", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "frmMain.HoraFantasia_Timer", Erl)
     Resume Next
         
 End Sub
@@ -1595,7 +1606,7 @@ Private Sub LimpiezaTimer_Timer()
     Exit Sub
 
 LimpiezaTimer_Timer_Err:
-    Call RegistrarError(Err.Number, Err.description, "frmMain.LimpiezaTimer_Timer", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "frmMain.LimpiezaTimer_Timer", Erl)
 
         
 End Sub
@@ -1630,7 +1641,7 @@ Private Sub loadcredit_Click()
         Exit Sub
 
 loadcredit_Click_Err:
-114     Call RegistrarError(Err.Number, Err.description, "frmMain.loadcredit_Click", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "frmMain.loadcredit_Click", Erl)
 116     Resume Next
         
 End Sub
@@ -1653,7 +1664,7 @@ Private Sub mnuCerrar_Click()
         Exit Sub
 
 mnuCerrar_Click_Err:
-106     Call RegistrarError(Err.Number, Err.description, "frmMain.mnuCerrar_Click", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "frmMain.mnuCerrar_Click", Erl)
 108     Resume Next
         
 End Sub
@@ -1668,7 +1679,7 @@ Private Sub mnusalir_Click()
         Exit Sub
 
 mnusalir_Click_Err:
-102     Call RegistrarError(Err.Number, Err.description, "frmMain.mnusalir_Click", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "frmMain.mnusalir_Click", Erl)
 104     Resume Next
         
 End Sub
@@ -1688,7 +1699,7 @@ Public Sub mnuMostrar_Click()
         Exit Sub
 
 mnuMostrar_Click_Err:
-104     Call RegistrarError(Err.Number, Err.description, "frmMain.mnuMostrar_Click", Erl)
+104     Call RegistrarError(Err.Number, Err.Description, "frmMain.mnuMostrar_Click", Erl)
 
         
 End Sub
@@ -1714,7 +1725,7 @@ Private Sub KillLog_Timer()
     Exit Sub
 
 KillLog_Timer_Err:
-    Call RegistrarError(Err.Number, Err.description, "frmMain.KillLog_Timer", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "frmMain.KillLog_Timer", Erl)
 
         
 End Sub
@@ -1729,7 +1740,7 @@ Private Sub mnuServidor_Click()
         Exit Sub
 
 mnuServidor_Click_Err:
-102     Call RegistrarError(Err.Number, Err.description, "frmMain.mnuServidor_Click", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "frmMain.mnuServidor_Click", Erl)
 104     Resume Next
         
 End Sub
@@ -1740,11 +1751,11 @@ Private Sub mnuSystray_Click()
         
 
         Dim i   As Integer
-        Dim S   As String
+        Dim s   As String
         Dim nid As NOTIFYICONDATA
 
-100     S = "ARGENTUM-ONLINE"
-102     nid = setNOTIFYICONDATA(frmMain.hWnd, vbNull, NIF_MESSAGE Or NIF_ICON Or NIF_TIP, WM_MOUSEMOVE, frmMain.Icon, S)
+100     s = "ARGENTUM-ONLINE"
+102     nid = setNOTIFYICONDATA(frmMain.hwnd, vbNull, NIF_MESSAGE Or NIF_ICON Or NIF_TIP, WM_MOUSEMOVE, frmMain.Icon, s)
 104     i = Shell_NotifyIconA(NIM_ADD, nid)
     
 106     If WindowState <> vbMinimized Then WindowState = vbMinimized
@@ -1755,7 +1766,7 @@ Private Sub mnuSystray_Click()
         Exit Sub
 
 mnuSystray_Click_Err:
-110     Call RegistrarError(Err.Number, Err.description, "frmMain.mnuSystray_Click", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "frmMain.mnuSystray_Click", Erl)
 112     Resume Next
         
 End Sub
@@ -1778,7 +1789,7 @@ Private Sub npcataca_Timer()
     Exit Sub
 
 npcataca_Timer_Err:
-    Call RegistrarError(Err.Number, Err.description, "frmMain.npcataca_Timer", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "frmMain.npcataca_Timer", Erl)
 
     
 End Sub
@@ -1798,7 +1809,7 @@ On Error GoTo Handler
     Exit Sub
     
 Handler:
-    Call RegistrarError(Err.Number, Err.description, "frmMain.packetResend_Timer")
+    Call RegistrarError(Err.Number, Err.Description, "frmMain.packetResend_Timer")
     Resume Next
     
 End Sub
@@ -1870,7 +1881,7 @@ Private Sub SubastaTimer_Timer()
     Exit Sub
 
 SubastaTimer_Timer_Err:
-    Call RegistrarError(Err.Number, Err.description, "frmMain.SubastaTimer_Timer", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "frmMain.SubastaTimer_Timer", Erl)
     Resume Next
         
 End Sub
@@ -2060,7 +2071,7 @@ Private Sub TimerMeteorologia_Timer()
     Exit Sub
 
 TimerMeteorologia_Timer_Err:
-    Call RegistrarError(Err.Number, Err.description, "frmMain.TimerMeteorologia_Timer", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "frmMain.TimerMeteorologia_Timer", Erl)
     Resume Next
         
 End Sub
@@ -2187,7 +2198,7 @@ Private Sub tPiqueteC_Timer()
     Exit Sub
 
 ErrHandler:
-    Call LogError("Error en tPiqueteC_Timer " & Err.Number & ": " & Err.description)
+    Call LogError("Error en tPiqueteC_Timer " & Err.Number & ": " & Err.Description)
 
 End Sub
 
@@ -2218,7 +2229,7 @@ Private Sub Truenos_Timer()
     Exit Sub
 
 Truenos_Timer_Err:
-    Call RegistrarError(Err.Number, Err.description, "frmMain.Truenos_Timer", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "frmMain.Truenos_Timer", Erl)
     Resume Next
         
 End Sub
@@ -2233,7 +2244,7 @@ Private Sub UptimeTimer_Timer()
     Exit Sub
 
 UptimeTimer_Timer_Err:
-    Call RegistrarError(Err.Number, Err.description, "frmMain.UptimeTimer_Timer", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "frmMain.UptimeTimer_Timer", Erl)
     Resume Next
         
 End Sub
