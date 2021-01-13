@@ -1813,7 +1813,7 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
             
         If AdministratorAccounts(UCase$(CuentaEmail)) <> UCase$(UserName) Then
             Call WriteShowMessageBox(UserIndex, "¡ESTE PERSONAJE NO TE PERTENECE!")
-            Call SaveBanCuentaDatabase(UserList(UserIndex).AccountID, "Intento de hackeo de personajes ajenos", "El Servidor")
+            Call SaveBanCuentaDatabase(UserList(UserIndex).AccountId, "Intento de hackeo de personajes ajenos", "El Servidor")
             Call CloseSocket(UserIndex)
             Exit Sub
         End If
@@ -1838,10 +1838,10 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
 
     End If
     
-    If Not PersonajePerteneceID(UserName, UserList(UserIndex).AccountID) Then
+    If Not PersonajePerteneceID(UserName, UserList(UserIndex).AccountId) Then
         'Call WriteShowMessageBox(UserIndex, "¡ESTE PERSONAJE NO TE PERTENECE!")
-        Call LogHackAttemp("Alguien ha tratado de ingresar con el PJ '" & UserName & "' desde una cuenta ajena ID: " & UserList(UserIndex).AccountID & " desde la IP: " & UserList(UserIndex).ip)
-        Call SaveBanCuentaDatabase(UserList(UserIndex).AccountID, "Intento de hackeo de personajes ajenos", "El Servidor")
+        Call LogHackAttemp("Alguien ha tratado de ingresar con el PJ '" & UserName & "' desde una cuenta ajena ID: " & UserList(UserIndex).AccountId & " desde la IP: " & UserList(UserIndex).ip)
+        Call SaveBanCuentaDatabase(UserList(UserIndex).AccountId, "Intento de hackeo de personajes ajenos", "El Servidor")
         Call CloseSocket(UserIndex)
         Exit Sub
             
@@ -1987,7 +1987,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
             Exit Sub
         End If
             
-164     If GetPersonajesCountByIDDatabase(UserList(UserIndex).AccountID) >= MAX_PERSONAJES Then
+164     If GetPersonajesCountByIDDatabase(UserList(UserIndex).AccountId) >= MAX_PERSONAJES Then
 166         Call CloseSocket(UserIndex)
             Exit Sub
         End If
@@ -2299,26 +2299,26 @@ Private Sub HandleWhisper(ByVal UserIndex As Integer)
         
             Dim chat            As String
             Dim targetCharIndex As String
-            Dim TargetUserIndex As Integer
+            Dim targetUserIndex As Integer
 
 110         targetCharIndex = Buffer.ReadASCIIString()
 112         chat = Buffer.ReadASCIIString()
             
 114         Call .incomingData.CopyBuffer(Buffer)
             
-116         TargetUserIndex = NameIndex(targetCharIndex)
+116         targetUserIndex = NameIndex(targetCharIndex)
 
-118         If TargetUserIndex <= 0 Then 'existe el usuario destino?
+118         If targetUserIndex <= 0 Then 'existe el usuario destino?
 120             Call WriteConsoleMsg(UserIndex, "Usuario offline o inexistente.", FontTypeNames.FONTTYPE_INFO)
 
             Else
         
-122             If Not EsGM(UserIndex) And EsGM(TargetUserIndex) Then
+122             If Not EsGM(UserIndex) And EsGM(targetUserIndex) Then
 124                 Call WriteConsoleMsg(UserIndex, "No podes hablar por privado con Game Masters.", FontTypeNames.FONTTYPE_WARNING)
 
                 Else
 
-126                 If EstaPCarea(UserIndex, TargetUserIndex) Then
+126                 If EstaPCarea(UserIndex, targetUserIndex) Then
 
 128                     If LenB(chat) <> 0 Then
                             'Analize chat...
@@ -2327,18 +2327,18 @@ Private Sub HandleWhisper(ByVal UserIndex As Integer)
 132                         Call SendData(SendTarget.ToSuperioresArea, UserIndex, PrepareMessageChatOverHead(chat, .Char.CharIndex, RGB(157, 226, 20)))
                         
 134                         Call WriteChatOverHead(UserIndex, chat, .Char.CharIndex, RGB(157, 226, 20))
-136                         Call WriteChatOverHead(TargetUserIndex, chat, .Char.CharIndex, RGB(157, 226, 20))
+136                         Call WriteChatOverHead(targetUserIndex, chat, .Char.CharIndex, RGB(157, 226, 20))
                             'Call WriteConsoleMsg(UserIndex, "[" & .Name & "] " & chat, FontTypeNames.FONTTYPE_MP)
                             'Call WriteConsoleMsg(targetUserIndex, "[" & .Name & "] " & chat, FontTypeNames.FONTTYPE_MP)
-138                         Call WritePlayWave(TargetUserIndex, FXSound.MP_SOUND, NO_3D_SOUND, NO_3D_SOUND)
+138                         Call WritePlayWave(targetUserIndex, FXSound.MP_SOUND, NO_3D_SOUND, NO_3D_SOUND)
                         
 
                         End If
 
                     Else
 140                     Call WriteConsoleMsg(UserIndex, "[" & .name & "] " & chat, FontTypeNames.FONTTYPE_MP)
-142                     Call WriteConsoleMsg(TargetUserIndex, "[" & .name & "] " & chat, FontTypeNames.FONTTYPE_MP)
-144                     Call WritePlayWave(TargetUserIndex, FXSound.MP_SOUND, NO_3D_SOUND, NO_3D_SOUND)
+142                     Call WriteConsoleMsg(targetUserIndex, "[" & .name & "] " & chat, FontTypeNames.FONTTYPE_MP)
+144                     Call WritePlayWave(targetUserIndex, FXSound.MP_SOUND, NO_3D_SOUND, NO_3D_SOUND)
                     
                     End If
 
@@ -10566,16 +10566,16 @@ Private Sub HandleDesbuggear(ByVal UserIndex As Integer)
 120                     Call WriteConsoleMsg(UserIndex, "El usuario debe estar offline.", FontTypeNames.FONTTYPE_INFO)
                     Else
 
-                        Dim AccountID As Long, AccountOnline As Boolean
+                        Dim AccountId As Long, AccountOnline As Boolean
                     
-122                     AccountID = GetAccountIDDatabase(UserName)
+122                     AccountId = GetAccountIDDatabase(UserName)
                     
-124                     If AccountID >= 0 Then
+124                     If AccountId >= 0 Then
 
 126                         For i = 1 To LastUser
 
 128                             If UserList(i).flags.UserLogged Then
-130                                 If UserList(i).AccountID = AccountID Then
+130                                 If UserList(i).AccountId = AccountId Then
 132                                     AccountOnline = True
 
                                     End If
@@ -10592,7 +10592,7 @@ Private Sub HandleDesbuggear(ByVal UserIndex As Integer)
 142                         If AccountOnline Then
 144                             Call WriteConsoleMsg(UserIndex, "Hay un usuario de la cuenta conectado. Se actualizaron solo los usuarios online.", FontTypeNames.FONTTYPE_INFO)
                             Else
-146                             Call ResetLoggedDatabase(AccountID)
+146                             Call ResetLoggedDatabase(AccountId)
 148                             Call WriteConsoleMsg(UserIndex, "Cuenta del personaje desbuggeada y usuarios online actualizados.", FontTypeNames.FONTTYPE_INFO)
 
                             End If
@@ -17424,12 +17424,12 @@ Public Sub HandleChangeMapInfoPK(ByVal UserIndex As Integer)
         
 112         Call LogGM(.name, .name & " ha cambiado la informacion sobre si es seguro el mapa.")
         
-114         MapInfo(.Pos.Map).Seguro = isMapPk
+114         MapInfo(.Pos.Map).Seguro = IIf(isMapPk, 1, 0)
         
             'Change the boolean to string in a fast way
             Rem Call WriteVar(App.Path & MapPath & "mapa" & .Pos.map & ".dat", "Mapa" & .Pos.map, "Pk", IIf(isMapPk, "1", "0"))
 
-116         Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & " PK: " & MapInfo(.Pos.Map).Seguro, FontTypeNames.FONTTYPE_INFO)
+116         Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & " Seguro: " & MapInfo(.Pos.Map).Seguro, FontTypeNames.FONTTYPE_INFO)
 
         End With
 
@@ -25985,7 +25985,7 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
             Exit Sub
         End If
     
-134     If Not CheckUserAccount(UserDelete, UserList(UserIndex).AccountID) Then
+134     If Not CheckUserAccount(UserDelete, UserList(UserIndex).AccountId) Then
 136         Call LogHackAttemp(CuentaEmail & "[" & UserList(UserIndex).ip & "] intentó borrar el pj " & UserDelete)
 138         Call CloseSocket(UserIndex)
             Exit Sub
@@ -26223,7 +26223,7 @@ Public Sub WritePersonajesDeCuenta(ByVal UserIndex As Integer)
 102     donador = DonadorCheck(UserCuenta)
 
 104     If Database_Enabled Then
-106         CantPersonajes = GetPersonajesCuentaDatabase(UserList(UserIndex).AccountID, Personaje)
+106         CantPersonajes = GetPersonajesCuentaDatabase(UserList(UserIndex).AccountId, Personaje)
         Else
 108         CantPersonajes = ObtenerCantidadDePersonajes(UserCuenta)
         
