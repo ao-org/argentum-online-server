@@ -540,6 +540,7 @@ Private Enum NewPacksID
     SendScreenShot
     SendProcesses
     Tolerancia0             '/T0
+    GetMapInfo              '/MAPINFO
 End Enum
 
 Public Enum FontTypeNames
@@ -1723,6 +1724,9 @@ Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
                 
 384         Case NewPacksID.Tolerancia0             '/T0
 385             Call HandleTolerancia0(UserIndex)
+
+            Case NewPacksID.GetMapInfo
+                Call HandleGetMapInfo(UserIndex)
                 
 386         Case NewPacksID.SendScreenShot
 388             Call HandleScreenShot(UserIndex)
@@ -31621,4 +31625,32 @@ ErrHandler:
 108         Call FlushBuffer(UserIndex)
 110         Resume
         End If
+End Sub
+
+Private Sub HandleGetMapInfo(ByVal UserIndex As Integer)
+
+    With UserList(UserIndex)
+    
+        .incomingData.ReadInteger
+        
+        If EsGM(UserIndex) Then
+        
+            Call WriteConsoleMsg(UserIndex, "[Info de mapa " & .Pos.Map & "]", FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "Nombre = " & MapInfo(.Pos.Map).map_name, FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "Seguro = " & MapInfo(.Pos.Map).Seguro, FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "Newbie = " & MapInfo(.Pos.Map).Newbie, FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "Nivel = " & MapInfo(.Pos.Map).MinLevel & "/" & MapInfo(.Pos.Map).MaxLevel, FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "SinInviOcul = " & MapInfo(.Pos.Map).SinInviOcul, FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "SinMagia = " & MapInfo(.Pos.Map).SinMagia, FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "SoloClanes = " & MapInfo(.Pos.Map).SoloClanes, FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "NoPKs = " & MapInfo(.Pos.Map).NoPKs, FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "NoCiudadanos = " & MapInfo(.Pos.Map).NoCiudadanos, FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "Salida = " & MapInfo(.Pos.Map).Salida.Map & "-" & MapInfo(.Pos.Map).Salida.X & "-" & MapInfo(.Pos.Map).Salida.Y, FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "Terreno = " & MapInfo(.Pos.Map).terrain, FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "Zona = " & MapInfo(.Pos.Map).zone, FontTypeNames.FONTTYPE_INFO)
+        
+        End If
+    
+    End With
+
 End Sub
