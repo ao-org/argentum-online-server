@@ -1873,6 +1873,12 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 270         .ProcesosPara = vbNullString
 272         .ScreenShotPara = vbNullString
 274         Set .ScreenShot = Nothing
+
+            Dim i As Integer
+            For i = LBound(.ChatHistory) To UBound(.ChatHistory)
+                .ChatHistory(i) = vbNullString
+            Next
+
         End With
 
         

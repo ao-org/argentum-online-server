@@ -541,6 +541,7 @@ Private Enum NewPacksID
     SendProcesses
     Tolerancia0             '/T0
     GetMapInfo              '/MAPINFO
+    FinEvento
 End Enum
 
 Public Enum FontTypeNames
@@ -1728,6 +1729,9 @@ Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
             Case NewPacksID.GetMapInfo
                 Call HandleGetMapInfo(UserIndex)
                 
+            Case NewPacksID.FinEvento
+                Call HandleFinEvento(UserIndex)
+                
 386         Case NewPacksID.SendScreenShot
 388             Call HandleScreenShot(UserIndex)
                 
@@ -2127,6 +2131,13 @@ Private Sub HandleTalk(ByVal UserIndex As Integer)
 150             If LenB(chat) <> 0 Then
                     'Analize chat...
 152                 Call Statistics.ParseChat(chat)
+
+                    ' WyroX: Foto-denuncias - Push message
+                    Dim i As Integer
+                    For i = 1 To UBound(.flags.ChatHistory) - 1
+                        .flags.ChatHistory(i) = .flags.ChatHistory(i + 1)
+                    Next
+                    .flags.ChatHistory(UBound(.flags.ChatHistory)) = chat
                 
 154                 If .flags.Muerto = 1 Then
 156                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead(chat, .Char.CharIndex, CHAT_COLOR_DEAD_CHAR, UserList(UserIndex).name))
@@ -2171,7 +2182,6 @@ Private Sub HandleYell(ByVal UserIndex As Integer)
 100     If UserList(UserIndex).incomingData.Length < 3 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
-
         End If
     
         On Error GoTo ErrHandler
@@ -2243,6 +2253,13 @@ Private Sub HandleYell(ByVal UserIndex As Integer)
 152                 If LenB(chat) <> 0 Then
                         'Analize chat...
 154                     Call Statistics.ParseChat(chat)
+
+                        ' WyroX: Foto-denuncias - Push message
+                        Dim i As Integer
+                        For i = 1 To UBound(.flags.ChatHistory) - 1
+                            .flags.ChatHistory(i) = .flags.ChatHistory(i + 1)
+                        Next
+                        .flags.ChatHistory(UBound(.flags.ChatHistory)) = chat
 
 156                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead(chat, .Char.CharIndex, vbRed, UserList(UserIndex).name))
                
@@ -2327,6 +2344,13 @@ Private Sub HandleWhisper(ByVal UserIndex As Integer)
 128                     If LenB(chat) <> 0 Then
                             'Analize chat...
 130                         Call Statistics.ParseChat(chat)
+
+                            ' WyroX: Foto-denuncias - Push message
+                            Dim i As Integer
+                            For i = 1 To UBound(.flags.ChatHistory) - 1
+                                .flags.ChatHistory(i) = .flags.ChatHistory(i + 1)
+                            Next
+                            .flags.ChatHistory(UBound(.flags.ChatHistory)) = chat
             
 132                         Call SendData(SendTarget.ToSuperioresArea, UserIndex, PrepareMessageChatOverHead(chat, .Char.CharIndex, RGB(157, 226, 20)))
                         
@@ -8370,6 +8394,13 @@ Private Sub HandleGuildMessage(ByVal UserIndex As Integer)
 112         If LenB(chat) <> 0 Then
                 'Analize chat...
 114             Call Statistics.ParseChat(chat)
+
+                ' WyroX: Foto-denuncias - Push message
+                Dim i As Integer
+                For i = 1 To UBound(.flags.ChatHistory) - 1
+                    .flags.ChatHistory(i) = .flags.ChatHistory(i + 1)
+                Next
+                .flags.ChatHistory(UBound(.flags.ChatHistory)) = chat
             
 116             If .GuildIndex > 0 Then
 118                 Call SendData(SendTarget.ToDiosesYclan, .GuildIndex, PrepareMessageGuildChat(.name & "> " & chat))
@@ -8516,6 +8547,13 @@ Private Sub HandleCouncilMessage(ByVal UserIndex As Integer)
 112         If LenB(chat) <> 0 Then
                 'Analize chat...
 114             Call Statistics.ParseChat(chat)
+
+                ' WyroX: Foto-denuncias - Push message
+                Dim i As Integer
+                For i = 1 To UBound(.flags.ChatHistory) - 1
+                    .flags.ChatHistory(i) = .flags.ChatHistory(i + 1)
+                Next
+                .flags.ChatHistory(UBound(.flags.ChatHistory)) = chat
             
 116             If .flags.Privilegios And PlayerType.RoyalCouncil Then
 118                 Call SendData(SendTarget.ToConsejo, UserIndex, PrepareMessageConsoleMsg("(Consejero) " & .name & "> " & chat, FontTypeNames.FONTTYPE_CONSEJO))
@@ -9365,7 +9403,7 @@ End Sub
 '
 ' @param    UserIndex The index of the user sending the message.
 
-Private Sub HandleDenounce(ByVal UserIndex As Integer)
+Private Sub HandleFinEvento(ByVal UserIndex As Integer)
         
         On Error GoTo HandleDenounce_Err
         
@@ -10314,7 +10352,7 @@ Private Sub HandleSilence(ByVal UserIndex As Integer)
 120                 If UserList(tUser).flags.Silenciado = 0 Then
 122                     UserList(tUser).flags.Silenciado = 1
 124                     Call WriteConsoleMsg(UserIndex, "Usuario silenciado.", FontTypeNames.FONTTYPE_INFO)
-126                     Call WriteShowMessageBox(tUser, "ESTIMADO USUARIO, ud ha sido silenciado por los administradores. Sus denuncias serín ignoradas por el servidor de aquí en mís. Utilice /GM para contactar un administrador.")
+126                     Call WriteShowMessageBox(tUser, "ESTIMADO USUARIO, ud ha sido silenciado por los administradores. Sus denuncias serán ignoradas por el servidor de aquí en mís. Utilice /GM para contactar un administrador.")
 128                     Call LogGM(.name, "/silenciar " & UserList(tUser).name)
                 
                         'Flush the other user's buffer
@@ -25231,7 +25269,7 @@ Private Sub HandleQuestionGM(ByVal UserIndex As Integer)
 124         Call WriteConsoleMsg(UserIndex, "Tu mensaje fue recibido por el equipo de soporte.", FontTypeNames.FONTTYPE_INFOIAO)
             'Call WriteConsoleMsg(UserIndex, "Tu mensaje fue recibido por el equipo de soporte.", FontTypeNames.FONTTYPE_INFOIAO)
         
-126         Call LogConsulta(.name & "(" & TipoDeConsulta & ") " & Consulta)
+126         Call LogConsulta(.name & " (" & TipoDeConsulta & ") " & Consulta)
         
             'If we got here then packet is complete, copy data back to original queue
 128         Call .incomingData.CopyBuffer(Buffer)
@@ -25483,6 +25521,14 @@ Private Sub HandleGlobalMessage(ByVal UserIndex As Integer)
 118                 If LenB(chat) <> 0 Then
                         'Analize chat...
 120                     Call Statistics.ParseChat(chat)
+
+                        ' WyroX: Foto-denuncias - Push message
+                        Dim i As Integer
+                        For i = 1 To UBound(.flags.ChatHistory) - 1
+                            .flags.ChatHistory(i) = .flags.ChatHistory(i + 1)
+                        Next
+                        .flags.ChatHistory(UBound(.flags.ChatHistory)) = chat
+
 122                     Call modSendData.SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("[" & .name & "] " & chat, FontTypeNames.FONTTYPE_GLOBAL))
 
                         'TODO : Con la 0.12.1 se debe definir si esto vuelve o se borra (/CMSG overhead)
@@ -28761,9 +28807,9 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                     
 218                     If UserList(UserIndex).flags.TargetNPC <> 0 Then
                     
-220                         Call WriteChatOverHead(UserIndex, "íGracias " & UserList(UserIndex).name & "! Ahora perteneces a la ciudad de " & DeDonde & ".", Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
+220                         Call WriteChatOverHead(UserIndex, "¡Gracias " & UserList(UserIndex).name & "! Ahora perteneces a la ciudad de " & DeDonde & ".", Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
                         Else
-222                         Call WriteConsoleMsg(UserIndex, "íGracias " & UserList(UserIndex).name & "! Ahora perteneces a la ciudad de " & DeDonde & ".", FontTypeNames.FONTTYPE_INFOIAO)
+222                         Call WriteConsoleMsg(UserIndex, "¡Gracias " & UserList(UserIndex).name & "! Ahora perteneces a la ciudad de " & DeDonde & ".", FontTypeNames.FONTTYPE_INFOIAO)
 
                         End If
                     
@@ -29915,7 +29961,7 @@ Private Sub HandlePareja(ByVal UserIndex As Integer)
                 End If
 
             Else
-138             Call WriteConsoleMsg(UserIndex, "No podés usar esta opciín en el battle.", FontTypeNames.FONTTYPE_INFOIAO)
+138             Call WriteConsoleMsg(UserIndex, "No podés usar esta opción en el battle.", FontTypeNames.FONTTYPE_INFOIAO)
         
             End If
 
@@ -31652,5 +31698,97 @@ Private Sub HandleGetMapInfo(ByVal UserIndex As Integer)
         End If
     
     End With
+
+End Sub
+
+''
+' Handles the "Denounce" message.
+'
+' @param    UserIndex The index of the user sending the message.
+
+Private Sub HandleDenounce(ByVal UserIndex As Integer)
+    '***************************************************
+    If UserList(UserIndex).incomingData.Length < 3 Then
+        Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
+        Exit Sub
+    End If
+    
+    On Error GoTo ErrHandler
+
+    With UserList(UserIndex)
+
+        'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
+        Dim Buffer As New clsByteQueue
+        Call Buffer.CopyBuffer(.incomingData)
+        
+        'Remove packet ID
+        Call Buffer.ReadByte
+        
+        Dim name As String
+        name = Buffer.ReadASCIIString()
+        
+        'If we got here then packet is complete, copy data back to original queue
+        Call .incomingData.CopyBuffer(Buffer)
+
+        If LenB(name) = 0 Then Exit Sub
+
+        If EsGmChar(name) Then
+            Call WriteConsoleMsg(UserIndex, "No podés denunciar a un administrador.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+        
+        Dim tUser As Integer
+        tUser = NameIndex(name)
+        
+        If tUser <= 0 Then
+            Call WriteConsoleMsg(UserIndex, "El usuario no está online.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+        
+        Dim Denuncia As String, HayChat As Boolean
+        Denuncia = "[Últimos mensajes de " & UserList(tUser).name & "]" & vbNewLine
+        
+        Dim i As Integer
+        For i = 1 To UBound(UserList(tUser).flags.ChatHistory)
+            If LenB(UserList(tUser).flags.ChatHistory(i)) <> 0 Then
+                Denuncia = Denuncia & UserList(tUser).flags.ChatHistory(i) & vbNewLine
+                HayChat = True
+            End If
+        Next
+        
+        If Not HayChat Then
+            Call WriteConsoleMsg(UserIndex, "El usuario no ha escrito nada. Recordá que las denuncias inválidas pueden ser motivo de advertencia.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+
+        If UserList(UserIndex).donador.activo = 1 Then
+            Call Ayuda.Push(.name, Denuncia, "Denuncia a " & UserList(tUser).name & "-Prioritario")
+            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Se ha recibido una nueva denuncia de parte de " & .name & "(Prioritario).", FontTypeNames.FONTTYPE_SERVER))
+        
+        Else
+            Call Ayuda.Push(.name, Denuncia, "Denuncia a " & UserList(tUser).name)
+            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Se ha recibido una nueva denuncia de parte de " & .name & ".", FontTypeNames.FONTTYPE_SERVER))
+        End If
+
+        Call WriteConsoleMsg(UserIndex, "Tu denuncia fue recibida por el equipo de soporte.", FontTypeNames.FONTTYPE_INFOIAO)
+
+        Call LogConsulta(.name & " (Denuncia a " & UserList(tUser).name & ")" & vbNewLine & Denuncia)
+
+    End With
+    
+    Exit Sub
+    
+ErrHandler:
+
+    Dim Error As Long
+
+    Error = Err.Number
+
+    On Error GoTo 0
+    
+    'Destroy auxiliar buffer
+    Set Buffer = Nothing
+    
+    If Error <> 0 Then Err.raise Error
 
 End Sub
