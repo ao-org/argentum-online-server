@@ -1149,6 +1149,11 @@ Sub LoadBalance()
 162     InfluenciaPromedioVidas = val(BalanceIni.GetValue("EXTRA", "InfluenciaPromedioVidas"))
 164     DesbalancePromedioVidas = val(BalanceIni.GetValue("EXTRA", "DesbalancePromedioVidas"))
 166     RangoVidas = val(BalanceIni.GetValue("EXTRA", "RangoVidas"))
+
+        ' Exp
+        For i = 1 To STAT_MAXELV
+            ExpLevelUp(i) = val(BalanceIni.GetValue("EXP", i))
+        Next
     
 168     Set BalanceIni = Nothing
     

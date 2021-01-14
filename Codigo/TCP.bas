@@ -568,7 +568,7 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal 
 210         .Stats.GLD = 0
         
 212         .Stats.Exp = 0
-214         .Stats.ELU = 300
+214         .Stats.ELU = ExpLevelUp(1)
 216         .Stats.ELV = 1
         
 218         Call RellenarInventario(UserIndex)

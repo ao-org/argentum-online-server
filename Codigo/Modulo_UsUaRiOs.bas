@@ -494,16 +494,6 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
 112             Call WriteLocaleMsg(UserIndex, "186", FontTypeNames.FONTTYPE_INFO)
             
 114             .Stats.Exp = .Stats.Exp - .Stats.ELU
-
-116             If .Stats.ELV < 10 Then
-118                 .Stats.ELU = .Stats.ELU * 1.5
-120             ElseIf .Stats.ELV < 25 Then
-122                 .Stats.ELU = .Stats.ELU * 1.3
-124             ElseIf .Stats.ELV < 48 Then
-126                 .Stats.ELU = .Stats.ELU * 1.2
-                Else
-128                 .Stats.ELU = .Stats.ELU * 1.3
-                End If
                 
 130             Pts = Pts + 5
             
@@ -523,6 +513,7 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
 144             AumentoHIT = IIf(.Stats.ELV < 36, ModClase(.clase).HitPre36, ModClase(.clase).HitPost36)
 
 146             .Stats.ELV = .Stats.ELV + 1
+147             .Stats.ELU = ExpLevelUp(.Stats.ELV)
                 
                 'Actualizamos HitPoints
 148             .Stats.MaxHp = .Stats.MaxHp + AumentoHP
@@ -596,11 +587,7 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
             Loop
         
 198         If PasoDeNivel Then
-                'Checkea otra vez, esto sucede si tiene mas EXP y puede saltarse el maximo nivel
-200             If .Stats.ELV >= STAT_MAXELV Then
-202                 .Stats.Exp = 0
-204                 .Stats.ELU = 0
-                End If
+200             If .Stats.ELV >= STAT_MAXELV Then .Stats.Exp = 0
         
 206             Call UpdateUserInv(True, UserIndex, 0)
                 'Call CheckearRecompesas(UserIndex, 3)
