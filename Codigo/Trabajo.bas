@@ -2038,7 +2038,7 @@ Public Sub DoGolpeCritico(ByVal UserIndex As Integer, ByVal VictimNpcIndex As In
         
 102         If .clase <> eClass.Bandit Then Exit Sub
 104         If .Invent.WeaponEqpSlot = 0 Then Exit Sub
-106         If ObjData(.Invent.WeaponEqpObjIndex).name <> "Espada Vikinga" Then Exit Sub
+106         If ObjData(.Invent.WeaponEqpObjIndex).Subtipo <> 2 Then Exit Sub
 
 108         Skill = .Stats.UserSkills(eSkill.Wrestling)
         
