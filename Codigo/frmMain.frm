@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{248DD890-BB45-11CF-9ABC-0080C7E7B78D}#1.0#0"; "MSWINSCK.ocx"
+Object = "{248DD890-BB45-11CF-9ABC-0080C7E7B78D}#1.0#0"; "MSWINSCK.OCX"
 Begin VB.Form frmMain 
    BackColor       =   &H00E0E0E0&
    BorderStyle     =   4  'Fixed ToolWindow
@@ -1353,7 +1353,7 @@ Private Sub GameTimer_Timer()
     Dim bEnviarStats As Boolean
     Dim bEnviarAyS   As Boolean
     
-    On Error GoTo hayerror
+    On Error GoTo HayError
     
     '<<<<<< Procesa eventos de los usuarios >>>>>>
     For iUserIndex = 1 To MaxUsers 'LastUser
@@ -1549,7 +1549,7 @@ Private Sub GameTimer_Timer()
 
     Exit Sub
 
-hayerror:
+HayError:
     LogError ("Error en GameTimer: " & Err.description & " UserIndex = " & iUserIndex)
 
 End Sub
@@ -1895,7 +1895,18 @@ Private Sub TIMER_AI_Timer()
             
                 If .flags.NPCActive Then 'Nos aseguramos que sea INTELIGENTE!
                 
-                    If .flags.Paralizado = 1 Or .flags.Inmovilizado = 1 Then
+                    If .NPCtype = DummyTarget Then
+                        ' Regenera vida después de X tiempo sin atacarlo
+                        If .Stats.MinHp < .Stats.MaxHp Then
+                            .Contadores.UltimoAtaque = .Contadores.UltimoAtaque - 1
+                            
+                            If .Contadores.UltimoAtaque <= 0 Then
+                                Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageEfectOverHead(.Stats.MaxHp - .Stats.MinHp, .Char.CharIndex, vbGreen))
+                                .Stats.MinHp = .Stats.MaxHp
+                            End If
+                        End If
+                
+                    ElseIf .flags.Paralizado = 1 Or .flags.Inmovilizado = 1 Then
                         Call EfectoParalisisNpc(NpcIndex)
 
                     Else
