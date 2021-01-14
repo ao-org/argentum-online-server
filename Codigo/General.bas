@@ -27,6 +27,9 @@ Attribute VB_Name = "General"
 'La Plata - Pcia, Buenos Aires - Republica Argentina
 'Código Postal 1900
 'Pablo Ignacio Márquez
+
+Option Explicit
+
 Public Type TDonador
 
     activo As Byte
@@ -35,10 +38,7 @@ Public Type TDonador
 
 End Type
 
-Option Explicit
-
 Public Declare Function QueryPerformanceCounter Lib "kernel32" (lpPerformanceCount As Currency) As Long
-
 Public Declare Function QueryPerformanceFrequency Lib "kernel32" (lpFrequency As Currency) As Long
 
 Public Declare Sub OutputDebugString Lib "kernel32" Alias "OutputDebugStringA" (ByVal lpOutputString As String)
@@ -2749,4 +2749,10 @@ handle:
 106     Call RegistrarError(Err.Number, Err.Description, "General.RandomIntBiased")
 108     RandomIntBiased = Bias
 
+End Function
+
+'Very efficient function for testing whether this code is running in the IDE or compiled
+'https://www.vbforums.com/showthread.php?231468-VB-Detect-if-you-are-running-in-the-IDE&p=5413357&viewfull=1#post5413357
+Public Function RunningInVB(Optional ByRef B As Boolean = True) As Boolean
+    If B Then Debug.Assert Not RunningInVB(RunningInVB) Else B = True
 End Function

@@ -190,7 +190,7 @@ Public Sub Connect()
     ' Si estamos en VB, tenemos que llamar a la API directamente para cerrar el socket
     ' Sino tenemos que re-abrir el VB para que el hilo se cierre
     ' Por lo que primero lo cerramos, para evitar errores.
-    If Socket.State <> (sckClosed Or sckConnecting) Then
+    If RunningInVB() Or Socket.State <> (sckClosed Or sckConnecting) Then
         Call Socket.CloseSck
         DoEvents
     End If
