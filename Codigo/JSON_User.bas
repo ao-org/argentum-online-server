@@ -43,7 +43,7 @@ Function Principal(ByRef UserIndex As Integer, ByRef Logout As Boolean) As JS_Ob
         Objeto.Item("slot_shield") = .Invent.EscudoEqpSlot
         Objeto.Item("slot_helmet") = .Invent.CascoEqpSlot
         Objeto.Item("slot_ammo") = .Invent.MunicionEqpSlot
-        Objeto.Item("slot_ring") = .Invent.AnilloEqpSlot
+        'Objeto.Item("slot_ring") = .Invent.AnilloEqpSlot
         Objeto.Item("slot_tool") = .Invent.HerramientaEqpSlot
         Objeto.Item("slot_magic") = .Invent.MagicoSlot
         Objeto.Item("slot_knuckles") = .Invent.NudilloSlot

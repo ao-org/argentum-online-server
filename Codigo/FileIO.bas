@@ -3037,7 +3037,7 @@ End Sub
 
 Sub SaveUserAPI(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = False)
         
-    On Error GoTo SaveUser_Err
+    On Error GoTo SaveUserAPI_Err:
         
     Call SaveUserDatabase(UserIndex, True)
         

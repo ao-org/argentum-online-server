@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{248DD890-BB45-11CF-9ABC-0080C7E7B78D}#1.0#0"; "MSWINSCK.OCX"
+Object = "{248DD890-BB45-11CF-9ABC-0080C7E7B78D}#1.0#0"; "MSWINSCK.ocx"
 Begin VB.Form frmMain 
    BackColor       =   &H00E0E0E0&
    BorderStyle     =   4  'Fixed ToolWindow
@@ -1563,11 +1563,7 @@ Private Sub GameTimer_Timer()
     Exit Sub
 
 HayError:
-<<<<<<< HEAD
-    LogError ("Error en GameTimer: " & Err.description & " UserIndex = " & iUserIndex)
-=======
     LogError ("Error en GameTimer: " & Err.Description & " UserIndex = " & iUserIndex)
->>>>>>> 14fa9ea... Fix: line-endings y algun q otro error al buildear.
 
 End Sub
 
