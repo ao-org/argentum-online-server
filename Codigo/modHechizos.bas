@@ -1714,12 +1714,18 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                 '   b = False
                 '   Exit Sub
                 ' End If
+                
+                If UserList(tU).flags.SeguroResu Then
+                    Call WriteConsoleMsg(UserIndex, "El usuario tiene el seguro de resurrección activado.", FontTypeNames.FONTTYPE_INFO)
+                    Call WriteConsoleMsg(tU, UserList(UserIndex).name & " está intentando revivirte. Desactiva el seguro de resurrección para permitirle hacerlo.", FontTypeNames.FONTTYPE_INFO)
+                    b = False
+                    Exit Sub
+                End If
         
 542             If UserList(tU).Accion.TipoAccion = Accion_Barra.Resucitar Then
 544                 Call WriteConsoleMsg(UserIndex, "El usuario ya esta siendo resucitado.", FontTypeNames.FONTTYPE_INFO)
 546                 b = False
                     Exit Sub
-
                 End If
         
                 'Para poder tirar revivir a un pk en el ring

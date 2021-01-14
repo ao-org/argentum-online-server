@@ -1100,7 +1100,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
         
 224         .flags.SeguroParty = True
 226         .flags.SeguroClan = True
-
+            .flags.SeguroResu = True
         
 228         .CurrentInventorySlots = getMaxInventorySlots(UserIndex)
         

@@ -198,6 +198,7 @@ Private Enum ServerPacketID
     ScreenShotData
     Tolerancia0
     Redundancia
+    SeguroResu
 
 End Enum
 
@@ -542,6 +543,7 @@ Private Enum NewPacksID
     Tolerancia0             '/T0
     GetMapInfo              '/MAPINFO
     FinEvento
+    SeguroResu
 End Enum
 
 Public Enum FontTypeNames
@@ -1737,6 +1739,9 @@ Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
                 
 390         Case NewPacksID.SendProcesses
 392             Call HandleProcesses(UserIndex)
+
+            Case NewPacksID.SeguroResu
+                Call HandleSeguroResu(UserIndex)
             
 394         Case Else
                 'ERROR : Abort!
@@ -19962,6 +19967,23 @@ ErrHandler:
 
 End Sub
 
+Public Sub WriteSeguroResu(ByVal UserIndex As Integer, ByVal estado As Boolean)
+
+        On Error GoTo ErrHandler
+
+100     Call UserList(UserIndex).outgoingData.WriteByte(ServerPacketID.SeguroResu)
+102     Call UserList(UserIndex).outgoingData.WriteBoolean(estado)
+        Exit Sub
+
+ErrHandler:
+
+104     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
+106         Call FlushBuffer(UserIndex)
+108         Resume
+        End If
+
+End Sub
+
 ''
 ' Writes the "CantUseWhileMeditating" message to the given user's outgoing data buffer.
 '
@@ -31790,5 +31812,19 @@ ErrHandler:
     Set Buffer = Nothing
     
     If Error <> 0 Then Err.raise Error
+
+End Sub
+
+Private Sub HandleSeguroResu(ByVal UserIndex As Integer)
+
+    With UserList(UserIndex)
+    
+        .incomingData.ReadInteger
+        
+        .flags.SeguroResu = Not .flags.SeguroResu
+        
+        Call WriteSeguroResu(UserIndex, .flags.SeguroResu)
+    
+    End With
 
 End Sub

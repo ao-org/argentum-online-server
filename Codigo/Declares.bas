@@ -1580,7 +1580,8 @@ Public Type UserFlags
     Seguro As Boolean
     SeguroParty As Boolean
     SeguroClan As Boolean
-    
+    SeguroResu As Boolean
+
     DuracionEfecto As Long
     TargetNPC As Integer ' Npc señalado por el usuario
     TargetNpcTipo As eNPCType ' Tipo del npc señalado
