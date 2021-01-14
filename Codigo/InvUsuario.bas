@@ -3532,8 +3532,6 @@ End Function
 Public Function PirataCaeItem(ByVal UserIndex As Integer, ByVal slot As Byte)
         
         On Error GoTo PirataCaeItem_Err
-    
-        
 
 100     With UserList(UserIndex)
     
@@ -3595,33 +3593,25 @@ Sub TirarTodosLosItems(ByVal UserIndex As Integer)
 108                 If ItemSeCae(ItemIndex) And PirataCaeItem(UserIndex, i) And (Not EsNewbie(UserIndex) Or Not ItemNewbie(ItemIndex)) Then
 110                     NuevaPos.X = 0
 112                     NuevaPos.Y = 0
-                
-114                     If .flags.CarroMineria = 1 Then
-                
-116                         If ItemIndex = ORO_MINA Or ItemIndex = PLATA_MINA Or ItemIndex = HIERRO_MINA Then
-                       
-118                             MiObj.Amount = .Invent.Object(i).Amount * 0.3
-120                             MiObj.ObjIndex = ItemIndex
-                        
-122                             Call Tilelibre(.Pos, NuevaPos, MiObj, True, True)
                     
-124                             If NuevaPos.X <> 0 And NuevaPos.Y <> 0 Then
-126                                 Call DropObj(UserIndex, i, MiObj.Amount, NuevaPos.Map, NuevaPos.X, NuevaPos.Y)
-                                End If
+114                     MiObj.Amount = .Invent.Object(i).Amount
+116                     MiObj.ObjIndex = ItemIndex
 
+                        If .flags.CarroMineria = 1 Then
+118                         If ItemIndex = ORO_MINA Or ItemIndex = PLATA_MINA Or ItemIndex = HIERRO_MINA Then
+120                             MiObj.Amount = MiObj.Amount * 0.3
                             End If
+                        End If
                     
-                        Else
-                    
-128                         MiObj.Amount = .Invent.Object(i).Amount
-130                         MiObj.ObjIndex = ItemIndex
+122                     Call Tilelibre(.Pos, NuevaPos, MiObj, True, True)
+            
+124                     If NuevaPos.X <> 0 And NuevaPos.Y <> 0 Then
+126                         Call DropObj(UserIndex, i, MiObj.Amount, NuevaPos.Map, NuevaPos.X, NuevaPos.Y)
                         
-132                         Call Tilelibre(.Pos, NuevaPos, MiObj, True, True)
-                
-134                         If NuevaPos.X <> 0 And NuevaPos.Y <> 0 Then
-136                             Call DropObj(UserIndex, i, MAX_INVENTORY_OBJS, NuevaPos.Map, NuevaPos.X, NuevaPos.Y)
-                            End If
-                    
+                        ' WyroX: Si no hay lugar, quemamos el item del inventario (nada de mochilas gratis)
+                        Else
+128                         Call QuitarUserInvItem(UserIndex, i, MiObj.Amount)
+130                         Call UpdateUserInv(False, UserIndex, i)
                         End If
                 
                     End If
