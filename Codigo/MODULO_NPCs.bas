@@ -44,6 +44,13 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         '24/01/2007: Pablo (ToxicWaste): Agrego para actualización de tag si cambia de status.
         '********************************************************
         On Error GoTo ErrHandler
+        
+        ' Objetivo de pruebas nunca muere
+        If Npclist(NpcIndex).NPCtype = DummyTarget Then
+            Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageChatOverHead("¡¡Auch!!", Npclist(NpcIndex).Char.CharIndex, vbRed, "Barrin"))
+            Npclist(NpcIndex).Stats.MinHp = Npclist(NpcIndex).Stats.MaxHp
+            Exit Sub
+        End If
 
         Dim MiNPC As npc
 

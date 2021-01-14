@@ -166,6 +166,10 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
         
 114         Npclist(TargetNPC).Stats.MinHp = Npclist(TargetNPC).Stats.MinHp - daño
 
+            If Npclist(NpcIndex).NPCtype = DummyTarget Then
+                Npclist(NpcIndex).Contadores.UltimoAtaque = 30
+            End If
+
             ' Mascotas dan experiencia al amo
 116         If Npclist(NpcIndex).MaestroUser > 0 Then
 118             Call CalcularDarExp(Npclist(NpcIndex).MaestroUser, TargetNPC, daño)
@@ -2102,10 +2106,13 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal Use
         
 152         Npclist(NpcIndex).Stats.MinHp = Npclist(NpcIndex).Stats.MinHp - daño
 154         Call InfoHechizo(UserIndex)
+
+            If Npclist(NpcIndex).NPCtype = DummyTarget Then
+                Npclist(NpcIndex).Contadores.UltimoAtaque = 30
+            End If
         
 156         If UserList(UserIndex).ChatCombate = 1 Then
 158             Call WriteConsoleMsg(UserIndex, "Le has causado " & daño & " puntos de daño a la criatura!", FontTypeNames.FONTTYPE_FIGHT)
-
             End If
         
             If Npclist(NpcIndex).MaestroUser <= 0 Then

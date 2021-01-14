@@ -510,6 +510,7 @@ Public Enum eNPCType
     Subastador = 16
     Quest = 17
     Pretoriano = 18
+    DummyTarget = 19
     
 End Enum
 
@@ -1904,6 +1905,7 @@ Public Type NpcCounters
     IntervaloMovimiento As Long
     InvervaloLanzarHechizo As Long
     InvervaloRespawn As Long
+    UltimoAtaque As Long
 
 End Type
 

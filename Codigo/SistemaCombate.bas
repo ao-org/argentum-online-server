@@ -680,6 +680,9 @@ Public Sub UserDañoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
     
 116     If daño < 0 Then daño = 0
 
+        If Npclist(NpcIndex).NPCtype = DummyTarget Then
+            Npclist(NpcIndex).Contadores.UltimoAtaque = 30
+        End If
     
         'If UserList(UserIndex).ChatCombate = 1 Then
         '    Call WriteUserHitNPC(UserIndex, daño)
