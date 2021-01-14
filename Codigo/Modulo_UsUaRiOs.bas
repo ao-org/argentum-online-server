@@ -1495,7 +1495,7 @@ Sub UserDie(ByVal UserIndex As Integer)
 196             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, False))
             End If
     
-198         If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger <> eTrigger6.TRIGGER6_PERMITE And .flags.BattleModo = 0 Then
+198         If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger <> eTrigger.ZONAPELEA And .flags.BattleModo = 0 Then
 
 200             If (.flags.Privilegios And PlayerType.user) <> 0 Then
 
