@@ -372,26 +372,24 @@ Function Quest(ByRef UserIndex As Integer) As JS_Array
 End Function
 
 Function QuestTerminadas(ByRef UserIndex As Integer) As JS_Array
-    
-    Call Objeto.Clear
-    Call Matriz.Clear
-    
+
     With UserList(UserIndex)
-    
-        If .QuestStats.NumQuestsDone > 0 Then
         
-            For i = 1 To .QuestStats.NumQuestsDone
-                Objeto.Item("user_id") = .Id
-                Objeto.Item("quest_id") = .QuestStats.QuestsDone(i)
+        If .QuestStats.NumQuestsDone = 0 Then Exit Sub
+            
+        Call Objeto.Clear
+        Call Matriz.Clear
+            
+        For i = 1 To .QuestStats.NumQuestsDone
+            Objeto.Item("user_id") = .Id
+            Objeto.Item("quest_id") = .QuestStats.QuestsDone(i)
                     
-                ' Lo meto en el array de items
-                Matriz.Push Objeto
+            ' Lo meto en el array de items
+            Matriz.Push Objeto
                     
-                ' Limpio el objeto para la proxima iteracion
-                Objeto.Clear
-            Next i
-        
-        End If
+            ' Limpio el objeto para la proxima iteracion
+            Objeto.Clear
+        Next i
         
     End With
 
