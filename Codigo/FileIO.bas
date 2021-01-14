@@ -3016,140 +3016,108 @@ Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = Fals
 
     On Error GoTo SaveUser_Err
     
-100 If Database_Enabled Then
-102     Call SaveUserDatabase(UserIndex, Logout)
-    Else
-104     Call SaveUserCharfile(UserIndex, Logout)
-    End If
+    'If Database_Enabled Then
+        'Call SaveUserDatabase(UserIndex, Logout)
+    'Else
+        'Call SaveUserCharfile(UserIndex, Logout)
+    'End If
     
-106 UserList(UserIndex).Counters.LastSave = GetTickCount
+    Call SaveUserAPI(UserIndex, Logout)
+    
+    UserList(UserIndex).Counters.LastSave = GetTickCount
     
     Exit Sub
 
 SaveUser_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "ES.SaveUser", Erl)
-110     Resume Next
+    Call RegistrarError(Err.Number, Err.Description, "ES.SaveUser", Erl)
+
+    Resume Next
 
 End Sub
 
-Sub SaveUserWIP(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = False)
+Sub SaveUserAPI(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = False)
         
-        On Error GoTo SaveUser_Err
+    On Error GoTo SaveUser_Err
         
-        Dim s As cStringBuilder
-100     Set s = New cStringBuilder
+    Call SaveUserDatabase(UserIndex, True)
         
-102     With UserList(UserIndex)
-
-104         s.Append "name: '" & .name & "', "
-106         s.Append "level: " & .Stats.ELV & ", "
-108         s.Append "exp: " & CLng(.Stats.Exp) & ", "
-110         s.Append "elu: " & .Stats.ELU & ", "
-112         s.Append "genre_id: " & .genero & ", "
-114         s.Append "race_id: " & .raza & ", "
-116         s.Append "class_id: " & .clase & ", "
-118         s.Append "home_id: " & .Hogar & ", "
-120         s.Append "description: '" & .Desc & "', "
-122         s.Append "gold: " & .Stats.GLD & ", "
-124         s.Append "bank_gold: " & .Stats.Banco & ", "
-126         s.Append "free_skillpoints: " & .Stats.SkillPts & ", "
-128         s.Append "pets_saved: " & .flags.MascotasGuardadas & ", "
-130         s.Append "pos_map: " & .Pos.Map & ", "
-132         s.Append "pos_x: " & .Pos.X & ", "
-134         s.Append "pos_y: " & .Pos.Y & ", "
-136         s.Append "last_map: " & .flags.lastMap & ", "
-138         s.Append "message_info: '" & .MENSAJEINFORMACION & "', "
-140         s.Append "body_id: " & .Char.Body & ", "
-142         s.Append "head_id: " & .OrigChar.Head & ", "
-144         s.Append "weapon_id: " & .Char.WeaponAnim & ", "
-146         s.Append "helmet_id: " & .Char.CascoAnim & ", "
-148         s.Append "shield_id: " & .Char.ShieldAnim & ", "
-150         s.Append "heading: " & .Char.Heading & ", "
-152         s.Append "items_Amount: " & .Invent.NroItems & ", "
-154         s.Append "slot_armour: " & .Invent.ArmourEqpSlot & ", "
-156         s.Append "slot_weapon: " & .Invent.WeaponEqpSlot & ", "
-158         s.Append "slot_shield: " & .Invent.EscudoEqpSlot & ", "
-160         s.Append "slot_helmet: " & .Invent.CascoEqpSlot & ", "
-162         s.Append "slot_ammo: " & .Invent.MunicionEqpSlot & ", "
-164         s.Append "slot_dm: " & .Invent.DañoMagicoEqpSlot & ", "
-166         s.Append "slot_rm: " & .Invent.ResistenciaEqpSlot & ", "
-168         s.Append "slot_tool: " & .Invent.HerramientaEqpSlot & ", "
-170         s.Append "slot_magic: " & .Invent.MagicoSlot & ", "
-172         s.Append "slot_knuckles: " & .Invent.NudilloSlot & ", "
-174         s.Append "slot_ship: " & .Invent.BarcoSlot & ", "
-176         s.Append "slot_mount: " & .Invent.MonturaSlot & ", "
-178         s.Append "min_hp: " & .Stats.MinHp & ", "
-180         s.Append "max_hp: " & .Stats.MaxHp & ", "
-182         s.Append "min_man: " & .Stats.MinMAN & ", "
-184         s.Append "max_man: " & .Stats.MaxMAN & ", "
-186         s.Append "min_sta: " & .Stats.MinSta & ", "
-188         s.Append "max_sta: " & .Stats.MaxSta & ", "
-190         s.Append "min_ham: " & .Stats.MinHam & ", "
-192         s.Append "max_ham: " & .Stats.MaxHam & ", "
-194         s.Append "min_sed: " & .Stats.MinAGU & ", "
-196         s.Append "max_sed: " & .Stats.MaxAGU & ", "
-198         s.Append "min_hit: " & .Stats.MinHIT & ", "
-200         s.Append "max_hit: " & .Stats.MaxHit & ", "
-202         s.Append "killed_npcs: " & .Stats.NPCsMuertos & ", "
-204         s.Append "killed_users: " & .Stats.UsuariosMatados & ", "
-206         s.Append "invent_level: " & .Stats.InventLevel & ", "
-            'S.Append "rep_asesino: " & .Reputacion.AsesinoRep & ", "
-            'S.Append "rep_bandido: " & .Reputacion.BandidoRep & ", "
-            'S.Append "rep_burgues: " & .Reputacion.BurguesRep & ", "
-            'S.Append "rep_ladron: " & .Reputacion.LadronesRep & ", "
-            'S.Append "rep_noble: " & .Reputacion.NobleRep & ", "
-            'S.Append "rep_plebe: " & .Reputacion.PlebeRep & ", "
-            'S.Append "rep_average: " & .Reputacion.Promedio & ", "
-208         s.Append "is_naked: " & .flags.Desnudo & ", "
-210         s.Append "is_poisoned: " & .flags.Envenenado & ", "
-212         s.Append "is_hidden: " & .flags.Escondido & ", "
-214         s.Append "is_hungry: " & .flags.Hambre & ", "
-216         s.Append "is_thirsty: " & .flags.Sed & ", "
-            'S.Append "is_banned: " & .flags.Ban & ", " Esto es innecesario porque se setea cuando lo baneas (creo)
-218         s.Append "is_dead: " & .flags.Muerto & ", "
-220         s.Append "is_sailing: " & .flags.Navegando & ", "
-222         s.Append "is_paralyzed: " & .flags.Paralizado & ", "
-224         s.Append "is_mounted: " & .flags.Montado & ", "
-226         s.Append "is_silenced: " & .flags.Silenciado & ", "
-228         s.Append "silence_minutes_left: " & .flags.MinutosRestantes & ", "
-230         s.Append "silence_elapsed_seconds: " & .flags.SegundosPasados & ", "
-232         s.Append "spouse: '" & .flags.Pareja & "', "
-234         s.Append "counter_pena: " & .Counters.Pena & ", "
-236         s.Append "deaths: " & .flags.VecesQueMoriste & ", "
-238         s.Append "pertenece_consejo_real: " & (.flags.Privilegios And PlayerType.RoyalCouncil) & ", "
-240         s.Append "pertenece_consejo_caos: " & (.flags.Privilegios And PlayerType.ChaosCouncil) & ", "
-242         s.Append "pertenece_real: " & .Faccion.ArmadaReal & ", "
-244         s.Append "pertenece_caos: " & .Faccion.FuerzasCaos & ", "
-246         s.Append "ciudadanos_matados: " & .Faccion.CiudadanosMatados & ", "
-248         s.Append "criminales_matados: " & .Faccion.CriminalesMatados & ", "
-250         s.Append "recibio_armadura_real: " & .Faccion.RecibioArmaduraReal & ", "
-252         s.Append "recibio_armadura_caos: " & .Faccion.RecibioArmaduraCaos & ", "
-254         s.Append "recibio_exp_real: " & .Faccion.RecibioExpInicialReal & ", "
-256         s.Append "recibio_exp_caos: " & .Faccion.RecibioExpInicialCaos & ", "
-258         s.Append "recompensas_real: " & .Faccion.RecompensasReal & ", "
-260         s.Append "recompensas_caos: " & .Faccion.RecompensasCaos & ", "
-262         s.Append "reenlistadas: " & .Faccion.Reenlistadas & ", "
-264         s.Append "fecha_ingreso: " & IIf(.Faccion.FechaIngreso <> vbNullString, "'" & .Faccion.FechaIngreso & "'", "NULL") & ", "
-266         s.Append "nivel_ingreso: " & .Faccion.NivelIngreso & ", "
-268         s.Append "matados_ingreso: " & .Faccion.MatadosIngreso & ", "
-270         s.Append "siguiente_recompensa: " & .Faccion.NextRecompensa & ", "
-272         s.Append "status: " & .Faccion.Status & ", "
-274         s.Append "battle_points: " & .flags.BattlePuntos & ", "
-276         s.Append "guild_index: " & .GuildIndex & ", "
-278         s.Append "chat_combate: " & .ChatCombate & ", "
-280         s.Append "chat_global: " & .ChatGlobal & ", "
-282         s.Append "is_logged: " & IIf(Logout, "FALSE", "TRUE")
-
-284         .Counters.LastSave = GetTickCount
-
-        End With
-
+    Dim i As Long
         
-        Exit Sub
+    Dim SavePacket As New JS_Object
+        
+    Dim Header As New JS_Object
+    Header.Item("action") = "SaveUser"
+    Header.Item("expectsResponse") = False
+        
+    SavePacket.Item("header") = Header
+        
+    Dim Body As New JS_Object
+    Dim Main As New JS_Object
+        
+    With UserList(UserIndex)
 
-SaveUser_Err:
-286     Call RegistrarError(Err.Number, Err.Description, "ES.SaveUser", Erl)
-288     Resume Next
+        '*************************************************************
+        '   USER
+        '*************************************************************
+        Body.Item("main") = JSON_User.Principal(UserIndex, Logout)
+            
+        '*************************************************************
+        '   ATRIBUTOS
+        '*************************************************************
+        Body.Item("attributes") = JSON_User.Atributos(UserIndex)
+            
+        '*************************************************************
+        '   HECHIZOS
+        '*************************************************************
+        Body.Item("spell") = JSON_User.Hechizo(UserIndex)
+            
+        '*************************************************************
+        '   INVENTARIO
+        '*************************************************************
+        Body.Item("inventory_item") = JSON_User.Inventario(UserIndex)
+            
+        '*************************************************************
+        '   INVENTARIO DEL BANCO
+        '*************************************************************
+        Body.Item("bank_item") = JSON_User.InventarioBanco(UserIndex)
+            
+        '*************************************************************
+        '   SKILLS
+        '*************************************************************
+        Body.Item("skillpoint") = JSON_User.Habilidades(UserIndex)
+            
+        '*************************************************************
+        '   MASCOTAS
+        '*************************************************************
+        Body.Item("pet") = JSON_User.Mascotas(UserIndex)
+            
+        '*************************************************************
+        '   QUESTS
+        '*************************************************************
+        Body.Item("quest") = JSON_User.Quest(UserIndex)
+        
+        '*************************************************************
+        '   QUESTS TERMINADAS
+        '*************************************************************
+        Body.Item("quest_done") = JSON_User.QuestTerminadas(UserIndex)
+        
+        '*************************************************************
+        '   ENVIAMOS A LA API
+        '*************************************************************
+        SavePacket.Item("body") = Body
+            
+        frmAPISocket.txtResponse = SavePacket.toString
+        'Debug.Print SavePacket.ToString
+            
+        'Lo mandamos a la API
+        'Call frmAPISocket.API_SendData(SavePacket.ToString)
+            
+    End With
+
+    Exit Sub
+
+SaveUserAPI_Err:
+    Call RegistrarError(Err.Number, Err.Description, "ES.SaveUserAPI", Erl)
         
 End Sub
 
