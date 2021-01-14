@@ -200,6 +200,9 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 194         Call NPC_TIRAR_ITEMS(MiNPC)
             
         End If ' UserIndex > 0
+        
+        ' Mascotas y npcs de entrenamiento no respawnean
+        If MiNPC.MaestroNPC > 0 Or MiNPC.MaestroUser > 0 Then Exit Sub
 
         'ReSpawn o no
 196     If TiempoRespw = 0 Then
