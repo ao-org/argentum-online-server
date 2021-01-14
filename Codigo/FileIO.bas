@@ -3099,7 +3099,9 @@ Sub SaveUserAPI(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = F
         '*************************************************************
         '   QUESTS TERMINADAS
         '*************************************************************
-        Body.Item("quest_done") = JSON_User.QuestTerminadas(UserIndex)
+        If .QuestStats.NumQuestsDone > 0 Then
+            Body.Item("quest_done") = JSON_User.QuestTerminadas(UserIndex)
+        End If
         
         '*************************************************************
         '   ENVIAMOS A LA API
