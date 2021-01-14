@@ -755,6 +755,12 @@ auxSocket_DataArrival_Err:
         
 End Sub
 
+Private Sub Form_Load()
+
+    Call frmAPISocket.Connect
+    
+End Sub
+
 Private Sub mnuConsolaAPI_Click()
     frmAPISocket.Show vbModeless
 End Sub

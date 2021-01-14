@@ -3106,8 +3106,9 @@ Sub SaveUserAPI(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = F
         '*************************************************************
         SavePacket.Item("body") = Body
             
-        frmAPISocket.txtResponse = SavePacket.toString
-        'Debug.Print SavePacket.ToString
+        frmAPISocket.txtResponse = SavePacket.ToString
+        
+        Debug.Print vbNewLine & SavePacket.ToString
             
         'Lo mandamos a la API
         'Call frmAPISocket.API_SendData(SavePacket.ToString)

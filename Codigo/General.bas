@@ -547,9 +547,7 @@ End Sub
 Sub Main()
 
         On Error GoTo Handler
-        
-100     frmAPISocket.Socket.Connect "localhost", 3100
-        
+
 102     Call LeerLineaComandos
     
 104     Call CargarRanking
