@@ -140,6 +140,8 @@ Public DesbalancePromedioVidas      As Single
 
 Public RangoVidas                   As Single
 
+Public ExpLevelUp(1 To STAT_MAXELV) As Long
+
 Public InfluenciaPromedioVidas      As Single
 
 Public MinutosWs                    As Long
