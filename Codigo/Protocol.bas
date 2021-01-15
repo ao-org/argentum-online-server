@@ -1484,7 +1484,7 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
   
 1148     ElseIf Err.Number <> 0 And Not Err.Number = UserList(UserIndex).incomingData.NotEnoughDataErrCode Then
                'An error ocurred, log it and kick player.
-1150         Call RegistrarError(Err.Number, Err.description & vbNewLine & "PackedId: " & packetId & vbNewLine & _
+1150         Call RegistrarError(Err.Number, Err.Description & vbNewLine & "PackedId: " & packetId & vbNewLine & _
                  IIf(UserList(UserIndex).flags.UserLogged, "UserName: " & UserList(UserIndex).name, "UserIndex: " & UserIndex), _
                  "Protocol.HandleIncomingData", Erl)
         
@@ -1756,8 +1756,8 @@ Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
     
 404     ElseIf Err.Number <> 0 And Not Err.Number = UserList(UserIndex).incomingData.NotEnoughDataErrCode Then
             'An error ocurred, log it and kick player.
-406         Call LogError("Error: " & Err.Number & " [" & Err.description & "] - Linea: " & Erl & _
-                          " Source: " & Err.source & vbTab & _
+406         Call LogError("Error: " & Err.Number & " [" & Err.Description & "] - Linea: " & Erl & _
+                          " Source: " & Err.Source & vbTab & _
                           " HelpFile: " & Err.HelpFile & vbTab & _
                           " HelpContext: " & Err.HelpContext & vbTab & _
                           " LastDllError: " & Err.LastDllError & vbTab & _
@@ -2050,7 +2050,7 @@ Private Sub HandleThrowDice(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleThrowDice_Err:
-116     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleThrowDice", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleThrowDice", Erl)
 118     Resume Next
         
 End Sub
@@ -2577,7 +2577,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleWalk_Err:
-226     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleWalk", Erl)
+226     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleWalk", Erl)
 228     Resume Next
         
 End Sub
@@ -2605,7 +2605,7 @@ Private Sub HandleRequestPositionUpdate(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleRequestPositionUpdate_Err:
-104     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleRequestPositionUpdate", Erl)
+104     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleRequestPositionUpdate", Erl)
 106     Resume Next
         
 End Sub
@@ -2703,7 +2703,7 @@ Private Sub HandleAttack(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleAttack_Err:
-158     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleAttack", Erl)
+158     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleAttack", Erl)
 160     Resume Next
         
 End Sub
@@ -2750,7 +2750,7 @@ Private Sub HandlePickUp(ByVal UserIndex As Integer)
         Exit Sub
 
 HandlePickUp_Err:
-116     Call RegistrarError(Err.Number, Err.description, "Protocol.HandlePickUp", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandlePickUp", Erl)
 118     Resume Next
         
 End Sub
@@ -2789,7 +2789,7 @@ Private Sub HandleSafeToggle(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleSafeToggle_Err:
-112     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleSafeToggle", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleSafeToggle", Erl)
 114     Resume Next
         
 End Sub
@@ -2825,7 +2825,7 @@ Private Sub HandlePartyToggle(ByVal UserIndex As Integer)
         Exit Sub
 
 HandlePartyToggle_Err:
-112     Call RegistrarError(Err.Number, Err.description, "Protocol.HandlePartyToggle", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandlePartyToggle", Erl)
 114     Resume Next
         
 End Sub
@@ -2852,7 +2852,7 @@ Private Sub HandleSeguroClan(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleSeguroClan_Err:
-108     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleSeguroClan", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleSeguroClan", Erl)
 110     Resume Next
         
 End Sub
@@ -2880,7 +2880,7 @@ Private Sub HandleRequestGuildLeaderInfo(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleRequestGuildLeaderInfo_Err:
-104     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleRequestGuildLeaderInfo", Erl)
+104     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleRequestGuildLeaderInfo", Erl)
 106     Resume Next
         
 End Sub
@@ -2908,7 +2908,7 @@ Private Sub HandleRequestAtributes(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleRequestAtributes_Err:
-104     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleRequestAtributes", Erl)
+104     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleRequestAtributes", Erl)
 106     Resume Next
         
 End Sub
@@ -2936,7 +2936,7 @@ Private Sub HandleRequestSkills(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleRequestSkills_Err:
-104     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleRequestSkills", Erl)
+104     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleRequestSkills", Erl)
 106     Resume Next
         
 End Sub
@@ -2964,7 +2964,7 @@ Private Sub HandleRequestMiniStats(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleRequestMiniStats_Err:
-104     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleRequestMiniStats", Erl)
+104     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleRequestMiniStats", Erl)
 106     Resume Next
         
 End Sub
@@ -3002,7 +3002,7 @@ Private Sub HandleCommerceEnd(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleCommerceEnd_Err:
-112     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleCommerceEnd", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleCommerceEnd", Erl)
 114     Resume Next
         
 End Sub
@@ -3044,7 +3044,7 @@ Private Sub HandleUserCommerceEnd(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleUserCommerceEnd_Err:
-112     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleUserCommerceEnd", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleUserCommerceEnd", Erl)
 114     Resume Next
         
 End Sub
@@ -3080,7 +3080,7 @@ Private Sub HandleBankEnd(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleBankEnd_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleBankEnd", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleBankEnd", Erl)
 112     Resume Next
         
 End Sub
@@ -3109,7 +3109,7 @@ Private Sub HandleUserCommerceOk(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleUserCommerceOk_Err:
-104     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleUserCommerceOk", Erl)
+104     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleUserCommerceOk", Erl)
 106     Resume Next
         
 End Sub
@@ -3159,7 +3159,7 @@ Private Sub HandleUserCommerceReject(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleUserCommerceReject_Err:
-118     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleUserCommerceReject", Erl)
+118     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleUserCommerceReject", Erl)
 120     Resume Next
         
 End Sub
@@ -3279,7 +3279,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleDrop_Err:
-160     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleDrop", Erl)
+160     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleDrop", Erl)
 162     Resume Next
         
 End Sub
@@ -3351,7 +3351,7 @@ Private Sub HandleCastSpell(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleCastSpell_Err:
-136     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleCastSpell", Erl)
+136     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleCastSpell", Erl)
 138     Resume Next
         
 End Sub
@@ -3396,7 +3396,7 @@ Private Sub HandleLeftClick(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleLeftClick_Err:
-114     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleLeftClick", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleLeftClick", Erl)
 116     Resume Next
         
 End Sub
@@ -3441,7 +3441,7 @@ Private Sub HandleDoubleClick(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleDoubleClick_Err:
-114     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleDoubleClick", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleDoubleClick", Erl)
 116     Resume Next
         
 End Sub
@@ -3542,7 +3542,7 @@ Private Sub HandleWork(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleWork_Err:
-148     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleWork", Erl)
+148     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleWork", Erl)
 150     Resume Next
         
 End Sub
@@ -3576,7 +3576,7 @@ Private Sub HandleUseSpellMacro(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleUseSpellMacro_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleUseSpellMacro", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleUseSpellMacro", Erl)
 112     Resume Next
         
 End Sub
@@ -3624,7 +3624,7 @@ Private Sub HandleUseItem(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleUseItem_Err:
-116     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleUseItem", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleUseItem", Erl)
 118     Resume Next
         
 End Sub
@@ -3670,7 +3670,7 @@ Private Sub HandleCraftBlacksmith(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleCraftBlacksmith_Err:
-114     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleCraftBlacksmith", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleCraftBlacksmith", Erl)
 116     Resume Next
         
 End Sub
@@ -3716,7 +3716,7 @@ Private Sub HandleCraftCarpenter(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleCraftCarpenter_Err:
-114     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleCraftCarpenter", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleCraftCarpenter", Erl)
 116     Resume Next
         
 End Sub
@@ -3755,7 +3755,7 @@ Private Sub HandleCraftAlquimia(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleCraftAlquimia_Err:
-114     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleCraftAlquimia", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleCraftAlquimia", Erl)
 116     Resume Next
         
 End Sub
@@ -3795,7 +3795,7 @@ Private Sub HandleCraftSastre(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleCraftSastre_Err:
-114     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleCraftSastre", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleCraftSastre", Erl)
 116     Resume Next
         
 End Sub
@@ -4730,7 +4730,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleWorkLeftClick_Err:
-794     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleWorkLeftClick", Erl)
+794     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleWorkLeftClick", Erl)
 796     Resume Next
         
 End Sub
@@ -4870,7 +4870,7 @@ Private Sub HandleSpellInfo(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleSpellInfo_Err:
-122     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleSpellInfo", Erl)
+122     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleSpellInfo", Erl)
 124     Resume Next
         
 End Sub
@@ -4924,7 +4924,7 @@ Private Sub HandleEquipItem(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleEquipItem_Err:
-120     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleEquipItem", Erl)
+120     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleEquipItem", Erl)
 122     Resume Next
         
 End Sub
@@ -4972,7 +4972,7 @@ Private Sub HandleChangeHeading(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleChangeHeading_Err:
-116     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleChangeHeading", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleChangeHeading", Erl)
 118     Resume Next
         
 End Sub
@@ -5056,7 +5056,7 @@ Private Sub HandleModifySkills(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleModifySkills_Err:
-146     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleModifySkills", Erl)
+146     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleModifySkills", Erl)
 148     Resume Next
         
 End Sub
@@ -5120,7 +5120,7 @@ Private Sub HandleTrain(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleTrain_Err:
-128     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleTrain", Erl)
+128     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleTrain", Erl)
 130     Resume Next
         
 End Sub
@@ -5191,7 +5191,7 @@ Private Sub HandleCommerceBuy(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleCommerceBuy_Err:
-130     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleCommerceBuy", Erl)
+130     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleCommerceBuy", Erl)
 132     Resume Next
         
 End Sub
@@ -5257,7 +5257,7 @@ Private Sub HandleBankExtractItem(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleBankExtractItem_Err:
-124     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleBankExtractItem", Erl)
+124     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleBankExtractItem", Erl)
 126     Resume Next
         
 End Sub
@@ -5320,7 +5320,7 @@ Private Sub HandleCommerceSell(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleCommerceSell_Err:
-124     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleCommerceSell", Erl)
+124     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleCommerceSell", Erl)
 126     Resume Next
         
 End Sub
@@ -5385,7 +5385,7 @@ Private Sub HandleBankDeposit(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleBankDeposit_Err:
-124     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleBankDeposit", Erl)
+124     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleBankDeposit", Erl)
 126     Resume Next
         
 End Sub
@@ -5537,7 +5537,7 @@ Private Sub HandleMoveSpell(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleMoveSpell_Err:
-116     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleMoveSpell", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleMoveSpell", Erl)
 118     Resume Next
         
 End Sub
@@ -5728,7 +5728,7 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleUserCommerceOffer_Err:
-168     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleUserCommerceOffer", Erl)
+168     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleUserCommerceOffer", Erl)
 170     Resume Next
         
 End Sub
@@ -6359,7 +6359,7 @@ Private Sub HandleGuildAlliancePropList(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleGuildAlliancePropList_Err:
-104     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleGuildAlliancePropList", Erl)
+104     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGuildAlliancePropList", Erl)
 106     Resume Next
         
 End Sub
@@ -6387,7 +6387,7 @@ Private Sub HandleGuildPeacePropList(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleGuildPeacePropList_Err:
-104     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleGuildPeacePropList", Erl)
+104     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGuildPeacePropList", Erl)
 106     Resume Next
         
 End Sub
@@ -6870,7 +6870,7 @@ Private Sub HandleGuildOpenElections(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleGuildOpenElections_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleGuildOpenElections", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGuildOpenElections", Erl)
 112     Resume Next
         
 End Sub
@@ -7069,7 +7069,7 @@ Private Sub HandleOnline(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleOnline_Err:
-148     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleOnline", Erl)
+148     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleOnline", Erl)
 150     Resume Next
         
 End Sub
@@ -7146,7 +7146,7 @@ Private Sub HandleQuit(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleQuit_Err:
-142     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleQuit", Erl)
+142     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleQuit", Erl)
 144     Resume Next
         
 End Sub
@@ -7189,7 +7189,7 @@ Private Sub HandleGuildLeave(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleGuildLeave_Err:
-114     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleGuildLeave", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGuildLeave", Erl)
 116     Resume Next
         
 End Sub
@@ -7270,7 +7270,7 @@ Private Sub HandleRequestAccountState(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleRequestAccountState_Err:
-136     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleRequestAccountState", Erl)
+136     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleRequestAccountState", Erl)
 138     Resume Next
         
 End Sub
@@ -7324,7 +7324,7 @@ Private Sub HandlePetStand(ByVal UserIndex As Integer)
         Exit Sub
 
 HandlePetStand_Err:
-122     Call RegistrarError(Err.Number, Err.description, "Protocol.HandlePetStand", Erl)
+122     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandlePetStand", Erl)
 
         
 End Sub
@@ -7378,7 +7378,7 @@ Private Sub HandlePetFollow(ByVal UserIndex As Integer)
         Exit Sub
 
 HandlePetFollow_Err:
-122     Call RegistrarError(Err.Number, Err.description, "Protocol.HandlePetFollow", Erl)
+122     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandlePetFollow", Erl)
 
         
 End Sub
@@ -7419,7 +7419,7 @@ Private Sub HandlePetLeave(ByVal UserIndex As Integer)
         Exit Sub
 
 HandlePetLeave_Err:
-116     Call RegistrarError(Err.Number, Err.description, "Protocol.HandlePetLeave", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandlePetLeave", Erl)
 
         
 End Sub
@@ -7554,7 +7554,7 @@ Private Sub HandleTrainList(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleTrainList_Err:
-120     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleTrainList", Erl)
+120     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleTrainList", Erl)
 122     Resume Next
         
 End Sub
@@ -7617,7 +7617,7 @@ Private Sub HandleRest(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleRest_Err:
-130     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleRest", Erl)
+130     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleRest", Erl)
 132     Resume Next
         
 End Sub
@@ -7697,7 +7697,7 @@ Private Sub HandleMeditate(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleMeditate_Err:
-142     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleMeditate", Erl)
+142     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleMeditate", Erl)
 144     Resume Next
         
 End Sub
@@ -7750,7 +7750,7 @@ Private Sub HandleResucitate(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleResucitate_Err:
-122     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleResucitate", Erl)
+122     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleResucitate", Erl)
 124     Resume Next
         
 End Sub
@@ -7802,7 +7802,7 @@ Private Sub HandleHeal(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleHeal_Err:
-120     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleHeal", Erl)
+120     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleHeal", Erl)
 122     Resume Next
         
 End Sub
@@ -7830,7 +7830,7 @@ Private Sub HandleRequestStats(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleRequestStats_Err:
-104     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleRequestStats", Erl)
+104     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleRequestStats", Erl)
 106     Resume Next
         
 End Sub
@@ -7858,7 +7858,7 @@ Private Sub HandleHelp(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleHelp_Err:
-104     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleHelp", Erl)
+104     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleHelp", Erl)
 106     Resume Next
         
 End Sub
@@ -7997,7 +7997,7 @@ Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleCommerceStart_Err:
-170     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleCommerceStart", Erl)
+170     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleCommerceStart", Erl)
 172     Resume Next
         
 End Sub
@@ -8061,7 +8061,7 @@ Private Sub HandleBankStart(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleBankStart_Err:
-124     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleBankStart", Erl)
+124     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleBankStart", Erl)
 126     Resume Next
         
 End Sub
@@ -8113,7 +8113,7 @@ Private Sub HandleEnlist(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleEnlist_Err:
-120     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleEnlist", Erl)
+120     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleEnlist", Erl)
 122     Resume Next
         
 End Sub
@@ -8179,7 +8179,7 @@ Private Sub HandleInformation(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleInformation_Err:
-128     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleInformation", Erl)
+128     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleInformation", Erl)
 130     Resume Next
         
 End Sub
@@ -8245,7 +8245,7 @@ Private Sub HandleReward(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleReward_Err:
-128     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleReward", Erl)
+128     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleReward", Erl)
 130     Resume Next
         
 End Sub
@@ -8273,7 +8273,7 @@ Private Sub HandleRequestMOTD(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleRequestMOTD_Err:
-104     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleRequestMOTD", Erl)
+104     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleRequestMOTD", Erl)
 106     Resume Next
         
 End Sub
@@ -8325,7 +8325,7 @@ Private Sub HandleUpTime(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleUpTime_Err:
-124     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleUpTime", Erl)
+124     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleUpTime", Erl)
 126     Resume Next
         
 End Sub
@@ -8353,7 +8353,7 @@ Private Sub HandleInquiry(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleInquiry_Err:
-104     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleInquiry", Erl)
+104     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleInquiry", Erl)
 106     Resume Next
         
 End Sub
@@ -8465,7 +8465,7 @@ Private Sub HandleCentinelReport(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleCentinelReport_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleCentinelReport", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleCentinelReport", Erl)
 112     Resume Next
         
 End Sub
@@ -8506,7 +8506,7 @@ Private Sub HandleGuildOnline(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleGuildOnline_Err:
-112     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleGuildOnline", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGuildOnline", Erl)
 114     Resume Next
         
 End Sub
@@ -8680,7 +8680,7 @@ Private Sub HandleGMRequest(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleGMRequest_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleGMRequest", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGMRequest", Erl)
 112     Resume Next
         
 End Sub
@@ -8715,20 +8715,20 @@ Private Sub HandleChangeDescription(ByVal UserIndex As Integer)
             'Remove packet ID
 108         Call Buffer.ReadByte
         
-            Dim description As String
+            Dim Description As String
         
-110         description = Buffer.ReadASCIIString()
+110         Description = Buffer.ReadASCIIString()
         
 112         If .flags.Muerto = 1 Then
 114             Call WriteConsoleMsg(UserIndex, "No podés cambiar la descripción estando muerto.", FontTypeNames.FONTTYPE_INFOIAO)
             Else
-116             If Len(description) > 128 Then
+116             If Len(Description) > 128 Then
 118                 Call WriteConsoleMsg(UserIndex, "La descripción es muy larga.", FontTypeNames.FONTTYPE_INFOIAO)
 
-120             ElseIf Not DescripcionValida(description) Then
+120             ElseIf Not DescripcionValida(Description) Then
 122                 Call WriteConsoleMsg(UserIndex, "La descripción tiene carácteres inválidos.", FontTypeNames.FONTTYPE_INFOIAO)
                 Else
-124                 .Desc = Trim$(description)
+124                 .Desc = Trim$(Description)
 126                 Call WriteConsoleMsg(UserIndex, "La descripción a cambiado.", FontTypeNames.FONTTYPE_INFOIAO)
 
                 End If
@@ -9102,7 +9102,7 @@ Private Sub HandleGamble(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleGamble_Err:
-162     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleGamble", Erl)
+162     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGamble", Erl)
 164     Resume Next
         
 End Sub
@@ -9144,7 +9144,7 @@ Private Sub HandleInquiryVote(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleInquiryVote_Err:
-112     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleInquiryVote", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleInquiryVote", Erl)
 114     Resume Next
         
 End Sub
@@ -9220,7 +9220,7 @@ Private Sub HandleBankExtractGold(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleBankExtractGold_Err:
-136     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleBankExtractGold", Erl)
+136     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleBankExtractGold", Erl)
 138     Resume Next
         
 End Sub
@@ -9318,7 +9318,7 @@ Private Sub HandleLeaveFaction(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleLeaveFaction_Err:
-152     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleLeaveFaction", Erl)
+152     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleLeaveFaction", Erl)
 154     Resume Next
         
 End Sub
@@ -9394,7 +9394,7 @@ Private Sub HandleBankDepositGold(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleBankDepositGold_Err:
-136     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleBankDepositGold", Erl)
+136     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleBankDepositGold", Erl)
 138     Resume Next
         
 End Sub
@@ -9432,7 +9432,7 @@ Private Sub HandleFinEvento(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleDenounce_Err:
-112     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleDenounce", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleDenounce", Erl)
 114     Resume Next
         
 End Sub ''
@@ -9620,7 +9620,7 @@ Private Sub HandleShowName(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleShowName_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleShowName", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleShowName", Erl)
 112     Resume Next
         
 End Sub
@@ -9678,7 +9678,7 @@ Private Sub HandleOnlineRoyalArmy(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleOnlineRoyalArmy_Err:
-124     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleOnlineRoyalArmy", Erl)
+124     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleOnlineRoyalArmy", Erl)
 126     Resume Next
         
 End Sub
@@ -9736,7 +9736,7 @@ Private Sub HandleOnlineChaosLegion(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleOnlineChaosLegion_Err:
-124     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleOnlineChaosLegion", Erl)
+124     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleOnlineChaosLegion", Erl)
 126     Resume Next
         
 End Sub
@@ -9941,7 +9941,7 @@ Private Sub HandleServerTime(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleServerTime_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleServerTime", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleServerTime", Erl)
 112     Resume Next
         
 End Sub
@@ -10173,7 +10173,7 @@ Private Sub HandleCreaturesInMap(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleCreaturesInMap_Err:
-216     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleCreaturesInMap", Erl)
+216     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleCreaturesInMap", Erl)
 218     Resume Next
         
 End Sub
@@ -10208,7 +10208,7 @@ Private Sub HandleWarpMeToTarget(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleWarpMeToTarget_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleWarpMeToTarget", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleWarpMeToTarget", Erl)
 112     Resume Next
         
 End Sub
@@ -10417,7 +10417,7 @@ Private Sub HandleSOSShowList(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleSOSShowList_Err:
-108     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleSOSShowList", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleSOSShowList", Erl)
 110     Resume Next
         
 End Sub
@@ -10823,7 +10823,7 @@ Private Sub HandleSacarLlave(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleSacarLlave_Err:
-124     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleSacarLlave", Erl)
+124     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleSacarLlave", Erl)
 
         
 End Sub
@@ -10856,7 +10856,7 @@ Private Sub HandleVerLlaves(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleVerLlaves_Err:
-112     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleVerLlaves", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleVerLlaves", Erl)
 
         
 End Sub
@@ -10887,7 +10887,7 @@ Private Sub HandleUseKey(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleUseKey_Err:
-112     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleUseKey", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleUseKey", Erl)
 
         
 End Sub
@@ -10921,7 +10921,7 @@ Private Sub HandleInvisible(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleInvisible_Err:
-108     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleInvisible", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleInvisible", Erl)
 110     Resume Next
         
 End Sub
@@ -10955,7 +10955,7 @@ Private Sub HandleGMPanel(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleGMPanel_Err:
-108     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleGMPanel", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGMPanel", Erl)
 110     Resume Next
         
 End Sub
@@ -11010,7 +11010,7 @@ Private Sub HandleRequestUserList(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleRequestUserList_Err:
-122     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleRequestUserList", Erl)
+122     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleRequestUserList", Erl)
 124     Resume Next
         
 End Sub
@@ -11066,7 +11066,7 @@ Private Sub HandleWorking(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleWorking_Err:
-124     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleWorking", Erl)
+124     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleWorking", Erl)
 126     Resume Next
         
 End Sub
@@ -11119,7 +11119,7 @@ Private Sub HandleHiding(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleHiding_Err:
-122     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleHiding", Erl)
+122     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleHiding", Erl)
 124     Resume Next
         
 End Sub
@@ -11299,7 +11299,7 @@ Private Sub HandleKillNPC(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleKillNPC_Err:
-126     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleKillNPC", Erl)
+126     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleKillNPC", Erl)
 
 128     Resume Next
         
@@ -12866,7 +12866,7 @@ Private Sub HandleOnlineGM(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleOnlineGM_Err:
-126     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleOnlineGM", Erl)
+126     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleOnlineGM", Erl)
 128     Resume Next
         
 End Sub
@@ -12921,7 +12921,7 @@ Private Sub HandleOnlineMap(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleOnlineMap_Err:
-122     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleOnlineMap", Erl)
+122     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleOnlineMap", Erl)
 124     Resume Next
         
 End Sub
@@ -13007,7 +13007,7 @@ Private Sub HandleForgive(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleForgive_Err:
-146     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleForgive", Erl)
+146     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleForgive", Erl)
 148     Resume Next
         
 End Sub
@@ -13412,7 +13412,7 @@ Private Sub HandleNPCFollow(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleNPCFollow_Err:
-116     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleNPCFollow", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleNPCFollow", Erl)
 118     Resume Next
         
 End Sub
@@ -13565,7 +13565,7 @@ Private Sub HandleSpawnListRequest(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleSpawnListRequest_Err:
-108     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleSpawnListRequest", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleSpawnListRequest", Erl)
 110     Resume Next
         
 End Sub
@@ -13612,7 +13612,7 @@ Private Sub HandleSpawnCreature(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleSpawnCreature_Err:
-116     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleSpawnCreature", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleSpawnCreature", Erl)
 118     Resume Next
         
 End Sub
@@ -13648,7 +13648,7 @@ Private Sub HandleResetNPCInventory(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleResetNPCInventory_Err:
-112     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleResetNPCInventory", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleResetNPCInventory", Erl)
 114     Resume Next
         
 End Sub
@@ -13683,7 +13683,7 @@ Private Sub HandleCleanWorld(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleCleanWorld_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleCleanWorld", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleCleanWorld", Erl)
 112     Resume Next
         
 End Sub
@@ -13931,7 +13931,7 @@ Private Sub HandleIPToNick(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleIPToNick_Err:
-142     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleIPToNick", Erl)
+142     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleIPToNick", Erl)
 144     Resume Next
         
 End Sub
@@ -14085,7 +14085,7 @@ Private Sub HandleTeleportCreate(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleTeleportCreate_Err:
-146     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleTeleportCreate", Erl)
+146     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleTeleportCreate", Erl)
 148     Resume Next
         
 End Sub
@@ -14153,7 +14153,7 @@ Private Sub HandleTeleportDestroy(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleTeleportDestroy_Err:
-134     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleTeleportDestroy", Erl)
+134     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleTeleportDestroy", Erl)
 136     Resume Next
         
 End Sub
@@ -14199,7 +14199,7 @@ Private Sub HandleRainToggle(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleRainToggle_Err:
-124     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleRainToggle", Erl)
+124     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleRainToggle", Erl)
 126     Resume Next
         
 End Sub
@@ -14330,7 +14330,7 @@ Private Sub HanldeForceMIDIToMap(ByVal UserIndex As Integer)
         Exit Sub
 
 HanldeForceMIDIToMap_Err:
-124     Call RegistrarError(Err.Number, Err.description, "Protocol.HanldeForceMIDIToMap", Erl)
+124     Call RegistrarError(Err.Number, Err.Description, "Protocol.HanldeForceMIDIToMap", Erl)
 126     Resume Next
         
 End Sub
@@ -14395,7 +14395,7 @@ Private Sub HandleForceWAVEToMap(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleForceWAVEToMap_Err:
-128     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleForceWAVEToMap", Erl)
+128     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleForceWAVEToMap", Erl)
 130     Resume Next
         
 End Sub
@@ -14757,7 +14757,7 @@ Private Sub HandleDestroyAllItemsInArea(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleDestroyAllItemsInArea_Err:
-124     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleDestroyAllItemsInArea", Erl)
+124     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleDestroyAllItemsInArea", Erl)
 126     Resume Next
         
 End Sub
@@ -14970,7 +14970,7 @@ Private Sub HandleItemsInTheFloor(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleItemsInTheFloor_Err:
-122     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleItemsInTheFloor", Erl)
+122     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleItemsInTheFloor", Erl)
 124     Resume Next
         
 End Sub
@@ -15143,7 +15143,7 @@ Private Sub HandleDumpIPTables(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleDumpIPTables_Err:
-108     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleDumpIPTables", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleDumpIPTables", Erl)
 110     Resume Next
         
 End Sub
@@ -15300,7 +15300,7 @@ Private Sub HandleSetTrigger(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleSetTrigger_Err:
-122     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleSetTrigger", Erl)
+122     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleSetTrigger", Erl)
 124     Resume Next
         
 End Sub
@@ -15340,7 +15340,7 @@ Private Sub HandleAskTrigger(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleAskTrigger_Err:
-112     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleAskTrigger", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleAskTrigger", Erl)
 114     Resume Next
         
 End Sub
@@ -15386,7 +15386,7 @@ Private Sub HandleBannedIPList(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleBannedIPList_Err:
-118     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleBannedIPList", Erl)
+118     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleBannedIPList", Erl)
 120     Resume Next
         
 End Sub
@@ -15421,7 +15421,7 @@ Private Sub HandleBannedIPReload(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleBannedIPReload_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleBannedIPReload", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleBannedIPReload", Erl)
 112     Resume Next
         
 End Sub
@@ -15696,7 +15696,7 @@ Private Sub HandleUnbanIP(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleUnbanIP_Err:
-124     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleUnbanIP", Erl)
+124     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleUnbanIP", Erl)
 126     Resume Next
         
 End Sub
@@ -15796,7 +15796,7 @@ Private Sub HandleCreateItem(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleCreateItem_Err:
-150     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleCreateItem", Erl)
+150     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleCreateItem", Erl)
 152     Resume Next
         
 End Sub
@@ -15839,7 +15839,7 @@ Private Sub HandleDestroyItems(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleDestroyItems_Err:
-112     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleDestroyItems", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleDestroyItems", Erl)
 114     Resume Next
         
 End Sub
@@ -16083,7 +16083,7 @@ Private Sub HandleForceMIDIAll(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleForceMIDIAll_Err:
-116     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleForceMIDIAll", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleForceMIDIAll", Erl)
 118     Resume Next
         
 End Sub
@@ -16127,7 +16127,7 @@ Private Sub HandleForceWAVEAll(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleForceWAVEAll_Err:
-114     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleForceWAVEAll", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleForceWAVEAll", Erl)
 116     Resume Next
         
 End Sub
@@ -16263,7 +16263,7 @@ Private Sub HandleTileBlockedToggle(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleTileBlockedToggle_Err:
-116     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleTileBlockedToggle", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleTileBlockedToggle", Erl)
 118     Resume Next
         
 End Sub
@@ -16300,7 +16300,7 @@ Private Sub HandleKillNPCNoRespawn(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleKillNPCNoRespawn_Err:
-112     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleKillNPCNoRespawn", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleKillNPCNoRespawn", Erl)
 114     Resume Next
         
 End Sub
@@ -16354,7 +16354,7 @@ Private Sub HandleKillAllNearbyNPCs(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleKillAllNearbyNPCs_Err:
-124     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleKillAllNearbyNPCs", Erl)
+124     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleKillAllNearbyNPCs", Erl)
 126     Resume Next
         
 End Sub
@@ -16512,7 +16512,7 @@ Public Sub HandleChatColor(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleChatColor_Err:
-114     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleChatColor", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleChatColor", Erl)
 116     Resume Next
         
 End Sub
@@ -16547,7 +16547,7 @@ Public Sub HandleIgnored(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleIgnored_Err:
-108     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleIgnored", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleIgnored", Erl)
 110     Resume Next
         
 End Sub
@@ -16665,7 +16665,7 @@ Public Sub HandleResetAutoUpdate(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleResetAutoUpdate_Err:
-108     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleResetAutoUpdate", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleResetAutoUpdate", Erl)
 110     Resume Next
         
 End Sub
@@ -16702,7 +16702,7 @@ Public Sub HandleRestart(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleRestart_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleRestart", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleRestart", Erl)
 112     Resume Next
         
 End Sub
@@ -16741,7 +16741,7 @@ Public Sub HandleReloadObjects(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleReloadObjects_Err:
-116     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleReloadObjects", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleReloadObjects", Erl)
 118     Resume Next
         
 End Sub
@@ -16777,7 +16777,7 @@ Public Sub HandleReloadSpells(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleReloadSpells_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleReloadSpells", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleReloadSpells", Erl)
 112     Resume Next
         
 End Sub
@@ -16813,7 +16813,7 @@ Public Sub HandleReloadServerIni(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleReloadServerIni_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleReloadServerIni", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleReloadServerIni", Erl)
 112     Resume Next
         
 End Sub
@@ -16851,7 +16851,7 @@ Public Sub HandleReloadNPCs(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleReloadNPCs_Err:
-112     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleReloadNPCs", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleReloadNPCs", Erl)
 114     Resume Next
         
 End Sub
@@ -16922,7 +16922,7 @@ Public Sub HandleRequestTCPStats(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleRequestTCPStats_Err:
-136     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleRequestTCPStats", Erl)
+136     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleRequestTCPStats", Erl)
 138     Resume Next
         
 End Sub
@@ -16958,7 +16958,7 @@ Public Sub HandleKickAllChars(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleKickAllChars_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleKickAllChars", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleKickAllChars", Erl)
 112     Resume Next
         
 End Sub
@@ -16995,7 +16995,7 @@ Public Sub HandleNight(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleNight_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleNight", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleNight", Erl)
 112     Resume Next
         
 End Sub
@@ -17025,7 +17025,7 @@ Public Sub HandleDay(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleDay_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleDay", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleDay", Erl)
 112     Resume Next
         
 End Sub
@@ -17058,7 +17058,7 @@ Public Sub HandleSetTime(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleSetTime_Err:
-112     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleSetTime", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleSetTime", Erl)
 114     Resume Next
         
 End Sub
@@ -17133,7 +17133,7 @@ Public Sub HandleDonateGold(ByVal UserIndex As Integer)
          Exit Sub
 
 handle:
-152     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleDonateGold", Erl)
+152     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleDonateGold", Erl)
 154     Resume Next
         
 End Sub
@@ -17180,7 +17180,7 @@ Public Sub HandlePromedio(ByVal UserIndex As Integer)
         Exit Sub
 
 handle:
-134     Call RegistrarError(Err.Number, Err.description, "Protocol.HandlePromedio", Erl)
+134     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandlePromedio", Erl)
 136     Resume Next
         
 End Sub
@@ -17300,7 +17300,7 @@ Public Sub HandleShowServerForm(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleShowServerForm_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleShowServerForm", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleShowServerForm", Erl)
 112     Resume Next
         
 End Sub
@@ -17336,7 +17336,7 @@ Public Sub HandleCleanSOS(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleCleanSOS_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleCleanSOS", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleCleanSOS", Erl)
 112     Resume Next
         
 End Sub
@@ -17372,7 +17372,7 @@ Public Sub HandleSaveChars(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleSaveChars_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleSaveChars", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleSaveChars", Erl)
 112     Resume Next
         
 End Sub
@@ -17430,7 +17430,7 @@ Public Sub HandleChangeMapInfoBackup(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleChangeMapInfoBackup_Err:
-124     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleChangeMapInfoBackup", Erl)
+124     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleChangeMapInfoBackup", Erl)
 126     Resume Next
         
 End Sub
@@ -17482,7 +17482,7 @@ Public Sub HandleChangeMapInfoPK(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleChangeMapInfoPK_Err:
-118     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleChangeMapInfoPK", Erl)
+118     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleChangeMapInfoPK", Erl)
 120     Resume Next
         
 End Sub
@@ -17618,7 +17618,7 @@ Public Sub HandleChangeMapInfoNoMagic(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleChangeMapInfoNoMagic_Err:
-114     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleChangeMapInfoNoMagic", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleChangeMapInfoNoMagic", Erl)
 116     Resume Next
         
 End Sub
@@ -17666,7 +17666,7 @@ Public Sub HandleChangeMapInfoNoInvi(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleChangeMapInfoNoInvi_Err:
-114     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleChangeMapInfoNoInvi", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleChangeMapInfoNoInvi", Erl)
 116     Resume Next
         
 End Sub
@@ -17714,7 +17714,7 @@ Public Sub HandleChangeMapInfoNoResu(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleChangeMapInfoNoResu_Err:
-114     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleChangeMapInfoNoResu", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleChangeMapInfoNoResu", Erl)
 116     Resume Next
         
 End Sub
@@ -17888,7 +17888,7 @@ Public Sub HandleSaveMap(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleSaveMap_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleSaveMap", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleSaveMap", Erl)
 112     Resume Next
         
 End Sub
@@ -17984,7 +17984,7 @@ Public Sub HandleDoBackUp(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleDoBackUp_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleDoBackUp", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleDoBackUp", Erl)
 112     Resume Next
         
 End Sub
@@ -18308,7 +18308,7 @@ Public Sub HandleCreateNPC(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleCreateNPC_Err:
-122     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleCreateNPC", Erl)
+122     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleCreateNPC", Erl)
 124     Resume Next
         
 End Sub
@@ -18357,7 +18357,7 @@ Public Sub HandleCreateNPCWithRespawn(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleCreateNPCWithRespawn_Err:
-118     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleCreateNPCWithRespawn", Erl)
+118     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleCreateNPCWithRespawn", Erl)
 120     Resume Next
         
 End Sub
@@ -18418,7 +18418,7 @@ Public Sub HandleImperialArmour(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleImperialArmour_Err:
-122     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleImperialArmour", Erl)
+122     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleImperialArmour", Erl)
 124     Resume Next
         
 End Sub
@@ -18479,7 +18479,7 @@ Public Sub HandleChaosArmour(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleChaosArmour_Err:
-122     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleChaosArmour", Erl)
+122     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleChaosArmour", Erl)
 124     Resume Next
         
 End Sub
@@ -18521,7 +18521,7 @@ Public Sub HandleNavigateToggle(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleNavigateToggle_Err:
-114     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleNavigateToggle", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleNavigateToggle", Erl)
 116     Resume Next
         
 End Sub
@@ -18562,7 +18562,7 @@ Public Sub HandleServerOpenToUsersToggle(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleServerOpenToUsersToggle_Err:
-116     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleServerOpenToUsersToggle", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleServerOpenToUsersToggle", Erl)
 118     Resume Next
         
 End Sub
@@ -18692,7 +18692,7 @@ Public Sub HandleParticipar(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleParticipar_Err:
-170     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleParticipar", Erl)
+170     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleParticipar", Erl)
 172     Resume Next
         
 End Sub
@@ -19154,7 +19154,7 @@ Public Sub HandleChangeMOTD(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleChangeMOTD_Err:
-120     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleChangeMOTD", Erl)
+120     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleChangeMOTD", Erl)
 122     Resume Next
         
 End Sub
@@ -19190,7 +19190,7 @@ Public Sub HandlePing(ByVal UserIndex As Integer)
         Exit Sub
 
 HandlePing_Err:
-108     Call RegistrarError(Err.Number, Err.description, "Protocol.HandlePing", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandlePing", Erl)
 110     Resume Next
         
 End Sub
@@ -19830,7 +19830,7 @@ Public Function PrepareMessageCharSwing(ByVal CharIndex As Integer, Optional ByV
         Exit Function
 
 PrepareMessageCharSwing_Err:
-112     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageCharSwing", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageCharSwing", Erl)
 114     Resume Next
         
 End Function
@@ -20771,7 +20771,7 @@ End Sub
 ' @param    privileges Sets if the character is a normal one or any kind of administrative character.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As eHeading, ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal DM_Aura As String, ByVal RM_Aura As String, ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Boolean, ByVal donador As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal Simbolo As Byte, Optional ByVal Idle As Boolean = False, Optional ByVal Navegando As Boolean = False)
+Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As eHeading, ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal DM_Aura As String, ByVal RM_Aura As String, ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Byte, ByVal donador As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal Simbolo As Byte, Optional ByVal Idle As Boolean = False, Optional ByVal Navegando As Boolean = False)
 
         '***************************************************
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -23705,7 +23705,7 @@ Public Sub FlushBuffer(ByVal UserIndex As Integer)
         Exit Sub
 
 FlushBuffer_Err:
-112     Call RegistrarError(Err.Number, Err.description, "Protocol.FlushBuffer", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "Protocol.FlushBuffer", Erl)
 114     Resume Next
         
 End Sub
@@ -23743,7 +23743,7 @@ Public Function PrepareMessageSetInvisible(ByVal CharIndex As Integer, ByVal inv
         Exit Function
 
 PrepareMessageSetInvisible_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageSetInvisible", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageSetInvisible", Erl)
 112     Resume Next
         
 End Function
@@ -23772,7 +23772,7 @@ Public Function PrepareMessageSetEscribiendo(ByVal CharIndex As Integer, ByVal E
         Exit Function
 
 PrepareMessageSetEscribiendo_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageSetEscribiendo", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageSetEscribiendo", Erl)
 112     Resume Next
         
 End Function
@@ -23826,7 +23826,7 @@ Public Function PrepareMessageChatOverHead(ByVal chat As String, ByVal CharIndex
         Exit Function
 
 PrepareMessageChatOverHead_Err:
-124     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageChatOverHead", Erl)
+124     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageChatOverHead", Erl)
 126     Resume Next
         
 End Function
@@ -23854,7 +23854,7 @@ Public Function PrepareMessageEfectOverHead(ByVal chat As String, ByVal CharInde
         Exit Function
 
 PrepareMessageEfectOverHead_Err:
-112     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageEfectOverHead", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageEfectOverHead", Erl)
 114     Resume Next
         
 End Function
@@ -23880,7 +23880,7 @@ Public Function PrepareMessageExpOverHead(ByVal chat As String, ByVal CharIndex 
         Exit Function
 
 PrepareMessageExpOverHead_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageExpOverHead", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageExpOverHead", Erl)
 112     Resume Next
         
 End Function
@@ -23906,7 +23906,7 @@ Public Function PrepareMessageOroOverHead(ByVal chat As String, ByVal CharIndex 
         Exit Function
 
 PrepareMessageOroOverHead_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageOroOverHead", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageOroOverHead", Erl)
 112     Resume Next
         
 End Function
@@ -23942,7 +23942,7 @@ Public Function PrepareMessageConsoleMsg(ByVal chat As String, ByVal FontIndex A
         Exit Function
 
 PrepareMessageConsoleMsg_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageConsoleMsg", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageConsoleMsg", Erl)
 112     Resume Next
         
 End Function
@@ -23971,7 +23971,7 @@ Public Function PrepareMessageLocaleMsg(ByVal Id As Integer, ByVal chat As Strin
         Exit Function
 
 PrepareMessageLocaleMsg_Err:
-112     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageLocaleMsg", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageLocaleMsg", Erl)
 114     Resume Next
         
 End Function
@@ -24022,7 +24022,7 @@ Public Function PrepareMessageListaCorreo(ByVal UserIndex As Integer, ByVal Actu
         Exit Function
 
 PrepareMessageListaCorreo_Err:
-132     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageListaCorreo", Erl)
+132     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageListaCorreo", Erl)
 134     Resume Next
         
 End Function
@@ -24061,7 +24061,7 @@ Public Function PrepareMessageCreateFX(ByVal CharIndex As Integer, ByVal FX As I
         Exit Function
 
 PrepareMessageCreateFX_Err:
-112     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageCreateFX", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageCreateFX", Erl)
 114     Resume Next
         
 End Function
@@ -24083,7 +24083,7 @@ Public Function PrepareMessageMeditateToggle(ByVal CharIndex As Integer, ByVal F
         Exit Function
 
 PrepareMessageMeditateToggle_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageMeditateToggle", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageMeditateToggle", Erl)
 112     Resume Next
         
 End Function
@@ -24113,7 +24113,7 @@ Public Function PrepareMessageParticleFX(ByVal CharIndex As Integer, ByVal Parti
         Exit Function
 
 PrepareMessageParticleFX_Err:
-114     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageParticleFX", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageParticleFX", Erl)
 116     Resume Next
         
 End Function
@@ -24146,7 +24146,7 @@ Public Function PrepareMessageParticleFXWithDestino(ByVal Emisor As Integer, ByV
         Exit Function
 
 PrepareMessageParticleFXWithDestino_Err:
-120     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageParticleFXWithDestino", Erl)
+120     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageParticleFXWithDestino", Erl)
 122     Resume Next
         
 End Function
@@ -24180,7 +24180,7 @@ Public Function PrepareMessageParticleFXWithDestinoXY(ByVal Emisor As Integer, B
         Exit Function
 
 PrepareMessageParticleFXWithDestinoXY_Err:
-122     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageParticleFXWithDestinoXY", Erl)
+122     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageParticleFXWithDestinoXY", Erl)
 124     Resume Next
         
 End Function
@@ -24209,7 +24209,7 @@ Public Function PrepareMessageAuraToChar(ByVal CharIndex As Integer, ByVal Aura 
         Exit Function
 
 PrepareMessageAuraToChar_Err:
-114     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageAuraToChar", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageAuraToChar", Erl)
 116     Resume Next
         
 End Function
@@ -24236,7 +24236,7 @@ Public Function PrepareMessageSpeedingACT(ByVal CharIndex As Integer, ByVal spee
         Exit Function
 
 PrepareMessageSpeedingACT_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageSpeedingACT", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageSpeedingACT", Erl)
 112     Resume Next
         
 End Function
@@ -24262,7 +24262,7 @@ Public Function PrepareMessageParticleFXToFloor(ByVal X As Byte, ByVal Y As Byte
         Exit Function
 
 PrepareMessageParticleFXToFloor_Err:
-114     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageParticleFXToFloor", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageParticleFXToFloor", Erl)
 116     Resume Next
         
 End Function
@@ -24288,7 +24288,7 @@ Public Function PrepareMessageLightFXToFloor(ByVal X As Byte, ByVal Y As Byte, B
         Exit Function
 
 PrepareMessageLightFXToFloor_Err:
-114     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageLightFXToFloor", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageLightFXToFloor", Erl)
 116     Resume Next
         
 End Function
@@ -24327,7 +24327,7 @@ Public Function PrepareMessagePlayWave(ByVal wave As Integer, ByVal X As Byte, B
         Exit Function
 
 PrepareMessagePlayWave_Err:
-112     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessagePlayWave", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessagePlayWave", Erl)
 114     Resume Next
         
 End Function
@@ -24357,7 +24357,7 @@ Public Function PrepareMessageUbicacionLlamada(ByVal Mapa As Integer, ByVal X As
         Exit Function
 
 PrepareMessageUbicacionLlamada_Err:
-112     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageUbicacionLlamada", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageUbicacionLlamada", Erl)
 114     Resume Next
         
 End Function
@@ -24387,7 +24387,7 @@ Public Function PrepareMessageCharUpdateHP(ByVal UserIndex As Integer) As String
         Exit Function
 
 PrepareMessageCharUpdateHP_Err:
-112     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageCharUpdateHP", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageCharUpdateHP", Erl)
 114     Resume Next
         
 End Function
@@ -24410,7 +24410,7 @@ Public Function PrepareMessageArmaMov(ByVal CharIndex As Integer) As String
         Exit Function
 
 PrepareMessageArmaMov_Err:
-108     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageArmaMov", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageArmaMov", Erl)
 110     Resume Next
         
 End Function
@@ -24433,7 +24433,7 @@ Public Function PrepareMessageEscudoMov(ByVal CharIndex As Integer) As String
         Exit Function
 
 PrepareMessageEscudoMov_Err:
-108     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageEscudoMov", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageEscudoMov", Erl)
 110     Resume Next
         
 End Function
@@ -24462,7 +24462,7 @@ Public Function PrepareMessageEfectToScreen(ByVal Color As Long, ByVal duracion 
         Exit Function
 
 PrepareMessageEfectToScreen_Err:
-112     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageEfectToScreen", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageEfectToScreen", Erl)
 114     Resume Next
         
 End Function
@@ -24496,7 +24496,7 @@ Public Function PrepareMessageGuildChat(ByVal chat As String) As String
         Exit Function
 
 PrepareMessageGuildChat_Err:
-108     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageGuildChat", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageGuildChat", Erl)
 110     Resume Next
         
 End Function
@@ -24530,7 +24530,7 @@ Public Function PrepareMessageShowMessageBox(ByVal chat As String) As String
         Exit Function
 
 PrepareMessageShowMessageBox_Err:
-108     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageShowMessageBox", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageShowMessageBox", Erl)
 110     Resume Next
         
 End Function
@@ -24566,7 +24566,7 @@ Public Function PrepareMessagePlayMidi(ByVal midi As Byte, Optional ByVal loops 
         Exit Function
 
 PrepareMessagePlayMidi_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessagePlayMidi", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessagePlayMidi", Erl)
 112     Resume Next
         
 End Function
@@ -24590,7 +24590,7 @@ Public Function PrepareMessageOnlineUser(ByVal UserOnline As Integer) As String
         Exit Function
 
 PrepareMessageOnlineUser_Err:
-108     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageOnlineUser", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageOnlineUser", Erl)
 110     Resume Next
         
 End Function
@@ -24621,7 +24621,7 @@ Public Function PrepareMessagePauseToggle() As String
         Exit Function
 
 PrepareMessagePauseToggle_Err:
-106     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessagePauseToggle", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessagePauseToggle", Erl)
 108     Resume Next
         
 End Function
@@ -24653,7 +24653,7 @@ Public Function PrepareMessageRainToggle() As String
         Exit Function
 
 PrepareMessageRainToggle_Err:
-106     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageRainToggle", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageRainToggle", Erl)
 108     Resume Next
         
 End Function
@@ -24679,7 +24679,7 @@ Public Function PrepareMessageTrofeoToggleOn() As String
         Exit Function
 
 PrepareMessageTrofeoToggleOn_Err:
-106     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageTrofeoToggleOn", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageTrofeoToggleOn", Erl)
 108     Resume Next
         
 End Function
@@ -24705,7 +24705,7 @@ Public Function PrepareMessageTrofeoToggleOff() As String
         Exit Function
 
 PrepareMessageTrofeoToggleOff_Err:
-106     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageTrofeoToggleOff", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageTrofeoToggleOff", Erl)
 108     Resume Next
         
 End Function
@@ -24733,7 +24733,7 @@ Public Function PrepareMessageHora() As String
         Exit Function
 
 PrepareMessageHora_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageHora", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageHora", Erl)
 112     Resume Next
         
 End Function
@@ -24769,7 +24769,7 @@ Public Function PrepareMessageObjectDelete(ByVal X As Byte, ByVal Y As Byte) As 
         Exit Function
 
 PrepareMessageObjectDelete_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageObjectDelete", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageObjectDelete", Erl)
 112     Resume Next
         
 End Function
@@ -24807,7 +24807,7 @@ Public Function PrepareMessageBlockPosition(ByVal X As Byte, ByVal Y As Byte, By
         Exit Function
 
 PrepareMessageBlockPosition_Err:
-112     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageBlockPosition", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageBlockPosition", Erl)
 114     Resume Next
         
 End Function
@@ -24845,7 +24845,7 @@ Public Function PrepareMessageObjectCreate(ByVal ObjIndex As Integer, ByVal X As
         Exit Function
 
 PrepareMessageObjectCreate_Err:
-112     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageObjectCreate", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageObjectCreate", Erl)
 114     Resume Next
         
 End Function
@@ -24874,7 +24874,7 @@ Public Function PrepareMessageFxPiso(ByVal GrhIndex As Integer, ByVal X As Byte,
         Exit Function
 
 PrepareMessageFxPiso_Err:
-112     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageFxPiso", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageFxPiso", Erl)
 114     Resume Next
         
 End Function
@@ -24909,7 +24909,7 @@ Public Function PrepareMessageCharacterRemove(ByVal CharIndex As Integer, ByVal 
         Exit Function
 
 PrepareMessageCharacterRemove_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageCharacterRemove", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageCharacterRemove", Erl)
 112     Resume Next
         
 End Function
@@ -24943,7 +24943,7 @@ Public Function PrepareMessageRemoveCharDialog(ByVal CharIndex As Integer) As St
         Exit Function
 
 PrepareMessageRemoveCharDialog_Err:
-108     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageRemoveCharDialog", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageRemoveCharDialog", Erl)
 110     Resume Next
         
 End Function
@@ -24968,7 +24968,7 @@ End Function
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As eHeading, ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal DM_Aura As String, ByVal RM_Aura As String, ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Boolean, ByVal donador As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal Simbolo As Byte, ByVal Idle As Boolean, ByVal Navegando As Boolean) As String
+Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As eHeading, ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal DM_Aura As String, ByVal RM_Aura As String, ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Byte, ByVal donador As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal Simbolo As Byte, ByVal Idle As Boolean, ByVal Navegando As Boolean) As String
         '***************************************************
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
@@ -25004,7 +25004,7 @@ Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, ByVal Head 
 144         Call .WriteASCIIString(Otra_Aura)
 146         Call .WriteASCIIString(Escudo_Aura)
 148         Call .WriteSingle(speeding)
-150         Call .WriteBoolean(EsNPC)
+150         Call .WriteByte(EsNPC)
 152         Call .WriteByte(donador)
 154         Call .WriteByte(appear)
 156         Call .WriteInteger(group_index)
@@ -25024,7 +25024,7 @@ Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, ByVal Head 
         Exit Function
 
 PrepareMessageCharacterCreate_Err:
-174     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageCharacterCreate", Erl)
+174     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageCharacterCreate", Erl)
 176     Resume Next
         
 End Function
@@ -25077,7 +25077,7 @@ Public Function PrepareMessageCharacterChange(ByVal Body As Integer, ByVal Head 
         Exit Function
 
 PrepareMessageCharacterChange_Err:
-128     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageCharacterChange", Erl)
+128     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageCharacterChange", Erl)
 130     Resume Next
         
 End Function
@@ -25115,7 +25115,7 @@ Public Function PrepareMessageCharacterMove(ByVal CharIndex As Integer, ByVal X 
         Exit Function
 
 PrepareMessageCharacterMove_Err:
-112     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageCharacterMove", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageCharacterMove", Erl)
 114     Resume Next
         
 End Function
@@ -25143,7 +25143,7 @@ Public Function PrepareMessageForceCharMove(ByVal Direccion As eHeading) As Stri
         Exit Function
 
 PrepareMessageForceCharMove_Err:
-108     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageForceCharMove", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageForceCharMove", Erl)
 
         
 End Function
@@ -25184,7 +25184,7 @@ Public Function PrepareMessageUpdateTagAndStatus(ByVal UserIndex As Integer, Sta
         Exit Function
 
 PrepareMessageUpdateTagAndStatus_Err:
-114     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageUpdateTagAndStatus", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageUpdateTagAndStatus", Erl)
 116     Resume Next
         
 End Function
@@ -25244,7 +25244,7 @@ Public Function PrepareMessageErrorMsg(ByVal message As String) As String
         Exit Function
 
 PrepareMessageErrorMsg_Err:
-108     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageErrorMsg", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageErrorMsg", Erl)
 110     Resume Next
         
 End Function
@@ -25394,7 +25394,7 @@ Private Sub HandleOfertaInicial(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleOfertaInicial_Err:
-164     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleOfertaInicial", Erl)
+164     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleOfertaInicial", Erl)
 166     Resume Next
         
 End Sub
@@ -25609,7 +25609,7 @@ Public Sub HandleGlobalOnOff(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleGlobalOnOff_Err:
-118     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleGlobalOnOff", Erl)
+118     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGlobalOnOff", Erl)
 120     Resume Next
         
 End Sub
@@ -25700,7 +25700,7 @@ Public Sub SilenciarUserName(ByVal SilencioUserIndex As Integer, ByVal UserName 
         Exit Sub
 
 SilenciarUserName_Err:
-164     Call RegistrarError(Err.Number, Err.description, "Protocol.SilenciarUserName", Erl)
+164     Call RegistrarError(Err.Number, Err.Description, "Protocol.SilenciarUserName", Erl)
 166     Resume Next
         
 End Sub
@@ -26634,7 +26634,7 @@ Private Sub HandleNieveToggle(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleNieveToggle_Err:
-112     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleNieveToggle", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleNieveToggle", Erl)
 114     Resume Next
         
 End Sub
@@ -26661,7 +26661,7 @@ Private Sub HandleNieblaToggle(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleNieblaToggle_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleNieblaToggle", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleNieblaToggle", Erl)
 112     Resume Next
         
 End Sub
@@ -27172,7 +27172,7 @@ Public Function PrepareMessageNieblandoToggle(ByVal IntensidadMax As Byte) As St
         Exit Function
 
 PrepareMessageNieblandoToggle_Err:
-108     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageNieblandoToggle", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageNieblandoToggle", Erl)
 110     Resume Next
         
 End Function
@@ -27196,7 +27196,7 @@ Public Function PrepareMessageNevarToggle() As String
         Exit Function
 
 PrepareMessageNevarToggle_Err:
-106     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageNevarToggle", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageNevarToggle", Erl)
 108     Resume Next
         
 End Function
@@ -27235,7 +27235,7 @@ Private Sub HandleGenio(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleGenio_Err:
-118     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleGenio", Erl)
+118     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGenio", Erl)
 
         
 End Sub
@@ -27943,7 +27943,7 @@ Private Sub HandleRequestFamiliar(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleRequestFamiliar_Err:
-104     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleRequestFamiliar", Erl)
+104     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleRequestFamiliar", Erl)
 106     Resume Next
         
 End Sub
@@ -28003,7 +28003,7 @@ Public Function PrepareMessageBarFx(ByVal CharIndex As Integer, ByVal BarTime As
         Exit Function
 
 PrepareMessageBarFx_Err:
-112     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageBarFx", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageBarFx", Erl)
 114     Resume Next
         
 End Function
@@ -28282,7 +28282,7 @@ Public Sub WriteRecompensas(ByVal UserIndex As Integer)
         Exit Sub
 
 WriteRecompensas_Err:
-206     Call RegistrarError(Err.Number, Err.description, "Protocol.WriteRecompensas", Erl)
+206     Call RegistrarError(Err.Number, Err.Description, "Protocol.WriteRecompensas", Erl)
 208     Resume Next
         
 End Sub
@@ -28605,7 +28605,7 @@ Private Sub HandleInvitarGrupo(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleInvitarGrupo_Err:
-118     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleInvitarGrupo", Erl)
+118     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleInvitarGrupo", Erl)
 
         
 End Sub
@@ -28637,7 +28637,7 @@ Private Sub HandleMarcaDeClan(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleMarcaDeClan_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleMarcaDeClan", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleMarcaDeClan", Erl)
 
         
 End Sub
@@ -28661,7 +28661,7 @@ Private Sub HandleMarcaDeGM(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleMarcaDeGM_Err:
-106     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleMarcaDeGM", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleMarcaDeGM", Erl)
 
         
 End Sub
@@ -29104,7 +29104,7 @@ Private Sub HandleAbandonarGrupo(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleAbandonarGrupo_Err:
-128     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleAbandonarGrupo", Erl)
+128     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleAbandonarGrupo", Erl)
 
         
 End Sub
@@ -29182,7 +29182,7 @@ Private Sub HandleHecharDeGrupo(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleHecharDeGrupo_Err:
-112     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleHecharDeGrupo", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleHecharDeGrupo", Erl)
 
         
 End Sub
@@ -29212,7 +29212,7 @@ Private Sub HandleMacroPos(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleMacroPos_Err:
-112     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleMacroPos", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleMacroPos", Erl)
 
         
 End Sub
@@ -29273,7 +29273,7 @@ Private Sub HandleSubastaInfo(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleSubastaInfo_Err:
-124     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleSubastaInfo", Erl)
+124     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleSubastaInfo", Erl)
 
         
 End Sub
@@ -29385,7 +29385,7 @@ Private Sub HandleCancelarExit(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleCancelarExit_Err:
-106     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleCancelarExit", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleCancelarExit", Erl)
 108     Resume Next
         
 End Sub
@@ -29745,7 +29745,7 @@ Private Sub HandleEventoInfo(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleEventoInfo_Err:
-140     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleEventoInfo", Erl)
+140     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleEventoInfo", Erl)
 
         
 End Sub
@@ -29901,7 +29901,7 @@ Private Sub HandleTraerShop(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleTraerShop_Err:
-108     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleTraerShop", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleTraerShop", Erl)
 
         
 End Sub
@@ -29922,7 +29922,7 @@ Private Sub HandleTraerRanking(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleTraerRanking_Err:
-104     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleTraerRanking", Erl)
+104     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleTraerRanking", Erl)
 
         
 End Sub
@@ -29990,7 +29990,7 @@ Private Sub HandlePareja(ByVal UserIndex As Integer)
         Exit Sub
 
 HandlePareja_Err:
-140     Call RegistrarError(Err.Number, Err.description, "Protocol.HandlePareja", Erl)
+140     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandlePareja", Erl)
 
         
 End Sub
@@ -30328,7 +30328,7 @@ Public Function PrepareMessageCreateRenderValue(ByVal X As Byte, ByVal Y As Byte
         Exit Function
 
 PrepareMessageCreateRenderValue_Err:
-114     Call RegistrarError(Err.Number, Err.description, "Protocol.PrepareMessageCreateRenderValue", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageCreateRenderValue", Erl)
 116     Resume Next
         
 End Function
@@ -30476,7 +30476,7 @@ Public Sub HandleQuest(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleQuest_Err:
-116     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleQuest", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleQuest", Erl)
 118     Resume Next
         
 End Sub
@@ -30570,7 +30570,7 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleQuestAccept_Err:
-150     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleQuestAccept", Erl)
+150     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleQuestAccept", Erl)
 152     Resume Next
         
 End Sub
@@ -30597,7 +30597,7 @@ Public Sub HandleQuestDetailsRequest(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleQuestDetailsRequest_Err:
-106     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleQuestDetailsRequest", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleQuestDetailsRequest", Erl)
 108     Resume Next
         
 End Sub
@@ -30626,7 +30626,7 @@ Public Sub HandleQuestAbandon(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleQuestAbandon_Err:
-108     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleQuestAbandon", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleQuestAbandon", Erl)
 110     Resume Next
         
 End Sub
@@ -30654,7 +30654,7 @@ Public Sub HandleQuestListRequest(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleQuestListRequest_Err:
-108     Call RegistrarError(Err.Number, Err.description, "Protocol.HandleQuestListRequest", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleQuestListRequest", Erl)
 110     Resume Next
         
 End Sub
@@ -31011,7 +31011,7 @@ Public Sub HandleCreatePretorianClan(ByVal UserIndex As Integer)
         Exit Sub
 
 ErrHandler:
-130     Call LogError("Error en HandleCreatePretorianClan. Error: " & Err.Number & " - " & Err.description)
+130     Call LogError("Error en HandleCreatePretorianClan. Error: " & Err.Number & " - " & Err.Description)
 
 End Sub
 
@@ -31056,7 +31056,7 @@ Public Sub HandleDeletePretorianClan(ByVal UserIndex As Integer)
         Exit Sub
 
 ErrHandler:
-114     Call LogError("Error en HandleDeletePretorianClan. Error: " & Err.Number & " - " & Err.description)
+114     Call LogError("Error en HandleDeletePretorianClan. Error: " & Err.Number & " - " & Err.Description)
 
 End Sub
 

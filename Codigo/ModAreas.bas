@@ -87,7 +87,7 @@ Public Sub InitAreas()
         Exit Sub
 
 InitAreas_Err:
-134     Call RegistrarError(Err.Number, Err.description, "ModAreas.InitAreas", Erl)
+134     Call RegistrarError(Err.Number, Err.Description, "ModAreas.InitAreas", Erl)
 136     Resume Next
         
 End Sub
@@ -134,7 +134,7 @@ Public Sub AreasOptimizacion()
         Exit Sub
 
 AreasOptimizacion_Err:
-124     Call RegistrarError(Err.Number, Err.description, "ModAreas.AreasOptimizacion", Erl)
+124     Call RegistrarError(Err.Number, Err.Description, "ModAreas.AreasOptimizacion", Erl)
 126     Resume Next
         
 End Sub
@@ -300,7 +300,7 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal Head As Byte,
         Exit Sub
 
 CheckUpdateNeededUser_Err:
-250     Call RegistrarError(Err.Number, Err.description, "ModAreas.CheckUpdateNeededUser", Erl)
+250     Call RegistrarError(Err.Number, Err.Description, "ModAreas.CheckUpdateNeededUser", Erl)
 252     Resume Next
         
 End Sub
@@ -384,6 +384,7 @@ Public Sub CheckUpdateNeededNpc(ByVal NpcIndex As Integer, ByVal Head As Byte)
 186                 For Y = MinY To MaxY
 
 188                     If MapData(.Pos.Map, X, Y).UserIndex Then Call MakeNPCChar(False, MapData(.Pos.Map, X, Y).UserIndex, NpcIndex, .Pos.Map, .Pos.X, .Pos.Y)
+
 190                 Next Y
 192             Next X
 
@@ -406,7 +407,7 @@ Public Sub CheckUpdateNeededNpc(ByVal NpcIndex As Integer, ByVal Head As Byte)
         Exit Sub
 
 CheckUpdateNeededNpc_Err:
-208     Call RegistrarError(Err.Number, Err.description, "ModAreas.CheckUpdateNeededNpc", Erl)
+208     Call RegistrarError(Err.Number, Err.Description, "ModAreas.CheckUpdateNeededNpc", Erl)
 210     Resume Next
         
 End Sub
@@ -452,7 +453,7 @@ Public Sub QuitarUser(ByVal UserIndex As Integer, ByVal Map As Integer)
         Exit Sub
 
 QuitarUser_Err:
-122     Call RegistrarError(Err.Number, Err.description, "ModAreas.QuitarUser", Erl)
+122     Call RegistrarError(Err.Number, Err.Description, "ModAreas.QuitarUser", Erl)
 124     Resume Next
         
 End Sub
@@ -518,7 +519,7 @@ Public Sub AgregarUser(ByVal UserIndex As Integer, ByVal Map As Integer, Optiona
         Exit Sub
 
 AgregarUser_Err:
-136     Call RegistrarError(Err.Number, Err.description, "ModAreas.AgregarUser", Erl)
+136     Call RegistrarError(Err.Number, Err.Description, "ModAreas.AgregarUser", Erl)
 138     Resume Next
         
 End Sub
@@ -545,7 +546,7 @@ Public Sub AgregarNpc(ByVal NpcIndex As Integer)
         Exit Sub
 
 AgregarNpc_Err:
-112     Call RegistrarError(Err.Number, Err.description, "ModAreas.AgregarNpc", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "ModAreas.AgregarNpc", Erl)
 114     Resume Next
         
 End Sub
