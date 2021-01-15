@@ -3044,7 +3044,7 @@ Sub SaveUserAPI(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = F
     Dim Body As New JS_Object
     Dim Main As New JS_Object
     
-    Header.Item("action") = "SaveUser"
+    Header.Item("action") = "user_save"
     Header.Item("expectsResponse") = False
         
     SavePacket.Item("header") = Header
@@ -3104,16 +3104,14 @@ Sub SaveUserAPI(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = F
         SavePacket.Item("body") = Body
 
         Dim UserData As String: UserData = SavePacket.ToString
-        
-        frmAPISocket.txtSend = UserData
-        
-        Clipboard.Clear
-        Clipboard.SetText UserData
-        
+         
+        ' Para fines de desarrollo
+        If frmAPISocket.Visible Then frmAPISocket.txtSend = UserData
         Debug.Print vbNewLine & UserData
-            
+        ' Para fines de desarrollo
+        
         'Lo mandamos a la API
-        Call frmAPISocket.Socket.SendData(UserData & ";")
+        Call frmAPISocket.Socket.SendData(UserData)
         'Call frmAPISocket.API_SendData(UserData)
             
     End With

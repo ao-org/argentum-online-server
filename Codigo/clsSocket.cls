@@ -93,6 +93,7 @@ Public Event DataArrival(ByVal bytesTotal As Long)
 Public Event Error(ByVal Number As Integer, Description As String, ByVal Scode As Long, ByVal Source As String, ByVal HelpFile As String, ByVal HelpContext As Long, CancelDisplay As Boolean)
 Public Event SendComplete()
 Public Event SendProgress(ByVal bytesSent As Long, ByVal bytesRemaining As Long)
+Public Event BeforeSend(ByRef Data As String) 'Jopi: Nuevo evento que me permite manipular la informacion JUSTO ANTES de enviarla.
  
 '==============================================================================
 'MEMBER VARIABLES
@@ -1153,15 +1154,15 @@ Private Function GetLocalPort(ByVal lngSocket As Long) As Long
 
 End Function
  
-Public Sub SendData(data As String)
- 
+Public Sub SendData(Data As String)
+    
+    RaiseEvent BeforeSend(Data)
+    
     Dim arrData() As Byte 'We store the data here before send it
  
     If m_enmProtocol = sckTCPProtocol Then
         If m_enmState <> sckConnected Then
             Exit Sub
-            Exit Sub
-
         End If
 
     Else 'If we use UDP we create a socket if there isn't one yet

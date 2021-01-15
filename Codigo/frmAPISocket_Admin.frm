@@ -142,7 +142,7 @@ Private Sub HandleIncomingAPIData(ByRef data As String)
     
     'Select Case response.Item("header").Item("action")
     
-        'Case "LoadUser"
+        'Case "user_load"
             'Call MsgBox(response!data)
             
     'End Select
@@ -174,7 +174,7 @@ Public Sub API_SendData(ByRef data As String)
         End Select
     
         'Lo agrego a la cola para enviarlo mas tarde.
-        Call API_Queue.Push(data)
+        Call API_Queue.Push(Data)
     
     End With
     
@@ -219,9 +219,7 @@ End Sub
 Private Sub cmdEnviar_Click()
 
     On Error Resume Next
-    
-    '  {"header"":{"action":""LoadUser""},"data"":{"accountId":1}}
-    
+
     If Len(txtSend.Text) = 0 Then Exit Sub
     
     With Socket
@@ -229,7 +227,7 @@ Private Sub cmdEnviar_Click()
         Select Case .State
         
             Case sckClosed
-                Call API_Queue.Push(txtSend.Text & ";")
+                Call API_Queue.Push(txtSend.Text)
                 Call Connect
 
             Case sckError
@@ -237,7 +235,7 @@ Private Sub cmdEnviar_Click()
                 Call Connect
                 
             Case sckConnected
-                Call .SendData(txtSend.Text & ";")
+                Call .SendData(txtSend.Text)
                 
         End Select
 
@@ -259,6 +257,11 @@ Private Sub tColaAPI_Timer()
         Call Socket.SendData(API_Queue.Pop)
     Loop
     
+End Sub
+
+Private Sub Socket_BeforeSend(ByRef Data As String)
+    'Agregamos el separador de paquetes al string que vamos a enviar
+    Data = Data & ";"
 End Sub
 
 Private Sub Socket_DataArrival(ByVal bytesTotal As Long)
