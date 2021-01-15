@@ -2670,14 +2670,14 @@ Public Sub DoHandInmo(ByVal UserIndex As Integer, ByVal victimaIndex As Integer)
 
 104     If res < (UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) / 4) Then
 106         UserList(victimaIndex).flags.Paralizado = 1
-108         UserList(victimaIndex).Counters.Paralisis = IntervaloParalizado / 2
+108         UserList(victimaIndex).Counters.Paralisis = IntervaloParalizado / 4
         
             'UserList(VictimaIndex).flags.ParalizedByIndex = Userindex
             'UserList(VictimaIndex).flags.ParalizedBy = UserList(Userindex).name
         
 110         Call WriteParalizeOK(victimaIndex)
 112         Call WriteConsoleMsg(UserIndex, "Tu golpe ha dejado inmovil a tu oponente", FontTypeNames.FONTTYPE_FIGHT)
-114         Call WriteConsoleMsg(victimaIndex, "El golpe te ha dejado inmovil!", FontTypeNames.FONTTYPE_FIGHT)
+114         Call WriteConsoleMsg(victimaIndex, "¡El golpe te ha dejado inmovil!", FontTypeNames.FONTTYPE_FIGHT)
 
         End If
 
