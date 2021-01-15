@@ -2737,13 +2737,9 @@ Private Sub HandlePickUp(ByVal UserIndex As Integer)
             End If
         
             'Lower rank administrators can't pick up items
-108         If .flags.Privilegios And PlayerType.Consejero Then
-110             If Not .flags.Privilegios And PlayerType.RoleMaster Then
-112                 Call WriteConsoleMsg(UserIndex, "No podés tomar ningun objeto.", FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-
-                End If
-
+108         If .flags.Privilegios And (PlayerType.Consejero Or PlayerType.SemiDios) Then
+112                Call WriteConsoleMsg(UserIndex, "No podés tomar ningun objeto.", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
             End If
         
 114         Call GetObj(UserIndex)
