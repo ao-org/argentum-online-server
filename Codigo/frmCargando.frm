@@ -17,7 +17,7 @@ Begin VB.Form frmCargando
    ScaleMode       =   0  'User
    ScaleWidth      =   438
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   2  'CenterScreen
+   StartUpPosition =   3  'Windows Default
    Begin ComctlLib.ProgressBar cargar 
       Height          =   300
       Left            =   840
@@ -115,7 +115,7 @@ Attribute VB_Exposed = False
 'Pablo Ignacio Márquez
 
 ' Form Always On Top
-Private Declare Function SetWindowPos Lib "user32" (ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal X As Long, ByVal Y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
+Private Declare Function SetWindowPos Lib "user32" (ByVal hwnd As Long, ByVal hWndInsertAfter As Long, ByVal X As Long, ByVal Y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
 Private Const HWND_TOPMOST = -1
 Private Const HWND_NOTOPMOST = -2
 Private Const SWP_NOSIZE = &H1
@@ -126,7 +126,7 @@ Private mlngY As Long
 
 Private Sub Form_Load()
         ' Mostramos este form arriba de todo.
-100     Call SetWindowPos(Me.hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE)
+100     Call SetWindowPos(Me.hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE)
 102     Call Me.ZOrder(0)
 End Sub
 
