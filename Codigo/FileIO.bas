@@ -3039,8 +3039,6 @@ Sub SaveUserAPI(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = F
         
     On Error GoTo SaveUserAPI_Err:
 
-    Dim i As Long
-    
     Dim SavePacket As New JS_Object
     Dim Header As New JS_Object
     Dim Body As New JS_Object
@@ -3056,12 +3054,12 @@ Sub SaveUserAPI(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = F
         '*************************************************************
         '   USER
         '*************************************************************
-        Body.Item("main") = JSON_User.Principal(UserIndex, Logout)
+        Body.Item("user") = JSON_User.Principal(UserIndex, Logout)
             
         '*************************************************************
         '   ATRIBUTOS
         '*************************************************************
-        Body.Item("attributes") = JSON_User.Atributos(UserIndex)
+        Body.Item("attribute") = JSON_User.Atributos(UserIndex)
             
         '*************************************************************
         '   HECHIZOS
