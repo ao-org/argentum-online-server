@@ -3016,13 +3016,13 @@ Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = Fals
 
     On Error GoTo SaveUser_Err
     
-    'If Database_Enabled Then
-        'Call SaveUserDatabase(UserIndex, Logout)
-    'Else
-        'Call SaveUserCharfile(UserIndex, Logout)
-    'End If
+    If Database_Enabled Then
+        Call SaveUserDatabase(UserIndex, Logout)
+    Else
+        Call SaveUserCharfile(UserIndex, Logout)
+    End If
     
-    Call SaveUserAPI(UserIndex, Logout)
+    'Call SaveUserAPI(UserIndex, Logout)
     
     UserList(UserIndex).Counters.LastSave = GetTickCount
     
