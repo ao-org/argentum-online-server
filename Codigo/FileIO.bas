@@ -225,7 +225,7 @@ Public Sub CargarSpawnList()
         Exit Sub
 
 CargarSpawnList_Err:
-116     Call RegistrarError(Err.Number, Err.description, "ES.CargarSpawnList", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "ES.CargarSpawnList", Erl)
 118     Resume Next
         
 End Sub
@@ -245,7 +245,7 @@ Function EsAdmin(ByRef name As String) As Boolean
         Exit Function
 
 EsAdmin_Err:
-102     Call RegistrarError(Err.Number, Err.description, "ES.EsAdmin", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "ES.EsAdmin", Erl)
 104     Resume Next
         
 End Function
@@ -265,7 +265,7 @@ Function EsDios(ByRef name As String) As Boolean
         Exit Function
 
 EsDios_Err:
-102     Call RegistrarError(Err.Number, Err.description, "ES.EsDios", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "ES.EsDios", Erl)
 104     Resume Next
         
 End Function
@@ -285,7 +285,7 @@ Function EsSemiDios(ByRef name As String) As Boolean
         Exit Function
 
 EsSemiDios_Err:
-102     Call RegistrarError(Err.Number, Err.description, "ES.EsSemiDios", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "ES.EsSemiDios", Erl)
 104     Resume Next
         
 End Function
@@ -305,7 +305,7 @@ Function EsConsejero(ByRef name As String) As Boolean
         Exit Function
 
 EsConsejero_Err:
-102     Call RegistrarError(Err.Number, Err.description, "ES.EsConsejero", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "ES.EsConsejero", Erl)
 104     Resume Next
         
 End Function
@@ -325,7 +325,7 @@ Function EsRolesMaster(ByRef name As String) As Boolean
         Exit Function
 
 EsRolesMaster_Err:
-102     Call RegistrarError(Err.Number, Err.description, "ES.EsRolesMaster", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "ES.EsRolesMaster", Erl)
 104     Resume Next
         
 End Function
@@ -360,7 +360,7 @@ Public Function EsGmChar(ByRef name As String) As Boolean
         Exit Function
 
 EsGmChar_Err:
-110     Call RegistrarError(Err.Number, Err.description, "ES.EsGmChar", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "ES.EsGmChar", Erl)
 112     Resume Next
         
 End Function
@@ -491,7 +491,7 @@ Public Sub loadAdministrativeUsers()
         Exit Sub
 
 loadAdministrativeUsers_Err:
-190     Call RegistrarError(Err.Number, Err.description, "ES.loadAdministrativeUsers", Erl)
+190     Call RegistrarError(Err.Number, Err.Description, "ES.loadAdministrativeUsers", Erl)
 192     Resume Next
         
 End Sub
@@ -531,7 +531,7 @@ Public Function GetCharPrivs(ByRef UserName As String) As PlayerType
         Exit Function
 
 GetCharPrivs_Err:
-120     Call RegistrarError(Err.Number, Err.description, "ES.GetCharPrivs", Erl)
+120     Call RegistrarError(Err.Number, Err.Description, "ES.GetCharPrivs", Erl)
 122     Resume Next
         
 End Function
@@ -558,7 +558,7 @@ Public Function TxtDimension(ByVal name As String) As Long
         Exit Function
 
 TxtDimension_Err:
-116     Call RegistrarError(Err.Number, Err.description, "ES.TxtDimension", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "ES.TxtDimension", Erl)
 118     Resume Next
         
 End Function
@@ -595,7 +595,7 @@ Public Sub CargarForbidenWords()
         Exit Sub
 
 CargarForbidenWords_Err:
-120     Call RegistrarError(Err.Number, Err.description, "ES.CargarForbidenWords", Erl)
+120     Call RegistrarError(Err.Number, Err.Description, "ES.CargarForbidenWords", Erl)
 122     Resume Next
         
 End Sub
@@ -771,7 +771,7 @@ Public Sub CargarHechizos()
         Exit Sub
 
 ErrHandler:
-288     MsgBox "Error cargando hechizos.dat " & Err.Number & ": " & Err.description
+288     MsgBox "Error cargando hechizos.dat " & Err.Number & ": " & Err.Description
  
 End Sub
 
@@ -795,7 +795,7 @@ Sub LoadMotd()
         Exit Sub
 
 LoadMotd_Err:
-112     Call RegistrarError(Err.Number, Err.description, "ES.LoadMotd", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "ES.LoadMotd", Erl)
 114     Resume Next
         
 End Sub
@@ -836,7 +836,7 @@ Public Sub DoBackUp()
         Exit Sub
 
 DoBackUp_Err:
-118     Call RegistrarError(Err.Number, Err.description, "ES.DoBackUp", Erl)
+118     Call RegistrarError(Err.Number, Err.Description, "ES.DoBackUp", Erl)
 
         
 End Sub
@@ -1055,7 +1055,7 @@ Sub LoadArmasHerreria()
         Exit Sub
 
 LoadArmasHerreria_Err:
-114     Call RegistrarError(Err.Number, Err.description, "ES.LoadArmasHerreria", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "ES.LoadArmasHerreria", Erl)
 116     Resume Next
         
 End Sub
@@ -1085,7 +1085,7 @@ Sub LoadArmadurasHerreria()
         Exit Sub
 
 LoadArmadurasHerreria_Err:
-114     Call RegistrarError(Err.Number, Err.description, "ES.LoadArmadurasHerreria", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "ES.LoadArmadurasHerreria", Erl)
 116     Resume Next
         
 End Sub
@@ -1163,7 +1163,7 @@ Sub LoadBalance()
         Exit Sub
 
 LoadBalance_Err:
-172     Call RegistrarError(Err.Number, Err.description, "ES.LoadBalance", Erl)
+172     Call RegistrarError(Err.Number, Err.Description, "ES.LoadBalance", Erl)
 174     Resume Next
         
 End Sub
@@ -1193,7 +1193,7 @@ Sub LoadObjCarpintero()
         Exit Sub
 
 LoadObjCarpintero_Err:
-114     Call RegistrarError(Err.Number, Err.description, "ES.LoadObjCarpintero", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "ES.LoadObjCarpintero", Erl)
 116     Resume Next
         
 End Sub
@@ -1223,7 +1223,7 @@ Sub LoadObjAlquimista()
         Exit Sub
 
 LoadObjAlquimista_Err:
-114     Call RegistrarError(Err.Number, Err.description, "ES.LoadObjAlquimista", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "ES.LoadObjAlquimista", Erl)
 116     Resume Next
         
 End Sub
@@ -1253,7 +1253,7 @@ Sub LoadObjSastre()
         Exit Sub
 
 LoadObjSastre_Err:
-114     Call RegistrarError(Err.Number, Err.description, "ES.LoadObjSastre", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "ES.LoadObjSastre", Erl)
 116     Resume Next
         
 End Sub
@@ -1279,7 +1279,7 @@ Sub LoadObjDonador()
         Exit Sub
 
 LoadObjDonador_Err:
-114     Call RegistrarError(Err.Number, Err.description, "ES.LoadObjDonador", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "ES.LoadObjDonador", Erl)
 116     Resume Next
         
 End Sub
@@ -1661,16 +1661,16 @@ Sub LoadOBJData()
     
             'CHECK: !!! Esto es provisorio hasta que los de Dateo cambien los valores de string a numerico  -  Nunca más papu
             Dim n As Integer
-            Dim S As String
+            Dim s As String
 
 542         For i = 1 To NUMCLASES
-544             S = UCase$(Leer.GetValue("OBJ" & Object, "CP" & i))
+544             s = UCase$(Leer.GetValue("OBJ" & Object, "CP" & i))
 546             n = 1
 
-548             Do While LenB(S) > 0 And Tilde(ListaClases(n)) <> Trim$(S)
+548             Do While LenB(s) > 0 And Tilde(ListaClases(n)) <> Trim$(s)
 550                 n = n + 1
                 Loop
-552             ObjData(Object).ClaseProhibida(i) = IIf(LenB(S) > 0, n, 0)
+552             ObjData(Object).ClaseProhibida(i) = IIf(LenB(s) > 0, n, 0)
 554         Next i
         
             ' Skill requerido
@@ -1709,7 +1709,7 @@ Sub LoadOBJData()
         Exit Sub
 
 ErrHandler:
-588     MsgBox "error cargando objetos " & Err.Number & ": " & Err.description & ". Error producido al cargar el objeto: " & Object
+588     MsgBox "error cargando objetos " & Err.Number & ": " & Err.Description & ". Error producido al cargar el objeto: " & Object
 
 End Sub
 
@@ -1798,7 +1798,7 @@ Sub LoadUserStats(ByVal UserIndex As Integer, ByRef UserFile As clsIniReader)
         Exit Sub
 
 LoadUserStats_Err:
-196     Call RegistrarError(Err.Number, Err.description, "ES.LoadUserStats", Erl)
+196     Call RegistrarError(Err.Number, Err.Description, "ES.LoadUserStats", Erl)
 198     Resume Next
         
 End Sub
@@ -1990,7 +1990,7 @@ Sub LoadUserInit(ByVal UserIndex As Integer, ByRef UserFile As clsIniReader)
         Exit Sub
 
 LoadUserInit_Err:
-326     Call RegistrarError(Err.Number, Err.description, "ES.LoadUserInit", Erl)
+326     Call RegistrarError(Err.Number, Err.Description, "ES.LoadUserInit", Erl)
 328     Resume Next
         
 End Sub
@@ -2017,7 +2017,7 @@ Function GetVar(ByVal File As String, ByVal Main As String, ByVal Var As String,
         Exit Function
 
 GetVar_Err:
-110     Call RegistrarError(Err.Number, Err.description, "ES.GetVar", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "ES.GetVar", Erl)
 112     Resume Next
         
 End Function
@@ -2062,7 +2062,7 @@ Sub CargarBackUp()
         Exit Sub
 
 CargarBackUp_Err:
-134     Call RegistrarError(Err.Number, Err.description, "ES.CargarBackUp", Erl)
+134     Call RegistrarError(Err.Number, Err.Description, "ES.CargarBackUp", Erl)
 136     Resume Next
         
 End Sub
@@ -2110,7 +2110,7 @@ Sub LoadMapData()
 
 man:
 134     Call MsgBox("Error durante la carga de mapas, el mapa " & Map & " contiene errores")
-136     Call LogError(Date & " " & Err.description & " " & Err.HelpContext & " " & Err.HelpFile & " " & Err.source)
+136     Call LogError(Date & " " & Err.Description & " " & Err.HelpContext & " " & Err.HelpFile & " " & Err.Source)
 
 End Sub
 
@@ -2441,7 +2441,7 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
 
 ErrorHandler:
 380     Close fh
-382     Call RegistrarError(Err.Number, Err.description, "ES.CargarMapaFormatoCSM", Erl)
+382     Call RegistrarError(Err.Number, Err.Description, "ES.CargarMapaFormatoCSM", Erl)
     
 End Sub
 
@@ -2517,10 +2517,15 @@ Sub LoadSini()
 
 174     NumCuentas = val(Lector.GetValue("INIT", "NumCuentas"))
 176     frmMain.cuentas.Caption = NumCuentas
+
         #If DEBUGGING Then
             'Shell App.Path & "\estadisticas.exe" & " " & "NUEVACUENTALADDER" & "*" & NumCuentas & "*" & MaxUsers
         #End If
-    
+        
+        ' Configuracion de la API
+        API_HostName = Lector.GetValue("API_SOCKET", "HostName")
+        API_Port = val(Lector.GetValue("API_SOCKET", "Port"))
+        
         '&&&&&&&&&&&&&&&&&&&&& BALANCE &&&&&&&&&&&&&&&&&&&&&&&
         'Se agregó en LoadBalance y en el Balance.dat
         'PorcentajeRecuperoMana = val(Lector.GetValue("BALANCE", "PorcentajeRecuperoMana"))
@@ -2538,7 +2543,7 @@ Sub LoadSini()
         Exit Sub
 
 LoadSini_Err:
-186     Call RegistrarError(Err.Number, Err.description, "ES.LoadSini", Erl)
+186     Call RegistrarError(Err.Number, Err.Description, "ES.LoadSini", Erl)
 188     Resume Next
         
 End Sub
@@ -2681,7 +2686,7 @@ Sub CargarCiudades()
         Exit Sub
 
 CargarCiudades_Err:
-302     Call RegistrarError(Err.Number, Err.description, "ES.CargarCiudades", Erl)
+302     Call RegistrarError(Err.Number, Err.Description, "ES.CargarCiudades", Erl)
 
         
 End Sub
@@ -2814,7 +2819,7 @@ Sub LoadIntervalos()
         Exit Sub
 
 LoadIntervalos_Err:
-240     Call RegistrarError(Err.Number, Err.description, "ES.LoadIntervalos", Erl)
+240     Call RegistrarError(Err.Number, Err.Description, "ES.LoadIntervalos", Erl)
 242     Resume Next
         
 End Sub
@@ -2846,7 +2851,7 @@ Sub LoadConfiguraciones()
         Exit Sub
 
 LoadConfiguraciones_Err:
-126     Call RegistrarError(Err.Number, Err.description, "ES.LoadConfiguraciones", Erl)
+126     Call RegistrarError(Err.Number, Err.Description, "ES.LoadConfiguraciones", Erl)
 128     Resume Next
         
 End Sub
@@ -2865,7 +2870,7 @@ Sub WriteVar(ByVal File As String, ByVal Main As String, ByVal Var As String, By
         Exit Sub
 
 WriteVar_Err:
-102     Call RegistrarError(Err.Number, Err.description, "ES.WriteVar", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "ES.WriteVar", Erl)
 104     Resume Next
         
 End Sub
@@ -3002,7 +3007,7 @@ Sub LoadUser(ByVal UserIndex As Integer)
         Exit Sub
 
 ErrorHandler:
-220     Call RegistrarError(Err.Number, Err.description & " UserName: " & UserList(UserIndex).name, "ES.LoadUser", Erl)
+220     Call RegistrarError(Err.Number, Err.Description & " UserName: " & UserList(UserIndex).name, "ES.LoadUser", Erl)
 222     Resume Next
     
 End Sub
@@ -3011,140 +3016,110 @@ Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = Fals
 
     On Error GoTo SaveUser_Err
     
-100 If Database_Enabled Then
-102     Call SaveUserDatabase(UserIndex, Logout)
+    If Database_Enabled Then
+        Call SaveUserDatabase(UserIndex, Logout)
     Else
-104     Call SaveUserCharfile(UserIndex, Logout)
+        Call SaveUserCharfile(UserIndex, Logout)
     End If
     
-106 UserList(UserIndex).Counters.LastSave = GetTickCount
+    'Call SaveUserAPI(UserIndex, Logout)
+    
+    UserList(UserIndex).Counters.LastSave = GetTickCount
     
     Exit Sub
 
 SaveUser_Err:
-108     Call RegistrarError(Err.Number, Err.description, "ES.SaveUser", Erl)
-110     Resume Next
+    Call RegistrarError(Err.Number, Err.Description, "ES.SaveUser", Erl)
+
+    Resume Next
 
 End Sub
 
-Sub SaveUserWIP(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = False)
+Sub SaveUserAPI(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = False)
         
-        On Error GoTo SaveUser_Err
+    On Error GoTo SaveUserAPI_Err:
+
+    Dim SavePacket As New JS_Object
+    Dim Header As New JS_Object
+    Dim Body As New JS_Object
+    Dim Main As New JS_Object
+    
+    Header.Item("action") = "user_save"
+    Header.Item("expectsResponse") = False
         
-        Dim S As cStringBuilder
-100     Set S = New cStringBuilder
+    SavePacket.Item("header") = Header
+   
+    With UserList(UserIndex)
+
+        '*************************************************************
+        '   USER
+        '*************************************************************
+        Body.Item("user") = JSON_User.Principal(UserIndex, Logout)
+            
+        '*************************************************************
+        '   ATRIBUTOS
+        '*************************************************************
+        Body.Item("attribute") = JSON_User.Atributos(UserIndex)
+            
+        '*************************************************************
+        '   HECHIZOS
+        '*************************************************************
+        Body.Item("spell") = JSON_User.Hechizo(UserIndex)
+            
+        '*************************************************************
+        '   INVENTARIO
+        '*************************************************************
+        Body.Item("inventory_item") = JSON_User.Inventario(UserIndex)
+            
+        '*************************************************************
+        '   INVENTARIO DEL BANCO
+        '*************************************************************
+        Body.Item("bank_item") = JSON_User.InventarioBanco(UserIndex)
+            
+        '*************************************************************
+        '   SKILLS
+        '*************************************************************
+        Body.Item("skillpoint") = JSON_User.Habilidades(UserIndex)
+            
+        '*************************************************************
+        '   MASCOTAS
+        '*************************************************************
+        Body.Item("pet") = JSON_User.Mascotas(UserIndex)
+            
+        '*************************************************************
+        '   QUESTS
+        '*************************************************************
+        Body.Item("quest") = JSON_User.Quest(UserIndex)
         
-102     With UserList(UserIndex)
-
-104         S.Append "name: '" & .name & "', "
-106         S.Append "level: " & .Stats.ELV & ", "
-108         S.Append "exp: " & CLng(.Stats.Exp) & ", "
-110         S.Append "elu: " & .Stats.ELU & ", "
-112         S.Append "genre_id: " & .genero & ", "
-114         S.Append "race_id: " & .raza & ", "
-116         S.Append "class_id: " & .clase & ", "
-118         S.Append "home_id: " & .Hogar & ", "
-120         S.Append "description: '" & .Desc & "', "
-122         S.Append "gold: " & .Stats.GLD & ", "
-124         S.Append "bank_gold: " & .Stats.Banco & ", "
-126         S.Append "free_skillpoints: " & .Stats.SkillPts & ", "
-128         S.Append "pets_saved: " & .flags.MascotasGuardadas & ", "
-130         S.Append "pos_map: " & .Pos.Map & ", "
-132         S.Append "pos_x: " & .Pos.X & ", "
-134         S.Append "pos_y: " & .Pos.Y & ", "
-136         S.Append "last_map: " & .flags.lastMap & ", "
-138         S.Append "message_info: '" & .MENSAJEINFORMACION & "', "
-140         S.Append "body_id: " & .Char.Body & ", "
-142         S.Append "head_id: " & .OrigChar.Head & ", "
-144         S.Append "weapon_id: " & .Char.WeaponAnim & ", "
-146         S.Append "helmet_id: " & .Char.CascoAnim & ", "
-148         S.Append "shield_id: " & .Char.ShieldAnim & ", "
-150         S.Append "heading: " & .Char.Heading & ", "
-152         S.Append "items_Amount: " & .Invent.NroItems & ", "
-154         S.Append "slot_armour: " & .Invent.ArmourEqpSlot & ", "
-156         S.Append "slot_weapon: " & .Invent.WeaponEqpSlot & ", "
-158         S.Append "slot_shield: " & .Invent.EscudoEqpSlot & ", "
-160         S.Append "slot_helmet: " & .Invent.CascoEqpSlot & ", "
-162         S.Append "slot_ammo: " & .Invent.MunicionEqpSlot & ", "
-164         S.Append "slot_dm: " & .Invent.DañoMagicoEqpSlot & ", "
-166         S.Append "slot_rm: " & .Invent.ResistenciaEqpSlot & ", "
-168         S.Append "slot_tool: " & .Invent.HerramientaEqpSlot & ", "
-170         S.Append "slot_magic: " & .Invent.MagicoSlot & ", "
-172         S.Append "slot_knuckles: " & .Invent.NudilloSlot & ", "
-174         S.Append "slot_ship: " & .Invent.BarcoSlot & ", "
-176         S.Append "slot_mount: " & .Invent.MonturaSlot & ", "
-178         S.Append "min_hp: " & .Stats.MinHp & ", "
-180         S.Append "max_hp: " & .Stats.MaxHp & ", "
-182         S.Append "min_man: " & .Stats.MinMAN & ", "
-184         S.Append "max_man: " & .Stats.MaxMAN & ", "
-186         S.Append "min_sta: " & .Stats.MinSta & ", "
-188         S.Append "max_sta: " & .Stats.MaxSta & ", "
-190         S.Append "min_ham: " & .Stats.MinHam & ", "
-192         S.Append "max_ham: " & .Stats.MaxHam & ", "
-194         S.Append "min_sed: " & .Stats.MinAGU & ", "
-196         S.Append "max_sed: " & .Stats.MaxAGU & ", "
-198         S.Append "min_hit: " & .Stats.MinHIT & ", "
-200         S.Append "max_hit: " & .Stats.MaxHit & ", "
-202         S.Append "killed_npcs: " & .Stats.NPCsMuertos & ", "
-204         S.Append "killed_users: " & .Stats.UsuariosMatados & ", "
-206         S.Append "invent_level: " & .Stats.InventLevel & ", "
-            'S.Append "rep_asesino: " & .Reputacion.AsesinoRep & ", "
-            'S.Append "rep_bandido: " & .Reputacion.BandidoRep & ", "
-            'S.Append "rep_burgues: " & .Reputacion.BurguesRep & ", "
-            'S.Append "rep_ladron: " & .Reputacion.LadronesRep & ", "
-            'S.Append "rep_noble: " & .Reputacion.NobleRep & ", "
-            'S.Append "rep_plebe: " & .Reputacion.PlebeRep & ", "
-            'S.Append "rep_average: " & .Reputacion.Promedio & ", "
-208         S.Append "is_naked: " & .flags.Desnudo & ", "
-210         S.Append "is_poisoned: " & .flags.Envenenado & ", "
-212         S.Append "is_hidden: " & .flags.Escondido & ", "
-214         S.Append "is_hungry: " & .flags.Hambre & ", "
-216         S.Append "is_thirsty: " & .flags.Sed & ", "
-            'S.Append "is_banned: " & .flags.Ban & ", " Esto es innecesario porque se setea cuando lo baneas (creo)
-218         S.Append "is_dead: " & .flags.Muerto & ", "
-220         S.Append "is_sailing: " & .flags.Navegando & ", "
-222         S.Append "is_paralyzed: " & .flags.Paralizado & ", "
-224         S.Append "is_mounted: " & .flags.Montado & ", "
-226         S.Append "is_silenced: " & .flags.Silenciado & ", "
-228         S.Append "silence_minutes_left: " & .flags.MinutosRestantes & ", "
-230         S.Append "silence_elapsed_seconds: " & .flags.SegundosPasados & ", "
-232         S.Append "spouse: '" & .flags.Pareja & "', "
-234         S.Append "counter_pena: " & .Counters.Pena & ", "
-236         S.Append "deaths: " & .flags.VecesQueMoriste & ", "
-238         S.Append "pertenece_consejo_real: " & (.flags.Privilegios And PlayerType.RoyalCouncil) & ", "
-240         S.Append "pertenece_consejo_caos: " & (.flags.Privilegios And PlayerType.ChaosCouncil) & ", "
-242         S.Append "pertenece_real: " & .Faccion.ArmadaReal & ", "
-244         S.Append "pertenece_caos: " & .Faccion.FuerzasCaos & ", "
-246         S.Append "ciudadanos_matados: " & .Faccion.CiudadanosMatados & ", "
-248         S.Append "criminales_matados: " & .Faccion.CriminalesMatados & ", "
-250         S.Append "recibio_armadura_real: " & .Faccion.RecibioArmaduraReal & ", "
-252         S.Append "recibio_armadura_caos: " & .Faccion.RecibioArmaduraCaos & ", "
-254         S.Append "recibio_exp_real: " & .Faccion.RecibioExpInicialReal & ", "
-256         S.Append "recibio_exp_caos: " & .Faccion.RecibioExpInicialCaos & ", "
-258         S.Append "recompensas_real: " & .Faccion.RecompensasReal & ", "
-260         S.Append "recompensas_caos: " & .Faccion.RecompensasCaos & ", "
-262         S.Append "reenlistadas: " & .Faccion.Reenlistadas & ", "
-264         S.Append "fecha_ingreso: " & IIf(.Faccion.FechaIngreso <> vbNullString, "'" & .Faccion.FechaIngreso & "'", "NULL") & ", "
-266         S.Append "nivel_ingreso: " & .Faccion.NivelIngreso & ", "
-268         S.Append "matados_ingreso: " & .Faccion.MatadosIngreso & ", "
-270         S.Append "siguiente_recompensa: " & .Faccion.NextRecompensa & ", "
-272         S.Append "status: " & .Faccion.Status & ", "
-274         S.Append "battle_points: " & .flags.BattlePuntos & ", "
-276         S.Append "guild_index: " & .GuildIndex & ", "
-278         S.Append "chat_combate: " & .ChatCombate & ", "
-280         S.Append "chat_global: " & .ChatGlobal & ", "
-282         S.Append "is_logged: " & IIf(Logout, "FALSE", "TRUE")
-
-284         .Counters.LastSave = GetTickCount
-
-        End With
-
+        '*************************************************************
+        '   QUESTS TERMINADAS
+        '*************************************************************
+        If .QuestStats.NumQuestsDone > 0 Then
+            Body.Item("quest_done") = JSON_User.QuestTerminadas(UserIndex)
+        End If
         
-        Exit Sub
+        '*************************************************************
+        '   ENVIAMOS A LA API
+        '*************************************************************
+        SavePacket.Item("body") = Body
 
-SaveUser_Err:
-286     Call RegistrarError(Err.Number, Err.description, "ES.SaveUser", Erl)
-288     Resume Next
+        Dim UserData As String: UserData = SavePacket.ToString
+         
+        ' Para fines de desarrollo
+        If frmAPISocket.Visible Then frmAPISocket.txtSend = UserData
+        Debug.Print vbNewLine & UserData
+        ' Para fines de desarrollo
+        
+        'Lo mandamos a la API
+        'Call frmAPISocket.Socket.SendData(UserData)
+        Call frmAPISocket.API_SendData(UserData)
+            
+    End With
+
+    Exit Sub
+
+SaveUserAPI_Err:
+    Call RegistrarError(Err.Number, Err.Description, "ES.SaveUserAPI", Erl)
         
 End Sub
 
@@ -3171,7 +3146,7 @@ Sub LoadUserBinary(ByVal UserIndex As Integer)
         Exit Sub
 
 LoadUserBinary_Err:
-110     Call RegistrarError(Err.Number, Err.description, "ES.LoadUserBinary", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "ES.LoadUserBinary", Erl)
 112     Resume Next
         
 End Sub
@@ -3545,7 +3520,7 @@ Sub SaveNewUser(ByVal UserIndex As Integer)
         Exit Sub
 
 SaveNewUser_Err:
-106     Call RegistrarError(Err.Number, Err.description, "ES.SaveNewUser", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "ES.SaveNewUser", Erl)
 108     Resume Next
         
 End Sub
@@ -3860,7 +3835,7 @@ Sub SetUserLogged(ByVal UserIndex As Integer)
         Exit Sub
 
 SetUserLogged_Err:
-108     Call RegistrarError(Err.Number, Err.description, "ES.SetUserLogged", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "ES.SetUserLogged", Erl)
 110     Resume Next
         
 End Sub
@@ -3881,7 +3856,7 @@ Sub SaveBattlePoints(ByVal UserIndex As Integer)
         Exit Sub
 
 SaveBattlePoints_Err:
-106     Call RegistrarError(Err.Number, Err.description, "ES.SaveBattlePoints", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "ES.SaveBattlePoints", Erl)
 108     Resume Next
         
 End Sub
@@ -3897,7 +3872,7 @@ Function Status(ByVal UserIndex As Integer) As Byte
         Exit Function
 
 Status_Err:
-102     Call RegistrarError(Err.Number, Err.description, "ES.Status", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "ES.Status", Erl)
 104     Resume Next
         
 End Function
@@ -3967,7 +3942,7 @@ Sub BackUPnPc(NpcIndex As Integer)
         Exit Sub
 
 BackUPnPc_Err:
-162     Call RegistrarError(Err.Number, Err.description, "ES.BackUPnPc", Erl)
+162     Call RegistrarError(Err.Number, Err.Description, "ES.BackUPnPc", Erl)
 164     Resume Next
         
 End Sub
@@ -4052,7 +4027,7 @@ Sub CargarNpcBackUp(NpcIndex As Integer, ByVal NpcNumber As Integer)
         Exit Sub
 
 CargarNpcBackUp_Err:
-180     Call RegistrarError(Err.Number, Err.description, "ES.CargarNpcBackUp", Erl)
+180     Call RegistrarError(Err.Number, Err.Description, "ES.CargarNpcBackUp", Erl)
 182     Resume Next
         
 End Sub
@@ -4077,7 +4052,7 @@ Sub LogBan(ByVal BannedIndex As Integer, ByVal UserIndex As Integer, ByVal Motiv
         Exit Sub
 
 LogBan_Err:
-112     Call RegistrarError(Err.Number, Err.description, "ES.LogBan", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "ES.LogBan", Erl)
 114     Resume Next
         
 End Sub
@@ -4102,7 +4077,7 @@ Sub LogBanFromName(ByVal BannedName As String, ByVal UserIndex As Integer, ByVal
         Exit Sub
 
 LogBanFromName_Err:
-112     Call RegistrarError(Err.Number, Err.description, "ES.LogBanFromName", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "ES.LogBanFromName", Erl)
 114     Resume Next
         
 End Sub
@@ -4127,7 +4102,7 @@ Sub Ban(ByVal BannedName As String, ByVal Baneador As String, ByVal Motivo As St
         Exit Sub
 
 Ban_Err:
-112     Call RegistrarError(Err.Number, Err.description, "ES.Ban", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "ES.Ban", Erl)
 114     Resume Next
         
 End Sub
@@ -4145,7 +4120,7 @@ Public Sub CargaApuestas()
         Exit Sub
 
 CargaApuestas_Err:
-106     Call RegistrarError(Err.Number, Err.description, "ES.CargaApuestas", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "ES.CargaApuestas", Erl)
 108     Resume Next
         
 End Sub
@@ -4212,7 +4187,7 @@ Public Sub LoadRecursosEspeciales()
         Exit Sub
 
 LoadRecursosEspeciales_Err:
-148     Call RegistrarError(Err.Number, Err.description, "ES.LoadRecursosEspeciales", Erl)
+148     Call RegistrarError(Err.Number, Err.Description, "ES.LoadRecursosEspeciales", Erl)
 150     Resume Next
         
 End Sub
@@ -4281,7 +4256,7 @@ Public Sub LoadPesca()
         Exit Sub
 
 LoadPesca_Err:
-154     Call RegistrarError(Err.Number, Err.description, "ES.LoadPesca", Erl)
+154     Call RegistrarError(Err.Number, Err.Description, "ES.LoadPesca", Erl)
 156     Resume Next
         
 End Sub
@@ -4332,7 +4307,7 @@ Private Sub QuickSortPeces(ByVal First As Long, ByVal Last As Long)
         Exit Sub
 
 QuickSortPeces_Err:
-132     Call RegistrarError(Err.Number, Err.description, "ES.QuickSortPeces", Erl)
+132     Call RegistrarError(Err.Number, Err.Description, "ES.QuickSortPeces", Erl)
 134     Resume Next
         
 End Sub
@@ -4381,7 +4356,7 @@ Public Function BinarySearchPeces(ByVal Value As Long) As Long
         Exit Function
 
 BinarySearchPeces_Err:
-124     Call RegistrarError(Err.Number, Err.description, "ES.BinarySearchPeces", Erl)
+124     Call RegistrarError(Err.Number, Err.Description, "ES.BinarySearchPeces", Erl)
 126     Resume Next
         
 End Function
@@ -4410,7 +4385,7 @@ Public Sub LoadUserIntervals(ByVal UserIndex As Integer)
         Exit Sub
 
 LoadUserIntervals_Err:
-124     Call RegistrarError(Err.Number, Err.description, "ES.LoadUserIntervals", Erl)
+124     Call RegistrarError(Err.Number, Err.Description, "ES.LoadUserIntervals", Erl)
 126     Resume Next
         
 End Sub
@@ -4476,7 +4451,7 @@ Public Sub RegistrarError(ByVal Numero As Long, ByVal Descripcion As String, ByV
         Exit Sub
 
 RegistrarError_Err:
-136     Call RegistrarError(Err.Number, Err.description, "ES.RegistrarError", Erl)
+136     Call RegistrarError(Err.Number, Err.Description, "ES.RegistrarError", Erl)
 
         
 End Sub
@@ -4501,7 +4476,7 @@ Function CountFiles(strFolder As String, strPattern As String) As Integer
         Exit Function
 
 CountFiles_Err:
-110     Call RegistrarError(Err.Number, Err.description, "ES.CountFiles", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "ES.CountFiles", Erl)
 
         
 End Function
