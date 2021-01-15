@@ -1431,6 +1431,7 @@ Sub LoadOBJData()
 252                 ObjData(Object).Real = val(Leer.GetValue("OBJ" & Object, "Real"))
 254                 ObjData(Object).Caos = val(Leer.GetValue("OBJ" & Object, "Caos"))
 256                 ObjData(Object).EfectoMagico = val(Leer.GetValue("OBJ" & Object, "efectomagico"))
+257                 ObjData(Object).Revive = val(Leer.GetValue("OBJ" & Object, "Revive")) <> 0
         
 258             Case eOBJType.otInstrumentos
         
@@ -1563,6 +1564,7 @@ Sub LoadOBJData()
 428                 ObjData(Object).MagicDamageBonus = val(Leer.GetValue("OBJ" & Object, "MagicDamageBonus"))
 430                 ObjData(Object).MinHIT = val(Leer.GetValue("OBJ" & Object, "MinHIT"))
 432                 ObjData(Object).MaxHit = val(Leer.GetValue("OBJ" & Object, "MaxHIT"))
+433                 ObjData(Object).Revive = val(Leer.GetValue("OBJ" & Object, "Revive")) <> 0
 
 434             Case eOBJType.otResistencia
 436                 ObjData(Object).ResistenciaMagica = val(Leer.GetValue("OBJ" & Object, "ResistenciaMagica"))

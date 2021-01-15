@@ -1324,6 +1324,7 @@ Public Type ObjData
     Power As Integer
     MagicDamageBonus As Integer
     ResistenciaMagica As Integer
+    Revive As Boolean
     Refuerzo As Byte
     
     Log As Byte 'es un objeto que queremos loguear? Pablo (ToxicWaste) 07/09/07

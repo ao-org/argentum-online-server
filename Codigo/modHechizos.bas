@@ -1715,6 +1715,28 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                 '   Exit Sub
                 ' End If
                 
+                If UserList(UserIndex).clase <> Cleric Then
+                    Dim PuedeRevivir As Boolean
+                    
+                    If UserList(UserIndex).Invent.WeaponEqpObjIndex <> 0 Then
+                        If ObjData(UserList(UserIndex).Invent.WeaponEqpObjIndex).Revive Then
+                            PuedeRevivir = True
+                        End If
+                    End If
+                    
+                    If UserList(UserIndex).Invent.DañoMagicoEqpObjIndex <> 0 Then
+                        If ObjData(UserList(UserIndex).Invent.DañoMagicoEqpObjIndex).Revive Then
+                            PuedeRevivir = True
+                        End If
+                    End If
+                        
+                    If Not PuedeRevivir Then
+                        Call WriteConsoleMsg(UserIndex, "Necesitás un objeto con mayor poder mágico para poder revivir.", FontTypeNames.FONTTYPE_INFO)
+                        b = False
+                        Exit Sub
+                    End If
+                End If
+                
                 If UserList(tU).flags.SeguroResu Then
                     Call WriteConsoleMsg(UserIndex, "El usuario tiene el seguro de resurrección activado.", FontTypeNames.FONTTYPE_INFO)
                     Call WriteConsoleMsg(tU, UserList(UserIndex).name & " está intentando revivirte. Desactiva el seguro de resurrección para permitirle hacerlo.", FontTypeNames.FONTTYPE_INFO)
