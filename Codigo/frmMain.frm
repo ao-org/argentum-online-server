@@ -491,6 +491,9 @@ Begin VB.Form frmMain
    Begin VB.Menu mnuPopUp 
       Caption         =   "PopUpMenu"
       Visible         =   0   'False
+      Begin VB.Menu mnuConsolaAPI_Popup 
+         Caption         =   "&Consola API"
+      End
       Begin VB.Menu mnuMostrar 
          Caption         =   "&Mostrar"
       End
@@ -763,6 +766,10 @@ End Sub
 
 Private Sub mnuConsolaAPI_Click()
     frmAPISocket.Show vbModeless
+End Sub
+
+Private Sub mnuConsolaAPI_Popup_Click()
+    Call mnuConsolaAPI_Click
 End Sub
 
 Private Sub TimerGuardarUsuarios_Timer()
