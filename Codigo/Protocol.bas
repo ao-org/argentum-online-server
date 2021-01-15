@@ -16596,8 +16596,13 @@ Public Sub HandleCheckSlot(ByVal UserIndex As Integer)
 110         UserName = Buffer.ReadASCIIString() 'Que UserName?
 112         slot = Buffer.ReadByte() 'Que Slot?
 114         tIndex = NameIndex(UserName)  'Que user index?
+
+            'If we got here then packet is complete, copy data back to original queue
+115         Call .incomingData.CopyBuffer(Buffer)
+
+            If Not EsGM(UserIndex) Then Exit Sub
         
-116         Call LogGM(.name, .name & " Checkeo el slot " & slot & " de " & UserName)
+117         Call LogGM(.name, .name & " Checkeo el slot " & slot & " de " & UserName)
            
 118         If tIndex > 0 And UserList(UserIndex).flags.BattleModo = 0 Then
 120             If slot > 0 And slot <= UserList(UserIndex).CurrentInventorySlots Then
@@ -16617,9 +16622,6 @@ Public Sub HandleCheckSlot(ByVal UserIndex As Integer)
 130             Call WriteConsoleMsg(UserIndex, "Usuario offline.", FontTypeNames.FONTTYPE_TALK)
 
             End If
-
-            'If we got here then packet is complete, copy data back to original queue
-132         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
