@@ -428,6 +428,11 @@ Begin VB.Form frmMain
       TabIndex        =   14
       Top             =   3000
       Width           =   4935
+      Begin VB.Timer t_ColaAPI 
+         Interval        =   50
+         Left            =   3120
+         Top             =   1200
+      End
       Begin VB.ListBox listaDePaquetes 
          Height          =   1110
          Left            =   120
@@ -770,6 +775,26 @@ End Sub
 
 Private Sub mnuConsolaAPI_Popup_Click()
     Call mnuConsolaAPI_Click
+End Sub
+
+Private Sub t_ColaAPI_Timer()
+    
+    With frmAPISocket
+    
+        If .API_Queue.Count = 0 Then Exit Sub
+    
+        If .Socket.State = sckClosed Then
+            Call .Connect
+            Exit Sub
+
+        End If
+        
+        Do While (Not .API_Queue.IsEmpty)
+            Call .Socket.SendData(.API_Queue.Pop)
+        Loop
+    
+    End With
+
 End Sub
 
 Private Sub TimerGuardarUsuarios_Timer()

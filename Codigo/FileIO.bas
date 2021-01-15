@@ -3111,8 +3111,8 @@ Sub SaveUserAPI(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = F
         ' Para fines de desarrollo
         
         'Lo mandamos a la API
-        Call frmAPISocket.Socket.SendData(UserData)
-        'Call frmAPISocket.API_SendData(UserData)
+        'Call frmAPISocket.Socket.SendData(UserData)
+        Call frmAPISocket.API_SendData(UserData)
             
     End With
 

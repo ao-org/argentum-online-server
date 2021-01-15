@@ -163,18 +163,18 @@ Public Sub API_SendData(ByRef data As String)
                 Exit Sub
             
             Case sckClosed
-                Call .Connect("localhost", 3100)
+                Call .Connect(API_HostName, API_Port)
                 Debug.Print "API: El socket estaba cerrado! Reconectando..."
                 
             Case sckError
                 Call .CloseSck
-                Call .Connect("localhost", 3100)
+                Call .Connect(API_HostName, API_Port)
                 Debug.Print "API: Error en el socket! Reconectando..."
                 
         End Select
     
         'Lo agrego a la cola para enviarlo mas tarde.
-        Call API_Queue.Push(Data)
+        Call API_Queue.Push(data)
     
     End With
     
@@ -243,25 +243,9 @@ Private Sub cmdEnviar_Click()
     
 End Sub
 
-Private Sub tColaAPI_Timer()
-
-    If API_Queue.Count = 0 Then Exit Sub
-    
-    If Socket.State = sckClosed Then
-        Call Connect
-        Exit Sub
-
-    End If
-        
-    Do While (Not API_Queue.IsEmpty)
-        Call Socket.SendData(API_Queue.Pop)
-    Loop
-    
-End Sub
-
-Private Sub Socket_BeforeSend(ByRef Data As String)
+Private Sub Socket_BeforeSend(ByRef data As String)
     'Agregamos el separador de paquetes al string que vamos a enviar
-    Data = Data & ";"
+    data = data & ";"
 End Sub
 
 Private Sub Socket_DataArrival(ByVal bytesTotal As Long)
