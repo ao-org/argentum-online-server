@@ -2014,14 +2014,6 @@ End Sub
 Sub Cerrar_Usuario(ByVal UserIndex As Integer)
 
         On Error GoTo Cerrar_Usuario_Err
-
-        '***************************************************
-        'Author: Unknown
-        'Last Modification: 16/09/2010
-        '16/09/2010 - ZaMa: Cuando se va el invi estando navegando, no se saca el invi (ya esta visible).
-        '***************************************************
-        Dim isNotVisible As Boolean
-        Dim HiddenPirat  As Boolean
     
 100     With UserList(UserIndex)
 
@@ -2029,52 +2021,10 @@ Sub Cerrar_Usuario(ByVal UserIndex As Integer)
 104             .Counters.Saliendo = True
 106             .Counters.Salir = IntervaloCerrarConexion
             
-108             isNotVisible = (.flags.Oculto Or .flags.invisible)
-
-110             If isNotVisible And .flags.AdminInvisible = 0 Then
-112                 .flags.invisible = 0
-                
-114                 If .flags.Oculto Then
-                
-116                     If .flags.Navegando = 1 Then
-                    
-118                         If .clase = eClass.Pirat Then
-                                ' Pierde la apariencia de fragata fantasmal
-120                             .Char.Body = ObjData(.Invent.BarcoObjIndex).Ropaje
-        
-122                             .Char.ShieldAnim = NingunEscudo
-124                             .Char.WeaponAnim = NingunArma
-126                             .Char.CascoAnim = NingunCasco
-        
-128                             Call WriteConsoleMsg(UserIndex, "Has recuperado tu apariencia normal!", FontTypeNames.FONTTYPE_INFO)
-130                             Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)
-132                             HiddenPirat = True
-
-                            End If
-
-                        End If
-
-                    End If
-                
-134                 .flags.Oculto = 0
-                
-                    ' Para no repetir mensajes
-136                 If Not HiddenPirat Then
-138                     Call WriteConsoleMsg(UserIndex, "Has vuelto a ser visible.", FontTypeNames.FONTTYPE_INFO)
-                    End If
-                
-                    ' Si esta navegando ya esta visible
-140                 If .flags.Navegando = 0 Then
-142                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, False))
-                    End If
-
-                End If
-            
 144             If .flags.Traveling = 1 Then
 146                 Call WriteConsoleMsg(UserIndex, "Se ha cancelado el viaje a casa", FontTypeNames.FONTTYPE_INFO)
 148                 .flags.Traveling = 0
 150                 .Counters.goHome = 0
-
                 End If
             
 152             Call WriteLocaleMsg(UserIndex, "203", FontTypeNames.FONTTYPE_INFO, .Counters.Salir)
