@@ -3038,22 +3038,19 @@ End Sub
 Sub SaveUserAPI(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = False)
         
     On Error GoTo SaveUserAPI_Err:
-        
-    Call SaveUserDatabase(UserIndex, True)
-        
+
     Dim i As Long
-        
+    
     Dim SavePacket As New JS_Object
-        
     Dim Header As New JS_Object
+    Dim Body As New JS_Object
+    Dim Main As New JS_Object
+    
     Header.Item("action") = "SaveUser"
     Header.Item("expectsResponse") = False
         
     SavePacket.Item("header") = Header
-        
-    Dim Body As New JS_Object
-    Dim Main As New JS_Object
-        
+   
     With UserList(UserIndex)
 
         '*************************************************************
@@ -3107,13 +3104,19 @@ Sub SaveUserAPI(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = F
         '   ENVIAMOS A LA API
         '*************************************************************
         SavePacket.Item("body") = Body
-            
-        frmAPISocket.txtResponse = SavePacket.ToString
+
+        Dim UserData As String: UserData = SavePacket.ToString
         
-        Debug.Print vbNewLine & SavePacket.ToString
+        frmAPISocket.txtSend = UserData
+        
+        Clipboard.Clear
+        Clipboard.SetText UserData
+        
+        Debug.Print vbNewLine & UserData
             
         'Lo mandamos a la API
-        Call frmAPISocket.API_SendData(SavePacket.ToString)
+        Call frmAPISocket.Socket.SendData(UserData & ";")
+        'Call frmAPISocket.API_SendData(UserData)
             
     End With
 

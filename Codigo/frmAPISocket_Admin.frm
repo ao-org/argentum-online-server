@@ -21,6 +21,19 @@ Begin VB.Form frmAPISocket
    ScaleHeight     =   9555
    ScaleWidth      =   9750
    StartUpPosition =   3  'Windows Default
+   Begin VB.Timer tColaAPI 
+      Interval        =   10
+      Left            =   120
+      Top             =   120
+   End
+   Begin VB.CommandButton cmdConnect 
+      Caption         =   "Conectar"
+      Height          =   360
+      Left            =   6120
+      TabIndex        =   6
+      Top             =   240
+      Width           =   1455
+   End
    Begin VB.CommandButton cmdShutdown 
       Caption         =   "Cerrar Socket"
       Height          =   360
@@ -28,11 +41,6 @@ Begin VB.Form frmAPISocket
       TabIndex        =   5
       Top             =   210
       Width           =   1500
-   End
-   Begin VB.Timer tColaAPI 
-      Interval        =   500
-      Left            =   660
-      Top             =   210
    End
    Begin VB.TextBox txtResponse 
       Height          =   4245
@@ -200,27 +208,12 @@ Public Sub Connect()
 
 End Sub
 
-Private Sub cmdShutdown_Click()
-
-    Call Socket.CloseSck
-    
+Private Sub cmdConnect_Click()
+    Call Connect
 End Sub
 
-Private Sub tColaAPI_Timer()
-    
-    'If API_Queue.Count = 0 Then Exit Sub
-    
-    If Socket.State = sckClosed Then
-        Call Connect
-        Exit Sub
-    End If
-    
-    Do While (Not API_Queue.IsEmpty)
-        
-        Call Socket.SendData(API_Queue.Pop)
-        
-    Loop
-    
+Private Sub cmdShutdown_Click()
+    Call Socket.CloseSck
 End Sub
 
 Private Sub cmdEnviar_Click()
@@ -236,19 +229,35 @@ Private Sub cmdEnviar_Click()
         Select Case .State
         
             Case sckClosed
-                Call API_Queue.Push(txtSend.Text)
-                'Call Connect
+                Call API_Queue.Push(txtSend.Text & ";")
+                Call Connect
 
             Case sckError
                 Call .CloseSck
                 Call Connect
                 
             Case sckConnected
-                Call .SendData(txtSend.Text)
+                Call .SendData(txtSend.Text & ";")
                 
         End Select
 
     End With
+    
+End Sub
+
+Private Sub tColaAPI_Timer()
+
+    If API_Queue.Count = 0 Then Exit Sub
+    
+    If Socket.State = sckClosed Then
+        Call Connect
+        Exit Sub
+
+    End If
+        
+    Do While (Not API_Queue.IsEmpty)
+        Call Socket.SendData(API_Queue.Pop)
+    Loop
     
 End Sub
 

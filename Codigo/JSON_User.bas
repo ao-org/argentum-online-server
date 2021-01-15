@@ -128,7 +128,7 @@ Function Atributos(ByRef UserIndex As Integer) As JS_Array
         For i = 1 To NUMATRIBUTOS
             Objeto.Item("user_id") = .Id
             Objeto.Item("number") = i
-            Objeto.Item("spellId") = .Stats.UserAtributosBackUP(i)
+            Objeto.Item("value") = .Stats.UserAtributosBackUP(i)
     
             ' Lo meto en el array de items
             Matriz.Push Objeto
@@ -153,7 +153,7 @@ Function Hechizo(ByRef UserIndex As Integer) As JS_Array
         For i = 1 To MAXUSERHECHIZOS
             Objeto.Item("user_id") = .Id
             Objeto.Item("number") = i
-            Objeto.Item("spellId") = .Stats.UserHechizos(i)
+            Objeto.Item("spell_id") = .Stats.UserHechizos(i)
                     
             ' Lo meto en el array de items
             Matriz.Push Objeto
@@ -179,7 +179,7 @@ Function Inventario(ByRef UserIndex As Integer) As JS_Array
             Objeto.Item("user_id") = .Id
             Objeto.Item("number") = i
             Objeto.Item("item_id") = .Invent.Object(i).ObjIndex
-            Objeto.Item("amount") = .Invent.Object(i).Amount
+            Objeto.Item("Amount") = .Invent.Object(i).Amount
             Objeto.Item("is_equipped") = .Invent.Object(i).Equipped
                 
             ' Lo meto en el array de items
