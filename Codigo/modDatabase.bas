@@ -2078,7 +2078,7 @@ Public Function GetUserAmountOfPunishmentsDatabase(ByVal UserName As String) As 
     '***************************************************
     On Error GoTo ErrorHandler
 
-    Call MakeQuery("SELECT COUNT(*) as punishments FROM punishment WHERE user_id = (SELECT id from user WHERE UPPER(name) = ?);", False, UCase$(UserName))
+    Call MakeQuery("SELECT COUNT(*) as punishments FROM `punishment` INNER JOIN `user` ON punishment.user_id = user.id WHERE UPPER(user.name) = ?;", False, UCase$(UserName))
 
     If QueryData Is Nothing Then Exit Function
 
@@ -2098,7 +2098,7 @@ Public Sub SendUserPunishmentsDatabase(ByVal UserIndex As Integer, ByVal UserNam
     '***************************************************
     On Error GoTo ErrorHandler
 
-    Call MakeQuery("SELECT * FROM punishment WHERE user_id = (SELECT id from user WHERE UPPER(name) = ?);", False, UCase$(UserName))
+    Call MakeQuery("SELECT user_id, number, reason FROM `punishment` INNER JOIN `user` ON punishment.user_id = user.id WHERE UPPER(user.name) = ?;", False, UCase$(UserName))
     
     If QueryData Is Nothing Then Exit Sub
 
@@ -2106,9 +2106,8 @@ Public Sub SendUserPunishmentsDatabase(ByVal UserIndex As Integer, ByVal UserNam
         QueryData.MoveFirst
 
         While Not QueryData.EOF
-
             Call WriteConsoleMsg(UserIndex, QueryData!Number & " - " & QueryData!Reason, FontTypeNames.FONTTYPE_INFO)
-
+            
             QueryData.MoveNext
         Wend
 
@@ -2126,7 +2125,7 @@ Public Function GetNombreCuentaDatabase(name As String) As String
     On Error GoTo ErrorHandler
 
     'Hacemos la query.
-    Call MakeQuery("SELECT email FROM account WHERE id = (SELECT account_id FROM user WHERE UPPER(name) = ?);", False, UCase$(name))
+    Call MakeQuery("SELECT email FROM `account` INNER JOIN `user` ON user.account_id = account.id WHERE UPPER(user.name) = ?;", False, UCase$(name))
     
     'Verificamos que la query no devuelva un resultado vacio.
     If QueryData Is Nothing Then Exit Function
@@ -2412,9 +2411,9 @@ Public Function PersonajePerteneceEmail(ByVal UserName As String, ByVal AccountE
     
 End Function
 
-Public Function PersonajePerteneceID(ByVal UserName As String, ByVal AccountID As Integer) As Boolean
+Public Function PersonajePerteneceID(ByVal UserName As String, ByVal AccountId As Integer) As Boolean
     
-    Call MakeQuery("SELECT id FROM user WHERE name = ? AND account_id = ?;", False, UserName, AccountID)
+    Call MakeQuery("SELECT id FROM user WHERE name = ? AND account_id = ?;", False, UserName, AccountId)
     
     If QueryData Is Nothing Then
         PersonajePerteneceID = False
@@ -2563,7 +2562,7 @@ Public Function SacarLlaveDatabase(ByVal LlaveObj As Integer) As Boolean
     Dim Users() As String
 
     ' Obtengo los usuarios logueados en la cuenta del dueño de la llave
-    Call MakeQuery("SELECT name FROM user WHERE is_logged = TRUE AND account_id = (SELECT account_id FROM house_key WHERE key_obj = ?);", False, LlaveObj)
+    Call MakeQuery("SELECT name FROM `user` INNER JOIN `account` ON `user`.account_id = account.id INNER JOIN `house_key` ON `house_key`.account_id = account.id WHERE `user`.is_logged = TRUE AND `house_key`.key_obj = ?;", False, LlaveObj)
     
     If QueryData Is Nothing Then Exit Function
 
@@ -2610,7 +2609,7 @@ End Function
 Public Sub VerLlavesDatabase(ByVal UserIndex As Integer)
     On Error GoTo ErrorHandler
 
-    Call MakeQuery("SELECT (SELECT email FROM account WHERE id = K.account_id) as email, key_obj FROM house_key AS K;", False)
+    Call MakeQuery("SELECT email, key_obj FROM `house_key` INNER JOIN `account` ON `house_key`.account_id = `account`.id;", False)
 
     If QueryData Is Nothing Then
         Call WriteConsoleMsg(UserIndex, "No hay llaves otorgadas por el momento.", FontTypeNames.FONTTYPE_INFO)
@@ -2626,7 +2625,6 @@ Public Sub VerLlavesDatabase(ByVal UserIndex As Integer)
         QueryData.MoveFirst
 
         While Not QueryData.EOF
-        
             message = message & "Llave: " & QueryData!key_obj & " - Cuenta: " & QueryData!email & vbNewLine
 
             QueryData.MoveNext
