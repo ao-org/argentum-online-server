@@ -152,32 +152,16 @@ End Sub
 Public Sub API_SendData(ByRef data As String)
     
     On Error GoTo ErrHandler:
-    
-    With Socket
+
+    If Me.Socket.State = sckConnected Then
+        Call Me.Socket.SendData(data)
         
-        Select Case .State
-        
-            Case sckConnected
-                Call .SendData(data)
-                Debug.Print "API: Enviado!"
-                Exit Sub
-            
-            Case sckClosed
-                Call .Connect(API_HostName, API_Port)
-                Debug.Print "API: El socket estaba cerrado! Reconectando..."
-                
-            Case sckError
-                Call .CloseSck
-                Call .Connect(API_HostName, API_Port)
-                Debug.Print "API: Error en el socket! Reconectando..."
-                
-        End Select
-    
+    Else
         'Lo agrego a la cola para enviarlo mas tarde.
         Call API_Queue.Push(data)
-    
-    End With
-    
+
+    End If
+
     Exit Sub
     
 ErrHandler:

@@ -763,10 +763,8 @@ auxSocket_DataArrival_Err:
         
 End Sub
 
-Private Sub Form_Load()
-
+Private Sub Form_Activate()
     Call frmAPISocket.Connect
-    
 End Sub
 
 Private Sub mnuConsolaAPI_Click()
@@ -783,16 +781,30 @@ Private Sub t_ColaAPI_Timer()
     
         If .API_Queue.Count = 0 Then Exit Sub
     
-        If .Socket.State = sckClosed Then
-            Call .Connect
-            Exit Sub
-
-        End If
+        Select Case .Socket.State
         
-        Do While (Not .API_Queue.IsEmpty)
-            Call .Socket.SendData(.API_Queue.Pop)
-        Loop
-    
+            Case sckConnected
+            
+                'Iteramos la cola y mandamos todo.
+                Do While (Not .API_Queue.IsEmpty)
+                    Call .Socket.SendData(.API_Queue.Pop)
+                Loop
+                
+                Debug.Print "API: Enviado!"
+                
+                Exit Sub
+            
+            Case sckClosed
+                Call .Connect
+                Debug.Print "API: El socket estaba cerrado! Reconectando..."
+                
+            Case sckError
+                Call .Socket.CloseSck
+                Call .Connect
+                Debug.Print "API: Error en el socket! Reconectando..."
+                
+        End Select
+
     End With
 
 End Sub

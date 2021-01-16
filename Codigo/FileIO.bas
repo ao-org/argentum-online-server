@@ -2523,6 +2523,7 @@ Sub LoadSini()
         #End If
         
         ' Configuracion de la API
+        API_Enabled = val(Lector.GetValue("API_SOCKET", "Enabled"))
         API_HostName = Lector.GetValue("API_SOCKET", "HostName")
         API_Port = val(Lector.GetValue("API_SOCKET", "Port"))
         
@@ -3016,13 +3017,19 @@ Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = Fals
 
     On Error GoTo SaveUser_Err
     
-    If Database_Enabled Then
-        Call SaveUserDatabase(UserIndex, Logout)
-    Else
-        Call SaveUserCharfile(UserIndex, Logout)
-    End If
+    If API_Enabled = 0 Then
     
-    'Call SaveUserAPI(UserIndex, Logout)
+        If Database_Enabled Then
+            Call SaveUserDatabase(UserIndex, Logout)
+        Else
+            Call SaveUserCharfile(UserIndex, Logout)
+        End If
+        
+    Else
+    
+        Call SaveUserAPI(UserIndex, Logout)
+        
+    End If
     
     UserList(UserIndex).Counters.LastSave = GetTickCount
     
