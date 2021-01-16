@@ -4,6 +4,7 @@ Option Explicit
 '==============================================================================
 'SERVER.INI CONFIGURATIONS
 '==============================================================================
+Public API_Enabled As Byte
 Public API_HostName As String
 Public API_Port As Integer
 
