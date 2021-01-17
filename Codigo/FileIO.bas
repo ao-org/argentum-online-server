@@ -741,7 +741,7 @@ Public Sub CargarHechizos()
 254         Hechizos(Hechizo).Estupidez = val(Leer.GetValue("Hechizo" & Hechizo, "Estupidez"))
     
 256         Hechizos(Hechizo).Invoca = val(Leer.GetValue("Hechizo" & Hechizo, "Invoca"))
-258         Hechizos(Hechizo).NumNpc = val(Leer.GetValue("Hechizo" & Hechizo, "NumNpc"))
+258         Hechizos(Hechizo).NumNPC = val(Leer.GetValue("Hechizo" & Hechizo, "NumNpc"))
 260         Hechizos(Hechizo).cant = val(Leer.GetValue("Hechizo" & Hechizo, "Cant"))
 262         Hechizos(Hechizo).Mimetiza = val(Leer.GetValue("Hechizo" & Hechizo, "Mimetiza"))
     
@@ -1390,7 +1390,7 @@ Sub LoadOBJData()
 178                 ObjData(Object).SkHerreria = val(Leer.GetValue("OBJ" & Object, "SkHerreria"))
 180                 ObjData(Object).ResistenciaMagica = val(Leer.GetValue("OBJ" & Object, "ResistenciaMagica"))
         
-182             Case eOBJType.otEscudo
+182             Case eOBJType.otESCUDO
 184                 ObjData(Object).ShieldAnim = val(Leer.GetValue("OBJ" & Object, "Anim"))
 186                 ObjData(Object).LingH = val(Leer.GetValue("OBJ" & Object, "LingH"))
 188                 ObjData(Object).LingP = val(Leer.GetValue("OBJ" & Object, "LingP"))
@@ -1400,7 +1400,7 @@ Sub LoadOBJData()
 196                 ObjData(Object).Caos = val(Leer.GetValue("OBJ" & Object, "Caos"))
 198                 ObjData(Object).ResistenciaMagica = val(Leer.GetValue("OBJ" & Object, "ResistenciaMagica"))
         
-200             Case eOBJType.otCasco
+200             Case eOBJType.otCASCO
 202                 ObjData(Object).CascoAnim = val(Leer.GetValue("OBJ" & Object, "Anim"))
 204                 ObjData(Object).LingH = val(Leer.GetValue("OBJ" & Object, "LingH"))
 206                 ObjData(Object).LingP = val(Leer.GetValue("OBJ" & Object, "LingP"))
@@ -1482,7 +1482,7 @@ Sub LoadOBJData()
                     '  ObjData(Object).SkHerreria = val(Leer.GetValue("OBJ" & Object, "SkHerreria"))
             
                     'Pasajes Ladder 05-05-08
-320             Case eOBJType.otPasajes
+320             Case eOBJType.otpasajes
 322                 ObjData(Object).DesdeMap = val(Leer.GetValue("OBJ" & Object, "DesdeMap"))
 324                 ObjData(Object).HastaMap = val(Leer.GetValue("OBJ" & Object, "Map"))
 326                 ObjData(Object).HastaX = val(Leer.GetValue("OBJ" & Object, "X"))
@@ -1509,7 +1509,7 @@ Sub LoadOBJData()
 356                 ObjData(Object).HastaX = val(Leer.GetValue("OBJ" & Object, "X"))
 358                 ObjData(Object).HastaY = val(Leer.GetValue("OBJ" & Object, "Y"))
                     
-360             Case eOBJType.otNudillos
+360             Case eOBJType.otNUDILLOS
 362                 ObjData(Object).MinHIT = val(Leer.GetValue("OBJ" & Object, "MinHIT"))
 364                 ObjData(Object).MaxHit = val(Leer.GetValue("OBJ" & Object, "MaxHit"))
 366                 ObjData(Object).Envenena = val(Leer.GetValue("OBJ" & Object, "Envenena"))
@@ -2317,23 +2317,25 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
 276         If .NumeroNPCs > 0 Then
 278             ReDim NPCs(1 To .NumeroNPCs)
 280             Get #fh, , NPCs
+
+                Dim NumNPC As Integer
                  
 282             For i = 1 To .NumeroNPCs
 
-284                 MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex = NPCs(i).NpcIndex
+284                 NumNPC = NPCs(i).NpcIndex
                     
-286                 If MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex > 0 Then
+286                 If NumNPC > 0 Then
 288                     npcfile = DatPath & "NPCs.dat"
 
                         'Si el npc debe hacer respawn en la pos
                         'original la guardamos
-290                     If val(GetVar(npcfile, "NPC" & MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex, "PosOrig")) = 1 Then
-292                         MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex = OpenNPC(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex)
+290                     If val(GetVar(npcfile, "NPC" & NumNPC, "PosOrig")) = 1 Then
+292                         MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex = OpenNPC(NumNPC)
 294                         Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Orig.Map = Map
 296                         Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Orig.X = NPCs(i).X
 298                         Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Orig.Y = NPCs(i).Y
                         Else
-300                         MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex = OpenNPC(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex)
+300                         MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex = OpenNPC(NumNPC)
 
                         End If
 
