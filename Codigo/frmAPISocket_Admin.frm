@@ -119,7 +119,7 @@ Public Sub Connect()
     '*********************************************************************
     
     ' Me fijo que estamos usando la API.
-    If API_Enabled = 0 Then Exit Sub
+    If Not API_Enabled Then Exit Sub
     
     If Socket Is Nothing Then
         Set Socket = New clsSocket
