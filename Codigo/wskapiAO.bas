@@ -37,11 +37,11 @@ Private totalProcessCount As Long
 Private Const SD_BOTH As Long = &H2
 
 Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
-Public Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
-Public Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
-Public Declare Function CallWindowProc Lib "user32" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Long, ByVal hWnd As Long, ByVal msg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
-Private Declare Function CreateWindowEx Lib "user32" Alias "CreateWindowExA" (ByVal dwExStyle As Long, ByVal lpClassName As String, ByVal lpWindowName As String, ByVal dwStyle As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hwndParent As Long, ByVal hMenu As Long, ByVal hInstance As Long, lpParam As Any) As Long
-Private Declare Function DestroyWindow Lib "user32" (ByVal hWnd As Long) As Long
+Public Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hwnd As Long, ByVal nIndex As Long) As Long
+Public Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hwnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+Public Declare Function CallWindowProc Lib "user32" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Long, ByVal hwnd As Long, ByVal msg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Private Declare Function CreateWindowEx Lib "user32" Alias "CreateWindowExA" (ByVal dwExStyle As Long, ByVal lpClassName As String, ByVal lpWindowName As String, ByVal dwStyle As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hWndParent As Long, ByVal hMenu As Long, ByVal hInstance As Long, lpParam As Any) As Long
+Private Declare Function DestroyWindow Lib "user32" (ByVal hwnd As Long) As Long
 
 Private Const WS_CHILD = &H40000000
 Public Const GWL_WNDPROC = (-4)
@@ -64,7 +64,7 @@ Public Type tSockCache
 
 End Type
 
-Public WSAPISock2Usr  As New Collection
+Public WSAPISock2Usr  As New Dictionary
 
 ' ====================================================================================
 ' ====================================================================================
@@ -82,7 +82,7 @@ Public LastSockListen As Long
 ' ====================================================================================
 ' ====================================================================================
 
-Public Sub IniciaWsApi(ByVal hwndParent As Long)
+Public Sub IniciaWsApi(ByVal hWndParent As Long)
         
         On Error GoTo IniciaWsApi_Err
 
@@ -90,9 +90,9 @@ Public Sub IniciaWsApi(ByVal hwndParent As Long)
 102     Debug.Print "IniciaWsApi"
 
         #If WSAPI_CREAR_LABEL Then
-104         hWndMsg = CreateWindowEx(0, "STATIC", "AOMSG", WS_CHILD, 0, 0, 0, 0, hwndParent, 0, App.hInstance, ByVal 0&)
+104         hWndMsg = CreateWindowEx(0, "STATIC", "AOMSG", WS_CHILD, 0, 0, 0, 0, hWndParent, 0, App.hInstance, ByVal 0&)
         #Else
-106         hWndMsg = hwndParent
+106         hWndMsg = hWndParent
         #End If 'WSAPI_CREAR_LABEL
 
 108     OldWProc = SetWindowLong(hWndMsg, GWL_WNDPROC, AddressOf WndProc)
@@ -105,7 +105,7 @@ Public Sub IniciaWsApi(ByVal hwndParent As Long)
         Exit Sub
 
 IniciaWsApi_Err:
-114     Call RegistrarError(Err.Number, Err.description, "wskapiAO.IniciaWsApi", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "wskapiAO.IniciaWsApi", Erl)
 
 116     Resume Next
         
@@ -140,24 +140,29 @@ Public Sub LimpiaWsApi()
         Exit Sub
 
 LimpiaWsApi_Err:
-116     Call RegistrarError(Err.Number, Err.description, "wskapiAO.LimpiaWsApi", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "wskapiAO.LimpiaWsApi", Erl)
 
 118     Resume Next
         
 End Sub
 
-Public Function BuscaSlotSock(ByVal S As Long) As Long
+Public Function BuscaSlotSock(ByVal s As Long) As Long
 
-        On Error GoTo HayError
-
-100     BuscaSlotSock = WSAPISock2Usr.Item(CStr(S))
+        On Error GoTo BuscaSlotSock_Err
+        
+100     If WSAPISock2Usr.Exists(s) Then
+102         BuscaSlotSock = WSAPISock2Usr.Item(s)
+        Else
+104         BuscaSlotSock = -1
+        End If
         Exit Function
             
 HayError:
             
-        ' The socket was already removed
-104     BuscaSlotSock = -1
-106     Err.Clear
+BuscaSlotSock_Err:
+108     Call RegistrarError(Err.Number, Err.Description, "wskapiAO.BuscaSlotSock", Erl)
+
+110     Resume Next
 
 End Function
 
@@ -170,15 +175,14 @@ Public Sub AgregaSlotSock(ByVal Sock As Long, ByVal slot As Long)
 102     If WSAPISock2Usr.Count > MaxUsers Then
 104         Call CloseSocket(slot)
             Exit Sub
-
         End If
 
-106     Call WSAPISock2Usr.Add(CStr(slot), CStr(Sock))
+106     Call WSAPISock2Usr.Add(Sock, slot)
         
         Exit Sub
 
 AgregaSlotSock_Err:
-108     Call RegistrarError(Err.Number, Err.description, "wskapiAO.AgregaSlotSock", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "wskapiAO.AgregaSlotSock", Erl)
 
 110     Resume Next
         
@@ -187,23 +191,25 @@ End Sub
 Public Sub BorraSlotSock(ByVal Sock As Long)
         
         On Error GoTo BorraSlotSock_Err
+        
+        If Not WSAPISock2Usr.Exists(Sock) Then Exit Sub
 
         Dim cant As Long
 
 100     cant = WSAPISock2Usr.Count
 
-102     WSAPISock2Usr.Remove CStr(Sock)
+102     WSAPISock2Usr.Remove Sock
 
 104     Debug.Print "BorraSockSlot " & cant & " -> " & WSAPISock2Usr.Count
 
         Exit Sub
 
 BorraSlotSock_Err:
-106     Call RegistrarError(Err.Number, Err.description, "wskapiAO.BorraSlotSock", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "wskapiAO.BorraSlotSock", Erl)
         
 End Sub
 
-Public Function WndProc(ByVal hWnd As Long, ByVal msg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Public Function WndProc(ByVal hwnd As Long, ByVal msg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
         
         On Error GoTo WndProc_Err
 
@@ -212,7 +218,7 @@ Public Function WndProc(ByVal hWnd As Long, ByVal msg As Long, ByVal wParam As L
 
         Dim ret      As Long
         Dim Tmp()    As Byte
-        Dim S        As Long, e As Long
+        Dim s        As Long, e As Long
         Dim n        As Integer
         Dim Dale     As Boolean
         Dim UltError As Long
@@ -223,7 +229,7 @@ Public Function WndProc(ByVal hWnd As Long, ByVal msg As Long, ByVal wParam As L
 
             Case 1025
 
-106             S = wParam
+106             s = wParam
 108             e = WSAGetSelectEvent(lParam)
                 'Debug.Print "Msg: " & msg & " W: " & wParam & " L: " & lParam
                 'Call LogApiSock("Msg: " & msg & " W: " & wParam & " L: " & lParam)
@@ -233,9 +239,9 @@ Public Function WndProc(ByVal hWnd As Long, ByVal msg As Long, ByVal wParam As L
                     Case FD_ACCEPT
 
                         'If frmMain.SUPERLOG.Value = 1 Then LogCustom ("FD_ACCEPT")
-112                     If S = SockListen Then
+112                     If s = SockListen Then
                             'If frmMain.SUPERLOG.Value = 1 Then LogCustom ("sockLIsten = " & s & ". Llamo a Eventosocketaccept")
-114                         Call EventoSockAccept(S)
+114                         Call EventoSockAccept(s)
 
                         End If
         
@@ -270,11 +276,11 @@ Public Function WndProc(ByVal hWnd As Long, ByVal msg As Long, ByVal wParam As L
 
 116                 Case FD_READ
         
-118                     n = BuscaSlotSock(S)
+118                     n = BuscaSlotSock(s)
 
-120                     If n < 0 And S <> SockListen Then
+120                     If n < 0 And s <> SockListen Then
                             'Call apiclosesocket(s)
-122                         Call WSApiCloseSocket(S)
+122                         Call WSApiCloseSocket(s)
                             Exit Function
 
                         End If
@@ -287,7 +293,7 @@ Public Function WndProc(ByVal hWnd As Long, ByVal msg As Long, ByVal wParam As L
 
 126                     ReDim Preserve Tmp(AvaiableSpace - 1) As Byte
         
-128                     ret = recv(S, Tmp(0), AvaiableSpace, 0)
+128                     ret = recv(s, Tmp(0), AvaiableSpace, 0)
 
                         ' Comparo por = 0 ya que esto es cuando se cierra
                         ' "gracefully". (mas abajo)
@@ -300,7 +306,7 @@ Public Function WndProc(ByVal hWnd As Long, ByVal msg As Long, ByVal wParam As L
                                 
                             Else
 140                             Debug.Print "Error en Recv: " & GetWSAErrorString(UltError)
-142                             Call LogApiSock("Error en Recv: N=" & n & " S=" & S & " Str=" & GetWSAErrorString(UltError))
+142                             Call LogApiSock("Error en Recv: N=" & n & " S=" & s & " Str=" & GetWSAErrorString(UltError))
                 
                                 'no hay q llamar a CloseSocket() directamente,
                                 'ya q pueden abusar de algun error para
@@ -329,14 +335,14 @@ Public Function WndProc(ByVal hWnd As Long, ByVal msg As Long, ByVal wParam As L
         
 158                 Case FD_CLOSE
                         'Debug.Print WSAGETSELECTERROR(lParam)
-160                     n = BuscaSlotSock(S)
+160                     n = BuscaSlotSock(s)
 
-162                     If S <> SockListen Then Call apiclosesocket(S)
+162                     If s <> SockListen Then Call apiclosesocket(s)
         
 164                     Call LogApiSock("WndProc:FD_CLOSE:N=" & n & ":Err=" & WSAGetAsyncError(lParam))
         
 166                     If n > 0 Then
-168                         Call BorraSlotSock(S)
+168                         Call BorraSlotSock(s)
 170                         UserList(n).ConnID = -1
 172                         UserList(n).ConnIDValida = False
 174                         Call EventoSockClose(n)
@@ -346,7 +352,7 @@ Public Function WndProc(ByVal hWnd As Long, ByVal msg As Long, ByVal wParam As L
                 End Select
 
 176         Case Else
-178             WndProc = CallWindowProc(OldWProc, hWnd, msg, wParam, lParam)
+178             WndProc = CallWindowProc(OldWProc, hwnd, msg, wParam, lParam)
 
         End Select
 
@@ -355,7 +361,7 @@ Public Function WndProc(ByVal hWnd As Long, ByVal msg As Long, ByVal wParam As L
         Exit Function
 
 WndProc_Err:
-182     Call RegistrarError(Err.Number, Err.description, "wskapiAO.WndProc", Erl)
+182     Call RegistrarError(Err.Number, Err.Description, "wskapiAO.WndProc", Erl)
         
 End Function
 
@@ -407,7 +413,7 @@ Public Function WsApiEnviar(ByVal slot As Integer, ByRef str As String) As Long
         Exit Function
 
 WsApiEnviar_Err:
-128     Call RegistrarError(Err.Number, Err.description, "wskapiAO.WsApiEnviar", Erl)
+128     Call RegistrarError(Err.Number, Err.Description, "wskapiAO.WsApiEnviar", Erl)
 
 130     Resume Next
         
@@ -471,7 +477,7 @@ Public Sub EventoSockAccept(ByVal SockID As Long)
     
         'Modificado por Maraxus
         'Ret = WSAAccept(SockID, sa, Tam, AddressOf CondicionSocket, 0)
-102     ret = accept(SockID, sa, Tam)
+102     ret = Accept(SockID, sa, Tam)
 
 104     If ret = INVALID_SOCKET Then
 106         i = Err.LastDllError
@@ -590,7 +596,7 @@ Public Sub EventoSockAccept(ByVal SockID As Long)
         Exit Sub
 
 EventoSockAccept_Err:
-178     Call RegistrarError(Err.Number, Err.description, "wskapiAO.EventoSockAccept", Erl)
+178     Call RegistrarError(Err.Number, Err.Description, "wskapiAO.EventoSockAccept", Erl)
 
 180     Resume Next
         
@@ -666,7 +672,7 @@ Public Sub EventoSockRead(ByVal slot As Integer, ByRef Datos() As Byte)
         Exit Sub
 
 EventoSockRead_Err:
-138     Call RegistrarError(Err.Number, Err.description, "wskapiAO.EventoSockRead", Erl)
+138     Call RegistrarError(Err.Number, Err.Description, "wskapiAO.EventoSockRead", Erl)
 
 140     Resume Next
         
@@ -691,7 +697,7 @@ Public Sub EventoSockClose(ByVal slot As Integer)
         Exit Sub
 
 EventoSockClose_Err:
-110     Call RegistrarError(Err.Number, Err.description, "wskapiAO.EventoSockClose", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "wskapiAO.EventoSockClose", Erl)
 
 112     Resume Next
         
@@ -738,13 +744,13 @@ Public Sub WSApiReiniciarSockets()
     
 136     Call LimpiaWsApi
 138     Call Sleep(100)
-140     Call IniciaWsApi(frmMain.hWnd)
+140     Call IniciaWsApi(frmMain.hwnd)
 142     SockListen = ListenForConnect(Puerto, hWndMsg, "")
 
         Exit Sub
 
 WSApiReiniciarSockets_Err:
-144     Call RegistrarError(Err.Number, Err.description, "wskapiAO.WSApiReiniciarSockets", Erl)
+144     Call RegistrarError(Err.Number, Err.Description, "wskapiAO.WSApiReiniciarSockets", Erl)
 
 146     Resume Next
         
@@ -760,7 +766,7 @@ Public Sub WSApiCloseSocket(ByVal Socket As Long)
         Exit Sub
 
 WSApiCloseSocket_Err:
-104     Call RegistrarError(Err.Number, Err.description, "wskapiAO.WSApiCloseSocket", Erl)
+104     Call RegistrarError(Err.Number, Err.Description, "wskapiAO.WSApiCloseSocket", Erl)
 
 106     Resume Next
         
@@ -794,7 +800,7 @@ Public Function CondicionSocket(ByRef lpCallerId As WSABUF, ByRef lpCallerData A
         Exit Function
 
 CondicionSocket_Err:
-112     Call RegistrarError(Err.Number, Err.description, "wskapiAO.CondicionSocket", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "wskapiAO.CondicionSocket", Erl)
 
 114     Resume Next
         
