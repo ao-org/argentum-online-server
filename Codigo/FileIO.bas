@@ -2525,20 +2525,31 @@ Sub LoadSini()
         API_Enabled = CBool(Lector.GetValue("API_SOCKET", "Enabled"))
         API_HostName = Lector.GetValue("API_SOCKET", "HostName")
         API_Port = val(Lector.GetValue("API_SOCKET", "Port"))
-
-        ' Si la API esta activada, activamos el timer.
-        frmMain.t_ColaAPI.Enabled = API_Enabled
+        
+        ' Manejo de el Socket reservado a la API al activar/desactivar
+        If API_Enabled Then
+        
+            ' Si la API esta activada, activamos el timer.
+            frmMain.t_ColaAPI.Enabled = API_Enabled
+            
+            Call frmAPISocket.Connect
+            
+        Else
+            
+            ' Cerramos el socket ya que no vamos a estar usándolo
+            Call frmAPISocket.Socket.CloseSck
+            
+        End If
     
 178     Call CargarCiudades
-
 182     Call ConsultaPopular.LoadData
-    
+
 184     Set Lector = Nothing
 
-        
         Exit Sub
 
 LoadSini_Err:
+        Set Lector = Nothing
 186     Call RegistrarError(Err.Number, Err.Description, "ES.LoadSini", Erl)
 188     Resume Next
         
@@ -3012,12 +3023,17 @@ Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = Fals
 
     On Error GoTo SaveUser_Err
     
+    #If DEBUGGING = 1 Then
+        Call GetElapsedTime
+    #End If
+    
     If Not API_Enabled Then
     
         If Database_Enabled Then
             Call SaveUserDatabase(UserIndex, Logout)
         Else
             Call SaveUserCharfile(UserIndex, Logout)
+
         End If
         
     Else
@@ -3028,10 +3044,15 @@ Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = Fals
     
     UserList(UserIndex).Counters.LastSave = GetTickCount
     
+    #If DEBUGGING = 1 Then
+        Call LogPerformance("Guardado de Cuenta " & IIf(API_Enabled, "(API)", "(ADO)") & " - Tiempo transcurrido: " & Round(GetElapsedTime(), 1) & " ms")
+    #End If
+    
     Exit Sub
 
 SaveUser_Err:
     Call RegistrarError(Err.Number, Err.Description, "ES.SaveUser", Erl)
+
     Resume Next
 
 End Sub
@@ -4392,4 +4413,30 @@ CountFiles_Err:
 110     Call RegistrarError(Err.Number, Err.Description, "ES.CountFiles", Erl)
 
         
+End Function
+
+Public Function GetElapsedTime() As Single
+
+    '***********************************************************************
+    'Author: Wyrox
+    'Obenemos el tiempo (en milisegundos) que pasó desde la ultima llamada.
+    '***********************************************************************
+    
+    Dim end_time As Currency
+    Static start_time As Currency
+    Static timer_freq As Single
+
+    'Get the timer frequency
+    If timer_freq = 0 Then
+        Dim temp_time As Currency
+        Call QueryPerformanceFrequency(temp_time)
+        timer_freq = 1000 / temp_time
+    End If
+
+    Call QueryPerformanceCounter(end_time)
+
+    GetElapsedTime = (end_time - start_time) * timer_freq
+    
+    start_time = end_time
+
 End Function

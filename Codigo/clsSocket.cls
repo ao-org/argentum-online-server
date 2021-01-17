@@ -335,9 +335,10 @@ Private Sub DestroySocket()
 End Sub
  
 Public Sub CloseSck()
-
+    
+    If m_enmState = sckClosed Then Exit Sub
     If m_lngSocketHandle = INVALID_SOCKET Then Exit Sub
- 
+
     m_enmState = sckClosing
     
     Call CleanResolutionSystem
