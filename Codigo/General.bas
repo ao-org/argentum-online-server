@@ -919,18 +919,25 @@ End Sub
 
 Public Sub LogError(Desc As String)
 
-        On Error GoTo ErrHandler
+    Dim nfile As Integer: nfile = FreeFile ' obtenemos un canal
+    
+    Open App.Path & "\logs\errores.log" For Append Shared As #nfile
+    Print #nfile, Date & " " & Time & " " & Desc
+    Close #nfile
 
-        Dim nfile As Integer
+    Exit Sub
 
-100     nfile = FreeFile ' obtenemos un canal
-102     Open App.Path & "\logs\errores.log" For Append Shared As #nfile
-104     Print #nfile, Date & " " & Time & " " & Desc
-106     Close #nfile
+End Sub
 
-        Exit Sub
+Public Sub LogPerformance(Desc As String)
 
-ErrHandler:
+    Dim nfile As Integer: nfile = FreeFile ' obtenemos un canal
+    
+    Open App.Path & "\logs\Performance.log" For Append Shared As #nfile
+        Print #nfile, Date & " " & Time & " " & Desc
+    Close #nfile
+
+    Exit Sub
 
 End Sub
 
@@ -942,7 +949,7 @@ Public Sub LogConsulta(Desc As String)
 
 100     nfile = FreeFile ' obtenemos un canal
 102     Open App.Path & "\logs\ConsultasGM.log" For Append Shared As #nfile
-104     Print #nfile, Date & " " & Time & " " & Desc
+104     Print #nfile, Date & " - " & Time & " - " & Desc
 106     Close #nfile
 
         Exit Sub
@@ -2585,49 +2592,34 @@ End Function
 
 Public Sub CerrarServidor()
         
-        On Error GoTo CerrarServidor_Err
+    'Save stats!!!
+    Call Statistics.DumpStatistics
+    Call frmMain.QuitarIconoSystray
     
-        
+    ' Limpieza del socket del servidor.
+    Call LimpiaWsApi
     
-
-        'Save stats!!!
-100     Call Statistics.DumpStatistics
-    
-102     Call frmMain.QuitarIconoSystray
-    
-104     Call LimpiaWsApi
-    
-        Dim LoopC As Integer
-    
-110     For LoopC = 1 To MaxUsers
-112         If UserList(LoopC).ConnID <> -1 Then
-114             Call CloseSocket(LoopC)
-            End If
-        Next
-    
-116     If Database_Enabled Then
-            ' Cierro base de datos
-118         Call Database_Close
+    Dim LoopC As Long
+    For LoopC = 1 To MaxUsers
+        If UserList(LoopC).ConnID <> -1 Then
+            Call CloseSocket(LoopC)
         End If
+    Next
     
-120     LimpiarModuloLimpieza
+    If Database_Enabled Then Database_Close
     
-        'Log
-        Dim n As Integer
-
-122     n = FreeFile
-124     Open App.Path & "\logs\Main.log" For Append Shared As #n
-126     Print #n, Date & " " & Time & " server cerrado."
-128     Close #n
+    If API_Enabled Then frmAPISocket.Socket.CloseSck
     
-130     End
-        
-        Exit Sub
-
-CerrarServidor_Err:
-132     Call RegistrarError(Err.Number, Err.Description, "General.CerrarServidor", Erl)
-
-        
+    Call LimpiarModuloLimpieza
+    
+    'Log
+    Dim n As Integer: n = FreeFile
+    Open App.Path & "\logs\Main.log" For Append Shared As #n
+    Print #n, Date & " " & Time & " server cerrado."
+    Close #n
+    
+    End
+   
 End Sub
 
 Function max(ByVal a As Double, ByVal b As Double) As Double
