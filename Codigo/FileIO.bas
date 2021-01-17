@@ -3045,7 +3045,7 @@ Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = Fals
     UserList(UserIndex).Counters.LastSave = GetTickCount
     
     #If DEBUGGING = 1 Then
-        Call LogPerformance("Guardado de Cuenta " & IIf(API_Enabled, "(API)", "(ADO)") & " - Tiempo transcurrido: " & Round(GetElapsedTime(), 1) & " ms")
+        Call LogPerformance("Guardado de Personaje " & IIf(API_Enabled, "(API)", "(ADO)") & " - Tiempo transcurrido: " & Round(GetElapsedTime(), 1) & " ms")
     #End If
     
     Exit Sub
