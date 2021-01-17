@@ -83,7 +83,7 @@ Public Sub DoPermanecerOculto(ByVal UserIndex As Integer)
         Exit Sub
 
 DoPermanecerOculto_Err:
-134     Call RegistrarError(Err.Number, Err.description, "Trabajo.DoPermanecerOculto", Erl)
+134     Call RegistrarError(Err.Number, Err.Description, "Trabajo.DoPermanecerOculto", Erl)
 
 136     Resume Next
         
@@ -314,7 +314,7 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
         Exit Sub
 
 DoNavega_Err:
-226     Call RegistrarError(Err.Number, Err.description, "Trabajo.DoNavega", Erl)
+226     Call RegistrarError(Err.Number, Err.Description, "Trabajo.DoNavega", Erl)
 
 228     Resume Next
         
@@ -349,7 +349,7 @@ Public Sub FundirMineral(ByVal UserIndex As Integer)
         Exit Sub
 
 FundirMineral_Err:
-114     Call RegistrarError(Err.Number, Err.description, "Trabajo.FundirMineral", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "Trabajo.FundirMineral", Erl)
 116     Resume Next
         
 End Sub
@@ -383,7 +383,7 @@ Function TieneObjetos(ByVal ItemIndex As Integer, ByVal cant As Integer, ByVal U
         Exit Function
 
 TieneObjetos_Err:
-112     Call RegistrarError(Err.Number, Err.description, "Trabajo.TieneObjetos", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "Trabajo.TieneObjetos", Erl)
 114     Resume Next
         
 End Function
@@ -432,7 +432,7 @@ Function QuitarObjetos(ByVal ItemIndex As Integer, ByVal cant As Integer, ByVal 
         Exit Function
 
 QuitarObjetos_Err:
-130     Call RegistrarError(Err.Number, Err.description, "Trabajo.QuitarObjetos", Erl)
+130     Call RegistrarError(Err.Number, Err.Description, "Trabajo.QuitarObjetos", Erl)
 132     Resume Next
         
 End Function
@@ -450,7 +450,7 @@ Sub HerreroQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Integ
         Exit Sub
 
 HerreroQuitarMateriales_Err:
-106     Call RegistrarError(Err.Number, Err.description, "Trabajo.HerreroQuitarMateriales", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "Trabajo.HerreroQuitarMateriales", Erl)
 108     Resume Next
         
 End Sub
@@ -468,7 +468,7 @@ Sub CarpinteroQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As In
         Exit Sub
 
 CarpinteroQuitarMateriales_Err:
-104     Call RegistrarError(Err.Number, Err.description, "Trabajo.CarpinteroQuitarMateriales", Erl)
+104     Call RegistrarError(Err.Number, Err.Description, "Trabajo.CarpinteroQuitarMateriales", Erl)
 106     Resume Next
         
 End Sub
@@ -484,7 +484,7 @@ Sub AlquimistaQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As In
         Exit Sub
 
 AlquimistaQuitarMateriales_Err:
-102     Call RegistrarError(Err.Number, Err.description, "Trabajo.AlquimistaQuitarMateriales", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "Trabajo.AlquimistaQuitarMateriales", Erl)
 104     Resume Next
         
 End Sub
@@ -502,7 +502,7 @@ Sub SastreQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Intege
         Exit Sub
 
 SastreQuitarMateriales_Err:
-106     Call RegistrarError(Err.Number, Err.description, "Trabajo.SastreQuitarMateriales", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "Trabajo.SastreQuitarMateriales", Erl)
 108     Resume Next
         
 End Sub
@@ -539,7 +539,7 @@ Function CarpinteroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex A
         Exit Function
 
 CarpinteroTieneMateriales_Err:
-122     Call RegistrarError(Err.Number, Err.description, "Trabajo.CarpinteroTieneMateriales", Erl)
+122     Call RegistrarError(Err.Number, Err.Description, "Trabajo.CarpinteroTieneMateriales", Erl)
 124     Resume Next
         
 End Function
@@ -566,7 +566,7 @@ Function AlquimistaTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex A
         Exit Function
 
 AlquimistaTieneMateriales_Err:
-112     Call RegistrarError(Err.Number, Err.description, "Trabajo.AlquimistaTieneMateriales", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "Trabajo.AlquimistaTieneMateriales", Erl)
 114     Resume Next
         
 End Function
@@ -615,7 +615,7 @@ Function SastreTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As In
         Exit Function
 
 SastreTieneMateriales_Err:
-132     Call RegistrarError(Err.Number, Err.description, "Trabajo.SastreTieneMateriales", Erl)
+132     Call RegistrarError(Err.Number, Err.Description, "Trabajo.SastreTieneMateriales", Erl)
 134     Resume Next
         
 End Function
@@ -664,7 +664,7 @@ Function HerreroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As I
         Exit Function
 
 HerreroTieneMateriales_Err:
-132     Call RegistrarError(Err.Number, Err.description, "Trabajo.HerreroTieneMateriales", Erl)
+132     Call RegistrarError(Err.Number, Err.Description, "Trabajo.HerreroTieneMateriales", Erl)
 134     Resume Next
         
 End Function
@@ -679,7 +679,7 @@ Public Function PuedeConstruir(ByVal UserIndex As Integer, ByVal ItemIndex As In
         Exit Function
 
 PuedeConstruir_Err:
-102     Call RegistrarError(Err.Number, Err.description, "Trabajo.PuedeConstruir", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "Trabajo.PuedeConstruir", Erl)
 104     Resume Next
         
 End Function
@@ -717,7 +717,7 @@ Public Function PuedeConstruirHerreria(ByVal ItemIndex As Integer) As Boolean
         Exit Function
 
 PuedeConstruirHerreria_Err:
-118     Call RegistrarError(Err.Number, Err.description, "Trabajo.PuedeConstruirHerreria", Erl)
+118     Call RegistrarError(Err.Number, Err.Description, "Trabajo.PuedeConstruirHerreria", Erl)
 120     Resume Next
         
 End Function
@@ -736,16 +736,16 @@ Public Sub HerreroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As I
     
 110         If ObjData(ItemIndex).OBJType = eOBJType.otWeapon Then
                 ' Call WriteConsoleMsg(UserIndex, "Has construido el arma!", FontTypeNames.FONTTYPE_INFO)
-112             Call WriteRenderValueMsg(UserIndex, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, " 1", 5)
-114         ElseIf ObjData(ItemIndex).OBJType = eOBJType.otESCUDO Then
+112             Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.CharIndex, vbWhite)
+114         ElseIf ObjData(ItemIndex).OBJType = eOBJType.otEscudo Then
                 ' Call WriteConsoleMsg(UserIndex, "Has construido el escudo!", FontTypeNames.FONTTYPE_INFO)
-116             Call WriteRenderValueMsg(UserIndex, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, " 1", 5)
-118         ElseIf ObjData(ItemIndex).OBJType = eOBJType.otCASCO Then
+116             Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.CharIndex, vbWhite)
+118         ElseIf ObjData(ItemIndex).OBJType = eOBJType.otCasco Then
                 ' Call WriteConsoleMsg(UserIndex, "Has construido el casco!", FontTypeNames.FONTTYPE_INFO)
-120             Call WriteRenderValueMsg(UserIndex, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, " 1", 5)
+120             Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.CharIndex, vbWhite)
 122         ElseIf ObjData(ItemIndex).OBJType = eOBJType.otArmadura Then
                 'Call WriteConsoleMsg(UserIndex, "Has construido la armadura!", FontTypeNames.FONTTYPE_INFO)
-124             Call WriteRenderValueMsg(UserIndex, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, " 1", 5)
+124             Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.CharIndex, vbWhite)
 
             End If
 
@@ -776,7 +776,7 @@ Public Sub HerreroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As I
         Exit Sub
 
 HerreroConstruirItem_Err:
-142     Call RegistrarError(Err.Number, Err.description, "Trabajo.HerreroConstruirItem", Erl)
+142     Call RegistrarError(Err.Number, Err.Description, "Trabajo.HerreroConstruirItem", Erl)
 144     Resume Next
         
 End Sub
@@ -804,7 +804,7 @@ Public Function PuedeConstruirCarpintero(ByVal ItemIndex As Integer) As Boolean
         Exit Function
 
 PuedeConstruirCarpintero_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Trabajo.PuedeConstruirCarpintero", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Trabajo.PuedeConstruirCarpintero", Erl)
 112     Resume Next
         
 End Function
@@ -832,7 +832,7 @@ Public Function PuedeConstruirAlquimista(ByVal ItemIndex As Integer) As Boolean
         Exit Function
 
 PuedeConstruirAlquimista_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Trabajo.PuedeConstruirAlquimista", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Trabajo.PuedeConstruirAlquimista", Erl)
 112     Resume Next
         
 End Function
@@ -860,7 +860,7 @@ Public Function PuedeConstruirSastre(ByVal ItemIndex As Integer) As Boolean
         Exit Function
 
 PuedeConstruirSastre_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Trabajo.PuedeConstruirSastre", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Trabajo.PuedeConstruirSastre", Erl)
 112     Resume Next
         
 End Function
@@ -891,7 +891,7 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
 112         Call CarpinteroQuitarMateriales(UserIndex, ItemIndex)
             'Call WriteConsoleMsg(UserIndex, "Has construido un objeto!", FontTypeNames.FONTTYPE_INFO)
             'Call WriteOroOverHead(UserIndex, 1, UserList(UserIndex).Char.CharIndex)
-114         Call WriteRenderValueMsg(UserIndex, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, " 1", 5)
+114         Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.CharIndex, vbWhite)
     
             Dim MiObj As obj
 
@@ -920,7 +920,7 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
         Exit Sub
 
 CarpinteroConstruirItem_Err:
-130     Call RegistrarError(Err.Number, Err.description, "Trabajo.CarpinteroConstruirItem", Erl)
+130     Call RegistrarError(Err.Number, Err.Description, "Trabajo.CarpinteroConstruirItem", Erl)
 132     Resume Next
         
 End Sub
@@ -978,7 +978,7 @@ Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
         Exit Sub
 
 AlquimistaConstruirItem_Err:
-128     Call RegistrarError(Err.Number, Err.description, "Trabajo.AlquimistaConstruirItem", Erl)
+128     Call RegistrarError(Err.Number, Err.Description, "Trabajo.AlquimistaConstruirItem", Erl)
 130     Resume Next
         
 End Sub
@@ -1009,7 +1009,7 @@ Public Sub SastreConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As In
     
             ' If Not UserList(UserIndex).flags.UltimoMensaje = 9 Then
             ' Call WriteConsoleMsg(UserIndex, "Has construido el objeto.", FontTypeNames.FONTTYPE_INFO)
-114         Call WriteRenderValueMsg(UserIndex, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, " 1", 5)
+114         Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.CharIndex, vbWhite)
     '112         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, " 1", 5))
             ' UserList(UserIndex).flags.UltimoMensaje = 9
             ' End If
@@ -1037,7 +1037,7 @@ Public Sub SastreConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As In
         Exit Sub
 
 SastreConstruirItem_Err:
-132     Call RegistrarError(Err.Number, Err.description, "Trabajo.SastreConstruirItem", Erl)
+132     Call RegistrarError(Err.Number, Err.Description, "Trabajo.SastreConstruirItem", Erl)
 134     Resume Next
         
 End Sub
@@ -1067,7 +1067,7 @@ Private Function MineralesParaLingote(ByVal Lingote As iMinerales, ByVal cant As
         Exit Function
 
 MineralesParaLingote_Err:
-116     Call RegistrarError(Err.Number, Err.description, "Trabajo.MineralesParaLingote", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "Trabajo.MineralesParaLingote", Erl)
 118     Resume Next
         
 End Function
@@ -1132,7 +1132,7 @@ Public Sub DoLingotes(ByVal UserIndex As Integer)
 138     Call UpdateUserInv(False, UserIndex, slot)
         
         
-140        Call WriteRenderValueMsg(UserIndex, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, cant, 5)
+140        Call WriteTextCharDrop(UserIndex, "+" & cant, UserList(UserIndex).Char.CharIndex, vbWhite)
     
         'If Not UserList(UserIndex).flags.UltimoMensaje = 5 Then
         '  Call WriteConsoleMsg(UserIndex, "¡Has obtenido lingotes!", FontTypeNames.FONTTYPE_INFO)
@@ -1155,7 +1155,7 @@ Public Sub DoLingotes(ByVal UserIndex As Integer)
         Exit Sub
 
 DoLingotes_Err:
-152     Call RegistrarError(Err.Number, Err.description, "Trabajo.DoLingotes", Erl)
+152     Call RegistrarError(Err.Number, Err.Description, "Trabajo.DoLingotes", Erl)
 154     Resume Next
         
 End Sub
@@ -1179,7 +1179,7 @@ Function ModFundicion(ByVal clase As eClass) As Single
         Exit Function
 
 ModFundicion_Err:
-108     Call RegistrarError(Err.Number, Err.description, "Trabajo.ModFundicion", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "Trabajo.ModFundicion", Erl)
 110     Resume Next
         
 End Function
@@ -1206,7 +1206,7 @@ Function ModAlquimia(ByVal clase As eClass) As Integer
         Exit Function
 
 ModAlquimia_Err:
-112     Call RegistrarError(Err.Number, Err.description, "Trabajo.ModAlquimia", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "Trabajo.ModAlquimia", Erl)
 114     Resume Next
         
 End Function
@@ -1230,7 +1230,7 @@ Function ModSastre(ByVal clase As eClass) As Integer
         Exit Function
 
 ModSastre_Err:
-108     Call RegistrarError(Err.Number, Err.description, "Trabajo.ModSastre", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "Trabajo.ModSastre", Erl)
 110     Resume Next
         
 End Function
@@ -1254,7 +1254,7 @@ Function ModCarpinteria(ByVal clase As eClass) As Integer
         Exit Function
 
 ModCarpinteria_Err:
-108     Call RegistrarError(Err.Number, Err.description, "Trabajo.ModCarpinteria", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "Trabajo.ModCarpinteria", Erl)
 110     Resume Next
         
 End Function
@@ -1278,7 +1278,7 @@ Function ModHerreria(ByVal clase As eClass) As Single
         Exit Function
 
 ModHerreriA_Err:
-108     Call RegistrarError(Err.Number, Err.description, "Trabajo.ModHerreriA", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "Trabajo.ModHerreriA", Erl)
 110     Resume Next
         
 End Function
@@ -1327,7 +1327,7 @@ Sub DoAdminInvisible(ByVal UserIndex As Integer)
         Exit Sub
 
 DoAdminInvisible_Err:
-126     Call RegistrarError(Err.Number, Err.description, "Trabajo.DoAdminInvisible", Erl)
+126     Call RegistrarError(Err.Number, Err.Description, "Trabajo.DoAdminInvisible", Erl)
 
 128     Resume Next
         
@@ -1419,7 +1419,7 @@ Sub TratarDeHacerFogata(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Int
         Exit Sub
 
 TratarDeHacerFogata_Err:
-160     Call RegistrarError(Err.Number, Err.description, "Trabajo.TratarDeHacerFogata", Erl)
+160     Call RegistrarError(Err.Number, Err.Description, "Trabajo.TratarDeHacerFogata", Erl)
 162     Resume Next
         
 End Sub
@@ -1475,7 +1475,7 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
 130                 Call TirarItemAlPiso(.Pos, MiObj)
                 End If
 
-132             Call WriteRenderValueMsg(UserIndex, .Pos.X, .Pos.Y, MiObj.Amount, 5)
+132             Call WriteTextCharDrop(UserIndex, "+" & MiObj.Amount, .Char.CharIndex, vbWhite)
         
                 ' Al pescar también podés sacar cosas raras (se setean desde RecursosEspeciales.dat)
                 Dim i As Integer
@@ -1517,7 +1517,7 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
         Exit Sub
 
 ErrHandler:
-156     Call LogError("Error en DoPescar. Error " & Err.Number & " - " & Err.description)
+156     Call LogError("Error en DoPescar. Error " & Err.Number & " - " & Err.Description)
 
 End Sub
 
@@ -1527,7 +1527,7 @@ End Sub
 ' @param LadrOnIndex Specifies reference to user that stoles
 ' @param VictimaIndex Specifies reference to user that is being stolen
 
-Public Sub DoRobar(ByVal LadrOnIndex As Integer, ByVal victimaIndex As Integer)
+Public Sub DoRobar(ByVal LadrOnIndex As Integer, ByVal VictimaIndex As Integer)
         '*************************************************
         'Author: Unknown
         'Last modified: 05/04/2010
@@ -1545,9 +1545,9 @@ Public Sub DoRobar(ByVal LadrOnIndex As Integer, ByVal victimaIndex As Integer)
 
         Dim OtroUserIndex As Integer
 
-100     If MapInfo(UserList(victimaIndex).Pos.Map).Seguro = 1 Then Exit Sub
+100     If MapInfo(UserList(VictimaIndex).Pos.Map).Seguro = 1 Then Exit Sub
     
-102     If UserList(victimaIndex).flags.EnConsulta Then
+102     If UserList(VictimaIndex).flags.EnConsulta Then
 104         Call WriteConsoleMsg(LadrOnIndex, "No puedes robar a usuarios en consulta!!!", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
@@ -1566,7 +1566,7 @@ Public Sub DoRobar(ByVal LadrOnIndex As Integer, ByVal victimaIndex As Integer)
 
 114             If .Faccion.ArmadaReal = 1 Then
             
-116                 If Status(victimaIndex) = 1 Then
+116                 If Status(VictimaIndex) = 1 Then
 118                     Call WriteConsoleMsg(LadrOnIndex, "Los miembros del ejercito real no tienen permitido robarle a ciudadanos.", FontTypeNames.FONTTYPE_FIGHT)
                         Exit Sub
 
@@ -1577,12 +1577,12 @@ Public Sub DoRobar(ByVal LadrOnIndex As Integer, ByVal victimaIndex As Integer)
             End If
         
             ' Caos robando a caos?
-120         If UserList(victimaIndex).Faccion.FuerzasCaos = 1 And .Faccion.FuerzasCaos = 1 Then
+120         If UserList(VictimaIndex).Faccion.FuerzasCaos = 1 And .Faccion.FuerzasCaos = 1 Then
 122             Call WriteConsoleMsg(LadrOnIndex, "No puedes robar a otros miembros de la legion oscura.", FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
             End If
         
-124         If TriggerZonaPelea(LadrOnIndex, victimaIndex) <> TRIGGER6_AUSENTE Then Exit Sub
+124         If TriggerZonaPelea(LadrOnIndex, VictimaIndex) <> TRIGGER6_AUSENTE Then Exit Sub
         
             ' Tiene energia?
 126         If .Stats.MinSta < 15 Then
@@ -1603,7 +1603,7 @@ Public Sub DoRobar(ByVal LadrOnIndex As Integer, ByVal victimaIndex As Integer)
         
 136             If .flags.SeguroClan Then
             
-138                 If .GuildIndex = UserList(victimaIndex).GuildIndex Then
+138                 If .GuildIndex = UserList(VictimaIndex).GuildIndex Then
 140                     Call WriteConsoleMsg(LadrOnIndex, "No podes robarle a un miembro de tu clan.", FontTypeNames.FONTTYPE_INFOIAO)
                         Exit Sub
 
@@ -1615,7 +1615,7 @@ Public Sub DoRobar(ByVal LadrOnIndex As Integer, ByVal victimaIndex As Integer)
 
 142         If .Grupo.EnGrupo > 0 Then
         
-144             If .GuildIndex = UserList(victimaIndex).GuildIndex Then
+144             If .GuildIndex = UserList(VictimaIndex).GuildIndex Then
 146                 Call WriteConsoleMsg(LadrOnIndex, "No podes robarle a un miembro de tu grupo.", FontTypeNames.FONTTYPE_INFOIAO)
                     Exit Sub
 
@@ -1628,7 +1628,7 @@ Public Sub DoRobar(ByVal LadrOnIndex As Integer, ByVal victimaIndex As Integer)
                 Dim i As Byte
 150             For i = 1 To UserList(.Grupo.Lider).Grupo.CantidadMiembros
 
-152                 If UserList(.Grupo.Lider).Grupo.Miembros(i) = victimaIndex Then
+152                 If UserList(.Grupo.Lider).Grupo.Miembros(i) = VictimaIndex Then
 154                     Call WriteConsoleMsg(LadrOnIndex, "No podes robarle a un miembro de tu grupo.", FontTypeNames.FONTTYPE_INFOIAO)
                         Exit Sub
 
@@ -1641,7 +1641,7 @@ Public Sub DoRobar(ByVal LadrOnIndex As Integer, ByVal victimaIndex As Integer)
             ' Quito energia
 158         Call QuitarSta(LadrOnIndex, 15)
                 
-160         If UserList(victimaIndex).flags.Privilegios And PlayerType.user Then
+160         If UserList(VictimaIndex).flags.Privilegios And PlayerType.user Then
             
                 Dim Suerte     As Integer
                 Dim res        As Integer
@@ -1688,14 +1688,14 @@ Public Sub DoRobar(ByVal LadrOnIndex As Integer, ByVal victimaIndex As Integer)
                 
 208             If res < 3 Then 'Exito robo
                 
-210                 If UserList(victimaIndex).flags.Comerciando Then
-212                     OtroUserIndex = UserList(victimaIndex).ComUsu.DestUsu
+210                 If UserList(VictimaIndex).flags.Comerciando Then
+212                     OtroUserIndex = UserList(VictimaIndex).ComUsu.DestUsu
                         
 214                     If OtroUserIndex > 0 And OtroUserIndex <= MaxUsers Then
-216                         Call WriteConsoleMsg(victimaIndex, "Comercio cancelado, te estan robando!!", FontTypeNames.FONTTYPE_TALK)
+216                         Call WriteConsoleMsg(VictimaIndex, "Comercio cancelado, te estan robando!!", FontTypeNames.FONTTYPE_TALK)
 218                         Call WriteConsoleMsg(OtroUserIndex, "Comercio cancelado por el otro usuario!!", FontTypeNames.FONTTYPE_TALK)
                         
-220                         Call LimpiarComercioSeguro(victimaIndex)
+220                         Call LimpiarComercioSeguro(VictimaIndex)
 
                         End If
 
@@ -1703,24 +1703,24 @@ Public Sub DoRobar(ByVal LadrOnIndex As Integer, ByVal victimaIndex As Integer)
                
 222                 If (RandomNumber(1, 50) < 25) And (.clase = eClass.Thief) Then
                     
-224                     If TieneObjetosRobables(victimaIndex) Then
-226                         Call RobarObjeto(LadrOnIndex, victimaIndex)
+224                     If TieneObjetosRobables(VictimaIndex) Then
+226                         Call RobarObjeto(LadrOnIndex, VictimaIndex)
                         Else
-228                         Call WriteConsoleMsg(LadrOnIndex, UserList(victimaIndex).name & " no tiene objetos.", FontTypeNames.FONTTYPE_INFO)
+228                         Call WriteConsoleMsg(LadrOnIndex, UserList(VictimaIndex).name & " no tiene objetos.", FontTypeNames.FONTTYPE_INFO)
 
                         End If
 
                     Else 'Roba oro
 
-230                     If UserList(victimaIndex).Stats.GLD > 0 Then
+230                     If UserList(VictimaIndex).Stats.GLD > 0 Then
 
                             Dim n As Long
 
 232                         If .clase = eClass.Thief Then
 
                                 ' Si no tine puestos los guantes de hurto roba un 50% menos.
-234                             If .Invent.DañoMagicoEqpObjIndex > 0 Then
-236                                 If ObjData(.Invent.DañoMagicoEqpObjIndex).Subtipo = 5 Then
+234                             If .Invent.NudilloObjIndex > 0 Then
+236                                 If ObjData(.Invent.NudilloObjIndex).Subtipo = 5 Then
 238                                     n = RandomNumber(.Stats.ELV * 50, .Stats.ELV * 100) * OroMult
                                     Else
 240                                     n = RandomNumber(.Stats.ELV * 25, .Stats.ELV * 50) * OroMult
@@ -1734,20 +1734,20 @@ Public Sub DoRobar(ByVal LadrOnIndex As Integer, ByVal victimaIndex As Integer)
     
                             End If
 
-246                         If n > UserList(victimaIndex).Stats.GLD Then n = UserList(victimaIndex).Stats.GLD
+246                         If n > UserList(VictimaIndex).Stats.GLD Then n = UserList(VictimaIndex).Stats.GLD
                         
-248                         UserList(victimaIndex).Stats.GLD = UserList(victimaIndex).Stats.GLD - n
+248                         UserList(VictimaIndex).Stats.GLD = UserList(VictimaIndex).Stats.GLD - n
                         
 250                         .Stats.GLD = .Stats.GLD + n
 
 252                         If .Stats.GLD > MAXORO Then .Stats.GLD = MAXORO
                         
-254                         Call WriteConsoleMsg(LadrOnIndex, "Le has robado " & PonerPuntos(n) & " monedas de oro a " & UserList(victimaIndex).name, FontTypeNames.FONTTYPE_INFO)
+254                         Call WriteConsoleMsg(LadrOnIndex, "Le has robado " & PonerPuntos(n) & " monedas de oro a " & UserList(VictimaIndex).name, FontTypeNames.FONTTYPE_INFO)
 256                         Call WriteUpdateGold(LadrOnIndex) 'Le actualizamos la billetera al ladron
                         
-258                         Call WriteUpdateGold(victimaIndex) 'Le actualizamos la billetera a la victima
+258                         Call WriteUpdateGold(VictimaIndex) 'Le actualizamos la billetera a la victima
                         Else
-260                         Call WriteConsoleMsg(LadrOnIndex, UserList(victimaIndex).name & " no tiene oro.", FontTypeNames.FONTTYPE_INFO)
+260                         Call WriteConsoleMsg(LadrOnIndex, UserList(VictimaIndex).name & " no tiene oro.", FontTypeNames.FONTTYPE_INFO)
 
                         End If
 
@@ -1757,7 +1757,7 @@ Public Sub DoRobar(ByVal LadrOnIndex As Integer, ByVal victimaIndex As Integer)
             
                 Else
 264                 Call WriteConsoleMsg(LadrOnIndex, "No has logrado robar nada!", FontTypeNames.FONTTYPE_INFO)
-266                 Call WriteConsoleMsg(victimaIndex, "" & .name & " ha intentado robarte!", FontTypeNames.FONTTYPE_INFO)
+266                 Call WriteConsoleMsg(VictimaIndex, "" & .name & " ha intentado robarte!", FontTypeNames.FONTTYPE_INFO)
                 
 268                 Call SubirSkill(LadrOnIndex, eSkill.Robar)
 
@@ -1786,11 +1786,11 @@ Public Sub DoRobar(ByVal LadrOnIndex As Integer, ByVal victimaIndex As Integer)
         Exit Sub
 
 ErrHandler:
-274     Call LogError("Error en DoRobar. Error " & Err.Number & " : " & Err.description)
+274     Call LogError("Error en DoRobar. Error " & Err.Number & " : " & Err.Description)
 
 End Sub
 
-Public Function ObjEsRobable(ByVal victimaIndex As Integer, ByVal slot As Integer) As Boolean
+Public Function ObjEsRobable(ByVal VictimaIndex As Integer, ByVal slot As Integer) As Boolean
         ' Agregué los barcos
         ' Esta funcion determina qué objetos son robables.
         
@@ -1799,15 +1799,15 @@ Public Function ObjEsRobable(ByVal victimaIndex As Integer, ByVal slot As Intege
 
         Dim OI As Integer
 
-100     OI = UserList(victimaIndex).Invent.Object(slot).ObjIndex
+100     OI = UserList(VictimaIndex).Invent.Object(slot).ObjIndex
 
-102     ObjEsRobable = ObjData(OI).OBJType <> eOBJType.otLlaves And UserList(victimaIndex).Invent.Object(slot).Equipped = 0 And ObjData(OI).Real = 0 And ObjData(OI).Caos = 0 And ObjData(OI).donador = 0 And ObjData(OI).OBJType <> eOBJType.otBarcos And ObjData(OI).OBJType <> eOBJType.otRunas And ObjData(OI).Instransferible = 0 And ObjData(OI).OBJType <> eOBJType.otMonturas
+102     ObjEsRobable = ObjData(OI).OBJType <> eOBJType.otLlaves And UserList(VictimaIndex).Invent.Object(slot).Equipped = 0 And ObjData(OI).Real = 0 And ObjData(OI).Caos = 0 And ObjData(OI).donador = 0 And ObjData(OI).OBJType <> eOBJType.otBarcos And ObjData(OI).OBJType <> eOBJType.otRunas And ObjData(OI).Instransferible = 0 And ObjData(OI).OBJType <> eOBJType.otMonturas
 
         
         Exit Function
 
 ObjEsRobable_Err:
-104     Call RegistrarError(Err.Number, Err.description, "Trabajo.ObjEsRobable", Erl)
+104     Call RegistrarError(Err.Number, Err.Description, "Trabajo.ObjEsRobable", Erl)
 106     Resume Next
         
 End Function
@@ -1818,7 +1818,7 @@ End Function
 ' @param LadrOnIndex Specifies reference to user that stoles
 ' @param VictimaIndex Specifies reference to user that is being stolen
 
-Public Sub RobarObjeto(ByVal LadrOnIndex As Integer, ByVal victimaIndex As Integer)
+Public Sub RobarObjeto(ByVal LadrOnIndex As Integer, ByVal VictimaIndex As Integer)
         '***************************************************
         'Author: Unknown
         'Last Modification: 02/04/2010
@@ -1834,7 +1834,7 @@ Public Sub RobarObjeto(ByVal LadrOnIndex As Integer, ByVal victimaIndex As Integ
 
 100     flag = False
 
-102     With UserList(victimaIndex)
+102     With UserList(VictimaIndex)
 
 104         If RandomNumber(1, 12) < 6 Then 'Comenzamos por el principio o el final?
 106             i = 1
@@ -1844,7 +1844,7 @@ Public Sub RobarObjeto(ByVal LadrOnIndex As Integer, ByVal victimaIndex As Integ
                     'Hay objeto en este slot?
 110                 If .Invent.Object(i).ObjIndex > 0 Then
                 
-112                     If ObjEsRobable(victimaIndex, i) Then
+112                     If ObjEsRobable(VictimaIndex, i) Then
                     
 114                         If RandomNumber(1, 10) < 4 Then flag = True
                         
@@ -1862,7 +1862,7 @@ Public Sub RobarObjeto(ByVal LadrOnIndex As Integer, ByVal victimaIndex As Integ
                     'Hay objeto en este slot?
 122                 If .Invent.Object(i).ObjIndex > 0 Then
                 
-124                     If ObjEsRobable(victimaIndex, i) Then
+124                     If ObjEsRobable(VictimaIndex, i) Then
                     
 126                         If RandomNumber(1, 10) < 4 Then flag = True
                         
@@ -1892,11 +1892,11 @@ Public Sub RobarObjeto(ByVal LadrOnIndex As Integer, ByVal victimaIndex As Integ
 140             .Invent.Object(i).Amount = ObjAmount - num
                     
 142             If .Invent.Object(i).Amount <= 0 Then
-144                 Call QuitarUserInvItem(victimaIndex, CByte(i), 1)
+144                 Call QuitarUserInvItem(VictimaIndex, CByte(i), 1)
 
                 End If
                 
-146             Call UpdateUserInv(False, victimaIndex, CByte(i))
+146             Call UpdateUserInv(False, VictimaIndex, CByte(i))
                     
 148             If Not MeterItemEnInventario(LadrOnIndex, MiObj) Then
 150                 Call TirarItemAlPiso(UserList(LadrOnIndex).Pos, MiObj)
@@ -1917,7 +1917,7 @@ Public Sub RobarObjeto(ByVal LadrOnIndex As Integer, ByVal victimaIndex As Integ
             End If
 
             'If exiting, cancel de quien es robado
-160         Call CancelExit(victimaIndex)
+160         Call CancelExit(VictimaIndex)
 
         End With
 
@@ -1925,152 +1925,8 @@ Public Sub RobarObjeto(ByVal LadrOnIndex As Integer, ByVal victimaIndex As Integ
         Exit Sub
 
 RobarObjeto_Err:
-162     Call RegistrarError(Err.Number, Err.description, "Trabajo.RobarObjeto", Erl)
+162     Call RegistrarError(Err.Number, Err.Description, "Trabajo.RobarObjeto", Erl)
 
-        
-End Sub
-
-Public Sub DoApuñalar(ByVal UserIndex As Integer, ByVal VictimNpcIndex As Integer, ByVal VictimUserIndex As Integer, ByVal daño As Integer)
-        
-        On Error GoTo DoApuñalar_Err
-        
-
-        '***************************************************
-        'Autor: Nacho (Integer) & Unknown (orginal version)
-        'Last Modification: 04/17/08 - (NicoNZ)
-        'Simplifique la cuenta que hacia para sacar la suerte
-        'y arregle la cuenta que hacia para sacar el daño
-        '***************************************************
-        Dim Suerte As Integer
-
-        Dim Skill  As Integer
-    
-100     Skill = UserList(UserIndex).Stats.UserSkills(eSkill.Apuñalar)
-    
-102     Select Case UserList(UserIndex).clase
-
-            Case eClass.Assasin '25
-104             Suerte = 0.2 * Skill + 5
-
-106         Case eClass.Pirat, eClass.Hunter '20
-108             Suerte = 0.155 * Skill + 4.5
-
-110         Case Else ' 15
-112             Suerte = 0.11 * Skill + 4
-
-        End Select
-        
-        ' Daga especial da +5 de prob. de apu
-114     If ObjData(UserList(UserIndex).Invent.WeaponEqpObjIndex).Subtipo = 42 Then
-116         Suerte = Suerte + 5
-        End If
-    
-118     If RandomNumber(1, 100) < Suerte Then
-120         If VictimUserIndex <> 0 Then
-122             daño = daño * 1.5
-            
-124             UserList(VictimUserIndex).Stats.MinHp = UserList(VictimUserIndex).Stats.MinHp - daño
-
-126             Call SendData(SendTarget.ToPCArea, VictimUserIndex, PrepareMessageEfectOverHead("¡" & daño & "!", UserList(VictimUserIndex).Char.CharIndex, vbYellow))
-
-128             If UserList(UserIndex).ChatCombate = 1 Then
-                    'Call WriteEfectOverHead(UserIndex, daño, UserList(UserIndex).Char.CharIndex) 'LADDER 21.11.08
-130                 Call WriteConsoleMsg(UserIndex, "Has apuñalado a " & UserList(VictimUserIndex).name & " por " & daño, FontTypeNames.FONTTYPE_FIGHT)
-
-                End If
-
-132             If UserList(VictimUserIndex).ChatCombate = 1 Then
-134                 Call WriteConsoleMsg(VictimUserIndex, "Te ha apuñalado " & UserList(UserIndex).name & " por " & daño, FontTypeNames.FONTTYPE_FIGHT)
-
-                End If
-            
-            
-            Else
-136             daño = daño * 2
-
-138             Npclist(VictimNpcIndex).Stats.MinHp = Npclist(VictimNpcIndex).Stats.MinHp - daño
-
-140             If UserList(UserIndex).ChatCombate = 1 Then
-                    'Call WriteConsoleMsg(UserIndex, "Has apuñalado la criatura por " & Int(daño * 1.5), FontTypeNames.FONTTYPE_FIGHT)
-142                 Call WriteLocaleMsg(UserIndex, "212", FontTypeNames.FONTTYPE_FIGHT, daño)
-
-                End If
-            
-144             Call SendData(SendTarget.ToNPCArea, VictimNpcIndex, PrepareMessageEfectOverHead("¡" & daño & "!", Npclist(VictimNpcIndex).Char.CharIndex, vbYellow))
-
-                '[Alejo]
-146             Call CalcularDarExp(UserIndex, VictimNpcIndex, daño)
-
-            End If
-
-        Else
-
-148         If UserList(UserIndex).ChatCombate = 1 Then
-150             Call WriteConsoleMsg(UserIndex, "¡No has logrado apuñalar a tu enemigo!", FontTypeNames.FONTTYPE_FIGHT)
-
-            End If
-
-        End If
-    
-152     Call SubirSkill(UserIndex, Apuñalar)
-
-        
-        Exit Sub
-
-DoApuñalar_Err:
-154     Call RegistrarError(Err.Number, Err.description, "Trabajo.DoApuñalar", Erl)
-156     Resume Next
-        
-End Sub
-
-Public Sub DoGolpeCritico(ByVal UserIndex As Integer, ByVal VictimNpcIndex As Integer, ByVal VictimUserIndex As Integer, ByVal daño As Integer)
-        
-        On Error GoTo DoGolpeCritico_Err
-
-        '***************************************************
-        'Autor: Pablo (ToxicWaste)
-        'Last Modification: 28/01/2007
-        '***************************************************
-        Dim Suerte As Integer
-        Dim Skill  As Integer
-        
-100     With UserList(UserIndex)
-        
-102         If .clase <> eClass.Bandit Then Exit Sub
-104         If .Invent.WeaponEqpSlot = 0 Then Exit Sub
-106         If ObjData(.Invent.WeaponEqpObjIndex).Subtipo <> 2 Then Exit Sub
-
-108         Skill = .Stats.UserSkills(eSkill.Wrestling)
-        
-        End With
-
-110     Suerte = 0.2 * Skill + 5
-
-112     If VictimNpcIndex <> 0 Then Suerte = Suerte * 2
-
-114     If RandomNumber(1, 100) < Suerte Then
-116         daño = Int(daño * 0.5)
-
-118         If VictimUserIndex <> 0 Then
-120             UserList(VictimUserIndex).Stats.MinHp = UserList(VictimUserIndex).Stats.MinHp - daño
-122             Call WriteConsoleMsg(UserIndex, "Has golpeado críticamente a " & UserList(VictimUserIndex).name & " por " & daño, FontTypeNames.FONTTYPE_FIGHT)
-124             Call WriteConsoleMsg(VictimUserIndex, UserList(UserIndex).name & " te ha golpeado críticamente por " & daño, FontTypeNames.FONTTYPE_FIGHT)
-                
-            Else
-126             Npclist(VictimNpcIndex).Stats.MinHp = Npclist(VictimNpcIndex).Stats.MinHp - daño
-128             Call WriteConsoleMsg(UserIndex, "Has golpeado críticamente a la criatura por " & daño, FontTypeNames.FONTTYPE_FIGHT)
-130             Call CalcularDarExp(UserIndex, VictimNpcIndex, daño)
-
-            End If
-
-        End If
-        
-        Exit Sub
-
-DoGolpeCritico_Err:
-132     Call RegistrarError(Err.Number, Err.description, "Trabajo.DoGolpeCritico", Erl)
-
-134     Resume Next
         
 End Sub
 
@@ -2088,7 +1944,7 @@ Public Sub QuitarSta(ByVal UserIndex As Integer, ByVal Cantidad As Integer)
         Exit Sub
 
 QuitarSta_Err:
-108     Call RegistrarError(Err.Number, Err.description, "Trabajo.QuitarSta", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "Trabajo.QuitarSta", Erl)
 110     Resume Next
         
 End Sub
@@ -2157,7 +2013,7 @@ Public Sub DoRaices(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte
                 End If
         
                 'Call WriteConsoleMsg(UserIndex, "¡Has conseguido algunas raices!", FontTypeNames.FONTTYPE_INFO)
-142             Call WriteRenderValueMsg(UserIndex, .Pos.X, .Pos.Y, MiObj.Amount, 5)
+142             Call WriteTextCharDrop(UserIndex, "+" & MiObj.Amount, .Char.CharIndex, vbWhite)
 144             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(60, .Pos.X, .Pos.Y))
             Else
 146             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(61, .Pos.X, .Pos.Y))
@@ -2250,7 +2106,7 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
                 ' Call WriteConsoleMsg(UserIndex, "¡Has conseguido algo de leña!", FontTypeNames.FONTTYPE_INFO)
                 '        .flags.UltimoMensaje = 5
                 ' End If
-142             Call WriteRenderValueMsg(UserIndex, .Pos.X, .Pos.Y, MiObj.Amount, 5)
+142             Call WriteTextCharDrop(UserIndex, "+" & MiObj.Amount, .Char.CharIndex, vbWhite)
 144             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_TALAR, .Pos.X, .Pos.Y))
             
                 ' Al talar también podés dropear cosas raras (se setean desde RecursosEspeciales.dat)
@@ -2468,7 +2324,7 @@ Public Sub DoMeditar(ByVal UserIndex As Integer)
         Exit Sub
 
 DoMeditar_Err:
-132     Call RegistrarError(Err.Number, Err.description, "Trabajo.DoMeditar", Erl)
+132     Call RegistrarError(Err.Number, Err.Description, "Trabajo.DoMeditar", Erl)
 134     Resume Next
         
 End Sub
@@ -2590,12 +2446,12 @@ Public Sub DoDesequipar(ByVal UserIndex As Integer, ByVal VictimIndex As Integer
         Exit Sub
 
 DoDesequipar_Err:
-164     Call RegistrarError(Err.Number, Err.description, "Trabajo.DoDesequipar", Erl)
+164     Call RegistrarError(Err.Number, Err.Description, "Trabajo.DoDesequipar", Erl)
 
         
 End Sub
 
-Public Sub DoHurtar(ByVal UserIndex As Integer, ByVal victimaIndex As Integer)
+Public Sub DoHurtar(ByVal UserIndex As Integer, ByVal VictimaIndex As Integer)
         
         On Error GoTo DoHurtar_Err
     
@@ -2609,7 +2465,7 @@ Public Sub DoHurtar(ByVal UserIndex As Integer, ByVal victimaIndex As Integer)
         '***************************************************
         Dim OtroUserIndex As Integer
 
-100     If TriggerZonaPelea(UserIndex, victimaIndex) <> TRIGGER6_AUSENTE Then Exit Sub
+100     If TriggerZonaPelea(UserIndex, VictimaIndex) <> TRIGGER6_AUSENTE Then Exit Sub
 
 102     If UserList(UserIndex).clase <> eClass.Bandit Then Exit Sub
 
@@ -2618,25 +2474,25 @@ Public Sub DoHurtar(ByVal UserIndex As Integer, ByVal victimaIndex As Integer)
 104     res = RandomNumber(1, 100)
 
 106     If (res < 20) Then
-108         If TieneObjetosRobables(victimaIndex) Then
+108         If TieneObjetosRobables(VictimaIndex) Then
     
-110             If UserList(victimaIndex).flags.Comerciando Then
-112                 OtroUserIndex = UserList(victimaIndex).ComUsu.DestUsu
+110             If UserList(VictimaIndex).flags.Comerciando Then
+112                 OtroUserIndex = UserList(VictimaIndex).ComUsu.DestUsu
                 
 114                 If OtroUserIndex > 0 And OtroUserIndex <= MaxUsers Then
-116                     Call WriteConsoleMsg(victimaIndex, "Comercio cancelado, te estan robando!!", FontTypeNames.FONTTYPE_WARNING)
+116                     Call WriteConsoleMsg(VictimaIndex, "Comercio cancelado, te estan robando!!", FontTypeNames.FONTTYPE_WARNING)
 118                     Call WriteConsoleMsg(OtroUserIndex, "Comercio cancelado por el otro usuario!!", FontTypeNames.FONTTYPE_WARNING)
                 
-120                     Call LimpiarComercioSeguro(victimaIndex)
+120                     Call LimpiarComercioSeguro(VictimaIndex)
 
                     End If
 
                 End If
                 
-122             Call RobarObjeto(UserIndex, victimaIndex)
-124             Call WriteConsoleMsg(victimaIndex, "" & UserList(UserIndex).name & " es un Bandido!", FontTypeNames.FONTTYPE_INFO)
+122             Call RobarObjeto(UserIndex, VictimaIndex)
+124             Call WriteConsoleMsg(VictimaIndex, "" & UserList(UserIndex).name & " es un Bandido!", FontTypeNames.FONTTYPE_INFO)
             Else
-126             Call WriteConsoleMsg(UserIndex, UserList(victimaIndex).name & " no tiene objetos.", FontTypeNames.FONTTYPE_INFO)
+126             Call WriteConsoleMsg(UserIndex, UserList(VictimaIndex).name & " no tiene objetos.", FontTypeNames.FONTTYPE_INFO)
 
             End If
 
@@ -2646,12 +2502,12 @@ Public Sub DoHurtar(ByVal UserIndex As Integer, ByVal victimaIndex As Integer)
         Exit Sub
 
 DoHurtar_Err:
-128     Call RegistrarError(Err.Number, Err.description, "Trabajo.DoHurtar", Erl)
+128     Call RegistrarError(Err.Number, Err.Description, "Trabajo.DoHurtar", Erl)
 
         
 End Sub
 
-Public Sub DoHandInmo(ByVal UserIndex As Integer, ByVal victimaIndex As Integer)
+Public Sub DoHandInmo(ByVal UserIndex As Integer, ByVal VictimaIndex As Integer)
         
         On Error GoTo DoHandInmo_Err
     
@@ -2662,22 +2518,22 @@ Public Sub DoHandInmo(ByVal UserIndex As Integer, ByVal victimaIndex As Integer)
         'Last Modif: 17/02/2007
         'Implements the special Skill of the Thief
         '***************************************************
-100     If UserList(victimaIndex).flags.Paralizado = 1 Then Exit Sub
+100     If UserList(VictimaIndex).flags.Paralizado = 1 Then Exit Sub
         
         Dim res As Integer
 
 102     res = RandomNumber(0, 100)
 
 104     If res < (UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) / 4) Then
-106         UserList(victimaIndex).flags.Paralizado = 1
-108         UserList(victimaIndex).Counters.Paralisis = IntervaloParalizado / 4
+106         UserList(VictimaIndex).flags.Paralizado = 1
+108         UserList(VictimaIndex).Counters.Paralisis = IntervaloParalizado / 4
         
             'UserList(VictimaIndex).flags.ParalizedByIndex = Userindex
             'UserList(VictimaIndex).flags.ParalizedBy = UserList(Userindex).name
         
-110         Call WriteParalizeOK(victimaIndex)
+110         Call WriteParalizeOK(VictimaIndex)
 112         Call WriteConsoleMsg(UserIndex, "Tu golpe ha dejado inmovil a tu oponente", FontTypeNames.FONTTYPE_FIGHT)
-114         Call WriteConsoleMsg(victimaIndex, "¡El golpe te ha dejado inmovil!", FontTypeNames.FONTTYPE_FIGHT)
+114         Call WriteConsoleMsg(VictimaIndex, "¡El golpe te ha dejado inmovil!", FontTypeNames.FONTTYPE_FIGHT)
 
         End If
 
@@ -2685,7 +2541,7 @@ Public Sub DoHandInmo(ByVal UserIndex As Integer, ByVal victimaIndex As Integer)
         Exit Sub
 
 DoHandInmo_Err:
-116     Call RegistrarError(Err.Number, Err.description, "Trabajo.DoHandInmo", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "Trabajo.DoHandInmo", Erl)
 
         
 End Sub
@@ -2743,7 +2599,7 @@ Public Sub Desarmar(ByVal UserIndex As Integer, ByVal VictimIndex As Integer)
         Exit Sub
 
 Desarmar_Err:
-156     Call RegistrarError(Err.Number, Err.description, "Trabajo.Desarmar", Erl)
+156     Call RegistrarError(Err.Number, Err.Description, "Trabajo.Desarmar", Erl)
 158     Resume Next
         
 End Sub
@@ -2845,75 +2701,10 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As ObjData, ByVal 
         Exit Sub
 
 DoMontar_Err:
-180     Call RegistrarError(Err.Number, Err.description, "Trabajo.DoMontar", Erl)
+180     Call RegistrarError(Err.Number, Err.Description, "Trabajo.DoMontar", Erl)
 182     Resume Next
         
 End Sub
-
-Public Function ApuñalarFunction(ByVal UserIndex As Integer, ByVal VictimNpcIndex As Integer, ByVal VictimUserIndex As Integer, ByVal daño As Integer) As Integer
-        
-        On Error GoTo ApuñalarFunction_Err
-        
-
-        '***************************************************
-        'Autor: Nacho (Integer) & Unknown (orginal version)
-        'Last Modification: 04/17/08 - (NicoNZ)
-        'Simplifique la cuenta que hacia para sacar la suerte
-        'y arregle la cuenta que hacia para sacar el daño
-        '***************************************************
-        Dim Suerte As Integer
-
-        Dim Skill  As Integer
-
-        Dim Random As Byte
-
-100     Skill = UserList(UserIndex).Stats.UserSkills(eSkill.Apuñalar)
-
-102     Select Case UserList(UserIndex).clase
-
-            Case eClass.Assasin '35
-104             Suerte = Int(((0.00003 * Skill - 0.001) * Skill + 0.098) * Skill + 5)
-        
-106             If VictimNpcIndex = 0 Then
-108                 If UserList(VictimUserIndex).Char.Heading = UserList(UserIndex).Char.Heading Then
-110                     Random = RandomNumber(1, 3)
-
-112                     If Random = 1 Then
-114                         Suerte = 70
-
-                        End If
-
-                    End If
-
-                End If
-    
-116         Case eClass.Cleric, eClass.Paladin ' 15
-118             Suerte = Int(((0.000003 * Skill + 0.0006) * Skill + 0.0107) * Skill + 4.93)
-    
-120         Case eClass.Bard, eClass.Druid '13
-122             Suerte = Int(((0.000002 * Skill + 0.0002) * Skill + 0.032) * Skill + 4.81)
-    
-124         Case Else '8
-126             Suerte = Int(0.0361 * Skill + 4.39)
-
-        End Select
-
-128     If RandomNumber(0, 99) < Suerte Then
-130         If VictimUserIndex <> 0 Then
-132                 ApuñalarFunction = daño * ModicadorApuñalarClase(UserList(UserIndex).clase)
-            Else ' A los npcs el apuñalar es un 20% mas
-134                ApuñalarFunction = (daño * ModicadorApuñalarClase(UserList(UserIndex).clase)) * 1.2
-136                Debug.Print ApuñalarFunction
-            End If
-        End If
-        
-        Exit Function
-
-ApuñalarFunction_Err:
-138     Call RegistrarError(Err.Number, Err.description, "Trabajo.ApuñalarFunction", Erl)
-140     Resume Next
-        
-End Function
 
 Public Sub ActualizarRecurso(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer)
         
@@ -2939,7 +2730,7 @@ Public Sub ActualizarRecurso(ByVal Map As Integer, ByVal X As Integer, ByVal Y A
         Exit Sub
 
 ActualizarRecurso_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Trabajo.ActualizarRecurso", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Trabajo.ActualizarRecurso", Erl)
 112     Resume Next
         
 End Sub
@@ -2961,7 +2752,7 @@ Public Function ObtenerPezRandom(ByVal PoderCania As Integer) As Long
         Exit Function
 
 ObtenerPezRandom_Err:
-108     Call RegistrarError(Err.Number, Err.description, "Trabajo.ObtenerPezRandom", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "Trabajo.ObtenerPezRandom", Erl)
 110     Resume Next
         
 End Function
@@ -2997,7 +2788,7 @@ Function ModDomar(ByVal clase As eClass) As Integer
         Exit Function
 
 ModDomar_Err:
-116     Call RegistrarError(Err.Number, Err.description, "Trabajo.ModDomar", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "Trabajo.ModDomar", Erl)
 
         
 End Function
@@ -3029,7 +2820,7 @@ Function FreeMascotaIndex(ByVal UserIndex As Integer) As Integer
         Exit Function
 
 FreeMascotaIndex_Err:
-108     Call RegistrarError(Err.Number, Err.description, "Trabajo.FreeMascotaIndex", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "Trabajo.FreeMascotaIndex", Erl)
 
         
 End Function
@@ -3129,7 +2920,7 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
         Exit Sub
 
 ErrHandler:
-166     Call LogError("Error en DoDomar. Error " & Err.Number & " : " & Err.description)
+166     Call LogError("Error en DoDomar. Error " & Err.Number & " : " & Err.Description)
 
 End Sub
 
@@ -3171,7 +2962,7 @@ Private Function PuedeDomarMascota(ByVal UserIndex As Integer, _
         Exit Function
 
 PuedeDomarMascota_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Trabajo.PuedeDomarMascota", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Trabajo.PuedeDomarMascota", Erl)
 
         
 End Function
@@ -3192,7 +2983,7 @@ Private Function ModFundirMineral(ByVal clase As eClass) As Integer
         Exit Function
 
 ModFundirMineral_Err:
-106     Call RegistrarError(Err.Number, Err.description, "Trabajo.ModFundirMineral", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "Trabajo.ModFundirMineral", Erl)
 
         
 End Function

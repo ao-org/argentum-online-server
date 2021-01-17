@@ -48,7 +48,7 @@ Public Function GetTickCount() As Long
         Exit Function
 
 GetTickCount_Err:
-102     Call RegistrarError(Err.Number, Err.description, "ModLadder.GetTickCount", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "ModLadder.GetTickCount", Erl)
 
         
 End Function
@@ -76,7 +76,7 @@ Function GetTimeFormated() As String
         Exit Function
 
 GetTimeFormated_Err:
-110     Call RegistrarError(Err.Number, Err.description, "ModLadder.GetTimeFormated", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "ModLadder.GetTimeFormated", Erl)
 112     Resume Next
         
 End Function
@@ -99,7 +99,7 @@ Public Sub GetHoraActual()
         Exit Sub
 
 GetHoraActual_Err:
-114     Call RegistrarError(Err.Number, Err.description, "ModLadder.GetHoraActual", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "ModLadder.GetHoraActual", Erl)
 116     Resume Next
         
 End Sub
@@ -114,7 +114,7 @@ Public Function DarNameMapa(ByVal Map As Long) As String
         Exit Function
 
 DarNameMapa_Err:
-102     Call RegistrarError(Err.Number, Err.description, "ModLadder.DarNameMapa", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "ModLadder.DarNameMapa", Erl)
 104     Resume Next
         
 End Function
@@ -248,7 +248,7 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 212                     Call WarpUserChar(UserIndex, Map, X, Y, True)
 214                     Call WriteConsoleMsg(UserIndex, "Has regresado a tu ciudad de origen.", FontTypeNames.FONTTYPE_WARNING)
 
-                        'Call WriteEfectToScreen(UserIndex, &HA4FFFF, 150, True)
+                        'Call WriteFlashScreen(UserIndex, &HA4FFFF, 150, True)
 216                     If UserList(UserIndex).flags.Navegando = 1 Then
 
                             Dim barca As ObjData
@@ -540,7 +540,7 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
         Exit Sub
 
 CompletarAccionFin_Err:
-504     Call RegistrarError(Err.Number, Err.description, "ModLadder.CompletarAccionFin", Erl)
+504     Call RegistrarError(Err.Number, Err.Description, "ModLadder.CompletarAccionFin", Erl)
 506     Resume Next
         
 End Sub
@@ -589,7 +589,7 @@ Public Function Integer_To_String(ByVal Var As Integer) As String
         Dim temp As String
         
         'Convertimos a hexa
-100     temp = hex$(Var)
+100     temp = Hex$(Var)
     
         'Nos aseguramos tenga 4 bytes de largo
 102     While Len(temp) < 4
@@ -607,7 +607,7 @@ ErrorHandler:
         Exit Function
 
 Integer_To_String_Err:
-108     Call RegistrarError(Err.Number, Err.description, "ModLadder.Integer_To_String", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "ModLadder.Integer_To_String", Erl)
 110     Resume Next
         
 End Function
@@ -619,7 +619,7 @@ Public Function String_To_Integer(ByRef str As String, ByVal Start As Integer) A
         'Last Modify Date: 3/12/2005
         '
         '**************************************************************
-        On Error GoTo Error_Handler
+        On Error GoTo ERROR_HANDLER
     
         Dim temp_str As String
     
@@ -627,7 +627,7 @@ Public Function String_To_Integer(ByRef str As String, ByVal Start As Integer) A
 100     If Len(str) < Start - 1 Or Len(str) = 0 Then Exit Function
     
         'Convertimos a hexa el valor ascii del segundo byte
-102     temp_str = hex$(Asc(mid$(str, Start + 1, 1)))
+102     temp_str = Hex$(Asc(mid$(str, Start + 1, 1)))
     
         'Nos aseguramos tenga 2 bytes (los ceros a la izquierda cuentan por ser el segundo byte)
 104     While Len(temp_str) < 2
@@ -636,11 +636,11 @@ Public Function String_To_Integer(ByRef str As String, ByVal Start As Integer) A
         Wend
     
         'Convertimos a integer
-108     String_To_Integer = val("&H" & hex$(Asc(mid$(str, Start, 1))) & temp_str)
+108     String_To_Integer = val("&H" & Hex$(Asc(mid$(str, Start, 1))) & temp_str)
             
         Exit Function
         
-Error_Handler:
+ERROR_HANDLER:
         
 End Function
 
@@ -653,7 +653,7 @@ Public Function Byte_To_String(ByVal Var As Byte) As String
         
         On Error GoTo Byte_To_String_Err
         
-100     Byte_To_String = Chr$(val("&H" & hex$(Var)))
+100     Byte_To_String = Chr$(val("&H" & Hex$(Var)))
         Exit Function
 
 ErrorHandler:
@@ -662,7 +662,7 @@ ErrorHandler:
         Exit Function
 
 Byte_To_String_Err:
-102     Call RegistrarError(Err.Number, Err.description, "ModLadder.Byte_To_String", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "ModLadder.Byte_To_String", Erl)
 104     Resume Next
         
 End Function
@@ -674,7 +674,7 @@ Public Function String_To_Byte(ByRef str As String, ByVal Start As Integer) As B
         'Last Modify Date: 3/12/2005
         '
         '**************************************************************
-        On Error GoTo Error_Handler
+        On Error GoTo ERROR_HANDLER
     
 100     If Len(str) < Start Then Exit Function
     
@@ -682,7 +682,7 @@ Public Function String_To_Byte(ByRef str As String, ByVal Start As Integer) As B
     
         Exit Function
         
-Error_Handler:
+ERROR_HANDLER:
 
 End Function
 
@@ -714,7 +714,7 @@ Public Function Long_To_String(ByVal Var As Long) As String
 108     If Var < &H1000000 Then Var = Var Or &H10000000
     
         'Convertimos a hexa
-110     temp = hex$(Var)
+110     temp = Hex$(Var)
     
         'Nos aseguramos tenga 8 bytes de largo
 112     While Len(temp) < 8
@@ -732,7 +732,7 @@ ErrorHandler:
         Exit Function
 
 Long_To_String_Err:
-118     Call RegistrarError(Err.Number, Err.description, "ModLadder.Long_To_String", Erl)
+118     Call RegistrarError(Err.Number, Err.Description, "ModLadder.Long_To_String", Erl)
 120     Resume Next
         
 End Function
@@ -755,9 +755,9 @@ Public Function String_To_Long(ByRef str As String, ByVal Start As Integer) As L
         Dim temp_str3 As String
     
         'Tomamos los últimos 3 bytes y convertimos sus valroes ASCII a hexa
-102     temp_str = hex$(Asc(mid$(str, Start + 1, 1)))
-104     temp_str2 = hex$(Asc(mid$(str, Start + 2, 1)))
-106     temp_str3 = hex$(Asc(mid$(str, Start + 3, 1)))
+102     temp_str = Hex$(Asc(mid$(str, Start + 1, 1)))
+104     temp_str2 = Hex$(Asc(mid$(str, Start + 2, 1)))
+106     temp_str3 = Hex$(Asc(mid$(str, Start + 3, 1)))
     
         'Nos aseguramos todos midan 2 bytes (los ceros a la izquierda cuentan por ser bytes 2, 3 y 4)
 108     While Len(temp_str) < 2
@@ -776,7 +776,7 @@ Public Function String_To_Long(ByRef str As String, ByVal Start As Integer) As L
         Wend
     
         'Convertimos a una única cadena hexa
-120     String_To_Long = val("&H" & hex$(Asc(mid$(str, Start, 1))) & temp_str & temp_str2 & temp_str3)
+120     String_To_Long = val("&H" & Hex$(Asc(mid$(str, Start, 1))) & temp_str & temp_str2 & temp_str3)
     
         'Si el cuarto byte era cero
 122     If String_To_Long And &H80000000 Then String_To_Long = String_To_Long Xor &H80000001
@@ -830,7 +830,7 @@ Public Function TieneObjEnInv(ByVal UserIndex As Integer, ByVal ObjIndex As Inte
         Exit Function
 
 TieneObjEnInv_Err:
-116     Call RegistrarError(Err.Number, Err.description, "ModLadder.TieneObjEnInv", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "ModLadder.TieneObjEnInv", Erl)
 118     Resume Next
         
 End Function
@@ -858,7 +858,7 @@ Public Function CantidadObjEnInv(ByVal UserIndex As Integer, ByVal ObjIndex As I
         Exit Function
 
 CantidadObjEnInv_Err:
-110     Call RegistrarError(Err.Number, Err.description, "ModLadder.CantidadObjEnInv", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "ModLadder.CantidadObjEnInv", Erl)
 112     Resume Next
         
 End Function
@@ -888,7 +888,7 @@ Public Function SumarTiempo(segundos As Integer) As String
         Exit Function
 
 SumarTiempo_Err:
-114     Call RegistrarError(Err.Number, Err.description, "ModLadder.SumarTiempo", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "ModLadder.SumarTiempo", Erl)
 116     Resume Next
         
 End Function
@@ -904,7 +904,7 @@ Public Sub AgregarAConsola(ByVal Text As String)
         Exit Sub
 
 AgregarAConsola_Err:
-102     Call RegistrarError(Err.Number, Err.description, "ModLadder.AgregarAConsola", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "ModLadder.AgregarAConsola", Erl)
 104     Resume Next
         
 End Sub
@@ -1011,7 +1011,7 @@ Function PuedeUsarObjeto(UserIndex As Integer, ByVal ObjIndex As Integer) As Byt
         Exit Function
 
 PuedeUsarObjeto_Err:
-166     Call RegistrarError(Err.Number, Err.description, "ModLadder.PuedeUsarObjeto", Erl)
+166     Call RegistrarError(Err.Number, Err.Description, "ModLadder.PuedeUsarObjeto", Erl)
 168     Resume Next
         
 End Function
@@ -1043,7 +1043,7 @@ Public Function RequiereOxigeno(ByVal UserMap) As Boolean
         Exit Function
 
 RequiereOxigeno_Err:
-116     Call RegistrarError(Err.Number, Err.description, "ModLadder.RequiereOxigeno", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "ModLadder.RequiereOxigeno", Erl)
 118     Resume Next
         
 End Function

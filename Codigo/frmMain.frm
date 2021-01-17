@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{248DD890-BB45-11CF-9ABC-0080C7E7B78D}#1.0#0"; "MSWINSCK.ocx"
+Object = "{248DD890-BB45-11CF-9ABC-0080C7E7B78D}#1.0#0"; "MSWINSCK.OCX"
 Begin VB.Form frmMain 
    BackColor       =   &H00E0E0E0&
    BorderStyle     =   4  'Fixed ToolWindow
@@ -1958,7 +1958,7 @@ Private Sub TIMER_AI_Timer()
                             .Contadores.UltimoAtaque = .Contadores.UltimoAtaque - 1
                             
                             If .Contadores.UltimoAtaque <= 0 Then
-                                Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageEfectOverHead(.Stats.MaxHp - .Stats.MinHp, .Char.CharIndex, vbGreen))
+                                Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageTextOverChar(.Stats.MaxHp - .Stats.MinHp, .Char.CharIndex, vbGreen))
                                 .Stats.MinHp = .Stats.MaxHp
                             End If
                         End If
@@ -2063,7 +2063,7 @@ Private Sub TimerMeteorologia_Timer()
         If ProbabilidadLLuvia = 1 Then
             'Envia Lluvia
             Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(404, NO_3D_SOUND, NO_3D_SOUND)) ' Explota un trueno
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageEfectToScreen(&HD254D6, 250)) 'Rayo
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageFlashScreen(&HD254D6, 250)) 'Rayo
             Call SendData(SendTarget.ToAll, 0, PrepareMessageRainToggle())
             Nebando = True
         
@@ -2267,7 +2267,7 @@ Private Sub Truenos_Timer()
         If TruenoWav = 404 Then TruenoWav = 406
         duracion = RandomNumber(80, 250)
         Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(TruenoWav, NO_3D_SOUND, NO_3D_SOUND))
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageEfectToScreen(&HEFEECB, duracion))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageFlashScreen(&HEFEECB, duracion))
         
     End If
 

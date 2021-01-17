@@ -50,7 +50,7 @@ Function ModificadorEvasion(ByVal clase As eClass) As Single
         Exit Function
 
 ModificadorEvasion_Err:
-102     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.ModificadorEvasion", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.ModificadorEvasion", Erl)
 104     Resume Next
         
 End Function
@@ -66,7 +66,7 @@ Function ModificadorPoderAtaqueArmas(ByVal clase As eClass) As Single
         Exit Function
 
 ModificadorPoderAtaqueArmas_Err:
-102     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.ModificadorPoderAtaqueArmas", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.ModificadorPoderAtaqueArmas", Erl)
 104     Resume Next
         
 End Function
@@ -82,7 +82,7 @@ Function ModificadorPoderAtaqueProyectiles(ByVal clase As eClass) As Single
         Exit Function
 
 ModificadorPoderAtaqueProyectiles_Err:
-102     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.ModificadorPoderAtaqueProyectiles", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.ModificadorPoderAtaqueProyectiles", Erl)
 104     Resume Next
         
 End Function
@@ -98,7 +98,7 @@ Function ModicadorDañoClaseArmas(ByVal clase As eClass) As Single
         Exit Function
 
 ModicadorDañoClaseArmas_Err:
-102     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.ModicadorDañoClaseArmas", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.ModicadorDañoClaseArmas", Erl)
 104     Resume Next
         
 End Function
@@ -113,7 +113,7 @@ Function ModicadorApuñalarClase(ByVal clase As eClass) As Single
         Exit Function
 
 ModicadorApuñalarClase_Err:
-102     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.ModicadorApuñalarClase", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.ModicadorApuñalarClase", Erl)
 104     Resume Next
         
 End Function
@@ -129,7 +129,7 @@ Function ModicadorDañoClaseWrestling(ByVal clase As eClass) As Single
         Exit Function
 
 ModicadorDañoClaseWrestling_Err:
-102     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.ModicadorDañoClaseWrestling", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.ModicadorDañoClaseWrestling", Erl)
 104     Resume Next
         
 End Function
@@ -145,7 +145,7 @@ Function ModicadorDañoClaseProyectiles(ByVal clase As eClass) As Single
         Exit Function
 
 ModicadorDañoClaseProyectiles_Err:
-102     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.ModicadorDañoClaseProyectiles", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.ModicadorDañoClaseProyectiles", Erl)
 104     Resume Next
         
 End Function
@@ -161,7 +161,7 @@ Function ModEvasionDeEscudoClase(ByVal clase As eClass) As Single
         Exit Function
 
 ModEvasionDeEscudoClase_Err:
-102     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.ModEvasionDeEscudoClase", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.ModEvasionDeEscudoClase", Erl)
 104     Resume Next
         
 End Function
@@ -182,7 +182,7 @@ Function Minimo(ByVal a As Single, ByVal b As Single) As Single
         Exit Function
 
 Minimo_Err:
-106     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.Minimo", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.Minimo", Erl)
 108     Resume Next
         
 End Function
@@ -203,7 +203,7 @@ Function MinimoInt(ByVal a As Integer, ByVal b As Integer) As Integer
         Exit Function
 
 MinimoInt_Err:
-106     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.MinimoInt", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.MinimoInt", Erl)
 108     Resume Next
         
 End Function
@@ -224,7 +224,7 @@ Function Maximo(ByVal a As Single, ByVal b As Single) As Single
         Exit Function
 
 Maximo_Err:
-106     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.Maximo", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.Maximo", Erl)
 108     Resume Next
         
 End Function
@@ -245,7 +245,7 @@ Function MaximoInt(ByVal a As Integer, ByVal b As Integer) As Integer
         Exit Function
 
 MaximoInt_Err:
-106     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.MaximoInt", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.MaximoInt", Erl)
 108     Resume Next
         
 End Function
@@ -261,7 +261,7 @@ Function PoderEvasionEscudo(ByVal UserIndex As Integer) As Long
         Exit Function
 
 PoderEvasionEscudo_Err:
-102     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.PoderEvasionEscudo", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.PoderEvasionEscudo", Erl)
 104     Resume Next
         
 End Function
@@ -284,7 +284,7 @@ Function PoderEvasion(ByVal UserIndex As Integer) As Long
         Exit Function
 
 PoderEvasion_Err:
-106     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.PoderEvasion", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.PoderEvasion", Erl)
 108     Resume Next
         
 End Function
@@ -313,7 +313,7 @@ Function PoderAtaqueArma(ByVal UserIndex As Integer) As Long
         Exit Function
 
 PoderAtaqueArma_Err:
-116     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.PoderAtaqueArma", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.PoderAtaqueArma", Erl)
 118     Resume Next
         
 End Function
@@ -342,7 +342,7 @@ Function PoderAtaqueProyectil(ByVal UserIndex As Integer) As Long
         Exit Function
 
 PoderAtaqueProyectil_Err:
-116     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.PoderAtaqueProyectil", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.PoderAtaqueProyectil", Erl)
 118     Resume Next
         
 End Function
@@ -371,7 +371,7 @@ Function PoderAtaqueWrestling(ByVal UserIndex As Integer) As Long
         Exit Function
 
 PoderAtaqueWrestling_Err:
-116     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.PoderAtaqueWrestling", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.PoderAtaqueWrestling", Erl)
 118     Resume Next
         
 End Function
@@ -385,16 +385,16 @@ Public Function UserImpactoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Int
 
         Dim Arma        As Integer
 
-        Dim proyectil   As Boolean
+        Dim Proyectil   As Boolean
 
         Dim ProbExito   As Long
 
 100     Arma = UserList(UserIndex).Invent.WeaponEqpObjIndex
 
-102     If Arma = 0 Then proyectil = False Else proyectil = ObjData(Arma).proyectil = 1
+102     If Arma = 0 Then Proyectil = False Else Proyectil = ObjData(Arma).Proyectil = 1
 
 104     If Arma > 0 Then 'Usando un arma
-106         If proyectil Then
+106         If Proyectil Then
 108             PoderAtaque = PoderAtaqueProyectil(UserIndex)
             Else
 110             PoderAtaque = PoderAtaqueArma(UserIndex)
@@ -412,7 +412,7 @@ Public Function UserImpactoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Int
 
 118     If UserImpactoNpc Then
 120         If Arma <> 0 Then
-122             If proyectil Then
+122             If Proyectil Then
 124                 Call SubirSkill(UserIndex, Proyectiles)
                 Else
 126                 Call SubirSkill(UserIndex, Armas)
@@ -430,7 +430,7 @@ Public Function UserImpactoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Int
         Exit Function
 
 UserImpactoNpc_Err:
-130     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.UserImpactoNpc", Erl)
+130     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.UserImpactoNpc", Erl)
 132     Resume Next
         
 End Function
@@ -507,138 +507,85 @@ Public Function NpcImpacto(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
         Exit Function
 
 NpcImpacto_Err:
-136     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.NpcImpacto", Erl)
+136     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.NpcImpacto", Erl)
 138     Resume Next
         
 End Function
 
-Public Function CalcularDaño(ByVal UserIndex As Integer, Optional ByVal NpcIndex As Integer = 0) As Long
-        
+Public Function CalcularDaño(ByVal UserIndex As Integer) As Long
+
+        ' Reescrita por WyroX - 16/01/2021
+
         On Error GoTo CalcularDaño_Err
+
+        Dim DañoUsuario As Long, DañoArma As Long, DañoMaxArma As Long, ModifClase As Single
+
+        With UserList(UserIndex)
         
+            ' Daño base del usuario
+            DañoUsuario = RandomNumber(.Stats.MinHIT, .Stats.MaxHit)
 
-        Dim DañoArma As Long, DañoUsuario As Long, Arma As ObjData, ModifClase As Single
-
-        Dim proyectil As ObjData
-
-        Dim DañoMaxArma As Long, DañoMinArma As Long
-
-        ''sacar esto si no queremos q la matadracos mate el Dragon si o si
-        Dim matoDragon As Boolean
-
-100     With UserList(UserIndex)
-
-102         If .Invent.WeaponEqpObjIndex > 0 Then
-104             Arma = ObjData(.Invent.WeaponEqpObjIndex)
-        
-                ' Ataca a un npc?
-106             If NpcIndex > 0 Then
-    
-                    'Usa la mata Dragones?
-108                 If .Invent.WeaponEqpObjIndex = EspadaMataDragonesIndex Then ' Usa la mataDragones?
-110                     ModifClase = ModicadorDañoClaseArmas(.clase)
+            ' Daño con arma
+            If .Invent.WeaponEqpObjIndex > 0 Then
+                Dim Arma As ObjData
+                Arma = ObjData(.Invent.WeaponEqpObjIndex)
                 
-112                     If Npclist(NpcIndex).NPCtype = DRAGON Then 'Ataca Dragon?
-114                         DañoArma = RandomNumber(Arma.MinHIT, Arma.MaxHit)
-116                         DañoMaxArma = Arma.MaxHit
-118                         matoDragon = True ''sacar esto si no queremos q la matadracos mate el Dragon si o si
-                        Else ' Sino es Dragon daño es 1
-120                         DañoArma = 1
-122                         DañoMaxArma = 1
-                        End If
-    
-                    Else ' daño comun
-    
-124                     If Arma.proyectil = 1 Then
-126                         ModifClase = ModicadorDañoClaseProyectiles(.clase)
-128                         DañoArma = RandomNumber(Arma.MinHIT, Arma.MaxHit)
-130                         DañoMaxArma = Arma.MaxHit
-    
-132                         If Arma.Municion = 1 Then
-134                             proyectil = ObjData(.Invent.MunicionEqpObjIndex)
-136                             DañoArma = DañoArma + RandomNumber(proyectil.MinHIT, proyectil.MaxHit)
-138                             DañoMaxArma = Arma.MaxHit + proyectil.MaxHit
-                            End If
-    
-                        Else
-140                         ModifClase = ModicadorDañoClaseArmas(.clase)
-142                         DañoArma = RandomNumber(Arma.MinHIT, Arma.MaxHit)
-144                         DañoMaxArma = Arma.MaxHit
-                        End If
-    
-                    End If
-        
-                Else ' Ataca usuario
-    
-146                 If .Invent.WeaponEqpObjIndex = EspadaMataDragonesIndex Then
-148                     ModifClase = ModicadorDañoClaseArmas(.clase)
-150                     DañoArma = 1 ' Si usa la espada mataDragones daño es 1
-152                     DañoMaxArma = 1
-                    Else
-    
-154                     If Arma.proyectil = 1 Then
-156                         ModifClase = ModicadorDañoClaseProyectiles(.clase)
-158                         DañoArma = RandomNumber(Arma.MinHIT, Arma.MaxHit)
-160                         DañoMaxArma = Arma.MaxHit
-                    
-162                         If Arma.Municion = 1 Then
-164                             proyectil = ObjData(.Invent.MunicionEqpObjIndex)
-166                             DañoArma = DañoArma + RandomNumber(proyectil.MinHIT, proyectil.MaxHit)
-168                             DañoMaxArma = Arma.MaxHit + proyectil.MaxHit
-                            End If
-    
-                        Else
-170                         ModifClase = ModicadorDañoClaseArmas(.clase)
-172                         DañoArma = RandomNumber(Arma.MinHIT, Arma.MaxHit)
-174                         DañoMaxArma = Arma.MaxHit
-                        End If
-    
-                    End If
-    
-                End If
-    
-            Else
-    
-176             If .Invent.NudilloSlot > 0 Then
-178                 ModifClase = ModicadorDañoClaseArmas(.clase)
-180                 Arma = ObjData(.Invent.NudilloObjIndex)
-182                 DañoArma = RandomNumber(Arma.MinHIT, Arma.MaxHit)
-184                 DañoMaxArma = Arma.MaxHit
-                Else
-186                 ModifClase = ModicadorDañoClaseWrestling(.clase)
-    
-                    ' Dano sin guantes
-188                 DañoMinArma = 2
-190                 DañoMaxArma = 3
-                    
-                    ' Plus de guantes (en slot de anillo)
-192                 If .Invent.DañoMagicoEqpObjIndex > 0 Then
-194                     If ObjData(.Invent.DañoMagicoEqpObjIndex).Subtipo = 4 Then
-196                         DañoMinArma = DañoMinArma + ObjData(.Invent.DañoMagicoEqpObjIndex).MinHIT
-198                         DañoMaxArma = DañoMaxArma + ObjData(.Invent.DañoMagicoEqpObjIndex).MaxHit
-                        End If
-                    End If
-                    
-200                 DañoArma = RandomNumber(DañoMinArma, DañoMaxArma)
-                End If
-    
-            End If
-    
-202         If .Invent.MagicoObjIndex = 707 And NpcIndex = 0 Then
-204             DañoUsuario = RandomNumber((.Stats.MinHIT - ObjData(.Invent.MagicoObjIndex).CuantoAumento), (.Stats.MaxHit - ObjData(.Invent.MagicoObjIndex).CuantoAumento))
-            Else
-206             DañoUsuario = RandomNumber(.Stats.MinHIT, .Stats.MaxHit)
-            End If
-    
-208         If matoDragon Then
-210             CalcularDaño = Npclist(NpcIndex).Stats.MinHp + Npclist(NpcIndex).Stats.def
-            Else
-212             CalcularDaño = (3 * DañoArma + DañoMaxArma * 0.2 * Maximo(0, .Stats.UserAtributos(Fuerza) - 15) + DañoUsuario) * ModifClase
+                ' Calculamos el daño del arma
+                DañoArma = RandomNumber(Arma.MinHIT, Arma.MaxHit)
+                ' Daño máximo del arma
+                DañoMaxArma = Arma.MaxHit
 
-                ' WyroX: Idea de los de balace. El pirata navegando pega un 20% más
-214             If .clase = eClass.Pirat And .flags.Navegando Then
-216                 CalcularDaño = CalcularDaño * 1.15
+                ' Si lanza proyectiles
+                If Arma.Proyectil = 1 Then
+                    ' Usamos el modificador correspondiente
+                    ModifClase = ModicadorDañoClaseProyectiles(.clase)
+
+                    ' Si requiere munición
+                    If Arma.Municion = 1 And .Invent.MunicionEqpObjIndex > 0 Then
+                        Dim Municion As ObjData
+                        Municion = ObjData(.Invent.MunicionEqpObjIndex)
+                        ' Agregamos el daño de la munición al daño del arma
+                        DañoArma = DañoArma + RandomNumber(Municion.MinHIT, Municion.MaxHit)
+                        DañoMaxArma = Arma.MaxHit + Municion.MaxHit
+                    End If
+                
+                ' Arma melé
+                Else
+                    ' Usamos el modificador correspondiente
+                    ModifClase = ModicadorDañoClaseArmas(.clase)
                 End If
+        
+            ' Daño con puños
+            Else
+                ' Modificador de combate sin armas
+                ModifClase = ModicadorDañoClaseWrestling(.clase)
+            
+                ' Si tiene nudillos o guantes
+                If .Invent.NudilloSlot > 0 Then
+                    Arma = ObjData(.Invent.NudilloObjIndex)
+                    
+                    ' Calculamos el daño del nudillo o guante
+                    DañoArma = RandomNumber(Arma.MinHIT, Arma.MaxHit)
+                    ' Daño máximo
+                    DañoMaxArma = Arma.MaxHit
+                End If
+            End If
+
+            ' Calculo del daño
+            CalcularDaño = (3 * DañoArma + DañoMaxArma * 0.2 * Maximo(0, .Stats.UserAtributos(Fuerza) - 15) + DañoUsuario) * ModifClase
+            
+            ' El pirata navegando pega un 20% más
+            If .clase = eClass.Pirat And .flags.Navegando Then
+                CalcularDaño = CalcularDaño * 1.15
+            End If
+            
+            ' Daño del barco
+            If .flags.Navegando = 1 And .Invent.BarcoObjIndex > 0 Then
+                CalcularDaño = CalcularDaño + RandomNumber(ObjData(.Invent.BarcoObjIndex).MinHIT, ObjData(.Invent.BarcoObjIndex).MaxHit)
+
+            ' Daño de la montura
+            ElseIf .flags.Montado = 1 And .Invent.MonturaObjIndex > 0 Then
+                CalcularDaño = CalcularDaño + RandomNumber(ObjData(.Invent.MonturaObjIndex).MinHIT, ObjData(.Invent.MonturaObjIndex).MaxHit)
             End If
 
         End With
@@ -646,110 +593,122 @@ Public Function CalcularDaño(ByVal UserIndex As Integer, Optional ByVal NpcInde
         Exit Function
 
 CalcularDaño_Err:
-218     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.CalcularDaño", Erl)
-220     Resume Next
+     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.CalcularDaño", Erl)
+     Resume Next
         
 End Function
 
 Public Sub UserDañoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
+
+        ' Reescrito por WyroX - 16/01/2021
         
         On Error GoTo UserDañoNpc_Err
-        
 
-        Dim daño As Long
+        With UserList(UserIndex)
 
-        Dim j As Integer
+            Dim Daño As Long, DañoBase As Long, DañoExtra As Long, Color As Long, DañoStr As String
 
-        Dim apudaño As Integer
-    
-100     daño = CalcularDaño(UserIndex, NpcIndex)
-    
-        'esta navegando? si es asi le sumamos el daño del barco
-102     If UserList(UserIndex).flags.Navegando = 1 And UserList(UserIndex).Invent.BarcoObjIndex > 0 Then daño = daño + RandomNumber(ObjData(UserList(UserIndex).Invent.BarcoObjIndex).MinHIT, ObjData(UserList(UserIndex).Invent.BarcoObjIndex).MaxHit)
+100         If .Invent.WeaponEqpObjIndex = EspadaMataDragonesIndex And Npclist(NpcIndex).NPCtype = DRAGON Then
+                ' Espada MataDragones
+102             DañoBase = Npclist(NpcIndex).Stats.MinHp + Npclist(NpcIndex).Stats.def
+                ' La pierde una vez usada
+104             Call QuitarObjetos(EspadaMataDragonesIndex, 1, UserIndex)
+            Else
+                ' Daño normal
+106             DañoBase = CalcularDaño(UserIndex)
 
-104     If UserList(UserIndex).flags.Montado = 1 And UserList(UserIndex).Invent.MonturaObjIndex > 0 Then daño = daño + RandomNumber(ObjData(UserList(UserIndex).Invent.MonturaObjIndex).MinHIT, ObjData(UserList(UserIndex).Invent.MonturaObjIndex).MaxHit)
-
-106     If PuedeApuñalar(UserIndex) Then
-108         Call SubirSkill(UserIndex, Apuñalar)
-110         apudaño = ApuñalarFunction(UserIndex, NpcIndex, 0, daño)
-
-112         daño = daño + apudaño
-        End If
-    
-114     daño = daño - Npclist(NpcIndex).Stats.def
-    
-116     If daño < 0 Then daño = 0
-
-        If Npclist(NpcIndex).NPCtype = DummyTarget Then
-            Npclist(NpcIndex).Contadores.UltimoAtaque = 30
-        End If
-    
-        'If UserList(UserIndex).ChatCombate = 1 Then
-        '    Call WriteUserHitNPC(UserIndex, daño)
-        'End If
-    
-118     If apudaño > 0 Then
-120         Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageEfectOverHead("¡" & daño & "!", Npclist(NpcIndex).Char.CharIndex, vbYellow))
-
-122         If UserList(UserIndex).ChatCombate = 1 Then
-                'Call WriteConsoleMsg(UserIndex, "Has apuñalado la criatura por " & apudaño, FontTypeNames.FONTTYPE_FIGHT)
-            
-124             Call WriteLocaleMsg(UserIndex, "212", FontTypeNames.FONTTYPE_FIGHT, daño)
-
-            End If
-
-        Else
-126         Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageEfectOverHead(daño, Npclist(NpcIndex).Char.CharIndex))
-
-        End If
-        
-128     If UserList(UserIndex).ChatCombate = 1 Then
-130         Call WriteConsoleMsg(UserIndex, "Le has causado " & daño & " puntos de daño a la criatura!", FontTypeNames.FONTTYPE_FIGHT)
-        End If
-    
-        If Npclist(NpcIndex).MaestroUser <= 0 Then
-132         Call CalcularDarExp(UserIndex, NpcIndex, daño)
-        End If
-
-134     Npclist(NpcIndex).Stats.MinHp = Npclist(NpcIndex).Stats.MinHp - daño
-        
-136     Call DoGolpeCritico(UserIndex, NpcIndex, 0, daño)
-     
-138     If Npclist(NpcIndex).Stats.MinHp <= 0 Then
-            
-            ' Si era un Dragon perdemos la espada mataDragones
-140         If Npclist(NpcIndex).NPCtype = DRAGON Then
-
-                'Si tiene equipada la matadracos se la sacamos
-142             If UserList(UserIndex).Invent.WeaponEqpObjIndex = EspadaMataDragonesIndex Then
-144                 Call QuitarObjetos(EspadaMataDragonesIndex, 1, UserIndex)
-
+                ' NPC de pruebas
+108             If Npclist(NpcIndex).NPCtype = DummyTarget Then
+110                 Npclist(NpcIndex).Contadores.UltimoAtaque = 30
                 End If
-
-                ' If Npclist(NpcIndex).Stats.MaxHp > 100000 Then Call LogDesarrollo(UserList(UserIndex).name & " mató un dragón")
             End If
             
-            ' Para que las mascotas no sigan intentando luchar y
-            ' comiencen a seguir al amo
-146         For j = 1 To MAXMASCOTAS
-148             If UserList(UserIndex).MascotasIndex(j) > 0 Then
-150                 If Npclist(UserList(UserIndex).MascotasIndex(j)).TargetNPC = NpcIndex Then
-152                     Npclist(UserList(UserIndex).MascotasIndex(j)).TargetNPC = 0
-154                     Npclist(UserList(UserIndex).MascotasIndex(j)).Movement = TipoAI.SigueAmo
+            ' Color por defecto rojo
+111         Color = vbRed
+
+            ' Defensa del NPC
+112         Daño = DañoBase - Npclist(NpcIndex).Stats.def
+
+114         If Daño < 0 Then Daño = 0
+
+            ' Mostramos en consola el golpe
+116         If .ChatCombate = 1 Then
+118             Call WriteLocaleMsg(UserIndex, "382", FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(Daño))
+            End If
+
+            ' Golpe crítico (ignora defensa)
+120         If PuedeGolpeCritico(UserIndex) Then
+                ' Si acertó - Doble chance contra NPCs
+122             If RandomNumber(1, 100) <= ProbabilidadGolpeCritico(UserIndex) * 2 Then
+                    ' Daño del golpe crítico (usamos el daño base)
+124                 DañoExtra = DañoBase * ModDañoGolpeCritico
+                
+                    ' Mostramos en consola el daño
+126                 If .ChatCombate = 1 Then
+128                     Call WriteLocaleMsg(UserIndex, "383", FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(DañoExtra))
                     End If
+
+                    ' Color naranja
+130                 Color = RGB(225, 165, 0)
                 End If
-156         Next j
-        
-158         Call MuereNpc(NpcIndex, UserIndex)
 
-        End If
+            ' Apuñalar (le afecta la defensa)
+132         ElseIf PuedeApuñalar(UserIndex) Then
+                ' Si acertó - Doble chance contra NPCs
+136             If RandomNumber(1, 100) <= ProbabilidadApuñalar(UserIndex) * 2 Then
+                    ' Daño del apuñalamiento
+138                 DañoExtra = Daño * ModicadorApuñalarClase(.clase)
+                
+                    ' Mostramos en consola el daño
+140                 If .ChatCombate = 1 Then
+142                     Call WriteLocaleMsg(UserIndex, "212", FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(DañoExtra))
+                    End If
 
+                    ' Color amarillo
+144                 Color = vbYellow
+                End If
+
+                ' Sube skills en apuñalar
+146             Call SubirSkill(UserIndex, Apuñalar)
+            End If
+            
+148         If DañoExtra > 0 Then
+150             Daño = Daño + DañoExtra
+
+                DañoStr = PonerPuntos(Daño)
+                
+                ' Mostramos el daño total en consola
+152             If .ChatCombate = 1 Then
+154                 Call WriteLocaleMsg(UserIndex, "384", FontTypeNames.FONTTYPE_FIGHT, DañoStr)
+                End If
+                
+156             DañoStr = "¡" & DañoStr & "!"
+            Else
+158             DañoStr = PonerPuntos(Daño)
+            End If
+
+            ' Daño sobre el tile
+160         Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageTextCharDrop(DañoStr, Npclist(NpcIndex).Char.CharIndex, Color))
+
+            ' Experiencia
+162         Call CalcularDarExp(UserIndex, NpcIndex, Daño)
+
+            ' Restamos el daño al NPC
+164         Npclist(NpcIndex).Stats.MinHp = Npclist(NpcIndex).Stats.MinHp - Daño
+
+            ' Muere el NPC
+166         If Npclist(NpcIndex).Stats.MinHp <= 0 Then
+                ' Drop items, respawn, etc.
+170             Call MuereNpc(NpcIndex, UserIndex)
+            End If
+
+        End With
         
         Exit Sub
 
 UserDañoNpc_Err:
-160     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.UserDañoNpc", Erl)
-162     Resume Next
+172     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.UserDañoNpc", Erl)
+174     Resume Next
         
 End Sub
 
@@ -758,19 +717,18 @@ Public Sub NpcDaño(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         On Error GoTo NpcDaño_Err
         
 
-        Dim daño As Integer, Lugar As Integer, absorbido As Integer
+        Dim Daño As Integer, Lugar As Integer, absorbido As Integer
 
         Dim antdaño As Integer, defbarco As Integer
 
         Dim obj As ObjData
     
-100     daño = RandomNumber(Npclist(NpcIndex).Stats.MinHIT, Npclist(NpcIndex).Stats.MaxHit)
-102     antdaño = daño
+100     Daño = RandomNumber(Npclist(NpcIndex).Stats.MinHIT, Npclist(NpcIndex).Stats.MaxHit)
+102     antdaño = Daño
     
 104     If UserList(UserIndex).flags.Navegando = 1 And UserList(UserIndex).Invent.BarcoObjIndex > 0 Then
 106         obj = ObjData(UserList(UserIndex).Invent.BarcoObjIndex)
 108         defbarco = RandomNumber(obj.MinDef, obj.MaxDef)
-
         End If
     
         Dim defMontura As Integer
@@ -778,63 +736,53 @@ Public Sub NpcDaño(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 110     If UserList(UserIndex).flags.Montado = 1 And UserList(UserIndex).Invent.MonturaObjIndex > 0 Then
 112         obj = ObjData(UserList(UserIndex).Invent.MonturaObjIndex)
 114         defMontura = RandomNumber(obj.MinDef, obj.MaxDef)
-
         End If
     
 116     Lugar = RandomNumber(1, 6)
     
 118     Select Case Lugar
-
+            ' 1/6 de chances de que sea a la cabeza
             Case PartesCuerpo.bCabeza
 
                 'Si tiene casco absorbe el golpe
-120             If UserList(UserIndex).Invent.CascoEqpObjIndex > 0 Then
-122                 obj = ObjData(UserList(UserIndex).Invent.CascoEqpObjIndex)
-124                 absorbido = RandomNumber(obj.MinDef, obj.MaxDef)
-126                 absorbido = absorbido + defbarco
-128                 daño = daño - absorbido
-
-130                 If daño < 1 Then daño = 1
-
+                If UserList(UserIndex).Invent.CascoEqpObjIndex > 0 Then
+                    Dim Casco As ObjData
+                    Casco = ObjData(UserList(UserIndex).Invent.CascoEqpObjIndex)
+                    absorbido = absorbido + RandomNumber(Casco.MinDef, Casco.MaxDef)
                 End If
 
-132         Case Else
+            Case Else
 
                 'Si tiene armadura absorbe el golpe
-134             If UserList(UserIndex).Invent.ArmourEqpObjIndex > 0 Then
-
-                    Dim Obj2 As ObjData
-
-136                 obj = ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex)
-
-138                 If UserList(UserIndex).Invent.EscudoEqpObjIndex Then
-140                     Obj2 = ObjData(UserList(UserIndex).Invent.EscudoEqpObjIndex)
-142                     absorbido = RandomNumber(obj.MinDef + Obj2.MinDef, obj.MaxDef + Obj2.MaxDef)
-                    Else
-144                     absorbido = RandomNumber(obj.MinDef, obj.MaxDef)
-
-                    End If
-
-146                 absorbido = absorbido + defbarco
-148                 daño = daño - absorbido
-
-150                 If daño < 1 Then daño = 1
-
+                If UserList(UserIndex).Invent.ArmourEqpObjIndex > 0 Then
+                    Dim Armadura As ObjData
+                    Armadura = ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex)
+                    absorbido = absorbido + RandomNumber(Armadura.MinDef, Armadura.MaxDef)
+                End If
+                
+                'Si tiene escudo absorbe el golpe
+                If UserList(UserIndex).Invent.EscudoEqpObjIndex > 0 Then
+                    Dim Escudo As ObjData
+                    Escudo = ObjData(UserList(UserIndex).Invent.EscudoEqpObjIndex)
+                    absorbido = absorbido + RandomNumber(Escudo.MinDef, Escudo.MaxDef)
                 End If
 
         End Select
+        
+        Daño = Daño - absorbido - defbarco - defMontura
+        
+        If Daño < 0 Then Daño = 0
     
-152     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageEfectOverHead(daño, UserList(UserIndex).Char.CharIndex))
+152     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageTextCharDrop(PonerPuntos(Daño), UserList(UserIndex).Char.CharIndex, vbRed))
 
 154     If UserList(UserIndex).ChatCombate = 1 Then
-156         Call WriteNPCHitUser(UserIndex, Lugar, daño)
-
+156         Call WriteNPCHitUser(UserIndex, Lugar, Daño)
         End If
 
-158     If UserList(UserIndex).flags.Privilegios And PlayerType.user Then UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp - daño
+158     If UserList(UserIndex).flags.Privilegios And PlayerType.user Then UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp - Daño
     
 160     If UserList(UserIndex).flags.Meditando Then
-162         If daño > Fix(UserList(UserIndex).Stats.MinHp / 100 * UserList(UserIndex).Stats.UserAtributos(eAtributos.Inteligencia) * UserList(UserIndex).Stats.UserSkills(eSkill.Meditar) / 100 * 12 / (RandomNumber(0, 5) + 7)) Then
+162         If Daño > Fix(UserList(UserIndex).Stats.MinHp / 100 * UserList(UserIndex).Stats.UserAtributos(eAtributos.Inteligencia) * UserList(UserIndex).Stats.UserSkills(eSkill.Meditar) / 100 * 12 / (RandomNumber(0, 5) + 7)) Then
 164             UserList(UserIndex).flags.Meditando = False
 166             UserList(UserIndex).Char.FX = 0
 168             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(UserList(UserIndex).Char.CharIndex, 0))
@@ -877,7 +825,7 @@ Public Sub NpcDaño(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         Exit Sub
 
 NpcDaño_Err:
-194     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.NpcDaño", Erl)
+194     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.NpcDaño", Erl)
 196     Resume Next
         
 End Sub
@@ -943,7 +891,7 @@ Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integ
         Exit Function
 
 NpcAtacaUser_Err:
-144     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.NpcAtacaUser", Erl)
+144     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.NpcAtacaUser", Erl)
 146     Resume Next
         
 End Function
@@ -966,7 +914,7 @@ Function NpcImpactoNpc(ByVal Atacante As Integer, ByVal Victima As Integer) As B
         Exit Function
 
 NpcImpactoNpc_Err:
-108     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.NpcImpactoNpc", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.NpcImpactoNpc", Erl)
 110     Resume Next
         
 End Function
@@ -975,17 +923,17 @@ Public Sub NpcDañoNpc(ByVal Atacante As Integer, ByVal Victima As Integer)
         
             On Error GoTo NpcDañoNpc_Err
 
-            Dim daño As Integer
+            Dim Daño As Integer
     
 100         With Npclist(Atacante)
-102             daño = RandomNumber(.Stats.MinHIT, .Stats.MaxHit)
-104             Npclist(Victima).Stats.MinHp = Npclist(Victima).Stats.MinHp - daño
+102             Daño = RandomNumber(.Stats.MinHIT, .Stats.MaxHit)
+104             Npclist(Victima).Stats.MinHp = Npclist(Victima).Stats.MinHp - Daño
             
-106             Call SendData(SendTarget.ToNPCArea, Victima, PrepareMessageEfectOverHead(daño, Npclist(Victima).Char.CharIndex))
+106             Call SendData(SendTarget.ToNPCArea, Victima, PrepareMessageTextCharDrop(PonerPuntos(Daño), Npclist(Victima).Char.CharIndex, vbRed))
             
                 ' Mascotas dan experiencia al amo
 108             If .MaestroUser > 0 Then
-110                 Call CalcularDarExp(.MaestroUser, Victima, daño)
+110                 Call CalcularDarExp(.MaestroUser, Victima, Daño)
                 End If
             
 112             If Npclist(Victima).Stats.MinHp < 1 Then
@@ -1007,7 +955,7 @@ Public Sub NpcDañoNpc(ByVal Atacante As Integer, ByVal Victima As Integer)
             Exit Sub
 
 NpcDañoNpc_Err:
-126         Call RegistrarError(Err.Number, Err.description, "SistemaCombate.NpcDañoNpc")
+126         Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.NpcDañoNpc")
 128         Resume Next
         
 End Sub
@@ -1059,7 +1007,7 @@ Public Sub NpcAtacaNpc(ByVal Atacante As Integer, ByVal Victima As Integer, Opti
         Exit Sub
 
 NpcAtacaNpc_Err:
-128     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.NpcAtacaNpc", Erl)
+128     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.NpcAtacaNpc", Erl)
 130     Resume Next
         
 End Sub
@@ -1141,7 +1089,7 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
         Exit Sub
 
 UsuarioAtacaNpc_Err:
-146     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.UsuarioAtacaNpc", Erl)
+146     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.UsuarioAtacaNpc", Erl)
 148     Resume Next
         
 End Sub
@@ -1183,7 +1131,7 @@ Public Function UsuarioAtacaNpcFunction(ByVal UserIndex As Integer, ByVal NpcInd
         Exit Function
 
 UsuarioAtacaNpcFunction_Err:
-122     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.UsuarioAtacaNpcFunction", Erl)
+122     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.UsuarioAtacaNpcFunction", Erl)
 124     Resume Next
         
 End Function
@@ -1246,9 +1194,8 @@ Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
             'Look for user
 134         If index > 0 Then
 136             Call UsuarioAtacaUsuario(UserIndex, index)
-138             Call WriteUpdateUserStats(UserIndex)
-140             Call WriteUpdateUserStats(index)
-                Exit Sub
+
+                Call SubirSkillDeArmaActual(UserIndex)
             
             'Look for NPC
 142         ElseIf MapData(AttackPos.Map, AttackPos.X, AttackPos.Y).NpcIndex > 0 Then
@@ -1262,7 +1209,8 @@ Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
                     End If
                     
 152                 Call UsuarioAtacaNpc(UserIndex, index)
-154                 Call WriteUpdateUserStats(UserIndex)
+
+                    Call SubirSkillDeArmaActual(UserIndex)
                 Else
             
 156                 Call WriteConsoleMsg(UserIndex, "No podés atacar a este NPC", FontTypeNames.FONTTYPE_FIGHT)
@@ -1283,12 +1231,12 @@ Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
         Exit Sub
 
 UsuarioAtaca_Err:
-162     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.UsuarioAtaca", Erl)
+162     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.UsuarioAtaca", Erl)
 164     Resume Next
         
 End Sub
 
-Public Function UsuarioImpacto(ByVal atacanteIndex As Integer, ByVal victimaIndex As Integer) As Boolean
+Public Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer) As Boolean
         
         On Error GoTo UsuarioImpacto_Err
         
@@ -1307,36 +1255,36 @@ Public Function UsuarioImpacto(ByVal atacanteIndex As Integer, ByVal victimaInde
 
         Dim Arma                   As Integer
 
-        Dim proyectil              As Boolean
+        Dim Proyectil              As Boolean
 
         Dim SkillTacticas          As Long
 
         Dim SkillDefensa           As Long
     
-100     If UserList(atacanteIndex).flags.GolpeCertero = 1 Then
+100     If UserList(AtacanteIndex).flags.GolpeCertero = 1 Then
 102         UsuarioImpacto = True
-104         UserList(atacanteIndex).flags.GolpeCertero = 0
+104         UserList(AtacanteIndex).flags.GolpeCertero = 0
             Exit Function
 
         End If
     
-106     SkillTacticas = UserList(victimaIndex).Stats.UserSkills(eSkill.Tacticas)
-108     SkillDefensa = UserList(victimaIndex).Stats.UserSkills(eSkill.Defensa)
+106     SkillTacticas = UserList(VictimaIndex).Stats.UserSkills(eSkill.Tacticas)
+108     SkillDefensa = UserList(VictimaIndex).Stats.UserSkills(eSkill.Defensa)
     
-110     Arma = UserList(atacanteIndex).Invent.WeaponEqpObjIndex
+110     Arma = UserList(AtacanteIndex).Invent.WeaponEqpObjIndex
 
 112     If Arma > 0 Then
-114         proyectil = ObjData(Arma).proyectil = 1
+114         Proyectil = ObjData(Arma).Proyectil = 1
         Else
-116         proyectil = False
+116         Proyectil = False
 
         End If
     
         'Calculamos el poder de evasion...
-118     UserPoderEvasion = PoderEvasion(victimaIndex)
+118     UserPoderEvasion = PoderEvasion(VictimaIndex)
     
-120     If UserList(victimaIndex).Invent.EscudoEqpObjIndex > 0 Then
-122         UserPoderEvasionEscudo = PoderEvasionEscudo(victimaIndex)
+120     If UserList(VictimaIndex).Invent.EscudoEqpObjIndex > 0 Then
+122         UserPoderEvasionEscudo = PoderEvasionEscudo(VictimaIndex)
 124         UserPoderEvasion = UserPoderEvasion + UserPoderEvasionEscudo
         Else
 126         UserPoderEvasionEscudo = 0
@@ -1344,19 +1292,19 @@ Public Function UsuarioImpacto(ByVal atacanteIndex As Integer, ByVal victimaInde
         End If
     
         'Esta usando un arma ???
-128     If UserList(atacanteIndex).Invent.WeaponEqpObjIndex > 0 Then
+128     If UserList(AtacanteIndex).Invent.WeaponEqpObjIndex > 0 Then
         
-130         If proyectil Then
-132             PoderAtaque = PoderAtaqueProyectil(atacanteIndex)
+130         If Proyectil Then
+132             PoderAtaque = PoderAtaqueProyectil(AtacanteIndex)
             Else
-134             PoderAtaque = PoderAtaqueArma(atacanteIndex)
+134             PoderAtaque = PoderAtaqueArma(AtacanteIndex)
 
             End If
 
 136         ProbExito = Maximo(10, Minimo(90, 50 + ((PoderAtaque - UserPoderEvasion) * 0.4)))
        
         Else
-138         PoderAtaque = PoderAtaqueWrestling(atacanteIndex)
+138         PoderAtaque = PoderAtaqueWrestling(AtacanteIndex)
 140         ProbExito = Maximo(10, Minimo(90, 50 + ((PoderAtaque - UserPoderEvasion) * 0.4)))
         
         End If
@@ -1364,7 +1312,7 @@ Public Function UsuarioImpacto(ByVal atacanteIndex As Integer, ByVal victimaInde
 142     UsuarioImpacto = (RandomNumber(1, 100) <= ProbExito)
     
         ' el usuario esta usando un escudo ???
-144     If UserList(victimaIndex).Invent.EscudoEqpObjIndex > 0 Then
+144     If UserList(VictimaIndex).Invent.EscudoEqpObjIndex > 0 Then
         
             'Fallo ???
 146         If UsuarioImpacto = False Then
@@ -1373,40 +1321,40 @@ Public Function UsuarioImpacto(ByVal atacanteIndex As Integer, ByVal victimaInde
           
 152             If Rechazo = True Then
                     'Se rechazo el ataque con el escudo
-154                 Call SendData(SendTarget.ToPCArea, victimaIndex, PrepareMessagePlayWave(SND_ESCUDO, UserList(victimaIndex).Pos.X, UserList(victimaIndex).Pos.Y))
-156                 Call SendData(SendTarget.ToPCArea, victimaIndex, PrepareMessageEscudoMov(UserList(victimaIndex).Char.CharIndex))
+154                 Call SendData(SendTarget.ToPCArea, VictimaIndex, PrepareMessagePlayWave(SND_ESCUDO, UserList(VictimaIndex).Pos.X, UserList(VictimaIndex).Pos.Y))
+156                 Call SendData(SendTarget.ToPCArea, VictimaIndex, PrepareMessageEscudoMov(UserList(VictimaIndex).Char.CharIndex))
 
-158                 If UserList(atacanteIndex).ChatCombate = 1 Then
-160                     Call WriteBlockedWithShieldOther(atacanteIndex)
-
-                    End If
-
-162                 If UserList(victimaIndex).ChatCombate = 1 Then
-164                     Call WriteBlockedWithShieldUser(victimaIndex)
+158                 If UserList(AtacanteIndex).ChatCombate = 1 Then
+160                     Call WriteBlockedWithShieldOther(AtacanteIndex)
 
                     End If
 
-166                 Call SendData(SendTarget.ToPCArea, victimaIndex, PrepareMessageCreateFX(UserList(victimaIndex).Char.CharIndex, 88, 0))
+162                 If UserList(VictimaIndex).ChatCombate = 1 Then
+164                     Call WriteBlockedWithShieldUser(VictimaIndex)
+
+                    End If
+
+166                 Call SendData(SendTarget.ToPCArea, VictimaIndex, PrepareMessageCreateFX(UserList(VictimaIndex).Char.CharIndex, 88, 0))
 
                 End If
 
             End If
             
-168         Call SubirSkill(victimaIndex, Defensa)
+168         Call SubirSkill(VictimaIndex, Defensa)
 
         End If
         
 170     If UsuarioImpacto Then
 172         If Arma > 0 Then
-174             If Not proyectil Then
-176                 Call SubirSkill(atacanteIndex, Armas)
+174             If Not Proyectil Then
+176                 Call SubirSkill(AtacanteIndex, Armas)
                 Else
-178                 Call SubirSkill(atacanteIndex, Proyectiles)
+178                 Call SubirSkill(AtacanteIndex, Proyectiles)
 
                 End If
 
             Else
-180             Call SubirSkill(atacanteIndex, Wrestling)
+180             Call SubirSkill(AtacanteIndex, Wrestling)
 
             End If
 
@@ -1416,22 +1364,22 @@ Public Function UsuarioImpacto(ByVal atacanteIndex As Integer, ByVal victimaInde
         Exit Function
 
 UsuarioImpacto_Err:
-182     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.UsuarioImpacto", Erl)
+182     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.UsuarioImpacto", Erl)
 184     Resume Next
         
 End Function
 
-Public Sub UsuarioAtacaUsuario(ByVal atacanteIndex As Integer, ByVal victimaIndex As Integer)
+Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer)
         
         On Error GoTo UsuarioAtacaUsuario_Err
 
         Dim Probabilidad As Byte
         Dim HuboEfecto   As Boolean
     
-100     If Not PuedeAtacar(atacanteIndex, victimaIndex) Then Exit Sub
+100     If Not PuedeAtacar(AtacanteIndex, VictimaIndex) Then Exit Sub
     
-102     If Distancia(UserList(atacanteIndex).Pos, UserList(victimaIndex).Pos) > MAXDISTANCIAARCO Then
-104         Call WriteLocaleMsg(atacanteIndex, "8", FontTypeNames.FONTTYPE_INFO)
+102     If Distancia(UserList(AtacanteIndex).Pos, UserList(VictimaIndex).Pos) > MAXDISTANCIAARCO Then
+104         Call WriteLocaleMsg(AtacanteIndex, "8", FontTypeNames.FONTTYPE_INFO)
             ' Call WriteConsoleMsg(atacanteindex, "Estás muy lejos para disparar.", FontTypeNames.FONTTYPE_FIGHT)
             Exit Sub
 
@@ -1439,119 +1387,37 @@ Public Sub UsuarioAtacaUsuario(ByVal atacanteIndex As Integer, ByVal victimaInde
 
 106     HuboEfecto = False
     
-108     Call UsuarioAtacadoPorUsuario(atacanteIndex, victimaIndex)
+108     Call UsuarioAtacadoPorUsuario(AtacanteIndex, VictimaIndex)
     
-110     If UsuarioImpacto(atacanteIndex, victimaIndex) Then
-112         Call SendData(SendTarget.ToPCArea, atacanteIndex, PrepareMessagePlayWave(SND_IMPACTO, UserList(atacanteIndex).Pos.X, UserList(atacanteIndex).Pos.Y))
+110     If UsuarioImpacto(AtacanteIndex, VictimaIndex) Then
+112         Call SendData(SendTarget.ToPCArea, AtacanteIndex, PrepareMessagePlayWave(SND_IMPACTO, UserList(AtacanteIndex).Pos.X, UserList(AtacanteIndex).Pos.Y))
         
-114         If UserList(victimaIndex).flags.Navegando = 0 Or UserList(victimaIndex).flags.Montado = 0 Then
-116             Call SendData(SendTarget.ToPCArea, victimaIndex, PrepareMessageCreateFX(UserList(victimaIndex).Char.CharIndex, FXSANGRE, 0))
-
+114         If UserList(VictimaIndex).flags.Navegando = 0 Or UserList(VictimaIndex).flags.Montado = 0 Then
+116             Call SendData(SendTarget.ToPCArea, VictimaIndex, PrepareMessageCreateFX(UserList(VictimaIndex).Char.CharIndex, FXSANGRE, 0))
             End If
             
             'Pablo (ToxicWaste): Guantes de Hurto del Bandido en accion
-118         If UserList(atacanteIndex).clase = eClass.Bandit Then
-120             Call DoDesequipar(atacanteIndex, victimaIndex)
+118         If UserList(AtacanteIndex).clase = eClass.Bandit Then
+120             Call DoDesequipar(AtacanteIndex, VictimaIndex)
                 
                 'y ahora, el ladron puede llegar a paralizar con el golpe.
-122         ElseIf UserList(atacanteIndex).clase = eClass.Thief Then
-124             Call DoHandInmo(atacanteIndex, victimaIndex)
-
-            End If
-            
-126         If UserList(atacanteIndex).flags.incinera = 1 Then
-128             Probabilidad = RandomNumber(1, 6)
-
-130             If Probabilidad = 1 Then
-132                 If UserList(victimaIndex).flags.Incinerado = 0 Then
-134                     UserList(victimaIndex).flags.Incinerado = 1
-
-136                     If UserList(victimaIndex).ChatCombate = 1 Then
-138                         Call WriteConsoleMsg(victimaIndex, UserList(atacanteIndex).name & " te ha Incinerado!!", FontTypeNames.FONTTYPE_FIGHT)
-
-                        End If
-
-140                     If UserList(atacanteIndex).ChatCombate = 1 Then
-142                         Call WriteConsoleMsg(atacanteIndex, "Has Incinerado a " & UserList(victimaIndex).name & "!!", FontTypeNames.FONTTYPE_FIGHT)
-
-                        End If
-
-144                     HuboEfecto = True
-146                     Call SendData(SendTarget.ToPCArea, victimaIndex, PrepareMessageParticleFX(UserList(victimaIndex).Char.CharIndex, ParticulasIndex.Incinerar, 100, False))
-
-                    End If
-
-                End If
-
-            End If
-    
-148         If UserList(atacanteIndex).flags.Envenena > 0 And Not HuboEfecto Then
-150             Probabilidad = RandomNumber(1, 2)
-    
-152             If Probabilidad = 1 Then
-154                 If UserList(victimaIndex).flags.Envenenado = 0 Then
-156                     UserList(victimaIndex).flags.Envenenado = UserList(atacanteIndex).flags.Envenena
-
-158                     If UserList(victimaIndex).ChatCombate = 1 Then
-160                         Call WriteConsoleMsg(victimaIndex, UserList(atacanteIndex).name & " te ha envenenado!!", FontTypeNames.FONTTYPE_FIGHT)
-
-                        End If
-                    
-162                     If UserList(atacanteIndex).ChatCombate = 1 Then
-164                         Call WriteConsoleMsg(atacanteIndex, "Has envenenado a " & UserList(victimaIndex).name & "!!", FontTypeNames.FONTTYPE_FIGHT)
-
-                        End If
-
-166                     Call SendData(SendTarget.ToPCArea, victimaIndex, PrepareMessageParticleFX(UserList(victimaIndex).Char.CharIndex, ParticulasIndex.Envenena, 100, False))
-
-                    End If
-
-                End If
-
+122         ElseIf UserList(AtacanteIndex).clase = eClass.Thief Then
+124             Call DoHandInmo(AtacanteIndex, VictimaIndex)
             End If
         
-168         If UserList(atacanteIndex).flags.Paraliza = 1 And Not HuboEfecto Then
-170             Probabilidad = RandomNumber(1, 5)
-
-172             If Probabilidad = 1 Then
-174                 If UserList(victimaIndex).flags.Paralizado = 0 Then
-176                     UserList(victimaIndex).flags.Paralizado = 1
-178                     UserList(victimaIndex).Counters.Paralisis = 6
-180                     Call WriteParalizeOK(victimaIndex)
-                        Rem   Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(Spell).WAV, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
-                    
-182                     If UserList(victimaIndex).ChatCombate = 1 Then
-184                         Call WriteConsoleMsg(victimaIndex, UserList(atacanteIndex).name & " te ha paralizado!!", FontTypeNames.FONTTYPE_FIGHT)
-
-                        End If
-                    
-186                     If UserList(atacanteIndex).ChatCombate = 1 Then
-188                         Call WriteConsoleMsg(atacanteIndex, "Has paralizado a " & UserList(victimaIndex).name & "!!", FontTypeNames.FONTTYPE_FIGHT)
-
-                        End If
-
-                        'Call SendData(SendTarget.ToPCArea, victimaindex, PrepareMessageParticleFX(UserList(victimaindex).Char.CharIndex, ParticulasIndex.Paralizar, 100, False))
-190                     Call SendData(SendTarget.ToPCArea, victimaIndex, PrepareMessageCreateFX(UserList(victimaIndex).Char.CharIndex, 8, 0))
-
-                    End If
-
-                End If
-
-            End If
-        
-192         Call UserDañoUser(atacanteIndex, victimaIndex)
+192         Call UserDañoUser(AtacanteIndex, VictimaIndex)
 
         Else
         
             Dim sendto As SendTarget
    
-194         If UserList(atacanteIndex).clase = eClass.Hunter And UserList(atacanteIndex).flags.Oculto = 0 Then
+194         If UserList(AtacanteIndex).clase = eClass.Hunter And UserList(AtacanteIndex).flags.Oculto = 0 Then
 196             sendto = SendTarget.ToPCArea
             Else
 198             sendto = SendTarget.ToIndex
             End If
             
-200         Call SendData(sendto, atacanteIndex, PrepareMessageCharSwing(UserList(atacanteIndex).Char.CharIndex))
+200         Call SendData(sendto, AtacanteIndex, PrepareMessageCharSwing(UserList(AtacanteIndex).Char.CharIndex))
 
         End If
 
@@ -1559,208 +1425,198 @@ Public Sub UsuarioAtacaUsuario(ByVal atacanteIndex As Integer, ByVal victimaInde
         Exit Sub
 
 UsuarioAtacaUsuario_Err:
-202     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.UsuarioAtacaUsuario", Erl)
+202     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.UsuarioAtacaUsuario", Erl)
 204     Resume Next
         
 End Sub
 
-Public Sub UserDañoUser(ByVal atacanteIndex As Integer, ByVal victimaIndex As Integer)
+Public Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer)
+
+        ' Reescrito por WyroX - 16/01/2021
         
         On Error GoTo UserDañoUser_Err
-        
 
-        Dim daño As Long, antdaño As Integer
+100     With UserList(VictimaIndex)
 
-        Dim Lugar    As Integer, absorbido As Long
+            Dim Daño As Long, DañoBase As Long, DañoExtra As Long, Defensa As Long, Color As Long, DañoStr As String, Lugar As PartesCuerpo
 
-        Dim defbarco As Integer
+            ' Daño normal
+102         DañoBase = CalcularDaño(AtacanteIndex)
 
-        Dim apudaño As Integer
+            ' Color por defecto rojo
+103         Color = vbRed
 
-        Dim obj As ObjData
-    
-100     daño = CalcularDaño(atacanteIndex)
-102     antdaño = daño
+            ' Elegimos al azar una parte del cuerpo
+104         Lugar = RandomNumber(1, 6)
 
-104     If PuedeApuñalar(atacanteIndex) Then
-106         apudaño = ApuñalarFunction(atacanteIndex, 0, victimaIndex, daño)
-108         daño = daño + apudaño
-110         antdaño = daño
+            Select Case Lugar
+                ' 1/6 de chances de que sea a la cabeza
+                Case PartesCuerpo.bCabeza
 
-        End If
-
-112     Call UserDañoEspecial(atacanteIndex, victimaIndex)
-    
-114     If UserList(atacanteIndex).flags.Navegando = 1 And UserList(atacanteIndex).Invent.BarcoObjIndex > 0 Then
-116         obj = ObjData(UserList(atacanteIndex).Invent.BarcoObjIndex)
-118         daño = daño + RandomNumber(obj.MinHIT, obj.MaxHit)
-
-        End If
-    
-120     If UserList(victimaIndex).flags.Navegando = 1 And UserList(victimaIndex).Invent.BarcoObjIndex > 0 Then
-122         obj = ObjData(UserList(victimaIndex).Invent.BarcoObjIndex)
-124         defbarco = RandomNumber(obj.MinDef, obj.MaxDef)
-
-        End If
-    
-126     If UserList(atacanteIndex).flags.Montado = 1 And UserList(atacanteIndex).Invent.MonturaObjIndex > 0 Then
-128         obj = ObjData(UserList(atacanteIndex).Invent.MonturaObjIndex)
-130         daño = daño + RandomNumber(obj.MinHIT, obj.MaxHit)
-
-        End If
-    
-132     If UserList(victimaIndex).flags.Montado = 1 And UserList(victimaIndex).Invent.MonturaObjIndex > 0 Then
-134         obj = ObjData(UserList(victimaIndex).Invent.MonturaObjIndex)
-136         defbarco = RandomNumber(obj.MinDef, obj.MaxDef)
-
-        End If
-    
-        Dim Resist As Byte
-
-138     If UserList(atacanteIndex).Invent.WeaponEqpObjIndex > 0 Then
-140         Resist = ObjData(UserList(atacanteIndex).Invent.WeaponEqpObjIndex).Refuerzo
-
-        End If
-    
-142     Lugar = RandomNumber(1, 6)
-    
-144     Select Case Lugar
-      
-            Case PartesCuerpo.bCabeza
-
-                'Si tiene casco absorbe el golpe
-146             If UserList(victimaIndex).Invent.CascoEqpObjIndex > 0 Then
-148                 obj = ObjData(UserList(victimaIndex).Invent.CascoEqpObjIndex)
-150                 absorbido = RandomNumber(obj.MinDef, obj.MaxDef)
-152                 absorbido = absorbido + defbarco - Resist
-154                 daño = daño - absorbido
-
-156                 If daño < 0 Then daño = 1
-
-                End If
-
-158         Case Else
-
-                'Si tiene armadura absorbe el golpe
-160             If UserList(victimaIndex).Invent.ArmourEqpObjIndex > 0 Then
-162                 obj = ObjData(UserList(victimaIndex).Invent.ArmourEqpObjIndex)
-
-                    Dim Obj2 As ObjData
-
-164                 If UserList(victimaIndex).Invent.EscudoEqpObjIndex Then
-166                     Obj2 = ObjData(UserList(victimaIndex).Invent.EscudoEqpObjIndex)
-168                     absorbido = RandomNumber(obj.MinDef + Obj2.MinDef, obj.MaxDef + Obj2.MaxDef)
-                    Else
-170                     absorbido = RandomNumber(obj.MinDef, obj.MaxDef)
-
+                    'Si tiene casco absorbe el golpe
+106                 If .Invent.CascoEqpObjIndex > 0 Then
+                        Dim Casco As ObjData
+108                     Casco = ObjData(.Invent.CascoEqpObjIndex)
+110                     Defensa = Defensa + RandomNumber(Casco.MinDef, Casco.MaxDef)
                     End If
 
-172                 absorbido = absorbido + defbarco - Resist
-174                 daño = daño - absorbido
+                Case Else
 
-176                 If daño < 0 Then daño = 1
+                    'Si tiene armadura absorbe el golpe
+112                 If .Invent.ArmourEqpObjIndex > 0 Then
+                        Dim Armadura As ObjData
+114                     Armadura = ObjData(.Invent.ArmourEqpObjIndex)
+116                     Defensa = Defensa + RandomNumber(Armadura.MinDef, Armadura.MaxDef)
+                    End If
+                    
+                    'Si tiene escudo absorbe el golpe
+118                 If .Invent.EscudoEqpObjIndex > 0 Then
+                        Dim Escudo As ObjData
+120                     Escudo = ObjData(.Invent.EscudoEqpObjIndex)
+122                     Defensa = Defensa + RandomNumber(Escudo.MinDef, Escudo.MaxDef)
+                    End If
+    
+            End Select
 
+            ' Defensa del barco de la víctima
+124         If .Invent.BarcoObjIndex > 0 Then
+                Dim Barco As ObjData
+126             Barco = ObjData(.Invent.BarcoObjIndex)
+128             Defensa = Defensa + RandomNumber(Barco.MinDef, Barco.MaxDef)
+
+            ' Defensa de la montura de la víctima
+130         ElseIf .Invent.MonturaObjIndex > 0 Then
+                Dim Montura As ObjData
+132             Montura = ObjData(.Invent.MonturaObjIndex)
+134             Defensa = Defensa + RandomNumber(Montura.MinDef, Montura.MaxDef)
+            End If
+            
+            ' Refuerzo de la espada - Ignora parte de la armadura
+136         If UserList(AtacanteIndex).Invent.WeaponEqpObjIndex > 0 Then
+138             Defensa = Defensa - ObjData(UserList(AtacanteIndex).Invent.WeaponEqpObjIndex).Refuerzo
+
+140             If Defensa < 0 Then Defensa = 0
+            End If
+            
+            ' Restamos la defensa
+142         Daño = DañoBase - Defensa
+
+144         If Daño < 0 Then Daño = 0
+
+            DañoStr = PonerPuntos(Daño)
+
+            ' Mostramos en consola el golpe al atacante
+146         If UserList(AtacanteIndex).ChatCombate = 1 Then
+148             Call WriteUserHittedUser(AtacanteIndex, Lugar, .Char.CharIndex, DañoStr)
+            End If
+            ' Y a la víctima
+150         If .ChatCombate = 1 Then
+152             Call WriteUserHittedByUser(VictimaIndex, Lugar, UserList(AtacanteIndex).Char.CharIndex, DañoStr)
+            End If
+
+            ' Golpe crítico (ignora defensa)
+154         If PuedeGolpeCritico(AtacanteIndex) Then
+                ' Si acertó
+156             If RandomNumber(1, 100) <= ProbabilidadGolpeCritico(AtacanteIndex) Then
+                    ' Daño del golpe crítico (usamos el daño base)
+158                 DañoExtra = DañoBase * ModDañoGolpeCritico
+
+                    DañoStr = PonerPuntos(DañoExtra)
+
+                    ' Mostramos en consola el daño al atacante
+160                 If UserList(AtacanteIndex).ChatCombate = 1 Then
+162                     Call WriteLocaleMsg(AtacanteIndex, "383", FontTypeNames.FONTTYPE_FIGHT, .name & "¬" & DañoStr)
+                    End If
+                    ' Y a la víctima
+164                 If .ChatCombate = 1 Then
+166                     Call WriteLocaleMsg(VictimaIndex, "385", FontTypeNames.FONTTYPE_FIGHT, UserList(AtacanteIndex).name & "¬" & DañoStr)
+                    End If
+
+                    ' Color naranja
+168                 Color = RGB(225, 165, 0)
                 End If
 
-        End Select
-    
-178     If apudaño > 0 Then
-180         Call SendData(SendTarget.ToPCArea, victimaIndex, PrepareMessageEfectOverHead("¡" & daño & "!", UserList(victimaIndex).Char.CharIndex, vbYellow))
-            
-182         If UserList(atacanteIndex).ChatCombate = 1 Then
-184             Call WriteConsoleMsg(atacanteIndex, "Has apuñalado a " & UserList(victimaIndex).name & " por " & daño & ".", FontTypeNames.FONTTYPE_FIGHT)
-            End If
-            
-186         If UserList(victimaIndex).ChatCombate = 1 Then
-188             Call WriteConsoleMsg(victimaIndex, UserList(atacanteIndex).name & " te ha apuñalado por " & daño & ".", FontTypeNames.FONTTYPE_FIGHT)
-            End If
+            ' Apuñalar (le afecta la defensa)
+170         ElseIf DañoExtra = 0 And PuedeApuñalar(AtacanteIndex) Then
+                ' Si acertó - Doble chance contra NPCs
+172             If RandomNumber(1, 100) <= ProbabilidadApuñalar(AtacanteIndex) Then
+                    ' Daño del apuñalamiento
+174                 DañoExtra = Daño * ModicadorApuñalarClase(UserList(AtacanteIndex).clase)
 
-190         Call WriteEfectToScreen(victimaIndex, &H3C3CFF, 200, True)
-192         Call WriteEfectToScreen(atacanteIndex, &H3C3CFF, 150, True)
-            
-194         Call SendData(SendTarget.ToPCArea, victimaIndex, PrepareMessageCreateFX(UserList(victimaIndex).Char.CharIndex, 89, 0))
-        Else
-196         If UserList(atacanteIndex).ChatCombate = 1 Then
-198             Call WriteUserHittedUser(atacanteIndex, Lugar, UserList(victimaIndex).Char.CharIndex, daño)
-            End If
-    
-200         If UserList(victimaIndex).ChatCombate = 1 Then
-202             Call WriteUserHittedByUser(victimaIndex, Lugar, UserList(atacanteIndex).Char.CharIndex, daño)
-            End If
-        
-204         Call SendData(SendTarget.ToPCArea, victimaIndex, PrepareMessageEfectOverHead(daño, UserList(victimaIndex).Char.CharIndex))
-        End If
+                    DañoStr = PonerPuntos(DañoExtra)
+                
+                    ' Mostramos en consola el daño al atacante
+176                 If UserList(AtacanteIndex).ChatCombate = 1 Then
+178                     Call WriteLocaleMsg(AtacanteIndex, "210", FontTypeNames.FONTTYPE_FIGHT, .name & "¬" & DañoStr)
+                    End If
+                    ' Y a la víctima
+180                 If .ChatCombate = 1 Then
+182                     Call WriteLocaleMsg(VictimaIndex, "211", FontTypeNames.FONTTYPE_FIGHT, UserList(AtacanteIndex).name & "¬" & DañoStr)
+                    End If
 
-206     UserList(victimaIndex).Stats.MinHp = UserList(victimaIndex).Stats.MinHp - daño
-    
-208     If UserList(atacanteIndex).flags.Hambre = 0 And UserList(atacanteIndex).flags.Sed = 0 Then
+                    ' Color amarillo
+184                 Color = vbYellow
 
-            'Si usa un arma quizas suba "Combate con armas"
-210         If UserList(atacanteIndex).Invent.WeaponEqpObjIndex > 0 Then
-212             If ObjData(UserList(atacanteIndex).Invent.WeaponEqpObjIndex).proyectil Then
-                    'es un Arco. Sube Armas a Distancia
-214                 Call SubirSkill(atacanteIndex, Proyectiles)
-                Else
-                    'Sube combate con armas.
-216                 Call SubirSkill(atacanteIndex, Armas)
-
+                    ' Efecto en la víctima
+186                 Call SendData(SendTarget.ToPCArea, VictimaIndex, PrepareMessageCreateFX(UserList(VictimaIndex).Char.CharIndex, 89, 0))
+                    
+                    ' Efecto en pantalla a ambos
+188                 Call WriteFlashScreen(VictimaIndex, &H3C3CFF, 200, True)
+190                 Call WriteFlashScreen(AtacanteIndex, &H3C3CFF, 150, True)
                 End If
 
+                ' Sube skills en apuñalar
+192             Call SubirSkill(AtacanteIndex, Apuñalar)
+            End If
+            
+196         If DañoExtra > 0 Then
+198             Daño = Daño + DañoExtra
+
+                DañoStr = PonerPuntos(Daño)
+                
+                ' Mostramos el daño total en consola al atacante
+200             If UserList(AtacanteIndex).ChatCombate = 1 Then
+202                 Call WriteLocaleMsg(AtacanteIndex, "384", FontTypeNames.FONTTYPE_FIGHT, DañoStr)
+                End If
+                ' Y a la víctima
+204             If .ChatCombate = 1 Then
+206                 Call WriteLocaleMsg(VictimaIndex, "387", FontTypeNames.FONTTYPE_FIGHT, UserList(AtacanteIndex).name & "¬" & DañoStr)
+                End If
+                
+208             DañoStr = "¡" & PonerPuntos(Daño) & "!"
             Else
-                'sino tal vez lucha libre
-218             Call SubirSkill(atacanteIndex, Wrestling)
-
+210             DañoStr = PonerPuntos(Daño)
             End If
-            
-220         Call SubirSkill(victimaIndex, Tacticas)
 
-222         If PuedeApuñalar(atacanteIndex) Then
-224             Call SubirSkill(atacanteIndex, Apuñalar)
+            ' Daño sobre el tile
+212         Call SendData(SendTarget.ToPCArea, VictimaIndex, PrepareMessageTextCharDrop(DañoStr, .Char.CharIndex, Color))
 
+            ' Restamos el daño a la víctima
+214         .Stats.MinHp = .Stats.MinHp - Daño
+
+            ' Muere la víctima
+216         If .Stats.MinHp <= 0 Then
+                ' Sumar frag y rutina de muerte
+218             Call Statistics.StoreFrag(AtacanteIndex, VictimaIndex)
+220             Call ContarMuerte(VictimaIndex, AtacanteIndex)
+222             Call ActStats(VictimaIndex, AtacanteIndex)
+
+            ' Si sigue vivo
+            Else
+                ' Enviamos la vida
+224             Call WriteUpdateHP(VictimaIndex)
+                
+                ' Intentamos aplicar algún efecto de estado
+226             Call UserDañoEspecial(AtacanteIndex, VictimaIndex)
             End If
-    
-            'Se intenta dar un golpe crítico [Pablo (ToxicWaste)]
-226         Call DoGolpeCritico(atacanteIndex, 0, victimaIndex, daño)
-        End If
-    
-228     If UserList(victimaIndex).Stats.MinHp <= 0 Then
-    
-            'Store it!
-230         Call Statistics.StoreFrag(atacanteIndex, victimaIndex)
-        
-232         Call ContarMuerte(victimaIndex, atacanteIndex)
 
-            ' Para que las mascotas no sigan intentando luchar y
-            ' comiencen a seguir al amo
-            Dim j As Integer
-234         For j = 1 To MAXMASCOTAS
-236             If UserList(atacanteIndex).MascotasIndex(j) > 0 Then
-238                 If Npclist(UserList(atacanteIndex).MascotasIndex(j)).Target = victimaIndex Then
-240                     Npclist(UserList(atacanteIndex).MascotasIndex(j)).Target = 0
-242                     Call FollowAmo(UserList(atacanteIndex).MascotasIndex(j))
-                    End If
-                End If
-244         Next j
-    
-246         Call ActStats(victimaIndex, atacanteIndex)
-        Else
-            'Está vivo - Actualizamos el HP
-    
-248         Call WriteUpdateHP(victimaIndex)
+        End With
 
-        End If
-    
-        'Controla el nivel del usuario
-250     Call CheckUserLevel(atacanteIndex)
-    
-    
-
-        
         Exit Sub
 
 UserDañoUser_Err:
-252     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.UserDañoUser", Erl)
-254     Resume Next
+228     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.UserDañoUser", Erl)
+230     Resume Next
         
 End Sub
 
@@ -1822,7 +1678,7 @@ Sub UsuarioAtacadoPorUsuario(ByVal attackerIndex As Integer, ByVal VictimIndex A
         Exit Sub
 
 UsuarioAtacadoPorUsuario_Err:
-136     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.UsuarioAtacadoPorUsuario", Erl)
+136     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.UsuarioAtacadoPorUsuario", Erl)
 138     Resume Next
         
 End Sub
@@ -2032,7 +1888,7 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
         Exit Function
 
 PuedeAtacar_Err:
-228     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.PuedeAtacar", Erl)
+228     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.PuedeAtacar", Erl)
 230     Resume Next
         
 End Function
@@ -2203,7 +2059,7 @@ Public Function PuedeAtacarNPC(ByVal attackerIndex As Integer, ByVal NpcIndex As
         Exit Function
 
 PuedeAtacarNPC_Err:
-204     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.PuedeAtacarNPC", Erl)
+204     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.PuedeAtacarNPC", Erl)
 206     Resume Next
         
 End Function
@@ -2218,6 +2074,9 @@ Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal 
         
         On Error GoTo CalcularDarExp_Err
         
+        If Npclist(NpcIndex).MaestroUser <> 0 Then
+            Exit Sub
+        End If
 
 100     If UserList(UserIndex).Grupo.EnGrupo Then
 102         Call CalcularDarExpGrupal(UserIndex, NpcIndex, ElDaño)
@@ -2255,8 +2114,7 @@ Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal 
 128             ExpaDar = ExpaDar * 1.1
 
             End If
-    
-            '[Nacho] Le damos la exp al user
+
 130         If ExpaDar > 0 Then
 132             If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then
 134                 UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + ExpaDar
@@ -2268,7 +2126,7 @@ Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal 
 
                 End If
             
-142             Call WriteRenderValueMsg(UserIndex, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, ExpaDar, 6)
+142             Call WriteTextOverTile(UserIndex, "+" & PonerPuntos(ExpaDar), UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, RGB(0, 169, 255))
 
             End If
 
@@ -2278,7 +2136,7 @@ Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal 
         Exit Sub
 
 CalcularDarExp_Err:
-144     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.CalcularDarExp", Erl)
+144     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.CalcularDarExp", Erl)
 146     Resume Next
         
 End Sub
@@ -2430,7 +2288,7 @@ Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, 
         Exit Sub
 
 CalcularDarExpGrupal_Err:
-212     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.CalcularDarExpGrupal", Erl)
+212     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.CalcularDarExpGrupal", Erl)
 214     Resume Next
         
 End Sub
@@ -2532,7 +2390,7 @@ Sub CalcularDarOroGrupal(ByVal UserIndex As Integer, ByVal GiveGold As Long)
         Exit Sub
 
 CalcularDarOroGrupal_Err:
-154     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.CalcularDarOroGrupal", Erl)
+154     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.CalcularDarOroGrupal", Erl)
 156     Resume Next
         
 End Sub
@@ -2566,11 +2424,11 @@ Public Function TriggerZonaPelea(ByVal Origen As Integer, ByVal Destino As Integ
         Exit Function
 ErrHandler:
 114     TriggerZonaPelea = TRIGGER6_AUSENTE
-116     LogError ("Error en TriggerZonaPelea - " & Err.description)
+116     LogError ("Error en TriggerZonaPelea - " & Err.Description)
 
 End Function
 
-Sub UserIncinera(ByVal atacanteIndex As Integer, ByVal victimaIndex As Integer)
+Sub UserIncinera(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer)
         
         On Error GoTo UserIncinera_Err
         
@@ -2579,14 +2437,14 @@ Sub UserIncinera(ByVal atacanteIndex As Integer, ByVal victimaIndex As Integer)
 
         Dim num        As Long
  
-100     ArmaObjInd = UserList(atacanteIndex).Invent.WeaponEqpObjIndex
+100     ArmaObjInd = UserList(AtacanteIndex).Invent.WeaponEqpObjIndex
 102     ObjInd = 0
  
 104     If ArmaObjInd > 0 Then
-106         If ObjData(ArmaObjInd).proyectil = 0 Then
+106         If ObjData(ArmaObjInd).Proyectil = 0 Then
 108             ObjInd = ArmaObjInd
             Else
-110             ObjInd = UserList(atacanteIndex).Invent.MunicionEqpObjIndex
+110             ObjInd = UserList(AtacanteIndex).Invent.MunicionEqpObjIndex
 
             End If
    
@@ -2595,9 +2453,9 @@ Sub UserIncinera(ByVal atacanteIndex As Integer, ByVal victimaIndex As Integer)
 116                 num = RandomNumber(1, 6)
            
 118                 If num < 6 Then
-120                     UserList(victimaIndex).flags.Incinerado = 1
-122                     Call WriteConsoleMsg(victimaIndex, UserList(atacanteIndex).name & " te ha Incinerado!!", FontTypeNames.FONTTYPE_FIGHT)
-124                     Call WriteConsoleMsg(atacanteIndex, "Has Incinerado a " & UserList(victimaIndex).name & "!!", FontTypeNames.FONTTYPE_FIGHT)
+120                     UserList(VictimaIndex).flags.Incinerado = 1
+122                     Call WriteConsoleMsg(VictimaIndex, UserList(AtacanteIndex).name & " te ha Incinerado!!", FontTypeNames.FONTTYPE_FIGHT)
+124                     Call WriteConsoleMsg(AtacanteIndex, "Has Incinerado a " & UserList(VictimaIndex).name & "!!", FontTypeNames.FONTTYPE_FIGHT)
 
                     End If
 
@@ -2613,12 +2471,12 @@ Sub UserIncinera(ByVal atacanteIndex As Integer, ByVal victimaIndex As Integer)
         Exit Sub
 
 UserIncinera_Err:
-126     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.UserIncinera", Erl)
+126     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.UserIncinera", Erl)
 128     Resume Next
         
 End Sub
 
-Sub UserDañoEspecial(ByVal atacanteIndex As Integer, ByVal victimaIndex As Integer)
+Sub UserDañoEspecial(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer)
         
         On Error GoTo UserDañoEspecial_Err
         
@@ -2630,19 +2488,19 @@ Sub UserDañoEspecial(ByVal atacanteIndex As Integer, ByVal victimaIndex As Inte
         Dim num        As Long
 
 100     HuboEfecto = False
-102     ArmaObjInd = UserList(atacanteIndex).Invent.WeaponEqpObjIndex
+102     ArmaObjInd = UserList(AtacanteIndex).Invent.WeaponEqpObjIndex
 104     ObjInd = 0
 
 106     If ArmaObjInd = 0 Then
-108         ArmaObjInd = UserList(atacanteIndex).Invent.NudilloObjIndex
+108         ArmaObjInd = UserList(AtacanteIndex).Invent.NudilloObjIndex
 
         End If
 
 110     If ArmaObjInd > 0 Then
-112         If ObjData(ArmaObjInd).proyectil = 0 Then
+112         If ObjData(ArmaObjInd).Proyectil = 0 Then
 114             ObjInd = ArmaObjInd
             Else
-116             ObjInd = UserList(atacanteIndex).Invent.MunicionEqpObjIndex
+116             ObjInd = UserList(AtacanteIndex).Invent.MunicionEqpObjIndex
 
             End If
     
@@ -2651,9 +2509,9 @@ Sub UserDañoEspecial(ByVal atacanteIndex As Integer, ByVal victimaIndex As Inte
 122                 num = RandomNumber(1, 100)
             
 124                 If num < 30 Then
-126                     UserList(victimaIndex).flags.Envenenado = ObjData(ObjInd).Envenena
-128                     Call WriteConsoleMsg(victimaIndex, UserList(atacanteIndex).name & " te ha envenenado!!", FontTypeNames.FONTTYPE_FIGHT)
-130                     Call WriteConsoleMsg(atacanteIndex, "Has envenenado a " & UserList(victimaIndex).name & "!!", FontTypeNames.FONTTYPE_FIGHT)
+126                     UserList(VictimaIndex).flags.Envenenado = ObjData(ObjInd).Envenena
+128                     Call WriteConsoleMsg(VictimaIndex, "¡" & UserList(AtacanteIndex).name & " te ha envenenado!", FontTypeNames.FONTTYPE_FIGHT)
+130                     Call WriteConsoleMsg(AtacanteIndex, "¡Has envenenado a " & UserList(VictimaIndex).name & "!", FontTypeNames.FONTTYPE_FIGHT)
 132                     HuboEfecto = True
 
                     End If
@@ -2664,9 +2522,9 @@ Sub UserDañoEspecial(ByVal atacanteIndex As Integer, ByVal victimaIndex As Inte
 136                 num = RandomNumber(1, 100)
             
 138                 If num < 10 Then
-140                     UserList(victimaIndex).flags.Incinerado = 1
-142                     Call WriteConsoleMsg(victimaIndex, UserList(atacanteIndex).name & " te ha Incinerado!!", FontTypeNames.FONTTYPE_FIGHT)
-144                     Call WriteConsoleMsg(atacanteIndex, "Has Incinerado a " & UserList(victimaIndex).name & "!!", FontTypeNames.FONTTYPE_FIGHT)
+140                     UserList(VictimaIndex).flags.Incinerado = 1
+142                     Call WriteConsoleMsg(VictimaIndex, "¡" & UserList(AtacanteIndex).name & " te ha Incinerado!", FontTypeNames.FONTTYPE_FIGHT)
+144                     Call WriteConsoleMsg(AtacanteIndex, "¡Has Incinerado a " & UserList(VictimaIndex).name & "!", FontTypeNames.FONTTYPE_FIGHT)
 146                     HuboEfecto = True
 
                     End If
@@ -2677,19 +2535,19 @@ Sub UserDañoEspecial(ByVal atacanteIndex As Integer, ByVal victimaIndex As Inte
 150                 num = RandomNumber(1, 100)
 
 152                 If num < 10 Then
-154                     If UserList(victimaIndex).flags.Paralizado = 0 Then
-156                         UserList(victimaIndex).flags.Paralizado = 1
-158                         UserList(victimaIndex).Counters.Paralisis = 6
-160                         Call WriteParalizeOK(victimaIndex)
-162                         Call SendData(SendTarget.ToPCArea, victimaIndex, PrepareMessageCreateFX(UserList(victimaIndex).Char.CharIndex, 8, 0))
+154                     If UserList(VictimaIndex).flags.Paralizado = 0 Then
+156                         UserList(VictimaIndex).flags.Paralizado = 1
+158                         UserList(VictimaIndex).Counters.Paralisis = 6
+160                         Call WriteParalizeOK(VictimaIndex)
+162                         Call SendData(SendTarget.ToPCArea, VictimaIndex, PrepareMessageCreateFX(UserList(VictimaIndex).Char.CharIndex, 8, 0))
                     
-164                         If UserList(victimaIndex).ChatCombate = 1 Then
-166                             Call WriteConsoleMsg(victimaIndex, UserList(atacanteIndex).name & " te ha paralizado!!", FontTypeNames.FONTTYPE_FIGHT)
+164                         If UserList(VictimaIndex).ChatCombate = 1 Then
+166                             Call WriteConsoleMsg(VictimaIndex, "¡" & UserList(AtacanteIndex).name & " te ha paralizado!", FontTypeNames.FONTTYPE_FIGHT)
 
                             End If
                     
-168                         If UserList(atacanteIndex).ChatCombate = 1 Then
-170                             Call WriteConsoleMsg(atacanteIndex, "Has paralizado a " & UserList(victimaIndex).name & "!!", FontTypeNames.FONTTYPE_FIGHT)
+168                         If UserList(AtacanteIndex).ChatCombate = 1 Then
+170                             Call WriteConsoleMsg(AtacanteIndex, "¡Has paralizado a " & UserList(VictimaIndex).name & "!", FontTypeNames.FONTTYPE_FIGHT)
 
                             End If
 
@@ -2705,25 +2563,25 @@ Sub UserDañoEspecial(ByVal atacanteIndex As Integer, ByVal victimaIndex As Inte
 176                 num = RandomNumber(1, 100)
 
 178                 If num < 8 Then
-180                     If UserList(victimaIndex).flags.Estupidez = 0 Then
-182                         UserList(victimaIndex).flags.Estupidez = 1
-184                         UserList(victimaIndex).Counters.Estupidez = 5
+180                     If UserList(VictimaIndex).flags.Estupidez = 0 Then
+182                         UserList(VictimaIndex).flags.Estupidez = 1
+184                         UserList(VictimaIndex).Counters.Estupidez = 5
 
                         End If
                 
-186                     If UserList(victimaIndex).ChatCombate = 1 Then
-188                         Call WriteConsoleMsg(victimaIndex, UserList(atacanteIndex).name & " te ha estupidizado!!", FontTypeNames.FONTTYPE_FIGHT)
+186                     If UserList(VictimaIndex).ChatCombate = 1 Then
+188                         Call WriteConsoleMsg(VictimaIndex, "¡" & UserList(AtacanteIndex).name & " te ha estupidizado!", FontTypeNames.FONTTYPE_FIGHT)
 
                         End If
 
-190                     Call SendData(SendTarget.ToPCArea, victimaIndex, PrepareMessageParticleFX(UserList(victimaIndex).Char.CharIndex, 30, 30, False))
+190                     Call SendData(SendTarget.ToPCArea, VictimaIndex, PrepareMessageParticleFX(UserList(VictimaIndex).Char.CharIndex, 30, 30, False))
                 
-192                     If UserList(atacanteIndex).ChatCombate = 1 Then
-194                         Call WriteConsoleMsg(atacanteIndex, "Has estupidizado a " & UserList(victimaIndex).name & "!!", FontTypeNames.FONTTYPE_FIGHT)
+192                     If UserList(AtacanteIndex).ChatCombate = 1 Then
+194                         Call WriteConsoleMsg(AtacanteIndex, "¡Has estupidizado a " & UserList(VictimaIndex).name & "!", FontTypeNames.FONTTYPE_FIGHT)
 
                         End If
 
-196                     Call WriteDumb(victimaIndex)
+196                     Call WriteDumb(VictimaIndex)
 
                     End If
 
@@ -2739,7 +2597,7 @@ Sub UserDañoEspecial(ByVal atacanteIndex As Integer, ByVal victimaIndex As Inte
         Exit Sub
 
 UserDañoEspecial_Err:
-198     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.UserDañoEspecial", Erl)
+198     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.UserDañoEspecial", Erl)
 200     Resume Next
         
 End Sub
@@ -2763,7 +2621,7 @@ Sub AllMascotasAtacanUser(ByVal victim As Integer, ByVal Maestro As Integer)
         Exit Sub
 
 AllMascotasAtacanUser_Err:
-112     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.AllMascotasAtacanUser", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.AllMascotasAtacanUser", Erl)
 
         
 End Sub
@@ -2789,7 +2647,7 @@ Public Sub CheckPets(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, Opti
         Exit Sub
 
 CheckPets_Err:
-114     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.CheckPets", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.CheckPets", Erl)
 
         
 End Sub
@@ -2810,7 +2668,107 @@ Public Sub AllFollowAmo(ByVal UserIndex As Integer)
         Exit Sub
 
 AllFollowAmo_Err:
-108     Call RegistrarError(Err.Number, Err.description, "SistemaCombate.AllFollowAmo", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.AllFollowAmo", Erl)
 
         
 End Sub
+
+Function PuedeApuñalar(ByVal UserIndex As Integer) As Boolean
+        
+        On Error GoTo PuedeApuñalar_Err
+        
+        With UserList(UserIndex)
+
+100         If .Invent.WeaponEqpObjIndex > 0 Then
+102             PuedeApuñalar = (.clase = eClass.Assasin Or .Stats.UserSkills(eSkill.Apuñalar) >= MIN_APUÑALAR) And ObjData(.Invent.WeaponEqpObjIndex).Apuñala = 1
+            End If
+            
+        End With
+        
+        Exit Function
+
+PuedeApuñalar_Err:
+106     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.PuedeApuñalar", Erl)
+108     Resume Next
+        
+End Function
+
+Function PuedeGolpeCritico(ByVal UserIndex As Integer) As Boolean
+        ' Autor: WyroX - 16/01/2021
+        
+        On Error GoTo PuedeGolpeCritico_Err
+        
+        With UserList(UserIndex)
+
+100         If .Invent.WeaponEqpObjIndex > 0 Then
+102             PuedeGolpeCritico = .clase = eClass.Bandit And ObjData(.Invent.WeaponEqpObjIndex).Subtipo = 2
+            End If
+            
+        End With
+        
+        Exit Function
+
+PuedeGolpeCritico_Err:
+106     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.PuedeGolpeCritico", Erl)
+108     Resume Next
+        
+End Function
+
+Public Function ProbabilidadApuñalar(ByVal UserIndex As Integer) As Integer
+
+        ' Autor: WyroX - 16/01/2021
+        
+        On Error GoTo ProbabilidadApuñalar_Err
+
+        With UserList(UserIndex)
+
+100         Dim Skill  As Integer
+102         Skill = .Stats.UserSkills(eSkill.Apuñalar)
+        
+104         Select Case .clase
+    
+                Case eClass.Assasin '25
+106                 ProbabilidadApuñalar = 0.2 * Skill + 5
+    
+108             Case eClass.Pirat, eClass.Hunter '20
+110                 ProbabilidadApuñalar = 0.155 * Skill + 4.5
+    
+112             Case Else ' 15
+114                 ProbabilidadApuñalar = 0.11 * Skill + 4
+    
+            End Select
+            
+            ' Daga especial da +5 de prob. de apu
+116         If ObjData(.Invent.WeaponEqpObjIndex).Subtipo = 42 Then
+118             ProbabilidadApuñalar = ProbabilidadApuñalar + 5
+            End If
+            
+        End With
+        
+        Exit Function
+
+ProbabilidadApuñalar_Err:
+120     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.ProbabilidadApuñalar", Erl)
+122     Resume Next
+        
+End Function
+
+Public Function ProbabilidadGolpeCritico(ByVal UserIndex As Integer) As Integer
+        ' Autor: WyroX - 16/01/2021
+        
+        On Error GoTo ProbabilidadGolpeCritico_Err
+
+100     With UserList(UserIndex)
+
+102         ProbabilidadGolpeCritico = 0.2 * .Stats.UserSkills(eSkill.Wrestling) + 5
+
+        End With
+
+        Exit Function
+
+ProbabilidadGolpeCritico_Err:
+132     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.ProbabilidadGolpeCritico", Erl)
+
+134     Resume Next
+        
+End Function

@@ -23,7 +23,6 @@ Private Enum ServerPacketID
     RemoveCharDialog        ' QDL
     NavigateToggle          ' NAVEG
     EquiteToggle
-    CreateRenderText
     Disconnect              ' FINOK
     CommerceEnd             ' FINCOMOK
     BankEnd                 ' FINBANOK
@@ -124,7 +123,6 @@ Private Enum ServerPacketID
     Contadores
     
     'GM messages
-   'GM messages
     SpawnList               ' SPL
     ShowSOSForm             ' MSOS
     ShowMOTDEditionForm     ' ZMOTD
@@ -144,8 +142,10 @@ Private Enum ServerPacketID
     NieveToggle
     NieblaToggle
     Goliath
-    EfectOverHEad '120
-    EfectToScreen
+    TextOverChar
+    TextOverTile
+    TextCharDrop
+    FlashScreen
     AlquimistaObj
     ShowAlquimiaForm
     Familiar
@@ -170,8 +170,6 @@ Private Enum ServerPacketID
     ubicacion
     CorreoPicOn
     DonadorObj
-    ExpOverHEad
-    OroOverHEad
     ArmaMov
     EscudoMov
     ActShop
@@ -2640,7 +2638,7 @@ Private Sub HandleAttack(ByVal UserIndex As Integer)
         
             'If equiped weapon is ranged, can't attack this way
 108         If .Invent.WeaponEqpObjIndex > 0 Then
-110             If ObjData(.Invent.WeaponEqpObjIndex).proyectil = 1 Then
+110             If ObjData(.Invent.WeaponEqpObjIndex).Proyectil = 1 Then
 112                 Call WriteConsoleMsg(UserIndex, "No podés usar así esta arma.", FontTypeNames.FONTTYPE_INFOIAO)
                     Exit Sub
 
@@ -3882,7 +3880,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 150                         DummyInt = 1
 152                     ElseIf .MunicionEqpObjIndex = 0 Then
 154                         DummyInt = 1
-156                     ElseIf ObjData(.WeaponEqpObjIndex).proyectil <> 1 Then
+156                     ElseIf ObjData(.WeaponEqpObjIndex).Proyectil <> 1 Then
 158                         DummyInt = 2
 160                     ElseIf ObjData(.MunicionEqpObjIndex).OBJType <> eOBJType.otFlechas Then
 162                         DummyInt = 1
@@ -14188,7 +14186,7 @@ Private Sub HandleRainToggle(ByVal UserIndex As Integer)
 
 116         If Lloviendo Then
 118             Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(404, NO_3D_SOUND, NO_3D_SOUND)) ' Explota un trueno
-120             Call SendData(SendTarget.ToAll, 0, PrepareMessageEfectToScreen(&HF5D3F3, 250)) 'Rayo
+120             Call SendData(SendTarget.ToAll, 0, PrepareMessageFlashScreen(&HF5D3F3, 250)) 'Rayo
 122             Call ApagarFogatas
 
             End If
@@ -20449,16 +20447,11 @@ ErrHandler:
 
 End Sub
 
-Public Sub WriteEfectOverHead(ByVal UserIndex As Integer, ByVal chat As String, ByVal CharIndex As Integer, Optional ByVal Color As Long = &HFF0000)
+Public Sub WriteTextOverChar(ByVal UserIndex As Integer, ByVal chat As String, ByVal CharIndex As Integer, ByVal Color As Long)
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        'Writes the "ChatOverHead" message to the given user's outgoing data buffer
-        '***************************************************
         On Error GoTo ErrHandler
 
-100     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageEfectOverHead(chat, CharIndex, Color))
+100     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageTextOverChar(chat, CharIndex, Color))
         Exit Sub
 
 ErrHandler:
@@ -20470,16 +20463,11 @@ ErrHandler:
 
 End Sub
 
-Public Sub WriteExpOverHead(ByVal UserIndex As Integer, ByVal chat As String, ByVal CharIndex As Integer)
+Public Sub WriteTextOverTile(ByVal UserIndex As Integer, ByVal chat As String, ByVal X As Integer, ByVal Y As Integer, ByVal Color As Long)
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        'Writes the "ChatOverHead" message to the given user's outgoing data buffer
-        '***************************************************
         On Error GoTo ErrHandler
 
-100     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageExpOverHead(chat, CharIndex))
+100     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageTextOverTile(chat, X, Y, Color))
         Exit Sub
 
 ErrHandler:
@@ -20491,16 +20479,11 @@ ErrHandler:
 
 End Sub
 
-Public Sub WriteOroOverHead(ByVal UserIndex As Integer, ByVal chat As String, ByVal CharIndex As Integer)
+Public Sub WriteTextCharDrop(ByVal UserIndex As Integer, ByVal chat As String, ByVal CharIndex As Integer, ByVal Color As Long)
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        'Writes the "ChatOverHead" message to the given user's outgoing data buffer
-        '***************************************************
         On Error GoTo ErrHandler
 
-100     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageOroOverHead(chat, CharIndex))
+100     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageTextCharDrop(chat, CharIndex, Color))
         Exit Sub
 
 ErrHandler:
@@ -20530,22 +20513,6 @@ Public Sub WriteConsoleMsg(ByVal UserIndex As Integer, ByVal chat As String, ByV
         On Error GoTo ErrHandler
 
 100     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageConsoleMsg(chat, FontIndex))
-        Exit Sub
-
-ErrHandler:
-
-102     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-104         Call FlushBuffer(UserIndex)
-106         Resume
-        End If
-
-End Sub
-
-Public Sub WriteRenderValueMsg(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal rValue As Double, ByVal rType As Byte)
-
-        On Error GoTo ErrHandler
-
-100     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageCreateRenderValue(X, Y, rValue, rType))
         Exit Sub
 
 ErrHandler:
@@ -22328,12 +22295,12 @@ ErrHandler:
 
 End Sub
 
-Public Sub WriteEfectToScreen(ByVal UserIndex As Integer, ByVal Color As Long, ByVal Time As Long, Optional ByVal Ignorar As Boolean = False)
+Public Sub WriteFlashScreen(ByVal UserIndex As Integer, ByVal Color As Long, ByVal Time As Long, Optional ByVal Ignorar As Boolean = False)
 
         On Error GoTo ErrHandler
  
 100     With UserList(UserIndex).outgoingData
-102         Call .WriteByte(ServerPacketID.EfectToScreen)
+102         Call .WriteByte(ServerPacketID.FlashScreen)
 104         Call .WriteLong(Color)
 106         Call .WriteLong(Time)
 108         Call .WriteBoolean(Ignorar)
@@ -23831,83 +23798,70 @@ PrepareMessageChatOverHead_Err:
         
 End Function
 
-Public Function PrepareMessageEfectOverHead(ByVal chat As String, ByVal CharIndex As Integer, Optional ByVal Color As Long = vbRed) As String
+Public Function PrepareMessageTextOverChar(ByVal chat As String, ByVal CharIndex As Integer, ByVal Color As Long) As String
         
-        On Error GoTo PrepareMessageEfectOverHead_Err
-        
+        On Error GoTo PrepareMessageTextOverChar_Err
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        'Prepares the "ChatOverHead" message and returns it.
-        '***************************************************
 100     With auxiliarBuffer
-102         Call .WriteByte(ServerPacketID.EfectOverHEad)
+102         Call .WriteByte(ServerPacketID.TextOverChar)
 104         Call .WriteASCIIString(chat)
 106         Call .WriteInteger(CharIndex)
 108         Call .WriteLong(Color)
-110         PrepareMessageEfectOverHead = .ReadASCIIStringFixed(.Length)
-
+110         PrepareMessageTextOverChar = .ReadASCIIStringFixed(.Length)
         End With
 
         
         Exit Function
 
-PrepareMessageEfectOverHead_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageEfectOverHead", Erl)
+PrepareMessageTextOverChar_Err:
+112     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageTextOverChar", Erl)
 114     Resume Next
         
 End Function
 
-Public Function PrepareMessageExpOverHead(ByVal chat As String, ByVal CharIndex As Integer, Optional ByVal name As String = "") As String
+Public Function PrepareMessageTextCharDrop(ByVal chat As String, ByVal CharIndex As Integer, ByVal Color As Long) As String
         
-        On Error GoTo PrepareMessageExpOverHead_Err
-        
+        On Error GoTo PrepareMessageTextCharDrop_Err
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
         '***************************************************
 100     With auxiliarBuffer
-102         Call .WriteByte(ServerPacketID.ExpOverHEad)
+102         Call .WriteByte(ServerPacketID.TextCharDrop)
 104         Call .WriteASCIIString(chat)
 106         Call .WriteInteger(CharIndex)
-108         PrepareMessageExpOverHead = .ReadASCIIStringFixed(.Length)
-
+108         Call .WriteLong(Color)
+110         PrepareMessageTextCharDrop = .ReadASCIIStringFixed(.Length)
         End With
 
         
         Exit Function
 
-PrepareMessageExpOverHead_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageExpOverHead", Erl)
-112     Resume Next
+PrepareMessageTextCharDrop_Err:
+112     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageTextCharDrop", Erl)
+114     Resume Next
         
 End Function
 
-Public Function PrepareMessageOroOverHead(ByVal chat As String, ByVal CharIndex As Integer, Optional ByVal name As String = "") As String
+Public Function PrepareMessageTextOverTile(ByVal chat As String, ByVal X As Integer, ByVal Y As Integer, ByVal Color As Long) As String
         
-        On Error GoTo PrepareMessageOroOverHead_Err
-        
+        On Error GoTo PrepareMessageTextOverTile_Err
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
         '***************************************************
 100     With auxiliarBuffer
-102         Call .WriteByte(ServerPacketID.OroOverHEad)
+102         Call .WriteByte(ServerPacketID.TextOverTile)
 104         Call .WriteASCIIString(chat)
-106         Call .WriteInteger(CharIndex)
-108         PrepareMessageOroOverHead = .ReadASCIIStringFixed(.Length)
-
+106         Call .WriteInteger(X)
+108         Call .WriteInteger(Y)
+110         Call .WriteLong(Color)
+112         PrepareMessageTextOverTile = .ReadASCIIStringFixed(.Length)
         End With
 
         
         Exit Function
 
-PrepareMessageOroOverHead_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageOroOverHead", Erl)
-112     Resume Next
+PrepareMessageTextOverTile_Err:
+114     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageTextOverTile", Erl)
+116     Resume Next
         
 End Function
 
@@ -24438,9 +24392,9 @@ PrepareMessageEscudoMov_Err:
         
 End Function
 
-Public Function PrepareMessageEfectToScreen(ByVal Color As Long, ByVal duracion As Long, Optional ByVal Ignorar As Boolean = False) As String
+Public Function PrepareMessageFlashScreen(ByVal Color As Long, ByVal duracion As Long, Optional ByVal Ignorar As Boolean = False) As String
         
-        On Error GoTo PrepareMessageEfectToScreen_Err
+        On Error GoTo PrepareMessageFlashScreen_Err
         
 
         '***************************************************
@@ -24450,19 +24404,19 @@ Public Function PrepareMessageEfectToScreen(ByVal Color As Long, ByVal duracion 
         'Added X and Y positions for 3D Sounds
         '***************************************************
 100     With auxiliarBuffer
-102         Call .WriteByte(ServerPacketID.EfectToScreen)
+102         Call .WriteByte(ServerPacketID.FlashScreen)
 104         Call .WriteLong(Color)
 106         Call .WriteLong(duracion)
 108         Call .WriteBoolean(Ignorar)
-110         PrepareMessageEfectToScreen = .ReadASCIIStringFixed(.Length)
+110         PrepareMessageFlashScreen = .ReadASCIIStringFixed(.Length)
 
         End With
 
         
         Exit Function
 
-PrepareMessageEfectToScreen_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageEfectToScreen", Erl)
+PrepareMessageFlashScreen_Err:
+112     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageFlashScreen", Erl)
 114     Resume Next
         
 End Function
@@ -30301,37 +30255,6 @@ ErrHandler:
 212     If Error <> 0 Then Err.raise Error
 
 End Sub
-
-Public Function PrepareMessageCreateRenderValue(ByVal X As Byte, ByVal Y As Byte, ByVal rValue As Double, ByVal rType As Byte)
-        '***************************************************
-        'Author: maTih.-
-        'Last Modification: 09/06/2012 - ^[GS]^
-        '***************************************************
-        
-        On Error GoTo PrepareMessageCreateRenderValue_Err
-        
-
-        ' @ Envia el paquete para crear un valor en el render
-     
-100     With auxiliarBuffer
-102         .WriteByte ServerPacketID.CreateRenderText
-104         .WriteByte X
-106         .WriteByte Y
-108         .WriteDouble rValue
-110         .WriteByte rType
-         
-112         PrepareMessageCreateRenderValue = .ReadASCIIStringFixed(.Length)
-         
-        End With
-     
-        
-        Exit Function
-
-PrepareMessageCreateRenderValue_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageCreateRenderValue", Erl)
-116     Resume Next
-        
-End Function
 
 Public Sub WriteActShop(ByVal UserIndex As Integer)
 
