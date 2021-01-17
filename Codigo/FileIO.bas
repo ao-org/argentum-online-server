@@ -2526,12 +2526,8 @@ Sub LoadSini()
         API_HostName = Lector.GetValue("API_SOCKET", "HostName")
         API_Port = val(Lector.GetValue("API_SOCKET", "Port"))
         
-        '&&&&&&&&&&&&&&&&&&&&& BALANCE &&&&&&&&&&&&&&&&&&&&&&&
-        'Se agregó en LoadBalance y en el Balance.dat
-        'PorcentajeRecuperoMana = val(Lector.GetValue("BALANCE", "PorcentajeRecuperoMana"))
-    
-        ''&&&&&&&&&&&&&&&&&&&&& FIN BALANCE &&&&&&&&&&&&&&&&&&&&&&&
-        'Call Statistics.Initialize
+        ' Si la API esta activada, activamos el timer.
+        frmMain.t_ColaAPI.Enabled = IIf(API_Enabled = 1, True, False)
     
 178     Call CargarCiudades
 
@@ -3036,97 +3032,8 @@ Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = Fals
 
 SaveUser_Err:
     Call RegistrarError(Err.Number, Err.Description, "ES.SaveUser", Erl)
-
     Resume Next
 
-End Sub
-
-Sub SaveUserAPI(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = False)
-        
-    On Error GoTo SaveUserAPI_Err:
-
-    Dim SavePacket As New JS_Object
-    Dim Header As New JS_Object
-    Dim Body As New JS_Object
-    Dim Main As New JS_Object
-    
-    Header.Item("action") = "user_save"
-    Header.Item("expectsResponse") = False
-        
-    SavePacket.Item("header") = Header
-   
-    With UserList(UserIndex)
-
-        '*************************************************************
-        '   USER
-        '*************************************************************
-        Body.Item("user") = JSON_User.Principal(UserIndex, Logout)
-            
-        '*************************************************************
-        '   ATRIBUTOS
-        '*************************************************************
-        Body.Item("attribute") = JSON_User.Atributos(UserIndex)
-            
-        '*************************************************************
-        '   HECHIZOS
-        '*************************************************************
-        Body.Item("spell") = JSON_User.Hechizo(UserIndex)
-            
-        '*************************************************************
-        '   INVENTARIO
-        '*************************************************************
-        Body.Item("inventory_item") = JSON_User.Inventario(UserIndex)
-            
-        '*************************************************************
-        '   INVENTARIO DEL BANCO
-        '*************************************************************
-        Body.Item("bank_item") = JSON_User.InventarioBanco(UserIndex)
-            
-        '*************************************************************
-        '   SKILLS
-        '*************************************************************
-        Body.Item("skillpoint") = JSON_User.Habilidades(UserIndex)
-            
-        '*************************************************************
-        '   MASCOTAS
-        '*************************************************************
-        Body.Item("pet") = JSON_User.Mascotas(UserIndex)
-            
-        '*************************************************************
-        '   QUESTS
-        '*************************************************************
-        Body.Item("quest") = JSON_User.Quest(UserIndex)
-        
-        '*************************************************************
-        '   QUESTS TERMINADAS
-        '*************************************************************
-        If .QuestStats.NumQuestsDone > 0 Then
-            Body.Item("quest_done") = JSON_User.QuestTerminadas(UserIndex)
-        End If
-        
-        '*************************************************************
-        '   ENVIAMOS A LA API
-        '*************************************************************
-        SavePacket.Item("body") = Body
-
-        Dim UserData As String: UserData = SavePacket.ToString
-         
-        ' Para fines de desarrollo
-        If frmAPISocket.Visible Then frmAPISocket.txtSend = UserData
-        Debug.Print vbNewLine & UserData
-        ' Para fines de desarrollo
-        
-        'Lo mandamos a la API
-        'Call frmAPISocket.Socket.SendData(UserData)
-        Call frmAPISocket.API_SendData(UserData)
-            
-    End With
-
-    Exit Sub
-
-SaveUserAPI_Err:
-    Call RegistrarError(Err.Number, Err.Description, "ES.SaveUserAPI", Erl)
-        
 End Sub
 
 Sub LoadUserBinary(ByVal UserIndex As Integer)
