@@ -2522,12 +2522,12 @@ Sub LoadSini()
         #End If
         
         ' Configuracion de la API
-        API_Enabled = val(Lector.GetValue("API_SOCKET", "Enabled"))
+        API_Enabled = CBool(Lector.GetValue("API_SOCKET", "Enabled"))
         API_HostName = Lector.GetValue("API_SOCKET", "HostName")
         API_Port = val(Lector.GetValue("API_SOCKET", "Port"))
-        
+
         ' Si la API esta activada, activamos el timer.
-        frmMain.t_ColaAPI.Enabled = IIf(API_Enabled = 1, True, False)
+        frmMain.t_ColaAPI.Enabled = API_Enabled
     
 178     Call CargarCiudades
 
@@ -3012,7 +3012,7 @@ Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = Fals
 
     On Error GoTo SaveUser_Err
     
-    If API_Enabled = 0 Then
+    If Not API_Enabled Then
     
         If Database_Enabled Then
             Call SaveUserDatabase(UserIndex, Logout)
