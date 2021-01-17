@@ -770,7 +770,7 @@ Public Enum eOBJType
     OtPozos = 40
     otMonturas = 44
     otRunas = 45
-    otNUDILLOS = 46
+    otNudillos = 46
     OtCorreo = 47
     OtCofre = 48
     OtDonador = 50
@@ -1189,7 +1189,7 @@ Public Type ObjData
     MineralIndex As Integer
     LingoteInex As Integer
     
-    proyectil As Integer
+    Proyectil As Integer
     Municion As Integer
     
     Crucial As Byte
@@ -2347,7 +2347,7 @@ Public Declare Function writeprivateprofilestring Lib "kernel32" Alias "WritePri
 
 Public Declare Function GetPrivateProfileString Lib "kernel32" Alias "GetPrivateProfileStringA" (ByVal lpApplicationname As String, ByVal lpKeyname As Any, ByVal lpdefault As String, ByVal lpreturnedstring As String, ByVal nsize As Long, ByVal lpfilename As String) As Long
 
-Public Declare Sub ZeroMemory Lib "kernel32.dll" Alias "RtlZeroMemory" (ByRef destination As Any, ByVal Length As Long)
+Public Declare Sub ZeroMemory Lib "kernel32.dll" Alias "RtlZeroMemory" (ByRef Destination As Any, ByVal Length As Long)
 
 Public Enum e_ObjetosCriticos
 

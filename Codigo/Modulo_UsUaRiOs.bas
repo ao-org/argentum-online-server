@@ -1278,27 +1278,6 @@ NPCAtacado_Err:
         
 End Sub
 
-Function PuedeApuñalar(ByVal UserIndex As Integer) As Boolean
-        
-        On Error GoTo PuedeApuñalar_Err
-        
-
-100     If UserList(UserIndex).Invent.WeaponEqpObjIndex > 0 Then
-102         PuedeApuñalar = ((UserList(UserIndex).Stats.UserSkills(eSkill.Apuñalar) >= MIN_APUÑALAR) And (ObjData(UserList(UserIndex).Invent.WeaponEqpObjIndex).Apuñala = 1)) Or ((UserList(UserIndex).clase = eClass.Assasin) And (ObjData(UserList(UserIndex).Invent.WeaponEqpObjIndex).Apuñala = 1))
-        Else
-104         PuedeApuñalar = False
-
-        End If
-
-        
-        Exit Function
-
-PuedeApuñalar_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.PuedeApuñalar", Erl)
-108     Resume Next
-        
-End Function
-
 Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
         
         On Error GoTo SubirSkill_Err
@@ -1383,6 +1362,32 @@ SubirSkill_Err:
 162     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.SubirSkill", Erl)
 164     Resume Next
         
+End Sub
+
+Sub SubirSkillDeArmaActual(ByVal UserIndex As Integer)
+    
+    ' Autor WyroX - 16/01/2021
+
+    With UserList(UserIndex)
+    
+        If .Invent.WeaponEqpObjIndex > 0 Then
+            
+            ' Arma con proyectiles, subimos armas a distancia
+            If ObjData(.Invent.WeaponEqpObjIndex).Proyectil Then
+                Call SubirSkill(UserIndex, eSkill.Proyectiles)
+            
+            ' Sino, subimos combate con armas
+            Else
+                Call SubirSkill(UserIndex, eSkill.Armas)
+            End If
+
+        ' Si no está usando un arma, subimos combate sin armas
+        Else
+            Call SubirSkill(UserIndex, eSkill.Wrestling)
+        End If
+    
+    End With
+
 End Sub
 
 ''

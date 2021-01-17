@@ -81,16 +81,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 116         UserList(UserIndex).flags.TargetNpcTipo = eNPCType.Comun
         
             'El user que lo mato tiene mascotas?
-120         If UserList(UserIndex).NroMascotas > 0 Then
-                Dim T As Integer
-122             For T = 1 To MAXMASCOTAS
-124                  If UserList(UserIndex).MascotasIndex(T) > 0 Then
-126                     If Npclist(UserList(UserIndex).MascotasIndex(T)).TargetNPC = NpcIndex Then
-128                         Call FollowAmo(UserList(UserIndex).MascotasIndex(T))
-                        End If
-                    End If
-130             Next T
-            End If
+120         Call AllFollowAmo(UserIndex)
             
 140         If UserList(UserIndex).ChatCombate = 1 Then
 150             Call WriteLocaleMsg(UserIndex, "184", FontTypeNames.FONTTYPE_FIGHT, "la criatura")
@@ -109,7 +100,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 
 138                 If UserList(UserIndex).Stats.Exp > MAXEXP Then UserList(UserIndex).Stats.Exp = MAXEXP
                     
-                 Call WriteRenderValueMsg(UserIndex, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, MiNPC.flags.ExpCount, 6)
+                    Call WriteTextOverTile(UserIndex, "+" & PonerPuntos(MiNPC.flags.ExpCount), UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, RGB(0, 169, 255))
 142                 Call WriteUpdateExp(UserIndex)
 144                 Call CheckUserLevel(UserIndex)
 

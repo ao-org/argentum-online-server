@@ -144,6 +144,8 @@ Public ExpLevelUp(1 To STAT_MAXELV) As Long
 
 Public InfluenciaPromedioVidas      As Single
 
+Public ModDañoGolpeCritico          As Single
+
 Public MinutosWs                    As Long
 
 Public Puerto                       As Integer
@@ -189,7 +191,7 @@ Function VersionOK(ByVal Ver As String) As Boolean
         Exit Function
 
 VersionOK_Err:
-102     Call RegistrarError(Err.Number, Err.description, "Admin.VersionOK", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "Admin.VersionOK", Erl)
 104     Resume Next
         
 End Function
@@ -225,7 +227,7 @@ Sub ReSpawnOrigPosNpcs()
         Exit Sub
         
 Handler:
-114 Call RegistrarError(Err.Number, Err.description, "Admin.ReSpawnOrigPosNpcs", Erl)
+114 Call RegistrarError(Err.Number, Err.Description, "Admin.ReSpawnOrigPosNpcs", Erl)
 116 Resume Next
 
 End Sub
@@ -283,7 +285,7 @@ Sub WorldSave()
         Exit Sub
         
 Handler:
-128 Call RegistrarError(Err.Number, Err.description, "Admin.WorldSave", Erl)
+128 Call RegistrarError(Err.Number, Err.Description, "Admin.WorldSave", Erl)
 130 Resume Next
 
 End Sub
@@ -317,7 +319,7 @@ Public Sub PurgarPenas()
         Exit Sub
 
 PurgarPenas_Err:
-118     Call RegistrarError(Err.Number, Err.description, "Admin.PurgarPenas", Erl)
+118     Call RegistrarError(Err.Number, Err.Description, "Admin.PurgarPenas", Erl)
 120     Resume Next
         
 End Sub
@@ -368,7 +370,7 @@ Public Sub PurgarScroll()
         Exit Sub
 
 PurgarScroll_Err:
-134     Call RegistrarError(Err.Number, Err.description, "Admin.PurgarScroll", Erl)
+134     Call RegistrarError(Err.Number, Err.Description, "Admin.PurgarScroll", Erl)
 136     Resume Next
         
 End Sub
@@ -412,7 +414,7 @@ Public Sub PurgarOxigeno()
         Exit Sub
 
 PurgarOxigeno_Err:
-126     Call RegistrarError(Err.Number, Err.description, "Admin.PurgarOxigeno", Erl)
+126     Call RegistrarError(Err.Number, Err.Description, "Admin.PurgarOxigeno", Erl)
 128     Resume Next
         
 End Sub
@@ -438,7 +440,7 @@ Public Sub Encarcelar(ByVal UserIndex As Integer, ByVal minutos As Long, Optiona
         Exit Sub
 
 Encarcelar_Err:
-112     Call RegistrarError(Err.Number, Err.description, "Admin.Encarcelar", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "Admin.Encarcelar", Erl)
 114     Resume Next
         
 End Sub
@@ -467,7 +469,7 @@ Public Sub BorrarUsuario(ByVal UserName As String)
         Exit Sub
 
 BorrarUsuario_Err:
-108     Call RegistrarError(Err.Number, Err.description, "Admin.BorrarUsuario", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "Admin.BorrarUsuario", Erl)
 
         
 End Sub
@@ -488,7 +490,7 @@ Public Function BANCheck(ByVal name As String) As Boolean
         Exit Function
 
 BANCheck_Err:
-106     Call RegistrarError(Err.Number, Err.description, "Admin.BANCheck", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "Admin.BANCheck", Erl)
 108     Resume Next
         
 End Function
@@ -509,7 +511,7 @@ Public Function DonadorCheck(ByVal name As String) As Boolean
         Exit Function
 
 DonadorCheck_Err:
-106     Call RegistrarError(Err.Number, Err.description, "Admin.DonadorCheck", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "Admin.DonadorCheck", Erl)
 108     Resume Next
         
 End Function
@@ -530,7 +532,7 @@ Public Function CreditosDonadorCheck(ByVal name As String) As Long
         Exit Function
 
 CreditosDonadorCheck_Err:
-106     Call RegistrarError(Err.Number, Err.description, "Admin.CreditosDonadorCheck", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "Admin.CreditosDonadorCheck", Erl)
 108     Resume Next
         
 End Function
@@ -551,7 +553,7 @@ Public Function CreditosCanjeadosCheck(ByVal name As String) As Long
         Exit Function
 
 CreditosCanjeadosCheck_Err:
-106     Call RegistrarError(Err.Number, Err.description, "Admin.CreditosCanjeadosCheck", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "Admin.CreditosCanjeadosCheck", Erl)
 108     Resume Next
         
 End Function
@@ -583,7 +585,7 @@ Public Function DiasDonadorCheck(ByVal name As String) As Integer
         Exit Function
 
 DiasDonadorCheck_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Admin.DiasDonadorCheck", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Admin.DiasDonadorCheck", Erl)
 112     Resume Next
         
 End Function
@@ -604,7 +606,7 @@ Public Function ComprasDonadorCheck(ByVal name As String) As Long
         Exit Function
 
 ComprasDonadorCheck_Err:
-106     Call RegistrarError(Err.Number, Err.description, "Admin.ComprasDonadorCheck", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "Admin.ComprasDonadorCheck", Erl)
 108     Resume Next
         
 End Function
@@ -625,7 +627,7 @@ Public Function PersonajeExiste(ByVal name As String) As Boolean
         Exit Function
 
 PersonajeExiste_Err:
-106     Call RegistrarError(Err.Number, Err.description, "Admin.PersonajeExiste", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "Admin.PersonajeExiste", Erl)
 108     Resume Next
         
 End Function
@@ -652,7 +654,7 @@ Public Function UnBan(ByVal name As String) As Boolean
         Exit Function
 
 UnBan_Err:
-114     Call RegistrarError(Err.Number, Err.description, "Admin.UnBan", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "Admin.UnBan", Erl)
 116     Resume Next
         
 End Function
@@ -669,7 +671,7 @@ Public Sub BanIpAgrega(ByVal ip As String)
         Exit Sub
 
 BanIpAgrega_Err:
-104     Call RegistrarError(Err.Number, Err.description, "Admin.BanIpAgrega", Erl)
+104     Call RegistrarError(Err.Number, Err.Description, "Admin.BanIpAgrega", Erl)
 106     Resume Next
         
 End Sub
@@ -709,7 +711,7 @@ Public Function CheckHD(ByVal hd As String) As Boolean
         Exit Function
 
 CheckHD_Err:
-116     Call RegistrarError(Err.Number, Err.description, "Admin.CheckHD", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "Admin.CheckHD", Erl)
 118     Resume Next
         
 End Function
@@ -749,7 +751,7 @@ Public Function CheckMAC(ByVal Mac As String) As Boolean
         Exit Function
 
 CheckMAC_Err:
-116     Call RegistrarError(Err.Number, Err.description, "Admin.CheckMAC", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "Admin.CheckMAC", Erl)
 118     Resume Next
         
 End Function
@@ -782,7 +784,7 @@ Public Function BanIpBuscar(ByVal ip As String) As Long
         Exit Function
 
 BanIpBuscar_Err:
-116     Call RegistrarError(Err.Number, Err.description, "Admin.BanIpBuscar", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "Admin.BanIpBuscar", Erl)
 118     Resume Next
         
 End Function
@@ -812,7 +814,7 @@ Public Function BanIpQuita(ByVal ip As String) As Boolean
         Exit Function
 
 BanIpQuita_Err:
-112     Call RegistrarError(Err.Number, Err.description, "Admin.BanIpQuita", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "Admin.BanIpQuita", Erl)
 
         
 End Function
@@ -843,7 +845,7 @@ Public Sub BanIpGuardar()
         Exit Sub
 
 BanIpGuardar_Err:
-114     Call RegistrarError(Err.Number, Err.description, "Admin.BanIpGuardar", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "Admin.BanIpGuardar", Erl)
 116     Resume Next
         
 End Sub
@@ -879,7 +881,7 @@ Public Sub BanIpCargar()
         Exit Sub
 
 BanIpCargar_Err:
-118     Call RegistrarError(Err.Number, Err.description, "Admin.BanIpCargar", Erl)
+118     Call RegistrarError(Err.Number, Err.Description, "Admin.BanIpCargar", Erl)
 120     Resume Next
         
 End Sub
@@ -914,7 +916,7 @@ Public Sub ActualizaEstadisticasWeb()
         Exit Sub
 
 ActualizaEstadisticasWeb_Err:
-114     Call RegistrarError(Err.Number, Err.description, "Admin.ActualizaEstadisticasWeb", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "Admin.ActualizaEstadisticasWeb", Erl)
 116     Resume Next
         
 End Sub
@@ -964,7 +966,7 @@ Public Sub ActualizaStatsES()
         Exit Sub
 
 ActualizaStatsES_Err:
-132     Call RegistrarError(Err.Number, Err.description, "Admin.ActualizaStatsES", Erl)
+132     Call RegistrarError(Err.Number, Err.Description, "Admin.ActualizaStatsES", Erl)
 134     Resume Next
         
 End Sub
@@ -996,7 +998,7 @@ Public Function UserDarPrivilegioLevel(ByVal name As String) As PlayerType
         Exit Function
 
 UserDarPrivilegioLevel_Err:
-118     Call RegistrarError(Err.Number, Err.description, "Admin.UserDarPrivilegioLevel", Erl)
+118     Call RegistrarError(Err.Number, Err.Description, "Admin.UserDarPrivilegioLevel", Erl)
 120     Resume Next
         
 End Function
@@ -1120,7 +1122,7 @@ Public Sub BanCharacter(ByVal bannerUserIndex As Integer, ByVal UserName As Stri
         Exit Sub
 
 BanCharacter_Err:
-192     Call RegistrarError(Err.Number, Err.description, "Admin.BanCharacter", Erl)
+192     Call RegistrarError(Err.Number, Err.Description, "Admin.BanCharacter", Erl)
 194     Resume Next
         
 End Sub
@@ -1207,7 +1209,7 @@ Public Sub BanAccount(ByVal bannerUserIndex As Integer, ByVal UserName As String
         Exit Sub
 
 BanAccount_Err:
-144     Call RegistrarError(Err.Number, Err.description, "Admin.BanAccount", Erl)
+144     Call RegistrarError(Err.Number, Err.Description, "Admin.BanAccount", Erl)
 146     Resume Next
         
 End Sub
@@ -1267,7 +1269,7 @@ Public Sub UnBanAccount(ByVal bannerUserIndex As Integer, ByVal UserName As Stri
         Exit Sub
 
 UnBanAccount_Err:
-126     Call RegistrarError(Err.Number, Err.description, "Admin.UnBanAccount", Erl)
+126     Call RegistrarError(Err.Number, Err.Description, "Admin.UnBanAccount", Erl)
 128     Resume Next
         
 End Sub
@@ -1342,7 +1344,7 @@ Public Sub BanSerialOK(ByVal bannerUserIndex As Integer, ByVal UserName As Strin
         Exit Sub
 
 BanSerialOK_Err:
-140     Call RegistrarError(Err.Number, Err.description, "Admin.BanSerialOK", Erl)
+140     Call RegistrarError(Err.Number, Err.Description, "Admin.BanSerialOK", Erl)
 142     Resume Next
         
 End Sub
@@ -1401,7 +1403,7 @@ Public Sub UnBanSerialOK(ByVal bannerUserIndex As Integer, ByVal UserName As Str
         Exit Sub
 
 UnBanSerialOK_Err:
-122     Call RegistrarError(Err.Number, Err.description, "Admin.UnBanSerialOK", Erl)
+122     Call RegistrarError(Err.Number, Err.Description, "Admin.UnBanSerialOK", Erl)
 124     Resume Next
         
 End Sub
@@ -1427,7 +1429,7 @@ Public Sub BanTemporal(ByVal nombre As String, ByVal dias As Integer, Causa As S
         Exit Sub
 
 BanTemporal_Err:
-116     Call RegistrarError(Err.Number, Err.description, "Admin.BanTemporal", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "Admin.BanTemporal", Erl)
 118     Resume Next
         
 End Sub
@@ -1452,7 +1454,7 @@ Sub SaveBans()
         Exit Sub
 
 SaveBans_Err:
-112     Call RegistrarError(Err.Number, Err.description, "Admin.SaveBans", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "Admin.SaveBans", Erl)
 114     Resume Next
         
 End Sub
@@ -1481,7 +1483,7 @@ Sub SaveBan(num As Integer)
         Exit Sub
 
 SaveBan_Err:
-120     Call RegistrarError(Err.Number, Err.description, "Argentum20Server.Admin.SaveBan", Erl)
+120     Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Admin.SaveBan", Erl)
 122     Resume Next
         
 End Sub
@@ -1518,7 +1520,7 @@ Sub LoadBans()
         Exit Sub
 
 LoadBans_Err:
-120     Call RegistrarError(Err.Number, Err.description, "Argentum20Server.Admin.LoadBans", Erl)
+120     Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Admin.LoadBans", Erl)
 122     Resume Next
         
 End Sub
@@ -1540,7 +1542,7 @@ Public Function ChangeBan(ByVal name As String, ByVal Baneado As Byte) As Boolea
         Exit Function
 
 ChangeBan_Err:
-106     Call RegistrarError(Err.Number, Err.description, "Argentum20Server.Admin.ChangeBan", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Admin.ChangeBan", Erl)
 108     Resume Next
         
 End Function
@@ -1585,7 +1587,7 @@ Public Function CompararPrivilegios(ByVal Personaje_1 As Integer, ByVal Personaj
         Exit Function
 
 CompararPrivilegios_Err:
-118     Call RegistrarError(Err.Number, Err.description, "Admin.CompararPrivilegios", Erl)
+118     Call RegistrarError(Err.Number, Err.Description, "Admin.CompararPrivilegios", Erl)
 120     Resume Next
         
 End Function
