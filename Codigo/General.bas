@@ -2753,6 +2753,6 @@ End Function
 
 'Very efficient function for testing whether this code is running in the IDE or compiled
 'https://www.vbforums.com/showthread.php?231468-VB-Detect-if-you-are-running-in-the-IDE&p=5413357&viewfull=1#post5413357
-Public Function RunningInVB(Optional ByRef B As Boolean = True) As Boolean
-    If B Then Debug.Assert Not RunningInVB(RunningInVB) Else B = True
+Public Function RunningInVB(Optional ByRef b As Boolean = True) As Boolean
+    If b Then Debug.Assert Not RunningInVB(RunningInVB) Else b = True
 End Function
