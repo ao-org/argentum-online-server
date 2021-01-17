@@ -21,11 +21,6 @@ Begin VB.Form frmAPISocket
    ScaleHeight     =   9555
    ScaleWidth      =   9750
    StartUpPosition =   3  'Windows Default
-   Begin VB.Timer tColaAPI 
-      Interval        =   10
-      Left            =   120
-      Top             =   120
-   End
    Begin VB.CommandButton cmdConnect 
       Caption         =   "Conectar"
       Height          =   360
@@ -114,66 +109,17 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
-Public API_Queue As New CColaArray
-
 Public WithEvents Socket As clsSocket
 Attribute Socket.VB_VarHelpID = -1
-
-Private Sub HandleIncomingAPIData(ByRef data As String)
-
-    ' Para debuguear :P
-    If Me.Visible Then
-        Me.txtResponse.Text = vbNullString
-        Me.txtResponse.Text = data
-        DoEvents
-        
-    Else
-        
-        #If DEBUG_API = 1 Then
-            Me.Show vbModeless
-            Me.SetFocus
-        #End If
-        
-    End If
-    
-    ' Parseamos el JSON que recibimo.
-    'Dim response As Object
-    'Set response = mod_JSON.parse(strData)
-    
-    'Select Case response.Item("header").Item("action")
-    
-        'Case "user_load"
-            'Call MsgBox(response!data)
-            
-    'End Select
-
-End Sub
-
-Public Sub API_SendData(ByRef data As String)
-    
-    On Error GoTo ErrHandler:
-
-    If Me.Socket.State = sckConnected Then
-        Call Me.Socket.SendData(data)
-        
-    Else
-        'Lo agrego a la cola para enviarlo mas tarde.
-        Call API_Queue.Push(data)
-
-    End If
-
-    Exit Sub
-    
-ErrHandler:
-    Call RegistrarError(Err.Number, Err.Description, "API_Manager.API_SendData")
-    
-End Sub
 
 Public Sub Connect()
     '*********************************************************************
     'Author: Jopi
-    'Conexion al servidor mediante la API de Windows.
+    'Conexion a la API.
     '*********************************************************************
+    
+    ' Me fijo que estamos usando la API.
+    If API_Enabled = 0 Then Exit Sub
     
     If Socket Is Nothing Then
         Set Socket = New clsSocket
@@ -193,7 +139,7 @@ Public Sub Connect()
 End Sub
 
 Private Sub cmdConnect_Click()
-    Call Connect
+    Call frmAPISocket.Connect
 End Sub
 
 Private Sub cmdShutdown_Click()
@@ -206,25 +152,8 @@ Private Sub cmdEnviar_Click()
 
     If Len(txtSend.Text) = 0 Then Exit Sub
     
-    With Socket
-        
-        Select Case .State
-        
-            Case sckClosed
-                Call API_Queue.Push(txtSend.Text)
-                Call Connect
+    Call SendDataAPI(txtSend.Text)
 
-            Case sckError
-                Call .CloseSck
-                Call Connect
-                
-            Case sckConnected
-                Call .SendData(txtSend.Text)
-                
-        End Select
-
-    End With
-    
 End Sub
 
 Private Sub Socket_BeforeSend(ByRef data As String)
@@ -245,7 +174,7 @@ Private Sub Socket_DataArrival(ByVal bytesTotal As Long)
     If Len(recievedData) = 0 Then Exit Sub
 
     'Process the data we recieved from the API
-    Call HandleIncomingAPIData(recievedData)
+    Call API.HandleIncomingAPIData(recievedData)
     
     Debug.Print vbNewLine
     Debug.Print "Tamaño: " & bytesTotal

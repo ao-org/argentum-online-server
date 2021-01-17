@@ -776,18 +776,18 @@ Private Sub mnuConsolaAPI_Popup_Click()
 End Sub
 
 Private Sub t_ColaAPI_Timer()
+
+    If API.packetResend.Count = 0 Then Exit Sub
     
     With frmAPISocket
-    
-        If .API_Queue.Count = 0 Then Exit Sub
     
         Select Case .Socket.State
         
             Case sckConnected
             
                 'Iteramos la cola y mandamos todo.
-                Do While (Not .API_Queue.IsEmpty)
-                    Call .Socket.SendData(.API_Queue.Pop)
+                Do While (Not API.packetResend.IsEmpty)
+                    Call .Socket.SendData(API.packetResend.Pop)
                 Loop
                 
                 Debug.Print "API: Enviado!"
@@ -804,9 +804,9 @@ Private Sub t_ColaAPI_Timer()
                 Debug.Print "API: Error en el socket! Reconectando..."
                 
         End Select
-
+    
     End With
-
+    
 End Sub
 
 Private Sub TimerGuardarUsuarios_Timer()
