@@ -62,7 +62,7 @@ Public Function TieneObjetosRobables(ByVal UserIndex As Integer) As Boolean
         Exit Function
 
 TieneObjetosRobables_Err:
-112     Call RegistrarError(Err.Number, Err.description, "InvUsuario.TieneObjetosRobables", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.TieneObjetosRobables", Erl)
 
         
 End Function
@@ -177,7 +177,7 @@ Sub QuitarNewbieObj(ByVal UserIndex As Integer)
         Exit Sub
 
 QuitarNewbieObj_Err:
-144     Call RegistrarError(Err.Number, Err.description, "InvUsuario.QuitarNewbieObj", Erl)
+144     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.QuitarNewbieObj", Erl)
 146     Resume Next
         
 End Sub
@@ -238,7 +238,7 @@ Sub LimpiarInventario(ByVal UserIndex As Integer)
         Exit Sub
 
 LimpiarInventario_Err:
-158     Call RegistrarError(Err.Number, Err.description, "InvUsuario.LimpiarInventario", Erl)
+158     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.LimpiarInventario", Erl)
 160     Resume Next
         
 End Sub
@@ -346,7 +346,7 @@ Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
         Exit Sub
 
 ErrHandler:
-162 Call RegistrarError(Err.Number, Err.description, "InvUsuario.TirarOro", Erl())
+162 Call RegistrarError(Err.Number, Err.Description, "InvUsuario.TirarOro", Erl())
     
 End Sub
 
@@ -381,7 +381,7 @@ Sub QuitarUserInvItem(ByVal UserIndex As Integer, ByVal slot As Byte, ByVal Cant
         Exit Sub
 
 QuitarUserInvItem_Err:
-118     Call RegistrarError(Err.Number, Err.description, "InvUsuario.QuitarUserInvItem", Erl)
+118     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.QuitarUserInvItem", Erl)
 120     Resume Next
         
 End Sub
@@ -427,7 +427,7 @@ Sub UpdateUserInv(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer, ByVal 
         Exit Sub
 
 UpdateUserInv_Err:
-118     Call RegistrarError(Err.Number, Err.description, "InvUsuario.UpdateUserInv", Erl)
+118     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.UpdateUserInv", Erl)
 120     Resume Next
         
 End Sub
@@ -498,7 +498,7 @@ Sub DropObj(ByVal UserIndex As Integer, _
         Exit Sub
 
 DropObj_Err:
-138     Call RegistrarError(Err.Number, Err.description, "InvUsuario.DropObj", Erl)
+138     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.DropObj", Erl)
 
 140     Resume Next
         
@@ -547,7 +547,7 @@ Sub EraseObj(ByVal num As Integer, ByVal Map As Integer, ByVal X As Integer, ByV
         Exit Sub
 
 EraseObj_Err:
-114     Call RegistrarError(Err.Number, Err.description, "InvUsuario.EraseObj", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.EraseObj", Erl)
 116     Resume Next
         
 End Sub
@@ -602,7 +602,7 @@ Sub MakeObj(ByRef obj As obj, ByVal Map As Integer, ByVal X As Integer, ByVal Y 
         Exit Sub
 
 MakeObj_Err:
-120     Call RegistrarError(Err.Number, Err.description, "InvUsuario.MakeObj", Erl)
+120     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.MakeObj", Erl)
 
 122     Resume Next
         
@@ -623,6 +623,7 @@ Function MeterItemEnInventario(ByVal UserIndex As Integer, ByRef MiObj As obj) A
         '¿el user ya tiene un objeto del mismo tipo? ?????
 100     If MiObj.ObjIndex = 12 Then
 102         UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + MiObj.Amount
+            Call WriteUpdateGold(UserIndex)
 
         Else
     
@@ -674,7 +675,6 @@ Function MeterItemEnInventario(ByVal UserIndex As Integer, ByRef MiObj As obj) A
 
         End If
 
-140     WriteUpdateGold (UserIndex)
 142     MeterItemEnInventario = True
 
         Exit Function
@@ -820,7 +820,7 @@ Sub GetObj(ByVal UserIndex As Integer)
         Exit Sub
 
 GetObj_Err:
-146     Call RegistrarError(Err.Number, Err.description, "InvUsuario.GetObj", Erl)
+146     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.GetObj", Erl)
 148     Resume Next
         
 End Sub
@@ -1045,7 +1045,7 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal slot As Byte)
         Exit Sub
 
 Desequipar_Err:
-352     Call RegistrarError(Err.Number, Err.description, "InvUsuario.Desequipar", Erl)
+352     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.Desequipar", Erl)
 354     Resume Next
         
 End Sub
@@ -1111,7 +1111,7 @@ Function FaccionPuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Inte
         Exit Function
 
 FaccionPuedeUsarItem_Err:
-122     Call RegistrarError(Err.Number, Err.description, "InvUsuario.FaccionPuedeUsarItem", Erl)
+122     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.FaccionPuedeUsarItem", Erl)
 124     Resume Next
         
 End Function
@@ -1200,7 +1200,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 156                 .Invent.WeaponEqpObjIndex = .Invent.Object(slot).ObjIndex
 158                 .Invent.WeaponEqpSlot = slot
             
-160                 If obj.proyectil = 1 Then 'Si es un arco, desequipa el escudo.
+160                 If obj.Proyectil = 1 Then 'Si es un arco, desequipa el escudo.
             
                         'If .Invent.EscudoEqpObjIndex = 404 Or .Invent.EscudoEqpObjIndex = 1007 Or .Invent.EscudoEqpObjIndex = 1358 Then
 162                     If .Invent.EscudoEqpObjIndex = 1700 Or _
@@ -1644,7 +1644,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                     Else
 
 532                     If .Invent.WeaponEqpObjIndex > 0 Then
-534                         If ObjData(.Invent.WeaponEqpObjIndex).proyectil = 1 Then
+534                         If ObjData(.Invent.WeaponEqpObjIndex).Proyectil = 1 Then
 536                             Call Desequipar(UserIndex, .Invent.WeaponEqpSlot)
 538                             Call WriteConsoleMsg(UserIndex, "No podes sostener el escudo si tenes que tirar flechas. Tu arco fue desequipado.", FontTypeNames.FONTTYPE_INFOIAO)
                             End If
@@ -1753,7 +1753,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
     
 ErrHandler:
 632     Debug.Print errordesc
-634     Call LogError("EquiparInvItem Slot:" & slot & " - Error: " & Err.Number & " - Error Description : " & Err.description & "- " & errordesc)
+634     Call LogError("EquiparInvItem Slot:" & slot & " - Error: " & Err.Number & " - Error Description : " & Err.Description & "- " & errordesc)
 
 End Sub
 
@@ -1954,7 +1954,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 104         obj = ObjData(.Invent.Object(slot).ObjIndex)
     
 106         If obj.OBJType = eOBJType.otWeapon Then
-108             If obj.proyectil = 1 Then
+108             If obj.Proyectil = 1 Then
     
                     'valido para evitar el flood pero no bloqueo. El bloqueo se hace en WLC con proyectiles.
 110                 If Not IntervaloPermiteUsar(UserIndex, False) Then Exit Sub
@@ -2057,7 +2057,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
     
                     End If
             
-192                 If ObjData(ObjIndex).proyectil = 1 Then
+192                 If ObjData(ObjIndex).Proyectil = 1 Then
                         'liquid: muevo esto aca adentro, para que solo pida modo combate si estamos por usar el arco
 194                     Call WriteWorkRequestTarget(UserIndex, Proyectiles)
                     Else
@@ -3444,7 +3444,7 @@ Sub EnivarArmasConstruibles(ByVal UserIndex As Integer)
         Exit Sub
 
 EnivarArmasConstruibles_Err:
-102     Call RegistrarError(Err.Number, Err.description, "InvUsuario.EnivarArmasConstruibles", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.EnivarArmasConstruibles", Erl)
 104     Resume Next
         
 End Sub
@@ -3460,7 +3460,7 @@ Sub EnivarObjConstruibles(ByVal UserIndex As Integer)
         Exit Sub
 
 EnivarObjConstruibles_Err:
-102     Call RegistrarError(Err.Number, Err.description, "InvUsuario.EnivarObjConstruibles", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.EnivarObjConstruibles", Erl)
 104     Resume Next
         
 End Sub
@@ -3476,7 +3476,7 @@ Sub EnivarObjConstruiblesAlquimia(ByVal UserIndex As Integer)
         Exit Sub
 
 EnivarObjConstruiblesAlquimia_Err:
-102     Call RegistrarError(Err.Number, Err.description, "InvUsuario.EnivarObjConstruiblesAlquimia", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.EnivarObjConstruiblesAlquimia", Erl)
 104     Resume Next
         
 End Sub
@@ -3492,7 +3492,7 @@ Sub EnivarObjConstruiblesSastre(ByVal UserIndex As Integer)
         Exit Sub
 
 EnivarObjConstruiblesSastre_Err:
-102     Call RegistrarError(Err.Number, Err.description, "InvUsuario.EnivarObjConstruiblesSastre", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.EnivarObjConstruiblesSastre", Erl)
 104     Resume Next
         
 End Sub
@@ -3508,7 +3508,7 @@ Sub EnivarArmadurasConstruibles(ByVal UserIndex As Integer)
         Exit Sub
 
 EnivarArmadurasConstruibles_Err:
-102     Call RegistrarError(Err.Number, Err.description, "InvUsuario.EnivarArmadurasConstruibles", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.EnivarArmadurasConstruibles", Erl)
 104     Resume Next
         
 End Sub
@@ -3524,7 +3524,7 @@ Public Function ItemSeCae(ByVal index As Integer) As Boolean
         Exit Function
 
 ItemSeCae_Err:
-102     Call RegistrarError(Err.Number, Err.description, "InvUsuario.ItemSeCae", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.ItemSeCae", Erl)
 104     Resume Next
         
 End Function
@@ -3568,7 +3568,7 @@ Public Function PirataCaeItem(ByVal UserIndex As Integer, ByVal slot As Byte)
         Exit Function
 
 PirataCaeItem_Err:
-116     Call RegistrarError(Err.Number, Err.description, "InvUsuario.PirataCaeItem", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.PirataCaeItem", Erl)
 
         
 End Function
@@ -3625,7 +3625,7 @@ Sub TirarTodosLosItems(ByVal UserIndex As Integer)
         Exit Sub
 
 TirarTodosLosItems_Err:
-140     Call RegistrarError(Err.Number, Err.description, "InvUsuario.TirarTodosLosItems", Erl)
+140     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.TirarTodosLosItems", Erl)
 
 142     Resume Next
         
@@ -3642,7 +3642,7 @@ Function ItemNewbie(ByVal ItemIndex As Integer) As Boolean
         Exit Function
 
 ItemNewbie_Err:
-102     Call RegistrarError(Err.Number, Err.description, "InvUsuario.ItemNewbie", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.ItemNewbie", Erl)
 104     Resume Next
         
 End Function
