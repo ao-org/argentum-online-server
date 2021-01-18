@@ -478,7 +478,6 @@ Private Enum NewPacksID
     Genio
     Casarse
     CraftAlquimista
-    DropItem
     RequestFamiliar
     FlagTrabajar
     CraftSastre
@@ -1573,9 +1572,6 @@ Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
 182         Case NewPacksID.CraftAlquimista
 184             Call HandleCraftAlquimia(UserIndex)
 
-186         Case NewPacksID.DropItem
-188             Call HandleDropItem(UserIndex)
-
 190         Case NewPacksID.RequestFamiliar
 192             Call HandleRequestFamiliar(UserIndex)
 
@@ -1755,7 +1751,7 @@ Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
 404     ElseIf Err.Number <> 0 And Not Err.Number = UserList(UserIndex).incomingData.NotEnoughDataErrCode Then
             'An error ocurred, log it and kick player.
 406         Call LogError("Error: " & Err.Number & " [" & Err.Description & "] - Linea: " & Erl & _
-                          " Source: " & Err.Source & vbTab & _
+                          " Source: " & Err.source & vbTab & _
                           " HelpFile: " & Err.HelpFile & vbTab & _
                           " HelpContext: " & Err.HelpContext & vbTab & _
                           " LastDllError: " & Err.LastDllError & vbTab & _
@@ -3195,6 +3191,8 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
 110         Amount = .incomingData.ReadLong()
 
 112         If Not IntervaloPermiteTirar(UserIndex) Then Exit Sub
+
+            If Amount <= 0 Then Exit Sub
 
             'low rank admins can't drop item. Neither can the dead nor those sailing.
 114         If .flags.Muerto = 1 Or ((.flags.Privilegios And PlayerType.Consejero) <> 0 And (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0) Then Exit Sub
@@ -5371,7 +5369,12 @@ Private Sub HandleBankDeposit(ByVal UserIndex As Integer)
             'íEl NPC puede comerciar?
 120         If Npclist(.flags.TargetNPC).NPCtype <> eNPCType.Banquero Then
                 Exit Sub
-
+            End If
+            
+            If Distancia(Npclist(.flags.TargetNPC).Pos, .Pos) > 10 Then
+                Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
             End If
         
             'User deposita el item del slot rdata
@@ -9066,14 +9069,14 @@ Private Sub HandleGamble(ByVal UserIndex As Integer)
 126         ElseIf Amount < 1 Then
 128             Call WriteChatOverHead(UserIndex, "El mínimo de apuesta es 1 moneda.", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
 130         ElseIf Amount > 10000 Then
-132             Call WriteChatOverHead(UserIndex, "El míximo de apuesta es 10.000 monedas.", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
+132             Call WriteChatOverHead(UserIndex, "El máximo de apuesta es 10.000 monedas.", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
 134         ElseIf .Stats.GLD < Amount Then
 136             Call WriteChatOverHead(UserIndex, "No tienes esa cantidad.", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
             Else
 
 138             If RandomNumber(1, 100) <= 45 Then
 140                 .Stats.GLD = .Stats.GLD + Amount
-142                 Call WriteChatOverHead(UserIndex, "Felicidades! Has ganado " & PonerPuntos(Amount) & " monedas de oro!", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
+142                 Call WriteChatOverHead(UserIndex, "¡Felicidades! Has ganado " & PonerPuntos(Amount) & " monedas de oro!", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
                 
 144                 Apuestas.Perdidas = Apuestas.Perdidas + Amount
 146                 Call WriteVar(DatPath & "apuestas.dat", "Main", "Perdidas", CStr(Apuestas.Perdidas))
@@ -9364,6 +9367,8 @@ Private Sub HandleBankDepositGold(ByVal UserIndex As Integer)
                 Exit Sub
 
             End If
+            
+            If Npclist(.flags.TargetNPC).NPCtype <> eNPCType.Banquero Then Exit Sub
         
 118         If Distancia(Npclist(.flags.TargetNPC).Pos, .Pos) > 10 Then
 120             Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
@@ -9371,8 +9376,6 @@ Private Sub HandleBankDepositGold(ByVal UserIndex As Integer)
                 Exit Sub
 
             End If
-        
-122         If Npclist(.flags.TargetNPC).NPCtype <> eNPCType.Banquero Then Exit Sub
         
 124         If Amount > 0 And Amount <= .Stats.GLD Then
 126             .Stats.Banco = .Stats.Banco + Amount
@@ -10599,7 +10602,7 @@ Private Sub HandleDesbuggear(ByVal UserIndex As Integer)
         
 110         UserName = Buffer.ReadASCIIString()
         
-112         If .flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin Or PlayerType.SemiDios Or PlayerType.Consejero) Then
+112         If EsGM(UserIndex) Then
 114             If Len(UserName) > 0 Then
 116                 tUser = NameIndex(UserName)
                 
@@ -25312,7 +25315,7 @@ Private Sub HandleOfertaInicial(ByVal UserIndex As Integer)
             End If
         
 126         If .flags.Subastando = False Then
-128             Call WriteChatOverHead(UserIndex, "Ollí amigo, tu no podés decirme cual es la oferta inicial.", Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
+128             Call WriteChatOverHead(UserIndex, "Oye amigo, tu no podés decirme cual es la oferta inicial.", Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
                 Exit Sub
 
             End If
@@ -26651,8 +26654,42 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
         
             'If we got here then packet is complete, copy data back to original queue
 114         Call .incomingData.CopyBuffer(Buffer)
+
+            ' WyroX: Chequeos de seguridad... Estos chequeos ya se hacen en el cliente, pero si no se hacen se puede duplicar oro...
+
+            ' Cantidad válida?
+            If Cantidad <= 0 Then Exit Sub
+
+            ' Tiene el oro?
+            If .Stats.Banco < Cantidad Then Exit Sub
+            
+            If .flags.Muerto = 1 Then
+                Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
         
+            'Validate target NPC
+            If .flags.TargetNPC = 0 Then
+                Call WriteConsoleMsg(UserIndex, "Primero tenés que seleccionar un personaje, haz click izquierdo sobre él.", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+
+            If Npclist(.flags.TargetNPC).NPCtype <> eNPCType.Banquero Then Exit Sub
+            
+            If Distancia(Npclist(.flags.TargetNPC).Pos, .Pos) > 10 Then
+                Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+
 116         tUser = NameIndex(UserName)
+
+            ' Enviar a vos mismo?
+            If tUser = UserIndex Then
+                Call WriteChatOverHead(UserIndex, "¡No puedo enviarte oro a vos mismo!", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
+                Exit Sub
+            End If
     
 118         If Not EsGM(UserIndex) Then
 
@@ -26672,11 +26709,11 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
     
 134                     Call WriteVar(FileUser, "STATS", "BANCO", CLng(OroenBove)) 'Guardamos en bove
                     End If
-136                 UserList(UserIndex).Stats.Banco = UserList(UserIndex).Stats.Banco - val(Cantidad) 'Quitamos el oro al usuario
                 Else
-138                 UserList(UserIndex).Stats.Banco = UserList(UserIndex).Stats.Banco - val(Cantidad) 'Quitamos el oro al usuario
 140                 UserList(tUser).Stats.Banco = UserList(tUser).Stats.Banco + val(Cantidad) 'Se lo damos al otro.
                 End If
+                
+                UserList(UserIndex).Stats.Banco = UserList(UserIndex).Stats.Banco - val(Cantidad) 'Quitamos el oro al usuario
     
 142             Call WriteChatOverHead(UserIndex, "¡El envío se ha realizado con éxito! Gracias por utilizar los servicios de Finanzas Goliath", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
 144             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("173", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
@@ -27671,123 +27708,6 @@ ErrHandler:
 184     Set Buffer = Nothing
     
 186     If Error <> 0 Then Err.raise Error
-
-End Sub
-
-Private Sub HandleDropItem(ByVal UserIndex As Integer)
-        'Author: Pablo Mercavides
-
-100     If UserList(UserIndex).incomingData.Length < 5 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
-
-        End If
-    
-        On Error GoTo ErrHandler
-
-104     With UserList(UserIndex)
-
-            Dim Buffer As New clsByteQueue
-
-106         Call Buffer.CopyBuffer(.incomingData)
-            'Remove packet ID
-108         Call Buffer.ReadInteger
-        
-            Dim Item         As Byte
-
-            Dim X            As Byte
-
-            Dim Y            As Byte
-
-            Dim Depositado   As Byte
-
-            Dim DropCantidad As Integer
-
-110         Item = Buffer.ReadByte()
-112         X = Buffer.ReadByte()
-114         Y = Buffer.ReadByte()
-116         DropCantidad = Buffer.ReadInteger()
-118         Depositado = 0
-
-120         If UserList(UserIndex).flags.Muerto = 1 Then
-                ' Call WriteConsoleMsg(UserIndex, "Estas muerto!.", FontTypeNames.FONTTYPE_INFO)
-122             Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
-            Else
-    
-124             If (MapData(UserList(UserIndex).Pos.Map, X, Y).Blocked And eBlock.ALL_SIDES) = eBlock.ALL_SIDES Or MapData(UserList(UserIndex).Pos.Map, X, Y).TileExit.Map > 0 Or MapData(UserList(UserIndex).Pos.Map, X, Y).NpcIndex > 0 Or (MapData(UserList(UserIndex).Pos.Map, X, Y).Blocked And FLAG_AGUA) <> 0 Then
-            
-                    'Call WriteConsoleMsg(UserIndex, "Area invalida para tirar el item.", FontTypeNames.FONTTYPE_INFO)
-126                 Call WriteLocaleMsg(UserIndex, "262", FontTypeNames.FONTTYPE_INFO)
-                Else
-            
-128                 If UserList(UserIndex).flags.BattleModo = 1 Then
-130                     Call WriteConsoleMsg(UserIndex, "No podes tirar items en este mapa.", FontTypeNames.FONTTYPE_INFO)
-                    Else
-
-132                     If ObjData(.Invent.Object(Item).ObjIndex).Destruye = 1 Then
-134                         Call WriteConsoleMsg(UserIndex, "Acciín no disponible.", FontTypeNames.FONTTYPE_INFO)
-                        Else
-                
-136                         If ObjData(.Invent.Object(Item).ObjIndex).Instransferible = 1 Then
-138                             Call WriteConsoleMsg(UserIndex, "Acciín no disponible.", FontTypeNames.FONTTYPE_INFO)
-                            Else
-            
-140                             If ObjData(.Invent.Object(Item).ObjIndex).Newbie = 1 Then
-142                                 Call WriteConsoleMsg(UserIndex, "No se pueden tirar los objetos Newbies.", FontTypeNames.FONTTYPE_INFO)
-                                Else
-
-144                                 If ObjData(.Invent.Object(Item).ObjIndex).Intirable = 1 Then
-146                                     Call WriteConsoleMsg(UserIndex, "Este objeto es imposible de tirar.", FontTypeNames.FONTTYPE_INFO)
-                                    Else
-                    
-148                                     If ObjData(.Invent.Object(Item).ObjIndex).OBJType = eOBJType.otBarcos And UserList(UserIndex).flags.Navegando Then
-150                                         Call WriteConsoleMsg(UserIndex, "Para tirar la barca deberias estar en tierra firme.", FontTypeNames.FONTTYPE_INFO)
-        
-                                        Else
-                                            
-152                                         If ObjData(.Invent.Object(Item).ObjIndex).OBJType = eOBJType.otMonturas And UserList(UserIndex).flags.Montado Then
-154                                             Call WriteConsoleMsg(UserIndex, "Para tirar tu montura deberias descender de ella.", FontTypeNames.FONTTYPE_INFO)
-        
-                                            Else
-                
-156                                             Call DropObj(UserIndex, Item, DropCantidad, UserList(UserIndex).Pos.Map, X, Y)
-
-                                            End If
-
-                                            'End If
-                                        End If
-
-                                    End If
-
-                                End If
-
-                            End If
-
-                        End If
-
-                    End If
-
-                End If
-
-            End If
-        
-            'If we got here then packet is complete, copy data back to original queue
-158         Call .incomingData.CopyBuffer(Buffer)
-
-        End With
-    
-ErrHandler:
-
-        Dim Error As Long
-
-160     Error = Err.Number
-
-        On Error GoTo 0
-    
-        'Destroy auxiliar buffer
-162     Set Buffer = Nothing
-    
-164     If Error <> 0 Then Err.raise Error
 
 End Sub
 
@@ -30141,7 +30061,15 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
 
 110         Destino = Buffer.ReadByte()
 112         costo = Buffer.ReadLong()
-        
+
+            'If we got here then packet is complete, copy data back to original queue
+206         Call .incomingData.CopyBuffer(Buffer)
+
+            ' WyroX: WTF el costo lo decide el cliente... Desactivo....
+            Exit Sub
+
+            If costo <= 0 Then Exit Sub
+
             Dim DeDonde As CityWorldPos
 
 114         If UserList(UserIndex).Stats.GLD < costo Then
@@ -30235,9 +30163,6 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
                 End If
 
             End If
-    
-            'If we got here then packet is complete, copy data back to original queue
-206         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
