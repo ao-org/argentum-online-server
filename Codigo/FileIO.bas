@@ -2539,7 +2539,9 @@ Sub LoadSini()
         Else
             
             ' Cerramos el socket ya que no vamos a estar usándolo
-            Call frmAPISocket.Socket.CloseSck
+            If Not frmAPISocket.Socket Is Nothing Then
+                Call frmAPISocket.Socket.CloseSck
+            End If
             
         End If
     
