@@ -1766,78 +1766,67 @@ Public Function CheckRazaUsaRopa(ByVal UserIndex As Integer, ItemIndex As Intege
             Exit Function
 
         End If
-        
-        Dim i As Long
-104     For i = 1 To NUMCLASES
-
-106         If ObjData(ItemIndex).RazaProhibida(i) = UserList(UserIndex).raza Then
-108             CheckRazaUsaRopa = False
-                Exit Function
-
-            End If
-
-110     Next i
-        
-112     Select Case UserList(UserIndex).raza
+   
+104     Select Case UserList(UserIndex).raza
 
             Case eRaza.Humano
 
-114             If ObjData(ItemIndex).RazaEnana = 0 And ObjData(ItemIndex).RazaOrca = 0 And ObjData(ItemIndex).RazaDrow = 0 Then
-116                 If ObjData(ItemIndex).Ropaje > 0 Then
-118                     CheckRazaUsaRopa = True
+106             If ObjData(ItemIndex).RazaEnana = 0 And ObjData(ItemIndex).RazaOrca = 0 And ObjData(ItemIndex).RazaDrow = 0 Then
+108                 If ObjData(ItemIndex).Ropaje > 0 Then
+110                     CheckRazaUsaRopa = True
                         Exit Function
 
                     End If
 
                 End If
 
-120         Case eRaza.Elfo
+112         Case eRaza.Elfo
 
-122             If ObjData(ItemIndex).RazaEnana = 0 And ObjData(ItemIndex).RazaOrca = 0 And ObjData(ItemIndex).RazaDrow = 0 Then
-124                 CheckRazaUsaRopa = True
+114             If ObjData(ItemIndex).RazaEnana = 0 And ObjData(ItemIndex).RazaOrca = 0 And ObjData(ItemIndex).RazaDrow = 0 Then
+116                 CheckRazaUsaRopa = True
                     Exit Function
 
                 End If
     
-126         Case eRaza.Orco
+118         Case eRaza.Orco
 
-128             If ObjData(ItemIndex).RazaEnana = 0 Then
-130                 CheckRazaUsaRopa = True
+120             If ObjData(ItemIndex).RazaEnana = 0 Then
+122                 CheckRazaUsaRopa = True
                     Exit Function
 
                 End If
     
-132         Case eRaza.Drow
+124         Case eRaza.Drow
 
-134             If ObjData(ItemIndex).RazaEnana = 0 And ObjData(ItemIndex).RazaOrca = 0 Then
-136                 CheckRazaUsaRopa = True
+126             If ObjData(ItemIndex).RazaEnana = 0 And ObjData(ItemIndex).RazaOrca = 0 Then
+128                 CheckRazaUsaRopa = True
                     Exit Function
 
                 End If
     
-138         Case eRaza.Gnomo
+130         Case eRaza.Gnomo
 
-140             If ObjData(ItemIndex).RazaEnana > 0 Then
-142                 CheckRazaUsaRopa = True
+132             If ObjData(ItemIndex).RazaEnana > 0 Then
+134                 CheckRazaUsaRopa = True
                     Exit Function
 
                 End If
         
-144         Case eRaza.Enano
+136         Case eRaza.Enano
 
-146             If ObjData(ItemIndex).RazaEnana > 0 Then
-148                 CheckRazaUsaRopa = True
+138             If ObjData(ItemIndex).RazaEnana > 0 Then
+140                 CheckRazaUsaRopa = True
                     Exit Function
 
                 End If
     
         End Select
 
-150     CheckRazaUsaRopa = False
+142     CheckRazaUsaRopa = False
 
         Exit Function
 ErrHandler:
-152     Call LogError("Error CheckRazaUsaRopa ItemIndex:" & ItemIndex)
+144     Call LogError("Error CheckRazaUsaRopa ItemIndex:" & ItemIndex)
 
 End Function
 
