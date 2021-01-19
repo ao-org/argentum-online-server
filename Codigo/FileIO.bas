@@ -1669,8 +1669,20 @@ Sub LoadOBJData()
 548             Do While LenB(s) > 0 And Tilde(ListaClases(n)) <> Trim$(s)
 550                 n = n + 1
                 Loop
+            
 552             ObjData(Object).ClaseProhibida(i) = IIf(LenB(s) > 0, n, 0)
 554         Next i
+        
+556         For i = 1 To NUMRAZAS
+558             s = UCase$(Leer.GetValue("OBJ" & Object, "RP" & i))
+560             n = 1
+
+562             Do While LenB(s) > 0 And Tilde(ListaRazas(n)) <> Trim$(s)
+564                 n = n + 1
+                Loop
+            
+566             ObjData(Object).RazaProhibida(i) = IIf(LenB(s) > 0, n, 0)
+568         Next i
         
             ' Skill requerido
 556         str = Leer.GetValue("OBJ" & Object, "SkillRequerido")

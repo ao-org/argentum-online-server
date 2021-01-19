@@ -1766,8 +1766,18 @@ Public Function CheckRazaUsaRopa(ByVal UserIndex As Integer, ItemIndex As Intege
             Exit Function
 
         End If
+        
+104     For i = 1 To NUMCLASES
 
-104     Select Case UserList(UserIndex).raza
+106         If ObjData(ItemIndex).RazaProhibida(i) = UserList(UserIndex).raza Then
+108             CheckRazaUsaRopa = False
+                Exit Function
+
+            End If
+
+110     Next i
+        
+112     Select Case UserList(UserIndex).raza
 
             Case eRaza.Humano
 

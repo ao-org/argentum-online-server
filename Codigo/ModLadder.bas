@@ -929,7 +929,7 @@ Function PuedeUsarObjeto(UserIndex As Integer, ByVal ObjIndex As Integer) As Byt
                     Exit Function
 
                 End If
-       
+
 110         Case otNUDILLOS
 
 112             If Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
