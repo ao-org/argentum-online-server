@@ -1781,62 +1781,62 @@ Public Function CheckRazaUsaRopa(ByVal UserIndex As Integer, ItemIndex As Intege
 
             Case eRaza.Humano
 
-106             If ObjData(ItemIndex).RazaEnana = 0 And ObjData(ItemIndex).RazaOrca = 0 And ObjData(ItemIndex).RazaDrow = 0 Then
-108                 If ObjData(ItemIndex).Ropaje > 0 Then
-110                     CheckRazaUsaRopa = True
+114             If ObjData(ItemIndex).RazaEnana = 0 And ObjData(ItemIndex).RazaOrca = 0 And ObjData(ItemIndex).RazaDrow = 0 Then
+116                 If ObjData(ItemIndex).Ropaje > 0 Then
+118                     CheckRazaUsaRopa = True
                         Exit Function
 
                     End If
 
                 End If
 
-112         Case eRaza.Elfo
+120         Case eRaza.Elfo
 
-114             If ObjData(ItemIndex).RazaEnana = 0 And ObjData(ItemIndex).RazaOrca = 0 And ObjData(ItemIndex).RazaDrow = 0 Then
-116                 CheckRazaUsaRopa = True
+122             If ObjData(ItemIndex).RazaEnana = 0 And ObjData(ItemIndex).RazaOrca = 0 And ObjData(ItemIndex).RazaDrow = 0 Then
+124                 CheckRazaUsaRopa = True
                     Exit Function
 
                 End If
     
-118         Case eRaza.Orco
+126         Case eRaza.Orco
 
-120             If ObjData(ItemIndex).RazaEnana = 0 Then
-122                 CheckRazaUsaRopa = True
+128             If ObjData(ItemIndex).RazaEnana = 0 Then
+130                 CheckRazaUsaRopa = True
                     Exit Function
 
                 End If
     
-124         Case eRaza.Drow
+132         Case eRaza.Drow
 
-126             If ObjData(ItemIndex).RazaEnana = 0 And ObjData(ItemIndex).RazaOrca = 0 Then
-128                 CheckRazaUsaRopa = True
+134             If ObjData(ItemIndex).RazaEnana = 0 And ObjData(ItemIndex).RazaOrca = 0 Then
+136                 CheckRazaUsaRopa = True
                     Exit Function
 
                 End If
     
-130         Case eRaza.Gnomo
+138         Case eRaza.Gnomo
 
-132             If ObjData(ItemIndex).RazaEnana > 0 Then
-134                 CheckRazaUsaRopa = True
+140             If ObjData(ItemIndex).RazaEnana > 0 Then
+142                 CheckRazaUsaRopa = True
                     Exit Function
 
                 End If
         
-136         Case eRaza.Enano
+144         Case eRaza.Enano
 
-138             If ObjData(ItemIndex).RazaEnana > 0 Then
-140                 CheckRazaUsaRopa = True
+146             If ObjData(ItemIndex).RazaEnana > 0 Then
+148                 CheckRazaUsaRopa = True
                     Exit Function
 
                 End If
     
         End Select
 
-142     CheckRazaUsaRopa = False
+150     CheckRazaUsaRopa = False
 
         Exit Function
 ErrHandler:
-144     Call LogError("Error CheckRazaUsaRopa ItemIndex:" & ItemIndex)
+152     Call LogError("Error CheckRazaUsaRopa ItemIndex:" & ItemIndex)
 
 End Function
 
@@ -2889,7 +2889,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
     
 928                     Case 19 ' Reseteo de skill
     
-                            Dim S As Byte
+                            Dim s As Byte
                     
 930                         If .Stats.UserSkills(eSkill.Liderazgo) >= 80 Then
 932                             Call WriteConsoleMsg(UserIndex, "Has fundado un clan, no podes resetar tus skills. ", FontTypeNames.FONTTYPE_INFOIAO)
@@ -2897,9 +2897,9 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
     
                             End If
                         
-934                         For S = 1 To NUMSKILLS
-936                             .Stats.UserSkills(S) = 0
-938                         Next S
+934                         For s = 1 To NUMSKILLS
+936                             .Stats.UserSkills(s) = 0
+938                         Next s
                         
                             Dim SkillLibres As Integer
                         
