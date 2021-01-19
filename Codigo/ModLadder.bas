@@ -912,107 +912,118 @@ End Sub
 Function PuedeUsarObjeto(UserIndex As Integer, ByVal ObjIndex As Integer) As Byte
         
         On Error GoTo PuedeUsarObjeto_Err
-        
 
 100     If UserList(UserIndex).Stats.ELV < ObjData(ObjIndex).MinELV Then
 102         PuedeUsarObjeto = 6
             Exit Function
 
         End If
+        
+        Dim i As Long
+104     For i = 1 To NUMCLASES
 
-104     Select Case ObjData(ObjIndex).OBJType
+106         If ObjData(ItemIndex).RazaProhibida(i) = UserList(UserIndex).raza Then
+108             PuedeUsarObjeto = 5
+                Exit Function
+
+            End If
+
+110     Next i
+
+112     Select Case ObjData(ObjIndex).OBJType
 
             Case otWeapon
 
-106             If Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
-108                 PuedeUsarObjeto = 2
+114             If Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
+116                 PuedeUsarObjeto = 2
                     Exit Function
 
                 End If
-       
-110         Case otNUDILLOS
 
-112             If Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
-114                 PuedeUsarObjeto = 2
+118         Case otNUDILLOS
+
+120             If Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
+122                 PuedeUsarObjeto = 2
                     Exit Function
 
                 End If
         
-116         Case otArmadura
+124         Case otArmadura
             
-118             If Not CheckRazaUsaRopa(UserIndex, ObjIndex) Then
-120                 PuedeUsarObjeto = 5
+126             If Not CheckRazaUsaRopa(UserIndex, ObjIndex) Then
+128                 PuedeUsarObjeto = 5
                     Exit Function
 
                 End If
                 
-122             If Not SexoPuedeUsarItem(UserIndex, ObjIndex) Then
-124                 PuedeUsarObjeto = 1
+130             If Not SexoPuedeUsarItem(UserIndex, ObjIndex) Then
+132                 PuedeUsarObjeto = 1
                     Exit Function
 
                 End If
 
-126             If Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
-128                 PuedeUsarObjeto = 2
+134             If Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
+136                 PuedeUsarObjeto = 2
                     Exit Function
 
                 End If
 
-130         Case otCASCO
+138         Case otCASCO
             
-132             If Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
-134                 PuedeUsarObjeto = 2
+140             If Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
+142                 PuedeUsarObjeto = 2
                     Exit Function
 
                 End If
                 
-136         Case otESCUDO
+144         Case otESCUDO
             
-138             If Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
-140                 PuedeUsarObjeto = 2
+146             If Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
+148                 PuedeUsarObjeto = 2
                     Exit Function
 
                 End If
             
-142         Case otPergaminos
+150         Case otPergaminos
             
-144             If Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
-146                 PuedeUsarObjeto = 2
+152             If Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
+154                 PuedeUsarObjeto = 2
                     Exit Function
 
                 End If
 
-148         Case otMonturas
+156         Case otMonturas
 
-150             If Not CheckClaseTipo(UserIndex, ObjIndex) Then
-152                 PuedeUsarObjeto = 2
+158             If Not CheckClaseTipo(UserIndex, ObjIndex) Then
+160                 PuedeUsarObjeto = 2
                     Exit Function
 
                 End If
                 
-154             If Not CheckRazaTipo(UserIndex, ObjIndex) Then
-156                 PuedeUsarObjeto = 5
+162             If Not CheckRazaTipo(UserIndex, ObjIndex) Then
+164                 PuedeUsarObjeto = 5
                     Exit Function
 
                 End If
                 
-158         Case otHerramientas
-160             If Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
-162                 PuedeUsarObjeto = 2
+166         Case otHerramientas
+
+168             If Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
+170                 PuedeUsarObjeto = 2
                     Exit Function
 
                 End If
             
         End Select
 
-164     PuedeUsarObjeto = 0
-
+172     PuedeUsarObjeto = 0
         
         Exit Function
 
 PuedeUsarObjeto_Err:
-166     Call RegistrarError(Err.Number, Err.Description, "ModLadder.PuedeUsarObjeto", Erl)
-168     Resume Next
+174     Call RegistrarError(Err.Number, Err.Description, "ModLadder.PuedeUsarObjeto", Erl)
+
+176     Resume Next
         
 End Function
 
