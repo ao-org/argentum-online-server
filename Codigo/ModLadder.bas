@@ -923,7 +923,7 @@ Function PuedeUsarObjeto(UserIndex As Integer, ByVal ObjIndex As Integer) As Byt
 104     For i = 1 To NUMCLASES
 
 106         If ObjData(ItemIndex).RazaProhibida(i) = UserList(UserIndex).raza Then
-108             CheckRazaUsaRopa = False
+108             PuedeUsarObjeto = False
                 Exit Function
 
             End If
