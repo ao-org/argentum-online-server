@@ -2087,10 +2087,9 @@ Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal 
             '[Nacho] Chekeamos que las variables sean validas para las operaciones
 104         If ElDaño <= 0 Then ElDaño = 0
 106         If Npclist(NpcIndex).Stats.MaxHp <= 0 Then Exit Sub
-108         If ElDaño > Npclist(NpcIndex).Stats.MinHp Then ElDaño = Npclist(NpcIndex).Stats.MinHp
-    
+
             '[Nacho] La experiencia a dar es la porcion de vida quitada * toda la experiencia
-110         ExpaDar = CLng((ElDaño) * (Npclist(NpcIndex).GiveEXP / Npclist(NpcIndex).Stats.MaxHp))
+110         ExpaDar = ElDaño * Npclist(NpcIndex).GiveEXP / Npclist(NpcIndex).Stats.MaxHp
 
 112         If ExpaDar <= 0 Then Exit Sub
 
