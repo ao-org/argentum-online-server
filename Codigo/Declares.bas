@@ -770,7 +770,7 @@ Public Enum eOBJType
     OtPozos = 40
     otMonturas = 44
     otRunas = 45
-    otNudillos = 46
+    otNUDILLOS = 46
     OtCorreo = 47
     OtCofre = 48
     OtDonador = 50
@@ -1700,6 +1700,7 @@ Public Type UserCounters
     Salir As Integer
     '[/Gonzalo]
     RepetirMensaje As Integer
+    MensajeGlobal As Long
     
     Maldicion As Byte
 
