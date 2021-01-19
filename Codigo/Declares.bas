@@ -1311,7 +1311,7 @@ Public Type ObjData
     ClaseProhibida(1 To NUMCLASES) As eClass
     
     'Razas que no tienen permitido usar este obj
-    ClaseProhibida(1 To NUMRAZAS) As eRaza
+    RazaProhibida(1 To NUMRAZAS) As eRaza
     
     ClasePermitida As String
     

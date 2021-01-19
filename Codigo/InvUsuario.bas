@@ -1767,6 +1767,7 @@ Public Function CheckRazaUsaRopa(ByVal UserIndex As Integer, ItemIndex As Intege
 
         End If
         
+        Dim i As Long
 104     For i = 1 To NUMCLASES
 
 106         If ObjData(ItemIndex).RazaProhibida(i) = UserList(UserIndex).raza Then
