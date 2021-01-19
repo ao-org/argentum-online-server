@@ -130,6 +130,8 @@ Public LimiteGuardarUsuarios        As Integer
 
 Public IntervaloTimerGuardarUsuarios As Integer
 
+Public IntervaloMensajeGlobal       As Long
+
 'BALANCE
 
 Public PorcentajeRecuperoMana       As Integer

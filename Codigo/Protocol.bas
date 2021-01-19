@@ -1751,7 +1751,7 @@ Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
 404     ElseIf Err.Number <> 0 And Not Err.Number = UserList(UserIndex).incomingData.NotEnoughDataErrCode Then
             'An error ocurred, log it and kick player.
 406         Call LogError("Error: " & Err.Number & " [" & Err.Description & "] - Linea: " & Erl & _
-                          " Source: " & Err.source & vbTab & _
+                          " Source: " & Err.Source & vbTab & _
                           " HelpFile: " & Err.HelpFile & vbTab & _
                           " HelpContext: " & Err.HelpContext & vbTab & _
                           " LastDllError: " & Err.LastDllError & vbTab & _
@@ -25472,10 +25472,16 @@ Private Sub HandleGlobalMessage(ByVal UserIndex As Integer)
             Exit Sub
 
         End If
+        
+        Dim TActual As Long
+        Dim ElapsedTime As Long
 
+        TActual = GetTickCount()
+        ElapsedTime = TActual - UserList(UserIndex).Counters.MensajeGlobal
+                
         On Error GoTo ErrHandler
 
-104     With UserList(UserIndex)
+        With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
             Dim Buffer As New clsByteQueue
@@ -25492,12 +25498,14 @@ Private Sub HandleGlobalMessage(ByVal UserIndex As Integer)
 112         If .flags.Silenciado = 1 Then
 114             Call WriteLocaleMsg(UserIndex, "110", FontTypeNames.FONTTYPE_VENENO, .flags.MinutosRestantes)
                 'Call WriteConsoleMsg(UserIndex, "Los administradores te han impedido hablar durante los proximos " & .flags.MinutosRestantes & " minutos debido a tu comportamiento.", FontTypeNames.FONTTYPE_VENENO)
+            ElseIf ElapsedTime < IntervaloMensajeGlobal Then
+                Call WriteConsoleMsg(UserIndex, "No puedes escribir mensajes globales tan rápido.", FontTypeNames.FONTTYPE_WARNING)
             Else
-
-116             If EstadoGlobal Then
-118                 If LenB(chat) <> 0 Then
+                UserList(UserIndex).Counters.MensajeGlobal = TActual
+116                 If EstadoGlobal Then
+118                     If LenB(chat) <> 0 Then
                         'Analize chat...
-120                     Call Statistics.ParseChat(chat)
+120                         Call Statistics.ParseChat(chat)
 
                         ' WyroX: Foto-denuncias - Push message
                         Dim i As Integer
@@ -25506,14 +25514,14 @@ Private Sub HandleGlobalMessage(ByVal UserIndex As Integer)
                         Next
                         .flags.ChatHistory(UBound(.flags.ChatHistory)) = chat
 
-122                     Call modSendData.SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("[" & .name & "] " & chat, FontTypeNames.FONTTYPE_GLOBAL))
+122                         Call modSendData.SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("[" & .name & "] " & chat, FontTypeNames.FONTTYPE_GLOBAL))
 
                         'TODO : Con la 0.12.1 se debe definir si esto vuelve o se borra (/CMSG overhead)
                         'Call SendData(SendTarget.ToPCArea, UserIndex, UserList(UserIndex).Pos.map, "||" & vbBlue & "í< " & rData & " >í" & CStr(UserList(UserIndex).Char.CharIndex))
                     End If
 
                 Else
-124                 Call WriteConsoleMsg(UserIndex, "El global se encuentra Desactivado.", FontTypeNames.FONTTYPE_GLOBAL)
+124                     Call WriteConsoleMsg(UserIndex, "El global se encuentra Desactivado.", FontTypeNames.FONTTYPE_GLOBAL)
 
                 End If
 

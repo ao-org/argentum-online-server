@@ -741,7 +741,7 @@ Public Sub CargarHechizos()
 254         Hechizos(Hechizo).Estupidez = val(Leer.GetValue("Hechizo" & Hechizo, "Estupidez"))
     
 256         Hechizos(Hechizo).Invoca = val(Leer.GetValue("Hechizo" & Hechizo, "Invoca"))
-258         Hechizos(Hechizo).NumNPC = val(Leer.GetValue("Hechizo" & Hechizo, "NumNpc"))
+258         Hechizos(Hechizo).NumNpc = val(Leer.GetValue("Hechizo" & Hechizo, "NumNpc"))
 260         Hechizos(Hechizo).cant = val(Leer.GetValue("Hechizo" & Hechizo, "Cant"))
 262         Hechizos(Hechizo).Mimetiza = val(Leer.GetValue("Hechizo" & Hechizo, "Mimetiza"))
     
@@ -2318,24 +2318,24 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
 278             ReDim NPCs(1 To .NumeroNPCs)
 280             Get #fh, , NPCs
 
-                Dim NumNPC As Integer
+                Dim NumNpc As Integer
                  
 282             For i = 1 To .NumeroNPCs
 
-284                 NumNPC = NPCs(i).NpcIndex
+284                 NumNpc = NPCs(i).NpcIndex
                     
-286                 If NumNPC > 0 Then
+286                 If NumNpc > 0 Then
 288                     npcfile = DatPath & "NPCs.dat"
 
                         'Si el npc debe hacer respawn en la pos
                         'original la guardamos
-290                     If val(GetVar(npcfile, "NPC" & NumNPC, "PosOrig")) = 1 Then
-292                         MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex = OpenNPC(NumNPC)
+290                     If val(GetVar(npcfile, "NPC" & NumNpc, "PosOrig")) = 1 Then
+292                         MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex = OpenNPC(NumNpc)
 294                         Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Orig.Map = Map
 296                         Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Orig.X = NPCs(i).X
 298                         Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Orig.Y = NPCs(i).Y
                         Else
-300                         MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex = OpenNPC(NumNPC)
+300                         MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex = OpenNPC(NumNpc)
 
                         End If
 
@@ -2821,6 +2821,8 @@ Sub LoadIntervalos()
 234     LimiteGuardarUsuarios = val(Lector.GetValue("INTERVALOS", "LimiteGuardarUsuarios"))
 
 236     IntervaloTimerGuardarUsuarios = val(Lector.GetValue("INTERVALOS", "IntervaloTimerGuardarUsuarios"))
+
+        IntervaloMensajeGlobal = val(Lector.GetValue("INTERVALOS", "IntervaloMensajeGlobal"))
     
         '&&&&&&&&&&&&&&&&&&&&& FIN TIMERS &&&&&&&&&&&&&&&&&&&&&&&
     
