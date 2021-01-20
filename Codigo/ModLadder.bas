@@ -916,11 +916,10 @@ Function PuedeUsarObjeto(UserIndex As Integer, ByVal ObjIndex As Integer) As Byt
 100     If UserList(UserIndex).Stats.ELV < ObjData(ObjIndex).MinELV Then
 102         PuedeUsarObjeto = 6
             Exit Function
-
         End If
         
         Dim i As Long
-104     For i = 1 To NUMCLASES
+104     For i = 1 To NUMRAZAS
 
 106         If ObjData(ObjIndex).RazaProhibida(i) = UserList(UserIndex).raza Then
 108             PuedeUsarObjeto = 5
@@ -940,7 +939,7 @@ Function PuedeUsarObjeto(UserIndex As Integer, ByVal ObjIndex As Integer) As Byt
 
                 End If
 
-118         Case otNUDILLOS
+118         Case otNudillos
 
 120             If Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
 122                 PuedeUsarObjeto = 2
@@ -968,7 +967,7 @@ Function PuedeUsarObjeto(UserIndex As Integer, ByVal ObjIndex As Integer) As Byt
 
                 End If
 
-138         Case otCASCO
+138         Case otCasco
             
 140             If Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
 142                 PuedeUsarObjeto = 2
@@ -976,7 +975,7 @@ Function PuedeUsarObjeto(UserIndex As Integer, ByVal ObjIndex As Integer) As Byt
 
                 End If
                 
-144         Case otESCUDO
+144         Case otEscudo
             
 146             If Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
 148                 PuedeUsarObjeto = 2

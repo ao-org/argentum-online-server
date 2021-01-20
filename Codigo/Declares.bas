@@ -747,8 +747,8 @@ Public Enum eOBJType
     otBebidas = 13
     otLeña = 14
     otFogata = 15
-    otESCUDO = 16
-    otCASCO = 17
+    otEscudo = 16
+    otCasco = 17
     otHerramientas = 18
     otTeleport = 19
     OtDecoraciones = 20
@@ -770,7 +770,7 @@ Public Enum eOBJType
     OtPozos = 40
     otMonturas = 44
     otRunas = 45
-    otNUDILLOS = 46
+    otNudillos = 46
     OtCorreo = 47
     OtCofre = 48
     OtDonador = 50

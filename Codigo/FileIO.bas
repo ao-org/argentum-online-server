@@ -1395,7 +1395,7 @@ Sub LoadOBJData()
 182                     .SkHerreria = val(Leer.GetValue("OBJ" & Object, "SkHerreria"))
 184                     .ResistenciaMagica = val(Leer.GetValue("OBJ" & Object, "ResistenciaMagica"))
         
-186                 Case eOBJType.otESCUDO
+186                 Case eOBJType.otEscudo
 188                     .ShieldAnim = val(Leer.GetValue("OBJ" & Object, "Anim"))
 190                     .LingH = val(Leer.GetValue("OBJ" & Object, "LingH"))
 192                     .LingP = val(Leer.GetValue("OBJ" & Object, "LingP"))
@@ -1405,7 +1405,7 @@ Sub LoadOBJData()
 200                     .Caos = val(Leer.GetValue("OBJ" & Object, "Caos"))
 202                     .ResistenciaMagica = val(Leer.GetValue("OBJ" & Object, "ResistenciaMagica"))
         
-204                 Case eOBJType.otCASCO
+204                 Case eOBJType.otCasco
 206                     .CascoAnim = val(Leer.GetValue("OBJ" & Object, "Anim"))
 208                     .LingH = val(Leer.GetValue("OBJ" & Object, "LingH"))
 210                     .LingP = val(Leer.GetValue("OBJ" & Object, "LingP"))
@@ -1514,7 +1514,7 @@ Sub LoadOBJData()
 362                     .HastaX = val(Leer.GetValue("OBJ" & Object, "X"))
 364                     .HastaY = val(Leer.GetValue("OBJ" & Object, "Y"))
                     
-366                 Case eOBJType.otNUDILLOS
+366                 Case eOBJType.otNudillos
 368                     .MinHIT = val(Leer.GetValue("OBJ" & Object, "MinHIT"))
 370                     .MaxHit = val(Leer.GetValue("OBJ" & Object, "MaxHit"))
 372                     .Envenena = val(Leer.GetValue("OBJ" & Object, "Envenena"))

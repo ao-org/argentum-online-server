@@ -737,10 +737,10 @@ Public Sub HerreroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As I
 110         If ObjData(ItemIndex).OBJType = eOBJType.otWeapon Then
                 ' Call WriteConsoleMsg(UserIndex, "Has construido el arma!", FontTypeNames.FONTTYPE_INFO)
 112             Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.CharIndex, vbWhite)
-114         ElseIf ObjData(ItemIndex).OBJType = eOBJType.otESCUDO Then
+114         ElseIf ObjData(ItemIndex).OBJType = eOBJType.otEscudo Then
                 ' Call WriteConsoleMsg(UserIndex, "Has construido el escudo!", FontTypeNames.FONTTYPE_INFO)
 116             Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.CharIndex, vbWhite)
-118         ElseIf ObjData(ItemIndex).OBJType = eOBJType.otCASCO Then
+118         ElseIf ObjData(ItemIndex).OBJType = eOBJType.otCasco Then
                 ' Call WriteConsoleMsg(UserIndex, "Has construido el casco!", FontTypeNames.FONTTYPE_INFO)
 120             Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.CharIndex, vbWhite)
 122         ElseIf ObjData(ItemIndex).OBJType = eOBJType.otArmadura Then
