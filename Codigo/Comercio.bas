@@ -59,10 +59,6 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
         Dim objquedo     As obj
 
         Dim precioenvio  As Single
-
-        Dim DestruirItem As Boolean
-    
-100     DestruirItem = False
     
         Dim NpcSlot As Integer
     
@@ -158,9 +154,6 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
 176         ElseIf UserList(UserIndex).flags.BattleModo = 1 Then
 178             Call WriteConsoleMsg(UserIndex, "Lo siento, no comercio items robados.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-            
-180         ElseIf Not MeterItemEnInventarioDeNpc(UserList(UserIndex).flags.TargetNPC, Objeto) Then
-182             DestruirItem = True
           
 184         ElseIf (Npclist(NpcIndex).TipoItems <> ObjData(Objeto.ObjIndex).OBJType And Npclist(NpcIndex).TipoItems <> eOBJType.otCualquiera) Or Objeto.ObjIndex = iORO Then
 186             Call WriteConsoleMsg(UserIndex, "Lo siento, no estoy interesado en este tipo de objetos.", FontTypeNames.FONTTYPE_INFO)
@@ -204,22 +197,15 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
 216         If UserList(UserIndex).Stats.GLD > MAXORO Then UserList(UserIndex).Stats.GLD = MAXORO
             
 218         Call WriteUpdateGold(UserIndex)
-            
-220         If DestruirItem Then
-
-222             Call UpdateUserInv(False, UserIndex, slot)
-
-224             Call WriteUpdateUserStats(UserIndex)
-
-226             Call SubirSkill(UserIndex, eSkill.Comerciar)
-            
-                Exit Sub
-
-            End If
         
 228         NpcSlot = SlotEnNPCInv(NpcIndex, Objeto.ObjIndex, Objeto.Amount)
         
-230         If NpcSlot <= UserList(UserIndex).CurrentInventorySlots Then 'Slot valido
+230         If NpcSlot > 0 And NpcSlot <= MAX_INVENTORY_SLOTS Then 'Slot valido
+                
+                ' Saque este incremento de SlotEnNPCInv porque me parece mejor manejarlo junto con el resto de las asignaciones
+                If Npclist(NpcIndex).Invent.Object(NpcSlot).ObjIndex = 0 Then
+                    Npclist(NpcIndex).Invent.NroItems = Npclist(NpcIndex).Invent.NroItems + 1
+                End If
                 
                 'Mete el obj en el slot
 232             Npclist(NpcIndex).Invent.Object(NpcSlot).ObjIndex = Objeto.ObjIndex
@@ -230,6 +216,14 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
                 End If
                 
 240             Call UpdateNpcInvToAll(False, NpcIndex, NpcSlot)
+
+242             objquedo.Amount = Npclist(NpcIndex).Invent.Object(NpcSlot).Amount
+    
+244             objquedo.ObjIndex = Npclist(NpcIndex).Invent.Object(NpcSlot).ObjIndex
+    
+246             precioenvio = CLng((ObjData(Objeto.ObjIndex).Valor / Descuento(UserIndex) * 1))
+  
+248             Call WriteChangeNPCInventorySlot(UserIndex, NpcSlot, objquedo, precioenvio)
                 
             End If
         
@@ -243,14 +237,6 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
             '         Call LogDesarrollo(UserList(UserIndex).name & " vendió al NPC " & Objeto.Amount & " " & ObjData(Objeto.ObjIndex).name)
             '     End If
             ' End If
-            
-242         objquedo.Amount = Npclist(NpcIndex).Invent.Object(NpcSlot).Amount
-    
-244         objquedo.ObjIndex = Npclist(NpcIndex).Invent.Object(NpcSlot).ObjIndex
-    
-246         precioenvio = CLng((ObjData(Objeto.ObjIndex).Valor / Descuento(UserIndex) * 1))
-  
-248         Call WriteChangeNPCInventorySlot(UserIndex, NpcSlot, objquedo, precioenvio)
 
         End If
 
@@ -261,7 +247,7 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
 
 Comercio_Err:
 
-252     Call RegistrarError(Err.Number, Err.description, "modSistemaComercio.Comercio", Erl)
+252     Call RegistrarError(Err.Number, Err.Description, "modSistemaComercio.Comercio", Erl)
 254     Resume Next
         
 End Sub
@@ -289,50 +275,49 @@ Public Sub IniciarComercioNPC(ByVal UserIndex As Integer)
 
 IniciarComercioNPC_Err:
 
-110     Call RegistrarError(Err.Number, Err.description, "modSistemaComercio.IniciarComercioNPC", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "modSistemaComercio.IniciarComercioNPC", Erl)
 112     Resume Next
         
 End Sub
 
 Private Function SlotEnNPCInv(ByVal NpcIndex As Integer, ByVal Objeto As Integer, ByVal Cantidad As Integer) As Integer
         '*************************************************
-        'Author: Nacho (Integer)
-        'Last modified: 2/8/06
+        'Devuelve el slot en el cual se debe agregar el nuevo objeto, o 0 si no se debe asignar en ningun lado
         '*************************************************
         
         On Error GoTo SlotEnNPCInv_Err
+               
+        Dim slot As Byte
+        Dim matchingSlots As New Collection
+        Dim firstEmptySpace As Integer
         
-100     SlotEnNPCInv = 1
-
-102     Do Until Npclist(NpcIndex).Invent.Object(SlotEnNPCInv).ObjIndex = Objeto And Npclist(NpcIndex).Invent.Object(SlotEnNPCInv).Amount + Cantidad <= MAX_INVENTORY_OBJS
+        ' Recorro el inventario buscando el objeto a agregar y espacios vacios
+        firstEmptySpace = 0
+        For slot = 1 To MAX_INVENTORY_SLOTS
+            If Npclist(NpcIndex).Invent.Object(slot).ObjIndex = Objeto Then
+                matchingSlots.Add (slot)
+            ElseIf Npclist(NpcIndex).Invent.Object(slot).ObjIndex = 0 And firstEmptySpace = 0 Then
+                firstEmptySpace = slot
+            End If
+        Next slot
         
-104         SlotEnNPCInv = SlotEnNPCInv + 1
-
-106         If SlotEnNPCInv > MAX_INVENTORY_SLOTS Then Exit Do
-        
-        Loop
-    
-108     If SlotEnNPCInv > MAX_INVENTORY_SLOTS Then
-    
-110         SlotEnNPCInv = 1
-        
-112         Do Until Npclist(NpcIndex).Invent.Object(SlotEnNPCInv).ObjIndex = 0
-        
-114             SlotEnNPCInv = SlotEnNPCInv + 1
-
-116             If SlotEnNPCInv > MAX_INVENTORY_SLOTS Then Exit Do
-            
-            Loop
-        
-118         If SlotEnNPCInv <= MAX_INVENTORY_SLOTS Then Npclist(NpcIndex).Invent.NroItems = Npclist(NpcIndex).Invent.NroItems + 1
-    
+        ' Recorro los slots donde hay objetos que matcheen con el objeto a agregar y si alguno tiene espacio, lo agrego ahi. Si no, se descarta
+        If matchingSlots.Count <> 0 Then
+            For slot = 1 To matchingSlots.Count
+                If Npclist(NpcIndex).Invent.Object(matchingSlots.Item(slot)).Amount < MAX_INVENTORY_OBJS Then
+                    SlotEnNPCInv = matchingSlots.Item(slot)
+                    Exit Function
+                End If
+            Next slot
+            SlotEnNPCInv = 0
+            Exit Function
         End If
-    
         
+        SlotEnNPCInv = firstEmptySpace
         Exit Function
 
 SlotEnNPCInv_Err:
-120     Call RegistrarError(Err.Number, Err.description, "modSistemaComercio.SlotEnNPCInv", Erl)
+120     Call RegistrarError(Err.Number, Err.Description, "modSistemaComercio.SlotEnNPCInv", Erl)
 122     Resume Next
         
 End Function
@@ -351,7 +336,7 @@ Private Function Descuento(ByVal UserIndex As Integer) As Single
         Exit Function
 
 Descuento_Err:
-102     Call RegistrarError(Err.Number, Err.description, "modSistemaComercio.Descuento", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "modSistemaComercio.Descuento", Erl)
 104     Resume Next
         
 End Function
@@ -413,7 +398,7 @@ Private Sub UpdateNpcInv(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer,
             Exit Sub
 
 EnviarNpcInv_Err:
-132         Call RegistrarError(Err.Number, Err.description, "modSistemaComercio.UpdateNpcInv", Erl)
+132         Call RegistrarError(Err.Number, Err.Description, "modSistemaComercio.UpdateNpcInv", Erl)
 134         Resume Next
         
 End Sub
@@ -455,7 +440,7 @@ Public Sub UpdateNpcInvToAll(ByVal UpdateAll As Boolean, ByVal NpcIndex As Integ
     
 ErrHandler:
     
-110     Call RegistrarError(Err.Number, Err.description, "modSistemaComercio.UpdateNpcInvToAll")
+110     Call RegistrarError(Err.Number, Err.Description, "modSistemaComercio.UpdateNpcInvToAll")
 112     Resume Next
     
 End Sub
@@ -483,7 +468,7 @@ Public Function SalePrice(ByVal ObjIndex As Integer) As Single
         Exit Function
 
 SalePrice_Err:
-106     Call RegistrarError(Err.Number, Err.description, "modSistemaComercio.SalePrice", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "modSistemaComercio.SalePrice", Erl)
 108     Resume Next
         
 End Function
