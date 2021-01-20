@@ -1661,9 +1661,9 @@ Sub UsuarioAtacadoPorUsuario(ByVal attackerIndex As Integer, ByVal VictimIndex A
     
         'If UserList(VictimIndex).Familiar.Existe = 1 Then
         '  If UserList(VictimIndex).Familiar.Invocado = 1 Then
-        '  Npclist(UserList(VictimIndex).Familiar.Id).flags.AttackedBy = UserList(attackerIndex).name
-        '  Npclist(UserList(VictimIndex).Familiar.Id).Movement = TipoAI.NPCDEFENSA
-        '  Npclist(UserList(VictimIndex).Familiar.Id).Hostile = 1
+        '  NpcList(UserList(VictimIndex).Familiar.Id).flags.AttackedBy = UserList(attackerIndex).name
+        '  NpcList(UserList(VictimIndex).Familiar.Id).Movement = TipoAI.NPCDEFENSA
+        '  NpcList(UserList(VictimIndex).Familiar.Id).Hostile = 1
         ' End If
         ' End If
         

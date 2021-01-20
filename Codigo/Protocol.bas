@@ -9206,7 +9206,7 @@ Private Sub HandleBankExtractGold(ByVal UserIndex As Integer)
 124         If Amount > 0 And Amount <= .Stats.Banco Then
 126             .Stats.Banco = .Stats.Banco - Amount
 128             .Stats.GLD = .Stats.GLD + Amount
-                'Call WriteChatOverHead(UserIndex, "Tenés " & .Stats.Banco & " monedas de oro en tu cuenta.", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
+                'Call WriteChatOverHead(UserIndex, "Tenés " & .Stats.Banco & " monedas de oro en tu cuenta.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
 
 130             Call WriteUpdateGold(UserIndex)
 132             Call WriteGoliathInit(UserIndex)
@@ -9380,7 +9380,7 @@ Private Sub HandleBankDepositGold(ByVal UserIndex As Integer)
 124         If Amount > 0 And Amount <= .Stats.GLD Then
 126             .Stats.Banco = .Stats.Banco + Amount
 128             .Stats.GLD = .Stats.GLD - Amount
-                'Call WriteChatOverHead(UserIndex, "Tenés " & .Stats.Banco & " monedas de oro en tu cuenta.", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
+                'Call WriteChatOverHead(UserIndex, "Tenés " & .Stats.Banco & " monedas de oro en tu cuenta.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
             
 130             Call WriteUpdateGold(UserIndex)
 132             Call WriteGoliathInit(UserIndex)
@@ -30286,8 +30286,8 @@ Public Sub HandleQuest(ByVal UserIndex As Integer)
         End If
     
         'El personaje ya hizo la quest?
-      '  If UserDoneQuest(UserIndex, Npclist(NpcIndex).QuestNumber) Then
-        '    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead("Ya has hecho una mision para mi.", Npclist(NpcIndex).Char.CharIndex, vbWhite))
+      '  If UserDoneQuest(UserIndex, NpcList(NpcIndex).QuestNumber) Then
+        '    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead("Ya has hecho una mision para mi.", NpcList(NpcIndex).Char.CharIndex, vbWhite))
          '   Exit Sub
 
        ' End If
@@ -30299,19 +30299,19 @@ Public Sub HandleQuest(ByVal UserIndex As Integer)
         
  
         'El personaje tiene suficiente nivel?
-       ' If UserList(UserIndex).Stats.ELV < QuestList(Npclist(NpcIndex).QuestNumber).RequiredLevel Then
-          '  Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead("Debes ser por lo menos nivel " & QuestList(Npclist(NpcIndex).QuestNumber).RequiredLevel & " para emprender esta mision.", Npclist(NpcIndex).Char.CharIndex, vbWhite))
+       ' If UserList(UserIndex).Stats.ELV < QuestList(NpcList(NpcIndex).QuestNumber).RequiredLevel Then
+          '  Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead("Debes ser por lo menos nivel " & QuestList(NpcList(NpcIndex).QuestNumber).RequiredLevel & " para emprender esta mision.", NpcList(NpcIndex).Char.CharIndex, vbWhite))
          '   Exit Sub
 
         'End If
     
         'A esta altura ya analizo todas las restricciones y esta preparado para el handle propiamente dicho
  
-       ' tmpByte = TieneQuest(UserIndex, Npclist(NpcIndex).QuestNumber)
+       ' tmpByte = TieneQuest(UserIndex, NpcList(NpcIndex).QuestNumber)
     
       '  If tmpByte Then
             'El usuario esta haciendo la quest, entonces va a hablar con el NPC para recibir la recompensa.
-         '   Call FinishQuest(UserIndex, Npclist(NpcIndex).QuestNumber, tmpByte)
+         '   Call FinishQuest(UserIndex, NpcList(NpcIndex).QuestNumber, tmpByte)
       '  Else
             'El usuario no esta haciendo la quest, entonces primero recibe un informe con los detalles de la mision.
          '   tmpByte = FreeQuestSlot(UserIndex)
@@ -30324,7 +30324,7 @@ Public Sub HandleQuest(ByVal UserIndex As Integer)
        '     End If
         
             'Enviamos los detalles de la quest
-         '   Call WriteQuestDetails(UserIndex, Npclist(NpcIndex).QuestNumber)
+         '   Call WriteQuestDetails(UserIndex, NpcList(NpcIndex).QuestNumber)
 
        ' End If
 

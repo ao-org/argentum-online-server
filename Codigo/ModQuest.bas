@@ -46,7 +46,7 @@ Public Function TieneQuest(ByVal UserIndex As Integer, ByVal QuestNumber As Inte
         Exit Function
 
 TieneQuest_Err:
-110     Call RegistrarError(Err.Number, Err.description, "ModQuest.TieneQuest", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "ModQuest.TieneQuest", Erl)
 112     Resume Next
         
 End Function
@@ -78,7 +78,7 @@ Public Function FreeQuestSlot(ByVal UserIndex As Integer) As Byte
         Exit Function
 
 FreeQuestSlot_Err:
-110     Call RegistrarError(Err.Number, Err.description, "ModQuest.FreeQuestSlot", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "ModQuest.FreeQuestSlot", Erl)
 112     Resume Next
         
 End Function
@@ -239,7 +239,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
         Exit Sub
 
 FinishQuest_Err:
-202     Call RegistrarError(Err.Number, Err.description, "ModQuest.FinishQuest", Erl)
+202     Call RegistrarError(Err.Number, Err.Description, "ModQuest.FinishQuest", Erl)
 204     Resume Next
         
 End Sub
@@ -264,7 +264,7 @@ Public Sub AddDoneQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer)
         Exit Sub
 
 AddDoneQuest_Err:
-108     Call RegistrarError(Err.Number, Err.description, "ModQuest.AddDoneQuest", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "ModQuest.AddDoneQuest", Erl)
 110     Resume Next
         
 End Sub
@@ -310,7 +310,7 @@ Public Function UserDoneQuest(ByVal UserIndex As Integer, ByVal QuestIndex As In
         Exit Function
 
 UserDoneQuest_Err:
-118     Call RegistrarError(Err.Number, Err.description, "ModQuest.UserDoneQuest", Erl)
+118     Call RegistrarError(Err.Number, Err.Description, "ModQuest.UserDoneQuest", Erl)
 120     Resume Next
         
 End Function
@@ -355,7 +355,7 @@ Public Sub CleanQuestSlot(ByVal UserIndex As Integer, ByVal QuestSlot As Integer
         Exit Sub
 
 CleanQuestSlot_Err:
-122     Call RegistrarError(Err.Number, Err.description, "ModQuest.CleanQuestSlot", Erl)
+122     Call RegistrarError(Err.Number, Err.Description, "ModQuest.CleanQuestSlot", Erl)
 124     Resume Next
         
 End Sub
@@ -385,7 +385,7 @@ Public Sub ResetQuestStats(ByVal UserIndex As Integer)
         Exit Sub
 
 ResetQuestStats_Err:
-112     Call RegistrarError(Err.Number, Err.description, "ModQuest.ResetQuestStats", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "ModQuest.ResetQuestStats", Erl)
 114     Resume Next
         
 End Sub
@@ -592,7 +592,7 @@ Public Sub LoadQuestStats(ByVal UserIndex As Integer, ByRef UserFile As clsIniRe
         Exit Sub
 
 LoadQuestStats_Err:
-150     Call RegistrarError(Err.Number, Err.description, "ModQuest.LoadQuestStats", Erl)
+150     Call RegistrarError(Err.Number, Err.Description, "ModQuest.LoadQuestStats", Erl)
 152     Resume Next
         
 End Sub
@@ -658,7 +658,7 @@ Public Sub SaveQuestStats(ByVal UserIndex As Integer, ByRef UserFile As String)
         Exit Sub
 
 SaveQuestStats_Err:
-134     Call RegistrarError(Err.Number, Err.description, "ModQuest.SaveQuestStats", Erl)
+134     Call RegistrarError(Err.Number, Err.Description, "ModQuest.SaveQuestStats", Erl)
 136     Resume Next
         
 End Sub
@@ -703,7 +703,7 @@ Public Sub ArrangeUserQuests(ByVal UserIndex As Integer)
         Exit Sub
 
 ArrangeUserQuests_Err:
-118     Call RegistrarError(Err.Number, Err.description, "ModQuest.ArrangeUserQuests", Erl)
+118     Call RegistrarError(Err.Number, Err.Description, "ModQuest.ArrangeUserQuests", Erl)
 120     Resume Next
         
 End Sub
@@ -763,13 +763,13 @@ Public Sub EnviarQuest(ByVal UserIndex As Integer)
         
             'El personaje tiene algun slot de quest para la nueva quest?
             'If tmpByte = 0 Then
-              '  Call WriteChatOverHead(UserIndex, "Estas haciendo demasiadas misiones. Vuelve cuando hayas completado alguna.", Npclist(NpcIndex).Char.CharIndex, vbWhite)
+              '  Call WriteChatOverHead(UserIndex, "Estas haciendo demasiadas misiones. Vuelve cuando hayas completado alguna.", NpcList(NpcIndex).Char.CharIndex, vbWhite)
               '  Exit Sub
 
            ' End If
         
             'Enviamos los detalles de la quest
-            'Call WriteQuestDetails(UserIndex, Npclist(NpcIndex).QuestNumber(1))
+            'Call WriteQuestDetails(UserIndex, NpcList(NpcIndex).QuestNumber(1))
 
       '  End If
       
@@ -779,7 +779,7 @@ Public Sub EnviarQuest(ByVal UserIndex As Integer)
         Exit Sub
 
 EnviarQuest_Err:
-126     Call RegistrarError(Err.Number, Err.description, "ModQuest.EnviarQuest", Erl)
+126     Call RegistrarError(Err.Number, Err.Description, "ModQuest.EnviarQuest", Erl)
 128     Resume Next
         
 End Sub
@@ -858,7 +858,7 @@ Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As
         Exit Function
 
 FinishQuestCheck_Err:
-136     Call RegistrarError(Err.Number, Err.description, "ModQuest.FinishQuestCheck", Erl)
+136     Call RegistrarError(Err.Number, Err.Description, "ModQuest.FinishQuestCheck", Erl)
 
 End Function
 
@@ -891,7 +891,7 @@ Function FaltanItemsQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Intege
         End With
             
 Handler:
-112     Call RegistrarError(Err.Number, Err.description, "ModQuest.FaltanItemsQuest", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "ModQuest.FaltanItemsQuest", Erl)
 114     Resume Next
 
 End Function

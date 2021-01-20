@@ -136,7 +136,7 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
         Exit Sub
 
 EnlistarArmadaReal_Err:
-176     Call RegistrarError(Err.Number, Err.description, "ModFacciones.EnlistarArmadaReal", Erl)
+176     Call RegistrarError(Err.Number, Err.Description, "ModFacciones.EnlistarArmadaReal", Erl)
 178     Resume Next
         
 End Sub
@@ -239,7 +239,7 @@ Public Sub RecompensaArmadaReal(ByVal UserIndex As Integer)
         Exit Sub
 
 RecompensaArmadaReal_Err:
-156     Call RegistrarError(Err.Number, Err.description, "ModFacciones.RecompensaArmadaReal", Erl)
+156     Call RegistrarError(Err.Number, Err.Description, "ModFacciones.RecompensaArmadaReal", Erl)
 158     Resume Next
         
 End Sub
@@ -261,7 +261,7 @@ Public Sub ExpulsarFaccionReal(ByVal UserIndex As Integer)
         Exit Sub
 
 ExpulsarFaccionReal_Err:
-108     Call RegistrarError(Err.Number, Err.description, "ModFacciones.ExpulsarFaccionReal", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "ModFacciones.ExpulsarFaccionReal", Erl)
 110     Resume Next
         
 End Sub
@@ -286,7 +286,7 @@ Public Sub ExpulsarFaccionCaos(ByVal UserIndex As Integer)
         Exit Sub
 
 ExpulsarFaccionCaos_Err:
-108     Call RegistrarError(Err.Number, Err.description, "ModFacciones.ExpulsarFaccionCaos", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "ModFacciones.ExpulsarFaccionCaos", Erl)
 110     Resume Next
         
 End Sub
@@ -324,7 +324,7 @@ Public Function TituloReal(ByVal UserIndex As Integer) As String
         Exit Function
 
 TituloReal_Err:
-120     Call RegistrarError(Err.Number, Err.description, "ModFacciones.TituloReal", Erl)
+120     Call RegistrarError(Err.Number, Err.Description, "ModFacciones.TituloReal", Erl)
 122     Resume Next
         
 End Function
@@ -438,7 +438,7 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
         Exit Sub
 
 EnlistarCaos_Err:
-174     Call RegistrarError(Err.Number, Err.description, "ModFacciones.EnlistarCaos", Erl)
+174     Call RegistrarError(Err.Number, Err.Description, "ModFacciones.EnlistarCaos", Erl)
 176     Resume Next
         
 End Sub
@@ -495,7 +495,7 @@ Public Sub RecompensaCaos(ByVal UserIndex As Integer)
 
             Case 1500:
                 ' If Lvl < 27 Then
-                '  Call WriteChatOverHead(UserIndex, "Mataste Suficientes Ciudadanos, pero te faltan " & 27 - Lvl & " Niveles para poder recibir la próxima Recompensa", str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
+                '  Call WriteChatOverHead(UserIndex, "Mataste Suficientes Ciudadanos, pero te faltan " & 27 - Lvl & " Niveles para poder recibir la próxima Recompensa", str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
                 '  Exit Sub
                 ' End If
 136             Call WriteChatOverHead(UserIndex, "¡Felicitaciones, eres de mis mejores guerreros, estas en lo más alto!", str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
@@ -515,7 +515,7 @@ Public Sub RecompensaCaos(ByVal UserIndex As Integer)
         Exit Sub
 
 RecompensaCaos_Err:
-142     Call RegistrarError(Err.Number, Err.description, "ModFacciones.RecompensaCaos", Erl)
+142     Call RegistrarError(Err.Number, Err.Description, "ModFacciones.RecompensaCaos", Erl)
 144     Resume Next
         
 End Sub
@@ -548,7 +548,7 @@ Public Function TituloCaos(ByVal UserIndex As Integer) As String
         Exit Function
 
 TituloCaos_Err:
-120     Call RegistrarError(Err.Number, Err.description, "ModFacciones.TituloCaos", Erl)
+120     Call RegistrarError(Err.Number, Err.Description, "ModFacciones.TituloCaos", Erl)
 122     Resume Next
         
 End Function

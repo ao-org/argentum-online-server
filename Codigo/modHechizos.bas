@@ -49,7 +49,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 106             If .flags.invisible = 1 Or .flags.Oculto = 1 Or .flags.Inmunidad = 1 Then Exit Sub
             End If
 
-            'Npclist(NpcIndex).CanAttack = 0
+            'NpcList(NpcIndex).CanAttack = 0
             Dim Daño As Integer
             
             Dim DañoStr As String
@@ -66,7 +66,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 
                 DañoStr = PonerPuntos(Daño)
     
-                'Call WriteConsoleMsg(UserIndex, Npclist(NpcIndex).name & " te ha restaurado " & Daño & " puntos de vida.", FontTypeNames.FONTTYPE_FIGHT)
+                'Call WriteConsoleMsg(UserIndex, NpcList(NpcIndex).name & " te ha restaurado " & Daño & " puntos de vida.", FontTypeNames.FONTTYPE_FIGHT)
 120             Call WriteLocaleMsg(UserIndex, "32", FontTypeNames.FONTTYPE_FIGHT, Npclist(NpcIndex).name & "¬" & DañoStr)
 
 121             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageTextCharDrop(DañoStr, .Char.CharIndex, vbGreen))
@@ -99,7 +99,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 
 150             .Stats.MinHp = .Stats.MinHp - Daño
         
-                'Call WriteConsoleMsg(UserIndex, Npclist(NpcIndex).name & " te ha quitado " & Daño & " puntos de vida.", FontTypeNames.FONTTYPE_FIGHT)
+                'Call WriteConsoleMsg(UserIndex, NpcList(NpcIndex).name & " te ha quitado " & Daño & " puntos de vida.", FontTypeNames.FONTTYPE_FIGHT)
                 
 152             Call WriteLocaleMsg(UserIndex, "34", FontTypeNames.FONTTYPE_FIGHT, Npclist(NpcIndex).name & "¬" & DañoStr)
 
@@ -190,8 +190,8 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
             'Muere
 120         If Npclist(TargetNPC).Stats.MinHp < 1 Then
 122             Npclist(TargetNPC).Stats.MinHp = 0
-                ' If Npclist(NpcIndex).MaestroUser > 0 Then
-                '  Call MuereNpc(TargetNPC, Npclist(NpcIndex).MaestroUser)
+                ' If NpcList(NpcIndex).MaestroUser > 0 Then
+                '  Call MuereNpc(TargetNPC, NpcList(NpcIndex).MaestroUser)
                 '  Else
 124             Call MuereNpc(TargetNPC, 0)
 
@@ -676,7 +676,7 @@ Sub HechizoSobreArea(ByVal UserIndex As Integer, ByRef b As Boolean)
                                         
 140                             AreaHechizo UserIndex, NPCIndex2, PosCasteadaX, PosCasteadaY, False
 142                             cuantosuser = cuantosuser + 1
-                                ' nameuser = nameuser & "," & Npclist(NPCIndex2).Name
+                                ' nameuser = nameuser & "," & NpcList(NPCIndex2).Name
                                             
                             End If
 
@@ -1916,7 +1916,7 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
 
 130     If Hechizos(hIndex).RemoverMaldicion = 1 Then
 132         Call InfoHechizo(UserIndex)
-            'Npclist(NpcIndex).flags.Maldicion = 0
+            'NpcList(NpcIndex).flags.Maldicion = 0
 134         b = True
 
         End If
@@ -2262,7 +2262,7 @@ Sub InfoHechizo(ByVal UserIndex As Integer)
 150         If Hechizos(h).Particle > 0 Then '¿Envio Particula?
 152             If Npclist(UserList(UserIndex).flags.TargetNPC).Stats.MinHp < 1 Then
 154                 Call SendData(SendTarget.ToNPCArea, UserList(UserIndex).flags.TargetNPC, PrepareMessageParticleFXWithDestinoXY(UserList(UserIndex).Char.CharIndex, Hechizos(h).ParticleViaje, Hechizos(h).Particle, Hechizos(h).TimeParticula, Hechizos(h).wav, 0, Npclist(UserList(UserIndex).flags.TargetNPC).Pos.X, Npclist(UserList(UserIndex).flags.TargetNPC).Pos.Y))
-                    'Call SendData(SendTarget.ToNPCArea, UserList(UserIndex).flags.TargetNPC, PrepareMessageParticleFXToFloor(Npclist(UserList(UserIndex).flags.TargetNPC).Pos.X, Npclist(UserList(UserIndex).flags.TargetNPC).Pos.Y, Hechizos(H).Particle, Hechizos(H).TimeParticula))
+                    'Call SendData(SendTarget.ToNPCArea, UserList(UserIndex).flags.TargetNPC, PrepareMessageParticleFXToFloor(NpcList(UserList(UserIndex).flags.TargetNPC).Pos.X, NpcList(UserList(UserIndex).flags.TargetNPC).Pos.Y, Hechizos(H).Particle, Hechizos(H).TimeParticula))
                 Else
 
 156                 If Hechizos(h).ParticleViaje > 0 Then
@@ -3829,8 +3829,8 @@ Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y As Byte,
 146             Call CalcularDarExp(UserIndex, NpcIndex, Daño)
                 
 148             If Npclist(NpcIndex).Stats.MinHp <= 0 Then
-                    'UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + Npclist(NpcIndex).GiveEXP
-                    'UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + Npclist(NpcIndex).GiveGLD
+                    'UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + NpcList(NpcIndex).GiveEXP
+                    'UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + NpcList(NpcIndex).GiveGLD
 150                 Call MuereNpc(NpcIndex, UserIndex)
                 End If
 

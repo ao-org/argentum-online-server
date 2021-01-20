@@ -209,17 +209,17 @@ Sub ReSpawnOrigPosNpcs()
 100     For i = 1 To LastNPC
 
             'OJO
-102         If Npclist(i).flags.NPCActive Then
+102         If NpcList(i).flags.NPCActive Then
         
-104             If InMapBounds(Npclist(i).Orig.Map, Npclist(i).Orig.X, Npclist(i).Orig.Y) And Npclist(i).Numero = Guardias Then
-106                 MiNPC = Npclist(i)
+104             If InMapBounds(NpcList(i).Orig.Map, NpcList(i).Orig.X, NpcList(i).Orig.Y) And NpcList(i).Numero = Guardias Then
+106                 MiNPC = NpcList(i)
 108                 Call QuitarNPC(i)
 110                 Call ReSpawnNpc(MiNPC)
 
                 End If
         
                 'tildada por sugerencia de yind
-                'If Npclist(i).Contadores.TiempoExistencia > 0 Then
+                'If NpcList(i).Contadores.TiempoExistencia > 0 Then
                 '        Call MuereNpc(i, 0)
                 'End If
             End If
@@ -277,7 +277,7 @@ Sub WorldSave()
         'If FileExist(DatPath & "\bkNPCs-HOSTILES.dat", vbNormal) Then Kill (DatPath & "bkNPCs-HOSTILES.dat")
 
         'For LoopX = 1 To LastNPC
-        '    If Npclist(LoopX).flags.BackUp = 1 Then
+        '    If NpcList(LoopX).flags.BackUp = 1 Then
         '            Call BackUPnPc(LoopX)
         '    End If
         'Next
