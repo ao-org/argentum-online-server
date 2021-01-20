@@ -682,58 +682,6 @@ ErrHandler:
 
 End Function
 
-Function MeterItemEnInventarioDeNpc(ByVal NpcIndex As Integer, ByRef MiObj As obj) As Boolean
-
-        On Error GoTo ErrHandler
-
-        'Call LogTarea("MeterItemEnInventario")
- 
-        Dim X    As Integer
-
-        Dim Y    As Integer
-
-        Dim slot As Byte
-
-        '¿el user ya tiene un objeto del mismo tipo? ?????
-    
-100     slot = 1
-
-102     Do Until Npclist(NpcIndex).Invent.Object(slot).ObjIndex = MiObj.ObjIndex And Npclist(NpcIndex).Invent.Object(slot).Amount + MiObj.Amount <= MAX_INVENTORY_OBJS
-104         slot = slot + 1
-
-106         If slot > MAX_INVENTORY_SLOTS Then
-                Exit Do
-
-            End If
-
-        Loop
-        
-        'Sino busca un slot vacio
-108     If slot > MAX_INVENTORY_SLOTS Then
-110         slot = 1
-
-112         Do Until Npclist(NpcIndex).Invent.Object(slot).ObjIndex = 0
-114             slot = slot + 1
-
-116             If slot > MAX_INVENTORY_SLOTS Then
-                    Rem Call WriteConsoleMsg(UserIndex, "No podes cargar mas objetos.", FontTypeNames.FONTTYPE_FIGHT)
-118                 MeterItemEnInventarioDeNpc = False
-                    Exit Function
-
-                End If
-
-            Loop
-120         Npclist(NpcIndex).Invent.NroItems = Npclist(NpcIndex).Invent.NroItems + 1
-
-        End If
-
-122     MeterItemEnInventarioDeNpc = True
-
-        Exit Function
-ErrHandler:
-
-End Function
-
 Sub GetObj(ByVal UserIndex As Integer)
         
         On Error GoTo GetObj_Err

@@ -1824,7 +1824,7 @@ Private Sub npcataca_Timer()
     Dim npc As Integer
 
     'For npc = 1 To LastNPC
-    '  Npclist(npc).CanAttack = 1
+    '  NpcList(npc).CanAttack = 1
     'Next npc
 
     

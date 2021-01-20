@@ -118,7 +118,7 @@ Public Sub FindLegalPos(ByVal UserIndex As Integer, ByVal Map As Integer, ByRef 
         Exit Sub
 
 FindLegalPos_Err:
-150     Call RegistrarError(Err.Number, Err.description, "Extra.FindLegalPos", Erl)
+150     Call RegistrarError(Err.Number, Err.Description, "Extra.FindLegalPos", Erl)
 152     Resume Next
         
 End Sub
@@ -133,7 +133,7 @@ Public Function EsNewbie(ByVal UserIndex As Integer) As Boolean
         Exit Function
 
 EsNewbie_Err:
-102     Call RegistrarError(Err.Number, Err.description, "Extra.EsNewbie", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "Extra.EsNewbie", Erl)
 104     Resume Next
         
 End Function
@@ -152,7 +152,7 @@ Public Function esArmada(ByVal UserIndex As Integer) As Boolean
         Exit Function
 
 esArmada_Err:
-102     Call RegistrarError(Err.Number, Err.description, "Extra.esArmada", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "Extra.esArmada", Erl)
 104     Resume Next
         
 End Function
@@ -171,7 +171,7 @@ Public Function esCaos(ByVal UserIndex As Integer) As Boolean
         Exit Function
 
 esCaos_Err:
-102     Call RegistrarError(Err.Number, Err.description, "Extra.esCaos", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "Extra.esCaos", Erl)
 104     Resume Next
         
 End Function
@@ -195,7 +195,7 @@ Public Function EsGM(ByVal UserIndex As Integer) As Boolean
         Exit Function
 
 EsGM_Err:
-106     Call RegistrarError(Err.Number, Err.description, "Extra.EsGM", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "Extra.EsGM", Erl)
 108     Resume Next
         
 End Function
@@ -343,7 +343,7 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
         Exit Sub
 
 ErrHandler:
-150     Call LogError("Error en DotileEvents. Error: " & Err.Number & " - Desc: " & Err.description)
+150     Call LogError("Error en DotileEvents. Error: " & Err.Number & " - Desc: " & Err.Description)
 
 End Sub
 
@@ -367,7 +367,7 @@ Function InRangoVision(ByVal UserIndex As Integer, ByVal X As Integer, ByVal Y A
         Exit Function
 
 InRangoVision_Err:
-108     Call RegistrarError(Err.Number, Err.description, "Extra.InRangoVision", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "Extra.InRangoVision", Erl)
 110     Resume Next
         
 End Function
@@ -392,7 +392,7 @@ Function InRangoVisionNPC(ByVal NpcIndex As Integer, X As Integer, Y As Integer)
         Exit Function
 
 InRangoVisionNPC_Err:
-108     Call RegistrarError(Err.Number, Err.description, "Extra.InRangoVisionNPC", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "Extra.InRangoVisionNPC", Erl)
 110     Resume Next
         
 End Function
@@ -413,7 +413,7 @@ Function InMapBounds(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
         Exit Function
 
 InMapBounds_Err:
-106     Call RegistrarError(Err.Number, Err.description, "Extra.InMapBounds", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "Extra.InMapBounds", Erl)
 108     Resume Next
         
 End Function
@@ -476,7 +476,7 @@ Sub ClosestLegalPos(Pos As WorldPos, ByRef nPos As WorldPos, Optional PuedeAgua 
         Exit Sub
 
 ClosestLegalPos_Err:
-134     Call RegistrarError(Err.Number, Err.description, "Extra.ClosestLegalPos", Erl)
+134     Call RegistrarError(Err.Number, Err.Description, "Extra.ClosestLegalPos", Erl)
 136     Resume Next
         
 End Sub
@@ -537,7 +537,7 @@ Sub ClosestStablePos(Pos As WorldPos, ByRef nPos As WorldPos)
         Exit Sub
 
 ClosestStablePos_Err:
-134     Call RegistrarError(Err.Number, Err.description, "Extra.ClosestStablePos", Erl)
+134     Call RegistrarError(Err.Number, Err.Description, "Extra.ClosestStablePos", Erl)
 136     Resume Next
         
 End Sub
@@ -581,7 +581,7 @@ Function NameIndex(ByVal name As String) As Integer
         Exit Function
 
 NameIndex_Err:
-120     Call RegistrarError(Err.Number, Err.description, "Extra.NameIndex", Erl)
+120     Call RegistrarError(Err.Number, Err.Description, "Extra.NameIndex", Erl)
 122     Resume Next
         
 End Function
@@ -622,7 +622,7 @@ Function IP_Index(ByVal inIP As String) As Integer
         Exit Function
 
 IP_Index_Err:
-116     Call RegistrarError(Err.Number, Err.description, "Extra.IP_Index", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "Extra.IP_Index", Erl)
 118     Resume Next
         
 End Function
@@ -649,7 +649,7 @@ Function ContarMismaIP(ByVal UserIndex As Integer, ByVal UserIP As String) As In
         Exit Function
 
 CheckForSameIP_Err:
-110     Call RegistrarError(Err.Number, Err.description, "Extra.MaxConexionesIP", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "Extra.MaxConexionesIP", Erl)
 112     Resume Next
         
 End Function
@@ -705,7 +705,7 @@ Sub HeadtoPos(ByVal Head As eHeading, ByRef Pos As WorldPos)
         Exit Sub
 
 HeadtoPos_Err:
-132     Call RegistrarError(Err.Number, Err.description, "Extra.HeadtoPos", Erl)
+132     Call RegistrarError(Err.Number, Err.Description, "Extra.HeadtoPos", Erl)
 134     Resume Next
         
 End Sub
@@ -753,7 +753,7 @@ Function LegalPos(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, 
         Exit Function
 
 LegalPos_Err:
-128     Call RegistrarError(Err.Number, Err.description, "Extra.LegalPos", Erl)
+128     Call RegistrarError(Err.Number, Err.Description, "Extra.LegalPos", Erl)
         
 End Function
 
@@ -799,7 +799,7 @@ Function LegalWalk(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer,
         Exit Function
 
 LegalWalk_Err:
-130     Call RegistrarError(Err.Number, Err.description, "Extra.LegalWalk", Erl)
+130     Call RegistrarError(Err.Number, Err.Description, "Extra.LegalWalk", Erl)
 132     Resume Next
         
 End Function
@@ -829,7 +829,7 @@ Function LegalPosNPC(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
         Exit Function
 
 LegalPosNPC_Err:
-114     Call RegistrarError(Err.Number, Err.description, "Extra.LegalPosNPC", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "Extra.LegalPosNPC", Erl)
 116     Resume Next
         
 End Function
@@ -860,7 +860,7 @@ Function LegalWalkNPC(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integ
         Exit Function
 
 LegalWalkNPC_Err:
-118     Call RegistrarError(Err.Number, Err.description, "Extra.LegalWalkNPC", Erl)
+118     Call RegistrarError(Err.Number, Err.Description, "Extra.LegalWalkNPC", Erl)
 120     Resume Next
         
 End Function
@@ -884,7 +884,7 @@ Sub SendHelp(ByVal index As Integer)
         Exit Sub
 
 SendHelp_Err:
-108     Call RegistrarError(Err.Number, Err.description, "Extra.SendHelp", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "Extra.SendHelp", Erl)
 110     Resume Next
         
 End Sub
@@ -907,7 +907,7 @@ Public Sub Expresar(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         Exit Sub
 
 Expresar_Err:
-106     Call RegistrarError(Err.Number, Err.description, "Extra.Expresar", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "Extra.Expresar", Erl)
 108     Resume Next
         
 End Sub
@@ -1308,8 +1308,8 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                 
 474                 Call WriteConsoleMsg(UserIndex, "NPCNAME*" & Npclist(TempCharIndex).Numero & "*" & " " & estatus, FontTypeNames.FONTTYPE_INFO)
                     ' If UserList(UserIndex).flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin) Then
-                    ' Call WriteConsoleMsg(UserIndex, "Le pegó primero: " & Npclist(TempCharIndex).flags.AttackedFirstBy & ".", FontTypeNames.FONTTYPE_INFO)
-                    ' Call WriteConsoleMsg(UserIndex, Npclist(TempCharIndex).Char.CharIndex, FontTypeNames.FONTTYPE_INFO)
+                    ' Call WriteConsoleMsg(UserIndex, "Le pegó primero: " & NpcList(TempCharIndex).flags.AttackedFirstBy & ".", FontTypeNames.FONTTYPE_INFO)
+                    ' Call WriteConsoleMsg(UserIndex, NpcList(TempCharIndex).Char.CharIndex, FontTypeNames.FONTTYPE_INFO)
                     'End If
                 
                 End If
@@ -1400,9 +1400,9 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
         Exit Sub
 
 LookatTile_Err:
-556         Call RegistrarError(Err.Number, Err.description & " Pos: " & Map & "-" & X & "-" & Y & " Usuario: " & UserList(UserIndex).name & " Extra.LookatTile", Erl)
+556         Call RegistrarError(Err.Number, Err.Description & " Pos: " & Map & "-" & X & "-" & Y & " Usuario: " & UserList(UserIndex).name & " Extra.LookatTile", Erl)
 558     If FoundChar = 2 Then
-560         Call RegistrarError(Err.Number, Err.description & " Pos: " & Map & "-" & X & "-" & Y & "Npc: " & Npclist(TempCharIndex).Numero & " Usuario: " & UserList(UserIndex).name & "Extra.LookatTile X LADDER", Erl)
+560         Call RegistrarError(Err.Number, Err.Description & " Pos: " & Map & "-" & X & "-" & Y & "Npc: " & Npclist(TempCharIndex).Numero & " Usuario: " & UserList(UserIndex).name & "Extra.LookatTile X LADDER", Erl)
         End If
 562     Resume Next
         
@@ -1491,7 +1491,7 @@ Function FindDirection(Pos As WorldPos, Target As WorldPos) As eHeading
         Exit Function
 
 FindDirection_Err:
-140     Call RegistrarError(Err.Number, Err.description, "Extra.FindDirection", Erl)
+140     Call RegistrarError(Err.Number, Err.Description, "Extra.FindDirection", Erl)
 142     Resume Next
         
 End Function
@@ -1508,7 +1508,7 @@ Public Function ItemNoEsDeMapa(ByVal index As Integer) As Boolean
         Exit Function
 
 ItemNoEsDeMapa_Err:
-102     Call RegistrarError(Err.Number, Err.description, "Extra.ItemNoEsDeMapa", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "Extra.ItemNoEsDeMapa", Erl)
 104     Resume Next
         
 End Function
@@ -1525,7 +1525,7 @@ Public Function MostrarCantidad(ByVal index As Integer) As Boolean
         Exit Function
 
 MostrarCantidad_Err:
-102     Call RegistrarError(Err.Number, Err.description, "Extra.MostrarCantidad", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "Extra.MostrarCantidad", Erl)
 104     Resume Next
         
 End Function
@@ -1541,7 +1541,7 @@ Public Function EsObjetoFijo(ByVal OBJType As eOBJType) As Boolean
         Exit Function
 
 EsObjetoFijo_Err:
-102     Call RegistrarError(Err.Number, Err.description, "Extra.EsObjetoFijo", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "Extra.EsObjetoFijo", Erl)
 104     Resume Next
         
 End Function

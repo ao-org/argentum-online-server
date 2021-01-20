@@ -70,7 +70,7 @@ Public Sub Database_Connect()
     Exit Sub
     
 ErrorHandler:
-    Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description)
     
     If Not ConnectedOnce Then
         Call MsgBox("No se pudo conectar a la base de datos. Mas información en logs/Database.log", vbCritical, "OBDC - Error")
@@ -98,7 +98,7 @@ Public Sub Database_Close()
     Exit Sub
      
 ErrorHandler:
-    Call LogDatabaseError("Unable to close Mysql Database: " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Unable to close Mysql Database: " & Err.Number & " - " & Err.Description)
 
 End Sub
 
@@ -169,7 +169,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
         QueryBuilder.Append "status = " & .Faccion.Status & ", "
         QueryBuilder.Append "is_logged = TRUE; "
         
-        Call MakeQuery(QueryBuilder.toString, True, .name, .Desc)
+        Call MakeQuery(QueryBuilder.ToString, True, .name, .Desc)
         
         'Borramos la query construida.
         Call QueryBuilder.Clear
@@ -314,7 +314,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
         Next LoopC
 
         'Enviamos todas las queries
-        Call MakeQuery(QueryBuilder.toString, True)
+        Call MakeQuery(QueryBuilder.ToString, True)
         
         Set QueryBuilder = Nothing
     
@@ -326,7 +326,7 @@ ErrorHandler:
     
     Set QueryBuilder = Nothing
     
-    Call LogDatabaseError("Error en SaveNewUserDatabase. UserName: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error en SaveNewUserDatabase. UserName: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
 
@@ -443,7 +443,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
         QueryBuilder.Append "warnings = " & .Stats.Advertencias
         QueryBuilder.Append " WHERE id = " & .Id & "; "
         
-        Call MakeQuery(QueryBuilder.toString, True, .name, .Desc, .MENSAJEINFORMACION)
+        Call MakeQuery(QueryBuilder.ToString, True, .name, .Desc, .MENSAJEINFORMACION)
         
         QueryBuilder.Clear
         
@@ -701,7 +701,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
             QueryBuilder.Append "UPDATE account SET logged = logged - 1 WHERE id = " & .AccountId & ";"
         End If
         
-        Call MakeQuery(QueryBuilder.toString, True)
+        Call MakeQuery(QueryBuilder.ToString, True)
 
     End With
     
@@ -713,7 +713,7 @@ ErrorHandler:
 
     Set QueryBuilder = Nothing
     
-    Call LogDatabaseError("Error en SaveUserDatabase. UserName: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error en SaveUserDatabase. UserName: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
 
@@ -738,7 +738,7 @@ With UserList(UserIndex)
     .raza = QueryData!race_id
     .clase = QueryData!class_id
     .Hogar = QueryData!home_id
-    .Desc = QueryData!description
+    .Desc = QueryData!Description
     .Stats.GLD = QueryData!gold
     .Stats.Banco = QueryData!bank_gold
     .Stats.SkillPts = QueryData!free_skillpoints
@@ -1052,7 +1052,7 @@ End With
 Exit Sub
 
 ErrorHandler:
-Call LogDatabaseError("Error en LoadUserDatabase: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.description & ". Línea: " & Erl)
+Call LogDatabaseError("Error en LoadUserDatabase: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
 Resume Next
 
 End Sub
@@ -1107,7 +1107,7 @@ ErrorHandler:
         Resume
         
     Else
-        Call LogDatabaseError("Error en MakeQuery: query = '" & query & "'. " & Err.Number & " - " & Err.description)
+        Call LogDatabaseError("Error en MakeQuery: query = '" & query & "'. " & Err.Number & " - " & Err.Description)
         
         On Error GoTo 0
 
@@ -1134,7 +1134,7 @@ Private Function GetDBValue(Tabla As String, ColumnaGet As String, ColumnaTest A
     Exit Function
     
 ErrorHandler:
-    Call LogDatabaseError("Error en GetDBValue: SELECT " & ColumnaGet & " FROM " & Tabla & " WHERE " & ColumnaTest & " = '" & ValueTest & "';" & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error en GetDBValue: SELECT " & ColumnaGet & " FROM " & Tabla & " WHERE " & ColumnaTest & " = '" & ValueTest & "';" & ". " & Err.Number & " - " & Err.Description)
 
 End Function
 
@@ -1150,7 +1150,7 @@ Public Function GetCuentaValue(CuentaEmail As String, Columna As String) As Vari
     Exit Function
 
 GetCuentaValue_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.GetCuentaValue", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetCuentaValue", Erl)
     Resume Next
         
 End Function
@@ -1167,7 +1167,7 @@ Public Function GetUserValue(CharName As String, Columna As String) As Variant
     Exit Function
 
 GetUserValue_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.GetUserValue", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetUserValue", Erl)
     Resume Next
         
 End Function
@@ -1184,7 +1184,7 @@ Private Sub SetDBValue(Tabla As String, ColumnaSet As String, ByVal ValueSet As 
     Exit Sub
     
 ErrorHandler:
-    Call LogDatabaseError("Error en SetDBValue: UPDATE " & Tabla & " SET " & ColumnaSet & " = " & ValueSet & " WHERE " & ColumnaTest & " = " & ValueTest & ";" & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error en SetDBValue: UPDATE " & Tabla & " SET " & ColumnaSet & " = " & ValueSet & " WHERE " & ColumnaTest & " = " & ValueTest & ";" & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
 
@@ -1200,7 +1200,7 @@ Private Sub SetCuentaValue(CuentaEmail As String, Columna As String, Value As Va
     Exit Sub
 
 SetCuentaValue_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.SetCuentaValue", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.SetCuentaValue", Erl)
     Resume Next
         
 End Sub
@@ -1217,7 +1217,7 @@ Private Sub SetUserValue(CharName As String, Columna As String, Value As Variant
     Exit Sub
 
 SetUserValue_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.SetUserValue", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.SetUserValue", Erl)
     Resume Next
         
 End Sub
@@ -1235,7 +1235,7 @@ Private Sub SetCuentaValueByID(AccountId As Long, Columna As String, Value As Va
     Exit Sub
 
 SetCuentaValueByID_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.SetCuentaValueByID", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.SetCuentaValueByID", Erl)
     Resume Next
         
 End Sub
@@ -1253,7 +1253,7 @@ Private Sub SetUserValueByID(Id As Long, Columna As String, Value As Variant)
     Exit Sub
 
 SetUserValueByID_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.SetUserValueByID", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.SetUserValueByID", Erl)
     Resume Next
         
 End Sub
@@ -1268,7 +1268,7 @@ Public Function CheckUserDonatorDatabase(CuentaEmail As String) As Boolean
     Exit Function
 
 CheckUserDonatorDatabase_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.CheckUserDonatorDatabase", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.CheckUserDonatorDatabase", Erl)
     Resume Next
         
 End Function
@@ -1283,7 +1283,7 @@ Public Function GetUserCreditosDatabase(CuentaEmail As String) As Long
     Exit Function
 
 GetUserCreditosDatabase_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.GetUserCreditosDatabase", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetUserCreditosDatabase", Erl)
     Resume Next
         
 End Function
@@ -1298,7 +1298,7 @@ Public Function GetUserCreditosCanjeadosDatabase(CuentaEmail As String) As Long
     Exit Function
 
 GetUserCreditosCanjeadosDatabase_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.GetUserCreditosCanjeadosDatabase", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetUserCreditosCanjeadosDatabase", Erl)
     Resume Next
         
 End Function
@@ -1319,7 +1319,7 @@ Public Function GetUserDiasDonadorDatabase(CuentaEmail As String) As Long
     Exit Function
 
 GetUserDiasDonadorDatabase_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.GetUserDiasDonadorDatabase", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetUserDiasDonadorDatabase", Erl)
     Resume Next
         
 End Function
@@ -1334,7 +1334,7 @@ Public Function GetUserComprasDonadorDatabase(CuentaEmail As String) As Long
     Exit Function
 
 GetUserComprasDonadorDatabase_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.GetUserComprasDonadorDatabase", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetUserComprasDonadorDatabase", Erl)
     Resume Next
         
 End Function
@@ -1349,7 +1349,7 @@ Public Function CheckUserExists(name As String) As Boolean
     Exit Function
 
 CheckUserExists_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.CheckUserExists", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.CheckUserExists", Erl)
     Resume Next
         
 End Function
@@ -1364,7 +1364,7 @@ Public Function CheckCuentaExiste(CuentaEmail As String) As Boolean
     Exit Function
 
 CheckCuentaExiste_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.CheckCuentaExiste", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.CheckCuentaExiste", Erl)
     Resume Next
         
 End Function
@@ -1379,7 +1379,7 @@ Public Function BANCheckDatabase(name As String) As Boolean
     Exit Function
 
 BANCheckDatabase_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.BANCheckDatabase", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.BANCheckDatabase", Erl)
     Resume Next
         
 End Function
@@ -1394,7 +1394,7 @@ Public Function GetCodigoActivacionDatabase(name As String) As String
     Exit Function
 
 GetCodigoActivacionDatabase_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.GetCodigoActivacionDatabase", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetCodigoActivacionDatabase", Erl)
     Resume Next
         
 End Function
@@ -1409,7 +1409,7 @@ Public Function CheckCuentaActivadaDatabase(name As String) As Boolean
     Exit Function
 
 CheckCuentaActivadaDatabase_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.CheckCuentaActivadaDatabase", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.CheckCuentaActivadaDatabase", Erl)
     Resume Next
         
 End Function
@@ -1424,7 +1424,7 @@ Public Function GetEmailDatabase(name As String) As String
     Exit Function
 
 GetEmailDatabase_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.GetEmailDatabase", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetEmailDatabase", Erl)
     Resume Next
         
 End Function
@@ -1439,7 +1439,7 @@ Public Function GetMacAddressDatabase(CuentaEmail As String) As String
     Exit Function
 
 GetMacAddressDatabase_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.GetMacAddressDatabase", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetMacAddressDatabase", Erl)
     Resume Next
         
 End Function
@@ -1454,7 +1454,7 @@ Public Function GetHDSerialDatabase(CuentaEmail As String) As Long
     Exit Function
 
 GetHDSerialDatabase_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.GetHDSerialDatabase", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetHDSerialDatabase", Erl)
     Resume Next
         
 End Function
@@ -1469,7 +1469,7 @@ Public Function CheckBanCuentaDatabase(CuentaEmail As String) As Boolean
     Exit Function
 
 CheckBanCuentaDatabase_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.CheckBanCuentaDatabase", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.CheckBanCuentaDatabase", Erl)
     Resume Next
         
 End Function
@@ -1484,7 +1484,7 @@ Public Function GetMotivoBanCuentaDatabase(CuentaEmail As String) As String
     Exit Function
 
 GetMotivoBanCuentaDatabase_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.GetMotivoBanCuentaDatabase", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetMotivoBanCuentaDatabase", Erl)
     Resume Next
         
 End Function
@@ -1499,7 +1499,7 @@ Public Function GetQuienBanCuentaDatabase(CuentaEmail As String) As String
     Exit Function
 
 GetQuienBanCuentaDatabase_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.GetQuienBanCuentaDatabase", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetQuienBanCuentaDatabase", Erl)
     Resume Next
         
 End Function
@@ -1514,7 +1514,7 @@ Public Function GetCuentaLogeadaDatabase(CuentaEmail As String) As Boolean
     Exit Function
 
 GetCuentaLogeadaDatabase_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.GetCuentaLogeadaDatabase", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetCuentaLogeadaDatabase", Erl)
     Resume Next
         
 End Function
@@ -1529,7 +1529,7 @@ Public Function GetUserStatusDatabase(name As String) As Integer
     Exit Function
 
 GetUserStatusDatabase_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.GetUserStatusDatabase", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetUserStatusDatabase", Erl)
     Resume Next
         
 End Function
@@ -1554,7 +1554,7 @@ Public Function GetAccountIDDatabase(name As String) As Long
     Exit Function
 
 GetAccountIDDatabase_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.GetAccountIDDatabase", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetAccountIDDatabase", Erl)
     Resume Next
         
 End Function
@@ -1573,7 +1573,7 @@ Public Sub GetPasswordAndSaltDatabase(CuentaEmail As String, PasswordHash As Str
     Exit Sub
     
 ErrorHandler:
-    Call LogDatabaseError("Error in GetPasswordAndSaltDatabase. Cuenta: " & CuentaEmail & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error in GetPasswordAndSaltDatabase. Cuenta: " & CuentaEmail & ". " & Err.Number & " - " & Err.Description)
     
 End Sub
 
@@ -1590,7 +1590,7 @@ Public Function GetPersonajesCountDatabase(CuentaEmail As String) As Byte
     Exit Function
     
 ErrorHandler:
-    Call LogDatabaseError("Error in GetPersonajesCountDatabase. name: " & CuentaEmail & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error in GetPersonajesCountDatabase. name: " & CuentaEmail & ". " & Err.Number & " - " & Err.Description)
     
 End Function
 
@@ -1607,7 +1607,7 @@ Public Function GetPersonajesCountByIDDatabase(ByVal AccountId As Long) As Byte
     Exit Function
     
 ErrorHandler:
-    Call LogDatabaseError("Error in GetPersonajesCountByIDDatabase. AccountID: " & AccountId & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error in GetPersonajesCountByIDDatabase. AccountID: " & AccountId & ". " & Err.Number & " - " & Err.Description)
     
 End Function
 
@@ -1663,7 +1663,7 @@ Public Function GetPersonajesCuentaDatabase(ByVal AccountId As Long, Personaje()
     Exit Function
 
 GetPersonajesCuentaDatabase_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.GetPersonajesCuentaDatabase", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetPersonajesCuentaDatabase", Erl)
     Resume Next
         
 End Function
@@ -1679,7 +1679,7 @@ Public Sub SetUserLoggedDatabase(ByVal Id As Long, ByVal AccountId As Long)
     Exit Sub
 
 SetUserLoggedDatabase_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.SetUserLoggedDatabase", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.SetUserLoggedDatabase", Erl)
     Resume Next
         
 End Sub
@@ -1694,7 +1694,7 @@ Public Sub ResetLoggedDatabase(ByVal AccountId As Long)
     Exit Sub
 
 ResetLoggedDatabase_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.ResetLoggedDatabase", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.ResetLoggedDatabase", Erl)
     Resume Next
         
 End Sub
@@ -1708,7 +1708,7 @@ Public Sub SetUsersLoggedDatabase(ByVal NumUsers As Long)
     Exit Sub
 
 SetUsersLoggedDatabase_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.SetUsersLoggedDatabase", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.SetUsersLoggedDatabase", Erl)
     Resume Next
         
 End Sub
@@ -1726,7 +1726,7 @@ Public Function LeerRecordUsuariosDatabase() As Long
     Exit Function
 
 LeerRecordUsuariosDatabase_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.LeerRecordUsuariosDatabase", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.LeerRecordUsuariosDatabase", Erl)
     Resume Next
         
 End Function
@@ -1740,7 +1740,7 @@ Public Sub SetRecordUsersDatabase(ByVal Record As Long)
     Exit Sub
 
 SetRecordUsersDatabase_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.SetRecordUsersDatabase", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.SetRecordUsersDatabase", Erl)
     Resume Next
         
 End Sub
@@ -1754,7 +1754,7 @@ Public Sub LogoutAllUsersAndAccounts()
     Exit Sub
 
 LogoutAllUsersAndAccounts_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.LogoutAllUsersAndAccounts", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.LogoutAllUsersAndAccounts", Erl)
     Resume Next
         
 End Sub
@@ -1769,7 +1769,7 @@ Public Sub SaveBattlePointsDatabase(ByVal Id As Long, ByVal BattlePoints As Long
     Exit Sub
 
 SaveBattlePointsDatabase_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.SaveBattlePointsDatabase", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.SaveBattlePointsDatabase", Erl)
     Resume Next
         
 End Sub
@@ -1784,7 +1784,7 @@ Public Sub SaveVotoDatabase(ByVal Id As Long, ByVal Encuestas As Integer)
     Exit Sub
 
 SaveVotoDatabase_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.SaveVotoDatabase", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.SaveVotoDatabase", Erl)
     Resume Next
         
 End Sub
@@ -1799,7 +1799,7 @@ Public Sub SaveUserBodyDatabase(UserName As String, ByVal Body As Integer)
     Exit Sub
 
 SaveUserBodyDatabase_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.SaveUserBodyDatabase", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.SaveUserBodyDatabase", Erl)
     Resume Next
         
 End Sub
@@ -1814,7 +1814,7 @@ Public Sub SaveUserHeadDatabase(UserName As String, ByVal Head As Integer)
     Exit Sub
 
 SaveUserHeadDatabase_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.SaveUserHeadDatabase", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.SaveUserHeadDatabase", Erl)
     Resume Next
         
 End Sub
@@ -1828,7 +1828,7 @@ Public Sub SaveUserSkillDatabase(UserName As String, ByVal Skill As Integer, ByV
     Exit Sub
 
 SaveUserSkillDatabase_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.SaveUserSkillDatabase", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.SaveUserSkillDatabase", Erl)
     Resume Next
         
 End Sub
@@ -1842,7 +1842,7 @@ Public Sub SaveUserSkillsLibres(UserName As String, ByVal SkillsLibres As Intege
     Exit Sub
 
 SaveUserHeadDatabase_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.SaveUserHeadDatabase", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.SaveUserHeadDatabase", Erl)
     Resume Next
         
 End Sub
@@ -1856,7 +1856,7 @@ Public Sub SaveNewAccountDatabase(CuentaEmail As String, PasswordHash As String,
     Exit Sub
         
 ErrorHandler:
-    Call LogDatabaseError("Error en SaveNewAccountDatabase. Cuenta: " & CuentaEmail & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error en SaveNewAccountDatabase. Cuenta: " & CuentaEmail & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
 
@@ -1869,7 +1869,7 @@ Public Sub ValidarCuentaDatabase(UserCuenta As String)
     Exit Sub
 
 ValidarCuentaDatabase_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.ValidarCuentaDatabase", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.ValidarCuentaDatabase", Erl)
     Resume Next
         
 End Sub
@@ -1889,7 +1889,7 @@ Public Sub BorrarUsuarioDatabase(name As String)
     Exit Sub
     
 ErrorHandler:
-    Call LogDatabaseError("Error en BorrarUsuarioDatabase borrando user de la Mysql Database: " & name & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error en BorrarUsuarioDatabase borrando user de la Mysql Database: " & name & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
 
@@ -1908,7 +1908,7 @@ Public Sub BorrarCuentaDatabase(CuentaEmail As String)
     Exit Sub
     
 ErrorHandler:
-    Call LogDatabaseError("Error en BorrarCuentaDatabase borrando user de la Mysql Database: " & CuentaEmail & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error en BorrarCuentaDatabase borrando user de la Mysql Database: " & CuentaEmail & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
 
@@ -1934,7 +1934,7 @@ Public Sub SaveBanDatabase(UserName As String, Reason As String, BannedBy As Str
     Exit Sub
 
 ErrorHandler:
-    Call LogDatabaseError("Error in SaveBanDatabase: " & UserName & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error in SaveBanDatabase: " & UserName & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
 
@@ -1960,7 +1960,7 @@ Public Sub SaveWarnDatabase(UserName As String, Reason As String, WarnedBy As St
     Exit Sub
 
 ErrorHandler:
-    Call LogDatabaseError("Error in SaveWarnDatabase: " & UserName & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error in SaveWarnDatabase: " & UserName & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
 
@@ -1980,7 +1980,7 @@ Public Sub SavePenaDatabase(UserName As String, Reason As String)
     Exit Sub
 
 ErrorHandler:
-    Call LogDatabaseError("Error in SavePenaDatabase: " & UserName & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error in SavePenaDatabase: " & UserName & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
 
@@ -1993,7 +1993,7 @@ Public Sub UnBanDatabase(UserName As String)
     Exit Sub
 
 ErrorHandler:
-    Call LogDatabaseError("Error in UnBanDatabase: " & UserName & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error in UnBanDatabase: " & UserName & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
 
@@ -2006,7 +2006,7 @@ Public Sub SaveBanCuentaDatabase(ByVal AccountId As Integer, Reason As String, B
     Exit Sub
 
 ErrorHandler:
-    Call LogDatabaseError("Error in SaveBanCuentaDatabase: AccountId=" & AccountId & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error in SaveBanCuentaDatabase: AccountId=" & AccountId & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
 
@@ -2020,7 +2020,7 @@ Public Sub EcharConsejoDatabase(UserName As String)
     Exit Sub
 
 EcharConsejoDatabase_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.EcharConsejoDatabase", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.EcharConsejoDatabase", Erl)
     Resume Next
         
 End Sub
@@ -2035,7 +2035,7 @@ Public Sub EcharLegionDatabase(UserName As String)
     Exit Sub
 
 EcharLegionDatabase_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.EcharLegionDatabase", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.EcharLegionDatabase", Erl)
     Resume Next
         
 End Sub
@@ -2050,7 +2050,7 @@ Public Sub EcharArmadaDatabase(UserName As String)
     Exit Sub
 
 EcharArmadaDatabase_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.EcharArmadaDatabase", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.EcharArmadaDatabase", Erl)
     Resume Next
         
 End Sub
@@ -2065,7 +2065,7 @@ Public Sub CambiarPenaDatabase(UserName As String, ByVal Numero As Integer, Pena
     Exit Sub
 
 CambiarPenaDatabase_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.CambiarPenaDatabase", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.CambiarPenaDatabase", Erl)
     Resume Next
         
 End Sub
@@ -2086,7 +2086,7 @@ Public Function GetUserAmountOfPunishmentsDatabase(ByVal UserName As String) As 
 
     Exit Function
 ErrorHandler:
-    Call LogDatabaseError("Error in GetUserAmountOfPunishmentsDatabase: " & UserName & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error in GetUserAmountOfPunishmentsDatabase: " & UserName & ". " & Err.Number & " - " & Err.Description)
 
 End Function
 
@@ -2115,7 +2115,7 @@ Public Sub SendUserPunishmentsDatabase(ByVal UserIndex As Integer, ByVal UserNam
 
     Exit Sub
 ErrorHandler:
-    Call LogDatabaseError("Error in SendUserPunishmentsDatabase: " & UserName & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error in SendUserPunishmentsDatabase: " & UserName & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
 
@@ -2136,7 +2136,7 @@ Public Function GetNombreCuentaDatabase(name As String) As String
     Exit Function
     
 ErrorHandler:
-    Call LogDatabaseError("Error en GetNombreCuentaDatabase leyendo user de la Mysql Database: " & name & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error en GetNombreCuentaDatabase leyendo user de la Mysql Database: " & name & ". " & Err.Number & " - " & Err.Description)
 
 End Function
 
@@ -2153,7 +2153,7 @@ Public Function GetUserGuildIndexDatabase(UserName As String) As Integer
     Exit Function
 
 ErrorHandler:
-    Call LogDatabaseError("Error in GetUserGuildIndexDatabase: " & UserName & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error in GetUserGuildIndexDatabase: " & UserName & ". " & Err.Number & " - " & Err.Description)
 
 End Function
 
@@ -2170,7 +2170,7 @@ Public Function GetUserGuildMemberDatabase(UserName As String) As String
     Exit Function
 
 ErrorHandler:
-    Call LogDatabaseError("Error in GetUserGuildMemberDatabase: " & UserName & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error in GetUserGuildMemberDatabase: " & UserName & ". " & Err.Number & " - " & Err.Description)
 
 End Function
 
@@ -2187,7 +2187,7 @@ Public Function GetUserGuildAspirantDatabase(UserName As String) As Integer
     Exit Function
 
 ErrorHandler:
-    Call LogDatabaseError("Error in GetUserGuildAspirantDatabase: " & UserName & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error in GetUserGuildAspirantDatabase: " & UserName & ". " & Err.Number & " - " & Err.Description)
 
 End Function
 
@@ -2204,7 +2204,7 @@ Public Function GetUserGuildRejectionReasonDatabase(UserName As String) As Strin
     Exit Function
 
 ErrorHandler:
-    Call LogDatabaseError("Error in GetUserGuildRejectionReasonDatabase: " & UserName & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error in GetUserGuildRejectionReasonDatabase: " & UserName & ". " & Err.Number & " - " & Err.Description)
 
 End Function
 
@@ -2221,7 +2221,7 @@ Public Function GetUserGuildPedidosDatabase(UserName As String) As String
     Exit Function
 
 ErrorHandler:
-    Call LogDatabaseError("Error in GetUserGuildPedidosDatabase: " & UserName & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error in GetUserGuildPedidosDatabase: " & UserName & ". " & Err.Number & " - " & Err.Description)
 
 End Function
 
@@ -2237,7 +2237,7 @@ Public Sub SaveUserGuildRejectionReasonDatabase(UserName As String, Reason As St
 
     Exit Sub
 ErrorHandler:
-    Call LogDatabaseError("Error in SaveUserGuildRejectionReasonDatabase: " & UserName & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error in SaveUserGuildRejectionReasonDatabase: " & UserName & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
 
@@ -2253,7 +2253,7 @@ Public Sub SaveUserGuildIndexDatabase(ByVal UserName As String, ByVal GuildIndex
 
     Exit Sub
 ErrorHandler:
-    Call LogDatabaseError("Error in SaveUserGuildIndexDatabase: " & UserName & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error in SaveUserGuildIndexDatabase: " & UserName & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
 
@@ -2269,7 +2269,7 @@ Public Sub SaveUserGuildAspirantDatabase(ByVal UserName As String, ByVal Aspiran
 
     Exit Sub
 ErrorHandler:
-    Call LogDatabaseError("Error in SaveUserGuildAspirantDatabase: " & UserName & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error in SaveUserGuildAspirantDatabase: " & UserName & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
 
@@ -2285,7 +2285,7 @@ Public Sub SaveUserGuildMemberDatabase(ByVal UserName As String, ByVal guilds As
 
     Exit Sub
 ErrorHandler:
-    Call LogDatabaseError("Error in SaveUserGuildMemberDatabase: " & UserName & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error in SaveUserGuildMemberDatabase: " & UserName & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
 
@@ -2301,7 +2301,7 @@ Public Sub SaveUserGuildPedidosDatabase(ByVal UserName As String, ByVal Pedidos 
 
     Exit Sub
 ErrorHandler:
-    Call LogDatabaseError("Error in SaveUserGuildPedidosDatabase: " & UserName & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error in SaveUserGuildPedidosDatabase: " & UserName & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
 
@@ -2349,7 +2349,7 @@ Public Sub SendCharacterInfoDatabase(ByVal UserIndex As Integer, ByVal UserName 
 
     Exit Sub
 ErrorHandler:
-    Call LogDatabaseError("Error in SendCharacterInfoDatabase: " & UserName & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error in SendCharacterInfoDatabase: " & UserName & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
 
@@ -2394,7 +2394,7 @@ Public Function EnterAccountDatabase(ByVal UserIndex As Integer, CuentaEmail As 
     Exit Function
 
 ErrorHandler:
-    Call LogDatabaseError("Error in EnterAccountDatabase. UserCuenta: " & CuentaEmail & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error in EnterAccountDatabase. UserCuenta: " & CuentaEmail & ". " & Err.Number & " - " & Err.Description)
 
 End Function
 
@@ -2466,7 +2466,7 @@ Public Sub ChangePasswordDatabase(ByVal UserIndex As Integer, OldPassword As Str
     Exit Sub
 
 ErrorHandler:
-    Call LogDatabaseError("Error in ChangePasswordDatabase. Username: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error in ChangePasswordDatabase. Username: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
 
@@ -2483,7 +2483,7 @@ Public Function GetUsersLoggedAccountDatabase(ByVal AccountId As Integer) As Byt
     Exit Function
 
 ErrorHandler:
-    Call LogDatabaseError("Error in GetUsersLoggedAccountDatabase. AccountID: " & AccountId & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error in GetUsersLoggedAccountDatabase. AccountID: " & AccountId & ". " & Err.Number & " - " & Err.Description)
 
 End Function
 
@@ -2497,7 +2497,7 @@ Public Function SetPositionDatabase(UserName As String, ByVal Map As Integer, By
     Exit Function
 
 ErrorHandler:
-    Call LogDatabaseError("Error in SetPositionDatabase. UserName: " & UserName & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error in SetPositionDatabase. UserName: " & UserName & ". " & Err.Number & " - " & Err.Description)
 
 End Function
 
@@ -2509,7 +2509,7 @@ Public Function GetMapDatabase(UserName As String) As Integer
     Exit Function
 
 ErrorHandler:
-    Call LogDatabaseError("Error in SetPositionDatabase. UserName: " & UserName & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error in SetPositionDatabase. UserName: " & UserName & ". " & Err.Number & " - " & Err.Description)
 
 End Function
 
@@ -2523,7 +2523,7 @@ Public Function AddOroBancoDatabase(UserName As String, ByVal OroGanado As Long)
     Exit Function
 
 ErrorHandler:
-    Call LogDatabaseError("Error in AddOroBancoDatabase. UserName: " & UserName & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error in AddOroBancoDatabase. UserName: " & UserName & ". " & Err.Number & " - " & Err.Description)
 
 End Function
 
@@ -2537,7 +2537,7 @@ Public Function DarLlaveAUsuarioDatabase(UserName As String, ByVal LlaveObj As I
     Exit Function
 
 ErrorHandler:
-    Call LogDatabaseError("Error in DarLlaveAUsuarioDatabase. UserName: " & UserName & ", LlaveObj: " & LlaveObj & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error in DarLlaveAUsuarioDatabase. UserName: " & UserName & ", LlaveObj: " & LlaveObj & ". " & Err.Number & " - " & Err.Description)
 
 End Function
 
@@ -2550,7 +2550,7 @@ Public Function DarLlaveACuentaDatabase(email As String, ByVal LlaveObj As Integ
     Exit Function
 
 ErrorHandler:
-    Call LogDatabaseError("Error in DarLlaveACuentaDatabase. Email: " & email & ", LlaveObj: " & LlaveObj & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error in DarLlaveACuentaDatabase. Email: " & email & ", LlaveObj: " & LlaveObj & ". " & Err.Number & " - " & Err.Description)
 
 End Function
 
@@ -2602,7 +2602,7 @@ Public Function SacarLlaveDatabase(ByVal LlaveObj As Integer) As Boolean
     Exit Function
 
 ErrorHandler:
-    Call LogDatabaseError("Error in SacarLlaveDatabase. LlaveObj: " & LlaveObj & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error in SacarLlaveDatabase. LlaveObj: " & LlaveObj & ". " & Err.Number & " - " & Err.Description)
 
 End Function
 
@@ -2638,7 +2638,7 @@ Public Sub VerLlavesDatabase(ByVal UserIndex As Integer)
     Exit Sub
 
 ErrorHandler:
-    Call LogDatabaseError("Error in VerLlavesDatabase. UserName: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.description)
+    Call LogDatabaseError("Error in VerLlavesDatabase. UserName: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
 
@@ -2652,7 +2652,7 @@ Public Function SanitizeNullValue(ByVal Value As Variant, ByVal defaultValue As 
     Exit Function
 
 SanitizeNullValue_Err:
-    Call RegistrarError(Err.Number, Err.description, "modDatabase.SanitizeNullValue", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.SanitizeNullValue", Erl)
     Resume Next
         
 End Function
@@ -2672,19 +2672,19 @@ Function adoIsConnected(adoCn As ADODB.Connection) As Boolean
     On Error Resume Next
 
     Dim i As Long
-    Dim cmd As New ADODB.Command
+    Dim Cmd As New ADODB.Command
 
     'Set up SQL command to return 1
-    cmd.CommandText = "SELECT 1"
-    cmd.ActiveConnection = adoCn
+    Cmd.CommandText = "SELECT 1"
+    Cmd.ActiveConnection = adoCn
 
     'Run a simple query, to test the connection
         
-    i = cmd.Execute.Fields(0)
+    i = Cmd.Execute.Fields(0)
     On Error GoTo 0
 
     'Tidy up
-    Set cmd = Nothing
+    Set Cmd = Nothing
 
     'If i is 1, connection is open
     If i = 1 Then

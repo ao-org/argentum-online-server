@@ -38,7 +38,7 @@ Public Sub LimpiarMascota(UserIndex)
         Exit Sub
 
 LimpiarMascota_Err:
-116     Call RegistrarError(Err.Number, Err.description, "ModFamiliar.LimpiarMascota", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "ModFamiliar.LimpiarMascota", Erl)
 118     Resume Next
         
 End Sub
@@ -143,7 +143,7 @@ Public Sub InvocarFamiliar(ByVal UserIndex As Integer, ByVal b As Boolean)
         Exit Sub
 
 InvocarFamiliar_Err:
-156     Call RegistrarError(Err.Number, Err.description, "ModFamiliar.InvocarFamiliar", Erl)
+156     Call RegistrarError(Err.Number, Err.Description, "ModFamiliar.InvocarFamiliar", Erl)
 158     Resume Next
         
 End Sub
@@ -166,7 +166,7 @@ Public Sub RevivirFamiliar(ByVal UserIndex As Integer)
         Exit Sub
 
 RevivirFamiliar_Err:
-108     Call RegistrarError(Err.Number, Err.description, "ModFamiliar.RevivirFamiliar", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "ModFamiliar.RevivirFamiliar", Erl)
 110     Resume Next
         
 End Sub
@@ -195,7 +195,7 @@ Public Sub CargarFamiliar(ByVal UserIndex As Integer)
         Exit Sub
 
 CargarFamiliar_Err:
-122     Call RegistrarError(Err.Number, Err.description, "ModFamiliar.CargarFamiliar", Erl)
+122     Call RegistrarError(Err.Number, Err.Description, "ModFamiliar.CargarFamiliar", Erl)
 124     Resume Next
         
 End Sub
@@ -243,7 +243,7 @@ Public Function IndexDeFamiliar(ByVal Tipo As Byte) As Byte
         Exit Function
 
 IndexDeFamiliar_Err:
-136     Call RegistrarError(Err.Number, Err.description, "ModFamiliar.IndexDeFamiliar", Erl)
+136     Call RegistrarError(Err.Number, Err.Description, "ModFamiliar.IndexDeFamiliar", Erl)
 138     Resume Next
         
 End Function
@@ -323,7 +323,7 @@ Sub CalcularDarExpCompartida(ByVal UserIndex As Integer, ByVal NpcIndex As Integ
         Exit Sub
 
 CalcularDarExpCompartida_Err:
-146     Call RegistrarError(Err.Number, Err.description, "ModFamiliar.CalcularDarExpCompartida", Erl)
+146     Call RegistrarError(Err.Number, Err.Description, "ModFamiliar.CalcularDarExpCompartida", Erl)
 148     Resume Next
         
 End Sub
@@ -405,6 +405,6 @@ Sub CheckFamiliarLevel(ByVal UserIndex As Integer)
         Exit Sub
 
 ErrHandler:
-154     Call LogError("Error en la subrutina de check mascota nivel - Error : " & Err.Number & " - Description : " & Err.description)
+154     Call LogError("Error en la subrutina de check mascota nivel - Error : " & Err.Number & " - Description : " & Err.Description)
 
 End Sub

@@ -1485,7 +1485,7 @@ Sub UserDie(ByVal UserIndex As Integer)
             End If
         
             'If .Familiar.Invocado = 1 Then
-            ' Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageFxPiso("17", Npclist(.Familiar.Id).Pos.x, Npclist(.Familiar.Id).Pos.Y))
+            ' Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageFxPiso("17", NpcList(.Familiar.Id).Pos.x, NpcList(.Familiar.Id).Pos.Y))
             ' .Familiar.Invocado = 0
             ' Call QuitarNPC(.Familiar.Id)
             ' End If

@@ -1233,7 +1233,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 
 158     Npclist(NpcIndex).GiveEXPClan = val(Leer.GetValue("NPC" & NpcNumber, "GiveEXPClan"))
 
-        'Npclist(NpcIndex).flags.ExpDada = Npclist(NpcIndex).GiveEXP
+        'NpcList(NpcIndex).flags.ExpDada = NpcList(NpcIndex).GiveEXP
 160     Npclist(NpcIndex).flags.ExpCount = Npclist(NpcIndex).GiveEXP
 
 162     Npclist(NpcIndex).Veneno = val(Leer.GetValue("NPC" & NpcNumber, "Veneno"))
@@ -1242,7 +1242,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 
 166     Npclist(NpcIndex).GiveGLD = val(Leer.GetValue("NPC" & NpcNumber, "GiveGLD"))
 
-    '166     Npclist(NpcIndex).QuestNumber = val(Leer.GetValue("NPC" & NpcNumber, "QuestNumber"))
+    '166     NpcList(NpcIndex).QuestNumber = val(Leer.GetValue("NPC" & NpcNumber, "QuestNumber"))
 
 
 
