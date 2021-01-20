@@ -94,7 +94,7 @@ Public Sub NPC_TIRAR_ITEMS(ByRef npc As npc)
         Exit Sub
 
 NPC_TIRAR_ITEMS_Err:
-114     Call RegistrarError(Err.Number, Err.description, "InvNpc.NPC_TIRAR_ITEMS", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "InvNpc.NPC_TIRAR_ITEMS", Erl)
 
         
 End Sub
@@ -131,7 +131,7 @@ Function QuedanItems(ByVal NpcIndex As Integer, ByVal ObjIndex As Integer) As Bo
         Exit Function
 
 QuedanItems_Err:
-110     Call RegistrarError(Err.Number, Err.description, "InvNpc.QuedanItems", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "InvNpc.QuedanItems", Erl)
 
         
 End Function
@@ -150,7 +150,7 @@ Function EncontrarCant(ByVal NpcIndex As Integer, ByVal ObjIndex As Integer) As 
 
         Dim i  As Integer
 
-        'If Npclist(NpcIndex).Numero > 499 Then
+        'If NpcList(NpcIndex).Numero > 499 Then
         '    npcfile = DatPath & "NPCs-HOSTILES.dat"
         'Else
 100     npcfile = DatPath & "NPCs.dat"
@@ -173,7 +173,7 @@ Function EncontrarCant(ByVal NpcIndex As Integer, ByVal ObjIndex As Integer) As 
         Exit Function
 
 EncontrarCant_Err:
-112     Call RegistrarError(Err.Number, Err.description, "InvNpc.EncontrarCant", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "InvNpc.EncontrarCant", Erl)
 
         
 End Function
@@ -201,7 +201,7 @@ Sub ResetNpcInv(ByVal NpcIndex As Integer)
         Exit Sub
 
 ResetNpcInv_Err:
-112     Call RegistrarError(Err.Number, Err.description, "InvNpc.ResetNpcInv", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "InvNpc.ResetNpcInv", Erl)
 
         
 End Sub
@@ -267,7 +267,7 @@ Sub QuitarNpcInvItem(ByVal NpcIndex As Integer, ByVal slot As Byte, ByVal Cantid
         Exit Sub
 
 QuitarNpcInvItem_Err:
-144     Call RegistrarError(Err.Number, Err.description, "InvNpc.QuitarNpcInvItem", Erl)
+144     Call RegistrarError(Err.Number, Err.Description, "InvNpc.QuitarNpcInvItem", Erl)
 146     Resume Next
         
 End Sub
@@ -284,7 +284,7 @@ Sub CargarInvent(ByVal NpcIndex As Integer)
 
         Dim npcfile As String
 
-        'If Npclist(NpcIndex).Numero > 499 Then
+        'If NpcList(NpcIndex).Numero > 499 Then
         '    npcfile = DatPath & "NPCs-HOSTILES.dat"
         'Else
 100     npcfile = DatPath & "NPCs.dat"
@@ -303,7 +303,7 @@ Sub CargarInvent(ByVal NpcIndex As Integer)
         Exit Sub
 
 CargarInvent_Err:
-114     Call RegistrarError(Err.Number, Err.description, "InvNpc.CargarInvent", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "InvNpc.CargarInvent", Erl)
 116     Resume Next
         
 End Sub
@@ -366,7 +366,7 @@ Public Sub NpcDropeo(ByRef npc As npc, ByRef UserIndex As Integer)
         Exit Sub
 
 ErrHandler:
-134     Call LogError("Error al dropear el item " & ObjData(npc.QuizaDropea(objRandom)).name & ", al usuario " & UserList(UserIndex).name & ". " & Err.description & ".")
+134     Call LogError("Error al dropear el item " & ObjData(npc.QuizaDropea(objRandom)).name & ", al usuario " & UserList(UserIndex).name & ". " & Err.Description & ".")
 
 End Sub
 
@@ -417,7 +417,7 @@ Public Sub DropObjQuest(ByRef npc As npc, ByRef UserIndex As Integer)
         Exit Sub
 
 ErrHandler:
-126     Call LogError("Error DropObjQuest al dropear el item " & ObjData(npc.DropQuest(i).ObjIndex).name & ", al usuario " & UserList(UserIndex).name & ". " & Err.description & ".")
+126     Call LogError("Error DropObjQuest al dropear el item " & ObjData(npc.DropQuest(i).ObjIndex).name & ", al usuario " & UserList(UserIndex).name & ". " & Err.Description & ".")
 
 End Sub
 

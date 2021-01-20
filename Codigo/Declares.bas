@@ -2274,7 +2274,7 @@ End Type
 '*****************ARRAYS PUBLICOS*************************
 Public UserList()                         As user 'USUARIOS
 
-Public Npclist(1 To MAXNPCS)              As npc 'NPCS
+Public NpcList(1 To MAXNPCS)              As npc 'NPCS
 
 Public MapData()                          As MapBlock
 

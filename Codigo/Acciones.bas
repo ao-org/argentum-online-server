@@ -68,9 +68,9 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 104         If MapData(Map, X, Y).NpcIndex > 0 Then     'Acciones NPCs
                 'Set the target NPC
 106             UserList(UserIndex).flags.TargetNPC = MapData(Map, X, Y).NpcIndex
-108             UserList(UserIndex).flags.TargetNpcTipo = Npclist(MapData(Map, X, Y).NpcIndex).NPCtype
+108             UserList(UserIndex).flags.TargetNpcTipo = NpcList(MapData(Map, X, Y).NpcIndex).NPCtype
         
-110             If Npclist(MapData(Map, X, Y).NpcIndex).Comercia = 1 Then
+110             If NpcList(MapData(Map, X, Y).NpcIndex).Comercia = 1 Then
 
                     '¿Esta el user muerto? Si es asi no puede comerciar
 112                 If UserList(UserIndex).flags.Muerto = 1 Then
@@ -90,7 +90,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 
                     End If
             
-118                 If Distancia(Npclist(UserList(UserIndex).flags.TargetNPC).Pos, UserList(UserIndex).Pos) > 6 Then
+118                 If Distancia(NpcList(UserList(UserIndex).flags.TargetNPC).Pos, UserList(UserIndex).Pos) > 6 Then
 120                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                         'Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos del vendedor.", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
@@ -105,7 +105,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                     'Iniciamos la rutina pa' comerciar.
 122                 Call IniciarComercioNPC(UserIndex)
         
-124             ElseIf Npclist(MapData(Map, X, Y).NpcIndex).NPCtype = eNPCType.Banquero Then
+124             ElseIf NpcList(MapData(Map, X, Y).NpcIndex).NPCtype = eNPCType.Banquero Then
 
                     '¿Esta el user muerto? Si es asi no puede comerciar
 126                 If UserList(UserIndex).flags.Muerto = 1 Then
@@ -120,7 +120,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 
                     End If
             
-132                 If Distancia(Npclist(MapData(Map, X, Y).NpcIndex).Pos, UserList(UserIndex).Pos) > 6 Then
+132                 If Distancia(NpcList(MapData(Map, X, Y).NpcIndex).Pos, UserList(UserIndex).Pos) > 6 Then
 134                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                         'Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos del banquero.", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
@@ -130,7 +130,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                     'A depositar de una
 136                 Call IniciarBanco(UserIndex)
             
-138             ElseIf Npclist(MapData(Map, X, Y).NpcIndex).NPCtype = eNPCType.Pirata Then  'VIAJES
+138             ElseIf NpcList(MapData(Map, X, Y).NpcIndex).NPCtype = eNPCType.Pirata Then  'VIAJES
 
                     '¿Esta el user muerto? Si es asi no puede comerciar
 140                 If UserList(UserIndex).flags.Muerto = 1 Then
@@ -145,15 +145,15 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 
                     End If
             
-146                 If Distancia(Npclist(MapData(Map, X, Y).NpcIndex).Pos, UserList(UserIndex).Pos) > 5 Then
+146                 If Distancia(NpcList(MapData(Map, X, Y).NpcIndex).Pos, UserList(UserIndex).Pos) > 5 Then
 148                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
 150                     Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos del banquero.", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
                     End If
             
-152                 If Npclist(MapData(Map, X, Y).NpcIndex).SoundOpen <> 0 Then
-154                     Call WritePlayWave(UserIndex, Npclist(MapData(Map, X, Y).NpcIndex).SoundOpen, NO_3D_SOUND, NO_3D_SOUND)
+152                 If NpcList(MapData(Map, X, Y).NpcIndex).SoundOpen <> 0 Then
+154                     Call WritePlayWave(UserIndex, NpcList(MapData(Map, X, Y).NpcIndex).SoundOpen, NO_3D_SOUND, NO_3D_SOUND)
 
                     End If
 
@@ -161,9 +161,9 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 156                 Call WriteViajarForm(UserIndex, MapData(Map, X, Y).NpcIndex)
                     Exit Sub
             
-158             ElseIf Npclist(MapData(Map, X, Y).NpcIndex).NPCtype = eNPCType.Revividor Or Npclist(MapData(Map, X, Y).NpcIndex).NPCtype = eNPCType.ResucitadorNewbie Then
+158             ElseIf NpcList(MapData(Map, X, Y).NpcIndex).NPCtype = eNPCType.Revividor Or NpcList(MapData(Map, X, Y).NpcIndex).NPCtype = eNPCType.ResucitadorNewbie Then
 
-160                 If Distancia(UserList(UserIndex).Pos, Npclist(MapData(Map, X, Y).NpcIndex).Pos) > 5 Then
+160                 If Distancia(UserList(UserIndex).Pos, NpcList(MapData(Map, X, Y).NpcIndex).Pos) > 5 Then
                         'Call WriteConsoleMsg(UserIndex, "El sacerdote no puede curarte debido a que estas demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
 162                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
@@ -179,7 +179,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 166                 UserList(UserIndex).flags.Incinerado = 0
       
                     'Revivimos si es necesario
-168                 If UserList(UserIndex).flags.Muerto = 1 And (Npclist(MapData(Map, X, Y).NpcIndex).NPCtype = eNPCType.Revividor Or EsNewbie(UserIndex)) Then
+168                 If UserList(UserIndex).flags.Muerto = 1 And (NpcList(MapData(Map, X, Y).NpcIndex).NPCtype = eNPCType.Revividor Or EsNewbie(UserIndex)) Then
 170                     Call WriteConsoleMsg(UserIndex, "¡Has sido resucitado!", FontTypeNames.FONTTYPE_INFO)
 172                     Call RevivirUsuario(UserIndex)
 174                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Resucitar, 30, False))
@@ -210,16 +210,16 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
             
                     'Sistema Battle
             
-194             ElseIf Npclist(MapData(Map, X, Y).NpcIndex).NPCtype = eNPCType.BattleModo Then
+194             ElseIf NpcList(MapData(Map, X, Y).NpcIndex).NPCtype = eNPCType.BattleModo Then
 
-196                 If Distancia(UserList(UserIndex).Pos, Npclist(MapData(Map, X, Y).NpcIndex).Pos) > 5 Then
+196                 If Distancia(UserList(UserIndex).Pos, NpcList(MapData(Map, X, Y).NpcIndex).Pos) > 5 Then
 198                     Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
                     End If
             
 200                 If BattleActivado = 0 Then
-202                     Call WriteChatOverHead(UserIndex, "Actualmente el battle se encuentra desactivado.", Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
+202                     Call WriteChatOverHead(UserIndex, "Actualmente el battle se encuentra desactivado.", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
                         Exit Sub
 
                     End If
@@ -264,7 +264,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
             
                     'Sistema Battle
          
-238             ElseIf Npclist(MapData(Map, X, Y).NpcIndex).NPCtype = eNPCType.Subastador Then
+238             ElseIf NpcList(MapData(Map, X, Y).NpcIndex).NPCtype = eNPCType.Subastador Then
 
 240                 If UserList(UserIndex).flags.Muerto = 1 Then
 242                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
@@ -272,7 +272,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 
                     End If
             
-244                 If Distancia(Npclist(UserList(UserIndex).flags.TargetNPC).Pos, UserList(UserIndex).Pos) > 1 Then
+244                 If Distancia(NpcList(UserList(UserIndex).flags.TargetNPC).Pos, UserList(UserIndex).Pos) > 1 Then
                         ' Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos del subastador.", FontTypeNames.FONTTYPE_INFO)
 246                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
@@ -286,7 +286,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 
 248                 Call IniciarSubasta(UserIndex)
             
-250             ElseIf Npclist(MapData(Map, X, Y).NpcIndex).NPCtype = eNPCType.Quest Then
+250             ElseIf NpcList(MapData(Map, X, Y).NpcIndex).NPCtype = eNPCType.Quest Then
 
 252                 If UserList(UserIndex).flags.Muerto = 1 Then
 254                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
@@ -300,7 +300,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
             
 256                 Call EnviarQuest(UserIndex)
             
-258             ElseIf Npclist(MapData(Map, X, Y).NpcIndex).NPCtype = eNPCType.Enlistador Then
+258             ElseIf NpcList(MapData(Map, X, Y).NpcIndex).NPCtype = eNPCType.Enlistador Then
 
 260                 If UserList(UserIndex).flags.Muerto = 1 Then
 262                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
@@ -308,13 +308,13 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 
                     End If
             
-264                 If Distancia(Npclist(UserList(UserIndex).flags.TargetNPC).Pos, UserList(UserIndex).Pos) > 4 Then
+264                 If Distancia(NpcList(UserList(UserIndex).flags.TargetNPC).Pos, UserList(UserIndex).Pos) > 4 Then
 266                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
                     End If
         
-268                 If Npclist(UserList(UserIndex).flags.TargetNPC).flags.Faccion = 0 Then
+268                 If NpcList(UserList(UserIndex).flags.TargetNPC).flags.Faccion = 0 Then
 270                     If UserList(UserIndex).Faccion.ArmadaReal = 0 Then
 272                         Call EnlistarArmadaReal(UserIndex)
                         Else
@@ -333,7 +333,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 
                     End If
 
-282             ElseIf Npclist(MapData(Map, X, Y).NpcIndex).NPCtype = eNPCType.Gobernador Then
+282             ElseIf NpcList(MapData(Map, X, Y).NpcIndex).NPCtype = eNPCType.Gobernador Then
 
 284                 If UserList(UserIndex).flags.Muerto = 1 Then
 286                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFOIAO)
@@ -341,7 +341,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 
                     End If
             
-288                 If Distancia(Npclist(UserList(UserIndex).flags.TargetNPC).Pos, UserList(UserIndex).Pos) > 3 Then
+288                 If Distancia(NpcList(UserList(UserIndex).flags.TargetNPC).Pos, UserList(UserIndex).Pos) > 3 Then
 290                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                         'Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos del gobernador.", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
@@ -350,15 +350,15 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 
                     Dim DeDonde As String
             
-292                 If UserList(UserIndex).Hogar = Npclist(UserList(UserIndex).flags.TargetNPC).GobernadorDe Then
-294                     Call WriteChatOverHead(UserIndex, "Ya perteneces a esta ciudad. Gracias por ser uno más de nosotros.", Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
+292                 If UserList(UserIndex).Hogar = NpcList(UserList(UserIndex).flags.TargetNPC).GobernadorDe Then
+294                     Call WriteChatOverHead(UserIndex, "Ya perteneces a esta ciudad. Gracias por ser uno más de nosotros.", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
                         Exit Sub
 
                     End If
             
 296                 If UserList(UserIndex).Faccion.Status = 0 Or UserList(UserIndex).Faccion.Status = 2 Then
-298                     If Npclist(UserList(UserIndex).flags.TargetNPC).GobernadorDe = eCiudad.cBanderbill Then
-300                         Call WriteChatOverHead(UserIndex, "Aquí no aceptamos criminales.", Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
+298                     If NpcList(UserList(UserIndex).flags.TargetNPC).GobernadorDe = eCiudad.cBanderbill Then
+300                         Call WriteChatOverHead(UserIndex, "Aquí no aceptamos criminales.", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
                             Exit Sub
 
                         End If
@@ -366,17 +366,17 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                     End If
             
 302                 If UserList(UserIndex).Faccion.Status = 3 Or UserList(UserIndex).Faccion.Status = 1 Then
-304                     If Npclist(UserList(UserIndex).flags.TargetNPC).GobernadorDe = eCiudad.cArghal Then
-306                         Call WriteChatOverHead(UserIndex, "¡¡Sal de aquí ciudadano asqueroso!!", Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
+304                     If NpcList(UserList(UserIndex).flags.TargetNPC).GobernadorDe = eCiudad.cArghal Then
+306                         Call WriteChatOverHead(UserIndex, "¡¡Sal de aquí ciudadano asqueroso!!", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
                             Exit Sub
 
                         End If
 
                     End If
             
-308                 If UserList(UserIndex).Hogar <> Npclist(UserList(UserIndex).flags.TargetNPC).GobernadorDe Then
+308                 If UserList(UserIndex).Hogar <> NpcList(UserList(UserIndex).flags.TargetNPC).GobernadorDe Then
             
-310                     UserList(UserIndex).PosibleHogar = Npclist(UserList(UserIndex).flags.TargetNPC).GobernadorDe
+310                     UserList(UserIndex).PosibleHogar = NpcList(UserList(UserIndex).flags.TargetNPC).GobernadorDe
                 
 312                     Select Case UserList(UserIndex).PosibleHogar
 

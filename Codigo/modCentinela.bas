@@ -85,7 +85,7 @@ Public Sub CallUserAttention()
         Exit Sub
 
 CallUserAttention_Err:
-112     Call RegistrarError(Err.Number, Err.description, "modCentinela.CallUserAttention", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "modCentinela.CallUserAttention", Erl)
 114     Resume Next
         
 End Sub
@@ -143,7 +143,7 @@ Private Sub GoToNextWorkingChar()
         Exit Sub
 
 GoToNextWorkingChar_Err:
-132     Call RegistrarError(Err.Number, Err.description, "modCentinela.GoToNextWorkingChar", Erl)
+132     Call RegistrarError(Err.Number, Err.Description, "modCentinela.GoToNextWorkingChar", Erl)
 134     Resume Next
         
 End Sub
@@ -154,7 +154,7 @@ Private Sub CentinelaFinalCheck()
         'Al finalizar el tiempo, se retira y realiza la acción
         'pertinente dependiendo del caso
         '############################################################
-        On Error GoTo Error_Handler
+        On Error GoTo ERROR_HANDLER
 
         Dim name     As String
 
@@ -212,7 +212,7 @@ Private Sub CentinelaFinalCheck()
 
         Exit Sub
 
-Error_Handler:
+ERROR_HANDLER:
 132     Centinela.clave = 0
 134     Centinela.TiempoRestante = 0
 136     Centinela.RevisandoUserIndex = 0
@@ -223,7 +223,7 @@ Error_Handler:
 
         End If
     
-144     Call LogError("Error en el checkeo del centinela: " & Err.description)
+144     Call LogError("Error en el checkeo del centinela: " & Err.Description)
 
 End Sub
 
@@ -237,7 +237,7 @@ Public Sub CentinelaCheckClave(ByVal UserIndex As Integer, ByVal clave As Intege
         '############################################################
 100     If clave = Centinela.clave And UserIndex = Centinela.RevisandoUserIndex Then
 102         UserList(Centinela.RevisandoUserIndex).flags.CentinelaOK = True
-            'Call WriteChatOverHead(UserIndex, "¡Muchas gracias " & UserList(Centinela.RevisandoUserIndex).name & "! Espero no haber sido una molestia", CStr(Npclist(CentinelaNPCIndex).Char.CharIndex), vbWhite)
+            'Call WriteChatOverHead(UserIndex, "¡Muchas gracias " & UserList(Centinela.RevisandoUserIndex).name & "! Espero no haber sido una molestia", CStr(NpcList(CentinelaNPCIndex).Char.CharIndex), vbWhite)
 104         Call WriteConsoleMsg(UserIndex, "¡Muchas gracias " & UserList(Centinela.RevisandoUserIndex).name & "! Espero no haber sido una molestia", FontTypeNames.FONTTYPE_CENTINELA)
 106         Centinela.RevisandoUserIndex = 0
 108         Call GoToNextWorkingChar
@@ -259,7 +259,7 @@ Public Sub CentinelaCheckClave(ByVal UserIndex As Integer, ByVal clave As Intege
         Exit Sub
 
 CentinelaCheckClave_Err:
-118     Call RegistrarError(Err.Number, Err.description, "modCentinela.CentinelaCheckClave", Erl)
+118     Call RegistrarError(Err.Number, Err.Description, "modCentinela.CentinelaCheckClave", Erl)
 120     Resume Next
         
 End Sub
@@ -287,7 +287,7 @@ Public Sub ResetCentinelaInfo()
         Exit Sub
 
 ResetCentinelaInfo_Err:
-108     Call RegistrarError(Err.Number, Err.description, "modCentinela.ResetCentinelaInfo", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "modCentinela.ResetCentinelaInfo", Erl)
 110     Resume Next
         
 End Sub
@@ -322,7 +322,7 @@ Public Sub CentinelaSendClave(ByVal UserIndex As Integer)
         Exit Sub
 
 CentinelaSendClave_Err:
-116     Call RegistrarError(Err.Number, Err.description, "modCentinela.CentinelaSendClave", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "modCentinela.CentinelaSendClave", Erl)
 118     Resume Next
         
 End Sub
@@ -366,7 +366,7 @@ Public Sub PasarMinutoCentinela()
         Exit Sub
 
 PasarMinutoCentinela_Err:
-122     Call RegistrarError(Err.Number, Err.description, "modCentinela.PasarMinutoCentinela", Erl)
+122     Call RegistrarError(Err.Number, Err.Description, "modCentinela.PasarMinutoCentinela", Erl)
 124     Resume Next
         
 End Sub
@@ -400,7 +400,7 @@ Private Sub WarpCentinela(ByVal UserIndex As Integer)
         Exit Sub
 
 WarpCentinela_Err:
-114     Call RegistrarError(Err.Number, Err.description, "modCentinela.WarpCentinela", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "modCentinela.WarpCentinela", Erl)
 116     Resume Next
         
 End Sub
@@ -434,7 +434,7 @@ Public Sub CentinelaUserLogout()
         Exit Sub
 
 CentinelaUserLogout_Err:
-116     Call RegistrarError(Err.Number, Err.description, "modCentinela.CentinelaUserLogout", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "modCentinela.CentinelaUserLogout", Erl)
 118     Resume Next
         
 End Sub

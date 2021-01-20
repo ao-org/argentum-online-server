@@ -1205,7 +1205,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 110         OpenNPC = NpcIndex
             Exit Function
         End If
-        
+
         Dim LoopC As Long
         Dim ln    As String
         Dim Aux As String

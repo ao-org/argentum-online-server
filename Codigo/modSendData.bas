@@ -415,7 +415,7 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, ByV
         Exit Sub
 
 SendData_Err:
-362     Call RegistrarError(Err.Number, Err.description, "modSendData.SendData", Erl)
+362     Call RegistrarError(Err.Number, Err.Description, "modSendData.SendData", Erl)
 
         
 End Sub
@@ -464,7 +464,7 @@ Private Sub SendToUserArea(ByVal UserIndex As Integer, ByVal sndData As String)
         Exit Sub
 
 SendToUserArea_Err:
-124     Call RegistrarError(Err.Number, Err.description, "modSendData.SendToUserArea", Erl)
+124     Call RegistrarError(Err.Number, Err.Description, "modSendData.SendToUserArea", Erl)
 126     Resume Next
         
 End Sub
@@ -520,7 +520,7 @@ Private Sub SendToSuperioresArea(ByVal UserIndex As Integer, ByVal sndData As St
         Exit Sub
 
 SendToUserAreaButindex_Err:
-130     Call RegistrarError(Err.Number, Err.description, "modSendData.SendToUserAreaButindex", Erl)
+130     Call RegistrarError(Err.Number, Err.Description, "modSendData.SendToUserAreaButindex", Erl)
 
 132     Resume Next
         
@@ -579,7 +579,7 @@ Private Sub SendToUserAreaButindex(ByVal UserIndex As Integer, ByVal sndData As 
         Exit Sub
 
 SendToUserAreaButindex_Err:
-130     Call RegistrarError(Err.Number, Err.description, "modSendData.SendToUserAreaButindex", Erl)
+130     Call RegistrarError(Err.Number, Err.Description, "modSendData.SendToUserAreaButindex", Erl)
 132     Resume Next
         
 End Sub
@@ -639,7 +639,7 @@ Private Sub SendToAdminAreaButIndex(ByVal UserIndex As Integer, ByVal sndData As
         Exit Sub
 
 SendToUserAreaButindex_Err:
-130     Call RegistrarError(Err.Number, Err.description, "modSendData.SendToAdminAreaButIndex", Erl)
+130     Call RegistrarError(Err.Number, Err.Description, "modSendData.SendToAdminAreaButIndex", Erl)
 132     Resume Next
         
 End Sub
@@ -701,7 +701,7 @@ Private Sub SendToUserAreaButGMs(ByVal UserIndex As Integer, ByVal sndData As St
         Exit Sub
 
 SendToUserAreaButindex_Err:
-130     Call RegistrarError(Err.Number, Err.description, "modSendData.SendToUserAreaButindex", Erl)
+130     Call RegistrarError(Err.Number, Err.Description, "modSendData.SendToUserAreaButindex", Erl)
 132     Resume Next
         
 End Sub
@@ -751,7 +751,7 @@ Private Sub SendToDeadUserArea(ByVal UserIndex As Integer, ByVal sndData As Stri
         Exit Sub
 
 SendToDeadUserArea_Err:
-124     Call RegistrarError(Err.Number, Err.description, "modSendData.SendToDeadUserArea", Erl)
+124     Call RegistrarError(Err.Number, Err.Description, "modSendData.SendToDeadUserArea", Erl)
 126     Resume Next
         
 End Sub
@@ -802,7 +802,7 @@ Private Sub SendToUserGuildArea(ByVal UserIndex As Integer, ByVal sndData As Str
         Exit Sub
 
 SendToUserGuildArea_Err:
-126     Call RegistrarError(Err.Number, Err.description, "modSendData.SendToUserGuildArea", Erl)
+126     Call RegistrarError(Err.Number, Err.Description, "modSendData.SendToUserGuildArea", Erl)
 128     Resume Next
         
 End Sub
@@ -851,7 +851,7 @@ Private Sub SendToAdminsButConsejerosArea(ByVal UserIndex As Integer, ByVal sndD
         Exit Sub
 
 SendToAdminsButConsejerosArea_Err:
-124     Call RegistrarError(Err.Number, Err.description, "modSendData.SendToAdminsButConsejerosArea", Erl)
+124     Call RegistrarError(Err.Number, Err.Description, "modSendData.SendToAdminsButConsejerosArea", Erl)
 126     Resume Next
         
 End Sub
@@ -905,7 +905,7 @@ Private Sub SendToNpcArea(ByVal NpcIndex As Long, ByVal sndData As String)
         Exit Sub
 
 SendToNpcArea_Err:
-128     Call RegistrarError(Err.Number, Err.description, "modSendData.SendToNpcArea", Erl)
+128     Call RegistrarError(Err.Number, Err.Description, "modSendData.SendToNpcArea", Erl)
 130     Resume Next
         
 End Sub
@@ -947,7 +947,7 @@ Public Sub SendToAreaByPos(ByVal Map As Integer, ByVal AreaX As Integer, ByVal A
         Exit Sub
 
 SendToAreaByPos_Err:
-124     Call RegistrarError(Err.Number, Err.description, "modSendData.SendToAreaByPos", Erl)
+124     Call RegistrarError(Err.Number, Err.Description, "modSendData.SendToAreaByPos", Erl)
 126     Resume Next
         
 End Sub
@@ -981,7 +981,7 @@ Public Sub SendToMap(ByVal Map As Integer, ByVal sndData As String)
         Exit Sub
 
 SendToMap_Err:
-112     Call RegistrarError(Err.Number, Err.description, "modSendData.SendToMap", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "modSendData.SendToMap", Erl)
 114     Resume Next
         
 End Sub
@@ -1020,7 +1020,7 @@ Public Sub SendToMapButIndex(ByVal UserIndex As Integer, ByVal sndData As String
         Exit Sub
 
 SendToMapButIndex_Err:
-116     Call RegistrarError(Err.Number, Err.description, "modSendData.SendToMapButIndex", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "modSendData.SendToMapButIndex", Erl)
 118     Resume Next
         
 End Sub
