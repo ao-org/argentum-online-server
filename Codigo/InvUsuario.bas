@@ -904,7 +904,7 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal slot As Byte)
 236             UserList(UserIndex).Invent.MagicoObjIndex = 0
 238             UserList(UserIndex).Invent.MagicoSlot = 0
         
-240         Case eOBJType.otNUDILLOS
+240         Case eOBJType.otNudillos
     
                 'falta mandar animacion
             
@@ -938,7 +938,7 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal slot As Byte)
 278                 Call WriteUpdateRM(UserIndex)
                 End If
     
-280         Case eOBJType.otCASCO
+280         Case eOBJType.otCasco
 282             UserList(UserIndex).Invent.Object(slot).Equipped = 0
 284             UserList(UserIndex).Invent.CascoEqpObjIndex = 0
 286             UserList(UserIndex).Invent.CascoEqpSlot = 0
@@ -952,7 +952,7 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal slot As Byte)
 298                 Call WriteUpdateRM(UserIndex)
                 End If
     
-300         Case eOBJType.otESCUDO
+300         Case eOBJType.otEscudo
 302             UserList(UserIndex).Invent.Object(slot).Equipped = 0
 304             UserList(UserIndex).Invent.EscudoEqpObjIndex = 0
 306             UserList(UserIndex).Invent.EscudoEqpSlot = 0
@@ -1346,7 +1346,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                     'Call WriteUpdateExp(UserIndex)
                     'Call CheckUserLevel(UserIndex)
             
-336             Case eOBJType.otNUDILLOS
+336             Case eOBJType.otNudillos
     
 338                 If .flags.Muerto = 1 Then
 340                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
@@ -1499,7 +1499,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 458                     Call WriteUpdateRM(UserIndex)
                     End If
     
-460             Case eOBJType.otCASCO
+460             Case eOBJType.otCasco
                 
 462                 If Not ClasePuedeUsarItem(UserIndex, .Invent.Object(slot).ObjIndex, slot) Then
 464                     Call WriteConsoleMsg(UserIndex, "Tu clase no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
@@ -1549,7 +1549,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 504                     Call WriteUpdateRM(UserIndex)
                     End If
 
-506             Case eOBJType.otESCUDO
+506             Case eOBJType.otEscudo
 
 508                 If Not ClasePuedeUsarItem(UserIndex, .Invent.Object(slot).ObjIndex, slot) Then
 510                     Call WriteConsoleMsg(UserIndex, "Tu clase no puede usar este objeto.", FontTypeNames.FONTTYPE_INFO)
