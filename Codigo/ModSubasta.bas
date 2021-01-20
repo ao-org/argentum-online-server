@@ -74,7 +74,7 @@ Public Sub IniciarSubasta(UserIndex)
         Exit Sub
 
 IniciarSubasta_Err:
-140     Call RegistrarError(Err.Number, Err.description, "ModSubasta.IniciarSubasta", Erl)
+140     Call RegistrarError(Err.Number, Err.Description, "ModSubasta.IniciarSubasta", Erl)
 142     Resume Next
         
 End Sub
@@ -215,7 +215,7 @@ Public Sub FinalizarSubasta()
         Exit Sub
 
 FinalizarSubasta_Err:
-200     Call RegistrarError(Err.Number, Err.description, "ModSubasta.FinalizarSubasta", Erl)
+200     Call RegistrarError(Err.Number, Err.Description, "ModSubasta.FinalizarSubasta", Erl)
 202     Resume Next
         
 End Sub
@@ -236,7 +236,7 @@ Public Sub LogearEventoDeSubasta(Logeo As String)
         Exit Sub
 
 LogearEventoDeSubasta_Err:
-108     Call RegistrarError(Err.Number, Err.description, "ModSubasta.LogearEventoDeSubasta", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "ModSubasta.LogearEventoDeSubasta", Erl)
 110     Resume Next
         
 End Sub
@@ -263,7 +263,7 @@ Public Sub ResetearSubasta()
         Exit Sub
 
 ResetearSubasta_Err:
-126     Call RegistrarError(Err.Number, Err.description, "ModSubasta.ResetearSubasta", Erl)
+126     Call RegistrarError(Err.Number, Err.Description, "ModSubasta.ResetearSubasta", Erl)
 128     Resume Next
         
 End Sub
@@ -371,7 +371,7 @@ Public Sub DevolverItem()
         Exit Sub
 
 DevolverItem_Err:
-176     Call RegistrarError(Err.Number, Err.description, "ModSubasta.DevolverItem", Erl)
+176     Call RegistrarError(Err.Number, Err.Description, "ModSubasta.DevolverItem", Erl)
 178     Resume Next
         
 End Sub
@@ -479,7 +479,7 @@ Public Sub CancelarSubasta()
         Exit Sub
 
 CancelarSubasta_Err:
-180     Call RegistrarError(Err.Number, Err.description, "ModSubasta.CancelarSubasta", Erl)
+180     Call RegistrarError(Err.Number, Err.Description, "ModSubasta.CancelarSubasta", Erl)
 182     Resume Next
         
 End Sub

@@ -75,19 +75,19 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
             
 118             Call CloseSocket(UserIndex)
                 Exit Sub
-120         ElseIf Not Npclist(NpcIndex).Invent.Object(slot).Amount > 0 Then
+120         ElseIf Not NpcList(NpcIndex).Invent.Object(slot).Amount > 0 Then
                 Exit Sub
 
             End If
         
-122         If Cantidad > Npclist(NpcIndex).Invent.Object(slot).Amount Then Cantidad = Npclist(NpcIndex).Invent.Object(slot).Amount
+122         If Cantidad > NpcList(NpcIndex).Invent.Object(slot).Amount Then Cantidad = NpcList(NpcIndex).Invent.Object(slot).Amount
         
 124         Objeto.Amount = Cantidad
-126         Objeto.ObjIndex = Npclist(NpcIndex).Invent.Object(slot).ObjIndex
+126         Objeto.ObjIndex = NpcList(NpcIndex).Invent.Object(slot).ObjIndex
         
             'El precio, cuando nos venden algo, lo tenemos que redondear para arriba.
             'Es decir, 1.1 = 2, por lo cual se hace de la siguiente forma Precio = Clng(PrecioFinal + 0.5) Siempre va a darte el proximo numero. O el "Techo" (MarKoxX)
-128         Precio = CLng((ObjData(Npclist(NpcIndex).Invent.Object(slot).ObjIndex).Valor / Descuento(UserIndex) * Cantidad) + 0.5)
+128         Precio = CLng((ObjData(NpcList(NpcIndex).Invent.Object(slot).ObjIndex).Valor / Descuento(UserIndex) * Cantidad) + 0.5)
         
 130         If UserList(UserIndex).Stats.GLD < Precio Then
 132             Call WriteConsoleMsg(UserIndex, "No tienes suficiente dinero.", FontTypeNames.FONTTYPE_INFO)
@@ -116,15 +116,15 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
         
             'Agregado para que no se vuelvan a vender las llaves si se recargan los .dat.
 144         If ObjData(Objeto.ObjIndex).OBJType = otLlaves Then
-146             Call WriteVar(DatPath & "NPCs.dat", "NPC" & Npclist(NpcIndex).Numero, "obj" & slot, Objeto.ObjIndex & "-0")
+146             Call WriteVar(DatPath & "NPCs.dat", "NPC" & NpcList(NpcIndex).Numero, "obj" & slot, Objeto.ObjIndex & "-0")
 148             Call logVentaCasa(UserList(UserIndex).name & " compro " & ObjData(Objeto.ObjIndex).name)
 
             End If
          
             Rem    NpcSlot = SlotEnNPCInv(NpcIndex, Objeto.ObjIndex, Objeto.Amount)
                 
-150         objquedo.Amount = Npclist(NpcIndex).Invent.Object(CByte(slot)).Amount
-152         objquedo.ObjIndex = Npclist(NpcIndex).Invent.Object(CByte(slot)).ObjIndex
+150         objquedo.Amount = NpcList(NpcIndex).Invent.Object(CByte(slot)).Amount
+152         objquedo.ObjIndex = NpcList(NpcIndex).Invent.Object(CByte(slot)).ObjIndex
 154         precioenvio = CLng((ObjData(Objeto.ObjIndex).Valor / Descuento(UserIndex) * 1))
     
 156         Call WriteChangeNPCInventorySlot(UserIndex, CByte(slot), objquedo, precioenvio)
@@ -155,20 +155,20 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
 178             Call WriteConsoleMsg(UserIndex, "Lo siento, no comercio items robados.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
           
-184         ElseIf (Npclist(NpcIndex).TipoItems <> ObjData(Objeto.ObjIndex).OBJType And Npclist(NpcIndex).TipoItems <> eOBJType.otCualquiera) Or Objeto.ObjIndex = iORO Then
+184         ElseIf (NpcList(NpcIndex).TipoItems <> ObjData(Objeto.ObjIndex).OBJType And NpcList(NpcIndex).TipoItems <> eOBJType.otCualquiera) Or Objeto.ObjIndex = iORO Then
 186             Call WriteConsoleMsg(UserIndex, "Lo siento, no estoy interesado en este tipo de objetos.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
 188         ElseIf ObjData(Objeto.ObjIndex).Real = 1 Then
 
-190             If Npclist(NpcIndex).name <> "SR" Then
+190             If NpcList(NpcIndex).name <> "SR" Then
 192                 Call WriteConsoleMsg(UserIndex, "Las armaduras de la Armada solo pueden ser vendidas a los sastres reales.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
 
 194         ElseIf ObjData(Objeto.ObjIndex).Caos = 1 Then
 
-196             If Npclist(NpcIndex).name <> "SC" Then
+196             If NpcList(NpcIndex).name <> "SC" Then
 198                 Call WriteConsoleMsg(UserIndex, "Las armaduras de la Legión solo pueden ser vendidas a los sastres del demonio.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
@@ -203,23 +203,23 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
 230         If NpcSlot > 0 And NpcSlot <= MAX_INVENTORY_SLOTS Then 'Slot valido
                 
                 ' Saque este incremento de SlotEnNPCInv porque me parece mejor manejarlo junto con el resto de las asignaciones
-                If Npclist(NpcIndex).Invent.Object(NpcSlot).ObjIndex = 0 Then
-                    Npclist(NpcIndex).Invent.NroItems = Npclist(NpcIndex).Invent.NroItems + 1
+                If NpcList(NpcIndex).Invent.Object(NpcSlot).ObjIndex = 0 Then
+                    NpcList(NpcIndex).Invent.NroItems = NpcList(NpcIndex).Invent.NroItems + 1
                 End If
                 
                 'Mete el obj en el slot
-232             Npclist(NpcIndex).Invent.Object(NpcSlot).ObjIndex = Objeto.ObjIndex
-234             Npclist(NpcIndex).Invent.Object(NpcSlot).Amount = Npclist(NpcIndex).Invent.Object(NpcSlot).Amount + Objeto.Amount
+232             NpcList(NpcIndex).Invent.Object(NpcSlot).ObjIndex = Objeto.ObjIndex
+234             NpcList(NpcIndex).Invent.Object(NpcSlot).Amount = NpcList(NpcIndex).Invent.Object(NpcSlot).Amount + Objeto.Amount
 
-236             If Npclist(NpcIndex).Invent.Object(NpcSlot).Amount > MAX_INVENTORY_OBJS Then
-238                 Npclist(NpcIndex).Invent.Object(NpcSlot).Amount = MAX_INVENTORY_OBJS
+236             If NpcList(NpcIndex).Invent.Object(NpcSlot).Amount > MAX_INVENTORY_OBJS Then
+238                 NpcList(NpcIndex).Invent.Object(NpcSlot).Amount = MAX_INVENTORY_OBJS
                 End If
                 
 240             Call UpdateNpcInvToAll(False, NpcIndex, NpcSlot)
 
-242             objquedo.Amount = Npclist(NpcIndex).Invent.Object(NpcSlot).Amount
+242             objquedo.Amount = NpcList(NpcIndex).Invent.Object(NpcSlot).Amount
     
-244             objquedo.ObjIndex = Npclist(NpcIndex).Invent.Object(NpcSlot).ObjIndex
+244             objquedo.ObjIndex = NpcList(NpcIndex).Invent.Object(NpcSlot).ObjIndex
     
 246             precioenvio = CLng((ObjData(Objeto.ObjIndex).Valor / Descuento(UserIndex) * 1))
   
@@ -263,8 +263,8 @@ Public Sub IniciarComercioNPC(ByVal UserIndex As Integer)
 
 100     Call UpdateNpcInv(True, UserIndex, UserList(UserIndex).flags.TargetNPC, 0)
 
-102     If Npclist(UserList(UserIndex).flags.TargetNPC).SoundOpen <> 0 Then
-104         Call WritePlayWave(UserIndex, Npclist(UserList(UserIndex).flags.TargetNPC).SoundOpen, NO_3D_SOUND, NO_3D_SOUND)
+102     If NpcList(UserList(UserIndex).flags.TargetNPC).SoundOpen <> 0 Then
+104         Call WritePlayWave(UserIndex, NpcList(UserList(UserIndex).flags.TargetNPC).SoundOpen, NO_3D_SOUND, NO_3D_SOUND)
         End If
 
 106     UserList(UserIndex).flags.Comerciando = True
@@ -287,7 +287,7 @@ Private Function SlotEnNPCInv(ByVal NpcIndex As Integer, ByVal Objeto As Integer
         
         On Error GoTo SlotEnNPCInv_Err
                        
-        With Npclist(NpcIndex).Invent
+        With NpcList(NpcIndex).Invent
         
             Dim slot As Byte
             Dim matchingSlots As New Collection
@@ -365,7 +365,7 @@ Private Sub UpdateNpcInv(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer,
             'Actualiza un solo slot
 102         If Not UpdateAll Then
         
-104             With Npclist(NpcIndex).Invent.Object(slot)
+104             With NpcList(NpcIndex).Invent.Object(slot)
 106                 obj.ObjIndex = .ObjIndex
 108                 obj.Amount = .Amount
                 
@@ -382,7 +382,7 @@ Private Sub UpdateNpcInv(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer,
                 'Actualiza todos los slots
 116             For LoopC = 1 To MAX_INVENTORY_SLOTS
             
-118                 With Npclist(NpcIndex).Invent.Object(LoopC)
+118                 With NpcList(NpcIndex).Invent.Object(LoopC)
                 
 120                     obj.ObjIndex = .ObjIndex
 122                     obj.Amount = .Amount

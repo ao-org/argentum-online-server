@@ -46,7 +46,7 @@ Public Sub SortCorreos(ByVal UserIndex As Integer)
         Exit Sub
 
 SortCorreos_Err:
-130     Call RegistrarError(Err.Number, Err.description, "ModCorreo.SortCorreos", Erl)
+130     Call RegistrarError(Err.Number, Err.Description, "ModCorreo.SortCorreos", Erl)
 132     Resume Next
         
 End Sub
@@ -169,7 +169,7 @@ Public Sub BorrarCorreoMail(ByVal UserIndex As Integer, ByVal index As Byte)
         Exit Sub
 
 BorrarCorreoMail_Err:
-104     Call RegistrarError(Err.Number, Err.description, "ModCorreo.BorrarCorreoMail", Erl)
+104     Call RegistrarError(Err.Number, Err.Description, "ModCorreo.BorrarCorreoMail", Erl)
 106     Resume Next
         
 End Sub
@@ -222,7 +222,7 @@ Public Sub ExtractItemCorreo(ByVal UserIndex As Integer, ByVal index As Byte)
         Exit Sub
 
 ExtractItemCorreo_Err:
-132     Call RegistrarError(Err.Number, Err.description, "ModCorreo.ExtractItemCorreo", Erl)
+132     Call RegistrarError(Err.Number, Err.Description, "ModCorreo.ExtractItemCorreo", Erl)
 134     Resume Next
         
 End Sub
@@ -239,7 +239,7 @@ Public Sub ReadMessageCorreo(ByVal UserIndex As Integer, ByVal index As Byte)
         Exit Sub
 
 ReadMessageCorreo_Err:
-104     Call RegistrarError(Err.Number, Err.description, "ModCorreo.ReadMessageCorreo", Erl)
+104     Call RegistrarError(Err.Number, Err.Description, "ModCorreo.ReadMessageCorreo", Erl)
 106     Resume Next
         
 End Sub
@@ -267,7 +267,7 @@ Private Function SearchIndexFreeCorreo(ByVal UserIndex As Integer) As Byte
         Exit Function
 
 SearchIndexFreeCorreo_Err:
-110     Call RegistrarError(Err.Number, Err.description, "ModCorreo.SearchIndexFreeCorreo", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "ModCorreo.SearchIndexFreeCorreo", Erl)
 112     Resume Next
         
 End Function
@@ -302,7 +302,7 @@ Private Function GrabarNuevoCorreoInChar(ByRef UserName As String, ByVal EmisorI
 124         Call WriteVar(FileUser, "Correo", "NoLeidos", CByte(1))
 126         GrabarNuevoCorreoInChar = True
             
-            'Call WriteChatOverHead(UserIndex, "¡El envio se ha realizado con exito! Gracias por utilizar los servicios de Finanzas Goliath", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
+            'Call WriteChatOverHead(UserIndex, "¡El envio se ha realizado con exito! Gracias por utilizar los servicios de Finanzas Goliath", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
         Else
             ' Call WriteChatOverHead(EmisorIndex, "El usuario es inexistente.",
             '  Call WriteConsoleMsg(UserIndex, "El personaje no existe.", FontTypeNames.FONTTYPE_SERVER)
@@ -315,7 +315,7 @@ Private Function GrabarNuevoCorreoInChar(ByRef UserName As String, ByVal EmisorI
         Exit Function
 
 GrabarNuevoCorreoInChar_Err:
-130     Call RegistrarError(Err.Number, Err.description, "ModCorreo.GrabarNuevoCorreoInChar", Erl)
+130     Call RegistrarError(Err.Number, Err.Description, "ModCorreo.GrabarNuevoCorreoInChar", Erl)
 132     Resume Next
         
 End Function
@@ -350,7 +350,7 @@ Private Function GrabarNuevoCorreoInCharBySubasta(ByRef Comprador As String, ByV
 124         Call WriteVar(FileUser, "Correo", "NoLeidos", CByte(1))
 126         GrabarNuevoCorreoInCharBySubasta = True
             
-            'Call WriteChatOverHead(UserIndex, "¡El envio se ha realizado con exito! Gracias por utilizar los servicios de Finanzas Goliath", Npclist(.flags.TargetNPC).Char.CharIndex, vbWhite)
+            'Call WriteChatOverHead(UserIndex, "¡El envio se ha realizado con exito! Gracias por utilizar los servicios de Finanzas Goliath", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
         Else
             ' Call WriteChatOverHead(EmisorIndex, "El usuario es inexistente.",
             '  Call WriteConsoleMsg(UserIndex, "El personaje no existe.", FontTypeNames.FONTTYPE_SERVER)
@@ -363,7 +363,7 @@ Private Function GrabarNuevoCorreoInCharBySubasta(ByRef Comprador As String, ByV
         Exit Function
 
 GrabarNuevoCorreoInCharBySubasta_Err:
-130     Call RegistrarError(Err.Number, Err.description, "ModCorreo.GrabarNuevoCorreoInCharBySubasta", Erl)
+130     Call RegistrarError(Err.Number, Err.Description, "ModCorreo.GrabarNuevoCorreoInCharBySubasta", Erl)
 132     Resume Next
         
 End Function

@@ -106,7 +106,7 @@ Private Function Limites(ByVal vfila As Integer, ByVal vcolu As Integer)
         Exit Function
 
 Limites_Err:
-102     Call RegistrarError(Err.Number, Err.description, "PathFinding.Limites", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "PathFinding.Limites", Erl)
 104     Resume Next
         
 End Function
@@ -127,7 +127,7 @@ Private Function IsWalkable(ByVal Map As Integer, ByVal row As Integer, ByVal Co
         Exit Function
 
 IsWalkable_Err:
-108     Call RegistrarError(Err.Number, Err.description, "PathFinding.IsWalkable", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "PathFinding.IsWalkable", Erl)
 110     Resume Next
         
 End Function
@@ -233,7 +233,7 @@ Private Sub ProcessAdjacents(ByVal MapIndex As Integer, ByRef T() As tIntermidia
         Exit Sub
 
 ProcessAdjacents_Err:
-176     Call RegistrarError(Err.Number, Err.description, "PathFinding.ProcessAdjacents", Erl)
+176     Call RegistrarError(Err.Number, Err.Description, "PathFinding.ProcessAdjacents", Erl)
 178     Resume Next
         
 End Sub
@@ -290,7 +290,7 @@ Public Sub SeekPath(ByVal NpcIndex As Integer, Optional ByVal MaxSteps As Intege
         Exit Sub
 
 SeekPath_Err:
-130     Call RegistrarError(Err.Number, Err.description, "PathFinding.SeekPath", Erl)
+130     Call RegistrarError(Err.Number, Err.Description, "PathFinding.SeekPath", Erl)
 132     Resume Next
         
 End Sub
@@ -337,12 +337,12 @@ Private Sub MakePath(ByVal NpcIndex As Integer)
         Exit Sub
 
 MakePath_Err:
-128     Call RegistrarError(Err.Number, Err.description, "PathFinding.MakePath", Erl)
+128     Call RegistrarError(Err.Number, Err.Description, "PathFinding.MakePath", Erl)
 130     Resume Next
         
 End Sub
 
-Private Sub InitializeTable(ByRef T() As tIntermidiateWork, ByRef S As tVertice, Optional ByVal MaxSteps As Integer = 30)
+Private Sub InitializeTable(ByRef T() As tIntermidiateWork, ByRef s As tVertice, Optional ByVal MaxSteps As Integer = 30)
         '#########################################################
         'Initialize the array where we calculate the path
         '#########################################################
@@ -354,8 +354,8 @@ Private Sub InitializeTable(ByRef T() As tIntermidiateWork, ByRef S As tVertice,
 
         Const anymap = 1
 
-100     For j = S.Y - MaxSteps To S.Y + MaxSteps
-102         For K = S.X - MaxSteps To S.X + MaxSteps
+100     For j = s.Y - MaxSteps To s.Y + MaxSteps
+102         For K = s.X - MaxSteps To s.X + MaxSteps
 
 104             If InMapBounds(anymap, j, K) Then
 106                 T(j, K).Known = False
@@ -368,14 +368,14 @@ Private Sub InitializeTable(ByRef T() As tIntermidiateWork, ByRef S As tVertice,
             Next
         Next
 
-114     T(S.Y, S.X).Known = False
-116     T(S.Y, S.X).DistV = 0
+114     T(s.Y, s.X).Known = False
+116     T(s.Y, s.X).DistV = 0
 
         
         Exit Sub
 
 InitializeTable_Err:
-118     Call RegistrarError(Err.Number, Err.description, "PathFinding.InitializeTable", Erl)
+118     Call RegistrarError(Err.Number, Err.Description, "PathFinding.InitializeTable", Erl)
 120     Resume Next
         
 End Sub
@@ -511,7 +511,7 @@ Function FindDirectionEAO(a As WorldPos, b As WorldPos, Optional PuedeAgu As Boo
         Exit Function
 
 FindDirectionEAO_Err:
-194     Call RegistrarError(Err.Number, Err.description, "PathFinding.FindDirectionEAO", Erl)
+194     Call RegistrarError(Err.Number, Err.Description, "PathFinding.FindDirectionEAO", Erl)
 196     Resume Next
         
 End Function

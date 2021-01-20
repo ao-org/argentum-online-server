@@ -2371,19 +2371,19 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
                         '                                           Dim nfile As Integer
                         '  nfile = FreeFile ' obtenemos un canal
                         '  Open App.Path & "\logs\npcs.log" For Append Shared As #nfile
-                        ' Print #nfile, NPCs(i).NpcIndex & "(" & Npclist(MapData(Map, NPCs(i).x, NPCs(i).y).NpcIndex).Name & ") "
+                        ' Print #nfile, NPCs(i).NpcIndex & "(" & NpcList(MapData(Map, NPCs(i).x, NPCs(i).y).NpcIndex).Name & ") "
                         ' Close #nfile
                                             
-                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "Nombre", Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Name
-                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "MaxHp", Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Stats.MaxHp
-                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "GiveEXP", Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).GiveEXP
-                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "GiveGLD", Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).GiveGLD
-                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "MinHIT", Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Stats.MinHIT
-                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "MaxHit", Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Stats.MaxHit
-                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "def", Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Stats.def
-                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "defM", Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Stats.defM
-                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "PoderAtaque", Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).PoderAtaque
-                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "PoderEvasion", Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).PoderEvasion
+                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "Nombre", NpcList(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Name
+                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "MaxHp", NpcList(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Stats.MaxHp
+                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "GiveEXP", NpcList(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).GiveEXP
+                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "GiveGLD", NpcList(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).GiveGLD
+                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "MinHIT", NpcList(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Stats.MinHIT
+                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "MaxHit", NpcList(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Stats.MaxHit
+                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "def", NpcList(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Stats.def
+                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "defM", NpcList(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Stats.defM
+                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "PoderAtaque", NpcList(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).PoderAtaque
+                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "PoderEvasion", NpcList(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).PoderEvasion
                         ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "Posicion" & i, Map & "-" & NPCs(i).X & "-" & NPCs(i).Y
                         'End If
                             
