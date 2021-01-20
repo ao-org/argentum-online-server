@@ -305,19 +305,25 @@ Private Function SlotEnNPCInv(ByVal NpcIndex As Integer, ByVal Objeto As Integer
             
             ' Recorro los slots donde hay objetos que matcheen con el objeto a agregar y si alguno tiene espacio, lo agrego ahi. Si no, se descarta
             If matchingSlots.Count <> 0 Then
-                For slot = 1 To matchingSlots.Count
-                    If .Object(matchingSlots.Item(slot)).Amount < MAX_INVENTORY_OBJS Then
-                        SlotEnNPCInv = matchingSlots.Item(slot)
+                For Each slot In matchingSlots
+                    If .Object(slot).Amount < MAX_INVENTORY_OBJS Then
+                        SlotEnNPCInv = slot
                         Exit Function
                     End If
                 Next slot
+                'For slot = 1 To matchingSlots.Count
+                 '   If .Object(matchingSlots.Item(slot)).Amount < MAX_INVENTORY_OBJS Then
+                  '      SlotEnNPCInv = matchingSlots.Item(slot)
+                   '     Exit Function
+                    'End If
+                'Next slot
                 SlotEnNPCInv = 0
                 Exit Function
             End If
             
             SlotEnNPCInv = firstEmptySpace
             Exit Function
-        End
+        End With
         
 SlotEnNPCInv_Err:
 120     Call RegistrarError(Err.Number, Err.Description, "modSistemaComercio.SlotEnNPCInv", Erl)
