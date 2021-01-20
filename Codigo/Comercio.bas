@@ -305,18 +305,13 @@ Private Function SlotEnNPCInv(ByVal NpcIndex As Integer, ByVal Objeto As Integer
             
             ' Recorro los slots donde hay objetos que matcheen con el objeto a agregar y si alguno tiene espacio, lo agrego ahi. Si no, se descarta
             If matchingSlots.Count <> 0 Then
-                For Each slot In matchingSlots
-                    If .Object(slot).Amount < MAX_INVENTORY_OBJS Then
-                        SlotEnNPCInv = slot
+                Dim i As Variant
+                For Each i In matchingSlots
+                    If .Object(i).Amount < MAX_INVENTORY_OBJS Then
+                        SlotEnNPCInv = i
                         Exit Function
                     End If
-                Next slot
-                'For slot = 1 To matchingSlots.Count
-                 '   If .Object(matchingSlots.Item(slot)).Amount < MAX_INVENTORY_OBJS Then
-                  '      SlotEnNPCInv = matchingSlots.Item(slot)
-                   '     Exit Function
-                    'End If
-                'Next slot
+                Next i
                 SlotEnNPCInv = 0
                 Exit Function
             End If
