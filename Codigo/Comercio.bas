@@ -286,36 +286,39 @@ Private Function SlotEnNPCInv(ByVal NpcIndex As Integer, ByVal Objeto As Integer
         '*************************************************
         
         On Error GoTo SlotEnNPCInv_Err
-               
-        Dim slot As Byte
-        Dim matchingSlots As New Collection
-        Dim firstEmptySpace As Integer
+                       
+        With Npclist(NpcIndex).Invent
         
-        ' Recorro el inventario buscando el objeto a agregar y espacios vacios
-        firstEmptySpace = 0
-        For slot = 1 To MAX_INVENTORY_SLOTS
-            If Npclist(NpcIndex).Invent.Object(slot).ObjIndex = Objeto Then
-                matchingSlots.Add (slot)
-            ElseIf Npclist(NpcIndex).Invent.Object(slot).ObjIndex = 0 And firstEmptySpace = 0 Then
-                firstEmptySpace = slot
-            End If
-        Next slot
-        
-        ' Recorro los slots donde hay objetos que matcheen con el objeto a agregar y si alguno tiene espacio, lo agrego ahi. Si no, se descarta
-        If matchingSlots.Count <> 0 Then
-            For slot = 1 To matchingSlots.Count
-                If Npclist(NpcIndex).Invent.Object(matchingSlots.Item(slot)).Amount < MAX_INVENTORY_OBJS Then
-                    SlotEnNPCInv = matchingSlots.Item(slot)
-                    Exit Function
+            Dim slot As Byte
+            Dim matchingSlots As New Collection
+            Dim firstEmptySpace As Integer
+            
+            ' Recorro el inventario buscando el objeto a agregar y espacios vacios
+            firstEmptySpace = 0
+            For slot = 1 To MAX_INVENTORY_SLOTS
+                If .Object(slot).ObjIndex = Objeto Then
+                    matchingSlots.Add (slot)
+                ElseIf .Object(slot).ObjIndex = 0 And firstEmptySpace = 0 Then
+                    firstEmptySpace = slot
                 End If
             Next slot
-            SlotEnNPCInv = 0
+            
+            ' Recorro los slots donde hay objetos que matcheen con el objeto a agregar y si alguno tiene espacio, lo agrego ahi. Si no, se descarta
+            If matchingSlots.Count <> 0 Then
+                For slot = 1 To matchingSlots.Count
+                    If .Object(matchingSlots.Item(slot)).Amount < MAX_INVENTORY_OBJS Then
+                        SlotEnNPCInv = matchingSlots.Item(slot)
+                        Exit Function
+                    End If
+                Next slot
+                SlotEnNPCInv = 0
+                Exit Function
+            End If
+            
+            SlotEnNPCInv = firstEmptySpace
             Exit Function
-        End If
+        End
         
-        SlotEnNPCInv = firstEmptySpace
-        Exit Function
-
 SlotEnNPCInv_Err:
 120     Call RegistrarError(Err.Number, Err.Description, "modSistemaComercio.SlotEnNPCInv", Erl)
 122     Resume Next
