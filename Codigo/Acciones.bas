@@ -78,6 +78,11 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                         Exit Sub
 
                     End If
+                    
+                    ' WyroX: Hacemos que se detenga a hablar un momento :P
+                    If Npclist(MapData(Map, X, Y).NpcIndex).Movement = Caminata Then
+                        Npclist(MapData(Map, X, Y).NpcIndex).Contadores.IntervaloMovimiento = GetTickCount + 5000 - Npclist(MapData(Map, X, Y).NpcIndex).IntervaloMovimiento ' 5 segundos
+                    End If
             
                     'Is it already in commerce mode??
 116                 If UserList(UserIndex).flags.Comerciando Then
@@ -90,6 +95,11 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                         'Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos del vendedor.", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
+                    End If
+                    
+                    ' WyroX: Hacemos que se detenga a hablar un momento :P
+                    If Npclist(MapData(Map, X, Y).NpcIndex).Movement = Caminata Then
+                        Npclist(MapData(Map, X, Y).NpcIndex).Contadores.IntervaloMovimiento = GetTickCount + 5000 - Npclist(MapData(Map, X, Y).NpcIndex).IntervaloMovimiento ' 5 segundos
                     End If
             
                     'Iniciamos la rutina pa' comerciar.
@@ -158,6 +168,11 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 162                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
+                    End If
+                    
+                    ' WyroX: Hacemos que se detenga a hablar un momento :P
+                    If Npclist(MapData(Map, X, Y).NpcIndex).Movement = Caminata Then
+                        Npclist(MapData(Map, X, Y).NpcIndex).Contadores.IntervaloMovimiento = GetTickCount + 5000 - Npclist(MapData(Map, X, Y).NpcIndex).IntervaloMovimiento ' 5 segundos
                     End If
             
 164                 UserList(UserIndex).flags.Envenenado = 0
@@ -263,6 +278,11 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                         Exit Sub
 
                     End If
+                    
+                    ' WyroX: Hacemos que se detenga a hablar un momento :P
+                    If Npclist(MapData(Map, X, Y).NpcIndex).Movement = Caminata Then
+                        Npclist(MapData(Map, X, Y).NpcIndex).Contadores.IntervaloMovimiento = GetTickCount + 5000 - Npclist(MapData(Map, X, Y).NpcIndex).IntervaloMovimiento ' 5 segundos
+                    End If
 
 248                 Call IniciarSubasta(UserIndex)
             
@@ -271,7 +291,11 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 252                 If UserList(UserIndex).flags.Muerto = 1 Then
 254                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
-
+                    End If
+                    
+                    ' WyroX: Hacemos que se detenga a hablar un momento :P
+                    If Npclist(MapData(Map, X, Y).NpcIndex).Movement = Caminata Then
+                        Npclist(MapData(Map, X, Y).NpcIndex).Contadores.IntervaloMovimiento = GetTickCount + 5000 - Npclist(MapData(Map, X, Y).NpcIndex).IntervaloMovimiento ' 5 segundos
                     End If
             
 256                 Call EnviarQuest(UserIndex)
@@ -465,7 +489,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
         Exit Sub
 
 Accion_Err:
-400     Call RegistrarError(Err.Number, Err.description, "Acciones.Accion", Erl)
+400     Call RegistrarError(Err.Number, Err.Description, "Acciones.Accion", Erl)
 
         
 End Sub
@@ -532,7 +556,7 @@ Sub AccionParaForo(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer,
         Exit Sub
 
 AccionParaForo_Err:
-144     Call RegistrarError(Err.Number, Err.description, "Acciones.AccionParaForo", Erl)
+144     Call RegistrarError(Err.Number, Err.Description, "Acciones.AccionParaForo", Erl)
 
         
 End Sub
@@ -601,7 +625,7 @@ Sub AccionParaPozos(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer
         Exit Sub
 
 AccionParaPozos_Err:
-148     Call RegistrarError(Err.Number, Err.description, "Acciones.AccionParaPozos", Erl)
+148     Call RegistrarError(Err.Number, Err.Description, "Acciones.AccionParaPozos", Erl)
 
         
 End Sub
@@ -671,7 +695,7 @@ Sub AccionParaArboles(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integ
         Exit Sub
 
 AccionParaArboles_Err:
-146     Call RegistrarError(Err.Number, Err.description, "Acciones.AccionParaArboles", Erl)
+146     Call RegistrarError(Err.Number, Err.Description, "Acciones.AccionParaArboles", Erl)
 
         
 End Sub
@@ -732,7 +756,7 @@ Sub AccionParaAgua(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer,
         Exit Sub
 
 AccionParaAgua_Err:
-138     Call RegistrarError(Err.Number, Err.description, "Acciones.AccionParaAgua", Erl)
+138     Call RegistrarError(Err.Number, Err.Description, "Acciones.AccionParaAgua", Erl)
 
         
 End Sub
@@ -777,7 +801,7 @@ Sub AccionParaYunque(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
         Exit Sub
 
 AccionParaYunque_Err:
-120     Call RegistrarError(Err.Number, Err.description, "Acciones.AccionParaYunque", Erl)
+120     Call RegistrarError(Err.Number, Err.Description, "Acciones.AccionParaYunque", Erl)
 
         
 End Sub
@@ -838,7 +862,7 @@ Sub AccionParaPuerta(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, ByV
         Exit Sub
         
 Handler:
-132 Call RegistrarError(Err.Number, Err.description, "Acciones.AccionParaPuerta", Erl)
+132 Call RegistrarError(Err.Number, Err.Description, "Acciones.AccionParaPuerta", Erl)
 134 Resume Next
 
 End Sub
@@ -861,7 +885,7 @@ Sub AccionParaCartel(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
         Exit Sub
         
 Handler:
-106 Call RegistrarError(Err.Number, Err.description, "Acciones.AccionParaCartel", Erl)
+106 Call RegistrarError(Err.Number, Err.Description, "Acciones.AccionParaCartel", Erl)
 108 Resume Next
 
 End Sub
@@ -900,7 +924,7 @@ Sub AccionParaCorreo(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
         Exit Sub
 
 AccionParaCorreo_Err:
-118     Call RegistrarError(Err.Number, Err.description, "Argentum20Server.Acciones.AccionParaCorreo", Erl)
+118     Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Acciones.AccionParaCorreo", Erl)
 120     Resume Next
         
 End Sub
@@ -996,7 +1020,7 @@ Sub AccionParaRamita(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
         Exit Sub
         
 Handler:
-156 Call RegistrarError(Err.Number, Err.description, "Acciones.AccionParaRamita", Erl)
+156 Call RegistrarError(Err.Number, Err.Description, "Acciones.AccionParaRamita", Erl)
 158 Resume Next
 
 End Sub

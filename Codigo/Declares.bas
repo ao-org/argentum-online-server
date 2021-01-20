@@ -1996,7 +1996,10 @@ Public Type NpcPathFindingInfo
     
 End Type
 
-' New type for holding the pathfinding info
+Public Type tCaminata
+    Offset As Position
+    Espera As Long
+End Type
 
 Public Type npc
     
@@ -2091,6 +2094,9 @@ Public Type npc
     
     'Para diferenciar entre clanes
     ClanIndex As Integer
+    
+    Caminata() As tCaminata
+    CaminataActual As Byte
     
 End Type
 

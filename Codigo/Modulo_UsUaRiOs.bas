@@ -473,7 +473,7 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
         
         Dim PromedioUser     As Double
 
-        Dim aux              As Integer
+        Dim Aux              As Integer
     
         Dim PasoDeNivel      As Boolean
 
@@ -620,126 +620,110 @@ ErrHandler:
 
 End Sub
 
-Sub MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As eHeading)
-        
-        On Error GoTo MoveUserChar_Err
-        
+Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As eHeading) As Boolean
+    ' 20/01/2021 - WyroX: Lo convierto a función y saco los WritePosUpdate, ahora están en el paquete
 
-        Dim nPos         As WorldPos
+    On Error GoTo MoveUserChar_Err
 
-        Dim nPosOriginal As WorldPos
+    Dim nPos         As WorldPos
+    Dim nPosOriginal As WorldPos
+    Dim nPosMuerto   As WorldPos
+    Dim IndexMover As Integer
+    Dim OppositeHeading As eHeading
 
-        Dim nPosMuerto   As WorldPos
-    
-        Dim IndexMover As Integer
-    
-        Dim OppositeHeading As eHeading
+    With UserList(UserIndex)
 
-100     With UserList(UserIndex)
+        nPos = .Pos
+        Call HeadtoPos(nHeading, nPos)
 
-102         If .Accion.AccionPendiente = True Then
-104             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, .Accion.Particula, 1, True))
-106             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.CharIndex, 1, Accion_Barra.CancelarAccion))
-108             .Accion.AccionPendiente = False
-110             .Accion.Particula = 0
-112             .Accion.TipoAccion = Accion_Barra.CancelarAccion
-114             .Accion.HechizoPendiente = 0
-116             .Accion.RunaObj = 0
-118             .Accion.ObjSlot = 0
-120             .Accion.AccionPendiente = False
+        If Not LegalWalk(.Pos.Map, nPos.X, nPos.Y, nHeading, .flags.Navegando = 1, .flags.Navegando = 0, .flags.Montado) Then
+            Exit Function
+        End If
+
+        If .Accion.AccionPendiente = True Then
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, .Accion.Particula, 1, True))
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.CharIndex, 1, Accion_Barra.CancelarAccion))
+            .Accion.AccionPendiente = False
+            .Accion.Particula = 0
+            .Accion.TipoAccion = Accion_Barra.CancelarAccion
+            .Accion.HechizoPendiente = 0
+            .Accion.RunaObj = 0
+            .Accion.ObjSlot = 0
+            .Accion.AccionPendiente = False
+        End If
+
+        If .flags.Muerto = 0 Then
+            If MapData(nPos.Map, nPos.X, nPos.Y).TileExit.Map <> 0 And .Counters.TiempoDeMapeo > 0 Then
+                Call WriteConsoleMsg(UserIndex, "Estas en combate, debes aguardar " & .Counters.TiempoDeMapeo & " segundo(s) para escapar...", FontTypeNames.FONTTYPE_INFOBOLD)
+                Exit Function
             End If
+        End If
 
-122         nPos = .Pos
-124         Call HeadtoPos(nHeading, nPos)
-
-126         If LegalWalk(.Pos.Map, nPos.X, nPos.Y, nHeading, .flags.Navegando = 1, .flags.Navegando = 0, .flags.Montado) Then
+        'Si no estoy solo en el mapa...
+        If MapInfo(.Pos.Map).NumUsers > 1 Then
+            ' Intercambia posición si hay un casper o gm invisible
+            IndexMover = MapData(nPos.Map, nPos.X, nPos.Y).UserIndex
             
-128             If MapData(nPos.Map, nPos.X, nPos.Y).TileExit.Map <> 0 And .Counters.TiempoDeMapeo > 0 Then
-130                 If .flags.Muerto = 0 Then
-132                     Call WriteConsoleMsg(UserIndex, "Estas en combate, debes aguardar " & .Counters.TiempoDeMapeo & " segundo(s) para escapar...", FontTypeNames.FONTTYPE_INFOBOLD)
-134                     Call WritePosUpdate(UserIndex)
-                        Exit Sub
-                    End If
-                End If
-            
-                'Si no estoy solo en el mapa...
-136             If MapInfo(.Pos.Map).NumUsers > 1 Then
-                    ' Intercambia posición si hay un casper o gm invisible
-138                 IndexMover = MapData(nPos.Map, nPos.X, nPos.Y).UserIndex
+            If IndexMover <> 0 Then
+                ' Sólo puedo patear caspers/gms invisibles si no es él un gm invisible
+                If .flags.AdminInvisible = 0 Then Exit Function
 
-140                 If IndexMover <> 0 Then
-                    
-                        ' Sólo puedo patear caspers/gms invisibles si no es él un gm invisible
-142                     If .flags.AdminInvisible = 0 Then
+                Call WritePosUpdate(IndexMover)
+                OppositeHeading = InvertHeading(nHeading)
+                Call HeadtoPos(OppositeHeading, UserList(IndexMover).Pos)
                 
-144                         Call WritePosUpdate(IndexMover)
-    
-146                         OppositeHeading = InvertHeading(nHeading)
-148                         Call HeadtoPos(OppositeHeading, UserList(IndexMover).Pos)
-                    
-                            ' Si es un admin invisible, no se avisa a los demas clientes
-150                         If UserList(IndexMover).flags.AdminInvisible = 0 Then
-152                             Call SendData(SendTarget.ToPCAreaButIndex, IndexMover, PrepareMessageCharacterMove(UserList(IndexMover).Char.CharIndex, UserList(IndexMover).Pos.X, UserList(IndexMover).Pos.Y))
-                            Else
-154                             Call SendData(SendTarget.ToAdminAreaButIndex, IndexMover, PrepareMessageCharacterMove(UserList(IndexMover).Char.CharIndex, UserList(IndexMover).Pos.X, UserList(IndexMover).Pos.Y))
-                            End If
-    
-156                         Call WriteForceCharMove(IndexMover, OppositeHeading)
-                            
-                            'Update map and char
-158                         UserList(IndexMover).Char.Heading = OppositeHeading
-160                         MapData(UserList(IndexMover).Pos.Map, UserList(IndexMover).Pos.X, UserList(IndexMover).Pos.Y).UserIndex = IndexMover
-                    
-                            'Actualizamos las areas de ser necesario
-162                         Call ModAreas.CheckUpdateNeededUser(IndexMover, OppositeHeading, 0)
-                        
-                        Else
-164                         Call WritePosUpdate(UserIndex)
-                            Exit Sub
-                        End If
-            
-                    End If
-    
-166                 If .flags.AdminInvisible = 0 Then
-168                     Call SendData(SendTarget.ToPCAreaButIndex, UserIndex, PrepareMessageCharacterMove(.Char.CharIndex, nPos.X, nPos.Y))
-                    Else
-170                     Call SendData(SendTarget.ToAdminAreaButIndex, UserIndex, PrepareMessageCharacterMove(.Char.CharIndex, nPos.X, nPos.Y))
-                    End If
-            
+                ' Si es un admin invisible, no se avisa a los demas clientes
+                If UserList(IndexMover).flags.AdminInvisible = 0 Then
+                    Call SendData(SendTarget.ToPCAreaButIndex, IndexMover, PrepareMessageCharacterMove(UserList(IndexMover).Char.CharIndex, UserList(IndexMover).Pos.X, UserList(IndexMover).Pos.Y))
+                Else
+                    Call SendData(SendTarget.ToAdminAreaButIndex, IndexMover, PrepareMessageCharacterMove(UserList(IndexMover).Char.CharIndex, UserList(IndexMover).Pos.X, UserList(IndexMover).Pos.Y))
                 End If
+                Call WriteForceCharMove(IndexMover, OppositeHeading)
+                
+                'Update map and char
+                UserList(IndexMover).Char.Heading = OppositeHeading
+                MapData(UserList(IndexMover).Pos.Map, UserList(IndexMover).Pos.X, UserList(IndexMover).Pos.Y).UserIndex = IndexMover
+                
+                'Actualizamos las areas de ser necesario
+                Call ModAreas.CheckUpdateNeededUser(IndexMover, OppositeHeading, 0)
+            End If
 
-                'Update map and user pos
-172             If MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex = UserIndex Then
-174                 MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex = 0
-                End If
-            
-176             .Pos = nPos
-178             .Char.Heading = nHeading
-180             MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex = UserIndex
-            
-                'Actualizamos las áreas de ser necesario
-182             Call ModAreas.CheckUpdateNeededUser(UserIndex, nHeading, 0)
-           
+            If .flags.AdminInvisible = 0 Then
+                Call SendData(SendTarget.ToPCAreaButIndex, UserIndex, PrepareMessageCharacterMove(.Char.CharIndex, nPos.X, nPos.Y))
             Else
-184             Call WritePosUpdate(UserIndex)
+                Call SendData(SendTarget.ToAdminAreaButIndex, UserIndex, PrepareMessageCharacterMove(.Char.CharIndex, nPos.X, nPos.Y))
             End If
+        End If
         
-186         If .Counters.Trabajando Then
-188             Call WriteMacroTrabajoToggle(UserIndex, False)
-            End If
+        'Update map and user pos
+        If MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex = UserIndex Then
+            MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex = 0
+        End If
+
+        .Pos = nPos
+        .Char.Heading = nHeading
+        MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex = UserIndex
+        
+        'Actualizamos las áreas de ser necesario
+        Call ModAreas.CheckUpdateNeededUser(UserIndex, nHeading, 0)
+
+        If .Counters.Trabajando Then
+            Call WriteMacroTrabajoToggle(UserIndex, False)
+        End If
+
+        If .Counters.Ocultando Then .Counters.Ocultando = .Counters.Ocultando - 1
     
-190         If .Counters.Ocultando Then .Counters.Ocultando = .Counters.Ocultando - 1
-
-        End With
-
-        
-        Exit Sub
-
+    End With
+    
+    MoveUserChar = True
+    
+    Exit Function
+    
 MoveUserChar_Err:
-192     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.MoveUserChar", Erl)
-194     Resume Next
+    Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.MoveUserChar", Erl)
+    Resume Next
         
-End Sub
+End Function
 
 Public Function InvertHeading(ByVal nHeading As eHeading) As eHeading
         
@@ -2462,3 +2446,49 @@ Public Sub SetModoConsulta(ByVal UserIndex As Integer)
         End With
 
 End Sub
+
+' Autor: WyroX - 20/01/2021
+' Intenta moverlo hacia un "costado" según el heading indicado.
+' Si no hay un lugar válido a los lados, lo mueve a la posición válida más cercana.
+Sub MoveUserToSide(ByVal UserIndex As Integer, ByVal Heading As eHeading)
+
+    On Error GoTo Handler
+
+    With UserList(UserIndex)
+
+        ' Elegimos un lado al azar
+        Dim R As Integer
+        R = RandomNumber(0, 1) * 2 - 1 ' -1 o 1
+
+        ' Roto el heading original hacia ese lado
+        Heading = RotateHeading(Heading, R)
+
+        ' Intento moverlo para ese lado
+        If MoveUserChar(UserIndex, Heading) Then
+            ' Le aviso al usuario que fue movido
+            Call WriteForceCharMove(UserIndex, Heading)
+            Exit Sub
+        End If
+        
+        ' Si falló, intento moverlo para el lado opuesto
+        Heading = InvertHeading(Heading)
+        If MoveUserChar(UserIndex, Heading) Then
+            ' Le aviso al usuario que fue movido
+            Call WriteForceCharMove(UserIndex, Heading)
+            Exit Sub
+        End If
+        
+        ' Si ambos fallan, entonces lo dejo en la posición válida más cercana
+        Dim NuevaPos As WorldPos
+        Call ClosestLegalPos(.Pos, NuevaPos, .flags.Navegando, .flags.Navegando = 0)
+        Call WarpUserChar(UserIndex, NuevaPos.Map, NuevaPos.X, NuevaPos.Y)
+
+    End With
+
+    Exit Sub
+    
+Handler:
+    Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.MoveUserToSide", Erl)
+    Resume Next
+End Sub
+

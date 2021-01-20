@@ -47,6 +47,9 @@ Public Enum TipoAI
     MagoPretorianoAi = 13
     CazadorPretorianoAi = 14
     ReyPretoriano = 15
+    
+    ' Animado
+    Caminata = 20
 
 End Enum
 
@@ -327,7 +330,7 @@ Private Sub IrUsuarioCercano(ByVal NpcIndex As Integer)
         Exit Sub
 
 IrUsuarioCercano_Err:
-242     Call RegistrarError(Err.Number, Err.description, "AI.IrUsuarioCercano", Erl)
+242     Call RegistrarError(Err.Number, Err.Description, "AI.IrUsuarioCercano", Erl)
 
 244     Resume Next
         
@@ -450,7 +453,7 @@ Private Sub SeguirAgresor(ByVal NpcIndex As Integer)
         Exit Sub
 
 SeguirAgresor_Err:
-180     Call RegistrarError(Err.Number, Err.description, "AI.SeguirAgresor", Erl)
+180     Call RegistrarError(Err.Number, Err.Description, "AI.SeguirAgresor", Erl)
 182     Resume Next
         
 End Sub
@@ -473,7 +476,7 @@ Private Sub RestoreOldMovement(ByVal NpcIndex As Integer)
         Exit Sub
 
 RestoreOldMovement_Err:
-110     Call RegistrarError(Err.Number, Err.description, "AI.RestoreOldMovement", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "AI.RestoreOldMovement", Erl)
 112     Resume Next
         
 End Sub
@@ -528,7 +531,7 @@ Private Sub PersigueCiudadano(ByVal NpcIndex As Integer)
         Exit Sub
 
 PersigueCiudadano_Err:
-126     Call RegistrarError(Err.Number, Err.description, "AI.PersigueCiudadano", Erl)
+126     Call RegistrarError(Err.Number, Err.Description, "AI.PersigueCiudadano", Erl)
 128     Resume Next
         
 End Sub
@@ -595,7 +598,7 @@ Private Sub CuraResucita(ByVal NpcIndex As Integer)
         Exit Sub
 
 CuraResucita_Err:
-136     Call RegistrarError(Err.Number, Err.description, "AI.CuraResucita", Erl)
+136     Call RegistrarError(Err.Number, Err.Description, "AI.CuraResucita", Erl)
 138     Resume Next
         
 End Sub
@@ -729,7 +732,7 @@ Private Sub PersigueCriminal(ByVal NpcIndex As Integer)
         Exit Sub
 
 PersigueCriminal_Err:
-192     Call RegistrarError(Err.Number, Err.description, "AI.PersigueCriminal", Erl)
+192     Call RegistrarError(Err.Number, Err.Description, "AI.PersigueCriminal", Erl)
 194     Resume Next
         
 End Sub
@@ -791,7 +794,7 @@ Private Sub SeguirAmo(ByVal NpcIndex As Integer)
         Exit Sub
 
 SeguirAmo_Err:
-128     Call RegistrarError(Err.Number, Err.description, "AI.SeguirAmo", Erl)
+128     Call RegistrarError(Err.Number, Err.Description, "AI.SeguirAmo", Erl)
 130     Resume Next
 
 End Sub
@@ -932,7 +935,7 @@ Private Sub AiNpcAtacaNpc(ByVal NpcIndex As Integer)
         Exit Sub
     
 SeguirAmo_Err:
-214     Call RegistrarError(Err.Number, Err.description, "AI.SeguirAmo")
+214     Call RegistrarError(Err.Number, Err.Description, "AI.SeguirAmo")
 216     Resume Next
 End Sub
 
@@ -1024,6 +1027,12 @@ Sub NPCAI(ByVal NpcIndex As Integer)
             
 172                 If .flags.Inmovilizado = 1 Or .flags.Paralizado = 1 Then Exit Sub
 174                 Call SeguirAmo(NpcIndex)
+
+                Case TipoAI.Caminata
+                    falladesc = " fallo Caminata"
+                    
+                    If .flags.Inmovilizado = 1 Or .flags.Paralizado = 1 Then Exit Sub
+                    Call HacerCaminata(NpcIndex)
             
             End Select
 
@@ -1055,7 +1064,7 @@ Function UserNear(ByVal NpcIndex As Integer) As Boolean
         Exit Function
 
 UserNear_Err:
-102     Call RegistrarError(Err.Number, Err.description, "AI.UserNear", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "AI.UserNear", Erl)
 104     Resume Next
         
 End Function
@@ -1081,7 +1090,7 @@ Function ReCalculatePath(ByVal NpcIndex As Integer) As Boolean
         Exit Function
 
 ReCalculatePath_Err:
-108     Call RegistrarError(Err.Number, Err.description, "AI.ReCalculatePath", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "AI.ReCalculatePath", Erl)
 110     Resume Next
         
 End Function
@@ -1100,7 +1109,7 @@ Function PathEnd(ByVal NpcIndex As Integer) As Boolean
         Exit Function
 
 PathEnd_Err:
-102     Call RegistrarError(Err.Number, Err.description, "AI.PathEnd", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "AI.PathEnd", Erl)
 104     Resume Next
         
 End Function
@@ -1127,7 +1136,7 @@ Function FollowPath(NpcIndex As Integer) As Boolean
         Exit Function
 
 FollowPath_Err:
-112     Call RegistrarError(Err.Number, Err.description, "AI.FollowPath", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "AI.FollowPath", Erl)
 114     Resume Next
         
 End Function
@@ -1190,7 +1199,7 @@ Function PathFindingAI(ByVal NpcIndex As Integer) As Boolean
         Exit Function
 
 PathFindingAI_Err:
-126     Call RegistrarError(Err.Number, Err.description, "AI.PathFindingAI", Erl)
+126     Call RegistrarError(Err.Number, Err.Description, "AI.PathFindingAI", Erl)
 128     Resume Next
         
 End Function
@@ -1224,7 +1233,7 @@ Sub NpcLanzaUnSpell(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         Exit Sub
 
 NpcLanzaUnSpell_Err:
-118     Call RegistrarError(Err.Number, Err.description, "AI.NpcLanzaUnSpell", Erl)
+118     Call RegistrarError(Err.Number, Err.Description, "AI.NpcLanzaUnSpell", Erl)
 
 120     Resume Next
         
@@ -1244,7 +1253,7 @@ Sub NpcLanzaUnSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Intege
         Exit Sub
 
 NpcLanzaUnSpellSobreNpc_Err:
-104     Call RegistrarError(Err.Number, Err.description, "AI.NpcLanzaUnSpellSobreNpc", Erl)
+104     Call RegistrarError(Err.Number, Err.Description, "AI.NpcLanzaUnSpellSobreNpc", Erl)
 106     Resume Next
         
 End Sub
@@ -1256,3 +1265,71 @@ Private Function PuedeAtacarUser(ByVal targetUserIndex As Integer) As Boolean
         End With
 
 End Function
+
+Private Sub HacerCaminata(ByVal NpcIndex As Integer)
+    On Error GoTo Handler
+    
+    Dim Destino As WorldPos
+    Dim Heading As eHeading
+    Dim NextTile As WorldPos
+    Dim MoveChar As Integer
+    Dim PudoMover As Boolean
+
+    With Npclist(NpcIndex)
+    
+        Destino.Map = .Pos.Map
+        Destino.X = .Orig.X + .Caminata(.CaminataActual).Offset.X
+        Destino.Y = .Orig.Y + .Caminata(.CaminataActual).Offset.Y
+
+        ' Si todavía no llegó al destino
+        If .Pos.X <> Destino.X Or .Pos.Y <> Destino.Y Then
+            ' Tratamos de acercarnos (podemos pisar npcs, usuarios o triggers)
+            Heading = FindDirectionEAO(.Pos, Destino, .flags.AguaValida, .flags.TierraInvalida = 0, True, True)
+            ' Obtengo la posición según el heading
+            NextTile = .Pos
+            Call HeadtoPos(Heading, NextTile)
+            ' Si hay un NPC
+            MoveChar = MapData(NextTile.Map, NextTile.X, NextTile.Y).NpcIndex
+            If MoveChar Then
+                ' Lo movemos hacia un lado
+                Call MoveNpcToSide(MoveChar, Heading)
+            End If
+            ' Si hay un user
+            MoveChar = MapData(NextTile.Map, NextTile.X, NextTile.Y).UserIndex
+            If MoveChar Then
+                ' Si no está muerto o es admin invisible (porque a esos los atraviesa)
+                If UserList(MoveChar).flags.AdminInvisible = 0 And UserList(MoveChar).flags.Muerto = 0 Then
+                    ' Lo movemos hacia un lado
+                    Call MoveUserToSide(MoveChar, Heading)
+                End If
+            End If
+            ' Movemos al NPC de la caminata
+            PudoMover = MoveNPCChar(NpcIndex, Heading)
+            ' Si no pudimos moverlo, hacemos como si hubiese llegado a destino... para evitar que se quede atascado
+            If Not PudoMover Or Distancia(.Pos, Destino) = 0 Then
+                ' Llegamos a destino, ahora esperamos el tiempo necesario para continuar
+                .Contadores.IntervaloMovimiento = GetTickCount + .Caminata(.CaminataActual).Espera - .IntervaloMovimiento
+                ' Pasamos a la siguiente caminata
+                .CaminataActual = .CaminataActual + 1
+                ' Si pasamos el último, volvemos al primero
+                If .CaminataActual > UBound(.Caminata) Then
+                    .CaminataActual = 1
+                End If
+            End If
+        ' Si por alguna razón estamos en el destino, seguimos con la siguiente caminata
+        Else
+            .CaminataActual = .CaminataActual + 1
+            ' Si pasamos el último, volvemos al primero
+            If .CaminataActual > UBound(.Caminata) Then
+                .CaminataActual = 1
+            End If
+        End If
+    
+    End With
+    
+    Exit Sub
+    
+Handler:
+    Call RegistrarError(Err.Number, Err.Description, "AI.HacerCaminata", Erl)
+    Resume Next
+End Sub

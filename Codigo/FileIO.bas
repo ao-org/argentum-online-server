@@ -742,7 +742,7 @@ Public Sub CargarHechizos()
     
 256         Hechizos(Hechizo).Invoca = val(Leer.GetValue("Hechizo" & Hechizo, "Invoca"))
 258         Hechizos(Hechizo).NumNpc = val(Leer.GetValue("Hechizo" & Hechizo, "NumNpc"))
-260         Hechizos(Hechizo).cant = val(Leer.GetValue("Hechizo" & Hechizo, "Cant"))
+260         Hechizos(Hechizo).Cant = val(Leer.GetValue("Hechizo" & Hechizo, "Cant"))
 262         Hechizos(Hechizo).Mimetiza = val(Leer.GetValue("Hechizo" & Hechizo, "Mimetiza"))
     
 264         Hechizos(Hechizo).GolpeCertero = val(Leer.GetValue("Hechizo" & Hechizo, "GolpeCertero"))
@@ -4234,7 +4234,7 @@ Private Sub QuickSortPeces(ByVal First As Long, ByVal Last As Long)
 
         Dim MidValue As String
 
-        Dim aux      As obj
+        Dim Aux      As obj
     
 100     low = First
 102     high = Last
@@ -4253,9 +4253,9 @@ Private Sub QuickSortPeces(ByVal First As Long, ByVal Last As Long)
             Wend
 
 114         If low <= high Then
-116             aux = Peces(low)
+116             Aux = Peces(low)
 118             Peces(low) = Peces(high)
-120             Peces(high) = aux
+120             Peces(high) = Aux
 122             low = low + 1
 124             high = high - 1
 
