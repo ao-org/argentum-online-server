@@ -742,7 +742,7 @@ Public Sub CargarHechizos()
     
 256         Hechizos(Hechizo).Invoca = val(Leer.GetValue("Hechizo" & Hechizo, "Invoca"))
 258         Hechizos(Hechizo).NumNpc = val(Leer.GetValue("Hechizo" & Hechizo, "NumNpc"))
-260         Hechizos(Hechizo).Cant = val(Leer.GetValue("Hechizo" & Hechizo, "Cant"))
+260         Hechizos(Hechizo).cant = val(Leer.GetValue("Hechizo" & Hechizo, "Cant"))
 262         Hechizos(Hechizo).Mimetiza = val(Leer.GetValue("Hechizo" & Hechizo, "Mimetiza"))
     
 264         Hechizos(Hechizo).GolpeCertero = val(Leer.GetValue("Hechizo" & Hechizo, "GolpeCertero"))
@@ -2350,21 +2350,15 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
 286                 If NumNpc > 0 Then
 288                     npcfile = DatPath & "NPCs.dat"
 
-                        'Si el npc debe hacer respawn en la pos
-                        'original la guardamos
-290                     If val(GetVar(npcfile, "NPC" & NumNpc, "PosOrig")) = 1 Then
-292                         MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex = OpenNPC(NumNpc)
-294                         Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Orig.Map = Map
-296                         Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Orig.X = NPCs(i).X
-298                         Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Orig.Y = NPCs(i).Y
-                        Else
-300                         MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex = OpenNPC(NumNpc)
+                        ' WyroX: guardo siempre la pos original... puede sernos útil ;)
+292                     MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex = OpenNPC(NumNpc)
+294                     NpcList(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Orig.Map = Map
+296                     NpcList(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Orig.X = NPCs(i).X
+298                     NpcList(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Orig.Y = NPCs(i).Y
 
-                        End If
-
-302                     Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Pos.Map = Map
-304                     Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Pos.X = NPCs(i).X
-306                     Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Pos.Y = NPCs(i).Y
+302                     NpcList(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Pos.Map = Map
+304                     NpcList(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Pos.X = NPCs(i).X
+306                     NpcList(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Pos.Y = NPCs(i).Y
                         
                         '        If NPCs(i).NpcIndex > 499 Then
                                             
@@ -2387,7 +2381,7 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
                         ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "Posicion" & i, Map & "-" & NPCs(i).X & "-" & NPCs(i).Y
                         'End If
                             
-308                     If Npclist(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).name = "" Then
+308                     If NpcList(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).name = "" Then
                        
 310                         MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex = 0
                         Else
@@ -3851,7 +3845,7 @@ Sub BackUPnPc(NpcIndex As Integer)
 
         Dim LoopC     As Integer
 
-100     NpcNumero = Npclist(NpcIndex).Numero
+100     NpcNumero = NpcList(NpcIndex).Numero
 
         'If NpcNumero > 499 Then
         '    npcfile = DatPath & "bkNPCs-HOSTILES.dat"
@@ -3860,43 +3854,43 @@ Sub BackUPnPc(NpcIndex As Integer)
         'End If
 
         'General
-104     Call WriteVar(npcfile, "NPC" & NpcNumero, "Name", Npclist(NpcIndex).name)
-106     Call WriteVar(npcfile, "NPC" & NpcNumero, "Desc", Npclist(NpcIndex).Desc)
-108     Call WriteVar(npcfile, "NPC" & NpcNumero, "Head", val(Npclist(NpcIndex).Char.Head))
-110     Call WriteVar(npcfile, "NPC" & NpcNumero, "Body", val(Npclist(NpcIndex).Char.Body))
-112     Call WriteVar(npcfile, "NPC" & NpcNumero, "Heading", val(Npclist(NpcIndex).Char.Heading))
-114     Call WriteVar(npcfile, "NPC" & NpcNumero, "Movement", val(Npclist(NpcIndex).Movement))
-116     Call WriteVar(npcfile, "NPC" & NpcNumero, "Attackable", val(Npclist(NpcIndex).Attackable))
-118     Call WriteVar(npcfile, "NPC" & NpcNumero, "Comercia", val(Npclist(NpcIndex).Comercia))
-120     Call WriteVar(npcfile, "NPC" & NpcNumero, "TipoItems", val(Npclist(NpcIndex).TipoItems))
-122     Call WriteVar(npcfile, "NPC" & NpcNumero, "Hostil", val(Npclist(NpcIndex).Hostile))
-124     Call WriteVar(npcfile, "NPC" & NpcNumero, "GiveEXP", val(Npclist(NpcIndex).GiveEXP))
-126     Call WriteVar(npcfile, "NPC" & NpcNumero, "GiveGLD", val(Npclist(NpcIndex).GiveGLD))
-128     Call WriteVar(npcfile, "NPC" & NpcNumero, "Hostil", val(Npclist(NpcIndex).Hostile))
-130     Call WriteVar(npcfile, "NPC" & NpcNumero, "InvReSpawn", val(Npclist(NpcIndex).InvReSpawn))
-132     Call WriteVar(npcfile, "NPC" & NpcNumero, "NpcType", val(Npclist(NpcIndex).NPCtype))
+104     Call WriteVar(npcfile, "NPC" & NpcNumero, "Name", NpcList(NpcIndex).name)
+106     Call WriteVar(npcfile, "NPC" & NpcNumero, "Desc", NpcList(NpcIndex).Desc)
+108     Call WriteVar(npcfile, "NPC" & NpcNumero, "Head", val(NpcList(NpcIndex).Char.Head))
+110     Call WriteVar(npcfile, "NPC" & NpcNumero, "Body", val(NpcList(NpcIndex).Char.Body))
+112     Call WriteVar(npcfile, "NPC" & NpcNumero, "Heading", val(NpcList(NpcIndex).Char.Heading))
+114     Call WriteVar(npcfile, "NPC" & NpcNumero, "Movement", val(NpcList(NpcIndex).Movement))
+116     Call WriteVar(npcfile, "NPC" & NpcNumero, "Attackable", val(NpcList(NpcIndex).Attackable))
+118     Call WriteVar(npcfile, "NPC" & NpcNumero, "Comercia", val(NpcList(NpcIndex).Comercia))
+120     Call WriteVar(npcfile, "NPC" & NpcNumero, "TipoItems", val(NpcList(NpcIndex).TipoItems))
+122     Call WriteVar(npcfile, "NPC" & NpcNumero, "Hostil", val(NpcList(NpcIndex).Hostile))
+124     Call WriteVar(npcfile, "NPC" & NpcNumero, "GiveEXP", val(NpcList(NpcIndex).GiveEXP))
+126     Call WriteVar(npcfile, "NPC" & NpcNumero, "GiveGLD", val(NpcList(NpcIndex).GiveGLD))
+128     Call WriteVar(npcfile, "NPC" & NpcNumero, "Hostil", val(NpcList(NpcIndex).Hostile))
+130     Call WriteVar(npcfile, "NPC" & NpcNumero, "InvReSpawn", val(NpcList(NpcIndex).InvReSpawn))
+132     Call WriteVar(npcfile, "NPC" & NpcNumero, "NpcType", val(NpcList(NpcIndex).NPCtype))
 
         'Stats
-134     Call WriteVar(npcfile, "NPC" & NpcNumero, "Alineacion", val(Npclist(NpcIndex).Stats.Alineacion))
-136     Call WriteVar(npcfile, "NPC" & NpcNumero, "DEF", val(Npclist(NpcIndex).Stats.def))
-138     Call WriteVar(npcfile, "NPC" & NpcNumero, "MaxHit", val(Npclist(NpcIndex).Stats.MaxHit))
-140     Call WriteVar(npcfile, "NPC" & NpcNumero, "MaxHp", val(Npclist(NpcIndex).Stats.MaxHp))
-142     Call WriteVar(npcfile, "NPC" & NpcNumero, "MinHit", val(Npclist(NpcIndex).Stats.MinHIT))
-144     Call WriteVar(npcfile, "NPC" & NpcNumero, "MinHp", val(Npclist(NpcIndex).Stats.MinHp))
-146     Call WriteVar(npcfile, "NPC" & NpcNumero, "DEF", val(Npclist(NpcIndex).Stats.UsuariosMatados)) 'Que es ESTO?!!
+134     Call WriteVar(npcfile, "NPC" & NpcNumero, "Alineacion", val(NpcList(NpcIndex).Stats.Alineacion))
+136     Call WriteVar(npcfile, "NPC" & NpcNumero, "DEF", val(NpcList(NpcIndex).Stats.def))
+138     Call WriteVar(npcfile, "NPC" & NpcNumero, "MaxHit", val(NpcList(NpcIndex).Stats.MaxHit))
+140     Call WriteVar(npcfile, "NPC" & NpcNumero, "MaxHp", val(NpcList(NpcIndex).Stats.MaxHp))
+142     Call WriteVar(npcfile, "NPC" & NpcNumero, "MinHit", val(NpcList(NpcIndex).Stats.MinHIT))
+144     Call WriteVar(npcfile, "NPC" & NpcNumero, "MinHp", val(NpcList(NpcIndex).Stats.MinHp))
+146     Call WriteVar(npcfile, "NPC" & NpcNumero, "DEF", val(NpcList(NpcIndex).Stats.UsuariosMatados)) 'Que es ESTO?!!
 
         'Flags
-148     Call WriteVar(npcfile, "NPC" & NpcNumero, "ReSpawn", val(Npclist(NpcIndex).flags.Respawn))
-150     Call WriteVar(npcfile, "NPC" & NpcNumero, "BackUp", val(Npclist(NpcIndex).flags.backup))
-152     Call WriteVar(npcfile, "NPC" & NpcNumero, "Domable", val(Npclist(NpcIndex).flags.Domable))
+148     Call WriteVar(npcfile, "NPC" & NpcNumero, "ReSpawn", val(NpcList(NpcIndex).flags.Respawn))
+150     Call WriteVar(npcfile, "NPC" & NpcNumero, "BackUp", val(NpcList(NpcIndex).flags.backup))
+152     Call WriteVar(npcfile, "NPC" & NpcNumero, "Domable", val(NpcList(NpcIndex).flags.Domable))
 
         'Inventario
-154     Call WriteVar(npcfile, "NPC" & NpcNumero, "NroItems", val(Npclist(NpcIndex).Invent.NroItems))
+154     Call WriteVar(npcfile, "NPC" & NpcNumero, "NroItems", val(NpcList(NpcIndex).Invent.NroItems))
 
-156     If Npclist(NpcIndex).Invent.NroItems > 0 Then
+156     If NpcList(NpcIndex).Invent.NroItems > 0 Then
 
 158         For LoopC = 1 To MAX_INVENTORY_SLOTS
-160             Call WriteVar(npcfile, "NPC" & NpcNumero, "Obj" & LoopC, Npclist(NpcIndex).Invent.Object(LoopC).ObjIndex & "-" & Npclist(NpcIndex).Invent.Object(LoopC).Amount)
+160             Call WriteVar(npcfile, "NPC" & NpcNumero, "Obj" & LoopC, NpcList(NpcIndex).Invent.Object(LoopC).ObjIndex & "-" & NpcList(NpcIndex).Invent.Object(LoopC).Amount)
             Next
 
         End If
@@ -3926,65 +3920,65 @@ Sub CargarNpcBackUp(NpcIndex As Integer, ByVal NpcNumber As Integer)
 102     npcfile = DatPath & "bkNPCs.dat"
         'End If
 
-104     Npclist(NpcIndex).Numero = NpcNumber
-106     Npclist(NpcIndex).name = GetVar(npcfile, "NPC" & NpcNumber, "Name")
-108     Npclist(NpcIndex).Desc = GetVar(npcfile, "NPC" & NpcNumber, "Desc")
-110     Npclist(NpcIndex).Movement = val(GetVar(npcfile, "NPC" & NpcNumber, "Movement"))
-112     Npclist(NpcIndex).NPCtype = val(GetVar(npcfile, "NPC" & NpcNumber, "NpcType"))
+104     NpcList(NpcIndex).Numero = NpcNumber
+106     NpcList(NpcIndex).name = GetVar(npcfile, "NPC" & NpcNumber, "Name")
+108     NpcList(NpcIndex).Desc = GetVar(npcfile, "NPC" & NpcNumber, "Desc")
+110     NpcList(NpcIndex).Movement = val(GetVar(npcfile, "NPC" & NpcNumber, "Movement"))
+112     NpcList(NpcIndex).NPCtype = val(GetVar(npcfile, "NPC" & NpcNumber, "NpcType"))
 
-114     Npclist(NpcIndex).Char.Body = val(GetVar(npcfile, "NPC" & NpcNumber, "Body"))
-116     Npclist(NpcIndex).Char.Head = val(GetVar(npcfile, "NPC" & NpcNumber, "Head"))
-118     Npclist(NpcIndex).Char.Heading = val(GetVar(npcfile, "NPC" & NpcNumber, "Heading"))
+114     NpcList(NpcIndex).Char.Body = val(GetVar(npcfile, "NPC" & NpcNumber, "Body"))
+116     NpcList(NpcIndex).Char.Head = val(GetVar(npcfile, "NPC" & NpcNumber, "Head"))
+118     NpcList(NpcIndex).Char.Heading = val(GetVar(npcfile, "NPC" & NpcNumber, "Heading"))
 
-120     Npclist(NpcIndex).Attackable = val(GetVar(npcfile, "NPC" & NpcNumber, "Attackable"))
-122     Npclist(NpcIndex).Comercia = val(GetVar(npcfile, "NPC" & NpcNumber, "Comercia"))
-124     Npclist(NpcIndex).Hostile = val(GetVar(npcfile, "NPC" & NpcNumber, "Hostile"))
-126     Npclist(NpcIndex).GiveEXP = val(GetVar(npcfile, "NPC" & NpcNumber, "GiveEXP"))
+120     NpcList(NpcIndex).Attackable = val(GetVar(npcfile, "NPC" & NpcNumber, "Attackable"))
+122     NpcList(NpcIndex).Comercia = val(GetVar(npcfile, "NPC" & NpcNumber, "Comercia"))
+124     NpcList(NpcIndex).Hostile = val(GetVar(npcfile, "NPC" & NpcNumber, "Hostile"))
+126     NpcList(NpcIndex).GiveEXP = val(GetVar(npcfile, "NPC" & NpcNumber, "GiveEXP"))
 
-128     Npclist(NpcIndex).GiveGLD = val(GetVar(npcfile, "NPC" & NpcNumber, "GiveGLD"))
+128     NpcList(NpcIndex).GiveGLD = val(GetVar(npcfile, "NPC" & NpcNumber, "GiveGLD"))
 
-130     Npclist(NpcIndex).InvReSpawn = val(GetVar(npcfile, "NPC" & NpcNumber, "InvReSpawn"))
+130     NpcList(NpcIndex).InvReSpawn = val(GetVar(npcfile, "NPC" & NpcNumber, "InvReSpawn"))
 
-132     Npclist(NpcIndex).Stats.MaxHp = val(GetVar(npcfile, "NPC" & NpcNumber, "MaxHP"))
-134     Npclist(NpcIndex).Stats.MinHp = val(GetVar(npcfile, "NPC" & NpcNumber, "MinHP"))
-136     Npclist(NpcIndex).Stats.MaxHit = val(GetVar(npcfile, "NPC" & NpcNumber, "MaxHIT"))
-138     Npclist(NpcIndex).Stats.MinHIT = val(GetVar(npcfile, "NPC" & NpcNumber, "MinHIT"))
-140     Npclist(NpcIndex).Stats.def = val(GetVar(npcfile, "NPC" & NpcNumber, "DEF"))
-142     Npclist(NpcIndex).Stats.Alineacion = val(GetVar(npcfile, "NPC" & NpcNumber, "Alineacion"))
+132     NpcList(NpcIndex).Stats.MaxHp = val(GetVar(npcfile, "NPC" & NpcNumber, "MaxHP"))
+134     NpcList(NpcIndex).Stats.MinHp = val(GetVar(npcfile, "NPC" & NpcNumber, "MinHP"))
+136     NpcList(NpcIndex).Stats.MaxHit = val(GetVar(npcfile, "NPC" & NpcNumber, "MaxHIT"))
+138     NpcList(NpcIndex).Stats.MinHIT = val(GetVar(npcfile, "NPC" & NpcNumber, "MinHIT"))
+140     NpcList(NpcIndex).Stats.def = val(GetVar(npcfile, "NPC" & NpcNumber, "DEF"))
+142     NpcList(NpcIndex).Stats.Alineacion = val(GetVar(npcfile, "NPC" & NpcNumber, "Alineacion"))
 
         Dim LoopC As Integer
 
         Dim ln    As String
 
-144     Npclist(NpcIndex).Invent.NroItems = val(GetVar(npcfile, "NPC" & NpcNumber, "NROITEMS"))
+144     NpcList(NpcIndex).Invent.NroItems = val(GetVar(npcfile, "NPC" & NpcNumber, "NROITEMS"))
 
-146     If Npclist(NpcIndex).Invent.NroItems > 0 Then
+146     If NpcList(NpcIndex).Invent.NroItems > 0 Then
 
 148         For LoopC = 1 To MAX_INVENTORY_SLOTS
 150             ln = GetVar(npcfile, "NPC" & NpcNumber, "Obj" & LoopC)
-152             Npclist(NpcIndex).Invent.Object(LoopC).ObjIndex = val(ReadField(1, ln, 45))
-154             Npclist(NpcIndex).Invent.Object(LoopC).Amount = val(ReadField(2, ln, 45))
+152             NpcList(NpcIndex).Invent.Object(LoopC).ObjIndex = val(ReadField(1, ln, 45))
+154             NpcList(NpcIndex).Invent.Object(LoopC).Amount = val(ReadField(2, ln, 45))
        
 156         Next LoopC
 
         Else
 
 158         For LoopC = 1 To MAX_INVENTORY_SLOTS
-160             Npclist(NpcIndex).Invent.Object(LoopC).ObjIndex = 0
-162             Npclist(NpcIndex).Invent.Object(LoopC).Amount = 0
+160             NpcList(NpcIndex).Invent.Object(LoopC).ObjIndex = 0
+162             NpcList(NpcIndex).Invent.Object(LoopC).Amount = 0
 164         Next LoopC
 
         End If
 
-166     Npclist(NpcIndex).flags.NPCActive = True
-168     Npclist(NpcIndex).flags.UseAINow = False
-170     Npclist(NpcIndex).flags.Respawn = val(GetVar(npcfile, "NPC" & NpcNumber, "ReSpawn"))
-172     Npclist(NpcIndex).flags.backup = val(GetVar(npcfile, "NPC" & NpcNumber, "BackUp"))
-174     Npclist(NpcIndex).flags.Domable = val(GetVar(npcfile, "NPC" & NpcNumber, "Domable"))
-176     Npclist(NpcIndex).flags.RespawnOrigPos = val(GetVar(npcfile, "NPC" & NpcNumber, "OrigPos"))
+166     NpcList(NpcIndex).flags.NPCActive = True
+168     NpcList(NpcIndex).flags.UseAINow = False
+170     NpcList(NpcIndex).flags.Respawn = val(GetVar(npcfile, "NPC" & NpcNumber, "ReSpawn"))
+172     NpcList(NpcIndex).flags.backup = val(GetVar(npcfile, "NPC" & NpcNumber, "BackUp"))
+174     NpcList(NpcIndex).flags.Domable = val(GetVar(npcfile, "NPC" & NpcNumber, "Domable"))
+176     NpcList(NpcIndex).flags.RespawnOrigPos = val(GetVar(npcfile, "NPC" & NpcNumber, "OrigPos"))
 
         'Tipo de items con los que comercia
-178     Npclist(NpcIndex).TipoItems = val(GetVar(npcfile, "NPC" & NpcNumber, "TipoItems"))
+178     NpcList(NpcIndex).TipoItems = val(GetVar(npcfile, "NPC" & NpcNumber, "TipoItems"))
 
         
         Exit Sub
@@ -4234,7 +4228,7 @@ Private Sub QuickSortPeces(ByVal First As Long, ByVal Last As Long)
 
         Dim MidValue As String
 
-        Dim Aux      As obj
+        Dim aux      As obj
     
 100     low = First
 102     high = Last
@@ -4253,9 +4247,9 @@ Private Sub QuickSortPeces(ByVal First As Long, ByVal Last As Long)
             Wend
 
 114         If low <= high Then
-116             Aux = Peces(low)
+116             aux = Peces(low)
 118             Peces(low) = Peces(high)
-120             Peces(high) = Aux
+120             Peces(high) = aux
 122             low = low + 1
 124             high = high - 1
 
