@@ -1723,6 +1723,9 @@ Sub LoadOBJData()
 600             frmCargando.cargar.Value = frmCargando.cargar.Value + 1
         
             End With
+            
+            ' WyroX: Cada 10 objetos revivo la interfaz
+            If Object Mod 10 = 0 Then DoEvents
         
 602     Next Object
 
@@ -2057,6 +2060,8 @@ Sub CargarBackUp()
     
 102     NumMaps = CountFiles(MapPath, "*.csm")
 104     NumMaps = NumMaps - 1
+
+105     Call InitAreas
     
 106     frmCargando.cargar.min = 0
 108     frmCargando.cargar.max = NumMaps
@@ -2077,7 +2082,7 @@ Sub CargarBackUp()
 126         DoEvents
 128     Next Map
 
-130     Call InitAreas
+130     Call generateMatrix(MATRIX_INITIAL_MAP)
 
 132     frmCargando.ToMapLbl.Visible = False
 
@@ -2102,6 +2107,8 @@ Sub LoadMapData()
 102     NumMaps = CountFiles(MapPath, "*.csm")
     
 104     NumMaps = NumMaps - 1
+
+105     Call InitAreas
     
 106     frmCargando.cargar.min = 0
 108     frmCargando.cargar.max = NumMaps
@@ -2124,7 +2131,7 @@ Sub LoadMapData()
         
 128     Next Map
     
-130     Call InitAreas
+130     Call generateMatrix(MATRIX_INITIAL_MAP)
 
 132     frmCargando.ToMapLbl.Visible = False
     
@@ -2341,7 +2348,7 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
 278             ReDim NPCs(1 To .NumeroNPCs)
 280             Get #fh, , NPCs
 
-                Dim NumNpc As Integer
+                Dim NumNpc As Integer, NpcIndex As Integer
                  
 282             For i = 1 To .NumeroNPCs
 
@@ -2350,43 +2357,22 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
 286                 If NumNpc > 0 Then
 288                     npcfile = DatPath & "NPCs.dat"
 
-                        ' WyroX: guardo siempre la pos original... puede sernos útil ;)
-292                     MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex = OpenNPC(NumNpc)
-294                     NpcList(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Orig.Map = Map
-296                     NpcList(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Orig.X = NPCs(i).X
-298                     NpcList(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Orig.Y = NPCs(i).Y
+290                     NpcIndex = OpenNPC(NumNpc)
+292                     MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex = NpcIndex
 
-302                     NpcList(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Pos.Map = Map
-304                     NpcList(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Pos.X = NPCs(i).X
-306                     NpcList(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Pos.Y = NPCs(i).Y
-                        
-                        '        If NPCs(i).NpcIndex > 499 Then
-                                            
-                        '                                           Dim nfile As Integer
-                        '  nfile = FreeFile ' obtenemos un canal
-                        '  Open App.Path & "\logs\npcs.log" For Append Shared As #nfile
-                        ' Print #nfile, NPCs(i).NpcIndex & "(" & NpcList(MapData(Map, NPCs(i).x, NPCs(i).y).NpcIndex).Name & ") "
-                        ' Close #nfile
-                                            
-                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "Nombre", NpcList(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Name
-                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "MaxHp", NpcList(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Stats.MaxHp
-                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "GiveEXP", NpcList(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).GiveEXP
-                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "GiveGLD", NpcList(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).GiveGLD
-                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "MinHIT", NpcList(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Stats.MinHIT
-                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "MaxHit", NpcList(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Stats.MaxHit
-                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "def", NpcList(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Stats.def
-                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "defM", NpcList(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).Stats.defM
-                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "PoderAtaque", NpcList(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).PoderAtaque
-                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "PoderEvasion", NpcList(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).PoderEvasion
-                        ' WriteVar App.Path & "\npcenuso.txt", NPCs(i).NpcIndex, "Posicion" & i, Map & "-" & NPCs(i).X & "-" & NPCs(i).Y
-                        'End If
-                            
-308                     If NpcList(MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex).name = "" Then
+294                     NpcList(NpcIndex).Pos.Map = Map
+296                     NpcList(NpcIndex).Pos.X = NPCs(i).X
+298                     NpcList(NpcIndex).Pos.Y = NPCs(i).Y
+
+                        ' WyroX: guardo siempre la pos original... puede sernos útil ;)
+302                     NpcList(NpcIndex).Orig = NpcList(NpcIndex).Pos
+
+308                     If NpcList(NpcIndex).name = "" Then
                        
 310                         MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex = 0
                         Else
-                        
-312                         Call MakeNPCChar(True, 0, MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex, Map, NPCs(i).X, NPCs(i).Y)
+
+312                         Call MakeNPCChar(True, 0, NpcIndex, Map, NPCs(i).X, NPCs(i).Y)
                         
                         End If
 

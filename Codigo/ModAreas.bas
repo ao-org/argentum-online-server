@@ -81,8 +81,6 @@ Public Sub InitAreas()
 126         If ConnGroups(LoopC).OptValue = 0 Then ConnGroups(LoopC).OptValue = 1
 128         ReDim ConnGroups(LoopC).UserEntrys(1 To ConnGroups(LoopC).OptValue) As Long
 130     Next LoopC
-
-132     Call generateMatrix(MATRIX_INITIAL_MAP)
         
         Exit Sub
 
@@ -315,7 +313,7 @@ Public Sub CheckUpdateNeededNpc(ByVal NpcIndex As Integer, ByVal Head As Byte)
         'Last Modify Date: Unknow
         ' Se llama cuando se mueve un Npc
         '**************************************************************
-100     If Npclist(NpcIndex).AreasInfo.AreaID = AreasInfo(Npclist(NpcIndex).Pos.X, Npclist(NpcIndex).Pos.Y) Then Exit Sub
+100     If NpcList(NpcIndex).AreasInfo.AreaID = AreasInfo(NpcList(NpcIndex).Pos.X, NpcList(NpcIndex).Pos.Y) Then Exit Sub
     
         Dim MinX    As Long, MaxX As Long, MinY As Long, MaxY As Long, X As Long, Y As Long
 
@@ -325,7 +323,7 @@ Public Sub CheckUpdateNeededNpc(ByVal NpcIndex As Integer, ByVal Head As Byte)
 
 102     appear = 0
     
-104     With Npclist(NpcIndex)
+104     With NpcList(NpcIndex)
 106         MinX = .AreasInfo.MinX
 108         MinY = .AreasInfo.MinY
         
@@ -361,7 +359,7 @@ Public Sub CheckUpdateNeededNpc(ByVal NpcIndex As Integer, ByVal Head As Byte)
                 'Esto pasa por cuando cambiamos de mapa o logeamos...
 160             MinY = ((.Pos.Y \ AREA_DIM) - 1) * AREA_DIM
 162             MaxY = MinY + AREA_DIM * 3 - 1 '+ 26
-            
+
 164             MinX = ((.Pos.X \ AREA_DIM) - 1) * AREA_DIM
 166             MaxX = MinX + AREA_DIM * 3 - 1 '+ 26
             
@@ -533,12 +531,12 @@ Public Sub AgregarNpc(ByVal NpcIndex As Integer)
         
         On Error GoTo AgregarNpc_Err
         
-100     Npclist(NpcIndex).AreasInfo.AreaID = 0
+100     NpcList(NpcIndex).AreasInfo.AreaID = 0
    
-102     Npclist(NpcIndex).AreasInfo.AreaPerteneceX = 0
-104     Npclist(NpcIndex).AreasInfo.AreaPerteneceY = 0
-106     Npclist(NpcIndex).AreasInfo.AreaReciveX = 0
-108     Npclist(NpcIndex).AreasInfo.AreaReciveY = 0
+102     NpcList(NpcIndex).AreasInfo.AreaPerteneceX = 0
+104     NpcList(NpcIndex).AreasInfo.AreaPerteneceY = 0
+106     NpcList(NpcIndex).AreasInfo.AreaReciveX = 0
+108     NpcList(NpcIndex).AreasInfo.AreaReciveY = 0
    
 110     Call CheckUpdateNeededNpc(NpcIndex, USER_NUEVO)
 
