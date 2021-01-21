@@ -380,7 +380,8 @@ InitializeTable_Err:
         
 End Sub
 
-Function FindDirectionEAO(a As WorldPos, b As WorldPos, Optional PuedeAgu As Boolean, Optional PuedeTierra As Boolean = True) As Byte
+Function FindDirectionEAO(a As WorldPos, b As WorldPos, Optional ByVal PuedeAgu As Boolean, Optional ByVal PuedeTierra As Boolean = True, _
+                            Optional ByVal IgnoraInvalida As Boolean, Optional ByVal PuedePisar As Boolean) As Byte
         
         On Error GoTo FindDirectionEAO_Err
         
@@ -445,7 +446,7 @@ Function FindDirectionEAO(a As WorldPos, b As WorldPos, Optional PuedeAgu As Boo
 
             Case eHeading.NORTH
 
-132             If Not LegalWalkNPC(a.Map, a.X, a.Y - 1, eHeading.NORTH, PuedeAgu, PuedeTierra) Then
+132             If Not LegalWalkNPC(a.Map, a.X, a.Y - 1, eHeading.NORTH, PuedeAgu, PuedeTierra, IgnoraInvalida, PuedePisar) Then
 
 134                 If a.X > b.X Then
 136                     FindDirectionEAO = eHeading.WEST
@@ -461,7 +462,7 @@ Function FindDirectionEAO(a As WorldPos, b As WorldPos, Optional PuedeAgu As Boo
 
 146         Case eHeading.SOUTH
 
-148             If Not LegalWalkNPC(a.Map, a.X, a.Y + 1, eHeading.SOUTH, PuedeAgu, PuedeTierra) Then
+148             If Not LegalWalkNPC(a.Map, a.X, a.Y + 1, eHeading.SOUTH, PuedeAgu, PuedeTierra, IgnoraInvalida, PuedePisar) Then
 
 150                 If a.X > b.X Then
 152                     FindDirectionEAO = eHeading.WEST
@@ -477,7 +478,7 @@ Function FindDirectionEAO(a As WorldPos, b As WorldPos, Optional PuedeAgu As Boo
     
 162         Case eHeading.WEST
 
-164             If Not LegalWalkNPC(a.Map, a.X - 1, a.Y, eHeading.WEST, PuedeAgu, PuedeTierra) Then
+164             If Not LegalWalkNPC(a.Map, a.X - 1, a.Y, eHeading.WEST, PuedeAgu, PuedeTierra, IgnoraInvalida, PuedePisar) Then
 
 166                 If a.Y > b.Y Then
 168                      FindDirectionEAO = eHeading.NORTH
@@ -493,7 +494,7 @@ Function FindDirectionEAO(a As WorldPos, b As WorldPos, Optional PuedeAgu As Boo
     
 178         Case eHeading.EAST
 
-180             If Not LegalWalkNPC(a.Map, a.X + 1, a.Y, eHeading.EAST, PuedeAgu, PuedeTierra) Then
+180             If Not LegalWalkNPC(a.Map, a.X + 1, a.Y, eHeading.EAST, PuedeAgu, PuedeTierra, IgnoraInvalida, PuedePisar) Then
 182                 If a.Y > b.Y Then
 184                     FindDirectionEAO = eHeading.NORTH
 186                 ElseIf a.Y < b.Y Then

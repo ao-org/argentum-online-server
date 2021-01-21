@@ -418,7 +418,7 @@ InMapBounds_Err:
         
 End Function
 
-Sub ClosestLegalPos(Pos As WorldPos, ByRef nPos As WorldPos, Optional PuedeAgua As Boolean = False, Optional PuedeTierra As Boolean = True)
+Sub ClosestLegalPos(Pos As WorldPos, ByRef nPos As WorldPos, Optional ByVal PuedeAgua As Boolean = False, Optional ByVal PuedeTierra As Boolean = True)
         '*****************************************************************
         'Author: Unknown (original version)
         'Last Modification: 24/01/2007 (ToxicWaste)
@@ -710,6 +710,15 @@ HeadtoPos_Err:
         
 End Sub
 
+' Autor: WyroX - 20/01/2021
+' Retorna el heading recibo como parámetro pero rotado, según el valor R.
+' Si R es 1, rota en sentido horario. Si R es -1, en sentido antihorario.
+Function RotateHeading(ByVal Heading As eHeading, ByVal R As Integer) As eHeading
+    
+    RotateHeading = (Heading + R + 3) Mod 4 + 1
+    
+End Function
+
 Function LegalPos(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, Optional ByVal PuedeAgua As Boolean = False, Optional ByVal PuedeTierra As Boolean = True, Optional ByVal Montado As Boolean = False, Optional ByVal PuedeTraslado As Boolean = True) As Boolean
         '***************************************************
         'Autor: Pablo (ToxicWaste) & Unknown (orginal version)
@@ -834,30 +843,56 @@ LegalPosNPC_Err:
         
 End Function
 
-Function LegalWalkNPC(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal Heading As eHeading, Optional ByVal PuedeAgua As Boolean = False, Optional ByVal PuedeTierra As Boolean = True, Optional ByVal IsPet As Boolean = False) As Boolean
-        On Error GoTo LegalWalkNPC_Err
-        
+Function LegalWalkNPC(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal Heading As eHeading, Optional ByVal PuedeAgua As Boolean = False, Optional ByVal PuedeTierra As Boolean = True, Optional ByVal IgnoraInvalida As Boolean = False, Optional ByVal PuedePisar As Boolean) As Boolean
+    ' Reescrito por WyroX
 
-100     If (Map <= 0 Or Map > NumMaps) Or (X < MinXBorder Or X > MaxXBorder Or Y < MinYBorder Or Y > MaxYBorder) Then
+    On Error GoTo LegalWalkNPC_Err
+
+    If (Map <= 0 Or Map > NumMaps) Or (X < MinXBorder Or X > MaxXBorder Or Y < MinYBorder Or Y > MaxYBorder) Then
+        Exit Function
+    End If
+
+    With MapData(Map, X, Y)
+
+        If .TileExit.Map Then Exit Function
+
+        If Not PuedeAgua Then
+            If .Blocked And FLAG_AGUA Then
+                Exit Function
+            End If
+        End If
+
+        If Not PuedeTierra Then
+            If Not (.Blocked And FLAG_AGUA) Then
+                Exit Function
+            End If
+        End If
+
+        If Not PuedePisar Then
+            If .UserIndex Then
+                If UserList(.UserIndex).flags.AdminInvisible = 0 And UserList(.UserIndex).flags.Muerto = 0 Then
+                    Exit Function
+                End If
+            ElseIf .NpcIndex Then
+                Exit Function
+            End If
+        End If
+        
+        If Not IgnoraInvalida Then
+            If .trigger = eTrigger.POSINVALIDA Then
+                Exit Function
+            End If
+        End If
+        
+        If .Blocked And 2 ^ (Heading - 1) Then
             Exit Function
         End If
 
-102     If PuedeAgua And PuedeTierra Then
-104         LegalWalkNPC = (MapData(Map, X, Y).UserIndex = 0) And (MapData(Map, X, Y).NpcIndex = 0) And MapData(Map, X, Y).TileExit.Map = 0 And (MapData(Map, X, Y).trigger <> eTrigger.POSINVALIDA Or IsPet)
-
-106     ElseIf PuedeTierra And Not PuedeAgua Then
-108         LegalWalkNPC = (MapData(Map, X, Y).UserIndex = 0) And (MapData(Map, X, Y).NpcIndex = 0) And ((MapData(Map, X, Y).Blocked And FLAG_AGUA) = 0) And MapData(Map, X, Y).TileExit.Map = 0 And (MapData(Map, X, Y).trigger <> eTrigger.POSINVALIDA Or IsPet)
-
-110     ElseIf PuedeAgua And Not PuedeTierra Then
-112         LegalWalkNPC = (MapData(Map, X, Y).UserIndex = 0) And (MapData(Map, X, Y).NpcIndex = 0) And ((MapData(Map, X, Y).Blocked And FLAG_AGUA) <> 0) And MapData(Map, X, Y).TileExit.Map = 0 And (MapData(Map, X, Y).trigger <> eTrigger.POSINVALIDA Or IsPet)
-        
-        Else
-114         LegalWalkNPC = False
-        End If
-        
-116     LegalWalkNPC = LegalWalkNPC And ((MapData(Map, X, Y).Blocked And 2 ^ (Heading - 1)) = 0)
-        
-        Exit Function
+    End With
+    
+    LegalWalkNPC = True
+    
+    Exit Function
 
 LegalWalkNPC_Err:
 118     Call RegistrarError(Err.Number, Err.Description, "Extra.LegalWalkNPC", Erl)
@@ -1295,6 +1330,11 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                 'End If
             
 462             If Len(Npclist(TempCharIndex).Desc) > 1 Then
+                    ' WyroX: Hacemos que se detenga a hablar un momento :P
+                    If Npclist(TempCharIndex).Movement = Caminata Then
+                        Npclist(TempCharIndex).Contadores.IntervaloMovimiento = GetTickCount + 5000 - Npclist(TempCharIndex).IntervaloMovimiento ' 5 segundos
+                    End If
+
                     'Optimizacion de protocolo por Ladder
 464                 Call WriteChatOverHead(UserIndex, "NPCDESC*" & Npclist(TempCharIndex).Numero, Npclist(TempCharIndex).Char.CharIndex, vbWhite)
 466             ElseIf TempCharIndex = CentinelaNPCIndex Then

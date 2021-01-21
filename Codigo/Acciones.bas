@@ -78,6 +78,11 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                         Exit Sub
 
                     End If
+                    
+                    ' WyroX: Hacemos que se detenga a hablar un momento :P
+                    If Npclist(MapData(Map, X, Y).NpcIndex).Movement = Caminata Then
+                        Npclist(MapData(Map, X, Y).NpcIndex).Contadores.IntervaloMovimiento = GetTickCount + 5000 - Npclist(MapData(Map, X, Y).NpcIndex).IntervaloMovimiento ' 5 segundos
+                    End If
             
                     'Is it already in commerce mode??
 116                 If UserList(UserIndex).flags.Comerciando Then
@@ -90,6 +95,11 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                         'Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos del vendedor.", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
+                    End If
+                    
+                    ' WyroX: Hacemos que se detenga a hablar un momento :P
+                    If Npclist(MapData(Map, X, Y).NpcIndex).Movement = Caminata Then
+                        Npclist(MapData(Map, X, Y).NpcIndex).Contadores.IntervaloMovimiento = GetTickCount + 5000 - Npclist(MapData(Map, X, Y).NpcIndex).IntervaloMovimiento ' 5 segundos
                     End If
             
                     'Iniciamos la rutina pa' comerciar.
@@ -158,6 +168,11 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 162                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
+                    End If
+                    
+                    ' WyroX: Hacemos que se detenga a hablar un momento :P
+                    If Npclist(MapData(Map, X, Y).NpcIndex).Movement = Caminata Then
+                        Npclist(MapData(Map, X, Y).NpcIndex).Contadores.IntervaloMovimiento = GetTickCount + 5000 - Npclist(MapData(Map, X, Y).NpcIndex).IntervaloMovimiento ' 5 segundos
                     End If
             
 164                 UserList(UserIndex).flags.Envenenado = 0
@@ -263,6 +278,11 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                         Exit Sub
 
                     End If
+                    
+                    ' WyroX: Hacemos que se detenga a hablar un momento :P
+                    If Npclist(MapData(Map, X, Y).NpcIndex).Movement = Caminata Then
+                        Npclist(MapData(Map, X, Y).NpcIndex).Contadores.IntervaloMovimiento = GetTickCount + 5000 - Npclist(MapData(Map, X, Y).NpcIndex).IntervaloMovimiento ' 5 segundos
+                    End If
 
 248                 Call IniciarSubasta(UserIndex)
             
@@ -271,7 +291,11 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 252                 If UserList(UserIndex).flags.Muerto = 1 Then
 254                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
-
+                    End If
+                    
+                    ' WyroX: Hacemos que se detenga a hablar un momento :P
+                    If Npclist(MapData(Map, X, Y).NpcIndex).Movement = Caminata Then
+                        Npclist(MapData(Map, X, Y).NpcIndex).Contadores.IntervaloMovimiento = GetTickCount + 5000 - Npclist(MapData(Map, X, Y).NpcIndex).IntervaloMovimiento ' 5 segundos
                     End If
             
 256                 Call EnviarQuest(UserIndex)

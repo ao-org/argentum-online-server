@@ -47,6 +47,9 @@ Public Enum TipoAI
     MagoPretorianoAi = 13
     CazadorPretorianoAi = 14
     ReyPretoriano = 15
+    
+    ' Animado
+    Caminata = 20
 
 End Enum
 
@@ -1024,6 +1027,12 @@ Sub NPCAI(ByVal NpcIndex As Integer)
             
 172                 If .flags.Inmovilizado = 1 Or .flags.Paralizado = 1 Then Exit Sub
 174                 Call SeguirAmo(NpcIndex)
+
+                Case TipoAI.Caminata
+                    falladesc = " fallo Caminata"
+                    
+                    If .flags.Inmovilizado = 1 Or .flags.Paralizado = 1 Then Exit Sub
+                    Call HacerCaminata(NpcIndex)
             
             End Select
 
@@ -1256,3 +1265,71 @@ Private Function PuedeAtacarUser(ByVal targetUserIndex As Integer) As Boolean
         End With
 
 End Function
+
+Private Sub HacerCaminata(ByVal NpcIndex As Integer)
+    On Error GoTo Handler
+    
+    Dim Destino As WorldPos
+    Dim Heading As eHeading
+    Dim NextTile As WorldPos
+    Dim MoveChar As Integer
+    Dim PudoMover As Boolean
+
+    With Npclist(NpcIndex)
+    
+        Destino.Map = .Pos.Map
+        Destino.X = .Orig.X + .Caminata(.CaminataActual).Offset.X
+        Destino.Y = .Orig.Y + .Caminata(.CaminataActual).Offset.Y
+
+        ' Si todavía no llegó al destino
+        If .Pos.X <> Destino.X Or .Pos.Y <> Destino.Y Then
+            ' Tratamos de acercarnos (podemos pisar npcs, usuarios o triggers)
+            Heading = FindDirectionEAO(.Pos, Destino, .flags.AguaValida, .flags.TierraInvalida = 0, True, True)
+            ' Obtengo la posición según el heading
+            NextTile = .Pos
+            Call HeadtoPos(Heading, NextTile)
+            ' Si hay un NPC
+            MoveChar = MapData(NextTile.Map, NextTile.X, NextTile.Y).NpcIndex
+            If MoveChar Then
+                ' Lo movemos hacia un lado
+                Call MoveNpcToSide(MoveChar, Heading)
+            End If
+            ' Si hay un user
+            MoveChar = MapData(NextTile.Map, NextTile.X, NextTile.Y).UserIndex
+            If MoveChar Then
+                ' Si no está muerto o es admin invisible (porque a esos los atraviesa)
+                If UserList(MoveChar).flags.AdminInvisible = 0 And UserList(MoveChar).flags.Muerto = 0 Then
+                    ' Lo movemos hacia un lado
+                    Call MoveUserToSide(MoveChar, Heading)
+                End If
+            End If
+            ' Movemos al NPC de la caminata
+            PudoMover = MoveNPCChar(NpcIndex, Heading)
+            ' Si no pudimos moverlo, hacemos como si hubiese llegado a destino... para evitar que se quede atascado
+            If Not PudoMover Or Distancia(.Pos, Destino) = 0 Then
+                ' Llegamos a destino, ahora esperamos el tiempo necesario para continuar
+                .Contadores.IntervaloMovimiento = GetTickCount + .Caminata(.CaminataActual).Espera - .IntervaloMovimiento
+                ' Pasamos a la siguiente caminata
+                .CaminataActual = .CaminataActual + 1
+                ' Si pasamos el último, volvemos al primero
+                If .CaminataActual > UBound(.Caminata) Then
+                    .CaminataActual = 1
+                End If
+            End If
+        ' Si por alguna razón estamos en el destino, seguimos con la siguiente caminata
+        Else
+            .CaminataActual = .CaminataActual + 1
+            ' Si pasamos el último, volvemos al primero
+            If .CaminataActual > UBound(.Caminata) Then
+                .CaminataActual = 1
+            End If
+        End If
+    
+    End With
+    
+    Exit Sub
+    
+Handler:
+    Call RegistrarError(Err.Number, Err.Description, "AI.HacerCaminata", Erl)
+    Resume Next
+End Sub

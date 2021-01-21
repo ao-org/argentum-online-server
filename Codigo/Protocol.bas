@@ -2441,75 +2441,80 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
                 'If IntervaloPermiteCaminar(UserIndex) Then
             
                     'Move user
-122                 Call MoveUserChar(UserIndex, Heading)
+122                 If MoveUserChar(UserIndex, Heading) Then
                 
-124                 If UserList(UserIndex).Grupo.EnGrupo = True Then
-126                     Call CompartirUbicacion(UserIndex)
-                    End If
-
-                    'Stop resting if needed
-128                 If .flags.Descansar Then
-130                     .flags.Descansar = False
-                    
-132                     Call WriteRestOK(UserIndex)
-                        'Call WriteConsoleMsg(UserIndex, "Has dejado de descansar.", FontTypeNames.FONTTYPE_INFO)
-134                     Call WriteLocaleMsg(UserIndex, "178", FontTypeNames.FONTTYPE_INFO)
-
-                    End If
-
-                    Dim TiempoDeWalk As Byte
-
-136                 If .flags.Montado = 1 Then
-138                     TiempoDeWalk = 37
-140                 ElseIf .flags.Muerto = 1 Then
-142                     TiempoDeWalk = 40
-                    Else
-144                     TiempoDeWalk = 34
-
-                    End If
-                    
-                    'Prevent SpeedHack
-146                 If .flags.TimesWalk >= TiempoDeWalk Then
-148                     TempTick = GetTickCount()
-150                     dummy = (TempTick - .flags.StartWalk)
+124                     If UserList(UserIndex).Grupo.EnGrupo = True Then
+126                         Call CompartirUbicacion(UserIndex)
+                        End If
+    
+                        'Stop resting if needed
+128                     If .flags.Descansar Then
+130                         .flags.Descansar = False
                         
-                        ' 5800 is actually less than what would be needed in perfect conditions to take 30 steps
-                        '(it's about 193 ms per step against the over 200 needed in perfect conditions)
-152                     If dummy < 5200 Then
-154                         If TempTick - .flags.CountSH > 30000 Then
-156                             .flags.CountSH = 0
-
-                            End If
+132                         Call WriteRestOK(UserIndex)
+                            'Call WriteConsoleMsg(UserIndex, "Has dejado de descansar.", FontTypeNames.FONTTYPE_INFO)
+134                         Call WriteLocaleMsg(UserIndex, "178", FontTypeNames.FONTTYPE_INFO)
+    
+                        End If
+    
+                        Dim TiempoDeWalk As Byte
+    
+136                     If .flags.Montado = 1 Then
+138                         TiempoDeWalk = 37
+140                     ElseIf .flags.Muerto = 1 Then
+142                         TiempoDeWalk = 40
+                        Else
+144                         TiempoDeWalk = 34
+    
+                        End If
+                        
+                        'Prevent SpeedHack
+146                     If .flags.TimesWalk >= TiempoDeWalk Then
+148                         TempTick = GetTickCount()
+150                         dummy = (TempTick - .flags.StartWalk)
                             
-158                         If Not .flags.CountSH = 0 Then
-160                             If dummy <> 0 Then dummy = 126000 \ dummy
-                               
-162                             Call LogHackAttemp("Tramposo SH: " & .name & " , " & dummy)
-164                             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> " & .name & " ha sido echado por el servidor por posible uso de SpeedHack.", FontTypeNames.FONTTYPE_SERVER))
-166                             Call CloseSocket(UserIndex)
+                            ' 5800 is actually less than what would be needed in perfect conditions to take 30 steps
+                            '(it's about 193 ms per step against the over 200 needed in perfect conditions)
+152                         If dummy < 5200 Then
+154                             If TempTick - .flags.CountSH > 30000 Then
+156                                 .flags.CountSH = 0
+    
+                                End If
                                 
-                                Exit Sub
-                            Else
-168                             .flags.CountSH = TempTick
-
+158                             If Not .flags.CountSH = 0 Then
+160                                 If dummy <> 0 Then dummy = 126000 \ dummy
+                                   
+162                                 Call LogHackAttemp("Tramposo SH: " & .name & " , " & dummy)
+164                                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> " & .name & " ha sido echado por el servidor por posible uso de SpeedHack.", FontTypeNames.FONTTYPE_SERVER))
+166                                 Call CloseSocket(UserIndex)
+                                    
+                                    Exit Sub
+                                Else
+168                                 .flags.CountSH = TempTick
+    
+                                End If
+    
                             End If
-
+    
+170                         .flags.StartWalk = TempTick
+172                         .flags.TimesWalk = 0
+    
+                        End If
+                        
+174                     .flags.TimesWalk = .flags.TimesWalk + 1
+                    
+176                     Call CancelExit(UserIndex)
+    
+                        'Esta usando el /HOGAR, no se puede mover
+178                     If .flags.Traveling = 1 Then
+180                         .flags.Traveling = 0
+182                         .Counters.goHome = 0
+184                         Call WriteConsoleMsg(UserIndex, "Has cancelado el viaje a casa.", FontTypeNames.FONTTYPE_INFO)
                         End If
 
-170                     .flags.StartWalk = TempTick
-172                     .flags.TimesWalk = 0
-
-                    End If
-                    
-174                 .flags.TimesWalk = .flags.TimesWalk + 1
-                
-176                 Call CancelExit(UserIndex)
-
-                    'Esta usando el /HOGAR, no se puede mover
-178                 If .flags.Traveling = 1 Then
-180                     .flags.Traveling = 0
-182                     .Counters.goHome = 0
-184                     Call WriteConsoleMsg(UserIndex, "Has cancelado el viaje a casa.", FontTypeNames.FONTTYPE_INFO)
+                    ' Si no pudo moverse, actualizamos la posición
+                    Else
+                        Call WritePosUpdate(UserIndex)
                     End If
 
                 'End If
@@ -5710,7 +5715,7 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
                 End If
             
 156             .ComUsu.Objeto = slot
-158             .ComUsu.cant = Amount
+158             .ComUsu.Cant = Amount
             
                 'If the other one had accepted, we turn that back and inform of the new offer (just to be cautious).
 160             If UserList(tUser).ComUsu.Acepto = True Then
@@ -7980,7 +7985,7 @@ Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
                 'Initialize some variables...
 156             .ComUsu.DestUsu = .flags.TargetUser
 158             .ComUsu.DestNick = UserList(.flags.TargetUser).name
-160             .ComUsu.cant = 0
+160             .ComUsu.Cant = 0
 162             .ComUsu.Objeto = 0
 164             .ComUsu.Acepto = False
             
@@ -23575,7 +23580,7 @@ End Sub
 ' @param    Cant Number of names to send.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Sub WriteUserNameList(ByVal UserIndex As Integer, ByRef userNamesList() As String, ByVal cant As Integer)
+Public Sub WriteUserNameList(ByVal UserIndex As Integer, ByRef userNamesList() As String, ByVal Cant As Integer)
 
         '***************************************************
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -23592,7 +23597,7 @@ Public Sub WriteUserNameList(ByVal UserIndex As Integer, ByRef userNamesList() A
 102         Call .WriteByte(ServerPacketID.UserNameList)
         
             ' Prepare user's names list
-104         For i = 1 To cant
+104         For i = 1 To Cant
 106             Tmp = Tmp & userNamesList(i) & SEPARATOR
 108         Next i
         
@@ -23943,20 +23948,20 @@ Public Function PrepareMessageListaCorreo(ByVal UserIndex As Integer, ByVal Actu
         On Error GoTo PrepareMessageListaCorreo_Err
         
 
-        Dim cant As Byte
+        Dim Cant As Byte
 
         Dim i    As Byte
 
-100     cant = UserList(UserIndex).Correo.CantCorreo
+100     Cant = UserList(UserIndex).Correo.CantCorreo
 102     UserList(UserIndex).Correo.NoLeidos = 0
 
 104     With auxiliarBuffer
 106         Call .WriteByte(ServerPacketID.ListaCorreo)
-108         Call .WriteByte(cant)
+108         Call .WriteByte(Cant)
 
-110         If cant > 0 Then
+110         If Cant > 0 Then
 
-112             For i = 1 To cant
+112             For i = 1 To Cant
 114                 Call .WriteASCIIString(UserList(UserIndex).Correo.Mensaje(i).Remitente)
 116                 Call .WriteASCIIString(UserList(UserIndex).Correo.Mensaje(i).Mensaje)
 118                 Call .WriteByte(UserList(UserIndex).Correo.Mensaje(i).ItemCount)
@@ -28056,7 +28061,7 @@ Public Sub WriteRecompensas(ByVal UserIndex As Integer)
             'Logros NPC
 110         Call .WriteASCIIString(NPcLogros(a).nombre)
 112         Call .WriteASCIIString(NPcLogros(a).Desc)
-114         Call .WriteInteger(NPcLogros(a).cant)
+114         Call .WriteInteger(NPcLogros(a).Cant)
 116         Call .WriteByte(NPcLogros(a).TipoRecompensa)
         
 118         If NPcLogros(a).TipoRecompensa = 1 Then
@@ -28081,7 +28086,7 @@ Public Sub WriteRecompensas(ByVal UserIndex As Integer)
         
 134         Call .WriteInteger(UserList(UserIndex).Stats.NPCsMuertos)
         
-136         If UserList(UserIndex).Stats.NPCsMuertos >= NPcLogros(a).cant Then
+136         If UserList(UserIndex).Stats.NPCsMuertos >= NPcLogros(a).Cant Then
 138             Call .WriteBoolean(True)
             Else
 140             Call .WriteBoolean(False)
@@ -28091,7 +28096,7 @@ Public Sub WriteRecompensas(ByVal UserIndex As Integer)
             'Logros User
 142         Call .WriteASCIIString(UserLogros(b).nombre)
 144         Call .WriteASCIIString(UserLogros(b).Desc)
-146         Call .WriteInteger(UserLogros(b).cant)
+146         Call .WriteInteger(UserLogros(b).Cant)
 148         Call .WriteInteger(UserLogros(b).TipoRecompensa)
 150         Call .WriteInteger(UserList(UserIndex).Stats.UsuariosMatados)
 
@@ -28115,7 +28120,7 @@ Public Sub WriteRecompensas(ByVal UserIndex As Integer)
 
             End If
 
-168         If UserList(UserIndex).Stats.UsuariosMatados >= UserLogros(b).cant Then
+168         If UserList(UserIndex).Stats.UsuariosMatados >= UserLogros(b).Cant Then
 170             Call .WriteBoolean(True)
             Else
 172             Call .WriteBoolean(False)
@@ -28125,7 +28130,7 @@ Public Sub WriteRecompensas(ByVal UserIndex As Integer)
             'Nivel User
 174         Call .WriteASCIIString(LevelLogros(c).nombre)
 176         Call .WriteASCIIString(LevelLogros(c).Desc)
-178         Call .WriteInteger(LevelLogros(c).cant)
+178         Call .WriteInteger(LevelLogros(c).Cant)
 180         Call .WriteInteger(LevelLogros(c).TipoRecompensa)
 182         Call .WriteByte(UserList(UserIndex).Stats.ELV)
 
@@ -28149,7 +28154,7 @@ Public Sub WriteRecompensas(ByVal UserIndex As Integer)
 
             End If
 
-200         If UserList(UserIndex).Stats.ELV >= LevelLogros(c).cant Then
+200         If UserList(UserIndex).Stats.ELV >= LevelLogros(c).Cant Then
 202             Call .WriteBoolean(True)
             Else
 204             Call .WriteBoolean(False)
@@ -28236,7 +28241,7 @@ Private Sub HandleSendCorreo(ByVal UserIndex As Integer)
 
             Dim ItemCount          As Byte
 
-            Dim cant               As Integer
+            Dim Cant               As Integer
 
             Dim IndexReceptor      As Integer
 
@@ -28727,7 +28732,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                     
 234                             UserList(UserIndex).ComUsu.DestUsu = UserList(UserIndex).flags.TargetUser
 236                             UserList(UserIndex).ComUsu.DestNick = UserList(UserList(UserIndex).flags.TargetUser).name
-238                             UserList(UserIndex).ComUsu.cant = 0
+238                             UserList(UserIndex).ComUsu.Cant = 0
 240                             UserList(UserIndex).ComUsu.Objeto = 0
 242                             UserList(UserIndex).ComUsu.Acepto = False
                     
