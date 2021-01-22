@@ -31709,7 +31709,7 @@ Private Sub HandleCuentaExtractItem(ByVal UserIndex As Integer)
     
 104     With UserList(UserIndex)
 
-106         Call .incomingData.ReadByte
+106         Call .incomingData.ReadInteger
         
             Dim slot        As Byte
 
@@ -31769,7 +31769,7 @@ Private Sub HandleCuentaDeposit(ByVal UserIndex As Integer)
     
 104     With UserList(UserIndex)
             'Remove packet ID
-106         Call .incomingData.ReadByte
+106         Call .incomingData.ReadInteger
         
             Dim slot        As Byte
 
