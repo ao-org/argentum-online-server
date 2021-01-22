@@ -2251,7 +2251,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
                 Next
             
             Else
-156             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(62, .Pos.X, .Pos.Y))
+156             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(2185, .Pos.X, .Pos.Y))
     
                 '[CDT 17-02-2004]
 158             If Not .flags.UltimoMensaje = 9 Then
