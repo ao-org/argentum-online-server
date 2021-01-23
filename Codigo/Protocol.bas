@@ -1736,6 +1736,9 @@ Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
 390         Case NewPacksID.SendProcesses
 392             Call HandleProcesses(UserIndex)
 
+            Case NewPacksID.SeguroResu
+                Call HandleSeguroResu(UserIndex)
+
             Case NewPacksID.CuentaExtractItem
                 Call HandleCuentaExtractItem(UserIndex)
                 
