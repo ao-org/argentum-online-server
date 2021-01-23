@@ -1613,30 +1613,30 @@ Public Sub DoRobar(ByVal LadrOnIndex As Integer, ByVal VictimaIndex As Integer)
 
             End If
 
-142         If .Grupo.EnGrupo > 0 Then
+142         'If .Grupo.EnGrupo > 0 Then
         
-144             If .GuildIndex = UserList(VictimaIndex).GuildIndex Then
-146                 Call WriteConsoleMsg(LadrOnIndex, "No podes robarle a un miembro de tu grupo.", FontTypeNames.FONTTYPE_INFOIAO)
-                    Exit Sub
+144         '    If .GuildIndex = UserList(VictimaIndex).GuildIndex Then
+146         '        Call WriteConsoleMsg(LadrOnIndex, "No podes robarle a un miembro de tu grupo.", FontTypeNames.FONTTYPE_INFOIAO)
+            '        Exit Sub
 
-                End If
+            '    End If
 
-            End If
+            'End If
 
-148         If .Grupo.EnGrupo = True Then
+148         'If .Grupo.EnGrupo = True Then
 
-                Dim i As Byte
-150             For i = 1 To UserList(.Grupo.Lider).Grupo.CantidadMiembros
+            '    Dim i As Byte
+150         '    For i = 1 To UserList(.Grupo.Lider).Grupo.CantidadMiembros
 
-152                 If UserList(.Grupo.Lider).Grupo.Miembros(i) = VictimaIndex Then
-154                     Call WriteConsoleMsg(LadrOnIndex, "No podes robarle a un miembro de tu grupo.", FontTypeNames.FONTTYPE_INFOIAO)
-                        Exit Sub
+152         '        If UserList(.Grupo.Lider).Grupo.Miembros(i) = VictimaIndex Then
+154         '            Call WriteConsoleMsg(LadrOnIndex, "No podes robarle a un miembro de tu grupo.", FontTypeNames.FONTTYPE_INFOIAO)
+            '            Exit Sub
 
-                    End If
+            '        End If
 
-156             Next i
+156         '    Next i
 
-            End If
+            'End If
         
             ' Quito energia
 158         Call QuitarSta(LadrOnIndex, 15)
@@ -2844,7 +2844,7 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 
         Dim NroPets          As Integer
     
-100     If Npclist(NpcIndex).MaestroUser = UserIndex Then
+100     If NpcList(NpcIndex).MaestroUser = UserIndex Then
 102         Call WriteConsoleMsg(UserIndex, "Ya domaste a esa criatura.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
@@ -2853,7 +2853,7 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 
 106         If .NroMascotas < MAXMASCOTAS Then
 
-108             If Npclist(NpcIndex).MaestroNPC > 0 Or Npclist(NpcIndex).MaestroUser > 0 Then
+108             If NpcList(NpcIndex).MaestroNPC > 0 Or NpcList(NpcIndex).MaestroUser > 0 Then
 110                 Call WriteConsoleMsg(UserIndex, "La criatura ya tiene amo.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
@@ -2871,25 +2871,25 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 122                 puntosDomar = puntosDomar / 11
                 End If
 
-124             If Npclist(NpcIndex).flags.Domable <= puntosDomar And RandomNumber(1, 5) = 1 Then
+124             If NpcList(NpcIndex).flags.Domable <= puntosDomar And RandomNumber(1, 5) = 1 Then
 
                     Dim index As Integer
 
 126                 .NroMascotas = .NroMascotas + 1
 128                 index = FreeMascotaIndex(UserIndex)
 130                 .MascotasIndex(index) = NpcIndex
-132                 .MascotasType(index) = Npclist(NpcIndex).Numero
+132                 .MascotasType(index) = NpcList(NpcIndex).Numero
 
-134                 Npclist(NpcIndex).MaestroUser = UserIndex
+134                 NpcList(NpcIndex).MaestroUser = UserIndex
 
 136                 Call FollowAmo(NpcIndex)
-138                 Call ReSpawnNpc(Npclist(NpcIndex))
+138                 Call ReSpawnNpc(NpcList(NpcIndex))
 
 140                 Call WriteConsoleMsg(UserIndex, "La criatura te ha aceptado como su amo.", FontTypeNames.FONTTYPE_INFO)
 
                     ' Es zona segura?
 142                 If MapInfo(.Pos.Map).Seguro = 1 Then
-144                     petType = Npclist(NpcIndex).Numero
+144                     petType = NpcList(NpcIndex).Numero
 146                     NroPets = .NroMascotas
 
 148                     Call QuitarNPC(NpcIndex)
@@ -2949,7 +2949,7 @@ Private Function PuedeDomarMascota(ByVal UserIndex As Integer, _
     
 100     For i = 1 To MAXMASCOTAS
 
-102         If UserList(UserIndex).MascotasType(i) = Npclist(NpcIndex).Numero Then
+102         If UserList(UserIndex).MascotasType(i) = NpcList(NpcIndex).Numero Then
 104             numMascotas = numMascotas + 1
 
             End If
