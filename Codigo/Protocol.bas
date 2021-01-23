@@ -4468,7 +4468,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 598                                     DistanciaMaxima = 1
                                     End If
 
-600                                 If Abs(.Pos.X - X) + Abs(.Pos.Y - Y) > DistanciaMaxima Then
+600                                 If Abs(.Pos.X - UserList(tU).Pos.X) + Abs(.Pos.Y - UserList(tU).Pos.Y) > DistanciaMaxima Then
 602                                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                                         'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
 604                                     Call WriteWorkRequestTarget(UserIndex, 0)
@@ -4477,7 +4477,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                                  
                                     '17/09/02
                                     'Check the trigger
-606                                 If MapData(UserList(tU).Pos.Map, X, Y).trigger = eTrigger.ZONASEGURA Then
+606                                 If MapData(UserList(tU).Pos.Map, UserList(tU).Pos.X, UserList(tU).Pos.Y).trigger = eTrigger.ZONASEGURA Then
 608                                     Call WriteConsoleMsg(UserIndex, "No podés robar aquí.", FontTypeNames.FONTTYPE_WARNING)
 610                                     Call WriteWorkRequestTarget(UserIndex, 0)
                                         Exit Sub
