@@ -29,7 +29,7 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal Invitado As Integer)
                 Status(UserIndex) = 0 And Status(Invitado) = 2 Or _
                 Status(UserIndex) = 2 And Status(Invitado) = 0 Then
 
-108             If Abs(CInt(UserList(Invitado).Stats.ELV) - CInt(UserList(UserIndex).Stats.ELV)) < 6 Then
+108             If Abs(CInt(UserList(Invitado).Stats.ELV) - CInt(UserList(UserIndex).Stats.ELV)) <= 10 Then
 
 110                 If UserList(Invitado).Grupo.EnGrupo = False Then
 
@@ -53,7 +53,7 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal Invitado As Integer)
                     End If
 
                 Else
-128                 Call WriteConsoleMsg(UserIndex, "No podés crear un grupo con personajes con diferencia de mas de 5 niveles.", FontTypeNames.FONTTYPE_New_GRUPO)
+128                 Call WriteConsoleMsg(UserIndex, "No podés crear un grupo con personajes con diferencia de más de 10 niveles.", FontTypeNames.FONTTYPE_New_GRUPO)
 
                 End If
 
@@ -71,7 +71,7 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal Invitado As Integer)
         Exit Sub
 
 InvitarMiembro_Err:
-134     Call RegistrarError(Err.Number, Err.description, "ModGrupos.InvitarMiembro", Erl)
+134     Call RegistrarError(Err.Number, Err.Description, "ModGrupos.InvitarMiembro", Erl)
 136     Resume Next
         
 End Sub
@@ -165,7 +165,7 @@ Public Sub HecharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
         Exit Sub
 
 HecharMiembro_Err:
-170     Call RegistrarError(Err.Number, Err.description, "ModGrupos.HecharMiembro", Erl)
+170     Call RegistrarError(Err.Number, Err.Description, "ModGrupos.HecharMiembro", Erl)
 172     Resume Next
         
 End Sub
@@ -242,7 +242,7 @@ Public Sub SalirDeGrupo(ByVal UserIndex As Integer)
         Exit Sub
 
 SalirDeGrupo_Err:
-158     Call RegistrarError(Err.Number, Err.description, "ModGrupos.SalirDeGrupo", Erl)
+158     Call RegistrarError(Err.Number, Err.Description, "ModGrupos.SalirDeGrupo", Erl)
 160     Resume Next
         
 End Sub
@@ -308,7 +308,7 @@ Public Sub SalirDeGrupoForzado(ByVal UserIndex As Integer)
         Exit Sub
 
 SalirDeGrupoForzado_Err:
-146     Call RegistrarError(Err.Number, Err.description, "ModGrupos.SalirDeGrupoForzado", Erl)
+146     Call RegistrarError(Err.Number, Err.Description, "ModGrupos.SalirDeGrupoForzado", Erl)
 148     Resume Next
         
 End Sub
@@ -337,7 +337,7 @@ Public Sub FinalizarGrupo(ByVal UserIndex As Integer)
         Exit Sub
 
 FinalizarGrupo_Err:
-120     Call RegistrarError(Err.Number, Err.description, "ModGrupos.FinalizarGrupo", Erl)
+120     Call RegistrarError(Err.Number, Err.Description, "ModGrupos.FinalizarGrupo", Erl)
 122     Resume Next
         
 End Sub
@@ -381,7 +381,7 @@ Public Sub CompartirUbicacion(UserIndex)
         Exit Sub
 
 CompartirUbicacion_Err:
-120     Call RegistrarError(Err.Number, Err.description, "ModGrupos.CompartirUbicacion", Erl)
+120     Call RegistrarError(Err.Number, Err.Description, "ModGrupos.CompartirUbicacion", Erl)
 122     Resume Next
         
 End Sub
