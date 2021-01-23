@@ -132,38 +132,38 @@ Private Sub IrUsuarioCercano(ByVal NpcIndex As Integer)
 116                 For i = 1 To ModAreas.ConnGroups(.Pos.Map).CountEntrys
 
 118                     UI = ModAreas.ConnGroups(.Pos.Map).UserEntrys(i)
-    
+
 120                     If UI > 0 Then
                             'Is it in it's range of vision??
-            
+
 122                         If NpcList(NpcIndex).Target = 0 Then Exit Sub
-                    
+
 124                         If Abs(UserList(NpcList(NpcIndex).Target).Pos.X - .Pos.X) <= RANGO_VISION_X Then
 126                             If Abs(UserList(NpcList(NpcIndex).Target).Pos.Y - .Pos.Y) <= RANGO_VISION_Y Then
-                                
+
 128                                 If PuedeAtacarUser(NpcList(NpcIndex).Target) Then
-                                                        
+
 130                                     If Distancia(.Pos, UserList(NpcList(NpcIndex).Target).Pos) > 1 Then
 
 132                                         If .flags.LanzaSpells <> 0 Then
 134                                             Call NpcLanzaUnSpell(NpcIndex, NpcList(NpcIndex).Target)
                                             End If
-                                                                
+
                                         Else
-                                                            
+
 136                                         tHeading = FindDirectionEAO(.Pos, UserList(NpcList(NpcIndex).Target).Pos, NpcList(NpcIndex).flags.AguaValida = 1, NpcList(NpcIndex).flags.TierraInvalida = 0)
 
 138                                         Call ChangeNPCChar(NpcIndex, .Char.Body, .Char.Head, tHeading)
 140                                         Call NpcAtacaUser(NpcIndex, NpcList(NpcIndex).Target, tHeading)
 
                                         End If
-            
+
                                         Exit Sub
 
                                     End If
-                                                        
+
                                 End If
-    
+
                             End If
     
                         End If
@@ -1275,7 +1275,7 @@ Private Sub HacerCaminata(ByVal NpcIndex As Integer)
     Dim MoveChar As Integer
     Dim PudoMover As Boolean
 
-    With Npclist(NpcIndex)
+    With NpcList(NpcIndex)
     
         Destino.Map = .Pos.Map
         Destino.X = .Orig.X + .Caminata(.CaminataActual).Offset.X
