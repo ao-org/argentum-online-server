@@ -317,17 +317,17 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
 128             aN = UserList(UserIndex).flags.AtacadoPorNpc
 
 130             If aN > 0 Then
-132                 Npclist(aN).Movement = Npclist(aN).flags.OldMovement
-134                 Npclist(aN).Hostile = Npclist(aN).flags.OldHostil
-136                 Npclist(aN).flags.AttackedBy = vbNullString
+132                 NpcList(aN).Movement = NpcList(aN).flags.OldMovement
+134                 NpcList(aN).Hostile = NpcList(aN).flags.OldHostil
+136                 NpcList(aN).flags.AttackedBy = vbNullString
 
                 End If
     
 138             aN = UserList(UserIndex).flags.NPCAtacado
 
 140             If aN > 0 Then
-142                 If Npclist(aN).flags.AttackedFirstBy = UserList(UserIndex).name Then
-144                     Npclist(aN).flags.AttackedFirstBy = vbNullString
+142                 If NpcList(aN).flags.AttackedFirstBy = UserList(UserIndex).name Then
+144                     NpcList(aN).flags.AttackedFirstBy = vbNullString
 
                     End If
 
@@ -377,8 +377,8 @@ Function InRangoVisionNPC(ByVal NpcIndex As Integer, X As Integer, Y As Integer)
         On Error GoTo InRangoVisionNPC_Err
         
 
-100     If X > Npclist(NpcIndex).Pos.X - MinXBorder And X < Npclist(NpcIndex).Pos.X + MinXBorder Then
-102         If Y > Npclist(NpcIndex).Pos.Y - MinYBorder And Y < Npclist(NpcIndex).Pos.Y + MinYBorder Then
+100     If X > NpcList(NpcIndex).Pos.X - MinXBorder And X < NpcList(NpcIndex).Pos.X + MinXBorder Then
+102         If Y > NpcList(NpcIndex).Pos.Y - MinYBorder And Y < NpcList(NpcIndex).Pos.Y + MinYBorder Then
 104             InRangoVisionNPC = True
                 Exit Function
 
@@ -863,7 +863,7 @@ Function LegalWalkNPC(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integ
         End If
 
         If Not PuedeTierra Then
-            If Not (.Blocked And FLAG_AGUA) Then
+            If (.Blocked And FLAG_AGUA) = 0 Then
                 Exit Function
             End If
         End If
@@ -929,12 +929,12 @@ Public Sub Expresar(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         On Error GoTo Expresar_Err
         
 
-100     If Npclist(NpcIndex).NroExpresiones > 0 Then
+100     If NpcList(NpcIndex).NroExpresiones > 0 Then
 
             Dim randomi
 
-102         randomi = RandomNumber(1, Npclist(NpcIndex).NroExpresiones)
-104         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead(Npclist(NpcIndex).Expresiones(randomi), Npclist(NpcIndex).Char.CharIndex, vbWhite))
+102         randomi = RandomNumber(1, NpcList(NpcIndex).NroExpresiones)
+104         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead(NpcList(NpcIndex).Expresiones(randomi), NpcList(NpcIndex).Char.CharIndex, vbWhite))
 
         End If
 
@@ -1271,31 +1271,31 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                 Dim estatus As String
 
 400             If EsGM(UserIndex) Or UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 75 Then
-402                 estatus = "<" & Npclist(TempCharIndex).Stats.MinHp & "/" & Npclist(TempCharIndex).Stats.MaxHp
+402                 estatus = "<" & NpcList(TempCharIndex).Stats.MinHp & "/" & NpcList(TempCharIndex).Stats.MaxHp
                     
 404             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 50 Then
-406                 If Npclist(TempCharIndex).Stats.MaxHp <> 0 Then
-408                     estatus = "<" & Round((Npclist(TempCharIndex).Stats.MinHp / Npclist(TempCharIndex).Stats.MaxHp) * 100#, 0) & "%"
+406                 If NpcList(TempCharIndex).Stats.MaxHp <> 0 Then
+408                     estatus = "<" & Round((NpcList(TempCharIndex).Stats.MinHp / NpcList(TempCharIndex).Stats.MaxHp) * 100#, 0) & "%"
                     End If
  
 410             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 25 Then
                 
-412                 If Npclist(TempCharIndex).Stats.MinHp < (Npclist(TempCharIndex).Stats.MaxHp * 0.1) Then
+412                 If NpcList(TempCharIndex).Stats.MinHp < (NpcList(TempCharIndex).Stats.MaxHp * 0.1) Then
 414                     estatus = "<Agonizando"
-416                 ElseIf Npclist(TempCharIndex).Stats.MinHp < (Npclist(TempCharIndex).Stats.MaxHp * 0.2) Then
+416                 ElseIf NpcList(TempCharIndex).Stats.MinHp < (NpcList(TempCharIndex).Stats.MaxHp * 0.2) Then
 418                     estatus = "<Casi muerto"
-420                 ElseIf Npclist(TempCharIndex).Stats.MinHp < (Npclist(TempCharIndex).Stats.MaxHp * 0.5) Then
+420                 ElseIf NpcList(TempCharIndex).Stats.MinHp < (NpcList(TempCharIndex).Stats.MaxHp * 0.5) Then
 422                     estatus = "<Malherido"
-424                 ElseIf Npclist(TempCharIndex).Stats.MinHp < (Npclist(TempCharIndex).Stats.MaxHp * 0.7) Then
+424                 ElseIf NpcList(TempCharIndex).Stats.MinHp < (NpcList(TempCharIndex).Stats.MaxHp * 0.7) Then
 426                     estatus = "<Herido"
-428                 ElseIf Npclist(TempCharIndex).Stats.MinHp < (Npclist(TempCharIndex).Stats.MaxHp * 0.95) Then
+428                 ElseIf NpcList(TempCharIndex).Stats.MinHp < (NpcList(TempCharIndex).Stats.MaxHp * 0.95) Then
 430                     estatus = "<Levemente herido"
                     Else
 432                     estatus = "<Intacto"
                     End If
                     
                 Else
-434                 If Npclist(TempCharIndex).Stats.MinHp < Npclist(TempCharIndex).Stats.MaxHp Then
+434                 If NpcList(TempCharIndex).Stats.MinHp < NpcList(TempCharIndex).Stats.MaxHp Then
 436                     estatus = "<Herido"
                     Else
 438                     estatus = "<Intacto"
@@ -1303,21 +1303,21 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                         
                 End If
                         
-440             If Npclist(TempCharIndex).flags.Envenenado > 0 Then
+440             If NpcList(TempCharIndex).flags.Envenenado > 0 Then
 442                 estatus = estatus & " | Envenenado"
                 End If
                         
-444             If Npclist(TempCharIndex).flags.Paralizado = 1 Then
+444             If NpcList(TempCharIndex).flags.Paralizado = 1 Then
 446                 If UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 100 Then
-448                     estatus = estatus & " | Paralizado (" & CInt(Npclist(TempCharIndex).Contadores.Paralisis / 6.5) & "s)"
+448                     estatus = estatus & " | Paralizado (" & CInt(NpcList(TempCharIndex).Contadores.Paralisis / 6.5) & "s)"
                     Else
 450                     estatus = estatus & " | Paralizado"
                     End If
                 End If
                         
-452             If Npclist(TempCharIndex).flags.Inmovilizado = 1 Then
+452             If NpcList(TempCharIndex).flags.Inmovilizado = 1 Then
 454                 If UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 100 Then
-456                     estatus = estatus & " | Inmovilizado (" & CInt(Npclist(TempCharIndex).Contadores.Paralisis / 6.5) & "s)"
+456                     estatus = estatus & " | Inmovilizado (" & CInt(NpcList(TempCharIndex).Contadores.Paralisis / 6.5) & "s)"
                     Else
 458                     estatus = estatus & " | Inmovilizado"
 
@@ -1329,24 +1329,24 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
     
                 'End If
             
-462             If Len(Npclist(TempCharIndex).Desc) > 1 Then
+462             If Len(NpcList(TempCharIndex).Desc) > 1 Then
                     ' WyroX: Hacemos que se detenga a hablar un momento :P
-                    If Npclist(TempCharIndex).Movement = Caminata Then
-                        Npclist(TempCharIndex).Contadores.IntervaloMovimiento = GetTickCount + 5000 - Npclist(TempCharIndex).IntervaloMovimiento ' 5 segundos
+                    If NpcList(TempCharIndex).Movement = Caminata Then
+                        NpcList(TempCharIndex).Contadores.IntervaloMovimiento = GetTickCount + 5000 - NpcList(TempCharIndex).IntervaloMovimiento ' 5 segundos
                     End If
 
                     'Optimizacion de protocolo por Ladder
-464                 Call WriteChatOverHead(UserIndex, "NPCDESC*" & Npclist(TempCharIndex).Numero, Npclist(TempCharIndex).Char.CharIndex, vbWhite)
+464                 Call WriteChatOverHead(UserIndex, "NPCDESC*" & NpcList(TempCharIndex).Numero, NpcList(TempCharIndex).Char.CharIndex, vbWhite)
 466             ElseIf TempCharIndex = CentinelaNPCIndex Then
                     'Enviamos nuevamente el texto del centinela según quien pregunta
 468                 Call modCentinela.CentinelaSendClave(UserIndex)
                 
-470             ElseIf Npclist(TempCharIndex).MaestroUser > 0 Then
-472                 Call WriteConsoleMsg(UserIndex, "NPCNAME*" & Npclist(TempCharIndex).Numero & "* es mascota de " & UserList(Npclist(TempCharIndex).MaestroUser).name & " " & estatus, FontTypeNames.FONTTYPE_INFO)
+470             ElseIf NpcList(TempCharIndex).MaestroUser > 0 Then
+472                 Call WriteConsoleMsg(UserIndex, "NPCNAME*" & NpcList(TempCharIndex).Numero & "* es mascota de " & UserList(NpcList(TempCharIndex).MaestroUser).name & " " & estatus, FontTypeNames.FONTTYPE_INFO)
                 
                 Else
                 
-474                 Call WriteConsoleMsg(UserIndex, "NPCNAME*" & Npclist(TempCharIndex).Numero & "*" & " " & estatus, FontTypeNames.FONTTYPE_INFO)
+474                 Call WriteConsoleMsg(UserIndex, "NPCNAME*" & NpcList(TempCharIndex).Numero & "*" & " " & estatus, FontTypeNames.FONTTYPE_INFO)
                     ' If UserList(UserIndex).flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin) Then
                     ' Call WriteConsoleMsg(UserIndex, "Le pegó primero: " & NpcList(TempCharIndex).flags.AttackedFirstBy & ".", FontTypeNames.FONTTYPE_INFO)
                     ' Call WriteConsoleMsg(UserIndex, NpcList(TempCharIndex).Char.CharIndex, FontTypeNames.FONTTYPE_INFO)
@@ -1355,7 +1355,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                 End If
 
 476             FoundSomething = 1
-478             UserList(UserIndex).flags.TargetNpcTipo = Npclist(TempCharIndex).NPCtype
+478             UserList(UserIndex).flags.TargetNpcTipo = NpcList(TempCharIndex).NPCtype
 480             UserList(UserIndex).flags.TargetNPC = TempCharIndex
 482             UserList(UserIndex).flags.TargetUser = 0
 484             UserList(UserIndex).flags.TargetObj = 0
@@ -1373,7 +1373,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                     
 494                                 For j = 1 To QuestList(.QuestIndex).RequiredTargetNPCs
                     
-496                                     If QuestList(.QuestIndex).RequiredTargetNPC(j).NpcIndex = Npclist(TempCharIndex).Numero Then
+496                                     If QuestList(.QuestIndex).RequiredTargetNPC(j).NpcIndex = NpcList(TempCharIndex).Numero Then
 498                                         If QuestList(.QuestIndex).RequiredTargetNPC(j).Amount > .NPCsTarget(j) Then
 500                                             .NPCsTarget(j) = .NPCsTarget(j) + 1
                     
@@ -1382,7 +1382,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 502                                         If QuestList(.QuestIndex).RequiredTargetNPC(j).Amount = .NPCsTarget(j) Then
 504                                             Call FinishQuest(UserIndex, .QuestIndex, i)
 506                                             Call WriteUpdateNPCSimbolo(UserIndex, TempCharIndex, 1)
-508                                             Call WriteChatOverHead(UserIndex, "¡Quest Finalizada!", Npclist(TempCharIndex).Char.CharIndex, vbYellow)
+508                                             Call WriteChatOverHead(UserIndex, "¡Quest Finalizada!", NpcList(TempCharIndex).Char.CharIndex, vbYellow)
 510                                             Call WriteConsoleMsg(UserIndex, "Quest Finalizada!", FontTypeNames.FONTTYPE_INFOIAO)
                                             End If
                     
@@ -1442,7 +1442,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 LookatTile_Err:
 556         Call RegistrarError(Err.Number, Err.Description & " Pos: " & Map & "-" & X & "-" & Y & " Usuario: " & UserList(UserIndex).name & " Extra.LookatTile", Erl)
 558     If FoundChar = 2 Then
-560         Call RegistrarError(Err.Number, Err.Description & " Pos: " & Map & "-" & X & "-" & Y & "Npc: " & Npclist(TempCharIndex).Numero & " Usuario: " & UserList(UserIndex).name & "Extra.LookatTile X LADDER", Erl)
+560         Call RegistrarError(Err.Number, Err.Description & " Pos: " & Map & "-" & X & "-" & Y & "Npc: " & NpcList(TempCharIndex).Numero & " Usuario: " & UserList(UserIndex).name & "Extra.LookatTile X LADDER", Erl)
         End If
 562     Resume Next
         
