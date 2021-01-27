@@ -72,18 +72,37 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 121             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageTextCharDrop(DañoStr, .Char.CharIndex, vbGreen))
 
 122             Call WriteUpdateHP(UserIndex)
-124             Call SubirSkill(UserIndex, Resistencia)
 
 126         ElseIf Hechizos(Spell).SubeHP = 2 Then
-        
+
 128             Daño = RandomNumber(Hechizos(Spell).MinHp, Hechizos(Spell).MaxHp)
-        
-130             If .Invent.CascoEqpObjIndex > 0 Then
-132                 Daño = Daño - ObjData(.Invent.CascoEqpObjIndex).ResistenciaMagica
-                End If
-        
-134             If .Invent.ResistenciaEqpObjIndex > 0 Then
-136                 Daño = Daño - ObjData(.Invent.ResistenciaEqpObjIndex).ResistenciaMagica
+
+                ' Si el hechizo no ignora la RM
+404             If Hechizos(Spell).AntiRm = 0 Then
+                    Dim PorcentajeRM As Integer
+
+                    ' Resistencia mágica armadura
+406                 If .Invent.ArmourEqpObjIndex > 0 Then
+408                     PorcentajeRM = PorcentajeRM + ObjData(.Invent.ArmourEqpObjIndex).ResistenciaMagica
+                    End If
+
+                    ' Resistencia mágica anillo
+410                 If .Invent.ResistenciaEqpObjIndex > 0 Then
+412                     PorcentajeRM = PorcentajeRM + ObjData(.Invent.ResistenciaEqpObjIndex).ResistenciaMagica
+                    End If
+
+                    ' Resistencia mágica escudo
+414                 If .Invent.EscudoEqpObjIndex > 0 Then
+416                     PorcentajeRM = PorcentajeRM + ObjData(.Invent.EscudoEqpObjIndex).ResistenciaMagica
+                    End If
+
+                    ' Resistencia mágica casco
+418                 If .Invent.CascoEqpObjIndex > 0 Then
+420                     PorcentajeRM = PorcentajeRM + ObjData(.Invent.CascoEqpObjIndex).ResistenciaMagica
+                    End If
+
+                    ' Resto el porcentaje total
+                    Daño = Daño - Porcentaje(Daño, PorcentajeRM)
                 End If
         
 138             If Daño < 0 Then Daño = 0
@@ -2691,25 +2710,30 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             
             ' Si el hechizo no ignora la RM
 404         If Hechizos(h).AntiRm = 0 Then
+                Dim PorcentajeRM As Integer
+
                 ' Resistencia mágica armadura
 406             If UserList(tempChr).Invent.ArmourEqpObjIndex > 0 Then
-408                 Daño = Daño - Porcentaje(Daño, ObjData(UserList(tempChr).Invent.ArmourEqpObjIndex).ResistenciaMagica)
+408                 PorcentajeRM = PorcentajeRM + ObjData(UserList(tempChr).Invent.ArmourEqpObjIndex).ResistenciaMagica
                 End If
                 
                 ' Resistencia mágica anillo
 410             If UserList(tempChr).Invent.ResistenciaEqpObjIndex > 0 Then
-412                 Daño = Daño - Porcentaje(Daño, ObjData(UserList(tempChr).Invent.ResistenciaEqpObjIndex).ResistenciaMagica)
+412                 PorcentajeRM = PorcentajeRM + ObjData(UserList(tempChr).Invent.ResistenciaEqpObjIndex).ResistenciaMagica
                 End If
                 
                 ' Resistencia mágica escudo
 414             If UserList(tempChr).Invent.EscudoEqpObjIndex > 0 Then
-416                 Daño = Daño - Porcentaje(Daño, ObjData(UserList(tempChr).Invent.EscudoEqpObjIndex).ResistenciaMagica)
+416                 PorcentajeRM = PorcentajeRM + ObjData(UserList(tempChr).Invent.EscudoEqpObjIndex).ResistenciaMagica
                 End If
                 
                 ' Resistencia mágica casco
 418             If UserList(tempChr).Invent.CascoEqpObjIndex > 0 Then
-420                 Daño = Daño - Porcentaje(Daño, ObjData(UserList(tempChr).Invent.CascoEqpObjIndex).ResistenciaMagica)
+420                 PorcentajeRM = PorcentajeRM + ObjData(UserList(tempChr).Invent.CascoEqpObjIndex).ResistenciaMagica
                 End If
+
+                ' Resto el porcentaje total
+                Daño = Daño - Porcentaje(Daño, PorcentajeRM)
             End If
 
             ' Prevengo daño negativo
