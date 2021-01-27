@@ -1395,10 +1395,10 @@ Public Sub TiempoInvocacion(ByVal UserIndex As Integer)
         Dim i As Integer
 100     For i = 1 To MAXMASCOTAS
 102         If UserList(UserIndex).MascotasIndex(i) > 0 Then
-104             If Npclist(UserList(UserIndex).MascotasIndex(i)).Contadores.TiempoExistencia > 0 Then
-106                Npclist(UserList(UserIndex).MascotasIndex(i)).Contadores.TiempoExistencia = _
-                   Npclist(UserList(UserIndex).MascotasIndex(i)).Contadores.TiempoExistencia - 1
-108                If Npclist(UserList(UserIndex).MascotasIndex(i)).Contadores.TiempoExistencia = 0 Then Call MuereNpc(UserList(UserIndex).MascotasIndex(i), 0)
+104             If NpcList(UserList(UserIndex).MascotasIndex(i)).Contadores.TiempoExistencia > 0 Then
+106                NpcList(UserList(UserIndex).MascotasIndex(i)).Contadores.TiempoExistencia = _
+                   NpcList(UserList(UserIndex).MascotasIndex(i)).Contadores.TiempoExistencia - 1
+108                If NpcList(UserList(UserIndex).MascotasIndex(i)).Contadores.TiempoExistencia = 0 Then Call MuereNpc(UserList(UserIndex).MascotasIndex(i), 0)
                 End If
             End If
 110     Next i
@@ -1417,11 +1417,12 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
         
 100     If Not Intemperie(UserIndex) Then Exit Sub
         
-        Dim modifi As Integer
-        
 102     With UserList(UserIndex)
             
-104         If .flags.Desnudo = 0 Then Exit Sub
+104         If .Invent.ArmourEqpObjIndex > 0 Then
+                ' WyroX: Ropa invernal
+                If ObjData(.Invent.ArmourEqpObjIndex).Invernal Then Exit Sub
+            End If
             
 106         If .Counters.Frio < IntervaloFrio Then
 108             .Counters.Frio = .Counters.Frio + 1
@@ -1431,9 +1432,21 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
 110             If MapInfo(.Pos.Map).terrain = Nieve Then
 112                 Call WriteConsoleMsg(UserIndex, "¡¡Estas muriendo de frio, abrigate o moriras!!.", FontTypeNames.FONTTYPE_INFO)
 
-114                 modifi = Porcentaje(.Stats.MaxHp, 5)
+                    ' WyroX: Sin ropa perdés vida más rápido que con una ropa no-invernal
+                    Dim MinDaño As Integer, MaxDaño As Integer
+                    If .flags.Desnudo = 0 Then
+                        MinDaño = 3
+                        MaxDaño = 5
+                    Else
+                        MinDaño = 10
+                        MaxDaño = 15
+                    End If
 
-116                 .Stats.MinHp = .Stats.MinHp - modifi
+                    ' WyroX: Agrego aleatoriedad
+                    Dim Daño As Integer
+114                 Daño = Porcentaje(.Stats.MaxHp, RandomNumber(MinDaño, MaxDaño))
+
+116                 .Stats.MinHp = .Stats.MinHp - Daño
             
 118                 If .Stats.MinHp < 1 Then
 
@@ -1604,11 +1617,11 @@ Public Sub EfectoParalisisNpc(ByVal NpcIndex As Integer)
         On Error GoTo EfectoParalisisNpc_Err
         
 
-100     If Npclist(NpcIndex).Contadores.Paralisis > 0 Then
-102         Npclist(NpcIndex).Contadores.Paralisis = Npclist(NpcIndex).Contadores.Paralisis - 1
+100     If NpcList(NpcIndex).Contadores.Paralisis > 0 Then
+102         NpcList(NpcIndex).Contadores.Paralisis = NpcList(NpcIndex).Contadores.Paralisis - 1
         Else
-104         Npclist(NpcIndex).flags.Paralizado = 0
-106         Npclist(NpcIndex).flags.Inmovilizado = 0
+104         NpcList(NpcIndex).flags.Paralizado = 0
+106         NpcList(NpcIndex).flags.Inmovilizado = 0
 
         End If
 
@@ -2144,7 +2157,7 @@ Public Sub CargaNpcsDat(Optional ByVal ActualizarNPCsExistentes As Boolean = Fal
                 Dim i As Long
 108             For i = 1 To NumNPCs
     
-110                 If Npclist(i).flags.NPCActive Then
+110                 If NpcList(i).flags.NPCActive Then
 112                     Call OpenNPC(CInt(i), False, True)
                     End If
     
@@ -2440,7 +2453,7 @@ Public Sub FreeNPCs()
     
         ' Free all NPC indexes
 100     For LoopC = 1 To MAXNPCS
-102         Npclist(LoopC).flags.NPCActive = False
+102         NpcList(LoopC).flags.NPCActive = False
 104     Next LoopC
 
         
