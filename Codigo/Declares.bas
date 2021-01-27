@@ -1329,7 +1329,9 @@ Public Type ObjData
     ResistenciaMagica As Integer
     Revive As Boolean
     Refuerzo As Byte
-    
+
+    Invernal As Boolean
+
     Log As Byte 'es un objeto que queremos loguear? Pablo (ToxicWaste) 07/09/07
     NoLog As Byte 'es un objeto que esta prohibido loguear?
     
