@@ -1758,8 +1758,8 @@ Sub WarpToLegalPos(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As 
 110                 With MapData(Map, lX, lY)
 
 112                     If .UserIndex <= 0 Then
-                            ' No podemos transportarnos a medios bloqueos
-114                         If (.Blocked And eBlock.ALL_SIDES) = 0 And ((.Blocked And FLAG_AGUA) = 0 Or AguaValida) Then
+                            ' No podemos transportarnos a bloqueos totales
+114                         If (.Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES And ((.Blocked And FLAG_AGUA) = 0 Or AguaValida) Then
 
 116                             If .TileExit.Map = 0 Then
 118                                 If .NpcIndex <= 0 Then
