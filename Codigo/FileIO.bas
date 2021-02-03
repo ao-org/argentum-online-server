@@ -1287,459 +1287,459 @@ End Sub
 
 Sub LoadOBJData()
 
-        '###################################################
-        '#               ATENCION PELIGRO                  #
-        '###################################################
-        '
-        '¡¡¡¡ NO USAR GetVar PARA LEER DESDE EL OBJ.DAT !!!!
-        '
-        'El que ose desafiar esta LEY, se las tendrá que ver
-        'con migo. Para leer desde el OBJ.DAT se deberá usar
-        'la nueva clase clsLeerInis.
-        '
-        'Alejo
-        '
-        '###################################################
+    '###################################################
+    '#               ATENCION PELIGRO                  #
+    '###################################################
+    '
+    '¡¡¡¡ NO USAR GetVar PARA LEER DESDE EL OBJ.DAT !!!!
+    '
+    'El que ose desafiar esta LEY, se las tendrá que ver
+    'con migo. Para leer desde el OBJ.DAT se deberá usar
+    'la nueva clase clsLeerInis.
+    '
+    'Alejo
+    '
+    '###################################################
 
-        'Call LogTarea("Sub LoadOBJData")
+    'Call LogTarea("Sub LoadOBJData")
 
-        On Error GoTo ErrHandler
+    On Error GoTo ErrHandler
 
-100     If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando base de datos de los objetos."
+    If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando base de datos de los objetos."
 
-        '*****************************************************************
-        'Carga la lista de objetos
-        '*****************************************************************
-        Dim Object As Integer
+    '*****************************************************************
+    'Carga la lista de objetos
+    '*****************************************************************
+    Dim Object As Integer
 
-        Dim Leer   As clsIniReader
-102     Set Leer = New clsIniReader
-104     Call Leer.Initialize(DatPath & "Obj.dat")
+    Dim Leer   As clsIniReader
+    Set Leer = New clsIniReader
+    Call Leer.Initialize(DatPath & "Obj.dat")
 
-        'obtiene el numero de obj
-106     NumObjDatas = val(Leer.GetValue("INIT", "NumObjs"))
+    'obtiene el numero de obj
+    NumObjDatas = val(Leer.GetValue("INIT", "NumObjs"))
     
-108     With frmCargando.cargar
-110         .min = 0
-112         .max = NumObjDatas
-114         .Value = 0
-        End With
+    With frmCargando.cargar
+        .min = 0
+        .max = NumObjDatas
+        .Value = 0
+    End With
     
-116     ReDim Preserve ObjData(1 To NumObjDatas) As ObjData
+    ReDim Preserve ObjData(1 To NumObjDatas) As ObjData
     
-        Dim ObjKey As String
-        Dim str As String, Field() As String
+    Dim ObjKey As String
+    Dim str As String, Field() As String
   
-        'Llena la lista
-118     For Object = 1 To NumObjDatas
+    'Llena la lista
+    For Object = 1 To NumObjDatas
         
-120         With ObjData(Object)
+        With ObjData(Object)
 
-122             ObjKey = "OBJ" & Object
+            ObjKey = "OBJ" & Object
         
-124             .name = Leer.GetValue(ObjKey, "Name")
+            .name = Leer.GetValue(ObjKey, "Name")
     
-                ' If .Name = "" Then
-                '   Call LogError("Objeto libre:" & Object)
-                ' End If
+            ' If .Name = "" Then
+            '   Call LogError("Objeto libre:" & Object)
+            ' End If
     
-                ' If .name = "" Then
-                ' Debug.Print Object
-                ' End If
+            ' If .name = "" Then
+            ' Debug.Print Object
+            ' End If
     
-                'Pablo (ToxicWaste) Log de Objetos.
-126             .Log = val(Leer.GetValue(ObjKey, "Log"))
-128             .NoLog = val(Leer.GetValue(ObjKey, "NoLog"))
-                '07/09/07
+            'Pablo (ToxicWaste) Log de Objetos.
+            .Log = val(Leer.GetValue(ObjKey, "Log"))
+            .NoLog = val(Leer.GetValue(ObjKey, "NoLog"))
+            '07/09/07
     
-130             .GrhIndex = val(Leer.GetValue(ObjKey, "GrhIndex"))
+            .GrhIndex = val(Leer.GetValue(ObjKey, "GrhIndex"))
 
-132             If .GrhIndex = 0 Then
-134                 .GrhIndex = .GrhIndex
+            If .GrhIndex = 0 Then
+                .GrhIndex = .GrhIndex
 
-                End If
+            End If
     
-136             .OBJType = val(Leer.GetValue(ObjKey, "ObjType"))
+            .OBJType = val(Leer.GetValue(ObjKey, "ObjType"))
     
-138             .Newbie = val(Leer.GetValue(ObjKey, "Newbie"))
+            .Newbie = val(Leer.GetValue(ObjKey, "Newbie"))
 
-                'Propiedades by Lader 05-05-08
-140             .Instransferible = val(Leer.GetValue(ObjKey, "Instransferible"))
-142             .Destruye = val(Leer.GetValue(ObjKey, "Destruye"))
-144             .Intirable = val(Leer.GetValue(ObjKey, "Intirable"))
+            'Propiedades by Lader 05-05-08
+            .Instransferible = val(Leer.GetValue(ObjKey, "Instransferible"))
+            .Destruye = val(Leer.GetValue(ObjKey, "Destruye"))
+            .Intirable = val(Leer.GetValue(ObjKey, "Intirable"))
     
-146             .CantidadSkill = val(Leer.GetValue(ObjKey, "CantidadSkill"))
-148             .QueSkill = val(Leer.GetValue(ObjKey, "QueSkill"))
-150             .QueAtributo = val(Leer.GetValue(ObjKey, "queatributo"))
-152             .CuantoAumento = val(Leer.GetValue(ObjKey, "cuantoaumento"))
-154             .MinELV = val(Leer.GetValue(ObjKey, "MinELV"))
-156             .Subtipo = val(Leer.GetValue(ObjKey, "Subtipo"))
-158             .Dorada = val(Leer.GetValue(ObjKey, "Dorada"))
-160             .VidaUtil = val(Leer.GetValue(ObjKey, "VidaUtil"))
-162             .TiempoRegenerar = val(Leer.GetValue(ObjKey, "TiempoRegenerar"))
+            .CantidadSkill = val(Leer.GetValue(ObjKey, "CantidadSkill"))
+            .QueSkill = val(Leer.GetValue(ObjKey, "QueSkill"))
+            .QueAtributo = val(Leer.GetValue(ObjKey, "queatributo"))
+            .CuantoAumento = val(Leer.GetValue(ObjKey, "cuantoaumento"))
+            .MinELV = val(Leer.GetValue(ObjKey, "MinELV"))
+            .Subtipo = val(Leer.GetValue(ObjKey, "Subtipo"))
+            .Dorada = val(Leer.GetValue(ObjKey, "Dorada"))
+            .VidaUtil = val(Leer.GetValue(ObjKey, "VidaUtil"))
+            .TiempoRegenerar = val(Leer.GetValue(ObjKey, "TiempoRegenerar"))
     
-164             .donador = val(Leer.GetValue(ObjKey, "donador"))
+            .donador = val(Leer.GetValue(ObjKey, "donador"))
     
-                Dim i As Integer
+            Dim i As Integer
 
-166             Select Case .OBJType
+            Select Case .OBJType
 
-                    Case eOBJType.otHerramientas
-168                     .WeaponAnim = val(Leer.GetValue(ObjKey, "Anim"))
-170                     .Power = val(Leer.GetValue(ObjKey, "Poder"))
+                Case eOBJType.otHerramientas
+                    .WeaponAnim = val(Leer.GetValue(ObjKey, "Anim"))
+                    .Power = val(Leer.GetValue(ObjKey, "Poder"))
             
-172                 Case eOBJType.otArmadura
-174                     .Real = val(Leer.GetValue(ObjKey, "Real"))
-176                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
-178                     .LingH = val(Leer.GetValue(ObjKey, "LingH"))
-180                     .LingP = val(Leer.GetValue(ObjKey, "LingP"))
-182                     .LingO = val(Leer.GetValue(ObjKey, "LingO"))
-184                     .SkHerreria = val(Leer.GetValue(ObjKey, "SkHerreria"))
-186                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
-188                     .Invernal = val(Leer.GetValue(ObjKey, "Invernal")) > 0
+                Case eOBJType.otArmadura
+                    .Real = val(Leer.GetValue(ObjKey, "Real"))
+                    .Caos = val(Leer.GetValue(ObjKey, "Caos"))
+                    .LingH = val(Leer.GetValue(ObjKey, "LingH"))
+                    .LingP = val(Leer.GetValue(ObjKey, "LingP"))
+                    .LingO = val(Leer.GetValue(ObjKey, "LingO"))
+                    .SkHerreria = val(Leer.GetValue(ObjKey, "SkHerreria"))
+                    .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
+                    .Invernal = val(Leer.GetValue(ObjKey, "Invernal")) > 0
         
-190                 Case eOBJType.otEscudo
-192                     .ShieldAnim = val(Leer.GetValue(ObjKey, "Anim"))
-194                     .LingH = val(Leer.GetValue(ObjKey, "LingH"))
-196                     .LingP = val(Leer.GetValue(ObjKey, "LingP"))
-198                     .LingO = val(Leer.GetValue(ObjKey, "LingO"))
-200                     .SkHerreria = val(Leer.GetValue(ObjKey, "SkHerreria"))
-202                     .Real = val(Leer.GetValue(ObjKey, "Real"))
-204                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
-206                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
+                Case eOBJType.otEscudo
+                    .ShieldAnim = val(Leer.GetValue(ObjKey, "Anim"))
+                    .LingH = val(Leer.GetValue(ObjKey, "LingH"))
+                    .LingP = val(Leer.GetValue(ObjKey, "LingP"))
+                    .LingO = val(Leer.GetValue(ObjKey, "LingO"))
+                    .SkHerreria = val(Leer.GetValue(ObjKey, "SkHerreria"))
+                    .Real = val(Leer.GetValue(ObjKey, "Real"))
+                    .Caos = val(Leer.GetValue(ObjKey, "Caos"))
+                    .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
         
-208                 Case eOBJType.otCasco
-210                     .CascoAnim = val(Leer.GetValue(ObjKey, "Anim"))
-212                     .LingH = val(Leer.GetValue(ObjKey, "LingH"))
-214                     .LingP = val(Leer.GetValue(ObjKey, "LingP"))
-216                     .LingO = val(Leer.GetValue(ObjKey, "LingO"))
-218                     .SkHerreria = val(Leer.GetValue(ObjKey, "SkHerreria"))
-220                     .Real = val(Leer.GetValue(ObjKey, "Real"))
-222                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
-224                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
+                Case eOBJType.otCasco
+                    .CascoAnim = val(Leer.GetValue(ObjKey, "Anim"))
+                    .LingH = val(Leer.GetValue(ObjKey, "LingH"))
+                    .LingP = val(Leer.GetValue(ObjKey, "LingP"))
+                    .LingO = val(Leer.GetValue(ObjKey, "LingO"))
+                    .SkHerreria = val(Leer.GetValue(ObjKey, "SkHerreria"))
+                    .Real = val(Leer.GetValue(ObjKey, "Real"))
+                    .Caos = val(Leer.GetValue(ObjKey, "Caos"))
+                    .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
         
-226                 Case eOBJType.otWeapon
-228                     .WeaponAnim = val(Leer.GetValue(ObjKey, "Anim"))
-230                     .Apuñala = val(Leer.GetValue(ObjKey, "Apuñala"))
-232                     .Envenena = val(Leer.GetValue(ObjKey, "Envenena"))
-234                     .Paraliza = val(Leer.GetValue(ObjKey, "Paraliza"))
-236                     .Estupidiza = val(Leer.GetValue(ObjKey, "Estupidiza"))
+                Case eOBJType.otWeapon
+                    .WeaponAnim = val(Leer.GetValue(ObjKey, "Anim"))
+                    .Apuñala = val(Leer.GetValue(ObjKey, "Apuñala"))
+                    .Envenena = val(Leer.GetValue(ObjKey, "Envenena"))
+                    .Paraliza = val(Leer.GetValue(ObjKey, "Paraliza"))
+                    .Estupidiza = val(Leer.GetValue(ObjKey, "Estupidiza"))
         
-238                     .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
-240                     .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
-242                     .Proyectil = val(Leer.GetValue(ObjKey, "Proyectil"))
-244                     .Municion = val(Leer.GetValue(ObjKey, "Municiones"))
-246                     .Power = val(Leer.GetValue(ObjKey, "StaffPower"))
-248                     .MagicDamageBonus = val(Leer.GetValue(ObjKey, "MagicDamageBonus"))
-250                     .Refuerzo = val(Leer.GetValue(ObjKey, "Refuerzo"))
+                    .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
+                    .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
+                    .Proyectil = val(Leer.GetValue(ObjKey, "Proyectil"))
+                    .Municion = val(Leer.GetValue(ObjKey, "Municiones"))
+                    .Power = val(Leer.GetValue(ObjKey, "StaffPower"))
+                    .MagicDamageBonus = val(Leer.GetValue(ObjKey, "MagicDamageBonus"))
+                    .Refuerzo = val(Leer.GetValue(ObjKey, "Refuerzo"))
             
-252                     .LingH = val(Leer.GetValue(ObjKey, "LingH"))
-254                     .LingP = val(Leer.GetValue(ObjKey, "LingP"))
-256                     .LingO = val(Leer.GetValue(ObjKey, "LingO"))
-258                     .SkHerreria = val(Leer.GetValue(ObjKey, "SkHerreria"))
-260                     .Real = val(Leer.GetValue(ObjKey, "Real"))
-262                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
-264                     .EfectoMagico = val(Leer.GetValue(ObjKey, "efectomagico"))
-266                     .Revive = val(Leer.GetValue(ObjKey, "Revive")) <> 0
-        
-268                 Case eOBJType.otInstrumentos
-        
-                        'Pablo (ToxicWaste)
-270                     .Real = val(Leer.GetValue(ObjKey, "Real"))
-272                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
-        
-274                 Case eOBJType.otPuertas, eOBJType.otBotellaVacia, eOBJType.otBotellaLlena
-276                     .IndexAbierta = val(Leer.GetValue(ObjKey, "IndexAbierta"))
-278                     .IndexCerrada = val(Leer.GetValue(ObjKey, "IndexCerrada"))
-280                     .IndexCerradaLlave = val(Leer.GetValue(ObjKey, "IndexCerradaLlave"))
-        
-282                 Case otPociones
-284                     .TipoPocion = val(Leer.GetValue(ObjKey, "TipoPocion"))
-286                     .MaxModificador = val(Leer.GetValue(ObjKey, "MaxModificador"))
-288                     .MinModificador = val(Leer.GetValue(ObjKey, "MinModificador"))
-            
-290                     .DuracionEfecto = val(Leer.GetValue(ObjKey, "DuracionEfecto"))
-292                     .Raices = val(Leer.GetValue(ObjKey, "Raices"))
-294                     .SkPociones = val(Leer.GetValue(ObjKey, "SkPociones"))
-296                     .Porcentaje = val(Leer.GetValue(ObjKey, "Porcentaje"))
-        
-298                 Case eOBJType.otBarcos
-300                     .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
-302                     .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
-304                     .Velocidad = val(Leer.GetValue(ObjKey, "Velocidad"))
-
-306                 Case eOBJType.otMonturas
-308                     .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
-310                     .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
-312                     .MinDef = val(Leer.GetValue(ObjKey, "MINDEF"))
-314                     .MaxDef = val(Leer.GetValue(ObjKey, "MAXDEF"))
-316                     .Real = val(Leer.GetValue(ObjKey, "Real"))
-318                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
-        
-320                 Case eOBJType.otFlechas
-322                     .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
-324                     .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
-            
-326                     .Snd1 = val(Leer.GetValue(ObjKey, "SND1"))
-328                     .Snd2 = val(Leer.GetValue(ObjKey, "SND2"))
-            
-                        'Case eOBJType.otAnillos 'Pablo (ToxicWaste)
-                        '  .LingH = val(Leer.GetValue(ObjKey, "LingH"))
-                        '  .LingP = val(Leer.GetValue(ObjKey, "LingP"))
-                        '  .LingO = val(Leer.GetValue(ObjKey, "LingO"))
-                        '  .SkHerreria = val(Leer.GetValue(ObjKey, "SkHerreria"))
-            
-                        'Pasajes Ladder 05-05-08
-330                 Case eOBJType.otpasajes
-332                     .DesdeMap = val(Leer.GetValue(ObjKey, "DesdeMap"))
-334                     .HastaMap = val(Leer.GetValue(ObjKey, "Map"))
-336                     .HastaX = val(Leer.GetValue(ObjKey, "X"))
-338                     .HastaY = val(Leer.GetValue(ObjKey, "Y"))
-340                     .NecesitaNave = val(Leer.GetValue(ObjKey, "NecesitaNave"))
-            
-342                 Case eOBJType.OtDonador
-344                     .HastaMap = val(Leer.GetValue(ObjKey, "Map"))
-346                     .HastaX = val(Leer.GetValue(ObjKey, "X"))
-348                     .HastaY = val(Leer.GetValue(ObjKey, "Y"))
-        
-350                 Case eOBJType.otMagicos
-352                     .EfectoMagico = val(Leer.GetValue(ObjKey, "efectomagico"))
-
-354                     If .EfectoMagico = 15 Then
-356                         PENDIENTE = Object
-
-                        End If
-            
-358                 Case eOBJType.otRunas
-360                     .TipoRuna = val(Leer.GetValue(ObjKey, "TipoRuna"))
-362                     .DesdeMap = val(Leer.GetValue(ObjKey, "DesdeMap"))
-364                     .HastaMap = val(Leer.GetValue(ObjKey, "Map"))
-366                     .HastaX = val(Leer.GetValue(ObjKey, "X"))
-368                     .HastaY = val(Leer.GetValue(ObjKey, "Y"))
+                    .LingH = val(Leer.GetValue(ObjKey, "LingH"))
+                    .LingP = val(Leer.GetValue(ObjKey, "LingP"))
+                    .LingO = val(Leer.GetValue(ObjKey, "LingO"))
+                    .SkHerreria = val(Leer.GetValue(ObjKey, "SkHerreria"))
+                    .Real = val(Leer.GetValue(ObjKey, "Real"))
+                    .Caos = val(Leer.GetValue(ObjKey, "Caos"))
+                    .EfectoMagico = val(Leer.GetValue(ObjKey, "efectomagico"))
+                    .Revive = val(Leer.GetValue(ObjKey, "Revive")) <> 0
                     
-370                 Case eOBJType.otNudillos
-372                     .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
-374                     .MaxHit = val(Leer.GetValue(ObjKey, "MaxHit"))
-376                     .Envenena = val(Leer.GetValue(ObjKey, "Envenena"))
-378                     .Paraliza = val(Leer.GetValue(ObjKey, "Paraliza"))
-380                     .Estupidiza = val(Leer.GetValue(ObjKey, "Estupidiza"))
-382                     .WeaponAnim = val(Leer.GetValue(ObjKey, "Anim"))
-384                     .SkHerreria = val(Leer.GetValue(ObjKey, "SkHerreria"))
-            
-386                 Case eOBJType.otPergaminos
+                    .DosManos = val(Leer.GetValue(ObjKey, "DosManos"))
         
-                        ' .ClasePermitida = Leer.GetValue(ObjKey, "CP")
+                Case eOBJType.otInstrumentos
         
-388                 Case eOBJType.OtCofre
-390                     .CantItem = val(Leer.GetValue(ObjKey, "CantItem"))
-
-392                     If .Subtipo = 1 Then
-394                         ReDim .Item(1 To .CantItem)
-                
-396                         For i = 1 To .CantItem
-398                             .Item(i).ObjIndex = val(Leer.GetValue(ObjKey, "Item" & i))
-400                             .Item(i).Amount = val(Leer.GetValue(ObjKey, "Cantidad" & i))
-402                         Next i
-
-                        Else
-404                         ReDim .Item(1 To .CantItem)
-                
-406                         .CantEntrega = val(Leer.GetValue(ObjKey, "CantEntrega"))
-
-408                         For i = 1 To .CantItem
-410                             .Item(i).ObjIndex = val(Leer.GetValue(ObjKey, "Item" & i))
-412                             .Item(i).Amount = val(Leer.GetValue(ObjKey, "Cantidad" & i))
-414                         Next i
-
-                        End If
+                    'Pablo (ToxicWaste)
+                    .Real = val(Leer.GetValue(ObjKey, "Real"))
+                    .Caos = val(Leer.GetValue(ObjKey, "Caos"))
+        
+                Case eOBJType.otPuertas, eOBJType.otBotellaVacia, eOBJType.otBotellaLlena
+                    .IndexAbierta = val(Leer.GetValue(ObjKey, "IndexAbierta"))
+                    .IndexCerrada = val(Leer.GetValue(ObjKey, "IndexCerrada"))
+                    .IndexCerradaLlave = val(Leer.GetValue(ObjKey, "IndexCerradaLlave"))
+        
+                Case otPociones
+                    .TipoPocion = val(Leer.GetValue(ObjKey, "TipoPocion"))
+                    .MaxModificador = val(Leer.GetValue(ObjKey, "MaxModificador"))
+                    .MinModificador = val(Leer.GetValue(ObjKey, "MinModificador"))
             
-416                 Case eOBJType.otYacimiento
-                        ' Drop gemas yacimientos
-418                     .CantItem = val(Leer.GetValue(ObjKey, "Gemas"))
+                    .DuracionEfecto = val(Leer.GetValue(ObjKey, "DuracionEfecto"))
+                    .Raices = val(Leer.GetValue(ObjKey, "Raices"))
+                    .SkPociones = val(Leer.GetValue(ObjKey, "SkPociones"))
+                    .Porcentaje = val(Leer.GetValue(ObjKey, "Porcentaje"))
+        
+                Case eOBJType.otBarcos
+                    .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
+                    .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
+                    .Velocidad = val(Leer.GetValue(ObjKey, "Velocidad"))
+
+                Case eOBJType.otMonturas
+                    .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
+                    .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
+                    .MinDef = val(Leer.GetValue(ObjKey, "MINDEF"))
+                    .MaxDef = val(Leer.GetValue(ObjKey, "MAXDEF"))
+                    .Real = val(Leer.GetValue(ObjKey, "Real"))
+                    .Caos = val(Leer.GetValue(ObjKey, "Caos"))
+        
+                Case eOBJType.otFlechas
+                    .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
+                    .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
             
-420                     If .CantItem > 0 Then
-422                         ReDim .Item(1 To .CantItem)
+                    .Snd1 = val(Leer.GetValue(ObjKey, "SND1"))
+                    .Snd2 = val(Leer.GetValue(ObjKey, "SND2"))
+            
+                    'Case eOBJType.otAnillos 'Pablo (ToxicWaste)
+                    '  .LingH = val(Leer.GetValue(ObjKey, "LingH"))
+                    '  .LingP = val(Leer.GetValue(ObjKey, "LingP"))
+                    '  .LingO = val(Leer.GetValue(ObjKey, "LingO"))
+                    '  .SkHerreria = val(Leer.GetValue(ObjKey, "SkHerreria"))
+            
+                    'Pasajes Ladder 05-05-08
+                Case eOBJType.otpasajes
+                    .DesdeMap = val(Leer.GetValue(ObjKey, "DesdeMap"))
+                    .HastaMap = val(Leer.GetValue(ObjKey, "Map"))
+                    .HastaX = val(Leer.GetValue(ObjKey, "X"))
+                    .HastaY = val(Leer.GetValue(ObjKey, "Y"))
+                    .NecesitaNave = val(Leer.GetValue(ObjKey, "NecesitaNave"))
+            
+                Case eOBJType.OtDonador
+                    .HastaMap = val(Leer.GetValue(ObjKey, "Map"))
+                    .HastaX = val(Leer.GetValue(ObjKey, "X"))
+                    .HastaY = val(Leer.GetValue(ObjKey, "Y"))
+        
+                Case eOBJType.otMagicos
+                    .EfectoMagico = val(Leer.GetValue(ObjKey, "efectomagico"))
 
-424                         For i = 1 To .CantItem
-426                             str = Leer.GetValue(ObjKey, "Gema" & i)
-428                             Field = Split(str, "-")
-430                             .Item(i).ObjIndex = val(Field(0))    ' ObjIndex
-432                             .Item(i).Amount = val(Field(1))      ' Probabilidad de drop (1 en X)
-434                         Next i
+                    If .EfectoMagico = 15 Then
+                        PENDIENTE = Object
 
-                        End If
+                    End If
+            
+                Case eOBJType.otRunas
+                    .TipoRuna = val(Leer.GetValue(ObjKey, "TipoRuna"))
+                    .DesdeMap = val(Leer.GetValue(ObjKey, "DesdeMap"))
+                    .HastaMap = val(Leer.GetValue(ObjKey, "Map"))
+                    .HastaX = val(Leer.GetValue(ObjKey, "X"))
+                    .HastaY = val(Leer.GetValue(ObjKey, "Y"))
+                    
+                Case eOBJType.otNudillos
+                    .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
+                    .MaxHit = val(Leer.GetValue(ObjKey, "MaxHit"))
+                    .Envenena = val(Leer.GetValue(ObjKey, "Envenena"))
+                    .Paraliza = val(Leer.GetValue(ObjKey, "Paraliza"))
+                    .Estupidiza = val(Leer.GetValue(ObjKey, "Estupidiza"))
+                    .WeaponAnim = val(Leer.GetValue(ObjKey, "Anim"))
+                    .SkHerreria = val(Leer.GetValue(ObjKey, "SkHerreria"))
+            
+                Case eOBJType.otPergaminos
+        
+                    ' .ClasePermitida = Leer.GetValue(ObjKey, "CP")
+        
+                Case eOBJType.OtCofre
+                    .CantItem = val(Leer.GetValue(ObjKey, "CantItem"))
+
+                    If .Subtipo = 1 Then
+                        ReDim .Item(1 To .CantItem)
                 
-436                 Case eOBJType.otDañoMagico
-438                     .MagicDamageBonus = val(Leer.GetValue(ObjKey, "MagicDamageBonus"))
-440                     .Revive = val(Leer.GetValue(ObjKey, "Revive")) <> 0
+                        For i = 1 To .CantItem
+                            .Item(i).ObjIndex = val(Leer.GetValue(ObjKey, "Item" & i))
+                            .Item(i).Amount = val(Leer.GetValue(ObjKey, "Cantidad" & i))
+                        Next i
 
-442                 Case eOBJType.otResistencia
-444                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
+                    Else
+                        ReDim .Item(1 To .CantItem)
+                
+                        .CantEntrega = val(Leer.GetValue(ObjKey, "CantEntrega"))
+
+                        For i = 1 To .CantItem
+                            .Item(i).ObjIndex = val(Leer.GetValue(ObjKey, "Item" & i))
+                            .Item(i).Amount = val(Leer.GetValue(ObjKey, "Cantidad" & i))
+                        Next i
+
+                    End If
             
-                End Select
-    
-446             .MinSkill = val(Leer.GetValue(ObjKey, "MinSkill"))
+                Case eOBJType.otYacimiento
+                    ' Drop gemas yacimientos
+                    .CantItem = val(Leer.GetValue(ObjKey, "Gemas"))
+            
+                    If .CantItem > 0 Then
+                        ReDim .Item(1 To .CantItem)
 
-448             .Elfico = val(Leer.GetValue(ObjKey, "Elfico"))
+                        For i = 1 To .CantItem
+                            str = Leer.GetValue(ObjKey, "Gema" & i)
+                            Field = Split(str, "-")
+                            .Item(i).ObjIndex = val(Field(0))    ' ObjIndex
+                            .Item(i).Amount = val(Field(1))      ' Probabilidad de drop (1 en X)
+                        Next i
 
-450             .Snd1 = val(Leer.GetValue(ObjKey, "SND1"))
-452             .Snd2 = val(Leer.GetValue(ObjKey, "SND2"))
-454             .Snd3 = val(Leer.GetValue(ObjKey, "SND3"))
-                'DELETE
-456             .SndAura = val(Leer.GetValue(ObjKey, "SndAura"))
-                '
+                    End If
+                
+                Case eOBJType.otDañoMagico
+                    .MagicDamageBonus = val(Leer.GetValue(ObjKey, "MagicDamageBonus"))
+                    .Revive = val(Leer.GetValue(ObjKey, "Revive")) <> 0
+
+                Case eOBJType.otResistencia
+                    .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
+            
+            End Select
     
-458             .NoSeLimpia = val(Leer.GetValue(ObjKey, "NoSeLimpia"))
-460             .Subastable = val(Leer.GetValue(ObjKey, "Subastable"))
+            .MinSkill = val(Leer.GetValue(ObjKey, "MinSkill"))
+
+            .Elfico = val(Leer.GetValue(ObjKey, "Elfico"))
+
+            .Snd1 = val(Leer.GetValue(ObjKey, "SND1"))
+            .Snd2 = val(Leer.GetValue(ObjKey, "SND2"))
+            .Snd3 = val(Leer.GetValue(ObjKey, "SND3"))
+            'DELETE
+            .SndAura = val(Leer.GetValue(ObjKey, "SndAura"))
+            '
     
-462             .ParticulaGolpe = val(Leer.GetValue(ObjKey, "ParticulaGolpe"))
-464             .ParticulaViaje = val(Leer.GetValue(ObjKey, "ParticulaViaje"))
-466             .ParticulaGolpeTime = val(Leer.GetValue(ObjKey, "ParticulaGolpeTime"))
+            .NoSeLimpia = val(Leer.GetValue(ObjKey, "NoSeLimpia"))
+            .Subastable = val(Leer.GetValue(ObjKey, "Subastable"))
     
-468             .Ropaje = val(Leer.GetValue(ObjKey, "NumRopaje"))
-470             .HechizoIndex = val(Leer.GetValue(ObjKey, "HechizoIndex"))
+            .ParticulaGolpe = val(Leer.GetValue(ObjKey, "ParticulaGolpe"))
+            .ParticulaViaje = val(Leer.GetValue(ObjKey, "ParticulaViaje"))
+            .ParticulaGolpeTime = val(Leer.GetValue(ObjKey, "ParticulaGolpeTime"))
     
-472             .LingoteIndex = val(Leer.GetValue(ObjKey, "LingoteIndex"))
+            .Ropaje = val(Leer.GetValue(ObjKey, "NumRopaje"))
+            .HechizoIndex = val(Leer.GetValue(ObjKey, "HechizoIndex"))
     
-474             .MineralIndex = val(Leer.GetValue(ObjKey, "MineralIndex"))
+            .LingoteIndex = val(Leer.GetValue(ObjKey, "LingoteIndex"))
     
-476             .MaxHp = val(Leer.GetValue(ObjKey, "MaxHP"))
-478             .MinHp = val(Leer.GetValue(ObjKey, "MinHP"))
+            .MineralIndex = val(Leer.GetValue(ObjKey, "MineralIndex"))
     
-480             .Mujer = val(Leer.GetValue(ObjKey, "Mujer"))
-482             .Hombre = val(Leer.GetValue(ObjKey, "Hombre"))
+            .MaxHp = val(Leer.GetValue(ObjKey, "MaxHP"))
+            .MinHp = val(Leer.GetValue(ObjKey, "MinHP"))
     
-484             .PielLobo = val(Leer.GetValue(ObjKey, "PielLobo"))
-486             .PielOsoPardo = val(Leer.GetValue(ObjKey, "PielOsoPardo"))
-488             .PielOsoPolaR = val(Leer.GetValue(ObjKey, "PielOsoPolaR"))
-490             .SkMAGOria = val(Leer.GetValue(ObjKey, "SKSastreria"))
+            .Mujer = val(Leer.GetValue(ObjKey, "Mujer"))
+            .Hombre = val(Leer.GetValue(ObjKey, "Hombre"))
     
-492             .CreaParticula = Leer.GetValue(ObjKey, "CreaParticula")
+            .PielLobo = val(Leer.GetValue(ObjKey, "PielLobo"))
+            .PielOsoPardo = val(Leer.GetValue(ObjKey, "PielOsoPardo"))
+            .PielOsoPolaR = val(Leer.GetValue(ObjKey, "PielOsoPolaR"))
+            .SkMAGOria = val(Leer.GetValue(ObjKey, "SKSastreria"))
     
-494             .CreaFX = val(Leer.GetValue(ObjKey, "CreaFX"))
+            .CreaParticula = Leer.GetValue(ObjKey, "CreaParticula")
+    
+            .CreaFX = val(Leer.GetValue(ObjKey, "CreaFX"))
   
-                'DELETE
-496             .CreaParticulaPiso = val(Leer.GetValue(ObjKey, "CreaParticulaPiso"))
-                '
+            'DELETE
+            .CreaParticulaPiso = val(Leer.GetValue(ObjKey, "CreaParticulaPiso"))
+            '
     
-498             .CreaGRH = Leer.GetValue(ObjKey, "CreaGRH")
-500             .CreaLuz = Leer.GetValue(ObjKey, "CreaLuz")
+            .CreaGRH = Leer.GetValue(ObjKey, "CreaGRH")
+            .CreaLuz = Leer.GetValue(ObjKey, "CreaLuz")
     
-502             .MinHam = val(Leer.GetValue(ObjKey, "MinHam"))
-504             .MinSed = val(Leer.GetValue(ObjKey, "MinAgu"))
+            .MinHam = val(Leer.GetValue(ObjKey, "MinHam"))
+            .MinSed = val(Leer.GetValue(ObjKey, "MinAgu"))
     
-506             .MinDef = val(Leer.GetValue(ObjKey, "MINDEF"))
-508             .MaxDef = val(Leer.GetValue(ObjKey, "MAXDEF"))
-510             .def = (.MinDef + .MaxDef) / 2
+            .MinDef = val(Leer.GetValue(ObjKey, "MINDEF"))
+            .MaxDef = val(Leer.GetValue(ObjKey, "MAXDEF"))
+            .def = (.MinDef + .MaxDef) / 2
     
-512             .ClaseTipo = val(Leer.GetValue(ObjKey, "ClaseTipo"))
-514             .RazaTipo = val(Leer.GetValue(ObjKey, "RazaTipo"))
+            .ClaseTipo = val(Leer.GetValue(ObjKey, "ClaseTipo"))
+            .RazaTipo = val(Leer.GetValue(ObjKey, "RazaTipo"))
 
-516             .RazaEnana = val(Leer.GetValue(ObjKey, "RazaEnana"))
-518             .RazaDrow = val(Leer.GetValue(ObjKey, "RazaDrow"))
-520             .RazaElfa = val(Leer.GetValue(ObjKey, "RazaElfa"))
-522             .RazaGnoma = val(Leer.GetValue(ObjKey, "RazaGnoma"))
+            .RazaEnana = val(Leer.GetValue(ObjKey, "RazaEnana"))
+            .RazaDrow = val(Leer.GetValue(ObjKey, "RazaDrow"))
+            .RazaElfa = val(Leer.GetValue(ObjKey, "RazaElfa"))
+            .RazaGnoma = val(Leer.GetValue(ObjKey, "RazaGnoma"))
     
-524             .RazaOrca = val(Leer.GetValue(ObjKey, "RazaOrca"))
+            .RazaOrca = val(Leer.GetValue(ObjKey, "RazaOrca"))
     
-526             .RazaHumana = val(Leer.GetValue(ObjKey, "RazaHumana"))
+            .RazaHumana = val(Leer.GetValue(ObjKey, "RazaHumana"))
     
-528             .Valor = val(Leer.GetValue(ObjKey, "Valor"))
+            .Valor = val(Leer.GetValue(ObjKey, "Valor"))
     
-530             .Crucial = val(Leer.GetValue(ObjKey, "Crucial"))
+            .Crucial = val(Leer.GetValue(ObjKey, "Crucial"))
+    
+            '.Cerrada = val(Leer.GetValue(ObjKey, "abierta")) cerrada = abierta??? WTF???????
+            .Cerrada = val(Leer.GetValue(ObjKey, "Cerrada"))
 
-532             .DosManos = val(Leer.GetValue(ObjKey, "DosManos"))
-    
-                '.Cerrada = val(Leer.GetValue(ObjKey, "abierta")) cerrada = abierta??? WTF???????
-534             .Cerrada = val(Leer.GetValue(ObjKey, "Cerrada"))
+            If .Cerrada = 1 Then
+                .Llave = val(Leer.GetValue(ObjKey, "Llave"))
+                .clave = val(Leer.GetValue(ObjKey, "Clave"))
 
-536             If .Cerrada = 1 Then
-538                 .Llave = val(Leer.GetValue(ObjKey, "Llave"))
-540                 .clave = val(Leer.GetValue(ObjKey, "Clave"))
+            End If
+    
+            'Puertas y llaves
+            .clave = val(Leer.GetValue(ObjKey, "Clave"))
+    
+            .texto = Leer.GetValue(ObjKey, "Texto")
+            .GrhSecundario = val(Leer.GetValue(ObjKey, "VGrande"))
+    
+            .Agarrable = val(Leer.GetValue(ObjKey, "Agarrable"))
+            .ForoID = Leer.GetValue(ObjKey, "ID")
+    
+            'CHECK: !!! Esto es provisorio hasta que los de Dateo cambien los valores de string a numerico  -  Nunca más papu
+            Dim n As Integer
+            Dim s As String
 
-                End If
-    
-                'Puertas y llaves
-542             .clave = val(Leer.GetValue(ObjKey, "Clave"))
-    
-544             .texto = Leer.GetValue(ObjKey, "Texto")
-546             .GrhSecundario = val(Leer.GetValue(ObjKey, "VGrande"))
-    
-548             .Agarrable = val(Leer.GetValue(ObjKey, "Agarrable"))
-550             .ForoID = Leer.GetValue(ObjKey, "ID")
-    
-                'CHECK: !!! Esto es provisorio hasta que los de Dateo cambien los valores de string a numerico  -  Nunca más papu
-                Dim n As Integer
-                Dim s As String
+            For i = 1 To NUMCLASES
+                s = UCase$(Leer.GetValue(ObjKey, "CP" & i))
+                n = 1
 
-552             For i = 1 To NUMCLASES
-554                 s = UCase$(Leer.GetValue(ObjKey, "CP" & i))
-556                 n = 1
-
-558                 Do While LenB(s) > 0 And Tilde(ListaClases(n)) <> Trim$(s)
-560                     n = n + 1
-                    Loop
+                Do While LenB(s) > 0 And Tilde(ListaClases(n)) <> Trim$(s)
+                    n = n + 1
+                Loop
             
-562                 .ClaseProhibida(i) = IIf(LenB(s) > 0, n, 0)
-564             Next i
+                .ClaseProhibida(i) = IIf(LenB(s) > 0, n, 0)
+            Next i
         
-566             For i = 1 To NUMRAZAS
-568                 s = UCase$(Leer.GetValue(ObjKey, "RP" & i))
-570                 n = 1
+            For i = 1 To NUMRAZAS
+                s = UCase$(Leer.GetValue(ObjKey, "RP" & i))
+                n = 1
 
-572                 Do While LenB(s) > 0 And Tilde(ListaRazas(n)) <> Trim$(s)
-574                     n = n + 1
-                    Loop
+                Do While LenB(s) > 0 And Tilde(ListaRazas(n)) <> Trim$(s)
+                    n = n + 1
+                Loop
             
-576                 .RazaProhibida(i) = IIf(LenB(s) > 0, n, 0)
-578             Next i
+                .RazaProhibida(i) = IIf(LenB(s) > 0, n, 0)
+            Next i
         
-                ' Skill requerido
-580             str = Leer.GetValue(ObjKey, "SkillRequerido")
+            ' Skill requerido
+            str = Leer.GetValue(ObjKey, "SkillRequerido")
 
-582             If Len(str) > 0 Then
-584                 Field = Split(str, "-")
+            If Len(str) > 0 Then
+                Field = Split(str, "-")
             
-586                 n = 1
+                n = 1
 
-588                 Do While LenB(Field(0)) > 0 And Tilde(SkillsNames(n)) <> Tilde(Field(0))
-590                     n = n + 1
-                    Loop
+                Do While LenB(Field(0)) > 0 And Tilde(SkillsNames(n)) <> Tilde(Field(0))
+                    n = n + 1
+                Loop
     
-592                 .SkillIndex = IIf(LenB(Field(0)) > 0, n, 0)
-594                 .SkillRequerido = val(Field(1))
+                .SkillIndex = IIf(LenB(Field(0)) > 0, n, 0)
+                .SkillRequerido = val(Field(1))
 
-                End If
+            End If
 
-                ' -----------------
+            ' -----------------
     
-596             .SkCarpinteria = val(Leer.GetValue(ObjKey, "SkCarpinteria"))
+            .SkCarpinteria = val(Leer.GetValue(ObjKey, "SkCarpinteria"))
     
-                'If .SkCarpinteria > 0 Then
-598             .Madera = val(Leer.GetValue(ObjKey, "Madera"))
+            'If .SkCarpinteria > 0 Then
+            .Madera = val(Leer.GetValue(ObjKey, "Madera"))
 
-600             .MaderaElfica = val(Leer.GetValue(ObjKey, "MaderaElfica"))
+            .MaderaElfica = val(Leer.GetValue(ObjKey, "MaderaElfica"))
     
-                'Bebidas
-602             .MinSta = val(Leer.GetValue(ObjKey, "MinST"))
+            'Bebidas
+            .MinSta = val(Leer.GetValue(ObjKey, "MinST"))
     
-604             .NoSeCae = val(Leer.GetValue(ObjKey, "NoSeCae"))
+            .NoSeCae = val(Leer.GetValue(ObjKey, "NoSeCae"))
     
-606             frmCargando.cargar.Value = frmCargando.cargar.Value + 1
+            frmCargando.cargar.Value = frmCargando.cargar.Value + 1
         
-            End With
+        End With
             
-            ' WyroX: Cada 10 objetos revivo la interfaz
-608         If Object Mod 10 = 0 Then DoEvents
+        ' WyroX: Cada 10 objetos revivo la interfaz
+        If Object Mod 10 = 0 Then DoEvents
         
-610     Next Object
+    Next Object
 
-612     Set Leer = Nothing
+    Set Leer = Nothing
 
-        Exit Sub
+    Exit Sub
 
 ErrHandler:
-614     MsgBox "error cargando objetos " & Err.Number & ": " & Err.Description & ". Error producido al cargar el objeto: " & Object
+    MsgBox "error cargando objetos " & Err.Number & ": " & Err.Description & ". Error producido al cargar el objeto: " & Object
 
 End Sub
 

@@ -1430,7 +1430,7 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
             Else
 
 110             If MapInfo(.Pos.Map).terrain = Nieve Then
-112                 Call WriteConsoleMsg(UserIndex, "¡¡Estas muriendo de frio, abrigate o moriras!!.", FontTypeNames.FONTTYPE_INFO)
+112                 Call WriteConsoleMsg(UserIndex, "¡Estás muriendo de frío, abrígate o morirás!", FontTypeNames.FONTTYPE_INFO)
 
                     ' WyroX: Sin ropa perdés vida más rápido que con una ropa no-invernal
                     Dim MinDaño As Integer, MaxDaño As Integer
@@ -1450,7 +1450,7 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
             
 118                 If .Stats.MinHp < 1 Then
 
-120                     Call WriteConsoleMsg(UserIndex, "¡¡Has muerto de frio!!.", FontTypeNames.FONTTYPE_INFO)
+120                     Call WriteConsoleMsg(UserIndex, "¡Has muerto de frío!", FontTypeNames.FONTTYPE_INFO)
 
 122                     Call UserDie(UserIndex)
 
@@ -1492,11 +1492,11 @@ Public Sub EfectoLava(ByVal UserIndex As Integer)
             Else
 
 106             If HayLava(.Pos.Map, .Pos.X, .Pos.Y) Then
-108                 Call WriteConsoleMsg(UserIndex, "¡¡Quitate de la lava, te estás quemando!!.", FontTypeNames.FONTTYPE_INFO)
+108                 Call WriteConsoleMsg(UserIndex, "¡Quítate de la lava, te estás quemando!", FontTypeNames.FONTTYPE_INFO)
 110                 .Stats.MinHp = .Stats.MinHp - Porcentaje(.Stats.MaxHp, 5)
             
 112                 If .Stats.MinHp < 1 Then
-114                     Call WriteConsoleMsg(UserIndex, "¡¡Has muerto quemado!!.", FontTypeNames.FONTTYPE_INFO)
+114                     Call WriteConsoleMsg(UserIndex, "¡Has muerto quemado!", FontTypeNames.FONTTYPE_INFO)
 116                     Call UserDie(UserIndex)
                     Else
 118                     Call WriteUpdateHP(UserIndex)
@@ -1745,7 +1745,7 @@ Public Sub EfectoMaldicionUser(ByVal UserIndex As Integer)
     
         Else
 104         UserList(UserIndex).flags.Maldicion = 0
-106         Call WriteConsoleMsg(UserIndex, "¡La magia perdió su efecto! Ya podes atacar.", FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
+106         Call WriteConsoleMsg(UserIndex, "¡La magia perdió su efecto! Ya puedes atacar.", FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
 
             'Call WriteParalizeOK(UserIndex)
         End If
@@ -1908,7 +1908,7 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
         Else
 104         Call CancelExit(UserIndex)
             
-            'Call WriteConsoleMsg(UserIndex, "Estás envenenado, si no te curas moriras.", FontTypeNames.FONTTYPE_VENENO)
+            'Call WriteConsoleMsg(UserIndex, "Estás envenenado, si no te curas morirás.", FontTypeNames.FONTTYPE_VENENO)
 106         Call WriteLocaleMsg(UserIndex, "47", FontTypeNames.FONTTYPE_VENENO)
 108         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Envenena, 30, False))
 110         UserList(UserIndex).Counters.Veneno = 0
@@ -1944,7 +1944,7 @@ Public Sub EfectoAhogo(ByVal UserIndex As Integer)
 102         If UserList(UserIndex).Counters.Ahogo < 70 Then
 104             UserList(UserIndex).Counters.Ahogo = UserList(UserIndex).Counters.Ahogo + 1
             Else
-106             Call WriteConsoleMsg(UserIndex, "Te estas ahogando.. si no consigues oxigeno moriras.", FontTypeNames.FONTTYPE_EJECUCION)
+106             Call WriteConsoleMsg(UserIndex, "Te estás ahogando, si no consigues oxígeno morirás.", FontTypeNames.FONTTYPE_EJECUCION)
                 'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, 205, 30, False))
 108             UserList(UserIndex).Counters.Ahogo = 0
 110             n = RandomNumber(150, 200)
@@ -1983,7 +1983,7 @@ Public Sub EfectoIncineramiento(ByVal UserIndex As Integer, ByRef EnviarStats As
 100     If UserList(UserIndex).Counters.Incineracion < IntervaloIncineracion Then
 102         UserList(UserIndex).Counters.Incineracion = UserList(UserIndex).Counters.Incineracion + 1
         Else
-104         Call WriteConsoleMsg(UserIndex, "Te estas incinerando,si no te curas moriras.", FontTypeNames.FONTTYPE_INFO)
+104         Call WriteConsoleMsg(UserIndex, "Te estás incinerando, si no te curas morirás.", FontTypeNames.FONTTYPE_INFO)
             'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Incinerar, 30, False))
 106         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.CharIndex, 73, 0))
 108         UserList(UserIndex).Counters.Incineracion = 0
@@ -2309,7 +2309,7 @@ Sub PasarSegundo()
 224                 Call WriteLocaleMsg(i, "203", FontTypeNames.FONTTYPE_INFO, UserList(i).Counters.Salir)
 
 226                 If UserList(i).Counters.Salir <= 0 Then
-228                     Call WriteConsoleMsg(i, "Gracias por jugar Argentum20.", FontTypeNames.FONTTYPE_INFO)
+228                     Call WriteConsoleMsg(i, "Gracias por jugar Argentum 20.", FontTypeNames.FONTTYPE_INFO)
 230                     Call WriteDisconnect(i)
                     
 232                     Call CloseSocket(i)

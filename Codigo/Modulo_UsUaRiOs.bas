@@ -98,7 +98,7 @@ ActStats_Err:
         
 End Sub
 
-Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As Boolean = False)
+Sub RevivirUsuario(ByVal UserIndex As Integer)
         
         On Error GoTo RevivirUsuario_Err
         
@@ -108,12 +108,14 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
 104         .Stats.MinHp = .Stats.MaxHp
 
             ' El comportamiento cambia si usamos el hechizo Resucitar
-106         If MedianteHechizo Then
+106         If .flags.RevividoPorHechizo Then
 108             .Stats.MinHp = 1
 110             .Stats.MinHam = 0
 112             .Stats.MinAGU = 0
             
 114             Call WriteUpdateHungerAndThirst(UserIndex)
+        
+116             .flags.RevividoPorHechizo = False
             End If
         
 118         Call WriteUpdateHP(UserIndex)
@@ -170,7 +172,7 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
 166             If .Invent.ArmourEqpObjIndex > 0 Then
 168                 .Char.Body = ObjData(.Invent.ArmourEqpObjIndex).Ropaje
         
-170                 If Len(ObjData(.Invent.ArmourEqpObjIndex).CreaGRH) <> 0 Then
+170                 If ObjData(.Invent.ArmourEqpObjIndex).CreaGRH <> "" Then
 172                     .Char.Body_Aura = ObjData(.Invent.ArmourEqpObjIndex).CreaGRH
 174                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Body_Aura, False, 2))
     
@@ -184,7 +186,7 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
 178             If .Invent.EscudoEqpObjIndex > 0 Then
 180                 .Char.ShieldAnim = ObjData(.Invent.EscudoEqpObjIndex).ShieldAnim
     
-182                 If Len(ObjData(.Invent.EscudoEqpObjIndex).CreaGRH) <> 0 Then
+182                 If ObjData(.Invent.EscudoEqpObjIndex).CreaGRH <> "" Then
 184                     .Char.Escudo_Aura = ObjData(.Invent.EscudoEqpObjIndex).CreaGRH
 186                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Escudo_Aura, False, 3))
     
@@ -195,7 +197,7 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
 188             If .Invent.CascoEqpObjIndex > 0 Then
 190                 .Char.CascoAnim = ObjData(.Invent.CascoEqpObjIndex).CascoAnim
     
-192                 If Len(ObjData(.Invent.CascoEqpObjIndex).CreaGRH) <> 0 Then
+192                 If ObjData(.Invent.CascoEqpObjIndex).CreaGRH <> "" Then
 194                     .Char.Head_Aura = ObjData(.Invent.CascoEqpObjIndex).CreaGRH
 196                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Head_Aura, False, 4))
     
@@ -204,7 +206,7 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
                 End If
     
 198             If .Invent.MagicoObjIndex > 0 Then
-200                 If Len(ObjData(.Invent.MagicoObjIndex).CreaGRH) <> 0 Then
+200                 If ObjData(.Invent.MagicoObjIndex).CreaGRH <> "" Then
 202                     .Char.Otra_Aura = ObjData(.Invent.MagicoObjIndex).CreaGRH
 204                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Otra_Aura, False, 5))
     
@@ -213,7 +215,7 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
                 End If
     
 206             If .Invent.NudilloObjIndex > 0 Then
-208                 If Len(ObjData(.Invent.NudilloObjIndex).CreaGRH) <> 0 Then
+208                 If ObjData(.Invent.NudilloObjIndex).CreaGRH <> "" Then
 210                     .Char.Arma_Aura = ObjData(.Invent.NudilloObjIndex).CreaGRH
 212                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Arma_Aura, False, 1))
     
@@ -221,14 +223,14 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
                 End If
                 
 214             If .Invent.DañoMagicoEqpObjIndex > 0 Then
-216                 If Len(ObjData(.Invent.DañoMagicoEqpObjIndex).CreaGRH) <> 0 Then
+216                 If ObjData(.Invent.DañoMagicoEqpObjIndex).CreaGRH <> "" Then
 218                     .Char.DM_Aura = ObjData(.Invent.DañoMagicoEqpObjIndex).CreaGRH
 220                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.DM_Aura, False, 6))
                     End If
                 End If
                 
 222             If .Invent.ResistenciaEqpObjIndex > 0 Then
-224                 If Len(ObjData(.Invent.ResistenciaEqpObjIndex).CreaGRH) <> 0 Then
+224                 If ObjData(.Invent.ResistenciaEqpObjIndex).CreaGRH <> "" Then
 226                     .Char.RM_Aura = ObjData(.Invent.ResistenciaEqpObjIndex).CreaGRH
 228                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.RM_Aura, False, 7))
                     End If
@@ -663,7 +665,7 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As eHeading) As
 
         If .flags.Muerto = 0 Then
             If MapData(nPos.Map, nPos.X, nPos.Y).TileExit.Map <> 0 And .Counters.TiempoDeMapeo > 0 Then
-                Call WriteConsoleMsg(UserIndex, "Estas en combate, debes aguardar " & .Counters.TiempoDeMapeo & " segundo(s) para escapar...", FontTypeNames.FONTTYPE_INFOBOLD)
+                Call WriteConsoleMsg(UserIndex, "Estás en combate, debes aguardar " & .Counters.TiempoDeMapeo & " segundo(s) para escapar...", FontTypeNames.FONTTYPE_INFOBOLD)
                 Exit Function
             End If
         End If
@@ -1847,7 +1849,7 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As In
             'End If
         
 126         If MapInfo(OldMap).Seguro = 1 And MapInfo(Map).Seguro = 0 And UserList(UserIndex).Stats.ELV < 42 Then
-128             Call WriteConsoleMsg(UserIndex, "Estas saliendo de una zona segura, recuerda que aquí corres riesgo de ser atacado.", FontTypeNames.FONTTYPE_WARNING)
+128             Call WriteConsoleMsg(UserIndex, "Estás saliendo de una zona segura, recuerda que aquí corres riesgo de ser atacado.", FontTypeNames.FONTTYPE_WARNING)
 
             End If
         
@@ -1910,7 +1912,7 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As In
 178         If UserList(UserIndex).flags.Traveling = 1 Then
 180             UserList(UserIndex).flags.Traveling = 0
 182             UserList(UserIndex).Counters.goHome = 0
-184             Call WriteConsoleMsg(UserIndex, "El viaje ha terminado", FontTypeNames.FONTTYPE_INFOBOLD)
+184             Call WriteConsoleMsg(UserIndex, "El viaje ha terminado.", FontTypeNames.FONTTYPE_INFOBOLD)
     
             End If
 
@@ -1990,7 +1992,7 @@ Sub WarpFamiliar(ByVal UserIndex As Integer)
 
                 'Controlamos que se sumoneo OK
 108             If .Familiar.Id = 0 Then
-110                 Call WriteConsoleMsg(UserIndex, "No hay espacio aquí para tu mascota. Se provoco un ERROR.", FontTypeNames.FONTTYPE_INFO)
+110                 Call WriteConsoleMsg(UserIndex, "No hay espacio aquí para tu mascota.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
 
                 End If
