@@ -1647,6 +1647,8 @@ Sub LoadOBJData()
 524             .Valor = val(Leer.GetValue(ObjKey, "Valor"))
     
 526             .Crucial = val(Leer.GetValue(ObjKey, "Crucial"))
+
+                .DosManos = val(Leer.GetValue(ObjKey, "DosManos"))
     
                 '.Cerrada = val(Leer.GetValue(ObjKey, "abierta")) cerrada = abierta??? WTF???????
 528             .Cerrada = val(Leer.GetValue(ObjKey, "Cerrada"))
