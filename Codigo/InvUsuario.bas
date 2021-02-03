@@ -1168,6 +1168,13 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                         End If
 
                     End If
+                    
+                    If obj.DosManos = 1 Then
+                        If .Invent.EscudoEqpObjIndex > 0 Then
+                            Call Desequipar(UserIndex, .Invent.EscudoEqpSlot)
+                            Call WriteConsoleMsg(UserIndex, "No puedes usar armas dos manos si tienes un escudo equipado. Tu escudo fue desequipado.", FontTypeNames.FONTTYPE_INFOIAO)
+                        End If
+                    End If
             
                     'Sonido
 170                 If obj.SndAura = 0 Then
@@ -1598,6 +1605,13 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                             End If
                         End If
 
+                    End If
+                    
+                    If .Invent.WeaponEqpObjIndex > 0 Then
+                        If ObjData(.Invent.WeaponEqpObjIndex).DosManos = 1 Then
+                            Call Desequipar(UserIndex, .Invent.WeaponEqpSlot)
+                            Call WriteConsoleMsg(UserIndex, "No puedes equipar un escudo si tienes un arma dos manos equipada. Tu arma fue desequipada.", FontTypeNames.FONTTYPE_INFOIAO)
+                        End If
                     End If
             
 540                 errordesc = "Escudo"
@@ -3228,7 +3242,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
     
                        End If
             
-1266                 If Distancia(Npclist(.flags.TargetNPC).Pos, .Pos) > 3 Then
+1266                 If Distancia(NpcList(.flags.TargetNPC).Pos, .Pos) > 3 Then
 1268                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                            'Call WriteConsoleMsg(UserIndex, "Estás demasiado lejos del vendedor.", FontTypeNames.FONTTYPE_INFO)
                            Exit Sub
@@ -3237,14 +3251,14 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
             
 1270                 If .Pos.Map <> obj.DesdeMap Then
                            Rem  Call WriteConsoleMsg(UserIndex, "El pasaje no lo compraste aquí! Largate!", FontTypeNames.FONTTYPE_INFO)
-1272                     Call WriteChatOverHead(UserIndex, "El pasaje no lo compraste aquí! Largate!", str(Npclist(.flags.TargetNPC).Char.CharIndex), vbWhite)
+1272                     Call WriteChatOverHead(UserIndex, "El pasaje no lo compraste aquí! Largate!", str(NpcList(.flags.TargetNPC).Char.CharIndex), vbWhite)
                            Exit Sub
     
                        End If
             
 1274                 If Not MapaValido(obj.HastaMap) Then
                            Rem Call WriteConsoleMsg(UserIndex, "El pasaje lleva hacia un mapa que ya no esta disponible! Disculpa las molestias.", FontTypeNames.FONTTYPE_INFO)
-1276                     Call WriteChatOverHead(UserIndex, "El pasaje lleva hacia un mapa que ya no esta disponible! Disculpa las molestias.", str(Npclist(.flags.TargetNPC).Char.CharIndex), vbWhite)
+1276                     Call WriteChatOverHead(UserIndex, "El pasaje lleva hacia un mapa que ya no esta disponible! Disculpa las molestias.", str(NpcList(.flags.TargetNPC).Char.CharIndex), vbWhite)
                            Exit Sub
     
                        End If
@@ -3252,7 +3266,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 1278                 If obj.NecesitaNave > 0 Then
 1280                     If .Stats.UserSkills(eSkill.Navegacion) < 80 Then
                                Rem Call WriteConsoleMsg(UserIndex, "Debido a la peligrosidad del viaje, no puedo llevarte, ya que al menos necesitas saber manejar una barca.", FontTypeNames.FONTTYPE_INFO)
-1282                         Call WriteChatOverHead(UserIndex, "Debido a la peligrosidad del viaje, no puedo llevarte, ya que al menos necesitas saber manejar una barca.", str(Npclist(.flags.TargetNPC).Char.CharIndex), vbWhite)
+1282                         Call WriteChatOverHead(UserIndex, "Debido a la peligrosidad del viaje, no puedo llevarte, ya que al menos necesitas saber manejar una barca.", str(NpcList(.flags.TargetNPC).Char.CharIndex), vbWhite)
                                Exit Sub
     
                            End If

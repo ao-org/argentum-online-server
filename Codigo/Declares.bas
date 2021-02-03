@@ -1193,9 +1193,13 @@ Public Type ObjData
     Municion As Integer
     
     Crucial As Byte
-    Newbie As Integer
-    'By Ladder
     
+    ' Sistema de armas Dos Manos - SimP - 03/02/2021
+    DosManos As Byte
+    
+    Newbie As Integer
+    
+    'By Ladder
     CreaParticula As String
     
     CreaFX As Integer
