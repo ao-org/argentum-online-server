@@ -1900,35 +1900,36 @@ End Sub
 Public Sub EfectoVeneno(ByVal UserIndex As Integer)
         
         On Error GoTo EfectoVeneno_Err
-        
 
         Dim n As Integer
 
 100     If UserList(UserIndex).Counters.Veneno < IntervaloVeneno Then
 102         UserList(UserIndex).Counters.Veneno = UserList(UserIndex).Counters.Veneno + 1
         Else
+104         Call CancelExit(UserIndex)
+            
             'Call WriteConsoleMsg(UserIndex, "Estás envenenado, si no te curas moriras.", FontTypeNames.FONTTYPE_VENENO)
-104         Call WriteLocaleMsg(UserIndex, "47", FontTypeNames.FONTTYPE_VENENO)
-106         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Envenena, 30, False))
-108         UserList(UserIndex).Counters.Veneno = 0
-110         n = RandomNumber(3, 6)
-112         n = n * UserList(UserIndex).flags.Envenenado
-114         UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp - n
+106         Call WriteLocaleMsg(UserIndex, "47", FontTypeNames.FONTTYPE_VENENO)
+108         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Envenena, 30, False))
+110         UserList(UserIndex).Counters.Veneno = 0
+112         n = RandomNumber(3, 6)
+114         n = n * UserList(UserIndex).flags.Envenenado
+116         UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp - n
 
-116         If UserList(UserIndex).Stats.MinHp < 1 Then
-118             Call UserDie(UserIndex)
+118         If UserList(UserIndex).Stats.MinHp < 1 Then
+120             Call UserDie(UserIndex)
             Else
-120             Call WriteUpdateHP(UserIndex)
+122             Call WriteUpdateHP(UserIndex)
             End If
+            
 
         End If
-
         
         Exit Sub
 
 EfectoVeneno_Err:
-122     Call RegistrarError(Err.Number, Err.Description, "General.EfectoVeneno", Erl)
-124     Resume Next
+124     Call RegistrarError(Err.Number, Err.Description, "General.EfectoVeneno", Erl)
+126     Resume Next
         
 End Sub
 
