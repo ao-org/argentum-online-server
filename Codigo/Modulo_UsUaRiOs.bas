@@ -473,7 +473,7 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
         
         Dim PromedioUser     As Double
 
-        Dim Aux              As Integer
+        Dim aux              As Integer
     
         Dim PasoDeNivel      As Boolean
 
@@ -1195,10 +1195,10 @@ Sub NPCAtacado(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         Dim EraCriminal As Byte
 
         'Guardamos el usuario que ataco el npc.
-104     If Npclist(NpcIndex).Movement <> ESTATICO And Npclist(NpcIndex).flags.AttackedFirstBy = vbNullString Then
-106         Npclist(NpcIndex).Target = UserIndex
-108         Npclist(NpcIndex).Movement = TipoAI.NpcMaloAtacaUsersBuenos
-110         Npclist(NpcIndex).flags.AttackedBy = UserList(UserIndex).name
+104     If NpcList(NpcIndex).Movement <> ESTATICO And NpcList(NpcIndex).flags.AttackedFirstBy = vbNullString Then
+106         NpcList(NpcIndex).Target = UserIndex
+108         NpcList(NpcIndex).Movement = TipoAI.NpcMaloAtacaUsersBuenos
+110         NpcList(NpcIndex).flags.AttackedBy = UserList(UserIndex).name
         End If
 
         'Npc que estabas atacando.
@@ -1210,25 +1210,25 @@ Sub NPCAtacado(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 
         'Revisamos robo de npc.
         'Guarda el primer nick que lo ataca.
-116     If Npclist(NpcIndex).flags.AttackedFirstBy = vbNullString Then
+116     If NpcList(NpcIndex).flags.AttackedFirstBy = vbNullString Then
 
             'El que le pegabas antes ya no es tuyo
 118         If LastNpcHit <> 0 Then
-120             If Npclist(LastNpcHit).flags.AttackedFirstBy = UserList(UserIndex).name Then
-122                 Npclist(LastNpcHit).flags.AttackedFirstBy = vbNullString
+120             If NpcList(LastNpcHit).flags.AttackedFirstBy = UserList(UserIndex).name Then
+122                 NpcList(LastNpcHit).flags.AttackedFirstBy = vbNullString
 
                 End If
 
             End If
 
-124         Npclist(NpcIndex).flags.AttackedFirstBy = UserList(UserIndex).name
-126     ElseIf Npclist(NpcIndex).flags.AttackedFirstBy <> UserList(UserIndex).name Then
+124         NpcList(NpcIndex).flags.AttackedFirstBy = UserList(UserIndex).name
+126     ElseIf NpcList(NpcIndex).flags.AttackedFirstBy <> UserList(UserIndex).name Then
 
             'Estas robando NPC
             'El que le pegabas antes ya no es tuyo
 128         If LastNpcHit <> 0 Then
-130             If Npclist(LastNpcHit).flags.AttackedFirstBy = UserList(UserIndex).name Then
-132                 Npclist(LastNpcHit).flags.AttackedFirstBy = vbNullString
+130             If NpcList(LastNpcHit).flags.AttackedFirstBy = UserList(UserIndex).name Then
+132                 NpcList(LastNpcHit).flags.AttackedFirstBy = vbNullString
 
                 End If
 
@@ -1238,7 +1238,7 @@ Sub NPCAtacado(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 
         '  EraCriminal = Status(UserIndex)
 
-134     If Npclist(NpcIndex).NPCtype = eNPCType.GuardiaReal Then
+134     If NpcList(NpcIndex).NPCtype = eNPCType.GuardiaReal Then
 136         If Status(UserIndex) = 1 Or Status(UserIndex) = 3 Then
 138             Call VolverCriminal(UserIndex)
 
@@ -1246,9 +1246,9 @@ Sub NPCAtacado(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 
         End If
         
-140     If Npclist(NpcIndex).MaestroUser > 0 Then
-142         If Npclist(NpcIndex).MaestroUser <> UserIndex Then
-144             Call AllMascotasAtacanUser(UserIndex, Npclist(NpcIndex).MaestroUser)
+140     If NpcList(NpcIndex).MaestroUser > 0 Then
+142         If NpcList(NpcIndex).MaestroUser <> UserIndex Then
+144             Call AllMascotasAtacanUser(UserIndex, NpcList(NpcIndex).MaestroUser)
             End If
         End If
 
@@ -1421,16 +1421,16 @@ Sub UserDie(ByVal UserIndex As Integer)
 132         aN = .flags.AtacadoPorNpc
     
 134         If aN > 0 Then
-136             Npclist(aN).Movement = Npclist(aN).flags.OldMovement
-138             Npclist(aN).Hostile = Npclist(aN).flags.OldHostil
-140             Npclist(aN).flags.AttackedBy = vbNullString
+136             NpcList(aN).Movement = NpcList(aN).flags.OldMovement
+138             NpcList(aN).Hostile = NpcList(aN).flags.OldHostil
+140             NpcList(aN).flags.AttackedBy = vbNullString
             End If
         
 142         aN = .flags.NPCAtacado
     
 144         If aN > 0 Then
-146             If Npclist(aN).flags.AttackedFirstBy = .name Then
-148                 Npclist(aN).flags.AttackedFirstBy = vbNullString
+146             If NpcList(aN).flags.AttackedFirstBy = .name Then
+148                 NpcList(aN).flags.AttackedFirstBy = vbNullString
                 End If
             End If
     
@@ -2053,7 +2053,7 @@ Public Sub CancelExit(ByVal UserIndex As Integer)
         'Last Modification: 04/02/08
         '
         '***************************************************
-100     If UserList(UserIndex).Counters.Saliendo Then
+100     If UserList(UserIndex).Counters.Saliendo And UserList(UserIndex).ConnID <> -1 Then
 
             ' Is the user still connected?
 102         If UserList(UserIndex).ConnIDValida Then
@@ -2328,10 +2328,10 @@ Private Sub WarpMascotas(ByVal UserIndex As Integer)
 104         index = UserList(UserIndex).MascotasIndex(i)
         
 106         If index > 0 Then
-108             iMinHP = Npclist(index).Stats.MinHp
-110             PetTiempoDeVida = Npclist(index).Contadores.TiempoExistencia
+108             iMinHP = NpcList(index).Stats.MinHp
+110             PetTiempoDeVida = NpcList(index).Contadores.TiempoExistencia
             
-112             Npclist(index).MaestroUser = 0
+112             NpcList(index).MaestroUser = 0
             
 114             Call QuitarNPC(index)
 
@@ -2367,7 +2367,7 @@ Private Sub WarpMascotas(ByVal UserIndex As Integer)
 146                 UserList(UserIndex).MascotasIndex(i) = index
 
                     ' Nos aseguramos de que conserve el hp, si estaba danado
-148                 If iMinHP Then Npclist(index).Stats.MinHp = iMinHP
+148                 If iMinHP Then NpcList(index).Stats.MinHp = iMinHP
 
 152                 Call FollowAmo(index)
             

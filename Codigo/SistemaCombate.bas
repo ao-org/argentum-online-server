@@ -863,36 +863,39 @@ Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integ
 122     If NpcList(NpcIndex).flags.Snd1 > 0 Then
 124         Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessagePlayWave(NpcList(NpcIndex).flags.Snd1, NpcList(NpcIndex).Pos.X, NpcList(NpcIndex).Pos.Y))
         End If
-    
-126     If NpcImpacto(NpcIndex, UserIndex) Then
-128         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_IMPACTO, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
         
-130         If UserList(UserIndex).flags.Navegando = 0 Or UserList(UserIndex).flags.Montado = 0 Then
-132             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.CharIndex, FXSANGRE, 0))
+126     Call CancelExit(UserIndex)
+
+128     If NpcImpacto(NpcIndex, UserIndex) Then
+    
+130         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_IMPACTO, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+        
+132         If UserList(UserIndex).flags.Navegando = 0 Or UserList(UserIndex).flags.Montado = 0 Then
+134             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.CharIndex, FXSANGRE, 0))
 
             End If
         
-134         Call NpcDaño(NpcIndex, UserIndex)
+136         Call NpcDaño(NpcIndex, UserIndex)
 
             '¿Puede envenenar?
-136         If NpcList(NpcIndex).Veneno > 0 Then Call NpcEnvenenarUser(UserIndex, NpcList(NpcIndex).Veneno)
+138         If NpcList(NpcIndex).Veneno > 0 Then Call NpcEnvenenarUser(UserIndex, NpcList(NpcIndex).Veneno)
         Else
-138         Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageCharSwing(NpcList(NpcIndex).Char.CharIndex, False))
+140         Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageCharSwing(NpcList(NpcIndex).Char.CharIndex, False))
 
         End If
 
         '-----Tal vez suba los skills------
-140     Call SubirSkill(UserIndex, Tacticas)
+142     Call SubirSkill(UserIndex, Tacticas)
     
         'Controla el nivel del usuario
-142     Call CheckUserLevel(UserIndex)
-
+144     Call CheckUserLevel(UserIndex)
         
+
         Exit Function
 
 NpcAtacaUser_Err:
-144     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.NpcAtacaUser", Erl)
-146     Resume Next
+146     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.NpcAtacaUser", Erl)
+148     Resume Next
         
 End Function
 
@@ -1388,36 +1391,39 @@ Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal VictimaInde
 106     HuboEfecto = False
     
 108     Call UsuarioAtacadoPorUsuario(AtacanteIndex, VictimaIndex)
-    
-110     If UsuarioImpacto(AtacanteIndex, VictimaIndex) Then
-112         Call SendData(SendTarget.ToPCArea, AtacanteIndex, PrepareMessagePlayWave(SND_IMPACTO, UserList(AtacanteIndex).Pos.X, UserList(AtacanteIndex).Pos.Y))
+
+        Call CancelExit(VictimaIndex)
         
-114         If UserList(VictimaIndex).flags.Navegando = 0 Or UserList(VictimaIndex).flags.Montado = 0 Then
-116             Call SendData(SendTarget.ToPCArea, VictimaIndex, PrepareMessageCreateFX(UserList(VictimaIndex).Char.CharIndex, FXSANGRE, 0))
+110     If UsuarioImpacto(AtacanteIndex, VictimaIndex) Then
+            
+114         Call SendData(SendTarget.ToPCArea, AtacanteIndex, PrepareMessagePlayWave(SND_IMPACTO, UserList(AtacanteIndex).Pos.X, UserList(AtacanteIndex).Pos.Y))
+        
+116         If UserList(VictimaIndex).flags.Navegando = 0 Or UserList(VictimaIndex).flags.Montado = 0 Then
+118             Call SendData(SendTarget.ToPCArea, VictimaIndex, PrepareMessageCreateFX(UserList(VictimaIndex).Char.CharIndex, FXSANGRE, 0))
             End If
             
             'Pablo (ToxicWaste): Guantes de Hurto del Bandido en accion
-118         If UserList(AtacanteIndex).clase = eClass.Bandit Then
-120             Call DoDesequipar(AtacanteIndex, VictimaIndex)
+120         If UserList(AtacanteIndex).clase = eClass.Bandit Then
+122             Call DoDesequipar(AtacanteIndex, VictimaIndex)
                 
                 'y ahora, el ladron puede llegar a paralizar con el golpe.
-122         ElseIf UserList(AtacanteIndex).clase = eClass.Thief Then
-124             Call DoHandInmo(AtacanteIndex, VictimaIndex)
+124         ElseIf UserList(AtacanteIndex).clase = eClass.Thief Then
+126             Call DoHandInmo(AtacanteIndex, VictimaIndex)
             End If
         
-192         Call UserDañoUser(AtacanteIndex, VictimaIndex)
+128         Call UserDañoUser(AtacanteIndex, VictimaIndex)
 
         Else
         
             Dim sendto As SendTarget
    
-194         If UserList(AtacanteIndex).clase = eClass.Hunter And UserList(AtacanteIndex).flags.Oculto = 0 Then
-196             sendto = SendTarget.ToPCArea
+130         If UserList(AtacanteIndex).clase = eClass.Hunter And UserList(AtacanteIndex).flags.Oculto = 0 Then
+132             sendto = SendTarget.ToPCArea
             Else
-198             sendto = SendTarget.ToIndex
+134             sendto = SendTarget.ToIndex
             End If
             
-200         Call SendData(sendto, AtacanteIndex, PrepareMessageCharSwing(UserList(AtacanteIndex).Char.CharIndex))
+136         Call SendData(sendto, AtacanteIndex, PrepareMessageCharSwing(UserList(AtacanteIndex).Char.CharIndex))
 
         End If
 
@@ -1425,8 +1431,8 @@ Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal VictimaInde
         Exit Sub
 
 UsuarioAtacaUsuario_Err:
-202     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.UsuarioAtacaUsuario", Erl)
-204     Resume Next
+138     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.UsuarioAtacaUsuario", Erl)
+140     Resume Next
         
 End Sub
 
