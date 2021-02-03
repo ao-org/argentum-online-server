@@ -1369,7 +1369,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
 472                     .MascotasIndex(i) = SpawnNpc(.MascotasType(i), .Pos, False, False, False, UserIndex)
                     
 474                     If .MascotasIndex(i) > 0 Then
-476                         Npclist(.MascotasIndex(i)).MaestroUser = UserIndex
+476                         NpcList(.MascotasIndex(i)).MaestroUser = UserIndex
 478                         Call FollowAmo(.MascotasIndex(i))
                           Else
 480                         .MascotasIndex(i) = 0
@@ -1859,6 +1859,7 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 248         .RegeneracionHP = 0
 250         .RegeneracionSta = 0
 252         .NecesitaOxigeno = False
+            .RevividoPorHechizo = False
 254         .LastCrimMatado = vbNullString
 256         .LastCiudMatado = vbNullString
         
@@ -2130,17 +2131,17 @@ Sub CloseUser(ByVal UserIndex As Integer)
 104     aN = UserList(UserIndex).flags.AtacadoPorNpc
 
 106     If aN > 0 Then
-108         Npclist(aN).Movement = Npclist(aN).flags.OldMovement
-110         Npclist(aN).Hostile = Npclist(aN).flags.OldHostil
-112         Npclist(aN).flags.AttackedBy = vbNullString
+108         NpcList(aN).Movement = NpcList(aN).flags.OldMovement
+110         NpcList(aN).Hostile = NpcList(aN).flags.OldHostil
+112         NpcList(aN).flags.AttackedBy = vbNullString
 
         End If
 
 114     aN = UserList(UserIndex).flags.NPCAtacado
 
 116     If aN > 0 Then
-118         If Npclist(aN).flags.AttackedFirstBy = UserList(UserIndex).name Then
-120             Npclist(aN).flags.AttackedFirstBy = vbNullString
+118         If NpcList(aN).flags.AttackedFirstBy = UserList(UserIndex).name Then
+120             NpcList(aN).flags.AttackedFirstBy = vbNullString
 
             End If
 
@@ -2229,7 +2230,7 @@ Sub CloseUser(ByVal UserIndex As Integer)
         'Borrar mascotas
 204     For i = 1 To MAXMASCOTAS
 206         If UserList(UserIndex).MascotasIndex(i) > 0 Then
-208             If Npclist(UserList(UserIndex).MascotasIndex(i)).flags.NPCActive Then _
+208             If NpcList(UserList(UserIndex).MascotasIndex(i)).flags.NPCActive Then _
                     Call QuitarNPC(UserList(UserIndex).MascotasIndex(i))
             End If
 210     Next i
