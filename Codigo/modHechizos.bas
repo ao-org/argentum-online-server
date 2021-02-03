@@ -1784,17 +1784,10 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 570             UserList(tU).Accion.AccionPendiente = True
 572             UserList(tU).Accion.Particula = ParticulasIndex.Resucitar
 574             UserList(tU).Accion.TipoAccion = Accion_Barra.Resucitar
-                UserList(tU).flags.RevividoPorHechizo = True
                 
-                'Pablo Toxic Waste (GD: 29/04/07)
-                'UserList(tU).Stats.MinAGU = 0
-                'UserList(tU).flags.Sed = 1
-                'UserList(tU).Stats.MinHam = 0
-                'UserList(tU).flags.Hambre = 1
 576             Call WriteUpdateHungerAndThirst(tU)
 578             Call InfoHechizo(UserIndex)
-                'UserList(tU).Stats.MinMAN = 0
-                'UserList(tU).Stats.MinSta = 0
+
 580             b = True
                 'Solo saco vida si es User. no quiero que exploten GMs por ahi.
         

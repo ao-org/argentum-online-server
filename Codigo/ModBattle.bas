@@ -276,7 +276,6 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
 414             .RegeneracionSta = 0
 416             .Nadando = 0
 418             .NecesitaOxigeno = False
-                .RevividoPorHechizo = False
 
             End With
     

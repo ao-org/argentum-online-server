@@ -1859,7 +1859,7 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 248         .RegeneracionHP = 0
 250         .RegeneracionSta = 0
 252         .NecesitaOxigeno = False
-            .RevividoPorHechizo = False
+
 254         .LastCrimMatado = vbNullString
 256         .LastCiudMatado = vbNullString
         

@@ -428,7 +428,7 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 404             Call WriteConsoleMsg(UserIndex, "¡Has sido resucitado!", FontTypeNames.FONTTYPE_INFO)
 406             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Resucitar, 250, True))
 408             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("117", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
-410             Call RevivirUsuario(UserIndex)
+410             Call RevivirUsuario(UserIndex, True)
                 
 412             UserList(UserIndex).Accion.Particula = 0
 414             UserList(UserIndex).Accion.TipoAccion = Accion_Barra.CancelarAccion
