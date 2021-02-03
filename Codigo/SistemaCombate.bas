@@ -2732,14 +2732,14 @@ Public Function ProbabilidadApuñalar(ByVal UserIndex As Integer) As Integer
         
 104         Select Case .clase
     
-                Case eClass.Assasin '25
-106                 ProbabilidadApuñalar = 0.2 * Skill + 5
+                Case eClass.Assasin '20%
+106                 ProbabilidadApuñalar = 0.2 * Skill
     
-108             Case eClass.Pirat, eClass.Hunter '20
-110                 ProbabilidadApuñalar = 0.155 * Skill + 4.5
+108             Case eClass.Pirat, eClass.Hunter '15%
+110                 ProbabilidadApuñalar = 0.15 * Skill
     
-112             Case Else ' 15
-114                 ProbabilidadApuñalar = 0.11 * Skill + 4
+112             Case Else ' 10%
+114                 ProbabilidadApuñalar = 0.1 * Skill
     
             End Select
             
