@@ -276,6 +276,7 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
 414             .RegeneracionSta = 0
 416             .Nadando = 0
 418             .NecesitaOxigeno = False
+                .RevividoPorHechizo = False
 
             End With
     
@@ -667,7 +668,7 @@ Public Sub AumentarPJ(ByVal UserIndex As Integer)
            Exit Sub
 
 AumentarPJ_Err:
-1072      Call RegistrarError(Err.Number, Err.description, "ModBattle.AumentarPJ", Erl)
+1072      Call RegistrarError(Err.Number, Err.Description, "ModBattle.AumentarPJ", Erl)
 1074      Resume Next
          
 End Sub

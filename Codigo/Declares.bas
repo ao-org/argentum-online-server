@@ -1488,6 +1488,8 @@ Public Type UserFlags
     Nadando As Byte
     NecesitaOxigeno As Boolean
     
+    RevividoPorHechizo As Boolean
+    
     Ahogandose As Byte
     
     EnTorneo As Boolean
