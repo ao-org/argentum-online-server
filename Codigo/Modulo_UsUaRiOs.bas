@@ -98,7 +98,7 @@ ActStats_Err:
         
 End Sub
 
-Sub RevivirUsuario(ByVal UserIndex As Integer)
+Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As Boolean)
         
         On Error GoTo RevivirUsuario_Err
         
@@ -108,14 +108,12 @@ Sub RevivirUsuario(ByVal UserIndex As Integer)
 104         .Stats.MinHp = .Stats.MaxHp
 
             ' El comportamiento cambia si usamos el hechizo Resucitar
-106         If .flags.RevividoPorHechizo Then
+106         If MedianteHechizo Then
 108             .Stats.MinHp = 1
 110             .Stats.MinHam = 0
 112             .Stats.MinAGU = 0
             
 114             Call WriteUpdateHungerAndThirst(UserIndex)
-        
-116             .flags.RevividoPorHechizo = False
             End If
         
 118         Call WriteUpdateHP(UserIndex)
