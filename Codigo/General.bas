@@ -250,25 +250,29 @@ Function HayAgua(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) A
         On Error GoTo HayAgua_Err
         
 
-100     If Map > 0 And Map < NumMaps + 1 And X > 0 And X < 101 And Y > 0 And Y < 101 Then
-102         If ((MapData(Map, X, Y).Graphic(1) >= 1505 And MapData(Map, X, Y).Graphic(1) <= 1520) Or (MapData(Map, X, Y).Graphic(1) >= 124 And MapData(Map, X, Y).Graphic(1) <= 139) Or (MapData(Map, X, Y).Graphic(1) >= 24223 And MapData(Map, X, Y).Graphic(1) <= 24238) Or (MapData(Map, X, Y).Graphic(1) >= 24303 And MapData(Map, X, Y).Graphic(1) <= 24318) Or (MapData(Map, X, Y).Graphic(1) >= 468 And MapData(Map, X, Y).Graphic(1) <= 483) Or (MapData(Map, X, Y).Graphic(1) >= 44668 And MapData(Map, X, Y).Graphic(1) <= 44939) Or (MapData(Map, X, Y).Graphic(1) >= 24143 And MapData(Map, X, Y).Graphic(1) <= 24158)) Then
-104             HayAgua = True
+100     With MapData(Map, X, Y)
+102         If Map > 0 And Map < NumMaps + 1 And X > 0 And X < 101 And Y > 0 And Y < 101 Then
+104             HayAgua = ((.Graphic(1) >= 1505 And .Graphic(1) <= 1520) Or _
+                    (.Graphic(1) >= 124 And .Graphic(1) <= 139) Or _
+                    (.Graphic(1) >= 24223 And .Graphic(1) <= 24238) Or _
+                    (.Graphic(1) >= 24303 And .Graphic(1) <= 24318) Or _
+                    (.Graphic(1) >= 468 And .Graphic(1) <= 483) Or _
+                    (.Graphic(1) >= 44668 And .Graphic(1) <= 44939) Or _
+                    (.Graphic(1) >= 24143 And .Graphic(1) <= 24158)) Or _
+                    (.Graphic(1) >= 12628 And .Graphic(1) <= 12643) Or _
+                    (.Graphic(1) >= 2948 And .Graphic(1) <= 2963)
             Else
 106             HayAgua = False
-
+    
             End If
-
-        Else
-108         HayAgua = False
-
-        End If
+        End With
 
         
         Exit Function
 
 HayAgua_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "General.HayAgua", Erl)
-112     Resume Next
+108     Call RegistrarError(Err.Number, Err.Description, "General.HayAgua", Erl)
+110     Resume Next
         
 End Function
 
