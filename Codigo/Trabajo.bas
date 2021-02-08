@@ -1689,8 +1689,13 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
 190                     Probabilidad = 90
 
                 End Select
+                
+                Dim NumeroRandom As Byte
+                NumeroRandom = RandomNumber(1, 100)
+                
+                Call WriteConsoleMsg(LadronIndex, "Skill: " & RobarSkill & " - Probabilidad: " & Probabilidad & " - Random: " & NumeroRandom, FontTypeNames.FONTTYPE_INFO)
 
-192             If (RandomNumber(1, 100) < Probabilidad) Then 'Exito robo
+192             If (NumeroRandom < Probabilidad) Then 'Exito robo
                 
 194                 If UserList(VictimaIndex).flags.Comerciando Then
 196                     OtroUserIndex = UserList(VictimaIndex).ComUsu.DestUsu
@@ -1720,19 +1725,19 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
 
                             Dim n     As Long
 
-                            Dim extra As Single
+                            Dim Extra As Single
                             
                             ' Multiplicador extra por niveles
 216                         If (.Stats.ELV < 25) Then
-218                             extra = 1
+218                             Extra = 1
 220                         ElseIf (.Stats.ELV < 35) Then
-222                             extra = 1.05
+222                             Extra = 1.05
 224                         ElseIf (.Stats.ELV >= 35 And .Stats.ELV <= 40) Then
-226                             extra = 1.1
+226                             Extra = 1.1
 228                         ElseIf (.Stats.ELV >= 41 And .Stats.ELV < 45) Then
-230                             extra = 1.15
+230                             Extra = 1.15
 232                         ElseIf (.Stats.ELV >= 45 And .Stats.ELV <= 47) Then
-234                             extra = 1.2
+234                             Extra = 1.2
 
                             End If
                             
@@ -1741,14 +1746,14 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
                                 'Si no tiene puestos los guantes de hurto roba un 50% menos.
 238                             If .Invent.NudilloObjIndex > 0 Then
 240                                 If ObjData(.Invent.NudilloObjIndex).Subtipo = 5 Then
-242                                     n = RandomNumber(.Stats.ELV * 50 * extra, .Stats.ELV * 100 * extra) * OroMult
+242                                     n = RandomNumber(.Stats.ELV * 50 * Extra, .Stats.ELV * 100 * Extra) * OroMult
                                     Else
-244                                     n = RandomNumber(.Stats.ELV * 25 * extra, .Stats.ELV * 50 * extra) * OroMult
+244                                     n = RandomNumber(.Stats.ELV * 25 * Extra, .Stats.ELV * 50 * Extra) * OroMult
 
                                     End If
 
                                 Else
-246                                 n = RandomNumber(.Stats.ELV * 25 * extra, .Stats.ELV * 50 * extra) * OroMult
+246                                 n = RandomNumber(.Stats.ELV * 25 * Extra, .Stats.ELV * 50 * Extra) * OroMult
 
                                 End If
     
