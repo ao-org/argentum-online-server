@@ -1653,41 +1653,41 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
             
 146             RobarSkill = .Stats.UserSkills(eSkill.Robar)
 
-148             Select Case RobarSkill
 
-                    Case Is >= 10
+
+148             Select Case RobarSkill
+                    Case Is >= 0, Is < 10
+                        Probabilidad = 1
+                        
+                    Case Is >= 10, Is < 20
 150                     Probabilidad = 5
 
-152                 Case Is >= 20
+152                 Case Is >= 20, Is < 30
 154                     Probabilidad = 10
 
-156                 Case Is >= 30
+156                 Case Is >= 30, Is < 40
 158                     Probabilidad = 15
 
-160                 Case Is >= 40
+160                 Case Is >= 40, Is < 50
 162                     Probabilidad = 25
 
-164                 Case Is >= 50
+164                 Case Is >= 50, Is < 60
 166                     Probabilidad = 35
 
-168                 Case Is >= 60
+168                 Case Is >= 60, Is < 70
 170                     Probabilidad = 40
 
-172                 Case Is >= 70
+172                 Case Is >= 70, Is < 80
 174                     Probabilidad = 55
 
-176                 Case Is >= 80
+176                 Case Is >= 80, Is < 90
 178                     Probabilidad = 70
 
-180                 Case Is >= 90
+180                 Case Is >= 90, Is < 100
 182                     Probabilidad = 80
-
-184                 Case Is = 100
-186                     Probabilidad = 90
                 
-188                 Case Else
+188                 Case Is = 100
 190                     Probabilidad = 90
-
                 End Select
                 
                 Dim NumeroRandom As Byte
