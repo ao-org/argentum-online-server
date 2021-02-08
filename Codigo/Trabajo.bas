@@ -1528,293 +1528,281 @@ End Sub
 ' @param VictimaIndex Specifies reference to user that is being stolen
 
 Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
-        '*************************************************
-        'Author: Unknown
-        'Last modified: 05/04/2010
-        'Last Modification By: ZaMa
-        '24/07/08: Marco - Now it calls to WriteUpdateGold(VictimaIndex and LadronIndex) when the thief stoles gold. (MarKoxX)
-        '27/11/2009: ZaMa - Optimizacion de codigo.
-        '18/12/2009: ZaMa - Los ladrones ciudas pueden robar a pks.
-        '01/04/2010: ZaMa - Los ladrones pasan a robar oro acorde a su nivel.
-        '05/04/2010: ZaMa - Los armadas no pueden robarle a ciudadanos jamas.
-        '23/04/2010: ZaMa - No se puede robar mas sin energia.
-        '23/04/2010: ZaMa - El alcance de robo pasa a ser de 1 tile.
-        '*************************************************
+    '*************************************************
+    'Author: Unknown
+    'Last modified: 05/04/2010
+    'Last Modification By: ZaMa
+    '24/07/08: Marco - Now it calls to WriteUpdateGold(VictimaIndex and LadronIndex) when the thief stoles gold. (MarKoxX)
+    '27/11/2009: ZaMa - Optimizacion de codigo.
+    '18/12/2009: ZaMa - Los ladrones ciudas pueden robar a pks.
+    '01/04/2010: ZaMa - Los ladrones pasan a robar oro acorde a su nivel.
+    '05/04/2010: ZaMa - Los armadas no pueden robarle a ciudadanos jamas.
+    '23/04/2010: ZaMa - No se puede robar mas sin energia.
+    '23/04/2010: ZaMa - El alcance de robo pasa a ser de 1 tile.
+    '*************************************************
 
-        On Error GoTo ErrHandler
+    On Error GoTo ErrHandler
 
-        Dim OtroUserIndex As Integer
+    Dim OtroUserIndex As Integer
 
-100     If MapInfo(UserList(VictimaIndex).Pos.Map).Seguro = 1 Then Exit Sub
+    If MapInfo(UserList(VictimaIndex).Pos.Map).Seguro = 1 Then Exit Sub
     
-102     If UserList(VictimaIndex).flags.EnConsulta Then
-104         Call WriteConsoleMsg(LadronIndex, "¡No puedes robar a usuarios en consulta!", FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
+    If UserList(VictimaIndex).flags.EnConsulta Then
+        Call WriteConsoleMsg(LadronIndex, "¡No puedes robar a usuarios en consulta!", FontTypeNames.FONTTYPE_INFO)
+        Exit Sub
 
-        End If
+    End If
     
-106     With UserList(LadronIndex)
+    With UserList(LadronIndex)
     
-108         If .flags.Seguro Then
+        If .flags.Seguro Then
         
-110             If Status(LadronIndex) = 1 Then
-112                 Call WriteConsoleMsg(LadronIndex, "Debes quitarte el seguro para robarle a un ciudadano.", FontTypeNames.FONTTYPE_FIGHT)
+            If Status(LadronIndex) = 1 Then
+                Call WriteConsoleMsg(LadronIndex, "Debes quitarte el seguro para robarle a un ciudadano.", FontTypeNames.FONTTYPE_FIGHT)
+                Exit Sub
+
+            End If
+
+        Else
+
+            If .Faccion.ArmadaReal = 1 Then
+            
+                If Status(VictimaIndex) = 1 Then
+                    Call WriteConsoleMsg(LadronIndex, "Los miembros del Ejército Real no tienen permitido robarle a ciudadanos.", FontTypeNames.FONTTYPE_FIGHT)
                     Exit Sub
 
                 End If
 
+            End If
+
+        End If
+        
+        ' Caos robando a caos?
+        If UserList(VictimaIndex).Faccion.FuerzasCaos = 1 And .Faccion.FuerzasCaos = 1 Then
+            Call WriteConsoleMsg(LadronIndex, "No puedes robar a otros miembros de la Legión Oscura.", FontTypeNames.FONTTYPE_FIGHT)
+            Exit Sub
+
+        End If
+        
+        If TriggerZonaPelea(LadronIndex, VictimaIndex) <> TRIGGER6_AUSENTE Then Exit Sub
+        
+        ' Tiene energia?
+        If .Stats.MinSta < 15 Then
+        
+            If .genero = eGenero.Hombre Then
+                Call WriteConsoleMsg(LadronIndex, "Estás muy cansado para robar.", FontTypeNames.FONTTYPE_INFO)
+                
             Else
-
-114             If .Faccion.ArmadaReal = 1 Then
-            
-116                 If Status(VictimaIndex) = 1 Then
-118                     Call WriteConsoleMsg(LadronIndex, "Los miembros del Ejército Real no tienen permitido robarle a ciudadanos.", FontTypeNames.FONTTYPE_FIGHT)
-                        Exit Sub
-
-                    End If
-
-                End If
+                Call WriteConsoleMsg(LadronIndex, "Estás muy cansada para robar.", FontTypeNames.FONTTYPE_INFO)
 
             End If
-        
-            ' Caos robando a caos?
-120         If UserList(VictimaIndex).Faccion.FuerzasCaos = 1 And .Faccion.FuerzasCaos = 1 Then
-122             Call WriteConsoleMsg(LadronIndex, "No puedes robar a otros miembros de la Legión Oscura.", FontTypeNames.FONTTYPE_FIGHT)
-                Exit Sub
-
-            End If
-        
-124         If TriggerZonaPelea(LadronIndex, VictimaIndex) <> TRIGGER6_AUSENTE Then Exit Sub
-        
-            ' Tiene energia?
-126         If .Stats.MinSta < 15 Then
-        
-128             If .genero = eGenero.Hombre Then
-130                 Call WriteConsoleMsg(LadronIndex, "Estás muy cansado para robar.", FontTypeNames.FONTTYPE_INFO)
-                
-                Else
-132                 Call WriteConsoleMsg(LadronIndex, "Estás muy cansada para robar.", FontTypeNames.FONTTYPE_INFO)
-
-                End If
             
-                Exit Sub
+            Exit Sub
 
-            End If
+        End If
         
-134         If .GuildIndex > 0 Then
+        If .GuildIndex > 0 Then
         
-136             If .flags.SeguroClan Then
+            If .flags.SeguroClan Then
             
-138                 If .GuildIndex = UserList(VictimaIndex).GuildIndex Then
-140                     Call WriteConsoleMsg(LadronIndex, "No podes robarle a un miembro de tu clan.", FontTypeNames.FONTTYPE_INFOIAO)
-                        Exit Sub
-
-                    End If
+                If .GuildIndex = UserList(VictimaIndex).GuildIndex Then
+                    Call WriteConsoleMsg(LadronIndex, "No podes robarle a un miembro de tu clan.", FontTypeNames.FONTTYPE_INFOIAO)
+                    Exit Sub
 
                 End If
 
             End If
 
-            'If .Grupo.EnGrupo > 0 Then
+        End If
+
+        'If .Grupo.EnGrupo > 0 Then
         
-            '    If .GuildIndex = UserList(VictimaIndex).GuildIndex Then
-            '        Call WriteConsoleMsg(LadronIndex, "No podes robarle a un miembro de tu grupo.", FontTypeNames.FONTTYPE_INFOIAO)
-            '        Exit Sub
+        '    If .GuildIndex = UserList(VictimaIndex).GuildIndex Then
+        '        Call WriteConsoleMsg(LadronIndex, "No podes robarle a un miembro de tu grupo.", FontTypeNames.FONTTYPE_INFOIAO)
+        '        Exit Sub
 
-            '    End If
+        '    End If
 
-            'End If
+        'End If
 
-            'If .Grupo.EnGrupo = True Then
+        'If .Grupo.EnGrupo = True Then
 
-            '    Dim i As Byte
-            '    For i = 1 To UserList(.Grupo.Lider).Grupo.CantidadMiembros
+        '    Dim i As Byte
+        '    For i = 1 To UserList(.Grupo.Lider).Grupo.CantidadMiembros
 
-            '        If UserList(.Grupo.Lider).Grupo.Miembros(i) = VictimaIndex Then
-            '            Call WriteConsoleMsg(LadronIndex, "No podes robarle a un miembro de tu grupo.", FontTypeNames.FONTTYPE_INFOIAO)
-            '            Exit Sub
+        '        If UserList(.Grupo.Lider).Grupo.Miembros(i) = VictimaIndex Then
+        '            Call WriteConsoleMsg(LadronIndex, "No podes robarle a un miembro de tu grupo.", FontTypeNames.FONTTYPE_INFOIAO)
+        '            Exit Sub
 
-            '        End If
+        '        End If
 
-            '    Next i
+        '    Next i
 
-            'End If
+        'End If
         
-            ' Quito energia
-142         Call QuitarSta(LadronIndex, 15)
+        ' Quito energia
+        Call QuitarSta(LadronIndex, 15)
                 
-144         If UserList(VictimaIndex).flags.Privilegios And PlayerType.user Then
+        If UserList(VictimaIndex).flags.Privilegios And PlayerType.user Then
             
-                Dim Probabilidad As Byte
+            Dim Probabilidad As Byte
 
-                Dim res          As Integer
+            Dim res          As Integer
 
-                Dim RobarSkill   As Byte
+            Dim RobarSkill   As Byte
             
-146             RobarSkill = .Stats.UserSkills(eSkill.Robar)
+            RobarSkill = .Stats.UserSkills(eSkill.Robar)
 
+            If (RobarSkill > 0 And RobarSkill < 10) Then
+                Probabilidad = 1
+            ElseIf (RobarSkill >= 10 And RobarSkill <= 20) Then
+                Probabilidad = 5
+            ElseIf (RobarSkill >= 20 And RobarSkill <= 30) Then
+                Probabilidad = 10
+            ElseIf (RobarSkill >= 30 And RobarSkill <= 40) Then
+                Probabilidad = 15
+            ElseIf (RobarSkill >= 40 And RobarSkill <= 50) Then
+                Probabilidad = 25
+            ElseIf (RobarSkill >= 50 And RobarSkill <= 60) Then
+                Probabilidad = 35
+            ElseIf (RobarSkill >= 60 And RobarSkill <= 70) Then
+                Probabilidad = 40
+            ElseIf (RobarSkill >= 70 And RobarSkill <= 80) Then
+                Probabilidad = 55
+            ElseIf (RobarSkill >= 80 And RobarSkill <= 90) Then
+                Probabilidad = 70
+            ElseIf (RobarSkill >= 90 And RobarSkill < 100) Then
+                Probabilidad = 80
+            ElseIf (RobarSkill = 100) Then
+                Probabilidad = 90
+            End If
 
+            Dim NumeroRandom As Byte
+            NumeroRandom = RandomNumber(1, 100)
+                
+            Call WriteConsoleMsg(LadronIndex, "Skill: " & RobarSkill & " - Probabilidad: " & Probabilidad & " - Random: " & NumeroRandom, FontTypeNames.FONTTYPE_INFO)
 
-148             Select Case RobarSkill
-                    Case Is >= 0, Is < 10
-                        Probabilidad = 1
+            If (NumeroRandom < Probabilidad) Then 'Exito robo
+                
+                If UserList(VictimaIndex).flags.Comerciando Then
+                    OtroUserIndex = UserList(VictimaIndex).ComUsu.DestUsu
                         
-                    Case Is >= 10, Is < 20
-150                     Probabilidad = 5
-
-152                 Case Is >= 20, Is < 30
-154                     Probabilidad = 10
-
-156                 Case Is >= 30, Is < 40
-158                     Probabilidad = 15
-
-160                 Case Is >= 40, Is < 50
-162                     Probabilidad = 25
-
-164                 Case Is >= 50, Is < 60
-166                     Probabilidad = 35
-
-168                 Case Is >= 60, Is < 70
-170                     Probabilidad = 40
-
-172                 Case Is >= 70, Is < 80
-174                     Probabilidad = 55
-
-176                 Case Is >= 80, Is < 90
-178                     Probabilidad = 70
-
-180                 Case Is >= 90, Is < 100
-182                     Probabilidad = 80
-                
-188                 Case Is = 100
-190                     Probabilidad = 90
-                End Select
-                
-                Dim NumeroRandom As Byte
-                NumeroRandom = RandomNumber(1, 100)
-                
-                Call WriteConsoleMsg(LadronIndex, "Skill: " & RobarSkill & " - Probabilidad: " & Probabilidad & " - Random: " & NumeroRandom, FontTypeNames.FONTTYPE_INFO)
-
-192             If (NumeroRandom < Probabilidad) Then 'Exito robo
-                
-194                 If UserList(VictimaIndex).flags.Comerciando Then
-196                     OtroUserIndex = UserList(VictimaIndex).ComUsu.DestUsu
+                    If OtroUserIndex > 0 And OtroUserIndex <= MaxUsers Then
+                        Call WriteConsoleMsg(VictimaIndex, "Comercio cancelado, ¡te están robando!", FontTypeNames.FONTTYPE_TALK)
+                        Call WriteConsoleMsg(OtroUserIndex, "Comercio cancelado, al otro usuario le robaron.", FontTypeNames.FONTTYPE_TALK)
                         
-198                     If OtroUserIndex > 0 And OtroUserIndex <= MaxUsers Then
-200                         Call WriteConsoleMsg(VictimaIndex, "Comercio cancelado, ¡te están robando!", FontTypeNames.FONTTYPE_TALK)
-202                         Call WriteConsoleMsg(OtroUserIndex, "Comercio cancelado, al otro usuario le robaron.", FontTypeNames.FONTTYPE_TALK)
-                        
-204                         Call LimpiarComercioSeguro(VictimaIndex)
-
-                        End If
+                        Call LimpiarComercioSeguro(VictimaIndex)
 
                     End If
+
+                End If
                
-206                 If (RandomNumber(1, 50) < 25) And (.clase = eClass.Thief) Then '50% de robar items
+                If (RandomNumber(1, 50) < 25) And (.clase = eClass.Thief) Then '50% de robar items
                     
-208                     If TieneObjetosRobables(VictimaIndex) Then
-210                         Call RobarObjeto(LadronIndex, VictimaIndex)
-                        Else
-212                         Call WriteConsoleMsg(LadronIndex, UserList(VictimaIndex).name & " no tiene objetos.", FontTypeNames.FONTTYPE_INFO)
+                    If TieneObjetosRobables(VictimaIndex) Then
+                        Call RobarObjeto(LadronIndex, VictimaIndex)
+                    Else
+                        Call WriteConsoleMsg(LadronIndex, UserList(VictimaIndex).name & " no tiene objetos.", FontTypeNames.FONTTYPE_INFO)
+
+                    End If
+
+                Else '50% de robar oro
+
+                    If UserList(VictimaIndex).Stats.GLD > 0 Then
+
+                        Dim n     As Long
+
+                        Dim Extra As Single
+                            
+                        ' Multiplicador extra por niveles
+                        If (.Stats.ELV < 25) Then
+                            Extra = 1
+                        ElseIf (.Stats.ELV < 35) Then
+                            Extra = 1.05
+                        ElseIf (.Stats.ELV >= 35 And .Stats.ELV <= 40) Then
+                            Extra = 1.1
+                        ElseIf (.Stats.ELV >= 41 And .Stats.ELV < 45) Then
+                            Extra = 1.15
+                        ElseIf (.Stats.ELV >= 45 And .Stats.ELV <= 47) Then
+                            Extra = 1.2
 
                         End If
-
-                    Else '50% de robar oro
-
-214                     If UserList(VictimaIndex).Stats.GLD > 0 Then
-
-                            Dim n     As Long
-
-                            Dim Extra As Single
                             
-                            ' Multiplicador extra por niveles
-216                         If (.Stats.ELV < 25) Then
-218                             Extra = 1
-220                         ElseIf (.Stats.ELV < 35) Then
-222                             Extra = 1.05
-224                         ElseIf (.Stats.ELV >= 35 And .Stats.ELV <= 40) Then
-226                             Extra = 1.1
-228                         ElseIf (.Stats.ELV >= 41 And .Stats.ELV < 45) Then
-230                             Extra = 1.15
-232                         ElseIf (.Stats.ELV >= 45 And .Stats.ELV <= 47) Then
-234                             Extra = 1.2
+                        If .clase = eClass.Thief Then
 
-                            End If
-                            
-236                         If .clase = eClass.Thief Then
-
-                                'Si no tiene puestos los guantes de hurto roba un 50% menos.
-238                             If .Invent.NudilloObjIndex > 0 Then
-240                                 If ObjData(.Invent.NudilloObjIndex).Subtipo = 5 Then
-242                                     n = RandomNumber(.Stats.ELV * 50 * Extra, .Stats.ELV * 100 * Extra) * OroMult
-                                    Else
-244                                     n = RandomNumber(.Stats.ELV * 25 * Extra, .Stats.ELV * 50 * Extra) * OroMult
-
-                                    End If
-
+                            'Si no tiene puestos los guantes de hurto roba un 50% menos.
+                            If .Invent.NudilloObjIndex > 0 Then
+                                If ObjData(.Invent.NudilloObjIndex).Subtipo = 5 Then
+                                    n = RandomNumber(.Stats.ELV * 50 * Extra, .Stats.ELV * 100 * Extra) * OroMult
                                 Else
-246                                 n = RandomNumber(.Stats.ELV * 25 * Extra, .Stats.ELV * 50 * Extra) * OroMult
+                                    n = RandomNumber(.Stats.ELV * 25 * Extra, .Stats.ELV * 50 * Extra) * OroMult
 
                                 End If
-    
+
                             Else
-248                             n = RandomNumber(1, 100) * OroMult
-    
+                                n = RandomNumber(.Stats.ELV * 25 * Extra, .Stats.ELV * 50 * Extra) * OroMult
+
                             End If
-
-250                         If n > UserList(VictimaIndex).Stats.GLD Then n = UserList(VictimaIndex).Stats.GLD
-                        
-252                         UserList(VictimaIndex).Stats.GLD = UserList(VictimaIndex).Stats.GLD - n
-                        
-254                         .Stats.GLD = .Stats.GLD + n
-
-256                         If .Stats.GLD > MAXORO Then .Stats.GLD = MAXORO
-                        
-258                         Call WriteConsoleMsg(LadronIndex, "Le has robado " & PonerPuntos(n) & " monedas de oro a " & UserList(VictimaIndex).name, FontTypeNames.FONTTYPE_INFO)
-260                         Call WriteUpdateGold(LadronIndex) 'Le actualizamos la billetera al ladron
-                        
-262                         Call WriteUpdateGold(VictimaIndex) 'Le actualizamos la billetera a la victima
+    
                         Else
-264                         Call WriteConsoleMsg(LadronIndex, UserList(VictimaIndex).name & " no tiene oro.", FontTypeNames.FONTTYPE_INFO)
-
+                            n = RandomNumber(1, 100) * OroMult
+    
                         End If
 
+                        If n > UserList(VictimaIndex).Stats.GLD Then n = UserList(VictimaIndex).Stats.GLD
+                        
+                        UserList(VictimaIndex).Stats.GLD = UserList(VictimaIndex).Stats.GLD - n
+                        
+                        .Stats.GLD = .Stats.GLD + n
+
+                        If .Stats.GLD > MAXORO Then .Stats.GLD = MAXORO
+                        
+                        Call WriteConsoleMsg(LadronIndex, "Le has robado " & PonerPuntos(n) & " monedas de oro a " & UserList(VictimaIndex).name, FontTypeNames.FONTTYPE_INFO)
+                        Call WriteConsoleMsg(VictimaIndex, UserList(LadronIndex).name & " te ha robado " & PonerPuntos(n) & " monedas de oro.", FontTypeNames.FONTTYPE_INFO)
+                        Call WriteUpdateGold(LadronIndex) 'Le actualizamos la billetera al ladron
+                        
+                        Call WriteUpdateGold(VictimaIndex) 'Le actualizamos la billetera a la victima
+                    Else
+                        Call WriteConsoleMsg(LadronIndex, UserList(VictimaIndex).name & " no tiene oro.", FontTypeNames.FONTTYPE_INFO)
+
                     End If
-                
-266                 Call SubirSkill(LadronIndex, eSkill.Robar)
-            
-                Else
-268                 Call WriteConsoleMsg(LadronIndex, "¡No has logrado robar nada!", FontTypeNames.FONTTYPE_INFO)
-270                 Call WriteConsoleMsg(VictimaIndex, "¡" & .name & " ha intentado robarte!", FontTypeNames.FONTTYPE_INFO)
-                
-272                 Call SubirSkill(LadronIndex, eSkill.Robar)
 
                 End If
+                
+                Call SubirSkill(LadronIndex, eSkill.Robar)
             
-274             If Status(LadronIndex) = 1 Then Call VolverCriminal(LadronIndex)
-        
-276             If .Faccion.ArmadaReal = 1 Then Call ExpulsarFaccionReal(LadronIndex)
-            
-                'If Not Criminal(LadronIndex) Then
-                'If Not Criminal(VictimaIndex) Then
-                'Call VolverCriminal(LadronIndex)
-                'End If
-                'End If
-            
-                ' Se pudo haber convertido si robo a un ciuda
-                'If Criminal(LadronIndex) Then
-                '.Reputacion.LadronesRep = .Reputacion.LadronesRep + vlLadron
-                'If .Reputacion.LadronesRep > MAXREP Then .Reputacion.LadronesRep = MAXREP
-                'End If
+            Else
+                Call WriteConsoleMsg(LadronIndex, "¡No has logrado robar nada!", FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(VictimaIndex, "¡" & .name & " ha intentado robarte!", FontTypeNames.FONTTYPE_INFO)
+                
+                Call SubirSkill(LadronIndex, eSkill.Robar)
 
             End If
+            
+            If Status(LadronIndex) = 1 Then Call VolverCriminal(LadronIndex)
+        
+            If .Faccion.ArmadaReal = 1 Then Call ExpulsarFaccionReal(LadronIndex)
+            
+            'If Not Criminal(LadronIndex) Then
+            'If Not Criminal(VictimaIndex) Then
+            'Call VolverCriminal(LadronIndex)
+            'End If
+            'End If
+            
+            ' Se pudo haber convertido si robo a un ciuda
+            'If Criminal(LadronIndex) Then
+            '.Reputacion.LadronesRep = .Reputacion.LadronesRep + vlLadron
+            'If .Reputacion.LadronesRep > MAXREP Then .Reputacion.LadronesRep = MAXREP
+            'End If
 
-        End With
+        End If
 
-        Exit Sub
+    End With
+
+    Exit Sub
 
 ErrHandler:
-278     Call LogError("Error en DoRobar. Error " & Err.Number & " : " & Err.Description)
+    Call LogError("Error en DoRobar. Error " & Err.Number & " : " & Err.Description)
 
 End Sub
 
@@ -1933,19 +1921,19 @@ Public Sub RobarObjeto(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integ
         
 152             If UserList(LadronIndex).clase = eClass.Thief Then
 154                 Call WriteConsoleMsg(LadronIndex, "Has robado " & MiObj.Amount & " " & ObjData(MiObj.ObjIndex).name, FontTypeNames.FONTTYPE_INFO)
-                
+156                 Call WriteConsoleMsg(VictimaIndex, UserList(LadronIndex).name & " te ha robado " & MiObj.Amount & " " & ObjData(MiObj.ObjIndex).name, FontTypeNames.FONTTYPE_INFO)
                 Else
-156                 Call WriteConsoleMsg(LadronIndex, "Has hurtado " & MiObj.Amount & " " & ObjData(MiObj.ObjIndex).name, FontTypeNames.FONTTYPE_INFO)
+158                 Call WriteConsoleMsg(LadronIndex, "Has hurtado " & MiObj.Amount & " " & ObjData(MiObj.ObjIndex).name, FontTypeNames.FONTTYPE_INFO)
                 
                 End If
 
             Else
-158             Call WriteConsoleMsg(LadronIndex, "No has logrado robar ningun objeto.", FontTypeNames.FONTTYPE_INFO)
+160             Call WriteConsoleMsg(LadronIndex, "No has logrado robar ningun objeto.", FontTypeNames.FONTTYPE_INFO)
 
             End If
 
             'If exiting, cancel de quien es robado
-160         Call CancelExit(VictimaIndex)
+162         Call CancelExit(VictimaIndex)
 
         End With
 
@@ -1953,7 +1941,7 @@ Public Sub RobarObjeto(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integ
         Exit Sub
 
 RobarObjeto_Err:
-162     Call RegistrarError(Err.Number, Err.Description, "Trabajo.RobarObjeto", Erl)
+164     Call RegistrarError(Err.Number, Err.Description, "Trabajo.RobarObjeto", Erl)
 
         
 End Sub
