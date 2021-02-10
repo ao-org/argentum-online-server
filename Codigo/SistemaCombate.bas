@@ -636,7 +636,7 @@ Public Sub UserDañoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 118             Call WriteLocaleMsg(UserIndex, "382", FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(Daño))
             End If
 
-            ' Golpe crítico (ignora defensa)
+            ' Golpe crítico
 120         If PuedeGolpeCritico(UserIndex) Then
                 ' Si acertó - Doble chance contra NPCs
 122             If RandomNumber(1, 100) <= ProbabilidadGolpeCritico(UserIndex) * 2 Then
@@ -2765,7 +2765,7 @@ Public Function ProbabilidadGolpeCritico(ByVal UserIndex As Integer) As Integer
 
 100     With UserList(UserIndex)
 
-102         ProbabilidadGolpeCritico = 0.2 * .Stats.UserSkills(eSkill.Wrestling) + 5
+102         ProbabilidadGolpeCritico = 0.2 * .Stats.UserSkills(eSkill.Wrestling)
 
         End With
 
