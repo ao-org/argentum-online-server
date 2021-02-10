@@ -187,7 +187,7 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
                         Case 2  'Galera
         
 108                         If .clase <> eClass.Assasin And .clase <> eClass.Pirat And .clase <> eClass.Bandit And .clase <> eClass.Cleric And .clase <> eClass.Thief And .clase <> eClass.Paladin Then
-110                             Call WriteConsoleMsg(UserIndex, "Solo los Piratas, Asesinos, Bandidos, Clérigos, Ladrones y Paladines pueden usar Galera!!", FontTypeNames.FONTTYPE_INFO)
+110                             Call WriteConsoleMsg(UserIndex, "¡Solo los Piratas, Asesinos, Bandidos, Clérigos, Ladrones y Paladines pueden usar galera!", FontTypeNames.FONTTYPE_INFO)
                                 Exit Sub
                             End If
                         
@@ -2381,74 +2381,61 @@ Public Sub DoDesequipar(ByVal UserIndex As Integer, ByVal VictimIndex As Integer
                     ' Se lo desequipo
 116                 Call Desequipar(VictimIndex, .Invent.EscudoEqpSlot)
                 
-118                 Call WriteConsoleMsg(UserIndex, "Has logrado desequipar el escudo de tu oponente!", FontTypeNames.FONTTYPE_FIGHT)
-                
-120                 If .Stats.ELV < 20 Then
-122                     Call WriteConsoleMsg(VictimIndex, "Tu oponente te ha desequipado el escudo!", FontTypeNames.FONTTYPE_FIGHT)
+118                 Call WriteConsoleMsg(UserIndex, "Has logrado desequipar el escudo de " & .name & ".", FontTypeNames.FONTTYPE_FIGHT)
+120                 Call WriteConsoleMsg(VictimIndex, UserList(UserIndex).name & " te ha desequipado el escudo.", FontTypeNames.FONTTYPE_FIGHT)
 
-                    End If
-                
                     Exit Sub
 
                 End If
             
-124             AlgoEquipado = True
+122             AlgoEquipado = True
 
             End If
         
             ' No tiene escudo, o fallo desequiparlo, entonces trata de desequipar arma
-126         If .Invent.WeaponEqpObjIndex > 0 Then
+124         If .Invent.WeaponEqpObjIndex > 0 Then
             
-128             Resultado = RandomNumber(1, 100)
+126             Resultado = RandomNumber(1, 100)
             
-130             If Resultado <= Probabilidad Then
+128             If Resultado <= Probabilidad Then
                     ' Se lo desequipo
-132                 Call Desequipar(VictimIndex, .Invent.WeaponEqpSlot)
+130                 Call Desequipar(VictimIndex, .Invent.WeaponEqpSlot)
                 
-134                 Call WriteConsoleMsg(UserIndex, "Has logrado desarmar a tu oponente!", FontTypeNames.FONTTYPE_FIGHT)
-                
-136                 If .Stats.ELV < 20 Then
-138                     Call WriteConsoleMsg(VictimIndex, "Tu oponente te ha desarmado!", FontTypeNames.FONTTYPE_FIGHT)
+132                 Call WriteConsoleMsg(UserIndex, "Has logrado desarmar a tu oponente!", FontTypeNames.FONTTYPE_FIGHT)
+134                 Call WriteConsoleMsg(VictimIndex, UserList(UserIndex).name & " te ha desarmado.", FontTypeNames.FONTTYPE_FIGHT)
 
-                    End If
-                
                     Exit Sub
 
                 End If
             
-140             AlgoEquipado = True
+136             AlgoEquipado = True
 
             End If
         
             ' No tiene arma, o fallo desequiparla, entonces trata de desequipar casco
-142         If .Invent.CascoEqpObjIndex > 0 Then
+138         If .Invent.CascoEqpObjIndex > 0 Then
             
-144             Resultado = RandomNumber(1, 100)
+140             Resultado = RandomNumber(1, 100)
             
-146             If Resultado <= Probabilidad Then
+142             If Resultado <= Probabilidad Then
                     ' Se lo desequipo
-148                 Call Desequipar(VictimIndex, .Invent.CascoEqpSlot)
+144                 Call Desequipar(VictimIndex, .Invent.CascoEqpSlot)
                 
-150                 Call WriteConsoleMsg(UserIndex, "Has logrado desequipar el casco de tu oponente!", FontTypeNames.FONTTYPE_FIGHT)
-                
-152                 If .Stats.ELV < 20 Then
-154                     Call WriteConsoleMsg(VictimIndex, "Tu oponente te ha desequipado el casco!", FontTypeNames.FONTTYPE_FIGHT)
+146                 Call WriteConsoleMsg(UserIndex, "Has logrado desequipar el casco de tu oponente!", FontTypeNames.FONTTYPE_FIGHT)
+148                 Call WriteConsoleMsg(VictimIndex, UserList(UserIndex).name & " te ha desequipado el casco.", FontTypeNames.FONTTYPE_FIGHT)
 
-                    End If
-                
                     Exit Sub
 
                 End If
             
-156             AlgoEquipado = True
+150             AlgoEquipado = True
 
             End If
     
-158         If AlgoEquipado Then
-160             Call WriteConsoleMsg(UserIndex, "Tu oponente no tiene equipado items!", FontTypeNames.FONTTYPE_FIGHT)
+152         If AlgoEquipado Then
+154             Call WriteConsoleMsg(UserIndex, "Tu oponente no tiene equipado items!", FontTypeNames.FONTTYPE_FIGHT)
             Else
-162             Call WriteConsoleMsg(UserIndex, "No has logrado desequipar ningun item a tu oponente!", FontTypeNames.FONTTYPE_FIGHT)
-
+156             Call WriteConsoleMsg(UserIndex, "No has logrado desequipar ningun item a tu oponente!", FontTypeNames.FONTTYPE_FIGHT)
             End If
     
         End With
@@ -2457,7 +2444,7 @@ Public Sub DoDesequipar(ByVal UserIndex As Integer, ByVal VictimIndex As Integer
         Exit Sub
 
 DoDesequipar_Err:
-164     Call RegistrarError(Err.Number, Err.Description, "Trabajo.DoDesequipar", Erl)
+158     Call RegistrarError(Err.Number, Err.Description, "Trabajo.DoDesequipar", Erl)
 
         
 End Sub
