@@ -118,9 +118,9 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 
 150             .Stats.MinHp = .Stats.MinHp - Daño
         
-                'Call WriteConsoleMsg(UserIndex, NpcList(NpcIndex).name & " te ha quitado " & Daño & " puntos de vida.", FontTypeNames.FONTTYPE_FIGHT)
+                Call WriteConsoleMsg(UserIndex, NpcList(NpcIndex).name & " te ha quitado " & Daño & " puntos de vida.", FontTypeNames.FONTTYPE_FIGHT)
                 
-152             Call WriteLocaleMsg(UserIndex, "34", FontTypeNames.FONTTYPE_FIGHT, NpcList(NpcIndex).name & "¬" & DañoStr)
+152             'Call WriteLocaleMsg(UserIndex, "34", FontTypeNames.FONTTYPE_FIGHT, NpcList(NpcIndex).name & "¬" & DañoStr)
 
 153             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageTextCharDrop(DañoStr, .Char.CharIndex, vbRed))
 
