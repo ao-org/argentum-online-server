@@ -58,7 +58,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 
         Dim EraCriminal As Byte
 
-        Dim TiempoRespw As Integer
+        Dim TiempoRespw As Long
 
 102     TiempoRespw = NpcList(NpcIndex).Contadores.InvervaloRespawn
 
