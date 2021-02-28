@@ -2109,9 +2109,12 @@ Sub LoadMapData()
 
         On Error GoTo man
     
-102     NumMaps = CountFiles(MapPath, "*.csm")
-    
-104     NumMaps = NumMaps - 1
+        If RunningInVB() Then
+            NumMaps = 869
+        Else
+            NumMaps = CountFiles(MapPath, "*.csm")
+            NumMaps = NumMaps - 1
+        End If
 
 105     Call InitAreas
     
