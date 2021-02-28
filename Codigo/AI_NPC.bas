@@ -40,14 +40,14 @@ Public Enum TipoAI
     SigueAmo = 8
     NpcAtacaNpc = 9
     NpcPathfinding = 10
-    
+
     'Pretorianos
     SacerdotePretorianoAi = 11
     GuerreroPretorianoAi = 12
     MagoPretorianoAi = 13
     CazadorPretorianoAi = 14
     ReyPretoriano = 15
-    
+
     ' Animado
     Caminata = 20
 
@@ -145,9 +145,7 @@ Private Sub IrUsuarioCercano(ByVal NpcIndex As Integer)
 
 130                                     If Distancia(.Pos, UserList(NpcList(NpcIndex).Target).Pos) > 1 Then
 
-132                                         If .flags.LanzaSpells <> 0 Then
-134                                             Call NpcLanzaUnSpell(NpcIndex, NpcList(NpcIndex).Target)
-                                            End If
+                                            Call NpcLanzaUnSpell(NpcIndex, NpcList(NpcIndex).Target)
 
                                         Else
 
@@ -947,23 +945,23 @@ Sub NPCAI(ByVal NpcIndex As Integer)
 
 100     With NpcList(NpcIndex)
 
+            ' Ningun NPC se puede mover si esta Inmovilizado o Paralizado
+            If .flags.Inmovilizado = 1 Or .flags.Paralizado = 1 Then Exit Sub
+
             '<<<<<<<<<<<Movimiento>>>>>>>>>>>>>>>>
 102         Select Case .Movement
 
                 Case TipoAI.ESTATICO
                     Rem  Debug.Print "Es un NPC estatico, no hace nada."
 104                 falladesc = " fallo en estatico"
-            
+
 106             Case TipoAI.MueveAlAzar
 108                 falladesc = " fallo al azar"
 
-110                 If .flags.Inmovilizado = 1 Or .flags.Paralizado = 1 Then Exit Sub
 112                 If .NPCtype = eNPCType.GuardiaReal Then
-                        'Call GuardiasAI(NpcIndex, False)
 114                     Call PersigueCriminal(NpcIndex)
 
 116                 ElseIf .NPCtype = eNPCType.Guardiascaos Then
-                        'Call GuardiasAI(NpcIndex, True)
 118                     Call PersigueCiudadano(NpcIndex)
 
                     Else
@@ -973,33 +971,27 @@ Sub NPCAI(ByVal NpcIndex As Integer)
 124                         Call AnimacionIdle(NpcIndex, True)
                         End If
                     End If
-            
-                    'Va hacia el usuario cercano
+
 126             Case TipoAI.NpcMaloAtacaUsersBuenos
 128                 falladesc = " fallo NpcMaloAtacaUsersBuenos"
-                    'Debug.Print "atacar "
-                    'Call PersigueCiudadano(NpcIndex)
 130                 Call IrUsuarioCercano(NpcIndex)
-            
+
                     'Va hacia el usuario que lo ataco(FOLLOW)
 132             Case TipoAI.NPCDEFENSA
-
 134                 Call SeguirAgresor(NpcIndex)
-            
+
                     'Persigue criminales
 136             Case TipoAI.GuardiasAtacanCriminales
 138                 Call PersigueCriminal(NpcIndex)
-                    
+
 140             Case TipoAI.GuardiasAtacanCiudadanos
 142                 Call PersigueCiudadano(NpcIndex)
-                        
+
 144             Case TipoAI.NpcAtacaNpc
 146                 Call AiNpcAtacaNpc(NpcIndex)
-            
+
 148             Case TipoAI.NpcPathfinding
 150                 falladesc = " fallo NpcPathfinding"
-
-152                 If .flags.Inmovilizado = 1 Then Exit Sub
 
 154                 If ReCalculatePath(NpcIndex) Then
 156                     Call PathFindingAI(NpcIndex)
@@ -1021,19 +1013,17 @@ Sub NPCAI(ByVal NpcIndex As Integer)
                         End If
 
                     End If
-            
+
 168             Case TipoAI.SigueAmo
 170                 falladesc = " fallo SigueAmo"
-            
-172                 If .flags.Inmovilizado = 1 Or .flags.Paralizado = 1 Then Exit Sub
+
 174                 Call SeguirAmo(NpcIndex)
 
                 Case TipoAI.Caminata
                     falladesc = " fallo Caminata"
-                    
-                    If .flags.Inmovilizado = 1 Or .flags.Paralizado = 1 Then Exit Sub
+
                     Call HacerCaminata(NpcIndex)
-            
+
             End Select
 
         End With
@@ -1155,6 +1145,7 @@ Function PathFindingAI(ByVal NpcIndex As Integer) As Boolean
         '#################################################################
         Dim Y As Long
         Dim X As Long
+        Dim tmpUserIndex As Integer
     
 100     For Y = NpcList(NpcIndex).Pos.Y - 10 To NpcList(NpcIndex).Pos.Y + 10    'Makes a loop that looks at
 102         For X = NpcList(NpcIndex).Pos.X - 10 To NpcList(NpcIndex).Pos.X + 10   '5 tiles in every direction
@@ -1166,8 +1157,7 @@ Function PathFindingAI(ByVal NpcIndex As Integer) As Boolean
 106                 If MapData(NpcList(NpcIndex).Pos.Map, X, Y).UserIndex > 0 Then
 
                         'Move towards user
-                        Dim tmpUserIndex As Integer
-108                         tmpUserIndex = MapData(NpcList(NpcIndex).Pos.Map, X, Y).UserIndex
+108                     tmpUserIndex = MapData(NpcList(NpcIndex).Pos.Map, X, Y).UserIndex
 
 110                     With UserList(tmpUserIndex)
 
