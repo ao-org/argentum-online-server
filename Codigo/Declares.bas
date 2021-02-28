@@ -2365,6 +2365,8 @@ Public Declare Function GetPrivateProfileString Lib "kernel32" Alias "GetPrivate
 
 Public Declare Sub ZeroMemory Lib "kernel32.dll" Alias "RtlZeroMemory" (ByRef Destination As Any, ByVal Length As Long)
 
+' Los Objetos Criticos nunca desaparecen del inventario de los npcs vendedores, una vez que
+' se venden los 10.000 (max. cantidad de items x slot) vuelven a reabastecer.
 Public Enum e_ObjetosCriticos
 
     Manzana = 1
