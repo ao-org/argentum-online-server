@@ -2135,7 +2135,7 @@ Private Sub TimerRespawn_Timer()
                     RespawnList(NpcIndex).flags.NPCActive = False
 
                     If RespawnList(NpcIndex).InformarRespawn = 1 Then
-                        Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(RespawnList(NpcIndex).name & " ha regresado y está listo para enfrentarte.", FontTypeNames.FONTTYPE_EXP))
+                        Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(RespawnList(NpcIndex).name & " ha vuelto a este mundo.", FontTypeNames.FONTTYPE_EXP))
                         Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(257, NO_3D_SOUND, NO_3D_SOUND)) 'Para evento de respwan
                         
                         'Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(246, NO_3D_SOUND, NO_3D_SOUND)) 'Para evento de respwan
