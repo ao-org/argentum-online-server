@@ -3123,10 +3123,10 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
            
 1158             Case eOBJType.otBarcos
                 
-                     ' Piratas y trabajadores navegan al nivel 20
+                     ' Piratas y trabajadores navegan al nivel 23
 1160                 If .clase = eClass.Trabajador Or .clase = eClass.Pirat Then
-1162                     If .Stats.ELV < 20 Then
-1164                         Call WriteConsoleMsg(UserIndex, "Para recorrer los mares debes ser nivel 20 o superior.", FontTypeNames.FONTTYPE_INFO)
+1162                     If .Stats.ELV < 23 Then
+1164                         Call WriteConsoleMsg(UserIndex, "Para recorrer los mares debes ser nivel 23 o superior.", FontTypeNames.FONTTYPE_INFO)
                              Exit Sub
                          End If
                     
@@ -3492,47 +3492,39 @@ ItemSeCae_Err:
 End Function
 
 Public Function PirataCaeItem(ByVal UserIndex As Integer, ByVal slot As Byte)
-        
+
         On Error GoTo PirataCaeItem_Err
 
-100     With UserList(UserIndex)
-    
-102         If .clase = eClass.Pirat Then
+        With UserList(UserIndex)
 
-                ' Si no está navegando, se caen los items
-104             If .Invent.BarcoObjIndex > 0 Then
-            
-                    ' El pirata con galera no pierde los últimos 6 * (cada 10 niveles; max 1) slots
-106                 If ObjData(.Invent.BarcoObjIndex).Ropaje = iGalera Then
-                
-108                     If slot > .CurrentInventorySlots - 6 * min(.Stats.ELV \ 10, 1) Then
-                            Exit Function
-                        End If
-                
-                    ' Con galeón no pierde los últimos 6 * (cada 10 niveles; max 3) slots
-110                 ElseIf ObjData(.Invent.BarcoObjIndex).Ropaje = iGaleon Then
-                
-112                     If slot > .CurrentInventorySlots - 6 * min(.Stats.ELV \ 10, 3) Then
-                            Exit Function
-                        End If
-                
+          If .clase = eClass.Pirat And .Stats.ELV >= 37 And .flags.Navegando = 1 Then
+
+            ' Si no está navegando, se caen los items
+            If .Invent.BarcoObjIndex > 0 Then
+
+                ' Con galeón cada item tiene una probabilidad de caerse del 67%
+                If ObjData(.Invent.BarcoObjIndex).Ropaje = iGaleon Then
+
+                    If RandomNumber(1, 100) <= 33 Then
+                        Exit Function
+                      End If
+
                     End If
-                
-                End If
-            
-            End If
-        
-        End With
-    
-114     PirataCaeItem = True
 
-        
+                End If
+
+            End If
+
+        End With
+
+        PirataCaeItem = True
+
         Exit Function
 
 PirataCaeItem_Err:
 116     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.PirataCaeItem", Erl)
 
-        
+
 End Function
 
 Sub TirarTodosLosItems(ByVal UserIndex As Integer)
@@ -3561,7 +3553,7 @@ Sub TirarTodosLosItems(ByVal UserIndex As Integer)
 
                         If .flags.CarroMineria = 1 Then
 118                         If ItemIndex = ORO_MINA Or ItemIndex = PLATA_MINA Or ItemIndex = HIERRO_MINA Then
-120                             MiObj.Amount = MiObj.Amount * 0.3
+120                             MiObj.Amount = Int(MiObj.Amount * 0.3)
                             End If
                         End If
                     
