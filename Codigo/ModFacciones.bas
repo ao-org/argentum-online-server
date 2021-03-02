@@ -165,42 +165,37 @@ Public Sub RecompensaArmadaReal(ByVal UserIndex As Integer)
 
         End If
 
-        Dim diferenciaNivel As Integer
-        Dim numRecomensa As Byte
+        Dim nivelRequerido As Integer
         Dim criminalesNecesariosParaFuturaRecomensa As Integer
+        Dim numRecompensa As Byte
+        numRecompensa = UserList(UserIndex).Faccion.RecompensasReal
 
-110     Select Case NextRecom
-            Case 30:
-                diferenciaNivel = 25 - Lvl
-                numRecomensa = 1
+        Select Case numRecompensa
+            Case 1:
+                nivelRequerido = 25
                 criminalesNecesariosParaFuturaRecomensa = 150
 
-            Case 150:
-                diferenciaNivel = 30 - Lvl
-                numRecomensa = 2
+            Case 2:
+                nivelRequerido = 30
                 criminalesNecesariosParaFuturaRecomensa = 300
 
-            Case 300:
-                diferenciaNivel = 33 - Lvl
-                numRecomensa = 3
+            Case 3:
+                nivelRequerido = 33
                 criminalesNecesariosParaFuturaRecomensa = 500
 
-            Case 500:
-                diferenciaNivel = 36 - Lvl
-                numRecomensa = 4
+            Case 4:
+                nivelRequerido = 36
                 criminalesNecesariosParaFuturaRecomensa = 1000
 
-            Case 1000:
-                diferenciaNivel = 40 - Lvl
-                numRecomensa = 5
+            Case 5:
+                nivelRequerido = 40
                 criminalesNecesariosParaFuturaRecomensa = 2000
 
-            Case 2000:
-                diferenciaNivel = 45 - Lvl
-                numRecomensa = 6
+            Case 6:
+                nivelRequerido = 43
                 criminalesNecesariosParaFuturaRecomensa = 4000
 
-            Case 4000:
+            Case 7:
                 Call WriteChatOverHead(UserIndex, "Eres uno de mis mejores Soldados. Mataste " & Crimis & ", sigue asi. Ya no tengo más recompensa para darte que mi agradescimiento. ¡Felicidades!", str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
                 Exit Sub
 
@@ -209,14 +204,14 @@ Public Sub RecompensaArmadaReal(ByVal UserIndex As Integer)
 
         End Select
 
-        If diferenciaNivel > 0 Then
+        If nivelRequerido - Lvl > 0 Then
           ' Al usuario le falta subir niveles
 
-          Call WriteChatOverHead(UserIndex, "Mataste Suficientes Criminales, pero te faltan " & diferenciaNivel & " Niveles para poder recibir la próxima Recompensa", str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
+          Call WriteChatOverHead(UserIndex, "Mataste Suficientes Criminales, pero te faltan " & (nivelRequerido - Lvl) & " Niveles para poder recibir la próxima Recompensa", str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
         Else
           ' El usuario cumple con los requerimientos de nivel, se le asigna la recomenza.
 
-          UserList(UserIndex).Faccion.RecompensasCaos = numRecomensa
+          UserList(UserIndex).Faccion.RecompensasReal = numRecompensa + 1
           UserList(UserIndex).Faccion.NextRecompensa = criminalesNecesariosParaFuturaRecomensa
 
           Call WriteChatOverHead(UserIndex, "¡¡¡Aqui tienes tu recompensa " + TituloReal(UserIndex) + "!!!", str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
@@ -459,42 +454,37 @@ Public Sub RecompensaCaos(ByVal UserIndex As Integer)
 
         End If
 
-        Dim diferenciaNivel As Integer
-        Dim numRecomensa As Byte
+        Dim nivelRequerido As Integer
         Dim ciudadanosNecesariosParaFuturaRecomensa as Integer
+        Dim numRecompensa As Byte
+        numRecompensa = UserList(UserIndex).Faccion.RecompensasCaos
 
-110     Select Case NextRecom
-            Case 30:
-                diferenciaNivel = 25 - Lvl
-                numRecomensa = 1
+        Select Case numRecompensa
+            Case 1:
+                nivelRequerido = 25
                 ciudadanosNecesariosParaFuturaRecomensa = 150
 
-            Case 150:
-                diferenciaNivel = 30 - Lvl
-                numRecomensa = 2
+            Case 2:
+                nivelRequerido = 30
                 ciudadanosNecesariosParaFuturaRecomensa = 300
 
-            Case 300:
-                diferenciaNivel = 33 - Lvl
-                numRecomensa = 3
+            Case 3:
+                nivelRequerido = 33
                 ciudadanosNecesariosParaFuturaRecomensa = 500
 
-            Case 500:
-                diferenciaNivel = 36 - Lvl
-                numRecomensa = 4
+            Case 4:
+                nivelRequerido = 36
                 ciudadanosNecesariosParaFuturaRecomensa = 1000
 
-            Case 1000:
-                diferenciaNivel = 40 - Lvl
-                numRecomensa = 5
+            Case 5:
+                nivelRequerido = 40
                 ciudadanosNecesariosParaFuturaRecomensa = 2000
 
-            Case 2000:
-                diferenciaNivel = 45 - Lvl
-                numRecomensa = 6
+            Case 6:
+                nivelRequerido = 43
                 ciudadanosNecesariosParaFuturaRecomensa = 4000
 
-            Case 4000:
+            Case 7:
                 Call WriteChatOverHead(UserIndex, "¡Felicitaciones, eres de mis mejores guerreros, estas en lo más alto!", str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
                 Exit Sub
 
@@ -503,14 +493,14 @@ Public Sub RecompensaCaos(ByVal UserIndex As Integer)
 
         End Select
 
-        If diferenciaNivel > 0 Then
+        If nivelRequerido - Lvl > 0 Then
           ' Al usuario le falta subir niveles
 
-          Call WriteChatOverHead(UserIndex, "Mataste Suficientes Ciudadanos, pero te faltan " & diferenciaNivel & " Niveles para poder recibir la próxima Recompensa", str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
+          Call WriteChatOverHead(UserIndex, "Mataste Suficientes Ciudadanos, pero te faltan " & (nivelRequerido - Lvl) & " Niveles para poder recibir la próxima Recompensa", str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
         Else
           ' El usuario cumple con los requerimientos de nivel, se le asigna la recomenza.
 
-          UserList(UserIndex).Faccion.RecompensasCaos = numRecomensa
+          UserList(UserIndex).Faccion.RecompensasCaos = numRecompensa + 1
           UserList(UserIndex).Faccion.NextRecompensa = ciudadanosNecesariosParaFuturaRecomensa
 
           Call WriteChatOverHead(UserIndex, "¡¡¡Bien hecho " + TituloCaos(UserIndex) + ", aquí tienes tu recompensa!!!", str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
@@ -539,12 +529,15 @@ Public Function TituloCaos(ByVal UserIndex As Integer) As String
                 TituloCaos = "Emisario del Caos"
 
             Case 4
-                TituloCaos = "Caballero de la Oscuridad"
+                TituloCaos = "Sanguinario"
 
             Case 5
-                TituloCaos = "Devorador de Almas"
+                TituloCaos = "Caballero de la Oscuridad"
 
             Case 6
+                TituloCaos = "Devorador de Almas"
+
+            Case 7
                 TituloCaos = "Concilio de las Sombras"
 
         End Select
