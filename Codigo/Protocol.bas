@@ -4224,8 +4224,8 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
     
                                 End If
                                 
-410                             If UserList(UserIndex).Stats.UserSkills(eSkill.Pescar) < 80 Then
-412                                 Call WriteConsoleMsg(UserIndex, "Para utilizar la red de pesca debes tener 80 skills en recoleccion.", FontTypeNames.FONTTYPE_INFO)
+410                             If UserList(UserIndex).Stats.UserSkills(eSkill.Pescar) < 100 Then
+412                                 Call WriteConsoleMsg(UserIndex, "Para utilizar la red de pesca debes tener 100 skills en pesca.", FontTypeNames.FONTTYPE_INFO)
 414                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                     Exit Sub
     
