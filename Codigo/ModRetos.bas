@@ -132,7 +132,7 @@ Public Sub CrearReto(ByVal UserIndex As Integer, JugadoresStr As String, ByVal A
             
             Dim Texto1 As String, Texto2 As String, Texto3 As String
             Texto1 = UserList(UserIndex).name & " te invita a jugar el siguiente reto:"
-            Texto2 = Equipo1 & " vs. " & Equipo2 & ". Apuesta: " & PonerPuntos(Apuesta) & " monedas de oro."
+            Texto2 = Equipo1 & " vs " & Equipo2 & ". Apuesta: " & PonerPuntos(Apuesta) & " monedas de oro."
             Texto3 = "Escribe /ACEPTAR " & UCase$(UserList(UserIndex).name) & " para participar en el reto."
 
             For i = 0 To UBound(.Jugadores)
@@ -251,6 +251,7 @@ Public Sub CancelarSolicitudReto(ByVal Oferente As Integer, Mensaje As String)
         
         Dim i As Integer, tIndex As Integer
 
+        ' Enviamos a los invitados
         For i = 0 To UBound(.Jugadores)
 
             tIndex = NameIndex(.Jugadores(i).nombre)
@@ -265,7 +266,11 @@ Public Sub CancelarSolicitudReto(ByVal Oferente As Integer, Mensaje As String)
             End If
 
         Next
-    
+
+        ' Y al oferente por separado
+        Call WriteConsoleMsg(Oferente, Mensaje, FontTypeNames.FONTTYPE_WARNING)
+        Call WriteConsoleMsg(Oferente, "El reto ha sido cancelado.", FontTypeNames.FONTTYPE_WARNING)
+
     End With
     
     Exit Sub
@@ -316,8 +321,9 @@ Private Sub IniciarReto(ByVal Oferente As Integer, ByVal Sala As Integer)
         ' Última comprobación de si todos pueden entrar/pagar
         If Not TodosPuedenReto(Oferente) Then Exit Sub
         
-        Dim Apuesta As Integer
+        Dim Apuesta As Integer, ApuestaStr As String
         Apuesta = .Apuesta
+        ApuestaStr = PonerPuntos(Apuesta)
 
         ' Calculamos el tamaño del equipo
         Retos.Salas(Sala).TamañoEquipoIzq = UBound(.Jugadores) \ 2 + 1
@@ -373,6 +379,7 @@ Private Sub IniciarReto(ByVal Oferente As Integer, ByVal Sala As Integer)
             ' Le cobramos
             UserList(tIndex).Stats.GLD = UserList(tIndex).Stats.GLD - Apuesta
             Call WriteUpdateGold(tIndex)
+            Call WriteConsoleMsg(tIndex, "Otorgas " & ApuestaStr & " monedas de oro al pozo del reto.", FontTypeNames.FONTTYPE_New_Rojo_Salmon)
             
             ' Desmontamos
             If UserList(tIndex).flags.Montado <> 0 Then
@@ -387,7 +394,7 @@ Private Sub IniciarReto(ByVal Oferente As Integer, ByVal Sala As Integer)
             ' Asignamos flags
             With UserList(tIndex).flags
                 .EnReto = True
-                .EquipoReto = IIf(i Mod 2, EquipoReto.Izquierda, EquipoReto.Derecha)
+                .EquipoReto = IIf(i Mod 2, EquipoReto.Derecha, EquipoReto.Izquierda)
                 .SalaReto = Sala
                 ' Guardar posición
                 .LastPos = UserList(tIndex).Pos
@@ -399,6 +406,8 @@ Private Sub IniciarReto(ByVal Oferente As Integer, ByVal Sala As Integer)
         Next
 
     End With
+    
+    Retos.SalasLibres = Retos.SalasLibres - 1
 
     Call IniciarRonda(Sala)
 
@@ -544,7 +553,7 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
         OroTotal = .Apuesta * (UBound(.Jugadores) + 1)
         
         ' Descontamos el impuesto
-        OroTotal = Fix(OroTotal * (1 - Retos.ImpuestoApuesta))
+        OroTotal = OroTotal * (1 - Retos.ImpuestoApuesta)
     
         ' Decidimos el resultado del reto según el puntaje:
         Dim i As Integer, tIndex As Integer, Equipo1 As String, Equipo2 As String
@@ -561,7 +570,7 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
                 If tIndex <> 0 Then
                     UserList(tIndex).Stats.GLD = UserList(tIndex).Stats.GLD + Oro
                     Call WriteUpdateGold(tIndex)
-                    Call WriteLocaleMsg(tIndex, "29", FontTypeNames.FONTTYPE_INFO, OroStr) ' Has ganado X monedas de oro
+                    Call WriteLocaleMsg(tIndex, "29", FontTypeNames.FONTTYPE_MP, OroStr) ' Has ganado X monedas de oro
                     
                     Call RevivirYLimpiar(tIndex)
 
@@ -572,20 +581,24 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
                     
                     ' Nombres
                     If i Mod 2 Then
-                        Equipo1 = Equipo1 & IIf((i + 1) \ 2 < .TamañoEquipoDer - 1, ", ", " y ") & UserList(tIndex).name
-                    Else
                         If LenB(Equipo2) > 0 Then
-                            Equipo2 = Equipo2 & IIf(i \ 2 < .TamañoEquipoIzq - 1, ", ", " y ") & UserList(tIndex).name
+                            Equipo2 = Equipo2 & IIf((i + 1) \ 2 < .TamañoEquipoDer - 2, ", ", " y ") & UserList(tIndex).name
                         Else
                             Equipo2 = UserList(tIndex).name
+                        End If
+                    Else
+                        If LenB(Equipo1) > 0 Then
+                            Equipo1 = Equipo2 & IIf(i \ 2 < .TamañoEquipoIzq - 2, ", ", " y ") & UserList(tIndex).name
+                        Else
+                            Equipo1 = UserList(tIndex).name
                         End If
                     End If
                 End If
             Next
             
             ' Anuncio global
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(Equipo1 & " vs. " & Equipo2 & ". Apuesta: " & PonerPuntos(.Apuesta) & _
-                                                " monedas de oro. Resultado: empate por tiempo.", FontTypeNames.FONTTYPE_INFO))
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(Equipo1 & " vs " & Equipo2 & ". Apuesta: " & PonerPuntos(.Apuesta) & _
+                                                " monedas de oro. Hubo un empate por tiempo muerto.", FontTypeNames.FONTTYPE_INFO))
 
         ' Hubo un ganador
         Else
@@ -608,7 +621,7 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
                     If UserList(tIndex).flags.EquipoReto = Ganador Then
                         UserList(tIndex).Stats.GLD = UserList(tIndex).Stats.GLD + Oro
                         Call WriteUpdateGold(tIndex)
-                        Call WriteLocaleMsg(tIndex, "29", FontTypeNames.FONTTYPE_INFO, OroStr) ' Has ganado X monedas de oro
+                        Call WriteLocaleMsg(tIndex, "29", FontTypeNames.FONTTYPE_MP, OroStr) ' Has ganado X monedas de oro
                     End If
                     
                     Call RevivirYLimpiar(tIndex)
@@ -624,20 +637,24 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
 
                     ' Nombres
                     If i Mod 2 Then
-                        Equipo1 = Equipo1 & IIf((i + 1) \ 2 < .TamañoEquipoDer - 1, ", ", " y ") & UserList(tIndex).name
-                    Else
                         If LenB(Equipo2) > 0 Then
-                            Equipo2 = Equipo2 & IIf(i \ 2 < .TamañoEquipoIzq - 1, ", ", " y ") & UserList(tIndex).name
+                            Equipo2 = Equipo2 & IIf((i + 1) \ 2 < .TamañoEquipoDer - 2, ", ", " y ") & UserList(tIndex).name
                         Else
                             Equipo2 = UserList(tIndex).name
+                        End If
+                    Else
+                        If LenB(Equipo1) > 0 Then
+                            Equipo1 = Equipo1 & IIf(i \ 2 < .TamañoEquipoIzq - 2, ", ", " y ") & UserList(tIndex).name
+                        Else
+                            Equipo1 = UserList(tIndex).name
                         End If
                     End If
                 End If
             Next
 
             ' Anuncio global
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(Equipo1 & " vs. " & Equipo2 & ". Apuesta: " & PonerPuntos(.Apuesta) & " monedas de oro. " & _
-                                IIf(UBound(.Jugadores) > 1, "Ganadores: ", "Ganador: ") & IIf(Ganador = EquipoReto.Izquierda, Equipo1, Equipo2) & ".", FontTypeNames.FONTTYPE_INFO))
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(Equipo1 & " vs " & Equipo2 & ". Apuesta: " & PonerPuntos(.Apuesta) & " monedas de oro. " & _
+                                IIf(UBound(.Jugadores) > 1, "Ganadores ", "Ganador ") & IIf(Ganador = EquipoReto.Izquierda, Equipo1, Equipo2) & ".", FontTypeNames.FONTTYPE_INFO))
         End If
     
     End With
@@ -787,8 +804,10 @@ End Function
 Private Function IndiceJugadorEnSolicitud(ByVal UserIndex As Integer, ByVal Oferente As Integer) As Integer
 
     With UserList(Oferente).flags.SolicitudReto
+    
+        IndiceJugadorEnSolicitud = -1
 
-        If Not .estado <> SolicitudRetoEstado.Enviada Then Exit Function
+        If .estado <> SolicitudRetoEstado.Enviada Then Exit Function
 
         Dim i As Integer
         For i = 0 To UBound(.Jugadores)
