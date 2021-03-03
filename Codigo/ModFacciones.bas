@@ -40,53 +40,53 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
         'Handles the entrance of users to the "Armada Real"
         '***************************************************
 100     If UserList(UserIndex).Faccion.ArmadaReal = 1 Then
-102         Call WriteChatOverHead(UserIndex, "¡¡¡Ya perteneces a las tropas reales!!! Ve a combatir criminales", str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
+102         Call WriteChatOverHead(UserIndex, "¡¡¡Ya perteneces a las tropas reales!!! Ve a combatir criminales", str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
             Exit Sub
 
         End If
 
 104     If UserList(UserIndex).Faccion.FuerzasCaos = 1 Then
-106         Call WriteChatOverHead(UserIndex, "¡¡¡Maldito insolente!!! vete de aqui seguidor de las sombras", str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
+106         Call WriteChatOverHead(UserIndex, "¡¡¡Maldito insolente!!! vete de aqui seguidor de las sombras", str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
             Exit Sub
 
         End If
 
 108     If Status(UserIndex) = 2 Then
-110         Call WriteChatOverHead(UserIndex, "¡¡¡No se permiten criminales en el ejercito imperial!!!", str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
+110         Call WriteChatOverHead(UserIndex, "¡¡¡No se permiten criminales en el ejercito imperial!!!", str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
             Exit Sub
 
         End If
 
 112     If Status(UserIndex) = 0 Then
-114         Call WriteChatOverHead(UserIndex, "¡¡¡No se permiten neutrales en el ejercito imperial, antes debes solicitar el perdón con un sacerdote!!!", str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
+114         Call WriteChatOverHead(UserIndex, "¡¡¡No se permiten neutrales en el ejercito imperial, antes debes solicitar el perdón con un sacerdote!!!", str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
             Exit Sub
 
         End If
 
 116     If UserList(UserIndex).Stats.ELV < 25 Then
-118         Call WriteChatOverHead(UserIndex, "¡¡¡Para unirte a nuestras fuerzas debes ser al menos de nivel 25!!!", str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
+118         Call WriteChatOverHead(UserIndex, "¡¡¡Para unirte a nuestras fuerzas debes ser al menos de nivel 25!!!", str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
             Exit Sub
 
         End If
 
 120     If UserList(UserIndex).Faccion.CriminalesMatados < 30 Then
-122         Call WriteChatOverHead(UserIndex, "Para unirte a nuestras fuerzas debes matar al menos 30 criminales, solo has matado " & UserList(UserIndex).Faccion.CriminalesMatados, str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
+122         Call WriteChatOverHead(UserIndex, "Para unirte a nuestras fuerzas debes matar al menos 30 criminales, solo has matado " & UserList(UserIndex).Faccion.CriminalesMatados, str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
             Exit Sub
 
         End If
  
         'Si fue miembro de la Legión del Caos no se puede enlistar
-124     If UserList(UserIndex).Faccion.CiudadanosMatados > 0 Then
-126         Call WriteChatOverHead(UserIndex, "¡Has asesinado gente inocente, no aceptamos asesinos en las tropas reales!", str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
+124     If UserList(UserIndex).Faccion.ciudadanosMatados > 0 Then
+126         Call WriteChatOverHead(UserIndex, "¡Has asesinado gente inocente, no aceptamos asesinos en las tropas reales!", str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
             Exit Sub
 
         End If
 
 128     If UserList(UserIndex).Faccion.Reenlistadas > 0 Then
-126         If UserList(UserIndex).Faccion.Reenlistadas = 200 Then
-                Call WriteChatOverHead(UserIndex, "¡Has sido expulsado de las fuerzas reales demasiadas veces!", str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
+            If UserList(UserIndex).Faccion.Reenlistadas = 200 Then
+                Call WriteChatOverHead(UserIndex, "¡Has sido expulsado de las fuerzas reales demasiadas veces!", str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
             Else
-130             Call WriteChatOverHead(UserIndex, "¡Has traicionado al ejercito imperial una vez, no aceptamos traidores!", str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
+130             Call WriteChatOverHead(UserIndex, "¡Has traicionado al ejercito imperial una vez, no aceptamos traidores!", str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
 
             End If
 
@@ -102,7 +102,7 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
 142     Call RefreshCharStatus(UserIndex)
 
 144     If UserList(UserIndex).Faccion.RecibioArmaduraReal = 0 Then
-            Call WriteChatOverHead(UserIndex, "¡¡¡Bienvenido al Ejercito Imperial!!!, aqui tienes tus vestimentas. Cumple bien tu labor exterminando Criminales y me encargaré de recompensarte.", str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
+            Call WriteChatOverHead(UserIndex, "¡¡¡Bienvenido al Ejercito Imperial!!!, aqui tienes tus vestimentas. Cumple bien tu labor exterminando Criminales y me encargaré de recompensarte.", str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
 
             Dim MiObj As obj
 
@@ -130,7 +130,7 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
 166         UserList(UserIndex).Faccion.NivelIngreso = UserList(UserIndex).Stats.ELV
 168         UserList(UserIndex).Faccion.FechaIngreso = Date
             'Esto por ahora es inútil, siempre va a ser cero, pero bueno, despues va a servir.
-170         UserList(UserIndex).Faccion.MatadosIngreso = UserList(UserIndex).Faccion.CiudadanosMatados
+170         UserList(UserIndex).Faccion.MatadosIngreso = UserList(UserIndex).Faccion.ciudadanosMatados
 
         End If
 
@@ -165,7 +165,7 @@ Public Sub RecompensaArmadaReal(ByVal UserIndex As Integer)
 104     NextRecom = UserList(UserIndex).Faccion.NextRecompensa
 
 106     If Crimis < NextRecom Then
-108         Call WriteChatOverHead(UserIndex, "Mata " & NextRecom - Crimis & " Criminales más para recibir la próxima Recompensa", str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
+108         Call WriteChatOverHead(UserIndex, "Mata " & NextRecom - Crimis & " Criminales más para recibir la próxima Recompensa", str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
             Exit Sub
 
         End If
@@ -202,7 +202,7 @@ Public Sub RecompensaArmadaReal(ByVal UserIndex As Integer)
 
             ' 6 es el máximo posible y 7 se accede por voto del consejo.
             Case Else:
-                Call WriteChatOverHead(UserIndex, "Eres uno de mis mejores Soldados. Mataste " & Crimis & ", sigue asi. Ya no tengo más recompensa para darte que mi agradescimiento. ¡Felicidades!", str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
+                Call WriteChatOverHead(UserIndex, "Eres uno de mis mejores Soldados. Mataste " & Crimis & ", sigue asi. Ya no tengo más recompensa para darte que mi agradescimiento. ¡Felicidades!", str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
                 Exit Sub
 
         End Select
@@ -210,7 +210,7 @@ Public Sub RecompensaArmadaReal(ByVal UserIndex As Integer)
         If nivelRequerido - Lvl > 0 Then
           ' Al usuario le falta subir niveles
 
-          Call WriteChatOverHead(UserIndex, "Mataste Suficientes Criminales, pero te faltan " & (nivelRequerido - Lvl) & " Niveles para poder recibir la próxima Recompensa", str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
+          Call WriteChatOverHead(UserIndex, "Mataste Suficientes Criminales, pero te faltan " & (nivelRequerido - Lvl) & " Niveles para poder recibir la próxima Recompensa", str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
         Else
           ' El usuario cumple con los requerimientos de nivel, se le asigna la recomenza.
 
@@ -218,7 +218,7 @@ Public Sub RecompensaArmadaReal(ByVal UserIndex As Integer)
           UserList(UserIndex).Faccion.RecompensasReal = IIf(numRecompensa < 6, numRecompensa + 1, numRecompensa)
           UserList(UserIndex).Faccion.NextRecompensa = criminalesNecesariosParaFuturaRecomensa
 
-          Call WriteChatOverHead(UserIndex, "¡¡¡Aqui tienes tu recompensa " + TituloReal(UserIndex) + "!!!", str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
+          Call WriteChatOverHead(UserIndex, "¡¡¡Aqui tienes tu recompensa " + TituloReal(UserIndex) + "!!!", str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
           'UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + ExpX100
         End If
 
@@ -322,47 +322,47 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
 
 
 100     If UserList(UserIndex).Faccion.FuerzasCaos = 1 Then
-102         Call WriteChatOverHead(UserIndex, "¡¡¡Ya perteneces a la legión oscura!!!", str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
+102         Call WriteChatOverHead(UserIndex, "¡¡¡Ya perteneces a la legión oscura!!!", str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
             Exit Sub
 
         End If
 
 104     If UserList(UserIndex).Faccion.ArmadaReal = 1 Then
-106         Call WriteChatOverHead(UserIndex, "Las sombras reinarán en Argentum. ¡¡¡Fuera de aqui insecto Real!!!", str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
+106         Call WriteChatOverHead(UserIndex, "Las sombras reinarán en Argentum. ¡¡¡Fuera de aqui insecto Real!!!", str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
             Exit Sub
 
         End If
 
         'Si fue miembro de la Armada Real no se puede enlistar
 108     If UserList(UserIndex).Faccion.RecompensasReal > 0 Then
-110         Call WriteChatOverHead(UserIndex, "No permitiré que ningún insecto real ingrese a mis tropas.", str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
+110         Call WriteChatOverHead(UserIndex, "No permitiré que ningún insecto real ingrese a mis tropas.", str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
             Exit Sub
 
         End If
 
 112     If Status(UserIndex) = 1 Then
-114         Call WriteChatOverHead(UserIndex, "¡¡Ja ja ja!! Tu no eres bienvenido aqui asqueroso Ciudadano", str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
+114         Call WriteChatOverHead(UserIndex, "¡¡Ja ja ja!! Tu no eres bienvenido aqui asqueroso Ciudadano", str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
             Exit Sub
 
         End If
 
-116     If UserList(UserIndex).Faccion.CiudadanosMatados < 30 Then
-118         Call WriteChatOverHead(UserIndex, "Para unirte a nuestras fuerzas debes matar al menos 30 usuarios, solo has matado " & UserList(UserIndex).Faccion.CiudadanosMatados, str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
+116     If UserList(UserIndex).Faccion.ciudadanosMatados < 30 Then
+118         Call WriteChatOverHead(UserIndex, "Para unirte a nuestras fuerzas debes matar al menos 30 usuarios, solo has matado " & UserList(UserIndex).Faccion.ciudadanosMatados, str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
             Exit Sub
 
         End If
 
 120     If UserList(UserIndex).Stats.ELV < 25 Then
-122         Call WriteChatOverHead(UserIndex, "¡¡¡Para unirte a nuestras fuerzas debes ser al menos de nivel 25!!!", str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
+122         Call WriteChatOverHead(UserIndex, "¡¡¡Para unirte a nuestras fuerzas debes ser al menos de nivel 25!!!", str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
             Exit Sub
 
         End If
 
 124     If UserList(UserIndex).Faccion.Reenlistadas > 0 Then
 126         If UserList(UserIndex).Faccion.Reenlistadas = 200 Then
-128             Call WriteChatOverHead(UserIndex, "Has sido expulsado de las fuerzas oscuras y durante tu rebeldía has atacado a mi ejército. ¡Vete de aquí!", str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
+128             Call WriteChatOverHead(UserIndex, "Has sido expulsado de las fuerzas oscuras y durante tu rebeldía has atacado a mi ejército. ¡Vete de aquí!", str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
             Else
-130             Call WriteChatOverHead(UserIndex, "¡Has sido expulsado de las fuerzas oscuras demasiadas veces!", str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
+130             Call WriteChatOverHead(UserIndex, "¡Has sido expulsado de las fuerzas oscuras demasiadas veces!", str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
 
             End If
 
@@ -379,7 +379,7 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
 
 144     If UserList(UserIndex).Faccion.RecibioArmaduraCaos = 0 Then
 
-            Call WriteChatOverHead(UserIndex, "¡¡¡Bienvenido al lado oscuro!!! Aqui tienes tus armaduras. Derrama sangre Ciudadana y Real y serás recompensado, lo prometo.", str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
+            Call WriteChatOverHead(UserIndex, "¡¡¡Bienvenido al lado oscuro!!! Aqui tienes tus armaduras. Derrama sangre Ciudadana y Real y serás recompensado, lo prometo.", str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
 
             Dim MiObj As obj
 
@@ -436,17 +436,17 @@ Public Sub RecompensaCaos(ByVal UserIndex As Integer)
         Dim NextRecom As Integer
 
 100     Lvl = UserList(UserIndex).Stats.ELV
-102     ciudadanosMatados = UserList(UserIndex).Faccion.CiudadanosMatados
+102     ciudadanosMatados = UserList(UserIndex).Faccion.ciudadanosMatados
 104     NextRecom = UserList(UserIndex).Faccion.NextRecompensa
 
 106     If ciudadanosMatados < NextRecom Then
-108         Call WriteChatOverHead(UserIndex, "Mata " & NextRecom - ciudadanosMatados & " Cuidadanos más para recibir la próxima Recompensa", str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
+108         Call WriteChatOverHead(UserIndex, "Mata " & NextRecom - ciudadanosMatados & " Cuidadanos más para recibir la próxima Recompensa", str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
             Exit Sub
 
         End If
 
         Dim nivelRequerido As Integer
-        Dim ciudadanosNecesariosParaFuturaRecomensa as Integer
+        Dim ciudadanosNecesariosParaFuturaRecomensa As Integer
         Dim numRecompensa As Byte
         numRecompensa = UserList(UserIndex).Faccion.RecompensasCaos
 
@@ -477,7 +477,7 @@ Public Sub RecompensaCaos(ByVal UserIndex As Integer)
 
             '6 es lo más alto y 7 esta reservado para asignarlo manualmente.
             Case Else:
-                Call WriteChatOverHead(UserIndex, "¡Felicitaciones, eres de mis mejores guerreros, estas en lo más alto!", str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
+                Call WriteChatOverHead(UserIndex, "¡Felicitaciones, eres de mis mejores guerreros, estas en lo más alto!", str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
 
                 Exit Sub
 
@@ -494,7 +494,7 @@ Public Sub RecompensaCaos(ByVal UserIndex As Integer)
           UserList(UserIndex).Faccion.RecompensasCaos = IIf(numRecompensa < 6, numRecompensa + 1, numRecompensa)
           UserList(UserIndex).Faccion.NextRecompensa = ciudadanosNecesariosParaFuturaRecomensa
 
-          Call WriteChatOverHead(UserIndex, "¡¡¡Bien hecho " + TituloCaos(UserIndex) + ", aquí tienes tu recompensa!!!", str(Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
+          Call WriteChatOverHead(UserIndex, "¡¡¡Bien hecho " + TituloCaos(UserIndex) + ", aquí tienes tu recompensa!!!", str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
         End If
 
         Exit Sub
@@ -566,7 +566,7 @@ Private Sub PerderItemsFaccionarios(ByVal UserIndex As Integer)
 
         Exit Sub
 
-TituloCaos_Err:
+PerderItemsFaccionarios_Err:
         Call RegistrarError(Err.Number, Err.Description, "ModFacciones.PerderItemsFaccionarios", Erl)
         Resume Next
 
