@@ -778,53 +778,6 @@ Public Enum eOBJType
 
 End Enum
 
-'Texto
-Public Const FONTTYPE_TALK            As String = "~255~255~255~0~0"
-
-Public Const FONTTYPE_EXP             As String = "~42~169~222~1~0"
-
-Public Const FONTTYPE_FIGHT           As String = "~255~0~0~1~0"
-
-Public Const FONTTYPE_WARNING         As String = "~32~51~223~1~1"
-
-Public Const FONTTYPE_INFO            As String = "~65~190~156~0~0"
-
-Public Const FONTTYPE_INFOBOLD        As String = "~65~190~156~1~0"
-
-Public Const FONTTYPE_EJECUCION       As String = "~130~130~130~1~0"
-
-Public Const FONTTYPE_PARTY           As String = "~255~180~255~0~0"
-
-Public Const FONTTYPE_VENENO          As String = "~0~255~0~0~0"
-
-Public Const FONTTYPE_GUILD           As String = "~255~255~255~1~0"
-
-Public Const FONTTYPE_SERVER          As String = "~0~185~0~0~0"
-
-Public Const FONTTYPE_GUILDMSG        As String = "~228~199~27~0~0"
-
-Public Const FONTTYPE_CONSEJO         As String = "~130~130~255~1~0"
-
-Public Const FONTTYPE_CONSEJOVesA     As String = "~31~139~139~1~0"
-
-Public Const FONTTYPE_CONSEJOCAOS     As String = "~31~139~139~1~0"
-
-Public Const FONTTYPE_CONSEJOCAOSVesA As String = "~179~0~4~1~0"
-
-Public Const FONTTYPE_CENTINELA       As String = "~0~255~0~1~0"
-
-Public Const FONTTYPE_SUBASTA         As String = "~188~192~103~0~1"
-
-Public Const FONTTYPE_GLOBAL          As String = "~0~176~176~0~1"
-
-Public Const FONTTYPE_MP              As String = "~157~226~20~0~0"
-
-Public Const FONTTYPE_ROSA            As String = "~255~0~128~0~0"
-
-Public Const FONTTYPE_VIOLETA         As String = "~99~0~198~0~0"
-
-Public Const FONTTYPE_INFOIAO         As String = "~204~193~115~0~0"
-
 'Estadisticas
 Public Const STAT_MAXELV              As Byte = 47
 
@@ -888,7 +841,7 @@ Public Type tHechizo
     AntiRm As Byte
     
     'Sistema..
-    nombre As String
+    Nombre As String
     Desc As String
     PalabrasMagicas As String
     
@@ -1017,16 +970,14 @@ Public Type Inventario
     
 End Type
 
-Public Type Position
-
+Public Type WorldPos
+    Map As Integer
     X As Integer
     Y As Integer
-
 End Type
 
-Public Type WorldPos
+Public Type Position
 
-    Map As Integer
     X As Integer
     Y As Integer
 
@@ -1049,7 +1000,7 @@ End Type
 
 Public Type FXdata
 
-    nombre As String
+    Nombre As String
     GrhIndex As Long
     Delay As Integer
 
@@ -1117,7 +1068,7 @@ Public QuestList() As tQuest
 
 Public Type tQuest
 
-    nombre As String
+    Nombre As String
     Desc As String
     NextQuest As String
     DescFinal As String
@@ -1143,6 +1094,58 @@ Public Type tQuest
     Repetible As Byte
 
 End Type
+
+' ******************* RETOS ************************
+Public Enum SolicitudRetoEstado
+    Libre
+    Enviada
+    EnCola
+End Enum
+
+Public Type SolicitudJugador
+    Nombre As String
+    Aceptado As Boolean
+    CurIndex As Integer
+End Type
+
+Public Type SolicitudReto
+    Estado As SolicitudRetoEstado
+    Jugadores() As SolicitudJugador
+    Apuesta As Long
+End Type
+
+Public Enum EquipoReto
+    Izquierda
+    Derecha
+End Enum
+
+Public Type tSalaReto
+    PosIzquierda As WorldPos
+    PosDerecha As WorldPos
+    ' -----------------
+    EnUso As Boolean
+    Ronda As Byte
+    Puntaje As Integer
+    Apuesta As Long
+    TiempoRestante As Long
+    TamañoEquipoIzq As Byte
+    TamañoEquipoDer As Byte
+    Jugadores() As Integer
+End Type
+
+Public Type tRetos
+    TamañoMaximoEquipo As Byte
+    ApuestaMinima As Long
+    ImpuestoApuesta As Single
+    DuracionMaxima As Long
+    TiempoConteo As Byte
+    Salas() As tSalaReto
+    TotalSalas As Integer
+    SalasLibres As Integer
+    AnchoSala As Integer
+    AltoSala As Integer
+End Type
+' **************************************************
 
 'Tipos de objetos
 Public Type ObjData
@@ -1508,14 +1511,6 @@ Public Type UserFlags
     
     VelocidadBackup As Single
     
-    'Duelos 02/05/09
-    EnDuelo As Boolean
-    SolicitudPendienteDe As String
-    RetoA As String
-    DuelosGanados As Long
-    DuelosPerdidos As Long
-    'Duelos
-    
     LevelBackup As Byte
     
     UsandoMacro As Boolean
@@ -1665,6 +1660,13 @@ Public Type UserFlags
     
     ChatHistory(1 To 5) As String
     
+    EnReto As Boolean
+    SalaReto As Integer
+    EquipoReto As EquipoReto
+    AceptoReto As Integer
+    SolicitudReto As SolicitudReto
+    LastPos As WorldPos
+    
 End Type
 
 Public Type UserCounters
@@ -1735,6 +1737,7 @@ Public Type UserCounters
     goHome As Long
     
     LastSave As Long
+    CuentaRegresiva As Integer
     
 End Type
 
@@ -1769,7 +1772,7 @@ Public Type tFacciones
     ArmadaReal As Byte
     FuerzasCaos As Byte
     CriminalesMatados As Long
-    CiudadanosMatados As Long
+    ciudadanosMatados As Long
     RecompensasReal As Long
     RecompensasCaos As Long
     RecibioExpInicialReal As Byte

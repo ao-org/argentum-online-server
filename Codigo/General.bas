@@ -636,8 +636,9 @@ Sub Main()
         Else
 202         frmCargando.Label1(2).Caption = "Cargando Mapas"
 204         Call LoadMapData
-
         End If
+        
+        Call CargarInfoRetos
     
         ' Pretorianos
 206     frmCargando.Label1(2).Caption = "Cargando Pretorianos.dat"
@@ -1059,7 +1060,7 @@ LogDesarrollo_Err:
         
 End Sub
 
-Public Sub LogGM(nombre As String, texto As String)
+Public Sub LogGM(Nombre As String, texto As String)
 
         On Error GoTo ErrHandler
 
@@ -1067,7 +1068,7 @@ Public Sub LogGM(nombre As String, texto As String)
 
 100     nfile = FreeFile ' obtenemos un canal
         'Guardamos todo en el mismo lugar. Pablo (ToxicWaste) 18/05/07
-102     Open App.Path & "\logs\" & nombre & ".log" For Append Shared As #nfile
+102     Open App.Path & "\logs\" & Nombre & ".log" For Append Shared As #nfile
 104     Print #nfile, Date & " " & Time & " " & texto
 106     Close #nfile
 
@@ -2244,6 +2245,17 @@ Sub PasarSegundo()
                         .flags.UltimoMensaje = 0
                         .Counters.RepetirMensaje = 0
                     End If
+                End If
+                
+                If .Counters.CuentaRegresiva >= 0 Then
+                    If .Counters.CuentaRegresiva > 0 Then
+                        Call WriteConsoleMsg(i, ">>>  " & .Counters.CuentaRegresiva & "  <<<", FontTypeNames.FONTTYPE_New_Gris)
+                    Else
+                        Call WriteConsoleMsg(i, ">>> YA! <<<", FontTypeNames.FONTTYPE_FIGHT)
+                        Call WriteStopped(i, False)
+                    End If
+                    
+                    .Counters.CuentaRegresiva = .Counters.CuentaRegresiva - 1
                 End If
         
             End With
