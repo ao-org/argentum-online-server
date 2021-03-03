@@ -137,9 +137,9 @@ Public Sub CrearReto(ByVal UserIndex As Integer, JugadoresStr As String, ByVal A
 
             For i = 0 To UBound(.Jugadores)
                 With .Jugadores(i)
-                    Call WriteConsoleMsg(.CurIndex, Texto1, FontTypeNames.FONTTYPE_INFOBOLD)
+                    Call WriteConsoleMsg(.CurIndex, Texto1, FontTypeNames.FONTTYPE_INFO)
                     Call WriteConsoleMsg(.CurIndex, Texto2, FontTypeNames.FONTTYPE_New_Naranja)
-                    Call WriteConsoleMsg(.CurIndex, Texto3, FontTypeNames.FONTTYPE_INFOBOLD)
+                    Call WriteConsoleMsg(.CurIndex, Texto3, FontTypeNames.FONTTYPE_INFO)
                 End With
             Next
 
