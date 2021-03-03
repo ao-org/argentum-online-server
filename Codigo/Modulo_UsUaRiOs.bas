@@ -1578,7 +1578,7 @@ Sub ContarMuerte(ByVal Muerto As Integer, ByVal Atacante As Integer)
 
             End If
         
-114         If UserList(Atacante).Faccion.RecibioExpInicialCaos = 1 And UserList(Muerto).Faccion.FuerzasCaos = 1 Then
+114         If UserList(Atacante).Faccion.RecompensasCaos > 0 And UserList(Muerto).Faccion.FuerzasCaos = 1 Then
 116             UserList(Atacante).Faccion.Reenlistadas = 200  'jaja que trucho
             
                 'con esto evitamos que se vuelva a reenlistar
