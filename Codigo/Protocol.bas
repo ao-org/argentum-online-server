@@ -4240,8 +4240,8 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
     
                                 End If
                                 
-410                             If UserList(UserIndex).Stats.UserSkills(eSkill.Pescar) < 80 Then
-412                                 Call WriteConsoleMsg(UserIndex, "Para utilizar la red de pesca debes tener 80 skills en recoleccion.", FontTypeNames.FONTTYPE_INFO)
+410                             If UserList(UserIndex).Stats.UserSkills(eSkill.Pescar) < 100 Then
+412                                 Call WriteConsoleMsg(UserIndex, "Para utilizar la red de pesca debes tener 100 skills en pesca.", FontTypeNames.FONTTYPE_INFO)
 414                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                     Exit Sub
     
@@ -8125,7 +8125,7 @@ Private Sub HandleEnlist(ByVal UserIndex As Integer)
 108         If NpcList(.flags.TargetNPC).NPCtype <> eNPCType.Enlistador Or .flags.Muerto <> 0 Then Exit Sub
         
 110         If Distancia(.Pos, NpcList(.flags.TargetNPC).Pos) > 4 Then
-112             Call WriteConsoleMsg(UserIndex, "Debes acercarte mís.", FontTypeNames.FONTTYPE_INFO)
+112             Call WriteConsoleMsg(UserIndex, "Debes acercarte más.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
@@ -8260,7 +8260,7 @@ Private Sub HandleReward(ByVal UserIndex As Integer)
             Else
 
 122             If .Faccion.FuerzasCaos = 0 Then
-124                 Call WriteChatOverHead(UserIndex, "No perteneces a la legiín oscura!!!", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+124                 Call WriteChatOverHead(UserIndex, "No perteneces a la legión oscura!!!", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
                     Exit Sub
 
                 End If
@@ -12867,7 +12867,7 @@ Private Sub HandleOnlineGM(ByVal UserIndex As Integer)
             'Remove packet ID
 102         Call .incomingData.ReadByte
         
-104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then Exit Sub
+104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.RoleMaster) Then Exit Sub
 
 106         priv = PlayerType.Consejero Or PlayerType.SemiDios
 
@@ -12920,7 +12920,7 @@ Private Sub HandleOnlineMap(ByVal UserIndex As Integer)
             'Remove packet ID
 102         Call .incomingData.ReadByte
         
-104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then Exit Sub
+104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.RoleMaster) Then Exit Sub
         
             Dim LoopC As Long
 
@@ -13426,7 +13426,7 @@ Private Sub HandleNPCFollow(ByVal UserIndex As Integer)
             'Remove packet ID
 102         Call .incomingData.ReadByte
         
-104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then Exit Sub
+104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.RoleMaster) Then Exit Sub
         
 106         If .flags.TargetNPC > 0 Then
 108             Call DoFollow(.flags.TargetNPC, .name)
@@ -13585,7 +13585,7 @@ Private Sub HandleSpawnListRequest(ByVal UserIndex As Integer)
             'Remove packet ID
 102         Call .incomingData.ReadByte
         
-104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then Exit Sub
+104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.RoleMaster) Then Exit Sub
         
 106         Call EnviarSpawnList(UserIndex)
 
@@ -14072,7 +14072,7 @@ Private Sub HandleTeleportCreate(ByVal UserIndex As Integer)
 110         X = .incomingData.ReadByte()
 112         Y = .incomingData.ReadByte()
         
-114         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
+114         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
 116         Call LogGM(.name, "/CT " & Mapa & "," & X & "," & Y)
         
@@ -14147,7 +14147,7 @@ Private Sub HandleTeleportDestroy(ByVal UserIndex As Integer)
 102         Call .incomingData.ReadByte
         
             '/dt
-104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
+104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
 106         Mapa = .flags.TargetMap
 108         X = .flags.TargetX
@@ -14207,7 +14207,7 @@ Private Sub HandleRainToggle(ByVal UserIndex As Integer)
             'Remove packet ID
 102         Call .incomingData.ReadByte
         
-104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then Exit Sub
+104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
 106         Call LogGM(.name, "/LLUVIA")
 108         Lloviendo = Not Lloviendo
@@ -14756,7 +14756,7 @@ Private Sub HandleDestroyAllItemsInArea(ByVal UserIndex As Integer)
             'Remove packet ID
 102         Call .incomingData.ReadByte
         
-104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
+104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
             Dim X As Long
 
@@ -14969,7 +14969,7 @@ Private Sub HandleItemsInTheFloor(ByVal UserIndex As Integer)
             'Remove packet ID
 102         Call .incomingData.ReadByte
         
-104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
+104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
             Dim tObj  As Integer
 
@@ -15163,7 +15163,7 @@ Private Sub HandleDumpIPTables(ByVal UserIndex As Integer)
             'Remove packet ID
 102         Call .incomingData.ReadByte
         
-104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
+104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
 106         Call SecurityIp.DumpTables
 
@@ -15850,7 +15850,7 @@ Private Sub HandleDestroyItems(ByVal UserIndex As Integer)
             'Remove packet ID
 102         Call .incomingData.ReadByte
         
-104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
+104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
 106         If MapData(.Pos.Map, .Pos.X, .Pos.Y).ObjInfo.ObjIndex = 0 Then Exit Sub
         
@@ -16101,7 +16101,7 @@ Private Sub HandleForceMIDIAll(ByVal UserIndex As Integer)
 
 108         midiID = .incomingData.ReadByte()
         
-110         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
+110         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
 112         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.name & " broadcast musica: " & midiID, FontTypeNames.FONTTYPE_SERVER))
         
@@ -16147,7 +16147,7 @@ Private Sub HandleForceWAVEAll(ByVal UserIndex As Integer)
 
 108         waveID = .incomingData.ReadByte()
         
-110         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
+110         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
 112         Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(waveID, NO_3D_SOUND, NO_3D_SOUND))
 
@@ -16274,7 +16274,7 @@ Private Sub HandleTileBlockedToggle(ByVal UserIndex As Integer)
             'Remove packet ID
 102         Call .incomingData.ReadByte
         
-104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then Exit Sub
+104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.RoleMaster) Then Exit Sub
 
 106         Call LogGM(.name, "/BLOQ")
         
@@ -16317,7 +16317,7 @@ Private Sub HandleKillNPCNoRespawn(ByVal UserIndex As Integer)
             'Remove packet ID
 102         Call .incomingData.ReadByte
         
-104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then Exit Sub
+104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.RoleMaster) Then Exit Sub
         
 106         If .flags.TargetNPC = 0 Then Exit Sub
         
@@ -16685,7 +16685,7 @@ Public Sub HandleResetAutoUpdate(ByVal UserIndex As Integer)
             'Remove packet ID
 102         Call .incomingData.ReadByte
         
-104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
+104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
 106         Call WriteConsoleMsg(UserIndex, "TID: " & CStr(ReiniciarAutoUpdate()), FontTypeNames.FONTTYPE_INFO)
 
@@ -16719,7 +16719,7 @@ Public Sub HandleRestart(ByVal UserIndex As Integer)
             'Remove Packet ID
 102         Call .incomingData.ReadByte
     
-104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
+104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
             'time and Time BUG!
 106         Call LogGM(.name, .name & " reinicio el mundo")
@@ -17013,7 +17013,7 @@ Public Sub HandleNight(ByVal UserIndex As Integer)
             'Remove Packet ID
 102         Call .incomingData.ReadByte
         
-104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
+104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
 
 106         HoraMundo = GetTickCount()
 
@@ -17043,7 +17043,7 @@ Public Sub HandleDay(ByVal UserIndex As Integer)
             'Remove Packet ID
 102         Call .incomingData.ReadByte
         
-104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
+104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
 
 106         HoraMundo = GetTickCount() - DuracionDia \ 2
 
@@ -17076,7 +17076,7 @@ Public Sub HandleSetTime(ByVal UserIndex As Integer)
             Dim HoraDia As Long
 104         HoraDia = .incomingData.ReadLong
         
-106         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
+106         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
 
 108         HoraMundo = GetTickCount() - HoraDia
             
@@ -18317,8 +18317,8 @@ Public Sub HandleCreateNPC(ByVal UserIndex As Integer)
         
 108         Dim NpcIndex As Integer: NpcIndex = .incomingData.ReadInteger()
         
-110         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
-        
+110         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
+            
             'Nos fijamos si es pretoriano.
 112         If NpcList(NpcIndex).NPCtype = eNPCType.Pretoriano Then
 114             Call WriteConsoleMsg(UserIndex, "No puedes sumonear miembros del clan pretoriano de esta forma, utiliza /CrearPretoianos MAPA X Y.", FontTypeNames.FONTTYPE_WARNING)
@@ -18372,7 +18372,7 @@ Public Sub HandleCreateNPCWithRespawn(ByVal UserIndex As Integer)
         
 108         NpcIndex = .incomingData.ReadInteger()
         
-110         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
+110         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
 112         NpcIndex = SpawnNpc(NpcIndex, .Pos, True, True)
         
@@ -18533,7 +18533,7 @@ Public Sub HandleNavigateToggle(ByVal UserIndex As Integer)
             'Remove Packet ID
 102         Call .incomingData.ReadByte
         
-104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then Exit Sub
+104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.RoleMaster) Then Exit Sub
         
 106         If .flags.Navegando = 1 Then
 108             .flags.Navegando = 0
@@ -26679,7 +26679,7 @@ Private Sub HandleNieveToggle(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 102         Call .incomingData.ReadInteger 'Remove packet ID
         
-104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then Exit Sub
+104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.RoleMaster) Then Exit Sub
         
 106         Call LogGM(.name, "/NIEVE")
 108         Nebando = Not Nebando
@@ -26706,7 +26706,7 @@ Private Sub HandleNieblaToggle(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 102         Call .incomingData.ReadInteger 'Remove packet ID
 
-104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then Exit Sub
+104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
 106         Call LogGM(.name, "/NIEBLA")
 108         Call ResetMeteo
@@ -29350,7 +29350,7 @@ Private Sub HandleCancelarExit(ByVal UserIndex As Integer)
             'Remove Packet ID
 102         Call .incomingData.ReadInteger
     
-            'If .flags.Privilegios And (PlayerType.User Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
+            'If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
 
 104         Call CancelExit(UserIndex)
 

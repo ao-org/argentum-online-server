@@ -38,16 +38,16 @@ Public Function getLimit(ByVal Mapa As Integer, ByVal side As Byte) As Integer
 106             Select Case side
 
                     Case eHeading.NORTH
-108                     getLimit = MapData(Mapa, X, 7 + Y).TileExit.Map
+108                     getLimit = MapData(Mapa, X, 10 + Y).TileExit.Map
 
 110                 Case eHeading.EAST
-112                     getLimit = MapData(Mapa, 92 - Y, X).TileExit.Map
+112                     getLimit = MapData(Mapa, 88 - Y, X).TileExit.Map
 
 114                 Case eHeading.SOUTH
-116                     getLimit = MapData(Mapa, X, 94 - Y).TileExit.Map
+116                     getLimit = MapData(Mapa, X, 91 - Y).TileExit.Map
 
 118                 Case eHeading.WEST
-120                     getLimit = MapData(Mapa, 9 + Y, X).TileExit.Map
+120                     getLimit = MapData(Mapa, 13 + Y, X).TileExit.Map
 
                 End Select
 
@@ -59,7 +59,7 @@ Public Function getLimit(ByVal Mapa As Integer, ByVal side As Byte) As Integer
         Exit Function
 
 getLimit_Err:
-128     Call RegistrarError(Err.Number, Err.description, "Hogar.getLimit", Erl)
+128     Call RegistrarError(Err.Number, Err.Description, "Hogar.getLimit", Erl)
 
         
 End Function
@@ -114,7 +114,7 @@ Public Sub generateMatrix(ByVal Mapa As Integer)
         Exit Sub
 
 generateMatrix_Err:
-136     Call RegistrarError(Err.Number, Err.description, "Hogar.generateMatrix", Erl)
+136     Call RegistrarError(Err.Number, Err.Description, "Hogar.generateMatrix", Erl)
 
         
 End Sub
@@ -178,7 +178,7 @@ Public Sub setDistance(ByVal Mapa As Integer, _
         Exit Sub
 
 setDistance_Err:
-134     Call RegistrarError(Err.Number, Err.description, "Hogar.setDistance", Erl)
+134     Call RegistrarError(Err.Number, Err.Description, "Hogar.setDistance", Erl)
 
         
 End Sub
@@ -225,7 +225,7 @@ Public Sub goHome(ByVal UserIndex As Integer)
         Exit Sub
 
 goHome_Err:
-122     Call RegistrarError(Err.Number, Err.description, "Hogar.goHome", Erl)
+122     Call RegistrarError(Err.Number, Err.Description, "Hogar.goHome", Erl)
 
         
 End Sub
@@ -255,7 +255,7 @@ Public Sub TravelingEffect(ByVal UserIndex As Integer)
         Exit Sub
 
 TravelingEffect_Err:
-104     Call RegistrarError(Err.Number, Err.description, "Hogar.TravelingEffect", Erl)
+104     Call RegistrarError(Err.Number, Err.Description, "Hogar.TravelingEffect", Erl)
 
         
 End Sub
@@ -285,7 +285,7 @@ Public Function GetHomeArrivalTime(ByVal UserIndex As Integer) As Integer
         Exit Function
 
 GetHomeArrivalTime_Err:
-106     Call RegistrarError(Err.Number, Err.description, "Hogar.GetHomeArrivalTime", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "Hogar.GetHomeArrivalTime", Erl)
 
         
 End Function
@@ -341,7 +341,7 @@ Public Sub HomeArrival(ByVal UserIndex As Integer)
         Exit Sub
 
 HomeArrival_Err:
-134     Call RegistrarError(Err.Number, Err.description, "Hogar.HomeArrival", Erl)
+134     Call RegistrarError(Err.Number, Err.Description, "Hogar.HomeArrival", Erl)
 
         
 End Sub
@@ -386,7 +386,7 @@ Public Function IntervaloGoHome(ByVal UserIndex As Integer, _
         Exit Function
 
 IntervaloGoHome_Err:
-114     Call RegistrarError(Err.Number, Err.description, "Hogar.IntervaloGoHome", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "Hogar.IntervaloGoHome", Erl)
 
         
 End Function
@@ -459,7 +459,7 @@ Public Sub HandleHome(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleHome_Err:
-134     Call RegistrarError(Err.Number, Err.description, "Hogar.HandleHome", Erl)
+134     Call RegistrarError(Err.Number, Err.Description, "Hogar.HandleHome", Erl)
 
         
 End Sub
