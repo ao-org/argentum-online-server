@@ -403,6 +403,11 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
         On Error GoTo HechizoInvocacion_Err
     
 100     With UserList(UserIndex)
+
+            If .flags.EnReto Then
+                Call WriteConsoleMsg(UserIndex, "No podés invocar criaturas durante un reto.", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
     
             Dim h As Integer, j As Integer, ind As Integer, index As Integer
             Dim TargetPos As WorldPos
@@ -1192,6 +1197,11 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 102     tU = UserList(UserIndex).flags.TargetUser
 
 104     If Hechizos(h).Invisibilidad = 1 Then
+
+            If UserList(UserIndex).flags.EnReto Then
+                Call WriteConsoleMsg(UserIndex, "No podés lanzar invisibilidad durante un reto.", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
    
 106         If UserList(tU).flags.Muerto = 1 Then
                 'Call WriteConsoleMsg(UserIndex, "¡Está muerto!", FontTypeNames.FONTTYPE_INFO)
@@ -1283,6 +1293,12 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
         End If
         
 172     If Hechizos(h).Mimetiza = 1 Then
+
+            If UserList(UserIndex).flags.EnReto Then
+                Call WriteConsoleMsg(UserIndex, "No podés mimetizarte durante un reto.", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+
 174         If UserList(tU).flags.Muerto = 1 Then
                 Exit Sub
             End If
@@ -1711,6 +1727,11 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 
 538     If Hechizos(h).Revivir = 1 Then
 540         If UserList(tU).flags.Muerto = 1 Then
+
+                If UserList(UserIndex).flags.EnReto Then
+                    Call WriteConsoleMsg(UserIndex, "No podés revivir a nadie durante un reto.", FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                End If
     
                 'No usar resu en mapas con ResuSinEfecto
                 'If MapInfo(UserList(tU).Pos.map).ResuSinEfecto > 0 Then
@@ -2015,6 +2036,11 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
         End If
 
 238     If Hechizos(hIndex).Mimetiza = 1 Then
+
+            If UserList(UserIndex).flags.EnReto Then
+                Call WriteConsoleMsg(UserIndex, "No podés mimetizarte durante un reto.", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
     
 240         If UserList(UserIndex).flags.Mimetizado = 1 Then
 242             Call WriteConsoleMsg(UserIndex, "Ya te encuentras transformado. El hechizo no tuvo efecto", FontTypeNames.FONTTYPE_INFO)

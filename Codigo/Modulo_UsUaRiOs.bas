@@ -931,7 +931,7 @@ Sub SendUserMiniStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
         '*************************************************
 100     With UserList(UserIndex)
 102         Call WriteConsoleMsg(sendIndex, "Pj: " & .name, FontTypeNames.FONTTYPE_INFO)
-104         Call WriteConsoleMsg(sendIndex, "Ciudadanos Matados: " & .Faccion.CiudadanosMatados & " Criminales Matados: " & .Faccion.CriminalesMatados & " UsuariosMatados: " & .Stats.UsuariosMatados, FontTypeNames.FONTTYPE_INFO)
+104         Call WriteConsoleMsg(sendIndex, "Ciudadanos Matados: " & .Faccion.ciudadanosMatados & " Criminales Matados: " & .Faccion.CriminalesMatados & " UsuariosMatados: " & .Stats.UsuariosMatados, FontTypeNames.FONTTYPE_INFO)
 106         Call WriteConsoleMsg(sendIndex, "NPCsMuertos: " & .Stats.NPCsMuertos, FontTypeNames.FONTTYPE_INFO)
 108         Call WriteConsoleMsg(sendIndex, "Clase: " & ListaClases(.clase), FontTypeNames.FONTTYPE_INFO)
 110         Call WriteConsoleMsg(sendIndex, "Pena: " & .Counters.Pena, FontTypeNames.FONTTYPE_INFO)
@@ -1151,7 +1151,7 @@ DameUserIndex_Err:
         
 End Function
 
-Function DameUserIndexConNombre(ByVal nombre As String) As Integer
+Function DameUserIndexConNombre(ByVal Nombre As String) As Integer
         
         On Error GoTo DameUserIndexConNombre_Err
         
@@ -1160,9 +1160,9 @@ Function DameUserIndexConNombre(ByVal nombre As String) As Integer
   
 100     LoopC = 1
   
-102     nombre = UCase$(nombre)
+102     Nombre = UCase$(Nombre)
 
-104     Do Until UCase$(UserList(LoopC).name) = nombre
+104     Do Until UCase$(UserList(LoopC).name) = Nombre
 
 106         LoopC = LoopC + 1
     
@@ -1413,9 +1413,7 @@ Sub UserDie(ByVal UserIndex As Integer)
 106         .Stats.MinHp = 0
 108         .Stats.MinSta = 0
 110         .flags.AtacadoPorUser = 0
-112         .flags.Envenenado = 0
-114         .flags.Ahogandose = 0
-116         .flags.Incinerado = 0
+
 118         .flags.incinera = 0
 120         .flags.Paraliza = 0
 122         .flags.Envenena = 0
@@ -1445,53 +1443,6 @@ Sub UserDie(ByVal UserIndex As Integer)
     
 150         .flags.AtacadoPorNpc = 0
 152         .flags.NPCAtacado = 0
-        
-            '<<<< Paralisis >>>>
-154         If .flags.Paralizado = 1 Then
-156             .flags.Paralizado = 0
-158             Call WriteParalizeOK(UserIndex)
-            End If
-        
-            '<<<< Inmovilizado >>>>
-160         If .flags.Inmovilizado = 1 Then
-162             .flags.Inmovilizado = 0
-164             Call WriteInmovilizaOK(UserIndex)
-            End If
-        
-            '<<< Estupidez >>>
-166         If .flags.Estupidez = 1 Then
-168             .flags.Estupidez = 0
-170             Call WriteDumbNoMore(UserIndex)
-            End If
-        
-            '<<<< Descansando >>>>
-172         If .flags.Descansar Then
-174             .flags.Descansar = False
-176             Call WriteRestOK(UserIndex)
-            End If
-        
-            '<<<< Meditando >>>>
-178         If .flags.Meditando Then
-180             .flags.Meditando = False
-182             .Char.FX = 0
-184             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(.Char.CharIndex, 0))
-            End If
-        
-            'If .Familiar.Invocado = 1 Then
-            ' Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageFxPiso("17", NpcList(.Familiar.Id).Pos.x, NpcList(.Familiar.Id).Pos.Y))
-            ' .Familiar.Invocado = 0
-            ' Call QuitarNPC(.Familiar.Id)
-            ' End If
-        
-            '<<<< Invisible >>>>
-186         If (.flags.invisible = 1 Or .flags.Oculto = 1) And .flags.AdminInvisible = 0 Then
-188             .flags.Oculto = 0
-190             .flags.invisible = 0
-192             .Counters.TiempoOculto = 0
-194             .Counters.Invisibilidad = 0
-                'no hace falta encriptar este NOVER
-196             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, False))
-            End If
     
 198         If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger <> eTrigger.ZONAPELEA And .flags.BattleModo = 0 Then
 
@@ -1579,6 +1530,8 @@ Sub UserDie(ByVal UserIndex As Integer)
 276             .Char.speeding = ObjData(.Invent.BarcoObjIndex).Velocidad
             End If
             
+            Call LimpiarEstadosAlterados(UserIndex)
+            
 278         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(.Char.CharIndex, .Char.speeding))
         
 280         For i = 1 To MAXMASCOTAS
@@ -1592,7 +1545,13 @@ Sub UserDie(ByVal UserIndex As Integer)
             '<< Actualizamos clientes >>
 290         Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)
 
-            Call WriteConsoleMsg(UserIndex, "Escribe /HOGAR si deseas regresar rápido a tu hogar.", FontTypeNames.FONTTYPE_New_Naranja)
+            If MapInfo(.Pos.Map).Seguro = 0 Then
+                Call WriteConsoleMsg(UserIndex, "Escribe /HOGAR si deseas regresar rápido a tu hogar.", FontTypeNames.FONTTYPE_New_Naranja)
+            End If
+            
+            If .flags.EnReto Then
+                Call MuereEnReto(UserIndex)
+            End If
 
         End With
 
@@ -1630,7 +1589,7 @@ Sub ContarMuerte(ByVal Muerto As Integer, ByVal Atacante As Integer)
 120         If UserList(Atacante).flags.LastCiudMatado <> UserList(Muerto).name Then
 122             UserList(Atacante).flags.LastCiudMatado = UserList(Muerto).name
 
-124             If UserList(Atacante).Faccion.CiudadanosMatados < MAXUSERMATADOS Then UserList(Atacante).Faccion.CiudadanosMatados = UserList(Atacante).Faccion.CiudadanosMatados + 1
+124             If UserList(Atacante).Faccion.ciudadanosMatados < MAXUSERMATADOS Then UserList(Atacante).Faccion.ciudadanosMatados = UserList(Atacante).Faccion.ciudadanosMatados + 1
 
             End If
 
@@ -2129,30 +2088,30 @@ CambiarNick_Err:
         
 End Sub
 
-Sub SendUserStatsTxtOFF(ByVal sendIndex As Integer, ByVal nombre As String)
+Sub SendUserStatsTxtOFF(ByVal sendIndex As Integer, ByVal Nombre As String)
         
         On Error GoTo SendUserStatsTxtOFF_Err
         
 
-100     If FileExist(CharPath & nombre & ".chr", vbArchive) = False Then
+100     If FileExist(CharPath & Nombre & ".chr", vbArchive) = False Then
 102         Call WriteConsoleMsg(sendIndex, "Pj Inexistente", FontTypeNames.FONTTYPE_INFO)
         Else
-104         Call WriteConsoleMsg(sendIndex, "Estadisticas de: " & nombre, FontTypeNames.FONTTYPE_INFO)
-106         Call WriteConsoleMsg(sendIndex, "Nivel: " & GetVar(CharPath & nombre & ".chr", "stats", "elv") & "  EXP: " & GetVar(CharPath & nombre & ".chr", "stats", "Exp") & "/" & GetVar(CharPath & nombre & ".chr", "stats", "elu"), FontTypeNames.FONTTYPE_INFO)
-108         Call WriteConsoleMsg(sendIndex, "Vitalidad: " & GetVar(CharPath & nombre & ".chr", "stats", "minsta") & "/" & GetVar(CharPath & nombre & ".chr", "stats", "maxSta"), FontTypeNames.FONTTYPE_INFO)
-110         Call WriteConsoleMsg(sendIndex, "Salud: " & GetVar(CharPath & nombre & ".chr", "stats", "MinHP") & "/" & GetVar(CharPath & nombre & ".chr", "Stats", "MaxHP") & "  Mana: " & GetVar(CharPath & nombre & ".chr", "Stats", "MinMAN") & "/" & GetVar(CharPath & nombre & ".chr", "Stats", "MaxMAN"), FontTypeNames.FONTTYPE_INFO)
+104         Call WriteConsoleMsg(sendIndex, "Estadisticas de: " & Nombre, FontTypeNames.FONTTYPE_INFO)
+106         Call WriteConsoleMsg(sendIndex, "Nivel: " & GetVar(CharPath & Nombre & ".chr", "stats", "elv") & "  EXP: " & GetVar(CharPath & Nombre & ".chr", "stats", "Exp") & "/" & GetVar(CharPath & Nombre & ".chr", "stats", "elu"), FontTypeNames.FONTTYPE_INFO)
+108         Call WriteConsoleMsg(sendIndex, "Vitalidad: " & GetVar(CharPath & Nombre & ".chr", "stats", "minsta") & "/" & GetVar(CharPath & Nombre & ".chr", "stats", "maxSta"), FontTypeNames.FONTTYPE_INFO)
+110         Call WriteConsoleMsg(sendIndex, "Salud: " & GetVar(CharPath & Nombre & ".chr", "stats", "MinHP") & "/" & GetVar(CharPath & Nombre & ".chr", "Stats", "MaxHP") & "  Mana: " & GetVar(CharPath & Nombre & ".chr", "Stats", "MinMAN") & "/" & GetVar(CharPath & Nombre & ".chr", "Stats", "MaxMAN"), FontTypeNames.FONTTYPE_INFO)
     
-112         Call WriteConsoleMsg(sendIndex, "Menor Golpe/Mayor Golpe: " & GetVar(CharPath & nombre & ".chr", "stats", "MaxHIT"), FontTypeNames.FONTTYPE_INFO)
+112         Call WriteConsoleMsg(sendIndex, "Menor Golpe/Mayor Golpe: " & GetVar(CharPath & Nombre & ".chr", "stats", "MaxHIT"), FontTypeNames.FONTTYPE_INFO)
     
-114         Call WriteConsoleMsg(sendIndex, "Oro: " & GetVar(CharPath & nombre & ".chr", "stats", "GLD"), FontTypeNames.FONTTYPE_INFO)
-116         Call WriteConsoleMsg(sendIndex, "Veces Que Murio: " & GetVar(CharPath & nombre & ".chr", "Flags", "VecesQueMoriste"), FontTypeNames.FONTTYPE_INFO)
+114         Call WriteConsoleMsg(sendIndex, "Oro: " & GetVar(CharPath & Nombre & ".chr", "stats", "GLD"), FontTypeNames.FONTTYPE_INFO)
+116         Call WriteConsoleMsg(sendIndex, "Veces Que Murio: " & GetVar(CharPath & Nombre & ".chr", "Flags", "VecesQueMoriste"), FontTypeNames.FONTTYPE_INFO)
             #If ConUpTime Then
 
                 Dim TempSecs As Long
 
                 Dim TempStr  As String
 
-118             TempSecs = GetVar(CharPath & nombre & ".chr", "INIT", "UpTime")
+118             TempSecs = GetVar(CharPath & Nombre & ".chr", "INIT", "UpTime")
 120             TempStr = (TempSecs \ 86400) & " Dias, " & ((TempSecs Mod 86400) \ 3600) & " Horas, " & ((TempSecs Mod 86400) Mod 3600) \ 60 & " Minutos, " & (((TempSecs Mod 86400) Mod 3600) Mod 60) & " Segundos."
 122             Call WriteConsoleMsg(sendIndex, "Tiempo Logeado: " & TempStr, FontTypeNames.FONTTYPE_INFO)
             #End If
@@ -2504,3 +2463,99 @@ Handler:
     Resume Next
 End Sub
 
+' Autor: WyroX - 02/03/2021
+' Quita parálisis, veneno, invisibilidad, estupidez, mimetismo, deja de descansar, de meditar y de ocultarse; y quita otros estados obsoletos (por si acaso)
+Public Sub LimpiarEstadosAlterados(ByVal UserIndex As Integer)
+
+    On Error GoTo Handler
+    
+    With UserList(UserIndex)
+
+        '<<<< Envenenamiento >>>>
+        .flags.Envenenado = 0
+        
+        '<<<< Paralisis >>>>
+        If .flags.Paralizado = 1 Then
+            .flags.Paralizado = 0
+            Call WriteParalizeOK(UserIndex)
+        End If
+                
+        '<<<< Inmovilizado >>>>
+        If .flags.Inmovilizado = 1 Then
+            .flags.Inmovilizado = 0
+            Call WriteInmovilizaOK(UserIndex)
+        End If
+                
+        '<<< Estupidez >>>
+        If .flags.Estupidez = 1 Then
+            .flags.Estupidez = 0
+            Call WriteDumbNoMore(UserIndex)
+        End If
+                
+        '<<<< Descansando >>>>
+        If .flags.Descansar Then
+            .flags.Descansar = False
+            Call WriteRestOK(UserIndex)
+        End If
+                
+        '<<<< Meditando >>>>
+        If .flags.Meditando Then
+            .flags.Meditando = False
+            .Char.FX = 0
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(.Char.CharIndex, 0))
+        End If
+        
+        '<<<< Invisible >>>>
+        If (.flags.invisible = 1 Or .flags.Oculto = 1) And .flags.AdminInvisible = 0 Then
+            .flags.Oculto = 0
+            .flags.invisible = 0
+            .Counters.TiempoOculto = 0
+            .Counters.Invisibilidad = 0
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, False))
+        End If
+        
+        '<<<< Mimetismo >>>>
+        If .flags.Mimetizado = 1 Then
+            If .flags.Navegando Then
+                If .flags.Muerto = 0 Then
+                    .Char.Body = ObjData(UserList(UserIndex).Invent.BarcoObjIndex).Ropaje
+                Else
+                    .Char.Body = iFragataFantasmal
+                End If
+                
+                .Char.ShieldAnim = NingunEscudo
+                .Char.WeaponAnim = NingunArma
+                .Char.CascoAnim = NingunCasco
+            Else
+                .Char.Body = .CharMimetizado.Body
+                .Char.Head = .CharMimetizado.Head
+                .Char.CascoAnim = .CharMimetizado.CascoAnim
+                .Char.ShieldAnim = .CharMimetizado.ShieldAnim
+                .Char.WeaponAnim = .CharMimetizado.WeaponAnim
+            End If
+            
+            .Counters.Mimetismo = 0
+            .flags.Mimetizado = 0
+        End If
+        
+        '<<<< Estados obsoletos >>>>
+        .flags.Ahogandose = 0
+        .flags.Incinerado = 0
+        
+    End With
+    
+    Exit Sub
+    
+Handler:
+    Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.LimpiarEstadosAlterados", Erl)
+    Resume Next
+
+End Sub
+
+Public Sub DevolverPosAnterior(ByVal UserIndex As Integer)
+
+    With UserList(UserIndex).flags
+        Call WarpToLegalPos(UserIndex, .LastPos.Map, .LastPos.X, .LastPos.Y, True)
+    End With
+
+End Sub

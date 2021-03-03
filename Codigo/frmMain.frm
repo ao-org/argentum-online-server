@@ -27,6 +27,11 @@ Begin VB.Form frmMain
    ScaleHeight     =   6315
    ScaleWidth      =   6915
    StartUpPosition =   2  'CenterScreen
+   Begin VB.Timer TiempoRetos 
+      Interval        =   10000
+      Left            =   3600
+      Top             =   4200
+   End
    Begin VB.Timer TimerGuardarUsuarios 
       Enabled         =   0   'False
       Interval        =   30000
@@ -430,7 +435,7 @@ Begin VB.Form frmMain
       Width           =   4935
       Begin VB.Timer t_ColaAPI 
          Interval        =   50
-         Left            =   3120
+         Left            =   3000
          Top             =   1200
       End
       Begin VB.ListBox listaDePaquetes 
@@ -802,6 +807,29 @@ Private Sub t_ColaAPI_Timer()
         End Select
     
     End With
+    
+End Sub
+
+' WyroX: Comprobamos cada 10 segundos, porque no es necesaria tanta precisión
+Private Sub TiempoRetos_Timer()
+    
+    Dim IntervaloTimerRetosEnSegundos As Integer
+    IntervaloTimerRetosEnSegundos = TiempoRetos.Interval * 0.001
+    
+    Dim Sala As Integer
+    For Sala = 1 To Retos.TotalSalas
+        
+        With Retos.Salas(Sala)
+            If .EnUso Then
+                .TiempoRestante = .TiempoRestante - IntervaloTimerRetosEnSegundos
+                
+                If .TiempoRestante <= 0 Then
+                    Call FinalizarReto(Sala, True)
+                End If
+            End If
+        End With
+
+    Next
     
 End Sub
 
@@ -1944,7 +1972,7 @@ Private Sub TIMER_AI_Timer()
         'Update NPCs
         For NpcIndex = 1 To LastNPC
             
-            With Npclist(NpcIndex)
+            With NpcList(NpcIndex)
             
                 If .flags.NPCActive Then 'Nos aseguramos que sea INTELIGENTE!
                 
@@ -2001,7 +2029,7 @@ Private Sub TIMER_AI_Timer()
     Exit Sub
 
 ErrorHandler:
-    Call LogError("Error en TIMER_AI_Timer " & Npclist(NpcIndex).name & " mapa:" & Npclist(NpcIndex).Pos.Map)
+    Call LogError("Error en TIMER_AI_Timer " & NpcList(NpcIndex).name & " mapa:" & NpcList(NpcIndex).Pos.Map)
     Call MuereNpc(NpcIndex, 0)
 
 End Sub
@@ -2154,7 +2182,7 @@ Private Sub TimerRespawn_Timer()
     Exit Sub
 
 ErrorHandler:
-    Call LogError("Error en TIMER_RESPAWN " & Npclist(NpcIndex).name & " mapa:" & Npclist(NpcIndex).Pos.Map)
+    Call LogError("Error en TIMER_RESPAWN " & NpcList(NpcIndex).name & " mapa:" & NpcList(NpcIndex).Pos.Map)
     Call MuereNpc(NpcIndex, 0)
 
 End Sub

@@ -197,6 +197,7 @@ Private Enum ServerPacketID
     Tolerancia0
     Redundancia
     SeguroResu
+    Stopped
 
 End Enum
 
@@ -464,13 +465,15 @@ Private Enum ClientPacketID
 End Enum
 
 Private Enum NewPacksID
-
     OfertaInicial
     OfertaDeSubasta
     QuestionGM
     CuentaRegresiva
     PossUser
-    Duelo
+    Duel
+    AcceptDuel
+    CancelDuel
+    QuitDuel
     NieveToggle
     NieblaToggle
     TransFerGold
@@ -545,6 +548,38 @@ Private Enum NewPacksID
     CuentaDeposit
 End Enum
 
+Public Enum eEditOptions
+
+    eo_Gold = 1
+    eo_Experience
+    eo_Body
+    eo_Head
+    eo_CiticensKilled
+    eo_CriminalsKilled
+    eo_Level
+    eo_Class
+    eo_Skills
+    eo_SkillPointsLeft
+    eo_Sex
+    eo_Raza
+    eo_Arma
+    eo_Escudo
+    eo_Casco
+    eo_Particula
+    eo_Vida
+    eo_Mana
+    eo_Energia
+    eo_MinHP
+    eo_MinMP
+    eo_Hit
+    eo_MinHit
+    eo_MaxHit
+    eo_Desc
+    eo_Intervalo
+    eo_Hogar
+
+End Enum
+
 Public Enum FontTypeNames
 
     FONTTYPE_TALK
@@ -594,41 +629,10 @@ Public Enum FontTypeNames
     
 End Enum
 
-Public Enum eEditOptions
-
-    eo_Gold = 1
-    eo_Experience
-    eo_Body
-    eo_Head
-    eo_CiticensKilled
-    eo_CriminalsKilled
-    eo_Level
-    eo_Class
-    eo_Skills
-    eo_SkillPointsLeft
-    eo_Sex
-    eo_Raza
-    eo_Arma
-    eo_Escudo
-    eo_Casco
-    eo_Particula
-    eo_Vida
-    eo_Mana
-    eo_Energia
-    eo_MinHP
-    eo_MinMP
-    eo_Hit
-    eo_MinHit
-    eo_MaxHit
-    eo_Desc
-    eo_Intervalo
-    eo_Hogar
-
-End Enum
 
 Public Type PersonajeCuenta
 
-    nombre As String
+    Nombre As String
     nivel As Byte
     Mapa As Integer
     cuerpo As Integer
@@ -1524,10 +1528,17 @@ Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
 118         Case NewPacksID.PossUser
 120             Call HandlePossUser(UserIndex)
 
-122         Case NewPacksID.Duelo
-                'Call HandleDuelo(UserIndex)
-                ' WyroX: Fix temporal para que no tiren el server
-124             Call UserList(UserIndex).incomingData.ReadInteger
+122         Case NewPacksID.Duel
+                Call HandleDuel(UserIndex)
+                
+            Case NewPacksID.AcceptDuel
+                Call HandleAcceptDuel(UserIndex)
+                
+            Case NewPacksID.CancelDuel
+                Call HandleCancelDuel(UserIndex)
+                
+            Case NewPacksID.QuitDuel
+                Call HandleQuitDuel(UserIndex)
 
 126         Case NewPacksID.NieveToggle
 128             Call HandleNieveToggle(UserIndex)
@@ -3530,8 +3541,13 @@ Private Sub HandleWork(ByVal UserIndex As Integer)
 
                     End If
                     
+                    If .flags.EnReto Then
+                        Call WriteConsoleMsg(UserIndex, "No podés ocultarte durante un reto.", FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
+                    
 138                 If .flags.EnConsulta Then
-140                     Call WriteConsoleMsg(UserIndex, "No puedes ocultarte si estas en consulta.", FontTypeNames.FONTTYPE_INFO)
+140                     Call WriteConsoleMsg(UserIndex, "No podés ocultarte si estas en consulta.", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
     
                     End If
@@ -11817,9 +11833,9 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                     Else
 
 248                     If val(Arg1) > MAXUSERMATADOS Then
-250                         UserList(tUser).Faccion.CiudadanosMatados = MAXUSERMATADOS
+250                         UserList(tUser).Faccion.ciudadanosMatados = MAXUSERMATADOS
                         Else
-252                         UserList(tUser).Faccion.CiudadanosMatados = val(Arg1)
+252                         UserList(tUser).Faccion.ciudadanosMatados = val(Arg1)
 
                         End If
 
@@ -12987,9 +13003,9 @@ Private Sub HandleForgive(ByVal UserIndex As Integer)
                 Exit Sub
             End If
             
-122         If UserList(UserIndex).Faccion.CiudadanosMatados > 0 Then
+122         If UserList(UserIndex).Faccion.ciudadanosMatados > 0 Then
                 Dim Donacion As Long
-124             Donacion = UserList(UserIndex).Faccion.CiudadanosMatados * OroMult * CostoPerdonPorCiudadano
+124             Donacion = UserList(UserIndex).Faccion.ciudadanosMatados * OroMult * CostoPerdonPorCiudadano
                 
 126             Call WriteChatOverHead(UserIndex, "Has matado a ciudadanos inocentes, Dios no puede perdonarte lo que has hecho. " & _
                         "Pero si haces una generosa donación de, digamos, " & PonerPuntos(Donacion) & " monedas de oro, tal vez cambie de opinión...", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
@@ -17105,7 +17121,7 @@ Public Sub HandleDonateGold(ByVal UserIndex As Integer)
                  Exit Sub
              End If
         
-118         If .Faccion.Status = 1 Or .Faccion.ArmadaReal = 1 Or .Faccion.FuerzasCaos > 0 Or .Faccion.CiudadanosMatados = 0 Then
+118         If .Faccion.Status = 1 Or .Faccion.ArmadaReal = 1 Or .Faccion.FuerzasCaos > 0 Or .Faccion.ciudadanosMatados = 0 Then
 120              Call WriteChatOverHead(UserIndex, "No puedo aceptar tu donación en este momento...", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
                  Exit Sub
              End If
@@ -17122,7 +17138,7 @@ Public Sub HandleDonateGold(ByVal UserIndex As Integer)
              End If
 
              Dim Donacion As Long
-130          Donacion = .Faccion.CiudadanosMatados * OroMult * CostoPerdonPorCiudadano
+130          Donacion = .Faccion.ciudadanosMatados * OroMult * CostoPerdonPorCiudadano
             
 132          If Oro < Donacion Then
 134              Call WriteChatOverHead(UserIndex, "Dios no puede perdonarte si eres una persona avara.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
@@ -19957,7 +19973,7 @@ ErrHandler:
 
 End Sub
 
-Public Sub WriteClanSeguro(ByVal UserIndex As Integer, ByVal estado As Boolean)
+Public Sub WriteClanSeguro(ByVal UserIndex As Integer, ByVal Estado As Boolean)
 
         '***************************************************
         'Author: Rapsodius
@@ -19967,7 +19983,7 @@ Public Sub WriteClanSeguro(ByVal UserIndex As Integer, ByVal estado As Boolean)
         On Error GoTo ErrHandler
 
 100     Call UserList(UserIndex).outgoingData.WriteByte(ServerPacketID.ClanSeguro)
-102     Call UserList(UserIndex).outgoingData.WriteBoolean(estado)
+102     Call UserList(UserIndex).outgoingData.WriteBoolean(Estado)
         Exit Sub
 
 ErrHandler:
@@ -19979,12 +19995,12 @@ ErrHandler:
 
 End Sub
 
-Public Sub WriteSeguroResu(ByVal UserIndex As Integer, ByVal estado As Boolean)
+Public Sub WriteSeguroResu(ByVal UserIndex As Integer, ByVal Estado As Boolean)
 
         On Error GoTo ErrHandler
 
 100     Call UserList(UserIndex).outgoingData.WriteByte(ServerPacketID.SeguroResu)
-102     Call UserList(UserIndex).outgoingData.WriteBoolean(estado)
+102     Call UserList(UserIndex).outgoingData.WriteBoolean(Estado)
         Exit Sub
 
 ErrHandler:
@@ -22496,7 +22512,7 @@ Public Sub WriteMiniStats(ByVal UserIndex As Integer)
 100     With UserList(UserIndex).outgoingData
 102         Call .WriteByte(ServerPacketID.MiniStats)
         
-104         Call .WriteLong(UserList(UserIndex).Faccion.CiudadanosMatados)
+104         Call .WriteLong(UserList(UserIndex).Faccion.ciudadanosMatados)
 106         Call .WriteLong(UserList(UserIndex).Faccion.CriminalesMatados)
 108         Call .WriteByte(UserList(UserIndex).Faccion.Status)
         
@@ -23322,6 +23338,26 @@ Public Sub WriteInmovilizaOK(ByVal UserIndex As Integer)
 
 100     Call UserList(UserIndex).outgoingData.WriteByte(ServerPacketID.InmovilizadoOK)
         '  Call WritePosUpdate(UserIndex)
+        Exit Sub
+
+ErrHandler:
+
+102     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
+104         Call FlushBuffer(UserIndex)
+106         Resume
+        End If
+
+End Sub
+
+Public Sub WriteStopped(ByVal UserIndex As Integer, ByVal Stopped As Boolean)
+
+        On Error GoTo ErrHandler
+
+        With UserList(UserIndex).outgoingData
+100         Call .WriteByte(ServerPacketID.Stopped)
+            Call .WriteBoolean(Stopped)
+        End With
+    
         Exit Sub
 
 ErrHandler:
@@ -26276,17 +26312,17 @@ Public Sub WritePersonajesDeCuenta(ByVal UserIndex As Integer)
 108         CantPersonajes = ObtenerCantidadDePersonajes(UserCuenta)
         
 110         For i = 1 To CantPersonajes
-112             Personaje(i).nombre = ObtenerNombrePJ(UserCuenta, i)
-114             Personaje(i).Cabeza = ObtenerCabeza(Personaje(i).nombre)
-116             Personaje(i).clase = ObtenerClase(Personaje(i).nombre)
-118             Personaje(i).cuerpo = ObtenerCuerpo(Personaje(i).nombre)
-120             Personaje(i).Mapa = ReadField(1, ObtenerMapa(Personaje(i).nombre), Asc("-"))
-122             Personaje(i).nivel = ObtenerNivel(Personaje(i).nombre)
-124             Personaje(i).Status = ObtenerCriminal(Personaje(i).nombre)
-126             Personaje(i).Casco = ObtenerCasco(Personaje(i).nombre)
-128             Personaje(i).Escudo = ObtenerEscudo(Personaje(i).nombre)
-130             Personaje(i).Arma = ObtenerArma(Personaje(i).nombre)
-132             Personaje(i).ClanIndex = GetUserGuildIndexCharfile(Personaje(i).nombre)
+112             Personaje(i).Nombre = ObtenerNombrePJ(UserCuenta, i)
+114             Personaje(i).Cabeza = ObtenerCabeza(Personaje(i).Nombre)
+116             Personaje(i).clase = ObtenerClase(Personaje(i).Nombre)
+118             Personaje(i).cuerpo = ObtenerCuerpo(Personaje(i).Nombre)
+120             Personaje(i).Mapa = ReadField(1, ObtenerMapa(Personaje(i).Nombre), Asc("-"))
+122             Personaje(i).nivel = ObtenerNivel(Personaje(i).Nombre)
+124             Personaje(i).Status = ObtenerCriminal(Personaje(i).Nombre)
+126             Personaje(i).Casco = ObtenerCasco(Personaje(i).Nombre)
+128             Personaje(i).Escudo = ObtenerEscudo(Personaje(i).Nombre)
+130             Personaje(i).Arma = ObtenerArma(Personaje(i).Nombre)
+132             Personaje(i).ClanIndex = GetUserGuildIndexCharfile(Personaje(i).Nombre)
 134         Next i
 
         End If
@@ -26298,7 +26334,7 @@ Public Sub WritePersonajesDeCuenta(ByVal UserIndex As Integer)
 140         Call .WriteByte(CantPersonajes)
             
 142         For i = 1 To CantPersonajes
-144             Call .WriteASCIIString(Personaje(i).nombre)
+144             Call .WriteASCIIString(Personaje(i).Nombre)
 146             Call .WriteByte(Personaje(i).nivel)
 148             Call .WriteInteger(Personaje(i).Mapa)
 150             Call .WriteInteger(Personaje(i).cuerpo)
@@ -26437,16 +26473,17 @@ ErrHandler:
 
 End Sub
 
-Private Sub HandleDuelo(ByVal UserIndex As Integer)
-        'Author: Pablo Mercavides
+Private Sub HandleDuel(ByVal UserIndex As Integer)
 
-100     If UserList(UserIndex).incomingData.Length < 2 Then
+100     If UserList(UserIndex).incomingData.Length < 8 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
-
         End If
     
         On Error GoTo ErrHandler
+        
+        Dim Players As String
+        Dim Bet As Long
 
 104     With UserList(UserIndex)
 
@@ -26457,47 +26494,14 @@ Private Sub HandleDuelo(ByVal UserIndex As Integer)
         
             'Remove packet ID
 110         Call Buffer.ReadInteger
+
+            Players = Buffer.ReadASCIIString
+            Bet = Buffer.ReadLong
         
             'If we got here then packet is complete, copy data back to original queue
 112         Call .incomingData.CopyBuffer(Buffer)
-        
-114         MapaOcupado = False
 
-116         Dim UserRetado As Integer: UserRetado = .flags.TargetUser
-
-118         If .flags.SolicitudPendienteDe = 0 Then
-            
-120             Select Case UserRetado
-            
-                    Case 0
-122                     Call WriteConsoleMsg(UserIndex, "Duelos> Primero haz click sobre el personaje.", FontTypeNames.FONTTYPE_INFO)
-                        Exit Sub
-                
-124                 Case Is < 0
-126                     Call WriteConsoleMsg(UserIndex, "Duelos> ¡El persona se encuentra offline!", FontTypeNames.FONTTYPE_INFO)
-                        Exit Sub
-                
-                End Select
-
-128             If MapaOcupado Then
-130                 Call WriteConsoleMsg(UserIndex, "Duelos> El mapa de duelos esta ocupado, intentalo mas tarde.", FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-
-                End If
-        
-132             .flags.RetoA = UserList(UserRetado).name
-134             UserList(UserRetado).flags.SolicitudPendienteDe = .name
-        
-136             Call WriteConsoleMsg(UserRetado, "Duelos> Has sido retado a duelo por " & .name & " si quieres aceptar el duelo escribe /DUELO.", FontTypeNames.FONTTYPE_INFO)
-138             Call WriteConsoleMsg(UserIndex, "Duelos> La solicitud a sido enviada al usuario, ahora debes esperar la respuesta de " & UserList(UserRetado).name & ".", FontTypeNames.FONTTYPE_INFO)
-               
-            Else
-
-               Exit Sub
-
-            End If
-
-140         Call SendData(UserIndex, 0, PrepareMessageConsoleMsg("Duelo comenzado!", FontTypeNames.FONTTYPE_SERVER))
+            Call CrearReto(UserIndex, Players, Bet)
 
         End With
     
@@ -26513,6 +26517,82 @@ ErrHandler:
 144     Set Buffer = Nothing
     
 146     If Error <> 0 Then Err.raise Error
+
+End Sub
+
+Private Sub HandleAcceptDuel(ByVal UserIndex As Integer)
+
+100     If UserList(UserIndex).incomingData.Length < 4 Then
+102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
+            Exit Sub
+        End If
+    
+        On Error GoTo ErrHandler
+        
+        Dim Offerer As String
+
+104     With UserList(UserIndex)
+
+            'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
+            Dim Buffer As clsByteQueue
+106         Set Buffer = New clsByteQueue
+108         Call Buffer.CopyBuffer(.incomingData)
+        
+            'Remove packet ID
+110         Call Buffer.ReadInteger
+
+            Offerer = Buffer.ReadASCIIString
+        
+            'If we got here then packet is complete, copy data back to original queue
+112         Call .incomingData.CopyBuffer(Buffer)
+
+            Call AceptarReto(UserIndex, Offerer)
+
+        End With
+    
+        Exit Sub
+    
+ErrHandler:
+
+142     Dim Error As Long: Error = Err.Number
+
+        On Error GoTo 0
+    
+        'Destroy auxiliar buffer
+144     Set Buffer = Nothing
+    
+146     If Error <> 0 Then Err.raise Error
+
+End Sub
+
+Private Sub HandleCancelDuel(ByVal UserIndex As Integer)
+
+    With UserList(UserIndex)
+
+        .incomingData.ReadInteger
+
+        If .flags.SolicitudReto.Estado <> SolicitudRetoEstado.Libre Then
+            Call CancelarSolicitudReto(UserIndex, .name & " ha cancelado la solicitud.")
+
+        ElseIf .flags.AceptoReto > 0 Then
+            Call CancelarSolicitudReto(.flags.AceptoReto, .name & " ha cancelado su admisión.")
+        End If
+
+    End With
+
+End Sub
+
+Private Sub HandleQuitDuel(ByVal UserIndex As Integer)
+
+    With UserList(UserIndex)
+
+        .incomingData.ReadInteger
+
+        If .flags.EnReto Then
+            Call AbandonarReto(UserIndex)
+        End If
+
+    End With
 
 End Sub
 
@@ -27456,7 +27536,7 @@ Private Sub HandleCrearTorneo(ByVal UserIndex As Integer)
 
             Dim Y           As Byte
 
-            Dim nombre      As String
+            Dim Nombre      As String
 
             Dim reglas      As String
 
@@ -27478,7 +27558,7 @@ Private Sub HandleCrearTorneo(ByVal UserIndex As Integer)
 136         Mapa = Buffer.ReadInteger
 138         X = Buffer.ReadByte
 140         Y = Buffer.ReadByte
-142         nombre = Buffer.ReadASCIIString
+142         Nombre = Buffer.ReadASCIIString
 144         reglas = Buffer.ReadASCIIString
   
 146         If EsGM(UserIndex) Then
@@ -27499,7 +27579,7 @@ Private Sub HandleCrearTorneo(ByVal UserIndex As Integer)
 174             Torneo.Mapa = Mapa
 176             Torneo.X = X
 178             Torneo.Y = Y
-180             Torneo.nombre = nombre
+180             Torneo.Nombre = Nombre
 182             Torneo.reglas = reglas
 
 184             Call IniciarTorneo
@@ -27852,7 +27932,7 @@ Public Sub WriteFamiliar(ByVal UserIndex As Integer)
 102         Call .WriteByte(ServerPacketID.Familiar)
 104         Call .WriteByte(UserList(UserIndex).Familiar.Existe)
 106         Call .WriteByte(UserList(UserIndex).Familiar.Muerto)
-108         Call .WriteASCIIString(UserList(UserIndex).Familiar.nombre)
+108         Call .WriteASCIIString(UserList(UserIndex).Familiar.Nombre)
 110         Call .WriteLong(UserList(UserIndex).Familiar.Exp)
 112         Call .WriteLong(UserList(UserIndex).Familiar.ELU)
 114         Call .WriteByte(UserList(UserIndex).Familiar.nivel)
@@ -28067,7 +28147,7 @@ Public Sub WriteRecompensas(ByVal UserIndex As Integer)
         
 108         Call .WriteByte(ServerPacketID.Logros)
             'Logros NPC
-110         Call .WriteASCIIString(NPcLogros(a).nombre)
+110         Call .WriteASCIIString(NPcLogros(a).Nombre)
 112         Call .WriteASCIIString(NPcLogros(a).Desc)
 114         Call .WriteInteger(NPcLogros(a).cant)
 116         Call .WriteByte(NPcLogros(a).TipoRecompensa)
@@ -28102,7 +28182,7 @@ Public Sub WriteRecompensas(ByVal UserIndex As Integer)
             End If
         
             'Logros User
-142         Call .WriteASCIIString(UserLogros(b).nombre)
+142         Call .WriteASCIIString(UserLogros(b).Nombre)
 144         Call .WriteASCIIString(UserLogros(b).Desc)
 146         Call .WriteInteger(UserLogros(b).cant)
 148         Call .WriteInteger(UserLogros(b).TipoRecompensa)
@@ -28136,7 +28216,7 @@ Public Sub WriteRecompensas(ByVal UserIndex As Integer)
             End If
 
             'Nivel User
-174         Call .WriteASCIIString(LevelLogros(c).nombre)
+174         Call .WriteASCIIString(LevelLogros(c).Nombre)
 176         Call .WriteASCIIString(LevelLogros(c).Desc)
 178         Call .WriteInteger(LevelLogros(c).cant)
 180         Call .WriteInteger(LevelLogros(c).TipoRecompensa)
@@ -30391,7 +30471,7 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
         'El personaje completo la quest que requiere?
 118     If QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredQuest > 0 Then
 120         If Not UserDoneQuest(UserIndex, QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredQuest) Then
-122             Call WriteChatOverHead(UserIndex, "Debes completas la quest " & QuestList(QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredQuest).nombre & " para emprender esta mision.", NpcList(NpcIndex).Char.CharIndex, vbYellow)
+122             Call WriteChatOverHead(UserIndex, "Debes completas la quest " & QuestList(QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredQuest).Nombre & " para emprender esta mision.", NpcList(NpcIndex).Char.CharIndex, vbYellow)
                 Exit Sub
             End If
         End If
@@ -30430,7 +30510,7 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
         
 142         If QuestList(.QuestIndex).RequiredNPCs Then ReDim .NPCsKilled(1 To QuestList(.QuestIndex).RequiredNPCs)
 144         If QuestList(.QuestIndex).RequiredTargetNPCs Then ReDim .NPCsTarget(1 To QuestList(.QuestIndex).RequiredTargetNPCs)
-146         Call WriteConsoleMsg(UserIndex, "Has aceptado la mision " & Chr(34) & QuestList(.QuestIndex).nombre & Chr(34) & ".", FontTypeNames.FONTTYPE_INFOIAO)
+146         Call WriteConsoleMsg(UserIndex, "Has aceptado la mision " & Chr(34) & QuestList(.QuestIndex).Nombre & Chr(34) & ".", FontTypeNames.FONTTYPE_INFOIAO)
 148         Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 4)
         
         End With
@@ -30642,7 +30722,7 @@ Public Sub WriteQuestListSend(ByVal UserIndex As Integer)
 
 106             If .QuestStats.Quests(i).QuestIndex Then
 108                 tmpByte = tmpByte + 1
-110                 tmpStr = tmpStr & QuestList(.QuestStats.Quests(i).QuestIndex).nombre & "-"
+110                 tmpStr = tmpStr & QuestList(.QuestStats.Quests(i).QuestIndex).Nombre & "-"
 
                 End If
 
