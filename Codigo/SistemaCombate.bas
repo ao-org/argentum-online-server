@@ -1725,6 +1725,7 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
         ' No podes atacar si estas en consulta
 112     If UserList(attackerIndex).flags.EnConsulta Then
 114         Call WriteConsoleMsg(attackerIndex, "No puedes atacar usuarios mientras estas en consulta.", FontTypeNames.FONTTYPE_INFO)
+            PuedeAtacar = False
             Exit Function
     
         End If
@@ -1732,6 +1733,7 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
         ' No podes atacar si esta en consulta
 116     If UserList(VictimIndex).flags.EnConsulta Then
 118         Call WriteConsoleMsg(attackerIndex, "No puedes atacar usuarios mientras estan en consulta.", FontTypeNames.FONTTYPE_INFO)
+            PuedeAtacar = False
             Exit Function
     
         End If
@@ -1849,7 +1851,7 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
 194     If MapInfo(UserList(VictimIndex).Pos.Map).Seguro = 1 Then
 
 196         If esArmada(attackerIndex) Then
-198             If UserList(attackerIndex).Faccion.RecompensasReal > 11 Then
+198             If UserList(attackerIndex).Faccion.RecompensasReal >= 3 Then
 200                 If UserList(VictimIndex).Pos.Map = 58 Or UserList(VictimIndex).Pos.Map = 59 Or UserList(VictimIndex).Pos.Map = 60 Then
 202                     Call WriteConsoleMsg(VictimIndex, "Huye de la ciudad! estas siendo atacado y no podrás defenderte.", FontTypeNames.FONTTYPE_WARNING)
 204                     PuedeAtacar = True 'Beneficio de Armadas que atacan en su ciudad.
@@ -1862,7 +1864,7 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
             End If
 
 206         If esCaos(attackerIndex) Then
-208             If UserList(attackerIndex).Faccion.RecompensasCaos > 11 Then
+208             If UserList(attackerIndex).Faccion.RecompensasCaos >= 3 Then
 210                 If UserList(VictimIndex).Pos.Map = 151 Or UserList(VictimIndex).Pos.Map = 156 Then
 212                     Call WriteConsoleMsg(VictimIndex, "Huye de la ciudad! estas siendo atacado y no podrás defenderte.", FontTypeNames.FONTTYPE_WARNING)
 214                     PuedeAtacar = True 'Beneficio de Caos que atacan en su ciudad.
@@ -1930,6 +1932,7 @@ Public Function PuedeAtacarNPC(ByVal attackerIndex As Integer, ByVal NpcIndex As
         ' No podes atacar si estas en consulta
 110     If UserList(attackerIndex).flags.EnConsulta Then
 112         Call WriteConsoleMsg(attackerIndex, "No puedes atacar npcs mientras estas en consulta.", FontTypeNames.FONTTYPE_INFO)
+            PuedeAtacarNPC = False
             Exit Function
 
         End If
