@@ -68,7 +68,7 @@ Public Sub CrearReto(ByVal UserIndex As Integer, JugadoresStr As String, ByVal A
         Dim Jugadores() As String
         Jugadores = Split(JugadoresStr, ";", 5)
         
-        If UBound(Jugadores) > Retos.TamañoMaximoEquipo - 2 Or UBound(Jugadores) Mod 2 = 1 Then Exit Sub
+        If UBound(Jugadores) > Retos.TamañoMaximoEquipo * 2 - 2 Or UBound(Jugadores) Mod 2 = 1 Then Exit Sub
         
         Dim MaxIndexEquipo As Integer
         MaxIndexEquipo = UBound(Jugadores) \ 2
