@@ -62,16 +62,16 @@ Public Sub CrearReto(ByVal UserIndex As Integer, JugadoresStr As String, ByVal A
         ElseIf .flags.AceptoReto > 0 Then
             Call CancelarSolicitudReto(.flags.AceptoReto, .name & " ha cancelado su admisión.")
         End If
-
+        
+        Dim TamanoReal As Byte: TamanoReal = Retos.TamañoMaximoEquipo * 2 - 1
+        
         If LenB(JugadoresStr) <= 0 Then Exit Sub
     
-        Dim Jugadores() As String
-        Jugadores = Split(JugadoresStr, ";", 5)
+        Dim Jugadores() As String: Jugadores = Split(JugadoresStr, ";", TamanoReal)
         
-        If UBound(Jugadores) > Retos.TamañoMaximoEquipo * 2 - 2 Or UBound(Jugadores) Mod 2 = 1 Then Exit Sub
+        If UBound(Jugadores) > TamanoReal - 1 Or UBound(Jugadores) Mod 2 = 1 Then Exit Sub
         
-        Dim MaxIndexEquipo As Integer
-        MaxIndexEquipo = UBound(Jugadores) \ 2
+        Dim MaxIndexEquipo As Integer: MaxIndexEquipo = UBound(Jugadores) \ 2
     
         If Apuesta < Retos.ApuestaMinima Or Apuesta > APUESTA_MAXIMA Then
             Call WriteConsoleMsg(UserIndex, "La apuesta mínima es de " & PonerPuntos(Retos.ApuestaMinima) & " monedas de oro.", FontTypeNames.FONTTYPE_INFO)
@@ -215,7 +215,7 @@ Public Sub AceptarReto(ByVal UserIndex As Integer, OferenteName As String)
         Dim i As Integer
         For i = 0 To UBound(.Jugadores)
             If Not .Jugadores(i).Aceptado Then
-                FaltanAceptar = FaltanAceptar & " - "
+                FaltanAceptar = FaltanAceptar & .Jugadores(i).nombre & " - "
             End If
         Next
         
@@ -581,23 +581,29 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
                     
                     ' Nombres
                     If i Mod 2 Then
+                    
                         If LenB(Equipo2) > 0 Then
                             Equipo2 = Equipo2 & IIf((i + 1) \ 2 < .TamañoEquipoDer - 2, ", ", " y ") & UserList(tIndex).name
                         Else
                             Equipo2 = UserList(tIndex).name
                         End If
+                        
                     Else
+                    
                         If LenB(Equipo1) > 0 Then
                             Equipo1 = Equipo2 & IIf(i \ 2 < .TamañoEquipoIzq - 2, ", ", " y ") & UserList(tIndex).name
                         Else
                             Equipo1 = UserList(tIndex).name
                         End If
+                        
                     End If
+                    
                 End If
+                
             Next
             
             ' Anuncio global
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(Equipo1 & " vs " & Equipo2 & ". Apuesta: " & PonerPuntos(.Apuesta) & _
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Retos » " & Equipo1 & " vs " & Equipo2 & ". Apuesta: " & PonerPuntos(.Apuesta) & _
                                                 " monedas de oro. Hubo un empate por tiempo muerto.", FontTypeNames.FONTTYPE_INFO))
 
         ' Hubo un ganador
@@ -637,23 +643,30 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
 
                     ' Nombres
                     If i Mod 2 Then
+                    
                         If LenB(Equipo2) > 0 Then
+                        
                             Equipo2 = Equipo2 & IIf((i + 1) \ 2 < .TamañoEquipoDer - 2, ", ", " y ") & UserList(tIndex).name
                         Else
                             Equipo2 = UserList(tIndex).name
                         End If
+                        
                     Else
+                    
                         If LenB(Equipo1) > 0 Then
                             Equipo1 = Equipo1 & IIf(i \ 2 < .TamañoEquipoIzq - 2, ", ", " y ") & UserList(tIndex).name
                         Else
                             Equipo1 = UserList(tIndex).name
                         End If
+                        
                     End If
+                    
                 End If
+                
             Next
 
             ' Anuncio global
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(Equipo1 & " vs " & Equipo2 & ". Apuesta: " & PonerPuntos(.Apuesta) & " monedas de oro. " & _
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Retos » " & Equipo1 & " vs " & Equipo2 & ". Apuesta: " & PonerPuntos(.Apuesta) & " monedas de oro. " & _
                                 IIf(UBound(.Jugadores) > 1, "Ganadores ", "Ganador ") & IIf(Ganador = EquipoReto.Izquierda, Equipo1, Equipo2) & ".", FontTypeNames.FONTTYPE_INFO))
         End If
     
