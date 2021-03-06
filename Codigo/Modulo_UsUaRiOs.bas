@@ -675,7 +675,7 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As eHeading) As
             
             If IndexMover <> 0 Then
                 ' Sólo puedo patear caspers/gms invisibles si no es él un gm invisible
-                If .flags.AdminInvisible = 0 Then Exit Function
+                If .flags.AdminInvisible <> 0 Then Exit Function
 
                 Call WritePosUpdate(IndexMover)
                 OppositeHeading = InvertHeading(nHeading)

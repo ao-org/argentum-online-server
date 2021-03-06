@@ -1288,7 +1288,7 @@ Private Sub HacerCaminata(ByVal NpcIndex As Integer)
             MoveChar = MapData(NextTile.Map, NextTile.X, NextTile.Y).UserIndex
             If MoveChar Then
                 ' Si no está muerto o es admin invisible (porque a esos los atraviesa)
-                If UserList(MoveChar).flags.AdminInvisible = 0 And UserList(MoveChar).flags.Muerto = 0 Then
+                If UserList(MoveChar).flags.AdminInvisible = 0 Or UserList(MoveChar).flags.Muerto = 0 Then
                     ' Lo movemos hacia un lado
                     Call MoveUserToSide(MoveChar, Heading)
                 End If
