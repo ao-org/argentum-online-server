@@ -1495,19 +1495,6 @@ Sub UserDie(ByVal UserIndex As Integer)
     
             End If
         
-240         .flags.VecesQueMoriste = .flags.VecesQueMoriste + 1
-        
-            ' << Restauramos los atributos >>
-242         If .flags.TomoPocion = True And .flags.BattleModo = 0 Then
-    
-244             For i = 1 To 4
-246                 .Stats.UserAtributos(i) = .Stats.UserAtributosBackUP(i)
-248             Next i
-    
-250             Call WriteFYA(UserIndex)
-    
-            End If
-        
             '<< Cambiamos la apariencia del char >>
 252         If .flags.Navegando = 0 Then
 254             .Char.Body = iCuerpoMuerto
