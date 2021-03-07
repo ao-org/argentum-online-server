@@ -1906,7 +1906,7 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
 
         On Error GoTo EfectoVeneno_Err
 
-        Dim n As Integer
+        Dim damage As Integer
 
 100     If UserList(UserIndex).Counters.Veneno < IntervaloVeneno Then
 102         UserList(UserIndex).Counters.Veneno = UserList(UserIndex).Counters.Veneno + 1
@@ -1920,10 +1920,14 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
               .Counters.Veneno = 0
 
               ' El veneno saca un porcentaje de vida random.
-              n = RandomNumber(3, 5)
-              n = .flags.Envenenado * (1 + n * .Stats.MaxHp \ 100) ' Redondea para arriba
-              .Stats.MinHp = UserList(UserIndex).Stats.MinHp - n
-              
+              damage = RandomNumber(3, 5)
+              damage = .flags.Envenenado * (1 + damage * .Stats.MaxHp \ 100) ' Redondea para arriba
+              .Stats.MinHp = UserList(UserIndex).Stats.MinHp - damage
+
+              If .ChatCombate = 1 Then
+                  ' "El veneno te ha causado ¬1 puntos de daño."
+                  Call WriteLocaleMsg(UserIndex, "390", FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(damage))
+              End If
 
               If UserList(UserIndex).Stats.MinHp < 1 Then
                   Call UserDie(UserIndex)
