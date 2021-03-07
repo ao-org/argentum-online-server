@@ -1903,7 +1903,7 @@ RecStamina_Err:
 End Sub
 
 Public Sub EfectoVeneno(ByVal UserIndex As Integer)
-        
+
         On Error GoTo EfectoVeneno_Err
 
         Dim n As Integer
@@ -1912,30 +1912,34 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
 102         UserList(UserIndex).Counters.Veneno = UserList(UserIndex).Counters.Veneno + 1
         Else
 104         Call CancelExit(UserIndex)
-            
-            'Call WriteConsoleMsg(UserIndex, "Estás envenenado, si no te curas morirás.", FontTypeNames.FONTTYPE_VENENO)
-106         Call WriteLocaleMsg(UserIndex, "47", FontTypeNames.FONTTYPE_VENENO)
-108         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Envenena, 30, False))
-110         UserList(UserIndex).Counters.Veneno = 0
-112         n = RandomNumber(3, 6)
-114         n = n * UserList(UserIndex).flags.Envenenado
-116         UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp - n
 
-118         If UserList(UserIndex).Stats.MinHp < 1 Then
-120             Call UserDie(UserIndex)
-            Else
-122             Call WriteUpdateHP(UserIndex)
-            End If
-            
+            With UserList(UserIndex)
+              'Call WriteConsoleMsg(UserIndex, "Estás envenenado, si no te curas morirás.", FontTypeNames.FONTTYPE_VENENO)
+              Call WriteLocaleMsg(UserIndex, "47", FontTypeNames.FONTTYPE_VENENO)
+              Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Envenena, 30, False))
+              .Counters.Veneno = 0
+
+              ' El veneno saca un porcentaje de vida random.
+              n = RandomNumber(3, 5)
+              n = .flags.Envenenado * (1 + n * .Stats.MaxHp \ 100) ' Redondea para arriba
+              .Stats.MinHp = UserList(UserIndex).Stats.MinHp - n
+              
+
+              If UserList(UserIndex).Stats.MinHp < 1 Then
+                  Call UserDie(UserIndex)
+              Else
+                  Call WriteUpdateHP(UserIndex)
+              End If
+            End With
 
         End If
-        
+
         Exit Sub
 
 EfectoVeneno_Err:
 124     Call RegistrarError(Err.Number, Err.Description, "General.EfectoVeneno", Erl)
 126     Resume Next
-        
+
 End Sub
 
 Public Sub EfectoAhogo(ByVal UserIndex As Integer)
