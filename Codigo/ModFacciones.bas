@@ -98,7 +98,7 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
 134     UserList(UserIndex).Faccion.Reenlistadas = UserList(UserIndex).Faccion.Reenlistadas + 1
 138     UserList(UserIndex).Faccion.Status = 3
 
-140     Call WriteConsoleMsg(UserIndex, "¡Ahora perteneces al ejercito revolucionario!", FontTypeNames.FONTTYPE_INFOIAO)
+140     Call WriteConsoleMsg(UserIndex, "¡Ahora perteneces al Ejercito Real!", FontTypeNames.FONTTYPE_INFOIAO)
 142     Call RefreshCharStatus(UserIndex)
 
 144     If UserList(UserIndex).Faccion.RecibioArmaduraReal = 0 Then
@@ -239,7 +239,7 @@ Public Sub ExpulsarFaccionReal(ByVal UserIndex As Integer)
         Call RefreshCharStatus(UserIndex)
 
         Call PerderItemsFaccionarios(UserIndex)
-        Call WriteConsoleMsg(UserIndex, "Has sido expulsado del Ejercito Revolucionario.", FontTypeNames.FONTTYPE_INFOIAO)
+        Call WriteConsoleMsg(UserIndex, "Has sido expulsado del Ejercito Real.", FontTypeNames.FONTTYPE_INFOIAO)
 
 
         Exit Sub
