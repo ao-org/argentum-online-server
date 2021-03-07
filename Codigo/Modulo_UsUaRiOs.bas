@@ -1322,7 +1322,7 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
             
                 Dim BonusExp As Long
 
-142             BonusExp = 5 * ExpMult * UserList(UserIndex).flags.ScrollExp
+142             BonusExp = 50 * ExpMult * UserList(UserIndex).flags.ScrollExp
         
 144             If UserList(UserIndex).donador.activo = 1 Then
 146                 BonusExp = BonusExp * 1.1
