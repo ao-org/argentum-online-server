@@ -1466,7 +1466,7 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
                 Dim nPos  As WorldPos
                 Dim MiObj As obj
 
-122             MiObj.Amount = IIf(ObjetoDorado, RandomNumber(1, 3), 1) * RecoleccionMult
+122             MiObj.Amount = IIf(.clase = Trabajador, RandomNumber(1, 3), 1) * RecoleccionMult
 124             MiObj.ObjIndex = ObtenerPezRandom(IIf(RedDePesca, 5, 2))
         
 126             If MiObj.ObjIndex = 0 Then Exit Sub
@@ -2094,7 +2094,7 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
 120             Call ActualizarRecurso(.Pos.Map, X, Y)
 122             MapData(.Pos.Map, X, Y).ObjInfo.data = GetTickCount() ' Ultimo uso
     
-124             MiObj.Amount = IIf(ObjetoDorado, RandomNumber(1, 5), 1) * RecoleccionMult
+124             MiObj.Amount = IIf(.clase = Trabajador, 5, RandomNumber(1, 2)) * RecoleccionMult
 
 126             If ObjData(MapData(.Pos.Map, X, Y).ObjInfo.ObjIndex).Elfico = 0 Then
 128                 MiObj.ObjIndex = Leña
@@ -2221,7 +2221,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
 124             Yacimiento = ObjData(MapData(.Pos.Map, X, Y).ObjInfo.ObjIndex)
             
 126             MiObj.ObjIndex = Yacimiento.MineralIndex
-128             MiObj.Amount = IIf(ObjetoDorado, RandomNumber(1, 6), 1) * RecoleccionMult
+128             MiObj.Amount = IIf(.clase = Trabajador, 5, RandomNumber(1, 2)) * RecoleccionMult
             
 130             If MiObj.Amount > MapData(.Pos.Map, X, Y).ObjInfo.Amount Then
 132                 MiObj.Amount = MapData(.Pos.Map, X, Y).ObjInfo.Amount
