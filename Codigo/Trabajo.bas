@@ -2506,10 +2506,8 @@ DoHurtar_Err:
 End Sub
 
 Public Sub DoHandInmo(ByVal UserIndex As Integer, ByVal VictimaIndex As Integer)
-        
+
         On Error GoTo DoHandInmo_Err
-    
-        
 
         '***************************************************
         'Author: Pablo (ToxicWaste)
@@ -2517,7 +2515,7 @@ Public Sub DoHandInmo(ByVal UserIndex As Integer, ByVal VictimaIndex As Integer)
         'Implements the special Skill of the Thief
         '***************************************************
 100     If UserList(VictimaIndex).flags.Paralizado = 1 Then Exit Sub
-        
+
         Dim res As Integer
 
 102     res = RandomNumber(0, 100)
@@ -2525,23 +2523,18 @@ Public Sub DoHandInmo(ByVal UserIndex As Integer, ByVal VictimaIndex As Integer)
 104     If res < (UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) / 4) Then
 106         UserList(VictimaIndex).flags.Paralizado = 1
 108         UserList(VictimaIndex).Counters.Paralisis = IntervaloParalizado / 4
-        
-            'UserList(VictimaIndex).flags.ParalizedByIndex = Userindex
-            'UserList(VictimaIndex).flags.ParalizedBy = UserList(Userindex).name
-        
+
 110         Call WriteParalizeOK(VictimaIndex)
 112         Call WriteConsoleMsg(UserIndex, "Tu golpe ha dejado inmovil a tu oponente", FontTypeNames.FONTTYPE_FIGHT)
 114         Call WriteConsoleMsg(VictimaIndex, "¡El golpe te ha dejado inmovil!", FontTypeNames.FONTTYPE_FIGHT)
 
         End If
 
-        
         Exit Sub
 
 DoHandInmo_Err:
 116     Call RegistrarError(Err.Number, Err.Description, "Trabajo.DoHandInmo", Erl)
 
-        
 End Sub
 
 Public Sub Desarmar(ByVal UserIndex As Integer, ByVal VictimIndex As Integer)
