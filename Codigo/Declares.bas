@@ -841,7 +841,7 @@ Public Type tHechizo
     AntiRm As Byte
     
     'Sistema..
-    Nombre As String
+    nombre As String
     Desc As String
     PalabrasMagicas As String
     
@@ -1000,7 +1000,7 @@ End Type
 
 Public Type FXdata
 
-    Nombre As String
+    nombre As String
     GrhIndex As Long
     Delay As Integer
 
@@ -1068,7 +1068,7 @@ Public QuestList() As tQuest
 
 Public Type tQuest
 
-    Nombre As String
+    nombre As String
     Desc As String
     NextQuest As String
     DescFinal As String
@@ -1103,13 +1103,13 @@ Public Enum SolicitudRetoEstado
 End Enum
 
 Public Type SolicitudJugador
-    Nombre As String
+    nombre As String
     Aceptado As Boolean
     CurIndex As Integer
 End Type
 
 Public Type SolicitudReto
-    Estado As SolicitudRetoEstado
+    estado As SolicitudRetoEstado
     Jugadores() As SolicitudJugador
     Apuesta As Long
 End Type
