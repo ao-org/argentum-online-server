@@ -3983,44 +3983,9 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         Dim envie     As Boolean
                         Dim Particula As Integer
                         Dim Tiempo    As Long
-                    
-216                     Select Case ObjData(.Invent.MunicionEqpObjIndex).Subtipo
-
-                            Case 1 'Paraliza
-218                             backup = UserList(UserIndex).flags.Paraliza
-220                             UserList(UserIndex).flags.Paraliza = 1
-
-222                         Case 2 ' Incinera
-224                             backup = UserList(UserIndex).flags.incinera
-226                             UserList(UserIndex).flags.incinera = 1
-
-228                         Case 3 ' envenena
-230                             backup = UserList(UserIndex).flags.Envenena
-232                             UserList(UserIndex).flags.Envenena = 1
-
-234                         Case 4 ' Explosiva
-
-                        End Select
 
 236                     Call UsuarioAtacaUsuario(UserIndex, tU)
-                    
-238                     Select Case ObjData(.Invent.MunicionEqpObjIndex).Subtipo
 
-                            Case 0
-
-240                         Case 1 'Paraliza
-242                             UserList(UserIndex).flags.Paraliza = backup
-
-244                         Case 2 ' Incinera
-246                             UserList(UserIndex).flags.incinera = backup
-
-248                         Case 3 ' envenena
-250                             UserList(UserIndex).flags.Envenena = backup
-
-252                         Case 4 ' Explosiva
-
-                        End Select
-                    
 254                     If ObjData(.Invent.MunicionEqpObjIndex).CreaFX <> 0 Then
 256                         Call SendData(SendTarget.ToPCArea, tU, PrepareMessageCreateFX(UserList(tU).Char.CharIndex, ObjData(.Invent.MunicionEqpObjIndex).CreaFX, 0))
 
