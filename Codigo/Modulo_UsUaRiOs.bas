@@ -1322,7 +1322,7 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
             
                 Dim BonusExp As Long
 
-142             BonusExp = 5 * ExpMult * UserList(UserIndex).flags.ScrollExp
+142             BonusExp = 50 * ExpMult * UserList(UserIndex).flags.ScrollExp
         
 144             If UserList(UserIndex).donador.activo = 1 Then
 146                 BonusExp = BonusExp * 1.1
@@ -1357,18 +1357,16 @@ SubirSkill_Err:
         
 End Sub
 
-Sub SubirSkillDeArmaActual(ByVal UserIndex As Integer)
-    
-    ' Autor WyroX - 16/01/2021
+Public Sub SubirSkillDeArmaActual(ByVal UserIndex As Integer)
+    On Error GoTo SubirSkillDeArmaActual_Err
 
     With UserList(UserIndex)
-    
+
         If .Invent.WeaponEqpObjIndex > 0 Then
-            
             ' Arma con proyectiles, subimos armas a distancia
             If ObjData(.Invent.WeaponEqpObjIndex).Proyectil Then
                 Call SubirSkill(UserIndex, eSkill.Proyectiles)
-            
+
             ' Sino, subimos combate con armas
             Else
                 Call SubirSkill(UserIndex, eSkill.Armas)
@@ -1378,8 +1376,14 @@ Sub SubirSkillDeArmaActual(ByVal UserIndex As Integer)
         Else
             Call SubirSkill(UserIndex, eSkill.Wrestling)
         End If
-    
+
     End With
+
+    Exit Sub
+
+SubirSkillDeArmaActual_Err:
+        Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.SubirSkillDeArmaActual", Erl)
+        Resume Next
 
 End Sub
 

@@ -890,7 +890,7 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal slot As Byte)
 218                 Case 18 ' Pendiente del Experto
 220                     UserList(UserIndex).flags.PendienteDelExperto = 0
 
-222                 Case 19
+222                 Case 19 ' Envenenamiento
 224                     UserList(UserIndex).flags.Envenena = 0
 
 226                 Case 20 ' anillo de las sombras
