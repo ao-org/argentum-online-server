@@ -1357,18 +1357,16 @@ SubirSkill_Err:
         
 End Sub
 
-Sub SubirSkillDeArmaActual(ByVal UserIndex As Integer)
-    
-    ' Autor WyroX - 16/01/2021
+Public Sub SubirSkillDeArmaActual(ByVal UserIndex As Integer)
+    On Error GoTo SubirSkillDeArmaActual_Err
 
     With UserList(UserIndex)
-    
+
         If .Invent.WeaponEqpObjIndex > 0 Then
-            
             ' Arma con proyectiles, subimos armas a distancia
             If ObjData(.Invent.WeaponEqpObjIndex).Proyectil Then
                 Call SubirSkill(UserIndex, eSkill.Proyectiles)
-            
+
             ' Sino, subimos combate con armas
             Else
                 Call SubirSkill(UserIndex, eSkill.Armas)
@@ -1378,8 +1376,14 @@ Sub SubirSkillDeArmaActual(ByVal UserIndex As Integer)
         Else
             Call SubirSkill(UserIndex, eSkill.Wrestling)
         End If
-    
+
     End With
+
+    Exit Sub
+
+SubirSkillDeArmaActual_Err:
+        Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.SubirSkillDeArmaActual", Erl)
+        Resume Next
 
 End Sub
 

@@ -1232,7 +1232,7 @@ Public Type ObjData
     CantidadSkillSuma As Byte
     QueSkill As Byte
     
-    Subtipo As Byte
+    Subtipo As Byte ' 0: -, 1: Paraliza, 2: Incinera, 3: Envenena, 4: Explosiva
     
     Dorada As Byte
     
