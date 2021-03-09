@@ -30,15 +30,8 @@ Attribute VB_Name = "ModFacciones"
 Option Explicit
 
 Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
-        
         On Error GoTo EnlistarArmadaReal_Err
-        
 
-        '***************************************************
-        'Autor: Pablo (ToxicWaste) & Unknown (orginal version)
-        'Last Modification: 23/01/2007
-        'Handles the entrance of users to the "Armada Real"
-        '***************************************************
 100     If UserList(UserIndex).Faccion.ArmadaReal = 1 Then
 102         Call WriteChatOverHead(UserIndex, "¡¡¡Ya perteneces a las tropas reales!!! Ve a combatir criminales", str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
             Exit Sub
@@ -62,6 +55,13 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
             Exit Sub
 
         End If
+
+        If UserList(UserIndex).clase = eClass.Thief  Then
+            Call WriteChatOverHead(UserIndex, "¡Los ladrones no son dignos para pertenecer al ejercito imperial!!!", str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
+            Exit Sub
+
+        End If
+
 
 116     If UserList(UserIndex).Stats.ELV < 25 Then
 118         Call WriteChatOverHead(UserIndex, "¡¡¡Para unirte a nuestras fuerzas debes ser al menos de nivel 25!!!", str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
@@ -341,7 +341,13 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
         End If
 
 112     If Status(UserIndex) = 1 Then
-114         Call WriteChatOverHead(UserIndex, "¡¡Ja ja ja!! Tu no eres bienvenido aqui asqueroso Ciudadano", str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
+114         Call WriteChatOverHead(UserIndex, "¡¡Ja ja ja!! Tu no eres bienvenido aquí asqueroso Ciudadano", str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
+            Exit Sub
+
+        End If
+
+        If UserList(UserIndex).clase = eClass.Thief Then
+            Call WriteChatOverHead(UserIndex, "¡La legión oscura no tiene lugar para escorias como tú! Los ladrones no son dignos de llevar nuestras armaduras.", str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
             Exit Sub
 
         End If

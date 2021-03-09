@@ -1290,7 +1290,7 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
                 Call SendData(SendTarget.ToPCArea, VictimaIndex, PrepareMessageCreateFX(UserList(VictimaIndex).Char.CharIndex, 88, 0))
                 Call SubirSkill(VictimaIndex, eSkill.Defensa)
             Else
-                Call WriteConsoleMsg(VictimaIndex, "¡" & UserList(AtacanteIndex).name & "te atacó y falló! ", FontTypeNames.FONTTYPE_FIGHT)
+                Call WriteConsoleMsg(VictimaIndex, "¡" & UserList(AtacanteIndex).name & " te atacó y falló! ", FontTypeNames.FONTTYPE_FIGHT)
 
             End If
         End If
