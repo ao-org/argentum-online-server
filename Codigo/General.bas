@@ -623,6 +623,12 @@ Sub Main()
     
 184     frmCargando.Label1(2).Caption = "Cargando Recursos Especiales"
 186     Call LoadRecursosEspeciales
+
+        frmCargando.Label1(2).Caption = "Cargando Rangos de Faccion"
+        Call LoadRangosFaccion
+
+        frmCargando.Label1(2).Caption = "Cargando Recompensas de Faccion"
+        Call LoadRecompensasFaccion
     
 188     frmCargando.Label1(2).Caption = "Cargando Balance.dat"
 190     Call LoadBalance    '4/01/08 Pablo ToxicWaste
