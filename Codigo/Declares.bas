@@ -1765,7 +1765,8 @@ Public Type tQuestStats
 
 End Type
 
-'Cosas faccionarias.
+' ------------- FACCIONES -------------
+
 Public Type tFacciones
 
     Status As Byte
@@ -1786,6 +1787,14 @@ Public Type tFacciones
     NextRecompensa As Integer
 
 End Type
+
+Public Type tRecompensaFaccion
+
+    Rank As Byte
+    ObjIndex As Integer
+
+End Type
+
 
 'Tipo de los Usuarios
 Public Type user
@@ -2320,6 +2329,8 @@ Public EspecialesPesca()                  As obj
 Public Peces()                            As obj
 
 Public PesoPeces()                        As Long
+
+Public RecompensasFaccion()               As tRecompensaFaccion
 
 Public ObjDonador()                       As tObjDonador
 
