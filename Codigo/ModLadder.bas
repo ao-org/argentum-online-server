@@ -917,7 +917,13 @@ Function PuedeUsarObjeto(UserIndex As Integer, ByVal ObjIndex As Integer) As Byt
 102         PuedeUsarObjeto = 6
             Exit Function
         End If
-        
+
+        If Not FaccionPuedeUsarItem(UserIndex, ObjIndex) Then
+            PuedeUsarObjeto = 3
+            Exit Function
+
+        End If
+
         Dim i As Long
 104     For i = 1 To NUMRAZAS
 

@@ -1852,7 +1852,7 @@ Sub LoadUserInit(ByVal UserIndex As Integer, ByRef UserFile As clsIniReader)
 100     UserList(UserIndex).Faccion.Status = CByte(UserFile.GetValue("FACCIONES", "Status"))
 102     UserList(UserIndex).Faccion.ArmadaReal = CByte(UserFile.GetValue("FACCIONES", "EjercitoReal"))
 104     UserList(UserIndex).Faccion.FuerzasCaos = CByte(UserFile.GetValue("FACCIONES", "EjercitoCaos"))
-106     UserList(UserIndex).Faccion.CiudadanosMatados = CLng(UserFile.GetValue("FACCIONES", "CiudMatados"))
+106     UserList(UserIndex).Faccion.ciudadanosMatados = CLng(UserFile.GetValue("FACCIONES", "CiudMatados"))
 108     UserList(UserIndex).Faccion.CriminalesMatados = CLng(UserFile.GetValue("FACCIONES", "CrimMatados"))
 110     UserList(UserIndex).Faccion.RecibioArmaduraCaos = CByte(UserFile.GetValue("FACCIONES", "rArCaos"))
 112     UserList(UserIndex).Faccion.RecibioArmaduraReal = CByte(UserFile.GetValue("FACCIONES", "rArReal"))
@@ -3267,7 +3267,7 @@ Sub SaveUserCharfile(ByVal UserIndex As Integer, Optional ByVal Logout As Boolea
 290             Print #n, , "EjercitoReal=" & CStr(.ArmadaReal) & vbCrLf
 292             Print #n, , "Status=" & CStr(.Status) & vbCrLf
 294             Print #n, , "EjercitoCaos=" & CStr(.FuerzasCaos) & vbCrLf
-296             Print #n, , "CiudMatados=" & CStr(.CiudadanosMatados) & vbCrLf
+296             Print #n, , "CiudMatados=" & CStr(.ciudadanosMatados) & vbCrLf
 298             Print #n, , "CrimMatados=" & CStr(.CriminalesMatados) & vbCrLf
 300             Print #n, , "rArCaos=" & CStr(.RecibioArmaduraCaos) & vbCrLf
 302             Print #n, , "rArReal=" & CStr(.RecibioArmaduraReal) & vbCrLf
@@ -3556,7 +3556,7 @@ Sub SaveNewUserCharfile(ByVal UserIndex As Integer)
 170     Put n, , "[FACCIONES]" & vbCrLf & "EjercitoReal=" & CStr(UserList(UserIndex).Faccion.ArmadaReal) & vbCrLf
 172     Put n, , "Status=" & CStr(UserList(UserIndex).Faccion.Status) & vbCrLf
 174     Put n, , "EjercitoCaos=" & CStr(UserList(UserIndex).Faccion.FuerzasCaos) & vbCrLf
-176     Put n, , "CiudMatados=" & CStr(UserList(UserIndex).Faccion.CiudadanosMatados) & vbCrLf
+176     Put n, , "CiudMatados=" & CStr(UserList(UserIndex).Faccion.ciudadanosMatados) & vbCrLf
 178     Put n, , "CrimMatados=" & CStr(UserList(UserIndex).Faccion.CriminalesMatados) & vbCrLf
 180     Put n, , "rArCaos=" & CStr(UserList(UserIndex).Faccion.RecibioArmaduraCaos) & vbCrLf
 182     Put n, , "rArReal=" & CStr(UserList(UserIndex).Faccion.RecibioArmaduraReal) & vbCrLf
@@ -4311,6 +4311,98 @@ BinarySearchPeces_Err:
 126     Resume Next
         
 End Function
+
+Public Sub LoadRangosFaccion()
+        On Error GoTo LoadRangosFaccion_Err
+
+        If Not FileExist(DatPath & "RangosFaccion.dat", vbArchive) Then
+            ReDim RangosFaccion(0) As tRangoFaccion
+            Exit Sub
+
+        End If
+
+        Dim IniFile As clsIniReader
+        Set IniFile = New clsIniReader
+
+        Call IniFile.Initialize(DatPath & "RangosFaccion.dat")
+
+        Dim i As Byte, rankData() As String
+
+        MaxRangoFaccion = val(IniFile.GetValue("INIT", "NumRangos"))
+
+        If MaxRangoFaccion > 0 Then
+            ' Los rangos de la Armada se guardan en los indices impar, y los del caos en indices pares.
+            ' Luego, para acceder es tan facil como usar el Rango directamente para la Armada, y multiplicar por 2 para el Caos.
+            ReDim RangosFaccion(1 To MaxRangoFaccion * 2) As tRangoFaccion
+
+            For i = 1 To MaxRangoFaccion
+                '<N>Rango=<NivelRequerido>-<AsesinatosRequeridos>-<Título>
+                rankData = Split(IniFile.GetValue("ArmadaReal", i & "Rango"), "-", , vbTextCompare)
+                RangosFaccion(2 * i - 1).Rank = i
+                RangosFaccion(2 * i - 1).Titulo = rankData(2)
+                RangosFaccion(2 * i - 1).NivelRequerido = val(rankData(0))
+                RangosFaccion(2 * i - 1).AsesinatosRequeridos = val(rankData(1))
+
+                rankData = Split(IniFile.GetValue("LegionCaos", i & "Rango"), "-", , vbTextCompare)
+                RangosFaccion(2 * i).Rank = i
+                RangosFaccion(2 * i).Titulo = rankData(2)
+                RangosFaccion(2 * i).NivelRequerido = val(rankData(0))
+                RangosFaccion(2 * i).AsesinatosRequeridos = val(rankData(1))
+            Next i
+
+        End If
+
+        Set IniFile = Nothing
+
+        Exit Sub
+
+LoadRangosFaccion_Err:
+        Call RegistrarError(Err.Number, Err.Description, "ES.LoadRangosFaccion", Erl)
+        Resume Next
+
+End Sub
+
+
+Public Sub LoadRecompensasFaccion()
+        On Error GoTo LoadRecompensasFaccion_Err
+
+        If Not FileExist(DatPath & "RecompensasFaccion.dat", vbArchive) Then
+            ReDim RecompensasFaccion(0) As tRecompensaFaccion
+            Exit Sub
+
+        End If
+
+        Dim IniFile As clsIniReader
+        Set IniFile = New clsIniReader
+
+        Call IniFile.Initialize(DatPath & "RecompensasFaccion.dat")
+
+        Dim cantidadRecompensas As Byte, i As Integer, rank_and_objindex() As String
+
+        cantidadRecompensas = val(IniFile.GetValue("INIT", "NumRecompensas"))
+
+        If cantidadRecompensas > 0 Then
+            ReDim RecompensasFaccion(1 To cantidadRecompensas) As tRecompensaFaccion
+
+            For i = 1 To cantidadRecompensas
+                rank_and_objindex = Split(IniFile.GetValue("Recompensas", "Recompensa" & i), "-", , vbTextCompare)
+
+                RecompensasFaccion(i).Rank = val(rank_and_objindex(0))
+                RecompensasFaccion(i).ObjIndex = val(rank_and_objindex(1))
+            Next i
+
+        End If
+
+        Set IniFile = Nothing
+
+        Exit Sub
+
+LoadRecompensasFaccion_Err:
+        Call RegistrarError(Err.Number, Err.Description, "ES.LoadRecompensasFaccion", Erl)
+        Resume Next
+
+End Sub
+
 
 Public Sub LoadUserIntervals(ByVal UserIndex As Integer)
         

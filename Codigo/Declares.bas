@@ -1765,7 +1765,8 @@ Public Type tQuestStats
 
 End Type
 
-'Cosas faccionarias.
+' ------------- FACCIONES -------------
+
 Public Type tFacciones
 
     Status As Byte
@@ -1773,8 +1774,8 @@ Public Type tFacciones
     FuerzasCaos As Byte
     CriminalesMatados As Long
     ciudadanosMatados As Long
-    RecompensasReal As Long
-    RecompensasCaos As Long
+    RecompensasReal As Long ' a.k.a Rango armada real
+    RecompensasCaos As Long ' a.k.a Rango legion caos
     RecibioExpInicialReal As Byte
     RecibioExpInicialCaos As Byte
     RecibioArmaduraReal As Byte
@@ -1783,9 +1784,26 @@ Public Type tFacciones
     NivelIngreso As Integer
     FechaIngreso As String
     MatadosIngreso As Integer 'Para Armadas nada mas
-    NextRecompensa As Integer
+    NextRecompensa As Integer 'DEPRECATED: Atributo viejo. Deberiamos usar `tRangoFaccion`
 
 End Type
+
+Public Type tRangoFaccion
+
+    Rank As Byte
+    Titulo As String
+    NivelRequerido As Byte
+    AsesinatosRequeridos As Integer
+
+End Type
+
+Public Type tRecompensaFaccion
+
+    Rank As Byte
+    ObjIndex As Integer
+
+End Type
+
 
 'Tipo de los Usuarios
 Public Type user
@@ -2258,6 +2276,8 @@ Public MaxUsers                          As Integer
 
 Public HideMe                            As Byte
 
+Public MaxRangoFaccion                   As Byte ' El rango maximo que se puede alcanzar
+
 Public LastBackup                        As String
 
 Public minutos                           As String
@@ -2320,6 +2340,10 @@ Public EspecialesPesca()                  As obj
 Public Peces()                            As obj
 
 Public PesoPeces()                        As Long
+
+Public RangosFaccion()                    As tRangoFaccion
+
+Public RecompensasFaccion()               As tRecompensaFaccion
 
 Public ObjDonador()                       As tObjDonador
 
