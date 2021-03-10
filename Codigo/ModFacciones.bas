@@ -71,7 +71,7 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
 
             ' Cumple con los requisitos para enlistarse
             .Faccion.ArmadaReal = 1
-            .Faccion.RecompensasReal = primerRango.Rank ' Asigna primer rango
+            .Faccion.RecompensasReal = primerRango.rank ' Asigna primer rango
             .Faccion.Reenlistadas = .Faccion.Reenlistadas + 1
             .Faccion.Status = 3
 
@@ -125,11 +125,11 @@ Public Sub RecompensaArmadaReal(ByVal UserIndex As Integer)
 
             End If
 
-            If proxRango.NivelRequerido - .Stats.ELV > 0 Then
+            If proxRango.NivelRequerido > .Stats.ELV Then
               Call WriteChatOverHead(UserIndex, "Mataste Suficientes Criminales, pero te faltan " & (proxRango.NivelRequerido - .Stats.ELV) & " Niveles para poder recibir la próxima Recompensa", npcCharIndex, vbWhite)
 
             Else ' El usuario cumple con los requerimientos de nivel, se le asigna la recomenza.
-              .Faccion.RecompensasReal = proxRango.Rank
+              .Faccion.RecompensasReal = proxRango.rank
 
               Call WriteChatOverHead(UserIndex, "¡¡¡Aqui tienes tu recompensa " + proxRango.Titulo + "!!!", npcCharIndex, vbWhite)
               Call DarRecompensas(UserIndex)
@@ -186,12 +186,12 @@ End Sub
 Public Function TituloReal(ByVal UserIndex As Integer) As String
         On Error GoTo TituloReal_Err
 
-        Dim Rank As Byte
-            Rank = UserList(UserIndex).Faccion.RecompensasReal
+        Dim rank As Byte
+            rank = UserList(UserIndex).Faccion.RecompensasReal
 
-        If Rank > 0 Then
+        If rank > 0 Then
             'Los indices impares son los Rangos de Armada
-            TituloReal = RangosFaccion(2 * Rank - 1).Titulo
+            TituloReal = RangosFaccion(2 * rank - 1).Titulo
         End If
 
         Exit Function
@@ -266,7 +266,7 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
 
             ' Cumple con los requisitos para enlistarse
             .Faccion.FuerzasCaos = 1
-            .Faccion.RecompensasCaos = primerRango.Rank ' Asigna primer rango
+            .Faccion.RecompensasCaos = primerRango.rank ' Asigna primer rango
             .Faccion.Reenlistadas = .Faccion.Reenlistadas + 1
             .Faccion.Status = 2
 
@@ -318,11 +318,11 @@ Public Sub RecompensaCaos(ByVal UserIndex As Integer)
 
             End If
 
-            If proxRango.NivelRequerido - .Stats.ELV > 0 Then
+            If proxRango.NivelRequerido > .Stats.ELV Then
               Call WriteChatOverHead(UserIndex, "Mataste Suficientes Ciudadanos, pero te faltan " & (proxRango.NivelRequerido - .Stats.ELV) & " Niveles para poder recibir la próxima Recompensa", npcCharIndex, vbWhite)
 
             Else ' El usuario cumple con los requerimientos de nivel, se le asigna la recomenza.
-              .Faccion.RecompensasCaos = proxRango.Rank
+              .Faccion.RecompensasCaos = proxRango.rank
 
               Call WriteChatOverHead(UserIndex, "¡¡¡Bien hecho " + proxRango.Titulo + ", aquí tienes tu recompensa!!!", npcCharIndex, vbWhite)
               Call DarRecompensas(UserIndex)
@@ -341,12 +341,12 @@ End Sub
 Public Function TituloCaos(ByVal UserIndex As Integer) As String
         On Error GoTo TituloCaos_Err
 
-        Dim Rank As Byte
-            Rank = UserList(UserIndex).Faccion.RecompensasCaos
+        Dim rank As Byte
+            rank = UserList(UserIndex).Faccion.RecompensasCaos
 
-        If Rank > 0 Then
+        If rank > 0 Then
             'Los indices pares son los Rangos del Caos
-            TituloCaos = RangosFaccion(2 * Rank).Titulo
+            TituloCaos = RangosFaccion(2 * rank).Titulo
         End If
 
         Exit Function
@@ -388,23 +388,23 @@ Private Sub DarRecompensas(ByVal UserIndex As Integer)
         On Error GoTo DarRecompensas_Err
 
         Dim recompensa As tRecompensaFaccion
-        Dim Rank As Byte
+        Dim rank As Byte
         Dim ultimaRecompensa As Byte
         Dim objetoRecompensa As obj
         Dim i As Integer
 
         With UserList(UserIndex)
             If .Faccion.ArmadaReal = 1 Then
-                Rank = .Faccion.RecompensasReal
+                rank = .Faccion.RecompensasReal
                 ultimaRecompensa = .Faccion.RecibioArmaduraReal
             ElseIf .Faccion.FuerzasCaos = 1 Then
-                Rank = .Faccion.RecompensasCaos
+                rank = .Faccion.RecompensasCaos
                 ultimaRecompensa = .Faccion.RecibioArmaduraCaos
             Else ' No pertenece a ninguna faccion.
                 Exit Sub
             End If
 
-            If ultimaRecompensa >= Rank Then
+            If ultimaRecompensa >= rank Then
                 Exit Sub
             End If
 
@@ -418,7 +418,7 @@ Private Sub DarRecompensas(ByVal UserIndex As Integer)
 
                 ' Como puede subir varios rangos todos juntos, nos aseguramos que
                 ' entregamos TODAS las recompensas hasta el rango actual desde la ultima recompensa.
-                If recompensa.Rank <= Rank And recompensa.Rank > ultimaRecompensa Then
+                If recompensa.rank <= rank And recompensa.rank > ultimaRecompensa Then
                     ' Por alguna razon, PuedeUsarObjeto devuelve 0 cuando el usuario SI puede usarlo.
                     If PuedeUsarObjeto(UserIndex, recompensa.ObjIndex) = 0 Then
                         objetoRecompensa.Amount = 1
@@ -435,9 +435,9 @@ Private Sub DarRecompensas(ByVal UserIndex As Integer)
 
             ' Guardamos que el usuario recibio las recompensas de su rank.
             If .Faccion.ArmadaReal = 1 Then
-              .Faccion.RecibioArmaduraReal = Rank
+              .Faccion.RecibioArmaduraReal = rank
             Else
-              .Faccion.RecibioArmaduraCaos = Rank
+              .Faccion.RecibioArmaduraCaos = rank
             End If
 
         End With
