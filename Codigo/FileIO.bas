@@ -4335,19 +4335,19 @@ Public Sub LoadRangosFaccion()
             ' Luego, para acceder es tan facil como usar el Rango directamente para la Armada, y multiplicar por 2 para el Caos.
             ReDim RangosFaccion(1 To MaxRangoFaccion * 2) As tRangoFaccion
 
-            For i = 0 To MaxRangoFaccion - 1
+            For i = 1 To MaxRangoFaccion
                 '<N>Rango=<NivelRequerido>-<AsesinatosRequeridos>-<Título>
                 rankData = Split(IniFile.GetValue("ArmadaReal", i & "Rango"), "-", , vbTextCompare)
-                RangosFaccion(2 * i + 1).Rank = i + 1
-                RangosFaccion(2 * i + 1).Titulo = rankData(2)
-                RangosFaccion(2 * i + 1).NivelRequerido = val(rankData(0))
-                RangosFaccion(2 * i + 1).AsesinatosRequeridos = val(rankData(1))
+                RangosFaccion(2 * i - 1).Rank = i
+                RangosFaccion(2 * i - 1).Titulo = rankData(2)
+                RangosFaccion(2 * i - 1).NivelRequerido = val(rankData(0))
+                RangosFaccion(2 * i - 1).AsesinatosRequeridos = val(rankData(1))
 
                 rankData = Split(IniFile.GetValue("LegionCaos", i & "Rango"), "-", , vbTextCompare)
-                RangosFaccion(2 * (i + 1)).Rank = i + 1
-                RangosFaccion(2 * (i + 1)).Titulo = rankData(2)
-                RangosFaccion(2 * (i + 1)).NivelRequerido = val(rankData(0))
-                RangosFaccion(2 * (i + 1)).AsesinatosRequeridos = val(rankData(1))
+                RangosFaccion(2 * i).Rank = i
+                RangosFaccion(2 * i).Titulo = rankData(2)
+                RangosFaccion(2 * i).NivelRequerido = val(rankData(0))
+                RangosFaccion(2 * i).AsesinatosRequeridos = val(rankData(1))
             Next i
 
         End If
