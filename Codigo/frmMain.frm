@@ -1152,6 +1152,7 @@ Private Sub Command8_Click()
 100     Call LoadOBJData
 102     Call LoadPesca
 104     Call LoadRecursosEspeciales
+        Call LoadRangosFaccion
         Call LoadRecompensasFaccion
 
 
