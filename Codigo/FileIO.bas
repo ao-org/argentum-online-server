@@ -4312,6 +4312,48 @@ BinarySearchPeces_Err:
         
 End Function
 
+
+Public Sub LoadRecompensasFaccion()
+        On Error GoTo LoadRecompensasFaccion_Err
+
+        If Not FileExist(DatPath & "RecompensasFaccion.dat", vbArchive) Then
+            ReDim RecompensasFaccion(0) As tRecompensaFaccion
+            Exit Sub
+
+        End If
+
+        Dim IniFile As clsIniReader
+        Set IniFile = New clsIniReader
+
+        Call IniFile.Initialize(DatPath & "RecompensasFaccion.dat")
+
+        Dim cantidadRecompensas As Byte, i As Integer, rank_and_objindex() As String
+
+        cantidadRecompensas = val(IniFile.GetValue("INIT", "NumRecompensas"))
+
+        If cantidadRecompensas > 0 Then
+            ReDim RecompensasFaccion(1 To cantidadRecompensas) As tRecompensaFaccion
+
+            For i = 1 To cantidadRecompensas
+                rank_and_objindex = Split(IniFile.GetValue("Recompensas", "Recompensa" & i), "-", , vbTextCompare)
+
+                RecompensasFaccion(i).Rank = val(rank_and_objindex(0))
+                RecompensasFaccion(i).ObjIndex = val(rank_and_objindex(1))
+            Next i
+
+        End If
+
+        Set IniFile = Nothing
+
+        Exit Sub
+
+LoadRecursosEspeciales_Err:
+        Call RegistrarError(Err.Number, Err.Description, "ES.LoadRecursosEspeciales", Erl)
+        Resume Next
+
+End Sub
+
+
 Public Sub LoadUserIntervals(ByVal UserIndex As Integer)
         
         On Error GoTo LoadUserIntervals_Err
