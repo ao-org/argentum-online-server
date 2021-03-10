@@ -4316,7 +4316,7 @@ Public Sub LoadRangosFaccion()
         On Error GoTo LoadRangosFaccion_Err
 
         If Not FileExist(DatPath & "RangosFaccion.dat", vbArchive) Then
-            ReDim RangosFaccion(0) As tRecompensaFaccion
+            ReDim RangosFaccion(0) As tRangoFaccion
             Exit Sub
 
         End If
@@ -4338,16 +4338,16 @@ Public Sub LoadRangosFaccion()
             For i = 0 To MaxRangoFaccion - 1
                 '<N>Rango=<NivelRequerido>-<AsesinatosRequeridos>-<Título>
                 rankData = Split(IniFile.GetValue("ArmadaReal", i & "Rango"), "-", , vbTextCompare)
-                RangosFaccion(2*i + 1).Rank = i+1
-                RangosFaccion(2*i + 1).Titulo = rankData(2)
-                RangosFaccion(2*i + 1).NivelRequerido = val(rank_and_objindex(0))
-                RangosFaccion(2*i + 1).AsesinatosRequeridos = val(rank_and_objindex(1))
+                RangosFaccion(2 * i + 1).Rank = i + 1
+                RangosFaccion(2 * i + 1).Titulo = rankData(2)
+                RangosFaccion(2 * i + 1).NivelRequerido = val(rankData(0))
+                RangosFaccion(2 * i + 1).AsesinatosRequeridos = val(rankData(1))
 
                 rankData = Split(IniFile.GetValue("LegionCaos", i & "Rango"), "-", , vbTextCompare)
-                RangosFaccion(2*(i+1)).Rank = i+1
-                RangosFaccion(2*(i+1)).Titulo = rankData(2)
-                RangosFaccion(2*(i+1)).NivelRequerido = val(rank_and_objindex(0))
-                RangosFaccion(2*(i+1)).AsesinatosRequeridos = val(rank_and_objindex(1))
+                RangosFaccion(2 * (i + 1)).Rank = i + 1
+                RangosFaccion(2 * (i + 1)).Titulo = rankData(2)
+                RangosFaccion(2 * (i + 1)).NivelRequerido = val(rankData(0))
+                RangosFaccion(2 * (i + 1)).AsesinatosRequeridos = val(rankData(1))
             Next i
 
         End If
@@ -4387,7 +4387,7 @@ Public Sub LoadRecompensasFaccion()
             For i = 1 To cantidadRecompensas
                 rank_and_objindex = Split(IniFile.GetValue("Recompensas", "Recompensa" & i), "-", , vbTextCompare)
 
-                RecompensasFaccion(i).rank = val(rank_and_objindex(0))
+                RecompensasFaccion(i).Rank = val(rank_and_objindex(0))
                 RecompensasFaccion(i).ObjIndex = val(rank_and_objindex(1))
             Next i
 
