@@ -56,7 +56,7 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
 
         End If
 
-        If UserList(UserIndex).clase = eClass.Thief  Then
+        If UserList(UserIndex).clase = eClass.Thief Then
             Call WriteChatOverHead(UserIndex, "¡Los ladrones no son dignos para pertenecer al ejercito imperial!!!", str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
             Exit Sub
 
@@ -149,10 +149,10 @@ Public Sub RecompensaArmadaReal(ByVal UserIndex As Integer)
 
         Dim nivelRequerido As Integer
         Dim criminalesNecesariosParaFuturaRecomensa As Integer
-        Dim rango As Byte
-        rango = UserList(UserIndex).Faccion.RecompensasReal
+        Dim Rango As Byte
+        Rango = UserList(UserIndex).Faccion.RecompensasReal
 
-        Select Case rango
+        Select Case Rango
             Case 0: ' Antes de enlistarse.
                 nivelRequerido = 25
                 criminalesNecesariosParaFuturaRecomensa = 100
@@ -186,7 +186,7 @@ Public Sub RecompensaArmadaReal(ByVal UserIndex As Integer)
         Else
           ' El usuario cumple con los requerimientos de nivel, se le asigna la recomenza.
 
-          UserList(UserIndex).Faccion.RecompensasReal = IIf(rango < 5, rango + 1, rango)
+          UserList(UserIndex).Faccion.RecompensasReal = IIf(Rango < 5, Rango + 1, Rango)
           UserList(UserIndex).Faccion.NextRecompensa = criminalesNecesariosParaFuturaRecomensa
 
           Call WriteChatOverHead(UserIndex, "¡¡¡Aqui tienes tu recompensa " + TituloReal(UserIndex) + "!!!", str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
@@ -398,10 +398,10 @@ Public Sub RecompensaCaos(ByVal UserIndex As Integer)
 
         Dim nivelRequerido As Integer
         Dim ciudadanosNecesariosParaFuturaRecomensa As Integer
-        Dim rango As Byte
-        rango = UserList(UserIndex).Faccion.RecompensasCaos
+        Dim Rango As Byte
+        Rango = UserList(UserIndex).Faccion.RecompensasCaos
 
-        Select Case rango
+        Select Case Rango
             Case 0: ' Antes de enlistarse
                 nivelRequerido = 25
                 ciudadanosNecesariosParaFuturaRecomensa = 100
@@ -436,7 +436,7 @@ Public Sub RecompensaCaos(ByVal UserIndex As Integer)
         Else
           ' El usuario cumple con los requerimientos de nivel, se le asigna la recomenza.
 
-          UserList(UserIndex).Faccion.RecompensasCaos = IIf(rango < 5, rango + 1, rango)
+          UserList(UserIndex).Faccion.RecompensasCaos = IIf(Rango < 5, Rango + 1, Rango)
           UserList(UserIndex).Faccion.NextRecompensa = ciudadanosNecesariosParaFuturaRecomensa
 
           Call WriteChatOverHead(UserIndex, "¡¡¡Bien hecho " + TituloCaos(UserIndex) + ", aquí tienes tu recompensa!!!", str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex), vbWhite)
@@ -505,9 +505,11 @@ Private Sub DarRecompensas(ByVal UserIndex As Integer)
                 ultimaRecompensa = .Faccion.RecibioArmaduraCaos
             Else ' No pertenece a ninguna faccion.
                 Exit Sub
-            End
+            End If
 
-            If ultimaRecompensa >= rank Then Exit Sub End If
+            If ultimaRecompensa >= rank Then
+                Exit Sub
+            End If
 
             ' Esto puede parecer ineficiente, pero DarRecompensas sucede pocas veces en el juego.
             ' Por ahora, iterar por todas las recompensas es mas facil que mantener una estructura mas
@@ -521,9 +523,9 @@ Private Sub DarRecompensas(ByVal UserIndex As Integer)
                 ' entregamos TODAS las recompensas hasta el rango actual desde la ultima recompensa.
                 If recompensa.rank <= rank And recompensa.rank > ultimaRecompensa Then
                     ' Por alguna razon, PuedeUsarObjeto devuelve 0 cuando el usuario SI puede usarlo.
-                    If PuedeUsarObjeto(UserIndex, recompensa.objIndex) = 0 Then
+                    If PuedeUsarObjeto(UserIndex, recompensa.ObjIndex) = 0 Then
                         objetoRecompensa.Amount = 1
-                        objetoRecompensa.ObjIndex = recompensa.objIndex
+                        objetoRecompensa.ObjIndex = recompensa.ObjIndex
 
                         If Not MeterItemEnInventario(UserIndex, objetoRecompensa) Then
                             Call TirarItemAlPiso(.Pos, objetoRecompensa)

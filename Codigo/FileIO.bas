@@ -1852,7 +1852,7 @@ Sub LoadUserInit(ByVal UserIndex As Integer, ByRef UserFile As clsIniReader)
 100     UserList(UserIndex).Faccion.Status = CByte(UserFile.GetValue("FACCIONES", "Status"))
 102     UserList(UserIndex).Faccion.ArmadaReal = CByte(UserFile.GetValue("FACCIONES", "EjercitoReal"))
 104     UserList(UserIndex).Faccion.FuerzasCaos = CByte(UserFile.GetValue("FACCIONES", "EjercitoCaos"))
-106     UserList(UserIndex).Faccion.CiudadanosMatados = CLng(UserFile.GetValue("FACCIONES", "CiudMatados"))
+106     UserList(UserIndex).Faccion.ciudadanosMatados = CLng(UserFile.GetValue("FACCIONES", "CiudMatados"))
 108     UserList(UserIndex).Faccion.CriminalesMatados = CLng(UserFile.GetValue("FACCIONES", "CrimMatados"))
 110     UserList(UserIndex).Faccion.RecibioArmaduraCaos = CByte(UserFile.GetValue("FACCIONES", "rArCaos"))
 112     UserList(UserIndex).Faccion.RecibioArmaduraReal = CByte(UserFile.GetValue("FACCIONES", "rArReal"))
@@ -3267,7 +3267,7 @@ Sub SaveUserCharfile(ByVal UserIndex As Integer, Optional ByVal Logout As Boolea
 290             Print #n, , "EjercitoReal=" & CStr(.ArmadaReal) & vbCrLf
 292             Print #n, , "Status=" & CStr(.Status) & vbCrLf
 294             Print #n, , "EjercitoCaos=" & CStr(.FuerzasCaos) & vbCrLf
-296             Print #n, , "CiudMatados=" & CStr(.CiudadanosMatados) & vbCrLf
+296             Print #n, , "CiudMatados=" & CStr(.ciudadanosMatados) & vbCrLf
 298             Print #n, , "CrimMatados=" & CStr(.CriminalesMatados) & vbCrLf
 300             Print #n, , "rArCaos=" & CStr(.RecibioArmaduraCaos) & vbCrLf
 302             Print #n, , "rArReal=" & CStr(.RecibioArmaduraReal) & vbCrLf
@@ -3556,7 +3556,7 @@ Sub SaveNewUserCharfile(ByVal UserIndex As Integer)
 170     Put n, , "[FACCIONES]" & vbCrLf & "EjercitoReal=" & CStr(UserList(UserIndex).Faccion.ArmadaReal) & vbCrLf
 172     Put n, , "Status=" & CStr(UserList(UserIndex).Faccion.Status) & vbCrLf
 174     Put n, , "EjercitoCaos=" & CStr(UserList(UserIndex).Faccion.FuerzasCaos) & vbCrLf
-176     Put n, , "CiudMatados=" & CStr(UserList(UserIndex).Faccion.CiudadanosMatados) & vbCrLf
+176     Put n, , "CiudMatados=" & CStr(UserList(UserIndex).Faccion.ciudadanosMatados) & vbCrLf
 178     Put n, , "CrimMatados=" & CStr(UserList(UserIndex).Faccion.CriminalesMatados) & vbCrLf
 180     Put n, , "rArCaos=" & CStr(UserList(UserIndex).Faccion.RecibioArmaduraCaos) & vbCrLf
 182     Put n, , "rArReal=" & CStr(UserList(UserIndex).Faccion.RecibioArmaduraReal) & vbCrLf
@@ -4337,7 +4337,7 @@ Public Sub LoadRecompensasFaccion()
             For i = 1 To cantidadRecompensas
                 rank_and_objindex = Split(IniFile.GetValue("Recompensas", "Recompensa" & i), "-", , vbTextCompare)
 
-                RecompensasFaccion(i).Rank = val(rank_and_objindex(0))
+                RecompensasFaccion(i).rank = val(rank_and_objindex(0))
                 RecompensasFaccion(i).ObjIndex = val(rank_and_objindex(1))
             Next i
 
@@ -4347,7 +4347,7 @@ Public Sub LoadRecompensasFaccion()
 
         Exit Sub
 
-LoadRecursosEspeciales_Err:
+LoadRecompensasFaccion_Err:
         Call RegistrarError(Err.Number, Err.Description, "ES.LoadRecursosEspeciales", Erl)
         Resume Next
 
