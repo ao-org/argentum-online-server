@@ -4312,6 +4312,56 @@ BinarySearchPeces_Err:
         
 End Function
 
+Public Sub LoadRangosFaccion()
+        On Error GoTo LoadRangosFaccion_Err
+
+        If Not FileExist(DatPath & "RangosFaccion.dat", vbArchive) Then
+            ReDim RangosFaccion(0) As tRecompensaFaccion
+            Exit Sub
+
+        End If
+
+        Dim IniFile As clsIniReader
+        Set IniFile = New clsIniReader
+
+        Call IniFile.Initialize(DatPath & "RangosFaccion.dat")
+
+        Dim i As Byte, rankData() As String
+
+        MaxRangoFaccion = val(IniFile.GetValue("INIT", "NumRangos"))
+
+        If MaxRangoFaccion > 0 Then
+            ' Los rangos de la Armada se guardan en los indices impar, y los del caos en indices pares.
+            ' Luego, para acceder es tan facil como usar el Rango directamente para la Armada, y multiplicar por 2 para el Caos.
+            ReDim RangosFaccion(1 To MaxRangoFaccion * 2) As tRangoFaccion
+
+            For i = 0 To MaxRangoFaccion - 1
+                '<N>Rango=<NivelRequerido>-<AsesinatosRequeridos>-<Título>
+                rankData = Split(IniFile.GetValue("ArmadaReal", i & "Rango"), "-", , vbTextCompare)
+                RangosFaccion(2*i + 1).Rank = i+1
+                RangosFaccion(2*i + 1).Titulo = rankData(2)
+                RangosFaccion(2*i + 1).NivelRequerido = val(rank_and_objindex(0))
+                RangosFaccion(2*i + 1).AsesinatosRequeridos = val(rank_and_objindex(1))
+
+                rankData = Split(IniFile.GetValue("LegionCaos", i & "Rango"), "-", , vbTextCompare)
+                RangosFaccion(2*(i+1)).Rank = i+1
+                RangosFaccion(2*(i+1)).Titulo = rankData(2)
+                RangosFaccion(2*(i+1)).NivelRequerido = val(rank_and_objindex(0))
+                RangosFaccion(2*(i+1)).AsesinatosRequeridos = val(rank_and_objindex(1))
+            Next i
+
+        End If
+
+        Set IniFile = Nothing
+
+        Exit Sub
+
+LoadRangosFaccion_Err:
+        Call RegistrarError(Err.Number, Err.Description, "ES.LoadRangosFaccion", Erl)
+        Resume Next
+
+End Sub
+
 
 Public Sub LoadRecompensasFaccion()
         On Error GoTo LoadRecompensasFaccion_Err
@@ -4348,7 +4398,7 @@ Public Sub LoadRecompensasFaccion()
         Exit Sub
 
 LoadRecompensasFaccion_Err:
-        Call RegistrarError(Err.Number, Err.Description, "ES.LoadRecursosEspeciales", Erl)
+        Call RegistrarError(Err.Number, Err.Description, "ES.LoadRecompensasFaccion", Erl)
         Resume Next
 
 End Sub
