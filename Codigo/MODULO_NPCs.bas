@@ -1328,15 +1328,16 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 248         Next LoopC
     
 250         If .NPCtype = eNPCType.Entrenador Then
-        
 252             .NroCriaturas = val(Leer.GetValue("NPC" & NpcNumber, "NroCriaturas"))
-            
-254             ReDim .Criaturas(1 To .NroCriaturas) As tCriaturasEntrenador
+                
+                If .NroCriaturas > 0 Then
+254                 ReDim .Criaturas(1 To .NroCriaturas) As tCriaturasEntrenador
     
-256             For LoopC = 1 To .NroCriaturas
-258                 .Criaturas(LoopC).NpcIndex = Leer.GetValue("NPC" & NpcNumber, "CI" & LoopC)
-260                 .Criaturas(LoopC).NpcName = Leer.GetValue("NPC" & NpcNumber, "CN" & LoopC)
-262             Next LoopC
+256                 For LoopC = 1 To .NroCriaturas
+258                     .Criaturas(LoopC).NpcIndex = Leer.GetValue("NPC" & NpcNumber, "CI" & LoopC)
+260                     .Criaturas(LoopC).NpcName = Leer.GetValue("NPC" & NpcNumber, "CN" & LoopC)
+262                 Next LoopC
+                End If
     
             End If
     
