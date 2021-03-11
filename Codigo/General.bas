@@ -1066,7 +1066,7 @@ LogDesarrollo_Err:
         
 End Sub
 
-Public Sub LogGM(Nombre As String, texto As String)
+Public Sub LogGM(nombre As String, texto As String)
 
         On Error GoTo ErrHandler
 
@@ -1074,7 +1074,7 @@ Public Sub LogGM(Nombre As String, texto As String)
 
 100     nfile = FreeFile ' obtenemos un canal
         'Guardamos todo en el mismo lugar. Pablo (ToxicWaste) 18/05/07
-102     Open App.Path & "\logs\" & Nombre & ".log" For Append Shared As #nfile
+102     Open App.Path & "\logs\" & nombre & ".log" For Append Shared As #nfile
 104     Print #nfile, Date & " " & Time & " " & texto
 106     Close #nfile
 
@@ -1912,7 +1912,7 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
 
         On Error GoTo EfectoVeneno_Err
 
-        Dim damage As Integer
+        Dim damage As Long
 
 100     If UserList(UserIndex).Counters.Veneno < IntervaloVeneno Then
 102         UserList(UserIndex).Counters.Veneno = UserList(UserIndex).Counters.Veneno + 1
