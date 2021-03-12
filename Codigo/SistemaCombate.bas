@@ -2396,7 +2396,7 @@ Private Sub UserDañoEspecial(ByVal AtacanteIndex As Integer, ByVal VictimaIndex
         If puedeIncinierar And (UserList(VictimaIndex).flags.Incinerado = 0) And Not HuboEfecto Then
             If RandomNumber(1, 100) < 10 Then
                 UserList(VictimaIndex).flags.Incinerado = 1
-                UserList(VictimaIndex).Counters.Incineracion = 6
+                UserList(VictimaIndex).Counters.Incineracion = 1
                 Call WriteCombatConsoleMsg(VictimaIndex, "¡" & UserList(AtacanteIndex).name & " te ha Incinerado!")
                 Call WriteCombatConsoleMsg(AtacanteIndex, "¡Has Incinerado a " & UserList(VictimaIndex).name & "!")
                 HuboEfecto = True
