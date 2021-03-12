@@ -1819,25 +1819,25 @@ Public Sub RecStamina(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, 
                 EnviarStats = True
 
                 Select Case .Stats.UserSkills(eSkill.Supervivencia)
-                    Case 0 to 10
+                    Case 0 To 10
                         Suerte = 5
-                    Case 11 to 20
+                    Case 11 To 20
                         Suerte = 7
-                    Case 21 to 30
+                    Case 21 To 30
                         Suerte = 9
-                    Case 31 to 40
+                    Case 31 To 40
                         Suerte = 11
-                    Case 41 to 50
+                    Case 41 To 50
                         Suerte = 13
-                    Case 51 to 60
+                    Case 51 To 60
                         Suerte = 15
-                    Case 61 to 70
+                    Case 61 To 70
                         Suerte = 17
-                    Case 71 to 80
+                    Case 71 To 80
                         Suerte = 19
-                    Case 81 to 90
+                    Case 81 To 90
                         Suerte = 21
-                    Case 91 to 99
+                    Case 91 To 99
                         Suerte = 23
                     Case 100
                         Suerte = 25
@@ -1853,6 +1853,7 @@ Public Sub RecStamina(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, 
                 End If
 
             End If
+        End With
 
         Exit Sub
 
@@ -1920,7 +1921,7 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
 
               ' El veneno saca un porcentaje de vida random.
               damage = RandomNumber(3, 5)
-              damage = .flags.Envenenado * (1 + damage * .Stats.MaxHp \ 100) ' Redondea para arriba
+              damage = (1 + damage * .Stats.MaxHp \ 100) ' Redondea para arriba
               .Stats.MinHp = UserList(UserIndex).Stats.MinHp - damage
 
               If .ChatCombate = 1 Then
@@ -1991,7 +1992,7 @@ Public Sub EfectoIncineramiento(ByVal UserIndex As Integer)
 
         Dim damage As Integer
 
-        With UserList(UserList)
+        With UserList(UserIndex)
 
             ' 5 Mini intervalitos, dentro del intervalo total de incineracion
             If .Counters.Incineracion Mod (IntervaloIncineracion \ 5) = 0 Then
@@ -2013,7 +2014,7 @@ Public Sub EfectoIncineramiento(ByVal UserIndex As Integer)
                 Else
                     Call WriteUpdateHP(UserIndex)
                 End If
-            end
+            End If
 
             .Counters.Incineracion = .Counters.Incineracion + 1
 
@@ -2023,8 +2024,8 @@ Public Sub EfectoIncineramiento(ByVal UserIndex As Integer)
                 .Counters.Incineracion = 0
                 Exit Sub
 
-            End
-        End
+            End If
+        End With
 
         Exit Sub
 
