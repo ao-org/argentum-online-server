@@ -4315,7 +4315,7 @@ End Function
 Public Sub LoadRangosFaccion()
         On Error GoTo LoadRangosFaccion_Err
 
-        If Not FileExist(DatPath & "RangosFaccion.dat", vbArchive) Then
+        If Not FileExist(DatPath & "rangos_faccion.dat", vbArchive) Then
             ReDim RangosFaccion(0) As tRangoFaccion
             Exit Sub
 
@@ -4324,7 +4324,7 @@ Public Sub LoadRangosFaccion()
         Dim IniFile As clsIniReader
         Set IniFile = New clsIniReader
 
-        Call IniFile.Initialize(DatPath & "RangosFaccion.dat")
+        Call IniFile.Initialize(DatPath & "rangos_faccion.dat")
 
         Dim i As Byte, rankData() As String
 
@@ -4366,7 +4366,7 @@ End Sub
 Public Sub LoadRecompensasFaccion()
         On Error GoTo LoadRecompensasFaccion_Err
 
-        If Not FileExist(DatPath & "RecompensasFaccion.dat", vbArchive) Then
+        If Not FileExist(DatPath & "recompensas_faccion.dat", vbArchive) Then
             ReDim RecompensasFaccion(0) As tRecompensaFaccion
             Exit Sub
 
@@ -4375,7 +4375,7 @@ Public Sub LoadRecompensasFaccion()
         Dim IniFile As clsIniReader
         Set IniFile = New clsIniReader
 
-        Call IniFile.Initialize(DatPath & "RecompensasFaccion.dat")
+        Call IniFile.Initialize(DatPath & "recompensas_faccion.dat")
 
         Dim cantidadRecompensas As Byte, i As Integer, rank_and_objindex() As String
 
