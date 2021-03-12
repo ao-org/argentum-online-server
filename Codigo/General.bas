@@ -1920,7 +1920,7 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
 
               ' El veneno saca un porcentaje de vida random.
               damage = RandomNumber(3, 5)
-              damage = .flags.Envenenado * (1 + damage * .Stats.MaxHp \ 100) ' Redondea para arriba
+              damage = (1 + damage * .Stats.MaxHp \ 100) ' Redondea para arriba
               .Stats.MinHp = UserList(UserIndex).Stats.MinHp - damage
 
               If .ChatCombate = 1 Then
