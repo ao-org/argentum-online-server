@@ -1794,79 +1794,73 @@ EfectoInmoUser_Err:
 End Sub
 
 Public Sub RecStamina(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, ByVal Intervalo As Integer)
-        
         On Error GoTo RecStamina_Err
-        
 
-100     If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger = 1 And MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger = 2 And MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger = 4 Then Exit Sub
+        Dim trigger As Byte
+        Dim Suerte As Integer
 
-        Dim massta As Integer
+        With UserList(UserIndex)
+            trigger = MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger
 
-102     If UserList(UserIndex).Stats.MinSta < UserList(UserIndex).Stats.MaxSta Then
+            If trigger = 1 And trigger = 2 And trigger = 4 Then Exit Sub
 
-104         If UserList(UserIndex).Counters.STACounter < Intervalo Then
-106             UserList(UserIndex).Counters.STACounter = UserList(UserIndex).Counters.STACounter + 1
-            Else
-        
-108             UserList(UserIndex).Counters.STACounter = 0
+            If .Stats.MinSta < .Stats.MaxSta Then
 
-110             If UserList(UserIndex).Counters.Trabajando > 0 Then Exit Sub  'Trabajando no sube energía. (ToxicWaste)
-         
-                ' If UserList(UserIndex).Stats.MinSta = 0 Then Exit Sub 'Ladder, se ve que esta linea la agregue yo, pero no sirve.
-
-112             EnviarStats = True
-        
-                Dim Suerte As Integer
-
-114             If UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) <= 10 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= -1 Then
-116                 Suerte = 5
-118             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) <= 20 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 11 Then
-120                 Suerte = 7
-122             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) <= 30 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 21 Then
-124                 Suerte = 9
-126             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) <= 40 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 31 Then
-128                 Suerte = 11
-130             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) <= 50 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 41 Then
-132                 Suerte = 13
-134             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) <= 60 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 51 Then
-136                 Suerte = 15
-138             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) <= 70 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 61 Then
-140                 Suerte = 17
-142             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) <= 80 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 71 Then
-144                 Suerte = 19
-146             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) <= 90 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 81 Then
-148                 Suerte = 21
-150             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) < 100 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 91 Then
-152                 Suerte = 23
-154             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) = 100 Then
-156                 Suerte = 25
+                If .Counters.STACounter < Intervalo Then
+                    .Counters.STACounter = .Counters.STACounter + 1
+                    Exit Sub
 
                 End If
-        
-158             If UserList(UserIndex).flags.RegeneracionSta = 1 Then
-160                 Suerte = 45
 
-                End If
-        
-162             massta = RandomNumber(1, Porcentaje(UserList(UserIndex).Stats.MaxSta, Suerte))
-164             UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta + massta
+                .Counters.STACounter = 0
 
-166             If UserList(UserIndex).Stats.MinSta > UserList(UserIndex).Stats.MaxSta Then
-168                 UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MaxSta
+                If .Counters.Trabajando > 0 Then Exit Sub  'Trabajando no sube energía. (ToxicWaste)
+
+                EnviarStats = True
+
+                Select Case .Stats.UserSkills(eSkill.Supervivencia)
+                    Case 0 To 10
+                        Suerte = 5
+                    Case 11 To 20
+                        Suerte = 7
+                    Case 21 To 30
+                        Suerte = 9
+                    Case 31 To 40
+                        Suerte = 11
+                    Case 41 To 50
+                        Suerte = 13
+                    Case 51 To 60
+                        Suerte = 15
+                    Case 61 To 70
+                        Suerte = 17
+                    Case 71 To 80
+                        Suerte = 19
+                    Case 81 To 90
+                        Suerte = 21
+                    Case 91 To 99
+                        Suerte = 23
+                    Case 100
+                        Suerte = 25
+                End Select
+
+                If .flags.RegeneracionSta = 1 Then Suerte = 45
+
+                .Stats.MinSta = .Stats.MinSta + RandomNumber(1, Porcentaje(.Stats.MaxSta, Suerte))
+
+                If .Stats.MinSta > .Stats.MaxSta Then
+                    .Stats.MinSta = .Stats.MaxSta
 
                 End If
 
             End If
+        End With
 
-        End If
-
-        
         Exit Sub
 
 RecStamina_Err:
-170     Call RegistrarError(Err.Number, Err.Description, "General.RecStamina", Erl)
-172     Resume Next
-        
+        Call RegistrarError(Err.Number, Err.Description, "General.RecStamina", Erl)
+        Resume Next
+
 End Sub
 
 Public Sub PierdeEnergia(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, ByVal Intervalo As Integer)
@@ -1927,7 +1921,7 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
 
               ' El veneno saca un porcentaje de vida random.
               damage = RandomNumber(3, 5)
-              damage = .flags.Envenenado * (1 + damage * .Stats.MaxHp \ 100) ' Redondea para arriba
+              damage = (1 + damage * .Stats.MaxHp \ 100) ' Redondea para arriba
               .Stats.MinHp = UserList(UserIndex).Stats.MinHp - damage
 
               If .ChatCombate = 1 Then
@@ -1992,38 +1986,53 @@ EfectoAhogo_Err:
         
 End Sub
 
-Public Sub EfectoIncineramiento(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean)
-        
+' El incineramiento tiene una logica particular, que es hacer daño sostenido en el tiempo.
+Public Sub EfectoIncineramiento(ByVal UserIndex As Integer)
         On Error GoTo EfectoIncineramiento_Err
-        
 
-        Dim n As Integer
- 
-100     If UserList(UserIndex).Counters.Incineracion < IntervaloIncineracion Then
-102         UserList(UserIndex).Counters.Incineracion = UserList(UserIndex).Counters.Incineracion + 1
-        Else
-104         Call WriteConsoleMsg(UserIndex, "Te estás incinerando, si no te curas morirás.", FontTypeNames.FONTTYPE_INFO)
-            'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Incinerar, 30, False))
-106         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.CharIndex, 73, 0))
-108         UserList(UserIndex).Counters.Incineracion = 0
-110         n = RandomNumber(40, 80)
-112         UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp - n
+        Dim damage As Integer
 
-114         If UserList(UserIndex).Stats.MinHp < 1 Then
-116             Call UserDie(UserIndex)
-            Else
-118             Call WriteUpdateHP(UserIndex)
+        With UserList(UserIndex)
+
+            ' 5 Mini intervalitos, dentro del intervalo total de incineracion
+            If .Counters.Incineracion Mod (IntervaloIncineracion \ 5) = 0 Then
+                ' "Te estás incinerando, si no te curas morirás.
+                Call WriteLocaleMsg(UserIndex, "392", FontTypeNames.FONTTYPE_FIGHT)
+                'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Incinerar, 30, False))
+                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, 73, 0))
+
+                damage = RandomNumber(35, 45)
+                .Stats.MinHp = .Stats.MinHp - damage
+
+                If .ChatCombate = 1 Then
+                    ' "El fuego te ha causado ¬1 puntos de daño."
+                    Call WriteLocaleMsg(UserIndex, "391", FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(damage))
+                End If
+
+                If UserList(UserIndex).Stats.MinHp < 1 Then
+                    Call UserDie(UserIndex)
+                Else
+                    Call WriteUpdateHP(UserIndex)
+                End If
             End If
 
-        End If
- 
-        
+            .Counters.Incineracion = .Counters.Incineracion + 1
+
+            If .Counters.Incineracion > IntervaloIncineracion Then
+                ' Se termino la incineracion
+                .flags.Incinerado = 0
+                .Counters.Incineracion = 0
+                Exit Sub
+
+            End If
+        End With
+
         Exit Sub
 
 EfectoIncineramiento_Err:
-120     Call RegistrarError(Err.Number, Err.Description, "General.EfectoIncineramiento", Erl)
-122     Resume Next
-        
+        Call RegistrarError(Err.Number, Err.Description, "General.EfectoIncineramiento", Erl)
+        Resume Next
+
 End Sub
 
 Public Sub DuracionPociones(ByVal UserIndex As Integer)
