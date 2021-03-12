@@ -1468,7 +1468,7 @@ Private Sub GameTimer_Timer()
                         If .flags.Meditando Then Call DoMeditar(iUserIndex)
                         If .flags.Envenenado <> 0 Then Call EfectoVeneno(iUserIndex)
                         If .flags.Ahogandose <> 0 Then Call EfectoAhogo(iUserIndex)
-                        If .flags.Incinerado <> 0 Then Call EfectoIncineramiento(iUserIndex, False)
+                        If .flags.Incinerado <> 0 Then Call EfectoIncineramiento(iUserIndex)
                         If .flags.Mimetizado <> 0 Then Call EfectoMimetismo(iUserIndex)
                         If .flags.AdminInvisible <> 1 Then
                             If .flags.Oculto = 1 Then Call DoPermanecerOculto(iUserIndex)
@@ -1534,7 +1534,7 @@ Private Sub GameTimer_Timer()
                                         
                                     End If
 
-                                Else
+                                Else ' Intemperie
                                     If .flags.Desnudo = 0 Then
                                         Call RecStamina(iUserIndex, bEnviarStats, StaminaIntervaloSinDescansar * 4)
                                     Else
@@ -1548,7 +1548,7 @@ Private Sub GameTimer_Timer()
 
                                 End If
                                 
-                            Else
+                            Else ' No llueve
 
                                 If Not .flags.Descansar Then
                                     'No esta descansando
@@ -2232,34 +2232,10 @@ Private Sub tPiqueteC_Timer()
 
             End If
 
-            'ustedes se preguntaran que hace esto aca?
-            'bueno la respuesta es simple: el codigo de AO es una mierda y encontrar
-            'todos los puntos en los cuales la alineacion puede cambiar es un dolor de
-            'huevos, asi que lo controlo aca, cada 6 segundos, lo cual es razonable
-
-            'GI = UserList(i).guildIndex
-            ' If GI > 0 Then
-            '  NuevaA = False
-            ' NuevoL = False
-            ' If Not modGuilds.m_ValidarPermanencia(i, True, NuevaA, NuevoL) Then
-            '  Call WriteConsoleMsg(i, "Has sido expulsado del clan. ¡El clan ha sumado un punto de antifacción!", FontTypeNames.FONTTYPE_GUILD)
-            ' End If
-            'If NuevaA Then
-            '   Call SendData(SendTarget.ToGuildMembers, GI, PrepareMessageConsoleMsg("¡El clan ha pasado a tener alineación neutral!", FontTypeNames.FONTTYPE_GUILD))
-            '   Call LogClanes("El clan cambio de alineacion!")
-            'End If
-            '  If NuevoL Then
-            '   Call SendData(SendTarget.ToGuildMembers, GI, PrepareMessageConsoleMsg("¡El clan tiene un nuevo líder!", FontTypeNames.FONTTYPE_GUILD))
-            '  Call LogClanes("El clan tiene nuevo lider!")
-            ' End If
-            ' End If
-
             If segundos >= 18 Then
                 If segundos >= 18 Then UserList(i).Counters.Pasos = 0
 
             End If
-
-            
 
         End If
     
