@@ -867,7 +867,7 @@ Private Sub AiNpcAtacaNpc(ByVal NpcIndex As Integer)
 156                 Next X
 158             Next Y
 
-            Else
+            Else ' No Inmovilizado
             
 160             For Y = .Pos.Y - RANGO_VISION_Y To .Pos.Y + RANGO_VISION_Y
 162                 For X = .Pos.X - RANGO_VISION_Y To .Pos.X + RANGO_VISION_Y

@@ -165,8 +165,8 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 126                             Case eCiudad.cArghal
 128                                 DeDonde = CityArghal
                         
-130                             Case eCiudad.CHillidan
-132                                 DeDonde = CityHillidan
+130                             Case eCiudad.cArkhein
+132                                 DeDonde = CityArkhein
                         
 134                             Case Else
 136                                 DeDonde = CityUllathorpe
@@ -191,14 +191,14 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 154                                 Case eCiudad.cBanderbill
 156                                     DeDonde = CityBanderbill
                     
-158                                 Case eCiudad.cLindos 'Vamos a tener que ir por todo el desierto... uff!
+158                                 Case eCiudad.cLindos
 160                                     DeDonde = CityLindos
                         
 162                                 Case eCiudad.cArghal
 164                                     DeDonde = CityArghal
                         
-166                                 Case eCiudad.CHillidan
-168                                     DeDonde = CityHillidan
+166                                 Case eCiudad.cArkhein
+168                                     DeDonde = CityArkhein
                         
 170                                 Case Else
 172                                     DeDonde = CityUllathorpe
@@ -218,14 +218,14 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 182                                 Case eCiudad.cBanderbill
 184                                     DeDonde = CityBanderbill
                     
-186                                 Case eCiudad.cLindos 'Vamos a tener que ir por todo el desierto... uff!
+186                                 Case eCiudad.cLindos
 188                                     DeDonde = CityLindos
                         
 190                                 Case eCiudad.cArghal
 192                                     DeDonde = CityArghal
                         
-194                                 Case eCiudad.CHillidan
-196                                     DeDonde = CityHillidan
+194                                 Case eCiudad.cArkhein
+196                                     DeDonde = CityArkhein
                         
 198                                 Case Else
 200                                     DeDonde = CityUllathorpe

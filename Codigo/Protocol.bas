@@ -12138,8 +12138,8 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 596                             UserList(tUser).Hogar = eCiudad.cLindos
 598                         Case "ARGHAL"
 600                             UserList(tUser).Hogar = eCiudad.cArghal
-602                         Case "HILLIDAN"
-604                             UserList(tUser).Hogar = eCiudad.CHillidan
+602                         Case "ARKHEIN"
+604                             UserList(tUser).Hogar = eCiudad.cArkhein
                         End Select
                     End If
                 
@@ -28762,8 +28762,8 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
 206                         Case eCiudad.cArghal
 208                             DeDonde = " Arghal"
                             
-210                         Case eCiudad.CHillidan
-212                             DeDonde = " Hillidan"
+210                         Case eCiudad.cArkhein
+212                             DeDonde = " Arkhein"
                             
 214                         Case Else
 216                             DeDonde = "Ullathorpe"
@@ -28877,8 +28877,8 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
 326                         Case eCiudad.cArghal
 328                             DeDonde = " Arghal"
                             
-330                         Case eCiudad.CHillidan
-332                             DeDonde = " Hillidan"
+330                         Case eCiudad.cArkhein
+332                             DeDonde = " Arkhein"
                             
 334                         Case Else
 336                             DeDonde = "Ullathorpe"
@@ -30165,8 +30165,8 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
 134                 Case eCiudad.cArghal
 136                     DeDonde = CityArghal
                         
-138                 Case eCiudad.CHillidan
-140                     DeDonde = CityHillidan
+138                 Case eCiudad.cArkhein
+140                     DeDonde = CityArkhein
                         
 142                 Case Else
 144                     DeDonde = CityUllathorpe

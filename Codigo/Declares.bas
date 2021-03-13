@@ -210,7 +210,7 @@ Public Enum eCiudad
     cBanderbill
     cLindos
     cArghal
-    CHillidan
+    cArkhein
 
 End Enum
 
@@ -2340,7 +2340,7 @@ Public Lindos                             As WorldPos
 
 Public Arghal                             As WorldPos
 
-Public Hillidan                           As WorldPos
+Public Arkhein                            As WorldPos
 
 Public CityNix                            As CityWorldPos
 
@@ -2352,7 +2352,7 @@ Public CityLindos                         As CityWorldPos
 
 Public CityArghal                         As CityWorldPos
 
-Public CityHillidan                       As CityWorldPos
+Public CityArkhein                        As CityWorldPos
 
 Public Prision                            As WorldPos
 
