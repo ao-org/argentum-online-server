@@ -623,7 +623,7 @@ Private Function m_EstadoPermiteEntrarChar(ByRef Personaje As String, ByVal Guil
 
                 Case ALINEACION_GUILD.ALINEACION_CIUDA
 
-120                 If Promedio = 1 Or 3 Then
+120                 If Promedio = 1 Or Promedio = 3 Then
 122                     m_EstadoPermiteEntrarChar = True
                     Else
 124                     m_EstadoPermiteEntrarChar = False
@@ -632,7 +632,7 @@ Private Function m_EstadoPermiteEntrarChar(ByRef Personaje As String, ByVal Guil
 
 126             Case ALINEACION_GUILD.ALINEACION_CRIMINAL
 
-128                 If Promedio = 0 Or 2 Then
+128                 If Promedio = 0 Or Promedio = 2 Then
 130                     m_EstadoPermiteEntrarChar = True
                     Else
 132                     m_EstadoPermiteEntrarChar = False
@@ -653,39 +653,25 @@ m_EstadoPermiteEntrarChar_Err:
 End Function
 
 Private Function m_EstadoPermiteEntrar(ByVal UserIndex As Integer, ByVal GuildIndex As Integer) As Boolean
-        
         On Error GoTo m_EstadoPermiteEntrar_Err
-        
 
-100     Select Case guilds(GuildIndex).Alineacion
-
+        Select Case guilds(GuildIndex).Alineacion
             Case ALINEACION_GUILD.ALINEACION_CIUDA
 
-102             If Status(UserIndex) = 1 Or Status(UserIndex) = 3 Then
-104                 m_EstadoPermiteEntrar = True
-                Else
-106                 m_EstadoPermiteEntrar = False
+              m_EstadoPermiteEntrar = Status(UserIndex) = 1 Or Status(UserIndex) = 3
 
-                End If
+            Case ALINEACION_GUILD.ALINEACION_CRIMINAL
 
-108         Case ALINEACION_GUILD.ALINEACION_CRIMINAL
-
-110             If Status(UserIndex) = 0 Or Status(UserIndex) = 2 Then
-112                 m_EstadoPermiteEntrar = True
-                Else
-114                 m_EstadoPermiteEntrar = False
-
-                End If
+              m_EstadoPermiteEntrar = Status(UserIndex) = 0 Or Status(UserIndex) = 2
 
         End Select
 
-        
         Exit Function
 
 m_EstadoPermiteEntrar_Err:
 116     Call RegistrarError(Err.Number, Err.description, "modGuilds.m_EstadoPermiteEntrar", Erl)
 118     Resume Next
-        
+
 End Function
 
 Public Function String2Alineacion(ByRef S As String) As ALINEACION_GUILD
