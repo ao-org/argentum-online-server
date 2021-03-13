@@ -994,7 +994,6 @@ Function SpawnNpc(ByVal NpcIndex As Integer, Pos As WorldPos, ByVal FX As Boolea
 112     Do While Not PosicionValida
         
 114         Call ClosestLegalPos(Pos, newpos, PuedeAgua, PuedeTierra)  'Nos devuelve la posicion valida mas cercana
-116         Call ClosestLegalPos(Pos, altpos, PuedeAgua)
             'Si X e Y son iguales a 0 significa que no se encontro posicion valida
 
 118         If newpos.X <> 0 And newpos.Y <> 0 Then
@@ -1003,17 +1002,9 @@ Function SpawnNpc(ByVal NpcIndex As Integer, Pos As WorldPos, ByVal FX As Boolea
 122             NpcList(nIndex).Pos.X = newpos.X
 124             NpcList(nIndex).Pos.Y = newpos.Y
 126             PosicionValida = True
+            
             Else
-
-128             If altpos.X <> 0 And altpos.Y <> 0 Then
-130                 NpcList(nIndex).Pos.Map = altpos.Map
-132                 NpcList(nIndex).Pos.X = altpos.X
-134                 NpcList(nIndex).Pos.Y = altpos.Y
-136                 PosicionValida = True
-                Else
-138                 PosicionValida = False
-
-                End If
+138             PosicionValida = False
 
             End If
         
