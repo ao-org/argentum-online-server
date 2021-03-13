@@ -2645,17 +2645,17 @@ Sub CargarCiudades()
 212         .NecesitaNave = val(Lector.GetValue("Arghal", "NecesitaNave"))
         End With
     
-214     With CityHillidan
-216         .Map = val(Lector.GetValue("Hillidan", "Mapa"))
-218         .X = val(Lector.GetValue("Hillidan", "X"))
-220         .Y = val(Lector.GetValue("Hillidan", "Y"))
-222         .MapaViaje = val(Lector.GetValue("Hillidan", "MapaViaje"))
-224         .ViajeX = val(Lector.GetValue("Hillidan", "ViajeX"))
-226         .ViajeY = val(Lector.GetValue("Hillidan", "ViajeY"))
-228         .MapaResu = val(Lector.GetValue("Hillidan", "MapaResu"))
-230         .ResuX = val(Lector.GetValue("Hillidan", "ResuX"))
-232         .ResuY = val(Lector.GetValue("Hillidan", "ResuY"))
-234         .NecesitaNave = val(Lector.GetValue("Hillidan", "NecesitaNave"))
+214     With CityArkhein
+216         .Map = val(Lector.GetValue("Arkhein", "Mapa"))
+218         .X = val(Lector.GetValue("Arkhein", "X"))
+220         .Y = val(Lector.GetValue("Arkhein", "Y"))
+222         .MapaViaje = val(Lector.GetValue("Arkhein", "MapaViaje"))
+224         .ViajeX = val(Lector.GetValue("Arkhein", "ViajeX"))
+226         .ViajeY = val(Lector.GetValue("Arkhein", "ViajeY"))
+228         .MapaResu = val(Lector.GetValue("Arkhein", "MapaResu"))
+230         .ResuX = val(Lector.GetValue("Arkhein", "ResuX"))
+232         .ResuY = val(Lector.GetValue("Arkhein", "ResuY"))
+234         .NecesitaNave = val(Lector.GetValue("Arkhein", "NecesitaNave"))
         End With
     
 236     With Prision
@@ -2692,9 +2692,9 @@ Sub CargarCiudades()
 280     Arghal.X = CityArghal.X
 282     Arghal.Y = CityArghal.Y
     
-284     Hillidan.Map = CityHillidan.Map
-286     Hillidan.X = CityHillidan.X
-288     Hillidan.Y = CityHillidan.Y
+284     Arkhein.Map = CityArkhein.Map
+286     Arkhein.X = CityArkhein.X
+288     Arkhein.Y = CityArkhein.Y
     
         'Esto es para el /HOGAR
 290     Ciudades(eCiudad.cNix) = Nix
@@ -2702,7 +2702,7 @@ Sub CargarCiudades()
 294     Ciudades(eCiudad.cBanderbill) = Banderbill
 296     Ciudades(eCiudad.cLindos) = Lindos
 298     Ciudades(eCiudad.cArghal) = Arghal
-300     Ciudades(eCiudad.CHillidan) = Hillidan
+300     Ciudades(eCiudad.cArkhein) = Arkhein
     
         
         Exit Sub
@@ -2927,7 +2927,7 @@ Sub LoadUser(ByVal UserIndex As Integer)
                 End If
             Else
 124             .Char.Body = iCuerpoMuerto
-126             .Char.Head = 0
+126             .Char.Head = iCabezaMuerto
 128             .Char.WeaponAnim = NingunArma
 130             .Char.ShieldAnim = NingunEscudo
 132             .Char.CascoAnim = NingunCasco

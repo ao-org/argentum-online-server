@@ -148,21 +148,21 @@ Sub QuitarNewbieObj(ByVal UserIndex As Integer)
 
                 Case eCiudad.cUllathorpe
 116                 DeDonde = Ullathorpe
-                
+
 118             Case eCiudad.cNix
 120                 DeDonde = Nix
     
 122             Case eCiudad.cBanderbill
 124                 DeDonde = Banderbill
             
-126             Case eCiudad.cLindos 'Vamos a tener que ir por todo el desierto... uff!
+126             Case eCiudad.cLindos
 128                 DeDonde = Lindos
                 
-130             Case eCiudad.cArghal 'Vamos a tener que ir por todo el desierto... uff!
+130             Case eCiudad.cArghal
 132                 DeDonde = Arghal
                 
-134             Case eCiudad.CHillidan
-136                 DeDonde = Hillidan
+134             Case eCiudad.cArkhein
+136                 DeDonde = Arkhein
                 
 138             Case Else
 140                 DeDonde = Ullathorpe
@@ -1974,14 +1974,9 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 150                 .flags.Hambre = 0
 152                 Call WriteUpdateHungerAndThirst(UserIndex)
                     'Sonido
-            
-154                 If ObjIndex = e_ObjetosCriticos.Manzana Or ObjIndex = e_ObjetosCriticos.Manzana2 Or ObjIndex = e_ObjetosCriticos.ManzanaNewbie Then
-156                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_SoundIndex.MORFAR_MANZANA, .Pos.X, .Pos.Y))
-                    Else
-158                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_SoundIndex.SOUND_COMIDA, .Pos.X, .Pos.Y))
-    
-                    End If
-            
+
+                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_SoundIndex.SOUND_COMIDA, .Pos.X, .Pos.Y))
+
                     'Quitamos del inv el item
 160                 Call QuitarUserInvItem(UserIndex, slot, 1)
             
@@ -2605,8 +2600,8 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 716                             Case eCiudad.cArghal
 718                                 DeDonde = Arghal
                                 
-720                             Case eCiudad.CHillidan
-722                                 DeDonde = Hillidan
+720                             Case eCiudad.cArkhein
+722                                 DeDonde = Arkhein
                                 
 724                             Case Else
 726                                 DeDonde = Ullathorpe

@@ -12019,7 +12019,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 456                     tmpLong = val(Arg1)
                         
 458                     If tmpLong >= 0 Then
-460                         UserList(tUser).Stats.MaxHit = min(tmpLong, STAT_MAXHIT_OVER36)
+460                         UserList(tUser).Stats.MaxHit = min(tmpLong, STAT_MAXHIT)
 462                         UserList(tUser).Stats.MinHIT = UserList(tUser).Stats.MaxHit
                         End If
                     End If
@@ -12032,7 +12032,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 470                     tmpLong = val(Arg1)
                         
 472                     If tmpLong >= 0 Then
-474                         UserList(tUser).Stats.MinHIT = min(tmpLong, STAT_MAXHIT_OVER36)
+474                         UserList(tUser).Stats.MinHIT = min(tmpLong, STAT_MAXHIT)
                         End If
                     End If
                     
@@ -12044,7 +12044,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 482                     tmpLong = val(Arg1)
                         
 484                     If tmpLong >= 0 Then
-486                         UserList(tUser).Stats.MaxHit = min(tmpLong, STAT_MAXHIT_OVER36)
+486                         UserList(tUser).Stats.MaxHit = min(tmpLong, STAT_MAXHIT)
                         End If
                     End If
                     
@@ -12138,8 +12138,8 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 596                             UserList(tUser).Hogar = eCiudad.cLindos
 598                         Case "ARGHAL"
 600                             UserList(tUser).Hogar = eCiudad.cArghal
-602                         Case "HILLIDAN"
-604                             UserList(tUser).Hogar = eCiudad.CHillidan
+602                         Case "ARKHEIN"
+604                             UserList(tUser).Hogar = eCiudad.cArkhein
                         End Select
                     End If
                 
@@ -28762,8 +28762,8 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
 206                         Case eCiudad.cArghal
 208                             DeDonde = " Arghal"
                             
-210                         Case eCiudad.CHillidan
-212                             DeDonde = " Hillidan"
+210                         Case eCiudad.cArkhein
+212                             DeDonde = " Arkhein"
                             
 214                         Case Else
 216                             DeDonde = "Ullathorpe"
@@ -28877,8 +28877,8 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
 326                         Case eCiudad.cArghal
 328                             DeDonde = " Arghal"
                             
-330                         Case eCiudad.CHillidan
-332                             DeDonde = " Hillidan"
+330                         Case eCiudad.cArkhein
+332                             DeDonde = " Arkhein"
                             
 334                         Case Else
 336                             DeDonde = "Ullathorpe"
@@ -30165,8 +30165,8 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
 134                 Case eCiudad.cArghal
 136                     DeDonde = CityArghal
                         
-138                 Case eCiudad.CHillidan
-140                     DeDonde = CityHillidan
+138                 Case eCiudad.cArkhein
+140                     DeDonde = CityArkhein
                         
 142                 Case Else
 144                     DeDonde = CityUllathorpe
