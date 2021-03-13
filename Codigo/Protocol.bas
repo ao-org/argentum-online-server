@@ -12019,7 +12019,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 456                     tmpLong = val(Arg1)
                         
 458                     If tmpLong >= 0 Then
-460                         UserList(tUser).Stats.MaxHit = min(tmpLong, STAT_MAXHIT_OVER36)
+460                         UserList(tUser).Stats.MaxHit = min(tmpLong, STAT_MAXHIT)
 462                         UserList(tUser).Stats.MinHIT = UserList(tUser).Stats.MaxHit
                         End If
                     End If
@@ -12032,7 +12032,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 470                     tmpLong = val(Arg1)
                         
 472                     If tmpLong >= 0 Then
-474                         UserList(tUser).Stats.MinHIT = min(tmpLong, STAT_MAXHIT_OVER36)
+474                         UserList(tUser).Stats.MinHIT = min(tmpLong, STAT_MAXHIT)
                         End If
                     End If
                     
@@ -12044,7 +12044,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 482                     tmpLong = val(Arg1)
                         
 484                     If tmpLong >= 0 Then
-486                         UserList(tUser).Stats.MaxHit = min(tmpLong, STAT_MAXHIT_OVER36)
+486                         UserList(tUser).Stats.MaxHit = min(tmpLong, STAT_MAXHIT)
                         End If
                     End If
                     

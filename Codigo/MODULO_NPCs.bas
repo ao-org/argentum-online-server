@@ -112,29 +112,6 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         
 154         EraCriminal = Status(UserIndex)
         
-            'If MiNPC.Stats.Alineacion = 0 Then
-            '  If MiNPC.Numero = Guardias Then
-            'UserList(UserIndex).Reputacion.NobleRep = 0
-               
-            'End If
-            'ElseIf MiNPC.Stats.Alineacion = 1 Then
-            ' UserList(UserIndex).Reputacion.NobleRep = UserList(UserIndex).Reputacion.NobleRep + vlCAZADOR
-            ' ElseIf MiNPC.Stats.Alineacion = 2 Then
-            'UserList(UserIndex).Reputacion.NobleRep = UserList(UserIndex).Reputacion.NobleRep + vlASESINO / 2
-            
-            'ElseIf MiNPC.Stats.Alineacion = 4 Then
-            ' UserList(UserIndex).Reputacion.NobleRep = UserList(UserIndex).Reputacion.NobleRep + vlCAZADOR
-            
-            'End If
-            ' If Status(UserIndex) = 0 And esArmada(UserIndex) Then Call ExpulsarFaccionReal(UserIndex)
-            ' If Status(UserIndex) = 2 And esCaos(UserIndex) Then Call ExpulsarFaccionCaos(UserIndex)
-        
-            'If EraCriminal = 2 And Status(UserIndex) < 2 Then
-            '    Call RefreshCharStatus(UserIndex)
-            'ElseIf EraCriminal < 2 And Status(UserIndex) = 2 Then
-            '    Call RefreshCharStatus(UserIndex)
-            'End If
-        
 156         If MiNPC.GiveEXPClan > 0 Then
 158             If UserList(UserIndex).GuildIndex > 0 Then
 160                 Call modGuilds.CheckClanExp(UserIndex, MiNPC.GiveEXPClan)

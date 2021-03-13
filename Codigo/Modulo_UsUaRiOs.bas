@@ -1272,22 +1272,26 @@ NPCAtacado_Err:
 End Sub
 
 Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
-        
         On Error GoTo SubirSkill_Err
-        
+
+        Dim Lvl As Integer, maxPermitido As Integer
+            Lvl = UserList(UserIndex).Stats.ELV
 
 100     If UserList(UserIndex).Stats.UserSkills(Skill) = MAXSKILLPOINTS Then Exit Sub
 
-102     If UserList(UserIndex).flags.Hambre = 0 And UserList(UserIndex).flags.Sed = 0 Then
-        
-            Dim Lvl As Integer
+        ' Se suben 5 skills cada dos niveles como máximo.
+        If (Lvl Mod 2 = 0) Then ' El level es numero par
+          maxPermitido = (Lvl \ 2) * 5
+        Else ' El level es numero impar
+          ' Esta cuenta signifca, que si el nivel anterior terminaba en 5 ahora
+          ' suma dos puntos mas, sino 3. Lo de siempre.
+          maxPermitido = (Lvl \ 2) * 5 + 3 - (( (((Lvl-1) \2)*5) Mod 10) \ 5)
+        End
 
-104         Lvl = UserList(UserIndex).Stats.ELV
-        
-106         If Lvl > UBound(LevelSkill) Then Lvl = UBound(LevelSkill)
-            
-108         If UserList(UserIndex).Stats.UserSkills(Skill) >= LevelSkill(Lvl).LevelValue Then Exit Sub
-        
+        If UserList(UserIndex).Stats.UserSkills(Skill) >= maxPermitido Then Exit Sub
+
+102     If UserList(UserIndex).flags.Hambre = 0 And UserList(UserIndex).flags.Sed = 0 Then
+
             Dim Aumenta As Integer
 
             Dim Prob    As Integer

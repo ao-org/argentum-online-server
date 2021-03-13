@@ -2927,7 +2927,7 @@ Sub LoadUser(ByVal UserIndex As Integer)
                 End If
             Else
 124             .Char.Body = iCuerpoMuerto
-126             .Char.Head = 0
+126             .Char.Head = iCabezaMuerto
 128             .Char.WeaponAnim = NingunArma
 130             .Char.ShieldAnim = NingunEscudo
 132             .Char.CascoAnim = NingunCasco

@@ -1974,14 +1974,9 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 150                 .flags.Hambre = 0
 152                 Call WriteUpdateHungerAndThirst(UserIndex)
                     'Sonido
-            
-154                 If ObjIndex = e_ObjetosCriticos.Manzana Or ObjIndex = e_ObjetosCriticos.Manzana2 Or ObjIndex = e_ObjetosCriticos.ManzanaNewbie Then
-156                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_SoundIndex.MORFAR_MANZANA, .Pos.X, .Pos.Y))
-                    Else
-158                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_SoundIndex.SOUND_COMIDA, .Pos.X, .Pos.Y))
-    
-                    End If
-            
+
+                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_SoundIndex.SOUND_COMIDA, .Pos.X, .Pos.Y))
+
                     'Quitamos del inv el item
 160                 Call QuitarUserInvItem(UserIndex, slot, 1)
             
