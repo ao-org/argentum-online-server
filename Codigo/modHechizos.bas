@@ -29,10 +29,6 @@ Attribute VB_Name = "modHechizos"
 
 Option Explicit
 
-Public Const HELEMENTAL_FUEGO  As Integer = 26
-
-Public Const HELEMENTAL_TIERRA As Integer = 28
-
 Public Const SUPERANILLO       As Integer = 700
 
 Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, ByVal Spell As Integer, Optional ByVal IgnoreVisibilityCheck As Boolean = False)
@@ -3113,7 +3109,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
 262         Call SendData(SendTarget.ToPCArea, tempChr, PrepareMessageTextOverChar(Daño, UserList(tempChr).Char.CharIndex, vbGreen))
     
 264         b = True
-266     ElseIf Hechizos(h).SubeHP = 2 Then
+266     ElseIf Hechizos(h).SubeHP = 2 Then ' Daño
     
 268         If UserIndex = tempChr Then
                 'Call WriteConsoleMsg(UserIndex, "No podés atacarte a vos mismo.", FontTypeNames.FONTTYPE_FIGHT)

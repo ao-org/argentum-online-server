@@ -40,7 +40,6 @@ Public Enum e_SoundIndex
     MUERTE_MUJER = 74
     FLECHA_IMPACTO = 65
     CONVERSION_BARCO = 55
-    MORFAR_MANZANA = 7
     SOUND_COMIDA = 7
 
 End Enum
@@ -570,19 +569,6 @@ Public Enum eBlock
 
 End Enum
 
-''
-
-'%%%%%%%%%% CONSTANTES DE INDICES %%%%%%%%%%%%%%%
-Public Const vlASALTO      As Integer = 100
-
-Public Const vlASESINO     As Integer = 1000
-
-Public Const vlCAZADOR     As Integer = 5
-
-Public Const vlNoble       As Integer = 5
-
-Public Const vlProleta     As Integer = 2
-
 '%%%%%%%%%% CONSTANTES DE INDICES %%%%%%%%%%%%%%%
 Public Const iCuerpoMuerto As Integer = 829
 
@@ -609,7 +595,7 @@ Public Enum eSkill
     Navegacion = 14
     equitacion = 15
     Resistencia = 16
-    
+
     Talar = 17
     Pescar = 18
     Mineria = 19
@@ -618,7 +604,7 @@ Public Enum eSkill
     Alquimia = 22
     Sastreria = 23
     Domar = 24
-    
+
     Grupo = 90
     MarcaDeClan = 91
     MarcaDeGM = 92
@@ -691,19 +677,19 @@ Public Const SND_IMPACTO         As Byte = 10
 
 Public Const SND_IMPACTO2        As Byte = 12
 
-Public Const SND_LEÑADOR As Byte = 13
+Public Const SND_LEÑADOR         As Byte = 13
 
-Public Const SND_FOGATA              As Byte = 14
+Public Const SND_FOGATA          As Byte = 14
 
-Public Const SND_SACARARMA           As Byte = 25
+Public Const SND_SACARARMA       As Byte = 25
 
-Public Const SND_ESCUDO              As Byte = 37
+Public Const SND_ESCUDO          As Byte = 37
 
-Public Const MARTILLOHERRERO         As Byte = 41
+Public Const MARTILLOHERRERO     As Byte = 41
 
-Public Const LABUROCARPINTERO        As Byte = 42
+Public Const LABUROCARPINTERO    As Byte = 42
 
-Public Const SND_BEBER               As Byte = 135
+Public Const SND_BEBER           As Byte = 135
 
 ''
 ' Cantidad maxima de objetos por slot de inventario
@@ -789,9 +775,7 @@ Public Const STAT_MAXSTA              As Integer = 32000
 
 Public Const STAT_MAXMAN              As Integer = 32000
 
-Public Const STAT_MAXHIT_UNDER36      As Byte = 99
-
-Public Const STAT_MAXHIT_OVER36       As Integer = 999
+Public Const STAT_MAXHIT              As Integer = 999
 
 Public Const STAT_MAXDEF              As Byte = 99
 
@@ -922,12 +906,6 @@ Public Type tHechizo
     
     NeedStaff As Integer
     StaffAffected As Boolean
-
-End Type
-
-Public Type LevelSkill
-
-    LevelValue As Integer
 
 End Type
 
@@ -1161,7 +1139,7 @@ Public Type ObjData
     donador As Byte
     ClaseTipo As Byte
     RazaTipo As Byte
-    
+
     TipoRuna As Byte
 
     name As String 'Nombre del obj
@@ -2318,8 +2296,6 @@ Public ObjData()                          As ObjData
 Public FX()                               As FXdata
 
 Public SpawnList()                        As tCriaturasEntrenador
-
-Public LevelSkill(1 To 50)                As LevelSkill
 
 Public ForbidenNames()                    As String
 

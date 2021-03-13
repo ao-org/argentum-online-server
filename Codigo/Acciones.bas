@@ -688,7 +688,7 @@ Sub AccionParaArboles(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integ
 
         End If
     
-142     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_SoundIndex.MORFAR_MANZANA, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+142     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_SoundIndex.SOUND_COMIDA, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 144     Call WriteUpdateHungerAndThirst(UserIndex)
 
         
