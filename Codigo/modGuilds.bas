@@ -127,7 +127,7 @@ Public Sub LoadGuildsDB()
         Exit Sub
 
 LoadGuildsDB_Err:
-122     Call RegistrarError(Err.Number, Err.description, "modGuilds.LoadGuildsDB", Erl)
+122     Call RegistrarError(Err.Number, Err.Description, "modGuilds.LoadGuildsDB", Erl)
 124     Resume Next
         
 End Sub
@@ -149,7 +149,7 @@ Public Function m_ConectarMiembroAClan(ByVal UserIndex As Integer, ByVal GuildIn
         Exit Function
 
 m_ConectarMiembroAClan_Err:
-110     Call RegistrarError(Err.Number, Err.description, "modGuilds.m_ConectarMiembroAClan", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "modGuilds.m_ConectarMiembroAClan", Erl)
 112     Resume Next
         
 End Function
@@ -166,7 +166,7 @@ Public Sub m_DesconectarMiembroDelClan(ByVal UserIndex As Integer, ByVal GuildIn
         Exit Sub
 
 m_DesconectarMiembroDelClan_Err:
-104     Call RegistrarError(Err.Number, Err.description, "modGuilds.m_DesconectarMiembroDelClan", Erl)
+104     Call RegistrarError(Err.Number, Err.Description, "modGuilds.m_DesconectarMiembroDelClan", Erl)
 106     Resume Next
         
 End Sub
@@ -181,7 +181,7 @@ Private Function m_EsGuildLeader(ByRef PJ As String, ByVal GuildIndex As Integer
         Exit Function
 
 m_EsGuildLeader_Err:
-102     Call RegistrarError(Err.Number, Err.description, "modGuilds.m_EsGuildLeader", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "modGuilds.m_EsGuildLeader", Erl)
 104     Resume Next
         
 End Function
@@ -196,7 +196,7 @@ Private Function m_EsGuildFounder(ByRef PJ As String, ByVal GuildIndex As Intege
         Exit Function
 
 m_EsGuildFounder_Err:
-102     Call RegistrarError(Err.Number, Err.description, "modGuilds.m_EsGuildFounder", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "modGuilds.m_EsGuildFounder", Erl)
 104     Resume Next
         
 End Function
@@ -285,7 +285,7 @@ Public Function m_EcharMiembroDeClan(ByVal Expulsador As Integer, ByVal Expulsad
         Exit Function
 
 m_EcharMiembroDeClan_Err:
-152     Call RegistrarError(Err.Number, Err.description, "modGuilds.m_EcharMiembroDeClan", Erl)
+152     Call RegistrarError(Err.Number, Err.Description, "modGuilds.m_EcharMiembroDeClan", Erl)
 154     Resume Next
         
 End Function
@@ -309,7 +309,7 @@ Public Sub ActualizarWebSite(ByVal UserIndex As Integer, ByRef Web As String)
         Exit Sub
 
 ActualizarWebSite_Err:
-108     Call RegistrarError(Err.Number, Err.description, "modGuilds.ActualizarWebSite", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "modGuilds.ActualizarWebSite", Erl)
 110     Resume Next
         
 End Sub
@@ -332,7 +332,7 @@ Public Sub ChangeCodexAndDesc(ByRef Desc As String, ByVal GuildIndex As Integer)
         Exit Sub
 
 ChangeCodexAndDesc_Err:
-106     Call RegistrarError(Err.Number, Err.description, "modGuilds.ChangeCodexAndDesc", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "modGuilds.ChangeCodexAndDesc", Erl)
 108     Resume Next
         
 End Sub
@@ -356,7 +356,7 @@ Public Sub ActualizarNoticias(ByVal UserIndex As Integer, ByRef Datos As String)
         Exit Sub
 
 ActualizarNoticias_Err:
-108     Call RegistrarError(Err.Number, Err.description, "modGuilds.ActualizarNoticias", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "modGuilds.ActualizarNoticias", Erl)
 110     Resume Next
         
 End Sub
@@ -435,7 +435,7 @@ Public Function CrearNuevoClan(ByVal FundadorIndex As Integer, ByRef Desc As Str
         Exit Function
 
 CrearNuevoClan_Err:
-154     Call RegistrarError(Err.Number, Err.description, "modGuilds.CrearNuevoClan", Erl)
+154     Call RegistrarError(Err.Number, Err.Description, "modGuilds.CrearNuevoClan", Erl)
 156     Resume Next
         
 End Function
@@ -475,7 +475,7 @@ Public Sub SendGuildNews(ByVal UserIndex As Integer, ByRef guildList() As String
         Exit Sub
 
 SendGuildNews_Err:
-114     Call RegistrarError(Err.Number, Err.description, "modGuilds.SendGuildNews", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "modGuilds.SendGuildNews", Erl)
 116     Resume Next
         
 End Sub
@@ -516,7 +516,7 @@ Public Function m_PuedeSalirDeClan(ByRef nombre As String, ByVal GuildIndex As I
         Exit Function
 
 m_PuedeSalirDeClan_Err:
-116     Call RegistrarError(Err.Number, Err.description, "modGuilds.m_PuedeSalirDeClan", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "modGuilds.m_PuedeSalirDeClan", Erl)
 118     Resume Next
         
 End Function
@@ -583,7 +583,7 @@ Public Function PuedeFundarUnClan(ByVal UserIndex As Integer, ByVal Alineacion A
         Exit Function
 
 PuedeFundarUnClan_Err:
-136     Call RegistrarError(Err.Number, Err.description, "modGuilds.PuedeFundarUnClan", Erl)
+136     Call RegistrarError(Err.Number, Err.Description, "modGuilds.PuedeFundarUnClan", Erl)
 138     Resume Next
         
 End Function
@@ -623,21 +623,12 @@ Private Function m_EstadoPermiteEntrarChar(ByRef Personaje As String, ByVal Guil
 
                 Case ALINEACION_GUILD.ALINEACION_CIUDA
 
-120                 If Promedio = 1 Or Promedio = 3 Then
-122                     m_EstadoPermiteEntrarChar = True
-                    Else
-124                     m_EstadoPermiteEntrarChar = False
-
-                    End If
+120                 m_EstadoPermiteEntrarChar = Promedio = 1 Or Promedio = 3
 
 126             Case ALINEACION_GUILD.ALINEACION_CRIMINAL
 
-128                 If Promedio = 0 Or Promedio = 2 Then
-130                     m_EstadoPermiteEntrarChar = True
-                    Else
-132                     m_EstadoPermiteEntrarChar = False
+128                 m_EstadoPermiteEntrarChar = Promedio = 0 Or Promedio = 2
 
-                    End If
 
             End Select
 
@@ -647,7 +638,7 @@ Private Function m_EstadoPermiteEntrarChar(ByRef Personaje As String, ByVal Guil
         Exit Function
 
 m_EstadoPermiteEntrarChar_Err:
-134     Call RegistrarError(Err.Number, Err.description, "modGuilds.m_EstadoPermiteEntrarChar", Erl)
+134     Call RegistrarError(Err.Number, Err.Description, "modGuilds.m_EstadoPermiteEntrarChar", Erl)
 136     Resume Next
         
 End Function
@@ -669,17 +660,16 @@ Private Function m_EstadoPermiteEntrar(ByVal UserIndex As Integer, ByVal GuildIn
         Exit Function
 
 m_EstadoPermiteEntrar_Err:
-116     Call RegistrarError(Err.Number, Err.description, "modGuilds.m_EstadoPermiteEntrar", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "modGuilds.m_EstadoPermiteEntrar", Erl)
 118     Resume Next
 
 End Function
 
-Public Function String2Alineacion(ByRef S As String) As ALINEACION_GUILD
+Public Function String2Alineacion(ByRef s As String) As ALINEACION_GUILD
         
         On Error GoTo String2Alineacion_Err
-        
 
-100     Select Case S
+100     Select Case s
 
             Case "Ciudadano"
 102             String2Alineacion = ALINEACION_CIUDA
@@ -693,7 +683,7 @@ Public Function String2Alineacion(ByRef S As String) As ALINEACION_GUILD
         Exit Function
 
 String2Alineacion_Err:
-108     Call RegistrarError(Err.Number, Err.description, "modGuilds.String2Alineacion", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "modGuilds.String2Alineacion", Erl)
 110     Resume Next
         
 End Function
@@ -717,7 +707,7 @@ Public Function Alineacion2String(ByVal Alineacion As ALINEACION_GUILD) As Strin
         Exit Function
 
 Alineacion2String_Err:
-108     Call RegistrarError(Err.Number, Err.description, "modGuilds.Alineacion2String", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "modGuilds.Alineacion2String", Erl)
 110     Resume Next
         
 End Function
@@ -738,7 +728,7 @@ Public Function Relacion2String(ByVal Relacion As RELACIONES_GUILD) As String
 108         Case RELACIONES_GUILD.PAZ
 110             Relacion2String = "P"
 
-112         Case RELACIONES_GUILD.ALIADOS
+112         Case Else
 114             Relacion2String = "?"
 
         End Select
@@ -747,17 +737,17 @@ Public Function Relacion2String(ByVal Relacion As RELACIONES_GUILD) As String
         Exit Function
 
 Relacion2String_Err:
-116     Call RegistrarError(Err.Number, Err.description, "modGuilds.Relacion2String", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "modGuilds.Relacion2String", Erl)
 118     Resume Next
         
 End Function
 
-Public Function String2Relacion(ByVal S As String) As RELACIONES_GUILD
+Public Function String2Relacion(ByVal s As String) As RELACIONES_GUILD
         
         On Error GoTo String2Relacion_Err
         
 
-100     Select Case UCase$(Trim$(S))
+100     Select Case UCase$(Trim$(s))
 
             Case vbNullString, "P"
 102             String2Relacion = RELACIONES_GUILD.PAZ
@@ -777,7 +767,7 @@ Public Function String2Relacion(ByVal S As String) As RELACIONES_GUILD
         Exit Function
 
 String2Relacion_Err:
-116     Call RegistrarError(Err.Number, Err.description, "modGuilds.String2Relacion", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "modGuilds.String2Relacion", Erl)
 118     Resume Next
         
 End Function
@@ -812,7 +802,7 @@ Private Function GuildNameValido(ByVal cad As String) As Boolean
         Exit Function
 
 GuildNameValido_Err:
-114     Call RegistrarError(Err.Number, Err.description, "modGuilds.GuildNameValido", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "modGuilds.GuildNameValido", Erl)
 116     Resume Next
         
 End Function
@@ -837,7 +827,7 @@ Private Function YaExiste(ByVal GuildName As String) As Boolean
         Exit Function
 
 YaExiste_Err:
-112     Call RegistrarError(Err.Number, Err.description, "modGuilds.YaExiste", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "modGuilds.YaExiste", Erl)
 114     Resume Next
         
 End Function
@@ -877,7 +867,7 @@ Public Function v_AbrirElecciones(ByVal UserIndex As Integer, ByRef refError As 
         Exit Function
 
 v_AbrirElecciones_Err:
-120     Call RegistrarError(Err.Number, Err.description, "modGuilds.v_AbrirElecciones", Erl)
+120     Call RegistrarError(Err.Number, Err.Description, "modGuilds.v_AbrirElecciones", Erl)
 122     Resume Next
         
 End Function
@@ -934,7 +924,7 @@ Public Function v_UsuarioVota(ByVal UserIndex As Integer, ByRef Votado As String
         Exit Function
 
 v_UsuarioVota_Err:
-132     Call RegistrarError(Err.Number, Err.description, "modGuilds.v_UsuarioVota", Erl)
+132     Call RegistrarError(Err.Number, Err.Description, "modGuilds.v_UsuarioVota", Erl)
 134     Resume Next
         
 End Function
@@ -963,7 +953,7 @@ proximo:
 112     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor> Elecciones revisadas", FontTypeNames.FONTTYPE_SERVER))
         Exit Sub
 errh:
-114     Call LogError("modGuilds.v_RutinaElecciones():" & Err.description)
+114     Call LogError("modGuilds.v_RutinaElecciones():" & Err.Description)
 
 116     Resume proximo
 
@@ -1006,7 +996,7 @@ Private Function GetGuildIndexFromChar(ByRef PlayerName As String) As Integer
         Exit Function
 
 GetGuildIndexFromChar_Err:
-120     Call RegistrarError(Err.Number, Err.description, "modGuilds.GetGuildIndexFromChar", Erl)
+120     Call RegistrarError(Err.Number, Err.Description, "modGuilds.GetGuildIndexFromChar", Erl)
 122     Resume Next
         
 End Function
@@ -1036,7 +1026,7 @@ Public Function GuildIndex(ByRef GuildName As String) As Integer
         Exit Function
 
 GuildIndex_Err:
-112     Call RegistrarError(Err.Number, Err.description, "modGuilds.GuildIndex", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "modGuilds.GuildIndex", Erl)
 114     Resume Next
         
 End Function
@@ -1069,7 +1059,7 @@ Public Function m_ListaDeMiembrosOnline(ByVal UserIndex As Integer, ByVal GuildI
         Exit Function
 
 m_ListaDeMiembrosOnline_Err:
-114     Call RegistrarError(Err.Number, Err.description, "modGuilds.m_ListaDeMiembrosOnline", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "modGuilds.m_ListaDeMiembrosOnline", Erl)
 116     Resume Next
         
 End Function
@@ -1100,7 +1090,7 @@ Public Function PrepareGuildsList() As String()
         Exit Function
 
 PrepareGuildsList_Err:
-114     Call RegistrarError(Err.Number, Err.description, "modGuilds.PrepareGuildsList", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "modGuilds.PrepareGuildsList", Erl)
 116     Resume Next
         
 End Function
@@ -1129,7 +1119,7 @@ Public Sub SendGuildDetails(ByVal UserIndex As Integer, ByRef GuildName As Strin
         Exit Sub
 
 SendGuildDetails_Err:
-108     Call RegistrarError(Err.Number, Err.description, "modGuilds.SendGuildDetails", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "modGuilds.SendGuildDetails", Erl)
 110     Resume Next
         
 End Sub
@@ -1190,7 +1180,7 @@ Public Sub SendGuildLeaderInfo(ByVal UserIndex As Integer)
         Exit Sub
 
 SendGuildLeaderInfo_Err:
-124     Call RegistrarError(Err.Number, Err.description, "modGuilds.SendGuildLeaderInfo", Erl)
+124     Call RegistrarError(Err.Number, Err.Description, "modGuilds.SendGuildLeaderInfo", Erl)
 126     Resume Next
         
 End Sub
@@ -1211,7 +1201,7 @@ Public Function m_Iterador_ProximoUserIndex(ByVal GuildIndex As Integer) As Inte
         Exit Function
 
 m_Iterador_ProximoUserIndex_Err:
-106     Call RegistrarError(Err.Number, Err.description, "modGuilds.m_Iterador_ProximoUserIndex", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "modGuilds.m_Iterador_ProximoUserIndex", Erl)
 108     Resume Next
         
 End Function
@@ -1232,7 +1222,7 @@ Public Function Iterador_ProximoGM(ByVal GuildIndex As Integer) As Integer
         Exit Function
 
 Iterador_ProximoGM_Err:
-106     Call RegistrarError(Err.Number, Err.description, "modGuilds.Iterador_ProximoGM", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "modGuilds.Iterador_ProximoGM", Erl)
 108     Resume Next
         
 End Function
@@ -1253,7 +1243,7 @@ Public Function r_Iterador_ProximaPropuesta(ByVal GuildIndex As Integer, ByVal T
         Exit Function
 
 r_Iterador_ProximaPropuesta_Err:
-106     Call RegistrarError(Err.Number, Err.description, "modGuilds.r_Iterador_ProximaPropuesta", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "modGuilds.r_Iterador_ProximaPropuesta", Erl)
 108     Resume Next
         
 End Function
@@ -1307,7 +1297,7 @@ Public Function GMEscuchaClan(ByVal UserIndex As Integer, ByVal GuildName As Str
         Exit Function
 
 GMEscuchaClan_Err:
-134     Call RegistrarError(Err.Number, Err.description, "modGuilds.GMEscuchaClan", Erl)
+134     Call RegistrarError(Err.Number, Err.Description, "modGuilds.GMEscuchaClan", Erl)
 136     Resume Next
         
 End Function
@@ -1324,7 +1314,7 @@ Public Sub GMDejaDeEscucharClan(ByVal UserIndex As Integer, ByVal GuildIndex As 
         Exit Sub
 
 GMDejaDeEscucharClan_Err:
-104     Call RegistrarError(Err.Number, Err.description, "modGuilds.GMDejaDeEscucharClan", Erl)
+104     Call RegistrarError(Err.Number, Err.Description, "modGuilds.GMDejaDeEscucharClan", Erl)
 106     Resume Next
         
 End Sub
@@ -1385,7 +1375,7 @@ Public Function r_DeclararGuerra(ByVal UserIndex As Integer, ByRef GuildGuerra A
         Exit Function
 
 r_DeclararGuerra_Err:
-138     Call RegistrarError(Err.Number, Err.description, "modGuilds.r_DeclararGuerra", Erl)
+138     Call RegistrarError(Err.Number, Err.Description, "modGuilds.r_DeclararGuerra", Erl)
 140     Resume Next
         
 End Function
@@ -1452,7 +1442,7 @@ Public Function r_AceptarPropuestaDePaz(ByVal UserIndex As Integer, ByRef GuildP
         Exit Function
 
 r_AceptarPropuestaDePaz_Err:
-140     Call RegistrarError(Err.Number, Err.description, "modGuilds.r_AceptarPropuestaDePaz", Erl)
+140     Call RegistrarError(Err.Number, Err.Description, "modGuilds.r_AceptarPropuestaDePaz", Erl)
 142     Resume Next
         
 End Function
@@ -1512,7 +1502,7 @@ Public Function r_RechazarPropuestaDeAlianza(ByVal UserIndex As Integer, ByRef G
         Exit Function
 
 r_RechazarPropuestaDeAlianza_Err:
-134     Call RegistrarError(Err.Number, Err.description, "modGuilds.r_RechazarPropuestaDeAlianza", Erl)
+134     Call RegistrarError(Err.Number, Err.Description, "modGuilds.r_RechazarPropuestaDeAlianza", Erl)
 136     Resume Next
         
 End Function
@@ -1572,7 +1562,7 @@ Public Function r_RechazarPropuestaDePaz(ByVal UserIndex As Integer, ByRef Guild
         Exit Function
 
 r_RechazarPropuestaDePaz_Err:
-134     Call RegistrarError(Err.Number, Err.description, "modGuilds.r_RechazarPropuestaDePaz", Erl)
+134     Call RegistrarError(Err.Number, Err.Description, "modGuilds.r_RechazarPropuestaDePaz", Erl)
 136     Resume Next
         
 End Function
@@ -1640,7 +1630,7 @@ Public Function r_AceptarPropuestaDeAlianza(ByVal UserIndex As Integer, ByRef Gu
         Exit Function
 
 r_AceptarPropuestaDeAlianza_Err:
-142     Call RegistrarError(Err.Number, Err.description, "modGuilds.r_AceptarPropuestaDeAlianza", Erl)
+142     Call RegistrarError(Err.Number, Err.Description, "modGuilds.r_AceptarPropuestaDeAlianza", Erl)
 144     Resume Next
         
 End Function
@@ -1717,7 +1707,7 @@ Public Function r_ClanGeneraPropuesta(ByVal UserIndex As Integer, ByRef OtroClan
         Exit Function
 
 r_ClanGeneraPropuesta_Err:
-144     Call RegistrarError(Err.Number, Err.description, "modGuilds.r_ClanGeneraPropuesta", Erl)
+144     Call RegistrarError(Err.Number, Err.Description, "modGuilds.r_ClanGeneraPropuesta", Erl)
 146     Resume Next
         
 End Function
@@ -1762,7 +1752,7 @@ Public Function r_VerPropuesta(ByVal UserIndex As Integer, ByRef OtroGuild As St
         Exit Function
 
 r_VerPropuesta_Err:
-122     Call RegistrarError(Err.Number, Err.description, "modGuilds.r_VerPropuesta", Erl)
+122     Call RegistrarError(Err.Number, Err.Description, "modGuilds.r_VerPropuesta", Erl)
 124     Resume Next
         
 End Function
@@ -1810,7 +1800,7 @@ Public Function r_ListaDePropuestas(ByVal UserIndex As Integer, ByVal Tipo As RE
         Exit Function
 
 r_ListaDePropuestas_Err:
-122     Call RegistrarError(Err.Number, Err.description, "modGuilds.r_ListaDePropuestas", Erl)
+122     Call RegistrarError(Err.Number, Err.Description, "modGuilds.r_ListaDePropuestas", Erl)
 124     Resume Next
         
 End Function
@@ -1841,7 +1831,7 @@ Public Sub a_RechazarAspiranteChar(ByRef Aspirante As String, ByVal guild As Int
         Exit Sub
 
 a_RechazarAspiranteChar_Err:
-114     Call RegistrarError(Err.Number, Err.description, "modGuilds.a_RechazarAspiranteChar", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "modGuilds.a_RechazarAspiranteChar", Erl)
 116     Resume Next
         
 End Sub
@@ -1873,7 +1863,7 @@ Public Function a_ObtenerRechazoDeChar(ByRef Aspirante As String) As String
         Exit Function
 
 a_ObtenerRechazoDeChar_Err:
-116     Call RegistrarError(Err.Number, Err.description, "modGuilds.a_ObtenerRechazoDeChar", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "modGuilds.a_ObtenerRechazoDeChar", Erl)
 118     Resume Next
         
 End Function
@@ -1912,7 +1902,7 @@ Public Function a_RechazarAspirante(ByVal UserIndex As Integer, ByRef nombre As 
         Exit Function
 
 a_RechazarAspirante_Err:
-120     Call RegistrarError(Err.Number, Err.description, "modGuilds.a_RechazarAspirante", Erl)
+120     Call RegistrarError(Err.Number, Err.Description, "modGuilds.a_RechazarAspirante", Erl)
 122     Resume Next
         
 End Function
@@ -1949,7 +1939,7 @@ Public Function a_DetallesAspirante(ByVal UserIndex As Integer, ByRef nombre As 
         Exit Function
 
 a_DetallesAspirante_Err:
-112     Call RegistrarError(Err.Number, Err.description, "modGuilds.a_DetallesAspirante", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "modGuilds.a_DetallesAspirante", Erl)
 114     Resume Next
         
 End Function
@@ -2033,7 +2023,7 @@ Error:
 146     If Not PersonajeExiste(Personaje) Then
 148         Call LogError("El usuario " & UserList(UserIndex).name & " (" & UserIndex & " ) ha pedido los detalles del personaje " & Personaje & " que no se encuentra.")
         Else
-150         Call LogError("[" & Err.Number & "] " & Err.description & " En la rutina SendDetallesPersonaje, por el usuario " & UserList(UserIndex).name & " (" & UserIndex & " ), pidiendo informacion sobre el personaje " & Personaje)
+150         Call LogError("[" & Err.Number & "] " & Err.Description & " En la rutina SendDetallesPersonaje, por el usuario " & UserList(UserIndex).name & " (" & UserIndex & " ), pidiendo informacion sobre el personaje " & Personaje)
 
         End If
 
@@ -2129,7 +2119,7 @@ Public Function a_NuevoAspirante(ByVal UserIndex As Integer, ByRef clan As Strin
         Exit Function
 
 a_NuevoAspirante_Err:
-152     Call RegistrarError(Err.Number, Err.description, "modGuilds.a_NuevoAspirante", Erl)
+152     Call RegistrarError(Err.Number, Err.Description, "modGuilds.a_NuevoAspirante", Erl)
 154     Resume Next
         
 End Function
@@ -2235,7 +2225,7 @@ Public Function a_AceptarAspirante(ByVal UserIndex As Integer, ByRef Aspirante A
         Exit Function
 
 a_AceptarAspirante_Err:
-166     Call RegistrarError(Err.Number, Err.description, "modGuilds.a_AceptarAspirante", Erl)
+166     Call RegistrarError(Err.Number, Err.Description, "modGuilds.a_AceptarAspirante", Erl)
 168     Resume Next
         
 End Function
@@ -2253,7 +2243,7 @@ Public Function GuildName(ByVal GuildIndex As Integer) As String
         Exit Function
 
 GuildName_Err:
-104     Call RegistrarError(Err.Number, Err.description, "modGuilds.GuildName", Erl)
+104     Call RegistrarError(Err.Number, Err.Description, "modGuilds.GuildName", Erl)
 106     Resume Next
         
 End Function
@@ -2270,7 +2260,7 @@ Public Function GuildLeader(ByVal GuildIndex As Integer) As String
         Exit Function
 
 GuildLeader_Err:
-104     Call RegistrarError(Err.Number, Err.description, "modGuilds.GuildLeader", Erl)
+104     Call RegistrarError(Err.Number, Err.Description, "modGuilds.GuildLeader", Erl)
 106     Resume Next
         
 End Function
@@ -2288,7 +2278,7 @@ Public Function GuildAlignment(ByVal GuildIndex As Integer) As String
         Exit Function
 
 GuildAlignment_Err:
-104     Call RegistrarError(Err.Number, Err.description, "modGuilds.GuildAlignment", Erl)
+104     Call RegistrarError(Err.Number, Err.Description, "modGuilds.GuildAlignment", Erl)
 106     Resume Next
         
 End Function
@@ -2306,7 +2296,7 @@ Public Function NivelDeClan(ByVal GuildIndex As Integer) As Byte
         Exit Function
 
 NivelDeClan_Err:
-104     Call RegistrarError(Err.Number, Err.description, "modGuilds.NivelDeClan", Erl)
+104     Call RegistrarError(Err.Number, Err.Description, "modGuilds.NivelDeClan", Erl)
 106     Resume Next
         
 End Function
@@ -2324,7 +2314,7 @@ Public Function Alineacion(ByVal GuildIndex As Integer) As Byte
         Exit Function
 
 Alineacion_Err:
-104     Call RegistrarError(Err.Number, Err.description, "modGuilds.Alineacion", Erl)
+104     Call RegistrarError(Err.Number, Err.Description, "modGuilds.Alineacion", Erl)
 106     Resume Next
         
 End Function
@@ -2409,7 +2399,7 @@ Sub CheckClanExp(ByVal UserIndex As Integer, ByVal ExpDar As Integer)
         Exit Sub
 
 CheckClanExp_Err:
-154     Call RegistrarError(Err.Number, Err.description, "modGuilds.CheckClanExp", Erl)
+154     Call RegistrarError(Err.Number, Err.Description, "modGuilds.CheckClanExp", Erl)
 156     Resume Next
         
 End Sub
@@ -2446,7 +2436,7 @@ Public Function MiembrosPermite(ByVal GI As Integer) As Byte
         Exit Function
 
 MiembrosPermite_Err:
-122     Call RegistrarError(Err.Number, Err.description, "modGuilds.MiembrosPermite", Erl)
+122     Call RegistrarError(Err.Number, Err.Description, "modGuilds.MiembrosPermite", Erl)
 124     Resume Next
         
 End Function
@@ -2471,7 +2461,7 @@ Public Function GetUserGuildMember(ByVal UserName As String) As String
         Exit Function
 
 GetUserGuildMember_Err:
-106     Call RegistrarError(Err.Number, Err.description, "modGuilds.GetUserGuildMember", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "modGuilds.GetUserGuildMember", Erl)
 108     Resume Next
         
 End Function
@@ -2497,7 +2487,7 @@ Public Function GetUserGuildAspirant(ByVal UserName As String) As Integer
         Exit Function
 
 GetUserGuildAspirant_Err:
-106     Call RegistrarError(Err.Number, Err.description, "modGuilds.GetUserGuildAspirant", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "modGuilds.GetUserGuildAspirant", Erl)
 108     Resume Next
         
 End Function
@@ -2523,7 +2513,7 @@ Public Function GetUserGuildRejectionReason(ByVal UserName As String) As String
         Exit Function
 
 GetUserGuildRejectionReason_Err:
-106     Call RegistrarError(Err.Number, Err.description, "modGuilds.GetUserGuildRejectionReason", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "modGuilds.GetUserGuildRejectionReason", Erl)
 108     Resume Next
         
 End Function
@@ -2549,7 +2539,7 @@ Public Function GetUserGuildPedidos(ByVal UserName As String) As String
         Exit Function
 
 GetUserGuildPedidos_Err:
-106     Call RegistrarError(Err.Number, Err.description, "modGuilds.GetUserGuildPedidos", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "modGuilds.GetUserGuildPedidos", Erl)
 108     Resume Next
         
 End Function
@@ -2575,7 +2565,7 @@ Public Sub SaveUserGuildRejectionReason(ByVal UserName As String, ByVal Reason A
         Exit Sub
 
 SaveUserGuildRejectionReason_Err:
-106     Call RegistrarError(Err.Number, Err.description, "modGuilds.SaveUserGuildRejectionReason", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "modGuilds.SaveUserGuildRejectionReason", Erl)
 108     Resume Next
         
 End Sub
@@ -2601,7 +2591,7 @@ Public Sub SaveUserGuildIndex(ByVal UserName As String, ByVal GuildIndex As Inte
         Exit Sub
 
 SaveUserGuildIndex_Err:
-106     Call RegistrarError(Err.Number, Err.description, "modGuilds.SaveUserGuildIndex", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "modGuilds.SaveUserGuildIndex", Erl)
 108     Resume Next
         
 End Sub
@@ -2627,7 +2617,7 @@ Public Sub SaveUserGuildAspirant(ByVal UserName As String, ByVal AspirantIndex A
         Exit Sub
 
 SaveUserGuildAspirant_Err:
-106     Call RegistrarError(Err.Number, Err.description, "modGuilds.SaveUserGuildAspirant", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "modGuilds.SaveUserGuildAspirant", Erl)
 108     Resume Next
         
 End Sub
@@ -2653,7 +2643,7 @@ Public Sub SaveUserGuildMember(ByVal UserName As String, ByVal guilds As String)
         Exit Sub
 
 SaveUserGuildMember_Err:
-106     Call RegistrarError(Err.Number, Err.description, "modGuilds.SaveUserGuildMember", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "modGuilds.SaveUserGuildMember", Erl)
 108     Resume Next
         
 End Sub
@@ -2679,7 +2669,7 @@ Public Sub SaveUserGuildPedidos(ByVal UserName As String, ByVal Pedidos As Strin
         Exit Sub
 
 SaveUserGuildPedidos_Err:
-106     Call RegistrarError(Err.Number, Err.description, "modGuilds.SaveUserGuildPedidos", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "modGuilds.SaveUserGuildPedidos", Erl)
 108     Resume Next
         
 End Sub
