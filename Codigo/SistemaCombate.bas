@@ -2477,7 +2477,7 @@ Public Sub CheckPets(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, Opti
 100     For j = 1 To MAXMASCOTAS
 102         If UserList(UserIndex).MascotasIndex(j) > 0 Then
 104            If UserList(UserIndex).MascotasIndex(j) <> NpcIndex Then
-106             If CheckElementales Or (NpcList(UserList(UserIndex).MascotasIndex(j)).Numero <> ELEMENTALFUEGO And NpcList(UserList(UserIndex).MascotasIndex(j)).Numero <> ELEMENTALAGUA And NpcList(UserList(UserIndex).MascotasIndex(j)).Numero <> ELEMENTALVIENTO) Then
+106             If CheckElementales Or (NpcList(UserList(UserIndex).MascotasIndex(j)).Numero <> ELEMENTALFUEGO And NpcList(UserList(UserIndex).MascotasIndex(j)).Numero <> ELEMENTALVIENTO) Then
 108                 If NpcList(UserList(UserIndex).MascotasIndex(j)).TargetNPC = 0 Then NpcList(UserList(UserIndex).MascotasIndex(j)).TargetNPC = NpcIndex
 110                 NpcList(UserList(UserIndex).MascotasIndex(j)).Movement = TipoAI.NpcAtacaNpc
                 End If
