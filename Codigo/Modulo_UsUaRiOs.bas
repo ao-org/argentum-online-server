@@ -1285,8 +1285,8 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
         Else ' El level es numero impar
           ' Esta cuenta signifca, que si el nivel anterior terminaba en 5 ahora
           ' suma dos puntos mas, sino 3. Lo de siempre.
-          maxPermitido = (Lvl \ 2) * 5 + 3 - (( (((Lvl-1) \2)*5) Mod 10) \ 5)
-        End
+          maxPermitido = (Lvl \ 2) * 5 + 3 - (((((Lvl - 1) \ 2) * 5) Mod 10) \ 5)
+        End If
 
         If UserList(UserIndex).Stats.UserSkills(Skill) >= maxPermitido Then Exit Sub
 

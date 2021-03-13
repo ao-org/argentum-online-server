@@ -350,7 +350,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 
                     Dim DeDonde As String
                     Dim Gobernador As npc
-                        Gobernador = NpcList(UserList(UserIndex)).flags.TargetNPC)
+                        Gobernador = NpcList(UserList(UserIndex).flags.TargetNPC)
             
 292                 If UserList(UserIndex).Hogar = Gobernador.GobernadorDe Then
 294                     Call WriteChatOverHead(UserIndex, "Ya perteneces a esta ciudad. Gracias por ser uno más de nosotros.", Gobernador.Char.CharIndex, vbWhite)
@@ -391,7 +391,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 320                         Case eCiudad.cBanderbill
 322                             DeDonde = "Banderbill"
                         
-324                         Case eCiudad.cLindos 
+324                         Case eCiudad.cLindos
 326                             DeDonde = "Lindos"
                             
 328                         Case eCiudad.cArghal
