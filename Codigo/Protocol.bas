@@ -7789,7 +7789,7 @@ Private Sub HandleHeal(ByVal UserIndex As Integer)
         
 116         Call WriteUpdateHP(UserIndex)
         
-118         Call WriteConsoleMsg(UserIndex, "ííHís sido curado!!", FontTypeNames.FONTTYPE_INFO)
+118         Call WriteConsoleMsg(UserIndex, "ííHas sido curado!!", FontTypeNames.FONTTYPE_INFO)
 
         End With
 

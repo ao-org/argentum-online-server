@@ -1660,24 +1660,6 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
 
         End If
 
-        'Es miembro del grupo?
-126     'If UserList(attackerIndex).Grupo.EnGrupo = True Then
-
-        '    Dim i As Byte
-
-128     '    For i = 1 To UserList(UserList(attackerIndex).Grupo.Lider).Grupo.CantidadMiembros
-    
-130     '        If UserList(UserList(attackerIndex).Grupo.Lider).Grupo.Miembros(i) = VictimIndex Then
-132     '            PuedeAtacar = False
-134     '            Call WriteConsoleMsg(attackerIndex, "No podes atacar a un miembro de tu grupo.", FontTypeNames.FONTTYPE_INFOIAO)
-        '            Exit Function
-
-        '        End If
-
-136     '    Next i
-
-        'End If
-
         'Estamos en una Arena? o un trigger zona segura?
 138     T = TriggerZonaPelea(attackerIndex, VictimIndex)
 
@@ -1695,25 +1677,6 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
             ' PuedeAtacar = False
             '    Exit Function
             ' End If
-        End If
-
-        'Consejeros no pueden atacar
-        'If UserList(attackerIndex).flags.Privilegios And PlayerType.Consejero Then
-        '    PuedeAtacar = False
-        '    Exit Sub
-        'End If
-
-150     If UserList(attackerIndex).GuildIndex <> 0 Then
-152         If UserList(attackerIndex).flags.SeguroClan Then
-154             If UserList(attackerIndex).GuildIndex = UserList(VictimIndex).GuildIndex Then
-156                 Call WriteConsoleMsg(attackerIndex, "No podes atacar a un miembro de tu clan. Para hacerlo debes desactivar el seguro de clan.", FontTypeNames.FONTTYPE_INFOIAO)
-158                 PuedeAtacar = False
-                    Exit Function
-
-                End If
-
-            End If
-
         End If
         
         'Solo administradores pueden atacar a usuarios (PARA TESTING)
@@ -1780,7 +1743,7 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
 
 206         If esCaos(attackerIndex) Then
 208             If UserList(attackerIndex).Faccion.RecompensasCaos >= 3 Then
-210                 If UserList(VictimIndex).Pos.Map = 151 Or UserList(VictimIndex).Pos.Map = 156 Then
+210                 If UserList(VictimIndex).Pos.Map = 195 Or UserList(VictimIndex).Pos.Map = 196 Then
 212                     Call WriteConsoleMsg(VictimIndex, "Huye de la ciudad! estas siendo atacado y no podrás defenderte.", FontTypeNames.FONTTYPE_WARNING)
 214                     PuedeAtacar = True 'Beneficio de Caos que atacan en su ciudad.
                         Exit Function
@@ -2378,10 +2341,10 @@ Private Sub UserDañoEspecial(ByVal AtacanteIndex As Integer, ByVal VictimaIndex
         End If
 
         Dim puedeEnvenenar, puedeEstupidizar, puedeIncinierar, puedeParalizar As Boolean
-        puedeEnvenenar   = (UserList(AtacanteIndex).flags.Envenena > 0)   Or (ObjInd > 0 And ObjData(ObjInd).Envenena)
+        puedeEnvenenar = (UserList(AtacanteIndex).flags.Envenena > 0) Or (ObjInd > 0 And ObjData(ObjInd).Envenena)
         puedeEstupidizar = (UserList(AtacanteIndex).flags.Estupidiza > 0) Or (ObjInd > 0 And ObjData(ObjInd).Estupidiza)
-        puedeIncinierar  = (UserList(AtacanteIndex).flags.incinera > 0)   Or (ObjInd > 0 And ObjData(ObjInd).incinera)
-        puedeParalizar   = (UserList(AtacanteIndex).flags.Paraliza > 0)   Or (ObjInd > 0 And ObjData(ObjInd).Paraliza)
+        puedeIncinierar = (UserList(AtacanteIndex).flags.incinera > 0) Or (ObjInd > 0 And ObjData(ObjInd).incinera)
+        puedeParalizar = (UserList(AtacanteIndex).flags.Paraliza > 0) Or (ObjInd > 0 And ObjData(ObjInd).Paraliza)
 
         If puedeEnvenenar And (UserList(VictimaIndex).flags.Envenenado = 0) And Not HuboEfecto Then
             If RandomNumber(1, 100) < 30 Then
