@@ -159,6 +159,20 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 
                 End If
 
+            ElseIf Hechizos(Spell).Inmoviliza = 1 Then
+
+                If .flags.Inmovilizado = 0 Then
+                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.Y))
+                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
+    
+                     .flags.Inmovilizado = 1
+                     .Counters.Inmovilizado = Hechizos(Spell).Duration / 2
+              
+                     Call WriteInmovilizaOK(UserIndex)
+                     Call WritePosUpdate(UserIndex)
+    
+                End If
+    
             End If
     
         End With

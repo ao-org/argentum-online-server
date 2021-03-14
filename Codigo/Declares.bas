@@ -234,11 +234,10 @@ End Enum
 
 Public Enum eClanType
 
-    ct_RoyalArmy
-    ct_Evil
+    ct_Neutral
+    ct_ArmadaReal
+    ct_LegionOscura
     ct_GM
-    ct_Legal
-    ct_Criminal
 
 End Enum
 
