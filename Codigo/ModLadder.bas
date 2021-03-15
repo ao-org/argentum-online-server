@@ -451,7 +451,6 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 
                     ' Call WarpUserChar(UserIndex, mapaa, xa, ya, False)
                 
-                    ' Call RelogearUser(UserIndex, UserList(UserIndex).name, UserList(UserIndex).cuenta)
                 Else
                 
 430                 If UserList(UserIndex).flags.invisible = 1 Or UserList(UserIndex).flags.Oculto = 1 Then
@@ -480,7 +479,6 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 
                     End If
                 
-458                 Call AumentarPJ(UserIndex)
 460                 Call WriteConsoleMsg(UserIndex, "Battle> Ahora tu personaje se encuentra en modo batalla. Recuerda que todos los cambios que se realicen sobre éste no tendran efecto mientras te encuentres aquí. Cuando desees salir, solamente toca ESC o escribe /SALIR y relogea con tu personaje.", FontTypeNames.FONTTYPE_CITIZEN)
                 
                 End If

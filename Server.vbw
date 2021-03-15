@@ -73,7 +73,6 @@ ModCorreo = 234, 234, 1561, 775, C
 ModGrupos = 26, 26, 1226, 676, C
 ModEventos = 0, 0, 0, 0, C
 ModEncrypt = 0, 0, 0, 0, C
-ModBattle = 156, 156, 1416, 696, C
 tBaneo = 0, 0, 0, 0, C
 TDonador = 156, 156, 1441, 794, C
 ModDonador = 0, 0, 0, 0, C
