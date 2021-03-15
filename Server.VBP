@@ -79,7 +79,6 @@ Module=ModCorreo; Codigo\ModCorreo.bas
 Module=ModGrupos; Codigo\ModGrupos.bas
 Module=ModEventos; Codigo\ModEventos.bas
 Module=ModEncrypt; Codigo\ModEncrypt.bas
-Module=ModBattle; Codigo\ModBattle.bas
 Class=tBaneo; Codigo\tBaneo.cls
 Class=TDonador; Codigo\TDonador.cls
 Module=ModDonador; Codigo\ModDonador.bas
