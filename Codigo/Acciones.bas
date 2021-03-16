@@ -809,60 +809,40 @@ AccionParaYunque_Err:
 End Sub
 
 Sub AccionParaPuerta(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal UserIndex As Integer)
-
         On Error GoTo Handler
 
-        Dim MiObj As obj
+        Dim puerta As ObjData
 
-        Dim wp    As WorldPos
-
-100     If Not (Distance(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, X, Y) > 2) Then
-102         If ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).Llave = 0 Then
-104             If ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).Cerrada = 1 Then
-
-                    'Abre la puerta
-106                 If ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).Llave = 0 Then
-                    
-108                     MapData(Map, X, Y).ObjInfo.ObjIndex = ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).IndexAbierta
-                    
-110                     Call modSendData.SendToAreaByPos(Map, X, Y, PrepareMessageObjectCreate(MapData(Map, X, Y).ObjInfo.ObjIndex, X, Y))
-                    
-112                     Call BloquearPuerta(Map, X, Y, False)
-                      
-                        'Sonido
-114                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_PUERTA, X, Y))
-                    
-                    Else
-116                     Call WriteConsoleMsg(UserIndex, "La puerta esta cerrada con llave.", FontTypeNames.FONTTYPE_INFO)
-
-                    End If
-
-                Else
-                    'Cierra puerta
-118                 MapData(Map, X, Y).ObjInfo.ObjIndex = ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).IndexCerrada
-                
-120                 Call modSendData.SendToAreaByPos(Map, X, Y, PrepareMessageObjectCreate(MapData(Map, X, Y).ObjInfo.ObjIndex, X, Y))
-                                
-122                 Call BloquearPuerta(Map, X, Y, True)
-
-124                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_PUERTA, X, Y))
-
-                End If
-        
-126             UserList(UserIndex).flags.TargetObj = MapData(Map, X, Y).ObjInfo.ObjIndex
-            Else
-128             Call WriteConsoleMsg(UserIndex, "La puerta esta cerrada con llave.", FontTypeNames.FONTTYPE_INFO)
-
-            End If
-
-        Else
-130         Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-
+        If Distance(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, X, Y) > 2 Then
             ' Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+
         End If
-        
+
+        puerta = ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex)
+
+        If puerta.Llave = 1 Then
+            Call WriteConsoleMsg(UserIndex, "La puerta esta cerrada con llave.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+
+        If puerta.Cerrada = 1 Then 'Abre la puerta
+            MapData(Map, X, Y).ObjInfo.ObjIndex = puerta.IndexAbierta
+            Call BloquearPuerta(Map, X, Y, False)
+
+        Else 'Cierra puerta
+            MapData(Map, X, Y).ObjInfo.ObjIndex = puerta.IndexCerrada
+            Call BloquearPuerta(Map, X, Y, True)
+
+        End If
+
+        Call modSendData.SendToAreaByPos(Map, X, Y, PrepareMessageObjectCreate(MapData(Map, X, Y).ObjInfo.ObjIndex, X, Y))
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_PUERTA, X, Y))
+        UserList(UserIndex).flags.TargetObj = MapData(Map, X, Y).ObjInfo.ObjIndex
+
         Exit Sub
-        
+
 Handler:
 132 Call RegistrarError(Err.Number, Err.Description, "Acciones.AccionParaPuerta", Erl)
 134 Resume Next

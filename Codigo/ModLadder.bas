@@ -692,14 +692,14 @@ Function PuedeUsarObjeto(UserIndex As Integer, ByVal ObjIndex As Integer) As Byt
 
         Select Case ObjData(ObjIndex).OBJType
 
-124         Case otArmadura
+            Case otArmadura
 
 126             If Not CheckRazaUsaRopa(UserIndex, ObjIndex) Then
 128                 PuedeUsarObjeto = 5
                     Exit Function
 
                 End If
-                
+
 130             If Not SexoPuedeUsarItem(UserIndex, ObjIndex) Then
 132                 PuedeUsarObjeto = 1
                     Exit Function
@@ -713,14 +713,16 @@ Function PuedeUsarObjeto(UserIndex As Integer, ByVal ObjIndex As Integer) As Byt
                     Exit Function
 
                 End If
-                
+
 162             If Not CheckRazaTipo(UserIndex, ObjIndex) Then
 164                 PuedeUsarObjeto = 5
                     Exit Function
 
                 End If
+
             Case Else
-              PuedeUsarObjeto = 0
+
+                PuedeUsarObjeto = 0
 
         End Select
 
