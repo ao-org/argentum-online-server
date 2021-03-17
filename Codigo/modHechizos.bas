@@ -1380,9 +1380,9 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             ' Call WriteConsoleMsg(UserIndex, "Ningun efecto magico tiene efecto sobre ti ya.", FontTypeNames.FONTTYPE_INFOIAO)
 
 240         UserList(UserIndex).flags.Envenenado = 0
-240         UserList(UserIndex).Counters.Veneno = 0
+241         UserList(UserIndex).Counters.Veneno = 0
 242         UserList(UserIndex).flags.Incinerado = 0
-240         UserList(UserIndex).Counters.Incineracion = 0
+243         UserList(UserIndex).Counters.Incineracion = 0
     
 244         If UserList(UserIndex).flags.Inmovilizado > 0 Then
 246             UserList(UserIndex).Counters.Inmovilizado = 0
@@ -1391,14 +1391,14 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             End If
 
 252         If UserList(UserIndex).flags.Paralizado > 0 Then
-246             UserList(UserIndex).Counters.Paralisis = 0
+                UserList(UserIndex).Counters.Paralisis = 0
 254             UserList(UserIndex).flags.Paralizado = 0
 256             Call WriteParalizeOK(UserIndex)
             End If
         
 258         If UserList(UserIndex).flags.Ceguera > 0 Then
 260             UserList(UserIndex).Counters.Ceguera = 0
-260             UserList(UserIndex).flags.Ceguera = 0
+                UserList(UserIndex).flags.Ceguera = 0
 262             Call WriteBlindNoMore(UserIndex)
             End If
     
@@ -1485,7 +1485,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             End If
         
 320         UserList(tU).flags.Envenenado = 0
-320         UserList(tU).Counters.Veneno = 0
+            UserList(tU).Counters.Veneno = 0
 322         Call InfoHechizo(UserIndex)
 324         b = True
 
@@ -3568,7 +3568,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
 
 640         If UserList(tU).flags.Paralizado = 1 Then
 642             UserList(tU).Counters.Paralisis = 0
-642             UserList(tU).flags.Paralizado = 0
+                UserList(tU).flags.Paralizado = 0
 
 644             Call WriteParalizeOK(tU)
 646             enviarInfoHechizo = True

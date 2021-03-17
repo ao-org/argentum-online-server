@@ -1414,8 +1414,6 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 452                     Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
 454                     .flags.Desnudo = 0
 
-                        End If
-
                     End If
 
 456                 If obj.ResistenciaMagica > 0 Then
