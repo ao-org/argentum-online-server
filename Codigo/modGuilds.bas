@@ -411,7 +411,7 @@ Public Function CrearNuevoClan(ByVal FundadorIndex As Integer, ByRef Desc As Str
         
 132         Call guilds(CANTIDADDECLANES).SetExpActual(0)
         
-134         Call guilds(CANTIDADDECLANES).SetExpNecesaria(300)
+134         Call guilds(CANTIDADDECLANES).SetExpNecesaria(500)
         
             '"conectamos" al nuevo miembro a la lista de la clase
 136         Call guilds(CANTIDADDECLANES).AceptarNuevoMiembro(UserList(FundadorIndex).name)
@@ -2374,11 +2374,11 @@ Sub CheckClanExp(ByVal UserIndex As Integer, ByVal ExpDar As Integer)
     
             'Nueva subida de exp x lvl. Pablo (ToxicWaste)
 132         If nivel = 2 Then
-134             ExpNecesaria = 600
+134             ExpNecesaria = 1000
 136         ElseIf nivel = 3 Then
-138             ExpNecesaria = 1200
+138             ExpNecesaria = 2000
 140         ElseIf nivel = 4 Then
-142             ExpNecesaria = 2100
+142             ExpNecesaria = 3000
             Else
 144             ExpNecesaria = 0
 146             ExpActual = 0
@@ -2416,19 +2416,19 @@ Public Function MiembrosPermite(ByVal GI As Integer) As Byte
 102     Select Case nivel
 
             Case 1
-104             MiembrosPermite = 5
+104             MiembrosPermite = 15
 
 106         Case 2
-108             MiembrosPermite = 10
+108             MiembrosPermite = 20
 
 110         Case 3
-112             MiembrosPermite = 15
+112             MiembrosPermite = 25
 
 114         Case 4
-116             MiembrosPermite = 20
+116             MiembrosPermite = 30
 
 118         Case Else
-120             MiembrosPermite = 25
+120             MiembrosPermite = 30
 
         End Select
 

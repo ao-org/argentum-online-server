@@ -43,21 +43,16 @@ Public Sub CargarLogros()
         
         On Error GoTo CargarLogros_Err
         
-
         Dim i As Integer
 
 100     CantNPcLogros = val(GetVar(DatPath & ARCHIVOCONFIG, "INIT", "NPcLogros"))
 102     CantUserLogros = val(GetVar(DatPath & ARCHIVOCONFIG, "INIT", "UserLogros"))
 104     CantLevelLogros = val(GetVar(DatPath & ARCHIVOCONFIG, "INIT", "LevelLogros"))
 
-106     ReDim NPcLogros(1 To CantNPcLogros)
-108     ReDim UserLogros(1 To CantUserLogros)
-110     ReDim LevelLogros(1 To CantLevelLogros)
-
 112     i = 1
 
 114     If CantNPcLogros > 0 Then
-
+            ReDim NPcLogros(1 To CantNPcLogros)
 116         For i = 1 To CantNPcLogros
 118             NPcLogros(i).nombre = GetVar(DatPath & ARCHIVOCONFIG, "NPcLogros" & i, "Nombre")
 120             NPcLogros(i).Desc = GetVar(DatPath & ARCHIVOCONFIG, "NPcLogros" & i, "Desc")
@@ -73,7 +68,7 @@ Public Sub CargarLogros()
         End If
     
 138     If CantUserLogros > 0 Then
-
+            ReDim UserLogros(1 To CantUserLogros)
 140         For i = 1 To CantUserLogros
 142             UserLogros(i).nombre = GetVar(DatPath & ARCHIVOCONFIG, "UserLogros" & i, "Nombre")
 144             UserLogros(i).Desc = GetVar(DatPath & ARCHIVOCONFIG, "UserLogros" & i, "Desc")
@@ -89,7 +84,7 @@ Public Sub CargarLogros()
         End If
     
 160     If CantLevelLogros > 0 Then
-
+            ReDim LevelLogros(1 To CantLevelLogros)
 162         For i = 1 To CantLevelLogros
 164             LevelLogros(i).nombre = GetVar(DatPath & ARCHIVOCONFIG, "LevelLogros" & i, "Nombre")
 166             LevelLogros(i).Desc = GetVar(DatPath & ARCHIVOCONFIG, "LevelLogros" & i, "Desc")
@@ -103,12 +98,11 @@ Public Sub CargarLogros()
 180         Next i
 
         End If
-
         
         Exit Sub
 
 CargarLogros_Err:
-182     Call RegistrarError(Err.Number, Err.description, "MoLogros.CargarLogros", Erl)
+182     Call RegistrarError(Err.Number, Err.Description, "MoLogros.CargarLogros", Erl)
 184     Resume Next
         
 End Sub
@@ -130,7 +124,7 @@ Public Sub EnviarRecompensaStat(ByVal UserIndex As Integer)
         Exit Sub
 
 EnviarRecompensaStat_Err:
-106     Call RegistrarError(Err.Number, Err.description, "MoLogros.EnviarRecompensaStat", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "MoLogros.EnviarRecompensaStat", Erl)
 108     Resume Next
         
 End Sub
@@ -174,7 +168,7 @@ Public Sub CheckearRecompesas(ByVal UserIndex As Integer, ByVal index As Byte)
         Exit Sub
 
 CheckearRecompesas_Err:
-120     Call RegistrarError(Err.Number, Err.description, "MoLogros.CheckearRecompesas", Erl)
+120     Call RegistrarError(Err.Number, Err.Description, "MoLogros.CheckearRecompesas", Erl)
 122     Resume Next
         
 End Sub
@@ -243,7 +237,7 @@ Public Sub EntregarRecompensas(ByVal UserIndex As Integer, ByVal index As Byte)
         Exit Sub
 
 EntregarRecompensas_Err:
-146     Call RegistrarError(Err.Number, Err.description, "MoLogros.EntregarRecompensas", Erl)
+146     Call RegistrarError(Err.Number, Err.Description, "MoLogros.EntregarRecompensas", Erl)
 148     Resume Next
         
 End Sub

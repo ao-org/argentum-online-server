@@ -315,11 +315,17 @@ DecirPalabrasMagicas_Err:
         
 End Sub
 
-Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As Integer, Optional ByVal slot As Integer = 0) As Boolean
-        
+Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As Integer, Optional ByVal slot As Integer = 0) As Boolean
     On Error GoTo PuedeLanzar_Err
-    
+
+    PuedeLanzar = False
+
     With UserList(UserIndex)
+
+        If UserList(UserIndex).flags.EnConsulta Then
+            Call WriteConsoleMsg(UserIndex, "No puedes lanzar hechizos si estas en consulta.", FontTypeNames.FONTTYPE_INFO)
+            Exit Function
+        End If
 
         If .flags.Muerto = 1 Then
             Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
@@ -1063,12 +1069,6 @@ End Sub
 Sub LanzarHechizo(index As Integer, UserIndex As Integer)
         
         On Error GoTo LanzarHechizo_Err
-        
-100     If UserList(UserIndex).flags.EnConsulta Then
-102         Call WriteConsoleMsg(UserIndex, "No puedes lanzar hechizos si estas en consulta.", FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-
-        End If
 
         Dim uh As Integer
 104         uh = UserList(UserIndex).Stats.UserHechizos(index)
@@ -1380,34 +1380,38 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             ' Call WriteConsoleMsg(UserIndex, "Ningun efecto magico tiene efecto sobre ti ya.", FontTypeNames.FONTTYPE_INFOIAO)
 
 240         UserList(UserIndex).flags.Envenenado = 0
+241         UserList(UserIndex).Counters.Veneno = 0
 242         UserList(UserIndex).flags.Incinerado = 0
+243         UserList(UserIndex).Counters.Incineracion = 0
     
-244         If UserList(UserIndex).flags.Inmovilizado = 1 Then
+244         If UserList(UserIndex).flags.Inmovilizado > 0 Then
 246             UserList(UserIndex).Counters.Inmovilizado = 0
 248             UserList(UserIndex).flags.Inmovilizado = 0
 250             Call WriteInmovilizaOK(UserIndex)
-            
-
             End If
-    
-252         If UserList(UserIndex).flags.Paralizado = 1 Then
+
+252         If UserList(UserIndex).flags.Paralizado > 0 Then
+                UserList(UserIndex).Counters.Paralisis = 0
 254             UserList(UserIndex).flags.Paralizado = 0
 256             Call WriteParalizeOK(UserIndex)
-            
-           
             End If
         
-258         If UserList(UserIndex).flags.Ceguera = 1 Then
-260             UserList(UserIndex).flags.Ceguera = 0
+258         If UserList(UserIndex).flags.Ceguera > 0 Then
+260             UserList(UserIndex).Counters.Ceguera = 0
+                UserList(UserIndex).flags.Ceguera = 0
 262             Call WriteBlindNoMore(UserIndex)
-            
-
             End If
     
-264         If UserList(UserIndex).flags.Maldicion = 1 Then
+264         If UserList(UserIndex).flags.Maldicion > 0 Then
 266             UserList(UserIndex).flags.Maldicion = 0
 268             UserList(UserIndex).Counters.Maldicion = 0
 
+            End If
+
+            If UserList(UserIndex).flags.Estupidez > 0 Then
+                UserList(UserIndex).flags.Estupidez = 0
+                UserList(UserIndex).Counters.Estupidez = 0
+            
             End If
     
 270         Call InfoHechizo(UserIndex)
@@ -1481,6 +1485,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             End If
         
 320         UserList(tU).flags.Envenenado = 0
+            UserList(tU).Counters.Veneno = 0
 322         Call InfoHechizo(UserIndex)
 324         b = True
 
@@ -1510,6 +1515,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 
 346     If Hechizos(h).RemoverMaldicion = 1 Then
 348         UserList(tU).flags.Maldicion = 0
+            UserList(tU).Counters.Maldicion = 0
 350         Call InfoHechizo(UserIndex)
 352         b = True
 
@@ -1676,19 +1682,13 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 494             UserList(tU).flags.Inmovilizado = 0
 496             Call WriteInmovilizaOK(tU)
 498             Call WritePosUpdate(tU)
-                ' Call InfoHechizo(UserIndex)
-            
-
-                'b = True
             End If
     
 500         If UserList(tU).flags.Paralizado = 1 Then
 502             UserList(tU).flags.Paralizado = 0
-                'no need to crypt this
-504             Call WriteParalizeOK(tU)
-            
+                UserList(tU).Counters.Paralisis = 0
 
-                '  b = True
+504             Call WriteParalizeOK(tU)
             End If
 
 506         b = True
@@ -1725,9 +1725,9 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                 End If
     
 530             UserList(tU).flags.Estupidez = 0
-                'no need to crypt this
+                UserList(tU).Counters.Estupidez = 0
 532             Call WriteDumbNoMore(tU)
-            
+
 534             Call InfoHechizo(UserIndex)
 536             b = True
 
@@ -3314,16 +3314,16 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
             End If
     
 422         If UserList(UserIndex).flags.Paralizado = 1 Then
+                UserList(UserIndex).Counters.Paralisis = 0
 424             UserList(UserIndex).flags.Paralizado = 0
 426             Call WriteParalizeOK(UserIndex)
-            
-           
+
             End If
         
 428         If UserList(UserIndex).flags.Ceguera = 1 Then
+                UserList(UserIndex).Counters.Ceguera = 0
 430             UserList(UserIndex).flags.Ceguera = 0
 432             Call WriteBlindNoMore(UserIndex)
-            
 
             End If
     
@@ -3361,6 +3361,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
 
             End If
 
+            UserList(tU).Counters.Incineracion = 1
 466         UserList(tU).flags.Incinerado = 1
 468         enviarInfoHechizo = True
 470         b = True
@@ -3413,6 +3414,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
             End If
         
 500         UserList(tU).flags.Envenenado = 0
+            UserList(tU).Counters.Veneno = 0
 502         enviarInfoHechizo = True
 504         b = True
 
@@ -3442,6 +3444,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
 
 526     If Hechizos(h).RemoverMaldicion = 1 Then
 528         UserList(tU).flags.Maldicion = 0
+            UserList(tU).Counters.Maldicion = 0
 530         enviarInfoHechizo = True
 532         b = True
 
@@ -3521,7 +3524,6 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
 602             UserList(tU).flags.Inmovilizado = 1
 604             Call WriteInmovilizaOK(tU)
 606             Call WritePosUpdate(tU)
-            
 
             End If
 
@@ -3565,8 +3567,9 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
             End If
 
 640         If UserList(tU).flags.Paralizado = 1 Then
-642             UserList(tU).flags.Paralizado = 0
-                'no need to crypt this
+642             UserList(tU).Counters.Paralisis = 0
+                UserList(tU).flags.Paralizado = 0
+
 644             Call WriteParalizeOK(tU)
 646             enviarInfoHechizo = True
             
@@ -4211,30 +4214,31 @@ Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y As Byte,
 440         Call WriteConsoleMsg(NpcIndex, "Has sido desencantado.", FontTypeNames.FONTTYPE_INFO)
                     
 442         UserList(NpcIndex).flags.Envenenado = 0
+            UserList(NpcIndex).Counters.Veneno = 0
 444         UserList(NpcIndex).flags.Incinerado = 0
-                    
+            UserList(NpcIndex).Counters.Incineracion = 0
+
 446         If UserList(NpcIndex).flags.Inmovilizado = 1 Then
 448             UserList(NpcIndex).Counters.Inmovilizado = 0
 450             UserList(NpcIndex).flags.Inmovilizado = 0
 452             Call WriteInmovilizaOK(NpcIndex)
-            
 
             End If
                     
 454         If UserList(NpcIndex).flags.Paralizado = 1 Then
 456             UserList(NpcIndex).flags.Paralizado = 0
+                UserList(NpcIndex).Counters.Paralisis = 0
 458             Call WriteParalizeOK(NpcIndex)
-            
-                       
-            End If
-                    
-460         If UserList(NpcIndex).flags.Ceguera = 1 Then
-462             UserList(NpcIndex).flags.Ceguera = 0
-464             Call WriteBlindNoMore(NpcIndex)
-            
 
             End If
-                    
+
+460         If UserList(NpcIndex).flags.Ceguera = 1 Then
+                UserList(NpcIndex).Counters.Ceguera = 0
+462             UserList(NpcIndex).flags.Ceguera = 0
+464             Call WriteBlindNoMore(NpcIndex)
+
+            End If
+
 466         If UserList(NpcIndex).flags.Maldicion = 1 Then
 468             UserList(NpcIndex).flags.Maldicion = 0
 470             UserList(NpcIndex).Counters.Maldicion = 0
@@ -4242,12 +4246,10 @@ Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y As Byte,
             End If
 
         End If
-        
-        
+
         Exit Sub
 
 AreaHechizo_Err:
 472     Call RegistrarError(Err.Number, Err.Description, "modHechizos.AreaHechizo", Erl)
 474     Resume Next
-        
 End Sub

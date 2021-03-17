@@ -658,11 +658,25 @@ AgregarAConsola_Err:
         
 End Sub
 
+' TODO: Crear enum para la respuesta
 Function PuedeUsarObjeto(UserIndex As Integer, ByVal ObjIndex As Integer) As Byte
-        
         On Error GoTo PuedeUsarObjeto_Err
 
-100     If UserList(UserIndex).Stats.ELV < ObjData(ObjIndex).MinELV Then
+        Dim objeto As ObjData
+
+        If EsGM(UserIndex) Then
+            PuedeUsarObjeto = 0
+            Exit Function
+        End If
+
+        objeto = ObjData(ObjIndex)
+
+        If objeto.Newbie = 1 And Not EsNewbie(UserIndex) Then
+            PuedeUsarObjeto = 7
+            Exit Function
+        End If
+
+100     If UserList(UserIndex).Stats.ELV < objeto.MinELV Then
 102         PuedeUsarObjeto = 6
             Exit Function
         End If
@@ -676,7 +690,7 @@ Function PuedeUsarObjeto(UserIndex As Integer, ByVal ObjIndex As Integer) As Byt
         Dim i As Long
 104     For i = 1 To NUMRAZAS
 
-106         If ObjData(ObjIndex).RazaProhibida(i) = UserList(UserIndex).raza Then
+106         If objeto.RazaProhibida(i) = UserList(UserIndex).raza Then
 108             PuedeUsarObjeto = 5
                 Exit Function
 
@@ -690,7 +704,14 @@ Function PuedeUsarObjeto(UserIndex As Integer, ByVal ObjIndex As Integer) As Byt
 
         End If
 
-        Select Case ObjData(ObjIndex).OBJType
+        If objeto.SkillIndex > 0 Then
+            If UserList(UserIndex).Stats.UserSkills(objeto.skillIndex) < objeto.SkillRequerido Then
+                PuedeUsarObjeto = 4
+                Exit Function
+            End If
+        End If
+
+        Select Case objeto.OBJType
 
             Case otArmadura
 
