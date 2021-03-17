@@ -39,7 +39,7 @@ Public Const MAXDISTANCIAARCO  As Byte = 18
 
 Public Const MAXDISTANCIAMAGIA As Byte = 18
 
-Function ModificadorEvasion(ByVal clase As eClass) As Single
+Private Function ModificadorEvasion(ByVal clase As eClass) As Single
         
         On Error GoTo ModificadorEvasion_Err
         
@@ -55,7 +55,7 @@ ModificadorEvasion_Err:
         
 End Function
 
-Function ModificadorPoderAtaqueArmas(ByVal clase As eClass) As Single
+Private Function ModificadorPoderAtaqueArmas(ByVal clase As eClass) As Single
         
         On Error GoTo ModificadorPoderAtaqueArmas_Err
         
@@ -71,7 +71,7 @@ ModificadorPoderAtaqueArmas_Err:
         
 End Function
 
-Function ModificadorPoderAtaqueProyectiles(ByVal clase As eClass) As Single
+Private Function ModificadorPoderAtaqueProyectiles(ByVal clase As eClass) As Single
         
         On Error GoTo ModificadorPoderAtaqueProyectiles_Err
         
@@ -87,7 +87,7 @@ ModificadorPoderAtaqueProyectiles_Err:
         
 End Function
 
-Function ModicadorDañoClaseArmas(ByVal clase As eClass) As Single
+Private Function ModicadorDañoClaseArmas(ByVal clase As eClass) As Single
         
         On Error GoTo ModicadorDañoClaseArmas_Err
         
@@ -102,7 +102,8 @@ ModicadorDañoClaseArmas_Err:
 104     Resume Next
         
 End Function
-Function ModicadorApuñalarClase(ByVal clase As eClass) As Single
+
+Private Function ModicadorApuñalarClase(ByVal clase As eClass) As Single
         
         On Error GoTo ModicadorApuñalarClase_Err
         
@@ -118,7 +119,7 @@ ModicadorApuñalarClase_Err:
         
 End Function
 
-Function ModicadorDañoClaseWrestling(ByVal clase As eClass) As Single
+Private Function ModicadorDañoClaseWrestling(ByVal clase As eClass) As Single
         
         On Error GoTo ModicadorDañoClaseWrestling_Err
         
@@ -134,7 +135,7 @@ ModicadorDañoClaseWrestling_Err:
         
 End Function
 
-Function ModicadorDañoClaseProyectiles(ByVal clase As eClass) As Single
+Private Function ModicadorDañoClaseProyectiles(ByVal clase As eClass) As Single
         
         On Error GoTo ModicadorDañoClaseProyectiles_Err
         
@@ -150,7 +151,7 @@ ModicadorDañoClaseProyectiles_Err:
         
 End Function
 
-Function ModEvasionDeEscudoClase(ByVal clase As eClass) As Single
+Private Function ModEvasionDeEscudoClase(ByVal clase As eClass) As Single
         
         On Error GoTo ModEvasionDeEscudoClase_Err
         
@@ -166,7 +167,7 @@ ModEvasionDeEscudoClase_Err:
         
 End Function
 
-Function Minimo(ByVal a As Single, ByVal b As Single) As Single
+Private Function Minimo(ByVal a As Single, ByVal b As Single) As Single
         
         On Error GoTo Minimo_Err
         
@@ -208,7 +209,7 @@ MinimoInt_Err:
         
 End Function
 
-Function Maximo(ByVal a As Single, ByVal b As Single) As Single
+Private Function Maximo(ByVal a As Single, ByVal b As Single) As Single
         
         On Error GoTo Maximo_Err
         
@@ -250,7 +251,7 @@ MaximoInt_Err:
         
 End Function
 
-Function PoderEvasionEscudo(ByVal UserIndex As Integer) As Long
+Private Function PoderEvasionEscudo(ByVal UserIndex As Integer) As Long
         
         On Error GoTo PoderEvasionEscudo_Err
         
@@ -266,7 +267,7 @@ PoderEvasionEscudo_Err:
         
 End Function
 
-Function PoderEvasion(ByVal UserIndex As Integer) As Long
+Private Function PoderEvasion(ByVal UserIndex As Integer) As Long
         
         On Error GoTo PoderEvasion_Err
         
@@ -289,7 +290,7 @@ PoderEvasion_Err:
         
 End Function
 
-Function PoderAtaqueArma(ByVal UserIndex As Integer) As Long
+Private Function PoderAtaqueArma(ByVal UserIndex As Integer) As Long
         
         On Error GoTo PoderAtaqueArma_Err
         
@@ -318,7 +319,7 @@ PoderAtaqueArma_Err:
         
 End Function
 
-Function PoderAtaqueProyectil(ByVal UserIndex As Integer) As Long
+Private Function PoderAtaqueProyectil(ByVal UserIndex As Integer) As Long
         
         On Error GoTo PoderAtaqueProyectil_Err
         
@@ -347,7 +348,7 @@ PoderAtaqueProyectil_Err:
         
 End Function
 
-Function PoderAtaqueWrestling(ByVal UserIndex As Integer) As Long
+Private Function PoderAtaqueWrestling(ByVal UserIndex As Integer) As Long
         
         On Error GoTo PoderAtaqueWrestling_Err
         
@@ -421,7 +422,7 @@ UserImpactoNpc_Err:
         
 End Function
 
-Public Function NpcImpacto(ByVal NpcIndex As Integer, ByVal UserIndex As Integer) As Boolean
+Private Function NpcImpacto(ByVal NpcIndex As Integer, ByVal UserIndex As Integer) As Boolean
         
         On Error GoTo NpcImpacto_Err
         
@@ -498,7 +499,7 @@ NpcImpacto_Err:
         
 End Function
 
-Public Function CalcularDaño(ByVal UserIndex As Integer) As Long
+Private Function CalcularDaño(ByVal UserIndex As Integer) As Long
 
         ' Reescrita por WyroX - 16/01/2021
 
@@ -698,7 +699,7 @@ UserDañoNpc_Err:
         
 End Sub
 
-Public Sub NpcDaño(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
+Private Sub NpcDaño(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         
         On Error GoTo NpcDaño_Err
         
@@ -885,7 +886,7 @@ NpcAtacaUser_Err:
         
 End Function
 
-Function NpcImpactoNpc(ByVal Atacante As Integer, ByVal Victima As Integer) As Boolean
+Private Function NpcImpactoNpc(ByVal Atacante As Integer, ByVal Victima As Integer) As Boolean
         
         On Error GoTo NpcImpactoNpc_Err
         
@@ -908,7 +909,7 @@ NpcImpactoNpc_Err:
         
 End Function
 
-Public Sub NpcDañoNpc(ByVal Atacante As Integer, ByVal Victima As Integer)
+Private Sub NpcDañoNpc(ByVal Atacante As Integer, ByVal Victima As Integer)
         
             On Error GoTo NpcDañoNpc_Err
 
@@ -1001,6 +1002,7 @@ NpcAtacaNpc_Err:
         
 End Sub
 
+' Deberia exponer esta o no??? En lugar de UsuarioAtacaNpcFunction
 Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
         
         On Error GoTo UsuarioAtacaNpc_Err
@@ -1083,6 +1085,7 @@ UsuarioAtacaNpc_Err:
         
 End Sub
 
+' Cambiar esto!
 Public Function UsuarioAtacaNpcFunction(ByVal UserIndex As Integer, ByVal NpcIndex As Integer) As Byte
         
         On Error GoTo UsuarioAtacaNpcFunction_Err
@@ -1331,6 +1334,7 @@ Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal VictimaInde
 118             Call SendData(SendTarget.ToPCArea, VictimaIndex, PrepareMessageCreateFX(UserList(VictimaIndex).Char.CharIndex, FXSANGRE, 0))
             End If
 
+            ' EMANCU: esto hay q moverlo
             'Pablo (ToxicWaste): Guantes de Hurto del Bandido en accion
 120         If UserList(AtacanteIndex).clase = eClass.Bandit Then
 122             Call DoDesequipar(AtacanteIndex, VictimaIndex)
@@ -1593,8 +1597,8 @@ Sub UsuarioAtacadoPorUsuario(ByVal attackerIndex As Integer, ByVal VictimIndex A
 128     If Status(attackerIndex) = 2 Then If UserList(attackerIndex).Faccion.ArmadaReal = 1 Then Call ExpulsarFaccionReal(attackerIndex)
 
 
-130     Call AllMascotasAtacanUser(attackerIndex, VictimIndex)
-132     Call AllMascotasAtacanUser(VictimIndex, attackerIndex)
+130     Call AllMascotasAtacanUser(VictimIndex, attackerIndex)
+132     Call AllMascotasAtacanUser(attackerIndex, VictimIndex)
 
         Exit Sub
 
@@ -2027,7 +2031,7 @@ CalcularDarExp_Err:
         
 End Sub
 
-Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal ElDaño As Long)
+Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal ElDaño As Long)
         
         On Error GoTo CalcularDarExpGrupal_Err
         
@@ -2179,7 +2183,7 @@ CalcularDarExpGrupal_Err:
         
 End Sub
 
-Sub CalcularDarOroGrupal(ByVal UserIndex As Integer, ByVal GiveGold As Long)
+Private Sub CalcularDarOroGrupal(ByVal UserIndex As Integer, ByVal GiveGold As Long)
         
         On Error GoTo CalcularDarOroGrupal_Err
         
@@ -2282,15 +2286,11 @@ CalcularDarOroGrupal_Err:
 End Sub
 
 Public Function TriggerZonaPelea(ByVal Origen As Integer, ByVal Destino As Integer) As eTrigger6
-
-        'TODO: Pero que rebuscado!!
-        'Nigo:  Te lo rediseñe, pero no te borro el TODO para que lo revises.
         On Error GoTo ErrHandler
 
         Dim tOrg As eTrigger
-
         Dim tDst As eTrigger
-    
+
 100     tOrg = MapData(UserList(Origen).Pos.Map, UserList(Origen).Pos.X, UserList(Origen).Pos.Y).trigger
 102     tDst = MapData(UserList(Destino).Pos.Map, UserList(Destino).Pos.X, UserList(Destino).Pos.Y).trigger
     
@@ -2456,28 +2456,7 @@ CheckPets_Err:
         
 End Sub
 
-Public Sub AllFollowAmo(ByVal UserIndex As Integer)
-        
-        On Error GoTo AllFollowAmo_Err
-    
-        
-        Dim j As Integer
-    
-100     For j = 1 To MAXMASCOTAS
-102         If UserList(UserIndex).MascotasIndex(j) > 0 Then
-104             Call FollowAmo(UserList(UserIndex).MascotasIndex(j))
-            End If
-106     Next j
-        
-        Exit Sub
-
-AllFollowAmo_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.AllFollowAmo", Erl)
-
-        
-End Sub
-
-Function PuedeApuñalar(ByVal UserIndex As Integer) As Boolean
+Private Function PuedeApuñalar(ByVal UserIndex As Integer) As Boolean
         
         On Error GoTo PuedeApuñalar_Err
         
@@ -2497,7 +2476,7 @@ PuedeApuñalar_Err:
         
 End Function
 
-Function PuedeGolpeCritico(ByVal UserIndex As Integer) As Boolean
+Private Function PuedeGolpeCritico(ByVal UserIndex As Integer) As Boolean
         ' Autor: WyroX - 16/01/2021
         
         On Error GoTo PuedeGolpeCritico_Err
@@ -2505,6 +2484,7 @@ Function PuedeGolpeCritico(ByVal UserIndex As Integer) As Boolean
         With UserList(UserIndex)
 
 100         If .Invent.WeaponEqpObjIndex > 0 Then
+                ' Esto me parece que esta MAL; subtipo 2 es incinera :/
 102             PuedeGolpeCritico = .clase = eClass.Bandit And ObjData(.Invent.WeaponEqpObjIndex).Subtipo = 2
             End If
             
@@ -2518,7 +2498,7 @@ PuedeGolpeCritico_Err:
         
 End Function
 
-Public Function ProbabilidadApuñalar(ByVal UserIndex As Integer) As Integer
+Private Function ProbabilidadApuñalar(ByVal UserIndex As Integer) As Integer
 
         ' Autor: WyroX - 16/01/2021
         
@@ -2557,24 +2537,17 @@ ProbabilidadApuñalar_Err:
         
 End Function
 
-Public Function ProbabilidadGolpeCritico(ByVal UserIndex As Integer) As Integer
-        ' Autor: WyroX - 16/01/2021
-        
+Private Function ProbabilidadGolpeCritico(ByVal UserIndex As Integer) As Integer
         On Error GoTo ProbabilidadGolpeCritico_Err
 
-100     With UserList(UserIndex)
-
-102         ProbabilidadGolpeCritico = 0.2 * .Stats.UserSkills(eSkill.Wrestling)
-
-        End With
+        ProbabilidadGolpeCritico = 0.2 * UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling)
 
         Exit Function
 
 ProbabilidadGolpeCritico_Err:
 132     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.ProbabilidadGolpeCritico", Erl)
-
 134     Resume Next
-        
+
 End Function
 
 ' Helper function to simplify the code. Keep private!
