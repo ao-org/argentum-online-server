@@ -1481,6 +1481,14 @@ Sub LoadOBJData()
                 Case eOBJType.otFlechas
                     .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
                     .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
+                    .Envenena = val(Leer.GetValue(ObjKey, "Envenena"))
+                    .Paraliza = val(Leer.GetValue(ObjKey, "Paraliza"))
+                    .Estupidiza = val(Leer.GetValue(ObjKey, "Estupidiza"))
+                    .incinera = val(Leer.GetValue(ObjKey, "Incinera"))
+        
+                    .Refuerzo = val(Leer.GetValue(ObjKey, "Refuerzo"))
+                    .SkCarpinteria = val(Leer.GetValue(ObjKey, "SkCarpinteria"))
+                    .EfectoMagico = val(Leer.GetValue(ObjKey, "efectomagico"))
             
                     .Snd1 = val(Leer.GetValue(ObjKey, "SND1"))
                     .Snd2 = val(Leer.GetValue(ObjKey, "SND2"))
