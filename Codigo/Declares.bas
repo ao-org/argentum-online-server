@@ -1189,8 +1189,8 @@ Public Type ObjData
     CreaLuz As String
     
     MinELV As Byte
-    SkillIndex As Byte
-    SkillRequerido As Byte
+    SkillIndex As Byte     ' El indice de Skill para equipar el item
+    SkillRequerido As Byte ' El valor MINIMO requerido de skillIndex para equipar el item
     
     CreaGRH As String
     SndAura As Integer
@@ -1206,8 +1206,8 @@ Public Type ObjData
     HastaX As Byte
     
     EfectoMagico As Byte
-    CantidadSkillSuma As Byte
-    QueSkill As Byte
+    QueSkill As Byte          ' Que skill recibe la bonificacion
+    CantidadSkill As Byte     ' Cuantos puntos de skill bonifica
     
     Subtipo As Byte ' 0: -, 1: Paraliza, 2: Incinera, 3: Envenena, 4: Explosiva
     
@@ -1216,9 +1216,8 @@ Public Type ObjData
     VidaUtil As Integer
     TiempoRegenerar As Integer
     
-    CuantoAumento As Single
-    QueAtributo As Byte
-    CantidadSkill As Byte
+    CuantoAumento As Single ' Cuanto aumenta el atributo.
+    QueAtributo As Byte     ' Que attributo sube (Agilidad, Fuerza, etc)
     incinera As Byte
 
     'Puntos de Stamina que da

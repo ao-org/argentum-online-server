@@ -3984,6 +3984,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         Dim Particula As Integer
                         Dim Tiempo    As Long
 
+                        ' Porque no es HandleAttack ???
 236                     Call UsuarioAtacaUsuario(UserIndex, tU)
 
 254                     If ObjData(.Invent.MunicionEqpObjIndex).CreaFX <> 0 Then

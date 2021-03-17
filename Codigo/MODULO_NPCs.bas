@@ -1522,15 +1522,7 @@ DoFollow_Err:
 End Sub
 
 Public Sub FollowAmo(ByVal NpcIndex As Integer)
-        '***************************************************
-        'Author: Unknown
-        'Last Modification: -
-        '
-        '***************************************************
-        
         On Error GoTo FollowAmo_Err
-    
-        
 
 100     With NpcList(NpcIndex)
 102         .flags.Follow = True
@@ -1543,14 +1535,30 @@ Public Sub FollowAmo(ByVal NpcIndex As Integer)
 116         .TargetNPC = 0
         End With
 
-        
         Exit Sub
 
 FollowAmo_Err:
 118     Call RegistrarError(Err.Number, Err.Description, "NPCs.FollowAmo", Erl)
-
-        
 End Sub
+
+Public Sub AllFollowAmo(ByVal UserIndex As Integer)
+        On Error GoTo AllFollowAmo_Err
+
+        Dim j As Integer
+
+        For j = 1 To MAXMASCOTAS
+            If UserList(UserIndex).MascotasIndex(j) > 0 Then
+                Call FollowAmo(UserList(UserIndex).MascotasIndex(j))
+            End If
+        Next j
+
+        Exit Sub
+
+AllFollowAmo_Err:
+        Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.AllFollowAmo", Erl)
+
+End Sub
+
 
 Public Function ObtenerIndiceRespawn() As Integer
 
@@ -1559,8 +1567,6 @@ Public Function ObtenerIndiceRespawn() As Integer
         Dim LoopC As Integer
 
 100     For LoopC = 1 To MaxRespawn
-
-            'If LoopC > MaxRespawn Then Exit For
 102         If Not RespawnList(LoopC).flags.NPCActive Then Exit For
 104     Next LoopC
   
@@ -1569,7 +1575,7 @@ Public Function ObtenerIndiceRespawn() As Integer
         Exit Function
 ErrHandler:
 108     Call LogError("Error en ObtenerIndiceRespawn")
-    
+
 End Function
 
 Sub QuitarMascota(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
