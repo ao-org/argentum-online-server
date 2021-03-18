@@ -1695,13 +1695,12 @@ Public Sub EfectoVelocidadUser(ByVal UserIndex As Integer)
 102         UserList(UserIndex).Counters.Velocidad = UserList(UserIndex).Counters.Velocidad - 1
         Else
 104         UserList(UserIndex).Char.speeding = UserList(UserIndex).flags.VelocidadBackup
-    
+            UserList(UserIndex).flags.VelocidadBackup = 0
+            
             'Call WriteVelocidadToggle(UserIndex)
 106         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(UserList(UserIndex).Char.CharIndex, UserList(UserIndex).flags.VelocidadBackup))
-108         UserList(UserIndex).flags.VelocidadBackup = 0
 
         End If
-
         
         Exit Sub
 
