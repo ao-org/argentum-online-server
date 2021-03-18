@@ -160,31 +160,39 @@ Sub MostrarBloqueosPuerta(ByVal toMap As Boolean, _
         On Error GoTo MostrarBloqueosPuerta_Err
         
         Dim Map As Integer
-
+        Dim ModPuerta As Integer
+        
 100     If toMap Then
 102         Map = sndIndex
         Else
 104         Map = UserList(sndIndex).Pos.Map
         End If
         
-        If ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).Subtipo = 2 Then
-            Call Bloquear(toMap, sndIndex, X, Y - 1, MapData(Map, X, Y - 1).Blocked)
-            Call Bloquear(toMap, sndIndex, X - 1, Y - 1, MapData(Map, X - 1, Y - 1).Blocked)
-            Call Bloquear(toMap, sndIndex, X + 1, Y - 1, MapData(Map, X + 1, Y - 1).Blocked)
-            ' Bloqueos inferiores
-            Call Bloquear(toMap, sndIndex, X, Y, MapData(Map, X, Y).Blocked)
-            Call Bloquear(toMap, sndIndex, X - 1, Y, MapData(Map, X - 1, Y).Blocked)
-            Call Bloquear(toMap, sndIndex, X + 1, Y, MapData(Map, X + 1, Y).Blocked)
-        Else
-            ' Bloqueos superiores
-106         Call Bloquear(toMap, sndIndex, X, Y, MapData(Map, X, Y).Blocked)
-108         Call Bloquear(toMap, sndIndex, X - 1, Y, MapData(Map, X - 1, Y).Blocked)
+        ModPuerta = ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).Subtipo
 
-            ' Bloqueos inferiores
-110         Call Bloquear(toMap, sndIndex, X, Y + 1, MapData(Map, X, Y + 1).Blocked)
-112         Call Bloquear(toMap, sndIndex, X - 1, Y + 1, MapData(Map, X - 1, Y + 1).Blocked)
+        Select Case ModPuerta
+        
+            Case 0
+106             ' Bloqueos superiores
+                Call Bloquear(toMap, sndIndex, X, Y, MapData(Map, X, Y).Blocked)
+108             Call Bloquear(toMap, sndIndex, X - 1, Y, MapData(Map, X - 1, Y).Blocked)
 
-        End If
+                ' Bloqueos inferiores
+110             Call Bloquear(toMap, sndIndex, X, Y + 1, MapData(Map, X, Y + 1).Blocked)
+112             Call Bloquear(toMap, sndIndex, X - 1, Y + 1, MapData(Map, X - 1, Y + 1).Blocked)
+
+            Case 1
+
+            Case 2
+                ' Bloqueos superiores
+                Call Bloquear(toMap, sndIndex, X, Y - 1, MapData(Map, X, Y - 1).Blocked)
+                Call Bloquear(toMap, sndIndex, X - 1, Y - 1, MapData(Map, X - 1, Y - 1).Blocked)
+                Call Bloquear(toMap, sndIndex, X + 1, Y - 1, MapData(Map, X + 1, Y - 1).Blocked)
+                ' Bloqueos inferiores
+                Call Bloquear(toMap, sndIndex, X, Y, MapData(Map, X, Y).Blocked)
+                Call Bloquear(toMap, sndIndex, X - 1, Y, MapData(Map, X - 1, Y).Blocked)
+                Call Bloquear(toMap, sndIndex, X + 1, Y, MapData(Map, X + 1, Y).Blocked)
+        End Select
 
         Exit Sub
 
@@ -199,29 +207,36 @@ Sub BloquearPuerta(ByVal Map As Integer, _
                    ByVal Bloquear As Boolean)
         
         On Error GoTo BloquearPuerta_Err
-    
-        'ver reyarb
-             
-        If ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).Subtipo = 2 Then
+        Dim ModPuerta As Integer
         
-            MapData(Map, X, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X, Y - 1).Blocked Or eBlock.NORTH, MapData(Map, X, Y - 1).Blocked And Not eBlock.NORTH)
-            MapData(Map, X - 1, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y - 1).Blocked Or eBlock.NORTH, MapData(Map, X - 1, Y - 1).Blocked And Not eBlock.NORTH)
-            MapData(Map, X + 1, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y - 1).Blocked Or eBlock.NORTH, MapData(Map, X + 1, Y - 1).Blocked And Not eBlock.NORTH)
-            ' Cambio bloqueos inferiores
-            MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked Or eBlock.SOUTH, MapData(Map, X, Y).Blocked And Not eBlock.SOUTH)
-            MapData(Map, X - 1, Y).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y).Blocked Or eBlock.SOUTH, MapData(Map, X - 1, Y).Blocked And Not eBlock.SOUTH)
-            MapData(Map, X + 1, Y).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y).Blocked Or eBlock.SOUTH, MapData(Map, X + 1, Y).Blocked And Not eBlock.SOUTH)
-        Else
-    
-            ' Cambio bloqueos superiores
-100         MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked Or eBlock.NORTH, MapData(Map, X, Y).Blocked And Not eBlock.NORTH)
-102         MapData(Map, X - 1, Y).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y).Blocked Or eBlock.NORTH, MapData(Map, X - 1, Y).Blocked And Not eBlock.NORTH)
+        'ver reyarb
+        ModPuerta = ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).Subtipo
 
-            ' Cambio bloqueos inferiores
-104         MapData(Map, X, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X, Y + 1).Blocked Or eBlock.SOUTH, MapData(Map, X, Y + 1).Blocked And Not eBlock.SOUTH)
-106         MapData(Map, X - 1, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y + 1).Blocked Or eBlock.SOUTH, MapData(Map, X - 1, Y + 1).Blocked And Not eBlock.SOUTH)
+        Select Case ModPuerta
+        
+            Case 0
+100
+                ' Bloqueos superiores
+                MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked Or eBlock.NORTH, MapData(Map, X, Y).Blocked And Not eBlock.NORTH)
+102             MapData(Map, X - 1, Y).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y).Blocked Or eBlock.NORTH, MapData(Map, X - 1, Y).Blocked And Not eBlock.NORTH)
 
-        End If
+                ' Cambio bloqueos inferiores
+104             MapData(Map, X, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X, Y + 1).Blocked Or eBlock.SOUTH, MapData(Map, X, Y + 1).Blocked And Not eBlock.SOUTH)
+106             MapData(Map, X - 1, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y + 1).Blocked Or eBlock.SOUTH, MapData(Map, X - 1, Y + 1).Blocked And Not eBlock.SOUTH)
+
+            Case 1
+
+            Case 2
+                ' Bloqueos superiores
+                MapData(Map, X, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X, Y - 1).Blocked Or eBlock.NORTH, MapData(Map, X, Y - 1).Blocked And Not eBlock.NORTH)
+                MapData(Map, X - 1, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y - 1).Blocked Or eBlock.NORTH, MapData(Map, X - 1, Y - 1).Blocked And Not eBlock.NORTH)
+                MapData(Map, X + 1, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y - 1).Blocked Or eBlock.NORTH, MapData(Map, X + 1, Y - 1).Blocked And Not eBlock.NORTH)
+                ' Cambio bloqueos inferiores
+                MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked Or eBlock.SOUTH, MapData(Map, X, Y).Blocked And Not eBlock.SOUTH)
+                MapData(Map, X - 1, Y).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y).Blocked Or eBlock.SOUTH, MapData(Map, X - 1, Y).Blocked And Not eBlock.SOUTH)
+                MapData(Map, X + 1, Y).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y).Blocked Or eBlock.SOUTH, MapData(Map, X + 1, Y).Blocked And Not eBlock.SOUTH)
+        End Select
+
         ' Mostramos a todos
 108     Call MostrarBloqueosPuerta(True, Map, X, Y)
         
