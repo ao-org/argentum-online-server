@@ -1595,11 +1595,10 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                  
 422         If UserList(tU).Counters.Velocidad = 0 Then
 424             UserList(tU).flags.VelocidadBackup = UserList(tU).Char.speeding
+                UserList(tU).Char.speeding = UserList(tU).Char.speeding * Hechizos(h).Velocidad
+                Call SendData(SendTarget.ToPCArea, tU, PrepareMessageSpeedingACT(UserList(tU).Char.CharIndex, UserList(tU).Char.speeding))
             End If
 
-426         UserList(tU).Char.speeding = Hechizos(h).Velocidad
-428         Call SendData(SendTarget.ToPCArea, tU, PrepareMessageSpeedingACT(UserList(tU).Char.CharIndex, UserList(tU).Char.speeding))
-            'End If
 430         UserList(tU).Counters.Velocidad = Hechizos(h).Duration
 
         End If
@@ -3645,11 +3644,9 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
             
 708         If UserList(tU).Counters.Velocidad = 0 Then
 710             UserList(tU).flags.VelocidadBackup = UserList(tU).Char.speeding
-
+712             UserList(tU).Char.speeding = UserList(tU).Char.speeding * Hechizos(h).Velocidad
+714             Call SendData(SendTarget.ToPCArea, tU, PrepareMessageSpeedingACT(UserList(tU).Char.CharIndex, UserList(tU).Char.speeding))
             End If
-
-712         UserList(tU).Char.speeding = Hechizos(h).Velocidad
-714         Call SendData(SendTarget.ToPCArea, tU, PrepareMessageSpeedingACT(UserList(tU).Char.CharIndex, UserList(tU).Char.speeding))
             
 716         UserList(tU).Counters.Velocidad = Hechizos(h).Duration
 
@@ -4109,11 +4106,10 @@ Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y As Byte,
 
 342         If UserList(NpcIndex).Counters.Velocidad = 0 Then
 344             UserList(NpcIndex).flags.VelocidadBackup = UserList(NpcIndex).Char.speeding
-
+346             UserList(NpcIndex).Char.speeding = UserList(NpcIndex).Char.speeding * Hechizos(h2).Velocidad
+348             Call SendData(SendTarget.ToPCArea, NpcIndex, PrepareMessageSpeedingACT(UserList(NpcIndex).Char.CharIndex, UserList(NpcIndex).Char.speeding))
             End If
 
-346         UserList(NpcIndex).Char.speeding = Hechizos(h2).Velocidad
-348         Call SendData(SendTarget.ToPCArea, NpcIndex, PrepareMessageSpeedingACT(UserList(NpcIndex).Char.CharIndex, UserList(NpcIndex).Char.speeding))
 350         UserList(NpcIndex).Counters.Velocidad = Hechizos(h2).Duration
 
         End If
