@@ -808,21 +808,25 @@ AccionParaYunque_Err:
         
 End Sub
 
-Sub AccionParaPuerta(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal UserIndex As Integer)
+Sub AccionParaPuerta(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal UserIndex As Integer, Optional ByVal SinDistancia As Boolean)
         On Error GoTo Handler
 
-        Dim puerta As ObjData
+        Dim puerta As ObjData 'ver ReyarB
+        
+        
 
-        If Distance(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, X, Y) > 2 Then
+        
+        If Distance(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, X, Y) > 2 And Not SinDistancia Then
             ' Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
             Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
 
+
         puerta = ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex)
 
-        If puerta.Llave = 1 Then
+        If puerta.Llave = 1 And Not SinDistancia Then
             Call WriteConsoleMsg(UserIndex, "La puerta esta cerrada con llave.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
@@ -835,6 +839,10 @@ Sub AccionParaPuerta(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, ByV
             MapData(Map, X, Y).ObjInfo.ObjIndex = puerta.IndexCerrada
             Call BloquearPuerta(Map, X, Y, True)
 
+        End If
+
+        If ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).Subtipo = 1 Then
+             Call AccionParaPuerta(Map, X - 3, Y + 1, UserIndex, True)
         End If
 
         Call modSendData.SendToAreaByPos(Map, X, Y, PrepareMessageObjectCreate(MapData(Map, X, Y).ObjInfo.ObjIndex, X, Y))
