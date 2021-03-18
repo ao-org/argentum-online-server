@@ -159,7 +159,7 @@ Sub MostrarBloqueosPuerta(ByVal toMap As Boolean, _
         
         On Error GoTo MostrarBloqueosPuerta_Err
         
-        Dim Map As Integer
+        Dim Map       As Integer
         Dim ModPuerta As Integer
         
 100     If toMap Then
@@ -182,7 +182,8 @@ Sub MostrarBloqueosPuerta(ByVal toMap As Boolean, _
 112             Call Bloquear(toMap, sndIndex, X - 1, Y + 1, MapData(Map, X - 1, Y + 1).Blocked)
 
             Case 1
-
+                ' para palancas o teclas sin modicar bloqueos en X,Y
+                
             Case 2
                 ' Bloqueos superiores
                 Call Bloquear(toMap, sndIndex, X, Y - 1, MapData(Map, X, Y - 1).Blocked)
@@ -192,6 +193,16 @@ Sub MostrarBloqueosPuerta(ByVal toMap As Boolean, _
                 Call Bloquear(toMap, sndIndex, X, Y, MapData(Map, X, Y).Blocked)
                 Call Bloquear(toMap, sndIndex, X - 1, Y, MapData(Map, X - 1, Y).Blocked)
                 Call Bloquear(toMap, sndIndex, X + 1, Y, MapData(Map, X + 1, Y).Blocked)
+                
+            Case 3
+                ' Bloqueos superiores
+                Call Bloquear(toMap, sndIndex, X, Y, MapData(Map, X, Y).Blocked)
+                Call Bloquear(toMap, sndIndex, X - 1, Y, MapData(Map, X - 1, Y).Blocked)
+                Call Bloquear(toMap, sndIndex, X + 1, Y, MapData(Map, X + 1, Y).Blocked)
+                ' Bloqueos inferiores
+                Call Bloquear(toMap, sndIndex, X, Y + 1, MapData(Map, X, Y + 1).Blocked)
+                Call Bloquear(toMap, sndIndex, X - 1, Y + 1, MapData(Map, X - 1, Y + 1).Blocked)
+                Call Bloquear(toMap, sndIndex, X + 1, Y + 1, MapData(Map, X + 1, Y + 1).Blocked)
         End Select
 
         Exit Sub
@@ -214,7 +225,7 @@ Sub BloquearPuerta(ByVal Map As Integer, _
 
         Select Case ModPuerta
         
-            Case 0
+            Case 0 'puerta 2 tiles
 100
                 ' Bloqueos superiores
                 MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked Or eBlock.NORTH, MapData(Map, X, Y).Blocked And Not eBlock.NORTH)
@@ -225,12 +236,23 @@ Sub BloquearPuerta(ByVal Map As Integer, _
 106             MapData(Map, X - 1, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y + 1).Blocked Or eBlock.SOUTH, MapData(Map, X - 1, Y + 1).Blocked And Not eBlock.SOUTH)
 
             Case 1
+                ' para palancas o teclas sin modicar bloqueos en X,Y
 
-            Case 2
+            Case 2 ' puerta 3 tiles 1 arriba
                 ' Bloqueos superiores
                 MapData(Map, X, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X, Y - 1).Blocked Or eBlock.NORTH, MapData(Map, X, Y - 1).Blocked And Not eBlock.NORTH)
                 MapData(Map, X - 1, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y - 1).Blocked Or eBlock.NORTH, MapData(Map, X - 1, Y - 1).Blocked And Not eBlock.NORTH)
                 MapData(Map, X + 1, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y - 1).Blocked Or eBlock.NORTH, MapData(Map, X + 1, Y - 1).Blocked And Not eBlock.NORTH)
+                ' Cambio bloqueos inferiores
+                MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked Or eBlock.SOUTH, MapData(Map, X, Y).Blocked And Not eBlock.SOUTH)
+                MapData(Map, X - 1, Y).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y).Blocked Or eBlock.SOUTH, MapData(Map, X - 1, Y).Blocked And Not eBlock.SOUTH)
+                MapData(Map, X + 1, Y).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y).Blocked Or eBlock.SOUTH, MapData(Map, X + 1, Y).Blocked And Not eBlock.SOUTH)
+                
+            Case 3 ' puerta 3 tiles
+                ' Bloqueos superiores
+                MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked Or eBlock.NORTH, MapData(Map, X, Y).Blocked And Not eBlock.NORTH)
+                MapData(Map, X - 1, Y).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y).Blocked Or eBlock.NORTH, MapData(Map, X - 1, Y).Blocked And Not eBlock.NORTH)
+                MapData(Map, X + 1, Y).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y).Blocked Or eBlock.NORTH, MapData(Map, X + 1, Y).Blocked And Not eBlock.NORTH)
                 ' Cambio bloqueos inferiores
                 MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked Or eBlock.SOUTH, MapData(Map, X, Y).Blocked And Not eBlock.SOUTH)
                 MapData(Map, X - 1, Y).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y).Blocked Or eBlock.SOUTH, MapData(Map, X - 1, Y).Blocked And Not eBlock.SOUTH)
@@ -1710,12 +1732,13 @@ Public Sub EfectoVelocidadUser(ByVal UserIndex As Integer)
 102         UserList(UserIndex).Counters.Velocidad = UserList(UserIndex).Counters.Velocidad - 1
         Else
 104         UserList(UserIndex).Char.speeding = UserList(UserIndex).flags.VelocidadBackup
-            UserList(UserIndex).flags.VelocidadBackup = 0
-            
+    
             'Call WriteVelocidadToggle(UserIndex)
 106         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(UserList(UserIndex).Char.CharIndex, UserList(UserIndex).flags.VelocidadBackup))
+108         UserList(UserIndex).flags.VelocidadBackup = 0
 
         End If
+
         
         Exit Sub
 
