@@ -1063,6 +1063,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
         Dim errordesc As String
 
         ObjIndex = UserList(UserIndex).Invent.Object(slot).ObjIndex
+        obj = ObjData(ObjIndex)
         
         Select Case PuedeUsarObjeto(UserIndex, ObjIndex)
             Case 0 ' Si puede usar
@@ -1085,7 +1086,6 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 
         End Select
 
-        obj = ObjData(ObjIndex)
 
 118     With UserList(UserIndex)
              If .flags.Muerto = 1 Then
