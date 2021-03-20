@@ -13,7 +13,7 @@ Public Evento(0 To 23)      As EventoPropiedades
 Public Type EventoPropiedades
 
     Tipo As Byte
-    duracion As Byte
+    Duracion As Byte
     multiplicacion As Byte
 
 End Type
@@ -27,6 +27,10 @@ Public DropMultOld        As Integer
 Public RecoleccionMultOld As Integer
 
 Public PublicidadEvento   As String
+
+Enum TipoEvento
+    Invasion
+End Enum
 
 Public Sub CheckEvento(ByVal Hora As Byte)
         
@@ -44,35 +48,35 @@ Public Sub CheckEvento(ByVal Hora As Byte)
 
             Case 1
 108             OroMult = OroMult * Evento(Hora).multiplicacion
-110             aviso = aviso & " Oro multiplicado por " & Evento(Hora).multiplicacion & " - Duración del evento: " & Evento(Hora).duracion & " minutos."
+110             aviso = aviso & " Oro multiplicado por " & Evento(Hora).multiplicacion & " - Duración del evento: " & Evento(Hora).Duracion & " minutos."
 112             PublicidadEvento = PublicidadEvento & " Oro multiplicado por " & Evento(Hora).multiplicacion
 
 114         Case 2
 116             ExpMult = ExpMult * Evento(Hora).multiplicacion
-118             aviso = aviso & " Experiencia multiplicada por " & Evento(Hora).multiplicacion & " - Duración del evento: " & Evento(Hora).duracion & " minutos."
+118             aviso = aviso & " Experiencia multiplicada por " & Evento(Hora).multiplicacion & " - Duración del evento: " & Evento(Hora).Duracion & " minutos."
 120             PublicidadEvento = PublicidadEvento & " Experiencia multiplicada por " & Evento(Hora).multiplicacion
 
 122         Case 3
 124             RecoleccionMult = RecoleccionMult * Evento(Hora).multiplicacion
-126             aviso = aviso & " Recoleccion multiplicada por " & Evento(Hora).multiplicacion & " - Duración del evento: " & Evento(Hora).duracion & " minutos."
+126             aviso = aviso & " Recoleccion multiplicada por " & Evento(Hora).multiplicacion & " - Duración del evento: " & Evento(Hora).Duracion & " minutos."
 128             PublicidadEvento = PublicidadEvento & " Recoleccion multiplicada por " & Evento(Hora).multiplicacion
 
 130         Case 4
 132             DropMult = DropMult / Evento(Hora).multiplicacion
-134             aviso = aviso & " Dropeo multiplicado por " & Evento(Hora).multiplicacion & " - Duración del evento: " & Evento(Hora).duracion & " minutos."
+134             aviso = aviso & " Dropeo multiplicado por " & Evento(Hora).multiplicacion & " - Duración del evento: " & Evento(Hora).Duracion & " minutos."
 136             PublicidadEvento = PublicidadEvento & " Dropeo multiplicado por " & Evento(Hora).multiplicacion
 
 138         Case 5
 140             ExpMult = ExpMult * Evento(Hora).multiplicacion
 142             OroMult = OroMult * Evento(Hora).multiplicacion
-144             aviso = aviso & " Oro y experiencia multiplicados por " & Evento(Hora).multiplicacion & " - Duración del evento: " & Evento(Hora).duracion & " minutos."
+144             aviso = aviso & " Oro y experiencia multiplicados por " & Evento(Hora).multiplicacion & " - Duración del evento: " & Evento(Hora).Duracion & " minutos."
 146             PublicidadEvento = PublicidadEvento & " Oro y experiencia multiplicados por " & Evento(Hora).multiplicacion
 
 148         Case 6
 150             ExpMult = ExpMult * Evento(Hora).multiplicacion
 152             OroMult = OroMult * Evento(Hora).multiplicacion
 154             RecoleccionMult = RecoleccionMult * Evento(Hora).multiplicacion
-156             aviso = aviso & " Oro, experiencia y recoleccion multiplicados por " & Evento(Hora).multiplicacion & " - Duración del evento: " & Evento(Hora).duracion & " minutos."
+156             aviso = aviso & " Oro, experiencia y recoleccion multiplicados por " & Evento(Hora).multiplicacion & " - Duración del evento: " & Evento(Hora).Duracion & " minutos."
 158             PublicidadEvento = PublicidadEvento & " Oro, experiencia y recoleccion multiplicados por " & Evento(Hora).multiplicacion
 
 160         Case 7
@@ -80,7 +84,7 @@ Public Sub CheckEvento(ByVal Hora As Byte)
 164             OroMult = OroMult * Evento(Hora).multiplicacion
 166             DropMult = DropMult / Evento(Hora).multiplicacion
 168             RecoleccionMult = RecoleccionMult * Evento(Hora).multiplicacion
-170             aviso = aviso & " Oro, experiencia, recoleccion y dropeo multiplicados por " & Evento(Hora).multiplicacion & " - Duración del evento: " & Evento(Hora).duracion & " minutos."
+170             aviso = aviso & " Oro, experiencia, recoleccion y dropeo multiplicados por " & Evento(Hora).multiplicacion & " - Duración del evento: " & Evento(Hora).Duracion & " minutos."
 172             PublicidadEvento = PublicidadEvento & " Oro, experiencia, recoleccion y dropeo multiplicados por " & Evento(Hora).multiplicacion
 
 174         Case Else
@@ -94,12 +98,12 @@ Public Sub CheckEvento(ByVal Hora As Byte)
 
 180     Call AgregarAConsola(aviso)
 
-182     EventoAcutal.duracion = Evento(Hora).duracion
+182     EventoAcutal.Duracion = Evento(Hora).Duracion
 184     EventoAcutal.multiplicacion = Evento(Hora).multiplicacion
 186     EventoAcutal.Tipo = Evento(Hora).Tipo
 
 188     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(aviso, FontTypeNames.FONTTYPE_New_Eventos))
-190     TiempoRestanteEvento = Evento(Hora).duracion
+190     TiempoRestanteEvento = Evento(Hora).Duracion
 192     frmMain.Evento.Enabled = True
 194     EventoActivo = True
         
@@ -107,7 +111,7 @@ Public Sub CheckEvento(ByVal Hora As Byte)
         Exit Sub
 
 CheckEvento_Err:
-196     Call RegistrarError(Err.Number, Err.description, "ModEventos.CheckEvento", Erl)
+196     Call RegistrarError(Err.Number, Err.Description, "ModEventos.CheckEvento", Erl)
 198     Resume Next
         
 End Sub
@@ -161,7 +165,7 @@ Public Sub FinalizarEvento()
         Exit Sub
 
 FinalizarEvento_Err:
-152     Call RegistrarError(Err.Number, Err.description, "ModEventos.FinalizarEvento", Erl)
+152     Call RegistrarError(Err.Number, Err.Description, "ModEventos.FinalizarEvento", Erl)
 154     Resume Next
         
 End Sub
@@ -179,27 +183,27 @@ Public Function DescribirEvento(ByVal Hora As Byte) As String
 
             Case 1
 
-104             aviso = aviso & "Oro multiplicado por " & Evento(Hora).multiplicacion & " - Duración: " & Evento(Hora).duracion & " minutos"
+104             aviso = aviso & "Oro multiplicado por " & Evento(Hora).multiplicacion & " - Duración: " & Evento(Hora).Duracion & " minutos"
 
 106         Case 2
         
-108             aviso = aviso & "Experiencia multiplicada por " & Evento(Hora).multiplicacion & " - Duración: " & Evento(Hora).duracion & " minutos"
+108             aviso = aviso & "Experiencia multiplicada por " & Evento(Hora).multiplicacion & " - Duración: " & Evento(Hora).Duracion & " minutos"
 
 110         Case 3
-112             aviso = aviso & "Recoleccion multiplicada por " & Evento(Hora).multiplicacion & " - Duración: " & Evento(Hora).duracion & " minutos"
+112             aviso = aviso & "Recoleccion multiplicada por " & Evento(Hora).multiplicacion & " - Duración: " & Evento(Hora).Duracion & " minutos"
 
 114         Case 4
-116             aviso = aviso & "Dropeo multiplicado por " & Evento(Hora).multiplicacion & " - Duración: " & Evento(Hora).duracion & " minutos"
+116             aviso = aviso & "Dropeo multiplicado por " & Evento(Hora).multiplicacion & " - Duración: " & Evento(Hora).Duracion & " minutos"
        
 118         Case 5
-120             aviso = aviso & "Oro y experiencia multiplicados por " & Evento(Hora).multiplicacion & " - Duración: " & Evento(Hora).duracion & " minutos"
+120             aviso = aviso & "Oro y experiencia multiplicados por " & Evento(Hora).multiplicacion & " - Duración: " & Evento(Hora).Duracion & " minutos"
 
 122         Case 6
 
-124             aviso = aviso & "Oro, experiencia y recoleccion multiplicados por " & Evento(Hora).multiplicacion & " - Duración: " & Evento(Hora).duracion & " minutos"
+124             aviso = aviso & "Oro, experiencia y recoleccion multiplicados por " & Evento(Hora).multiplicacion & " - Duración: " & Evento(Hora).Duracion & " minutos"
 
 126         Case 7
-128             aviso = aviso & "Oro, experiencia, recoleccion y dropeo multiplicados por " & Evento(Hora).multiplicacion & " - Duración: " & Evento(Hora).duracion & " minutos"
+128             aviso = aviso & "Oro, experiencia, recoleccion y dropeo multiplicados por " & Evento(Hora).multiplicacion & " - Duración: " & Evento(Hora).Duracion & " minutos"
 
 130         Case Else
 132             aviso = aviso & "sin información"
@@ -214,7 +218,7 @@ Public Function DescribirEvento(ByVal Hora As Byte) As String
         Exit Function
 
 DescribirEvento_Err:
-138     Call RegistrarError(Err.Number, Err.description, "ModEventos.DescribirEvento", Erl)
+138     Call RegistrarError(Err.Number, Err.Description, "ModEventos.DescribirEvento", Erl)
 140     Resume Next
         
 End Function
@@ -231,7 +235,7 @@ Public Sub CargarEventos()
 100     For i = 0 To 23
 102         EventoStrg = GetVar(IniPath & "Configuracion.ini", "EVENTOS", i)
 104         Evento(i).Tipo = val(ReadField(1, EventoStrg, Asc("-")))
-106         Evento(i).duracion = val(ReadField(2, EventoStrg, Asc("-")))
+106         Evento(i).Duracion = val(ReadField(2, EventoStrg, Asc("-")))
 108         Evento(i).multiplicacion = val(ReadField(3, EventoStrg, Asc("-")))
 110     Next i
 
@@ -244,12 +248,12 @@ Public Sub CargarEventos()
         Exit Sub
 
 CargarEventos_Err:
-120     Call RegistrarError(Err.Number, Err.description, "ModEventos.CargarEventos", Erl)
+120     Call RegistrarError(Err.Number, Err.Description, "ModEventos.CargarEventos", Erl)
 122     Resume Next
         
 End Sub
 
-Public Sub ForzarEvento(ByVal Tipo As Byte, ByVal duracion As Byte, ByVal multi As Byte, ByVal Quien As String)
+Public Sub ForzarEvento(ByVal Tipo As Byte, ByVal Duracion As Byte, ByVal multi As Byte, ByVal Quien As String)
         
         On Error GoTo ForzarEvento_Err
         
@@ -260,7 +264,7 @@ Public Sub ForzarEvento(ByVal Tipo As Byte, ByVal duracion As Byte, ByVal multi 
 
         End If
  
-104     If duracion > 59 Then
+104     If Duracion > 59 Then
 106         Call WriteConsoleMsg(NameIndex(Quien), "Duracion invalida, maxima 59 minutos.", FontTypeNames.FONTTYPE_New_Eventos)
             Exit Sub
 
@@ -281,35 +285,35 @@ Public Sub ForzarEvento(ByVal Tipo As Byte, ByVal duracion As Byte, ByVal multi 
 
             Case 1
 118             OroMult = OroMult * multi
-120             aviso = aviso & " Oro multiplicado por " & multi & " - Duración del evento: " & duracion & " minutos."
+120             aviso = aviso & " Oro multiplicado por " & multi & " - Duración del evento: " & Duracion & " minutos."
 122             PublicidadEvento = PublicidadEvento & " Oro multiplicado por " & multi
 
 124         Case 2
 126             ExpMult = ExpMult * multi
-128             aviso = aviso & " Experiencia multiplicada por " & multi & " - Duración del evento: " & duracion & " minutos."
+128             aviso = aviso & " Experiencia multiplicada por " & multi & " - Duración del evento: " & Duracion & " minutos."
 130             PublicidadEvento = PublicidadEvento & " Experiencia multiplicada por " & multi
 
 132         Case 3
 134             RecoleccionMult = RecoleccionMult * multi
-136             aviso = aviso & " Recoleccion multiplicada por " & multi & " - Duración del evento: " & duracion & " minutos."
+136             aviso = aviso & " Recoleccion multiplicada por " & multi & " - Duración del evento: " & Duracion & " minutos."
 138             PublicidadEvento = PublicidadEvento & " Recoleccion multiplicada por " & multi
 
 140         Case 4
 142             DropMult = DropMult / multi
-144             aviso = aviso & " Dropeo multiplicado por " & multi & " - Duración del evento: " & duracion & " minutos."
+144             aviso = aviso & " Dropeo multiplicado por " & multi & " - Duración del evento: " & Duracion & " minutos."
 146             PublicidadEvento = PublicidadEvento & " Dropeo multiplicado por " & multi
 
 148         Case 5
 150             ExpMult = ExpMult * multi
 152             OroMult = OroMult * multi
-154             aviso = aviso & " Oro y experiencia multiplicados por " & multi & " - Duración del evento: " & duracion & " minutos."
+154             aviso = aviso & " Oro y experiencia multiplicados por " & multi & " - Duración del evento: " & Duracion & " minutos."
 156             PublicidadEvento = PublicidadEvento & " Oro y experiencia multiplicados por " & multi
 
 158         Case 6
 160             ExpMult = ExpMult * multi
 162             OroMult = OroMult * multi
 164             RecoleccionMult = RecoleccionMult * multi
-166             aviso = aviso & " Oro, experiencia y recoleccion multiplicados por " & multi & " - Duración del evento: " & duracion & " minutos."
+166             aviso = aviso & " Oro, experiencia y recoleccion multiplicados por " & multi & " - Duración del evento: " & Duracion & " minutos."
 168             PublicidadEvento = PublicidadEvento & " Oro, experiencia y recoleccion multiplicados por " & multi
 
 170         Case 7
@@ -317,7 +321,7 @@ Public Sub ForzarEvento(ByVal Tipo As Byte, ByVal duracion As Byte, ByVal multi 
 174             OroMult = OroMult * multi
 176             DropMult = DropMult / multi
 178             RecoleccionMult = RecoleccionMult * multi
-180             aviso = aviso & " Oro, experiencia, recoleccion y dropeo multiplicados por " & multi & " - Duración del evento: " & duracion & " minutos."
+180             aviso = aviso & " Oro, experiencia, recoleccion y dropeo multiplicados por " & multi & " - Duración del evento: " & Duracion & " minutos."
 182             PublicidadEvento = PublicidadEvento & " Oro, experiencia, recoleccion y dropeo multiplicados por " & multi
 
 184         Case Else
@@ -329,13 +333,13 @@ Public Sub ForzarEvento(ByVal Tipo As Byte, ByVal duracion As Byte, ByVal multi 
 
 188     Call AgregarAConsola(aviso)
 
-190     EventoAcutal.duracion = duracion
+190     EventoAcutal.Duracion = Duracion
 192     EventoAcutal.multiplicacion = multi
 194     EventoAcutal.Tipo = Tipo
 
 196     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(aviso, FontTypeNames.FONTTYPE_New_Eventos))
 198     Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(553, NO_3D_SOUND, NO_3D_SOUND)) ' Explota un trueno
-200     TiempoRestanteEvento = duracion
+200     TiempoRestanteEvento = Duracion
 202     frmMain.Evento.Enabled = True
 204     EventoActivo = True
 
@@ -343,12 +347,14 @@ Public Sub ForzarEvento(ByVal Tipo As Byte, ByVal duracion As Byte, ByVal multi 
         Exit Sub
 
 ForzarEvento_Err:
-206     Call RegistrarError(Err.Number, Err.description, "ModEventos.ForzarEvento", Erl)
+206     Call RegistrarError(Err.Number, Err.Description, "ModEventos.ForzarEvento", Erl)
 208     Resume Next
         
 End Sub
 
-Public Sub EventoDeBoss()
-
+Public Sub IniciarEvento(Tipo As TipoEvento, Data As Variant)
+    Select Case Tipo
+        Case TipoEvento.Invasion
+            Call IniciarInvasion(Data)
+    End Select
 End Sub
-

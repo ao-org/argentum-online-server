@@ -639,6 +639,7 @@ Sub Main()
         End If
         
         Call CargarInfoRetos
+        Call CargarInfoEventos
     
         ' Pretorianos
 206     frmCargando.Label1(2).Caption = "Cargando Pretorianos.dat"
@@ -1060,7 +1061,7 @@ LogDesarrollo_Err:
         
 End Sub
 
-Public Sub LogGM(Nombre As String, texto As String)
+Public Sub LogGM(nombre As String, texto As String)
 
         On Error GoTo ErrHandler
 
@@ -1068,7 +1069,7 @@ Public Sub LogGM(Nombre As String, texto As String)
 
 100     nfile = FreeFile ' obtenemos un canal
         'Guardamos todo en el mismo lugar. Pablo (ToxicWaste) 18/05/07
-102     Open App.Path & "\logs\" & Nombre & ".log" For Append Shared As #nfile
+102     Open App.Path & "\logs\" & nombre & ".log" For Append Shared As #nfile
 104     Print #nfile, Date & " " & Time & " " & texto
 106     Close #nfile
 
@@ -2338,6 +2339,37 @@ Sub PasarSegundo()
 
 234     Next i
 
+        ' **********************************
+        ' **********  Invasiones  **********
+        ' **********************************
+        For i = 1 To UBound(Invasiones)
+            With Invasiones(i)
+
+                ' Si la invasión está activa
+                If .Activa Then
+                    .TimerSpawn = .TimerSpawn + 1
+
+                    ' Comprobamos si hay que spawnear NPCs
+                    If .TimerSpawn >= .IntervaloSpawn Then
+                        Call InvasionSpawnNPC(i)
+                        .TimerSpawn = 0
+                    End If
+                    
+                    ' ------------------------------------
+                    
+                    .TimerMostrarInfo = .TimerMostrarInfo + 1
+                    
+                    ' Comprobamos si hay que mostrar la info
+                    If .TimerMostrarInfo >= 5 Then
+                        Call EnviarInfoInvasion(i)
+                        .TimerMostrarInfo = 0
+                    End If
+                End If
+            
+            End With
+        Next
+        ' **********************************
+
         Exit Sub
 
 ErrHandler:
@@ -2469,7 +2501,7 @@ Public Sub FreeNPCs()
         Dim LoopC As Long
     
         ' Free all NPC indexes
-100     For LoopC = 1 To MAXNPCS
+100     For LoopC = 1 To MaxNPCs
 102         NpcList(LoopC).flags.NPCActive = False
 104     Next LoopC
 
@@ -2777,4 +2809,18 @@ End Function
 'https://www.vbforums.com/showthread.php?231468-VB-Detect-if-you-are-running-in-the-IDE&p=5413357&viewfull=1#post5413357
 Public Function RunningInVB(Optional ByRef b As Boolean = True) As Boolean
     If b Then Debug.Assert Not RunningInVB(RunningInVB) Else b = True
+End Function
+
+' WyroX: Mensaje a todo el mundo
+Public Sub MensajeGlobal(texto As String, Fuente As FontTypeNames)
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(texto, Fuente))
+End Sub
+
+' WyroX: Devuelve si X e Y están dentro del Rectangle
+Public Function InsideRectangle(R As Rectangle, ByVal X As Integer, ByVal Y As Integer) As Boolean
+    If X < R.X1 Then Exit Function
+    If X > R.X2 Then Exit Function
+    If Y < R.Y1 Then Exit Function
+    If Y > R.Y2 Then Exit Function
+    InsideRectangle = True
 End Function

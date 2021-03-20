@@ -472,7 +472,7 @@ Public Const PieldeOsoPardo As Integer = 415 'OK
 
 Public Const PieldeOsoPolar As Integer = 416 'OK
 
-Public Const MAXNPCS        As Integer = 10000
+Public Const MaxNPCs        As Integer = 10000
 
 Public Const MAXCHARS       As Integer = 10000
 
@@ -841,7 +841,7 @@ Public Type tHechizo
     AntiRm As Byte
     
     'Sistema..
-    Nombre As String
+    nombre As String
     Desc As String
     PalabrasMagicas As String
     
@@ -1000,7 +1000,7 @@ End Type
 
 Public Type FXdata
 
-    Nombre As String
+    nombre As String
     GrhIndex As Long
     Delay As Integer
 
@@ -1068,7 +1068,7 @@ Public QuestList() As tQuest
 
 Public Type tQuest
 
-    Nombre As String
+    nombre As String
     Desc As String
     NextQuest As String
     DescFinal As String
@@ -1103,13 +1103,13 @@ Public Enum SolicitudRetoEstado
 End Enum
 
 Public Type SolicitudJugador
-    Nombre As String
+    nombre As String
     Aceptado As Boolean
     CurIndex As Integer
 End Type
 
 Public Type SolicitudReto
-    Estado As SolicitudRetoEstado
+    estado As SolicitudRetoEstado
     Jugadores() As SolicitudJugador
     Apuesta As Long
 End Type
@@ -1936,6 +1936,11 @@ Public Type NPCFlags
     LanzaSpells As Byte
     NPCIdle As Boolean
     
+    ' Invasiones
+    InvasionIndex As Integer
+    SpawnBox As Integer
+    IndexInInvasion As Integer
+    
     '[KEVIN]
     'DeQuest As Byte
     
@@ -2283,7 +2288,7 @@ End Type
 '*****************ARRAYS PUBLICOS*************************
 Public UserList()                         As user 'USUARIOS
 
-Public NpcList(1 To MAXNPCS)              As npc 'NPCS
+Public NpcList(1 To MaxNPCs)              As npc 'NPCS
 
 Public MapData()                          As MapBlock
 
@@ -2382,3 +2387,10 @@ End Enum
 
     Public Security As New clsSecurity
 #End If
+
+Public Type Rectangle
+    X1 As Integer
+    Y1 As Integer
+    X2 As Integer
+    Y2 As Integer
+End Type

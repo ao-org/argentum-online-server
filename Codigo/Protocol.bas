@@ -198,7 +198,7 @@ Private Enum ServerPacketID
     Redundancia
     SeguroResu
     Stopped
-
+    InvasionInfo
 End Enum
 
 Private Enum ClientPacketID
@@ -546,6 +546,7 @@ Private Enum NewPacksID
     SeguroResu
     CuentaExtractItem
     CuentaDeposit
+    CreateEvent
 End Enum
 
 Public Enum eEditOptions
@@ -1755,6 +1756,9 @@ Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
                 
             Case NewPacksID.CuentaDeposit
                 Call HandleCuentaDeposit(UserIndex)
+                
+            Case NewPacksID.CreateEvent
+                Call HandleCreateEvent(UserIndex)
             
 394         Case Else
                 'ERROR : Abort!
@@ -31903,4 +31907,88 @@ HandleCuentaDeposit_Err:
 124     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleCuentaDeposit", Erl)
 126     Resume Next
         
+End Sub
+
+Private Sub HandleCreateEvent(ByVal UserIndex As Integer)
+        
+    If UserList(UserIndex).incomingData.Length < 4 Then
+        Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
+        Exit Sub
+    End If
+    
+    On Error GoTo ErrHandler
+
+    With UserList(UserIndex)
+
+        'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
+        Dim Buffer As New clsByteQueue
+        Call Buffer.CopyBuffer(.incomingData)
+        
+        'Remove packet ID
+        Call Buffer.ReadInteger
+        
+        Dim name As String
+        name = Buffer.ReadASCIIString()
+        
+        'If we got here then packet is complete, copy data back to original queue
+        Call .incomingData.CopyBuffer(Buffer)
+
+        If LenB(name) = 0 Then Exit Sub
+
+        If Not EsGM(UserIndex) Then Exit Sub
+
+        If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then Exit Sub
+        
+        Select Case UCase$(name)
+            Case "INVASION BANDER"
+                Call IniciarEvento(TipoEvento.Invasion, 1)
+                Call LogGM(.name, "Forzó el evento Invasión en Banderville.")
+
+            Case Else
+                Call WriteConsoleMsg(UserIndex, "No existe el evento """ & name & """.", FontTypeNames.FONTTYPE_INFO)
+        End Select
+
+    End With
+    
+    Exit Sub
+    
+ErrHandler:
+
+    Dim Error As Long
+
+    Error = Err.Number
+
+    On Error GoTo 0
+    
+    'Destroy auxiliar buffer
+    Set Buffer = Nothing
+    
+    If Error <> 0 Then Err.raise Error
+        
+End Sub
+
+Sub WriteInvasionInfo(ByVal UserIndex As Integer, ByVal Invasion As Integer, ByVal PorcentajeVida As Byte, ByVal PorcentajeTiempo As Byte)
+    
+        On Error GoTo ErrHandler
+
+100     With UserList(UserIndex).outgoingData
+
+102         Call .WriteByte(ServerPacketID.InvasionInfo)
+        
+104         Call .WriteByte(Invasion)
+
+106         Call .WriteByte(PorcentajeVida)
+
+108         Call .WriteByte(PorcentajeTiempo)
+
+        End With
+
+        Exit Sub
+
+ErrHandler:
+110     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
+112         Call FlushBuffer(UserIndex)
+114         Resume
+        End If
+    
 End Sub

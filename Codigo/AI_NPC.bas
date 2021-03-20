@@ -50,6 +50,9 @@ Public Enum TipoAI
 
     ' Animado
     Caminata = 20
+    
+    ' Eventos
+    Invasion = 21
 
 End Enum
 
@@ -1023,6 +1026,11 @@ Sub NPCAI(ByVal NpcIndex As Integer)
                     falladesc = " fallo Caminata"
 
                     Call HacerCaminata(NpcIndex)
+                    
+                Case TipoAI.Invasion
+                    falladesc = " fallo Invasion"
+                    
+                    Call MovimientoInvasion(NpcIndex)
 
             End Select
 
@@ -1321,5 +1329,78 @@ Private Sub HacerCaminata(ByVal NpcIndex As Integer)
     
 Handler:
     Call RegistrarError(Err.Number, Err.Description, "AI.HacerCaminata", Erl)
+    Resume Next
+End Sub
+
+Private Sub MovimientoInvasion(ByVal NpcIndex As Integer)
+    On Error GoTo Handler
+    
+    With NpcList(NpcIndex)
+        Dim SpawnBox As tSpawnBox
+        SpawnBox = Invasiones(.flags.InvasionIndex).SpawnBoxes(.flags.SpawnBox)
+    
+        ' Calculamos la distancia a la muralla y generamos una posición de destino
+        Dim DistanciaMuralla As Integer, Destino As WorldPos
+        Destino = .Pos
+        
+        If SpawnBox.Heading = eHeading.EAST Or SpawnBox.Heading = eHeading.WEST Then
+            DistanciaMuralla = Abs(.Pos.X - SpawnBox.CoordMuralla)
+            Destino.X = SpawnBox.CoordMuralla
+        Else
+            DistanciaMuralla = Abs(.Pos.Y - SpawnBox.CoordMuralla)
+            Destino.Y = SpawnBox.CoordMuralla
+        End If
+
+        ' Si todavía está lejos de la muralla
+        If DistanciaMuralla > 1 Then
+            ' Tratamos de acercarnos (sin pisar)
+            Dim Heading As eHeading
+            Heading = FindDirectionEAO(.Pos, Destino, .flags.AguaValida, .flags.TierraInvalida = 0, True)
+            
+            ' Nos aseguramos que la posición nueva está dentro del rectángulo válido
+            Dim NextTile As WorldPos
+            NextTile = .Pos
+            Call HeadtoPos(Heading, NextTile)
+            
+            ' Si la posición nueva queda fuera del rectángulo válido
+            If Not InsideRectangle(SpawnBox.LegalBox, NextTile.X, NextTile.Y) Then
+                ' Invertimos la dirección de movimiento
+                Heading = InvertHeading(Heading)
+            End If
+            
+            ' Movemos el NPC
+            Call MoveNPCChar(NpcIndex, Heading)
+        
+        ' Si está pegado a la muralla
+        Else
+            ' Chequeamos el intervalo de ataque
+            If Not IntervaloPermiteAtacarNPC(NpcIndex) Then
+                Exit Sub
+            End If
+            
+            ' Nos aseguramos que mire hacia la muralla
+            If .Char.Heading <> SpawnBox.Heading Then
+                Call ChangeNPCChar(NpcIndex, .Char.Body, .Char.Head, SpawnBox.Heading)
+            End If
+            
+            ' Sonido de ataque (si tiene)
+            If .flags.Snd1 > 0 Then
+                Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessagePlayWave(.flags.Snd1, .Pos.X, .Pos.Y))
+            End If
+            
+            ' Sonido de impacto
+            Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessagePlayWave(SND_IMPACTO, .Pos.X, .Pos.Y))
+            
+            ' Dañamos la muralla
+            Call HacerDañoMuralla(.flags.InvasionIndex, RandomNumber(.Stats.MinHIT, .Stats.MaxHit))  ' TODO: Defensa de la muralla? No hace falta creo...
+
+        End If
+    
+    End With
+
+    Exit Sub
+    
+Handler:
+    Call RegistrarError(Err.Number, Err.Description, "AI.MovimientoInvasion", Erl)
     Resume Next
 End Sub
