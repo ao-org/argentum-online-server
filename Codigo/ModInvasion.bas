@@ -170,6 +170,7 @@ Sub IniciarInvasion(ByVal index As Integer)
         Call EnviarInfoInvasion(index)
         
         Call MensajeGlobal(.Desc, FontTypeNames.FONTTYPE_New_Eventos)
+        Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(150, NO_3D_SOUND, NO_3D_SOUND))
     
     End With
     
@@ -183,9 +184,11 @@ Sub FinalizarInvasion(ByVal index As Integer)
         
         If .VidaMuralla > 0 Then
             Call MensajeGlobal(.MensajeGanaron, FontTypeNames.FONTTYPE_New_Eventos)
+            Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(44, NO_3D_SOUND, NO_3D_SOUND))
             Ganaron = True
         Else
             Call MensajeGlobal(.MensajePerdieron, FontTypeNames.FONTTYPE_New_Eventos)
+            Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(45, NO_3D_SOUND, NO_3D_SOUND))
         End If
 
         ' Limpiamos flags
