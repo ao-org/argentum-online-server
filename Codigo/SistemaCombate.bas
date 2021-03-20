@@ -696,6 +696,11 @@ Public Sub UserDañoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
             ' Restamos el daño al NPC
 164         NpcList(NpcIndex).Stats.MinHp = NpcList(NpcIndex).Stats.MinHp - Daño
 
+            ' NPC de invasión
+            If NpcList(NpcIndex).flags.InvasionIndex Then
+                Call SumarScoreInvasion(NpcList(NpcIndex).flags.InvasionIndex, UserIndex, Daño)
+            End If
+
             ' Muere el NPC
 166         If NpcList(NpcIndex).Stats.MinHp <= 0 Then
                 ' Drop items, respawn, etc.

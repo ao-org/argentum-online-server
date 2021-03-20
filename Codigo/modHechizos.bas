@@ -204,6 +204,11 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
             ' Mascotas dan experiencia al amo
 116         If NpcList(NpcIndex).MaestroUser > 0 Then
 118             Call CalcularDarExp(NpcList(NpcIndex).MaestroUser, TargetNPC, Daño)
+
+                ' NPC de invasión
+                If NpcList(TargetNPC).flags.InvasionIndex Then
+                    Call SumarScoreInvasion(NpcList(TargetNPC).flags.InvasionIndex, NpcList(NpcIndex).MaestroUser, Daño)
+                End If
             End If
         
             'Muere
@@ -2171,6 +2176,11 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal Use
         
 152         NpcList(NpcIndex).Stats.MinHp = NpcList(NpcIndex).Stats.MinHp - Daño
 154         Call InfoHechizo(UserIndex)
+
+            ' NPC de invasión
+            If NpcList(NpcIndex).flags.InvasionIndex Then
+                Call SumarScoreInvasion(NpcList(NpcIndex).flags.InvasionIndex, UserIndex, Daño)
+            End If
 
             If NpcList(NpcIndex).NPCtype = DummyTarget Then
                 NpcList(NpcIndex).Contadores.UltimoAtaque = 30

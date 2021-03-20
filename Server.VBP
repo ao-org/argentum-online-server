@@ -104,6 +104,7 @@ Module=API_User; Codigo\JSON_User.bas
 Class=JS_Object; Codigo\JS_Object.cls
 Class=JS_Array; Codigo\JS_Array.cls
 Module=API; Codigo\API.bas
+Module=ModInvasion; Codigo\ModInvasion.bas
 IconForm="frmMain"
 Startup="Sub Main"
 HelpFile=""

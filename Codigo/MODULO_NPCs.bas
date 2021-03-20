@@ -65,6 +65,10 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         ' Es pretoriano?
         If MiNPC.NPCtype = eNPCType.Pretoriano Then
             Call ClanPretoriano(MiNPC.ClanIndex).MuerePretoriano(NpcIndex)
+            
+        ' Es NPC de la invasión?
+        ElseIf MiNPC.flags.InvasionIndex Then
+            Call MuereNpcInvasion(MiNPC.flags.InvasionIndex, MiNPC.flags.IndexInInvasion)
         End If
 
         'Quitamos el npc
@@ -903,9 +907,9 @@ Function NextOpenNPC() As Integer
 
         Dim LoopC As Integer
   
-100     For LoopC = 1 To MAXNPCS + 1
+100     For LoopC = 1 To MaxNPCs + 1
 
-102         If LoopC > MAXNPCS Then Exit For
+102         If LoopC > MaxNPCs Then Exit For
 
 104         If Not NpcList(LoopC).flags.NPCActive Then Exit For
 
@@ -980,7 +984,7 @@ Function SpawnNpc(ByVal NpcIndex As Integer, Pos As WorldPos, ByVal FX As Boolea
 
 100     nIndex = OpenNPC(NpcIndex, Respawn)   'Conseguimos un indice
 
-102     If nIndex > MAXNPCS Then
+102     If nIndex > MaxNPCs Then
 104         SpawnNpc = 0
             Exit Function
 
@@ -1195,13 +1199,13 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 
         'If requested index is invalid, abort
 102     If Not Leer.KeyExists("NPC" & NpcNumber) Then
-104         OpenNPC = MAXNPCS + 1
+104         OpenNPC = MaxNPCs + 1
             Exit Function
         End If
 
 106     NpcIndex = NextOpenNPC
 
-108     If NpcIndex > MAXNPCS Then 'Limite de npcs
+108     If NpcIndex > MaxNPCs Then 'Limite de npcs
 110         OpenNPC = NpcIndex
             Exit Function
         End If

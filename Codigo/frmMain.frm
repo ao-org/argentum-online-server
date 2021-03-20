@@ -915,14 +915,12 @@ Private Sub Minuto_Timer()
         Call ReSpawnOrigPosNpcs 'respawn de los guardias en las pos originales
     Else
         MinutosLatsClean = MinutosLatsClean + 1
-
     End If
 
     Call PurgarPenas
 
     If IdleLimit > 0 Then
         Call CheckIdleUser
-
     End If
 
     '<<<<<-------- Log the number of users online ------>>>
@@ -1306,6 +1304,50 @@ End Sub
 Private Sub Evento_Timer()
         
     On Error GoTo Evento_Timer_Err
+    
+    Dim i As Integer
+    
+    ' **********************************
+    ' **********  Invasiones  **********
+    ' **********************************
+    For i = 1 To UBound(Invasiones)
+        With Invasiones(i)
+            ' Aumentamos el contador para controlar cuando
+            ' inicia la invasión o cuando debe terminar
+            .TimerInvasion = .TimerInvasion + 1
+        
+            If .Activa Then
+                ' Chequeamos si el evento debe terminar
+                If .TimerInvasion >= .duracion Then
+                    Call FinalizarInvasion(i)
+                
+                Else
+                    ' Descripción del evento
+                    .TimerRepetirDesc = .TimerRepetirDesc + 1
+    
+                    If .TimerRepetirDesc >= .RepetirDesc Then
+                        Call MensajeGlobal(.Desc, FontTypeNames.FONTTYPE_New_Eventos)
+                        .TimerRepetirDesc = 0
+                    End If
+                End If
+            
+            ' Si no está activa, chequeamos si debemos iniciarla
+            ElseIf .TimerInvasion >= .Intervalo Then
+                Call IniciarInvasion(i)
+
+            ' Si no está activa ni hay que iniciar, chequeamos si hay que avisar que se acerca el evento
+            ElseIf .TimerInvasion >= .Intervalo - .AvisarTiempo Then
+                .TimerRepetirAviso = .TimerRepetirAviso - 1
+
+                If .TimerRepetirAviso <= 0 Then
+                    Call MensajeGlobal(.Aviso, FontTypeNames.FONTTYPE_New_Eventos)
+                    .TimerRepetirAviso = .RepetirAviso
+                End If
+            End If
+        
+        End With
+    Next
+    ' **********************************
         
     TiempoRestanteEvento = TiempoRestanteEvento - 1
 
