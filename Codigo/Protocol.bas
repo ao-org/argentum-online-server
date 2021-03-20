@@ -4281,7 +4281,14 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                                     Exit Sub
 
                                 End If
-                                
+
+462                             If ObjData(DummyInt).Elfico <> ObjData(.Invent.HerramientaEqpObjIndex).Elfico Then
+                                    Call WriteConsoleMsg(UserIndex, "Sólo puedes talar árboles elficos con un hacha élfica.", FontTypeNames.FONTTYPE_INFO)
+466                                 Call WriteWorkRequestTarget(UserIndex, 0)
+                                    Exit Sub
+
+                                End If
+
 462                             If MapData(.Pos.Map, X, Y).ObjInfo.Amount <= 0 Then
 464                                 Call WriteConsoleMsg(UserIndex, "El árbol ya no te puede entregar mas leña.", FontTypeNames.FONTTYPE_INFO)
 466                                 Call WriteWorkRequestTarget(UserIndex, 0)
@@ -4296,7 +4303,6 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                                 End If
 
                             Else
-                            
 474                             Call WriteConsoleMsg(UserIndex, "No hay ningún árbol ahí.", FontTypeNames.FONTTYPE_INFO)
 476                             Call WriteWorkRequestTarget(UserIndex, 0)
 
@@ -4400,19 +4406,27 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                                     Exit Sub
 
                                 End If
-                                
-556                             If MapData(.Pos.Map, X, Y).ObjInfo.Amount <= 0 Then
-558                                 Call WriteConsoleMsg(UserIndex, "Este yacimiento no tiene mas minerales para entregar.", FontTypeNames.FONTTYPE_INFO)
-560                                 Call WriteWorkRequestTarget(UserIndex, 0)
-562                                 Call WriteMacroTrabajoToggle(UserIndex, False)
-                                    Exit Sub
-
-                                End If
-                                
-564                             DummyInt = MapData(.Pos.Map, X, Y).ObjInfo.ObjIndex 'CHECK
 
                                 '¡Hay un yacimiento donde clickeo?
 566                             If ObjData(DummyInt).OBJType = eOBJType.otYacimiento Then
+
+                                    ' Si el Yacimiento requiere herramienta `Dorada` y la herramienta no lo es, o vice versa.
+                                    ' Se usa para el yacimiento de Oro.
+                                    If ObjData(DummyInt).Dorada <> ObjData(.Invent.HerramientaEqpObjIndex).Dorada Then
+                                        Call WriteConsoleMsg(UserIndex, "El pico dorado solo puede extraer minerales del yacimiento de Oro.", FontTypeNames.FONTTYPE_INFO)
+                                        Call WriteWorkRequestTarget(UserIndex, 0)
+                                        Exit Sub
+
+                                    End If
+
+                                    If MapData(.Pos.Map, X, Y).ObjInfo.Amount <= 0 Then
+                                        Call WriteConsoleMsg(UserIndex, "Este yacimiento no tiene mas minerales para entregar.", FontTypeNames.FONTTYPE_INFO)
+                                        Call WriteWorkRequestTarget(UserIndex, 0)
+                                        Call WriteMacroTrabajoToggle(UserIndex, False)
+                                        Exit Sub
+
+                                    End If
+
 568                                 Call DoMineria(UserIndex, X, Y, ObjData(.Invent.HerramientaEqpObjIndex).Dorada = 1)
 
                                 Else

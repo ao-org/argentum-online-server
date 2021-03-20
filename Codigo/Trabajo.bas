@@ -1615,36 +1615,11 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
 
             End If
 
-            'If .Grupo.EnGrupo > 0 Then
-        
-            '    If .GuildIndex = UserList(VictimaIndex).GuildIndex Then
-            '        Call WriteConsoleMsg(LadronIndex, "No podes robarle a un miembro de tu grupo.", FontTypeNames.FONTTYPE_INFOIAO)
-            '        Exit Sub
-
-            '    End If
-
-            'End If
-
-            'If .Grupo.EnGrupo = True Then
-
-            '    Dim i As Byte
-            '    For i = 1 To UserList(.Grupo.Lider).Grupo.CantidadMiembros
-
-            '        If UserList(.Grupo.Lider).Grupo.Miembros(i) = VictimaIndex Then
-            '            Call WriteConsoleMsg(LadronIndex, "No podes robarle a un miembro de tu grupo.", FontTypeNames.FONTTYPE_INFOIAO)
-            '            Exit Sub
-
-            '        End If
-
-            '    Next i
-
-            'End If
-        
             ' Quito energia
 142         Call QuitarSta(LadronIndex, 15)
-                
+
 144         If UserList(VictimaIndex).flags.Privilegios And PlayerType.user Then
-            
+
                 Dim Probabilidad As Byte
 
                 Dim res          As Integer
@@ -2057,40 +2032,39 @@ ErrHandler:
 End Sub
 
 Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte, Optional ByVal ObjetoDorado As Boolean = False)
-
         On Error GoTo ErrHandler
 
         Dim Suerte As Integer
         Dim res    As Integer
-    
+
 100     With UserList(UserIndex)
-    
+
                 'EsfuerzoTalarLeñador = 1
 102         If .Stats.MinSta > 2 Then
 104             Call QuitarSta(UserIndex, 2)
-        
+
             Else
 106             Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
                 'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para talar.", FontTypeNames.FONTTYPE_INFO)
 108             Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Sub
-    
+
             End If
-    
+
             Dim Skill As Integer
-    
+
 110         Skill = .Stats.UserSkills(eSkill.Talar)
 112         Suerte = Int(-0.00125 * Skill * Skill - 0.3 * Skill + 49)
-        
+
 114         res = RandomNumber(1, Suerte)
 116         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
-        
+
 118         If res < 6 Then
-    
+
                 Dim nPos  As WorldPos
-    
+
                 Dim MiObj As obj
-            
+
 120             Call ActualizarRecurso(.Pos.Map, X, Y)
 122             MapData(.Pos.Map, X, Y).ObjInfo.data = GetTickCount() ' Ultimo uso
     
@@ -2102,7 +2076,7 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
 130                 MiObj.ObjIndex = LeñaElfica
                 End If
 
-            
+
 132             If MiObj.Amount > MapData(.Pos.Map, X, Y).ObjInfo.Amount Then
 134                 MiObj.Amount = MapData(.Pos.Map, X, Y).ObjInfo.Amount
                 End If
@@ -2122,17 +2096,17 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
             
                 ' Al talar también podés dropear cosas raras (se setean desde RecursosEspeciales.dat)
                 Dim i As Integer
-    
+
                 ' Por cada drop posible
 146             For i = 1 To UBound(EspecialesTala)
                     ' Tiramos al azar entre 1 y la probabilidad
 148                 res = RandomNumber(1, EspecialesTala(i).data)
-                
+
                     ' Si tiene suerte y le pega
 150                 If res = 1 Then
 152                     MiObj.ObjIndex = EspecialesTala(i).ObjIndex
 154                     MiObj.Amount = 1 ' Solo un item por vez
-                    
+
                         'If Not MeterItemEnInventario(Userindex, MiObj) Then _
                         'Call TirarItemAlPiso(.Pos, MiObj)
     
