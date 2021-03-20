@@ -1466,7 +1466,7 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
                 Dim nPos  As WorldPos
                 Dim MiObj As obj
 
-122             MiObj.Amount = IIf(ObjetoDorado, RandomNumber(1, 3), 1) * RecoleccionMult
+122             MiObj.Amount = IIf(.clase = Trabajador, RandomNumber(1, 3), 1) * RecoleccionMult
 124             MiObj.ObjIndex = ObtenerPezRandom(IIf(RedDePesca, 5, 2))
         
 126             If MiObj.ObjIndex = 0 Then Exit Sub
@@ -2094,7 +2094,7 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
 120             Call ActualizarRecurso(.Pos.Map, X, Y)
 122             MapData(.Pos.Map, X, Y).ObjInfo.data = GetTickCount() ' Ultimo uso
     
-124             MiObj.Amount = IIf(ObjetoDorado, RandomNumber(1, 5), 1) * RecoleccionMult
+124             MiObj.Amount = IIf(.clase = Trabajador, 5, RandomNumber(1, 2)) * RecoleccionMult
 
 126             If ObjData(MapData(.Pos.Map, X, Y).ObjInfo.ObjIndex).Elfico = 0 Then
 128                 MiObj.ObjIndex = Leña
@@ -2221,7 +2221,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
 124             Yacimiento = ObjData(MapData(.Pos.Map, X, Y).ObjInfo.ObjIndex)
             
 126             MiObj.ObjIndex = Yacimiento.MineralIndex
-128             MiObj.Amount = IIf(ObjetoDorado, RandomNumber(1, 6), 1) * RecoleccionMult
+128             MiObj.Amount = IIf(.clase = Trabajador, 5, RandomNumber(1, 2)) * RecoleccionMult
             
 130             If MiObj.Amount > MapData(.Pos.Map, X, Y).ObjInfo.Amount Then
 132                 MiObj.Amount = MapData(.Pos.Map, X, Y).ObjInfo.Amount
@@ -2506,10 +2506,8 @@ DoHurtar_Err:
 End Sub
 
 Public Sub DoHandInmo(ByVal UserIndex As Integer, ByVal VictimaIndex As Integer)
-        
+
         On Error GoTo DoHandInmo_Err
-    
-        
 
         '***************************************************
         'Author: Pablo (ToxicWaste)
@@ -2517,7 +2515,7 @@ Public Sub DoHandInmo(ByVal UserIndex As Integer, ByVal VictimaIndex As Integer)
         'Implements the special Skill of the Thief
         '***************************************************
 100     If UserList(VictimaIndex).flags.Paralizado = 1 Then Exit Sub
-        
+
         Dim res As Integer
 
 102     res = RandomNumber(0, 100)
@@ -2525,23 +2523,18 @@ Public Sub DoHandInmo(ByVal UserIndex As Integer, ByVal VictimaIndex As Integer)
 104     If res < (UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) / 4) Then
 106         UserList(VictimaIndex).flags.Paralizado = 1
 108         UserList(VictimaIndex).Counters.Paralisis = IntervaloParalizado / 4
-        
-            'UserList(VictimaIndex).flags.ParalizedByIndex = Userindex
-            'UserList(VictimaIndex).flags.ParalizedBy = UserList(Userindex).name
-        
+
 110         Call WriteParalizeOK(VictimaIndex)
 112         Call WriteConsoleMsg(UserIndex, "Tu golpe ha dejado inmovil a tu oponente", FontTypeNames.FONTTYPE_FIGHT)
 114         Call WriteConsoleMsg(VictimaIndex, "¡El golpe te ha dejado inmovil!", FontTypeNames.FONTTYPE_FIGHT)
 
         End If
 
-        
         Exit Sub
 
 DoHandInmo_Err:
 116     Call RegistrarError(Err.Number, Err.Description, "Trabajo.DoHandInmo", Erl)
 
-        
 End Sub
 
 Public Sub Desarmar(ByVal UserIndex As Integer, ByVal VictimIndex As Integer)

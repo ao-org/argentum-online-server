@@ -152,59 +152,126 @@ Bloquear_Err:
         
 End Sub
 
-Sub MostrarBloqueosPuerta(ByVal toMap As Boolean, ByVal sndIndex As Integer, ByVal X As Integer, ByVal Y As Integer)
+Sub MostrarBloqueosPuerta(ByVal toMap As Boolean, _
+                          ByVal sndIndex As Integer, _
+                          ByVal X As Integer, _
+                          ByVal Y As Integer)
         
         On Error GoTo MostrarBloqueosPuerta_Err
-    
         
-        Dim Map As Integer
+        Dim Map       As Integer
+        Dim ModPuerta As Integer
+        
 100     If toMap Then
 102         Map = sndIndex
         Else
 104         Map = UserList(sndIndex).Pos.Map
         End If
+        
+        ModPuerta = ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).Subtipo
 
-        ' Bloqueos superiores
-106     Call Bloquear(toMap, sndIndex, X, Y, MapData(Map, X, Y).Blocked)
-108     Call Bloquear(toMap, sndIndex, X - 1, Y, MapData(Map, X - 1, Y).Blocked)
-    
-        ' Bloqueos inferiores
-110     Call Bloquear(toMap, sndIndex, X, Y + 1, MapData(Map, X, Y + 1).Blocked)
-112     Call Bloquear(toMap, sndIndex, X - 1, Y + 1, MapData(Map, X - 1, Y + 1).Blocked)
+        Select Case ModPuerta
+        
+            Case 0
+106             ' Bloqueos superiores
+                Call Bloquear(toMap, sndIndex, X, Y, MapData(Map, X, Y).Blocked)
+108             Call Bloquear(toMap, sndIndex, X - 1, Y, MapData(Map, X - 1, Y).Blocked)
 
-        ' Bloqueos laterales / Comentado porque causaba problemas con las paredes de las casas comunes
-        'Call Bloquear(toMap, sndIndex, X, Y - 1, MapData(Map, X, Y - 1).Blocked)
-        'Call Bloquear(toMap, sndIndex, X + 1, Y, MapData(Map, X + 1, Y).Blocked)
-        'Call Bloquear(toMap, sndIndex, X + 1, Y - 1, MapData(Map, X + 1, Y - 1).Blocked)
+                ' Bloqueos inferiores
+110             Call Bloquear(toMap, sndIndex, X, Y + 1, MapData(Map, X, Y + 1).Blocked)
+112             Call Bloquear(toMap, sndIndex, X - 1, Y + 1, MapData(Map, X - 1, Y + 1).Blocked)
+
+            Case 1
+                ' para palancas o teclas sin modicar bloqueos en X,Y
+                
+            Case 2
+                ' Bloqueos superiores
+                Call Bloquear(toMap, sndIndex, X, Y - 1, MapData(Map, X, Y - 1).Blocked)
+                Call Bloquear(toMap, sndIndex, X - 1, Y - 1, MapData(Map, X - 1, Y - 1).Blocked)
+                Call Bloquear(toMap, sndIndex, X + 1, Y - 1, MapData(Map, X + 1, Y - 1).Blocked)
+                ' Bloqueos inferiores
+                Call Bloquear(toMap, sndIndex, X, Y, MapData(Map, X, Y).Blocked)
+                Call Bloquear(toMap, sndIndex, X - 1, Y, MapData(Map, X - 1, Y).Blocked)
+                Call Bloquear(toMap, sndIndex, X + 1, Y, MapData(Map, X + 1, Y).Blocked)
+                
+            Case 3
+                ' Bloqueos superiores
+                Call Bloquear(toMap, sndIndex, X, Y, MapData(Map, X, Y).Blocked)
+                Call Bloquear(toMap, sndIndex, X - 1, Y, MapData(Map, X - 1, Y).Blocked)
+                Call Bloquear(toMap, sndIndex, X + 1, Y, MapData(Map, X + 1, Y).Blocked)
+                ' Bloqueos inferiores
+                Call Bloquear(toMap, sndIndex, X, Y + 1, MapData(Map, X, Y + 1).Blocked)
+                Call Bloquear(toMap, sndIndex, X - 1, Y + 1, MapData(Map, X - 1, Y + 1).Blocked)
+                Call Bloquear(toMap, sndIndex, X + 1, Y + 1, MapData(Map, X + 1, Y + 1).Blocked)
+
+            Case 4
+                ' Bloqueos superiores
+                Call Bloquear(toMap, sndIndex, X, Y, MapData(Map, X, Y).Blocked)
+                ' Bloqueos inferiores
+                Call Bloquear(toMap, sndIndex, X, Y + 1, MapData(Map, X, Y + 1).Blocked)
+            
+        End Select
 
         Exit Sub
 
 MostrarBloqueosPuerta_Err:
 114     Call RegistrarError(Err.Number, Err.Description, "General.MostrarBloqueosPuerta", Erl)
-
         
 End Sub
 
-Sub BloquearPuerta(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal Bloquear As Boolean)
+Sub BloquearPuerta(ByVal Map As Integer, _
+                   ByVal X As Integer, _
+                   ByVal Y As Integer, _
+                   ByVal Bloquear As Boolean)
         
         On Error GoTo BloquearPuerta_Err
-    
-        ' Cambio bloqueos superiores
-100     MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked Or eBlock.NORTH, MapData(Map, X, Y).Blocked And Not eBlock.NORTH)
-102     MapData(Map, X - 1, Y).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y).Blocked Or eBlock.NORTH, MapData(Map, X - 1, Y).Blocked And Not eBlock.NORTH)
-    
-        ' Cambio bloqueos inferiores
-104     MapData(Map, X, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X, Y + 1).Blocked Or eBlock.SOUTH, MapData(Map, X, Y + 1).Blocked And Not eBlock.SOUTH)
-106     MapData(Map, X - 1, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y + 1).Blocked Or eBlock.SOUTH, MapData(Map, X - 1, Y + 1).Blocked And Not eBlock.SOUTH)
-    
-        ' Cambio bloqueos izquierda / Comentado porque causaba problemas con las paredes de las casas comunes
-        'MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked And Not eBlock.WEST, MapData(Map, X, Y).Blocked Or eBlock.WEST)
-        'MapData(Map, X, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X, Y - 1).Blocked And Not eBlock.WEST, MapData(Map, X, Y - 1).Blocked Or eBlock.WEST)
-    
-        ' Cambio bloqueos derecha / Comentado porque causaba problemas con las paredes de las casas comunes
-        'MapData(Map, X + 1, Y).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y).Blocked And Not eBlock.EAST, MapData(Map, X + 1, Y).Blocked Or eBlock.EAST)
-        'MapData(Map, X + 1, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y - 1).Blocked And Not eBlock.EAST, MapData(Map, X + 1, Y - 1).Blocked Or eBlock.EAST)
-    
+        Dim ModPuerta As Integer
+        
+        'ver reyarb
+        ModPuerta = ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).Subtipo
+
+        Select Case ModPuerta
+        
+            Case 0 'puerta 2 tiles
+100
+                ' Bloqueos superiores
+                MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked Or eBlock.NORTH, MapData(Map, X, Y).Blocked And Not eBlock.NORTH)
+102             MapData(Map, X - 1, Y).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y).Blocked Or eBlock.NORTH, MapData(Map, X - 1, Y).Blocked And Not eBlock.NORTH)
+
+                ' Cambio bloqueos inferiores
+104             MapData(Map, X, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X, Y + 1).Blocked Or eBlock.SOUTH, MapData(Map, X, Y + 1).Blocked And Not eBlock.SOUTH)
+106             MapData(Map, X - 1, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y + 1).Blocked Or eBlock.SOUTH, MapData(Map, X - 1, Y + 1).Blocked And Not eBlock.SOUTH)
+
+            Case 1
+                ' para palancas o teclas sin modicar bloqueos en X,Y
+
+            Case 2 ' puerta 3 tiles 1 arriba
+                ' Bloqueos superiores
+                MapData(Map, X, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X, Y - 1).Blocked Or eBlock.NORTH, MapData(Map, X, Y - 1).Blocked And Not eBlock.NORTH)
+                MapData(Map, X - 1, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y - 1).Blocked Or eBlock.NORTH, MapData(Map, X - 1, Y - 1).Blocked And Not eBlock.NORTH)
+                MapData(Map, X + 1, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y - 1).Blocked Or eBlock.NORTH, MapData(Map, X + 1, Y - 1).Blocked And Not eBlock.NORTH)
+                ' Cambio bloqueos inferiores
+                MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked Or eBlock.SOUTH, MapData(Map, X, Y).Blocked And Not eBlock.SOUTH)
+                MapData(Map, X - 1, Y).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y).Blocked Or eBlock.SOUTH, MapData(Map, X - 1, Y).Blocked And Not eBlock.SOUTH)
+                MapData(Map, X + 1, Y).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y).Blocked Or eBlock.SOUTH, MapData(Map, X + 1, Y).Blocked And Not eBlock.SOUTH)
+                
+            Case 3 ' puerta 3 tiles
+                ' Bloqueos superiores
+                MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked Or eBlock.NORTH, MapData(Map, X, Y).Blocked And Not eBlock.NORTH)
+                MapData(Map, X - 1, Y).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y).Blocked Or eBlock.NORTH, MapData(Map, X - 1, Y).Blocked And Not eBlock.NORTH)
+                MapData(Map, X + 1, Y).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y).Blocked Or eBlock.NORTH, MapData(Map, X + 1, Y).Blocked And Not eBlock.NORTH)
+                ' Cambio bloqueos inferiores
+                MapData(Map, X, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X, Y + 1).Blocked Or eBlock.SOUTH, MapData(Map, X, Y + 1).Blocked And Not eBlock.SOUTH)
+                MapData(Map, X - 1, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y + 1).Blocked Or eBlock.SOUTH, MapData(Map, X - 1, Y + 1).Blocked And Not eBlock.SOUTH)
+                MapData(Map, X + 1, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y + 1).Blocked Or eBlock.SOUTH, MapData(Map, X + 1, Y + 1).Blocked And Not eBlock.SOUTH)
+        
+            Case 4 'puerta 1 tiles
+                ' Bloqueos superiores
+                MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked Or eBlock.NORTH, MapData(Map, X, Y).Blocked And Not eBlock.NORTH)
+                ' Cambio bloqueos inferiores
+                MapData(Map, X, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X, Y + 1).Blocked Or eBlock.SOUTH, MapData(Map, X, Y + 1).Blocked And Not eBlock.SOUTH)
+        End Select
+
         ' Mostramos a todos
 108     Call MostrarBloqueosPuerta(True, Map, X, Y)
         
@@ -212,7 +279,6 @@ Sub BloquearPuerta(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer,
 
 BloquearPuerta_Err:
 110     Call RegistrarError(Err.Number, Err.Description, "General.BloquearPuerta", Erl)
-
         
 End Sub
 
@@ -427,57 +493,6 @@ Private Sub InicializarConstantes()
     
 104     IniPath = App.Path & "\"
 
-106     LevelSkill(1).LevelValue = 3
-108     LevelSkill(2).LevelValue = 5
-110     LevelSkill(3).LevelValue = 7
-112     LevelSkill(4).LevelValue = 10
-114     LevelSkill(5).LevelValue = 13
-116     LevelSkill(6).LevelValue = 15
-118     LevelSkill(7).LevelValue = 17
-120     LevelSkill(8).LevelValue = 20
-122     LevelSkill(9).LevelValue = 23
-124     LevelSkill(10).LevelValue = 25
-126     LevelSkill(11).LevelValue = 27
-128     LevelSkill(12).LevelValue = 30
-130     LevelSkill(13).LevelValue = 33
-132     LevelSkill(14).LevelValue = 35
-134     LevelSkill(15).LevelValue = 37
-136     LevelSkill(16).LevelValue = 40
-138     LevelSkill(17).LevelValue = 43
-140     LevelSkill(18).LevelValue = 45
-142     LevelSkill(19).LevelValue = 47
-144     LevelSkill(20).LevelValue = 50
-146     LevelSkill(21).LevelValue = 53
-148     LevelSkill(22).LevelValue = 55
-150     LevelSkill(23).LevelValue = 57
-152     LevelSkill(24).LevelValue = 60
-154     LevelSkill(25).LevelValue = 63
-156     LevelSkill(26).LevelValue = 65
-158     LevelSkill(27).LevelValue = 67
-160     LevelSkill(28).LevelValue = 70
-162     LevelSkill(29).LevelValue = 73
-164     LevelSkill(30).LevelValue = 75
-166     LevelSkill(31).LevelValue = 77
-168     LevelSkill(32).LevelValue = 80
-170     LevelSkill(33).LevelValue = 83
-172     LevelSkill(34).LevelValue = 85
-174     LevelSkill(35).LevelValue = 87
-176     LevelSkill(36).LevelValue = 90
-178     LevelSkill(37).LevelValue = 93
-180     LevelSkill(38).LevelValue = 95
-182     LevelSkill(39).LevelValue = 97
-184     LevelSkill(40).LevelValue = 100
-186     LevelSkill(41).LevelValue = 100
-188     LevelSkill(42).LevelValue = 100
-190     LevelSkill(43).LevelValue = 100
-192     LevelSkill(44).LevelValue = 100
-194     LevelSkill(45).LevelValue = 100
-196     LevelSkill(46).LevelValue = 100
-198     LevelSkill(47).LevelValue = 100
-200     LevelSkill(48).LevelValue = 100
-202     LevelSkill(49).LevelValue = 100
-204     LevelSkill(50).LevelValue = 100
-    
 206     ListaRazas(eRaza.Humano) = "Humano"
 208     ListaRazas(eRaza.Elfo) = "Elfo"
 210     ListaRazas(eRaza.Drow) = "Elfo Oscuro"
@@ -623,6 +638,12 @@ Sub Main()
     
 184     frmCargando.Label1(2).Caption = "Cargando Recursos Especiales"
 186     Call LoadRecursosEspeciales
+
+        frmCargando.Label1(2).Caption = "Cargando Rangos de Faccion"
+        Call LoadRangosFaccion
+
+        frmCargando.Label1(2).Caption = "Cargando Recompensas de Faccion"
+        Call LoadRecompensasFaccion
     
 188     frmCargando.Label1(2).Caption = "Cargando Balance.dat"
 190     Call LoadBalance    '4/01/08 Pablo ToxicWaste
@@ -1789,79 +1810,73 @@ EfectoInmoUser_Err:
 End Sub
 
 Public Sub RecStamina(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, ByVal Intervalo As Integer)
-        
         On Error GoTo RecStamina_Err
-        
 
-100     If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger = 1 And MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger = 2 And MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger = 4 Then Exit Sub
+        Dim trigger As Byte
+        Dim Suerte As Integer
 
-        Dim massta As Integer
+        With UserList(UserIndex)
+            trigger = MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger
 
-102     If UserList(UserIndex).Stats.MinSta < UserList(UserIndex).Stats.MaxSta Then
+            If trigger = 1 And trigger = 2 And trigger = 4 Then Exit Sub
 
-104         If UserList(UserIndex).Counters.STACounter < Intervalo Then
-106             UserList(UserIndex).Counters.STACounter = UserList(UserIndex).Counters.STACounter + 1
-            Else
-        
-108             UserList(UserIndex).Counters.STACounter = 0
+            If .Stats.MinSta < .Stats.MaxSta Then
 
-110             If UserList(UserIndex).Counters.Trabajando > 0 Then Exit Sub  'Trabajando no sube energía. (ToxicWaste)
-         
-                ' If UserList(UserIndex).Stats.MinSta = 0 Then Exit Sub 'Ladder, se ve que esta linea la agregue yo, pero no sirve.
-
-112             EnviarStats = True
-        
-                Dim Suerte As Integer
-
-114             If UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) <= 10 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= -1 Then
-116                 Suerte = 5
-118             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) <= 20 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 11 Then
-120                 Suerte = 7
-122             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) <= 30 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 21 Then
-124                 Suerte = 9
-126             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) <= 40 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 31 Then
-128                 Suerte = 11
-130             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) <= 50 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 41 Then
-132                 Suerte = 13
-134             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) <= 60 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 51 Then
-136                 Suerte = 15
-138             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) <= 70 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 61 Then
-140                 Suerte = 17
-142             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) <= 80 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 71 Then
-144                 Suerte = 19
-146             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) <= 90 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 81 Then
-148                 Suerte = 21
-150             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) < 100 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 91 Then
-152                 Suerte = 23
-154             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) = 100 Then
-156                 Suerte = 25
+                If .Counters.STACounter < Intervalo Then
+                    .Counters.STACounter = .Counters.STACounter + 1
+                    Exit Sub
 
                 End If
-        
-158             If UserList(UserIndex).flags.RegeneracionSta = 1 Then
-160                 Suerte = 45
 
-                End If
-        
-162             massta = RandomNumber(1, Porcentaje(UserList(UserIndex).Stats.MaxSta, Suerte))
-164             UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta + massta
+                .Counters.STACounter = 0
 
-166             If UserList(UserIndex).Stats.MinSta > UserList(UserIndex).Stats.MaxSta Then
-168                 UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MaxSta
+                If .Counters.Trabajando > 0 Then Exit Sub  'Trabajando no sube energía. (ToxicWaste)
+
+                EnviarStats = True
+
+                Select Case .Stats.UserSkills(eSkill.Supervivencia)
+                    Case 0 To 10
+                        Suerte = 5
+                    Case 11 To 20
+                        Suerte = 7
+                    Case 21 To 30
+                        Suerte = 9
+                    Case 31 To 40
+                        Suerte = 11
+                    Case 41 To 50
+                        Suerte = 13
+                    Case 51 To 60
+                        Suerte = 15
+                    Case 61 To 70
+                        Suerte = 17
+                    Case 71 To 80
+                        Suerte = 19
+                    Case 81 To 90
+                        Suerte = 21
+                    Case 91 To 99
+                        Suerte = 23
+                    Case 100
+                        Suerte = 25
+                End Select
+
+                If .flags.RegeneracionSta = 1 Then Suerte = 45
+
+                .Stats.MinSta = .Stats.MinSta + RandomNumber(1, Porcentaje(.Stats.MaxSta, Suerte))
+
+                If .Stats.MinSta > .Stats.MaxSta Then
+                    .Stats.MinSta = .Stats.MaxSta
 
                 End If
 
             End If
+        End With
 
-        End If
-
-        
         Exit Sub
 
 RecStamina_Err:
-170     Call RegistrarError(Err.Number, Err.Description, "General.RecStamina", Erl)
-172     Resume Next
-        
+        Call RegistrarError(Err.Number, Err.Description, "General.RecStamina", Erl)
+        Resume Next
+
 End Sub
 
 Public Sub PierdeEnergia(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, ByVal Intervalo As Integer)
@@ -1904,39 +1919,47 @@ RecStamina_Err:
 End Sub
 
 Public Sub EfectoVeneno(ByVal UserIndex As Integer)
-        
+
         On Error GoTo EfectoVeneno_Err
 
-        Dim n As Integer
+        Dim damage As Long
 
 100     If UserList(UserIndex).Counters.Veneno < IntervaloVeneno Then
 102         UserList(UserIndex).Counters.Veneno = UserList(UserIndex).Counters.Veneno + 1
         Else
 104         Call CancelExit(UserIndex)
-            
-            'Call WriteConsoleMsg(UserIndex, "Estás envenenado, si no te curas morirás.", FontTypeNames.FONTTYPE_VENENO)
-106         Call WriteLocaleMsg(UserIndex, "47", FontTypeNames.FONTTYPE_VENENO)
-108         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Envenena, 30, False))
-110         UserList(UserIndex).Counters.Veneno = 0
-112         n = RandomNumber(3, 6)
-114         n = n * UserList(UserIndex).flags.Envenenado
-116         UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp - n
 
-118         If UserList(UserIndex).Stats.MinHp < 1 Then
-120             Call UserDie(UserIndex)
-            Else
-122             Call WriteUpdateHP(UserIndex)
-            End If
-            
+            With UserList(UserIndex)
+              'Call WriteConsoleMsg(UserIndex, "Estás envenenado, si no te curas morirás.", FontTypeNames.FONTTYPE_VENENO)
+              Call WriteLocaleMsg(UserIndex, "47", FontTypeNames.FONTTYPE_VENENO)
+              Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Envenena, 30, False))
+              .Counters.Veneno = 0
+
+              ' El veneno saca un porcentaje de vida random.
+              damage = RandomNumber(3, 5)
+              damage = (1 + damage * .Stats.MaxHp \ 100) ' Redondea para arriba
+              .Stats.MinHp = UserList(UserIndex).Stats.MinHp - damage
+
+              If .ChatCombate = 1 Then
+                  ' "El veneno te ha causado ¬1 puntos de daño."
+                  Call WriteLocaleMsg(UserIndex, "390", FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(damage))
+              End If
+
+              If UserList(UserIndex).Stats.MinHp < 1 Then
+                  Call UserDie(UserIndex)
+              Else
+                  Call WriteUpdateHP(UserIndex)
+              End If
+            End With
 
         End If
-        
+
         Exit Sub
 
 EfectoVeneno_Err:
 124     Call RegistrarError(Err.Number, Err.Description, "General.EfectoVeneno", Erl)
 126     Resume Next
-        
+
 End Sub
 
 Public Sub EfectoAhogo(ByVal UserIndex As Integer)
@@ -1979,38 +2002,53 @@ EfectoAhogo_Err:
         
 End Sub
 
-Public Sub EfectoIncineramiento(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean)
-        
+' El incineramiento tiene una logica particular, que es hacer daño sostenido en el tiempo.
+Public Sub EfectoIncineramiento(ByVal UserIndex As Integer)
         On Error GoTo EfectoIncineramiento_Err
-        
 
-        Dim n As Integer
- 
-100     If UserList(UserIndex).Counters.Incineracion < IntervaloIncineracion Then
-102         UserList(UserIndex).Counters.Incineracion = UserList(UserIndex).Counters.Incineracion + 1
-        Else
-104         Call WriteConsoleMsg(UserIndex, "Te estás incinerando, si no te curas morirás.", FontTypeNames.FONTTYPE_INFO)
-            'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Incinerar, 30, False))
-106         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.CharIndex, 73, 0))
-108         UserList(UserIndex).Counters.Incineracion = 0
-110         n = RandomNumber(40, 80)
-112         UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp - n
+        Dim damage As Integer
 
-114         If UserList(UserIndex).Stats.MinHp < 1 Then
-116             Call UserDie(UserIndex)
-            Else
-118             Call WriteUpdateHP(UserIndex)
+        With UserList(UserIndex)
+
+            ' 5 Mini intervalitos, dentro del intervalo total de incineracion
+            If .Counters.Incineracion Mod (IntervaloIncineracion \ 5) = 0 Then
+                ' "Te estás incinerando, si no te curas morirás.
+                Call WriteLocaleMsg(UserIndex, "392", FontTypeNames.FONTTYPE_FIGHT)
+                'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Incinerar, 30, False))
+                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, 73, 0))
+
+                damage = RandomNumber(35, 45)
+                .Stats.MinHp = .Stats.MinHp - damage
+
+                If .ChatCombate = 1 Then
+                    ' "El fuego te ha causado ¬1 puntos de daño."
+                    Call WriteLocaleMsg(UserIndex, "391", FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(damage))
+                End If
+
+                If UserList(UserIndex).Stats.MinHp < 1 Then
+                    Call UserDie(UserIndex)
+                Else
+                    Call WriteUpdateHP(UserIndex)
+                End If
             End If
 
-        End If
- 
-        
+            .Counters.Incineracion = .Counters.Incineracion + 1
+
+            If .Counters.Incineracion > IntervaloIncineracion Then
+                ' Se termino la incineracion
+                .flags.Incinerado = 0
+                .Counters.Incineracion = 0
+                Exit Sub
+
+            End If
+        End With
+
         Exit Sub
 
 EfectoIncineramiento_Err:
-120     Call RegistrarError(Err.Number, Err.Description, "General.EfectoIncineramiento", Erl)
-122     Resume Next
-        
+        Call RegistrarError(Err.Number, Err.Description, "General.EfectoIncineramiento", Erl)
+        Resume Next
+
 End Sub
 
 Public Sub DuracionPociones(ByVal UserIndex As Integer)
