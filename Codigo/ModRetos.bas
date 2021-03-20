@@ -577,6 +577,7 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
                     Call DevolverPosAnterior(tIndex)
                     
                     ' Reset flags
+                    UserList(tIndex).Counters.CuentaRegresiva = -1
                     UserList(tIndex).flags.EnReto = False
                     
                     ' Nombres
@@ -635,6 +636,7 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
                     Call DevolverPosAnterior(tIndex)
                     
                     ' Reset flags
+                    UserList(tIndex).Counters.CuentaRegresiva = -1
                     UserList(tIndex).flags.EnReto = False
                     
                     If TiempoAgotado Then
@@ -684,6 +686,7 @@ Public Sub AbandonarReto(ByVal UserIndex As Integer, Optional ByVal Desconexion 
         Sala = .flags.SalaReto
         Equipo = .flags.EquipoReto
 
+        .Counters.CuentaRegresiva = -1
         .flags.EnReto = False
     End With
     
