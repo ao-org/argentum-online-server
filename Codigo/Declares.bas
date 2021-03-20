@@ -458,9 +458,9 @@ Public Const LingotePlata   As Integer = 387 'OK
 
 Public Const LingoteOro     As Integer = 388 'OK
 
-Public Const Leña As Integer = 58 'OK
+Public Const Leña           As Integer = 58 'OK
 
-Public Const LeñaElfica As Integer = 2781 'PONER
+Public Const LeñaElfica     As Integer = 2781 'OK
 
 Public Const Raices         As Integer = 888 'OK
 
