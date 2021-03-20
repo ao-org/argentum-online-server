@@ -190,7 +190,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                         'curamos totalmente
 178                     If UserList(UserIndex).Stats.MinHp <> UserList(UserIndex).Stats.MaxHp Then
 180                         UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MaxHp
-182                         Call WritePlayWave(UserIndex, "101", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y)
+182                         Call WritePlayWave(UserIndex, "117", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y)
                             'Call WriteConsoleMsg(UserIndex, "El Cura lanza unas palabras al aire. Comienzas a sentir como tu cuerpo se vuelve a formar...¡Has sido curado!", FontTypeNames.FONTTYPE_INFO)
 184                         Call WriteLocaleMsg(UserIndex, "83", FontTypeNames.FONTTYPE_INFOIAO)
                     
@@ -349,16 +349,18 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                     End If
 
                     Dim DeDonde As String
+                    Dim Gobernador As npc
+                        Gobernador = NpcList(UserList(UserIndex).flags.TargetNPC)
             
-292                 If UserList(UserIndex).Hogar = NpcList(UserList(UserIndex).flags.TargetNPC).GobernadorDe Then
-294                     Call WriteChatOverHead(UserIndex, "Ya perteneces a esta ciudad. Gracias por ser uno más de nosotros.", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
+292                 If UserList(UserIndex).Hogar = Gobernador.GobernadorDe Then
+294                     Call WriteChatOverHead(UserIndex, "Ya perteneces a esta ciudad. Gracias por ser uno más de nosotros.", Gobernador.Char.CharIndex, vbWhite)
                         Exit Sub
 
                     End If
             
 296                 If UserList(UserIndex).Faccion.Status = 0 Or UserList(UserIndex).Faccion.Status = 2 Then
-298                     If NpcList(UserList(UserIndex).flags.TargetNPC).GobernadorDe = eCiudad.cBanderbill Then
-300                         Call WriteChatOverHead(UserIndex, "Aquí no aceptamos criminales.", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
+298                     If Gobernador.GobernadorDe = eCiudad.cBanderbill Then
+300                         Call WriteChatOverHead(UserIndex, "Aquí no aceptamos criminales.", Gobernador.Char.CharIndex, vbWhite)
                             Exit Sub
 
                         End If
@@ -366,17 +368,17 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                     End If
             
 302                 If UserList(UserIndex).Faccion.Status = 3 Or UserList(UserIndex).Faccion.Status = 1 Then
-304                     If NpcList(UserList(UserIndex).flags.TargetNPC).GobernadorDe = eCiudad.cArghal Then
-306                         Call WriteChatOverHead(UserIndex, "¡¡Sal de aquí ciudadano asqueroso!!", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
+304                     If Gobernador.GobernadorDe = eCiudad.cArkhein Then
+306                         Call WriteChatOverHead(UserIndex, "¡¡Sal de aquí ciudadano asqueroso!!", Gobernador.Char.CharIndex, vbWhite)
                             Exit Sub
 
                         End If
 
                     End If
             
-308                 If UserList(UserIndex).Hogar <> NpcList(UserList(UserIndex).flags.TargetNPC).GobernadorDe Then
+308                 If UserList(UserIndex).Hogar <> Gobernador.GobernadorDe Then
             
-310                     UserList(UserIndex).PosibleHogar = NpcList(UserList(UserIndex).flags.TargetNPC).GobernadorDe
+310                     UserList(UserIndex).PosibleHogar = Gobernador.GobernadorDe
                 
 312                     Select Case UserList(UserIndex).PosibleHogar
 
@@ -389,15 +391,15 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 320                         Case eCiudad.cBanderbill
 322                             DeDonde = "Banderbill"
                         
-324                         Case eCiudad.cLindos 'Vamos a tener que ir por todo el desierto... uff!
+324                         Case eCiudad.cLindos
 326                             DeDonde = "Lindos"
                             
 328                         Case eCiudad.cArghal
 330                             DeDonde = " Arghal"
                             
-332                         Case eCiudad.CHillidan
-334                             DeDonde = " Hillidan"
-                            
+332                         Case eCiudad.cArkhein
+334                             DeDonde = " Arkhein"
+
 336                         Case Else
 338                             DeDonde = "Ullathorpe"
 
@@ -688,7 +690,7 @@ Sub AccionParaArboles(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integ
 
         End If
     
-142     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_SoundIndex.MORFAR_MANZANA, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+142     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_SoundIndex.SOUND_COMIDA, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 144     Call WriteUpdateHungerAndThirst(UserIndex)
 
         
@@ -806,61 +808,49 @@ AccionParaYunque_Err:
         
 End Sub
 
-Sub AccionParaPuerta(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal UserIndex As Integer)
-
+Sub AccionParaPuerta(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal UserIndex As Integer, Optional ByVal SinDistancia As Boolean)
         On Error GoTo Handler
 
-        Dim MiObj As obj
-
-        Dim wp    As WorldPos
-
-100     If Not (Distance(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, X, Y) > 2) Then
-102         If ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).Llave = 0 Then
-104             If ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).Cerrada = 1 Then
-
-                    'Abre la puerta
-106                 If ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).Llave = 0 Then
-                    
-108                     MapData(Map, X, Y).ObjInfo.ObjIndex = ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).IndexAbierta
-                    
-110                     Call modSendData.SendToAreaByPos(Map, X, Y, PrepareMessageObjectCreate(MapData(Map, X, Y).ObjInfo.ObjIndex, X, Y))
-                    
-112                     Call BloquearPuerta(Map, X, Y, False)
-                      
-                        'Sonido
-114                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_PUERTA, X, Y))
-                    
-                    Else
-116                     Call WriteConsoleMsg(UserIndex, "La puerta esta cerrada con llave.", FontTypeNames.FONTTYPE_INFO)
-
-                    End If
-
-                Else
-                    'Cierra puerta
-118                 MapData(Map, X, Y).ObjInfo.ObjIndex = ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).IndexCerrada
-                
-120                 Call modSendData.SendToAreaByPos(Map, X, Y, PrepareMessageObjectCreate(MapData(Map, X, Y).ObjInfo.ObjIndex, X, Y))
-                                
-122                 Call BloquearPuerta(Map, X, Y, True)
-
-124                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_PUERTA, X, Y))
-
-                End If
+        Dim puerta As ObjData 'ver ReyarB
         
-126             UserList(UserIndex).flags.TargetObj = MapData(Map, X, Y).ObjInfo.ObjIndex
-            Else
-128             Call WriteConsoleMsg(UserIndex, "La puerta esta cerrada con llave.", FontTypeNames.FONTTYPE_INFO)
+        
 
-            End If
-
-        Else
-130         Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-
+        
+        If Distance(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, X, Y) > 2 And Not SinDistancia Then
             ' Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
+            Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+
         End If
-        
+
+
+        puerta = ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex)
+
+        If puerta.Llave = 1 And Not SinDistancia Then
+            Call WriteConsoleMsg(UserIndex, "La puerta esta cerrada con llave.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+
+        If puerta.Cerrada = 1 Then 'Abre la puerta
+            MapData(Map, X, Y).ObjInfo.ObjIndex = puerta.IndexAbierta
+            Call BloquearPuerta(Map, X, Y, False)
+
+        Else 'Cierra puerta
+            MapData(Map, X, Y).ObjInfo.ObjIndex = puerta.IndexCerrada
+            Call BloquearPuerta(Map, X, Y, True)
+
+        End If
+
+        If ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).Subtipo = 1 Then
+             Call AccionParaPuerta(Map, X - 3, Y + 1, UserIndex, True)
+        End If
+
+        Call modSendData.SendToAreaByPos(Map, X, Y, PrepareMessageObjectCreate(MapData(Map, X, Y).ObjInfo.ObjIndex, X, Y))
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_PUERTA, X, Y))
+        UserList(UserIndex).flags.TargetObj = MapData(Map, X, Y).ObjInfo.ObjIndex
+
         Exit Sub
-        
+
 Handler:
 132 Call RegistrarError(Err.Number, Err.Description, "Acciones.AccionParaPuerta", Erl)
 134 Resume Next

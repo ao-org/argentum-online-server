@@ -3987,44 +3987,10 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         Dim envie     As Boolean
                         Dim Particula As Integer
                         Dim Tiempo    As Long
-                    
-216                     Select Case ObjData(.Invent.MunicionEqpObjIndex).Subtipo
 
-                            Case 1 'Paraliza
-218                             backup = UserList(UserIndex).flags.Paraliza
-220                             UserList(UserIndex).flags.Paraliza = 1
-
-222                         Case 2 ' Incinera
-224                             backup = UserList(UserIndex).flags.incinera
-226                             UserList(UserIndex).flags.incinera = 1
-
-228                         Case 3 ' envenena
-230                             backup = UserList(UserIndex).flags.Envenena
-232                             UserList(UserIndex).flags.Envenena = 1
-
-234                         Case 4 ' Explosiva
-
-                        End Select
-
+                        ' Porque no es HandleAttack ???
 236                     Call UsuarioAtacaUsuario(UserIndex, tU)
-                    
-238                     Select Case ObjData(.Invent.MunicionEqpObjIndex).Subtipo
 
-                            Case 0
-
-240                         Case 1 'Paraliza
-242                             UserList(UserIndex).flags.Paraliza = backup
-
-244                         Case 2 ' Incinera
-246                             UserList(UserIndex).flags.incinera = backup
-
-248                         Case 3 ' envenena
-250                             UserList(UserIndex).flags.Envenena = backup
-
-252                         Case 4 ' Explosiva
-
-                        End Select
-                    
 254                     If ObjData(.Invent.MunicionEqpObjIndex).CreaFX <> 0 Then
 256                         Call SendData(SendTarget.ToPCArea, tU, PrepareMessageCreateFX(UserList(tU).Char.CharIndex, ObjData(.Invent.MunicionEqpObjIndex).CreaFX, 0))
 
@@ -7828,7 +7794,7 @@ Private Sub HandleHeal(ByVal UserIndex As Integer)
         
 116         Call WriteUpdateHP(UserIndex)
         
-118         Call WriteConsoleMsg(UserIndex, "ííHís sido curado!!", FontTypeNames.FONTTYPE_INFO)
+118         Call WriteConsoleMsg(UserIndex, "ííHas sido curado!!", FontTypeNames.FONTTYPE_INFO)
 
         End With
 
@@ -12058,7 +12024,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 456                     tmpLong = val(Arg1)
                         
 458                     If tmpLong >= 0 Then
-460                         UserList(tUser).Stats.MaxHit = min(tmpLong, STAT_MAXHIT_OVER36)
+460                         UserList(tUser).Stats.MaxHit = min(tmpLong, STAT_MAXHIT)
 462                         UserList(tUser).Stats.MinHIT = UserList(tUser).Stats.MaxHit
                         End If
                     End If
@@ -12071,7 +12037,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 470                     tmpLong = val(Arg1)
                         
 472                     If tmpLong >= 0 Then
-474                         UserList(tUser).Stats.MinHIT = min(tmpLong, STAT_MAXHIT_OVER36)
+474                         UserList(tUser).Stats.MinHIT = min(tmpLong, STAT_MAXHIT)
                         End If
                     End If
                     
@@ -12083,7 +12049,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 482                     tmpLong = val(Arg1)
                         
 484                     If tmpLong >= 0 Then
-486                         UserList(tUser).Stats.MaxHit = min(tmpLong, STAT_MAXHIT_OVER36)
+486                         UserList(tUser).Stats.MaxHit = min(tmpLong, STAT_MAXHIT)
                         End If
                     End If
                     
@@ -12177,8 +12143,8 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 596                             UserList(tUser).Hogar = eCiudad.cLindos
 598                         Case "ARGHAL"
 600                             UserList(tUser).Hogar = eCiudad.cArghal
-602                         Case "HILLIDAN"
-604                             UserList(tUser).Hogar = eCiudad.CHillidan
+602                         Case "ARKHEIN"
+604                             UserList(tUser).Hogar = eCiudad.cArkhein
                         End Select
                     End If
                 
@@ -12985,51 +12951,50 @@ Private Sub HandleForgive(ByVal UserIndex As Integer)
                 Exit Sub
 
             End If
-        
-            'Validate NPC and make sure player is dead
+
+            'Validate NPC and make sure player is not dead
 108         If (NpcList(.flags.TargetNPC).NPCtype <> eNPCType.Revividor And (NpcList(.flags.TargetNPC).NPCtype <> eNPCType.ResucitadorNewbie Or Not EsNewbie(UserIndex))) Or .flags.Muerto = 1 Then Exit Sub
         
+            Dim priest As npc
+                priest = NpcList(.flags.TargetNPC)
+
             'Make sure it's close enough
-110         If Distancia(.Pos, NpcList(.flags.TargetNPC).Pos) > 3 Then
+110         If Distancia(.Pos, priest.Pos) > 3 Then
                 'Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
 112             Call WriteConsoleMsg(UserIndex, "El sacerdote no puede escuchar tus pecados debido a que estás demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         
-114         If UserList(UserIndex).Faccion.Status = 1 Or UserList(UserIndex).Faccion.ArmadaReal = 1 Then
+114         If .Faccion.Status = 1 Or .Faccion.ArmadaReal = 1 Then
                 'Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-116             Call WriteChatOverHead(UserIndex, "Tu alma ya esta libre de pecados hijo mio.", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
+116             Call WriteChatOverHead(UserIndex, "Tu alma ya esta libre de pecados hijo mio.", priest.Char.CharIndex, vbWhite)
                 Exit Sub
             End If
         
-118         If UserList(UserIndex).Faccion.FuerzasCaos > 0 Then
-120             Call WriteChatOverHead(UserIndex, "¡¡Dios no te perdonará mientras seas fiel al Demonio!!", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
+118         If .Faccion.FuerzasCaos > 0 Then
+120             Call WriteChatOverHead(UserIndex, "¡¡Dios no te perdonará mientras seas fiel al Demonio!!", priest.Char.CharIndex, vbWhite)
                 Exit Sub
             End If
-            
-122         If UserList(UserIndex).Faccion.ciudadanosMatados > 0 Then
-                Dim Donacion As Long
-124             Donacion = UserList(UserIndex).Faccion.ciudadanosMatados * OroMult * CostoPerdonPorCiudadano
-                
-126             Call WriteChatOverHead(UserIndex, "Has matado a ciudadanos inocentes, Dios no puede perdonarte lo que has hecho. " & _
-                        "Pero si haces una generosa donación de, digamos, " & PonerPuntos(Donacion) & " monedas de oro, tal vez cambie de opinión...", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
-                Exit Sub
-            End If
-        
-            Dim Clanalineacion As Byte
-                        
-128         If .GuildIndex <> 0 Then
-130             Clanalineacion = modGuilds.Alineacion(.GuildIndex)
 
-132             If Clanalineacion = 1 Then
-134                 Call WriteChatOverHead(UserIndex, "Te encuentras en un clan criminal... debes retirarte para que pueda perdonarte.", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
-                    Exit Sub
+            If .GuildIndex <> 0 Then
+                If modGuilds.Alineacion(.GuildIndex) = 1 Then
+                   Call WriteChatOverHead(UserIndex, "Te encuentras en un clan criminal... debes retirarte para que pueda perdonarte.", priest.Char.CharIndex, vbWhite)
+                   Exit Sub
 
                 End If
 
             End If
-        
-136         Call WriteChatOverHead(UserIndex, "Con estas palabras, te libero de todo tipo de pecados. ¡Que Dios te acompañe hijo mío!", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbYellow)
+
+            If .Faccion.ciudadanosMatados > 0 Then
+                Dim Donacion As Long
+                Donacion = .Faccion.ciudadanosMatados * OroMult * CostoPerdonPorCiudadano
+
+                Call WriteChatOverHead(UserIndex, "Has matado a ciudadanos inocentes, Dios no puede perdonarte lo que has hecho. " & _
+                        "Pero si haces una generosa donación de, digamos, " & PonerPuntos(Donacion) & " monedas de oro, tal vez cambie de opinión...", priest.Char.CharIndex, vbWhite)
+                Exit Sub
+            End If
+
+136         Call WriteChatOverHead(UserIndex, "Con estas palabras, te libero de todo tipo de pecados. ¡Que Dios te acompañe hijo mío!", priest.Char.CharIndex, vbYellow)
 
 138         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, "80", 100, False))
 140         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("100", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
@@ -17105,7 +17070,7 @@ Public Sub HandleDonateGold(ByVal UserIndex As Integer)
              'Remove Packet ID
 102         Call .incomingData.ReadByte
 
-             Dim Oro As Long
+            Dim Oro As Long
 104         Oro = .incomingData.ReadLong
 
 106         If Oro <= 0 Then Exit Sub
@@ -17113,47 +17078,53 @@ Public Sub HandleDonateGold(ByVal UserIndex As Integer)
              'Se asegura que el target es un npc
 108         If .flags.TargetNPC = 0 Then
 110             Call WriteConsoleMsg(UserIndex, "Primero tenés que seleccionar al sacerdote.", FontTypeNames.FONTTYPE_INFO)
-                 Exit Sub
-             End If
+                Exit Sub
+            End If
         
-             'Validate NPC and make sure player is dead
-112         If (NpcList(.flags.TargetNPC).NPCtype <> eNPCType.Revividor And (NpcList(.flags.TargetNPC).NPCtype <> eNPCType.ResucitadorNewbie Or Not EsNewbie(UserIndex))) Or .flags.Muerto = 1 Then Exit Sub
-        
+            Dim priest As npc
+                priest = NpcList(.flags.TargetNPC)
+
+             'Validate NPC is an actual priest and the player is not dead
+112         If (priest.NPCtype <> eNPCType.Revividor And (priest.NPCtype <> eNPCType.ResucitadorNewbie Or Not EsNewbie(UserIndex))) Or .flags.Muerto = 1 Then Exit Sub
+
              'Make sure it's close enough
 114         If Distancia(.Pos, NpcList(.flags.TargetNPC).Pos) > 3 Then
-116              Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-                 Exit Sub
-             End If
-        
+116             Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+
 118         If .Faccion.Status = 1 Or .Faccion.ArmadaReal = 1 Or .Faccion.FuerzasCaos > 0 Or .Faccion.ciudadanosMatados = 0 Then
-120              Call WriteChatOverHead(UserIndex, "No puedo aceptar tu donación en este momento...", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
-                 Exit Sub
-             End If
-            
-             Dim Clanalineacion As Byte
-                        
-122         If .GuildIndex <> 0 Then
-124             If modGuilds.Alineacion(.GuildIndex) = 1 Then Exit Sub
-             End If
-            
-126          If .Stats.GLD < Oro Then
-128              Call WriteConsoleMsg(UserIndex, "No tienes suficiente dinero.", FontTypeNames.FONTTYPE_INFO)
-                 Exit Sub
-             End If
+120             Call WriteChatOverHead(UserIndex, "No puedo aceptar tu donación en este momento...", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+                Exit Sub
+            End If
 
-             Dim Donacion As Long
-130          Donacion = .Faccion.ciudadanosMatados * OroMult * CostoPerdonPorCiudadano
-            
-132          If Oro < Donacion Then
-134              Call WriteChatOverHead(UserIndex, "Dios no puede perdonarte si eres una persona avara.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
-                 Exit Sub
-             End If
-            
-136          .Stats.GLD = .Stats.GLD - Oro
+            If .GuildIndex <> 0 Then
+                If modGuilds.Alineacion(.GuildIndex) = 1 Then
+                   Call WriteChatOverHead(UserIndex, "Te encuentras en un clan criminal... no puedo aceptar tu donación.", priest.Char.CharIndex, vbWhite)
+                   Exit Sub
 
-138          Call WriteUpdateGold(UserIndex)
+                End If
 
-140          Call WriteConsoleMsg(UserIndex, "Has donado " & PonerPuntos(Oro) & " monedas de oro.", FontTypeNames.FONTTYPE_INFO)
+            End If
+
+126         If .Stats.GLD < Oro Then
+128             Call WriteConsoleMsg(UserIndex, "No tienes suficiente dinero.", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+
+            Dim Donacion As Long
+130         Donacion = .Faccion.ciudadanosMatados * OroMult * CostoPerdonPorCiudadano
+
+132         If Oro < Donacion Then
+134             Call WriteChatOverHead(UserIndex, "Dios no puede perdonarte si eres una persona avara.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+                Exit Sub
+            End If
+
+136         .Stats.GLD = .Stats.GLD - Oro
+
+138         Call WriteUpdateGold(UserIndex)
+
+140         Call WriteConsoleMsg(UserIndex, "Has donado " & PonerPuntos(Oro) & " monedas de oro.", FontTypeNames.FONTTYPE_INFO)
 
 142         Call WriteChatOverHead(UserIndex, "¡Gracias por tu generosa donación! Con estas palabras, te libero de todo tipo de pecados. ¡Que Dios te acompañe hijo mío!", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbYellow)
 
@@ -28796,8 +28767,8 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
 206                         Case eCiudad.cArghal
 208                             DeDonde = " Arghal"
                             
-210                         Case eCiudad.CHillidan
-212                             DeDonde = " Hillidan"
+210                         Case eCiudad.cArkhein
+212                             DeDonde = " Arkhein"
                             
 214                         Case Else
 216                             DeDonde = "Ullathorpe"
@@ -28911,8 +28882,8 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
 326                         Case eCiudad.cArghal
 328                             DeDonde = " Arghal"
                             
-330                         Case eCiudad.CHillidan
-332                             DeDonde = " Hillidan"
+330                         Case eCiudad.cArkhein
+332                             DeDonde = " Arkhein"
                             
 334                         Case Else
 336                             DeDonde = "Ullathorpe"
@@ -30199,8 +30170,8 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
 134                 Case eCiudad.cArghal
 136                     DeDonde = CityArghal
                         
-138                 Case eCiudad.CHillidan
-140                     DeDonde = CityHillidan
+138                 Case eCiudad.cArkhein
+140                     DeDonde = CityArkhein
                         
 142                 Case Else
 144                     DeDonde = CityUllathorpe

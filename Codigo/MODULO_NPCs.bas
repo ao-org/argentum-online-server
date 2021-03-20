@@ -116,29 +116,6 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         
 154         EraCriminal = Status(UserIndex)
         
-            'If MiNPC.Stats.Alineacion = 0 Then
-            '  If MiNPC.Numero = Guardias Then
-            'UserList(UserIndex).Reputacion.NobleRep = 0
-               
-            'End If
-            'ElseIf MiNPC.Stats.Alineacion = 1 Then
-            ' UserList(UserIndex).Reputacion.NobleRep = UserList(UserIndex).Reputacion.NobleRep + vlCAZADOR
-            ' ElseIf MiNPC.Stats.Alineacion = 2 Then
-            'UserList(UserIndex).Reputacion.NobleRep = UserList(UserIndex).Reputacion.NobleRep + vlASESINO / 2
-            
-            'ElseIf MiNPC.Stats.Alineacion = 4 Then
-            ' UserList(UserIndex).Reputacion.NobleRep = UserList(UserIndex).Reputacion.NobleRep + vlCAZADOR
-            
-            'End If
-            ' If Status(UserIndex) = 0 And esArmada(UserIndex) Then Call ExpulsarFaccionReal(UserIndex)
-            ' If Status(UserIndex) = 2 And esCaos(UserIndex) Then Call ExpulsarFaccionCaos(UserIndex)
-        
-            'If EraCriminal = 2 And Status(UserIndex) < 2 Then
-            '    Call RefreshCharStatus(UserIndex)
-            'ElseIf EraCriminal < 2 And Status(UserIndex) = 2 Then
-            '    Call RefreshCharStatus(UserIndex)
-            'End If
-        
 156         If MiNPC.GiveEXPClan > 0 Then
 158             If UserList(UserIndex).GuildIndex > 0 Then
 160                 Call modGuilds.CheckClanExp(UserIndex, MiNPC.GiveEXPClan)
@@ -998,7 +975,6 @@ Function SpawnNpc(ByVal NpcIndex As Integer, Pos As WorldPos, ByVal FX As Boolea
 112     Do While Not PosicionValida
         
 114         Call ClosestLegalPos(Pos, newpos, PuedeAgua, PuedeTierra)  'Nos devuelve la posicion valida mas cercana
-116         Call ClosestLegalPos(Pos, altpos, PuedeAgua)
             'Si X e Y son iguales a 0 significa que no se encontro posicion valida
 
 118         If newpos.X <> 0 And newpos.Y <> 0 Then
@@ -1007,17 +983,9 @@ Function SpawnNpc(ByVal NpcIndex As Integer, Pos As WorldPos, ByVal FX As Boolea
 122             NpcList(nIndex).Pos.X = newpos.X
 124             NpcList(nIndex).Pos.Y = newpos.Y
 126             PosicionValida = True
+            
             Else
-
-128             If altpos.X <> 0 And altpos.Y <> 0 Then
-130                 NpcList(nIndex).Pos.Map = altpos.Map
-132                 NpcList(nIndex).Pos.X = altpos.X
-134                 NpcList(nIndex).Pos.Y = altpos.Y
-136                 PosicionValida = True
-                Else
-138                 PosicionValida = False
-
-                End If
+138             PosicionValida = False
 
             End If
         
@@ -1332,15 +1300,16 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 248         Next LoopC
     
 250         If .NPCtype = eNPCType.Entrenador Then
-        
 252             .NroCriaturas = val(Leer.GetValue("NPC" & NpcNumber, "NroCriaturas"))
-            
-254             ReDim .Criaturas(1 To .NroCriaturas) As tCriaturasEntrenador
+                
+                If .NroCriaturas > 0 Then
+254                 ReDim .Criaturas(1 To .NroCriaturas) As tCriaturasEntrenador
     
-256             For LoopC = 1 To .NroCriaturas
-258                 .Criaturas(LoopC).NpcIndex = Leer.GetValue("NPC" & NpcNumber, "CI" & LoopC)
-260                 .Criaturas(LoopC).NpcName = Leer.GetValue("NPC" & NpcNumber, "CN" & LoopC)
-262             Next LoopC
+256                 For LoopC = 1 To .NroCriaturas
+258                     .Criaturas(LoopC).NpcIndex = Leer.GetValue("NPC" & NpcNumber, "CI" & LoopC)
+260                     .Criaturas(LoopC).NpcName = Leer.GetValue("NPC" & NpcNumber, "CN" & LoopC)
+262                 Next LoopC
+                End If
     
             End If
     
@@ -1557,15 +1526,7 @@ DoFollow_Err:
 End Sub
 
 Public Sub FollowAmo(ByVal NpcIndex As Integer)
-        '***************************************************
-        'Author: Unknown
-        'Last Modification: -
-        '
-        '***************************************************
-        
         On Error GoTo FollowAmo_Err
-    
-        
 
 100     With NpcList(NpcIndex)
 102         .flags.Follow = True
@@ -1578,14 +1539,30 @@ Public Sub FollowAmo(ByVal NpcIndex As Integer)
 116         .TargetNPC = 0
         End With
 
-        
         Exit Sub
 
 FollowAmo_Err:
 118     Call RegistrarError(Err.Number, Err.Description, "NPCs.FollowAmo", Erl)
-
-        
 End Sub
+
+Public Sub AllFollowAmo(ByVal UserIndex As Integer)
+        On Error GoTo AllFollowAmo_Err
+
+        Dim j As Integer
+
+        For j = 1 To MAXMASCOTAS
+            If UserList(UserIndex).MascotasIndex(j) > 0 Then
+                Call FollowAmo(UserList(UserIndex).MascotasIndex(j))
+            End If
+        Next j
+
+        Exit Sub
+
+AllFollowAmo_Err:
+        Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.AllFollowAmo", Erl)
+
+End Sub
+
 
 Public Function ObtenerIndiceRespawn() As Integer
 
@@ -1594,8 +1571,6 @@ Public Function ObtenerIndiceRespawn() As Integer
         Dim LoopC As Integer
 
 100     For LoopC = 1 To MaxRespawn
-
-            'If LoopC > MaxRespawn Then Exit For
 102         If Not RespawnList(LoopC).flags.NPCActive Then Exit For
 104     Next LoopC
   
@@ -1604,7 +1579,7 @@ Public Function ObtenerIndiceRespawn() As Integer
         Exit Function
 ErrHandler:
 108     Call LogError("Error en ObtenerIndiceRespawn")
-    
+
 End Function
 
 Sub QuitarMascota(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)

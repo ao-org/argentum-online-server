@@ -675,7 +675,7 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As eHeading) As
             
             If IndexMover <> 0 Then
                 ' Sólo puedo patear caspers/gms invisibles si no es él un gm invisible
-                If .flags.AdminInvisible = 0 Then Exit Function
+                If .flags.AdminInvisible <> 0 Then Exit Function
 
                 Call WritePosUpdate(IndexMover)
                 OppositeHeading = InvertHeading(nHeading)
@@ -1272,22 +1272,26 @@ NPCAtacado_Err:
 End Sub
 
 Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
-        
         On Error GoTo SubirSkill_Err
-        
+
+        Dim Lvl As Integer, maxPermitido As Integer
+            Lvl = UserList(UserIndex).Stats.ELV
 
 100     If UserList(UserIndex).Stats.UserSkills(Skill) = MAXSKILLPOINTS Then Exit Sub
 
-102     If UserList(UserIndex).flags.Hambre = 0 And UserList(UserIndex).flags.Sed = 0 Then
-        
-            Dim Lvl As Integer
+        ' Se suben 5 skills cada dos niveles como máximo.
+        If (Lvl Mod 2 = 0) Then ' El level es numero par
+          maxPermitido = (Lvl \ 2) * 5
+        Else ' El level es numero impar
+          ' Esta cuenta signifca, que si el nivel anterior terminaba en 5 ahora
+          ' suma dos puntos mas, sino 3. Lo de siempre.
+          maxPermitido = (Lvl \ 2) * 5 + 3 - (((((Lvl - 1) \ 2) * 5) Mod 10) \ 5)
+        End If
 
-104         Lvl = UserList(UserIndex).Stats.ELV
-        
-106         If Lvl > UBound(LevelSkill) Then Lvl = UBound(LevelSkill)
-            
-108         If UserList(UserIndex).Stats.UserSkills(Skill) >= LevelSkill(Lvl).LevelValue Then Exit Sub
-        
+        If UserList(UserIndex).Stats.UserSkills(Skill) >= maxPermitido Then Exit Sub
+
+102     If UserList(UserIndex).flags.Hambre = 0 And UserList(UserIndex).flags.Sed = 0 Then
+
             Dim Aumenta As Integer
 
             Dim Prob    As Integer
@@ -1322,7 +1326,7 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
             
                 Dim BonusExp As Long
 
-142             BonusExp = 5 * ExpMult * UserList(UserIndex).flags.ScrollExp
+142             BonusExp = 50 * ExpMult * UserList(UserIndex).flags.ScrollExp
         
 144             If UserList(UserIndex).donador.activo = 1 Then
 146                 BonusExp = BonusExp * 1.1
@@ -1357,18 +1361,16 @@ SubirSkill_Err:
         
 End Sub
 
-Sub SubirSkillDeArmaActual(ByVal UserIndex As Integer)
-    
-    ' Autor WyroX - 16/01/2021
+Public Sub SubirSkillDeArmaActual(ByVal UserIndex As Integer)
+    On Error GoTo SubirSkillDeArmaActual_Err
 
     With UserList(UserIndex)
-    
+
         If .Invent.WeaponEqpObjIndex > 0 Then
-            
             ' Arma con proyectiles, subimos armas a distancia
             If ObjData(.Invent.WeaponEqpObjIndex).Proyectil Then
                 Call SubirSkill(UserIndex, eSkill.Proyectiles)
-            
+
             ' Sino, subimos combate con armas
             Else
                 Call SubirSkill(UserIndex, eSkill.Armas)
@@ -1378,8 +1380,14 @@ Sub SubirSkillDeArmaActual(ByVal UserIndex As Integer)
         Else
             Call SubirSkill(UserIndex, eSkill.Wrestling)
         End If
-    
+
     End With
+
+    Exit Sub
+
+SubirSkillDeArmaActual_Err:
+        Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.SubirSkillDeArmaActual", Erl)
+        Resume Next
 
 End Sub
 
@@ -1492,19 +1500,6 @@ Sub UserDie(ByVal UserIndex As Integer)
 236             Next i
     
 238             Call WriteFYA(UserIndex)
-    
-            End If
-        
-240         .flags.VecesQueMoriste = .flags.VecesQueMoriste + 1
-        
-            ' << Restauramos los atributos >>
-242         If .flags.TomoPocion = True And .flags.BattleModo = 0 Then
-    
-244             For i = 1 To 4
-246                 .Stats.UserAtributos(i) = .Stats.UserAtributosBackUP(i)
-248             Next i
-    
-250             Call WriteFYA(UserIndex)
     
             End If
         

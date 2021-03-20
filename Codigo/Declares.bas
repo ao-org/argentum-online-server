@@ -40,7 +40,6 @@ Public Enum e_SoundIndex
     MUERTE_MUJER = 74
     FLECHA_IMPACTO = 65
     CONVERSION_BARCO = 55
-    MORFAR_MANZANA = 7
     SOUND_COMIDA = 7
 
 End Enum
@@ -211,7 +210,7 @@ Public Enum eCiudad
     cBanderbill
     cLindos
     cArghal
-    CHillidan
+    cArkhein
 
 End Enum
 
@@ -235,11 +234,10 @@ End Enum
 
 Public Enum eClanType
 
-    ct_RoyalArmy
-    ct_Evil
+    ct_Neutral
+    ct_ArmadaReal
+    ct_LegionOscura
     ct_GM
-    ct_Legal
-    ct_Criminal
 
 End Enum
 
@@ -570,19 +568,6 @@ Public Enum eBlock
 
 End Enum
 
-''
-
-'%%%%%%%%%% CONSTANTES DE INDICES %%%%%%%%%%%%%%%
-Public Const vlASALTO      As Integer = 100
-
-Public Const vlASESINO     As Integer = 1000
-
-Public Const vlCAZADOR     As Integer = 5
-
-Public Const vlNoble       As Integer = 5
-
-Public Const vlProleta     As Integer = 2
-
 '%%%%%%%%%% CONSTANTES DE INDICES %%%%%%%%%%%%%%%
 Public Const iCuerpoMuerto As Integer = 829
 
@@ -609,7 +594,7 @@ Public Enum eSkill
     Navegacion = 14
     equitacion = 15
     Resistencia = 16
-    
+
     Talar = 17
     Pescar = 18
     Mineria = 19
@@ -618,7 +603,7 @@ Public Enum eSkill
     Alquimia = 22
     Sastreria = 23
     Domar = 24
-    
+
     Grupo = 90
     MarcaDeClan = 91
     MarcaDeGM = 92
@@ -691,19 +676,19 @@ Public Const SND_IMPACTO         As Byte = 10
 
 Public Const SND_IMPACTO2        As Byte = 12
 
-Public Const SND_LEÑADOR As Byte = 13
+Public Const SND_LEÑADOR         As Byte = 13
 
-Public Const SND_FOGATA              As Byte = 14
+Public Const SND_FOGATA          As Byte = 14
 
-Public Const SND_SACARARMA           As Byte = 25
+Public Const SND_SACARARMA       As Byte = 25
 
-Public Const SND_ESCUDO              As Byte = 37
+Public Const SND_ESCUDO          As Byte = 37
 
-Public Const MARTILLOHERRERO         As Byte = 41
+Public Const MARTILLOHERRERO     As Byte = 41
 
-Public Const LABUROCARPINTERO        As Byte = 42
+Public Const LABUROCARPINTERO    As Byte = 42
 
-Public Const SND_BEBER               As Byte = 135
+Public Const SND_BEBER           As Byte = 135
 
 ''
 ' Cantidad maxima de objetos por slot de inventario
@@ -789,9 +774,7 @@ Public Const STAT_MAXSTA              As Integer = 32000
 
 Public Const STAT_MAXMAN              As Integer = 32000
 
-Public Const STAT_MAXHIT_UNDER36      As Byte = 99
-
-Public Const STAT_MAXHIT_OVER36       As Integer = 999
+Public Const STAT_MAXHIT              As Integer = 999
 
 Public Const STAT_MAXDEF              As Byte = 99
 
@@ -922,12 +905,6 @@ Public Type tHechizo
     
     NeedStaff As Integer
     StaffAffected As Boolean
-
-End Type
-
-Public Type LevelSkill
-
-    LevelValue As Integer
 
 End Type
 
@@ -1161,7 +1138,7 @@ Public Type ObjData
     donador As Byte
     ClaseTipo As Byte
     RazaTipo As Byte
-    
+
     TipoRuna As Byte
 
     name As String 'Nombre del obj
@@ -1212,8 +1189,8 @@ Public Type ObjData
     CreaLuz As String
     
     MinELV As Byte
-    SkillIndex As Byte
-    SkillRequerido As Byte
+    SkillIndex As Byte     ' El indice de Skill para equipar el item
+    SkillRequerido As Byte ' El valor MINIMO requerido de skillIndex para equipar el item
     
     CreaGRH As String
     SndAura As Integer
@@ -1229,19 +1206,18 @@ Public Type ObjData
     HastaX As Byte
     
     EfectoMagico As Byte
-    CantidadSkillSuma As Byte
-    QueSkill As Byte
+    QueSkill As Byte          ' Que skill recibe la bonificacion
+    CantidadSkill As Byte     ' Cuantos puntos de skill bonifica
     
-    Subtipo As Byte
+    Subtipo As Byte ' 0: -, 1: Paraliza, 2: Incinera, 3: Envenena, 4: Explosiva
     
     Dorada As Byte
     
     VidaUtil As Integer
     TiempoRegenerar As Integer
     
-    CuantoAumento As Single
-    QueAtributo As Byte
-    CantidadSkill As Byte
+    CuantoAumento As Single ' Cuanto aumenta el atributo.
+    QueAtributo As Byte     ' Que attributo sube (Agilidad, Fuerza, etc)
     incinera As Byte
 
     'Puntos de Stamina que da
@@ -1765,7 +1741,8 @@ Public Type tQuestStats
 
 End Type
 
-'Cosas faccionarias.
+' ------------- FACCIONES -------------
+
 Public Type tFacciones
 
     Status As Byte
@@ -1773,8 +1750,8 @@ Public Type tFacciones
     FuerzasCaos As Byte
     CriminalesMatados As Long
     ciudadanosMatados As Long
-    RecompensasReal As Long
-    RecompensasCaos As Long
+    RecompensasReal As Long ' a.k.a Rango armada real
+    RecompensasCaos As Long ' a.k.a Rango legion caos
     RecibioExpInicialReal As Byte
     RecibioExpInicialCaos As Byte
     RecibioArmaduraReal As Byte
@@ -1783,9 +1760,26 @@ Public Type tFacciones
     NivelIngreso As Integer
     FechaIngreso As String
     MatadosIngreso As Integer 'Para Armadas nada mas
-    NextRecompensa As Integer
+    NextRecompensa As Integer 'DEPRECATED: Atributo viejo. Deberiamos usar `tRangoFaccion`
 
 End Type
+
+Public Type tRangoFaccion
+
+    Rank As Byte
+    Titulo As String
+    NivelRequerido As Byte
+    AsesinatosRequeridos As Integer
+
+End Type
+
+Public Type tRecompensaFaccion
+
+    Rank As Byte
+    ObjIndex As Integer
+
+End Type
+
 
 'Tipo de los Usuarios
 Public Type user
@@ -2263,6 +2257,8 @@ Public MaxUsers                          As Integer
 
 Public HideMe                            As Byte
 
+Public MaxRangoFaccion                   As Byte ' El rango maximo que se puede alcanzar
+
 Public LastBackup                        As String
 
 Public minutos                           As String
@@ -2304,8 +2300,6 @@ Public FX()                               As FXdata
 
 Public SpawnList()                        As tCriaturasEntrenador
 
-Public LevelSkill(1 To 50)                As LevelSkill
-
 Public ForbidenNames()                    As String
 
 Public ArmasHerrero()                     As Integer
@@ -2326,6 +2320,10 @@ Public Peces()                            As obj
 
 Public PesoPeces()                        As Long
 
+Public RangosFaccion()                    As tRangoFaccion
+
+Public RecompensasFaccion()               As tRecompensaFaccion
+
 Public ObjDonador()                       As tObjDonador
 
 Public BanIps                             As New Collection
@@ -2345,7 +2343,7 @@ Public Lindos                             As WorldPos
 
 Public Arghal                             As WorldPos
 
-Public Hillidan                           As WorldPos
+Public Arkhein                            As WorldPos
 
 Public CityNix                            As CityWorldPos
 
@@ -2357,7 +2355,7 @@ Public CityLindos                         As CityWorldPos
 
 Public CityArghal                         As CityWorldPos
 
-Public CityHillidan                       As CityWorldPos
+Public CityArkhein                        As CityWorldPos
 
 Public Prision                            As WorldPos
 
