@@ -1332,7 +1332,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 462             If Len(NpcList(TempCharIndex).Desc) > 1 Then
                     ' WyroX: Hacemos que se detenga a hablar un momento :P
                     If NpcList(TempCharIndex).Movement = Caminata Then
-                        NpcList(TempCharIndex).Contadores.IntervaloMovimiento = GetTickCount + 5000 - NpcList(TempCharIndex).IntervaloMovimiento ' 5 segundos
+                        NpcList(TempCharIndex).Contadores.IntervaloMovimiento = GetTickCount + 5000 + Len(NpcList(TempCharIndex).Desc) * 50 - NpcList(TempCharIndex).IntervaloMovimiento ' 5 segundos + 1 segundo cada 20 caracteres
                     End If
 
                     'Optimizacion de protocolo por Ladder

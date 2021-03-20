@@ -78,11 +78,6 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                         Exit Sub
 
                     End If
-                    
-                    ' WyroX: Hacemos que se detenga a hablar un momento :P
-                    If NpcList(MapData(Map, X, Y).NpcIndex).Movement = Caminata Then
-                        NpcList(MapData(Map, X, Y).NpcIndex).Contadores.IntervaloMovimiento = GetTickCount + 5000 - NpcList(MapData(Map, X, Y).NpcIndex).IntervaloMovimiento ' 5 segundos
-                    End If
             
                     'Is it already in commerce mode??
 116                 If UserList(UserIndex).flags.Comerciando Then
@@ -99,7 +94,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                     
                     ' WyroX: Hacemos que se detenga a hablar un momento :P
                     If NpcList(MapData(Map, X, Y).NpcIndex).Movement = Caminata Then
-                        NpcList(MapData(Map, X, Y).NpcIndex).Contadores.IntervaloMovimiento = GetTickCount + 5000 - NpcList(MapData(Map, X, Y).NpcIndex).IntervaloMovimiento ' 5 segundos
+                        NpcList(MapData(Map, X, Y).NpcIndex).Contadores.IntervaloMovimiento = GetTickCount + 15000 - NpcList(MapData(Map, X, Y).NpcIndex).IntervaloMovimiento ' 15 segundos
                     End If
             
                     'Iniciamos la rutina pa' comerciar.
@@ -281,7 +276,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                     
                     ' WyroX: Hacemos que se detenga a hablar un momento :P
                     If NpcList(MapData(Map, X, Y).NpcIndex).Movement = Caminata Then
-                        NpcList(MapData(Map, X, Y).NpcIndex).Contadores.IntervaloMovimiento = GetTickCount + 5000 - NpcList(MapData(Map, X, Y).NpcIndex).IntervaloMovimiento ' 5 segundos
+                        NpcList(MapData(Map, X, Y).NpcIndex).Contadores.IntervaloMovimiento = GetTickCount + 20000 - NpcList(MapData(Map, X, Y).NpcIndex).IntervaloMovimiento ' 20 segundos
                     End If
 
 248                 Call IniciarSubasta(UserIndex)
@@ -295,7 +290,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                     
                     ' WyroX: Hacemos que se detenga a hablar un momento :P
                     If NpcList(MapData(Map, X, Y).NpcIndex).Movement = Caminata Then
-                        NpcList(MapData(Map, X, Y).NpcIndex).Contadores.IntervaloMovimiento = GetTickCount + 5000 - NpcList(MapData(Map, X, Y).NpcIndex).IntervaloMovimiento ' 5 segundos
+                        NpcList(MapData(Map, X, Y).NpcIndex).Contadores.IntervaloMovimiento = GetTickCount + 15000 - NpcList(MapData(Map, X, Y).NpcIndex).IntervaloMovimiento ' 15 segundos
                     End If
             
 256                 Call EnviarQuest(UserIndex)
