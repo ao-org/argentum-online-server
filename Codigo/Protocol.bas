@@ -4282,9 +4282,9 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
                                 End If
 
-462                             If ObjData(DummyInt).Elfico <> ObjData(.Invent.HerramientaEqpObjIndex).Elfico Then
+                                If ObjData(DummyInt).Elfico <> ObjData(.Invent.HerramientaEqpObjIndex).Elfico Then
                                     Call WriteConsoleMsg(UserIndex, "Sólo puedes talar árboles elficos con un hacha élfica.", FontTypeNames.FONTTYPE_INFO)
-466                                 Call WriteWorkRequestTarget(UserIndex, 0)
+                                    Call WriteWorkRequestTarget(UserIndex, 0)
                                     Exit Sub
 
                                 End If
