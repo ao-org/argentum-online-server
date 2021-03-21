@@ -119,32 +119,10 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
 118         Call WriteUpdateHP(UserIndex)
             
 120         If .flags.Navegando = 1 Then
-    
-                Dim Barco As ObjData
-    
-122             Barco = ObjData(.Invent.BarcoObjIndex)
+                EquiparBarco(UserIndex)
 
-124             If Barco.Subtipo = 0 Then
-126                 .Char.Head = .OrigChar.Head
-                    
-128                 If .Invent.CascoEqpObjIndex > 0 Then
-130                     .Char.CascoAnim = ObjData(.Invent.CascoEqpObjIndex).CascoAnim
-                    End If
-
-132                 Call WriteNadarToggle(UserIndex, True)
-                Else
-134                 .Char.Head = 0
-136                 Call WriteNadarToggle(UserIndex, False)
-                End If
-        
-138             .Char.Body = Barco.Ropaje
-        
-140             .Char.ShieldAnim = NingunEscudo
-142             .Char.WeaponAnim = NingunArma
-144             .Char.speeding = Barco.Velocidad
-       
             Else
-        
+
 146             .Char.Head = .OrigChar.Head
     
 148             If .Invent.CascoEqpObjIndex > 0 Then
@@ -1513,16 +1491,7 @@ Sub UserDie(ByVal UserIndex As Integer)
             
 264             .Char.speeding = VelocidadMuerto
             Else
-    
-266             If ObjData(.Invent.BarcoObjIndex).Ropaje = iTraje Then
-268                 .Char.Body = iRopaBuceoMuerto
-270                 .Char.Head = iCabezaMuerto
-                Else
-272                 .Char.Body = iFragataFantasmal ';)
-274                 .Char.Head = 0
-                End If
-                
-276             .Char.speeding = ObjData(.Invent.BarcoObjIndex).Velocidad
+                EquiparBarco(UserIndex)
             End If
             
             Call LimpiarEstadosAlterados(UserIndex)
@@ -2517,7 +2486,7 @@ Public Sub LimpiarEstadosAlterados(ByVal UserIndex As Integer)
                 Else
                     .Char.Body = iFragataFantasmal
                 End If
-                
+
                 .Char.ShieldAnim = NingunEscudo
                 .Char.WeaponAnim = NingunArma
                 .Char.CascoAnim = NingunCasco
