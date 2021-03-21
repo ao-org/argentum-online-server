@@ -2121,11 +2121,7 @@ Private Sub HandleTalk(ByVal UserIndex As Integer)
 
 126                 If .clase = eClass.Pirat Then
                         ' Pierde la apariencia de fragata fantasmal
-128                     .Char.Body = ObjData(.Invent.BarcoObjIndex).Ropaje
-
-130                     .Char.ShieldAnim = NingunEscudo
-132                     .Char.WeaponAnim = NingunArma
-134                     .Char.CascoAnim = NingunCasco
+                        EquiparBarco(UserIndex)
 
 136                     Call WriteConsoleMsg(UserIndex, "Has recuperado tu apariencia normal!", FontTypeNames.FONTTYPE_INFO)
 138                     Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)

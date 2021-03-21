@@ -231,28 +231,7 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
 
 138             Call WriteNadarToggle(UserIndex, Barco.Subtipo = 0)
     
-140             If .flags.Muerto = 0 Then
-142                 .Char.Body = Barco.Ropaje
-                
-144                 If Barco.Subtipo = 0 Then
-146                     .Char.Head = .OrigChar.Head
-                    Else
-148                     .Char.Head = 0
-                    End If
-                Else
-150                 If Barco.Subtipo = 0 Then
-152                     .Char.Body = iRopaBuceoMuerto
-154                     .Char.Head = iCabezaMuerto
-                    Else
-156                     .Char.Body = iFragataFantasmal
-158                     .Char.Head = 0
-                    End If
-                End If
-    
-160             .Char.ShieldAnim = NingunEscudo
-162             .Char.WeaponAnim = NingunArma
-
-164             .Char.speeding = Barco.Velocidad
+                EquiparBarco(UserIndex)
             
             Else
 166             Call WriteNadarToggle(UserIndex, False)
