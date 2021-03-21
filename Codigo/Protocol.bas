@@ -28610,8 +28610,7 @@ Private Sub HandleMarcaDeGM(ByVal UserIndex As Integer)
         'Author: Pablo Mercavides
         
         On Error GoTo HandleMarcaDeGM_Err
-    
-        
+
 
 100     With UserList(UserIndex)
 
