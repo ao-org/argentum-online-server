@@ -1054,6 +1054,67 @@ FaccionPuedeUsarItem_Err:
         
 End Function
 
+'Equipa barco y hace el cambio de ropaje correspondiente
+Sub EquiparBarco(ByVal UserIndex As Integer)
+  On Error GoTo Equiparbarco_Err
+
+  Dim Barco As ObjData
+
+  With UserList(UserIndex)
+    Barco = ObjData(.Invent.BarcoObjIndex)
+
+    If .flags.Muerto = 1 Then
+      If Barco.Ropaje = iTraje Then
+          .Char.Body = iRopaBuceoMuerto
+          .Char.Head = iCabezaMuerto
+      Else
+          .Char.Body = iFragataFantasmal
+          .Char.Head = 0
+      End If
+    Else ' Esta vivo
+      If Barco.Ropaje = iTraje Then
+        .Char.Body = iTraje
+        .Char.Head = .OrigChar.Head
+
+        If .Invent.CascoEqpObjIndex > 0 Then
+          .Char.CascoAnim = ObjData(.Invent.CascoEqpObjIndex).CascoAnim
+        End If
+      Else
+        .Char.Head = 0
+        .Char.CascoAnim = NingunCasco
+      End If
+
+      If .Faccion.ArmadaReal = 1 Then
+        If Barco.Ropaje = iBarca Then .Char.Body = iBarcaArmada
+        If Barco.Ropaje = iGalera Then .Char.Body = iGaleraArmada
+        If Barco.Ropaje = iGaleon Then .Char.Body = iGaleonArmada
+      ElseIf .Faccion.FuerzasCaos = 1 Then
+
+        If Barco.Ropaje = iBarca Then .Char.Body = iBarcaCaos
+        If Barco.Ropaje = iGalera Then .Char.Body = iGaleraCaos
+        If Barco.Ropaje = iGaleon Then .Char.Body = iGaleonCaos
+      Else
+
+        If Barco.Ropaje = iBarca Then .Char.Body = iBarca
+        If Barco.Ropaje = iGalera Then .Char.Body = iGalera
+        If Barco.Ropaje = iGaleon Then .Char.Body = iGaleon
+      End If
+    End If
+
+    .Char.ShieldAnim = NingunEscudo
+    .Char.WeaponAnim = NingunArma
+    .Char.speeding = Barco.Velocidad
+
+    Call WriteNadarToggle(UserIndex, Barco.Ropaje = iTraje)
+  End With
+
+
+Equiparbarco_Err:
+  Call RegistrarError(Err.Number, Err.Description, "InvUsuario.EquiparBarco", Erl)
+  Resume Next
+
+End Sub
+
 'Equipa un item del inventario
 Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
         On Error GoTo ErrHandler
