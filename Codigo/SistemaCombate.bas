@@ -2200,7 +2200,6 @@ Private Sub CalcularDarOroGrupal(ByVal UserIndex As Integer, ByVal GiveGold As L
 
 146                     If UserList(index).ChatCombate = 1 Then
 148                         Call WriteConsoleMsg(index, "¡El grupo ha ganado " & PonerPuntos(OroDar) & " monedas de oro!", FontTypeNames.FONTTYPE_New_GRUPO)
-                            Call WriteLocaleMsg(index, "123", FontTypeNames.FONTTYPE_New_GRUPO, PonerPuntos(OroDar), jadj, a)
 
                         End If
 
