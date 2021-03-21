@@ -20,9 +20,9 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal Invitado As Integer)
         ' Fundar un party require 15 puntos de liderazgo, pero el carisma ayuda
         skillsNecesarios = 15 - UserList(UserIndex).Stats.UserAtributos(eAtributos.Carisma) \ 2
 
-        If UserList(UserIndex).Stats.UserSkills(eSkill.Liderazgo) < skillsNecesarios Then
-            Call WriteLocaleMsg(UserIndex, "393", FontTypeNames.FONTTYPE_New_GRUPO, skillsNecesarios - UserList(UserIndex).Stats.UserSkills(eSkill.liderazgo) )
-            Exit sub
+        If UserList(UserIndex).Stats.UserSkills(eSkill.liderazgo) < skillsNecesarios Then
+            Call WriteConsoleMsg(UserIndex, "Te faltan " & (skillsNecesarios - UserList(UserIndex).Stats.UserSkills(eSkill.liderazgo)) & " puntos en Liderazgo para liderar un grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
+            Exit Sub
 
         End If
 
