@@ -2089,38 +2089,14 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
             End If
         Next
     
-136     Select Case CantidadMiembrosValidos
-    
-            Case 1
-138             BonificacionGrupo = 1
-
-140         Case 2
-142             BonificacionGrupo = 1.2
-
-144         Case 3
-146             BonificacionGrupo = 1.4
-
-148         Case 4
-150             BonificacionGrupo = 1.6
-
-152         Case 5
-154             BonificacionGrupo = 1.8
-
-156         Case Else
-158             BonificacionGrupo = 2
-                
-        End Select
- 
 160     If ExpMult > 0 Then
 162         ExpaDar = ExpaDar * ExpMult
         End If
 
-164     ExpaDar = ExpaDar * BonificacionGrupo
-
 166     ExpaDar = ExpaDar / CantidadMiembrosValidos
-    
+
         Dim ExpUser As Long
-    
+
 168     If ExpaDar > 0 Then
 170         For i = 1 To UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
 172             index = UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(i)
@@ -2201,41 +2177,10 @@ Private Sub CalcularDarOroGrupal(ByVal UserIndex As Integer, ByVal GiveGold As L
         '***************************************************
         Dim OroDar            As Long
 
-        Dim BonificacionGrupo As Single
-
-        'If UserList(UserIndex).Grupo.EnGrupo Then
-    
-100     Select Case UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
-    
-            Case 1
-102             BonificacionGrupo = 1
-
-104         Case 2
-106             BonificacionGrupo = 1.2
-
-108         Case 3
-110             BonificacionGrupo = 1.4
-
-112         Case 4
-114             BonificacionGrupo = 1.6
-
-116         Case 5
-118             BonificacionGrupo = 1.8
-
-120         Case 6
-122             BonificacionGrupo = 2
-                
-        End Select
- 
 124     OroDar = GiveGold * OroMult
-    
-126     If OroDar > 0 Then
-128         OroDar = OroDar * BonificacionGrupo
-        
-        End If
-    
+
         Dim orobackup As Long
-    
+
 130     orobackup = OroDar
 
         Dim i     As Byte
@@ -2250,18 +2195,17 @@ Private Sub CalcularDarOroGrupal(ByVal UserIndex As Integer, ByVal GiveGold As L
 138         If UserList(index).flags.Muerto = 0 Then
 140             If UserList(UserIndex).Pos.Map = UserList(index).Pos.Map Then
 142                 If OroDar > 0 Then
-                    
-                        'OroDar = orobackup * UserList(Index).flags.ScrollOro
-                
+
 144                     UserList(index).Stats.GLD = UserList(index).Stats.GLD + OroDar
-                        
+
 146                     If UserList(index).ChatCombate = 1 Then
 148                         Call WriteConsoleMsg(index, "¡El grupo ha ganado " & PonerPuntos(OroDar) & " monedas de oro!", FontTypeNames.FONTTYPE_New_GRUPO)
+                            Call WriteLocaleMsg(index, "123", FontTypeNames.FONTTYPE_New_GRUPO, PonerPuntos(OroDar), jadj, a)
 
                         End If
-                        
+
 150                     Call WriteUpdateGold(index)
-                        
+
                     End If
 
                 Else
