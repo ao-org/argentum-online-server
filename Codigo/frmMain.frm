@@ -27,6 +27,11 @@ Begin VB.Form frmMain
    ScaleHeight     =   6315
    ScaleWidth      =   6915
    StartUpPosition =   2  'CenterScreen
+   Begin VB.Timer Invasion 
+      Interval        =   60000
+      Left            =   1200
+      Top             =   3480
+   End
    Begin VB.Timer TiempoRetos 
       Interval        =   10000
       Left            =   3600
@@ -768,6 +773,52 @@ auxSocket_DataArrival_Err:
         
 End Sub
 
+Private Sub Invasion_Timer()
+    Dim i As Integer
+    
+    ' **********************************
+    ' **********  Invasiones  **********
+    ' **********************************
+    For i = 1 To UBound(Invasiones)
+        With Invasiones(i)
+            ' Aumentamos el contador para controlar cuando
+            ' inicia la invasión o cuando debe terminar
+            .TimerInvasion = .TimerInvasion + 1
+        
+            If .Activa Then
+                ' Chequeamos si el evento debe terminar
+                If .TimerInvasion >= .Duracion Then
+                    Call FinalizarInvasion(i)
+                
+                Else
+                    ' Descripción del evento
+                    .TimerRepetirDesc = .TimerRepetirDesc + 1
+    
+                    If .TimerRepetirDesc >= .RepetirDesc Then
+                        Call MensajeGlobal(.Desc, FontTypeNames.FONTTYPE_New_Eventos)
+                        .TimerRepetirDesc = 0
+                    End If
+                End If
+            
+            ' Si no está activa, chequeamos si debemos iniciarla
+            ElseIf .TimerInvasion >= .Intervalo Then
+                Call IniciarInvasion(i)
+
+            ' Si no está activa ni hay que iniciar, chequeamos si hay que avisar que se acerca el evento
+            ElseIf .TimerInvasion >= .Intervalo - .AvisarTiempo Then
+                .TimerRepetirAviso = .TimerRepetirAviso - 1
+
+                If .TimerRepetirAviso <= 0 Then
+                    Call MensajeGlobal(.aviso, FontTypeNames.FONTTYPE_New_Eventos)
+                    .TimerRepetirAviso = .RepetirAviso
+                End If
+            End If
+        
+        End With
+    Next
+    ' **********************************
+End Sub
+
 Private Sub mnuConsolaAPI_Click()
     frmAPISocket.Show vbModeless
 End Sub
@@ -1306,50 +1357,6 @@ End Sub
 Private Sub Evento_Timer()
         
     On Error GoTo Evento_Timer_Err
-    
-    Dim i As Integer
-    
-    ' **********************************
-    ' **********  Invasiones  **********
-    ' **********************************
-    For i = 1 To UBound(Invasiones)
-        With Invasiones(i)
-            ' Aumentamos el contador para controlar cuando
-            ' inicia la invasión o cuando debe terminar
-            .TimerInvasion = .TimerInvasion + 1
-        
-            If .Activa Then
-                ' Chequeamos si el evento debe terminar
-                If .TimerInvasion >= .duracion Then
-                    Call FinalizarInvasion(i)
-                
-                Else
-                    ' Descripción del evento
-                    .TimerRepetirDesc = .TimerRepetirDesc + 1
-    
-                    If .TimerRepetirDesc >= .RepetirDesc Then
-                        Call MensajeGlobal(.Desc, FontTypeNames.FONTTYPE_New_Eventos)
-                        .TimerRepetirDesc = 0
-                    End If
-                End If
-            
-            ' Si no está activa, chequeamos si debemos iniciarla
-            ElseIf .TimerInvasion >= .Intervalo Then
-                Call IniciarInvasion(i)
-
-            ' Si no está activa ni hay que iniciar, chequeamos si hay que avisar que se acerca el evento
-            ElseIf .TimerInvasion >= .Intervalo - .AvisarTiempo Then
-                .TimerRepetirAviso = .TimerRepetirAviso - 1
-
-                If .TimerRepetirAviso <= 0 Then
-                    Call MensajeGlobal(.Aviso, FontTypeNames.FONTTYPE_New_Eventos)
-                    .TimerRepetirAviso = .RepetirAviso
-                End If
-            End If
-        
-        End With
-    Next
-    ' **********************************
         
     TiempoRestanteEvento = TiempoRestanteEvento - 1
 
@@ -2303,15 +2310,15 @@ Private Sub Truenos_Timer()
 
     Enviar = RandomNumber(1, 15)
 
-    Dim duracion As Long
+    Dim Duracion As Long
 
     If Enviar < 8 Then
         TruenoWav = 399 + Enviar
 
         If TruenoWav = 404 Then TruenoWav = 406
-        duracion = RandomNumber(80, 250)
+        Duracion = RandomNumber(80, 250)
         Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(TruenoWav, NO_3D_SOUND, NO_3D_SOUND))
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageFlashScreen(&HEFEECB, duracion))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageFlashScreen(&HEFEECB, Duracion))
         
     End If
 
