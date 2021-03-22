@@ -27,7 +27,7 @@ Type tInvasion
     NumNPCsSpawn() As Integer
     MaxNPCs As Integer
     ' Aviso
-    Aviso As String
+    aviso As String
     AvisarTiempo As Integer
     RepetirAviso As Integer
     TimerRepetirAviso As Integer
@@ -42,7 +42,7 @@ Type tInvasion
     ' Duracion e intervalos
     TimerInvasion As Integer
     Intervalo As Integer
-    duracion As Integer
+    Duracion As Integer
     ' Mostrar info en pantalla
     TimerMostrarInfo As Integer
     TiempoDeInicio As Long
@@ -76,13 +76,13 @@ Sub CargarInfoEventos()
     
             .MaxVidaMuralla = val(File.GetValue(nombre, "MaxVidaMuralla"))
             .MaxNPCs = val(File.GetValue(nombre, "MaxNPCs"))
-            .Aviso = File.GetValue(nombre, "Aviso")
+            .aviso = File.GetValue(nombre, "Aviso")
             .AvisarTiempo = val(File.GetValue(nombre, "AvisarTiempo"))
             .RepetirAviso = val(File.GetValue(nombre, "RepetirAviso"))
             .Desc = File.GetValue(nombre, "Desc")
             .RepetirDesc = val(File.GetValue(nombre, "RepetirDesc"))
             .IntervaloSpawn = val(File.GetValue(nombre, "IntervaloSpawn"))
-            .duracion = val(File.GetValue(nombre, "Duracion"))
+            .Duracion = val(File.GetValue(nombre, "Duracion"))
             .Intervalo = val(File.GetValue(nombre, "Intervalo"))
             .TimerInvasion = val(File.GetValue(nombre, "Offset"))
             .MensajeGanaron = File.GetValue(nombre, "MensajeGanaron")
@@ -340,7 +340,7 @@ Public Sub EnviarInfoInvasion(ByVal index As Integer)
         
         PorcentajeVida = (.VidaMuralla / .MaxVidaMuralla) * 100
         
-        PorcentajeTiempo = (GetTickCount - .TiempoDeInicio) / (.duracion * 600)
+        PorcentajeTiempo = (GetTickCount - .TiempoDeInicio) / (.Duracion * 600)
     
         Dim i As Integer, Mapa As Integer, j As Integer
         For i = 1 To UBound(.SpawnBoxes)
@@ -388,7 +388,7 @@ Public Sub SumarScoreInvasion(ByVal index As Integer, ByVal UserIndex As Integer
                 
                 ' Revisamos si subió en el top
                 Dim j As Integer
-                For j = i - 1 To 1
+                For j = i - 1 To 1 Step -1
                     ' Si el que está arriba tiene un puntaje menor, los cambiamos
                     If .Top10Users(j).Score < .Top10Users(j + 1).Score Then
                         tmpUser = .Top10Users(j)
@@ -407,7 +407,7 @@ Public Sub SumarScoreInvasion(ByVal index As Integer, ByVal UserIndex As Integer
         Next
         
         ' Si llegamos acá, entonces hay que meterlo al top
-        For i = UBound(.Top10Users) To 1
+        For i = UBound(.Top10Users) To 1 Step -1
             ' Buscamos el lugar indicado
             If .Top10Users(i).Score > Score Then
                 Exit For
