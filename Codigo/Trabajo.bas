@@ -231,28 +231,7 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
 
 138             Call WriteNadarToggle(UserIndex, Barco.Subtipo = 0)
     
-140             If .flags.Muerto = 0 Then
-142                 .Char.Body = Barco.Ropaje
-                
-144                 If Barco.Subtipo = 0 Then
-146                     .Char.Head = .OrigChar.Head
-                    Else
-148                     .Char.Head = 0
-                    End If
-                Else
-150                 If Barco.Subtipo = 0 Then
-152                     .Char.Body = iRopaBuceoMuerto
-154                     .Char.Head = iCabezaMuerto
-                    Else
-156                     .Char.Body = iFragataFantasmal
-158                     .Char.Head = 0
-                    End If
-                End If
-    
-160             .Char.ShieldAnim = NingunEscudo
-162             .Char.WeaponAnim = NingunArma
-
-164             .Char.speeding = Barco.Velocidad
+                EquiparBarco(UserIndex)
             
             Else
 166             Call WriteNadarToggle(UserIndex, False)
@@ -1401,16 +1380,7 @@ Sub TratarDeHacerFogata(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Int
     
             'Seteamos la fogata como el nuevo TargetObj del user
 150         UserList(UserIndex).flags.TargetObj = FOGATA_APAG
-        Else
 
-            '[CDT 17-02-2004]
-152         If Not UserList(UserIndex).flags.UltimoMensaje = 10 Then
-154             Call WriteConsoleMsg(UserIndex, "No has podido hacer la fogata.", FontTypeNames.FONTTYPE_INFO)
-156             UserList(UserIndex).flags.UltimoMensaje = 10
-
-            End If
-
-            '[/CDT]
         End If
 
 158     Call SubirSkill(UserIndex, Supervivencia)
@@ -1615,36 +1585,11 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
 
             End If
 
-            'If .Grupo.EnGrupo > 0 Then
-        
-            '    If .GuildIndex = UserList(VictimaIndex).GuildIndex Then
-            '        Call WriteConsoleMsg(LadronIndex, "No podes robarle a un miembro de tu grupo.", FontTypeNames.FONTTYPE_INFOIAO)
-            '        Exit Sub
-
-            '    End If
-
-            'End If
-
-            'If .Grupo.EnGrupo = True Then
-
-            '    Dim i As Byte
-            '    For i = 1 To UserList(.Grupo.Lider).Grupo.CantidadMiembros
-
-            '        If UserList(.Grupo.Lider).Grupo.Miembros(i) = VictimaIndex Then
-            '            Call WriteConsoleMsg(LadronIndex, "No podes robarle a un miembro de tu grupo.", FontTypeNames.FONTTYPE_INFOIAO)
-            '            Exit Sub
-
-            '        End If
-
-            '    Next i
-
-            'End If
-        
             ' Quito energia
 142         Call QuitarSta(LadronIndex, 15)
-                
+
 144         If UserList(VictimaIndex).flags.Privilegios And PlayerType.user Then
-            
+
                 Dim Probabilidad As Byte
 
                 Dim res          As Integer
@@ -1891,12 +1836,12 @@ Public Sub RobarObjeto(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integ
                 Dim MiObj     As obj
                 Dim num       As Integer
                 Dim ObjAmount As Integer
-        
+
 132             ObjAmount = .Invent.Object(i).Amount
-        
+
                 'Cantidad al azar entre el 3 y el 6% del total, con minimo 1.
 134             num = MaximoInt(1, RandomNumber(ObjAmount * 0.03, ObjAmount * 0.06))
-                                    
+
 136             MiObj.Amount = num
 138             MiObj.ObjIndex = .Invent.Object(i).ObjIndex
         
@@ -1951,7 +1896,6 @@ Public Sub QuitarSta(ByVal UserIndex As Integer, ByVal Cantidad As Integer)
 104     If UserList(UserIndex).Stats.MinSta = 0 Then Exit Sub
 106     Call WriteUpdateSta(UserIndex)
 
-        
         Exit Sub
 
 QuitarSta_Err:
@@ -2029,14 +1973,6 @@ Public Sub DoRaices(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte
             Else
 146             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(61, .Pos.X, .Pos.Y))
     
-                '[CDT 17-02-2004]
-148             If Not .flags.UltimoMensaje = 8 Then
-150                 Call WriteConsoleMsg(UserIndex, "¡No has obtenido raices!", FontTypeNames.FONTTYPE_INFO)
-152                 .flags.UltimoMensaje = 8
-    
-                End If
-        
-                '[/CDT]
             End If
     
 154         Call SubirSkill(UserIndex, eSkill.Alquimia)
@@ -2057,40 +1993,39 @@ ErrHandler:
 End Sub
 
 Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte, Optional ByVal ObjetoDorado As Boolean = False)
-
         On Error GoTo ErrHandler
 
         Dim Suerte As Integer
         Dim res    As Integer
-    
+
 100     With UserList(UserIndex)
-    
+
                 'EsfuerzoTalarLeñador = 1
 102         If .Stats.MinSta > 2 Then
 104             Call QuitarSta(UserIndex, 2)
-        
+
             Else
 106             Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
                 'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para talar.", FontTypeNames.FONTTYPE_INFO)
 108             Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Sub
-    
+
             End If
-    
+
             Dim Skill As Integer
-    
+
 110         Skill = .Stats.UserSkills(eSkill.Talar)
 112         Suerte = Int(-0.00125 * Skill * Skill - 0.3 * Skill + 49)
-        
+
 114         res = RandomNumber(1, Suerte)
 116         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
-        
+
 118         If res < 6 Then
-    
+
                 Dim nPos  As WorldPos
-    
+
                 Dim MiObj As obj
-            
+
 120             Call ActualizarRecurso(.Pos.Map, X, Y)
 122             MapData(.Pos.Map, X, Y).ObjInfo.data = GetTickCount() ' Ultimo uso
     
@@ -2102,7 +2037,7 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
 130                 MiObj.ObjIndex = LeñaElfica
                 End If
 
-            
+
 132             If MiObj.Amount > MapData(.Pos.Map, X, Y).ObjInfo.Amount Then
 134                 MiObj.Amount = MapData(.Pos.Map, X, Y).ObjInfo.Amount
                 End If
@@ -2113,51 +2048,31 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
 140                 Call TirarItemAlPiso(.Pos, MiObj)
                 End If
     
-                'If Not .flags.UltimoMensaje = 5 Then
-                ' Call WriteConsoleMsg(UserIndex, "¡Has conseguido algo de leña!", FontTypeNames.FONTTYPE_INFO)
-                '        .flags.UltimoMensaje = 5
-                ' End If
 142             Call WriteTextCharDrop(UserIndex, "+" & MiObj.Amount, .Char.CharIndex, vbWhite)
 144             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_TALAR, .Pos.X, .Pos.Y))
-            
+
                 ' Al talar también podés dropear cosas raras (se setean desde RecursosEspeciales.dat)
                 Dim i As Integer
-    
+
                 ' Por cada drop posible
 146             For i = 1 To UBound(EspecialesTala)
                     ' Tiramos al azar entre 1 y la probabilidad
 148                 res = RandomNumber(1, EspecialesTala(i).data)
-                
+
                     ' Si tiene suerte y le pega
 150                 If res = 1 Then
 152                     MiObj.ObjIndex = EspecialesTala(i).ObjIndex
 154                     MiObj.Amount = 1 ' Solo un item por vez
-                    
-                        'If Not MeterItemEnInventario(Userindex, MiObj) Then _
-                        'Call TirarItemAlPiso(.Pos, MiObj)
-    
+
                         ' Tiro siempre el item al piso, me parece más rolero, como que cae del árbol :P
 156                     Call TirarItemAlPiso(.Pos, MiObj)
-    
-                        ' Oculto el mensaje porque el item cae al piso
-                        'Call WriteConsoleMsg(Userindex, "¡Has conseguido " & ObjData(EspecialesTala(i).ObjIndex).Name & "!", FontTypeNames.FONTTYPE_INFO)
-                        ' TODO: Sonido ?
-                        'Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessagePlayWave(15, .Pos.x, .Pos.Y))
                     End If
-    
-                Next
-        
+
+                Next i
+
             Else
-                '[CDT 17-02-2004]
 158             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(64, .Pos.X, .Pos.Y))
-    
-160             If Not .flags.UltimoMensaje = 8 Then
-162                 Call WriteConsoleMsg(UserIndex, "¡No has obtenido leña!", FontTypeNames.FONTTYPE_INFO)
-164                 .flags.UltimoMensaje = 8
-    
-                End If
-    
-                '[/CDT]
+
             End If
         
 166         Call SubirSkill(UserIndex, eSkill.Talar)
@@ -2249,37 +2164,22 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
 150                     MiObj.Amount = 1 ' Solo una gema por vez
                     
 152                     If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.Pos, MiObj)
-                        
+
                         ' Le mandamos un mensaje
 154                     Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(Yacimiento.Item(i).ObjIndex).name & "!", FontTypeNames.FONTTYPE_INFO)
-                        ' TODO: Sonido de drop de gema :P
-                        'Call SendData(SendTarget.ToPCArea, Userindex, PrepareMessagePlayWave(15, .Pos.x, .Pos.Y))
-                        
-                        ' Como máximo dropea una gema
-                        'Exit For ' Lo saco a pedido de Haracin
                     End If
     
                 Next
             
             Else
 156             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(2185, .Pos.X, .Pos.Y))
-    
-                '[CDT 17-02-2004]
-158             If Not .flags.UltimoMensaje = 9 Then
-                
-160                 Call WriteConsoleMsg(UserIndex, "¡No has conseguido nada!", FontTypeNames.FONTTYPE_INFO)
-                
-162                 .flags.UltimoMensaje = 9
-    
-                End If
-    
-                '[/CDT]
+
             End If
-        
+
 164         Call SubirSkill(UserIndex, eSkill.Mineria)
-        
+
 166         .Counters.Trabajando = .Counters.Trabajando + 1
-        
+
 168         If .Counters.Trabajando = 1 And Not .flags.UsandoMacro Then
 170             Call WriteMacroTrabajoToggle(UserIndex, True)
             End If

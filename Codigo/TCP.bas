@@ -1225,56 +1225,9 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
         
               'If in the water, and has a boat, equip it!
 318         If .Invent.BarcoObjIndex > 0 And (MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Then
-
-                  Dim Barco As ObjData
-
-320             Barco = ObjData(.Invent.BarcoObjIndex)
-
-322             If Barco.Ropaje <> iTraje Then
-324                 .Char.Head = 0
-                  End If
-
-326             If .flags.Muerto = 0 Then
-
-                      '(Nacho)
-328                 If .Faccion.ArmadaReal = 1 Then
-330                     If Barco.Ropaje = iBarca Then .Char.Body = iBarcaCiuda
-332                     If Barco.Ropaje = iGalera Then .Char.Body = iGaleraCiuda
-334                     If Barco.Ropaje = iGaleon Then .Char.Body = iGaleonCiuda
-336                     If Barco.Ropaje = iTraje Then .Char.Body = iTraje
-338                 ElseIf .Faccion.FuerzasCaos = 1 Then
-
-340                     If Barco.Ropaje = iBarca Then .Char.Body = iBarcaPk
-342                     If Barco.Ropaje = iGalera Then .Char.Body = iGaleraPk
-344                     If Barco.Ropaje = iGaleon Then .Char.Body = iGaleonPk
-346                     If Barco.Ropaje = iTraje Then .Char.Body = iTraje
-                      Else
-
-348                     If Barco.Ropaje = iBarca Then .Char.Body = iBarca
-350                     If Barco.Ropaje = iGalera Then .Char.Body = iGalera
-352                     If Barco.Ropaje = iGaleon Then .Char.Body = iGaleon
-354                     If Barco.Ropaje = iTraje Then .Char.Body = iTraje
-
-                      End If
-
-                  Else
-356                 .Char.Body = iFragataFantasmal
-                  End If
-            
-358             .Char.ShieldAnim = NingunEscudo
-360             .Char.WeaponAnim = NingunArma
-362             .Char.CascoAnim = NingunCasco
-364             .flags.Navegando = 1
-            
-366             .Char.speeding = Barco.Velocidad
-            
-368             If Barco.Ropaje = iTraje Then
-370                 Call WriteNadarToggle(UserIndex, True)
-                  Else
-372                 Call WriteNadarToggle(UserIndex, False)
-
-                  End If
-              End If
+                .flags.Navegando = 1
+                EquiparBarco(UserIndex)
+            End If
 
 374         Call WriteUserIndexInServer(UserIndex) 'Enviamos el User index
 376         .flags.NecesitaOxigeno = RequiereOxigeno(.Pos.Map)
