@@ -1573,16 +1573,7 @@ Public Sub EfectoMimetismo(ByVal UserIndex As Integer)
 106             Call WriteConsoleMsg(UserIndex, "Recuperas tu apariencia normal.", FontTypeNames.FONTTYPE_INFO)
             
 108             If .flags.Navegando Then
-110                 If .flags.Muerto = 0 Then
-112                     Barco = ObjData(UserList(UserIndex).Invent.BarcoObjIndex)
-114                     .Char.Body = Barco.Ropaje
-                    Else
-116                     .Char.Body = iFragataFantasmal
-                    End If
-                
-118                 .Char.ShieldAnim = NingunEscudo
-120                 .Char.WeaponAnim = NingunArma
-122                 .Char.CascoAnim = NingunCasco
+                    EquiparBarco(UserIndex)
                 Else
 124                 .Char.Body = .CharMimetizado.Body
 126                 .Char.Head = .CharMimetizado.Head
@@ -1746,14 +1737,13 @@ Public Sub EfectoVelocidadUser(ByVal UserIndex As Integer)
 102         UserList(UserIndex).Counters.Velocidad = UserList(UserIndex).Counters.Velocidad - 1
         Else
 104         UserList(UserIndex).Char.speeding = UserList(UserIndex).flags.VelocidadBackup
-    
-            'Call WriteVelocidadToggle(UserIndex)
-106         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(UserList(UserIndex).Char.CharIndex, UserList(UserIndex).flags.VelocidadBackup))
 108         UserList(UserIndex).flags.VelocidadBackup = 0
+
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(UserList(UserIndex).Char.CharIndex, UserList(UserIndex).Char.speeding))
+            Call WriteVelocidadToggle(UserIndex)
 
         End If
 
-        
         Exit Sub
 
 EfectoVelocidadUser_Err:

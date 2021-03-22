@@ -129,10 +129,6 @@ Public Const NO_3D_SOUND          As Byte = 0
 
 Public Const iFragataFantasmal = 87 'ok
 
-Public Const iFragataReal = 87 'ok
-
-Public Const iFragataCaos = 87 'ok
-
 Public Const iTraje = 694 'ok
 
 Public Const iBarca = 84 'ok
@@ -141,17 +137,17 @@ Public Const iGalera = 85 'ok
 
 Public Const iGaleon = 86 'ok
 
-Public Const iBarcaCiuda = 295 'ok
+Public Const iBarcaArmada = 1264 'ok
 
-Public Const iBarcaPk = 296 'ok
+Public Const iBarcaCaos = 1263 'ok
 
-Public Const iGaleraCiuda = 297 'ok
+Public Const iGaleraArmada = 1264 'ok
 
-Public Const iGaleraPk = 298 'ok
+Public Const iGaleraCaos = 1263 'ok
 
-Public Const iGaleonCiuda = 299 'v
+Public Const iGaleonArmada = 1264 'v
 
-Public Const iGaleonPk = 300 'ok
+Public Const iGaleonCaos = 1263 'ok
 
 Public Const iRopaBuceoMuerto = 772
 
@@ -458,9 +454,9 @@ Public Const LingotePlata   As Integer = 387 'OK
 
 Public Const LingoteOro     As Integer = 388 'OK
 
-Public Const Leña As Integer = 58 'OK
+Public Const Leña           As Integer = 58 'OK
 
-Public Const LeñaElfica As Integer = 2781 'PONER
+Public Const LeñaElfica     As Integer = 2781 'OK
 
 Public Const Raices         As Integer = 888 'OK
 
