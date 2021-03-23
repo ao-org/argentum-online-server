@@ -261,7 +261,6 @@ Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
 
             End If
         
-            'If Cantidad > 100000 Then Exit Sub
 106         If .flags.BattleModo = 1 Then Exit Sub
         
             'SI EL Pjta TIENE ORO LO TIRAMOS
@@ -277,9 +276,9 @@ Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
 
 110             TeniaOro = .Stats.GLD
 
-112             If Cantidad > 500000 Then 'Para evitar explotar demasiado
-114                 Extra = Cantidad - 500000
-116                 Cantidad = 500000
+112             If Cantidad > 100000 Then 'Para evitar explotar demasiado
+114                 Extra = Cantidad - 100000
+116                 Cantidad = 100000
 
                 End If
         
@@ -3457,9 +3456,13 @@ Sub TirarTodosLosItems(ByVal UserIndex As Integer)
         Dim NuevaPos  As WorldPos
         Dim MiObj     As obj
         Dim ItemIndex As Integer
-    
+       
 100     With UserList(UserIndex)
-    
+            ' Tambien se cae el oro de la billetera
+            If (.Stats.GLD < 100000) And Not EsNewbie(UserIndex) Then
+                Call TirarOro(.Stats.GLD, UserIndex)
+            End If
+            
 102         For i = 1 To .CurrentInventorySlots
     
 104             ItemIndex = .Invent.Object(i).ObjIndex

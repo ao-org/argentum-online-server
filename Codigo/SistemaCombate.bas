@@ -786,15 +786,7 @@ Private Sub NpcDaño(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 170     If UserList(UserIndex).Stats.MinHp <= 0 Then
     
 172         Call WriteNPCKillUser(UserIndex) ' Le informamos que ha muerto ;)
-        
-            'Si lo mato un guardia
-174         If Status(UserIndex) = 2 And NpcList(NpcIndex).NPCtype = eNPCType.GuardiaReal Then
-
-                ' Call RestarCriminalidad(UserIndex)
-176             If Status(UserIndex) < 2 And UserList(UserIndex).Faccion.FuerzasCaos = 1 Then Call ExpulsarFaccionCaos(UserIndex)
-
-            End If
-            
+                    
 178         If NpcList(NpcIndex).MaestroUser > 0 Then
 180             Call AllFollowAmo(NpcList(NpcIndex).MaestroUser)
             Else
