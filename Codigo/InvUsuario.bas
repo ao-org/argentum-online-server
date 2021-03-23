@@ -3459,7 +3459,7 @@ Sub TirarTodosLosItems(ByVal UserIndex As Integer)
        
 100     With UserList(UserIndex)
             ' Tambien se cae el oro de la billetera
-            If (.Stats.GLD < 100000) And Not EsNewbie(UserIndex) Then
+            If (.Stats.GLD < 100000) Then
                 Call TirarOro(.Stats.GLD, UserIndex)
             End If
             
