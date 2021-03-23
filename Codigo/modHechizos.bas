@@ -3210,7 +3210,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
 330             Call ContarMuerte(tempChr, UserIndex)
 332             Call ActStats(tempChr, UserIndex)
 
-                'Call UserDie(tempChr)
+                Call UserDie(tempChr)
             End If
     
 334         b = True
@@ -3967,7 +3967,7 @@ Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y As Byte,
 222                 Call ContarMuerte(NpcIndex, UserIndex)
 224                 Call ActStats(NpcIndex, UserIndex)
 
-                    'Call UserDie(NpcIndex)
+                    Call UserDie(NpcIndex)
                 End If
 
             End If
@@ -3995,14 +3995,14 @@ Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y As Byte,
 244             UserList(NpcIndex).Stats.MinHp = UserList(NpcIndex).Stats.MinHp + Daño
 
 246             If UserList(NpcIndex).Stats.MinHp > UserList(NpcIndex).Stats.MaxHp Then UserList(NpcIndex).Stats.MinHp = UserList(NpcIndex).Stats.MaxHp
-
-            End If
  
-248         If UserIndex <> NpcIndex Then
-250             Call WriteConsoleMsg(UserIndex, "Le has restaurado " & Daño & " puntos de vida a " & UserList(NpcIndex).name, FontTypeNames.FONTTYPE_FIGHT)
-252             Call WriteConsoleMsg(NpcIndex, UserList(UserIndex).name & " te ha restaurado " & Daño & " puntos de vida.", FontTypeNames.FONTTYPE_FIGHT)
-            Else
-254             Call WriteConsoleMsg(UserIndex, "Te has restaurado " & Daño & " puntos de vida.", FontTypeNames.FONTTYPE_FIGHT)
+248             If UserIndex <> NpcIndex Then
+250                 Call WriteConsoleMsg(UserIndex, "Le has restaurado " & Daño & " puntos de vida a " & UserList(NpcIndex).name, FontTypeNames.FONTTYPE_FIGHT)
+252                 Call WriteConsoleMsg(NpcIndex, UserList(UserIndex).name & " te ha restaurado " & Daño & " puntos de vida.", FontTypeNames.FONTTYPE_FIGHT)
+                Else
+254                 Call WriteConsoleMsg(UserIndex, "Te has restaurado " & Daño & " puntos de vida.", FontTypeNames.FONTTYPE_FIGHT)
+
+                End If
 
             End If
                     

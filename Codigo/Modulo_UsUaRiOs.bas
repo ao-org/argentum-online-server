@@ -1405,6 +1405,7 @@ Sub UserDie(ByVal UserIndex As Integer)
 122         .flags.Envenena = 0
 124         .flags.Estupidiza = 0
 126         .flags.Muerto = 1
+            .flags.Ahogandose = 0
             '.flags.SeguroParty = True
             'Call WritePartySafeOn(UserIndex)
             

@@ -1971,7 +1971,6 @@ Public Sub EfectoAhogo(ByVal UserIndex As Integer)
 
 114             If UserList(UserIndex).Stats.MinHp < 1 Then
 116                 Call UserDie(UserIndex)
-118                 UserList(UserIndex).flags.Ahogandose = 0
                 Else
 120                 Call WriteUpdateHP(UserIndex)
                 End If
