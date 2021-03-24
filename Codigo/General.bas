@@ -1573,7 +1573,7 @@ Public Sub EfectoMimetismo(ByVal UserIndex As Integer)
 106             Call WriteConsoleMsg(UserIndex, "Recuperas tu apariencia normal.", FontTypeNames.FONTTYPE_INFO)
             
 108             If .flags.Navegando Then
-                    EquiparBarco(UserIndex)
+                    Call EquiparBarco(UserIndex)
                 Else
 124                 .Char.Body = .CharMimetizado.Body
 126                 .Char.Head = .CharMimetizado.Head
@@ -1736,12 +1736,8 @@ Public Sub EfectoVelocidadUser(ByVal UserIndex As Integer)
 100     If UserList(UserIndex).Counters.Velocidad > 0 Then
 102         UserList(UserIndex).Counters.Velocidad = UserList(UserIndex).Counters.Velocidad - 1
         Else
-104         UserList(UserIndex).Char.speeding = UserList(UserIndex).flags.VelocidadBackup
-108         UserList(UserIndex).flags.VelocidadBackup = 0
-
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(UserList(UserIndex).Char.CharIndex, UserList(UserIndex).Char.speeding))
-            Call WriteVelocidadToggle(UserIndex)
-
+            UserList(UserIndex).flags.VelocidadHechizada = 0
+            Call ActualizarVelocidadDeUsuario(UserIndex)
         End If
 
         Exit Sub
@@ -2265,7 +2261,7 @@ Sub PasarSegundo()
 142             If .flags.Ceguera = 1 Then Call EfectoCegueEstu(i)
 144             If .flags.Estupidez = 1 Then Call EfectoEstupidez(i)
 146             If .flags.Maldicion = 1 Then Call EfectoMaldicionUser(i)
-148             If .flags.VelocidadBackup > 0 Then Call EfectoVelocidadUser(i)
+148             If .flags.VelocidadHechizada > 0 Then Call EfectoVelocidadUser(i)
 
 150             If .flags.UltimoMensaje > 0 Then
                     .Counters.RepetirMensaje = .Counters.RepetirMensaje + 1

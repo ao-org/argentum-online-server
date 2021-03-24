@@ -1226,7 +1226,9 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
               'If in the water, and has a boat, equip it!
 318         If .Invent.BarcoObjIndex > 0 And (MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Then
                 .flags.Navegando = 1
-                EquiparBarco(UserIndex)
+                Call EquiparBarco(UserIndex)
+                Call WriteNavigateToggle(UserIndex)
+                Call ActualizarVelocidadDeUsuario(UserIndex)
             End If
 
 374         Call WriteUserIndexInServer(UserIndex) 'Enviamos el User index
@@ -1334,19 +1336,14 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
         
 484         If .flags.Navegando = 1 Then
 486             Call WriteNavigateToggle(UserIndex)
-              End If
+                Call EquiparBarco(UserIndex)
+            End If
         
 488         If .flags.Montado = 1 Then
-490             .Char.speeding = VelocidadMontura
 492             Call WriteEquiteToggle(UserIndex)
-                  'Debug.Print "Montado:" & .Char.speeding
-494             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(.Char.CharIndex, .Char.speeding))
-              End If
-        
-496         If .flags.Muerto = 1 Then
-498             .Char.speeding = VelocidadMuerto
-500             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(.Char.CharIndex, .Char.speeding))
-              End If
+            End If
+
+            Call ActualizarVelocidadDeUsuario(UserIndex)
         
 502         If .GuildIndex > 0 Then
 

@@ -228,10 +228,8 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
                     .Counters.Mimetismo = 0
                     .flags.Mimetizado = 0
                 End If
-
-138             Call WriteNadarToggle(UserIndex, Barco.Subtipo = 0)
     
-                EquiparBarco(UserIndex)
+                Call EquiparBarco(UserIndex)
             
             Else
 166             Call WriteNadarToggle(UserIndex, False)
@@ -260,19 +258,19 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
 192                 If .Invent.HerramientaEqpObjIndex > 0 Then .Char.WeaponAnim = ObjData(.Invent.HerramientaEqpObjIndex).WeaponAnim
 
 194                 If .Invent.CascoEqpObjIndex > 0 Then .Char.CascoAnim = ObjData(.Invent.CascoEqpObjIndex).CascoAnim
-                
-196                 .Char.speeding = VelocidadNormal
+
                 Else
 198                 .Char.Body = iCuerpoMuerto
 200                 .Char.Head = 0
 202                 .Char.ShieldAnim = NingunEscudo
 204                 .Char.WeaponAnim = NingunArma
 206                 .Char.CascoAnim = NingunCasco
-                
-208                 .Char.speeding = VelocidadMuerto
+
                 End If
 
             End If
+            
+            Call ActualizarVelocidadDeUsuario(UserIndex)
         
             ' Volver visible
 210         If .flags.Oculto = 1 And .flags.AdminInvisible = 0 And .flags.invisible = 0 Then
@@ -284,7 +282,6 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
 218             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, False))
             End If
 
-220         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(.Char.CharIndex, .Char.speeding))
 222         Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
 224         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(FXSound.BARCA_SOUND, .Pos.X, .Pos.Y))
     
@@ -2558,7 +2555,6 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As ObjData, ByVal 
             
 140         UserList(UserIndex).Char.Body = Montura.Ropaje
 
-            'UserList(UserIndex).Char.body = Montura.Ropaje
 142         UserList(UserIndex).Char.Head = UserList(UserIndex).OrigChar.Head
 144         UserList(UserIndex).Char.ShieldAnim = NingunEscudo
 146         UserList(UserIndex).Char.WeaponAnim = NingunArma
