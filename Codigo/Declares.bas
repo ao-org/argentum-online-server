@@ -271,14 +271,8 @@ Public Enum FXSound
 End Enum
 
 Public Enum FXIDs
-
     FXWARP = 30
-    FXMEDITARCHICO = 38
-    FXMEDITARMEDIANO = 2
     FXMEDITARGRANDE = 42
-    FXMEDITARXGRANDE = 40
-    FXMEDITARXXGRANDE = 73
-
 End Enum
 
 Public Enum Meditaciones
@@ -286,6 +280,7 @@ Public Enum Meditaciones
     MeditarMayor15 = 116
     MeditarMayor30 = 117
     MeditarMayor45 = 119
+    MeditarMayor47 = 120
 End Enum
 
 Public Enum ParticulasIndex ' Particulas FX
@@ -584,7 +579,7 @@ Public Enum eSkill
     Supervivencia = 8
     Comerciar = 9
     Defensa = 10
-    Liderazgo = 11
+    liderazgo = 11
     Proyectiles = 12
     Wrestling = 13
     Navegacion = 14
@@ -786,7 +781,7 @@ Public Type tHechizo
     incinera As Byte
     AutoLanzar As Byte
     
-    Velocidad As Single
+    velocidad As Single
     Duration As Integer
     RequiredHP As Integer
     
@@ -1123,7 +1118,7 @@ End Type
 'Tipos de objetos
 Public Type ObjData
     Elfico As Byte
-    Velocidad As Single
+    velocidad As Single
     CantEntrega As Byte
     CantItem As Byte
     Item() As obj
@@ -1667,7 +1662,7 @@ Public Type UserCounters
     Veneno As Integer
     Incineracion As Integer
     Paralisis As Integer
-    Velocidad As Integer
+    velocidad As Integer
     Inmovilizado As Integer
     Ceguera As Integer
     Estupidez As Integer
@@ -1764,7 +1759,7 @@ End Type
 
 Public Type tRangoFaccion
 
-    Rank As Byte
+    rank As Byte
     Titulo As String
     NivelRequerido As Byte
     AsesinatosRequeridos As Integer
@@ -1773,7 +1768,7 @@ End Type
 
 Public Type tRecompensaFaccion
 
-    Rank As Byte
+    rank As Byte
     ObjIndex As Integer
 
 End Type

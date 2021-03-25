@@ -7690,8 +7690,11 @@ Private Sub HandleMeditate(ByVal UserIndex As Integer)
 130                 Case 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44
 132                     .Char.FX = Meditaciones.MeditarMayor30
 
-134                 Case Else
+134                 Case 45, 46
 136                     .Char.FX = Meditaciones.MeditarMayor45
+
+                    Case Else
+                        .Char.FX = Meditaciones.MeditarMayor47
 
                 End Select
             Else
@@ -24424,7 +24427,7 @@ PrepareMessageEscudoMov_Err:
         
 End Function
 
-Public Function PrepareMessageFlashScreen(ByVal Color As Long, ByVal duracion As Long, Optional ByVal Ignorar As Boolean = False) As String
+Public Function PrepareMessageFlashScreen(ByVal Color As Long, ByVal Duracion As Long, Optional ByVal Ignorar As Boolean = False) As String
         
         On Error GoTo PrepareMessageFlashScreen_Err
         
@@ -24438,7 +24441,7 @@ Public Function PrepareMessageFlashScreen(ByVal Color As Long, ByVal duracion As
 100     With auxiliarBuffer
 102         Call .WriteByte(ServerPacketID.FlashScreen)
 104         Call .WriteLong(Color)
-106         Call .WriteLong(duracion)
+106         Call .WriteLong(Duracion)
 108         Call .WriteBoolean(Ignorar)
 110         PrepareMessageFlashScreen = .ReadASCIIStringFixed(.Length)
 
@@ -27123,7 +27126,7 @@ Private Sub HandleQuieroFundarClan(ByVal UserIndex As Integer)
 
         End If
 
-        If UserList(UserIndex).Stats.ELV < 35 Or UserList(UserIndex).Stats.UserSkills(eSkill.Liderazgo) < 100 Then
+        If UserList(UserIndex).Stats.ELV < 35 Or UserList(UserIndex).Stats.UserSkills(eSkill.liderazgo) < 100 Then
             Call WriteConsoleMsg(UserIndex, "Para fundar un clan debes ser nivel 35, tener 100 en liderazgo y tener en tu inventario las 2 gemas: Gema Azul(1), Gema Naranja(1).", FontTypeNames.FONTTYPE_INFOIAO)
             Exit Sub
 
@@ -29729,22 +29732,22 @@ Private Sub HandleCrearEvento(ByVal UserIndex As Integer)
         
             Dim Tipo           As Byte
 
-            Dim duracion       As Byte
+            Dim Duracion       As Byte
 
             Dim multiplicacion As Byte
         
 110         Tipo = Buffer.ReadByte()
-112         duracion = Buffer.ReadByte()
+112         Duracion = Buffer.ReadByte()
 114         multiplicacion = Buffer.ReadByte()
         
             '/
 116         If .flags.Privilegios >= PlayerType.Admin Then
 118             If EventoActivo = False Then
-120                 If LenB(Tipo) = 0 Or LenB(duracion) = 0 Or LenB(multiplicacion) = 0 Then
+120                 If LenB(Tipo) = 0 Or LenB(Duracion) = 0 Or LenB(multiplicacion) = 0 Then
 122                     Call WriteConsoleMsg(UserIndex, "Utilice /CREAREVENTO TIPO@DURACION@MULTIPLICACION.", FontTypeNames.FONTTYPE_New_Eventos)
                     Else
                 
-124                     Call ForzarEvento(Tipo, duracion, multiplicacion, UserList(UserIndex).name)
+124                     Call ForzarEvento(Tipo, Duracion, multiplicacion, UserList(UserIndex).name)
                   
                     End If
 
