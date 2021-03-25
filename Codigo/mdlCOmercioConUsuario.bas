@@ -47,18 +47,6 @@ Public Sub IniciarComercioConUsuario(ByVal Origen As Integer, ByVal Destino As I
 
         On Error GoTo ErrHandler
 
-100     If UserList(Origen).flags.BattleModo = 1 Then
-102         Call WriteConsoleMsg(Origen, "No podes usar el sistema de comercio en el battle.", FontTypeNames.FONTTYPE_EXP)
-            Exit Sub
-
-        End If
-
-104     If UserList(Destino).flags.BattleModo = 1 Then
-106         Call WriteConsoleMsg(Destino, "No podes usar el sistema de comercio en el battle.", FontTypeNames.FONTTYPE_EXP)
-            Exit Sub
-
-        End If
-
 108     If MapInfo(UserList(Origen).Pos.Map).Seguro = 0 Then
 110         Call WriteConsoleMsg(Origen, "No se puede usar el comercio seguro en zona insegura.", FontTypeNames.FONTTYPE_INFO)
 112         Call WriteWorkRequestTarget(Origen, 0)
@@ -95,7 +83,7 @@ Public Sub IniciarComercioConUsuario(ByVal Origen As Integer, ByVal Destino As I
 
         Exit Sub
 ErrHandler:
-134     Call LogError("Error en IniciarComercioConUsuario: " & Err.description)
+134     Call LogError("Error en IniciarComercioConUsuario: " & Err.Description)
 
 End Sub
 
@@ -134,7 +122,7 @@ Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer)
         Exit Sub
 
 EnviarObjetoTransaccion_Err:
-114     Call RegistrarError(Err.Number, Err.description, "mdlCOmercioConUsuario.EnviarObjetoTransaccion", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "mdlCOmercioConUsuario.EnviarObjetoTransaccion", Erl)
 116     Resume Next
         
 End Sub
@@ -166,7 +154,7 @@ Public Sub FinComerciarUsu(ByVal UserIndex As Integer)
         Exit Sub
 
 FinComerciarUsu_Err:
-120     Call RegistrarError(Err.Number, Err.description, "mdlCOmercioConUsuario.FinComerciarUsu", Erl)
+120     Call RegistrarError(Err.Number, Err.Description, "mdlCOmercioConUsuario.FinComerciarUsu", Erl)
 122     Resume Next
         
 End Sub
@@ -382,7 +370,7 @@ Public Sub AceptarComercioUsu(ByVal UserIndex As Integer)
         Exit Sub
 
 AceptarComercioUsu_Err:
-234     Call RegistrarError(Err.Number, Err.description, "mdlCOmercioConUsuario.AceptarComercioUsu", Erl)
+234     Call RegistrarError(Err.Number, Err.Description, "mdlCOmercioConUsuario.AceptarComercioUsu", Erl)
 236     Resume Next
         
 End Sub

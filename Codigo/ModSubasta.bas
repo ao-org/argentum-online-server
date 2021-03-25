@@ -27,31 +27,31 @@ Public Sub IniciarSubasta(UserIndex)
         
 
 100     If UserList(UserIndex).flags.Subastando = True And Not Subasta.HaySubastaActiva Then
-102         Call WriteChatOverHead(UserIndex, "Escribe /OFERTAINICIAL (cantidad) para comenzar la subasta. Te quedan: " & UserList(UserIndex).Counters.TiempoParaSubastar & " segundos... ¡Apurate!", Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
+102         Call WriteChatOverHead(UserIndex, "Escribe /OFERTAINICIAL (cantidad) para comenzar la subasta. Te quedan: " & UserList(UserIndex).Counters.TiempoParaSubastar & " segundos... ¡Apurate!", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
             Exit Sub
 
         End If
 
 104     If Subasta.HaySubastaActiva = True Then
-106         Call WriteChatOverHead(UserIndex, "Oye amigo, espera tu turno, estoy subastando en este momento.", Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
+106         Call WriteChatOverHead(UserIndex, "Oye amigo, espera tu turno, estoy subastando en este momento.", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
             Exit Sub
 
         End If
 
 108     If Not MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).ObjInfo.ObjIndex > 0 Then
-110         Call WriteChatOverHead(UserIndex, "¿Pues Acaso el aire está en venta ahora? ¡Bribón!", Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
+110         Call WriteChatOverHead(UserIndex, "¿Pues Acaso el aire está en venta ahora? ¡Bribón!", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
             Exit Sub
 
         End If
     
 112     If Not ObjData(MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).ObjInfo.ObjIndex).Subastable = 1 Then
-114         Call WriteChatOverHead(UserIndex, "Aquí solo subastamos items que sean valiosos. ¡Largate de acá Bribón!", Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
+114         Call WriteChatOverHead(UserIndex, "Aquí solo subastamos items que sean valiosos. ¡Largate de acá Bribón!", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
             Exit Sub
 
         End If
     
 116     If UserList(UserIndex).flags.Subastando = True Then 'Practicamente imposible que pase... pero por si las dudas
-118         Call WriteChatOverHead(UserIndex, "Tu ya estas subastando! Esto a quedado logeado.", Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbRed)
+118         Call WriteChatOverHead(UserIndex, "Tu ya estas subastando! Esto a quedado logeado.", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbRed)
 120         Logear = "El usuario que ya estaba subastando pudo subastar otro item" & Date & " - " & Time
 122         Call LogearEventoDeSubasta(Logear)
             Exit Sub
@@ -63,7 +63,7 @@ Public Sub IniciarSubasta(UserIndex)
 128         Subasta.ObjSubastadoCantidad = MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).ObjInfo.Amount
 130         Subasta.Subastador = UserList(UserIndex).name
 132         UserList(UserIndex).Counters.TiempoParaSubastar = 15
-134         Call WriteChatOverHead(UserIndex, "Escribe /OFERTAINICIAL (cantidad) para comenzar la subasta. ¡Tienes 15 segundos!", Npclist(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
+134         Call WriteChatOverHead(UserIndex, "Escribe /OFERTAINICIAL (cantidad) para comenzar la subasta. ¡Tienes 15 segundos!", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
 136         Call EraseObj(Subasta.ObjSubastadoCantidad, UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y)
 138         UserList(UserIndex).flags.Subastando = True
             Exit Sub
@@ -119,17 +119,7 @@ Public Sub FinalizarSubasta()
 104     ObjVendido.Amount = Subasta.ObjSubastadoCantidad
 106     tUser = NameIndex(Subasta.Comprador)
 
-        Dim EstaBattle As Boolean
-
-108     If tUser > 0 Then
-110         If UserList(tUser).flags.BattleModo = 1 Then
-112             EstaBattle = True
-
-            End If
-
-        End If
-
-114     If tUser <= 0 Or EstaBattle Then
+114     If tUser <= 0 Then
 116         Call LogearEventoDeSubasta("El usuario ganador de subasta se encuentra offline, intentando depositar en boveda")
 118         Call Leer.Initialize(FileUser)
 120         SlotEnBoveda = CInt(Leer.GetValue("BancoInventory", "CantidadItems")) + 1
@@ -184,16 +174,8 @@ Public Sub FinalizarSubasta()
 
 168     Descuento = Subasta.MejorOferta / 100 * 5
 170     Subasta.MejorOferta = Subasta.MejorOferta - Descuento
-    
-172     If NameIndex(Subasta.Subastador) > 0 Then
-174         If UserList(NameIndex(Subasta.Subastador)).flags.BattleModo = 1 Then
-176             EstaBattle = True
-
-            End If
-
-        End If
-    
-178     If NameIndex(Subasta.Subastador) <= 0 Or EstaBattle Then
+        
+178     If NameIndex(Subasta.Subastador) <= 0 Then
 180         Call LogearEventoDeSubasta("El subastador se encontraba offline cuando se le tenia que dar el oro, depositando en el banco.")
 182         Call Leer.Initialize(CharPath & UCase$(Subasta.Subastador) & ".chr")
 184         Call WriteVar(CharPath & UCase$(Subasta.Subastador) & ".chr", "STATS", "Banco", CLng(Leer.GetValue("STATS", "BANCO")) + Subasta.MejorOferta)
@@ -256,7 +238,7 @@ Public Sub ResetearSubasta()
 116     Subasta.TiempoRestanteSubasta = 0
 118     Subasta.MinutosDeSubasta = 0
 120     Subasta.PosibleCancelo = False
-122     Call LogearEventoDeSubasta("Subasta finalizada." & data & " a las " & Time)
+122     Call LogearEventoDeSubasta("Subasta finalizada." & Data & " a las " & Time)
 124     Call LogearEventoDeSubasta("#################################################################################################################################################################################################")
 
         
@@ -297,19 +279,7 @@ Public Sub DevolverItem()
 106     ObjVendido.Amount = Subasta.ObjSubastadoCantidad
 108     tUser = NameIndex(Subasta.Subastador)
 
-        Dim EstaBattle As Boolean
-
-110     If tUser > 0 Then
-112         If UserList(tUser).flags.BattleModo = 1 Then
-114             EstaBattle = True
-116             UserList(tUser).flags.Subastando = False
-118             UserList(tUser).Counters.TiempoParaSubastar = 0
-
-            End If
-
-        End If
-
-120     If tUser <= 0 Or EstaBattle Then
+120     If tUser <= 0 Then
     
 122         Call LogearEventoDeSubasta("El usuario vendedor de subasta se encuentra offline, intentando depositar en boveda")
 124         Call Leer.Initialize(FileUser)
@@ -405,19 +375,7 @@ Public Sub CancelarSubasta()
 106     ObjVendido.Amount = Subasta.ObjSubastadoCantidad
 108     tUser = NameIndex(Subasta.Subastador)
 
-        Dim EstaBattle As Boolean
-
-110     If tUser > 0 Then
-112         If UserList(tUser).flags.BattleModo = 1 Then
-114             EstaBattle = True
-116             UserList(tUser).flags.Subastando = False
-118             UserList(tUser).Counters.TiempoParaSubastar = 0
-
-            End If
-
-        End If
-
-120     If tUser <= 0 Or EstaBattle Then
+120     If tUser <= 0 Then
 122         Call LogearEventoDeSubasta("El usuario de subasta se encuentra offline, intentando depositar en boveda")
 124         Call Leer.Initialize(FileUser)
 126         SlotEnBoveda = CInt(Leer.GetValue("BancoInventory", "CantidadItems")) + 1

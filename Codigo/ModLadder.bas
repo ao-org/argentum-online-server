@@ -29,7 +29,6 @@ Public Enum Accion_Barra
     Runa = 1
     Resucitar = 2
     Intermundia = 3
-    BattleModo = 4
     GoToPareja = 5
     Hogar = 6
     CancelarAccion = 99
@@ -323,49 +322,6 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 300                     UserList(UserIndex).Accion.ObjSlot = 0
 302                     UserList(UserIndex).Accion.AccionPendiente = False
 
-304                 Case 3
-
-                        Dim parejaindex As Integer
-    
-306                     If Not UserList(UserIndex).flags.BattleModo Then
-                    
-                            ' If UserList(UserIndex).donador.activo = 1 Then
-308                         If MapInfo(UserList(UserIndex).Pos.Map).Seguro = 1 Then
-310                             If UserList(UserIndex).flags.Casado = 1 Then
-312                                 parejaindex = NameIndex(UserList(UserIndex).flags.Pareja)
-                            
-314                                 If parejaindex > 0 Then
-316                                     If Not UserList(parejaindex).flags.BattleModo Then
-318                                         Call WarpToLegalPos(UserIndex, UserList(parejaindex).Pos.Map, UserList(parejaindex).Pos.X, UserList(parejaindex).Pos.Y, True)
-320                                         Call WriteConsoleMsg(UserIndex, "Te has teletransportado hacia tu pareja.", FontTypeNames.FONTTYPE_INFOIAO)
-322                                         Call WriteConsoleMsg(parejaindex, "Tu pareja se ha teletransportado hacia vos.", FontTypeNames.FONTTYPE_INFOIAO)
-                                        Else
-324                                         Call WriteConsoleMsg(UserIndex, "Tu pareja esta en modo battle. No podés teletransportarte hacia ella.", FontTypeNames.FONTTYPE_INFOIAO)
-
-                                        End If
-                                    
-                                    Else
-326                                     Call WriteConsoleMsg(UserIndex, "Tu pareja no esta online.", FontTypeNames.FONTTYPE_INFOIAO)
-
-                                    End If
-
-                                Else
-328                                 Call WriteConsoleMsg(UserIndex, "No estas casado con nadie.", FontTypeNames.FONTTYPE_INFOIAO)
-
-                                End If
-
-                            Else
-330                             Call WriteConsoleMsg(UserIndex, "Solo disponible en zona segura.", FontTypeNames.FONTTYPE_INFOIAO)
-
-                            End If
-                    
-                            'Else
-                            '   Call WriteConsoleMsg(UserIndex, "Opcion disponible unicamente para usuarios donadores.", FontTypeNames.FONTTYPE_INFOIAO)
-                            '  End If
-                        Else
-332                         Call WriteConsoleMsg(UserIndex, "No podés usar esta opción en el battle.", FontTypeNames.FONTTYPE_INFOIAO)
-            
-                        End If
             
                 End Select
                 
@@ -436,105 +392,9 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 418             UserList(UserIndex).Accion.RunaObj = 0
 420             UserList(UserIndex).Accion.ObjSlot = 0
 422             UserList(UserIndex).Accion.AccionPendiente = False
-        
-424         Case Accion_Barra.BattleModo
-        
-426             If UserList(UserIndex).flags.BattleModo = 1 Then
-428                 Call Cerrar_Usuario(UserIndex)
-                
-                    ' Dim mapaa As Integer
-                    '  Dim xa As Integer
-                    ' Dim ya As Integer
-                    ' mapaa = CInt(ReadField(1, GetVar(CharPath & UserList(UserIndex).name & ".chr", "INIT", "Position"), 45))
-                    ' xa = CInt(ReadField(2, GetVar(CharPath & UserList(UserIndex).name & ".chr", "INIT", "Position"), 45))
-                    ' ya = CInt(ReadField(3, GetVar(CharPath & UserList(UserIndex).name & ".chr", "INIT", "Position"), 45))
-
-                    ' Call WarpUserChar(UserIndex, mapaa, xa, ya, False)
-                
-                Else
-                
-430                 If UserList(UserIndex).flags.invisible = 1 Or UserList(UserIndex).flags.Oculto = 1 Then
-
-432                     UserList(UserIndex).flags.Oculto = 0
-434                     UserList(UserIndex).flags.invisible = 0
-436                     UserList(UserIndex).Counters.TiempoOculto = 0
-438                     UserList(UserIndex).Counters.Invisibilidad = 0
-                
-440                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(UserList(UserIndex).Char.CharIndex, False))
-
-                    End If
-                
-442                 Call SaveUser(UserIndex)  'Guardo el PJ
-
-444                 X = 50
-446                 Y = 54
-448                 Call FindLegalPos(UserIndex, 336, X, Y)
-                
-450                 Call WarpUserChar(UserIndex, 336, X, Y, True)
-                
-452                 UserList(UserIndex).flags.BattleModo = 1
-
-454                 If UserList(UserIndex).flags.Subastando Then
-456                     Call CancelarSubasta
-
-                    End If
-                
-460                 Call WriteConsoleMsg(UserIndex, "Battle> Ahora tu personaje se encuentra en modo batalla. Recuerda que todos los cambios que se realicen sobre éste no tendran efecto mientras te encuentres aquí. Cuando desees salir, solamente toca ESC o escribe /SALIR y relogea con tu personaje.", FontTypeNames.FONTTYPE_CITIZEN)
-                
-                End If
-
-462             UserList(UserIndex).Accion.AccionPendiente = False
-464             UserList(UserIndex).Accion.Particula = 0
-466             UserList(UserIndex).Accion.TipoAccion = Accion_Barra.CancelarAccion
-468             UserList(UserIndex).Accion.HechizoPendiente = 0
-470             UserList(UserIndex).Accion.RunaObj = 0
-472             UserList(UserIndex).Accion.ObjSlot = 0
-                
-474         Case Accion_Barra.GoToPareja
-    
-476             If Not UserList(UserIndex).flags.BattleModo Then
-                    
-                    ' If UserList(UserIndex).donador.activo = 1 Then
-478                 If MapInfo(UserList(UserIndex).Pos.Map).Seguro = 1 Then
-480                     If UserList(UserIndex).flags.Casado = 1 Then
-482                         parejaindex = NameIndex(UserList(UserIndex).flags.Pareja)
-                            
-484                         If parejaindex > 0 Then
-486                             If Not UserList(parejaindex).flags.BattleModo Then
-488                                 Call WarpToLegalPos(UserIndex, UserList(parejaindex).Pos.Map, UserList(parejaindex).Pos.X, UserList(parejaindex).Pos.Y, True)
-490                                 Call WriteConsoleMsg(UserIndex, "Te has teletransportado hacia tu pareja.", FontTypeNames.FONTTYPE_INFOIAO)
-492                                 Call WriteConsoleMsg(parejaindex, "Tu pareja se ha teletransportado hacia vos.", FontTypeNames.FONTTYPE_INFOIAO)
-                                Else
-494                                 Call WriteConsoleMsg(UserIndex, "Tu pareja esta en modo battle. No podés teletransportarte hacia ella.", FontTypeNames.FONTTYPE_INFOIAO)
-
-                                End If
-                                    
-                            Else
-496                             Call WriteConsoleMsg(UserIndex, "Tu pareja no esta online.", FontTypeNames.FONTTYPE_INFOIAO)
-
-                            End If
-
-                        Else
-498                         Call WriteConsoleMsg(UserIndex, "No estas casado con nadie.", FontTypeNames.FONTTYPE_INFOIAO)
-
-                        End If
-
-                    Else
-500                     Call WriteConsoleMsg(UserIndex, "Solo disponible en zona segura.", FontTypeNames.FONTTYPE_INFOIAO)
-
-                    End If
-                    
-                    ' Else
-                    ' Call WriteConsoleMsg(UserIndex, "Opcion disponible unicamente para usuarios donadores.", FontTypeNames.FONTTYPE_INFOIAO)
-                    'End If
-                Else
-502                 Call WriteConsoleMsg(UserIndex, "No podés usar esta opción en el battle.", FontTypeNames.FONTTYPE_INFOIAO)
-            
-                End If
-            
+                      
         End Select
-       
-        
+               
         Exit Sub
 
 CompletarAccionFin_Err:
@@ -544,10 +404,8 @@ CompletarAccionFin_Err:
 End Sub
 
 Public Function TieneObjEnInv(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, Optional ObjIndex2 As Integer = 0) As Boolean
-        
         On Error GoTo TieneObjEnInv_Err
         
-
         'Devuelve el slot del inventario donde se encuentra el obj
         'Creaado por Ladder 25/09/2014
         Dim i As Byte
@@ -662,21 +520,21 @@ End Sub
 Function PuedeUsarObjeto(UserIndex As Integer, ByVal ObjIndex As Integer) As Byte
         On Error GoTo PuedeUsarObjeto_Err
 
-        Dim objeto As ObjData
+        Dim Objeto As ObjData
 
         If EsGM(UserIndex) Then
             PuedeUsarObjeto = 0
             Exit Function
         End If
 
-        objeto = ObjData(ObjIndex)
+        Objeto = ObjData(ObjIndex)
 
-        If objeto.Newbie = 1 And Not EsNewbie(UserIndex) Then
+        If Objeto.Newbie = 1 And Not EsNewbie(UserIndex) Then
             PuedeUsarObjeto = 7
             Exit Function
         End If
 
-100     If UserList(UserIndex).Stats.ELV < objeto.MinELV Then
+100     If UserList(UserIndex).Stats.ELV < Objeto.MinELV Then
 102         PuedeUsarObjeto = 6
             Exit Function
         End If
@@ -690,7 +548,7 @@ Function PuedeUsarObjeto(UserIndex As Integer, ByVal ObjIndex As Integer) As Byt
         Dim i As Long
 104     For i = 1 To NUMRAZAS
 
-106         If objeto.RazaProhibida(i) = UserList(UserIndex).raza Then
+106         If Objeto.RazaProhibida(i) = UserList(UserIndex).raza Then
 108             PuedeUsarObjeto = 5
                 Exit Function
 
@@ -704,14 +562,14 @@ Function PuedeUsarObjeto(UserIndex As Integer, ByVal ObjIndex As Integer) As Byt
 
         End If
 
-        If objeto.SkillIndex > 0 Then
-            If UserList(UserIndex).Stats.UserSkills(objeto.skillIndex) < objeto.SkillRequerido Then
+        If Objeto.SkillIndex > 0 Then
+            If UserList(UserIndex).Stats.UserSkills(Objeto.SkillIndex) < Objeto.SkillRequerido Then
                 PuedeUsarObjeto = 4
                 Exit Function
             End If
         End If
 
-        Select Case objeto.OBJType
+        Select Case Objeto.OBJType
 
             Case otArmadura
 
@@ -723,20 +581,6 @@ Function PuedeUsarObjeto(UserIndex As Integer, ByVal ObjIndex As Integer) As Byt
 
 130             If Not SexoPuedeUsarItem(UserIndex, ObjIndex) Then
 132                 PuedeUsarObjeto = 1
-                    Exit Function
-
-                End If
-
-156         Case otMonturas
-
-158             If Not CheckClaseTipo(UserIndex, ObjIndex) Then
-160                 PuedeUsarObjeto = 2
-                    Exit Function
-
-                End If
-
-162             If Not CheckRazaTipo(UserIndex, ObjIndex) Then
-164                 PuedeUsarObjeto = 5
                     Exit Function
 
                 End If
@@ -756,28 +600,11 @@ PuedeUsarObjeto_Err:
 End Function
 
 Public Function RequiereOxigeno(ByVal UserMap) As Boolean
-        
         On Error GoTo RequiereOxigeno_Err
         
-
-100     Select Case UserMap
-
-                'Case 55
-                ' RequiereOxigeno = True
-            Case 331
-102             RequiereOxigeno = True
-
-104         Case 332
-106             RequiereOxigeno = True
-
-108         Case 333
-110             RequiereOxigeno = True
-
-112         Case Else
-114             RequiereOxigeno = False
-
-        End Select
-
+        RequiereOxigeno = (UserMap = 331) Or _
+                          (UserMap = 332) Or _
+                          (UserMap = 333)
         
         Exit Function
 

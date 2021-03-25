@@ -604,8 +604,7 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
             Next
             
             ' Anuncio global
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Retos » " & Equipo1 & " vs " & Equipo2 & ". Apuesta: " & PonerPuntos(.Apuesta) & _
-                                                " monedas de oro. Hubo un empate por tiempo muerto.", FontTypeNames.FONTTYPE_INFO))
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Retos » " & Equipo1 & " vs " & Equipo2 & ". Ninguno pudo vencer a su rival.", FontTypeNames.FONTTYPE_INFO))
 
         ' Hubo un ganador
         Else
@@ -667,9 +666,19 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
                 
             Next
 
+            Dim equipoGanador As String, equipoPerdedor As String
+            equipoGanador = IIf(Ganador = EquipoReto.Izquierda, Equipo1, Equipo2)
+            equipoPerdedor = IIf(Ganador = EquipoReto.Izquierda, Equipo2, Equipo1)
+
             ' Anuncio global
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Retos » " & Equipo1 & " vs " & Equipo2 & ". Apuesta: " & PonerPuntos(.Apuesta) & " monedas de oro. " & _
-                                IIf(UBound(.Jugadores) > 1, "Ganadores ", "Ganador ") & IIf(Ganador = EquipoReto.Izquierda, Equipo1, Equipo2) & ".", FontTypeNames.FONTTYPE_INFO))
+            If UBound(.Jugadores) > 1 Then
+                Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Retos » El equipo " & equipoGanador & " venció al equipo " & equipoPerdedor & " y se quedo con el botín de: " & PonerPuntos(.Apuesta) & " monedas de oro. ", FontTypeNames.FONTTYPE_INFO))
+        
+            Else ' 1 vs 1
+                Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Retos » " & equipoGanador & " venció a " & equipoPerdedor & " y se quedo con el botín de: " & PonerPuntos(.Apuesta) & " monedas de oro. ", FontTypeNames.FONTTYPE_INFO))
+
+            End If
+            
         End If
     
     End With
