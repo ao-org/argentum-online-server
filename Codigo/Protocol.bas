@@ -1683,7 +1683,7 @@ Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
 316             Call HandleTraerRanking(UserIndex)
 
 318         Case NewPacksID.Pareja
-320             Call HandlePareja(UserIndex)
+320             Call UserList(UserIndex).incomingData.ReadInteger ' Desactivado. Nada para hacer
             
 322         Case NewPacksID.ComprarItem
 324             Call HandleComprarItem(UserIndex)
@@ -3218,9 +3218,9 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
 
             If Amount <= 0 Then Exit Sub
 
-            'low rank admins can't drop item. Neither can the dead nor those sailing.
+            'low rank admins can't drop item. Neither can the dead nor those sailing or riding a horse.
 114         If .flags.Muerto = 1 Or ((.flags.Privilegios And PlayerType.Consejero) <> 0 And (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0) Then Exit Sub
-            
+                      
             'If the user is trading, he can't drop items => He's cheating, we kick him.
 116         If .flags.Comerciando Then Exit Sub
     
@@ -3229,13 +3229,16 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
 120             Call WriteConsoleMsg(UserIndex, "Solo los Piratas pueden tirar items en altamar", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
+            
+            If .flags.Montado = 1 Then
+                Call WriteConsoleMsg(UserIndex, "Debes descender de tu montura para dejar objetos en el suelo.", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
 
             'Are we dropping gold or other items??
 122         If slot = FLAGORO Then
-
 124             Call TirarOro(Amount, UserIndex)
             
-126             Call WriteUpdateGold(UserIndex)
             Else
         
                 '04-05-08 Ladder
@@ -3257,12 +3260,6 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
                         Exit Sub
 
                     End If
-                    
-142                 If UserList(UserIndex).flags.BattleModo = 1 Then
-144                     Call WriteConsoleMsg(UserIndex, "No podes tirar items en este mapa.", FontTypeNames.FONTTYPE_INFO)
-                        Exit Sub
-
-                    End If
 
                 End If
         
@@ -3272,12 +3269,6 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
 
                 End If
         
-150             If ObjData(.Invent.Object(slot).ObjIndex).OBJType = eOBJType.otMonturas And UserList(UserIndex).flags.Montado Then
-152                 Call WriteConsoleMsg(UserIndex, "Para tirar tu montura deberias descender de ella.", FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-
-                End If
-
                 '04-05-08 Ladder
         
                 'Only drop valid slots
@@ -6568,7 +6559,7 @@ Private Sub HandleGuildAcceptNewMember(ByVal UserIndex As Integer)
             Else
 116             tUser = NameIndex(UserName)
 
-118             If tUser > 0 And UserList(tUser).flags.BattleModo = 0 Then
+118             If tUser > 0 Then
 120                 Call modGuilds.m_ConectarMiembroAClan(tUser, .GuildIndex)
 122                 Call RefreshCharStatus(tUser)
 
@@ -13511,14 +13502,7 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
 
 156                 Call WriteConsoleMsg(UserIndex, "Has traído a " & UserList(tUser).name & ".", FontTypeNames.FONTTYPE_INFO)
                     
-                    ' Si trato de sumonearlo estando en Modo Battle, lo sacamos cagando y lo escrachamos en los logs.
-158                 If UserList(tUser).flags.BattleModo = 1 Then
-160                     Call WriteConsoleMsg(UserIndex, "¡¡¡ATENCIÓN!!! [" & UCase(UserList(tUser).name) & "] SE ENCUENTRA EN MODO BATTLE.", FontTypeNames.FONTTYPE_WARNING)
-162                     Call LogGM(.name, "¡¡¡ATENCIÓN /SUM EN MODO BATTLE " & UserName & " Map:" & .Pos.Map & " X:" & .Pos.X & " Y:" & .Pos.Y)
-
-                    Else
-164                     Call LogGM(.name, "/SUM " & UserName & " Map:" & .Pos.Map & " X:" & .Pos.X & " Y:" & .Pos.Y)
-                    End If
+                    Call LogGM(.name, "/SUM " & UserName & " Map:" & .Pos.Map & " X:" & .Pos.X & " Y:" & .Pos.Y)
                 
                 End If
                 
@@ -16607,7 +16591,7 @@ Public Sub HandleCheckSlot(ByVal UserIndex As Integer)
         
 117         Call LogGM(.name, .name & " Checkeo el slot " & slot & " de " & UserName)
            
-118         If tIndex > 0 And UserList(UserIndex).flags.BattleModo = 0 Then
+118         If tIndex > 0 Then
 120             If slot > 0 And slot <= UserList(UserIndex).CurrentInventorySlots Then
 122                 If UserList(tIndex).Invent.Object(slot).ObjIndex > 0 Then
 124                     Call WriteConsoleMsg(UserIndex, " Objeto " & slot & ") " & ObjData(UserList(tIndex).Invent.Object(slot).ObjIndex).name & " Cantidad:" & UserList(tIndex).Invent.Object(slot).Amount, FontTypeNames.FONTTYPE_INFO)
@@ -18606,13 +18590,7 @@ Public Sub HandleParticipar(ByVal UserIndex As Integer)
                 Exit Sub
 
             End If
-                
-108         If .flags.BattleModo = 1 Then
-110             Call WriteConsoleMsg(UserIndex, "No podes participar desde aquí.", FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-
-            End If
-    
+                   
 112         If .flags.EnTorneo Then
 114             Call WriteConsoleMsg(UserIndex, "Ya estás participando.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
@@ -19436,13 +19414,6 @@ Public Sub WriteDisconnect(ByVal UserIndex As Integer)
         '***************************************************
         On Error GoTo ErrHandler
 
-        'If UserList(UserIndex).flags.BattleModo = 0 Then
-        '    Call SaveUser(UserIndex, CharPath & UCase$(UserList(UserIndex).Name) & ".chr")
-        'Else
-        '    Call WriteVar(CharPath & UserList(UserIndex).Name & ".chr", "Battle", "Puntos", UserList(UserIndex).flags.BattlePuntos)
-        'End If
-    
-        'Call WriteVar(CuentasPath & UCase$(UserList(UserIndex).cuenta) & ".act", "INIT", "LOGEADA", 0)
 100     Call WritePersonajesDeCuenta(UserIndex)
 
 102     Call WriteMostrarCuenta(UserIndex)
@@ -22517,8 +22488,6 @@ Public Sub WriteMiniStats(ByVal UserIndex As Integer)
             'ARREGLANDO
         
 126         Call .WriteInteger(DiasDonadorCheck(UserList(UserIndex).Cuenta))
-        
-128         Call .WriteLong(UserList(UserIndex).flags.BattlePuntos)
                 
         End With
 
@@ -25420,14 +25389,7 @@ Private Sub HandleOfertaDeSubasta(ByVal UserIndex As Integer)
                 Exit Sub
 
             End If
-        
-118         If UserList(UserIndex).flags.BattleModo = 1 Then
-120             Call WriteConsoleMsg(UserIndex, "Subastador > íComo vas a ofertar con dinero que no es tuyo? Bríbon.", FontTypeNames.FONTTYPE_INFOIAO)
-122             Call .incomingData.CopyBuffer(Buffer)
-                Exit Sub
-
-            End If
-        
+               
 124         If Oferta < Subasta.MejorOferta + 100 Then
 126             Call WriteConsoleMsg(UserIndex, "Debe haber almenos una diferencia de 100 monedas a la ultima oferta!", FontTypeNames.FONTTYPE_INFOIAO)
 128             Call .incomingData.CopyBuffer(Buffer)
@@ -27138,11 +27100,6 @@ Private Sub HandleQuieroFundarClan(ByVal UserIndex As Integer)
 
         End If
 
-        If UserList(UserIndex).flags.BattleModo = 1 Then
-            Call WriteConsoleMsg(UserIndex, "No podés fundar un clan en Modo Battle.", FontTypeNames.FONTTYPE_INFOIAO)
-            Exit Sub
-        End If
-
         Call WriteConsoleMsg(UserIndex, "Servidor> ¡Comenzamos a fundar el clan! Ingresa todos los datos solicitados.", FontTypeNames.FONTTYPE_INFOIAO)
         
         Call WriteShowFundarClanForm(UserIndex)
@@ -28347,7 +28304,7 @@ Private Sub HandleSendCorreo(ByVal UserIndex As Integer)
             Dim ObjArray As String
         
             ' WyroX: Deshabilitado
-130         If False And UserList(UserIndex).flags.BattleModo = 0 Then
+130         If False Then
 
 132             For i = 1 To ItemCount
 134                 ObjIndex = UserList(UserIndex).Invent.Object(Itemlista(i).ObjIndex).ObjIndex
@@ -28795,21 +28752,14 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                 
 228                     If UserList(UserIndex).flags.TargetUser <> 0 Then
                 
-230                         If UserList(UserList(UserIndex).flags.TargetUser).flags.BattleModo = 1 Then
-232                             Call WriteConsoleMsg(UserIndex, "No podes usar el sistema de comercio cuando el otro personaje esta en el battle.", FontTypeNames.FONTTYPE_EXP)
-                        
-                            Else
+234                         UserList(UserIndex).ComUsu.DestUsu = UserList(UserIndex).flags.TargetUser
+236                         UserList(UserIndex).ComUsu.DestNick = UserList(UserList(UserIndex).flags.TargetUser).name
+238                         UserList(UserIndex).ComUsu.cant = 0
+240                         UserList(UserIndex).ComUsu.Objeto = 0
+242                         UserList(UserIndex).ComUsu.Acepto = False
                     
-234                             UserList(UserIndex).ComUsu.DestUsu = UserList(UserIndex).flags.TargetUser
-236                             UserList(UserIndex).ComUsu.DestNick = UserList(UserList(UserIndex).flags.TargetUser).name
-238                             UserList(UserIndex).ComUsu.cant = 0
-240                             UserList(UserIndex).ComUsu.Objeto = 0
-242                             UserList(UserIndex).ComUsu.Acepto = False
-                    
-                                'Rutina para comerciar con otro usuario
-244                             Call IniciarComercioConUsuario(UserIndex, UserList(UserIndex).flags.TargetUser)
-
-                            End If
+                            'Rutina para comerciar con otro usuario
+244                         Call IniciarComercioConUsuario(UserIndex, UserList(UserIndex).flags.TargetUser)
 
                         Else
 246                         Call WriteConsoleMsg(UserIndex, "Servidor> Solicitud de comercio invalida, reintente...", FontTypeNames.FONTTYPE_SERVER)
@@ -29843,17 +29793,11 @@ Private Sub HandleTraerShop(ByVal UserIndex As Integer)
         
         On Error GoTo HandleTraerShop_Err
     
-        
-    
+
         'Remove packet ID
 100     Call UserList(UserIndex).incomingData.ReadInteger
     
-102     If UserList(UserIndex).flags.BattleModo = 1 Then
-104         Call WriteConsoleMsg(UserIndex, "No disponible aquí.", FontTypeNames.FONTTYPE_INFOIAO)
-        Else
-106         Call WriteShop(UserIndex)
-        End If
-
+106     Call WriteShop(UserIndex)
         
         Exit Sub
 
@@ -29880,74 +29824,6 @@ Private Sub HandleTraerRanking(ByVal UserIndex As Integer)
 
 HandleTraerRanking_Err:
 104     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleTraerRanking", Erl)
-
-        
-End Sub
-
-Private Sub HandlePareja(ByVal UserIndex As Integer)
-        'Author: Pablo Mercavides
-        
-        On Error GoTo HandlePareja_Err
-    
-        
-
-100     With UserList(UserIndex)
-
-            'Remove packet ID
-102         Call .incomingData.ReadInteger
-        
-            Dim parejaindex As Integer
-
-104         If Not UserList(UserIndex).flags.BattleModo Then
-                
-106             If UserList(UserIndex).donador.activo = 1 Then
-108                 If MapInfo(UserList(UserIndex).Pos.Map).Seguro = 1 Then
-110                     If UserList(UserIndex).flags.Casado = 1 Then
-112                         parejaindex = NameIndex(UserList(UserIndex).flags.Pareja)
-                        
-114                         If parejaindex > 0 Then
-116                             If Not UserList(parejaindex).flags.BattleModo Then
-118                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Runa, 600, False))
-120                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(UserList(UserIndex).Char.CharIndex, 600, Accion_Barra.GoToPareja))
-122                                 UserList(UserIndex).Accion.AccionPendiente = True
-124                                 UserList(UserIndex).Accion.Particula = ParticulasIndex.Runa
-126                                 UserList(UserIndex).Accion.TipoAccion = Accion_Barra.GoToPareja
-                                Else
-128                                 Call WriteConsoleMsg(UserIndex, "Tu pareja esta en modo battle. No podés teletransportarte hacia ella.", FontTypeNames.FONTTYPE_INFOIAO)
-
-                                End If
-                                
-                            Else
-130                             Call WriteConsoleMsg(UserIndex, "Tu pareja no esta online.", FontTypeNames.FONTTYPE_INFOIAO)
-
-                            End If
-
-                        Else
-132                         Call WriteConsoleMsg(UserIndex, "No estas casado con nadie.", FontTypeNames.FONTTYPE_INFOIAO)
-
-                        End If
-
-                    Else
-134                     Call WriteConsoleMsg(UserIndex, "Solo disponible en zona segura.", FontTypeNames.FONTTYPE_INFOIAO)
-
-                    End If
-                
-                Else
-136                 Call WriteConsoleMsg(UserIndex, "Opcion disponible unicamente para usuarios donadores.", FontTypeNames.FONTTYPE_INFOIAO)
-
-                End If
-
-            Else
-138             Call WriteConsoleMsg(UserIndex, "No podés usar esta opción en el battle.", FontTypeNames.FONTTYPE_INFOIAO)
-        
-            End If
-
-        End With
-        
-        Exit Sub
-
-HandlePareja_Err:
-140     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandlePareja", Erl)
 
         
 End Sub
@@ -30570,17 +30446,10 @@ Public Sub HandleQuestListRequest(ByVal UserIndex As Integer)
         
         On Error GoTo HandleQuestListRequest_Err
         
- 
         'Leemos el paquete
 100     Call UserList(UserIndex).incomingData.ReadInteger
-    
-102     If UserList(UserIndex).flags.BattleModo = 0 Then
-104         Call WriteQuestListSend(UserIndex)
-        Else
-106         Call WriteConsoleMsg(UserIndex, "No disponible aquí.", FontTypeNames.FONTTYPE_INFOIAO)
 
-        End If
-
+104     Call WriteQuestListSend(UserIndex)
         
         Exit Sub
 

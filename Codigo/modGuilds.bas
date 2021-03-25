@@ -534,7 +534,7 @@ Public Function PuedeFundarUnClan(ByVal UserIndex As Integer, ByVal Alineacion A
 
         End If
     
-106     If UserList(UserIndex).Stats.ELV < 25 Or UserList(UserIndex).Stats.UserSkills(eSkill.Liderazgo) < 80 Then
+106     If UserList(UserIndex).Stats.ELV < 25 Or UserList(UserIndex).Stats.UserSkills(eSkill.liderazgo) < 80 Then
 108         refError = "Para fundar un clan debes ser nivel 25, tener 80 en liderazgo y tener en tu inventario las 2 gemas: Gema Azul(1), Gema Naranja(1)."
             Exit Function
         End If
@@ -547,12 +547,6 @@ Public Function PuedeFundarUnClan(ByVal UserIndex As Integer, ByVal Alineacion A
     
 114     If Not TieneObjetos(408, 1, UserIndex) Then
 116           refError = "Para fundar un clan debes ser nivel 25, tener 80 en liderazgo y tener en tu inventario las 2 gemas: Gema Azul(1), Gema Naranja(1)."
-            Exit Function
-
-        End If
-    
-118     If UserList(UserIndex).flags.BattleModo = 1 Then
-120         refError = "Ya pensamos en eso... No podés fundar un clan acá."
             Exit Function
 
         End If
@@ -665,11 +659,11 @@ m_EstadoPermiteEntrar_Err:
 
 End Function
 
-Public Function String2Alineacion(ByRef s As String) As ALINEACION_GUILD
+Public Function String2Alineacion(ByRef S As String) As ALINEACION_GUILD
         
         On Error GoTo String2Alineacion_Err
 
-100     Select Case s
+100     Select Case S
 
             Case "Ciudadano"
 102             String2Alineacion = ALINEACION_CIUDA
@@ -742,12 +736,12 @@ Relacion2String_Err:
         
 End Function
 
-Public Function String2Relacion(ByVal s As String) As RELACIONES_GUILD
+Public Function String2Relacion(ByVal S As String) As RELACIONES_GUILD
         
         On Error GoTo String2Relacion_Err
         
 
-100     Select Case UCase$(Trim$(s))
+100     Select Case UCase$(Trim$(S))
 
             Case vbNullString, "P"
 102             String2Relacion = RELACIONES_GUILD.PAZ
@@ -1142,12 +1136,6 @@ Public Sub SendGuildLeaderInfo(ByVal UserIndex As Integer)
 
         Dim aspirantsList() As String
     
-100     If UserList(UserIndex).flags.BattleModo = 1 Then
-102         Call WriteConsoleMsg(UserIndex, "No disponible aquí.", FontTypeNames.FONTTYPE_INFOIAO)
-            Exit Sub
-
-        End If
-
 104     With UserList(UserIndex)
 106         GI = .GuildIndex
         

@@ -421,7 +421,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
         QueryBuilder.Append "pertenece_consejo_caos = " & (.flags.Privilegios And PlayerType.ChaosCouncil) & ", "
         QueryBuilder.Append "pertenece_real = " & .Faccion.ArmadaReal & ", "
         QueryBuilder.Append "pertenece_caos = " & .Faccion.FuerzasCaos & ", "
-        QueryBuilder.Append "ciudadanos_matados = " & .Faccion.CiudadanosMatados & ", "
+        QueryBuilder.Append "ciudadanos_matados = " & .Faccion.ciudadanosMatados & ", "
         QueryBuilder.Append "criminales_matados = " & .Faccion.CriminalesMatados & ", "
         QueryBuilder.Append "recibio_armadura_real = " & .Faccion.RecibioArmaduraReal & ", "
         QueryBuilder.Append "recibio_armadura_caos = " & .Faccion.RecibioArmaduraCaos & ", "
@@ -435,7 +435,6 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
         QueryBuilder.Append "matados_ingreso = " & .Faccion.MatadosIngreso & ", "
         QueryBuilder.Append "siguiente_recompensa = " & .Faccion.NextRecompensa & ", "
         QueryBuilder.Append "status = " & .Faccion.Status & ", "
-        QueryBuilder.Append "battle_points = " & .flags.BattlePuntos & ", "
         QueryBuilder.Append "guild_index = " & .GuildIndex & ", "
         QueryBuilder.Append "chat_combate = " & .ChatCombate & ", "
         QueryBuilder.Append "chat_global = " & .ChatGlobal & ", "
@@ -560,7 +559,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
             'CHOTS | I got this logic from SaveUserToCharfile
             If .MascotasIndex(LoopC) > 0 Then
             
-                If Npclist(.MascotasIndex(LoopC)).Contadores.TiempoExistencia = 0 Then
+                If NpcList(.MascotasIndex(LoopC)).Contadores.TiempoExistencia = 0 Then
                     petType = .MascotasType(LoopC)
                 Else
                     petType = 0
@@ -799,7 +798,6 @@ With UserList(UserIndex)
     .flags.Navegando = QueryData!is_sailing
     .flags.Paralizado = QueryData!is_paralyzed
     .flags.VecesQueMoriste = QueryData!deaths
-    .flags.BattlePuntos = QueryData!battle_points
     .flags.Montado = QueryData!is_mounted
     .flags.Pareja = QueryData!spouse
     .flags.Casado = IIf(Len(.flags.Pareja) > 0, 1, 0)
@@ -825,7 +823,7 @@ With UserList(UserIndex)
 
     .Faccion.ArmadaReal = QueryData!pertenece_real
     .Faccion.FuerzasCaos = QueryData!pertenece_caos
-    .Faccion.CiudadanosMatados = QueryData!ciudadanos_matados
+    .Faccion.ciudadanosMatados = QueryData!ciudadanos_matados
     .Faccion.CriminalesMatados = QueryData!criminales_matados
     .Faccion.RecibioArmaduraReal = QueryData!recibio_armadura_real
     .Faccion.RecibioArmaduraCaos = QueryData!recibio_armadura_caos
@@ -1759,21 +1757,6 @@ LogoutAllUsersAndAccounts_Err:
         
 End Sub
 
-Public Sub SaveBattlePointsDatabase(ByVal Id As Long, ByVal BattlePoints As Long)
-        
-    On Error GoTo SaveBattlePointsDatabase_Err
-        
-    Call SetDBValue("user", "battle_points", BattlePoints, "id", Id)
-
-        
-    Exit Sub
-
-SaveBattlePointsDatabase_Err:
-    Call RegistrarError(Err.Number, Err.Description, "modDatabase.SaveBattlePointsDatabase", Erl)
-    Resume Next
-        
-End Sub
-
 Public Sub SaveVotoDatabase(ByVal Id As Long, ByVal Encuestas As Integer)
         
     On Error GoTo SaveVotoDatabase_Err
@@ -2672,19 +2655,19 @@ Function adoIsConnected(adoCn As ADODB.Connection) As Boolean
     On Error Resume Next
 
     Dim i As Long
-    Dim Cmd As New ADODB.Command
+    Dim cmd As New ADODB.Command
 
     'Set up SQL command to return 1
-    Cmd.CommandText = "SELECT 1"
-    Cmd.ActiveConnection = adoCn
+    cmd.CommandText = "SELECT 1"
+    cmd.ActiveConnection = adoCn
 
     'Run a simple query, to test the connection
         
-    i = Cmd.Execute.Fields(0)
+    i = cmd.Execute.Fields(0)
     On Error GoTo 0
 
     'Tidy up
-    Set Cmd = Nothing
+    Set cmd = Nothing
 
     'If i is 1, connection is open
     If i = 1 Then

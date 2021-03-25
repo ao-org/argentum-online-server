@@ -1578,7 +1578,7 @@ Sub ResetCharInfo(ByVal UserIndex As Integer)
 132         .RM_Aura = ""
 134         .Escudo_Aura = ""
 136         .ParticulaFx = 0
-138         .speeding = VelocidadCero
+138         .speeding = 0
 
         End With
 
@@ -1778,8 +1778,6 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 214         .Candidato = 0
 216         .UsandoMacro = False
 218         .pregunta = 0
-            'Ladder
-220         .BattleModo = 0
 
 222         .Subastando = False
 224         .Paraliza = 0
@@ -2160,13 +2158,7 @@ Sub CloseUser(ByVal UserIndex As Integer)
         
 184         errordesc = "ERROR AL GRABAR PJ"
         
-186         If .flags.BattleModo = 0 Then
-188             Call SaveUser(UserIndex, True)
-            Else
-                'Call WriteVar(CharPath & .Name & ".chr", "Battle", "Puntos", .flags.BattlePuntos)
-190             Call SaveBattlePoints(UserIndex)
-    
-            End If
+            Call SaveUser(UserIndex, True)
     
 192         errordesc = "ERROR AL DESCONTAR USER DE MAPA"
     

@@ -30,18 +30,10 @@ Attribute VB_Name = "InvUsuario"
 Option Explicit
 
 Public Function TieneObjetosRobables(ByVal UserIndex As Integer) As Boolean
-        
         On Error GoTo TieneObjetosRobables_Err
-    
-        
-
-        '17/09/02
-        'Agregue que la función se asegure que el objeto no es un barco
-
-        
+      
 
         Dim i        As Integer
-
         Dim ObjIndex As Integer
 
 100     For i = 1 To UserList(UserIndex).CurrentInventorySlots
@@ -71,8 +63,6 @@ Function ClasePuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Intege
 
         On Error GoTo manejador
 
-        'Call LogTarea("ClasePuedeUsarItem")
-
         Dim flag As Boolean
 
 100     If slot <> 0 Then
@@ -90,9 +80,6 @@ Function ClasePuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Intege
 
         End If
 
-        'Admins can use ANYTHING!
-        'If UserList(UserIndex).flags.Privilegios And PlayerType.User Then
-        'If ObjData(ObjIndex).ClaseProhibida(1) <> 0 Then
         Dim i As Integer
 
 110     For i = 1 To NUMCLASES
@@ -104,9 +91,6 @@ Function ClasePuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Intege
             End If
 
 116     Next i
-
-        ' End If
-        'End If
 
 118     ClasePuedeUsarItem = True
 
@@ -260,10 +244,8 @@ Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
                 Exit Sub
 
             End If
-        
-106         If .flags.BattleModo = 1 Then Exit Sub
-        
-            'SI EL Pjta TIENE ORO LO TIRAMOS
+         
+            ' Si el usuario tiene ORO, entonces lo tiramos
 108         If (Cantidad > 0) And (Cantidad <= .Stats.GLD) Then
 
                 Dim i     As Byte
@@ -338,6 +320,7 @@ Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
 160                 .Stats.GLD = .Stats.GLD - Extra
                 End If
     
+                Call WriteUpdateGold(UserIndex)
             End If
         
         End With
@@ -675,9 +658,10 @@ Sub GetObj(ByVal UserIndex As Integer)
         
         On Error GoTo GetObj_Err
         
-
+        Dim X    As Integer
+        Dim Y    As Integer
+        Dim slot As Byte
         Dim obj   As ObjData
-
         Dim MiObj As obj
 
         '¿Hay algun obj?
@@ -686,11 +670,10 @@ Sub GetObj(ByVal UserIndex As Integer)
             '¿Esta permitido agarrar este obj?
 102         If ObjData(MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).ObjInfo.ObjIndex).Agarrable <> 1 Then
 
-                Dim X    As Integer
-
-                Dim Y    As Integer
-
-                Dim slot As Byte
+                If UserList(UserIndex).flags.Montado = 1 Then
+                    Call WriteConsoleMsg(UserIndex, "Debes descender de tu montura para agarrar objetos del suelo.", FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                End If
         
 104             X = UserList(UserIndex).Pos.X
 106             Y = UserList(UserIndex).Pos.Y
@@ -2487,13 +2470,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                             End If
     
 688                     Case 14
-                    
-690                         If .flags.BattleModo = 1 Then
-692                             Call WriteConsoleMsg(UserIndex, "No podes usarlo aquí.", FontTypeNames.FONTTYPE_WARNING)
-                                Exit Sub
-    
-                            End If
-                        
+                                       
 694                         If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = CARCEL Then
 696                             Call WriteConsoleMsg(UserIndex, "No podes usar la runa estando en la carcel.", FontTypeNames.FONTTYPE_INFO)
                                 Exit Sub
@@ -2763,7 +2740,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
     
 928                     Case 19 ' Reseteo de skill
     
-                            Dim s As Byte
+                            Dim S As Byte
                     
 930                         If .Stats.UserSkills(eSkill.liderazgo) >= 80 Then
 932                             Call WriteConsoleMsg(UserIndex, "Has fundado un clan, no podes resetar tus skills. ", FontTypeNames.FONTTYPE_INFOIAO)
@@ -2771,9 +2748,9 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
     
                             End If
                         
-934                         For s = 1 To NUMSKILLS
-936                             .Stats.UserSkills(s) = 0
-938                         Next s
+934                         For S = 1 To NUMSKILLS
+936                             .Stats.UserSkills(S) = 0
+938                         Next S
                         
                             Dim SkillLibres As Integer
                         
@@ -3207,40 +3184,34 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
             
 1302             Case eOBJType.otRunas
         
-1304                 If .Counters.Pena <> 0 Then
-1306                     Call WriteConsoleMsg(UserIndex, "No podes usar la runa estando en la carcel.", FontTypeNames.FONTTYPE_INFO)
-                           Exit Sub
+1304                If .Counters.Pena <> 0 Then
+1306                    Call WriteConsoleMsg(UserIndex, "No podes usar la runa estando en la carcel.", FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
     
-                       End If
+                    End If
             
-1308                 If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = CARCEL Then
-1310                     Call WriteConsoleMsg(UserIndex, "No podes usar la runa estando en la carcel.", FontTypeNames.FONTTYPE_INFO)
-                           Exit Sub
+1308                If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = CARCEL Then
+1310                    Call WriteConsoleMsg(UserIndex, "No podes usar la runa estando en la carcel.", FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
     
-                       End If
+                    End If
+                        
+1316                If MapInfo(.Pos.Map).Seguro = 0 And .flags.Muerto = 0 Then
+1318                    Call WriteConsoleMsg(UserIndex, "Solo podes usar tu runa en zonas seguras.", FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+    
+                    End If
             
-1312                 If .flags.BattleModo = 1 Then
-1314                     Call WriteConsoleMsg(UserIndex, "No podes usarlo aquí.", FontTypeNames.FONTTYPE_WARNING)
-                           Exit Sub
+1320                If .Accion.AccionPendiente Then
+                        Exit Sub
     
-                       End If
-            
-1316                 If MapInfo(.Pos.Map).Seguro = 0 And .flags.Muerto = 0 Then
-1318                     Call WriteConsoleMsg(UserIndex, "Solo podes usar tu runa en zonas seguras.", FontTypeNames.FONTTYPE_INFO)
-                           Exit Sub
-    
-                       End If
-            
-1320                 If .Accion.AccionPendiente Then
-                           Exit Sub
-    
-                       End If
+                    End If
             
 1322                 Select Case ObjData(ObjIndex).TipoRuna
             
                            Case 1, 2
     
-1324                         If .donador.activo = 0 And Not EsGM(UserIndex) Then ' Donador no espera tiempo
+1324                         If Not EsGM(UserIndex) Then
 1326                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Runa, 400, False))
 1328                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.CharIndex, 350, Accion_Barra.Runa))
                                Else
@@ -3254,52 +3225,6 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 1338                         .Accion.TipoAccion = Accion_Barra.Runa
 1340                         .Accion.RunaObj = ObjIndex
 1342                         .Accion.ObjSlot = slot
-                
-1344                     Case 3
-            
-                               Dim parejaindex As Integer
-    
-1346                         If Not .flags.BattleModo Then
-                    
-                                   'If .donador.activo = 1 Then
-1348                             If MapInfo(.Pos.Map).Seguro = 1 Then
-1350                                 If .flags.Casado = 1 Then
-1352                                     parejaindex = NameIndex(.flags.Pareja)
-                            
-1354                                     If parejaindex > 0 Then
-1356                                         If UserList(parejaindex).flags.BattleModo = 0 Then
-1358                                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Runa, 600, False))
-1360                                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.CharIndex, 600, Accion_Barra.GoToPareja))
-1362                                             .Accion.AccionPendiente = True
-1364                                             .Accion.Particula = ParticulasIndex.Runa
-1366                                             .Accion.TipoAccion = Accion_Barra.GoToPareja
-                                               Else
-1368                                             Call WriteConsoleMsg(UserIndex, "Tu pareja esta en modo battle. No podés teletransportarte hacia ella.", FontTypeNames.FONTTYPE_INFOIAO)
-    
-                                               End If
-                                    
-                                           Else
-1370                                         Call WriteConsoleMsg(UserIndex, "Tu pareja no esta online.", FontTypeNames.FONTTYPE_INFOIAO)
-    
-                                           End If
-    
-                                       Else
-1372                                     Call WriteConsoleMsg(UserIndex, "No estas casado con nadie.", FontTypeNames.FONTTYPE_INFOIAO)
-    
-                                       End If
-    
-                                   Else
-1374                                 Call WriteConsoleMsg(UserIndex, "Solo disponible en zona segura.", FontTypeNames.FONTTYPE_INFOIAO)
-    
-                                   End If
-                    
-                                   ' Else
-                                   '  Call WriteConsoleMsg(UserIndex, "Opcion disponible unicamente para usuarios donadores.", FontTypeNames.FONTTYPE_INFOIAO)
-                                   ' End If
-                               Else
-1376                             Call WriteConsoleMsg(UserIndex, "No podés usar esta opción en el battle.", FontTypeNames.FONTTYPE_INFOIAO)
-            
-                               End If
         
                        End Select
             

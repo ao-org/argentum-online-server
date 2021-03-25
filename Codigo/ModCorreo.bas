@@ -62,7 +62,7 @@ Public Function AddCorreo(ByVal UserIndex As Integer, ByRef UserName As String, 
 
 100     ReceptIndex = NameIndex(UserName)
 
-102     If ReceptIndex > 0 And UserList(UserIndex).flags.BattleModo = 0 Then
+102     If ReceptIndex > 0 Then
 104         index = SearchIndexFreeCorreo(ReceptIndex)
     
 106         If index >= 1 And index <= MAX_CORREOS_SLOTS Then
