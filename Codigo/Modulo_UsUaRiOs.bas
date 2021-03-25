@@ -119,8 +119,7 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
 118         Call WriteUpdateHP(UserIndex)
             
 120         If .flags.Navegando = 1 Then
-                EquiparBarco(UserIndex)
-
+                Call EquiparBarco(UserIndex)
             Else
 
 146             .Char.Head = .OrigChar.Head
@@ -211,13 +210,11 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
 228                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.RM_Aura, False, 7))
                     End If
                 End If
-                
-230             .Char.speeding = VelocidadNormal
     
             End If
     
+            Call ActualizarVelocidadDeUsuario(UserIndex)
 232         Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
-234         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(.Char.CharIndex, .Char.speeding))
 
         End With
         
@@ -1406,8 +1403,6 @@ Sub UserDie(ByVal UserIndex As Integer)
 124         .flags.Estupidiza = 0
 126         .flags.Muerto = 1
             .flags.Ahogandose = 0
-            '.flags.SeguroParty = True
-            'Call WritePartySafeOn(UserIndex)
             
 128         Call WriteUpdateHP(UserIndex)
 130         Call WriteUpdateSta(UserIndex)
@@ -1472,7 +1467,7 @@ Sub UserDie(ByVal UserIndex As Integer)
 228         .flags.VecesQueMoriste = .flags.VecesQueMoriste + 1
         
             ' << Restauramos los atributos >>
-230         If .flags.TomoPocion = True And .flags.BattleModo = 0 Then
+230         If .flags.TomoPocion And .flags.BattleModo = 0 Then
     
 232             For i = 1 To 4
 234                 .Stats.UserAtributos(i) = .Stats.UserAtributosBackUP(i)
@@ -1489,15 +1484,12 @@ Sub UserDie(ByVal UserIndex As Integer)
 258             .Char.ShieldAnim = NingunEscudo
 260             .Char.WeaponAnim = NingunArma
 262             .Char.CascoAnim = NingunCasco
-            
-264             .Char.speeding = VelocidadMuerto
             Else
-                EquiparBarco(UserIndex)
+                Call EquiparBarco(UserIndex)
             End If
             
+            Call ActualizarVelocidadDeUsuario(UserIndex)
             Call LimpiarEstadosAlterados(UserIndex)
-            
-278         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(.Char.CharIndex, .Char.speeding))
         
 280         For i = 1 To MAXMASCOTAS
 282             If .MascotasIndex(i) > 0 Then
@@ -2524,3 +2516,50 @@ Public Sub DevolverPosAnterior(ByVal UserIndex As Integer)
     End With
 
 End Sub
+
+Public Function ActualizarVelocidadDeUsuario(ByVal UserIndex As Integer) As Single
+    On Error GoTo ActualizarVelocidadDeUsuario_Err
+    
+    Dim velocidad As Single, modificadorItem As Single, modificadorHechizo As Single
+    
+    velocidad = VelocidadNormal
+    modificadorItem = 1
+    modificadorHechizo = 1
+    
+    With UserList(UserIndex)
+        If .flags.Muerto = 1 Then
+            velocidad = VelocidadMuerto
+            GoTo UpdateSpeed ' Los muertos no tienen modificadores de velocidad
+        End If
+        
+        ' El traje para nadar es considerado barco, de subtipo = 0
+        If (.flags.Navegando + .flags.Nadando > 0) And (.Invent.BarcoObjIndex > 0) Then
+            modificadorItem = ObjData(.Invent.BarcoObjIndex).velocidad
+        End If
+        
+        If (.flags.Montado = 1) And (.Invent.MonturaObjIndex > 0) Then
+            modificadorItem = ObjData(.Invent.MonturaObjIndex).velocidad
+        End If
+        
+        ' Algun hechizo le afecto la velocidad
+        If .flags.VelocidadHechizada > 0 Then
+            modificadorHechizo = .flags.VelocidadHechizada
+        End If
+        
+        velocidad = VelocidadNormal * modificadorItem * modificadorHechizo
+        
+UpdateSpeed:
+        .Char.speeding = velocidad
+        
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(.Char.CharIndex, .Char.speeding))
+        Call WriteVelocidadToggle(UserIndex)
+     
+    End With
+
+    Exit Function
+    
+ActualizarVelocidadDeUsuario_Err:
+    Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.CalcularVelocidad_Err", Erl)
+    Resume Next
+End Function
+
