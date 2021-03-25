@@ -1160,14 +1160,10 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 286                                 Fragsnick = Fragsnick & " | Descansando"
                                 End If
     
-288                             If UserList(TempCharIndex).flags.Meditando = True Then
+288                             If UserList(TempCharIndex).flags.Meditando Then
 290                                 Fragsnick = Fragsnick & " | Concentrado"
                                 End If
-    
-292                             If UserList(TempCharIndex).flags.BattleModo = 1 Then
-294                                 Fragsnick = Fragsnick & " | Modo Battle"
-                                End If
-                            
+                                
 296                             If UserList(TempCharIndex).Stats.MinHp = 0 Then
 298                                 Stat = Stat & " <Muerto>"
 300                             ElseIf UserList(TempCharIndex).Stats.MinHp < (UserList(TempCharIndex).Stats.MaxHp * 0.1) Then

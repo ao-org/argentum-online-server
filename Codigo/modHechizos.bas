@@ -341,6 +341,11 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
             Call WriteConsoleMsg(UserIndex, "Una fuerza mística te impide lanzar hechizos en esta zona.", FontTypeNames.FONTTYPE_FIGHT)
             Exit Function
         End If
+        
+        If .flags.Montado = 1 Then
+            Call WriteConsoleMsg(UserIndex, "No puedes lanzar hechizos si estas montado.", FontTypeNames.FONTTYPE_INFO)
+            Exit Function
+        End If
 
         If Hechizos(HechizoIndex).NecesitaObj > 0 Then
             If Not TieneObjEnInv(UserIndex, Hechizos(HechizoIndex).NecesitaObj, Hechizos(HechizoIndex).NecesitaObj2) Then
@@ -781,71 +786,62 @@ HechizoSobreArea_Err:
 End Sub
 
 Sub HechizoPortal(ByVal UserIndex As Integer, ByRef b As Boolean)
-        
         On Error GoTo HechizoPortal_Err
         
 
-100     If UserList(UserIndex).flags.BattleModo = 1 Then
-102         b = False
+        Dim PosCasteadaX As Byte
+
+        Dim PosCasteadaY As Byte
+
+        Dim PosCasteadaM As Integer
+
+        Dim uh           As Integer
+
+        Dim TempX        As Integer
+
+        Dim TempY        As Integer
+
+106     PosCasteadaX = UserList(UserIndex).flags.TargetX
+108     PosCasteadaY = UserList(UserIndex).flags.TargetY
+110     PosCasteadaM = UserList(UserIndex).flags.TargetMap
+ 
+112     uh = UserList(UserIndex).Stats.UserHechizos(UserList(UserIndex).flags.Hechizo)
+    
+        'Envio Palabras magicas, wavs y fxs.
+   
+114     If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY).ObjInfo.Amount > 0 Or (MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES Or MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY).TileExit.Map > 0 Or UserList(UserIndex).flags.TargetUser <> 0 Then
+116         b = False
             'Call WriteConsoleMsg(UserIndex, "Area invalida para lanzar este Hechizo!", FontTypeNames.FONTTYPE_INFO)
-104         Call WriteLocaleMsg(UserIndex, "262", FontTypeNames.FONTTYPE_INFO)
+118         Call WriteLocaleMsg(UserIndex, "262", FontTypeNames.FONTTYPE_INFO)
+
         Else
 
-            Dim PosCasteadaX As Byte
+120         If Hechizos(uh).TeleportX = 1 Then
 
-            Dim PosCasteadaY As Byte
+122             If UserList(UserIndex).flags.Portal = 0 Then
 
-            Dim PosCasteadaM As Integer
-
-            Dim uh           As Integer
-
-            Dim TempX        As Integer
-
-            Dim TempY        As Integer
-
-106         PosCasteadaX = UserList(UserIndex).flags.TargetX
-108         PosCasteadaY = UserList(UserIndex).flags.TargetY
-110         PosCasteadaM = UserList(UserIndex).flags.TargetMap
- 
-112         uh = UserList(UserIndex).Stats.UserHechizos(UserList(UserIndex).flags.Hechizo)
-    
-            'Envio Palabras magicas, wavs y fxs.
-   
-114         If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY).ObjInfo.Amount > 0 Or (MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES Or MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY).TileExit.Map > 0 Or UserList(UserIndex).flags.TargetUser <> 0 Then
-116             b = False
-                'Call WriteConsoleMsg(UserIndex, "Area invalida para lanzar este Hechizo!", FontTypeNames.FONTTYPE_INFO)
-118             Call WriteLocaleMsg(UserIndex, "262", FontTypeNames.FONTTYPE_INFO)
-
-            Else
-
-120             If Hechizos(uh).TeleportX = 1 Then
-
-122                 If UserList(UserIndex).flags.Portal = 0 Then
-
-124                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Runa, -1, False))
+124                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Runa, -1, False))
+         
+126                 UserList(UserIndex).flags.PortalM = UserList(UserIndex).Pos.Map
+128                 UserList(UserIndex).flags.PortalX = UserList(UserIndex).flags.TargetX
+130                 UserList(UserIndex).flags.PortalY = UserList(UserIndex).flags.TargetY
             
-126                     UserList(UserIndex).flags.PortalM = UserList(UserIndex).Pos.Map
-128                     UserList(UserIndex).flags.PortalX = UserList(UserIndex).flags.TargetX
-130                     UserList(UserIndex).flags.PortalY = UserList(UserIndex).flags.TargetY
+132                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(UserList(UserIndex).Char.CharIndex, 600, Accion_Barra.Intermundia))
+
+134                 UserList(UserIndex).Accion.AccionPendiente = True
+136                 UserList(UserIndex).Accion.Particula = ParticulasIndex.Runa
+138                 UserList(UserIndex).Accion.TipoAccion = Accion_Barra.Intermundia
+140                 UserList(UserIndex).Accion.HechizoPendiente = uh
             
-132                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(UserList(UserIndex).Char.CharIndex, 600, Accion_Barra.Intermundia))
-
-134                     UserList(UserIndex).Accion.AccionPendiente = True
-136                     UserList(UserIndex).Accion.Particula = ParticulasIndex.Runa
-138                     UserList(UserIndex).Accion.TipoAccion = Accion_Barra.Intermundia
-140                     UserList(UserIndex).Accion.HechizoPendiente = uh
-            
-142                     If UserList(UserIndex).flags.NoPalabrasMagicas = 0 Then
-144                         Call DecirPalabrasMagicas(uh, UserIndex)
-
-                        End If
-
-146                     b = True
-                    Else
-148                     Call WriteConsoleMsg(UserIndex, "No podés lanzar mas de un portal a la vez.", FontTypeNames.FONTTYPE_INFO)
-150                     b = False
+142                 If UserList(UserIndex).flags.NoPalabrasMagicas = 0 Then
+144                     Call DecirPalabrasMagicas(uh, UserIndex)
 
                     End If
+
+146                 b = True
+                Else
+148                 Call WriteConsoleMsg(UserIndex, "No podés lanzar mas de un portal a la vez.", FontTypeNames.FONTTYPE_INFO)
+150                 b = False
 
                 End If
 
@@ -853,7 +849,6 @@ Sub HechizoPortal(ByVal UserIndex As Integer, ByRef b As Boolean)
 
         End If
 
-        
         Exit Sub
 
 HechizoPortal_Err:
@@ -1580,7 +1575,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 
         End If
 
-406     If Hechizos(h).Velocidad > 0 Then
+406     If Hechizos(h).velocidad > 0 Then
 408         If UserIndex = tU Then
                 'Call WriteConsoleMsg(UserIndex, "No podés atacarte a vos mismo.", FontTypeNames.FONTTYPE_FIGHT)
 410             Call WriteLocaleMsg(UserIndex, "380", FontTypeNames.FONTTYPE_FIGHT)
@@ -1595,13 +1590,13 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 418         Call InfoHechizo(UserIndex)
 420         b = True
                  
-422         If UserList(tU).Counters.Velocidad = 0 Then
+422         If UserList(tU).Counters.velocidad = 0 Then
                 UserList(tU).flags.VelocidadHechizada = Hechizos(h).velocidad
                 
                 Call ActualizarVelocidadDeUsuario(tU)
             End If
 
-430         UserList(tU).Counters.Velocidad = Hechizos(h).Duration
+430         UserList(tU).Counters.velocidad = Hechizos(h).Duration
 
         End If
 
@@ -3649,7 +3644,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
 704         enviarInfoHechizo = True
 706         b = True
             
-708         If UserList(tU).Counters.Velocidad = 0 Then
+708         If UserList(tU).Counters.velocidad = 0 Then
                 UserList(tU).flags.VelocidadHechizada = Hechizos(h).velocidad
                 
                 Call ActualizarVelocidadDeUsuario(tU)
@@ -4109,7 +4104,7 @@ Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y As Byte,
 
             End If
 
-342         If UserList(NpcIndex).Counters.Velocidad = 0 Then
+342         If UserList(NpcIndex).Counters.velocidad = 0 Then
                 UserList(NpcIndex).flags.VelocidadHechizada = Hechizos(h2).velocidad
                 
                 Call ActualizarVelocidadDeUsuario(NpcIndex)

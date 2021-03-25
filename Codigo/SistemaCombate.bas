@@ -1632,7 +1632,7 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
 
         'No podes atacar a alguien muerto
 106     If UserList(VictimIndex).flags.Muerto = 1 Then
-108         Call WriteConsoleMsg(attackerIndex, "No podés atacar a un espiritu.", FontTypeNames.FONTTYPE_INFOIAO)
+108         Call WriteConsoleMsg(attackerIndex, "No podés atacar a un espiritu.", FontTypeNames.FONTTYPE_INFO)
 110         PuedeAtacar = False
             Exit Function
 
@@ -1655,8 +1655,15 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
         End If
         
 120     If UserList(attackerIndex).flags.Maldicion = 1 Then
-122         Call WriteConsoleMsg(attackerIndex, "¡Estas maldito! No podes atacar.", FontTypeNames.FONTTYPE_INFOIAO)
+122         Call WriteConsoleMsg(attackerIndex, "¡Estas maldito! No podes atacar.", FontTypeNames.FONTTYPE_INFO)
 124         PuedeAtacar = False
+            Exit Function
+
+        End If
+        
+        If UserList(attackerIndex).flags.Montado = 1 Then
+            Call WriteConsoleMsg(attackerIndex, "No podés atacar usando una montura.", FontTypeNames.FONTTYPE_INFO)
+            PuedeAtacar = False
             Exit Function
 
         End If
@@ -1798,6 +1805,13 @@ Public Function PuedeAtacarNPC(ByVal attackerIndex As Integer, ByVal NpcIndex As
             'Call WriteConsoleMsg(attackerIndex, "No podés atacar porque estas muerto", FontTypeNames.FONTTYPE_INFO)
 102         Call WriteLocaleMsg(attackerIndex, "77", FontTypeNames.FONTTYPE_INFO)
 104         PuedeAtacarNPC = False
+            Exit Function
+
+        End If
+             
+        If UserList(attackerIndex).flags.Montado = 1 Then
+            Call WriteConsoleMsg(attackerIndex, "No podés atacar usando una montura.", FontTypeNames.FONTTYPE_INFO)
+            PuedeAtacarNPC = False
             Exit Function
 
         End If

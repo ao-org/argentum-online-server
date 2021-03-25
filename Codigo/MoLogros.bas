@@ -112,12 +112,6 @@ Public Sub EnviarRecompensaStat(ByVal UserIndex As Integer)
         On Error GoTo EnviarRecompensaStat_Err
         
 
-100     If UserList(UserIndex).flags.BattleModo = 1 Then
-102         Call WriteConsoleMsg(UserIndex, "Aquí no podés utilizar el sistema de recompensas.", FontTypeNames.FONTTYPE_EXP)
-            Exit Sub
-
-        End If
-
 104     Call WriteRecompensas(UserIndex)
 
         
@@ -133,9 +127,6 @@ Public Sub CheckearRecompesas(ByVal UserIndex As Integer, ByVal index As Byte)
         
         On Error GoTo CheckearRecompesas_Err
         
-
-100     If UserList(UserIndex).flags.BattleModo = 1 Then Exit Sub
-
 102     Select Case index
 
             Case 1
@@ -176,13 +167,7 @@ End Sub
 Public Sub EntregarRecompensas(ByVal UserIndex As Integer, ByVal index As Byte)
         
         On Error GoTo EntregarRecompensas_Err
-        
 
-100     If UserList(UserIndex).flags.BattleModo = 1 Then
-102         Call WriteConsoleMsg(UserIndex, "Aquí no podés utilizar el sistema de recompensas.", FontTypeNames.FONTTYPE_EXP)
-            Exit Sub
-
-        End If
 
 104     Select Case index
 

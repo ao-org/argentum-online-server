@@ -19,7 +19,6 @@ End Type
 
 Public Enum eRankings '' Cada ranking tiene un identificador.
 
-    Battle = 1
     asesino = 2
     Muertes = 3
     NPCs = 4
@@ -98,7 +97,7 @@ Public Sub CheckRanking(ByVal Tipo As eRankings, ByVal UserIndex As Integer, ByV
         Exit Sub
 
 CheckRanking_Err:
-152     Call RegistrarError(Err.Number, Err.description, "ModRanking.CheckRanking", Erl)
+152     Call RegistrarError(Err.Number, Err.Description, "ModRanking.CheckRanking", Erl)
 154     Resume Next
         
 End Sub
@@ -130,7 +129,7 @@ Private Function isRank(ByVal Nick As String, ByVal Tipo As eRankings) As Byte
         Exit Function
 
 isRank_Err:
-110     Call RegistrarError(Err.Number, Err.description, "ModRanking.isRank", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "ModRanking.isRank", Erl)
 112     Resume Next
         
 End Function
@@ -164,7 +163,7 @@ Public Sub GuardarRanking()
         Exit Sub
 
 GuardarRanking_Err:
-114     Call RegistrarError(Err.Number, Err.description, "ModRanking.GuardarRanking", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "ModRanking.GuardarRanking", Erl)
 116     Resume Next
         
 End Sub
@@ -202,7 +201,7 @@ Public Sub CargarRanking()
         Exit Sub
 
 CargarRanking_Err:
-118     Call RegistrarError(Err.Number, Err.description, "ModRanking.CargarRanking", Erl)
+118     Call RegistrarError(Err.Number, Err.Description, "ModRanking.CargarRanking", Erl)
 120     Resume Next
         
 End Sub

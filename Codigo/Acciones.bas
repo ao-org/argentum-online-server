@@ -202,62 +202,6 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                         End If
 
                     End If
-            
-                    'Sistema Battle
-            
-194             ElseIf NpcList(MapData(Map, X, Y).NpcIndex).NPCtype = eNPCType.BattleModo Then
-
-196                 If Distancia(UserList(UserIndex).Pos, NpcList(MapData(Map, X, Y).NpcIndex).Pos) > 5 Then
-198                     Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
-                        Exit Sub
-
-                    End If
-            
-200                 If BattleActivado = 0 Then
-202                     Call WriteChatOverHead(UserIndex, "Actualmente el battle se encuentra desactivado.", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
-                        Exit Sub
-
-                    End If
-                        
-204                 If UserList(UserIndex).clase = eClass.Trabajador Then
-206                     Call WriteConsoleMsg(UserIndex, "Los trabajadores no pueden ingresar al battle.", FontTypeNames.FONTTYPE_INFOIAO)
-                        Exit Sub
-
-                    End If
-            
-208                 If UserList(UserIndex).Stats.ELV < BattleMinNivel Then
-210                     Call WriteConsoleMsg(UserIndex, "Exclusivo para personajes superiores a nivel " & BattleMinNivel, FontTypeNames.FONTTYPE_INFO)
-                        Exit Sub
-
-                    End If
-            
-212                 If UserList(UserIndex).flags.Comerciando Then
-214                     Call WriteConsoleMsg(UserIndex, "No podes ingresar al battle si estas comerciando.", FontTypeNames.FONTTYPE_INFOIAO)
-                        Exit Sub
-
-                    End If
-            
-216                 If UserList(UserIndex).flags.EnTorneo = True Then
-218                     Call WriteConsoleMsg(UserIndex, "No podes ingresar al battle estando anotado en un evento.", FontTypeNames.FONTTYPE_INFOIAO)
-                        Exit Sub
-
-                    End If
-            
-220                 If UserList(UserIndex).Accion.TipoAccion = Accion_Barra.BattleModo Then Exit Sub
-222                 If UserList(UserIndex).donador.activo = 0 Then
-224                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Runa, 400, False))
-226                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(UserList(UserIndex).Char.CharIndex, 400, Accion_Barra.BattleModo))
-                    Else
-228                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Runa, 50, False))
-230                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(UserList(UserIndex).Char.CharIndex, 50, Accion_Barra.BattleModo))
-
-                    End If
-
-232                 UserList(UserIndex).Accion.AccionPendiente = True
-234                 UserList(UserIndex).Accion.Particula = ParticulasIndex.Runa
-236                 UserList(UserIndex).Accion.TipoAccion = Accion_Barra.BattleModo
-            
-                    'Sistema Battle
          
 238             ElseIf NpcList(MapData(Map, X, Y).NpcIndex).NPCtype = eNPCType.Subastador Then
 

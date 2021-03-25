@@ -78,17 +78,10 @@ Sub ActStats(ByVal VictimIndex As Integer, ByVal attackerIndex As Integer)
         End If
     
 130     Call UserDie(VictimIndex)
-    
-132     If UserList(attackerIndex).flags.BattleModo = 1 Then
-134         Call ContarPuntoBattle(VictimIndex, attackerIndex)
-
+        
+136     If UserList(attackerIndex).Stats.UsuariosMatados < MAXUSERMATADOS Then
+            UserList(attackerIndex).Stats.UsuariosMatados = UserList(attackerIndex).Stats.UsuariosMatados + 1
         End If
-    
-136     If UserList(attackerIndex).Stats.UsuariosMatados < MAXUSERMATADOS Then UserList(attackerIndex).Stats.UsuariosMatados = UserList(attackerIndex).Stats.UsuariosMatados + 1
-        'Call CheckearRecompesas(attackerIndex, 2)
-    
-    
-
         
         Exit Sub
 
@@ -1426,7 +1419,7 @@ Sub UserDie(ByVal UserIndex As Integer)
 150         .flags.AtacadoPorNpc = 0
 152         .flags.NPCAtacado = 0
     
-198         If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger <> eTrigger.ZONAPELEA And .flags.BattleModo = 0 Then
+198         If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger <> eTrigger.ZONAPELEA Then
 
 200             If (.flags.Privilegios And PlayerType.user) <> 0 Then
 
@@ -1467,7 +1460,7 @@ Sub UserDie(ByVal UserIndex As Integer)
 228         .flags.VecesQueMoriste = .flags.VecesQueMoriste + 1
         
             ' << Restauramos los atributos >>
-230         If .flags.TomoPocion And .flags.BattleModo = 0 Then
+230         If .flags.TomoPocion Then
     
 232             For i = 1 To 4
 234                 .Stats.UserAtributos(i) = .Stats.UserAtributosBackUP(i)
@@ -1558,37 +1551,6 @@ Sub ContarMuerte(ByVal Muerto As Integer, ByVal Atacante As Integer)
 ContarMuerte_Err:
 126     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.ContarMuerte", Erl)
 128     Resume Next
-        
-End Sub
-
-Sub ContarPuntoBattle(ByVal Muerto As Integer, ByVal Atacante As Integer)
-        
-        On Error GoTo ContarPuntoBattle_Err
-        
-
-100     If UserList(Muerto).flags.LevelBackup < 40 And UserList(Atacante).flags.LevelBackup < 40 Then Exit Sub
-102     If Abs(CInt(UserList(Muerto).flags.LevelBackup) - CInt(UserList(Atacante).flags.LevelBackup)) > 5 Then Exit Sub
-
-104     If UserList(Atacante).flags.LastCrimMatado <> UserList(Muerto).name Then
-106         UserList(Atacante).flags.LastCrimMatado = UserList(Muerto).name
-            
-108         UserList(Atacante).flags.BattlePuntos = UserList(Atacante).flags.BattlePuntos + 1
-110         UserList(Muerto).flags.BattlePuntos = UserList(Muerto).flags.BattlePuntos - 1
-            
-112         Call WriteConsoleMsg(Atacante, "Has ganado 1 punto battle.", FontTypeNames.FONTTYPE_EXP)
-114         Call WriteConsoleMsg(Muerto, "Has perdido 1 punto battle.", FontTypeNames.FONTTYPE_EXP)
-116         Call CheckRanking(Battle, Atacante, UserList(Atacante).flags.BattlePuntos)
-118         Call CheckRanking(Battle, Muerto, UserList(Muerto).flags.BattlePuntos)
-120         Call GuardarRanking
-
-        End If
-
-        
-        Exit Sub
-
-ContarPuntoBattle_Err:
-122     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.ContarPuntoBattle", Erl)
-124     Resume Next
         
 End Sub
 

@@ -76,10 +76,6 @@ Public TimerLimpiarObjetos  As Byte
 
 Public DuracionDia          As Long
 
-Public BattleActivado       As Byte
-
-Public BattleMinNivel       As Byte
-
 Public OroPorNivel          As Integer
 
 Public DropActive           As Byte
@@ -300,11 +296,7 @@ End Enum
 
 Public Const VelocidadNormal       As Single = 1
 
-Public Const VelocidadMontura      As Single = 1.3
-
 Public Const VelocidadMuerto       As Single = 1.4
-
-Public Const VelocidadCero         As Single = 0
 
 Public Const TIEMPO_CARCEL_PIQUETE As Long = 5
 
@@ -495,7 +487,6 @@ Public Enum eNPCType
     Pirata = 10
     Veterinaria = 11
     Gobernador = 12
-    BattleModo = 13
     Subastador = 16
     Quest = 17
     Pretoriano = 18
@@ -1004,7 +995,7 @@ Public Type obj
 
     ObjIndex As Integer
     Amount As Integer
-    data As Long
+    Data As Long
 
 End Type
 
@@ -1472,10 +1463,7 @@ Public Type UserFlags
     Candidato As Integer
     
     pregunta As Byte
-    
-    BattleModo As Byte
-    BattlePuntos As Long
-    
+       
     ' 0: no esta hechizada;
     'Cualquier otro valor si lo esta: 0.8 -> reduce un 20% de velocidad; 1.3 -> Aumenta un 30%
     VelocidadHechizada As Single
@@ -2362,7 +2350,7 @@ Public Declare Function writeprivateprofilestring Lib "kernel32" Alias "WritePri
 
 Public Declare Function GetPrivateProfileString Lib "kernel32" Alias "GetPrivateProfileStringA" (ByVal lpApplicationname As String, ByVal lpKeyname As Any, ByVal lpdefault As String, ByVal lpreturnedstring As String, ByVal nsize As Long, ByVal lpfilename As String) As Long
 
-Public Declare Sub ZeroMemory Lib "kernel32.dll" Alias "RtlZeroMemory" (ByRef Destination As Any, ByVal Length As Long)
+Public Declare Sub ZeroMemory Lib "kernel32.dll" Alias "RtlZeroMemory" (ByRef destination As Any, ByVal Length As Long)
 
 ' Los Objetos Criticos nunca desaparecen del inventario de los npcs vendedores, una vez que
 ' se venden los 10.000 (max. cantidad de items x slot) vuelven a reabastecer.
