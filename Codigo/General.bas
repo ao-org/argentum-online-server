@@ -523,7 +523,7 @@ Private Sub InicializarConstantes()
 254     SkillsNames(eSkill.Supervivencia) = "Supervivencia"
 256     SkillsNames(eSkill.Comerciar) = "Comercio"
 258     SkillsNames(eSkill.Defensa) = "Defensa con escudo"
-260     SkillsNames(eSkill.Liderazgo) = "Liderazgo"
+260     SkillsNames(eSkill.liderazgo) = "Liderazgo"
 262     SkillsNames(eSkill.Proyectiles) = "Armas a distancia"
 264     SkillsNames(eSkill.Wrestling) = "Combate sin armas"
 266     SkillsNames(eSkill.Navegacion) = "Navegación"
@@ -740,7 +740,7 @@ Sub Main()
         'Cierra el socket de escucha
 280     If LastSockListen >= 0 Then Call apiclosesocket(LastSockListen)
 
-282     Call IniciaWsApi(frmMain.hwnd)
+282     Call IniciaWsApi(frmMain.hWnd)
 284     SockListen = ListenForConnect(Puerto, hWndMsg, "")
 
 286     If SockListen <> -1 Then
@@ -1652,9 +1652,9 @@ EfectoParalisisNpc_Err:
         
 End Sub
 
-Public Sub EfectoCegueEstu(ByVal UserIndex As Integer)
+Public Sub EfectoCeguera(ByVal UserIndex As Integer)
         
-        On Error GoTo EfectoCegueEstu_Err
+        On Error GoTo EfectoCeguera_Err
         
 
 100     If UserList(UserIndex).Counters.Ceguera > 0 Then
@@ -1672,8 +1672,8 @@ Public Sub EfectoCegueEstu(ByVal UserIndex As Integer)
         
         Exit Sub
 
-EfectoCegueEstu_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "General.EfectoCegueEstu", Erl)
+EfectoCeguera_Err:
+110     Call RegistrarError(Err.Number, Err.Description, "General.EfectoCeguera", Erl)
 112     Resume Next
         
 End Sub
@@ -1733,8 +1733,8 @@ Public Sub EfectoVelocidadUser(ByVal UserIndex As Integer)
         On Error GoTo EfectoVelocidadUser_Err
         
 
-100     If UserList(UserIndex).Counters.Velocidad > 0 Then
-102         UserList(UserIndex).Counters.Velocidad = UserList(UserIndex).Counters.Velocidad - 1
+100     If UserList(UserIndex).Counters.velocidad > 0 Then
+102         UserList(UserIndex).Counters.velocidad = UserList(UserIndex).Counters.velocidad - 1
         Else
             UserList(UserIndex).flags.VelocidadHechizada = 0
             Call ActualizarVelocidadDeUsuario(UserIndex)
@@ -1759,8 +1759,6 @@ Public Sub EfectoMaldicionUser(ByVal UserIndex As Integer)
         Else
 104         UserList(UserIndex).flags.Maldicion = 0
 106         Call WriteConsoleMsg(UserIndex, "¡La magia perdió su efecto! Ya puedes atacar.", FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
-
-            'Call WriteParalizeOK(UserIndex)
         End If
 
         
@@ -2076,7 +2074,6 @@ Public Sub HambreYSed(ByVal UserIndex As Integer, ByRef fenviarAyS As Boolean)
         
 
 100     If Not UserList(UserIndex).flags.Privilegios And PlayerType.user Then Exit Sub
-102     If UserList(UserIndex).flags.BattleModo = 1 Then Exit Sub
 
         'Sed
 104     If UserList(UserIndex).Stats.MinAGU > 0 Then
@@ -2253,12 +2250,12 @@ Sub PasarSegundo()
             End If
 
 132         With UserList(i)
-        
+                
+                Call DuracionPociones(i)
 134             If .flags.invisible = 1 Then Call EfectoInvisibilidad(i)
-136             If .flags.BattleModo = 0 Then Call DuracionPociones(i)
 138             If .flags.Paralizado = 1 Then Call EfectoParalisisUser(i)
 140             If .flags.Inmovilizado = 1 Then Call EfectoInmoUser(i)
-142             If .flags.Ceguera = 1 Then Call EfectoCegueEstu(i)
+142             If .flags.Ceguera = 1 Then Call EfectoCeguera(i)
 144             If .flags.Estupidez = 1 Then Call EfectoEstupidez(i)
 146             If .flags.Maldicion = 1 Then Call EfectoMaldicionUser(i)
 148             If .flags.VelocidadHechizada > 0 Then Call EfectoVelocidadUser(i)
@@ -2464,10 +2461,7 @@ Sub GuardarUsuarios()
 114     For i = 1 To LastUser
 
 116         If UserList(i).flags.UserLogged Then
-118             If UserList(i).flags.BattleModo = 0 Then
-120                 Call SaveUser(i)
-
-                End If
+120             Call SaveUser(i)
 
             End If
 
@@ -2496,7 +2490,7 @@ Sub InicializaEstadisticas()
 
 100     Ta = GetTickCount()
 
-102     Call EstadisticasWeb.Inicializa(frmMain.hwnd)
+102     Call EstadisticasWeb.Inicializa(frmMain.hWnd)
 104     Call EstadisticasWeb.Informar(CANTIDAD_MAPAS, NumMaps)
 106     Call EstadisticasWeb.Informar(CANTIDAD_ONLINE, NumUsers)
 108     Call EstadisticasWeb.Informar(UPTIME_SERVER, (Ta - tInicioServer) / 1000)
@@ -2653,12 +2647,12 @@ CMSValidateChar__Err:
         
 End Function
 
-Public Function Tilde(ByRef data As String) As String
+Public Function Tilde(ByRef Data As String) As String
     
         On Error GoTo Tilde_Err
     
 
-100     Tilde = UCase$(data)
+100     Tilde = UCase$(Data)
  
 102     Tilde = Replace$(Tilde, "Á", "A")
 104     Tilde = Replace$(Tilde, "É", "E")

@@ -638,7 +638,7 @@ Public Sub CargarHechizos()
         'Llena la lista
 114     For Hechizo = 1 To NumeroHechizos
 
-116         Hechizos(Hechizo).Velocidad = val(Leer.GetValue("Hechizo" & Hechizo, "Velocidad"))
+116         Hechizos(Hechizo).velocidad = val(Leer.GetValue("Hechizo" & Hechizo, "Velocidad"))
     
             'Materializacion
 118         Hechizos(Hechizo).MaterializaObj = val(Leer.GetValue("Hechizo" & Hechizo, "MaterializaObj"))
@@ -1468,7 +1468,7 @@ Sub LoadOBJData()
                 Case eOBJType.otBarcos
                     .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
                     .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
-                    .Velocidad = val(Leer.GetValue(ObjKey, "Velocidad"))
+                    .velocidad = val(Leer.GetValue(ObjKey, "Velocidad"))
 
                 Case eOBJType.otMonturas
                     .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
@@ -1678,28 +1678,28 @@ Sub LoadOBJData()
     
             'CHECK: !!! Esto es provisorio hasta que los de Dateo cambien los valores de string a numerico  -  Nunca más papu
             Dim n As Integer
-            Dim s As String
+            Dim S As String
 
             For i = 1 To NUMCLASES
-                s = UCase$(Leer.GetValue(ObjKey, "CP" & i))
+                S = UCase$(Leer.GetValue(ObjKey, "CP" & i))
                 n = 1
 
-                Do While LenB(s) > 0 And Tilde(ListaClases(n)) <> Trim$(s)
+                Do While LenB(S) > 0 And Tilde(ListaClases(n)) <> Trim$(S)
                     n = n + 1
                 Loop
             
-                .ClaseProhibida(i) = IIf(LenB(s) > 0, n, 0)
+                .ClaseProhibida(i) = IIf(LenB(S) > 0, n, 0)
             Next i
         
             For i = 1 To NUMRAZAS
-                s = UCase$(Leer.GetValue(ObjKey, "RP" & i))
+                S = UCase$(Leer.GetValue(ObjKey, "RP" & i))
                 n = 1
 
-                Do While LenB(s) > 0 And Tilde(ListaRazas(n)) <> Trim$(s)
+                Do While LenB(S) > 0 And Tilde(ListaRazas(n)) <> Trim$(S)
                     n = n + 1
                 Loop
             
-                .RazaProhibida(i) = IIf(LenB(s) > 0, n, 0)
+                .RazaProhibida(i) = IIf(LenB(S) > 0, n, 0)
             Next i
         
             ' Skill requerido
@@ -1893,8 +1893,6 @@ Sub LoadUserInit(ByVal UserIndex As Integer, ByRef UserFile As clsIniReader)
 158         UserList(UserIndex).Counters.Paralisis = IntervaloParalizado
 
         End If
-
-160     UserList(UserIndex).flags.BattlePuntos = CLng(UserFile.GetValue("Battle", "Puntos"))
 
 162     If UserList(UserIndex).flags.Inmovilizado = 1 Then
 164         UserList(UserIndex).Counters.Inmovilizado = 20
@@ -2155,7 +2153,7 @@ Sub LoadMapData()
 
 man:
 134     Call MsgBox("Error durante la carga de mapas, el mapa " & Map & " contiene errores")
-136     Call LogError(Date & " " & Err.Description & " " & Err.HelpContext & " " & Err.HelpFile & " " & Err.Source)
+136     Call LogError(Date & " " & Err.Description & " " & Err.HelpContext & " " & Err.HelpFile & " " & Err.source)
 
 End Sub
 
@@ -2349,7 +2347,7 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
 
                         Case eOBJType.otYacimiento, eOBJType.otArboles
 266                         MapData(Map, Objetos(i).X, Objetos(i).Y).ObjInfo.Amount = ObjData(Objetos(i).ObjIndex).VidaUtil
-268                         MapData(Map, Objetos(i).X, Objetos(i).Y).ObjInfo.data = &H7FFFFFFF ' Ultimo uso = Max Long
+268                         MapData(Map, Objetos(i).X, Objetos(i).Y).ObjInfo.Data = &H7FFFFFFF ' Ultimo uso = Max Long
 
 270                     Case Else
 272                         MapData(Map, Objetos(i).X, Objetos(i).Y).ObjInfo.Amount = Objetos(i).ObjAmmount
@@ -2553,7 +2551,7 @@ Sub LoadSini()
             ' Si la API esta activada, activamos el timer.
             frmMain.t_ColaAPI.Enabled = API_Enabled
             
-            Call frmAPISocket.Connect
+            Call frmAPISocket.connect
             
         Else
             
@@ -2871,9 +2869,6 @@ Sub LoadConfiguraciones()
 114     OroPorNivel = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "OroPorNivel"))
 
 116     DuracionDia = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "DuracionDia")) * 60 * 1000 ' De minutos a milisegundos
-
-118     BattleActivado = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "BattleActivado"))
-120     BattleMinNivel = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "BattleMinNivel"))
 
 122     CostoPerdonPorCiudadano = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "CostoPerdonPorCiudadano"))
 
@@ -3416,13 +3411,7 @@ Sub SaveUserCharfile(ByVal UserIndex As Integer, Optional ByVal Logout As Boolea
             Next
         
 472         Print #n, , vbCrLf
-        
-            'BATTLE
-474         Print #n, , "[Battle]" & vbCrLf
-476         Print #n, , "Puntos=" & CStr(.flags.BattlePuntos) & vbCrLf
-        
-478         Print #n, , vbCrLf
-        
+               
 480         Print #n, , "[CORREO]" & vbCrLf & "NoLeidos=" & CByte(.Correo.NoLeidos) & vbCrLf
 482         Print #n, , "CANTCORREO=" & CByte(.Correo.CantCorreo) & vbCrLf
         
@@ -3526,9 +3515,6 @@ Sub SaveNewUserCharfile(ByVal UserIndex As Integer)
 
 114     n = FreeFile
 116     Open UserFile For Binary Access Write As n
-    
-        'BATTLE
-118     Put n, , "[Battle]" & vbCrLf & "Puntos=" & CStr(UserList(UserIndex).flags.BattlePuntos) & vbCrLf
     
 120     Put n, , vbCrLf
     
@@ -3796,27 +3782,6 @@ Sub SetUserLogged(ByVal UserIndex As Integer)
 SetUserLogged_Err:
 108     Call RegistrarError(Err.Number, Err.Description, "ES.SetUserLogged", Erl)
 110     Resume Next
-        
-End Sub
-
-Sub SaveBattlePoints(ByVal UserIndex As Integer)
-        
-        On Error GoTo SaveBattlePoints_Err
-        
-    
-100     If Database_Enabled Then
-102         Call SaveBattlePointsDatabase(UserList(UserIndex).Id, UserList(UserIndex).flags.BattlePuntos)
-        Else
-104         Call WriteVar(CharPath & UserList(UserIndex).name & ".chr", "Battle", "Puntos", UserList(UserIndex).flags.BattlePuntos)
-
-        End If
-    
-        
-        Exit Sub
-
-SaveBattlePoints_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "ES.SaveBattlePoints", Erl)
-108     Resume Next
         
 End Sub
 
@@ -4115,7 +4080,7 @@ Public Sub LoadRecursosEspeciales()
 120             Field = Split(str, "-")
             
 122             EspecialesTala(i).ObjIndex = val(Field(0))
-124             EspecialesTala(i).data = val(Field(1))      ' Probabilidad
+124             EspecialesTala(i).Data = val(Field(1))      ' Probabilidad
             Next
         Else
 126         ReDim EspecialesTala(0) As obj
@@ -4133,7 +4098,7 @@ Public Sub LoadRecursosEspeciales()
 138             Field = Split(str, "-")
             
 140             EspecialesPesca(i).ObjIndex = val(Field(0))
-142             EspecialesPesca(i).data = val(Field(1))     ' Probabilidad
+142             EspecialesPesca(i).Data = val(Field(1))     ' Probabilidad
             Next
         Else
 144         ReDim EspecialesPesca(0) As obj
@@ -4185,7 +4150,7 @@ Public Sub LoadPesca()
 124             Field = Split(str, "-")
             
 126             Peces(i).ObjIndex = val(Field(0))
-128             Peces(i).data = val(Field(1))       ' Peso
+128             Peces(i).Data = val(Field(1))       ' Peso
 
 130             nivel = val(Field(2))               ' Nivel de caña
 
@@ -4199,10 +4164,10 @@ Public Sub LoadPesca()
             ' Sumo los pesos
 138         For i = 1 To Count
 140             For j = Peces(i).Amount To MaxLvlCania
-142                 PesoPeces(j) = PesoPeces(j) + Peces(i).data
+142                 PesoPeces(j) = PesoPeces(j) + Peces(i).Data
 144             Next j
 
-146             Peces(i).data = PesoPeces(Peces(i).Amount)
+146             Peces(i).Data = PesoPeces(Peces(i).Amount)
 148         Next i
         Else
 150         ReDim Peces(0) As obj
@@ -4292,12 +4257,12 @@ Public Function BinarySearchPeces(ByVal Value As Long) As Long
 106         i = (low + high) \ 2
 
 108         If i > 1 Then
-110             valor_anterior = Peces(i - 1).data
+110             valor_anterior = Peces(i - 1).Data
             Else
 112             valor_anterior = 0
             End If
 
-114         If Value >= valor_anterior And Value < Peces(i).data Then
+114         If Value >= valor_anterior And Value < Peces(i).Data Then
 116             BinarySearchPeces = i
                 Exit Do
             
@@ -4346,13 +4311,13 @@ Public Sub LoadRangosFaccion()
             For i = 1 To MaxRangoFaccion
                 '<N>Rango=<NivelRequerido>-<AsesinatosRequeridos>-<Título>
                 rankData = Split(IniFile.GetValue("ArmadaReal", i & "Rango"), "-", , vbTextCompare)
-                RangosFaccion(2 * i - 1).Rank = i
+                RangosFaccion(2 * i - 1).rank = i
                 RangosFaccion(2 * i - 1).Titulo = rankData(2)
                 RangosFaccion(2 * i - 1).NivelRequerido = val(rankData(0))
                 RangosFaccion(2 * i - 1).AsesinatosRequeridos = val(rankData(1))
 
                 rankData = Split(IniFile.GetValue("LegionCaos", i & "Rango"), "-", , vbTextCompare)
-                RangosFaccion(2 * i).Rank = i
+                RangosFaccion(2 * i).rank = i
                 RangosFaccion(2 * i).Titulo = rankData(2)
                 RangosFaccion(2 * i).NivelRequerido = val(rankData(0))
                 RangosFaccion(2 * i).AsesinatosRequeridos = val(rankData(1))
@@ -4395,7 +4360,7 @@ Public Sub LoadRecompensasFaccion()
             For i = 1 To cantidadRecompensas
                 rank_and_objindex = Split(IniFile.GetValue("Recompensas", "Recompensa" & i), "-", , vbTextCompare)
 
-                RecompensasFaccion(i).Rank = val(rank_and_objindex(0))
+                RecompensasFaccion(i).rank = val(rank_and_objindex(0))
                 RecompensasFaccion(i).ObjIndex = val(rank_and_objindex(1))
             Next i
 

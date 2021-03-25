@@ -150,10 +150,6 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
 172         ElseIf ObjData(Objeto.ObjIndex).Destruye = 1 Then
 174             Call WriteConsoleMsg(UserIndex, "Lo siento, no puedo comprarte ese item.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
-176         ElseIf UserList(UserIndex).flags.BattleModo = 1 Then
-178             Call WriteConsoleMsg(UserIndex, "Lo siento, no comercio items robados.", FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
           
 184         ElseIf (NpcList(NpcIndex).TipoItems <> ObjData(Objeto.ObjIndex).OBJType And NpcList(NpcIndex).TipoItems <> eOBJType.otCualquiera) Or Objeto.ObjIndex = iORO Then
 186             Call WriteConsoleMsg(UserIndex, "Lo siento, no estoy interesado en este tipo de objetos.", FontTypeNames.FONTTYPE_INFO)
@@ -226,23 +222,11 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
 248             Call WriteChangeNPCInventorySlot(UserIndex, NpcSlot, objquedo, precioenvio)
                 
             End If
-        
-            'Bien, ahora logueo de ser necesario. Pablo (ToxicWaste) 07/09/07
-            'Es un Objeto que tenemos que loguear?
-            ' If ObjData(Objeto.ObjIndex).Log = 1 Then
-            '    Call LogDesarrollo(UserList(UserIndex).name & " vendió al NPC " & Objeto.Amount & " " & ObjData(Objeto.ObjIndex).name)
-            ' ElseIf Objeto.Amount = 1000 Then 'Es mucha cantidad?
-            'Si no es de los prohibidos de loguear, lo logueamos.
-            '     If ObjData(Objeto.ObjIndex).NoLog <> 1 Then
-            '         Call LogDesarrollo(UserList(UserIndex).name & " vendió al NPC " & Objeto.Amount & " " & ObjData(Objeto.ObjIndex).name)
-            '     End If
-            ' End If
 
         End If
 
 250     Call SubirSkill(UserIndex, eSkill.Comerciar)
 
-        
         Exit Sub
 
 Comercio_Err:
