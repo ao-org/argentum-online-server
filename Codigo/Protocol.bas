@@ -12790,12 +12790,7 @@ Private Sub HandleReviveChar(ByVal UserIndex As Integer)
                 
                     ' Call WriteHora(tUser)
 138                 Call WriteUpdateHP(tUser)
-140                 UserList(tUser).Char.speeding = VelocidadNormal
-                    'Call WriteVelocidadToggle(tUser)
-142                 Call SendData(SendTarget.ToPCArea, tUser, PrepareMessageSpeedingACT(UserList(tUser).Char.CharIndex, UserList(tUser).Char.speeding))
-                
-                
-                
+                    Call ActualizarVelocidadDeUsuario(tUser)
 144                 Call LogGM(.name, "Resucito a " & UserName)
 
                 End If

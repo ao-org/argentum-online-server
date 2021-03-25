@@ -1258,13 +1258,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
 400             .LogOnTime = Now
               #End If
         
-402         If .flags.Navegando = 0 Then
-404             If .flags.Muerto = 0 Then
-406                 .Char.speeding = VelocidadNormal
-                  Else
-408                 .Char.speeding = VelocidadMuerto
-                  End If
-              End If
+            Call ActualizarVelocidadDeUsuario(UserIndex)
         
               'Crea  el personaje del usuario
 410         Call MakeUserChar(True, .Pos.Map, UserIndex, .Pos.Map, .Pos.X, .Pos.Y, 1)
@@ -1273,11 +1267,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
         
 414         If (.flags.Privilegios And PlayerType.user) = 0 Then
 416             Call DoAdminInvisible(UserIndex)
-              Else
-418             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(.Char.CharIndex, .Char.speeding))
-              End If
-        
-420         Call WriteVelocidadToggle(UserIndex)
+            End If
         
 422         Call WriteUpdateUserStats(UserIndex)
         
@@ -1290,7 +1280,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
         
 432         Call SetUserLogged(UserIndex)
         
-              'Actualiza el Num de usuarios
+            'Actualiza el Num de usuarios
 434         NumUsers = NumUsers + 1
 436         .flags.UserLogged = True
 438         .Counters.LastSave = GetTickCount
