@@ -1226,7 +1226,9 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
               'If in the water, and has a boat, equip it!
 318         If .Invent.BarcoObjIndex > 0 And (MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Then
                 .flags.Navegando = 1
-                EquiparBarco(UserIndex)
+                Call EquiparBarco(UserIndex)
+                Call WriteNavigateToggle(UserIndex)
+                Call ActualizarVelocidadDeUsuario(UserIndex)
             End If
 
 374         Call WriteUserIndexInServer(UserIndex) 'Enviamos el User index
@@ -1256,13 +1258,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
 400             .LogOnTime = Now
               #End If
         
-402         If .flags.Navegando = 0 Then
-404             If .flags.Muerto = 0 Then
-406                 .Char.speeding = VelocidadNormal
-                  Else
-408                 .Char.speeding = VelocidadMuerto
-                  End If
-              End If
+            Call ActualizarVelocidadDeUsuario(UserIndex)
         
               'Crea  el personaje del usuario
 410         Call MakeUserChar(True, .Pos.Map, UserIndex, .Pos.Map, .Pos.X, .Pos.Y, 1)
@@ -1271,11 +1267,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
         
 414         If (.flags.Privilegios And PlayerType.user) = 0 Then
 416             Call DoAdminInvisible(UserIndex)
-              Else
-418             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(.Char.CharIndex, .Char.speeding))
-              End If
-        
-420         Call WriteVelocidadToggle(UserIndex)
+            End If
         
 422         Call WriteUpdateUserStats(UserIndex)
         
@@ -1288,7 +1280,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
         
 432         Call SetUserLogged(UserIndex)
         
-              'Actualiza el Num de usuarios
+            'Actualiza el Num de usuarios
 434         NumUsers = NumUsers + 1
 436         .flags.UserLogged = True
 438         .Counters.LastSave = GetTickCount
@@ -1334,19 +1326,14 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
         
 484         If .flags.Navegando = 1 Then
 486             Call WriteNavigateToggle(UserIndex)
-              End If
+                Call EquiparBarco(UserIndex)
+            End If
         
 488         If .flags.Montado = 1 Then
-490             .Char.speeding = VelocidadMontura
 492             Call WriteEquiteToggle(UserIndex)
-                  'Debug.Print "Montado:" & .Char.speeding
-494             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(.Char.CharIndex, .Char.speeding))
-              End If
-        
-496         If .flags.Muerto = 1 Then
-498             .Char.speeding = VelocidadMuerto
-500             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(.Char.CharIndex, .Char.speeding))
-              End If
+            End If
+
+            Call ActualizarVelocidadDeUsuario(UserIndex)
         
 502         If .GuildIndex > 0 Then
 

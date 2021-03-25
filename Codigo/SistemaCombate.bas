@@ -411,7 +411,7 @@ Private Function UserImpactoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As In
 116     UserImpactoNpc = (RandomNumber(1, 100) <= ProbExito)
 
 118     If UserImpactoNpc Then
-            SubirSkillDeArmaActual(UserIndex)
+            Call SubirSkillDeArmaActual(UserIndex)
         End If
 
         Exit Function
@@ -562,8 +562,8 @@ Private Function CalcularDaño(ByVal UserIndex As Integer) As Long
             CalcularDaño = (3 * DañoArma + DañoMaxArma * 0.2 * Maximo(0, .Stats.UserAtributos(Fuerza) - 15) + DañoUsuario) * ModifClase
             
             ' El pirata navegando pega un 20% más
-            If .clase = eClass.Pirat And .flags.Navegando Then
-                CalcularDaño = CalcularDaño * 1.15
+            If .clase = eClass.Pirat And .flags.Navegando = 1 Then
+                CalcularDaño = CalcularDaño * 1.2
             End If
             
             ' Daño del barco
@@ -1271,7 +1271,7 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
         UsuarioImpacto = (RandomNumber(1, 100) <= ProbExito)
 
         If UsuarioImpacto Then
-          SubirSkillDeArmaActual(AtacanteIndex)
+          Call SubirSkillDeArmaActual(AtacanteIndex)
 
         Else ' Falló
             If RandomNumber(1, 100) <= ProbRechazo Then

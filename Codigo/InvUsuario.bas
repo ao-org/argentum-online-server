@@ -1055,7 +1055,7 @@ End Function
 
 'Equipa barco y hace el cambio de ropaje correspondiente
 Sub EquiparBarco(ByVal UserIndex As Integer)
-  On Error GoTo Equiparbarco_Err
+  On Error GoTo EquiparBarco_Err
 
   Dim Barco As ObjData
 
@@ -1070,6 +1070,7 @@ Sub EquiparBarco(ByVal UserIndex As Integer)
           .Char.Body = iFragataFantasmal
           .Char.Head = 0
       End If
+      
     Else ' Esta vivo
       If Barco.Ropaje = iTraje Then
         .Char.Body = iTraje
@@ -1102,13 +1103,13 @@ Sub EquiparBarco(ByVal UserIndex As Integer)
 
     .Char.ShieldAnim = NingunEscudo
     .Char.WeaponAnim = NingunArma
-    .Char.speeding = Barco.Velocidad
-
+    
     Call WriteNadarToggle(UserIndex, Barco.Ropaje = iTraje)
   End With
+  
+  Exit Sub
 
-
-Equiparbarco_Err:
+EquiparBarco_Err:
   Call RegistrarError(Err.Number, Err.Description, "InvUsuario.EquiparBarco", Erl)
   Resume Next
 
@@ -2764,7 +2765,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
     
                             Dim s As Byte
                     
-930                         If .Stats.UserSkills(eSkill.Liderazgo) >= 80 Then
+930                         If .Stats.UserSkills(eSkill.liderazgo) >= 80 Then
 932                             Call WriteConsoleMsg(UserIndex, "Has fundado un clan, no podes resetar tus skills. ", FontTypeNames.FONTTYPE_INFOIAO)
                                 Exit Sub
     
@@ -3079,26 +3080,26 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 1188             Case eOBJType.otMonturas
                        'Verifica todo lo que requiere la montura
         
-1190                 If .flags.Muerto = 1 Then
-1192                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
-                           'Call WriteConsoleMsg(UserIndex, "¡Estas muerto! Los fantasmas no pueden montar.", FontTypeNames.FONTTYPE_INFO)
-                           Exit Sub
+1190                If .flags.Muerto = 1 Then
+1192                    Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
+                        'Call WriteConsoleMsg(UserIndex, "¡Estas muerto! Los fantasmas no pueden montar.", FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
     
-                       End If
+                    End If
                 
-1194                 If .flags.Navegando = 1 Then
-1196                     Call WriteConsoleMsg(UserIndex, "Debes dejar de navegar para poder montarté.", FontTypeNames.FONTTYPE_INFO)
-                           Exit Sub
+1194                If .flags.Navegando = 1 Then
+1196                    Call WriteConsoleMsg(UserIndex, "Debes dejar de navegar para poder cabalgar.", FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
     
-                       End If
+                    End If
     
-1198                 If MapInfo(.Pos.Map).zone = "DUNGEON" Then
-1200                     Call WriteConsoleMsg(UserIndex, "No podes cabalgar dentro de un dungeon.", FontTypeNames.FONTTYPE_INFO)
-                           Exit Sub
+1198                If MapInfo(.Pos.Map).zone = "DUNGEON" Then
+1200                    Call WriteConsoleMsg(UserIndex, "No podes cabalgar dentro de un dungeon.", FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
     
-                       End If
+                    End If
             
-1202                 Call DoMontar(UserIndex, obj, slot)
+1202                Call DoMontar(UserIndex, obj, slot)
     
 1204             Case eOBJType.OtDonador
     
