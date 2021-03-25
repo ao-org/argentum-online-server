@@ -120,8 +120,6 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
             
 120         If .flags.Navegando = 1 Then
                 Call EquiparBarco(UserIndex)
-    
-                Call ActualizarVelocidadDeUsuario(UserIndex)
             Else
 
 146             .Char.Head = .OrigChar.Head
@@ -212,13 +210,11 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
 228                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.RM_Aura, False, 7))
                     End If
                 End If
-                
-230             .Char.speeding = VelocidadNormal
     
             End If
     
+            Call ActualizarVelocidadDeUsuario(UserIndex)
 232         Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
-234         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(.Char.CharIndex, .Char.speeding))
 
         End With
         

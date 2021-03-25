@@ -2560,11 +2560,9 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As ObjData, ByVal 
 146         UserList(UserIndex).Char.WeaponAnim = NingunArma
 148         UserList(UserIndex).Char.CascoAnim = UserList(UserIndex).Char.CascoAnim
 150         UserList(UserIndex).flags.Montado = 1
-152         UserList(UserIndex).Char.speeding = VelocidadMontura
         Else
 154         UserList(UserIndex).flags.Montado = 0
 156         UserList(UserIndex).Char.Head = UserList(UserIndex).OrigChar.Head
-158         UserList(UserIndex).Char.speeding = VelocidadNormal
 
 160         If UserList(UserIndex).Invent.ArmourEqpObjIndex > 0 Then
 162             UserList(UserIndex).Char.Body = ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).Ropaje
@@ -2582,12 +2580,11 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As ObjData, ByVal 
 
         End If
 
+        Call ActualizarVelocidadDeUsuario(UserIndex)
 172     Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
 
 174     Call UpdateUserInv(False, UserIndex, slot)
 176     Call WriteEquiteToggle(UserIndex)
-178     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSpeedingACT(UserList(UserIndex).Char.CharIndex, UserList(UserIndex).Char.speeding))
-
         
         Exit Sub
 

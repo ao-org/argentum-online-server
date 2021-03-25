@@ -3664,8 +3664,6 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
 
         End If
 
-    
-
         
         Exit Sub
 
