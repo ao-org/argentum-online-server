@@ -389,7 +389,7 @@ Numeric_Err:
         
 End Function
 
-Function NombrePermitido(ByVal Nombre As String) As Boolean
+Function NombrePermitido(ByVal nombre As String) As Boolean
         
         On Error GoTo NombrePermitido_Err
         
@@ -398,7 +398,7 @@ Function NombrePermitido(ByVal Nombre As String) As Boolean
 
 100     For i = 1 To UBound(ForbidenNames)
 
-102         If InStr(Nombre, ForbidenNames(i)) Then
+102         If InStr(nombre, ForbidenNames(i)) Then
 104             NombrePermitido = False
                 Exit Function
 
@@ -1227,8 +1227,6 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
 318         If .Invent.BarcoObjIndex > 0 And (MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Then
                 .flags.Navegando = 1
                 Call EquiparBarco(UserIndex)
-                Call WriteNavigateToggle(UserIndex)
-                Call ActualizarVelocidadDeUsuario(UserIndex)
             End If
 
 374         Call WriteUserIndexInServer(UserIndex) 'Enviamos el User index
@@ -1258,12 +1256,12 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
 400             .LogOnTime = Now
               #End If
         
-            Call ActualizarVelocidadDeUsuario(UserIndex)
-        
               'Crea  el personaje del usuario
 410         Call MakeUserChar(True, .Pos.Map, UserIndex, .Pos.Map, .Pos.X, .Pos.Y, 1)
 
 412         Call WriteUserCharIndexInServer(UserIndex)
+
+            Call ActualizarVelocidadDeUsuario(UserIndex)
         
 414         If (.flags.Privilegios And PlayerType.user) = 0 Then
 416             Call DoAdminInvisible(UserIndex)
@@ -1818,7 +1816,7 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
             Next
 
             .EnReto = False
-            .SolicitudReto.Estado = SolicitudRetoEstado.Libre
+            .SolicitudReto.estado = SolicitudRetoEstado.Libre
             .AceptoReto = 0
             .LastPos.Map = 0
 
@@ -2102,7 +2100,7 @@ Sub CloseUser(ByVal UserIndex As Integer)
             If .flags.EnReto Then
                 Call AbandonarReto(UserIndex, True)
 
-            ElseIf .flags.SolicitudReto.Estado <> SolicitudRetoEstado.Libre Then
+            ElseIf .flags.SolicitudReto.estado <> SolicitudRetoEstado.Libre Then
                 Call CancelarSolicitudReto(UserIndex, .name & " se ha desconectado.")
             
             ElseIf .flags.AceptoReto > 0 Then
@@ -2315,12 +2313,12 @@ Function ValidarCabeza(ByVal UserRaza As eRaza, ByVal UserSexo As eGenero, ByVal
 
 End Function
 
-Function ValidarNombre(Nombre As String) As Boolean
+Function ValidarNombre(nombre As String) As Boolean
     
-100     If Len(Nombre) < 1 Or Len(Nombre) > 18 Then Exit Function
+100     If Len(nombre) < 1 Or Len(nombre) > 18 Then Exit Function
     
         Dim temp As String
-102     temp = UCase$(Nombre)
+102     temp = UCase$(nombre)
     
         Dim i As Long, Char As Integer, LastChar As Integer
 104     For i = 1 To Len(temp)
