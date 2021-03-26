@@ -1687,7 +1687,6 @@ Public Type UserCounters
     TimerCaminar As Long
     TimerTirar As Long
     TimerMeditar As Long
-    TimerMontar As Long
 
     'Nuevos de AoLibre
     TimerPuedeSerAtacado As Long
@@ -1711,7 +1710,6 @@ Public Type UserIntervals
     UsarU As Long
     UsarClic As Long
     Caminar As Long
-    Montar As Long
     GolpeMagia As Long
     MagiaGolpe As Long
     GolpeUsar As Long
