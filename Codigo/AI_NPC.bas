@@ -146,7 +146,7 @@ Private Sub IrUsuarioCercano(ByVal NpcIndex As Integer)
 
                                     If Distancia(.Pos, UserList(NpcList(NpcIndex).Target).Pos) > 1 Then
 
-                                        Call NpcLanzaUnSpell(NpcIndex)
+                                        Call NpcLanzaUnSpell(NpcIndex, NpcList(NpcIndex).Target)
 
                                     Else
 
@@ -1252,18 +1252,15 @@ NpcLanzaUnSpellSobreNpc_Err:
         
 End Sub
 
-Private Function PuedeAtacarUser(ByVal targetUserIndex As Integer, Optional ByVal IgnorarMimetismo As Boolean = False) As Boolean
+Private Function PuedeAtacarUser(ByVal targetUserIndex As Integer) As Boolean
     
 100     With UserList(targetUserIndex)
-            
-            Dim PuedeAtacarUsuarioMimetizado As Boolean
-                PuedeAtacarUsuarioMimetizado = (IgnorarMimetismo Or .flags.Mimetizado < 2)
             
 102         PuedeAtacarUser = (.flags.Muerto = 0 And _
                                 .flags.invisible = 0 And _
                                 .flags.Inmunidad = 0 And _
                                 .flags.Oculto = 0 And _
-                                PuedeAtacarUsuarioMimetizado And _
+                                .flags.Mimetizado < 2 And _
                                 Not EsGM(targetUserIndex) And _
                                 Not .flags.EnConsulta)
                                 
