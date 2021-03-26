@@ -1207,11 +1207,6 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 102     tU = UserList(UserIndex).flags.TargetUser
 
 104     If Hechizos(h).Invisibilidad = 1 Then
-
-            If UserList(UserIndex).flags.EnReto Then
-                Call WriteConsoleMsg(UserIndex, "No podés lanzar invisibilidad durante un reto.", FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            End If
    
 106         If UserList(tU).flags.Muerto = 1 Then
                 'Call WriteConsoleMsg(UserIndex, "¡Está muerto!", FontTypeNames.FONTTYPE_INFO)
@@ -1219,6 +1214,16 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 110             b = False
                 Exit Sub
 
+            End If
+            
+            If UserList(UserIndex).flags.EnReto Then
+                Call WriteConsoleMsg(UserIndex, "No podés lanzar invisibilidad durante un reto.", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+            
+            If UserList(UserIndex).flags.Montado Then
+                Call WriteConsoleMsg(UserIndex, "No podés lanzar invisibilidad mientras usas una montura.", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
             End If
     
 112         If UserList(tU).Counters.Saliendo Then
