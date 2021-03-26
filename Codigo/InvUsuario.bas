@@ -101,6 +101,60 @@ manejador:
 
 End Function
 
+Function RazaPuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, Optional slot As Byte) As Boolean
+        On Error GoTo RazaPuedeUsarItem_Err
+
+        Dim Objeto As ObjData, i As Long
+        
+        Objeto = ObjData(ObjIndex)
+        
+        If EsGM(UserIndex) Then
+            RazaPuedeUsarItem = True
+            Exit Function
+        End If
+
+        For i = 1 To NUMRAZAS
+            If Objeto.RazaProhibida(i) = UserList(UserIndex).raza Then
+                RazaPuedeUsarItem = False
+                Exit Function
+            End If
+
+        Next i
+        
+        ' Si el objeto no define una raza en particular
+        If Objeto.RazaDrow + Objeto.RazaElfa + Objeto.RazaEnana + Objeto.RazaGnoma + Objeto.RazaHumana + Objeto.RazaOrca = 0 Then
+            RazaPuedeUsarItem = True
+        
+        Else ' El objeto esta definido para alguna raza en especial
+            Select Case UserList(UserIndex).raza
+                Case eRaza.Humano
+                    RazaPuedeUsarItem = Objeto.RazaHumana > 0
+
+                Case eRaza.Elfo
+                    RazaPuedeUsarItem = Objeto.RazaElfa > 0
+                
+                Case eRaza.Drow
+                    RazaPuedeUsarItem = Objeto.RazaDrow > 0
+    
+                Case eRaza.Orco
+                    RazaPuedeUsarItem = Objeto.RazaOrca > 0
+                    
+                Case eRaza.Gnomo
+                    RazaPuedeUsarItem = Objeto.RazaGnoma > 0
+                    
+                Case eRaza.Enano
+                    RazaPuedeUsarItem = Objeto.RazaEnana > 0
+
+            End Select
+        End If
+        
+        Exit Function
+
+RazaPuedeUsarItem_Err:
+120     LogError ("Error en RazaPuedeUsarItem")
+
+End Function
+
 Sub QuitarNewbieObj(ByVal UserIndex As Integer)
         
         On Error GoTo QuitarNewbieObj_Err
@@ -1109,27 +1163,9 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
         ObjIndex = UserList(UserIndex).Invent.Object(slot).ObjIndex
         obj = ObjData(ObjIndex)
         
-        Select Case PuedeUsarObjeto(UserIndex, ObjIndex)
-            Case 0 ' Si puede usar
-
-            Case 4 ' Skill no suficiente
-                Call WriteConsoleMsg(UserIndex, "Necesitas " & obj.SkillRequerido & " puntos en " & SkillsNames(obj.SkillIndex) & " para usar este item.", FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-
-            Case 6 ' Level no suficiente
-                 Call WriteConsoleMsg(UserIndex, "Necesitas ser nivel " & obj.MinELV & " para usar este item.", FontTypeNames.FONTTYPE_INFO)
-                 Exit Sub
-
-            Case 7 ' Es un objeto de newbie
-                 Call WriteConsoleMsg(UserIndex, "Solo los newbies pueden usar este objeto.", FontTypeNames.FONTTYPE_INFO)
-                 Exit Sub
-
-            Case Else
-                Call WriteConsoleMsg(UserIndex, "No puedes usar este objeto.", FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-
-        End Select
-
+        If PuedeUsarObjeto(UserIndex, ObjIndex, True) > 0 Then
+            Exit Sub
+        End If
 
 118     With UserList(UserIndex)
              If .flags.Muerto = 1 Then
@@ -1628,134 +1664,6 @@ ErrHandler:
 634     Call LogError("EquiparInvItem Slot:" & slot & " - Error: " & Err.Number & " - Error Description : " & Err.Description & "- " & errordesc)
 
 End Sub
-
-Public Function CheckRazaUsaRopa(ByVal UserIndex As Integer, ItemIndex As Integer) As Boolean
-
-        On Error GoTo ErrHandler
-
-100     If EsGM(UserIndex) Then
-102         CheckRazaUsaRopa = True
-            Exit Function
-
-        End If
-   
-104     Select Case UserList(UserIndex).raza
-
-            Case eRaza.Humano
-
-106             If ObjData(ItemIndex).RazaEnana = 0 And ObjData(ItemIndex).RazaOrca = 0 And ObjData(ItemIndex).RazaDrow = 0 Then
-108                 If ObjData(ItemIndex).Ropaje > 0 Then
-110                     CheckRazaUsaRopa = True
-                        Exit Function
-
-                    End If
-
-                End If
-
-112         Case eRaza.Elfo
-
-114             If ObjData(ItemIndex).RazaEnana = 0 And ObjData(ItemIndex).RazaOrca = 0 And ObjData(ItemIndex).RazaDrow = 0 Then
-116                 CheckRazaUsaRopa = True
-                    Exit Function
-
-                End If
-    
-118         Case eRaza.Orco
-
-120             If ObjData(ItemIndex).RazaEnana = 0 Then
-122                 CheckRazaUsaRopa = True
-                    Exit Function
-
-                End If
-    
-124         Case eRaza.Drow
-
-126             If ObjData(ItemIndex).RazaEnana = 0 And ObjData(ItemIndex).RazaOrca = 0 Then
-128                 CheckRazaUsaRopa = True
-                    Exit Function
-
-                End If
-    
-130         Case eRaza.Gnomo
-
-132             If ObjData(ItemIndex).RazaEnana > 0 Then
-134                 CheckRazaUsaRopa = True
-                    Exit Function
-
-                End If
-        
-136         Case eRaza.Enano
-
-138             If ObjData(ItemIndex).RazaEnana > 0 Then
-140                 CheckRazaUsaRopa = True
-                    Exit Function
-
-                End If
-    
-        End Select
-
-142     CheckRazaUsaRopa = False
-
-        Exit Function
-ErrHandler:
-144     Call LogError("Error CheckRazaUsaRopa ItemIndex:" & ItemIndex)
-
-End Function
-
-Public Function CheckRazaTipo(ByVal UserIndex As Integer, ItemIndex As Integer) As Boolean
-
-        On Error GoTo ErrHandler
-
-100     If EsGM(UserIndex) Then
-
-102         CheckRazaTipo = True
-            Exit Function
-
-        End If
-
-104     Select Case ObjData(ItemIndex).RazaTipo
-
-            Case 0
-106             CheckRazaTipo = True
-
-108         Case 1
-
-110             If UserList(UserIndex).raza = eRaza.Elfo Then
-112                 CheckRazaTipo = True
-                    Exit Function
-
-                End If
-        
-114             If UserList(UserIndex).raza = eRaza.Drow Then
-116                 CheckRazaTipo = True
-                    Exit Function
-
-                End If
-        
-118             If UserList(UserIndex).raza = eRaza.Humano Then
-120                 CheckRazaTipo = True
-                    Exit Function
-
-                End If
-
-122         Case 2
-
-124             If UserList(UserIndex).raza = eRaza.Gnomo Then CheckRazaTipo = True
-126             If UserList(UserIndex).raza = eRaza.Enano Then CheckRazaTipo = True
-                Exit Function
-
-128         Case 3
-
-130             If UserList(UserIndex).raza = eRaza.Orco Then CheckRazaTipo = True
-                Exit Function
-    
-        End Select
-
-        Exit Function
-ErrHandler:
-132     Call LogError("Error CheckRazaTipo ItemIndex:" & ItemIndex)
-
-End Function
 
 Public Function CheckClaseTipo(ByVal UserIndex As Integer, ItemIndex As Integer) As Boolean
 

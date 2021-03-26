@@ -21540,22 +21540,17 @@ Public Sub WriteChangeInventorySlot(ByVal UserIndex As Integer, ByVal slot As By
 
         On Error GoTo ErrHandler
 
+        Dim ObjIndex As Integer
+        Dim PodraUsarlo As Byte
+
 100     With UserList(UserIndex).outgoingData
 102         Call .WriteByte(ServerPacketID.ChangeInventorySlot)
 104         Call .WriteByte(slot)
-        
-            Dim ObjIndex As Integer
-        
+                
 106         ObjIndex = UserList(UserIndex).Invent.Object(slot).ObjIndex
-        
-            Dim PodraUsarlo As Byte
-    
-            'Ladder
+
 108         If ObjIndex > 0 Then
 110             PodraUsarlo = PuedeUsarObjeto(UserIndex, ObjIndex)
-                'PodraUsarlo = IIf(SexoPuedeUsarItem(UserIndex, OBJIndex) = True And UserList(UserIndex).Stats.ELV >= ObjData(OBJIndex).MinELV And ClasePuedeUsarItem(UserIndex, OBJIndex) = True And CheckRazaUsaRopa(UserIndex, OBJIndex) = True, 1, 0)
-                'Ladder
-    
             End If
     
 112         Call .WriteInteger(ObjIndex)
@@ -21592,32 +21587,22 @@ Public Sub WriteChangeBankSlot(ByVal UserIndex As Integer, ByVal slot As Byte)
         'Writes the "ChangeBankSlot" message to the given user's outgoing data buffer
         '***************************************************
         On Error GoTo ErrHandler
+        
+        Dim ObjIndex As Integer
+        Dim obData   As ObjData
+        Dim PodraUsarlo As Byte
 
 100     With UserList(UserIndex).outgoingData
 102         Call .WriteByte(ServerPacketID.ChangeBankSlot)
 104         Call .WriteByte(slot)
-        
-            Dim ObjIndex As Integer
 
-            Dim obData   As ObjData
-        
 106         ObjIndex = UserList(UserIndex).BancoInvent.Object(slot).ObjIndex
         
 108         Call .WriteInteger(ObjIndex)
         
 110         If ObjIndex > 0 Then
 112             obData = ObjData(ObjIndex)
-
-            End If
-        
-            Dim PodraUsarlo As Byte
-    
-            'Ladder
-114         If ObjIndex > 0 Then
-116             PodraUsarlo = PuedeUsarObjeto(UserIndex, ObjIndex)
-
-                'PodraUsarlo = IIf(SexoPuedeUsarItem(UserIndex, OBJIndex) = True And UserList(UserIndex).Stats.ELV >= ObjData(OBJIndex).MinELV = True And ClasePuedeUsarItem(UserIndex, OBJIndex) = True And CheckRazaUsaRopa(UserIndex, OBJIndex) = True, 1, 0)
-                'Ladder
+                PodraUsarlo = PuedeUsarObjeto(UserIndex, ObjIndex)
             End If
 
 118         Call .WriteInteger(UserList(UserIndex).BancoInvent.Object(slot).Amount)
@@ -22184,22 +22169,13 @@ Public Sub WriteChangeNPCInventorySlot(ByVal UserIndex As Integer, ByVal slot As
         On Error GoTo ErrHandler
 
         Dim ObjInfo As ObjData
+        Dim PodraUsarlo As Byte
     
 100     If obj.ObjIndex >= LBound(ObjData()) And obj.ObjIndex <= UBound(ObjData()) Then
 102         ObjInfo = ObjData(obj.ObjIndex)
-
+            PodraUsarlo = PuedeUsarObjeto(UserIndex, obj.ObjIndex)
         End If
-    
-        Dim PodraUsarlo As Byte
-    
-        'Ladder
-104     If obj.ObjIndex > 0 Then
-106         PodraUsarlo = PuedeUsarObjeto(UserIndex, obj.ObjIndex)
-
-            'PodraUsarlo = IIf(SexoPuedeUsarItem(UserIndex, obj.OBJIndex) = True And UserList(UserIndex).Stats.ELV >= ObjData(obj.OBJIndex).MinELV And ClasePuedeUsarItem(UserIndex, obj.OBJIndex) = True And CheckRazaUsaRopa(UserIndex, obj.OBJIndex) = True, 1, 0)
-            'Ladder
-        End If
-    
+        
 108     With UserList(UserIndex).outgoingData
 110         Call .WriteByte(ServerPacketID.ChangeNPCInventorySlot)
 112         Call .WriteByte(slot)

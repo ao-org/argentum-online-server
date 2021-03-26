@@ -1182,6 +1182,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                     
 318                         If UserList(TempCharIndex).Faccion.ArmadaReal = 1 Then
 320                             Stat = Stat & " <" & TituloReal(TempCharIndex) & ">"
+                                'asdasd
 322                             ft = FontTypeNames.FONTTYPE_CONSEJOVesA
 324                         ElseIf UserList(TempCharIndex).Faccion.FuerzasCaos = 1 Then
 326                             Stat = Stat & " <" & TituloCaos(TempCharIndex) & ">"

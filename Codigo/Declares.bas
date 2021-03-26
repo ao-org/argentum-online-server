@@ -1119,7 +1119,6 @@ Public Type ObjData
 
     donador As Byte
     ClaseTipo As Byte
-    RazaTipo As Byte
 
     TipoRuna As Byte
 
