@@ -2493,87 +2493,90 @@ Desarmar_Err:
 End Sub
 
 Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As ObjData, ByVal slot As Integer)
-        On Error GoTo DoMontar_Err
-        
-        If UserList(UserIndex).flags.EnReto Then
+    On Error GoTo DoMontar_Err
+
+    With UserList(UserIndex)
+        If PuedeUsarObjeto(UserIndex, .Invent.Object(slot).ObjIndex, True) > 0 Then
+            Exit Sub
+        End If
+
+        If Not IntervaloPermiteMontar(UserIndex) Then
+            Exit Sub
+        End If
+
+        If .flags.EnReto Then
             Call WriteConsoleMsg(UserIndex, "No podés montar en un reto.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
 
-        If PuedeUsarObjeto(UserIndex, UserList(UserIndex).Invent.Object(slot).ObjIndex, True) > 0 Then
+        If (.flags.Oculto = 1 Or .flags.invisible = 1) And .flags.AdminInvisible = 0 Then
+            Call WriteConsoleMsg(UserIndex, "No podés montar estando oculto o invisible.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
 
         'Ladder 21/11/08
-112     If UserList(UserIndex).flags.Montado = 0 Then
-114         If (MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger > 10) Then
-116             Call WriteConsoleMsg(UserIndex, "No podés montar aquí.", FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
+        If .flags.Montado = 0 And (MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger > 10) Then
+            Call WriteConsoleMsg(UserIndex, "No podés montar aquí.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
 
+        End If
+
+        If .flags.Meditando Then
+            .flags.Meditando = False
+            .Char.FX = 0
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(.Char.CharIndex, 0))
+        End If
+
+        If .flags.Montado = 1 And .Invent.MonturaObjIndex > 0 Then
+            If ObjData(.Invent.MonturaObjIndex).ResistenciaMagica > 0 Then
+                Call UpdateUserInv(False, UserIndex, .Invent.MonturaSlot)
             End If
 
         End If
 
-118     If UserList(UserIndex).flags.Meditando Then
-120         UserList(UserIndex).flags.Meditando = False
-122         UserList(UserIndex).Char.FX = 0
-124         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(UserList(UserIndex).Char.CharIndex, 0))
-        End If
+        .Invent.MonturaObjIndex = .Invent.Object(slot).ObjIndex
+        .Invent.MonturaSlot = slot
 
-126     If UserList(UserIndex).flags.Montado = 1 Then
-128         If UserList(UserIndex).Invent.MonturaObjIndex > 0 Then
-130             If ObjData(UserList(UserIndex).Invent.MonturaObjIndex).ResistenciaMagica > 0 Then
-132                 Call UpdateUserInv(False, UserIndex, UserList(UserIndex).Invent.MonturaSlot)
-                End If
-
-            End If
-
-        End If
-
-134     UserList(UserIndex).Invent.MonturaObjIndex = UserList(UserIndex).Invent.Object(slot).ObjIndex
-136     UserList(UserIndex).Invent.MonturaSlot = slot
-
-138     If UserList(UserIndex).flags.Montado = 0 Then
-            
-140         UserList(UserIndex).Char.Body = Montura.Ropaje
-
-142         UserList(UserIndex).Char.Head = UserList(UserIndex).OrigChar.Head
-144         UserList(UserIndex).Char.ShieldAnim = NingunEscudo
-146         UserList(UserIndex).Char.WeaponAnim = NingunArma
-148         UserList(UserIndex).Char.CascoAnim = UserList(UserIndex).Char.CascoAnim
-150         UserList(UserIndex).flags.Montado = 1
+        If .flags.Montado = 0 Then
+            .Char.Body = Montura.Ropaje
+            .Char.Head = .OrigChar.Head
+            .Char.ShieldAnim = NingunEscudo
+            .Char.WeaponAnim = NingunArma
+            .Char.CascoAnim = .Char.CascoAnim
+            .flags.Montado = 1
         Else
-154         UserList(UserIndex).flags.Montado = 0
-156         UserList(UserIndex).Char.Head = UserList(UserIndex).OrigChar.Head
+            .flags.Montado = 0
+            .Char.Head = .OrigChar.Head
 
-160         If UserList(UserIndex).Invent.ArmourEqpObjIndex > 0 Then
-162             UserList(UserIndex).Char.Body = ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).Ropaje
+            If .Invent.ArmourEqpObjIndex > 0 Then
+                .Char.Body = ObjData(.Invent.ArmourEqpObjIndex).Ropaje
 
             Else
-164             Call DarCuerpoDesnudo(UserIndex)
+                Call DarCuerpoDesnudo(UserIndex)
 
             End If
-            
-166         If UserList(UserIndex).Invent.EscudoEqpObjIndex > 0 Then UserList(UserIndex).Char.ShieldAnim = ObjData(UserList(UserIndex).Invent.EscudoEqpObjIndex).ShieldAnim
 
-168         If UserList(UserIndex).Invent.WeaponEqpObjIndex > 0 Then UserList(UserIndex).Char.WeaponAnim = ObjData(UserList(UserIndex).Invent.WeaponEqpObjIndex).WeaponAnim
+            If .Invent.EscudoEqpObjIndex > 0 Then .Char.ShieldAnim = ObjData(.Invent.EscudoEqpObjIndex).ShieldAnim
 
-170         If UserList(UserIndex).Invent.CascoEqpObjIndex > 0 Then UserList(UserIndex).Char.CascoAnim = ObjData(UserList(UserIndex).Invent.CascoEqpObjIndex).CascoAnim
+            If .Invent.WeaponEqpObjIndex > 0 Then .Char.WeaponAnim = ObjData(.Invent.WeaponEqpObjIndex).WeaponAnim
+
+            If .Invent.CascoEqpObjIndex > 0 Then .Char.CascoAnim = ObjData(.Invent.CascoEqpObjIndex).CascoAnim
 
         End If
 
         Call ActualizarVelocidadDeUsuario(UserIndex)
-172     Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
+        Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
 
-174     Call UpdateUserInv(False, UserIndex, slot)
-176     Call WriteEquiteToggle(UserIndex)
-        
-        Exit Sub
+        Call UpdateUserInv(False, UserIndex, slot)
+        Call WriteEquiteToggle(UserIndex)
+    End With
+
+    Exit Sub
 
 DoMontar_Err:
-180     Call RegistrarError(Err.Number, Err.Description, "Trabajo.DoMontar", Erl)
-182     Resume Next
-        
+    Call RegistrarError(Err.Number, Err.Description, "Trabajo.DoMontar", Erl)
+    Resume Next
+
 End Sub
 
 Public Sub ActualizarRecurso(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer)

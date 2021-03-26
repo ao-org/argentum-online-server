@@ -377,6 +377,30 @@ IntervaloPermiteCaminar_Err:
         
 End Function
 
+Public Function IntervaloPermiteMontar(ByVal UserIndex As Integer) As Boolean
+        On Error GoTo IntervaloPermiteMontar_Err
+
+        Dim TActual As Long
+
+100     TActual = GetTickCount()
+
+102     If TActual - UserList(UserIndex).Counters.TimerMontar >= UserList(UserIndex).Intervals.Montar - MargenDeIntervaloPorPing Then
+
+104         UserList(UserIndex).Counters.TimerMontar = TActual
+106         IntervaloPermiteMontar = True
+        Else
+108         IntervaloPermiteMontar = False
+
+        End If
+
+        Exit Function
+
+IntervaloPermiteMontar_Err:
+110     Call RegistrarError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteMontar", Erl)
+112     Resume Next
+        
+End Function
+
 Public Function IntervaloPermiteMoverse(ByVal NpcIndex As Integer) As Boolean
         
         On Error GoTo IntervaloPermiteMoverse_Err
