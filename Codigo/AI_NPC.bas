@@ -1263,7 +1263,8 @@ Private Function PuedeAtacarUser(ByVal targetUserIndex As Integer) As Boolean
                                 .flags.Inmunidad = 0 And _
                                 .flags.Oculto = 0 And _
                                 Not EsGM(targetUserIndex) And _
-                                Not .flags.EnConsulta And .flags.Mimetizado < 2)
+                                Not .flags.EnConsulta And _
+                                .flags.Mimetizado < 2)
         End With
 
 End Function
