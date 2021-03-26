@@ -2054,9 +2054,9 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
             End If
             
 244         If UserList(UserIndex).flags.AdminInvisible = 1 Then Exit Sub
-            
-                
+ 
 246         If UserList(UserIndex).clase = eClass.Druid Then
+
                 'copio el char original al mimetizado
 248             With UserList(UserIndex)
 250                 .CharMimetizado.Body = .Char.Body
@@ -2065,7 +2065,7 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
 256                 .CharMimetizado.ShieldAnim = .Char.ShieldAnim
 258                 .CharMimetizado.WeaponAnim = .Char.WeaponAnim
                     
-260                 .flags.Mimetizado = 1
+260                 .flags.Mimetizado = 2
                     
                     'ahora pongo lo del NPC.
 262                 .Char.Body = NpcList(NpcIndex).Char.Body
@@ -2078,9 +2078,12 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
 274                 Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
 276                 Call RefreshCharStatus(UserIndex)
                 End With
+                
             Else
+            
 278             Call WriteConsoleMsg(UserIndex, "Solo los druidas pueden mimetizarse con criaturas.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
+                
             End If
         
 280        Call InfoHechizo(UserIndex)

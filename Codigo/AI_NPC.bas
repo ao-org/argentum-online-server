@@ -127,7 +127,6 @@ Private Sub IrUsuarioCercano(ByVal NpcIndex As Integer)
 
             End If
 
-            'If NpcList(NpcIndex).Target = 0 Then Exit Sub
 112         If .flags.Inmovilizado = 1 Then
 
 114             If .flags.LanzaSpells <> 0 Then
@@ -137,8 +136,8 @@ Private Sub IrUsuarioCercano(ByVal NpcIndex As Integer)
 118                     UI = ModAreas.ConnGroups(.Pos.Map).UserEntrys(i)
 
 120                     If UI > 0 Then
-                            'Is it in it's range of vision??
 
+                            'Is it in it's range of vision??
 122                         If NpcList(NpcIndex).Target = 0 Then Exit Sub
 
 124                         If Abs(UserList(NpcList(NpcIndex).Target).Pos.X - .Pos.X) <= RANGO_VISION_X Then
@@ -1259,7 +1258,12 @@ End Sub
 Private Function PuedeAtacarUser(ByVal targetUserIndex As Integer) As Boolean
     
 100     With UserList(targetUserIndex)
-102         PuedeAtacarUser = (.flags.Muerto = 0 And .flags.invisible = 0 And .flags.Inmunidad = 0 And .flags.Oculto = 0 And Not EsGM(targetUserIndex) And Not .flags.EnConsulta)
+102         PuedeAtacarUser = (.flags.Muerto = 0 And _
+                                .flags.invisible = 0 And _
+                                .flags.Inmunidad = 0 And _
+                                .flags.Oculto = 0 And _
+                                Not EsGM(targetUserIndex) And _
+                                Not .flags.EnConsulta And .flags.Mimetizado < 2)
         End With
 
 End Function

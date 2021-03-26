@@ -1057,7 +1057,7 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
             If NpcList(NpcIndex).Target <> UserIndex Then
                 NpcList(NpcIndex).Target = UserIndex
             End If
-            
+
             ' Resta la vida del NPC
 136         Call UserDañoNpc(UserIndex, NpcIndex)
             
