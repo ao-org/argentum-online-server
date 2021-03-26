@@ -1071,7 +1071,9 @@ Sub EquiparBarco(ByVal UserIndex As Integer)
 
     If .flags.Muerto = 1 Then
       If Barco.Ropaje = iTraje Then
-          .Char.Body = iRopaBuceoMuerto
+          ' No tenemos la cabeza copada que va con iRopaBuceoMuerto,
+          ' asique asignamos el casper directamente caminando sobre el agua.
+          .Char.Body = iCuerpoMuerto 'iRopaBuceoMuerto
           .Char.Head = iCabezaMuerto
       Else
           .Char.Body = iFragataFantasmal
