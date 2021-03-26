@@ -103,7 +103,7 @@ Public IntervaloTrabajarConstruir   As Long
 Public IntervaloCerrarConexion      As Long '[Gonzalo]
 
 Public IntervaloUserPuedeUsarU      As Long
-Public IntervaloUserPuedeMontar     As Long
+
 Public IntervaloUserPuedeUsarClic   As Long
 
 Public IntervaloGolpeUsar           As Long
