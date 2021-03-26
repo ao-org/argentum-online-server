@@ -301,16 +301,20 @@ Sub RefreshCharStatus(ByVal UserIndex As Integer)
         Dim klan As String, name As String
 
 100     If UserList(UserIndex).showName Then
-102         If UserList(UserIndex).flags.Mimetizado = 0 Then
+
+102         If UserList(UserIndex).flags.flags.Mimetizado = e_EstadoMimetismo.Desactivado Then
+
 104             If UserList(UserIndex).GuildIndex > 0 Then
 106                 klan = modGuilds.GuildName(UserList(UserIndex).GuildIndex)
 108                 klan = " <" & klan & ">"
                 End If
             
 110             name = UserList(UserIndex).name & klan
+
             Else
 112             name = UserList(UserIndex).NameMimetizado
             End If
+            
         End If
     
 114     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageUpdateTagAndStatus(UserIndex, UserList(UserIndex).Faccion.Status, name))
@@ -359,7 +363,7 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
 114             If Not toMap Then
                 
 116                 If .showName Then
-118                     If .flags.Mimetizado = 0 Then
+118                     If .flags.flags.Mimetizado = e_EstadoMimetismo.Desactivado Then
 120                         If .GuildIndex > 0 Then
                     
 122                             klan = modGuilds.GuildName(.GuildIndex)
@@ -1119,7 +1123,7 @@ DameUserIndex_Err:
         
 End Function
 
-Function DameUserIndexConNombre(ByVal Nombre As String) As Integer
+Function DameUserIndexConNombre(ByVal nombre As String) As Integer
         
         On Error GoTo DameUserIndexConNombre_Err
         
@@ -1128,9 +1132,9 @@ Function DameUserIndexConNombre(ByVal Nombre As String) As Integer
   
 100     LoopC = 1
   
-102     Nombre = UCase$(Nombre)
+102     nombre = UCase$(nombre)
 
-104     Do Until UCase$(UserList(LoopC).name) = Nombre
+104     Do Until UCase$(UserList(LoopC).name) = nombre
 
 106         LoopC = LoopC + 1
     
@@ -2007,30 +2011,30 @@ CambiarNick_Err:
         
 End Sub
 
-Sub SendUserStatsTxtOFF(ByVal sendIndex As Integer, ByVal Nombre As String)
+Sub SendUserStatsTxtOFF(ByVal sendIndex As Integer, ByVal nombre As String)
         
         On Error GoTo SendUserStatsTxtOFF_Err
         
 
-100     If FileExist(CharPath & Nombre & ".chr", vbArchive) = False Then
+100     If FileExist(CharPath & nombre & ".chr", vbArchive) = False Then
 102         Call WriteConsoleMsg(sendIndex, "Pj Inexistente", FontTypeNames.FONTTYPE_INFO)
         Else
-104         Call WriteConsoleMsg(sendIndex, "Estadisticas de: " & Nombre, FontTypeNames.FONTTYPE_INFO)
-106         Call WriteConsoleMsg(sendIndex, "Nivel: " & GetVar(CharPath & Nombre & ".chr", "stats", "elv") & "  EXP: " & GetVar(CharPath & Nombre & ".chr", "stats", "Exp") & "/" & GetVar(CharPath & Nombre & ".chr", "stats", "elu"), FontTypeNames.FONTTYPE_INFO)
-108         Call WriteConsoleMsg(sendIndex, "Vitalidad: " & GetVar(CharPath & Nombre & ".chr", "stats", "minsta") & "/" & GetVar(CharPath & Nombre & ".chr", "stats", "maxSta"), FontTypeNames.FONTTYPE_INFO)
-110         Call WriteConsoleMsg(sendIndex, "Salud: " & GetVar(CharPath & Nombre & ".chr", "stats", "MinHP") & "/" & GetVar(CharPath & Nombre & ".chr", "Stats", "MaxHP") & "  Mana: " & GetVar(CharPath & Nombre & ".chr", "Stats", "MinMAN") & "/" & GetVar(CharPath & Nombre & ".chr", "Stats", "MaxMAN"), FontTypeNames.FONTTYPE_INFO)
+104         Call WriteConsoleMsg(sendIndex, "Estadisticas de: " & nombre, FontTypeNames.FONTTYPE_INFO)
+106         Call WriteConsoleMsg(sendIndex, "Nivel: " & GetVar(CharPath & nombre & ".chr", "stats", "elv") & "  EXP: " & GetVar(CharPath & nombre & ".chr", "stats", "Exp") & "/" & GetVar(CharPath & nombre & ".chr", "stats", "elu"), FontTypeNames.FONTTYPE_INFO)
+108         Call WriteConsoleMsg(sendIndex, "Vitalidad: " & GetVar(CharPath & nombre & ".chr", "stats", "minsta") & "/" & GetVar(CharPath & nombre & ".chr", "stats", "maxSta"), FontTypeNames.FONTTYPE_INFO)
+110         Call WriteConsoleMsg(sendIndex, "Salud: " & GetVar(CharPath & nombre & ".chr", "stats", "MinHP") & "/" & GetVar(CharPath & nombre & ".chr", "Stats", "MaxHP") & "  Mana: " & GetVar(CharPath & nombre & ".chr", "Stats", "MinMAN") & "/" & GetVar(CharPath & nombre & ".chr", "Stats", "MaxMAN"), FontTypeNames.FONTTYPE_INFO)
     
-112         Call WriteConsoleMsg(sendIndex, "Menor Golpe/Mayor Golpe: " & GetVar(CharPath & Nombre & ".chr", "stats", "MaxHIT"), FontTypeNames.FONTTYPE_INFO)
+112         Call WriteConsoleMsg(sendIndex, "Menor Golpe/Mayor Golpe: " & GetVar(CharPath & nombre & ".chr", "stats", "MaxHIT"), FontTypeNames.FONTTYPE_INFO)
     
-114         Call WriteConsoleMsg(sendIndex, "Oro: " & GetVar(CharPath & Nombre & ".chr", "stats", "GLD"), FontTypeNames.FONTTYPE_INFO)
-116         Call WriteConsoleMsg(sendIndex, "Veces Que Murio: " & GetVar(CharPath & Nombre & ".chr", "Flags", "VecesQueMoriste"), FontTypeNames.FONTTYPE_INFO)
+114         Call WriteConsoleMsg(sendIndex, "Oro: " & GetVar(CharPath & nombre & ".chr", "stats", "GLD"), FontTypeNames.FONTTYPE_INFO)
+116         Call WriteConsoleMsg(sendIndex, "Veces Que Murio: " & GetVar(CharPath & nombre & ".chr", "Flags", "VecesQueMoriste"), FontTypeNames.FONTTYPE_INFO)
             #If ConUpTime Then
 
                 Dim TempSecs As Long
 
                 Dim TempStr  As String
 
-118             TempSecs = GetVar(CharPath & Nombre & ".chr", "INIT", "UpTime")
+118             TempSecs = GetVar(CharPath & nombre & ".chr", "INIT", "UpTime")
 120             TempStr = (TempSecs \ 86400) & " Dias, " & ((TempSecs Mod 86400) \ 3600) & " Horas, " & ((TempSecs Mod 86400) Mod 3600) \ 60 & " Minutos, " & (((TempSecs Mod 86400) Mod 3600) Mod 60) & " Segundos."
 122             Call WriteConsoleMsg(sendIndex, "Tiempo Logeado: " & TempStr, FontTypeNames.FONTTYPE_INFO)
             #End If
@@ -2434,8 +2438,10 @@ Public Sub LimpiarEstadosAlterados(ByVal UserIndex As Integer)
         End If
         
         '<<<< Mimetismo >>>>
-        If .flags.Mimetizado = 1 Then
+        If .flags.Mimetizado > 0 Then
+        
             If .flags.Navegando Then
+            
                 If .flags.Muerto = 0 Then
                     .Char.Body = ObjData(UserList(UserIndex).Invent.BarcoObjIndex).Ropaje
                 Else
@@ -2445,16 +2451,19 @@ Public Sub LimpiarEstadosAlterados(ByVal UserIndex As Integer)
                 .Char.ShieldAnim = NingunEscudo
                 .Char.WeaponAnim = NingunArma
                 .Char.CascoAnim = NingunCasco
+                
             Else
+            
                 .Char.Body = .CharMimetizado.Body
                 .Char.Head = .CharMimetizado.Head
                 .Char.CascoAnim = .CharMimetizado.CascoAnim
                 .Char.ShieldAnim = .CharMimetizado.ShieldAnim
                 .Char.WeaponAnim = .CharMimetizado.WeaponAnim
+                
             End If
             
             .Counters.Mimetismo = 0
-            .flags.Mimetizado = 0
+            .flags.Mimetizado = e_EstadoMimetismo.Desactivado
         End If
         
         '<<<< Estados obsoletos >>>>

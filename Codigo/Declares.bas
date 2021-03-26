@@ -995,7 +995,7 @@ Public Type obj
 
     ObjIndex As Integer
     Amount As Integer
-    Data As Long
+    data As Long
 
 End Type
 
@@ -1531,7 +1531,7 @@ Public Type UserFlags
     Hechizo As Integer
     TomoPocion As Boolean
     TipoPocion As Byte
-    Mimetizado As Byte
+    Mimetizado As e_EstadoMimetismo
     MascotasGuardadas As Byte
     
     Navegando As Byte
@@ -1622,6 +1622,13 @@ Public Type UserFlags
     LastPos As WorldPos
     
 End Type
+
+Public Enum e_EstadoMimetismo
+    Desactivado = 0
+    FormaUsuario = 1
+    FormaBichoSinProteccion = 2
+    FormaBicho = 3
+End Enum
 
 Public Type UserCounters
 
@@ -2349,7 +2356,7 @@ Public Declare Function writeprivateprofilestring Lib "kernel32" Alias "WritePri
 
 Public Declare Function GetPrivateProfileString Lib "kernel32" Alias "GetPrivateProfileStringA" (ByVal lpApplicationname As String, ByVal lpKeyname As Any, ByVal lpdefault As String, ByVal lpreturnedstring As String, ByVal nsize As Long, ByVal lpfilename As String) As Long
 
-Public Declare Sub ZeroMemory Lib "kernel32.dll" Alias "RtlZeroMemory" (ByRef destination As Any, ByVal Length As Long)
+Public Declare Sub ZeroMemory Lib "kernel32.dll" Alias "RtlZeroMemory" (ByRef Destination As Any, ByVal Length As Long)
 
 ' Los Objetos Criticos nunca desaparecen del inventario de los npcs vendedores, una vez que
 ' se venden los 10.000 (max. cantidad de items x slot) vuelven a reabastecer.

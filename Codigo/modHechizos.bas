@@ -1328,7 +1328,8 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             'Si sos user, no uses este hechizo con GMS.
 180         If Not EsGM(UserIndex) And EsGM(tU) Then Exit Sub
             
-182         If UserList(UserIndex).flags.Mimetizado = 1 Then
+            ' Si te mimetizaste, no importa si como bicho o User...
+182         If UserList(UserIndex).flags.Mimetizado <> e_EstadoMimetismo.Desactivado Then
 184             Call WriteConsoleMsg(UserIndex, "Ya te encuentras transformado. El hechizo no tuvo efecto", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
@@ -1336,7 +1337,6 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 186         If UserList(UserIndex).flags.AdminInvisible = 1 Then Exit Sub
             
             'copio el char original al mimetizado
-            
 188         With UserList(UserIndex)
 190             .CharMimetizado.Body = .Char.Body
 192             .CharMimetizado.Head = .Char.Head
@@ -1344,7 +1344,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 196             .CharMimetizado.ShieldAnim = .Char.ShieldAnim
 198             .CharMimetizado.WeaponAnim = .Char.WeaponAnim
                 
-200             .flags.Mimetizado = 1
+200             .flags.Mimetizado = e_EstadoMimetismo.FormaUsuario
                 
                 'ahora pongo local el del enemigo
 202             .Char.Body = UserList(tU).Char.Body
@@ -1353,6 +1353,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 208             .Char.ShieldAnim = UserList(tU).Char.ShieldAnim
 210             .Char.WeaponAnim = UserList(tU).Char.WeaponAnim
 212             .NameMimetizado = UserList(tU).name
+
 214             If UserList(tU).GuildIndex > 0 Then .NameMimetizado = .NameMimetizado & " <" & modGuilds.GuildName(UserList(tU).GuildIndex) & ">"
             
 216             Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
@@ -2053,7 +2054,7 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
                 Exit Sub
             End If
     
-240         If UserList(UserIndex).flags.Mimetizado = 1 Then
+240         If UserList(UserIndex).flags.Mimetizado <> e_EstadoMimetismo.Desactivado Then
 242             Call WriteConsoleMsg(UserIndex, "Ya te encuentras transformado. El hechizo no tuvo efecto", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
@@ -2070,7 +2071,7 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
 256                 .CharMimetizado.ShieldAnim = .Char.ShieldAnim
 258                 .CharMimetizado.WeaponAnim = .Char.WeaponAnim
                     
-260                 .flags.Mimetizado = 2
+260                 .flags.Mimetizado = e_EstadoMimetismo.FormaBicho
                     
                     'ahora pongo lo del NPC.
 262                 .Char.Body = NpcList(NpcIndex).Char.Body

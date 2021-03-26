@@ -740,7 +740,7 @@ Sub Main()
         'Cierra el socket de escucha
 280     If LastSockListen >= 0 Then Call apiclosesocket(LastSockListen)
 
-282     Call IniciaWsApi(frmMain.hWnd)
+282     Call IniciaWsApi(frmMain.hwnd)
 284     SockListen = ListenForConnect(Puerto, hWndMsg, "")
 
 286     If SockListen <> -1 Then
@@ -1568,6 +1568,7 @@ Public Sub EfectoMimetismo(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 102         If .Counters.Mimetismo < IntervaloInvisible Then
 104             .Counters.Mimetismo = .Counters.Mimetismo + 1
+
             Else
                 'restore old char
 106             Call WriteConsoleMsg(UserIndex, "Recuperas tu apariencia normal.", FontTypeNames.FONTTYPE_INFO)
@@ -1583,13 +1584,15 @@ Public Sub EfectoMimetismo(ByVal UserIndex As Integer)
                 End If
                 
 134             .Counters.Mimetismo = 0
-136             .flags.Mimetizado = 0
+136             .flags.Mimetizado = e_EstadoMimetismo.Desactivado
             
 138             With .Char
 140                 Call ChangeUserChar(UserIndex, .Body, .Head, .Heading, .WeaponAnim, .ShieldAnim, .CascoAnim)
 142                 Call RefreshCharStatus(UserIndex)
                 End With
+                
             End If
+            
         End With
         
         Exit Sub
@@ -2490,7 +2493,7 @@ Sub InicializaEstadisticas()
 
 100     Ta = GetTickCount()
 
-102     Call EstadisticasWeb.Inicializa(frmMain.hWnd)
+102     Call EstadisticasWeb.Inicializa(frmMain.hwnd)
 104     Call EstadisticasWeb.Informar(CANTIDAD_MAPAS, NumMaps)
 106     Call EstadisticasWeb.Informar(CANTIDAD_ONLINE, NumUsers)
 108     Call EstadisticasWeb.Informar(UPTIME_SERVER, (Ta - tInicioServer) / 1000)
@@ -2647,12 +2650,12 @@ CMSValidateChar__Err:
         
 End Function
 
-Public Function Tilde(ByRef Data As String) As String
+Public Function Tilde(ByRef data As String) As String
     
         On Error GoTo Tilde_Err
     
 
-100     Tilde = UCase$(Data)
+100     Tilde = UCase$(data)
  
 102     Tilde = Replace$(Tilde, "Á", "A")
 104     Tilde = Replace$(Tilde, "É", "E")
