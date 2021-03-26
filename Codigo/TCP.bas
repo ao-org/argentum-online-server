@@ -1802,7 +1802,7 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 260         .FirstPacket = False
 262         .Inmunidad = 0
             
-264         .flags.Mimetizado = e_EstadoMimetismo.Desactivado
+264         .Mimetizado = e_EstadoMimetismo.Desactivado
 266         .MascotasGuardadas = 0
 
 268         .EnConsulta = False

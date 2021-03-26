@@ -302,7 +302,7 @@ Sub RefreshCharStatus(ByVal UserIndex As Integer)
 
 100     If UserList(UserIndex).showName Then
 
-102         If UserList(UserIndex).flags.flags.Mimetizado = e_EstadoMimetismo.Desactivado Then
+102         If UserList(UserIndex).flags.Mimetizado = e_EstadoMimetismo.Desactivado Then
 
 104             If UserList(UserIndex).GuildIndex > 0 Then
 106                 klan = modGuilds.GuildName(UserList(UserIndex).GuildIndex)
@@ -363,7 +363,7 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
 114             If Not toMap Then
                 
 116                 If .showName Then
-118                     If .flags.flags.Mimetizado = e_EstadoMimetismo.Desactivado Then
+118                     If .flags.Mimetizado = e_EstadoMimetismo.Desactivado Then
 120                         If .GuildIndex > 0 Then
                     
 122                             klan = modGuilds.GuildName(.GuildIndex)
