@@ -551,22 +551,6 @@ Sub EraseObj(ByVal num As Integer, ByVal Map As Integer, ByVal X As Integer, ByV
 
 102     If MapData(Map, X, Y).ObjInfo.Amount <= 0 Then
 
-            'Rango = val(ReadField(1, ObjData(MapData(Map, x, Y).ObjInfo.ObjIndex).CreaLuz, Asc(":")))
-    
-            ' If Rango >= 1 Then
-            '  'Call modSendData.SendToAreaByPos(map, X, Y, PrepareMessageLightFXToFloor(X, Y, 0, Rango))
-            '  MapData(Map, x, Y).Luz.Color = 0
-            '   MapData(Map, x, Y).Luz.Rango = 0
-            ' End If
-    
-            '  If ObjData(MapData(Map, x, Y).ObjInfo.ObjIndex).CreaParticulaPiso >= 1 Then
-            ' Call modSendData.SendToAreaByPos(map, X, Y, PrepareMessageParticleFXToFloor(X, Y, 0, 0))
-            '   MapData(Map, x, Y).Particula = 0
-            '   MapData(Map, x, Y).TimeParticula = 0
-            ' End If
-
-            
-
 104         If ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).OBJType <> otTeleport Then
 106             Call QuitarItemLimpieza(Map, X, Y)
             End If
@@ -615,20 +599,6 @@ Sub MakeObj(ByRef obj As obj, ByVal Map As Integer, ByVal X As Integer, ByVal Y 
 
                 End If
             
-                'Color = val(ReadField(2, ObjData(obj.ObjIndex).CreaLuz, Asc(":")))
-                ' Rango = val(ReadField(1, ObjData(obj.ObjIndex).CreaLuz, Asc(":")))
-    
-                ' If Rango >= 1 Then
-                'Call modSendData.SendToAreaByPos(map, X, Y, PrepareMessageLightFXToFloor(X, Y, color, Rango))
-                '  MapData(Map, x, Y).Luz.Color = Color
-                '  MapData(Map, x, Y).Luz.Rango = Rango
-                ' End If
-    
-                ' If ObjData(obj.ObjIndex).CreaParticulaPiso >= 1 Then
-                'Call modSendData.SendToAreaByPos(map, X, Y, PrepareMessageParticleFXToFloor(X, Y, ObjData(obj.ObjIndex).CreaParticulaPiso, -1))
-                ' MapData(Map, x, Y).Particula = ObjData(obj.ObjIndex).CreaParticulaPiso
-                ' MapData(Map, x, Y).TimeParticula = -1
-                ' End If
 118             Call modSendData.SendToAreaByPos(Map, X, Y, PrepareMessageObjectCreate(obj.ObjIndex, X, Y))
                 
             End If
@@ -2648,7 +2618,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
     
 928                     Case 19 ' Reseteo de skill
     
-                            Dim S As Byte
+                            Dim s As Byte
                     
 930                         If .Stats.UserSkills(eSkill.liderazgo) >= 80 Then
 932                             Call WriteConsoleMsg(UserIndex, "Has fundado un clan, no podes resetar tus skills. ", FontTypeNames.FONTTYPE_INFOIAO)
@@ -2656,9 +2626,9 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
     
                             End If
                         
-934                         For S = 1 To NUMSKILLS
-936                             .Stats.UserSkills(S) = 0
-938                         Next S
+934                         For s = 1 To NUMSKILLS
+936                             .Stats.UserSkills(s) = 0
+938                         Next s
                         
                             Dim SkillLibres As Integer
                         
