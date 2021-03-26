@@ -104,140 +104,193 @@ End Enum
 
 Private Sub IrUsuarioCercano(ByVal NpcIndex As Integer)
         
-        On Error GoTo IrUsuarioCercano_Err
+    On Error GoTo IrUsuarioCercano_Err
 
-        Dim tHeading   As Byte
-        Dim UI         As Integer
-        Dim Pos        As WorldPos
-        Dim i          As Long
-        Dim comoatacto As Byte
+    Dim tHeading   As Byte
+    Dim UI         As Integer
+    Dim Pos        As WorldPos
+    Dim i          As Long
+    Dim comoatacto As Byte
+    Dim RespetarMimetismo As Boolean
 
-100     With NpcList(NpcIndex)
+    With NpcList(NpcIndex)
     
-            Dim rangox As Byte
-            Dim rangoy As Byte
+        Dim rangox As Byte
+        Dim rangoy As Byte
     
-102         If .Distancia <> 0 Then
-104             rangox = .Distancia
-106             rangoy = .Distancia
+        If .Distancia <> 0 Then
+            rangox = .Distancia
+            rangoy = .Distancia
 
+        Else
+            rangox = RANGO_VISION_X
+            rangoy = RANGO_VISION_Y
+
+        End If
+
+        If .flags.Inmovilizado = 1 Then
+
+            If .flags.LanzaSpells <> 0 Then
+                
+                For i = 1 To ModAreas.ConnGroups(.Pos.Map).CountEntrys
+
+                    UI = ModAreas.ConnGroups(.Pos.Map).UserEntrys(i)
+
+                    If UI > 0 Then
+
+                        ' Si hay un usuario dentro del rango de vision.
+                        If Abs(UserList(NpcList(NpcIndex).Target).Pos.X - .Pos.X) <= RANGO_VISION_X Then
+                            If Abs(UserList(NpcList(NpcIndex).Target).Pos.Y - .Pos.Y) <= RANGO_VISION_Y Then
+
+                                If PuedeAtacarUser(NpcList(NpcIndex).Target) Then
+
+                                    If Distancia(.Pos, UserList(NpcList(NpcIndex).Target).Pos) > 1 Then
+
+                                        Call NpcLanzaUnSpell(NpcIndex)
+
+                                    Else
+
+                                        tHeading = FindDirectionEAO(.Pos, UserList(NpcList(NpcIndex).Target).Pos, NpcList(NpcIndex).flags.AguaValida = 1, NpcList(NpcIndex).flags.TierraInvalida = 0)
+
+                                        Call ChangeNPCChar(NpcIndex, .Char.Body, .Char.Head, tHeading)
+                                        Call NpcAtacaUser(NpcIndex, NpcList(NpcIndex).Target, tHeading)
+
+                                    End If
+
+                                    Exit Sub
+
+                                End If
+
+                            End If
+
+                        End If
+    
+                    End If
+                    
+                Next i
+                
             Else
-108             rangox = RANGO_VISION_X
-110             rangoy = RANGO_VISION_Y
+                
+                Pos = .Pos
+                Call HeadtoPos(.Char.Heading, Pos)
+                    
+                UI = MapData(Pos.Map, Pos.X, Pos.Y).UserIndex
+                    
+                If UI > 0 Then
 
+                    If PuedeAtacarUser(UI) Then
+                        Call NpcAtacaUser(NpcIndex, UI, .Char.Heading)
+                        Exit Sub
+                    End If
+                        
+                End If
+                    
             End If
 
-112         If .flags.Inmovilizado = 1 Then
+        Else
+        
+            If NpcList(NpcIndex).Target <> 0 Then
+            
+                If Abs(UserList(NpcList(NpcIndex).Target).Pos.X - .Pos.X) <= RANGO_VISION_X Then
+                    If Abs(UserList(NpcList(NpcIndex).Target).Pos.Y - .Pos.Y) <= RANGO_VISION_Y Then
+                        
+                        If PuedeAtacarUser(NpcList(NpcIndex).Target) Then
 
-114             If .flags.LanzaSpells <> 0 Then
+                            If .flags.LanzaSpells <> 0 And Distancia(.Pos, UserList(NpcList(NpcIndex).Target).Pos) > 1 Then
+                                Call NpcLanzaUnSpell(NpcIndex, NpcList(NpcIndex).Target)
 
-116                 For i = 1 To ModAreas.ConnGroups(.Pos.Map).CountEntrys
+                            End If
 
-118                     UI = ModAreas.ConnGroups(.Pos.Map).UserEntrys(i)
+                            If Distancia(.Pos, UserList(NpcList(NpcIndex).Target).Pos) = 1 Then
 
-120                     If UI > 0 Then
+                                tHeading = FindDirectionEAO(.Pos, UserList(NpcList(NpcIndex).Target).Pos, NpcList(NpcIndex).flags.AguaValida = 1, NpcList(NpcIndex).flags.TierraInvalida = 0)
 
-                            'Is it in it's range of vision??
-122                         If NpcList(NpcIndex).Target = 0 Then Exit Sub
+                                Call AnimacionIdle(NpcIndex, True)
+                                Call ChangeNPCChar(NpcIndex, .Char.Body, .Char.Head, tHeading)
 
-124                         If Abs(UserList(NpcList(NpcIndex).Target).Pos.X - .Pos.X) <= RANGO_VISION_X Then
-126                             If Abs(UserList(NpcList(NpcIndex).Target).Pos.Y - .Pos.Y) <= RANGO_VISION_Y Then
+                                If .flags.LanzaSpells <> 0 Then
+                                  
+                                    comoatacto = RandomNumber(1, 2)
 
-128                                 If PuedeAtacarUser(NpcList(NpcIndex).Target) Then
+                                    If comoatacto = 1 Then
+                                        If .flags.LanzaSpells <> 0 Then Call NpcLanzaUnSpell(NpcIndex, NpcList(NpcIndex).Target)
 
-130                                     If Distancia(.Pos, UserList(NpcList(NpcIndex).Target).Pos) > 1 Then
-
-                                            Call NpcLanzaUnSpell(NpcIndex, NpcList(NpcIndex).Target)
-
-                                        Else
-
-136                                         tHeading = FindDirectionEAO(.Pos, UserList(NpcList(NpcIndex).Target).Pos, NpcList(NpcIndex).flags.AguaValida = 1, NpcList(NpcIndex).flags.TierraInvalida = 0)
-
-138                                         Call ChangeNPCChar(NpcIndex, .Char.Body, .Char.Head, tHeading)
-140                                         Call NpcAtacaUser(NpcIndex, NpcList(NpcIndex).Target, tHeading)
-
-                                        End If
+                                    Else
+                                        Call NpcAtacaUser(NpcIndex, NpcList(NpcIndex).Target, tHeading)
 
                                         Exit Sub
 
                                     End If
 
+                                Else
+                                    Call NpcAtacaUser(NpcIndex, NpcList(NpcIndex).Target, tHeading)
+
+                                    Exit Sub
+
                                 End If
 
                             End If
-    
-                        End If
 
-142                 Next i
-                
-                Else
-                
-144                 Pos = .Pos
-146                 Call HeadtoPos(.Char.Heading, Pos)
-                    
-148                 UI = MapData(Pos.Map, Pos.X, Pos.Y).UserIndex
-                    
-150                 If UI > 0 Then
+                            tHeading = FindDirectionEAO(.Pos, UserList(NpcList(NpcIndex).Target).Pos, NpcList(NpcIndex).flags.AguaValida = 1, NpcList(NpcIndex).flags.TierraInvalida = 0)
 
-152                     If PuedeAtacarUser(UI) Then
-154                         Call NpcAtacaUser(NpcIndex, UI, .Char.Heading)
+                            Call MoveNPCChar(NpcIndex, tHeading)
 
                             Exit Sub
 
                         End If
                         
                     End If
-                    
+
                 End If
 
             Else
         
-156             If NpcList(NpcIndex).Target <> 0 Then
-            
-158                 If Abs(UserList(NpcList(NpcIndex).Target).Pos.X - .Pos.X) <= RANGO_VISION_X Then
-160                     If Abs(UserList(NpcList(NpcIndex).Target).Pos.Y - .Pos.Y) <= RANGO_VISION_Y Then
+                For i = 1 To ModAreas.ConnGroups(.Pos.Map).CountEntrys
+                    UI = ModAreas.ConnGroups(.Pos.Map).UserEntrys(i)
+
+                    If Abs(UserList(UI).Pos.X - .Pos.X) <= rangox Then
+                        If Abs(UserList(UI).Pos.Y - .Pos.Y) <= rangoy Then
                         
-162                         If PuedeAtacarUser(NpcList(NpcIndex).Target) Then
+                            If PuedeAtacarUser(UI) Then
 
-164                             If .flags.LanzaSpells <> 0 And Distancia(.Pos, UserList(NpcList(NpcIndex).Target).Pos) > 1 Then
-166                                 Call NpcLanzaUnSpell(NpcIndex, NpcList(NpcIndex).Target)
-
+                                If .flags.LanzaSpells <> 0 And Distancia(.Pos, UserList(UI).Pos) > 1 Then
+                                    Call NpcLanzaUnSpell(NpcIndex, UI)
                                 End If
+                            
+                                If Distancia(.Pos, UserList(UI).Pos) = 1 Then
 
-168                             If Distancia(.Pos, UserList(NpcList(NpcIndex).Target).Pos) = 1 Then
+                                    tHeading = FindDirectionEAO(.Pos, UserList(UI).Pos, NpcList(NpcIndex).flags.AguaValida = 1, NpcList(NpcIndex).flags.TierraInvalida = 0)
+                                    Call ChangeNPCChar(NpcIndex, .Char.Body, .Char.Head, tHeading)
+                                    Call AnimacionIdle(NpcIndex, True)
 
-170                                 tHeading = FindDirectionEAO(.Pos, UserList(NpcList(NpcIndex).Target).Pos, NpcList(NpcIndex).flags.AguaValida = 1, NpcList(NpcIndex).flags.TierraInvalida = 0)
-
-172                                 Call AnimacionIdle(NpcIndex, True)
-174                                 Call ChangeNPCChar(NpcIndex, .Char.Body, .Char.Head, tHeading)
-
-176                                 If .flags.LanzaSpells <> 0 Then
+                                    If .flags.LanzaSpells <> 0 Then
                                   
-178                                     comoatacto = RandomNumber(1, 2)
+                                        comoatacto = RandomNumber(1, 2)
 
-180                                     If comoatacto = 1 Then
-182                                         If .flags.LanzaSpells <> 0 Then Call NpcLanzaUnSpell(NpcIndex, NpcList(NpcIndex).Target)
+                                        If comoatacto = 1 Then
+                                            If .flags.LanzaSpells <> 0 Then Call NpcLanzaUnSpell(NpcIndex, UI)
 
                                         Else
-184                                         Call NpcAtacaUser(NpcIndex, NpcList(NpcIndex).Target, tHeading)
-
-                                            Exit Sub
+                                            Call NpcAtacaUser(NpcIndex, UI, tHeading)
 
                                         End If
 
+                                        Exit Sub
+                                            
                                     Else
-186                                     Call NpcAtacaUser(NpcIndex, NpcList(NpcIndex).Target, tHeading)
+                                        
+                                        Call NpcAtacaUser(NpcIndex, UI, tHeading)
 
                                         Exit Sub
 
                                     End If
-
+                                
                                 End If
+                            
+                                tHeading = FindDirectionEAO(.Pos, UserList(UI).Pos, NpcList(NpcIndex).flags.AguaValida = 1, NpcList(NpcIndex).flags.TierraInvalida = 0)
 
-188                             tHeading = FindDirectionEAO(.Pos, UserList(NpcList(NpcIndex).Target).Pos, NpcList(NpcIndex).flags.AguaValida = 1, NpcList(NpcIndex).flags.TierraInvalida = 0)
-
-190                             Call MoveNPCChar(NpcIndex, tHeading)
-
+                                Call MoveNPCChar(NpcIndex, tHeading)
+                           
                                 Exit Sub
 
                             End If
@@ -246,93 +299,37 @@ Private Sub IrUsuarioCercano(ByVal NpcIndex As Integer)
 
                     End If
 
-                Else
-        
-192                 For i = 1 To ModAreas.ConnGroups(.Pos.Map).CountEntrys
-194                     UI = ModAreas.ConnGroups(.Pos.Map).UserEntrys(i)
+                Next i
 
-196                     If Abs(UserList(UI).Pos.X - .Pos.X) <= rangox Then
-198                         If Abs(UserList(UI).Pos.Y - .Pos.Y) <= rangoy Then
-                        
-200                             If PuedeAtacarUser(UI) Then
-
-202                                 If .flags.LanzaSpells <> 0 And Distancia(.Pos, UserList(UI).Pos) > 1 Then
-204                                     Call NpcLanzaUnSpell(NpcIndex, UI)
-                                    End If
-                            
-206                                 If Distancia(.Pos, UserList(UI).Pos) = 1 Then
-
-208                                     tHeading = FindDirectionEAO(.Pos, UserList(UI).Pos, NpcList(NpcIndex).flags.AguaValida = 1, NpcList(NpcIndex).flags.TierraInvalida = 0)
-210                                     Call ChangeNPCChar(NpcIndex, .Char.Body, .Char.Head, tHeading)
-212                                     Call AnimacionIdle(NpcIndex, True)
-
-214                                     If .flags.LanzaSpells <> 0 Then
-                                  
-216                                         comoatacto = RandomNumber(1, 2)
-
-218                                         If comoatacto = 1 Then
-220                                             If .flags.LanzaSpells <> 0 Then Call NpcLanzaUnSpell(NpcIndex, UI)
-
-                                            Else
-222                                             Call NpcAtacaUser(NpcIndex, UI, tHeading)
-
-                                            End If
-
-                                            Exit Sub
-                                            
-                                        Else
-                                        
-224                                         Call NpcAtacaUser(NpcIndex, UI, tHeading)
-
-                                            Exit Sub
-
-                                        End If
-                                
-                                    End If
-                            
-226                                 tHeading = FindDirectionEAO(.Pos, UserList(UI).Pos, NpcList(NpcIndex).flags.AguaValida = 1, NpcList(NpcIndex).flags.TierraInvalida = 0)
-
-228                                 Call MoveNPCChar(NpcIndex, tHeading)
-                           
-                                    Exit Sub
-
-                                End If
-                        
-                            End If
-
-                        End If
-
-230                 Next i
-
-                End If
+            End If
             
-                'Si llega aca es que no había ningún usuario cercano vivo.
-                'A bailar. Pablo (ToxicWaste)
+            'Si llega aca es que no había ningún usuario cercano vivo.
+            'A bailar. Pablo (ToxicWaste)
             
-232             NpcList(NpcIndex).Target = 0
+            NpcList(NpcIndex).Target = 0
 
-234             If RandomNumber(0, 10) = 0 Then
+            If RandomNumber(0, 10) = 0 Then
                 
-236                 Call MoveNPCChar(NpcIndex, CByte(RandomNumber(eHeading.NORTH, eHeading.WEST)))
+                Call MoveNPCChar(NpcIndex, CByte(RandomNumber(eHeading.NORTH, eHeading.WEST)))
 
-                Else
+            Else
                 
-238                 Call AnimacionIdle(NpcIndex, True)
-
-                End If
+                Call AnimacionIdle(NpcIndex, True)
 
             End If
 
-        End With
+        End If
 
-240     Call RestoreOldMovement(NpcIndex)
+    End With
+
+    Call RestoreOldMovement(NpcIndex)
         
-        Exit Sub
+    Exit Sub
 
 IrUsuarioCercano_Err:
-242     Call RegistrarError(Err.Number, Err.Description, "AI.IrUsuarioCercano", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "AI.IrUsuarioCercano", Erl)
 
-244     Resume Next
+    Resume Next
         
 End Sub
 
@@ -1255,16 +1252,21 @@ NpcLanzaUnSpellSobreNpc_Err:
         
 End Sub
 
-Private Function PuedeAtacarUser(ByVal targetUserIndex As Integer) As Boolean
+Private Function PuedeAtacarUser(ByVal targetUserIndex As Integer, Optional ByVal IgnorarMimetismo As Boolean = False) As Boolean
     
 100     With UserList(targetUserIndex)
+            
+            Dim PuedeAtacarUsuarioMimetizado As Boolean
+                PuedeAtacarUsuarioMimetizado = (IgnorarMimetismo Or .flags.Mimetizado < 2)
+            
 102         PuedeAtacarUser = (.flags.Muerto = 0 And _
                                 .flags.invisible = 0 And _
                                 .flags.Inmunidad = 0 And _
                                 .flags.Oculto = 0 And _
+                                PuedeAtacarUsuarioMimetizado And _
                                 Not EsGM(targetUserIndex) And _
-                                Not .flags.EnConsulta And _
-                                .flags.Mimetizado < 2)
+                                Not .flags.EnConsulta)
+                                
         End With
 
 End Function

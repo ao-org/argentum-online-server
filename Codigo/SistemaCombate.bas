@@ -1057,7 +1057,10 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
             If NpcList(NpcIndex).Target <> UserIndex Then
                 NpcList(NpcIndex).Target = UserIndex
             End If
-
+            
+            ' Si te mimetizaste en forma de bicho y le pegas al chobi, el chobi te va a pegar.
+            If UserList(UserIndex).flags.Mimetizado = 2 Then UserList(UserIndex).flags.Mimetizado = 1
+            
             ' Resta la vida del NPC
 136         Call UserDañoNpc(UserIndex, NpcIndex)
             
