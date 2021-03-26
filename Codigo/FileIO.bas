@@ -1643,15 +1643,12 @@ Sub LoadOBJData()
             .def = (.MinDef + .MaxDef) / 2
     
             .ClaseTipo = val(Leer.GetValue(ObjKey, "ClaseTipo"))
-            .RazaTipo = val(Leer.GetValue(ObjKey, "RazaTipo"))
 
             .RazaEnana = val(Leer.GetValue(ObjKey, "RazaEnana"))
             .RazaDrow = val(Leer.GetValue(ObjKey, "RazaDrow"))
             .RazaElfa = val(Leer.GetValue(ObjKey, "RazaElfa"))
             .RazaGnoma = val(Leer.GetValue(ObjKey, "RazaGnoma"))
-    
             .RazaOrca = val(Leer.GetValue(ObjKey, "RazaOrca"))
-    
             .RazaHumana = val(Leer.GetValue(ObjKey, "RazaHumana"))
     
             .Valor = val(Leer.GetValue(ObjKey, "Valor"))

@@ -517,79 +517,50 @@ AgregarAConsola_Err:
 End Sub
 
 ' TODO: Crear enum para la respuesta
-Function PuedeUsarObjeto(UserIndex As Integer, ByVal ObjIndex As Integer) As Byte
+Function PuedeUsarObjeto(UserIndex As Integer, ByVal ObjIndex As Integer, Optional ByVal writeInConsole As Boolean = False) As Byte
         On Error GoTo PuedeUsarObjeto_Err
 
         Dim Objeto As ObjData
-
+        Dim msg As String, i As Long
+        Objeto = ObjData(ObjIndex)
+                
         If EsGM(UserIndex) Then
             PuedeUsarObjeto = 0
-            Exit Function
-        End If
+            msg = ""
 
-        Objeto = ObjData(ObjIndex)
-
-        If Objeto.Newbie = 1 And Not EsNewbie(UserIndex) Then
+        ElseIf Objeto.Newbie = 1 And Not EsNewbie(UserIndex) Then
             PuedeUsarObjeto = 7
-            Exit Function
-        End If
+            msg = "Solo los newbies pueden usar este objeto."
+            
+        ElseIf UserList(UserIndex).Stats.ELV < Objeto.MinELV Then
+            PuedeUsarObjeto = 6
+            msg = "Necesitas ser nivel " & Objeto.MinELV & " para usar este objeto."
 
-100     If UserList(UserIndex).Stats.ELV < Objeto.MinELV Then
-102         PuedeUsarObjeto = 6
-            Exit Function
-        End If
-
-        If Not FaccionPuedeUsarItem(UserIndex, ObjIndex) Then
+        ElseIf Not FaccionPuedeUsarItem(UserIndex, ObjIndex) Then
             PuedeUsarObjeto = 3
-            Exit Function
+            msg = "Tu facción no te permite utilizarlo."
 
+        ElseIf Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
+            PuedeUsarObjeto = 2
+            msg = "Tu clase no puede utilizar este objeto."
+
+        ElseIf Not SexoPuedeUsarItem(UserIndex, ObjIndex) Then
+            PuedeUsarObjeto = 1
+            msg = "Tu sexo no puede utilizar este objeto."
+
+        ElseIf (Objeto.SkillIndex > 0) And (UserList(UserIndex).Stats.UserSkills(Objeto.SkillIndex) < Objeto.SkillRequerido) Then
+            PuedeUsarObjeto = 4
+            msg = "Necesitas " & Objeto.SkillRequerido & " puntos en " & SkillsNames(Objeto.SkillIndex) & " para usar este item."
+            
+        ElseIf Not RazaPuedeUsarItem(UserIndex, ObjIndex) Then
+            PuedeUsarObjeto = 5
+            msg = "Tu raza no puede utilizar este objeto."
+        Else
+            PuedeUsarObjeto = 0
+            msg = ""
         End If
 
-        Dim i As Long
-104     For i = 1 To NUMRAZAS
-
-106         If Objeto.RazaProhibida(i) = UserList(UserIndex).raza Then
-108             PuedeUsarObjeto = 5
-                Exit Function
-
-            End If
-
-110     Next i
-
-114     If Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
-116         PuedeUsarObjeto = 2
-            Exit Function
-
-        End If
-
-        If Objeto.SkillIndex > 0 Then
-            If UserList(UserIndex).Stats.UserSkills(Objeto.SkillIndex) < Objeto.SkillRequerido Then
-                PuedeUsarObjeto = 4
-                Exit Function
-            End If
-        End If
-
-        Select Case Objeto.OBJType
-
-            Case otArmadura
-
-126             If Not CheckRazaUsaRopa(UserIndex, ObjIndex) Then
-128                 PuedeUsarObjeto = 5
-                    Exit Function
-
-                End If
-
-130             If Not SexoPuedeUsarItem(UserIndex, ObjIndex) Then
-132                 PuedeUsarObjeto = 1
-                    Exit Function
-
-                End If
-
-            Case Else
-
-                PuedeUsarObjeto = 0
-
-        End Select
+        If writeInConsole And msg <> "" Then Call WriteConsoleMsg(UserIndex, msg, FontTypeNames.FONTTYPE_INFO)
 
         Exit Function
 
