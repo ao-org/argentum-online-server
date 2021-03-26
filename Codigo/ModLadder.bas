@@ -548,13 +548,17 @@ Function PuedeUsarObjeto(UserIndex As Integer, ByVal ObjIndex As Integer, Option
             PuedeUsarObjeto = 1
             msg = "Tu sexo no puede utilizar este objeto."
 
-        ElseIf (Objeto.SkillIndex > 0) And (UserList(UserIndex).Stats.UserSkills(Objeto.SkillIndex) < Objeto.SkillRequerido) Then
-            PuedeUsarObjeto = 4
-            msg = "Necesitas " & Objeto.SkillRequerido & " puntos en " & SkillsNames(Objeto.SkillIndex) & " para usar este item."
-            
         ElseIf Not RazaPuedeUsarItem(UserIndex, ObjIndex) Then
             PuedeUsarObjeto = 5
             msg = "Tu raza no puede utilizar este objeto."
+        ElseIf (Objeto.SkillIndex > 0) Then
+            If (UserList(UserIndex).Stats.UserSkills(Objeto.SkillIndex) < Objeto.SkillRequerido) Then
+                PuedeUsarObjeto = 4
+                msg = "Necesitas " & Objeto.SkillRequerido & " puntos en " & SkillsNames(Objeto.SkillIndex) & " para usar este item."
+            Else
+                PuedeUsarObjeto = 0
+                msg = ""
+            End If
         Else
             PuedeUsarObjeto = 0
             msg = ""
