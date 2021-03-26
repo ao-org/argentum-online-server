@@ -1353,12 +1353,6 @@ Sub LoadOBJData()
             '07/09/07
     
             .GrhIndex = val(Leer.GetValue(ObjKey, "GrhIndex"))
-
-            If .GrhIndex = 0 Then
-                .GrhIndex = .GrhIndex
-
-            End If
-    
             .OBJType = val(Leer.GetValue(ObjKey, "ObjType"))
     
             .Newbie = val(Leer.GetValue(ObjKey, "Newbie"))
@@ -1424,6 +1418,7 @@ Sub LoadOBJData()
                     .Envenena = val(Leer.GetValue(ObjKey, "Envenena"))
                     .Paraliza = val(Leer.GetValue(ObjKey, "Paraliza"))
                     .Estupidiza = val(Leer.GetValue(ObjKey, "Estupidiza"))
+                    .incinera = val(Leer.GetValue(ObjKey, "Incinera"))
         
                     .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
                     .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
@@ -1477,6 +1472,7 @@ Sub LoadOBJData()
                     .MaxDef = val(Leer.GetValue(ObjKey, "MAXDEF"))
                     .Real = val(Leer.GetValue(ObjKey, "Real"))
                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
+                    .velocidad = val(Leer.GetValue(ObjKey, "Velocidad"))
         
                 Case eOBJType.otFlechas
                     .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
@@ -1533,6 +1529,7 @@ Sub LoadOBJData()
                     .Envenena = val(Leer.GetValue(ObjKey, "Envenena"))
                     .Paraliza = val(Leer.GetValue(ObjKey, "Paraliza"))
                     .Estupidiza = val(Leer.GetValue(ObjKey, "Estupidiza"))
+                    .incinera = val(Leer.GetValue(ObjKey, "Incinera"))
                     .WeaponAnim = val(Leer.GetValue(ObjKey, "Anim"))
                     .SkHerreria = val(Leer.GetValue(ObjKey, "SkHerreria"))
             
@@ -1625,13 +1622,7 @@ Sub LoadOBJData()
             .SkMAGOria = val(Leer.GetValue(ObjKey, "SKSastreria"))
     
             .CreaParticula = Leer.GetValue(ObjKey, "CreaParticula")
-    
             .CreaFX = val(Leer.GetValue(ObjKey, "CreaFX"))
-  
-            'DELETE
-            .CreaParticulaPiso = val(Leer.GetValue(ObjKey, "CreaParticulaPiso"))
-            '
-    
             .CreaGRH = Leer.GetValue(ObjKey, "CreaGRH")
             .CreaLuz = Leer.GetValue(ObjKey, "CreaLuz")
     

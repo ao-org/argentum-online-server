@@ -1165,8 +1165,6 @@ Public Type ObjData
     
     CreaFX As Integer
     
-    CreaParticulaPiso As Integer
-    
     CreaLuz As String
     
     MinELV As Byte
