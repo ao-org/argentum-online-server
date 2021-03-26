@@ -1004,32 +1004,28 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
         
         On Error GoTo UsuarioAtacaNpc_Err
         
+100     If Not PuedeAtacarNPC(UserIndex, NpcIndex) Then Exit Sub
 
-100     If Not PuedeAtacarNPC(UserIndex, NpcIndex) Then
-            Exit Sub
-
-        End If
-    
 102     If UserList(UserIndex).flags.invisible = 0 Then
 104         Call NPCAtacado(NpcIndex, UserIndex)
         End If
 
 106     If UserImpactoNpc(UserIndex, NpcIndex) Then
-        
+            
+            ' Suena el Golpe en el cliente.
 108         If NpcList(NpcIndex).flags.Snd2 > 0 Then
 110             Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessagePlayWave(NpcList(NpcIndex).flags.Snd2, NpcList(NpcIndex).Pos.X, NpcList(NpcIndex).Pos.Y))
             Else
 112             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_IMPACTO2, NpcList(NpcIndex).Pos.X, NpcList(NpcIndex).Pos.Y))
-
             End If
-
+            
+            ' Golpe Paralizador
 114         If UserList(UserIndex).flags.Paraliza = 1 And NpcList(NpcIndex).flags.Paralizado = 0 Then
 
-                Dim Probabilidad As Byte
-    
-116             Probabilidad = RandomNumber(1, 4)
+                Dim Probabilidad As Byte: Probabilidad = RandomNumber(1, 4)
 
 118             If Probabilidad = 1 Then
+
 120                 If NpcList(NpcIndex).flags.AfectaParalisis = 0 Then
 122                     NpcList(NpcIndex).flags.Paralizado = 1
                         
@@ -1056,13 +1052,19 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
                 End If
 
             End If
-
+            
+            ' Cambiamos el objetivo del NPC si uno le pega cuerpo a cuerpo.
+            If NpcList(NpcIndex).Target <> UserIndex Then
+                NpcList(NpcIndex).Target = UserIndex
+            End If
+            
+            ' Resta la vida del NPC
 136         Call UserDañoNpc(UserIndex, NpcIndex)
-       
+            
         Else
             
             Dim sendto As SendTarget
-
+            
 138         If UserList(UserIndex).clase = eClass.Hunter And UserList(UserIndex).flags.Oculto = 0 Then
 140             sendto = SendTarget.ToPCArea
             Else
