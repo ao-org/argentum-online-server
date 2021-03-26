@@ -553,7 +553,7 @@ End Enum
 '%%%%%%%%%% CONSTANTES DE INDICES %%%%%%%%%%%%%%%
 Public Const iCuerpoMuerto As Integer = 829
 
-Public Const iCabezaMuerto As Integer = 621
+Public Const iCabezaMuerto As Integer = 0 ' El nuevo casper no usa cabeza. El viejo es: 621
 
 Public Const iORO          As Byte = 12
 
