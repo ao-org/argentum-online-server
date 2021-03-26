@@ -223,10 +223,10 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
 136                 Call DoMontar(UserIndex, ObjData(.Invent.MonturaObjIndex), .Invent.MonturaSlot)
                 End If
                 
-                If .flags.Mimetizado = 1 Then
+                If .flags.Mimetizado <> e_EstadoMimetismo.Desactivado Then
                     Call WriteConsoleMsg(UserIndex, "Pierdes el efecto del mimetismo.", FontTypeNames.FONTTYPE_INFO)
                     .Counters.Mimetismo = 0
-                    .flags.Mimetizado = 0
+                    .flags.Mimetizado = e_EstadoMimetismo.Desactivado
                 End If
     
                 Call EquiparBarco(UserIndex)

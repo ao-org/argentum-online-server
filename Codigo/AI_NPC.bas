@@ -111,7 +111,6 @@ Private Sub IrUsuarioCercano(ByVal NpcIndex As Integer)
     Dim Pos        As WorldPos
     Dim i          As Long
     Dim comoatacto As Byte
-    Dim RespetarMimetismo As Boolean
 
     With NpcList(NpcIndex)
     
@@ -141,7 +140,7 @@ Private Sub IrUsuarioCercano(ByVal NpcIndex As Integer)
                         ' Si hay un usuario dentro del rango de vision.
                         If Abs(UserList(NpcList(NpcIndex).Target).Pos.X - .Pos.X) <= RANGO_VISION_X Then
                             If Abs(UserList(NpcList(NpcIndex).Target).Pos.Y - .Pos.Y) <= RANGO_VISION_Y Then
-
+                                
                                 If PuedeAtacarUser(NpcList(NpcIndex).Target) Then
 
                                     If Distancia(.Pos, UserList(NpcList(NpcIndex).Target).Pos) > 1 Then
@@ -1222,8 +1221,6 @@ Sub NpcLanzaUnSpell(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         
         End With
 
-
-        
         Exit Sub
 
 NpcLanzaUnSpell_Err:
@@ -1260,7 +1257,7 @@ Private Function PuedeAtacarUser(ByVal targetUserIndex As Integer) As Boolean
                                 .flags.invisible = 0 And _
                                 .flags.Inmunidad = 0 And _
                                 .flags.Oculto = 0 And _
-                                .flags.Mimetizado < 2 And _
+                                .flags.Mimetizado < e_EstadoMimetismo.FormaBichoSinProteccion And _
                                 Not EsGM(targetUserIndex) And _
                                 Not .flags.EnConsulta)
                                 

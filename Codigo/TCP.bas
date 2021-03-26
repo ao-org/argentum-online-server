@@ -1802,7 +1802,7 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 260         .FirstPacket = False
 262         .Inmunidad = 0
             
-264         .Mimetizado = 0
+264         .flags.Mimetizado = e_EstadoMimetismo.Desactivado
 266         .MascotasGuardadas = 0
 
 268         .EnConsulta = False
@@ -2109,14 +2109,16 @@ Sub CloseUser(ByVal UserIndex As Integer)
             End If
         
 132         errordesc = "ERROR AL SACAR MIMETISMO"
-134         If .flags.Mimetizado = 1 Then
+134         If .flags.Mimetizado > 0 Then
+
 136             .Char.Body = .CharMimetizado.Body
 138             .Char.Head = .CharMimetizado.Head
 140             .Char.CascoAnim = .CharMimetizado.CascoAnim
 142             .Char.ShieldAnim = .CharMimetizado.ShieldAnim
 144             .Char.WeaponAnim = .CharMimetizado.WeaponAnim
 146             .Counters.Mimetismo = 0
-148             .flags.Mimetizado = 0
+148             .flags.Mimetizado = e_EstadoMimetismo.Desactivado
+
             End If
         
 150         errordesc = "ERROR AL ENVIAR PARTICULA"
