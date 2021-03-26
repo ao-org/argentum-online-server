@@ -2814,7 +2814,8 @@ Sub LoadIntervalos()
 220     IntervaloUserPuedeUsarClic = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeUsarClic"))
 222     IntervaloFlechasCazadores = val(Lector.GetValue("INTERVALOS", "IntervaloFlechasCazadores"))
 224     IntervaloGolpeUsar = val(Lector.GetValue("INTERVALOS", "IntervaloGolpeUsar"))
-    
+        IntervaloUserPuedeMontar = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeMontar"))
+
 226     IntervaloOculto = val(Lector.GetValue("INTERVALOS", "IntervaloOculto"))
 
 228     MargenDeIntervaloPorPing = val(Lector.GetValue("INTERVALOS", "MargenDeIntervaloPorPing"))
@@ -4382,6 +4383,7 @@ Public Sub LoadUserIntervals(ByVal UserIndex As Integer)
 118         .TrabajarConstruir = IntervaloTrabajarConstruir
 120         .UsarU = IntervaloUserPuedeUsarU
 122         .UsarClic = IntervaloUserPuedeUsarClic
+            .Montar = IntervaloUserPuedeMontar
 
         End With
 
