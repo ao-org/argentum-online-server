@@ -62,7 +62,10 @@ Sub CargarInfoEventos()
     Dim CantInvasiones As Integer
     CantInvasiones = val(File.GetValue("Invasiones", "Cantidad"))
 
-    If CantInvasiones <= 0 Then Exit Sub
+    If CantInvasiones <= 0 Then
+        ReDim Invasiones(0)
+        Exit Sub
+    End If
 
     ReDim Invasiones(1 To CantInvasiones)
     

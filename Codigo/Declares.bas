@@ -1680,19 +1680,20 @@ Public Type UserCounters
     TimerCaminar As Long
     TimerTirar As Long
     TimerMeditar As Long
-    
+    TimerMontar As Long
+
     'Nuevos de AoLibre
     TimerPuedeSerAtacado As Long
     TimerPerteneceNpc As Long
-    
+
     Trabajando As Long  ' Para el centinela
     Ocultando As Long   ' Unico trabajo no revisado por el centinela
-    
+
     goHome As Long
-    
+
     LastSave As Long
     CuentaRegresiva As Integer
-    
+
 End Type
 
 Public Type UserIntervals
@@ -1703,6 +1704,7 @@ Public Type UserIntervals
     UsarU As Long
     UsarClic As Long
     Caminar As Long
+    Montar As Long
     GolpeMagia As Long
     MagiaGolpe As Long
     GolpeUsar As Long
