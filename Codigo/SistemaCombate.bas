@@ -816,70 +816,70 @@ End Sub
 
 Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, ByVal Heading As eHeading) As Boolean
         
-        On Error GoTo NpcAtacaUser_Err
+    On Error GoTo NpcAtacaUser_Err
         
 
-100     If UserList(UserIndex).flags.AdminInvisible = 1 Then Exit Function
-102     If (Not UserList(UserIndex).flags.Privilegios And PlayerType.user) <> 0 And Not UserList(UserIndex).flags.AdminPerseguible Then Exit Function
+    If UserList(UserIndex).flags.AdminInvisible = 1 Then Exit Function
+    If (Not UserList(UserIndex).flags.Privilegios And PlayerType.user) <> 0 And Not UserList(UserIndex).flags.AdminPerseguible Then Exit Function
     
-        ' El npc puede atacar ???
+    ' El npc puede atacar ???
     
-104     If Not IntervaloPermiteAtacarNPC(NpcIndex) Then
-106         NpcAtacaUser = False
-            Exit Function
-        End If
-        
-108     If ((MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).Blocked And 2 ^ (Heading - 1)) <> 0) Then
-110         NpcAtacaUser = False
-            Exit Function
-        End If
-
-112     NpcAtacaUser = True
-
-114     Call CheckPets(NpcIndex, UserIndex, False)
-
-116     If NpcList(NpcIndex).Target = 0 Then NpcList(NpcIndex).Target = UserIndex
-    
-118     If UserList(UserIndex).flags.AtacadoPorNpc = 0 And UserList(UserIndex).flags.AtacadoPorUser = 0 Then UserList(UserIndex).flags.AtacadoPorNpc = NpcIndex
-
-120     NpcList(NpcIndex).CanAttack = 0
-    
-122     If NpcList(NpcIndex).flags.Snd1 > 0 Then
-124         Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessagePlayWave(NpcList(NpcIndex).flags.Snd1, NpcList(NpcIndex).Pos.X, NpcList(NpcIndex).Pos.Y))
-        End If
-        
-126     Call CancelExit(UserIndex)
-
-128     If NpcImpacto(NpcIndex, UserIndex) Then
-    
-130         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_IMPACTO, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
-        
-132         If UserList(UserIndex).flags.Navegando = 0 Or UserList(UserIndex).flags.Montado = 0 Then
-134             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.CharIndex, FXSANGRE, 0))
-
-            End If
-        
-136         Call NpcDaño(NpcIndex, UserIndex)
-
-            '¿Puede envenenar?
-138         If NpcList(NpcIndex).Veneno > 0 Then Call NpcEnvenenarUser(UserIndex, NpcList(NpcIndex).Veneno)
-        Else
-140         Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageCharSwing(NpcList(NpcIndex).Char.CharIndex, False))
-
-        End If
-
-        '-----Tal vez suba los skills------
-142     Call SubirSkill(UserIndex, Tacticas)
-    
-        'Controla el nivel del usuario
-144     Call CheckUserLevel(UserIndex)
-        
-
+    If Not IntervaloPermiteAtacarNPC(NpcIndex) Then
+        NpcAtacaUser = False
         Exit Function
+    End If
+        
+    If ((MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).Blocked And 2 ^ (Heading - 1)) <> 0) Then
+        NpcAtacaUser = False
+        Exit Function
+    End If
+
+    NpcAtacaUser = True
+
+    Call CheckPets(NpcIndex, UserIndex, False)
+
+    If NpcList(NpcIndex).Target = 0 Then NpcList(NpcIndex).Target = UserIndex
+    
+    If UserList(UserIndex).flags.AtacadoPorNpc = 0 And UserList(UserIndex).flags.AtacadoPorUser = 0 Then UserList(UserIndex).flags.AtacadoPorNpc = NpcIndex
+
+    NpcList(NpcIndex).CanAttack = 0
+    
+    If NpcList(NpcIndex).flags.Snd1 > 0 Then
+        Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessagePlayWave(NpcList(NpcIndex).flags.Snd1, NpcList(NpcIndex).Pos.X, NpcList(NpcIndex).Pos.Y))
+    End If
+        
+    Call CancelExit(UserIndex)
+
+    If NpcImpacto(NpcIndex, UserIndex) Then
+    
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_IMPACTO, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+        
+        If UserList(UserIndex).flags.Navegando = 0 Or UserList(UserIndex).flags.Montado = 0 Then
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.CharIndex, FXSANGRE, 0))
+        End If
+        
+        Call NpcDaño(NpcIndex, UserIndex)
+
+        '¿Puede envenenar?
+        If NpcList(NpcIndex).Veneno > 0 Then Call NpcEnvenenarUser(UserIndex, NpcList(NpcIndex).Veneno)
+        
+    Else
+        Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageCharSwing(NpcList(NpcIndex).Char.CharIndex, False))
+
+    End If
+
+    '-----Tal vez suba los skills------
+    Call SubirSkill(UserIndex, Tacticas)
+    
+    'Controla el nivel del usuario
+    Call CheckUserLevel(UserIndex)
+        
+
+    Exit Function
 
 NpcAtacaUser_Err:
-146     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.NpcAtacaUser", Erl)
-148     Resume Next
+    Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.NpcAtacaUser", Erl)
+    Resume Next
         
 End Function
 
@@ -1181,26 +1181,26 @@ Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
                 Exit Sub
             End If
 
-            Dim index As Integer
+            Dim Index As Integer
 
-132         index = MapData(AttackPos.Map, AttackPos.X, AttackPos.Y).UserIndex
+132         Index = MapData(AttackPos.Map, AttackPos.X, AttackPos.Y).UserIndex
 
             'Look for user
-134         If index > 0 Then
-136             Call UsuarioAtacaUsuario(UserIndex, index)
+134         If Index > 0 Then
+136             Call UsuarioAtacaUsuario(UserIndex, Index)
 
             'Look for NPC
 142         ElseIf MapData(AttackPos.Map, AttackPos.X, AttackPos.Y).NpcIndex > 0 Then
 
-144             index = MapData(AttackPos.Map, AttackPos.X, AttackPos.Y).NpcIndex
+144             Index = MapData(AttackPos.Map, AttackPos.X, AttackPos.Y).NpcIndex
 
-146             If NpcList(index).Attackable Then
-148                 If NpcList(index).MaestroUser > 0 And MapInfo(NpcList(index).Pos.Map).Seguro = 1 Then
+146             If NpcList(Index).Attackable Then
+148                 If NpcList(Index).MaestroUser > 0 And MapInfo(NpcList(Index).Pos.Map).Seguro = 1 Then
 150                     Call WriteConsoleMsg(UserIndex, "No podés atacar mascotas en zonas seguras", FontTypeNames.FONTTYPE_FIGHT)
                         Exit Sub
                     End If
 
-152                 Call UsuarioAtacaNpc(UserIndex, index)
+152                 Call UsuarioAtacaNpc(UserIndex, Index)
 
                 Else
 156                 Call WriteConsoleMsg(UserIndex, "No podés atacar a este NPC", FontTypeNames.FONTTYPE_FIGHT)
@@ -2064,7 +2064,7 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
         Dim BonificacionGrupo       As Single
         Dim CantidadMiembrosValidos As Integer
         Dim i                       As Long
-        Dim index                   As Integer
+        Dim Index                   As Integer
 
         'If UserList(UserIndex).Grupo.EnGrupo Then
         '[Nacho] Chekeamos que las variables sean validas para las operaciones
@@ -2090,11 +2090,11 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
         End If
         
 122     For i = 1 To UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
-124         index = UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(i)
-126         If UserList(index).flags.Muerto = 0 Then
-128             If UserList(UserIndex).Pos.Map = UserList(index).Pos.Map Then
-130                 If Abs(UserList(UserIndex).Pos.X - UserList(index).Pos.X) < 20 Then
-132                     If Abs(UserList(UserIndex).Pos.Y - UserList(index).Pos.Y) < 20 Then
+124         Index = UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(i)
+126         If UserList(Index).flags.Muerto = 0 Then
+128             If UserList(UserIndex).Pos.Map = UserList(Index).Pos.Map Then
+130                 If Abs(UserList(UserIndex).Pos.X - UserList(Index).Pos.X) < 20 Then
+132                     If Abs(UserList(UserIndex).Pos.Y - UserList(Index).Pos.Y) < 20 Then
 134                         CantidadMiembrosValidos = CantidadMiembrosValidos + 1
                         End If
                     End If
@@ -2112,41 +2112,41 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
 
 168     If ExpaDar > 0 Then
 170         For i = 1 To UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
-172             index = UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(i)
+172             Index = UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(i)
     
-174             If UserList(index).flags.Muerto = 0 Then
-176                 If Distancia(UserList(UserIndex).Pos, UserList(index).Pos) < 20 Then
+174             If UserList(Index).flags.Muerto = 0 Then
+176                 If Distancia(UserList(UserIndex).Pos, UserList(Index).Pos) < 20 Then
 
 178                     ExpUser = 0
 
-180                     If UserList(index).donador.activo = 1 Then
+180                     If UserList(Index).donador.activo = 1 Then
 182                         ExpUser = ExpaDar * 1.1
                         Else
 184                         ExpUser = ExpaDar
                         End If
                     
-186                     ExpUser = ExpUser * UserList(index).flags.ScrollExp
+186                     ExpUser = ExpUser * UserList(Index).flags.ScrollExp
                 
-188                     If UserList(index).Stats.ELV < STAT_MAXELV Then
-190                         UserList(index).Stats.Exp = UserList(index).Stats.Exp + ExpUser
+188                     If UserList(Index).Stats.ELV < STAT_MAXELV Then
+190                         UserList(Index).Stats.Exp = UserList(Index).Stats.Exp + ExpUser
 
-192                         If UserList(index).Stats.Exp > MAXEXP Then UserList(index).Stats.Exp = MAXEXP
+192                         If UserList(Index).Stats.Exp > MAXEXP Then UserList(Index).Stats.Exp = MAXEXP
 
-194                         If UserList(index).ChatCombate = 1 Then
-196                             Call WriteLocaleMsg(index, "141", FontTypeNames.FONTTYPE_EXP, ExpUser)
+194                         If UserList(Index).ChatCombate = 1 Then
+196                             Call WriteLocaleMsg(Index, "141", FontTypeNames.FONTTYPE_EXP, ExpUser)
 
                             End If
 
-198                         Call WriteUpdateExp(index)
-200                         Call CheckUserLevel(index)
+198                         Call WriteUpdateExp(Index)
+200                         Call CheckUserLevel(Index)
 
                         End If
     
                     Else
     
                         'Call WriteConsoleMsg(Index, "Estas demasiado lejos del grupo, no has ganado experiencia.", FontTypeNames.FONTTYPE_INFOIAO)
-202                     If UserList(index).ChatCombate = 1 Then
-204                         Call WriteLocaleMsg(index, "69", FontTypeNames.FONTTYPE_New_GRUPO)
+202                     If UserList(Index).ChatCombate = 1 Then
+204                         Call WriteLocaleMsg(Index, "69", FontTypeNames.FONTTYPE_New_GRUPO)
     
                         End If
     
@@ -2154,8 +2154,8 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
     
                 Else
     
-206                 If UserList(index).ChatCombate = 1 Then
-208                     Call WriteConsoleMsg(index, "Estás muerto, no has ganado experencia del grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
+206                 If UserList(Index).ChatCombate = 1 Then
+208                     Call WriteConsoleMsg(Index, "Estás muerto, no has ganado experencia del grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
     
                     End If
     
@@ -2198,25 +2198,25 @@ Private Sub CalcularDarOroGrupal(ByVal UserIndex As Integer, ByVal GiveGold As L
 
         Dim i     As Byte
 
-        Dim index As Byte
+        Dim Index As Byte
 
 132     OroDar = OroDar / UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
 
 134     For i = 1 To UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
-136         index = UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(i)
+136         Index = UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(i)
 
-138         If UserList(index).flags.Muerto = 0 Then
-140             If UserList(UserIndex).Pos.Map = UserList(index).Pos.Map Then
+138         If UserList(Index).flags.Muerto = 0 Then
+140             If UserList(UserIndex).Pos.Map = UserList(Index).Pos.Map Then
 142                 If OroDar > 0 Then
 
-144                     UserList(index).Stats.GLD = UserList(index).Stats.GLD + OroDar
+144                     UserList(Index).Stats.GLD = UserList(Index).Stats.GLD + OroDar
 
-146                     If UserList(index).ChatCombate = 1 Then
-148                         Call WriteConsoleMsg(index, "¡El grupo ha ganado " & PonerPuntos(OroDar) & " monedas de oro!", FontTypeNames.FONTTYPE_New_GRUPO)
+146                     If UserList(Index).ChatCombate = 1 Then
+148                         Call WriteConsoleMsg(Index, "¡El grupo ha ganado " & PonerPuntos(OroDar) & " monedas de oro!", FontTypeNames.FONTTYPE_New_GRUPO)
 
                         End If
 
-150                     Call WriteUpdateGold(index)
+150                     Call WriteUpdateGold(Index)
 
                     End If
 

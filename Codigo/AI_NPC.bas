@@ -114,17 +114,16 @@ Private Sub IrUsuarioCercano(ByVal NpcIndex As Integer)
 
     With NpcList(NpcIndex)
     
-        Dim rangox As Byte
-        Dim rangoy As Byte
+        Dim RangoX As Byte
+        Dim RangoY As Byte
     
         If .Distancia <> 0 Then
-            rangox = .Distancia
-            rangoy = .Distancia
+            RangoX = .Distancia
+            RangoY = .Distancia
 
         Else
-            rangox = RANGO_VISION_X
-            rangoy = RANGO_VISION_Y
-
+            RangoX = RANGO_VISION_X
+            RangoY = RANGO_VISION_Y
         End If
 
         If .flags.Inmovilizado = 1 Then
@@ -203,7 +202,6 @@ Private Sub IrUsuarioCercano(ByVal NpcIndex As Integer)
                             If Distancia(.Pos, UserList(NpcList(NpcIndex).Target).Pos) = 1 Then
 
                                 tHeading = FindDirectionEAO(.Pos, UserList(NpcList(NpcIndex).Target).Pos, NpcList(NpcIndex).flags.AguaValida = 1, NpcList(NpcIndex).flags.TierraInvalida = 0)
-
                                 Call AnimacionIdle(NpcIndex, True)
                                 Call ChangeNPCChar(NpcIndex, .Char.Body, .Char.Head, tHeading)
 
@@ -247,8 +245,8 @@ Private Sub IrUsuarioCercano(ByVal NpcIndex As Integer)
                 For i = 1 To ModAreas.ConnGroups(.Pos.Map).CountEntrys
                     UI = ModAreas.ConnGroups(.Pos.Map).UserEntrys(i)
 
-                    If Abs(UserList(UI).Pos.X - .Pos.X) <= rangox Then
-                        If Abs(UserList(UI).Pos.Y - .Pos.Y) <= rangoy Then
+                    If Abs(UserList(UI).Pos.X - .Pos.X) <= RangoX Then
+                        If Abs(UserList(UI).Pos.Y - .Pos.Y) <= RangoY Then
                         
                             If PuedeAtacarUser(UI) Then
 
@@ -972,7 +970,7 @@ Sub NPCAI(ByVal NpcIndex As Integer)
 
 126             Case TipoAI.NpcMaloAtacaUsersBuenos
 128                 falladesc = " fallo NpcMaloAtacaUsersBuenos"
-130                 Call IrUsuarioCercano(NpcIndex)
+130                 Call IrUsuarioCercano2(NpcIndex)
 
                     'Va hacia el usuario que lo ataco(FOLLOW)
 132             Case TipoAI.NPCDEFENSA
