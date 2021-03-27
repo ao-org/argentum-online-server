@@ -28,6 +28,7 @@ Begin VB.Form frmMain
    ScaleWidth      =   6915
    StartUpPosition =   2  'CenterScreen
    Begin VB.Timer Invasion 
+      Enabled         =   0   'False
       Interval        =   60000
       Left            =   1200
       Top             =   3480
@@ -775,7 +776,7 @@ End Sub
 
 Private Sub Invasion_Timer()
     Dim i As Integer
-    
+
     ' **********************************
     ' **********  Invasiones  **********
     ' **********************************
