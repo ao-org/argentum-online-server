@@ -795,6 +795,7 @@ Private Sub NpcDaño(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 184                 NpcList(NpcIndex).Movement = NpcList(NpcIndex).flags.OldMovement
 186                 NpcList(NpcIndex).Hostile = NpcList(NpcIndex).flags.OldHostil
 188                 NpcList(NpcIndex).flags.AttackedBy = vbNullString
+                    NpcList(NpcIndex).Target = 0
                 End If
             End If
         
@@ -1181,26 +1182,26 @@ Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
                 Exit Sub
             End If
 
-            Dim Index As Integer
+            Dim index As Integer
 
-132         Index = MapData(AttackPos.Map, AttackPos.X, AttackPos.Y).UserIndex
+132         index = MapData(AttackPos.Map, AttackPos.X, AttackPos.Y).UserIndex
 
             'Look for user
-134         If Index > 0 Then
-136             Call UsuarioAtacaUsuario(UserIndex, Index)
+134         If index > 0 Then
+136             Call UsuarioAtacaUsuario(UserIndex, index)
 
             'Look for NPC
 142         ElseIf MapData(AttackPos.Map, AttackPos.X, AttackPos.Y).NpcIndex > 0 Then
 
-144             Index = MapData(AttackPos.Map, AttackPos.X, AttackPos.Y).NpcIndex
+144             index = MapData(AttackPos.Map, AttackPos.X, AttackPos.Y).NpcIndex
 
-146             If NpcList(Index).Attackable Then
-148                 If NpcList(Index).MaestroUser > 0 And MapInfo(NpcList(Index).Pos.Map).Seguro = 1 Then
+146             If NpcList(index).Attackable Then
+148                 If NpcList(index).MaestroUser > 0 And MapInfo(NpcList(index).Pos.Map).Seguro = 1 Then
 150                     Call WriteConsoleMsg(UserIndex, "No podés atacar mascotas en zonas seguras", FontTypeNames.FONTTYPE_FIGHT)
                         Exit Sub
                     End If
 
-152                 Call UsuarioAtacaNpc(UserIndex, Index)
+152                 Call UsuarioAtacaNpc(UserIndex, index)
 
                 Else
 156                 Call WriteConsoleMsg(UserIndex, "No podés atacar a este NPC", FontTypeNames.FONTTYPE_FIGHT)
@@ -2064,7 +2065,7 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
         Dim BonificacionGrupo       As Single
         Dim CantidadMiembrosValidos As Integer
         Dim i                       As Long
-        Dim Index                   As Integer
+        Dim index                   As Integer
 
         'If UserList(UserIndex).Grupo.EnGrupo Then
         '[Nacho] Chekeamos que las variables sean validas para las operaciones
@@ -2090,11 +2091,11 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
         End If
         
 122     For i = 1 To UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
-124         Index = UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(i)
-126         If UserList(Index).flags.Muerto = 0 Then
-128             If UserList(UserIndex).Pos.Map = UserList(Index).Pos.Map Then
-130                 If Abs(UserList(UserIndex).Pos.X - UserList(Index).Pos.X) < 20 Then
-132                     If Abs(UserList(UserIndex).Pos.Y - UserList(Index).Pos.Y) < 20 Then
+124         index = UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(i)
+126         If UserList(index).flags.Muerto = 0 Then
+128             If UserList(UserIndex).Pos.Map = UserList(index).Pos.Map Then
+130                 If Abs(UserList(UserIndex).Pos.X - UserList(index).Pos.X) < 20 Then
+132                     If Abs(UserList(UserIndex).Pos.Y - UserList(index).Pos.Y) < 20 Then
 134                         CantidadMiembrosValidos = CantidadMiembrosValidos + 1
                         End If
                     End If
@@ -2112,41 +2113,41 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
 
 168     If ExpaDar > 0 Then
 170         For i = 1 To UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
-172             Index = UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(i)
+172             index = UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(i)
     
-174             If UserList(Index).flags.Muerto = 0 Then
-176                 If Distancia(UserList(UserIndex).Pos, UserList(Index).Pos) < 20 Then
+174             If UserList(index).flags.Muerto = 0 Then
+176                 If Distancia(UserList(UserIndex).Pos, UserList(index).Pos) < 20 Then
 
 178                     ExpUser = 0
 
-180                     If UserList(Index).donador.activo = 1 Then
+180                     If UserList(index).donador.activo = 1 Then
 182                         ExpUser = ExpaDar * 1.1
                         Else
 184                         ExpUser = ExpaDar
                         End If
                     
-186                     ExpUser = ExpUser * UserList(Index).flags.ScrollExp
+186                     ExpUser = ExpUser * UserList(index).flags.ScrollExp
                 
-188                     If UserList(Index).Stats.ELV < STAT_MAXELV Then
-190                         UserList(Index).Stats.Exp = UserList(Index).Stats.Exp + ExpUser
+188                     If UserList(index).Stats.ELV < STAT_MAXELV Then
+190                         UserList(index).Stats.Exp = UserList(index).Stats.Exp + ExpUser
 
-192                         If UserList(Index).Stats.Exp > MAXEXP Then UserList(Index).Stats.Exp = MAXEXP
+192                         If UserList(index).Stats.Exp > MAXEXP Then UserList(index).Stats.Exp = MAXEXP
 
-194                         If UserList(Index).ChatCombate = 1 Then
-196                             Call WriteLocaleMsg(Index, "141", FontTypeNames.FONTTYPE_EXP, ExpUser)
+194                         If UserList(index).ChatCombate = 1 Then
+196                             Call WriteLocaleMsg(index, "141", FontTypeNames.FONTTYPE_EXP, ExpUser)
 
                             End If
 
-198                         Call WriteUpdateExp(Index)
-200                         Call CheckUserLevel(Index)
+198                         Call WriteUpdateExp(index)
+200                         Call CheckUserLevel(index)
 
                         End If
     
                     Else
     
                         'Call WriteConsoleMsg(Index, "Estas demasiado lejos del grupo, no has ganado experiencia.", FontTypeNames.FONTTYPE_INFOIAO)
-202                     If UserList(Index).ChatCombate = 1 Then
-204                         Call WriteLocaleMsg(Index, "69", FontTypeNames.FONTTYPE_New_GRUPO)
+202                     If UserList(index).ChatCombate = 1 Then
+204                         Call WriteLocaleMsg(index, "69", FontTypeNames.FONTTYPE_New_GRUPO)
     
                         End If
     
@@ -2154,8 +2155,8 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
     
                 Else
     
-206                 If UserList(Index).ChatCombate = 1 Then
-208                     Call WriteConsoleMsg(Index, "Estás muerto, no has ganado experencia del grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
+206                 If UserList(index).ChatCombate = 1 Then
+208                     Call WriteConsoleMsg(index, "Estás muerto, no has ganado experencia del grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
     
                     End If
     
@@ -2198,25 +2199,25 @@ Private Sub CalcularDarOroGrupal(ByVal UserIndex As Integer, ByVal GiveGold As L
 
         Dim i     As Byte
 
-        Dim Index As Byte
+        Dim index As Byte
 
 132     OroDar = OroDar / UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
 
 134     For i = 1 To UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
-136         Index = UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(i)
+136         index = UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(i)
 
-138         If UserList(Index).flags.Muerto = 0 Then
-140             If UserList(UserIndex).Pos.Map = UserList(Index).Pos.Map Then
+138         If UserList(index).flags.Muerto = 0 Then
+140             If UserList(UserIndex).Pos.Map = UserList(index).Pos.Map Then
 142                 If OroDar > 0 Then
 
-144                     UserList(Index).Stats.GLD = UserList(Index).Stats.GLD + OroDar
+144                     UserList(index).Stats.GLD = UserList(index).Stats.GLD + OroDar
 
-146                     If UserList(Index).ChatCombate = 1 Then
-148                         Call WriteConsoleMsg(Index, "¡El grupo ha ganado " & PonerPuntos(OroDar) & " monedas de oro!", FontTypeNames.FONTTYPE_New_GRUPO)
+146                     If UserList(index).ChatCombate = 1 Then
+148                         Call WriteConsoleMsg(index, "¡El grupo ha ganado " & PonerPuntos(OroDar) & " monedas de oro!", FontTypeNames.FONTTYPE_New_GRUPO)
 
                         End If
 
-150                     Call WriteUpdateGold(Index)
+150                     Call WriteUpdateGold(index)
 
                     End If
 
@@ -2368,26 +2369,33 @@ UserDañoEspecial_Err:
 End Sub
 
 Sub AllMascotasAtacanUser(ByVal victim As Integer, ByVal Maestro As Integer)
-        'Reaccion de las mascotas
+    'Reaccion de las mascotas
         
-        On Error GoTo AllMascotasAtacanUser_Err
+    On Error GoTo AllMascotasAtacanUser_Err
+
+    Dim iCount As Integer
     
-        
-        Dim iCount As Integer
+    With UserList(Maestro)
     
-100     For iCount = 1 To MAXMASCOTAS
-102         If UserList(Maestro).MascotasIndex(iCount) > 0 Then
-104             NpcList(UserList(Maestro).MascotasIndex(iCount)).flags.AttackedBy = UserList(victim).name
-106             NpcList(UserList(Maestro).MascotasIndex(iCount)).Movement = TipoAI.NPCDEFENSA
-108             NpcList(UserList(Maestro).MascotasIndex(iCount)).Hostile = 1
+        For iCount = 1 To MAXMASCOTAS
+
+            If .MascotasIndex(iCount) > 0 Then
+            
+                NpcList(.MascotasIndex(iCount)).flags.AttackedBy = UserList(victim).name
+                NpcList(.MascotasIndex(iCount)).Target = victim
+                NpcList(.MascotasIndex(iCount)).Movement = TipoAI.NPCDEFENSA
+                NpcList(.MascotasIndex(iCount)).Hostile = 1
+                
             End If
-110     Next iCount
+            
+        Next iCount
+    
+    End With
         
-        Exit Sub
+    Exit Sub
 
 AllMascotasAtacanUser_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.AllMascotasAtacanUser", Erl)
-
+    Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.AllMascotasAtacanUser", Erl)
         
 End Sub
 

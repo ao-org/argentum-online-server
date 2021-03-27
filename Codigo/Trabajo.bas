@@ -2195,7 +2195,7 @@ Public Sub DoMeditar(ByVal UserIndex As Integer)
         On Error GoTo DoMeditar_Err
 
         Dim Mana As Long
-
+        
 100     With UserList(UserIndex)
 
 102         .Counters.TimerMeditar = .Counters.TimerMeditar + 1
@@ -2206,21 +2206,24 @@ Public Sub DoMeditar(ByVal UserIndex As Integer)
 
 108             If Mana <= 0 Then Mana = 1
 
-110             .Stats.MinMAN = .Stats.MinMAN + Mana
+110             If .Stats.MinMAN + Mana >= .Stats.MaxMAN Then
 
-112             If .Stats.MinMAN >= .Stats.MaxMAN Then
-114                 .Stats.MinMAN = .Stats.MaxMAN
-116                 .flags.Meditando = False
-118                 .Char.FX = 0
+112                 .Stats.MinMAN = .Stats.MaxMAN
+114                 .flags.Meditando = False
+116                 .Char.FX = 0
                     
-120                 Call WriteUpdateMana(UserIndex)
-122                 Call SubirSkill(UserIndex, Meditar)
+118                 Call WriteUpdateMana(UserIndex)
+120                 Call SubirSkill(UserIndex, Meditar)
 
-124                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(.Char.CharIndex, 0))
+122                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(.Char.CharIndex, 0))
                 
                 Else
+                    
+124                 .Stats.MinMAN = .Stats.MinMAN + Mana
+                    
 126                 Call WriteUpdateMana(UserIndex)
-128             Call SubirSkill(UserIndex, Meditar)
+128                 Call SubirSkill(UserIndex, Meditar)
+
                 End If
 
 130             .Counters.TimerMeditar = 0
