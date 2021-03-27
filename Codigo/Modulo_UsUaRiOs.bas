@@ -1410,6 +1410,7 @@ Sub UserDie(ByVal UserIndex As Integer)
 136             NpcList(aN).Movement = NpcList(aN).flags.OldMovement
 138             NpcList(aN).Hostile = NpcList(aN).flags.OldHostil
 140             NpcList(aN).flags.AttackedBy = vbNullString
+                NpcList(aN).Target = 0
             End If
         
 142         aN = .flags.NPCAtacado

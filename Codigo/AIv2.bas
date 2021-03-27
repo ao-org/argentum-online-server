@@ -28,6 +28,7 @@ Public Sub IrUsuarioCercano(ByVal NpcIndex As Integer)
         Next i
 
         If .Target > 0 Then
+        
             If InRangoVision(.Target, .Pos.X, .Pos.Y) Then
                 Call AI_AtacarObjetivo(NpcIndex)
             Else
@@ -56,8 +57,7 @@ Private Sub AI_AtacarObjetivo(ByVal AtackerNpcIndex As Integer)
     
     With NpcList(AtackerNpcIndex)
         
-        ' Esta funcion espera que el target este seteado.
-        If .Target = 0 Then GoTo ErrorHandler
+        If .Target = 0 Then Exit Sub
         
         EstaLejosDelUsuario = (Distancia(.Pos, UserList(.Target).Pos) > 1)
         PegoConMagia = (.flags.LanzaSpells And (RandomNumber(1, 2) = 1 Or .flags.Inmovilizado Or EstaLejosDelUsuario))
@@ -95,6 +95,53 @@ ErrorHandler:
     
 End Sub
 
+Public Sub SeguirAgresor2(ByVal NpcIndex As Integer)
+    
+    With NpcList(NpcIndex)
+        
+        If EsObjetivoValido(NpcIndex, .Target) Then
+        
+            Call AI_AtacarObjetivo(NpcIndex)
+        
+        End If
+    
+    End With
+    
+End Sub
+
+' ---------------------------------------------------------------------------------------------------
+'                                       HELPERS
+' ---------------------------------------------------------------------------------------------------
+
+Private Function UsuarioEnVistaPerisfericaDelNPC(ByVal UserIndex As Integer, _
+                                                 ByVal NpcIndex As Integer) As Boolean
+    
+    Dim UserPos As WorldPos
+        UserPos = UserList(UserIndex).Pos
+    
+    With NpcList(NpcIndex)
+    
+        Select Case .Char.Heading
+
+            Case eHeading.NORTH
+                UsuarioEnVistaPerisfericaDelNPC = (.Pos.Y > UserPos.Y)
+           
+            Case eHeading.EAST
+                UsuarioEnVistaPerisfericaDelNPC = (.Pos.X > UserPos.X)
+
+            Case eHeading.SOUTH
+                UsuarioEnVistaPerisfericaDelNPC = (.Pos.Y < UserPos.Y)
+                
+            Case eHeading.WEST
+                UsuarioEnVistaPerisfericaDelNPC = (.Pos.X < UserPos.X)
+                
+        End Select
+    
+    End With
+
+
+End Function
+
 Private Function EsObjetivoValido(ByVal NpcIndex As Integer, ByVal UserIndex As Integer) As Boolean
     
     ' Esto se ejecuta cuando el NPC NO tiene ningun objetivo en primer lugar.
@@ -103,31 +150,22 @@ Private Function EsObjetivoValido(ByVal NpcIndex As Integer, ByVal UserIndex As 
     Dim RangoY    As Byte
         
     With NpcList(NpcIndex)
+        
         RangoX = IIf(.Distancia <> 0, .Distancia, RANGO_VISION_X)
         RangoY = IIf(.Distancia <> 0, .Distancia, RANGO_VISION_Y)
         
     End With
     
-    EsObjetivoValido = (EnRangoVision(NpcIndex, UserIndex, RangoX, RangoY) And PuedeAtacarUser(UserIndex))
+    If UserIndex > 0 Then
     
-End Function
-
-Private Function ValidarObjetivo(NpcIndex As Integer, UserIndex As Integer) As Boolean
+        EsObjetivoValido = (InRangoVision(NpcIndex, RangoX, RangoY) And PuedeAtacarUser(UserIndex))
     
-    ' Validamos al objetivo que ya estaba previamente establecido en BuscarObjetivo()
+    Else
+        
+        EsObjetivoValido = False
     
-    With NpcList(NpcIndex)
+    End If
     
-        ValidarObjetivo = (.Target <> 0 And InRangoVision(UserIndex, RANGO_VISION_X, RANGO_VISION_Y) And PuedeAtacarUser(.Target))
-    
-    End With
-    
-End Function
-
-Private Function EnRangoVision(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, ByVal Limite_X As Byte, ByVal Limite_Y As Integer) As Boolean
-    
-    EnRangoVision = (Abs(UserList(UserIndex).Pos.X - NpcList(NpcIndex).Pos.X) <= Limite_X And Abs(UserList(UserIndex).Pos.Y - NpcList(NpcIndex).Pos.Y) <= Limite_Y)
-
 End Function
 
 Private Function PuedeAtacarUser(ByVal targetUserIndex As Integer) As Boolean

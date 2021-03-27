@@ -92,146 +92,147 @@ End Enum
 
 Private Sub SeguirAgresor(ByVal NpcIndex As Integer)
         
-        On Error GoTo SeguirAgresor_Err
+    On Error GoTo SeguirAgresor_Err
         
 
-        Dim tHeading As Byte
-        Dim UI       As Integer
-        Dim i        As Long
-        Dim SignoNS  As Integer
-        Dim SignoEO  As Integer
+    Dim tHeading As Byte
+    Dim UI       As Integer
+    Dim i        As Long
+    Dim SignoNS  As Integer
+    Dim SignoEO  As Integer
     
-100     With NpcList(NpcIndex)
+    With NpcList(NpcIndex)
 
-102         If .flags.Inmovilizado = 1 Then
+        If .flags.Inmovilizado = 1 Then
 
-104             Select Case .Char.Heading
+            Select Case .Char.Heading
 
-                    Case eHeading.NORTH
-106                     SignoNS = -1
-108                     SignoEO = 0
+                Case eHeading.NORTH
+                    SignoNS = -1
+                    SignoEO = 0
                 
-110                 Case eHeading.EAST
-112                     SignoNS = 0
-114                     SignoEO = 1
+                Case eHeading.EAST
+                    SignoNS = 0
+                    SignoEO = 1
                 
-116                 Case eHeading.SOUTH
-118                     SignoNS = 1
-120                     SignoEO = 0
+                Case eHeading.SOUTH
+                    SignoNS = 1
+                    SignoEO = 0
                 
-122                 Case eHeading.WEST
-124                     SignoEO = -1
-126                     SignoNS = 0
+                Case eHeading.WEST
+                    SignoEO = -1
+                    SignoNS = 0
 
-                End Select
+            End Select
             
-128             For i = 1 To ModAreas.ConnGroups(.Pos.Map).CountEntrys
-130                 UI = ModAreas.ConnGroups(.Pos.Map).UserEntrys(i)
+            For i = 1 To ModAreas.ConnGroups(.Pos.Map).CountEntrys
+                UI = ModAreas.ConnGroups(.Pos.Map).UserEntrys(i)
                 
-                    'Is it in it's range of vision??
-132                 If Abs(UserList(UI).Pos.X - .Pos.X) <= RANGO_VISION_X And Sgn(UserList(UI).Pos.X - .Pos.X) = SignoEO Then
-134                     If Abs(UserList(UI).Pos.Y - .Pos.Y) <= RANGO_VISION_Y And Sgn(UserList(UI).Pos.Y - .Pos.Y) = SignoNS Then
+                'Is it in it's range of vision??
+                If Abs(UserList(UI).Pos.X - .Pos.X) <= RANGO_VISION_X And Sgn(UserList(UI).Pos.X - .Pos.X) = SignoEO Then
+                    If Abs(UserList(UI).Pos.Y - .Pos.Y) <= RANGO_VISION_Y And Sgn(UserList(UI).Pos.Y - .Pos.Y) = SignoNS Then
                             
-136                         If UserList(UI).name = .flags.AttackedBy Then
+                        If UserList(UI).name = .flags.AttackedBy Then
                             
-138                             If PuedeAtacarUser(UI) Then
+                            If PuedeAtacarUser(UI) Then
 
-140                                 If .flags.LanzaSpells > 0 Then
+                                If .flags.LanzaSpells > 0 Then
 
-142                                     Call AnimacionIdle(NpcIndex, True)
-144                                     Call NpcLanzaUnSpell(NpcIndex, UI)
+                                    Call AnimacionIdle(NpcIndex, True)
+                                    Call NpcLanzaUnSpell(NpcIndex, UI)
                                         
-                                    End If
-
-                                    Exit Sub
-
                                 End If
 
+                                Exit Sub
+
                             End If
-                        
+
                         End If
-
+                        
                     End If
-                
-146             Next i
 
-            Else
+                End If
+                
+            Next i
+
+        Else
   
-148             For i = 1 To ModAreas.ConnGroups(.Pos.Map).CountEntrys
-150                 UI = ModAreas.ConnGroups(.Pos.Map).UserEntrys(i)
+            For i = 1 To ModAreas.ConnGroups(.Pos.Map).CountEntrys
+                UI = ModAreas.ConnGroups(.Pos.Map).UserEntrys(i)
                 
-                    'Is it in it's range of vision??
-152                 If Abs(UserList(UI).Pos.X - .Pos.X) <= RANGO_VISION_X Then
-154                     If Abs(UserList(UI).Pos.Y - .Pos.Y) <= RANGO_VISION_Y Then
+                'Is it in it's range of vision??
+                If Abs(UserList(UI).Pos.X - .Pos.X) <= RANGO_VISION_X Then
+                    If Abs(UserList(UI).Pos.Y - .Pos.Y) <= RANGO_VISION_Y Then
                     
-156                         If UserList(UI).name = .flags.AttackedBy Then
+                        If UserList(UI).name = .flags.AttackedBy Then
                                
-158                             If PuedeAtacarUser(UI) Then
+                            If PuedeAtacarUser(UI) Then
 
-160                                 If .flags.LanzaSpells > 0 Then
-162                                     Call NpcLanzaUnSpell(NpcIndex, UI)
-                                    End If
+                                If .flags.LanzaSpells > 0 Then
+                                    Call NpcLanzaUnSpell(NpcIndex, UI)
+                                End If
                                     
-164                                 tHeading = FindDirectionEAO(.Pos, UserList(UI).Pos, NpcList(NpcIndex).flags.AguaValida = 1, NpcList(NpcIndex).flags.TierraInvalida = 0)
+                                tHeading = FindDirectionEAO(.Pos, UserList(UI).Pos, NpcList(NpcIndex).flags.AguaValida = 1, NpcList(NpcIndex).flags.TierraInvalida = 0)
                                                          
-166                                 If Distancia(.Pos, UserList(UI).Pos) = 1 Then
-168                                     Call ChangeNPCChar(NpcIndex, .Char.Body, .Char.Head, tHeading)
-170                                     Call AnimacionIdle(NpcIndex, True)
-172                                     Call NpcAtacaUser(NpcIndex, UI, tHeading)
+                                If Distancia(.Pos, UserList(UI).Pos) = 1 Then
+                                    Call ChangeNPCChar(NpcIndex, .Char.Body, .Char.Head, tHeading)
+                                    Call AnimacionIdle(NpcIndex, True)
+                                    Call NpcAtacaUser(NpcIndex, UI, tHeading)
 
-                                    Else
+                                Else
                                     
-174                                     Call MoveNPCChar(NpcIndex, tHeading)
-
-                                    End If
-
-                                    Exit Sub
+                                    Call MoveNPCChar(NpcIndex, tHeading)
 
                                 End If
 
+                                Exit Sub
+
                             End If
-                        
+
                         End If
-
+                        
                     End If
+
+                End If
                 
-176             Next i
+            Next i
 
-            End If
+        End If
 
-        End With
+    End With
     
-178     Call RestoreOldMovement(NpcIndex)
+    Call RestoreOldMovement(NpcIndex)
 
         
-        Exit Sub
+    Exit Sub
 
 SeguirAgresor_Err:
-180     Call RegistrarError(Err.Number, Err.Description, "AI.SeguirAgresor", Erl)
-182     Resume Next
+    Call RegistrarError(Err.Number, Err.Description, "AI.SeguirAgresor", Erl)
+    Resume Next
         
 End Sub
 
 Private Sub RestoreOldMovement(ByVal NpcIndex As Integer)
         
-        On Error GoTo RestoreOldMovement_Err
+    On Error GoTo RestoreOldMovement_Err
         
 
-100     With NpcList(NpcIndex)
+    With NpcList(NpcIndex)
 
-102         If .MaestroUser = 0 Then
-104             .Movement = .flags.OldMovement
-106             .Hostile = .flags.OldHostil
-108             .flags.AttackedBy = vbNullString
-            End If
+        If .MaestroUser = 0 Then
+            .Movement = .flags.OldMovement
+            .Hostile = .flags.OldHostil
+            .flags.AttackedBy = vbNullString
+            .Target = 0
+        End If
 
-        End With
+    End With
 
-        Exit Sub
+    Exit Sub
 
 RestoreOldMovement_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "AI.RestoreOldMovement", Erl)
-112     Resume Next
+    Call RegistrarError(Err.Number, Err.Description, "AI.RestoreOldMovement", Erl)
+    Resume Next
         
 End Sub
 
@@ -734,7 +735,7 @@ Sub NPCAI(ByVal NpcIndex As Integer)
 
                     'Va hacia el usuario que lo ataco(FOLLOW)
 132             Case TipoAI.NPCDEFENSA
-134                 Call SeguirAgresor(NpcIndex)
+134                 Call SeguirAgresor2(NpcIndex)
 
                     'Persigue criminales
 136             Case TipoAI.GuardiasAtacanCriminales
