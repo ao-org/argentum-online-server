@@ -701,14 +701,12 @@ Sub Main()
 244         .Minuto.Enabled = True
 246         .TimerGuardarUsuarios.Enabled = True
 248         .TimerGuardarUsuarios.Interval = IntervaloTimerGuardarUsuarios
-            '.tLluvia.Enabled = True
 250         .tPiqueteC.Enabled = True
 252         .GameTimer.Enabled = True
 254         .Auditoria.Enabled = True
 256         .KillLog.Enabled = True
 258         .TIMER_AI.Enabled = True
-
-            '.npcataca.Enabled = True
+            .Invasion.Enabled = True
         End With
     
 260     Subasta.SubastaHabilitada = True
