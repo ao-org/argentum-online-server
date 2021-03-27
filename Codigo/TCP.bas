@@ -2074,6 +2074,7 @@ Sub CloseUser(ByVal UserIndex As Integer)
 108             NpcList(aN).Movement = NpcList(aN).flags.OldMovement
 110             NpcList(aN).Hostile = NpcList(aN).flags.OldHostil
 112             NpcList(aN).flags.AttackedBy = vbNullString
+                NpcList(aN).Target = 0
     
             End If
     

@@ -320,7 +320,7 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
 132                 NpcList(aN).Movement = NpcList(aN).flags.OldMovement
 134                 NpcList(aN).Hostile = NpcList(aN).flags.OldHostil
 136                 NpcList(aN).flags.AttackedBy = vbNullString
-
+                    NpcList(aN).Target = 0
                 End If
     
 138             aN = UserList(UserIndex).flags.NPCAtacado
@@ -349,26 +349,26 @@ End Sub
 
 Function InRangoVision(ByVal UserIndex As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
         
-        On Error GoTo InRangoVision_Err
+    On Error GoTo InRangoVision_Err
         
 
-100     If X > UserList(UserIndex).Pos.X - MinXBorder And X < UserList(UserIndex).Pos.X + MinXBorder Then
-102         If Y > UserList(UserIndex).Pos.Y - MinYBorder And Y < UserList(UserIndex).Pos.Y + MinYBorder Then
-104             InRangoVision = True
-                Exit Function
-
-            End If
+    If X > UserList(UserIndex).Pos.X - MinXBorder And X < UserList(UserIndex).Pos.X + MinXBorder Then
+        If Y > UserList(UserIndex).Pos.Y - MinYBorder And Y < UserList(UserIndex).Pos.Y + MinYBorder Then
+            InRangoVision = True
+            Exit Function
 
         End If
 
-106     InRangoVision = False
+    End If
+
+    InRangoVision = False
 
         
-        Exit Function
+    Exit Function
 
 InRangoVision_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "Extra.InRangoVision", Erl)
-110     Resume Next
+    Call RegistrarError(Err.Number, Err.Description, "Extra.InRangoVision", Erl)
+    Resume Next
         
 End Function
 

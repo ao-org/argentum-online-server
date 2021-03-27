@@ -1500,28 +1500,35 @@ End Function
 
 Sub DoFollow(ByVal NpcIndex As Integer, ByVal UserName As String)
         
-        On Error GoTo DoFollow_Err
+    On Error GoTo DoFollow_Err
         
-
-100     If NpcList(NpcIndex).flags.Follow Then
-102         NpcList(NpcIndex).flags.AttackedBy = vbNullString
-104         NpcList(NpcIndex).flags.Follow = False
-106         NpcList(NpcIndex).Movement = NpcList(NpcIndex).flags.OldMovement
-108         NpcList(NpcIndex).Hostile = NpcList(NpcIndex).flags.OldHostil
+    With NpcList(NpcIndex)
+    
+        If .flags.Follow Then
+        
+            .flags.AttackedBy = vbNullString
+            .Target = 0
+            .flags.Follow = False
+            .Movement = .flags.OldMovement
+            .Hostile = .flags.OldHostil
+   
         Else
-110         NpcList(NpcIndex).flags.AttackedBy = UserName
-112         NpcList(NpcIndex).flags.Follow = True
-114         NpcList(NpcIndex).Movement = 4 'follow
-116         NpcList(NpcIndex).Hostile = 0
+        
+            .flags.AttackedBy = UserName
+            .Target = NameIndex(UserName)
+            .flags.Follow = True
+            .Movement = 4 'follow
+            .Hostile = 0
 
         End If
-
+    
+    End With
         
-        Exit Sub
+    Exit Sub
 
 DoFollow_Err:
-118     Call RegistrarError(Err.Number, Err.Description, "NPCs.DoFollow", Erl)
-120     Resume Next
+    Call RegistrarError(Err.Number, Err.Description, "NPCs.DoFollow", Erl)
+    Resume Next
         
 End Sub
 
