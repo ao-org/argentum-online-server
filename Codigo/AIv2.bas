@@ -29,7 +29,7 @@ Public Sub IrUsuarioCercano(ByVal NpcIndex As Integer)
 
         If .Target > 0 Then
         
-            If InRangoVision(.Target, .Pos.X, .Pos.Y) Then
+            If EnRangoVision(NpcIndex, .Target, .Pos.X, .Pos.Y) Then
                 Call AI_AtacarObjetivo(NpcIndex)
             Else
                 ' El usuario se alejo demasiado.
@@ -95,18 +95,47 @@ ErrorHandler:
     
 End Sub
 
-Public Sub SeguirAgresor2(ByVal NpcIndex As Integer)
+Public Sub SeguirAgresor(ByVal NpcIndex As Integer)
+    
+    ' La IA que se ejecuta cuando alguien le pega al maestro de una Mascota/Elemental
     
     With NpcList(NpcIndex)
         
-        If EsObjetivoValido(NpcIndex, .Target) Then
+        If EsObjetivoValido(NpcIndex, .Target, False) Then
         
             Call AI_AtacarObjetivo(NpcIndex)
         
+        Else
+        
+            Call RestoreOldMovement(NpcIndex)
+        
         End If
-    
+        
     End With
     
+End Sub
+
+Private Sub RestoreOldMovement(ByVal NpcIndex As Integer)
+
+    With NpcList(NpcIndex)
+        
+        ' Si el NPC no tiene maestro, reseteamos el movimiento que tenia antes.
+        If .MaestroUser = 0 Then
+        
+            .Movement = .flags.OldMovement
+            .Hostile = .flags.OldHostil
+            .flags.AttackedBy = vbNullString
+            .Target = 0
+            
+        Else
+            
+            ' Si tiene maestro, hacemos que lo siga.
+            Call FollowAmo(NpcIndex)
+            
+        End If
+
+    End With
+
 End Sub
 
 ' ---------------------------------------------------------------------------------------------------
@@ -139,10 +168,9 @@ Private Function UsuarioEnVistaPerisfericaDelNPC(ByVal UserIndex As Integer, _
     
     End With
 
-
 End Function
 
-Private Function EsObjetivoValido(ByVal NpcIndex As Integer, ByVal UserIndex As Integer) As Boolean
+Private Function EsObjetivoValido(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, Optional ByVal RespetarHeading As Boolean = False) As Boolean
     
     ' Esto se ejecuta cuando el NPC NO tiene ningun objetivo en primer lugar.
     
@@ -158,14 +186,26 @@ Private Function EsObjetivoValido(ByVal NpcIndex As Integer, ByVal UserIndex As 
     
     If UserIndex > 0 Then
     
-        EsObjetivoValido = (InRangoVision(NpcIndex, RangoX, RangoY) And PuedeAtacarUser(UserIndex))
-    
+        EsObjetivoValido = (EnRangoVision(NpcIndex, UserIndex, RangoX, RangoY) And PuedeAtacarUser(UserIndex))
+        
+        If RespetarHeading Then
+        
+            EsObjetivoValido = EsObjetivoValido And UsuarioEnVistaPerisfericaDelNPC(UserIndex, NpcIndex)
+            
+        End If
+        
     Else
         
         EsObjetivoValido = False
     
     End If
     
+End Function
+
+Private Function EnRangoVision(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, ByVal Limite_X As Byte, ByVal Limite_Y As Integer) As Boolean
+    
+    EnRangoVision = (Abs(UserList(UserIndex).Pos.X - NpcList(NpcIndex).Pos.X) <= Limite_X And Abs(UserList(UserIndex).Pos.Y - NpcList(NpcIndex).Pos.Y) <= Limite_Y)
+
 End Function
 
 Private Function PuedeAtacarUser(ByVal targetUserIndex As Integer) As Boolean

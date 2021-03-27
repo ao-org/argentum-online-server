@@ -90,128 +90,6 @@ Public Enum e_Personalidad
 
 End Enum
 
-Private Sub SeguirAgresor(ByVal NpcIndex As Integer)
-        
-    On Error GoTo SeguirAgresor_Err
-        
-
-    Dim tHeading As Byte
-    Dim UI       As Integer
-    Dim i        As Long
-    Dim SignoNS  As Integer
-    Dim SignoEO  As Integer
-    
-    With NpcList(NpcIndex)
-
-        If .flags.Inmovilizado = 1 Then
-
-            Select Case .Char.Heading
-
-                Case eHeading.NORTH
-                    SignoNS = -1
-                    SignoEO = 0
-                
-                Case eHeading.EAST
-                    SignoNS = 0
-                    SignoEO = 1
-                
-                Case eHeading.SOUTH
-                    SignoNS = 1
-                    SignoEO = 0
-                
-                Case eHeading.WEST
-                    SignoEO = -1
-                    SignoNS = 0
-
-            End Select
-            
-            For i = 1 To ModAreas.ConnGroups(.Pos.Map).CountEntrys
-                UI = ModAreas.ConnGroups(.Pos.Map).UserEntrys(i)
-                
-                'Is it in it's range of vision??
-                If Abs(UserList(UI).Pos.X - .Pos.X) <= RANGO_VISION_X And Sgn(UserList(UI).Pos.X - .Pos.X) = SignoEO Then
-                    If Abs(UserList(UI).Pos.Y - .Pos.Y) <= RANGO_VISION_Y And Sgn(UserList(UI).Pos.Y - .Pos.Y) = SignoNS Then
-                            
-                        If UserList(UI).name = .flags.AttackedBy Then
-                            
-                            If PuedeAtacarUser(UI) Then
-
-                                If .flags.LanzaSpells > 0 Then
-
-                                    Call AnimacionIdle(NpcIndex, True)
-                                    Call NpcLanzaUnSpell(NpcIndex, UI)
-                                        
-                                End If
-
-                                Exit Sub
-
-                            End If
-
-                        End If
-                        
-                    End If
-
-                End If
-                
-            Next i
-
-        Else
-  
-            For i = 1 To ModAreas.ConnGroups(.Pos.Map).CountEntrys
-                UI = ModAreas.ConnGroups(.Pos.Map).UserEntrys(i)
-                
-                'Is it in it's range of vision??
-                If Abs(UserList(UI).Pos.X - .Pos.X) <= RANGO_VISION_X Then
-                    If Abs(UserList(UI).Pos.Y - .Pos.Y) <= RANGO_VISION_Y Then
-                    
-                        If UserList(UI).name = .flags.AttackedBy Then
-                               
-                            If PuedeAtacarUser(UI) Then
-
-                                If .flags.LanzaSpells > 0 Then
-                                    Call NpcLanzaUnSpell(NpcIndex, UI)
-                                End If
-                                    
-                                tHeading = FindDirectionEAO(.Pos, UserList(UI).Pos, NpcList(NpcIndex).flags.AguaValida = 1, NpcList(NpcIndex).flags.TierraInvalida = 0)
-                                                         
-                                If Distancia(.Pos, UserList(UI).Pos) = 1 Then
-                                    Call ChangeNPCChar(NpcIndex, .Char.Body, .Char.Head, tHeading)
-                                    Call AnimacionIdle(NpcIndex, True)
-                                    Call NpcAtacaUser(NpcIndex, UI, tHeading)
-
-                                Else
-                                    
-                                    Call MoveNPCChar(NpcIndex, tHeading)
-
-                                End If
-
-                                Exit Sub
-
-                            End If
-
-                        End If
-                        
-                    End If
-
-                End If
-                
-            Next i
-
-        End If
-
-    End With
-    
-    Call RestoreOldMovement(NpcIndex)
-
-        
-    Exit Sub
-
-SeguirAgresor_Err:
-    Call RegistrarError(Err.Number, Err.Description, "AI.SeguirAgresor", Erl)
-    Resume Next
-        
-End Sub
-
 Private Sub RestoreOldMovement(ByVal NpcIndex As Integer)
         
     On Error GoTo RestoreOldMovement_Err
@@ -735,7 +613,7 @@ Sub NPCAI(ByVal NpcIndex As Integer)
 
                     'Va hacia el usuario que lo ataco(FOLLOW)
 132             Case TipoAI.NPCDEFENSA
-134                 Call SeguirAgresor2(NpcIndex)
+134                 Call SeguirAgresor(NpcIndex)
 
                     'Persigue criminales
 136             Case TipoAI.GuardiasAtacanCriminales
