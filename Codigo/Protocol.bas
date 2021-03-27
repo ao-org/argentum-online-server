@@ -2435,10 +2435,6 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
             Exit Sub
 
         End If
-    
-        Dim dummy    As Long
-
-        Dim TempTick As Long
 
         Dim Heading  As eHeading
     
@@ -2475,47 +2471,26 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
 134                         Call WriteLocaleMsg(UserIndex, "178", FontTypeNames.FONTTYPE_INFO)
     
                         End If
-    
-                        Dim TiempoDeWalk As Byte
-    
-136                     If .flags.Montado = 1 Then
-138                         TiempoDeWalk = 37
-140                     ElseIf .flags.Muerto = 1 Then
-142                         TiempoDeWalk = 40
-                        Else
-144                         TiempoDeWalk = 34
-    
-                        End If
                         
+                        Dim TiempoTotalPasos As Long, TickActual As Long
+                        Dim TotalPasos As Long, TiempoMaximoPasos As Long
+                        TotalPasos = 10
+                        TiempoMaximoPasos = TotalPasos * 200 / .Char.speeding
+
                         'Prevent SpeedHack
-146                     If .flags.TimesWalk >= TiempoDeWalk Then
-148                         TempTick = GetTickCount()
-150                         dummy = (TempTick - .flags.StartWalk)
-                            
-                            ' 5800 is actually less than what would be needed in perfect conditions to take 30 steps
-                            '(it's about 193 ms per step against the over 200 needed in perfect conditions)
-152                         If dummy < 5200 Then
-154                             If TempTick - .flags.CountSH > 30000 Then
-156                                 .flags.CountSH = 0
-    
-                                End If
-                                
-158                             If Not .flags.CountSH = 0 Then
-160                                 If dummy <> 0 Then dummy = 126000 \ dummy
-                                   
-162                                 Call LogHackAttemp("Tramposo SH: " & .name & " , " & dummy)
-164                                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> " & .name & " ha sido echado por el servidor por posible uso de SpeedHack.", FontTypeNames.FONTTYPE_SERVER))
-166                                 Call CloseSocket(UserIndex)
-                                    
-                                    Exit Sub
-                                Else
-168                                 .flags.CountSH = TempTick
-    
-                                End If
-    
+146                     If .flags.TimesWalk >= TotalPasos Then
+148                         TickActual = GetTickCount
+150                         TiempoTotalPasos = TickActual - .flags.StartWalk
+
+152                         If TiempoTotalPasos < TiempoMaximoPasos Then
+162                             Call LogHackAttemp("Tramposo SH: " & .name & " , Velocidad SH: " & TiempoTotalPasos \ TiempoMaximoPasos)
+164                             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> " & .name & " ha sido echado por el servidor por posible uso de SpeedHack.", FontTypeNames.FONTTYPE_SERVER))
+166                             Call CloseSocket(UserIndex)
+                                 
+                                Exit Sub
                             End If
     
-170                         .flags.StartWalk = TempTick
+170                         .flags.StartWalk = TickActual
 172                         .flags.TimesWalk = 0
     
                         End If
@@ -2546,8 +2521,6 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
 190                 Call WriteLocaleMsg(UserIndex, "54", FontTypeNames.FONTTYPE_INFO)
 
                 End If
-            
-192             .flags.CountSH = 0
 
             End If
             
