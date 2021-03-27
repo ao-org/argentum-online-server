@@ -1760,7 +1760,6 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 180         .Hechizo = 0
 182         .TimesWalk = 0
 184         .StartWalk = 0
-186         .CountSH = 0
 188         .Silenciado = 0
 190         .CentinelaOK = False
 192         .AdminPerseguible = False

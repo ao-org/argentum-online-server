@@ -1587,15 +1587,10 @@ Public Type UserFlags
     
     ChatColor As Long
 
-    '[Barrin 30-11-03]
     TimesWalk As Long
     StartWalk As Long
-    CountSH As Long
-    '[/Barrin 30-11-03]
-    
-    '[CDT 17-02-04]
+
     UltimoMensaje As Integer
-    '[/CDT]
     
     Silenciado As Byte
     
