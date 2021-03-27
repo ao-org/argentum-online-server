@@ -1585,10 +1585,9 @@ Private Sub GameTimer_Timer()
                                     End If
 
                                 Else ' Intemperie
-                                    If .flags.Desnudo = 0 Then
-                                        Call RecStamina(iUserIndex, bEnviarStats, StaminaIntervaloSinDescansar * 4)
-                                    Else
+                                    If .flags.Desnudo = 1 Then
                                         Call PierdeEnergia(iUserIndex, bEnviarStats, IntervaloPerderStamina * 0.5)
+                                        
                                     End If
 
                                     If bEnviarStats Then
