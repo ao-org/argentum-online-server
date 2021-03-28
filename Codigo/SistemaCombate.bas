@@ -837,7 +837,7 @@ Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integ
 
     NpcAtacaUser = True
 
-    Call CheckPets(NpcIndex, UserIndex, False)
+    Call CheckPets(NpcIndex, UserIndex)
 
     If NpcList(NpcIndex).Target = 0 Then NpcList(NpcIndex).Target = UserIndex
     
@@ -936,7 +936,9 @@ Private Sub NpcDañoNpc(ByVal Atacante As Integer, ByVal Victima As Integer)
                     End If
                 
 124                 Call MuereNpc(Victima, .MaestroUser)
+
                 End If
+                
             End With
 
         
@@ -2399,29 +2401,36 @@ AllMascotasAtacanUser_Err:
         
 End Sub
 
-Public Sub CheckPets(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, Optional ByVal CheckElementales As Boolean = True)
+Public Sub CheckPets(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         
         On Error GoTo CheckPets_Err
-    
         
         Dim j As Integer
-    
 100     For j = 1 To MAXMASCOTAS
+        
 102         If UserList(UserIndex).MascotasIndex(j) > 0 Then
-104            If UserList(UserIndex).MascotasIndex(j) <> NpcIndex Then
-106             If CheckElementales Or (NpcList(UserList(UserIndex).MascotasIndex(j)).Numero <> ELEMENTALFUEGO And NpcList(UserList(UserIndex).MascotasIndex(j)).Numero <> ELEMENTALVIENTO) Then
-108                 If NpcList(UserList(UserIndex).MascotasIndex(j)).TargetNPC = 0 Then NpcList(UserList(UserIndex).MascotasIndex(j)).TargetNPC = NpcIndex
-110                 NpcList(UserList(UserIndex).MascotasIndex(j)).Movement = TipoAI.NpcAtacaNpc
+    
+104             If UserList(UserIndex).MascotasIndex(j) <> NpcIndex Then
+                
+106                 With NpcList(UserList(UserIndex).MascotasIndex(j))
+                
+108                     If .TargetNPC = 0 Then
+110                         .TargetNPC = NpcIndex
+112                         .Movement = TipoAI.NpcAtacaNpc
+                        End If
+                
+                    End With
+                
                 End If
-               End If
+               
             End If
-112     Next j
+            
+114     Next j
         
         Exit Sub
 
 CheckPets_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.CheckPets", Erl)
-
+116     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.CheckPets", Erl)
         
 End Sub
 
