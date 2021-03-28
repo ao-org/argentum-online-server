@@ -1959,8 +1959,9 @@ Public Type NPCFlags
     Snd2 As Integer
     Snd3 As Integer
     
-    AtacaAPJ As Integer
-    AtacaANPC As Integer
+    AtacaUsuarios As Boolean ' Si el NPC puede atacar usuarios
+    AtacaNPCs As Boolean     ' Si el NPC puede atacar otros NPC
+    
     AIAlineacion As e_Alineacion
     AIPersonalidad As e_Personalidad
 

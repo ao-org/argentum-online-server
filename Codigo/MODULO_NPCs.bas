@@ -229,8 +229,8 @@ Sub ResetNpcFlags(ByVal NpcIndex As Integer)
 146         .Snd3 = 0
 148         .TierraInvalida = 0
 150         .UseAINow = False
-152         .AtacaAPJ = 0
-154         .AtacaANPC = 0
+152         .AtacaUsuarios = True
+154         .AtacaNPCs = True
 156         .AIAlineacion = e_Alineacion.ninguna
 158         .AIPersonalidad = e_Personalidad.ninguna
 160         .NPCIdle = False
@@ -1316,6 +1316,19 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 264         .flags.NPCActive = True
 266         .flags.NPCActive = True
 268         .flags.UseAINow = False
+
+            Select Case val(Leer.GetValue("NPC" & NpcNumber, "RestriccionDeAtaque"))
+                Case 0 ' Todos
+                    .flags.AtacaNPCs = True
+                    .flags.AtacaUsuarios = True
+                Case 1 ' Usuarios solamente
+                    .flags.AtacaNPCs = False
+                    .flags.AtacaUsuarios = True
+                Case 2 ' NPCs solamente
+                    .flags.AtacaNPCs = True
+                    .flags.AtacaUsuarios = False
+                    
+            End Select
     
 270         If Respawn Then
 272             .flags.Respawn = val(Leer.GetValue("NPC" & NpcNumber, "ReSpawn"))
