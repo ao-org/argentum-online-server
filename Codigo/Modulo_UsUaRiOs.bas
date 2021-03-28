@@ -1233,7 +1233,7 @@ Sub NPCAtacado(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
             End If
         End If
 
-146     Call CheckPets(NpcIndex, UserIndex, False)
+146     Call CheckPets(NpcIndex, UserIndex)
         
         Exit Sub
 
