@@ -1233,7 +1233,7 @@ Sub NPCAtacado(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
             End If
         End If
 
-146     Call CheckPets(NpcIndex, UserIndex)
+146     Call AllMascotasAtacanNPC(NpcIndex, UserIndex)
         
         Exit Sub
 
