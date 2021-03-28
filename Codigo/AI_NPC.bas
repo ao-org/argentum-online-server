@@ -264,28 +264,12 @@ Public Sub AI_NpcAtacaNpc(ByVal NpcIndex As Integer)
     With NpcList(NpcIndex)
     
         If .TargetNPC > 0 And InRangoVisionNPC(NpcIndex, NpcList(.TargetNPC).Pos.X, NpcList(.TargetNPC).Pos.Y) Then
-
-            ' Si el NPC que esta atacando es un Elemental de Fuego
-            If .Numero = ELEMENTALFUEGO Then
-                
-                ' El Elemental de Fuego le tira hechizo al Dragon
-                Call NpcLanzaUnSpellSobreNpc(NpcIndex, .TargetNPC)
-                    
-                ' El dragon le pega al Elemental de Fuego
-                If NpcList(.TargetNPC).NPCtype = DRAGON Then
-                    .CanAttack = 1
-                    Call NpcLanzaUnSpellSobreNpc(.TargetNPC, NpcIndex)
-                End If
-                                         
-            Else ' OJO! Es lo que esta aca aplica para todos EXCEPTO Elemental de Fuego
-                                     
-                ' Me fijo si el NPC esta al lado del Objetivo
-                If Distancia(.Pos, NpcList(.TargetNPC).Pos) = 1 Then
-                    Call SistemaCombate.NpcAtacaNpc(NpcIndex, .TargetNPC)
-                End If
-      
+           
+            ' Me fijo si el NPC esta al lado del Objetivo
+            If Distancia(.Pos, NpcList(.TargetNPC).Pos) = 1 Then
+                Call SistemaCombate.NpcAtacaNpc(NpcIndex, .TargetNPC)
             End If
-            
+
             ' Si NO esta inmovilizado el NPC, caminamos hacia el objetivo.
             If Not .flags.Inmovilizado Then
                 
