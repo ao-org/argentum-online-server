@@ -837,7 +837,7 @@ Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integ
 
     NpcAtacaUser = True
 
-    Call CheckPets(NpcIndex, UserIndex)
+    Call AllMascotasAtacanNPC(NpcIndex, UserIndex)
 
     If NpcList(NpcIndex).Target = 0 Then NpcList(NpcIndex).Target = UserIndex
     
@@ -2375,19 +2375,22 @@ Sub AllMascotasAtacanUser(ByVal victim As Integer, ByVal Maestro As Integer)
         
     On Error GoTo AllMascotasAtacanUser_Err
 
-    Dim iCount As Integer
+    Dim iCount As Long
+    Dim mascotaIndex As Integer
     
     With UserList(Maestro)
     
         For iCount = 1 To MAXMASCOTAS
-
-            If .MascotasIndex(iCount) > 0 Then
+            mascotaIndex = .MascotasIndex(iCount)
             
-                NpcList(.MascotasIndex(iCount)).flags.AttackedBy = UserList(victim).name
-                NpcList(.MascotasIndex(iCount)).Target = victim
-                NpcList(.MascotasIndex(iCount)).Movement = TipoAI.NPCDEFENSA
-                NpcList(.MascotasIndex(iCount)).Hostile = 1
-                
+            If mascotaIndex > 0 Then
+                If NpcList(mascotaIndex).flags.AtacaUsuarios Then
+                    NpcList(mascotaIndex).flags.AttackedBy = UserList(victim).name
+                    NpcList(mascotaIndex).Target = victim
+                    NpcList(mascotaIndex).Movement = TipoAI.NPCDEFENSA
+                    NpcList(mascotaIndex).Hostile = 1
+                End If
+                    
             End If
             
         Next iCount
@@ -2401,36 +2404,31 @@ AllMascotasAtacanUser_Err:
         
 End Sub
 
-Public Sub CheckPets(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
+Public Sub AllMascotasAtacanNPC(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
+        On Error GoTo AllMascotasAtacanNPC_Err
         
-        On Error GoTo CheckPets_Err
+        Dim j As Long
+        Dim mascotaIdx As Integer
         
-        Dim j As Integer
-100     For j = 1 To MAXMASCOTAS
-        
-102         If UserList(UserIndex).MascotasIndex(j) > 0 Then
-    
-104             If UserList(UserIndex).MascotasIndex(j) <> NpcIndex Then
-                
-106                 With NpcList(UserList(UserIndex).MascotasIndex(j))
-                
-108                     If .TargetNPC = 0 Then
-110                         .TargetNPC = NpcIndex
-112                         .Movement = TipoAI.NpcAtacaNpc
-                        End If
-                
-                    End With
-                
-                End If
-               
-            End If
+        For j = 1 To MAXMASCOTAS
+            mascotaIdx = UserList(UserIndex).MascotasIndex(j)
             
-114     Next j
+            If mascotaIdx > 0 And mascotaIdx <> NpcIndex Then
+                With NpcList(mascotaIdx)
+                    
+                    If .flags.AtacaNPCs And .TargetNPC = 0 Then
+                        .TargetNPC = NpcIndex
+                        .Movement = TipoAI.NpcAtacaNpc
+                    End If
+            
+                End With
+            End If
+        Next j
         
         Exit Sub
 
-CheckPets_Err:
-116     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.CheckPets", Erl)
+AllMascotasAtacanNPC_Err:
+116     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.AllMascotasAtacanNPC", Erl)
         
 End Sub
 

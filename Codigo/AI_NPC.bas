@@ -63,7 +63,7 @@ Public Enum e_Personalidad
 End Enum
 
 Public Enum e_ModoBusquedaObjetivos
-    NPCsHostiles
+    NingunoEnParticular
     FaccionarioCiudadano
     FaccionarioCriminal
 End Enum
@@ -107,7 +107,7 @@ Public Sub NPCAI(ByVal NpcIndex As Integer)
 
             Case TipoAI.NpcMaloAtacaUsersBuenos
                 falladesc = " fallo NpcMaloAtacaUsersBuenos"
-                Call PerseguirUsuarioCercano(NpcIndex, e_ModoBusquedaObjetivos.NPCsHostiles)
+                Call PerseguirUsuarioCercano(NpcIndex, e_ModoBusquedaObjetivos.NingunoEnParticular)
 
                 'Va hacia el usuario que lo ataco(FOLLOW)
             Case TipoAI.NPCDEFENSA
@@ -327,7 +327,7 @@ Public Sub SeguirAgresor(ByVal NpcIndex As Integer)
     
     With NpcList(NpcIndex)
         
-        If EsObjetivoValido(NpcIndex, .Target, False) Then
+        If EsObjetivoValido(NpcIndex, .Target, e_ModoBusquedaObjetivos.NingunoEnParticular) Then
         
             Call AI_AtacarObjetivo(NpcIndex)
         
@@ -635,38 +635,9 @@ End Sub
 '                                       HELPERS
 ' ---------------------------------------------------------------------------------------------------
 
-Private Function UsuarioEnVistaPerisfericaDelNPC(ByVal UserIndex As Integer, _
-                                                 ByVal NpcIndex As Integer) As Boolean
-    
-    Dim UserPos As WorldPos
-        UserPos = UserList(UserIndex).Pos
-    
-    With NpcList(NpcIndex)
-    
-        Select Case .Char.Heading
-
-            Case eHeading.NORTH
-                UsuarioEnVistaPerisfericaDelNPC = (.Pos.Y > UserPos.Y)
-           
-            Case eHeading.EAST
-                UsuarioEnVistaPerisfericaDelNPC = (.Pos.X > UserPos.X)
-
-            Case eHeading.SOUTH
-                UsuarioEnVistaPerisfericaDelNPC = (.Pos.Y < UserPos.Y)
-                
-            Case eHeading.WEST
-                UsuarioEnVistaPerisfericaDelNPC = (.Pos.X < UserPos.X)
-                
-        End Select
-    
-    End With
-
-End Function
-
 Private Function EsObjetivoValido(ByVal NpcIndex As Integer, _
                                   ByVal UserIndex As Integer, _
-                                  ByVal ModoBusqueda As e_ModoBusquedaObjetivos, _
-                                  Optional ByVal RespetarHeading As Boolean = False) As Boolean
+                                  ByVal ModoBusqueda As e_ModoBusquedaObjetivos) As Boolean
     
     ' Esto se ejecuta cuando el NPC NO tiene ningun objetivo en primer lugar.
     
@@ -687,25 +658,20 @@ Private Function EsObjetivoValido(ByVal NpcIndex As Integer, _
         
         ' Aca tenemos ciertos criterios que podemos usar a la hora de establecer el objetivo de un NPC
         Select Case ModoBusqueda
-            
-            ' Si queres buscar NPCs's hostiles cercanos...
-            Case e_ModoBusquedaObjetivos.NPCsHostiles
-
-                If RespetarHeading Then
-        
-                    EsObjetivoValido = (EsObjetivoValido And (UsuarioEnVistaPerisfericaDelNPC(UserIndex, NpcIndex)))
-                    
-                End If
-               
+                           
             ' Si queres buscar Criminales cercanos...
             Case e_ModoBusquedaObjetivos.FaccionarioCiudadano
                 
-                EsObjetivoValido = (EsObjetivoValido And (NpcList(NpcIndex).NPCtype = eNPCType.Guardiascaos And (Status(UserIndex) = 1 Or Status(UserIndex) = 3)))
+                EsObjetivoValido = (EsObjetivoValido And (Status(UserIndex) = 1 Or Status(UserIndex) = 3))
             
             ' Si queres buscar Ciudadanos cercanos...
             Case e_ModoBusquedaObjetivos.FaccionarioCriminal
                 
-                EsObjetivoValido = (EsObjetivoValido And (NpcList(NpcIndex).NPCtype = eNPCType.GuardiaReal And (Status(UserIndex) = 0 Or Status(UserIndex) = 2)))
+                EsObjetivoValido = (EsObjetivoValido And (Status(UserIndex) = 0 Or Status(UserIndex) = 2))
+            
+            Case Else
+                ' Ok. No hay nada especial para hacer, cualquiera puede ser objetivo!
+            
                             
         End Select
 
