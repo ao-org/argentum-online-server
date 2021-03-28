@@ -1,11 +1,19 @@
 Attribute VB_Name = "AIv2"
 Option Explicit
 
-Public Sub IrUsuarioCercano(ByVal NpcIndex As Integer)
+Public Enum e_ModoBusquedaObjetivos
+    NPCsHostiles
+    FaccionarioCiudadano
+    FaccionarioCriminal
+End Enum
+
+Public Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer, Optional ByVal TipoObjetivo As e_ModoBusquedaObjetivos)
     On Error GoTo ErrorHandler
-  
-    Dim UserIndex As Integer
-    Dim i         As Long
+    
+    ' Buscas dentro del area de vision (donde se encuentra el NPC) el objetivo mas cercano de cierto tipo para atacar.
+    
+    Dim UserIndex    As Integer
+    Dim i            As Long
     Dim minDistancia As Integer
 
     ' Numero muy grande para que siempre haya un mínimo
@@ -13,27 +21,33 @@ Public Sub IrUsuarioCercano(ByVal NpcIndex As Integer)
     
     With NpcList(NpcIndex)
 
+        ' Busco un objetivo en el area.
         For i = 1 To ModAreas.ConnGroups(.Pos.Map).CountEntrys
             UserIndex = ModAreas.ConnGroups(.Pos.Map).UserEntrys(i)
+                
+            If EsObjetivoValido(NpcIndex, UserIndex, TipoObjetivo) Then
                     
-            If EsObjetivoValido(NpcIndex, UserIndex) Then
-            
+                ' Seteo el objetivo MAS CERCANO al NPC
                 If Distancia(UserList(UserIndex).Pos, .Pos) < minDistancia Then
                     .Target = UserIndex
                     minDistancia = Distancia(UserList(UserIndex).Pos, .Pos)
                 End If
-                
+                    
             End If
-             
+                 
         Next i
 
+        ' Si el NPC ya tiene un objetivo
         If .Target > 0 Then
-        
-            If EnRangoVision(NpcIndex, .Target, .Pos.X, .Pos.Y) Then
+            
+            ' Vuelvo a chequear que sea valido antes de atacar
+            If EsObjetivoValido(NpcIndex, UserIndex, TipoObjetivo) Then
                 Call AI_AtacarObjetivo(NpcIndex)
+                
             Else
                 ' El usuario se alejo demasiado.
-                .Target = 0
+                Call RestoreOldMovement(NpcIndex)
+                
             End If
        
         End If
@@ -98,6 +112,10 @@ End Sub
 Public Sub SeguirAgresor(ByVal NpcIndex As Integer)
     
     ' La IA que se ejecuta cuando alguien le pega al maestro de una Mascota/Elemental
+    '   o si atacas a los NPCs con Movement = 3 (TIPOAI.NPCDEFENSA)
+    
+    ' A diferencia de IrUsuarioCercano(), aca no buscamos objetivos cercanos en el area
+    ' porque ya establecemos como objetivo a el usuario que ataco a los NPC con este tipo de IA
     
     With NpcList(NpcIndex)
         
@@ -119,14 +137,15 @@ Private Sub RestoreOldMovement(ByVal NpcIndex As Integer)
 
     With NpcList(NpcIndex)
         
+        .Target = 0
+        
         ' Si el NPC no tiene maestro, reseteamos el movimiento que tenia antes.
         If .MaestroUser = 0 Then
         
             .Movement = .flags.OldMovement
             .Hostile = .flags.OldHostil
             .flags.AttackedBy = vbNullString
-            .Target = 0
-            
+
         Else
             
             ' Si tiene maestro, hacemos que lo siga.
@@ -170,7 +189,10 @@ Private Function UsuarioEnVistaPerisfericaDelNPC(ByVal UserIndex As Integer, _
 
 End Function
 
-Private Function EsObjetivoValido(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, Optional ByVal RespetarHeading As Boolean = False) As Boolean
+Private Function EsObjetivoValido(ByVal NpcIndex As Integer, _
+                                  ByVal UserIndex As Integer, _
+                                  ByVal ModoBusqueda As e_ModoBusquedaObjetivos, _
+                                  Optional ByVal RespetarHeading As Boolean = False) As Boolean
     
     ' Esto se ejecuta cuando el NPC NO tiene ningun objetivo en primer lugar.
     
@@ -185,15 +207,34 @@ Private Function EsObjetivoValido(ByVal NpcIndex As Integer, ByVal UserIndex As 
     End With
     
     If UserIndex > 0 Then
-    
+        
+        ' Esta condicion debe ejecutarse independiemente de el modo de busqueda.
         EsObjetivoValido = (EnRangoVision(NpcIndex, UserIndex, RangoX, RangoY) And PuedeAtacarUser(UserIndex))
         
-        If RespetarHeading Then
-        
-            EsObjetivoValido = EsObjetivoValido And UsuarioEnVistaPerisfericaDelNPC(UserIndex, NpcIndex)
+        ' Aca tenemos ciertos criterios que podemos usar a la hora de establecer el objetivo de un NPC
+        Select Case ModoBusqueda
             
-        End If
+            ' Si queres buscar NPCs's hostiles cercanos...
+            Case e_ModoBusquedaObjetivos.NPCsHostiles
+
+                If RespetarHeading Then
         
+                    EsObjetivoValido = (EsObjetivoValido And UsuarioEnVistaPerisfericaDelNPC(UserIndex, NpcIndex))
+                    
+                End If
+               
+            ' Si queres buscar Criminales cercanos...
+            Case e_ModoBusquedaObjetivos.FaccionarioCiudadano
+                
+                EsObjetivoValido = (EsObjetivoValido And (NpcList(NpcIndex).NPCtype = eNPCType.Guardiascaos And (Status(UserIndex) = 1 Or Status(UserIndex) = 3)))
+            
+            ' Si queres buscar Ciudadanos cercanos...
+            Case e_ModoBusquedaObjetivos.FaccionarioCriminal
+                
+                EsObjetivoValido = (EsObjetivoValido And (NpcList(NpcIndex).NPCtype = eNPCType.GuardiaReal And (Status(UserIndex) = 0 Or Status(UserIndex) = 2)))
+                            
+        End Select
+
     Else
         
         EsObjetivoValido = False

@@ -114,61 +114,6 @@ RestoreOldMovement_Err:
         
 End Sub
 
-Private Sub PersigueCiudadano(ByVal NpcIndex As Integer)
-        
-        On Error GoTo PersigueCiudadano_Err
-        
-
-        Dim UI       As Integer
-        Dim tHeading As Byte
-        Dim i        As Long
-    
-100     With NpcList(NpcIndex)
-
-102         For i = 1 To ModAreas.ConnGroups(.Pos.Map).CountEntrys
-104             UI = ModAreas.ConnGroups(.Pos.Map).UserEntrys(i)
-                
-                'Is it in it's range of vision??
-106             If Abs(UserList(UI).Pos.X - .Pos.X) <= RANGO_VISION_X Then
-108                 If Abs(UserList(UI).Pos.Y - .Pos.Y) <= RANGO_VISION_Y Then
-        
-110                     If Status(UI) = 1 Or Status(UI) = 3 Then
-                        
-112                         If PuedeAtacarUser(UI) Then
-
-114                             If .flags.LanzaSpells > 0 Then
-116                                 Call NpcLanzaUnSpell(NpcIndex, UI)
-                                End If
-
-118                             tHeading = FindDirectionEAO(.Pos, UserList(UI).Pos, NpcList(NpcIndex).flags.AguaValida = 1, NpcList(NpcIndex).flags.TierraInvalida = 0)
-
-120                             Call MoveNPCChar(NpcIndex, tHeading)
-
-                                Exit Sub
-
-                            End If
-
-                        End If
-                    
-                    End If
-
-                End If
-            
-122         Next i
-
-        End With
-    
-124     Call RestoreOldMovement(NpcIndex)
-
-        
-        Exit Sub
-
-PersigueCiudadano_Err:
-126     Call RegistrarError(Err.Number, Err.Description, "AI.PersigueCiudadano", Erl)
-128     Resume Next
-        
-End Sub
-
 Private Sub CuraResucita(ByVal NpcIndex As Integer)
         
         On Error GoTo CuraResucita_Err
@@ -216,8 +161,6 @@ Private Sub CuraResucita(ByVal NpcIndex As Integer)
                         End If
 
                         Exit Sub
-                        ' End If
-                        ' End If
                     
                     End If
 
@@ -233,140 +176,6 @@ Private Sub CuraResucita(ByVal NpcIndex As Integer)
 CuraResucita_Err:
 136     Call RegistrarError(Err.Number, Err.Description, "AI.CuraResucita", Erl)
 138     Resume Next
-        
-End Sub
-
-Private Sub PersigueCriminal(ByVal NpcIndex As Integer)
-        
-        On Error GoTo PersigueCriminal_Err
-        
-
-        Dim UI       As Integer
-        Dim tHeading As Byte
-        Dim i        As Long
-        Dim SignoNS  As Integer
-        Dim SignoEO  As Integer
-    
-100     With NpcList(NpcIndex)
-
-102         If .flags.Inmovilizado = 1 Then
-
-104             Select Case .Char.Heading
-
-                    Case eHeading.NORTH
-106                     SignoNS = -1
-108                     SignoEO = 0
-                
-110                 Case eHeading.EAST
-112                     SignoNS = 0
-114                     SignoEO = 1
-                
-116                 Case eHeading.SOUTH
-118                     SignoNS = 1
-120                     SignoEO = 0
-                
-122                 Case eHeading.WEST
-124                     SignoEO = -1
-126                     SignoNS = 0
-
-                End Select
-            
-128             For i = 1 To ModAreas.ConnGroups(.Pos.Map).CountEntrys
-130                 UI = ModAreas.ConnGroups(.Pos.Map).UserEntrys(i)
-                
-                    'Is it in it's range of vision??
-132                 If Abs(UserList(UI).Pos.X - .Pos.X) <= RANGO_VISION_X And Sgn(UserList(UI).Pos.X - .Pos.X) = SignoEO Then
-134                     If Abs(UserList(UI).Pos.Y - .Pos.Y) <= RANGO_VISION_Y And Sgn(UserList(UI).Pos.Y - .Pos.Y) = SignoNS Then
-                        
-136                         If Status(UI) = 0 Or Status(UI) = 2 Then
-
-138                             If PuedeAtacarUser(UI) Then
-
-140                                 If .flags.LanzaSpells > 0 Then
-142                                     Call NpcLanzaUnSpell(NpcIndex, UI)
-                                    End If
-
-                                    Exit Sub
-
-                                End If
-
-                            End If
-                        
-                        End If
-
-                    End If
-                    
-144             Next i
-
-            Else
-
-146             For i = 1 To ModAreas.ConnGroups(.Pos.Map).CountEntrys
-148                 UI = ModAreas.ConnGroups(.Pos.Map).UserEntrys(i)
-                
-                    'Is it in it's range of vision??
-150                 If Abs(UserList(UI).Pos.X - .Pos.X) <= RANGO_VISION_X Then
-152                     If Abs(UserList(UI).Pos.Y - .Pos.Y) <= RANGO_VISION_Y Then
-                        
-154                         If Status(UI) = 0 Or Status(UI) = 2 Then
-
-156                             If PuedeAtacarUser(UI) Then
-
-158                                 If .flags.LanzaSpells > 0 Then
-160                                     Call NpcLanzaUnSpell(NpcIndex, UI)
-                                    End If
-
-162                                 If Distancia(.Pos, UserList(UI).Pos) > 1 Then
-164                                     tHeading = FindDirectionEAO(.Pos, UserList(UI).Pos, NpcList(NpcIndex).flags.AguaValida = 1, NpcList(NpcIndex).flags.TierraInvalida = 0)
-166                                     Call MoveNPCChar(NpcIndex, tHeading)
-                                    
-                                    Else
-                                    
-168                                     If .Pos.Y > UserList(UI).Pos.Y Then
-170                                         tHeading = 1
-
-172                                     ElseIf .Pos.X < UserList(UI).Pos.X Then
-174                                         tHeading = 2
-
-176                                     ElseIf .Pos.Y < UserList(UI).Pos.Y Then
-178                                         tHeading = 3
-
-                                        Else
-180                                         tHeading = 4
-
-                                        End If
-
-182                                     If NpcAtacaUser(NpcIndex, UI, tHeading) Then
-184                                         Call ChangeNPCChar(NpcIndex, .Char.Body, .Char.Head, tHeading)
-                                        End If
-                                        
-                                    End If
-                                    
-                                    Exit Sub
-
-                                End If
-
-                            End If
-                        
-                        End If
-
-                    End If
-                
-186             Next i
-
-            End If
-
-        End With
-    
-188     Call RestoreOldMovement(NpcIndex)
-
-190     Call AnimacionIdle(NpcIndex, True)
-
-        
-        Exit Sub
-
-PersigueCriminal_Err:
-192     Call RegistrarError(Err.Number, Err.Description, "AI.PersigueCriminal", Erl)
-194     Resume Next
         
 End Sub
 
@@ -587,29 +396,31 @@ Sub NPCAI(ByVal NpcIndex As Integer)
 102         Select Case .Movement
 
                 Case TipoAI.ESTATICO
-                    Rem  Debug.Print "Es un NPC estatico, no hace nada."
-104                 falladesc = " fallo en estatico"
+                    ' Es un NPC estatico, no hace nada.
 
 106             Case TipoAI.MueveAlAzar
 108                 falladesc = " fallo al azar"
 
 112                 If .NPCtype = eNPCType.GuardiaReal Then
-114                     Call PersigueCriminal(NpcIndex)
+114                     Call PerseguirUsuarioCercano(NpcIndex, e_ModoBusquedaObjetivos.FaccionarioCriminal)
 
 116                 ElseIf .NPCtype = eNPCType.Guardiascaos Then
-118                     Call PersigueCiudadano(NpcIndex)
+118                     Call PerseguirUsuarioCercano(NpcIndex, e_ModoBusquedaObjetivos.FaccionarioCiudadano)
 
                     Else
+                        
+                        ' No encontro a nadie cerca, camina unos pasos en cualquier direccion.
 120                     If RandomNumber(1, 12) = 3 Then
 122                         Call MoveNPCChar(NpcIndex, CByte(RandomNumber(eHeading.NORTH, eHeading.WEST)))
                         Else
 124                         Call AnimacionIdle(NpcIndex, True)
                         End If
+                        
                     End If
 
 126             Case TipoAI.NpcMaloAtacaUsersBuenos
 128                 falladesc = " fallo NpcMaloAtacaUsersBuenos"
-130                 Call IrUsuarioCercano(NpcIndex)
+130                 Call PerseguirUsuarioCercano(NpcIndex, e_ModoBusquedaObjetivos.NPCsHostiles)
 
                     'Va hacia el usuario que lo ataco(FOLLOW)
 132             Case TipoAI.NPCDEFENSA
@@ -617,10 +428,10 @@ Sub NPCAI(ByVal NpcIndex As Integer)
 
                     'Persigue criminales
 136             Case TipoAI.GuardiasAtacanCriminales
-138                 Call PersigueCriminal(NpcIndex)
+                    Call PerseguirUsuarioCercano(NpcIndex, e_ModoBusquedaObjetivos.FaccionarioCriminal)
 
 140             Case TipoAI.GuardiasAtacanCiudadanos
-142                 Call PersigueCiudadano(NpcIndex)
+                    Call PerseguirUsuarioCercano(NpcIndex, e_ModoBusquedaObjetivos.FaccionarioCiudadano)
 
 144             Case TipoAI.NpcAtacaNpc
 146                 Call AiNpcAtacaNpc(NpcIndex)
