@@ -3773,7 +3773,7 @@ SetUserLogged_Err:
         
 End Sub
 
-Function Status(ByVal UserIndex As Integer) As Byte
+Function Status(ByVal UserIndex As Integer) As e_Facciones
         
         On Error GoTo Status_Err
         
