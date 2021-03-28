@@ -204,6 +204,7 @@ Public Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer, Optional ByVal Tip
     Exit Sub
     
 ErrorHandler:
+    
     Call RegistrarError(Err.Number, Err.Description, "AIv2.IrUsuarioCercano", Erl)
     
 End Sub
@@ -349,6 +350,7 @@ Public Sub SeguirAmo(ByVal NpcIndex As Integer)
         
         If .MaestroUser = 0 Then Exit Sub
         
+        ' Si la mascota no tiene objetivo establecido.
         If .Target = 0 And .TargetNPC = 0 Then
             
             UserIndex = .MaestroUser
@@ -360,12 +362,14 @@ Public Sub SeguirAmo(ByVal NpcIndex As Integer)
                     UserList(UserIndex).flags.Oculto = 0 And _
                     Distancia(.Pos, UserList(UserIndex).Pos) > 3 Then
                     
+                    ' Caminamos cerca del usuario
                     tHeading = FindDirectionEAO(.Pos, UserList(UserIndex).Pos)
                     Call MoveNPCChar(NpcIndex, tHeading)
                     Exit Sub
                     
                 Else
-                
+                    
+                    ' Caminamos aleatoriamente por ahi cerca.
                     If RandomNumber(1, 12) = 3 Then
                         Call MoveNPCChar(NpcIndex, CByte(RandomNumber(eHeading.NORTH, eHeading.WEST)))
 
@@ -427,17 +431,21 @@ Private Sub HacerCaminata(ByVal NpcIndex As Integer)
 
         ' Si todavía no llegó al destino
         If .Pos.X <> Destino.X Or .Pos.Y <> Destino.Y Then
+        
             ' Tratamos de acercarnos (podemos pisar npcs, usuarios o triggers)
             Heading = FindDirectionEAO(.Pos, Destino, .flags.AguaValida, .flags.TierraInvalida = 0, True, True)
+            
             ' Obtengo la posición según el heading
             NextTile = .Pos
             Call HeadtoPos(Heading, NextTile)
+            
             ' Si hay un NPC
             MoveChar = MapData(NextTile.Map, NextTile.X, NextTile.Y).NpcIndex
             If MoveChar Then
                 ' Lo movemos hacia un lado
                 Call MoveNpcToSide(MoveChar, Heading)
             End If
+            
             ' Si hay un user
             MoveChar = MapData(NextTile.Map, NextTile.X, NextTile.Y).UserIndex
             If MoveChar Then
@@ -447,26 +455,36 @@ Private Sub HacerCaminata(ByVal NpcIndex As Integer)
                     Call MoveUserToSide(MoveChar, Heading)
                 End If
             End If
+            
             ' Movemos al NPC de la caminata
             PudoMover = MoveNPCChar(NpcIndex, Heading)
+            
             ' Si no pudimos moverlo, hacemos como si hubiese llegado a destino... para evitar que se quede atascado
             If Not PudoMover Or Distancia(.Pos, Destino) = 0 Then
+            
                 ' Llegamos a destino, ahora esperamos el tiempo necesario para continuar
                 .Contadores.IntervaloMovimiento = GetTickCount + .Caminata(.CaminataActual).Espera - .IntervaloMovimiento
+                
                 ' Pasamos a la siguiente caminata
                 .CaminataActual = .CaminataActual + 1
+                
                 ' Si pasamos el último, volvemos al primero
                 If .CaminataActual > UBound(.Caminata) Then
                     .CaminataActual = 1
                 End If
+                
             End If
+            
         ' Si por alguna razón estamos en el destino, seguimos con la siguiente caminata
         Else
+        
             .CaminataActual = .CaminataActual + 1
+            
             ' Si pasamos el último, volvemos al primero
             If .CaminataActual > UBound(.Caminata) Then
                 .CaminataActual = 1
             End If
+            
         End If
     
     End With
@@ -499,6 +517,7 @@ Private Sub MovimientoInvasion(ByVal NpcIndex As Integer)
 
         ' Si todavía está lejos de la muralla
         If DistanciaMuralla > 1 Then
+        
             ' Tratamos de acercarnos (sin pisar)
             Dim Heading As eHeading
             Heading = FindDirectionEAO(.Pos, Destino, .flags.AguaValida, .flags.TierraInvalida = 0, True)
@@ -519,6 +538,7 @@ Private Sub MovimientoInvasion(ByVal NpcIndex As Integer)
         
         ' Si está pegado a la muralla
         Else
+        
             ' Chequeamos el intervalo de ataque
             If Not IntervaloPermiteAtacarNPC(NpcIndex) Then
                 Exit Sub
@@ -607,10 +627,6 @@ NpcLanzaUnSpellSobreNpc_Err:
     Resume Next
         
 End Sub
-
-
-
-
 
 
 
