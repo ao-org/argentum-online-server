@@ -32,6 +32,14 @@ Option Explicit
 ''
 ' Modulo de declaraciones. Aca hay de todo.
 '
+
+Public Enum e_Facciones
+    Criminal = 0
+    Ciudadano = 1
+    Caos = 2
+    Armada = 3
+End Enum
+
 Public Administradores As clsIniReader
 
 Public Enum e_SoundIndex
