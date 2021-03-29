@@ -17848,7 +17848,7 @@ Public Sub HandleSaveMap(ByVal UserIndex As Integer)
         
 106         Call LogGM(.name, .name & " ha guardado el mapa " & CStr(.Pos.Map))
         
-            ' Call GrabarMapa(.Pos.Map, App.Path & "\WorldBackUp\Mapa" & .Pos.Map)
+            Call GrabarMapa(.Pos.Map, App.Path & "\WorldBackUp\Mapa" & .Pos.Map)
         
 108         Call WriteConsoleMsg(UserIndex, "Mapa Guardado", FontTypeNames.FONTTYPE_INFO)
 
