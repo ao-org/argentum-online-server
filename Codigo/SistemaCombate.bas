@@ -1542,7 +1542,7 @@ Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As 
 218             Call Statistics.StoreFrag(AtacanteIndex, VictimaIndex)
 220             Call ContarMuerte(VictimaIndex, AtacanteIndex)
 222             Call ActStats(VictimaIndex, AtacanteIndex)
-
+                Call UserDie(VictimaIndex)
             ' Si sigue vivo
             Else
                 ' Enviamos la vida

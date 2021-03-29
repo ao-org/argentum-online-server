@@ -1518,45 +1518,40 @@ ErrorHandler:
 End Sub
 
 Sub ContarMuerte(ByVal Muerto As Integer, ByVal Atacante As Integer)
-        
         On Error GoTo ContarMuerte_Err
-        
 
-100     If EsNewbie(Muerto) Then Exit Sub
-102     If TriggerZonaPelea(Muerto, Atacante) = TRIGGER6_PERMITE Then Exit Sub
-104     If Abs(CInt(UserList(Muerto).Stats.ELV) - CInt(UserList(Atacante).Stats.ELV)) > 14 Then Exit Sub
-106     If Status(Muerto) = 0 Then
-108         If UserList(Atacante).flags.LastCrimMatado <> UserList(Muerto).name Then
-110             UserList(Atacante).flags.LastCrimMatado = UserList(Muerto).name
 
-112             If UserList(Atacante).Faccion.CriminalesMatados < MAXUSERMATADOS Then UserList(Atacante).Faccion.CriminalesMatados = UserList(Atacante).Faccion.CriminalesMatados + 1
+        If EsNewbie(Muerto) Then Exit Sub
+        If TriggerZonaPelea(Muerto, Atacante) = TRIGGER6_PERMITE Then Exit Sub
+        If Abs(CInt(UserList(Muerto).Stats.ELV) - CInt(UserList(Atacante).Stats.ELV)) > 14 Then Exit Sub
+        If Status(Muerto) = 0 Or Status(Muerto) = 2 Then
+            If UserList(Atacante).flags.LastCrimMatado <> UserList(Muerto).name Then
+                UserList(Atacante).flags.LastCrimMatado = UserList(Muerto).name
 
-            End If
-        
-114         If UserList(Atacante).Faccion.RecompensasCaos > 0 And UserList(Muerto).Faccion.FuerzasCaos = 1 Then
-116             UserList(Atacante).Faccion.Reenlistadas = 200  'jaja que trucho
-            
-                'con esto evitamos que se vuelva a reenlistar
+                If UserList(Atacante).Faccion.CriminalesMatados < MAXUSERMATADOS Then
+                    UserList(Atacante).Faccion.CriminalesMatados = UserList(Atacante).Faccion.CriminalesMatados + 1
+                End If
             End If
 
-118     ElseIf Status(Muerto) = 1 Then
+        ElseIf Status(Muerto) = 1 Or Status(Muerto) = 3 Then
 
-120         If UserList(Atacante).flags.LastCiudMatado <> UserList(Muerto).name Then
-122             UserList(Atacante).flags.LastCiudMatado = UserList(Muerto).name
+            If UserList(Atacante).flags.LastCiudMatado <> UserList(Muerto).name Then
+                UserList(Atacante).flags.LastCiudMatado = UserList(Muerto).name
 
-124             If UserList(Atacante).Faccion.ciudadanosMatados < MAXUSERMATADOS Then UserList(Atacante).Faccion.ciudadanosMatados = UserList(Atacante).Faccion.ciudadanosMatados + 1
+                If UserList(Atacante).Faccion.ciudadanosMatados < MAXUSERMATADOS Then
+                    UserList(Atacante).Faccion.ciudadanosMatados = UserList(Atacante).Faccion.ciudadanosMatados + 1
+                End If
 
             End If
 
         End If
 
-        
         Exit Sub
 
 ContarMuerte_Err:
-126     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.ContarMuerte", Erl)
-128     Resume Next
-        
+        Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.ContarMuerte", Erl)
+        Resume Next
+
 End Sub
 
 Sub Tilelibre(ByRef Pos As WorldPos, ByRef nPos As WorldPos, ByRef obj As obj, ByRef Agua As Boolean, ByRef Tierra As Boolean)
