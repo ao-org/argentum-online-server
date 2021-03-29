@@ -415,7 +415,7 @@ Public Sub HandleHome(ByVal UserIndex As Integer)
             End If
                 
             'Si el mapa tiene alguna restriccion (newbie, dungeon, etc...), no lo dejamos viajar.
-108         If MapInfo(.Pos.Map).zone = "NEWBIE" Then
+108         If MapInfo(.Pos.Map).zone = "NEWBIE" Or MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = CARCEL Then
 110             Call WriteConsoleMsg(UserIndex, "No pueder viajar a tu hogar desde este mapa.", FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
             
@@ -424,12 +424,6 @@ Public Sub HandleHome(ByVal UserIndex As Integer)
             'Si es un mapa comun y no esta en cana
 112         If .Counters.Pena <> 0 Then
 114             Call WriteConsoleMsg(UserIndex, "No puedes usar este comando en prisión.", FontTypeNames.FONTTYPE_FIGHT)
-                Exit Sub
-
-            End If
-        
-116         If .flags.Muerto = 0 Then
-118             Call WriteConsoleMsg(UserIndex, "Debes estar muerto para utilizar este comando.", FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
 
             End If
