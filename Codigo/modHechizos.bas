@@ -2805,6 +2805,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 442             Call Statistics.StoreFrag(UserIndex, tempChr)
 444             Call ContarMuerte(tempChr, UserIndex)
 446             Call ActStats(tempChr, UserIndex)
+                Call UserDie(tempChr)
             Else
 448             Call WriteUpdateHP(tempChr)
             End If
