@@ -1994,14 +1994,15 @@ Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal 
 102         Call CalcularDarExpGrupal(UserIndex, NpcIndex, ElDaño)
         Else
 
-            Dim ExpaDar As Long
+            Dim ExpaDar As Double
     
             '[Nacho] Chekeamos que las variables sean validas para las operaciones
 104         If ElDaño <= 0 Then ElDaño = 0
 106         If NpcList(NpcIndex).Stats.MaxHp <= 0 Then Exit Sub
 
             '[Nacho] La experiencia a dar es la porcion de vida quitada * toda la experiencia
-110         ExpaDar = ElDaño * NpcList(NpcIndex).GiveEXP / NpcList(NpcIndex).Stats.MaxHp
+            
+110         ExpaDar = CDbl(ElDaño) * CDbl(NpcList(NpcIndex).GiveEXP) / NpcList(NpcIndex).Stats.MaxHp
 
 112         If ExpaDar <= 0 Then Exit Sub
 
@@ -2098,7 +2099,9 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
 128             If UserList(UserIndex).Pos.Map = UserList(index).Pos.Map Then
 130                 If Abs(UserList(UserIndex).Pos.X - UserList(index).Pos.X) < 20 Then
 132                     If Abs(UserList(UserIndex).Pos.Y - UserList(index).Pos.Y) < 20 Then
-134                         CantidadMiembrosValidos = CantidadMiembrosValidos + 1
+                            If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then 'hay una var del lvl max?
+134                             CantidadMiembrosValidos = CantidadMiembrosValidos + 1
+                            End If
                         End If
                     End If
                 End If
