@@ -11,18 +11,10 @@ Public Enum TipoAI
     GuardiasAtacanCiudadanos = 6
     SigueAmo = 8
     NpcAtacaNpc = 9
-    NpcPathfinding = 10
-
-    'Pretorianos
-    SacerdotePretorianoAi = 11
-    GuerreroPretorianoAi = 12
-    MagoPretorianoAi = 13
-    CazadorPretorianoAi = 14
-    ReyPretoriano = 15
 
     ' Animado
     Caminata = 20
-    
+
     ' Eventos
     Invasion = 21
 
@@ -192,6 +184,13 @@ Public Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer, Optional ByVal Tip
                 Call AI_AtacarObjetivo(NpcIndex)
                 
             Else
+                ' No encontro a nadie cerca, camina unos pasos en cualquier direccion.
+                If RandomNumber(1, 12) = 3 Then
+                    Call MoveNPCChar(NpcIndex, CByte(RandomNumber(eHeading.NORTH, eHeading.WEST)))
+                Else
+                    Call AnimacionIdle(NpcIndex, True)
+                End If
+
                 ' El usuario se alejo demasiado.
                 Call RestoreOldMovement(NpcIndex)
                 
