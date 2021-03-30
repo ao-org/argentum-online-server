@@ -1797,7 +1797,7 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As In
 190     UserList(UserIndex).Pos.Map = Map
 
         If UserList(UserIndex).Grupo.EnGrupo = True Then
-            Call CompartirUbicacion(UserIndex, True)
+            Call CompartirUbicacion(UserIndex)
         End If
     
 192     If FX Then

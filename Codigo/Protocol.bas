@@ -46,7 +46,7 @@ Private Enum ServerPacketID
     UpdateHP                ' ASH
     UpdateGold              ' ASG
     UpdateExp               ' ASE 30
-    ChangeMap               ' CM
+    changeMap               ' CM
     PosUpdate               ' PU
     NPCHitUser              ' N2
     UserHitNPC              ' U2
@@ -20149,7 +20149,7 @@ Public Sub WriteChangeMap(ByVal UserIndex As Integer, ByVal Map As Integer)
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex).outgoingData
-102         Call .WriteByte(ServerPacketID.ChangeMap)
+102         Call .WriteByte(ServerPacketID.changeMap)
 104         Call .WriteInteger(Map)
 106         Call .WriteInteger(Version)
 
@@ -29030,7 +29030,7 @@ Private Sub HandleHecharDeGrupo(ByVal UserIndex As Integer)
 
 108         Indice = .incomingData.ReadByte()
         
-110         Call HecharMiembro(UserIndex, Indice)
+110         Call EcharMiembro(UserIndex, Indice)
 
         End With
 
