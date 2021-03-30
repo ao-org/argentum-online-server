@@ -858,13 +858,6 @@ Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) A
         
                 ' Npc has moved
 140             MoveNPCChar = True
-        
-142         ElseIf .MaestroUser = 0 Then
-
-144             If .Movement = TipoAI.NpcPathfinding Then
-                    'Someone has blocked the npc's way, we must to seek a new path!
-146                 .PFINFO.PathLenght = 0
-                End If
 
             End If
 
