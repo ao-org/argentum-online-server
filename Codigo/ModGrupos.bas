@@ -29,7 +29,7 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal Invitado As Integer)
 100     If UserList(Invitado).flags.SeguroParty = False Then
             
 102         If UserList(UserIndex).Grupo.CantidadMiembros >= UBound(UserList(UserIndex).Grupo.Miembros) Then
-104             Call WriteConsoleMsg(UserIndex, "No puedes invitar a mas personas. (Límite: " & CStr(UBound(UserList(UserIndex).Grupo.Miembros)) & ")", FontTypeNames.FONTTYPE_New_GRUPO)
+104             Call WriteConsoleMsg(UserIndex, "No puedes invitar a mas personas. (Lï¿½mite: " & CStr(UBound(UserList(UserIndex).Grupo.Miembros)) & ")", FontTypeNames.FONTTYPE_New_GRUPO)
                 Exit Sub
             End If
             
@@ -44,15 +44,15 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal Invitado As Integer)
 110                 If UserList(Invitado).Grupo.EnGrupo = False Then
 
 112                     Call WriteLocaleMsg(UserIndex, "42", FontTypeNames.FONTTYPE_New_GRUPO)
-                        'Call WriteConsoleMsg(userindex, "Se envió la invitación a " & UserList(Invitado).name & ", ahora solo resta aguardar su respuesta.", FontTypeNames.FONTTYPE_INFOIAO)
-114                     Call WriteConsoleMsg(Invitado, UserList(UserIndex).name & " te invitó a unirse a su grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
+                        'Call WriteConsoleMsg(userindex, "Se enviï¿½ la invitaciï¿½n a " & UserList(Invitado).name & ", ahora solo resta aguardar su respuesta.", FontTypeNames.FONTTYPE_INFOIAO)
+114                     Call WriteConsoleMsg(Invitado, UserList(UserIndex).name & " te invitï¿½ a unirse a su grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
 
 116                     UserList(Invitado).Grupo.PropuestaDe = UserIndex
 118                     UserList(Invitado).flags.pregunta = 1
 120                     UserList(Invitado).Grupo.Lider = UserIndex
 
                         Dim pregunta As String
-122                         pregunta = UserList(UserIndex).name & " te invitó a unirse a su grupo. ¿Deseas unirte?"
+122                         pregunta = UserList(UserIndex).name & " te invitï¿½ a unirse a su grupo. ï¿½Deseas unirte?"
 
 124                     Call WritePreguntaBox(Invitado, pregunta)
 
@@ -63,12 +63,12 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal Invitado As Integer)
                     End If
 
                 Else
-128                 Call WriteConsoleMsg(UserIndex, "No podés crear un grupo con personajes con diferencia de más de 10 niveles.", FontTypeNames.FONTTYPE_New_GRUPO)
+128                 Call WriteConsoleMsg(UserIndex, "No podï¿½s crear un grupo con personajes con diferencia de mï¿½s de 10 niveles.", FontTypeNames.FONTTYPE_New_GRUPO)
 
                 End If
 
             Else
-130             Call WriteConsoleMsg(UserIndex, "No podés crear un grupo con personajes de diferentes facciones.", FontTypeNames.FONTTYPE_New_GRUPO)
+130             Call WriteConsoleMsg(UserIndex, "No podï¿½s crear un grupo con personajes de diferentes facciones.", FontTypeNames.FONTTYPE_New_GRUPO)
 
             End If
 
@@ -157,12 +157,12 @@ Public Sub HecharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
                     'UserList(UserIndex).Grupo.Lider = 0
 162                 Call RefreshCharStatus(UserIndex)
                 Else
-164                 Call WriteConsoleMsg(UserIndex, "No podés expulsarte a ti mismo.", FontTypeNames.FONTTYPE_New_GRUPO)
+164                 Call WriteConsoleMsg(UserIndex, "No podï¿½s expulsarte a ti mismo.", FontTypeNames.FONTTYPE_New_GRUPO)
 
                 End If
     
             Else
-166             Call WriteConsoleMsg(UserIndex, "Tu no podés hechar usuarios del grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
+166             Call WriteConsoleMsg(UserIndex, "Tu no podï¿½s hechar usuarios del grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
 
             End If
 
@@ -352,13 +352,13 @@ FinalizarGrupo_Err:
         
 End Sub
 
-Public Sub CompartirUbicacion(UserIndex)
+Public Sub CompartirUbicacion(UserIndex, Optional ByVal changeMap As Boolean = False)
         
         On Error GoTo CompartirUbicacion_Err
         
 
         Dim i       As Byte
-
+    
         Dim a       As Byte
 
         Dim indexpj As Byte
@@ -375,17 +375,30 @@ Public Sub CompartirUbicacion(UserIndex)
 108     For i = 1 To UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
 
 110         If UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(i) <> UserIndex Then
-        
 112             If UserList(UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(i)).Pos.Map = UserList(UserIndex).Pos.Map Then
 114                 Call WriteUbicacion(UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(i), indexpj, UserIndex)
                 Else
 116                 Call WriteUbicacion(UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(i), indexpj, 0)
-
                 End If
-
             End If
-    
 118     Next i
+
+        'Si cambia de mapa le actualizo a el mismo las pos de sus compaÃ±eros
+        If changeMap Then
+            
+            For j = 1 To UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
+                'Si no es el
+                If UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(j) <> UserIndex Then
+                    If UserList(UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(j)).Pos.Map = UserList(UserIndex).Pos.Map Then
+                        'Si va al mapa del compaÃ±ero
+                        Call WriteUbicacion(UserIndex, UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(j), UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(j))
+                    Else
+                        'Si se va del mapa del compaÃ±ero
+                        Call WriteUbicacion(UserIndex, UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(j), 0)
+                    End If
+                End If
+            Next j
+        End If
 
         
         Exit Sub
