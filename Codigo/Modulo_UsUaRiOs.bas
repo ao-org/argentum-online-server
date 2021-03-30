@@ -1715,7 +1715,6 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As In
 120     Call EraseUserChar(UserIndex, True)
     
 122     If OldMap <> Map Then
-        
 124         Call WriteChangeMap(UserIndex, Map)
             'Call WriteLight(UserIndex, map)
             'Call WriteHora(UserIndex)
@@ -1783,7 +1782,6 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As In
 176             UserList(UserIndex).flags.lastMap = UserList(UserIndex).flags.lastMap
 
             End If
-        
 
 178         If UserList(UserIndex).flags.Traveling = 1 Then
 180             UserList(UserIndex).flags.Traveling = 0
@@ -1797,6 +1795,10 @@ Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As In
 186     UserList(UserIndex).Pos.X = X
 188     UserList(UserIndex).Pos.Y = Y
 190     UserList(UserIndex).Pos.Map = Map
+
+        If UserList(UserIndex).Grupo.EnGrupo = True Then
+            Call CompartirUbicacion(UserIndex, True)
+        End If
     
 192     If FX Then
 194         Call MakeUserChar(True, Map, UserIndex, Map, X, Y, 1)
