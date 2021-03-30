@@ -95,9 +95,8 @@ Public Sub NPCAI(ByVal NpcIndex As Integer)
                     Call PerseguirUsuarioCercano(NpcIndex, e_ModoBusquedaObjetivos.FaccionarioCiudadano)
 
                 Else
-                        
                     ' No encontro a nadie cerca, camina unos pasos en cualquier direccion.
-                    If RandomNumber(1, 12) = 3 Then
+                    If RandomNumber(1, 6) = 3 Then
                         Call MoveNPCChar(NpcIndex, CByte(RandomNumber(eHeading.NORTH, eHeading.WEST)))
                     Else
                         Call AnimacionIdle(NpcIndex, True)
@@ -188,7 +187,7 @@ Public Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer, Optional ByVal Tip
         If .Target > 0 Then
             
             ' Vuelvo a chequear que sea valido antes de atacar
-            If EsObjetivoValido(NpcIndex, UserIndex, TipoObjetivo) Then
+            If EsObjetivoValido(NpcIndex, .Target, TipoObjetivo) Then
                 Call AI_AtacarObjetivo(NpcIndex)
                 
             Else
@@ -196,7 +195,13 @@ Public Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer, Optional ByVal Tip
                 Call RestoreOldMovement(NpcIndex)
                 
             End If
-       
+        Else
+            ' No encontro a nadie cerca, camina unos pasos en cualquier direccion.
+                If RandomNumber(1, 6) = 3 Then '20%
+                    Call MoveNPCChar(NpcIndex, CByte(RandomNumber(eHeading.NORTH, eHeading.WEST)))
+                Else
+                    Call AnimacionIdle(NpcIndex, True)
+                End If
         End If
 
     End With
@@ -228,16 +233,8 @@ Private Sub AI_AtacarObjetivo(ByVal AtackerNpcIndex As Integer)
         
             ' Le lanzo un Hechizo
             Call NpcLanzaUnSpell(AtackerNpcIndex, .Target)
-                
-        ElseIf EstaLejosDelUsuario Then
-        
-            ' Camino hacia el Usuario
-            tHeading = FindDirectionEAO(.Pos, UserList(.Target).Pos, .flags.AguaValida = 1, .flags.TierraInvalida = 0)
-            Call MoveNPCChar(AtackerNpcIndex, tHeading)
-                
-        Else
-            
-            ' Se da vuelta y enfrenta al Usuario
+        ElseIf Not EstaLejosDelUsuario Then
+         ' Se da vuelta y enfrenta al Usuario
             tHeading = FindDirectionEAO(.Pos, UserList(.Target).Pos, .flags.AguaValida = 1, .flags.TierraInvalida = 0)
             Call AnimacionIdle(AtackerNpcIndex, True)
             Call ChangeNPCChar(AtackerNpcIndex, .Char.Body, .Char.Head, tHeading)
@@ -246,6 +243,10 @@ Private Sub AI_AtacarObjetivo(ByVal AtackerNpcIndex As Integer)
             Call NpcAtacaUser(AtackerNpcIndex, .Target, tHeading)
                 
         End If
+        
+        ' Camino hacia el Usuario
+        tHeading = FindDirectionEAO(.Pos, UserList(.Target).Pos, .flags.AguaValida = 1, .flags.TierraInvalida = 0)
+        Call MoveNPCChar(AtackerNpcIndex, tHeading)
         
     End With
     
