@@ -23,7 +23,7 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal InvitadoIndex As Int
     ' Fundar un party require 15 puntos de liderazgo, pero el carisma ayuda
     skillsNecesarios = 15 - Remitente.Stats.UserAtributos(eAtributos.Carisma) \ 2
     
-    If .Stats.UserSkills(eSkill.liderazgo) < skillsNecesarios Then
+    If Remitente.Stats.UserSkills(eSkill.liderazgo) < skillsNecesarios Then
         Call WriteConsoleMsg(UserIndex, "Te faltan " & (skillsNecesarios - Remitente.Stats.UserSkills(eSkill.liderazgo)) & " puntos en Liderazgo para liderar un grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
         Exit Sub
 
@@ -65,7 +65,7 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal InvitadoIndex As Int
         
     Call WriteLocaleMsg(UserIndex, "42", FontTypeNames.FONTTYPE_New_GRUPO)
     'Call WriteConsoleMsg(userindex, "Se envio la invitacion a " & UserList(Invitado).name & ", ahora solo resta aguardar su respuesta.", FontTypeNames.FONTTYPE_INFOIAO)
-    Call WriteConsoleMsg(Invitado, Remitente.name & " te invitó a unirse a su grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
+    Call WriteConsoleMsg(InvitadoIndex, Remitente.name & " te invitó a unirse a su grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
                 
     With Invitado
                 
@@ -75,7 +75,7 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal InvitadoIndex As Int
                 
     End With
 
-    Call WritePreguntaBox(Invitado, Remitente.name & " te invito a unirse a su grupo. ¿Deseas unirte?")
+    Call WritePreguntaBox(InvitadoIndex, Remitente.name & " te invito a unirse a su grupo. ¿Deseas unirte?")
 
     Exit Sub
 
