@@ -29,6 +29,8 @@ Attribute VB_Name = "Extra"
 
 Option Explicit
 
+Public NameIndex As New Dictionary
+
 Public Sub FindLegalPos(ByVal UserIndex As Integer, ByVal Map As Integer, ByRef X As Byte, ByRef Y As Byte)
         '***************************************************
         'Autor: ZaMa
@@ -37,7 +39,6 @@ Public Sub FindLegalPos(ByVal UserIndex As Integer, ByVal Map As Integer, ByRef 
         '***************************************************
         
         On Error GoTo FindLegalPos_Err
-        
 
 100     If MapData(Map, X, Y).UserIndex <> 0 Or MapData(Map, X, Y).NpcIndex <> 0 Then
                     
@@ -541,50 +542,6 @@ ClosestStablePos_Err:
 136     Resume Next
         
 End Sub
-
-Function NameIndex(ByVal name As String) As Integer
-        
-        On Error GoTo NameIndex_Err
-        
-
-        Dim UserIndex As Integer
-
-        '¿Nombre valido?
-100     If LenB(name) = 0 Then
-102         NameIndex = 0
-            Exit Function
-
-        End If
-
-104     If InStrB(name, "+") <> 0 Then
-106         name = UCase$(Replace(name, "+", " "))
-
-        End If
-
-108     UserIndex = 1
-
-110     Do Until UCase$(UserList(UserIndex).name) = UCase$(name)
-    
-112         UserIndex = UserIndex + 1
-    
-114         If UserIndex > MaxUsers Then
-116             NameIndex = 0
-                Exit Function
-
-            End If
-    
-        Loop
- 
-118     NameIndex = UserIndex
- 
-        
-        Exit Function
-
-NameIndex_Err:
-120     Call RegistrarError(Err.Number, Err.Description, "Extra.NameIndex", Erl)
-122     Resume Next
-        
-End Function
 
 Function IP_Index(ByVal inIP As String) As Integer
         
