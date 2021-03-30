@@ -513,6 +513,11 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal 
 146         .flags.Pareja = ""
     
 148         .name = name
+
+            If Not NameIndex.Exists(name) Then
+                Call NameIndex.Add(name, UserIndex)
+            End If
+            
 150         .clase = UserClase
 152         .raza = UserRaza
         
@@ -1078,7 +1083,12 @@ Sub ConnectUser(ByVal UserIndex As Integer, ByRef name As String, ByRef UserCuen
         
               ' Seteamos el nombre
 200         .name = name
-202           .showName = True
+
+            If Not NameIndex.Exists(name) Then
+                Call NameIndex.Add(name, UserIndex)
+            End If
+            
+202         .showName = True
         
               ' Cargamos el personaje
 204         Call LoadUser(UserIndex)
@@ -2200,7 +2210,11 @@ Sub CloseUser(ByVal UserIndex As Integer)
 222         errordesc = "ERROR AL RESETSLOT Name:" & .name & " cuenta:" & .Cuenta
         
 224         Call ResetUserSlot(UserIndex)
-
+            
+            If NameIndex.Exists(.name) Then
+                Call NameIndex.Remove(.name)
+            End If
+            
         End With
     
         Exit Sub
