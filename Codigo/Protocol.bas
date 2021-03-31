@@ -736,7 +736,7 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
 154             Call HandleBorrarPJ(UserIndex)
             
 156         Case ClientPacketID.RecuperandoContraseña
-158             Call HandleRecuperandoContraseña(UserIndex)
+158             'Call HandleRecuperandoContraseña(UserIndex)
         
 160         Case ClientPacketID.BorrandoCuenta
 162             Call HandleBorrandoCuenta(UserIndex)
@@ -2017,7 +2017,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
             Exit Sub
         End If
             
-164     If GetPersonajesCountByIDDatabase(UserList(UserIndex).AccountId) >= MAX_PERSONAJES Then
+164     If GetPersonajesCountByID(UserList(UserIndex).AccountId) >= MAX_PERSONAJES Then
 166         Call CloseSocket(UserIndex)
             Exit Sub
         End If
@@ -8874,30 +8874,14 @@ Private Sub HandlePunishments(ByVal UserIndex As Integer)
             
         End If
 
-        If Database_Enabled Then
-            Count = GetUserAmountOfPunishmentsDatabase(TargetUserName)
-                
-        Else
-            Count = val(GetVar(CharPath & name & ".chr", "PENAS", "Cant"))
 
-        End If
+        Count = GetUserAmountOfPunishmentsDatabase(TargetUserName)
 
         If Count = 0 Then
             Call WriteConsoleMsg(UserIndex, "Sin prontuario..", FontTypeNames.FONTTYPE_INFO)
 
         Else
-                
-            If Database_Enabled Then
-                Call SendUserPunishmentsDatabase(UserIndex, TargetUserName)
-                        
-            Else
-                        
-                While Count > 0
-                    Call WriteConsoleMsg(UserIndex, Count & " - " & GetVar(CharPath & TargetUserName & ".chr", "PENAS", "P" & Count), FontTypeNames.FONTTYPE_INFO)
-                    Count = Count - 1
-                Wend
-                            
-            End If
+            Call SendUserPunishmentsDatabase(UserIndex, TargetUserName)
 
         End If
 
@@ -8926,79 +8910,61 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleChangePassword(ByVal UserIndex As Integer)
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Creation Date: 10/10/07
-        'Last Modified By: Ladder
-        'Ahora cambia la password de la cuenta y no del PJ.
-        '***************************************************
+    '***************************************************
+    'Author: Juan Martín Sotuyo Dodero (Maraxus)
+    'Creation Date: 10/10/07
+    'Last Modified By: Ladder
+    'Ahora cambia la password de la cuenta y no del PJ.
+    '***************************************************
 
-100     If UserList(UserIndex).incomingData.Length < 5 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
+    If UserList(UserIndex).incomingData.Length < 5 Then
+        Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
+        Exit Sub
 
-        End If
+    End If
     
-        On Error GoTo ErrHandler
+    On Error GoTo ErrHandler
 
-104     With UserList(UserIndex)
+    With UserList(UserIndex)
 
-            'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim Buffer As New clsByteQueue
+        'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
+        Dim Buffer As New clsByteQueue
 
-106         Call Buffer.CopyBuffer(.incomingData)
+        Call Buffer.CopyBuffer(.incomingData)
         
-            Dim oldPass  As String
+        Dim oldPass  As String
 
-            Dim newPass  As String
+        Dim newPass  As String
 
-            Dim oldPass2 As String
+        Dim oldPass2 As String
         
-            'Remove packet ID
-108         Call Buffer.ReadByte
+        'Remove packet ID
+        Call Buffer.ReadByte
         
-110         oldPass = Buffer.ReadASCIIString()
-112         newPass = Buffer.ReadASCIIString()
-
-114         If Database_Enabled Then
-116             Call ChangePasswordDatabase(UserIndex, SDesencriptar(oldPass), SDesencriptar(newPass))
+        oldPass = Buffer.ReadASCIIString()
+        newPass = Buffer.ReadASCIIString()
         
-            Else
-
-118             If LenB(SDesencriptar(newPass)) = 0 Then
-120                 Call WriteConsoleMsg(UserIndex, "Debe especificar una contraseña nueva, inténtelo de nuevo.", FontTypeNames.FONTTYPE_INFO)
-                Else
-122                 oldPass2 = GetVar(CuentasPath & UserList(UserIndex).Cuenta & ".act", "INIT", "PASSWORD")
-                
-124                 If SDesencriptar(oldPass2) <> SDesencriptar(oldPass) Then
-126                     Call WriteConsoleMsg(UserIndex, "La contraseña actual proporcionada no es correcta. La contraseña no ha sido cambiada, inténtelo de nuevo.", FontTypeNames.FONTTYPE_INFO)
-                    Else
-128                     Call WriteVar(CuentasPath & UserList(UserIndex).Cuenta & ".act", "INIT", "PASSWORD", newPass)
-130                     Call WriteConsoleMsg(UserIndex, "La contraseña de su cuenta fue cambiada con éxito.", FontTypeNames.FONTTYPE_INFO)
-
-                    End If
-
-                End If
-
-            End If
+        'If we got here then packet is complete, copy data back to original queue
+        Call .incomingData.CopyBuffer(Buffer)
         
-            'If we got here then packet is complete, copy data back to original queue
-132         Call .incomingData.CopyBuffer(Buffer)
+        Call ChangePasswordDatabase(UserIndex, SDesencriptar(oldPass), SDesencriptar(newPass))
 
-        End With
+    End With
+    
+    Exit Sub
     
 ErrHandler:
 
-        Dim Error As Long
+    Dim Error As Long
 
-134     Error = Err.Number
+    Error = Err.Number
 
-        On Error GoTo 0
+    On Error GoTo 0
     
-        'Destroy auxiliar buffer
-136     Set Buffer = Nothing
+    'Destroy auxiliar buffer
+    Set Buffer = Nothing
     
-138     If Error <> 0 Then Err.raise Error
+    If Error <> 0 Then Err.raise Error
 
 End Sub
 
@@ -11179,14 +11145,8 @@ Private Sub HandleJail(ByVal UserIndex As Integer)
                             End If
                         
 148                         If PersonajeExiste(UserName) Then
-150                             If Database_Enabled Then
-152                                 Call SavePenaDatabase(UserName, .name & ": CARCEL " & jailTime & "m, MOTIVO: " & Reason & " " & Date & " " & Time)
-                                Else
-154                                 Count = val(GetVar(CharPath & UserName & ".chr", "PENAS", "Cant"))
-156                                 Call WriteVar(CharPath & UserName & ".chr", "PENAS", "Cant", Count + 1)
-158                                 Call WriteVar(CharPath & UserName & ".chr", "PENAS", "P" & Count + 1, LCase$(.name) & ": CARCEL " & jailTime & "m, MOTIVO: " & LCase$(Reason) & " " & Date & " " & Time)
 
-                                End If
+152                            Call SavePenaDatabase(UserName, .name & ": CARCEL " & jailTime & "m, MOTIVO: " & Reason & " " & Date & " " & Time)
 
                             End If
                         
@@ -11353,19 +11313,8 @@ Private Sub HandleWarnUser(ByVal UserIndex As Integer)
                     
 136         If PersonajeExiste(UserName) Then
 
-138             If Database_Enabled Then
-140                 Call SaveWarnDatabase(UserName, "ADVERTENCIA: " & Reason & " " & Date & " " & Time, .name)
- 
-                Else
-                
-                    Dim Count As Integer
-142                     Count = val(GetVar(CharPath & UserName & ".chr", "PENAS", "Cant"))
-                
-144                 Call WriteVar(CharPath & UserName & ".chr", "PENAS", "Cant", Count + 1)
-146                 Call WriteVar(CharPath & UserName & ".chr", "PENAS", "P" & Count + 1, LCase$(.name) & ": ADVERTENCIA por: " & LCase$(Reason) & " " & Date & " " & Time)
+140             Call SaveWarnDatabase(UserName, "ADVERTENCIA: " & Reason & " " & Date & " " & Time, .name)
 
-                End If
-            
                 ' Para el GM
 148             Call WriteConsoleMsg(UserIndex, "Has advertido a " & UserName, FontTypeNames.FONTTYPE_CENTINELA)
 150             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.name & " ha advertido a " & UserName & " por " & Reason, FontTypeNames.FONTTYPE_GM))
@@ -11581,17 +11530,23 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 108         Call Buffer.ReadByte
         
             Dim UserName      As String
+
             Dim tUser         As Integer
 
             Dim opcion        As Byte
+
             Dim Arg1          As String
+
             Dim Arg2          As String
 
             Dim valido        As Boolean
 
             Dim LoopC         As Byte
+
             Dim commandString As String
+
             Dim n             As Byte
+
             Dim tmpLong       As Long
         
 110         UserName = Replace(Buffer.ReadASCIIString(), "+", " ")
@@ -11655,15 +11610,9 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 158             Case eEditOptions.eo_Body
 
 160                 If tUser <= 0 Then
-                    
-162                     If Database_Enabled Then
-164                         Call SaveUserBodyDatabase(UserName, val(Arg1))
-                        Else
-166                         Call WriteVar(CharPath & UserName & ".chr", "INIT", "Body", Arg1)
-
-                        End If
-
+164                     Call SaveUserBodyDatabase(UserName, val(Arg1))
 168                     Call WriteConsoleMsg(UserIndex, "Usuario Offline Alterado: " & UserName, FontTypeNames.FONTTYPE_INFO)
+
                     Else
 170                     Call ChangeUserChar(tUser, val(Arg1), UserList(tUser).Char.Head, UserList(tUser).Char.Heading, UserList(tUser).Char.WeaponAnim, UserList(tUser).Char.ShieldAnim, UserList(tUser).Char.CascoAnim)
 
@@ -11672,87 +11621,55 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 172             Case eEditOptions.eo_Arma
                 
 174                 If tUser <= 0 Then
-                       
-176                     If Database_Enabled Then
-                           'Call SaveUserBodyDatabase(UserName, val(Arg1))
-                           Else
-                            'Call WriteVar(CharPath & UserName & ".chr", "INIT", "Arma", Arg1)
+                        'Call SaveUserBodyDatabase(UserName, val(Arg1))
+178                     Call WriteConsoleMsg(UserIndex, "Usuario Offline Alterado: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                    Else
+180                     Call ChangeUserChar(tUser, UserList(tUser).Char.Body, UserList(tUser).Char.Head, UserList(tUser).Char.Heading, val(Arg1), UserList(tUser).Char.ShieldAnim, UserList(tUser).Char.CascoAnim)
                     
-                           End If
-                    
-178                         Call WriteConsoleMsg(UserIndex, "Usuario Offline Alterado: " & UserName, FontTypeNames.FONTTYPE_INFO)
-                        Else
-180                         Call ChangeUserChar(tUser, UserList(tUser).Char.Body, UserList(tUser).Char.Head, UserList(tUser).Char.Heading, val(Arg1), UserList(tUser).Char.ShieldAnim, UserList(tUser).Char.CascoAnim)
-                    
-                       End If
+                    End If
                        
 182             Case eEditOptions.eo_Escudo
                 
 184                 If tUser <= 0 Then
-                       
-186                     If Database_Enabled Then
-                           'Call SaveUserBodyDatabase(UserName, val(Arg1))
-                           Else
-                            'Call WriteVar(CharPath & UserName & ".chr", "INIT", "Arma", Arg1)
+                        'Call SaveUserBodyDatabase(UserName, val(Arg1))
+188                     Call WriteConsoleMsg(UserIndex, "Usuario Offline Alterado: " & UserName, FontTypeNames.FONTTYPE_INFO)
+
+                    Else
+190                     Call ChangeUserChar(tUser, UserList(tUser).Char.Body, UserList(tUser).Char.Head, UserList(tUser).Char.Heading, UserList(tUser).Char.WeaponAnim, val(Arg1), UserList(tUser).Char.CascoAnim)
                     
-                           End If
-                    
-188                         Call WriteConsoleMsg(UserIndex, "Usuario Offline Alterado: " & UserName, FontTypeNames.FONTTYPE_INFO)
-                        Else
-190                         Call ChangeUserChar(tUser, UserList(tUser).Char.Body, UserList(tUser).Char.Head, UserList(tUser).Char.Heading, UserList(tUser).Char.WeaponAnim, val(Arg1), UserList(tUser).Char.CascoAnim)
-                    
-                       End If
+                    End If
                        
 192             Case eEditOptions.eo_Casco
                 
 194                 If tUser <= 0 Then
-                       
-196                     If Database_Enabled Then
-                           'Call SaveUserBodyDatabase(UserName, val(Arg1))
-                           Else
-                            'Call WriteVar(CharPath & UserName & ".chr", "INIT", "Arma", Arg1)
+                        'Call SaveUserBodyDatabase(UserName, val(Arg1))
+198                     Call WriteConsoleMsg(UserIndex, "Usuario Offline Alterado: " & UserName, FontTypeNames.FONTTYPE_INFO)
+
+                    Else
+200                     Call ChangeUserChar(tUser, UserList(tUser).Char.Body, UserList(tUser).Char.Head, UserList(tUser).Char.Heading, UserList(tUser).Char.WeaponAnim, UserList(tUser).Char.ShieldAnim, val(Arg1))
                     
-                           End If
-                    
-198                         Call WriteConsoleMsg(UserIndex, "Usuario Offline Alterado: " & UserName, FontTypeNames.FONTTYPE_INFO)
-                        Else
-200                         Call ChangeUserChar(tUser, UserList(tUser).Char.Body, UserList(tUser).Char.Head, UserList(tUser).Char.Heading, UserList(tUser).Char.WeaponAnim, UserList(tUser).Char.ShieldAnim, val(Arg1))
-                    
-                       End If
+                    End If
                        
 202             Case eEditOptions.eo_Particula
                 
 204                 If tUser <= 0 Then
-                       
-206                     If Database_Enabled Then
-                           'Call SaveUserBodyDatabase(UserName, val(Arg1))
-                           Else
-                            'Call WriteVar(CharPath & UserName & ".chr", "INIT", "Arma", Arg1)
-                    
-                           End If
-                    
-208                         Call WriteConsoleMsg(UserIndex, "Usuario Offline Alterado: " & UserName, FontTypeNames.FONTTYPE_INFO)
-                        Else
-                            'Call ChangeUserChar(tUser, UserList(tUser).Char.Body, UserList(tUser).Char.Head, UserList(tUser).Char.Heading, UserList(tUser).Char.WeaponAnim, UserList(tUser).Char.ShieldAnim, val(Arg1))
-210                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, val(Arg1), 9999, False))
-212                         .Char.ParticulaFx = val(Arg1)
-214                         .Char.loops = 9999
-                       End If
-                       
-                       
+                        'Call SaveUserBodyDatabase(UserName, val(Arg1))
+208                     Call WriteConsoleMsg(UserIndex, "Usuario Offline Alterado: " & UserName, FontTypeNames.FONTTYPE_INFO)
+
+                    Else
+                        'Call ChangeUserChar(tUser, UserList(tUser).Char.Body, UserList(tUser).Char.Head, UserList(tUser).Char.Heading, UserList(tUser).Char.WeaponAnim, UserList(tUser).Char.ShieldAnim, val(Arg1))
+210                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, val(Arg1), 9999, False))
+212                     .Char.ParticulaFx = val(Arg1)
+214                     .Char.loops = 9999
+
+                    End If
                 
 216             Case eEditOptions.eo_Head
 
 218                 If tUser <= 0 Then
-                    
-220                     If Database_Enabled Then
-222                         Call SaveUserHeadDatabase(UserName, val(Arg1))
-                        Else
-224                         Call WriteVar(CharPath & UserName & ".chr", "INIT", "Head", Arg1)
-
-                        End If
-
+222                     Call SaveUserHeadDatabase(UserName, val(Arg1))
 226                     Call WriteConsoleMsg(UserIndex, "Usuario Offline Alterado: " & UserName, FontTypeNames.FONTTYPE_INFO)
+
                     Else
 228                     Call ChangeUserChar(tUser, UserList(tUser).Char.Body, val(Arg1), UserList(tUser).Char.Heading, UserList(tUser).Char.WeaponAnim, UserList(tUser).Char.ShieldAnim, UserList(tUser).Char.CascoAnim)
 
@@ -11762,6 +11679,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 
 232                 If tUser <= 0 Then
 234                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
+
                     Else
 
 236                     If val(Arg1) > MAXUSERMATADOS Then
@@ -11838,16 +11756,10 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                     Else
 
 300                     If tUser <= 0 Then
-                        
-302                         If Database_Enabled Then
-304                             Call SaveUserSkillDatabase(UserName, LoopC, val(Arg2))
-                            Else
-306                             Call WriteVar(CharPath & UserName & ".chr", "Skills", "SK" & LoopC, Arg2)
-
-                            End If
-
+304                         Call SaveUserSkillDatabase(UserName, LoopC, val(Arg2))
 308                         Call WriteConsoleMsg(UserIndex, "Usuario Offline Alterado: " & UserName, FontTypeNames.FONTTYPE_INFO)
                         Else
+                        
 310                         UserList(tUser).Stats.UserSkills(LoopC) = val(Arg2)
 
                         End If
@@ -11857,15 +11769,9 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 312             Case eEditOptions.eo_SkillPointsLeft
 
 314                 If tUser <= 0 Then
-                    
-316                     If Database_Enabled Then
-318                         Call SaveUserSkillsLibres(UserName, val(Arg1))
-                        Else
-320                         Call WriteVar(CharPath & UserName & ".chr", "STATS", "SkillPtsLibres", Arg1)
-
-                        End If
-                        
+318                     Call SaveUserSkillsLibres(UserName, val(Arg1))
 322                     Call WriteConsoleMsg(UserIndex, "Usuario Offline Alterado: " & UserName, FontTypeNames.FONTTYPE_INFO)
+
                     Else
 324                     UserList(tUser).Stats.SkillPts = val(Arg1)
 
@@ -11921,6 +11827,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                     End If
                     
 374             Case eEditOptions.eo_Vida
+
 376                 If tUser <= 0 Then
 378                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
                     
@@ -11932,10 +11839,13 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 386                         UserList(tUser).Stats.MinHp = UserList(tUser).Stats.MaxHp
                             
 388                         Call WriteUpdateUserStats(tUser)
+
                         End If
+
                     End If
                     
 390             Case eEditOptions.eo_Mana
+
 392                 If tUser <= 0 Then
 394                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
                     
@@ -11947,10 +11857,13 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 402                         UserList(tUser).Stats.MinMAN = UserList(tUser).Stats.MaxMAN
                             
 404                         Call WriteUpdateUserStats(tUser)
+
                         End If
+
                     End If
                     
 406             Case eEditOptions.eo_Energia
+
 408                 If tUser <= 0 Then
 410                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
                     
@@ -11962,10 +11875,13 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 418                         UserList(tUser).Stats.MinSta = UserList(tUser).Stats.MaxSta
                             
 420                         Call WriteUpdateUserStats(tUser)
+
                         End If
+
                     End If
                         
 422             Case eEditOptions.eo_MinHP
+
 424                 If tUser <= 0 Then
 426                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
                     
@@ -11976,10 +11892,13 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 432                         UserList(tUser).Stats.MinHp = min(tmpLong, STAT_MAXHP)
                             
 434                         Call WriteUpdateHP(tUser)
+
                         End If
+
                     End If
                     
 436             Case eEditOptions.eo_MinMP
+
 438                 If tUser <= 0 Then
 440                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
                     
@@ -11990,10 +11909,13 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 446                         UserList(tUser).Stats.MinMAN = min(tmpLong, STAT_MAXMP)
                             
 448                         Call WriteUpdateMana(tUser)
+
                         End If
+
                     End If
                     
 450             Case eEditOptions.eo_Hit
+
 452                 If tUser <= 0 Then
 454                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
                     
@@ -12003,10 +11925,13 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 458                     If tmpLong >= 0 Then
 460                         UserList(tUser).Stats.MaxHit = min(tmpLong, STAT_MAXHIT)
 462                         UserList(tUser).Stats.MinHIT = UserList(tUser).Stats.MaxHit
+
                         End If
+
                     End If
                     
 464             Case eEditOptions.eo_MinHit
+
 466                 If tUser <= 0 Then
 468                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
                     
@@ -12015,10 +11940,13 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                         
 472                     If tmpLong >= 0 Then
 474                         UserList(tUser).Stats.MinHIT = min(tmpLong, STAT_MAXHIT)
+
                         End If
+
                     End If
                     
 476             Case eEditOptions.eo_MaxHit
+
 478                 If tUser <= 0 Then
 480                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
                     
@@ -12027,10 +11955,13 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                         
 484                     If tmpLong >= 0 Then
 486                         UserList(tUser).Stats.MaxHit = min(tmpLong, STAT_MAXHIT)
+
                         End If
+
                     End If
                     
 488             Case eEditOptions.eo_Desc
+
 490                 If tUser <= 0 Then
 492                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
                     
@@ -12039,9 +11970,11 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                         
                     Else
 498                     Call WriteConsoleMsg(UserIndex, "Caracteres inválidos en la descripción.", FontTypeNames.FONTTYPE_INFO)
+
                     End If
                     
 500             Case eEditOptions.eo_Intervalo
+
 502                 If tUser <= 0 Then
 504                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
                     Else
@@ -12052,6 +11985,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 510                     If tmpLong >= 0 Then
                     
 512                         Select Case Arg1
+
                                 Case "USAR"
 514                                 UserList(tUser).Intervals.UsarClic = tmpLong
 516                                 UserList(tUser).Intervals.UsarU = tmpLong
@@ -12096,33 +12030,44 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                                     
 570                             Case Else
                                     Exit Sub
+
                             End Select
                             
 572                         Call WriteIntervals(tUser)
                             
                         End If
+
                     End If
                     
 574             Case eEditOptions.eo_Hogar
+
 576                 If tUser <= 0 Then
 578                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
                     Else
 580                     Arg1 = UCase$(Arg1)
                     
 582                     Select Case Arg1
+
                             Case "NIX"
 584                             UserList(tUser).Hogar = eCiudad.cNix
+
 586                         Case "ULLA", "ULLATHORPE"
 588                             UserList(tUser).Hogar = eCiudad.cUllathorpe
+
 590                         Case "BANDER", "BANDERBILL"
 592                             UserList(tUser).Hogar = eCiudad.cBanderbill
+
 594                         Case "LINDOS"
 596                             UserList(tUser).Hogar = eCiudad.cLindos
+
 598                         Case "ARGHAL"
 600                             UserList(tUser).Hogar = eCiudad.cArghal
+
 602                         Case "ARKHEIN"
 604                             UserList(tUser).Hogar = eCiudad.cArkhein
+
                         End Select
+
                     End If
                 
 606             Case Else
@@ -12187,7 +12132,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 676             Case eEditOptions.eo_MinMP
 678                 commandString = commandString & "MINMP "
                     
-680            Case eEditOptions.eo_Hit
+680             Case eEditOptions.eo_Hit
 682                 commandString = commandString & "HIT "
                     
 684             Case eEditOptions.eo_MinHit
@@ -13303,19 +13248,7 @@ Private Sub HandleUnbanChar(ByVal UserIndex As Integer)
 
 126                 If ObtenerBaneo(UserName) Then
 128                     Call UnBan(UserName)
-                    
-130                     If Database_Enabled Then
-132                         Call SavePenaDatabase(UserName, .name & ": UNBAN. " & Date & " " & Time)
-                        Else
-
-                            'penas
-                            Dim cantPenas As Byte
-
-134                         cantPenas = val(GetVar(CharPath & UserName & ".chr", "PENAS", "Cant"))
-136                         Call WriteVar(CharPath & UserName & ".chr", "PENAS", "Cant", cantPenas + 1)
-138                         Call WriteVar(CharPath & UserName & ".chr", "PENAS", "P" & cantPenas + 1, .name & ": UNBAN. " & Date & " " & Time)
-
-                        End If
+132                     Call SavePenaDatabase(UserName, .name & ": UNBAN. " & Date & " " & Time)
 
 140                     Call LogGM(.name, "/UNBAN a " & UserName)
 142                     Call WriteConsoleMsg(UserIndex, UserName & " desbaneado.", FontTypeNames.FONTTYPE_INFO)
@@ -15153,15 +15086,9 @@ Private Sub HandleCouncilKick(ByVal UserIndex As Integer)
 
 116             If tUser <= 0 Then
 118                 If PersonajeExiste(UserName) Then
-120                     Call WriteConsoleMsg(UserIndex, "Usuario offline, echando de los consejos", FontTypeNames.FONTTYPE_INFO)
-                    
-122                     If Database_Enabled Then
-124                         Call EcharConsejoDatabase(UserName)
-                        Else
-126                         Call WriteVar(CharPath & UserName & ".chr", "CONSEJO", "PERTENECE", 0)
-128                         Call WriteVar(CharPath & UserName & ".chr", "CONSEJO", "PERTENECECAOS", 0)
 
-                        End If
+120                     Call WriteConsoleMsg(UserIndex, "Usuario offline, echando de los consejos", FontTypeNames.FONTTYPE_INFO)
+124                     Call EcharConsejoDatabase(UserName)
 
                     Else
 130                     Call WriteConsoleMsg(UserIndex, "No existe el personaje.", FontTypeNames.FONTTYPE_INFO)
@@ -15465,19 +15392,8 @@ Private Sub HandleGuildBan(ByVal UserIndex As Integer)
 
                         End If
                     
-142                     If Database_Enabled Then
-144                         Call SaveBanDatabase(member, .name & " - BAN AL CLAN: " & GuildName & ". " & Date & " " & Time, .name)
-                        Else
-                            'ponemos el flag de ban a 1
-146                         Call WriteVar(CharPath & member & ".chr", "BAN", "BANEADO", "1")
-148                         Call WriteVar(CharPath & member & ".chr", "BAN", "BannedBy", .name)
-150                         Call WriteVar(CharPath & member & ".chr", "BAN", "BanMotivo", "clan baneado")
-                            'ponemos la pena
-152                         Count = val(GetVar(CharPath & member & ".chr", "PENAS", "Cant"))
-154                         Call WriteVar(CharPath & member & ".chr", "PENAS", "Cant", Count + 1)
-156                         Call WriteVar(CharPath & member & ".chr", "PENAS", "P" & Count + 1, .name & " - BAN AL CLAN: " & GuildName & ". " & Date & " " & Time)
 
-                        End If
+144                     Call SaveBanDatabase(member, .name & " - BAN AL CLAN: " & GuildName & ". " & Date & " " & Time, .name)
 
 158                 Next LoopC
 
@@ -15868,16 +15784,9 @@ Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
                 Else
 
 136                 If PersonajeExiste(UserName) Then
-138                     If Database_Enabled Then
-140                         Call EcharLegionDatabase(UserName)
-                        Else
-142                         Call WriteVar(CharPath & UserName & ".chr", "FACCIONES", "EjercitoCaos", 0)
-144                         Call WriteVar(CharPath & UserName & ".chr", "FACCIONES", "Reenlistadas", 200)
-146                         Call WriteVar(CharPath & UserName & ".chr", "FACCIONES", "Extra", "Expulsado por " & .name)
-
-                        End If
-                    
+140                     Call EcharLegionDatabase(UserName)
 148                     Call WriteConsoleMsg(UserIndex, UserName & " expulsado de las fuerzas del caos y prohibida la reenlistada", FontTypeNames.FONTTYPE_INFO)
+
                     Else
 150                     Call WriteConsoleMsg(UserIndex, "El personaje " & UserName & " no existe.", FontTypeNames.FONTTYPE_INFO)
 
@@ -15967,16 +15876,9 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
                 Else
 
 136                 If PersonajeExiste(UserName) Then
-138                     If Database_Enabled Then
-140                         Call EcharArmadaDatabase(UserName)
-                        Else
-142                         Call WriteVar(CharPath & UserName & ".chr", "FACCIONES", "EjercitoReal", 0)
-144                         Call WriteVar(CharPath & UserName & ".chr", "FACCIONES", "Reenlistadas", 200)
-146                         Call WriteVar(CharPath & UserName & ".chr", "FACCIONES", "Extra", "Expulsado por " & .name)
-
-                        End If
-
+140                     Call EcharArmadaDatabase(UserName)
 148                     Call WriteConsoleMsg(UserIndex, UserName & " expulsado de las fuerzas reales y prohibida la reenlistada", FontTypeNames.FONTTYPE_INFO)
+
                     Else
 150                     Call WriteConsoleMsg(UserIndex, UserName & ".chr inexistente.", FontTypeNames.FONTTYPE_INFO)
 
@@ -16152,15 +16054,11 @@ Private Sub HandleRemovePunishment(ByVal UserIndex As Integer)
                     End If
                 
 130                 If PersonajeExiste(UserName) Then
-132                     Call LogGM(.name, "Borro la pena " & punishment & " de " & UserName & " y la cambií por: " & NewText)
-                    
-134                     If Database_Enabled Then
-136                         Call CambiarPenaDatabase(UserName, punishment, .name & ": <" & NewText & "> " & Date & " " & Time)
-                        Else
-138                         Call WriteVar(CharPath & UserName & ".chr", "PENAS", "P" & punishment, .name & ": <" & NewText & "> " & Date & " " & Time)
 
-                        End If
-                    
+132                     Call LogGM(.name, "Borro la pena " & punishment & " de " & UserName & " y la cambií por: " & NewText)
+            
+136                     Call CambiarPenaDatabase(UserName, punishment, .name & ": <" & NewText & "> " & Date & " " & Time)
+
 140                     Call WriteConsoleMsg(UserIndex, "Pena Modificada.", FontTypeNames.FONTTYPE_INFO)
 
                     End If
@@ -25633,7 +25531,6 @@ Private Sub HandleCrearCuenta(ByVal UserIndex As Integer)
 106     Call Buffer.ReadByte
 
         Dim CuentaEmail    As String
-
         Dim CuentaPassword As String
     
 108     CuentaEmail = Buffer.ReadASCIIString()
@@ -25650,13 +25547,13 @@ Private Sub HandleCrearCuenta(ByVal UserIndex As Integer)
 118     If Not CuentaExiste(CuentaEmail) Then
 
 120         Call SaveNewAccount(UserIndex, CuentaEmail, SDesencriptar(CuentaPassword))
-    
-122         Call EnviarCorreo(CuentaEmail)
 124         Call WriteShowFrmLogear(UserIndex)
 126         Call WriteShowMessageBox(UserIndex, "Cuenta creada. Se ha enviado un código de validación a su email, debe activar la cuenta antes de poder usarla. Recuerde revisar SPAM en caso de no encontrar el mail.")
         
 128         Call UserList(UserIndex).incomingData.CopyBuffer(Buffer)
+
         Else
+        
 130         Call WriteShowMessageBox(UserIndex, "El email ya está en uso.")
         
 132         Call CloseSocket(UserIndex)
@@ -25680,84 +25577,81 @@ End Sub
 
 Private Sub HandleValidarCuenta(ByVal UserIndex As Integer)
 
-        'Author: Pablo Mercavides
-100     If UserList(UserIndex).incomingData.Length < 7 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
+    'Author: Pablo Mercavides
+    If UserList(UserIndex).incomingData.Length < 7 Then
+        Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
+        Exit Sub
 
-        End If
+    End If
 
-        On Error GoTo ErrHandler
+    On Error GoTo ErrHandler
 
-        'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-        Dim Buffer As New clsByteQueue
+    'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
+    Dim Buffer As New clsByteQueue
 
-104     Call Buffer.CopyBuffer(UserList(UserIndex).incomingData)
+    Call Buffer.CopyBuffer(UserList(UserIndex).incomingData)
     
-        'Remove packet ID
-106     Call Buffer.ReadByte
+    'Remove packet ID
+    Call Buffer.ReadByte
 
-        Dim CuentaEmail    As String
+    Dim CuentaEmail    As String
 
-        Dim ValidacionCode As String
+    Dim ValidacionCode As String
     
-108     CuentaEmail = Buffer.ReadASCIIString()
-110     ValidacionCode = Buffer.ReadASCIIString()
-
-112     If Not CheckMailString(CuentaEmail) Then
-114         Call WriteShowFrmLogear(UserIndex)
-116         Call WriteShowMessageBox(UserIndex, "Email inválido.")
-        
-118         Call CloseSocket(UserIndex)
-            Exit Sub
-
-        End If
+    CuentaEmail = Buffer.ReadASCIIString()
+    ValidacionCode = Buffer.ReadASCIIString()
     
-120     If CuentaExiste(CuentaEmail) Then
-122         If Not ObtenerValidacion(CuentaEmail) Then
-124             If UCase$(ObtenerCodigo(CuentaEmail)) = UCase$(ValidacionCode) Then
-126                 If Database_Enabled Then
-128                     Call ValidarCuentaDatabase(CuentaEmail)
-                    Else
-130                     Call WriteVar(CuentasPath & LCase$(CuentaEmail) & ".act", "INIT", "Activada", "1")
-
-                    End If
-
-132                 Call WriteShowFrmLogear(UserIndex)
-134                 Call WriteShowMessageBox(UserIndex, "Cuenta activada con éxito, ya puede ingresar.")
-                Else
-136                 Call WriteShowFrmLogear(UserIndex)
-138                 Call WriteShowMessageBox(UserIndex, "¡Código de activación inválido!")
-
-                End If
-
-            Else
-140             Call WriteShowFrmLogear(UserIndex)
-142             Call WriteShowMessageBox(UserIndex, "La cuenta ya ha sido validada anteriormente.")
-
-            End If
-
-        Else
-144         Call WriteShowFrmLogear(UserIndex)
-146         Call WriteShowMessageBox(UserIndex, "La cuenta no existe.")
-
-        End If
+    'If we got here then packet is complete, copy data back to original queue
+    Call UserList(UserIndex).incomingData.CopyBuffer(Buffer)
     
-        'If we got here then packet is complete, copy data back to original queue
-148     Call UserList(UserIndex).incomingData.CopyBuffer(Buffer)
+    If Not CheckMailString(CuentaEmail) Then
+        Call WriteShowFrmLogear(UserIndex)
+        Call WriteShowMessageBox(UserIndex, "Email inválido.")
+        Call CloseSocket(UserIndex)
+        Exit Sub
+
+    End If
+    
+    If Not CuentaExiste(CuentaEmail) Then
+        Call WriteShowFrmLogear(UserIndex)
+        Call WriteShowMessageBox(UserIndex, "La cuenta ya ha sido validada anteriormente.")
+        Exit Sub
+    
+    End If
+
+    If Not ObtenerValidacion(CuentaEmail) Then
+        Call WriteShowFrmLogear(UserIndex)
+        Call WriteShowMessageBox(UserIndex, "La cuenta no existe.")
+        Exit Sub
+    
+    End If
+    
+    If UCase$(ObtenerCodigo(CuentaEmail)) <> UCase$(ValidacionCode) Then
+        Call WriteShowFrmLogear(UserIndex)
+        Call WriteShowMessageBox(UserIndex, "¡Código de activación inválido!")
+        Exit Sub
+
+    End If
+
+    Call ValidarCuentaDatabase(CuentaEmail)
+
+    Call WriteShowFrmLogear(UserIndex)
+    Call WriteShowMessageBox(UserIndex, "Cuenta activada con éxito, ya puede ingresar.")
+
+    Exit Sub
     
 ErrHandler:
 
-        Dim Error As Long
+    Dim Error As Long
 
-150     Error = Err.Number
+    Error = Err.Number
 
-        On Error GoTo 0
+    On Error GoTo 0
     
-        'Destroy auxiliar buffer
-152     Set Buffer = Nothing
+    'Destroy auxiliar buffer
+    Set Buffer = Nothing
     
-154     If Error <> 0 Then Err.raise Error
+    If Error <> 0 Then Err.raise Error
 
 End Sub
 
@@ -25976,22 +25870,8 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
 146         Call CloseSocket(targetUserIndex)
         End If
     
-148     If Database_Enabled Then
-150         Call BorrarUsuarioDatabase(UserDelete)
-        
-        Else
+150     Call BorrarUsuarioDatabase(UserDelete)
 
-152         If PersonajeExiste(UserDelete) Then
-154             Call FileCopy(CharPath & UserDelete & ".chr", DeletePath & UCase$(UserDelete) & ".chr")
-156             Call BorrarPJdeCuenta(UserDelete)
-        
-                'Call WriteShowMessageBox(UserIndex, "El personaje " & UserDelete & " a sido borrado de la cuenta.")
-158             Call Kill(CharPath & UserDelete & ".chr")
-
-            End If
-
-        End If
-    
 160     Call WritePersonajesDeCuenta(UserIndex)
   
         Exit Sub
@@ -26100,128 +25980,22 @@ ErrHandler:
 
 End Sub
 
-Private Sub HandleRecuperandoContraseña(ByVal UserIndex As Integer)
-
-        'Author: Pablo Mercavides
-100     If UserList(UserIndex).incomingData.Length < 5 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
-
-        End If
-
-        On Error GoTo ErrHandler
-
-        'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-        Dim Buffer As New clsByteQueue
-
-104     Call Buffer.CopyBuffer(UserList(UserIndex).incomingData)
-    
-        'Remove packet ID
-106     Call Buffer.ReadByte
-
-        Dim AcountDelete As String
-
-        Dim UserMail     As String
-    
-108     AcountDelete = Buffer.ReadASCIIString()
-110     UserMail = Buffer.ReadASCIIString()
-    
-112     If FileExist(CuentasPath & UCase$(AcountDelete) & ".act", vbNormal) Then
-    
-114         If Not AsciiValidos(AcountDelete) Then
-116             Call WriteShowFrmLogear(UserIndex)
-118             Call WriteShowMessageBox(UserIndex, "Cuenta invalida.")
-            
-            
-120             Call CloseSocket(UserIndex)
-                Exit Sub
-
-            End If
-
-122         If UserMail <> ObtenerEmail(AcountDelete) Then
-124             Call WriteShowFrmLogear(UserIndex)
-126             Call WriteShowMessageBox(UserIndex, "El email introducido no coincide con el email registrador.")
-            
-128             Call CloseSocket(UserIndex)
-                Exit Sub
-
-            End If
-        
-130         If EnviarCorreoRecuperacion(AcountDelete, ObtenerEmail(AcountDelete)) Then
-132             Call WriteShowFrmLogear(UserIndex)
-134             Call WriteShowMessageBox(UserIndex, "La contraseña de la cuenta a sido enviada por email a la direccion registrada.")
-            Else
-136             Call WriteShowFrmLogear(UserIndex)
-138             Call WriteShowMessageBox(UserIndex, "Se ha provocado un error al recuperar la clave, reintente mas tarde.")
-
-            End If
-
-        Else
-140         Call WriteShowFrmLogear(UserIndex)
-142         Call WriteShowMessageBox(UserIndex, "La cuenta ingresada no existe.")
-        
-144         Call CloseSocket(UserIndex)
-            Exit Sub
-
-        End If
-    
-        'If we got here then packet is complete, copy data back to original queue
-146     Call UserList(UserIndex).incomingData.CopyBuffer(Buffer)
-    
-ErrHandler:
-
-        Dim Error As Long
-
-148     Error = Err.Number
-
-        On Error GoTo 0
-    
-        'Destroy auxiliar buffer
-150     Set Buffer = Nothing
-    
-152     If Error <> 0 Then Err.raise Error
-
-End Sub
-
 Public Sub WritePersonajesDeCuenta(ByVal UserIndex As Integer)
         'Author: Pablo Mercavides
     
         Dim UserCuenta                     As String
-
         Dim CantPersonajes                 As Byte
-
         Dim Personaje(1 To MAX_PERSONAJES) As PersonajeCuenta
-
         Dim donador                        As Boolean
-
         Dim i                              As Byte
-    
+           
+        On Error GoTo ErrHandler
+           
 100     UserCuenta = UserList(UserIndex).Cuenta
     
 102     donador = DonadorCheck(UserCuenta)
 
-104     If Database_Enabled Then
-106         CantPersonajes = GetPersonajesCuentaDatabase(UserList(UserIndex).AccountId, Personaje)
-        Else
-108         CantPersonajes = ObtenerCantidadDePersonajes(UserCuenta)
-        
-110         For i = 1 To CantPersonajes
-112             Personaje(i).nombre = ObtenerNombrePJ(UserCuenta, i)
-114             Personaje(i).Cabeza = ObtenerCabeza(Personaje(i).nombre)
-116             Personaje(i).clase = ObtenerClase(Personaje(i).nombre)
-118             Personaje(i).cuerpo = ObtenerCuerpo(Personaje(i).nombre)
-120             Personaje(i).Mapa = ReadField(1, ObtenerMapa(Personaje(i).nombre), Asc("-"))
-122             Personaje(i).nivel = ObtenerNivel(Personaje(i).nombre)
-124             Personaje(i).Status = ObtenerCriminal(Personaje(i).nombre)
-126             Personaje(i).Casco = ObtenerCasco(Personaje(i).nombre)
-128             Personaje(i).Escudo = ObtenerEscudo(Personaje(i).nombre)
-130             Personaje(i).Arma = ObtenerArma(Personaje(i).nombre)
-132             Personaje(i).ClanIndex = GetUserGuildIndexCharfile(Personaje(i).nombre)
-134         Next i
-
-        End If
-    
-        On Error GoTo ErrHandler
+106     CantPersonajes = GetPersonajesCuentaDatabase(UserList(UserIndex).AccountId, Personaje)
 
 136     With UserList(UserIndex).outgoingData
 138         Call .WriteByte(ServerPacketID.PersonajesDeCuenta)
@@ -26252,6 +26026,7 @@ ErrHandler:
 170     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
 172         Call FlushBuffer(UserIndex)
 174         Resume
+
         End If
 
 End Sub
@@ -26322,7 +26097,6 @@ Private Sub HandlePossUser(ByVal UserIndex As Integer)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
             Dim Buffer As New clsByteQueue
-
 106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
@@ -26334,17 +26108,12 @@ Private Sub HandlePossUser(ByVal UserIndex As Integer)
         
 112         If Not .flags.Privilegios And PlayerType.user Then
         
-114             If Database_Enabled Then
-116                 If Not SetPositionDatabase(UserName, UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y) Then
-118                     Call WriteConsoleMsg(UserIndex, "El usuario " & UserName & " no existe.", FontTypeNames.FONTTYPE_INFO)
-                    End If
-                Else
-120                 Call WriteVar(CharPath & UCase$(UserName) & ".chr", "INIT", "Position", UserList(UserIndex).Pos.Map & "-" & UserList(UserIndex).Pos.X & "-" & UserList(UserIndex).Pos.Y)
+116             If Not SetPositionDatabase(UserName, UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y) Then
+118                 Call WriteConsoleMsg(UserIndex, "El usuario " & UserName & " no existe.", FontTypeNames.FONTTYPE_INFO)
                 End If
 
 122             Call WriteConsoleMsg(UserIndex, "Servidor> Acción realizada con exito! La nueva posicion de " & UserName & "es: " & UserList(UserIndex).Pos.Map & "-" & UserList(UserIndex).Pos.X & "-" & UserList(UserIndex).Pos.Y & "...", FontTypeNames.FONTTYPE_INFO)
 
-                ' Call SendData(UserIndex, UserIndex, PrepareMessageConsoleMsg("Acciín realizada con exito! La nueva posicion de " & UserName & "es: " & UserList(UserIndex).Pos.Map & "-" & UserList(UserIndex).Pos.X & "-" & UserList(UserIndex).Pos.y & "...", FontTypeNames.FONTTYPE_SERVER))
             End If
         
             'If we got here then packet is complete, copy data back to original queue
@@ -26662,12 +26431,14 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
                 Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
                 'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
+
             End If
         
             'Validate target NPC
             If .flags.TargetNPC = 0 Then
                 Call WriteConsoleMsg(UserIndex, "Primero tenés que seleccionar un personaje, haz click izquierdo sobre él.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
+
             End If
 
             If NpcList(.flags.TargetNPC).NPCtype <> eNPCType.Banquero Then Exit Sub
@@ -26676,6 +26447,7 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                 'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
+
             End If
 
 116         tUser = NameIndex(UserName)
@@ -26684,39 +26456,35 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
             If tUser = UserIndex Then
                 Call WriteChatOverHead(UserIndex, "¡No puedo enviarte oro a vos mismo!", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
                 Exit Sub
+
             End If
     
 118         If Not EsGM(UserIndex) Then
 
 120             If tUser <= 0 Then
-122                 If Database_Enabled Then
-124                     If Not AddOroBancoDatabase(UserName, Cantidad) Then
-126                         Call WriteChatOverHead(UserIndex, "El usuario no existe.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
-                            Exit Sub
-                        End If
-                    Else
-                        Dim FileUser  As String
-                        Dim OroenBove As Long
-    
-128                     FileUser = CharPath & UCase$(UserName) & ".chr"
-130                     OroenBove = val(GetVar(FileUser, "STATS", "BANCO"))
-132                     OroenBove = OroenBove + val(Cantidad)
-    
-134                     Call WriteVar(FileUser, "STATS", "BANCO", CLng(OroenBove)) 'Guardamos en bove
+
+124                 If Not AddOroBancoDatabase(UserName, Cantidad) Then
+126                     Call WriteChatOverHead(UserIndex, "El usuario no existe.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+                        Exit Sub
+
                     End If
+
                 Else
 140                 UserList(tUser).Stats.Banco = UserList(tUser).Stats.Banco + val(Cantidad) 'Se lo damos al otro.
+
                 End If
                 
                 UserList(UserIndex).Stats.Banco = UserList(UserIndex).Stats.Banco - val(Cantidad) 'Quitamos el oro al usuario
     
 142             Call WriteChatOverHead(UserIndex, "¡El envío se ha realizado con éxito! Gracias por utilizar los servicios de Finanzas Goliath", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
 144             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("173", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+
             Else
 146             Call WriteChatOverHead(UserIndex, "Los administradores no pueden transferir oro.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
 148             Call LogGM(.name, "Quizo transferirle oro a: " & UserName)
             
             End If
+
         End With
     
 ErrHandler:
