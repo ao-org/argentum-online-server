@@ -300,9 +300,8 @@ Public Sub FundirMineral(ByVal UserIndex As Integer)
         
         On Error GoTo FundirMineral_Err
 
-        If UserList(UserList).clase <> eClass.Trabajador Then
-            ' Poner mensaje de que no puede.
-
+        If UserList(UserIndex).clase <> eClass.Trabajador Then
+            Call WriteConsoleMsg(UserIndex, "Tu clase no tiene el conocimiento suficiente para trabajar este mineral.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
 
@@ -317,7 +316,7 @@ Public Sub FundirMineral(ByVal UserIndex As Integer)
 106             Call DoLingotes(UserIndex)
         
 108         ElseIf SkillRequerido > 100 Then
-110             Call WriteConsoleMsg(UserIndex, "Tu clase no tiene el conocimiento suficiente para trabajar este mineral.", FontTypeNames.FONTTYPE_INFO)
+110             Call WriteConsoleMsg(UserIndex, "Los mortales no pueden fundir este mineral.", FontTypeNames.FONTTYPE_INFO)
                 
             Else
 112             Call WriteConsoleMsg(UserIndex, "No tenés conocimientos de minería suficientes para trabajar este mineral. Necesitas " & SkillRequerido & " puntos en minería.", FontTypeNames.FONTTYPE_INFO)
