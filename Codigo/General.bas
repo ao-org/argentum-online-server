@@ -1460,11 +1460,11 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
                     ' WyroX: Sin ropa perdés vida más rápido que con una ropa no-invernal
                     Dim MinDaño As Integer, MaxDaño As Integer
                     If .flags.Desnudo = 0 Then
-                        MinDaño = 3
-                        MaxDaño = 5
+                        MinDaño = 17
+                        MaxDaño = 23
                     Else
-                        MinDaño = 10
-                        MaxDaño = 15
+                        MinDaño = 27
+                        MaxDaño = 33
                     End If
 
                     ' WyroX: Agrego aleatoriedad
