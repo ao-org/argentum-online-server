@@ -440,6 +440,7 @@ Private Sub DarRecompensas(ByVal UserIndex As Integer)
               .Faccion.RecibioArmaduraCaos = rank
             End If
 
+            Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(48, NO_3D_SOUND, NO_3D_SOUND))
         End With
 
         Exit Sub
