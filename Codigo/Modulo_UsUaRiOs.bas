@@ -931,70 +931,11 @@ SendUserMiniStatsTxt_Err:
         
 End Sub
 
-Sub SendUserMiniStatsTxtFromChar(ByVal sendIndex As Integer, ByVal CharName As String)
-        
-        On Error GoTo SendUserMiniStatsTxtFromChar_Err
-        
-
-        '*************************************************
-        'Author: Unknown
-        'Last modified: 23/01/2007
-        'Shows the users Stats when the user is offline.
-        '23/01/2007 Pablo (ToxicWaste) - Agrego de funciones y mejora de distribución de parámetros.
-        '*************************************************
-        Dim CharFile      As String
-
-        Dim Ban           As String
-
-        Dim BanDetailPath As String
-
-100     BanDetailPath = App.Path & "\logs\" & "BanDetail.dat"
-102     CharFile = CharPath & CharName & ".chr"
-    
-104     If FileExist(CharFile) Then
-106         Call WriteConsoleMsg(sendIndex, "Pj: " & CharName, FontTypeNames.FONTTYPE_INFO)
-108         Call WriteConsoleMsg(sendIndex, "CiudadanosMatados: " & GetVar(CharFile, "FACCIONES", "CiudMatados") & " CriminalesMatados: " & GetVar(CharFile, "FACCIONES", "CrimMatados") & " UsuariosMatados: " & GetVar(CharFile, "MUERTES", "UserMuertes"), FontTypeNames.FONTTYPE_INFO)
-110         Call WriteConsoleMsg(sendIndex, "NPCsMuertos: " & GetVar(CharFile, "MUERTES", "NpcsMuertes"), FontTypeNames.FONTTYPE_INFO)
-112         Call WriteConsoleMsg(sendIndex, "Clase: " & ListaClases(GetVar(CharFile, "INIT", "Clase")), FontTypeNames.FONTTYPE_INFO)
-114         Call WriteConsoleMsg(sendIndex, "Pena: " & GetVar(CharFile, "COUNTERS", "PENA"), FontTypeNames.FONTTYPE_INFO)
-116         Call WriteConsoleMsg(sendIndex, "Oro en billetera: " & GetVar(CharFile, "STATS", "GLD"), FontTypeNames.FONTTYPE_INFO)
-118         Call WriteConsoleMsg(sendIndex, "Oro en boveda: " & GetVar(CharFile, "STATS", "BANCO"), FontTypeNames.FONTTYPE_INFO)
-120         Call WriteConsoleMsg(sendIndex, "Cuenta: " & GetVar(CharFile, "INIT", "Cuenta"), FontTypeNames.FONTTYPE_INFO)
-        
-122         If IsNumeric(GetVar(CharFile, "Guild", "GUILDINDEX")) Then
-124             Call WriteConsoleMsg(sendIndex, "Clan: " & modGuilds.GuildName(CInt(GetVar(CharFile, "Guild", "GUILDINDEX"))), FontTypeNames.FONTTYPE_INFO)
-
-            End If
-        
-126         Ban = GetVar(CharFile, "BAN", "BanMotivo")
-128         Call WriteConsoleMsg(sendIndex, "Ban: " & Ban, FontTypeNames.FONTTYPE_INFO)
-
-130         If Ban = "1" Then
-132             Call WriteConsoleMsg(sendIndex, "Ban por: " & GetVar(CharFile, CharName, "BannedBy") & " Motivo: " & GetVar(BanDetailPath, CharName, "Reason"), FontTypeNames.FONTTYPE_INFO)
-
-            End If
-        
-        Else
-134         Call WriteConsoleMsg(sendIndex, "El pj no existe: " & CharName, FontTypeNames.FONTTYPE_INFO)
-
-        End If
-
-        
-        Exit Sub
-
-SendUserMiniStatsTxtFromChar_Err:
-136     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.SendUserMiniStatsTxtFromChar", Erl)
-138     Resume Next
-        
-End Sub
 
 Sub SendUserInvTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
         
         On Error GoTo SendUserInvTxt_Err
     
-        
-
-        
 
         Dim j As Long
     
@@ -1019,59 +960,9 @@ SendUserInvTxt_Err:
         
 End Sub
 
-Sub SendUserInvTxtFromChar(ByVal sendIndex As Integer, ByVal CharName As String)
-        
-        On Error GoTo SendUserInvTxtFromChar_Err
-    
-        
-
-        
-
-        Dim j        As Long
-
-        Dim CharFile As String, Tmp As String
-
-        Dim ObjInd   As Long, ObjCant As Long
-    
-100     CharFile = CharPath & CharName & ".chr"
-    
-102     If FileExist(CharFile, vbNormal) Then
-104         Call WriteConsoleMsg(sendIndex, CharName, FontTypeNames.FONTTYPE_INFO)
-106         Call WriteConsoleMsg(sendIndex, " Tiene " & GetVar(CharFile, "Inventory", "CantidadItems") & " objetos.", FontTypeNames.FONTTYPE_INFO)
-        
-108         For j = 1 To MAX_INVENTORY_SLOTS
-110             Tmp = GetVar(CharFile, "Inventory", "Obj" & j)
-112             ObjInd = ReadField(1, Tmp, Asc("-"))
-114             ObjCant = ReadField(2, Tmp, Asc("-"))
-
-116             If ObjInd > 0 Then
-118                 Call WriteConsoleMsg(sendIndex, " Objeto " & j & " " & ObjData(ObjInd).name & " Cantidad:" & ObjCant, FontTypeNames.FONTTYPE_INFO)
-
-                End If
-
-120         Next j
-
-        Else
-122         Call WriteConsoleMsg(sendIndex, "Usuario inexistente: " & CharName, FontTypeNames.FONTTYPE_INFO)
-
-        End If
-    
-        
-        Exit Sub
-
-SendUserInvTxtFromChar_Err:
-124     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.SendUserInvTxtFromChar", Erl)
-
-        
-End Sub
-
 Sub SendUserSkillsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
         
         On Error GoTo SendUserSkillsTxt_Err
-    
-        
-
-        
 
         Dim j As Integer
 
@@ -2045,39 +1936,6 @@ Sub SendUserStatsTxtOFF(ByVal sendIndex As Integer, ByVal nombre As String)
 SendUserStatsTxtOFF_Err:
 124     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.SendUserStatsTxtOFF", Erl)
 126     Resume Next
-        
-End Sub
-
-Sub SendUserOROTxtFromChar(ByVal sendIndex As Integer, ByVal CharName As String)
-        
-        On Error GoTo SendUserOROTxtFromChar_Err
-    
-        
-
-        
-
-        Dim j        As Integer
-
-        Dim CharFile As String, Tmp As String
-
-        Dim ObjInd   As Long, ObjCant As Long
-
-100     CharFile = CharPath & CharName & ".chr"
-
-102     If FileExist(CharFile, vbNormal) Then
-104         Call WriteConsoleMsg(sendIndex, CharName, FontTypeNames.FONTTYPE_INFO)
-106         Call WriteConsoleMsg(sendIndex, " Tiene " & GetVar(CharFile, "STATS", "BANCO") & " en el banco.", FontTypeNames.FONTTYPE_INFO)
-        Else
-108         Call WriteConsoleMsg(sendIndex, "Usuario inexistente: " & CharName, FontTypeNames.FONTTYPE_INFO)
-
-        End If
-
-        
-        Exit Sub
-
-SendUserOROTxtFromChar_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.SendUserOROTxtFromChar", Erl)
-
         
 End Sub
 

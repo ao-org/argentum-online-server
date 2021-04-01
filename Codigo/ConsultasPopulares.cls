@@ -170,6 +170,7 @@ Public Function doVotar(ByVal UserIndex As Integer, ByVal opcion As Integer) As 
     
 106     If (UserList(UserIndex).Stats.ELV >= pNivelRequerido) Then
 108         If (OpcionValida(opcion)) Then
+
 110             YaVoto = val(GetVar(CharFile, "CONSULTAS", "Voto")) >= pEncuestaActualNum
 
 112             If Not YaVoto Then
