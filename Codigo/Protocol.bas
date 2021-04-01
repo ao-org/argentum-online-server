@@ -1774,7 +1774,7 @@ Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
 404     ElseIf Err.Number <> 0 And Not Err.Number = UserList(UserIndex).incomingData.NotEnoughDataErrCode Then
             'An error ocurred, log it and kick player.
 406         Call LogError("Error: " & Err.Number & " [" & Err.Description & "] - Linea: " & Erl & _
-                          " Source: " & Err.Source & vbTab & _
+                          " Source: " & Err.source & vbTab & _
                           " HelpFile: " & Err.HelpFile & vbTab & _
                           " HelpContext: " & Err.HelpContext & vbTab & _
                           " LastDllError: " & Err.LastDllError & vbTab & _
@@ -11419,20 +11419,7 @@ Private Sub HandleMensajeUser(ByVal UserIndex As Integer)
                     End If
                     
 132                 AddCorreo UserIndex, UserName, LCase$(Mensaje), 0, 0
-                    
-                    ' If tUser <= 0 Then
-          
-                    ' If FileExist(CharPath & UserName & ".chr", vbNormal) Then
-                    '   Call WriteVar(CharPath & UserName & ".chr", "INIT", "MENSAJEINFORMACION", .name & " te ha dejado un mensaje: " & Mensaje)
-                    '   Call WriteConsoleMsg(UserIndex, "El usuario estaba offline. El mensaje fue grabado en el charfile.", FontTypeNames.FONTTYPE_INFO)
-                    '   Call LogGM(.name, " envio el siguiente mensaje ha " & UCase$(UserName) & ": " & LCase$(Mensaje))
-                    '  Else
-                    '  Call WriteConsoleMsg(UserIndex, "El usuario no existe.", FontTypeNames.FONTTYPE_INFO)
-                    ' End If
-                    ' Else
-                    ' Call WriteConsoleMsg(tUser, .name & " te ha dejado un mensaje: " & Mensaje, FontTypeNames.FONTTYPE_CENTINELA)
-                    ' Call WriteConsoleMsg(UserIndex, "El mensaje fue enviado.", FontTypeNames.FONTTYPE_INFO)
-                    ' End If
+
                 End If
 
             End If
@@ -12220,7 +12207,7 @@ Private Sub HandleRequestCharInfo(ByVal UserIndex As Integer)
 
                     'don't allow to retrieve administrator's info
 118                 If Not (EsDios(targetName) Or EsAdmin(targetName)) Then
-120                     Call WriteConsoleMsg(UserIndex, "Usuario offline, Buscando en Charfile.", FontTypeNames.FONTTYPE_INFO)
+120                     Call WriteConsoleMsg(UserIndex, "Usuario offline", FontTypeNames.FONTTYPE_INFO)
 122                     Call SendUserStatsTxtOFF(UserIndex, targetName)
 
                     End If
@@ -12298,13 +12285,11 @@ Private Sub HandleRequestCharStats(ByVal UserIndex As Integer)
             
 116             tUser = NameIndex(UserName)
             
-118             If tUser <= 0 Then
-120                 Call WriteConsoleMsg(UserIndex, "Usuario offline. Leyendo Charfile... ", FontTypeNames.FONTTYPE_INFO)
-                
-122                 Call SendUserMiniStatsTxtFromChar(UserIndex, UserName)
+118             If tUser > 0 Then
+122                 Call SendUserMiniStatsTxt(UserIndex, tUser)
                 Else
-124                 Call SendUserMiniStatsTxt(UserIndex, tUser)
-
+                    Call WriteConsoleMsg(UserIndex, "Usuario offline", FontTypeNames.FONTTYPE_INFO)
+124
                 End If
 
             End If
@@ -12369,12 +12354,11 @@ Private Sub HandleRequestCharGold(ByVal UserIndex As Integer)
 114         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
 116             Call LogGM(.name, "/BAL " & UserName)
             
-118             If tUser <= 0 Then
-120                 Call WriteConsoleMsg(UserIndex, "Usuario offline. Leyendo charfile... ", FontTypeNames.FONTTYPE_TALK)
-                
-122                 Call SendUserOROTxtFromChar(UserIndex, UserName)
+118             If tUser > 0 Then
+                    Call WriteConsoleMsg(UserIndex, "El usuario " & UserName & " tiene " & UserList(tUser).Stats.Banco & " en el banco", FontTypeNames.FONTTYPE_TALK)
+
                 Else
-124                 Call WriteConsoleMsg(UserIndex, "El usuario " & UserName & " tiene " & UserList(tUser).Stats.Banco & " en el banco", FontTypeNames.FONTTYPE_TALK)
+124                 Call WriteConsoleMsg(UserIndex, "Usuario offline", FontTypeNames.FONTTYPE_TALK)
 
                 End If
 
@@ -12440,12 +12424,11 @@ Private Sub HandleRequestCharInventory(ByVal UserIndex As Integer)
 114         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
 116             Call LogGM(.name, "/INV " & UserName)
             
-118             If tUser <= 0 Then
-120                 Call WriteConsoleMsg(UserIndex, "Usuario offline. Leyendo del charfile...", FontTypeNames.FONTTYPE_TALK)
-                
-122                 Call SendUserInvTxtFromChar(UserIndex, UserName)
+118             If tUser > 0 Then
+                    Call SendUserInvTxt(UserIndex, tUser)
+                    
                 Else
-124                 Call SendUserInvTxt(UserIndex, tUser)
+                    Call WriteConsoleMsg(UserIndex, "Usuario offline.", FontTypeNames.FONTTYPE_TALK)
 
                 End If
 
@@ -12511,13 +12494,12 @@ Private Sub HandleRequestCharBank(ByVal UserIndex As Integer)
 114         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
 116             Call LogGM(.name, "/BOV " & UserName)
             
-118             If tUser <= 0 Then
-120                 Call WriteConsoleMsg(UserIndex, "Usuario offline. Leyendo charfile... ", FontTypeNames.FONTTYPE_TALK)
-                
-122                 Call SendUserBovedaTxtFromChar(UserIndex, UserName)
+118             If tUser > 0 Then
+                    Call SendUserBovedaTxt(UserIndex, tUser)
+                    
                 Else
-124                 Call SendUserBovedaTxt(UserIndex, tUser)
-
+                    Call WriteConsoleMsg(UserIndex, "Usuario offline.", FontTypeNames.FONTTYPE_TALK)
+                    
                 End If
 
             End If
@@ -13243,7 +13225,7 @@ Private Sub HandleUnbanChar(ByVal UserIndex As Integer)
                 End If
             
 122             If Not PersonajeExiste(UserName) Then
-124                 Call WriteConsoleMsg(UserIndex, "Charfile inexistente (no use +)", FontTypeNames.FONTTYPE_INFO)
+124                 Call WriteConsoleMsg(UserIndex, "Usuario inexistente (no use +)", FontTypeNames.FONTTYPE_INFO)
                 Else
 
 126                 If ObtenerBaneo(UserName) Then
@@ -13252,6 +13234,7 @@ Private Sub HandleUnbanChar(ByVal UserIndex As Integer)
 
 140                     Call LogGM(.name, "/UNBAN a " & UserName)
 142                     Call WriteConsoleMsg(UserIndex, UserName & " desbaneado.", FontTypeNames.FONTTYPE_INFO)
+
                     Else
 144                     Call WriteConsoleMsg(UserIndex, UserName & " no esta baneado. Imposible unbanear", FontTypeNames.FONTTYPE_INFO)
 
@@ -16293,18 +16276,7 @@ Private Sub HandleLastIP(ByVal UserIndex As Integer)
 134             If validCheck Then
 136                 Call LogGM(.name, "/LASTIP " & UserName)
                 
-138                 If FileExist(CharPath & UserName & ".chr", vbNormal) Then
-140                     lista = "Las ultimas IPs con las que " & UserName & " se conectí son:"
-
-142                     For LoopC = 1 To 5
-144                         lista = lista & vbCrLf & LoopC & " - " & GetVar(CharPath & UserName & ".chr", "INIT", "LastIP" & LoopC)
-146                     Next LoopC
-
-148                     Call WriteConsoleMsg(UserIndex, lista, FontTypeNames.FONTTYPE_INFO)
-                    Else
-150                     Call WriteConsoleMsg(UserIndex, "Charfile """ & UserName & """ inexistente.", FontTypeNames.FONTTYPE_INFO)
-
-                    End If
+                    ' TODO: Obtener anteriores ip
 
                 Else
 152                 Call WriteConsoleMsg(UserIndex, UserName & " es de mayor jerarquía que vos.", FontTypeNames.FONTTYPE_INFO)
@@ -18009,18 +17981,13 @@ Public Sub HandleAlterMail(ByVal UserIndex As Integer)
 112         newMail = Buffer.ReadASCIIString()
         
 114         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) Then
+
 116             If LenB(UserName) = 0 Or LenB(newMail) = 0 Then
 118                 Call WriteConsoleMsg(UserIndex, "usar /AEMAIL <pj>-<nuevomail>", FontTypeNames.FONTTYPE_INFO)
                 Else
+                    
+                    Call SetDBValue("account", "email", newMail, "id", .AccountId)
 
-120                 If Not FileExist(CharPath & UserName & ".chr") Then
-122                     Call WriteConsoleMsg(UserIndex, "No existe el charfile " & UserName & ".chr", FontTypeNames.FONTTYPE_INFO)
-                    Else
-124                     Call WriteVar(CharPath & UserName & ".chr", "CONTACTO", "Email", newMail)
-126                     Call WriteConsoleMsg(UserIndex, "Email de " & UserName & " cambiado a: " & newMail, FontTypeNames.FONTTYPE_INFO)
-
-                    End If
-                
 128                 Call LogGM(.name, "Le ha cambiado el mail a " & UserName)
 
                 End If
@@ -25446,24 +25413,23 @@ Public Sub SilenciarUserName(ByVal SilencioUserIndex As Integer, ByVal UserName 
 108     With UserList(SilencioUserIndex)
 
 110         If tUser <= 0 Then
-112             Call WriteConsoleMsg(SilencioUserIndex, "El usuario no esta online, pena grabada en el charfile.", FontTypeNames.FONTTYPE_TALK)
+112             Call WriteConsoleMsg(SilencioUserIndex, "El usuario no esta online, pena grabada en la base de datos.", FontTypeNames.FONTTYPE_TALK)
             
-114             If FileExist(CharPath & UserName & ".chr", vbNormal) Then
+114             If LenB(ObtenerCuenta(UserName)) Then
 116                 userPriv = UserDarPrivilegioLevel(UserName)
                 
 118                 If (userPriv And rank) > (.flags.Privilegios And rank) Then
 120                     Call WriteConsoleMsg(SilencioUserIndex, "No podes silenciar a al alguien de mayor jerarquia.", FontTypeNames.FONTTYPE_INFO)
+
                     Else
                         
                         'ponemos el flag de silencio a 1 y los minutos
-122                     Call WriteVar(CharPath & UserName & ".chr", "FLAGS", "Silenciado", "1")
-124                     Call WriteVar(CharPath & UserName & ".chr", "FLAGS", "MinutosRestantes", Time)
-126                     Call WriteVar(CharPath & UserName & ".chr", "FLAGS", "SegundosPasados", "0")
+                        Call SetUserValue(UserName, "is_silenced", 1)
+                        Call SetUserValue(UserName, "silence_minutes_left", Time)
+                        Call SetUserValue(UserName, "silence_elapsed_seconds", 0)
                         
                         'ponemos la pena
-128                     cantPenas = val(GetVar(CharPath & UserName & ".chr", "PENAS", "Cant"))
-130                     Call WriteVar(CharPath & UserName & ".chr", "PENAS", "Cant", cantPenas + 1)
-132                     Call WriteVar(CharPath & UserName & ".chr", "PENAS", "P" & cantPenas + 1, LCase$(.name) & ": Silenciado durante " & Time & " minutos. " & Date & " ")
+128                     Call SavePenaDatabase(UserName, LCase$(.name) & ": silencio por " & Time & " minutos. " & Date & " " & Time)
 
                     End If
 
@@ -25476,7 +25442,8 @@ Public Sub SilenciarUserName(ByVal SilencioUserIndex As Integer, ByVal UserName 
 
 136             If (UserList(tUser).flags.Privilegios And rank) > (.flags.Privilegios And rank) Then
 138                 Call WriteConsoleMsg(SilencioUserIndex, "No podes silenciar a al alguien de mayor jerarquia.", FontTypeNames.FONTTYPE_INFO)
-
+                    Exit Sub
+                    
                 End If
             
 140             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> " & .name & " ha silenciado a " & UserList(tUser).name & ", por " & Time & " minutos.", FontTypeNames.FONTTYPE_SERVER))
@@ -25485,16 +25452,17 @@ Public Sub SilenciarUserName(ByVal SilencioUserIndex As Integer, ByVal UserName 
 142             UserList(tUser).flags.Silenciado = 1
 144             UserList(tUser).flags.MinutosRestantes = Time
 146             UserList(tUser).flags.SegundosPasados = 0
+
 148             Call LogGM(.name, "Silencio a " & UserName)
             
-                'ponemos el flag de silencio
-150             Call WriteVar(CharPath & UserName & ".chr", "FLAGS", "Silenciado", "1")
-152             Call WriteVar(CharPath & UserName & ".chr", "FLAGS", "MinutosRestantes", Time)
-154             Call WriteVar(CharPath & UserName & ".chr", "FLAGS", "SegundosPasados", "0")
+                'ponemos el flag de silencio a 1 y los minutos
+                Call SetUserValue(UserName, "is_silenced", 1)
+                Call SetUserValue(UserName, "silence_minutes_left", Time)
+                Call SetUserValue(UserName, "silence_elapsed_seconds", 0)
+                        
                 'ponemos la pena
-156             cantPenas = val(GetVar(CharPath & UserName & ".chr", "PENAS", "Cant"))
-158             Call WriteVar(CharPath & UserName & ".chr", "PENAS", "Cant", cantPenas + 1)
-160             Call WriteVar(CharPath & UserName & ".chr", "PENAS", "P" & cantPenas + 1, LCase$(.name) & ": silencio por " & Time & " minutos. " & Date & " " & Time)
+                Call SavePenaDatabase(UserName, LCase$(.name) & ": silencio por " & Time & " minutos. " & Date & " " & Time)
+
                 'Call WriteConsoleMsg(tUser, "Has sido silenciado durante " & Time & " minutos.", FontTypeNames.FONTTYPE_INFO)
 162             Call WriteLocaleMsg(tUser, "11", FontTypeNames.FONTTYPE_VENENO)
 
@@ -30979,7 +30947,7 @@ Private Sub HandleScreenShot(ByVal UserIndex As Integer)
             ' Remove packet ID
 110         Call Buffer.ReadInteger
         
-112         Dim data As String: data = Buffer.ReadASCIIString
+112         Dim Data As String: Data = Buffer.ReadASCIIString
 
 114         Call .incomingData.CopyBuffer(Buffer)
 116         Set Buffer = Nothing
@@ -30990,18 +30958,18 @@ Private Sub HandleScreenShot(ByVal UserIndex As Integer)
             Dim Finished As Boolean
         
             ' Por seguridad, limito a 10Kb de datos (dejo margen para el nombre y el resto del paquete)
-120         If LenB(data) = 0 Or Len(data) > 10000 Then
-122             data = "ERROR"
+120         If LenB(Data) = 0 Or Len(Data) > 10000 Then
+122             Data = "ERROR"
 124             Finished = True
         
             ' Si envió menos de 10Kb y termina con ~~~
-126         ElseIf Len(data) <= 10000 And Right$(data, 3) = "~~~" Then
+126         ElseIf Len(Data) <= 10000 And Right$(Data, 3) = "~~~" Then
                 ' Damos la screenshot por terminada
 128             Finished = True
             End If
 
             ' Lo guardo en la cola
-130         Call .flags.ScreenShot.WriteASCIIStringFixed(data)
+130         Call .flags.ScreenShot.WriteASCIIStringFixed(Data)
         
 132         If Finished Then
                 Dim ListaGMs() As String
@@ -31061,11 +31029,11 @@ Private Sub HandleProcesses(ByVal UserIndex As Integer)
             ' Remove packet ID
 110         Call Buffer.ReadInteger
         
-112         Dim data As String: data = Buffer.ReadASCIIString
+112         Dim Data As String: Data = Buffer.ReadASCIIString
         
             ' Por seguridad, limito a 10kb de datos (con margen para el nombre)
-114         If Len(data) > 10000 Then
-116             data = Left$(data, 10000) & vbNewLine & "[...Demasiado largo]"
+114         If Len(Data) > 10000 Then
+116             Data = Left$(Data, 10000) & vbNewLine & "[...Demasiado largo]"
             End If
 
 118         Call .incomingData.CopyBuffer(Buffer)
@@ -31075,10 +31043,10 @@ Private Sub HandleProcesses(ByVal UserIndex As Integer)
 122         If LenB(.flags.ProcesosPara) = 0 Then Exit Sub
         
             ' Prevengo avivadas
-124         data = Replace$(data, "*:*", vbNullString)
+124         Data = Replace$(Data, "*:*", vbNullString)
         
             ' Anteponemos el nombre del user
-126         data = .name & "*:*" & data
+126         Data = .name & "*:*" & Data
 
             Dim ListaGMs() As String
 128         ListaGMs = Split(.flags.ProcesosPara, ":")
@@ -31089,7 +31057,7 @@ Private Sub HandleProcesses(ByVal UserIndex As Integer)
 132             tGM = NameIndex(ListaGMs(i))
             
 134             If tGM > 0 Then
-136                 Call WriteShowProcesses(tGM, data)
+136                 Call WriteShowProcesses(tGM, Data)
                 End If
             Next
         
@@ -31133,7 +31101,7 @@ ErrHandler:
         End If
 End Sub
 
-Private Sub WriteShowProcesses(ByVal UserIndex As Integer, data As String)
+Private Sub WriteShowProcesses(ByVal UserIndex As Integer, Data As String)
 
         On Error GoTo ErrHandler
 
@@ -31141,7 +31109,7 @@ Private Sub WriteShowProcesses(ByVal UserIndex As Integer, data As String)
 
 102         Call .WriteByte(ServerPacketID.ShowProcesses)
 
-104         Call .WriteASCIIString(data)
+104         Call .WriteASCIIString(Data)
 
         End With
 
