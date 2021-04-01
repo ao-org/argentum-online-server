@@ -4752,8 +4752,8 @@ Private Sub HandleCreateNewGuild(ByVal UserIndex As Integer)
 120             Call QuitarObjetos(408, 1, UserIndex)
 122             Call QuitarObjetos(409, 1, UserIndex)
 124             Call QuitarObjetos(411, 1, UserIndex)
-            
-126             Call SendData(SendTarget.ToAll, UserIndex, PrepareMessageConsoleMsg(.name & " fundó el clan " & GuildName & ".", FontTypeNames.FONTTYPE_GUILD))
+
+126             Call SendData(SendTarget.ToAll, UserIndex, PrepareMessageConsoleMsg(.name & " fundó el clan " & GuildName & " con alineación: " & Alineacion & ".", FontTypeNames.FONTTYPE_GUILD))
 128             Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(44, NO_3D_SOUND, NO_3D_SOUND))
                 'Update tag
 130             Call RefreshCharStatus(UserIndex)
@@ -29032,7 +29032,7 @@ Private Sub HandleHecharDeGrupo(ByVal UserIndex As Integer)
 
 108         Indice = .incomingData.ReadByte()
         
-110         Call HecharMiembro(UserIndex, Indice)
+110         Call EcharMiembro(UserIndex, Indice)
 
         End With
 
