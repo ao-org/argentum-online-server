@@ -299,12 +299,16 @@ End Sub
 Public Sub FundirMineral(ByVal UserIndex As Integer)
         
         On Error GoTo FundirMineral_Err
-        
+
+        If UserList(UserIndex).clase <> eClass.Trabajador Then
+            Call WriteConsoleMsg(UserIndex, "Tu clase no tiene el conocimiento suficiente para trabajar este mineral.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
 
 100     If UserList(UserIndex).flags.TargetObjInvIndex > 0 Then
 
             Dim SkillRequerido As Integer
-102         SkillRequerido = ObjData(UserList(UserIndex).flags.TargetObjInvIndex).MinSkill * ModFundirMineral(UserList(UserIndex).clase)
+102         SkillRequerido = ObjData(UserList(UserIndex).flags.TargetObjInvIndex).MinSkill
    
 104         If ObjData(UserList(UserIndex).flags.TargetObjInvIndex).OBJType = eOBJType.otMinerales And _
                 UserList(UserIndex).Stats.UserSkills(eSkill.Mineria) >= SkillRequerido Then
@@ -312,7 +316,7 @@ Public Sub FundirMineral(ByVal UserIndex As Integer)
 106             Call DoLingotes(UserIndex)
         
 108         ElseIf SkillRequerido > 100 Then
-110             Call WriteConsoleMsg(UserIndex, "Tu clase no tiene el conocimiento suficiente para trabajar este mineral.", FontTypeNames.FONTTYPE_INFO)
+110             Call WriteConsoleMsg(UserIndex, "Los mortales no pueden fundir este mineral.", FontTypeNames.FONTTYPE_INFO)
                 
             Else
 112             Call WriteConsoleMsg(UserIndex, "No tenés conocimientos de minería suficientes para trabajar este mineral. Necesitas " & SkillRequerido & " puntos en minería.", FontTypeNames.FONTTYPE_INFO)
@@ -1049,121 +1053,79 @@ MineralesParaLingote_Err:
 End Function
 
 Public Sub DoLingotes(ByVal UserIndex As Integer)
-        '    Call LogTarea("Sub DoLingotes")
-        
         On Error GoTo DoLingotes_Err
-        
-
-100     If UserList(UserIndex).Stats.MinSta > 5 Then
-102         Call QuitarSta(UserIndex, 5)
-    
-        Else
-        
-104         Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
-            'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para excavar.", FontTypeNames.FONTTYPE_INFO)
-106         Call WriteMacroTrabajoToggle(UserIndex, False)
-            Exit Sub
-
-        End If
 
         Dim slot As Integer
         Dim obji As Integer
-
-108     slot = UserList(UserIndex).flags.TargetObjInvSlot
-110     obji = UserList(UserIndex).Invent.Object(slot).ObjIndex
-    
-112     Dim cant As Byte: cant = RandomNumber(1, 3)
-    
+        Dim cant As Byte
         Dim necesarios As Integer
 
-114     necesarios = MineralesParaLingote(obji, cant)
-    
-116     If UserList(UserIndex).Invent.Object(slot).Amount < MineralesParaLingote(obji, cant) Or ObjData(obji).OBJType <> eOBJType.otMinerales Then
-118         Call WriteConsoleMsg(UserIndex, "No tienes suficientes minerales para hacer un lingote.", FontTypeNames.FONTTYPE_INFO)
-120         Call WriteMacroTrabajoToggle(UserIndex, False)
+        If UserList(UserIndex).Stats.MinSta > 2 Then
+            Call QuitarSta(UserIndex, 2)
+
+        Else
+            Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
+            'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para excavar.", FontTypeNames.FONTTYPE_INFO)
+            Call WriteMacroTrabajoToggle(UserIndex, False)
             Exit Sub
 
         End If
-    
-122     UserList(UserIndex).Invent.Object(slot).Amount = UserList(UserIndex).Invent.Object(slot).Amount - MineralesParaLingote(obji, cant)
 
-124     If UserList(UserIndex).Invent.Object(slot).Amount < 1 Then
-126         UserList(UserIndex).Invent.Object(slot).Amount = 0
-128         UserList(UserIndex).Invent.Object(slot).ObjIndex = 0
+        slot = UserList(UserIndex).flags.TargetObjInvSlot
+        obji = UserList(UserIndex).Invent.Object(slot).ObjIndex
+
+        cant = RandomNumber(10, 20)
+        necesarios = MineralesParaLingote(obji, cant)
+
+        If UserList(UserIndex).Invent.Object(slot).Amount < MineralesParaLingote(obji, cant) Or ObjData(obji).OBJType <> eOBJType.otMinerales Then
+            Call WriteConsoleMsg(UserIndex, "No tienes suficientes minerales para hacer un lingote.", FontTypeNames.FONTTYPE_INFO)
+            Call WriteMacroTrabajoToggle(UserIndex, False)
+            Exit Sub
 
         End If
-    
+
+        UserList(UserIndex).Invent.Object(slot).Amount = UserList(UserIndex).Invent.Object(slot).Amount - MineralesParaLingote(obji, cant)
+
+        If UserList(UserIndex).Invent.Object(slot).Amount < 1 Then
+            UserList(UserIndex).Invent.Object(slot).Amount = 0
+            UserList(UserIndex).Invent.Object(slot).ObjIndex = 0
+
+        End If
+
         Dim nPos  As WorldPos
 
         Dim MiObj As obj
 
-130     MiObj.Amount = cant
-132     MiObj.ObjIndex = ObjData(UserList(UserIndex).flags.TargetObjInvIndex).LingoteIndex
+        MiObj.Amount = cant
+        MiObj.ObjIndex = ObjData(UserList(UserIndex).flags.TargetObjInvIndex).LingoteIndex
 
-134     If Not MeterItemEnInventario(UserIndex, MiObj) Then
-136         Call TirarItemAlPiso(UserList(UserIndex).Pos, MiObj)
+        If Not MeterItemEnInventario(UserIndex, MiObj) Then
+            Call TirarItemAlPiso(UserList(UserIndex).Pos, MiObj)
+
+        End If
+
+        Call UpdateUserInv(False, UserIndex, slot)
+        Call WriteTextCharDrop(UserIndex, "+" & cant, UserList(UserIndex).Char.CharIndex, vbWhite)
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(41, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+        Call SubirSkill(UserIndex, eSkill.Mineria)
+
+        UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
+
+        If UserList(UserIndex).Counters.Trabajando = 1 And Not UserList(UserIndex).flags.UsandoMacro Then
+            Call WriteMacroTrabajoToggle(UserIndex, True)
 
         End If
 
-138     Call UpdateUserInv(False, UserIndex, slot)
-        
-        
-140        Call WriteTextCharDrop(UserIndex, "+" & cant, UserList(UserIndex).Char.CharIndex, vbWhite)
-    
-        'If Not UserList(UserIndex).flags.UltimoMensaje = 5 Then
-        '  Call WriteConsoleMsg(UserIndex, "¡Has obtenido lingotes!", FontTypeNames.FONTTYPE_INFO)
-            
-        '  UserList(UserIndex).flags.UltimoMensaje = 5
-        'End If
-    
-142     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(117, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
-    
-144     Call SubirSkill(UserIndex, eSkill.Mineria)
-  
-146     UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
-        
-148     If UserList(UserIndex).Counters.Trabajando = 1 And Not UserList(UserIndex).flags.UsandoMacro Then
-150         Call WriteMacroTrabajoToggle(UserIndex, True)
-
-        End If
-    
-        
         Exit Sub
 
 DoLingotes_Err:
-152     Call RegistrarError(Err.Number, Err.Description, "Trabajo.DoLingotes", Erl)
-154     Resume Next
-        
+        Call RegistrarError(Err.Number, Err.Description, "Trabajo.DoLingotes", Erl)
+        Resume Next
+
 End Sub
 
-Function ModFundicion(ByVal clase As eClass) As Single
-        
-        On Error GoTo ModFundicion_Err
-        
-
-100     Select Case clase
-
-            Case eClass.Trabajador
-102             ModFundicion = 3
-
-104         Case Else
-106             ModFundicion = 1
-
-        End Select
-
-        
-        Exit Function
-
-ModFundicion_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "Trabajo.ModFundicion", Erl)
-110     Resume Next
-        
-End Function
-
 Function ModAlquimia(ByVal clase As eClass) As Integer
-        
         On Error GoTo ModAlquimia_Err
-        
 
 100     Select Case clase
 
@@ -1178,13 +1140,12 @@ Function ModAlquimia(ByVal clase As eClass) As Integer
 
         End Select
 
-        
         Exit Function
 
 ModAlquimia_Err:
 112     Call RegistrarError(Err.Number, Err.Description, "Trabajo.ModAlquimia", Erl)
 114     Resume Next
-        
+
 End Function
 
 Function ModSastre(ByVal clase As eClass) As Integer
@@ -1399,7 +1360,7 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
         Dim res          As Integer
         Dim RestaStamina As Byte
 
-100     RestaStamina = IIf(RedDePesca, 2, 1)
+100     RestaStamina = IIf(RedDePesca, 5, 1)
     
 102     With UserList(UserIndex)
     
@@ -2840,27 +2801,6 @@ Private Function PuedeDomarMascota(ByVal UserIndex As Integer, _
 
 PuedeDomarMascota_Err:
 110     Call RegistrarError(Err.Number, Err.Description, "Trabajo.PuedeDomarMascota", Erl)
-
-        
-End Function
-
-Private Function ModFundirMineral(ByVal clase As eClass) As Integer
-        
-        On Error GoTo ModFundirMineral_Err
-    
-        
-    
-100     If clase = eClass.Trabajador Then
-102         ModFundirMineral = 1
-        Else
-104         ModFundirMineral = 3
-        End If
-    
-        
-        Exit Function
-
-ModFundirMineral_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "Trabajo.ModFundirMineral", Erl)
 
         
 End Function
