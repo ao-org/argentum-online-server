@@ -32,14 +32,8 @@ Option Explicit
 Public m_NameIndex As New Dictionary
 
 Public Function NameIndex(ByRef UserName As String) As Integer
-    
-    If Not m_NameIndex.Exists(UCase$(UserName)) Then
-        NameIndex = 0
-        Exit Function
-        
-    End If
-    
-    NameIndex = m_NameIndex(UCase$(UserName))
+
+    NameIndex = m_NameIndex(UCase$(name))
     
 End Function
 

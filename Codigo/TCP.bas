@@ -1093,9 +1093,9 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
         
             ' Seteamos el nombre
 200         .name = name
-
-            Call m_NameIndex.Add(UCase$(name), UserIndex)
             
+            m_NameIndex(UCase$(name)) = UserIndex
+
 202         .showName = True
         
             ' Cargamos el personaje
