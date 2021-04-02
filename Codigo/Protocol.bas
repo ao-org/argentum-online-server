@@ -2475,7 +2475,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
                         Dim TiempoTotalPasos As Long, TickActual As Long
                         Dim TotalPasos As Long, TiempoMaximoPasos As Long
                         TotalPasos = 10
-                        TiempoMaximoPasos = TotalPasos * 200 / .Char.speeding
+                        TiempoMaximoPasos = TotalPasos * 190 / .Char.speeding
 
                         'Prevent SpeedHack
 146                     If .flags.TimesWalk >= TotalPasos Then
