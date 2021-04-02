@@ -1,6 +1,6 @@
 Attribute VB_Name = "ES"
 'Argentum Online 0.11.6
-'Copyright (C) 2002 Márquez Pablo Ignacio
+'Copyright (C) 2002 MÃ¯Â¿Â½rquez Pablo Ignacio
 '
 'This program is free software; you can redistribute it and/or modify
 'it under the terms of the Affero General Public License;
@@ -22,10 +22,10 @@ Attribute VB_Name = "ES"
 'You can contact me at:
 'morgolock@speedy.com.ar
 'www.geocities.com/gmorgolock
-'Calle 3 número 983 piso 7 dto A
+'Calle 3 nÃ¯Â¿Â½mero 983 piso 7 dto A
 'La Plata - Pcia, Buenos Aires - Republica Argentina
-'Código Postal 1900
-'Pablo Ignacio Márquez
+'CÃ¯Â¿Â½digo Postal 1900
+'Pablo Ignacio MÃ¯Â¿Â½rquez
 
 Option Explicit
 
@@ -230,7 +230,7 @@ CargarSpawnList_Err:
         
 End Sub
 
-Function EsAdmin(ByRef name As String) As Boolean
+Function EsAdmin(ByRef Name As String) As Boolean
         '***************************************************
         'Author: Unknown
         'Last Modification: 27/03/2011
@@ -239,7 +239,7 @@ Function EsAdmin(ByRef name As String) As Boolean
         
         On Error GoTo EsAdmin_Err
         
-100     EsAdmin = (val(Administradores.GetValue("Admin", name)) = 1)
+100     EsAdmin = (val(Administradores.GetValue("Admin", Name)) = 1)
 
         
         Exit Function
@@ -250,7 +250,7 @@ EsAdmin_Err:
         
 End Function
 
-Function EsDios(ByRef name As String) As Boolean
+Function EsDios(ByRef Name As String) As Boolean
         '***************************************************
         'Author: Unknown
         'Last Modification: 27/03/2011
@@ -259,7 +259,7 @@ Function EsDios(ByRef name As String) As Boolean
         
         On Error GoTo EsDios_Err
         
-100     EsDios = (val(Administradores.GetValue("Dios", name)) = 1)
+100     EsDios = (val(Administradores.GetValue("Dios", Name)) = 1)
 
         
         Exit Function
@@ -270,7 +270,7 @@ EsDios_Err:
         
 End Function
 
-Function EsSemiDios(ByRef name As String) As Boolean
+Function EsSemiDios(ByRef Name As String) As Boolean
         '***************************************************
         'Author: Unknown
         'Last Modification: 27/03/2011
@@ -279,7 +279,7 @@ Function EsSemiDios(ByRef name As String) As Boolean
         
         On Error GoTo EsSemiDios_Err
         
-100     EsSemiDios = (val(Administradores.GetValue("SemiDios", name)) = 1)
+100     EsSemiDios = (val(Administradores.GetValue("SemiDios", Name)) = 1)
 
         
         Exit Function
@@ -290,7 +290,7 @@ EsSemiDios_Err:
         
 End Function
 
-Function EsConsejero(ByRef name As String) As Boolean
+Function EsConsejero(ByRef Name As String) As Boolean
         '***************************************************
         'Author: Unknown
         'Last Modification: 27/03/2011
@@ -299,7 +299,7 @@ Function EsConsejero(ByRef name As String) As Boolean
         
         On Error GoTo EsConsejero_Err
         
-100     EsConsejero = (val(Administradores.GetValue("Consejero", name)) = 1)
+100     EsConsejero = (val(Administradores.GetValue("Consejero", Name)) = 1)
 
         
         Exit Function
@@ -310,7 +310,7 @@ EsConsejero_Err:
         
 End Function
 
-Function EsRolesMaster(ByRef name As String) As Boolean
+Function EsRolesMaster(ByRef Name As String) As Boolean
         '***************************************************
         'Author: Unknown
         'Last Modification: 27/03/2011
@@ -319,7 +319,7 @@ Function EsRolesMaster(ByRef name As String) As Boolean
         
         On Error GoTo EsRolesMaster_Err
         
-100     EsRolesMaster = (val(Administradores.GetValue("RM", name)) = 1)
+100     EsRolesMaster = (val(Administradores.GetValue("RM", Name)) = 1)
 
         
         Exit Function
@@ -330,7 +330,7 @@ EsRolesMaster_Err:
         
 End Function
 
-Public Function EsGmChar(ByRef name As String) As Boolean
+Public Function EsGmChar(ByRef Name As String) As Boolean
         '***************************************************
         'Author: ZaMa
         'Last Modification: 27/03/2011
@@ -343,16 +343,16 @@ Public Function EsGmChar(ByRef name As String) As Boolean
         Dim EsGM As Boolean
     
         ' Admin?
-100     EsGM = EsAdmin(name)
+100     EsGM = EsAdmin(Name)
 
         ' Dios?
-102     If Not EsGM Then EsGM = EsDios(name)
+102     If Not EsGM Then EsGM = EsDios(Name)
 
         ' Semidios?
-104     If Not EsGM Then EsGM = EsSemiDios(name)
+104     If Not EsGM Then EsGM = EsSemiDios(Name)
 
         ' Consejero?
-106     If Not EsGM Then EsGM = EsConsejero(name)
+106     If Not EsGM Then EsGM = EsConsejero(Name)
 
 108     EsGmChar = EsGM
 
@@ -379,26 +379,26 @@ Public Sub loadAdministrativeUsers()
         'Si esta mierda tuviese array asociativos el codigo seria tan lindo.
         Dim buf  As Integer
         Dim i    As Long
-        Dim name As String
+        Dim Name As String
         
         ' Anti-choreo de GM's
 100     Set AdministratorAccounts = New Dictionary
         Dim TempName() As String
        
         ' Public container
-102     Set Administradores = New clsIniReader
+102     Set Administradores = New clsIniManager
     
         ' Server ini info file
-        Dim ServerIni As clsIniReader
-104     Set ServerIni = New clsIniReader
+        Dim ServerIni As clsIniManager
+104     Set ServerIni = New clsIniManager
 106     Call ServerIni.Initialize(IniPath & "Server.ini")
        
         ' Admines
 108     buf = val(ServerIni.GetValue("INIT", "Admines"))
     
 110     For i = 1 To buf
-112         name = UCase$(ServerIni.GetValue("Admines", "Admin" & i))
-114         TempName = Split(name, "|", , vbTextCompare)
+112         Name = UCase$(ServerIni.GetValue("Admines", "Admin" & i))
+114         TempName = Split(Name, "|", , vbTextCompare)
         
             ' Si NO declara el mail de la cuenta en el Server.ini, NO le doy privilegios.
 116         If UBound(TempName()) > 0 Then
@@ -415,8 +415,8 @@ Public Sub loadAdministrativeUsers()
 124     buf = val(ServerIni.GetValue("INIT", "Dioses"))
     
 126     For i = 1 To buf
-128         name = UCase$(ServerIni.GetValue("Dioses", "Dios" & i))
-130         TempName = Split(name, "|", , vbTextCompare)
+128         Name = UCase$(ServerIni.GetValue("Dioses", "Dios" & i))
+130         TempName = Split(Name, "|", , vbTextCompare)
         
             ' Si NO declara el mail de la cuenta en el Server.ini, NO le doy privilegios.
 132         If UBound(TempName()) > 0 Then
@@ -433,8 +433,8 @@ Public Sub loadAdministrativeUsers()
 140     buf = val(ServerIni.GetValue("INIT", "SemiDioses"))
     
 142     For i = 1 To buf
-144         name = UCase$(ServerIni.GetValue("SemiDioses", "SemiDios" & i))
-146         TempName = Split(name, "|", , vbTextCompare)
+144         Name = UCase$(ServerIni.GetValue("SemiDioses", "SemiDios" & i))
+146         TempName = Split(Name, "|", , vbTextCompare)
         
             ' Si NO declara el mail de la cuenta en el Server.ini, NO le doy privilegios.
 148         If UBound(TempName()) > 0 Then
@@ -451,8 +451,8 @@ Public Sub loadAdministrativeUsers()
 156     buf = val(ServerIni.GetValue("INIT", "Consejeros"))
         
 158     For i = 1 To buf
-160         name = UCase$(ServerIni.GetValue("Consejeros", "Consejero" & i))
-162         TempName = Split(name, "|", , vbTextCompare)
+160         Name = UCase$(ServerIni.GetValue("Consejeros", "Consejero" & i))
+162         TempName = Split(Name, "|", , vbTextCompare)
         
             ' Si NO declara el mail de la cuenta en el Server.ini, NO le doy privilegios.
 164         If UBound(TempName()) > 0 Then
@@ -469,8 +469,8 @@ Public Sub loadAdministrativeUsers()
 172     buf = val(ServerIni.GetValue("INIT", "RolesMasters"))
         
 174     For i = 1 To buf
-176         name = UCase$(ServerIni.GetValue("RolesMasters", "RM" & i))
-178         TempName = Split(name, "|", , vbTextCompare)
+176         Name = UCase$(ServerIni.GetValue("RolesMasters", "RM" & i))
+178         TempName = Split(Name, "|", , vbTextCompare)
         
             ' Si NO declara el mail de la cuenta en el Server.ini, NO le doy privilegios.
 180         If UBound(TempName()) > 0 Then
@@ -536,7 +536,7 @@ GetCharPrivs_Err:
         
 End Function
 
-Public Function TxtDimension(ByVal name As String) As Long
+Public Function TxtDimension(ByVal Name As String) As Long
         
         On Error GoTo TxtDimension_Err
         
@@ -544,7 +544,7 @@ Public Function TxtDimension(ByVal name As String) As Long
         Dim n As Integer, cad As String, Tam As Long
 
 100     n = FreeFile(1)
-102     Open name For Input As #n
+102     Open Name For Input As #n
 104     Tam = 0
 
 106     Do While Not EOF(n)
@@ -606,10 +606,10 @@ Public Sub CargarHechizos()
         '#               ATENCION PELIGRO                  #
         '###################################################
         '
-        '  ¡¡¡¡ NO USAR GetVar PARA LEER Hechizos.dat !!!!
+        '  Ã¯Â¿Â½Ã¯Â¿Â½Ã¯Â¿Â½Ã¯Â¿Â½ NO USAR GetVar PARA LEER Hechizos.dat !!!!
         '
-        'El que ose desafiar esta LEY, se las tendrá que ver
-        'con migo. Para leer Hechizos.dat se deberá usar
+        'El que ose desafiar esta LEY, se las tendrÃ¯Â¿Â½ que ver
+        'con migo. Para leer Hechizos.dat se deberÃ¯Â¿Â½ usar
         'la nueva clase clsLeerInis.
         '
         'Alejo
@@ -622,7 +622,7 @@ Public Sub CargarHechizos()
 
         Dim Hechizo As Integer
 
-        Dim Leer    As New clsIniReader
+        Dim Leer    As New clsIniManager
 
 102     Call Leer.Initialize(DatPath & "Hechizos.dat")
 
@@ -1095,9 +1095,9 @@ Sub LoadBalance()
         On Error GoTo LoadBalance_Err
         
 
-        Dim BalanceIni As clsIniReader
+        Dim BalanceIni As clsIniManager
 
-100     Set BalanceIni = New clsIniReader
+100     Set BalanceIni = New clsIniManager
     
 102     BalanceIni.Initialize DatPath & "Balance.dat"
     
@@ -1113,12 +1113,12 @@ Sub LoadBalance()
 110             .Evasion = val(BalanceIni.GetValue("MODEVASION", SearchVar))
 112             .AtaqueArmas = val(BalanceIni.GetValue("MODATAQUEARMAS", SearchVar))
 114             .AtaqueProyectiles = val(BalanceIni.GetValue("MODATAQUEPROYECTILES", SearchVar))
-                '.DañoWrestling = val(BalanceIni.GetValue("MODATAQUEWRESTLING", SearchVar))
-116             .DañoArmas = val(BalanceIni.GetValue("MODDANOARMAS", SearchVar))
-118             .DañoProyectiles = val(BalanceIni.GetValue("MODDANOPROYECTILES", SearchVar))
-120             .DañoWrestling = val(BalanceIni.GetValue("MODDANOWRESTLING", SearchVar))
+                '.DaÃ¯Â¿Â½oWrestling = val(BalanceIni.GetValue("MODATAQUEWRESTLING", SearchVar))
+116             .DaÃ¯Â¿Â½oArmas = val(BalanceIni.GetValue("MODDANOARMAS", SearchVar))
+118             .DaÃ¯Â¿Â½oProyectiles = val(BalanceIni.GetValue("MODDANOPROYECTILES", SearchVar))
+120             .DaÃ¯Â¿Â½oWrestling = val(BalanceIni.GetValue("MODDANOWRESTLING", SearchVar))
 122             .Escudo = val(BalanceIni.GetValue("MODESCUDO", SearchVar))
-124             .ModApuñalar = val(BalanceIni.GetValue("MODAPUÑALAR", SearchVar))
+124             .ModApuÃ¯Â¿Â½alar = val(BalanceIni.GetValue("MODAPUÃ¯Â¿Â½ALAR", SearchVar))
 126             .Vida = val(BalanceIni.GetValue("MODVIDA", SearchVar))
 128             .ManaInicial = val(BalanceIni.GetValue("MANA_INICIAL", SearchVar))
 130             .MultMana = val(BalanceIni.GetValue("MULT_MANA", SearchVar))
@@ -1150,7 +1150,7 @@ Sub LoadBalance()
 162     InfluenciaPromedioVidas = val(BalanceIni.GetValue("EXTRA", "InfluenciaPromedioVidas"))
 164     DesbalancePromedioVidas = val(BalanceIni.GetValue("EXTRA", "DesbalancePromedioVidas"))
 166     RangoVidas = val(BalanceIni.GetValue("EXTRA", "RangoVidas"))
-168     ModDañoGolpeCritico = val(BalanceIni.GetValue("EXTRA", "ModDañoGolpeCritico"))
+168     ModDaÃ¯Â¿Â½oGolpeCritico = val(BalanceIni.GetValue("EXTRA", "ModDaÃ¯Â¿Â½oGolpeCritico"))
 
         ' Exp
         For i = 1 To STAT_MAXELV
@@ -1159,7 +1159,7 @@ Sub LoadBalance()
     
 172     Set BalanceIni = Nothing
     
-174     AgregarAConsola "Se cargó el balance (Balance.dat)"
+174     AgregarAConsola "Se cargÃ¯Â¿Â½ el balance (Balance.dat)"
 
         
         Exit Sub
@@ -1292,10 +1292,10 @@ Sub LoadOBJData()
     '#               ATENCION PELIGRO                  #
     '###################################################
     '
-    '¡¡¡¡ NO USAR GetVar PARA LEER DESDE EL OBJ.DAT !!!!
+    'Ã¯Â¿Â½Ã¯Â¿Â½Ã¯Â¿Â½Ã¯Â¿Â½ NO USAR GetVar PARA LEER DESDE EL OBJ.DAT !!!!
     '
-    'El que ose desafiar esta LEY, se las tendrá que ver
-    'con migo. Para leer desde el OBJ.DAT se deberá usar
+    'El que ose desafiar esta LEY, se las tendrÃ¯Â¿Â½ que ver
+    'con migo. Para leer desde el OBJ.DAT se deberÃ¯Â¿Â½ usar
     'la nueva clase clsLeerInis.
     '
     'Alejo
@@ -1313,8 +1313,8 @@ Sub LoadOBJData()
     '*****************************************************************
     Dim Object As Integer
 
-    Dim Leer   As clsIniReader
-    Set Leer = New clsIniReader
+    Dim Leer   As clsIniManager
+    Set Leer = New clsIniManager
     Call Leer.Initialize(DatPath & "Obj.dat")
 
     'obtiene el numero de obj
@@ -1338,7 +1338,7 @@ Sub LoadOBJData()
 
             ObjKey = "OBJ" & Object
         
-            .name = Leer.GetValue(ObjKey, "Name")
+            .Name = Leer.GetValue(ObjKey, "Name")
     
             ' If .Name = "" Then
             '   Call LogError("Objeto libre:" & Object)
@@ -1415,7 +1415,7 @@ Sub LoadOBJData()
         
                 Case eOBJType.otWeapon
                     .WeaponAnim = val(Leer.GetValue(ObjKey, "Anim"))
-                    .Apuñala = val(Leer.GetValue(ObjKey, "Apuñala"))
+                    .ApuÃ¯Â¿Â½ala = val(Leer.GetValue(ObjKey, "ApuÃ¯Â¿Â½ala"))
                     .Envenena = val(Leer.GetValue(ObjKey, "Envenena"))
                     .Paraliza = val(Leer.GetValue(ObjKey, "Paraliza"))
                     .Estupidiza = val(Leer.GetValue(ObjKey, "Estupidiza"))
@@ -1577,7 +1577,7 @@ Sub LoadOBJData()
 
                     End If
                 
-                Case eOBJType.otDañoMagico
+                Case eOBJType.otDaÃ¯Â¿Â½oMagico
                     .MagicDamageBonus = val(Leer.GetValue(ObjKey, "MagicDamageBonus"))
                     .Revive = val(Leer.GetValue(ObjKey, "Revive")) <> 0
 
@@ -1665,7 +1665,7 @@ Sub LoadOBJData()
             .Agarrable = val(Leer.GetValue(ObjKey, "Agarrable"))
             .ForoID = Leer.GetValue(ObjKey, "ID")
     
-            'CHECK: !!! Esto es provisorio hasta que los de Dateo cambien los valores de string a numerico  -  Nunca más papu
+            'CHECK: !!! Esto es provisorio hasta que los de Dateo cambien los valores de string a numerico  -  Nunca mÃ¯Â¿Â½s papu
             Dim n As Integer
             Dim s As String
 
@@ -1740,7 +1740,7 @@ ErrHandler:
 
 End Sub
 
-Sub LoadUserStats(ByVal UserIndex As Integer, ByRef UserFile As clsIniReader)
+Sub LoadUserStats(ByVal UserIndex As Integer, ByRef UserFile As clsIniManager)
         
         On Error GoTo LoadUserStats_Err
         
@@ -1800,7 +1800,7 @@ Sub LoadUserStats(ByVal UserIndex As Integer, ByRef UserFile As clsIniReader)
 
         End If
 
-        'UserList(UserIndex).flags.DañoMagico = CByte(UserFile.GetValue("MAGIA", "DañoMagico"))
+        'UserList(UserIndex).flags.DaÃ¯Â¿Â½oMagico = CByte(UserFile.GetValue("MAGIA", "DaÃ¯Â¿Â½oMagico"))
         'UserList(UserIndex).flags.ResistenciaMagica = CByte(UserFile.GetValue("MAGIA", "ResistenciaMagica"))
 
         'Nuevos
@@ -1829,7 +1829,7 @@ LoadUserStats_Err:
         
 End Sub
 
-Sub LoadUserInit(ByVal UserIndex As Integer, ByRef UserFile As clsIniReader)
+Sub LoadUserInit(ByVal UserIndex As Integer, ByRef UserFile As clsIniManager)
         
         On Error GoTo LoadUserInit_Err
         
@@ -1975,7 +1975,7 @@ Sub LoadUserInit(ByVal UserIndex As Integer, ByRef UserFile As clsIniReader)
 274     UserList(UserIndex).Invent.BarcoSlot = CByte(UserFile.GetValue("Inventory", "BarcoSlot"))
 276     UserList(UserIndex).Invent.MonturaSlot = CByte(UserFile.GetValue("Inventory", "MonturaSlot"))
 278     UserList(UserIndex).Invent.MunicionEqpSlot = CByte(UserFile.GetValue("Inventory", "MunicionSlot"))
-280     UserList(UserIndex).Invent.DañoMagicoEqpSlot = CByte(UserFile.GetValue("Inventory", "DMSlot"))
+280     UserList(UserIndex).Invent.DaÃ¯Â¿Â½oMagicoEqpSlot = CByte(UserFile.GetValue("Inventory", "DMSlot"))
 282     UserList(UserIndex).Invent.ResistenciaEqpSlot = CByte(UserFile.GetValue("Inventory", "RMSlot"))
 284     UserList(UserIndex).Invent.MagicoSlot = CByte(UserFile.GetValue("Inventory", "MagicoSlot"))
 286     UserList(UserIndex).Invent.NudilloSlot = CByte(UserFile.GetValue("Inventory", "NudilloEqpSlot"))
@@ -2368,10 +2368,10 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
 296                     NpcList(NpcIndex).Pos.X = NPCs(i).X
 298                     NpcList(NpcIndex).Pos.Y = NPCs(i).Y
 
-                        ' WyroX: guardo siempre la pos original... puede sernos útil ;)
+                        ' WyroX: guardo siempre la pos original... puede sernos Ã¯Â¿Â½til ;)
 302                     NpcList(NpcIndex).Orig = NpcList(NpcIndex).Pos
 
-308                     If NpcList(NpcIndex).name = "" Then
+308                     If NpcList(NpcIndex).Name = "" Then
                        
 310                         MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex = 0
                         Else
@@ -2458,13 +2458,13 @@ Sub LoadSini()
         On Error GoTo LoadSini_Err
         
 
-        Dim Lector   As clsIniReader
+        Dim Lector   As clsIniManager
 
         Dim Temporal As Long
     
 100     If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando info de inicio del server."
     
-102     Set Lector = New clsIniReader
+102     Set Lector = New clsIniManager
 104     Call Lector.Initialize(IniPath & "Server.ini")
     
         'Misc
@@ -2543,8 +2543,8 @@ Sub CargarCiudades()
     
         
 
-        Dim Lector As clsIniReader
-100     Set Lector = New clsIniReader
+        Dim Lector As clsIniManager
+100     Set Lector = New clsIniManager
 102     Call Lector.Initialize(DatPath & "Ciudades.dat")
     
 104     With CityNix
@@ -2685,8 +2685,8 @@ Sub LoadIntervalos()
         On Error GoTo LoadIntervalos_Err
         
 
-        Dim Lector As clsIniReader
-100     Set Lector = New clsIniReader
+        Dim Lector As clsIniManager
+100     Set Lector = New clsIniManager
 102     Call Lector.Initialize(IniPath & "intervalos.ini")
     
         'Intervalos
@@ -2956,11 +2956,11 @@ Sub LoadUser(ByVal UserIndex As Integer)
             End If
 
             ' DM
-180         If .Invent.DañoMagicoEqpSlot > 0 Then
-182             .Invent.DañoMagicoEqpObjIndex = .Invent.Object(.Invent.DañoMagicoEqpSlot).ObjIndex
+180         If .Invent.DaÃ¯Â¿Â½oMagicoEqpSlot > 0 Then
+182             .Invent.DaÃ¯Â¿Â½oMagicoEqpObjIndex = .Invent.Object(.Invent.DaÃ¯Â¿Â½oMagicoEqpSlot).ObjIndex
             
 184             If .flags.Muerto = 0 Then
-186                 .Char.DM_Aura = ObjData(.Invent.DañoMagicoEqpObjIndex).CreaGRH
+186                 .Char.DM_Aura = ObjData(.Invent.DaÃ¯Â¿Â½oMagicoEqpObjIndex).CreaGRH
                 End If
             End If
             
@@ -3002,7 +3002,7 @@ Sub LoadUser(ByVal UserIndex As Integer)
         Exit Sub
 
 ErrorHandler:
-220     Call RegistrarError(Err.Number, Err.Description & " UserName: " & UserList(UserIndex).name, "ES.LoadUser", Erl)
+220     Call RegistrarError(Err.Number, Err.Description & " UserName: " & UserList(UserIndex).Name, "ES.LoadUser", Erl)
 222     Resume Next
     
 End Sub
@@ -3038,8 +3038,8 @@ Sub LoadUserBinary(ByVal UserIndex As Integer)
         
 
         'Cargamos el personaje
-        Dim Leer As New clsIniReader
-100     Call Leer.Initialize(CharPath & UCase$(UserList(UserIndex).name) & ".chr")
+        Dim Leer As New clsIniManager
+100     Call Leer.Initialize(CharPath & UCase$(UserList(UserIndex).Name) & ".chr")
     
         'Cargamos los datos del personaje
 
@@ -3082,7 +3082,7 @@ Sub SetUserLogged(ByVal UserIndex As Integer)
 100     If Database_Enabled Then
 102         Call SetUserLoggedDatabase(UserList(UserIndex).Id, UserList(UserIndex).AccountId)
         Else
-104         Call WriteVar(CharPath & UCase$(UserList(UserIndex).name) & ".chr", "INIT", "Logged", 1)
+104         Call WriteVar(CharPath & UCase$(UserList(UserIndex).Name) & ".chr", "INIT", "Logged", 1)
 106         Call WriteVar(CuentasPath & UCase$(UserList(UserIndex).Cuenta) & ".act", "INIT", "LOGEADA", 1)
 
         End If
@@ -3132,7 +3132,7 @@ Sub BackUPnPc(NpcIndex As Integer)
         'End If
 
         'General
-104     Call WriteVar(npcfile, "NPC" & NpcNumero, "Name", NpcList(NpcIndex).name)
+104     Call WriteVar(npcfile, "NPC" & NpcNumero, "Name", NpcList(NpcIndex).Name)
 106     Call WriteVar(npcfile, "NPC" & NpcNumero, "Desc", NpcList(NpcIndex).Desc)
 108     Call WriteVar(npcfile, "NPC" & NpcNumero, "Head", val(NpcList(NpcIndex).Char.Head))
 110     Call WriteVar(npcfile, "NPC" & NpcNumero, "Body", val(NpcList(NpcIndex).Char.Body))
@@ -3199,7 +3199,7 @@ Sub CargarNpcBackUp(NpcIndex As Integer, ByVal NpcNumber As Integer)
         'End If
 
 104     NpcList(NpcIndex).Numero = NpcNumber
-106     NpcList(NpcIndex).name = GetVar(npcfile, "NPC" & NpcNumber, "Name")
+106     NpcList(NpcIndex).Name = GetVar(npcfile, "NPC" & NpcNumber, "Name")
 108     NpcList(NpcIndex).Desc = GetVar(npcfile, "NPC" & NpcNumber, "Desc")
 110     NpcList(NpcIndex).Movement = val(GetVar(npcfile, "NPC" & NpcNumber, "Movement"))
 112     NpcList(NpcIndex).NPCtype = val(GetVar(npcfile, "NPC" & NpcNumber, "NpcType"))
@@ -3271,15 +3271,15 @@ Sub LogBan(ByVal BannedIndex As Integer, ByVal UserIndex As Integer, ByVal Motiv
         On Error GoTo LogBan_Err
         
 
-100     Call WriteVar(App.Path & "\logs\" & "BanDetail.log", UserList(BannedIndex).name, "BannedBy", UserList(UserIndex).name)
-102     Call WriteVar(App.Path & "\logs\" & "BanDetail.log", UserList(BannedIndex).name, "Reason", Motivo)
+100     Call WriteVar(App.Path & "\logs\" & "BanDetail.log", UserList(BannedIndex).Name, "BannedBy", UserList(UserIndex).Name)
+102     Call WriteVar(App.Path & "\logs\" & "BanDetail.log", UserList(BannedIndex).Name, "Reason", Motivo)
 
         'Log interno del servidor, lo usa para hacer un UNBAN general de toda la gente banned
         Dim mifile As Integer
 
 104     mifile = FreeFile
 106     Open App.Path & "\logs\GenteBanned.log" For Append Shared As #mifile
-108     Print #mifile, UserList(BannedIndex).name
+108     Print #mifile, UserList(BannedIndex).Name
 110     Close #mifile
 
         
@@ -3296,7 +3296,7 @@ Sub LogBanFromName(ByVal BannedName As String, ByVal UserIndex As Integer, ByVal
         On Error GoTo LogBanFromName_Err
         
 
-100     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", BannedName, "BannedBy", UserList(UserIndex).name)
+100     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", BannedName, "BannedBy", UserList(UserIndex).Name)
 102     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", BannedName, "Reason", Motivo)
 
         'Log interno del servidor, lo usa para hacer un UNBAN general de toda la gente banned
@@ -3371,9 +3371,9 @@ Public Sub LoadRecursosEspeciales()
 
         End If
 
-        Dim IniFile As clsIniReader
+        Dim IniFile As clsIniManager
 
-106     Set IniFile = New clsIniReader
+106     Set IniFile = New clsIniManager
     
 108     Call IniFile.Initialize(DatPath & "RecursosEspeciales.dat")
     
@@ -3438,16 +3438,16 @@ Public Sub LoadPesca()
 
         End If
 
-        Dim IniFile As clsIniReader
+        Dim IniFile As clsIniManager
 
-106     Set IniFile = New clsIniReader
+106     Set IniFile = New clsIniManager
     
 108     Call IniFile.Initialize(DatPath & "pesca.dat")
     
         Dim Count As Long, i As Long, j As Long, str As String, Field() As String, nivel As Integer, MaxLvlCania As Long
 
 110     Count = val(IniFile.GetValue("PECES", "NumPeces"))
-112     MaxLvlCania = val(IniFile.GetValue("PECES", "Maxlvlcaña"))
+112     MaxLvlCania = val(IniFile.GetValue("PECES", "MaxlvlcaÃ¯Â¿Â½a"))
     
 114     ReDim PesoPeces(0 To MaxLvlCania) As Long
     
@@ -3462,13 +3462,13 @@ Public Sub LoadPesca()
 126             Peces(i).ObjIndex = val(Field(0))
 128             Peces(i).data = val(Field(1))       ' Peso
 
-130             nivel = val(Field(2))               ' Nivel de caña
+130             nivel = val(Field(2))               ' Nivel de caÃ¯Â¿Â½a
 
 132             If (nivel > MaxLvlCania) Then nivel = MaxLvlCania
 134             Peces(i).Amount = nivel
             Next
 
-            ' Los ordeno segun nivel de caña (quick sort)
+            ' Los ordeno segun nivel de caÃ¯Â¿Â½a (quick sort)
 136         Call QuickSortPeces(1, Count)
 
             ' Sumo los pesos
@@ -3496,7 +3496,7 @@ LoadPesca_Err:
 End Sub
 
 ' Adaptado de https://www.vbforums.com/showthread.php?231925-VB-Quick-Sort-algorithm-(very-fast-sorting-algorithm)
-Private Sub QuickSortPeces(ByVal First As Long, ByVal Last As Long)
+Private Sub QuickSortPeces(ByVal first As Long, ByVal last As Long)
         
         On Error GoTo QuickSortPeces_Err
         
@@ -3507,9 +3507,9 @@ Private Sub QuickSortPeces(ByVal First As Long, ByVal Last As Long)
 
         Dim aux      As obj
     
-100     low = First
-102     high = Last
-104     MidValue = Peces((First + Last) \ 2).Amount
+100     low = first
+102     high = last
+104     MidValue = Peces((first + last) \ 2).Amount
     
         Do
 
@@ -3534,8 +3534,8 @@ Private Sub QuickSortPeces(ByVal First As Long, ByVal Last As Long)
 
 126     Loop While low <= high
     
-128     If First < high Then QuickSortPeces First, high
-130     If low < Last Then QuickSortPeces low, Last
+128     If first < high Then QuickSortPeces first, high
+130     If low < last Then QuickSortPeces low, last
 
         
         Exit Sub
@@ -3604,8 +3604,8 @@ Public Sub LoadRangosFaccion()
 
         End If
 
-        Dim IniFile As clsIniReader
-        Set IniFile = New clsIniReader
+        Dim IniFile As clsIniManager
+        Set IniFile = New clsIniManager
 
         Call IniFile.Initialize(DatPath & "rangos_faccion.dat")
 
@@ -3619,7 +3619,7 @@ Public Sub LoadRangosFaccion()
             ReDim RangosFaccion(1 To MaxRangoFaccion * 2) As tRangoFaccion
 
             For i = 1 To MaxRangoFaccion
-                '<N>Rango=<NivelRequerido>-<AsesinatosRequeridos>-<Título>
+                '<N>Rango=<NivelRequerido>-<AsesinatosRequeridos>-<TÃ¯Â¿Â½tulo>
                 rankData = Split(IniFile.GetValue("ArmadaReal", i & "Rango"), "-", , vbTextCompare)
                 RangosFaccion(2 * i - 1).rank = i
                 RangosFaccion(2 * i - 1).Titulo = rankData(2)
@@ -3655,8 +3655,8 @@ Public Sub LoadRecompensasFaccion()
 
         End If
 
-        Dim IniFile As clsIniReader
-        Set IniFile = New clsIniReader
+        Dim IniFile As clsIniManager
+        Set IniFile = New clsIniManager
 
         Call IniFile.Initialize(DatPath & "recompensas_faccion.dat")
 
@@ -3811,7 +3811,7 @@ Public Function GetElapsedTime() As Single
 
     '***********************************************************************
     'Author: Wyrox
-    'Obenemos el tiempo (en milisegundos) que pasó desde la ultima llamada.
+    'Obenemos el tiempo (en milisegundos) que pasÃ¯Â¿Â½ desde la ultima llamada.
     '***********************************************************************
     
     Dim end_time As Currency

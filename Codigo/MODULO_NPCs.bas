@@ -144,7 +144,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
                                     End If
                                     
 178                                 If QuestList(.QuestIndex).RequiredNPC(j).Amount = .NPCsKilled(j) Then
-180                                     Call WriteConsoleMsg(UserIndex, "Ya has matado todos los " & MiNPC.name & " que la misión " & QuestList(.QuestIndex).nombre & " requería. Revisa si ya estás listo para recibir la recompensa.", FontTypeNames.FONTTYPE_INFOIAO)
+180                                     Call WriteConsoleMsg(UserIndex, "Ya has matado todos los " & MiNPC.Name & " que la misión " & QuestList(.QuestIndex).nombre & " requería. Revisa si ya estás listo para recibir la recompensa.", FontTypeNames.FONTTYPE_INFOIAO)
                                     
                                     End If
         
@@ -380,7 +380,7 @@ Sub ResetNpcMainInfo(ByVal NpcIndex As Integer)
     
 120     NpcList(NpcIndex).Mascotas = 0
 122     NpcList(NpcIndex).Movement = 0
-124     NpcList(NpcIndex).name = "NPC SIN INICIAR"
+124     NpcList(NpcIndex).Name = "NPC SIN INICIAR"
 126     NpcList(NpcIndex).NPCtype = 0
 128     NpcList(NpcIndex).Numero = 0
 130     NpcList(NpcIndex).Orig.Map = 0
@@ -606,7 +606,7 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
             Dim GG      As String
             Dim tmpByte As Byte
        
-112         GG = IIf(.showName > 0, .name & .SubName, vbNullString)
+112         GG = IIf(.showName > 0, .Name & .SubName, vbNullString)
         
 114         If Not toMap Then
 116             If .NumQuest > 0 Then
@@ -962,7 +962,7 @@ Function SpawnNpc(ByVal NpcIndex As Integer, Pos As WorldPos, ByVal FX As Boolea
         End If
 
 164     If Avisar Then
-166         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(NpcList(nIndex).name & " ha aparecido en " & DarNameMapa(Map) & " , todo indica que puede tener una gran recompensa para el que logre sobrevivir a él.", FontTypeNames.FONTTYPE_CITIZEN))
+166         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(NpcList(nIndex).Name & " ha aparecido en " & DarNameMapa(Map) & " , todo indica que puede tener una gran recompensa para el que logre sobrevivir a él.", FontTypeNames.FONTTYPE_CITIZEN))
 
         End If
 
@@ -1092,7 +1092,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
         '
         'El que ose desafiar esta LEY, se las tendrá que ver
         'conmigo. Para leer los NPCS se deberá usar la
-        'nueva clase clsIniReader.
+        'nueva clase clsIniManager.
         '
         'Alejo
         '
@@ -1100,7 +1100,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 
         Dim NpcIndex As Integer
     
-        Dim Leer As clsIniReader
+        Dim Leer As clsIniManager
 100     Set Leer = LeerNPCs
 
         'If requested index is invalid, abort
@@ -1124,7 +1124,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
         With NpcList(NpcIndex)
 
 112         .Numero = NpcNumber
-114         .name = Leer.GetValue("NPC" & NpcNumber, "Name")
+114         .Name = Leer.GetValue("NPC" & NpcNumber, "Name")
 116         .SubName = Leer.GetValue("NPC" & NpcNumber, "SubName")
 118         .Desc = Leer.GetValue("NPC" & NpcNumber, "Desc")
     

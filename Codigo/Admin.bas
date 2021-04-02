@@ -450,9 +450,7 @@ End Sub
 Public Sub BorrarUsuario(ByVal UserName As String)
         
         On Error GoTo BorrarUsuario_Err
-    
-        
-    
+
 100     If Database_Enabled Then
 102         Call BorrarUsuarioDatabase(UserName)
     
@@ -476,15 +474,15 @@ BorrarUsuario_Err:
         
 End Sub
 
-Public Function BANCheck(ByVal name As String) As Boolean
+Public Function BANCheck(ByVal Name As String) As Boolean
         
         On Error GoTo BANCheck_Err
         
 
 100     If Database_Enabled Then
-102         BANCheck = BANCheckDatabase(name)
+102         BANCheck = BANCheckDatabase(Name)
         Else
-104         BANCheck = (val(GetVar(CharPath & name & ".chr", "BAN", "Baneado")) = 1)
+104         BANCheck = (val(GetVar(CharPath & Name & ".chr", "BAN", "Baneado")) = 1)
 
         End If
 
@@ -497,15 +495,15 @@ BANCheck_Err:
         
 End Function
 
-Public Function DonadorCheck(ByVal name As String) As Boolean
+Public Function DonadorCheck(ByVal Name As String) As Boolean
         
         On Error GoTo DonadorCheck_Err
         
 
 100     If Database_Enabled Then
-102         DonadorCheck = CheckUserDonatorDatabase(name)
+102         DonadorCheck = CheckUserDonatorDatabase(Name)
         Else
-104         DonadorCheck = val(GetVar(CuentasPath & name & ".act", "DONADOR", "DONADOR"))
+104         DonadorCheck = val(GetVar(CuentasPath & Name & ".act", "DONADOR", "DONADOR"))
 
         End If
 
@@ -518,15 +516,15 @@ DonadorCheck_Err:
         
 End Function
 
-Public Function CreditosDonadorCheck(ByVal name As String) As Long
+Public Function CreditosDonadorCheck(ByVal Name As String) As Long
         
         On Error GoTo CreditosDonadorCheck_Err
         
 
 100     If Database_Enabled Then
-102         CreditosDonadorCheck = GetUserCreditosDatabase(name)
+102         CreditosDonadorCheck = GetUserCreditosDatabase(Name)
         Else
-104         CreditosDonadorCheck = val(GetVar(CuentasPath & name & ".act", "DONADOR", "CREDITOS"))
+104         CreditosDonadorCheck = val(GetVar(CuentasPath & Name & ".act", "DONADOR", "CREDITOS"))
 
         End If
 
@@ -539,15 +537,15 @@ CreditosDonadorCheck_Err:
         
 End Function
 
-Public Function CreditosCanjeadosCheck(ByVal name As String) As Long
+Public Function CreditosCanjeadosCheck(ByVal Name As String) As Long
         
         On Error GoTo CreditosCanjeadosCheck_Err
         
 
 100     If Database_Enabled Then
-102         CreditosCanjeadosCheck = GetUserCreditosCanjeadosDatabase(name)
+102         CreditosCanjeadosCheck = GetUserCreditosCanjeadosDatabase(Name)
         Else
-104         CreditosCanjeadosCheck = val(GetVar(CuentasPath & name & ".act", "DONADOR", "CREDITOSCANJEADOS"))
+104         CreditosCanjeadosCheck = val(GetVar(CuentasPath & Name & ".act", "DONADOR", "CREDITOSCANJEADOS"))
 
         End If
 
@@ -560,23 +558,23 @@ CreditosCanjeadosCheck_Err:
         
 End Function
 
-Public Function DiasDonadorCheck(ByVal name As String) As Integer
+Public Function DiasDonadorCheck(ByVal Name As String) As Integer
         
         On Error GoTo DiasDonadorCheck_Err
         
 
 100     If Database_Enabled Then
             ' Uso una funcion que hace ambas queries a la vez para optimizar
-102         DiasDonadorCheck = GetUserDiasDonadorDatabase(name)
+102         DiasDonadorCheck = GetUserDiasDonadorDatabase(Name)
         Else
 
-104         If DonadorCheck(name) Then
+104         If DonadorCheck(Name) Then
 
                 Dim Diasrestantes As Integer
 
                 Dim fechadonador  As Date
 
-106             fechadonador = GetVar(CuentasPath & name & ".act", "DONADOR", "FECHAEXPIRACION")
+106             fechadonador = GetVar(CuentasPath & Name & ".act", "DONADOR", "FECHAEXPIRACION")
 108             DiasDonadorCheck = DateDiff("d", Date, fechadonador)
 
             End If
@@ -592,15 +590,15 @@ DiasDonadorCheck_Err:
         
 End Function
 
-Public Function ComprasDonadorCheck(ByVal name As String) As Long
+Public Function ComprasDonadorCheck(ByVal Name As String) As Long
         
         On Error GoTo ComprasDonadorCheck_Err
         
 
 100     If Database_Enabled Then
-102         ComprasDonadorCheck = GetUserComprasDonadorDatabase(name)
+102         ComprasDonadorCheck = GetUserComprasDonadorDatabase(Name)
         Else
-104         ComprasDonadorCheck = val(GetVar(CuentasPath & name & ".act", "COMPRAS", "CANTIDAD"))
+104         ComprasDonadorCheck = val(GetVar(CuentasPath & Name & ".act", "COMPRAS", "CANTIDAD"))
 
         End If
 
@@ -613,15 +611,15 @@ ComprasDonadorCheck_Err:
         
 End Function
 
-Public Function PersonajeExiste(ByVal name As String) As Boolean
+Public Function PersonajeExiste(ByVal Name As String) As Boolean
         
         On Error GoTo PersonajeExiste_Err
         
 
 100     If Database_Enabled Then
-102         PersonajeExiste = CheckUserExists(name)
+102         PersonajeExiste = CheckUserExists(Name)
         Else
-104         PersonajeExiste = FileExist(CharPath & name & ".chr", vbNormal)
+104         PersonajeExiste = FileExist(CharPath & Name & ".chr", vbNormal)
 
         End If
 
@@ -634,23 +632,23 @@ PersonajeExiste_Err:
         
 End Function
 
-Public Function UnBan(ByVal name As String) As Boolean
+Public Function UnBan(ByVal Name As String) As Boolean
         
         On Error GoTo UnBan_Err
         
 
 100     If Database_Enabled Then
-102         Call UnBanDatabase(name)
+102         Call UnBanDatabase(Name)
         Else
-104         Call WriteVar(CharPath & name & ".chr", "BAN", "Baneado", "0")
-106         Call WriteVar(CharPath & name & ".chr", "BAN", "BannedBy", "")
-108         Call WriteVar(CharPath & name & ".chr", "BAN", "BanMotivo", "")
+104         Call WriteVar(CharPath & Name & ".chr", "BAN", "Baneado", "0")
+106         Call WriteVar(CharPath & Name & ".chr", "BAN", "BannedBy", "")
+108         Call WriteVar(CharPath & Name & ".chr", "BAN", "BanMotivo", "")
 
         End If
     
         'Remove it from the banned people database
-110     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", name, "BannedBy", "")
-112     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", name, "Reason", "")
+110     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", Name, "BannedBy", "")
+112     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", Name, "Reason", "")
 
         
         Exit Function
@@ -661,22 +659,6 @@ UnBan_Err:
         
 End Function
 
-Public Sub BanIpAgrega(ByVal ip As String)
-        
-        On Error GoTo BanIpAgrega_Err
-        
-100     BanIps.Add ip
-    
-102     Call BanIpGuardar
-
-        
-        Exit Sub
-
-BanIpAgrega_Err:
-104     Call RegistrarError(Err.Number, Err.Description, "Admin.BanIpAgrega", Erl)
-106     Resume Next
-        
-End Sub
 
 Public Function CheckHD(ByVal hd As String) As Boolean
         
@@ -758,134 +740,21 @@ CheckMAC_Err:
         
 End Function
 
-Public Function BanIpBuscar(ByVal ip As String) As Long
-        
-        On Error GoTo BanIpBuscar_Err
-        
-
-        Dim Dale  As Boolean
-
-        Dim LoopC As Long
-
-100     Dale = True
-102     LoopC = 1
-
-104     Do While LoopC <= BanIps.Count And Dale
-106         Dale = (BanIps.Item(LoopC) <> ip)
-108         LoopC = LoopC + 1
-        Loop
-
-110     If Dale Then
-112         BanIpBuscar = 0
-        Else
-114         BanIpBuscar = LoopC - 1
-
-        End If
-
-        
-        Exit Function
-
-BanIpBuscar_Err:
-116     Call RegistrarError(Err.Number, Err.Description, "Admin.BanIpBuscar", Erl)
-118     Resume Next
-        
-End Function
-
-Public Function BanIpQuita(ByVal ip As String) As Boolean
-        
-        On Error GoTo BanIpQuita_Err
-    
-        
-
-        
-
-        Dim n As Long
-
-100     n = BanIpBuscar(ip)
-
-102     If n > 0 Then
-104         BanIps.Remove n
-106         BanIpGuardar
-108         BanIpQuita = True
-        Else
-110         BanIpQuita = False
-
-        End If
-
-        
-        Exit Function
-
-BanIpQuita_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "Admin.BanIpQuita", Erl)
-
-        
-End Function
-
-Public Sub BanIpGuardar()
-        
-        On Error GoTo BanIpGuardar_Err
-        
-
-        Dim ArchivoBanIp As String
-
-        Dim ArchN        As Long
-
-        Dim LoopC        As Long
-
-100     ArchivoBanIp = DatPath & "BanIps.dat"
-
-102     ArchN = FreeFile()
-104     Open ArchivoBanIp For Output As #ArchN
-
-106     For LoopC = 1 To BanIps.Count
-108         Print #ArchN, BanIps.Item(LoopC)
-110     Next LoopC
-
-112     Close #ArchN
-
-        
-        Exit Sub
-
-BanIpGuardar_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "Admin.BanIpGuardar", Erl)
-116     Resume Next
-        
-End Sub
-
 Public Sub BanIpCargar()
-        
-        On Error GoTo BanIpCargar_Err
-        
+    
+    Dim File As clsIniManager
+    Dim i As Long
+    Dim iKey As String
+    Dim iValue As String
+    
+    Set File = New clsIniManager
+    Call File.Initialize(DatPath & "Baneos.ini")
 
-        Dim ArchN        As Long
-
-        Dim Tmp          As String
-
-        Dim ArchivoBanIp As String
-
-100     ArchivoBanIp = DatPath & "BanIps.dat"
-
-102     Do While BanIps.Count > 0
-104         BanIps.Remove 1
-        Loop
-
-106     ArchN = FreeFile()
-108     Open ArchivoBanIp For Input As #ArchN
-
-110     Do While Not EOF(ArchN)
-112         Line Input #ArchN, Tmp
-114         BanIps.Add Tmp
-        Loop
-
-116     Close #ArchN
-
-        
-        Exit Sub
-
-BanIpCargar_Err:
-118     Call RegistrarError(Err.Number, Err.Description, "Admin.BanIpCargar", Erl)
-120     Resume Next
-        
+    For i = 0 To File.EntriesCount("IP") - 1
+        Call File.GetPair("IP", i, iKey, iValue)
+        Call BanIps.Add(iKey, iValue)
+    Next
+    
 End Sub
 
 Public Sub ActualizaEstadisticasWeb()
@@ -973,7 +842,7 @@ ActualizaStatsES_Err:
         
 End Sub
 
-Public Function UserDarPrivilegioLevel(ByVal name As String) As PlayerType
+Public Function UserDarPrivilegioLevel(ByVal Name As String) As PlayerType
         
         On Error GoTo UserDarPrivilegioLevel_Err
         
@@ -983,13 +852,13 @@ Public Function UserDarPrivilegioLevel(ByVal name As String) As PlayerType
         'Last Modification: 03/02/07
         'Last Modified By: Juan Martín Sotuyo Dodero (Maraxus)
         '***************************************************
-100     If EsAdmin(name) Then
+100     If EsAdmin(Name) Then
 102         UserDarPrivilegioLevel = PlayerType.Admin
-104     ElseIf EsDios(name) Then
+104     ElseIf EsDios(Name) Then
 106         UserDarPrivilegioLevel = PlayerType.Dios
-108     ElseIf EsSemiDios(name) Then
+108     ElseIf EsSemiDios(Name) Then
 110         UserDarPrivilegioLevel = PlayerType.SemiDios
-112     ElseIf EsConsejero(name) Then
+112     ElseIf EsConsejero(Name) Then
 114         UserDarPrivilegioLevel = PlayerType.Consejero
         Else
 116         UserDarPrivilegioLevel = PlayerType.user
@@ -1004,277 +873,6 @@ UserDarPrivilegioLevel_Err:
 120     Resume Next
         
 End Function
-
-Public Sub BanCharacter(ByVal bannerUserIndex As Integer, ByVal UserName As String, ByVal Reason As String)
-        
-        On Error GoTo BanCharacter_Err
-        
-
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 03/02/07
-        '
-        '***************************************************
-        Dim tUser     As Integer
-
-        Dim userPriv  As Byte
-
-        Dim cantPenas As Byte
-
-        Dim rank      As Integer
-    
-100     If InStrB(UserName, "+") Then
-102         UserName = Replace(UserName, "+", " ")
-
-        End If
-    
-104     tUser = NameIndex(UserName)
-    
-106     rank = PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero
-    
-108     With UserList(bannerUserIndex)
-
-110         If tUser <= 0 Then
-112             Call WriteConsoleMsg(bannerUserIndex, "El usuario no esta online.", FontTypeNames.FONTTYPE_TALK)
-            
-114             If PersonajeExiste(UserName) Then
-116                 userPriv = UserDarPrivilegioLevel(UserName)
-                
-118                 If (userPriv And rank) > (.flags.Privilegios And rank) Then
-120                     Call WriteConsoleMsg(bannerUserIndex, "No podes banear a al alguien de mayor jerarquia.", FontTypeNames.FONTTYPE_INFO)
-                        Exit Sub
-
-                    End If
-
-122                 Call LogBanFromName(UserName, bannerUserIndex, Reason)
-124                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> " & .name & " ha baneado a " & UserName & " debido a: " & LCase$(Reason) & ".", FontTypeNames.FONTTYPE_SERVER))
-                    
-126                 If Database_Enabled Then
-128                     Call SaveBanDatabase(UserName, Reason, .name)
-                    Else
-                        'ponemos el flag de ban a 1
-130                     Call WriteVar(CharPath & UserName & ".chr", "BAN", "Baneado", "1")
-132                     Call WriteVar(CharPath & UserName & ".chr", "BAN", "BanMotivo", LCase$(Reason))
-134                     Call WriteVar(CharPath & UserName & ".chr", "BAN", "BannedBy", LCase$(.name))
-            
-                        'ponemos la pena
-136                     cantPenas = val(GetVar(CharPath & UserName & ".chr", "PENAS", "Cant"))
-138                     Call WriteVar(CharPath & UserName & ".chr", "PENAS", "Cant", cantPenas + 1)
-140                     Call WriteVar(CharPath & UserName & ".chr", "PENAS", "P" & cantPenas + 1, LCase$(.name) & ": " & LCase$(Reason) & " " & Date & " " & Time)
-
-                    End If
-                    
-142                 If (userPriv And rank) = (.flags.Privilegios And rank) Then
-144                     .flags.Ban = 1
-146                     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.name & " banned by the server por bannear un Administrador.", FontTypeNames.FONTTYPE_FIGHT))
-148                     Call CloseSocket(bannerUserIndex)
-
-                    End If
-                    
-150                 Call LogGM(.name, "BAN a " & UserName)
-                Else
-152                 Call WriteConsoleMsg(bannerUserIndex, "El pj " & UserName & " no existe.", FontTypeNames.FONTTYPE_INFO)
-
-                End If
-
-            Else
-
-154             If (UserList(tUser).flags.Privilegios And rank) > (.flags.Privilegios And rank) Then
-156                 Call WriteConsoleMsg(bannerUserIndex, "No podes banear a al alguien de mayor jerarquia.", FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-
-                End If
-            
-158             Call LogBan(tUser, bannerUserIndex, Reason)
-160             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> " & .name & " ha baneado a " & UserList(tUser).name & ".", FontTypeNames.FONTTYPE_SERVER))
-            
-                'Ponemos el flag de ban a 1
-162             UserList(tUser).flags.Ban = 1
-            
-164             If (UserList(tUser).flags.Privilegios And rank) = (.flags.Privilegios And rank) Then
-166                 .flags.Ban = 1
-168                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.name & " banned by the server por bannear un Administrador.", FontTypeNames.FONTTYPE_FIGHT))
-170                 Call CloseSocket(bannerUserIndex)
-
-                End If
-            
-172             Call LogGM(.name, "BAN a " & UserName)
-            
-174             If Database_Enabled Then
-176                 Call SaveBanDatabase(UserName, Reason, .name)
-                Else
-                    'ponemos el flag de ban a 1
-178                 Call WriteVar(CharPath & UserName & ".chr", "BAN", " Baneado", "1")
-180                 Call WriteVar(CharPath & UserName & ".chr", "BAN", "BanMotivo", LCase$(Reason))
-182                 Call WriteVar(CharPath & UserName & ".chr", "BAN", "BannedBy", LCase$(.name))
-                    'ponemos la pena
-184                 cantPenas = val(GetVar(CharPath & UserName & ".chr", "PENAS", "Cant"))
-186                 Call WriteVar(CharPath & UserName & ".chr", "PENAS", "Cant", cantPenas + 1)
-188                 Call WriteVar(CharPath & UserName & ".chr", "PENAS", "P" & cantPenas + 1, LCase$(.name) & ": " & LCase$(Reason) & " " & Date & " " & Time)
-
-                End If
-            
-190             Call CloseSocket(tUser)
-
-            End If
-
-        End With
-
-        
-        Exit Sub
-
-BanCharacter_Err:
-192     Call RegistrarError(Err.Number, Err.Description, "Admin.BanCharacter", Erl)
-194     Resume Next
-        
-End Sub
-
-Public Sub BanAccount(ByVal bannerUserIndex As Integer, ByVal UserName As String, ByVal Reason As String)
-        
-        On Error GoTo BanAccount_Err
-        
-
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 03/02/07
-        '
-        '***************************************************
-        Dim tUser     As Integer
-
-        Dim cantPenas As Byte
-
-        Dim Cuenta    As String
-        
-        Dim AccountId As Integer
-    
-100     If InStrB(UserName, "+") Then
-102         UserName = Replace(UserName, "+", " ")
-        End If
-    
-104     tUser = NameIndex(UserName)
-
-108     With UserList(bannerUserIndex)
-
-110         If tUser <= 0 Then
-112             Call WriteConsoleMsg(bannerUserIndex, "El usuario no esta online.", FontTypeNames.FONTTYPE_SERVER)
-            
-114             If PersonajeExiste(UserName) Then
-
-120                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & .name & " ha baneado la cuenta de " & UserName & " debido a: " & Reason & ".", FontTypeNames.FONTTYPE_SERVER))
-                
-                    If Database_Enabled Then
-                        AccountId = GetAccountIDDatabase(UserName)
-                        Call SaveBanCuentaDatabase(AccountId, Reason, .name)
-                    Else
-                        Cuenta = ObtenerCuenta(UserName)
-122                     Call WriteVar(CuentasPath & Cuenta & ".act", "BAN", "Baneada", "1")
-124                     Call WriteVar(CuentasPath & Cuenta & ".act", "BAN", "Motivo", Reason)
-126                     Call WriteVar(CuentasPath & Cuenta & ".act", "BAN", "BANEO", .name)
-                    End If
-
-128                 Call LogGM(.name, "Baneó la cuenta de " & UserName & " por: " & Reason)
-
-                Else
-130                 Call WriteConsoleMsg(bannerUserIndex, "El pj " & UserName & " no existe.", FontTypeNames.FONTTYPE_INFO)
-                End If
-
-            Else
-132             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & .name & " ha baneado la cuenta de " & UserName & " debido a: " & Reason & ".", FontTypeNames.FONTTYPE_SERVER))
-            
-                If Database_Enabled Then
-                    AccountId = UserList(tUser).AccountId
-                    Call SaveBanCuentaDatabase(AccountId, Reason, .name)
-                Else
-                    Cuenta = ObtenerCuenta(UserName)
-136                 Call WriteVar(CuentasPath & Cuenta & ".act", "BAN", "Baneada", "1")
-138                 Call WriteVar(CuentasPath & Cuenta & ".act", "BAN", "Motivo", Reason)
-140                 Call WriteVar(CuentasPath & Cuenta & ".act", "BAN", "BANEO", .name)
-                End If
-                
-                Call LogGM(.name, "Baneó la cuenta de " & UserName & " por: " & Reason)
-
-            End If
-            
-            ' Echo a todos los logueados en esta cuenta
-            If Database_Enabled Then
-                Dim i As Integer
-                For i = 1 To LastUser
-                    If UserList(i).AccountId = AccountId Then
-                        Call WriteShowMessageBox(i, "Has sido baneado del servidor. Motivo: " & Reason)
-                        Call CloseSocket(i)
-                    End If
-                Next
-            End If
-
-        End With
-        
-        Exit Sub
-
-BanAccount_Err:
-144     Call RegistrarError(Err.Number, Err.Description, "Admin.BanAccount", Erl)
-146     Resume Next
-        
-End Sub
-
-Public Sub UnBanAccount(ByVal bannerUserIndex As Integer, ByVal UserName As String)
-        
-        On Error GoTo UnBanAccount_Err
-        
-
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 03/02/07
-        '
-        '***************************************************
-        Dim tUser     As Integer
-
-        Dim userPriv  As Byte
-
-        Dim cantPenas As Byte
-
-        Dim rank      As Integer
-
-        Dim Cuenta    As String
-    
-100     If InStrB(UserName, "+") Then
-102         UserName = Replace(UserName, "+", " ")
-
-        End If
-    
-104     tUser = NameIndex(UserName)
-    
-106     rank = PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero
-    
-108     With UserList(bannerUserIndex)
-            
-110         If FileExist(CharPath & UserName & ".chr", vbNormal) Then
-                
-112             Cuenta = ObtenerCuenta(UserName)
-
-                'Call LogBanFromName(UserName, bannerUserIndex, reason)
-114             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> " & .name & " ha desbaneado la cuenta de " & UserName & "(" & Cuenta & ").", FontTypeNames.FONTTYPE_SERVER))
-                
-116             Call WriteVar(CuentasPath & Cuenta & ".act", "BAN", "Baneada", "0")
-118             Call WriteVar(CuentasPath & Cuenta & ".act", "BAN", "Motivo", "")
-120             Call WriteVar(CuentasPath & Cuenta & ".act", "BAN", "BANEO", "")
-            
-122             Call LogGM(.name, "Desbaneo la cuenta de " & UserName & ".")
-                
-            Else
-124             Call WriteConsoleMsg(bannerUserIndex, "El pj " & UserName & " no existe.", FontTypeNames.FONTTYPE_INFO)
-
-            End If
-
-        End With
-
-        
-        Exit Sub
-
-UnBanAccount_Err:
-126     Call RegistrarError(Err.Number, Err.Description, "Admin.UnBanAccount", Erl)
-128     Resume Next
-        
-End Sub
 
 Public Sub BanSerialOK(ByVal bannerUserIndex As Integer, ByVal UserName As String)
         
@@ -1325,9 +923,9 @@ Public Sub BanSerialOK(ByVal bannerUserIndex As Integer, ByVal UserName As Strin
 126             Print #1, MacAdress
 128             Close #1
 
-130             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> " & .name & " ha baneado la computadora de: " & UserName & "(" & Cuenta & ").", FontTypeNames.FONTTYPE_SERVER))
+130             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> " & .Name & " ha baneado la computadora de: " & UserName & "(" & Cuenta & ").", FontTypeNames.FONTTYPE_SERVER))
             
-132             Call LogGM(.name, "Baneo la computadora de " & UserName & ".")
+132             Call LogGM(.Name, "Baneo la computadora de " & UserName & ".")
 
             Else
 134             Call WriteConsoleMsg(bannerUserIndex, "El pj " & UserName & " no existe.", FontTypeNames.FONTTYPE_INFO)
@@ -1418,7 +1016,7 @@ Public Sub BanTemporal(ByVal nombre As String, ByVal dias As Integer, Causa As S
         Dim tBan As tBaneo
 
 100     Set tBan = New tBaneo
-102     tBan.name = UCase$(nombre)
+102     tBan.Name = UCase$(nombre)
 104     tBan.FechaLiberacion = (Now + dias)
 106     tBan.Causa = Causa
 108     tBan.Baneador = Baneador
@@ -1446,7 +1044,7 @@ Sub SaveBans()
 100     Call WriteVar(DatPath & "baneos.dat", "INIT", "NumeroBans", Baneos.Count)
 
 102     For num = 1 To Baneos.Count
-104         Call WriteVar(DatPath & "baneos.dat", "BANEO" & num, "USER", Baneos(num).name)
+104         Call WriteVar(DatPath & "baneos.dat", "BANEO" & num, "USER", Baneos(num).Name)
 106         Call WriteVar(DatPath & "baneos.dat", "BANEO" & num, "FECHA", Baneos(num).FechaLiberacion)
 108         Call WriteVar(DatPath & "baneos.dat", "BANEO" & num, "BANEADOR", Baneos(num).Baneador)
 110         Call WriteVar(DatPath & "baneos.dat", "BANEO" & num, "CAUSA", Baneos(num).Causa)
@@ -1467,17 +1065,17 @@ Sub SaveBan(num As Integer)
         
 
 100     Call WriteVar(DatPath & "baneos.dat", "INIT", "NumeroBans", Baneos.Count)
-102     Call WriteVar(DatPath & "baneos.dat", "BANEO" & num, "USER", Baneos(num).name)
+102     Call WriteVar(DatPath & "baneos.dat", "BANEO" & num, "USER", Baneos(num).Name)
 104     Call WriteVar(DatPath & "baneos.dat", "BANEO" & num, "FECHA", Baneos(num).FechaLiberacion)
 106     Call WriteVar(DatPath & "baneos.dat", "BANEO" & num, "BANEADOR", Baneos(num).Baneador)
 108     Call WriteVar(DatPath & "baneos.dat", "BANEO" & num, "CAUSA", Baneos(num).Causa)
     
 110     If Database_Enabled Then
-112         Call SaveBanDatabase(Baneos(num).name, Baneos(num).Causa, Baneos(num).Baneador)
+112         Call SaveBanDatabase(Baneos(num).Name, Baneos(num).Causa, Baneos(num).Baneador)
         Else
-114         Call WriteVar(CharPath & Baneos(num).name & ".chr", "BAN", "Baneado", "1")
-116         Call WriteVar(CharPath & Baneos(num).name & ".chr", "BAN", "BanMotivo", Baneos(num).Causa)
-118         Call WriteVar(CharPath & Baneos(num).name & ".chr", "BAN", "BannedBy", Baneos(num).Baneador)
+114         Call WriteVar(CharPath & Baneos(num).Name & ".chr", "BAN", "Baneado", "1")
+116         Call WriteVar(CharPath & Baneos(num).Name & ".chr", "BAN", "BanMotivo", Baneos(num).Causa)
+118         Call WriteVar(CharPath & Baneos(num).Name & ".chr", "BAN", "BannedBy", Baneos(num).Baneador)
 
         End If
 
@@ -1507,7 +1105,7 @@ Sub LoadBans()
 106         Set tBan = New tBaneo
 
 108         With tBan
-110             .name = GetVar(DatPath & "baneos.dat", "BANEO" & i, "USER")
+110             .Name = GetVar(DatPath & "baneos.dat", "BANEO" & i, "USER")
 112             .FechaLiberacion = GetVar(DatPath & "baneos.dat", "BANEO" & i, "FECHA")
 114             .Causa = GetVar(DatPath & "baneos.dat", "BANEO" & i, "CAUSA")
 116             .Baneador = GetVar(DatPath & "baneos.dat", "BANEO" & i, "BANEADOR")
@@ -1527,14 +1125,14 @@ LoadBans_Err:
         
 End Sub
 
-Public Function ChangeBan(ByVal name As String, ByVal Baneado As Byte) As Boolean
+Public Function ChangeBan(ByVal Name As String, ByVal Baneado As Byte) As Boolean
         
         On Error GoTo ChangeBan_Err
         
 
-100     If FileExist(CharPath & name & ".chr", vbNormal) Then
-102         If (val(GetVar(CharPath & name & ".chr", "BAN", "BANEADO")) = 1) Then
-104             Call UnBan(name)
+100     If FileExist(CharPath & Name & ".chr", vbNormal) Then
+102         If (val(GetVar(CharPath & Name & ".chr", "BAN", "BANEADO")) = 1) Then
+104             Call UnBan(Name)
 
             End If
 

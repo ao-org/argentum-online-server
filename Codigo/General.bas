@@ -43,7 +43,7 @@ Public Declare Function QueryPerformanceFrequency Lib "kernel32" (lpFrequency As
 
 Public Declare Sub OutputDebugString Lib "kernel32" Alias "OutputDebugStringA" (ByVal lpOutputString As String)
 
-Global LeerNPCs As New clsIniReader
+Global LeerNPCs As New clsIniManager
 
 Sub DarCuerpoDesnudo(ByVal UserIndex As Integer)
         
@@ -975,14 +975,14 @@ ErrHandler:
 
 End Sub
 
-Public Sub LogIndex(ByVal index As Integer, ByVal Desc As String)
+Public Sub LogIndex(ByVal Index As Integer, ByVal Desc As String)
 
         On Error GoTo ErrHandler
 
         Dim nfile As Integer
 
 100     nfile = FreeFile ' obtenemos un canal
-102     Open App.Path & "\logs\" & index & ".log" For Append Shared As #nfile
+102     Open App.Path & "\logs\" & Index & ".log" For Append Shared As #nfile
 104     Print #nfile, Date & " " & Time & " " & Desc
 106     Close #nfile
 
@@ -1159,7 +1159,7 @@ Public Sub LogPremios(GM As String, UserName As String, ByVal ObjIndex As Intege
 102     Open App.Path & "\logs\PremiosOtorgados.log" For Append Shared As #nfile
 104     Print #nfile, "[" & GM & "]" & vbNewLine
 106     Print #nfile, Date & " " & Time & vbNewLine
-108     Print #nfile, "Item: " & ObjData(ObjIndex).name & " (" & ObjIndex & ") Cantidad: " & Cantidad & vbNewLine
+108     Print #nfile, "Item: " & ObjData(ObjIndex).Name & " (" & ObjIndex & ") Cantidad: " & Cantidad & vbNewLine
 110     Print #nfile, "Motivo: " & Motivo & vbNewLine & vbNewLine
 112     Close #nfile
 
@@ -2239,7 +2239,7 @@ Public Sub CargaNpcsDat(Optional ByVal ActualizarNPCsExistentes As Boolean = Fal
             On Error GoTo CargaNpcsDat_Err
         
             ' Leemos el NPCs.dat y lo almacenamos en la memoria.
-100         Set LeerNPCs = New clsIniReader
+100         Set LeerNPCs = New clsIniManager
 102         Call LeerNPCs.Initialize(DatPath & "NPCs.dat")
         
             ' Cargamos la lista de NPC's hostiles disponibles para spawnear.

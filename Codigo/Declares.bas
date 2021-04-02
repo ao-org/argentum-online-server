@@ -40,7 +40,7 @@ Public Enum e_Facciones
     Armada = 3
 End Enum
 
-Public Administradores As clsIniReader
+Public Administradores As clsIniManager
 
 Public Enum e_SoundIndex
 
@@ -1110,7 +1110,7 @@ Public Type ObjData
 
     TipoRuna As Byte
 
-    name As String 'Nombre del obj
+    Name As String 'Nombre del obj
     
     OBJType As eOBJType 'Tipo enum que determina cuales son las caract del obj
     
@@ -1765,7 +1765,7 @@ End Type
 'Tipo de los Usuarios
 Public Type user
 
-    name As String
+    Name As String
     Cuenta As String
     
     Id As Long
@@ -1831,7 +1831,7 @@ Public Type user
         UpTime As Long
     #End If
 
-    ip As String
+    IP As String
     
     '[Alejo]
     ComUsu As tComercioUsuario
@@ -1992,7 +1992,7 @@ Public Type npc
     DropQuest() As tQuestObj
     
     InformarRespawn As Byte
-    name As String
+    Name As String
     SubName As String
     Char As Char 'Define como se vera
     Desc As String
@@ -2298,7 +2298,7 @@ Public RecompensasFaccion()               As tRecompensaFaccion
 
 Public ObjDonador()                       As tObjDonador
 
-Public BanIps                             As New Collection
+Public BanIps                             As New Dictionary
 
 Public ModClase(1 To NUMCLASES)           As ModClase
 

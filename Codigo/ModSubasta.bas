@@ -61,7 +61,7 @@ Public Sub IniciarSubasta(UserIndex)
 124     If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).ObjInfo.ObjIndex > 0 Then
 126         Subasta.ObjSubastado = MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).ObjInfo.ObjIndex
 128         Subasta.ObjSubastadoCantidad = MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).ObjInfo.Amount
-130         Subasta.Subastador = UserList(UserIndex).name
+130         Subasta.Subastador = UserList(UserIndex).Name
 132         UserList(UserIndex).Counters.TiempoParaSubastar = 15
 134         Call WriteChatOverHead(UserIndex, "Escribe /OFERTAINICIAL (cantidad) para comenzar la subasta. ¡Tienes 15 segundos!", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
 136         Call EraseObj(Subasta.ObjSubastadoCantidad, UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y)
@@ -101,7 +101,7 @@ Public Sub FinalizarSubasta()
 
         Dim tUser        As Integer
 
-        Dim Leer         As New clsIniReader
+        Dim Leer         As New clsIniManager
 
         Dim FileUser     As String
 
@@ -149,7 +149,7 @@ Public Sub FinalizarSubasta()
 
 150                 If Subasta.ObjSubastado < 1 Or Subasta.ObjSubastado > NumObjDatas Then Exit Sub
 
-152                 If LenB(ObjData(Subasta.ObjSubastado).name) = 0 Then Exit Sub
+152                 If LenB(ObjData(Subasta.ObjSubastado).Name) = 0 Then Exit Sub
 154                 Call MakeObj(ObjVendido, PosMap, posX, posY)
 156                 Call LogearEventoDeSubasta("La boveda del usuario estaba llena, se tiro en la posicion:" & PosMap & "-" & posX & "-" & posY)
 158                 Call WriteVar(FileUser, "INIT", "MENSAJEINFORMACION", "Subastador te ha dejado un mensaje: ¡Has ganado la subasta! Como no tenias espacio ni en tu boveda ni en el correo, tuve que tirarlo en tu ultima posicion.")
@@ -259,7 +259,7 @@ Public Sub DevolverItem()
 
         Dim tUser        As Integer
 
-        Dim Leer         As New clsIniReader
+        Dim Leer         As New clsIniManager
 
         Dim FileUser     As String
 
@@ -308,7 +308,7 @@ Public Sub DevolverItem()
 
 152                 If Subasta.ObjSubastado < 1 Or Subasta.ObjSubastado > NumObjDatas Then Exit Sub
 
-154                 If LenB(ObjData(Subasta.ObjSubastado).name) = 0 Then Exit Sub
+154                 If LenB(ObjData(Subasta.ObjSubastado).Name) = 0 Then Exit Sub
 156                 Call MakeObj(ObjVendido, PosMap, posX, posY)
 158                 Call LogearEventoDeSubasta("El correo del usuario estaba lleno, se tiro en la posicion:" & PosMap & "-" & posX & "-" & posY)
 160                 Call WriteVar(FileUser, "INIT", "MENSAJEINFORMACION", "Subastador te ha dejado un mensaje: Tu subasta fue cancelada por falta de ofertas, como no tenias lugar ni en tu correo ni boveda, tuve que tirarlo en tu ultimo posicion.")
@@ -355,7 +355,7 @@ Public Sub CancelarSubasta()
 
         Dim tUser        As Integer
 
-        Dim Leer         As New clsIniReader
+        Dim Leer         As New clsIniManager
 
         Dim FileUser     As String
 
@@ -403,7 +403,7 @@ Public Sub CancelarSubasta()
 
 154                 If Subasta.ObjSubastado < 1 Or Subasta.ObjSubastado > NumObjDatas Then Exit Sub
 
-156                 If LenB(ObjData(Subasta.ObjSubastado).name) = 0 Then Exit Sub
+156                 If LenB(ObjData(Subasta.ObjSubastado).Name) = 0 Then Exit Sub
 158                 Call MakeObj(ObjVendido, PosMap, posX, posY)
 160                 Call LogearEventoDeSubasta("El correo del usuario estaba lleno, se tiro en la posicion:" & PosMap & "-" & posX & "-" & posY)
 162                 Call WriteVar(FileUser, "INIT", "MENSAJEINFORMACION", "Subastador te ha dejado un mensaje: Tu subasta fue cancelada, como no tenias lugar ni en tu correo ni boveda, tuve que tirarlo en tu ultimo posicion.")

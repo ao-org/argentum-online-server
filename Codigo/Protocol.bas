@@ -275,7 +275,7 @@ Private Enum ClientPacketID
     GuildLeave              '/SALIRCLAN
     RequestAccountState     '/BALANCE
     PetStand                '/QUIETO
-    PetFollow               '/ACOMPAÑAR
+    PetFollow               '/ACOMPAï¿½AR
     PetLeave                '/LIBERAR
     GrupoMsg                '/GrupoMsg
     TrainList               '/ENTRENAR
@@ -302,7 +302,7 @@ Private Enum ClientPacketID
     ChangeDescription       '/DESC
     GuildVote               '/VOTO
     punishments             '/PENAS
-    ChangePassword          '/Contraseña
+    ChangePassword          '/Contraseï¿½a
     Gamble                  '/APOSTAR
     InquiryVote             '/ENCUESTA ( with parameters )
     LeaveFaction            '/RETIRAR ( with no arguments )
@@ -450,7 +450,7 @@ Private Enum ClientPacketID
     IngresarConCuenta
     RevalidarCuenta
     BorrarPJ
-    RecuperandoContraseña
+    RecuperandoContraseï¿½a
     BorrandoCuenta
     NewPacketID
     Desbuggear
@@ -656,7 +656,7 @@ End Type
 
 Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 01/09/07
         '
         '***************************************************
@@ -675,10 +675,10 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
 
         'frmMain.listaDePaquetes.AddItem "Paq:" & PaquetesCount & ": " & packetID
     
-        ' Debug.Print "Llego paquete ní" & packetID & " pesa: " & UserList(UserIndex).incomingData.length & "Bytes"
+        ' Debug.Print "Llego paquete nï¿½" & packetID & " pesa: " & UserList(UserIndex).incomingData.length & "Bytes"
     
         'Does the packet requires a logged user??
-102     If Not (packetId = ClientPacketID.LoginExistingChar Or packetId = ClientPacketID.LoginNewChar Or packetId = ClientPacketID.CrearNuevaCuenta Or packetId = ClientPacketID.IngresarConCuenta Or packetId = ClientPacketID.RevalidarCuenta Or packetId = ClientPacketID.BorrarPJ Or packetId = ClientPacketID.RecuperandoContraseña Or packetId = ClientPacketID.BorrandoCuenta Or packetId = ClientPacketID.ValidarCuenta Or packetId = ClientPacketID.ThrowDice) Then
+102     If Not (packetId = ClientPacketID.LoginExistingChar Or packetId = ClientPacketID.LoginNewChar Or packetId = ClientPacketID.CrearNuevaCuenta Or packetId = ClientPacketID.IngresarConCuenta Or packetId = ClientPacketID.RevalidarCuenta Or packetId = ClientPacketID.BorrarPJ Or packetId = ClientPacketID.RecuperandoContraseï¿½a Or packetId = ClientPacketID.BorrandoCuenta Or packetId = ClientPacketID.ValidarCuenta Or packetId = ClientPacketID.ThrowDice) Then
         
             'Is the user actually logged?
 104         If Not UserList(UserIndex).flags.UserLogged Then
@@ -695,7 +695,7 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
     
 112         UserList(UserIndex).Counters.IdleCount = 0
         
-            ' Envió el primer paquete
+            ' Enviï¿½ el primer paquete
 114         UserList(UserIndex).flags.FirstPacket = True
             
             #If AntiExternos = 1 Then
@@ -737,8 +737,8 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
 152         Case ClientPacketID.BorrarPJ
 154             Call HandleBorrarPJ(UserIndex)
             
-156         Case ClientPacketID.RecuperandoContraseña
-158             Call HandleRecuperandoContraseña(UserIndex)
+156         Case ClientPacketID.RecuperandoContraseï¿½a
+158             Call HandleRecuperandoContraseï¿½a(UserIndex)
         
 160         Case ClientPacketID.BorrandoCuenta
 162             Call HandleBorrandoCuenta(UserIndex)
@@ -941,7 +941,7 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
 424         Case ClientPacketID.PetStand                '/QUIETO
 426             Call HandlePetStand(UserIndex)
         
-428         Case ClientPacketID.PetFollow               '/ACOMPAÑAR
+428         Case ClientPacketID.PetFollow               '/ACOMPAï¿½AR
 430             Call HandlePetFollow(UserIndex)
             
 432         Case ClientPacketID.PetLeave                '/LIBERAR
@@ -1022,7 +1022,7 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
 532         Case ClientPacketID.punishments             '/PENAS
 534             Call HandlePunishments(UserIndex)
         
-536         Case ClientPacketID.ChangePassword          '/Contraseña
+536         Case ClientPacketID.ChangePassword          '/Contraseï¿½a
 538             Call HandleChangePassword(UserIndex)
         
 540         Case ClientPacketID.Gamble                  '/APOSTAR
@@ -1491,7 +1491,7 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
 1148     ElseIf Err.Number <> 0 And Not Err.Number = UserList(UserIndex).incomingData.NotEnoughDataErrCode Then
                'An error ocurred, log it and kick player.
 1150         Call RegistrarError(Err.Number, Err.Description & vbNewLine & "PackedId: " & packetId & vbNewLine & _
-                 IIf(UserList(UserIndex).flags.UserLogged, "UserName: " & UserList(UserIndex).name, "UserIndex: " & UserIndex), _
+                 IIf(UserList(UserIndex).flags.UserLogged, "UserName: " & UserList(UserIndex).Name, "UserIndex: " & UserIndex), _
                  "Protocol.HandleIncomingData", Erl)
         
 1152         Call CloseSocket(UserIndex)
@@ -1800,7 +1800,7 @@ End Sub
 Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
 
     '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
+    'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
     ''Last Modification: 01/12/08 Ladder
     '***************************************************
     If UserList(UserIndex).incomingData.Length < 18 Then
@@ -1840,7 +1840,7 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
     
     #If DEBUGGING = False Then
         If Not VersionOK(Version) Then
-            Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
+            Call WriteShowMessageBox(UserIndex, "Esta versiï¿½n del juego es obsoleta, la versiï¿½n correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
             Call CloseSocket(UserIndex)
             Exit Sub
         End If
@@ -1849,7 +1849,7 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
     If EsGmChar(UserName) Then
             
         If AdministratorAccounts(UCase$(UserName)) <> UCase$(CuentaEmail) Then
-            Call WriteShowMessageBox(UserIndex, "¡ESTE PERSONAJE NO TE PERTENECE!")
+            Call WriteShowMessageBox(UserIndex, "ï¿½ESTE PERSONAJE NO TE PERTENECE!")
             Call SaveBanCuentaDatabase(UserList(UserIndex).AccountId, "Intento de hackeo de personajes ajenos", "El Servidor")
             Call CloseSocket(UserIndex)
             Exit Sub
@@ -1876,8 +1876,8 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
     End If
     
     If Not PersonajePerteneceID(UserName, UserList(UserIndex).AccountId) Then
-        'Call WriteShowMessageBox(UserIndex, "¡ESTE PERSONAJE NO TE PERTENECE!")
-        Call LogHackAttemp("Alguien ha tratado de ingresar con el PJ '" & UserName & "' desde una cuenta ajena ID: " & UserList(UserIndex).AccountId & " desde la IP: " & UserList(UserIndex).ip)
+        'Call WriteShowMessageBox(UserIndex, "ï¿½ESTE PERSONAJE NO TE PERTENECE!")
+        Call LogHackAttemp("Alguien ha tratado de ingresar con el PJ '" & UserName & "' desde una cuenta ajena ID: " & UserList(UserIndex).AccountId & " desde la IP: " & UserList(UserIndex).IP)
         Call SaveBanCuentaDatabase(UserList(UserIndex).AccountId, "Intento de hackeo de personajes ajenos", "El Servidor")
         Call CloseSocket(UserIndex)
         Exit Sub
@@ -1887,11 +1887,10 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
     If BANCheck(UserName) Then
 
         Dim LoopC As Integer
-        
         For LoopC = 1 To Baneos.Count
 
-            If Baneos(LoopC).name = UCase$(UserName) Then
-                Call WriteShowMessageBox(UserIndex, "Se te ha prohibido la entrada a Argentum20 hasta el día " & Format(Baneos(LoopC).FechaLiberacion, "dddddd") & " a las " & Format(Baneos(LoopC).FechaLiberacion, "hh:mm am/pm") & " debido a " & Baneos(LoopC).Causa & " Esta decisión fue tomada por " & Baneos(LoopC).Baneador & ".")
+            If Baneos(LoopC).Name = UCase$(UserName) Then
+                Call WriteShowMessageBox(UserIndex, "Se te ha prohibido la entrada a Argentum20 hasta el dï¿½a " & Format(Baneos(LoopC).FechaLiberacion, "dddddd") & " a las " & Format(Baneos(LoopC).FechaLiberacion, "hh:mm am/pm") & " debido a " & Baneos(LoopC).Causa & " Esta decisiï¿½n fue tomada por " & Baneos(LoopC).Baneador & ".")
                 Call CloseSocket(UserIndex)
                 Exit Sub
 
@@ -1901,16 +1900,17 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
         
         Dim BanNick     As String
         Dim BaneoMotivo As String
-
-        BanNick = GetVar(CharPath & UserName & ".chr", "BAN", "BannedBy")
-        BaneoMotivo = GetVar(CharPath & UserName & ".chr", "BAN", "BanMotivo")
+        
+        BanNick = GetUserValue(UserName, "banned_by")
+        BaneoMotivo = GetUserValue(UserName, "banned_reason")
 
         If LenB(BanNick) = 0 Then BanNick = "*Error en la base de datos*"
         If LenB(BaneoMotivo) = 0 Then BaneoMotivo = "*No se registra el motivo del baneo.*"
         
-        Call WriteShowMessageBox(UserIndex, "Se te ha prohibido la entrada al juego debido a " & BaneoMotivo & ". Esta decisión fue tomada por " & BanNick & ".")
+        Call WriteShowMessageBox(UserIndex, "Se te ha prohibido la entrada al juego debido a " & BaneoMotivo & ". Esta decisiï¿½n fue tomada por " & BanNick & ".")
         
         Call CloseSocket(UserIndex)
+        
         Exit Sub
 
     End If
@@ -1939,7 +1939,7 @@ End Sub
 
 Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -1979,7 +1979,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
             Exit Sub
         End If
 
-114     If aClon.MaxPersonajes(UserList(UserIndex).ip) Then
+114     If aClon.MaxPersonajes(UserList(UserIndex).IP) Then
 116         Call WriteShowMessageBox(UserIndex, "Has creado demasiados personajes.")
 118         Call CloseSocket(UserIndex)
             Exit Sub
@@ -2005,7 +2005,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
     
         #If DEBUGGING = False Then
 146         If Not VersionOK(Version) Then
-148             Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
+148             Call WriteShowMessageBox(UserIndex, "Esta versiï¿½n del juego es obsoleta, la versiï¿½n correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
 150             Call CloseSocket(UserIndex)
                 Exit Sub
             End If
@@ -2014,7 +2014,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
 152     If EsGmChar(UserName) Then
             
 154         If AdministratorAccounts(UCase$(UserName)) <> UCase$(CuentaEmail) Then
-156             Call WriteShowMessageBox(UserIndex, "El nombre de usuario ingresado está siendo ocupado por un miembro del Staff.")
+156             Call WriteShowMessageBox(UserIndex, "El nombre de usuario ingresado estï¿½ siendo ocupado por un miembro del Staff.")
 158             Call CloseSocket(UserIndex)
                 Exit Sub
             End If
@@ -2089,7 +2089,7 @@ End Sub
 Private Sub HandleTalk(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '13/01/2010: ZaMa - Now hidden on boat pirats recover the proper boat body.
         '***************************************************
@@ -2118,7 +2118,7 @@ Private Sub HandleTalk(ByVal UserIndex As Integer)
         
             '[Consejeros & GMs]
 114         If .flags.Privilegios And (PlayerType.Consejero Or PlayerType.SemiDios) Then
-116             Call LogGM(.name, "Dijo: " & chat)
+116             Call LogGM(.Name, "Dijo: " & chat)
             End If
         
             'I see you....
@@ -2141,7 +2141,7 @@ Private Sub HandleTalk(ByVal UserIndex As Integer)
 
 140                 If .flags.invisible = 0 Then
 142                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, False))
-                        'Call WriteConsoleMsg(UserIndex, "¡Has vuelto a ser visible!", FontTypeNames.FONTTYPE_INFO)
+                        'Call WriteConsoleMsg(UserIndex, "ï¿½Has vuelto a ser visible!", FontTypeNames.FONTTYPE_INFO)
 144                     Call WriteLocaleMsg(UserIndex, "307", FontTypeNames.FONTTYPE_INFO)
     
                     End If
@@ -2167,9 +2167,9 @@ Private Sub HandleTalk(ByVal UserIndex As Integer)
                     .flags.ChatHistory(UBound(.flags.ChatHistory)) = chat
                 
 154                 If .flags.Muerto = 1 Then
-156                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead(chat, .Char.CharIndex, CHAT_COLOR_DEAD_CHAR, UserList(UserIndex).name))
+156                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead(chat, .Char.CharIndex, CHAT_COLOR_DEAD_CHAR, UserList(UserIndex).Name))
                     Else
-158                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead(chat, .Char.CharIndex, .flags.ChatColor, UserList(UserIndex).name))
+158                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead(chat, .Char.CharIndex, .flags.ChatColor, UserList(UserIndex).Name))
 
                     End If
 
@@ -2202,7 +2202,7 @@ End Sub
 Private Sub HandleYell(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -2229,12 +2229,12 @@ Private Sub HandleYell(ByVal UserIndex As Integer)
         
 112         If UserList(UserIndex).flags.Muerto = 1 Then
 114             Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
-                ' Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!! Los muertos no pueden comunicarse con el mundo de los vivos.", FontTypeNames.FONTTYPE_INFO)
+                ' Call WriteConsoleMsg(UserIndex, "ï¿½ï¿½Estï¿½s muerto!! Los muertos no pueden comunicarse con el mundo de los vivos.", FontTypeNames.FONTTYPE_INFO)
             Else
 
                 '[Consejeros & GMs]
 116             If .flags.Privilegios And (PlayerType.Consejero Or PlayerType.SemiDios) Then
-118                 Call LogGM(.name, "Grito: " & chat)
+118                 Call LogGM(.Name, "Grito: " & chat)
 
                 End If
             
@@ -2263,7 +2263,7 @@ Private Sub HandleYell(ByVal UserIndex As Integer)
     
 142                     If .flags.invisible = 0 Then
 144                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, False))
-146                         Call WriteConsoleMsg(UserIndex, "¡Has vuelto a ser visible!", FontTypeNames.FONTTYPE_INFO)
+146                         Call WriteConsoleMsg(UserIndex, "ï¿½Has vuelto a ser visible!", FontTypeNames.FONTTYPE_INFO)
     
                         End If
     
@@ -2288,7 +2288,7 @@ Private Sub HandleYell(ByVal UserIndex As Integer)
                         Next
                         .flags.ChatHistory(UBound(.flags.ChatHistory)) = chat
 
-156                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead(chat, .Char.CharIndex, vbRed, UserList(UserIndex).name))
+156                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead(chat, .Char.CharIndex, vbRed, UserList(UserIndex).Name))
                
                     End If
 
@@ -2324,7 +2324,7 @@ End Sub
 Private Sub HandleWhisper(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -2391,8 +2391,8 @@ Private Sub HandleWhisper(ByVal UserIndex As Integer)
                         End If
 
                     Else
-140                     Call WriteConsoleMsg(UserIndex, "[" & .name & "] " & chat, FontTypeNames.FONTTYPE_MP)
-142                     Call WriteConsoleMsg(targetUserIndex, "[" & .name & "] " & chat, FontTypeNames.FONTTYPE_MP)
+140                     Call WriteConsoleMsg(UserIndex, "[" & .Name & "] " & chat, FontTypeNames.FONTTYPE_MP)
+142                     Call WriteConsoleMsg(targetUserIndex, "[" & .Name & "] " & chat, FontTypeNames.FONTTYPE_MP)
 144                     Call WritePlayWave(targetUserIndex, FXSound.MP_SOUND, NO_3D_SOUND, NO_3D_SOUND)
                     
                     End If
@@ -2425,7 +2425,7 @@ End Sub
 
 Private Sub HandleWalk(ByVal UserIndex As Integer)
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -2575,7 +2575,7 @@ End Sub
 
 Private Sub HandleRequestPositionUpdate(ByVal UserIndex As Integer)
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -2607,7 +2607,7 @@ Private Sub HandleAttack(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 10/01/08
         'Last Modified By: Lucas Tavolaro Ortiz (Tavo)
         ' 10/01/2008: Tavo - Se cancela la salida del juego si el user esta saliendo
@@ -2619,7 +2619,7 @@ Private Sub HandleAttack(ByVal UserIndex As Integer)
             'If dead, can't attack
 104         If .flags.Muerto = 1 Then
 106             Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "í¡No podes atacar a nadie porque estas muerto!!.", FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(UserIndex, "ï¿½ï¿½No podes atacar a nadie porque estas muerto!!.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
@@ -2627,7 +2627,7 @@ Private Sub HandleAttack(ByVal UserIndex As Integer)
             'If equiped weapon is ranged, can't attack this way
 108         If .Invent.WeaponEqpObjIndex > 0 Then
 110             If ObjData(.Invent.WeaponEqpObjIndex).Proyectil = 1 Then
-112                 Call WriteConsoleMsg(UserIndex, "No podés usar así esta arma.", FontTypeNames.FONTTYPE_INFOIAO)
+112                 Call WriteConsoleMsg(UserIndex, "No podï¿½s usar asï¿½ esta arma.", FontTypeNames.FONTTYPE_INFOIAO)
                     Exit Sub
 
                 End If
@@ -2675,7 +2675,7 @@ Private Sub HandleAttack(ByVal UserIndex As Integer)
     
 152                 If .flags.invisible = 0 Then
 154                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, False))
-                        'Call WriteConsoleMsg(UserIndex, "¡Has vuelto a ser visible!", FontTypeNames.FONTTYPE_INFO)
+                        'Call WriteConsoleMsg(UserIndex, "ï¿½Has vuelto a ser visible!", FontTypeNames.FONTTYPE_INFO)
 156                     Call WriteLocaleMsg(UserIndex, "307", FontTypeNames.FONTTYPE_INFOIAO)
     
                     End If
@@ -2705,7 +2705,7 @@ Private Sub HandlePickUp(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -2715,7 +2715,7 @@ Private Sub HandlePickUp(ByVal UserIndex As Integer)
         
             'If dead, it can't pick up objects
 104         If .flags.Muerto = 1 Then
-                'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!! Los muertos no pueden tomar objetos.", FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(UserIndex, "ï¿½ï¿½Estï¿½s muerto!! Los muertos no pueden tomar objetos.", FontTypeNames.FONTTYPE_INFO)
 106             Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
             
                 Exit Sub
@@ -2724,7 +2724,7 @@ Private Sub HandlePickUp(ByVal UserIndex As Integer)
         
             'Lower rank administrators can't pick up items
 108         If .flags.Privilegios And (PlayerType.Consejero Or PlayerType.SemiDios) Then
-112                Call WriteConsoleMsg(UserIndex, "No podés tomar ningun objeto.", FontTypeNames.FONTTYPE_INFO)
+112                Call WriteConsoleMsg(UserIndex, "No podï¿½s tomar ningun objeto.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         
@@ -2752,7 +2752,7 @@ Private Sub HandleSafeToggle(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -2850,7 +2850,7 @@ End Sub
 
 Private Sub HandleRequestGuildLeaderInfo(ByVal UserIndex As Integer)
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -2878,7 +2878,7 @@ End Sub
 
 Private Sub HandleRequestAtributes(ByVal UserIndex As Integer)
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -2906,7 +2906,7 @@ End Sub
 
 Private Sub HandleRequestSkills(ByVal UserIndex As Integer)
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -2934,7 +2934,7 @@ End Sub
 
 Private Sub HandleRequestMiniStats(ByVal UserIndex As Integer)
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -2962,7 +2962,7 @@ End Sub
 
 Private Sub HandleCommerceEnd(ByVal UserIndex As Integer)
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -3004,7 +3004,7 @@ Private Sub HandleUserCommerceEnd(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -3014,7 +3014,7 @@ Private Sub HandleUserCommerceEnd(ByVal UserIndex As Integer)
         
             'Quits commerce mode with user
 104         If .ComUsu.DestUsu > 0 And UserList(.ComUsu.DestUsu).ComUsu.DestUsu = UserIndex Then
-106             Call WriteConsoleMsg(.ComUsu.DestUsu, .name & " ha dejado de comerciar con vos.", FontTypeNames.FONTTYPE_TALK)
+106             Call WriteConsoleMsg(.ComUsu.DestUsu, .Name & " ha dejado de comerciar con vos.", FontTypeNames.FONTTYPE_TALK)
 108             Call FinComerciarUsu(.ComUsu.DestUsu)
             
                 'Send data in the outgoing buffer of the other user
@@ -3046,7 +3046,7 @@ Private Sub HandleBankEnd(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -3078,7 +3078,7 @@ End Sub
 
 Private Sub HandleUserCommerceOk(ByVal UserIndex As Integer)
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -3111,7 +3111,7 @@ Private Sub HandleUserCommerceReject(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -3126,7 +3126,7 @@ Private Sub HandleUserCommerceReject(ByVal UserIndex As Integer)
             'Offer rejected
 106         If otherUser > 0 Then
 108             If UserList(otherUser).flags.UserLogged Then
-110                 Call WriteConsoleMsg(otherUser, .name & " ha rechazado tu oferta.", FontTypeNames.FONTTYPE_TALK)
+110                 Call WriteConsoleMsg(otherUser, .Name & " ha rechazado tu oferta.", FontTypeNames.FONTTYPE_TALK)
 112                 Call FinComerciarUsu(otherUser)
                 
                     'Send data in the outgoing buffer of the other user
@@ -3160,7 +3160,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
         On Error GoTo HandleDrop_Err
         
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 07/25/09
         '07/25/09: Marco - Agregue un checkeo para patear a los usuarios que tiran items mientras comercian.
         '***************************************************
@@ -3218,13 +3218,13 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
                     End If
             
 134                 If ObjData(.Invent.Object(slot).ObjIndex).Instransferible = 1 Then
-136                     Call WriteConsoleMsg(UserIndex, "Acción no permitida.", FontTypeNames.FONTTYPE_INFO)
+136                     Call WriteConsoleMsg(UserIndex, "Acciï¿½n no permitida.", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
                     End If
             
 138                 If ObjData(.Invent.Object(slot).ObjIndex).Intirable = 1 Then
-140                     Call WriteConsoleMsg(UserIndex, "Acción no permitida.", FontTypeNames.FONTTYPE_INFO)
+140                     Call WriteConsoleMsg(UserIndex, "Acciï¿½n no permitida.", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
                     End If
@@ -3274,7 +3274,7 @@ Private Sub HandleCastSpell(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -3293,7 +3293,7 @@ Private Sub HandleCastSpell(ByVal UserIndex As Integer)
 108         Spell = .incomingData.ReadByte()
         
 110         If .flags.Muerto = 1 Then
-                'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!.", FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(UserIndex, "ï¿½ï¿½Estï¿½s muerto!!.", FontTypeNames.FONTTYPE_INFO)
 112             Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
@@ -3346,7 +3346,7 @@ Private Sub HandleLeftClick(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -3391,7 +3391,7 @@ Private Sub HandleDoubleClick(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -3436,7 +3436,7 @@ Private Sub HandleWork(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 13/01/2010
         '13/01/2010: ZaMa - El pirata se puede ocultar en barca
         '***************************************************
@@ -3455,7 +3455,7 @@ Private Sub HandleWork(ByVal UserIndex As Integer)
 108         Skill = .incomingData.ReadByte()
         
 110         If UserList(UserIndex).flags.Muerto = 1 Then
-                'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!.", FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(UserIndex, "ï¿½ï¿½Estï¿½s muerto!!.", FontTypeNames.FONTTYPE_INFO)
 112             Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
@@ -3475,7 +3475,7 @@ Private Sub HandleWork(ByVal UserIndex As Integer)
 
                         '[CDT 17-02-2004]
 124                     If Not .flags.UltimoMensaje = 3 Then
-126                         Call WriteConsoleMsg(UserIndex, "No podés ocultarte si estás montado.", FontTypeNames.FONTTYPE_INFO)
+126                         Call WriteConsoleMsg(UserIndex, "No podï¿½s ocultarte si estï¿½s montado.", FontTypeNames.FONTTYPE_INFO)
 128                         .flags.UltimoMensaje = 3
 
                         End If
@@ -3490,7 +3490,7 @@ Private Sub HandleWork(ByVal UserIndex As Integer)
                         '[CDT 17-02-2004]
 132                     If Not .flags.UltimoMensaje = 2 Then
 134                         Call WriteLocaleMsg(UserIndex, "55", FontTypeNames.FONTTYPE_INFO)
-                            'Call WriteConsoleMsg(UserIndex, "Ya estás oculto.", FontTypeNames.FONTTYPE_INFO)
+                            'Call WriteConsoleMsg(UserIndex, "Ya estï¿½s oculto.", FontTypeNames.FONTTYPE_INFO)
 136                         .flags.UltimoMensaje = 2
 
                         End If
@@ -3501,12 +3501,12 @@ Private Sub HandleWork(ByVal UserIndex As Integer)
                     End If
                     
                     If .flags.EnReto Then
-                        Call WriteConsoleMsg(UserIndex, "No podés ocultarte durante un reto.", FontTypeNames.FONTTYPE_INFO)
+                        Call WriteConsoleMsg(UserIndex, "No podï¿½s ocultarte durante un reto.", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                     
 138                 If .flags.EnConsulta Then
-140                     Call WriteConsoleMsg(UserIndex, "No podés ocultarte si estas en consulta.", FontTypeNames.FONTTYPE_INFO)
+140                     Call WriteConsoleMsg(UserIndex, "No podï¿½s ocultarte si estas en consulta.", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
     
                     End If
@@ -3542,14 +3542,14 @@ Private Sub HandleUseSpellMacro(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
 100     With UserList(UserIndex)
             'Remove packet ID
 102         Call .incomingData.ReadByte
-104         Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg(.name & " fue expulsado por Anti-macro de hechizos", FontTypeNames.FONTTYPE_VENENO))
+104         Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg(.Name & " fue expulsado por Anti-macro de hechizos", FontTypeNames.FONTTYPE_VENENO))
 106         Call WriteShowMessageBox(UserIndex, "Has sido expulsado por usar macro de hechizos. Recomendamos leer el reglamento sobre el tema macros")
         
 108         Call CloseSocket(UserIndex)
@@ -3572,7 +3572,7 @@ End Sub
 
 Private Sub HandleUseItem(ByVal UserIndex As Integer)
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -3624,7 +3624,7 @@ Private Sub HandleCraftBlacksmith(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -3670,7 +3670,7 @@ Private Sub HandleCraftCarpenter(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -3711,7 +3711,7 @@ Private Sub HandleCraftAlquimia(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -3750,7 +3750,7 @@ Private Sub HandleCraftSastre(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -3795,7 +3795,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -3877,7 +3877,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     
 168                     If DummyInt <> 0 Then
 170                         If DummyInt = 1 Then
-172                             Call WriteConsoleMsg(UserIndex, "No tenés municiones.", FontTypeNames.FONTTYPE_INFO)
+172                             Call WriteConsoleMsg(UserIndex, "No tenï¿½s municiones.", FontTypeNames.FONTTYPE_INFO)
                             End If
                         
 176                         Call Desequipar(UserIndex, .MunicionEqpSlot)
@@ -3899,7 +3899,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     
                     Else
 188                     Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
-                        ' Call WriteConsoleMsg(UserIndex, "Estís muy cansado para luchar.", FontTypeNames.FONTTYPE_INFO)
+                        ' Call WriteConsoleMsg(UserIndex, "Estï¿½s muy cansado para luchar.", FontTypeNames.FONTTYPE_INFO)
 190                     Call WriteWorkRequestTarget(UserIndex, 0)
                         Exit Sub
 
@@ -3917,7 +3917,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         'Only allow to atack if the other one can retaliate (can see us)
 202                     If Abs(UserList(tU).Pos.Y - .Pos.Y) > RANGO_VISION_Y Then
 204                         Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-                            'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos para atacar.", FontTypeNames.FONTTYPE_WARNING)
+                            'Call WriteConsoleMsg(UserIndex, "Estï¿½s demasiado lejos para atacar.", FontTypeNames.FONTTYPE_WARNING)
 206                         Call WriteWorkRequestTarget(UserIndex, 0)
                             Exit Sub
 
@@ -3925,7 +3925,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     
                         'Prevent from hitting self
 208                     If tU = UserIndex Then
-210                         Call WriteConsoleMsg(UserIndex, "¡No podés atacarte a vos mismo!", FontTypeNames.FONTTYPE_INFO)
+210                         Call WriteConsoleMsg(UserIndex, "ï¿½No podï¿½s atacarte a vos mismo!", FontTypeNames.FONTTYPE_INFO)
 212                         Call WriteWorkRequestTarget(UserIndex, 0)
                             Exit Sub
 
@@ -4009,7 +4009,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 352             Case eSkill.Magia
                     'Check the map allows spells to be casted.
                     '  If MapInfo(.Pos.map).MagiaSinEfecto > 0 Then
-                    ' Call WriteConsoleMsg(UserIndex, "Una fuerza oscura te impide canalizar tu energía", FontTypeNames.FONTTYPE_FIGHT)
+                    ' Call WriteConsoleMsg(UserIndex, "Una fuerza oscura te impide canalizar tu energï¿½a", FontTypeNames.FONTTYPE_FIGHT)
                     '  Exit Sub
                     ' End If
                 
@@ -4037,7 +4037,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 368                     Call LanzarHechizo(.flags.Hechizo, UserIndex)
 370                     .flags.Hechizo = 0
                     Else
-372                     Call WriteConsoleMsg(UserIndex, "¡Primero selecciona el hechizo que quieres lanzar!", FontTypeNames.FONTTYPE_INFO)
+372                     Call WriteConsoleMsg(UserIndex, "ï¿½Primero selecciona el hechizo que quieres lanzar!", FontTypeNames.FONTTYPE_INFO)
 
                     End If
             
@@ -4052,7 +4052,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
 382                 Select Case ObjData(.Invent.HerramientaEqpObjIndex).Subtipo
                 
-                        Case 1      ' Subtipo: Caña de Pescar
+                        Case 1      ' Subtipo: Caï¿½a de Pescar
 
 384                         If (MapData(.Pos.Map, X, Y).Blocked And FLAG_AGUA) <> 0 Then
 386                             If (MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Or _
@@ -4064,7 +4064,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 388                                 Call DoPescar(UserIndex, False, ObjData(.Invent.HerramientaEqpObjIndex).Dorada = 1)
 390                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .Pos.X, .Pos.Y))
                                 Else
-392                                 Call WriteConsoleMsg(UserIndex, "Acércate a la costa para pescar.", FontTypeNames.FONTTYPE_INFO)
+392                                 Call WriteConsoleMsg(UserIndex, "Acï¿½rcate a la costa para pescar.", FontTypeNames.FONTTYPE_INFO)
 394                                 Call WriteMacroTrabajoToggle(UserIndex, False)
                                 End If
                             
@@ -4080,7 +4080,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                             
 404                             If Abs(.Pos.X - X) + Abs(.Pos.Y - Y) > 8 Then
 406                                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-                                    'Call WriteConsoleMsg(UserIndex, "Estás demasiado lejos para pescar.", FontTypeNames.FONTTYPE_INFO)
+                                    'Call WriteConsoleMsg(UserIndex, "Estï¿½s demasiado lejos para pescar.", FontTypeNames.FONTTYPE_INFO)
 408                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                     Exit Sub
     
@@ -4152,34 +4152,34 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                                 End If
                                 
 456                             If .Pos.X = X And .Pos.Y = Y Then
-458                                 Call WriteConsoleMsg(UserIndex, "No podés talar desde allí.", FontTypeNames.FONTTYPE_INFO)
+458                                 Call WriteConsoleMsg(UserIndex, "No podï¿½s talar desde allï¿½.", FontTypeNames.FONTTYPE_INFO)
 460                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                     Exit Sub
 
                                 End If
 
                                 If ObjData(DummyInt).Elfico <> ObjData(.Invent.HerramientaEqpObjIndex).Elfico Then
-                                    Call WriteConsoleMsg(UserIndex, "Sólo puedes talar árboles elficos con un hacha élfica.", FontTypeNames.FONTTYPE_INFO)
+                                    Call WriteConsoleMsg(UserIndex, "Sï¿½lo puedes talar ï¿½rboles elficos con un hacha ï¿½lfica.", FontTypeNames.FONTTYPE_INFO)
                                     Call WriteWorkRequestTarget(UserIndex, 0)
                                     Exit Sub
 
                                 End If
 
 462                             If MapData(.Pos.Map, X, Y).ObjInfo.amount <= 0 Then
-464                                 Call WriteConsoleMsg(UserIndex, "El árbol ya no te puede entregar mas leña.", FontTypeNames.FONTTYPE_INFO)
+464                                 Call WriteConsoleMsg(UserIndex, "El ï¿½rbol ya no te puede entregar mas leï¿½a.", FontTypeNames.FONTTYPE_INFO)
 466                                 Call WriteWorkRequestTarget(UserIndex, 0)
 468                                 Call WriteMacroTrabajoToggle(UserIndex, False)
                                     Exit Sub
 
                                 End If
 
-                                '¡Hay un arbol donde clickeo?
+                                'ï¿½Hay un arbol donde clickeo?
 470                             If ObjData(DummyInt).OBJType = eOBJType.otArboles Then
 472                                 Call DoTalar(UserIndex, X, Y, ObjData(.Invent.HerramientaEqpObjIndex).Dorada = 1)
                                 End If
 
                             Else
-474                             Call WriteConsoleMsg(UserIndex, "No hay ningún árbol ahí.", FontTypeNames.FONTTYPE_INFO)
+474                             Call WriteConsoleMsg(UserIndex, "No hay ningï¿½n ï¿½rbol ahï¿½.", FontTypeNames.FONTTYPE_INFO)
 476                             Call WriteWorkRequestTarget(UserIndex, 0)
 
 478                             If UserList(UserIndex).Counters.Trabajando > 1 Then
@@ -4212,7 +4212,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                             End If
                             
 498                         If MapData(.Pos.Map, X, Y).ObjInfo.amount <= 0 Then
-500                             Call WriteConsoleMsg(UserIndex, "El árbol ya no te puede entregar mas raices.", FontTypeNames.FONTTYPE_INFO)
+500                             Call WriteConsoleMsg(UserIndex, "El ï¿½rbol ya no te puede entregar mas raices.", FontTypeNames.FONTTYPE_INFO)
 502                             Call WriteWorkRequestTarget(UserIndex, 0)
 504                             Call WriteMacroTrabajoToggle(UserIndex, False)
                                 Exit Sub
@@ -4232,13 +4232,13 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                                 End If
                                 
 516                             If .Pos.X = X And .Pos.Y = Y Then
-518                                 Call WriteConsoleMsg(UserIndex, "No podés quitar raices allí.", FontTypeNames.FONTTYPE_INFO)
+518                                 Call WriteConsoleMsg(UserIndex, "No podï¿½s quitar raices allï¿½.", FontTypeNames.FONTTYPE_INFO)
 520                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                     Exit Sub
 
                                 End If
                                 
-                                '¡Hay un arbol donde clickeo?
+                                'ï¿½Hay un arbol donde clickeo?
 522                             If ObjData(DummyInt).OBJType = eOBJType.otArboles Then
 524                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_TIJERAS, .Pos.X, .Pos.Y))
 526                                 Call DoRaices(UserIndex, X, Y)
@@ -4246,7 +4246,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                                 End If
 
                             Else
-528                             Call WriteConsoleMsg(UserIndex, "No hay ningún árbol ahí.", FontTypeNames.FONTTYPE_INFO)
+528                             Call WriteConsoleMsg(UserIndex, "No hay ningï¿½n ï¿½rbol ahï¿½.", FontTypeNames.FONTTYPE_INFO)
 530                             Call WriteWorkRequestTarget(UserIndex, 0)
 532                             Call WriteMacroTrabajoToggle(UserIndex, False)
 
@@ -4277,13 +4277,13 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                                 'Check distance
 550                             If Abs(.Pos.X - X) + Abs(.Pos.Y - Y) > 2 Then
 552                                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-                                    'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
+                                    'Call WriteConsoleMsg(UserIndex, "Estï¿½s demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
 554                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                     Exit Sub
 
                                 End If
 
-                                '¡Hay un yacimiento donde clickeo?
+                                'ï¿½Hay un yacimiento donde clickeo?
 566                             If ObjData(DummyInt).OBJType = eOBJType.otYacimiento Then
 
                                     ' Si el Yacimiento requiere herramienta `Dorada` y la herramienta no lo es, o vice versa.
@@ -4306,13 +4306,13 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 568                                 Call DoMineria(UserIndex, X, Y, ObjData(.Invent.HerramientaEqpObjIndex).Dorada = 1)
 
                                 Else
-570                                 Call WriteConsoleMsg(UserIndex, "Ahí no hay ningún yacimiento.", FontTypeNames.FONTTYPE_INFO)
+570                                 Call WriteConsoleMsg(UserIndex, "Ahï¿½ no hay ningï¿½n yacimiento.", FontTypeNames.FONTTYPE_INFO)
 572                                 Call WriteWorkRequestTarget(UserIndex, 0)
 
                                 End If
 
                             Else
-574                             Call WriteConsoleMsg(UserIndex, "Ahí no hay ningun yacimiento.", FontTypeNames.FONTTYPE_INFO)
+574                             Call WriteConsoleMsg(UserIndex, "Ahï¿½ no hay ningun yacimiento.", FontTypeNames.FONTTYPE_INFO)
 576                             Call WriteWorkRequestTarget(UserIndex, 0)
 
                             End If
@@ -4346,7 +4346,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
 600                                 If Abs(.Pos.X - UserList(tU).Pos.X) + Abs(.Pos.Y - UserList(tU).Pos.Y) > DistanciaMaxima Then
 602                                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-                                        'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
+                                        'Call WriteConsoleMsg(UserIndex, "Estï¿½s demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
 604                                     Call WriteWorkRequestTarget(UserIndex, 0)
                                         Exit Sub
                                     End If
@@ -4354,13 +4354,13 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                                     '17/09/02
                                     'Check the trigger
 606                                 If MapData(UserList(tU).Pos.Map, UserList(tU).Pos.X, UserList(tU).Pos.Y).trigger = eTrigger.ZONASEGURA Then
-608                                     Call WriteConsoleMsg(UserIndex, "No podés robar aquí.", FontTypeNames.FONTTYPE_WARNING)
+608                                     Call WriteConsoleMsg(UserIndex, "No podï¿½s robar aquï¿½.", FontTypeNames.FONTTYPE_WARNING)
 610                                     Call WriteWorkRequestTarget(UserIndex, 0)
                                         Exit Sub
                                     End If
                                  
 612                                 If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = eTrigger.ZONASEGURA Then
-614                                     Call WriteConsoleMsg(UserIndex, "No podés robar aquí.", FontTypeNames.FONTTYPE_WARNING)
+614                                     Call WriteConsoleMsg(UserIndex, "No podï¿½s robar aquï¿½.", FontTypeNames.FONTTYPE_WARNING)
 616                                     Call WriteWorkRequestTarget(UserIndex, 0)
                                         Exit Sub
                                     End If
@@ -4378,7 +4378,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         End If
 
                     Else
-624                     Call WriteConsoleMsg(UserIndex, "¡No podés robar en zonas seguras!", FontTypeNames.FONTTYPE_INFO)
+624                     Call WriteConsoleMsg(UserIndex, "ï¿½No podï¿½s robar en zonas seguras!", FontTypeNames.FONTTYPE_INFO)
 626                     Call WriteWorkRequestTarget(UserIndex, 0)
 
                     End If
@@ -4437,7 +4437,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                             ''chequeamos que no se zarpe duplicando oro
 664                         If .Invent.Object(.flags.TargetObjInvSlot).ObjIndex <> .flags.TargetObjInvIndex Then
 666                             If .Invent.Object(.flags.TargetObjInvSlot).ObjIndex = 0 Or .Invent.Object(.flags.TargetObjInvSlot).amount = 0 Then
-668                                 Call WriteConsoleMsg(UserIndex, "No tienes más minerales", FontTypeNames.FONTTYPE_INFO)
+668                                 Call WriteConsoleMsg(UserIndex, "No tienes mï¿½s minerales", FontTypeNames.FONTTYPE_INFO)
 670                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                     Exit Sub
 
@@ -4455,7 +4455,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         
                         Else
                     
-678                         Call WriteConsoleMsg(UserIndex, "Ahí no hay ninguna fragua.", FontTypeNames.FONTTYPE_INFO)
+678                         Call WriteConsoleMsg(UserIndex, "Ahï¿½ no hay ninguna fragua.", FontTypeNames.FONTTYPE_INFO)
 680                         Call WriteWorkRequestTarget(UserIndex, 0)
 
 682                         If UserList(UserIndex).Counters.Trabajando > 1 Then
@@ -4467,7 +4467,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
                     Else
                 
-686                     Call WriteConsoleMsg(UserIndex, "Ahí no hay ninguna fragua.", FontTypeNames.FONTTYPE_INFO)
+686                     Call WriteConsoleMsg(UserIndex, "Ahï¿½ no hay ninguna fragua.", FontTypeNames.FONTTYPE_INFO)
 688                     Call WriteWorkRequestTarget(UserIndex, 0)
 
 690                     If UserList(UserIndex).Counters.Trabajando > 1 Then
@@ -4484,7 +4484,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     
 698                 tU = .flags.TargetUser
                     
-                    'Call WritePreguntaBox(UserIndex, UserList(UserIndex).name & " te invitó a unirte a su grupo. ¿Deseas unirte?")
+                    'Call WritePreguntaBox(UserIndex, UserList(UserIndex).name & " te invitï¿½ a unirte a su grupo. ï¿½Deseas unirte?")
                     
 700                 If tU > 0 And tU <> UserIndex Then
 
@@ -4493,7 +4493,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 704                         If UserList(tU).flags.Muerto = 0 Then
 706                             If Abs(.Pos.X - X) + Abs(.Pos.Y - Y) > 8 Then
 708                                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-                                    'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
+                                    'Call WriteConsoleMsg(UserIndex, "Estï¿½s demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
 710                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                     Exit Sub
 
@@ -4522,7 +4522,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 730                         If UserList(UserIndex).Grupo.Lider = UserIndex Then
 732                             Call InvitarMiembro(UserIndex, tU)
                             Else
-734                             Call WriteConsoleMsg(UserIndex, "Tu no podés invitar usuarios, debe hacerlo " & UserList(UserList(UserIndex).Grupo.Lider).name & ".", FontTypeNames.FONTTYPE_INFOIAO)
+734                             Call WriteConsoleMsg(UserIndex, "Tu no podï¿½s invitar usuarios, debe hacerlo " & UserList(UserList(UserIndex).Grupo.Lider).Name & ".", FontTypeNames.FONTTYPE_INFOIAO)
 736                             Call WriteWorkRequestTarget(UserIndex, 0)
 
                             End If
@@ -4550,7 +4550,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 746                 clan_nivel = modGuilds.NivelDeClan(UserList(UserIndex).GuildIndex)
 
 748                 If clan_nivel < 4 Then
-750                     Call WriteConsoleMsg(UserIndex, "Servidor> El nivel de tu clan debe ser 4 para utilizar esta opción.", FontTypeNames.FONTTYPE_INFOIAO)
+750                     Call WriteConsoleMsg(UserIndex, "Servidor> El nivel de tu clan debe ser 4 para utilizar esta opciï¿½n.", FontTypeNames.FONTTYPE_INFOIAO)
                         Exit Sub
 
                     End If
@@ -4567,7 +4567,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
                     End If
                     
-                    'Call WritePreguntaBox(UserIndex, UserList(UserIndex).name & " te invitó a unirte a su grupo. ¿Deseas unirte?")
+                    'Call WritePreguntaBox(UserIndex, UserList(UserIndex).name & " te invitï¿½ a unirte a su grupo. ï¿½Deseas unirte?")
                     
 762                 If tU > 0 And tU <> UserIndex Then
 
@@ -4582,7 +4582,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                             Else
 772                             Call SendData(SendTarget.ToClanArea, UserIndex, PrepareMessageParticleFX(UserList(tU).Char.CharIndex, 210, 150, False))
                             End If
-774                         Call SendData(SendTarget.ToClanArea, UserIndex, PrepareMessageConsoleMsg("Clan> [" & UserList(UserIndex).name & "] marco a " & UserList(tU).name & ".", FontTypeNames.FONTTYPE_GUILD))
+774                         Call SendData(SendTarget.ToClanArea, UserIndex, PrepareMessageConsoleMsg("Clan> [" & UserList(UserIndex).Name & "] marco a " & UserList(tU).Name & ".", FontTypeNames.FONTTYPE_GUILD))
                         Else
 776                         Call WriteLocaleMsg(UserIndex, "7", FontTypeNames.FONTTYPE_INFO)
                             'Call WriteConsoleMsg(UserIndex, "El usuario esta muerto.", FontTypeNames.FONTTYPE_INFOIAO)
@@ -4601,7 +4601,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 786                 tU = .flags.TargetUser
 
 788                 If tU > 0 Then
-790                     Call WriteConsoleMsg(UserIndex, "Servidor> [" & UserList(tU).name & "] seleccionado.", FontTypeNames.FONTTYPE_SERVER)
+790                     Call WriteConsoleMsg(UserIndex, "Servidor> [" & UserList(tU).Name & "] seleccionado.", FontTypeNames.FONTTYPE_SERVER)
                     Else
 792                     Call WriteLocaleMsg(UserIndex, "261", FontTypeNames.FONTTYPE_INFO)
 
@@ -4628,7 +4628,7 @@ End Sub
 Private Sub HandleCreateNewGuild(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -4669,7 +4669,7 @@ Private Sub HandleCreateNewGuild(ByVal UserIndex As Integer)
 122             Call QuitarObjetos(409, 1, UserIndex)
 124             Call QuitarObjetos(411, 1, UserIndex)
 
-126             Call SendData(SendTarget.ToAll, UserIndex, PrepareMessageConsoleMsg(.name & " fundó el clan " & GuildName & " con alineación: " & Alineacion & ".", FontTypeNames.FONTTYPE_GUILD))
+126             Call SendData(SendTarget.ToAll, UserIndex, PrepareMessageConsoleMsg(.Name & " fundï¿½ el clan " & GuildName & " con alineaciï¿½n: " & Alineacion & ".", FontTypeNames.FONTTYPE_GUILD))
 128             Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(44, NO_3D_SOUND, NO_3D_SOUND))
                 'Update tag
 130             Call RefreshCharStatus(UserIndex)
@@ -4709,7 +4709,7 @@ Private Sub HandleSpellInfo(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -4731,7 +4731,7 @@ Private Sub HandleSpellInfo(ByVal UserIndex As Integer)
         
             'Validate slot
 110         If spellSlot < 1 Or spellSlot > MAXUSERHECHIZOS Then
-112             Call WriteConsoleMsg(UserIndex, "¡Primero selecciona el hechizo!", FontTypeNames.FONTTYPE_INFO)
+112             Call WriteConsoleMsg(UserIndex, "ï¿½Primero selecciona el hechizo!", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
@@ -4771,7 +4771,7 @@ Private Sub HandleEquipItem(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -4791,7 +4791,7 @@ Private Sub HandleEquipItem(ByVal UserIndex As Integer)
         
             'Dead users can't equip items
 110         If .flags.Muerto = 1 Then
-112             Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!! Sólo podés usar items cuando estás vivo.", FontTypeNames.FONTTYPE_INFO)
+112             Call WriteConsoleMsg(UserIndex, "ï¿½ï¿½Estï¿½s muerto!! Sï¿½lo podï¿½s usar items cuando estï¿½s vivo.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
@@ -4825,7 +4825,7 @@ Private Sub HandleChangeHeading(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 10/01/08
         'Last Modified By: Lucas Tavolaro Ortiz (Tavo)
         ' 10/01/2008: Tavo - Se cancela la salida del juego si el user esta saliendo
@@ -4873,7 +4873,7 @@ Private Sub HandleModifySkills(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -4899,7 +4899,7 @@ Private Sub HandleModifySkills(ByVal UserIndex As Integer)
 110             points(i) = .incomingData.ReadByte()
             
 112             If points(i) < 0 Then
-114                 Call LogHackAttemp(.name & " IP:" & .ip & " trató de hackear los skills.")
+114                 Call LogHackAttemp(.Name & " IP:" & .IP & " tratï¿½ de hackear los skills.")
 116                 .Stats.SkillPts = 0
 118                 Call CloseSocket(UserIndex)
                     Exit Sub
@@ -4910,7 +4910,7 @@ Private Sub HandleModifySkills(ByVal UserIndex As Integer)
 122         Next i
         
 124         If Count > .Stats.SkillPts Then
-126             Call LogHackAttemp(.name & " IP:" & .ip & " trató de hackear los skills.")
+126             Call LogHackAttemp(.Name & " IP:" & .IP & " tratï¿½ de hackear los skills.")
 128             Call CloseSocket(UserIndex)
                 Exit Sub
 
@@ -4957,7 +4957,7 @@ Private Sub HandleTrain(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -4995,7 +4995,7 @@ Private Sub HandleTrain(ByVal UserIndex As Integer)
                 End If
 
             Else
-126             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead("No puedo traer más criaturas, mata las existentes!", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite))
+126             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead("No puedo traer mï¿½s criaturas, mata las existentes!", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite))
 
             End If
 
@@ -5021,7 +5021,7 @@ Private Sub HandleCommerceBuy(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -5044,24 +5044,24 @@ Private Sub HandleCommerceBuy(ByVal UserIndex As Integer)
         
             'Dead people can't commerce...
 112         If .flags.Muerto = 1 Then
-114             Call WriteConsoleMsg(UserIndex, "¡¡Estís muerto!!", FontTypeNames.FONTTYPE_INFO)
+114             Call WriteConsoleMsg(UserIndex, "ï¿½ï¿½Estï¿½s muerto!!", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
         
-            'íEl target es un NPC valido?
+            'ï¿½El target es un NPC valido?
 116         If .flags.TargetNPC < 1 Then Exit Sub
             
-            'íEl NPC puede comerciar?
+            'ï¿½El NPC puede comerciar?
 118         If NpcList(.flags.TargetNPC).Comercia = 0 Then
-120             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead("No tengo ningún interés en comerciar.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite))
+120             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead("No tengo ningï¿½n interï¿½s en comerciar.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite))
                 Exit Sub
 
             End If
         
             'Only if in commerce mode....
 122         If Not .flags.Comerciando Then
-124             Call WriteConsoleMsg(UserIndex, "No estás comerciando", FontTypeNames.FONTTYPE_INFO)
+124             Call WriteConsoleMsg(UserIndex, "No estï¿½s comerciando", FontTypeNames.FONTTYPE_INFO)
 126             Call WriteCommerceEnd(UserIndex)
                 Exit Sub
 
@@ -5092,7 +5092,7 @@ Private Sub HandleBankExtractItem(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -5119,15 +5119,15 @@ Private Sub HandleBankExtractItem(ByVal UserIndex As Integer)
         
             'Dead people can't commerce
 114         If .flags.Muerto = 1 Then
-116             Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", FontTypeNames.FONTTYPE_INFO)
+116             Call WriteConsoleMsg(UserIndex, "ï¿½ï¿½Estï¿½s muerto!!", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
         
-            '¿El target es un NPC valido?
+            'ï¿½El target es un NPC valido?
 118         If .flags.TargetNPC < 1 Then Exit Sub
         
-            '¿Es el banquero?
+            'ï¿½Es el banquero?
 120         If NpcList(.flags.TargetNPC).NPCtype <> eNPCType.Banquero Then
                 Exit Sub
 
@@ -5158,7 +5158,7 @@ Private Sub HandleCommerceSell(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -5181,17 +5181,17 @@ Private Sub HandleCommerceSell(ByVal UserIndex As Integer)
         
             'Dead people can't commerce...
 112         If .flags.Muerto = 1 Then
-114             Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", FontTypeNames.FONTTYPE_INFO)
+114             Call WriteConsoleMsg(UserIndex, "ï¿½ï¿½Estï¿½s muerto!!", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
         
-            'íEl target es un NPC valido?
+            'ï¿½El target es un NPC valido?
 116         If .flags.TargetNPC < 1 Then Exit Sub
         
-            'íEl NPC puede comerciar?
+            'ï¿½El NPC puede comerciar?
 118         If NpcList(.flags.TargetNPC).Comercia = 0 Then
-120             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead("No tengo ningún interés en comerciar.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite))
+120             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead("No tengo ningï¿½n interï¿½s en comerciar.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite))
                 Exit Sub
 
             End If
@@ -5221,7 +5221,7 @@ Private Sub HandleBankDeposit(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -5247,22 +5247,22 @@ Private Sub HandleBankDeposit(ByVal UserIndex As Integer)
         
             'Dead people can't commerce...
 114         If .flags.Muerto = 1 Then
-116             Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", FontTypeNames.FONTTYPE_INFO)
+116             Call WriteConsoleMsg(UserIndex, "ï¿½ï¿½Estï¿½s muerto!!", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
         
-            'íEl target es un NPC valido?
+            'ï¿½El target es un NPC valido?
 118         If .flags.TargetNPC < 1 Then Exit Sub
         
-            'íEl NPC puede comerciar?
+            'ï¿½El NPC puede comerciar?
 120         If NpcList(.flags.TargetNPC).NPCtype <> eNPCType.Banquero Then
                 Exit Sub
             End If
             
             If Distancia(NpcList(.flags.TargetNPC).Pos, .Pos) > 10 Then
                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(UserIndex, "Estï¿½s demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         
@@ -5288,7 +5288,7 @@ End Sub
 Private Sub HandleForumPost(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -5396,7 +5396,7 @@ Private Sub HandleMoveSpell(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -5440,7 +5440,7 @@ End Sub
 Private Sub HandleClanCodexUpdate(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -5499,7 +5499,7 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -5572,7 +5572,7 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
             
                 'Prevent offer changes (otherwise people would ripp off other players)
 140             'If .ComUsu.Objeto > 0 Then
-142            '     Call WriteConsoleMsg(UserIndex, "No podés cambiar tu oferta.", FontTypeNames.FONTTYPE_TALK)
+142            '     Call WriteConsoleMsg(UserIndex, "No podï¿½s cambiar tu oferta.", FontTypeNames.FONTTYPE_TALK)
                '     Exit Sub
 
               '  End If
@@ -5580,7 +5580,7 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
                 'Don't allow to sell boats if they are equipped (you can't take them off in the water and causes trouble)
 144             If .flags.Navegando = 1 Then
 146                 If .Invent.BarcoSlot = slot Then
-148                     Call WriteConsoleMsg(UserIndex, "No podés vender tu barco mientras lo estás usando.", FontTypeNames.FONTTYPE_TALK)
+148                     Call WriteConsoleMsg(UserIndex, "No podï¿½s vender tu barco mientras lo estï¿½s usando.", FontTypeNames.FONTTYPE_TALK)
                         Exit Sub
 
                     End If
@@ -5589,7 +5589,7 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
             
 150             If .flags.Montado = 1 Then
 152                 If .Invent.MonturaSlot = slot Then
-154                     Call WriteConsoleMsg(UserIndex, "No podés vender tu montura mientras la estás usando.", FontTypeNames.FONTTYPE_TALK)
+154                     Call WriteConsoleMsg(UserIndex, "No podï¿½s vender tu montura mientras la estï¿½s usando.", FontTypeNames.FONTTYPE_TALK)
                         Exit Sub
 
                     End If
@@ -5602,7 +5602,7 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
                 'If the other one had accepted, we turn that back and inform of the new offer (just to be cautious).
 160             If UserList(tUser).ComUsu.Acepto = True Then
 162                 UserList(tUser).ComUsu.Acepto = False
-164                 Call WriteConsoleMsg(tUser, .name & " ha cambiado su oferta.", FontTypeNames.FONTTYPE_TALK)
+164                 Call WriteConsoleMsg(tUser, .Name & " ha cambiado su oferta.", FontTypeNames.FONTTYPE_TALK)
 
                 End If
             
@@ -5635,7 +5635,7 @@ End Sub
 Private Sub HandleGuildAcceptPeace(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -5703,7 +5703,7 @@ End Sub
 Private Sub HandleGuildRejectAlliance(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -5771,7 +5771,7 @@ End Sub
 Private Sub HandleGuildRejectPeace(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -5839,7 +5839,7 @@ End Sub
 Private Sub HandleGuildAcceptAlliance(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -5907,7 +5907,7 @@ End Sub
 Private Sub HandleGuildOfferPeace(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -5973,7 +5973,7 @@ End Sub
 Private Sub HandleGuildOfferAlliance(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -6039,7 +6039,7 @@ End Sub
 Private Sub HandleGuildAllianceDetails(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -6106,7 +6106,7 @@ End Sub
 Private Sub HandleGuildPeaceDetails(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -6173,7 +6173,7 @@ End Sub
 Private Sub HandleGuildRequestJoinerInfo(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -6204,7 +6204,7 @@ Private Sub HandleGuildRequestJoinerInfo(ByVal UserIndex As Integer)
 112         details = modGuilds.a_DetallesAspirante(UserIndex, user)
         
 114         If LenB(details) = 0 Then
-116             Call WriteConsoleMsg(UserIndex, "El personaje no ha mandado solicitud, o no estás habilitado para verla.", FontTypeNames.FONTTYPE_GUILD)
+116             Call WriteConsoleMsg(UserIndex, "El personaje no ha mandado solicitud, o no estï¿½s habilitado para verla.", FontTypeNames.FONTTYPE_GUILD)
             Else
 118             Call WriteShowUserRequest(UserIndex, details)
 
@@ -6237,7 +6237,7 @@ End Sub
 
 Private Sub HandleGuildAlliancePropList(ByVal UserIndex As Integer)
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -6265,7 +6265,7 @@ End Sub
 
 Private Sub HandleGuildPeacePropList(ByVal UserIndex As Integer)
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -6294,7 +6294,7 @@ End Sub
 Private Sub HandleGuildDeclareWar(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -6365,7 +6365,7 @@ End Sub
 Private Sub HandleGuildNewWebsite(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -6417,7 +6417,7 @@ End Sub
 Private Sub HandleGuildAcceptNewMember(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -6491,7 +6491,7 @@ End Sub
 Private Sub HandleGuildRejectNewMember(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 01/08/07
         'Last Modification by: (liquid)
         '
@@ -6568,7 +6568,7 @@ End Sub
 Private Sub HandleGuildKickMember(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -6602,7 +6602,7 @@ Private Sub HandleGuildKickMember(ByVal UserIndex As Integer)
 116             Call SendData(SendTarget.ToGuildMembers, GuildIndex, PrepareMessageConsoleMsg(UserName & " fue expulsado del clan.", FontTypeNames.FONTTYPE_GUILD))
 118             Call SendData(SendTarget.ToGuildMembers, GuildIndex, PrepareMessagePlayWave(45, NO_3D_SOUND, NO_3D_SOUND))
             Else
-120             Call WriteConsoleMsg(UserIndex, "No podés expulsar ese personaje del clan.", FontTypeNames.FONTTYPE_GUILD)
+120             Call WriteConsoleMsg(UserIndex, "No podï¿½s expulsar ese personaje del clan.", FontTypeNames.FONTTYPE_GUILD)
 
             End If
         
@@ -6634,7 +6634,7 @@ End Sub
 Private Sub HandleGuildUpdateNews(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -6686,7 +6686,7 @@ End Sub
 Private Sub HandleGuildMemberInfo(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -6741,7 +6741,7 @@ Private Sub HandleGuildOpenElections(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -6754,7 +6754,7 @@ Private Sub HandleGuildOpenElections(ByVal UserIndex As Integer)
 104         If Not modGuilds.v_AbrirElecciones(UserIndex, Error) Then
 106             Call WriteConsoleMsg(UserIndex, Error, FontTypeNames.FONTTYPE_GUILD)
             Else
-108             Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("¡Han comenzado las elecciones del clan! Puedes votar escribiendo /VOTO seguido del nombre del personaje, por ejemplo: /VOTO " & .name, FontTypeNames.FONTTYPE_GUILD))
+108             Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("ï¿½Han comenzado las elecciones del clan! Puedes votar escribiendo /VOTO seguido del nombre del personaje, por ejemplo: /VOTO " & .Name, FontTypeNames.FONTTYPE_GUILD))
 
             End If
 
@@ -6777,7 +6777,7 @@ End Sub
 Private Sub HandleGuildRequestMembership(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -6811,7 +6811,7 @@ Private Sub HandleGuildRequestMembership(ByVal UserIndex As Integer)
 114         If Not modGuilds.a_NuevoAspirante(UserIndex, guild, application, errorStr) Then
 116             Call WriteConsoleMsg(UserIndex, errorStr, FontTypeNames.FONTTYPE_GUILD)
             Else
-118             Call WriteConsoleMsg(UserIndex, "Tu solicitud ha sido enviada. Espera prontas noticias del líder de " & guild & ".", FontTypeNames.FONTTYPE_GUILD)
+118             Call WriteConsoleMsg(UserIndex, "Tu solicitud ha sido enviada. Espera prontas noticias del lï¿½der de " & guild & ".", FontTypeNames.FONTTYPE_GUILD)
 
             End If
         
@@ -6843,7 +6843,7 @@ End Sub
 Private Sub HandleGuildRequestDetails(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -6917,7 +6917,7 @@ Private Sub HandleOnline(ByVal UserIndex As Integer)
 
 106             If UserList(i).flags.UserLogged Then
 108                 If UserList(i).flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then
-110                     nombres = nombres & " - " & UserList(i).name
+110                     nombres = nombres & " - " & UserList(i).Name
                     End If
 112                 Count = Count + 1
 
@@ -6940,9 +6940,9 @@ Private Sub HandleOnline(ByVal UserIndex As Integer)
 128      Time = Time \ 24
         
 130      If Time = 1 Then
-132          UpTimeStr = Time & " día, " & UpTimeStr
+132          UpTimeStr = Time & " dï¿½a, " & UpTimeStr
             Else
-134          UpTimeStr = Time & " días, " & UpTimeStr
+134          UpTimeStr = Time & " dï¿½as, " & UpTimeStr
     
             End If
     
@@ -6950,11 +6950,11 @@ Private Sub HandleOnline(ByVal UserIndex As Integer)
 
 
 138         If .flags.Privilegios And PlayerType.user Then
-140             Call WriteConsoleMsg(UserIndex, "Número de usuarios: " & CStr(Count) & " conectados.", FontTypeNames.FONTTYPE_INFOIAO)
-142             Call WriteConsoleMsg(UserIndex, "Tiempo en línea: " & UpTimeStr & " Record de usuarios en simultaneo: " & RecordUsuarios & ".", FontTypeNames.FONTTYPE_INFOIAO)
+140             Call WriteConsoleMsg(UserIndex, "Nï¿½mero de usuarios: " & CStr(Count) & " conectados.", FontTypeNames.FONTTYPE_INFOIAO)
+142             Call WriteConsoleMsg(UserIndex, "Tiempo en lï¿½nea: " & UpTimeStr & " Record de usuarios en simultaneo: " & RecordUsuarios & ".", FontTypeNames.FONTTYPE_INFOIAO)
             Else
-144             Call WriteConsoleMsg(UserIndex, "Número de usuarios: " & CStr(Count) & " conectados: " & nombres & ".", FontTypeNames.FONTTYPE_INFOIAO)
-146             Call WriteConsoleMsg(UserIndex, "Tiempo en línea: " & UpTimeStr & " Record de usuarios en simultaneo: " & RecordUsuarios & ".", FontTypeNames.FONTTYPE_INFOIAO)
+144             Call WriteConsoleMsg(UserIndex, "Nï¿½mero de usuarios: " & CStr(Count) & " conectados: " & nombres & ".", FontTypeNames.FONTTYPE_INFOIAO)
+146             Call WriteConsoleMsg(UserIndex, "Tiempo en lï¿½nea: " & UpTimeStr & " Record de usuarios en simultaneo: " & RecordUsuarios & ".", FontTypeNames.FONTTYPE_INFOIAO)
             End If
 
         End With
@@ -6979,7 +6979,7 @@ Private Sub HandleQuit(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 04/15/2008 (NicoNZ)
         'If user is invisible, it automatically becomes
         'visible before doing the countdown to exit
@@ -6993,7 +6993,7 @@ Private Sub HandleQuit(ByVal UserIndex As Integer)
 102         Call .incomingData.ReadByte
         
 104         If .flags.Paralizado = 1 Then
-106             Call WriteConsoleMsg(UserIndex, "No podés salir estando paralizado.", FontTypeNames.FONTTYPE_WARNING)
+106             Call WriteConsoleMsg(UserIndex, "No podï¿½s salir estando paralizado.", FontTypeNames.FONTTYPE_WARNING)
                 Exit Sub
 
             End If
@@ -7056,7 +7056,7 @@ Private Sub HandleGuildLeave(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -7067,13 +7067,13 @@ Private Sub HandleGuildLeave(ByVal UserIndex As Integer)
 102         Call .incomingData.ReadByte
         
             'obtengo el guildindex
-104         GuildIndex = m_EcharMiembroDeClan(UserIndex, .name)
+104         GuildIndex = m_EcharMiembroDeClan(UserIndex, .Name)
         
 106         If GuildIndex > 0 Then
 108             Call WriteConsoleMsg(UserIndex, "Dejas el clan.", FontTypeNames.FONTTYPE_GUILD)
-110             Call SendData(SendTarget.ToGuildMembers, GuildIndex, PrepareMessageConsoleMsg(.name & " deja el clan.", FontTypeNames.FONTTYPE_GUILD))
+110             Call SendData(SendTarget.ToGuildMembers, GuildIndex, PrepareMessageConsoleMsg(.Name & " deja el clan.", FontTypeNames.FONTTYPE_GUILD))
             Else
-112             Call WriteConsoleMsg(UserIndex, "Tu no podés salir de ningún clan.", FontTypeNames.FONTTYPE_GUILD)
+112             Call WriteConsoleMsg(UserIndex, "Tu no podï¿½s salir de ningï¿½n clan.", FontTypeNames.FONTTYPE_GUILD)
 
             End If
 
@@ -7099,7 +7099,7 @@ Private Sub HandleRequestAccountState(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -7113,21 +7113,21 @@ Private Sub HandleRequestAccountState(ByVal UserIndex As Integer)
         
             'Dead people can't check their accounts
 104         If .flags.Muerto = 1 Then
-106             Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", FontTypeNames.FONTTYPE_INFO)
+106             Call WriteConsoleMsg(UserIndex, "ï¿½ï¿½Estï¿½s muerto!!", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
         
             'Validate target NPC
 108         If .flags.TargetNPC = 0 Then
-110             Call WriteConsoleMsg(UserIndex, "Primero tenes que seleccionar un personaje, hace click izquierdo sobre él.", FontTypeNames.FONTTYPE_INFO)
+110             Call WriteConsoleMsg(UserIndex, "Primero tenes que seleccionar un personaje, hace click izquierdo sobre ï¿½l.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
         
 112         If Distancia(NpcList(.flags.TargetNPC).Pos, .Pos) > 3 Then
 114             Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos del vendedor.", FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(UserIndex, "Estï¿½s demasiado lejos del vendedor.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
@@ -7176,7 +7176,7 @@ End Sub
 
 Private Sub HandlePetStand(ByVal UserIndex As Integer)
     '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
+    'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
     'Last Modification: 05/17/06
     '
     '***************************************************
@@ -7190,19 +7190,19 @@ Private Sub HandlePetStand(ByVal UserIndex As Integer)
         
             'Dead people can't use pets
 104         If .flags.Muerto = 1 Then
-106             Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", FontTypeNames.FONTTYPE_INFO)
+106             Call WriteConsoleMsg(UserIndex, "ï¿½ï¿½Estï¿½s muerto!!", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         
             'Validate target NPC
 108         If .flags.TargetNPC = 0 Then
-110             Call WriteConsoleMsg(UserIndex, "Primero tenés que seleccionar un personaje, hace click izquierdo sobre él.", FontTypeNames.FONTTYPE_INFO)
+110             Call WriteConsoleMsg(UserIndex, "Primero tenï¿½s que seleccionar un personaje, hace click izquierdo sobre ï¿½l.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         
             'Make sure it's close enough
 112         If Distancia(NpcList(.flags.TargetNPC).Pos, .Pos) > 10 Then
-114             Call WriteConsoleMsg(UserIndex, "Estás demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
+114             Call WriteConsoleMsg(UserIndex, "Estï¿½s demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         
@@ -7230,7 +7230,7 @@ End Sub
 
 Private Sub HandlePetFollow(ByVal UserIndex As Integer)
     '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
+    'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
     'Last Modification: 05/17/06
     '
     '***************************************************
@@ -7244,19 +7244,19 @@ Private Sub HandlePetFollow(ByVal UserIndex As Integer)
         
             'Dead users can't use pets
 104         If .flags.Muerto = 1 Then
-106             Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", FontTypeNames.FONTTYPE_INFO)
+106             Call WriteConsoleMsg(UserIndex, "ï¿½ï¿½Estï¿½s muerto!!", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         
             'Validate target NPC
 108         If .flags.TargetNPC = 0 Then
-110             Call WriteConsoleMsg(UserIndex, "Primero tenés que seleccionar un personaje, hace click izquierdo sobre él.", FontTypeNames.FONTTYPE_INFO)
+110             Call WriteConsoleMsg(UserIndex, "Primero tenï¿½s que seleccionar un personaje, hace click izquierdo sobre ï¿½l.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         
             'Make sure it's close enough
 112         If Distancia(NpcList(.flags.TargetNPC).Pos, .Pos) > 10 Then
-114             Call WriteConsoleMsg(UserIndex, "Estás demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
+114             Call WriteConsoleMsg(UserIndex, "Estï¿½s demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         
@@ -7294,13 +7294,13 @@ Private Sub HandlePetLeave(ByVal UserIndex As Integer)
         
             'Dead users can't use pets
 104         If .flags.Muerto = 1 Then
-106             Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", FontTypeNames.FONTTYPE_INFO)
+106             Call WriteConsoleMsg(UserIndex, "ï¿½ï¿½Estï¿½s muerto!!", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         
             'Validate target NPC
 108         If .flags.TargetNPC = 0 Then
-110             Call WriteConsoleMsg(UserIndex, "Primero tenés que seleccionar un personaje, hace click izquierdo sobre él.", FontTypeNames.FONTTYPE_INFO)
+110             Call WriteConsoleMsg(UserIndex, "Primero tenï¿½s que seleccionar un personaje, hace click izquierdo sobre ï¿½l.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         
@@ -7326,7 +7326,7 @@ End Sub
 Private Sub HandleGrupoMsg(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -7363,7 +7363,7 @@ Private Sub HandleGrupoMsg(ByVal UserIndex As Integer)
 118                 For i = 1 To UserList(.Grupo.Lider).Grupo.CantidadMiembros
                     
                         'Call WriteConsoleMsg(UserList(.Grupo.Lider).Grupo.Miembros(i), "[" & .Name & "] " & chat, FontTypeNames.FONTTYPE_New_Amarillo_Verdoso)
-120                     Call WriteConsoleMsg(UserList(.Grupo.Lider).Grupo.Miembros(i), .name & "> " & chat, FontTypeNames.FONTTYPE_New_Amarillo_Verdoso)
+120                     Call WriteConsoleMsg(UserList(.Grupo.Lider).Grupo.Miembros(i), .Name & "> " & chat, FontTypeNames.FONTTYPE_New_Amarillo_Verdoso)
 122                     Call WriteChatOverHead(UserList(.Grupo.Lider).Grupo.Miembros(i), chat, UserList(UserIndex).Char.CharIndex, &HFF8000)
                   
 124                 Next i
@@ -7407,7 +7407,7 @@ Private Sub HandleTrainList(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -7417,14 +7417,14 @@ Private Sub HandleTrainList(ByVal UserIndex As Integer)
         
             'Dead users can't use pets
 104         If .flags.Muerto = 1 Then
-106             Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", FontTypeNames.FONTTYPE_INFO)
+106             Call WriteConsoleMsg(UserIndex, "ï¿½ï¿½Estï¿½s muerto!!", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
         
             'Validate target NPC
 108         If .flags.TargetNPC = 0 Then
-110             Call WriteConsoleMsg(UserIndex, "Primero tenés que seleccionar un personaje, hace click izquierdo sobre él.", FontTypeNames.FONTTYPE_INFO)
+110             Call WriteConsoleMsg(UserIndex, "Primero tenï¿½s que seleccionar un personaje, hace click izquierdo sobre ï¿½l.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
@@ -7432,7 +7432,7 @@ Private Sub HandleTrainList(ByVal UserIndex As Integer)
             'Make sure it's close enough
 112         If Distancia(NpcList(.flags.TargetNPC).Pos, .Pos) > 10 Then
 114             Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(UserIndex, "Estï¿½s demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
@@ -7464,7 +7464,7 @@ Private Sub HandleRest(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -7474,7 +7474,7 @@ Private Sub HandleRest(ByVal UserIndex As Integer)
         
             'Dead users can't use pets
 104         If .flags.Muerto = 1 Then
-106             Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!! Solo podés usar items cuando estás vivo.", FontTypeNames.FONTTYPE_INFO)
+106             Call WriteConsoleMsg(UserIndex, "ï¿½ï¿½Estï¿½s muerto!! Solo podï¿½s usar items cuando estï¿½s vivo.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
@@ -7483,7 +7483,7 @@ Private Sub HandleRest(ByVal UserIndex As Integer)
 110             Call WriteRestOK(UserIndex)
             
 112             If Not .flags.Descansar Then
-114                 Call WriteConsoleMsg(UserIndex, "Te acomodás junto a la fogata y comenzís a descansar.", FontTypeNames.FONTTYPE_INFO)
+114                 Call WriteConsoleMsg(UserIndex, "Te acomodï¿½s junto a la fogata y comenzï¿½s a descansar.", FontTypeNames.FONTTYPE_INFO)
                 Else
 116                 Call WriteConsoleMsg(UserIndex, "Te levantas.", FontTypeNames.FONTTYPE_INFO)
 
@@ -7526,9 +7526,9 @@ Private Sub HandleMeditate(ByVal UserIndex As Integer)
         On Error GoTo HandleMeditate_Err
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 04/15/08 (NicoNZ)
-        'Arreglí un bug que mandaba un index de la meditacion diferente
+        'Arreglï¿½ un bug que mandaba un index de la meditacion diferente
         'al que decia el server.
         '***************************************************
         
@@ -7610,7 +7610,7 @@ Private Sub HandleResucitate(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -7620,7 +7620,7 @@ Private Sub HandleResucitate(ByVal UserIndex As Integer)
         
             'Se asegura que el target es un npc
 104         If .flags.TargetNPC = 0 Then
-106             Call WriteConsoleMsg(UserIndex, "Primero tenés que seleccionar un personaje, hace click izquierdo sobre él.", FontTypeNames.FONTTYPE_INFO)
+106             Call WriteConsoleMsg(UserIndex, "Primero tenï¿½s que seleccionar un personaje, hace click izquierdo sobre ï¿½l.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
@@ -7631,7 +7631,7 @@ Private Sub HandleResucitate(ByVal UserIndex As Integer)
             'Make sure it's close enough
 110         If Distancia(.Pos, NpcList(.flags.TargetNPC).Pos) > 10 Then
 112             Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "El sacerdote no puede resucitarte debido a que estás demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(UserIndex, "El sacerdote no puede resucitarte debido a que estï¿½s demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
@@ -7639,7 +7639,7 @@ Private Sub HandleResucitate(ByVal UserIndex As Integer)
 114         Call RevivirUsuario(UserIndex)
 116         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Curar, 100, False))
 118         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("104", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
-120         Call WriteConsoleMsg(UserIndex, "¡Has sido resucitado!", FontTypeNames.FONTTYPE_INFO)
+120         Call WriteConsoleMsg(UserIndex, "ï¿½Has sido resucitado!", FontTypeNames.FONTTYPE_INFO)
 
         End With
 
@@ -7663,7 +7663,7 @@ Private Sub HandleHeal(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -7673,7 +7673,7 @@ Private Sub HandleHeal(ByVal UserIndex As Integer)
         
             'Se asegura que el target es un npc
 104         If .flags.TargetNPC = 0 Then
-106             Call WriteConsoleMsg(UserIndex, "Primero tenés que seleccionar un personaje, hace click izquierdo sobre él.", FontTypeNames.FONTTYPE_INFO)
+106             Call WriteConsoleMsg(UserIndex, "Primero tenï¿½s que seleccionar un personaje, hace click izquierdo sobre ï¿½l.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
@@ -7682,7 +7682,7 @@ Private Sub HandleHeal(ByVal UserIndex As Integer)
         
 110         If Distancia(.Pos, NpcList(.flags.TargetNPC).Pos) > 10 Then
 112             Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "El sacerdote no puede curarte debido a que estás demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(UserIndex, "El sacerdote no puede curarte debido a que estï¿½s demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
@@ -7691,7 +7691,7 @@ Private Sub HandleHeal(ByVal UserIndex As Integer)
         
 116         Call WriteUpdateHP(UserIndex)
         
-118         Call WriteConsoleMsg(UserIndex, "ííHas sido curado!!", FontTypeNames.FONTTYPE_INFO)
+118         Call WriteConsoleMsg(UserIndex, "ï¿½ï¿½Has sido curado!!", FontTypeNames.FONTTYPE_INFO)
 
         End With
 
@@ -7711,7 +7711,7 @@ End Sub
 
 Private Sub HandleRequestStats(ByVal UserIndex As Integer)
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -7739,7 +7739,7 @@ End Sub
 
 Private Sub HandleHelp(ByVal UserIndex As Integer)
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -7771,7 +7771,7 @@ Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -7782,7 +7782,7 @@ Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
 
             'Dead people can't commerce
 104         If .flags.Muerto = 1 Then
-                'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(UserIndex, "ï¿½ï¿½Estï¿½s muerto!!", FontTypeNames.FONTTYPE_INFO)
 106             Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
@@ -7790,7 +7790,7 @@ Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
         
             'Is it already in commerce mode??
 108         If .flags.Comerciando Then
-110             Call WriteConsoleMsg(UserIndex, "Ya estás comerciando", FontTypeNames.FONTTYPE_INFO)
+110             Call WriteConsoleMsg(UserIndex, "Ya estï¿½s comerciando", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
@@ -7800,7 +7800,7 @@ Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
                 
                 'VOS, como GM, NO podes COMERCIAR con NPCs. (excepto Dioses y Admins)
 114             If (.flags.Privilegios And (PlayerType.user Or PlayerType.Dios Or PlayerType.Admin)) = 0 Then
-116                 Call WriteConsoleMsg(UserIndex, "No podés vender items.", FontTypeNames.FONTTYPE_WARNING)
+116                 Call WriteConsoleMsg(UserIndex, "No podï¿½s vender items.", FontTypeNames.FONTTYPE_WARNING)
                     Exit Sub
 
                 End If
@@ -7808,7 +7808,7 @@ Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
                 'Does the NPC want to trade??
 118             If NpcList(.flags.TargetNPC).Comercia = 0 Then
 120                 If LenB(NpcList(.flags.TargetNPC).Desc) <> 0 Then
-122                     Call WriteChatOverHead(UserIndex, "No tengo ningún interés en comerciar.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+122                     Call WriteChatOverHead(UserIndex, "No tengo ningï¿½n interï¿½s en comerciar.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
 
                     End If
                 
@@ -7818,7 +7818,7 @@ Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
             
 124             If Distancia(NpcList(.flags.TargetNPC).Pos, .Pos) > 3 Then
 126                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-                    'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos del vendedor.", FontTypeNames.FONTTYPE_INFO)
+                    'Call WriteConsoleMsg(UserIndex, "Estï¿½s demasiado lejos del vendedor.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
 
                 End If
@@ -7832,28 +7832,28 @@ Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
                 
                 'VOS, como GM, NO podes COMERCIAR con usuarios. (excepto Dioses y Admins)
 132             If (.flags.Privilegios And (PlayerType.user Or PlayerType.Dios Or PlayerType.Admin)) = 0 Then
-134                 Call WriteConsoleMsg(UserIndex, "No podés vender items.", FontTypeNames.FONTTYPE_WARNING)
+134                 Call WriteConsoleMsg(UserIndex, "No podï¿½s vender items.", FontTypeNames.FONTTYPE_WARNING)
                     Exit Sub
 
                 End If
                 
                 'NO podes COMERCIAR CON un GM. (excepto Dioses y Admins)
 136             If (UserList(.flags.TargetUser).flags.Privilegios And (PlayerType.user Or PlayerType.Dios Or PlayerType.Admin)) = 0 Then
-138                 Call WriteConsoleMsg(UserIndex, "No podés vender items a este usuario.", FontTypeNames.FONTTYPE_WARNING)
+138                 Call WriteConsoleMsg(UserIndex, "No podï¿½s vender items a este usuario.", FontTypeNames.FONTTYPE_WARNING)
                     Exit Sub
 
                 End If
                 
                 'Is the other one dead??
 140             If UserList(.flags.TargetUser).flags.Muerto = 1 Then
-142                 Call WriteConsoleMsg(UserIndex, "¡¡No podés comerciar con los muertos!!", FontTypeNames.FONTTYPE_INFO)
+142                 Call WriteConsoleMsg(UserIndex, "ï¿½ï¿½No podï¿½s comerciar con los muertos!!", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
 
                 End If
             
                 'Is it me??
 144             If .flags.TargetUser = UserIndex Then
-146                 Call WriteConsoleMsg(UserIndex, "No podés comerciar con vos mismo...", FontTypeNames.FONTTYPE_INFO)
+146                 Call WriteConsoleMsg(UserIndex, "No podï¿½s comerciar con vos mismo...", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
 
                 End If
@@ -7861,21 +7861,21 @@ Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
                 'Check distance
 148             If Distancia(UserList(.flags.TargetUser).Pos, .Pos) > 3 Then
 150                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-                    'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos del usuario.", FontTypeNames.FONTTYPE_INFO)
+                    'Call WriteConsoleMsg(UserIndex, "Estï¿½s demasiado lejos del usuario.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
 
                 End If
             
                 'Is he already trading?? is it with me or someone else??
 152             If UserList(.flags.TargetUser).flags.Comerciando = True And UserList(.flags.TargetUser).ComUsu.DestUsu <> UserIndex Then
-154                 Call WriteConsoleMsg(UserIndex, "No podés comerciar con el usuario en este momento.", FontTypeNames.FONTTYPE_INFO)
+154                 Call WriteConsoleMsg(UserIndex, "No podï¿½s comerciar con el usuario en este momento.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
 
                 End If
             
                 'Initialize some variables...
 156             .ComUsu.DestUsu = .flags.TargetUser
-158             .ComUsu.DestNick = UserList(.flags.TargetUser).name
+158             .ComUsu.DestNick = UserList(.flags.TargetUser).Name
 160             .ComUsu.cant = 0
 162             .ComUsu.Objeto = 0
 164             .ComUsu.Acepto = False
@@ -7910,7 +7910,7 @@ Private Sub HandleBankStart(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -7921,13 +7921,13 @@ Private Sub HandleBankStart(ByVal UserIndex As Integer)
             'Dead people can't commerce
 104         If .flags.Muerto = 1 Then
 106             Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(UserIndex, "ï¿½ï¿½Estï¿½s muerto!!", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
         
 108         If .flags.Comerciando Then
-110             Call WriteConsoleMsg(UserIndex, "Ya estás comerciando", FontTypeNames.FONTTYPE_INFO)
+110             Call WriteConsoleMsg(UserIndex, "Ya estï¿½s comerciando", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
@@ -7936,7 +7936,7 @@ Private Sub HandleBankStart(ByVal UserIndex As Integer)
 112         If .flags.TargetNPC > 0 Then
 114             If Distancia(NpcList(.flags.TargetNPC).Pos, .Pos) > 6 Then
 116                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-                    'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos del vendedor.", FontTypeNames.FONTTYPE_INFO)
+                    'Call WriteConsoleMsg(UserIndex, "Estï¿½s demasiado lejos del vendedor.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
 
                 End If
@@ -7974,7 +7974,7 @@ Private Sub HandleEnlist(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -7988,7 +7988,7 @@ Private Sub HandleEnlist(ByVal UserIndex As Integer)
         
             'Validate target NPC
 104         If .flags.TargetNPC = 0 Then
-106             Call WriteConsoleMsg(UserIndex, "Primero tenés que seleccionar un personaje, hacé click izquierdo sobre él.", FontTypeNames.FONTTYPE_INFO)
+106             Call WriteConsoleMsg(UserIndex, "Primero tenï¿½s que seleccionar un personaje, hacï¿½ click izquierdo sobre ï¿½l.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
@@ -7996,7 +7996,7 @@ Private Sub HandleEnlist(ByVal UserIndex As Integer)
 108         If NpcList(.flags.TargetNPC).NPCtype <> eNPCType.Enlistador Or .flags.Muerto <> 0 Then Exit Sub
         
 110         If Distancia(.Pos, NpcList(.flags.TargetNPC).Pos) > 4 Then
-112             Call WriteConsoleMsg(UserIndex, "Debes acercarte mís.", FontTypeNames.FONTTYPE_INFO)
+112             Call WriteConsoleMsg(UserIndex, "Debes acercarte mï¿½s.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
@@ -8030,7 +8030,7 @@ Private Sub HandleInformation(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -8040,7 +8040,7 @@ Private Sub HandleInformation(ByVal UserIndex As Integer)
         
             'Validate target NPC
 104         If .flags.TargetNPC = 0 Then
-106             Call WriteConsoleMsg(UserIndex, "Primero tenés que seleccionar un personaje, hacé click izquierdo sobre él.", FontTypeNames.FONTTYPE_INFO)
+106             Call WriteConsoleMsg(UserIndex, "Primero tenï¿½s que seleccionar un personaje, hacï¿½ click izquierdo sobre ï¿½l.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
@@ -8049,7 +8049,7 @@ Private Sub HandleInformation(ByVal UserIndex As Integer)
         
 110         If Distancia(.Pos, NpcList(.flags.TargetNPC).Pos) > 4 Then
 112             Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(UserIndex, "Estï¿½s demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
@@ -8061,16 +8061,16 @@ Private Sub HandleInformation(ByVal UserIndex As Integer)
 
                 End If
 
-120             Call WriteChatOverHead(UserIndex, "Tu deber es combatir criminales, cada 100 criminales que derrotes te darí una recompensa.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+120             Call WriteChatOverHead(UserIndex, "Tu deber es combatir criminales, cada 100 criminales que derrotes te darï¿½ una recompensa.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
             Else
 
 122             If .Faccion.FuerzasCaos = 0 Then
-124                 Call WriteChatOverHead(UserIndex, "No perteneces a la legiín oscura!!!", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+124                 Call WriteChatOverHead(UserIndex, "No perteneces a la legiï¿½n oscura!!!", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
                     Exit Sub
 
                 End If
 
-126             Call WriteChatOverHead(UserIndex, "Tu deber es sembrar el caos y la desesperanza, cada 100 ciudadanos que derrotes te darí una recompensa.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+126             Call WriteChatOverHead(UserIndex, "Tu deber es sembrar el caos y la desesperanza, cada 100 ciudadanos que derrotes te darï¿½ una recompensa.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
 
             End If
 
@@ -8096,7 +8096,7 @@ Private Sub HandleReward(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -8106,7 +8106,7 @@ Private Sub HandleReward(ByVal UserIndex As Integer)
         
             'Validate target NPC
 104         If .flags.TargetNPC = 0 Then
-106             Call WriteConsoleMsg(UserIndex, "Primero tenés que seleccionar un personaje, hacé click izquierdo sobre él.", FontTypeNames.FONTTYPE_INFO)
+106             Call WriteConsoleMsg(UserIndex, "Primero tenï¿½s que seleccionar un personaje, hacï¿½ click izquierdo sobre ï¿½l.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
@@ -8115,7 +8115,7 @@ Private Sub HandleReward(ByVal UserIndex As Integer)
         
 110         If Distancia(.Pos, NpcList(.flags.TargetNPC).Pos) > 4 Then
 112             Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(UserIndex, "Estï¿½s demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
@@ -8131,7 +8131,7 @@ Private Sub HandleReward(ByVal UserIndex As Integer)
             Else
 
 122             If .Faccion.FuerzasCaos = 0 Then
-124                 Call WriteChatOverHead(UserIndex, "No perteneces a la legiín oscura!!!", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+124                 Call WriteChatOverHead(UserIndex, "No perteneces a la legiï¿½n oscura!!!", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
                     Exit Sub
 
                 End If
@@ -8158,7 +8158,7 @@ End Sub
 
 Private Sub HandleRequestMOTD(ByVal UserIndex As Integer)
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -8186,7 +8186,7 @@ End Sub
 
 Private Sub HandleUpTime(ByVal UserIndex As Integer)
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 01/10/08
         '01/10/2008 - Marcos Martinez (ByVal) - Automatic restart removed from the server along with all their assignments and varibles
         '***************************************************
@@ -8214,9 +8214,9 @@ Private Sub HandleUpTime(ByVal UserIndex As Integer)
 114     Time = Time \ 24
     
 116     If Time = 1 Then
-118         UpTimeStr = Time & " día, " & UpTimeStr
+118         UpTimeStr = Time & " dï¿½a, " & UpTimeStr
         Else
-120         UpTimeStr = Time & " días, " & UpTimeStr
+120         UpTimeStr = Time & " dï¿½as, " & UpTimeStr
 
         End If
     
@@ -8238,7 +8238,7 @@ End Sub
 
 Private Sub HandleInquiry(ByVal UserIndex As Integer)
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -8267,7 +8267,7 @@ End Sub
 Private Sub HandleGuildMessage(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -8305,10 +8305,10 @@ Private Sub HandleGuildMessage(ByVal UserIndex As Integer)
                 .flags.ChatHistory(UBound(.flags.ChatHistory)) = chat
             
 116             If .GuildIndex > 0 Then
-118                 Call SendData(SendTarget.ToDiosesYclan, .GuildIndex, PrepareMessageGuildChat(.name & "> " & chat))
+118                 Call SendData(SendTarget.ToDiosesYclan, .GuildIndex, PrepareMessageGuildChat(.Name & "> " & chat))
 
                     'TODO : Con la 0.12.1 se debe definir si esto vuelve o se borra (/CMSG overhead)
-                    'Call SendData(SendTarget.ToClanArea, UserIndex, UserList(UserIndex).Pos.Map, "||" & vbYellow & "í< " & rData & " >í" & CStr(UserList(UserIndex).Char.CharIndex))
+                    'Call SendData(SendTarget.ToClanArea, UserIndex, UserList(UserIndex).Pos.Map, "||" & vbYellow & "ï¿½< " & rData & " >ï¿½" & CStr(UserList(UserIndex).Char.CharIndex))
                 End If
 
             End If
@@ -8344,7 +8344,7 @@ Private Sub HandleCentinelReport(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -8382,7 +8382,7 @@ Private Sub HandleGuildOnline(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -8395,9 +8395,9 @@ Private Sub HandleGuildOnline(ByVal UserIndex As Integer)
 104         onlineList = modGuilds.m_ListaDeMiembrosOnline(UserIndex, .GuildIndex)
         
 106         If .GuildIndex <> 0 Then
-108             Call WriteConsoleMsg(UserIndex, "Compaíeros de tu clan conectados: " & onlineList, FontTypeNames.FONTTYPE_GUILDMSG)
+108             Call WriteConsoleMsg(UserIndex, "Compaï¿½eros de tu clan conectados: " & onlineList, FontTypeNames.FONTTYPE_GUILDMSG)
             Else
-110             Call WriteConsoleMsg(UserIndex, "No pertences a ningún clan.", FontTypeNames.FONTTYPE_GUILDMSG)
+110             Call WriteConsoleMsg(UserIndex, "No pertences a ningï¿½n clan.", FontTypeNames.FONTTYPE_GUILDMSG)
 
             End If
 
@@ -8420,7 +8420,7 @@ End Sub
 Private Sub HandleCouncilMessage(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -8458,9 +8458,9 @@ Private Sub HandleCouncilMessage(ByVal UserIndex As Integer)
                 .flags.ChatHistory(UBound(.flags.ChatHistory)) = chat
             
 116             If .flags.Privilegios And PlayerType.RoyalCouncil Then
-118                 Call SendData(SendTarget.ToConsejo, UserIndex, PrepareMessageConsoleMsg("(Consejero) " & .name & "> " & chat, FontTypeNames.FONTTYPE_CONSEJO))
+118                 Call SendData(SendTarget.ToConsejo, UserIndex, PrepareMessageConsoleMsg("(Consejero) " & .Name & "> " & chat, FontTypeNames.FONTTYPE_CONSEJO))
 120             ElseIf .flags.Privilegios And PlayerType.ChaosCouncil Then
-122                 Call SendData(SendTarget.ToConsejoCaos, UserIndex, PrepareMessageConsoleMsg("(Consejero) " & .name & "> " & chat, FontTypeNames.FONTTYPE_CONSEJOCAOS))
+122                 Call SendData(SendTarget.ToConsejoCaos, UserIndex, PrepareMessageConsoleMsg("(Consejero) " & .Name & "> " & chat, FontTypeNames.FONTTYPE_CONSEJOCAOS))
 
                 End If
 
@@ -8494,7 +8494,7 @@ End Sub
 Private Sub HandleRoleMasterRequest(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -8522,7 +8522,7 @@ Private Sub HandleRoleMasterRequest(ByVal UserIndex As Integer)
         
 112         If LenB(request) <> 0 Then
 114             Call WriteConsoleMsg(UserIndex, "Su solicitud ha sido enviada", FontTypeNames.FONTTYPE_INFO)
-116             Call SendData(SendTarget.ToRolesMasters, 0, PrepareMessageConsoleMsg(.name & " PREGUNTA ROL: " & request, FontTypeNames.FONTTYPE_GUILDMSG))
+116             Call SendData(SendTarget.ToRolesMasters, 0, PrepareMessageConsoleMsg(.Name & " PREGUNTA ROL: " & request, FontTypeNames.FONTTYPE_GUILDMSG))
 
             End If
         
@@ -8557,7 +8557,7 @@ Private Sub HandleGMRequest(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -8565,13 +8565,13 @@ Private Sub HandleGMRequest(ByVal UserIndex As Integer)
             'Remove packet ID
 102         Call .incomingData.ReadByte
         
-104         If Not Ayuda.Existe(.name) Then
-106             Call WriteConsoleMsg(UserIndex, "El mensaje ha sido entregado, ahora sílo debes esperar que se desocupe algín GM.", FontTypeNames.FONTTYPE_INFO)
+104         If Not Ayuda.Existe(.Name) Then
+106             Call WriteConsoleMsg(UserIndex, "El mensaje ha sido entregado, ahora sï¿½lo debes esperar que se desocupe algï¿½n GM.", FontTypeNames.FONTTYPE_INFO)
                 'Call Ayuda.Push(.name)
             Else
                 'Call Ayuda.Quitar(.name)
                 'Call Ayuda.Push(.name)
-108             Call WriteConsoleMsg(UserIndex, "Ya habías mandado un mensaje, tu mensaje ha sido movido al final de la cola de mensajes.", FontTypeNames.FONTTYPE_INFO)
+108             Call WriteConsoleMsg(UserIndex, "Ya habï¿½as mandado un mensaje, tu mensaje ha sido movido al final de la cola de mensajes.", FontTypeNames.FONTTYPE_INFO)
 
             End If
 
@@ -8594,7 +8594,7 @@ End Sub
 Private Sub HandleChangeDescription(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -8621,16 +8621,16 @@ Private Sub HandleChangeDescription(ByVal UserIndex As Integer)
 110         Description = Buffer.ReadASCIIString()
         
 112         If .flags.Muerto = 1 Then
-114             Call WriteConsoleMsg(UserIndex, "No podés cambiar la descripción estando muerto.", FontTypeNames.FONTTYPE_INFOIAO)
+114             Call WriteConsoleMsg(UserIndex, "No podï¿½s cambiar la descripciï¿½n estando muerto.", FontTypeNames.FONTTYPE_INFOIAO)
             Else
 116             If Len(Description) > 128 Then
-118                 Call WriteConsoleMsg(UserIndex, "La descripción es muy larga.", FontTypeNames.FONTTYPE_INFOIAO)
+118                 Call WriteConsoleMsg(UserIndex, "La descripciï¿½n es muy larga.", FontTypeNames.FONTTYPE_INFOIAO)
 
 120             ElseIf Not DescripcionValida(Description) Then
-122                 Call WriteConsoleMsg(UserIndex, "La descripción tiene carácteres inválidos.", FontTypeNames.FONTTYPE_INFOIAO)
+122                 Call WriteConsoleMsg(UserIndex, "La descripciï¿½n tiene carï¿½cteres invï¿½lidos.", FontTypeNames.FONTTYPE_INFOIAO)
                 Else
 124                 .Desc = Trim$(Description)
-126                 Call WriteConsoleMsg(UserIndex, "La descripción a cambiado.", FontTypeNames.FONTTYPE_INFOIAO)
+126                 Call WriteConsoleMsg(UserIndex, "La descripciï¿½n a cambiado.", FontTypeNames.FONTTYPE_INFOIAO)
 
                 End If
 
@@ -8664,7 +8664,7 @@ End Sub
 Private Sub HandleGuildVote(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -8727,7 +8727,7 @@ End Sub
 Private Sub HandlePunishments(ByVal UserIndex As Integer)
 
     '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
+    'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
     'Last Modification: 05/17/06
     '
     '***************************************************
@@ -8748,34 +8748,34 @@ Private Sub HandlePunishments(ByVal UserIndex As Integer)
         'Remove packet ID
         Call Buffer.ReadByte
         
-        Dim name As String
-        name = Buffer.ReadASCIIString()
+        Dim Name As String
+        Name = Buffer.ReadASCIIString()
         
         'If we got here then packet is complete, copy data back to original queue
         Call .incomingData.CopyBuffer(Buffer)
         
         ' Si un GM usa este comando, me fijo que me haya dado el nick del PJ a analizar.
-        If EsGM(UserIndex) And LenB(name) = 0 Then Exit Sub
+        If EsGM(UserIndex) And LenB(Name) = 0 Then Exit Sub
         
         Dim Count As Integer
 
-        If (InStrB(name, "\") <> 0) Then
-            name = Replace(name, "\", vbNullString)
+        If (InStrB(Name, "\") <> 0) Then
+            Name = Replace(Name, "\", vbNullString)
 
         End If
 
-        If (InStrB(name, "/") <> 0) Then
-            name = Replace(name, "/", vbNullString)
+        If (InStrB(Name, "/") <> 0) Then
+            Name = Replace(Name, "/", vbNullString)
 
         End If
 
-        If (InStrB(name, ":") <> 0) Then
-            name = Replace(name, ":", vbNullString)
+        If (InStrB(Name, ":") <> 0) Then
+            Name = Replace(Name, ":", vbNullString)
 
         End If
 
-        If (InStrB(name, "|") <> 0) Then
-            name = Replace(name, "|", vbNullString)
+        If (InStrB(Name, "|") <> 0) Then
+            Name = Replace(Name, "|", vbNullString)
 
         End If
            
@@ -8783,8 +8783,8 @@ Private Sub HandlePunishments(ByVal UserIndex As Integer)
 
         If EsGM(UserIndex) Then
         
-            If PersonajeExiste(name) Then
-                TargetUserName = name
+            If PersonajeExiste(Name) Then
+                TargetUserName = Name
                 
             Else
                 Call WriteConsoleMsg(UserIndex, "El personaje " & TargetUserName & " no existe.", FontTypeNames.FONTTYPE_INFO)
@@ -8794,7 +8794,7 @@ Private Sub HandlePunishments(ByVal UserIndex As Integer)
             
         Else
         
-            TargetUserName = .name
+            TargetUserName = .Name
             
         End If
 
@@ -8802,7 +8802,7 @@ Private Sub HandlePunishments(ByVal UserIndex As Integer)
             Count = GetUserAmountOfPunishmentsDatabase(TargetUserName)
                 
         Else
-            Count = val(GetVar(CharPath & name & ".chr", "PENAS", "Cant"))
+            Count = val(GetVar(CharPath & Name & ".chr", "PENAS", "Cant"))
 
         End If
 
@@ -8851,7 +8851,7 @@ End Sub
 
 Private Sub HandleChangePassword(ByVal UserIndex As Integer)
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Creation Date: 10/10/07
         'Last Modified By: Ladder
         'Ahora cambia la password de la cuenta y no del PJ.
@@ -8917,7 +8917,7 @@ Private Sub HandleGamble(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -8937,26 +8937,26 @@ Private Sub HandleGamble(ByVal UserIndex As Integer)
         
 110         If .flags.Muerto = 1 Then
 112             Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(UserIndex, "ï¿½ï¿½Estï¿½s muerto!!", FontTypeNames.FONTTYPE_INFO)
 114         ElseIf .flags.TargetNPC = 0 Then
                 'Validate target NPC
-116             Call WriteConsoleMsg(UserIndex, "Primero tenés que seleccionar un personaje, haz click izquierdo sobre él.", FontTypeNames.FONTTYPE_INFO)
+116             Call WriteConsoleMsg(UserIndex, "Primero tenï¿½s que seleccionar un personaje, haz click izquierdo sobre ï¿½l.", FontTypeNames.FONTTYPE_INFO)
 118         ElseIf Distancia(NpcList(.flags.TargetNPC).Pos, .Pos) > 10 Then
 120             Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-                ' Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
+                ' Call WriteConsoleMsg(UserIndex, "Estï¿½s demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
 122         ElseIf NpcList(.flags.TargetNPC).NPCtype <> eNPCType.Timbero Then
-124             Call WriteChatOverHead(UserIndex, "No tengo ningún interés en apostar.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+124             Call WriteChatOverHead(UserIndex, "No tengo ningï¿½n interï¿½s en apostar.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
 126         ElseIf amount < 1 Then
-128             Call WriteChatOverHead(UserIndex, "El mínimo de apuesta es 1 moneda.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+128             Call WriteChatOverHead(UserIndex, "El mï¿½nimo de apuesta es 1 moneda.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
 130         ElseIf amount > 10000 Then
-132             Call WriteChatOverHead(UserIndex, "El máximo de apuesta es 10.000 monedas.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+132             Call WriteChatOverHead(UserIndex, "El mï¿½ximo de apuesta es 10.000 monedas.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
 134         ElseIf .Stats.GLD < amount Then
 136             Call WriteChatOverHead(UserIndex, "No tienes esa cantidad.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
             Else
 
 138             If RandomNumber(1, 100) <= 45 Then
 140                 .Stats.GLD = .Stats.GLD + amount
-142                 Call WriteChatOverHead(UserIndex, "¡Felicidades! Has ganado " & PonerPuntos(amount) & " monedas de oro!", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+142                 Call WriteChatOverHead(UserIndex, "ï¿½Felicidades! Has ganado " & PonerPuntos(amount) & " monedas de oro!", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
                 
 144                 Apuestas.Perdidas = Apuestas.Perdidas + amount
 146                 Call WriteVar(DatPath & "apuestas.dat", "Main", "Perdidas", CStr(Apuestas.Perdidas))
@@ -8999,7 +8999,7 @@ Private Sub HandleInquiryVote(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -9041,7 +9041,7 @@ Private Sub HandleBankExtractGold(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -9062,14 +9062,14 @@ Private Sub HandleBankExtractGold(ByVal UserIndex As Integer)
             'Dead people can't leave a faction.. they can't talk...
 110         If .flags.Muerto = 1 Then
 112             Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(UserIndex, "ï¿½ï¿½Estï¿½s muerto!!", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
         
             'Validate target NPC
 114         If .flags.TargetNPC = 0 Then
-116             Call WriteConsoleMsg(UserIndex, "Primero tenés que seleccionar un personaje, haz click izquierdo sobre él.", FontTypeNames.FONTTYPE_INFO)
+116             Call WriteConsoleMsg(UserIndex, "Primero tenï¿½s que seleccionar un personaje, haz click izquierdo sobre ï¿½l.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
@@ -9078,7 +9078,7 @@ Private Sub HandleBankExtractGold(ByVal UserIndex As Integer)
         
 120         If Distancia(.Pos, NpcList(.flags.TargetNPC).Pos) > 10 Then
 122             Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(UserIndex, "Estï¿½s demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
@@ -9086,12 +9086,12 @@ Private Sub HandleBankExtractGold(ByVal UserIndex As Integer)
 124         If amount > 0 And amount <= .Stats.Banco Then
 126             .Stats.Banco = .Stats.Banco - amount
 128             .Stats.GLD = .Stats.GLD + amount
-                'Call WriteChatOverHead(UserIndex, "Tenés " & .Stats.Banco & " monedas de oro en tu cuenta.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+                'Call WriteChatOverHead(UserIndex, "Tenï¿½s " & .Stats.Banco & " monedas de oro en tu cuenta.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
 
 130             Call WriteUpdateGold(UserIndex)
 132             Call WriteGoliathInit(UserIndex)
             Else
-134             Call WriteChatOverHead(UserIndex, "No tenés esa cantidad.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+134             Call WriteChatOverHead(UserIndex, "No tenï¿½s esa cantidad.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
 
             End If
 
@@ -9117,7 +9117,7 @@ Private Sub HandleLeaveFaction(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -9128,7 +9128,7 @@ Private Sub HandleLeaveFaction(ByVal UserIndex As Integer)
             'Dead people can't leave a faction.. they can't talk...
 104         If .flags.Muerto = 1 Then
 106             Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(UserIndex, "ï¿½ï¿½Estï¿½s muerto!!", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
@@ -9167,10 +9167,10 @@ Private Sub HandleLeaveFaction(ByVal UserIndex As Integer)
 130             If .Faccion.ArmadaReal = 1 Then
 132                 If NpcList(.flags.TargetNPC).flags.Faccion = 0 Then
 134                     Call ExpulsarFaccionReal(UserIndex)
-136                     Call WriteChatOverHead(UserIndex, "Serís bienvenido a las fuerzas imperiales si deseas regresar.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+136                     Call WriteChatOverHead(UserIndex, "Serï¿½s bienvenido a las fuerzas imperiales si deseas regresar.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
                         Exit Sub
                     Else
-138                     Call WriteChatOverHead(UserIndex, "¡¡¡Sal de aquí bufón!!!", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+138                     Call WriteChatOverHead(UserIndex, "ï¿½ï¿½ï¿½Sal de aquï¿½ bufï¿½n!!!", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
                    
                     End If
 
@@ -9179,14 +9179,14 @@ Private Sub HandleLeaveFaction(ByVal UserIndex As Integer)
 
 142                 If NpcList(.flags.TargetNPC).flags.Faccion = 1 Then
 144                     Call ExpulsarFaccionCaos(UserIndex)
-146                     Call WriteChatOverHead(UserIndex, "Ya volverís arrastrandote.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+146                     Call WriteChatOverHead(UserIndex, "Ya volverï¿½s arrastrandote.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
                     Else
-148                     Call WriteChatOverHead(UserIndex, "Sal de aquí maldito criminal", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+148                     Call WriteChatOverHead(UserIndex, "Sal de aquï¿½ maldito criminal", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
 
                     End If
 
                 Else
-150                 Call WriteChatOverHead(UserIndex, "¡No perteneces a ninguna facción!", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+150                 Call WriteChatOverHead(UserIndex, "ï¿½No perteneces a ninguna facciï¿½n!", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
 
                 End If
 
@@ -9214,7 +9214,7 @@ Private Sub HandleBankDepositGold(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -9235,14 +9235,14 @@ Private Sub HandleBankDepositGold(ByVal UserIndex As Integer)
             'Dead people can't leave a faction.. they can't talk...
 110         If .flags.Muerto = 1 Then
 112             Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(UserIndex, "ï¿½ï¿½Estï¿½s muerto!!", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
         
             'Validate target NPC
 114         If .flags.TargetNPC = 0 Then
-116             Call WriteConsoleMsg(UserIndex, "Primero tenés que seleccionar un personaje, haz click izquierdo sobre él.", FontTypeNames.FONTTYPE_INFO)
+116             Call WriteConsoleMsg(UserIndex, "Primero tenï¿½s que seleccionar un personaje, haz click izquierdo sobre ï¿½l.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
@@ -9251,7 +9251,7 @@ Private Sub HandleBankDepositGold(ByVal UserIndex As Integer)
         
 118         If Distancia(NpcList(.flags.TargetNPC).Pos, .Pos) > 10 Then
 120             Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(UserIndex, "Estï¿½s demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
@@ -9259,12 +9259,12 @@ Private Sub HandleBankDepositGold(ByVal UserIndex As Integer)
 124         If amount > 0 And amount <= .Stats.GLD Then
 126             .Stats.Banco = .Stats.Banco + amount
 128             .Stats.GLD = .Stats.GLD - amount
-                'Call WriteChatOverHead(UserIndex, "Tenés " & .Stats.Banco & " monedas de oro en tu cuenta.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+                'Call WriteChatOverHead(UserIndex, "Tenï¿½s " & .Stats.Banco & " monedas de oro en tu cuenta.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
             
 130             Call WriteUpdateGold(UserIndex)
 132             Call WriteGoliathInit(UserIndex)
             Else
-134             Call WriteChatOverHead(UserIndex, "No tenés esa cantidad.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+134             Call WriteChatOverHead(UserIndex, "No tenï¿½s esa cantidad.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
 
             End If
 
@@ -9290,7 +9290,7 @@ Private Sub HandleFinEvento(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -9323,7 +9323,7 @@ End Sub ''
 Private Sub HandleGuildMemberList(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -9409,7 +9409,7 @@ End Sub
 Private Sub HandleGMMessage(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 01/08/07
         'Last Modification by: (liquid)
         '***************************************************
@@ -9436,13 +9436,13 @@ Private Sub HandleGMMessage(ByVal UserIndex As Integer)
 110         message = Buffer.ReadASCIIString()
         
 112         If Not .flags.Privilegios And PlayerType.user Then
-114             Call LogGM(.name, "Mensaje a Gms:" & message)
+114             Call LogGM(.Name, "Mensaje a Gms:" & message)
         
 116             If LenB(message) <> 0 Then
                     'Analize chat...
 118                 Call Statistics.ParseChat(message)
             
-120                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.name & "> " & message, FontTypeNames.FONTTYPE_GMMSG))
+120                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & "> " & message, FontTypeNames.FONTTYPE_GMMSG))
 
                 End If
 
@@ -9479,7 +9479,7 @@ Private Sub HandleShowName(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -9516,7 +9516,7 @@ Private Sub HandleOnlineRoyalArmy(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -9535,7 +9535,7 @@ Private Sub HandleOnlineRoyalArmy(ByVal UserIndex As Integer)
 108             If UserList(i).ConnID <> -1 Then
 110                 If UserList(i).Faccion.ArmadaReal = 1 Then
 112                     If UserList(i).flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Or .flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin) Then
-114                         list = list & UserList(i).name & ", "
+114                         list = list & UserList(i).Name & ", "
 
                         End If
 
@@ -9574,7 +9574,7 @@ Private Sub HandleOnlineChaosLegion(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -9593,7 +9593,7 @@ Private Sub HandleOnlineChaosLegion(ByVal UserIndex As Integer)
 108             If UserList(i).ConnID <> -1 Then
 110                 If UserList(i).Faccion.FuerzasCaos = 1 Then
 112                     If UserList(i).flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Or .flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin) Then
-114                         list = list & UserList(i).name & ", "
+114                         list = list & UserList(i).Name & ", "
 
                         End If
 
@@ -9629,7 +9629,7 @@ End Sub
 Private Sub HandleGoNearby(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 01/10/07
         '
         '***************************************************
@@ -9670,7 +9670,7 @@ Private Sub HandleGoNearby(ByVal UserIndex As Integer)
             'Check the user has enough powers
 114         If .flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios) Then
 
-                'Si es dios o Admins no podemos salvo que nosotros tambiín lo seamos
+                'Si es dios o Admins no podemos salvo que nosotros tambiï¿½n lo seamos
 116             If Not (EsDios(UserName) Or EsAdmin(UserName)) Or (.flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin)) Then
 118                 If tIndex <= 0 Then 'existe el usuario destino?
 120                     Call WriteConsoleMsg(UserIndex, "Usuario offline.", FontTypeNames.FONTTYPE_INFO)
@@ -9700,7 +9700,7 @@ Private Sub HandleGoNearby(ByVal UserIndex As Integer)
                     
                         'No space found??
 146                     If Not Found Then
-148                         Call WriteConsoleMsg(UserIndex, "Todos los lugares estín ocupados.", FontTypeNames.FONTTYPE_INFO)
+148                         Call WriteConsoleMsg(UserIndex, "Todos los lugares estï¿½n ocupados.", FontTypeNames.FONTTYPE_INFO)
 
                         End If
 
@@ -9738,7 +9738,7 @@ End Sub
 Private Sub HandleComment(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -9765,7 +9765,7 @@ Private Sub HandleComment(ByVal UserIndex As Integer)
 110         comment = Buffer.ReadASCIIString()
         
 112         If Not .flags.Privilegios And PlayerType.user Then
-114             Call LogGM(.name, "Comentario: " & comment)
+114             Call LogGM(.Name, "Comentario: " & comment)
 116             Call WriteConsoleMsg(UserIndex, "Comentario salvado...", FontTypeNames.FONTTYPE_INFO)
 
             End If
@@ -9801,7 +9801,7 @@ Private Sub HandleServerTime(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 01/08/07
         'Last Modification by: (liquid)
         '***************************************************
@@ -9811,7 +9811,7 @@ Private Sub HandleServerTime(ByVal UserIndex As Integer)
     
 104         If .flags.Privilegios And PlayerType.user Then Exit Sub
     
-106         Call LogGM(.name, "Hora.")
+106         Call LogGM(.Name, "Hora.")
 
         End With
     
@@ -9834,7 +9834,7 @@ End Sub
 Private Sub HandleWhere(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -9870,7 +9870,7 @@ Private Sub HandleWhere(ByVal UserIndex As Integer)
                 Else
 
 120                 If CompararPrivilegios(UserIndex, tUser) >= 0 Then
-122                     Call WriteConsoleMsg(UserIndex, "Ubicación  " & UserName & ": " & UserList(tUser).Pos.Map & ", " & UserList(tUser).Pos.X & ", " & UserList(tUser).Pos.Y & ".", FontTypeNames.FONTTYPE_INFO)
+122                     Call WriteConsoleMsg(UserIndex, "Ubicaciï¿½n  " & UserName & ": " & UserList(tUser).Pos.Map & ", " & UserList(tUser).Pos.X & ", " & UserList(tUser).Pos.Y & ".", FontTypeNames.FONTTYPE_INFO)
 124                     Call LogGM(.name, "/Donde " & UserName)
 
                     End If
@@ -9910,9 +9910,9 @@ Private Sub HandleCreaturesInMap(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 30/07/06
-        'Pablo (ToxicWaste): modificaciones generales para simplificar la visualizaciín.
+        'Pablo (ToxicWaste): modificaciones generales para simplificar la visualizaciï¿½n.
         '***************************************************
 100     If UserList(UserIndex).incomingData.Length < 3 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
@@ -9949,7 +9949,7 @@ Private Sub HandleCreaturesInMap(ByVal UserIndex As Integer)
                     'VB isn't lazzy, so we put more restrictive condition first to speed up the process
 116                 If NpcList(i).Pos.Map = Map Then
 
-                        'íesta vivo?
+                        'ï¿½esta vivo?
 118                     If NpcList(i).flags.NPCActive And NpcList(i).Hostile = 1 Then
 120                         If NPCcount1 = 0 Then
 122                             ReDim List1(0) As String
@@ -10034,7 +10034,7 @@ Private Sub HandleCreaturesInMap(ByVal UserIndex As Integer)
 202             Call WriteConsoleMsg(UserIndex, "Otros Npcs en mapa: ", FontTypeNames.FONTTYPE_WARNING)
 
 204             If NPCcount2 = 0 Then
-206                 Call WriteConsoleMsg(UserIndex, "No más NPCs.", FontTypeNames.FONTTYPE_INFO)
+206                 Call WriteConsoleMsg(UserIndex, "No mï¿½s NPCs.", FontTypeNames.FONTTYPE_INFO)
                 Else
 
 208                 For j = 0 To NPCcount2 - 1
@@ -10043,7 +10043,7 @@ Private Sub HandleCreaturesInMap(ByVal UserIndex As Integer)
 
                 End If
 
-214             Call LogGM(.name, "Numero enemigos en mapa " & Map)
+214             Call LogGM(.Name, "Numero enemigos en mapa " & Map)
 
             End If
 
@@ -10069,7 +10069,7 @@ Private Sub HandleWarpMeToTarget(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -10101,7 +10101,7 @@ End Sub
 Private Sub HandleWarpChar(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -10138,7 +10138,7 @@ Private Sub HandleWarpChar(ByVal UserIndex As Integer)
             
 120         If Not EsGM(UserIndex) Then Exit Sub
             
-            '¿Para que te vas a transportar a la misma posicion?
+            'ï¿½Para que te vas a transportar a la misma posicion?
 122         If .Pos.Map = Map And .Pos.X = X And .Pos.Y = Y Then Exit Sub
             
 124         If MapaValido(Map) And LenB(UserName) <> 0 Then
@@ -10162,7 +10162,7 @@ Private Sub HandleWarpChar(ByVal UserIndex As Integer)
 142                 Call WarpUserChar(tUser, Map, X, Y, True)
 
 144                 If tUser <> UserIndex Then
-146                     Call LogGM(.name, "Transportó a " & UserList(tUser).name & " hacia " & "Mapa" & Map & " X:" & X & " Y:" & Y)
+146                     Call LogGM(.Name, "Transportï¿½ a " & UserList(tUser).Name & " hacia " & "Mapa" & Map & " X:" & X & " Y:" & Y)
                     End If
                         
                 End If
@@ -10195,7 +10195,7 @@ End Sub
 Private Sub HandleSilence(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -10233,15 +10233,15 @@ Private Sub HandleSilence(ByVal UserIndex As Integer)
 120                 If UserList(tUser).flags.Silenciado = 0 Then
 122                     UserList(tUser).flags.Silenciado = 1
 124                     Call WriteConsoleMsg(UserIndex, "Usuario silenciado.", FontTypeNames.FONTTYPE_INFO)
-126                     Call WriteShowMessageBox(tUser, "ESTIMADO USUARIO, ud ha sido silenciado por los administradores. Sus denuncias serán ignoradas por el servidor de aquí en mís. Utilice /GM para contactar un administrador.")
-128                     Call LogGM(.name, "/silenciar " & UserList(tUser).name)
+126                     Call WriteShowMessageBox(tUser, "ESTIMADO USUARIO, ud ha sido silenciado por los administradores. Sus denuncias serï¿½n ignoradas por el servidor de aquï¿½ en mï¿½s. Utilice /GM para contactar un administrador.")
+128                     Call LogGM(.Name, "/silenciar " & UserList(tUser).Name)
                 
                         'Flush the other user's buffer
                     
                     Else
 130                     UserList(tUser).flags.Silenciado = 0
 132                     Call WriteConsoleMsg(UserIndex, "Usuario des silenciado.", FontTypeNames.FONTTYPE_INFO)
-134                     Call LogGM(.name, "/DESsilenciar " & UserList(tUser).name)
+134                     Call LogGM(.Name, "/DESsilenciar " & UserList(tUser).Name)
 
                     End If
 
@@ -10280,7 +10280,7 @@ Private Sub HandleSOSShowList(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -10310,7 +10310,7 @@ End Sub
 Private Sub HandleSOSRemove(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -10366,7 +10366,7 @@ End Sub
 Private Sub HandleGoToChar(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -10406,7 +10406,7 @@ Private Sub HandleGoToChar(ByVal UserIndex As Integer)
 118                 tUser = NameIndex(UserName)
                     
 120                 If tUser <= 0 Then
-122                     Call WriteConsoleMsg(UserIndex, "El jugador no está online.", FontTypeNames.FONTTYPE_INFO)
+122                     Call WriteConsoleMsg(UserIndex, "El jugador no estï¿½ online.", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                 Else
@@ -10416,8 +10416,8 @@ Private Sub HandleGoToChar(ByVal UserIndex As Integer)
                 End If
       
 128             If CompararPrivilegios(tUser, UserIndex) > 0 Then
-130                 Call WriteConsoleMsg(UserIndex, "Se le ha avisado a " & UserList(tUser).name & " que quieres ir a su posición.", FontTypeNames.FONTTYPE_INFO)
-132                 Call WriteConsoleMsg(tUser, .name & " quiere transportarse a tu ubicación. Escribe /sum " & .name & " para traerlo.", FontTypeNames.FONTTYPE_INFO)
+130                 Call WriteConsoleMsg(UserIndex, "Se le ha avisado a " & UserList(tUser).Name & " que quieres ir a su posiciï¿½n.", FontTypeNames.FONTTYPE_INFO)
+132                 Call WriteConsoleMsg(tUser, .Name & " quiere transportarse a tu ubicaciï¿½n. Escribe /sum " & .Name & " para traerlo.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
 
@@ -10429,10 +10429,10 @@ Private Sub HandleGoToChar(ByVal UserIndex As Integer)
 140             Call WarpUserChar(UserIndex, UserList(tUser).Pos.Map, X, Y, True)
                     
 142             If .flags.AdminInvisible = 0 Then
-144                 Call WriteConsoleMsg(tUser, .name & " se ha trasportado hacia donde te encuentras.", FontTypeNames.FONTTYPE_INFO)
+144                 Call WriteConsoleMsg(tUser, .Name & " se ha trasportado hacia donde te encuentras.", FontTypeNames.FONTTYPE_INFO)
                 End If
                 
-146             Call WriteConsoleMsg(UserIndex, "Te has transportado hacia " & UserList(tUser).name & ".", FontTypeNames.FONTTYPE_INFO)
+146             Call WriteConsoleMsg(UserIndex, "Te has transportado hacia " & UserList(tUser).Name & ".", FontTypeNames.FONTTYPE_INFO)
                     
 148             Call LogGM(.name, "/IRA " & UserName & " Mapa:" & UserList(tUser).Pos.Map & " X:" & UserList(tUser).Pos.X & " Y:" & UserList(tUser).Pos.Y)
 
@@ -10519,7 +10519,7 @@ Private Sub HandleDesbuggear(ByVal UserIndex As Integer)
 
                             End If
     
-150                         Call LogGM(.name, "/DESBUGGEAR " & UserName)
+150                         Call LogGM(.Name, "/DESBUGGEAR " & UserName)
                         Else
 152                         Call WriteConsoleMsg(UserIndex, "El usuario no existe.", FontTypeNames.FONTTYPE_INFO)
 
@@ -10594,15 +10594,15 @@ Private Sub HandleDarLlaveAUsuario(ByVal UserIndex As Integer)
         
             ' Solo dios o admin
 114         If .flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin) Then
-                ' Me aseguro que esté activada la db
+                ' Me aseguro que estï¿½ activada la db
 116             If Not Database_Enabled Then
-118                 Call WriteConsoleMsg(UserIndex, "Es necesario que el juego esté corriendo con base de datos.", FontTypeNames.FONTTYPE_INFO)
+118                 Call WriteConsoleMsg(UserIndex, "Es necesario que el juego estï¿½ corriendo con base de datos.", FontTypeNames.FONTTYPE_INFO)
             
-                ' Me aseguro que el objeto sea una llave válida
+                ' Me aseguro que el objeto sea una llave vï¿½lida
 120             ElseIf Llave < 1 Or Llave > NumObjDatas Then
-122                 Call WriteConsoleMsg(UserIndex, "El número ingresado no es el de una llave válida.", FontTypeNames.FONTTYPE_INFO)
+122                 Call WriteConsoleMsg(UserIndex, "El nï¿½mero ingresado no es el de una llave vï¿½lida.", FontTypeNames.FONTTYPE_INFO)
 124             ElseIf ObjData(Llave).OBJType <> eOBJType.otLlaves Then ' vb6 no tiene short-circuit evaluation :(
-126                 Call WriteConsoleMsg(UserIndex, "El número ingresado no es el de una llave válida.", FontTypeNames.FONTTYPE_INFO)
+126                 Call WriteConsoleMsg(UserIndex, "El nï¿½mero ingresado no es el de una llave vï¿½lida.", FontTypeNames.FONTTYPE_INFO)
                 Else
 128                 tUser = NameIndex(UserName)
                 
@@ -10611,29 +10611,29 @@ Private Sub HandleDarLlaveAUsuario(ByVal UserIndex As Integer)
 132                     If DarLlaveAUsuarioDatabase(UserName, Llave) Then
                             ' Actualizamos su llavero
 134                         If MeterLlaveEnLLavero(tUser, Llave) Then
-136                             Call WriteConsoleMsg(UserIndex, "Llave número " & Llave & " entregada a " & UserList(tUser).name & ".", FontTypeNames.FONTTYPE_INFO)
+136                             Call WriteConsoleMsg(UserIndex, "Llave nï¿½mero " & Llave & " entregada a " & UserList(tUser).Name & ".", FontTypeNames.FONTTYPE_INFO)
                             Else
-138                             Call WriteConsoleMsg(UserIndex, "No se pudo entregar la llave. El usuario no tiene más espacio en su llavero.", FontTypeNames.FONTTYPE_INFO)
+138                             Call WriteConsoleMsg(UserIndex, "No se pudo entregar la llave. El usuario no tiene mï¿½s espacio en su llavero.", FontTypeNames.FONTTYPE_INFO)
                             End If
                         Else
-140                         Call WriteConsoleMsg(UserIndex, "No se pudo entregar la llave. Asegúrese de que la llave esté disponible.", FontTypeNames.FONTTYPE_INFO)
+140                         Call WriteConsoleMsg(UserIndex, "No se pudo entregar la llave. Asegï¿½rese de que la llave estï¿½ disponible.", FontTypeNames.FONTTYPE_INFO)
                         End If
                     Else
                         ' No es un usuario online, nos fijamos si es un email
 142                     If CheckMailString(UserName) Then
                             ' Es un email, intentamos guardarlo en la db
 144                         If DarLlaveACuentaDatabase(UserName, Llave) Then
-146                             Call WriteConsoleMsg(UserIndex, "Llave número " & Llave & " entregada a " & LCase$(UserName) & ".", FontTypeNames.FONTTYPE_INFO)
+146                             Call WriteConsoleMsg(UserIndex, "Llave nï¿½mero " & Llave & " entregada a " & LCase$(UserName) & ".", FontTypeNames.FONTTYPE_INFO)
                             Else
-148                             Call WriteConsoleMsg(UserIndex, "No se pudo entregar la llave. Asegúrese de que la llave esté disponible y que el email sea correcto.", FontTypeNames.FONTTYPE_INFO)
+148                             Call WriteConsoleMsg(UserIndex, "No se pudo entregar la llave. Asegï¿½rese de que la llave estï¿½ disponible y que el email sea correcto.", FontTypeNames.FONTTYPE_INFO)
                             End If
                         Else
-150                         Call WriteConsoleMsg(UserIndex, "El usuario no está online. Ingrese el email de la cuenta para otorgar la llave offline.", FontTypeNames.FONTTYPE_INFO)
+150                         Call WriteConsoleMsg(UserIndex, "El usuario no estï¿½ online. Ingrese el email de la cuenta para otorgar la llave offline.", FontTypeNames.FONTTYPE_INFO)
                         End If
     
                     End If
                 
-152                 Call LogGM(.name, "/DARLLAVE " & UserName & " " & Llave)
+152                 Call LogGM(.Name, "/DARLLAVE " & UserName & " " & Llave)
                 End If
             End If
         
@@ -10680,19 +10680,19 @@ Private Sub HandleSacarLlave(ByVal UserIndex As Integer)
         
             ' Solo dios o admin
 110         If .flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin) Then
-                ' Me aseguro que esté activada la db
+                ' Me aseguro que estï¿½ activada la db
 112             If Not Database_Enabled Then
-114                 Call WriteConsoleMsg(UserIndex, "Es necesario que el juego esté corriendo con base de datos.", FontTypeNames.FONTTYPE_INFO)
+114                 Call WriteConsoleMsg(UserIndex, "Es necesario que el juego estï¿½ corriendo con base de datos.", FontTypeNames.FONTTYPE_INFO)
 
                 Else
                     ' Intento borrarla de la db
 116                 If SacarLlaveDatabase(Llave) Then
 118                     Call WriteConsoleMsg(UserIndex, "La llave " & Llave & " fue removida.", FontTypeNames.FONTTYPE_INFO)
                     Else
-120                     Call WriteConsoleMsg(UserIndex, "No se pudo sacar la llave. Asegúrese de que esté en uso.", FontTypeNames.FONTTYPE_INFO)
+120                     Call WriteConsoleMsg(UserIndex, "No se pudo sacar la llave. Asegï¿½rese de que estï¿½ en uso.", FontTypeNames.FONTTYPE_INFO)
                     End If
 
-122                 Call LogGM(.name, "/SACARLLAVE " & Llave)
+122                 Call LogGM(.Name, "/SACARLLAVE " & Llave)
                 End If
             End If
 
@@ -10717,11 +10717,11 @@ Private Sub HandleVerLlaves(ByVal UserIndex As Integer)
     
 102         Call .incomingData.ReadByte
 
-            ' Sólo GMs
+            ' Sï¿½lo GMs
 104         If Not (.flags.Privilegios And PlayerType.user) Then
-                ' Me aseguro que esté activada la db
+                ' Me aseguro que estï¿½ activada la db
 106             If Not Database_Enabled Then
-108                 Call WriteConsoleMsg(UserIndex, "Es necesario que el juego esté corriendo con base de datos.", FontTypeNames.FONTTYPE_INFO)
+108                 Call WriteConsoleMsg(UserIndex, "Es necesario que el juego estï¿½ corriendo con base de datos.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
             
@@ -10782,7 +10782,7 @@ Private Sub HandleInvisible(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -10816,7 +10816,7 @@ Private Sub HandleGMPanel(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -10850,7 +10850,7 @@ Private Sub HandleRequestUserList(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 01/09/07
         'Last modified by: Lucas Tavolaro Ortiz (Tavo)
         'I haven`t found a solution to split, so i make an array of names
@@ -10872,9 +10872,9 @@ Private Sub HandleRequestUserList(ByVal UserIndex As Integer)
         
 110         For i = 1 To LastUser
 
-112             If (LenB(UserList(i).name) <> 0) Then
+112             If (LenB(UserList(i).Name) <> 0) Then
                 
-114                 names(Count) = UserList(i).name
+114                 names(Count) = UserList(i).Name
 116                 Count = Count + 1
  
                 End If
@@ -10905,7 +10905,7 @@ Private Sub HandleWorking(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -10922,7 +10922,7 @@ Private Sub HandleWorking(ByVal UserIndex As Integer)
 106         For i = 1 To LastUser
 
 108             If UserList(i).flags.UserLogged And UserList(i).Counters.Trabajando > 0 Then
-110                 Users = Users & ", " & UserList(i).name
+110                 Users = Users & ", " & UserList(i).Name
                 
                     ' Display the user being checked by the centinel
 112                 If modCentinela.Centinela.RevisandoUserIndex = i Then Users = Users & " (*)"
@@ -10961,7 +10961,7 @@ Private Sub HandleHiding(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -10977,8 +10977,8 @@ Private Sub HandleHiding(ByVal UserIndex As Integer)
         
 106         For i = 1 To LastUser
 
-108             If (LenB(UserList(i).name) <> 0) And UserList(i).Counters.Ocultando > 0 Then
-110                 Users = Users & UserList(i).name & ", "
+108             If (LenB(UserList(i).Name) <> 0) And UserList(i).Counters.Ocultando > 0 Then
+110                 Users = Users & UserList(i).Name & ", "
 
                 End If
 
@@ -11011,7 +11011,7 @@ End Sub
 Private Sub HandleJail(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -11060,14 +11060,14 @@ Private Sub HandleJail(ByVal UserIndex As Integer)
 126                 tUser = NameIndex(UserName)
                 
 128                 If tUser <= 0 Then
-130                     Call WriteConsoleMsg(UserIndex, "El usuario no está online.", FontTypeNames.FONTTYPE_INFO)
+130                     Call WriteConsoleMsg(UserIndex, "El usuario no estï¿½ online.", FontTypeNames.FONTTYPE_INFO)
                     Else
 
 132                     If EsGM(tUser) Then
-134                         Call WriteConsoleMsg(UserIndex, "No podés encarcelar a administradores.", FontTypeNames.FONTTYPE_INFO)
+134                         Call WriteConsoleMsg(UserIndex, "No podï¿½s encarcelar a administradores.", FontTypeNames.FONTTYPE_INFO)
                     
 136                     ElseIf jailTime > 60 Then
-138                         Call WriteConsoleMsg(UserIndex, "No podés encarcelar por más de 60 minutos.", FontTypeNames.FONTTYPE_INFO)
+138                         Call WriteConsoleMsg(UserIndex, "No podï¿½s encarcelar por mï¿½s de 60 minutos.", FontTypeNames.FONTTYPE_INFO)
                         Else
 
 140                         If (InStrB(UserName, "\") <> 0) Then
@@ -11082,18 +11082,18 @@ Private Sub HandleJail(ByVal UserIndex As Integer)
                         
 148                         If PersonajeExiste(UserName) Then
 150                             If Database_Enabled Then
-152                                 Call SavePenaDatabase(UserName, .name & ": CARCEL " & jailTime & "m, MOTIVO: " & Reason & " " & Date & " " & Time)
+152                                 Call SavePenaDatabase(UserName, .Name & ": CARCEL " & jailTime & "m, MOTIVO: " & Reason & " " & Date & " " & Time)
                                 Else
 154                                 Count = val(GetVar(CharPath & UserName & ".chr", "PENAS", "Cant"))
 156                                 Call WriteVar(CharPath & UserName & ".chr", "PENAS", "Cant", Count + 1)
-158                                 Call WriteVar(CharPath & UserName & ".chr", "PENAS", "P" & Count + 1, LCase$(.name) & ": CARCEL " & jailTime & "m, MOTIVO: " & LCase$(Reason) & " " & Date & " " & Time)
+158                                 Call WriteVar(CharPath & UserName & ".chr", "PENAS", "P" & Count + 1, LCase$(.Name) & ": CARCEL " & jailTime & "m, MOTIVO: " & LCase$(Reason) & " " & Date & " " & Time)
 
                                 End If
 
                             End If
                         
-160                         Call Encarcelar(tUser, jailTime, .name)
-162                         Call LogGM(.name, " encarceló a " & UserName)
+160                         Call Encarcelar(tUser, jailTime, .Name)
+162                         Call LogGM(.Name, " encarcelï¿½ a " & UserName)
 
                         End If
 
@@ -11133,7 +11133,7 @@ Private Sub HandleKillNPC(ByVal UserIndex As Integer)
         On Error GoTo HandleKillNPC_Err
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
@@ -11161,7 +11161,7 @@ Private Sub HandleKillNPC(ByVal UserIndex As Integer)
         
 114         If tNPC > 0 Then
 
-116             Call WriteConsoleMsg(UserIndex, "RMatas (con posible respawn) a: " & NpcList(tNPC).name, FontTypeNames.FONTTYPE_INFO)
+116             Call WriteConsoleMsg(UserIndex, "RMatas (con posible respawn) a: " & NpcList(tNPC).Name, FontTypeNames.FONTTYPE_INFO)
             
 118             Dim auxNPC As npc: auxNPC = NpcList(tNPC)
             
@@ -11229,7 +11229,7 @@ Private Sub HandleWarnUser(ByVal UserIndex As Integer)
         
             ' Me fijo que esten todos los parametros.
 118         If Len(UserName) = 0 Or Len(Trim$(Reason)) = 0 Then
-120             Call WriteConsoleMsg(UserIndex, "Formato inválido. /advertencia nick@motivo", FontTypeNames.FONTTYPE_INFO)
+120             Call WriteConsoleMsg(UserIndex, "Formato invï¿½lido. /advertencia nick@motivo", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
@@ -11256,7 +11256,7 @@ Private Sub HandleWarnUser(ByVal UserIndex As Integer)
 136         If PersonajeExiste(UserName) Then
 
 138             If Database_Enabled Then
-140                 Call SaveWarnDatabase(UserName, "ADVERTENCIA: " & Reason & " " & Date & " " & Time, .name)
+140                 Call SaveWarnDatabase(UserName, "ADVERTENCIA: " & Reason & " " & Date & " " & Time, .Name)
  
                 Else
                 
@@ -11264,14 +11264,14 @@ Private Sub HandleWarnUser(ByVal UserIndex As Integer)
 142                     Count = val(GetVar(CharPath & UserName & ".chr", "PENAS", "Cant"))
                 
 144                 Call WriteVar(CharPath & UserName & ".chr", "PENAS", "Cant", Count + 1)
-146                 Call WriteVar(CharPath & UserName & ".chr", "PENAS", "P" & Count + 1, LCase$(.name) & ": ADVERTENCIA por: " & LCase$(Reason) & " " & Date & " " & Time)
+146                 Call WriteVar(CharPath & UserName & ".chr", "PENAS", "P" & Count + 1, LCase$(.Name) & ": ADVERTENCIA por: " & LCase$(Reason) & " " & Date & " " & Time)
 
                 End If
             
                 ' Para el GM
 148             Call WriteConsoleMsg(UserIndex, "Has advertido a " & UserName, FontTypeNames.FONTTYPE_CENTINELA)
-150             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.name & " ha advertido a " & UserName & " por " & Reason, FontTypeNames.FONTTYPE_GM))
-152             Call LogGM(.name, " advirtio a " & UserName & " por " & Reason)
+150             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " ha advertido a " & UserName & " por " & Reason, FontTypeNames.FONTTYPE_GM))
+152             Call LogGM(.Name, " advirtio a " & UserName & " por " & Reason)
 
                 ' Si esta online...
 154             If tUser >= 0 Then
@@ -11280,7 +11280,7 @@ Private Sub HandleWarnUser(ByVal UserIndex As Integer)
                 
                     ' Para el usuario advertido
 158                 Call WriteConsoleMsg(tUser, "Has sido advertido por " & Reason, FontTypeNames.FONTTYPE_CENTINELA)
-160                 Call WriteConsoleMsg(tUser, "Tenés " & UserList(tUser).Stats.Advertencias & " advertencias actualmente.", FontTypeNames.FONTTYPE_CENTINELA)
+160                 Call WriteConsoleMsg(tUser, "Tenï¿½s " & UserList(tUser).Stats.Advertencias & " advertencias actualmente.", FontTypeNames.FONTTYPE_CENTINELA)
                 
                     ' Cuando acumulas cierta cantidad de advertencias...
 162                 Select Case UserList(tUser).Stats.Advertencias
@@ -11548,7 +11548,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 154                         Call WriteUpdateExp(tUser)
                             
                         Else
-156                         Call WriteConsoleMsg(UserIndex, "El usuario es nivel máximo.", FontTypeNames.FONTTYPE_INFO)
+156                         Call WriteConsoleMsg(UserIndex, "El usuario es nivel mï¿½ximo.", FontTypeNames.FONTTYPE_INFO)
 
                         End If
 
@@ -11698,7 +11698,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 
 260                     If val(Arg1) > STAT_MAXELV Then
 262                         Arg1 = CStr(STAT_MAXELV)
-264                         Call WriteConsoleMsg(UserIndex, "No podés tener un nivel superior a " & STAT_MAXELV & ".", FONTTYPE_INFO)
+264                         Call WriteConsoleMsg(UserIndex, "No podï¿½s tener un nivel superior a " & STAT_MAXELV & ".", FONTTYPE_INFO)
 
                         End If
                         
@@ -11940,7 +11940,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 496                     UserList(tUser).Desc = Arg1
                         
                     Else
-498                     Call WriteConsoleMsg(UserIndex, "Caracteres inválidos en la descripción.", FontTypeNames.FONTTYPE_INFO)
+498                     Call WriteConsoleMsg(UserIndex, "Caracteres invï¿½lidos en la descripciï¿½n.", FontTypeNames.FONTTYPE_INFO)
                     End If
                     
 500             Case eEditOptions.eo_Intervalo
@@ -12114,7 +12114,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
         
 708         commandString = commandString & Arg1 & " " & Arg2
         
-710         Call LogGM(.name, commandString & " " & UserName)
+710         Call LogGM(.Name, commandString & " " & UserName)
 
         End With
 
@@ -12165,15 +12165,15 @@ Private Sub HandleRequestCharInfo(ByVal UserIndex As Integer)
                 
             Dim targetName  As String
 
-            Dim targetIndex As Integer
+            Dim TargetIndex As Integer
         
 110         targetName = Replace$(Buffer.ReadASCIIString(), "+", " ")
-112         targetIndex = NameIndex(targetName)
+112         TargetIndex = NameIndex(targetName)
         
 114         If .flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios) Then
 
                 'is the player offline?
-116             If targetIndex <= 0 Then
+116             If TargetIndex <= 0 Then
 
                     'don't allow to retrieve administrator's info
 118                 If Not (EsDios(targetName) Or EsAdmin(targetName)) Then
@@ -12185,8 +12185,8 @@ Private Sub HandleRequestCharInfo(ByVal UserIndex As Integer)
                 Else
 
                     'don't allow to retrieve administrator's info
-124                 If UserList(targetIndex).flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then
-126                     Call SendUserStatsTxt(UserIndex, targetIndex)
+124                 If UserList(TargetIndex).flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then
+126                     Call SendUserStatsTxt(UserIndex, TargetIndex)
 
                     End If
 
@@ -12251,7 +12251,7 @@ Private Sub HandleRequestCharStats(ByVal UserIndex As Integer)
 110         UserName = Buffer.ReadASCIIString()
         
 112         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) <> 0 Then
-114             Call LogGM(.name, "/STAT " & UserName)
+114             Call LogGM(.Name, "/STAT " & UserName)
             
 116             tUser = NameIndex(UserName)
             
@@ -12324,7 +12324,7 @@ Private Sub HandleRequestCharGold(ByVal UserIndex As Integer)
 112         tUser = NameIndex(UserName)
         
 114         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
-116             Call LogGM(.name, "/BAL " & UserName)
+116             Call LogGM(.Name, "/BAL " & UserName)
             
 118             If tUser <= 0 Then
 120                 Call WriteConsoleMsg(UserIndex, "Usuario offline. Leyendo charfile... ", FontTypeNames.FONTTYPE_TALK)
@@ -12395,7 +12395,7 @@ Private Sub HandleRequestCharInventory(ByVal UserIndex As Integer)
 112         tUser = NameIndex(UserName)
         
 114         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
-116             Call LogGM(.name, "/INV " & UserName)
+116             Call LogGM(.Name, "/INV " & UserName)
             
 118             If tUser <= 0 Then
 120                 Call WriteConsoleMsg(UserIndex, "Usuario offline. Leyendo del charfile...", FontTypeNames.FONTTYPE_TALK)
@@ -12466,7 +12466,7 @@ Private Sub HandleRequestCharBank(ByVal UserIndex As Integer)
 112         tUser = NameIndex(UserName)
         
 114         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
-116             Call LogGM(.name, "/BOV " & UserName)
+116             Call LogGM(.Name, "/BOV " & UserName)
             
 118             If tUser <= 0 Then
 120                 Call WriteConsoleMsg(UserIndex, "Usuario offline. Leyendo charfile... ", FontTypeNames.FONTTYPE_TALK)
@@ -12541,7 +12541,7 @@ Private Sub HandleRequestCharSkills(ByVal UserIndex As Integer)
 112         tUser = NameIndex(UserName)
         
 114         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
-116             Call LogGM(.name, "/STATS " & UserName)
+116             Call LogGM(.Name, "/STATS " & UserName)
             
 118             If tUser <= 0 Then
 120                 If (InStrB(UserName, "\") <> 0) Then
@@ -12647,9 +12647,9 @@ Private Sub HandleReviveChar(ByVal UserIndex As Integer)
                             'Call ChangeUserChar(tUser, .Char.body, .OrigChar.Head, .Char.heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
 130                         Call RevivirUsuario(tUser)
                         
-132                         Call WriteConsoleMsg(tUser, UserList(UserIndex).name & " te ha resucitado.", FontTypeNames.FONTTYPE_INFO)
+132                         Call WriteConsoleMsg(tUser, UserList(UserIndex).Name & " te ha resucitado.", FontTypeNames.FONTTYPE_INFO)
                         Else
-134                         Call WriteConsoleMsg(tUser, UserList(UserIndex).name & " te ha curado.", FontTypeNames.FONTTYPE_INFO)
+134                         Call WriteConsoleMsg(tUser, UserList(UserIndex).Name & " te ha curado.", FontTypeNames.FONTTYPE_INFO)
 
                         End If
                     
@@ -12660,7 +12660,7 @@ Private Sub HandleReviveChar(ByVal UserIndex As Integer)
                     ' Call WriteHora(tUser)
 138                 Call WriteUpdateHP(tUser)
                     Call ActualizarVelocidadDeUsuario(tUser)
-144                 Call LogGM(.name, "Resucito a " & UserName)
+144                 Call LogGM(.Name, "Resucito a " & UserName)
 
                 End If
 
@@ -12720,7 +12720,7 @@ Private Sub HandleOnlineGM(ByVal UserIndex As Integer)
 110         For i = 1 To LastUser
 
 112             If UserList(i).flags.UserLogged Then
-114                 If UserList(i).flags.Privilegios And priv Then list = list & UserList(i).name & ", "
+114                 If UserList(i).flags.Privilegios And priv Then list = list & UserList(i).Name & ", "
 
                 End If
 
@@ -12821,7 +12821,7 @@ Private Sub HandleForgive(ByVal UserIndex As Integer)
         
             'Se asegura que el target es un npc
 104         If .flags.TargetNPC = 0 Then
-106             Call WriteConsoleMsg(UserIndex, "Primero tenés que seleccionar al sacerdote.", FontTypeNames.FONTTYPE_INFO)
+106             Call WriteConsoleMsg(UserIndex, "Primero tenï¿½s que seleccionar al sacerdote.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
@@ -12835,7 +12835,7 @@ Private Sub HandleForgive(ByVal UserIndex As Integer)
             'Make sure it's close enough
 110         If Distancia(.Pos, priest.Pos) > 3 Then
                 'Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-112             Call WriteConsoleMsg(UserIndex, "El sacerdote no puede escuchar tus pecados debido a que estás demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
+112             Call WriteConsoleMsg(UserIndex, "El sacerdote no puede escuchar tus pecados debido a que estï¿½s demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         
@@ -12846,7 +12846,7 @@ Private Sub HandleForgive(ByVal UserIndex As Integer)
             End If
         
 118         If .Faccion.FuerzasCaos > 0 Then
-120             Call WriteChatOverHead(UserIndex, "¡¡Dios no te perdonará mientras seas fiel al Demonio!!", priest.Char.CharIndex, vbWhite)
+120             Call WriteChatOverHead(UserIndex, "ï¿½ï¿½Dios no te perdonarï¿½ mientras seas fiel al Demonio!!", priest.Char.CharIndex, vbWhite)
                 Exit Sub
             End If
 
@@ -12864,11 +12864,11 @@ Private Sub HandleForgive(ByVal UserIndex As Integer)
                 Donacion = .Faccion.ciudadanosMatados * OroMult * CostoPerdonPorCiudadano
 
                 Call WriteChatOverHead(UserIndex, "Has matado a ciudadanos inocentes, Dios no puede perdonarte lo que has hecho. " & _
-                        "Pero si haces una generosa donación de, digamos, " & PonerPuntos(Donacion) & " monedas de oro, tal vez cambie de opinión...", priest.Char.CharIndex, vbWhite)
+                        "Pero si haces una generosa donaciï¿½n de, digamos, " & PonerPuntos(Donacion) & " monedas de oro, tal vez cambie de opiniï¿½n...", priest.Char.CharIndex, vbWhite)
                 Exit Sub
             End If
 
-136         Call WriteChatOverHead(UserIndex, "Con estas palabras, te libero de todo tipo de pecados. ¡Que Dios te acompañe hijo mío!", priest.Char.CharIndex, vbYellow)
+136         Call WriteChatOverHead(UserIndex, "Con estas palabras, te libero de todo tipo de pecados. ï¿½Que Dios te acompaï¿½e hijo mï¿½o!", priest.Char.CharIndex, vbYellow)
 
 138         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, "80", 100, False))
 140         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("100", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
@@ -12935,9 +12935,9 @@ Private Sub HandleKick(ByVal UserIndex As Integer)
 122                 If (UserList(tUser).flags.Privilegios And rank) > (.flags.Privilegios And rank) Then
 124                     Call WriteConsoleMsg(UserIndex, "No podes echar a alguien con jerarquia mayor a la tuya.", FontTypeNames.FONTTYPE_INFO)
                     Else
-126                     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.name & " echo a " & UserName & ".", FontTypeNames.FONTTYPE_INFO))
+126                     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " echo a " & UserName & ".", FontTypeNames.FONTTYPE_INFO))
 128                     Call CloseSocket(tUser)
-130                     Call LogGM(.name, "Echo a " & UserName)
+130                     Call LogGM(.Name, "Echo a " & UserName)
 
                     End If
 
@@ -13006,14 +13006,14 @@ Private Sub HandleExecute(ByVal UserIndex As Integer)
             
 116             If tUser > 0 Then
                     'If Not UserList(tUser).flags.Privilegios And PlayerType.User Then
-                    'Call WriteConsoleMsg(UserIndex, "Estís loco?? como vas a piíatear un gm!!!! :@", FontTypeNames.FONTTYPE_INFO)
+                    'Call WriteConsoleMsg(UserIndex, "Estï¿½s loco?? como vas a piï¿½atear un gm!!!! :@", FontTypeNames.FONTTYPE_INFO)
                     'Else
 118                 Call UserDie(tUser)
-120                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.name & " ha ejecutado a " & UserList(tUser).name, FontTypeNames.FONTTYPE_EJECUCION))
-122                 Call LogGM(.name, " ejecuto a " & UserName)
+120                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " ha ejecutado a " & UserList(tUser).Name, FontTypeNames.FONTTYPE_EJECUCION))
+122                 Call LogGM(.Name, " ejecuto a " & UserName)
                     'End If
                 Else
-124                 Call WriteConsoleMsg(UserIndex, "No está online", FontTypeNames.FONTTYPE_INFO)
+124                 Call WriteConsoleMsg(UserIndex, "No estï¿½ online", FontTypeNames.FONTTYPE_INFO)
 
                 End If
 
@@ -13077,7 +13077,7 @@ Private Sub HandleBanChar(ByVal UserIndex As Integer)
 112         Reason = Buffer.ReadASCIIString()
         
 114         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) <> 0 Then
-116             Call BanCharacter(UserIndex, UserName, Reason)
+116             Call BanPJ(UserIndex, UserName, Reason)
 
             End If
         
@@ -13207,7 +13207,7 @@ Private Sub HandleUnbanChar(ByVal UserIndex As Integer)
 128                     Call UnBan(UserName)
                     
 130                     If Database_Enabled Then
-132                         Call SavePenaDatabase(UserName, .name & ": UNBAN. " & Date & " " & Time)
+132                         Call SavePenaDatabase(UserName, .Name & ": UNBAN. " & Date & " " & Time)
                         Else
 
                             'penas
@@ -13215,11 +13215,11 @@ Private Sub HandleUnbanChar(ByVal UserIndex As Integer)
 
 134                         cantPenas = val(GetVar(CharPath & UserName & ".chr", "PENAS", "Cant"))
 136                         Call WriteVar(CharPath & UserName & ".chr", "PENAS", "Cant", cantPenas + 1)
-138                         Call WriteVar(CharPath & UserName & ".chr", "PENAS", "P" & cantPenas + 1, .name & ": UNBAN. " & Date & " " & Time)
+138                         Call WriteVar(CharPath & UserName & ".chr", "PENAS", "P" & cantPenas + 1, .Name & ": UNBAN. " & Date & " " & Time)
 
                         End If
 
-140                     Call LogGM(.name, "/UNBAN a " & UserName)
+140                     Call LogGM(.Name, "/UNBAN a " & UserName)
 142                     Call WriteConsoleMsg(UserIndex, UserName & " desbaneado.", FontTypeNames.FONTTYPE_INFO)
                     Else
 144                     Call WriteConsoleMsg(UserIndex, UserName & " no esta baneado. Imposible unbanear", FontTypeNames.FONTTYPE_INFO)
@@ -13272,7 +13272,7 @@ Private Sub HandleNPCFollow(ByVal UserIndex As Integer)
 104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then Exit Sub
         
 106         If .flags.TargetNPC > 0 Then
-108             Call DoFollow(.flags.TargetNPC, .name)
+108             Call DoFollow(.flags.TargetNPC, .Name)
 110             NpcList(.flags.TargetNPC).flags.Inmovilizado = 0
 112             NpcList(.flags.TargetNPC).flags.Paralizado = 0
 114             NpcList(.flags.TargetNPC).Contadores.Paralisis = 0
@@ -13332,7 +13332,7 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
 118                 tUser = NameIndex(UserName)
 
 120                 If tUser <= 0 Then
-122                     Call WriteConsoleMsg(UserIndex, "El jugador no está online.", FontTypeNames.FONTTYPE_INFO)
+122                     Call WriteConsoleMsg(UserIndex, "El jugador no estï¿½ online.", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                 
@@ -13345,7 +13345,7 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
 132                     Call WarpNpcChar(.flags.TargetNPC, .Pos.Map, .Pos.X, .Pos.Y + 1, True)
 134                     Call WriteConsoleMsg(UserIndex, "Has desplazado a la criatura.", FontTypeNames.FONTTYPE_INFO)
                     Else
-136                     Call WriteConsoleMsg(UserIndex, "Sólo puedes mover NPCs dentro del mismo mapa.", FontTypeNames.FONTTYPE_INFO)
+136                     Call WriteConsoleMsg(UserIndex, "Sï¿½lo puedes mover NPCs dentro del mismo mapa.", FontTypeNames.FONTTYPE_INFO)
                     End If
                     Exit Sub
 
@@ -13354,27 +13354,27 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
                 End If
 
 138             If CompararPrivilegios(tUser, UserIndex) > 0 Then
-140                 Call WriteConsoleMsg(UserIndex, "Se le ha avisado a " & UserList(tUser).name & " que quieres traerlo a tu posición.", FontTypeNames.FONTTYPE_INFO)
-142                 Call WriteConsoleMsg(tUser, .name & " quiere transportarte a su ubicación. Escribe /ira " & .name & " para ir.", FontTypeNames.FONTTYPE_INFO)
+140                 Call WriteConsoleMsg(UserIndex, "Se le ha avisado a " & UserList(tUser).Name & " que quieres traerlo a tu posiciï¿½n.", FontTypeNames.FONTTYPE_INFO)
+142                 Call WriteConsoleMsg(tUser, .Name & " quiere transportarte a su ubicaciï¿½n. Escribe /ira " & .Name & " para ir.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
                 
                 Dim NotConsejero As Boolean
 144             NotConsejero = (.flags.Privilegios And PlayerType.Consejero) = 0
                 
-                ' Consejeros sólo pueden traer en el mismo mapa
+                ' Consejeros sï¿½lo pueden traer en el mismo mapa
 146             If NotConsejero Or .Pos.Map = UserList(tUser).Pos.Map Then
                     
-                    ' Si el admin está invisible no mostramos el nombre
+                    ' Si el admin estï¿½ invisible no mostramos el nombre
 148                 If NotConsejero And .flags.AdminInvisible = 1 Then
 150                     Call WriteConsoleMsg(tUser, "Te han trasportado.", FontTypeNames.FONTTYPE_INFO)
                     Else
-152                     Call WriteConsoleMsg(tUser, .name & " te ha trasportado.", FontTypeNames.FONTTYPE_INFO)
+152                     Call WriteConsoleMsg(tUser, .Name & " te ha trasportado.", FontTypeNames.FONTTYPE_INFO)
                     End If
 
 154                 Call WarpToLegalPos(tUser, .Pos.Map, .Pos.X, .Pos.Y + 1, True, True)
 
-156                 Call WriteConsoleMsg(UserIndex, "Has traído a " & UserList(tUser).name & ".", FontTypeNames.FONTTYPE_INFO)
+156                 Call WriteConsoleMsg(UserIndex, "Has traï¿½do a " & UserList(tUser).Name & ".", FontTypeNames.FONTTYPE_INFO)
                     
                     Call LogGM(.name, "/SUM " & UserName & " Map:" & .Pos.Map & " X:" & .Pos.X & " Y:" & .Pos.Y)
                 
@@ -13465,7 +13465,7 @@ Private Sub HandleSpawnCreature(ByVal UserIndex As Integer)
 110         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
 112             If npc > 0 And npc <= UBound(Declaraciones.SpawnList()) Then Call SpawnNpc(Declaraciones.SpawnList(npc).NpcIndex, .Pos, True, False)
             
-114             Call LogGM(.name, "Sumoneo " & Declaraciones.SpawnList(npc).NpcName)
+114             Call LogGM(.Name, "Sumoneo " & Declaraciones.SpawnList(npc).NpcName)
 
             End If
 
@@ -13503,7 +13503,7 @@ Private Sub HandleResetNPCInventory(ByVal UserIndex As Integer)
 106         If .flags.TargetNPC = 0 Then Exit Sub
         
 108         Call ResetNpcInv(.flags.TargetNPC)
-110         Call LogGM(.name, "/RESETINV " & NpcList(.flags.TargetNPC).name)
+110         Call LogGM(.Name, "/RESETINV " & NpcList(.flags.TargetNPC).Name)
 
         End With
 
@@ -13586,8 +13586,8 @@ Private Sub HandleServerMessage(ByVal UserIndex As Integer)
         
 112         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
 114             If LenB(message) <> 0 Then
-116                 Call LogGM(.name, "Mensaje Broadcast:" & message)
-118                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.name & "> " & message, FontTypeNames.FONTTYPE_SERVER))
+116                 Call LogGM(.Name, "Mensaje Broadcast:" & message)
+118                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.Name & "> " & message, FontTypeNames.FONTTYPE_SERVER))
 
                 End If
 
@@ -13653,7 +13653,7 @@ Private Sub HandleNickToIP(ByVal UserIndex As Integer)
         
 112         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) <> 0 Then
 114             tUser = NameIndex(UserName)
-116             Call LogGM(.name, "NICK2IP Solicito la IP de " & UserName)
+116             Call LogGM(.Name, "NICK2IP Solicito la IP de " & UserName)
 
 118             If .flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin) Then
 120                 priv = PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.Dios Or PlayerType.Admin
@@ -13664,22 +13664,22 @@ Private Sub HandleNickToIP(ByVal UserIndex As Integer)
             
 124             If tUser > 0 Then
 126                 If UserList(tUser).flags.Privilegios And priv Then
-128                     Call WriteConsoleMsg(UserIndex, "El ip de " & UserName & " es " & UserList(tUser).ip, FontTypeNames.FONTTYPE_INFO)
+128                     Call WriteConsoleMsg(UserIndex, "El ip de " & UserName & " es " & UserList(tUser).IP, FontTypeNames.FONTTYPE_INFO)
 
-                        Dim ip    As String
+                        Dim IP    As String
 
                         Dim lista As String
 
                         Dim LoopC As Long
 
-130                     ip = UserList(tUser).ip
+130                     IP = UserList(tUser).IP
 
 132                     For LoopC = 1 To LastUser
 
-134                         If UserList(LoopC).ip = ip Then
-136                             If LenB(UserList(LoopC).name) <> 0 And UserList(LoopC).flags.UserLogged Then
+134                         If UserList(LoopC).IP = IP Then
+136                             If LenB(UserList(LoopC).Name) <> 0 And UserList(LoopC).flags.UserLogged Then
 138                                 If UserList(LoopC).flags.Privilegios And priv Then
-140                                     lista = lista & UserList(LoopC).name & ", "
+140                                     lista = lista & UserList(LoopC).Name & ", "
 
                                     End If
 
@@ -13690,7 +13690,7 @@ Private Sub HandleNickToIP(ByVal UserIndex As Integer)
 142                     Next LoopC
 
 144                     If LenB(lista) <> 0 Then lista = Left$(lista, Len(lista) - 2)
-146                     Call WriteConsoleMsg(UserIndex, "Los personajes con ip " & ip & " son: " & lista, FontTypeNames.FONTTYPE_INFO)
+146                     Call WriteConsoleMsg(UserIndex, "Los personajes con ip " & IP & " son: " & lista, FontTypeNames.FONTTYPE_INFO)
 
                     End If
 
@@ -13746,7 +13746,7 @@ Private Sub HandleIPToNick(ByVal UserIndex As Integer)
             'Remove packet ID
 106         Call .incomingData.ReadByte
         
-            Dim ip    As String
+            Dim IP    As String
 
             Dim LoopC As Long
 
@@ -13754,14 +13754,14 @@ Private Sub HandleIPToNick(ByVal UserIndex As Integer)
 
             Dim priv  As PlayerType
         
-108         ip = .incomingData.ReadByte() & "."
-110         ip = ip & .incomingData.ReadByte() & "."
-112         ip = ip & .incomingData.ReadByte() & "."
-114         ip = ip & .incomingData.ReadByte()
+108         IP = .incomingData.ReadByte() & "."
+110         IP = IP & .incomingData.ReadByte() & "."
+112         IP = IP & .incomingData.ReadByte() & "."
+114         IP = IP & .incomingData.ReadByte()
         
 116         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.RoleMaster) Then Exit Sub
         
-118         Call LogGM(.name, "IP2NICK Solicito los Nicks de IP " & ip)
+118         Call LogGM(.Name, "IP2NICK Solicito los Nicks de IP " & IP)
         
 120         If .flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin) Then
 122             priv = PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.Dios Or PlayerType.Admin
@@ -13772,10 +13772,10 @@ Private Sub HandleIPToNick(ByVal UserIndex As Integer)
 
 126         For LoopC = 1 To LastUser
 
-128             If UserList(LoopC).ip = ip Then
-130                 If LenB(UserList(LoopC).name) <> 0 And UserList(LoopC).flags.UserLogged Then
+128             If UserList(LoopC).IP = IP Then
+130                 If LenB(UserList(LoopC).Name) <> 0 And UserList(LoopC).flags.UserLogged Then
 132                     If UserList(LoopC).flags.Privilegios And priv Then
-134                         lista = lista & UserList(LoopC).name & ", "
+134                         lista = lista & UserList(LoopC).Name & ", "
 
                         End If
 
@@ -13786,7 +13786,7 @@ Private Sub HandleIPToNick(ByVal UserIndex As Integer)
 136         Next LoopC
         
 138         If LenB(lista) <> 0 Then lista = Left$(lista, Len(lista) - 2)
-140         Call WriteConsoleMsg(UserIndex, "Los personajes con ip " & ip & " son: " & lista, FontTypeNames.FONTTYPE_INFO)
+140         Call WriteConsoleMsg(UserIndex, "Los personajes con ip " & IP & " son: " & lista, FontTypeNames.FONTTYPE_INFO)
 
         End With
 
@@ -13907,7 +13907,7 @@ Private Sub HandleTeleportCreate(ByVal UserIndex As Integer)
         
 114         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
         
-116         Call LogGM(.name, "/CT " & Mapa & "," & X & "," & Y)
+116         Call LogGM(.Name, "/CT " & Mapa & "," & X & "," & Y)
         
 118         If Not MapaValido(Mapa) Or Not InMapBounds(Mapa, X, Y) Then Exit Sub
         
@@ -13922,7 +13922,7 @@ Private Sub HandleTeleportCreate(ByVal UserIndex As Integer)
             End If
         
 128         If MapData(Mapa, X, Y).TileExit.Map > 0 Then
-130             Call WriteConsoleMsg(UserIndex, "No podés crear un teleport que apunte a la entrada de otro.", FontTypeNames.FONTTYPE_INFO)
+130             Call WriteConsoleMsg(UserIndex, "No podï¿½s crear un teleport que apunte a la entrada de otro.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
@@ -14050,7 +14050,7 @@ Private Sub HandleRainToggle(ByVal UserIndex As Integer)
         
 104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then Exit Sub
         
-106         Call LogGM(.name, "/LLUVIA")
+106         Call LogGM(.Name, "/LLUVIA")
 108         Lloviendo = Not Lloviendo
 110         Nebando = Not Nebando
         
@@ -14620,7 +14620,7 @@ Private Sub HandleDestroyAllItemsInArea(ByVal UserIndex As Integer)
 118             Next X
 120         Next Y
         
-122         Call LogGM(UserList(UserIndex).name, "/MASSDEST")
+122         Call LogGM(UserList(UserIndex).Name, "/MASSDEST")
 
         End With
 
@@ -14756,7 +14756,7 @@ Private Sub HandleAcceptChaosCouncilMember(ByVal UserIndex As Integer)
 116             If tUser <= 0 Then
 118                 Call WriteConsoleMsg(UserIndex, "Usuario offline", FontTypeNames.FONTTYPE_INFO)
                 Else
-120                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(UserName & " fue aceptado en el Consejo de la Legión Oscura.", FontTypeNames.FONTTYPE_CONSEJO))
+120                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(UserName & " fue aceptado en el Consejo de la Legiï¿½n Oscura.", FontTypeNames.FONTTYPE_CONSEJO))
                 
 122                 With UserList(tUser)
 
@@ -14826,7 +14826,7 @@ Private Sub HandleItemsInTheFloor(ByVal UserIndex As Integer)
 
 112                 If tObj > 0 Then
 114                     If ObjData(tObj).OBJType <> eOBJType.otArboles Then
-116                         Call WriteConsoleMsg(UserIndex, "(" & X & "," & Y & ") " & ObjData(tObj).name, FontTypeNames.FONTTYPE_INFO)
+116                         Call WriteConsoleMsg(UserIndex, "(" & X & "," & Y & ") " & ObjData(tObj).Name, FontTypeNames.FONTTYPE_INFO)
 
                         End If
 
@@ -15089,11 +15089,11 @@ Private Sub HandleCouncilKick(ByVal UserIndex As Integer)
                         End If
                     
 144                     If .flags.Privilegios And PlayerType.ChaosCouncil Then
-146                         Call WriteConsoleMsg(tUser, "Has sido echado del consejo de la Legiín Oscura", FontTypeNames.FONTTYPE_TALK)
+146                         Call WriteConsoleMsg(tUser, "Has sido echado del consejo de la Legiï¿½n Oscura", FontTypeNames.FONTTYPE_TALK)
 148                         .flags.Privilegios = .flags.Privilegios - PlayerType.ChaosCouncil
                         
 150                         Call WarpUserChar(tUser, .Pos.Map, .Pos.X, .Pos.Y)
-152                         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(UserName & " fue expulsado del consejo de la Legión Oscura", FontTypeNames.FONTTYPE_CONSEJO))
+152                         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(UserName & " fue expulsado del consejo de la Legiï¿½n Oscura", FontTypeNames.FONTTYPE_CONSEJO))
 
                         End If
 
@@ -15160,7 +15160,7 @@ Private Sub HandleSetTrigger(ByVal UserIndex As Integer)
 114             MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = tTrigger
 116             tLog = "Trigger " & tTrigger & " en mapa " & .Pos.Map & " " & .Pos.X & "," & .Pos.Y
             
-118             Call LogGM(.name, tLog)
+118             Call LogGM(.Name, tLog)
 120             Call WriteConsoleMsg(UserIndex, tLog, FontTypeNames.FONTTYPE_INFO)
 
             End If
@@ -15241,7 +15241,7 @@ Private Sub HandleBannedIPList(ByVal UserIndex As Integer)
 
             Dim LoopC As Long
         
-106         Call LogGM(.name, "/BANIPLIST")
+106         Call LogGM(.Name, "/BANIPLIST")
         
 108         For LoopC = 1 To BanIps.Count
 110             lista = lista & BanIps.Item(LoopC) & ", "
@@ -15283,7 +15283,6 @@ Private Sub HandleBannedIPReload(ByVal UserIndex As Integer)
         
 104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
-106         Call BanIpGuardar
 108         Call BanIpCargar
 
         End With
@@ -15349,10 +15348,10 @@ Private Sub HandleGuildBan(ByVal UserIndex As Integer)
 116             If Not FileExist(tFile) Then
 118                 Call WriteConsoleMsg(UserIndex, "No existe el clan: " & GuildName, FontTypeNames.FONTTYPE_INFO)
                 Else
-120                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.name & " banned al clan " & UCase$(GuildName), FontTypeNames.FONTTYPE_FIGHT))
+120                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.Name & " banned al clan " & UCase$(GuildName), FontTypeNames.FONTTYPE_FIGHT))
                 
                     'baneamos a los miembros
-122                 Call LogGM(.name, "BANCLAN a " & UCase$(GuildName))
+122                 Call LogGM(.Name, "BANCLAN a " & UCase$(GuildName))
                 
 124                 cantMembers = val(GetVar(tFile, "INIT", "NroMembers"))
                 
@@ -15373,16 +15372,16 @@ Private Sub HandleGuildBan(ByVal UserIndex As Integer)
                         End If
                     
 142                     If Database_Enabled Then
-144                         Call SaveBanDatabase(member, .name & " - BAN AL CLAN: " & GuildName & ". " & Date & " " & Time, .name)
+144                         Call SaveBanDatabase(member, .Name & " - BAN AL CLAN: " & GuildName & ". " & Date & " " & Time, .Name)
                         Else
                             'ponemos el flag de ban a 1
 146                         Call WriteVar(CharPath & member & ".chr", "BAN", "BANEADO", "1")
-148                         Call WriteVar(CharPath & member & ".chr", "BAN", "BannedBy", .name)
+148                         Call WriteVar(CharPath & member & ".chr", "BAN", "BannedBy", .Name)
 150                         Call WriteVar(CharPath & member & ".chr", "BAN", "BanMotivo", "clan baneado")
                             'ponemos la pena
 152                         Count = val(GetVar(CharPath & member & ".chr", "PENAS", "Cant"))
 154                         Call WriteVar(CharPath & member & ".chr", "PENAS", "Cant", Count + 1)
-156                         Call WriteVar(CharPath & member & ".chr", "PENAS", "P" & Count + 1, .name & " - BAN AL CLAN: " & GuildName & ". " & Date & " " & Time)
+156                         Call WriteVar(CharPath & member & ".chr", "PENAS", "P" & Count + 1, .Name & " - BAN AL CLAN: " & GuildName & ". " & Date & " " & Time)
 
                         End If
 
@@ -15420,7 +15419,7 @@ End Sub
 Private Sub HandleBanIP(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 12/30/06
         '
         '***************************************************
@@ -15460,35 +15459,38 @@ Private Sub HandleBanIP(ByVal UserIndex As Integer)
 120             tUser = NameIndex(Buffer.ReadASCIIString())
             
 122             If tUser <= 0 Then
-124                 Call WriteConsoleMsg(UserIndex, "El personaje no está online.", FontTypeNames.FONTTYPE_INFO)
+124                 Call WriteConsoleMsg(UserIndex, "El personaje no estï¿½ online.", FontTypeNames.FONTTYPE_INFO)
                 Else
-126                 bannedIP = UserList(tUser).ip
+126                 bannedIP = UserList(tUser).IP
 
                 End If
 
             End If
         
 128         Reason = Buffer.ReadASCIIString()
-        
+            
+            'If we got here then packet is complete, copy data back to original queue
+            Call .incomingData.CopyBuffer(Buffer)
+            
 130         If LenB(bannedIP) > 0 Then
 132             If .flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios) Then
-134                 Call LogGM(.name, "/BanIP " & bannedIP & " por " & Reason)
+134                 Call LogGM(.Name, "/BanIP " & bannedIP & " por " & Reason)
                 
-136                 If BanIpBuscar(bannedIP) > 0 Then
+136                 If BanIps.Exists(bannedIP) Then
 138                     Call WriteConsoleMsg(UserIndex, "La IP " & bannedIP & " ya se encuentra en la lista de bans.", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
                     End If
                 
-140                 Call BanIpAgrega(bannedIP)
-142                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.name & " baneó la IP " & bannedIP & " por " & Reason, FontTypeNames.FONTTYPE_FIGHT))
+140                 Call BanIps.Add(bannedIP, .Name)
+142                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " baneï¿½ la IP " & bannedIP & " por " & Reason, FontTypeNames.FONTTYPE_FIGHT))
                 
                     'Find every player with that ip and ban him!
 144                 For i = 1 To LastUser
 
 146                     If UserList(i).ConnIDValida Then
-148                         If UserList(i).ip = bannedIP Then
-150                             Call BanCharacter(UserIndex, UserList(i).name, "IP POR " & Reason)
+148                         If UserList(i).IP = bannedIP Then
+150                             Call BanPJ(UserIndex, UserList(i).Name, "IP POR " & Reason)
 
                             End If
 
@@ -15500,11 +15502,11 @@ Private Sub HandleBanIP(ByVal UserIndex As Integer)
 
             End If
         
-            'If we got here then packet is complete, copy data back to original queue
-154         Call .incomingData.CopyBuffer(Buffer)
 
         End With
-
+        
+        Exit Sub
+        
 ErrHandler:
 
         Dim Error As Long
@@ -15531,7 +15533,7 @@ Private Sub HandleUnbanIP(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 12/30/06
         '
         '***************************************************
@@ -15554,8 +15556,10 @@ Private Sub HandleUnbanIP(ByVal UserIndex As Integer)
         
 116         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
-118         If BanIpQuita(bannedIP) Then
+118         If BanIps.Exists(bannedIP) Then
+119             Call DesbanearIP(bannedIP, UserIndex)
 120             Call WriteConsoleMsg(UserIndex, "La IP """ & bannedIP & """ se ha quitado de la lista de bans.", FontTypeNames.FONTTYPE_INFO)
+
             Else
 122             Call WriteConsoleMsg(UserIndex, "La IP """ & bannedIP & """ NO se encuentra en la lista de bans.", FontTypeNames.FONTTYPE_INFO)
 
@@ -15612,7 +15616,7 @@ Private Sub HandleCreateItem(ByVal UserIndex As Integer)
 
             ' Si hace mas de 10000, lo sacamos cagando.
 116         If Cuantos > MAX_INVENTORY_OBJS Then
-118             Call WriteConsoleMsg(UserIndex, "Solo podés crear hasta " & CStr(MAX_INVENTORY_OBJS) & " unidades", FontTypeNames.FONTTYPE_TALK)
+118             Call WriteConsoleMsg(UserIndex, "Solo podï¿½s crear hasta " & CStr(MAX_INVENTORY_OBJS) & " unidades", FontTypeNames.FONTTYPE_TALK)
                 Exit Sub
             End If
         
@@ -15620,7 +15624,7 @@ Private Sub HandleCreateItem(ByVal UserIndex As Integer)
 120         If tObj < 1 Or tObj > NumObjDatas Then Exit Sub
         
             ' El nombre del objeto es nulo?
-122         If LenB(ObjData(tObj).name) = 0 Then Exit Sub
+122         If LenB(ObjData(tObj).Name) = 0 Then Exit Sub
         
             Dim Objeto As obj
 124             Objeto.amount = Cuantos
@@ -15659,7 +15663,7 @@ Private Sub HandleCreateItem(ByVal UserIndex As Integer)
             End If
         
             ' Lo registro en los logs.
-148         Call LogGM(.name, "/CI: " & tObj & " Cantidad : " & Cuantos)
+148         Call LogGM(.Name, "/CI: " & tObj & " Cantidad : " & Cuantos)
 
         End With
 
@@ -15695,10 +15699,10 @@ Private Sub HandleDestroyItems(ByVal UserIndex As Integer)
         
 106         If MapData(.Pos.Map, .Pos.X, .Pos.Y).ObjInfo.ObjIndex = 0 Then Exit Sub
         
-108         Call LogGM(.name, "/DEST")
+108         Call LogGM(.Name, "/DEST")
         
             ' If ObjData(MapData(.Pos.map, .Pos.X, .Pos.Y).ObjInfo.ObjIndex).OBJType = eOBJType.otTeleport Then
-            ''  Call WriteConsoleMsg(UserIndex, "No puede destruir teleports así. Utilice /DT.", FontTypeNames.FONTTYPE_INFO)
+            ''  Call WriteConsoleMsg(UserIndex, "No puede destruir teleports asï¿½. Utilice /DT.", FontTypeNames.FONTTYPE_INFO)
             '  Exit Sub
             ' End If
         
@@ -15764,13 +15768,13 @@ Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
 
 122             tUser = NameIndex(UserName)
             
-124             Call LogGM(.name, "ECHO DEL CAOS A: " & UserName)
+124             Call LogGM(.Name, "ECHO DEL CAOS A: " & UserName)
     
 126             If tUser > 0 Then
 128                 UserList(tUser).Faccion.FuerzasCaos = 0
 130                 UserList(tUser).Faccion.Reenlistadas = 200
 132                 Call WriteConsoleMsg(UserIndex, UserName & " expulsado de las fuerzas del caos y prohibida la reenlistada", FontTypeNames.FONTTYPE_INFO)
-134                 Call WriteConsoleMsg(tUser, .name & " te ha expulsado en forma definitiva de las fuerzas del caos.", FontTypeNames.FONTTYPE_FIGHT)
+134                 Call WriteConsoleMsg(tUser, .Name & " te ha expulsado en forma definitiva de las fuerzas del caos.", FontTypeNames.FONTTYPE_FIGHT)
                 
                 Else
 
@@ -15780,7 +15784,7 @@ Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
                         Else
 142                         Call WriteVar(CharPath & UserName & ".chr", "FACCIONES", "EjercitoCaos", 0)
 144                         Call WriteVar(CharPath & UserName & ".chr", "FACCIONES", "Reenlistadas", 200)
-146                         Call WriteVar(CharPath & UserName & ".chr", "FACCIONES", "Extra", "Expulsado por " & .name)
+146                         Call WriteVar(CharPath & UserName & ".chr", "FACCIONES", "Extra", "Expulsado por " & .Name)
 
                         End If
                     
@@ -15863,13 +15867,13 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
 
 122             tUser = NameIndex(UserName)
             
-124             Call LogGM(.name, "ECHO DE LA REAL A: " & UserName)
+124             Call LogGM(.Name, "ECHO DE LA REAL A: " & UserName)
             
 126             If tUser > 0 Then
 128                 UserList(tUser).Faccion.ArmadaReal = 0
 130                 UserList(tUser).Faccion.Reenlistadas = 200
 132                 Call WriteConsoleMsg(UserIndex, UserName & " expulsado de las fuerzas reales y prohibida la reenlistada", FontTypeNames.FONTTYPE_INFO)
-134                 Call WriteConsoleMsg(tUser, .name & " te ha expulsado en forma definitiva de las fuerzas reales.", FontTypeNames.FONTTYPE_FIGHT)
+134                 Call WriteConsoleMsg(tUser, .Name & " te ha expulsado en forma definitiva de las fuerzas reales.", FontTypeNames.FONTTYPE_FIGHT)
                 
                 Else
 
@@ -15879,7 +15883,7 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
                         Else
 142                         Call WriteVar(CharPath & UserName & ".chr", "FACCIONES", "EjercitoReal", 0)
 144                         Call WriteVar(CharPath & UserName & ".chr", "FACCIONES", "Reenlistadas", 200)
-146                         Call WriteVar(CharPath & UserName & ".chr", "FACCIONES", "Extra", "Expulsado por " & .name)
+146                         Call WriteVar(CharPath & UserName & ".chr", "FACCIONES", "Extra", "Expulsado por " & .Name)
 
                         End If
 
@@ -15944,7 +15948,7 @@ Private Sub HandleForceMIDIAll(ByVal UserIndex As Integer)
         
 110         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
         
-112         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.name & " broadcast musica: " & midiID, FontTypeNames.FONTTYPE_SERVER))
+112         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.Name & " broadcast musica: " & midiID, FontTypeNames.FONTTYPE_SERVER))
         
 114         Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayMidi(midiID))
 
@@ -16059,12 +16063,12 @@ Private Sub HandleRemovePunishment(ByVal UserIndex As Integer)
                     End If
                 
 130                 If PersonajeExiste(UserName) Then
-132                     Call LogGM(.name, "Borro la pena " & punishment & " de " & UserName & " y la cambií por: " & NewText)
+132                     Call LogGM(.Name, "Borro la pena " & punishment & " de " & UserName & " y la cambiï¿½ por: " & NewText)
                     
 134                     If Database_Enabled Then
-136                         Call CambiarPenaDatabase(UserName, punishment, .name & ": <" & NewText & "> " & Date & " " & Time)
+136                         Call CambiarPenaDatabase(UserName, punishment, .Name & ": <" & NewText & "> " & Date & " " & Time)
                         Else
-138                         Call WriteVar(CharPath & UserName & ".chr", "PENAS", "P" & punishment, .name & ": <" & NewText & "> " & Date & " " & Time)
+138                         Call WriteVar(CharPath & UserName & ".chr", "PENAS", "P" & punishment, .Name & ": <" & NewText & "> " & Date & " " & Time)
 
                         End If
                     
@@ -16117,7 +16121,7 @@ Private Sub HandleTileBlockedToggle(ByVal UserIndex As Integer)
         
 104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then Exit Sub
 
-106         Call LogGM(.name, "/BLOQ")
+106         Call LogGM(.Name, "/BLOQ")
         
 108         If MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked = 0 Then
 110             MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked = eBlock.ALL_SIDES Or eBlock.GM
@@ -16163,7 +16167,7 @@ Private Sub HandleKillNPCNoRespawn(ByVal UserIndex As Integer)
 106         If .flags.TargetNPC = 0 Then Exit Sub
         
 108         Call QuitarNPC(.flags.TargetNPC)
-110         Call LogGM(.name, "/MATA " & NpcList(.flags.TargetNPC).name)
+110         Call LogGM(.Name, "/MATA " & NpcList(.flags.TargetNPC).Name)
 
         End With
 
@@ -16197,7 +16201,7 @@ Private Sub HandleKillAllNearbyNPCs(ByVal UserIndex As Integer)
         
 104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then Exit Sub
             
-            'Si está en el mapa pretoriano, me aseguro de que los saque correctamente antes que nada.
+            'Si estï¿½ en el mapa pretoriano, me aseguro de que los saque correctamente antes que nada.
 106         If .Pos.Map = MAPA_PRETORIANO Then Call EliminarPretorianos(MAPA_PRETORIANO)
 
             Dim X As Long
@@ -16217,7 +16221,7 @@ Private Sub HandleKillAllNearbyNPCs(ByVal UserIndex As Integer)
 118             Next X
 120         Next Y
 
-122         Call LogGM(.name, "/MASSKILL")
+122         Call LogGM(.Name, "/MASSKILL")
 
         End With
 
@@ -16300,10 +16304,10 @@ Private Sub HandleLastIP(ByVal UserIndex As Integer)
                 End If
             
 134             If validCheck Then
-136                 Call LogGM(.name, "/LASTIP " & UserName)
+136                 Call LogGM(.Name, "/LASTIP " & UserName)
                 
 138                 If FileExist(CharPath & UserName & ".chr", vbNormal) Then
-140                     lista = "Las ultimas IPs con las que " & UserName & " se conectí son:"
+140                     lista = "Las ultimas IPs con las que " & UserName & " se conectï¿½ son:"
 
 142                     For LoopC = 1 To 5
 144                         lista = lista & vbCrLf & LoopC & " - " & GetVar(CharPath & UserName & ".chr", "INIT", "LastIP" & LoopC)
@@ -16316,7 +16320,7 @@ Private Sub HandleLastIP(ByVal UserIndex As Integer)
                     End If
 
                 Else
-152                 Call WriteConsoleMsg(UserIndex, UserName & " es de mayor jerarquía que vos.", FontTypeNames.FONTTYPE_INFO)
+152                 Call WriteConsoleMsg(UserIndex, UserName & " es de mayor jerarquï¿½a que vos.", FontTypeNames.FONTTYPE_INFO)
 
                 End If
 
@@ -16355,7 +16359,7 @@ Public Sub HandleChatColor(ByVal UserIndex As Integer)
         '***************************************************
         'Author: Lucas Tavolaro Ortiz (Tavo)
         'Last Modification: 12/23/06
-        'Last modified by: Juan Martín Sotuyo Dodero (Maraxus)
+        'Last modified by: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Change the user`s chat color
         '***************************************************
 100     If UserList(UserIndex).incomingData.Length < 4 Then
@@ -16469,7 +16473,7 @@ Public Sub HandleCheckSlot(ByVal UserIndex As Integer)
 
             If Not EsGM(UserIndex) Then Exit Sub
         
-117         Call LogGM(.name, .name & " Checkeo el slot " & slot & " de " & UserName)
+117         Call LogGM(.Name, .Name & " Checkeo el slot " & slot & " de " & UserName)
            
 118         If tIndex > 0 Then
 120             If slot > 0 And slot <= UserList(UserIndex).CurrentInventorySlots Then
@@ -16481,7 +16485,7 @@ Public Sub HandleCheckSlot(ByVal UserIndex As Integer)
                     End If
 
                 Else
-128                 Call WriteConsoleMsg(UserIndex, "Slot Invílido.", FontTypeNames.FONTTYPE_TALK)
+128                 Call WriteConsoleMsg(UserIndex, "Slot Invï¿½lido.", FontTypeNames.FONTTYPE_TALK)
 
                 End If
 
@@ -16563,7 +16567,7 @@ Public Sub HandleRestart(ByVal UserIndex As Integer)
 104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
         
             'time and Time BUG!
-106         Call LogGM(.name, .name & " reinicio el mundo")
+106         Call LogGM(.Name, .Name & " reinicio el mundo")
         
 108         Call ReiniciarServidor(True)
 
@@ -16599,7 +16603,7 @@ Public Sub HandleReloadObjects(ByVal UserIndex As Integer)
         
 104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
-106         Call LogGM(.name, .name & " ha recargado a los objetos.")
+106         Call LogGM(.Name, .Name & " ha recargado a los objetos.")
         
 108         Call LoadOBJData
 110         Call LoadPesca
@@ -16638,7 +16642,7 @@ Public Sub HandleReloadSpells(ByVal UserIndex As Integer)
         
 104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
-106         Call LogGM(.name, .name & " ha recargado los hechizos.")
+106         Call LogGM(.Name, .Name & " ha recargado los hechizos.")
         
 108         Call CargarHechizos
 
@@ -16674,7 +16678,7 @@ Public Sub HandleReloadServerIni(ByVal UserIndex As Integer)
         
 104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
-106         Call LogGM(.name, .name & " ha recargado los INITs.")
+106         Call LogGM(.Name, .Name & " ha recargado los INITs.")
         
 108         Call LoadSini
 
@@ -16710,7 +16714,7 @@ Public Sub HandleReloadNPCs(ByVal UserIndex As Integer)
         
 104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
          
-106         Call LogGM(.name, .name & " ha recargado los NPCs.")
+106         Call LogGM(.Name, .Name & " ha recargado los NPCs.")
     
 108         Call CargaNpcsDat
     
@@ -16739,7 +16743,7 @@ Public Sub HandleRequestTCPStats(ByVal UserIndex As Integer)
         '***************************************************
         'Author: Lucas Tavolaro Ortiz (Tavo)
         'Last Modification: 12/23/06
-        'Last modified by: Juan Martín Sotuyo Dodero (Maraxus)
+        'Last modified by: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Send the TCP`s stadistics
         '***************************************************
 100     With UserList(UserIndex)
@@ -16754,9 +16758,9 @@ Public Sub HandleRequestTCPStats(ByVal UserIndex As Integer)
 
             Dim i     As Long
         
-106         Call LogGM(.name, .name & " ha pedido las estadisticas del TCP.")
+106         Call LogGM(.Name, .Name & " ha pedido las estadisticas del TCP.")
     
-108         Call WriteConsoleMsg(UserIndex, "Los datos estín en BYTES.", FontTypeNames.FONTTYPE_INFO)
+108         Call WriteConsoleMsg(UserIndex, "Los datos estï¿½n en BYTES.", FontTypeNames.FONTTYPE_INFO)
         
             'Send the stats
 110         With TCPESStats
@@ -16773,7 +16777,7 @@ Public Sub HandleRequestTCPStats(ByVal UserIndex As Integer)
 
 122                 If .flags.UserLogged And .ConnID >= 0 And .ConnIDValida Then
 124                     If .outgoingData.Length > 0 Then
-126                         list = list & .name & " (" & CStr(.outgoingData.Length) & "), "
+126                         list = list & .Name & " (" & CStr(.outgoingData.Length) & "), "
 128                         Count = Count + 1
 
                         End If
@@ -16819,7 +16823,7 @@ Public Sub HandleKickAllChars(ByVal UserIndex As Integer)
         
 104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
-106         Call LogGM(.name, .name & " ha echado a todos los personajes.")
+106         Call LogGM(.Name, .Name & " ha echado a todos los personajes.")
         
 108         Call EcharPjsNoPrivilegiados
 
@@ -16847,7 +16851,7 @@ Public Sub HandleNight(ByVal UserIndex As Integer)
         '***************************************************
         'Author: Lucas Tavolaro Ortiz (Tavo)
         'Last Modification: 12/23/06
-        'Last modified by: Juan Martín Sotuyo Dodero (Maraxus)
+        'Last modified by: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         '
         '***************************************************
 100     With UserList(UserIndex)
@@ -16949,7 +16953,7 @@ Public Sub HandleDonateGold(ByVal UserIndex As Integer)
 
              'Se asegura que el target es un npc
 108         If .flags.TargetNPC = 0 Then
-110             Call WriteConsoleMsg(UserIndex, "Primero tenés que seleccionar al sacerdote.", FontTypeNames.FONTTYPE_INFO)
+110             Call WriteConsoleMsg(UserIndex, "Primero tenï¿½s que seleccionar al sacerdote.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         
@@ -16966,13 +16970,13 @@ Public Sub HandleDonateGold(ByVal UserIndex As Integer)
             End If
 
 118         If .Faccion.Status = 1 Or .Faccion.ArmadaReal = 1 Or .Faccion.FuerzasCaos > 0 Or .Faccion.ciudadanosMatados = 0 Then
-120             Call WriteChatOverHead(UserIndex, "No puedo aceptar tu donación en este momento...", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+120             Call WriteChatOverHead(UserIndex, "No puedo aceptar tu donaciï¿½n en este momento...", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
                 Exit Sub
             End If
 
             If .GuildIndex <> 0 Then
                 If modGuilds.Alineacion(.GuildIndex) = 1 Then
-                   Call WriteChatOverHead(UserIndex, "Te encuentras en un clan criminal... no puedo aceptar tu donación.", priest.Char.CharIndex, vbWhite)
+                   Call WriteChatOverHead(UserIndex, "Te encuentras en un clan criminal... no puedo aceptar tu donaciï¿½n.", priest.Char.CharIndex, vbWhite)
                    Exit Sub
 
                 End If
@@ -16998,7 +17002,7 @@ Public Sub HandleDonateGold(ByVal UserIndex As Integer)
 
 140         Call WriteConsoleMsg(UserIndex, "Has donado " & PonerPuntos(Oro) & " monedas de oro.", FontTypeNames.FONTTYPE_INFO)
 
-142         Call WriteChatOverHead(UserIndex, "¡Gracias por tu generosa donación! Con estas palabras, te libero de todo tipo de pecados. ¡Que Dios te acompañe hijo mío!", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbYellow)
+142         Call WriteChatOverHead(UserIndex, "ï¿½Gracias por tu generosa donaciï¿½n! Con estas palabras, te libero de todo tipo de pecados. ï¿½Que Dios te acompaï¿½e hijo mï¿½o!", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbYellow)
 
 144         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, "80", 100, False))
 146         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("100", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
@@ -17105,12 +17109,12 @@ Public Sub HandleGiveItem(ByVal UserIndex As Integer)
 126             If ObjIndex < 1 Or ObjIndex > NumObjDatas Then Exit Sub
             
                 ' El nombre del objeto es nulo?
-128             If LenB(ObjData(ObjIndex).name) = 0 Then Exit Sub
+128             If LenB(ObjData(ObjIndex).Name) = 0 Then Exit Sub
 
-                ' Está online?
+                ' Estï¿½ online?
 130             tIndex = NameIndex(UserName)
 132             If tIndex = 0 Then
-134                 Call WriteConsoleMsg(UserIndex, "El usuario " & UserName & " no está conectado.", FontTypeNames.FONTTYPE_INFO)
+134                 Call WriteConsoleMsg(UserIndex, "El usuario " & UserName & " no estï¿½ conectado.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
 
@@ -17120,14 +17124,14 @@ Public Sub HandleGiveItem(ByVal UserIndex As Integer)
 
                 ' Trato de meterlo en el inventario.
 140             If MeterItemEnInventario(tIndex, Objeto) Then
-142                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.name & " ha otorgado a " & UserList(tIndex).name & " " & Cantidad & " " & ObjData(ObjIndex).name & ": " & Motivo, FontTypeNames.FONTTYPE_ROSA))
+142                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.Name & " ha otorgado a " & UserList(tIndex).Name & " " & Cantidad & " " & ObjData(ObjIndex).Name & ": " & Motivo, FontTypeNames.FONTTYPE_ROSA))
                 Else
 144                 Call WriteConsoleMsg(UserIndex, "El usuario no tiene espacio en el inventario.", FontTypeNames.FONTTYPE_INFO)
                 End If
 
                 ' Lo registro en los logs.
-146             Call LogGM(.name, "/DAR " & UserName & " - Item: " & ObjData(ObjIndex).name & "(" & ObjIndex & ") Cantidad : " & Cantidad)
-148             Call LogPremios(.name, UserName, ObjIndex, Cantidad, Motivo)
+146             Call LogGM(.Name, "/DAR " & UserName & " - Item: " & ObjData(ObjIndex).Name & "(" & ObjIndex & ") Cantidad : " & Cantidad)
+148             Call LogPremios(.Name, UserName, ObjIndex, Cantidad, Motivo)
             
             End If
         End With
@@ -17168,7 +17172,7 @@ Public Sub HandleShowServerForm(ByVal UserIndex As Integer)
         
 104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
-106         Call LogGM(.name, .name & " ha solicitado mostrar el formulario del servidor.")
+106         Call LogGM(.Name, .Name & " ha solicitado mostrar el formulario del servidor.")
 108         Call frmMain.mnuMostrar_Click
 
         End With
@@ -17203,7 +17207,7 @@ Public Sub HandleCleanSOS(ByVal UserIndex As Integer)
         
 104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
-106         Call LogGM(.name, .name & " ha borrado los SOS")
+106         Call LogGM(.Name, .Name & " ha borrado los SOS")
         
 108         Call Ayuda.Reset
 
@@ -17239,7 +17243,7 @@ Public Sub HandleSaveChars(ByVal UserIndex As Integer)
         
 104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.RoleMaster) Then Exit Sub
         
-106         Call LogGM(.name, .name & " ha guardado todos los chars")
+106         Call LogGM(.Name, .Name & " ha guardado todos los chars")
         
 108         Call GuardarUsuarios
 
@@ -17267,7 +17271,7 @@ Public Sub HandleChangeMapInfoBackup(ByVal UserIndex As Integer)
         '***************************************************
         'Author: Lucas Tavolaro Ortiz (Tavo)
         'Last Modification: 12/24/06
-        'Last modified by: Juan Martín Sotuyo Dodero (Maraxus)
+        'Last modified by: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Change the backup`s info of the map
         '***************************************************
 100     If UserList(UserIndex).incomingData.Length < 2 Then
@@ -17286,7 +17290,7 @@ Public Sub HandleChangeMapInfoBackup(ByVal UserIndex As Integer)
         
 110         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
-112         Call LogGM(.name, .name & " ha cambiado la informaciín sobre el BackUp")
+112         Call LogGM(.Name, .Name & " ha cambiado la informaciï¿½n sobre el BackUp")
         
             'Change the boolean to byte in a fast way
 114         If doTheBackUp Then
@@ -17325,7 +17329,7 @@ Public Sub HandleChangeMapInfoPK(ByVal UserIndex As Integer)
         '***************************************************
         'Author: Lucas Tavolaro Ortiz (Tavo)
         'Last Modification: 12/24/06
-        'Last modified by: Juan Martín Sotuyo Dodero (Maraxus)
+        'Last modified by: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Change the pk`s info of the  map
         '***************************************************
 100     If UserList(UserIndex).incomingData.Length < 2 Then
@@ -17344,7 +17348,7 @@ Public Sub HandleChangeMapInfoPK(ByVal UserIndex As Integer)
         
 110         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
-112         Call LogGM(.name, .name & " ha cambiado la informacion sobre si es seguro el mapa.")
+112         Call LogGM(.Name, .Name & " ha cambiado la informacion sobre si es seguro el mapa.")
         
 114         MapInfo(.Pos.Map).Seguro = IIf(isMapPk, 1, 0)
         
@@ -17404,27 +17408,27 @@ Public Sub HandleChangeMapInfoRestricted(ByVal UserIndex As Integer)
                     Case "NEWBIE"
 116                     MapInfo(.Pos.Map).Newbie = Not MapInfo(.Pos.Map).Newbie
 118                     Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & ": Newbie = " & MapInfo(.Pos.Map).Newbie, FontTypeNames.FONTTYPE_INFO)
-120                     Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .Pos.Map & ": Newbie = " & MapInfo(.Pos.Map).Newbie)
+120                     Call LogGM(.name, .name & " ha cambiado la restricciï¿½n del mapa " & .Pos.Map & ": Newbie = " & MapInfo(.Pos.Map).Newbie)
                         
 122                 Case "SINMAGIA"
 124                     MapInfo(.Pos.Map).SinMagia = Not MapInfo(.Pos.Map).SinMagia
 126                     Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & ": SinMagia = " & MapInfo(.Pos.Map).SinMagia, FontTypeNames.FONTTYPE_INFO)
-128                     Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .Pos.Map & ": SinMagia = " & MapInfo(.Pos.Map).SinMagia)
+128                     Call LogGM(.name, .name & " ha cambiado la restricciï¿½n del mapa " & .Pos.Map & ": SinMagia = " & MapInfo(.Pos.Map).SinMagia)
                         
 130                 Case "NOPKS"
 132                     MapInfo(.Pos.Map).NoPKs = Not MapInfo(.Pos.Map).NoPKs
 134                     Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & ": NoPKs = " & MapInfo(.Pos.Map).NoPKs, FontTypeNames.FONTTYPE_INFO)
-136                     Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .Pos.Map & ": NoPKs = " & MapInfo(.Pos.Map).NoPKs)
+136                     Call LogGM(.name, .name & " ha cambiado la restricciï¿½n del mapa " & .Pos.Map & ": NoPKs = " & MapInfo(.Pos.Map).NoPKs)
                         
 138                 Case "NOCIUD"
 140                     MapInfo(.Pos.Map).NoCiudadanos = Not MapInfo(.Pos.Map).NoCiudadanos
 142                     Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & ": NoCiudadanos = " & MapInfo(.Pos.Map).NoCiudadanos, FontTypeNames.FONTTYPE_INFO)
-144                     Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .Pos.Map & ": NoCiudadanos = " & MapInfo(.Pos.Map).NoCiudadanos)
+144                     Call LogGM(.name, .name & " ha cambiado la restricciï¿½n del mapa " & .Pos.Map & ": NoCiudadanos = " & MapInfo(.Pos.Map).NoCiudadanos)
                         
 146                 Case "SININVI"
 148                     MapInfo(.Pos.Map).SinInviOcul = Not MapInfo(.Pos.Map).SinInviOcul
 150                     Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & ": SinInvi = " & MapInfo(.Pos.Map).SinInviOcul, FontTypeNames.FONTTYPE_INFO)
-152                     Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .Pos.Map & ": SinInvi = " & MapInfo(.Pos.Map).SinInviOcul)
+152                     Call LogGM(.name, .name & " ha cambiado la restricciï¿½n del mapa " & .Pos.Map & ": SinInvi = " & MapInfo(.Pos.Map).SinInviOcul)
                 
 154                 Case Else
 156                     Call WriteConsoleMsg(UserIndex, "Opciones para restringir: 'NEWBIE', 'SINMAGIA', 'SININVI', 'NOPKS', 'NOCIUD'", FontTypeNames.FONTTYPE_INFO)
@@ -17482,7 +17486,7 @@ Public Sub HandleChangeMapInfoNoMagic(ByVal UserIndex As Integer)
 108         nomagic = .incomingData.ReadBoolean
         
 110         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) <> 0 Then
-112             Call LogGM(.name, .name & " ha cambiado la informacion sobre si esta permitido usar la Magia el mapa.")
+112             Call LogGM(.Name, .Name & " ha cambiado la informacion sobre si esta permitido usar la Magia el mapa.")
 
                 ' MapInfo(UserList(UserIndex).Pos.map).MagiaSinEfecto = nomagic
                 'Call WriteVar(App.Path & MapPath & "mapa" & UserList(UserIndex).Pos.map & ".dat", "Mapa" & UserList(UserIndex).Pos.map, "MagiaSinEfecto", nomagic)
@@ -17530,7 +17534,7 @@ Public Sub HandleChangeMapInfoNoInvi(ByVal UserIndex As Integer)
 108         noinvi = .incomingData.ReadBoolean()
         
 110         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) <> 0 Then
-112             Call LogGM(.name, .name & " ha cambiado la informacion sobre si esta permitido usar Invisibilidad el mapa.")
+112             Call LogGM(.Name, .Name & " ha cambiado la informacion sobre si esta permitido usar Invisibilidad el mapa.")
 
                 ' MapInfo(UserList(UserIndex).Pos.map).InviSinEfecto = noinvi
                 'Call WriteVar(App.Path & MapPath & "mapa" & UserList(UserIndex).Pos.map & ".dat", "Mapa" & UserList(UserIndex).Pos.map, "InviSinEfecto", noinvi)
@@ -17578,7 +17582,7 @@ Public Sub HandleChangeMapInfoNoResu(ByVal UserIndex As Integer)
 108         noresu = .incomingData.ReadBoolean()
         
 110         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) <> 0 Then
-112             Call LogGM(.name, .name & " ha cambiado la informacion sobre si esta permitido usar Resucitar el mapa.")
+112             Call LogGM(.Name, .Name & " ha cambiado la informacion sobre si esta permitido usar Resucitar el mapa.")
 
                 '  MapInfo(UserList(UserIndex).Pos.map).ResuSinEfecto = noresu
                 ' Call WriteVar(App.Path & MapPath & "mapa" & UserList(UserIndex).Pos.map & ".dat", "Mapa" & UserList(UserIndex).Pos.map, "ResuSinEfecto", noresu)
@@ -17638,7 +17642,7 @@ Public Sub HandleChangeMapInfoLand(ByVal UserIndex As Integer)
 122                 Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & " Terreno: " & MapInfo(.Pos.Map).terrain, FontTypeNames.FONTTYPE_INFO)
                 Else
 124                 Call WriteConsoleMsg(UserIndex, "Opciones para terreno: 'BOSQUE', 'NIEVE', 'DESIERTO', 'CIUDAD', 'CAMPO', 'DUNGEON'", FontTypeNames.FONTTYPE_INFO)
-126                 Call WriteConsoleMsg(UserIndex, "Igualmente, el ínico ítil es 'NIEVE' ya que al ingresarlo, la gente muere de frio en el Mapa", FontTypeNames.FONTTYPE_INFO)
+126                 Call WriteConsoleMsg(UserIndex, "Igualmente, el ï¿½nico ï¿½til es 'NIEVE' ya que al ingresarlo, la gente muere de frio en el Mapa", FontTypeNames.FONTTYPE_INFO)
 
                 End If
 
@@ -17706,7 +17710,7 @@ Public Sub HandleChangeMapInfoZone(ByVal UserIndex As Integer)
 122                 Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & " Zona: " & MapInfo(.Pos.Map).zone, FontTypeNames.FONTTYPE_INFO)
                 Else
 124                 Call WriteConsoleMsg(UserIndex, "Opciones para terreno: 'BOSQUE', 'NIEVE', 'DESIERTO', 'CIUDAD', 'CAMPO', 'DUNGEON'", FontTypeNames.FONTTYPE_INFO)
-126                 Call WriteConsoleMsg(UserIndex, "Igualmente, el ínico ítil es 'DUNGEON' ya que al ingresarlo, NO se sentirí el efecto de la lluvia en este mapa.", FontTypeNames.FONTTYPE_INFO)
+126                 Call WriteConsoleMsg(UserIndex, "Igualmente, el ï¿½nico ï¿½til es 'DUNGEON' ya que al ingresarlo, NO se sentirï¿½ el efecto de la lluvia en este mapa.", FontTypeNames.FONTTYPE_INFO)
 
                 End If
 
@@ -17780,7 +17784,7 @@ Public Sub HandleShowGuildMessages(ByVal UserIndex As Integer)
         '***************************************************
         'Author: Lucas Tavolaro Ortiz (Tavo)
         'Last Modification: 12/24/06
-        'Last modified by: Juan Martín Sotuyo Dodero (Maraxus)
+        'Last modified by: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Allows admins to read guild messages
         '***************************************************
 100     If UserList(UserIndex).incomingData.Length < 3 Then
@@ -17851,7 +17855,7 @@ Public Sub HandleDoBackUp(ByVal UserIndex As Integer)
         
 104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
 
-106         Call LogGM(.name, .name & " ha hecho un backup")
+106         Call LogGM(.Name, .Name & " ha hecho un backup")
         
 108         Call ES.DoBackUp 'Sino lo confunde con la id del paquete
 
@@ -17874,7 +17878,7 @@ End Sub
 Public Sub HandleAlterName(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 12/26/06
         'Change user name
         '***************************************************
@@ -17934,7 +17938,7 @@ Public Sub HandleAlterName(ByVal UserIndex As Integer)
                                 
 142                                 Call WriteVar(CharPath & UserName & ".chr", "BAN", "Baneado", "1")
 144                                 Call WriteVar(CharPath & UserName & ".chr", "BAN", "BanMotivo", "BAN POR Cambio de nick a " & UCase$(newName) & " " & Date & " " & Time)
-146                                 Call WriteVar(CharPath & UserName & ".chr", "BAN", "BannedBy", .name)
+146                                 Call WriteVar(CharPath & UserName & ".chr", "BAN", "BannedBy", .Name)
 
                                     Dim cantPenas As Byte
                                 
@@ -17942,9 +17946,9 @@ Public Sub HandleAlterName(ByVal UserIndex As Integer)
                                 
 150                                 Call WriteVar(CharPath & UserName & ".chr", "PENAS", "Cant", CStr(cantPenas + 1))
                                 
-152                                 Call WriteVar(CharPath & UserName & ".chr", "PENAS", "P" & CStr(cantPenas + 1), LCase$(.name) & ": BAN POR Cambio de nick a " & UCase$(newName) & " " & Date & " " & Time)
+152                                 Call WriteVar(CharPath & UserName & ".chr", "PENAS", "P" & CStr(cantPenas + 1), LCase$(.Name) & ": BAN POR Cambio de nick a " & UCase$(newName) & " " & Date & " " & Time)
                                 
-154                                 Call LogGM(.name, "Ha cambiado de nombre al usuario " & UserName & ". Ahora se llama " & newName)
+154                                 Call LogGM(.Name, "Ha cambiado de nombre al usuario " & UserName & ". Ahora se llama " & newName)
                                 Else
 156                                 Call WriteConsoleMsg(UserIndex, "El nick solicitado ya existe", FontTypeNames.FONTTYPE_INFO)
 
@@ -17988,7 +17992,7 @@ End Sub
 Public Sub HandleAlterMail(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 12/26/06
         'Change user password
         '***************************************************
@@ -18030,7 +18034,7 @@ Public Sub HandleAlterMail(ByVal UserIndex As Integer)
 
                     End If
                 
-128                 Call LogGM(.name, "Le ha cambiado el mail a " & UserName)
+128                 Call LogGM(.Name, "Le ha cambiado el mail a " & UserName)
 
                 End If
 
@@ -18064,7 +18068,7 @@ End Sub
 Public Sub HandleAlterPassword(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 12/26/06
         'Change user password
         '***************************************************
@@ -18096,7 +18100,7 @@ Public Sub HandleAlterPassword(ByVal UserIndex As Integer)
 112         copyFrom = Replace(Buffer.ReadASCIIString(), "+", " ")
         
 114         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) Then
-116             Call LogGM(.name, "Ha alterado la contraseña de " & UserName)
+116             Call LogGM(.Name, "Ha alterado la contraseï¿½a de " & UserName)
             
 118             If LenB(UserName) = 0 Or LenB(copyFrom) = 0 Then
 120                 Call WriteConsoleMsg(UserIndex, "usar /APASS <pjsinpass>@<pjconpass>", FontTypeNames.FONTTYPE_INFO)
@@ -18147,7 +18151,7 @@ Public Sub HandleCreateNPC(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 12/24/06
         '
         '***************************************************
@@ -18201,7 +18205,7 @@ Public Sub HandleCreateNPCWithRespawn(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 12/24/06
         '
         '***************************************************
@@ -18250,7 +18254,7 @@ Public Sub HandleImperialArmour(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 12/24/06
         '
         '***************************************************
@@ -18264,16 +18268,16 @@ Public Sub HandleImperialArmour(ByVal UserIndex As Integer)
             'Remove Packet ID
 106         Call .incomingData.ReadByte
         
-            Dim index    As Byte
+            Dim Index    As Byte
 
             Dim ObjIndex As Integer
         
-108         index = .incomingData.ReadByte()
+108         Index = .incomingData.ReadByte()
 110         ObjIndex = .incomingData.ReadInteger()
         
 112         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
-114         Select Case index
+114         Select Case Index
 
                 Case 1
                     ' ArmaduraImperial1 = objindex
@@ -18311,7 +18315,7 @@ Public Sub HandleChaosArmour(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 12/24/06
         '
         '***************************************************
@@ -18325,16 +18329,16 @@ Public Sub HandleChaosArmour(ByVal UserIndex As Integer)
             'Remove Packet ID
 106         Call .incomingData.ReadByte
         
-            Dim index    As Byte
+            Dim Index    As Byte
 
             Dim ObjIndex As Integer
         
-108         index = .incomingData.ReadByte()
+108         Index = .incomingData.ReadByte()
 110         ObjIndex = .incomingData.ReadInteger()
         
 112         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
-114         Select Case index
+114         Select Case Index
 
                 Case 1
                     '   ArmaduraCaos1 = objindex
@@ -18372,7 +18376,7 @@ Public Sub HandleNavigateToggle(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 01/12/07
         '
         '***************************************************
@@ -18414,7 +18418,7 @@ Public Sub HandleServerOpenToUsersToggle(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 12/24/06
         '
         '***************************************************
@@ -18455,7 +18459,7 @@ Public Sub HandleParticipar(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 12/24/06
         'Turns off the server
         '***************************************************
@@ -18466,25 +18470,25 @@ Public Sub HandleParticipar(ByVal UserIndex As Integer)
 102         Call .incomingData.ReadByte
         
 104         If Torneo.HayTorneoaActivo = False Then
-106             Call WriteConsoleMsg(UserIndex, "No hay ningún evento disponible.", FontTypeNames.FONTTYPE_INFO)
+106             Call WriteConsoleMsg(UserIndex, "No hay ningï¿½n evento disponible.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
                    
 112         If .flags.EnTorneo Then
-114             Call WriteConsoleMsg(UserIndex, "Ya estás participando.", FontTypeNames.FONTTYPE_INFO)
+114             Call WriteConsoleMsg(UserIndex, "Ya estï¿½s participando.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
     
 116         If .Stats.ELV > Torneo.nivelmaximo Then
-118             Call WriteConsoleMsg(UserIndex, "El nivel míximo para participar es " & Torneo.nivelmaximo & ".", FontTypeNames.FONTTYPE_INFO)
+118             Call WriteConsoleMsg(UserIndex, "El nivel mï¿½ximo para participar es " & Torneo.nivelmaximo & ".", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
     
 120         If .Stats.ELV < Torneo.NivelMinimo Then
-122             Call WriteConsoleMsg(UserIndex, "El nivel mínimo para participar es " & Torneo.NivelMinimo & ".", FontTypeNames.FONTTYPE_INFO)
+122             Call WriteConsoleMsg(UserIndex, "El nivel mï¿½nimo para participar es " & Torneo.NivelMinimo & ".", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
@@ -18576,7 +18580,7 @@ End Sub
 Public Sub HandleTurnCriminal(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 12/26/06
         '
         '***************************************************
@@ -18605,7 +18609,7 @@ Public Sub HandleTurnCriminal(ByVal UserIndex As Integer)
 110         UserName = Buffer.ReadASCIIString()
         
 112         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) Then
-114             Call LogGM(.name, "/CONDEN " & UserName)
+114             Call LogGM(.Name, "/CONDEN " & UserName)
             
 116             tUser = NameIndex(UserName)
 
@@ -18641,7 +18645,7 @@ End Sub
 Public Sub HandleResetFactions(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 12/26/06
         '
         '***************************************************
@@ -18670,7 +18674,7 @@ Public Sub HandleResetFactions(ByVal UserIndex As Integer)
 110         UserName = Buffer.ReadASCIIString()
         
 112         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) Then
-114             Call LogGM(.name, "/RAJAR " & UserName)
+114             Call LogGM(.Name, "/RAJAR " & UserName)
             
 116             tUser = NameIndex(UserName)
             
@@ -18706,7 +18710,7 @@ End Sub
 Public Sub HandleRemoveCharFromGuild(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 12/26/06
         '
         '***************************************************
@@ -18735,12 +18739,12 @@ Public Sub HandleRemoveCharFromGuild(ByVal UserIndex As Integer)
 110         UserName = Buffer.ReadASCIIString()
         
 112         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) Then
-114             Call LogGM(.name, "/RAJARCLAN " & UserName)
+114             Call LogGM(.Name, "/RAJARCLAN " & UserName)
             
 116             GuildIndex = modGuilds.m_EcharMiembroDeClan(UserIndex, UserName)
             
 118             If GuildIndex = 0 Then
-120                 Call WriteConsoleMsg(UserIndex, "No pertenece a ningún clan o es fundador.", FontTypeNames.FONTTYPE_INFO)
+120                 Call WriteConsoleMsg(UserIndex, "No pertenece a ningï¿½n clan o es fundador.", FontTypeNames.FONTTYPE_INFO)
                 Else
 122                 Call WriteConsoleMsg(UserIndex, "Expulsado.", FontTypeNames.FONTTYPE_INFO)
 124                 Call SendData(SendTarget.ToGuildMembers, GuildIndex, PrepareMessageConsoleMsg(UserName & " ha sido expulsado del clan por los administradores del servidor.", FontTypeNames.FONTTYPE_GUILD))
@@ -18777,7 +18781,7 @@ End Sub
 Public Sub HandleRequestCharMail(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 12/26/06
         'Request user mail
         '***************************************************
@@ -18870,7 +18874,7 @@ Public Sub HandleSystemMessage(ByVal UserIndex As Integer)
 110         message = Buffer.ReadASCIIString()
         
 112         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) Then
-114             Call LogGM(.name, "Mensaje de sistema:" & message)
+114             Call LogGM(.Name, "Mensaje de sistema:" & message)
             
 116             Call SendData(SendTarget.ToAll, 0, PrepareMessageShowMessageBox(message))
 
@@ -18907,7 +18911,7 @@ Public Sub HandleSetMOTD(ByVal UserIndex As Integer)
         'Author: Lucas Tavolaro Ortiz (Tavo)
         'Last Modification: 03/31/07
         'Set the MOTD
-        'Modified by: Juan Martín Sotuyo Dodero (Maraxus)
+        'Modified by: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         '   - Fixed a bug that prevented from properly setting the new number of lines.
         '   - Fixed a bug that caused the player to be kicked.
         '***************************************************
@@ -18939,7 +18943,7 @@ Public Sub HandleSetMOTD(ByVal UserIndex As Integer)
 112         auxiliaryString = Split(newMOTD, vbCrLf)
         
 114         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) Then
-116             Call LogGM(.name, "Ha fijado un nuevo MOTD")
+116             Call LogGM(.Name, "Ha fijado un nuevo MOTD")
             
 118             MaxLines = UBound(auxiliaryString()) + 1
             
@@ -18988,7 +18992,7 @@ Public Sub HandleChangeMOTD(ByVal UserIndex As Integer)
         
 
         '***************************************************
-        'Author: Juan Martín sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n sotuyo Dodero (Maraxus)
         'Last Modification: 12/29/06
         'Change the MOTD
         '***************************************************
@@ -19112,7 +19116,7 @@ End Sub
 Public Sub WriteRemoveAllDialogs(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "RemoveDialogs" message to the given user's outgoing data buffer
         '***************************************************
@@ -19140,7 +19144,7 @@ End Sub
 Public Sub WriteRemoveCharDialog(ByVal UserIndex As Integer, ByVal CharIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "RemoveCharDialog" message to the given user's outgoing data buffer
         '***************************************************
@@ -19166,7 +19170,7 @@ End Sub
 Public Sub WriteNavigateToggle(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "NavigateToggle" message to the given user's outgoing data buffer
         '***************************************************
@@ -19187,7 +19191,7 @@ End Sub
 Public Sub WriteNadarToggle(ByVal UserIndex As Integer, ByVal Puede As Boolean)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "NavigateToggle" message to the given user's outgoing data buffer
         '***************************************************
@@ -19288,7 +19292,7 @@ End Sub
 Public Sub WriteDisconnect(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "Disconnect" message to the given user's outgoing data buffer
         '***************************************************
@@ -19320,7 +19324,7 @@ End Sub
 Public Sub WriteCommerceEnd(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "CommerceEnd" message to the given user's outgoing data buffer
         '***************************************************
@@ -19347,7 +19351,7 @@ End Sub
 Public Sub WriteBankEnd(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "BankEnd" message to the given user's outgoing data buffer
         '***************************************************
@@ -19374,14 +19378,14 @@ End Sub
 Public Sub WriteCommerceInit(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "CommerceInit" message to the given user's outgoing data buffer
         '***************************************************
         On Error GoTo ErrHandler
 
 100     Call UserList(UserIndex).outgoingData.WriteByte(ServerPacketID.CommerceInit)
-102     Call UserList(UserIndex).outgoingData.WriteASCIIString(NpcList(UserList(UserIndex).flags.TargetNPC).name)
+102     Call UserList(UserIndex).outgoingData.WriteASCIIString(NpcList(UserList(UserIndex).flags.TargetNPC).Name)
         Exit Sub
 
 ErrHandler:
@@ -19402,7 +19406,7 @@ End Sub
 Public Sub WriteBankInit(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "BankInit" message to the given user's outgoing data buffer
         '***************************************************
@@ -19429,7 +19433,7 @@ End Sub
 Public Sub WriteUserCommerceInit(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "UserCommerceInit" message to the given user's outgoing data buffer
         '***************************************************
@@ -19456,7 +19460,7 @@ End Sub
 Public Sub WriteUserCommerceEnd(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "UserCommerceEnd" message to the given user's outgoing data buffer
         '***************************************************
@@ -19483,7 +19487,7 @@ End Sub
 Public Sub WriteShowBlacksmithForm(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "ShowBlacksmithForm" message to the given user's outgoing data buffer
         '***************************************************
@@ -19510,7 +19514,7 @@ End Sub
 Public Sub WriteShowCarpenterForm(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "ShowCarpenterForm" message to the given user's outgoing data buffer
         '***************************************************
@@ -19531,7 +19535,7 @@ End Sub
 Public Sub WriteShowAlquimiaForm(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "ShowCarpenterForm" message to the given user's outgoing data buffer
         '***************************************************
@@ -19552,7 +19556,7 @@ End Sub
 Public Sub WriteShowSastreForm(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "ShowCarpenterForm" message to the given user's outgoing data buffer
         '***************************************************
@@ -19579,7 +19583,7 @@ End Sub
 Public Sub WriteNPCKillUser(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "NPCKillUser" message to the given user's outgoing data buffer
         '***************************************************
@@ -19606,7 +19610,7 @@ End Sub
 Public Sub WriteBlockedWithShieldUser(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "BlockedWithShieldUser" message to the given user's outgoing data buffer
         '***************************************************
@@ -19633,7 +19637,7 @@ End Sub
 Public Sub WriteBlockedWithShieldOther(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "BlockedWithShieldOther" message to the given user's outgoing data buffer
         '***************************************************
@@ -19708,7 +19712,7 @@ End Function
 Public Sub WriteSafeModeOn(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "SafeModeOn" message to the given user's outgoing data buffer
         '***************************************************
@@ -19735,7 +19739,7 @@ End Sub
 Public Sub WriteSafeModeOff(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "SafeModeOff" message to the given user's outgoing data buffer
         '***************************************************
@@ -19855,7 +19859,7 @@ End Sub
 Public Sub WriteCantUseWhileMeditating(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "CantUseWhileMeditating" message to the given user's outgoing data buffer
         '***************************************************
@@ -19882,7 +19886,7 @@ End Sub
 Public Sub WriteUpdateSta(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "UpdateMana" message to the given user's outgoing data buffer
         '***************************************************
@@ -19914,7 +19918,7 @@ End Sub
 Public Sub WriteUpdateMana(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "UpdateMana" message to the given user's outgoing data buffer
         '***************************************************
@@ -19949,7 +19953,7 @@ Public Sub WriteUpdateHP(ByVal UserIndex As Integer)
 100     Call SendData(SendTarget.ToDiosesYclan, UserList(UserIndex).GuildIndex, PrepareMessageCharUpdateHP(UserIndex))
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "UpdateMana" message to the given user's outgoing data buffer
         '***************************************************
@@ -19981,7 +19985,7 @@ End Sub
 Public Sub WriteUpdateGold(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "UpdateGold" message to the given user's outgoing data buffer
         '***************************************************
@@ -20013,7 +20017,7 @@ End Sub
 Public Sub WriteUpdateExp(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "UpdateExp" message to the given user's outgoing data buffer
         '***************************************************
@@ -20046,7 +20050,7 @@ End Sub
 
 Public Sub WriteChangeMap(ByVal UserIndex As Integer, ByVal Map As Integer)
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "ChangeMap" message to the given user's outgoing data buffer
         '***************************************************
@@ -20082,7 +20086,7 @@ End Sub
 Public Sub WritePosUpdate(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "PosUpdate" message to the given user's outgoing data buffer
         '***************************************************
@@ -20117,7 +20121,7 @@ End Sub
 Public Sub WriteNPCHitUser(ByVal UserIndex As Integer, ByVal Target As PartesCuerpo, ByVal damage As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "NPCHitUser" message to the given user's outgoing data buffer
         '***************************************************
@@ -20151,7 +20155,7 @@ End Sub
 Public Sub WriteUserHitNPC(ByVal UserIndex As Integer, ByVal damage As Long)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "UserHitNPC" message to the given user's outgoing data buffer
         '***************************************************
@@ -20186,7 +20190,7 @@ End Sub
 Public Sub WriteUserAttackedSwing(ByVal UserIndex As Integer, ByVal AttackerIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "UserAttackedSwing" message to the given user's outgoing data buffer
         '***************************************************
@@ -20221,7 +20225,7 @@ End Sub
 Public Sub WriteUserHittedByUser(ByVal UserIndex As Integer, ByVal Target As PartesCuerpo, ByVal attackerChar As Integer, ByVal damage As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "UserHittedByUser" message to the given user's outgoing data buffer
         '***************************************************
@@ -20258,7 +20262,7 @@ End Sub
 Public Sub WriteUserHittedUser(ByVal UserIndex As Integer, ByVal Target As PartesCuerpo, ByVal attackedChar As Integer, ByVal damage As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "UserHittedUser" message to the given user's outgoing data buffer
         '***************************************************
@@ -20295,7 +20299,7 @@ End Sub
 Public Sub WriteChatOverHead(ByVal UserIndex As Integer, ByVal chat As String, ByVal CharIndex As Integer, ByVal Color As Long)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "ChatOverHead" message to the given user's outgoing data buffer
         '***************************************************
@@ -20372,7 +20376,7 @@ End Sub
 Public Sub WriteConsoleMsg(ByVal UserIndex As Integer, ByVal chat As String, ByVal FontIndex As FontTypeNames)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "ConsoleMsg" message to the given user's outgoing data buffer
         '***************************************************
@@ -20393,7 +20397,7 @@ End Sub
 Public Sub WriteLocaleMsg(ByVal UserIndex As Integer, ByVal Id As Integer, ByVal FontIndex As FontTypeNames, Optional ByVal strExtra As String = vbNullString)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "ConsoleMsg" message to the given user's outgoing data buffer
         '***************************************************
@@ -20416,7 +20420,7 @@ End Sub
 Public Sub WriteListaCorreo(ByVal UserIndex As Integer, ByVal Actualizar As Boolean)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "ConsoleMsg" message to the given user's outgoing data buffer
         '***************************************************
@@ -20444,7 +20448,7 @@ End Sub
 Public Sub WriteGuildChat(ByVal UserIndex As Integer, ByVal chat As String)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "GuildChat" message to the given user's outgoing data buffer
         '***************************************************
@@ -20472,7 +20476,7 @@ End Sub
 Public Sub WriteShowMessageBox(ByVal UserIndex As Integer, ByVal message As String)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "ShowMessageBox" message to the given user's outgoing data buffer
         '***************************************************
@@ -20498,7 +20502,7 @@ End Sub
 Public Sub WriteMostrarCuenta(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "ShowMessageBox" message to the given user's outgoing data buffer
         '***************************************************
@@ -20529,7 +20533,7 @@ End Sub
 Public Sub WriteUserIndexInServer(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "UserIndexInServer" message to the given user's outgoing data buffer
         '***************************************************
@@ -20561,7 +20565,7 @@ End Sub
 Public Sub WriteUserCharIndexInServer(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "UserIndexInServer" message to the given user's outgoing data buffer
         '***************************************************
@@ -20604,16 +20608,16 @@ End Sub
 ' @param    privileges Sets if the character is a normal one or any kind of administrative character.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As eHeading, ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal DM_Aura As String, ByVal RM_Aura As String, ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Byte, ByVal donador As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal Simbolo As Byte, Optional ByVal Idle As Boolean = False, Optional ByVal Navegando As Boolean = False)
+Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As eHeading, ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal Name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal DM_Aura As String, ByVal RM_Aura As String, ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Byte, ByVal donador As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal Simbolo As Byte, Optional ByVal Idle As Boolean = False, Optional ByVal Navegando As Boolean = False)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "CharacterCreate" message to the given user's outgoing data buffer
         '***************************************************
         On Error GoTo ErrHandler
 
-100     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageCharacterCreate(Body, Head, Heading, CharIndex, X, Y, weapon, shield, FX, FXLoops, helmet, name, Status, privileges, ParticulaFx, Head_Aura, Arma_Aura, Body_Aura, DM_Aura, RM_Aura, Otra_Aura, Escudo_Aura, speeding, EsNPC, donador, appear, group_index, clan_index, clan_nivel, UserMinHp, UserMaxHp, Simbolo, Idle, Navegando))
+100     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageCharacterCreate(Body, Head, Heading, CharIndex, X, Y, weapon, shield, FX, FXLoops, helmet, Name, Status, privileges, ParticulaFx, Head_Aura, Arma_Aura, Body_Aura, DM_Aura, RM_Aura, Otra_Aura, Escudo_Aura, speeding, EsNPC, donador, appear, group_index, clan_index, clan_nivel, UserMinHp, UserMaxHp, Simbolo, Idle, Navegando))
         Exit Sub
 
 ErrHandler:
@@ -20635,7 +20639,7 @@ End Sub
 Public Sub WriteCharacterRemove(ByVal UserIndex As Integer, ByVal CharIndex As Integer, ByVal Desvanecido As Boolean)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "CharacterRemove" message to the given user's outgoing data buffer
         '***************************************************
@@ -20665,7 +20669,7 @@ End Sub
 Public Sub WriteCharacterMove(ByVal UserIndex As Integer, ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "CharacterMove" message to the given user's outgoing data buffer
         '***************************************************
@@ -20723,7 +20727,7 @@ End Sub
 Public Sub WriteCharacterChange(ByVal UserIndex As Integer, ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As eHeading, ByVal CharIndex As Integer, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, Optional ByVal Idle As Boolean = False, Optional ByVal Navegando As Boolean = False)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "CharacterChange" message to the given user's outgoing data buffer
         '***************************************************
@@ -20752,7 +20756,7 @@ End Sub
 
 Public Sub WriteObjectCreate(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal Amount As Integer, ByVal X As Byte, ByVal Y As Byte)
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "ObjectCreate" message to the given user's outgoing data buffer
         '***************************************************
@@ -20838,7 +20842,7 @@ End Sub
 Public Sub WriteObjectDelete(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "ObjectDelete" message to the given user's outgoing data buffer
         '***************************************************
@@ -20868,7 +20872,7 @@ End Sub
 Public Sub WriteBlockPosition(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal Blocked As Byte)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "BlockPosition" message to the given user's outgoing data buffer
         '***************************************************
@@ -20904,7 +20908,7 @@ End Sub
 Public Sub WritePlayMidi(ByVal UserIndex As Integer, ByVal midi As Byte, Optional ByVal loops As Integer = -1)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "PlayMidi" message to the given user's outgoing data buffer
         '***************************************************
@@ -20934,7 +20938,7 @@ End Sub
 Public Sub WritePlayWave(ByVal UserIndex As Integer, ByVal wave As Integer, ByVal X As Byte, ByVal Y As Byte)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 08/08/07
         'Last Modified by: Rapsodius
         'Added X and Y positions for 3D Sounds
@@ -20963,7 +20967,7 @@ End Sub
 Public Sub WriteGuildList(ByVal UserIndex As Integer, ByRef guildList() As String)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "GuildList" message to the given user's outgoing data buffer
         '***************************************************
@@ -21007,7 +21011,7 @@ End Sub
 Public Sub WriteAreaChanged(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "AreaChanged" message to the given user's outgoing data buffer
         '***************************************************
@@ -21040,7 +21044,7 @@ End Sub
 Public Sub WritePauseToggle(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "PauseToggle" message to the given user's outgoing data buffer
         '***************************************************
@@ -21067,7 +21071,7 @@ End Sub
 Public Sub WriteRainToggle(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "RainToggle" message to the given user's outgoing data buffer
         '***************************************************
@@ -21088,7 +21092,7 @@ End Sub
 Public Sub WriteNubesToggle(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "RainToggle" message to the given user's outgoing data buffer
         '***************************************************
@@ -21109,7 +21113,7 @@ End Sub
 Public Sub WriteTrofeoToggleOn(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "RainToggle" message to the given user's outgoing data buffer
         '***************************************************
@@ -21130,7 +21134,7 @@ End Sub
 Public Sub WriteTrofeoToggleOff(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "RainToggle" message to the given user's outgoing data buffer
         '***************************************************
@@ -21160,7 +21164,7 @@ End Sub
 Public Sub WriteCreateFX(ByVal UserIndex As Integer, ByVal CharIndex As Integer, ByVal FX As Integer, ByVal FXLoops As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "CreateFX" message to the given user's outgoing data buffer
         '***************************************************
@@ -21186,7 +21190,7 @@ End Sub
 
 Public Sub WriteUpdateUserStats(ByVal UserIndex As Integer)
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "UpdateUserStats" message to the given user's outgoing data buffer
         '***************************************************
@@ -21242,20 +21246,20 @@ ErrHandler:
 
 End Sub
 
-' Actualiza el indicador de daño mágico
+' Actualiza el indicador de daï¿½o mï¿½gico
 Public Sub WriteUpdateDM(ByVal UserIndex As Integer)
         On Error GoTo ErrHandler
     
         Dim Valor As Integer
     
 100     With UserList(UserIndex).Invent
-            ' % daño mágico del arma
+            ' % daï¿½o mï¿½gico del arma
 102         If .WeaponEqpObjIndex > 0 Then
 104             Valor = Valor + ObjData(.WeaponEqpObjIndex).MagicDamageBonus
             End If
-            ' % daño mágico del anillo
-106         If .DañoMagicoEqpObjIndex > 0 Then
-108             Valor = Valor + ObjData(.DañoMagicoEqpObjIndex).MagicDamageBonus
+            ' % daï¿½o mï¿½gico del anillo
+106         If .Daï¿½oMagicoEqpObjIndex > 0 Then
+108             Valor = Valor + ObjData(.Daï¿½oMagicoEqpObjIndex).MagicDamageBonus
             End If
         End With
 
@@ -21273,29 +21277,29 @@ ErrHandler:
         End If
 End Sub
 
-' Actualiza el indicador de resistencia mágica
+' Actualiza el indicador de resistencia mï¿½gica
 Public Sub WriteUpdateRM(ByVal UserIndex As Integer)
         On Error GoTo ErrHandler
     
         Dim Valor As Integer
     
 100     With UserList(UserIndex).Invent
-            ' Resistencia mágica de la armadura
+            ' Resistencia mï¿½gica de la armadura
 102         If .ArmourEqpObjIndex > 0 Then
 104             Valor = Valor + ObjData(.ArmourEqpObjIndex).ResistenciaMagica
             End If
         
-            ' Resistencia mágica del anillo
+            ' Resistencia mï¿½gica del anillo
 106         If .ResistenciaEqpObjIndex > 0 Then
 108             Valor = Valor + ObjData(.ResistenciaEqpObjIndex).ResistenciaMagica
             End If
         
-            ' Resistencia mágica del escudo
+            ' Resistencia mï¿½gica del escudo
 110         If .EscudoEqpObjIndex > 0 Then
 112             Valor = Valor + ObjData(.EscudoEqpObjIndex).ResistenciaMagica
             End If
         
-            ' Resistencia mágica del casco
+            ' Resistencia mï¿½gica del casco
 114         If .CascoEqpObjIndex > 0 Then
 116             Valor = Valor + ObjData(.CascoEqpObjIndex).ResistenciaMagica
             End If
@@ -21327,7 +21331,7 @@ End Sub
 Public Sub WriteWorkRequestTarget(ByVal UserIndex As Integer, ByVal Skill As eSkill)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "WorkRequestTarget" message to the given user's outgoing data buffer
         '***************************************************
@@ -21414,7 +21418,7 @@ End Sub
 
 Public Sub WriteChangeInventorySlot(ByVal UserIndex As Integer, ByVal slot As Byte)
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 3/12/09
         'Writes the "ChangeInventorySlot" message to the given user's outgoing data buffer
         '3/12/09: Budi - Ahora se envia MaxDef y MinDef en lugar de Def
@@ -21464,7 +21468,7 @@ End Sub
 Public Sub WriteChangeBankSlot(ByVal UserIndex As Integer, ByVal slot As Byte)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "ChangeBankSlot" message to the given user's outgoing data buffer
         '***************************************************
@@ -21514,7 +21518,7 @@ End Sub
 Public Sub WriteChangeSpellSlot(ByVal UserIndex As Integer, ByVal slot As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "ChangeSpellSlot" message to the given user's outgoing data buffer
         '***************************************************
@@ -21554,7 +21558,7 @@ End Sub
 Public Sub WriteAttributes(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "Atributes" message to the given user's outgoing data buffer
         '***************************************************
@@ -21589,7 +21593,7 @@ End Sub
 Public Sub WriteBlacksmithWeapons(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 04/15/2008 (NicoNZ) Habia un error al fijarse los skills del personaje
         'Writes the "BlacksmithWeapons" message to the given user's outgoing data buffer
         '***************************************************
@@ -21654,7 +21658,7 @@ End Sub
 Public Sub WriteBlacksmithArmors(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 04/15/2008 (NicoNZ) Habia un error al fijarse los skills del personaje
         'Writes the "BlacksmithArmors" message to the given user's outgoing data buffer
         '***************************************************
@@ -21690,7 +21694,7 @@ Public Sub WriteBlacksmithArmors(ByVal UserIndex As Integer)
             ' Write the needed data of each object
 118         For i = 1 To Count
 120             obj = ObjData(ArmadurasHerrero(validIndexes(i)))
-122             Call .WriteASCIIString(obj.name)
+122             Call .WriteASCIIString(obj.Name)
 124             Call .WriteInteger(obj.LingH)
 126             Call .WriteInteger(obj.LingP)
 128             Call .WriteInteger(obj.LingO)
@@ -21719,7 +21723,7 @@ End Sub
 Public Sub WriteCarpenterObjects(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "CarpenterObjects" message to the given user's outgoing data buffer
         '***************************************************
@@ -21896,7 +21900,7 @@ End Sub
 Public Sub WriteRestOK(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "RestOK" message to the given user's outgoing data buffer
         '***************************************************
@@ -21924,7 +21928,7 @@ End Sub
 Public Sub WriteErrorMsg(ByVal UserIndex As Integer, ByVal message As String)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "ErrorMsg" message to the given user's outgoing data buffer
         '***************************************************
@@ -21951,7 +21955,7 @@ End Sub
 Public Sub WriteBlind(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "Blind" message to the given user's outgoing data buffer
         '***************************************************
@@ -21978,7 +21982,7 @@ End Sub
 Public Sub WriteDumb(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "Dumb" message to the given user's outgoing data buffer
         '***************************************************
@@ -22007,7 +22011,7 @@ End Sub
 Public Sub WriteShowSignal(ByVal UserIndex As Integer, ByVal ObjIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "ShowSignal" message to the given user's outgoing data buffer
         '***************************************************
@@ -22043,7 +22047,7 @@ End Sub
 Public Sub WriteChangeNPCInventorySlot(ByVal UserIndex As Integer, ByVal slot As Byte, ByRef obj As obj, ByVal price As Single)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Last Modified by: Nicolas Ezequiel Bouhid (NicoNZ)
         'Writes the "ChangeNPCInventorySlot" message to the given user's outgoing data buffer
@@ -22088,7 +22092,7 @@ End Sub
 Public Sub WriteUpdateHungerAndThirst(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "UpdateHungerAndThirst" message to the given user's outgoing data buffer
         '***************************************************
@@ -22165,7 +22169,7 @@ End Sub
 Public Sub WriteFYA(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "Fame" message to the given user's outgoing data buffer
         '***************************************************
@@ -22193,7 +22197,7 @@ End Sub
 Public Sub WriteCerrarleCliente(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "Fame" message to the given user's outgoing data buffer
         '***************************************************
@@ -22218,7 +22222,7 @@ End Sub
 Public Sub WriteOxigeno(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "Fame" message to the given user's outgoing data buffer
         '***************************************************
@@ -22244,7 +22248,7 @@ End Sub
 Public Sub WriteContadores(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "Fame" message to the given user's outgoing data buffer
         '***************************************************
@@ -22315,7 +22319,7 @@ End Sub
 Public Sub WriteMiniStats(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "MiniStats" message to the given user's outgoing data buffer
         '***************************************************
@@ -22328,7 +22332,7 @@ Public Sub WriteMiniStats(ByVal UserIndex As Integer)
 106         Call .WriteLong(UserList(UserIndex).Faccion.CriminalesMatados)
 108         Call .WriteByte(UserList(UserIndex).Faccion.Status)
         
-            'TODO : Este valor es calculable, no debería NI EXISTIR, ya sea en el servidor ni en el cliente!!!
+            'TODO : Este valor es calculable, no deberï¿½a NI EXISTIR, ya sea en el servidor ni en el cliente!!!
             'Call .WriteLong(UserList(UserIndex).Stats.UsuariosMatados)
         
 110         Call .WriteInteger(UserList(UserIndex).Stats.NPCsMuertos)
@@ -22369,7 +22373,7 @@ End Sub
 Public Sub WriteLevelUp(ByVal UserIndex As Integer, ByVal skillPoints As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "LevelUp" message to the given user's outgoing data buffer
         '***************************************************
@@ -22402,7 +22406,7 @@ End Sub
 Public Sub WriteAddForumMsg(ByVal UserIndex As Integer, ByVal title As String, ByVal message As String)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "AddForumMsg" message to the given user's outgoing data buffer
         '***************************************************
@@ -22435,7 +22439,7 @@ End Sub
 Public Sub WriteShowForumForm(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "ShowForumForm" message to the given user's outgoing data buffer
         '***************************************************
@@ -22463,7 +22467,7 @@ End Sub
 
 Public Sub WriteSetInvisible(ByVal UserIndex As Integer, ByVal CharIndex As Integer, ByVal invisible As Boolean)
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "SetInvisible" message to the given user's outgoing data buffer
         '***************************************************
@@ -22498,7 +22502,7 @@ End Sub
 Public Sub WriteDiceRoll(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "DiceRoll" message to the given user's outgoing data buffer
         '***************************************************
@@ -22534,7 +22538,7 @@ End Sub
 Public Sub WriteMeditateToggle(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "MeditateToggle" message to the given user's outgoing data buffer
         '***************************************************
@@ -22561,7 +22565,7 @@ End Sub
 Public Sub WriteBlindNoMore(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "BlindNoMore" message to the given user's outgoing data buffer
         '***************************************************
@@ -22588,7 +22592,7 @@ End Sub
 Public Sub WriteDumbNoMore(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "DumbNoMore" message to the given user's outgoing data buffer
         '***************************************************
@@ -22615,7 +22619,7 @@ End Sub
 Public Sub WriteSendSkills(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "SendSkills" message to the given user's outgoing data buffer
         '***************************************************
@@ -22653,7 +22657,7 @@ End Sub
 Public Sub WriteTrainerCreatureList(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "TrainerCreatureList" message to the given user's outgoing data buffer
         '***************************************************
@@ -22699,7 +22703,7 @@ End Sub
 Public Sub WriteGuildNews(ByVal UserIndex As Integer, ByVal guildNews As String, ByRef guildList() As String, ByRef MemberList() As String, ByVal ClanNivel As Byte, ByVal ExpAcu As Integer, ByVal ExpNe As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "GuildNews" message to the given user's outgoing data buffer
         '***************************************************
@@ -22759,7 +22763,7 @@ End Sub
 Public Sub WriteOfferDetails(ByVal UserIndex As Integer, ByVal details As String)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "OfferDetails" message to the given user's outgoing data buffer
         '***************************************************
@@ -22795,7 +22799,7 @@ End Sub
 Public Sub WriteAlianceProposalsList(ByVal UserIndex As Integer, ByRef guilds() As String)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "AlianceProposalsList" message to the given user's outgoing data buffer
         '***************************************************
@@ -22840,7 +22844,7 @@ End Sub
 Public Sub WritePeaceProposalsList(ByVal UserIndex As Integer, ByRef guilds() As String)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "PeaceProposalsList" message to the given user's outgoing data buffer
         '***************************************************
@@ -22898,7 +22902,7 @@ End Sub
 Public Sub WriteCharacterInfo(ByVal UserIndex As Integer, ByVal CharName As String, ByVal race As eRaza, ByVal Class As eClass, ByVal gender As eGenero, ByVal level As Byte, ByVal gold As Long, ByVal bank As Long, ByVal previousPetitions As String, ByVal currentGuild As String, ByVal previousGuilds As String, ByVal RoyalArmy As Boolean, ByVal CaosLegion As Boolean, ByVal citicensKilled As Long, ByVal criminalsKilled As Long)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "CharacterInfo" message to the given user's outgoing data buffer
         '***************************************************
@@ -22952,7 +22956,7 @@ End Sub
 Public Sub WriteGuildLeaderInfo(ByVal UserIndex As Integer, ByRef guildList() As String, ByRef MemberList() As String, ByVal guildNews As String, ByRef joinRequests() As String, ByVal NivelDeClan As Byte, ByVal ExpActual As Integer, ByVal ExpNecesaria As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "GuildLeaderInfo" message to the given user's outgoing data buffer
         '***************************************************
@@ -23039,7 +23043,7 @@ End Sub
 Public Sub WriteGuildDetails(ByVal UserIndex As Integer, ByVal GuildName As String, ByVal founder As String, ByVal foundationDate As String, ByVal leader As String, ByVal memberCount As Integer, ByVal alignment As String, ByVal guildDesc As String, ByVal NivelDeClan As Byte, ByVal ExpActual As Integer, ByVal ExpNecesaria As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "GuildDetails" message to the given user's outgoing data buffer
         '***************************************************
@@ -23089,7 +23093,7 @@ End Sub
 Public Sub WriteShowGuildFundationForm(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "ShowGuildFundationForm" message to the given user's outgoing data buffer
         '***************************************************
@@ -23116,7 +23120,7 @@ End Sub
 Public Sub WriteParalizeOK(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 08/12/07
         'Last Modified By: Lucas Tavolaro Ortiz (Tavo)
         'Writes the "ParalizeOK" message to the given user's outgoing data buffer
@@ -23189,7 +23193,7 @@ End Sub
 Public Sub WriteShowUserRequest(ByVal UserIndex As Integer, ByVal details As String)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "ShowUserRequest" message to the given user's outgoing data buffer
         '***************************************************
@@ -23224,7 +23228,7 @@ End Sub
 Public Sub WriteChangeUserTradeSlot(ByVal UserIndex As Integer, ByRef itemsAenviar() As obj, ByVal gold As Long, ByVal miOferta As Boolean)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "ChangeUserTradeSlot" message to the given user's outgoing data buffer
         '***************************************************
@@ -23276,7 +23280,7 @@ End Sub
 Public Sub WriteSpawnList(ByVal UserIndex As Integer, ByRef npcNames() As String)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "SpawnList" message to the given user's outgoing data buffer
         '***************************************************
@@ -23320,7 +23324,7 @@ End Sub
 Public Sub WriteShowSOSForm(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "ShowSOSForm" message to the given user's outgoing data buffer
         '***************************************************
@@ -23364,7 +23368,7 @@ End Sub
 Public Sub WriteShowMOTDEditionForm(ByVal UserIndex As Integer, ByVal currentMOTD As String)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "ShowMOTDEditionForm" message to the given user's outgoing data buffer
         '***************************************************
@@ -23397,7 +23401,7 @@ End Sub
 Public Sub WriteShowGMPanelForm(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "ShowGMPanelForm" message to the given user's outgoing data buffer
         '***************************************************
@@ -23420,7 +23424,7 @@ End Sub
 Public Sub WriteShowFundarClanForm(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "ShowGMPanelForm" message to the given user's outgoing data buffer
         '***************************************************
@@ -23449,7 +23453,7 @@ End Sub
 Public Sub WriteUserNameList(ByVal UserIndex As Integer, ByRef userNamesList() As String, ByVal cant As Integer)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06 NIGO:
         'Writes the "UserNameList" message to the given user's outgoing data buffer
         '***************************************************
@@ -23493,7 +23497,7 @@ End Sub
 Public Sub WritePong(ByVal UserIndex As Integer, ByVal Time As Long)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "Pong" message to the given user's outgoing data buffer
         '***************************************************
@@ -23565,7 +23569,7 @@ Public Function PrepareMessageSetInvisible(ByVal CharIndex As Integer, ByVal inv
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Prepares the "SetInvisible" message and returns it.
         '***************************************************
@@ -23595,7 +23599,7 @@ Public Function PrepareMessageSetEscribiendo(ByVal CharIndex As Integer, ByVal E
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Prepares the "SetInvisible" message and returns it.
         '***************************************************
@@ -23627,13 +23631,13 @@ End Function
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The message is written to no outgoing buffer, but only prepared in a single string to be easily sent to several clients.
 
-Public Function PrepareMessageChatOverHead(ByVal chat As String, ByVal CharIndex As Integer, ByVal Color As Long, Optional ByVal name As String = "") As String
+Public Function PrepareMessageChatOverHead(ByVal chat As String, ByVal CharIndex As Integer, ByVal Color As Long, Optional ByVal Name As String = "") As String
         
         On Error GoTo PrepareMessageChatOverHead_Err
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Prepares the "ChatOverHead" message and returns it.
         '***************************************************
@@ -23753,7 +23757,7 @@ Public Function PrepareMessageConsoleMsg(ByVal chat As String, ByVal FontIndex A
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Prepares the "ConsoleMsg" message and returns it.
         '***************************************************
@@ -23781,7 +23785,7 @@ Public Function PrepareMessageLocaleMsg(ByVal Id As Integer, ByVal chat As Strin
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Prepares the "ConsoleMsg" message and returns it.
         '***************************************************
@@ -23806,7 +23810,7 @@ End Function
 
 Public Function PrepareMessageListaCorreo(ByVal UserIndex As Integer, ByVal Actualizar As Boolean) As String
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Prepares the "ConsoleMsg" message and returns it.
         '***************************************************
@@ -23871,7 +23875,7 @@ Public Function PrepareMessageCreateFX(ByVal CharIndex As Integer, ByVal FX As I
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Prepares the "CreateFX" message and returns it
         '***************************************************
@@ -23922,7 +23926,7 @@ Public Function PrepareMessageParticleFX(ByVal CharIndex As Integer, ByVal Parti
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Prepares the "CreateFX" message and returns it
         '***************************************************
@@ -23952,7 +23956,7 @@ Public Function PrepareMessageParticleFXWithDestino(ByVal Emisor As Integer, ByV
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Prepares the "CreateFX" message and returns it
         '***************************************************
@@ -23985,7 +23989,7 @@ Public Function PrepareMessageParticleFXWithDestinoXY(ByVal Emisor As Integer, B
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Prepares the "CreateFX" message and returns it
         '***************************************************
@@ -24019,7 +24023,7 @@ Public Function PrepareMessageAuraToChar(ByVal CharIndex As Integer, ByVal Aura 
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Prepares the "CreateFX" message and returns it
         '***************************************************
@@ -24048,7 +24052,7 @@ Public Function PrepareMessageSpeedingACT(ByVal CharIndex As Integer, ByVal spee
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Prepares the "CreateFX" message and returns it
         '***************************************************
@@ -24136,7 +24140,7 @@ Public Function PrepareMessagePlayWave(ByVal wave As Integer, ByVal X As Byte, B
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 08/08/07
         'Last Modified by: Rapsodius
         'Added X and Y positions for 3D Sounds
@@ -24166,7 +24170,7 @@ Public Function PrepareMessageUbicacionLlamada(ByVal Mapa As Integer, ByVal X As
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 08/08/07
         'Last Modified by: Rapsodius
         'Added X and Y positions for 3D Sounds
@@ -24196,7 +24200,7 @@ Public Function PrepareMessageCharUpdateHP(ByVal UserIndex As Integer) As String
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 08/08/07
         'Last Modified by: Rapsodius
         'Added X and Y positions for 3D Sounds
@@ -24272,7 +24276,7 @@ Public Function PrepareMessageFlashScreen(ByVal Color As Long, ByVal Duracion As
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 08/08/07
         'Last Modified by: Rapsodius
         'Added X and Y positions for 3D Sounds
@@ -24308,7 +24312,7 @@ Public Function PrepareMessageGuildChat(ByVal chat As String) As String
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Prepares the "GuildChat" message and returns it
         '***************************************************
@@ -24377,7 +24381,7 @@ Public Function PrepareMessagePlayMidi(ByVal midi As Byte, Optional ByVal loops 
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Prepares the "GuildChat" message and returns it
         '***************************************************
@@ -24435,7 +24439,7 @@ Public Function PrepareMessagePauseToggle() As String
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Prepares the "PauseToggle" message and returns it
         '***************************************************
@@ -24466,7 +24470,7 @@ Public Function PrepareMessageRainToggle() As String
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Prepares the "RainToggle" message and returns it
         '***************************************************
@@ -24492,7 +24496,7 @@ Public Function PrepareMessageTrofeoToggleOn() As String
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Prepares the "TrofeoToggle" message and returns it
         '***************************************************
@@ -24518,7 +24522,7 @@ Public Function PrepareMessageTrofeoToggleOff() As String
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Prepares the "TrofeoToggle" message and returns it
         '***************************************************
@@ -24544,7 +24548,7 @@ Public Function PrepareMessageHora() As String
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Prepares the "RainToggle" message and returns it
         '***************************************************
@@ -24580,7 +24584,7 @@ Public Function PrepareMessageObjectDelete(ByVal X As Byte, ByVal Y As Byte) As 
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Prepares the "ObjectDelete" message and returns it
         '***************************************************
@@ -24655,7 +24659,7 @@ Public Function PrepareMessageObjectCreate(ByVal ObjIndex As Integer, ByVal Amou
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'prepares the "ObjectCreate" message and returns it
         '***************************************************
@@ -24685,7 +24689,7 @@ Public Function PrepareMessageFxPiso(ByVal GrhIndex As Integer, ByVal X As Byte,
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'prepares the "ObjectCreate" message and returns it
         '***************************************************
@@ -24721,7 +24725,7 @@ Public Function PrepareMessageCharacterRemove(ByVal CharIndex As Integer, ByVal 
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Prepares the "CharacterRemove" message and returns it
         '***************************************************
@@ -24756,7 +24760,7 @@ Public Function PrepareMessageRemoveCharDialog(ByVal CharIndex As Integer) As St
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "RemoveCharDialog" message to the given user's outgoing data buffer
         '***************************************************
@@ -24797,9 +24801,9 @@ End Function
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As eHeading, ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal DM_Aura As String, ByVal RM_Aura As String, ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Byte, ByVal donador As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal Simbolo As Byte, ByVal Idle As Boolean, ByVal Navegando As Boolean) As String
+Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As eHeading, ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal Name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal DM_Aura As String, ByVal RM_Aura As String, ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Byte, ByVal donador As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal Simbolo As Byte, ByVal Idle As Boolean, ByVal Navegando As Boolean) As String
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Prepares the "CharacterCreate" message and returns it
         '***************************************************
@@ -24821,7 +24825,7 @@ Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, ByVal Head 
 120         Call .WriteInteger(helmet)
 122         Call .WriteInteger(FX)
 124         Call .WriteInteger(FXLoops)
-126         Call .WriteASCIIString(name)
+126         Call .WriteASCIIString(Name)
 128         Call .WriteByte(Status)
 130         Call .WriteByte(privileges)
 132         Call .WriteByte(ParticulaFx)
@@ -24879,7 +24883,7 @@ Public Function PrepareMessageCharacterChange(ByVal Body As Integer, ByVal Head 
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Prepares the "CharacterChange" message and returns it
         '***************************************************
@@ -24926,7 +24930,7 @@ Public Function PrepareMessageCharacterMove(ByVal CharIndex As Integer, ByVal X 
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Prepares the "CharacterMove" message and returns it
         '***************************************************
@@ -24994,7 +24998,7 @@ Public Function PrepareMessageUpdateTagAndStatus(ByVal UserIndex As Integer, Sta
         '***************************************************
         'Author: Alejandro Salvo (Salvito)
         'Last Modification: 04/07/07
-        'Last Modified By: Juan Martín Sotuyo Dodero (Maraxus)
+        'Last Modified By: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Prepares the "UpdateTagAndStatus" message and returns it
         '***************************************************
 100     With auxiliarBuffer
@@ -25021,7 +25025,7 @@ End Function
 Public Sub WriteUpdateNPCSimbolo(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal Simbolo As Byte)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "Fame" message to the given user's outgoing data buffer
         '***************************************************
@@ -25057,7 +25061,7 @@ Public Function PrepareMessageErrorMsg(ByVal message As String) As String
         
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Prepares the "ErrorMsg" message and returns it
         '***************************************************
@@ -25106,19 +25110,19 @@ Private Sub HandleQuestionGM(ByVal UserIndex As Integer)
 112         TipoDeConsulta = Buffer.ReadASCIIString()
 
 114         If UserList(UserIndex).donador.activo = 1 Then
-116             Call Ayuda.Push(.name, Consulta, TipoDeConsulta & "-Prioritario")
-118             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Se ha recibido un nuevo mensaje de soporte de " & UserList(UserIndex).name & "(Prioritario).", FontTypeNames.FONTTYPE_SERVER))
+116             Call Ayuda.Push(.Name, Consulta, TipoDeConsulta & "-Prioritario")
+118             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Se ha recibido un nuevo mensaje de soporte de " & UserList(UserIndex).Name & "(Prioritario).", FontTypeNames.FONTTYPE_SERVER))
             
             Else
-120             Call Ayuda.Push(.name, Consulta, TipoDeConsulta)
-122             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Se ha recibido un nuevo mensaje de soporte de " & UserList(UserIndex).name & ".", FontTypeNames.FONTTYPE_SERVER))
+120             Call Ayuda.Push(.Name, Consulta, TipoDeConsulta)
+122             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Se ha recibido un nuevo mensaje de soporte de " & UserList(UserIndex).Name & ".", FontTypeNames.FONTTYPE_SERVER))
 
             End If
 
 124         Call WriteConsoleMsg(UserIndex, "Tu mensaje fue recibido por el equipo de soporte.", FontTypeNames.FONTTYPE_INFOIAO)
             'Call WriteConsoleMsg(UserIndex, "Tu mensaje fue recibido por el equipo de soporte.", FontTypeNames.FONTTYPE_INFOIAO)
         
-126         Call LogConsulta(.name & " (" & TipoDeConsulta & ") " & Consulta)
+126         Call LogConsulta(.Name & " (" & TipoDeConsulta & ") " & Consulta)
         
             'If we got here then packet is complete, copy data back to original queue
 128         Call .incomingData.CopyBuffer(Buffer)
@@ -25168,26 +25172,26 @@ Private Sub HandleOfertaInicial(ByVal UserIndex As Integer)
             End If
 
 114         If .flags.TargetNPC < 1 Then
-116             Call WriteConsoleMsg(UserIndex, "Primero tenés que hacer click sobre el subastador.", FontTypeNames.FONTTYPE_INFO)
+116             Call WriteConsoleMsg(UserIndex, "Primero tenï¿½s que hacer click sobre el subastador.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
 
 118         If NpcList(.flags.TargetNPC).NPCtype <> eNPCType.Subastador Then
-120             Call WriteConsoleMsg(UserIndex, "Primero tenés que hacer click sobre el subastador.", FontTypeNames.FONTTYPE_INFO)
+120             Call WriteConsoleMsg(UserIndex, "Primero tenï¿½s que hacer click sobre el subastador.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
         
 122         If Distancia(NpcList(.flags.TargetNPC).Pos, .Pos) > 2 Then
 124             Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos del subastador.", FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(UserIndex, "Estï¿½s demasiado lejos del subastador.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
         
 126         If .flags.Subastando = False Then
-128             Call WriteChatOverHead(UserIndex, "Oye amigo, tu no podés decirme cual es la oferta inicial.", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
+128             Call WriteChatOverHead(UserIndex, "Oye amigo, tu no podï¿½s decirme cual es la oferta inicial.", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
                 Exit Sub
 
             End If
@@ -25202,15 +25206,15 @@ Private Sub HandleOfertaInicial(ByVal UserIndex As Integer)
 136             UserList(UserIndex).Counters.TiempoParaSubastar = 0
 138             Subasta.OfertaInicial = Oferta
 140             Subasta.MejorOferta = 0
-142             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.name & " está subastando: " & ObjData(Subasta.ObjSubastado).name & " (Cantidad: " & Subasta.ObjSubastadoCantidad & " ) - con un precio inicial de " & PonerPuntos(Subasta.OfertaInicial) & " monedas. Escribe /OFERTAR (cantidad) para participar.", FontTypeNames.FONTTYPE_SUBASTA))
+142             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.Name & " estï¿½ subastando: " & ObjData(Subasta.ObjSubastado).Name & " (Cantidad: " & Subasta.ObjSubastadoCantidad & " ) - con un precio inicial de " & PonerPuntos(Subasta.OfertaInicial) & " monedas. Escribe /OFERTAR (cantidad) para participar.", FontTypeNames.FONTTYPE_SUBASTA))
 144             .flags.Subastando = False
 146             Subasta.HaySubastaActiva = True
-148             Subasta.Subastador = .name
+148             Subasta.Subastador = .Name
 150             Subasta.MinutosDeSubasta = 5
 152             Subasta.TiempoRestanteSubasta = 300
 154             Call LogearEventoDeSubasta("#################################################################################################################################################################################################")
 156             Call LogearEventoDeSubasta("El dia: " & Date & " a las " & Time)
-158             Call LogearEventoDeSubasta(.name & ": Esta subastando el item numero " & Subasta.ObjSubastado & " con una cantidad de " & Subasta.ObjSubastadoCantidad & " y con un precio inicial de " & PonerPuntos(Subasta.OfertaInicial) & " monedas.")
+158             Call LogearEventoDeSubasta(.Name & ": Esta subastando el item numero " & Subasta.ObjSubastado & " con una cantidad de " & Subasta.ObjSubastadoCantidad & " y con un precio inicial de " & PonerPuntos(Subasta.OfertaInicial) & " monedas.")
 160             frmMain.SubastaTimer.Enabled = True
 162             Call WarpUserChar(UserIndex, 14, 27, 64, True)
 
@@ -25268,8 +25272,8 @@ Private Sub HandleOfertaDeSubasta(ByVal UserIndex As Integer)
 
             End If
         
-130         If .name = Subasta.Subastador Then
-132             Call WriteConsoleMsg(UserIndex, "No podés auto ofertar en tus subastas. La proxima vez iras a la carcel...", FontTypeNames.FONTTYPE_INFOIAO)
+130         If .Name = Subasta.Subastador Then
+132             Call WriteConsoleMsg(UserIndex, "No podï¿½s auto ofertar en tus subastas. La proxima vez iras a la carcel...", FontTypeNames.FONTTYPE_INFOIAO)
 134             Call .incomingData.CopyBuffer(Buffer)
                 Exit Sub
 
@@ -25287,18 +25291,18 @@ Private Sub HandleOfertaDeSubasta(ByVal UserIndex As Integer)
                 End If
             
 146             Subasta.MejorOferta = Oferta
-148             Subasta.Comprador = .name
+148             Subasta.Comprador = .Name
             
 150             .Stats.GLD = .Stats.GLD - Oferta
 152             Call WriteUpdateGold(UserIndex)
             
 154             If Subasta.TiempoRestanteSubasta < 60 Then
-156                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Oferta mejorada por: " & .name & " (Ofrece " & PonerPuntos(Oferta) & " monedas de oro) - Tiempo Extendido. Escribe /SUBASTA para mas informaciín.", FontTypeNames.FONTTYPE_SUBASTA))
-158                 Call LogearEventoDeSubasta(.name & ": Mejoro la oferta en el ultimo minuto ofreciendo " & PonerPuntos(Oferta) & " monedas.")
+156                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Oferta mejorada por: " & .Name & " (Ofrece " & PonerPuntos(Oferta) & " monedas de oro) - Tiempo Extendido. Escribe /SUBASTA para mas informaciï¿½n.", FontTypeNames.FONTTYPE_SUBASTA))
+158                 Call LogearEventoDeSubasta(.Name & ": Mejoro la oferta en el ultimo minuto ofreciendo " & PonerPuntos(Oferta) & " monedas.")
 160                 Subasta.TiempoRestanteSubasta = Subasta.TiempoRestanteSubasta + 30
                 Else
-162                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Oferta mejorada por: " & .name & " (Ofrece " & PonerPuntos(Oferta) & " monedas de oro). Escribe /SUBASTA para mas informaciín.", FontTypeNames.FONTTYPE_SUBASTA))
-164                 Call LogearEventoDeSubasta(.name & ": Mejoro la oferta ofreciendo " & PonerPuntos(Oferta) & " monedas.")
+162                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Oferta mejorada por: " & .Name & " (Ofrece " & PonerPuntos(Oferta) & " monedas de oro). Escribe /SUBASTA para mas informaciï¿½n.", FontTypeNames.FONTTYPE_SUBASTA))
+164                 Call LogearEventoDeSubasta(.Name & ": Mejoro la oferta ofreciendo " & PonerPuntos(Oferta) & " monedas.")
 166                 Subasta.HuboOferta = True
 168                 Subasta.PosibleCancelo = False
 
@@ -25364,7 +25368,7 @@ Private Sub HandleGlobalMessage(ByVal UserIndex As Integer)
 114             Call WriteLocaleMsg(UserIndex, "110", FontTypeNames.FONTTYPE_VENENO, .flags.MinutosRestantes)
                 'Call WriteConsoleMsg(UserIndex, "Los administradores te han impedido hablar durante los proximos " & .flags.MinutosRestantes & " minutos debido a tu comportamiento.", FontTypeNames.FONTTYPE_VENENO)
             ElseIf ElapsedTime < IntervaloMensajeGlobal Then
-                Call WriteConsoleMsg(UserIndex, "No puedes escribir mensajes globales tan rápido.", FontTypeNames.FONTTYPE_WARNING)
+                Call WriteConsoleMsg(UserIndex, "No puedes escribir mensajes globales tan rï¿½pido.", FontTypeNames.FONTTYPE_WARNING)
             Else
                 UserList(UserIndex).Counters.MensajeGlobal = TActual
 116                 If EstadoGlobal Then
@@ -25379,10 +25383,10 @@ Private Sub HandleGlobalMessage(ByVal UserIndex As Integer)
                         Next
                         .flags.ChatHistory(UBound(.flags.ChatHistory)) = chat
 
-122                         Call modSendData.SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("[" & .name & "] " & chat, FontTypeNames.FONTTYPE_GLOBAL))
+122                         Call modSendData.SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("[" & .Name & "] " & chat, FontTypeNames.FONTTYPE_GLOBAL))
 
                         'TODO : Con la 0.12.1 se debe definir si esto vuelve o se borra (/CMSG overhead)
-                        'Call SendData(SendTarget.ToPCArea, UserIndex, UserList(UserIndex).Pos.map, "||" & vbBlue & "í< " & rData & " >í" & CStr(UserList(UserIndex).Char.CharIndex))
+                        'Call SendData(SendTarget.ToPCArea, UserIndex, UserList(UserIndex).Pos.map, "||" & vbBlue & "ï¿½< " & rData & " >ï¿½" & CStr(UserList(UserIndex).Char.CharIndex))
                     End If
 
                 Else
@@ -25422,7 +25426,7 @@ Public Sub HandleGlobalOnOff(ByVal UserIndex As Integer)
 102         Call .incomingData.ReadByte
         
 104         If Not EsGM(UserIndex) Then Exit Sub
-106         Call LogGM(.name, "/GLOBAL")
+106         Call LogGM(.Name, "/GLOBAL")
         
 108         If EstadoGlobal = False Then
 110             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor> Chat general habilitado. Escribe" & Chr(34) & "/CONSOLA" & Chr(34) & " o " & Chr(34) & ";" & Chr(34) & " y su mensaje para utilizarlo.", FontTypeNames.FONTTYPE_SERVER))
@@ -25487,7 +25491,7 @@ Public Sub SilenciarUserName(ByVal SilencioUserIndex As Integer, ByVal UserName 
                         'ponemos la pena
 128                     cantPenas = val(GetVar(CharPath & UserName & ".chr", "PENAS", "Cant"))
 130                     Call WriteVar(CharPath & UserName & ".chr", "PENAS", "Cant", cantPenas + 1)
-132                     Call WriteVar(CharPath & UserName & ".chr", "PENAS", "P" & cantPenas + 1, LCase$(.name) & ": Silenciado durante " & Time & " minutos. " & Date & " ")
+132                     Call WriteVar(CharPath & UserName & ".chr", "PENAS", "P" & cantPenas + 1, LCase$(.Name) & ": Silenciado durante " & Time & " minutos. " & Date & " ")
 
                     End If
 
@@ -25503,13 +25507,13 @@ Public Sub SilenciarUserName(ByVal SilencioUserIndex As Integer, ByVal UserName 
 
                 End If
             
-140             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> " & .name & " ha silenciado a " & UserList(tUser).name & ", por " & Time & " minutos.", FontTypeNames.FONTTYPE_SERVER))
+140             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> " & .Name & " ha silenciado a " & UserList(tUser).Name & ", por " & Time & " minutos.", FontTypeNames.FONTTYPE_SERVER))
             
                 'Ponemos el flag de ban a 1
 142             UserList(tUser).flags.Silenciado = 1
 144             UserList(tUser).flags.MinutosRestantes = Time
 146             UserList(tUser).flags.SegundosPasados = 0
-148             Call LogGM(.name, "Silencio a " & UserName)
+148             Call LogGM(.Name, "Silencio a " & UserName)
             
                 'ponemos el flag de silencio
 150             Call WriteVar(CharPath & UserName & ".chr", "FLAGS", "Silenciado", "1")
@@ -25518,7 +25522,7 @@ Public Sub SilenciarUserName(ByVal SilencioUserIndex As Integer, ByVal UserName 
                 'ponemos la pena
 156             cantPenas = val(GetVar(CharPath & UserName & ".chr", "PENAS", "Cant"))
 158             Call WriteVar(CharPath & UserName & ".chr", "PENAS", "Cant", cantPenas + 1)
-160             Call WriteVar(CharPath & UserName & ".chr", "PENAS", "P" & cantPenas + 1, LCase$(.name) & ": silencio por " & Time & " minutos. " & Date & " " & Time)
+160             Call WriteVar(CharPath & UserName & ".chr", "PENAS", "P" & cantPenas + 1, LCase$(.Name) & ": silencio por " & Time & " minutos. " & Date & " " & Time)
                 'Call WriteConsoleMsg(tUser, "Has sido silenciado durante " & Time & " minutos.", FontTypeNames.FONTTYPE_INFO)
 162             Call WriteLocaleMsg(tUser, "11", FontTypeNames.FONTTYPE_VENENO)
 
@@ -25562,7 +25566,7 @@ Private Sub HandleCrearCuenta(ByVal UserIndex As Integer)
 110     CuentaPassword = Buffer.ReadASCIIString()
   
 112     If Not CheckMailString(CuentaEmail) Then
-114         Call WriteErrorMsg(UserIndex, "Email inválido.")
+114         Call WriteErrorMsg(UserIndex, "Email invï¿½lido.")
         
 116         Call CloseSocket(UserIndex)
             Exit Sub
@@ -25575,11 +25579,11 @@ Private Sub HandleCrearCuenta(ByVal UserIndex As Integer)
     
 122         Call EnviarCorreo(CuentaEmail)
 124         Call WriteShowFrmLogear(UserIndex)
-126         Call WriteShowMessageBox(UserIndex, "Cuenta creada. Se ha enviado un código de validación a su email, debe activar la cuenta antes de poder usarla. Recuerde revisar SPAM en caso de no encontrar el mail.")
+126         Call WriteShowMessageBox(UserIndex, "Cuenta creada. Se ha enviado un cï¿½digo de validaciï¿½n a su email, debe activar la cuenta antes de poder usarla. Recuerde revisar SPAM en caso de no encontrar el mail.")
         
 128         Call UserList(UserIndex).incomingData.CopyBuffer(Buffer)
         Else
-130         Call WriteShowMessageBox(UserIndex, "El email ya está en uso.")
+130         Call WriteShowMessageBox(UserIndex, "El email ya estï¿½ en uso.")
         
 132         Call CloseSocket(UserIndex)
 
@@ -25628,7 +25632,7 @@ Private Sub HandleValidarCuenta(ByVal UserIndex As Integer)
 
 112     If Not CheckMailString(CuentaEmail) Then
 114         Call WriteShowFrmLogear(UserIndex)
-116         Call WriteShowMessageBox(UserIndex, "Email inválido.")
+116         Call WriteShowMessageBox(UserIndex, "Email invï¿½lido.")
         
 118         Call CloseSocket(UserIndex)
             Exit Sub
@@ -25646,10 +25650,10 @@ Private Sub HandleValidarCuenta(ByVal UserIndex As Integer)
                     End If
 
 132                 Call WriteShowFrmLogear(UserIndex)
-134                 Call WriteShowMessageBox(UserIndex, "Cuenta activada con éxito, ya puede ingresar.")
+134                 Call WriteShowMessageBox(UserIndex, "Cuenta activada con ï¿½xito, ya puede ingresar.")
                 Else
 136                 Call WriteShowFrmLogear(UserIndex)
-138                 Call WriteShowMessageBox(UserIndex, "¡Código de activación inválido!")
+138                 Call WriteShowMessageBox(UserIndex, "ï¿½Cï¿½digo de activaciï¿½n invï¿½lido!")
 
                 End If
 
@@ -25735,7 +25739,7 @@ Private Sub HandleReValidarCuenta(ByVal UserIndex As Integer)
 128         If ObtenerValidacion(UserCuenta) = 0 Then
                 'Call EnviarCorreo(UserCuenta, ObtenerEmail(UserCuenta))
 130             Call WriteShowFrmLogear(UserIndex)
-132             Call WriteShowMessageBox(UserIndex, "Se ha enviado el mail de validación a la dirección designada cuando se creo la cuenta.")
+132             Call WriteShowMessageBox(UserIndex, "Se ha enviado el mail de validaciï¿½n a la direcciï¿½n designada cuando se creo la cuenta.")
                 
             Else
 134             Call WriteShowFrmLogear(UserIndex)
@@ -25805,7 +25809,7 @@ Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
         
         #If DEBUGGING = False Then
 120         If Not VersionOK(Version) Then
-122             Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
+122             Call WriteShowMessageBox(UserIndex, "Esta versiï¿½n del juego es obsoleta, la versiï¿½n correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
 124             Call CloseSocket(UserIndex)
                 Exit Sub
     
@@ -25878,7 +25882,7 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
     
         #If DEBUGGING = False Then
 124         If Not VersionOK(Version) Then
-126             Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
+126             Call WriteShowMessageBox(UserIndex, "Esta versiï¿½n del juego es obsoleta, la versiï¿½n correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
 128             Call CloseSocket(UserIndex)
                 Exit Sub
             End If
@@ -25890,18 +25894,23 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
         End If
     
 134     If Not CheckUserAccount(UserDelete, UserList(UserIndex).AccountId) Then
-136         Call LogHackAttemp(CuentaEmail & "[" & UserList(UserIndex).ip & "] intentó borrar el pj " & UserDelete)
+136         Call LogHackAttemp(CuentaEmail & "[" & UserList(UserIndex).IP & "] intentï¿½ borrar el pj " & UserDelete)
 138         Call CloseSocket(UserIndex)
             Exit Sub
         End If
     
-        ' Si está online el personaje a borrar, lo kickeo para prevenir dupeos.
+        ' Si estï¿½ online el personaje a borrar, lo kickeo para prevenir dupeos.
 140     Dim targetUserIndex As Integer: targetUserIndex = NameIndex(UserDelete)
 142     If targetUserIndex > 0 Then
-144         Call LogHackAttemp("Se trató de eliminar al personaje " & UserDelete & " cuando este estaba conectado desde la IP " & UserList(UserIndex).ip)
+144         Call LogHackAttemp("Se tratï¿½ de eliminar al personaje " & UserDelete & " cuando este estaba conectado desde la IP " & UserList(UserIndex).IP)
 146         Call CloseSocket(targetUserIndex)
         End If
     
+        If BANCheck(UserDelete) Then
+            Call WriteShowMessageBox(UserIndex, "No podï¿½s borrar este personaje por que se encuentra baneado.")
+            Exit Sub
+            
+        End If
 
         Call BorrarUsuarioDatabase(UserDelete)
 160     Call WritePersonajesDeCuenta(UserIndex)
@@ -25974,7 +25983,7 @@ Private Sub HandleBorrandoCuenta(ByVal UserIndex As Integer)
         
 132         If True Then ' Desactivado
 134             Call WriteShowFrmLogear(UserIndex)
-136             Call WriteShowMessageBox(UserIndex, "La contraseña introducida no es correcta.")
+136             Call WriteShowMessageBox(UserIndex, "La contraseï¿½a introducida no es correcta.")
             
 138             Call CloseSocket(UserIndex)
                 Exit Sub
@@ -26012,7 +26021,7 @@ ErrHandler:
 
 End Sub
 
-Private Sub HandleRecuperandoContraseña(ByVal UserIndex As Integer)
+Private Sub HandleRecuperandoContraseï¿½a(ByVal UserIndex As Integer)
 
         'Author: Pablo Mercavides
 100     If UserList(UserIndex).incomingData.Length < 5 Then
@@ -26061,7 +26070,7 @@ Private Sub HandleRecuperandoContraseña(ByVal UserIndex As Integer)
         
 130         If EnviarCorreoRecuperacion(AcountDelete, ObtenerEmail(AcountDelete)) Then
 132             Call WriteShowFrmLogear(UserIndex)
-134             Call WriteShowMessageBox(UserIndex, "La contraseña de la cuenta a sido enviada por email a la direccion registrada.")
+134             Call WriteShowMessageBox(UserIndex, "La contraseï¿½a de la cuenta a sido enviada por email a la direccion registrada.")
             Else
 136             Call WriteShowFrmLogear(UserIndex)
 138             Call WriteShowMessageBox(UserIndex, "Se ha provocado un error al recuperar la clave, reintente mas tarde.")
@@ -26195,7 +26204,7 @@ Private Sub HandleCuentaRegresiva(ByVal UserIndex As Integer)
 
 112         If Not .flags.Privilegios And PlayerType.user Then
 114             CuentaRegresivaTimer = Seconds
-116             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("íEmpezando cuenta regresiva desde: " & Seconds & " segundos...!", FontTypeNames.FONTTYPE_GUILD))
+116             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("ï¿½Empezando cuenta regresiva desde: " & Seconds & " segundos...!", FontTypeNames.FONTTYPE_GUILD))
         
                 'If we got here then packet is complete, copy data back to original queue
             End If
@@ -26254,9 +26263,9 @@ Private Sub HandlePossUser(ByVal UserIndex As Integer)
 120                 Call WriteVar(CharPath & UCase$(UserName) & ".chr", "INIT", "Position", UserList(UserIndex).Pos.Map & "-" & UserList(UserIndex).Pos.X & "-" & UserList(UserIndex).Pos.Y)
                 End If
 
-122             Call WriteConsoleMsg(UserIndex, "Servidor> Acción realizada con exito! La nueva posicion de " & UserName & "es: " & UserList(UserIndex).Pos.Map & "-" & UserList(UserIndex).Pos.X & "-" & UserList(UserIndex).Pos.Y & "...", FontTypeNames.FONTTYPE_INFO)
+122             Call WriteConsoleMsg(UserIndex, "Servidor> Acciï¿½n realizada con exito! La nueva posicion de " & UserName & "es: " & UserList(UserIndex).Pos.Map & "-" & UserList(UserIndex).Pos.X & "-" & UserList(UserIndex).Pos.Y & "...", FontTypeNames.FONTTYPE_INFO)
 
-                ' Call SendData(UserIndex, UserIndex, PrepareMessageConsoleMsg("Acciín realizada con exito! La nueva posicion de " & UserName & "es: " & UserList(UserIndex).Pos.Map & "-" & UserList(UserIndex).Pos.X & "-" & UserList(UserIndex).Pos.y & "...", FontTypeNames.FONTTYPE_SERVER))
+                ' Call SendData(UserIndex, UserIndex, PrepareMessageConsoleMsg("Acciï¿½n realizada con exito! La nueva posicion de " & UserName & "es: " & UserList(UserIndex).Pos.Map & "-" & UserList(UserIndex).Pos.X & "-" & UserList(UserIndex).Pos.y & "...", FontTypeNames.FONTTYPE_SERVER))
             End If
         
             'If we got here then packet is complete, copy data back to original queue
@@ -26381,10 +26390,10 @@ Private Sub HandleCancelDuel(ByVal UserIndex As Integer)
         .incomingData.ReadInteger
 
         If .flags.SolicitudReto.estado <> SolicitudRetoEstado.Libre Then
-            Call CancelarSolicitudReto(UserIndex, .name & " ha cancelado la solicitud.")
+            Call CancelarSolicitudReto(UserIndex, .Name & " ha cancelado la solicitud.")
 
         ElseIf .flags.AceptoReto > 0 Then
-            Call CancelarSolicitudReto(.flags.AceptoReto, .name & " ha cancelado su admisión.")
+            Call CancelarSolicitudReto(.flags.AceptoReto, .Name & " ha cancelado su admisiï¿½n.")
         End If
 
     End With
@@ -26490,7 +26499,7 @@ Private Sub HandleNieveToggle(ByVal UserIndex As Integer)
         
 104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then Exit Sub
         
-106         Call LogGM(.name, "/NIEVE")
+106         Call LogGM(.Name, "/NIEVE")
 108         Nebando = Not Nebando
         
 110         Call SendData(SendTarget.ToAll, 0, PrepareMessageNevarToggle())
@@ -26517,7 +26526,7 @@ Private Sub HandleNieblaToggle(ByVal UserIndex As Integer)
 
 104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then Exit Sub
         
-106         Call LogGM(.name, "/NIEBLA")
+106         Call LogGM(.Name, "/NIEBLA")
 108         Call ResetMeteo
             'Nieblando = Not Nieblando
         
@@ -26567,7 +26576,7 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
 
             ' WyroX: Chequeos de seguridad... Estos chequeos ya se hacen en el cliente, pero si no se hacen se puede duplicar oro...
 
-            ' Cantidad válida?
+            ' Cantidad vï¿½lida?
             If Cantidad <= 0 Then Exit Sub
 
             ' Tiene el oro?
@@ -26575,13 +26584,13 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
             
             If .flags.Muerto = 1 Then
                 Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(UserIndex, "ï¿½ï¿½Estï¿½s muerto!!", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         
             'Validate target NPC
             If .flags.TargetNPC = 0 Then
-                Call WriteConsoleMsg(UserIndex, "Primero tenés que seleccionar un personaje, haz click izquierdo sobre él.", FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(UserIndex, "Primero tenï¿½s que seleccionar un personaje, haz click izquierdo sobre ï¿½l.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
 
@@ -26589,7 +26598,7 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
             
             If Distancia(NpcList(.flags.TargetNPC).Pos, .Pos) > 10 Then
                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(UserIndex, "Estï¿½s demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
 
@@ -26597,7 +26606,7 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
 
             ' Enviar a vos mismo?
             If tUser = UserIndex Then
-                Call WriteChatOverHead(UserIndex, "¡No puedo enviarte oro a vos mismo!", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+                Call WriteChatOverHead(UserIndex, "ï¿½No puedo enviarte oro a vos mismo!", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
                 Exit Sub
             End If
     
@@ -26625,11 +26634,11 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
                 
                 UserList(UserIndex).Stats.Banco = UserList(UserIndex).Stats.Banco - val(Cantidad) 'Quitamos el oro al usuario
     
-142             Call WriteChatOverHead(UserIndex, "¡El envío se ha realizado con éxito! Gracias por utilizar los servicios de Finanzas Goliath", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+142             Call WriteChatOverHead(UserIndex, "ï¿½El envï¿½o se ha realizado con ï¿½xito! Gracias por utilizar los servicios de Finanzas Goliath", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
 144             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("173", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
             Else
 146             Call WriteChatOverHead(UserIndex, "Los administradores no pueden transferir oro.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
-148             Call LogGM(.name, "Quizo transferirle oro a: " & UserName)
+148             Call LogGM(.Name, "Quizo transferirle oro a: " & UserName)
             
             End If
         End With
@@ -26707,8 +26716,8 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
                         .Invent.Object(SlotViejo).Equipped = 0
                     
                         'Cambiamos si alguno es un anillo
-                        If .Invent.DañoMagicoEqpSlot = SlotViejo Then
-                            .Invent.DañoMagicoEqpSlot = SlotNuevo
+                        If .Invent.Daï¿½oMagicoEqpSlot = SlotViejo Then
+                            .Invent.Daï¿½oMagicoEqpSlot = SlotNuevo
                         End If
                         If .Invent.ResistenciaEqpSlot = SlotViejo Then
                             .Invent.ResistenciaEqpSlot = SlotNuevo
@@ -26739,7 +26748,7 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
                             .Invent.EscudoEqpSlot = SlotNuevo
                         End If
                         
-                        'Cambiamos si alguno es municiín
+                        'Cambiamos si alguno es municiï¿½n
                         If .Invent.MunicionEqpSlot = SlotViejo Then
                             .Invent.MunicionEqpSlot = SlotNuevo
                         End If
@@ -26808,10 +26817,10 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
                     End If
     
                     'Cambiamos si alguno es un anillo
-152                 If .Invent.DañoMagicoEqpSlot = SlotViejo Then
-154                     .Invent.DañoMagicoEqpSlot = SlotNuevo
-156                 ElseIf .Invent.DañoMagicoEqpSlot = SlotNuevo Then
-158                     .Invent.DañoMagicoEqpSlot = SlotViejo
+152                 If .Invent.Daï¿½oMagicoEqpSlot = SlotViejo Then
+154                     .Invent.Daï¿½oMagicoEqpSlot = SlotNuevo
+156                 ElseIf .Invent.Daï¿½oMagicoEqpSlot = SlotNuevo Then
+158                     .Invent.Daï¿½oMagicoEqpSlot = SlotViejo
                     End If
 160                 If .Invent.ResistenciaEqpSlot = SlotViejo Then
 162                     .Invent.ResistenciaEqpSlot = SlotNuevo
@@ -26859,7 +26868,7 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
     
                     End If
                     
-                    'Cambiamos si alguno es municiín
+                    'Cambiamos si alguno es municiï¿½n
 208                 If .Invent.MunicionEqpSlot = SlotViejo Then
 210                     .Invent.MunicionEqpSlot = SlotNuevo
 212                 ElseIf .Invent.MunicionEqpSlot = SlotNuevo Then
@@ -27028,7 +27037,7 @@ Private Sub HandleQuieroFundarClan(ByVal UserIndex As Integer)
         Call .incomingData.CopyBuffer(Buffer)
 
         If UserList(UserIndex).GuildIndex > 0 Then
-            Call WriteConsoleMsg(UserIndex, "Ya perteneces a un clan, no podés fundar otro.", FontTypeNames.FONTTYPE_INFOIAO)
+            Call WriteConsoleMsg(UserIndex, "Ya perteneces a un clan, no podï¿½s fundar otro.", FontTypeNames.FONTTYPE_INFOIAO)
             Exit Sub
 
         End If
@@ -27045,7 +27054,7 @@ Private Sub HandleQuieroFundarClan(ByVal UserIndex As Integer)
 
         End If
 
-        Call WriteConsoleMsg(UserIndex, "Servidor> ¡Comenzamos a fundar el clan! Ingresa todos los datos solicitados.", FontTypeNames.FONTTYPE_INFOIAO)
+        Call WriteConsoleMsg(UserIndex, "Servidor> ï¿½Comenzamos a fundar el clan! Ingresa todos los datos solicitados.", FontTypeNames.FONTTYPE_INFOIAO)
         
         Call WriteShowFundarClanForm(UserIndex)
 
@@ -27096,11 +27105,11 @@ Private Sub HandleLlamadadeClan(ByVal UserIndex As Integer)
 112             clan_nivel = modGuilds.NivelDeClan(.GuildIndex)
 
 114             If clan_nivel > 1 Then
-116                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Clan> [" & .name & "] solicita apoyo de su clan en " & DarNameMapa(.Pos.Map) & " (" & .Pos.Map & "-" & .Pos.X & "-" & .Pos.Y & "). Puedes ver su ubicación en el mapa del mundo.", FontTypeNames.FONTTYPE_GUILD))
+116                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Clan> [" & .name & "] solicita apoyo de su clan en " & DarNameMapa(.Pos.Map) & " (" & .Pos.Map & "-" & .Pos.X & "-" & .Pos.Y & "). Puedes ver su ubicaciï¿½n en el mapa del mundo.", FontTypeNames.FONTTYPE_GUILD))
 118                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessagePlayWave("43", NO_3D_SOUND, NO_3D_SOUND))
 120                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageUbicacionLlamada(.Pos.Map, .Pos.X, .Pos.Y))
                 Else
-122                 Call WriteConsoleMsg(UserIndex, "Servidor> El nivel de tu clan debe ser 2 para utilizar esta opción.", FontTypeNames.FONTTYPE_INFOIAO)
+122                 Call WriteConsoleMsg(UserIndex, "Servidor> El nivel de tu clan debe ser 2 para utilizar esta opciï¿½n.", FontTypeNames.FONTTYPE_INFOIAO)
 
                 End If
 
@@ -27254,15 +27263,15 @@ Private Sub HandleCasamiento(ByVal UserIndex As Integer)
 
 120                 If Distancia(.Pos, NpcList(.flags.TargetNPC).Pos) > 10 Then
 122                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-                        'Call WriteConsoleMsg(UserIndex, "El sacerdote no puede casarte debido a que estás demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
+                        'Call WriteConsoleMsg(UserIndex, "El sacerdote no puede casarte debido a que estï¿½s demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
                         
                     Else
             
 124                     If tUser = UserIndex Then
-126                         Call WriteConsoleMsg(UserIndex, "No podés casarte contigo mismo.", FontTypeNames.FONTTYPE_INFO)
+126                         Call WriteConsoleMsg(UserIndex, "No podï¿½s casarte contigo mismo.", FontTypeNames.FONTTYPE_INFO)
                         
                         ElseIf .flags.Casado = 1 Then
-                            Call WriteConsoleMsg(UserIndex, "¡Ya estás casado! Debes divorciarte de tu actual pareja para casarte nuevamente.", FontTypeNames.FONTTYPE_INFO)
+                            Call WriteConsoleMsg(UserIndex, "ï¿½Ya estï¿½s casado! Debes divorciarte de tu actual pareja para casarte nuevamente.", FontTypeNames.FONTTYPE_INFO)
                             
                         ElseIf UserList(tUser).flags.Casado = 1 Then
                             Call WriteConsoleMsg(UserIndex, "Tu pareja debe divorciarse antes de tomar tu mano en matrimonio.", FontTypeNames.FONTTYPE_INFO)
@@ -27277,19 +27286,19 @@ Private Sub HandleCasamiento(ByVal UserIndex As Integer)
 132                             If UserList(tUser).flags.Candidato = UserIndex Then
 
 134                                 UserList(tUser).flags.Casado = 1
-136                                 UserList(tUser).flags.Pareja = UserList(UserIndex).name
+136                                 UserList(tUser).flags.Pareja = UserList(UserIndex).Name
 138                                 .flags.Casado = 1
-140                                 .flags.Pareja = UserList(tUser).name
+140                                 .flags.Pareja = UserList(tUser).Name
 
 142                                 Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(FXSound.Casamiento_sound, NO_3D_SOUND, NO_3D_SOUND))
 144                                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("El sacerdote de " & DarNameMapa(.Pos.Map) & " celebra el casamiento entre " & UserList(UserIndex).name & " y " & UserList(tUser).name & ".", FontTypeNames.FONTTYPE_WARNING))
-146                                 Call WriteChatOverHead(UserIndex, "Los declaro unidos en legal matrimonio ¡Felicidades!", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
-148                                 Call WriteChatOverHead(tUser, "Los declaro unidos en legal matrimonio ¡Felicidades!", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
+146                                 Call WriteChatOverHead(UserIndex, "Los declaro unidos en legal matrimonio ï¿½Felicidades!", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+148                                 Call WriteChatOverHead(tUser, "Los declaro unidos en legal matrimonio ï¿½Felicidades!", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
                                 
                                 Else
                                 
 150                                 Call WriteChatOverHead(UserIndex, "La solicitud de casamiento a sido enviada a " & UserName & ".", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
-152                                 Call WriteConsoleMsg(tUser, .name & " desea casarse contigo, para permitirlo haz click en el sacerdote y escribe /PROPONER " & .name & ".", FontTypeNames.FONTTYPE_TALK)
+152                                 Call WriteConsoleMsg(tUser, .Name & " desea casarse contigo, para permitirlo haz click en el sacerdote y escribe /PROPONER " & .Name & ".", FontTypeNames.FONTTYPE_TALK)
 
 154                                 .flags.Candidato = tUser
 
@@ -27616,7 +27625,7 @@ Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
                         Else
 
                             If BusquedaTesoroActiva Then
-                                Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> Todavia nadie fue capaz de encontar el tesoro, recorda que se encuentra en " & DarNameMapa(TesoroNumMapa) & "(" & TesoroNumMapa & "). ¿Quien sera el valiente que lo encuentre?", FontTypeNames.FONTTYPE_TALK))
+                                Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> Todavia nadie fue capaz de encontar el tesoro, recorda que se encuentra en " & DarNameMapa(TesoroNumMapa) & "(" & TesoroNumMapa & "). ï¿½Quien sera el valiente que lo encuentre?", FontTypeNames.FONTTYPE_TALK))
                                 Call WriteConsoleMsg(UserIndex, "Ya hay una busqueda del tesoro activa. El tesoro se encuentra en: " & TesoroNumMapa & "-" & TesoroX & "-" & TesoroY, FontTypeNames.FONTTYPE_INFO)
                             Else
                                 Call WriteConsoleMsg(UserIndex, "Ya hay una busqueda del tesoro activa.", FontTypeNames.FONTTYPE_INFO)
@@ -27630,7 +27639,7 @@ Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
                         Else
 
                             If BusquedaRegaloActiva Then
-                                Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> Ningún valiente fue capaz de encontrar el item misterioso, recuerda que se encuentra en " & DarNameMapa(RegaloNumMapa) & "(" & RegaloNumMapa & "). ¡Ten cuidado!", FontTypeNames.FONTTYPE_TALK))
+                                Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> Ningï¿½n valiente fue capaz de encontrar el item misterioso, recuerda que se encuentra en " & DarNameMapa(RegaloNumMapa) & "(" & RegaloNumMapa & "). ï¿½Ten cuidado!", FontTypeNames.FONTTYPE_TALK))
 178                             Call WriteConsoleMsg(UserIndex, "Ya hay una busqueda del tesoro activa. El tesoro se encuentra en: " & RegaloNumMapa & "-" & RegaloX & "-" & RegaloY, FontTypeNames.FONTTYPE_INFO)
                             Else
                                 Call WriteConsoleMsg(UserIndex, "Ya hay una busqueda del tesoro activa.", FontTypeNames.FONTTYPE_INFO)
@@ -27649,7 +27658,7 @@ Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
                         Else
 
                             If BusquedaNpcActiva Then
-                                Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> Todavía nadie logró matar el NPC que se encuentra en el mapa " & NpcList(npc_index_evento).Pos.Map & ".", FontTypeNames.FONTTYPE_TALK))
+                                Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> Todavï¿½a nadie logrï¿½ matar el NPC que se encuentra en el mapa " & NpcList(npc_index_evento).Pos.Map & ".", FontTypeNames.FONTTYPE_TALK))
                                 Call WriteConsoleMsg(UserIndex, "Ya hay una busqueda de npc activo. El tesoro se encuentra en: " & NpcList(npc_index_evento).Pos.Map & "-" & NpcList(npc_index_evento).Pos.X & "-" & NpcList(npc_index_evento).Pos.Y, FontTypeNames.FONTTYPE_INFO)
                             Else
                                 Call WriteConsoleMsg(UserIndex, "Ya hay una busqueda del tesoro activa.", FontTypeNames.FONTTYPE_INFO)
@@ -27877,12 +27886,12 @@ Private Sub HandleCompletarAccion(ByVal UserIndex As Integer)
 114             If .Accion.TipoAccion = Accion Then
 116                 Call CompletarAccionFin(UserIndex)
                 Else
-118                 Call WriteConsoleMsg(UserIndex, "Servidor> La acción que solicitas no se corresponde.", FontTypeNames.FONTTYPE_SERVER)
+118                 Call WriteConsoleMsg(UserIndex, "Servidor> La acciï¿½n que solicitas no se corresponde.", FontTypeNames.FONTTYPE_SERVER)
 
                 End If
 
             Else
-120             Call WriteConsoleMsg(UserIndex, "Servidor> Tu no tenias ninguna acción pendiente. ", FontTypeNames.FONTTYPE_SERVER)
+120             Call WriteConsoleMsg(UserIndex, "Servidor> Tu no tenias ninguna acciï¿½n pendiente. ", FontTypeNames.FONTTYPE_SERVER)
 
             End If
         
@@ -27921,15 +27930,15 @@ Private Sub HandleReclamarRecompensa(ByVal UserIndex As Integer)
 
             Dim Buffer As New clsByteQueue
 
-            Dim index  As Byte
+            Dim Index  As Byte
 
 106         Call Buffer.CopyBuffer(.incomingData)
             'Remove packet ID
 108         Call Buffer.ReadInteger
         
-110         index = Buffer.ReadByte()
+110         Index = Buffer.ReadByte()
         
-112         Call EntregarRecompensas(UserIndex, index)
+112         Call EntregarRecompensas(UserIndex, Index)
         
             'If we got here then packet is complete, copy data back to original queue
 114         Call .incomingData.CopyBuffer(Buffer)
@@ -28427,7 +28436,7 @@ Private Sub HandleInvitarGrupo(ByVal UserIndex As Integer)
 106         Call .incomingData.ReadInteger
         
 108         If .flags.Muerto = 1 Then
-                'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!.", FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(UserIndex, "ï¿½ï¿½Estï¿½s muerto!!.", FontTypeNames.FONTTYPE_INFO)
 110             Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
             
             Else
@@ -28435,7 +28444,7 @@ Private Sub HandleInvitarGrupo(ByVal UserIndex As Integer)
 112             If .Grupo.CantidadMiembros <= UBound(.Grupo.Miembros) Then
 114                 Call WriteWorkRequestTarget(UserIndex, eSkill.Grupo)
                 Else
-116                 Call WriteConsoleMsg(UserIndex, "¡No podés invitar a más personas!", FontTypeNames.FONTTYPE_INFO)
+116                 Call WriteConsoleMsg(UserIndex, "ï¿½No podï¿½s invitar a mï¿½s personas!", FontTypeNames.FONTTYPE_INFO)
                 End If
 
             End If
@@ -28465,7 +28474,7 @@ Private Sub HandleMarcaDeClan(ByVal UserIndex As Integer)
 102         Call .incomingData.ReadInteger
         
 104         If .flags.Muerto = 1 Then
-                'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!.", FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(UserIndex, "ï¿½ï¿½Estï¿½s muerto!!.", FontTypeNames.FONTTYPE_INFO)
 106             Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
@@ -28510,7 +28519,7 @@ End Sub
 Public Sub WritePreguntaBox(ByVal UserIndex As Integer, ByVal message As String)
 
         '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "ShowMessageBox" message to the given user's outgoing data buffer
         '***************************************************
@@ -28574,20 +28583,20 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
 120                     If UserList(UserIndex).Grupo.PropuestaDe <> 0 Then
                 
 122                         If UserList(UserList(UserIndex).Grupo.PropuestaDe).Grupo.Lider <> UserList(UserIndex).Grupo.PropuestaDe Then
-124                             Call WriteConsoleMsg(UserIndex, "íEl lider del grupo a cambiado, imposible unirse!", FontTypeNames.FONTTYPE_INFOIAO)
+124                             Call WriteConsoleMsg(UserIndex, "ï¿½El lider del grupo a cambiado, imposible unirse!", FontTypeNames.FONTTYPE_INFOIAO)
                             Else
                         
 126                             Log = "Repuesta Afirmativa 1-1 "
                         
 128                             If UserList(UserList(UserIndex).Grupo.PropuestaDe).Grupo.Lider = 0 Then
-130                                 Call WriteConsoleMsg(UserIndex, "íEl grupo ya no existe!", FontTypeNames.FONTTYPE_INFOIAO)
+130                                 Call WriteConsoleMsg(UserIndex, "ï¿½El grupo ya no existe!", FontTypeNames.FONTTYPE_INFOIAO)
                                 Else
                             
 132                                 Log = "Repuesta Afirmativa 1-2 "
                             
 134                                 If UserList(UserList(UserIndex).Grupo.PropuestaDe).Grupo.CantidadMiembros = 1 Then
 136                                     Call WriteLocaleMsg(UserList(UserIndex).Grupo.PropuestaDe, "36", FontTypeNames.FONTTYPE_INFOIAO)
-                                        'Call WriteConsoleMsg(UserList(UserIndex).Grupo.PropuestaDe, "íEl grupo a sido creado!", FontTypeNames.FONTTYPE_INFOIAO)
+                                        'Call WriteConsoleMsg(UserList(UserIndex).Grupo.PropuestaDe, "ï¿½El grupo a sido creado!", FontTypeNames.FONTTYPE_INFOIAO)
 138                                     UserList(UserList(UserIndex).Grupo.PropuestaDe).Grupo.EnGrupo = True
 140                                     Log = "Repuesta Afirmativa 1-3 "
 
@@ -28598,20 +28607,20 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
 146                                 UserList(UserList(UserIndex).Grupo.PropuestaDe).Grupo.Miembros(UserList(UserList(UserIndex).Grupo.PropuestaDe).Grupo.CantidadMiembros) = UserIndex
 148                                 UserList(UserIndex).Grupo.EnGrupo = True
                                 
-                                    Dim index As Byte
+                                    Dim Index As Byte
                                 
 150                                 Log = "Repuesta Afirmativa 1-5 "
                                 
-152                                 For index = 2 To UserList(UserList(UserIndex).Grupo.PropuestaDe).Grupo.CantidadMiembros - 1
-154                                     Call WriteLocaleMsg(UserList(UserList(UserIndex).Grupo.PropuestaDe).Grupo.Miembros(index), "40", FontTypeNames.FONTTYPE_INFOIAO, UserList(UserIndex).name)
+152                                 For Index = 2 To UserList(UserList(UserIndex).Grupo.PropuestaDe).Grupo.CantidadMiembros - 1
+154                                     Call WriteLocaleMsg(UserList(UserList(UserIndex).Grupo.PropuestaDe).Grupo.Miembros(Index), "40", FontTypeNames.FONTTYPE_INFOIAO, UserList(UserIndex).Name)
                                 
-156                                 Next index
+156                                 Next Index
                                 
 158                                 Log = "Repuesta Afirmativa 1-6 "
-                                    'Call WriteConsoleMsg(UserList(UserIndex).Grupo.PropuestaDe, "í" & UserList(UserIndex).name & " a sido aíadido al grupo!", FontTypeNames.FONTTYPE_INFOIAO)
-160                                 Call WriteLocaleMsg(UserList(UserIndex).Grupo.PropuestaDe, "40", FontTypeNames.FONTTYPE_INFOIAO, UserList(UserIndex).name)
+                                    'Call WriteConsoleMsg(UserList(UserIndex).Grupo.PropuestaDe, "ï¿½" & UserList(UserIndex).name & " a sido aï¿½adido al grupo!", FontTypeNames.FONTTYPE_INFOIAO)
+160                                 Call WriteLocaleMsg(UserList(UserIndex).Grupo.PropuestaDe, "40", FontTypeNames.FONTTYPE_INFOIAO, UserList(UserIndex).Name)
                                 
-162                                 Call WriteConsoleMsg(UserIndex, "¡Has sido aíadido al grupo!", FontTypeNames.FONTTYPE_INFOIAO)
+162                                 Call WriteConsoleMsg(UserIndex, "ï¿½Has sido aï¿½adido al grupo!", FontTypeNames.FONTTYPE_INFOIAO)
                                 
 164                                 Log = "Repuesta Afirmativa 1-7 "
                                 
@@ -28635,7 +28644,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                         'unirlo
 174                 Case 2
 176                     Log = "Repuesta Afirmativa 2"
-180                     Call WriteConsoleMsg(UserIndex, "¡Ahora sos un ciudadano!", FontTypeNames.FONTTYPE_INFOIAO)
+180                     Call WriteConsoleMsg(UserIndex, "ï¿½Ahora sos un ciudadano!", FontTypeNames.FONTTYPE_INFOIAO)
 182                     Call VolverCiudadano(UserIndex)
                     
 184                 Case 3
@@ -28670,9 +28679,9 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                     
 218                     If UserList(UserIndex).flags.TargetNPC <> 0 Then
                     
-220                         Call WriteChatOverHead(UserIndex, "¡Gracias " & UserList(UserIndex).name & "! Ahora perteneces a la ciudad de " & DeDonde & ".", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
+220                         Call WriteChatOverHead(UserIndex, "ï¿½Gracias " & UserList(UserIndex).Name & "! Ahora perteneces a la ciudad de " & DeDonde & ".", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
                         Else
-222                         Call WriteConsoleMsg(UserIndex, "¡Gracias " & UserList(UserIndex).name & "! Ahora perteneces a la ciudad de " & DeDonde & ".", FontTypeNames.FONTTYPE_INFOIAO)
+222                         Call WriteConsoleMsg(UserIndex, "ï¿½Gracias " & UserList(UserIndex).Name & "! Ahora perteneces a la ciudad de " & DeDonde & ".", FontTypeNames.FONTTYPE_INFOIAO)
 
                         End If
                     
@@ -28682,7 +28691,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
 228                     If UserList(UserIndex).flags.TargetUser <> 0 Then
                 
 234                         UserList(UserIndex).ComUsu.DestUsu = UserList(UserIndex).flags.TargetUser
-236                         UserList(UserIndex).ComUsu.DestNick = UserList(UserList(UserIndex).flags.TargetUser).name
+236                         UserList(UserIndex).ComUsu.DestNick = UserList(UserList(UserIndex).flags.TargetUser).Name
 238                         UserList(UserIndex).ComUsu.cant = 0
 240                         UserList(UserIndex).ComUsu.Objeto = 0
 242                         UserList(UserIndex).ComUsu.Acepto = False
@@ -28745,7 +28754,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                 
 296                 Case 2
 298                     Log = "Repuesta negativa 2"
-302                     Call WriteConsoleMsg(UserIndex, "¡Continuas siendo neutral!", FontTypeNames.FONTTYPE_INFOIAO)
+302                     Call WriteConsoleMsg(UserIndex, "ï¿½Continuas siendo neutral!", FontTypeNames.FONTTYPE_INFOIAO)
 304                     Call VolverCriminal(UserIndex)
 
 306                 Case 3
@@ -28777,7 +28786,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                         End Select
                     
 338                     If UserList(UserIndex).flags.TargetNPC <> 0 Then
-340                         Call WriteChatOverHead(UserIndex, "¡No hay problema " & UserList(UserIndex).name & "! Sos bienvenido en " & DeDonde & " cuando gustes.", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
+340                         Call WriteChatOverHead(UserIndex, "ï¿½No hay problema " & UserList(UserIndex).Name & "! Sos bienvenido en " & DeDonde & " cuando gustes.", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
 
                         End If
 
@@ -28863,9 +28872,9 @@ Public Sub WriteDatosGrupo(ByVal UserIndex As Integer)
 112                 For i = 1 To UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
 
 114                     If i = 1 Then
-116                         Call .WriteASCIIString(UserList(UserList(UserIndex).Grupo.Miembros(i)).name & "(Lider)")
+116                         Call .WriteASCIIString(UserList(UserList(UserIndex).Grupo.Miembros(i)).Name & "(Lider)")
                         Else
-118                         Call .WriteASCIIString(UserList(UserList(UserIndex).Grupo.Miembros(i)).name)
+118                         Call .WriteASCIIString(UserList(UserList(UserIndex).Grupo.Miembros(i)).Name)
 
                         End If
 
@@ -28876,9 +28885,9 @@ Public Sub WriteDatosGrupo(ByVal UserIndex As Integer)
 122                 For i = 1 To UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
                 
 124                     If i = 1 Then
-126                         Call .WriteASCIIString(UserList(UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(i)).name & "(Lider)")
+126                         Call .WriteASCIIString(UserList(UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(i)).Name & "(Lider)")
                         Else
-128                         Call .WriteASCIIString(UserList(UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(i)).name)
+128                         Call .WriteASCIIString(UserList(UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(i)).Name)
 
                         End If
 
@@ -29086,7 +29095,7 @@ Private Sub HandleSubastaInfo(ByVal UserIndex As Integer)
 104         If Subasta.HaySubastaActiva Then
 
 106             Call WriteConsoleMsg(UserIndex, "Subastador: " & Subasta.Subastador, FontTypeNames.FONTTYPE_SUBASTA)
-108             Call WriteConsoleMsg(UserIndex, "Objeto: " & ObjData(Subasta.ObjSubastado).name & " (" & Subasta.ObjSubastadoCantidad & ")", FontTypeNames.FONTTYPE_SUBASTA)
+108             Call WriteConsoleMsg(UserIndex, "Objeto: " & ObjData(Subasta.ObjSubastado).Name & " (" & Subasta.ObjSubastadoCantidad & ")", FontTypeNames.FONTTYPE_SUBASTA)
 
 110             If Subasta.HuboOferta Then
 112                 Call WriteConsoleMsg(UserIndex, "Mejor oferta: " & PonerPuntos(Subasta.MejorOferta) & " monedas de oro por " & Subasta.Comprador & ".", FontTypeNames.FONTTYPE_SUBASTA)
@@ -29259,7 +29268,7 @@ Private Sub HandleBanCuenta(ByVal UserIndex As Integer)
 112         Reason = Buffer.ReadASCIIString()
         
 114         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) <> 0 Then
-116             Call BanAccount(UserIndex, UserName, Reason)
+116             Call BanearCuenta(UserIndex, UserName, Reason)
 
             End If
         
@@ -29313,7 +29322,7 @@ Private Sub HandleUnBanCuenta(ByVal UserIndex As Integer)
 110         UserName = Buffer.ReadASCIIString()
         
 112         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) <> 0 Then
-114             Call UnBanAccount(UserIndex, UserName)
+114             Call DesbanearCuenta(UserIndex, UserName)
 
             End If
         
@@ -29483,11 +29492,11 @@ Private Sub HandleCerrarCliente(ByVal UserIndex As Integer)
 116             If tUser <= 0 Then
 118                 Call WriteConsoleMsg(UserIndex, "El usuario no esta online.", FontTypeNames.FONTTYPE_INFO)
                 Else
-120                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.name & " cerro el cliente de " & UserName & ".", FontTypeNames.FONTTYPE_INFO))
+120                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.Name & " cerro el cliente de " & UserName & ".", FontTypeNames.FONTTYPE_INFO))
                     
 122                 Call WriteCerrarleCliente(tUser)
                     'Call CloseSocket(tUser)
-124                 Call LogGM(.name, "Cerro el cliene de:" & UserName)
+124                 Call LogGM(.Name, "Cerro el cliene de:" & UserName)
 
                 End If
 
@@ -29630,7 +29639,7 @@ Private Sub HandleCrearEvento(ByVal UserIndex As Integer)
 122                     Call WriteConsoleMsg(UserIndex, "Utilice /CREAREVENTO TIPO@DURACION@MULTIPLICACION.", FontTypeNames.FONTTYPE_New_Eventos)
                     Else
                 
-124                     Call ForzarEvento(Tipo, Duracion, multiplicacion, UserList(UserIndex).name)
+124                     Call ForzarEvento(Tipo, Duracion, multiplicacion, UserList(UserIndex).Name)
                   
                     End If
 
@@ -29697,7 +29706,7 @@ Private Sub HandleBanTemporal(ByVal UserIndex As Integer)
 114         dias = Buffer.ReadByte()
         
 116         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) <> 0 Then
-118             Call Admin.BanTemporal(UserName, dias, Reason, UserList(UserIndex).name)
+118             Call Admin.BanTemporal(UserName, dias, Reason, UserList(UserIndex).Name)
 
             End If
         
@@ -29875,7 +29884,7 @@ Private Sub HandleComprarItem(ByVal UserIndex As Integer)
     
             'Nos fijamos si entra
 118         If InvSlotsLibres = 0 Then
-120             Call WriteConsoleMsg(UserIndex, "Donación> Sin espacio en el inventario.", FontTypeNames.FONTTYPE_WARNING)
+120             Call WriteConsoleMsg(UserIndex, "Donaciï¿½n> Sin espacio en el inventario.", FontTypeNames.FONTTYPE_WARNING)
             Else
 
 122             If CreditosDonadorCheck(UserList(UserIndex).Cuenta) - ObjDonador(ItemIndex).Valor >= 0 Then
@@ -29884,7 +29893,7 @@ Private Sub HandleComprarItem(ByVal UserIndex As Integer)
             
 128                 LogeoDonador = LogeoDonador & vbCrLf & "****************************************************" & vbCrLf
 130                 LogeoDonador = LogeoDonador & "Compra iniciada. Balance de la cuenta " & CreditosDonadorCheck(UserList(UserIndex).Cuenta) & " creditos." & vbCrLf
-132                 LogeoDonador = LogeoDonador & "El personaje " & UserList(UserIndex).name & "(" & UserList(UserIndex).Cuenta & ") Compro el item " & ObjData(ObjDonador(ItemIndex).ObjIndex).name & vbCrLf
+132                 LogeoDonador = LogeoDonador & "El personaje " & UserList(UserIndex).Name & "(" & UserList(UserIndex).Cuenta & ") Compro el item " & ObjData(ObjDonador(ItemIndex).ObjIndex).Name & vbCrLf
 134                 LogeoDonador = LogeoDonador & "Se descontaron " & CLng(ObjDonador(ItemIndex).Valor) & " creditos de la cuenta " & UserList(UserIndex).Cuenta & "." & vbCrLf
             
 136                 If Not MeterItemEnInventario(UserIndex, ObjComprado) Then
@@ -29896,12 +29905,12 @@ Private Sub HandleComprarItem(ByVal UserIndex As Integer)
 142                 LogeoDonador = LogeoDonador & "****************************************************" & vbCrLf
              
 144                 Call RestarCreditosDonador(UserList(UserIndex).Cuenta, CLng(ObjDonador(ItemIndex).Valor))
-146                 Call WriteConsoleMsg(UserIndex, "Donación> Gracias por tu compra. Tu saldo es de " & CreditosDonadorCheck(UserList(UserIndex).Cuenta) & " creditos.", FontTypeNames.FONTTYPE_WARNING)
+146                 Call WriteConsoleMsg(UserIndex, "Donaciï¿½n> Gracias por tu compra. Tu saldo es de " & CreditosDonadorCheck(UserList(UserIndex).Cuenta) & " creditos.", FontTypeNames.FONTTYPE_WARNING)
 148                 Call LogearEventoDeDonador(LogeoDonador)
 150                 Call SaveUser(UserIndex)
 152                 Call WriteActShop(UserIndex)
                 Else
-154                 Call WriteConsoleMsg(UserIndex, "Donación> Tu saldo es insuficiente. Actualmente tu saldo es de " & CreditosDonadorCheck(UserList(UserIndex).Cuenta) & " creditos.", FontTypeNames.FONTTYPE_WARNING)
+154                 Call WriteConsoleMsg(UserIndex, "Donaciï¿½n> Tu saldo es insuficiente. Actualmente tu saldo es de " & CreditosDonadorCheck(UserList(UserIndex).Cuenta) & " creditos.", FontTypeNames.FONTTYPE_WARNING)
 156                 Call WriteActShop(UserIndex)
 
                 End If
@@ -30009,7 +30018,7 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
                         End If
 
 158                     Call WarpToLegalPos(UserIndex, DeDonde.MapaViaje, DeDonde.ViajeX, DeDonde.ViajeY, True)
-160                     Call WriteConsoleMsg(UserIndex, "Has viajado por varios días, te sientes exhausto!", FontTypeNames.FONTTYPE_WARNING)
+160                     Call WriteConsoleMsg(UserIndex, "Has viajado por varios dï¿½as, te sientes exhausto!", FontTypeNames.FONTTYPE_WARNING)
 162                     UserList(UserIndex).Stats.MinAGU = 0
 164                     UserList(UserIndex).Stats.MinHam = 0
 166                     UserList(UserIndex).flags.Sed = 1
@@ -30042,7 +30051,7 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
                     End If
                 
 188                 Call WarpUserChar(UserIndex, Map, X, Y, True)
-190                 Call WriteConsoleMsg(UserIndex, "Has viajado por varios días, te sientes exhausto!", FontTypeNames.FONTTYPE_WARNING)
+190                 Call WriteConsoleMsg(UserIndex, "Has viajado por varios dï¿½as, te sientes exhausto!", FontTypeNames.FONTTYPE_WARNING)
 192                 UserList(UserIndex).Stats.MinAGU = 0
 194                 UserList(UserIndex).Stats.MinHam = 0
 196                 UserList(UserIndex).flags.Sed = 1
@@ -30285,7 +30294,7 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
 
 
 134     If QuestSlot = 0 Then
-136         Call WriteChatOverHead(UserIndex, "Debes completar las misiones en curso para poder aceptar más misiones.", NpcList(NpcIndex).Char.CharIndex, vbYellow)
+136         Call WriteChatOverHead(UserIndex, "Debes completar las misiones en curso para poder aceptar mï¿½s misiones.", NpcList(NpcIndex).Char.CharIndex, vbYellow)
             Exit Sub
         End If
         
@@ -30395,7 +30404,7 @@ End Sub
 Public Sub WriteQuestDetails(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, Optional QuestSlot As Byte = 0)
 
         '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        'Envía el paquete QuestDetails y la informaciín correspondiente.
+        'Envï¿½a el paquete QuestDetails y la informaciï¿½n correspondiente.
         'Last modified: 30/01/2010 by Amraphen
         '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         Dim i As Integer
@@ -30406,10 +30415,10 @@ Public Sub WriteQuestDetails(ByVal UserIndex As Integer, ByVal QuestIndex As Int
             'ID del paquete
 102         Call .WriteByte(ServerPacketID.QuestDetails)
         
-            'Se usa la variable QuestSlot para saber si enviamos la info de una quest ya empezada o la info de una quest que no se aceptí todavía (1 para el primer caso y 0 para el segundo)
+            'Se usa la variable QuestSlot para saber si enviamos la info de una quest ya empezada o la info de una quest que no se aceptï¿½ todavï¿½a (1 para el primer caso y 0 para el segundo)
 104         Call .WriteByte(IIf(QuestSlot, 1, 0))
         
-            'Enviamos nombre, descripciín y nivel requerido de la quest
+            'Enviamos nombre, descripciï¿½n y nivel requerido de la quest
             'Call .WriteASCIIString(QuestList(QuestIndex).Nombre)
             'Call .WriteASCIIString(QuestList(QuestIndex).Desc)
 106         Call .WriteInteger(QuestIndex)
@@ -30427,7 +30436,7 @@ Public Sub WriteQuestDetails(ByVal UserIndex As Integer, ByVal QuestIndex As Int
 118                 Call .WriteInteger(QuestList(QuestIndex).RequiredNPC(i).amount)
 120                 Call .WriteInteger(QuestList(QuestIndex).RequiredNPC(i).NpcIndex)
 
-                    'Si es una quest ya empezada, entonces mandamos los NPCs que matí.
+                    'Si es una quest ya empezada, entonces mandamos los NPCs que matï¿½.
 122                 If QuestSlot Then
 124                     Call .WriteInteger(UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsKilled(i))
 
@@ -30488,7 +30497,7 @@ End Sub
 Public Sub WriteQuestListSend(ByVal UserIndex As Integer)
 
         '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        'Envía el paquete QuestList y la informaciín correspondiente.
+        'Envï¿½a el paquete QuestList y la informaciï¿½n correspondiente.
         'Last modified: 30/01/2010 by Amraphen
         '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         Dim i       As Integer
@@ -30515,7 +30524,7 @@ Public Sub WriteQuestListSend(ByVal UserIndex As Integer)
             'Escribimos la cantidad de quests
 114         Call .outgoingData.WriteByte(tmpByte)
         
-            'Escribimos la lista de quests (sacamos el íltimo caracter)
+            'Escribimos la lista de quests (sacamos el ï¿½ltimo caracter)
 116         If tmpByte Then
 118             Call .outgoingData.WriteASCIIString(Left$(tmpStr, Len(tmpStr) - 1))
 
@@ -30537,7 +30546,7 @@ End Sub
 Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 
         '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        'Envía el paquete QuestList y la informaciín correspondiente.
+        'Envï¿½a el paquete QuestList y la informaciï¿½n correspondiente.
         'Last modified: 30/01/2010 by Amraphen
         '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         Dim i       As Integer
@@ -30580,7 +30589,7 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
 122                 Call .WriteInteger(QuestList(QuestIndex).RequiredNPC(i).amount)
 124                 Call .WriteInteger(QuestList(QuestIndex).RequiredNPC(i).NpcIndex)
 
-                    'Si es una quest ya empezada, entonces mandamos los NPCs que matí.
+                    'Si es una quest ya empezada, entonces mandamos los NPCs que matï¿½.
                     'If QuestSlot Then
                        ' Call .WriteInteger(UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsKilled(i))
 
@@ -30663,7 +30672,7 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
             'Escribimos la cantidad de quests
            ' Call .WriteByte(tmpByte)
         
-            'Escribimos la lista de quests (sacamos el íltimo caracter)
+            'Escribimos la lista de quests (sacamos el ï¿½ltimo caracter)
            ' If tmpByte Then
              '   Call .WriteASCIIString(Left$(tmpStr, Len(tmpStr) - 1))
 
@@ -30698,7 +30707,7 @@ Public Sub HandleCreatePretorianClan(ByVal UserIndex As Integer)
         Dim Map   As Integer
         Dim X     As Byte
         Dim Y     As Byte
-        Dim index As Long
+        Dim Index As Long
     
 100     With UserList(UserIndex)
         
@@ -30721,21 +30730,21 @@ Public Sub HandleCreatePretorianClan(ByVal UserIndex As Integer)
         
             ' Choose pretorian clan index
 116         If Map = MAPA_PRETORIANO Then
-118             index = ePretorianType.Default ' Default clan
+118             Index = ePretorianType.Default ' Default clan
             Else
-120             index = ePretorianType.Custom ' Custom Clan
+120             Index = ePretorianType.Custom ' Custom Clan
             End If
             
             ' Is already active any clan?
-122         If Not ClanPretoriano(index).Active Then
+122         If Not ClanPretoriano(Index).Active Then
             
-124             If Not ClanPretoriano(index).SpawnClan(Map, X, Y, index) Then
+124             If Not ClanPretoriano(Index).SpawnClan(Map, X, Y, Index) Then
 126                 Call WriteConsoleMsg(UserIndex, "La posicion no es apropiada para crear el clan", FontTypeNames.FONTTYPE_INFO)
 
                 End If
         
             Else
-128             Call WriteConsoleMsg(UserIndex, "El clan pretoriano se encuentra activo en el mapa " & ClanPretoriano(index).ClanMap & ". Utilice /EliminarPretorianos MAPA y reintente.", FontTypeNames.FONTTYPE_INFO)
+128             Call WriteConsoleMsg(UserIndex, "El clan pretoriano se encuentra activo en el mapa " & ClanPretoriano(Index).ClanMap & ". Utilice /EliminarPretorianos MAPA y reintente.", FontTypeNames.FONTTYPE_INFO)
 
             End If
     
@@ -30762,7 +30771,7 @@ Public Sub HandleDeletePretorianClan(ByVal UserIndex As Integer)
         On Error GoTo ErrHandler
     
         Dim Map   As Integer
-        Dim index As Long
+        Dim Index As Long
     
 100     With UserList(UserIndex)
         
@@ -30867,20 +30876,20 @@ Private Sub HandleConsulta(ByVal UserIndex As Integer)
 
             ' Si ya estaba en consulta, termina la consulta
 138         If UserList(UserConsulta).flags.EnConsulta Then
-140             Call WriteConsoleMsg(UserIndex, "Has terminado el modo consulta con " & UserList(UserConsulta).name & ".", FontTypeNames.FONTTYPE_INFOBOLD)
+140             Call WriteConsoleMsg(UserIndex, "Has terminado el modo consulta con " & UserList(UserConsulta).Name & ".", FontTypeNames.FONTTYPE_INFOBOLD)
 142             Call WriteConsoleMsg(UserConsulta, "Has terminado el modo consulta.", FontTypeNames.FONTTYPE_INFOBOLD)
             
-144             Call LogGM(.name, "Termino consulta con " & UserList(UserConsulta).name)
+144             Call LogGM(.Name, "Termino consulta con " & UserList(UserConsulta).Name)
             
 146             UserList(UserConsulta).flags.EnConsulta = False
         
                 ' Sino la inicia
             Else
         
-148             Call WriteConsoleMsg(UserIndex, "Has iniciado el modo consulta con " & UserList(UserConsulta).name & ".", FontTypeNames.FONTTYPE_INFOBOLD)
+148             Call WriteConsoleMsg(UserIndex, "Has iniciado el modo consulta con " & UserList(UserConsulta).Name & ".", FontTypeNames.FONTTYPE_INFOBOLD)
 150             Call WriteConsoleMsg(UserConsulta, "Has iniciado el modo consulta.", FontTypeNames.FONTTYPE_INFOBOLD)
             
-152             Call LogGM(.name, "Inicio consulta con " & UserList(UserConsulta).name)
+152             Call LogGM(.Name, "Inicio consulta con " & UserList(UserConsulta).Name)
             
 154             With UserList(UserConsulta)
 156                 If Not EstaPCarea(UserIndex, UserConsulta) Then
@@ -30991,7 +31000,7 @@ Private Sub HandleRequestProcesses(ByVal UserIndex As Integer)
     
 134             If tUser <> UserIndex Then
 135                 If AdministratorAccounts.Exists(UCase$(UserList(tUser).name)) Then
-136                     Call WriteConsoleMsg(UserIndex, "No podés invadir la privacidad de otro administrador.", FontTypeNames.FONTTYPE_INFO)
+136                     Call WriteConsoleMsg(UserIndex, "No podï¿½s invadir la privacidad de otro administrador.", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                 End If
@@ -31070,7 +31079,7 @@ Private Sub HandleRequestScreenShot(ByVal UserIndex As Integer)
 
 134         If tUser <> UserIndex Then
 135             If AdministratorAccounts.Exists(UCase$(UserList(tUser).name)) Then
-136                 Call WriteConsoleMsg(UserIndex, "No podés invadir la privacidad de otro administrador.", FontTypeNames.FONTTYPE_INFO)
+136                 Call WriteConsoleMsg(UserIndex, "No podï¿½s invadir la privacidad de otro administrador.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
             End If
@@ -31083,7 +31092,7 @@ Private Sub HandleRequestScreenShot(ByVal UserIndex As Integer)
 144             Call WriteRequestScreenShot(tUser)
             End If
 
-146         UserList(tUser).flags.ScreenShotPara = UserList(tUser).flags.ScreenShotPara & ":" & .name
+146         UserList(tUser).flags.ScreenShotPara = UserList(tUser).flags.ScreenShotPara & ":" & .Name
 
         End With
     
@@ -31138,9 +31147,9 @@ Private Sub HandleTolerancia0(ByVal UserIndex As Integer)
             End If
         
             Call WriteTolerancia0(tUser)
-138         Call BanIpAgrega(UserList(tUser).ip)
+            Call BanearIP(UserIndex, UserList(tUser).Name, UserList(tUser).IP)
             Call BanSerialOK(UserIndex, Nick)
-            Call BanAccount(UserIndex, Nick, "Tolerancia cero")
+            Call BanearCuenta(UserIndex, Nick, "Tolerancia cero")
 
         End With
     
@@ -31218,7 +31227,7 @@ Private Sub HandleScreenShot(ByVal UserIndex As Integer)
         
              If .flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios) Then
             
-            ' Si nadie requirió esto, salimos
+            ' Si nadie requiriï¿½ esto, salimos
             If LenB(.flags.ScreenShotPara) = 0 Then Exit Sub
         
             Dim Finished As Boolean
@@ -31228,7 +31237,7 @@ Private Sub HandleScreenShot(ByVal UserIndex As Integer)
 122             data = "ERROR"
 124             Finished = True
         
-            ' Si envió menos de 10Kb y termina con ~~~
+            ' Si enviï¿½ menos de 10Kb y termina con ~~~
 126         ElseIf Len(data) <= 10000 And Right$(data, 3) = "~~~" Then
                 ' Damos la screenshot por terminada
 128             Finished = True
@@ -31252,7 +31261,7 @@ Private Sub HandleScreenShot(ByVal UserIndex As Integer)
 144                         Call WriteScreenShotData(tGM, .flags.ScreenShot, Offset, min(.flags.ScreenShot.Length - Offset, 10000))
                         Next
                         
-146                     Call WriteShowScreenShot(tGM, .name)
+146                     Call WriteShowScreenShot(tGM, .Name)
                     End If
                 Next
 
@@ -31306,14 +31315,14 @@ Private Sub HandleProcesses(ByVal UserIndex As Integer)
 118         Call .incomingData.CopyBuffer(Buffer)
 120         Set Buffer = Nothing
         
-            ' Si nadie requirió esto, salimos
+            ' Si nadie requiriï¿½ esto, salimos
 122         If LenB(.flags.ProcesosPara) = 0 Then Exit Sub
         
             ' Prevengo avivadas
 124         data = Replace$(data, "*:*", vbNullString)
         
             ' Anteponemos el nombre del user
-126         data = .name & "*:*" & data
+126         data = .Name & "*:*" & data
 
             Dim ListaGMs() As String
 128         ListaGMs = Split(.flags.ProcesosPara, ":")
@@ -31347,7 +31356,7 @@ ErrHandler:
 
 End Sub
 
-Private Sub WriteShowScreenShot(ByVal UserIndex As Integer, name As String)
+Private Sub WriteShowScreenShot(ByVal UserIndex As Integer, Name As String)
 
         On Error GoTo ErrHandler
 
@@ -31355,7 +31364,7 @@ Private Sub WriteShowScreenShot(ByVal UserIndex As Integer, name As String)
 
 102         Call .WriteByte(ServerPacketID.ShowScreenShot)
         
-104         Call .WriteASCIIString(name)
+104         Call .WriteASCIIString(Name)
 
         End With
 
@@ -31498,29 +31507,29 @@ Private Sub HandleDenounce(ByVal UserIndex As Integer)
         'Remove packet ID
         Call Buffer.ReadByte
         
-        Dim name As String
-        name = Buffer.ReadASCIIString()
+        Dim Name As String
+        Name = Buffer.ReadASCIIString()
         
         'If we got here then packet is complete, copy data back to original queue
         Call .incomingData.CopyBuffer(Buffer)
 
-        If LenB(name) = 0 Then Exit Sub
+        If LenB(Name) = 0 Then Exit Sub
 
-        If EsGmChar(name) Then
-            Call WriteConsoleMsg(UserIndex, "No podés denunciar a un administrador.", FontTypeNames.FONTTYPE_INFO)
+        If EsGmChar(Name) Then
+            Call WriteConsoleMsg(UserIndex, "No podï¿½s denunciar a un administrador.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         
         Dim tUser As Integer
-        tUser = NameIndex(name)
+        tUser = NameIndex(Name)
         
         If tUser <= 0 Then
-            Call WriteConsoleMsg(UserIndex, "El usuario no está online.", FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "El usuario no estï¿½ online.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         
         Dim Denuncia As String, HayChat As Boolean
-        Denuncia = "[Últimos mensajes de " & UserList(tUser).name & "]" & vbNewLine
+        Denuncia = "[ï¿½ltimos mensajes de " & UserList(tUser).Name & "]" & vbNewLine
         
         Dim i As Integer
         For i = 1 To UBound(UserList(tUser).flags.ChatHistory)
@@ -31531,22 +31540,22 @@ Private Sub HandleDenounce(ByVal UserIndex As Integer)
         Next
         
         If Not HayChat Then
-            Call WriteConsoleMsg(UserIndex, "El usuario no ha escrito nada. Recordá que las denuncias inválidas pueden ser motivo de advertencia.", FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "El usuario no ha escrito nada. Recordï¿½ que las denuncias invï¿½lidas pueden ser motivo de advertencia.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
 
         If UserList(UserIndex).donador.activo = 1 Then
-            Call Ayuda.Push(.name, Denuncia, "Denuncia a " & UserList(tUser).name & "-Prioritario")
-            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Se ha recibido una nueva denuncia de parte de " & .name & "(Prioritario).", FontTypeNames.FONTTYPE_SERVER))
+            Call Ayuda.Push(.Name, Denuncia, "Denuncia a " & UserList(tUser).Name & "-Prioritario")
+            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Se ha recibido una nueva denuncia de parte de " & .Name & "(Prioritario).", FontTypeNames.FONTTYPE_SERVER))
         
         Else
-            Call Ayuda.Push(.name, Denuncia, "Denuncia a " & UserList(tUser).name)
-            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Se ha recibido una nueva denuncia de parte de " & .name & ".", FontTypeNames.FONTTYPE_SERVER))
+            Call Ayuda.Push(.Name, Denuncia, "Denuncia a " & UserList(tUser).Name)
+            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Se ha recibido una nueva denuncia de parte de " & .Name & ".", FontTypeNames.FONTTYPE_SERVER))
         End If
 
         Call WriteConsoleMsg(UserIndex, "Tu denuncia fue recibida por el equipo de soporte.", FontTypeNames.FONTTYPE_INFOIAO)
 
-        Call LogConsulta(.name & " (Denuncia a " & UserList(tUser).name & ")" & vbNewLine & Denuncia)
+        Call LogConsulta(.Name & " (Denuncia a " & UserList(tUser).Name & ")" & vbNewLine & Denuncia)
 
     End With
     
@@ -31611,7 +31620,7 @@ Private Sub HandleCuentaExtractItem(ByVal UserIndex As Integer)
 112         slotdestino = .incomingData.ReadByte()
         
 114         If .flags.Muerto = 1 Then
-116             Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", FontTypeNames.FONTTYPE_INFO)
+116             Call WriteConsoleMsg(UserIndex, "ï¿½ï¿½Estï¿½s muerto!!", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
@@ -31623,7 +31632,7 @@ Private Sub HandleCuentaExtractItem(ByVal UserIndex As Integer)
 
             End If
         
-            'acá va el guardado en memoria
+            'acï¿½ va el guardado en memoria
         
         
             'User retira el item del slot
@@ -31671,28 +31680,28 @@ Private Sub HandleCuentaDeposit(ByVal UserIndex As Integer)
         
             'Dead people can't commerce...
 114         If .flags.Muerto = 1 Then
-116             Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", FontTypeNames.FONTTYPE_INFO)
+116             Call WriteConsoleMsg(UserIndex, "ï¿½ï¿½Estï¿½s muerto!!", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
         
-            'íEl target es un NPC valido?
+            'ï¿½El target es un NPC valido?
 118         If .flags.TargetNPC < 1 Then Exit Sub
         
-            'íEl NPC puede comerciar?
+            'ï¿½El NPC puede comerciar?
 120         If NpcList(.flags.TargetNPC).NPCtype <> eNPCType.Banquero Then
                 Exit Sub
             End If
             
             If Distancia(NpcList(.flags.TargetNPC).Pos, .Pos) > 10 Then
                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(UserIndex, "Estï¿½s demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         
 
         
-            'acá va el guardado en memoria
+            'acï¿½ va el guardado en memoria
             
             
             
@@ -31730,7 +31739,7 @@ Private Sub HandleCommerceSendChatMessage(ByVal UserIndex As Integer)
         
         chatMessage = "[" & UserList(UserIndex).name & "] " & Buffer.ReadASCIIString
         
-        'El mensaje se lo envío al destino
+        'El mensaje se lo envï¿½o al destino
         Call WriteCommerceRecieveChatMessage(UserList(UserIndex).ComUsu.DestUsu, chatMessage)
         'y tambien a mi mismo
         Call WriteCommerceRecieveChatMessage(UserIndex, chatMessage)
@@ -31782,29 +31791,29 @@ Private Sub HandleCreateEvent(ByVal UserIndex As Integer)
         'Remove packet ID
         Call Buffer.ReadInteger
         
-        Dim name As String
-        name = Buffer.ReadASCIIString()
+        Dim Name As String
+        Name = Buffer.ReadASCIIString()
         
         'If we got here then packet is complete, copy data back to original queue
         Call .incomingData.CopyBuffer(Buffer)
 
-        If LenB(name) = 0 Then Exit Sub
+        If LenB(Name) = 0 Then Exit Sub
 
         If Not EsGM(UserIndex) Then Exit Sub
 
         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then Exit Sub
         
-        Select Case UCase$(name)
+        Select Case UCase$(Name)
             Case "INVASION BANDER"
                 Call IniciarEvento(TipoEvento.Invasion, 1)
-                Call LogGM(.name, "Forzó el evento Invasión en Banderville.")
+                Call LogGM(.name, "Forzï¿½ el evento Invasiï¿½n en Banderville.")
                 
             Case "INVASION CARCEL"
                 Call IniciarEvento(TipoEvento.Invasion, 2)
-                Call LogGM(.name, "Forzó el evento Invasión en Carcel.")
+                Call LogGM(.name, "Forzï¿½ el evento Invasiï¿½n en Carcel.")
 
             Case Else
-                Call WriteConsoleMsg(UserIndex, "No existe el evento """ & name & """.", FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(UserIndex, "No existe el evento """ & Name & """.", FontTypeNames.FONTTYPE_INFO)
         End Select
 
     End With

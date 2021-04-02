@@ -58,21 +58,21 @@ Public Function AddCorreo(ByVal UserIndex As Integer, ByRef UserName As String, 
 
         Dim ReceptIndex As Integer
 
-        Dim index       As Byte
+        Dim Index       As Byte
 
 100     ReceptIndex = NameIndex(UserName)
 
 102     If ReceptIndex > 0 Then
-104         index = SearchIndexFreeCorreo(ReceptIndex)
+104         Index = SearchIndexFreeCorreo(ReceptIndex)
     
-106         If index >= 1 And index <= MAX_CORREOS_SLOTS Then
+106         If Index >= 1 And Index <= MAX_CORREOS_SLOTS Then
 108             UserList(ReceptIndex).Correo.CantCorreo = UserList(ReceptIndex).Correo.CantCorreo + 1
-110             UserList(ReceptIndex).Correo.Mensaje(index).Remitente = UserList(UserIndex).name
-112             UserList(ReceptIndex).Correo.Mensaje(index).Mensaje = message
-114             UserList(ReceptIndex).Correo.Mensaje(index).Item = ObjArray
-116             UserList(ReceptIndex).Correo.Mensaje(index).ItemCount = FinalCount
-118             UserList(ReceptIndex).Correo.Mensaje(index).Leido = 0
-120             UserList(ReceptIndex).Correo.Mensaje(index).Fecha = Date & " - " & Time
+110             UserList(ReceptIndex).Correo.Mensaje(Index).Remitente = UserList(UserIndex).Name
+112             UserList(ReceptIndex).Correo.Mensaje(Index).Mensaje = message
+114             UserList(ReceptIndex).Correo.Mensaje(Index).Item = ObjArray
+116             UserList(ReceptIndex).Correo.Mensaje(Index).ItemCount = FinalCount
+118             UserList(ReceptIndex).Correo.Mensaje(Index).Leido = 0
+120             UserList(ReceptIndex).Correo.Mensaje(Index).Fecha = Date & " - " & Time
         
                 ' UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD - 75
         
@@ -83,7 +83,7 @@ Public Function AddCorreo(ByVal UserIndex As Integer, ByRef UserName As String, 
                 ' Call WriteUpdateUserStats(UserIndex)
         
                 '''
-122             Call WriteConsoleMsg(ReceptIndex, "Has recibido un nuevo mensaje de " & UserList(UserIndex).name & " ve a un correo local para leerlo.", FontTypeNames.FONTTYPE_INFOIAO)
+122             Call WriteConsoleMsg(ReceptIndex, "Has recibido un nuevo mensaje de " & UserList(UserIndex).Name & " ve a un correo local para leerlo.", FontTypeNames.FONTTYPE_INFOIAO)
 124             UserList(ReceptIndex).Correo.NoLeidos = 1
 126             Call WriteCorreoPicOn(ReceptIndex)
                 ' Call WriteCorreoUpdateCount(ReceptIndex, UserList(ReceptIndex).Correo.MensajesSinLeer)
@@ -107,7 +107,7 @@ Public Function AddCorreo(ByVal UserIndex As Integer, ByRef UserName As String, 
 
 136         If PersonajeExiste(UserName) Then
     
-                Dim Leer       As New clsIniReader
+                Dim Leer       As New clsIniManager
 
                 Dim FileUser   As String
 
@@ -158,11 +158,11 @@ ErrHandler:
 
 End Function
 
-Public Sub BorrarCorreoMail(ByVal UserIndex As Integer, ByVal index As Byte)
+Public Sub BorrarCorreoMail(ByVal UserIndex As Integer, ByVal Index As Byte)
         
         On Error GoTo BorrarCorreoMail_Err
         
-100     UserList(UserIndex).Correo.Mensaje(index).Remitente = ""
+100     UserList(UserIndex).Correo.Mensaje(Index).Remitente = ""
 102     Call SortCorreos(UserIndex)
 
         
@@ -174,12 +174,12 @@ BorrarCorreoMail_Err:
         
 End Sub
 
-Public Sub ExtractItemCorreo(ByVal UserIndex As Integer, ByVal index As Byte)
+Public Sub ExtractItemCorreo(ByVal UserIndex As Integer, ByVal Index As Byte)
         
         On Error GoTo ExtractItemCorreo_Err
         
 
-100     If UserList(UserIndex).Correo.Mensaje(index).ItemCount <= 0 Then Exit Sub
+100     If UserList(UserIndex).Correo.Mensaje(Index).ItemCount <= 0 Then Exit Sub
     
         Dim ObjAMeter As obj
 
@@ -193,9 +193,9 @@ Public Sub ExtractItemCorreo(ByVal UserIndex As Integer, ByVal index As Byte)
 
         Dim Cantidad  As String
     
-102     For i = 1 To UserList(UserIndex).Correo.Mensaje(index).ItemCount
+102     For i = 1 To UserList(UserIndex).Correo.Mensaje(Index).ItemCount
     
-104         rdata = Right$(UserList(UserIndex).Correo.Mensaje(index).Item, Len(UserList(UserIndex).Correo.Mensaje(index).Item))
+104         rdata = Right$(UserList(UserIndex).Correo.Mensaje(Index).Item, Len(UserList(UserIndex).Correo.Mensaje(Index).Item))
 106         Item = (ReadField(i, rdata, Asc("@")))
                 
 108         rdata = Left$(Item, Len(Item))
@@ -214,8 +214,8 @@ Public Sub ExtractItemCorreo(ByVal UserIndex As Integer, ByVal index As Byte)
 
 124     Next i
 
-126     UserList(UserIndex).Correo.Mensaje(index).ItemCount = 0
-128     UserList(UserIndex).Correo.Mensaje(index).Item = 0
+126     UserList(UserIndex).Correo.Mensaje(Index).ItemCount = 0
+128     UserList(UserIndex).Correo.Mensaje(Index).Item = 0
 130     Call WriteListaCorreo(UserIndex, True)
 
         
@@ -227,11 +227,11 @@ ExtractItemCorreo_Err:
         
 End Sub
 
-Public Sub ReadMessageCorreo(ByVal UserIndex As Integer, ByVal index As Byte)
+Public Sub ReadMessageCorreo(ByVal UserIndex As Integer, ByVal Index As Byte)
         
         On Error GoTo ReadMessageCorreo_Err
         
-100     UserList(UserIndex).Correo.Mensaje(index).Leido = 1
+100     UserList(UserIndex).Correo.Mensaje(Index).Leido = 1
 102     UserList(UserIndex).Correo.MensajesSinLeer = UserList(UserIndex).Correo.MensajesSinLeer - 1
 
         '   Call WriteCorreoUpdateCount(ReceptIndex, UserList(ReceptIndex).Correo.MensajesSinLeer)
@@ -279,7 +279,7 @@ Private Function GrabarNuevoCorreoInChar(ByRef UserName As String, ByVal EmisorI
 
 100     If FileExist(CharPath & UCase$(UserName) & ".chr", vbNormal) Then
             
-            Dim Leer       As New clsIniReader
+            Dim Leer       As New clsIniManager
 
             Dim FileUser   As String
 
@@ -293,7 +293,7 @@ Private Function GrabarNuevoCorreoInChar(ByRef UserName As String, ByVal EmisorI
 108         CantCorreo = CantCorreo + 1
             
 110         Call WriteVar(FileUser, "Correo", "CantCorreo", CByte(CantCorreo))
-112         Call WriteVar(FileUser, "Correo", "REMITENTE" & CantCorreo, UserList(EmisorIndex).name)
+112         Call WriteVar(FileUser, "Correo", "REMITENTE" & CantCorreo, UserList(EmisorIndex).Name)
 114         Call WriteVar(FileUser, "Correo", "MENSAJE" & CantCorreo, message)
 116         Call WriteVar(FileUser, "Correo", "Item" & CantCorreo, ObjArray)
 118         Call WriteVar(FileUser, "Correo", "ItemCount" & CantCorreo, ItemCount)
@@ -327,7 +327,7 @@ Private Function GrabarNuevoCorreoInCharBySubasta(ByRef Comprador As String, ByV
 
 100     If FileExist(CharPath & UCase$(Comprador) & ".chr", vbNormal) Then
             
-            Dim Leer       As New clsIniReader
+            Dim Leer       As New clsIniManager
 
             Dim FileUser   As String
 
@@ -374,7 +374,7 @@ Public Function AddCorreoBySubastador(ByVal Vendedor As String, ByRef Comprador 
 
         Dim ReceptIndex As Integer
 
-        Dim index       As Byte
+        Dim Index       As Byte
 
         Dim ObjIndex    As Integer
 
@@ -383,16 +383,16 @@ Public Function AddCorreoBySubastador(ByVal Vendedor As String, ByRef Comprador 
 102     ObjIndex = obj
 
 104     If ReceptIndex > 0 Then
-106         index = SearchIndexFreeCorreo(ReceptIndex)
+106         Index = SearchIndexFreeCorreo(ReceptIndex)
     
-108         If index >= 1 And index <= MAX_CORREOS_SLOTS Then
+108         If Index >= 1 And Index <= MAX_CORREOS_SLOTS Then
 110             UserList(ReceptIndex).Correo.CantCorreo = UserList(ReceptIndex).Correo.CantCorreo + 1
-112             UserList(ReceptIndex).Correo.Mensaje(index).Remitente = Vendedor
-114             UserList(ReceptIndex).Correo.Mensaje(index).Mensaje = message
-116             UserList(ReceptIndex).Correo.Mensaje(index).ItemCount = 1
-118             UserList(ReceptIndex).Correo.Mensaje(index).Item = ObjIndex & "-" & Cantidad & "@"
-120             UserList(ReceptIndex).Correo.Mensaje(index).Leido = 0
-122             UserList(ReceptIndex).Correo.Mensaje(index).Fecha = Date & " - " & Time
+112             UserList(ReceptIndex).Correo.Mensaje(Index).Remitente = Vendedor
+114             UserList(ReceptIndex).Correo.Mensaje(Index).Mensaje = message
+116             UserList(ReceptIndex).Correo.Mensaje(Index).ItemCount = 1
+118             UserList(ReceptIndex).Correo.Mensaje(Index).Item = ObjIndex & "-" & Cantidad & "@"
+120             UserList(ReceptIndex).Correo.Mensaje(Index).Leido = 0
+122             UserList(ReceptIndex).Correo.Mensaje(Index).Fecha = Date & " - " & Time
         
                 '''
 124             Call WriteConsoleMsg(ReceptIndex, "Has recibido un nuevo mensaje de " & Vendedor & " ve a un correo local para leerlo.", FontTypeNames.FONTTYPE_INFOIAO)
@@ -414,7 +414,7 @@ Public Function AddCorreoBySubastador(ByVal Vendedor As String, ByRef Comprador 
 
 134         If PersonajeExiste(Comprador) Then
     
-                Dim Leer       As New clsIniReader
+                Dim Leer       As New clsIniManager
 
                 Dim FileUser   As String
 

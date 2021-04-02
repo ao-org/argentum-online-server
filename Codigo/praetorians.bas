@@ -49,7 +49,7 @@ Public Enum ePretorianAI
     SwordMaster
     Shooter
     Thief
-    Last
+    last
 
 End Enum
 
@@ -61,13 +61,13 @@ Public PretorianDatNumbers()     As Integer
 ''Cuantos pretorianos vivos quedan. Uno por cada alcoba
 'Public pretorianosVivos As Integer
 '
-Private FileReader As clsIniReader
+Private FileReader As clsIniManager
 
 Public Sub LoadPretorianData()
 
         On Error GoTo LoadPretorianData_Err
  
-100     Set FileReader = New clsIniReader
+100     Set FileReader = New clsIniManager
 102     Call FileReader.Initialize(DatPath & "Pretorianos.dat")
         
         'Ubicación predeterminada de los pretorianos.
@@ -179,7 +179,7 @@ Public Sub LoadPretorianData()
 212     Next counter
 
         ' Last
-214     PretorianAIOffset(ePretorianAI.Last) = PretorianIndex
+214     PretorianAIOffset(ePretorianAI.last) = PretorianIndex
 
         ' Inicializa los clanes pretorianos
 216     ReDim ClanPretoriano(ePretorianType.Default To ePretorianType.Custom) As clsClanPretoriano
@@ -201,7 +201,7 @@ LoadPretorianData_Err:
         
 228     Set FileReader = Nothing
         
-230     Call RegistrarError(Err.Number, Err.description, "PraetoriansCoopNPC.LoadPretorianData", Erl)
+230     Call RegistrarError(Err.Number, Err.Description, "PraetoriansCoopNPC.LoadPretorianData", Erl)
         
 232     Resume Next
         
@@ -211,12 +211,12 @@ Public Sub EliminarPretorianos(ByVal Mapa As Integer)
 
         On Error GoTo EliminarPretorianos_Err
         
-        Dim index As Byte
-100     For index = 1 To UBound(ClanPretoriano)
+        Dim Index As Byte
+100     For Index = 1 To UBound(ClanPretoriano)
                  
             ' Search for the clan to be deleted
-102         If ClanPretoriano(index).ClanMap = Mapa Then
-104             Call ClanPretoriano(index).DeleteClan
+102         If ClanPretoriano(Index).ClanMap = Mapa Then
+104             Call ClanPretoriano(Index).DeleteClan
                 Exit For
         
             End If
@@ -226,7 +226,7 @@ Public Sub EliminarPretorianos(ByVal Mapa As Integer)
         Exit Sub
 
 EliminarPretorianos_Err:
-106     Call RegistrarError(Err.Number, Err.description, "PraetoriansCoopNPC.EliminarPretorianos", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "PraetoriansCoopNPC.EliminarPretorianos", Erl)
 108     Resume Next
         
 End Sub

@@ -7,14 +7,14 @@ Public Retos As tRetos
 Private ListaDeEspera As New Dictionary
 
 Public Sub CargarInfoRetos()
-    Dim File As clsIniReader
-    Set File = New clsIniReader
+    Dim File As clsIniManager
+    Set File = New clsIniManager
 
     Call File.Initialize(DatPath & "Retos.dat")
     
     With Retos
 
-        .TamañoMaximoEquipo = val(File.GetValue("Retos", "MaximoEquipo"))
+        .Tamaï¿½oMaximoEquipo = val(File.GetValue("Retos", "MaximoEquipo"))
         .ApuestaMinima = val(File.GetValue("Retos", "ApuestaMinima"))
         .ImpuestoApuesta = val(File.GetValue("Retos", "ImpuestoApuesta"))
         .DuracionMaxima = val(File.GetValue("Retos", "DuracionMaxima"))
@@ -57,13 +57,13 @@ Public Sub CrearReto(ByVal UserIndex As Integer, JugadoresStr As String, ByVal A
     With UserList(UserIndex)
 
         If .flags.SolicitudReto.estado <> SolicitudRetoEstado.Libre Then
-            Call CancelarSolicitudReto(UserIndex, .name & " ha cancelado la solicitud.")
+            Call CancelarSolicitudReto(UserIndex, .Name & " ha cancelado la solicitud.")
 
         ElseIf .flags.AceptoReto > 0 Then
-            Call CancelarSolicitudReto(.flags.AceptoReto, .name & " ha cancelado su admisión.")
+            Call CancelarSolicitudReto(.flags.AceptoReto, .Name & " ha cancelado su admisiï¿½n.")
         End If
         
-        Dim TamanoReal As Byte: TamanoReal = Retos.TamañoMaximoEquipo * 2 - 1
+        Dim TamanoReal As Byte: TamanoReal = Retos.Tamaï¿½oMaximoEquipo * 2 - 1
         
         If LenB(JugadoresStr) <= 0 Then Exit Sub
     
@@ -74,7 +74,7 @@ Public Sub CrearReto(ByVal UserIndex As Integer, JugadoresStr As String, ByVal A
         Dim MaxIndexEquipo As Integer: MaxIndexEquipo = UBound(Jugadores) \ 2
     
         If Apuesta < Retos.ApuestaMinima Or Apuesta > APUESTA_MAXIMA Then
-            Call WriteConsoleMsg(UserIndex, "La apuesta mínima es de " & PonerPuntos(Retos.ApuestaMinima) & " monedas de oro.", FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "La apuesta mï¿½nima es de " & PonerPuntos(Retos.ApuestaMinima) & " monedas de oro.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
 
@@ -87,7 +87,7 @@ Public Sub CrearReto(ByVal UserIndex As Integer, JugadoresStr As String, ByVal A
         
         If PocionesMaximas >= 0 Then
             If TieneObjetos(38, PocionesMaximas + 1, UserIndex) Then
-                Call WriteConsoleMsg(UserIndex, "Tienes demasiadas pociones rojas (Cantidad máxima: " & PocionesMaximas & ").", FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(UserIndex, "Tienes demasiadas pociones rojas (Cantidad mï¿½xima: " & PocionesMaximas & ").", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         End If
@@ -101,29 +101,29 @@ Public Sub CrearReto(ByVal UserIndex As Integer, JugadoresStr As String, ByVal A
             Dim i As Integer, tIndex As Integer
             Dim Equipo1 As String, Equipo2 As String
             
-            Equipo1 = UserList(UserIndex).name
+            Equipo1 = UserList(UserIndex).Name
 
             For i = 0 To UBound(.Jugadores)
                 With .Jugadores(i)
                     If EsGmChar(Jugadores(i)) Then
-                        Call WriteConsoleMsg(UserIndex, "¡No puedes jugar retos con administradores!", FontTypeNames.FONTTYPE_INFO)
+                        Call WriteConsoleMsg(UserIndex, "ï¿½No puedes jugar retos con administradores!", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
 
                     tIndex = NameIndex(Jugadores(i))
                                                                                 
                     If tIndex <= 0 Then
-                        Call WriteConsoleMsg(UserIndex, "El usuario " & Jugadores(i) & " no está conectado.", FontTypeNames.FONTTYPE_INFO)
+                        Call WriteConsoleMsg(UserIndex, "El usuario " & Jugadores(i) & " no estï¿½ conectado.", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                     
                     If Not PuedeReto(tIndex) Then
-                        Call WriteConsoleMsg(UserIndex, "El usuario " & UserList(tIndex).name & " no puede jugar un reto en este momento.", FontTypeNames.FONTTYPE_INFO)
+                        Call WriteConsoleMsg(UserIndex, "El usuario " & UserList(tIndex).Name & " no puede jugar un reto en este momento.", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
 
                     .CurIndex = tIndex
-                    .nombre = UserList(.CurIndex).name
+                    .nombre = UserList(.CurIndex).Name
                     .Aceptado = False
                     
                     If i Mod 2 Then
@@ -175,15 +175,15 @@ Public Sub AceptarReto(ByVal UserIndex As Integer, OferenteName As String)
     
     With UserList(UserIndex)
         If .flags.SolicitudReto.estado <> SolicitudRetoEstado.Libre Then
-            Call CancelarSolicitudReto(UserIndex, .name & " ha cancelado la solicitud.")
+            Call CancelarSolicitudReto(UserIndex, .Name & " ha cancelado la solicitud.")
             
         ElseIf .flags.AceptoReto > 0 Then
-            Call CancelarSolicitudReto(.flags.AceptoReto, .name & " ha cancelado su admisión.")
+            Call CancelarSolicitudReto(.flags.AceptoReto, .Name & " ha cancelado su admisiï¿½n.")
         End If
     End With
     
     If EsGmChar(OferenteName) Then
-        Call WriteConsoleMsg(UserIndex, "¡No puedes jugar retos con administradores!", FontTypeNames.FONTTYPE_INFO)
+        Call WriteConsoleMsg(UserIndex, "ï¿½No puedes jugar retos con administradores!", FontTypeNames.FONTTYPE_INFO)
         Exit Sub
     End If
 
@@ -191,7 +191,7 @@ Public Sub AceptarReto(ByVal UserIndex As Integer, OferenteName As String)
     Oferente = NameIndex(OferenteName)
     
     If Oferente <= 0 Then
-        Call WriteConsoleMsg(UserIndex, OferenteName & " no está conectado.", FontTypeNames.FONTTYPE_INFO)
+        Call WriteConsoleMsg(UserIndex, OferenteName & " no estï¿½ conectado.", FontTypeNames.FONTTYPE_INFO)
         Exit Sub
     End If
     
@@ -203,7 +203,7 @@ Public Sub AceptarReto(ByVal UserIndex As Integer, OferenteName As String)
         JugadorIndex = IndiceJugadorEnSolicitud(UserIndex, Oferente)
         
         If JugadorIndex < 0 Then
-            Call WriteConsoleMsg(UserIndex, UserList(Oferente).name & " no te ha invitado a ningún reto o ha sido cancelado.", FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, UserList(Oferente).Name & " no te ha invitado a ningï¿½n reto o ha sido cancelado.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         
@@ -214,7 +214,7 @@ Public Sub AceptarReto(ByVal UserIndex As Integer, OferenteName As String)
         
         If .PocionesMaximas >= 0 Then
             If TieneObjetos(38, .PocionesMaximas + 1, UserIndex) Then
-                Call WriteConsoleMsg(UserIndex, "Tienes demasiadas pociones rojas (Cantidad máxima: " & .PocionesMaximas & ").", FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(UserIndex, "Tienes demasiadas pociones rojas (Cantidad mï¿½xima: " & .PocionesMaximas & ").", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         End If
@@ -225,7 +225,7 @@ Public Sub AceptarReto(ByVal UserIndex As Integer, OferenteName As String)
         .Jugadores(JugadorIndex).CurIndex = UserIndex
         UserList(UserIndex).flags.AceptoReto = Oferente
         
-        Call WriteConsoleMsg(UserIndex, "Has aceptado el reto de " & UserList(Oferente).name & ".", FontTypeNames.FONTTYPE_INFO)
+        Call WriteConsoleMsg(UserIndex, "Has aceptado el reto de " & UserList(Oferente).Name & ".", FontTypeNames.FONTTYPE_INFO)
         
         Dim FaltanAceptar As String
 
@@ -305,7 +305,7 @@ Private Sub BuscarSala(ByVal Oferente As Integer)
 
         If Retos.SalasLibres <= 0 Then
             Call ListaDeEspera.Add(Oferente, 0)
-            Call MensajeATodosSolicitud(Oferente, "No hay salas disponibles. El reto comenzará cuando se desocupe una sala.", FontTypeNames.FONTTYPE_FIGHT)
+            Call MensajeATodosSolicitud(Oferente, "No hay salas disponibles. El reto comenzarï¿½ cuando se desocupe una sala.", FontTypeNames.FONTTYPE_FIGHT)
             Exit Sub
         End If
         
@@ -335,16 +335,16 @@ Private Sub IniciarReto(ByVal Oferente As Integer, ByVal Sala As Integer)
     
     With UserList(Oferente).flags.SolicitudReto
     
-        ' Última comprobación de si todos pueden entrar/pagar
+        ' ï¿½ltima comprobaciï¿½n de si todos pueden entrar/pagar
         If Not TodosPuedenReto(Oferente) Then Exit Sub
         
         Dim Apuesta As Integer, ApuestaStr As String
         Apuesta = .Apuesta
         ApuestaStr = PonerPuntos(Apuesta)
 
-        ' Calculamos el tamaño del equipo
-        Retos.Salas(Sala).TamañoEquipoIzq = UBound(.Jugadores) \ 2 + 1
-        Retos.Salas(Sala).TamañoEquipoDer = Retos.Salas(Sala).TamañoEquipoIzq
+        ' Calculamos el tamaï¿½o del equipo
+        Retos.Salas(Sala).Tamaï¿½oEquipoIzq = UBound(.Jugadores) \ 2 + 1
+        Retos.Salas(Sala).Tamaï¿½oEquipoDer = Retos.Salas(Sala).Tamaï¿½oEquipoIzq
         ' Reservamos espacio para los jugadores (incluyendo al oferente)
         ReDim Retos.Salas(Sala).Jugadores(0 To UBound(.Jugadores) + 1)
         
@@ -362,7 +362,7 @@ Private Sub IniciarReto(ByVal Oferente As Integer, ByVal Sala As Integer)
         
         Dim i As Integer
         
-        ' Agregamos los jugadores alternando 1 y 1 (en los índices pares está el equipo izquierdo y en los impares el derecho - el array empieza en cero)
+        ' Agregamos los jugadores alternando 1 y 1 (en los ï¿½ndices pares estï¿½ el equipo izquierdo y en los impares el derecho - el array empieza en cero)
         For i = 0 To UBound(.Jugadores)
             Retos.Salas(Sala).Jugadores(CurIndex) = .Jugadores(i).CurIndex
             CurIndex = CurIndex + 1
@@ -375,7 +375,7 @@ Private Sub IniciarReto(ByVal Oferente As Integer, ByVal Sala As Integer)
             Retos.Salas(Sala).Jugadores(CurIndex) = Oferente
         End If
         
-        ' Reset estado de la solicitud, ya que no la necesitamos más
+        ' Reset estado de la solicitud, ya que no la necesitamos mï¿½s
         .estado = SolicitudRetoEstado.Libre
     End With
 
@@ -412,11 +412,11 @@ Private Sub IniciarReto(ByVal Oferente As Integer, ByVal Sala As Integer)
                 .EnReto = True
                 .EquipoReto = IIf(i Mod 2, EquipoReto.Derecha, EquipoReto.Izquierda)
                 .SalaReto = Sala
-                ' Guardar posición
+                ' Guardar posiciï¿½n
                 .LastPos = UserList(tIndex).pos
             End With
             
-            Call WriteConsoleMsg(tIndex, "¡Ha comenzado el reto!", FontTypeNames.FONTTYPE_New_Rojo_Salmon)
+            Call WriteConsoleMsg(tIndex, "ï¿½Ha comenzado el reto!", FontTypeNames.FONTTYPE_New_Rojo_Salmon)
             Call WriteConsoleMsg(tIndex, "Para admitir la derrota escribe /ABANDONAR.", FontTypeNames.FONTTYPE_New_Gris)
 
         Next
@@ -448,7 +448,7 @@ Private Sub IniciarRonda(ByVal Sala As Integer)
 
                 Call RevivirYLimpiar(tIndex)
 
-                ' Usando el número de ronda y el índice, decidimos el lado al que corresponde
+                ' Usando el nï¿½mero de ronda y el ï¿½ndice, decidimos el lado al que corresponde
                 If (.Ronda + i) Mod 2 = 1 Then
                     ' Lado izquierdo
                     Call WarpToLegalPos(tIndex, .PosIzquierda.Map, .PosIzquierda.x, .PosIzquierda.y, True)
@@ -465,7 +465,7 @@ Private Sub IniciarRonda(ByVal Sala As Integer)
                     Call WriteStopped(tIndex, True)
                 End If
                 
-                Call WriteConsoleMsg(tIndex, "Comienza la ronda Nº" & .Ronda, FontTypeNames.FONTTYPE_GUILD)
+                Call WriteConsoleMsg(tIndex, "Comienza la ronda Nï¿½" & .Ronda, FontTypeNames.FONTTYPE_GUILD)
 
             End If
         Next
@@ -487,19 +487,19 @@ Public Sub MuereEnReto(ByVal UserIndex As Integer)
     
         Dim CurIndex As Integer
         
-        ' El equipo derecho está en índices pares
+        ' El equipo derecho estï¿½ en ï¿½ndices pares
         If Equipo = EquipoReto.Derecha Then CurIndex = 1
         
         For CurIndex = CurIndex To UBound(.Jugadores) Step 2
             If .Jugadores(CurIndex) <> 0 Then
-                ' Si todavía hay alguno vivo del equipo
+                ' Si todavï¿½a hay alguno vivo del equipo
                 If UserList(.Jugadores(CurIndex)).flags.Muerto = 0 Then
                     Exit Sub
                 End If
             End If
         Next
         
-        ' Están todos muertos, ganó el equipo contrario
+        ' Estï¿½n todos muertos, ganï¿½ el equipo contrario
         Call ProcesarRondaGanada(Sala, EquipoContrario(Equipo))
     
     End With
@@ -510,37 +510,37 @@ Private Sub ProcesarRondaGanada(ByVal Sala As Integer, ByVal Equipo As EquipoRet
 
     With Retos.Salas(Sala)
 
-        ' Sumamos puntaje o restamos según el equipo
+        ' Sumamos puntaje o restamos segï¿½n el equipo
         If Equipo = EquipoReto.Derecha Then
             .Puntaje = .Puntaje + 1
         Else
             .Puntaje = .Puntaje - 1
         End If
         
-        ' Si terminó la tercer ronda o bien algún equipo obtuvo 2 victorias seguidas
+        ' Si terminï¿½ la tercer ronda o bien algï¿½n equipo obtuvo 2 victorias seguidas
         If .Ronda >= 3 Or Abs(.Puntaje) >= 2 Then
             Call FinalizarReto(Sala)
             Exit Sub
         End If
         
-        ' Aumentamos el número de ronda
+        ' Aumentamos el nï¿½mero de ronda
         .Ronda = .Ronda + 1
         
-        ' Obtenemos el tamaño actual del equipo (por si alguno abandonó)
-        Dim TamañoEquipo As Integer, TamañoEquipo2 As Integer
-        TamañoEquipo = ObtenerTamañoEquipo(Sala, Equipo)
-        ' Menos cálculos en el bucle
-        TamañoEquipo2 = TamañoEquipo * 2
+        ' Obtenemos el tamaï¿½o actual del equipo (por si alguno abandonï¿½)
+        Dim Tamaï¿½oEquipo As Integer, Tamaï¿½oEquipo2 As Integer
+        Tamaï¿½oEquipo = ObtenerTamaï¿½oEquipo(Sala, Equipo)
+        ' Menos cï¿½lculos en el bucle
+        Tamaï¿½oEquipo2 = Tamaï¿½oEquipo * 2
         
         ' Obtenemos los nombres del equipo ganador
         Dim i As Integer, nombres As String
-        For i = IIf(Equipo = EquipoReto.Izquierda, 0, 1) To TamañoEquipo2 - 1 Step 2
+        For i = IIf(Equipo = EquipoReto.Izquierda, 0, 1) To Tamaï¿½oEquipo2 - 1 Step 2
 
             If .Jugadores(i) <> 0 Then
-                nombres = nombres & UserList(.Jugadores(i)).name
+                nombres = nombres & UserList(.Jugadores(i)).Name
                 
-                If i < TamañoEquipo2 - 2 Then
-                    nombres = nombres & IIf(i > TamañoEquipo2 - 5, " y ", ", ")
+                If i < Tamaï¿½oEquipo2 - 2 Then
+                    nombres = nombres & IIf(i > Tamaï¿½oEquipo2 - 5, " y ", ", ")
                 End If
             End If
         Next
@@ -553,7 +553,7 @@ Private Sub ProcesarRondaGanada(ByVal Sala As Integer, ByVal Equipo As EquipoRet
             End If
         Next
         
-        ' Iniciamos la próxima ronda
+        ' Iniciamos la prï¿½xima ronda
         Call IniciarRonda(Sala)
     
     End With
@@ -571,7 +571,7 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
         ' Descontamos el impuesto
         OroTotal = OroTotal * (1 - Retos.ImpuestoApuesta)
     
-        ' Decidimos el resultado del reto según el puntaje:
+        ' Decidimos el resultado del reto segï¿½n el puntaje:
         Dim i As Integer, tIndex As Integer, Equipo1 As String, Equipo2 As String
         
         ' Empate
@@ -600,17 +600,17 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
                     If i Mod 2 Then
                     
                         If LenB(Equipo2) > 0 Then
-                            Equipo2 = Equipo2 & IIf((i + 1) \ 2 < .TamañoEquipoDer - 2, ", ", " y ") & UserList(tIndex).name
+                            Equipo2 = Equipo2 & IIf((i + 1) \ 2 < .Tamaï¿½oEquipoDer - 2, ", ", " y ") & UserList(tIndex).Name
                         Else
-                            Equipo2 = UserList(tIndex).name
+                            Equipo2 = UserList(tIndex).Name
                         End If
                         
                     Else
                     
                         If LenB(Equipo1) > 0 Then
-                            Equipo1 = Equipo2 & IIf(i \ 2 < .TamañoEquipoIzq - 2, ", ", " y ") & UserList(tIndex).name
+                            Equipo1 = Equipo2 & IIf(i \ 2 < .Tamaï¿½oEquipoIzq - 2, ", ", " y ") & UserList(tIndex).Name
                         Else
-                            Equipo1 = UserList(tIndex).name
+                            Equipo1 = UserList(tIndex).Name
                         End If
                         
                     End If
@@ -620,7 +620,7 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
             Next
             
             ' Anuncio global
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Retos » " & Equipo1 & " vs " & Equipo2 & ". Ninguno pudo vencer a su rival.", FontTypeNames.FONTTYPE_INFO))
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Retos ï¿½ " & Equipo1 & " vs " & Equipo2 & ". Ninguno pudo vencer a su rival.", FontTypeNames.FONTTYPE_INFO))
             Call SalaLiberada(Sala)
         ' Hubo un ganador
         Else
@@ -633,7 +633,7 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
             End If
 
             ' Pagamos a los ganadores que no abandonaron
-            Oro = OroTotal \ ObtenerTamañoEquipo(Sala, Ganador)
+            Oro = OroTotal \ ObtenerTamaï¿½oEquipo(Sala, Ganador)
             OroStr = PonerPuntos(Oro)
 
             For i = 0 To UBound(.Jugadores)
@@ -678,17 +678,17 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
                     If i Mod 2 Then
                     
                         If LenB(Equipo2) > 0 Then
-                            Equipo2 = Equipo2 & IIf((i + 1) \ 2 < .TamañoEquipoDer - 2, ", ", " y ") & UserList(tIndex).name
+                            Equipo2 = Equipo2 & IIf((i + 1) \ 2 < .Tamaï¿½oEquipoDer - 2, ", ", " y ") & UserList(tIndex).name
                         Else
-                            Equipo2 = UserList(tIndex).name
+                            Equipo2 = UserList(tIndex).Name
                         End If
                         
                     Else
                     
                         If LenB(Equipo1) > 0 Then
-                            Equipo1 = Equipo1 & IIf(i \ 2 < .TamañoEquipoIzq - 2, ", ", " y ") & UserList(tIndex).name
+                            Equipo1 = Equipo1 & IIf(i \ 2 < .Tamaï¿½oEquipoIzq - 2, ", ", " y ") & UserList(tIndex).Name
                         Else
-                            Equipo1 = UserList(tIndex).name
+                            Equipo1 = UserList(tIndex).Name
                         End If
                         
                     End If
@@ -702,10 +702,10 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
 
             ' Anuncio global
             If UBound(.Jugadores) > 1 Then
-                Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Retos » El equipo " & equipoGanador & " venció al equipo " & equipoPerdedor & " y se quedo con el botín de: " & PonerPuntos(.Apuesta) & " monedas de oro. ", FontTypeNames.FONTTYPE_INFO))
+                Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Retos ï¿½ El equipo " & equipoGanador & " venciï¿½ al equipo " & equipoPerdedor & " y se quedo con el botï¿½n de: " & PonerPuntos(.Apuesta) & " monedas de oro. ", FontTypeNames.FONTTYPE_INFO))
         
             Else ' 1 vs 1
-                Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Retos » " & equipoGanador & " venció a " & equipoPerdedor & " y se quedo con el botín de: " & PonerPuntos(.Apuesta) & " monedas de oro. ", FontTypeNames.FONTTYPE_INFO))
+                Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Retos ï¿½ " & equipoGanador & " venciï¿½ a " & equipoPerdedor & " y se quedo con el botï¿½n de: " & PonerPuntos(.Apuesta) & " monedas de oro. ", FontTypeNames.FONTTYPE_INFO))
 
             End If
             
@@ -864,13 +864,13 @@ Public Sub AbandonarReto(ByVal UserIndex As Integer, Optional ByVal Desconexion 
         
         If .CaenItems And Abs(.Puntaje) >= 2 Then
                 If .Puntaje < 0 Then
-                    .TamañoEquipoIzq = .TamañoEquipoIzq - 1
-                    If .TamañoEquipoIzq <= 0 Then
+                    .Tamaï¿½oEquipoIzq = .Tamaï¿½oEquipoIzq - 1
+                    If .Tamaï¿½oEquipoIzq <= 0 Then
                         TerminarTiempoAgarrarItems (Sala)
                     End If
                 Else
-                    .TamañoEquipoDer = .TamañoEquipoDer - 1
-                    If .TamañoEquipoDer <= 0 Then
+                    .Tamaï¿½oEquipoDer = .Tamaï¿½oEquipoDer - 1
+                    If .Tamaï¿½oEquipoDer <= 0 Then
                         TerminarTiempoAgarrarItems (Sala)
                     End If
                 End If
@@ -883,8 +883,8 @@ Public Sub AbandonarReto(ByVal UserIndex As Integer, Optional ByVal Desconexion 
         
         ' Restamos un miembro al equipo y si llega a cero entonces procesamos la derrota
         If Equipo = EquipoReto.Izquierda Then
-            If .TamañoEquipoIzq > 1 Then
-                .TamañoEquipoIzq = .TamañoEquipoIzq - 1
+            If .Tamaï¿½oEquipoIzq > 1 Then
+                .Tamaï¿½oEquipoIzq = .Tamaï¿½oEquipoIzq - 1
             Else
                 .Puntaje = 123 ' Forzamos puntaje positivo
                 Call FinalizarReto(Sala)
@@ -892,8 +892,8 @@ Public Sub AbandonarReto(ByVal UserIndex As Integer, Optional ByVal Desconexion 
             End If
 
         Else
-            If .TamañoEquipoDer > 1 Then
-                .TamañoEquipoDer = .TamañoEquipoDer - 1
+            If .Tamaï¿½oEquipoDer > 1 Then
+                .Tamaï¿½oEquipoDer = .Tamaï¿½oEquipoDer - 1
             Else
                 .Puntaje = -123 ' Forzamos puntaje negativo
                 Call FinalizarReto(Sala)
@@ -906,9 +906,9 @@ Public Sub AbandonarReto(ByVal UserIndex As Integer, Optional ByVal Desconexion 
         
         Dim texto As String
         If Desconexion Then
-            texto = UserList(UserIndex).name & " es descalificado por desconectarse."
+            texto = UserList(UserIndex).Name & " es descalificado por desconectarse."
         Else
-            texto = UserList(UserIndex).name & " ha abandonado el reto."
+            texto = UserList(UserIndex).Name & " ha abandonado el reto."
         End If
         
         Dim i As Integer
@@ -977,7 +977,7 @@ Public Function PuedeRetoConMensaje(ByVal UserIndex As Integer) As Boolean
         End If
         
         If .flags.EnConsulta Then
-            Call WriteConsoleMsg(UserIndex, "No puedes acceder a un reto si estás en consulta.", FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "No puedes acceder a un reto si estï¿½s en consulta.", FontTypeNames.FONTTYPE_INFO)
             Exit Function
         End If
         
@@ -992,7 +992,7 @@ Public Function PuedeRetoConMensaje(ByVal UserIndex As Integer) As Boolean
         End If
         
         If MapData(.pos.Map, .pos.x, .pos.y).trigger = CARCEL Then
-            Call WriteConsoleMsg(UserIndex, "¡Estás encarcelado!", FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "ï¿½Estï¿½s encarcelado!", FontTypeNames.FONTTYPE_INFO)
             Exit Function
         End If
         
@@ -1012,7 +1012,7 @@ Private Function IndiceJugadorEnSolicitud(ByVal UserIndex As Integer, ByVal Ofer
 
         Dim i As Integer
         For i = 0 To UBound(.Jugadores)
-            If .Jugadores(i).nombre = UserList(UserIndex).name Then
+            If .Jugadores(i).nombre = UserList(UserIndex).Name Then
                 IndiceJugadorEnSolicitud = i
                 Exit Function
             End If
@@ -1049,16 +1049,16 @@ Private Function TodosPuedenReto(ByVal Oferente As Integer) As Boolean
 
         For i = 0 To UBound(.Jugadores)
             If Not PuedeReto(.Jugadores(i).CurIndex) Then
-                Call CancelarSolicitudReto(Oferente, UserList(.Jugadores(i).CurIndex).name & " no puede entrar al reto en este momento.")
+                Call CancelarSolicitudReto(Oferente, UserList(.Jugadores(i).CurIndex).Name & " no puede entrar al reto en este momento.")
                 Exit Function
 
             ElseIf UserList(.Jugadores(i).CurIndex).Stats.GLD < .Apuesta Then
-                Call CancelarSolicitudReto(Oferente, UserList(.Jugadores(i).CurIndex).name & " no tiene las monedas de oro suficientes.")
+                Call CancelarSolicitudReto(Oferente, UserList(.Jugadores(i).CurIndex).Name & " no tiene las monedas de oro suficientes.")
                 Exit Function
                 
             ElseIf .PocionesMaximas >= 0 Then
                 If TieneObjetos(38, .PocionesMaximas + 1, Oferente) Then
-                    Call CancelarSolicitudReto(Oferente, UserList(.Jugadores(i).CurIndex).name & " tiene demasiadas pociones rojas (Cantidad máxima: " & .PocionesMaximas & ").")
+                    Call CancelarSolicitudReto(Oferente, UserList(.Jugadores(i).CurIndex).name & " tiene demasiadas pociones rojas (Cantidad mï¿½xima: " & .PocionesMaximas & ").")
                     Exit Function
                 End If
             End If
@@ -1083,11 +1083,11 @@ Private Function EquipoContrario(ByVal Equipo As EquipoReto) As EquipoReto
     End If
 End Function
 
-Private Function ObtenerTamañoEquipo(ByVal Sala As Integer, ByVal Equipo As EquipoReto) As Integer
+Private Function ObtenerTamaï¿½oEquipo(ByVal Sala As Integer, ByVal Equipo As EquipoReto) As Integer
     If Equipo = EquipoReto.Izquierda Then
-        ObtenerTamañoEquipo = Retos.Salas(Sala).TamañoEquipoIzq
+        ObtenerTamaï¿½oEquipo = Retos.Salas(Sala).Tamaï¿½oEquipoIzq
     Else
-        ObtenerTamañoEquipo = Retos.Salas(Sala).TamañoEquipoDer
+        ObtenerTamaï¿½oEquipo = Retos.Salas(Sala).Tamaï¿½oEquipoDer
     End If
 End Function
 
@@ -1095,12 +1095,12 @@ Private Sub RevivirYLimpiar(ByVal UserIndex As Integer)
     
         Call WriteStopped(UserIndex, False)
     
-    ' Si está vivo
+    ' Si estï¿½ vivo
     If UserList(UserIndex).flags.Muerto = 0 Then
         Call LimpiarEstadosAlterados(UserIndex)
     End If
 
-    ' Si está muerto lo revivimos, sino lo curamos
+    ' Si estï¿½ muerto lo revivimos, sino lo curamos
     Call RevivirUsuario(UserIndex)
 
 End Sub

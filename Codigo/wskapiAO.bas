@@ -555,10 +555,10 @@ Public Sub EventoSockAccept(ByVal SockID As Long)
 144         Call UserList(NewIndex).incomingData.ReadASCIIStringFixed(UserList(NewIndex).incomingData.Length)
 146         Call UserList(NewIndex).outgoingData.ReadASCIIStringFixed(UserList(NewIndex).outgoingData.Length)
         
-148         UserList(NewIndex).ip = GetAscIP(sa.sin_addr)
+148         UserList(NewIndex).IP = GetAscIP(sa.sin_addr)
 
             'Busca si esta banneada la ip
-150         If BanIpBuscar(UserList(NewIndex).ip) <> 0 Then
+150         If BanIps.Exists(UserList(NewIndex).IP) Then
                 Call WriteShowMessageBox(NewIndex, "Se te ha prohibido la entrada al servidor. Cod: #0003")
                     
                 'Call FlushBuffer(NewIndex)

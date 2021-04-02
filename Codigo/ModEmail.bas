@@ -49,15 +49,15 @@ EnviarCorreoRecuperacion_Err:
         
 End Function
 
-Public Function ObtenerCodigo(ByVal name As String) As String
+Public Function ObtenerCodigo(ByVal Name As String) As String
         
         On Error GoTo ObtenerCodigo_Err
         
 
 100     If Database_Enabled Then
-102         ObtenerCodigo = GetCodigoActivacionDatabase(name)
+102         ObtenerCodigo = GetCodigoActivacionDatabase(Name)
         Else
-104         ObtenerCodigo = GetVar(CuentasPath & UCase$(name) & ".act", "INIT", "CodigoActivacion")
+104         ObtenerCodigo = GetVar(CuentasPath & UCase$(Name) & ".act", "INIT", "CodigoActivacion")
 
         End If
 
@@ -70,15 +70,15 @@ ObtenerCodigo_Err:
         
 End Function
 
-Public Function ObtenerValidacion(ByVal name As String) As Boolean
+Public Function ObtenerValidacion(ByVal Name As String) As Boolean
         
         On Error GoTo ObtenerValidacion_Err
         
 
 100     If Database_Enabled Then
-102         ObtenerValidacion = CheckCuentaActivadaDatabase(name)
+102         ObtenerValidacion = CheckCuentaActivadaDatabase(Name)
         Else
-104         ObtenerValidacion = val(GetVar(CuentasPath & UCase$(name) & ".act", "INIT", "Activada"))
+104         ObtenerValidacion = val(GetVar(CuentasPath & UCase$(Name) & ".act", "INIT", "Activada"))
 
         End If
     
@@ -91,15 +91,15 @@ ObtenerValidacion_Err:
         
 End Function
 
-Public Function ObtenerEmail(ByVal name As String) As String
+Public Function ObtenerEmail(ByVal Name As String) As String
         
         On Error GoTo ObtenerEmail_Err
         
 
 100     If Database_Enabled Then
-102         ObtenerEmail = GetEmailDatabase(name)
+102         ObtenerEmail = GetEmailDatabase(Name)
         Else
-104         ObtenerEmail = GetVar(CuentasPath & UCase$(name) & ".act", "INIT", "Email")
+104         ObtenerEmail = GetVar(CuentasPath & UCase$(Name) & ".act", "INIT", "Email")
 
         End If
     
@@ -112,15 +112,15 @@ ObtenerEmail_Err:
         
 End Function
 
-Public Function ObtenerMacAdress(ByVal name As String) As String
+Public Function ObtenerMacAdress(ByVal Name As String) As String
         
         On Error GoTo ObtenerMacAdress_Err
         
 
 100     If Database_Enabled Then
-102         ObtenerMacAdress = GetMacAddressDatabase(name)
+102         ObtenerMacAdress = GetMacAddressDatabase(Name)
         Else
-104         ObtenerMacAdress = GetVar(CuentasPath & UCase$(name) & ".act", "INIT", "MacAdress")
+104         ObtenerMacAdress = GetVar(CuentasPath & UCase$(Name) & ".act", "INIT", "MacAdress")
 
         End If
 
@@ -133,15 +133,15 @@ ObtenerMacAdress_Err:
         
 End Function
 
-Public Function ObtenerHDserial(ByVal name As String) As Long
+Public Function ObtenerHDserial(ByVal Name As String) As Long
         
         On Error GoTo ObtenerHDserial_Err
         
 
 100     If Database_Enabled Then
-102         ObtenerHDserial = GetHDSerialDatabase(name)
+102         ObtenerHDserial = GetHDSerialDatabase(Name)
         Else
-104         ObtenerHDserial = GetVar(CuentasPath & UCase$(name) & ".act", "INIT", "HDserial")
+104         ObtenerHDserial = GetVar(CuentasPath & UCase$(Name) & ".act", "INIT", "HDserial")
 
         End If
 
@@ -218,11 +218,11 @@ Public Sub SaveNewAccountCharfile(CuentaEmail As String, PasswordHash As String,
 
         On Error GoTo ErrorHandler
 
-        Dim Manager     As clsIniReader
+        Dim Manager     As clsIniManager
     
         Dim AccountFile As String
 
-100     Set Manager = New clsIniReader
+100     Set Manager = New clsIniManager
 102     AccountFile = CuentasPath & LCase$(CuentaEmail) & ".act"
 
 104     With Manager
@@ -261,15 +261,15 @@ ErrorHandler:
 
 End Sub
 
-Public Function ObtenerCuenta(ByVal name As String) As String
+Public Function ObtenerCuenta(ByVal Name As String) As String
         
         On Error GoTo ObtenerCuenta_Err
         
 
 100     If Database_Enabled Then
-102         ObtenerCuenta = GetNombreCuentaDatabase(name)
+102         ObtenerCuenta = GetNombreCuentaDatabase(Name)
         Else
-104         ObtenerCuenta = GetVar(CharPath & UCase$(name) & ".chr", "INIT", "Cuenta")
+104         ObtenerCuenta = GetVar(CharPath & UCase$(Name) & ".chr", "INIT", "Cuenta")
 
         End If
     
@@ -304,15 +304,15 @@ PasswordValida_Err:
         
 End Function
 
-Public Function ObtenerBaneo(ByVal name As String) As Boolean
+Public Function ObtenerBaneo(ByVal Name As String) As Boolean
         
         On Error GoTo ObtenerBaneo_Err
         
 
 100     If Database_Enabled Then
-102         ObtenerBaneo = CheckBanCuentaDatabase(name)
+102         ObtenerBaneo = CheckBanCuentaDatabase(Name)
         Else
-104         ObtenerBaneo = val(GetVar(CuentasPath & LCase$(name) & ".act", "BAN", "Baneada")) = 1
+104         ObtenerBaneo = val(GetVar(CuentasPath & LCase$(Name) & ".act", "BAN", "Baneada")) = 1
 
         End If
 
@@ -325,15 +325,15 @@ ObtenerBaneo_Err:
         
 End Function
 
-Public Function ObtenerMotivoBaneo(ByVal name As String) As String
+Public Function ObtenerMotivoBaneo(ByVal Name As String) As String
         
         On Error GoTo ObtenerMotivoBaneo_Err
         
 
 100     If Database_Enabled Then
-102         ObtenerMotivoBaneo = GetMotivoBanCuentaDatabase(name)
+102         ObtenerMotivoBaneo = GetMotivoBanCuentaDatabase(Name)
         Else
-104         ObtenerMotivoBaneo = GetVar(CuentasPath & UCase$(name) & ".act", "BAN", "Motivo")
+104         ObtenerMotivoBaneo = GetVar(CuentasPath & UCase$(Name) & ".act", "BAN", "Motivo")
 
         End If
 
@@ -346,15 +346,15 @@ ObtenerMotivoBaneo_Err:
         
 End Function
 
-Public Function ObtenerQuienBaneo(ByVal name As String) As String
+Public Function ObtenerQuienBaneo(ByVal Name As String) As String
         
         On Error GoTo ObtenerQuienBaneo_Err
         
 
 100     If Database_Enabled Then
-102         ObtenerQuienBaneo = GetQuienBanCuentaDatabase(name)
+102         ObtenerQuienBaneo = GetQuienBanCuentaDatabase(Name)
         Else
-104         ObtenerQuienBaneo = GetVar(CuentasPath & UCase$(name) & ".act", "BAN", "BANEO")
+104         ObtenerQuienBaneo = GetVar(CuentasPath & UCase$(Name) & ".act", "BAN", "BANEO")
 
         End If
 
@@ -367,15 +367,15 @@ ObtenerQuienBaneo_Err:
         
 End Function
 
-Public Function ObtenerCantidadDePersonajes(ByVal name As String) As String
+Public Function ObtenerCantidadDePersonajes(ByVal Name As String) As String
         
         On Error GoTo ObtenerCantidadDePersonajes_Err
         
 
 100     If Database_Enabled Then
-102         ObtenerCantidadDePersonajes = GetPersonajesCountDatabase(name)
+102         ObtenerCantidadDePersonajes = GetPersonajesCountDatabase(Name)
         Else
-104         ObtenerCantidadDePersonajes = GetVar(CuentasPath & UCase$(name) & ".act", "PERSONAJES", "Total")
+104         ObtenerCantidadDePersonajes = GetVar(CuentasPath & UCase$(Name) & ".act", "PERSONAJES", "Total")
 
         End If
 
@@ -396,7 +396,7 @@ Public Function ObtenerCantidadDePersonajesByUserIndex(ByVal UserIndex As Intege
 100     If Database_Enabled Then
 102         ObtenerCantidadDePersonajesByUserIndex = GetPersonajesCountByIDDatabase(UserList(UserIndex).AccountId)
         Else
-104         ObtenerCantidadDePersonajesByUserIndex = val(GetVar(CuentasPath & UCase$(UserList(UserIndex).name) & ".act", "PERSONAJES", "Total"))
+104         ObtenerCantidadDePersonajesByUserIndex = val(GetVar(CuentasPath & UCase$(UserList(UserIndex).Name) & ".act", "PERSONAJES", "Total"))
 
         End If
 
@@ -409,15 +409,15 @@ ObtenerCantidadDePersonajesByUserIndex_Err:
         
 End Function
 
-Public Function ObtenerLogeada(ByVal name As String) As Byte
+Public Function ObtenerLogeada(ByVal Name As String) As Byte
         
         On Error GoTo ObtenerLogeada_Err
         
 
 100     If Database_Enabled Then
-102         ObtenerLogeada = GetCuentaLogeadaDatabase(name)
+102         ObtenerLogeada = GetCuentaLogeadaDatabase(Name)
         Else
-104         ObtenerLogeada = GetVar(CuentasPath & UCase$(name) & ".act", "INIT", "Logeada")
+104         ObtenerLogeada = GetVar(CuentasPath & UCase$(Name) & ".act", "INIT", "Logeada")
 
         End If
 
@@ -445,7 +445,7 @@ ObtenerNombrePJ_Err:
         
 End Function
 
-Sub BorrarPJdeCuenta(ByVal name As String)
+Sub BorrarPJdeCuenta(ByVal Name As String)
         
         On Error GoTo BorrarPJdeCuenta_Err
         
@@ -462,7 +462,7 @@ Sub BorrarPJdeCuenta(ByVal name As String)
 
         Dim Cuenta      As String
 
-100     Cuenta = ObtenerCuenta(name)
+100     Cuenta = ObtenerCuenta(Name)
     
 102     CantpjsOld = ObtenerCantidadDePersonajes(Cuenta)
     
@@ -471,7 +471,7 @@ Sub BorrarPJdeCuenta(ByVal name As String)
 104     For i = 1 To CantpjsOld
 106         pjs(i) = GetVar(CuentasPath & UCase$(Cuenta) & ".act", "PERSONAJES", "PJ" & i)
 
-108         If pjs(i) = name Then
+108         If pjs(i) = Name Then
 110             Indice = i
 112             pjs(i) = ""
 
@@ -557,11 +557,11 @@ BorrarCuenta_Err:
         
 End Sub
 
-Public Function ObtenerNivel(ByVal name As String) As Byte
+Public Function ObtenerNivel(ByVal Name As String) As Byte
 
         On Error GoTo ErrorHandler
 
-100     ObtenerNivel = GetVar(CharPath & UCase$(name & ".chr"), "STATS", "ELV")
+100     ObtenerNivel = GetVar(CharPath & UCase$(Name & ".chr"), "STATS", "ELV")
 
         Exit Function
 ErrorHandler:
@@ -569,7 +569,7 @@ ErrorHandler:
 
 End Function
 
-Public Function ObtenerCuerpo(ByVal name As String) As Integer
+Public Function ObtenerCuerpo(ByVal Name As String) As Integer
 
         On Error GoTo ErrorHandler
 
@@ -577,10 +577,10 @@ Public Function ObtenerCuerpo(ByVal name As String) As Integer
 
         Dim cuerpo     As Long
 
-100     EstaMuerto = GetVar(CharPath & UCase$(name & ".chr"), "flags", "Muerto")
+100     EstaMuerto = GetVar(CharPath & UCase$(Name & ".chr"), "flags", "Muerto")
 
 102     If EstaMuerto = 0 Then
-104         cuerpo = GetVar(CharPath & UCase$(name & ".chr"), "INIT", "Body")
+104         cuerpo = GetVar(CharPath & UCase$(Name & ".chr"), "INIT", "Body")
 106         ObtenerCuerpo = cuerpo
         Else
 108         ObtenerCuerpo = iCuerpoMuerto
@@ -593,7 +593,7 @@ ErrorHandler:
 
 End Function
 
-Public Function ObtenerCabeza(ByVal name As String) As Integer
+Public Function ObtenerCabeza(ByVal Name As String) As Integer
 
         On Error GoTo ErrorHandler
 
@@ -601,10 +601,10 @@ Public Function ObtenerCabeza(ByVal name As String) As Integer
 
         Dim EstaMuerto As Byte
 
-100     EstaMuerto = GetVar(CharPath & UCase$(name & ".chr"), "flags", "Muerto")
+100     EstaMuerto = GetVar(CharPath & UCase$(Name & ".chr"), "flags", "Muerto")
 
 102     If EstaMuerto = 0 Then
-104         Head = GetVar(CharPath & UCase$(name & ".chr"), "INIT", "Head")
+104         Head = GetVar(CharPath & UCase$(Name & ".chr"), "INIT", "Head")
         Else
 106         Head = 0
         End If
@@ -617,33 +617,33 @@ ErrorHandler:
 
 End Function
 
-Public Function ObtenerEscudo(ByVal name As String) As Integer
+Public Function ObtenerEscudo(ByVal Name As String) As Integer
 
         On Error GoTo ErrorHandler
 
-100     ObtenerEscudo = GetVar(CharPath & UCase$(name & ".chr"), "INIT", "Escudo")
+100     ObtenerEscudo = GetVar(CharPath & UCase$(Name & ".chr"), "INIT", "Escudo")
         Exit Function
 ErrorHandler:
 102     ObtenerEscudo = 0
 
 End Function
 
-Public Function ObtenerArma(ByVal name As String) As Integer
+Public Function ObtenerArma(ByVal Name As String) As Integer
 
         On Error GoTo ErrorHandler
 
-100     ObtenerArma = GetVar(CharPath & UCase$(name & ".chr"), "INIT", "Arma")
+100     ObtenerArma = GetVar(CharPath & UCase$(Name & ".chr"), "INIT", "Arma")
         Exit Function
 ErrorHandler:
 102     ObtenerArma = 0
 
 End Function
 
-Public Function ObtenerCasco(ByVal name As String) As Integer
+Public Function ObtenerCasco(ByVal Name As String) As Integer
 
         On Error GoTo ErrorHandler
 
-100     ObtenerCasco = GetVar(CharPath & UCase$(name & ".chr"), "INIT", "Casco")
+100     ObtenerCasco = GetVar(CharPath & UCase$(Name & ".chr"), "INIT", "Casco")
         Exit Function
 ErrorHandler:
 102     ObtenerCasco = 0
@@ -832,7 +832,7 @@ Sub SendCharacterInfoCharfile(ByVal UserIndex As Integer, ByVal UserName As Stri
         '***************************************************
         Dim gName       As String
 
-        Dim UserFile    As clsIniReader
+        Dim UserFile    As clsIniManager
 
         Dim Miembro     As String
 
@@ -856,7 +856,7 @@ Sub SendCharacterInfoCharfile(ByVal UserIndex As Integer, ByVal UserName As Stri
 
         End If
 
-114     Set UserFile = New clsIniReader
+114     Set UserFile = New clsIniManager
 
 116     With UserFile
 118         .Initialize (CharPath & UserName & ".chr")
@@ -956,28 +956,28 @@ SaveUserGuildRejectionReasonCharfile_Err:
         
 End Sub
 
-Public Function ObtenerCriminal(ByVal name As String) As Byte
+Public Function ObtenerCriminal(ByVal Name As String) As Byte
 
         On Error GoTo ErrorHandler
     
         Dim Criminal As Byte
 
 100     If Database_Enabled Then
-102         Criminal = GetUserStatusDatabase(name)
+102         Criminal = GetUserStatusDatabase(Name)
         Else
-104         Criminal = GetVar(CharPath & UCase$(name & ".chr"), "FACCIONES", "Status")
+104         Criminal = GetVar(CharPath & UCase$(Name & ".chr"), "FACCIONES", "Status")
 
         End If
 
-106     If EsRolesMaster(name) Then
+106     If EsRolesMaster(Name) Then
 108         Criminal = 3
-110     ElseIf EsConsejero(name) Then
+110     ElseIf EsConsejero(Name) Then
 112         Criminal = 4
-114     ElseIf EsSemiDios(name) Then
+114     ElseIf EsSemiDios(Name) Then
 116         Criminal = 5
-118     ElseIf EsDios(name) Then
+118     ElseIf EsDios(Name) Then
 120         Criminal = 6
-122     ElseIf EsAdmin(name) Then
+122     ElseIf EsAdmin(Name) Then
 124         Criminal = 7
 
         End If
@@ -990,13 +990,13 @@ ErrorHandler:
 
 End Function
 
-Public Function ObtenerMapa(ByVal name As String) As String
+Public Function ObtenerMapa(ByVal Name As String) As String
 
         On Error GoTo ErrorHandler
 
         Dim Mapa As String
 
-100     ObtenerMapa = GetVar(CharPath & UCase$(name & ".chr"), "INIT", "Position")
+100     ObtenerMapa = GetVar(CharPath & UCase$(Name & ".chr"), "INIT", "Position")
     
         Exit Function
 ErrorHandler:
@@ -1004,11 +1004,11 @@ ErrorHandler:
     
 End Function
 
-Public Function ObtenerClase(ByVal name As String) As Byte
+Public Function ObtenerClase(ByVal Name As String) As Byte
 
         On Error GoTo ErrorHandler
 
-100     ObtenerClase = GetVar(CharPath & UCase$(name & ".chr"), "INIT", "Clase")
+100     ObtenerClase = GetVar(CharPath & UCase$(Name & ".chr"), "INIT", "Clase")
 
         Exit Function
 ErrorHandler:

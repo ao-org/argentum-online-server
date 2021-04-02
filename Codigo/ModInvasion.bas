@@ -54,8 +54,8 @@ End Type
 Public Invasiones() As tInvasion
 
 Sub CargarInfoEventos()
-    Dim File As clsIniReader
-    Set File = New clsIniReader
+    Dim File As clsIniManager
+    Set File = New clsIniManager
 
     Call File.Initialize(DatPath & "Eventos.dat")
     
@@ -159,9 +159,9 @@ Sub CargarInfoEventos()
     Set File = Nothing
 End Sub
 
-Sub IniciarInvasion(ByVal index As Integer)
+Sub IniciarInvasion(ByVal Index As Integer)
     
-    With Invasiones(index)
+    With Invasiones(Index)
     
         .Activa = True
         
@@ -170,7 +170,7 @@ Sub IniciarInvasion(ByVal index As Integer)
         .TiempoDeInicio = GetTickCount
 
         ' Enviamos info sobre la invasión a los usuarios en estos mapas
-        Call EnviarInfoInvasion(index)
+        Call EnviarInfoInvasion(Index)
         
         Call MensajeGlobal(.Desc, FontTypeNames.FONTTYPE_New_Eventos)
         Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(150, NO_3D_SOUND, NO_3D_SOUND))
@@ -179,9 +179,9 @@ Sub IniciarInvasion(ByVal index As Integer)
     
 End Sub
 
-Sub FinalizarInvasion(ByVal index As Integer)
+Sub FinalizarInvasion(ByVal Index As Integer)
 
-    With Invasiones(index)
+    With Invasiones(Index)
     
         Dim Ganaron As Boolean
         
@@ -255,9 +255,9 @@ Sub FinalizarInvasion(ByVal index As Integer)
 
 End Sub
 
-Sub InvasionSpawnNPC(ByVal index As Integer)
+Sub InvasionSpawnNPC(ByVal Index As Integer)
 
-    With Invasiones(index)
+    With Invasiones(Index)
     
         ' Si ya hay el máximo de NPCs, no spawneamos nada
         If .CantNPCs >= .MaxNPCs Then Exit Sub
@@ -303,7 +303,7 @@ Sub InvasionSpawnNPC(ByVal index As Integer)
             Call ChangeNPCChar(.NPCsVivos(i), NpcList(.NPCsVivos(i)).Char.Body, NpcList(.NPCsVivos(i)).Char.Head, Heading)
             
             ' Guardamos información sobre el spawn
-            NpcList(.NPCsVivos(i)).flags.InvasionIndex = index
+            NpcList(.NPCsVivos(i)).flags.InvasionIndex = Index
             NpcList(.NPCsVivos(i)).flags.SpawnBox = SpawnBox
             NpcList(.NPCsVivos(i)).flags.IndexInInvasion = i
         End If
@@ -312,9 +312,9 @@ Sub InvasionSpawnNPC(ByVal index As Integer)
 
 End Sub
 
-Public Sub MuereNpcInvasion(ByVal index As Integer, ByVal NpcIndex As Integer)
+Public Sub MuereNpcInvasion(ByVal Index As Integer, ByVal NpcIndex As Integer)
 
-    With Invasiones(index)
+    With Invasiones(Index)
     
         .NPCsVivos(NpcIndex) = 0
     
@@ -335,9 +335,9 @@ Private Function String2Heading(str As String) As eHeading
 
 End Function
 
-Public Sub EnviarInfoInvasion(ByVal index As Integer)
+Public Sub EnviarInfoInvasion(ByVal Index As Integer)
 
-    With Invasiones(index)
+    With Invasiones(Index)
     
         Dim PorcentajeVida As Byte, PorcentajeTiempo As Byte
         
@@ -350,7 +350,7 @@ Public Sub EnviarInfoInvasion(ByVal index As Integer)
             Mapa = .SpawnBoxes(i).TopLeft.Map
             
             For j = 1 To ModAreas.ConnGroups(Mapa).CountEntrys
-                Call WriteInvasionInfo(ModAreas.ConnGroups(Mapa).UserEntrys(j), index, PorcentajeVida, PorcentajeTiempo)
+                Call WriteInvasionInfo(ModAreas.ConnGroups(Mapa).UserEntrys(j), Index, PorcentajeVida, PorcentajeTiempo)
             Next
         Next
         
@@ -358,23 +358,23 @@ Public Sub EnviarInfoInvasion(ByVal index As Integer)
 
 End Sub
 
-Public Sub HacerDañoMuralla(ByVal index As Integer, ByVal Daño As Long)
+Public Sub HacerDañoMuralla(ByVal Index As Integer, ByVal Daño As Long)
     
-    With Invasiones(index)
+    With Invasiones(Index)
     
         .VidaMuralla = .VidaMuralla - Daño
         
         If .VidaMuralla <= 0 Then
-            Call FinalizarInvasion(index)
+            Call FinalizarInvasion(Index)
         End If
     
     End With
     
 End Sub
 
-Public Sub SumarScoreInvasion(ByVal index As Integer, ByVal UserIndex As Integer, ByVal Score As Long)
+Public Sub SumarScoreInvasion(ByVal Index As Integer, ByVal UserIndex As Integer, ByVal Score As Long)
     
-    With Invasiones(index)
+    With Invasiones(Index)
     
         Dim i As Integer
         Dim tmpUser As tTopInvasion
@@ -385,7 +385,7 @@ Public Sub SumarScoreInvasion(ByVal index As Integer, ByVal UserIndex As Integer
                 ' Llegamos a un lugar vacío, entonces no está en el top
                 Exit For
             
-            ElseIf .Top10Users(i).UserName = UserList(UserIndex).name Then
+            ElseIf .Top10Users(i).UserName = UserList(UserIndex).Name Then
                 ' Está en el top, así que le sumamos el puntaje
                 .Top10Users(i).Score = .Top10Users(i).Score + Score
                 
@@ -426,7 +426,7 @@ Public Sub SumarScoreInvasion(ByVal index As Integer, ByVal UserIndex As Integer
             
             ' Lo colocamos en la posición que le corresponde
             With .Top10Users(i + 1)
-                .UserName = UserList(UserIndex).name
+                .UserName = UserList(UserIndex).Name
                 .Score = Score
             End With
         End If
