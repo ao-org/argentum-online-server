@@ -659,11 +659,11 @@ m_EstadoPermiteEntrar_Err:
 
 End Function
 
-Public Function String2Alineacion(ByRef S As String) As ALINEACION_GUILD
+Public Function String2Alineacion(ByRef s As String) As ALINEACION_GUILD
         
         On Error GoTo String2Alineacion_Err
 
-100     Select Case S
+100     Select Case s
 
             Case "Ciudadano"
 102             String2Alineacion = ALINEACION_CIUDA
@@ -736,12 +736,12 @@ Relacion2String_Err:
         
 End Function
 
-Public Function String2Relacion(ByVal S As String) As RELACIONES_GUILD
+Public Function String2Relacion(ByVal s As String) As RELACIONES_GUILD
         
         On Error GoTo String2Relacion_Err
         
 
-100     Select Case UCase$(Trim$(S))
+100     Select Case UCase$(Trim$(s))
 
             Case vbNullString, "P"
 102             String2Relacion = RELACIONES_GUILD.PAZ

@@ -514,10 +514,6 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal 
     
 148         .name = name
 
-            If Not NameIndex.Exists(name) Then
-                Call NameIndex.Add(name, UserIndex)
-            End If
-            
 150         .clase = UserClase
 152         .raza = UserRaza
         
@@ -1098,9 +1094,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
             ' Seteamos el nombre
 200         .name = name
 
-            If Not NameIndex.Exists(name) Then
-                Call NameIndex.Add(name, UserIndex)
-            End If
+            Call m_NameIndex.Add(UCase$(name), UserIndex)
             
 202         .showName = True
         
@@ -2255,11 +2249,9 @@ Sub CloseUser(ByVal UserIndex As Integer)
 222         errordesc = "ERROR AL RESETSLOT Name:" & .name & " cuenta:" & .Cuenta
         
 224         Call ResetUserSlot(UserIndex)
-            
-            If NameIndex.Exists(.name) Then
-                Call NameIndex.Remove(.name)
-            End If
-            
+
+            Call m_NameIndex.Remove(UCase$(.name))
+
         End With
     
         Exit Sub

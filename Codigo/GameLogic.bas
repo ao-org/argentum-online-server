@@ -29,17 +29,17 @@ Attribute VB_Name = "Extra"
 
 Option Explicit
 
-Private m_NameIndex As New Dictionary
+Public m_NameIndex As New Dictionary
 
 Public Function NameIndex(ByRef UserName As String) As Integer
     
-    If Not m_NameIndex.Exists(UserName) Then
+    If Not m_NameIndex.Exists(UCase$(UserName)) Then
         NameIndex = 0
         Exit Function
         
     End If
     
-    NameIndex = m_NameIndex(UserName)
+    NameIndex = m_NameIndex(UCase$(UserName))
     
 End Function
 

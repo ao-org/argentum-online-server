@@ -2655,19 +2655,19 @@ Function adoIsConnected(adoCn As ADODB.Connection) As Boolean
     On Error Resume Next
 
     Dim i As Long
-    Dim cmd As New ADODB.Command
+    Dim Cmd As New ADODB.Command
 
     'Set up SQL command to return 1
-    cmd.CommandText = "SELECT 1"
-    cmd.ActiveConnection = adoCn
+    Cmd.CommandText = "SELECT 1"
+    Cmd.ActiveConnection = adoCn
 
     'Run a simple query, to test the connection
         
-    i = cmd.Execute.Fields(0)
+    i = Cmd.Execute.Fields(0)
     On Error GoTo 0
 
     'Tidy up
-    Set cmd = Nothing
+    Set Cmd = Nothing
 
     'If i is 1, connection is open
     If i = 1 Then
