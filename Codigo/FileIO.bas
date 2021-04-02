@@ -2521,35 +2521,11 @@ Sub LoadSini()
 
         End If
 
-174     NumCuentas = val(Lector.GetValue("INIT", "NumCuentas"))
-176     frmMain.cuentas.Caption = NumCuentas
-
-        #If DEBUGGING Then
-            'Shell App.Path & "\estadisticas.exe" & " " & "NUEVACUENTALADDER" & "*" & NumCuentas & "*" & MaxUsers
-        #End If
-        
-        ' Configuracion de la API
-        API_Enabled = CBool(Lector.GetValue("API_SOCKET", "Enabled"))
-        API_HostName = Lector.GetValue("API_SOCKET", "HostName")
-        API_Port = val(Lector.GetValue("API_SOCKET", "Port"))
-        
-        ' Manejo de el Socket reservado a la API al activar/desactivar
-        If API_Enabled Then
-        
-            ' Si la API esta activada, activamos el timer.
-            frmMain.t_ColaAPI.Enabled = API_Enabled
-            
-            Call frmAPISocket.Connect
-            
-        Else
-            
-            ' Cerramos el socket ya que no vamos a estar usándolo
-            If Not frmAPISocket.Socket Is Nothing Then
-                Call frmAPISocket.Socket.CloseSck
-            End If
-            
+        ' Cerramos el socket ya que no vamos a estar usándolo
+        If Not frmAPISocket.Socket Is Nothing Then
+            Call frmAPISocket.Socket.CloseSck
         End If
-    
+
 178     Call CargarCiudades
 182     Call ConsultaPopular.LoadData
 
