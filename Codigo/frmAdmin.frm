@@ -106,7 +106,7 @@ Private Sub cboPjs_Change()
         Exit Sub
 
 cboPjs_Change_Err:
-102     Call RegistrarError(Err.Number, Err.description, "frmAdmin.cboPjs_Change", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "frmAdmin.cboPjs_Change", Erl)
 104     Resume Next
         
 End Sub
@@ -121,7 +121,7 @@ Private Sub cboPjs_Click()
         Exit Sub
 
 cboPjs_Click_Err:
-102     Call RegistrarError(Err.Number, Err.description, "frmAdmin.cboPjs_Click", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "frmAdmin.cboPjs_Click", Erl)
 104     Resume Next
         
 End Sub
@@ -145,7 +145,7 @@ Private Sub Command1_Click()
         Exit Sub
 
 Command1_Click_Err:
-108     Call RegistrarError(Err.Number, Err.description, "frmAdmin.Command1_Click", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "frmAdmin.Command1_Click", Erl)
 110     Resume Next
         
 End Sub
@@ -179,7 +179,7 @@ Public Sub ActualizaListaPjs()
         Exit Sub
 
 ActualizaListaPjs_Err:
-116     Call RegistrarError(Err.Number, Err.description, "frmAdmin.ActualizaListaPjs", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "frmAdmin.ActualizaListaPjs", Erl)
 118     Resume Next
         
 End Sub
@@ -194,7 +194,7 @@ Private Sub Command3_Click()
         Exit Sub
 
 Command3_Click_Err:
-102     Call RegistrarError(Err.Number, Err.description, "frmAdmin.Command3_Click", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "frmAdmin.Command3_Click", Erl)
 104     Resume Next
         
 End Sub
@@ -221,7 +221,7 @@ Private Sub ActualizaPjInfo()
         Exit Sub
 
 ActualizaPjInfo_Err:
-108     Call RegistrarError(Err.Number, Err.description, "frmAdmin.ActualizaPjInfo", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "frmAdmin.ActualizaPjInfo", Erl)
 110     Resume Next
         
 End Sub
