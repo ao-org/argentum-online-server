@@ -2111,92 +2111,92 @@ Sub CloseUser(ByVal UserIndex As Integer)
         Dim aN  As Integer
         Dim i   As Integer
         
-        With UserList(UserIndex)
+100     With UserList(UserIndex)
             
-100         Map = .Pos.Map
+102         Map = .Pos.Map
         
-102         errordesc = "ERROR AL SETEAR NPC"
+104         errordesc = "ERROR AL SETEAR NPC"
         
-104         aN = .flags.AtacadoPorNpc
+106         aN = .flags.AtacadoPorNpc
     
-106         If aN > 0 Then
-108             NpcList(aN).Movement = NpcList(aN).flags.OldMovement
-110             NpcList(aN).Hostile = NpcList(aN).flags.OldHostil
-112             NpcList(aN).flags.AttackedBy = vbNullString
-                NpcList(aN).Target = 0
+108         If aN > 0 Then
+110             NpcList(aN).Movement = NpcList(aN).flags.OldMovement
+112             NpcList(aN).Hostile = NpcList(aN).flags.OldHostil
+114             NpcList(aN).flags.AttackedBy = vbNullString
+116             NpcList(aN).Target = 0
     
             End If
     
-114         aN = .flags.NPCAtacado
+118         aN = .flags.NPCAtacado
     
-116         If aN > 0 Then
-118             If NpcList(aN).flags.AttackedFirstBy = .name Then
-120                 NpcList(aN).flags.AttackedFirstBy = vbNullString
+120         If aN > 0 Then
+122             If NpcList(aN).flags.AttackedFirstBy = .name Then
+124                 NpcList(aN).flags.AttackedFirstBy = vbNullString
                 End If
             End If
     
-122         .flags.AtacadoPorNpc = 0
-124         .flags.NPCAtacado = 0
+126         .flags.AtacadoPorNpc = 0
+128         .flags.NPCAtacado = 0
         
-126         errordesc = "ERROR AL DESMONTAR"
+130         errordesc = "ERROR AL DESMONTAR"
     
-128         If .flags.Montado > 0 Then
-130             Call DoMontar(UserIndex, ObjData(.Invent.MonturaObjIndex), .Invent.MonturaSlot)
+132         If .flags.Montado > 0 Then
+134             Call DoMontar(UserIndex, ObjData(.Invent.MonturaObjIndex), .Invent.MonturaSlot)
             End If
             
-            errordesc = "ERROR AL CANCELAR SOLICITUD DE RETO"
+136         errordesc = "ERROR AL CANCELAR SOLICITUD DE RETO"
             
-            If .flags.EnReto Then
-                Call AbandonarReto(UserIndex, True)
+138         If .flags.EnReto Then
+140             Call AbandonarReto(UserIndex, True)
 
-            ElseIf .flags.SolicitudReto.estado <> SolicitudRetoEstado.Libre Then
-                Call CancelarSolicitudReto(UserIndex, .name & " se ha desconectado.")
+142         ElseIf .flags.SolicitudReto.estado <> SolicitudRetoEstado.Libre Then
+144             Call CancelarSolicitudReto(UserIndex, .name & " se ha desconectado.")
             
-            ElseIf .flags.AceptoReto > 0 Then
-                Call CancelarSolicitudReto(.flags.AceptoReto, .name & " se ha desconectado.")
+146         ElseIf .flags.AceptoReto > 0 Then
+148             Call CancelarSolicitudReto(.flags.AceptoReto, .name & " se ha desconectado.")
             End If
         
-132         errordesc = "ERROR AL SACAR MIMETISMO"
-134         If .flags.Mimetizado > 0 Then
+150         errordesc = "ERROR AL SACAR MIMETISMO"
+152         If .flags.Mimetizado > 0 Then
 
-136             .Char.Body = .CharMimetizado.Body
-138             .Char.Head = .CharMimetizado.Head
-140             .Char.CascoAnim = .CharMimetizado.CascoAnim
-142             .Char.ShieldAnim = .CharMimetizado.ShieldAnim
-144             .Char.WeaponAnim = .CharMimetizado.WeaponAnim
-146             .Counters.Mimetismo = 0
-148             .flags.Mimetizado = e_EstadoMimetismo.Desactivado
+154             .Char.Body = .CharMimetizado.Body
+156             .Char.Head = .CharMimetizado.Head
+158             .Char.CascoAnim = .CharMimetizado.CascoAnim
+160             .Char.ShieldAnim = .CharMimetizado.ShieldAnim
+162             .Char.WeaponAnim = .CharMimetizado.WeaponAnim
+164             .Counters.Mimetismo = 0
+166             .flags.Mimetizado = e_EstadoMimetismo.Desactivado
 
             End If
         
-150         errordesc = "ERROR AL ENVIAR PARTICULA"
+168         errordesc = "ERROR AL ENVIAR PARTICULA"
         
-152         .Char.FX = 0
-154         .Char.loops = 0
-156         .Char.ParticulaFx = 0
-158         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, 0, 0, True))
-160         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, 0, 0))
+170         .Char.FX = 0
+172         .Char.loops = 0
+174         .Char.ParticulaFx = 0
+176         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, 0, 0, True))
+178         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, 0, 0))
         
-162         .flags.UserLogged = False
-164         .Counters.Saliendo = False
+180         .flags.UserLogged = False
+182         .Counters.Saliendo = False
         
-166         errordesc = "ERROR AL ENVIAR INVI"
+184         errordesc = "ERROR AL ENVIAR INVI"
         
             'Le devolvemos el body y head originales
-168         If .flags.AdminInvisible = 1 Then Call DoAdminInvisible(UserIndex)
+186         If .flags.AdminInvisible = 1 Then Call DoAdminInvisible(UserIndex)
         
-170         errordesc = "ERROR AL CANCELAR SUBASTA"
+188         errordesc = "ERROR AL CANCELAR SUBASTA"
     
-172         If .flags.Subastando = True Then
-174             Call CancelarSubasta
+190         If .flags.Subastando = True Then
+192             Call CancelarSubasta
     
             End If
         
-176         errordesc = "ERROR AL BORRAR INDEX DE TORNEO"
+194         errordesc = "ERROR AL BORRAR INDEX DE TORNEO"
     
-178         If .flags.EnTorneo = True Then
-180             Call BorrarIndexInTorneo(UserIndex)
-182             .flags.EnTorneo = False
+196         If .flags.EnTorneo = True Then
+198             Call BorrarIndexInTorneo(UserIndex)
+200             .flags.EnTorneo = False
     
             End If
         
@@ -2205,61 +2205,58 @@ Sub CloseUser(ByVal UserIndex As Integer)
         
             ' Grabamos el personaje del usuario
         
-184         errordesc = "ERROR AL GRABAR PJ"
+202         errordesc = "ERROR AL GRABAR PJ"
         
-            Call SaveUser(UserIndex, True)
+204         Call SaveUser(UserIndex, True)
     
-192         errordesc = "ERROR AL DESCONTAR USER DE MAPA"
+206         errordesc = "ERROR AL DESCONTAR USER DE MAPA"
     
-194         If MapInfo(Map).NumUsers > 0 Then
-196             Call SendData(SendTarget.ToPCAreaButIndex, UserIndex, PrepareMessageRemoveCharDialog(.Char.CharIndex))
+208         If MapInfo(Map).NumUsers > 0 Then
+210             Call SendData(SendTarget.ToPCAreaButIndex, UserIndex, PrepareMessageRemoveCharDialog(.Char.CharIndex))
     
             End If
     
-198         errordesc = "ERROR AL ERASEUSERCHAR"
+212         errordesc = "ERROR AL ERASEUSERCHAR"
         
             'Borrar el personaje
-200         Call EraseUserChar(UserIndex, True)
+214         Call EraseUserChar(UserIndex, True)
         
-202         errordesc = "ERROR AL BORRAR MASCOTAS"
+216         errordesc = "ERROR AL BORRAR MASCOTAS"
         
             'Borrar mascotas
-204         For i = 1 To MAXMASCOTAS
-206             If .MascotasIndex(i) > 0 Then
-208                 If NpcList(.MascotasIndex(i)).flags.NPCActive Then _
+218         For i = 1 To MAXMASCOTAS
+220             If .MascotasIndex(i) > 0 Then
+222                 If NpcList(.MascotasIndex(i)).flags.NPCActive Then _
                         Call QuitarNPC(.MascotasIndex(i))
                 End If
-210         Next i
+224         Next i
         
-212         errordesc = "ERROR Update Map Users"
+226         errordesc = "ERROR Update Map Users"
         
             'Update Map Users
-214         MapInfo(Map).NumUsers = MapInfo(Map).NumUsers - 1
+228         MapInfo(Map).NumUsers = MapInfo(Map).NumUsers - 1
         
-216         If MapInfo(Map).NumUsers < 0 Then MapInfo(Map).NumUsers = 0
+230         If MapInfo(Map).NumUsers < 0 Then MapInfo(Map).NumUsers = 0
     
             ' Si el usuario habia dejado un msg en la gm's queue lo borramos
             'If Ayuda.Existe(.Name) Then Call Ayuda.Quitar(.Name)
         
-218         errordesc = "ERROR AL RESETEAR FLAGS Name:" & .name & " cuenta:" & .Cuenta
+236         errordesc = "ERROR AL m_NameIndex.Remove() Name:" & .name & " cuenta:" & .Cuenta
+            
+238         Call m_NameIndex.Remove(UCase$(.name))
         
-            'Reseteo los estados del juagador, fuerza el cierre del cliente.
-220         Call ResetUserFlags(UserIndex)
+240         errordesc = "ERROR AL RESETSLOT Name:" & .name & " cuenta:" & .Cuenta
         
-222         errordesc = "ERROR AL RESETSLOT Name:" & .name & " cuenta:" & .Cuenta
-        
-224         Call ResetUserSlot(UserIndex)
-
-            Call m_NameIndex.Remove(UCase$(.name))
+242         Call ResetUserSlot(UserIndex)
 
         End With
     
         Exit Sub
     
 ErrHandler:
-226     Call LogError("Error en CloseUser. Número " & Err.Number & ". Descripción: " & Err.Description & ". Detalle:" & errordesc)
-
-228     Resume Next ' TODO: Provisional hasta solucionar bugs graves
+        'Call LogError("Error en CloseUser. Número " & Err.Number & ". Descripción: " & Err.Description & ". Detalle:" & errordesc)
+244     Call RegistrarError(Err.Number, Err.Description & ". Detalle:" & errordesc, Erl)
+246     Resume Next ' TODO: Provisional hasta solucionar bugs graves
 
 End Sub
 

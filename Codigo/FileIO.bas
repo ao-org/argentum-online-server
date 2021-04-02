@@ -1666,28 +1666,28 @@ Sub LoadOBJData()
     
             'CHECK: !!! Esto es provisorio hasta que los de Dateo cambien los valores de string a numerico  -  Nunca más papu
             Dim n As Integer
-            Dim S As String
+            Dim s As String
 
             For i = 1 To NUMCLASES
-                S = UCase$(Leer.GetValue(ObjKey, "CP" & i))
+                s = UCase$(Leer.GetValue(ObjKey, "CP" & i))
                 n = 1
 
-                Do While LenB(S) > 0 And Tilde(ListaClases(n)) <> Trim$(S)
+                Do While LenB(s) > 0 And Tilde(ListaClases(n)) <> Trim$(s)
                     n = n + 1
                 Loop
             
-                .ClaseProhibida(i) = IIf(LenB(S) > 0, n, 0)
+                .ClaseProhibida(i) = IIf(LenB(s) > 0, n, 0)
             Next i
         
             For i = 1 To NUMRAZAS
-                S = UCase$(Leer.GetValue(ObjKey, "RP" & i))
+                s = UCase$(Leer.GetValue(ObjKey, "RP" & i))
                 n = 1
 
-                Do While LenB(S) > 0 And Tilde(ListaRazas(n)) <> Trim$(S)
+                Do While LenB(s) > 0 And Tilde(ListaRazas(n)) <> Trim$(s)
                     n = n + 1
                 Loop
             
-                .RazaProhibida(i) = IIf(LenB(S) > 0, n, 0)
+                .RazaProhibida(i) = IIf(LenB(s) > 0, n, 0)
             Next i
         
             ' Skill requerido
@@ -2141,7 +2141,7 @@ Sub LoadMapData()
 
 man:
 134     Call MsgBox("Error durante la carga de mapas, el mapa " & Map & " contiene errores")
-136     Call LogError(Date & " " & Err.Description & " " & Err.HelpContext & " " & Err.HelpFile & " " & Err.source)
+136     Call LogError(Date & " " & Err.Description & " " & Err.HelpContext & " " & Err.HelpFile & " " & Err.Source)
 
 End Sub
 
@@ -2335,7 +2335,7 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
 
                         Case eOBJType.otYacimiento, eOBJType.otArboles
 266                         MapData(Map, Objetos(i).X, Objetos(i).Y).ObjInfo.Amount = ObjData(Objetos(i).ObjIndex).VidaUtil
-268                         MapData(Map, Objetos(i).X, Objetos(i).Y).ObjInfo.Data = &H7FFFFFFF ' Ultimo uso = Max Long
+268                         MapData(Map, Objetos(i).X, Objetos(i).Y).ObjInfo.data = &H7FFFFFFF ' Ultimo uso = Max Long
 
 270                     Case Else
 272                         MapData(Map, Objetos(i).X, Objetos(i).Y).ObjInfo.Amount = Objetos(i).ObjAmmount
@@ -2539,7 +2539,7 @@ Sub LoadSini()
             ' Si la API esta activada, activamos el timer.
             frmMain.t_ColaAPI.Enabled = API_Enabled
             
-            Call frmAPISocket.connect
+            Call frmAPISocket.Connect
             
         Else
             
@@ -4068,7 +4068,7 @@ Public Sub LoadRecursosEspeciales()
 120             Field = Split(str, "-")
             
 122             EspecialesTala(i).ObjIndex = val(Field(0))
-124             EspecialesTala(i).Data = val(Field(1))      ' Probabilidad
+124             EspecialesTala(i).data = val(Field(1))      ' Probabilidad
             Next
         Else
 126         ReDim EspecialesTala(0) As obj
@@ -4086,7 +4086,7 @@ Public Sub LoadRecursosEspeciales()
 138             Field = Split(str, "-")
             
 140             EspecialesPesca(i).ObjIndex = val(Field(0))
-142             EspecialesPesca(i).Data = val(Field(1))     ' Probabilidad
+142             EspecialesPesca(i).data = val(Field(1))     ' Probabilidad
             Next
         Else
 144         ReDim EspecialesPesca(0) As obj
@@ -4138,7 +4138,7 @@ Public Sub LoadPesca()
 124             Field = Split(str, "-")
             
 126             Peces(i).ObjIndex = val(Field(0))
-128             Peces(i).Data = val(Field(1))       ' Peso
+128             Peces(i).data = val(Field(1))       ' Peso
 
 130             nivel = val(Field(2))               ' Nivel de caña
 
@@ -4152,10 +4152,10 @@ Public Sub LoadPesca()
             ' Sumo los pesos
 138         For i = 1 To Count
 140             For j = Peces(i).Amount To MaxLvlCania
-142                 PesoPeces(j) = PesoPeces(j) + Peces(i).Data
+142                 PesoPeces(j) = PesoPeces(j) + Peces(i).data
 144             Next j
 
-146             Peces(i).Data = PesoPeces(Peces(i).Amount)
+146             Peces(i).data = PesoPeces(Peces(i).Amount)
 148         Next i
         Else
 150         ReDim Peces(0) As obj
@@ -4245,12 +4245,12 @@ Public Function BinarySearchPeces(ByVal Value As Long) As Long
 106         i = (low + high) \ 2
 
 108         If i > 1 Then
-110             valor_anterior = Peces(i - 1).Data
+110             valor_anterior = Peces(i - 1).data
             Else
 112             valor_anterior = 0
             End If
 
-114         If Value >= valor_anterior And Value < Peces(i).Data Then
+114         If Value >= valor_anterior And Value < Peces(i).data Then
 116             BinarySearchPeces = i
                 Exit Do
             
