@@ -1130,7 +1130,14 @@ ChangeBan_Err:
         
 End Function
 
-Public Function CompararPrivilegios(ByVal Personaje_1 As Integer, ByVal Personaje_2 As Integer) As Integer
+Public Function CompararUserPrivilegios(ByVal Personaje_1 As Integer, ByVal Personaje_2 As Integer) As Integer
+    
+    CompararUserPrivilegios = CompararPrivilegios(UserList(Personaje_1).flags.Privilegios, UserList(Personaje_2).flags.Privilegios)
+        
+End Function
+
+Public Function CompararPrivilegios(ByVal Priv1 As PlayerType, ByVal Priv2 As PlayerType) As Integer
+
     '**************************************************************************************************************************
     'Author: Jopi
     'Last Modification: 05/07/2020
@@ -1140,8 +1147,8 @@ Public Function CompararPrivilegios(ByVal Personaje_1 As Integer, ByVal Personaj
     '       - Si los privilegios de el de la izquierda [Personaje1] son IGUALES que el de la derecha [Personaje2], devuelve 0
     '       - Si los privilegios de el de la izquierda [Personaje1] son MENORES que el de la derecha [Personaje2], devuelve -1
     '**************************************************************************************************************************
-        
-        On Error GoTo CompararPrivilegios_Err
+
+    On Error GoTo CompararPrivilegios_Err
         
         Dim PrivilegiosGM As PlayerType
         Dim Izquierda As PlayerType
@@ -1150,8 +1157,8 @@ Public Function CompararPrivilegios(ByVal Personaje_1 As Integer, ByVal Personaj
 100     PrivilegiosGM = PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero Or PlayerType.RoleMaster
 
         ' Obtenemos el rango de los 2 personajes.
-102     Izquierda = (UserList(Personaje_1).flags.Privilegios And PrivilegiosGM)
-104     Derecha = (UserList(Personaje_2).flags.Privilegios And PrivilegiosGM)
+102     Izquierda = Priv1 And PrivilegiosGM
+104     Derecha = Priv2 And PrivilegiosGM
 
 106     Select Case Izquierda
 
@@ -1172,5 +1179,5 @@ Public Function CompararPrivilegios(ByVal Personaje_1 As Integer, ByVal Personaj
 CompararPrivilegios_Err:
 118     Call RegistrarError(Err.Number, Err.Description, "Admin.CompararPrivilegios", Erl)
 120     Resume Next
-        
+
 End Function

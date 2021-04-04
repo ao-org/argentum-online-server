@@ -69,16 +69,26 @@ Private Function GlobalChecks(ByVal BannerIndex, ByRef UserName As String) As In
     
     TargetIndex = NameIndex(UserName)
     
-    If TargetIndex = BannerIndex Then
-        Call WriteConsoleMsg(BannerIndex, "No podes banearte a vos mismo.", FontTypeNames.FONTTYPE_INFO)
-        Exit Function
-    End If
-    
-    ' Estas tratando de banear a alguien con mas privilegios que vos, no va a pasar bro.
-    If CompararPrivilegios(TargetIndex, BannerIndex) >= 0 Then
-        Call WriteConsoleMsg(BannerIndex, "No podes banear a al alguien de igual o mayor jerarquia.", FontTypeNames.FONTTYPE_INFO)
-        Exit Function
+    If TargetIndex Then
         
+        If TargetIndex = BannerIndex Then
+            Call WriteConsoleMsg(BannerIndex, "No podes banearte a vos mismo.", FontTypeNames.FONTTYPE_INFO)
+            Exit Function
+        End If
+        
+        ' Estas tratando de banear a alguien con mas privilegios que vos, no va a pasar bro.
+        If CompararUserPrivilegios(TargetIndex, BannerIndex) >= 0 Then
+            Call WriteConsoleMsg(BannerIndex, "No podes banear a al alguien de igual o mayor jerarquia.", FontTypeNames.FONTTYPE_INFO)
+            Exit Function
+        End If
+        
+    Else
+    
+        If CompararPrivilegios(UserDarPrivilegioLevel(UserName), UserList(BannerIndex).flags.Privilegios) >= 0 Then
+            Call WriteConsoleMsg(BannerIndex, "No podes banear a al alguien de igual o mayor jerarquia.", FontTypeNames.FONTTYPE_INFO)
+            Exit Function
+        End If
+    
     End If
     
     ' Se llegó hasta acá, todo bien!
@@ -97,7 +107,11 @@ Public Sub BanPJ(ByVal BannerIndex As Integer, ByVal UserName As String, ByRef R
     If Not PersonajeExiste(UserName) Then
         Call WriteConsoleMsg(BannerIndex, "El personaje no existe.", FontTypeNames.FONTTYPE_TALK)
         Exit Sub
-        
+    End If
+    
+    If BANCheck(UserName) Then
+        Call WriteConsoleMsg(BannerIndex, "El usuario ya se encuentra baneado.", FontTypeNames.FONTTYPE_INFO)
+        Exit Sub
     End If
     
     ' Registramos el baneo en los logs.
@@ -106,14 +120,11 @@ Public Sub BanPJ(ByVal BannerIndex As Integer, ByVal UserName As String, ByRef R
     ' Le buchoneamos al mundo.
     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> " & UserList(BannerIndex).Name & " ha baneado a " & UserName & " debido a: " & LCase$(Razon) & ".", FontTypeNames.FONTTYPE_SERVER))
     
-    ' Guardamos el estado de baneado en la memoria.
-    UserList(tUser).flags.Ban = 1
+    ' Si estaba online, lo echamos.
+    If tUser > 0 Then Call CloseSocket(tUser)
     
     ' Guardamos el estado de baneado en la base de datos.
     Call SaveBanDatabase(UserName, Razon, UserList(BannerIndex).Name)
-    
-    ' Si estaba online, lo echamos.
-    If tUser > 0 Then Call CloseSocket(tUser)
     
 End Sub
 
@@ -133,6 +144,11 @@ Public Sub BanearCuenta(ByVal BannerIndex As Integer, _
         Call WriteConsoleMsg(BannerIndex, "El personaje no existe.", FontTypeNames.FONTTYPE_TALK)
         Exit Sub
     
+    End If
+
+    If ObtenerBaneo(UserName) Then
+        Call WriteConsoleMsg(BannerIndex, "La cuenta ya se encuentra baneada.", FontTypeNames.FONTTYPE_INFO)
+        Exit Sub
     End If
     
     ' Guardamos el estado de baneado en la base de datos.
@@ -161,6 +177,11 @@ End Sub
 Public Sub DesbanearCuenta(ByVal BannerIndex As Integer, ByVal UserName As String)
 
     If Not GlobalChecks(BannerIndex, UserName) Then Exit Sub
+    
+    If Not ObtenerBaneo(UserName) Then
+        Call WriteConsoleMsg(BannerIndex, "La cuenta no se encuentra baneada.", FontTypeNames.FONTTYPE_INFO)
+        Exit Sub
+    End If
     
     ' Busco el ID de la cuenta baneada a partir del nick de uno de sus PJ's
     Call MakeQuery("SELECT `account_id`, `account`.email FROM `user` INNER JOIN `account` ON `user`.account_id = account.id WHERE `account`.is_banned = TRUE AND UPPER(`user`.name) = ?;", False, UCase$(UserName))

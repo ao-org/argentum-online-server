@@ -1902,7 +1902,7 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
         Dim BaneoMotivo As String
         
         BanNick = GetUserValue(UserName, "banned_by")
-        BaneoMotivo = GetUserValue(UserName, "banned_reason")
+        BaneoMotivo = GetUserValue(UserName, "ban_reason")
 
         If LenB(BanNick) = 0 Then BanNick = "*Error en la base de datos*"
         If LenB(BaneoMotivo) = 0 Then BaneoMotivo = "*No se registra el motivo del baneo.*"
@@ -10415,9 +10415,15 @@ Private Sub HandleGoToChar(ByVal UserIndex As Integer)
 126                 If tUser <= 0 Then Exit Sub
                 End If
       
+<<<<<<< HEAD
 128             If CompararPrivilegios(tUser, UserIndex) > 0 Then
 130                 Call WriteConsoleMsg(UserIndex, "Se le ha avisado a " & UserList(tUser).Name & " que quieres ir a su posiciï¿½n.", FontTypeNames.FONTTYPE_INFO)
 132                 Call WriteConsoleMsg(tUser, .Name & " quiere transportarse a tu ubicaciï¿½n. Escribe /sum " & .Name & " para traerlo.", FontTypeNames.FONTTYPE_INFO)
+=======
+128             If CompararUserPrivilegios(tUser, UserIndex) > 0 Then
+130                 Call WriteConsoleMsg(UserIndex, "Se le ha avisado a " & UserList(tUser).Name & " que quieres ir a su posición.", FontTypeNames.FONTTYPE_INFO)
+132                 Call WriteConsoleMsg(tUser, .Name & " quiere transportarse a tu ubicación. Escribe /sum " & .Name & " para traerlo.", FontTypeNames.FONTTYPE_INFO)
+>>>>>>> 59a82e9 (Necesito help con los inner join)
                     Exit Sub
                 End If
 
@@ -13078,7 +13084,6 @@ Private Sub HandleBanChar(ByVal UserIndex As Integer)
         
 114         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) <> 0 Then
 116             Call BanPJ(UserIndex, UserName, Reason)
-
             End If
         
             'If we got here then packet is complete, copy data back to original queue
@@ -13203,7 +13208,7 @@ Private Sub HandleUnbanChar(ByVal UserIndex As Integer)
 124                 Call WriteConsoleMsg(UserIndex, "Charfile inexistente (no use +)", FontTypeNames.FONTTYPE_INFO)
                 Else
 
-126                 If ObtenerBaneo(UserName) Then
+126                 If BANCheck(UserName) Then
 128                     Call UnBan(UserName)
                     
 130                     If Database_Enabled Then
@@ -13353,9 +13358,15 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
                     Exit Sub
                 End If
 
+<<<<<<< HEAD
 138             If CompararPrivilegios(tUser, UserIndex) > 0 Then
 140                 Call WriteConsoleMsg(UserIndex, "Se le ha avisado a " & UserList(tUser).Name & " que quieres traerlo a tu posiciï¿½n.", FontTypeNames.FONTTYPE_INFO)
 142                 Call WriteConsoleMsg(tUser, .Name & " quiere transportarte a su ubicaciï¿½n. Escribe /ira " & .Name & " para ir.", FontTypeNames.FONTTYPE_INFO)
+=======
+138             If CompararUserPrivilegios(tUser, UserIndex) > 0 Then
+140                 Call WriteConsoleMsg(UserIndex, "Se le ha avisado a " & UserList(tUser).Name & " que quieres traerlo a tu posición.", FontTypeNames.FONTTYPE_INFO)
+142                 Call WriteConsoleMsg(tUser, .Name & " quiere transportarte a su ubicación. Escribe /ira " & .Name & " para ir.", FontTypeNames.FONTTYPE_INFO)
+>>>>>>> 59a82e9 (Necesito help con los inner join)
                     Exit Sub
                 End If
                 

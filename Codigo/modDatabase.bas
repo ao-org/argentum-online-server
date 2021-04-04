@@ -1877,14 +1877,16 @@ Public Sub SaveBanDatabase(UserName As String, Reason As String, BannedBy As Str
 
     Dim query As String
 
-    Call MakeQuery("UPDATE user SET is_banned = TRUE WHERE UPPER(name) = ?;", True, UCase$(UserName))
+    Call MakeQuery("UPDATE user SET is_banned = TRUE, banned_by = ?, ban_reason = ? WHERE UPPER(name) = ?;", True, BannedBy, Reason, UCase$(UserName))
+
+    Call MakeQuery("SELECT user.id, COUNT(punishment.number) as number FROM punishment INNER JOIN user ON punishment.user_id = user.id WHERE UPPER(user.name) = ?;", False, UCase$(UserName))
 
     query = "INSERT INTO punishment SET "
-    query = query & "user_id = (SELECT id from user WHERE UPPER(name) = ?), "
-    query = query & "number = number + 1, "
+    query = query & "user_id = ?, "
+    query = query & "number = ?, "
     query = query & "reason = ?;"
 
-    Call MakeQuery(query, True, UCase$(UserName), BannedBy & ": " & Reason & " " & Date & " " & Time)
+    Call MakeQuery(query, True, QueryData!Id, QueryData!Number + 1, BannedBy & ": " & Reason & " " & Date & " " & Time)
 
     Exit Sub
 
@@ -1922,15 +1924,17 @@ End Sub
 Public Sub SavePenaDatabase(UserName As String, Reason As String)
 
     On Error GoTo ErrorHandler
+    
+    Call MakeQuery("SELECT user.id, COUNT(number) as number FROM punishment INNER JOIN user ON punishment.user_id = user.id WHERE UPPER(user.name) = ?;", False, UCase$(UserName))
 
     Dim query As String
 
     query = query & "INSERT INTO punishment SET "
-    query = query & "user_id = (SELECT id from user WHERE UPPER(name) = ?), "
-    query = query & "number = number + 1, "
+    query = query & "user_id = ?, "
+    query = query & "number = ?, "
     query = query & "reason = ?;"
 
-    Call MakeQuery(query, True, UCase$(UserName), Reason)
+    Call MakeQuery(query, True, QueryData!Id, QueryData!Number + 1, Reason)
 
     Exit Sub
 
@@ -2308,7 +2312,7 @@ ErrorHandler:
 
 End Sub
 
-Public Function EnterAccountDatabase(ByVal UserIndex As Integer, CuentaEmail As String, Password As String, MacAddress As String, ByVal HDserial As Long, IP As String) As Boolean
+Public Function EnterAccountDatabase(ByVal UserIndex As Integer, CuentaEmail As String, Password As String, MacAddress As String, ByVal HDSerial As Long, IP As String) As Boolean
 
     On Error GoTo ErrorHandler
     
@@ -2342,7 +2346,7 @@ Public Function EnterAccountDatabase(ByVal UserIndex As Integer, CuentaEmail As 
     UserList(UserIndex).AccountId = QueryData!Id
     UserList(UserIndex).Cuenta = CuentaEmail
     
-    Call MakeQuery("UPDATE account SET mac_address = ?, hd_serial = ?, last_ip = ?, last_access = NOW() WHERE id = ?;", True, MacAddress, HDserial, IP, QueryData!Id)
+    Call MakeQuery("UPDATE account SET mac_address = ?, hd_serial = ?, last_ip = ?, last_access = NOW() WHERE id = ?;", True, MacAddress, HDSerial, IP, QueryData!Id)
     
     EnterAccountDatabase = True
     

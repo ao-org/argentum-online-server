@@ -114,7 +114,7 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, ByV
 
 128                 If UserList(LoopC).ConnID <> -1 Then
 
-130                     If CompararPrivilegios(LoopC, sndIndex) > 0 Then
+130                     If CompararUserPrivilegios(LoopC, sndIndex) > 0 Then
 132                         Call EnviarDatosASlot(LoopC, sndData)
                         End If
                     
@@ -505,7 +505,7 @@ Private Sub SendToSuperioresArea(ByVal UserIndex As Integer, ByVal sndData As St
 
 122                 If UserList(tempIndex).ConnIDValida Then
                 
-124                     If CompararPrivilegios(UserIndex, tempIndex) < 0 Then
+124                     If CompararUserPrivilegios(UserIndex, tempIndex) < 0 Then
 126                         Call EnviarDatosASlot(tempIndex, sndData)
                         End If
 
@@ -875,9 +875,9 @@ Private Sub SendToNpcArea(ByVal NpcIndex As Long, ByVal sndData As String)
         
 100     If NpcIndex = 0 Then Exit Sub
         
-102     Map = Npclist(NpcIndex).Pos.Map
-104     AreaX = Npclist(NpcIndex).AreasInfo.AreaPerteneceX
-106     AreaY = Npclist(NpcIndex).AreasInfo.AreaPerteneceY
+102     Map = NpcList(NpcIndex).Pos.Map
+104     AreaX = NpcList(NpcIndex).AreasInfo.AreaPerteneceX
+106     AreaY = NpcList(NpcIndex).AreasInfo.AreaPerteneceY
     
 108     If Not MapaValido(Map) Then Exit Sub
     
