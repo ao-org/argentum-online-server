@@ -15283,7 +15283,7 @@ Private Sub HandleBannedIPReload(ByVal UserIndex As Integer)
         
 104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
-108         Call BanIpCargar
+108         Call CargarListaNegraUsuarios(LoadIPs)
 
         End With
 

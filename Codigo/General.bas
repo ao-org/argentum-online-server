@@ -484,7 +484,7 @@ Sub EnviarSpawnList(ByVal UserIndex As Integer)
         Dim K          As Long
         Dim npcNames() As String
 
-100     'Debug.Print UBound(SpawnList)
+100     Debug.Print UBound(SpawnList)
 102     ReDim npcNames(1 To UBound(SpawnList)) As String
 
 104     For K = 1 To UBound(SpawnList)
@@ -605,59 +605,45 @@ End Sub
 
 Sub Main()
 
-    On Error GoTo Handler
+        On Error GoTo Handler
 
-    ' Me fijo si ya hay un proceso llamado server.exe abierto
-    If GetProcess(App.EXEName & ".exe") > 1 Then
+102     Call LeerLineaComandos
     
-        ' Si lo hay, pregunto si lo queremos cerrar.
-        If MsgBox("Se ha encontrado mas de 1 instancia abierta de esta aplicación, ¿ Desea continuar ?", vbYesNo) = vbNo Then
-            
-            ' Cerramos esta instancia de la aplicacion.
-            End
+104     Call CargarRanking
+    
+        Dim f As Date
+    
+106     Call ChDir(App.Path)
+108     Call ChDrive(App.Path)
 
-        End If
-        
-    End If
+110     Call InicializarConstantes
     
-    Call LeerLineaComandos
+112     frmCargando.Show
     
-    Call CargarRanking
+        'Call PlayWaveAPI(App.Path & "\wav\harp3.wav")
     
-    Dim f As Date
+118     frmMain.Caption = frmMain.Caption & " V." & App.Major & "." & App.Minor & "." & App.Revision
     
-    Call ChDir(App.Path)
-    Call ChDrive(App.Path)
+120     frmCargando.Label1(2).Caption = "Iniciando Arrays..."
+    
+122     Call LoadGuildsDB
+    
+124     Call LoadConfiguraciones
+126     Call CargarEventos
+128     Call CargarCodigosDonador
+130     Call loadAdministrativeUsers
 
-    Call InicializarConstantes
+        '¿?¿?¿?¿?¿?¿?¿?¿ CARGAMOS DATOS DESDE ARCHIVOS ¿??¿?¿?¿?¿?¿?¿?¿
+132     frmCargando.Label1(2).Caption = "Cargando Server.ini"
     
-    frmCargando.Show
-    
-    'Call PlayWaveAPI(App.Path & "\wav\harp3.wav")
-    
-    frmMain.Caption = frmMain.Caption & " V." & App.Major & "." & App.Minor & "." & App.Revision
-    
-    frmCargando.Label1(2).Caption = "Iniciando Arrays..."
-    
-    Call LoadGuildsDB
-    
-    Call LoadConfiguraciones
-    Call CargarCodigosDonador
-    Call loadAdministrativeUsers
-
-    '¿?¿?¿?¿?¿?¿?¿?¿ CARGAMOS DATOS DESDE ARCHIVOS ¿??¿?¿?¿?¿?¿?¿?¿
-    frmCargando.Label1(2).Caption = "Cargando Server.ini"
-    
-    MaxUsers = 0
-    Call LoadSini
-    Call LoadIntervalos
-    Call CargarForbidenWords
-    Call CargaApuestas
-    Call CargarSpawnList
-    Call LoadMotd
-    Call BanIpCargar
-    
-    frmCargando.Label1(2).Caption = "Conectando base de datos y limpiando usuarios logueados"
+134     MaxUsers = 0
+136     Call LoadSini
+138     Call LoadIntervalos
+140     Call CargarForbidenWords
+142     Call CargaApuestas
+144     Call CargarSpawnList
+146     Call LoadMotd
+148     Call CargarListaNegraUsuarios(LoadAll)
 
     'Conecto base de datos
     Call Database_Connect
@@ -676,157 +662,175 @@ Sub Main()
     frmCargando.Label1(2).Caption = "Cargando NPCs.Dat"
     Call CargaNpcsDat
     '*************************************************
-    
-    frmCargando.Label1(2).Caption = "Cargando Obj.Dat"
-    'Call LoadOBJData
-    Call LoadOBJData
 
-    Call InitTesoro
-    Call InitRegalo
+    
+154     frmCargando.Label1(2).Caption = "Cargando Obj.Dat"
+        'Call LoadOBJData
+156     Call LoadOBJData
+
+        Call InitTesoro
+        Call InitRegalo
         
-    frmCargando.Label1(2).Caption = "Cargando Hechizos.Dat"
-    Call CargarHechizos
+158     frmCargando.Label1(2).Caption = "Cargando Hechizos.Dat"
+160     Call CargarHechizos
         
-    frmCargando.Label1(2).Caption = "Cargando Objetos de Herrería"
-    Call LoadArmasHerreria
-    Call LoadArmadurasHerreria
+162     frmCargando.Label1(2).Caption = "Cargando Objetos de Herrería"
+164     Call LoadArmasHerreria
+166     Call LoadArmadurasHerreria
     
-    frmCargando.Label1(2).Caption = "Cargando Objetos de Carpintería"
-    Call LoadObjCarpintero
+168     frmCargando.Label1(2).Caption = "Cargando Objetos de Carpintería"
+170     Call LoadObjCarpintero
     
-    frmCargando.Label1(2).Caption = "Cargando Objetos de Alquimista"
-    Call LoadObjAlquimista
+172     frmCargando.Label1(2).Caption = "Cargando Objetos de Alquimista"
+174     Call LoadObjAlquimista
     
-    frmCargando.Label1(2).Caption = "Cargando Objetos de Sastre"
-    Call LoadObjSastre
+176     frmCargando.Label1(2).Caption = "Cargando Objetos de Sastre"
+178     Call LoadObjSastre
     
-    frmCargando.Label1(2).Caption = "Cargando Pesca"
-    Call LoadPesca
+180     frmCargando.Label1(2).Caption = "Cargando Pesca"
+182     Call LoadPesca
     
-    frmCargando.Label1(2).Caption = "Cargando Recursos Especiales"
-    Call LoadRecursosEspeciales
+184     frmCargando.Label1(2).Caption = "Cargando Recursos Especiales"
+186     Call LoadRecursosEspeciales
 
-    frmCargando.Label1(2).Caption = "Cargando Rangos de Faccion"
-    Call LoadRangosFaccion
+        frmCargando.Label1(2).Caption = "Cargando Rangos de Faccion"
+        Call LoadRangosFaccion
 
-    frmCargando.Label1(2).Caption = "Cargando Recompensas de Faccion"
-    Call LoadRecompensasFaccion
+        frmCargando.Label1(2).Caption = "Cargando Recompensas de Faccion"
+        Call LoadRecompensasFaccion
     
-    frmCargando.Label1(2).Caption = "Cargando Balance.dat"
-    Call LoadBalance    '4/01/08 Pablo ToxicWaste
+188     frmCargando.Label1(2).Caption = "Cargando Balance.dat"
+190     Call LoadBalance    '4/01/08 Pablo ToxicWaste
     
-    frmCargando.Label1(2).Caption = "Cargando Ciudades.dat"
-    Call CargarCiudades
+192     frmCargando.Label1(2).Caption = "Cargando Ciudades.dat"
+194     Call CargarCiudades
     
-    If BootDelBackUp Then
-        frmCargando.Label1(2).Caption = "Cargando WorldBackup"
-        Call CargarBackUp
-    Else
-        frmCargando.Label1(2).Caption = "Cargando Mapas"
-        Call LoadMapData
-    End If
+196     If BootDelBackUp Then
+198         frmCargando.Label1(2).Caption = "Cargando WorldBackup"
+200         Call CargarBackUp
+        Else
+202         frmCargando.Label1(2).Caption = "Cargando Mapas"
+            Call LoadMapData
+        End If
         
-    Call CargarInfoRetos
-    Call CargarInfoEventos
+        Call CargarInfoRetos
+        Call CargarInfoEventos
     
-    ' Pretorianos
-    frmCargando.Label1(2).Caption = "Cargando Pretorianos.dat"
-    Call LoadPretorianData
+        ' Pretorianos
+206     frmCargando.Label1(2).Caption = "Cargando Pretorianos.dat"
+208     Call LoadPretorianData
     
-    frmCargando.Label1(2).Caption = "Cargando Logros.ini"
-    Call CargarLogros ' Ladder 22/04/2015
+210     frmCargando.Label1(2).Caption = "Cargando Logros.ini"
+212     Call CargarLogros ' Ladder 22/04/2015
     
-    frmCargando.Label1(2).Caption = "Cargando Baneos Temporales"
-    Call LoadBans
+214     frmCargando.Label1(2).Caption = "Cargando Baneos Temporales"
+216     Call LoadBans
     
-    frmCargando.Label1(2).Caption = "Cargando Usuarios Donadores"
-    Call LoadDonadores
-    Call LoadObjDonador
-    Call LoadQuests
+218     frmCargando.Label1(2).Caption = "Cargando Usuarios Donadores"
+220     Call LoadDonadores
+222     Call LoadObjDonador
+224     Call LoadQuests
 
-    EstadoGlobal = True
+226     EstadoGlobal = True
     
-    Call InicializarLimpieza
+228     Call InicializarLimpieza
 
-    'Comentado porque hay worldsave en ese mapa!
-    'Call CrearClanPretoriano(MAPA_PRETORIANO, ALCOBA2_X, ALCOBA2_Y)
-    '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
+        'Comentado porque hay worldsave en ese mapa!
+        'Call CrearClanPretoriano(MAPA_PRETORIANO, ALCOBA2_X, ALCOBA2_Y)
+        '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
     
-    Dim LoopC As Integer
+        Dim LoopC As Integer
     
-    'Resetea las conexiones de los usuarios
-    For LoopC = 1 To MaxUsers
-        UserList(LoopC).ConnID = -1
-        UserList(LoopC).ConnIDValida = False
-        Set UserList(LoopC).incomingData = New clsByteQueue
-        Set UserList(LoopC).outgoingData = New clsByteQueue
-    Next LoopC
+        'Resetea las conexiones de los usuarios
+230     For LoopC = 1 To MaxUsers
+232         UserList(LoopC).ConnID = -1
+234         UserList(LoopC).ConnIDValida = False
+236         Set UserList(LoopC).incomingData = New clsByteQueue
+238         Set UserList(LoopC).outgoingData = New clsByteQueue
+240     Next LoopC
     
-    '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
+        '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
     
-    With frmMain
-        .Minuto.Enabled = True
-        .TimerGuardarUsuarios.Enabled = True
-        .TimerGuardarUsuarios.Interval = IntervaloTimerGuardarUsuarios
-        .tPiqueteC.Enabled = True
-        .GameTimer.Enabled = True
-        .Auditoria.Enabled = True
-        .KillLog.Enabled = True
-        .TIMER_AI.Enabled = True
-        .Invasion.Enabled = True
-    End With
+242     With frmMain
+244         .Minuto.Enabled = True
+246         .TimerGuardarUsuarios.Enabled = True
+248         .TimerGuardarUsuarios.Interval = IntervaloTimerGuardarUsuarios
+250         .tPiqueteC.Enabled = True
+252         .GameTimer.Enabled = True
+254         .Auditoria.Enabled = True
+256         .KillLog.Enabled = True
+258         .TIMER_AI.Enabled = True
+            .Invasion.Enabled = True
+        End With
     
-    Subasta.SubastaHabilitada = True
-    Subasta.HaySubastaActiva = False
-    Call ResetMeteo
+260     Subasta.SubastaHabilitada = True
+262     Subasta.HaySubastaActiva = False
+264     Call ResetMeteo
     
-    '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
-    'Configuracion de los sockets
+266     frmCargando.Label1(2).Caption = "Conectando base de datos y limpiando usuarios logueados"
     
-    Call SecurityIp.InitIpTables(1000)
+268     If Database_Enabled Then
+            'Conecto base de datos
+270         Call Database_Connect
         
-    'Cierra el socket de escucha
-    If LastSockListen >= 0 Then Call apiclosesocket(LastSockListen)
+            'Reinicio los users online
+272         Call SetUsersLoggedDatabase(0)
+        
+            'Leo el record de usuarios
+274         RecordUsuarios = LeerRecordUsuariosDatabase()
+        
+            'Tarea pesada
+276         Call LogoutAllUsersAndAccounts
 
-    Call IniciaWsApi(frmMain.hwnd)
-    SockListen = ListenForConnect(Puerto, hWndMsg, "")
-
-    If SockListen <> -1 Then
-        Call WriteVar(IniPath & "Server.ini", "INIT", "LastSockListen", SockListen) _
-                ' Guarda el socket escuchando
-    Else
-        Call MsgBox("Ha ocurrido un error al iniciar el socket del Servidor.", vbCritical + vbOKOnly)
-
-    End If
+        End If
     
-    If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
-    '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
+        '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
+        'Configuracion de los sockets
     
-    Call GetHoraActual
-    
-    HoraMundo = GetTickCount() - DuracionDia \ 2
+278     Call SecurityIp.InitIpTables(1000)
+        
+        'Cierra el socket de escucha
+280     If LastSockListen >= 0 Then Call apiclosesocket(LastSockListen)
 
-    frmCargando.Visible = False
-    Unload frmCargando
+282     Call IniciaWsApi(frmMain.hwnd)
+284     SockListen = ListenForConnect(Puerto, hWndMsg, "")
 
-    'Log
-    Dim n As Integer
-    n = FreeFile
-    Open App.Path & "\logs\Main.log" For Append Shared As #n
-    Print #n, Date & " " & Time & " server iniciado " & App.Major & "." & App.Minor & "." & App.Revision
-    Close #n
-    
-    'Ocultar
-    Call frmMain.InitMain(HideMe)
-    
-    tInicioServer = GetTickCount()
+286     If SockListen <> -1 Then
+288         Call WriteVar(IniPath & "Server.ini", "INIT", "LastSockListen", SockListen) _
+                    ' Guarda el socket escuchando
+        Else
+290         Call MsgBox("Ha ocurrido un error al iniciar el socket del Servidor.", vbCritical + vbOKOnly)
 
-    Exit Sub
+        End If
+    
+318     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
+        '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
+    
+320     Call GetHoraActual
+    
+322     HoraMundo = GetTickCount() - DuracionDia \ 2
+
+324     frmCargando.Visible = False
+326     Unload frmCargando
+
+        'Log
+328     Dim n As Integer
+        n = FreeFile
+330     Open App.Path & "\logs\Main.log" For Append Shared As #n
+332     Print #n, Date & " " & Time & " server iniciado " & App.Major & "." & App.Minor & "." & App.Revision
+334     Close #n
+    
+        'Ocultar
+336     Call frmMain.InitMain(HideMe)
+    
+338     tInicioServer = GetTickCount()
+
+        Exit Sub
         
 Handler:
-    Call RegistrarError(Err.Number, Err.Description, "General.Main", Erl)
+340     Call RegistrarError(Err.Number, Err.Description, "General.Main", Erl)
 
-    Resume Next
+342     Resume Next
 
 End Sub
 
@@ -2753,7 +2757,9 @@ Public Sub CerrarServidor()
     Next
     
     If Database_Enabled Then Database_Close
- 
+    
+    If API_Enabled Then frmAPISocket.Socket.CloseSck
+    
     Call LimpiarModuloLimpieza
     
     'Log
@@ -2905,33 +2911,4 @@ Public Function InsideRectangle(R As Rectangle, ByVal X As Integer, ByVal Y As I
     If Y < R.Y1 Then Exit Function
     If Y > R.Y2 Then Exit Function
     InsideRectangle = True
-End Function
-
-' Fuente: https://stackoverflow.com/questions/1378604/end-process-from-task-manager-using-vb-6-code (ultima respuesta)
-Public Function GetProcess(ByVal processName As String) As Byte
-    
-    Dim oService As Object
-    Dim servicename As String
-    Dim processCount As Byte
-    
-    Dim oWMI As Object: Set oWMI = GetObject("winmgmts:")
-    Dim oServices As Object: Set oServices = oWMI.InstancesOf("win32_process")
-
-    For Each oService In oServices
-
-        servicename = LCase$(Trim$(CStr(oService.name)))
-
-        If InStrB(1, servicename, LCase$(processName), vbBinaryCompare) > 0 Then
-            
-            ' Para matar un proceso adentro de este loop usar.
-            'oService.Terminate
-            
-            processCount = processCount + 1
-            
-        End If
-
-    Next
-    
-    GetProcess = processCount
-
 End Function

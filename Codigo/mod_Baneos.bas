@@ -1,9 +1,58 @@
 Attribute VB_Name = "mod_Baneos"
 Option Explicit
 
+Public Enum e_LoadBlacklistFlags
+    LoadAll = &H1   ' 2 ^ 0
+    LoadIPs = &H2   ' 2 ^ 1
+    LoadHDs = &H4   ' 2 ^ 2
+    LoadMACs = &H8  ' 2 ^ 3
+End Enum
+
 Public IP_Blacklist As New Dictionary
 Public HD_Blacklist As New Dictionary
 Public MAC_Blacklist As New Dictionary
+
+Public Sub CargarListaNegraUsuarios(ByVal LoadFlags As e_LoadBlacklistFlags)
+    
+    Dim File As clsIniManager
+    Dim i As Long
+    Dim iKey As String
+    Dim iValue As String
+    
+    Set File = New clsIniManager
+    Call File.Initialize(DatPath & "Baneos.ini")
+    
+    If (LoadFlags And (LoadAll Or LoadIPs)) Then
+    
+        ' IP's
+        For i = 0 To File.EntriesCount("IP") - 1
+            Call File.GetPair("IP", i, iKey, iValue)
+            Call IP_Blacklist.Add(iKey, iValue)
+        Next
+        
+    End If
+    
+    If (LoadFlags And (LoadAll Or LoadHDs)) Then
+    
+        ' HD's
+        For i = 0 To File.EntriesCount("HD") - 1
+            Call File.GetPair("HD", i, iKey, iValue)
+            Call HD_Blacklist.Add(iKey, iValue)
+        Next
+        
+    End If
+    
+    If (LoadFlags And (LoadAll Or LoadMACs)) Then
+    
+        ' MAC's
+        For i = 0 To File.EntriesCount("MAC") - 1
+            Call File.GetPair("MAC", i, iKey, iValue)
+            Call MAC_Blacklist.Add(iKey, iValue)
+        Next
+        
+    End If
+    
+End Sub
 
 Private Function GlobalChecks(ByVal BannerIndex, ByRef UserName As String) As Integer
     
@@ -150,7 +199,7 @@ Public Sub DesbanearIP(ByVal IP As String, ByVal UnbannerIndex As Integer)
     Call WriteVar(DatPath & "Baneos.dat", "IP", GetVar(DatPath & "Baneos.dat", "IP", IP), vbNullString)
     
     ' Registramos el des-baneo en los logs.
-    Call LogGM(UserList(UnbannerIndex).Name, "Des-Baneó la IP: " & IP & " de " & BanIps(IP))
+    Call LogGM(UserList(UnbannerIndex).Name, "Des-Baneó la IP: " & IP & " de " & IP_Blacklist(IP))
     
 End Sub
 
@@ -171,11 +220,11 @@ Public Sub BanearHDMAC(ByVal BannerIndex As Integer, ByVal UserName As String)
     End If
     
     HDSerial = ObtenerHDserial(Cuenta)
-    MacAdress = ObtenerMacAdress(Cuenta)
+    MacAddress = ObtenerMacAdress(Cuenta)
     
     ' Lo guardo en memoria.
     Call HD_Blacklist.Add(HDSerial, UserName)
-    Call MAC_Blacklist.Add(MacAdress, UserName)
+    Call MAC_Blacklist.Add(MacAddress, UserName)
     
     ' Lo guardo en Baneos.dat
     Call WriteVar(DatPath & "Baneos.dat", "HD", HDSerial, UserName)
@@ -188,27 +237,27 @@ End Sub
 
 Public Sub DesbanearHDMAC(ByVal UserName As String)
     
+    Dim Cuenta As String
+    Dim HDSerial As String
+    Dim MacAddress As String
+    
     Cuenta = ObtenerCuenta(UserName)
     
-    If LenB(Cuenta) = 0 Then
-        Call WriteConsoleMsg(BannerIndex, "La cuenta no existe.", FontTypeNames.FONTTYPE_TALK)
-        Exit Sub
-        
-    End If
+    If LenB(Cuenta) = 0 Then Exit Sub
 
     HDSerial = ObtenerHDserial(Cuenta)
-    MacAdress = ObtenerMacAdress(Cuenta)
+    MacAddress = ObtenerMacAdress(Cuenta)
     
     ' Lo guardo en memoria.
-    Call HD_Blacklist.Remove(HDSerial, UserName)
-    Call MAC_Blacklist.Remove(MacAdress, UserName)
+    Call HD_Blacklist.Remove(HDSerial)
+    Call MAC_Blacklist.Remove(MacAddress)
     
     ' Lo guardo en Baneos.dat
     Call WriteVar(DatPath & "Baneos.dat", "HD", HDSerial, vbNullString)
     Call WriteVar(DatPath & "Baneos.dat", "MAC", MacAddress, vbNullString)
     
     ' Registramos el baneo en los logs.
-    Call LogGM(UserList(BannerIndex).Name, "Le quitó la Tolerancia 0 a: " & UserName & " con Serial HD: " & HDSerial & " y MAC Address: " & MacAddress)
+    Call LogDesarrollo("Le quitó la Tolerancia 0 a: " & UserName & " con Serial HD: " & HDSerial & " y MAC Address: " & MacAddress)
     
 End Sub
 
