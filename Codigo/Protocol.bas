@@ -1824,7 +1824,7 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
     Dim Password    As String
     Dim Version     As String
     Dim MacAddress  As String
-    Dim HDserial    As Long
+    Dim HDSerial    As Long
     Dim MD5         As String
 
     CuentaEmail = Buffer.ReadASCIIString()
@@ -1832,7 +1832,7 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
     Version = CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte())
     UserName = Buffer.ReadASCIIString()
     MacAddress = Buffer.ReadASCIIString()
-    HDserial = Buffer.ReadLong()
+    HDSerial = Buffer.ReadLong()
     MD5 = Buffer.ReadASCIIString()
     
     'If we got here then packet is complete, copy data back to original queue
@@ -1857,7 +1857,7 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
             
     End If
   
-    If Not EntrarCuenta(UserIndex, CuentaEmail, Password, MacAddress, HDserial, MD5) Then
+    If Not EntrarCuenta(UserIndex, CuentaEmail, Password, MacAddress, HDSerial, MD5) Then
         Call CloseSocket(UserIndex)
         Exit Sub
     End If
@@ -1969,7 +1969,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
         Dim CuentaEmail As String
         Dim Password    As String
         Dim MacAddress  As String
-        Dim HDserial    As Long
+        Dim HDSerial    As Long
         Dim MD5         As String
         Dim Version     As String
     
@@ -2000,7 +2000,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
 138     Head = Buffer.ReadInteger()
 140     Hogar = Buffer.ReadByte()
 142     MacAddress = Buffer.ReadASCIIString()
-144     HDserial = Buffer.ReadLong()
+144     HDSerial = Buffer.ReadLong()
 145     MD5 = Buffer.ReadASCIIString()
     
         #If DEBUGGING = False Then
@@ -2021,7 +2021,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
             
         End If
         
-160     If Not EntrarCuenta(UserIndex, CuentaEmail, Password, MacAddress, HDserial, MD5) Then
+160     If Not EntrarCuenta(UserIndex, CuentaEmail, Password, MacAddress, HDSerial, MD5) Then
 162         Call CloseSocket(UserIndex)
             Exit Sub
         End If
@@ -15243,8 +15243,8 @@ Private Sub HandleBannedIPList(ByVal UserIndex As Integer)
         
 106         Call LogGM(.Name, "/BANIPLIST")
         
-108         For LoopC = 1 To BanIps.Count
-110             lista = lista & BanIps.Item(LoopC) & ", "
+108         For LoopC = 1 To IP_Blacklist.Count
+110             lista = lista & IP_Blacklist.Item(LoopC) & ", "
 112         Next LoopC
         
 114         If LenB(lista) <> 0 Then lista = Left$(lista, Len(lista) - 2)
@@ -15476,13 +15476,13 @@ Private Sub HandleBanIP(ByVal UserIndex As Integer)
 132             If .flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios) Then
 134                 Call LogGM(.Name, "/BanIP " & bannedIP & " por " & Reason)
                 
-136                 If BanIps.Exists(bannedIP) Then
+136                 If IP_Blacklist.Exists(bannedIP) Then
 138                     Call WriteConsoleMsg(UserIndex, "La IP " & bannedIP & " ya se encuentra en la lista de bans.", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
                     End If
                 
-140                 Call BanIps.Add(bannedIP, .Name)
+140                 Call IP_Blacklist.Add(bannedIP, .Name)
 142                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " baneï¿½ la IP " & bannedIP & " por " & Reason, FontTypeNames.FONTTYPE_FIGHT))
                 
                     'Find every player with that ip and ban him!
@@ -15556,7 +15556,7 @@ Private Sub HandleUnbanIP(ByVal UserIndex As Integer)
         
 116         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
-118         If BanIps.Exists(bannedIP) Then
+118         If IP_Blacklist.Exists(bannedIP) Then
 119             Call DesbanearIP(bannedIP, UserIndex)
 120             Call WriteConsoleMsg(UserIndex, "La IP """ & bannedIP & """ se ha quitado de la lista de bans.", FontTypeNames.FONTTYPE_INFO)
 
@@ -25794,14 +25794,14 @@ Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
         Dim CuentaEmail    As String
         Dim CuentaPassword As String
         Dim MacAddress     As String
-        Dim HDserial       As Long
+        Dim HDSerial       As Long
         Dim MD5            As String
     
 108     CuentaEmail = Buffer.ReadASCIIString()
 110     CuentaPassword = Buffer.ReadASCIIString()
 112     Version = CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte())
 114     MacAddress = Buffer.ReadASCIIString()
-116     HDserial = Buffer.ReadLong()
+116     HDSerial = Buffer.ReadLong()
 117     MD5 = Buffer.ReadASCIIString()
     
         'If we got here then packet is complete, copy data back to original queue
@@ -25816,7 +25816,7 @@ Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
             End If
         #End If
 
-126     If EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MacAddress, HDserial, MD5) Then
+126     If EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MacAddress, HDSerial, MD5) Then
 128         Call WritePersonajesDeCuenta(UserIndex)
 130         Call WriteMostrarCuenta(UserIndex)
         Else
@@ -25865,7 +25865,7 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
         Dim CuentaEmail    As String
         Dim CuentaPassword As String
         Dim MacAddress     As String
-        Dim HDserial       As Long
+        Dim HDSerial       As Long
         Dim MD5            As String
         Dim Version        As String
     
@@ -25874,7 +25874,7 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
 112     CuentaPassword = Buffer.ReadASCIIString()
 114     Version = CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte())
 116     MacAddress = Buffer.ReadASCIIString()
-118     HDserial = Buffer.ReadLong()
+118     HDSerial = Buffer.ReadLong()
 120     MD5 = Buffer.ReadASCIIString()
     
         'If we got here then packet is complete, copy data back to original queue
@@ -25888,7 +25888,7 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
             End If
         #End If
     
-130     If Not EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MacAddress, HDserial, MD5) Then
+130     If Not EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MacAddress, HDSerial, MD5) Then
 132         Call CloseSocket(UserIndex)
             Exit Sub
         End If

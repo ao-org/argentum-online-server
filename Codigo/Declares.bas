@@ -2298,7 +2298,6 @@ Public RecompensasFaccion()               As tRecompensaFaccion
 
 Public ObjDonador()                       As tObjDonador
 
-Public BanIps                             As New Dictionary
 
 Public ModClase(1 To NUMCLASES)           As ModClase
 

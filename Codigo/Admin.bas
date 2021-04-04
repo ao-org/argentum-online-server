@@ -740,7 +740,7 @@ CheckMAC_Err:
         
 End Function
 
-Public Sub BanIpCargar()
+Public Sub CargarListaNegraUsuarios()
     
     Dim File As clsIniManager
     Dim i As Long
@@ -749,10 +749,23 @@ Public Sub BanIpCargar()
     
     Set File = New clsIniManager
     Call File.Initialize(DatPath & "Baneos.ini")
-
+    
+    ' IP's
     For i = 0 To File.EntriesCount("IP") - 1
         Call File.GetPair("IP", i, iKey, iValue)
-        Call BanIps.Add(iKey, iValue)
+        Call IP_Blacklist.Add(iKey, iValue)
+    Next
+    
+    ' HD's
+    For i = 0 To File.EntriesCount("HD") - 1
+        Call File.GetPair("HD", i, iKey, iValue)
+        Call HD_Blacklist.Add(iKey, iValue)
+    Next
+    
+    ' MAC's
+    For i = 0 To File.EntriesCount("MAC") - 1
+        Call File.GetPair("MAC", i, iKey, iValue)
+        Call MAC_Blacklist.Add(iKey, iValue)
     Next
     
 End Sub

@@ -558,7 +558,7 @@ Public Sub EventoSockAccept(ByVal SockID As Long)
 148         UserList(NewIndex).IP = GetAscIP(sa.sin_addr)
 
             'Busca si esta banneada la ip
-150         If BanIps.Exists(UserList(NewIndex).IP) Then
+150         If IP_Blacklist.Exists(UserList(NewIndex).IP) Then
                 Call WriteShowMessageBox(NewIndex, "Se te ha prohibido la entrada al servidor. Cod: #0003")
                     
                 'Call FlushBuffer(NewIndex)
