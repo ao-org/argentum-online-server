@@ -1240,28 +1240,6 @@ LoadBans_Err:
         
 End Sub
 
-Public Function ChangeBan(ByVal name As String, ByVal Baneado As Byte) As Boolean
-        
-    On Error GoTo ChangeBan_Err
-        
-
-    If FileExist(CharPath & name & ".chr", vbNormal) Then
-        If (val(GetVar(CharPath & name & ".chr", "BAN", "BANEADO")) = 1) Then
-            Call UnBan(name)
-
-        End If
-
-    End If
-
-        
-    Exit Function
-
-ChangeBan_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Admin.ChangeBan", Erl)
-    Resume Next
-        
-End Function
-
 Public Function CompararPrivilegios(ByVal Personaje_1 As Integer, ByVal Personaje_2 As Integer) As Integer
 '**************************************************************************************************************************
 'Author: Jopi

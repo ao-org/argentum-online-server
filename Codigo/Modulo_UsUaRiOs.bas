@@ -960,7 +960,7 @@ SendUserInvTxt_Err:
         
 End Sub
 
-Sub SendUserSkillsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
+Sub SendUserSkills(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
         
         On Error GoTo SendUserSkillsTxt_Err
 
@@ -1867,75 +1867,42 @@ CancelExit_Err:
         
 End Sub
 
-'CambiarNick: Cambia el Nick de un slot.
-'
-'UserIndex: Quien ejecutó la orden
-'UserIndexDestino: SLot del usuario destino, a quien cambiarle el nick
-'NuevoNick: Nuevo nick de UserIndexDestino
-Public Sub CambiarNick(ByVal UserIndex As Integer, ByVal UserIndexDestino As Integer, ByVal NuevoNick As String)
-        
-        On Error GoTo CambiarNick_Err
-        
-
-        Dim ViejoNick       As String
-
-        Dim ViejoCharBackup As String
-
-100     If UserList(UserIndexDestino).flags.UserLogged = False Then Exit Sub
-102     ViejoNick = UserList(UserIndexDestino).name
-
-104     If FileExist(CharPath & ViejoNick & ".chr", vbNormal) Then
-            'hace un backup del char
-106         ViejoCharBackup = CharPath & ViejoNick & ".chr.old-"
-108         Name CharPath & ViejoNick & ".chr" As ViejoCharBackup
-
-        End If
-
-        
-        Exit Sub
-
-CambiarNick_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.CambiarNick", Erl)
-112     Resume Next
-        
-End Sub
-
 Sub SendUserStatsTxtOFF(ByVal sendIndex As Integer, ByVal nombre As String)
         
-        On Error GoTo SendUserStatsTxtOFF_Err
+    On Error GoTo SendUserStatsTxtOFF_Err
         
 
-100     If FileExist(CharPath & nombre & ".chr", vbArchive) = False Then
-102         Call WriteConsoleMsg(sendIndex, "Pj Inexistente", FontTypeNames.FONTTYPE_INFO)
-        Else
-104         Call WriteConsoleMsg(sendIndex, "Estadisticas de: " & nombre, FontTypeNames.FONTTYPE_INFO)
-106         Call WriteConsoleMsg(sendIndex, "Nivel: " & GetVar(CharPath & nombre & ".chr", "stats", "elv") & "  EXP: " & GetVar(CharPath & nombre & ".chr", "stats", "Exp") & "/" & GetVar(CharPath & nombre & ".chr", "stats", "elu"), FontTypeNames.FONTTYPE_INFO)
-108         Call WriteConsoleMsg(sendIndex, "Vitalidad: " & GetVar(CharPath & nombre & ".chr", "stats", "minsta") & "/" & GetVar(CharPath & nombre & ".chr", "stats", "maxSta"), FontTypeNames.FONTTYPE_INFO)
-110         Call WriteConsoleMsg(sendIndex, "Salud: " & GetVar(CharPath & nombre & ".chr", "stats", "MinHP") & "/" & GetVar(CharPath & nombre & ".chr", "Stats", "MaxHP") & "  Mana: " & GetVar(CharPath & nombre & ".chr", "Stats", "MinMAN") & "/" & GetVar(CharPath & nombre & ".chr", "Stats", "MaxMAN"), FontTypeNames.FONTTYPE_INFO)
+    If FileExist(CharPath & nombre & ".chr", vbArchive) = False Then
+        Call WriteConsoleMsg(sendIndex, "Pj Inexistente", FontTypeNames.FONTTYPE_INFO)
+        
+    Else
+        Call WriteConsoleMsg(sendIndex, "Estadisticas de: " & nombre, FontTypeNames.FONTTYPE_INFO)
+        Call WriteConsoleMsg(sendIndex, "Nivel: " & GetVar(CharPath & nombre & ".chr", "stats", "elv") & "  EXP: " & GetVar(CharPath & nombre & ".chr", "stats", "Exp") & "/" & GetVar(CharPath & nombre & ".chr", "stats", "elu"), FontTypeNames.FONTTYPE_INFO)
+        Call WriteConsoleMsg(sendIndex, "Vitalidad: " & GetVar(CharPath & nombre & ".chr", "stats", "minsta") & "/" & GetVar(CharPath & nombre & ".chr", "stats", "maxSta"), FontTypeNames.FONTTYPE_INFO)
+        Call WriteConsoleMsg(sendIndex, "Salud: " & GetVar(CharPath & nombre & ".chr", "stats", "MinHP") & "/" & GetVar(CharPath & nombre & ".chr", "Stats", "MaxHP") & "  Mana: " & GetVar(CharPath & nombre & ".chr", "Stats", "MinMAN") & "/" & GetVar(CharPath & nombre & ".chr", "Stats", "MaxMAN"), FontTypeNames.FONTTYPE_INFO)
     
-112         Call WriteConsoleMsg(sendIndex, "Menor Golpe/Mayor Golpe: " & GetVar(CharPath & nombre & ".chr", "stats", "MaxHIT"), FontTypeNames.FONTTYPE_INFO)
+        Call WriteConsoleMsg(sendIndex, "Menor Golpe/Mayor Golpe: " & GetVar(CharPath & nombre & ".chr", "stats", "MaxHIT"), FontTypeNames.FONTTYPE_INFO)
     
-114         Call WriteConsoleMsg(sendIndex, "Oro: " & GetVar(CharPath & nombre & ".chr", "stats", "GLD"), FontTypeNames.FONTTYPE_INFO)
-116         Call WriteConsoleMsg(sendIndex, "Veces Que Murio: " & GetVar(CharPath & nombre & ".chr", "Flags", "VecesQueMoriste"), FontTypeNames.FONTTYPE_INFO)
-            #If ConUpTime Then
+        Call WriteConsoleMsg(sendIndex, "Oro: " & GetVar(CharPath & nombre & ".chr", "stats", "GLD"), FontTypeNames.FONTTYPE_INFO)
+        Call WriteConsoleMsg(sendIndex, "Veces Que Murio: " & GetVar(CharPath & nombre & ".chr", "Flags", "VecesQueMoriste"), FontTypeNames.FONTTYPE_INFO)
 
-                Dim TempSecs As Long
+        #If ConUpTime Then
+            Dim TempSecs As Long
+            Dim TempStr  As String
 
-                Dim TempStr  As String
+            TempSecs = GetVar(CharPath & nombre & ".chr", "INIT", "UpTime")
+            TempStr = (TempSecs \ 86400) & " Dias, " & ((TempSecs Mod 86400) \ 3600) & " Horas, " & ((TempSecs Mod 86400) Mod 3600) \ 60 & " Minutos, " & (((TempSecs Mod 86400) Mod 3600) Mod 60) & " Segundos."
+            Call WriteConsoleMsg(sendIndex, "Tiempo Logeado: " & TempStr, FontTypeNames.FONTTYPE_INFO)
+        #End If
 
-118             TempSecs = GetVar(CharPath & nombre & ".chr", "INIT", "UpTime")
-120             TempStr = (TempSecs \ 86400) & " Dias, " & ((TempSecs Mod 86400) \ 3600) & " Horas, " & ((TempSecs Mod 86400) Mod 3600) \ 60 & " Minutos, " & (((TempSecs Mod 86400) Mod 3600) Mod 60) & " Segundos."
-122             Call WriteConsoleMsg(sendIndex, "Tiempo Logeado: " & TempStr, FontTypeNames.FONTTYPE_INFO)
-            #End If
-
-        End If
+    End If
 
         
-        Exit Sub
+    Exit Sub
 
 SendUserStatsTxtOFF_Err:
-124     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.SendUserStatsTxtOFF", Erl)
-126     Resume Next
+    Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.SendUserStatsTxtOFF", Erl)
+    Resume Next
         
 End Sub
 
