@@ -12159,77 +12159,78 @@ End Sub
 
 Private Sub HandleRequestCharInfo(ByVal UserIndex As Integer)
 
-        '***************************************************
-        'Author: Fredy Horacio Treboux (liquid)
-        'Last Modification: 01/08/07
-        'Last Modification by: (liquid).. alto bug zapallo..
-        '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 3 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
+    '***************************************************
+    'Author: Fredy Horacio Treboux (liquid)
+    'Last Modification: 01/08/07
+    'Last Modification by: (liquid).. alto bug zapallo..
+    '***************************************************
+    If UserList(UserIndex).incomingData.Length < 3 Then
+        Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
+        Exit Sub
+
+    End If
+    
+    On Error GoTo ErrHandler
+
+    With UserList(UserIndex)
+
+        'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
+        Dim Buffer As New clsByteQueue
+
+        Call Buffer.CopyBuffer(.incomingData)
+        
+        'Remove packet ID
+        Call Buffer.ReadByte
+                
+        Dim targetName  As String
+        Dim targetIndex As Integer
+        
+        targetName = Replace$(Buffer.ReadASCIIString(), "+", " ")
+        
+        'If we got here then packet is complete, copy data back to original queue
+        Call .incomingData.CopyBuffer(Buffer)
+        
+        targetIndex = NameIndex(targetName)
+        
+        If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) = 0 Then Exit Sub
+        
+        'don't allow to retrieve administrator's info
+        If Not EsGM(UserIndex) Or EsDios(targetName) Or EsAdmin(targetName) Then Exit Sub
+        
+        'is the player offline?
+        If targetIndex <= 0 Then
+                
+            ' Si el GM es Admin o Dios lo dejo ver la info. de los PJ's offline.
+            If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) Then
+                    
+                Call SendUserStatsTxtOFF(UserIndex, targetName)
+                
+            Else
+                    
+                Call WriteConsoleMsg(UserIndex, "Usuario offline", FontTypeNames.FONTTYPE_INFO)
+                    
+            End If
+
+        Else
+
+            Call SendUserStatsTxt(UserIndex, targetIndex)
 
         End If
-    
-        On Error GoTo ErrHandler
 
-104     With UserList(UserIndex)
-
-            'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim Buffer As New clsByteQueue
-
-106         Call Buffer.CopyBuffer(.incomingData)
-        
-            'Remove packet ID
-108         Call Buffer.ReadByte
-                
-            Dim targetName  As String
-
-            Dim targetIndex As Integer
-        
-110         targetName = Replace$(Buffer.ReadASCIIString(), "+", " ")
-112         targetIndex = NameIndex(targetName)
-        
-114         If .flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios) Then
-
-                'is the player offline?
-116             If targetIndex <= 0 Then
-
-                    'don't allow to retrieve administrator's info
-118                 If Not (EsDios(targetName) Or EsAdmin(targetName)) Then
-120                     Call WriteConsoleMsg(UserIndex, "Usuario offline", FontTypeNames.FONTTYPE_INFO)
-122                     Call SendUserStatsTxtOFF(UserIndex, targetName)
-
-                    End If
-
-                Else
-
-                    'don't allow to retrieve administrator's info
-124                 If UserList(targetIndex).flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then
-126                     Call SendUserStatsTxt(UserIndex, targetIndex)
-
-                    End If
-
-                End If
-
-            End If
-        
-            'If we got here then packet is complete, copy data back to original queue
-128         Call .incomingData.CopyBuffer(Buffer)
-
-        End With
+    End With
     
 ErrHandler:
 
-        Dim Error As Long
+    Dim Error As Long
 
-130     Error = Err.Number
+    Error = Err.Number
 
-        On Error GoTo 0
+    On Error GoTo 0
     
-        'Destroy auxiliar buffer
-132     Set Buffer = Nothing
+    'Destroy auxiliar buffer
+    Set Buffer = Nothing
     
-134     If Error <> 0 Then Err.raise Error
+    If Error <> 0 Then Err.raise Error
 
 End Sub
 
