@@ -1609,7 +1609,6 @@ Public Type UserCounters
     TiempoDeInmunidad As Byte
     TiempoDeMapeo As Byte
 
-    TiempoParaSubastar As Byte
     UserHechizosInterval(1 To MAXUSERHECHIZOS) As Long
     ScrollExperiencia As Long
     ScrollOro As Long
