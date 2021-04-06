@@ -1158,29 +1158,25 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
     
                     End If ' If user > 0 then
                                 
-                    If Not (UserList(TempCharIndex).flags.Privilegios And PlayerType.user) Then
-
+                    If EsGM(TempCharIndex) Then
+                        ft = FontTypeNames.FONTTYPE_GM
+                        
                         If UserList(TempCharIndex).flags.Privilegios = PlayerType.Consejero Then
                             Stat = Stat & " <Consejero>"
-                            ft = FontTypeNames.FONTTYPE_GM
-    
                         End If
     
                         If UserList(TempCharIndex).flags.Privilegios = PlayerType.SemiDios Then
                             Stat = Stat & " <Semi-Dios>"
-                            ft = FontTypeNames.FONTTYPE_GM
     
                         End If
     
                         If UserList(TempCharIndex).flags.Privilegios = PlayerType.Dios Then
                             Stat = Stat & " <Dios>"
-                            ft = FontTypeNames.FONTTYPE_GM
     
                         End If
                             
                         If UserList(TempCharIndex).flags.Privilegios = PlayerType.Admin Then
                             Stat = Stat & " <Administrador>"
-                            ft = FontTypeNames.FONTTYPE_GM
     
                         End If
                         
