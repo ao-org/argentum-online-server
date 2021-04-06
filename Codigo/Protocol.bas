@@ -14849,7 +14849,7 @@ Private Sub HandleAcceptChaosCouncilMember(ByVal UserIndex As Integer)
 116             If tUser <= 0 Then
 118                 Call WriteConsoleMsg(UserIndex, "Usuario offline", FontTypeNames.FONTTYPE_INFO)
                 Else
-120                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(UserName & " fue aceptado en el Consejo de la Legiín Oscura.", FontTypeNames.FONTTYPE_CONSEJO))
+120                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(UserName & " fue aceptado en el Consejo de la Legión Oscura.", FontTypeNames.FONTTYPE_CONSEJO))
                 
 122                 With UserList(tUser)
 
@@ -15186,7 +15186,7 @@ Private Sub HandleCouncilKick(ByVal UserIndex As Integer)
 148                         .flags.Privilegios = .flags.Privilegios - PlayerType.ChaosCouncil
                         
 150                         Call WarpUserChar(tUser, .Pos.Map, .Pos.X, .Pos.Y)
-152                         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(UserName & " fue expulsado del consejo de la Legiín Oscura", FontTypeNames.FONTTYPE_CONSEJO))
+152                         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(UserName & " fue expulsado del consejo de la Legión Oscura", FontTypeNames.FONTTYPE_CONSEJO))
 
                         End If
 
