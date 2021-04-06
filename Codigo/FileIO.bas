@@ -1597,7 +1597,6 @@ Sub LoadOBJData()
             '
     
             .NoSeLimpia = val(Leer.GetValue(ObjKey, "NoSeLimpia"))
-            .Subastable = val(Leer.GetValue(ObjKey, "Subastable"))
     
             .ParticulaGolpe = val(Leer.GetValue(ObjKey, "ParticulaGolpe"))
             .ParticulaViaje = val(Leer.GetValue(ObjKey, "ParticulaViaje"))
@@ -1666,28 +1665,28 @@ Sub LoadOBJData()
     
             'CHECK: !!! Esto es provisorio hasta que los de Dateo cambien los valores de string a numerico  -  Nunca más papu
             Dim n As Integer
-            Dim s As String
+            Dim S As String
 
             For i = 1 To NUMCLASES
-                s = UCase$(Leer.GetValue(ObjKey, "CP" & i))
+                S = UCase$(Leer.GetValue(ObjKey, "CP" & i))
                 n = 1
 
-                Do While LenB(s) > 0 And Tilde(ListaClases(n)) <> Trim$(s)
+                Do While LenB(S) > 0 And Tilde(ListaClases(n)) <> Trim$(S)
                     n = n + 1
                 Loop
             
-                .ClaseProhibida(i) = IIf(LenB(s) > 0, n, 0)
+                .ClaseProhibida(i) = IIf(LenB(S) > 0, n, 0)
             Next i
         
             For i = 1 To NUMRAZAS
-                s = UCase$(Leer.GetValue(ObjKey, "RP" & i))
+                S = UCase$(Leer.GetValue(ObjKey, "RP" & i))
                 n = 1
 
-                Do While LenB(s) > 0 And Tilde(ListaRazas(n)) <> Trim$(s)
+                Do While LenB(S) > 0 And Tilde(ListaRazas(n)) <> Trim$(S)
                     n = n + 1
                 Loop
             
-                .RazaProhibida(i) = IIf(LenB(s) > 0, n, 0)
+                .RazaProhibida(i) = IIf(LenB(S) > 0, n, 0)
             Next i
         
             ' Skill requerido
@@ -1829,196 +1828,6 @@ LoadUserStats_Err:
         
 End Sub
 
-Sub LoadUserInit(ByVal UserIndex As Integer, ByRef UserFile As clsIniReader)
-        
-        On Error GoTo LoadUserInit_Err
-        
-
-        '*************************************************
-        'Author: Unknown
-        'Last modified: 19/11/2006
-        'Loads the Users records
-        '23/01/2007 Pablo (ToxicWaste) - Agrego NivelIngreso, FechaIngreso, MatadosIngreso y NextRecompensa.
-        '23/01/2007 Pablo (ToxicWaste) - Quito CriminalesMatados de Stats porque era redundante.
-        '*************************************************
-        Dim LoopC As Long
-
-        Dim ln    As String
-
-100     UserList(UserIndex).Faccion.Status = CByte(UserFile.GetValue("FACCIONES", "Status"))
-102     UserList(UserIndex).Faccion.ArmadaReal = CByte(UserFile.GetValue("FACCIONES", "EjercitoReal"))
-104     UserList(UserIndex).Faccion.FuerzasCaos = CByte(UserFile.GetValue("FACCIONES", "EjercitoCaos"))
-106     UserList(UserIndex).Faccion.ciudadanosMatados = CLng(UserFile.GetValue("FACCIONES", "CiudMatados"))
-108     UserList(UserIndex).Faccion.CriminalesMatados = CLng(UserFile.GetValue("FACCIONES", "CrimMatados"))
-110     UserList(UserIndex).Faccion.RecibioArmaduraCaos = CByte(UserFile.GetValue("FACCIONES", "rArCaos"))
-112     UserList(UserIndex).Faccion.RecibioArmaduraReal = CByte(UserFile.GetValue("FACCIONES", "rArReal"))
-114     UserList(UserIndex).Faccion.RecibioExpInicialCaos = CByte(UserFile.GetValue("FACCIONES", "rExCaos"))
-116     UserList(UserIndex).Faccion.RecibioExpInicialReal = CByte(UserFile.GetValue("FACCIONES", "rExReal"))
-118     UserList(UserIndex).Faccion.RecompensasCaos = CLng(UserFile.GetValue("FACCIONES", "recCaos"))
-120     UserList(UserIndex).Faccion.RecompensasReal = CLng(UserFile.GetValue("FACCIONES", "recReal"))
-122     UserList(UserIndex).Faccion.Reenlistadas = CByte(UserFile.GetValue("FACCIONES", "Reenlistadas"))
-124     UserList(UserIndex).Faccion.NivelIngreso = CInt(UserFile.GetValue("FACCIONES", "NivelIngreso"))
-126     UserList(UserIndex).Faccion.FechaIngreso = UserFile.GetValue("FACCIONES", "FechaIngreso")
-128     UserList(UserIndex).Faccion.MatadosIngreso = CInt(UserFile.GetValue("FACCIONES", "MatadosIngreso"))
-130     UserList(UserIndex).Faccion.NextRecompensa = CInt(UserFile.GetValue("FACCIONES", "NextRecompensa"))
-
-132     UserList(UserIndex).flags.Muerto = CByte(UserFile.GetValue("FLAGS", "Muerto"))
-134     UserList(UserIndex).flags.Escondido = CByte(UserFile.GetValue("FLAGS", "Escondido"))
-
-136     UserList(UserIndex).flags.Hambre = CByte(UserFile.GetValue("FLAGS", "Hambre"))
-138     UserList(UserIndex).flags.Sed = CByte(UserFile.GetValue("FLAGS", "Sed"))
-140     UserList(UserIndex).flags.Desnudo = CByte(UserFile.GetValue("FLAGS", "Desnudo"))
-142     UserList(UserIndex).flags.Navegando = CByte(UserFile.GetValue("FLAGS", "Navegando"))
-144     UserList(UserIndex).flags.Envenenado = CByte(UserFile.GetValue("FLAGS", "Envenenado"))
-146     UserList(UserIndex).flags.Paralizado = CByte(UserFile.GetValue("FLAGS", "Paralizado"))
-148     UserList(UserIndex).flags.Incinerado = CByte(UserFile.GetValue("FLAGS", "Incinerado"))
-150     UserList(UserIndex).flags.Inmovilizado = CByte(UserFile.GetValue("FLAGS", "Inmovilizado"))
-
-152     UserList(UserIndex).flags.ScrollExp = CSng(UserFile.GetValue("FLAGS", "ScrollExp"))
-154     UserList(UserIndex).flags.ScrollOro = CSng(UserFile.GetValue("FLAGS", "ScrollOro"))
-
-156     If UserList(UserIndex).flags.Paralizado = 1 Then
-158         UserList(UserIndex).Counters.Paralisis = IntervaloParalizado
-
-        End If
-
-162     If UserList(UserIndex).flags.Inmovilizado = 1 Then
-164         UserList(UserIndex).Counters.Inmovilizado = 20
-
-        End If
-
-166     UserList(UserIndex).Counters.Pena = CLng(UserFile.GetValue("COUNTERS", "Pena"))
-
-168     UserList(UserIndex).Counters.ScrollExperiencia = CLng(UserFile.GetValue("COUNTERS", "ScrollExperiencia"))
-170     UserList(UserIndex).Counters.ScrollOro = CLng(UserFile.GetValue("COUNTERS", "ScrollOro"))
-
-172     UserList(UserIndex).Counters.Oxigeno = CLng(UserFile.GetValue("COUNTERS", "Oxigeno"))
-
-174     UserList(UserIndex).MENSAJEINFORMACION = UserFile.GetValue("INIT", "MENSAJEINFORMACION")
-
-176     UserList(UserIndex).genero = UserFile.GetValue("INIT", "Genero")
-178     UserList(UserIndex).clase = UserFile.GetValue("INIT", "Clase")
-180     UserList(UserIndex).raza = UserFile.GetValue("INIT", "Raza")
-182     UserList(UserIndex).Hogar = UserFile.GetValue("INIT", "Hogar")
-184     UserList(UserIndex).Char.Heading = CInt(UserFile.GetValue("INIT", "Heading"))
-
-186     UserList(UserIndex).OrigChar.Head = CInt(UserFile.GetValue("INIT", "Head"))
-188     UserList(UserIndex).OrigChar.Body = CInt(UserFile.GetValue("INIT", "Body"))
-190     UserList(UserIndex).OrigChar.WeaponAnim = CInt(UserFile.GetValue("INIT", "Arma"))
-192     UserList(UserIndex).OrigChar.ShieldAnim = CInt(UserFile.GetValue("INIT", "Escudo"))
-194     UserList(UserIndex).OrigChar.CascoAnim = CInt(UserFile.GetValue("INIT", "Casco"))
-
-        #If ConUpTime Then
-196         UserList(UserIndex).UpTime = CLng(UserFile.GetValue("INIT", "UpTime"))
-        #End If
-
-198     UserList(UserIndex).OrigChar.Heading = UserList(UserIndex).Char.Heading
-
-200     If UserList(UserIndex).flags.Muerto = 0 Then
-202         UserList(UserIndex).Char = UserList(UserIndex).OrigChar
-        Else
-204         UserList(UserIndex).Char.Body = iCuerpoMuerto
-206         UserList(UserIndex).Char.Head = 0
-208         UserList(UserIndex).Char.WeaponAnim = NingunArma
-210         UserList(UserIndex).Char.ShieldAnim = NingunEscudo
-212         UserList(UserIndex).Char.CascoAnim = NingunCasco
-
-        End If
-
-214     UserList(UserIndex).Desc = UserFile.GetValue("INIT", "Desc")
-
-216     UserList(UserIndex).flags.BanMotivo = UserFile.GetValue("BAN", "BanMotivo")
-218     UserList(UserIndex).flags.Montado = CByte(UserFile.GetValue("FLAGS", "Montado"))
-220     UserList(UserIndex).flags.VecesQueMoriste = CLng(UserFile.GetValue("FLAGS", "VecesQueMoriste"))
-
-222     UserList(UserIndex).flags.MinutosRestantes = CLng(UserFile.GetValue("FLAGS", "MinutosRestantes"))
-224     UserList(UserIndex).flags.Silenciado = CLng(UserFile.GetValue("FLAGS", "Silenciado"))
-226     UserList(UserIndex).flags.SegundosPasados = CLng(UserFile.GetValue("FLAGS", "SegundosPasados"))
-
-        'CASAMIENTO LADDER
-228     UserList(UserIndex).flags.Casado = CInt(UserFile.GetValue("FLAGS", "CASADO"))
-230     UserList(UserIndex).flags.Pareja = UserFile.GetValue("FLAGS", "PAREJA")
-
-232     UserList(UserIndex).Pos.Map = CInt(ReadField(1, UserFile.GetValue("INIT", "Position"), 45))
-234     UserList(UserIndex).Pos.X = CInt(ReadField(2, UserFile.GetValue("INIT", "Position"), 45))
-236     UserList(UserIndex).Pos.Y = CInt(ReadField(3, UserFile.GetValue("INIT", "Position"), 45))
-
-238     UserList(UserIndex).Invent.NroItems = CInt(UserFile.GetValue("Inventory", "CantidadItems"))
-
-        '[KEVIN]--------------------------------------------------------------------
-        '***********************************************************************************
-240     UserList(UserIndex).BancoInvent.NroItems = CInt(UserFile.GetValue("BancoInventory", "CantidadItems"))
-
-        'Lista de objetos del banco
-242     For LoopC = 1 To MAX_BANCOINVENTORY_SLOTS
-244         ln = UserFile.GetValue("BancoInventory", "Obj" & LoopC)
-246         UserList(UserIndex).BancoInvent.Object(LoopC).ObjIndex = CInt(ReadField(1, ln, 45))
-248         UserList(UserIndex).BancoInvent.Object(LoopC).Amount = CInt(ReadField(2, ln, 45))
-250     Next LoopC
-
-        '------------------------------------------------------------------------------------
-        '[/KEVIN]*****************************************************************************
-
-        'Lista de objetos
-252     For LoopC = 1 To UserList(UserIndex).CurrentInventorySlots
-254         ln = UserFile.GetValue("Inventory", "Obj" & LoopC)
-256         UserList(UserIndex).Invent.Object(LoopC).ObjIndex = CInt(ReadField(1, ln, 45))
-258         UserList(UserIndex).Invent.Object(LoopC).Amount = CInt(ReadField(2, ln, 45))
-260         UserList(UserIndex).Invent.Object(LoopC).Equipped = CByte(ReadField(3, ln, 45))
-262     Next LoopC
-
-264     UserList(UserIndex).Invent.WeaponEqpSlot = CByte(UserFile.GetValue("Inventory", "WeaponEqpSlot"))
-266     UserList(UserIndex).Invent.HerramientaEqpSlot = CByte(UserFile.GetValue("Inventory", "HerramientaEqpSlot"))
-268     UserList(UserIndex).Invent.ArmourEqpSlot = CByte(UserFile.GetValue("Inventory", "ArmourEqpSlot"))
-270     UserList(UserIndex).Invent.EscudoEqpSlot = CByte(UserFile.GetValue("Inventory", "EscudoEqpSlot"))
-272     UserList(UserIndex).Invent.CascoEqpSlot = CByte(UserFile.GetValue("Inventory", "CascoEqpSlot"))
-274     UserList(UserIndex).Invent.BarcoSlot = CByte(UserFile.GetValue("Inventory", "BarcoSlot"))
-276     UserList(UserIndex).Invent.MonturaSlot = CByte(UserFile.GetValue("Inventory", "MonturaSlot"))
-278     UserList(UserIndex).Invent.MunicionEqpSlot = CByte(UserFile.GetValue("Inventory", "MunicionSlot"))
-280     UserList(UserIndex).Invent.DañoMagicoEqpSlot = CByte(UserFile.GetValue("Inventory", "DMSlot"))
-282     UserList(UserIndex).Invent.ResistenciaEqpSlot = CByte(UserFile.GetValue("Inventory", "RMSlot"))
-284     UserList(UserIndex).Invent.MagicoSlot = CByte(UserFile.GetValue("Inventory", "MagicoSlot"))
-286     UserList(UserIndex).Invent.NudilloSlot = CByte(UserFile.GetValue("Inventory", "NudilloEqpSlot"))
-
-288     UserList(UserIndex).ChatCombate = CByte(UserFile.GetValue("BINDKEYS", "ChatCombate"))
-290     UserList(UserIndex).ChatGlobal = CByte(UserFile.GetValue("BINDKEYS", "ChatGlobal"))
-
-292     UserList(UserIndex).Correo.CantCorreo = CByte(UserFile.GetValue("CORREO", "CantCorreo"))
-294     UserList(UserIndex).Correo.NoLeidos = CByte(UserFile.GetValue("CORREO", "NoLeidos"))
-
-296     For LoopC = 1 To UserList(UserIndex).Correo.CantCorreo
-298         UserList(UserIndex).Correo.Mensaje(LoopC).Remitente = UserFile.GetValue("CORREO", "REMITENTE" & LoopC)
-300         UserList(UserIndex).Correo.Mensaje(LoopC).Mensaje = UserFile.GetValue("CORREO", "MENSAJE" & LoopC)
-302         UserList(UserIndex).Correo.Mensaje(LoopC).Item = UserFile.GetValue("CORREO", "Item" & LoopC)
-304         UserList(UserIndex).Correo.Mensaje(LoopC).ItemCount = CByte(UserFile.GetValue("CORREO", "ItemCount" & LoopC))
-306         UserList(UserIndex).Correo.Mensaje(LoopC).Fecha = UserFile.GetValue("CORREO", "DATE" & LoopC)
-308         UserList(UserIndex).Correo.Mensaje(LoopC).Leido = CByte(UserFile.GetValue("CORREO", "LEIDO" & LoopC))
-310     Next LoopC
-
-        'Logros Ladder
-312     UserList(UserIndex).UserLogros = UserFile.GetValue("LOGROS", "UserLogros")
-314     UserList(UserIndex).NPcLogros = UserFile.GetValue("LOGROS", "NPcLogros")
-316     UserList(UserIndex).LevelLogros = UserFile.GetValue("LOGROS", "LevelLogros")
-        'Logros Ladder
-
-318     ln = UserFile.GetValue("Guild", "GUILDINDEX")
-
-320     If IsNumeric(ln) Then
-322         UserList(UserIndex).GuildIndex = CInt(ln)
-        Else
-324         UserList(UserIndex).GuildIndex = 0
-
-        End If
-
-        
-        Exit Sub
-
-LoadUserInit_Err:
-326     Call RegistrarError(Err.Number, Err.Description, "ES.LoadUserInit", Erl)
-328     Resume Next
-        
-End Sub
-
 Function GetVar(ByVal File As String, ByVal Main As String, ByVal Var As String, Optional EmptySpaces As Long = 1024) As String
         
         On Error GoTo GetVar_Err
@@ -2141,7 +1950,7 @@ Sub LoadMapData()
 
 man:
 134     Call MsgBox("Error durante la carga de mapas, el mapa " & Map & " contiene errores")
-136     Call LogError(Date & " " & Err.Description & " " & Err.HelpContext & " " & Err.HelpFile & " " & Err.Source)
+136     Call LogError(Date & " " & Err.Description & " " & Err.HelpContext & " " & Err.HelpFile & " " & Err.source)
 
 End Sub
 
@@ -2496,7 +2305,6 @@ Sub LoadSini()
 142     EnTesting = val(Lector.GetValue("INIT", "Testing"))
     
         ' Database
-144     Database_Enabled = CBool(val(Lector.GetValue("DATABASE", "Enabled")))
 146     Database_DataSource = Lector.GetValue("DATABASE", "DSN")
 148     Database_Host = Lector.GetValue("DATABASE", "Host")
 150     Database_Name = Lector.GetValue("DATABASE", "Name")
@@ -2518,7 +2326,6 @@ Sub LoadSini()
         End If
 
 178     Call CargarCiudades
-182     Call ConsultaPopular.LoadData
 
 184     Set Lector = Nothing
 

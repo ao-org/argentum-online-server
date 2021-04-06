@@ -9,7 +9,6 @@ Attribute VB_Name = "modDatabase"
 
 Option Explicit
 
-Public Database_Enabled     As Boolean
 Public Database_DataSource  As String
 Public Database_Host        As String
 Public Database_Name        As String
