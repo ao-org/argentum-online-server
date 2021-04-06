@@ -1505,7 +1505,7 @@ Public Function ItemNoEsDeMapa(ByVal index As Integer) As Boolean
         On Error GoTo ItemNoEsDeMapa_Err
         
 
-100     ItemNoEsDeMapa = ObjData(index).OBJType <> eOBJType.otPuertas And ObjData(index).OBJType <> eOBJType.otForos And ObjData(index).OBJType <> eOBJType.otCarteles And ObjData(index).OBJType <> eOBJType.otArboles And ObjData(index).OBJType <> eOBJType.otYacimiento And ObjData(index).OBJType <> eOBJType.otTeleport And ObjData(index).OBJType <> eOBJType.OtCorreo And ObjData(index).OBJType <> eOBJType.OtDecoraciones
+100     ItemNoEsDeMapa = ObjData(index).OBJType <> eOBJType.otPuertas And ObjData(index).OBJType <> eOBJType.otForos And ObjData(index).OBJType <> eOBJType.otCarteles And ObjData(index).OBJType <> eOBJType.otArboles And ObjData(index).OBJType <> eOBJType.otYacimiento And ObjData(index).OBJType <> eOBJType.otTeleport And ObjData(index).OBJType <> eOBJType.OtDecoraciones
 
         
         Exit Function
@@ -1522,7 +1522,7 @@ Public Function MostrarCantidad(ByVal index As Integer) As Boolean
         
         On Error GoTo MostrarCantidad_Err
         
-100     MostrarCantidad = ObjData(index).OBJType <> eOBJType.otPuertas And ObjData(index).OBJType <> eOBJType.otForos And ObjData(index).OBJType <> eOBJType.otCarteles And ObjData(index).OBJType <> eOBJType.otYacimiento And ObjData(index).OBJType <> eOBJType.otArboles And ObjData(index).OBJType <> eOBJType.OtCorreo And ObjData(index).OBJType <> eOBJType.otTeleport
+100     MostrarCantidad = ObjData(index).OBJType <> eOBJType.otPuertas And ObjData(index).OBJType <> eOBJType.otForos And ObjData(index).OBJType <> eOBJType.otCarteles And ObjData(index).OBJType <> eOBJType.otYacimiento And ObjData(index).OBJType <> eOBJType.otArboles And ObjData(index).OBJType <> eOBJType.otTeleport
 
         
         Exit Function

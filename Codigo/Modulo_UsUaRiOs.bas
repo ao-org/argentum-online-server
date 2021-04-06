@@ -1893,16 +1893,6 @@ Sub SendUserStatsTxtOFF(ByVal sendIndex As Integer, ByVal nombre As String)
     response = response & "Menor Golpe/Mayor Golpe: " & QueryData!min_hit & "/" & QueryData!max_hit & vbNewLine
     response = response & "Muertes: " & QueryData!deaths & vbNewLine
     response = response & "Asesinatos: " & QueryData!killed_users & vbNewLine
-
-    #If ConUpTime Then
-        Dim TempSecs As Long
-        Dim TempStr  As String
-
-        TempSecs = GetVar(CharPath & nombre & ".chr", "INIT", "UpTime")
-        TempStr = (TempSecs \ 86400) & " Dias, " & ((TempSecs Mod 86400) \ 3600) & " Horas, " & ((TempSecs Mod 86400) Mod 3600) \ 60 & " Minutos, " & (((TempSecs Mod 86400) Mod 3600) Mod 60) & " Segundos."
-        
-        response = response & "Tiempo conectado: " & TempStr & vbNewLine
-    #End If
     
     Call WriteConsoleMsg(sendIndex, response, FontTypeNames.FONTTYPE_INFO)
     

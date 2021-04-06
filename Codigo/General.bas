@@ -709,8 +709,6 @@ Sub Main()
             .Invasion.Enabled = True
         End With
     
-260     Subasta.SubastaHabilitada = True
-262     Subasta.HaySubastaActiva = False
 264     Call ResetMeteo
     
 266     frmCargando.Label1(2).Caption = "Conectando base de datos y limpiando usuarios logueados"
@@ -2324,16 +2322,6 @@ Sub PasarSegundo()
                 End If
             End If
         
-210         If UserList(i).flags.Subastando Then
-212             UserList(i).Counters.TiempoParaSubastar = UserList(i).Counters.TiempoParaSubastar - 1
-
-214             If UserList(i).Counters.TiempoParaSubastar = 0 Then
-216                 Call CancelarSubasta
-
-                End If
-
-            End If
-
 218         If UserList(i).flags.UserLogged Then
 
                 'Cerrar usuario

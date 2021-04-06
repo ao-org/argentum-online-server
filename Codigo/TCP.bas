@@ -586,12 +586,7 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal 
         
 228         .ChatCombate = 1
 230         .ChatGlobal = 1
-        
-            'Resetamos CORREO
-232         .Correo.CantCorreo = 0
-234         .Correo.NoLeidos = 0
-            'Resetamos CORREO
-        
+                
 236         .Pos.Map = 37
 238         .Pos.X = 76
 240         .Pos.Y = 82
@@ -1082,11 +1077,6 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
         
 240         Call EnviarLlaves(UserIndex)
 
-242         If .Correo.NoLeidos > 0 Then
-244             Call WriteCorreoPicOn(UserIndex)
-
-            End If
-
 246         If .flags.Paralizado Then
 248             Call WriteParalizeOK(UserIndex)
 
@@ -1391,14 +1381,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
             'Call Statistics.UserConnected(UserIndex)
 
 564         Call MostrarNumUsers
-            'Call SendData(SendTarget.ToPCArea, userindex, PrepareMessageParticleFXToFloor(.Pos.X, .Pos.y, ParticulasIndex.LogeoLevel1, 400))
-            'Call SaveUser(UserIndex, CharPath & UCase$(.name) & ".chr")
         
-            ' n = FreeFile
-            ' Open App.Path & "\logs\numusers.log" For Output As n
-            'Print #n, NumUsers
-            ' Close #n
-
         End With
     
         Exit Sub
@@ -1520,7 +1503,6 @@ Sub ResetContadores(ByVal UserIndex As Integer)
 164         .ScrollExperiencia = 0
 166         .ScrollOro = 0
 168         .Oxigeno = 0
-170         .TiempoParaSubastar = 0
 172         .TimerPerteneceNpc = 0
 174         .TimerPuedeSerAtacado = 0
 176         .TiempoDeInmunidad = 0
@@ -1612,21 +1594,6 @@ Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
 130         .Hogar = 0
 132         .raza = 0
 134         .EmpoCont = 0
-        
-            'Ladder     Reseteo de Correos
-136         .Correo.CantCorreo = 0
-138         .Correo.NoLeidos = 0
-        
-140         For LoopC = 1 To MAX_CORREOS_SLOTS
-142             .Correo.Mensaje(LoopC).Remitente = ""
-144             .Correo.Mensaje(LoopC).Mensaje = ""
-146             .Correo.Mensaje(LoopC).Item = 0
-148             .Correo.Mensaje(LoopC).ItemCount = 0
-150             .Correo.Mensaje(LoopC).Fecha = ""
-152             .Correo.Mensaje(LoopC).Leido = 0
-154         Next LoopC
-
-            'Ladder     Reseteo de Correos
         
 156         With .Stats
 158             .InventLevel = 0
@@ -1768,7 +1735,6 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 216         .UsandoMacro = False
 218         .pregunta = 0
 
-222         .Subastando = False
 224         .Paraliza = 0
 226         .Envenena = 0
 228         .NoPalabrasMagicas = 0
@@ -2127,14 +2093,7 @@ Sub CloseUser(ByVal UserIndex As Integer)
         
             'Le devolvemos el body y head originales
 186         If .flags.AdminInvisible = 1 Then Call DoAdminInvisible(UserIndex)
-        
-188         errordesc = "ERROR AL CANCELAR SUBASTA"
-    
-190         If .flags.Subastando = True Then
-192             Call CancelarSubasta
-    
-            End If
-        
+                
 194         errordesc = "ERROR AL BORRAR INDEX DE TORNEO"
     
 196         If .flags.EnTorneo = True Then

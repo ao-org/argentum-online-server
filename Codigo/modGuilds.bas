@@ -656,11 +656,11 @@ m_EstadoPermiteEntrar_Err:
 
 End Function
 
-Public Function String2Alineacion(ByRef s As String) As ALINEACION_GUILD
+Public Function String2Alineacion(ByRef S As String) As ALINEACION_GUILD
         
         On Error GoTo String2Alineacion_Err
 
-100     Select Case s
+100     Select Case S
 
             Case "Ciudadano"
 102             String2Alineacion = ALINEACION_CIUDA
@@ -733,12 +733,12 @@ Relacion2String_Err:
         
 End Function
 
-Public Function String2Relacion(ByVal s As String) As RELACIONES_GUILD
+Public Function String2Relacion(ByVal S As String) As RELACIONES_GUILD
         
         On Error GoTo String2Relacion_Err
         
 
-100     Select Case UCase$(Trim$(s))
+100     Select Case UCase$(Trim$(S))
 
             Case vbNullString, "P"
 102             String2Relacion = RELACIONES_GUILD.PAZ
@@ -949,48 +949,6 @@ errh:
 116     Resume proximo
 
 End Sub
-
-Private Function GetGuildIndexFromChar(ByRef PlayerName As String) As Integer
-        
-        On Error GoTo GetGuildIndexFromChar_Err
-        
-
-        'aca si que vamos a violar las capas deliveradamente ya que
-        'visual basic no permite declarar metodos de clase
-        Dim Temps As String
-
-100     If InStrB(PlayerName, "\") <> 0 Then
-102         PlayerName = Replace(PlayerName, "\", vbNullString)
-
-        End If
-
-104     If InStrB(PlayerName, "/") <> 0 Then
-106         PlayerName = Replace(PlayerName, "/", vbNullString)
-
-        End If
-
-108     If InStrB(PlayerName, ".") <> 0 Then
-110         PlayerName = Replace(PlayerName, ".", vbNullString)
-
-        End If
-
-112     Temps = GetVar(CharPath & PlayerName & ".chr", "GUILD", "GUILDINDEX")
-
-114     If IsNumeric(Temps) Then
-116         GetGuildIndexFromChar = CInt(Temps)
-        Else
-118         GetGuildIndexFromChar = 0
-
-        End If
-
-        
-        Exit Function
-
-GetGuildIndexFromChar_Err:
-120     Call RegistrarError(Err.Number, Err.Description, "modGuilds.GetGuildIndexFromChar", Erl)
-122     Resume Next
-        
-End Function
 
 Public Function GuildIndex(ByRef GuildName As String) As Integer
         
