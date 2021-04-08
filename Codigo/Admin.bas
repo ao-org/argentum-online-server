@@ -482,7 +482,7 @@ End Function
 
 Public Function PersonajeExiste(ByVal name As String) As Boolean
 
-    PersonajeExiste = GetUserValue(name, "COUNT(*)") > 0
+    PersonajeExiste = GetUserValue(name, "COUNT(1)") > 0
         
 End Function
 
