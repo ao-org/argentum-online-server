@@ -94,12 +94,12 @@ Public Sub InitializeFromRecordset(ByRef QueryData As ADODB.Recordset)
     On Error GoTo Inicializar_Err
 
     p_GuildId = QueryData!Id
-    p_GuildName = QueryData!name
+    p_GuildName = QueryData!Name
     p_FounderId = QueryData!FounderId
     p_FounderName = QueryData!FounderName
     p_LeaderId = QueryData!LeaderId
     p_LeaderName = QueryData!LeaderName
-    p_Level = QueryData!level
+    p_Level = QueryData!Level
     p_Experience = QueryData!Experience
     p_Alignment = QueryData!Alignment
     p_Description = QueryData!Description
@@ -316,35 +316,7 @@ Public Sub NuevoAspirante(ByRef nombre As String, ByRef Peticion As String)
         
         On Error GoTo NuevoAspirante_Err
         
-
-        Dim i     As Integer
-
-        Dim OldQ  As String
-
-        Dim OldQI As Integer
-
-100     OldQ = GetVar(SOLICITUDESFILE, "INIT", "CantSolicitudes")
-
-102     If IsNumeric(OldQ) Then
-104         OldQI = CInt(OldQ)
-        Else
-106         OldQI = 0
-
-        End If
-
-108     For i = 1 To MAXASPIRANTES
-
-110         If GetVar(SOLICITUDESFILE, "SOLICITUD" & i, "Nombre") = vbNullString Then
-112             Call WriteVar(SOLICITUDESFILE, "SOLICITUD" & i, "Nombre", nombre)
-114             Call WriteVar(SOLICITUDESFILE, "SOLICITUD" & i, "Detalle", IIf(Trim$(Peticion) = vbNullString, "Peticion vacia", Peticion))
-116             Call WriteVar(SOLICITUDESFILE, "INIT", "CantSolicitudes", OldQI + 1)
-118             Call SaveUserGuildAspirant(nombre, p_GuildNumber)
-                Exit Sub
-
-            End If
-
-120     Next i
-
+        'TODO: FIXME
         
         Exit Sub
 
@@ -359,47 +331,7 @@ Public Sub RetirarAspirante(ByRef nombre As String, ByRef NroAspirante As Intege
         On Error GoTo RetirarAspirante_Err
         
 
-        Dim OldQ    As String
-
-        Dim OldQI   As String
-
-        Dim Pedidos As String
-
-        Dim i       As Integer
-
-100     OldQ = GetVar(SOLICITUDESFILE, "INIT", "CantSolicitudes")
-
-102     If IsNumeric(OldQ) Then
-104         OldQI = CInt(OldQ)
-        Else
-106         OldQI = 1
-
-        End If
-
-108     Call SaveUserGuildAspirant(nombre, 0)
-110     Pedidos = GetUserGuildPedidos(nombre)
-
-112     If Not InStr(1, Pedidos, p_GuildName, vbTextCompare) > 0 Then
-114         If LenB(Pedidos) <> 0 Then
-116             Pedidos = Pedidos & ","
-
-            End If
-
-118         Pedidos = Pedidos & p_GuildName
-120         Call SaveUserGuildPedidos(nombre, Pedidos)
-
-        End If
-    
-122     Call WriteVar(SOLICITUDESFILE, "INIT", "CantSolicitudes", OldQI - 1)
-
-124     For i = NroAspirante To modGuilds.MAXASPIRANTES - 1
-126         Call WriteVar(SOLICITUDESFILE, "SOLICITUD" & i, "Nombre", GetVar(SOLICITUDESFILE, "SOLICITUD" & (i + 1), "Nombre"))
-128         Call WriteVar(SOLICITUDESFILE, "SOLICITUD" & i, "Detalle", GetVar(SOLICITUDESFILE, "SOLICITUD" & (i + 1), "Detalle"))
-130     Next i
-    
-132     Call WriteVar(SOLICITUDESFILE, "SOLICITUD" & modGuilds.MAXASPIRANTES, "Nombre", vbNullString)
-134     Call WriteVar(SOLICITUDESFILE, "SOLICITUD" & modGuilds.MAXASPIRANTES, "Detalle", vbNullString)
-
+      'TODO: FIXME: haers
         
         Exit Sub
 
@@ -413,27 +345,12 @@ End Sub
 'DEFINICION DEL CLAN (CODEX Y NOTICIAS)
 '
 
-Public Function GetFechaFundacion() As String
-        
-        On Error GoTo GetFechaFundacion_Err
-        
-100     GetFechaFundacion = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Date")
-
-        
-        Exit Function
-
-GetFechaFundacion_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "clsClan.GetFechaFundacion", Erl)
-104     Resume Next
-        
-End Function
-
 
 Public Function GetURL() As String
         
         On Error GoTo GetURL_Err
         
-100     GetURL = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "URL")
+100     GetURL = "urlnovalida"
 
         
         Exit Function
@@ -448,9 +365,7 @@ Public Sub SetNivelDeClan(ByRef nivel As Byte)
         
         On Error GoTo SetNivelDeClan_Err
         
-100     Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "NivelDeClan", nivel)
 
-        
         Exit Sub
 
 SetNivelDeClan_Err:
@@ -463,10 +378,7 @@ End Sub
 Public Sub SetExpActual(ByRef Exp As Integer)
         
         On Error GoTo SetExpActual_Err
-        
-100     Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "ExpActual", Exp)
-
-        
+       
         Exit Sub
 
 SetExpActual_Err:
@@ -474,51 +386,6 @@ SetExpActual_Err:
 104     Resume Next
         
 End Sub
-
-Public Function GetExpActual() As Integer
-        
-        On Error GoTo GetExpActual_Err
-        
-100     GetExpActual = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "ExpActual")
-
-        
-        Exit Function
-
-GetExpActual_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "clsClan.GetExpActual", Erl)
-104     Resume Next
-        
-End Function
-
-Public Sub SetExpNecesaria(ByRef Exp As Integer)
-        
-        On Error GoTo SetExpNecesaria_Err
-        
-100     Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "ExpNecesaria", Exp)
-
-        
-        Exit Sub
-
-SetExpNecesaria_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "clsClan.SetExpNecesaria", Erl)
-104     Resume Next
-        
-End Sub
-
-Public Function GetExpNecesaria() As Integer
-        
-        On Error GoTo GetExpNecesaria_Err
-        
-100     GetExpNecesaria = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "ExpNecesaria")
-
-        
-        Exit Function
-
-GetExpNecesaria_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "clsClan.GetExpNecesaria", Erl)
-104     Resume Next
-        
-End Function
 
 Public Sub SetGuildNews(ByRef News As String)
         
@@ -528,7 +395,7 @@ Public Sub SetGuildNews(ByRef News As String)
     
 102     News = Left$(News, NEWSLENGTH)
     
-104     Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "GuildNews", News)
+104     'Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "GuildNews", News)
 
         
         Exit Sub
@@ -543,7 +410,7 @@ Public Function GetGuildNews() As String
         
         On Error GoTo GetGuildNews_Err
         
-100     GetGuildNews = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "GuildNews")
+100     'GetGuildNews = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "GuildNews")
 
         
         Exit Function
@@ -561,7 +428,7 @@ Public Sub SetDesc(ByRef Desc As String)
 100     Call ReplaceInvalidChars(Desc)
 102     Desc = Left$(Desc, DESCLENGTH)
     
-104     Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Desc", Desc)
+104     'Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Desc", Desc)
 
         
         Exit Sub
@@ -576,7 +443,7 @@ Public Function GetDesc() As String
         
         On Error GoTo GetDesc_Err
         
-100     GetDesc = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Desc")
+100     'GetDesc = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "Desc")
 
         
         Exit Function
@@ -600,8 +467,8 @@ Public Function EleccionesAbiertas() As Boolean
 
         Dim ee As String
 
-100     ee = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "EleccionesAbiertas")
-102     EleccionesAbiertas = (ee = "1")     'cualquier otra cosa da falso
+100     'ee = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "EleccionesAbiertas")
+102     'EleccionesAbiertas = (ee = "1")     'cualquier otra cosa da falso
 
         
         Exit Function
@@ -616,11 +483,7 @@ Public Sub AbrirElecciones()
         
         On Error GoTo AbrirElecciones_Err
         
-100     Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "EleccionesAbiertas", "1")
-102     Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "EleccionesFinalizan", DateAdd("d", 1, Now))
-104     Call WriteVar(VOTACIONESFILE, "INIT", "NumVotos", "0")
-
-        
+       
         Exit Sub
 
 AbrirElecciones_Err:
@@ -633,10 +496,7 @@ Private Sub CerrarElecciones()  'solo pueden cerrarse mediante recuento de votos
         
         On Error GoTo CerrarElecciones_Err
         
-100     Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "EleccionesAbiertas", "0")
-102     Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "EleccionesFinalizan", vbNullString)
-104     Call Kill(VOTACIONESFILE)   'borramos toda la evidencia ;-)
-
+100
         
         Exit Sub
 
@@ -650,16 +510,6 @@ Public Sub ContabilizarVoto(ByRef Votante As String, ByRef Votado As String)
         
         On Error GoTo ContabilizarVoto_Err
         
-
-        Dim q     As Integer
-
-        Dim Temps As String
-
-100     Temps = GetVar(VOTACIONESFILE, "INIT", "NumVotos")
-102     q = IIf(IsNumeric(Temps), CInt(Temps), 0)
-104     Call WriteVar(VOTACIONESFILE, "VOTOS", Votante, Votado)
-106     Call WriteVar(VOTACIONESFILE, "INIT", "NumVotos", CStr(q + 1))
-
         
         Exit Sub
 
@@ -673,9 +523,7 @@ Public Function YaVoto(ByRef Votante) As Boolean
         
         On Error GoTo YaVoto_Err
         
-100     YaVoto = ((LenB(Trim$(GetVar(VOTACIONESFILE, "VOTOS", Votante)))) <> 0)
-
-        
+100
         Exit Function
 
 YaVoto_Err:
@@ -686,61 +534,6 @@ End Function
 
 Private Function ContarVotos(ByRef CantGanadores As Integer) As String
 
-        Dim q     As Integer
-
-        Dim i     As Integer
-
-        Dim Temps As String
-
-        Dim tempV As String
-
-        Dim d     As diccionario
-
-        On Error GoTo errh
-
-100     ContarVotos = vbNullString
-102     CantGanadores = 0
-104     Temps = GetVar(MEMBERSFILE, "INIT", "NroMembers")
-106     q = IIf(IsNumeric(Temps), CInt(Temps), 0)
-
-108     If q > 0 Then
-            'el diccionario tiene clave el elegido y valor la #votos
-110         Set d = New diccionario
-        
-112         For i = 1 To q
-                'miembro del clan
-114             Temps = GetVar(MEMBERSFILE, "MEMBERS", "Member" & i)
-            
-                'a quienvoto
-116             tempV = GetVar(VOTACIONESFILE, "VOTOS", Temps)
-            
-                'si voto a alguien contabilizamos el voto
-118             If LenB(tempV) <> 0 Then
-120                 If Not IsNull(d.At(tempV)) Then  'cuantos votos tiene?
-122                     Call d.AtPut(tempV, CInt(d.At(tempV)) + 1)
-                    Else
-124                     Call d.AtPut(tempV, 1)
-
-                    End If
-
-                End If
-
-126         Next i
-    
-            'quien quedo con mas votos, y cuantos tuvieron esos votos?
-128         ContarVotos = d.MayorValor(CantGanadores)
-    
-130         Set d = Nothing
-
-        End If
-    
-        Exit Function
-errh:
-132     LogError ("clsClan.Contarvotos: " & Err.Description)
-
-134     If Not d Is Nothing Then Set d = Nothing
-136     ContarVotos = vbNullString
-
 End Function
 
 Public Function RevisarElecciones() As Boolean
@@ -748,64 +541,7 @@ Public Function RevisarElecciones() As Boolean
         On Error GoTo RevisarElecciones_Err
         
 
-        Dim FechaSufragio As Date
-
-        Dim Temps         As String
-
-        Dim Ganador       As String
-
-        Dim CantGanadores As Integer
-
-        Dim list()        As String
-
-        Dim i             As Long
-
-100     RevisarElecciones = False
-102     Temps = Trim$(GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "EleccionesFinalizan"))
-    
-104     If LenB(Temps) = 0 Then Exit Function
-
-106     If IsDate(Temps) Then
-108         FechaSufragio = CDate(Temps)
-
-110         If FechaSufragio < Now Then     'toca!
-112             Ganador = ContarVotos(CantGanadores)
-
-114             If CantGanadores > 1 Then
-                    'empate en la votacion
-116                 Call SetGuildNews("*Empate en la votacion. " & Ganador & " con " & CantGanadores & " votos ganaron las elecciones del clan.")
-118             ElseIf CantGanadores = 1 Then
-120                 list = Me.GetMemberList()
-                
-122                 For i = 0 To UBound(list())
-
-124                     If Ganador = list(i) Then Exit For
-126                 Next i
-                
-128                 If i <= UBound(list()) Then
-130                     Call SetGuildNews("*" & Ganador & " gano la eleccion del clan*")
-132                     Call Me.SetLeader(Ganador)
-134                     RevisarElecciones = True
-                    Else
-136                     Call SetGuildNews("*" & Ganador & " gano la eleccion del clan pero abandono las filas por lo que la votacion queda desierta*")
-
-                    End If
-
-                Else
-138                 Call SetGuildNews("*El periodo de votacion se cerro sin votos*")
-
-                End If
-            
-140             Call CerrarElecciones
-            
-            End If
-
-        Else
-142         Call LogError("clsClan.RevisarElecciones: tempS is not Date")
-
-        End If
-
-        
+              
         Exit Function
 
 RevisarElecciones_Err:
@@ -826,15 +562,6 @@ Public Function m_Iterador_ProximoUserIndex() As Integer
         On Error GoTo m_Iterador_ProximoUserIndex_Err
         
     
-100     If p_IteradorOnlineMembers < p_OnlineMembers.Count Then
-102         p_IteradorOnlineMembers = p_IteradorOnlineMembers + 1
-104         m_Iterador_ProximoUserIndex = p_OnlineMembers.Item(p_IteradorOnlineMembers)
-        Else
-106         p_IteradorOnlineMembers = 0
-108         m_Iterador_ProximoUserIndex = 0
-
-        End If
-
         
         Exit Function
 
@@ -849,15 +576,6 @@ Public Function Iterador_ProximoGM() As Integer
         On Error GoTo Iterador_ProximoGM_Err
         
     
-100     If p_IteradorOnlineGMs < p_GMsOnline.Count Then
-102         p_IteradorOnlineGMs = p_IteradorOnlineGMs + 1
-104         Iterador_ProximoGM = p_GMsOnline.Item(p_IteradorOnlineGMs)
-        Else
-106         p_IteradorOnlineGMs = 0
-108         Iterador_ProximoGM = 0
-
-        End If
-
         
         Exit Function
 
@@ -877,9 +595,7 @@ Public Sub ConectarGM(ByVal UserIndex As Integer)
         
         On Error GoTo ConectarGM_Err
         
-100     p_GMsOnline.Add UserIndex
-
-        
+100
         Exit Sub
 
 ConectarGM_Err:
@@ -892,17 +608,6 @@ Public Sub DesconectarGM(ByVal UserIndex As Integer)
         
         On Error GoTo DesconectarGM_Err
         
-
-        Dim i As Integer
-
-100     For i = 1 To p_GMsOnline.Count
-
-102         If p_GMsOnline.Item(i) = UserIndex Then
-104             p_GMsOnline.Remove (i)
-
-            End If
-
-106     Next i
 
         
         Exit Sub

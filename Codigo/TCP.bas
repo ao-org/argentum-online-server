@@ -1307,7 +1307,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
             Call ActualizarVelocidadDeUsuario(UserIndex)
         
 502         If .GuildIndex > 0 Then
-                modGuilds.memberConnected(UserIndex, .GuildIndex)
+                Call modGuilds.memberConnected(UserIndex, .GuildIndex)
 
             End If
         
@@ -1644,7 +1644,7 @@ Sub ResetGuildInfo(ByVal UserIndex As Integer)
         End If
 
 106     If UserList(UserIndex).GuildIndex > 0 Then
-108         Call modGuilds.m_DesconectarMiembroDelClan(UserIndex, UserList(UserIndex).GuildIndex)
+108         Call modGuilds.memberDisconnected(UserIndex, UserList(UserIndex).GuildIndex)
 
         End If
 
