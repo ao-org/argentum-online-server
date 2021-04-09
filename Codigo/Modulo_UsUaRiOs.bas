@@ -814,83 +814,79 @@ End Function
 
 Sub SendUserStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
         
-    On Error GoTo SendUserStatsTxt_Err
+        On Error GoTo SendUserStatsTxt_Err
         
-    Dim GuildI As Integer
-     
-    With UserList(UserIndex)
-        
-        Call WriteConsoleMsg(sendIndex, "Estadisticas de: " & .name, FontTypeNames.FONTTYPE_INFO)
-        Call WriteConsoleMsg(sendIndex, "Nivel: " & .Stats.ELV & "  EXP: " & .Stats.Exp & "/" & .Stats.ELU, FontTypeNames.FONTTYPE_INFO)
-        Call WriteConsoleMsg(sendIndex, "Salud: " & .Stats.MinHp & "/" & .Stats.MaxHp & "  Mana: " & .Stats.MinMAN & "/" & .Stats.MaxMAN & "  Vitalidad: " & .Stats.MinSta & "/" & .Stats.MaxSta, FontTypeNames.FONTTYPE_INFO)
+
+        Dim GuildI As Integer
+
+100     Call WriteConsoleMsg(sendIndex, "Estadisticas de: " & UserList(UserIndex).name, FontTypeNames.FONTTYPE_INFO)
+102     Call WriteConsoleMsg(sendIndex, "Nivel: " & UserList(UserIndex).Stats.ELV & "  EXP: " & UserList(UserIndex).Stats.Exp & "/" & UserList(UserIndex).Stats.ELU, FontTypeNames.FONTTYPE_INFO)
+104     Call WriteConsoleMsg(sendIndex, "Salud: " & UserList(UserIndex).Stats.MinHp & "/" & UserList(UserIndex).Stats.MaxHp & "  Mana: " & UserList(UserIndex).Stats.MinMAN & "/" & UserList(UserIndex).Stats.MaxMAN & "  Vitalidad: " & UserList(UserIndex).Stats.MinSta & "/" & UserList(UserIndex).Stats.MaxSta, FontTypeNames.FONTTYPE_INFO)
     
-        If .Invent.WeaponEqpObjIndex > 0 Then
-            Call WriteConsoleMsg(sendIndex, "Menor Golpe/Mayor Golpe: " & .Stats.MinHIT & "/" & .Stats.MaxHit & " (" & ObjData(.Invent.WeaponEqpObjIndex).MinHIT & "/" & ObjData(.Invent.WeaponEqpObjIndex).MaxHit & ")", FontTypeNames.FONTTYPE_INFO)
+106     If UserList(UserIndex).Invent.WeaponEqpObjIndex > 0 Then
+108         Call WriteConsoleMsg(sendIndex, "Menor Golpe/Mayor Golpe: " & UserList(UserIndex).Stats.MinHIT & "/" & UserList(UserIndex).Stats.MaxHit & " (" & ObjData(UserList(UserIndex).Invent.WeaponEqpObjIndex).MinHIT & "/" & ObjData(UserList(UserIndex).Invent.WeaponEqpObjIndex).MaxHit & ")", FontTypeNames.FONTTYPE_INFO)
         Else
-            Call WriteConsoleMsg(sendIndex, "Menor Golpe/Mayor Golpe: " & .Stats.MinHIT & "/" & .Stats.MaxHit, FontTypeNames.FONTTYPE_INFO)
+110         Call WriteConsoleMsg(sendIndex, "Menor Golpe/Mayor Golpe: " & UserList(UserIndex).Stats.MinHIT & "/" & UserList(UserIndex).Stats.MaxHit, FontTypeNames.FONTTYPE_INFO)
 
         End If
     
-        If .Invent.ArmourEqpObjIndex > 0 Then
-        
-            If .Invent.EscudoEqpObjIndex > 0 Then
-                Call WriteConsoleMsg(sendIndex, "(CUERPO) Min Def/Max Def: " & ObjData(.Invent.ArmourEqpObjIndex).MinDef + ObjData(.Invent.EscudoEqpObjIndex).MinDef & "/" & ObjData(.Invent.ArmourEqpObjIndex).MaxDef + ObjData(.Invent.EscudoEqpObjIndex).MaxDef, FontTypeNames.FONTTYPE_INFO)
+112     If UserList(UserIndex).Invent.ArmourEqpObjIndex > 0 Then
+114         If UserList(UserIndex).Invent.EscudoEqpObjIndex > 0 Then
+116             Call WriteConsoleMsg(sendIndex, "(CUERPO) Min Def/Max Def: " & ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).MinDef + ObjData(UserList(UserIndex).Invent.EscudoEqpObjIndex).MinDef & "/" & ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).MaxDef + ObjData(UserList(UserIndex).Invent.EscudoEqpObjIndex).MaxDef, FontTypeNames.FONTTYPE_INFO)
             Else
-                Call WriteConsoleMsg(sendIndex, "(CUERPO) Min Def/Max Def: " & ObjData(.Invent.ArmourEqpObjIndex).MinDef & "/" & ObjData(.Invent.ArmourEqpObjIndex).MaxDef, FontTypeNames.FONTTYPE_INFO)
+118             Call WriteConsoleMsg(sendIndex, "(CUERPO) Min Def/Max Def: " & ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).MinDef & "/" & ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).MaxDef, FontTypeNames.FONTTYPE_INFO)
 
             End If
 
         Else
-            Call WriteConsoleMsg(sendIndex, "(CUERPO) Min Def/Max Def: 0", FontTypeNames.FONTTYPE_INFO)
+120         Call WriteConsoleMsg(sendIndex, "(CUERPO) Min Def/Max Def: 0", FontTypeNames.FONTTYPE_INFO)
 
         End If
     
-        If .Invent.CascoEqpObjIndex > 0 Then
-            Call WriteConsoleMsg(sendIndex, "(CABEZA) Min Def/Max Def: " & ObjData(.Invent.CascoEqpObjIndex).MinDef & "/" & ObjData(.Invent.CascoEqpObjIndex).MaxDef, FontTypeNames.FONTTYPE_INFO)
+122     If UserList(UserIndex).Invent.CascoEqpObjIndex > 0 Then
+124         Call WriteConsoleMsg(sendIndex, "(CABEZA) Min Def/Max Def: " & ObjData(UserList(UserIndex).Invent.CascoEqpObjIndex).MinDef & "/" & ObjData(UserList(UserIndex).Invent.CascoEqpObjIndex).MaxDef, FontTypeNames.FONTTYPE_INFO)
         Else
-            Call WriteConsoleMsg(sendIndex, "(CABEZA) Min Def/Max Def: 0", FontTypeNames.FONTTYPE_INFO)
+126         Call WriteConsoleMsg(sendIndex, "(CABEZA) Min Def/Max Def: 0", FontTypeNames.FONTTYPE_INFO)
 
         End If
     
-        GuildI = .GuildIndex
+128     GuildI = UserList(UserIndex).GuildIndex
 
-        If GuildI > 0 Then
-        
-            Call WriteConsoleMsg(sendIndex, "Clan: " & modGuilds.GuildName(GuildI), FontTypeNames.FONTTYPE_INFO)
+130     If GuildI > 0 Then
+132         Call WriteConsoleMsg(sendIndex, "Clan: " & modGuilds.GuildName(GuildI), FontTypeNames.FONTTYPE_INFO)
 
-            If UCase$(modGuilds.GuildLeader(GuildI)) = UCase$(UserList(sendIndex).name) Then
-                Call WriteConsoleMsg(sendIndex, "Status: Lider", FontTypeNames.FONTTYPE_INFO)
+134         If UCase$(modGuilds.GuildLeader(GuildI)) = UCase$(UserList(sendIndex).name) Then
+136             Call WriteConsoleMsg(sendIndex, "Status: Lider", FontTypeNames.FONTTYPE_INFO)
+
             End If
 
             'guildpts no tienen objeto
         End If
     
         #If ConUpTime Then
+
             Dim TempDate As Date
+
             Dim TempSecs As Long
+
             Dim TempStr  As String
 
-            TempDate = Now - .LogOnTime
-            TempSecs = (.UpTime + (Abs(Day(TempDate) - 30) * 24 * 3600) + (Hour(TempDate) * 3600) + (Minute(TempDate) * 60) + Second(TempDate))
-            TempStr = (TempSecs \ 86400) & " Dias, " & ((TempSecs Mod 86400) \ 3600) & " Horas, " & ((TempSecs Mod 86400) Mod 3600) \ 60 & " Minutos, " & (((TempSecs Mod 86400) Mod 3600) Mod 60) & " Segundos."
-            
-            Call WriteConsoleMsg(sendIndex, "Logeado hace: " & Hour(TempDate) & ":" & Minute(TempDate) & ":" & Second(TempDate), FontTypeNames.FONTTYPE_INFO)
-            Call WriteConsoleMsg(sendIndex, "Total: " & TempStr, FontTypeNames.FONTTYPE_INFO)
+138         TempDate = Now - UserList(UserIndex).LogOnTime
+140         TempSecs = (UserList(UserIndex).UpTime + (Abs(Day(TempDate) - 30) * 24 * 3600) + (Hour(TempDate) * 3600) + (Minute(TempDate) * 60) + Second(TempDate))
+142         TempStr = (TempSecs \ 86400) & " Dias, " & ((TempSecs Mod 86400) \ 3600) & " Horas, " & ((TempSecs Mod 86400) Mod 3600) \ 60 & " Minutos, " & (((TempSecs Mod 86400) Mod 3600) Mod 60) & " Segundos."
+144         Call WriteConsoleMsg(sendIndex, "Logeado hace: " & Hour(TempDate) & ":" & Minute(TempDate) & ":" & Second(TempDate), FontTypeNames.FONTTYPE_INFO)
+146         Call WriteConsoleMsg(sendIndex, "Total: " & TempStr, FontTypeNames.FONTTYPE_INFO)
         #End If
 
-        Call WriteConsoleMsg(sendIndex, "Oro: " & .Stats.GLD & "  Posicion: " & .Pos.X & "," & .Pos.Y & " en mapa " & .Pos.Map, FontTypeNames.FONTTYPE_INFO)
-        Call WriteConsoleMsg(sendIndex, "Dados: " & .Stats.UserAtributos(eAtributos.Fuerza) & ", " & .Stats.UserAtributos(eAtributos.Agilidad) & ", " & .Stats.UserAtributos(eAtributos.Inteligencia) & ", " & .Stats.UserAtributos(eAtributos.Constitucion) & ", " & .Stats.UserAtributos(eAtributos.Carisma), FontTypeNames.FONTTYPE_INFO)
-        Call WriteConsoleMsg(sendIndex, "Muertes: " & .flags.VecesQueMoriste, FontTypeNames.FONTTYPE_INFO)
-        Call WriteConsoleMsg(sendIndex, "Asesinatos: " & .Stats.UsuariosMatados, FontTypeNames.FONTTYPE_INFO)
-        
-    End With
+148     Call WriteConsoleMsg(sendIndex, "Oro: " & UserList(UserIndex).Stats.GLD & "  Posicion: " & UserList(UserIndex).Pos.X & "," & UserList(UserIndex).Pos.Y & " en mapa " & UserList(UserIndex).Pos.Map, FontTypeNames.FONTTYPE_INFO)
+150     Call WriteConsoleMsg(sendIndex, "Dados: " & UserList(UserIndex).Stats.UserAtributos(eAtributos.Fuerza) & ", " & UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad) & ", " & UserList(UserIndex).Stats.UserAtributos(eAtributos.Inteligencia) & ", " & UserList(UserIndex).Stats.UserAtributos(eAtributos.Constitucion) & ", " & UserList(UserIndex).Stats.UserAtributos(eAtributos.Carisma), FontTypeNames.FONTTYPE_INFO)
+152     Call WriteConsoleMsg(sendIndex, "Veces que Moriste: " & UserList(UserIndex).flags.VecesQueMoriste, FontTypeNames.FONTTYPE_INFO)
 
-    Exit Sub
+        Exit Sub
 
 SendUserStatsTxt_Err:
-    Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.SendUserStatsTxt", Erl)
-
-    Resume Next
+154     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.SendUserStatsTxt", Erl)
+156     Resume Next
         
 End Sub
 
@@ -935,11 +931,70 @@ SendUserMiniStatsTxt_Err:
         
 End Sub
 
+Sub SendUserMiniStatsTxtFromChar(ByVal sendIndex As Integer, ByVal CharName As String)
+        
+        On Error GoTo SendUserMiniStatsTxtFromChar_Err
+        
+
+        '*************************************************
+        'Author: Unknown
+        'Last modified: 23/01/2007
+        'Shows the users Stats when the user is offline.
+        '23/01/2007 Pablo (ToxicWaste) - Agrego de funciones y mejora de distribución de parámetros.
+        '*************************************************
+        Dim CharFile      As String
+
+        Dim Ban           As String
+
+        Dim BanDetailPath As String
+
+100     BanDetailPath = App.Path & "\logs\" & "BanDetail.dat"
+102     CharFile = CharPath & CharName & ".chr"
+    
+104     If FileExist(CharFile) Then
+106         Call WriteConsoleMsg(sendIndex, "Pj: " & CharName, FontTypeNames.FONTTYPE_INFO)
+108         Call WriteConsoleMsg(sendIndex, "CiudadanosMatados: " & GetVar(CharFile, "FACCIONES", "CiudMatados") & " CriminalesMatados: " & GetVar(CharFile, "FACCIONES", "CrimMatados") & " UsuariosMatados: " & GetVar(CharFile, "MUERTES", "UserMuertes"), FontTypeNames.FONTTYPE_INFO)
+110         Call WriteConsoleMsg(sendIndex, "NPCsMuertos: " & GetVar(CharFile, "MUERTES", "NpcsMuertes"), FontTypeNames.FONTTYPE_INFO)
+112         Call WriteConsoleMsg(sendIndex, "Clase: " & ListaClases(GetVar(CharFile, "INIT", "Clase")), FontTypeNames.FONTTYPE_INFO)
+114         Call WriteConsoleMsg(sendIndex, "Pena: " & GetVar(CharFile, "COUNTERS", "PENA"), FontTypeNames.FONTTYPE_INFO)
+116         Call WriteConsoleMsg(sendIndex, "Oro en billetera: " & GetVar(CharFile, "STATS", "GLD"), FontTypeNames.FONTTYPE_INFO)
+118         Call WriteConsoleMsg(sendIndex, "Oro en boveda: " & GetVar(CharFile, "STATS", "BANCO"), FontTypeNames.FONTTYPE_INFO)
+120         Call WriteConsoleMsg(sendIndex, "Cuenta: " & GetVar(CharFile, "INIT", "Cuenta"), FontTypeNames.FONTTYPE_INFO)
+        
+122         If IsNumeric(GetVar(CharFile, "Guild", "GUILDINDEX")) Then
+124             Call WriteConsoleMsg(sendIndex, "Clan: " & modGuilds.GuildName(CInt(GetVar(CharFile, "Guild", "GUILDINDEX"))), FontTypeNames.FONTTYPE_INFO)
+
+            End If
+        
+126         Ban = GetVar(CharFile, "BAN", "BanMotivo")
+128         Call WriteConsoleMsg(sendIndex, "Ban: " & Ban, FontTypeNames.FONTTYPE_INFO)
+
+130         If Ban = "1" Then
+132             Call WriteConsoleMsg(sendIndex, "Ban por: " & GetVar(CharFile, CharName, "BannedBy") & " Motivo: " & GetVar(BanDetailPath, CharName, "Reason"), FontTypeNames.FONTTYPE_INFO)
+
+            End If
+        
+        Else
+134         Call WriteConsoleMsg(sendIndex, "El pj no existe: " & CharName, FontTypeNames.FONTTYPE_INFO)
+
+        End If
+
+        
+        Exit Sub
+
+SendUserMiniStatsTxtFromChar_Err:
+136     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.SendUserMiniStatsTxtFromChar", Erl)
+138     Resume Next
+        
+End Sub
 
 Sub SendUserInvTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
         
         On Error GoTo SendUserInvTxt_Err
     
+        
+
+        
 
         Dim j As Long
     
@@ -964,9 +1019,59 @@ SendUserInvTxt_Err:
         
 End Sub
 
-Sub SendUserSkills(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
+Sub SendUserInvTxtFromChar(ByVal sendIndex As Integer, ByVal CharName As String)
+        
+        On Error GoTo SendUserInvTxtFromChar_Err
+    
+        
+
+        
+
+        Dim j        As Long
+
+        Dim CharFile As String, Tmp As String
+
+        Dim ObjInd   As Long, ObjCant As Long
+    
+100     CharFile = CharPath & CharName & ".chr"
+    
+102     If FileExist(CharFile, vbNormal) Then
+104         Call WriteConsoleMsg(sendIndex, CharName, FontTypeNames.FONTTYPE_INFO)
+106         Call WriteConsoleMsg(sendIndex, " Tiene " & GetVar(CharFile, "Inventory", "CantidadItems") & " objetos.", FontTypeNames.FONTTYPE_INFO)
+        
+108         For j = 1 To MAX_INVENTORY_SLOTS
+110             Tmp = GetVar(CharFile, "Inventory", "Obj" & j)
+112             ObjInd = ReadField(1, Tmp, Asc("-"))
+114             ObjCant = ReadField(2, Tmp, Asc("-"))
+
+116             If ObjInd > 0 Then
+118                 Call WriteConsoleMsg(sendIndex, " Objeto " & j & " " & ObjData(ObjInd).name & " Cantidad:" & ObjCant, FontTypeNames.FONTTYPE_INFO)
+
+                End If
+
+120         Next j
+
+        Else
+122         Call WriteConsoleMsg(sendIndex, "Usuario inexistente: " & CharName, FontTypeNames.FONTTYPE_INFO)
+
+        End If
+    
+        
+        Exit Sub
+
+SendUserInvTxtFromChar_Err:
+124     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.SendUserInvTxtFromChar", Erl)
+
+        
+End Sub
+
+Sub SendUserSkillsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
         
         On Error GoTo SendUserSkillsTxt_Err
+    
+        
+
+        
 
         Dim j As Integer
 
@@ -1871,37 +1976,108 @@ CancelExit_Err:
         
 End Sub
 
-Sub SendUserStatsTxtOFF(ByVal sendIndex As Integer, ByVal nombre As String)
+'CambiarNick: Cambia el Nick de un slot.
+'
+'UserIndex: Quien ejecutó la orden
+'UserIndexDestino: SLot del usuario destino, a quien cambiarle el nick
+'NuevoNick: Nuevo nick de UserIndexDestino
+Public Sub CambiarNick(ByVal UserIndex As Integer, ByVal UserIndexDestino As Integer, ByVal NuevoNick As String)
         
-    On Error GoTo SendUserStatsTxtOFF_Err
-    
-    If Not PersonajeExiste(nombre) Then
-        Call WriteConsoleMsg(sendIndex, "No existen registros de este personaje", FontTypeNames.FONTTYPE_INFO)
+        On Error GoTo CambiarNick_Err
+        
+
+        Dim ViejoNick       As String
+
+        Dim ViejoCharBackup As String
+
+100     If UserList(UserIndexDestino).flags.UserLogged = False Then Exit Sub
+102     ViejoNick = UserList(UserIndexDestino).name
+
+104     If FileExist(CharPath & ViejoNick & ".chr", vbNormal) Then
+            'hace un backup del char
+106         ViejoCharBackup = CharPath & ViejoNick & ".chr.old-"
+108         Name CharPath & ViejoNick & ".chr" As ViejoCharBackup
+
+        End If
+
+        
         Exit Sub
 
-    End If
+CambiarNick_Err:
+110     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.CambiarNick", Erl)
+112     Resume Next
+        
+End Sub
+
+Sub SendUserStatsTxtOFF(ByVal sendIndex As Integer, ByVal nombre As String)
+        
+        On Error GoTo SendUserStatsTxtOFF_Err
+        
+
+100     If FileExist(CharPath & nombre & ".chr", vbArchive) = False Then
+102         Call WriteConsoleMsg(sendIndex, "Pj Inexistente", FontTypeNames.FONTTYPE_INFO)
+        Else
+104         Call WriteConsoleMsg(sendIndex, "Estadisticas de: " & nombre, FontTypeNames.FONTTYPE_INFO)
+106         Call WriteConsoleMsg(sendIndex, "Nivel: " & GetVar(CharPath & nombre & ".chr", "stats", "elv") & "  EXP: " & GetVar(CharPath & nombre & ".chr", "stats", "Exp") & "/" & GetVar(CharPath & nombre & ".chr", "stats", "elu"), FontTypeNames.FONTTYPE_INFO)
+108         Call WriteConsoleMsg(sendIndex, "Vitalidad: " & GetVar(CharPath & nombre & ".chr", "stats", "minsta") & "/" & GetVar(CharPath & nombre & ".chr", "stats", "maxSta"), FontTypeNames.FONTTYPE_INFO)
+110         Call WriteConsoleMsg(sendIndex, "Salud: " & GetVar(CharPath & nombre & ".chr", "stats", "MinHP") & "/" & GetVar(CharPath & nombre & ".chr", "Stats", "MaxHP") & "  Mana: " & GetVar(CharPath & nombre & ".chr", "Stats", "MinMAN") & "/" & GetVar(CharPath & nombre & ".chr", "Stats", "MaxMAN"), FontTypeNames.FONTTYPE_INFO)
     
-    Call MakeQuery("SELECT `level`, `exp`, `elu`, `min_sta`, `max_sta`, `min_hp`, `max_hp`, `min_man`, `max_man`, `min_hit`, `max_hit`, `deaths`, `killed_users` FROM `user` WHERE UPPER(name) = ?;", False, UCase$(nombre))
+112         Call WriteConsoleMsg(sendIndex, "Menor Golpe/Mayor Golpe: " & GetVar(CharPath & nombre & ".chr", "stats", "MaxHIT"), FontTypeNames.FONTTYPE_INFO)
     
-    Dim response As String
-    
-    response = "Estadisticas de: " & nombre & vbNewLine
-    response = response & "Nivel: " & QueryData!level & "  EXP: " & QueryData!Exp & "/" & QueryData!ELU & vbNewLine
-    response = response & "Vitalidad: " & QueryData!min_sta & "/" & QueryData!max_sta & vbNewLine
-    response = response & "Salud: " & QueryData!min_hp & "/" & QueryData!max_hp & vbNewLine
-    response = response & "Mana: " & QueryData!min_man & "/" & QueryData!max_man & vbNewLine
-    response = response & "Menor Golpe/Mayor Golpe: " & QueryData!min_hit & "/" & QueryData!max_hit & vbNewLine
-    response = response & "Muertes: " & QueryData!deaths & vbNewLine
-    response = response & "Asesinatos: " & QueryData!killed_users & vbNewLine
-    
-    Call WriteConsoleMsg(sendIndex, response, FontTypeNames.FONTTYPE_INFO)
-    
-    Exit Sub
+114         Call WriteConsoleMsg(sendIndex, "Oro: " & GetVar(CharPath & nombre & ".chr", "stats", "GLD"), FontTypeNames.FONTTYPE_INFO)
+116         Call WriteConsoleMsg(sendIndex, "Veces Que Murio: " & GetVar(CharPath & nombre & ".chr", "Flags", "VecesQueMoriste"), FontTypeNames.FONTTYPE_INFO)
+            #If ConUpTime Then
+
+                Dim TempSecs As Long
+
+                Dim TempStr  As String
+
+118             TempSecs = GetVar(CharPath & nombre & ".chr", "INIT", "UpTime")
+120             TempStr = (TempSecs \ 86400) & " Dias, " & ((TempSecs Mod 86400) \ 3600) & " Horas, " & ((TempSecs Mod 86400) Mod 3600) \ 60 & " Minutos, " & (((TempSecs Mod 86400) Mod 3600) Mod 60) & " Segundos."
+122             Call WriteConsoleMsg(sendIndex, "Tiempo Logeado: " & TempStr, FontTypeNames.FONTTYPE_INFO)
+            #End If
+
+        End If
+
+        
+        Exit Sub
 
 SendUserStatsTxtOFF_Err:
-    Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.SendUserStatsTxtOFF", Erl)
+124     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.SendUserStatsTxtOFF", Erl)
+126     Resume Next
+        
+End Sub
 
-    Resume Next
+Sub SendUserOROTxtFromChar(ByVal sendIndex As Integer, ByVal CharName As String)
+        
+        On Error GoTo SendUserOROTxtFromChar_Err
+    
+        
+
+        
+
+        Dim j        As Integer
+
+        Dim CharFile As String, Tmp As String
+
+        Dim ObjInd   As Long, ObjCant As Long
+
+100     CharFile = CharPath & CharName & ".chr"
+
+102     If FileExist(CharFile, vbNormal) Then
+104         Call WriteConsoleMsg(sendIndex, CharName, FontTypeNames.FONTTYPE_INFO)
+106         Call WriteConsoleMsg(sendIndex, " Tiene " & GetVar(CharFile, "STATS", "BANCO") & " en el banco.", FontTypeNames.FONTTYPE_INFO)
+        Else
+108         Call WriteConsoleMsg(sendIndex, "Usuario inexistente: " & CharName, FontTypeNames.FONTTYPE_INFO)
+
+        End If
+
+        
+        Exit Sub
+
+SendUserOROTxtFromChar_Err:
+110     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.SendUserOROTxtFromChar", Erl)
+
         
 End Sub
 

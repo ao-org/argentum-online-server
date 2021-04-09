@@ -9,6 +9,7 @@ Attribute VB_Name = "modDatabase"
 
 Option Explicit
 
+Public Database_Enabled     As Boolean
 Public Database_DataSource  As String
 Public Database_Host        As String
 Public Database_Name        As String
@@ -17,7 +18,7 @@ Public Database_Password    As String
 
 Private Database_Connection As ADODB.Connection
 Private Command             As ADODB.Command
-Public QueryData           As ADODB.Recordset
+Private QueryData           As ADODB.Recordset
 Private RecordsAffected     As Long
 
 Private QueryBuilder        As cStringBuilder
@@ -1114,7 +1115,7 @@ ErrorHandler:
 
 End Function
 
-Public Function GetDBValue(Tabla As String, ColumnaGet As String, ColumnaTest As String, ValueTest As Variant) As Variant
+Private Function GetDBValue(Tabla As String, ColumnaGet As String, ColumnaTest As String, ValueTest As Variant) As Variant
     ' 17/10/2020 Autor: Alexis Caraballo (WyroX)
     ' Para leer un unico valor de una unica fila
 
@@ -1169,7 +1170,7 @@ GetUserValue_Err:
         
 End Function
 
-Public Sub SetDBValue(Tabla As String, ColumnaSet As String, ByVal ValueSet As Variant, ColumnaTest As String, ByVal ValueTest As Variant)
+Private Sub SetDBValue(Tabla As String, ColumnaSet As String, ByVal ValueSet As Variant, ColumnaTest As String, ByVal ValueTest As Variant)
     ' 17/10/2020 Autor: Alexis Caraballo (WyroX)
     ' Para escribir un unico valor de una unica fila
 
@@ -1185,7 +1186,7 @@ ErrorHandler:
 
 End Sub
 
-Public Sub SetCuentaValue(CuentaEmail As String, Columna As String, Value As Variant)
+Private Sub SetCuentaValue(CuentaEmail As String, Columna As String, Value As Variant)
     ' 18/10/2020 Autor: Alexis Caraballo (WyroX)
     ' Para cuando hay que escribir un unico valor de la cuenta
         
@@ -1202,7 +1203,7 @@ SetCuentaValue_Err:
         
 End Sub
 
-Public Sub SetUserValue(CharName As String, Columna As String, Value As Variant)
+Private Sub SetUserValue(CharName As String, Columna As String, Value As Variant)
     ' 18/10/2020 Autor: Alexis Caraballo (WyroX)
     ' Para cuando hay que escribir un unico valor del char
         
@@ -1219,7 +1220,7 @@ SetUserValue_Err:
         
 End Sub
 
-Public Sub SetCuentaValueByID(AccountId As Long, Columna As String, Value As Variant)
+Private Sub SetCuentaValueByID(AccountId As Long, Columna As String, Value As Variant)
     ' 18/10/2020 Autor: Alexis Caraballo (WyroX)
     ' Para cuando hay que escribir un unico valor de la cuenta
     ' Por ID
@@ -1237,37 +1238,298 @@ SetCuentaValueByID_Err:
         
 End Sub
 
-Public Sub SetUserValueByID(Id As Long, Columna As String, Value As Variant)
+Private Sub SetUserValueByID(Id As Long, Columna As String, Value As Variant)
     ' 18/10/2020 Autor: Alexis Caraballo (WyroX)
     ' Para cuando hay que escribir un unico valor del char
     ' Por ID
-  
+        
+    On Error GoTo SetUserValueByID_Err
+        
     Call SetDBValue("user", Columna, Value, "id", Id)
 
+        
+    Exit Sub
+
+SetUserValueByID_Err:
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.SetUserValueByID", Erl)
+    Resume Next
+        
 End Sub
+
+Public Function CheckUserDonatorDatabase(CuentaEmail As String) As Boolean
+        
+    On Error GoTo CheckUserDonatorDatabase_Err
+        
+    CheckUserDonatorDatabase = GetCuentaValue(CuentaEmail, "is_donor")
+
+        
+    Exit Function
+
+CheckUserDonatorDatabase_Err:
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.CheckUserDonatorDatabase", Erl)
+    Resume Next
+        
+End Function
+
+Public Function GetUserCreditosDatabase(CuentaEmail As String) As Long
+        
+    On Error GoTo GetUserCreditosDatabase_Err
+        
+    GetUserCreditosDatabase = GetCuentaValue(CuentaEmail, "credits")
+
+        
+    Exit Function
+
+GetUserCreditosDatabase_Err:
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetUserCreditosDatabase", Erl)
+    Resume Next
+        
+End Function
+
+Public Function GetUserCreditosCanjeadosDatabase(CuentaEmail As String) As Long
+        
+    On Error GoTo GetUserCreditosCanjeadosDatabase_Err
+        
+    GetUserCreditosCanjeadosDatabase = GetCuentaValue(CuentaEmail, "credits_used")
+
+        
+    Exit Function
+
+GetUserCreditosCanjeadosDatabase_Err:
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetUserCreditosCanjeadosDatabase", Erl)
+    Resume Next
+        
+End Function
+
+Public Function GetUserDiasDonadorDatabase(CuentaEmail As String) As Long
+        
+    On Error GoTo GetUserDiasDonadorDatabase_Err
+        
+
+    Dim DonadorExpire As Variant
+
+    DonadorExpire = SanitizeNullValue(GetCuentaValue(CuentaEmail, "donor_expire"), False)
+    
+    If Not DonadorExpire Then Exit Function
+    GetUserDiasDonadorDatabase = DateDiff("d", Date, DonadorExpire)
+
+        
+    Exit Function
+
+GetUserDiasDonadorDatabase_Err:
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetUserDiasDonadorDatabase", Erl)
+    Resume Next
+        
+End Function
+
+Public Function GetUserComprasDonadorDatabase(CuentaEmail As String) As Long
+        
+    On Error GoTo GetUserComprasDonadorDatabase_Err
+        
+    GetUserComprasDonadorDatabase = GetCuentaValue(CuentaEmail, "donor_purchases")
+
+        
+    Exit Function
+
+GetUserComprasDonadorDatabase_Err:
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetUserComprasDonadorDatabase", Erl)
+    Resume Next
+        
+End Function
+
+Public Function CheckUserExists(name As String) As Boolean
+        
+    On Error GoTo CheckUserExists_Err
+        
+    CheckUserExists = GetUserValue(name, "COUNT(*)") > 0
+
+        
+    Exit Function
+
+CheckUserExists_Err:
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.CheckUserExists", Erl)
+    Resume Next
+        
+End Function
+
+Public Function CheckCuentaExiste(CuentaEmail As String) As Boolean
+        
+    On Error GoTo CheckCuentaExiste_Err
+        
+    CheckCuentaExiste = GetCuentaValue(CuentaEmail, "COUNT(*)") > 0
+
+        
+    Exit Function
+
+CheckCuentaExiste_Err:
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.CheckCuentaExiste", Erl)
+    Resume Next
+        
+End Function
 
 Public Function BANCheckDatabase(name As String) As Boolean
         
+    On Error GoTo BANCheckDatabase_Err
+        
     BANCheckDatabase = CBool(GetUserValue(name, "is_banned"))
 
+        
+    Exit Function
+
+BANCheckDatabase_Err:
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.BANCheckDatabase", Erl)
+    Resume Next
+        
 End Function
 
 Public Function GetCodigoActivacionDatabase(name As String) As String
-
+        
+    On Error GoTo GetCodigoActivacionDatabase_Err
+        
     GetCodigoActivacionDatabase = GetCuentaValue(name, "validate_code")
 
+        
+    Exit Function
+
+GetCodigoActivacionDatabase_Err:
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetCodigoActivacionDatabase", Erl)
+    Resume Next
+        
 End Function
 
 Public Function CheckCuentaActivadaDatabase(name As String) As Boolean
-
+        
+    On Error GoTo CheckCuentaActivadaDatabase_Err
+        
     CheckCuentaActivadaDatabase = GetCuentaValue(name, "validated")
+
+        
+    Exit Function
+
+CheckCuentaActivadaDatabase_Err:
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.CheckCuentaActivadaDatabase", Erl)
+    Resume Next
+        
+End Function
+
+Public Function GetEmailDatabase(name As String) As String
+        
+    On Error GoTo GetEmailDatabase_Err
+        
+    GetEmailDatabase = GetCuentaValue(name, "email")
+
+        
+    Exit Function
+
+GetEmailDatabase_Err:
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetEmailDatabase", Erl)
+    Resume Next
+        
+End Function
+
+Public Function GetMacAddressDatabase(CuentaEmail As String) As String
+        
+    On Error GoTo GetMacAddressDatabase_Err
+        
+    GetMacAddressDatabase = GetCuentaValue(CuentaEmail, "mac_address")
+
+        
+    Exit Function
+
+GetMacAddressDatabase_Err:
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetMacAddressDatabase", Erl)
+    Resume Next
         
 End Function
 
 Public Function GetHDSerialDatabase(CuentaEmail As String) As Long
-
+        
+    On Error GoTo GetHDSerialDatabase_Err
+        
     GetHDSerialDatabase = GetCuentaValue(CuentaEmail, "hd_serial")
 
+        
+    Exit Function
+
+GetHDSerialDatabase_Err:
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetHDSerialDatabase", Erl)
+    Resume Next
+        
+End Function
+
+Public Function CheckBanCuentaDatabase(CuentaEmail As String) As Boolean
+        
+    On Error GoTo CheckBanCuentaDatabase_Err
+        
+    CheckBanCuentaDatabase = CBool(GetCuentaValue(CuentaEmail, "is_banned"))
+
+        
+    Exit Function
+
+CheckBanCuentaDatabase_Err:
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.CheckBanCuentaDatabase", Erl)
+    Resume Next
+        
+End Function
+
+Public Function GetMotivoBanCuentaDatabase(CuentaEmail As String) As String
+        
+    On Error GoTo GetMotivoBanCuentaDatabase_Err
+        
+    GetMotivoBanCuentaDatabase = GetCuentaValue(CuentaEmail, "ban_reason")
+
+        
+    Exit Function
+
+GetMotivoBanCuentaDatabase_Err:
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetMotivoBanCuentaDatabase", Erl)
+    Resume Next
+        
+End Function
+
+Public Function GetQuienBanCuentaDatabase(CuentaEmail As String) As String
+        
+    On Error GoTo GetQuienBanCuentaDatabase_Err
+        
+    GetQuienBanCuentaDatabase = GetCuentaValue(CuentaEmail, "banned_by")
+
+        
+    Exit Function
+
+GetQuienBanCuentaDatabase_Err:
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetQuienBanCuentaDatabase", Erl)
+    Resume Next
+        
+End Function
+
+Public Function GetCuentaLogeadaDatabase(CuentaEmail As String) As Boolean
+        
+    On Error GoTo GetCuentaLogeadaDatabase_Err
+        
+    GetCuentaLogeadaDatabase = GetCuentaValue(CuentaEmail, "is_logged")
+
+        
+    Exit Function
+
+GetCuentaLogeadaDatabase_Err:
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetCuentaLogeadaDatabase", Erl)
+    Resume Next
+        
+End Function
+
+Public Function GetUserStatusDatabase(name As String) As Integer
+        
+    On Error GoTo GetUserStatusDatabase_Err
+        
+    GetUserStatusDatabase = GetUserValue(name, "status")
+
+        
+    Exit Function
+
+GetUserStatusDatabase_Err:
+    Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetUserStatusDatabase", Erl)
+    Resume Next
+        
 End Function
 
 Public Function GetAccountIDDatabase(name As String) As Long
@@ -1281,7 +1543,6 @@ Public Function GetAccountIDDatabase(name As String) As Long
     
     If VBA.IsEmpty(temp) Then
         GetAccountIDDatabase = -1
-        
     Else
         GetAccountIDDatabase = val(temp)
 
@@ -1314,8 +1575,39 @@ ErrorHandler:
     
 End Sub
 
+Public Function GetPersonajesCountDatabase(CuentaEmail As String) As Byte
 
+    On Error GoTo ErrorHandler
 
+    Dim Id As Integer
+
+    Id = GetDBValue("account", "id", "email", LCase$(CuentaEmail))
+    
+    GetPersonajesCountDatabase = GetPersonajesCountByIDDatabase(Id)
+    
+    Exit Function
+    
+ErrorHandler:
+    Call LogDatabaseError("Error in GetPersonajesCountDatabase. name: " & CuentaEmail & ". " & Err.Number & " - " & Err.Description)
+    
+End Function
+
+Public Function GetPersonajesCountByIDDatabase(ByVal AccountId As Long) As Byte
+
+    On Error GoTo ErrorHandler
+    
+    Call MakeQuery("SELECT COUNT(*) FROM user WHERE deleted = FALSE AND account_id = ?;", False, AccountId)
+    
+    If QueryData Is Nothing Then Exit Function
+    
+    GetPersonajesCountByIDDatabase = QueryData.Fields(0).Value
+    
+    Exit Function
+    
+ErrorHandler:
+    Call LogDatabaseError("Error in GetPersonajesCountByIDDatabase. AccountID: " & AccountId & ". " & Err.Number & " - " & Err.Description)
+    
+End Function
 
 Public Function GetPersonajesCuentaDatabase(ByVal AccountId As Long, Personaje() As PersonajeCuenta) As Byte
         
@@ -1584,6 +1876,51 @@ ErrorHandler:
 
 End Sub
 
+Public Sub BorrarCuentaDatabase(CuentaEmail As String)
+
+    On Error GoTo ErrorHandler
+
+    Dim Id As Integer
+
+    Id = GetDBValue("account", "id", "email", LCase$(CuentaEmail))
+
+    Call MakeQuery("UPDATE account SET email = CONCAT('DELETED_', email), deleted = TRUE WHERE email = ?;", True, LCase$(CuentaEmail))
+
+    Call MakeQuery("UPDATE user SET name = CONCAT('DELETED_', name), deleted = TRUE WHERE account_id = ?;", True, Id)
+
+    Exit Sub
+    
+ErrorHandler:
+    Call LogDatabaseError("Error en BorrarCuentaDatabase borrando user de la Mysql Database: " & CuentaEmail & ". " & Err.Number & " - " & Err.Description)
+
+End Sub
+
+Public Sub SaveBanDatabase(UserName As String, Reason As String, BannedBy As String)
+
+    '***************************************************
+    'Author: Juan Andres Dalmasso (CHOTS)
+    'Last Modification: 10/10/2018
+    '***************************************************
+    On Error GoTo ErrorHandler
+
+    Dim query As String
+
+    Call MakeQuery("UPDATE user SET is_banned = TRUE WHERE UPPER(name) = ?;", True, UCase$(UserName))
+
+    query = "INSERT INTO punishment SET "
+    query = query & "user_id = (SELECT id from user WHERE UPPER(name) = ?), "
+    query = query & "number = number + 1, "
+    query = query & "reason = ?;"
+
+    Call MakeQuery(query, True, UCase$(UserName), BannedBy & ": " & Reason & " " & Date & " " & Time)
+
+    Exit Sub
+
+ErrorHandler:
+    Call LogDatabaseError("Error in SaveBanDatabase: " & UserName & ". " & Err.Number & " - " & Err.Description)
+
+End Sub
+
 Public Sub SaveWarnDatabase(UserName As String, Reason As String, WarnedBy As String)
 
     '***************************************************
@@ -1630,6 +1967,18 @@ ErrorHandler:
 
 End Sub
 
+Public Sub UnBanDatabase(UserName As String)
+
+    On Error GoTo ErrorHandler
+
+    Call MakeQuery("UPDATE user SET is_banned = FALSE WHERE UPPER(name) = ?;", True, UCase$(UserName))
+
+    Exit Sub
+
+ErrorHandler:
+    Call LogDatabaseError("Error in UnBanDatabase: " & UserName & ". " & Err.Number & " - " & Err.Description)
+
+End Sub
 
 Public Sub SaveBanCuentaDatabase(ByVal AccountId As Integer, Reason As String, BannedBy As String)
 
@@ -1750,6 +2099,192 @@ Public Sub SendUserPunishmentsDatabase(ByVal UserIndex As Integer, ByVal UserNam
     Exit Sub
 ErrorHandler:
     Call LogDatabaseError("Error in SendUserPunishmentsDatabase: " & UserName & ". " & Err.Number & " - " & Err.Description)
+
+End Sub
+
+
+Public Function GetNombreCuentaDatabase(name As String) As String
+
+    On Error GoTo ErrorHandler
+
+    'Hacemos la query.
+    Call MakeQuery("SELECT email FROM `account` INNER JOIN `user` ON user.account_id = account.id WHERE UPPER(user.name) = ?;", False, UCase$(name))
+    
+    'Verificamos que la query no devuelva un resultado vacio.
+    If QueryData Is Nothing Then Exit Function
+    
+    'Obtenemos el nombre de la cuenta
+    GetNombreCuentaDatabase = QueryData!name
+
+    Exit Function
+    
+ErrorHandler:
+    Call LogDatabaseError("Error en GetNombreCuentaDatabase leyendo user de la Mysql Database: " & name & ". " & Err.Number & " - " & Err.Description)
+
+End Function
+
+Public Function GetUserGuildIndexDatabase(UserName As String) As Integer
+
+    '***************************************************
+    'Author: Juan Andres Dalmasso (CHOTS)
+    'Last Modification: 09/10/2018
+    '***************************************************
+    On Error GoTo ErrorHandler
+
+    GetUserGuildIndexDatabase = SanitizeNullValue(GetUserValue(UserName, "guild_index"), 0)
+
+    Exit Function
+
+ErrorHandler:
+    Call LogDatabaseError("Error in GetUserGuildIndexDatabase: " & UserName & ". " & Err.Number & " - " & Err.Description)
+
+End Function
+
+Public Function GetUserGuildMemberDatabase(UserName As String) As String
+
+    '***************************************************
+    'Author: Juan Andres Dalmasso (CHOTS)
+    'Last Modification: 11/10/2018
+    '***************************************************
+    On Error GoTo ErrorHandler
+
+    GetUserGuildMemberDatabase = SanitizeNullValue(GetUserValue(UserName, "guild_member_history"), vbNullString)
+
+    Exit Function
+
+ErrorHandler:
+    Call LogDatabaseError("Error in GetUserGuildMemberDatabase: " & UserName & ". " & Err.Number & " - " & Err.Description)
+
+End Function
+
+Public Function GetUserGuildAspirantDatabase(UserName As String) As Integer
+
+    '***************************************************
+    'Author: Juan Andres Dalmasso (CHOTS)
+    'Last Modification: 11/10/2018
+    '***************************************************
+    On Error GoTo ErrorHandler
+
+    GetUserGuildAspirantDatabase = SanitizeNullValue(GetUserValue(UserName, "guild_aspirant_index"), 0)
+
+    Exit Function
+
+ErrorHandler:
+    Call LogDatabaseError("Error in GetUserGuildAspirantDatabase: " & UserName & ". " & Err.Number & " - " & Err.Description)
+
+End Function
+
+Public Function GetUserGuildRejectionReasonDatabase(UserName As String) As String
+
+    '***************************************************
+    'Author: Juan Andres Dalmasso (CHOTS)
+    'Last Modification: 11/10/2018
+    '***************************************************
+    On Error GoTo ErrorHandler
+
+    GetUserGuildRejectionReasonDatabase = SanitizeNullValue(GetUserValue(UserName, "guild_rejected_because"), vbNullString)
+
+    Exit Function
+
+ErrorHandler:
+    Call LogDatabaseError("Error in GetUserGuildRejectionReasonDatabase: " & UserName & ". " & Err.Number & " - " & Err.Description)
+
+End Function
+
+Public Function GetUserGuildPedidosDatabase(UserName As String) As String
+
+    '***************************************************
+    'Author: Juan Andres Dalmasso (CHOTS)
+    'Last Modification: 11/10/2018
+    '***************************************************
+    On Error GoTo ErrorHandler
+
+    GetUserGuildPedidosDatabase = SanitizeNullValue(GetUserValue(UserName, "guild_requests_history"), vbNullString)
+
+    Exit Function
+
+ErrorHandler:
+    Call LogDatabaseError("Error in GetUserGuildPedidosDatabase: " & UserName & ". " & Err.Number & " - " & Err.Description)
+
+End Function
+
+Public Sub SaveUserGuildRejectionReasonDatabase(UserName As String, Reason As String)
+
+    '***************************************************
+    'Author: Juan Andres Dalmasso (CHOTS)
+    'Last Modification: 11/10/2018
+    '***************************************************
+    On Error GoTo ErrorHandler
+
+    Call SetUserValue(UserName, "guild_rejected_because", Reason)
+
+    Exit Sub
+ErrorHandler:
+    Call LogDatabaseError("Error in SaveUserGuildRejectionReasonDatabase: " & UserName & ". " & Err.Number & " - " & Err.Description)
+
+End Sub
+
+Public Sub SaveUserGuildIndexDatabase(ByVal UserName As String, ByVal GuildIndex As Integer)
+
+    '***************************************************
+    'Author: Juan Andres Dalmasso (CHOTS)
+    'Last Modification: 11/10/2018
+    '***************************************************
+    On Error GoTo ErrorHandler
+
+    Call SetUserValue(UserName, "guild_index", GuildIndex)
+
+    Exit Sub
+ErrorHandler:
+    Call LogDatabaseError("Error in SaveUserGuildIndexDatabase: " & UserName & ". " & Err.Number & " - " & Err.Description)
+
+End Sub
+
+Public Sub SaveUserGuildAspirantDatabase(ByVal UserName As String, ByVal AspirantIndex As Integer)
+
+    '***************************************************
+    'Author: Juan Andres Dalmasso (CHOTS)
+    'Last Modification: 11/10/2018
+    '***************************************************
+    On Error GoTo ErrorHandler
+
+    Call SetUserValue(UserName, "guild_aspirant_index", AspirantIndex)
+
+    Exit Sub
+ErrorHandler:
+    Call LogDatabaseError("Error in SaveUserGuildAspirantDatabase: " & UserName & ". " & Err.Number & " - " & Err.Description)
+
+End Sub
+
+Public Sub SaveUserGuildMemberDatabase(ByVal UserName As String, ByVal guilds As String)
+
+    '***************************************************
+    'Author: Juan Andres Dalmasso (CHOTS)
+    'Last Modification: 11/10/2018
+    '***************************************************
+    On Error GoTo ErrorHandler
+
+    Call SetUserValue(UserName, "guild_member_history", guilds)
+
+    Exit Sub
+ErrorHandler:
+    Call LogDatabaseError("Error in SaveUserGuildMemberDatabase: " & UserName & ". " & Err.Number & " - " & Err.Description)
+
+End Sub
+
+Public Sub SaveUserGuildPedidosDatabase(ByVal UserName As String, ByVal Pedidos As String)
+
+    '***************************************************
+    'Author: Juan Andres Dalmasso (CHOTS)
+    'Last Modification: 11/10/2018
+    '***************************************************
+    On Error GoTo ErrorHandler
+
+    Call SetUserValue(UserName, "guild_requests_history", Pedidos)
+
+    Exit Sub
+ErrorHandler:
+    Call LogDatabaseError("Error in SaveUserGuildPedidosDatabase: " & UserName & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
 
