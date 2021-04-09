@@ -15,7 +15,9 @@ Option Explicit
 
 Private p_GuildId               As Integer
 Private p_GuildName             As String
+Private p_FounderId             As Integer
 Private p_FounderName           As String
+Private p_LeaderId              As Integer
 Private p_LeaderName            As String
 Private p_Level                 As Byte
 Private p_Experience            As Long
@@ -27,19 +29,6 @@ Private p_OnlineMembers         As Collection   'Array de UserIndexes!
 Private Const NEWSLENGTH        As Integer = 1024
 Private Const DESCLENGTH        As Integer = 256
 
-
-Public Property Get GuildName() As String
-    On Error GoTo GuildName_Err
-        
-    GuildName = p_GuildName
-        
-    Exit Property
-
-GuildName_Err:
-    Call RegistrarError(Err.Number, Err.Description, "clsClan.GuildName", Erl)
-    Resume Next
-        
-End Property
 
 '
 'ALINEACION Y ANTIFACCION
@@ -106,7 +95,9 @@ Public Sub InitializeFromRecordset(ByRef QueryData As ADODB.Recordset)
 
     p_GuildId = QueryData!Id
     p_GuildName = QueryData!name
+    p_FounderId = QueryData!FounderId
     p_FounderName = QueryData!FounderName
+    p_LeaderId = QueryData!LeaderId
     p_LeaderName = QueryData!LeaderName
     p_Level = QueryData!level
     p_Experience = QueryData!Experience
@@ -195,61 +186,6 @@ GetMemberList_Err:
     Resume Next
         
 End Function
-
-Public Sub ConectarMiembro(ByVal UserIndex As Integer)
-    On Error GoTo ConectarMiembro_Err
-        
-    p_OnlineMembers.Add UserIndex
-
-    With UserList(UserIndex)
-
-        ' No avisa cuando loguea un dios
-        If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then
-            Call SendData(SendTarget.ToDiosesYclan, .GuildIndex, PrepareMessageGuildChat(.name & " se ha conectado."))
-
-        End If
-
-    End With
-       
-    Exit Sub
-
-ConectarMiembro_Err:
-    Call RegistrarError(Err.Number, Err.Description, "clsClan.ConectarMiembro", Erl)
-    Resume Next
-        
-End Sub
-
-Public Sub DesconectarMiembro(ByVal UserIndex As Integer)
-    On Error GoTo DesConectarMiembro_Err
-    
-    Dim i As Integer
-
-    For i = 1 To p_OnlineMembers.Count
-
-        If p_OnlineMembers.Item(i) = UserIndex Then
-            p_OnlineMembers.Remove i
-            
-            With UserList(UserIndex)
-                ' No avisa cuando se desconecta un dios
-                If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then
-                    Call SendData(SendTarget.ToDiosesYclan, .GuildIndex, PrepareMessageGuildChat(.name & " se ha desconectado."))
-
-                End If
-
-            End With
-
-            Exit Sub
-        End If
-
-    Next i
-   
-    Exit Sub
-
-DesConectarMiembro_Err:
-    Call RegistrarError(Err.Number, Err.Description, "clsClan.DesconectarMiembro", Erl)
-    Resume Next
-        
-End Sub
 
 Public Sub AceptarNuevoMiembro(ByRef nombre As String)
     On Error GoTo AceptarNuevoMiembro_Err
@@ -523,20 +459,6 @@ SetNivelDeClan_Err:
         
 End Sub
 
-Public Function GetNivelDeClan() As Byte
-        
-        On Error GoTo GetNivelDeClan_Err
-        
-100     GetNivelDeClan = GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "NivelDeClan")
-
-        
-        Exit Function
-
-GetNivelDeClan_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "clsClan.GetNivelDeClan", Erl)
-104     Resume Next
-        
-End Function
 
 Public Sub SetExpActual(ByRef Exp As Integer)
         

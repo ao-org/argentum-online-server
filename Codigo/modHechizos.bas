@@ -1354,7 +1354,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 210             .Char.WeaponAnim = UserList(tU).Char.WeaponAnim
 212             .NameMimetizado = UserList(tU).name
 
-214             If UserList(tU).GuildIndex > 0 Then .NameMimetizado = .NameMimetizado & " <" & modGuilds.GuildName(UserList(tU).GuildIndex) & ">"
+214             If UserList(tU).GuildIndex > 0 Then .NameMimetizado = .NameMimetizado & " <" & guilds(UserList(tU).GuildIndex).Name & ">"
             
 216             Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
 218             Call RefreshCharStatus(UserIndex)

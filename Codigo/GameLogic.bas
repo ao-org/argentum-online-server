@@ -1153,7 +1153,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                         End If
                     
                         If UserList(TempCharIndex).GuildIndex > 0 Then
-                            Stat = Stat & " <" & modGuilds.GuildName(UserList(TempCharIndex).GuildIndex) & ">"
+                            Stat = Stat & " <" & guilds(UserList(TempCharIndex).GuildIndex).Name & ">"
                         End If
     
                     End If ' If user > 0 then

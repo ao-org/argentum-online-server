@@ -305,7 +305,7 @@ Sub RefreshCharStatus(ByVal UserIndex As Integer)
 102         If UserList(UserIndex).flags.Mimetizado = e_EstadoMimetismo.Desactivado Then
 
 104             If UserList(UserIndex).GuildIndex > 0 Then
-106                 klan = modGuilds.GuildName(UserList(UserIndex).GuildIndex)
+106                 klan = guilds(UserList(UserIndex).GuildIndex).Name
 108                 klan = " <" & klan & ">"
                 End If
             
@@ -366,7 +366,7 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
 118                     If .flags.Mimetizado = e_EstadoMimetismo.Desactivado Then
 120                         If .GuildIndex > 0 Then
                     
-122                             klan = modGuilds.GuildName(.GuildIndex)
+122                             klan = guilds(.GuildIndex).Name
 124                             clan_nivel = modGuilds.NivelDeClan(.GuildIndex)
 126                             TempName = .name & " <" & klan & ">"
                     
@@ -856,7 +856,7 @@ Sub SendUserStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
 
         If GuildI > 0 Then
         
-            Call WriteConsoleMsg(sendIndex, "Clan: " & modGuilds.GuildName(GuildI), FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(sendIndex, "Clan: " & guilds(GuildI).Name, FontTypeNames.FONTTYPE_INFO)
 
             If UCase$(modGuilds.GuildLeader(GuildI)) = UCase$(UserList(sendIndex).name) Then
                 Call WriteConsoleMsg(sendIndex, "Status: Lider", FontTypeNames.FONTTYPE_INFO)
@@ -913,7 +913,7 @@ Sub SendUserMiniStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
 110         Call WriteConsoleMsg(sendIndex, "Pena: " & .Counters.Pena, FontTypeNames.FONTTYPE_INFO)
 
 112         If .GuildIndex > 0 Then
-114             Call WriteConsoleMsg(sendIndex, "Clan: " & GuildName(.GuildIndex), FontTypeNames.FONTTYPE_INFO)
+114             Call WriteConsoleMsg(sendIndex, "Clan: " & guilds(.GuildIndex).Name, FontTypeNames.FONTTYPE_INFO)
 
             End If
 
@@ -2152,7 +2152,7 @@ Public Sub SetModoConsulta(ByVal UserIndex As Integer)
             Else
 
 108             If .GuildIndex > 0 Then
-110                 sndNick = sndNick & " <" & modGuilds.GuildName(.GuildIndex) & ">"
+110                 sndNick = sndNick & " <" & guilds(.GuildIndex).Name & ">"
                 End If
 
             End If

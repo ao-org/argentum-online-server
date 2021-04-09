@@ -5500,7 +5500,7 @@ Private Sub HandleClanCodexUpdate(ByVal UserIndex As Integer)
         
 110         Desc = Buffer.ReadASCIIString()
         
-112         Call modGuilds.ChangeCodexAndDesc(Desc, .GuildIndex)
+112         Call modGuilds.changeDescription(Desc, .GuildIndex)
         
             'If we got here then packet is complete, copy data back to original queue
 114         Call .incomingData.CopyBuffer(Buffer)
@@ -5701,7 +5701,7 @@ Private Sub HandleGuildAcceptPeace(ByVal UserIndex As Integer)
 116             Call WriteConsoleMsg(UserIndex, errorStr, FontTypeNames.FONTTYPE_GUILD)
             Else
 118             Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Tu clan ha firmado la paz con " & guild, FontTypeNames.FONTTYPE_GUILD))
-120             Call SendData(SendTarget.ToGuildMembers, otherClanIndex, PrepareMessageConsoleMsg("Tu clan ha firmado la paz con " & modGuilds.GuildName(.GuildIndex), FontTypeNames.FONTTYPE_GUILD))
+120             Call SendData(SendTarget.ToGuildMembers, otherClanIndex, PrepareMessageConsoleMsg("Tu clan ha firmado la paz con " & guilds(.GuildIndex).Name, FontTypeNames.FONTTYPE_GUILD))
 
             End If
         
@@ -5769,7 +5769,7 @@ Private Sub HandleGuildRejectAlliance(ByVal UserIndex As Integer)
 116             Call WriteConsoleMsg(UserIndex, errorStr, FontTypeNames.FONTTYPE_GUILD)
             Else
 118             Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Tu clan rechazado la propuesta de alianza de " & guild, FontTypeNames.FONTTYPE_GUILD))
-120             Call SendData(SendTarget.ToGuildMembers, otherClanIndex, PrepareMessageConsoleMsg(modGuilds.GuildName(.GuildIndex) & " ha rechazado nuestra propuesta de alianza con su clan.", FontTypeNames.FONTTYPE_GUILD))
+120             Call SendData(SendTarget.ToGuildMembers, otherClanIndex, PrepareMessageConsoleMsg(guilds(.GuildIndex).Name & " ha rechazado nuestra propuesta de alianza con su clan.", FontTypeNames.FONTTYPE_GUILD))
 
             End If
         
@@ -5837,7 +5837,7 @@ Private Sub HandleGuildRejectPeace(ByVal UserIndex As Integer)
 116             Call WriteConsoleMsg(UserIndex, errorStr, FontTypeNames.FONTTYPE_GUILD)
             Else
 118             Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Tu clan rechazado la propuesta de paz de " & guild, FontTypeNames.FONTTYPE_GUILD))
-120             Call SendData(SendTarget.ToGuildMembers, otherClanIndex, PrepareMessageConsoleMsg(modGuilds.GuildName(.GuildIndex) & " ha rechazado nuestra propuesta de paz con su clan.", FontTypeNames.FONTTYPE_GUILD))
+120             Call SendData(SendTarget.ToGuildMembers, otherClanIndex, PrepareMessageConsoleMsg(guilds(.GuildIndex).Name & " ha rechazado nuestra propuesta de paz con su clan.", FontTypeNames.FONTTYPE_GUILD))
 
             End If
         
@@ -5905,7 +5905,7 @@ Private Sub HandleGuildAcceptAlliance(ByVal UserIndex As Integer)
 116             Call WriteConsoleMsg(UserIndex, errorStr, FontTypeNames.FONTTYPE_GUILD)
             Else
 118             Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Tu clan ha firmado la alianza con " & guild, FontTypeNames.FONTTYPE_GUILD))
-120             Call SendData(SendTarget.ToGuildMembers, otherClanIndex, PrepareMessageConsoleMsg("Tu clan ha firmado la paz con " & modGuilds.GuildName(.GuildIndex), FontTypeNames.FONTTYPE_GUILD))
+120             Call SendData(SendTarget.ToGuildMembers, otherClanIndex, PrepareMessageConsoleMsg("Tu clan ha firmado la paz con " & guilds(.GuildIndex).Name, FontTypeNames.FONTTYPE_GUILD))
 
             End If
         
@@ -6361,7 +6361,7 @@ Private Sub HandleGuildDeclareWar(ByVal UserIndex As Integer)
             Else
                 'WAR shall be!
 118             Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("TU CLAN HA ENTRADO EN GUERRA CON " & guild, FontTypeNames.FONTTYPE_GUILD))
-120             Call SendData(SendTarget.ToGuildMembers, otherGuildIndex, PrepareMessageConsoleMsg(modGuilds.GuildName(.GuildIndex) & " LE DECLARA LA GUERRA A TU CLAN", FontTypeNames.FONTTYPE_GUILD))
+120             Call SendData(SendTarget.ToGuildMembers, otherGuildIndex, PrepareMessageConsoleMsg(guilds(.GuildIndex).Name & " LE DECLARA LA GUERRA A TU CLAN", FontTypeNames.FONTTYPE_GUILD))
 122             Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessagePlayWave(45, NO_3D_SOUND, NO_3D_SOUND))
 124             Call SendData(SendTarget.ToGuildMembers, otherGuildIndex, PrepareMessagePlayWave(45, NO_3D_SOUND, NO_3D_SOUND))
 
@@ -6416,9 +6416,11 @@ Private Sub HandleGuildNewWebsite(ByVal UserIndex As Integer)
         
             'Remove packet ID
 108         Call Buffer.ReadByte
-        
-110         Call modGuilds.ActualizarWebSite(UserIndex, Buffer.ReadASCIIString())
-        
+
+            'FIXME: Do nothing
+            ' Los clanes no tienen URL por ahora; pueden ponerla en la descripcion.
+            ' Habria que borrar este handle
+
             'If we got here then packet is complete, copy data back to original queue
 112         Call .incomingData.CopyBuffer(Buffer)
 
@@ -6445,59 +6447,34 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleGuildAcceptNewMember(ByVal UserIndex As Integer)
+        On Error GoTo ErrHandler
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 3 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
+        If UserList(UserIndex).incomingData.Length < 3 Then
+            Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
         End If
-    
-        On Error GoTo ErrHandler
 
-104     With UserList(UserIndex)
+        With UserList(UserIndex)
 
             'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
             Dim Buffer As New clsByteQueue
-
-106         Call Buffer.CopyBuffer(.incomingData)
-        
-            'Remove packet ID
-108         Call Buffer.ReadByte
-        
-            Dim errorStr As String
-
             Dim UserName As String
 
-            Dim tUser    As Integer
-        
-110         UserName = Buffer.ReadASCIIString()
-        
-112         If Not modGuilds.a_AceptarAspirante(UserIndex, UserName, errorStr) Then
-114             Call WriteConsoleMsg(UserIndex, errorStr, FontTypeNames.FONTTYPE_GUILD)
-            Else
-116             tUser = NameIndex(UserName)
+            Call Buffer.CopyBuffer(.incomingData)
 
-118             If tUser > 0 Then
-120                 Call modGuilds.m_ConectarMiembroAClan(tUser, .GuildIndex)
-122                 Call RefreshCharStatus(tUser)
+            'Remove packet ID
+            Call Buffer.ReadByte
 
-                End If
-            
-124             Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("[" & UserName & "] ha sido aceptado como miembro del clan.", FontTypeNames.FONTTYPE_GUILD))
-126             Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessagePlayWave(43, NO_3D_SOUND, NO_3D_SOUND))
+            UserName = Buffer.ReadASCIIString()
 
-            End If
-        
+            modGuilds.approveMembershipRequest(UserIndex, UserName)
+
             'If we got here then packet is complete, copy data back to original queue
-128         Call .incomingData.CopyBuffer(Buffer)
+            Call .incomingData.CopyBuffer(Buffer)
 
         End With
-    
+
 ErrHandler:
 
         Dim Error As Long
@@ -6686,7 +6663,9 @@ Private Sub HandleGuildUpdateNews(ByVal UserIndex As Integer)
             'Remove packet ID
 108         Call Buffer.ReadByte
         
-110         Call modGuilds.ActualizarNoticias(UserIndex, Buffer.ReadASCIIString())
+            ' TODO: Define news for guilds
+            ' Only the leader can do this.
+110         'Call modGuilds.ActualizarNoticias(UserIndex, Buffer.ReadASCIIString())
         
             'If we got here then packet is complete, copy data back to original queue
 112         Call .incomingData.CopyBuffer(Buffer)
@@ -25331,7 +25310,7 @@ Public Sub WritePersonajesDeCuenta(ByVal UserIndex As Integer)
 158             Call .WriteInteger(Personaje(i).Casco)
 160             Call .WriteInteger(Personaje(i).Escudo)
 162             Call .WriteInteger(Personaje(i).Arma)
-164             Call .WriteASCIIString(modGuilds.GuildName(Personaje(i).ClanIndex))
+164             Call .WriteASCIIString(guilds(Personaje(i).ClanIndex).Name)
 166         Next i
             
 168         Call .WriteByte(IIf(donador, 1, 0))

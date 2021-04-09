@@ -1779,7 +1779,7 @@ Public Sub SendCharacterInfoDatabase(ByVal UserIndex As Integer, ByVal UserName 
     GuildActual = SanitizeNullValue(QueryData!Guild_Index, 0)
 
     If GuildActual > 0 And GuildActual <= CANTIDADDECLANES Then
-        gName = "<" & GuildName(GuildActual) & ">"
+        gName = "<" & guilds(GuildActual).Name & ">"
     Else
         gName = "Ninguno"
 

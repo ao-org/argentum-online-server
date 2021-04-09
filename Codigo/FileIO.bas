@@ -813,7 +813,6 @@ Public Sub DoBackUp()
 102     Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
 
         'Call WorldSave
-        'Call modGuilds.v_RutinaElecciones
     
         'Reseteamos al centinela
 104     Call ResetCentinelaInfo

@@ -1307,12 +1307,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
             Call ActualizarVelocidadDeUsuario(UserIndex)
         
 502         If .GuildIndex > 0 Then
-
-                'welcome to the show baby...
-504             If Not modGuilds.m_ConectarMiembroAClan(UserIndex, .GuildIndex) Then
-506                 Call WriteConsoleMsg(UserIndex, "Tu estado no te permite entrar al clan.", FontTypeNames.FONTTYPE_GUILD)
-
-                End If
+                modGuilds.memberConnected(UserIndex, .GuildIndex)
 
             End If
         

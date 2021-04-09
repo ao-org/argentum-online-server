@@ -1819,7 +1819,7 @@ Public Type user
     MascotasType(1 To MAXMASCOTAS) As Integer
     MascotasIndex(1 To MAXMASCOTAS) As Integer
     
-    GuildIndex As Integer   'puntero al array global de guilds
+    GuildIndex As Integer   'puntero al array global de guilds FIXME: Deberia ser el GuildId
     FundandoGuildAlineacion As ALINEACION_GUILD     'esto esta aca hasta que se parchee el cliente y se pongan cadenas de datos distintas para cada alineacion
     EscucheClan As Integer
     
