@@ -67,7 +67,7 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal InvitadoIndex As Int
     'Call WriteConsoleMsg(userindex, "Se envio la invitacion a " & UserList(Invitado).name & ", ahora solo resta aguardar su respuesta.", FontTypeNames.FONTTYPE_INFOIAO)
     Call WriteConsoleMsg(InvitadoIndex, Remitente.name & " te invitó a unirse a su grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
                 
-    With Invitado
+    With UserList(InvitadoIndex)
                 
         .Grupo.PropuestaDe = UserIndex
         .flags.pregunta = 1
