@@ -709,27 +709,22 @@ Sub Main()
             .Invasion.Enabled = True
         End With
     
-260     Subasta.SubastaHabilitada = True
-262     Subasta.HaySubastaActiva = False
 264     Call ResetMeteo
     
 266     frmCargando.Label1(2).Caption = "Conectando base de datos y limpiando usuarios logueados"
     
-268     If Database_Enabled Then
-            'Conecto base de datos
-270         Call Database_Connect
+        'Conecto base de datos
+270     Call Database_Connect
         
-            'Reinicio los users online
-272         Call SetUsersLoggedDatabase(0)
+        'Reinicio los users online
+272     Call SetUsersLoggedDatabase(0)
         
-            'Leo el record de usuarios
-274         RecordUsuarios = LeerRecordUsuariosDatabase()
+        'Leo el record de usuarios
+274     RecordUsuarios = LeerRecordUsuariosDatabase()
         
-            'Tarea pesada
-276         Call LogoutAllUsersAndAccounts
+        'Tarea pesada
+276     Call LogoutAllUsersAndAccounts
 
-        End If
-    
         '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
         'Configuracion de los sockets
     
@@ -2327,16 +2322,6 @@ Sub PasarSegundo()
                 End If
             End If
         
-210         If UserList(i).flags.Subastando Then
-212             UserList(i).Counters.TiempoParaSubastar = UserList(i).Counters.TiempoParaSubastar - 1
-
-214             If UserList(i).Counters.TiempoParaSubastar = 0 Then
-216                 Call CancelarSubasta
-
-                End If
-
-            End If
-
 218         If UserList(i).flags.UserLogged Then
 
                 'Cerrar usuario
@@ -2686,10 +2671,8 @@ Public Sub CerrarServidor()
         End If
     Next
     
-    If Database_Enabled Then Database_Close
-    
-    If API_Enabled Then frmAPISocket.Socket.CloseSck
-    
+    Call Database_Close
+
     Call LimpiarModuloLimpieza
     
     'Log

@@ -202,29 +202,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                         End If
 
                     End If
-         
-238             ElseIf NpcList(MapData(Map, X, Y).NpcIndex).NPCtype = eNPCType.Subastador Then
 
-240                 If UserList(UserIndex).flags.Muerto = 1 Then
-242                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
-                        Exit Sub
-
-                    End If
-            
-244                 If Distancia(NpcList(UserList(UserIndex).flags.TargetNPC).Pos, UserList(UserIndex).Pos) > 1 Then
-                        ' Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos del subastador.", FontTypeNames.FONTTYPE_INFO)
-246                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-                        Exit Sub
-
-                    End If
-                    
-                    ' WyroX: Hacemos que se detenga a hablar un momento :P
-                    If NpcList(MapData(Map, X, Y).NpcIndex).Movement = Caminata Then
-                        NpcList(MapData(Map, X, Y).NpcIndex).Contadores.IntervaloMovimiento = GetTickCount + 20000 - NpcList(MapData(Map, X, Y).NpcIndex).IntervaloMovimiento ' 20 segundos
-                    End If
-
-248                 Call IniciarSubasta(UserIndex)
-            
 250             ElseIf NpcList(MapData(Map, X, Y).NpcIndex).NPCtype = eNPCType.Quest Then
 
 252                 If UserList(UserIndex).flags.Muerto = 1 Then
@@ -362,9 +340,6 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 
 352                 Case eOBJType.otCarteles 'Es un cartel
 354                     Call AccionParaCartel(Map, X, Y, UserIndex)
-
-356                 Case eOBJType.OtCorreo 'Es un cartel
-                        'Call AccionParaCorreo(Map, x, Y, UserIndex)
 
 358                 Case eOBJType.otForos 'Foro
                         'Call AccionParaForo(Map, X, Y, UserIndex)
@@ -817,45 +792,6 @@ Handler:
 106 Call RegistrarError(Err.Number, Err.Description, "Acciones.AccionParaCartel", Erl)
 108 Resume Next
 
-End Sub
-
-Sub AccionParaCorreo(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal UserIndex As Integer)
-        
-        On Error GoTo AccionParaCorreo_Err
-        
-
-        Dim Pos As WorldPos
-
-100     Pos.Map = Map
-102     Pos.X = X
-104     Pos.Y = Y
-
-106     If UserList(UserIndex).flags.Muerto = 1 Then
-            'Call WriteConsoleMsg(UserIndex, "Estas muerto.", FontTypeNames.FONTTYPE_INFO)
-108         Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-
-        End If
-
-110     If Distancia(Pos, UserList(UserIndex).Pos) > 4 Then
-112         Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-            ' Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-
-        End If
-
-114     If ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).OBJType = 47 Then
-116         Call WriteListaCorreo(UserIndex, False)
-
-        End If
-
-        
-        Exit Sub
-
-AccionParaCorreo_Err:
-118     Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Acciones.AccionParaCorreo", Erl)
-120     Resume Next
-        
 End Sub
 
 Sub AccionParaRamita(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal UserIndex As Integer)
