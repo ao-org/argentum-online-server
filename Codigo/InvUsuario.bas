@@ -2467,6 +2467,12 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 788                             Call QuitarUserInvItem(UserIndex, slot, 1)
                             
 790                             If tUser <= 0 Then
+    
+                                    Dim FileUser As String
+    
+792                                 FileUser = CharPath & UCase$(.flags.Pareja) & ".chr"
+                                    'Call WriteVar(FileUser, "FLAGS", "CASADO", 0)
+                                    'Call WriteVar(FileUser, "FLAGS", "PAREJA", "")
 794                                 .flags.Casado = 0
 796                                 .flags.Pareja = ""
 798                                 Call WriteConsoleMsg(UserIndex, "Te has divorciado.", FontTypeNames.FONTTYPE_INFOIAO)
@@ -2614,7 +2620,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
     
 928                     Case 19 ' Reseteo de skill
     
-                            Dim S As Byte
+                            Dim s As Byte
                     
 930                         If .Stats.UserSkills(eSkill.liderazgo) >= 80 Then
 932                             Call WriteConsoleMsg(UserIndex, "Has fundado un clan, no podes resetar tus skills. ", FontTypeNames.FONTTYPE_INFOIAO)
@@ -2622,9 +2628,9 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
     
                             End If
                         
-934                         For S = 1 To NUMSKILLS
-936                             .Stats.UserSkills(S) = 0
-938                         Next S
+934                         For s = 1 To NUMSKILLS
+936                             .Stats.UserSkills(s) = 0
+938                         Next s
                         
                             Dim SkillLibres As Integer
                         

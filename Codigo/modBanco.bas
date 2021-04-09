@@ -53,7 +53,7 @@ Sub IniciarBanco(ByVal UserIndex As Integer)
         Exit Sub
 
 IniciarBanco_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "modBanco.IniciarBanco", Erl)
+106     Call RegistrarError(Err.Number, Err.description, "modBanco.IniciarBanco", Erl)
 108     Resume Next
         
 End Sub
@@ -71,7 +71,7 @@ Sub SendBanObj(UserIndex As Integer, slot As Byte, Object As UserOBJ)
         Exit Sub
 
 SendBanObj_Err:
-104     Call RegistrarError(Err.Number, Err.Description, "modBanco.SendBanObj", Erl)
+104     Call RegistrarError(Err.Number, Err.description, "modBanco.SendBanObj", Erl)
 106     Resume Next
         
 End Sub
@@ -118,7 +118,7 @@ Sub UpdateBanUserInv(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer, ByV
         Exit Sub
 
 UpdateBanUserInv_Err:
-118     Call RegistrarError(Err.Number, Err.Description, "modBanco.UpdateBanUserInv", Erl)
+118     Call RegistrarError(Err.Number, Err.description, "modBanco.UpdateBanUserInv", Erl)
 120     Resume Next
         
 End Sub
@@ -146,7 +146,7 @@ Sub UserRetiraItem(ByVal UserIndex As Integer, ByVal i As Integer, ByVal Cantida
         Exit Sub
     
 ErrHandler:
-112     Call RegistrarError(Err.Number, Err.Description, "modBanco.UsaRetiraItem")
+112     Call RegistrarError(Err.Number, Err.description, "modBanco.UsaRetiraItem")
 114     Resume Next
     
 End Sub
@@ -244,7 +244,7 @@ Sub UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal C
         Exit Sub
 
 UserReciveObj_Err:
-156     Call RegistrarError(Err.Number, Err.Description, "modBanco.UserReciveObj", Erl)
+156     Call RegistrarError(Err.Number, Err.description, "modBanco.UserReciveObj", Erl)
 158     Resume Next
         
 End Sub
@@ -273,7 +273,7 @@ Sub QuitarBancoInvItem(ByVal UserIndex As Integer, ByVal slot As Byte, ByVal Can
         Exit Sub
 
 QuitarBancoInvItem_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "modBanco.QuitarBancoInvItem", Erl)
+112     Call RegistrarError(Err.Number, Err.description, "modBanco.QuitarBancoInvItem", Erl)
 114     Resume Next
         
 End Sub
@@ -299,7 +299,7 @@ Sub UserDepositaItem(ByVal UserIndex As Integer, ByVal Item As Integer, ByVal Ca
         Exit Sub
     
 ErrHandler:
-110     Call RegistrarError(Err.Number, Err.Description, "modBanco.UserDepositaItem")
+110     Call RegistrarError(Err.Number, Err.description, "modBanco.UserDepositaItem")
 112     Resume Next
     
 End Sub
@@ -321,7 +321,7 @@ Sub UserDepositaItemDrop(ByVal UserIndex As Integer, ByVal Item As Integer, ByVa
         Exit Sub
 
 ErrHandler:
-108     Call RegistrarError(Err.Number, Err.Description, "modBanco.UserDepositaItemDrop")
+108     Call RegistrarError(Err.Number, Err.description, "modBanco.UserDepositaItemDrop")
 110     Resume Next
 
 End Sub
@@ -417,7 +417,7 @@ Sub UserDejaObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal Can
         Exit Sub
 
 UserDejaObj_Err:
-158     Call RegistrarError(Err.Number, Err.Description, "modBanco.UserDejaObj", Erl)
+158     Call RegistrarError(Err.Number, Err.description, "modBanco.UserDejaObj", Erl)
 160     Resume Next
         
 End Sub
@@ -425,6 +425,10 @@ End Sub
 Sub SendUserBovedaTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
         
         On Error GoTo SendUserBovedaTxt_Err
+    
+        
+
+        
 
         Dim j As Integer
 
@@ -440,10 +444,56 @@ Sub SendUserBovedaTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
 
         Next
 
+        
         Exit Sub
 
 SendUserBovedaTxt_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "modBanco.SendUserBovedaTxt", Erl)
+110     Call RegistrarError(Err.Number, Err.description, "modBanco.SendUserBovedaTxt", Erl)
+
+        
+End Sub
+
+Sub SendUserBovedaTxtFromChar(ByVal sendIndex As Integer, ByVal CharName As String)
+        
+        On Error GoTo SendUserBovedaTxtFromChar_Err
+    
+        
+
+        
+
+        Dim j        As Integer
+
+        Dim CharFile As String, Tmp As String
+
+        Dim ObjInd   As Long, ObjCant As Long
+
+100     CharFile = CharPath & CharName & ".chr"
+
+102     If FileExist(CharFile, vbNormal) Then
+104         Call WriteConsoleMsg(sendIndex, CharName, FontTypeNames.FONTTYPE_INFO)
+106         Call WriteConsoleMsg(sendIndex, " Tiene " & GetVar(CharFile, "BancoInventory", "CantidadItems") & " objetos.", FontTypeNames.FONTTYPE_INFO)
+
+108         For j = 1 To MAX_BANCOINVENTORY_SLOTS
+110             Tmp = GetVar(CharFile, "BancoInventory", "Obj" & j)
+112             ObjInd = ReadField(1, Tmp, Asc("-"))
+114             ObjCant = ReadField(2, Tmp, Asc("-"))
+
+116             If ObjInd > 0 Then
+118                 Call WriteConsoleMsg(sendIndex, " Objeto " & j & " " & ObjData(ObjInd).name & " Cantidad:" & ObjCant, FontTypeNames.FONTTYPE_INFO)
+
+                End If
+
+            Next
+        Else
+120         Call WriteConsoleMsg(sendIndex, "Usuario inexistente: " & CharName, FontTypeNames.FONTTYPE_INFO)
+
+        End If
+
+        
+        Exit Sub
+
+SendUserBovedaTxtFromChar_Err:
+122     Call RegistrarError(Err.Number, Err.description, "modBanco.SendUserBovedaTxtFromChar", Erl)
 
         
 End Sub
