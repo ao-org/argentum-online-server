@@ -586,11 +586,20 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal 
         
 228         .ChatCombate = 1
 230         .ChatGlobal = 1
-                
+        
+            'Resetamos CORREO
+232         .Correo.CantCorreo = 0
+234         .Correo.NoLeidos = 0
+            'Resetamos CORREO
+        
 236         .Pos.Map = 37
 238         .Pos.X = 76
 240         .Pos.Y = 82
-
+        
+242         If Not Database_Enabled Then
+244             Call GrabarNuevoPjEnCuentaCharfile(UserCuenta, name)
+            End If
+        
 246         UltimoChar = UCase$(name)
         
 248         Call SaveNewUser(UserIndex)
@@ -879,9 +888,58 @@ Function EntrarCuenta(ByVal UserIndex As Integer, CuentaEmail As String, CuentaP
             Exit Function
         End If
     
+118     If Database_Enabled Then
+120         EntrarCuenta = EnterAccountDatabase(UserIndex, CuentaEmail, SDesencriptar(CuentaPassword), MacAddress, HDserial, UserList(UserIndex).ip)
+        Else
+122         If CuentaExiste(CuentaEmail) Then
+124             If Not ObtenerBaneo(CuentaEmail) Then
 
-120     EntrarCuenta = EnterAccountDatabase(UserIndex, CuentaEmail, SDesencriptar(CuentaPassword), MacAddress, HDserial, UserList(UserIndex).ip)
+                    Dim PasswordHash As String, Salt As String
 
+126                 PasswordHash = GetVar(CuentasPath & UCase$(CuentaEmail) & ".act", "INIT", "PASSWORD")
+128                 Salt = GetVar(CuentasPath & UCase$(CuentaEmail) & ".act", "INIT", "SALT")
+
+130                 If PasswordValida(SDesencriptar(CuentaPassword), PasswordHash, _
+                            Salt) Then
+132                     If ObtenerValidacion(CuentaEmail) Then
+134                         Call WriteVar(CuentasPath & LCase$(CuentaEmail) & ".act", _
+                                    "INIT", "MacAdress", MacAddress)
+136                         Call WriteVar(CuentasPath & LCase$(CuentaEmail) & ".act", _
+                                    "INIT", "HDserial", HDserial)
+138                         Call WriteVar(CuentasPath & LCase$(CuentaEmail) & ".act", _
+                                    "INIT", "UltimoAcceso", Date & " " & Time)
+140                         Call WriteVar(CuentasPath & LCase$(CuentaEmail) & ".act", _
+                                    "INIT", "UltimaIP", UserList(UserIndex).ip)
+                        
+142                         UserList(UserIndex).Cuenta = CuentaEmail
+                        
+144                         EntrarCuenta = True
+                        Else
+146                         Call WriteShowMessageBox(UserIndex, _
+                                    "¡La cuenta no ha sido validada aún!")
+
+                        End If
+
+                    Else
+148                     Call WriteShowMessageBox(UserIndex, "Contraseña inválida.")
+
+                    End If
+
+                Else
+150                 Call WriteShowMessageBox(UserIndex, _
+                            "La cuenta se encuentra baneada debido a: " & _
+                            ObtenerMotivoBaneo(CuentaEmail) & _
+                            ". Esta decisión fue tomada por: " & ObtenerQuienBaneo( _
+                            CuentaEmail) & ".")
+
+                End If
+
+            Else
+152             Call WriteShowMessageBox(UserIndex, "La cuenta no existe.")
+
+            End If
+
+        End If
         
         Exit Function
 
@@ -1077,6 +1135,11 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
         
 240         Call EnviarLlaves(UserIndex)
 
+242         If .Correo.NoLeidos > 0 Then
+244             Call WriteCorreoPicOn(UserIndex)
+
+            End If
+
 246         If .flags.Paralizado Then
 248             Call WriteParalizeOK(UserIndex)
 
@@ -1262,8 +1325,12 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
 452             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Record de usuarios conectados simultáneamente: " & NumUsers & " usuarios.", FontTypeNames.FONTTYPE_INFO))
 454             RecordUsuarios = NumUsers
             
+456             If Database_Enabled Then
+458                 Call SetRecordUsersDatabase(RecordUsuarios)
+                Else
+460                 Call WriteVar(IniPath & "Server.ini", "INIT", "Record", str(RecordUsuarios))
 
-458             Call SetRecordUsersDatabase(RecordUsuarios)
+                End If
 
             End If
         
@@ -1381,7 +1448,14 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
             'Call Statistics.UserConnected(UserIndex)
 
 564         Call MostrarNumUsers
+            'Call SendData(SendTarget.ToPCArea, userindex, PrepareMessageParticleFXToFloor(.Pos.X, .Pos.y, ParticulasIndex.LogeoLevel1, 400))
+            'Call SaveUser(UserIndex, CharPath & UCase$(.name) & ".chr")
         
+            ' n = FreeFile
+            ' Open App.Path & "\logs\numusers.log" For Output As n
+            'Print #n, NumUsers
+            ' Close #n
+
         End With
     
         Exit Sub
@@ -1503,6 +1577,7 @@ Sub ResetContadores(ByVal UserIndex As Integer)
 164         .ScrollExperiencia = 0
 166         .ScrollOro = 0
 168         .Oxigeno = 0
+170         .TiempoParaSubastar = 0
 172         .TimerPerteneceNpc = 0
 174         .TimerPuedeSerAtacado = 0
 176         .TiempoDeInmunidad = 0
@@ -1594,6 +1669,21 @@ Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
 130         .Hogar = 0
 132         .raza = 0
 134         .EmpoCont = 0
+        
+            'Ladder     Reseteo de Correos
+136         .Correo.CantCorreo = 0
+138         .Correo.NoLeidos = 0
+        
+140         For LoopC = 1 To MAX_CORREOS_SLOTS
+142             .Correo.Mensaje(LoopC).Remitente = ""
+144             .Correo.Mensaje(LoopC).Mensaje = ""
+146             .Correo.Mensaje(LoopC).Item = 0
+148             .Correo.Mensaje(LoopC).ItemCount = 0
+150             .Correo.Mensaje(LoopC).Fecha = ""
+152             .Correo.Mensaje(LoopC).Leido = 0
+154         Next LoopC
+
+            'Ladder     Reseteo de Correos
         
 156         With .Stats
 158             .InventLevel = 0
@@ -1735,6 +1825,7 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 216         .UsandoMacro = False
 218         .pregunta = 0
 
+222         .Subastando = False
 224         .Paraliza = 0
 226         .Envenena = 0
 228         .NoPalabrasMagicas = 0
@@ -2093,7 +2184,14 @@ Sub CloseUser(ByVal UserIndex As Integer)
         
             'Le devolvemos el body y head originales
 186         If .flags.AdminInvisible = 1 Then Call DoAdminInvisible(UserIndex)
-                
+        
+188         errordesc = "ERROR AL CANCELAR SUBASTA"
+    
+190         If .flags.Subastando = True Then
+192             Call CancelarSubasta
+    
+            End If
+        
 194         errordesc = "ERROR AL BORRAR INDEX DE TORNEO"
     
 196         If .flags.EnTorneo = True Then
