@@ -110,11 +110,6 @@ Public TrashCollector As New Collection
 
 Public Const MAXSPAWNATTEMPS = 60
 
-' Correo Ladder 22/11/2017
-Public Const MAX_CORREOS_SLOTS = 15
-
-' Correo Ladder 22/11/2017
-
 Public Const INFINITE_LOOPS As Integer = -1
 
 Public Const FXSANGRE = 14
@@ -495,7 +490,6 @@ Public Enum eNPCType
     Pirata = 10
     Veterinaria = 11
     Gobernador = 12
-    Subastador = 16
     Quest = 17
     Pretoriano = 18
     DummyTarget = 19
@@ -746,7 +740,6 @@ Public Enum eOBJType
     otMonturas = 44
     otRunas = 45
     otNudillos = 46
-    OtCorreo = 47
     OtCofre = 48
     OtDonador = 50
     otCualquiera = 1000
@@ -1147,7 +1140,6 @@ Public Type ObjData
     Envenena As Byte
     
     NoSeLimpia As Byte
-    Subastable As Integer
     HechizoIndex As Integer
     
     ForoID As String
@@ -1366,26 +1358,6 @@ End Type
 '*********************************************************
 '*********************************************************
 
-Public Type CorreoMsj
-
-    Remitente As String
-    Mensaje As String
-    Item As String
-    ItemCount As Byte
-    Leido As Byte
-    Fecha As String
-
-End Type
-
-Public Type UserCorreo
-
-    MensajesSinLeer As Byte
-    NoLeidos As Byte
-    CantCorreo As Byte
-    Mensaje(1 To MAX_CORREOS_SLOTS) As CorreoMsj
-
-End Type
-
 'Estadisticas de los usuarios
 Public Type UserStats
 
@@ -1509,7 +1481,6 @@ Public Type UserFlags
     Inmovilizado As Byte
     
     Montado As Byte
-    Subastando As Boolean
     Incinerado As Byte
     'Ladder
     Muerto As Byte '¿Esta muerto?
@@ -1638,7 +1609,6 @@ Public Type UserCounters
     TiempoDeInmunidad As Byte
     TiempoDeMapeo As Byte
 
-    TiempoParaSubastar As Byte
     UserHechizosInterval(1 To MAXUSERHECHIZOS) As Long
     ScrollExperiencia As Long
     ScrollOro As Long
@@ -1825,7 +1795,6 @@ Public Type user
     BytesTransmitidosUser As Long
     BytesTransmitidosSvr As Long
 
-    Correo As UserCorreo
     Faccion As tFacciones
     Familiar As Family
 
@@ -2352,13 +2321,11 @@ Public Libertad                           As WorldPos
 
 Public Ayuda                              As New cCola
 
-Public ConsultaPopular                    As New ConsultasPopulares
-
 Public Declare Function writeprivateprofilestring Lib "kernel32" Alias "WritePrivateProfileStringA" (ByVal lpApplicationname As String, ByVal lpKeyname As Any, ByVal lpString As String, ByVal lpfilename As String) As Long
 
 Public Declare Function GetPrivateProfileString Lib "kernel32" Alias "GetPrivateProfileStringA" (ByVal lpApplicationname As String, ByVal lpKeyname As Any, ByVal lpdefault As String, ByVal lpreturnedstring As String, ByVal nsize As Long, ByVal lpfilename As String) As Long
 
-Public Declare Sub ZeroMemory Lib "kernel32.dll" Alias "RtlZeroMemory" (ByRef Destination As Any, ByVal Length As Long)
+Public Declare Sub ZeroMemory Lib "kernel32.dll" Alias "RtlZeroMemory" (ByRef destination As Any, ByVal Length As Long)
 
 ' Los Objetos Criticos nunca desaparecen del inventario de los npcs vendedores, una vez que
 ' se venden los 10.000 (max. cantidad de items x slot) vuelven a reabastecer.

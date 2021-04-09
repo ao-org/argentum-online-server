@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{248DD890-BB45-11CF-9ABC-0080C7E7B78D}#1.0#0"; "MSWINSCK.OCX"
+Object = "{248DD890-BB45-11CF-9ABC-0080C7E7B78D}#1.0#0"; "MSWINSCK.ocx"
 Begin VB.Form frmMain 
    BackColor       =   &H00E0E0E0&
    BorderStyle     =   4  'Fixed ToolWindow
@@ -35,7 +35,7 @@ Begin VB.Form frmMain
    End
    Begin VB.Timer TiempoRetos 
       Interval        =   10000
-      Left            =   3600
+      Left            =   720
       Top             =   4200
    End
    Begin VB.Timer TimerGuardarUsuarios 
@@ -310,12 +310,6 @@ Begin VB.Form frmMain
       Left            =   1200
       Top             =   4200
    End
-   Begin VB.Timer SubastaTimer 
-      Enabled         =   0   'False
-      Interval        =   1000
-      Left            =   720
-      Top             =   4200
-   End
    Begin VB.Timer packetResend 
       Interval        =   5
       Left            =   240
@@ -439,11 +433,6 @@ Begin VB.Form frmMain
       TabIndex        =   14
       Top             =   3000
       Width           =   4935
-      Begin VB.Timer t_ColaAPI 
-         Interval        =   50
-         Left            =   3000
-         Top             =   1200
-      End
       Begin VB.ListBox listaDePaquetes 
          Height          =   1110
          Left            =   120
@@ -501,15 +490,9 @@ Begin VB.Form frmMain
          Caption         =   "Cargar Creditos"
       End
    End
-   Begin VB.Menu mnuConsolaAPI 
-      Caption         =   "Consola API"
-   End
    Begin VB.Menu mnuPopUp 
       Caption         =   "PopUpMenu"
       Visible         =   0   'False
-      Begin VB.Menu mnuConsolaAPI_Popup 
-         Caption         =   "&Consola API"
-      End
       Begin VB.Menu mnuMostrar 
          Caption         =   "&Mostrar"
       End
@@ -818,48 +801,6 @@ Private Sub Invasion_Timer()
         End With
     Next
     ' **********************************
-End Sub
-
-Private Sub mnuConsolaAPI_Click()
-    frmAPISocket.Show vbModeless
-End Sub
-
-Private Sub mnuConsolaAPI_Popup_Click()
-    Call mnuConsolaAPI_Click
-End Sub
-
-Private Sub t_ColaAPI_Timer()
-
-    If API.packetResend.Count = 0 Then Exit Sub
-    
-    With frmAPISocket
-    
-        Select Case .Socket.State
-        
-            Case sckConnected
-            
-                'Iteramos la cola y mandamos todo.
-                Do While (Not API.packetResend.IsEmpty)
-                    Call .Socket.SendData(API.packetResend.Pop)
-                Loop
-                
-                Debug.Print "API: Enviado!"
-                
-                Exit Sub
-            
-            Case sckClosed
-                Call .Connect
-                Debug.Print "API: El socket estaba cerrado! Reconectando..."
-                
-            Case sckError
-                Call .Socket.CloseSck
-                Call .Connect
-                Debug.Print "API: Error en el socket! Reconectando..."
-                
-        End Select
-    
-    End With
-    
 End Sub
 
 ' WyroX: Comprobamos cada 10 segundos, porque no es necesaria tanta precisión
@@ -1245,7 +1186,7 @@ Private Sub EstadoTimer_Timer()
 
         If Baneos(i).FechaLiberacion <= Now Then
             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> Se ha concluido la sentencia de ban para " & Baneos(i).name & ".", FontTypeNames.FONTTYPE_SERVER))
-            Call ChangeBan(Baneos(i).name, 0)
+            Call UnBan(Baneos(i).name)
             Call Baneos.Remove(i)
             Call SaveBans
 
@@ -1873,11 +1814,11 @@ Private Sub mnuSystray_Click()
         
 
         Dim i   As Integer
-        Dim s   As String
+        Dim S   As String
         Dim nid As NOTIFYICONDATA
 
-100     s = "ARGENTUM-ONLINE"
-102     nid = setNOTIFYICONDATA(frmMain.hwnd, vbNull, NIF_MESSAGE Or NIF_ICON Or NIF_TIP, WM_MOUSEMOVE, frmMain.Icon, s)
+100     S = "ARGENTUM-ONLINE"
+102     nid = setNOTIFYICONDATA(frmMain.hwnd, vbNull, NIF_MESSAGE Or NIF_ICON Or NIF_TIP, WM_MOUSEMOVE, frmMain.Icon, S)
 104     i = Shell_NotifyIconA(NIM_ADD, nid)
     
 106     If WindowState <> vbMinimized Then WindowState = vbMinimized
@@ -1934,78 +1875,6 @@ Handler:
     Call RegistrarError(Err.Number, Err.Description, "frmMain.packetResend_Timer")
     Resume Next
     
-End Sub
-
-Private Sub SubastaTimer_Timer()
-        
-    On Error GoTo SubastaTimer_Timer_Err
-        
-
-    'Si ya paso un minuto y todavia no hubo oferta, avisamos que se cancela en un minuto
-    If Subasta.TiempoRestanteSubasta = 240 And Subasta.HuboOferta = False Then
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Quedan 4 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información. La subasta será cancelada si no hay ofertas en el próximo minuto.", FontTypeNames.FONTTYPE_SUBASTA))
-        Subasta.MinutosDeSubasta = 4
-        Subasta.PosibleCancelo = True
-
-    End If
-    
-    'Si ya pasaron dos minutos y no hubo ofertas, cancelamos la subasta
-    If Subasta.TiempoRestanteSubasta = 180 And Subasta.HuboOferta = False Then
-        Subasta.HaySubastaActiva = False
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Subasta cancelada por falta de ofertas.", FontTypeNames.FONTTYPE_SUBASTA))
-        'Devolver item antes de resetear datos
-        Call DevolverItem
-        Exit Sub
-
-    End If
-
-    If Subasta.PosibleCancelo = True Then
-        Subasta.TiempoRestanteSubasta = Subasta.TiempoRestanteSubasta - 1
-
-    End If
-    
-    If Subasta.TiempoRestanteSubasta > 0 And Subasta.PosibleCancelo = False Then
-        If Subasta.TiempoRestanteSubasta = 240 Then
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Quedan 4 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.", FontTypeNames.FONTTYPE_SUBASTA))
-            Subasta.MinutosDeSubasta = "4"
-
-        End If
-        
-        If Subasta.TiempoRestanteSubasta = 180 Then
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Quedan 3 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.", FontTypeNames.FONTTYPE_SUBASTA))
-            Subasta.MinutosDeSubasta = "3"
-
-        End If
-
-        If Subasta.TiempoRestanteSubasta = 120 Then
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Quedan 2 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.", FontTypeNames.FONTTYPE_SUBASTA))
-            Subasta.MinutosDeSubasta = "2"
-
-        End If
-
-        If Subasta.TiempoRestanteSubasta = 60 Then
-            Subasta.MinutosDeSubasta = "1"
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Quedan 1 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.", FontTypeNames.FONTTYPE_SUBASTA))
-
-        End If
-
-        Subasta.TiempoRestanteSubasta = Subasta.TiempoRestanteSubasta - 1
-
-    End If
-    
-    If Subasta.TiempoRestanteSubasta = 1 Then
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡La subasta a terminado! El ganador fue: " & Subasta.Comprador, FontTypeNames.FONTTYPE_SUBASTA))
-        Call FinalizarSubasta
-
-    End If
-
-        
-    Exit Sub
-
-SubastaTimer_Timer_Err:
-    Call RegistrarError(Err.Number, Err.Description, "frmMain.SubastaTimer_Timer", Erl)
-    Resume Next
-        
 End Sub
 
 Private Sub TIMER_AI_Timer()
