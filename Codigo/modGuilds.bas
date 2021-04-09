@@ -41,13 +41,6 @@ Public Enum SONIDOS_GUILD
 
 End Enum
 
-Public Enum eGuildMembershipState
-    Pending = 1
-    Active
-    Rejected
-    Expelled
-    Cancelled ' Cuando el usuario decide dejar el clan
-End Enum
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''

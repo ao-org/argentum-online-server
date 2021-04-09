@@ -284,11 +284,11 @@ Public Sub ExpulsarMiembro(ByRef nombre As String)
             ' Esto quizas en otro lado
             Call MakeQuery("UPDATE guild_memberships SET state = ?, state_explanation = ? WHERE guild_id = ? AND user_id = ? AND state = ?", _
                 True, _
-                eGuildMembershipState.Expelled, _
+                "expelled", _
                 "Ha sido expulsado por el lider", _
                 p_GuildId, _
                 UserIndex, _
-                eGuildMembershipState.Active _
+                "active" _
             )
             
         End If
@@ -312,26 +312,10 @@ Public Function GetAspirantes() As String()
         On Error GoTo GetAspirantes_Err
         
 
-        Dim OldQ   As Integer
-
         Dim list() As String
 
-        Dim i      As Long
     
-100     OldQ = Me.CantidadAspirantes()
-    
-102     If OldQ > 1 Then
-104         ReDim list(OldQ - 1) As String
-        Else
-106         ReDim list(0) As String
-
-        End If
-    
-108     For i = 1 To OldQ
-110         list(i - 1) = GetVar(SOLICITUDESFILE, "SOLICITUD" & i, "Nombre")
-112     Next i
-    
-114     GetAspirantes = list
+        GetAspirantes = list
 
         
         Exit Function
@@ -343,28 +327,15 @@ GetAspirantes_Err:
 End Function
 
 Public Function CantidadAspirantes() As Integer
-        
-        On Error GoTo CantidadAspirantes_Err
-        
-
-        Dim Temps As String
-
-100     CantidadAspirantes = 0
-102     Temps = GetVar(SOLICITUDESFILE, "INIT", "CantSolicitudes")
-
-104     If Not IsNumeric(Temps) Then
-            Exit Function
-
-        End If
-
-106     CantidadAspirantes = CInt(Temps)
-
-        
-        Exit Function
+    On Error GoTo CantidadAspirantes_Err
+    
+    CantidadAspirantes = GetDBValue("guild_memberships", "COUNT(1)", "guild_id", p_GuildId)
+    
+    Exit Function
 
 CantidadAspirantes_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "clsClan.CantidadAspirantes", Erl)
-110     Resume Next
+    Call RegistrarError(Err.Number, Err.Description, "clsClan.CantidadAspirantes", Erl)
+    Resume Next
         
 End Function
 
@@ -372,7 +343,7 @@ Public Function DetallesSolicitudAspirante(ByVal NroAspirante As Integer) As Str
         
         On Error GoTo DetallesSolicitudAspirante_Err
         
-100     DetallesSolicitudAspirante = GetVar(SOLICITUDESFILE, "SOLICITUD" & NroAspirante, "Detalle")
+100     DetallesSolicitudAspirante = ""
 
         
         Exit Function
@@ -393,12 +364,6 @@ Public Function NumeroDeAspirante(ByRef nombre As String) As Integer
 100     NumeroDeAspirante = 0
     
 102     For i = 1 To MAXASPIRANTES
-
-104         If UCase$(Trim$(GetVar(SOLICITUDESFILE, "SOLICITUD" & i, "Nombre"))) = UCase$(nombre) Then
-106             NumeroDeAspirante = i
-                Exit Function
-
-            End If
 
 108     Next i
 
