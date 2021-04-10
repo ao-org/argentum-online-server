@@ -209,7 +209,16 @@ Sub MostrarBloqueosPuerta(ByVal toMap As Boolean, _
                 Call Bloquear(toMap, sndIndex, X, Y, MapData(Map, X, Y).Blocked)
                 ' Bloqueos inferiores
                 Call Bloquear(toMap, sndIndex, X, Y + 1, MapData(Map, X, Y + 1).Blocked)
-            
+
+            Case 5
+                ' Bloqueos superiores ver ReyarB
+                Call Bloquear(toMap, sndIndex, X, Y, MapData(Map, X, Y).Blocked)
+                Call Bloquear(toMap, sndIndex, X, Y - 1, MapData(Map, X, Y - 1).Blocked)
+
+'                ' Bloqueos inferiores
+'                Call Bloquear(toMap, sndIndex, X + 1, Y - 2, MapData(Map, X + 1, Y - 2).Blocked)
+'                Call Bloquear(toMap, sndIndex, X + 2, Y - 2, MapData(Map, X + 2, Y - 2).Blocked)
+'                Call Bloquear(toMap, sndIndex, X + 3, Y - 2, MapData(Map, X + 3, Y - 2).Blocked)
         End Select
 
         Exit Sub
@@ -270,6 +279,17 @@ Sub BloquearPuerta(ByVal Map As Integer, _
                 MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked Or eBlock.NORTH, MapData(Map, X, Y).Blocked And Not eBlock.NORTH)
                 ' Cambio bloqueos inferiores
                 MapData(Map, X, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X, Y + 1).Blocked Or eBlock.SOUTH, MapData(Map, X, Y + 1).Blocked And Not eBlock.SOUTH)
+                
+            Case 5
+                ' Bloqueos superiores vertical ver ReyarB
+                MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked Or eBlock.ALL_SIDES, MapData(Map, X, Y).Blocked And Not eBlock.ALL_SIDES)
+                MapData(Map, X, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X, Y - 1).Blocked Or eBlock.ALL_SIDES, MapData(Map, X, Y - 1).Blocked And Not eBlock.ALL_SIDES)
+                
+'                ' Cambio bloqueos Puerta abierta
+'                MapData(Map, X + 1, Y - 2).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y - 2).Blocked Or eBlock.ALL_SIDES, MapData(Map, X + 1, Y - 2).Blocked And Not eBlock.ALL_SIDES)
+'                MapData(Map, X + 2, Y - 2).Blocked = IIf(Bloquear, MapData(Map, X + 2, Y - 2).Blocked Or eBlock.ALL_SIDES, MapData(Map, X + 2, Y - 2).Blocked And Not eBlock.ALL_SIDES)
+'                MapData(Map, X + 3, Y - 2).Blocked = IIf(Bloquear, MapData(Map, X + 3, Y - 2).Blocked Or eBlock.ALL_SIDES, MapData(Map, X + 3, Y - 2).Blocked And Not eBlock.ALL_SIDES)
+                
         End Select
 
         ' Mostramos a todos
