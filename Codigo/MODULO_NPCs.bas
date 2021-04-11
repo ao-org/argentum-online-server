@@ -234,11 +234,9 @@ Sub ResetNpcFlags(ByVal NpcIndex As Integer)
 144         .Snd2 = 0
 146         .Snd3 = 0
 148         .TierraInvalida = 0
-150         .UseAINow = False
 152         .AtacaUsuarios = True
 154         .AtacaNPCs = True
 156         .AIAlineacion = e_Alineacion.ninguna
-158         .AIPersonalidad = e_Personalidad.ninguna
 160         .NPCIdle = False
         End With
 
@@ -1070,7 +1068,7 @@ Function NPCHostiles(ByVal Map As Integer) As Integer
 102     For NpcIndex = 1 To LastNPC
 
             '¿esta vivo?
-104         If NpcList(NpcIndex).flags.NPCActive And NpcList(NpcIndex).Pos.Map = Map And NpcList(NpcIndex).Hostile = 1 And NpcList(NpcIndex).Stats.Alineacion = 2 Then
+104         If NpcList(NpcIndex).flags.NPCActive And NpcList(NpcIndex).Pos.Map = Map And NpcList(NpcIndex).Hostile = 1 Then
 106             cont = cont + 1
            
             End If
@@ -1312,9 +1310,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
     
             End If
     
-264         .flags.NPCActive = True
 266         .flags.NPCActive = True
-268         .flags.UseAINow = False
 
             Select Case val(Leer.GetValue("NPC" & NpcNumber, "RestriccionDeAtaque"))
                 Case 0 ' Todos
@@ -1529,7 +1525,7 @@ Sub DoFollow(ByVal NpcIndex As Integer, ByVal UserName As String)
             .flags.AttackedBy = UserName
             .Target = NameIndex(UserName)
             .flags.Follow = True
-            .Movement = 4 'follow
+            .Movement = TipoAI.NPCDEFENSA
             .Hostile = 0
 
         End If
@@ -1550,11 +1546,10 @@ Public Sub FollowAmo(ByVal NpcIndex As Integer)
 100     With NpcList(NpcIndex)
 102         .flags.Follow = True
 104         .Movement = TipoAI.SigueAmo
-106         .Target = .MaestroUser
 108         .PFINFO.TargetUser = .MaestroUser
 110         .PFINFO.PathLenght = 0
 112         .Hostile = 0
-114         .Target = 0
+114         .Target = 0 ' No deberia ser .MaestroUser ?
 116         .TargetNPC = 0
         End With
 

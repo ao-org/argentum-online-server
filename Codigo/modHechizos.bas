@@ -187,60 +187,115 @@ NpcLanzaSpellSobreUser_Err:
 End Sub
 
 Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer, ByVal Spell As Integer)
-        'solo hechizos ofensivos!
-        
-        On Error GoTo NpcLanzaSpellSobreNpc_Err
-        
+  On Error GoTo NpcLanzaSpellSobreNpc_Err
 
-100     If NpcList(NpcIndex).CanAttack = 0 Then Exit Sub
+  If NpcList(NpcIndex).CanAttack = 0 Then Exit Sub
 
-102     NpcList(NpcIndex).CanAttack = 0
+  ' Emancu: ESTO ESTA MEDIO RARO!!! Nadie lo pone en 1 de nuevo.
+  NpcList(NpcIndex).CanAttack = 0
 
-        Dim Daño As Integer
+  Dim Daño As Integer
 
-104     If Hechizos(Spell).SubeHP = 2 Then
-    
-106         Daño = RandomNumber(Hechizos(Spell).MinHp, Hechizos(Spell).MaxHp)
-108         Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessagePlayWave(Hechizos(Spell).wav, NpcList(TargetNPC).Pos.X, NpcList(TargetNPC).Pos.Y))
-110         Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessageCreateFX(NpcList(TargetNPC).Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
-112         Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessageTextOverChar(PonerPuntos(Daño), NpcList(TargetNPC).Char.CharIndex, vbRed))
-        
-114         NpcList(TargetNPC).Stats.MinHp = NpcList(TargetNPC).Stats.MinHp - Daño
+  With NpcList(TargetNPC)
+    If Hechizos(Spell).SubeHP = 1 Then ' Cura
+      Daño = RandomNumber(Hechizos(Spell).MinHp, Hechizos(Spell).MaxHp)
 
-            If NpcList(NpcIndex).NPCtype = DummyTarget Then
-                NpcList(NpcIndex).Contadores.UltimoAtaque = 30
-            End If
+      Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.Y))
+      Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessageCreateFX(.Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
+      ' Emancu: No hacen falta los dos
+      Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessageTextOverChar(PonerPuntos(Daño), .Char.CharIndex, vbGreen))
+      Call SendData(SendTarget.ToPCArea, TargetNPC, PrepareMessageTextCharDrop(DañoStr, .Char.CharIndex, vbGreen))
 
-            ' Mascotas dan experiencia al amo
-116         If NpcList(NpcIndex).MaestroUser > 0 Then
-118             Call CalcularDarExp(NpcList(NpcIndex).MaestroUser, TargetNPC, Daño)
+      .Stats.MinHp = .Stats.MinHp + Daño
 
-                ' NPC de invasión
-                If NpcList(TargetNPC).flags.InvasionIndex Then
-                    Call SumarScoreInvasion(NpcList(TargetNPC).flags.InvasionIndex, NpcList(NpcIndex).MaestroUser, Daño)
-                End If
-            End If
-        
-            'Muere
-120         If NpcList(TargetNPC).Stats.MinHp < 1 Then
-122             NpcList(TargetNPC).Stats.MinHp = 0
-                ' If NpcList(NpcIndex).MaestroUser > 0 Then
-                '  Call MuereNpc(TargetNPC, NpcList(NpcIndex).MaestroUser)
-                '  Else
-124             Call MuereNpc(TargetNPC, 0)
+      If .Stats.MinHp > .Stats.MaxHp Then .Stats.MinHp = .Stats.MaxHp
 
-                '  End If
-            End If
-    
+      DañoStr = PonerPuntos(Daño)
+
+    ElseIf Hechizos(Spell).SubeHP = 2 Then
+
+      Daño = RandomNumber(Hechizos(Spell).MinHp, Hechizos(Spell).MaxHp)
+      Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.Y))
+      Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessageCreateFX(.Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
+      Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessageTextOverChar(PonerPuntos(Daño), .Char.CharIndex, vbRed))
+
+      .Stats.MinHp = .Stats.MinHp - Daño
+
+      If .NPCtype = DummyTarget Then
+        .Contadores.UltimoAtaque = 30
+      End If
+
+      ' Mascotas dan experiencia al amo
+      If .MaestroUser > 0 Then
+        Call CalcularDarExp(.MaestroUser, TargetNPC, Daño)
+
+        ' NPC de invasión
+        If .flags.InvasionIndex Then
+          Call SumarScoreInvasion(.flags.InvasionIndex, .MaestroUser, Daño)
         End If
-    
-        
-        Exit Sub
+      End If
+
+      'Muere
+      If .Stats.MinHp < 1 Then
+        .Stats.MinHp = 0
+        Call MuereNpc(TargetNPC, 0)
+      End If
+
+
+    ElseIf Hechizos(Spell).Paraliza = 1 Then
+
+      If .flags.Paralizado = 0 Then
+        Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.Y))
+        Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessageCreateFX(.Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
+
+        .flags.Paralizado = 1
+        .Counters.Paralisis = Hechizos(Spell).Duration / 2
+
+      End If
+
+    ElseIf Hechizos(Spell).Inmoviliza = 1 Then
+
+      If .flags.Inmovilizado = 0 Then
+        Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.Y))
+        Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessageCreateFX(.Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
+
+        .flags.Inmovilizado = 1
+        .Counters.Inmovilizado = Hechizos(Spell).Duration / 2
+      End If
+
+    ElseIf Hechizos(Spell).RemoverParalisis = 1 Then
+
+      If .flags.Paralizado + .flags.Inmovilizado > 0 Then
+        Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.Y))
+        Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessageCreateFX(.Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
+
+        .flags.Paralizado = 0
+        .Counters.Paralisis = 0
+        .flags.Inmovilizado = 0
+        .Counters.Inmovilizar = 0
+
+      End If
+
+    ElseIf Hechizos(Spell).incinera = 1 Then
+      If .flags.Incinerado = 0 Then
+        Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.Y))
+
+        If Hechizos(Spell).Particle > 0 Then '¿Envio Particula?
+          Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessageParticleFX(.Char.CharIndex, Hechizos(Spell).Particle, Hechizos(Spell).TimeParticula, False))
+
+        End If
+
+        .flags.Incinerado = 1
+      End If
+    End If
+  End With
+
+  Exit Sub
 
 NpcLanzaSpellSobreNpc_Err:
-126     Call RegistrarError(Err.Number, Err.Description, "modHechizos.NpcLanzaSpellSobreNpc", Erl)
-128     Resume Next
-        
+  Call RegistrarError(Err.Number, Err.Description, "modHechizos.NpcLanzaSpellSobreNpc", Erl)
+  Resume Next
+
 End Sub
 
 Function TieneHechizo(ByVal i As Integer, ByVal UserIndex As Integer) As Boolean

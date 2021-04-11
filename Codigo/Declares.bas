@@ -1736,7 +1736,7 @@ End Type
 
 Public Type tFacciones
 
-    Status As Byte
+    Status As Byte ' Esto deberia ser e_Facciones
     ArmadaReal As Byte
     FuerzasCaos As Byte
     CriminalesMatados As Long
@@ -1886,7 +1886,6 @@ End Type
 
 Public Type NPCStats
 
-    Alineacion As Integer
     MaxHp As Long
     MinHp As Long
     MaxHit As Integer
@@ -1899,13 +1898,13 @@ End Type
 
 Public Type NpcCounters
 
-    Paralisis As Integer
-    TiempoExistencia As Long
-    IntervaloAtaque As Long
-    IntervaloMovimiento As Long
+    Paralisis              As Long
+    TiempoExistencia       As Long
+    IntervaloAtaque        As Long
+    IntervaloMovimiento    As Long
     InvervaloLanzarHechizo As Long
-    InvervaloRespawn As Long
-    UltimoAtaque As Long
+    InvervaloRespawn       As Long
+    UltimoAtaque           As Long
 
 End Type
 
@@ -1917,21 +1916,19 @@ Public Type NPCFlags
     Respawn As Byte
     NPCActive As Boolean '¿Esta vivo?
     Follow As Boolean
-    Faccion As Byte
+    Faccion As e_Facciones
     LanzaSpells As Byte
     NPCIdle As Boolean
-    
+
     ' Invasiones
     InvasionIndex As Integer
     SpawnBox As Integer
     IndexInInvasion As Integer
-    
+
     '[KEVIN]
     'DeQuest As Byte
-    
-    'ExpDada As Long
+
     ExpCount As Long '[ALEJO]
-    '[/KEVIN]
     
     OldMovement As TipoAI
     OldHostil As Byte
@@ -1939,19 +1936,14 @@ Public Type NPCFlags
     AguaValida As Byte
     TierraInvalida As Byte
     
-    UseAINow As Boolean
+    ' UseAINow As Boolean No se usa, borrar de la DB!!!! 
     Sound As Integer
     Attacking As Integer
     AttackedBy As String
     AttackedFirstBy As String
-    Category1 As String
-    Category2 As String
-    Category3 As String
-    Category4 As String
-    Category5 As String
     backup As Byte
     RespawnOrigPos As Byte
-    
+
     Envenenado As Byte
     Paralizado As Byte
     Inmovilizado As Byte
@@ -1961,12 +1953,11 @@ Public Type NPCFlags
     Snd1 As Integer
     Snd2 As Integer
     Snd3 As Integer
-    
+
     AtacaUsuarios As Boolean ' Si el NPC puede atacar usuarios
     AtacaNPCs As Boolean     ' Si el NPC puede atacar otros NPC
-    
+
     AIAlineacion As e_Alineacion
-    AIPersonalidad As e_Personalidad
 
 End Type
 

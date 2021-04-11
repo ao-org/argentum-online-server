@@ -791,12 +791,10 @@ Private Sub NpcDaño(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 180             Call AllFollowAmo(NpcList(NpcIndex).MaestroUser)
             Else
                 'Al matarlo no lo sigue mas
-182             If NpcList(NpcIndex).Stats.Alineacion = 0 Then
-184                 NpcList(NpcIndex).Movement = NpcList(NpcIndex).flags.OldMovement
-186                 NpcList(NpcIndex).Hostile = NpcList(NpcIndex).flags.OldHostil
-188                 NpcList(NpcIndex).flags.AttackedBy = vbNullString
-                    NpcList(NpcIndex).Target = 0
-                End If
+184             NpcList(NpcIndex).Movement = NpcList(NpcIndex).flags.OldMovement
+186             NpcList(NpcIndex).Hostile = NpcList(NpcIndex).flags.OldHostil
+188             NpcList(NpcIndex).flags.AttackedBy = vbNullString
+                NpcList(NpcIndex).Target = 0
             End If
         
 190         Call UserDie(UserIndex)
