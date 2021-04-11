@@ -9221,9 +9221,8 @@ Private Sub HandleLeaveFaction(ByVal UserIndex As Integer)
 
                 End If
 
+                Exit Sub
             End If
-        
-126         If .flags.TargetNPC = 0 Then Exit Sub
         
 128         If NpcList(.flags.TargetNPC).NPCtype = eNPCType.Enlistador Then
 
@@ -10014,7 +10013,7 @@ Private Sub HandleCreaturesInMap(ByVal UserIndex As Integer)
 116                 If NpcList(i).Pos.Map = Map Then
 
                         'íesta vivo?
-118                     If NpcList(i).flags.NPCActive And NpcList(i).Hostile = 1 And NpcList(i).Stats.Alineacion = 2 Then
+118                     If NpcList(i).flags.NPCActive And NpcList(i).Hostile = 1 Then
 120                         If NPCcount1 = 0 Then
 122                             ReDim List1(0) As String
 124                             ReDim NPCcant1(0) As Integer

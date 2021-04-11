@@ -1180,7 +1180,7 @@ Sub NPCAtacado(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         'Guardamos el usuario que ataco el npc.
 104     If NpcList(NpcIndex).Movement <> ESTATICO And NpcList(NpcIndex).flags.AttackedFirstBy = vbNullString Then
 106         NpcList(NpcIndex).Target = UserIndex
-108         NpcList(NpcIndex).Movement = TipoAI.NpcMaloAtacaUsersBuenos
+108         NpcList(NpcIndex).Movement = TipoAI.NpcMaloAtacaUsersBuenos ' Esta mal essto
 110         NpcList(NpcIndex).flags.AttackedBy = UserList(UserIndex).name
         End If
 
