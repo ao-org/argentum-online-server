@@ -8960,27 +8960,7 @@ Private Sub HandleChangePassword(ByVal UserIndex As Integer)
 110         oldPass = Buffer.ReadASCIIString()
 112         newPass = Buffer.ReadASCIIString()
 
-114         If Database_Enabled Then
-116             Call ChangePasswordDatabase(UserIndex, SDesencriptar(oldPass), SDesencriptar(newPass))
-        
-            Else
-
-118             If LenB(SDesencriptar(newPass)) = 0 Then
-120                 Call WriteConsoleMsg(UserIndex, "Debe especificar una contraseña nueva, inténtelo de nuevo.", FontTypeNames.FONTTYPE_INFO)
-                Else
-122                 oldPass2 = GetVar(CuentasPath & UserList(UserIndex).Cuenta & ".act", "INIT", "PASSWORD")
-                
-124                 If SDesencriptar(oldPass2) <> SDesencriptar(oldPass) Then
-126                     Call WriteConsoleMsg(UserIndex, "La contraseña actual proporcionada no es correcta. La contraseña no ha sido cambiada, inténtelo de nuevo.", FontTypeNames.FONTTYPE_INFO)
-                    Else
-128                     Call WriteVar(CuentasPath & UserList(UserIndex).Cuenta & ".act", "INIT", "PASSWORD", newPass)
-130                     Call WriteConsoleMsg(UserIndex, "La contraseña de su cuenta fue cambiada con éxito.", FontTypeNames.FONTTYPE_INFO)
-
-                    End If
-
-                End If
-
-            End If
+            Call ChangePasswordDatabase(UserIndex, SDesencriptar(oldPass), SDesencriptar(newPass))
         
             'If we got here then packet is complete, copy data back to original queue
 132         Call .incomingData.CopyBuffer(Buffer)
@@ -21298,7 +21278,7 @@ Public Sub WriteUpdateUserStats(ByVal UserIndex As Integer)
 116         Call .WriteInteger(UserList(UserIndex).Stats.MinSta)
 118         Call .WriteLong(UserList(UserIndex).Stats.GLD)
 120         Call .WriteByte(UserList(UserIndex).Stats.ELV)
-122         Call .WriteLong(UserList(UserIndex).Stats.ELU)
+122         Call .WriteLong(ExpLevelUp(UserList(UserIndex).Stats.ELV))
 124         Call .WriteLong(UserList(UserIndex).Stats.Exp)
 126         Call .WriteByte(UserList(UserIndex).clase)
 
@@ -25976,22 +25956,8 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
 146         Call CloseSocket(targetUserIndex)
         End If
     
-148     If Database_Enabled Then
-150         Call BorrarUsuarioDatabase(UserDelete)
-        
-        Else
 
-152         If PersonajeExiste(UserDelete) Then
-154             Call FileCopy(CharPath & UserDelete & ".chr", DeletePath & UCase$(UserDelete) & ".chr")
-156             Call BorrarPJdeCuenta(UserDelete)
-        
-                'Call WriteShowMessageBox(UserIndex, "El personaje " & UserDelete & " a sido borrado de la cuenta.")
-158             Call Kill(CharPath & UserDelete & ".chr")
-
-            End If
-
-        End If
-    
+        Call BorrarUsuarioDatabase(UserDelete)
 160     Call WritePersonajesDeCuenta(UserIndex)
   
         Exit Sub
