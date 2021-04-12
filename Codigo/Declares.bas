@@ -1899,6 +1899,7 @@ End Type
 Public Type NpcCounters
 
     Paralisis              As Long
+    Inmovilizado           As Long
     TiempoExistencia       As Long
     IntervaloAtaque        As Long
     IntervaloMovimiento    As Long
@@ -1936,7 +1937,7 @@ Public Type NPCFlags
     AguaValida As Byte
     TierraInvalida As Byte
     
-    ' UseAINow As Boolean No se usa, borrar de la DB!!!! 
+    ' UseAINow As Boolean No se usa, borrar de la DB!!!!
     Sound As Integer
     Attacking As Integer
     AttackedBy As String
@@ -1947,6 +1948,7 @@ Public Type NPCFlags
     Envenenado As Byte
     Paralizado As Byte
     Inmovilizado As Byte
+    Incinerado As Byte
     invisible As Byte
     Bendicion As Byte
 
