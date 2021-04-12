@@ -8,11 +8,11 @@ Public Enum TipoAI
                     ' MueveAlAzarAgresivo (ataca en cuanto ve a alguien)
 
     NpcMaloAtacaUsersBuenos = 3
-    NPCDEFENSA = 4
+    NpcDefensa = 4
     GuardiasAtacanCriminales = 5 ' No se usa
-    GuardiasAtacanCiudadanos = 6 
+    GuardiasAtacanCiudadanos = 6
     SigueAmo = 8                 ' No se usa
-    NpcAtacaNpc = 9              
+    NpcAtacaNpc = 9
     NpcPathfinding = 10          ' No se usa
 
     'Pretorianos
@@ -82,7 +82,7 @@ Public Sub NPCAI(ByVal NpcIndex As Integer)
                 falladesc = " fallo NpcMaloAtacaUsersBuenos"
                 Call PerseguirUsuarioCercano(NpcIndex)
 
-            Case TipoAI.NPCDEFENSA
+            Case TipoAI.NpcDefensa
                 Call SeguirAgresor(NpcIndex)
 
             'Case TipoAI.GuardiasAtacanCiudadanos
@@ -632,37 +632,37 @@ End Sub
 Private Sub NpcLanzaUnSpell(ByVal NpcIndex As Integer)
     On Error GoTo NpcLanzaUnSpell_Err
     ' Elegir hechizo, dependiendo del hechi lo tiro sobre NPC, sobre Target o Sobre area (cerca de user o NPC si no tiene)
-    Dim spellIndex As Integer
-    Dim target As Integer
+    Dim SpellIndex As Integer
+    Dim Target As Integer
 
     If Not IntervaloPermiteLanzarHechizo(NpcIndex) Then Exit Sub
 
-    target = NpcList(NpcIndex).Target
-    spellIndex = NpcList(NpcIndex).Spells(RandomNumber(1, NpcList(NpcIndex).flags.LanzaSpells))
+    Target = NpcList(NpcIndex).Target
+    SpellIndex = NpcList(NpcIndex).Spells(RandomNumber(1, NpcList(NpcIndex).flags.LanzaSpells))
 
-    Select Case Hechizos(spellIndex).Target
+    Select Case Hechizos(SpellIndex).Target
       Case TargetType.uUsuarios
 
-        If UsuarioAtacable(target) And UserList(target).flags.NoMagiaEfeceto = 0 Then
-          Call NpcLanzaSpellSobreUser(NpcIndex, target, spellIndex)
+        If UsuarioAtacable(Target) And UserList(Target).flags.NoMagiaEfeceto = 0 Then
+          Call NpcLanzaSpellSobreUser(NpcIndex, Target, SpellIndex)
 
-          If UserList(target).flags.AtacadoPorNpc = 0 Then
-            UserList(target).flags.AtacadoPorNpc = NpcIndex
+          If UserList(Target).flags.AtacadoPorNpc = 0 Then
+            UserList(Target).flags.AtacadoPorNpc = NpcIndex
           End If
         End If
 
       Case TargetType.uNPC
-        Call NpcLanzaSpellSobreNpc(NpcIndex, NpcIndex, spellIndex)
+        Call NpcLanzaSpellSobreNpc(NpcIndex, NpcIndex, SpellIndex)
 
       Case TargetType.uUsuariosYnpc
-        If UsuarioAtacable(target) And UserList(target).flags.NoMagiaEfeceto = 0 Then
-          Call NpcLanzaSpellSobreUser(NpcIndex, target, spellIndex)
+        If UsuarioAtacable(Target) And UserList(Target).flags.NoMagiaEfeceto = 0 Then
+          Call NpcLanzaSpellSobreUser(NpcIndex, Target, SpellIndex)
 
-          If UserList(target).flags.AtacadoPorNpc = 0 Then
-            UserList(target).flags.AtacadoPorNpc = NpcIndex
+          If UserList(Target).flags.AtacadoPorNpc = 0 Then
+            UserList(Target).flags.AtacadoPorNpc = NpcIndex
           End If
         Else
-          Call NpcLanzaSpellSobreNpc(NpcIndex, NpcIndex, spellIndex)
+          Call NpcLanzaSpellSobreNpc(NpcIndex, NpcIndex, SpellIndex)
 
         End If
 
@@ -710,7 +710,7 @@ End Sub
 ' ---------------------------------------------------------------------------------------------------
 
 Private Function EsObjetivoValido(ByVal NpcIndex As Integer, ByVal UserIndex As Integer) As Boolean
-  If UserIndex = 0 Then Exit Sub
+  If UserIndex = 0 Then Exit Function
 
   With NpcList(NpcIndex)
 
@@ -726,11 +726,11 @@ Private Function EsObjetivoValido(ByVal NpcIndex As Integer, ByVal UserIndex As 
 
 
     Select Case .flags.AIAlineacion
-      Case e_Alineacion.Real
-        EsObjetivoValido = (EsObjetivoValido And (Status(UserIndex) Mod 2 = 1)
+        Case e_Alineacion.Real
+            EsObjetivoValido = ((EsObjetivoValido And (Status(UserIndex) Mod 2) = 1))
 
       Case e_Alineacion.Caos
-        EsObjetivoValido = (EsObjetivoValido And (Status(UserIndex) Mod 2 = 0)
+        EsObjetivoValido = ((EsObjetivoValido And (Status(UserIndex) Mod 2) = 0))
 
       Case e_Alineacion.ninguna
         ' Ok. No hay nada especial para hacer, cualquiera puede ser objetivo!
@@ -743,7 +743,7 @@ End Function
 
 Private Function EnRangoVision(ByVal NpcIndex As Integer, ByVal UserIndex As Integer) As Boolean
     Dim userPos As WorldPos
-    Dim npcPos As WorldPos
+    Dim NpcPos As WorldPos
     Dim Limite_X As Byte, Limite_Y As Byte
 
     ' Si alguno es cero, devolve false
@@ -753,12 +753,12 @@ Private Function EnRangoVision(ByVal NpcIndex As Integer, ByVal UserIndex As Int
     Limite_Y = IIf(NpcList(NpcIndex).Distancia <> 0, NpcList(NpcIndex).Distancia, RANGO_VISION_Y)
 
     userPos = UserList(UserIndex).Pos
-    npcPos = NpcList(NpcIndex).Pos
+    NpcPos = NpcList(NpcIndex).Pos
 
     EnRangoVision = ( _
-      (userPos.Map = npcPos.map) And _
-      (Abs(userPos.X - npcPos.X) <= Limite_X) And _
-      (Abs(userPos.Y - npcPos.Y) <= Limite_Y) _
+      (userPos.Map = NpcPos.Map) And _
+      (Abs(userPos.X - NpcPos.X) <= Limite_X) And _
+      (Abs(userPos.Y - NpcPos.Y) <= Limite_Y) _
     )
 
 End Function

@@ -1276,7 +1276,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 218         .Stats.MinHIT = val(Leer.GetValue("NPC" & NpcNumber, "MinHIT"))
 220         .Stats.def = val(Leer.GetValue("NPC" & NpcNumber, "DEF"))
 222         .Stats.defM = val(Leer.GetValue("NPC" & NpcNumber, "DEFm"))
-224         .Stats.Alineacion = val(Leer.GetValue("NPC" & NpcNumber, "Alineacion"))
+224         .flags.AIAlineacion = val(Leer.GetValue("NPC" & NpcNumber, "Alineacion"))
     
 226         .Invent.NroItems = val(Leer.GetValue("NPC" & NpcNumber, "NROITEMS"))
     

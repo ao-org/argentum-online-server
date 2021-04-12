@@ -188,6 +188,7 @@ End Sub
 
 Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer, ByVal Spell As Integer)
   On Error GoTo NpcLanzaSpellSobreNpc_Err
+    
 
   If NpcList(NpcIndex).CanAttack = 0 Then Exit Sub
 
@@ -195,11 +196,12 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
   NpcList(NpcIndex).CanAttack = 0
 
   Dim Daño As Integer
+  Dim DañoStr As String
 
   With NpcList(TargetNPC)
     If Hechizos(Spell).SubeHP = 1 Then ' Cura
       Daño = RandomNumber(Hechizos(Spell).MinHp, Hechizos(Spell).MaxHp)
-
+      DañoStr = PonerPuntos(Daño)
       Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.Y))
       Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessageCreateFX(.Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
       ' Emancu: No hacen falta los dos
@@ -210,7 +212,7 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
 
       If .Stats.MinHp > .Stats.MaxHp Then .Stats.MinHp = .Stats.MaxHp
 
-      DañoStr = PonerPuntos(Daño)
+
 
     ElseIf Hechizos(Spell).SubeHP = 2 Then
 
@@ -249,7 +251,7 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
         Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessageCreateFX(.Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
 
         .flags.Paralizado = 1
-        .Counters.Paralisis = Hechizos(Spell).Duration / 2
+        .Contadores.Paralisis = Hechizos(Spell).Duration / 2
 
       End If
 
@@ -260,7 +262,8 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
         Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessageCreateFX(.Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
 
         .flags.Inmovilizado = 1
-        .Counters.Inmovilizado = Hechizos(Spell).Duration / 2
+        'EMANCU: Faltan contador de inmovilizado
+        '.Contadores.Inmovilizado = Hechizos(Spell).Duration / 2
       End If
 
     ElseIf Hechizos(Spell).RemoverParalisis = 1 Then
@@ -270,9 +273,9 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
         Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessageCreateFX(.Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
 
         .flags.Paralizado = 0
-        .Counters.Paralisis = 0
+        .Contadores.Paralisis = 0
         .flags.Inmovilizado = 0
-        .Counters.Inmovilizar = 0
+        '.Contadores.Inmovilizar = 0
 
       End If
 
