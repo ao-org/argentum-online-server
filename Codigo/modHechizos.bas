@@ -142,6 +142,28 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 176                 Call WritePosUpdate(UserIndex)
 
                 End If
+            
+            ElseIf Hechizos(Spell).RemoverParalisis = 1 Then
+                
+                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.Y))
+                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
+                
+                If .flags.Paralizado > 0 Then
+                    .flags.Paralizado = 0
+                    .Counters.Paralisis = 0
+                    
+                    Call WriteParalizeOK(UserIndex)
+                End If
+                
+                If .flags.Inmovilizado > 0 Then
+                    .flags.Inmovilizado = 0
+                    .Counters.Inmovilizado = 0
+                    
+                    Call WriteInmovilizaOK(UserIndex)
+                End If
+
+                Call WritePosUpdate(UserIndex)
+
 
 178         ElseIf Hechizos(Spell).incinera = 1 Then
 180             Debug.Print "incinerar"
@@ -275,7 +297,7 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
         .flags.Paralizado = 0
         .Contadores.Paralisis = 0
         .flags.Inmovilizado = 0
-        '.Contadores.Inmovilizar = 0
+        .Contadores.Inmovilizado = 0
 
       End If
 
@@ -2016,8 +2038,9 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
 152             Call NPCAtacado(NpcIndex, UserIndex)
 154             Call InfoHechizo(UserIndex)
 156             NpcList(NpcIndex).flags.Paralizado = 1
-158             NpcList(NpcIndex).flags.Inmovilizado = 0
 160             NpcList(NpcIndex).Contadores.Paralisis = (Hechizos(hIndex).Duration * 6.5) * 6
+                NpcList(NpcIndex).flags.Inmovilizado = 0
+                NpcList(NpcIndex).Contadores.Inmovilizado = 0
 
 162             Call AnimacionIdle(NpcIndex, False)
                 
@@ -2080,7 +2103,7 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
 
         End If
  
-214     If Hechizos(hIndex).Inmoviliza = 1 And NpcList(NpcIndex).flags.Paralizado = 0 Then
+214     If Hechizos(hIndex).Inmoviliza = 1 Then
 216         If NpcList(NpcIndex).flags.AfectaParalisis = 0 Then
 218             If Not PuedeAtacarNPC(UserIndex, NpcIndex) Then
 220                 b = False
@@ -2090,8 +2113,9 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
 
 222             Call NPCAtacado(NpcIndex, UserIndex)
 224             NpcList(NpcIndex).flags.Inmovilizado = 1
-226             NpcList(NpcIndex).flags.Paralizado = 0
-228             NpcList(NpcIndex).Contadores.Paralisis = (Hechizos(hIndex).Duration * 6.5) * 6
+229             NpcList(NpcIndex).Contadores.Inmovilizado = (Hechizos(hIndex).Duration * 6.5) * 6
+                NpcList(NpcIndex).flags.Paralizado = 0
+                NpcList(NpcIndex).Contadores.Paralisis = 0
 
 230             Call AnimacionIdle(NpcIndex, True)
 
