@@ -19,7 +19,6 @@ Function Principal(ByRef UserIndex As Integer, ByRef Logout As Boolean) As JS_Ob
 106         Objeto.Item("name") = .name
 108         Objeto.Item("level") = .Stats.ELV
 110         Objeto.Item("exp") = CLng(.Stats.Exp)
-112         Objeto.Item("elu") = .Stats.ELU
 114         Objeto.Item("genre_id") = .genero
 116         Objeto.Item("race_id") = .raza
 118         Objeto.Item("class_id") = .clase

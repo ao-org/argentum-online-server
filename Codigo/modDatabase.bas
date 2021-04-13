@@ -120,7 +120,6 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
         QueryBuilder.Append "account_id = " & .AccountId & ", "
         QueryBuilder.Append "level = " & .Stats.ELV & ", "
         QueryBuilder.Append "exp = " & .Stats.Exp & ", "
-        QueryBuilder.Append "elu = " & .Stats.ELU & ", "
         QueryBuilder.Append "genre_id = " & .genero & ", "
         QueryBuilder.Append "race_id = " & .raza & ", "
         QueryBuilder.Append "class_id = " & .clase & ", "
@@ -344,7 +343,6 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
         QueryBuilder.Append "name = ?, "
         QueryBuilder.Append "level = " & .Stats.ELV & ", "
         QueryBuilder.Append "exp = " & CLng(.Stats.Exp) & ", "
-        QueryBuilder.Append "elu = " & .Stats.ELU & ", "
         QueryBuilder.Append "genre_id = " & .genero & ", "
         QueryBuilder.Append "race_id = " & .raza & ", "
         QueryBuilder.Append "class_id = " & .clase & ", "
@@ -732,7 +730,6 @@ With UserList(UserIndex)
     .name = QueryData!name
     .Stats.ELV = QueryData!level
     .Stats.Exp = QueryData!Exp
-    .Stats.ELU = QueryData!ELU
     .genero = QueryData!genre_id
     .raza = QueryData!race_id
     .clase = QueryData!class_id
