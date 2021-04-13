@@ -806,7 +806,7 @@ Public Function PuedeRetoConMensaje(ByVal UserIndex As Integer) As Boolean
         End If
         
         If MapInfo(.Pos.Map).Seguro = 0 Then
-            Call WriteConsoleMsg(UserIndex, "No puedes  estar en un mapa seguro.", FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "No puedes participar de un reto en un mapa inseguro.", FontTypeNames.FONTTYPE_INFO)
             Exit Function
         End If
         
