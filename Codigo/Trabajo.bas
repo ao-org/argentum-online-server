@@ -1357,7 +1357,7 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
         On Error GoTo ErrHandler
 
         Dim Suerte       As Integer
-        Dim res          As Integer
+        Dim res          As Long
         Dim RestaStamina As Byte
 
 100     RestaStamina = IIf(RedDePesca, 5, 1)
