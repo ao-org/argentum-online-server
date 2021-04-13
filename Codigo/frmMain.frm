@@ -2038,9 +2038,6 @@ Private Sub TIMER_AI_Timer()
                                 .Stats.MinHp = .Stats.MaxHp
                             End If
                         End If
-                
-                    ElseIf .flags.Paralizado = 1 Or .flags.Inmovilizado = 1 Then
-                        Call EfectoParalisisNpc(NpcIndex)
 
                     Else
                         'Usamos AI si hay algun user en el mapa

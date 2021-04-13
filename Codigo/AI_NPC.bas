@@ -52,11 +52,9 @@ Public Sub NPCAI(ByVal NpcIndex As Integer)
     Dim falladesc As String
 
     With NpcList(NpcIndex)
-
-        ' Esto lo quiero volar
-        ' Ningun NPC se puede mover si esta Inmovilizado o Paralizado
-        If .flags.Inmovilizado = 1 Or .flags.Paralizado = 1 Then Exit Sub
-
+        If .flags.Paralizado > 0 Then Call EfectoParalisisNpc(NpcIndex)
+        If .flags.Inmovilizado > 0 Then Call EfectoInmovilizadoNpc(NpcIndex)
+        
         '<<<<<<<<<<<Movimiento>>>>>>>>>>>>>>>>
         Select Case .Movement
 
@@ -71,7 +69,7 @@ Public Sub NPCAI(ByVal NpcIndex As Integer)
                     ' Buscas enemigos constantemente
                     Call PerseguirUsuarioCercanoEmancu(NpcIndex)
                 Else
-                    If RandomNumber(1, 6) = 3 Then
+                    If RandomNumber(1, 6) = 3 And .flags.Paralizado = 0 And .flags.Inmovilizado = 0 Then
                         Call MoveNPCChar(NpcIndex, CByte(RandomNumber(eHeading.NORTH, eHeading.WEST)))
                     Else
                         Call AnimacionIdle(NpcIndex, True)
@@ -146,7 +144,7 @@ Private Sub PerseguirUsuarioCercanoEmancu(ByVal NpcIndex As Integer)
 
         If .flags.AttackedBy <> vbNullString Then
           agresor = NameIndex(.flags.AttackedBy)
-          distanciaAgresor = Distancia(UserList(UserIndex).Pos, .Pos)
+          If agresor > 0 Then distanciaAgresor = Distancia(UserList(UserIndex).Pos, .Pos)
         End If
 
         ' Busco algun objetivo en el area.
@@ -179,33 +177,26 @@ Private Sub PerseguirUsuarioCercanoEmancu(ByVal NpcIndex As Integer)
         If npcEraPasivo Then
             ' Significa que alguien le pego, y esta en modo agresivo trantando de darle.
             ' El unico objetivo que importa aca es el atacante; los demas son ignorados.
-            If EnRangoVision(NpcIndex, agresor) Then
-                .Target = agresor
-            Else
-                Call RestoreOldMovement(NpcIndex)
-            End If
+            If EnRangoVision(NpcIndex, agresor) Then .Target = agresor
 
         Else ' El NPC es hostil siempre, le quiere pegar a alguien.
 
-            If minDistanciaAtacable > 0 Then ' Hay alguien atacable cerca
+            If minDistanciaAtacable > 0 And enemigoAtacableMasCercano > 0 Then ' Hay alguien atacable cerca
                 .Target = enemigoAtacableMasCercano
-              ElseIf enemigoCercano > 0 Then ' Hay alguien cerca, pero no es atacable
+            ElseIf enemigoCercano > 0 Then ' Hay alguien cerca, pero no es atacable
                 .Target = enemigoCercano
-            Else ' No hay nadie cerca en el rango del NPC.
-                Call RestoreOldMovement(NpcIndex)
             End If
 
         End If
 
-        ' Si el NPC tiene un objetivo
-        If .Target > 0 Then
 
-          ' Vuelvo a chequear que sea valido antes de atacar
-           '' If EsObjetivoValido(NpcIndex, .Target) Then
-            '    Call AI_AtacarObjetivo(NpcIndex)
+        ' Si el NPC tiene un objetivo
+        If .Target > 0 And Not EsGM(.Target) Then
+            Call AI_AtacarObjetivo(NpcIndex)
         Else
+            Call RestoreOldMovement(NpcIndex)
             ' No encontro a nadie cerca, camina unos pasos en cualquier direccion.
-            If RandomNumber(1, 6) = 3 Then '20%
+            If RandomNumber(1, 6) = 3 And .flags.Paralizado = 0 And .flags.Inmovilizado = 0 Then
                 Call MoveNPCChar(NpcIndex, CByte(RandomNumber(eHeading.NORTH, eHeading.WEST)))
             Else
                 Call AnimacionIdle(NpcIndex, True)
@@ -298,7 +289,7 @@ Private Sub AI_AtacarObjetivo(ByVal AtackerNpcIndex As Integer)
         
         EstaPegadoAlUsuario = (Distancia(.Pos, UserList(.Target).Pos) <= 1)
         AtacaConMagia = (.flags.LanzaSpells And (RandomNumber(1, 2) = 1 Or .flags.Inmovilizado Or Not EstaPegadoAlUsuario))
-        AtacaMelee = (EstaPegadoAlUsuario And UsuarioAtacable(.Target) And Not AtacaConMagia)
+        AtacaMelee = (EstaPegadoAlUsuario And UsuarioAtacable(.Target) And .flags.Paralizado = 0 And Not AtacaConMagia)
 
         If AtacaConMagia Then
             ' Le lanzo un Hechizo
@@ -314,9 +305,11 @@ Private Sub AI_AtacarObjetivo(ByVal AtackerNpcIndex As Integer)
 
         End If
 
-        ' Camino hacia el Usuario
-        tHeading = FindDirectionEAO(.Pos, UserList(.Target).Pos, .flags.AguaValida = 1, .flags.TierraInvalida = 0)
-        Call MoveNPCChar(AtackerNpcIndex, tHeading)
+        If UsuarioAtacable(.Target) Then
+            ' Camino hacia el Usuario
+            tHeading = FindDirectionEAO(.Pos, UserList(.Target).Pos, .flags.AguaValida = 1, .flags.TierraInvalida = 0)
+            Call MoveNPCChar(AtackerNpcIndex, tHeading)
+        End If
 
     End With
 
@@ -375,7 +368,7 @@ End Sub
 Private Sub SeguirAgresor(ByVal NpcIndex As Integer)
     
     ' La IA que se ejecuta cuando alguien le pega al maestro de una Mascota/Elemental
-    '   o si atacas a los NPCs con Movement = TIPOAI.NPCDEFENSA
+    '   o si atacas a los NPCs con Movement = TIPOAI.NpcDefensa
     
     ' A diferencia de IrUsuarioCercano(), aca no buscamos objetivos cercanos en el area
     ' porque ya establecemos como objetivo a el usuario que ataco a los NPC con este tipo de IA
