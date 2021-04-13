@@ -457,6 +457,7 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
         Dim aux              As Integer
     
         Dim PasoDeNivel      As Boolean
+        Dim experienceToLevelUp As Long
 
         ' Randomizo las vidas
 100     Randomize Time
@@ -464,8 +465,9 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
 102     With UserList(UserIndex)
 
 104         WasNewbie = EsNewbie(UserIndex)
+            experienceToLevelUp = ExpLevelUp(.Stats.ELV)
         
-106         Do While .Stats.Exp >= .Stats.ELU And .Stats.ELV < STAT_MAXELV
+106         Do While .Stats.Exp >= experienceToLevelUp And .Stats.ELV < STAT_MAXELV
             
                 'Store it!
                 'Call Statistics.UserLevelUp(UserIndex)
@@ -474,7 +476,7 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
 110             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_NIVEL, .Pos.X, .Pos.Y))
 112             Call WriteLocaleMsg(UserIndex, "186", FontTypeNames.FONTTYPE_INFO)
             
-114             .Stats.Exp = .Stats.Exp - .Stats.ELU
+114             .Stats.Exp = .Stats.Exp - experienceToLevelUp
                 
 130             Pts = Pts + 5
             
@@ -494,7 +496,7 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
 144             AumentoHIT = IIf(.Stats.ELV < 36, ModClase(.clase).HitPre36, ModClase(.clase).HitPost36)
 
 146             .Stats.ELV = .Stats.ELV + 1
-147             .Stats.ELU = ExpLevelUp(.Stats.ELV)
+147             experienceToLevelUp = ExpLevelUp(.Stats.ELV)
                 
                 'Actualizamos HitPoints
 148             .Stats.MaxHp = .Stats.MaxHp + AumentoHP
@@ -820,7 +822,7 @@ Sub SendUserStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
         Dim GuildI As Integer
 
 100     Call WriteConsoleMsg(sendIndex, "Estadisticas de: " & UserList(UserIndex).name, FontTypeNames.FONTTYPE_INFO)
-102     Call WriteConsoleMsg(sendIndex, "Nivel: " & UserList(UserIndex).Stats.ELV & "  EXP: " & UserList(UserIndex).Stats.Exp & "/" & UserList(UserIndex).Stats.ELU, FontTypeNames.FONTTYPE_INFO)
+102     Call WriteConsoleMsg(sendIndex, "Nivel: " & UserList(UserIndex).Stats.ELV & "  EXP: " & UserList(UserIndex).Stats.Exp & "/" & ExpLevelUp(UserList(UserIndex).Stats.ELV), FontTypeNames.FONTTYPE_INFO)
 104     Call WriteConsoleMsg(sendIndex, "Salud: " & UserList(UserIndex).Stats.MinHp & "/" & UserList(UserIndex).Stats.MaxHp & "  Mana: " & UserList(UserIndex).Stats.MinMAN & "/" & UserList(UserIndex).Stats.MaxMAN & "  Vitalidad: " & UserList(UserIndex).Stats.MinSta & "/" & UserList(UserIndex).Stats.MaxSta, FontTypeNames.FONTTYPE_INFO)
     
 106     If UserList(UserIndex).Invent.WeaponEqpObjIndex > 0 Then

@@ -2400,9 +2400,9 @@ Private Sub UserDañoEspecial(ByVal AtacanteIndex As Integer, ByVal VictimaIndex
     End If
 
     If puedeEstupidizar And (UserList(VictimaIndex).flags.Estupidez = 0) Then
-        If RandomNumber(1, 100) < 8 Then
+        If RandomNumber(1, 100) < 13 Then
             UserList(VictimaIndex).flags.Estupidez = 1
-            UserList(VictimaIndex).Counters.Estupidez = 5
+            UserList(VictimaIndex).Counters.Estupidez = 3 ' segundos?
 
             Call WriteDumb(VictimaIndex)
             Call SendData(SendTarget.ToPCArea, VictimaIndex, PrepareMessageParticleFX(UserList(VictimaIndex).Char.CharIndex, 30, 30, False))

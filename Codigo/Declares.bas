@@ -1412,7 +1412,7 @@ Public Type UserStats
     def As Integer
     Exp As Double
     ELV As Byte
-    ELU As Long
+
     UserSkills(1 To NUMSKILLS) As Byte
     UserAtributos(1 To NUMATRIBUTOS) As Byte
     UserAtributosBackUP(1 To NUMATRIBUTOS) As Byte

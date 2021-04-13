@@ -13,7 +13,7 @@ Public Function EnviarCorreo(ByVal UserMail As String) As Boolean
         Exit Function
 
 EnviarCorreo_Err:
-104     Call RegistrarError(Err.Number, Err.description, "ModCuentas.EnviarCorreo", Erl)
+104     Call RegistrarError(Err.Number, Err.Description, "ModCuentas.EnviarCorreo", Erl)
 106     Resume Next
         
 End Function
@@ -44,7 +44,7 @@ Public Function EnviarCorreoRecuperacion(ByVal UserNick As String, ByVal UserMai
         Exit Function
 
 EnviarCorreoRecuperacion_Err:
-110     Call RegistrarError(Err.Number, Err.description, "ModCuentas.EnviarCorreoRecuperacion", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "ModCuentas.EnviarCorreoRecuperacion", Erl)
 112     Resume Next
         
 End Function
@@ -65,7 +65,7 @@ Public Function ObtenerCodigo(ByVal name As String) As String
         Exit Function
 
 ObtenerCodigo_Err:
-106     Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerCodigo", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "ModCuentas.ObtenerCodigo", Erl)
 108     Resume Next
         
 End Function
@@ -86,7 +86,7 @@ Public Function ObtenerValidacion(ByVal name As String) As Boolean
         Exit Function
 
 ObtenerValidacion_Err:
-106     Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerValidacion", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "ModCuentas.ObtenerValidacion", Erl)
 108     Resume Next
         
 End Function
@@ -107,7 +107,7 @@ Public Function ObtenerEmail(ByVal name As String) As String
         Exit Function
 
 ObtenerEmail_Err:
-106     Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerEmail", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "ModCuentas.ObtenerEmail", Erl)
 108     Resume Next
         
 End Function
@@ -128,7 +128,7 @@ Public Function ObtenerMacAdress(ByVal name As String) As String
         Exit Function
 
 ObtenerMacAdress_Err:
-106     Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerMacAdress", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "ModCuentas.ObtenerMacAdress", Erl)
 108     Resume Next
         
 End Function
@@ -149,7 +149,7 @@ Public Function ObtenerHDserial(ByVal name As String) As Long
         Exit Function
 
 ObtenerHDserial_Err:
-106     Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerHDserial", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "ModCuentas.ObtenerHDserial", Erl)
 108     Resume Next
         
 End Function
@@ -170,7 +170,7 @@ Public Function CuentaExiste(ByVal CuentaEmail As String) As Boolean
         Exit Function
 
 CuentaExiste_Err:
-106     Call RegistrarError(Err.Number, Err.description, "ModCuentas.CuentaExiste", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "ModCuentas.CuentaExiste", Erl)
 108     Resume Next
         
 End Function
@@ -209,7 +209,7 @@ Public Sub SaveNewAccount(ByVal UserIndex As Integer, ByVal CuentaEmail As Strin
         Exit Sub
 
 SaveNewAccount_Err:
-116     Call RegistrarError(Err.Number, Err.description, "ModCuentas.SaveNewAccount", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "ModCuentas.SaveNewAccount", Erl)
 118     Resume Next
         
 End Sub
@@ -277,7 +277,7 @@ Public Function ObtenerCuenta(ByVal name As String) As String
         Exit Function
 
 ObtenerCuenta_Err:
-106     Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerCuenta", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "ModCuentas.ObtenerCuenta", Erl)
 108     Resume Next
         
 End Function
@@ -299,7 +299,7 @@ Public Function PasswordValida(Password As String, PasswordHash As String, Salt 
         Exit Function
 
 PasswordValida_Err:
-106     Call RegistrarError(Err.Number, Err.description, "ModCuentas.PasswordValida", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "ModCuentas.PasswordValida", Erl)
 108     Resume Next
         
 End Function
@@ -320,7 +320,7 @@ Public Function ObtenerBaneo(ByVal name As String) As Boolean
         Exit Function
 
 ObtenerBaneo_Err:
-106     Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerBaneo", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "ModCuentas.ObtenerBaneo", Erl)
 108     Resume Next
         
 End Function
@@ -341,7 +341,7 @@ Public Function ObtenerMotivoBaneo(ByVal name As String) As String
         Exit Function
 
 ObtenerMotivoBaneo_Err:
-106     Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerMotivoBaneo", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "ModCuentas.ObtenerMotivoBaneo", Erl)
 108     Resume Next
         
 End Function
@@ -362,7 +362,7 @@ Public Function ObtenerQuienBaneo(ByVal name As String) As String
         Exit Function
 
 ObtenerQuienBaneo_Err:
-106     Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerQuienBaneo", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "ModCuentas.ObtenerQuienBaneo", Erl)
 108     Resume Next
         
 End Function
@@ -383,7 +383,7 @@ Public Function ObtenerCantidadDePersonajes(ByVal name As String) As String
         Exit Function
 
 ObtenerCantidadDePersonajes_Err:
-106     Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerCantidadDePersonajes", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "ModCuentas.ObtenerCantidadDePersonajes", Erl)
 108     Resume Next
         
 End Function
@@ -394,7 +394,7 @@ Public Function ObtenerCantidadDePersonajesByUserIndex(ByVal UserIndex As Intege
         
 
 100     If Database_Enabled Then
-102         ObtenerCantidadDePersonajesByUserIndex = GetPersonajesCountByIDDatabase(UserList(UserIndex).AccountID)
+102         ObtenerCantidadDePersonajesByUserIndex = GetPersonajesCountByIDDatabase(UserList(UserIndex).AccountId)
         Else
 104         ObtenerCantidadDePersonajesByUserIndex = val(GetVar(CuentasPath & UCase$(UserList(UserIndex).name) & ".act", "PERSONAJES", "Total"))
 
@@ -404,7 +404,7 @@ Public Function ObtenerCantidadDePersonajesByUserIndex(ByVal UserIndex As Intege
         Exit Function
 
 ObtenerCantidadDePersonajesByUserIndex_Err:
-106     Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerCantidadDePersonajesByUserIndex", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "ModCuentas.ObtenerCantidadDePersonajesByUserIndex", Erl)
 108     Resume Next
         
 End Function
@@ -425,7 +425,7 @@ Public Function ObtenerLogeada(ByVal name As String) As Byte
         Exit Function
 
 ObtenerLogeada_Err:
-106     Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerLogeada", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "ModCuentas.ObtenerLogeada", Erl)
 108     Resume Next
         
 End Function
@@ -440,7 +440,7 @@ Public Function ObtenerNombrePJ(ByVal Cuenta As String, ByVal i As Byte) As Stri
         Exit Function
 
 ObtenerNombrePJ_Err:
-102     Call RegistrarError(Err.Number, Err.description, "ModCuentas.ObtenerNombrePJ", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "ModCuentas.ObtenerNombrePJ", Erl)
 104     Resume Next
         
 End Function
@@ -504,29 +504,8 @@ Sub BorrarPJdeCuenta(ByVal name As String)
         Exit Sub
 
 BorrarPJdeCuenta_Err:
-142     Call RegistrarError(Err.Number, Err.description, "ModCuentas.BorrarPJdeCuenta", Erl)
+142     Call RegistrarError(Err.Number, Err.Description, "ModCuentas.BorrarPJdeCuenta", Erl)
 144     Resume Next
-        
-End Sub
-
-Sub GrabarNuevoPjEnCuentaCharfile(ByVal UserCuenta As String, ByVal name As String)
-        
-        On Error GoTo GrabarNuevoPjEnCuentaCharfile_Err
-        
-
-        Dim cantidaddePersonajes As Byte
-
-100     cantidaddePersonajes = ObtenerCantidadDePersonajes(UserCuenta)
-
-102     Call WriteVar(CuentasPath & UCase$(UserCuenta) & ".act", "PERSONAJES", "Total", cantidaddePersonajes + 1)
-104     Call WriteVar(CuentasPath & UCase$(UserCuenta) & ".act", "PERSONAJES", "PJ" & cantidaddePersonajes + 1, name)
-
-        
-        Exit Sub
-
-GrabarNuevoPjEnCuentaCharfile_Err:
-106     Call RegistrarError(Err.Number, Err.description, "ModCuentas.GrabarNuevoPjEnCuentaCharfile", Erl)
-108     Resume Next
         
 End Sub
 
@@ -573,7 +552,7 @@ Sub BorrarCuenta(ByVal CuentaName As String)
         Exit Sub
 
 BorrarCuenta_Err:
-124     Call RegistrarError(Err.Number, Err.description, "ModCuentas.BorrarCuenta", Erl)
+124     Call RegistrarError(Err.Number, Err.Description, "ModCuentas.BorrarCuenta", Erl)
 126     Resume Next
         
 End Sub
@@ -707,7 +686,7 @@ Public Function GetUserGuildIndex(ByVal UserName As String) As Integer
         Exit Function
 
 GetUserGuildIndex_Err:
-118     Call RegistrarError(Err.Number, Err.description, "ModCuentas.GetUserGuildIndex", Erl)
+118     Call RegistrarError(Err.Number, Err.Description, "ModCuentas.GetUserGuildIndex", Erl)
 120     Resume Next
         
 End Function
@@ -737,7 +716,7 @@ Public Function GetUserGuildIndexCharfile(ByRef UserName As String) As Integer
         Exit Function
 
 GetUserGuildIndexCharfile_Err:
-108     Call RegistrarError(Err.Number, Err.description, "ModCuentas.GetUserGuildIndexCharfile", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "ModCuentas.GetUserGuildIndexCharfile", Erl)
 110     Resume Next
         
 End Function
@@ -757,7 +736,7 @@ Public Function GetUserGuildPedidosCharfile(ByVal UserName As String) As String
         Exit Function
 
 GetUserGuildPedidosCharfile_Err:
-102     Call RegistrarError(Err.Number, Err.description, "ModCuentas.GetUserGuildPedidosCharfile", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "ModCuentas.GetUserGuildPedidosCharfile", Erl)
 104     Resume Next
         
 End Function
@@ -777,7 +756,7 @@ Sub SaveUserGuildPedidosCharfile(ByVal UserName As String, ByVal Pedidos As Stri
         Exit Sub
 
 SaveUserGuildPedidosCharfile_Err:
-102     Call RegistrarError(Err.Number, Err.description, "ModCuentas.SaveUserGuildPedidosCharfile", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "ModCuentas.SaveUserGuildPedidosCharfile", Erl)
 104     Resume Next
         
 End Sub
@@ -797,7 +776,7 @@ Sub SaveUserGuildMemberCharfile(ByVal UserName As String, ByVal guilds As String
         Exit Sub
 
 SaveUserGuildMemberCharfile_Err:
-102     Call RegistrarError(Err.Number, Err.description, "ModCuentas.SaveUserGuildMemberCharfile", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "ModCuentas.SaveUserGuildMemberCharfile", Erl)
 104     Resume Next
         
 End Sub
@@ -817,7 +796,7 @@ Sub SaveUserGuildIndexCharfile(ByVal UserName As String, ByVal GuildIndex As Int
         Exit Sub
 
 SaveUserGuildIndexCharfile_Err:
-102     Call RegistrarError(Err.Number, Err.description, "ModCuentas.SaveUserGuildIndexCharfile", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "ModCuentas.SaveUserGuildIndexCharfile", Erl)
 104     Resume Next
         
 End Sub
@@ -837,7 +816,7 @@ Sub SaveUserGuildAspirantCharfile(ByVal UserName As String, ByVal AspirantIndex 
         Exit Sub
 
 SaveUserGuildAspirantCharfile_Err:
-102     Call RegistrarError(Err.Number, Err.description, "ModCuentas.SaveUserGuildAspirantCharfile", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "ModCuentas.SaveUserGuildAspirantCharfile", Erl)
 104     Resume Next
         
 End Sub
@@ -892,7 +871,7 @@ Sub SendCharacterInfoCharfile(ByVal UserIndex As Integer, ByVal UserName As Stri
         Exit Sub
 
 SendCharacterInfoCharfile_Err:
-124     Call RegistrarError(Err.Number, Err.description, "ModCuentas.SendCharacterInfoCharfile", Erl)
+124     Call RegistrarError(Err.Number, Err.Description, "ModCuentas.SendCharacterInfoCharfile", Erl)
 126     Resume Next
         
 End Sub
@@ -912,7 +891,7 @@ Public Function GetUserGuildMemberCharfile(ByVal UserName As String) As String
         Exit Function
 
 GetUserGuildMemberCharfile_Err:
-102     Call RegistrarError(Err.Number, Err.description, "ModCuentas.GetUserGuildMemberCharfile", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "ModCuentas.GetUserGuildMemberCharfile", Erl)
 104     Resume Next
         
 End Function
@@ -932,7 +911,7 @@ Public Function GetUserGuildAspirantCharfile(ByVal UserName As String) As Intege
         Exit Function
 
 GetUserGuildAspirantCharfile_Err:
-102     Call RegistrarError(Err.Number, Err.description, "ModCuentas.GetUserGuildAspirantCharfile", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "ModCuentas.GetUserGuildAspirantCharfile", Erl)
 104     Resume Next
         
 End Function
@@ -952,7 +931,7 @@ Public Function GetUserGuildRejectionReasonCharfile(ByVal UserName As String) As
         Exit Function
 
 GetUserGuildRejectionReasonCharfile_Err:
-102     Call RegistrarError(Err.Number, Err.description, "ModCuentas.GetUserGuildRejectionReasonCharfile", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "ModCuentas.GetUserGuildRejectionReasonCharfile", Erl)
 104     Resume Next
         
 End Function
@@ -972,7 +951,7 @@ Sub SaveUserGuildRejectionReasonCharfile(ByVal UserName As String, ByVal Reason 
         Exit Sub
 
 SaveUserGuildRejectionReasonCharfile_Err:
-102     Call RegistrarError(Err.Number, Err.description, "ModCuentas.SaveUserGuildRejectionReasonCharfile", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "ModCuentas.SaveUserGuildRejectionReasonCharfile", Erl)
 104     Resume Next
         
 End Sub

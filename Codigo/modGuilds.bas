@@ -1998,12 +1998,7 @@ Public Sub SendDetallesPersonaje(ByVal UserIndex As Integer, ByVal Personaje As 
 
         End If
 
-140     If Not Database_Enabled Then
-142         Call SendCharacterInfoCharfile(UserIndex, Personaje)
-        Else
-144         Call SendCharacterInfoDatabase(UserIndex, Personaje)
-
-        End If
+        Call SendCharacterInfoDatabase(UserIndex, Personaje)
 
         Exit Sub
 Error:

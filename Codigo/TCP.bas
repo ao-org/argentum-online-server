@@ -569,7 +569,6 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal 
 210         .Stats.GLD = 0
         
 212         .Stats.Exp = 0
-214         .Stats.ELU = ExpLevelUp(1)
 216         .Stats.ELV = 1
         
 218         Call RellenarInventario(UserIndex)
@@ -595,10 +594,6 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal 
 236         .Pos.Map = 37
 238         .Pos.X = 76
 240         .Pos.Y = 82
-        
-242         If Not Database_Enabled Then
-244             Call GrabarNuevoPjEnCuentaCharfile(UserCuenta, name)
-            End If
         
 246         UltimoChar = UCase$(name)
         
@@ -888,58 +883,7 @@ Function EntrarCuenta(ByVal UserIndex As Integer, CuentaEmail As String, CuentaP
             Exit Function
         End If
     
-118     If Database_Enabled Then
-120         EntrarCuenta = EnterAccountDatabase(UserIndex, CuentaEmail, SDesencriptar(CuentaPassword), MacAddress, HDserial, UserList(UserIndex).ip)
-        Else
-122         If CuentaExiste(CuentaEmail) Then
-124             If Not ObtenerBaneo(CuentaEmail) Then
-
-                    Dim PasswordHash As String, Salt As String
-
-126                 PasswordHash = GetVar(CuentasPath & UCase$(CuentaEmail) & ".act", "INIT", "PASSWORD")
-128                 Salt = GetVar(CuentasPath & UCase$(CuentaEmail) & ".act", "INIT", "SALT")
-
-130                 If PasswordValida(SDesencriptar(CuentaPassword), PasswordHash, _
-                            Salt) Then
-132                     If ObtenerValidacion(CuentaEmail) Then
-134                         Call WriteVar(CuentasPath & LCase$(CuentaEmail) & ".act", _
-                                    "INIT", "MacAdress", MacAddress)
-136                         Call WriteVar(CuentasPath & LCase$(CuentaEmail) & ".act", _
-                                    "INIT", "HDserial", HDserial)
-138                         Call WriteVar(CuentasPath & LCase$(CuentaEmail) & ".act", _
-                                    "INIT", "UltimoAcceso", Date & " " & Time)
-140                         Call WriteVar(CuentasPath & LCase$(CuentaEmail) & ".act", _
-                                    "INIT", "UltimaIP", UserList(UserIndex).ip)
-                        
-142                         UserList(UserIndex).Cuenta = CuentaEmail
-                        
-144                         EntrarCuenta = True
-                        Else
-146                         Call WriteShowMessageBox(UserIndex, _
-                                    "¡La cuenta no ha sido validada aún!")
-
-                        End If
-
-                    Else
-148                     Call WriteShowMessageBox(UserIndex, "Contraseña inválida.")
-
-                    End If
-
-                Else
-150                 Call WriteShowMessageBox(UserIndex, _
-                            "La cuenta se encuentra baneada debido a: " & _
-                            ObtenerMotivoBaneo(CuentaEmail) & _
-                            ". Esta decisión fue tomada por: " & ObtenerQuienBaneo( _
-                            CuentaEmail) & ".")
-
-                End If
-
-            Else
-152             Call WriteShowMessageBox(UserIndex, "La cuenta no existe.")
-
-            End If
-
-        End If
+        EntrarCuenta = EnterAccountDatabase(UserIndex, CuentaEmail, SDesencriptar(CuentaPassword), MacAddress, HDserial, UserList(UserIndex).ip)
         
         Exit Function
 
@@ -1689,7 +1633,6 @@ Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
 158             .InventLevel = 0
 160             .Banco = 0
 162             .ELV = 0
-164             .ELU = 0
 166             .Exp = 0
 168             .def = 0
                 '.CriminalesMatados = 0
