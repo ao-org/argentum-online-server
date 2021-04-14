@@ -2820,23 +2820,31 @@ End Sub
 Sub LoadConfiguraciones()
         
         On Error GoTo LoadConfiguraciones_Err
+        
+        Dim Leer As clsIniReader
+        Set Leer = New clsIniReader
 
-100     ExpMult = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "ExpMult"))
-102     OroMult = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "OroMult"))
-104     OroAutoEquipable = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "OroAutoEquipable"))
-106     DropMult = val(GetVar(IniPath & "Configuracion.ini", "DROPEO", "DropMult"))
-108     DropActive = val(GetVar(IniPath & "Configuracion.ini", "DROPEO", "DropActive"))
-110     RecoleccionMult = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "RecoleccionMult"))
+        Call Leer.Initialize(IniPath & "Configuracion.ini")
 
-112     TimerLimpiarObjetos = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "TimerLimpiarObjetos"))
-114     OroPorNivel = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "OroPorNivel"))
+100     ExpMult = val(Leer.GetValue("CONFIGURACIONES", "ExpMult"))
+102     OroMult = val(Leer.GetValue("CONFIGURACIONES", "OroMult"))
+104     OroAutoEquipable = val(Leer.GetValue("CONFIGURACIONES", "OroAutoEquipable"))
+106     DropMult = val(Leer.GetValue("DROPEO", "DropMult"))
+108     DropActive = val(Leer.GetValue("DROPEO", "DropActive"))
+110     RecoleccionMult = val(Leer.GetValue("CONFIGURACIONES", "RecoleccionMult"))
 
-116     DuracionDia = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "DuracionDia")) * 60 * 1000 ' De minutos a milisegundos
+112     TimerLimpiarObjetos = val(Leer.GetValue("CONFIGURACIONES", "TimerLimpiarObjetos"))
+114     OroPorNivel = val(Leer.GetValue("CONFIGURACIONES", "OroPorNivel"))
 
-122     CostoPerdonPorCiudadano = val(GetVar(IniPath & "Configuracion.ini", "CONFIGURACIONES", "CostoPerdonPorCiudadano"))
+116     DuracionDia = val(Leer.GetValue("CONFIGURACIONES", "DuracionDia")) * 60 * 1000 ' De minutos a milisegundos
 
-124     frmMain.lblLimpieza.Caption = "Limpieza de objetos cada: " & TimerLimpiarObjetos & " minutos."
+122     CostoPerdonPorCiudadano = val(Leer.GetValue("CONFIGURACIONES", "CostoPerdonPorCiudadano"))
 
+123     MaximoSpeedHack = val(Leer.GetValue("ANTICHEAT", "MaximoSpeedHack"))
+
+125     frmMain.lblLimpieza.Caption = "Limpieza de objetos cada: " & TimerLimpiarObjetos & " minutos."
+
+        Set Leer = Nothing
         
         Exit Sub
 

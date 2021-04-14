@@ -1528,6 +1528,8 @@ Sub ResetContadores(ByVal UserIndex As Integer)
 177         .RepetirMensaje = 0
             .MensajeGlobal = 0
             .CuentaRegresiva = -1
+            .SpeedHackCounter = 0
+            .LastStep = 0
         End With
 
         
@@ -1750,8 +1752,6 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 176         .AdminInvisible = 0
 178         .ValCoDe = 0
 180         .Hechizo = 0
-182         .TimesWalk = 0
-184         .StartWalk = 0
 188         .Silenciado = 0
 190         .CentinelaOK = False
 192         .AdminPerseguible = False
