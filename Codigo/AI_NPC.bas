@@ -52,9 +52,6 @@ Public Sub NPCAI(ByVal NpcIndex As Integer)
     Dim falladesc As String
 
     With NpcList(NpcIndex)
-        If .flags.Paralizado > 0 Then Call EfectoParalisisNpc(NpcIndex)
-        If .flags.Inmovilizado > 0 Then Call EfectoInmovilizadoNpc(NpcIndex)
-        
         '<<<<<<<<<<<Movimiento>>>>>>>>>>>>>>>>
         Select Case .Movement
 
@@ -144,7 +141,7 @@ Private Sub PerseguirUsuarioCercanoEmancu(ByVal NpcIndex As Integer)
 
         If .flags.AttackedBy <> vbNullString Then
           agresor = NameIndex(.flags.AttackedBy)
-          If agresor > 0 Then distanciaAgresor = Distancia(UserList(UserIndex).Pos, .Pos)
+          distanciaAgresor = Distancia(UserList(agresor).Pos, .Pos)
         End If
 
         ' Busco algun objetivo en el area.

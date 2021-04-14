@@ -1276,7 +1276,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                         
             If NpcList(TempCharIndex).flags.Inmovilizado = 1 Then
                 If UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 100 Then
-                    estatus = estatus & " | Inmovilizado (" & CInt(NpcList(TempCharIndex).Contadores.Paralisis / 6.5) & "s)"
+                    estatus = estatus & " | Inmovilizado (" & CInt(NpcList(TempCharIndex).Contadores.Inmovilizado / 6.5) & "s)"
                 Else
                     estatus = estatus & " | Inmovilizado"
 

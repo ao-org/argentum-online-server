@@ -820,9 +820,13 @@ Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) A
         Dim UserIndex As Integer
     
 100     With NpcList(NpcIndex)
+            If .flags.Paralizado + .flags.Inmovilizado > 0 Then Exit Function
+            
 102         nPos = .Pos
 104         Call HeadtoPos(nHeading, nPos)
-        
+            
+            
+            
             ' es una posicion legal
 106         If LegalWalkNPC(nPos.Map, nPos.X, nPos.Y, nHeading, .flags.AguaValida = 1, .flags.TierraInvalida = 0, .MaestroUser <> 0) Then
             

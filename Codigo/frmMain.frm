@@ -2014,8 +2014,11 @@ Private Sub TIMER_AI_Timer()
                         'Usamos AI si hay algun user en el mapa
                         Mapa = .Pos.Map
                         
+                        If .flags.Paralizado > 0 Then Call EfectoParalisisNpc(NpcIndex)
+                        If .flags.Inmovilizado > 0 Then Call EfectoInmovilizadoNpc(NpcIndex)
+                        
                         If Mapa > 0 Then
-                            
+
                             If MapInfo(Mapa).NumUsers > 0 Then
     
                                 If IntervaloPermiteMoverse(NpcIndex) Then
