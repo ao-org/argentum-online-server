@@ -94,6 +94,8 @@ Public PENDIENTE            As Integer
 
 Public CostoPerdonPorCiudadano As Long
 
+Public MaximoSpeedHack      As Integer
+
 Type tEstadisticasDiarias
 
     segundos As Double
@@ -1595,9 +1597,6 @@ Public Type UserFlags
     
     ChatColor As Long
 
-    TimesWalk As Long
-    StartWalk As Long
-
     UltimoMensaje As Integer
     
     Silenciado As Byte
@@ -1662,6 +1661,10 @@ Public Type UserCounters
     Ceguera As Integer
     Estupidez As Integer
     Mimetismo As Integer
+
+    ' Anticheat
+    SpeedHackCounter As Single
+    LastStep As Long
     
     Invisibilidad As Integer
     TiempoOculto As Integer

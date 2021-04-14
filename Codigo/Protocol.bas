@@ -2423,17 +2423,9 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
         
         On Error GoTo HandleWalk_Err
         
-
-        Dim demora      As Long
-
-        Dim demorafinal As Long
-
-100     demora = GetTickCount()
-
 102     If UserList(UserIndex).incomingData.Length < 2 Then
 104         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
-
         End If
 
         Dim Heading  As eHeading
@@ -2452,66 +2444,63 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
 118                 UserList(UserIndex).Char.FX = 0
 120                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(UserList(UserIndex).Char.CharIndex, 0))
                 End If
-            
-                'If IntervaloPermiteCaminar(UserIndex) Then
-            
-                    'Move user
-122                 If MoveUserChar(UserIndex, Heading) Then
                 
-124                     If UserList(UserIndex).Grupo.EnGrupo = True Then
-126                         Call CompartirUbicacion(UserIndex)
-                        End If
-    
-                        'Stop resting if needed
-128                     If .flags.Descansar Then
-130                         .flags.Descansar = False
-                        
-132                         Call WriteRestOK(UserIndex)
-                            'Call WriteConsoleMsg(UserIndex, "Has dejado de descansar.", FontTypeNames.FONTTYPE_INFO)
-134                         Call WriteLocaleMsg(UserIndex, "178", FontTypeNames.FONTTYPE_INFO)
-    
-                        End If
-                        
-                        Dim TiempoTotalPasos As Long, TickActual As Long
-                        Dim TotalPasos As Long, TiempoMaximoPasos As Long
-                        TotalPasos = 10
-                        TiempoMaximoPasos = TotalPasos * 190 / .Char.speeding
-
-                        'Prevent SpeedHack
-146                     If .flags.TimesWalk >= TotalPasos Then
-148                         TickActual = GetTickCount
-150                         TiempoTotalPasos = TickActual - .flags.StartWalk
-
-152                         If TiempoTotalPasos < TiempoMaximoPasos Then
-162                             Call LogHackAttemp("Tramposo SH: " & .name & " , Velocidad SH: " & TiempoTotalPasos \ TiempoMaximoPasos)
-164                             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> " & .name & " ha sido echado por el servidor por posible uso de SpeedHack.", FontTypeNames.FONTTYPE_SERVER))
-166                             Call CloseSocket(UserIndex)
-                                 
-                                Exit Sub
-                            End If
-    
-170                         .flags.StartWalk = TickActual
-172                         .flags.TimesWalk = 0
-    
-                        End If
-                        
-174                     .flags.TimesWalk = .flags.TimesWalk + 1
+                Dim CurrentTick As Long
+                CurrentTick = GetTickCount
+            
+                'Prevent SpeedHack (refactored by WyroX)
+                If Not EsGM(UserIndex) Then
+                    Dim ElapsedTimeStep As Long, MinTimeStep As Long, DeltaStep As Single
+                    ElapsedTimeStep = CurrentTick - .Counters.LastStep
+                    MinTimeStep = .Intervals.Caminar / .Char.speeding
+                    DeltaStep = (MinTimeStep - ElapsedTimeStep) / MinTimeStep
                     
-176                     Call CancelExit(UserIndex)
-    
-                        'Esta usando el /HOGAR, no se puede mover
-178                     If .flags.Traveling = 1 Then
-180                         .flags.Traveling = 0
-182                         .Counters.goHome = 0
-184                         Call WriteConsoleMsg(UserIndex, "Has cancelado el viaje a casa.", FontTypeNames.FONTTYPE_INFO)
-                        End If
+                    .Counters.SpeedHackCounter = .Counters.SpeedHackCounter + DeltaStep
 
-                    ' Si no pudo moverse, actualizamos la posición
+                    If DeltaStep > 0 Then
+                        If .Counters.SpeedHackCounter > MaximoSpeedHack Then
+                            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Administración » Posible uso de SpeedHack del usuario " & .name & ".", FontTypeNames.FONTTYPE_SERVER))
+                            Call WritePosUpdate(UserIndex)
+                            Exit Sub
+                        End If
                     Else
-                        Call WritePosUpdate(UserIndex)
+                        If .Counters.SpeedHackCounter < 0 Then .Counters.SpeedHackCounter = 0
+                    End If
+                End If
+            
+                'Move user
+122             If MoveUserChar(UserIndex, Heading) Then
+                    ' Save current step for anti-sh
+                    .Counters.LastStep = CurrentTick
+                
+124                 If UserList(UserIndex).Grupo.EnGrupo = True Then
+126                     Call CompartirUbicacion(UserIndex)
+                    End If
+    
+                    'Stop resting if needed
+128                 If .flags.Descansar Then
+130                     .flags.Descansar = False
+                        
+132                     Call WriteRestOK(UserIndex)
+                        'Call WriteConsoleMsg(UserIndex, "Has dejado de descansar.", FontTypeNames.FONTTYPE_INFO)
+134                     Call WriteLocaleMsg(UserIndex, "178", FontTypeNames.FONTTYPE_INFO)
+    
+                    End If
+                        
+176                 Call CancelExit(UserIndex)
+                        
+                    'Esta usando el /HOGAR, no se puede mover
+178                 If .flags.Traveling = 1 Then
+180                     .flags.Traveling = 0
+182                     .Counters.goHome = 0
+184                     Call WriteConsoleMsg(UserIndex, "Has cancelado el viaje a casa.", FontTypeNames.FONTTYPE_INFO)
                     End If
 
-                'End If
+                ' Si no pudo moverse
+                Else
+                    .Counters.LastStep = 0
+                    Call WritePosUpdate(UserIndex)
+                End If
 
             Else    'paralized
 
@@ -2562,8 +2551,6 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
             End If
 
         End With
-    
-224     demorafinal = GetTickCount() - demora
 
         Exit Sub
 
