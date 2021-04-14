@@ -2764,9 +2764,6 @@ Sub LoadIntervalos()
 188     frmMain.TIMER_AI.Interval = val(Lector.GetValue("INTERVALOS", "IntervaloNpcAI"))
 190     FrmInterv.txtAI.Text = frmMain.TIMER_AI.Interval
     
-192     frmMain.npcataca.Interval = val(Lector.GetValue("INTERVALOS", "IntervaloNpcPuedeAtacar"))
-194     FrmInterv.txtNPCPuedeAtacar.Text = frmMain.npcataca.Interval
-    
 196     IntervaloTrabajarExtraer = val(Lector.GetValue("INTERVALOS", "IntervaloTrabajarExtraer"))
 198     FrmInterv.txtTrabajoExtraer.Text = IntervaloTrabajarExtraer
 
@@ -3708,7 +3705,7 @@ Public Sub LoadUserIntervals(ByVal UserIndex As Integer)
 102         .Arco = IntervaloFlechasCazadores
 104         .Caminar = IntervaloCaminar
 106         .Golpe = IntervaloUserPuedeAtacar
-108         .magia = IntervaloUserPuedeCastear
+108         .Magia = IntervaloUserPuedeCastear
 110         .GolpeMagia = IntervaloGolpeMagia
 112         .MagiaGolpe = IntervaloMagiaGolpe
 114         .GolpeUsar = IntervaloGolpeUsar

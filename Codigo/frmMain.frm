@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{248DD890-BB45-11CF-9ABC-0080C7E7B78D}#1.0#0"; "MSWINSCK.OCX"
+Object = "{248DD890-BB45-11CF-9ABC-0080C7E7B78D}#1.0#0"; "MSWINSCK.ocx"
 Begin VB.Form frmMain 
    BackColor       =   &H00E0E0E0&
    BorderStyle     =   4  'Fixed ToolWindow
@@ -30,8 +30,8 @@ Begin VB.Form frmMain
    Begin VB.Timer Invasion 
       Enabled         =   0   'False
       Interval        =   60000
-      Left            =   1200
-      Top             =   3480
+      Left            =   3120
+      Top             =   3120
    End
    Begin VB.Timer TiempoRetos 
       Interval        =   10000
@@ -351,12 +351,6 @@ Begin VB.Form frmMain
    Begin VB.Timer Minuto 
       Interval        =   60000
       Left            =   4080
-      Top             =   3060
-   End
-   Begin VB.Timer npcataca 
-      Enabled         =   0   'False
-      Interval        =   4000
-      Left            =   3120
       Top             =   3060
    End
    Begin VB.Timer KillLog 
@@ -1891,29 +1885,6 @@ mnuSystray_Click_Err:
 110     Call RegistrarError(Err.Number, Err.Description, "frmMain.mnuSystray_Click", Erl)
 112     Resume Next
         
-End Sub
-
-Private Sub npcataca_Timer()
-    
-    On Error GoTo npcataca_Timer_Err
-    
-    
-
-    
-
-    Dim npc As Integer
-
-    'For npc = 1 To LastNPC
-    '  NpcList(npc).CanAttack = 1
-    'Next npc
-
-    
-    Exit Sub
-
-npcataca_Timer_Err:
-    Call RegistrarError(Err.Number, Err.Description, "frmMain.npcataca_Timer", Erl)
-
-    
 End Sub
 
 Private Sub packetResend_Timer()
