@@ -33,7 +33,7 @@ Public m_NameIndex As New Dictionary
 
 Public Function NameIndex(ByRef UserName As String) As Integer
 
-    NameIndex = m_NameIndex(UCase$(UserName))
+    NameIndex = m_NameIndex(UCase$(Replace(UserName, "+", " ")))
     
 End Function
 
