@@ -28,25 +28,25 @@ Public Sub InitTesoro()
         
         On Error GoTo InitTesoro_Err
         
-100     TesoroMapa(1) = 253
-102     TesoroMapa(2) = 254
-104     TesoroMapa(3) = 265
-106     TesoroMapa(4) = 266
-108     TesoroMapa(5) = 267
-110     TesoroMapa(6) = 268
-112     TesoroMapa(7) = 250
-114     TesoroMapa(8) = 37
-116     TesoroMapa(9) = 85
-118     TesoroMapa(10) = 73
-120     TesoroMapa(11) = 42
-122     TesoroMapa(12) = 21
-124     TesoroMapa(13) = 87
-126     TesoroMapa(14) = 27
-128     TesoroMapa(15) = 28
-130     TesoroMapa(16) = 63
-132     TesoroMapa(17) = 47
-134     TesoroMapa(18) = 48
-136     TesoroMapa(19) = 252
+100     TesoroMapa(1) = 21
+102     TesoroMapa(2) = 17
+104     TesoroMapa(3) = 365
+106     TesoroMapa(4) = 349
+108     TesoroMapa(5) = 289
+110     TesoroMapa(6) = 114
+112     TesoroMapa(7) = 28
+114     TesoroMapa(8) = 114
+116     TesoroMapa(9) = 228
+118     TesoroMapa(10) = 237
+120     TesoroMapa(11) = 70
+122     TesoroMapa(12) = 213
+124     TesoroMapa(13) = 13
+126     TesoroMapa(14) = 189
+128     TesoroMapa(15) = 180
+130     TesoroMapa(16) = 346
+132     TesoroMapa(17) = 338
+134     TesoroMapa(18) = 133
+136     TesoroMapa(19) = 297
 138     TesoroMapa(20) = 249
     
 140     TesoroRegalo(1).ObjIndex = 200
@@ -68,7 +68,7 @@ Public Sub InitTesoro()
         Exit Sub
 
 InitTesoro_Err:
-160     Call RegistrarError(Err.Number, Err.description, "ModTesoros.InitTesoro", Erl)
+160     Call RegistrarError(Err.Number, Err.Description, "ModTesoros.InitTesoro", Erl)
 162     Resume Next
         
 End Sub
@@ -77,25 +77,25 @@ Public Sub InitRegalo()
         
         On Error GoTo InitRegalo_Err
         
-100     RegaloMapa(1) = 297
-102     RegaloMapa(2) = 295
-104     RegaloMapa(3) = 296
-106     RegaloMapa(4) = 276
-108     RegaloMapa(5) = 142
-110     RegaloMapa(6) = 317
-112     RegaloMapa(7) = 303
-114     RegaloMapa(8) = 302
-116     RegaloMapa(9) = 293
-118     RegaloMapa(10) = 290
-120     RegaloMapa(11) = 289
-122     RegaloMapa(12) = 294
-124     RegaloMapa(13) = 292
-126     RegaloMapa(14) = 286
-128     RegaloMapa(15) = 278
-130     RegaloMapa(16) = 277
-132     RegaloMapa(17) = 301
-134     RegaloMapa(18) = 287
-136     RegaloMapa(19) = 316
+100     RegaloMapa(1) = 366
+102     RegaloMapa(2) = 367
+104     RegaloMapa(3) = 368
+106     RegaloMapa(4) = 303
+108     RegaloMapa(5) = 304
+110     RegaloMapa(6) = 305
+112     RegaloMapa(7) = 208
+114     RegaloMapa(8) = 37
+116     RegaloMapa(9) = 168
+118     RegaloMapa(10) = 167
+120     RegaloMapa(11) = 42
+122     RegaloMapa(12) = 307
+124     RegaloMapa(13) = 291
+126     RegaloMapa(14) = 292
+128     RegaloMapa(15) = 40
+130     RegaloMapa(16) = 63
+132     RegaloMapa(17) = 47
+134     RegaloMapa(18) = 48
+136     RegaloMapa(19) = 252
     
 138     RegaloRegalo(1).ObjIndex = 1081 'Pendiente del Sacrificio
 140     RegaloRegalo(1).Amount = 1
@@ -119,7 +119,7 @@ Public Sub InitRegalo()
         Exit Sub
 
 InitRegalo_Err:
-158     Call RegistrarError(Err.Number, Err.description, "ModTesoros.InitRegalo", Erl)
+158     Call RegistrarError(Err.Number, Err.Description, "ModTesoros.InitRegalo", Erl)
 160     Resume Next
         
 End Sub
@@ -264,7 +264,7 @@ Public Sub PerderTesoro()
         Exit Sub
 
 PerderTesoro_Err:
-234     Call RegistrarError(Err.Number, Err.description, "ModTesoros.PerderTesoro", Erl)
+234     Call RegistrarError(Err.Number, Err.Description, "ModTesoros.PerderTesoro", Erl)
 236     Resume Next
         
 End Sub
@@ -429,7 +429,7 @@ Public Sub PerderRegalo()
         Exit Sub
 
 PerderRegalo_Err:
-254     Call RegistrarError(Err.Number, Err.description, "ModTesoros.PerderRegalo", Erl)
+254     Call RegistrarError(Err.Number, Err.Description, "ModTesoros.PerderRegalo", Erl)
 256     Resume Next
         
 End Sub
