@@ -277,8 +277,7 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
         Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessageCreateFX(.Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
 
         .flags.Inmovilizado = 1
-        'EMANCU: Faltan contador de inmovilizado
-        '.Contadores.Inmovilizado = Hechizos(Spell).Duration / 2
+        .Contadores.Inmovilizado = Hechizos(Spell).Duration / 2
       End If
 
     ElseIf Hechizos(Spell).RemoverParalisis = 1 Then
