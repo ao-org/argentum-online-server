@@ -367,7 +367,6 @@ Sub ResetNpcMainInfo(ByVal NpcIndex As Integer)
         
     
 100     NpcList(NpcIndex).Attackable = 0
-102     NpcList(NpcIndex).CanAttack = 0
 104     NpcList(NpcIndex).Comercia = 0
 106     NpcList(NpcIndex).GiveEXP = 0
 108     NpcList(NpcIndex).GiveEXPClan = 0
@@ -1469,7 +1468,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
                 cant = val(Leer.GetValue("NPC" & NpcNumber, "CaminataLen"))
                 ' Prevengo NPCs rotos
                 If cant = 0 Then
-                    .Movement = ESTATICO
+                    .Movement = Estatico
                 Else
                     ' Redimenciono el array
                     ReDim .Caminata(1 To cant)
@@ -1525,7 +1524,7 @@ Sub DoFollow(ByVal NpcIndex As Integer, ByVal UserName As String)
             .flags.AttackedBy = UserName
             .Target = NameIndex(UserName)
             .flags.Follow = True
-            .Movement = TipoAI.NPCDEFENSA
+            .Movement = TipoAI.NpcDefensa
             .Hostile = 0
 
         End If

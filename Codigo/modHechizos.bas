@@ -45,7 +45,6 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 106             If .flags.invisible = 1 Or .flags.Oculto = 1 Or .flags.Inmunidad = 1 Then Exit Sub
             End If
 
-            'NpcList(NpcIndex).CanAttack = 0
             Dim Daño As Integer
             
             Dim DañoStr As String
@@ -210,12 +209,6 @@ End Sub
 
 Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer, ByVal Spell As Integer)
   On Error GoTo NpcLanzaSpellSobreNpc_Err
-    
-
-  If NpcList(NpcIndex).CanAttack = 0 Then Exit Sub
-
-  ' Emancu: ESTO ESTA MEDIO RARO!!! Nadie lo pone en 1 de nuevo.
-  NpcList(NpcIndex).CanAttack = 0
 
   Dim Daño As Integer
   Dim DañoStr As String
@@ -446,7 +439,7 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
             End If
         End If
 
-        If .Stats.UserSkills(eSkill.magia) < Hechizos(HechizoIndex).MinSkill Then
+        If .Stats.UserSkills(eSkill.Magia) < Hechizos(HechizoIndex).MinSkill Then
             Call WriteConsoleMsg(UserIndex, "No tenes suficientes puntos de magia para lanzar este hechizo, necesitas " & Hechizos(HechizoIndex).MinSkill & " puntos.", FontTypeNames.FONTTYPE_INFO)
             Exit Function
         End If
@@ -1014,7 +1007,7 @@ Sub HandleHechizoTerreno(ByVal UserIndex As Integer, ByVal uh As Integer)
         'Else
 
 122     If b Then
-124         Call SubirSkill(UserIndex, magia)
+124         Call SubirSkill(UserIndex, Magia)
 
 130         UserList(UserIndex).Stats.MinMAN = UserList(UserIndex).Stats.MinMAN - Hechizos(uh).ManaRequerido
 
@@ -1064,7 +1057,7 @@ Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
         End Select
 
 112     If b Then
-114         Call SubirSkill(UserIndex, magia)
+114         Call SubirSkill(UserIndex, Magia)
             'If Hechizos(uh).Resis = 1 Then Call SubirSkill(UserList(UserIndex).Flags.TargetUser, Resis)
 116         UserList(UserIndex).Stats.MinMAN = UserList(UserIndex).Stats.MinMAN - Hechizos(uh).ManaRequerido
 118         If UserList(UserIndex).Stats.MinMAN < 0 Then UserList(UserIndex).Stats.MinMAN = 0
@@ -1118,7 +1111,7 @@ Sub HandleHechizoNPC(ByVal UserIndex As Integer, ByVal uh As Integer)
         End Select
 
 108     If b Then
-110         Call SubirSkill(UserIndex, magia)
+110         Call SubirSkill(UserIndex, Magia)
 112         UserList(UserIndex).flags.TargetNPC = 0
 114         UserList(UserIndex).Stats.MinMAN = UserList(UserIndex).Stats.MinMAN - Hechizos(uh).ManaRequerido
 

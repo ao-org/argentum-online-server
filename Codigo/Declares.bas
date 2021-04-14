@@ -570,7 +570,7 @@ Public Const iORO          As Byte = 12
 '%%%%%%%%%% CONSTANTES DE INDICES %%%%%%%%%%%%%%%
 Public Enum eSkill
 
-    magia = 1
+    Magia = 1
     Robar = 2
     Tacticas = 3
     Armas = 4
@@ -584,7 +584,7 @@ Public Enum eSkill
     Proyectiles = 12
     Wrestling = 13
     Navegacion = 14
-    equitacion = 15
+    Equitacion = 15
     Resistencia = 16
 
     Talar = 17
@@ -1710,7 +1710,7 @@ End Type
 
 Public Type UserIntervals
 
-    magia As Long
+    Magia As Long
     Golpe As Long
     Arco As Long
     UsarU As Long
@@ -2055,7 +2055,6 @@ Public Type npc
     InvervaloRespawn As Long
     
     Invent As Inventario
-    CanAttack As Byte
     
     NroExpresiones As Byte
     Expresiones() As String ' le da vida ;)

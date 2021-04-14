@@ -3310,7 +3310,7 @@ Private Sub HandleCastSpell(ByVal UserIndex As Integer)
 130                 UserList(UserIndex).flags.TargetUser = UserIndex
 132                 Call LanzarHechizo(.flags.Hechizo, UserIndex)
                 Else
-134                 Call WriteWorkRequestTarget(UserIndex, eSkill.magia)
+134                 Call WriteWorkRequestTarget(UserIndex, eSkill.Magia)
 
                 End If
 
@@ -3458,7 +3458,7 @@ Private Sub HandleWork(ByVal UserIndex As Integer)
         
 116         Select Case Skill
 
-                Case Robar, magia, Domar
+                Case Robar, Magia, Domar
 118                 Call WriteWorkRequestTarget(UserIndex, Skill)
 
 120             Case Ocultarse
@@ -3834,7 +3834,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
         
 130         Select Case Skill
 
-                Dim fallo As Boolean
+                Dim consumirMunicion As Boolean
 
                 Case eSkill.Proyectiles
             
@@ -3870,10 +3870,6 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 168                     If DummyInt <> 0 Then
 170                         If DummyInt = 1 Then
 172                             Call WriteConsoleMsg(UserIndex, "No tenés municiones.", FontTypeNames.FONTTYPE_INFO)
-                            
-                                'Call Desequipar(UserIndex, .WeaponEqpSlot)
-174                             Call WriteWorkRequestTarget(UserIndex, 0)
-
                             End If
                         
 176                         Call Desequipar(UserIndex, .MunicionEqpSlot)
@@ -3905,7 +3901,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                 
 194                 tU = .flags.TargetUser
 196                 tN = .flags.TargetNPC
-198                 fallo = True
+198                 consumirMunicion = False
 
                     'Validate target
 200                 If tU > 0 Then
@@ -3951,7 +3947,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
                         End If
                     
-266                     fallo = False
+266                     consumirMunicion = True
                     
 268                 ElseIf tN > 0 Then
 
@@ -3966,77 +3962,12 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     
                         'Is it attackable???
 276                     If NpcList(tN).Attackable <> 0 Then
-                    
-278                         fallo = False
-                        
-                            'Attack!
-                        
-280                         Select Case UsuarioAtacaNpcFunction(UserIndex, tN)
-                        
-                                Case 0 ' no se puede pegar
-                            
-282                             Case 1 ' le pego
-                
-284                                 If NpcList(tN).flags.Snd2 > 0 Then
-286                                     Call SendData(SendTarget.ToNPCArea, tN, PrepareMessagePlayWave(NpcList(tN).flags.Snd2, NpcList(tN).Pos.X, NpcList(tN).Pos.Y))
-                                    Else
-288                                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_IMPACTO2, NpcList(tN).Pos.X, NpcList(tN).Pos.Y))
-
-                                    End If
-                                
-290                                 If ObjData(.Invent.MunicionEqpObjIndex).Subtipo = 1 And UserList(UserIndex).flags.TargetNPC > 0 Then
-292                                     If NpcList(tN).flags.Paralizado = 0 Then
-
-                                            Dim Probabilidad As Byte
-
-294                                         Probabilidad = RandomNumber(1, 2)
-
-296                                         If Probabilidad = 1 Then
-298                                             If NpcList(tN).flags.AfectaParalisis = 0 Then
-300                                                 NpcList(tN).flags.Paralizado = 1
-                                                
-302                                                 NpcList(tN).Contadores.Paralisis = IntervaloParalizado
-
-304                                                 If UserList(UserIndex).ChatCombate = 1 Then
-                                                        'Call WriteConsoleMsg(UserIndex, "Tu golpe a paralizado a la criatura.", FontTypeNames.FONTTYPE_FIGHT)
-306                                                     Call WriteLocaleMsg(UserIndex, "136", FontTypeNames.FONTTYPE_FIGHT)
-
-                                                    End If
-
-308                                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(NpcList(tN).Char.CharIndex, 8, 0))
-310                                                 envie = True
-                                                Else
-
-312                                                 If UserList(UserIndex).ChatCombate = 1 Then
-                                                        'Call WriteConsoleMsg(UserIndex, "El NPC es inmune al hechizo.", FontTypeNames.FONTTYPE_INFO)
-314                                                     Call WriteLocaleMsg(UserIndex, "381", FontTypeNames.FONTTYPE_INFO)
-
-                                                    End If
-
-                                                End If
-
-                                            End If
-
-                                        End If
-
-                                    End If
-                                
-316                                 If ObjData(.Invent.MunicionEqpObjIndex).CreaFX <> 0 Then
-318                                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(NpcList(tN).Char.CharIndex, ObjData(.Invent.MunicionEqpObjIndex).CreaFX, 0))
-
-                                    End If
-                    
-320                                 If ObjData(.Invent.MunicionEqpObjIndex).CreaParticula <> "" Then
-322                                     Particula = val(ReadField(1, ObjData(.Invent.MunicionEqpObjIndex).CreaParticula, Asc(":")))
-324                                     Tiempo = val(ReadField(2, ObjData(.Invent.MunicionEqpObjIndex).CreaParticula, Asc(":")))
-326                                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(NpcList(tN).Char.CharIndex, Particula, Tiempo, False))
-
-                                    End If
-                                
-328                             Case 2 ' Fallo
-                            
-                            End Select
-                        
+                            If PuedeAtacarNPC(UserIndex, tN) Then
+                                Call UsuarioAtacaNpc(UserIndex, tN)
+                                consumirMunicion = True
+                            Else
+                                consumirMunicion = False
+                            End If
                         End If
 
                     End If
@@ -4045,20 +3976,10 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 332                     DummyInt = .MunicionEqpSlot
                     
                         'Take 1 arrow away - we do it AFTER hitting, since if Ammo Slot is 0 it gives a rt9 and kicks players
-                    
-334                     If Not fallo Then
+334                     If consumirMunicion Then
 336                         Call QuitarUserInvItem(UserIndex, DummyInt, 1)
 
                         End If
-                    
-                        'Call DropObj(UserIndex, .MunicionEqpSlot, 1, UserList(UserIndex).Pos.Map, x, y)
-                   
-                        ' If fallo And MapData(UserList(UserIndex).Pos.Map, x, Y).Blocked = 0 Then
-                        '  Dim flecha As obj
-                        ' flecha.Amount = 1
-                        'flecha.ObjIndex = .MunicionEqpObjIndex
-                        ' Call MakeObj(flecha, UserList(UserIndex).Pos.Map, x, Y)
-                        ' End If
                     
 338                     If .Object(DummyInt).Amount > 0 Then
                             'QuitarUserInvItem unequipps the ammo, so we equip it again
@@ -4077,7 +3998,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
                     '-----------------------------------
             
-352             Case eSkill.magia
+352             Case eSkill.Magia
                     'Check the map allows spells to be casted.
                     '  If MapInfo(.Pos.map).MagiaSinEfecto > 0 Then
                     ' Call WriteConsoleMsg(UserIndex, "Una fuerza oscura te impide canalizar tu energía", FontTypeNames.FONTTYPE_FIGHT)
@@ -7277,7 +7198,7 @@ Private Sub HandlePetStand(ByVal UserIndex As Integer)
 116         If NpcList(.flags.TargetNPC).MaestroUser <> UserIndex Then Exit Sub
         
             'Do it!
-118         NpcList(.flags.TargetNPC).Movement = TipoAI.ESTATICO
+118         NpcList(.flags.TargetNPC).Movement = TipoAI.Estatico
         
 120         Call Expresar(.flags.TargetNPC, UserIndex)
         End With
@@ -12035,7 +11956,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 532                                 UserList(tUser).Intervals.Golpe = tmpLong
                                     
 534                             Case "MAGIA", "HECHIZO", "HECHIZOS", "LANZAR"
-536                                 UserList(tUser).Intervals.magia = tmpLong
+536                                 UserList(tUser).Intervals.Magia = tmpLong
 
 538                             Case "COMBO"
 540                                 UserList(tUser).Intervals.GolpeMagia = tmpLong
@@ -21447,7 +21368,7 @@ Public Sub WriteIntervals(ByVal UserIndex As Integer)
 106         Call .outgoingData.WriteLong(.Intervals.Caminar)
 108         Call .outgoingData.WriteLong(.Intervals.Golpe)
 110         Call .outgoingData.WriteLong(.Intervals.GolpeMagia)
-112         Call .outgoingData.WriteLong(.Intervals.magia)
+112         Call .outgoingData.WriteLong(.Intervals.Magia)
 114         Call .outgoingData.WriteLong(.Intervals.MagiaGolpe)
 116         Call .outgoingData.WriteLong(.Intervals.GolpeUsar)
 118         Call .outgoingData.WriteLong(.Intervals.TrabajarExtraer)

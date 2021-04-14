@@ -838,7 +838,6 @@ Public Sub AplicarIntervalos()
         '///////////////// TIMERS \\\\\\\\\\\\\\\\\\\
 
 138     IntervaloUserPuedeCastear = val(txtIntervaloLanzaHechizo.Text)
-140     frmMain.npcataca.Interval = val(txtNPCPuedeAtacar.Text)
 142     frmMain.TIMER_AI.Interval = val(txtAI.Text)
 144     IntervaloTrabajarExtraer = val(txtTrabajoExtraer.Text)
 146     IntervaloTrabajarConstruir = val(txtTrabajoConstruir.Text)
@@ -849,7 +848,7 @@ Public Sub AplicarIntervalos()
         Exit Sub
 
 AplicarIntervalos_Err:
-150     Call RegistrarError(Err.Number, Err.description, "FrmInterv.AplicarIntervalos", Erl)
+150     Call RegistrarError(Err.Number, Err.Description, "FrmInterv.AplicarIntervalos", Erl)
 152     Resume Next
         
 End Sub
@@ -868,7 +867,7 @@ Private Sub Command1_Click()
         Exit Sub
 
 Command1_Click_Err:
-102     Call RegistrarError(Err.Number, Err.description, "FrmInterv.Command1_Click", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "FrmInterv.Command1_Click", Erl)
 
         
 End Sub
@@ -900,7 +899,6 @@ Private Sub Command2_Click()
 
 136     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloLanzaHechizo", CStr(IntervaloUserPuedeCastear))
 138     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloNpcAI", frmMain.TIMER_AI.Interval)
-140     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloNpcPuedeAtacar", frmMain.npcataca.Interval)
 142     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloTrabajarExtraer", CStr(IntervaloTrabajarExtraer))
 144     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloTrabajarConstruir", CStr(IntervaloTrabajarConstruir))
 146     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloUserPuedeAtacar", CStr(IntervaloUserPuedeAtacar))
@@ -924,7 +922,7 @@ Private Sub ok_Click()
         Exit Sub
 
 ok_Click_Err:
-102     Call RegistrarError(Err.Number, Err.description, "FrmInterv.ok_Click", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "FrmInterv.ok_Click", Erl)
 104     Resume Next
         
 End Sub

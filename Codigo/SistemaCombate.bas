@@ -840,8 +840,6 @@ Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integ
     If NpcList(NpcIndex).Target = 0 Then NpcList(NpcIndex).Target = UserIndex
     
     If UserList(UserIndex).flags.AtacadoPorNpc = 0 And UserList(UserIndex).flags.AtacadoPorUser = 0 Then UserList(UserIndex).flags.AtacadoPorNpc = NpcIndex
-
-    NpcList(NpcIndex).CanAttack = 0
     
     If NpcList(NpcIndex).flags.Snd1 > 0 Then
         Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessagePlayWave(NpcList(NpcIndex).flags.Snd1, NpcList(NpcIndex).Pos.X, NpcList(NpcIndex).Pos.Y))
@@ -952,20 +950,11 @@ Public Sub NpcAtacaNpc(ByVal Atacante As Integer, ByVal Victima As Integer, Opti
         
         On Error GoTo NpcAtacaNpc_Err
         
- 
-        ' El npc puede atacar ???
-100     If IntervaloPermiteAtacarNPC(Atacante) Then
-102         NpcList(Atacante).CanAttack = 0
-
-104         If cambiarMOvimiento Then
-106             NpcList(Victima).TargetNPC = Atacante
-108             NpcList(Victima).Movement = TipoAI.NpcAtacaNpc
-
-            End If
-
-        Else
-            Exit Sub
-
+        If Not IntervaloPermiteAtacarNPC(Atacante) Then Exit Sub
+        
+100     If cambiarMovimiento Then
+106         NpcList(Victima).TargetNPC = Atacante
+108         NpcList(Victima).Movement = TipoAI.NpcAtacaNpc
         End If
 
 110     If NpcList(Atacante).flags.Snd1 > 0 Then
@@ -1000,51 +989,45 @@ NpcAtacaNpc_Err:
         
 End Sub
 
-' Deberia exponer esta o no??? En lugar de UsuarioAtacaNpcFunction
 Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
         
         On Error GoTo UsuarioAtacaNpc_Err
         
-100     If Not PuedeAtacarNPC(UserIndex, NpcIndex) Then Exit Sub
+        If Not PuedeAtacarNPC(UserIndex, NpcIndex) Then Exit Sub
 
-102     If UserList(UserIndex).flags.invisible = 0 Then
-104         Call NPCAtacado(NpcIndex, UserIndex)
-        End If
+        If UserList(UserIndex).flags.invisible = 0 Then Call NPCAtacado(NpcIndex, UserIndex)
 
-106     If UserImpactoNpc(UserIndex, NpcIndex) Then
-            
+        If UserImpactoNpc(UserIndex, NpcIndex) Then
+        
             ' Suena el Golpe en el cliente.
-108         If NpcList(NpcIndex).flags.Snd2 > 0 Then
-110             Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessagePlayWave(NpcList(NpcIndex).flags.Snd2, NpcList(NpcIndex).Pos.X, NpcList(NpcIndex).Pos.Y))
+            If NpcList(NpcIndex).flags.Snd2 > 0 Then
+                Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessagePlayWave(NpcList(NpcIndex).flags.Snd2, NpcList(NpcIndex).Pos.X, NpcList(NpcIndex).Pos.Y))
             Else
-112             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_IMPACTO2, NpcList(NpcIndex).Pos.X, NpcList(NpcIndex).Pos.Y))
+                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_IMPACTO2, NpcList(NpcIndex).Pos.X, NpcList(NpcIndex).Pos.Y))
             End If
-            
+        
             ' Golpe Paralizador
-114         If UserList(UserIndex).flags.Paraliza = 1 And NpcList(NpcIndex).flags.Paralizado = 0 Then
+            If UserList(UserIndex).flags.Paraliza = 1 And NpcList(NpcIndex).flags.Paralizado = 0 Then
 
-                Dim Probabilidad As Byte: Probabilidad = RandomNumber(1, 4)
+                If RandomNumber(1, 4) = 1 Then
 
-118             If Probabilidad = 1 Then
+                    If NpcList(NpcIndex).flags.AfectaParalisis = 0 Then
+                        NpcList(NpcIndex).flags.Paralizado = 1
+                        NpcList(NpcIndex).Contadores.Paralisis = IntervaloParalizado / 3
 
-120                 If NpcList(NpcIndex).flags.AfectaParalisis = 0 Then
-122                     NpcList(NpcIndex).flags.Paralizado = 1
-                        
-124                     NpcList(NpcIndex).Contadores.Paralisis = IntervaloParalizado / 3
-
-126                     If UserList(UserIndex).ChatCombate = 1 Then
+                        If UserList(UserIndex).ChatCombate = 1 Then
                             'Call WriteConsoleMsg(UserIndex, "Tu golpe a paralizado a la criatura.", FontTypeNames.FONTTYPE_FIGHT)
-128                         Call WriteLocaleMsg(UserIndex, "136", FontTypeNames.FONTTYPE_FIGHT)
+                            Call WriteLocaleMsg(UserIndex, "136", FontTypeNames.FONTTYPE_FIGHT)
 
                         End If
 
-130                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(NpcList(NpcIndex).Char.CharIndex, 8, 0))
-                                     
+                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(NpcList(NpcIndex).Char.CharIndex, 8, 0))
+                                 
                     Else
 
-132                     If UserList(UserIndex).ChatCombate = 1 Then
+                        If UserList(UserIndex).ChatCombate = 1 Then
                             'Call WriteConsoleMsg(UserIndex, "El NPC es inmune al hechizo.", FontTypeNames.FONTTYPE_INFO)
-134                         Call WriteLocaleMsg(UserIndex, "381", FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, "381", FontTypeNames.FONTTYPE_INFO)
 
                         End If
 
@@ -1067,17 +1050,34 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
             ' Resta la vida del NPC
 136         Call UserDañoNpc(UserIndex, NpcIndex)
             
+            Dim municionIndex As Integer: municionIndex = UserList(UserIndex).Invent.MunicionEqpObjIndex
+            Dim Particula As Integer
+            Dim Tiempo    As Long
+            
+            If municionIndex > 0 Then
+                If ObjData(municionIndex).CreaFX <> 0 Then
+                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(NpcList(NpcIndex).Char.CharIndex, ObjData(municionIndex).CreaFX, 0))
+                
+                End If
+                                    
+                If ObjData(municionIndex).CreaParticula <> "" Then
+                    Particula = val(ReadField(1, ObjData(municionIndex).CreaParticula, Asc(":")))
+                    Tiempo = val(ReadField(2, ObjData(municionIndex).CreaParticula, Asc(":")))
+                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(NpcList(NpcIndex).Char.CharIndex, Particula, Tiempo, False))
+                End If
+            End If
+            
         Else
             
             Dim sendto As SendTarget
             
-138         If UserList(UserIndex).clase = eClass.Hunter And UserList(UserIndex).flags.Oculto = 0 Then
-140             sendto = SendTarget.ToPCArea
+            If UserList(UserIndex).clase = eClass.Hunter And UserList(UserIndex).flags.Oculto = 0 Then
+                sendto = SendTarget.ToPCArea
             Else
-142             sendto = SendTarget.ToIndex
+                sendto = SendTarget.ToIndex
             End If
 
-144         Call SendData(sendto, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.CharIndex))
+            Call SendData(sendto, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.CharIndex))
 
         End If
 
@@ -1089,49 +1089,6 @@ UsuarioAtacaNpc_Err:
 148     Resume Next
         
 End Sub
-
-' Cambiar esto!
-Public Function UsuarioAtacaNpcFunction(ByVal UserIndex As Integer, ByVal NpcIndex As Integer) As Byte
-        
-        On Error GoTo UsuarioAtacaNpcFunction_Err
-        
-
-100     If Not PuedeAtacarNPC(UserIndex, NpcIndex) Then
-102         UsuarioAtacaNpcFunction = 0
-            Exit Function
-
-        End If
-    
-104     Call NPCAtacado(NpcIndex, UserIndex)
-    
-106     If UserImpactoNpc(UserIndex, NpcIndex) Then
-108         Call UserDañoNpc(UserIndex, NpcIndex)
-110         UsuarioAtacaNpcFunction = 1
-
-        Else
-            
-            Dim sendto As SendTarget
-
-112         If UserList(UserIndex).clase = eClass.Hunter And UserList(UserIndex).flags.Oculto = 0 Then
-114             sendto = SendTarget.ToPCArea
-            Else
-116             sendto = SendTarget.ToIndex
-            End If
-            
-118         Call SendData(sendto, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.CharIndex))
-            
-120         UsuarioAtacaNpcFunction = 2
-
-        End If
-
-        
-        Exit Function
-
-UsuarioAtacaNpcFunction_Err:
-122     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.UsuarioAtacaNpcFunction", Erl)
-124     Resume Next
-        
-End Function
 
 Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
         
@@ -2437,7 +2394,7 @@ Sub AllMascotasAtacanUser(ByVal victim As Integer, ByVal Maestro As Integer)
                 If NpcList(mascotaIndex).flags.AtacaUsuarios Then
                     NpcList(mascotaIndex).flags.AttackedBy = UserList(victim).name
                     NpcList(mascotaIndex).Target = victim
-                    NpcList(mascotaIndex).Movement = TipoAI.NPCDEFENSA
+                    NpcList(mascotaIndex).Movement = TipoAI.NpcDefensa
                     NpcList(mascotaIndex).Hostile = 1
                 End If
                     
