@@ -27585,13 +27585,13 @@ Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
 128                         Select Case Mapa
 
                                 Case 1
-130                                 Pos.Map = 187
+130                                 Pos.Map = 186
 
 132                             Case 2
 134                                 Pos.Map = 188
 
 136                             Case 3
-138                                 Pos.Map = 94
+138                                 Pos.Map = 28
 
 140                             Case 4
 142                                 Pos.Map = 191
