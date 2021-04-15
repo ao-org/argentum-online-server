@@ -27,7 +27,7 @@ Public RegaloY              As Byte
 Public Sub InitTesoro()
         
         On Error GoTo InitTesoro_Err
-        
+        ' pasar a un Init ver ReyarB
 100     TesoroMapa(1) = 21
 102     TesoroMapa(2) = 17
 104     TesoroMapa(3) = 365
@@ -63,7 +63,6 @@ Public Sub InitTesoro()
     
 156     TesoroRegalo(5).ObjIndex = 204
 158     TesoroRegalo(5).Amount = 1
-    
         
         Exit Sub
 
@@ -76,7 +75,7 @@ End Sub
 Public Sub InitRegalo()
         
         On Error GoTo InitRegalo_Err
-        
+        ' pasar a un Init ver ReyarB
 100     RegaloMapa(1) = 366
 102     RegaloMapa(2) = 367
 104     RegaloMapa(3) = 368
@@ -114,7 +113,6 @@ Public Sub InitRegalo()
     
         'TesoroRegalo(6).ObjIndex = 1181 'Báculo de Hechicero (DM +10)
         'TesoroRegalo(6).Amount = 1
-    
         
         Exit Sub
 

@@ -27582,7 +27582,7 @@ Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
 
 126                         Mapa = RandomNumber(1, 8)
                 
-128                         Select Case Mapa
+128                         Select Case Mapa 'Pasar a un init ver ReyarB
 
                                 Case 1
 130                                 Pos.Map = 186
