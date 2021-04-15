@@ -820,6 +820,7 @@ Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) A
         Dim UserIndex As Integer
     
 100     With NpcList(NpcIndex)
+            ' Quiero dejar esto aca? o no
             If .flags.Paralizado + .flags.Inmovilizado > 0 Then Exit Function
             
 102         nPos = .Pos
