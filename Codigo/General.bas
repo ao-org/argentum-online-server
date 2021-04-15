@@ -620,9 +620,6 @@ Sub Main()
     
 112     frmCargando.Show
     
-114     Call InitTesoro
-116     Call InitRegalo
-    
         'Call PlayWaveAPI(App.Path & "\wav\harp3.wav")
     
 118     frmMain.Caption = frmMain.Caption & " V." & App.Major & "." & App.Minor & "." & App.Revision
@@ -656,6 +653,9 @@ Sub Main()
 154     frmCargando.Label1(2).Caption = "Cargando Obj.Dat"
         'Call LoadOBJData
 156     Call LoadOBJData
+
+        Call InitTesoro
+        Call InitRegalo
         
 158     frmCargando.Label1(2).Caption = "Cargando Hechizos.Dat"
 160     Call CargarHechizos
@@ -1057,7 +1057,7 @@ ErrHandler:
 
 End Sub
 
-Public Sub LogClanes(ByVal str As String)
+Public Sub LogClanes(ByVal Str As String)
         
         On Error GoTo LogClanes_Err
         
@@ -1066,7 +1066,7 @@ Public Sub LogClanes(ByVal str As String)
 
 100     nfile = FreeFile ' obtenemos un canal
 102     Open App.Path & "\logs\clanes.log" For Append Shared As #nfile
-104     Print #nfile, Date & " " & Time & " " & str
+104     Print #nfile, Date & " " & Time & " " & Str
 106     Close #nfile
 
         
@@ -1078,7 +1078,7 @@ LogClanes_Err:
         
 End Sub
 
-Public Sub LogIP(ByVal str As String)
+Public Sub LogIP(ByVal Str As String)
         
         On Error GoTo LogIP_Err
         
@@ -1087,7 +1087,7 @@ Public Sub LogIP(ByVal str As String)
 
 100     nfile = FreeFile ' obtenemos un canal
 102     Open App.Path & "\logs\IP.log" For Append Shared As #nfile
-104     Print #nfile, Date & " " & Time & " " & str
+104     Print #nfile, Date & " " & Time & " " & Str
 106     Close #nfile
 
         
@@ -1099,7 +1099,7 @@ LogIP_Err:
         
 End Sub
 
-Public Sub LogDesarrollo(ByVal str As String)
+Public Sub LogDesarrollo(ByVal Str As String)
         
         On Error GoTo LogDesarrollo_Err
         
@@ -1108,7 +1108,7 @@ Public Sub LogDesarrollo(ByVal str As String)
 
 100     nfile = FreeFile ' obtenemos un canal
 102     Open App.Path & "\logs\desarrollo" & Month(Date) & Year(Date) & ".log" For Append Shared As #nfile
-104     Print #nfile, Date & " " & Time & " " & str
+104     Print #nfile, Date & " " & Time & " " & Str
 106     Close #nfile
 
         
@@ -2793,7 +2793,7 @@ Public Function PonerPuntos(ByVal Numero As Long) As String
 
         Dim Cifra As String
  
-100     Cifra = str(Numero)
+100     Cifra = Str(Numero)
 102     Cifra = Right$(Cifra, Len(Cifra) - 1)
 
 104     For i = 0 To 4
