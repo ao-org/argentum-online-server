@@ -7,10 +7,7 @@ Public Enum TipoAI
     MueveAlAzar = 2 ' MueveAlAzarPasivo (ataca si le pegan)
                     ' MueveAlAzarAgresivo (ataca en cuanto ve a alguien)
 
-    NpcMaloAtacaUsersBuenos = 3
     NpcDefensa = 4
-    GuardiasAtacanCriminales = 5 ' No se usa
-    GuardiasAtacanCiudadanos = 6
     SigueAmo = 8                 ' No se usa
     NpcAtacaNpc = 9
     NpcPathfinding = 10          ' No se usa
@@ -73,15 +70,9 @@ Public Sub NPCAI(ByVal NpcIndex As Integer)
                     End If
                 End If
 
-            Case TipoAI.NpcMaloAtacaUsersBuenos
-                falladesc = " fallo NpcMaloAtacaUsersBuenos"
-                Call PerseguirUsuarioCercano(NpcIndex)
 
             Case TipoAI.NpcDefensa
                 Call SeguirAgresor(NpcIndex)
-
-            'Case TipoAI.GuardiasAtacanCiudadanos
-            '    Call PerseguirUsuarioCercano(NpcIndex, e_ModoBusquedaObjetivos.FaccionarioCiudadano)
 
             Case TipoAI.NpcAtacaNpc
                 Call AI_NpcAtacaNpc(NpcIndex)
@@ -148,7 +139,7 @@ Private Sub PerseguirUsuarioCercanoEmancu(ByVal NpcIndex As Integer)
         For i = 1 To ModAreas.ConnGroups(.Pos.Map).CountEntrys
             UserIndex = ModAreas.ConnGroups(.Pos.Map).UserEntrys(i)
 
-            If EnRangoVision(NpcIndex, UserIndex) Then
+            If EnRangoVision(NpcIndex, UserIndex) And EsEnemigo(NpcIndex, UserIndex) Then
 
                 ' Busco el mas cercano, sea atacable o no.
                 If Distancia(UserList(UserIndex).Pos, .Pos) < minDistancia Then
@@ -157,7 +148,7 @@ Private Sub PerseguirUsuarioCercanoEmancu(ByVal NpcIndex As Integer)
                 End If
 
                 ' Busco el mas cercano que sea atacable.
-                If UsuarioAtacable(UserIndex) And Distancia(UserList(UserIndex).Pos, .Pos) < minDistanciaAtacable Then
+                If EsObjetivoValido(NpcIndex, UserIndex) And Distancia(UserList(UserIndex).Pos, .Pos) < minDistanciaAtacable Then
                     enemigoAtacableMasCercano = UserIndex
                     minDistanciaAtacable = Distancia(UserList(UserIndex).Pos, .Pos)
                 End If
@@ -205,7 +196,7 @@ Private Sub PerseguirUsuarioCercanoEmancu(ByVal NpcIndex As Integer)
     Exit Sub
 
 ErrorHandler:
-    Call RegistrarError(Err.Number, Err.Description, "AI_NPC.Emancu", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "AI_NPC.PerseguirUsuarioCercanoEmancu", Erl)
 
 End Sub
 
@@ -254,7 +245,7 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
             End If
         Else
             ' No encontro a nadie cerca, camina unos pasos en cualquier direccion.
-                If RandomNumber(1, 6) = 3 Then '20%
+                If RandomNumber(1, 6) = 3 And .flags.Paralizado = 0 And .flags.Inmovilizado = 0 Then '20%
                     Call MoveNPCChar(NpcIndex, CByte(RandomNumber(eHeading.NORTH, eHeading.WEST)))
                 Else
                     Call AnimacionIdle(NpcIndex, True)
@@ -717,10 +708,10 @@ Private Function EsObjetivoValido(ByVal NpcIndex As Integer, ByVal UserIndex As 
 
     Select Case .flags.AIAlineacion
         Case e_Alineacion.Real
-            EsObjetivoValido = ((EsObjetivoValido And (Status(UserIndex) Mod 2) = 1))
+            EsObjetivoValido = ((EsObjetivoValido And (Status(UserIndex) Mod 2) <> 1))
 
       Case e_Alineacion.Caos
-        EsObjetivoValido = ((EsObjetivoValido And (Status(UserIndex) Mod 2) = 0))
+        EsObjetivoValido = ((EsObjetivoValido And (Status(UserIndex) Mod 2) <> 0))
 
       Case e_Alineacion.ninguna
         ' Ok. No hay nada especial para hacer, cualquiera puede ser objetivo!
@@ -729,6 +720,31 @@ Private Function EsObjetivoValido(ByVal NpcIndex As Integer, ByVal UserIndex As 
 
   End With
 
+End Function
+
+Private Function EsEnemigo(ByVal NpcIndex As Integer, ByVal UserIndex As Integer) As Boolean
+    
+    With NpcList(NpcIndex)
+    
+        If .flags.AttackedBy <> vbNullString Then
+            EsEnemigo = (UserIndex = NameIndex(.flags.AttackedBy))
+            If EsEnemigo Then Exit Function
+        End If
+    
+        Select Case .flags.AIAlineacion
+            Case e_Alineacion.Real
+                EsEnemigo = (Status(UserIndex) Mod 2) <> 1
+        
+            Case e_Alineacion.Caos
+                EsEnemigo = (Status(UserIndex) Mod 2) <> 0
+                
+            Case e_Alineacion.ninguna
+                EsEnemigo = True
+                ' Ok. No hay nada especial para hacer, cualquiera puede ser enemigo!
+
+        End Select
+    
+    End With
 End Function
 
 Private Function EnRangoVision(ByVal NpcIndex As Integer, ByVal UserIndex As Integer) As Boolean
