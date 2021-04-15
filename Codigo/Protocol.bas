@@ -27591,16 +27591,16 @@ Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
 134                                 Pos.Map = 188
 
 136                             Case 3
-138                                 Pos.Map = 190
+138                                 Pos.Map = 94
 
 140                             Case 4
 142                                 Pos.Map = 191
 
 144                             Case 5
-146                                 Pos.Map = 234
+146                                 Pos.Map = 230
 
 148                             Case 6
-150                                 Pos.Map = 235
+150                                 Pos.Map = 237
 
 152                             Case 7
 154                                 Pos.Map = 30
