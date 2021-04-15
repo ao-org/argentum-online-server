@@ -22719,18 +22719,18 @@ Public Sub WriteTrainerCreatureList(ByVal UserIndex As Integer, ByVal NpcIndex A
 
         Dim i   As Long
 
-        Dim str As String
+        Dim Str As String
     
 100     With UserList(UserIndex).outgoingData
 102         Call .WriteByte(ServerPacketID.TrainerCreatureList)
         
 104         For i = 1 To NpcList(NpcIndex).NroCriaturas
-106             str = str & NpcList(NpcIndex).Criaturas(i).NpcName & SEPARATOR
+106             Str = Str & NpcList(NpcIndex).Criaturas(i).NpcName & SEPARATOR
 108         Next i
         
-110         If LenB(str) > 0 Then str = Left$(str, Len(str) - 1)
+110         If LenB(Str) > 0 Then Str = Left$(Str, Len(Str) - 1)
         
-112         Call .WriteASCIIString(str)
+112         Call .WriteASCIIString(Str)
 
         End With
 
@@ -27580,52 +27580,21 @@ Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
                 
                             Dim Pos As WorldPos
 
-126                         Mapa = RandomNumber(1, 8)
-                
-128                         Select Case Mapa 'Pasar a un init ver ReyarB
-
-                                Case 1
-130                                 Pos.Map = 186
-
-132                             Case 2
-134                                 Pos.Map = 188
-
-136                             Case 3
-138                                 Pos.Map = 28
-
-140                             Case 4
-142                                 Pos.Map = 191
-
-144                             Case 5
-146                                 Pos.Map = 230
-
-148                             Case 6
-150                                 Pos.Map = 237
-
-152                             Case 7
-154                                 Pos.Map = 30
-
-156                             Case 8
-158                                 Pos.Map = 98
-
-160                             Case 8
-162                                 Pos.Map = 75
-
-                            End Select
+126                         Mapa = TesoroNPCMapa(RandomNumber(1, UBound(TesoroNPCMapa)))
 
 164                         Pos.Y = 50
 166                         Pos.X = 50
-168                         Call SpawnNpc(RandomNumber(592, 593), Pos, True, False, True)
+168                         Call SpawnNpc(TesoroNPC(RandomNumber(1, UBound(TesoroNPC))), Pos, True, False, True)
                 
                     End Select
             
                 Else
             
 170                 If BusquedaTesoroActiva = True Then
-172                     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> Todavia nadie fue capaz de encontar el tesoro, recorda que se encuentra en " & DarNameMapa(TesoroNumMapa) & "(" & TesoroNumMapa & "). íQuien sera el valiente que lo encuentre?", FontTypeNames.FONTTYPE_TALK))
+172                     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> Todavía nadie fue capaz de encontar el tesoro, recuerda que se encuentra en " & DarNameMapa(TesoroNumMapa) & "(" & TesoroNumMapa & "). ¿Quién será el valiente que lo encuentre?", FontTypeNames.FONTTYPE_TALK))
 174                     Call WriteConsoleMsg(UserIndex, "Ya hay una busqueda del tesoro activa. El tesoro se encuentra en: " & TesoroNumMapa & "-" & TesoroX & "-" & TesoroY, FontTypeNames.FONTTYPE_INFO)
                     Else
-176                     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> Ningun valiente fue capaz de encontrar el item misterioso, recorda que se encuentra en " & DarNameMapa(RegaloNumMapa) & "(" & RegaloNumMapa & "). íTení cuidado!", FontTypeNames.FONTTYPE_TALK))
+176                     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> Ningún valiente fue capaz de encontrar el item misterioso, recuerda que se encuentra en " & DarNameMapa(RegaloNumMapa) & "(" & RegaloNumMapa & "). ¡Ten cuidado!", FontTypeNames.FONTTYPE_TALK))
 178                     Call WriteConsoleMsg(UserIndex, "Ya hay una busqueda del tesoro activa. El tesoro se encuentra en: " & RegaloNumMapa & "-" & RegaloX & "-" & RegaloY, FontTypeNames.FONTTYPE_INFO)
 
                     End If
