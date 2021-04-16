@@ -175,7 +175,13 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         
         ' Mascotas y npcs de entrenamiento no respawnean
         If MiNPC.MaestroNPC > 0 Or MiNPC.MaestroUser > 0 Then Exit Sub
+        
+        If NpcIndex = npc_index_evento Then
+            BusquedaNpcActiva = False
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Evento> El NPC ha sido asesinado.", FontTypeNames.FONTTYPE_CITIZEN))
 
+        End If
+        
         'ReSpawn o no
 196     If TiempoRespw = 0 Then
 198         Call ReSpawnNpc(MiNPC)
