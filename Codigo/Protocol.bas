@@ -23452,6 +23452,8 @@ Public Sub WriteShowGMPanelForm(ByVal UserIndex As Integer)
         On Error GoTo ErrHandler
 
 100     Call UserList(UserIndex).outgoingData.WriteByte(ServerPacketID.ShowGMPanelForm)
+        Call UserList(UserIndex).outgoingData.WriteInteger(UserList(UserIndex).Char.Head)
+        Call UserList(UserIndex).outgoingData.WriteInteger(UserList(UserIndex).Char.Body)
         Exit Sub
 
 ErrHandler:
