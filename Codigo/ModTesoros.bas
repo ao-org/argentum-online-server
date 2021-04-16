@@ -10,7 +10,10 @@ Dim TesoroMapa()     As Integer
 Dim TesoroRegalo()    As obj
 
 Public BusquedaTesoroActiva As Boolean
-
+Public BusquedaRegaloActiva As Boolean
+Public BusquedaNpcActiva As Boolean
+Public npc_index_evento As Integer
+                           
 Public TesoroNumMapa        As Integer
 
 Public TesoroX              As Byte
@@ -21,7 +24,6 @@ Dim RegaloMapa()     As Integer
 
 Dim RegaloRegalo()    As obj
 
-Public BusquedaRegaloActiva As Boolean
 
 Public RegaloNumMapa        As Integer
 
@@ -57,21 +59,21 @@ Public Sub InitTesoro()
         TiposDeTesoros = val(Lector.GetValue("Tesoros", "TiposDeTesoros"))
         
         If TiposDeTesoros <= 0 Then
-            ReDim TesoroTesoro(0)
+            ReDim TesoroRegalo(0)
             Exit Sub
         End If
     
-        ReDim TesoroTesoro(1 To TiposDeTesoros)
+        ReDim TesoroRegalo(1 To TiposDeTesoros)
         
-        Dim Fields() As String, Str As String
+        Dim Fields() As String, str As String
         For i = 1 To TiposDeTesoros
-            Str = Lector.GetValue("Tesoros", "Tesoro" & i)
+            str = Lector.GetValue("Tesoros", "Tesoro" & i)
         
-            If LenB(Str) Then
-                Fields = Split(Str, "-", 2)
+            If LenB(str) Then
+                Fields = Split(str, "-", 2)
                 
                 If UBound(Fields) >= 1 Then
-                    With TesoroTesoro(i)
+                    With TesoroRegalo(i)
                         .ObjIndex = val(Fields(0))
                         .Amount = val(Fields(1))
                     End With
@@ -141,12 +143,12 @@ Public Sub InitRegalo()
     
         ReDim RegaloRegalo(1 To TiposDeRegalos)
         
-        Dim Fields() As String, Str As String
+        Dim Fields() As String, str As String
         For i = 1 To TiposDeRegalos
-            Str = Lector.GetValue("Regalos", "Regalo" & i)
+            str = Lector.GetValue("Regalos", "Regalo" & i)
         
-            If LenB(Str) Then
-                Fields = Split(Str, "-", 2)
+            If LenB(str) Then
+                Fields = Split(str, "-", 2)
                 
                 If UBound(Fields) >= 1 Then
                     With RegaloRegalo(i)
@@ -177,131 +179,37 @@ Public Sub PerderTesoro()
 100     TesoroNumMapa = TesoroMapa(RandomNumber(1, UBound(TesoroMapa)))
 102     TesoroX = RandomNumber(20, 80)
 104     TesoroY = RandomNumber(20, 80)
-
-106     If (MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES Then
-108         If (MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked And FLAG_AGUA) = 0 Then
-110             EncontreLugar = True
-            Else
-112             EncontreLugar = False
-114             TesoroX = RandomNumber(20, 80)
-116             TesoroY = RandomNumber(20, 80)
-
-            End If
-
-        Else
-118         EncontreLugar = False
-120         TesoroX = RandomNumber(20, 80)
-122         TesoroY = RandomNumber(20, 80)
-
-        End If
-
-124     If EncontreLugar = False Then
-126         If (MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES Then
-128             If (MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked And FLAG_AGUA) = 0 Then
-130                 EncontreLugar = True
-                Else
-132                 EncontreLugar = False
-134                 TesoroX = RandomNumber(20, 80)
-136                 TesoroY = RandomNumber(20, 80)
-
-                End If
-
-            Else
-138             EncontreLugar = False
-140             TesoroX = RandomNumber(20, 80)
-142             TesoroY = RandomNumber(20, 80)
-
-            End If
-
-        End If
-
-144     If EncontreLugar = False Then
-146         If (MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES Then
-148             If (MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked And FLAG_AGUA) = 0 Then
-150                 EncontreLugar = True
-                Else
-152                 EncontreLugar = False
-154                 TesoroX = RandomNumber(20, 80)
-156                 TesoroY = RandomNumber(20, 80)
-
-                End If
-
-            Else
-158             EncontreLugar = False
-160             TesoroX = RandomNumber(20, 80)
-162             TesoroY = RandomNumber(20, 80)
-
-            End If
-
-        End If
         
-164     If EncontreLugar = False Then
-166         If (MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES Then
-168             If (MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked And FLAG_AGUA) = 0 Then
-170                 EncontreLugar = True
-                Else
-172                 EncontreLugar = False
-174                 TesoroX = RandomNumber(20, 80)
-176                 TesoroY = RandomNumber(20, 80)
-
-                End If
-
-            Else
-178             EncontreLugar = False
-180             TesoroX = RandomNumber(20, 80)
-182             TesoroY = RandomNumber(20, 80)
-
-            End If
-
-        End If
-
-184     If EncontreLugar = False Then
-186         If (MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES Then
-188             If (MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked And FLAG_AGUA) = 0 Then
-190                 EncontreLugar = True
-                Else
-192                 EncontreLugar = False
-194                 TesoroX = RandomNumber(20, 80)
-196                 TesoroY = RandomNumber(20, 80)
-
-                End If
-
-            Else
-198             EncontreLugar = False
-200             TesoroX = RandomNumber(20, 80)
-202             TesoroY = RandomNumber(20, 80)
-
-            End If
-
-        End If
-
-204     If EncontreLugar = False Then
-206         If (MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES Then
-208             If (MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked And FLAG_AGUA) = 0 Then
-210                 EncontreLugar = True
-                Else
-212                 EncontreLugar = False
-214                 TesoroX = RandomNumber(20, 80)
-216                 TesoroY = RandomNumber(20, 80)
-
-                End If
-
-            Else
-218             EncontreLugar = False
-220             TesoroX = RandomNumber(20, 80)
-222             TesoroY = RandomNumber(20, 80)
-
-            End If
-
-        End If
+        Dim Iterations As Integer
         
-224     If EncontreLugar = True Then
+        Iterations = 0
+        Do While Not EncontreLugar
+        Iterations = Iterations + 1
+106         If (MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES Then
+108             If (MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked And FLAG_AGUA) = 0 Then
+110                 EncontreLugar = True
+                Else
+112                 EncontreLugar = False
+114                 TesoroX = RandomNumber(20, 80)
+116                 TesoroY = RandomNumber(20, 80)
+    
+                End If
+            Else
+118             EncontreLugar = False
+120             TesoroX = RandomNumber(20, 80)
+122             TesoroY = RandomNumber(20, 80)
+            End If
+            'si no encuentra en 10000 salgo a la mierda
+            If Iterations >= 20 Then
+                 TesoroNumMapa = TesoroMapa(RandomNumber(1, UBound(TesoroMapa)))
+            End If
+        Loop
+
+        
 226         BusquedaTesoroActiva = True
 228         Call MakeObj(TesoroRegalo(RandomNumber(1, UBound(TesoroRegalo))), TesoroNumMapa, TesoroX, TesoroY, False)
 230         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> Rondan rumores que hay un tesoro enterrado en el mapa: " & DarNameMapa(TesoroNumMapa) & "(" & TesoroNumMapa & ") ¿Quien sera el afortunado que lo encuentre?", FontTypeNames.FONTTYPE_TALK))
 232         Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(257, NO_3D_SOUND, NO_3D_SOUND)) ' Explota un trueno 257
-
-        End If
 
         
         Exit Sub
@@ -322,151 +230,38 @@ Public Sub PerderRegalo()
 100     RegaloNumMapa = RegaloMapa(RandomNumber(1, UBound(RegaloMapa)))
 102     RegaloX = RandomNumber(20, 80)
 104     RegaloY = RandomNumber(20, 80)
-
-106     If (MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES Then
-108         If (MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked And FLAG_AGUA) = 0 Then
-110             EncontreLugar = True
-            Else
-112             EncontreLugar = False
-114             RegaloX = RandomNumber(20, 80)
-116             RegaloY = RandomNumber(20, 80)
-
-            End If
-
-        Else
-118         EncontreLugar = False
-120         RegaloX = RandomNumber(20, 80)
-122         RegaloY = RandomNumber(20, 80)
-
-        End If
-
-124     If EncontreLugar = False Then
-126         If (MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES Then
-128             If (MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked And FLAG_AGUA) = 0 Then
-130                 EncontreLugar = True
-                Else
-132                 EncontreLugar = False
-134                 RegaloX = RandomNumber(20, 80)
-136                 RegaloY = RandomNumber(20, 80)
-
-                End If
-
-            Else
-138             EncontreLugar = False
-140             RegaloX = RandomNumber(20, 80)
-142             RegaloY = RandomNumber(20, 80)
-
-            End If
-
-        End If
-
-144     If EncontreLugar = False Then
-146         If (MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES Then
-148             If (MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked And FLAG_AGUA) = 0 Then
-150                 EncontreLugar = True
-                Else
-152                 EncontreLugar = False
-154                 RegaloX = RandomNumber(20, 80)
-156                 RegaloY = RandomNumber(20, 80)
-
-                End If
-
-            Else
-158             EncontreLugar = False
-160             RegaloX = RandomNumber(20, 80)
-162             RegaloY = RandomNumber(20, 80)
-
-            End If
-
-        End If
-
-164     If EncontreLugar = False Then
-166         If (MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES Then
-168             If (MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked And FLAG_AGUA) = 0 Then
-170                 EncontreLugar = True
-                Else
-172                 EncontreLugar = False
-174                 RegaloX = RandomNumber(20, 80)
-176                 RegaloY = RandomNumber(20, 80)
-
-                End If
-
-            Else
-178             EncontreLugar = False
-180             RegaloX = RandomNumber(20, 80)
-182             RegaloY = RandomNumber(20, 80)
-
-            End If
-
-        End If
-
-184     If EncontreLugar = False Then
-186         If (MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES Then
-188             If (MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked And FLAG_AGUA) = 0 Then
-190                 EncontreLugar = True
-                Else
-192                 EncontreLugar = False
-194                 RegaloX = RandomNumber(20, 80)
-196                 RegaloY = RandomNumber(20, 80)
-
-                End If
-
-            Else
-198             EncontreLugar = False
-200             RegaloX = RandomNumber(20, 80)
-202             RegaloY = RandomNumber(20, 80)
-
-            End If
-
-        End If
-
-204     If EncontreLugar = False Then
-206         If (MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES Then
-208             If (MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked And FLAG_AGUA) = 0 Then
-210                 EncontreLugar = True
-                Else
-212                 EncontreLugar = False
-214                 RegaloX = RandomNumber(20, 80)
-216                 RegaloY = RandomNumber(20, 80)
-
-                End If
-
-            Else
-218             EncontreLugar = False
-220             RegaloX = RandomNumber(20, 80)
-222             RegaloY = RandomNumber(20, 80)
-
-            End If
-
-        End If
-
-224     If EncontreLugar = False Then
-226         If (MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES Then
-228             If (MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked And FLAG_AGUA) = 0 Then
-230                 EncontreLugar = True
-                Else
-232                 EncontreLugar = False
-234                 RegaloX = RandomNumber(20, 80)
-236                 RegaloY = RandomNumber(20, 80)
-
-                End If
-
-            Else
-238             EncontreLugar = False
-240             RegaloX = RandomNumber(20, 80)
-242             RegaloY = RandomNumber(20, 80)
-
-            End If
-
-        End If
         
-244     If EncontreLugar = True Then
-246         BusquedaRegaloActiva = True
-248         Call MakeObj(RegaloRegalo(RandomNumber(1, UBound(RegaloRegalo))), RegaloNumMapa, RegaloX, RegaloY, False)
-250         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> De repente ha surgido un item maravilloso en el mapa: " & DarNameMapa(RegaloNumMapa) & "(" & RegaloNumMapa & ") ¿Quien sera el valiente que lo encuentre? ¡MUCHO CUIDADO!", FontTypeNames.FONTTYPE_TALK))
-252         Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(497, NO_3D_SOUND, NO_3D_SOUND)) ' Explota un trueno
+        Dim Iterations As Integer
+        
+        Iterations = 0
+        
+        Do While Not EncontreLugar
+        Iterations = Iterations + 1
+106         If (MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES Then
+108             If (MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked And FLAG_AGUA) = 0 Then
+110                 EncontreLugar = True
+                Else
+112                 EncontreLugar = False
+114                 RegaloX = RandomNumber(20, 80)
+116                 RegaloY = RandomNumber(20, 80)
+    
+                End If
+            Else
+118                 EncontreLugar = False
+120                 RegaloX = RandomNumber(20, 80)
+122                 RegaloY = RandomNumber(20, 80)
+            End If
+            If Iterations >= 20 Then
+                RegaloNumMapa = RegaloMapa(RandomNumber(1, UBound(RegaloMapa)))
+            End If
+        Loop
+        
 
-        End If
+246     BusquedaRegaloActiva = True
+248     Call MakeObj(RegaloRegalo(RandomNumber(1, UBound(RegaloRegalo))), RegaloNumMapa, RegaloX, RegaloY, False)
+250     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> De repente ha surgido un item maravilloso en el mapa: " & DarNameMapa(RegaloNumMapa) & "(" & RegaloNumMapa & ") ¿Quien sera el valiente que lo encuentre? ¡MUCHO CUIDADO!", FontTypeNames.FONTTYPE_TALK))
+252     Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(497, NO_3D_SOUND, NO_3D_SOUND)) ' Explota un trueno
+
 
         
         Exit Sub
