@@ -57,7 +57,7 @@ Public Sub NPCAI(ByVal NpcIndex As Integer)
                 Exit Sub
 
             Case TipoAI.MueveAlAzar
-                falladesc = " fallo al azar"
+                falladesc = " Fallo MueveAlAzar"
 
                 If .Hostile = 1 Then
                     ' Buscas enemigos constantemente
@@ -99,7 +99,8 @@ Public Sub NPCAI(ByVal NpcIndex As Integer)
     Exit Sub
 
 ErrorHandler:
-    Call LogError("NPCAI " & NpcList(NpcIndex).name & " " & NpcList(NpcIndex).MaestroNPC & " mapa:" & NpcList(NpcIndex).Pos.Map & " x:" & NpcList(NpcIndex).Pos.X & " y:" & NpcList(NpcIndex).Pos.Y & " Mov:" & NpcList(NpcIndex).Movement & " TargU:" & NpcList(NpcIndex).Target & " TargN:" & NpcList(NpcIndex).TargetNPC & falladesc)
+    
+    Call LogError("NPC.AI " & NpcList(NpcIndex).name & " " & NpcList(NpcIndex).MaestroNPC & " mapa:" & NpcList(NpcIndex).Pos.Map & " x:" & NpcList(NpcIndex).Pos.X & " y:" & NpcList(NpcIndex).Pos.Y & " Mov:" & NpcList(NpcIndex).Movement & " TargU:" & NpcList(NpcIndex).Target & " TargN:" & NpcList(NpcIndex).TargetNPC & falladesc)
 
     Dim MiNPC As npc: MiNPC = NpcList(NpcIndex)
     
@@ -111,7 +112,6 @@ End Sub
 Private Sub PerseguirUsuarioCercanoEmancu(ByVal NpcIndex As Integer)
     On Error GoTo ErrorHandler
 
-    ' Buscas dentro del area de vision (donde se encuentra el NPC) el objetivo mas cercano de cierto tipo para atacar.
     Dim i            As Long
     Dim UserIndex    As Integer
     Dim npcEraPasivo As Boolean
@@ -129,6 +129,7 @@ Private Sub PerseguirUsuarioCercanoEmancu(ByVal NpcIndex As Integer)
 
     With NpcList(NpcIndex)
         npcEraPasivo = .flags.OldHostil = 0
+        .Target = 0
 
         If .flags.AttackedBy <> vbNullString Then
           agresor = NameIndex(.flags.AttackedBy)
@@ -139,7 +140,7 @@ Private Sub PerseguirUsuarioCercanoEmancu(ByVal NpcIndex As Integer)
         For i = 1 To ModAreas.ConnGroups(.Pos.Map).CountEntrys
             UserIndex = ModAreas.ConnGroups(.Pos.Map).UserEntrys(i)
 
-            If EnRangoVision(NpcIndex, UserIndex) And EsEnemigo(NpcIndex, UserIndex) Then
+            If EnRangoVision(NpcIndex, UserIndex) And EsEnemigo(NpcIndex, UserIndex) And Not EsGM(UserIndex) Then
 
                 ' Busco el mas cercano, sea atacable o no.
                 If Distancia(UserList(UserIndex).Pos, .Pos) < minDistancia Then
@@ -179,7 +180,7 @@ Private Sub PerseguirUsuarioCercanoEmancu(ByVal NpcIndex As Integer)
 
 
         ' Si el NPC tiene un objetivo
-        If .Target > 0 And Not EsGM(.Target) Then
+        If .Target > 0 Then
             Call AI_AtacarObjetivo(NpcIndex)
         Else
             Call RestoreOldMovement(NpcIndex)
@@ -198,68 +199,6 @@ Private Sub PerseguirUsuarioCercanoEmancu(ByVal NpcIndex As Integer)
 ErrorHandler:
     Call RegistrarError(Err.Number, Err.Description, "AI_NPC.PerseguirUsuarioCercanoEmancu", Erl)
 
-End Sub
-
-
-Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
-    On Error GoTo ErrorHandler
-    
-    ' Buscas dentro del area de vision (donde se encuentra el NPC) el objetivo mas cercano de cierto tipo para atacar.
-    
-    Dim UserIndex    As Integer
-    Dim i            As Long
-    Dim minDistancia As Integer
-
-    ' Numero muy grande para que siempre haya un mínimo
-    minDistancia = 32000
-    
-    With NpcList(NpcIndex)
-
-        ' Busco un objetivo en el area.
-        For i = 1 To ModAreas.ConnGroups(.Pos.Map).CountEntrys
-            UserIndex = ModAreas.ConnGroups(.Pos.Map).UserEntrys(i)
-                
-            If EsObjetivoValido(NpcIndex, UserIndex) Then
-                    
-                ' Seteo el objetivo MAS CERCANO al NPC
-                If Distancia(UserList(UserIndex).Pos, .Pos) < minDistancia Then
-                    .Target = UserIndex
-                    minDistancia = Distancia(UserList(UserIndex).Pos, .Pos)
-                End If
-                    
-            End If
-                 
-        Next i
-
-        ' Si el NPC ya tiene un objetivo
-        If .Target > 0 Then
-            
-            ' Vuelvo a chequear que sea valido antes de atacar
-            If EsObjetivoValido(NpcIndex, .Target) Then
-                Call AI_AtacarObjetivo(NpcIndex)
-                
-            Else
-                ' El usuario se alejo demasiado.
-                Call RestoreOldMovement(NpcIndex)
-                
-            End If
-        Else
-            ' No encontro a nadie cerca, camina unos pasos en cualquier direccion.
-                If RandomNumber(1, 6) = 3 And .flags.Paralizado = 0 And .flags.Inmovilizado = 0 Then '20%
-                    Call MoveNPCChar(NpcIndex, CByte(RandomNumber(eHeading.NORTH, eHeading.WEST)))
-                Else
-                    Call AnimacionIdle(NpcIndex, True)
-                End If
-        End If
-
-    End With
-    
-    Exit Sub
-    
-ErrorHandler:
-    
-    Call RegistrarError(Err.Number, Err.Description, "AIv2.IrUsuarioCercano", Erl)
-    
 End Sub
 
 Private Sub AI_AtacarObjetivo(ByVal AtackerNpcIndex As Integer)
@@ -318,12 +257,12 @@ Public Sub AI_NpcAtacaNpc(ByVal NpcIndex As Integer)
         If .TargetNPC > 0 And InRangoVisionNPC(NpcIndex, NpcList(.TargetNPC).Pos.X, NpcList(.TargetNPC).Pos.Y) Then
            
             ' Me fijo si el NPC esta al lado del Objetivo
-            If Distancia(.Pos, NpcList(.TargetNPC).Pos) = 1 Then
+            If Distancia(.Pos, NpcList(.TargetNPC).Pos) = 1 And .flags.Paralizado = 0 Then
                 Call SistemaCombate.NpcAtacaNpc(NpcIndex, .TargetNPC)
             End If
 
-            ' Si NO esta inmovilizado el NPC, caminamos hacia el objetivo.
-            If Not .flags.Inmovilizado Then
+            ' Si el NPC se puede mover, caminamos hacia el objetivo.
+            If (.flags.Paralizado + .flags.Inmovilizado) = 0 Then
                 
                 tHeading = FindDirectionEAO(.Pos, NpcList(.TargetNPC).Pos, .flags.AguaValida = 1, .flags.TierraInvalida = 0)
                 
@@ -354,27 +293,17 @@ Public Sub AI_NpcAtacaNpc(ByVal NpcIndex As Integer)
 End Sub
 
 Private Sub SeguirAgresor(ByVal NpcIndex As Integer)
-    
     ' La IA que se ejecuta cuando alguien le pega al maestro de una Mascota/Elemental
     '   o si atacas a los NPCs con Movement = TIPOAI.NpcDefensa
-    
     ' A diferencia de IrUsuarioCercano(), aca no buscamos objetivos cercanos en el area
     ' porque ya establecemos como objetivo a el usuario que ataco a los NPC con este tipo de IA
     
-    With NpcList(NpcIndex)
-        
-        If EsObjetivoValido(NpcIndex, .Target) Then
-        
-            Call AI_AtacarObjetivo(NpcIndex)
-        
-        Else
-        
-            Call RestoreOldMovement(NpcIndex)
-        
-        End If
-        
-    End With
-    
+    If EsObjetivoValido(NpcIndex, NpcList(NpcIndex).Target) Then
+        Call AI_AtacarObjetivo(NpcIndex)
+    Else
+        Call RestoreOldMovement(NpcIndex)
+    End If
+
 End Sub
 
 Public Sub SeguirAmo(ByVal NpcIndex As Integer)
@@ -621,6 +550,8 @@ Private Sub NpcLanzaUnSpell(ByVal NpcIndex As Integer)
     Target = NpcList(NpcIndex).Target
     SpellIndex = NpcList(NpcIndex).Spells(RandomNumber(1, NpcList(NpcIndex).flags.LanzaSpells))
 
+    
+    Debug.Print NpcList(NpcIndex).name & " tira " & Hechizos(SpellIndex).nombre & " a usuario: " & UserList(Target).name
     Select Case Hechizos(SpellIndex).Target
       Case TargetType.uUsuarios
 
@@ -691,34 +622,10 @@ End Sub
 ' ---------------------------------------------------------------------------------------------------
 
 Private Function EsObjetivoValido(ByVal NpcIndex As Integer, ByVal UserIndex As Integer) As Boolean
-  If UserIndex = 0 Then Exit Function
-
-  With NpcList(NpcIndex)
+    If UserIndex = 0 Then Exit Function
 
     ' Esta condicion debe ejecutarse independiemente de el modo de busqueda.
-    EsObjetivoValido = (EnRangoVision(NpcIndex, UserIndex) And UsuarioAtacable(UserIndex))
-
-    If .flags.AttackedBy <> vbNullString Then
-      If NameIndex(.flags.AttackedBy) = UserIndex Then
-        'Ignora el checkeo de alineacion.
-        Exit Function
-      End If
-    End If
-
-
-    Select Case .flags.AIAlineacion
-        Case e_Alineacion.Real
-            EsObjetivoValido = ((EsObjetivoValido And (Status(UserIndex) Mod 2) <> 1))
-
-      Case e_Alineacion.Caos
-        EsObjetivoValido = ((EsObjetivoValido And (Status(UserIndex) Mod 2) <> 0))
-
-      Case e_Alineacion.ninguna
-        ' Ok. No hay nada especial para hacer, cualquiera puede ser objetivo!
-
-    End Select
-
-  End With
+    EsObjetivoValido = (EnRangoVision(NpcIndex, UserIndex) And UsuarioAtacable(UserIndex) And EsEnemigo(NpcIndex, UserIndex))
 
 End Function
 

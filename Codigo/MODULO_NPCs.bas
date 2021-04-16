@@ -826,8 +826,6 @@ Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) A
 102         nPos = .Pos
 104         Call HeadtoPos(nHeading, nPos)
             
-            
-            
             ' es una posicion legal
 106         If LegalWalkNPC(nPos.Map, nPos.X, nPos.Y, nHeading, .flags.AguaValida = 1, .flags.TierraInvalida = 0, .MaestroUser <> 0) Then
             
