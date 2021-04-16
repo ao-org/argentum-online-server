@@ -2056,9 +2056,12 @@ Sub CargarBackUp()
         Dim TempInt   As Integer
         Dim npcfile   As String
     
-102     NumMaps = CountFiles(MapPath, "*.csm")
-104     NumMaps = NumMaps - 1
-
+        If RunningInVB() Then
+            NumMaps = 869
+        Else
+            NumMaps = CountFiles(MapPath, "*.csm")
+            NumMaps = NumMaps - 1
+        End If
 105     Call InitAreas
     
 106     frmCargando.cargar.min = 0

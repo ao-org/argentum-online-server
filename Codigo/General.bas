@@ -692,11 +692,11 @@ Sub Main()
 194     Call CargarCiudades
     
 196     If BootDelBackUp Then
-198         frmCargando.Label1(2).Caption = "Cargando BackUp"
+198         frmCargando.Label1(2).Caption = "Cargando WorldBackup"
 200         Call CargarBackUp
         Else
 202         frmCargando.Label1(2).Caption = "Cargando Mapas"
-204         Call LoadMapData
+            Call LoadMapData
         End If
         
         Call CargarInfoRetos
@@ -1057,7 +1057,7 @@ ErrHandler:
 
 End Sub
 
-Public Sub LogClanes(ByVal Str As String)
+Public Sub LogClanes(ByVal str As String)
         
         On Error GoTo LogClanes_Err
         
@@ -1066,7 +1066,7 @@ Public Sub LogClanes(ByVal Str As String)
 
 100     nfile = FreeFile ' obtenemos un canal
 102     Open App.Path & "\logs\clanes.log" For Append Shared As #nfile
-104     Print #nfile, Date & " " & Time & " " & Str
+104     Print #nfile, Date & " " & Time & " " & str
 106     Close #nfile
 
         
@@ -1078,7 +1078,7 @@ LogClanes_Err:
         
 End Sub
 
-Public Sub LogIP(ByVal Str As String)
+Public Sub LogIP(ByVal str As String)
         
         On Error GoTo LogIP_Err
         
@@ -1087,7 +1087,7 @@ Public Sub LogIP(ByVal Str As String)
 
 100     nfile = FreeFile ' obtenemos un canal
 102     Open App.Path & "\logs\IP.log" For Append Shared As #nfile
-104     Print #nfile, Date & " " & Time & " " & Str
+104     Print #nfile, Date & " " & Time & " " & str
 106     Close #nfile
 
         
@@ -1099,7 +1099,7 @@ LogIP_Err:
         
 End Sub
 
-Public Sub LogDesarrollo(ByVal Str As String)
+Public Sub LogDesarrollo(ByVal str As String)
         
         On Error GoTo LogDesarrollo_Err
         
@@ -1108,7 +1108,7 @@ Public Sub LogDesarrollo(ByVal Str As String)
 
 100     nfile = FreeFile ' obtenemos un canal
 102     Open App.Path & "\logs\desarrollo" & Month(Date) & Year(Date) & ".log" For Append Shared As #nfile
-104     Print #nfile, Date & " " & Time & " " & Str
+104     Print #nfile, Date & " " & Time & " " & str
 106     Close #nfile
 
         
@@ -2793,7 +2793,7 @@ Public Function PonerPuntos(ByVal Numero As Long) As String
 
         Dim Cifra As String
  
-100     Cifra = Str(Numero)
+100     Cifra = str(Numero)
 102     Cifra = Right$(Cifra, Len(Cifra) - 1)
 
 104     For i = 0 To 4
