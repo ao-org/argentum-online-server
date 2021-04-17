@@ -4,9 +4,7 @@ Option Explicit
 Public Enum TipoAI
 
     Estatico = 1
-    MueveAlAzar = 2 ' MueveAlAzarPasivo (ataca si le pegan)
-                    ' MueveAlAzarAgresivo (ataca en cuanto ve a alguien)
-
+    MueveAlAzar = 2
     NpcDefensa = 4
     SigueAmo = 8                 ' No se usa
     NpcAtacaNpc = 9
@@ -24,9 +22,6 @@ Public Enum TipoAI
     
     ' Eventos
     Invasion = 21
-
-    MueveAlAzarEmancu = 30
-
 End Enum
 
 ' WyroX: Hardcodeada de la vida...
@@ -60,8 +55,7 @@ Public Sub NPCAI(ByVal NpcIndex As Integer)
                 falladesc = " Fallo MueveAlAzar"
 
                 If .Hostile = 1 Then
-                    ' Buscas enemigos constantemente
-                    Call PerseguirUsuarioCercanoEmancu(NpcIndex)
+                    Call PerseguirUsuarioCercano(NpcIndex)
                 Else
                     If RandomNumber(1, 6) = 3 And .flags.Paralizado = 0 And .flags.Inmovilizado = 0 Then
                         Call MoveNPCChar(NpcIndex, CByte(RandomNumber(eHeading.NORTH, eHeading.WEST)))
@@ -109,7 +103,7 @@ ErrorHandler:
 
 End Sub
 
-Private Sub PerseguirUsuarioCercanoEmancu(ByVal NpcIndex As Integer)
+Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
     On Error GoTo ErrorHandler
 
     Dim i            As Long
@@ -161,8 +155,6 @@ Private Sub PerseguirUsuarioCercanoEmancu(ByVal NpcIndex As Integer)
         ' Al terminar el `for`, puedo tener un maximo de tres objetivos distintos.
         ' Por prioridad, vamos a decidir estas cosas en orden.
 
-        ' If agresor + enemigoCercano + enemigoAtacableMasCercano > 0 Then' hay algo atacable
-
         If npcEraPasivo Then
             ' Significa que alguien le pego, y esta en modo agresivo trantando de darle.
             ' El unico objetivo que importa aca es el atacante; los demas son ignorados.
@@ -197,7 +189,7 @@ Private Sub PerseguirUsuarioCercanoEmancu(ByVal NpcIndex As Integer)
     Exit Sub
 
 ErrorHandler:
-    Call RegistrarError(Err.Number, Err.Description, "AI_NPC.PerseguirUsuarioCercanoEmancu", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "AI_NPC.PerseguirUsuarioCercano", Erl)
 
 End Sub
 
@@ -550,8 +542,6 @@ Private Sub NpcLanzaUnSpell(ByVal NpcIndex As Integer)
     Target = NpcList(NpcIndex).Target
     SpellIndex = NpcList(NpcIndex).Spells(RandomNumber(1, NpcList(NpcIndex).flags.LanzaSpells))
 
-    
-    Debug.Print NpcList(NpcIndex).name & " tira " & Hechizos(SpellIndex).nombre & " a usuario: " & UserList(Target).name
     Select Case Hechizos(SpellIndex).Target
       Case TargetType.uUsuarios
 
