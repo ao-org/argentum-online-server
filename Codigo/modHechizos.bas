@@ -118,22 +118,22 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
     End If
 
     'Mana
-    If Hechizos(h).SubeMana = 1 Then
+    If Hechizos(Spell).SubeMana = 1 Then
       Daño = RandomNumber(Hechizos(Spell).MinMana, Hechizos(Spell).MaxMana)
 
-      .Stats.MinMAN = MinimoInt(.Stats.MinMan + Daño, .Stats.MaxMAN)
+      .Stats.MinMAN = MinimoInt(.Stats.MinMAN + Daño, .Stats.MaxMAN)
 
       Call WriteUpdateMana(UserIndex)
       Call WriteConsoleMsg(UserIndex, NpcList(NpcIndex).name & " te ha restaurado " & Daño & " puntos de mana.", FontTypeNames.FONTTYPE_INFO)
       Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.Y))
       Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
 
-    ElseIf Hechizos(h).SubeMana = 2 Then
+    ElseIf Hechizos(Spell).SubeMana = 2 Then
       Daño = RandomNumber(Hechizos(Spell).MinMana, Hechizos(Spell).MaxMana)
 
       .Stats.MinMAN = MaximoInt(.Stats.MinMAN - Daño, 0)
 
-      Call WriteUpdateMana(tempChr)
+      Call WriteUpdateMana(UserIndex)
       Call WriteConsoleMsg(UserIndex, NpcList(NpcIndex).name & " te ha quitado " & Daño & " puntos de mana.", FontTypeNames.FONTTYPE_INFO)
       Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.Y))
       Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
@@ -186,7 +186,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
       Call WritePosUpdate(UserIndex)
     End If
 
-    If Hechizos(Spell).Incinera > 0 Then
+    If Hechizos(Spell).incinera > 0 Then
       If .flags.Incinerado = 0 Then
         .flags.Incinerado = 1
         .Counters.Incineracion = Hechizos(Spell).Duration
@@ -230,7 +230,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
     If Hechizos(Spell).Estupidez > 0 Then
       If .flags.Estupidez = 0 Then
         .flags.Estupidez = Hechizos(Spell).Estupidez
-        .Counters.Estupidez = Hechizos(Sepll).Duration
+        .Counters.Estupidez = Hechizos(Spell).Duration
 
         Call WriteConsoleMsg(UserIndex, "Has sido estupidizado por " & NpcList(NpcIndex).name & ".", FontTypeNames.FONTTYPE_FIGHT)
         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.Y))
@@ -252,7 +252,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
     If Hechizos(Spell).velocidad > 0 Then
       If .Counters.velocidad = 0 Then
         .flags.VelocidadHechizada = Hechizos(Spell).velocidad
-        .Counters.velocidad = Hechizos(h2).Duration
+        .Counters.velocidad = Hechizos(Spell).Duration
 
         Call ActualizarVelocidadDeUsuario(UserIndex)
       End If
@@ -1541,7 +1541,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 
         End If
 
-274     If Hechizos(h).Incinera > 0 Then
+274     If Hechizos(h).incinera > 0 Then
 276         If UserIndex = tU Then
                 'Call WriteConsoleMsg(UserIndex, "No podés atacarte a vos mismo.", FontTypeNames.FONTTYPE_FIGHT)
 278             Call WriteLocaleMsg(UserIndex, "380", FontTypeNames.FONTTYPE_FIGHT)
