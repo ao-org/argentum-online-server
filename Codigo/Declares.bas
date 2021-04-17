@@ -393,32 +393,6 @@ Public Const MAX_MENSAJES_FORO As Byte = 35
 
 Public Const MAXUSERHECHIZOS   As Byte = 25
 
-' TODO: Y ESTO ? LO CONOCE GD ?
-Public Const EsfuerzoTalarLeñador As Byte = 5
-
-Public Const EsfuerzoTalarGeneral          As Byte = 15
-
-Public Const EsfuerzoRaicesDruida          As Byte = 5
-
-Public Const EsfuerzoRaicesGeneral         As Byte = 15
-
-Public Const EsfuerzoPescarPescador        As Byte = 5
-
-Public Const EsfuerzoPescarGeneral         As Byte = 15
-
-Public Const EsfuerzoPescarRedPescador     As Byte = 8
-
-Public Const EsfuerzoPescarRedGeneral      As Byte = 20
-
-'Ladder Agrego que el carpintero le sea mas facil carpinterear.. jaja 07/07/2014
-Public Const EsfuerzoCarpinteriaCarpintero As Byte = 5
-
-Public Const EsfuerzoCarpinteriaGeneral    As Byte = 15
-
-Public Const EsfuerzoExcavarMinero         As Byte = 5
-
-Public Const EsfuerzoExcavarGeneral        As Byte = 15
-
 Public Const FX_TELEPORT_INDEX             As Integer = 1
 
 ' La utilidad de esto es casi nula, sólo se revisa si fue a la cabeza...
