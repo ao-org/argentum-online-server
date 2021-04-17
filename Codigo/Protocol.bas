@@ -27565,39 +27565,56 @@ Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
 110         Tipo = Buffer.ReadByte()
   
 112         If EsGM(UserIndex) Then
-    
 
-116                 Select Case Tipo
+116             Select Case Tipo
 
-                        Case 0
-                            If Not BusquedaTesoroActiva Then
-118                             Call PerderTesoro
-                            Else
+                    Case 0
+
+                        If Not BusquedaTesoroActiva And BusquedaRegaloActiva = False And BusquedaNpcActiva = False Then
+118                         Call PerderTesoro
+                        Else
+
+                            If BusquedaTesoroActiva Then
                                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> Todavia nadie fue capaz de encontar el tesoro, recorda que se encuentra en " & DarNameMapa(TesoroNumMapa) & "(" & TesoroNumMapa & "). ¿Quien sera el valiente que lo encuentre?", FontTypeNames.FONTTYPE_TALK))
                                 Call WriteConsoleMsg(UserIndex, "Ya hay una busqueda del tesoro activa. El tesoro se encuentra en: " & TesoroNumMapa & "-" & TesoroX & "-" & TesoroY, FontTypeNames.FONTTYPE_INFO)
-                            End If
-
-120                     Case 1
-                            If Not BusquedaRegaloActiva Then
-122                             Call PerderRegalo
                             Else
+                                Call WriteConsoleMsg(UserIndex, "Ya hay una busqueda del tesoro activa.", FontTypeNames.FONTTYPE_INFO)
+                            End If
+                        End If
+
+120                 Case 1
+
+                        If Not BusquedaRegaloActiva And BusquedaTesoroActiva = False And BusquedaNpcActiva = False Then
+122                         Call PerderRegalo
+                        Else
+
+                            If BusquedaRegaloActiva Then
                                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> Ningún valiente fue capaz de encontrar el item misterioso, recuerda que se encuentra en " & DarNameMapa(RegaloNumMapa) & "(" & RegaloNumMapa & "). ¡Ten cuidado!", FontTypeNames.FONTTYPE_TALK))
 178                             Call WriteConsoleMsg(UserIndex, "Ya hay una busqueda del tesoro activa. El tesoro se encuentra en: " & RegaloNumMapa & "-" & RegaloX & "-" & RegaloY, FontTypeNames.FONTTYPE_INFO)
-                            End If
-
-124                     Case 2
-                            If Not BusquedaNpcActiva Then
-                                Dim Pos As WorldPos
-126                             Pos.Map = TesoroNPCMapa(RandomNumber(1, UBound(TesoroNPCMapa)))
-164                             Pos.Y = 50
-166                             Pos.X = 50
-168                             npc_index_evento = SpawnNpc(TesoroNPC(RandomNumber(1, UBound(TesoroNPC))), Pos, True, False, True)
-                                BusquedaNpcActiva = True
                             Else
-                                Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> Todavía nadie logró matar el NPC que se encuentra en el mapa " & NpcList(npc_index_evento).Pos.Map & ".", FontTypeNames.FONTTYPE_TALK))
-                                Call WriteConsoleMsg(UserIndex, "Ya hay un asesinato del npc activo. El tesoro se encuentra en: " & NpcList(npc_index_evento).Pos.Map & "-" & NpcList(npc_index_evento).Pos.X & "-" & NpcList(npc_index_evento).Pos.Y, FontTypeNames.FONTTYPE_INFO)
+                                Call WriteConsoleMsg(UserIndex, "Ya hay una busqueda del tesoro activa.", FontTypeNames.FONTTYPE_INFO)
                             End If
-                    End Select
+                        End If
+
+124                 Case 2
+
+                        If Not BusquedaNpcActiva And BusquedaTesoroActiva = False And BusquedaRegaloActiva = False Then
+                            Dim Pos As WorldPos
+126                         Pos.Map = TesoroNPCMapa(RandomNumber(1, UBound(TesoroNPCMapa)))
+164                         Pos.Y = 50
+166                         Pos.X = 50
+168                         npc_index_evento = SpawnNpc(TesoroNPC(RandomNumber(1, UBound(TesoroNPC))), Pos, True, False, True)
+                            BusquedaNpcActiva = True
+                        Else
+
+                            If BusquedaNpcActiva Then
+                                Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> Todavía nadie logró matar el NPC que se encuentra en el mapa " & NpcList(npc_index_evento).Pos.Map & ".", FontTypeNames.FONTTYPE_TALK))
+                                Call WriteConsoleMsg(UserIndex, "Ya hay una busqueda de npc activo. El tesoro se encuentra en: " & NpcList(npc_index_evento).Pos.Map & "-" & NpcList(npc_index_evento).Pos.X & "-" & NpcList(npc_index_evento).Pos.Y, FontTypeNames.FONTTYPE_INFO)
+                            Else
+                                Call WriteConsoleMsg(UserIndex, "Ya hay una busqueda del tesoro activa.", FontTypeNames.FONTTYPE_INFO)
+                            End If
+                        End If
+                End Select
 
             End If
             
