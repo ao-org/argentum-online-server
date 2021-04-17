@@ -44,12 +44,10 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
       If .flags.invisible = 1 Or .flags.Oculto = 1 Or .flags.Inmunidad = 1 Then Exit Sub
     End If
 
+    Call InfoHechizoDeNpcSobreUser(NpcIndex, UserIndex, Spell)
 
     If Hechizos(Spell).SubeHP = 1 Then
-
       Daño = RandomNumber(Hechizos(Spell).MinHp, Hechizos(Spell).MaxHp)
-      Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.Y))
-      Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
 
       .Stats.MinHp = MinimoInt(.Stats.MinHp + Daño, .Stats.MaxHp)
 
@@ -61,7 +59,6 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
       Call WriteUpdateHP(UserIndex)
 
     ElseIf Hechizos(Spell).SubeHP = 2 Then
-
       Daño = RandomNumber(Hechizos(Spell).MinHp, Hechizos(Spell).MaxHp)
 
       ' Si el hechizo no ignora la RM
@@ -94,17 +91,10 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 
       If Daño < 0 Then Daño = 0
 
-      Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.Y))
-      Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
-
-      If Hechizos(Spell).Particle > 0 Then '¿Envio Particula?
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, Hechizos(Spell).Particle, Hechizos(Spell).TimeParticula, False))
-      End If
-
       .Stats.MinHp = .Stats.MinHp - Daño
 
-      Call WriteConsoleMsg(UserIndex, NpcList(NpcIndex).name & " te ha quitado " & Daño & " puntos de vida.", FontTypeNames.FONTTYPE_FIGHT)
       'Call WriteLocaleMsg(UserIndex, "34", FontTypeNames.FONTTYPE_FIGHT, NpcList(NpcIndex).name & "¬" & DañoStr)
+      Call WriteConsoleMsg(UserIndex, NpcList(NpcIndex).name & " te ha quitado " & Daño & " puntos de vida.", FontTypeNames.FONTTYPE_FIGHT)
       Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageTextCharDrop(DañoStr, .Char.CharIndex, vbRed))
 
       Call SubirSkill(UserIndex, Resistencia)
@@ -125,8 +115,6 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 
       Call WriteUpdateMana(UserIndex)
       Call WriteConsoleMsg(UserIndex, NpcList(NpcIndex).name & " te ha restaurado " & Daño & " puntos de mana.", FontTypeNames.FONTTYPE_INFO)
-      Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.Y))
-      Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
 
     ElseIf Hechizos(Spell).SubeMana = 2 Then
       Daño = RandomNumber(Hechizos(Spell).MinMana, Hechizos(Spell).MaxMana)
@@ -135,9 +123,42 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 
       Call WriteUpdateMana(UserIndex)
       Call WriteConsoleMsg(UserIndex, NpcList(NpcIndex).name & " te ha quitado " & Daño & " puntos de mana.", FontTypeNames.FONTTYPE_INFO)
-      Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.Y))
-      Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
+    End If
 
+    If Hechizos(Spell).SubeAgilidad = 1 Then
+      Daño = RandomNumber(Hechizos(Spell).MinAgilidad, Hechizos(Spell).MaxAgilidad)
+
+      .flags.TomoPocion = True
+      .flags.DuracionEfecto = Hechizos(h).Duration
+      .Stats.UserAtributos(eAtributos.Agilidad) = MinimoInt(.Stats.UserAtributos(eAtributos.Agilidad) + Daño, .Stats.UserAtributosBackUP(eAtributos.Agilidad) * 2)
+
+      Call WriteFYA(UserIndex)
+    ElseIf Hechizos(Spell).SubeAgilidad = 2 Then
+      Daño = RandomNumber(Hechizos(Spell).MinAgilidad, Hechizos(Spell).MaxAgilidad)
+
+      .flags.TomoPocion = True
+      .flags.DuracionEfecto = Hechizos(Spell).Duration
+      .Stats.UserAtributos(eAtributos.Agilidad) = MaximoInt(MINATRIBUTOS, .Stats.UserAtributos(eAtributos.Agilidad) - Daño)
+
+      Call WriteFYA(UserIndex)
+    End If
+
+    If Hechizos(Spell).SubeFuerza = 1 Then
+      Daño = RandomNumber(Hechizos(Spell).MinFuerza, Hechizos(Spell).MaxFuerza)
+
+      .flags.TomoPocion = True
+      .flags.DuracionEfecto = Hechizos(h).Duration
+      .Stats.UserAtributos(eAtributos.Fuerza) = MinimoInt(.Stats.UserAtributos(eAtributos.Fuerza) + Daño, .Stats.UserAtributosBackUP(eAtributos.Fuerza) * 2)
+
+      Call WriteFYA(UserIndex)
+    ElseIf Hechizos(Spell).SubeFuerza = 2 Then
+      Daño = RandomNumber(Hechizos(Spell).MinFuerza, Hechizos(Spell).MaxFuerza)
+
+      .flags.TomoPocion = True
+      .flags.DuracionEfecto = Hechizos(Spell).Duration
+      .Stats.UserAtributos(eAtributos.Fuerza) = MaximoInt(MINATRIBUTOS, .Stats.UserAtributos(eAtributos.Fuerza) - Daño)
+
+      Call WriteFYA(UserIndex)
     End If
 
 
@@ -146,8 +167,6 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
         .flags.Paralizado = 1
         .Counters.Paralisis = Hechizos(Spell).Duration / 2
 
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.Y))
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
         Call WriteParalizeOK(UserIndex)
         Call WritePosUpdate(UserIndex)
       End If
@@ -158,8 +177,6 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
         .flags.Inmovilizado = 1
         .Counters.Inmovilizado = Hechizos(Spell).Duration / 2
 
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.Y))
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
         Call WriteInmovilizaOK(UserIndex)
         Call WritePosUpdate(UserIndex)
       End If
@@ -180,9 +197,6 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
         Call WriteInmovilizaOK(UserIndex)
       End If
 
-      Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.Y))
-      Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
-
       Call WritePosUpdate(UserIndex)
     End If
 
@@ -191,13 +205,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
         .flags.Incinerado = 1
         .Counters.Incineracion = Hechizos(Spell).Duration
 
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.Y))
         Call WriteConsoleMsg(UserIndex, "Has sido incinerado por " & NpcList(NpcIndex).name & ".", FontTypeNames.FONTTYPE_FIGHT)
-
-        If Hechizos(Spell).Particle > 0 Then '¿Envio Particula?
-          Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, Hechizos(Spell).Particle, Hechizos(Spell).TimeParticula, False))
-        End If
-
       End If
     End If
 
@@ -206,13 +214,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
         .flags.Envenenado = Hechizos(Spell).Envenena
         .Counters.Veneno = Hechizos(Spell).Duration
 
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.Y))
         Call WriteConsoleMsg(UserIndex, "Has sido incinerado por " & NpcList(NpcIndex).name & ".", FontTypeNames.FONTTYPE_FIGHT)
-
-        If Hechizos(Spell).Particle > 0 Then '¿Envio Particula?
-          Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, Hechizos(Spell).Particle, Hechizos(Spell).TimeParticula, False))
-        End If
-
       End If
     End If
 
@@ -222,7 +224,6 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
         .Counters.Invisibilidad = 0
 
         Call WriteConsoleMsg(UserIndex, "Tu invisibilidad ya no tiene efecto.", FontTypeNames.FONTTYPE_INFOIAO)
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.Y))
         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, False))
       End If
     End If
@@ -233,7 +234,6 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
         .Counters.Estupidez = Hechizos(Spell).Duration
 
         Call WriteConsoleMsg(UserIndex, "Has sido estupidizado por " & NpcList(NpcIndex).name & ".", FontTypeNames.FONTTYPE_FIGHT)
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.Y))
         Call WriteDumb(UserIndex)
       End If
     ElseIf Hechizos(Spell).RemoverEstupidez > 0 Then
@@ -242,8 +242,6 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
         .Counters.Estupidez = 0
 
         Call WriteConsoleMsg(UserIndex, NpcList(NpcIndex).name & " te removio la estupidez.", FontTypeNames.FONTTYPE_FIGHT)
-        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.Y))
-
         Call WriteDumbNoMore(UserIndex)
       End If
 
@@ -256,7 +254,6 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 
         Call ActualizarVelocidadDeUsuario(UserIndex)
       End If
-
     End If
 
   End With
@@ -2329,7 +2326,42 @@ HechizoPropNPC_Err:
         
 End Sub
 
-Sub InfoHechizo(ByVal UserIndex As Integer)
+Private Sub InfoHechizoDeNpcSobreUser(ByVal NpcIndex As Integer, ByVal TargetUser As Integer, ByVal Spell as Integer)
+  On Error GoTo InfoHechizoDeNpcSobreUser_Err
+
+  With UserList(TargetUser)
+    If Hechizos(Spell).FXgrh > 0 Then '¿Envio FX?
+      If Hechizos(Spell).ParticleViaje > 0 Then
+        Call SendData(SendTarget.ToPCArea, TargetUser, PrepareMessageParticleFXWithDestino(NpcList(NpcIndex).Char.CharIndex, .Char.CharIndex, Hechizos(Spell).ParticleViaje, Hechizos(Spell).FXgrh, Hechizos(Spell).TimeParticula, Hechizos(Spell).wav, 1))
+      Else
+        Call SendData(SendTarget.ToPCArea, TargetUser, PrepareMessageCreateFX(.Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
+      End If
+    End If
+
+    If Hechizos(Spell).Particle > 0 Then '¿Envio Particula?
+      If Hechizos(Spell).ParticleViaje > 0 Then
+        Call SendData(SendTarget.ToPCArea, TargetUser, PrepareMessageParticleFXWithDestino(NpcList(NpcIndex).Char.CharIndex, .Char.CharIndex, Hechizos(Spell).ParticleViaje, Hechizos(Spell).Particle, Hechizos(Spell).TimeParticula, Hechizos(Spell).wav, 0))
+      Else
+        Call SendData(SendTarget.ToPCArea, TargetUser, PrepareMessageParticleFX(.Char.CharIndex, Hechizos(Spell).Particle, Hechizos(Spell).TimeParticula, False))
+      End If
+    End If
+
+    If Hechizos(Spell).wav > 0 Then
+      Call SendData(SendTarget.ToPCArea, TargetUser, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.Y))
+    End If
+
+    If Hechizos(Spell).TimeEfect <> 0 Then
+      Call WriteFlashScreen(TargetUser, Hechizos(Spell).ScreenColor, Hechizos(Spell).TimeEfect)
+    End If
+
+  End With
+
+InfoHechizoDeNpcSobreUser_Err:
+  Call RegistrarError(Err.Number, Err.Description, "modHechizos.InfoHechizoDeNpcSobreUser", Erl)
+  Resume Next
+End Sub
+
+Private Sub InfoHechizo(ByVal UserIndex As Integer)
         
         On Error GoTo InfoHechizo_Err
         
