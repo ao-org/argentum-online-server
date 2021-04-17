@@ -579,6 +579,7 @@ Private Sub NpcLanzaUnSpell(ByVal NpcIndex As Integer)
         End If
 
       Case TargetType.uTerreno
+        Call NpcLanzaSpellSobreArea(NpcIndex, SpellIndex)
 
     End Select
 
