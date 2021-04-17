@@ -751,9 +751,6 @@ Public Const STAT_MAXDEF              As Byte = 99
 ' **************************************************************
 
 Public Type tHechizo
-
-    'Ladder
-    incinera As Byte
     AutoLanzar As Byte
     
     velocidad As Single
@@ -808,8 +805,8 @@ Public Type tHechizo
     MaxHp As Integer
     
     SubeMana As Byte
-    MiMana As Integer
-    MaMana As Integer
+    MinMana As Integer
+    MaxMana As Integer
     
     SubeSta As Byte
     MinSta As Integer
@@ -841,6 +838,7 @@ Public Type tHechizo
     RemoverParalisis As Byte
     RemoverEstupidez As Byte
     CuraVeneno As Byte
+    Incinera As Byte
     Envenena As Byte
     Maldicion As Byte
     RemoverMaldicion As Byte
