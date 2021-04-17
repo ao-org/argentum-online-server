@@ -38,7 +38,8 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
   If Spell = 0 Then Exit Sub
 
   With UserList(UserIndex)
-
+    If .flags.Muerto Then Exit Sub
+    
     '¿NPC puede ver a través de la invisibilidad?
     If Not IgnoreVisibilityCheck Then
       If .flags.invisible = 1 Or .flags.Oculto = 1 Or .flags.Inmunidad = 1 Then Exit Sub
@@ -129,7 +130,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
       Daño = RandomNumber(Hechizos(Spell).MinAgilidad, Hechizos(Spell).MaxAgilidad)
 
       .flags.TomoPocion = True
-      .flags.DuracionEfecto = Hechizos(h).Duration
+      .flags.DuracionEfecto = Hechizos(Spell).Duration
       .Stats.UserAtributos(eAtributos.Agilidad) = MinimoInt(.Stats.UserAtributos(eAtributos.Agilidad) + Daño, .Stats.UserAtributosBackUP(eAtributos.Agilidad) * 2)
 
       Call WriteFYA(UserIndex)
@@ -147,7 +148,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
       Daño = RandomNumber(Hechizos(Spell).MinFuerza, Hechizos(Spell).MaxFuerza)
 
       .flags.TomoPocion = True
-      .flags.DuracionEfecto = Hechizos(h).Duration
+      .flags.DuracionEfecto = Hechizos(Spell).Duration
       .Stats.UserAtributos(eAtributos.Fuerza) = MinimoInt(.Stats.UserAtributos(eAtributos.Fuerza) + Daño, .Stats.UserAtributosBackUP(eAtributos.Fuerza) * 2)
 
       Call WriteFYA(UserIndex)
@@ -219,9 +220,11 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
     End If
 
     If Hechizos(Spell).RemueveInvisibilidadParcial = 1 Then
-      If .flags.invisible = 1 And .flags.NoDetectable = 0 Then
+      If .flags.invisible + .flags.Oculto > 0 And .flags.NoDetectable = 0 Then
         .flags.invisible = 0
+        .flags.Oculto = 0
         .Counters.Invisibilidad = 0
+        .Counters.Ocultando = 0
 
         Call WriteConsoleMsg(UserIndex, "Tu invisibilidad ya no tiene efecto.", FontTypeNames.FONTTYPE_INFOIAO)
         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, False))
@@ -390,29 +393,13 @@ Public Sub NpcLanzaSpellSobreArea(ByVal NpcIndex As Integer, ByVal SpellIndex As
         mitadAreaRadio = CInt(.AreaRadio / 2)
         
         If NpcList(NpcIndex).Target > 0 Then
-            PosCasteadaX = UserList(NpcList(NpcIndex).Target).flags.TargetX ' Quizas restar random
-            PosCasteadaY = UserList(NpcList(NpcIndex).Target).flags.TargetY
+            PosCasteadaX = UserList(NpcList(NpcIndex).Target).flags.TargetX + RandomNumber(-2, 2)
+            PosCasteadaY = UserList(NpcList(NpcIndex).Target).flags.TargetY + RandomNumber(-2, 2)
         Else
-            PosCasteadaX = NpcList(NpcIndex).Pos.X + RandomNumber(1, 4) 'Testear el random con negativos
-            PosCasteadaY = NpcList(NpcIndex).Pos.Y + RandomNumber(1, 4) 'Testear el random con negativos
+            PosCasteadaX = NpcList(NpcIndex).Pos.X + RandomNumber(-2, 2)
+            PosCasteadaY = NpcList(NpcIndex).Pos.Y + RandomNumber(-1, 2)
         End If
        
-        If .FXgrh > 0 Then 'Envio Fx?
-            If .ParticleViaje > 0 Then
-                'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFXWithDestinoXY(UserList(UserIndex).Char.CharIndex, .ParticleViaje, .FXgrh, 1, .wav, 1, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY))
-            Else
-                Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageFxPiso(.FXgrh, PosCasteadaX, PosCasteadaY))
-            End If
-        End If
-    
-        If .Particle > 0 Then 'Envio Particula?
-            Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageParticleFXToFloor(PosCasteadaX, PosCasteadaY, .Particle, .TimeParticula))
-        End If
-
-        If .ParticleViaje = 0 Then
-            Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessagePlayWave(.wav, PosCasteadaX, PosCasteadaY))
-        End If
-
         For X = 1 To .AreaRadio
             For Y = 1 To .AreaRadio
 
@@ -2326,7 +2313,7 @@ HechizoPropNPC_Err:
         
 End Sub
 
-Private Sub InfoHechizoDeNpcSobreUser(ByVal NpcIndex As Integer, ByVal TargetUser As Integer, ByVal Spell as Integer)
+Private Sub InfoHechizoDeNpcSobreUser(ByVal NpcIndex As Integer, ByVal TargetUser As Integer, ByVal Spell As Integer)
   On Error GoTo InfoHechizoDeNpcSobreUser_Err
 
   With UserList(TargetUser)
@@ -2355,6 +2342,8 @@ Private Sub InfoHechizoDeNpcSobreUser(ByVal NpcIndex As Integer, ByVal TargetUse
     End If
 
   End With
+  
+  Exit Sub
 
 InfoHechizoDeNpcSobreUser_Err:
   Call RegistrarError(Err.Number, Err.Description, "modHechizos.InfoHechizoDeNpcSobreUser", Erl)
