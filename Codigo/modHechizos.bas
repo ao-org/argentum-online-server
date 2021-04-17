@@ -29,11 +29,7 @@ Attribute VB_Name = "modHechizos"
 
 Option Explicit
 
-Public Const SUPERANILLO       As Integer = 700
-
 Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, ByVal Spell As Integer, Optional ByVal IgnoreVisibilityCheck As Boolean = False)
-        'Guardia caos
-        
         On Error GoTo NpcLanzaSpellSobreUser_Err
         
 100     With UserList(UserIndex)
@@ -226,8 +222,6 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
       .Stats.MinHp = .Stats.MinHp + Daño
 
       If .Stats.MinHp > .Stats.MaxHp Then .Stats.MinHp = .Stats.MaxHp
-
-
 
     ElseIf Hechizos(Spell).SubeHP = 2 Then
 
@@ -743,117 +737,47 @@ Sub HechizoSobreArea(ByVal UserIndex As Integer, ByRef b As Boolean)
         End If
     
 120     If Hechizos(h).Particle > 0 Then 'Envio Particula?
-122         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFXToFloor(UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY, Hechizos(h).Particle, Hechizos(h).TimeParticula))
-
-        End If
-    
-124     If Hechizos(h).ParticleViaje = 0 Then
-126         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(h).wav, PosCasteadaX, PosCasteadaY))  'Esta linea faltaba. Pablo (ToxicWaste)
+122         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFXToFloor(PosCasteadaX, PosCasteadaY, Hechizos(h).Particle, Hechizos(h).TimeParticula))
 
         End If
 
-        Dim cuantosuser As Byte
 
-        Dim nameuser    As String
+        If Hechizos(h).ParticleViaje = 0 Then
+            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(h).wav, PosCasteadaX, PosCasteadaY))
+        End If
+
+        
+        afectaUsers = (Hechizos(h).AreaAfecta = 1 Or Hechizos(h).AreaAfecta = 3)
+        afectaNPCs = (Hechizos(h).AreaAfecta = 2 Or Hechizos(h).AreaAfecta = 3)
        
-128     Select Case Hechizos(h).AreaAfecta
-
-            Case 1
-
-130             For X = 1 To Hechizos(h).AreaRadio
-132                 For Y = 1 To Hechizos(h).AreaRadio
-
-134                     If MapData(UserList(UserIndex).Pos.Map, X + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).UserIndex > 0 Then
-136                         NPCIndex2 = MapData(UserList(UserIndex).Pos.Map, X + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).UserIndex
-
-                            'If NPCIndex2 <> UserIndex Then
-138                         If UserList(NPCIndex2).flags.Muerto = 0 Then
-                                        
-140                             AreaHechizo UserIndex, NPCIndex2, PosCasteadaX, PosCasteadaY, False
-142                             cuantosuser = cuantosuser + 1
-                                ' nameuser = nameuser & "," & NpcList(NPCIndex2).Name
-                                            
-                            End If
-
-                            ' End If
-                        End If
-
-                    Next
-                Next
-                    
-                ' If cuantosuser > 0 Then
-                '     Call WriteConsoleMsg(UserIndex, "Has alcanzado a " & cuantosuser & " usuarios.", FontTypeNames.FONTTYPE_FIGHT)
-                ' End If
-144         Case 2
-
-146             For X = 1 To Hechizos(h).AreaRadio
-148                 For Y = 1 To Hechizos(h).AreaRadio
-
-150                     If MapData(UserList(UserIndex).Pos.Map, X + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).NpcIndex > 0 Then
-152                         NPCIndex2 = MapData(UserList(UserIndex).Pos.Map, X + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).NpcIndex
-
-154                         If NpcList(NPCIndex2).Attackable Then
-156                             AreaHechizo UserIndex, NPCIndex2, PosCasteadaX, PosCasteadaY, True
-158                             Cuantos = Cuantos + 1
-
-                            End If
-
-                        End If
-
-                    Next
-                Next
+        For X = 1 To Hechizos(h).AreaRadio
+            For Y = 1 To Hechizos(h).AreaRadio
+                TargetMap = MapData(UserList(UserIndex).Pos.Map, X + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2))
                 
-                ' If Cuantos > 0 Then
-                '  Call WriteConsoleMsg(UserIndex, "Has alcanzado a " & Cuantos & " criaturas.", FontTypeNames.FONTTYPE_FIGHT)
-                '  End If
-160         Case 3
+                If afectaUsers And TargetMap.UserIndex > 0 Then
+                    If UserList(TargetMap.UserIndex).flags.Muerto = 0 Then
+                        Call AreaHechizo(UserIndex, TargetMap.UserIndex, PosCasteadaX, PosCasteadaY, False)
+                    End If
 
-162             For X = 1 To Hechizos(h).AreaRadio
-164                 For Y = 1 To Hechizos(h).AreaRadio
-
-166                     If MapData(UserList(UserIndex).Pos.Map, X + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).UserIndex > 0 Then
-168                         NPCIndex2 = MapData(UserList(UserIndex).Pos.Map, X + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).UserIndex
-
-                            'If NPCIndex2 <> UserIndex Then
-170                         If UserList(NPCIndex2).flags.Muerto = 0 Then
-172                             AreaHechizo UserIndex, NPCIndex2, PosCasteadaX, PosCasteadaY, False
-174                             cuantosuser = cuantosuser + 1
-
-                            End If
-
-                            ' End If
-                        End If
+                End If
                             
-176                     If MapData(UserList(UserIndex).Pos.Map, X + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).NpcIndex > 0 Then
-178                         NPCIndex2 = MapData(UserList(UserIndex).Pos.Map, X + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2)).NpcIndex
+                If afectaNPCs And TargetMap.NpcIndex > 0 Then
+                    If NpcList(TargetMap.NpcIndex).Attackable Then
+                        Call AreaHechizo(UserIndex, TargetMap.NpcIndex, PosCasteadaX, PosCasteadaY, True)
+                    End If
 
-180                         If NpcList(NPCIndex2).Attackable Then
-182                             AreaHechizo UserIndex, NPCIndex2, PosCasteadaX, PosCasteadaY, True
-184                             Cuantos = Cuantos + 1
-            
-                            End If
-
-                        End If
+                End If
                             
-                    Next
-                Next
-                
-                ' If Cuantos > 0 Then
-                '   Call WriteConsoleMsg(UserIndex, "Has alcanzado a " & Cuantos & " criaturas", FontTypeNames.FONTTYPE_FIGHT)
-                ' End If
-                'If cuantosuser > 0 Then
-                ' Call WriteConsoleMsg(UserIndex, "Has alcanzado a a " & cuantosuser & " usuarios.", FontTypeNames.FONTTYPE_FIGHT)
-                ' End If
-        End Select
+            Next Y
+        Next X
 
-186     b = True
-
+        b = True
         
         Exit Sub
 
 HechizoSobreArea_Err:
-188     Call RegistrarError(Err.Number, Err.Description, "modHechizos.HechizoSobreArea", Erl)
-190     Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "modHechizos.HechizoSobreArea", Erl)
+        Resume Next
         
 End Sub
 
@@ -995,15 +919,9 @@ Sub HandleHechizoTerreno(ByVal UserIndex As Integer, ByVal uh As Integer)
 118             Call HechizoPortal(UserIndex, b)
 
 120         Case TipoHechizo.UFamiliar
-
-                ' Call InvocarFamiliar(UserIndex, b)
+                Call InvocarFamiliar(UserIndex, b)
+                
         End Select
-
-        'If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY).ObjInfo.Amount > 0 Or MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY).Blocked Or UserList(UserIndex).flags.TargetUser <> 0 Then
-        '  b = False
-        '  Call WriteConsoleMsg(UserIndex, "Area invalida para lanzar este Hechizo!", FontTypeNames.FONTTYPE_INFO)
-
-        'Else
 
 122     If b Then
 124         Call SubirSkill(UserIndex, Magia)
@@ -1634,14 +1552,6 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             
 386         Call InfoHechizo(UserIndex)
 388         b = True
-
-390         If UserList(tU).Invent.ResistenciaEqpObjIndex = SUPERANILLO Then
-392             Call WriteConsoleMsg(tU, " Tu anillo rechaza los efectos del hechizo.", FontTypeNames.FONTTYPE_FIGHT)
-394             Call WriteConsoleMsg(UserIndex, " ¡El hechizo no tiene efecto!", FontTypeNames.FONTTYPE_FIGHT)
-            
-                Exit Sub
-
-            End If
             
 396         UserList(tU).Counters.Paralisis = Hechizos(h).Duration
 
@@ -1701,12 +1611,6 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             
 452         Call InfoHechizo(UserIndex)
 454         b = True
-            '  If UserList(tU).Invent.AnilloEqpObjIndex = SUPERANILLO Then
-            '   Call WriteConsoleMsg(tU, " Tu anillo rechaza los efectos del hechizo.", FontTypeNames.FONTTYPE_FIGHT)
-            '   Call WriteConsoleMsg(UserIndex, " ¡El hechizo no tiene efecto!", FontTypeNames.FONTTYPE_FIGHT)
-            '
-            '    Exit Sub
-            ' End If
             
 456         UserList(tU).Counters.Inmovilizado = Hechizos(h).Duration
 
@@ -3567,13 +3471,6 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
 562         enviarInfoHechizo = True
 564         b = True
 
-566         If UserList(tU).Invent.ResistenciaEqpObjIndex = SUPERANILLO Then
-568             Call WriteConsoleMsg(tU, " Tu anillo rechaza los efectos del hechizo.", FontTypeNames.FONTTYPE_FIGHT)
-570             Call WriteConsoleMsg(UserIndex, " ¡El hechizo no tiene efecto!", FontTypeNames.FONTTYPE_FIGHT)
-            
-                Exit Sub
-
-            End If
             
 572         UserList(tU).Counters.Paralisis = Hechizos(h).Duration
 
@@ -3879,25 +3776,16 @@ DesplazarHechizo_Err:
         
 End Sub
 
-Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y As Byte, npc As Boolean)
-        
+Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y As Byte, npc As Boolean)
         On Error GoTo AreaHechizo_Err
         
-
         Dim calculo      As Integer
-
         Dim TilesDifUser As Integer
-
         Dim TilesDifNpc  As Integer
-
         Dim tilDif       As Integer
-
         Dim h2           As Integer
-
         Dim Hit          As Integer
-
         Dim Daño As Integer
-
         Dim porcentajeDesc As Integer
 
 100     h2 = UserList(UserIndex).Stats.UserHechizos(UserList(UserIndex).flags.Hechizo)
