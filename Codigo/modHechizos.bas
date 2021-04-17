@@ -32,18 +32,18 @@ Option Explicit
 Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, ByVal Spell As Integer, Optional ByVal IgnoreVisibilityCheck As Boolean = False)
         On Error GoTo NpcLanzaSpellSobreUser_Err
         
+        Dim Daño As Integer
+        Dim DañoStr As String
+        
+        If Spell = 0 Then Exit Sub
+        
 100     With UserList(UserIndex)
-
-102         If Spell = 0 Then Exit Sub
         
             '¿NPC puede ver a través de la invisibilidad?
 104         If Not IgnoreVisibilityCheck Then
 106             If .flags.invisible = 1 Or .flags.Oculto = 1 Or .flags.Inmunidad = 1 Then Exit Sub
             End If
 
-            Dim Daño As Integer
-            
-            Dim DañoStr As String
 
 108         If Hechizos(Spell).SubeHP = 1 Then
 
@@ -189,6 +189,18 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
                      Call WritePosUpdate(UserIndex)
     
                 End If
+                
+             ElseIf Hechizos(Spell).RemueveInvisibilidadParcial = 1 Then
+                
+                If .flags.invisible = 1 And .flags.NoDetectable = 0 Then
+                    .flags.invisible = 0
+                    .Counters.Invisibilidad = 0
+                    
+                    Call WriteConsoleMsg(UserIndex, "Tu invisibilidad ya no tiene efecto.", FontTypeNames.FONTTYPE_INFOIAO)
+                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.Y))
+                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, False))
+
+                End If
     
             End If
     
@@ -308,6 +320,79 @@ NpcLanzaSpellSobreNpc_Err:
   Resume Next
 
 End Sub
+
+Public Sub NpcLanzaSpellSobreArea(ByVal NpcIndex As Integer, ByVal SpellIndex As Integer)
+    On Error GoTo NpcLanzaSpellSobreArea_Err
+    
+    Dim afectaUsers As Boolean
+    Dim afectaNPCs As Boolean
+    Dim TargetMap As MapBlock
+    Dim PosCasteadaX As Byte
+    Dim PosCasteadaY As Byte
+    Dim X            As Long
+    Dim Y            As Long
+    Dim mitadAreaRadio As Integer
+      
+    With Hechizos(SpellIndex)
+        afectaUsers = (.AreaAfecta = 1 Or .AreaAfecta = 3)
+        afectaNPCs = (.AreaAfecta = 2 Or .AreaAfecta = 3)
+        mitadAreaRadio = CInt(.AreaRadio / 2)
+        
+        If NpcList(NpcIndex).Target > 0 Then
+            PosCasteadaX = UserList(NpcList(NpcIndex).Target).flags.TargetX ' Quizas restar random
+            PosCasteadaY = UserList(NpcList(NpcIndex).Target).flags.TargetY
+        Else
+            PosCasteadaX = NpcList(NpcIndex).Pos.X + RandomNumber(1, 4) 'Testear el random con negativos
+            PosCasteadaY = NpcList(NpcIndex).Pos.Y + RandomNumber(1, 4) 'Testear el random con negativos
+        End If
+       
+        If .FXgrh > 0 Then 'Envio Fx?
+            If .ParticleViaje > 0 Then
+                'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFXWithDestinoXY(UserList(UserIndex).Char.CharIndex, .ParticleViaje, .FXgrh, 1, .wav, 1, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY))
+            Else
+                Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageFxPiso(.FXgrh, PosCasteadaX, PosCasteadaY))
+            End If
+        End If
+    
+        If .Particle > 0 Then 'Envio Particula?
+            Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageParticleFXToFloor(PosCasteadaX, PosCasteadaY, .Particle, .TimeParticula))
+        End If
+
+        If .ParticleViaje = 0 Then
+            Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessagePlayWave(.wav, PosCasteadaX, PosCasteadaY))
+        End If
+
+        For X = 1 To .AreaRadio
+            For Y = 1 To .AreaRadio
+
+                TargetMap = MapData(NpcList(NpcIndex).Pos.Map, X + PosCasteadaX - mitadAreaRadio, PosCasteadaY + Y - mitadAreaRadio)
+                
+                If afectaUsers And TargetMap.UserIndex > 0 Then
+                    If Not UserList(TargetMap.UserIndex).flags.Muerto Then
+                        Call NpcLanzaSpellSobreUser(NpcIndex, TargetMap.UserIndex, SpellIndex, True)
+                    End If
+
+                End If
+                            
+                If afectaNPCs And TargetMap.NpcIndex > 0 Then
+                    If NpcList(TargetMap.NpcIndex).Attackable Then
+                        Call NpcLanzaSpellSobreNpc(NpcIndex, TargetMap.NpcIndex, SpellIndex)
+                    End If
+
+                End If
+                            
+            Next Y
+        Next X
+    End With
+        
+    Exit Sub
+
+NpcLanzaSpellSobreArea_Err:
+    Call RegistrarError(Err.Number, Err.Description, "modHechizos.NpcLanzaSpellSobreArea", Erl)
+    Resume Next
+        
+End Sub
+
 
 Function TieneHechizo(ByVal i As Integer, ByVal UserIndex As Integer) As Boolean
 
@@ -687,37 +772,23 @@ HechizoTerrenoEstado_Err:
         
 End Sub
 
-Sub HechizoSobreArea(ByVal UserIndex As Integer, ByRef b As Boolean)
+Private Sub HechizoSobreArea(ByVal UserIndex As Integer, ByRef b As Boolean)
         
         On Error GoTo HechizoSobreArea_Err
         
-
+        Dim afectaUsers As Boolean
+        Dim afectaNPCs As Boolean
+        Dim TargetMap As MapBlock
         Dim PosCasteadaX As Byte
-
         Dim PosCasteadaY As Byte
-
-        Dim PosCasteadaM As Integer
-
         Dim h            As Integer
-
-        Dim TempX        As Integer
-
-        Dim TempY        As Integer
-
-100     PosCasteadaX = UserList(UserIndex).flags.TargetX
-102     PosCasteadaY = UserList(UserIndex).flags.TargetY
-104     PosCasteadaM = UserList(UserIndex).flags.TargetMap
+        Dim X            As Long
+        Dim Y            As Long
  
 106     h = UserList(UserIndex).Stats.UserHechizos(UserList(UserIndex).flags.Hechizo)
-
-        Dim X         As Long
-
-        Dim Y         As Long
-    
-        Dim NPCIndex2 As Integer
-
-        Dim Cuantos   As Long
-    
+        PosCasteadaX = UserList(UserIndex).flags.TargetX
+        PosCasteadaY = UserList(UserIndex).flags.TargetY
+        
         'Envio Palabras magicas, wavs y fxs.
 108     If UserList(UserIndex).flags.NoPalabrasMagicas = 0 Then
 110         Call DecirPalabrasMagicas(h, UserIndex)
@@ -727,10 +798,10 @@ Sub HechizoSobreArea(ByVal UserIndex As Integer, ByRef b As Boolean)
 112     If Hechizos(h).FXgrh > 0 Then 'Envio Fx?
     
 114         If Hechizos(h).ParticleViaje > 0 Then
-116             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFXWithDestinoXY(UserList(UserIndex).Char.CharIndex, Hechizos(h).ParticleViaje, Hechizos(h).FXgrh, 1, Hechizos(h).wav, 1, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY))
+116             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFXWithDestinoXY(UserList(UserIndex).Char.CharIndex, Hechizos(h).ParticleViaje, Hechizos(h).FXgrh, 1, Hechizos(h).wav, 1, PosCasteadaX, PosCasteadaY))
                 
             Else
-118             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageFxPiso(Hechizos(h).FXgrh, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY))
+118             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageFxPiso(Hechizos(h).FXgrh, PosCasteadaX, PosCasteadaY))
 
             End If
 
