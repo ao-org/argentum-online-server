@@ -1178,9 +1178,9 @@ Sub NPCAtacado(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         Dim EraCriminal As Byte
 
         'Guardamos el usuario que ataco el npc.
-104     If NpcList(NpcIndex).Movement <> ESTATICO And NpcList(NpcIndex).flags.AttackedFirstBy = vbNullString Then
+104     If NpcList(NpcIndex).Movement <> Estatico And NpcList(NpcIndex).flags.AttackedFirstBy = vbNullString Then
 106         NpcList(NpcIndex).Target = UserIndex
-108         NpcList(NpcIndex).Movement = TipoAI.NpcMaloAtacaUsersBuenos
+108         NpcList(NpcIndex).Movement = TipoAI.NpcDefensa
 110         NpcList(NpcIndex).flags.AttackedBy = UserList(UserIndex).name
         End If
 

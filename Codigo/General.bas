@@ -1672,15 +1672,12 @@ EfectoInvisibilidad_Err:
 End Sub
 
 Public Sub EfectoParalisisNpc(ByVal NpcIndex As Integer)
-        
         On Error GoTo EfectoParalisisNpc_Err
         
-
 100     If NpcList(NpcIndex).Contadores.Paralisis > 0 Then
 102         NpcList(NpcIndex).Contadores.Paralisis = NpcList(NpcIndex).Contadores.Paralisis - 1
         Else
 104         NpcList(NpcIndex).flags.Paralizado = 0
-106         NpcList(NpcIndex).flags.Inmovilizado = 0
 
         End If
 
@@ -1692,6 +1689,25 @@ EfectoParalisisNpc_Err:
 110     Resume Next
         
 End Sub
+
+Public Sub EfectoInmovilizadoNpc(ByVal NpcIndex As Integer)
+        On Error GoTo EfectoInmovilizadoNpc_Err
+
+100     If NpcList(NpcIndex).Contadores.Inmovilizado > 0 Then
+102         NpcList(NpcIndex).Contadores.Inmovilizado = NpcList(NpcIndex).Contadores.Inmovilizado - 1
+        Else
+104         NpcList(NpcIndex).flags.Inmovilizado = 0
+
+        End If
+
+        Exit Sub
+
+EfectoInmovilizadoNpc_Err:
+108     Call RegistrarError(Err.Number, Err.Description, "General.EfectoInmovilizadoNpc", Erl)
+110     Resume Next
+        
+End Sub
+
 
 Public Sub EfectoCeguera(ByVal UserIndex As Integer)
         
