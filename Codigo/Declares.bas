@@ -838,7 +838,7 @@ Public Type tHechizo
     RemoverParalisis As Byte
     RemoverEstupidez As Byte
     CuraVeneno As Byte
-    Incinera As Byte
+    incinera As Byte
     Envenena As Byte
     Maldicion As Byte
     RemoverMaldicion As Byte
@@ -1875,8 +1875,8 @@ Public Type NpcCounters
     TiempoExistencia       As Long
     IntervaloAtaque        As Long
     IntervaloMovimiento    As Long
-    InvervaloLanzarHechizo As Long
-    InvervaloRespawn       As Long
+    IntervaloLanzarHechizo As Long
+    IntervaloRespawn       As Long
     UltimoAtaque           As Long
 
 End Type
@@ -2021,10 +2021,8 @@ Public Type npc
     Contadores As NpcCounters
     IntervaloMovimiento As Long
     IntervaloAtaque As Long
-    
-    InvervaloLanzarHechizo As Long
-    
-    InvervaloRespawn As Long
+    IntervaloLanzarHechizo As Long
+    IntervaloRespawn As Long
     
     Invent As Inventario
     
