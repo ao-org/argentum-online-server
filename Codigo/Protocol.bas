@@ -1832,12 +1832,13 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
     'If we got here then packet is complete, copy data back to original queue
     Call UserList(UserIndex).incomingData.CopyBuffer(Buffer)
     
-    If Not VersionOK(Version) Then
-        Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
-        Call CloseSocket(UserIndex)
-        Exit Sub
-
-    End If
+    #If DEBUGGING = False Then
+        If Not VersionOK(Version) Then
+            Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
+            Call CloseSocket(UserIndex)
+            Exit Sub
+        End If
+    #End If
         
     If EsGmChar(UserName) Then
             
@@ -1996,11 +1997,13 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
 144     HDserial = Buffer.ReadLong()
 145     MD5 = Buffer.ReadASCIIString()
     
-146     If Not VersionOK(Version) Then
-148         Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
-150         Call CloseSocket(UserIndex)
-            Exit Sub
-        End If
+        #If DEBUGGING = False Then
+146         If Not VersionOK(Version) Then
+148             Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
+150             Call CloseSocket(UserIndex)
+                Exit Sub
+            End If
+        #End If
         
 152     If EsGmChar(UserName) Then
             
@@ -13977,11 +13980,20 @@ Private Sub HandleTeleportDestroy(ByVal UserIndex As Integer)
 112         If Not InMapBounds(Mapa, X, Y) Then Exit Sub
         
 114         With MapData(Mapa, X, Y)
-
-116             If .ObjInfo.ObjIndex = 0 Then Exit Sub
-            
-118             If ObjData(.ObjInfo.ObjIndex).OBJType = eOBJType.otTeleport And .TileExit.Map > 0 Then
-120                 Call LogGM(UserList(UserIndex).name, "/DT: " & Mapa & "," & X & "," & Y)
+                'Si no tengo objeto y no tengo traslado
+116             If .ObjInfo.ObjIndex = 0 And .TileExit.Map = 0 Then Exit Sub
+                
+                
+                'Si no tengo objeto pero tengo traslado
+                If .ObjInfo.ObjIndex = 0 And .TileExit.Map > 0 Then
+                    Call LogGM(UserList(UserIndex).name, "/DT: " & Mapa & "," & X & "," & Y)
+                
+128                 .TileExit.Map = 0
+130                 .TileExit.X = 0
+132                 .TileExit.Y = 0
+                'si tengo objeto y traslado
+                ElseIf .ObjInfo.ObjIndex > 0 And ObjData(.ObjInfo.ObjIndex).OBJType = eOBJType.otTeleport Then
+                     Call LogGM(UserList(UserIndex).name, "/DT: " & Mapa & "," & X & "," & Y)
                 
 122                 Call EraseObj(.ObjInfo.Amount, Mapa, X, Y)
                 
@@ -13990,12 +14002,11 @@ Private Sub HandleTeleportDestroy(ByVal UserIndex As Integer)
 
                     End If
                 
-128                 .TileExit.Map = 0
-130                 .TileExit.X = 0
-132                 .TileExit.Y = 0
+                    .TileExit.Map = 0
+                    .TileExit.X = 0
+                    .TileExit.Y = 0
 
                 End If
-
             End With
 
         End With
@@ -25769,13 +25780,15 @@ Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
     
         'If we got here then packet is complete, copy data back to original queue
 118     Call UserList(UserIndex).incomingData.CopyBuffer(Buffer)
+        
+        #If DEBUGGING = False Then
+120         If Not VersionOK(Version) Then
+122             Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
+124             Call CloseSocket(UserIndex)
+                Exit Sub
     
-120     If Not VersionOK(Version) Then
-122         Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
-124         Call CloseSocket(UserIndex)
-            Exit Sub
-
-        End If
+            End If
+        #End If
 
 126     If EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MacAddress, HDserial, MD5) Then
 128         Call WritePersonajesDeCuenta(UserIndex)
@@ -25841,11 +25854,13 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
         'If we got here then packet is complete, copy data back to original queue
 122     Call UserList(UserIndex).incomingData.CopyBuffer(Buffer)
     
-124     If Not VersionOK(Version) Then
-126         Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
-128         Call CloseSocket(UserIndex)
-            Exit Sub
-        End If
+        #If DEBUGGING = False Then
+124         If Not VersionOK(Version) Then
+126             Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
+128             Call CloseSocket(UserIndex)
+                Exit Sub
+            End If
+        #End If
     
 130     If Not EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MacAddress, HDserial, MD5) Then
 132         Call CloseSocket(UserIndex)
