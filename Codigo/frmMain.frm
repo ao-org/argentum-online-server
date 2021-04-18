@@ -2177,12 +2177,12 @@ Private Sub TimerRespawn_Timer()
 
     'Update NPCs
     For NpcIndex = 1 To MaxRespawn
-
+        Debug.Print RespawnList(NpcIndex).name
         If RespawnList(NpcIndex).flags.NPCActive Then  'Nos aseguramos que este muerto
-            If RespawnList(NpcIndex).Contadores.InvervaloRespawn <> 0 Then
-                RespawnList(NpcIndex).Contadores.InvervaloRespawn = RespawnList(NpcIndex).Contadores.InvervaloRespawn - 1
+            If RespawnList(NpcIndex).Contadores.IntervaloRespawn <> 0 Then
+                RespawnList(NpcIndex).Contadores.IntervaloRespawn = RespawnList(NpcIndex).Contadores.IntervaloRespawn - 1
 
-                If RespawnList(NpcIndex).Contadores.InvervaloRespawn = 0 Then
+                If RespawnList(NpcIndex).Contadores.IntervaloRespawn = 0 Then
                     RespawnList(NpcIndex).flags.NPCActive = False
 
                     If RespawnList(NpcIndex).InformarRespawn = 1 Then

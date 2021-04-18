@@ -45,7 +45,7 @@ Public Function IntervaloPermiteLanzarSpell(ByVal UserIndex As Integer, Optional
 
 100     TActual = GetTickCount()
 
-102     If TActual - UserList(UserIndex).Counters.TimerLanzarSpell >= UserList(UserIndex).Intervals.magia - MargenDeIntervaloPorPing Then
+102     If TActual - UserList(UserIndex).Counters.TimerLanzarSpell >= UserList(UserIndex).Intervals.Magia - MargenDeIntervaloPorPing Then
 104         If Actualizar Then
 106             UserList(UserIndex).Counters.TimerLanzarSpell = TActual
                 ' Actualizo spell-attack
@@ -386,10 +386,10 @@ Public Function IntervaloPermiteMoverse(ByVal NpcIndex As Integer) As Boolean
 
 100     TActual = GetTickCount()
 
-102     If TActual - Npclist(NpcIndex).Contadores.IntervaloMovimiento >= Npclist(NpcIndex).IntervaloMovimiento Then
+102     If TActual - NpcList(NpcIndex).Contadores.IntervaloMovimiento >= NpcList(NpcIndex).IntervaloMovimiento Then
     
             '  Call AddtoRichTextBox(frmMain.RecTxt, "Usar OK.", 255, 0, 0, True, False, False)
-104         Npclist(NpcIndex).Contadores.IntervaloMovimiento = TActual
+104         NpcList(NpcIndex).Contadores.IntervaloMovimiento = TActual
 106         IntervaloPermiteMoverse = True
         Else
 108         IntervaloPermiteMoverse = False
@@ -414,10 +414,10 @@ Public Function IntervaloPermiteLanzarHechizo(ByVal NpcIndex As Integer) As Bool
 
 100     TActual = GetTickCount()
 
-102     If TActual - Npclist(NpcIndex).Contadores.InvervaloLanzarHechizo >= Npclist(NpcIndex).InvervaloLanzarHechizo Then
+102     If TActual - NpcList(NpcIndex).Contadores.IntervaloLanzarHechizo >= NpcList(NpcIndex).IntervaloLanzarHechizo Then
     
             '  Call AddtoRichTextBox(frmMain.RecTxt, "Usar OK.", 255, 0, 0, True, False, False)
-104         Npclist(NpcIndex).Contadores.InvervaloLanzarHechizo = TActual
+104         NpcList(NpcIndex).Contadores.IntervaloLanzarHechizo = TActual
 106         IntervaloPermiteLanzarHechizo = True
         Else
 108         IntervaloPermiteLanzarHechizo = False
@@ -442,10 +442,10 @@ Public Function IntervaloPermiteAtacarNPC(ByVal NpcIndex As Integer) As Boolean
 
 100     TActual = GetTickCount()
 
-102     If TActual - Npclist(NpcIndex).Contadores.IntervaloAtaque >= Npclist(NpcIndex).IntervaloAtaque Then
+102     If TActual - NpcList(NpcIndex).Contadores.IntervaloAtaque >= NpcList(NpcIndex).IntervaloAtaque Then
     
             '  Call AddtoRichTextBox(frmMain.RecTxt, "Usar OK.", 255, 0, 0, True, False, False)
-104         Npclist(NpcIndex).Contadores.IntervaloAtaque = TActual
+104         NpcList(NpcIndex).Contadores.IntervaloAtaque = TActual
 106         IntervaloPermiteAtacarNPC = True
         Else
 108         IntervaloPermiteAtacarNPC = False
