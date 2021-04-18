@@ -393,32 +393,6 @@ Public Const MAX_MENSAJES_FORO As Byte = 35
 
 Public Const MAXUSERHECHIZOS   As Byte = 25
 
-' TODO: Y ESTO ? LO CONOCE GD ?
-Public Const EsfuerzoTalarLeñador As Byte = 5
-
-Public Const EsfuerzoTalarGeneral          As Byte = 15
-
-Public Const EsfuerzoRaicesDruida          As Byte = 5
-
-Public Const EsfuerzoRaicesGeneral         As Byte = 15
-
-Public Const EsfuerzoPescarPescador        As Byte = 5
-
-Public Const EsfuerzoPescarGeneral         As Byte = 15
-
-Public Const EsfuerzoPescarRedPescador     As Byte = 8
-
-Public Const EsfuerzoPescarRedGeneral      As Byte = 20
-
-'Ladder Agrego que el carpintero le sea mas facil carpinterear.. jaja 07/07/2014
-Public Const EsfuerzoCarpinteriaCarpintero As Byte = 5
-
-Public Const EsfuerzoCarpinteriaGeneral    As Byte = 15
-
-Public Const EsfuerzoExcavarMinero         As Byte = 5
-
-Public Const EsfuerzoExcavarGeneral        As Byte = 15
-
 Public Const FX_TELEPORT_INDEX             As Integer = 1
 
 ' La utilidad de esto es casi nula, sólo se revisa si fue a la cabeza...
@@ -570,7 +544,7 @@ Public Const iORO          As Byte = 12
 '%%%%%%%%%% CONSTANTES DE INDICES %%%%%%%%%%%%%%%
 Public Enum eSkill
 
-    magia = 1
+    Magia = 1
     Robar = 2
     Tacticas = 3
     Armas = 4
@@ -584,7 +558,7 @@ Public Enum eSkill
     Proyectiles = 12
     Wrestling = 13
     Navegacion = 14
-    equitacion = 15
+    Equitacion = 15
     Resistencia = 16
 
     Talar = 17
@@ -777,9 +751,6 @@ Public Const STAT_MAXDEF              As Byte = 99
 ' **************************************************************
 
 Public Type tHechizo
-
-    'Ladder
-    incinera As Byte
     AutoLanzar As Byte
     
     velocidad As Single
@@ -834,8 +805,8 @@ Public Type tHechizo
     MaxHp As Integer
     
     SubeMana As Byte
-    MiMana As Integer
-    MaMana As Integer
+    MinMana As Integer
+    MaxMana As Integer
     
     SubeSta As Byte
     MinSta As Integer
@@ -867,6 +838,7 @@ Public Type tHechizo
     RemoverParalisis As Byte
     RemoverEstupidez As Byte
     CuraVeneno As Byte
+    Incinera As Byte
     Envenena As Byte
     Maldicion As Byte
     RemoverMaldicion As Byte
@@ -1710,7 +1682,7 @@ End Type
 
 Public Type UserIntervals
 
-    magia As Long
+    Magia As Long
     Golpe As Long
     Arco As Long
     UsarU As Long
@@ -1736,7 +1708,7 @@ End Type
 
 Public Type tFacciones
 
-    Status As Byte
+    Status As Byte ' Esto deberia ser e_Facciones
     ArmadaReal As Byte
     FuerzasCaos As Byte
     CriminalesMatados As Long
@@ -1886,7 +1858,6 @@ End Type
 
 Public Type NPCStats
 
-    Alineacion As Integer
     MaxHp As Long
     MinHp As Long
     MaxHit As Integer
@@ -1899,13 +1870,14 @@ End Type
 
 Public Type NpcCounters
 
-    Paralisis As Integer
-    TiempoExistencia As Long
-    IntervaloAtaque As Long
-    IntervaloMovimiento As Long
+    Paralisis              As Long
+    Inmovilizado           As Long
+    TiempoExistencia       As Long
+    IntervaloAtaque        As Long
+    IntervaloMovimiento    As Long
     InvervaloLanzarHechizo As Long
-    InvervaloRespawn As Long
-    UltimoAtaque As Long
+    InvervaloRespawn       As Long
+    UltimoAtaque           As Long
 
 End Type
 
@@ -1917,21 +1889,19 @@ Public Type NPCFlags
     Respawn As Byte
     NPCActive As Boolean '¿Esta vivo?
     Follow As Boolean
-    Faccion As Byte
+    Faccion As e_Facciones
     LanzaSpells As Byte
     NPCIdle As Boolean
-    
+
     ' Invasiones
     InvasionIndex As Integer
     SpawnBox As Integer
     IndexInInvasion As Integer
-    
+
     '[KEVIN]
     'DeQuest As Byte
-    
-    'ExpDada As Long
+
     ExpCount As Long '[ALEJO]
-    '[/KEVIN]
     
     OldMovement As TipoAI
     OldHostil As Byte
@@ -1939,34 +1909,29 @@ Public Type NPCFlags
     AguaValida As Byte
     TierraInvalida As Byte
     
-    UseAINow As Boolean
+    ' UseAINow As Boolean No se usa, borrar de la DB!!!!
     Sound As Integer
     Attacking As Integer
     AttackedBy As String
     AttackedFirstBy As String
-    Category1 As String
-    Category2 As String
-    Category3 As String
-    Category4 As String
-    Category5 As String
     backup As Byte
     RespawnOrigPos As Byte
-    
+
     Envenenado As Byte
     Paralizado As Byte
     Inmovilizado As Byte
+    Incinerado As Byte
     invisible As Byte
     Bendicion As Byte
 
     Snd1 As Integer
     Snd2 As Integer
     Snd3 As Integer
-    
+
     AtacaUsuarios As Boolean ' Si el NPC puede atacar usuarios
     AtacaNPCs As Boolean     ' Si el NPC puede atacar otros NPC
-    
+
     AIAlineacion As e_Alineacion
-    AIPersonalidad As e_Personalidad
 
 End Type
 
@@ -2062,7 +2027,6 @@ Public Type npc
     InvervaloRespawn As Long
     
     Invent As Inventario
-    CanAttack As Byte
     
     NroExpresiones As Byte
     Expresiones() As String ' le da vida ;)

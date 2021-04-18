@@ -234,11 +234,9 @@ Sub ResetNpcFlags(ByVal NpcIndex As Integer)
 144         .Snd2 = 0
 146         .Snd3 = 0
 148         .TierraInvalida = 0
-150         .UseAINow = False
 152         .AtacaUsuarios = True
 154         .AtacaNPCs = True
 156         .AIAlineacion = e_Alineacion.ninguna
-158         .AIPersonalidad = e_Personalidad.ninguna
 160         .NPCIdle = False
         End With
 
@@ -369,7 +367,6 @@ Sub ResetNpcMainInfo(ByVal NpcIndex As Integer)
         
     
 100     NpcList(NpcIndex).Attackable = 0
-102     NpcList(NpcIndex).CanAttack = 0
 104     NpcList(NpcIndex).Comercia = 0
 106     NpcList(NpcIndex).GiveEXP = 0
 108     NpcList(NpcIndex).GiveEXPClan = 0
@@ -823,9 +820,11 @@ Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) A
         Dim UserIndex As Integer
     
 100     With NpcList(NpcIndex)
+            If .flags.Paralizado + .flags.Inmovilizado > 0 Then Exit Function
+            
 102         nPos = .Pos
 104         Call HeadtoPos(nHeading, nPos)
-        
+            
             ' es una posicion legal
 106         If LegalWalkNPC(nPos.Map, nPos.X, nPos.Y, nHeading, .flags.AguaValida = 1, .flags.TierraInvalida = 0, .MaestroUser <> 0) Then
             
@@ -1070,7 +1069,7 @@ Function NPCHostiles(ByVal Map As Integer) As Integer
 102     For NpcIndex = 1 To LastNPC
 
             '¿esta vivo?
-104         If NpcList(NpcIndex).flags.NPCActive And NpcList(NpcIndex).Pos.Map = Map And NpcList(NpcIndex).Hostile = 1 And NpcList(NpcIndex).Stats.Alineacion = 2 Then
+104         If NpcList(NpcIndex).flags.NPCActive And NpcList(NpcIndex).Pos.Map = Map And NpcList(NpcIndex).Hostile = 1 Then
 106             cont = cont + 1
            
             End If
@@ -1278,7 +1277,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 218         .Stats.MinHIT = val(Leer.GetValue("NPC" & NpcNumber, "MinHIT"))
 220         .Stats.def = val(Leer.GetValue("NPC" & NpcNumber, "DEF"))
 222         .Stats.defM = val(Leer.GetValue("NPC" & NpcNumber, "DEFm"))
-224         .Stats.Alineacion = val(Leer.GetValue("NPC" & NpcNumber, "Alineacion"))
+224         .flags.AIAlineacion = val(Leer.GetValue("NPC" & NpcNumber, "Alineacion"))
     
 226         .Invent.NroItems = val(Leer.GetValue("NPC" & NpcNumber, "NROITEMS"))
     
@@ -1312,9 +1311,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
     
             End If
     
-264         .flags.NPCActive = True
 266         .flags.NPCActive = True
-268         .flags.UseAINow = False
 
             Select Case val(Leer.GetValue("NPC" & NpcNumber, "RestriccionDeAtaque"))
                 Case 0 ' Todos
@@ -1473,7 +1470,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
                 cant = val(Leer.GetValue("NPC" & NpcNumber, "CaminataLen"))
                 ' Prevengo NPCs rotos
                 If cant = 0 Then
-                    .Movement = ESTATICO
+                    .Movement = Estatico
                 Else
                     ' Redimenciono el array
                     ReDim .Caminata(1 To cant)
@@ -1529,7 +1526,7 @@ Sub DoFollow(ByVal NpcIndex As Integer, ByVal UserName As String)
             .flags.AttackedBy = UserName
             .Target = NameIndex(UserName)
             .flags.Follow = True
-            .Movement = 4 'follow
+            .Movement = TipoAI.NpcDefensa
             .Hostile = 0
 
         End If
@@ -1550,11 +1547,10 @@ Public Sub FollowAmo(ByVal NpcIndex As Integer)
 100     With NpcList(NpcIndex)
 102         .flags.Follow = True
 104         .Movement = TipoAI.SigueAmo
-106         .Target = .MaestroUser
 108         .PFINFO.TargetUser = .MaestroUser
 110         .PFINFO.PathLenght = 0
 112         .Hostile = 0
-114         .Target = 0
+114         .Target = 0 ' No deberia ser .MaestroUser ?
 116         .TargetNPC = 0
         End With
 
