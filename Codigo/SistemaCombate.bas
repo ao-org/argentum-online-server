@@ -1886,6 +1886,15 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
             End If
         End If
         
+        If Status(AttackerIndex) = Ciudadano Then
+            If NpcList(NpcIndex).MaestroUser > 0 And NpcList(NpcIndex).MaestroUser = AttackerIndex Then
+                Call WriteConsoleMsg(AttackerIndex, "No puedes atacar a tus mascotas siendo un ciudadano.", FontTypeNames.FONTTYPE_INFO)
+                PuedeAtacarNPC = False
+                Exit Function
+            End If
+        End If
+        
+        
         ' El seguro es SOLO para ciudadanos. La armada debe desenlistarse antes de querer atacar y se checkea arriba.
         ' Los criminales o Caos, ya estan mas alla del seguro.
         If Status(AttackerIndex) = Ciudadano Then

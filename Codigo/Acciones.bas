@@ -93,7 +93,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                     End If
                     
                     ' WyroX: Hacemos que se detenga a hablar un momento :P
-                    If NpcList(MapData(Map, X, Y).NpcIndex).Movement = Caminata Then
+                    If NpcList(MapData(Map, X, Y).NpcIndex).Movement = TipoAI.Caminata Then
                         NpcList(MapData(Map, X, Y).NpcIndex).Contadores.IntervaloMovimiento = GetTickCount + 15000 - NpcList(MapData(Map, X, Y).NpcIndex).IntervaloMovimiento ' 15 segundos
                     End If
             
