@@ -23225,7 +23225,7 @@ Public Sub WriteChangeUserTradeSlot(ByVal UserIndex As Integer, ByVal ObjIndex A
 104         Call .WriteInteger(ObjIndex)
 106         Call .WriteASCIIString(ObjData(ObjIndex).name)
 108         Call .WriteLong(Amount)
-110         Call .WriteInteger(ObjData(ObjIndex).GrhIndex)
+110         Call .WriteLong(ObjData(ObjIndex).GrhIndex)
 112         Call .WriteByte(ObjData(ObjIndex).OBJType)
 114         Call .WriteInteger(ObjData(ObjIndex).MaxHit)
 116         Call .WriteInteger(ObjData(ObjIndex).MinHIT)
