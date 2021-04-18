@@ -20243,7 +20243,7 @@ End Sub
 ' @param    attackerIndex   The user index of the user that attacked.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Sub WriteUserAttackedSwing(ByVal UserIndex As Integer, ByVal attackerIndex As Integer)
+Public Sub WriteUserAttackedSwing(ByVal UserIndex As Integer, ByVal AttackerIndex As Integer)
 
         '***************************************************
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -20254,7 +20254,7 @@ Public Sub WriteUserAttackedSwing(ByVal UserIndex As Integer, ByVal attackerInde
 
 100     With UserList(UserIndex).outgoingData
 102         Call .WriteByte(ServerPacketID.UserAttackedSwing)
-104         Call .WriteInteger(UserList(attackerIndex).Char.CharIndex)
+104         Call .WriteInteger(UserList(AttackerIndex).Char.CharIndex)
 
         End With
 
@@ -29577,8 +29577,12 @@ Private Sub HandleCrearEvento(ByVal UserIndex As Integer)
 110         Tipo = Buffer.ReadByte()
 112         Duracion = Buffer.ReadByte()
 114         multiplicacion = Buffer.ReadByte()
+
+            If multiplicacion > 3 Then 'no superar este multiplicador
+                multiplicacion = "3"
+            End If
         
-            '/
+            '/ dejar solo Administradores
 116         If .flags.Privilegios >= PlayerType.Admin Then
 118             If EventoActivo = False Then
 120                 If LenB(Tipo) = 0 Or LenB(Duracion) = 0 Or LenB(multiplicacion) = 0 Then

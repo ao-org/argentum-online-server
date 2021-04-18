@@ -271,7 +271,7 @@ Public Sub ForzarEvento(ByVal Tipo As Byte, ByVal Duracion As Byte, ByVal multi 
         End If
 
 108     If multi > 10 Then
-110         Call WriteConsoleMsg(NameIndex(Quien), "Multiplicacion invalida, maxima x10.", FontTypeNames.FONTTYPE_New_Eventos)
+110         Call WriteConsoleMsg(NameIndex(Quien), "Multiplicacion invalida, maxima x3.", FontTypeNames.FONTTYPE_New_Eventos)
             Exit Sub
 
         End If
