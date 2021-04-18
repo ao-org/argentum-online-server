@@ -60,7 +60,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 
         Dim TiempoRespw As Long
 
-102     TiempoRespw = NpcList(NpcIndex).Contadores.InvervaloRespawn
+102     TiempoRespw = NpcList(NpcIndex).Contadores.IntervaloRespawn
 
         ' Es pretoriano?
         If MiNPC.NPCtype = eNPCType.Pretoriano Then
@@ -258,8 +258,8 @@ Sub ResetNpcCounters(ByVal NpcIndex As Integer)
 102     NpcList(NpcIndex).Contadores.TiempoExistencia = 0
 104     NpcList(NpcIndex).Contadores.IntervaloMovimiento = 0
 106     NpcList(NpcIndex).Contadores.IntervaloAtaque = 0
-108     NpcList(NpcIndex).Contadores.InvervaloLanzarHechizo = 0
-110     NpcList(NpcIndex).Contadores.InvervaloRespawn = 0
+108     NpcList(NpcIndex).Contadores.IntervaloLanzarHechizo = 0
+110     NpcList(NpcIndex).Contadores.IntervaloRespawn = 0
 
         
         Exit Sub
@@ -1245,8 +1245,9 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
     
 182         .IntervaloAtaque = val(Leer.GetValue("NPC" & NpcNumber, "IntervaloAtaque"))
 184         .IntervaloMovimiento = val(Leer.GetValue("NPC" & NpcNumber, "IntervaloMovimiento"))
-186         .InvervaloLanzarHechizo = val(Leer.GetValue("NPC" & NpcNumber, "IntervaloLanzarHechizo"))
-188         .Contadores.InvervaloRespawn = val(Leer.GetValue("NPC" & NpcNumber, "InvervaloRespawn"))
+186         .IntervaloLanzarHechizo = val(Leer.GetValue("NPC" & NpcNumber, "IntervaloLanzarHechizo"))
+
+188         .Contadores.IntervaloRespawn = val(Leer.GetValue("NPC" & NpcNumber, "IntervaloRespawn"))
     
 190         .InformarRespawn = val(Leer.GetValue("NPC" & NpcNumber, "InformarRespawn"))
     
@@ -1261,8 +1262,8 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 202             .Char.speeding = 210 / .IntervaloMovimiento
             End If
     
-204         If .InvervaloLanzarHechizo = 0 Then
-206             .InvervaloLanzarHechizo = 8000
+204         If .IntervaloLanzarHechizo = 0 Then
+206             .IntervaloLanzarHechizo = 8000
     
             End If
     
