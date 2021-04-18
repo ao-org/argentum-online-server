@@ -35,7 +35,7 @@ Option Explicit
 'Rutinas de los usuarios
 '?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
 
-Sub ActStats(ByVal VictimIndex As Integer, ByVal attackerIndex As Integer)
+Sub ActStats(ByVal VictimIndex As Integer, ByVal AttackerIndex As Integer)
         
         On Error GoTo ActStats_Err
         
@@ -46,32 +46,32 @@ Sub ActStats(ByVal VictimIndex As Integer, ByVal attackerIndex As Integer)
     
 100     DaExp = CInt(UserList(VictimIndex).Stats.ELV * 2)
     
-102     If UserList(attackerIndex).Stats.ELV < STAT_MAXELV Then
-104         UserList(attackerIndex).Stats.Exp = UserList(attackerIndex).Stats.Exp + DaExp
+102     If UserList(AttackerIndex).Stats.ELV < STAT_MAXELV Then
+104         UserList(AttackerIndex).Stats.Exp = UserList(AttackerIndex).Stats.Exp + DaExp
 
-106         If UserList(attackerIndex).Stats.Exp > MAXEXP Then UserList(attackerIndex).Stats.Exp = MAXEXP
+106         If UserList(AttackerIndex).Stats.Exp > MAXEXP Then UserList(AttackerIndex).Stats.Exp = MAXEXP
 
-108         Call WriteUpdateExp(attackerIndex)
-110         Call CheckUserLevel(attackerIndex)
+108         Call WriteUpdateExp(AttackerIndex)
+110         Call CheckUserLevel(AttackerIndex)
 
         End If
     
         'Lo mata
         'Call WriteConsoleMsg(attackerIndex, "Has matado a " & UserList(VictimIndex).name & "!", FontTypeNames.FONTTYPE_FIGHT)
     
-112     Call WriteLocaleMsg(attackerIndex, "184", FontTypeNames.FONTTYPE_FIGHT, UserList(VictimIndex).name)
-114     Call WriteLocaleMsg(attackerIndex, "140", FontTypeNames.FONTTYPE_EXP, DaExp)
+112     Call WriteLocaleMsg(AttackerIndex, "184", FontTypeNames.FONTTYPE_FIGHT, UserList(VictimIndex).name)
+114     Call WriteLocaleMsg(AttackerIndex, "140", FontTypeNames.FONTTYPE_EXP, DaExp)
           
         'Call WriteConsoleMsg(VictimIndex, UserList(attackerIndex).name & " te ha matado!", FontTypeNames.FONTTYPE_FIGHT)
-116     Call WriteLocaleMsg(VictimIndex, "185", FontTypeNames.FONTTYPE_FIGHT, UserList(attackerIndex).name)
+116     Call WriteLocaleMsg(VictimIndex, "185", FontTypeNames.FONTTYPE_FIGHT, UserList(AttackerIndex).name)
     
-118     If TriggerZonaPelea(VictimIndex, attackerIndex) <> TRIGGER6_PERMITE Then
-120         EraCriminal = Status(attackerIndex)
+118     If TriggerZonaPelea(VictimIndex, AttackerIndex) <> TRIGGER6_PERMITE Then
+120         EraCriminal = Status(AttackerIndex)
         
-122         If EraCriminal = 2 And Status(attackerIndex) < 2 Then
-124             Call RefreshCharStatus(attackerIndex)
-126         ElseIf EraCriminal < 2 And Status(attackerIndex) = 2 Then
-128             Call RefreshCharStatus(attackerIndex)
+122         If EraCriminal = 2 And Status(AttackerIndex) < 2 Then
+124             Call RefreshCharStatus(AttackerIndex)
+126         ElseIf EraCriminal < 2 And Status(AttackerIndex) = 2 Then
+128             Call RefreshCharStatus(AttackerIndex)
 
             End If
 
@@ -79,8 +79,8 @@ Sub ActStats(ByVal VictimIndex As Integer, ByVal attackerIndex As Integer)
     
 130     Call UserDie(VictimIndex)
         
-136     If UserList(attackerIndex).Stats.UsuariosMatados < MAXUSERMATADOS Then
-            UserList(attackerIndex).Stats.UsuariosMatados = UserList(attackerIndex).Stats.UsuariosMatados + 1
+136     If UserList(AttackerIndex).Stats.UsuariosMatados < MAXUSERMATADOS Then
+            UserList(AttackerIndex).Stats.UsuariosMatados = UserList(AttackerIndex).Stats.UsuariosMatados + 1
         End If
         
         Exit Sub
@@ -1160,27 +1160,16 @@ DameUserIndexConNombre_Err:
 End Function
 
 Sub NPCAtacado(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
-        
         On Error GoTo NPCAtacado_Err
-        
-
-        '**********************************************
-        'Author: Unknown
-        'Last Modification: 24/07/2007
-        '24/01/2007 -> Pablo (ToxicWaste): Agrego para que se actualize el tag si corresponde.
-        '24/07/2007 -> Pablo (ToxicWaste): Guardar primero que ataca NPC y el que atacas ahora.
-        '**********************************************
         
         ' WyroX: El usuario pierde la protección
 100     UserList(UserIndex).Counters.TiempoDeInmunidad = 0
 102     UserList(UserIndex).flags.Inmunidad = 0
-        
-        Dim EraCriminal As Byte
 
         'Guardamos el usuario que ataco el npc.
 104     If NpcList(NpcIndex).Movement <> Estatico And NpcList(NpcIndex).flags.AttackedFirstBy = vbNullString Then
 106         NpcList(NpcIndex).Target = UserIndex
-108         NpcList(NpcIndex).Movement = TipoAI.NpcDefensa
+            NpcList(NpcIndex).Hostile = 1
 110         NpcList(NpcIndex).flags.AttackedBy = UserList(UserIndex).name
         End If
 
@@ -1191,48 +1180,12 @@ Sub NPCAtacado(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         'Guarda el NPC que estas atacando ahora.
 114     UserList(UserIndex).flags.NPCAtacado = NpcIndex
 
-        'Revisamos robo de npc.
-        'Guarda el primer nick que lo ataca.
-116     If NpcList(NpcIndex).flags.AttackedFirstBy = vbNullString Then
-
-            'El que le pegabas antes ya no es tuyo
-118         If LastNpcHit <> 0 Then
-120             If NpcList(LastNpcHit).flags.AttackedFirstBy = UserList(UserIndex).name Then
-122                 NpcList(LastNpcHit).flags.AttackedFirstBy = vbNullString
-
-                End If
-
-            End If
-
-124         NpcList(NpcIndex).flags.AttackedFirstBy = UserList(UserIndex).name
-126     ElseIf NpcList(NpcIndex).flags.AttackedFirstBy <> UserList(UserIndex).name Then
-
-            'Estas robando NPC
-            'El que le pegabas antes ya no es tuyo
-128         If LastNpcHit <> 0 Then
-130             If NpcList(LastNpcHit).flags.AttackedFirstBy = UserList(UserIndex).name Then
-132                 NpcList(LastNpcHit).flags.AttackedFirstBy = vbNullString
-
-                End If
-
-            End If
-
-        End If
-
-        '  EraCriminal = Status(UserIndex)
-
-134     If NpcList(NpcIndex).NPCtype = eNPCType.GuardiaReal Then
-136         If Status(UserIndex) = 1 Or Status(UserIndex) = 3 Then
-138             Call VolverCriminal(UserIndex)
-
-            End If
-
+134     If NpcList(NpcIndex).flags.Faccion = Armada And Status(UserIndex) = e_Facciones.Ciudadano Then
+            Call VolverCriminal(UserIndex)
         End If
         
-140     If NpcList(NpcIndex).MaestroUser > 0 Then
-142         If NpcList(NpcIndex).MaestroUser <> UserIndex Then
-144             Call AllMascotasAtacanUser(UserIndex, NpcList(NpcIndex).MaestroUser)
-            End If
+140     If NpcList(NpcIndex).MaestroUser > 0 And NpcList(NpcIndex).MaestroUser <> UserIndex Then
+144         Call AllMascotasAtacanUser(UserIndex, NpcList(NpcIndex).MaestroUser)
         End If
 
 146     Call AllMascotasAtacanNPC(NpcIndex, UserIndex)
