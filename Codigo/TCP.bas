@@ -872,8 +872,8 @@ Function EntrarCuenta(ByVal UserIndex As Integer, CuentaEmail As String, CuentaP
 112         Call WriteShowMessageBox(UserIndex, "Su cuenta se encuentra bajo tolerancia 0. Tiene prohibido el acceso. Cod: #0002")
             Exit Function
         End If
-        
-        If Md5Cliente <> vbNullString And Md5Cliente <> MD5 Then
+
+        If Md5Cliente <> vbNullString And LCase$(Md5Cliente) <> LCase$(MD5) Then
             Call WriteShowMessageBox(UserIndex, "Error al comprobar el cliente del juego, por favor reinstale y vuelva a intentar.")
             Exit Function
         End If
