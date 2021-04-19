@@ -621,7 +621,11 @@ Private Function EsObjetivoValido(ByVal NpcIndex As Integer, ByVal UserIndex As 
 End Function
 
 Private Function EsEnemigo(ByVal NpcIndex As Integer, ByVal UserIndex As Integer) As Boolean
-    
+
+    ' Hardcodeo de Emancu: Arreglando el movimiento cuando esta muerto.
+    ' Lo arreglo asi rapido, porque quiero reescribir la definicion de estas funciones auxiliares.
+    If UserList(UserIndex).flags.Muerto = 1 Then Exit Function
+
     With NpcList(NpcIndex)
     
         If .flags.AttackedBy <> vbNullString Then
