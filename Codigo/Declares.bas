@@ -1744,6 +1744,21 @@ Public Type tRecompensaFaccion
 End Type
 
 
+Public Type tCOmercioUsuario
+    
+    ItemsAEnviar(1 To 5) As obj
+    DestUsu As Integer 'El otro Usuario
+    DestNick As String
+    Objeto As Integer 'Indice del inventario a comerciar, que objeto desea dar
+    Oro As Long
+    'El tipo de datos de Cant ahora es Long (antes Integer)
+    'asi se puede comerciar con oro > 32k
+    '[CORREGIDO]
+    cant As Long 'Cuantos comerciar, cuantos objetos desea dar
+    '[/CORREGIDO]
+    Acepto As Boolean
+
+End Type
 'Tipo de los Usuarios
 Public Type user
 
