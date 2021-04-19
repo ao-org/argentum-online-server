@@ -554,17 +554,26 @@ Private Sub NpcLanzaUnSpell(ByVal NpcIndex As Integer)
         End If
 
       Case TargetType.uNPC
-        Call NpcLanzaSpellSobreNpc(NpcIndex, NpcIndex, SpellIndex)
+        If Hechizos(SpellIndex).AutoLanzar = 1 Then
+          Call NpcLanzaSpellSobreNpc(NpcIndex, NpcIndex, SpellIndex)
+
+        ElseIf NpcList(NpcIndex).TargetNPC > 0 Then
+          Call NpcLanzaSpellSobreNpc(NpcIndex, NpcList(NpcIndex).TargetNPC, SpellIndex)
+        End If
 
       Case TargetType.uUsuariosYnpc
-        If UsuarioAtacable(Target) And UserList(Target).flags.NoMagiaEfeceto = 0 Then
+        If Hechizos(SpellIndex).AutoLanzar = 1 Then
+          Call NpcLanzaSpellSobreNpc(NpcIndex, NpcIndex, SpellIndex)
+
+        ElseIf UsuarioAtacable(Target) And UserList(Target).flags.NoMagiaEfeceto = 0 Then
           Call NpcLanzaSpellSobreUser(NpcIndex, Target, SpellIndex)
 
           If UserList(Target).flags.AtacadoPorNpc = 0 Then
             UserList(Target).flags.AtacadoPorNpc = NpcIndex
           End If
-        Else
-          Call NpcLanzaSpellSobreNpc(NpcIndex, NpcIndex, SpellIndex)
+
+        ElseIf NpcList(NpcIndex).TargetNPC > 0 Then
+          Call NpcLanzaSpellSobreNpc(NpcIndex, NpcList(NpcIndex).TargetNPC, SpellIndex)
 
         End If
 
