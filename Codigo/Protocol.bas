@@ -5568,11 +5568,11 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
                 End If
             
                 'Prevent offer changes (otherwise people would ripp off other players)
-140             If .ComUsu.Objeto > 0 Then
-142                 Call WriteConsoleMsg(UserIndex, "No podés cambiar tu oferta.", FontTypeNames.FONTTYPE_TALK)
-                    Exit Sub
+140             'If .ComUsu.Objeto > 0 Then
+142            '     Call WriteConsoleMsg(UserIndex, "No podés cambiar tu oferta.", FontTypeNames.FONTTYPE_TALK)
+               '     Exit Sub
 
-                End If
+              '  End If
             
                 'Don't allow to sell boats if they are equipped (you can't take them off in the water and causes trouble)
 144             If .flags.Navegando = 1 Then
@@ -5603,7 +5603,13 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
 
                 End If
             
-166             Call EnviarObjetoTransaccion(tUser)
+                Dim ObjAEnviar As obj
+                
+                ObjAEnviar.amount = amount
+                'Si no es oro tmb le agrego el objInex
+                If slot <> 200 Then ObjAEnviar.ObjIndex = UserList(UserIndex).Invent.Object(slot).ObjIndex
+                'Llamos a la funcion
+                Call EnviarObjetoTransaccion(tUser, UserIndex, ObjAEnviar)
 
             End If
 
@@ -23210,7 +23216,7 @@ End Sub
 ' @param    Amount The number of objects offered.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Sub WriteChangeUserTradeSlot(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal Amount As Long)
+Public Sub WriteChangeUserTradeSlot(ByVal UserIndex As Integer, ByRef itemsAenviar() As obj, ByVal gold As Long, ByVal miOferta As Boolean)
 
         '***************************************************
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -23220,18 +23226,28 @@ Public Sub WriteChangeUserTradeSlot(ByVal UserIndex As Integer, ByVal ObjIndex A
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex).outgoingData
-102         Call .WriteByte(ServerPacketID.ChangeUserTradeSlot)
-        
-104         Call .WriteInteger(ObjIndex)
-106         Call .WriteASCIIString(ObjData(ObjIndex).name)
-108         Call .WriteLong(Amount)
-110         Call .WriteLong(ObjData(ObjIndex).GrhIndex)
-112         Call .WriteByte(ObjData(ObjIndex).OBJType)
-114         Call .WriteInteger(ObjData(ObjIndex).MaxHit)
-116         Call .WriteInteger(ObjData(ObjIndex).MinHIT)
-118         Call .WriteInteger(ObjData(ObjIndex).def)
-120         Call .WriteLong(SalePrice(ObjIndex))
 
+            Call .WriteByte(ServerPacketID.ChangeUserTradeSlot)
+            Call .WriteBoolean(miOferta)
+            Call .WriteLong(gold)
+            
+            Dim i As Byte
+            For i = 1 To UBound(itemsAenviar)
+                Call .WriteInteger(itemsAenviar(i).ObjIndex)
+                If itemsAenviar(i).ObjIndex = 0 Then
+                    Call .WriteASCIIString("")
+                Else
+                    Call .WriteASCIIString(ObjData(itemsAenviar(i).ObjIndex).name)
+                End If
+                
+                If itemsAenviar(i).ObjIndex = 0 Then
+                    Call .WriteLong(0)
+                Else
+                    Call .WriteLong(ObjData(itemsAenviar(i).ObjIndex).GrhIndex)
+                End If
+                
+                Call .WriteLong(itemsAenviar(i).amount)
+            Next i
         End With
 
         Exit Sub
