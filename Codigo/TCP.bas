@@ -855,12 +855,25 @@ Function EntrarCuenta(ByVal UserIndex As Integer, CuentaEmail As String, CuentaP
         
         On Error GoTo EntrarCuenta_Err
         
+        Dim adminIdx As Long
+        Dim laCuentaEsDeAdmin As Boolean
+        
+        
 100     If ServerSoloGMs > 0 Then
-            ' Si el e-mail está declarado junto al nick de la cuenta donde esta el PJ GM en el Server.ini te dejo entrar.
-102         If Not AdministratorAccounts.Exists(UCase$(CuentaEmail)) Then
-104             Call WriteShowMessageBox(UserIndex, "El servidor se encuentra habilitado solo para administradores por el momento.")
+            laCuentaEsDeAdmin = False
+            
+            For adminIdx = 1 To AdministratorAccounts.Count
+                ' Si el e-mail está declarado junto al nick de la cuenta donde esta el PJ GM en el Server.ini te dejo entrar.
+                If UCase$(AdministratorAccounts.Items(adminIdx)) = UCase$(CuentaEmail) Then
+                    laCuentaEsDeAdmin = True
+                End If
+            Next adminIdx
+            
+            If Not laCuentaEsDeAdmin Then
+                Call WriteShowMessageBox(UserIndex, "El servidor se encuentra habilitado solo para administradores por el momento.")
                 Exit Function
             End If
+
         End If
 
 106     If CheckMAC(MacAddress) Then

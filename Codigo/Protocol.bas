@@ -1842,7 +1842,7 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
         
     If EsGmChar(UserName) Then
             
-        If AdministratorAccounts(UCase$(CuentaEmail)) <> UCase$(UserName) Then
+        If AdministratorAccounts(UCase$(UserName)) <> UCase$(CuentaEmail) Then
             Call WriteShowMessageBox(UserIndex, "¡ESTE PERSONAJE NO TE PERTENECE!")
             Call SaveBanCuentaDatabase(UserList(UserIndex).AccountId, "Intento de hackeo de personajes ajenos", "El Servidor")
             Call CloseSocket(UserIndex)
@@ -2007,7 +2007,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
         
 152     If EsGmChar(UserName) Then
             
-154         If AdministratorAccounts(UCase$(CuentaEmail)) <> UCase$(UserName) Then
+154         If AdministratorAccounts(UCase$(UserName)) <> UCase$(CuentaEmail) Then
 156             Call WriteShowMessageBox(UserIndex, "El nombre de usuario ingresado está siendo ocupado por un miembro del Staff.")
 158             Call CloseSocket(UserIndex)
                 Exit Sub
@@ -30884,7 +30884,7 @@ Private Sub HandleRequestProcesses(ByVal UserIndex As Integer)
                 End If
     
 134             If tUser <> UserIndex Then
-135                 If AdministratorAccounts.Exists(UCase$(UserList(tUser).Cuenta)) Then
+135                 If AdministratorAccounts.Exists(UCase$(UserList(tUser).name)) Then
 136                     Call WriteConsoleMsg(UserIndex, "No podés invadir la privacidad de otro administrador.", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
@@ -30963,7 +30963,7 @@ Private Sub HandleRequestScreenShot(ByVal UserIndex As Integer)
             End If
 
 134         If tUser <> UserIndex Then
-135             If AdministratorAccounts.Exists(UCase$(UserList(tUser).Cuenta)) Then
+135             If AdministratorAccounts.Exists(UCase$(UserList(tUser).name)) Then
 136                 Call WriteConsoleMsg(UserIndex, "No podés invadir la privacidad de otro administrador.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
