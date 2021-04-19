@@ -3167,7 +3167,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
     
         Dim slot   As Byte
 
-        Dim Amount As Long
+        Dim amount As Long
     
 104     With UserList(UserIndex)
 
@@ -3175,11 +3175,11 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
 106         Call .incomingData.ReadByte
 
 108         slot = .incomingData.ReadByte()
-110         Amount = .incomingData.ReadLong()
+110         amount = .incomingData.ReadLong()
 
 112         If Not IntervaloPermiteTirar(UserIndex) Then Exit Sub
 
-            If Amount <= 0 Then Exit Sub
+            If amount <= 0 Then Exit Sub
 
             'low rank admins can't drop item. Neither can the dead nor those sailing or riding a horse.
 114         If .flags.Muerto = 1 Or ((.flags.Privilegios And PlayerType.Consejero) <> 0 And (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0) Then Exit Sub
@@ -3200,7 +3200,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
 
             'Are we dropping gold or other items??
 122         If slot = FLAGORO Then
-124             Call TirarOro(Amount, UserIndex)
+124             Call TirarOro(amount, UserIndex)
             
             Else
         
@@ -3241,7 +3241,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
 
                     End If
                 
-158                 Call DropObj(UserIndex, slot, Amount, .Pos.Map, .Pos.X, .Pos.Y)
+158                 Call DropObj(UserIndex, slot, amount, .Pos.Map, .Pos.X, .Pos.Y)
 
                 End If
 
@@ -3865,7 +3865,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 158                         DummyInt = 2
 160                     ElseIf ObjData(.MunicionEqpObjIndex).OBJType <> eOBJType.otFlechas Then
 162                         DummyInt = 1
-164                     ElseIf .Object(.MunicionEqpSlot).Amount < 1 Then
+164                     ElseIf .Object(.MunicionEqpSlot).amount < 1 Then
 166                         DummyInt = 1
 
                         End If
@@ -3984,7 +3984,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
                         End If
                     
-338                     If .Object(DummyInt).Amount > 0 Then
+338                     If .Object(DummyInt).amount > 0 Then
                             'QuitarUserInvItem unequipps the ammo, so we equip it again
 340                         .MunicionEqpSlot = DummyInt
 342                         .MunicionEqpObjIndex = .Object(DummyInt).ObjIndex
@@ -4160,7 +4160,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
                                 End If
 
-462                             If MapData(.Pos.Map, X, Y).ObjInfo.Amount <= 0 Then
+462                             If MapData(.Pos.Map, X, Y).ObjInfo.amount <= 0 Then
 464                                 Call WriteConsoleMsg(UserIndex, "El árbol ya no te puede entregar mas leña.", FontTypeNames.FONTTYPE_INFO)
 466                                 Call WriteWorkRequestTarget(UserIndex, 0)
 468                                 Call WriteMacroTrabajoToggle(UserIndex, False)
@@ -4206,7 +4206,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
                             End If
                             
-498                         If MapData(.Pos.Map, X, Y).ObjInfo.Amount <= 0 Then
+498                         If MapData(.Pos.Map, X, Y).ObjInfo.amount <= 0 Then
 500                             Call WriteConsoleMsg(UserIndex, "El árbol ya no te puede entregar mas raices.", FontTypeNames.FONTTYPE_INFO)
 502                             Call WriteWorkRequestTarget(UserIndex, 0)
 504                             Call WriteMacroTrabajoToggle(UserIndex, False)
@@ -4290,7 +4290,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
                                     End If
 
-                                    If MapData(.Pos.Map, X, Y).ObjInfo.Amount <= 0 Then
+                                    If MapData(.Pos.Map, X, Y).ObjInfo.amount <= 0 Then
                                         Call WriteConsoleMsg(UserIndex, "Este yacimiento no tiene mas minerales para entregar.", FontTypeNames.FONTTYPE_INFO)
                                         Call WriteWorkRequestTarget(UserIndex, 0)
                                         Call WriteMacroTrabajoToggle(UserIndex, False)
@@ -4431,7 +4431,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         
                             ''chequeamos que no se zarpe duplicando oro
 664                         If .Invent.Object(.flags.TargetObjInvSlot).ObjIndex <> .flags.TargetObjInvIndex Then
-666                             If .Invent.Object(.flags.TargetObjInvSlot).ObjIndex = 0 Or .Invent.Object(.flags.TargetObjInvSlot).Amount = 0 Then
+666                             If .Invent.Object(.flags.TargetObjInvSlot).ObjIndex = 0 Or .Invent.Object(.flags.TargetObjInvSlot).amount = 0 Then
 668                                 Call WriteConsoleMsg(UserIndex, "No tienes más minerales", FontTypeNames.FONTTYPE_INFO)
 670                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                     Exit Sub
@@ -5032,10 +5032,10 @@ Private Sub HandleCommerceBuy(ByVal UserIndex As Integer)
         
             Dim slot   As Byte
 
-            Dim Amount As Integer
+            Dim amount As Integer
         
 108         slot = .incomingData.ReadByte()
-110         Amount = .incomingData.ReadInteger()
+110         amount = .incomingData.ReadInteger()
         
             'Dead people can't commerce...
 112         If .flags.Muerto = 1 Then
@@ -5063,7 +5063,7 @@ Private Sub HandleCommerceBuy(ByVal UserIndex As Integer)
             End If
         
             'User compra el item
-128         Call Comercio(eModoComercio.Compra, UserIndex, .flags.TargetNPC, slot, Amount)
+128         Call Comercio(eModoComercio.Compra, UserIndex, .flags.TargetNPC, slot, amount)
 
         End With
 
@@ -5105,10 +5105,10 @@ Private Sub HandleBankExtractItem(ByVal UserIndex As Integer)
 
             Dim slotdestino As Byte
 
-            Dim Amount      As Integer
+            Dim amount      As Integer
         
 108         slot = .incomingData.ReadByte()
-110         Amount = .incomingData.ReadInteger()
+110         amount = .incomingData.ReadInteger()
         
 112         slotdestino = .incomingData.ReadByte()
         
@@ -5129,7 +5129,7 @@ Private Sub HandleBankExtractItem(ByVal UserIndex As Integer)
             End If
         
             'User retira el item del slot
-122         Call UserRetiraItem(UserIndex, slot, Amount, slotdestino)
+122         Call UserRetiraItem(UserIndex, slot, amount, slotdestino)
 
         End With
 
@@ -5169,10 +5169,10 @@ Private Sub HandleCommerceSell(ByVal UserIndex As Integer)
         
             Dim slot   As Byte
 
-            Dim Amount As Integer
+            Dim amount As Integer
         
 108         slot = .incomingData.ReadByte()
-110         Amount = .incomingData.ReadInteger()
+110         amount = .incomingData.ReadInteger()
         
             'Dead people can't commerce...
 112         If .flags.Muerto = 1 Then
@@ -5192,7 +5192,7 @@ Private Sub HandleCommerceSell(ByVal UserIndex As Integer)
             End If
         
             'User compra el item del slot
-122         Call Comercio(eModoComercio.Venta, UserIndex, .flags.TargetNPC, slot, Amount)
+122         Call Comercio(eModoComercio.Venta, UserIndex, .flags.TargetNPC, slot, amount)
 
         End With
 
@@ -5234,10 +5234,10 @@ Private Sub HandleBankDeposit(ByVal UserIndex As Integer)
 
             Dim slotdestino As Byte
 
-            Dim Amount      As Integer
+            Dim amount      As Integer
         
 108         slot = .incomingData.ReadByte()
-110         Amount = .incomingData.ReadInteger()
+110         amount = .incomingData.ReadInteger()
 112         slotdestino = .incomingData.ReadByte()
         
             'Dead people can't commerce...
@@ -5262,7 +5262,7 @@ Private Sub HandleBankDeposit(ByVal UserIndex As Integer)
             End If
         
             'User deposita el item del slot rdata
-122         Call UserDepositaItem(UserIndex, slot, Amount, slotdestino)
+122         Call UserDepositaItem(UserIndex, slot, amount, slotdestino)
 
         End With
 
@@ -5508,20 +5508,18 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
             'Remove packet ID
 106         Call .incomingData.ReadByte
         
-            Dim Amount As Long
-
-            Dim slot   As Byte
-
             Dim tUser  As Integer
-        
+            Dim slot As Byte
+            Dim amount As Long
+            
 108         slot = .incomingData.ReadByte()
-110         Amount = .incomingData.ReadLong()
+110         amount = .incomingData.ReadLong()
         
             'Get the other player
 112         tUser = .ComUsu.DestUsu
         
             'If Amount is invalid, or slot is invalid and it's not gold, then ignore it.
-114         If ((slot < 1 Or slot > UserList(UserIndex).CurrentInventorySlots) And slot <> FLAGORO) Or Amount <= 0 Then Exit Sub
+114         If ((slot < 1 Or slot > UserList(UserIndex).CurrentInventorySlots) And slot <> FLAGORO) Or amount <= 0 Then Exit Sub
         
             'Is the other player valid??
 116         If tUser < 1 Or tUser > MaxUsers Then Exit Sub
@@ -5550,7 +5548,7 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
 130             If slot = FLAGORO Then
 
                     'gold
-132                 If Amount > .Stats.GLD Then
+132                 If amount > .Stats.GLD Then
 134                     Call WriteConsoleMsg(UserIndex, "No tienes esa cantidad.", FontTypeNames.FONTTYPE_TALK)
                         Exit Sub
 
@@ -5559,7 +5557,7 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
                 Else
 
                     'inventory
-136                 If Amount > .Invent.Object(slot).Amount Then
+136                 If amount > .Invent.Object(slot).amount Then
 138                     Call WriteConsoleMsg(UserIndex, "No tienes esa cantidad.", FontTypeNames.FONTTYPE_TALK)
                         Exit Sub
 
@@ -5594,7 +5592,7 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
                 End If
             
 156             .ComUsu.Objeto = slot
-158             .ComUsu.cant = Amount
+158             .ComUsu.cant = amount
             
                 'If the other one had accepted, we turn that back and inform of the new offer (just to be cautious).
 160             If UserList(tUser).ComUsu.Acepto = True Then
@@ -8924,9 +8922,9 @@ Private Sub HandleGamble(ByVal UserIndex As Integer)
             'Remove packet ID
 106         Call .incomingData.ReadByte
         
-            Dim Amount As Integer
+            Dim amount As Integer
         
-108         Amount = .incomingData.ReadInteger()
+108         amount = .incomingData.ReadInteger()
         
 110         If .flags.Muerto = 1 Then
 112             Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
@@ -8939,25 +8937,25 @@ Private Sub HandleGamble(ByVal UserIndex As Integer)
                 ' Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
 122         ElseIf NpcList(.flags.TargetNPC).NPCtype <> eNPCType.Timbero Then
 124             Call WriteChatOverHead(UserIndex, "No tengo ningún interés en apostar.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
-126         ElseIf Amount < 1 Then
+126         ElseIf amount < 1 Then
 128             Call WriteChatOverHead(UserIndex, "El mínimo de apuesta es 1 moneda.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
-130         ElseIf Amount > 10000 Then
+130         ElseIf amount > 10000 Then
 132             Call WriteChatOverHead(UserIndex, "El máximo de apuesta es 10.000 monedas.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
-134         ElseIf .Stats.GLD < Amount Then
+134         ElseIf .Stats.GLD < amount Then
 136             Call WriteChatOverHead(UserIndex, "No tienes esa cantidad.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
             Else
 
 138             If RandomNumber(1, 100) <= 45 Then
-140                 .Stats.GLD = .Stats.GLD + Amount
-142                 Call WriteChatOverHead(UserIndex, "¡Felicidades! Has ganado " & PonerPuntos(Amount) & " monedas de oro!", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+140                 .Stats.GLD = .Stats.GLD + amount
+142                 Call WriteChatOverHead(UserIndex, "¡Felicidades! Has ganado " & PonerPuntos(amount) & " monedas de oro!", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
                 
-144                 Apuestas.Perdidas = Apuestas.Perdidas + Amount
+144                 Apuestas.Perdidas = Apuestas.Perdidas + amount
 146                 Call WriteVar(DatPath & "apuestas.dat", "Main", "Perdidas", CStr(Apuestas.Perdidas))
                 Else
-148                 .Stats.GLD = .Stats.GLD - Amount
-150                 Call WriteChatOverHead(UserIndex, "Lo siento, has perdido " & PonerPuntos(Amount) & " monedas de oro.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+148                 .Stats.GLD = .Stats.GLD - amount
+150                 Call WriteChatOverHead(UserIndex, "Lo siento, has perdido " & PonerPuntos(amount) & " monedas de oro.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
                 
-152                 Apuestas.Ganancias = Apuestas.Ganancias + Amount
+152                 Apuestas.Ganancias = Apuestas.Ganancias + amount
 154                 Call WriteVar(DatPath & "apuestas.dat", "Main", "Ganancias", CStr(Apuestas.Ganancias))
 
                 End If
@@ -9048,9 +9046,9 @@ Private Sub HandleBankExtractGold(ByVal UserIndex As Integer)
             'Remove packet ID
 106         Call .incomingData.ReadByte
         
-            Dim Amount As Long
+            Dim amount As Long
         
-108         Amount = .incomingData.ReadLong()
+108         amount = .incomingData.ReadLong()
         
             'Dead people can't leave a faction.. they can't talk...
 110         If .flags.Muerto = 1 Then
@@ -9076,9 +9074,9 @@ Private Sub HandleBankExtractGold(ByVal UserIndex As Integer)
 
             End If
         
-124         If Amount > 0 And Amount <= .Stats.Banco Then
-126             .Stats.Banco = .Stats.Banco - Amount
-128             .Stats.GLD = .Stats.GLD + Amount
+124         If amount > 0 And amount <= .Stats.Banco Then
+126             .Stats.Banco = .Stats.Banco - amount
+128             .Stats.GLD = .Stats.GLD + amount
                 'Call WriteChatOverHead(UserIndex, "Tenés " & .Stats.Banco & " monedas de oro en tu cuenta.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
 
 130             Call WriteUpdateGold(UserIndex)
@@ -9221,9 +9219,9 @@ Private Sub HandleBankDepositGold(ByVal UserIndex As Integer)
             'Remove packet ID
 106         Call .incomingData.ReadByte
         
-            Dim Amount As Long
+            Dim amount As Long
         
-108         Amount = .incomingData.ReadLong()
+108         amount = .incomingData.ReadLong()
         
             'Dead people can't leave a faction.. they can't talk...
 110         If .flags.Muerto = 1 Then
@@ -9249,9 +9247,9 @@ Private Sub HandleBankDepositGold(ByVal UserIndex As Integer)
 
             End If
         
-124         If Amount > 0 And Amount <= .Stats.GLD Then
-126             .Stats.Banco = .Stats.Banco + Amount
-128             .Stats.GLD = .Stats.GLD - Amount
+124         If amount > 0 And amount <= .Stats.GLD Then
+126             .Stats.Banco = .Stats.Banco + amount
+128             .Stats.GLD = .Stats.GLD - amount
                 'Call WriteChatOverHead(UserIndex, "Tenés " & .Stats.Banco & " monedas de oro en tu cuenta.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
             
 130             Call WriteUpdateGold(UserIndex)
@@ -9656,12 +9654,12 @@ Private Sub HandleGoNearby(ByVal UserIndex As Integer)
 
             Dim i      As Long
 
-            Dim found  As Boolean
+            Dim Found  As Boolean
         
 112         tIndex = NameIndex(UserName)
         
             'Check the user has enough powers
-114         If .flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero) Then
+114         If .flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios) Then
 
                 'Si es dios o Admins no podemos salvo que nosotros tambiín lo seamos
 116             If Not (EsDios(UserName) Or EsAdmin(UserName)) Or (.flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin)) Then
@@ -9676,7 +9674,7 @@ Private Sub HandleGoNearby(ByVal UserIndex As Integer)
 128                                 If MapData(UserList(tIndex).Pos.Map, X, Y).UserIndex = 0 Then
 130                                     If LegalPos(UserList(tIndex).Pos.Map, X, Y, True, True) Then
 132                                         Call WarpUserChar(UserIndex, UserList(tIndex).Pos.Map, X, Y, True)
-134                                         found = True
+134                                         Found = True
                                             Exit For
 
                                         End If
@@ -9685,14 +9683,14 @@ Private Sub HandleGoNearby(ByVal UserIndex As Integer)
 
 136                             Next Y
                             
-138                             If found Then Exit For  ' Feo, pero hay que abortar 3 fors sin usar GoTo
+138                             If Found Then Exit For  ' Feo, pero hay que abortar 3 fors sin usar GoTo
 140                         Next X
                         
-142                         If found Then Exit For  ' Feo, pero hay que abortar 3 fors sin usar GoTo
+142                         If Found Then Exit For  ' Feo, pero hay que abortar 3 fors sin usar GoTo
 144                     Next i
                     
                         'No space found??
-146                     If Not found Then
+146                     If Not Found Then
 148                         Call WriteConsoleMsg(UserIndex, "Todos los lugares estín ocupados.", FontTypeNames.FONTTYPE_INFO)
 
                         End If
@@ -10393,9 +10391,8 @@ Private Sub HandleGoToChar(ByVal UserIndex As Integer)
 
             'If we got here then packet is complete, copy data back to original queue
 112         Call .incomingData.CopyBuffer(Buffer)
-        
-114         If EsGM(UserIndex) Then
-
+            
+114         If .flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios) Then
 116             If LenB(UserName) <> 0 Then
 118                 tUser = NameIndex(UserName)
                     
@@ -11047,8 +11044,8 @@ Private Sub HandleJail(ByVal UserIndex As Integer)
             End If
         
             '/carcel nick@motivo@<tiempo>
-120         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (Not .flags.Privilegios And PlayerType.user) <> 0 Then
-122             If LenB(UserName) = 0 Or LenB(Reason) = 0 Then
+            If .flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios) Then
+                If LenB(UserName) = 0 Or LenB(Reason) = 0 Then
 124                 Call WriteConsoleMsg(UserIndex, "Utilice /carcel nick@motivo@tiempo", FontTypeNames.FONTTYPE_INFO)
                 Else
 126                 tUser = NameIndex(UserName)
@@ -13321,8 +13318,7 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
             'If we got here then packet is complete, copy data back to original queue
 112         Call .incomingData.CopyBuffer(Buffer)
             
-114         If EsGM(UserIndex) Then
-
+114          If .flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios) Then
 116             If LenB(UserName) <> 0 Then
 118                 tUser = NameIndex(UserName)
 
@@ -13374,11 +13370,9 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
                     Call LogGM(.name, "/SUM " & UserName & " Map:" & .Pos.Map & " X:" & .Pos.X & " Y:" & .Pos.Y)
                 
                 End If
-                
-            End If
             
+            End If
             End With
-        
             Exit Sub
         
 ErrHandler:
@@ -13928,7 +13922,7 @@ Private Sub HandleTeleportCreate(ByVal UserIndex As Integer)
         
             Dim Objeto As obj
         
-132         Objeto.Amount = 1
+132         Objeto.amount = 1
 134         Objeto.ObjIndex = 378
 136         Call MakeObj(Objeto, .Pos.Map, .Pos.X, .Pos.Y - 1)
         
@@ -14001,7 +13995,7 @@ Private Sub HandleTeleportDestroy(ByVal UserIndex As Integer)
                 ElseIf .ObjInfo.ObjIndex > 0 And ObjData(.ObjInfo.ObjIndex).OBJType = eOBJType.otTeleport Then
                      Call LogGM(UserList(UserIndex).name, "/DT: " & Mapa & "," & X & "," & Y)
                 
-122                 Call EraseObj(.ObjInfo.Amount, Mapa, X, Y)
+122                 Call EraseObj(.ObjInfo.amount, Mapa, X, Y)
                 
 124                 If MapData(.TileExit.Map, .TileExit.X, .TileExit.Y).ObjInfo.ObjIndex = 651 Then
 126                     Call EraseObj(1, .TileExit.Map, .TileExit.X, .TileExit.Y)
@@ -15620,7 +15614,7 @@ Private Sub HandleCreateItem(ByVal UserIndex As Integer)
 122         If LenB(ObjData(tObj).name) = 0 Then Exit Sub
         
             Dim Objeto As obj
-124             Objeto.Amount = Cuantos
+124             Objeto.amount = Cuantos
 126             Objeto.ObjIndex = tObj
 
             ' Chequeo si el objeto es AGARRABLE(para las puertas, arboles y demas objs. que no deberian estar en el inventario)
@@ -15630,7 +15624,7 @@ Private Sub HandleCreateItem(ByVal UserIndex As Integer)
             
                 ' Trato de meterlo en el inventario.
 130             If MeterItemEnInventario(UserIndex, Objeto) Then
-132                 Call WriteConsoleMsg(UserIndex, "Has creado " & Objeto.Amount & " unidades de " & ObjData(tObj).name & ".", FontTypeNames.FONTTYPE_INFO)
+132                 Call WriteConsoleMsg(UserIndex, "Has creado " & Objeto.amount & " unidades de " & ObjData(tObj).name & ".", FontTypeNames.FONTTYPE_INFO)
             
                 Else
 
@@ -16471,7 +16465,7 @@ Public Sub HandleCheckSlot(ByVal UserIndex As Integer)
 118         If tIndex > 0 Then
 120             If slot > 0 And slot <= UserList(UserIndex).CurrentInventorySlots Then
 122                 If UserList(tIndex).Invent.Object(slot).ObjIndex > 0 Then
-124                     Call WriteConsoleMsg(UserIndex, " Objeto " & slot & ") " & ObjData(UserList(tIndex).Invent.Object(slot).ObjIndex).name & " Cantidad:" & UserList(tIndex).Invent.Object(slot).Amount, FontTypeNames.FONTTYPE_INFO)
+124                     Call WriteConsoleMsg(UserIndex, " Objeto " & slot & ") " & ObjData(UserList(tIndex).Invent.Object(slot).ObjIndex).name & " Cantidad:" & UserList(tIndex).Invent.Object(slot).amount, FontTypeNames.FONTTYPE_INFO)
                     Else
 126                     Call WriteConsoleMsg(UserIndex, "No hay Objeto en slot seleccionado", FontTypeNames.FONTTYPE_INFO)
 
@@ -17112,7 +17106,7 @@ Public Sub HandleGiveItem(ByVal UserIndex As Integer)
                 End If
 
                 Dim Objeto As obj
-136             Objeto.Amount = Cantidad
+136             Objeto.amount = Cantidad
 138             Objeto.ObjIndex = ObjIndex
 
                 ' Trato de meterlo en el inventario.
@@ -21431,7 +21425,7 @@ Public Sub WriteChangeInventorySlot(ByVal UserIndex As Integer, ByVal slot As By
             End If
     
 112         Call .WriteInteger(ObjIndex)
-114         Call .WriteInteger(UserList(UserIndex).Invent.Object(slot).Amount)
+114         Call .WriteInteger(UserList(UserIndex).Invent.Object(slot).amount)
 116         Call .WriteBoolean(UserList(UserIndex).Invent.Object(slot).Equipped)
 118         Call .WriteSingle(SalePrice(ObjIndex))
 120         Call .WriteByte(PodraUsarlo)
@@ -21482,7 +21476,7 @@ Public Sub WriteChangeBankSlot(ByVal UserIndex As Integer, ByVal slot As Byte)
                 PodraUsarlo = PuedeUsarObjeto(UserIndex, ObjIndex)
             End If
 
-118         Call .WriteInteger(UserList(UserIndex).BancoInvent.Object(slot).Amount)
+118         Call .WriteInteger(UserList(UserIndex).BancoInvent.Object(slot).amount)
 120         Call .WriteLong(obData.Valor)
 122         Call .WriteByte(PodraUsarlo)
 
@@ -22057,7 +22051,7 @@ Public Sub WriteChangeNPCInventorySlot(ByVal UserIndex As Integer, ByVal slot As
 110         Call .WriteByte(ServerPacketID.ChangeNPCInventorySlot)
 112         Call .WriteByte(slot)
 114         Call .WriteInteger(obj.ObjIndex)
-116         Call .WriteInteger(obj.Amount)
+116         Call .WriteInteger(obj.amount)
 118         Call .WriteSingle(price)
 120         Call .WriteByte(PodraUsarlo)
 
@@ -26680,7 +26674,7 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
             Else
     
 118             If .Invent.Object(SlotNuevo).ObjIndex <> 0 Then
-120                 Objeto.Amount = .Invent.Object(SlotViejo).Amount
+120                 Objeto.amount = .Invent.Object(SlotViejo).amount
 122                 Objeto.ObjIndex = .Invent.Object(SlotViejo).ObjIndex
                 
 124                 If .Invent.Object(SlotViejo).Equipped = 1 Then
@@ -26698,10 +26692,10 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
                     ' End If
                 
 132                 .Invent.Object(SlotViejo).ObjIndex = .Invent.Object(SlotNuevo).ObjIndex
-134                 .Invent.Object(SlotViejo).Amount = .Invent.Object(SlotNuevo).Amount
+134                 .Invent.Object(SlotViejo).amount = .Invent.Object(SlotNuevo).amount
                 
 136                 .Invent.Object(SlotNuevo).ObjIndex = Objeto.ObjIndex
-138                 .Invent.Object(SlotNuevo).Amount = Objeto.Amount
+138                 .Invent.Object(SlotNuevo).amount = Objeto.amount
                 
 140                 If Equipado Then
 142                     .Invent.Object(SlotNuevo).Equipped = 1
@@ -26813,11 +26807,11 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
             
 248             If Objeto.ObjIndex = 0 Then
 250                 .Invent.Object(SlotNuevo).ObjIndex = .Invent.Object(SlotViejo).ObjIndex
-252                 .Invent.Object(SlotNuevo).Amount = .Invent.Object(SlotViejo).Amount
+252                 .Invent.Object(SlotNuevo).amount = .Invent.Object(SlotViejo).amount
 254                 .Invent.Object(SlotNuevo).Equipped = .Invent.Object(SlotViejo).Equipped
                         
 256                 .Invent.Object(SlotViejo).ObjIndex = 0
-258                 .Invent.Object(SlotViejo).Amount = 0
+258                 .Invent.Object(SlotViejo).amount = 0
 260                 .Invent.Object(SlotViejo).Equipped = 0
 
                 End If
@@ -26882,13 +26876,13 @@ Private Sub HandleBovedaMoveItem(ByVal UserIndex As Integer)
             Dim Equipado3 As Boolean
         
 116         Objeto.ObjIndex = UserList(UserIndex).BancoInvent.Object(SlotViejo).ObjIndex
-118         Objeto.Amount = UserList(UserIndex).BancoInvent.Object(SlotViejo).Amount
+118         Objeto.amount = UserList(UserIndex).BancoInvent.Object(SlotViejo).amount
         
 120         UserList(UserIndex).BancoInvent.Object(SlotViejo).ObjIndex = UserList(UserIndex).BancoInvent.Object(SlotNuevo).ObjIndex
-122         UserList(UserIndex).BancoInvent.Object(SlotViejo).Amount = UserList(UserIndex).BancoInvent.Object(SlotNuevo).Amount
+122         UserList(UserIndex).BancoInvent.Object(SlotViejo).amount = UserList(UserIndex).BancoInvent.Object(SlotNuevo).amount
          
 124         UserList(UserIndex).BancoInvent.Object(SlotNuevo).ObjIndex = Objeto.ObjIndex
-126         UserList(UserIndex).BancoInvent.Object(SlotNuevo).Amount = Objeto.Amount
+126         UserList(UserIndex).BancoInvent.Object(SlotNuevo).amount = Objeto.amount
     
             'Actualizamos el banco
 128         Call UpdateBanUserInv(False, UserIndex, SlotViejo)
@@ -28128,7 +28122,7 @@ Private Sub HandleSendCorreo(ByVal UserIndex As Integer)
 
 118             For i = 1 To ItemCount
 120                 Itemlista(i).ObjIndex = Buffer.ReadByte
-122                 Itemlista(i).Amount = Buffer.ReadInteger
+122                 Itemlista(i).amount = Buffer.ReadInteger
 124             Next i
 
             Else 'Si es solo texto
@@ -28170,10 +28164,10 @@ Private Sub HandleSendCorreo(ByVal UserIndex As Integer)
                                         '  Call WriteConsoleMsg(UserIndex, "Para transferir tu montura deberias descender de ella.", FontTypeNames.FONTTYPE_INFO)
                                     Else
                                 
-156                                     Call QuitarUserInvItem(UserIndex, Itemlista(i).ObjIndex, Itemlista(i).Amount)
+156                                     Call QuitarUserInvItem(UserIndex, Itemlista(i).ObjIndex, Itemlista(i).amount)
 158                                     Call UpdateUserInv(False, UserIndex, Itemlista(i).ObjIndex)
 160                                     FinalCount = FinalCount + 1
-162                                     ObjArray = ObjArray & ObjIndex & "-" & Itemlista(i).Amount & "@"
+162                                     ObjArray = ObjArray & ObjIndex & "-" & Itemlista(i).amount & "@"
 
                                     End If
 
@@ -29789,7 +29783,7 @@ Private Sub HandleComprarItem(ByVal UserIndex As Integer)
             Else
 
 122             If CreditosDonadorCheck(UserList(UserIndex).Cuenta) - ObjDonador(ItemIndex).Valor >= 0 Then
-124                 ObjComprado.Amount = ObjDonador(ItemIndex).Cantidad
+124                 ObjComprado.amount = ObjDonador(ItemIndex).Cantidad
 126                 ObjComprado.ObjIndex = ObjDonador(ItemIndex).ObjIndex
             
 128                 LogeoDonador = LogeoDonador & vbCrLf & "****************************************************" & vbCrLf
@@ -30334,7 +30328,7 @@ Public Sub WriteQuestDetails(ByVal UserIndex As Integer, ByVal QuestIndex As Int
 
                 'Si hay npcs entonces enviamos la lista
 116             For i = 1 To QuestList(QuestIndex).RequiredNPCs
-118                 Call .WriteInteger(QuestList(QuestIndex).RequiredNPC(i).Amount)
+118                 Call .WriteInteger(QuestList(QuestIndex).RequiredNPC(i).amount)
 120                 Call .WriteInteger(QuestList(QuestIndex).RequiredNPC(i).NpcIndex)
 
                     'Si es una quest ya empezada, entonces mandamos los NPCs que matí.
@@ -30354,7 +30348,7 @@ Public Sub WriteQuestDetails(ByVal UserIndex As Integer, ByVal QuestIndex As Int
 
                 'Si hay objs entonces enviamos la lista
 132             For i = 1 To QuestList(QuestIndex).RequiredOBJs
-134                 Call .WriteInteger(QuestList(QuestIndex).RequiredOBJ(i).Amount)
+134                 Call .WriteInteger(QuestList(QuestIndex).RequiredOBJ(i).amount)
 136                 Call .WriteInteger(QuestList(QuestIndex).RequiredOBJ(i).ObjIndex)
                 
                     'escribe si tiene ese objeto en el inventario y que cantidad
@@ -30376,7 +30370,7 @@ Public Sub WriteQuestDetails(ByVal UserIndex As Integer, ByVal QuestIndex As Int
 
                 'si hay objs entonces enviamos la lista
 150             For i = 1 To QuestList(QuestIndex).RewardOBJs
-152                 Call .WriteInteger(QuestList(QuestIndex).RewardOBJ(i).Amount)
+152                 Call .WriteInteger(QuestList(QuestIndex).RewardOBJ(i).amount)
 154                 Call .WriteInteger(QuestList(QuestIndex).RewardOBJ(i).ObjIndex)
 156             Next i
 
@@ -30487,7 +30481,7 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
 
                 'Si hay npcs entonces enviamos la lista
 120             For i = 1 To QuestList(QuestIndex).RequiredNPCs
-122                 Call .WriteInteger(QuestList(QuestIndex).RequiredNPC(i).Amount)
+122                 Call .WriteInteger(QuestList(QuestIndex).RequiredNPC(i).amount)
 124                 Call .WriteInteger(QuestList(QuestIndex).RequiredNPC(i).NpcIndex)
 
                     'Si es una quest ya empezada, entonces mandamos los NPCs que matí.
@@ -30507,7 +30501,7 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
 
                 'Si hay objs entonces enviamos la lista
 132             For i = 1 To QuestList(QuestIndex).RequiredOBJs
-134                 Call .WriteInteger(QuestList(QuestIndex).RequiredOBJ(i).Amount)
+134                 Call .WriteInteger(QuestList(QuestIndex).RequiredOBJ(i).amount)
 136                 Call .WriteInteger(QuestList(QuestIndex).RequiredOBJ(i).ObjIndex)
 138             Next i
 
@@ -30524,7 +30518,7 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
 
                 'si hay objs entonces enviamos la lista
 148             For i = 1 To QuestList(QuestIndex).RewardOBJs
-150                 Call .WriteInteger(QuestList(QuestIndex).RewardOBJ(i).Amount)
+150                 Call .WriteInteger(QuestList(QuestIndex).RewardOBJ(i).amount)
 152                 Call .WriteInteger(QuestList(QuestIndex).RewardOBJ(i).ObjIndex)
 154             Next i
 
@@ -30861,46 +30855,49 @@ Private Sub HandleRequestProcesses(ByVal UserIndex As Integer)
 116         Set Buffer = Nothing
         
             ' Comando exclusivo para gms
-118         If Not EsGM(UserIndex) Then Exit Sub
-        
-            Dim tUser As Integer
-
-120         If Len(Nick) <> 0 Then
-122             tUser = NameIndex(Nick)
             
-                'Se asegura que el target exista
-124             If tUser <= 0 Then
-126                 Call WriteConsoleMsg(UserIndex, "El usuario se encuentra offline.", FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-                End If
-            
-            Else
         
-128             tUser = .flags.TargetUser
             
-                'Se asegura que el target exista
-130             If tUser <= 0 Then
-132                 Call WriteConsoleMsg(UserIndex, "Primero tienes que seleccionar un usuario, haz click izquierdo sobre el.", FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-                End If
-
-            End If
-
-134         If tUser <> UserIndex Then
-135             If AdministratorAccounts.Exists(UCase$(UserList(tUser).Cuenta)) Then
-136                 Call WriteConsoleMsg(UserIndex, "No podés invadir la privacidad de otro administrador.", FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-                End If
-            End If
-        
-138         If LenB(UserList(tUser).flags.ProcesosPara) = 0 Then
-140             Call WriteRequestProcesses(tUser)
-            End If
-
-142         UserList(tUser).flags.ProcesosPara = UserList(tUser).flags.ProcesosPara & ":" & .name
-
-        End With
+            
+            If .flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios) Then
+                Dim tUser As Integer
     
+120             If Len(Nick) <> 0 Then
+122                 tUser = NameIndex(Nick)
+                
+                    'Se asegura que el target exista
+124                 If tUser <= 0 Then
+126                     Call WriteConsoleMsg(UserIndex, "El usuario se encuentra offline.", FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
+                
+                Else
+            
+128                 tUser = .flags.TargetUser
+                
+                    'Se asegura que el target exista
+130                 If tUser <= 0 Then
+132                     Call WriteConsoleMsg(UserIndex, "Primero tienes que seleccionar un usuario, haz click izquierdo sobre el.", FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
+    
+                End If
+    
+134             If tUser <> UserIndex Then
+135                 If AdministratorAccounts.Exists(UCase$(UserList(tUser).Cuenta)) Then
+136                     Call WriteConsoleMsg(UserIndex, "No podés invadir la privacidad de otro administrador.", FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
+                End If
+            
+138             If LenB(UserList(tUser).flags.ProcesosPara) = 0 Then
+140                 Call WriteRequestProcesses(tUser)
+                End If
+    
+142             UserList(tUser).flags.ProcesosPara = UserList(tUser).flags.ProcesosPara & ":" & .name
+    
+            End If
+                End With
         Exit Sub
     
 ErrHandler:
@@ -30939,9 +30936,10 @@ Private Sub HandleRequestScreenShot(ByVal UserIndex As Integer)
 116         Set Buffer = Nothing
         
             ' Comando exclusivo para gms
-118         If Not EsGM(UserIndex) Then Exit Sub
-        
+            
             Dim tUser As Integer
+            
+            If Not .flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios) Then Exit Sub
 
 120         If Len(Nick) <> 0 Then
 122             tUser = NameIndex(Nick)
@@ -31107,9 +31105,15 @@ Private Sub HandleScreenShot(ByVal UserIndex As Integer)
 
 114         Call .incomingData.CopyBuffer(Buffer)
 116         Set Buffer = Nothing
-
+            
+            
+            
+118         If Not (Not .flags.Privilegios And PlayerType.Admin) <> 0 Or (Not .flags.Privilegios And PlayerType.Dios) <> 0 Or (Not .flags.Privilegios And PlayerType.SemiDios) <> 0 Then Exit Sub
+        
+             If .flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios) Then
+            
             ' Si nadie requirió esto, salimos
-118         If LenB(.flags.ScreenShotPara) = 0 Then Exit Sub
+            If LenB(.flags.ScreenShotPara) = 0 Then Exit Sub
         
             Dim Finished As Boolean
         
@@ -31148,6 +31152,7 @@ Private Sub HandleScreenShot(ByVal UserIndex As Integer)
 
 148             .flags.ScreenShotPara = vbNullString
 150             Set .flags.ScreenShot = Nothing
+            End If
             End If
 
         End With
@@ -31492,10 +31497,10 @@ Private Sub HandleCuentaExtractItem(ByVal UserIndex As Integer)
 
             Dim slotdestino As Byte
 
-            Dim Amount      As Integer
+            Dim amount      As Integer
         
 108         slot = .incomingData.ReadByte()
-110         Amount = .incomingData.ReadInteger()
+110         amount = .incomingData.ReadInteger()
         
 112         slotdestino = .incomingData.ReadByte()
         
@@ -31552,10 +31557,10 @@ Private Sub HandleCuentaDeposit(ByVal UserIndex As Integer)
 
             Dim slotdestino As Byte
 
-            Dim Amount      As Integer
+            Dim amount      As Integer
         
 108         slot = .incomingData.ReadByte()
-110         Amount = .incomingData.ReadInteger()
+110         amount = .incomingData.ReadInteger()
 112         slotdestino = .incomingData.ReadByte()
         
             'Dead people can't commerce...
