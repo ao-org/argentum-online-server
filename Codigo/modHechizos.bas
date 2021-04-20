@@ -85,6 +85,10 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
         If .Invent.CascoEqpObjIndex > 0 Then
           PorcentajeRM = PorcentajeRM + ObjData(.Invent.CascoEqpObjIndex).ResistenciaMagica
         End If
+        
+        If ModClase(.clase).ResistenciaMagica > 0 Then
+          PorcentajeRM = PorcentajeRM + 100 * ModClase(.clase).ResistenciaMagica
+        End If
 
         ' Resto el porcentaje total
         Daño = Daño - Porcentaje(Daño, PorcentajeRM)
@@ -2894,6 +2898,10 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 418             If UserList(tempChr).Invent.CascoEqpObjIndex > 0 Then
 420                 PorcentajeRM = PorcentajeRM + ObjData(UserList(tempChr).Invent.CascoEqpObjIndex).ResistenciaMagica
                 End If
+                
+                If ModClase(UserList(tempChr).clase).ResistenciaMagica > 0 Then
+                    PorcentajeRM = PorcentajeRM + 100 * ModClase(UserList(tempChr).clase).ResistenciaMagica
+                End If
 
                 ' Resto el porcentaje total
                 Daño = Daño - Porcentaje(Daño, PorcentajeRM)
@@ -3305,6 +3313,11 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
                 ' Resistencia mágica casco
 302             If UserList(tempChr).Invent.CascoEqpObjIndex > 0 Then
 304                 Daño = Daño - Porcentaje(Daño, ObjData(UserList(tempChr).Invent.CascoEqpObjIndex).ResistenciaMagica)
+                End If
+                
+                ' Resistencia mágica de la clase
+                If ModClase(UserList(tempChr).clase).ResistenciaMagica > 0 Then
+                    Daño = Daño - Daño * ModClase(UserList(tempChr).clase).ResistenciaMagica
                 End If
             End If
 
@@ -4053,6 +4066,11 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y 
                     ' Resistencia mágica casco
 202                 If UserList(NpcIndex).Invent.CascoEqpObjIndex > 0 Then
 204                     Daño = Daño - Porcentaje(Daño, ObjData(UserList(NpcIndex).Invent.CascoEqpObjIndex).ResistenciaMagica)
+                    End If
+                   
+                    ' Resistencia mágica de la clase
+                    If ModClase(UserList(NpcIndex).clase).ResistenciaMagica > 0 Then
+                        Daño = Daño - Daño * ModClase(UserList(NpcIndex).clase).ResistenciaMagica
                     End If
                 End If
                 

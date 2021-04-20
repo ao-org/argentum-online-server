@@ -39,21 +39,6 @@ Public Const MAXDISTANCIAARCO  As Byte = 18
 
 Public Const MAXDISTANCIAMAGIA As Byte = 18
 
-Private Function ModificadorEvasion(ByVal clase As eClass) As Single
-        
-        On Error GoTo ModificadorEvasion_Err
-        
-
-100     ModificadorEvasion = ModClase(clase).Evasion
-
-        
-        Exit Function
-
-ModificadorEvasion_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.ModificadorEvasion", Erl)
-104     Resume Next
-        
-End Function
 
 Private Function ModificadorPoderAtaqueArmas(ByVal clase As eClass) As Single
         
@@ -115,22 +100,6 @@ Private Function ModicadorApuñalarClase(ByVal clase As eClass) As Single
 
 ModicadorApuñalarClase_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.ModicadorApuñalarClase", Erl)
-104     Resume Next
-        
-End Function
-
-Private Function ModicadorDañoClaseWrestling(ByVal clase As eClass) As Single
-        
-        On Error GoTo ModicadorDañoClaseWrestling_Err
-        
-        
-100     ModicadorDañoClaseWrestling = ModClase(clase).DañoWrestling
-
-        
-        Exit Function
-
-ModicadorDañoClaseWrestling_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.ModicadorDañoClaseWrestling", Erl)
 104     Resume Next
         
 End Function
@@ -275,7 +244,7 @@ Private Function PoderEvasion(ByVal UserIndex As Integer) As Long
         Dim lTemp As Long
 
 100     With UserList(UserIndex)
-102         lTemp = (.Stats.UserSkills(eSkill.Tacticas) + .Stats.UserSkills(eSkill.Tacticas) / 33 * .Stats.UserAtributos(eAtributos.Agilidad)) * ModificadorEvasion(.clase)
+102         lTemp = (.Stats.UserSkills(eSkill.Tacticas) + .Stats.UserSkills(eSkill.Tacticas) / 33 * .Stats.UserAtributos(eAtributos.Agilidad)) * ModClase(.clase).Evasion
        
 104         PoderEvasion = (lTemp + (2.5 * Maximo(CInt(.Stats.ELV) - 12, 0)))
 
@@ -545,7 +514,7 @@ Private Function CalcularDaño(ByVal UserIndex As Integer) As Long
             ' Daño con puños
             Else
                 ' Modificador de combate sin armas
-                ModifClase = ModicadorDañoClaseWrestling(.clase)
+                ModifClase = ModClase(.clase).DañoWrestling
             
                 ' Si tiene nudillos o guantes
                 If .Invent.NudilloSlot > 0 Then
@@ -1319,9 +1288,6 @@ UsuarioAtacaUsuario_Err:
 End Sub
 
 Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer)
-
-        ' Reescrito por WyroX - 16/01/2021
-        
         On Error GoTo UserDañoUser_Err
 
 100     With UserList(VictimaIndex)
