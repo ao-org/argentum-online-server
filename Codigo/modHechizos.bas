@@ -86,10 +86,8 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
           PorcentajeRM = PorcentajeRM + ObjData(.Invent.CascoEqpObjIndex).ResistenciaMagica
         End If
         
-        If ModClase(.clase).ResistenciaMagica > 0 Then
-          PorcentajeRM = PorcentajeRM + 100 * ModClase(.clase).ResistenciaMagica
-        End If
-
+        PorcentajeRM = PorcentajeRM + 100 * ModClase(.clase).ResistenciaMagica
+        
         ' Resto el porcentaje total
         Daño = Daño - Porcentaje(Daño, PorcentajeRM)
       End If
@@ -2899,10 +2897,8 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 420                 PorcentajeRM = PorcentajeRM + ObjData(UserList(tempChr).Invent.CascoEqpObjIndex).ResistenciaMagica
                 End If
                 
-                If ModClase(UserList(tempChr).clase).ResistenciaMagica > 0 Then
-                    PorcentajeRM = PorcentajeRM + 100 * ModClase(UserList(tempChr).clase).ResistenciaMagica
-                End If
-
+                PorcentajeRM = PorcentajeRM + 100 * ModClase(UserList(tempChr).clase).ResistenciaMagica
+                
                 ' Resto el porcentaje total
                 Daño = Daño - Porcentaje(Daño, PorcentajeRM)
             End If
@@ -3316,9 +3312,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
                 End If
                 
                 ' Resistencia mágica de la clase
-                If ModClase(UserList(tempChr).clase).ResistenciaMagica > 0 Then
-                    Daño = Daño - Daño * ModClase(UserList(tempChr).clase).ResistenciaMagica
-                End If
+                Daño = Daño - Daño * ModClase(UserList(tempChr).clase).ResistenciaMagica
             End If
 
             ' Prevengo daño negativo
@@ -4069,9 +4063,7 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y 
                     End If
                    
                     ' Resistencia mágica de la clase
-                    If ModClase(UserList(NpcIndex).clase).ResistenciaMagica > 0 Then
-                        Daño = Daño - Daño * ModClase(UserList(NpcIndex).clase).ResistenciaMagica
-                    End If
+                    Daño = Daño - Daño * ModClase(UserList(NpcIndex).clase).ResistenciaMagica
                 End If
                 
                 ' Prevengo daño negativo

@@ -1125,6 +1125,7 @@ Sub LoadBalance()
 132             .AumentoSta = val(BalanceIni.GetValue("AUMENTO_STA", SearchVar))
 134             .HitPre36 = val(BalanceIni.GetValue("GOLPE_PRE_36", SearchVar))
 136             .HitPost36 = val(BalanceIni.GetValue("GOLPE_POST_36", SearchVar))
+                .ResistenciaMagica = val(BalanceIni.GetValue("MODRESISTENCIAMAGICA", SearchVar))
             End With
 
 138     Next i
