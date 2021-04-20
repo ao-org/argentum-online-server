@@ -21291,9 +21291,7 @@ Public Sub WriteUpdateRM(ByVal UserIndex As Integer)
 116             Valor = Valor + ObjData(.CascoEqpObjIndex).ResistenciaMagica
             End If
             
-            If ModClase(UserList(UserIndex).clase).ResistenciaMagica > 0 Then
-                Valor = Valor + 100 * ModClase(UserList(UserIndex).clase).ResistenciaMagica
-            End If
+            Valor = Valor + 100 * ModClase(UserList(UserIndex).clase).ResistenciaMagica
         End With
 
 118     With UserList(UserIndex).outgoingData
