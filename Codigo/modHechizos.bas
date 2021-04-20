@@ -85,7 +85,9 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
         If .Invent.CascoEqpObjIndex > 0 Then
           PorcentajeRM = PorcentajeRM + ObjData(.Invent.CascoEqpObjIndex).ResistenciaMagica
         End If
-
+        
+        PorcentajeRM = PorcentajeRM + 100 * ModClase(.clase).ResistenciaMagica
+        
         ' Resto el porcentaje total
         Daño = Daño - Porcentaje(Daño, PorcentajeRM)
       End If
@@ -2894,7 +2896,9 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 418             If UserList(tempChr).Invent.CascoEqpObjIndex > 0 Then
 420                 PorcentajeRM = PorcentajeRM + ObjData(UserList(tempChr).Invent.CascoEqpObjIndex).ResistenciaMagica
                 End If
-
+                
+                PorcentajeRM = PorcentajeRM + 100 * ModClase(UserList(tempChr).clase).ResistenciaMagica
+                
                 ' Resto el porcentaje total
                 Daño = Daño - Porcentaje(Daño, PorcentajeRM)
             End If
@@ -3306,6 +3310,9 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
 302             If UserList(tempChr).Invent.CascoEqpObjIndex > 0 Then
 304                 Daño = Daño - Porcentaje(Daño, ObjData(UserList(tempChr).Invent.CascoEqpObjIndex).ResistenciaMagica)
                 End If
+                
+                ' Resistencia mágica de la clase
+                Daño = Daño - Daño * ModClase(UserList(tempChr).clase).ResistenciaMagica
             End If
 
             ' Prevengo daño negativo
@@ -4054,6 +4061,9 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y 
 202                 If UserList(NpcIndex).Invent.CascoEqpObjIndex > 0 Then
 204                     Daño = Daño - Porcentaje(Daño, ObjData(UserList(NpcIndex).Invent.CascoEqpObjIndex).ResistenciaMagica)
                     End If
+                   
+                    ' Resistencia mágica de la clase
+                    Daño = Daño - Daño * ModClase(UserList(NpcIndex).clase).ResistenciaMagica
                 End If
                 
                 ' Prevengo daño negativo
