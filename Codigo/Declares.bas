@@ -1299,6 +1299,7 @@ Public Type ModClase
     MultMana As Double
     HitPre36 As Integer
     HitPost36 As Integer
+    ResistenciaMagica As Double
 
 End Type
 
