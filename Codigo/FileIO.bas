@@ -402,8 +402,8 @@ Public Sub loadAdministrativeUsers()
         
             ' Si NO declara el mail de la cuenta en el Server.ini, NO le doy privilegios.
 116         If UBound(TempName()) > 0 Then
-                ' AdministratorAccounts("Email") = Nick
-118             AdministratorAccounts(TempName(1)) = TempName(0)
+                ' AdministratorAccounts("Nick") = "Email"
+                AdministratorAccounts(TempName(0)) = TempName(1)
             
                 ' Add key
 120             Call Administradores.ChangeValue("Admin", TempName(0), "1")
@@ -420,8 +420,8 @@ Public Sub loadAdministrativeUsers()
         
             ' Si NO declara el mail de la cuenta en el Server.ini, NO le doy privilegios.
 132         If UBound(TempName()) > 0 Then
-                ' AdministratorAccounts("Email") = Nick
-134             AdministratorAccounts(TempName(1)) = TempName(0)
+                ' AdministratorAccounts("Nick") = "Email"
+                AdministratorAccounts(TempName(0)) = TempName(1)
             
                 ' Add key
 136             Call Administradores.ChangeValue("Dios", TempName(0), "1")
@@ -438,8 +438,8 @@ Public Sub loadAdministrativeUsers()
         
             ' Si NO declara el mail de la cuenta en el Server.ini, NO le doy privilegios.
 148         If UBound(TempName()) > 0 Then
-                ' AdministratorAccounts("Email") = Nick
-150             AdministratorAccounts(TempName(1)) = TempName(0)
+                ' AdministratorAccounts("Nick") = "Email"
+                AdministratorAccounts(TempName(0)) = TempName(1)
             
                 ' Add key
 152             Call Administradores.ChangeValue("SemiDios", TempName(0), "1")
@@ -456,8 +456,8 @@ Public Sub loadAdministrativeUsers()
         
             ' Si NO declara el mail de la cuenta en el Server.ini, NO le doy privilegios.
 164         If UBound(TempName()) > 0 Then
-                ' AdministratorAccounts("Email") = Nick
-166             AdministratorAccounts(TempName(1)) = TempName(0)
+                ' AdministratorAccounts("Nick") = "Email"
+                AdministratorAccounts(TempName(0)) = TempName(1)
             
                 ' Add key
 168             Call Administradores.ChangeValue("Consejero", TempName(0), "1")
@@ -474,8 +474,8 @@ Public Sub loadAdministrativeUsers()
         
             ' Si NO declara el mail de la cuenta en el Server.ini, NO le doy privilegios.
 180         If UBound(TempName()) > 0 Then
-                ' AdministratorAccounts("Email") = Nick
-182             AdministratorAccounts(TempName(1)) = TempName(0)
+                ' AdministratorAccounts("Nick") = "Email"
+                AdministratorAccounts(TempName(0)) = TempName(1)
             
                 ' Add key
 184             Call Administradores.ChangeValue("RM", TempName(0), "1")
@@ -1125,6 +1125,7 @@ Sub LoadBalance()
 132             .AumentoSta = val(BalanceIni.GetValue("AUMENTO_STA", SearchVar))
 134             .HitPre36 = val(BalanceIni.GetValue("GOLPE_PRE_36", SearchVar))
 136             .HitPost36 = val(BalanceIni.GetValue("GOLPE_POST_36", SearchVar))
+                .ResistenciaMagica = val(BalanceIni.GetValue("MODRESISTENCIAMAGICA", SearchVar))
             End With
 
 138     Next i
