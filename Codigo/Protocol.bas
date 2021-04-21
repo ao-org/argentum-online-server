@@ -199,6 +199,7 @@ Private Enum ServerPacketID
     SeguroResu
     Stopped
     InvasionInfo
+    CommerceRecieveChatMessage
 End Enum
 
 Private Enum ClientPacketID
@@ -547,6 +548,7 @@ Private Enum NewPacksID
     CuentaExtractItem
     CuentaDeposit
     CreateEvent
+    CommerceSendChatMessage
 End Enum
 
 Public Enum eEditOptions
@@ -1759,6 +1761,10 @@ Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
                 
             Case NewPacksID.CreateEvent
                 Call HandleCreateEvent(UserIndex)
+                
+                
+            Case NewPacksID.CommerceSendChatMessage
+                Call HandleCommerceSendChatMessage(UserIndex)
             
 394         Case Else
                 'ERROR : Abort!
@@ -31605,6 +31611,60 @@ HandleCuentaDeposit_Err:
 126     Resume Next
         
 End Sub
+Private Sub HandleCommerceSendChatMessage(ByVal UserIndex As Integer)
+    
+    If UserList(UserIndex).incomingData.Length < 4 Then
+        Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
+        Exit Sub
+    End If
+    
+    
+    On Error GoTo ErrHandler
+    
+    With UserList(UserIndex)
+    
+        Dim Buffer As New clsByteQueue
+        Call Buffer.CopyBuffer(.incomingData)
+    
+        Call Buffer.ReadInteger
+        
+        Dim chatMessage As String
+        
+        chatMessage = "[" & UserList(UserIndex).name & "] " & Buffer.ReadASCIIString
+        
+        'El mensaje se lo envío al destino
+        Call WriteCommerceRecieveChatMessage(UserList(UserIndex).ComUsu.DestUsu, chatMessage)
+        'y tambien a mi mismo
+        Call WriteCommerceRecieveChatMessage(UserIndex, chatMessage)
+        
+        Call .incomingData.CopyBuffer(Buffer)
+    
+    End With
+    
+ErrHandler:
+     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
+         Call FlushBuffer(UserIndex)
+         Resume
+        End If
+    
+End Sub
+
+Sub WriteCommerceRecieveChatMessage(ByVal UserIndex As Integer, ByVal message As String)
+     On Error GoTo ErrHandler
+
+     With UserList(UserIndex).outgoingData
+             Call .WriteByte(ServerPacketID.CommerceRecieveChatMessage)
+             Call .WriteASCIIString(message)
+    End With
+
+    Exit Sub
+
+ErrHandler:
+     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
+         Call FlushBuffer(UserIndex)
+         Resume
+        End If
+End Sub
 
 Private Sub HandleCreateEvent(ByVal UserIndex As Integer)
         
@@ -31663,6 +31723,7 @@ ErrHandler:
     If Error <> 0 Then Err.raise Error
         
 End Sub
+
 
 Sub WriteInvasionInfo(ByVal UserIndex As Integer, ByVal Invasion As Integer, ByVal PorcentajeVida As Byte, ByVal PorcentajeTiempo As Byte)
     
