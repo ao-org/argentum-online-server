@@ -178,7 +178,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
     
             ' Todos reciben pociones rojas
 104         .Invent.Object(NumItems).ObjIndex = 1616 'Pocion Roja
-106         .Invent.Object(NumItems).Amount = 100
+106         .Invent.Object(NumItems).amount = 100
 108         NumItems = NumItems + 1
         
             ' Magicas puras reciben más azules
@@ -186,7 +186,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
 
                 Case eClass.Mage, eClass.Druid
 112                 .Invent.Object(NumItems).ObjIndex = 1617 ' Pocion Azul
-114                 .Invent.Object(NumItems).Amount = 100
+114                 .Invent.Object(NumItems).amount = 100
 116                 NumItems = NumItems + 1
 
             End Select
@@ -196,7 +196,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
 
                 Case eClass.Bard, eClass.Cleric, eClass.Paladin, eClass.Assasin, eClass.Bandit
 120                 .Invent.Object(NumItems).ObjIndex = 1617 ' Pocion Azul
-122                 .Invent.Object(NumItems).Amount = 50
+122                 .Invent.Object(NumItems).amount = 50
 124                 NumItems = NumItems + 1
 
             End Select
@@ -214,23 +214,23 @@ Sub RellenarInventario(ByVal UserIndex As String)
 
                 Case eClass.Assasin, eClass.Bard, eClass.Cleric, eClass.Hunter, eClass.Paladin, eClass.Trabajador, eClass.Warrior, eClass.Bandit, eClass.Pirat, eClass.Thief
 132                 .Invent.Object(NumItems).ObjIndex = 1618 ' Pocion Amarilla
-134                 .Invent.Object(NumItems).Amount = 25
+134                 .Invent.Object(NumItems).amount = 25
 136                 NumItems = NumItems + 1
 
 138                 .Invent.Object(NumItems).ObjIndex = 1619 ' Pocion Verde
-140                 .Invent.Object(NumItems).Amount = 25
+140                 .Invent.Object(NumItems).amount = 25
 142                 NumItems = NumItems + 1
 
             End Select
             
             ' Poción violeta
 144         .Invent.Object(NumItems).ObjIndex = 2332 ' Pocion violeta
-146         .Invent.Object(NumItems).Amount = 10
+146         .Invent.Object(NumItems).amount = 10
 148         NumItems = NumItems + 1
         
             ' Equipo el arma
 150         .Invent.Object(NumItems).ObjIndex = 460 ' Daga (Newbies)
-152         .Invent.Object(NumItems).Amount = 1
+152         .Invent.Object(NumItems).amount = 1
 154         .Invent.Object(NumItems).Equipped = 1
 156         .Invent.WeaponEqpSlot = NumItems
 158         .Invent.WeaponEqpObjIndex = .Invent.Object(NumItems).ObjIndex
@@ -253,7 +253,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
                 End If
             End If
                         
-178         .Invent.Object(NumItems).Amount = 1
+178         .Invent.Object(NumItems).amount = 1
 180         .Invent.Object(NumItems).Equipped = 1
 182         .Invent.ArmourEqpSlot = NumItems
 184         .Invent.ArmourEqpObjIndex = .Invent.Object(NumItems).ObjIndex
@@ -265,15 +265,15 @@ Sub RellenarInventario(ByVal UserIndex As String)
         
             ' Comida y bebida
 190         .Invent.Object(NumItems).ObjIndex = 573 ' Manzana
-192         .Invent.Object(NumItems).Amount = 100
+192         .Invent.Object(NumItems).amount = 100
 194         NumItems = NumItems + 1
 
 196         .Invent.Object(NumItems).ObjIndex = 572 ' Agua
-198         .Invent.Object(NumItems).Amount = 100
+198         .Invent.Object(NumItems).amount = 100
 200         NumItems = NumItems + 1
 
 202         .Invent.Object(NumItems).ObjIndex = 200 ' Cofre Inicial - TODO: Remover
-204         .Invent.Object(NumItems).Amount = 1
+204         .Invent.Object(NumItems).amount = 1
 206         NumItems = NumItems + 1
 
             ' Seteo la cantidad de items
@@ -1211,6 +1211,10 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
                 Call EquiparBarco(UserIndex)
 
             End If
+            
+            If .Invent.MagicoObjIndex <> 0 Then
+                If ObjData(.Invent.MagicoObjIndex).EfectoMagico = 11 Then .flags.Paraliza = 1
+            End If
 
 374         Call WriteUserIndexInServer(UserIndex) 'Enviamos el User index
 376         .flags.NecesitaOxigeno = RequiereOxigeno(.Pos.Map)
@@ -1933,7 +1937,7 @@ Sub ResetUserBanco(ByVal UserIndex As Integer)
         Dim LoopC As Long
     
 100     For LoopC = 1 To MAX_BANCOINVENTORY_SLOTS
-102         UserList(UserIndex).BancoInvent.Object(LoopC).Amount = 0
+102         UserList(UserIndex).BancoInvent.Object(LoopC).amount = 0
 104         UserList(UserIndex).BancoInvent.Object(LoopC).Equipped = 0
 106         UserList(UserIndex).BancoInvent.Object(LoopC).ObjIndex = 0
 108     Next LoopC
