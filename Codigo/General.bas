@@ -728,6 +728,12 @@ Sub Main()
         frmCargando.Label1(2).Caption = "Cargando Mapas"
         Call LoadMapData
     End If
+        
+    Call InitPathFinding
+
+    frmCargando.Label1(2).Caption = "Cargando informacion de eventos"
+    Call CargarInfoRetos
+    Call CargarInfoEventos
     
     ' Pretorianos
     frmCargando.Label1(2).Caption = "Cargando Pretorianos.dat"

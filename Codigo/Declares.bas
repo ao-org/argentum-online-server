@@ -2060,7 +2060,14 @@ Public Type npc
     Mascotas As Integer
     
     ' New!! Needed for pathfindig
-    PFINFO As NpcPathFindingInfo
+    Path() As Position
+    PathLength As Integer
+    TargetPos As Position
+
+    RangoVision As Single
+    Inteligencia As Integer
+    
+    ' Esto es del Areas.bas
     AreasInfo As AreaInfo
     
     NumQuiza As Byte
