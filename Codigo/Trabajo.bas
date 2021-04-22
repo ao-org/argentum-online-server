@@ -186,15 +186,15 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
         
                         Case 2  'Galera
         
-108                         If .clase <> eClass.Assasin And .clase <> eClass.Pirat And .clase <> eClass.Bandit And .clase <> eClass.Cleric And .clase <> eClass.Thief And .clase <> eClass.Paladin Then
-110                             Call WriteConsoleMsg(UserIndex, "¡Solo los Piratas, Asesinos, Bandidos, Clérigos, Ladrones y Paladines pueden usar galera!", FontTypeNames.FONTTYPE_INFO)
+108                         If .clase <> eClass.Trabajador And .clase <> eClass.Pirat Then
+110                             Call WriteConsoleMsg(UserIndex, "¡Solo Piratas y trabajadores pueden usar galera!", FontTypeNames.FONTTYPE_INFO)
                                 Exit Sub
                             End If
                         
 112                     Case 3  'Galeón
                     
-114                         If .clase <> eClass.Thief And .clase <> eClass.Pirat Then
-116                             Call WriteConsoleMsg(UserIndex, "Solo los Ladrones y Piratas pueden usar Galeón!!", FontTypeNames.FONTTYPE_INFO)
+114                         If .clase <> eClass.Pirat Then
+116                             Call WriteConsoleMsg(UserIndex, "Solo los Piratas pueden usar Galeón!!", FontTypeNames.FONTTYPE_INFO)
                                 Exit Sub
                             End If
                         
@@ -347,7 +347,7 @@ Function TieneObjetos(ByVal ItemIndex As Integer, ByVal cant As Integer, ByVal U
 100     For i = 1 To UserList(UserIndex).CurrentInventorySlots
 
 102         If UserList(UserIndex).Invent.Object(i).ObjIndex = ItemIndex Then
-104             Total = Total + UserList(UserIndex).Invent.Object(i).Amount
+104             Total = Total + UserList(UserIndex).Invent.Object(i).amount
 
             End If
 
@@ -381,15 +381,15 @@ Function QuitarObjetos(ByVal ItemIndex As Integer, ByVal cant As Integer, ByVal 
     
 104             If .Invent.Object(i).ObjIndex = ItemIndex Then
     
-106                 .Invent.Object(i).Amount = .Invent.Object(i).Amount - cant
+106                 .Invent.Object(i).amount = .Invent.Object(i).amount - cant
     
-108                 If .Invent.Object(i).Amount <= 0 Then
+108                 If .Invent.Object(i).amount <= 0 Then
 110                     If .Invent.Object(i).Equipped Then
 112                         Call Desequipar(UserIndex, i)
                         End If
     
-114                     cant = Abs(.Invent.Object(i).Amount)
-116                     .Invent.Object(i).Amount = 0
+114                     cant = Abs(.Invent.Object(i).amount)
+116                     .Invent.Object(i).amount = 0
 118                     .Invent.Object(i).ObjIndex = 0
                     Else
 120                     cant = 0
@@ -731,7 +731,7 @@ Public Sub HerreroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As I
 
             Dim MiObj As obj
 
-126         MiObj.Amount = 1
+126         MiObj.amount = 1
 128         MiObj.ObjIndex = ItemIndex
 
 130         If Not MeterItemEnInventario(UserIndex, MiObj) Then
@@ -875,7 +875,7 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
     
             Dim MiObj As obj
 
-116         MiObj.Amount = 1
+116         MiObj.amount = 1
 118         MiObj.ObjIndex = ItemIndex
 
 120         If Not MeterItemEnInventario(UserIndex, MiObj) Then
@@ -933,7 +933,7 @@ Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
     
             Dim MiObj As obj
 
-114         MiObj.Amount = 1
+114         MiObj.amount = 1
 116         MiObj.ObjIndex = ItemIndex
 
 118         If Not MeterItemEnInventario(UserIndex, MiObj) Then
@@ -998,7 +998,7 @@ Public Sub SastreConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As In
     
             Dim MiObj As obj
 
-118         MiObj.Amount = 1
+118         MiObj.amount = 1
 120         MiObj.ObjIndex = ItemIndex
 
 122         If Not MeterItemEnInventario(UserIndex, MiObj) Then
@@ -1077,17 +1077,17 @@ Public Sub DoLingotes(ByVal UserIndex As Integer)
         cant = RandomNumber(10, 20)
         necesarios = MineralesParaLingote(obji, cant)
 
-        If UserList(UserIndex).Invent.Object(slot).Amount < MineralesParaLingote(obji, cant) Or ObjData(obji).OBJType <> eOBJType.otMinerales Then
+        If UserList(UserIndex).Invent.Object(slot).amount < MineralesParaLingote(obji, cant) Or ObjData(obji).OBJType <> eOBJType.otMinerales Then
             Call WriteConsoleMsg(UserIndex, "No tienes suficientes minerales para hacer un lingote.", FontTypeNames.FONTTYPE_INFO)
             Call WriteMacroTrabajoToggle(UserIndex, False)
             Exit Sub
 
         End If
 
-        UserList(UserIndex).Invent.Object(slot).Amount = UserList(UserIndex).Invent.Object(slot).Amount - MineralesParaLingote(obji, cant)
+        UserList(UserIndex).Invent.Object(slot).amount = UserList(UserIndex).Invent.Object(slot).amount - MineralesParaLingote(obji, cant)
 
-        If UserList(UserIndex).Invent.Object(slot).Amount < 1 Then
-            UserList(UserIndex).Invent.Object(slot).Amount = 0
+        If UserList(UserIndex).Invent.Object(slot).amount < 1 Then
+            UserList(UserIndex).Invent.Object(slot).amount = 0
             UserList(UserIndex).Invent.Object(slot).ObjIndex = 0
 
         End If
@@ -1096,7 +1096,7 @@ Public Sub DoLingotes(ByVal UserIndex As Integer)
 
         Dim MiObj As obj
 
-        MiObj.Amount = cant
+        MiObj.amount = cant
         MiObj.ObjIndex = ObjData(UserList(UserIndex).flags.TargetObjInvIndex).LingoteIndex
 
         If Not MeterItemEnInventario(UserIndex, MiObj) Then
@@ -1311,7 +1311,7 @@ Sub TratarDeHacerFogata(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Int
 
         End If
 
-122     If MapData(Map, X, Y).ObjInfo.Amount < 3 Then
+122     If MapData(Map, X, Y).ObjInfo.amount < 3 Then
 124         Call WriteConsoleMsg(UserIndex, "Necesitas por lo menos tres troncos para hacer una fogata.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
@@ -1330,9 +1330,9 @@ Sub TratarDeHacerFogata(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Int
 
 140     If exito = 1 Then
 142         obj.ObjIndex = FOGATA_APAG
-144         obj.Amount = MapData(Map, X, Y).ObjInfo.Amount \ 3
+144         obj.amount = MapData(Map, X, Y).ObjInfo.amount \ 3
     
-146         Call WriteConsoleMsg(UserIndex, "Has hecho " & obj.Amount & " ramitas.", FontTypeNames.FONTTYPE_INFO)
+146         Call WriteConsoleMsg(UserIndex, "Has hecho " & obj.amount & " ramitas.", FontTypeNames.FONTTYPE_INFO)
     
 148         Call MakeObj(obj, Map, X, Y)
     
@@ -1394,7 +1394,7 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
                 Dim nPos  As WorldPos
                 Dim MiObj As obj
 
-122             MiObj.Amount = IIf(.clase = Trabajador, RandomNumber(1, 3), 1) * RecoleccionMult
+122             MiObj.amount = IIf(.clase = Trabajador, RandomNumber(1, 3), 1) * RecoleccionMult
 124             MiObj.ObjIndex = ObtenerPezRandom(IIf(RedDePesca, 5, 2))
         
 126             If MiObj.ObjIndex = 0 Then Exit Sub
@@ -1403,7 +1403,7 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
 130                 Call TirarItemAlPiso(.Pos, MiObj)
                 End If
 
-132             Call WriteTextCharDrop(UserIndex, "+" & MiObj.Amount, .Char.CharIndex, vbWhite)
+132             Call WriteTextCharDrop(UserIndex, "+" & MiObj.amount, .Char.CharIndex, vbWhite)
         
                 ' Al pescar también podés sacar cosas raras (se setean desde RecursosEspeciales.dat)
                 Dim i As Integer
@@ -1416,7 +1416,7 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
                     ' Si tiene suerte y le pega
 138                 If res = 1 Then
 140                     MiObj.ObjIndex = EspecialesPesca(i).ObjIndex
-142                     MiObj.Amount = 1 ' Solo un item por vez
+142                     MiObj.amount = 1 ' Solo un item por vez
                 
 144                     If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.Pos, MiObj)
                     
@@ -1792,17 +1792,17 @@ Private Sub RobarObjeto(ByVal LadronIndex As Integer, ByVal VictimaIndex As Inte
                 Dim num       As Integer
                 Dim ObjAmount As Integer
 
-132             ObjAmount = .Invent.Object(i).Amount
+132             ObjAmount = .Invent.Object(i).amount
 
                 'Cantidad al azar entre el 3 y el 6% del total, con minimo 1.
 134             num = MaximoInt(1, RandomNumber(ObjAmount * 0.03, ObjAmount * 0.06))
 
-136             MiObj.Amount = num
+136             MiObj.amount = num
 138             MiObj.ObjIndex = .Invent.Object(i).ObjIndex
         
-140             .Invent.Object(i).Amount = ObjAmount - num
+140             .Invent.Object(i).amount = ObjAmount - num
                     
-142             If .Invent.Object(i).Amount <= 0 Then
+142             If .Invent.Object(i).amount <= 0 Then
 144                 Call QuitarUserInvItem(VictimaIndex, CByte(i), 1)
 
                 End If
@@ -1815,10 +1815,10 @@ Private Sub RobarObjeto(ByVal LadronIndex As Integer, ByVal VictimaIndex As Inte
                 End If
         
 152             If UserList(LadronIndex).clase = eClass.Thief Then
-154                 Call WriteConsoleMsg(LadronIndex, "Has robado " & MiObj.Amount & " " & ObjData(MiObj.ObjIndex).name, FontTypeNames.FONTTYPE_INFO)
-156                 Call WriteConsoleMsg(VictimaIndex, UserList(LadronIndex).name & " te ha robado " & MiObj.Amount & " " & ObjData(MiObj.ObjIndex).name, FontTypeNames.FONTTYPE_INFO)
+154                 Call WriteConsoleMsg(LadronIndex, "Has robado " & MiObj.amount & " " & ObjData(MiObj.ObjIndex).name, FontTypeNames.FONTTYPE_INFO)
+156                 Call WriteConsoleMsg(VictimaIndex, UserList(LadronIndex).name & " te ha robado " & MiObj.amount & " " & ObjData(MiObj.ObjIndex).name, FontTypeNames.FONTTYPE_INFO)
                 Else
-158                 Call WriteConsoleMsg(LadronIndex, "Has hurtado " & MiObj.Amount & " " & ObjData(MiObj.ObjIndex).name, FontTypeNames.FONTTYPE_INFO)
+158                 Call WriteConsoleMsg(LadronIndex, "Has hurtado " & MiObj.amount & " " & ObjData(MiObj.ObjIndex).name, FontTypeNames.FONTTYPE_INFO)
                 
                 End If
 
@@ -1897,20 +1897,20 @@ Public Sub DoRaices(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte
                 'If .clase = eClass.Druid Then
                 'MiObj.Amount = RandomNumber(6, 8)
                 ' Else
-120             MiObj.Amount = RandomNumber(5, 7)
+120             MiObj.amount = RandomNumber(5, 7)
                 ' End If
        
 122             If ObjData(.Invent.HerramientaEqpObjIndex).donador = 1 Then
-124                 MiObj.Amount = MiObj.Amount * 2
+124                 MiObj.amount = MiObj.amount * 2
                 End If
        
-126             MiObj.Amount = MiObj.Amount * RecoleccionMult
+126             MiObj.amount = MiObj.amount * RecoleccionMult
 128             MiObj.ObjIndex = Raices
         
-130             MapData(.Pos.Map, X, Y).ObjInfo.Amount = MapData(.Pos.Map, X, Y).ObjInfo.Amount - MiObj.Amount
+130             MapData(.Pos.Map, X, Y).ObjInfo.amount = MapData(.Pos.Map, X, Y).ObjInfo.amount - MiObj.amount
     
-132             If MapData(.Pos.Map, X, Y).ObjInfo.Amount < 0 Then
-134                 MapData(.Pos.Map, X, Y).ObjInfo.Amount = 0
+132             If MapData(.Pos.Map, X, Y).ObjInfo.amount < 0 Then
+134                 MapData(.Pos.Map, X, Y).ObjInfo.amount = 0
     
 136                 Call AgregarItemLimpieza(.Pos.Map, X, Y)
                 
@@ -1923,7 +1923,7 @@ Public Sub DoRaices(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte
                 End If
         
                 'Call WriteConsoleMsg(UserIndex, "¡Has conseguido algunas raices!", FontTypeNames.FONTTYPE_INFO)
-142             Call WriteTextCharDrop(UserIndex, "+" & MiObj.Amount, .Char.CharIndex, vbWhite)
+142             Call WriteTextCharDrop(UserIndex, "+" & MiObj.amount, .Char.CharIndex, vbWhite)
 144             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(60, .Pos.X, .Pos.Y))
             Else
 146             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(61, .Pos.X, .Pos.Y))
@@ -1984,7 +1984,7 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
 120             Call ActualizarRecurso(.Pos.Map, X, Y)
 122             MapData(.Pos.Map, X, Y).ObjInfo.data = GetTickCount() ' Ultimo uso
     
-124             MiObj.Amount = IIf(.clase = Trabajador, 5, RandomNumber(1, 2)) * RecoleccionMult
+124             MiObj.amount = IIf(.clase = Trabajador, 5, RandomNumber(1, 2)) * RecoleccionMult
 
 126             If ObjData(MapData(.Pos.Map, X, Y).ObjInfo.ObjIndex).Elfico = 0 Then
 128                 MiObj.ObjIndex = Leña
@@ -1993,17 +1993,17 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
                 End If
 
 
-132             If MiObj.Amount > MapData(.Pos.Map, X, Y).ObjInfo.Amount Then
-134                 MiObj.Amount = MapData(.Pos.Map, X, Y).ObjInfo.Amount
+132             If MiObj.amount > MapData(.Pos.Map, X, Y).ObjInfo.amount Then
+134                 MiObj.amount = MapData(.Pos.Map, X, Y).ObjInfo.amount
                 End If
             
-136             MapData(.Pos.Map, X, Y).ObjInfo.Amount = MapData(.Pos.Map, X, Y).ObjInfo.Amount - MiObj.Amount
+136             MapData(.Pos.Map, X, Y).ObjInfo.amount = MapData(.Pos.Map, X, Y).ObjInfo.amount - MiObj.amount
             
 138             If Not MeterItemEnInventario(UserIndex, MiObj) Then
 140                 Call TirarItemAlPiso(.Pos, MiObj)
                 End If
     
-142             Call WriteTextCharDrop(UserIndex, "+" & MiObj.Amount, .Char.CharIndex, vbWhite)
+142             Call WriteTextCharDrop(UserIndex, "+" & MiObj.amount, .Char.CharIndex, vbWhite)
 144             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_TALAR, .Pos.X, .Pos.Y))
 
                 ' Al talar también podés dropear cosas raras (se setean desde RecursosEspeciales.dat)
@@ -2017,7 +2017,7 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
                     ' Si tiene suerte y le pega
 150                 If res = 1 Then
 152                     MiObj.ObjIndex = EspecialesTala(i).ObjIndex
-154                     MiObj.Amount = 1 ' Solo un item por vez
+154                     MiObj.amount = 1 ' Solo un item por vez
 
                         ' Tiro siempre el item al piso, me parece más rolero, como que cae del árbol :P
 156                     Call TirarItemAlPiso(.Pos, MiObj)
@@ -2091,13 +2091,13 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
 124             Yacimiento = ObjData(MapData(.Pos.Map, X, Y).ObjInfo.ObjIndex)
             
 126             MiObj.ObjIndex = Yacimiento.MineralIndex
-128             MiObj.Amount = IIf(.clase = Trabajador, 5, RandomNumber(1, 2)) * RecoleccionMult
+128             MiObj.amount = IIf(.clase = Trabajador, 5, RandomNumber(1, 2)) * RecoleccionMult
             
-130             If MiObj.Amount > MapData(.Pos.Map, X, Y).ObjInfo.Amount Then
-132                 MiObj.Amount = MapData(.Pos.Map, X, Y).ObjInfo.Amount
+130             If MiObj.amount > MapData(.Pos.Map, X, Y).ObjInfo.amount Then
+132                 MiObj.amount = MapData(.Pos.Map, X, Y).ObjInfo.amount
                 End If
             
-134             MapData(.Pos.Map, X, Y).ObjInfo.Amount = MapData(.Pos.Map, X, Y).ObjInfo.Amount - MiObj.Amount
+134             MapData(.Pos.Map, X, Y).ObjInfo.amount = MapData(.Pos.Map, X, Y).ObjInfo.amount - MiObj.amount
         
 136             If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.Pos, MiObj)
             
@@ -2110,13 +2110,13 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
                 ' Por cada drop posible
 142             For i = 1 To Yacimiento.CantItem
                     ' Tiramos al azar entre 1 y la probabilidad
-144                 res = RandomNumber(1, Yacimiento.Item(i).Amount)
+144                 res = RandomNumber(1, Yacimiento.Item(i).amount)
                 
                     ' Si tiene suerte y le pega
 146                 If res = 1 Then
                         ' Se lo metemos al inventario (o lo tiramos al piso)
 148                     MiObj.ObjIndex = Yacimiento.Item(i).ObjIndex
-150                     MiObj.Amount = 1 ' Solo una gema por vez
+150                     MiObj.amount = 1 ' Solo una gema por vez
                     
 152                     If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.Pos, MiObj)
 
@@ -2301,7 +2301,7 @@ Public Sub ActualizarRecurso(ByVal Map As Integer, ByVal X As Integer, ByVal Y A
 
         ' Data = Ultimo uso
 104     If (TiempoActual - MapData(Map, X, Y).ObjInfo.data) * 0.001 > ObjData(ObjIndex).TiempoRegenerar Then
-106         MapData(Map, X, Y).ObjInfo.Amount = ObjData(ObjIndex).VidaUtil
+106         MapData(Map, X, Y).ObjInfo.amount = ObjData(ObjIndex).VidaUtil
 108         MapData(Map, X, Y).ObjInfo.data = &H7FFFFFFF   ' Ultimo uso = Max Long
 
         End If
@@ -2446,7 +2446,7 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 112             puntosDomar = CInt(.Stats.UserAtributos(eAtributos.Carisma)) * CInt(.Stats.UserSkills(eSkill.Domar))
 
 114             If .clase = eClass.Druid Then
-                    puntosDomar = puntosDomar / 6
+                    puntosDomar = puntosDomar / 6 'original es 6
                 Else
 122                 puntosDomar = puntosDomar / 11
                 End If
