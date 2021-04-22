@@ -1354,10 +1354,10 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
         
             '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< PATHFINDING >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 378         .RangoVision = val(Leer.GetValue("NPC" & NpcNumber, "Distancia"))
-380         If .RangoVision = 0 Then NpcList(NpcIndex).RangoVision = RANGO_VISION_X
+380         If .RangoVision = 0 Then .RangoVision = RANGO_VISION_X
         
 382         .Inteligencia = val(Leer.GetValue("NPC" & NpcNumber, "Inteligencia"))
-384         If NpcList(NpcIndex).Inteligencia = 0 Then NpcList(NpcIndex).Inteligencia = 30
+384         If .Inteligencia = 0 Then .Inteligencia = 30
         
 386         ReDim .Path(1 To .Inteligencia + RANGO_VISION_X * 3)
     
