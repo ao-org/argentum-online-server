@@ -252,26 +252,27 @@ Public Sub AI_NpcAtacaNpc(ByVal NpcIndex As Integer)
             If Distancia(.Pos, NpcList(.TargetNPC).Pos) = 1 And .flags.Paralizado = 0 Then
                 Call SistemaCombate.NpcAtacaNpc(NpcIndex, .TargetNPC)
             End If
-
-            ' Si el NPC se puede mover, caminamos hacia el objetivo.
-            If (.flags.Paralizado + .flags.Inmovilizado) = 0 Then
-                
-                tHeading = FindDirectionEAO(.Pos, NpcList(.TargetNPC).Pos, .flags.AguaValida = 1, .flags.TierraInvalida = 0)
-                
-                ' Si el NPC esta al lado del Objetivo
-                If Distancia(.Pos, NpcList(.TargetNPC).Pos) = 1 Then
+            If .TargetNPC <> vbNull And .TargetNPC > 0 Then
+                ' Si el NPC se puede mover, caminamos hacia el objetivo.
+                If (.flags.Paralizado + .flags.Inmovilizado) = 0 Then
                     
-                    ' Cambio el Heading
-                    Call ChangeNPCChar(NpcIndex, .Char.Body, .Char.Head, tHeading)
-                    Call AnimacionIdle(NpcIndex, True)
-
-                Else
+                    tHeading = FindDirectionEAO(.Pos, NpcList(.TargetNPC).Pos, .flags.AguaValida = 1, .flags.TierraInvalida = 0)
                     
-                    ' Camino hacia el NPC
-                    Call MoveNPCChar(NpcIndex, tHeading)
-                    
+                    ' Si el NPC esta al lado del Objetivo
+                    If Distancia(.Pos, NpcList(.TargetNPC).Pos) = 1 Then
+                        
+                        ' Cambio el Heading
+                        Call ChangeNPCChar(NpcIndex, .Char.Body, .Char.Head, tHeading)
+                        Call AnimacionIdle(NpcIndex, True)
+    
+                    Else
+                        
+                        ' Camino hacia el NPC
+                        Call MoveNPCChar(NpcIndex, tHeading)
+                        
+                    End If
+                                    
                 End If
-                                
             End If
  
         Else
