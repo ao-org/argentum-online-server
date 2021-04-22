@@ -323,7 +323,7 @@ Public Const TIEMPO_CARCEL_PIQUETE As Long = 5
 '
 Public Enum eTrigger
 
-    NADA = 0
+    nada = 0
     BAJOTECHO = 1
     trigger_2 = 2
     POSINVALIDA = 3
@@ -558,7 +558,7 @@ Public Enum eSkill
     Proyectiles = 12
     Wrestling = 13
     Navegacion = 14
-    Equitacion = 15
+    equitacion = 15
     Resistencia = 16
 
     Talar = 17
@@ -875,7 +875,7 @@ End Type
 Public Type UserOBJ
 
     ObjIndex As Integer
-    Amount As Integer
+    amount As Integer
     Equipped As Byte
 
 End Type
@@ -976,7 +976,7 @@ End Type
 Public Type obj
 
     ObjIndex As Integer
-    Amount As Integer
+    amount As Integer
     data As Long
 
 End Type
@@ -984,7 +984,7 @@ End Type
 Public Type tQuestNpc
 
     NpcIndex As Integer
-    Amount As Integer
+    amount As Integer
 
 End Type
 
@@ -992,7 +992,7 @@ Public Type tQuestObj
 
     QuestIndex As Integer
     ObjIndex As Integer
-    Amount As Integer
+    amount As Integer
     Probabilidad As Long
 
 End Type
@@ -1747,7 +1747,7 @@ End Type
 
 Public Type tCOmercioUsuario
     
-    ItemsAEnviar(1 To 5) As obj
+    itemsAenviar(1 To 6) As obj
     DestUsu As Integer 'El otro Usuario
     DestNick As String
     Objeto As Integer 'Indice del inventario a comerciar, que objeto desea dar
