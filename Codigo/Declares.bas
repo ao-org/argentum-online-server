@@ -1751,18 +1751,14 @@ Public Type tRecompensaFaccion
 End Type
 
 
-Public Type tCOmercioUsuario
+Public Type tComercioUsuario
     
-    itemsAenviar(1 To 6) As obj
+    itemsAenviar(1 To 24) As obj ' Max cantidad de items a enviar es la minima cantidad de slots en el inventario.
     DestUsu As Integer 'El otro Usuario
     DestNick As String
     Objeto As Integer 'Indice del inventario a comerciar, que objeto desea dar
     Oro As Long
-    'El tipo de datos de Cant ahora es Long (antes Integer)
-    'asi se puede comerciar con oro > 32k
-    '[CORREGIDO]
     cant As Long 'Cuantos comerciar, cuantos objetos desea dar
-    '[/CORREGIDO]
     Acepto As Boolean
 
 End Type
@@ -1838,7 +1834,7 @@ Public Type user
     ip As String
     
     '[Alejo]
-    ComUsu As tCOmercioUsuario
+    ComUsu As tComercioUsuario
     '[/Alejo]
     
     EmpoCont As Byte
