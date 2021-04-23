@@ -27,7 +27,7 @@ End Enum
 ' WyroX: Hardcodeada de la vida...
 Public Const FUEGOFATUO      As Integer = 964
 
-'Damos a los NPCs el mismo rango de visión que un PJ
+'Damos a los NPCs el mismo rango de visiï¿½n que un PJ
 Public Const RANGO_VISION_X  As Byte = 11
 Public Const RANGO_VISION_Y  As Byte = 9
 
@@ -115,7 +115,7 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
     Dim enemigoCercano As Integer
     Dim enemigoAtacableMasCercano As Integer
     
-    ' Numero muy grande para que siempre haya un mínimo
+    ' Numero muy grande para que siempre haya un mï¿½nimo
     minDistancia = 32000
     minDistanciaAtacable = 32000
 
@@ -168,6 +168,20 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
 
         ' Si el NPC tiene un objetivo
         If .Target > 0 Then
+            ' Si no tiene un camino calculado o si el user se moviï¿½
+            If .PathLength = 0 Or .TargetPos.X <> UserList(.Target).Pos.X Or .TargetPos.Y <> UserList(.Target).Pos.Y Then
+                .TargetPos.X = UserList(.Target).Pos.X
+                .TargetPos.Y = UserList(.Target).Pos.Y
+
+                ' Recalculamos el camino
+                If SeekPath(NpcIndex, True) Then
+                    ' Si consiguiï¿½ un camino
+                    Call FollowPath(NpcIndex)
+                End If
+            Else ' Avanzamos en el camino
+                Call FollowPath(NpcIndex)
+            End If
+        
             Call AI_AtacarObjetivo(NpcIndex)
         Else
             Call RestoreOldMovement(NpcIndex)
@@ -196,7 +210,8 @@ Private Sub AI_AtacarObjetivo(ByVal AtackerNpcIndex As Integer)
     Dim AtacaMelee As Boolean
     Dim EstaPegadoAlUsuario As Boolean
     Dim tHeading As Byte
-
+    Dim NextPos As Position
+    
     With NpcList(AtackerNpcIndex)
 
         If .Target = 0 Then Exit Sub
@@ -209,10 +224,12 @@ Private Sub AI_AtacarObjetivo(ByVal AtackerNpcIndex As Integer)
             ' Le lanzo un Hechizo
             Call NpcLanzaUnSpell(AtackerNpcIndex)
         ElseIf AtacaMelee Then
-         ' Se da vuelta y enfrenta al Usuario
-            tHeading = FindDirectionEAO(.Pos, UserList(.Target).Pos, .flags.AguaValida = 1, .flags.TierraInvalida = 0)
+            ' Se da vuelta y enfrenta al Usuario
+            NextPos = .Path(.PathLength)
+            tHeading = GetHeadingFromDeltas(NextPos.X - .Pos.X, NextPos.Y - .Pos.Y) 'FindDirectionEAO(.Pos, UserList(.Target).Pos, .flags.AguaValida = 1, .flags.TierraInvalida = 0)
             Call AnimacionIdle(AtackerNpcIndex, True)
             Call ChangeNPCChar(AtackerNpcIndex, .Char.Body, .Char.Head, tHeading)
+            
 
             ' Le pego al Usuario
             Call NpcAtacaUser(AtackerNpcIndex, .Target, tHeading)
@@ -221,7 +238,9 @@ Private Sub AI_AtacarObjetivo(ByVal AtackerNpcIndex As Integer)
 
         If UsuarioAtacableConMagia(.Target) Or UsuarioAtacableConMelee(AtackerNpcIndex, .Target) Then
             ' Camino hacia el Usuario
-            tHeading = FindDirectionEAO(.Pos, UserList(.Target).Pos, .flags.AguaValida = 1, .flags.TierraInvalida = 0)
+            'tHeading = 1 'FindDirectionEAO(.Pos, UserList(.Target).Pos, .flags.AguaValida = 1, .flags.TierraInvalida = 0)
+            NextPos = .Path(.PathLength)
+            tHeading = GetHeadingFromDeltas(NextPos.X - .Pos.X, NextPos.Y - .Pos.Y)
             Call MoveNPCChar(AtackerNpcIndex, tHeading)
         End If
 
@@ -238,6 +257,7 @@ End Sub
 Public Sub AI_NpcAtacaNpc(ByVal NpcIndex As Integer)
     
     Dim tHeading As Integer
+    Dim NextPos As Position
     
     With NpcList(NpcIndex)
     
@@ -251,8 +271,9 @@ Public Sub AI_NpcAtacaNpc(ByVal NpcIndex As Integer)
                 ' Si el NPC se puede mover, caminamos hacia el objetivo.
                 If (.flags.Paralizado + .flags.Inmovilizado) = 0 Then
                     
-                    tHeading = FindDirectionEAO(.Pos, NpcList(.TargetNPC).Pos, .flags.AguaValida = 1, .flags.TierraInvalida = 0)
-                    
+                    tHeading = 1 'FindDirectionEAO(.Pos, NpcList(.TargetNPC).Pos, .flags.AguaValida = 1, .flags.TierraInvalida = 0)
+                    'NextPos = .Path(.PathLength)
+                    'tHeading = GetHeadingFromDeltas(NextPos.X - .Pos.X, NextPos.Y - .Pos.Y)
                     ' Si el NPC esta al lado del Objetivo
                     If Distancia(.Pos, NpcList(.TargetNPC).Pos) = 1 Then
                         
@@ -316,7 +337,8 @@ Public Sub SeguirAmo(ByVal NpcIndex As Integer)
                     Distancia(.Pos, UserList(UserIndex).Pos) > 3 Then
                     
                     ' Caminamos cerca del usuario
-                    tHeading = FindDirectionEAO(.Pos, UserList(UserIndex).Pos)
+                    tHeading = 1 'FindDirectionEAO(.Pos, UserList(UserIndex).Pos)
+                    
                     Call MoveNPCChar(NpcIndex, tHeading)
                     Exit Sub
                     
@@ -382,13 +404,13 @@ Private Sub HacerCaminata(ByVal NpcIndex As Integer)
         Destino.X = .Orig.X + .Caminata(.CaminataActual).Offset.X
         Destino.Y = .Orig.Y + .Caminata(.CaminataActual).Offset.Y
 
-        ' Si todavía no llegó al destino
+        ' Si todavï¿½a no llegï¿½ al destino
         If .Pos.X <> Destino.X Or .Pos.Y <> Destino.Y Then
         
             ' Tratamos de acercarnos (podemos pisar npcs, usuarios o triggers)
-            Heading = FindDirectionEAO(.Pos, Destino, .flags.AguaValida, .flags.TierraInvalida = 0, True, True)
+            Heading = 1 'FindDirectionEAO(.Pos, Destino, .flags.AguaValida, .flags.TierraInvalida = 0, True, True)
             
-            ' Obtengo la posición según el heading
+            ' Obtengo la posiciï¿½n segï¿½n el heading
             NextTile = .Pos
             Call HeadtoPos(Heading, NextTile)
             
@@ -402,7 +424,7 @@ Private Sub HacerCaminata(ByVal NpcIndex As Integer)
             ' Si hay un user
             MoveChar = MapData(NextTile.Map, NextTile.X, NextTile.Y).UserIndex
             If MoveChar Then
-                ' Si no está muerto o es admin invisible (porque a esos los atraviesa)
+                ' Si no estï¿½ muerto o es admin invisible (porque a esos los atraviesa)
                 If UserList(MoveChar).flags.AdminInvisible = 0 Or UserList(MoveChar).flags.Muerto = 0 Then
                     ' Lo movemos hacia un lado
                     Call MoveUserToSide(MoveChar, Heading)
@@ -421,19 +443,19 @@ Private Sub HacerCaminata(ByVal NpcIndex As Integer)
                 ' Pasamos a la siguiente caminata
                 .CaminataActual = .CaminataActual + 1
                 
-                ' Si pasamos el último, volvemos al primero
+                ' Si pasamos el ï¿½ltimo, volvemos al primero
                 If .CaminataActual > UBound(.Caminata) Then
                     .CaminataActual = 1
                 End If
                 
             End If
             
-        ' Si por alguna razón estamos en el destino, seguimos con la siguiente caminata
+        ' Si por alguna razï¿½n estamos en el destino, seguimos con la siguiente caminata
         Else
         
             .CaminataActual = .CaminataActual + 1
             
-            ' Si pasamos el último, volvemos al primero
+            ' Si pasamos el ï¿½ltimo, volvemos al primero
             If .CaminataActual > UBound(.Caminata) Then
                 .CaminataActual = 1
             End If
@@ -456,7 +478,7 @@ Private Sub MovimientoInvasion(ByVal NpcIndex As Integer)
         Dim SpawnBox As tSpawnBox
         SpawnBox = Invasiones(.flags.InvasionIndex).SpawnBoxes(.flags.SpawnBox)
     
-        ' Calculamos la distancia a la muralla y generamos una posición de destino
+        ' Calculamos la distancia a la muralla y generamos una posiciï¿½n de destino
         Dim DistanciaMuralla As Integer, Destino As WorldPos
         Destino = .Pos
         
@@ -468,28 +490,28 @@ Private Sub MovimientoInvasion(ByVal NpcIndex As Integer)
             Destino.Y = SpawnBox.CoordMuralla
         End If
 
-        ' Si todavía está lejos de la muralla
+        ' Si todavï¿½a estï¿½ lejos de la muralla
         If DistanciaMuralla > 1 Then
         
             ' Tratamos de acercarnos (sin pisar)
             Dim Heading As eHeading
-            Heading = FindDirectionEAO(.Pos, Destino, .flags.AguaValida, .flags.TierraInvalida = 0, True)
+            Heading = 1 ''FindDirectionEAO(.Pos, Destino, .flags.AguaValida, .flags.TierraInvalida = 0, True)
             
-            ' Nos aseguramos que la posición nueva está dentro del rectángulo válido
+            ' Nos aseguramos que la posiciï¿½n nueva estï¿½ dentro del rectï¿½ngulo vï¿½lido
             Dim NextTile As WorldPos
             NextTile = .Pos
             Call HeadtoPos(Heading, NextTile)
             
-            ' Si la posición nueva queda fuera del rectángulo válido
+            ' Si la posiciï¿½n nueva queda fuera del rectï¿½ngulo vï¿½lido
             If Not InsideRectangle(SpawnBox.LegalBox, NextTile.X, NextTile.Y) Then
-                ' Invertimos la dirección de movimiento
+                ' Invertimos la direcciï¿½n de movimiento
                 Heading = InvertHeading(Heading)
             End If
             
             ' Movemos el NPC
             Call MoveNPCChar(NpcIndex, Heading)
         
-        ' Si está pegado a la muralla
+        ' Si estï¿½ pegado a la muralla
         Else
         
             ' Chequeamos el intervalo de ataque
@@ -510,8 +532,8 @@ Private Sub MovimientoInvasion(ByVal NpcIndex As Integer)
             ' Sonido de impacto
             Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessagePlayWave(SND_IMPACTO, .Pos.X, .Pos.Y))
             
-            ' Dañamos la muralla
-            Call HacerDañoMuralla(.flags.InvasionIndex, RandomNumber(.Stats.MinHIT, .Stats.MaxHit))  ' TODO: Defensa de la muralla? No hace falta creo...
+            ' Daï¿½amos la muralla
+            Call HacerDaï¿½oMuralla(.flags.InvasionIndex, RandomNumber(.Stats.MinHIT, .Stats.MaxHit))  ' TODO: Defensa de la muralla? No hace falta creo...
 
         End If
     
@@ -532,19 +554,19 @@ Private Sub NpcLanzaUnSpell(ByVal NpcIndex As Integer)
     ' Elegir hechizo, dependiendo del hechi lo tiro sobre NPC, sobre Target o Sobre area (cerca de user o NPC si no tiene)
     Dim SpellIndex As Integer
     Dim Target As Integer
-    Dim PuedeDañarAlUsuario As Boolean
+    Dim PuedeDaï¿½arAlUsuario As Boolean
     
     If Not IntervaloPermiteLanzarHechizo(NpcIndex) Then Exit Sub
 
     Target = NpcList(NpcIndex).Target
     SpellIndex = NpcList(NpcIndex).Spells(RandomNumber(1, NpcList(NpcIndex).flags.LanzaSpells))
-    PuedeDañarAlUsuario = UserList(Target).flags.NoMagiaEfecto = 0 And NpcList(NpcIndex).flags.Paralizado = 0
+    PuedeDaï¿½arAlUsuario = UserList(Target).flags.NoMagiaEfecto = 0 And NpcList(NpcIndex).flags.Paralizado = 0
     
 
     Select Case Hechizos(SpellIndex).Target
       Case TargetType.uUsuarios
 
-        If UsuarioAtacableConMagia(Target) And PuedeDañarAlUsuario Then
+        If UsuarioAtacableConMagia(Target) And PuedeDaï¿½arAlUsuario Then
           Call NpcLanzaSpellSobreUser(NpcIndex, Target, SpellIndex)
 
           If UserList(Target).flags.AtacadoPorNpc = 0 Then
@@ -564,7 +586,7 @@ Private Sub NpcLanzaUnSpell(ByVal NpcIndex As Integer)
         If Hechizos(SpellIndex).AutoLanzar = 1 Then
           Call NpcLanzaSpellSobreNpc(NpcIndex, NpcIndex, SpellIndex)
 
-        ElseIf UsuarioAtacableConMagia(Target) And PuedeDañarAlUsuario Then
+        ElseIf UsuarioAtacableConMagia(Target) And PuedeDaï¿½arAlUsuario Then
           Call NpcLanzaSpellSobreUser(NpcIndex, Target, SpellIndex)
 
           If UserList(Target).flags.AtacadoPorNpc = 0 Then
