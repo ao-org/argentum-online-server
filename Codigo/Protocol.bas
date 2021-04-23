@@ -13358,15 +13358,9 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
                     Exit Sub
                 End If
 
-<<<<<<< HEAD
 138             If CompararPrivilegios(tUser, UserIndex) > 0 Then
 140                 Call WriteConsoleMsg(UserIndex, "Se le ha avisado a " & UserList(tUser).Name & " que quieres traerlo a tu posiciï¿½n.", FontTypeNames.FONTTYPE_INFO)
 142                 Call WriteConsoleMsg(tUser, .Name & " quiere transportarte a su ubicaciï¿½n. Escribe /ira " & .Name & " para ir.", FontTypeNames.FONTTYPE_INFO)
-=======
-138             If CompararUserPrivilegios(tUser, UserIndex) > 0 Then
-140                 Call WriteConsoleMsg(UserIndex, "Se le ha avisado a " & UserList(tUser).Name & " que quieres traerlo a tu posición.", FontTypeNames.FONTTYPE_INFO)
-142                 Call WriteConsoleMsg(tUser, .Name & " quiere transportarte a su ubicación. Escribe /ira " & .Name & " para ir.", FontTypeNames.FONTTYPE_INFO)
->>>>>>> 59a82e9 (Necesito help con los inner join)
                     Exit Sub
                 End If
                 
