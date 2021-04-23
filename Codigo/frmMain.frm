@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{248DD890-BB45-11CF-9ABC-0080C7E7B78D}#1.0#0"; "MSWINSCK.ocx"
+Object = "{248DD890-BB45-11CF-9ABC-0080C7E7B78D}#1.0#0"; "MSWINSCK.OCX"
 Begin VB.Form frmMain 
    BackColor       =   &H00E0E0E0&
    BorderStyle     =   4  'Fixed ToolWindow
@@ -872,6 +872,11 @@ Private Sub TiempoRetos_Timer()
                 If .TiempoRestante <= 0 Then
                     Call FinalizarReto(Sala, True)
                 End If
+                
+                If .TiempoItems > 0 Then
+                    .TiempoItems = .TiempoItems - IntervaloTimerRetosEnSegundos
+                    If .TiempoItems <= 0 Then Call TerminarTiempoAgarrarItems(Sala)
+                End If
             End If
         End With
 
@@ -1369,7 +1374,7 @@ Evento_Timer_Err:
         
 End Sub
 
-Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
         
         On Error GoTo Form_MouseMove_Err
     
@@ -1379,7 +1384,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y A
    
 100     If Not Visible Then
 
-102         Select Case X \ Screen.TwipsPerPixelX
+102         Select Case x \ Screen.TwipsPerPixelX
                 
                 Case WM_LBUTTONDBLCLK
 104                 WindowState = vbNormal
@@ -1499,7 +1504,7 @@ Private Sub GameTimer_Timer()
                     
                     .NumeroPaquetesPorMiliSec = 0
                     
-                    Call DoTileEvents(iUserIndex, .Pos.Map, .Pos.X, .Pos.Y)
+                    Call DoTileEvents(iUserIndex, .pos.Map, .pos.x, .pos.y)
 
                     If .flags.Muerto = 0 Then
                         
@@ -1986,8 +1991,8 @@ Private Sub TIMER_AI_Timer()
     Dim NpcIndex As Long
     Dim Mapa     As Integer
     
-    Dim X        As Integer
-    Dim Y        As Integer
+    Dim x        As Integer
+    Dim y        As Integer
 
     'Barrin 29/9/03
     If Not haciendoBK And Not EnPausa Then
@@ -2012,7 +2017,7 @@ Private Sub TIMER_AI_Timer()
 
                     Else
                         'Usamos AI si hay algun user en el mapa
-                        Mapa = .Pos.Map
+                        Mapa = .pos.Map
                         
                         If .flags.Paralizado > 0 Then Call EfectoParalisisNpc(NpcIndex)
                         If .flags.Inmovilizado > 0 Then Call EfectoInmovilizadoNpc(NpcIndex)
@@ -2052,7 +2057,7 @@ Private Sub TIMER_AI_Timer()
     Exit Sub
 
 ErrorHandler:
-    Call LogError("Error en TIMER_AI_Timer " & NpcList(NpcIndex).name & " mapa:" & NpcList(NpcIndex).Pos.Map)
+    Call LogError("Error en TIMER_AI_Timer " & NpcList(NpcIndex).name & " mapa:" & NpcList(NpcIndex).pos.Map)
     Call MuereNpc(NpcIndex, 0)
 
 End Sub
@@ -2205,7 +2210,7 @@ Private Sub TimerRespawn_Timer()
     Exit Sub
 
 ErrorHandler:
-    Call LogError("Error en TIMER_RESPAWN " & NpcList(NpcIndex).name & " mapa:" & NpcList(NpcIndex).Pos.Map)
+    Call LogError("Error en TIMER_RESPAWN " & NpcList(NpcIndex).name & " mapa:" & NpcList(NpcIndex).pos.Map)
     Call MuereNpc(NpcIndex, 0)
 
 End Sub
@@ -2229,7 +2234,7 @@ Private Sub tPiqueteC_Timer()
     For i = 1 To LastUser
 
         If UserList(i).flags.UserLogged Then
-            If MapData(UserList(i).Pos.Map, UserList(i).Pos.X, UserList(i).Pos.Y).trigger = eTrigger.ANTIPIQUETE Then
+            If MapData(UserList(i).pos.Map, UserList(i).pos.x, UserList(i).pos.y).trigger = eTrigger.ANTIPIQUETE Then
                 UserList(i).Counters.PiqueteC = UserList(i).Counters.PiqueteC + 1
                 'Call WriteConsoleMsg(i, "Estás obstruyendo la via pública, muévete o serás encarcelado!!!", FontTypeNames.FONTTYPE_INFO)
                 
