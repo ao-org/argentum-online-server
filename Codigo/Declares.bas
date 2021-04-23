@@ -1053,6 +1053,8 @@ Public Type SolicitudReto
     estado As SolicitudRetoEstado
     Jugadores() As SolicitudJugador
     Apuesta As Long
+    PocionesMaximas As Integer
+    CaenItems As Boolean
 End Type
 
 Public Enum EquipoReto
@@ -1063,12 +1065,16 @@ End Enum
 Public Type tSalaReto
     PosIzquierda As WorldPos
     PosDerecha As WorldPos
+    IndexBanquero As Integer
     ' -----------------
     EnUso As Boolean
     Ronda As Byte
     Puntaje As Integer
     Apuesta As Long
+    PocionesMaximas As Integer
+    CaenItems As Boolean
     TiempoRestante As Long
+    TiempoItems As Integer
     TamañoEquipoIzq As Byte
     TamañoEquipoDer As Byte
     Jugadores() As Integer
@@ -1795,7 +1801,7 @@ Public Type user
         
     Invent As Inventario
     
-    Pos As WorldPos
+    pos As WorldPos
     
     ConnIDValida As Boolean
     ConnID As Long 'ID
@@ -2015,7 +2021,7 @@ Public Type npc
 
     Veneno As Byte
 
-    Pos As WorldPos 'Posicion
+    pos As WorldPos 'Posicion
     Orig As WorldPos
 
     Movement As TipoAI
