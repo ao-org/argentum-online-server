@@ -127,15 +127,14 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
 
         If .flags.AttackedBy <> vbNullString Then
           agresor = NameIndex(.flags.AttackedBy)
-          distanciaAgresor = Distancia(UserList(agresor).Pos, .Pos)
+          If agresor > 0 Then distanciaAgresor = Distancia(UserList(agresor).Pos, .Pos)
         End If
 
         ' Busco algun objetivo en el area.
         For i = 1 To ModAreas.ConnGroups(.Pos.Map).CountEntrys
             UserIndex = ModAreas.ConnGroups(.Pos.Map).UserEntrys(i)
 
-            If EnRangoVision(NpcIndex, UserIndex) And EsEnemigo(NpcIndex, UserIndex) And Not EsGM(UserIndex) Then
-
+            If EsObjetivoValido(NpcIndex, UserIndex) Then
                 ' Busco el mas cercano, sea atacable o no.
                 If Distancia(UserList(UserIndex).Pos, .Pos) < minDistancia Then
                     enemigoCercano = UserIndex
@@ -143,7 +142,7 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
                 End If
 
                 ' Busco el mas cercano que sea atacable.
-                If EsObjetivoValido(NpcIndex, UserIndex) And Distancia(UserList(UserIndex).Pos, .Pos) < minDistanciaAtacable Then
+                If (UsuarioAtacableConMagia(UserIndex) Or UsuarioAtacableConMelee(UserIndex)) And Distancia(UserList(UserIndex).Pos, .Pos) < minDistanciaAtacable Then
                     enemigoAtacableMasCercano = UserIndex
                     minDistanciaAtacable = Distancia(UserList(UserIndex).Pos, .Pos)
                 End If
@@ -169,7 +168,6 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
             End If
 
         End If
-
 
         ' Si el NPC tiene un objetivo
         If .Target > 0 Then
@@ -201,14 +199,14 @@ Private Sub AI_AtacarObjetivo(ByVal AtackerNpcIndex As Integer)
     Dim AtacaMelee As Boolean
     Dim EstaPegadoAlUsuario As Boolean
     Dim tHeading As Byte
-    
+
     With NpcList(AtackerNpcIndex)
-        
+
         If .Target = 0 Then Exit Sub
-        
+
         EstaPegadoAlUsuario = (Distancia(.Pos, UserList(.Target).Pos) <= 1)
-        AtacaConMagia = (.flags.LanzaSpells And (RandomNumber(1, 2) = 1 Or .flags.Inmovilizado Or Not EstaPegadoAlUsuario))
-        AtacaMelee = (EstaPegadoAlUsuario And UsuarioAtacable(.Target) And .flags.Paralizado = 0 And Not AtacaConMagia)
+        AtacaConMagia = (.flags.LanzaSpells And UsuarioAtacableConMagia(.Target) And (RandomNumber(1, 100) <= 50 Or .flags.Inmovilizado Or Not EstaPegadoAlUsuario))
+        AtacaMelee = (EstaPegadoAlUsuario And UsuarioAtacableConMelee(.Target) And .flags.Paralizado = 0 And Not AtacaConMagia)
 
         If AtacaConMagia Then
             ' Le lanzo un Hechizo
@@ -224,7 +222,7 @@ Private Sub AI_AtacarObjetivo(ByVal AtackerNpcIndex As Integer)
 
         End If
 
-        If UsuarioAtacable(.Target) Then
+        If UsuarioAtacableConMagia(.Target) Or UsuarioAtacableConMelee(.Target) Then
             ' Camino hacia el Usuario
             tHeading = FindDirectionEAO(.Pos, UserList(.Target).Pos, .flags.AguaValida = 1, .flags.TierraInvalida = 0)
             Call MoveNPCChar(AtackerNpcIndex, tHeading)
@@ -287,10 +285,10 @@ End Sub
 
 Private Sub SeguirAgresor(ByVal NpcIndex As Integer)
     ' La IA que se ejecuta cuando alguien le pega al maestro de una Mascota/Elemental
-    '   o si atacas a los NPCs con Movement = TIPOAI.NpcDefensa
+    ' o si atacas a los NPCs con Movement = TIPOAI.NpcDefensa
     ' A diferencia de IrUsuarioCercano(), aca no buscamos objetivos cercanos en el area
     ' porque ya establecemos como objetivo a el usuario que ataco a los NPC con este tipo de IA
-    
+
     If EsObjetivoValido(NpcIndex, NpcList(NpcIndex).Target) Then
         Call AI_AtacarObjetivo(NpcIndex)
     Else
@@ -546,7 +544,7 @@ Private Sub NpcLanzaUnSpell(ByVal NpcIndex As Integer)
     Select Case Hechizos(SpellIndex).Target
       Case TargetType.uUsuarios
 
-        If UsuarioAtacable(Target) And UserList(Target).flags.NoMagiaEfeceto = 0 Then
+        If UsuarioAtacableConMagia(Target) And UserList(Target).flags.NoMagiaEfeceto = 0 Then
           Call NpcLanzaSpellSobreUser(NpcIndex, Target, SpellIndex)
 
           If UserList(Target).flags.AtacadoPorNpc = 0 Then
@@ -566,7 +564,7 @@ Private Sub NpcLanzaUnSpell(ByVal NpcIndex As Integer)
         If Hechizos(SpellIndex).AutoLanzar = 1 Then
           Call NpcLanzaSpellSobreNpc(NpcIndex, NpcIndex, SpellIndex)
 
-        ElseIf UsuarioAtacable(Target) And UserList(Target).flags.NoMagiaEfeceto = 0 Then
+        ElseIf UsuarioAtacableConMagia(Target) And UserList(Target).flags.NoMagiaEfeceto = 0 Then
           Call NpcLanzaSpellSobreUser(NpcIndex, Target, SpellIndex)
 
           If UserList(Target).flags.AtacadoPorNpc = 0 Then
@@ -612,9 +610,8 @@ Private Sub NpcLanzaUnSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC A
 NpcLanzaUnSpellSobreNpc_Err:
     Call RegistrarError(Err.Number, Err.Description, "AI.NpcLanzaUnSpellSobreNpc", Erl)
     Resume Next
-        
-End Sub
 
+End Sub
 
 
 
@@ -626,36 +623,38 @@ Private Function EsObjetivoValido(ByVal NpcIndex As Integer, ByVal UserIndex As 
     If UserIndex = 0 Then Exit Function
 
     ' Esta condicion debe ejecutarse independiemente de el modo de busqueda.
-    EsObjetivoValido = (EnRangoVision(NpcIndex, UserIndex) And UsuarioAtacable(UserIndex) And EsEnemigo(NpcIndex, UserIndex))
+    EsObjetivoValido = ( _
+      EnRangoVision(NpcIndex, UserIndex) And _
+      EsEnemigo(NpcIndex, UserIndex) And _
+      UserList(UserIndex).Muerto = 0 And _
+      Not EsGM(UserIndex))
 
 End Function
 
 Private Function EsEnemigo(ByVal NpcIndex As Integer, ByVal UserIndex As Integer) As Boolean
 
-    ' Hardcodeo de Emancu: Arreglando el movimiento cuando esta muerto.
-    ' Lo arreglo asi rapido, porque quiero reescribir la definicion de estas funciones auxiliares.
-    If UserList(UserIndex).flags.Muerto = 1 Then Exit Function
+    If NpcIndex * UserIndex = 0 Then Exit Function
 
     With NpcList(NpcIndex)
-    
+
         If .flags.AttackedBy <> vbNullString Then
             EsEnemigo = (UserIndex = NameIndex(.flags.AttackedBy))
             If EsEnemigo Then Exit Function
         End If
-    
+
         Select Case .flags.AIAlineacion
             Case e_Alineacion.Real
                 EsEnemigo = (Status(UserIndex) Mod 2) <> 1
-        
+
             Case e_Alineacion.Caos
                 EsEnemigo = (Status(UserIndex) Mod 2) <> 0
-                
+
             Case e_Alineacion.ninguna
                 EsEnemigo = True
                 ' Ok. No hay nada especial para hacer, cualquiera puede ser enemigo!
 
         End Select
-    
+
     End With
 End Function
 
@@ -681,16 +680,32 @@ Private Function EnRangoVision(ByVal NpcIndex As Integer, ByVal UserIndex As Int
 
 End Function
 
-Private Function UsuarioAtacable(ByVal targetUserIndex As Integer) As Boolean
+Private Function UsuarioAtacableConMagia(ByVal targetUserIndex As Integer) As Boolean
+    If targetUserIndex = 0 Then Exit Function
 
     With UserList(targetUserIndex)
-      UsuarioAtacable = (.flags.Muerto = 0 And _
-                         .flags.invisible = 0 And _
-                         .flags.Inmunidad = 0 And _
-                         .flags.Oculto = 0 And _
-                         .flags.Mimetizado < e_EstadoMimetismo.FormaBichoSinProteccion And _
-                         Not EsGM(targetUserIndex) And _
-                         Not .flags.EnConsulta)
+      UsuarioAtacableConMagia = ( _
+        .flags.Muerto = 0 And _
+        .flags.invisible = 0 And _
+        .flags.Inmunidad = 0 And _
+        .flags.Oculto = 0 And _
+        .flags.Mimetizado < e_EstadoMimetismo.FormaBichoSinProteccion And _
+        Not EsGM(targetUserIndex) And _
+        Not .flags.EnConsulta)
+    End With
+
+End Function
+
+Private Function UsuarioAtacableConMelee(ByVal targetUserIndex As Integer) As Boolean
+    If targetUserIndex = 0 Then Exit Function
+
+    With UserList(targetUserIndex)
+      UsuarioAtacableConMelee = ( _
+        .flags.Muerto = 0 And _
+        .flags.Inmunidad = 0 And _
+        .flags.Mimetizado < e_EstadoMimetismo.FormaBichoSinProteccion And _
+        Not EsGM(targetUserIndex) And _
+        Not .flags.EnConsulta )
     End With
 
 End Function
