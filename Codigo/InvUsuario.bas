@@ -859,7 +859,7 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal slot As Byte)
 186                 Case 7 '
                 
 188                 Case 9 ' Orbe Ignea
-190                     UserList(UserIndex).flags.NoMagiaEfeceto = 0
+190                     UserList(UserIndex).flags.NoMagiaEfecto = 0
 
 192                 Case 10
 194                     UserList(UserIndex).flags.incinera = 0
@@ -1316,7 +1316,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 282                         .Stats.MinHIT = .Stats.MinHIT + obj.CuantoAumento
 
 284                     Case 9
-286                         .flags.NoMagiaEfeceto = 1
+286                         .flags.NoMagiaEfecto = 1
 
 288                     Case 10
 290                         .flags.incinera = 1

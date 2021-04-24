@@ -1789,7 +1789,7 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 224         .Paraliza = 0
 226         .Envenena = 0
 228         .NoPalabrasMagicas = 0
-230         .NoMagiaEfeceto = 0
+230         .NoMagiaEfecto = 0
 232         .incinera = 0
 234         .Estupidiza = 0
 236         .GolpeCertero = 0

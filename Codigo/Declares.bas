@@ -1464,7 +1464,7 @@ Public Type UserFlags
     Envenena As Byte
     Paraliza As Byte
     Estupidiza As Byte
-    NoMagiaEfeceto As Byte
+    NoMagiaEfecto As Byte
     CarroMineria As Byte
     GolpeCertero As Byte
     AnilloOcultismo As Byte
@@ -1753,7 +1753,7 @@ End Type
 
 Public Type tComercioUsuario
     
-    itemsAenviar(1 To 24) As obj ' Max cantidad de items a enviar es la minima cantidad de slots en el inventario.
+    itemsAenviar(1 To 6) As obj ' Mas de 6 no se puede, la UI muestra solo eso.
     DestUsu As Integer 'El otro Usuario
     DestNick As String
     Objeto As Integer 'Indice del inventario a comerciar, que objeto desea dar
