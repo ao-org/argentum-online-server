@@ -595,7 +595,7 @@ Private Sub UserDañoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
             ' Golpe crítico
 120         If PuedeGolpeCritico(UserIndex) Then
                 ' Si acertó - Doble chance contra NPCs
-122             If RandomNumber(1, 100) <= ProbabilidadGolpeCritico(UserIndex) * 2 Then
+122             If RandomNumber(1, 100) <= ProbabilidadGolpeCritico(UserIndex) * 1.5 Then
                     ' Daño del golpe crítico (usamos el daño base)
 124                 DañoExtra = DañoBase * ModDañoGolpeCritico
                 
@@ -611,7 +611,7 @@ Private Sub UserDañoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
             ' Apuñalar (le afecta la defensa)
 132         ElseIf PuedeApuñalar(UserIndex) Then
                 ' Si acertó - Doble chance contra NPCs
-136             If RandomNumber(1, 100) <= ProbabilidadApuñalar(UserIndex) * 2 Then
+136             If RandomNumber(1, 100) <= ProbabilidadApuñalar(UserIndex) * 1.5 Then
                     ' Daño del apuñalamiento
 138                 DañoExtra = Daño * ModicadorApuñalarClase(.clase)
                 
@@ -2475,7 +2475,7 @@ Private Function ProbabilidadApuñalar(ByVal UserIndex As Integer) As Integer
 104         Select Case .clase
     
                 Case eClass.Assasin '20%
-106                 ProbabilidadApuñalar = 0.2 * Skill
+106                 ProbabilidadApuñalar = 0.33 * Skill
     
 108             Case eClass.Pirat, eClass.Hunter '15%
 110                 ProbabilidadApuñalar = 0.15 * Skill
