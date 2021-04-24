@@ -30799,9 +30799,19 @@ Private Sub HandleConsulta(ByVal UserIndex As Integer)
             
 154             With UserList(UserConsulta)
 156                 If Not EstaPCarea(UserIndex, UserConsulta) Then
-158                     Call WarpUserChar(UserIndex, .pos.Map, .pos.X, .pos.Y, True)
+                        Dim X       As Byte
+                        Dim Y       As Byte
+                        
+                        X = .Pos.X
+                        Y = .Pos.Y
+                        Call FindLegalPos(UserIndex, .Pos.Map, X, Y)
+158                     Call WarpUserChar(UserIndex, .Pos.Map, X, Y, True)
+                        
                     End If
             
+                    If UserList(UserIndex).flags.AdminInvisible = 1 Then
+                        Call DoAdminInvisible(UserIndex)
+                    End If
 160                 .flags.EnConsulta = True
                 
                     ' Pierde invi u ocu
