@@ -535,16 +535,19 @@ Private Sub NpcLanzaUnSpell(ByVal NpcIndex As Integer)
     ' Elegir hechizo, dependiendo del hechi lo tiro sobre NPC, sobre Target o Sobre area (cerca de user o NPC si no tiene)
     Dim SpellIndex As Integer
     Dim Target As Integer
-
+    Dim PuedeDañarAlUsuario As Boolean
+    
     If Not IntervaloPermiteLanzarHechizo(NpcIndex) Then Exit Sub
 
     Target = NpcList(NpcIndex).Target
     SpellIndex = NpcList(NpcIndex).Spells(RandomNumber(1, NpcList(NpcIndex).flags.LanzaSpells))
+    PuedeDañarAlUsuario = UserList(Target).flags.NoMagiaEfecto = 0 And NpcList(NpcIndex).flags.Paralizado = 0
+    
 
     Select Case Hechizos(SpellIndex).Target
       Case TargetType.uUsuarios
 
-        If UsuarioAtacableConMagia(Target) And UserList(Target).flags.NoMagiaEfeceto = 0 Then
+        If UsuarioAtacableConMagia(Target) And PuedeDañarAlUsuario Then
           Call NpcLanzaSpellSobreUser(NpcIndex, Target, SpellIndex)
 
           If UserList(Target).flags.AtacadoPorNpc = 0 Then
@@ -564,7 +567,7 @@ Private Sub NpcLanzaUnSpell(ByVal NpcIndex As Integer)
         If Hechizos(SpellIndex).AutoLanzar = 1 Then
           Call NpcLanzaSpellSobreNpc(NpcIndex, NpcIndex, SpellIndex)
 
-        ElseIf UsuarioAtacableConMagia(Target) And UserList(Target).flags.NoMagiaEfeceto = 0 Then
+        ElseIf UsuarioAtacableConMagia(Target) And PuedeDañarAlUsuario Then
           Call NpcLanzaSpellSobreUser(NpcIndex, Target, SpellIndex)
 
           If UserList(Target).flags.AtacadoPorNpc = 0 Then
