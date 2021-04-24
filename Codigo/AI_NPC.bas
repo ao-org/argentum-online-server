@@ -142,7 +142,7 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
                 End If
 
                 ' Busco el mas cercano que sea atacable.
-                If (UsuarioAtacableConMagia(UserIndex) Or UsuarioAtacableConMelee(UserIndex)) And Distancia(UserList(UserIndex).Pos, .Pos) < minDistanciaAtacable Then
+                If (UsuarioAtacableConMagia(UserIndex) Or UsuarioAtacableConMelee(NpcIndex, UserIndex)) And Distancia(UserList(UserIndex).Pos, .Pos) < minDistanciaAtacable Then
                     enemigoAtacableMasCercano = UserIndex
                     minDistanciaAtacable = Distancia(UserList(UserIndex).Pos, .Pos)
                 End If
@@ -206,7 +206,7 @@ Private Sub AI_AtacarObjetivo(ByVal AtackerNpcIndex As Integer)
 
         EstaPegadoAlUsuario = (Distancia(.Pos, UserList(.Target).Pos) <= 1)
         AtacaConMagia = (.flags.LanzaSpells And UsuarioAtacableConMagia(.Target) And (RandomNumber(1, 100) <= 50 Or .flags.Inmovilizado Or Not EstaPegadoAlUsuario))
-        AtacaMelee = (EstaPegadoAlUsuario And UsuarioAtacableConMelee(.Target) And .flags.Paralizado = 0 And Not AtacaConMagia)
+        AtacaMelee = (EstaPegadoAlUsuario And UsuarioAtacableConMelee(AtackerNpcIndex, .Target) And .flags.Paralizado = 0 And Not AtacaConMagia)
 
         If AtacaConMagia Then
             ' Le lanzo un Hechizo
@@ -222,7 +222,7 @@ Private Sub AI_AtacarObjetivo(ByVal AtackerNpcIndex As Integer)
 
         End If
 
-        If UsuarioAtacableConMagia(.Target) Or UsuarioAtacableConMelee(.Target) Then
+        If UsuarioAtacableConMagia(.Target) Or UsuarioAtacableConMelee(AtackerNpcIndex, .Target) Then
             ' Camino hacia el Usuario
             tHeading = FindDirectionEAO(.Pos, UserList(.Target).Pos, .flags.AguaValida = 1, .flags.TierraInvalida = 0)
             Call MoveNPCChar(AtackerNpcIndex, tHeading)
@@ -699,13 +699,19 @@ Private Function UsuarioAtacableConMagia(ByVal targetUserIndex As Integer) As Bo
 
 End Function
 
-Private Function UsuarioAtacableConMelee(ByVal targetUserIndex As Integer) As Boolean
+Private Function UsuarioAtacableConMelee(ByVal NpcIndex As Integer, ByVal targetUserIndex As Integer) As Boolean
     If targetUserIndex = 0 Then Exit Function
 
+    Dim EstaPegadoAlUser As Boolean
+    
     With UserList(targetUserIndex)
+    
+      EstaPegadoAlUser = Distancia(NpcList(NpcIndex).Pos, .Pos) = 1
+
       UsuarioAtacableConMelee = ( _
         .flags.Muerto = 0 And _
         .flags.Inmunidad = 0 And _
+        (EstaPegadoAlUser Or (Not EstaPegadoAlUser And (.flags.invisible + .flags.Oculto) = 0)) And _
         .flags.Mimetizado < e_EstadoMimetismo.FormaBichoSinProteccion And _
         Not EsGM(targetUserIndex) And _
         Not .flags.EnConsulta)
