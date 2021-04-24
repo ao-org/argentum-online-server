@@ -381,8 +381,8 @@ Public Sub NpcLanzaSpellSobreArea(ByVal NpcIndex As Integer, ByVal SpellIndex As
     Dim afectaUsers As Boolean
     Dim afectaNPCs As Boolean
     Dim TargetMap As MapBlock
-    Dim PosCasteadaX As Byte
-    Dim PosCasteadaY As Byte
+    Dim PosCasteadaX As Integer
+    Dim PosCasteadaY As Integer
     Dim X            As Long
     Dim Y            As Long
     Dim mitadAreaRadio As Integer
@@ -393,8 +393,8 @@ Public Sub NpcLanzaSpellSobreArea(ByVal NpcIndex As Integer, ByVal SpellIndex As
         mitadAreaRadio = CInt(.AreaRadio / 2)
         
         If NpcList(NpcIndex).Target > 0 Then
-            PosCasteadaX = UserList(NpcList(NpcIndex).Target).flags.TargetX + RandomNumber(-2, 2)
-            PosCasteadaY = UserList(NpcList(NpcIndex).Target).flags.TargetY + RandomNumber(-2, 2)
+            PosCasteadaX = UserList(NpcList(NpcIndex).Target).Pos.X + RandomNumber(-2, 2)
+            PosCasteadaY = UserList(NpcList(NpcIndex).Target).Pos.Y + RandomNumber(-2, 2)
         Else
             PosCasteadaX = NpcList(NpcIndex).Pos.X + RandomNumber(-2, 2)
             PosCasteadaY = NpcList(NpcIndex).Pos.Y + RandomNumber(-1, 2)
@@ -406,7 +406,7 @@ Public Sub NpcLanzaSpellSobreArea(ByVal NpcIndex As Integer, ByVal SpellIndex As
                 TargetMap = MapData(NpcList(NpcIndex).Pos.Map, X + PosCasteadaX - mitadAreaRadio, PosCasteadaY + Y - mitadAreaRadio)
                 
                 If afectaUsers And TargetMap.UserIndex > 0 Then
-                    If Not UserList(TargetMap.UserIndex).flags.Muerto Then
+                    If Not UserList(TargetMap.UserIndex).flags.Muerto And Not EsGM(TargetMap.UserIndex) Then
                         Call NpcLanzaSpellSobreUser(NpcIndex, TargetMap.UserIndex, SpellIndex, True)
                     End If
 
