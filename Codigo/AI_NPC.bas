@@ -626,7 +626,7 @@ Private Function EsObjetivoValido(ByVal NpcIndex As Integer, ByVal UserIndex As 
     EsObjetivoValido = ( _
       EnRangoVision(NpcIndex, UserIndex) And _
       EsEnemigo(NpcIndex, UserIndex) And _
-      UserList(UserIndex).Muerto = 0 And _
+      UserList(UserIndex).flags.Muerto = 0 And _
       Not EsGM(UserIndex))
 
 End Function
@@ -705,7 +705,7 @@ Private Function UsuarioAtacableConMelee(ByVal targetUserIndex As Integer) As Bo
         .flags.Inmunidad = 0 And _
         .flags.Mimetizado < e_EstadoMimetismo.FormaBichoSinProteccion And _
         Not EsGM(targetUserIndex) And _
-        Not .flags.EnConsulta )
+        Not .flags.EnConsulta)
     End With
 
 End Function
