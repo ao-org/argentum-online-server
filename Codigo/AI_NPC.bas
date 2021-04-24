@@ -114,12 +114,10 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
     Dim minDistanciaAtacable As Integer
     Dim enemigoCercano As Integer
     Dim enemigoAtacableMasCercano As Integer
-    Dim distanciaAgresor As Integer
-
+    
     ' Numero muy grande para que siempre haya un mínimo
     minDistancia = 32000
     minDistanciaAtacable = 32000
-    distanciaAgresor = 32000
 
     With NpcList(NpcIndex)
         npcEraPasivo = .flags.OldHostil = 0
@@ -127,7 +125,6 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
 
         If .flags.AttackedBy <> vbNullString Then
           agresor = NameIndex(.flags.AttackedBy)
-          If agresor > 0 Then distanciaAgresor = Distancia(UserList(agresor).Pos, .Pos)
         End If
 
         ' Busco algun objetivo en el area.
@@ -205,7 +202,7 @@ Private Sub AI_AtacarObjetivo(ByVal AtackerNpcIndex As Integer)
         If .Target = 0 Then Exit Sub
 
         EstaPegadoAlUsuario = (Distancia(.Pos, UserList(.Target).Pos) <= 1)
-        AtacaConMagia = (.flags.LanzaSpells And UsuarioAtacableConMagia(.Target) And (RandomNumber(1, 100) <= 50 Or .flags.Inmovilizado Or Not EstaPegadoAlUsuario))
+        AtacaConMagia = (.flags.LanzaSpells And (RandomNumber(1, 100) <= 50 Or .flags.Inmovilizado Or Not EstaPegadoAlUsuario))
         AtacaMelee = (EstaPegadoAlUsuario And UsuarioAtacableConMelee(AtackerNpcIndex, .Target) And .flags.Paralizado = 0 And Not AtacaConMagia)
 
         If AtacaConMagia Then
@@ -630,6 +627,7 @@ Private Function EsObjetivoValido(ByVal NpcIndex As Integer, ByVal UserIndex As 
       EnRangoVision(NpcIndex, UserIndex) And _
       EsEnemigo(NpcIndex, UserIndex) And _
       UserList(UserIndex).flags.Muerto = 0 And _
+      UserList(UserIndex).flags.EnConsulta = 0 And _
       Not EsGM(UserIndex))
 
 End Function
@@ -718,3 +716,4 @@ Private Function UsuarioAtacableConMelee(ByVal NpcIndex As Integer, ByVal target
     End With
 
 End Function
+

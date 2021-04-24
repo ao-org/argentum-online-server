@@ -2182,24 +2182,21 @@ Private Sub TimerRespawn_Timer()
 
     'Update NPCs
     For NpcIndex = 1 To MaxRespawn
-        Debug.Print RespawnList(NpcIndex).name
+        'Debug.Print RespawnList(NpcIndex).name
         If RespawnList(NpcIndex).flags.NPCActive Then  'Nos aseguramos que este muerto
-            If RespawnList(NpcIndex).Contadores.IntervaloRespawn <> 0 Then
+            If RespawnList(NpcIndex).Contadores.IntervaloRespawn > 0 Then
                 RespawnList(NpcIndex).Contadores.IntervaloRespawn = RespawnList(NpcIndex).Contadores.IntervaloRespawn - 1
+            Else
+                RespawnList(NpcIndex).flags.NPCActive = False
 
-                If RespawnList(NpcIndex).Contadores.IntervaloRespawn = 0 Then
-                    RespawnList(NpcIndex).flags.NPCActive = False
-
-                    If RespawnList(NpcIndex).InformarRespawn = 1 Then
-                        Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(RespawnList(NpcIndex).name & " ha vuelto a este mundo.", FontTypeNames.FONTTYPE_EXP))
-                        Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(257, NO_3D_SOUND, NO_3D_SOUND)) 'Para evento de respwan
+                If RespawnList(NpcIndex).InformarRespawn = 1 Then
+                    Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(RespawnList(NpcIndex).name & " ha vuelto a este mundo.", FontTypeNames.FONTTYPE_EXP))
+                    Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(257, NO_3D_SOUND, NO_3D_SOUND)) 'Para evento de respwan
                         
-                        'Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(246, NO_3D_SOUND, NO_3D_SOUND)) 'Para evento de respwan
-                    End If
-
-                    Call ReSpawnNpc(RespawnList(NpcIndex))
-
+                    'Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(246, NO_3D_SOUND, NO_3D_SOUND)) 'Para evento de respwan
                 End If
+
+                Call ReSpawnNpc(RespawnList(NpcIndex))
 
             End If
 

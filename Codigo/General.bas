@@ -484,7 +484,7 @@ Sub EnviarSpawnList(ByVal UserIndex As Integer)
         Dim K          As Long
         Dim npcNames() As String
 
-100     Debug.Print UBound(SpawnList)
+100     'Debug.Print UBound(SpawnList)
 102     ReDim npcNames(1 To UBound(SpawnList)) As String
 
 104     For K = 1 To UBound(SpawnList)

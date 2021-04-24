@@ -976,7 +976,7 @@ End Type
 Public Type obj
 
     ObjIndex As Integer
-    amount As Integer
+    amount As Long
     data As Long
 
 End Type
