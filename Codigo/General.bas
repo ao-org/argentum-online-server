@@ -642,7 +642,6 @@ Sub Main()
     Call LoadGuildsDB
     
     Call LoadConfiguraciones
-    Call CargarEventos
     Call CargarCodigosDonador
     Call loadAdministrativeUsers
 
