@@ -7982,6 +7982,10 @@ Private Sub HandleEnlist(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
             'Remove packet ID
 102         Call .incomingData.ReadByte
+
+            If .flags.Privilegios And (PlayerType.Consejero Or PlayerType.SemiDios) Then
+                Exit Sub
+            End If
         
             'Validate target NPC
 104         If .flags.TargetNPC = 0 Then
@@ -9859,14 +9863,14 @@ Private Sub HandleWhere(ByVal UserIndex As Integer)
         
 110         UserName = Buffer.ReadASCIIString()
         
-112         If Not .flags.Privilegios And PlayerType.user Then
+112         If EsGM(UserIndex) Then
 114             tUser = NameIndex(UserName)
 
 116             If tUser <= 0 Then
 118                 Call WriteConsoleMsg(UserIndex, "Usuario offline.", FontTypeNames.FONTTYPE_INFO)
                 Else
 
-120                 If (UserList(tUser).flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) <> 0 Or ((UserList(tUser).flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin) <> 0) And (.flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin)) <> 0) Then
+120                 If CompararPrivilegios(UserIndex, tUser) >= 0 Then
 122                     Call WriteConsoleMsg(UserIndex, "Ubicación  " & UserName & ": " & UserList(tUser).Pos.Map & ", " & UserList(tUser).Pos.X & ", " & UserList(tUser).Pos.Y & ".", FontTypeNames.FONTTYPE_INFO)
 124                     Call LogGM(.name, "/Donde " & UserName)
 
