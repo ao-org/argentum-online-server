@@ -20,7 +20,7 @@ Begin VB.Form frmConID
    Begin VB.CommandButton Command2 
       Caption         =   "Ver estado"
       Height          =   390
-      Left            =   135
+      Left            =   120
       TabIndex        =   2
       Top             =   3030
       Width           =   4290
