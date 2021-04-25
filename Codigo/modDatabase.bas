@@ -1,4 +1,4 @@
-Attribute VB_Name = "modDatabase"
+Attribute VB_Name = "Database"
 'Argentum Online Libre
 'Database connection module
 'Obtained from GS-Zone
