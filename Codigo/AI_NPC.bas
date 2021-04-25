@@ -634,7 +634,7 @@ End Function
 
 Private Function EsEnemigo(ByVal NpcIndex As Integer, ByVal UserIndex As Integer) As Boolean
 
-    If NpcIndex * UserIndex = 0 Then Exit Function
+    If NpcIndex = 0 Or UserIndex = 0 Then Exit Function
 
     With NpcList(NpcIndex)
 
@@ -665,7 +665,7 @@ Private Function EnRangoVision(ByVal NpcIndex As Integer, ByVal UserIndex As Int
     Dim Limite_X As Byte, Limite_Y As Byte
 
     ' Si alguno es cero, devolve false
-    If NpcIndex * UserIndex = 0 Then Exit Function
+    If NpcIndex = 0 Or UserIndex = 0 Then Exit Function
 
     Limite_X = IIf(NpcList(NpcIndex).Distancia <> 0, NpcList(NpcIndex).Distancia, RANGO_VISION_X)
     Limite_Y = IIf(NpcList(NpcIndex).Distancia <> 0, NpcList(NpcIndex).Distancia, RANGO_VISION_Y)
