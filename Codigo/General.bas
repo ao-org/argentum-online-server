@@ -605,218 +605,215 @@ End Sub
 
 Sub Main()
 
-        On Error GoTo Handler
+    On Error GoTo Handler
 
-102     Call LeerLineaComandos
+    Call LeerLineaComandos
     
-104     Call CargarRanking
+    Call CargarRanking
     
-        Dim f As Date
+    Dim f As Date
     
-106     Call ChDir(App.Path)
-108     Call ChDrive(App.Path)
+    Call ChDir(App.Path)
+    Call ChDrive(App.Path)
 
-110     Call InicializarConstantes
+    Call InicializarConstantes
     
-112     frmCargando.Show
+    frmCargando.Show
     
-        'Call PlayWaveAPI(App.Path & "\wav\harp3.wav")
+    'Call PlayWaveAPI(App.Path & "\wav\harp3.wav")
     
-118     frmMain.Caption = frmMain.Caption & " V." & App.Major & "." & App.Minor & "." & App.Revision
+    frmMain.Caption = frmMain.Caption & " V." & App.Major & "." & App.Minor & "." & App.Revision
     
-120     frmCargando.Label1(2).Caption = "Iniciando Arrays..."
+    frmCargando.Label1(2).Caption = "Iniciando Arrays..."
     
-122     Call LoadGuildsDB
+    Call LoadGuildsDB
     
-124     Call LoadConfiguraciones
-126     Call CargarEventos
-128     Call CargarCodigosDonador
-130     Call loadAdministrativeUsers
+    Call LoadConfiguraciones
+    Call CargarEventos
+    Call CargarCodigosDonador
+    Call loadAdministrativeUsers
 
-        '¿?¿?¿?¿?¿?¿?¿?¿ CARGAMOS DATOS DESDE ARCHIVOS ¿??¿?¿?¿?¿?¿?¿?¿
-132     frmCargando.Label1(2).Caption = "Cargando Server.ini"
+    '¿?¿?¿?¿?¿?¿?¿?¿ CARGAMOS DATOS DESDE ARCHIVOS ¿??¿?¿?¿?¿?¿?¿?¿
+    frmCargando.Label1(2).Caption = "Cargando Server.ini"
     
-134     MaxUsers = 0
-136     Call LoadSini
-138     Call LoadIntervalos
-140     Call CargarForbidenWords
-142     Call CargaApuestas
-144     Call CargarSpawnList
-146     Call LoadMotd
-148     Call BanIpCargar
-
-        '*************************************************
-150     frmCargando.Label1(2).Caption = "Cargando NPCs.Dat"
-152     Call CargaNpcsDat
-        '*************************************************
+    MaxUsers = 0
+    Call LoadSini
+    Call LoadIntervalos
+    Call CargarForbidenWords
+    Call CargaApuestas
+    Call CargarSpawnList
+    Call LoadMotd
+    Call BanIpCargar
     
-154     frmCargando.Label1(2).Caption = "Cargando Obj.Dat"
-        'Call LoadOBJData
-156     Call LoadOBJData
+    frmCargando.Label1(2).Caption = "Conectando base de datos y limpiando usuarios logueados"
 
-        Call InitTesoro
-        Call InitRegalo
+    'Conecto base de datos
+    Call Database_Connect
         
-158     frmCargando.Label1(2).Caption = "Cargando Hechizos.Dat"
-160     Call CargarHechizos
+    'Reinicio los users online
+    Call SetUsersLoggedDatabase(0)
         
-162     frmCargando.Label1(2).Caption = "Cargando Objetos de Herrería"
-164     Call LoadArmasHerreria
-166     Call LoadArmadurasHerreria
-    
-168     frmCargando.Label1(2).Caption = "Cargando Objetos de Carpintería"
-170     Call LoadObjCarpintero
-    
-172     frmCargando.Label1(2).Caption = "Cargando Objetos de Alquimista"
-174     Call LoadObjAlquimista
-    
-176     frmCargando.Label1(2).Caption = "Cargando Objetos de Sastre"
-178     Call LoadObjSastre
-    
-180     frmCargando.Label1(2).Caption = "Cargando Pesca"
-182     Call LoadPesca
-    
-184     frmCargando.Label1(2).Caption = "Cargando Recursos Especiales"
-186     Call LoadRecursosEspeciales
-
-        frmCargando.Label1(2).Caption = "Cargando Rangos de Faccion"
-        Call LoadRangosFaccion
-
-        frmCargando.Label1(2).Caption = "Cargando Recompensas de Faccion"
-        Call LoadRecompensasFaccion
-    
-188     frmCargando.Label1(2).Caption = "Cargando Balance.dat"
-190     Call LoadBalance    '4/01/08 Pablo ToxicWaste
-    
-192     frmCargando.Label1(2).Caption = "Cargando Ciudades.dat"
-194     Call CargarCiudades
-    
-196     If BootDelBackUp Then
-198         frmCargando.Label1(2).Caption = "Cargando WorldBackup"
-200         Call CargarBackUp
-        Else
-202         frmCargando.Label1(2).Caption = "Cargando Mapas"
-            Call LoadMapData
-        End If
+    'Leo el record de usuarios
+    RecordUsuarios = LeerRecordUsuariosDatabase()
         
-        Call CargarInfoRetos
-        Call CargarInfoEventos
-    
-        ' Pretorianos
-206     frmCargando.Label1(2).Caption = "Cargando Pretorianos.dat"
-208     Call LoadPretorianData
-    
-210     frmCargando.Label1(2).Caption = "Cargando Logros.ini"
-212     Call CargarLogros ' Ladder 22/04/2015
-    
-214     frmCargando.Label1(2).Caption = "Cargando Baneos Temporales"
-216     Call LoadBans
-    
-218     frmCargando.Label1(2).Caption = "Cargando Usuarios Donadores"
-220     Call LoadDonadores
-222     Call LoadObjDonador
-224     Call LoadQuests
+    'Tarea pesada
+    Call LogoutAllUsersAndAccounts
 
-226     EstadoGlobal = True
+    '*************************************************
+    frmCargando.Label1(2).Caption = "Cargando NPCs.Dat"
+    Call CargaNpcsDat
+    '*************************************************
     
-228     Call InicializarLimpieza
+    frmCargando.Label1(2).Caption = "Cargando Obj.Dat"
+    'Call LoadOBJData
+    Call LoadOBJData
 
-        'Comentado porque hay worldsave en ese mapa!
-        'Call CrearClanPretoriano(MAPA_PRETORIANO, ALCOBA2_X, ALCOBA2_Y)
-        '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
-    
-        Dim LoopC As Integer
-    
-        'Resetea las conexiones de los usuarios
-230     For LoopC = 1 To MaxUsers
-232         UserList(LoopC).ConnID = -1
-234         UserList(LoopC).ConnIDValida = False
-236         Set UserList(LoopC).incomingData = New clsByteQueue
-238         Set UserList(LoopC).outgoingData = New clsByteQueue
-240     Next LoopC
-    
-        '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
-    
-242     With frmMain
-244         .Minuto.Enabled = True
-246         .TimerGuardarUsuarios.Enabled = True
-248         .TimerGuardarUsuarios.Interval = IntervaloTimerGuardarUsuarios
-250         .tPiqueteC.Enabled = True
-252         .GameTimer.Enabled = True
-254         .Auditoria.Enabled = True
-256         .KillLog.Enabled = True
-258         .TIMER_AI.Enabled = True
-            .Invasion.Enabled = True
-        End With
-    
-260     Subasta.SubastaHabilitada = True
-262     Subasta.HaySubastaActiva = False
-264     Call ResetMeteo
-    
-266     frmCargando.Label1(2).Caption = "Conectando base de datos y limpiando usuarios logueados"
-    
-268     If Database_Enabled Then
-            'Conecto base de datos
-270         Call Database_Connect
+    Call InitTesoro
+    Call InitRegalo
         
-            'Reinicio los users online
-272         Call SetUsersLoggedDatabase(0)
+    frmCargando.Label1(2).Caption = "Cargando Hechizos.Dat"
+    Call CargarHechizos
         
-            'Leo el record de usuarios
-274         RecordUsuarios = LeerRecordUsuariosDatabase()
+    frmCargando.Label1(2).Caption = "Cargando Objetos de Herrería"
+    Call LoadArmasHerreria
+    Call LoadArmadurasHerreria
+    
+    frmCargando.Label1(2).Caption = "Cargando Objetos de Carpintería"
+    Call LoadObjCarpintero
+    
+    frmCargando.Label1(2).Caption = "Cargando Objetos de Alquimista"
+    Call LoadObjAlquimista
+    
+    frmCargando.Label1(2).Caption = "Cargando Objetos de Sastre"
+    Call LoadObjSastre
+    
+    frmCargando.Label1(2).Caption = "Cargando Pesca"
+    Call LoadPesca
+    
+    frmCargando.Label1(2).Caption = "Cargando Recursos Especiales"
+    Call LoadRecursosEspeciales
+
+    frmCargando.Label1(2).Caption = "Cargando Rangos de Faccion"
+    Call LoadRangosFaccion
+
+    frmCargando.Label1(2).Caption = "Cargando Recompensas de Faccion"
+    Call LoadRecompensasFaccion
+    
+    frmCargando.Label1(2).Caption = "Cargando Balance.dat"
+    Call LoadBalance    '4/01/08 Pablo ToxicWaste
+    
+    frmCargando.Label1(2).Caption = "Cargando Ciudades.dat"
+    Call CargarCiudades
+    
+    If BootDelBackUp Then
+        frmCargando.Label1(2).Caption = "Cargando WorldBackup"
+        Call CargarBackUp
+    Else
+        frmCargando.Label1(2).Caption = "Cargando Mapas"
+        Call LoadMapData
+    End If
         
-            'Tarea pesada
-276         Call LogoutAllUsersAndAccounts
+    Call CargarInfoRetos
+    Call CargarInfoEventos
+    
+    ' Pretorianos
+    frmCargando.Label1(2).Caption = "Cargando Pretorianos.dat"
+    Call LoadPretorianData
+    
+    frmCargando.Label1(2).Caption = "Cargando Logros.ini"
+    Call CargarLogros ' Ladder 22/04/2015
+    
+    frmCargando.Label1(2).Caption = "Cargando Baneos Temporales"
+    Call LoadBans
+    
+    frmCargando.Label1(2).Caption = "Cargando Usuarios Donadores"
+    Call LoadDonadores
+    Call LoadObjDonador
+    Call LoadQuests
 
-        End If
+    EstadoGlobal = True
     
-        '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
-        'Configuracion de los sockets
+    Call InicializarLimpieza
+
+    'Comentado porque hay worldsave en ese mapa!
+    'Call CrearClanPretoriano(MAPA_PRETORIANO, ALCOBA2_X, ALCOBA2_Y)
+    '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
     
-278     Call SecurityIp.InitIpTables(1000)
+    Dim LoopC As Integer
+    
+    'Resetea las conexiones de los usuarios
+    For LoopC = 1 To MaxUsers
+        UserList(LoopC).ConnID = -1
+        UserList(LoopC).ConnIDValida = False
+        Set UserList(LoopC).incomingData = New clsByteQueue
+        Set UserList(LoopC).outgoingData = New clsByteQueue
+    Next LoopC
+    
+    '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
+    
+    With frmMain
+        .Minuto.Enabled = True
+        .TimerGuardarUsuarios.Enabled = True
+        .TimerGuardarUsuarios.Interval = IntervaloTimerGuardarUsuarios
+        .tPiqueteC.Enabled = True
+        .GameTimer.Enabled = True
+        .Auditoria.Enabled = True
+        .KillLog.Enabled = True
+        .TIMER_AI.Enabled = True
+        .Invasion.Enabled = True
+    End With
+    
+    Subasta.SubastaHabilitada = True
+    Subasta.HaySubastaActiva = False
+    Call ResetMeteo
+    
+    '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
+    'Configuracion de los sockets
+    
+    Call SecurityIp.InitIpTables(1000)
         
-        'Cierra el socket de escucha
-280     If LastSockListen >= 0 Then Call apiclosesocket(LastSockListen)
+    'Cierra el socket de escucha
+    If LastSockListen >= 0 Then Call apiclosesocket(LastSockListen)
 
-282     Call IniciaWsApi(frmMain.hwnd)
-284     SockListen = ListenForConnect(Puerto, hWndMsg, "")
+    Call IniciaWsApi(frmMain.hwnd)
+    SockListen = ListenForConnect(Puerto, hWndMsg, "")
 
-286     If SockListen <> -1 Then
-288         Call WriteVar(IniPath & "Server.ini", "INIT", "LastSockListen", SockListen) _
-                    ' Guarda el socket escuchando
-        Else
-290         Call MsgBox("Ha ocurrido un error al iniciar el socket del Servidor.", vbCritical + vbOKOnly)
+    If SockListen <> -1 Then
+        Call WriteVar(IniPath & "Server.ini", "INIT", "LastSockListen", SockListen) _
+                ' Guarda el socket escuchando
+    Else
+        Call MsgBox("Ha ocurrido un error al iniciar el socket del Servidor.", vbCritical + vbOKOnly)
 
-        End If
+    End If
     
-318     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
-        '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
+    If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
+    '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
     
-320     Call GetHoraActual
+    Call GetHoraActual
     
-322     HoraMundo = GetTickCount() - DuracionDia \ 2
+    HoraMundo = GetTickCount() - DuracionDia \ 2
 
-324     frmCargando.Visible = False
-326     Unload frmCargando
+    frmCargando.Visible = False
+    Unload frmCargando
 
-        'Log
-328     Dim n As Integer
-        n = FreeFile
-330     Open App.Path & "\logs\Main.log" For Append Shared As #n
-332     Print #n, Date & " " & Time & " server iniciado " & App.Major & "." & App.Minor & "." & App.Revision
-334     Close #n
+    'Log
+    Dim n As Integer
+    n = FreeFile
+    Open App.Path & "\logs\Main.log" For Append Shared As #n
+    Print #n, Date & " " & Time & " server iniciado " & App.Major & "." & App.Minor & "." & App.Revision
+    Close #n
     
-        'Ocultar
-336     Call frmMain.InitMain(HideMe)
+    'Ocultar
+    Call frmMain.InitMain(HideMe)
     
-338     tInicioServer = GetTickCount()
+    tInicioServer = GetTickCount()
 
-        Exit Sub
+    Exit Sub
         
 Handler:
-340     Call RegistrarError(Err.Number, Err.Description, "General.Main", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "General.Main", Erl)
 
-342     Resume Next
+    Resume Next
 
 End Sub
 
