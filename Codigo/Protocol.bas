@@ -26694,6 +26694,10 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
                         .Invent.Object(SlotViejo).Amount = Excedente
                         .Invent.Object(SlotNuevo).Amount = MAX_INVENTORY_OBJS
                     Else
+                        If .Invent.Object(SlotViejo).Equipped = 1 Then
+                            .Invent.Object(SlotNuevo).Equipped = 1
+                        End If
+                    
                         .Invent.Object(SlotViejo).ObjIndex = 0
                         .Invent.Object(SlotViejo).Amount = 0
                         .Invent.Object(SlotViejo).Equipped = 0
