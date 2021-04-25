@@ -1019,20 +1019,23 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
             ' Resta la vida del NPC
 136         Call UserDañoNpc(UserIndex, NpcIndex)
             
+            Dim Arma As Integer: Arma = UserList(UserIndex).Invent.WeaponEqpObjIndex
             Dim municionIndex As Integer: municionIndex = UserList(UserIndex).Invent.MunicionEqpObjIndex
             Dim Particula As Integer
             Dim Tiempo    As Long
             
-            If municionIndex > 0 Then
-                If ObjData(municionIndex).CreaFX <> 0 Then
-                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(NpcList(NpcIndex).Char.CharIndex, ObjData(municionIndex).CreaFX, 0))
-                
-                End If
-                                    
-                If ObjData(municionIndex).CreaParticula <> "" Then
-                    Particula = val(ReadField(1, ObjData(municionIndex).CreaParticula, Asc(":")))
-                    Tiempo = val(ReadField(2, ObjData(municionIndex).CreaParticula, Asc(":")))
-                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(NpcList(NpcIndex).Char.CharIndex, Particula, Tiempo, False))
+            If Arma > 0 Then
+                If municionIndex > 0 And ObjData(Arma).Proyectil Then
+                    If ObjData(municionIndex).CreaFX <> 0 Then
+                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(NpcList(NpcIndex).Char.CharIndex, ObjData(municionIndex).CreaFX, 0))
+                    
+                    End If
+                                        
+                    If ObjData(municionIndex).CreaParticula <> "" Then
+                        Particula = val(ReadField(1, ObjData(municionIndex).CreaParticula, Asc(":")))
+                        Tiempo = val(ReadField(2, ObjData(municionIndex).CreaParticula, Asc(":")))
+                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(NpcList(NpcIndex).Char.CharIndex, Particula, Tiempo, False))
+                    End If
                 End If
             End If
             
