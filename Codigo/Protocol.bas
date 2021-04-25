@@ -8953,7 +8953,7 @@ Private Sub HandleGamble(ByVal UserIndex As Integer)
 
 138             If RandomNumber(1, 100) <= 45 Then
 140                 .Stats.GLD = .Stats.GLD + amount
-142                 Call WriteChatOverHead(UserIndex, "¡Felicidades! Has ganado " & PonerPuntos(amount) & " monedas de oro!", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+142                 Call WriteChatOverHead(UserIndex, "¡Felicidades! Has ganado " & PonerPuntos(Amount) & " monedas de oro!", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
                 
 144                 Apuestas.Perdidas = Apuestas.Perdidas + amount
 146                 Call WriteVar(DatPath & "apuestas.dat", "Main", "Perdidas", CStr(Apuestas.Perdidas))
@@ -20747,7 +20747,7 @@ End Sub
 ' @param    Y Y coord of the character's new position.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Sub WriteObjectCreate(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal X As Byte, ByVal Y As Byte)
+Public Sub WriteObjectCreate(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal Amount As Integer, ByVal X As Byte, ByVal Y As Byte)
         '***************************************************
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
@@ -20759,7 +20759,7 @@ Public Sub WriteObjectCreate(ByVal UserIndex As Integer, ByVal ObjIndex As Integ
         'End If
         On Error GoTo ErrHandler
 
-100     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageObjectCreate(ObjIndex, X, Y))
+100     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageObjectCreate(ObjIndex, Amount, X, Y))
         Exit Sub
 
 ErrHandler:
@@ -24646,7 +24646,7 @@ End Function
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 'Optimizacion por Ladder
-Public Function PrepareMessageObjectCreate(ByVal ObjIndex As Integer, ByVal X As Byte, ByVal Y As Byte) As String
+Public Function PrepareMessageObjectCreate(ByVal ObjIndex As Integer, ByVal Amount As Integer, ByVal X As Byte, ByVal Y As Byte) As String
         
         On Error GoTo PrepareMessageObjectCreate_Err
         
@@ -24661,6 +24661,7 @@ Public Function PrepareMessageObjectCreate(ByVal ObjIndex As Integer, ByVal X As
 104         Call .WriteByte(X)
 106         Call .WriteByte(Y)
 108         Call .WriteInteger(ObjIndex)
+            Call .WriteInteger(Amount)
         
 110         PrepareMessageObjectCreate = .ReadASCIIStringFixed(.Length)
 
@@ -26681,152 +26682,228 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
             Dim Equipado3 As Boolean
         
 114         If (SlotViejo > .CurrentInventorySlots) Or (SlotNuevo > .CurrentInventorySlots) Then
-116             Call WriteConsoleMsg(UserIndex, "Slot bloqueado.", FontTypeNames.FONTTYPE_INFOIAO)
+116             Call WriteConsoleMsg(UserIndex, "Espacio no desbloqueado.", FontTypeNames.FONTTYPE_INFOIAO)
             Else
     
-118             If .Invent.Object(SlotNuevo).ObjIndex <> 0 Then
-120                 Objeto.amount = .Invent.Object(SlotViejo).amount
-122                 Objeto.ObjIndex = .Invent.Object(SlotViejo).ObjIndex
-                
-124                 If .Invent.Object(SlotViejo).Equipped = 1 Then
-126                     Equipado = True
-
-                    End If
-                
-128                 If .Invent.Object(SlotNuevo).Equipped = 1 Then
-130                     Equipado2 = True
-
-                    End If
-                
-                    '  If .Invent.Object(SlotNuevo).Equipped = 1 And .Invent.Object(SlotViejo).Equipped = 1 Then
-                    '     Equipado3 = True
-                    ' End If
-                
-132                 .Invent.Object(SlotViejo).ObjIndex = .Invent.Object(SlotNuevo).ObjIndex
-134                 .Invent.Object(SlotViejo).amount = .Invent.Object(SlotNuevo).amount
-                
-136                 .Invent.Object(SlotNuevo).ObjIndex = Objeto.ObjIndex
-138                 .Invent.Object(SlotNuevo).amount = Objeto.amount
-                
-140                 If Equipado Then
-142                     .Invent.Object(SlotNuevo).Equipped = 1
+                If .Invent.Object(SlotNuevo).ObjIndex = .Invent.Object(SlotViejo).ObjIndex Then
+                    .Invent.Object(SlotNuevo).Amount = .Invent.Object(SlotNuevo).Amount + .Invent.Object(SlotViejo).Amount
+                    
+                    Dim Excedente As Integer
+                    Excedente = .Invent.Object(SlotNuevo).Amount - MAX_INVENTORY_OBJS
+                    If Excedente > 0 Then
+                        .Invent.Object(SlotViejo).Amount = Excedente
+                        .Invent.Object(SlotNuevo).Amount = MAX_INVENTORY_OBJS
                     Else
-144                     .Invent.Object(SlotNuevo).Equipped = 0
-
-                    End If
-                                
-146                 If Equipado2 Then
-148                     .Invent.Object(SlotViejo).Equipped = 1
-                    Else
-150                     .Invent.Object(SlotViejo).Equipped = 0
-
-                    End If
-
-                End If
-
-                'Cambiamos si alguno es un anillo
-152             If .Invent.DañoMagicoEqpSlot = SlotViejo Then
-154                 .Invent.DañoMagicoEqpSlot = SlotNuevo
-156             ElseIf .Invent.DañoMagicoEqpSlot = SlotNuevo Then
-158                 .Invent.DañoMagicoEqpSlot = SlotViejo
-                End If
-160             If .Invent.ResistenciaEqpSlot = SlotViejo Then
-162                 .Invent.ResistenciaEqpSlot = SlotNuevo
-164             ElseIf .Invent.ResistenciaEqpSlot = SlotNuevo Then
-166                 .Invent.ResistenciaEqpSlot = SlotViejo
-                End If
-                
-                'Cambiamos si alguno es un armor
-168             If .Invent.ArmourEqpSlot = SlotViejo Then
-170                 .Invent.ArmourEqpSlot = SlotNuevo
-172             ElseIf .Invent.ArmourEqpSlot = SlotNuevo Then
-174                 .Invent.ArmourEqpSlot = SlotViejo
-
-                End If
-                
-                'Cambiamos si alguno es un barco
-176             If .Invent.BarcoSlot = SlotViejo Then
-178                 .Invent.BarcoSlot = SlotNuevo
-180             ElseIf .Invent.BarcoSlot = SlotNuevo Then
-182                 .Invent.BarcoSlot = SlotViejo
-
-                End If
-                 
-                'Cambiamos si alguno es una montura
-184             If .Invent.MonturaSlot = SlotViejo Then
-186                 .Invent.MonturaSlot = SlotNuevo
-188             ElseIf .Invent.MonturaSlot = SlotNuevo Then
-190                 .Invent.MonturaSlot = SlotViejo
-
-                End If
-                
-                'Cambiamos si alguno es un casco
-192             If .Invent.CascoEqpSlot = SlotViejo Then
-194                 .Invent.CascoEqpSlot = SlotNuevo
-196             ElseIf .Invent.CascoEqpSlot = SlotNuevo Then
-198                 .Invent.CascoEqpSlot = SlotViejo
-
-                End If
-                
-                'Cambiamos si alguno es un escudo
-200             If .Invent.EscudoEqpSlot = SlotViejo Then
-202                 .Invent.EscudoEqpSlot = SlotNuevo
-204             ElseIf .Invent.EscudoEqpSlot = SlotNuevo Then
-206                 .Invent.EscudoEqpSlot = SlotViejo
-
-                End If
-                
-                'Cambiamos si alguno es municiín
-208             If .Invent.MunicionEqpSlot = SlotViejo Then
-210                 .Invent.MunicionEqpSlot = SlotNuevo
-212             ElseIf .Invent.MunicionEqpSlot = SlotNuevo Then
-214                 .Invent.MunicionEqpSlot = SlotViejo
-
-                End If
-                
-                'Cambiamos si alguno es un arma
-216             If .Invent.WeaponEqpSlot = SlotViejo Then
-218                 .Invent.WeaponEqpSlot = SlotNuevo
-220             ElseIf .Invent.WeaponEqpSlot = SlotNuevo Then
-222                 .Invent.WeaponEqpSlot = SlotViejo
-
-                End If
-                 
-                'Cambiamos si alguno es un nudillo
-224             If .Invent.NudilloSlot = SlotViejo Then
-226                 .Invent.NudilloSlot = SlotNuevo
-228             ElseIf .Invent.NudilloSlot = SlotNuevo Then
-230                 .Invent.NudilloSlot = SlotViejo
-
-                End If
-                 
-                'Cambiamos si alguno es un magico
-232             If .Invent.MagicoSlot = SlotViejo Then
-234                 .Invent.MagicoSlot = SlotNuevo
-236             ElseIf .Invent.MagicoSlot = SlotNuevo Then
-238                 .Invent.MagicoSlot = SlotViejo
-
-                End If
-                 
-                'Cambiamos si alguno es una herramienta
-240             If .Invent.HerramientaEqpSlot = SlotViejo Then
-242                 .Invent.HerramientaEqpSlot = SlotNuevo
-244             ElseIf .Invent.HerramientaEqpSlot = SlotNuevo Then
-246                 .Invent.HerramientaEqpSlot = SlotViejo
-
-                End If
-            
-248             If Objeto.ObjIndex = 0 Then
-250                 .Invent.Object(SlotNuevo).ObjIndex = .Invent.Object(SlotViejo).ObjIndex
-252                 .Invent.Object(SlotNuevo).amount = .Invent.Object(SlotViejo).amount
-254                 .Invent.Object(SlotNuevo).Equipped = .Invent.Object(SlotViejo).Equipped
+                        .Invent.Object(SlotViejo).ObjIndex = 0
+                        .Invent.Object(SlotViejo).Amount = 0
+                        .Invent.Object(SlotViejo).Equipped = 0
+                    
+                        'Cambiamos si alguno es un anillo
+                        If .Invent.DañoMagicoEqpSlot = SlotViejo Then
+                            .Invent.DañoMagicoEqpSlot = SlotNuevo
+                        End If
+                        If .Invent.ResistenciaEqpSlot = SlotViejo Then
+                            .Invent.ResistenciaEqpSlot = SlotNuevo
+                        End If
                         
-256                 .Invent.Object(SlotViejo).ObjIndex = 0
-258                 .Invent.Object(SlotViejo).amount = 0
-260                 .Invent.Object(SlotViejo).Equipped = 0
+                        'Cambiamos si alguno es un armor
+                        If .Invent.ArmourEqpSlot = SlotViejo Then
+                            .Invent.ArmourEqpSlot = SlotNuevo
+                        End If
+                        
+                        'Cambiamos si alguno es un barco
+                        If .Invent.BarcoSlot = SlotViejo Then
+                            .Invent.BarcoSlot = SlotNuevo
+                        End If
+                        
+                        'Cambiamos si alguno es una montura
+                        If .Invent.MonturaSlot = SlotViejo Then
+                            .Invent.MonturaSlot = SlotNuevo
+                        End If
+                        
+                        'Cambiamos si alguno es un casco
+                        If .Invent.CascoEqpSlot = SlotViejo Then
+                            .Invent.CascoEqpSlot = SlotNuevo
+                        End If
+                        
+                        'Cambiamos si alguno es un escudo
+                        If .Invent.EscudoEqpSlot = SlotViejo Then
+                            .Invent.EscudoEqpSlot = SlotNuevo
+                        End If
+                        
+                        'Cambiamos si alguno es municiín
+                        If .Invent.MunicionEqpSlot = SlotViejo Then
+                            .Invent.MunicionEqpSlot = SlotNuevo
+                        End If
+                        
+                        'Cambiamos si alguno es un arma
+                        If .Invent.WeaponEqpSlot = SlotViejo Then
+                            .Invent.WeaponEqpSlot = SlotNuevo
+                        End If
+                        
+                        'Cambiamos si alguno es un nudillo
+                        If .Invent.NudilloSlot = SlotViejo Then
+                            .Invent.NudilloSlot = SlotNuevo
+                        End If
+                        
+                        'Cambiamos si alguno es un magico
+                        If .Invent.MagicoSlot = SlotViejo Then
+                            .Invent.MagicoSlot = SlotNuevo
+                        End If
+                        
+                        'Cambiamos si alguno es una herramienta
+                        If .Invent.HerramientaEqpSlot = SlotViejo Then
+                            .Invent.HerramientaEqpSlot = SlotNuevo
+                        End If
 
+                    End If
+                
+                Else
+                    If .Invent.Object(SlotNuevo).ObjIndex <> 0 Then
+120                     Objeto.Amount = .Invent.Object(SlotViejo).Amount
+122                     Objeto.ObjIndex = .Invent.Object(SlotViejo).ObjIndex
+                    
+124                     If .Invent.Object(SlotViejo).Equipped = 1 Then
+126                         Equipado = True
+    
+                        End If
+                    
+128                     If .Invent.Object(SlotNuevo).Equipped = 1 Then
+130                         Equipado2 = True
+    
+                        End If
+                    
+                        '  If .Invent.Object(SlotNuevo).Equipped = 1 And .Invent.Object(SlotViejo).Equipped = 1 Then
+                        '     Equipado3 = True
+                        ' End If
+                    
+132                     .Invent.Object(SlotViejo).ObjIndex = .Invent.Object(SlotNuevo).ObjIndex
+134                     .Invent.Object(SlotViejo).Amount = .Invent.Object(SlotNuevo).Amount
+                    
+136                     .Invent.Object(SlotNuevo).ObjIndex = Objeto.ObjIndex
+138                     .Invent.Object(SlotNuevo).Amount = Objeto.Amount
+                    
+140                     If Equipado Then
+142                         .Invent.Object(SlotNuevo).Equipped = 1
+                        Else
+144                         .Invent.Object(SlotNuevo).Equipped = 0
+    
+                        End If
+                                    
+146                     If Equipado2 Then
+148                         .Invent.Object(SlotViejo).Equipped = 1
+                        Else
+150                         .Invent.Object(SlotViejo).Equipped = 0
+    
+                        End If
+    
+                    End If
+    
+                    'Cambiamos si alguno es un anillo
+152                 If .Invent.DañoMagicoEqpSlot = SlotViejo Then
+154                     .Invent.DañoMagicoEqpSlot = SlotNuevo
+156                 ElseIf .Invent.DañoMagicoEqpSlot = SlotNuevo Then
+158                     .Invent.DañoMagicoEqpSlot = SlotViejo
+                    End If
+160                 If .Invent.ResistenciaEqpSlot = SlotViejo Then
+162                     .Invent.ResistenciaEqpSlot = SlotNuevo
+164                 ElseIf .Invent.ResistenciaEqpSlot = SlotNuevo Then
+166                     .Invent.ResistenciaEqpSlot = SlotViejo
+                    End If
+                    
+                    'Cambiamos si alguno es un armor
+168                 If .Invent.ArmourEqpSlot = SlotViejo Then
+170                     .Invent.ArmourEqpSlot = SlotNuevo
+172                 ElseIf .Invent.ArmourEqpSlot = SlotNuevo Then
+174                     .Invent.ArmourEqpSlot = SlotViejo
+    
+                    End If
+                    
+                    'Cambiamos si alguno es un barco
+176                 If .Invent.BarcoSlot = SlotViejo Then
+178                     .Invent.BarcoSlot = SlotNuevo
+180                 ElseIf .Invent.BarcoSlot = SlotNuevo Then
+182                     .Invent.BarcoSlot = SlotViejo
+    
+                    End If
+                     
+                    'Cambiamos si alguno es una montura
+184                 If .Invent.MonturaSlot = SlotViejo Then
+186                     .Invent.MonturaSlot = SlotNuevo
+188                 ElseIf .Invent.MonturaSlot = SlotNuevo Then
+190                     .Invent.MonturaSlot = SlotViejo
+    
+                    End If
+                    
+                    'Cambiamos si alguno es un casco
+192                 If .Invent.CascoEqpSlot = SlotViejo Then
+194                     .Invent.CascoEqpSlot = SlotNuevo
+196                 ElseIf .Invent.CascoEqpSlot = SlotNuevo Then
+198                     .Invent.CascoEqpSlot = SlotViejo
+    
+                    End If
+                    
+                    'Cambiamos si alguno es un escudo
+200                 If .Invent.EscudoEqpSlot = SlotViejo Then
+202                     .Invent.EscudoEqpSlot = SlotNuevo
+204                 ElseIf .Invent.EscudoEqpSlot = SlotNuevo Then
+206                     .Invent.EscudoEqpSlot = SlotViejo
+    
+                    End If
+                    
+                    'Cambiamos si alguno es municiín
+208                 If .Invent.MunicionEqpSlot = SlotViejo Then
+210                     .Invent.MunicionEqpSlot = SlotNuevo
+212                 ElseIf .Invent.MunicionEqpSlot = SlotNuevo Then
+214                     .Invent.MunicionEqpSlot = SlotViejo
+    
+                    End If
+                    
+                    'Cambiamos si alguno es un arma
+216                 If .Invent.WeaponEqpSlot = SlotViejo Then
+218                     .Invent.WeaponEqpSlot = SlotNuevo
+220                 ElseIf .Invent.WeaponEqpSlot = SlotNuevo Then
+222                     .Invent.WeaponEqpSlot = SlotViejo
+    
+                    End If
+                     
+                    'Cambiamos si alguno es un nudillo
+224                 If .Invent.NudilloSlot = SlotViejo Then
+226                     .Invent.NudilloSlot = SlotNuevo
+228                 ElseIf .Invent.NudilloSlot = SlotNuevo Then
+230                     .Invent.NudilloSlot = SlotViejo
+    
+                    End If
+                     
+                    'Cambiamos si alguno es un magico
+232                 If .Invent.MagicoSlot = SlotViejo Then
+234                     .Invent.MagicoSlot = SlotNuevo
+236                 ElseIf .Invent.MagicoSlot = SlotNuevo Then
+238                     .Invent.MagicoSlot = SlotViejo
+    
+                    End If
+                     
+                    'Cambiamos si alguno es una herramienta
+240                 If .Invent.HerramientaEqpSlot = SlotViejo Then
+242                     .Invent.HerramientaEqpSlot = SlotNuevo
+244                 ElseIf .Invent.HerramientaEqpSlot = SlotNuevo Then
+246                     .Invent.HerramientaEqpSlot = SlotViejo
+    
+                    End If
+                
+248                 If Objeto.ObjIndex = 0 Then
+250                     .Invent.Object(SlotNuevo).ObjIndex = .Invent.Object(SlotViejo).ObjIndex
+252                     .Invent.Object(SlotNuevo).Amount = .Invent.Object(SlotViejo).Amount
+254                     .Invent.Object(SlotNuevo).Equipped = .Invent.Object(SlotViejo).Equipped
+                            
+256                     .Invent.Object(SlotViejo).ObjIndex = 0
+258                     .Invent.Object(SlotViejo).Amount = 0
+260                     .Invent.Object(SlotViejo).Equipped = 0
+    
+                    End If
+                    
                 End If
-            
+                
 262             Call UpdateUserInv(False, UserIndex, SlotViejo)
 264             Call UpdateUserInv(False, UserIndex, SlotNuevo)
 
