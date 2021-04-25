@@ -2841,6 +2841,8 @@ Sub LoadConfiguraciones()
 
         Set Leer = Nothing
         
+        CargarEventos
+        
         Exit Sub
 
 LoadConfiguraciones_Err:
