@@ -113,66 +113,59 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
     Set QueryBuilder = New cStringBuilder
     
     With UserList(UserIndex)
-    
+        
+        ReDim Params(45)
+        
         'Basic user data
-        QueryBuilder.Append "INSERT INTO user SET "
-        QueryBuilder.Append "name = ?, "
-        QueryBuilder.Append "account_id = " & .AccountId & ", "
-        QueryBuilder.Append "level = " & .Stats.ELV & ", "
-        QueryBuilder.Append "exp = " & .Stats.Exp & ", "
-        QueryBuilder.Append "genre_id = " & .genero & ", "
-        QueryBuilder.Append "race_id = " & .raza & ", "
-        QueryBuilder.Append "class_id = " & .clase & ", "
-        QueryBuilder.Append "home_id = " & .Hogar & ", "
-        QueryBuilder.Append "description = ?, "
-        QueryBuilder.Append "gold = " & .Stats.GLD & ", "
-        QueryBuilder.Append "free_skillpoints = " & .Stats.SkillPts & ", "
-        'QueryBuilder.Append "assigned_skillpoints = " & .Counters.AsignedSkills & ", "
-        QueryBuilder.Append "pos_map = " & .Pos.Map & ", "
-        QueryBuilder.Append "pos_x = " & .Pos.X & ", "
-        QueryBuilder.Append "pos_y = " & .Pos.Y & ", "
-        QueryBuilder.Append "body_id = " & .Char.Body & ", "
-        QueryBuilder.Append "head_id = " & .Char.Head & ", "
-        QueryBuilder.Append "weapon_id = " & .Char.WeaponAnim & ", "
-        QueryBuilder.Append "helmet_id = " & .Char.CascoAnim & ", "
-        QueryBuilder.Append "shield_id = " & .Char.ShieldAnim & ", "
-        QueryBuilder.Append "items_Amount = " & .Invent.NroItems & ", "
-        QueryBuilder.Append "slot_armour = " & .Invent.ArmourEqpSlot & ", "
-        QueryBuilder.Append "slot_weapon = " & .Invent.WeaponEqpSlot & ", "
-        QueryBuilder.Append "slot_shield = " & .Invent.EscudoEqpSlot & ", "
-        QueryBuilder.Append "slot_helmet = " & .Invent.CascoEqpSlot & ", "
-        QueryBuilder.Append "slot_ammo = " & .Invent.MunicionEqpSlot & ", "
-        QueryBuilder.Append "slot_dm = " & .Invent.DañoMagicoEqpSlot & ", "
-        QueryBuilder.Append "slot_rm = " & .Invent.ResistenciaEqpSlot & ", "
-        QueryBuilder.Append "slot_tool = " & .Invent.HerramientaEqpSlot & ", "
-        QueryBuilder.Append "slot_magic = " & .Invent.MagicoSlot & ", "
-        QueryBuilder.Append "slot_knuckles = " & .Invent.NudilloSlot & ", "
-        QueryBuilder.Append "slot_ship = " & .Invent.BarcoSlot & ", "
-        QueryBuilder.Append "slot_mount = " & .Invent.MonturaSlot & ", "
-        QueryBuilder.Append "min_hp = " & .Stats.MinHp & ", "
-        QueryBuilder.Append "max_hp = " & .Stats.MaxHp & ", "
-        QueryBuilder.Append "min_man = " & .Stats.MinMAN & ", "
-        QueryBuilder.Append "max_man = " & .Stats.MaxMAN & ", "
-        QueryBuilder.Append "min_sta = " & .Stats.MinSta & ", "
-        QueryBuilder.Append "max_sta = " & .Stats.MaxSta & ", "
-        QueryBuilder.Append "min_ham = " & .Stats.MinHam & ", "
-        QueryBuilder.Append "max_ham = " & .Stats.MaxHam & ", "
-        QueryBuilder.Append "min_sed = " & .Stats.MinAGU & ", "
-        QueryBuilder.Append "max_sed = " & .Stats.MaxAGU & ", "
-        QueryBuilder.Append "min_hit = " & .Stats.MinHIT & ", "
-        QueryBuilder.Append "max_hit = " & .Stats.MaxHit & ", "
-        'QueryBuilder.Append "rep_noble = " & .NobleRep & ", "
-        'QueryBuilder.Append "rep_plebe = " & .Reputacion.PlebeRep & ", "
-        'QueryBuilder.Append "rep_average = " & .Reputacion.Promedio & ", "
-        QueryBuilder.Append "is_naked = " & .flags.Desnudo & ", "
-        QueryBuilder.Append "status = " & .Faccion.Status & ", "
-        QueryBuilder.Append "is_logged = TRUE; "
+        Params(0) = .name
+        Params(1) = .AccountId
+        Params(2) = .Stats.ELV
+        Params(3) = .Stats.Exp
+        Params(4) = .genero
+        Params(5) = .raza
+        Params(6) = .clase
+        Params(7) = .Hogar
+        Params(8) = .Desc
+        Params(9) = .Stats.GLD
+        Params(10) = .Stats.SkillPts
+        Params(11) = .Pos.Map
+        Params(12) = .Pos.X
+        Params(13) = .Pos.Y
+        Params(14) = .Char.Body
+        Params(15) = .Char.Head
+        Params(16) = .Char.WeaponAnim
+        Params(17) = .Char.CascoAnim
+        Params(18) = .Char.ShieldAnim
+        Params(19) = .Invent.NroItems
+        Params(20) = .Invent.ArmourEqpSlot
+        Params(21) = .Invent.WeaponEqpSlot
+        Params(22) = .Invent.EscudoEqpSlot
+        Params(23) = .Invent.CascoEqpSlot
+        Params(24) = .Invent.MunicionEqpSlot
+        Params(25) = .Invent.DañoMagicoEqpSlot
+        Params(26) = .Invent.ResistenciaEqpSlot
+        Params(27) = .Invent.HerramientaEqpSlot
+        Params(28) = .Invent.MagicoSlot
+        Params(29) = .Invent.NudilloSlot
+        Params(30) = .Invent.BarcoSlot
+        Params(31) = .Invent.MonturaSlot
+        Params(32) = .Stats.MinHp
+        Params(33) = .Stats.MaxHp
+        Params(34) = .Stats.MinMAN
+        Params(35) = .Stats.MaxMAN
+        Params(36) = .Stats.MinSta
+        Params(37) = .Stats.MaxSta
+        Params(38) = .Stats.MinHam
+        Params(39) = .Stats.MaxHam
+        Params(40) = .Stats.MinAGU
+        Params(41) = .Stats.MaxAGU
+        Params(42) = .Stats.MinHIT
+        Params(43) = .Stats.MaxHit
+        Params(44) = .flags.Desnudo
+        Params(45) = .Faccion.Status
         
-        Call MakeQuery(QueryBuilder.ToString, True, .name, .Desc)
-        
-        'Borramos la query construida.
-        Call QueryBuilder.Clear
-        
+        Call MakeQuery(QUERY_CREARPJ_MAIN, True, Params)
+
         ' Para recibir el ID del user
         Call MakeQuery("SELECT LAST_INSERT_ID();", False)
 
@@ -240,7 +233,6 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
         Next LoopC
 
         'User skills
-        'QueryBuilder.Append "INSERT INTO skillpoint (user_id, number, value, exp, elu) VALUES "
         QueryBuilder.Append "INSERT INTO skillpoint (user_id, number, value) VALUES "
 
         For LoopC = 1 To NUMSKILLS
@@ -259,25 +251,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
             End If
 
         Next LoopC
-        
-        'User friends
-        'QueryBuilder.Append "INSERT INTO friend (user_id, number) VALUES "
 
-        'For LoopC = 1 To MAXAMIGOS
-        
-        '    QueryBuilder.Append "("
-        '    QueryBuilder.Append .ID & ", "
-        '    QueryBuilder.Append LoopC & ")"
-
-        '    If LoopC < MAXAMIGOS Then
-        '        QueryBuilder.Append ", "
-        '    Else
-        '        QueryBuilder.Append "; "
-
-        '    End If
-        
-        'Next LoopC
-        
         'User quests
         QueryBuilder.Append "INSERT INTO quest (user_id, number) VALUES "
 
