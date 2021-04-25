@@ -2909,6 +2909,7 @@ Public Function InsideRectangle(R As Rectangle, ByVal X As Integer, ByVal Y As I
     InsideRectangle = True
 End Function
 
+// Fuente: https://stackoverflow.com/questions/1378604/end-process-from-task-manager-using-vb-6-code (ultima respuesta)
 Public Function GetProcess(ByVal processName As String) As Byte
     
     Dim oService As Object
