@@ -3058,7 +3058,7 @@ Private Sub HandleBankEnd(ByVal UserIndex As Integer)
             'User exits banking mode
 104         .flags.Comerciando = False
         
-106         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("171", UserList(UserIndex).pos.X, UserList(UserIndex).pos.Y))
+106         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("171", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 108         Call WriteBankEnd(UserIndex)
 
         End With
@@ -3247,7 +3247,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
 
                     End If
                 
-158                 Call DropObj(UserIndex, slot, amount, .pos.Map, .pos.X, .pos.Y)
+158                 Call DropObj(UserIndex, slot, amount, .Pos.Map, .Pos.X, .Pos.Y)
 
                 End If
 
@@ -3368,7 +3368,7 @@ Private Sub HandleLeftClick(ByVal UserIndex As Integer)
 108         X = .ReadByte()
 110         Y = .ReadByte()
         
-112         Call LookatTile(UserIndex, UserList(UserIndex).pos.Map, X, Y)
+112         Call LookatTile(UserIndex, UserList(UserIndex).Pos.Map, X, Y)
 
         End With
 
@@ -3413,7 +3413,7 @@ Private Sub HandleDoubleClick(ByVal UserIndex As Integer)
 108         X = .ReadByte()
 110         Y = .ReadByte()
         
-112         Call Accion(UserIndex, UserList(UserIndex).pos.Map, X, Y)
+112         Call Accion(UserIndex, UserList(UserIndex).Pos.Map, X, Y)
 
         End With
 
@@ -3512,7 +3512,7 @@ Private Sub HandleWork(ByVal UserIndex As Integer)
     
                     End If
                     
-142                 If MapInfo(.pos.Map).SinInviOcul Then
+142                 If MapInfo(.Pos.Map).SinInviOcul Then
 144                     Call WriteConsoleMsg(UserIndex, "Una fuerza divina te impide ocultarte en esta zona.", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
@@ -3825,7 +3825,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
         
 112         Skill = .incomingData.ReadByte()
 
-114         If .flags.Muerto = 1 Or .flags.Descansar Or Not InMapBounds(.pos.Map, X, Y) Then Exit Sub
+114         If .flags.Muerto = 1 Or .flags.Descansar Or Not InMapBounds(.Pos.Map, X, Y) Then Exit Sub
 
 116         If Not InRangoVision(UserIndex, X, Y) Then
 118             Call WritePosUpdate(UserIndex)
@@ -3906,7 +3906,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
                     End If
                 
-192                 Call LookatTile(UserIndex, .pos.Map, X, Y)
+192                 Call LookatTile(UserIndex, .Pos.Map, X, Y)
                 
 194                 tU = .flags.TargetUser
 196                 tN = .flags.TargetNPC
@@ -3916,7 +3916,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 200                 If tU > 0 Then
 
                         'Only allow to atack if the other one can retaliate (can see us)
-202                     If Abs(UserList(tU).pos.Y - .pos.Y) > RANGO_VISION_Y Then
+202                     If Abs(UserList(tU).Pos.Y - .Pos.Y) > RANGO_VISION_Y Then
 204                         Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                             'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos para atacar.", FontTypeNames.FONTTYPE_WARNING)
 206                         Call WriteWorkRequestTarget(UserIndex, 0)
@@ -3961,7 +3961,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 268                 ElseIf tN > 0 Then
 
                         'Only allow to atack if the other one can retaliate (can see us)
-270                     If Abs(NpcList(tN).pos.Y - .pos.Y) > RANGO_VISION_Y And Abs(NpcList(tN).pos.X - .pos.X) > RANGO_VISION_X Then
+270                     If Abs(NpcList(tN).Pos.Y - .Pos.Y) > RANGO_VISION_Y And Abs(NpcList(tN).Pos.X - .Pos.X) > RANGO_VISION_X Then
 272                         Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
 274                         Call WriteWorkRequestTarget(UserIndex, 0)
                             'Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos para atacar.", FontTypeNames.FONTTYPE_WARNING)
@@ -4015,11 +4015,11 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     ' End If
                 
                     'Target whatever is in that tile
-354                 Call LookatTile(UserIndex, .pos.Map, X, Y)
+354                 Call LookatTile(UserIndex, .Pos.Map, X, Y)
                 
                     'If it's outside range log it and exit
-356                 If Abs(.pos.X - X) > RANGO_VISION_X Or Abs(.pos.Y - Y) > RANGO_VISION_Y Then
-358                     Call LogCheating("Ataque fuera de rango de " & .name & "(" & .pos.Map & "/" & .pos.X & "/" & .pos.Y & ") ip: " & .ip & " a la posicion (" & .pos.Map & "/" & X & "/" & Y & ")")
+356                 If Abs(.Pos.X - X) > RANGO_VISION_X Or Abs(.Pos.Y - Y) > RANGO_VISION_Y Then
+358                     Call LogCheating("Ataque fuera de rango de " & .name & "(" & .Pos.Map & "/" & .Pos.X & "/" & .Pos.Y & ") ip: " & .ip & " a la posicion (" & .Pos.Map & "/" & X & "/" & Y & ")")
                         Exit Sub
 
                     End If
@@ -4055,15 +4055,15 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                 
                         Case 1      ' Subtipo: Caña de Pescar
 
-384                         If (MapData(.pos.Map, X, Y).Blocked And FLAG_AGUA) <> 0 Then
-386                             If (MapData(.pos.Map, .pos.X, .pos.Y).Blocked And FLAG_AGUA) <> 0 Or _
-                                   (MapData(.pos.Map, .pos.X + 1, .pos.Y).Blocked And FLAG_AGUA) <> 0 Or _
-                                   (MapData(.pos.Map, .pos.X, .pos.Y + 1).Blocked And FLAG_AGUA) <> 0 Or _
-                                   (MapData(.pos.Map, .pos.X - 1, .pos.Y).Blocked And FLAG_AGUA) <> 0 Or _
-                                   (MapData(.pos.Map, .pos.X, .pos.Y - 1).Blocked And FLAG_AGUA) <> 0 Then
+384                         If (MapData(.Pos.Map, X, Y).Blocked And FLAG_AGUA) <> 0 Then
+386                             If (MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Or _
+                                   (MapData(.Pos.Map, .Pos.X + 1, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Or _
+                                   (MapData(.Pos.Map, .Pos.X, .Pos.Y + 1).Blocked And FLAG_AGUA) <> 0 Or _
+                                   (MapData(.Pos.Map, .Pos.X - 1, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Or _
+                                   (MapData(.Pos.Map, .Pos.X, .Pos.Y - 1).Blocked And FLAG_AGUA) <> 0 Then
 
 388                                 Call DoPescar(UserIndex, False, ObjData(.Invent.HerramientaEqpObjIndex).Dorada = 1)
-390                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .pos.X, .pos.Y))
+390                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .Pos.X, .Pos.Y))
                                 Else
 392                                 Call WriteConsoleMsg(UserIndex, "Acércate a la costa para pescar.", FontTypeNames.FONTTYPE_INFO)
 394                                 Call WriteMacroTrabajoToggle(UserIndex, False)
@@ -4077,9 +4077,9 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     
 400                     Case 2      ' Subtipo: Red de Pesca
     
-402                         If (MapData(.pos.Map, X, Y).Blocked And FLAG_AGUA) <> 0 Then
+402                         If (MapData(.Pos.Map, X, Y).Blocked And FLAG_AGUA) <> 0 Then
                             
-404                             If Abs(.pos.X - X) + Abs(.pos.Y - Y) > 8 Then
+404                             If Abs(.Pos.X - X) + Abs(.Pos.Y - Y) > 8 Then
 406                                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                                     'Call WriteConsoleMsg(UserIndex, "Estás demasiado lejos para pescar.", FontTypeNames.FONTTYPE_INFO)
 408                                 Call WriteWorkRequestTarget(UserIndex, 0)
@@ -4094,7 +4094,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
     
                                 End If
                                     
-416                             If MapInfo(UserList(UserIndex).pos.Map).Seguro = 1 Then
+416                             If MapInfo(UserList(UserIndex).Pos.Map).Seguro = 1 Then
 418                                 Call WriteConsoleMsg(UserIndex, "Esta prohibida la pesca masiva en las ciudades.", FontTypeNames.FONTTYPE_INFO)
 420                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                     Exit Sub
@@ -4109,7 +4109,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                                 End If
                                     
 428                             Call DoPescar(UserIndex, True, True)
-430                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .pos.X, .pos.Y))
+430                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .Pos.X, .Pos.Y))
                         
                             Else
                         
@@ -4141,10 +4141,10 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                             '    Exit Sub
                             'End If
                             
-446                         DummyInt = MapData(.pos.Map, X, Y).ObjInfo.ObjIndex
+446                         DummyInt = MapData(.Pos.Map, X, Y).ObjInfo.ObjIndex
                             
 448                         If DummyInt > 0 Then
-450                             If Abs(.pos.X - X) + Abs(.pos.Y - Y) > 1 Then
+450                             If Abs(.Pos.X - X) + Abs(.Pos.Y - Y) > 1 Then
 452                                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                                     'Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
 454                                 Call WriteWorkRequestTarget(UserIndex, 0)
@@ -4152,7 +4152,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
                                 End If
                                 
-456                             If .pos.X = X And .pos.Y = Y Then
+456                             If .Pos.X = X And .Pos.Y = Y Then
 458                                 Call WriteConsoleMsg(UserIndex, "No podés talar desde allí.", FontTypeNames.FONTTYPE_INFO)
 460                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                     Exit Sub
@@ -4166,7 +4166,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
                                 End If
 
-462                             If MapData(.pos.Map, X, Y).ObjInfo.amount <= 0 Then
+462                             If MapData(.Pos.Map, X, Y).ObjInfo.amount <= 0 Then
 464                                 Call WriteConsoleMsg(UserIndex, "El árbol ya no te puede entregar mas leña.", FontTypeNames.FONTTYPE_INFO)
 466                                 Call WriteWorkRequestTarget(UserIndex, 0)
 468                                 Call WriteMacroTrabajoToggle(UserIndex, False)
@@ -4205,14 +4205,14 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                 
                         Case 3  ' Herramientas de Alquimia - Tijeras
 
-492                         If MapInfo(UserList(UserIndex).pos.Map).Seguro = 1 Then
+492                         If MapInfo(UserList(UserIndex).Pos.Map).Seguro = 1 Then
 494                             Call WriteWorkRequestTarget(UserIndex, 0)
 496                             Call WriteConsoleMsg(UserIndex, "Esta prohibido cortar raices en las ciudades.", FontTypeNames.FONTTYPE_INFO)
                                 Exit Sub
 
                             End If
                             
-498                         If MapData(.pos.Map, X, Y).ObjInfo.amount <= 0 Then
+498                         If MapData(.Pos.Map, X, Y).ObjInfo.amount <= 0 Then
 500                             Call WriteConsoleMsg(UserIndex, "El árbol ya no te puede entregar mas raices.", FontTypeNames.FONTTYPE_INFO)
 502                             Call WriteWorkRequestTarget(UserIndex, 0)
 504                             Call WriteMacroTrabajoToggle(UserIndex, False)
@@ -4220,11 +4220,11 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
                             End If
                 
-506                         DummyInt = MapData(.pos.Map, X, Y).ObjInfo.ObjIndex
+506                         DummyInt = MapData(.Pos.Map, X, Y).ObjInfo.ObjIndex
                             
 508                         If DummyInt > 0 Then
                             
-510                             If Abs(.pos.X - X) + Abs(.pos.Y - Y) > 2 Then
+510                             If Abs(.Pos.X - X) + Abs(.Pos.Y - Y) > 2 Then
 512                                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                                     'Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
 514                                 Call WriteWorkRequestTarget(UserIndex, 0)
@@ -4232,7 +4232,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
                                 End If
                                 
-516                             If .pos.X = X And .pos.Y = Y Then
+516                             If .Pos.X = X And .Pos.Y = Y Then
 518                                 Call WriteConsoleMsg(UserIndex, "No podés quitar raices allí.", FontTypeNames.FONTTYPE_INFO)
 520                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                     Exit Sub
@@ -4241,7 +4241,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                                 
                                 '¡Hay un arbol donde clickeo?
 522                             If ObjData(DummyInt).OBJType = eOBJType.otArboles Then
-524                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_TIJERAS, .pos.X, .pos.Y))
+524                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_TIJERAS, .Pos.X, .Pos.Y))
 526                                 Call DoRaices(UserIndex, X, Y)
 
                                 End If
@@ -4269,14 +4269,14 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         Case 8  ' Herramientas de Mineria - Piquete
                 
                             'Target whatever is in the tile
-544                         Call LookatTile(UserIndex, .pos.Map, X, Y)
+544                         Call LookatTile(UserIndex, .Pos.Map, X, Y)
                             
-546                         DummyInt = MapData(.pos.Map, X, Y).ObjInfo.ObjIndex
+546                         DummyInt = MapData(.Pos.Map, X, Y).ObjInfo.ObjIndex
                             
 548                         If DummyInt > 0 Then
 
                                 'Check distance
-550                             If Abs(.pos.X - X) + Abs(.pos.Y - Y) > 2 Then
+550                             If Abs(.Pos.X - X) + Abs(.Pos.Y - Y) > 2 Then
 552                                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                                     'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
 554                                 Call WriteWorkRequestTarget(UserIndex, 0)
@@ -4296,7 +4296,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
                                     End If
 
-                                    If MapData(.pos.Map, X, Y).ObjInfo.amount <= 0 Then
+                                    If MapData(.Pos.Map, X, Y).ObjInfo.amount <= 0 Then
                                         Call WriteConsoleMsg(UserIndex, "Este yacimiento no tiene mas minerales para entregar.", FontTypeNames.FONTTYPE_INFO)
                                         Call WriteWorkRequestTarget(UserIndex, 0)
                                         Call WriteMacroTrabajoToggle(UserIndex, False)
@@ -4323,13 +4323,13 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 578             Case eSkill.Robar
 
                     'Does the map allow us to steal here?
-580                 If MapInfo(.pos.Map).Seguro = 0 Then
+580                 If MapInfo(.Pos.Map).Seguro = 0 Then
                     
                         'Check interval
 582                     If Not IntervaloPermiteTrabajarExtraer(UserIndex) Then Exit Sub
                     
                         'Target whatever is in that tile
-584                     Call LookatTile(UserIndex, UserList(UserIndex).pos.Map, X, Y)
+584                     Call LookatTile(UserIndex, UserList(UserIndex).Pos.Map, X, Y)
                     
 586                     tU = .flags.TargetUser
                     
@@ -4345,7 +4345,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 598                                     DistanciaMaxima = 1
                                     End If
 
-600                                 If Abs(.pos.X - UserList(tU).pos.X) + Abs(.pos.Y - UserList(tU).pos.Y) > DistanciaMaxima Then
+600                                 If Abs(.Pos.X - UserList(tU).Pos.X) + Abs(.Pos.Y - UserList(tU).Pos.Y) > DistanciaMaxima Then
 602                                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                                         'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
 604                                     Call WriteWorkRequestTarget(UserIndex, 0)
@@ -4354,13 +4354,13 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                                  
                                     '17/09/02
                                     'Check the trigger
-606                                 If MapData(UserList(tU).pos.Map, UserList(tU).pos.X, UserList(tU).pos.Y).trigger = eTrigger.ZONASEGURA Then
+606                                 If MapData(UserList(tU).Pos.Map, UserList(tU).Pos.X, UserList(tU).Pos.Y).trigger = eTrigger.ZONASEGURA Then
 608                                     Call WriteConsoleMsg(UserIndex, "No podés robar aquí.", FontTypeNames.FONTTYPE_WARNING)
 610                                     Call WriteWorkRequestTarget(UserIndex, 0)
                                         Exit Sub
                                     End If
                                  
-612                                 If MapData(.pos.Map, .pos.X, .pos.Y).trigger = eTrigger.ZONASEGURA Then
+612                                 If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = eTrigger.ZONASEGURA Then
 614                                     Call WriteConsoleMsg(UserIndex, "No podés robar aquí.", FontTypeNames.FONTTYPE_WARNING)
 616                                     Call WriteWorkRequestTarget(UserIndex, 0)
                                         Exit Sub
@@ -4390,12 +4390,12 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     'criaturas hostiles.
                     
                     'Target whatever is that tile
-630                 Call LookatTile(UserIndex, .pos.Map, X, Y)
+630                 Call LookatTile(UserIndex, .Pos.Map, X, Y)
 632                 tN = .flags.TargetNPC
                     
 634                 If tN > 0 Then
 636                     If NpcList(tN).flags.Domable > 0 Then
-638                         If Abs(.pos.X - X) + Abs(.pos.Y - Y) > 4 Then
+638                         If Abs(.Pos.X - X) + Abs(.Pos.Y - Y) > 4 Then
 640                             Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
                                 Exit Sub
     
@@ -4423,7 +4423,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     'Check interval
 654                 If Not IntervaloPermiteTrabajarConstruir(UserIndex) Then Exit Sub
                 
-656                 Call LookatTile(UserIndex, .pos.Map, X, Y)
+656                 Call LookatTile(UserIndex, .Pos.Map, X, Y)
                 
                     'Check there is a proper item there
 658                 If .flags.TargetObj > 0 Then
@@ -4481,7 +4481,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 694             Case eSkill.Grupo
                     'If UserList(UserIndex).Grupo.EnGrupo = False Then
                     'Target whatever is in that tile
-696                 Call LookatTile(UserIndex, UserList(UserIndex).pos.Map, X, Y)
+696                 Call LookatTile(UserIndex, UserList(UserIndex).Pos.Map, X, Y)
                     
 698                 tU = .flags.TargetUser
                     
@@ -4492,7 +4492,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         'Can't steal administrative players
 702                     If UserList(UserIndex).Grupo.EnGrupo = False Then
 704                         If UserList(tU).flags.Muerto = 0 Then
-706                             If Abs(.pos.X - X) + Abs(.pos.Y - Y) > 8 Then
+706                             If Abs(.Pos.X - X) + Abs(.Pos.Y - Y) > 8 Then
 708                                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                                     'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
 710                                 Call WriteWorkRequestTarget(UserIndex, 0)
@@ -4556,7 +4556,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
                     End If
                                 
-752                 Call LookatTile(UserIndex, UserList(UserIndex).pos.Map, X, Y)
+752                 Call LookatTile(UserIndex, UserList(UserIndex).Pos.Map, X, Y)
                     
 754                 tU = .flags.TargetUser
 
@@ -4597,7 +4597,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     End If
 
 782             Case eSkill.MarcaDeGM
-784                 Call LookatTile(UserIndex, UserList(UserIndex).pos.Map, X, Y)
+784                 Call LookatTile(UserIndex, UserList(UserIndex).Pos.Map, X, Y)
                     
 786                 tU = .flags.TargetUser
 
@@ -4985,7 +4985,7 @@ Private Sub HandleTrain(ByVal UserIndex As Integer)
 114         If NpcList(.flags.TargetNPC).Mascotas < MAXMASCOTASENTRENADOR Then
 116             If PetIndex > 0 And PetIndex < NpcList(.flags.TargetNPC).NroCriaturas + 1 Then
                     'Create the creature
-118                 SpawnedNpc = SpawnNpc(NpcList(.flags.TargetNPC).Criaturas(PetIndex).NpcIndex, NpcList(.flags.TargetNPC).pos, True, False)
+118                 SpawnedNpc = SpawnNpc(NpcList(.flags.TargetNPC).Criaturas(PetIndex).NpcIndex, NpcList(.flags.TargetNPC).Pos, True, False)
                 
 120                 If SpawnedNpc > 0 Then
 122                     NpcList(SpawnedNpc).MaestroNPC = .flags.TargetNPC
@@ -5261,7 +5261,7 @@ Private Sub HandleBankDeposit(ByVal UserIndex As Integer)
                 Exit Sub
             End If
             
-            If Distancia(NpcList(.flags.TargetNPC).pos, .pos) > 10 Then
+            If Distancia(NpcList(.flags.TargetNPC).Pos, .Pos) > 10 Then
                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                 'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
@@ -7126,7 +7126,7 @@ Private Sub HandleRequestAccountState(ByVal UserIndex As Integer)
 
             End If
         
-112         If Distancia(NpcList(.flags.TargetNPC).pos, .pos) > 3 Then
+112         If Distancia(NpcList(.flags.TargetNPC).Pos, .Pos) > 3 Then
 114             Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                 'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos del vendedor.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
@@ -7202,7 +7202,7 @@ Private Sub HandlePetStand(ByVal UserIndex As Integer)
             End If
         
             'Make sure it's close enough
-112         If Distancia(NpcList(.flags.TargetNPC).pos, .pos) > 10 Then
+112         If Distancia(NpcList(.flags.TargetNPC).Pos, .Pos) > 10 Then
 114             Call WriteConsoleMsg(UserIndex, "Estás demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
@@ -7256,7 +7256,7 @@ Private Sub HandlePetFollow(ByVal UserIndex As Integer)
             End If
         
             'Make sure it's close enough
-112         If Distancia(NpcList(.flags.TargetNPC).pos, .pos) > 10 Then
+112         If Distancia(NpcList(.flags.TargetNPC).Pos, .Pos) > 10 Then
 114             Call WriteConsoleMsg(UserIndex, "Estás demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
@@ -7431,7 +7431,7 @@ Private Sub HandleTrainList(ByVal UserIndex As Integer)
             End If
         
             'Make sure it's close enough
-112         If Distancia(NpcList(.flags.TargetNPC).pos, .pos) > 10 Then
+112         If Distancia(NpcList(.flags.TargetNPC).Pos, .Pos) > 10 Then
 114             Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                 'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
@@ -7480,7 +7480,7 @@ Private Sub HandleRest(ByVal UserIndex As Integer)
 
             End If
         
-108         If HayOBJarea(.pos, FOGATA) Then
+108         If HayOBJarea(.Pos, FOGATA) Then
 110             Call WriteRestOK(UserIndex)
             
 112             If Not .flags.Descansar Then
@@ -7630,7 +7630,7 @@ Private Sub HandleResucitate(ByVal UserIndex As Integer)
 108         If (NpcList(.flags.TargetNPC).NPCtype <> eNPCType.Revividor And (NpcList(.flags.TargetNPC).NPCtype <> eNPCType.ResucitadorNewbie Or Not EsNewbie(UserIndex))) Or .flags.Muerto = 0 Then Exit Sub
         
             'Make sure it's close enough
-110         If Distancia(.pos, NpcList(.flags.TargetNPC).pos) > 10 Then
+110         If Distancia(.Pos, NpcList(.flags.TargetNPC).Pos) > 10 Then
 112             Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                 'Call WriteConsoleMsg(UserIndex, "El sacerdote no puede resucitarte debido a que estás demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
@@ -7639,7 +7639,7 @@ Private Sub HandleResucitate(ByVal UserIndex As Integer)
         
 114         Call RevivirUsuario(UserIndex)
 116         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Curar, 100, False))
-118         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("104", UserList(UserIndex).pos.X, UserList(UserIndex).pos.Y))
+118         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("104", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 120         Call WriteConsoleMsg(UserIndex, "¡Has sido resucitado!", FontTypeNames.FONTTYPE_INFO)
 
         End With
@@ -7681,7 +7681,7 @@ Private Sub HandleHeal(ByVal UserIndex As Integer)
         
 108         If (NpcList(.flags.TargetNPC).NPCtype <> eNPCType.Revividor And NpcList(.flags.TargetNPC).NPCtype <> eNPCType.ResucitadorNewbie) Or .flags.Muerto <> 0 Then Exit Sub
         
-110         If Distancia(.pos, NpcList(.flags.TargetNPC).pos) > 10 Then
+110         If Distancia(.Pos, NpcList(.flags.TargetNPC).Pos) > 10 Then
 112             Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                 'Call WriteConsoleMsg(UserIndex, "El sacerdote no puede curarte debido a que estás demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
@@ -7817,7 +7817,7 @@ Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
 
                 End If
             
-124             If Distancia(NpcList(.flags.TargetNPC).pos, .pos) > 3 Then
+124             If Distancia(NpcList(.flags.TargetNPC).Pos, .Pos) > 3 Then
 126                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                     'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos del vendedor.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
@@ -7860,7 +7860,7 @@ Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
                 End If
             
                 'Check distance
-148             If Distancia(UserList(.flags.TargetUser).pos, .pos) > 3 Then
+148             If Distancia(UserList(.flags.TargetUser).Pos, .Pos) > 3 Then
 150                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                     'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos del usuario.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
@@ -7935,7 +7935,7 @@ Private Sub HandleBankStart(ByVal UserIndex As Integer)
         
             'Validate target NPC
 112         If .flags.TargetNPC > 0 Then
-114             If Distancia(NpcList(.flags.TargetNPC).pos, .pos) > 6 Then
+114             If Distancia(NpcList(.flags.TargetNPC).Pos, .Pos) > 6 Then
 116                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                     'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos del vendedor.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
@@ -7992,7 +7992,7 @@ Private Sub HandleEnlist(ByVal UserIndex As Integer)
         
 108         If NpcList(.flags.TargetNPC).NPCtype <> eNPCType.Enlistador Or .flags.Muerto <> 0 Then Exit Sub
         
-110         If Distancia(.pos, NpcList(.flags.TargetNPC).pos) > 4 Then
+110         If Distancia(.Pos, NpcList(.flags.TargetNPC).Pos) > 4 Then
 112             Call WriteConsoleMsg(UserIndex, "Debes acercarte mís.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
@@ -8044,7 +8044,7 @@ Private Sub HandleInformation(ByVal UserIndex As Integer)
         
 108         If NpcList(.flags.TargetNPC).NPCtype <> eNPCType.Enlistador Or .flags.Muerto <> 0 Then Exit Sub
         
-110         If Distancia(.pos, NpcList(.flags.TargetNPC).pos) > 4 Then
+110         If Distancia(.Pos, NpcList(.flags.TargetNPC).Pos) > 4 Then
 112             Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                 'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
@@ -8110,7 +8110,7 @@ Private Sub HandleReward(ByVal UserIndex As Integer)
         
 108         If NpcList(.flags.TargetNPC).NPCtype <> eNPCType.Enlistador Or .flags.Muerto <> 0 Then Exit Sub
         
-110         If Distancia(.pos, NpcList(.flags.TargetNPC).pos) > 4 Then
+110         If Distancia(.Pos, NpcList(.flags.TargetNPC).Pos) > 4 Then
 112             Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                 'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
@@ -8938,7 +8938,7 @@ Private Sub HandleGamble(ByVal UserIndex As Integer)
 114         ElseIf .flags.TargetNPC = 0 Then
                 'Validate target NPC
 116             Call WriteConsoleMsg(UserIndex, "Primero tenés que seleccionar un personaje, haz click izquierdo sobre él.", FontTypeNames.FONTTYPE_INFO)
-118         ElseIf Distancia(NpcList(.flags.TargetNPC).pos, .pos) > 10 Then
+118         ElseIf Distancia(NpcList(.flags.TargetNPC).Pos, .Pos) > 10 Then
 120             Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                 ' Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
 122         ElseIf NpcList(.flags.TargetNPC).NPCtype <> eNPCType.Timbero Then
@@ -9073,7 +9073,7 @@ Private Sub HandleBankExtractGold(ByVal UserIndex As Integer)
         
 118         If NpcList(.flags.TargetNPC).NPCtype <> eNPCType.Banquero Then Exit Sub
         
-120         If Distancia(.pos, NpcList(.flags.TargetNPC).pos) > 10 Then
+120         If Distancia(.Pos, NpcList(.flags.TargetNPC).Pos) > 10 Then
 122             Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                 'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
@@ -9246,7 +9246,7 @@ Private Sub HandleBankDepositGold(ByVal UserIndex As Integer)
             
             If NpcList(.flags.TargetNPC).NPCtype <> eNPCType.Banquero Then Exit Sub
         
-118         If Distancia(NpcList(.flags.TargetNPC).pos, .pos) > 10 Then
+118         If Distancia(NpcList(.flags.TargetNPC).Pos, .Pos) > 10 Then
 120             Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                 'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
@@ -9674,12 +9674,12 @@ Private Sub HandleGoNearby(ByVal UserIndex As Integer)
                     Else
 
 122                     For i = 2 To 5 'esto for sirve ir cambiando la distancia destino
-124                         For X = UserList(tIndex).pos.X - i To UserList(tIndex).pos.X + i
-126                             For Y = UserList(tIndex).pos.Y - i To UserList(tIndex).pos.Y + i
+124                         For X = UserList(tIndex).Pos.X - i To UserList(tIndex).Pos.X + i
+126                             For Y = UserList(tIndex).Pos.Y - i To UserList(tIndex).Pos.Y + i
 
-128                                 If MapData(UserList(tIndex).pos.Map, X, Y).UserIndex = 0 Then
-130                                     If LegalPos(UserList(tIndex).pos.Map, X, Y, True, True) Then
-132                                         Call WarpUserChar(UserIndex, UserList(tIndex).pos.Map, X, Y, True)
+128                                 If MapData(UserList(tIndex).Pos.Map, X, Y).UserIndex = 0 Then
+130                                     If LegalPos(UserList(tIndex).Pos.Map, X, Y, True, True) Then
+132                                         Call WarpUserChar(UserIndex, UserList(tIndex).Pos.Map, X, Y, True)
 134                                         Found = True
                                             Exit For
 
@@ -9867,7 +9867,7 @@ Private Sub HandleWhere(ByVal UserIndex As Integer)
                 Else
 
 120                 If (UserList(tUser).flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) <> 0 Or ((UserList(tUser).flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin) <> 0) And (.flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin)) <> 0) Then
-122                     Call WriteConsoleMsg(UserIndex, "Ubicación  " & UserName & ": " & UserList(tUser).pos.Map & ", " & UserList(tUser).pos.X & ", " & UserList(tUser).pos.Y & ".", FontTypeNames.FONTTYPE_INFO)
+122                     Call WriteConsoleMsg(UserIndex, "Ubicación  " & UserName & ": " & UserList(tUser).Pos.Map & ", " & UserList(tUser).Pos.X & ", " & UserList(tUser).Pos.Y & ".", FontTypeNames.FONTTYPE_INFO)
 124                     Call LogGM(.name, "/Donde " & UserName)
 
                     End If
@@ -9944,7 +9944,7 @@ Private Sub HandleCreaturesInMap(ByVal UserIndex As Integer)
 114             For i = 1 To LastNPC
 
                     'VB isn't lazzy, so we put more restrictive condition first to speed up the process
-116                 If NpcList(i).pos.Map = Map Then
+116                 If NpcList(i).Pos.Map = Map Then
 
                         'íesta vivo?
 118                     If NpcList(i).flags.NPCActive And NpcList(i).Hostile = 1 Then
@@ -9952,14 +9952,14 @@ Private Sub HandleCreaturesInMap(ByVal UserIndex As Integer)
 122                             ReDim List1(0) As String
 124                             ReDim NPCcant1(0) As Integer
 126                             NPCcount1 = 1
-128                             List1(0) = NpcList(i).name & ": (" & NpcList(i).pos.X & "," & NpcList(i).pos.Y & ")"
+128                             List1(0) = NpcList(i).name & ": (" & NpcList(i).Pos.X & "," & NpcList(i).Pos.Y & ")"
 130                             NPCcant1(0) = 1
                             Else
 
 132                             For j = 0 To NPCcount1 - 1
 
 134                                 If Left$(List1(j), Len(NpcList(i).name)) = NpcList(i).name Then
-136                                     List1(j) = List1(j) & ", (" & NpcList(i).pos.X & "," & NpcList(i).pos.Y & ")"
+136                                     List1(j) = List1(j) & ", (" & NpcList(i).Pos.X & "," & NpcList(i).Pos.Y & ")"
 138                                     NPCcant1(j) = NPCcant1(j) + 1
                                         Exit For
 
@@ -9971,7 +9971,7 @@ Private Sub HandleCreaturesInMap(ByVal UserIndex As Integer)
 144                                 ReDim Preserve List1(0 To NPCcount1) As String
 146                                 ReDim Preserve NPCcant1(0 To NPCcount1) As Integer
 148                                 NPCcount1 = NPCcount1 + 1
-150                                 List1(j) = NpcList(i).name & ": (" & NpcList(i).pos.X & "," & NpcList(i).pos.Y & ")"
+150                                 List1(j) = NpcList(i).name & ": (" & NpcList(i).Pos.X & "," & NpcList(i).Pos.Y & ")"
 152                                 NPCcant1(j) = 1
 
                                 End If
@@ -9984,14 +9984,14 @@ Private Sub HandleCreaturesInMap(ByVal UserIndex As Integer)
 156                             ReDim List2(0) As String
 158                             ReDim NPCcant2(0) As Integer
 160                             NPCcount2 = 1
-162                             List2(0) = NpcList(i).name & ": (" & NpcList(i).pos.X & "," & NpcList(i).pos.Y & ")"
+162                             List2(0) = NpcList(i).name & ": (" & NpcList(i).Pos.X & "," & NpcList(i).Pos.Y & ")"
 164                             NPCcant2(0) = 1
                             Else
 
 166                             For j = 0 To NPCcount2 - 1
 
 168                                 If Left$(List2(j), Len(NpcList(i).name)) = NpcList(i).name Then
-170                                     List2(j) = List2(j) & ", (" & NpcList(i).pos.X & "," & NpcList(i).pos.Y & ")"
+170                                     List2(j) = List2(j) & ", (" & NpcList(i).Pos.X & "," & NpcList(i).Pos.Y & ")"
 172                                     NPCcant2(j) = NPCcant2(j) + 1
                                         Exit For
 
@@ -10003,7 +10003,7 @@ Private Sub HandleCreaturesInMap(ByVal UserIndex As Integer)
 178                                 ReDim Preserve List2(0 To NPCcount2) As String
 180                                 ReDim Preserve NPCcant2(0 To NPCcount2) As Integer
 182                                 NPCcount2 = NPCcount2 + 1
-184                                 List2(j) = NpcList(i).name & ": (" & NpcList(i).pos.X & "," & NpcList(i).pos.Y & ")"
+184                                 List2(j) = NpcList(i).name & ": (" & NpcList(i).Pos.X & "," & NpcList(i).Pos.Y & ")"
 186                                 NPCcant2(j) = 1
 
                                 End If
@@ -10077,7 +10077,7 @@ Private Sub HandleWarpMeToTarget(ByVal UserIndex As Integer)
 104         If .flags.Privilegios And PlayerType.user Then Exit Sub
         
 106         Call WarpUserChar(UserIndex, .flags.TargetMap, .flags.TargetX, .flags.TargetY, True)
-108         Call LogGM(.name, "/TELEPLOC a x:" & .flags.TargetX & " Y:" & .flags.TargetY & " Map:" & .pos.Map)
+108         Call LogGM(.name, "/TELEPLOC a x:" & .flags.TargetX & " Y:" & .flags.TargetY & " Map:" & .Pos.Map)
 
         End With
 
@@ -10136,7 +10136,7 @@ Private Sub HandleWarpChar(ByVal UserIndex As Integer)
 120         If Not EsGM(UserIndex) Then Exit Sub
             
             '¿Para que te vas a transportar a la misma posicion?
-122         If .pos.Map = Map And .pos.X = X And .pos.Y = Y Then Exit Sub
+122         If .Pos.Map = Map And .Pos.X = X And .Pos.Y = Y Then Exit Sub
             
 124         If MapaValido(Map) And LenB(UserName) <> 0 Then
 
@@ -10418,12 +10418,12 @@ Private Sub HandleGoToChar(ByVal UserIndex As Integer)
                     Exit Sub
                 End If
 
-134             X = UserList(tUser).pos.X
-136             Y = UserList(tUser).pos.Y + 1
+134             X = UserList(tUser).Pos.X
+136             Y = UserList(tUser).Pos.Y + 1
 
-138             Call FindLegalPos(UserIndex, UserList(tUser).pos.Map, X, Y)
+138             Call FindLegalPos(UserIndex, UserList(tUser).Pos.Map, X, Y)
                 
-140             Call WarpUserChar(UserIndex, UserList(tUser).pos.Map, X, Y, True)
+140             Call WarpUserChar(UserIndex, UserList(tUser).Pos.Map, X, Y, True)
                     
 142             If .flags.AdminInvisible = 0 Then
 144                 Call WriteConsoleMsg(tUser, .name & " se ha trasportado hacia donde te encuentras.", FontTypeNames.FONTTYPE_INFO)
@@ -10431,7 +10431,7 @@ Private Sub HandleGoToChar(ByVal UserIndex As Integer)
                 
 146             Call WriteConsoleMsg(UserIndex, "Te has transportado hacia " & UserList(tUser).name & ".", FontTypeNames.FONTTYPE_INFO)
                     
-148             Call LogGM(.name, "/IRA " & UserName & " Mapa:" & UserList(tUser).pos.Map & " X:" & UserList(tUser).pos.X & " Y:" & UserList(tUser).pos.Y)
+148             Call LogGM(.name, "/IRA " & UserName & " Mapa:" & UserList(tUser).Pos.Map & " X:" & UserList(tUser).Pos.X & " Y:" & UserList(tUser).Pos.Y)
 
             End If
 
@@ -11142,7 +11142,7 @@ Private Sub HandleKillNPC(ByVal UserIndex As Integer)
 104         If .flags.Privilegios And PlayerType.user Then Exit Sub
 
             'Si estamos en el mapa pretoriano...
-106         If .pos.Map = MAPA_PRETORIANO Then
+106         If .Pos.Map = MAPA_PRETORIANO Then
 
                 '... solo los Dioses y Administradores pueden usar este comando en el mapa pretoriano.
 108             If .flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios) = 0 Then
@@ -12775,7 +12775,7 @@ Private Sub HandleOnlineMap(ByVal UserIndex As Integer)
         
 110         For LoopC = 1 To LastUser
 
-112             If LenB(UserList(LoopC).name) <> 0 And UserList(LoopC).pos.Map = .pos.Map Then
+112             If LenB(UserList(LoopC).name) <> 0 And UserList(LoopC).Pos.Map = .Pos.Map Then
 114                 If UserList(LoopC).flags.Privilegios And priv Then list = list & UserList(LoopC).name & ", "
 
                 End If
@@ -12830,7 +12830,7 @@ Private Sub HandleForgive(ByVal UserIndex As Integer)
                 priest = NpcList(.flags.TargetNPC)
 
             'Make sure it's close enough
-110         If Distancia(.pos, priest.pos) > 3 Then
+110         If Distancia(.Pos, priest.Pos) > 3 Then
                 'Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
 112             Call WriteConsoleMsg(UserIndex, "El sacerdote no puede escuchar tus pecados debido a que estás demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
@@ -12868,7 +12868,7 @@ Private Sub HandleForgive(ByVal UserIndex As Integer)
 136         Call WriteChatOverHead(UserIndex, "Con estas palabras, te libero de todo tipo de pecados. ¡Que Dios te acompañe hijo mío!", priest.Char.CharIndex, vbYellow)
 
 138         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, "80", 100, False))
-140         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("100", UserList(UserIndex).pos.X, UserList(UserIndex).pos.Y))
+140         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("100", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 142         Call VolverCiudadano(UserIndex)
 
         End With
@@ -13338,8 +13338,8 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
 
                 ' Mover NPCs
 128             ElseIf .flags.TargetNPC > 0 Then
-130                 If NpcList(.flags.TargetNPC).pos.Map = .pos.Map Then
-132                     Call WarpNpcChar(.flags.TargetNPC, .pos.Map, .pos.X, .pos.Y + 1, True)
+130                 If NpcList(.flags.TargetNPC).Pos.Map = .Pos.Map Then
+132                     Call WarpNpcChar(.flags.TargetNPC, .Pos.Map, .Pos.X, .Pos.Y + 1, True)
 134                     Call WriteConsoleMsg(UserIndex, "Has desplazado a la criatura.", FontTypeNames.FONTTYPE_INFO)
                     Else
 136                     Call WriteConsoleMsg(UserIndex, "Sólo puedes mover NPCs dentro del mismo mapa.", FontTypeNames.FONTTYPE_INFO)
@@ -13360,7 +13360,7 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
 144             NotConsejero = (.flags.Privilegios And PlayerType.Consejero) = 0
                 
                 ' Consejeros sólo pueden traer en el mismo mapa
-146             If NotConsejero Or .pos.Map = UserList(tUser).pos.Map Then
+146             If NotConsejero Or .Pos.Map = UserList(tUser).Pos.Map Then
                     
                     ' Si el admin está invisible no mostramos el nombre
 148                 If NotConsejero And .flags.AdminInvisible = 1 Then
@@ -13369,11 +13369,11 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
 152                     Call WriteConsoleMsg(tUser, .name & " te ha trasportado.", FontTypeNames.FONTTYPE_INFO)
                     End If
 
-154                 Call WarpToLegalPos(tUser, .pos.Map, .pos.X, .pos.Y + 1, True, True)
+154                 Call WarpToLegalPos(tUser, .Pos.Map, .Pos.X, .Pos.Y + 1, True, True)
 
 156                 Call WriteConsoleMsg(UserIndex, "Has traído a " & UserList(tUser).name & ".", FontTypeNames.FONTTYPE_INFO)
                     
-                    Call LogGM(.name, "/SUM " & UserName & " Map:" & .pos.Map & " X:" & .pos.X & " Y:" & .pos.Y)
+                    Call LogGM(.name, "/SUM " & UserName & " Map:" & .Pos.Map & " X:" & .Pos.X & " Y:" & .Pos.Y)
                 
                 End If
             
@@ -13460,7 +13460,7 @@ Private Sub HandleSpawnCreature(ByVal UserIndex As Integer)
 108         npc = .incomingData.ReadInteger()
         
 110         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
-112             If npc > 0 And npc <= UBound(Declaraciones.SpawnList()) Then Call SpawnNpc(Declaraciones.SpawnList(npc).NpcIndex, .pos, True, False)
+112             If npc > 0 And npc <= UBound(Declaraciones.SpawnList()) Then Call SpawnNpc(Declaraciones.SpawnList(npc).NpcIndex, .Pos, True, False)
             
 114             Call LogGM(.name, "Sumoneo " & Declaraciones.SpawnList(npc).NpcName)
 
@@ -13908,9 +13908,9 @@ Private Sub HandleTeleportCreate(ByVal UserIndex As Integer)
         
 118         If Not MapaValido(Mapa) Or Not InMapBounds(Mapa, X, Y) Then Exit Sub
         
-120         If MapData(.pos.Map, .pos.X, .pos.Y - 1).ObjInfo.ObjIndex > 0 Then Exit Sub
+120         If MapData(.Pos.Map, .Pos.X, .Pos.Y - 1).ObjInfo.ObjIndex > 0 Then Exit Sub
         
-122         If MapData(.pos.Map, .pos.X, .pos.Y - 1).TileExit.Map > 0 Then Exit Sub
+122         If MapData(.Pos.Map, .Pos.X, .Pos.Y - 1).TileExit.Map > 0 Then Exit Sub
         
 124         If MapData(Mapa, X, Y).ObjInfo.ObjIndex > 0 Then
 126             Call WriteConsoleMsg(UserIndex, "Hay un objeto en el piso en ese lugar", FontTypeNames.FONTTYPE_INFO)
@@ -13930,9 +13930,9 @@ Private Sub HandleTeleportCreate(ByVal UserIndex As Integer)
         
 132         Objeto.amount = 1
 134         Objeto.ObjIndex = 378
-136         Call MakeObj(Objeto, .pos.Map, .pos.X, .pos.Y - 1)
+136         Call MakeObj(Objeto, .Pos.Map, .Pos.X, .Pos.Y - 1)
         
-138         With MapData(.pos.Map, .pos.X, .pos.Y - 1)
+138         With MapData(.Pos.Map, .Pos.X, .Pos.Y - 1)
 140             .TileExit.Map = Mapa
 142             .TileExit.X = X
 144             .TileExit.Y = Y
@@ -14177,13 +14177,13 @@ Private Sub HanldeForceMIDIToMap(ByVal UserIndex As Integer)
 
                 'Si el mapa no fue enviado tomo el actual
 114             If Not InMapBounds(Mapa, 50, 50) Then
-116                 Mapa = .pos.Map
+116                 Mapa = .Pos.Map
 
                 End If
         
 118             If midiID = 0 Then
                     'Ponemos el default del mapa
-120                 Call SendData(SendTarget.toMap, Mapa, PrepareMessagePlayMidi(MapInfo(.pos.Map).music_numberLow))
+120                 Call SendData(SendTarget.toMap, Mapa, PrepareMessagePlayMidi(MapInfo(.Pos.Map).music_numberLow))
                 Else
                     'Ponemos el pedido por el GM
 122                 Call SendData(SendTarget.toMap, Mapa, PrepareMessagePlayMidi(midiID))
@@ -14246,9 +14246,9 @@ Private Sub HandleForceWAVEToMap(ByVal UserIndex As Integer)
 
                 'Si el mapa no fue enviado tomo el actual
 118             If Not InMapBounds(Mapa, X, Y) Then
-120                 Mapa = .pos.Map
-122                 X = .pos.X
-124                 Y = .pos.Y
+120                 Mapa = .Pos.Map
+122                 X = .Pos.X
+124                 Y = .Pos.Y
 
                 End If
             
@@ -14600,13 +14600,13 @@ Private Sub HandleDestroyAllItemsInArea(ByVal UserIndex As Integer)
 
             Dim Y As Long
         
-106         For Y = .pos.Y - MinYBorder + 1 To .pos.Y + MinYBorder - 1
-108             For X = .pos.X - MinXBorder + 1 To .pos.X + MinXBorder - 1
+106         For Y = .Pos.Y - MinYBorder + 1 To .Pos.Y + MinYBorder - 1
+108             For X = .Pos.X - MinXBorder + 1 To .Pos.X + MinXBorder - 1
 
 110                 If X > 0 And Y > 0 And X < 101 And Y < 101 Then
-112                     If MapData(.pos.Map, X, Y).ObjInfo.ObjIndex > 0 Then
-114                         If ItemNoEsDeMapa(MapData(.pos.Map, X, Y).ObjInfo.ObjIndex) Then
-116                             Call EraseObj(MAX_INVENTORY_OBJS, .pos.Map, X, Y)
+112                     If MapData(.Pos.Map, X, Y).ObjInfo.ObjIndex > 0 Then
+114                         If ItemNoEsDeMapa(MapData(.Pos.Map, X, Y).ObjInfo.ObjIndex) Then
+116                             Call EraseObj(MAX_INVENTORY_OBJS, .Pos.Map, X, Y)
 
                             End If
 
@@ -14681,7 +14681,7 @@ Private Sub HandleAcceptRoyalCouncilMember(ByVal UserIndex As Integer)
 124                     If .flags.Privilegios And PlayerType.ChaosCouncil Then .flags.Privilegios = .flags.Privilegios - PlayerType.ChaosCouncil
 126                     If Not .flags.Privilegios And PlayerType.RoyalCouncil Then .flags.Privilegios = .flags.Privilegios + PlayerType.RoyalCouncil
                     
-128                     Call WarpUserChar(tUser, .pos.Map, .pos.X, .pos.Y, False)
+128                     Call WarpUserChar(tUser, .Pos.Map, .Pos.X, .Pos.Y, False)
 
                     End With
 
@@ -14760,7 +14760,7 @@ Private Sub HandleAcceptChaosCouncilMember(ByVal UserIndex As Integer)
 124                     If .flags.Privilegios And PlayerType.RoyalCouncil Then .flags.Privilegios = .flags.Privilegios - PlayerType.RoyalCouncil
 126                     If Not .flags.Privilegios And PlayerType.ChaosCouncil Then .flags.Privilegios = .flags.Privilegios + PlayerType.ChaosCouncil
 
-128                     Call WarpUserChar(tUser, .pos.Map, .pos.X, .pos.Y, False)
+128                     Call WarpUserChar(tUser, .Pos.Map, .Pos.X, .Pos.Y, False)
 
                     End With
 
@@ -14819,7 +14819,7 @@ Private Sub HandleItemsInTheFloor(ByVal UserIndex As Integer)
         
 106         For X = 5 To 95
 108             For Y = 5 To 95
-110                 tObj = MapData(.pos.Map, X, Y).ObjInfo.ObjIndex
+110                 tObj = MapData(.Pos.Map, X, Y).ObjInfo.ObjIndex
 
 112                 If tObj > 0 Then
 114                     If ObjData(tObj).OBJType <> eOBJType.otArboles Then
@@ -15080,7 +15080,7 @@ Private Sub HandleCouncilKick(ByVal UserIndex As Integer)
 136                         Call WriteConsoleMsg(tUser, "Has sido echado del consejo de Banderbill", FontTypeNames.FONTTYPE_TALK)
 138                         .flags.Privilegios = .flags.Privilegios - PlayerType.RoyalCouncil
                         
-140                         Call WarpUserChar(tUser, .pos.Map, .pos.X, .pos.Y)
+140                         Call WarpUserChar(tUser, .Pos.Map, .Pos.X, .Pos.Y)
 142                         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(UserName & " fue expulsado del consejo de Banderbill", FontTypeNames.FONTTYPE_CONSEJO))
 
                         End If
@@ -15089,7 +15089,7 @@ Private Sub HandleCouncilKick(ByVal UserIndex As Integer)
 146                         Call WriteConsoleMsg(tUser, "Has sido echado del consejo de la Legiín Oscura", FontTypeNames.FONTTYPE_TALK)
 148                         .flags.Privilegios = .flags.Privilegios - PlayerType.ChaosCouncil
                         
-150                         Call WarpUserChar(tUser, .pos.Map, .pos.X, .pos.Y)
+150                         Call WarpUserChar(tUser, .Pos.Map, .Pos.X, .Pos.Y)
 152                         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(UserName & " fue expulsado del consejo de la Legión Oscura", FontTypeNames.FONTTYPE_CONSEJO))
 
                         End If
@@ -15154,8 +15154,8 @@ Private Sub HandleSetTrigger(ByVal UserIndex As Integer)
 110         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
 112         If tTrigger >= 0 Then
-114             MapData(.pos.Map, .pos.X, .pos.Y).trigger = tTrigger
-116             tLog = "Trigger " & tTrigger & " en mapa " & .pos.Map & " " & .pos.X & "," & .pos.Y
+114             MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = tTrigger
+116             tLog = "Trigger " & tTrigger & " en mapa " & .Pos.Map & " " & .Pos.X & "," & .Pos.Y
             
 118             Call LogGM(.name, tLog)
 120             Call WriteConsoleMsg(UserIndex, tLog, FontTypeNames.FONTTYPE_INFO)
@@ -15196,11 +15196,11 @@ Private Sub HandleAskTrigger(ByVal UserIndex As Integer)
         
 104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
-106         tTrigger = MapData(.pos.Map, .pos.X, .pos.Y).trigger
+106         tTrigger = MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger
         
-108         Call LogGM(.name, "Miro el trigger en " & .pos.Map & "," & .pos.X & "," & .pos.Y & ". Era " & tTrigger)
+108         Call LogGM(.name, "Miro el trigger en " & .Pos.Map & "," & .Pos.X & "," & .Pos.Y & ". Era " & tTrigger)
         
-110         Call WriteConsoleMsg(UserIndex, "Trigger " & tTrigger & " en mapa " & .pos.Map & " " & .pos.X & ", " & .pos.Y, FontTypeNames.FONTTYPE_INFO)
+110         Call WriteConsoleMsg(UserIndex, "Trigger " & tTrigger & " en mapa " & .Pos.Map & " " & .Pos.X & ", " & .Pos.Y, FontTypeNames.FONTTYPE_INFO)
 
         End With
 
@@ -15638,7 +15638,7 @@ Private Sub HandleCreateItem(ByVal UserIndex As Integer)
                 
                     ' Si no hay espacio y es Dios o Admin, lo tiro al piso.
 136                 If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) <> 0 Then
-138                     Call TirarItemAlPiso(.pos, Objeto)
+138                     Call TirarItemAlPiso(.Pos, Objeto)
 140                     Call WriteConsoleMsg(UserIndex, "ATENCION: CREASTE [" & Cuantos & "] ITEMS, TIRE E INGRESE /DEST EN CONSOLA PARA DESTRUIR LOS QUE NO NECESITE!!", FontTypeNames.FONTTYPE_GUILD)
                     End If
                 
@@ -15649,7 +15649,7 @@ Private Sub HandleCreateItem(ByVal UserIndex As Integer)
                 ' Crear el item NO AGARRARBLE y tirarlo al piso.
                 ' Si no hay espacio y es Dios o Admin, lo tiro al piso.
 142             If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) <> 0 Then
-144                 Call TirarItemAlPiso(.pos, Objeto)
+144                 Call TirarItemAlPiso(.Pos, Objeto)
 146                 Call WriteConsoleMsg(UserIndex, "ATENCION: CREASTE [" & Cuantos & "] ITEMS, TIRE E INGRESE /DEST EN CONSOLA PARA DESTRUIR LOS QUE NO NECESITE!!", FontTypeNames.FONTTYPE_GUILD)
                 End If
 
@@ -15690,7 +15690,7 @@ Private Sub HandleDestroyItems(ByVal UserIndex As Integer)
         
 104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
         
-106         If MapData(.pos.Map, .pos.X, .pos.Y).ObjInfo.ObjIndex = 0 Then Exit Sub
+106         If MapData(.Pos.Map, .Pos.X, .Pos.Y).ObjInfo.ObjIndex = 0 Then Exit Sub
         
 108         Call LogGM(.name, "/DEST")
         
@@ -15699,7 +15699,7 @@ Private Sub HandleDestroyItems(ByVal UserIndex As Integer)
             '  Exit Sub
             ' End If
         
-110         Call EraseObj(MAX_INVENTORY_OBJS, .pos.Map, .pos.X, .pos.Y)
+110         Call EraseObj(MAX_INVENTORY_OBJS, .Pos.Map, .Pos.X, .Pos.Y)
 
         End With
 
@@ -16116,14 +16116,14 @@ Private Sub HandleTileBlockedToggle(ByVal UserIndex As Integer)
 
 106         Call LogGM(.name, "/BLOQ")
         
-108         If MapData(.pos.Map, .pos.X, .pos.Y).Blocked = 0 Then
-110             MapData(.pos.Map, .pos.X, .pos.Y).Blocked = eBlock.ALL_SIDES Or eBlock.GM
+108         If MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked = 0 Then
+110             MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked = eBlock.ALL_SIDES Or eBlock.GM
             Else
-112             MapData(.pos.Map, .pos.X, .pos.Y).Blocked = 0
+112             MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked = 0
 
             End If
         
-114         Call Bloquear(True, .pos.Map, .pos.X, .pos.Y, IIf(MapData(.pos.Map, .pos.X, .pos.Y).Blocked > 0, eBlock.ALL_SIDES, 0))
+114         Call Bloquear(True, .Pos.Map, .Pos.X, .Pos.Y, IIf(MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked > 0, eBlock.ALL_SIDES, 0))
 
         End With
 
@@ -16195,18 +16195,18 @@ Private Sub HandleKillAllNearbyNPCs(ByVal UserIndex As Integer)
 104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then Exit Sub
             
             'Si está en el mapa pretoriano, me aseguro de que los saque correctamente antes que nada.
-106         If .pos.Map = MAPA_PRETORIANO Then Call EliminarPretorianos(MAPA_PRETORIANO)
+106         If .Pos.Map = MAPA_PRETORIANO Then Call EliminarPretorianos(MAPA_PRETORIANO)
 
             Dim X As Long
             Dim Y As Long
         
-108         For Y = .pos.Y - MinYBorder + 1 To .pos.Y + MinYBorder - 1
-110             For X = .pos.X - MinXBorder + 1 To .pos.X + MinXBorder - 1
+108         For Y = .Pos.Y - MinYBorder + 1 To .Pos.Y + MinYBorder - 1
+110             For X = .Pos.X - MinXBorder + 1 To .Pos.X + MinXBorder - 1
 
 112                 If X > 0 And Y > 0 And X < 101 And Y < 101 Then
 
-114                     If MapData(.pos.Map, X, Y).NpcIndex > 0 Then
-116                         Call QuitarNPC(MapData(.pos.Map, X, Y).NpcIndex)
+114                     If MapData(.Pos.Map, X, Y).NpcIndex > 0 Then
+116                         Call QuitarNPC(MapData(.Pos.Map, X, Y).NpcIndex)
                         End If
 
                     End If
@@ -16957,7 +16957,7 @@ Public Sub HandleDonateGold(ByVal UserIndex As Integer)
 112         If (priest.NPCtype <> eNPCType.Revividor And (priest.NPCtype <> eNPCType.ResucitadorNewbie Or Not EsNewbie(UserIndex))) Or .flags.Muerto = 1 Then Exit Sub
 
              'Make sure it's close enough
-114         If Distancia(.pos, NpcList(.flags.TargetNPC).pos) > 3 Then
+114         If Distancia(.Pos, NpcList(.flags.TargetNPC).Pos) > 3 Then
 116             Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
@@ -16998,7 +16998,7 @@ Public Sub HandleDonateGold(ByVal UserIndex As Integer)
 142         Call WriteChatOverHead(UserIndex, "¡Gracias por tu generosa donación! Con estas palabras, te libero de todo tipo de pecados. ¡Que Dios te acompañe hijo mío!", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbYellow)
 
 144         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, "80", 100, False))
-146         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("100", UserList(UserIndex).pos.X, UserList(UserIndex).pos.Y))
+146         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("100", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 148         Call VolverCiudadano(UserIndex)
     
          End With
@@ -17287,16 +17287,16 @@ Public Sub HandleChangeMapInfoBackup(ByVal UserIndex As Integer)
         
             'Change the boolean to byte in a fast way
 114         If doTheBackUp Then
-116             MapInfo(.pos.Map).backup_mode = 1
+116             MapInfo(.Pos.Map).backup_mode = 1
             Else
-118             MapInfo(.pos.Map).backup_mode = 0
+118             MapInfo(.Pos.Map).backup_mode = 0
 
             End If
         
             'Change the boolean to string in a fast way
-120         Call WriteVar(MapPath & "mapa" & .pos.Map & ".dat", "Mapa" & .pos.Map, "backup", MapInfo(.pos.Map).backup_mode)
+120         Call WriteVar(MapPath & "mapa" & .Pos.Map & ".dat", "Mapa" & .Pos.Map, "backup", MapInfo(.Pos.Map).backup_mode)
         
-122         Call WriteConsoleMsg(UserIndex, "Mapa " & .pos.Map & " Backup: " & MapInfo(.pos.Map).backup_mode, FontTypeNames.FONTTYPE_INFO)
+122         Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & " Backup: " & MapInfo(.Pos.Map).backup_mode, FontTypeNames.FONTTYPE_INFO)
 
         End With
 
@@ -17343,12 +17343,12 @@ Public Sub HandleChangeMapInfoPK(ByVal UserIndex As Integer)
         
 112         Call LogGM(.name, .name & " ha cambiado la informacion sobre si es seguro el mapa.")
         
-114         MapInfo(.pos.Map).Seguro = IIf(isMapPk, 1, 0)
+114         MapInfo(.Pos.Map).Seguro = IIf(isMapPk, 1, 0)
         
             'Change the boolean to string in a fast way
             Rem Call WriteVar(App.Path & MapPath & "mapa" & .Pos.map & ".dat", "Mapa" & .Pos.map, "Pk", IIf(isMapPk, "1", "0"))
 
-116         Call WriteConsoleMsg(UserIndex, "Mapa " & .pos.Map & " Seguro: " & MapInfo(.pos.Map).Seguro, FontTypeNames.FONTTYPE_INFO)
+116         Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & " Seguro: " & MapInfo(.Pos.Map).Seguro, FontTypeNames.FONTTYPE_INFO)
 
         End With
 
@@ -17399,29 +17399,29 @@ Public Sub HandleChangeMapInfoRestricted(ByVal UserIndex As Integer)
 114             Select Case UCase$(tStr)
                 
                     Case "NEWBIE"
-116                     MapInfo(.pos.Map).Newbie = Not MapInfo(.pos.Map).Newbie
-118                     Call WriteConsoleMsg(UserIndex, "Mapa " & .pos.Map & ": Newbie = " & MapInfo(.pos.Map).Newbie, FontTypeNames.FONTTYPE_INFO)
-120                     Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .pos.Map & ": Newbie = " & MapInfo(.pos.Map).Newbie)
+116                     MapInfo(.Pos.Map).Newbie = Not MapInfo(.Pos.Map).Newbie
+118                     Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & ": Newbie = " & MapInfo(.Pos.Map).Newbie, FontTypeNames.FONTTYPE_INFO)
+120                     Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .Pos.Map & ": Newbie = " & MapInfo(.Pos.Map).Newbie)
                         
 122                 Case "SINMAGIA"
-124                     MapInfo(.pos.Map).SinMagia = Not MapInfo(.pos.Map).SinMagia
-126                     Call WriteConsoleMsg(UserIndex, "Mapa " & .pos.Map & ": SinMagia = " & MapInfo(.pos.Map).SinMagia, FontTypeNames.FONTTYPE_INFO)
-128                     Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .pos.Map & ": SinMagia = " & MapInfo(.pos.Map).SinMagia)
+124                     MapInfo(.Pos.Map).SinMagia = Not MapInfo(.Pos.Map).SinMagia
+126                     Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & ": SinMagia = " & MapInfo(.Pos.Map).SinMagia, FontTypeNames.FONTTYPE_INFO)
+128                     Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .Pos.Map & ": SinMagia = " & MapInfo(.Pos.Map).SinMagia)
                         
 130                 Case "NOPKS"
-132                     MapInfo(.pos.Map).NoPKs = Not MapInfo(.pos.Map).NoPKs
-134                     Call WriteConsoleMsg(UserIndex, "Mapa " & .pos.Map & ": NoPKs = " & MapInfo(.pos.Map).NoPKs, FontTypeNames.FONTTYPE_INFO)
-136                     Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .pos.Map & ": NoPKs = " & MapInfo(.pos.Map).NoPKs)
+132                     MapInfo(.Pos.Map).NoPKs = Not MapInfo(.Pos.Map).NoPKs
+134                     Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & ": NoPKs = " & MapInfo(.Pos.Map).NoPKs, FontTypeNames.FONTTYPE_INFO)
+136                     Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .Pos.Map & ": NoPKs = " & MapInfo(.Pos.Map).NoPKs)
                         
 138                 Case "NOCIUD"
-140                     MapInfo(.pos.Map).NoCiudadanos = Not MapInfo(.pos.Map).NoCiudadanos
-142                     Call WriteConsoleMsg(UserIndex, "Mapa " & .pos.Map & ": NoCiudadanos = " & MapInfo(.pos.Map).NoCiudadanos, FontTypeNames.FONTTYPE_INFO)
-144                     Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .pos.Map & ": NoCiudadanos = " & MapInfo(.pos.Map).NoCiudadanos)
+140                     MapInfo(.Pos.Map).NoCiudadanos = Not MapInfo(.Pos.Map).NoCiudadanos
+142                     Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & ": NoCiudadanos = " & MapInfo(.Pos.Map).NoCiudadanos, FontTypeNames.FONTTYPE_INFO)
+144                     Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .Pos.Map & ": NoCiudadanos = " & MapInfo(.Pos.Map).NoCiudadanos)
                         
 146                 Case "SININVI"
-148                     MapInfo(.pos.Map).SinInviOcul = Not MapInfo(.pos.Map).SinInviOcul
-150                     Call WriteConsoleMsg(UserIndex, "Mapa " & .pos.Map & ": SinInvi = " & MapInfo(.pos.Map).SinInviOcul, FontTypeNames.FONTTYPE_INFO)
-152                     Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .pos.Map & ": SinInvi = " & MapInfo(.pos.Map).SinInviOcul)
+148                     MapInfo(.Pos.Map).SinInviOcul = Not MapInfo(.Pos.Map).SinInviOcul
+150                     Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & ": SinInvi = " & MapInfo(.Pos.Map).SinInviOcul, FontTypeNames.FONTTYPE_INFO)
+152                     Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .Pos.Map & ": SinInvi = " & MapInfo(.Pos.Map).SinInviOcul)
                 
 154                 Case Else
 156                     Call WriteConsoleMsg(UserIndex, "Opciones para restringir: 'NEWBIE', 'SINMAGIA', 'SININVI', 'NOPKS', 'NOCIUD'", FontTypeNames.FONTTYPE_INFO)
@@ -17630,9 +17630,9 @@ Public Sub HandleChangeMapInfoLand(ByVal UserIndex As Integer)
 112         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) <> 0 Then
 114             If tStr = "BOSQUE" Or tStr = "NIEVE" Or tStr = "DESIERTO" Or tStr = "CIUDAD" Or tStr = "CAMPO" Or tStr = "DUNGEON" Then
 116                 Call LogGM(.name, .name & " ha cambiado la informacion del Terreno del mapa.")
-118                 MapInfo(UserList(UserIndex).pos.Map).terrain = tStr
-120                 Call WriteVar(MapPath & "mapa" & UserList(UserIndex).pos.Map & ".dat", "Mapa" & UserList(UserIndex).pos.Map, "Terreno", tStr)
-122                 Call WriteConsoleMsg(UserIndex, "Mapa " & .pos.Map & " Terreno: " & MapInfo(.pos.Map).terrain, FontTypeNames.FONTTYPE_INFO)
+118                 MapInfo(UserList(UserIndex).Pos.Map).terrain = tStr
+120                 Call WriteVar(MapPath & "mapa" & UserList(UserIndex).Pos.Map & ".dat", "Mapa" & UserList(UserIndex).Pos.Map, "Terreno", tStr)
+122                 Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & " Terreno: " & MapInfo(.Pos.Map).terrain, FontTypeNames.FONTTYPE_INFO)
                 Else
 124                 Call WriteConsoleMsg(UserIndex, "Opciones para terreno: 'BOSQUE', 'NIEVE', 'DESIERTO', 'CIUDAD', 'CAMPO', 'DUNGEON'", FontTypeNames.FONTTYPE_INFO)
 126                 Call WriteConsoleMsg(UserIndex, "Igualmente, el ínico ítil es 'NIEVE' ya que al ingresarlo, la gente muere de frio en el Mapa", FontTypeNames.FONTTYPE_INFO)
@@ -17698,9 +17698,9 @@ Public Sub HandleChangeMapInfoZone(ByVal UserIndex As Integer)
 112         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) <> 0 Then
 114             If tStr = "BOSQUE" Or tStr = "NIEVE" Or tStr = "DESIERTO" Or tStr = "CIUDAD" Or tStr = "CAMPO" Or tStr = "DUNGEON" Then
 116                 Call LogGM(.name, .name & " ha cambiado la informacion de la Zona del mapa.")
-118                 MapInfo(UserList(UserIndex).pos.Map).zone = tStr
-120                 Call WriteVar(MapPath & "mapa" & UserList(UserIndex).pos.Map & ".dat", "Mapa" & UserList(UserIndex).pos.Map, "Zona", tStr)
-122                 Call WriteConsoleMsg(UserIndex, "Mapa " & .pos.Map & " Zona: " & MapInfo(.pos.Map).zone, FontTypeNames.FONTTYPE_INFO)
+118                 MapInfo(UserList(UserIndex).Pos.Map).zone = tStr
+120                 Call WriteVar(MapPath & "mapa" & UserList(UserIndex).Pos.Map & ".dat", "Mapa" & UserList(UserIndex).Pos.Map, "Zona", tStr)
+122                 Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & " Zona: " & MapInfo(.Pos.Map).zone, FontTypeNames.FONTTYPE_INFO)
                 Else
 124                 Call WriteConsoleMsg(UserIndex, "Opciones para terreno: 'BOSQUE', 'NIEVE', 'DESIERTO', 'CIUDAD', 'CAMPO', 'DUNGEON'", FontTypeNames.FONTTYPE_INFO)
 126                 Call WriteConsoleMsg(UserIndex, "Igualmente, el ínico ítil es 'DUNGEON' ya que al ingresarlo, NO se sentirí el efecto de la lluvia en este mapa.", FontTypeNames.FONTTYPE_INFO)
@@ -17750,9 +17750,9 @@ Public Sub HandleSaveMap(ByVal UserIndex As Integer)
         
 104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
-106         Call LogGM(.name, .name & " ha guardado el mapa " & CStr(.pos.Map))
+106         Call LogGM(.name, .name & " ha guardado el mapa " & CStr(.Pos.Map))
         
-            Call GrabarMapa(.pos.Map, App.Path & "\WorldBackUp\Mapa" & .pos.Map)
+            Call GrabarMapa(.Pos.Map, App.Path & "\WorldBackUp\Mapa" & .Pos.Map)
         
 108         Call WriteConsoleMsg(UserIndex, "Mapa Guardado", FontTypeNames.FONTTYPE_INFO)
 
@@ -18170,10 +18170,10 @@ Public Sub HandleCreateNPC(ByVal UserIndex As Integer)
 
             End If
         
-116         NpcIndex = SpawnNpc(NpcIndex, .pos, True, False)
+116         NpcIndex = SpawnNpc(NpcIndex, .Pos, True, False)
         
 118         If NpcIndex <> 0 Then
-120             Call LogGM(.name, "Sumoneo a " & NpcList(NpcIndex).name & " en mapa " & .pos.Map)
+120             Call LogGM(.name, "Sumoneo a " & NpcList(NpcIndex).name & " en mapa " & .Pos.Map)
             End If
 
         End With
@@ -18218,10 +18218,10 @@ Public Sub HandleCreateNPCWithRespawn(ByVal UserIndex As Integer)
         
 110         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
         
-112         NpcIndex = SpawnNpc(NpcIndex, .pos, True, True)
+112         NpcIndex = SpawnNpc(NpcIndex, .Pos, True, True)
         
 114         If NpcIndex <> 0 Then
-116             Call LogGM(.name, "Sumoneo con respawn " & NpcList(NpcIndex).name & " en mapa " & .pos.Map)
+116             Call LogGM(.name, "Sumoneo con respawn " & NpcList(NpcIndex).name & " en mapa " & .Pos.Map)
 
             End If
 
@@ -20087,8 +20087,8 @@ Public Sub WritePosUpdate(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex).outgoingData
 102         Call .WriteByte(ServerPacketID.PosUpdate)
-104         Call .WriteByte(UserList(UserIndex).pos.X)
-106         Call .WriteByte(UserList(UserIndex).pos.Y)
+104         Call .WriteByte(UserList(UserIndex).Pos.X)
+106         Call .WriteByte(UserList(UserIndex).Pos.Y)
 
         End With
 
@@ -21012,8 +21012,8 @@ Public Sub WriteAreaChanged(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex).outgoingData
 102         Call .WriteByte(ServerPacketID.AreaChanged)
-104         Call .WriteByte(UserList(UserIndex).pos.X)
-106         Call .WriteByte(UserList(UserIndex).pos.Y)
+104         Call .WriteByte(UserList(UserIndex).Pos.X)
+106         Call .WriteByte(UserList(UserIndex).Pos.Y)
 
         End With
 
@@ -25175,7 +25175,7 @@ Private Sub HandleOfertaInicial(ByVal UserIndex As Integer)
 
             End If
         
-122         If Distancia(NpcList(.flags.TargetNPC).pos, .pos) > 2 Then
+122         If Distancia(NpcList(.flags.TargetNPC).Pos, .Pos) > 2 Then
 124             Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                 'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos del subastador.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
@@ -26243,14 +26243,14 @@ Private Sub HandlePossUser(ByVal UserIndex As Integer)
 112         If Not .flags.Privilegios And PlayerType.user Then
         
 114             If Database_Enabled Then
-116                 If Not SetPositionDatabase(UserName, UserList(UserIndex).pos.Map, UserList(UserIndex).pos.X, UserList(UserIndex).pos.Y) Then
+116                 If Not SetPositionDatabase(UserName, UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y) Then
 118                     Call WriteConsoleMsg(UserIndex, "El usuario " & UserName & " no existe.", FontTypeNames.FONTTYPE_INFO)
                     End If
                 Else
-120                 Call WriteVar(CharPath & UCase$(UserName) & ".chr", "INIT", "Position", UserList(UserIndex).pos.Map & "-" & UserList(UserIndex).pos.X & "-" & UserList(UserIndex).pos.Y)
+120                 Call WriteVar(CharPath & UCase$(UserName) & ".chr", "INIT", "Position", UserList(UserIndex).Pos.Map & "-" & UserList(UserIndex).Pos.X & "-" & UserList(UserIndex).Pos.Y)
                 End If
 
-122             Call WriteConsoleMsg(UserIndex, "Servidor> Acción realizada con exito! La nueva posicion de " & UserName & "es: " & UserList(UserIndex).pos.Map & "-" & UserList(UserIndex).pos.X & "-" & UserList(UserIndex).pos.Y & "...", FontTypeNames.FONTTYPE_INFO)
+122             Call WriteConsoleMsg(UserIndex, "Servidor> Acción realizada con exito! La nueva posicion de " & UserName & "es: " & UserList(UserIndex).Pos.Map & "-" & UserList(UserIndex).Pos.X & "-" & UserList(UserIndex).Pos.Y & "...", FontTypeNames.FONTTYPE_INFO)
 
                 ' Call SendData(UserIndex, UserIndex, PrepareMessageConsoleMsg("Acciín realizada con exito! La nueva posicion de " & UserName & "es: " & UserList(UserIndex).Pos.Map & "-" & UserList(UserIndex).Pos.X & "-" & UserList(UserIndex).Pos.y & "...", FontTypeNames.FONTTYPE_SERVER))
             End If
@@ -26583,7 +26583,7 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
 
             If NpcList(.flags.TargetNPC).NPCtype <> eNPCType.Banquero Then Exit Sub
             
-            If Distancia(NpcList(.flags.TargetNPC).pos, .pos) > 10 Then
+            If Distancia(NpcList(.flags.TargetNPC).Pos, .Pos) > 10 Then
                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                 'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
@@ -26622,7 +26622,7 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
                 UserList(UserIndex).Stats.Banco = UserList(UserIndex).Stats.Banco - val(Cantidad) 'Quitamos el oro al usuario
     
 142             Call WriteChatOverHead(UserIndex, "¡El envío se ha realizado con éxito! Gracias por utilizar los servicios de Finanzas Goliath", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
-144             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("173", UserList(UserIndex).pos.X, UserList(UserIndex).pos.Y))
+144             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("173", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
             Else
 146             Call WriteChatOverHead(UserIndex, "Los administradores no pueden transferir oro.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
 148             Call LogGM(.name, "Quizo transferirle oro a: " & UserName)
@@ -27011,9 +27011,9 @@ Private Sub HandleLlamadadeClan(ByVal UserIndex As Integer)
 112             clan_nivel = modGuilds.NivelDeClan(.GuildIndex)
 
 114             If clan_nivel > 1 Then
-116                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Clan> [" & .name & "] solicita apoyo de su clan en " & DarNameMapa(.pos.Map) & " (" & .pos.Map & "-" & .pos.X & "-" & .pos.Y & "). Puedes ver su ubicación en el mapa del mundo.", FontTypeNames.FONTTYPE_GUILD))
+116                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Clan> [" & .name & "] solicita apoyo de su clan en " & DarNameMapa(.Pos.Map) & " (" & .Pos.Map & "-" & .Pos.X & "-" & .Pos.Y & "). Puedes ver su ubicación en el mapa del mundo.", FontTypeNames.FONTTYPE_GUILD))
 118                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessagePlayWave("43", NO_3D_SOUND, NO_3D_SOUND))
-120                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageUbicacionLlamada(.pos.Map, .pos.X, .pos.Y))
+120                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageUbicacionLlamada(.Pos.Map, .Pos.X, .Pos.Y))
                 Else
 122                 Call WriteConsoleMsg(UserIndex, "Servidor> El nivel de tu clan debe ser 2 para utilizar esta opción.", FontTypeNames.FONTTYPE_INFOIAO)
 
@@ -27167,7 +27167,7 @@ Private Sub HandleCasamiento(ByVal UserIndex As Integer)
 
                 Else
 
-120                 If Distancia(.pos, NpcList(.flags.TargetNPC).pos) > 10 Then
+120                 If Distancia(.Pos, NpcList(.flags.TargetNPC).Pos) > 10 Then
 122                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                         'Call WriteConsoleMsg(UserIndex, "El sacerdote no puede casarte debido a que estás demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
                         
@@ -27197,7 +27197,7 @@ Private Sub HandleCasamiento(ByVal UserIndex As Integer)
 140                                 .flags.Pareja = UserList(tUser).name
 
 142                                 Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(FXSound.Casamiento_sound, NO_3D_SOUND, NO_3D_SOUND))
-144                                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("El sacerdote de " & DarNameMapa(.pos.Map) & " celebra el casamiento entre " & UserList(UserIndex).name & " y " & UserList(tUser).name & ".", FontTypeNames.FONTTYPE_WARNING))
+144                                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("El sacerdote de " & DarNameMapa(.Pos.Map) & " celebra el casamiento entre " & UserList(UserIndex).name & " y " & UserList(tUser).name & ".", FontTypeNames.FONTTYPE_WARNING))
 146                                 Call WriteChatOverHead(UserIndex, "Los declaro unidos en legal matrimonio ¡Felicidades!", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
 148                                 Call WriteChatOverHead(tUser, "Los declaro unidos en legal matrimonio ¡Felicidades!", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
                                 
@@ -27555,17 +27555,17 @@ Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
 124                 Case 2
 
                         If Not BusquedaNpcActiva And BusquedaTesoroActiva = False And BusquedaRegaloActiva = False Then
-                            Dim pos As WorldPos
-126                         pos.Map = TesoroNPCMapa(RandomNumber(1, UBound(TesoroNPCMapa)))
-164                         pos.Y = 50
-166                         pos.X = 50
-168                         npc_index_evento = SpawnNpc(TesoroNPC(RandomNumber(1, UBound(TesoroNPC))), pos, True, False, True)
+                            Dim Pos As WorldPos
+126                         Pos.Map = TesoroNPCMapa(RandomNumber(1, UBound(TesoroNPCMapa)))
+164                         Pos.Y = 50
+166                         Pos.X = 50
+168                         npc_index_evento = SpawnNpc(TesoroNPC(RandomNumber(1, UBound(TesoroNPC))), Pos, True, False, True)
                             BusquedaNpcActiva = True
                         Else
 
                             If BusquedaNpcActiva Then
-                                Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> Todavía nadie logró matar el NPC que se encuentra en el mapa " & NpcList(npc_index_evento).pos.Map & ".", FontTypeNames.FONTTYPE_TALK))
-                                Call WriteConsoleMsg(UserIndex, "Ya hay una busqueda de npc activo. El tesoro se encuentra en: " & NpcList(npc_index_evento).pos.Map & "-" & NpcList(npc_index_evento).pos.X & "-" & NpcList(npc_index_evento).pos.Y, FontTypeNames.FONTTYPE_INFO)
+                                Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> Todavía nadie logró matar el NPC que se encuentra en el mapa " & NpcList(npc_index_evento).Pos.Map & ".", FontTypeNames.FONTTYPE_TALK))
+                                Call WriteConsoleMsg(UserIndex, "Ya hay una busqueda de npc activo. El tesoro se encuentra en: " & NpcList(npc_index_evento).Pos.Map & "-" & NpcList(npc_index_evento).Pos.X & "-" & NpcList(npc_index_evento).Pos.Y, FontTypeNames.FONTTYPE_INFO)
                             Else
                                 Call WriteConsoleMsg(UserIndex, "Ya hay una busqueda del tesoro activa.", FontTypeNames.FONTTYPE_INFO)
                             End If
@@ -28613,7 +28613,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
 248                 Case 5
 250                     Log = "Repuesta Afirmativa 5"
                 
-252                     If MapInfo(UserList(UserIndex).pos.Map).Newbie Then
+252                     If MapInfo(UserList(UserIndex).Pos.Map).Newbie Then
 254                         Call WarpToLegalPos(UserIndex, 140, 53, 58)
                     
 256                         If UserList(UserIndex).donador.activo = 0 Then ' Donador no espera tiempo
@@ -28629,7 +28629,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
 268                         UserList(UserIndex).Accion.Particula = ParticulasIndex.Resucitar
 270                         UserList(UserIndex).Accion.TipoAccion = Accion_Barra.Resucitar
     
-272                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("104", UserList(UserIndex).pos.X, UserList(UserIndex).pos.Y))
+272                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("104", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
                             'Call WriteConsoleMsg(UserIndex, "El Cura lanza unas palabras al aire. Comienzas a sentir como tu cuerpo se vuelve a formar...", FontTypeNames.FONTTYPE_INFO)
 274                         Call WriteLocaleMsg(UserIndex, "82", FontTypeNames.FONTTYPE_INFOIAO)
                         Else
@@ -28880,9 +28880,9 @@ Public Sub WriteUbicacion(ByVal UserIndex As Integer, ByVal Miembro As Byte, ByV
 
 106         If GPS > 0 Then
         
-108             Call .WriteByte(UserList(GPS).pos.X)
-110             Call .WriteByte(UserList(GPS).pos.Y)
-112             Call .WriteInteger(UserList(GPS).pos.Map)
+108             Call .WriteByte(UserList(GPS).Pos.X)
+110             Call .WriteByte(UserList(GPS).Pos.Y)
+112             Call .WriteInteger(UserList(GPS).Pos.Map)
             Else
 114             Call .WriteByte(0)
 116             Call .WriteByte(0)
@@ -29804,7 +29804,7 @@ Private Sub HandleComprarItem(ByVal UserIndex As Integer)
             
 136                 If Not MeterItemEnInventario(UserIndex, ObjComprado) Then
 138                     LogeoDonador = LogeoDonador & "El item se tiro al piso" & vbCrLf
-140                     Call TirarItemAlPiso(UserList(UserIndex).pos, ObjComprado)
+140                     Call TirarItemAlPiso(UserList(UserIndex).Pos, ObjComprado)
 
                     End If
                 
@@ -30071,7 +30071,7 @@ Public Sub HandleQuest(ByVal UserIndex As Integer)
 104     If NpcIndex = 0 Then Exit Sub
     
         'Esta el personaje en la distancia correcta?
-106     If Distancia(UserList(UserIndex).pos, NpcList(NpcIndex).pos) > 5 Then
+106     If Distancia(UserList(UserIndex).Pos, NpcList(NpcIndex).Pos) > 5 Then
 108         Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
@@ -30161,7 +30161,7 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
 108     If Indice = 0 Then Exit Sub
     
         'Esta el personaje en la distancia correcta?
-110     If Distancia(UserList(UserIndex).pos, NpcList(NpcIndex).pos) > 5 Then
+110     If Distancia(UserList(UserIndex).Pos, NpcList(NpcIndex).Pos) > 5 Then
 112         Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
@@ -31370,19 +31370,19 @@ Private Sub HandleGetMapInfo(ByVal UserIndex As Integer)
         
         If EsGM(UserIndex) Then
         
-            Call WriteConsoleMsg(UserIndex, "[Info de mapa " & .pos.Map & "]", FontTypeNames.FONTTYPE_INFO)
-            Call WriteConsoleMsg(UserIndex, "Nombre = " & MapInfo(.pos.Map).map_name, FontTypeNames.FONTTYPE_INFO)
-            Call WriteConsoleMsg(UserIndex, "Seguro = " & MapInfo(.pos.Map).Seguro, FontTypeNames.FONTTYPE_INFO)
-            Call WriteConsoleMsg(UserIndex, "Newbie = " & MapInfo(.pos.Map).Newbie, FontTypeNames.FONTTYPE_INFO)
-            Call WriteConsoleMsg(UserIndex, "Nivel = " & MapInfo(.pos.Map).MinLevel & "/" & MapInfo(.pos.Map).MaxLevel, FontTypeNames.FONTTYPE_INFO)
-            Call WriteConsoleMsg(UserIndex, "SinInviOcul = " & MapInfo(.pos.Map).SinInviOcul, FontTypeNames.FONTTYPE_INFO)
-            Call WriteConsoleMsg(UserIndex, "SinMagia = " & MapInfo(.pos.Map).SinMagia, FontTypeNames.FONTTYPE_INFO)
-            Call WriteConsoleMsg(UserIndex, "SoloClanes = " & MapInfo(.pos.Map).SoloClanes, FontTypeNames.FONTTYPE_INFO)
-            Call WriteConsoleMsg(UserIndex, "NoPKs = " & MapInfo(.pos.Map).NoPKs, FontTypeNames.FONTTYPE_INFO)
-            Call WriteConsoleMsg(UserIndex, "NoCiudadanos = " & MapInfo(.pos.Map).NoCiudadanos, FontTypeNames.FONTTYPE_INFO)
-            Call WriteConsoleMsg(UserIndex, "Salida = " & MapInfo(.pos.Map).Salida.Map & "-" & MapInfo(.pos.Map).Salida.X & "-" & MapInfo(.pos.Map).Salida.Y, FontTypeNames.FONTTYPE_INFO)
-            Call WriteConsoleMsg(UserIndex, "Terreno = " & MapInfo(.pos.Map).terrain, FontTypeNames.FONTTYPE_INFO)
-            Call WriteConsoleMsg(UserIndex, "Zona = " & MapInfo(.pos.Map).zone, FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "[Info de mapa " & .Pos.Map & "]", FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "Nombre = " & MapInfo(.Pos.Map).map_name, FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "Seguro = " & MapInfo(.Pos.Map).Seguro, FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "Newbie = " & MapInfo(.Pos.Map).Newbie, FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "Nivel = " & MapInfo(.Pos.Map).MinLevel & "/" & MapInfo(.Pos.Map).MaxLevel, FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "SinInviOcul = " & MapInfo(.Pos.Map).SinInviOcul, FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "SinMagia = " & MapInfo(.Pos.Map).SinMagia, FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "SoloClanes = " & MapInfo(.Pos.Map).SoloClanes, FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "NoPKs = " & MapInfo(.Pos.Map).NoPKs, FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "NoCiudadanos = " & MapInfo(.Pos.Map).NoCiudadanos, FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "Salida = " & MapInfo(.Pos.Map).Salida.Map & "-" & MapInfo(.Pos.Map).Salida.X & "-" & MapInfo(.Pos.Map).Salida.Y, FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "Terreno = " & MapInfo(.Pos.Map).terrain, FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "Zona = " & MapInfo(.Pos.Map).zone, FontTypeNames.FONTTYPE_INFO)
         
         End If
     
@@ -31599,7 +31599,7 @@ Private Sub HandleCuentaDeposit(ByVal UserIndex As Integer)
                 Exit Sub
             End If
             
-            If Distancia(NpcList(.flags.TargetNPC).pos, .pos) > 10 Then
+            If Distancia(NpcList(.flags.TargetNPC).Pos, .Pos) > 10 Then
                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                 'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
@@ -31713,6 +31713,10 @@ Private Sub HandleCreateEvent(ByVal UserIndex As Integer)
             Case "INVASION BANDER"
                 Call IniciarEvento(TipoEvento.Invasion, 1)
                 Call LogGM(.name, "Forzó el evento Invasión en Banderville.")
+                
+            Case "INVASION CARCEL"
+                Call IniciarEvento(TipoEvento.Invasion, 2)
+                Call LogGM(.name, "Forzó el evento Invasión en Carcel.")
 
             Case Else
                 Call WriteConsoleMsg(UserIndex, "No existe el evento """ & name & """.", FontTypeNames.FONTTYPE_INFO)
