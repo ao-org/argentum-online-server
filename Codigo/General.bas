@@ -607,6 +607,19 @@ Sub Main()
 
     On Error GoTo Handler
 
+    ' Me fijo si ya hay un proceso llamado server.exe abierto
+    If GetProcess(App.EXEName & ".exe") > 1 Then
+    
+        ' Si lo hay, pregunto si lo queremos cerrar.
+        If MsgBox("Se ha encontrado mas de 1 instancia abierta de esta aplicación, ¿ Desea continuar ?", vbYesNo) = vbNo Then
+            
+            ' Cerramos esta instancia de la aplicacion.
+            End
+
+        End If
+        
+    End If
+    
     Call LeerLineaComandos
     
     Call CargarRanking
@@ -2894,4 +2907,34 @@ Public Function InsideRectangle(R As Rectangle, ByVal X As Integer, ByVal Y As I
     If Y < R.Y1 Then Exit Function
     If Y > R.Y2 Then Exit Function
     InsideRectangle = True
+End Function
+
+Public Function GetProcess(ByVal processName As String) As Byte
+    
+    Dim oService As Object
+    Dim servicename As String
+    Dim processCount As Byte
+    
+    Dim oWMI As Object: Set oWMI = GetObject("winmgmts:")
+    Dim oServices As Object: Set oServices = oWMI.InstancesOf("win32_process")
+
+    For Each oService In oServices
+
+        servicename = LCase$(Trim$(CStr(oService.name)))
+        
+        Debug.Print servicename
+        
+        If InStrB(1, servicename, LCase$(processName), vbBinaryCompare) > 0 Then
+            
+            ' Para matar un proceso adentro de este loop usar.
+            'oService.Terminate
+            
+            processCount = processCount + 1
+            
+        End If
+
+    Next
+    
+    GetProcess = processCount
+
 End Function
