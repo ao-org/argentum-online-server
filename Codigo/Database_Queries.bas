@@ -9,6 +9,7 @@ Private QueryBuilder As cStringBuilder
 Public QUERY_CREARPJ_MAIN As String
 Public QUERY_CREARPJ_ATRIBUTOS As String
 Public QUERY_CREARPJ_SPELLS As String
+Public QUERY_CREARPJ_INVENTORY As String
 Public QUERY_CREARPJ_SKILLS As String
 Public QUERY_CREARPJ_QUESTS As String
 Public QUERY_CREARPJ_PETS As String
@@ -82,7 +83,6 @@ Private Sub ConstruirQuery_CrearPersonaje()
     QueryBuilder.Append "INSERT INTO attribute (user_id, number, value) VALUES "
 
     For LoopC = 1 To NUMATRIBUTOS
-        
         QueryBuilder.Append "(?, ?, ?)"
 
         If LoopC < NUMATRIBUTOS Then
@@ -119,6 +119,26 @@ Private Sub ConstruirQuery_CrearPersonaje()
     ' Limpio el constructor de querys
     Call QueryBuilder.Clear
     
+    ' ******************* INVENTORY *******************
+    QueryBuilder.Append "INSERT INTO inventory_item (user_id, number, item_id, Amount, is_equipped) VALUES "
+
+    For LoopC = 1 To MAX_INVENTORY_SLOTS
+        QueryBuilder.Append "(?, ?, ?, ?, ?)"
+
+        If LoopC < MAX_INVENTORY_SLOTS Then
+            QueryBuilder.Append ", "
+        Else
+            QueryBuilder.Append "; "
+        End If
+
+    Next LoopC
+    
+    ' Guardo la query ensamblada
+    QUERY_CREARPJ_INVENTORY = QueryBuilder.ToString
+    
+    ' Limpio el constructor de querys
+    Call QueryBuilder.Clear
+
     ' ************************** User skills ************************************
     QueryBuilder.Append "INSERT INTO skillpoint (user_id, number, value) VALUES "
 
@@ -143,7 +163,7 @@ Private Sub ConstruirQuery_CrearPersonaje()
     QueryBuilder.Append "INSERT INTO quest (user_id, number) VALUES "
 
     For LoopC = 1 To MAXUSERQUESTS
-        QueryBuilder.Append "(?, ?, ?)"
+        QueryBuilder.Append "(?, ?)"
 
         If LoopC < MAXUSERQUESTS Then
             QueryBuilder.Append ", "

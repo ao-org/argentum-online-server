@@ -106,6 +106,8 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 
     On Error GoTo ErrorHandler
     
+    Dim LoopC As Long
+    Dim ParamC As Long
     Dim Params() As Variant
     
     'Constructor de queries.
@@ -116,7 +118,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
         
         ReDim Params(45)
         
-        'Basic user data
+        '  ************ Basic user data *******************
         Params(0) = .name
         Params(1) = .AccountId
         Params(2) = .Stats.ELV
@@ -164,7 +166,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
         Params(44) = .flags.Desnudo
         Params(45) = .Faccion.Status
         
-        Call MakeQuery(QUERY_CREARPJ_MAIN, True, Params)
+        Call MakeQueryPrepared(QUERY_CREARPJ_MAIN, True, Params)
 
         ' Para recibir el ID del user
         Call MakeQuery("SELECT LAST_INSERT_ID();", False)
@@ -175,119 +177,89 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
             .Id = val(QueryData.Fields(0).Value)
         End If
         
-        ' Comenzamos una cadena de queries (para enviar todo de una)
-        Dim LoopC As Long
-
-        'User attributes
-        QueryBuilder.Append "INSERT INTO attribute (user_id, number, value) VALUES "
-
+        ' ******************* ATRIBUTOS *******************
+        ReDim Params(NUMATRIBUTOS * 3 - 1)
+        ParamC = 0
+        
         For LoopC = 1 To NUMATRIBUTOS
-        
-            QueryBuilder.Append "("
-            QueryBuilder.Append .Id & ", "
-            QueryBuilder.Append LoopC & ", "
-            QueryBuilder.Append .Stats.UserAtributos(LoopC) & ")"
-
-            If LoopC < NUMATRIBUTOS Then
-                QueryBuilder.Append ", "
-            Else
-                QueryBuilder.Append "; "
-            End If
-
+            Params(ParamC) = .Id
+            Params(ParamC + 1) = LoopC
+            Params(ParamC + 2) = .Stats.UserAtributos(LoopC)
+            
+            ParamC = ParamC + 3
         Next LoopC
-
-        'User spells
-        QueryBuilder.Append "INSERT INTO spell (user_id, number, spell_id) VALUES "
-
+        
+        Call MakeQueryPrepared(QUERY_CREARPJ_ATRIBUTOS, True, Params)
+        
+        ' ******************* SPELLS **********************
+        ReDim Params(MAXUSERHECHIZOS * 3 - 1)
+        ParamC = 0
+        
         For LoopC = 1 To MAXUSERHECHIZOS
-            QueryBuilder.Append "("
-            QueryBuilder.Append .Id & ", "
-            QueryBuilder.Append LoopC & ", "
-            QueryBuilder.Append .Stats.UserHechizos(LoopC) & ")"
-
-            If LoopC < MAXUSERHECHIZOS Then
-                QueryBuilder.Append ", "
-            Else
-                QueryBuilder.Append "; "
-            End If
-
+            Params(ParamC) = .Id
+            Params(ParamC + 1) = LoopC
+            Params(ParamC + 2) = .Stats.UserHechizos(LoopC)
+            
+            ParamC = ParamC + 3
         Next LoopC
 
-        'User inventory
-        QueryBuilder.Append "INSERT INTO inventory_item (user_id, number, item_id, Amount, is_equipped) VALUES "
-
-        For LoopC = 1 To UserList(UserIndex).CurrentInventorySlots
-            QueryBuilder.Append "("
-            QueryBuilder.Append .Id & ", "
-            QueryBuilder.Append LoopC & ", "
-            QueryBuilder.Append .Invent.Object(LoopC).ObjIndex & ", "
-            QueryBuilder.Append .Invent.Object(LoopC).Amount & ", "
-            QueryBuilder.Append .Invent.Object(LoopC).Equipped & ")"
-
-            If LoopC < UserList(UserIndex).CurrentInventorySlots Then
-                QueryBuilder.Append ", "
-            Else
-                QueryBuilder.Append "; "
-            End If
-
+        Call MakeQueryPrepared(QUERY_CREARPJ_SPELLS, True, Params)
+        
+        ' ******************* INVENTORY *******************
+        ReDim Params(MAX_INVENTORY_SLOTS * 5 - 1)
+        ParamC = 0
+        
+        For LoopC = 1 To MAX_INVENTORY_SLOTS
+            Params(ParamC) = .Id
+            Params(ParamC + 1) = LoopC
+            Params(ParamC + 2) = .Invent.Object(LoopC).ObjIndex
+            Params(ParamC + 3) = .Invent.Object(LoopC).amount
+            Params(ParamC + 4) = .Invent.Object(LoopC).Equipped
+            
+            ParamC = ParamC + 5
         Next LoopC
-
-        'User skills
-        QueryBuilder.Append "INSERT INTO skillpoint (user_id, number, value) VALUES "
-
+        
+        Call MakeQueryPrepared(QUERY_CREARPJ_INVENTORY, True, Params)
+        
+        ' ******************* SKILLS *******************
+        ReDim Params(NUMSKILLS * 3 - 1)
+        ParamC = 0
+        
         For LoopC = 1 To NUMSKILLS
-            QueryBuilder.Append "("
-            QueryBuilder.Append .Id & ", "
-            QueryBuilder.Append LoopC & ", "
-            QueryBuilder.Append .Stats.UserSkills(LoopC) & ")"
-            'QueryBuilder.Append .Stats.UserSkills(LoopC) & ", "
-            'QueryBuilder.Append .Stats.ExpSkills(LoopC) & ", "
-            'QueryBuilder.Append .Stats.EluSkills(LoopC) & ")"
-
-            If LoopC < NUMSKILLS Then
-                QueryBuilder.Append ", "
-            Else
-                QueryBuilder.Append "; "
-            End If
-
+            Params(ParamC) = .Id
+            Params(ParamC + 1) = LoopC
+            Params(ParamC + 2) = .Stats.UserSkills(LoopC)
+            
+            ParamC = ParamC + 3
         Next LoopC
-
-        'User quests
-        QueryBuilder.Append "INSERT INTO quest (user_id, number) VALUES "
-
+        
+        Call MakeQueryPrepared(QUERY_CREARPJ_SKILLS, True, Params)
+        
+        ' ******************* QUESTS *******************
+        ReDim Params(MAXUSERQUESTS * 2 - 1)
+        ParamC = 0
+        
         For LoopC = 1 To MAXUSERQUESTS
-        
-            QueryBuilder.Append "("
-            QueryBuilder.Append .Id & ", "
-            QueryBuilder.Append LoopC & ")"
-
-            If LoopC < MAXUSERQUESTS Then
-                QueryBuilder.Append ", "
-            Else
-                QueryBuilder.Append "; "
-            End If
-
+            Params(ParamC) = .Id
+            Params(ParamC + 1) = LoopC
+            
+            ParamC = ParamC + 2
         Next LoopC
         
-        'User pets
-        QueryBuilder.Append "INSERT INTO pet (user_id, number, pet_id) VALUES "
-
+        Call MakeQueryPrepared(QUERY_CREARPJ_QUESTS, True, Params)
+        
+        ' ******************* PETS ********************
+        ReDim Params(MAXMASCOTAS * 2 - 1)
+        ParamC = 0
+        
         For LoopC = 1 To MAXMASCOTAS
-        
-            QueryBuilder.Append "("
-            QueryBuilder.Append .Id & ", "
-            QueryBuilder.Append LoopC & ", 0)"
-
-            If LoopC < MAXMASCOTAS Then
-                QueryBuilder.Append ", "
-            Else
-                QueryBuilder.Append "; "
-            End If
-
+            Params(ParamC) = .Id
+            Params(ParamC + 1) = LoopC
+            
+            ParamC = ParamC + 2
         Next LoopC
-
-        'Enviamos todas las queries
-        Call MakeQuery(QueryBuilder.ToString, True)
+    
+        Call MakeQueryPrepared(QUERY_CREARPJ_PETS, True, Params)
         
         Set QueryBuilder = Nothing
     
@@ -1069,6 +1041,66 @@ Public Function MakeQuery(query As String, ByVal NoResult As Boolean, ParamArray
         Next
 
         .CommandText = query
+
+        If NoResult Then
+            Call .Execute(RecordsAffected, Params, adExecuteNoRecords)
+    
+        Else
+            Set QueryData = .Execute(RecordsAffected, Params)
+    
+            If QueryData.BOF Or QueryData.EOF Then
+                Set QueryData = Nothing
+            End If
+    
+        End If
+        
+    End With
+    
+    Exit Function
+    
+ErrorHandler:
+
+    If Not adoIsConnected(Database_Connection) Then
+        Call LogDatabaseError("Alerta en MakeQuery: Se perdió la conexión con la DB. Reconectando.")
+        Call Database_Connect
+        Resume
+        
+    Else
+        Call LogDatabaseError("Error en MakeQuery: query = '" & query & "'. " & Err.Number & " - " & Err.Description)
+        
+        On Error GoTo 0
+
+        Err.raise Err.Number
+
+    End If
+
+End Function
+
+Public Function MakeQueryPrepared(query As String, ByVal NoResult As Boolean, Query_Parameters() As Variant) As Boolean
+    ' 17/10/2020 Autor: Alexis Caraballo (WyroX)
+    ' Hace una unica query a la db. Asume una conexion.
+    ' Si NoResult = False, el metodo lee el resultado de la query
+    ' Guarda el resultado en QueryData
+    
+    On Error GoTo ErrorHandler
+    
+    Dim Params As Variant
+        
+    If UBound(Query_Parameters) < 0 Then
+        Params = Null
+    Else
+        Params = Query_Parameters
+    End If
+
+    With Command
+        .Prepared = True
+        .CommandText = query
+        
+        ' Clear old params
+        Dim i As Integer
+        For i = 0 To .Parameters.Count - 1
+            Call .Parameters.Delete(0)
+        Next
 
         If NoResult Then
             Call .Execute(RecordsAffected, Params, adExecuteNoRecords)
