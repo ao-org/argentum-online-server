@@ -35,7 +35,7 @@ Begin VB.Form frmMain
    End
    Begin VB.Timer TiempoRetos 
       Interval        =   10000
-      Left            =   3600
+      Left            =   3120
       Top             =   4200
    End
    Begin VB.Timer TimerGuardarUsuarios 
@@ -433,11 +433,6 @@ Begin VB.Form frmMain
       TabIndex        =   14
       Top             =   3000
       Width           =   4935
-      Begin VB.Timer t_ColaAPI 
-         Interval        =   50
-         Left            =   3000
-         Top             =   1200
-      End
       Begin VB.ListBox listaDePaquetes 
          Height          =   1110
          Left            =   120
@@ -495,15 +490,9 @@ Begin VB.Form frmMain
          Caption         =   "Cargar Creditos"
       End
    End
-   Begin VB.Menu mnuConsolaAPI 
-      Caption         =   "Consola API"
-   End
    Begin VB.Menu mnuPopUp 
       Caption         =   "PopUpMenu"
       Visible         =   0   'False
-      Begin VB.Menu mnuConsolaAPI_Popup 
-         Caption         =   "&Consola API"
-      End
       Begin VB.Menu mnuMostrar 
          Caption         =   "&Mostrar"
       End
@@ -812,48 +801,6 @@ Private Sub Invasion_Timer()
         End With
     Next
     ' **********************************
-End Sub
-
-Private Sub mnuConsolaAPI_Click()
-    frmAPISocket.Show vbModeless
-End Sub
-
-Private Sub mnuConsolaAPI_Popup_Click()
-    Call mnuConsolaAPI_Click
-End Sub
-
-Private Sub t_ColaAPI_Timer()
-
-    If API.packetResend.Count = 0 Then Exit Sub
-    
-    With frmAPISocket
-    
-        Select Case .Socket.State
-        
-            Case sckConnected
-            
-                'Iteramos la cola y mandamos todo.
-                Do While (Not API.packetResend.IsEmpty)
-                    Call .Socket.SendData(API.packetResend.Pop)
-                Loop
-                
-                Debug.Print "API: Enviado!"
-                
-                Exit Sub
-            
-            Case sckClosed
-                Call .Connect
-                Debug.Print "API: El socket estaba cerrado! Reconectando..."
-                
-            Case sckError
-                Call .Socket.CloseSck
-                Call .Connect
-                Debug.Print "API: Error en el socket! Reconectando..."
-                
-        End Select
-    
-    End With
-    
 End Sub
 
 ' WyroX: Comprobamos cada 10 segundos, porque no es necesaria tanta precisión
