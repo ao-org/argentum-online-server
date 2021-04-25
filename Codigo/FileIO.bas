@@ -2523,11 +2523,6 @@ Sub LoadSini()
 
         End If
 
-        ' Cerramos el socket ya que no vamos a estar usándolo
-        If Not frmAPISocket.Socket Is Nothing Then
-            Call frmAPISocket.Socket.CloseSck
-        End If
-
 178     Call CargarCiudades
 182     Call ConsultaPopular.LoadData
 
@@ -3018,18 +3013,12 @@ Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = Fals
         Call GetElapsedTime
     #End If
     
-    If API_Enabled Then
-        Call SaveUserAPI(UserIndex, Logout)
-
-    Else
-        Call SaveUserDatabase(UserIndex, Logout)
-        
-    End If
+    Call SaveUserDatabase(UserIndex, Logout)
     
     UserList(UserIndex).Counters.LastSave = GetTickCount
     
     #If DEBUGGING = 1 Then
-        Call LogPerformance("Guardado de Personaje " & IIf(API_Enabled, "(API)", "(ADO)") & " - Tiempo transcurrido: " & Round(GetElapsedTime(), 1) & " ms")
+        Call LogPerformance("Guardado de Personaje - Tiempo transcurrido: " & Round(GetElapsedTime(), 1) & " ms")
     #End If
     
     Exit Sub
