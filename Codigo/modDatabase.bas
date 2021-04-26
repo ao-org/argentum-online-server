@@ -793,17 +793,17 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             While Not QueryData.EOF
 
                 With .Invent.Object(QueryData!Number)
-					.ObjIndex = QueryData!item_id
-					
-					If .ObjIndex <> 0 Then
-						If LenB(ObjData(.ObjIndex).name) Then
-							.Amount = QueryData!Amount
-							.Equipped = QueryData!is_equipped
-						Else
-							.ObjIndex = 0
-						End If
-					End If
-				End With
+                                        .ObjIndex = QueryData!item_id
+                                        
+                                        If .ObjIndex <> 0 Then
+                                                If LenB(ObjData(.ObjIndex).Name) Then
+                                                        .amount = QueryData!amount
+                                                        .Equipped = QueryData!is_equipped
+                                                Else
+                                                        .ObjIndex = 0
+                                                End If
+                                        End If
+                                End With
 
                 QueryData.MoveNext
             Wend
@@ -1877,16 +1877,11 @@ Public Sub SaveBanDatabase(UserName As String, Reason As String, BannedBy As Str
 
     Dim query As String
 
-    Call MakeQuery("UPDATE user SET is_banned = TRUE, banned_by = ?, ban_reason = ? WHERE UPPER(name) = ?;", True, BannedBy, Reason, UCase$(UserName))
 
-    Call MakeQuery("SELECT user.id, COUNT(punishment.number) as number FROM punishment INNER JOIN user ON punishment.user_id = user.id WHERE UPPER(user.name) = ?;", False, UCase$(UserName))
+    query = "INSERT INTO punishment(user_id, NUMBER, reason)"
+    query = query & " SELECT u.id, COUNT(p.number) + 1, ? FROM user u LEFT JOIN punishment p ON p.user_id = u.id WHERE UPPER(u.name) = ?"
 
-    query = "INSERT INTO punishment SET "
-    query = query & "user_id = ?, "
-    query = query & "number = ?, "
-    query = query & "reason = ?;"
-
-    Call MakeQuery(query, True, QueryData!Id, QueryData!Number + 1, BannedBy & ": " & Reason & " " & Date & " " & Time)
+    Call MakeQuery(query, True, Reason, UserName)
 
     Exit Sub
 
