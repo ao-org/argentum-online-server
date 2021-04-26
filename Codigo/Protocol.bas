@@ -8957,7 +8957,7 @@ Private Sub HandleGamble(ByVal UserIndex As Integer)
 
 138             If RandomNumber(1, 100) <= 45 Then
 140                 .Stats.GLD = .Stats.GLD + amount
-142                 Call WriteChatOverHead(UserIndex, "¡Felicidades! Has ganado " & PonerPuntos(Amount) & " monedas de oro!", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+142                 Call WriteChatOverHead(UserIndex, "¡Felicidades! Has ganado " & PonerPuntos(amount) & " monedas de oro!", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
                 
 144                 Apuestas.Perdidas = Apuestas.Perdidas + amount
 146                 Call WriteVar(DatPath & "apuestas.dat", "Main", "Perdidas", CStr(Apuestas.Perdidas))
@@ -10035,7 +10035,7 @@ Private Sub HandleCreaturesInMap(ByVal UserIndex As Integer)
 202             Call WriteConsoleMsg(UserIndex, "Otros Npcs en mapa: ", FontTypeNames.FONTTYPE_WARNING)
 
 204             If NPCcount2 = 0 Then
-206                 Call WriteConsoleMsg(UserIndex, "No hay mís NPCS", FontTypeNames.FONTTYPE_INFO)
+206                 Call WriteConsoleMsg(UserIndex, "No más NPCs.", FontTypeNames.FONTTYPE_INFO)
                 Else
 
 208                 For j = 0 To NPCcount2 - 1
