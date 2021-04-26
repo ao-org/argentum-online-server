@@ -5,17 +5,29 @@ Option Explicit
 'Me permite concatenar strings MUCHO MAS rapido
 Private QueryBuilder As cStringBuilder
 
-' Queries
-Public QUERY_CREARPJ_MAIN As String
-Public QUERY_CREARPJ_ATRIBUTOS As String
-Public QUERY_CREARPJ_SPELLS As String
-Public QUERY_CREARPJ_INVENTORY As String
-Public QUERY_CREARPJ_SKILLS As String
-Public QUERY_CREARPJ_QUESTS As String
-Public QUERY_CREARPJ_PETS As String
+' DYNAMIC QUERIES
+Public QUERY_SAVE_MAINPJ As String
+Public QUERY_SAVE_ATTRIBUTES As String
+Public QUERY_SAVE_SPELLS As String
+Public QUERY_SAVE_INVENTORY As String
+Public QUERY_SAVE_BANCOINV As String
+Public QUERY_SAVE_SKILLS As String
+Public QUERY_SAVE_QUESTS As String
+Public QUERY_SAVE_PETS As String
+
+Public QUERY_UPSERT_ATTRIBUTES As String
+Public QUERY_UPSERT_SPELLS As String
+Public QUERY_UPSERT_INVENTORY As String
+Public QUERY_UPSERT_SKILLS As String
+Public QUERY_UPSERT_PETS As String
+
+' CONSTANT QUERIES
+Public Const QUERY_SAVE_CONNECTION As String = "INSERT INTO connection (user_id, ip) VALUES (? , ?) ON DUPLICATE KEY UPDATE date_last_login = VALUES(date_last_login);"
+Public Const QUERY_DELETE_LAST_CONNECTIONS As String = "DELETE FROM connection WHERE user_id = ? AND date_last_login < (SELECT min(date_last_login) FROM (SELECT date_last_login FROM connection WHERE user_id = ? ORDER BY date_last_login DESC LIMIT 5) AS d);"
 
 Public Sub Contruir_Querys()
     Call ConstruirQuery_CrearPersonaje
+    Call ConstruirQuery_GuardarPersonaje
 End Sub
 
 Private Sub ConstruirQuery_CrearPersonaje()
@@ -74,7 +86,7 @@ Private Sub ConstruirQuery_CrearPersonaje()
     QueryBuilder.Append "is_logged = TRUE;"
     
     ' Guardo la query ensamblada
-    QUERY_CREARPJ_MAIN = QueryBuilder.ToString
+    QUERY_SAVE_MAINPJ = QueryBuilder.ToString
     
     ' Limpio el constructor de querys
     Call QueryBuilder.Clear
@@ -87,14 +99,12 @@ Private Sub ConstruirQuery_CrearPersonaje()
 
         If LoopC < NUMATRIBUTOS Then
             QueryBuilder.Append ", "
-        Else
-            QueryBuilder.Append "; "
         End If
 
     Next LoopC
     
     ' Guardo la query ensamblada
-    QUERY_CREARPJ_ATRIBUTOS = QueryBuilder.ToString
+    QUERY_SAVE_ATTRIBUTES = QueryBuilder.ToString
     
     ' Limpio el constructor de querys
     Call QueryBuilder.Clear
@@ -107,14 +117,12 @@ Private Sub ConstruirQuery_CrearPersonaje()
 
         If LoopC < MAXUSERHECHIZOS Then
             QueryBuilder.Append ", "
-        Else
-            QueryBuilder.Append "; "
         End If
 
     Next LoopC
     
     ' Guardo la query ensamblada
-    QUERY_CREARPJ_SPELLS = QueryBuilder.ToString
+    QUERY_SAVE_SPELLS = QueryBuilder.ToString
     
     ' Limpio el constructor de querys
     Call QueryBuilder.Clear
@@ -127,14 +135,12 @@ Private Sub ConstruirQuery_CrearPersonaje()
 
         If LoopC < MAX_INVENTORY_SLOTS Then
             QueryBuilder.Append ", "
-        Else
-            QueryBuilder.Append "; "
         End If
 
     Next LoopC
     
     ' Guardo la query ensamblada
-    QUERY_CREARPJ_INVENTORY = QueryBuilder.ToString
+    QUERY_SAVE_INVENTORY = QueryBuilder.ToString
     
     ' Limpio el constructor de querys
     Call QueryBuilder.Clear
@@ -147,14 +153,12 @@ Private Sub ConstruirQuery_CrearPersonaje()
 
         If LoopC < NUMSKILLS Then
             QueryBuilder.Append ", "
-        Else
-            QueryBuilder.Append "; "
         End If
 
     Next LoopC
 
     ' Guardo la query ensamblada
-    QUERY_CREARPJ_SKILLS = QueryBuilder.ToString
+    QUERY_SAVE_SKILLS = QueryBuilder.ToString
     
     ' Limpio el constructor de querys
     Call QueryBuilder.Clear
@@ -167,14 +171,12 @@ Private Sub ConstruirQuery_CrearPersonaje()
 
         If LoopC < MAXUSERQUESTS Then
             QueryBuilder.Append ", "
-        Else
-            QueryBuilder.Append "; "
         End If
 
     Next LoopC
     
     ' Guardo la query ensamblada
-    QUERY_CREARPJ_QUESTS = QueryBuilder.ToString
+    QUERY_SAVE_QUESTS = QueryBuilder.ToString
     
     ' Limpio el constructor de querys
     Call QueryBuilder.Clear
@@ -183,20 +185,53 @@ Private Sub ConstruirQuery_CrearPersonaje()
     QueryBuilder.Append "INSERT INTO pet (user_id, number, pet_id) VALUES "
 
     For LoopC = 1 To MAXMASCOTAS
-        QueryBuilder.Append "(?, ?, 0)"
+        QueryBuilder.Append "(?, ?, ?)"
 
         If LoopC < MAXMASCOTAS Then
             QueryBuilder.Append ", "
-        Else
-            QueryBuilder.Append "; "
         End If
 
     Next LoopC
     
     ' Guardo la query ensamblada
-    QUERY_CREARPJ_PETS = QueryBuilder.ToString
+    QUERY_SAVE_PETS = QueryBuilder.ToString
     
     ' Limpio el constructor de querys
     Call QueryBuilder.Clear
+    
+End Sub
+
+Private Sub ConstruirQuery_GuardarPersonaje()
+
+    Dim LoopC As Long
+    
+    ' ************************** User bank inventory **************************************
+    QueryBuilder.Append "INSERT INTO bank_item (user_id, number, item_id, amount) VALUES "
+
+    For LoopC = 1 To MAX_BANCOINVENTORY_SLOTS
+        QueryBuilder.Append "(?, ?, ?, ?)"
+
+        If LoopC < MAX_BANCOINVENTORY_SLOTS Then
+            QueryBuilder.Append ", "
+
+        End If
+
+    Next LoopC
+        
+    QueryBuilder.Append " ON DUPLICATE KEY UPDATE item_id=VALUES(item_id), amount=VALUES(Amount); "
+    
+    ' Guardo la query ensamblada
+    QUERY_SAVE_BANCOINV = QueryBuilder.ToString
+    
+    ' Limpio el constructor de querys
+    Call QueryBuilder.Clear
+    
+    ' ************************** UPSERT QUERIES **************************************
+    
+    QUERY_UPSERT_ATTRIBUTES = QUERY_SAVE_ATTRIBUTES & " ON DUPLICATE KEY UPDATE value=VALUES(value); "
+    QUERY_UPSERT_SPELLS = QUERY_SAVE_SPELLS & " ON DUPLICATE KEY UPDATE spell_id=VALUES(spell_id); "
+    QUERY_UPSERT_INVENTORY = QUERY_SAVE_INVENTORY & " ON DUPLICATE KEY UPDATE item_id=VALUES(item_id), amount=VALUES(Amount), is_equipped=VALUES(is_equipped); "
+    QUERY_UPSERT_SKILLS = QUERY_SAVE_SKILLS & " ON DUPLICATE KEY UPDATE value=VALUES(value); "
+    QUERY_UPSERT_PETS = QUERY_SAVE_PETS & " ON DUPLICATE KEY UPDATE pet_id=VALUES(pet_id); "
     
 End Sub
