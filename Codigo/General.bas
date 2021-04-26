@@ -669,6 +669,7 @@ Sub Main()
     RecordUsuarios = LeerRecordUsuariosDatabase()
         
     'Tarea pesada
+    Call Contruir_Querys
     Call LogoutAllUsersAndAccounts
 
     '*************************************************
