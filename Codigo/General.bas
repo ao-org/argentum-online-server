@@ -2919,9 +2919,7 @@ Public Function GetProcess(ByVal processName As String) As Byte
     For Each oService In oServices
 
         servicename = LCase$(Trim$(CStr(oService.name)))
-        
-        Debug.Print servicename
-        
+
         If InStrB(1, servicename, LCase$(processName), vbBinaryCompare) > 0 Then
             
             ' Para matar un proceso adentro de este loop usar.

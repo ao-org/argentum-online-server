@@ -110,7 +110,7 @@ Public aClon          As New clsAntiMassClon
 
 Public TrashCollector As New Collection
 
-Public Const MAXSPAWNATTEMPS = 60
+Public Const MAXSPAWNATTEMPS = 15
 
 ' Correo Ladder 22/11/2017
 Public Const MAX_CORREOS_SLOTS = 15
