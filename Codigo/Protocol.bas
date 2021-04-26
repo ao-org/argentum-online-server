@@ -26687,7 +26687,8 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
         
 114         If (SlotViejo > .CurrentInventorySlots) Or (SlotNuevo > .CurrentInventorySlots) Then
 116             Call WriteConsoleMsg(UserIndex, "Espacio no desbloqueado.", FontTypeNames.FONTTYPE_INFOIAO)
-            Else
+
+            ElseIf SlotViejo <> SlotNuevo Then
     
                 If .Invent.Object(SlotNuevo).ObjIndex = .Invent.Object(SlotViejo).ObjIndex Then
                     .Invent.Object(SlotNuevo).Amount = .Invent.Object(SlotNuevo).Amount + .Invent.Object(SlotViejo).Amount
