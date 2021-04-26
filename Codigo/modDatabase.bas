@@ -896,9 +896,18 @@ With UserList(UserIndex)
 
         While Not QueryData.EOF
 
-            .Invent.Object(QueryData!Number).ObjIndex = QueryData!item_id
-            .Invent.Object(QueryData!Number).Amount = QueryData!Amount
-            .Invent.Object(QueryData!Number).Equipped = QueryData!is_equipped
+            With .Invent.Object(QueryData!Number)
+                .ObjIndex = QueryData!item_id
+                
+                If .ObjIndex <> 0 Then
+                    If LenB(ObjData(.ObjIndex).name) Then
+                        .Amount = QueryData!Amount
+                        .Equipped = QueryData!is_equipped
+                    Else
+                        .ObjIndex = 0
+                    End If
+                End If
+            End With
 
             QueryData.MoveNext
         Wend
@@ -913,8 +922,17 @@ With UserList(UserIndex)
 
         While Not QueryData.EOF
 
-            .BancoInvent.Object(QueryData!Number).ObjIndex = QueryData!item_id
-            .BancoInvent.Object(QueryData!Number).Amount = QueryData!Amount
+            With .BancoInvent.Object(QueryData!Number)
+                .ObjIndex = QueryData!item_id
+                
+                If .ObjIndex <> 0 Then
+                    If LenB(ObjData(.ObjIndex).name) Then
+                        .Amount = QueryData!Amount
+                    Else
+                        .ObjIndex = 0
+                    End If
+                End If
+            End With
 
             QueryData.MoveNext
         Wend
