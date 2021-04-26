@@ -472,17 +472,12 @@ ErrHandler:
 
 End Sub
 
-Function TestSpawnTrigger(Pos As WorldPos, Optional PuedeAgua As Boolean = False) As Boolean
-        
+Function TestSpawnTrigger(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
+
         On Error GoTo TestSpawnTrigger_Err
-        
-    
-100     If LegalPos(Pos.Map, Pos.X, Pos.Y, PuedeAgua) Then
-102         TestSpawnTrigger = MapData(Pos.Map, Pos.X, Pos.Y).trigger <> 3 And MapData(Pos.Map, Pos.X, Pos.Y).trigger <> 2 And MapData(Pos.Map, Pos.X, Pos.Y).trigger <> 1
 
-        End If
+100     TestSpawnTrigger = MapData(Map, X, Y).trigger <> 3 And MapData(Map, X, Y).trigger <> 2 And MapData(Map, X, Y).trigger <> 1
 
-        
         Exit Function
 
 TestSpawnTrigger_Err:
@@ -496,14 +491,8 @@ Public Function CrearNPC(NroNPC As Integer, Mapa As Integer, OrigPos As WorldPos
         'Crea un NPC del tipo NRONPC
         
         On Error GoTo CrearNPC_Err
-        
 
-        Dim Pos            As WorldPos
-        Dim newpos         As WorldPos
-        Dim altpos         As WorldPos
-
-        Dim nIndex         As Integer
-        Dim PosicionValida As Boolean
+        Dim NpcIndex       As Integer
         Dim Iteraciones    As Long
 
         Dim PuedeAgua      As Boolean
@@ -513,128 +502,79 @@ Public Function CrearNPC(NroNPC As Integer, Mapa As Integer, OrigPos As WorldPos
         Dim X              As Integer
         Dim Y              As Integer
 
-100     nIndex = OpenNPC(NroNPC) 'Conseguimos un indice
+100     NpcIndex = OpenNPC(NroNPC) 'Conseguimos un indice
     
-102     If nIndex = 0 Then Exit Function
-        
-        ' Cabeza customizada
-104     If CustomHead <> 0 Then NpcList(nIndex).Char.Head = CustomHead
+102     If NpcIndex = 0 Then Exit Function
 
-106     PuedeAgua = NpcList(nIndex).flags.AguaValida = 1
-108     PuedeTierra = NpcList(nIndex).flags.TierraInvalida = 0
+        With NpcList(NpcIndex)
+        
+            ' Cabeza customizada
+104         If CustomHead <> 0 Then .Char.Head = CustomHead
     
-        'Necesita ser respawned en un lugar especifico
-110     If NpcList(nIndex).flags.RespawnOrigPos And InMapBounds(OrigPos.Map, OrigPos.X, OrigPos.Y) Then
+106         PuedeAgua = .flags.AguaValida = 1
+108         PuedeTierra = .flags.TierraInvalida = 0
         
-112         Map = OrigPos.Map
-114         X = OrigPos.X
-116         Y = OrigPos.Y
-118         NpcList(nIndex).Orig = OrigPos
-120         NpcList(nIndex).Pos = OrigPos
-       
-        Else
-        
-122         Pos.Map = Mapa 'mapa
-124         altpos.Map = Mapa
-        
-126         Do While Not PosicionValida
-128             Pos.X = RandomNumber(MinXBorder + 2, MaxXBorder - 2) 'Obtenemos posicion al azar en x
-130             Pos.Y = RandomNumber(MinYBorder + 2, MaxYBorder - 2) 'Obtenemos posicion al azar en y
+            'Necesita ser respawned en un lugar especifico
+110         If .flags.RespawnOrigPos And InMapBounds(OrigPos.Map, OrigPos.X, OrigPos.Y) Then
             
-132             Call ClosestLegalPos(Pos, newpos, PuedeAgua, PuedeTierra)  'Nos devuelve la posicion valida mas cercana
-
-134             If newpos.X <> 0 And newpos.Y <> 0 Then
-136                 altpos.X = newpos.X
-138                 altpos.Y = newpos.Y     'posicion alternativa (para evitar el anti respawn, pero intentando qeu si tenía que ser en el agua, sea en el agua.)
-                Else
-140                 Call ClosestLegalPos(Pos, newpos, PuedeAgua)
-
-142                 If newpos.X <> 0 And newpos.Y <> 0 Then
-144                     altpos.X = newpos.X
-146                     altpos.Y = newpos.Y     'posicion alternativa (para evitar el anti respawn)
-
-                    End If
-
-                End If
-
-                'Si X e Y son iguales a 0 significa que no se encontro posicion valida
-148             If LegalPosNPC(newpos.Map, newpos.X, newpos.Y, PuedeAgua) And Not HayPCarea(newpos) And TestSpawnTrigger(newpos, PuedeAgua) Then
-
-                    'Asignamos las nuevas coordenas solo si son validas
-150                 NpcList(nIndex).Pos.Map = newpos.Map
-152                 NpcList(nIndex).Pos.X = newpos.X
-154                 NpcList(nIndex).Pos.Y = newpos.Y
-156                 PosicionValida = True
-
-                Else
-                
-158                 newpos.X = 0
-160                 newpos.Y = 0
-            
-                End If
-                
-                'for debug
-162             Iteraciones = Iteraciones + 1
-
-164             If Iteraciones > MAXSPAWNATTEMPS Then
-
-166                 If altpos.X <> 0 And altpos.Y <> 0 Then
-
-168                     Map = altpos.Map
-170                     X = altpos.X
-172                     Y = altpos.Y
-
-174                     NpcList(nIndex).Pos.Map = Map
-176                     NpcList(nIndex).Pos.X = X
-178                     NpcList(nIndex).Pos.Y = Y
-
-180                     Call MakeNPCChar(True, Map, nIndex, Map, X, Y)
-182                     CrearNPC = nIndex
-                        
-                        Exit Function
+112             Map = OrigPos.Map
+114             X = OrigPos.X
+116             Y = OrigPos.Y
+118             .Orig = OrigPos
+120             .Pos = OrigPos
+           
+            Else
+                ' Primera búsqueda: buscamos una posición ideal hasta llegar al máximo de iteraciones
+126             Do
+                    .Pos.Map = Mapa
+128                 .Pos.X = RandomNumber(MinXBorder + 2, MaxXBorder - 2) 'Obtenemos posicion al azar en x
+130                 .Pos.Y = RandomNumber(MinYBorder + 2, MaxYBorder - 2) 'Obtenemos posicion al azar en y
+    
+132                 .Pos = ClosestLegalPosNPC(NpcIndex, 10)       'Nos devuelve la posicion valida mas cercana
                     
-                    Else
+                    Iteraciones = Iteraciones + 1
+    
+                Loop While .Pos.X = 0 And .Pos.Y = 0 And Iteraciones < MAXSPAWNATTEMPS
+    
+                ' Si no encontramos una posición válida en la primera instancia
+                If Iteraciones >= MAXSPAWNATTEMPS Then
+                    ' Hacemos una búsqueda exhaustiva partiendo desde el centro del mapa
+                    .Pos.Map = Mapa
+                    .Pos.X = (XMaxMapSize - XMinMapSize) \ 2
+                    .Pos.Y = (YMaxMapSize - YMinMapSize) \ 2
                     
-184                     altpos.X = 50
-186                     altpos.Y = 50
-188                     Call ClosestLegalPos(altpos, newpos)
-
-190                     If newpos.X <> 0 And newpos.Y <> 0 Then
-
-192                         NpcList(nIndex).Pos.Map = newpos.Map
-194                         NpcList(nIndex).Pos.X = newpos.X
-196                         NpcList(nIndex).Pos.Y = newpos.Y
-
-198                         Call MakeNPCChar(True, newpos.Map, nIndex, newpos.Map, newpos.X, newpos.Y)
-200                         CrearNPC = nIndex
-                            
-                            Exit Function
-                            
-                        Else
+                    .Pos = ClosestLegalPosNPC(NpcIndex, (XMaxMapSize - XMinMapSize) \ 2)
+                    
+                    ' Si sigue fallando
+                    If .Pos.X = 0 And .Pos.Y = 0 Then
+                        ' Hacemos una última búsqueda exhaustiva, ignorando los usuarios
+                        .Pos.Map = Mapa
+                        .Pos.X = (XMaxMapSize - XMinMapSize) \ 2
+                        .Pos.Y = (YMaxMapSize - YMinMapSize) \ 2
                         
-202                         Call QuitarNPC(nIndex)
-204                         Call LogError(MAXSPAWNATTEMPS & " iteraciones en CrearNpc Mapa:" & Mapa & " NroNpc:" & NroNPC)
+                        .Pos = ClosestLegalPosNPC(NpcIndex, (XMaxMapSize - XMinMapSize) \ 2, True)
+                        
+                        ' Si falló, borramos el NPC y salimos
+                        If .Pos.X = 0 And .Pos.Y = 0 Then
+                            Call QuitarNPC(NpcIndex)
                             Exit Function
-
                         End If
-
                     End If
-
                 End If
+            
+                'asignamos las nuevas coordenas
+206             Map = .Pos.Map
+208             X = .Pos.X
+210             Y = .Pos.Y
+    
+            End If
 
-            Loop
-        
-            'asignamos las nuevas coordenas
-206         Map = newpos.Map
-208         X = NpcList(nIndex).Pos.X
-210         Y = NpcList(nIndex).Pos.Y
-
-        End If
+        End With
     
         'Crea el NPC
-212     Call MakeNPCChar(True, Map, nIndex, Map, X, Y)
+212     Call MakeNPCChar(True, Map, NpcIndex, Map, X, Y)
         
-214     CrearNPC = nIndex
+214     CrearNPC = NpcIndex
         
         Exit Function
 

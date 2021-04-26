@@ -772,18 +772,18 @@ EstaPCarea_Err:
         
 End Function
 
-Function HayPCarea(Pos As WorldPos) As Boolean
+Function HayPCarea(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
         
         On Error GoTo HayPCarea_Err
         
 
-        Dim X As Integer, Y As Integer
+        Dim tX As Integer, tY As Integer
 
-100     For Y = Pos.Y - MinYBorder + 1 To Pos.Y + MinYBorder - 1
-102         For X = Pos.X - MinXBorder + 1 To Pos.X + MinXBorder - 1
+100     For tY = Y - MinYBorder + 1 To Y + MinYBorder - 1
+102         For tX = X - MinXBorder + 1 To X + MinXBorder - 1
 
-104             If X > 0 And Y > 0 And X < 101 And Y < 101 Then
-106                 If MapData(Pos.Map, X, Y).UserIndex > 0 Then
+104             If InMapBounds(Map, tX, tY) Then
+106                 If MapData(Map, tX, tY).UserIndex > 0 Then
 108                     HayPCarea = True
                         Exit Function
 
@@ -791,8 +791,8 @@ Function HayPCarea(Pos As WorldPos) As Boolean
 
                 End If
 
-110         Next X
-112     Next Y
+110         Next
+112     Next
 
 114     HayPCarea = False
 

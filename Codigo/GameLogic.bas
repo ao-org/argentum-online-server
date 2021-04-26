@@ -425,6 +425,75 @@ InMapBounds_Err:
         
 End Function
 
+Function ClosestLegalPosNPC(ByVal NpcIndex As Integer, ByVal MaxRange As Integer, Optional ByVal IgnoreUsers As Boolean) As WorldPos
+
+    On Error GoTo ErrHandler
+
+    Dim LoopC    As Integer
+    Dim tX       As Integer
+    Dim tY       As Integer
+    
+    With NpcList(NpcIndex)
+
+        Do
+            tY = .Pos.Y - LoopC
+            For tX = .Pos.X - LoopC To .Pos.X + LoopC
+                If ValidNPCSpawnPos(ClosestLegalPosNPC, .Pos.Map, tX, tY, .flags.AguaValida = 1, .flags.TierraInvalida = 0, IgnoreUsers) Then
+                    Exit Function
+                End If
+            Next
+
+            tX = .Pos.X - LoopC
+            For tY = .Pos.Y - LoopC + 1 To .Pos.Y + LoopC - 1
+                If ValidNPCSpawnPos(ClosestLegalPosNPC, .Pos.Map, tX, tY, .flags.AguaValida = 1, .flags.TierraInvalida = 0, IgnoreUsers) Then
+                    Exit Function
+                End If
+            Next
+
+            tX = .Pos.X + LoopC
+            For tY = .Pos.Y - LoopC + 1 To .Pos.Y + LoopC - 1
+                If ValidNPCSpawnPos(ClosestLegalPosNPC, .Pos.Map, tX, tY, .flags.AguaValida = 1, .flags.TierraInvalida = 0, IgnoreUsers) Then
+                    Exit Function
+                End If
+            Next
+
+            tY = .Pos.Y + LoopC
+            For tX = .Pos.X - LoopC To .Pos.X + LoopC
+                If ValidNPCSpawnPos(ClosestLegalPosNPC, .Pos.Map, tX, tY, .flags.AguaValida = 1, .flags.TierraInvalida = 0, IgnoreUsers) Then
+                    Exit Function
+                End If
+            Next
+
+            LoopC = LoopC + 1
+
+        Loop While LoopC <= MaxRange
+
+    End With
+
+    Exit Function
+
+ErrHandler:
+    Call RegistrarError(Err.Number, Err.Description, "Extra.ClosestLegalPosNPC")
+    Resume Next
+        
+End Function
+
+Private Function ValidNPCSpawnPos(OutPos As WorldPos, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal AguaValida As Boolean, ByVal TierraValida As Boolean, ByVal IgnoreUsers As Boolean) As Boolean
+
+    If LegalPos(Map, X, Y, AguaValida, TierraValida, , False) Then
+        If TestSpawnTrigger(Map, X, Y) Then
+            If Not HayPCarea(Map, X, Y) Or IgnoreUsers Then
+                ValidNPCSpawnPos = True
+                OutPos.Map = Map
+                OutPos.X = X
+                OutPos.Y = Y
+                Exit Function
+            End If
+        End If
+    End If
+
+End Function
+
 Sub ClosestLegalPos(Pos As WorldPos, ByRef nPos As WorldPos, Optional ByVal PuedeAgua As Boolean = False, Optional ByVal PuedeTierra As Boolean = True)
         '*****************************************************************
         'Author: Unknown (original version)
