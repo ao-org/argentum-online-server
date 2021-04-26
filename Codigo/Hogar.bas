@@ -191,12 +191,7 @@ Public Sub goHome(ByVal UserIndex As Integer)
         '***************************************************
         
         On Error GoTo goHome_Err
-    
         
-
-        Dim Distance As Long
-        Dim Tiempo   As Long
-    
 100     With UserList(UserIndex)
 
 102         If .flags.Muerto = 1 Then
