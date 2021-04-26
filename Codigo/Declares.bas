@@ -665,13 +665,13 @@ Public Const MAX_INVENTORY_OBJS      As Integer = 10000
 ' Cantidad de "slots" en el inventario con todos los slots desbloqueados
 Public Const MAX_INVENTORY_SLOTS     As Byte = 42
 
-' Cantidad de "slots" en el inventario bï¿½sico
+' Cantidad de "slots" en el inventario básico
 Public Const MAX_USERINVENTORY_SLOTS As Byte = 24
 
 ' Cantidad de "slots" en el inventario por fila
 Public Const SLOTS_PER_ROW_INVENTORY As Byte = 6
 
-' Cantidad mï¿½xima de filas a desbloquear en el inventario
+' Cantidad máxima de filas a desbloquear en el inventario
 Public Const INVENTORY_EXTRA_ROWS    As Byte = 3
 
 ''
