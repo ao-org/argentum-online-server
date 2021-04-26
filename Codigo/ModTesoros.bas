@@ -35,8 +35,8 @@ Public Sub InitTesoro()
         
         On Error GoTo InitTesoro_Err
 
-        Dim Lector As clsIniReader
-        Set Lector = New clsIniReader
+        Dim Lector As clsIniManager
+        Set Lector = New clsIniManager
         
         Call Lector.Initialize(DatPath & "Tesoros.dat")
         
@@ -113,8 +113,8 @@ Public Sub InitRegalo()
         
         On Error GoTo InitRegalo_Err
         
-        Dim Lector As clsIniReader
-        Set Lector = New clsIniReader
+        Dim Lector As clsIniManager
+        Set Lector = New clsIniManager
         
         Call Lector.Initialize(DatPath & "Tesoros.dat")
         

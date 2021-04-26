@@ -2757,9 +2757,7 @@ Public Sub CerrarServidor()
     Next
     
     If Database_Enabled Then Database_Close
-    
-    If API_Enabled Then frmAPISocket.Socket.CloseSck
-    
+
     Call LimpiarModuloLimpieza
     
     'Log

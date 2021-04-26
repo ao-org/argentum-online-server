@@ -14,7 +14,7 @@ Public Sub CargarInfoRetos()
     
     With Retos
 
-        .Tamaï¿½oMaximoEquipo = val(File.GetValue("Retos", "MaximoEquipo"))
+        .TamañoMaximoEquipo = val(File.GetValue("Retos", "MaximoEquipo"))
         .ApuestaMinima = val(File.GetValue("Retos", "ApuestaMinima"))
         .ImpuestoApuesta = val(File.GetValue("Retos", "ImpuestoApuesta"))
         .DuracionMaxima = val(File.GetValue("Retos", "DuracionMaxima"))
@@ -63,7 +63,7 @@ Public Sub CrearReto(ByVal UserIndex As Integer, JugadoresStr As String, ByVal A
             Call CancelarSolicitudReto(.flags.AceptoReto, .Name & " ha cancelado su admisiï¿½n.")
         End If
         
-        Dim TamanoReal As Byte: TamanoReal = Retos.Tamaï¿½oMaximoEquipo * 2 - 1
+        Dim TamanoReal As Byte: TamanoReal = Retos.TamañoMaximoEquipo * 2 - 1
         
         If LenB(JugadoresStr) <= 0 Then Exit Sub
     
@@ -342,9 +342,9 @@ Private Sub IniciarReto(ByVal Oferente As Integer, ByVal Sala As Integer)
         Apuesta = .Apuesta
         ApuestaStr = PonerPuntos(Apuesta)
 
-        ' Calculamos el tamaï¿½o del equipo
-        Retos.Salas(Sala).Tamaï¿½oEquipoIzq = UBound(.Jugadores) \ 2 + 1
-        Retos.Salas(Sala).Tamaï¿½oEquipoDer = Retos.Salas(Sala).Tamaï¿½oEquipoIzq
+        ' Calculamos el Tamaño del equipo
+        Retos.Salas(Sala).TamañoEquipoIzq = UBound(.Jugadores) \ 2 + 1
+        Retos.Salas(Sala).TamañoEquipoDer = Retos.Salas(Sala).TamañoEquipoIzq
         ' Reservamos espacio para los jugadores (incluyendo al oferente)
         ReDim Retos.Salas(Sala).Jugadores(0 To UBound(.Jugadores) + 1)
         
@@ -526,21 +526,21 @@ Private Sub ProcesarRondaGanada(ByVal Sala As Integer, ByVal Equipo As EquipoRet
         ' Aumentamos el nï¿½mero de ronda
         .Ronda = .Ronda + 1
         
-        ' Obtenemos el tamaï¿½o actual del equipo (por si alguno abandonï¿½)
-        Dim Tamaï¿½oEquipo As Integer, Tamaï¿½oEquipo2 As Integer
-        Tamaï¿½oEquipo = ObtenerTamaï¿½oEquipo(Sala, Equipo)
+        ' Obtenemos el Tamaño actual del equipo (por si alguno abandonï¿½)
+        Dim TamañoEquipo As Integer, TamañoEquipo2 As Integer
+        TamañoEquipo = ObtenerTamañoEquipo(Sala, Equipo)
         ' Menos cï¿½lculos en el bucle
-        Tamaï¿½oEquipo2 = Tamaï¿½oEquipo * 2
+        TamañoEquipo2 = TamañoEquipo * 2
         
         ' Obtenemos los nombres del equipo ganador
         Dim i As Integer, nombres As String
-        For i = IIf(Equipo = EquipoReto.Izquierda, 0, 1) To Tamaï¿½oEquipo2 - 1 Step 2
+        For i = IIf(Equipo = EquipoReto.Izquierda, 0, 1) To TamañoEquipo2 - 1 Step 2
 
             If .Jugadores(i) <> 0 Then
                 nombres = nombres & UserList(.Jugadores(i)).Name
                 
-                If i < Tamaï¿½oEquipo2 - 2 Then
-                    nombres = nombres & IIf(i > Tamaï¿½oEquipo2 - 5, " y ", ", ")
+                If i < TamañoEquipo2 - 2 Then
+                    nombres = nombres & IIf(i > TamañoEquipo2 - 5, " y ", ", ")
                 End If
             End If
         Next
@@ -600,7 +600,7 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
                     If i Mod 2 Then
                     
                         If LenB(Equipo2) > 0 Then
-                            Equipo2 = Equipo2 & IIf((i + 1) \ 2 < .Tamaï¿½oEquipoDer - 2, ", ", " y ") & UserList(tIndex).Name
+                            Equipo2 = Equipo2 & IIf((i + 1) \ 2 < .TamañoEquipoDer - 2, ", ", " y ") & UserList(tIndex).Name
                         Else
                             Equipo2 = UserList(tIndex).Name
                         End If
@@ -608,7 +608,7 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
                     Else
                     
                         If LenB(Equipo1) > 0 Then
-                            Equipo1 = Equipo2 & IIf(i \ 2 < .Tamaï¿½oEquipoIzq - 2, ", ", " y ") & UserList(tIndex).Name
+                            Equipo1 = Equipo2 & IIf(i \ 2 < .TamañoEquipoIzq - 2, ", ", " y ") & UserList(tIndex).Name
                         Else
                             Equipo1 = UserList(tIndex).Name
                         End If
@@ -633,7 +633,7 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
             End If
 
             ' Pagamos a los ganadores que no abandonaron
-            Oro = OroTotal \ ObtenerTamaï¿½oEquipo(Sala, Ganador)
+            Oro = OroTotal \ ObtenerTamañoEquipo(Sala, Ganador)
             OroStr = PonerPuntos(Oro)
 
             For i = 0 To UBound(.Jugadores)
@@ -678,7 +678,7 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
                     If i Mod 2 Then
                     
                         If LenB(Equipo2) > 0 Then
-                            Equipo2 = Equipo2 & IIf((i + 1) \ 2 < .Tamaï¿½oEquipoDer - 2, ", ", " y ") & UserList(tIndex).name
+                            Equipo2 = Equipo2 & IIf((i + 1) \ 2 < .TamañoEquipoDer - 2, ", ", " y ") & UserList(tIndex).Name
                         Else
                             Equipo2 = UserList(tIndex).Name
                         End If
@@ -686,7 +686,7 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
                     Else
                     
                         If LenB(Equipo1) > 0 Then
-                            Equipo1 = Equipo1 & IIf(i \ 2 < .Tamaï¿½oEquipoIzq - 2, ", ", " y ") & UserList(tIndex).Name
+                            Equipo1 = Equipo1 & IIf(i \ 2 < .TamañoEquipoIzq - 2, ", ", " y ") & UserList(tIndex).Name
                         Else
                             Equipo1 = UserList(tIndex).Name
                         End If
@@ -864,13 +864,13 @@ Public Sub AbandonarReto(ByVal UserIndex As Integer, Optional ByVal Desconexion 
         
         If .CaenItems And Abs(.Puntaje) >= 2 Then
                 If .Puntaje < 0 Then
-                    .Tamaï¿½oEquipoIzq = .Tamaï¿½oEquipoIzq - 1
-                    If .Tamaï¿½oEquipoIzq <= 0 Then
+                    .TamañoEquipoIzq = .TamañoEquipoIzq - 1
+                    If .TamañoEquipoIzq <= 0 Then
                         TerminarTiempoAgarrarItems (Sala)
                     End If
                 Else
-                    .Tamaï¿½oEquipoDer = .Tamaï¿½oEquipoDer - 1
-                    If .Tamaï¿½oEquipoDer <= 0 Then
+                    .TamañoEquipoDer = .TamañoEquipoDer - 1
+                    If .TamañoEquipoDer <= 0 Then
                         TerminarTiempoAgarrarItems (Sala)
                     End If
                 End If
@@ -883,8 +883,8 @@ Public Sub AbandonarReto(ByVal UserIndex As Integer, Optional ByVal Desconexion 
         
         ' Restamos un miembro al equipo y si llega a cero entonces procesamos la derrota
         If Equipo = EquipoReto.Izquierda Then
-            If .Tamaï¿½oEquipoIzq > 1 Then
-                .Tamaï¿½oEquipoIzq = .Tamaï¿½oEquipoIzq - 1
+            If .TamañoEquipoIzq > 1 Then
+                .TamañoEquipoIzq = .TamañoEquipoIzq - 1
             Else
                 .Puntaje = 123 ' Forzamos puntaje positivo
                 Call FinalizarReto(Sala)
@@ -892,8 +892,8 @@ Public Sub AbandonarReto(ByVal UserIndex As Integer, Optional ByVal Desconexion 
             End If
 
         Else
-            If .Tamaï¿½oEquipoDer > 1 Then
-                .Tamaï¿½oEquipoDer = .Tamaï¿½oEquipoDer - 1
+            If .TamañoEquipoDer > 1 Then
+                .TamañoEquipoDer = .TamañoEquipoDer - 1
             Else
                 .Puntaje = -123 ' Forzamos puntaje negativo
                 Call FinalizarReto(Sala)
@@ -1058,7 +1058,7 @@ Private Function TodosPuedenReto(ByVal Oferente As Integer) As Boolean
                 
             ElseIf .PocionesMaximas >= 0 Then
                 If TieneObjetos(38, .PocionesMaximas + 1, Oferente) Then
-                    Call CancelarSolicitudReto(Oferente, UserList(.Jugadores(i).CurIndex).name & " tiene demasiadas pociones rojas (Cantidad mï¿½xima: " & .PocionesMaximas & ").")
+                    Call CancelarSolicitudReto(Oferente, UserList(.Jugadores(i).CurIndex).Name & " tiene demasiadas pociones rojas (Cantidad mï¿½xima: " & .PocionesMaximas & ").")
                     Exit Function
                 End If
             End If
@@ -1083,11 +1083,11 @@ Private Function EquipoContrario(ByVal Equipo As EquipoReto) As EquipoReto
     End If
 End Function
 
-Private Function ObtenerTamaï¿½oEquipo(ByVal Sala As Integer, ByVal Equipo As EquipoReto) As Integer
+Private Function ObtenerTamañoEquipo(ByVal Sala As Integer, ByVal Equipo As EquipoReto) As Integer
     If Equipo = EquipoReto.Izquierda Then
-        ObtenerTamaï¿½oEquipo = Retos.Salas(Sala).Tamaï¿½oEquipoIzq
+        ObtenerTamañoEquipo = Retos.Salas(Sala).TamañoEquipoIzq
     Else
-        ObtenerTamaï¿½oEquipo = Retos.Salas(Sala).Tamaï¿½oEquipoDer
+        ObtenerTamañoEquipo = Retos.Salas(Sala).TamañoEquipoDer
     End If
 End Function
 

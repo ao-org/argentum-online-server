@@ -10415,15 +10415,9 @@ Private Sub HandleGoToChar(ByVal UserIndex As Integer)
 126                 If tUser <= 0 Then Exit Sub
                 End If
       
-<<<<<<< HEAD
-128             If CompararPrivilegios(tUser, UserIndex) > 0 Then
-130                 Call WriteConsoleMsg(UserIndex, "Se le ha avisado a " & UserList(tUser).Name & " que quieres ir a su posiciï¿½n.", FontTypeNames.FONTTYPE_INFO)
-132                 Call WriteConsoleMsg(tUser, .Name & " quiere transportarse a tu ubicaciï¿½n. Escribe /sum " & .Name & " para traerlo.", FontTypeNames.FONTTYPE_INFO)
-=======
 128             If CompararUserPrivilegios(tUser, UserIndex) > 0 Then
 130                 Call WriteConsoleMsg(UserIndex, "Se le ha avisado a " & UserList(tUser).Name & " que quieres ir a su posición.", FontTypeNames.FONTTYPE_INFO)
 132                 Call WriteConsoleMsg(tUser, .Name & " quiere transportarse a tu ubicación. Escribe /sum " & .Name & " para traerlo.", FontTypeNames.FONTTYPE_INFO)
->>>>>>> 59a82e9 (Necesito help con los inner join)
                     Exit Sub
                 End If
 
@@ -17413,27 +17407,27 @@ Public Sub HandleChangeMapInfoRestricted(ByVal UserIndex As Integer)
                     Case "NEWBIE"
 116                     MapInfo(.Pos.Map).Newbie = Not MapInfo(.Pos.Map).Newbie
 118                     Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & ": Newbie = " & MapInfo(.Pos.Map).Newbie, FontTypeNames.FONTTYPE_INFO)
-120                     Call LogGM(.name, .name & " ha cambiado la restricciï¿½n del mapa " & .Pos.Map & ": Newbie = " & MapInfo(.Pos.Map).Newbie)
+120                     Call LogGM(.Name, .Name & " ha cambiado la restricciï¿½n del mapa " & .Pos.Map & ": Newbie = " & MapInfo(.Pos.Map).Newbie)
                         
 122                 Case "SINMAGIA"
 124                     MapInfo(.Pos.Map).SinMagia = Not MapInfo(.Pos.Map).SinMagia
 126                     Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & ": SinMagia = " & MapInfo(.Pos.Map).SinMagia, FontTypeNames.FONTTYPE_INFO)
-128                     Call LogGM(.name, .name & " ha cambiado la restricciï¿½n del mapa " & .Pos.Map & ": SinMagia = " & MapInfo(.Pos.Map).SinMagia)
+128                     Call LogGM(.Name, .Name & " ha cambiado la restricciï¿½n del mapa " & .Pos.Map & ": SinMagia = " & MapInfo(.Pos.Map).SinMagia)
                         
 130                 Case "NOPKS"
 132                     MapInfo(.Pos.Map).NoPKs = Not MapInfo(.Pos.Map).NoPKs
 134                     Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & ": NoPKs = " & MapInfo(.Pos.Map).NoPKs, FontTypeNames.FONTTYPE_INFO)
-136                     Call LogGM(.name, .name & " ha cambiado la restricciï¿½n del mapa " & .Pos.Map & ": NoPKs = " & MapInfo(.Pos.Map).NoPKs)
+136                     Call LogGM(.Name, .Name & " ha cambiado la restricciï¿½n del mapa " & .Pos.Map & ": NoPKs = " & MapInfo(.Pos.Map).NoPKs)
                         
 138                 Case "NOCIUD"
 140                     MapInfo(.Pos.Map).NoCiudadanos = Not MapInfo(.Pos.Map).NoCiudadanos
 142                     Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & ": NoCiudadanos = " & MapInfo(.Pos.Map).NoCiudadanos, FontTypeNames.FONTTYPE_INFO)
-144                     Call LogGM(.name, .name & " ha cambiado la restricciï¿½n del mapa " & .Pos.Map & ": NoCiudadanos = " & MapInfo(.Pos.Map).NoCiudadanos)
+144                     Call LogGM(.Name, .Name & " ha cambiado la restricciï¿½n del mapa " & .Pos.Map & ": NoCiudadanos = " & MapInfo(.Pos.Map).NoCiudadanos)
                         
 146                 Case "SININVI"
 148                     MapInfo(.Pos.Map).SinInviOcul = Not MapInfo(.Pos.Map).SinInviOcul
 150                     Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & ": SinInvi = " & MapInfo(.Pos.Map).SinInviOcul, FontTypeNames.FONTTYPE_INFO)
-152                     Call LogGM(.name, .name & " ha cambiado la restricciï¿½n del mapa " & .Pos.Map & ": SinInvi = " & MapInfo(.Pos.Map).SinInviOcul)
+152                     Call LogGM(.Name, .Name & " ha cambiado la restricciï¿½n del mapa " & .Pos.Map & ": SinInvi = " & MapInfo(.Pos.Map).SinInviOcul)
                 
 154                 Case Else
 156                     Call WriteConsoleMsg(UserIndex, "Opciones para restringir: 'NEWBIE', 'SINMAGIA', 'SININVI', 'NOPKS', 'NOCIUD'", FontTypeNames.FONTTYPE_INFO)
@@ -21251,20 +21245,20 @@ ErrHandler:
 
 End Sub
 
-' Actualiza el indicador de daï¿½o mï¿½gico
+' Actualiza el indicador de Daño mï¿½gico
 Public Sub WriteUpdateDM(ByVal UserIndex As Integer)
         On Error GoTo ErrHandler
     
         Dim Valor As Integer
     
 100     With UserList(UserIndex).Invent
-            ' % daï¿½o mï¿½gico del arma
+            ' % Daño mï¿½gico del arma
 102         If .WeaponEqpObjIndex > 0 Then
 104             Valor = Valor + ObjData(.WeaponEqpObjIndex).MagicDamageBonus
             End If
-            ' % daï¿½o mï¿½gico del anillo
-106         If .Daï¿½oMagicoEqpObjIndex > 0 Then
-108             Valor = Valor + ObjData(.Daï¿½oMagicoEqpObjIndex).MagicDamageBonus
+            ' % Daño mï¿½gico del anillo
+106         If .DañoMagicoEqpObjIndex > 0 Then
+108             Valor = Valor + ObjData(.DañoMagicoEqpObjIndex).MagicDamageBonus
             End If
         End With
 
@@ -26721,8 +26715,8 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
                         .Invent.Object(SlotViejo).Equipped = 0
                     
                         'Cambiamos si alguno es un anillo
-                        If .Invent.Daï¿½oMagicoEqpSlot = SlotViejo Then
-                            .Invent.Daï¿½oMagicoEqpSlot = SlotNuevo
+                        If .Invent.DañoMagicoEqpSlot = SlotViejo Then
+                            .Invent.DañoMagicoEqpSlot = SlotNuevo
                         End If
                         If .Invent.ResistenciaEqpSlot = SlotViejo Then
                             .Invent.ResistenciaEqpSlot = SlotNuevo
@@ -26822,10 +26816,10 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
                     End If
     
                     'Cambiamos si alguno es un anillo
-152                 If .Invent.Daï¿½oMagicoEqpSlot = SlotViejo Then
-154                     .Invent.Daï¿½oMagicoEqpSlot = SlotNuevo
-156                 ElseIf .Invent.Daï¿½oMagicoEqpSlot = SlotNuevo Then
-158                     .Invent.Daï¿½oMagicoEqpSlot = SlotViejo
+152                 If .Invent.DañoMagicoEqpSlot = SlotViejo Then
+154                     .Invent.DañoMagicoEqpSlot = SlotNuevo
+156                 ElseIf .Invent.DañoMagicoEqpSlot = SlotNuevo Then
+158                     .Invent.DañoMagicoEqpSlot = SlotViejo
                     End If
 160                 If .Invent.ResistenciaEqpSlot = SlotViejo Then
 162                     .Invent.ResistenciaEqpSlot = SlotNuevo
@@ -27110,7 +27104,7 @@ Private Sub HandleLlamadadeClan(ByVal UserIndex As Integer)
 112             clan_nivel = modGuilds.NivelDeClan(.GuildIndex)
 
 114             If clan_nivel > 1 Then
-116                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Clan> [" & .name & "] solicita apoyo de su clan en " & DarNameMapa(.Pos.Map) & " (" & .Pos.Map & "-" & .Pos.X & "-" & .Pos.Y & "). Puedes ver su ubicaciï¿½n en el mapa del mundo.", FontTypeNames.FONTTYPE_GUILD))
+116                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Clan> [" & .Name & "] solicita apoyo de su clan en " & DarNameMapa(.Pos.Map) & " (" & .Pos.Map & "-" & .Pos.X & "-" & .Pos.Y & "). Puedes ver su ubicaciï¿½n en el mapa del mundo.", FontTypeNames.FONTTYPE_GUILD))
 118                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessagePlayWave("43", NO_3D_SOUND, NO_3D_SOUND))
 120                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageUbicacionLlamada(.Pos.Map, .Pos.X, .Pos.Y))
                 Else
@@ -31811,11 +31805,11 @@ Private Sub HandleCreateEvent(ByVal UserIndex As Integer)
         Select Case UCase$(Name)
             Case "INVASION BANDER"
                 Call IniciarEvento(TipoEvento.Invasion, 1)
-                Call LogGM(.name, "Forzï¿½ el evento Invasiï¿½n en Banderville.")
+                Call LogGM(.Name, "Forzï¿½ el evento Invasiï¿½n en Banderville.")
                 
             Case "INVASION CARCEL"
                 Call IniciarEvento(TipoEvento.Invasion, 2)
-                Call LogGM(.name, "Forzï¿½ el evento Invasiï¿½n en Carcel.")
+                Call LogGM(.Name, "Forzï¿½ el evento Invasiï¿½n en Carcel.")
 
             Case Else
                 Call WriteConsoleMsg(UserIndex, "No existe el evento """ & Name & """.", FontTypeNames.FONTTYPE_INFO)

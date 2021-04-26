@@ -249,6 +249,7 @@ Public Sub Initialize(ByVal File As String)
     Exit Sub
 
 Initialize_Err:
+    Close handle
     Call RegistrarError(Err.Number, Err.Description, "clsIniManager.Initialize", Erl)
     Resume Next
     

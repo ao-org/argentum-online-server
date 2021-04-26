@@ -19,6 +19,8 @@ Public Sub CargarListaNegraUsuarios(ByVal LoadFlags As e_LoadBlacklistFlags)
     Dim iKey As String
     Dim iValue As String
     
+    If Not FileExist(DatPath & "Baneos.ini") Then Exit Sub
+    
     Set File = New clsIniManager
     Call File.Initialize(DatPath & "Baneos.ini")
     

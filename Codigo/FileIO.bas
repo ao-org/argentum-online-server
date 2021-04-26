@@ -1113,12 +1113,12 @@ Sub LoadBalance()
 110             .Evasion = val(BalanceIni.GetValue("MODEVASION", SearchVar))
 112             .AtaqueArmas = val(BalanceIni.GetValue("MODATAQUEARMAS", SearchVar))
 114             .AtaqueProyectiles = val(BalanceIni.GetValue("MODATAQUEPROYECTILES", SearchVar))
-                '.DaÃ¯Â¿Â½oWrestling = val(BalanceIni.GetValue("MODATAQUEWRESTLING", SearchVar))
-116             .DaÃ¯Â¿Â½oArmas = val(BalanceIni.GetValue("MODDANOARMAS", SearchVar))
-118             .DaÃ¯Â¿Â½oProyectiles = val(BalanceIni.GetValue("MODDANOPROYECTILES", SearchVar))
-120             .DaÃ¯Â¿Â½oWrestling = val(BalanceIni.GetValue("MODDANOWRESTLING", SearchVar))
+                '.DañoWrestling = val(BalanceIni.GetValue("MODATAQUEWRESTLING", SearchVar))
+116             .DañoArmas = val(BalanceIni.GetValue("MODDANOARMAS", SearchVar))
+118             .DañoProyectiles = val(BalanceIni.GetValue("MODDANOPROYECTILES", SearchVar))
+120             .DañoWrestling = val(BalanceIni.GetValue("MODDANOWRESTLING", SearchVar))
 122             .Escudo = val(BalanceIni.GetValue("MODESCUDO", SearchVar))
-124             .ModApuÃ¯Â¿Â½alar = val(BalanceIni.GetValue("MODAPUÃ¯Â¿Â½ALAR", SearchVar))
+124             .ModApuñalar = val(BalanceIni.GetValue("MODApuñalar", SearchVar))
 126             .Vida = val(BalanceIni.GetValue("MODVIDA", SearchVar))
 128             .ManaInicial = val(BalanceIni.GetValue("MANA_INICIAL", SearchVar))
 130             .MultMana = val(BalanceIni.GetValue("MULT_MANA", SearchVar))
@@ -1150,7 +1150,7 @@ Sub LoadBalance()
 162     InfluenciaPromedioVidas = val(BalanceIni.GetValue("EXTRA", "InfluenciaPromedioVidas"))
 164     DesbalancePromedioVidas = val(BalanceIni.GetValue("EXTRA", "DesbalancePromedioVidas"))
 166     RangoVidas = val(BalanceIni.GetValue("EXTRA", "RangoVidas"))
-168     ModDaÃ¯Â¿Â½oGolpeCritico = val(BalanceIni.GetValue("EXTRA", "ModDaÃ¯Â¿Â½oGolpeCritico"))
+168     ModDañoGolpeCritico = val(BalanceIni.GetValue("EXTRA", "ModDañoGolpeCritico"))
 
         ' Exp
         For i = 1 To STAT_MAXELV
@@ -1415,7 +1415,7 @@ Sub LoadOBJData()
         
                 Case eOBJType.otWeapon
                     .WeaponAnim = val(Leer.GetValue(ObjKey, "Anim"))
-                    .ApuÃ¯Â¿Â½ala = val(Leer.GetValue(ObjKey, "ApuÃ¯Â¿Â½ala"))
+                    .Apuñala = val(Leer.GetValue(ObjKey, "Apuñala"))
                     .Envenena = val(Leer.GetValue(ObjKey, "Envenena"))
                     .Paraliza = val(Leer.GetValue(ObjKey, "Paraliza"))
                     .Estupidiza = val(Leer.GetValue(ObjKey, "Estupidiza"))
@@ -1577,7 +1577,7 @@ Sub LoadOBJData()
 
                     End If
                 
-                Case eOBJType.otDaÃ¯Â¿Â½oMagico
+                Case eOBJType.otDañoMagico
                     .MagicDamageBonus = val(Leer.GetValue(ObjKey, "MagicDamageBonus"))
                     .Revive = val(Leer.GetValue(ObjKey, "Revive")) <> 0
 
@@ -1800,7 +1800,7 @@ Sub LoadUserStats(ByVal UserIndex As Integer, ByRef UserFile As clsIniManager)
 
         End If
 
-        'UserList(UserIndex).flags.DaÃ¯Â¿Â½oMagico = CByte(UserFile.GetValue("MAGIA", "DaÃ¯Â¿Â½oMagico"))
+        'UserList(UserIndex).flags.DañoMagico = CByte(UserFile.GetValue("MAGIA", "DañoMagico"))
         'UserList(UserIndex).flags.ResistenciaMagica = CByte(UserFile.GetValue("MAGIA", "ResistenciaMagica"))
 
         'Nuevos
@@ -1975,7 +1975,7 @@ Sub LoadUserInit(ByVal UserIndex As Integer, ByRef UserFile As clsIniManager)
 274     UserList(UserIndex).Invent.BarcoSlot = CByte(UserFile.GetValue("Inventory", "BarcoSlot"))
 276     UserList(UserIndex).Invent.MonturaSlot = CByte(UserFile.GetValue("Inventory", "MonturaSlot"))
 278     UserList(UserIndex).Invent.MunicionEqpSlot = CByte(UserFile.GetValue("Inventory", "MunicionSlot"))
-280     UserList(UserIndex).Invent.DaÃ¯Â¿Â½oMagicoEqpSlot = CByte(UserFile.GetValue("Inventory", "DMSlot"))
+280     UserList(UserIndex).Invent.DañoMagicoEqpSlot = CByte(UserFile.GetValue("Inventory", "DMSlot"))
 282     UserList(UserIndex).Invent.ResistenciaEqpSlot = CByte(UserFile.GetValue("Inventory", "RMSlot"))
 284     UserList(UserIndex).Invent.MagicoSlot = CByte(UserFile.GetValue("Inventory", "MagicoSlot"))
 286     UserList(UserIndex).Invent.NudilloSlot = CByte(UserFile.GetValue("Inventory", "NudilloEqpSlot"))
@@ -2816,8 +2816,8 @@ Sub LoadConfiguraciones()
         
         On Error GoTo LoadConfiguraciones_Err
         
-        Dim Leer As clsIniReader
-        Set Leer = New clsIniReader
+        Dim Leer As clsIniManager
+        Set Leer = New clsIniManager
 
         Call Leer.Initialize(IniPath & "Configuracion.ini")
 
@@ -2956,11 +2956,11 @@ Sub LoadUser(ByVal UserIndex As Integer)
             End If
 
             ' DM
-180         If .Invent.DaÃ¯Â¿Â½oMagicoEqpSlot > 0 Then
-182             .Invent.DaÃ¯Â¿Â½oMagicoEqpObjIndex = .Invent.Object(.Invent.DaÃ¯Â¿Â½oMagicoEqpSlot).ObjIndex
+180         If .Invent.DañoMagicoEqpSlot > 0 Then
+182             .Invent.DañoMagicoEqpObjIndex = .Invent.Object(.Invent.DañoMagicoEqpSlot).ObjIndex
             
 184             If .flags.Muerto = 0 Then
-186                 .Char.DM_Aura = ObjData(.Invent.DaÃ¯Â¿Â½oMagicoEqpObjIndex).CreaGRH
+186                 .Char.DM_Aura = ObjData(.Invent.DañoMagicoEqpObjIndex).CreaGRH
                 End If
             End If
             
