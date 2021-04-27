@@ -525,6 +525,10 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
             Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
             Exit Function
         End If
+        
+        If .flags.Privilegios And PlayerType.Consejero Then
+            Exit Function
+        End If
 
         If MapInfo(.Pos.Map).SinMagia Then
             Call WriteConsoleMsg(UserIndex, "Una fuerza mística te impide lanzar hechizos en esta zona.", FontTypeNames.FONTTYPE_FIGHT)
