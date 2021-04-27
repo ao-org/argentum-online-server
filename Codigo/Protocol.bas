@@ -1780,7 +1780,7 @@ Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
 404     ElseIf Err.Number <> 0 And Not Err.Number = UserList(UserIndex).incomingData.NotEnoughDataErrCode Then
             'An error ocurred, log it and kick player.
 406         Call LogError("Error: " & Err.Number & " [" & Err.Description & "] - Linea: " & Erl & _
-                          " Source: " & Err.Source & vbTab & _
+                          " Source: " & Err.source & vbTab & _
                           " HelpFile: " & Err.HelpFile & vbTab & _
                           " HelpContext: " & Err.HelpContext & vbTab & _
                           " LastDllError: " & Err.LastDllError & vbTab & _
@@ -2468,6 +2468,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
 
                     If DeltaStep > 0 Then
                         If .Counters.SpeedHackCounter > MaximoSpeedHack Then
+                            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Administración » Posible uso de SpeedHack del usuario " & .name & ".", FontTypeNames.FONTTYPE_SERVER))
                             Call WritePosUpdate(UserIndex)
                             Exit Sub
                         End If
@@ -10034,7 +10035,7 @@ Private Sub HandleCreaturesInMap(ByVal UserIndex As Integer)
 202             Call WriteConsoleMsg(UserIndex, "Otros Npcs en mapa: ", FontTypeNames.FONTTYPE_WARNING)
 
 204             If NPCcount2 = 0 Then
-206                 Call WriteConsoleMsg(UserIndex, "No más NPCs.", FontTypeNames.FONTTYPE_INFO)
+206                 Call WriteConsoleMsg(UserIndex, "No hay mís NPCS", FontTypeNames.FONTTYPE_INFO)
                 Else
 
 208                 For j = 0 To NPCcount2 - 1
@@ -20757,7 +20758,7 @@ End Sub
 ' @param    Y Y coord of the character's new position.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Sub WriteObjectCreate(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal Amount As Integer, ByVal X As Byte, ByVal Y As Byte)
+Public Sub WriteObjectCreate(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal amount As Integer, ByVal X As Byte, ByVal Y As Byte)
         '***************************************************
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
@@ -20769,7 +20770,7 @@ Public Sub WriteObjectCreate(ByVal UserIndex As Integer, ByVal ObjIndex As Integ
         'End If
         On Error GoTo ErrHandler
 
-100     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageObjectCreate(ObjIndex, Amount, X, Y))
+100     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageObjectCreate(ObjIndex, amount, X, Y))
         Exit Sub
 
 ErrHandler:
@@ -24656,7 +24657,7 @@ End Function
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 'Optimizacion por Ladder
-Public Function PrepareMessageObjectCreate(ByVal ObjIndex As Integer, ByVal Amount As Integer, ByVal X As Byte, ByVal Y As Byte) As String
+Public Function PrepareMessageObjectCreate(ByVal ObjIndex As Integer, ByVal amount As Integer, ByVal X As Byte, ByVal Y As Byte) As String
         
         On Error GoTo PrepareMessageObjectCreate_Err
         
@@ -24671,7 +24672,7 @@ Public Function PrepareMessageObjectCreate(ByVal ObjIndex As Integer, ByVal Amou
 104         Call .WriteByte(X)
 106         Call .WriteByte(Y)
 108         Call .WriteInteger(ObjIndex)
-            Call .WriteInteger(Amount)
+            Call .WriteInteger(amount)
         
 110         PrepareMessageObjectCreate = .ReadASCIIStringFixed(.Length)
 
@@ -26693,24 +26694,23 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
         
 114         If (SlotViejo > .CurrentInventorySlots) Or (SlotNuevo > .CurrentInventorySlots) Then
 116             Call WriteConsoleMsg(UserIndex, "Espacio no desbloqueado.", FontTypeNames.FONTTYPE_INFOIAO)
-
-            ElseIf SlotViejo <> SlotNuevo Then
+            Else
     
                 If .Invent.Object(SlotNuevo).ObjIndex = .Invent.Object(SlotViejo).ObjIndex Then
-                    .Invent.Object(SlotNuevo).Amount = .Invent.Object(SlotNuevo).Amount + .Invent.Object(SlotViejo).Amount
+                    .Invent.Object(SlotNuevo).amount = .Invent.Object(SlotNuevo).amount + .Invent.Object(SlotViejo).amount
                     
                     Dim Excedente As Integer
-                    Excedente = .Invent.Object(SlotNuevo).Amount - MAX_INVENTORY_OBJS
+                    Excedente = .Invent.Object(SlotNuevo).amount - MAX_INVENTORY_OBJS
                     If Excedente > 0 Then
-                        .Invent.Object(SlotViejo).Amount = Excedente
-                        .Invent.Object(SlotNuevo).Amount = MAX_INVENTORY_OBJS
+                        .Invent.Object(SlotViejo).amount = Excedente
+                        .Invent.Object(SlotNuevo).amount = MAX_INVENTORY_OBJS
                     Else
                         If .Invent.Object(SlotViejo).Equipped = 1 Then
                             .Invent.Object(SlotNuevo).Equipped = 1
                         End If
                     
                         .Invent.Object(SlotViejo).ObjIndex = 0
-                        .Invent.Object(SlotViejo).Amount = 0
+                        .Invent.Object(SlotViejo).amount = 0
                         .Invent.Object(SlotViejo).Equipped = 0
                     
                         'Cambiamos si alguno es un anillo
@@ -26775,7 +26775,7 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
                 
                 Else
                     If .Invent.Object(SlotNuevo).ObjIndex <> 0 Then
-120                     Objeto.Amount = .Invent.Object(SlotViejo).Amount
+120                     Objeto.amount = .Invent.Object(SlotViejo).amount
 122                     Objeto.ObjIndex = .Invent.Object(SlotViejo).ObjIndex
                     
 124                     If .Invent.Object(SlotViejo).Equipped = 1 Then
@@ -26793,10 +26793,10 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
                         ' End If
                     
 132                     .Invent.Object(SlotViejo).ObjIndex = .Invent.Object(SlotNuevo).ObjIndex
-134                     .Invent.Object(SlotViejo).Amount = .Invent.Object(SlotNuevo).Amount
+134                     .Invent.Object(SlotViejo).amount = .Invent.Object(SlotNuevo).amount
                     
 136                     .Invent.Object(SlotNuevo).ObjIndex = Objeto.ObjIndex
-138                     .Invent.Object(SlotNuevo).Amount = Objeto.Amount
+138                     .Invent.Object(SlotNuevo).amount = Objeto.amount
                     
 140                     If Equipado Then
 142                         .Invent.Object(SlotNuevo).Equipped = 1
@@ -26908,11 +26908,11 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
                 
 248                 If Objeto.ObjIndex = 0 Then
 250                     .Invent.Object(SlotNuevo).ObjIndex = .Invent.Object(SlotViejo).ObjIndex
-252                     .Invent.Object(SlotNuevo).Amount = .Invent.Object(SlotViejo).Amount
+252                     .Invent.Object(SlotNuevo).amount = .Invent.Object(SlotViejo).amount
 254                     .Invent.Object(SlotNuevo).Equipped = .Invent.Object(SlotViejo).Equipped
                             
 256                     .Invent.Object(SlotViejo).ObjIndex = 0
-258                     .Invent.Object(SlotViejo).Amount = 0
+258                     .Invent.Object(SlotViejo).amount = 0
 260                     .Invent.Object(SlotViejo).Equipped = 0
     
                     End If
@@ -27033,6 +27033,10 @@ Private Sub HandleQuieroFundarClan(ByVal UserIndex As Integer)
         
         'If we got here then packet is complete, copy data back to original queue
         Call .incomingData.CopyBuffer(Buffer)
+
+        If UserList(UserIndex).flags.Privilegios And (PlayerType.Consejero) Then
+            Exit Sub
+        End If
 
         If UserList(UserIndex).GuildIndex > 0 Then
             Call WriteConsoleMsg(UserIndex, "Ya perteneces a un clan, no podés fundar otro.", FontTypeNames.FONTTYPE_INFOIAO)
