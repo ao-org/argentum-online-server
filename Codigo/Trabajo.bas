@@ -304,6 +304,10 @@ Public Sub FundirMineral(ByVal UserIndex As Integer)
             Call WriteConsoleMsg(UserIndex, "Tu clase no tiene el conocimiento suficiente para trabajar este mineral.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
+        
+        If UserList(UserIndex).flags.Privilegios And (PlayerType.Consejero) Then
+            Exit Sub
+        End If
 
 100     If UserList(UserIndex).flags.TargetObjInvIndex > 0 Then
 
@@ -707,7 +711,11 @@ Public Sub HerreroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As I
         On Error GoTo HerreroConstruirItem_Err
         
 100     If Not IntervaloPermiteTrabajarConstruir(UserIndex) Then Exit Sub
-
+        
+        If UserList(UserIndex).flags.Privilegios And (PlayerType.Consejero) Then
+            Exit Sub
+        End If
+        
 102     If PuedeConstruir(UserIndex, ItemIndex) And PuedeConstruirHerreria(ItemIndex) Then
 104         Call HerreroQuitarMateriales(UserIndex, ItemIndex)
 106         UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - 2
@@ -851,6 +859,10 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
         
 100     If Not IntervaloPermiteTrabajarConstruir(UserIndex) Then Exit Sub
 
+        If UserList(UserIndex).flags.Privilegios And (PlayerType.Consejero) Then
+            Exit Sub
+        End If
+        
 102     If CarpinteroTieneMateriales(UserIndex, ItemIndex) _
                 And UserList(UserIndex).Stats.UserSkills(eSkill.Carpinteria) >= ObjData(ItemIndex).SkCarpinteria _
                 And PuedeConstruirCarpintero(ItemIndex) _
@@ -1363,7 +1375,11 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
 100     RestaStamina = IIf(RedDePesca, 5, 1)
     
 102     With UserList(UserIndex)
-    
+
+            If .flags.Privilegios And (PlayerType.Consejero) Then
+                Exit Sub
+            End If
+            
 104         If .Stats.MinSta > RestaStamina Then
 106             Call QuitarSta(UserIndex, RestaStamina)
         
@@ -1469,6 +1485,8 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
         On Error GoTo ErrHandler
 
         Dim OtroUserIndex As Integer
+        
+        If UserList(LadronIndex).flags.Privilegios And (PlayerType.Consejero) Then Exit Sub
 
 100     If MapInfo(UserList(VictimaIndex).Pos.Map).Seguro = 1 Then Exit Sub
     
@@ -1868,6 +1886,10 @@ Public Sub DoRaices(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte
     
 100     With UserList(UserIndex)
     
+            If .flags.Privilegios And (PlayerType.Consejero) Then
+                Exit Sub
+            End If
+            
 102         If .Stats.MinSta > 2 Then
 104             Call QuitarSta(UserIndex, 2)
         
@@ -1954,6 +1976,11 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
         Dim res    As Integer
 
 100     With UserList(UserIndex)
+
+             If .flags.Privilegios And (PlayerType.Consejero) Then
+                Exit Sub
+             End If
+
 
                 'EsfuerzoTalarLeñador = 1
 102         If .Stats.MinSta > 2 Then
@@ -2057,6 +2084,10 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
         Dim Yacimiento  As ObjData
 
 100     With UserList(UserIndex)
+    
+            If .flags.Privilegios And (PlayerType.Consejero) Then
+                Exit Sub
+            End If
     
             'Por Ladder 06/07/2014 Cuando la estamina llega a 0 , el macro se desactiva
 102         If .Stats.MinSta > 2 Then
@@ -2431,6 +2462,9 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 
 104     With UserList(UserIndex)
 
+
+            If .flags.Privilegios And (PlayerType.Consejero) Then Exit Sub
+            
 106         If .NroMascotas < MAXMASCOTAS Then
 
 108             If NpcList(NpcIndex).MaestroNPC > 0 Or NpcList(NpcIndex).MaestroUser > 0 Then

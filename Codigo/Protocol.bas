@@ -9862,7 +9862,7 @@ Private Sub HandleWhere(ByVal UserIndex As Integer)
         
 110         UserName = Buffer.ReadASCIIString()
         
-112         If EsGM(UserIndex) Then
+112         If .flags.Privilegios And Not (PlayerType.Consejero Or PlayerType.user) Then
 114             tUser = NameIndex(UserName)
 
 116             If tUser <= 0 Then
@@ -10135,8 +10135,15 @@ Private Sub HandleWarpChar(ByVal UserIndex As Integer)
 
             'If we got here then packet is complete, copy data back to original queue
 118         Call .incomingData.CopyBuffer(Buffer)
+
+            If .flags.Privilegios And PlayerType.user Then Exit Sub
             
-120         If Not EsGM(UserIndex) Then Exit Sub
+120         If .flags.Privilegios And PlayerType.Consejero Then
+                If MapInfo(Map).Seguro = 0 Then
+                    Call WriteConsoleMsg(UserIndex, "Solo puedes transportarte a ciudades.", FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                End If
+            End If
             
             '¿Para que te vas a transportar a la misma posicion?
 122         If .Pos.Map = Map And .Pos.X = X And .Pos.Y = Y Then Exit Sub
