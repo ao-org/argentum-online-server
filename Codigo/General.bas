@@ -658,10 +658,14 @@ Sub Main()
     Call BanIpCargar
     
     frmCargando.Label1(2).Caption = "Conectando base de datos y limpiando usuarios logueados"
-
+    
+    ' ************************* Base de Datos ********************
     'Conecto base de datos
     Call Database_Connect
-        
+    
+    ' Construimos las querys grandes
+    Call Contruir_Querys
+    
     'Reinicio los users online
     Call SetUsersLoggedDatabase(0)
         
@@ -670,6 +674,8 @@ Sub Main()
         
     'Tarea pesada
     Call LogoutAllUsersAndAccounts
+    
+    ' ******************* FIN - Base de Datos ********************
 
     '*************************************************
     frmCargando.Label1(2).Caption = "Cargando NPCs.Dat"
