@@ -27616,8 +27616,7 @@ Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
 
 110         Tipo = Buffer.ReadByte()
   
-112         If EsGM(UserIndex) Then
-
+112           If .flags.Privilegios And Not (PlayerType.Consejero Or PlayerType.user) Then
 116             Select Case Tipo
 
                     Case 0
@@ -31808,7 +31807,7 @@ Private Sub HandleCreateEvent(ByVal UserIndex As Integer)
         Select Case UCase$(name)
             Case "INVASION BANDER"
                 Call IniciarEvento(TipoEvento.Invasion, 1)
-                Call LogGM(.name, "Forzó el evento Invasión en Banderville.")
+                Call LogGM(.name, "Forzó el evento Invasión en Banderbille.")
                 
             Case "INVASION CARCEL"
                 Call IniciarEvento(TipoEvento.Invasion, 2)
