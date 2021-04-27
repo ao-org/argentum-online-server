@@ -910,7 +910,6 @@ Function SpawnNpc(ByVal NpcIndex As Integer, Pos As WorldPos, ByVal FX As Boolea
 
 110     it = 0
 
-112     Do While Not PosicionValida
         
 114         Call ClosestLegalPos(Pos, newpos, PuedeAgua, PuedeTierra)  'Nos devuelve la posicion valida mas cercana
             'Si X e Y son iguales a 0 significa que no se encontro posicion valida
@@ -924,20 +923,10 @@ Function SpawnNpc(ByVal NpcIndex As Integer, Pos As WorldPos, ByVal FX As Boolea
             
             Else
 138             PosicionValida = False
-
-            End If
-        
-140         it = it + 1
-        
-142         If it > MAXSPAWNATTEMPS Then
 144             Call QuitarNPC(nIndex)
 146             SpawnNpc = 0
-148             Call LogError("Mas de " & MAXSPAWNATTEMPS & " iteraciones en SpawnNpc Mapa:" & Pos.Map & " Index:" & NpcIndex)
                 Exit Function
-
             End If
-
-        Loop
 
         'asignamos las nuevas coordenas
 150     Map = newpos.Map
