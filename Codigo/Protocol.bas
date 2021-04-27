@@ -1890,7 +1890,7 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
         For LoopC = 1 To Baneos.Count
 
             If Baneos(LoopC).Name = UCase$(UserName) Then
-                Call WriteShowMessageBox(UserIndex, "Se te ha prohibido la entrada a Argentum20 hasta el dï¿½a " & Format(Baneos(LoopC).FechaLiberacion, "dddddd") & " a las " & Format(Baneos(LoopC).FechaLiberacion, "hh:mm am/pm") & " debido a " & Baneos(LoopC).Causa & " Esta decisiï¿½n fue tomada por " & Baneos(LoopC).Baneador & ".")
+                Call WriteShowMessageBox(UserIndex, "Se te ha prohibido la entrada a Argentum20 hasta el dï¿½a " & Format(Baneos(LoopC).FechaLiberacion, "dddddd") & " a las " & Format(Baneos(LoopC).FechaLiberacion, "hh:mm am/pm") & " debido a " & Baneos(LoopC).Causa & " Esta decisión fue tomada por " & Baneos(LoopC).Baneador & ".")
                 Call CloseSocket(UserIndex)
                 Exit Sub
 
@@ -1907,7 +1907,7 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
         If LenB(BanNick) = 0 Then BanNick = "*Error en la base de datos*"
         If LenB(BaneoMotivo) = 0 Then BaneoMotivo = "*No se registra el motivo del baneo.*"
         
-        Call WriteShowMessageBox(UserIndex, "Se te ha prohibido la entrada al juego debido a " & BaneoMotivo & ". Esta decisiï¿½n fue tomada por " & BanNick & ".")
+        Call WriteShowMessageBox(UserIndex, "Se te ha prohibido la entrada al juego debido a " & BaneoMotivo & ". Esta decisión fue tomada por " & BanNick & ".")
         
         Call CloseSocket(UserIndex)
         

@@ -1,0 +1,3 @@
+ALTER TABLE `punishment`
+	ADD COLUMN `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP() AFTER `reason`;
+

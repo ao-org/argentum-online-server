@@ -1868,20 +1868,16 @@ ErrorHandler:
 End Sub
 
 Public Sub SaveBanDatabase(UserName As String, Reason As String, BannedBy As String)
-
-    '***************************************************
-    'Author: Juan Andres Dalmasso (CHOTS)
-    'Last Modification: 10/10/2018
-    '***************************************************
     On Error GoTo ErrorHandler
 
     Dim query As String
-
 
     query = "INSERT INTO punishment(user_id, NUMBER, reason)"
     query = query & " SELECT u.id, COUNT(p.number) + 1, ? FROM user u LEFT JOIN punishment p ON p.user_id = u.id WHERE UPPER(u.name) = ?"
 
     Call MakeQuery(query, True, Reason, UserName)
+
+    Call MakeQuery("UPDATE user SET is_banned = TRUE, banned_by = ?, ban_reason = ? WHERE UPPER(name) = ?;", True, BannedBy, Reason, UCase$(UserName))
 
     Exit Sub
 

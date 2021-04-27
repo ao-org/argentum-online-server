@@ -635,7 +635,7 @@ Sub CloseSocket(ByVal UserIndex As Integer)
 
 112         If .ConnID <> -1 Then Call CloseSocketSL(UserIndex)
     
-            'Es el mismo user al que estï¿½ revisando el centinela??
+            'Es el mismo user al que está revisando el centinela??
             'IMPORTANTE!!! hacerlo antes de resetear asï¿½ todavï¿½a sabemos el nombre del user
             ' y lo podemos loguear
 114         If Centinela.RevisandoUserIndex = UserIndex Then Call modCentinela.CentinelaUserLogout
@@ -686,7 +686,7 @@ ErrHandler:
 
 150     Call ResetUserSlot(UserIndex)
 
-152     Call LogError("CloseSocket - Error = " & Err.Number & " - Descripciï¿½n = " & Err.Description & " - UserIndex = " & UserIndex)
+152     Call LogError("CloseSocket - Error = " & Err.Number & " - Descripción = " & Err.Description & " - UserIndex = " & UserIndex)
 154     Resume Next
 
 End Sub

@@ -99,7 +99,8 @@ Private Function GlobalChecks(ByVal BannerIndex, ByRef UserName As String) As In
 End Function
 
 Public Sub BanPJ(ByVal BannerIndex As Integer, ByVal UserName As String, ByRef Razon As String)
-
+    On Error GoTo BanPJ_Err
+    
     If Not GlobalChecks(BannerIndex, UserName) Then Exit Sub
     
     ' Busco el UserIndex del PJ
@@ -115,6 +116,9 @@ Public Sub BanPJ(ByVal BannerIndex As Integer, ByVal UserName As String, ByRef R
         Call WriteConsoleMsg(BannerIndex, "El usuario ya se encuentra baneado.", FontTypeNames.FONTTYPE_INFO)
         Exit Sub
     End If
+        
+    ' Guardamos el estado de baneado en la base de datos.
+    Call SaveBanDatabase(UserName, Razon, UserList(BannerIndex).Name)
     
     ' Registramos el baneo en los logs.
     Call LogBanFromName(UserName, BannerIndex, Razon)
@@ -124,9 +128,12 @@ Public Sub BanPJ(ByVal BannerIndex As Integer, ByVal UserName As String, ByRef R
     
     ' Si estaba online, lo echamos.
     If tUser > 0 Then Call CloseSocket(tUser)
-    
-    ' Guardamos el estado de baneado en la base de datos.
-    Call SaveBanDatabase(UserName, Razon, UserList(BannerIndex).Name)
+
+    Exit Sub
+
+BanPJ_Err:
+    Call RegistrarError(Err.Number, Err.Description, "Mod_Baneo.BanPJ")
+    Resume Next
     
 End Sub
 
