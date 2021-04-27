@@ -785,16 +785,18 @@ Private Sub Invasion_Timer()
                 End If
             
             ' Si no está activa, chequeamos si debemos iniciarla
-            ElseIf .TimerInvasion >= .Intervalo Then
-                Call IniciarInvasion(i)
-
-            ' Si no está activa ni hay que iniciar, chequeamos si hay que avisar que se acerca el evento
-            ElseIf .TimerInvasion >= .Intervalo - .AvisarTiempo Then
-                .TimerRepetirAviso = .TimerRepetirAviso - 1
-
-                If .TimerRepetirAviso <= 0 Then
-                    Call MensajeGlobal(.aviso, FontTypeNames.FONTTYPE_New_Eventos)
-                    .TimerRepetirAviso = .RepetirAviso
+            ElseIf .Intervalo > 0 Then
+                If .TimerInvasion >= .Intervalo Then
+                    Call IniciarInvasion(i)
+    
+                ' Si no está activa ni hay que iniciar, chequeamos si hay que avisar que se acerca el evento
+                ElseIf .TimerInvasion >= .Intervalo - .AvisarTiempo Then
+                    .TimerRepetirAviso = .TimerRepetirAviso - 1
+    
+                    If .TimerRepetirAviso <= 0 Then
+                        Call MensajeGlobal(.aviso, FontTypeNames.FONTTYPE_New_Eventos)
+                        .TimerRepetirAviso = .RepetirAviso
+                    End If
                 End If
             End If
         
