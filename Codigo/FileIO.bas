@@ -1260,32 +1260,6 @@ LoadObjSastre_Err:
         
 End Sub
 
-Sub LoadObjDonador()
-        
-        On Error GoTo LoadObjDonador_Err
-        
-
-        Dim n As Integer, lc As Integer
-
-100     n = val(GetVar(DatPath & "ObjDonador.dat", "INIT", "NumObjs"))
-
-102     ReDim Preserve ObjDonador(1 To n) As tObjDonador
-
-104     For lc = 1 To n
-106         ObjDonador(lc).ObjIndex = val(GetVar(DatPath & "ObjDonador.dat", "Obj" & lc, "Index"))
-108         ObjDonador(lc).Cantidad = val(GetVar(DatPath & "ObjDonador.dat", "Obj" & lc, "Cant"))
-110         ObjDonador(lc).Valor = val(GetVar(DatPath & "ObjDonador.dat", "Obj" & lc, "Valor"))
-112     Next lc
-
-        
-        Exit Sub
-
-LoadObjDonador_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "ES.LoadObjDonador", Erl)
-116     Resume Next
-        
-End Sub
-
 Sub LoadOBJData()
 
     '###################################################
@@ -1372,8 +1346,6 @@ Sub LoadOBJData()
             .Dorada = val(Leer.GetValue(ObjKey, "Dorada"))
             .VidaUtil = val(Leer.GetValue(ObjKey, "VidaUtil"))
             .TiempoRegenerar = val(Leer.GetValue(ObjKey, "TiempoRegenerar"))
-    
-            .donador = val(Leer.GetValue(ObjKey, "donador"))
     
             Dim i As Integer
 
@@ -1504,11 +1476,6 @@ Sub LoadOBJData()
                     .HastaY = val(Leer.GetValue(ObjKey, "Y"))
                     .NecesitaNave = val(Leer.GetValue(ObjKey, "NecesitaNave"))
             
-                Case eOBJType.OtDonador
-                    .HastaMap = val(Leer.GetValue(ObjKey, "Map"))
-                    .HastaX = val(Leer.GetValue(ObjKey, "X"))
-                    .HastaY = val(Leer.GetValue(ObjKey, "Y"))
-        
                 Case eOBJType.otMagicos
                     .EfectoMagico = val(Leer.GetValue(ObjKey, "efectomagico"))
 
@@ -1874,9 +1841,6 @@ Sub LoadUserInit(ByVal UserIndex As Integer, ByRef UserFile As clsIniReader)
 148     UserList(UserIndex).flags.Incinerado = CByte(UserFile.GetValue("FLAGS", "Incinerado"))
 150     UserList(UserIndex).flags.Inmovilizado = CByte(UserFile.GetValue("FLAGS", "Inmovilizado"))
 
-152     UserList(UserIndex).flags.ScrollExp = CSng(UserFile.GetValue("FLAGS", "ScrollExp"))
-154     UserList(UserIndex).flags.ScrollOro = CSng(UserFile.GetValue("FLAGS", "ScrollOro"))
-
 156     If UserList(UserIndex).flags.Paralizado = 1 Then
 158         UserList(UserIndex).Counters.Paralisis = IntervaloParalizado
 
@@ -1888,9 +1852,6 @@ Sub LoadUserInit(ByVal UserIndex As Integer, ByRef UserFile As clsIniReader)
         End If
 
 166     UserList(UserIndex).Counters.Pena = CLng(UserFile.GetValue("COUNTERS", "Pena"))
-
-168     UserList(UserIndex).Counters.ScrollExperiencia = CLng(UserFile.GetValue("COUNTERS", "ScrollExperiencia"))
-170     UserList(UserIndex).Counters.ScrollOro = CLng(UserFile.GetValue("COUNTERS", "ScrollOro"))
 
 172     UserList(UserIndex).Counters.Oxigeno = CLng(UserFile.GetValue("COUNTERS", "Oxigeno"))
 

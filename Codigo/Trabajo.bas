@@ -1730,7 +1730,7 @@ Public Function ObjEsRobable(ByVal VictimaIndex As Integer, ByVal slot As Intege
 
 100     OI = UserList(VictimaIndex).Invent.Object(slot).ObjIndex
 
-102     ObjEsRobable = ObjData(OI).OBJType <> eOBJType.otLlaves And UserList(VictimaIndex).Invent.Object(slot).Equipped = 0 And ObjData(OI).Real = 0 And ObjData(OI).Caos = 0 And ObjData(OI).donador = 0 And ObjData(OI).OBJType <> eOBJType.otBarcos And ObjData(OI).OBJType <> eOBJType.otRunas And ObjData(OI).Instransferible = 0 And ObjData(OI).OBJType <> eOBJType.otMonturas
+102     ObjEsRobable = ObjData(OI).OBJType <> eOBJType.otLlaves And UserList(VictimaIndex).Invent.Object(slot).Equipped = 0 And ObjData(OI).Real = 0 And ObjData(OI).Caos = 0 And ObjData(OI).OBJType <> eOBJType.otBarcos And ObjData(OI).OBJType <> eOBJType.otRunas And ObjData(OI).Instransferible = 0 And ObjData(OI).OBJType <> eOBJType.otMonturas
 
         
         Exit Function
@@ -1916,17 +1916,7 @@ Public Sub DoRaices(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte
                 Dim nPos  As WorldPos
                 Dim MiObj As obj
         
-                'If .clase = eClass.Druid Then
-                'MiObj.Amount = RandomNumber(6, 8)
-                ' Else
-120             MiObj.amount = RandomNumber(5, 7)
-                ' End If
-       
-122             If ObjData(.Invent.HerramientaEqpObjIndex).donador = 1 Then
-124                 MiObj.amount = MiObj.amount * 2
-                End If
-       
-126             MiObj.amount = MiObj.amount * RecoleccionMult
+126             MiObj.amount = RandomNumber(5, 7) * RecoleccionMult
 128             MiObj.ObjIndex = Raices
         
 130             MapData(.Pos.Map, X, Y).ObjInfo.amount = MapData(.Pos.Map, X, Y).ObjInfo.amount - MiObj.amount

@@ -697,8 +697,6 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
         .flags.MinutosRestantes = QueryData!silence_minutes_left
         .flags.SegundosPasados = QueryData!silence_elapsed_seconds
         .flags.MascotasGuardadas = QueryData!pets_saved
-        .flags.ScrollExp = 1 'TODO: sacar
-        .flags.ScrollOro = 1 'TODO: sacar
         
         .Counters.Pena = QueryData!counter_pena
         
@@ -1183,92 +1181,11 @@ SetUserValueByID_Err:
         
 End Sub
 
-Public Function CheckUserDonatorDatabase(CuentaEmail As String) As Boolean
-        
-    On Error GoTo CheckUserDonatorDatabase_Err
-        
-    CheckUserDonatorDatabase = GetCuentaValue(CuentaEmail, "is_donor")
-
-        
-    Exit Function
-
-CheckUserDonatorDatabase_Err:
-    Call RegistrarError(Err.Number, Err.Description, "modDatabase.CheckUserDonatorDatabase", Erl)
-    Resume Next
-        
-End Function
-
-Public Function GetUserCreditosDatabase(CuentaEmail As String) As Long
-        
-    On Error GoTo GetUserCreditosDatabase_Err
-        
-    GetUserCreditosDatabase = GetCuentaValue(CuentaEmail, "credits")
-
-        
-    Exit Function
-
-GetUserCreditosDatabase_Err:
-    Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetUserCreditosDatabase", Erl)
-    Resume Next
-        
-End Function
-
-Public Function GetUserCreditosCanjeadosDatabase(CuentaEmail As String) As Long
-        
-    On Error GoTo GetUserCreditosCanjeadosDatabase_Err
-        
-    GetUserCreditosCanjeadosDatabase = GetCuentaValue(CuentaEmail, "credits_used")
-
-        
-    Exit Function
-
-GetUserCreditosCanjeadosDatabase_Err:
-    Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetUserCreditosCanjeadosDatabase", Erl)
-    Resume Next
-        
-End Function
-
-Public Function GetUserDiasDonadorDatabase(CuentaEmail As String) As Long
-        
-    On Error GoTo GetUserDiasDonadorDatabase_Err
-        
-
-    Dim DonadorExpire As Variant
-
-    DonadorExpire = SanitizeNullValue(GetCuentaValue(CuentaEmail, "donor_expire"), False)
-    
-    If Not DonadorExpire Then Exit Function
-    GetUserDiasDonadorDatabase = DateDiff("d", Date, DonadorExpire)
-
-        
-    Exit Function
-
-GetUserDiasDonadorDatabase_Err:
-    Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetUserDiasDonadorDatabase", Erl)
-    Resume Next
-        
-End Function
-
-Public Function GetUserComprasDonadorDatabase(CuentaEmail As String) As Long
-        
-    On Error GoTo GetUserComprasDonadorDatabase_Err
-        
-    GetUserComprasDonadorDatabase = GetCuentaValue(CuentaEmail, "donor_purchases")
-
-        
-    Exit Function
-
-GetUserComprasDonadorDatabase_Err:
-    Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetUserComprasDonadorDatabase", Erl)
-    Resume Next
-        
-End Function
-
 Public Function CheckUserExists(name As String) As Boolean
         
     On Error GoTo CheckUserExists_Err
         
-    CheckUserExists = GetUserValue(name, "COUNT(*)") > 0
+    CheckUserExists = GetUserValue(name, "COUNT(1)") > 0
 
         
     Exit Function

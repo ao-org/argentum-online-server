@@ -481,15 +481,6 @@ Begin VB.Form frmMain
          Caption         =   "Cerrar Servidor"
       End
    End
-   Begin VB.Menu donador 
-      Caption         =   "Donador"
-      Begin VB.Menu addtimeDonador 
-         Caption         =   "Cargar tiempo"
-      End
-      Begin VB.Menu loadcredit 
-         Caption         =   "Cargar Creditos"
-      End
-   End
    Begin VB.Menu mnuPopUp 
       Caption         =   "PopUpMenu"
       Visible         =   0   'False
@@ -648,41 +639,6 @@ CheckIdleUser_Err:
         
 End Sub
 
-Private Sub addtimeDonador_Click()
-        
-        On Error GoTo addtimeDonador_Click_Err
-        
-
-        Dim Tmp  As String
-
-        Dim tmp2 As String
-
-100     Tmp = InputBox("Cuenta?", "Ingrese la cuenta")
-
-102     If FileExist(CuentasPath & Tmp & ".act", vbNormal) Then
-104         tmp2 = InputBox("¿Dias?", "Ingrese cantidad de días")
-
-106         If IsNumeric(tmp2) Then
-108             Call DonadorTiempo(Tmp, tmp2)
-            Else
-110             MsgBox ("Cantidad invalida")
-
-            End If
-
-        Else
-112         MsgBox ("La cuenta no existe")
-
-        End If
-
-        
-        Exit Sub
-
-addtimeDonador_Click_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "frmMain.addtimeDonador_Click", Erl)
-116     Resume Next
-        
-End Sub
-
 Private Sub Auditoria_Timer()
 
     On Error GoTo errhand
@@ -699,10 +655,7 @@ Private Sub Auditoria_Timer()
     'End If
 
     Call PasarSegundo 'sistema de desconexion de 10 segs
-    Call PurgarScroll
-
     Call PurgarOxigeno
-
     Call ActualizaStatsES
 
     Exit Sub
@@ -1201,18 +1154,6 @@ Private Sub EstadoTimer_Timer()
 
     Next
 
-    For i = 1 To Donadores.Count
-
-        If Donadores(i).FechaExpiracion <= Now Then
-            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> Se ha concluido el tiempo de donador para " & Donadores(i).name & ".", FontTypeNames.FONTTYPE_SERVER))
-            Call ChangeDonador(Donadores(i).name, 0)
-            Call Donadores.Remove(i)
-            Call SaveDonadores
-
-        End If
-
-    Next
-
     Select Case frmMain.lblhora.Caption
 
         Case "0:00:00"
@@ -1678,41 +1619,6 @@ Private Sub LimpiezaTimer_Timer()
 LimpiezaTimer_Timer_Err:
     Call RegistrarError(Err.Number, Err.Description, "frmMain.LimpiezaTimer_Timer", Erl)
 
-        
-End Sub
-
-Private Sub loadcredit_Click()
-        
-        On Error GoTo loadcredit_Click_Err
-        
-
-        Dim Tmp  As String
-
-        Dim tmp2 As String
-
-100     Tmp = InputBox("¿Cuenta?", "Ingrese la cuenta")
-
-102     If FileExist(CuentasPath & Tmp & ".act", vbNormal) Then
-104         tmp2 = InputBox("¿Cantidad?", "Ingrese cantidad de creditos a agregar")
-
-106         If IsNumeric(tmp2) Then
-108             Call AgregarCreditosDonador(Tmp, CLng(tmp2))
-            Else
-110             MsgBox ("Cantidad invalida")
-
-            End If
-
-        Else
-112         MsgBox ("La cuenta no existe")
-
-        End If
-
-        
-        Exit Sub
-
-loadcredit_Click_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "frmMain.loadcredit_Click", Erl)
-116     Resume Next
         
 End Sub
 

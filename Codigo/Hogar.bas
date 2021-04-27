@@ -184,45 +184,31 @@ setDistance_Err:
 End Sub
 
 Public Sub goHome(ByVal UserIndex As Integer)
-        '***************************************************
-        'Author: Budi
-        'Last Modification: 01/06/2010
-        '01/06/2010: ZaMa - Ahora usa otro tipo de intervalo
-        '***************************************************
-        
         On Error GoTo goHome_Err
-        
+
 100     With UserList(UserIndex)
 
 102         If .flags.Muerto = 1 Then
+                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Runa, 800, False))
+                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.CharIndex, 800, Accion_Barra.Hogar))
 
-104             If .donador.activo = 0 And Not EsGM(UserIndex) Then  ' Donador no espera tiempo
-106                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Runa, 800, False))
-108                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.CharIndex, 800, Accion_Barra.Hogar))
-                Else
-110                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Runa, 100, False))
-112                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.CharIndex, 100, Accion_Barra.Hogar))
-                End If
-                
 114             .Accion.Particula = ParticulasIndex.Runa
 116             .Accion.AccionPendiente = True
 118             .Accion.TipoAccion = Accion_Barra.Hogar
-            
+
             Else
-        
+
 120             Call WriteConsoleMsg(UserIndex, "Debes estar muerto para poder utilizar este comando.", FontTypeNames.FONTTYPE_FIGHT)
 
             End If
-        
+
         End With
-    
-        
+
         Exit Sub
 
 goHome_Err:
 122     Call RegistrarError(Err.Number, Err.Description, "Hogar.goHome", Erl)
 
-        
 End Sub
 
 ''

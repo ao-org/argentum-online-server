@@ -557,9 +557,6 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal 
 194         .Stats.MaxHam = 100
 196         .Stats.MinHam = 100
     
-198         .flags.ScrollExp = 1
-200         .flags.ScrollOro = 1
-    
 202         .flags.VecesQueMoriste = 0
 204         .flags.Montado = 0
     
@@ -1030,24 +1027,6 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
 
             End If
     
-            'Donador
-188         If DonadorCheck(UserCuenta) Then
-
-                Dim LoopC As Integer
-
-190             For LoopC = 1 To Donadores.Count
-
-192                 If UCase$(Donadores(LoopC).name) = UCase$(UserCuenta) Then
-194                     .donador.activo = 1
-196                     .donador.FechaExpiracion = Donadores(LoopC).FechaExpiracion
-                        Exit For
-
-                    End If
-
-198             Next LoopC
-
-            End If
-        
             ' Seteamos el nombre
 200         .name = name
             
@@ -1535,8 +1514,6 @@ Sub ResetContadores(ByVal UserIndex As Integer)
             'Ladder
 162         .Incineracion = 0
             'Ladder
-164         .ScrollExperiencia = 0
-166         .ScrollOro = 0
 168         .Oxigeno = 0
 170         .TiempoParaSubastar = 0
 172         .TimerPerteneceNpc = 0
@@ -1734,8 +1711,6 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 106         .Ban = 0
 108         .Escondido = 0
 110         .DuracionEfecto = 0
-112         .ScrollExp = 1
-114         .ScrollOro = 1
 116         .NpcInv = 0
 118         .StatsChanged = 0
 120         .TargetNPC = 0
@@ -1862,29 +1837,6 @@ Sub ResetAccionesPendientes(ByVal UserIndex As Integer)
 ResetAccionesPendientes_Err:
 114     Call RegistrarError(Err.Number, Err.Description, "TCP.ResetAccionesPendientes", Erl)
 116     Resume Next
-        
-End Sub
-
-Sub ResetDonadorFlag(ByVal UserIndex As Integer)
-        
-        On Error GoTo ResetDonadorFlag_Err
-        
-
-        '*************************************************
-        '*************************************************
-100     With UserList(UserIndex).donador
-102         .activo = 0
-104         .CreditoDonador = 0
-106         .FechaExpiracion = 0
-
-        End With
-
-        
-        Exit Sub
-
-ResetDonadorFlag_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "TCP.ResetDonadorFlag", Erl)
-110     Resume Next
         
 End Sub
 
@@ -2036,7 +1988,6 @@ Sub ResetUserSlot(ByVal UserIndex As Integer)
 144     Call ResetBasicUserInfo(UserIndex)
 146     Call ResetUserFlags(UserIndex)
 148     Call ResetAccionesPendientes(UserIndex)
-150     Call ResetDonadorFlag(UserIndex)
 152     Call LimpiarInventario(UserIndex)
 154     Call ResetUserSpells(UserIndex)
         'Call ResetUserPets(UserIndex)

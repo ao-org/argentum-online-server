@@ -391,7 +391,7 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
                         End If
                     End If
 
-140                 Call WriteCharacterCreate(sndIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.CharIndex, x, y, .Char.WeaponAnim, .Char.ShieldAnim, .Char.FX, 999, .Char.CascoAnim, TempName, .Faccion.Status, .flags.Privilegios, .Char.ParticulaFx, .Char.Head_Aura, .Char.Arma_Aura, .Char.Body_Aura, .Char.DM_Aura, .Char.RM_Aura, .Char.Otra_Aura, .Char.Escudo_Aura, .Char.speeding, 0, .donador.activo, appear, .Grupo.Lider, .GuildIndex, clan_nivel, .Stats.MinHp, .Stats.MaxHp, 0, False, .flags.Navegando)
+140                 Call WriteCharacterCreate(sndIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.CharIndex, x, y, .Char.WeaponAnim, .Char.ShieldAnim, .Char.FX, 999, .Char.CascoAnim, TempName, .Faccion.Status, .flags.Privilegios, .Char.ParticulaFx, .Char.Head_Aura, .Char.Arma_Aura, .Char.Body_Aura, .Char.DM_Aura, .Char.RM_Aura, .Char.Otra_Aura, .Char.Escudo_Aura, .Char.speeding, 0, appear, .Grupo.Lider, .GuildIndex, clan_nivel, .Stats.MinHp, .Stats.MaxHp, 0, False, .flags.Navegando)
                                          
                 Else
             
@@ -554,7 +554,7 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
 186                 If EsNewbie(UserIndex) Then
                         Dim OroRecompenza As Long
     
-188                     OroRecompenza = OroPorNivel * .Stats.ELV * OroMult * .flags.ScrollOro
+188                     OroRecompenza = OroPorNivel * .Stats.ELV * OroMult
 190                     .Stats.GLD = .Stats.GLD + OroRecompenza
                         'Call WriteConsoleMsg(UserIndex, "Has ganado " & OroRecompenza & " monedas de oro.", FontTypeNames.FONTTYPE_INFO)
 192                     Call WriteLocaleMsg(UserIndex, "29", FontTypeNames.FONTTYPE_INFO, PonerPuntos(OroRecompenza))
@@ -919,12 +919,9 @@ Sub SendUserMiniStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
 118         Call WriteConsoleMsg(sendIndex, "Oro en banco: " & .Stats.Banco, FontTypeNames.FONTTYPE_INFO)
     
 120         Call WriteConsoleMsg(sendIndex, "Cuenta: " & .Cuenta, FontTypeNames.FONTTYPE_INFO)
-122         Call WriteConsoleMsg(sendIndex, "Creditos: " & .donador.CreditoDonador, FontTypeNames.FONTTYPE_INFO)
-124         Call WriteConsoleMsg(sendIndex, "Fecha Vencimiento Donador: " & .donador.FechaExpiracion, FontTypeNames.FONTTYPE_INFO)
     
         End With
 
-        
         Exit Sub
 
 SendUserMiniStatsTxt_Err:
@@ -1253,12 +1250,7 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
             
                 Dim BonusExp As Long
 
-142             BonusExp = 50 * ExpMult * UserList(UserIndex).flags.ScrollExp
-        
-144             If UserList(UserIndex).donador.activo = 1 Then
-146                 BonusExp = BonusExp * 1.1
-
-                End If
+142             BonusExp = 50 * ExpMult
         
 148             If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then
 150                 UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + BonusExp

@@ -54,8 +54,6 @@ Paralizado=0
 Inmovilizado=0
 Incinerado=0
 VecesQueMoriste=1
-ScrollExp=1
-ScrollOro=1
 MinutosRestantes=0
 SegundosPasados=0
 Silenciado=0
@@ -182,8 +180,6 @@ AT4=20
 
 [COUNTERS]
 Pena=0
-ScrollOro=0
-ScrollExperiencia=0
 Oxigeno=0
 
 [MUERTES]

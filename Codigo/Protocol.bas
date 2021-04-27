@@ -169,7 +169,6 @@ Private Enum ServerPacketID
     DatosGrupo
     ubicacion
     CorreoPicOn
-    DonadorObj
     ArmaMov
     EscudoMov
     ActShop
@@ -512,7 +511,6 @@ Private Enum NewPacksID
     BanTemporal
     Traershop
     ComprarItem
-    ScrollInfo
     CancelarExit
     EnviarCodigo
     CrearTorneo
@@ -622,7 +620,6 @@ Public Enum FontTypeNames
     FONTTYPE_New_Gris
     FONTTYPE_New_Blanco
     FONTTYPE_New_Rojo_Salmon
-    FONTTYPE_New_DONADOR
     FONTTYPE_New_GRUPO
     FONTTYPE_New_Eventos
     
@@ -1688,14 +1685,11 @@ Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
 320             Call UserList(UserIndex).incomingData.ReadInteger ' Desactivado. Nada para hacer
             
 322         Case NewPacksID.ComprarItem
-324             Call HandleComprarItem(UserIndex)
+324             'Call HandleComprarItem(UserIndex) ' Desactivado. Nada para hacer!!
             
 326         Case NewPacksID.CompletarViaje
 328             Call HandleCompletarViaje(UserIndex)
             
-330         Case NewPacksID.ScrollInfo
-332             Call HandleScrollInfo(UserIndex)
-
 334         Case NewPacksID.CancelarExit
 336             Call HandleCancelarExit(UserIndex)
             
@@ -20612,7 +20606,7 @@ End Sub
 ' @param    privileges Sets if the character is a normal one or any kind of administrative character.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As eHeading, ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal DM_Aura As String, ByVal RM_Aura As String, ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Byte, ByVal donador As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal Simbolo As Byte, Optional ByVal Idle As Boolean = False, Optional ByVal Navegando As Boolean = False)
+Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As eHeading, ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal DM_Aura As String, ByVal RM_Aura As String, ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal Simbolo As Byte, Optional ByVal Idle As Boolean = False, Optional ByVal Navegando As Boolean = False)
 
         '***************************************************
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -20621,7 +20615,7 @@ Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, ByVal Body As Intege
         '***************************************************
         On Error GoTo ErrHandler
 
-100     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageCharacterCreate(Body, Head, Heading, CharIndex, X, Y, weapon, shield, FX, FXLoops, helmet, name, Status, privileges, ParticulaFx, Head_Aura, Arma_Aura, Body_Aura, DM_Aura, RM_Aura, Otra_Aura, Escudo_Aura, speeding, EsNPC, donador, appear, group_index, clan_index, clan_nivel, UserMinHp, UserMaxHp, Simbolo, Idle, Navegando))
+100     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageCharacterCreate(Body, Head, Heading, CharIndex, X, Y, weapon, shield, FX, FXLoops, helmet, name, Status, privileges, ParticulaFx, Head_Aura, Arma_Aura, Body_Aura, DM_Aura, RM_Aura, Otra_Aura, Escudo_Aura, speeding, EsNPC, appear, group_index, clan_index, clan_nivel, UserMinHp, UserMaxHp, Simbolo, Idle, Navegando))
         Exit Sub
 
 ErrHandler:
@@ -22261,8 +22255,6 @@ Public Sub WriteContadores(ByVal UserIndex As Integer)
 100     With UserList(UserIndex).outgoingData
 102         Call .WriteByte(ServerPacketID.Contadores)
 104         Call .WriteInteger(UserList(UserIndex).Counters.Invisibilidad)
-106         Call .WriteInteger(UserList(UserIndex).Counters.ScrollExperiencia)
-108         Call .WriteInteger(UserList(UserIndex).Counters.ScrollOro)
 
 110         If UserList(UserIndex).flags.NecesitaOxigeno Then
 112             Call .WriteInteger(UserList(UserIndex).Counters.Oxigeno)
@@ -22348,13 +22340,7 @@ Public Sub WriteMiniStats(ByVal UserIndex As Integer)
 116         Call .WriteLong(UserList(UserIndex).flags.VecesQueMoriste)
 118         Call .WriteByte(UserList(UserIndex).genero)
 120         Call .WriteByte(UserList(UserIndex).raza)
-        
-122         Call .WriteByte(UserList(UserIndex).donador.activo)
-124         Call .WriteLong(CreditosDonadorCheck(UserList(UserIndex).Cuenta))
-            'ARREGLANDO
-        
-126         Call .WriteInteger(DiasDonadorCheck(UserList(UserIndex).Cuenta))
-                
+
         End With
 
         Exit Sub
@@ -24805,7 +24791,7 @@ End Function
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As eHeading, ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal DM_Aura As String, ByVal RM_Aura As String, ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Byte, ByVal donador As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal Simbolo As Byte, ByVal Idle As Boolean, ByVal Navegando As Boolean) As String
+Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As eHeading, ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal DM_Aura As String, ByVal RM_Aura As String, ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal Simbolo As Byte, ByVal Idle As Boolean, ByVal Navegando As Boolean) As String
         '***************************************************
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
@@ -24842,7 +24828,6 @@ Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, ByVal Head 
 146         Call .WriteASCIIString(Escudo_Aura)
 148         Call .WriteSingle(speeding)
 150         Call .WriteByte(EsNPC)
-152         Call .WriteByte(donador)
 154         Call .WriteByte(appear)
 156         Call .WriteInteger(group_index)
 158         Call .WriteInteger(clan_index)
@@ -25113,21 +25098,13 @@ Private Sub HandleQuestionGM(ByVal UserIndex As Integer)
 110         Consulta = Buffer.ReadASCIIString()
 112         TipoDeConsulta = Buffer.ReadASCIIString()
 
-114         If UserList(UserIndex).donador.activo = 1 Then
-116             Call Ayuda.Push(.name, Consulta, TipoDeConsulta & "-Prioritario")
-118             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Se ha recibido un nuevo mensaje de soporte de " & UserList(UserIndex).name & "(Prioritario).", FontTypeNames.FONTTYPE_SERVER))
-            
-            Else
-120             Call Ayuda.Push(.name, Consulta, TipoDeConsulta)
-122             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Se ha recibido un nuevo mensaje de soporte de " & UserList(UserIndex).name & ".", FontTypeNames.FONTTYPE_SERVER))
-
-            End If
+120         Call Ayuda.Push(.name, Consulta, TipoDeConsulta)
+122         Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Se ha recibido un nuevo mensaje de soporte de " & UserList(UserIndex).name & ".", FontTypeNames.FONTTYPE_SERVER))
 
 124         Call WriteConsoleMsg(UserIndex, "Tu mensaje fue recibido por el equipo de soporte.", FontTypeNames.FONTTYPE_INFOIAO)
-            'Call WriteConsoleMsg(UserIndex, "Tu mensaje fue recibido por el equipo de soporte.", FontTypeNames.FONTTYPE_INFOIAO)
-        
+
 126         Call LogConsulta(.name & " (" & TipoDeConsulta & ") " & Consulta)
-        
+
             'If we got here then packet is complete, copy data back to original queue
 128         Call .incomingData.CopyBuffer(Buffer)
 
@@ -26112,13 +26089,9 @@ Public Sub WritePersonajesDeCuenta(ByVal UserIndex As Integer)
 
         Dim Personaje(1 To MAX_PERSONAJES) As PersonajeCuenta
 
-        Dim donador                        As Boolean
-
         Dim i                              As Byte
     
 100     UserCuenta = UserList(UserIndex).Cuenta
-    
-102     donador = DonadorCheck(UserCuenta)
 
 104     If Database_Enabled Then
 106         CantPersonajes = GetPersonajesCuentaDatabase(UserList(UserIndex).AccountId, Personaje)
@@ -26160,8 +26133,6 @@ Public Sub WritePersonajesDeCuenta(ByVal UserIndex As Integer)
 162             Call .WriteInteger(Personaje(i).Arma)
 164             Call .WriteASCIIString(modGuilds.GuildName(Personaje(i).ClanIndex))
 166         Next i
-            
-168         Call .WriteByte(IIf(donador, 1, 0))
 
         End With
     
@@ -26458,21 +26429,10 @@ ErrHandler:
 End Sub
 
 Public Sub WriteShowFrmMapa(ByVal UserIndex As Integer)
-
-        'Author: Pablo Mercavides
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex).outgoingData
 102         Call .WriteByte(ServerPacketID.ShowFrmMapa)
-        
-104         If UserList(UserIndex).donador.activo = 1 Then
-106             Call .WriteInteger(ExpMult * UserList(UserIndex).flags.ScrollExp * 1.1)
-            Else
-108             Call .WriteInteger(ExpMult * UserList(UserIndex).flags.ScrollExp)
-
-            End If
-
-110         Call .WriteInteger(OroMult * UserList(UserIndex).flags.ScrollOro)
 
         End With
 
@@ -28711,15 +28671,9 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
 252                     If MapInfo(UserList(UserIndex).Pos.Map).Newbie Then
 254                         Call WarpToLegalPos(UserIndex, 140, 53, 58)
                     
-256                         If UserList(UserIndex).donador.activo = 0 Then ' Donador no espera tiempo
-258                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Resucitar, 400, False))
-260                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(UserList(UserIndex).Char.CharIndex, 400, Accion_Barra.Resucitar))
-                            Else
-262                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Resucitar, 10, False))
-264                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(UserList(UserIndex).Char.CharIndex, 10, Accion_Barra.Resucitar))
+258                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Resucitar, 400, False))
+260                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(UserList(UserIndex).Char.CharIndex, 400, Accion_Barra.Resucitar))
 
-                            End If
-                    
 266                         UserList(UserIndex).Accion.AccionPendiente = True
 268                         UserList(UserIndex).Accion.Particula = ParticulasIndex.Resucitar
 270                         UserList(UserIndex).Accion.TipoAccion = Accion_Barra.Resucitar
@@ -29122,93 +29076,6 @@ HandleSubastaInfo_Err:
 124     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleSubastaInfo", Erl)
 
         
-End Sub
-
-Private Sub HandleScrollInfo(ByVal UserIndex As Integer)
-        'Author: Pablo Mercavides
-
-100     If UserList(UserIndex).incomingData.Length < 2 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
-
-        End If
-    
-        On Error GoTo ErrHandler
-
-104     With UserList(UserIndex)
-
-            Dim Buffer As New clsByteQueue
-
-106         Call Buffer.CopyBuffer(.incomingData)
-            'Remove packet ID
-108         Call Buffer.ReadInteger
-        
-            Dim activo As Boolean
-
-            Dim HR     As Integer
-
-            Dim MS     As Integer
-
-            Dim SS     As Integer
-
-            Dim secs   As Integer
-        
-110         If UserList(UserIndex).flags.ScrollExp > 1 Then
-112             secs = UserList(UserIndex).Counters.ScrollExperiencia
-114             HR = secs \ 3600
-116             MS = (secs Mod 3600) \ 60
-118             SS = (secs Mod 3600) Mod 60
-
-120             If SS > 9 Then
-122                 Call WriteConsoleMsg(UserIndex, "Scroll de experiencia activo. Tiempo restante: " & MS & ":" & SS & " minuto(s).", FontTypeNames.FONTTYPE_INFOIAO)
-                Else
-124                 Call WriteConsoleMsg(UserIndex, "Scroll de experiencia activo. Tiempo restante: " & MS & ":0" & SS & " minuto(s).", FontTypeNames.FONTTYPE_INFOIAO)
-
-                End If
-
-126             activo = True
-
-            End If
-
-128         If UserList(UserIndex).flags.ScrollOro > 1 Then
-130             secs = UserList(UserIndex).Counters.ScrollOro
-132             HR = secs \ 3600
-134             MS = (secs Mod 3600) \ 60
-136             SS = (secs Mod 3600) Mod 60
-
-138             If SS > 9 Then
-140                 Call WriteConsoleMsg(UserIndex, "Scroll de oro activo. Tiempo restante: " & MS & ":" & SS & " minuto(s).", FontTypeNames.FONTTYPE_INFOIAO)
-                Else
-142                 Call WriteConsoleMsg(UserIndex, "Scroll de oro activo. Tiempo restante: " & MS & ":0" & SS & " minuto(s).", FontTypeNames.FONTTYPE_INFOIAO)
-
-                End If
-
-144             activo = True
-
-            End If
-
-146         If Not activo Then
-148             Call WriteConsoleMsg(UserIndex, "No tenes ningun scroll activo.", FontTypeNames.FONTTYPE_INFOIAO)
-
-            End If
-                
-150         Call .incomingData.CopyBuffer(Buffer)
-
-        End With
-    
-ErrHandler:
-
-        Dim Error As Long
-
-152     Error = Err.Number
-
-        On Error GoTo 0
-    
-        'Destroy auxiliar buffer
-154     Set Buffer = Nothing
-    
-156     If Error <> 0 Then Err.raise Error
-
 End Sub
 
 Private Sub HandleCancelarExit(ByVal UserIndex As Integer)
@@ -29740,7 +29607,8 @@ Private Sub HandleTraerShop(ByVal UserIndex As Integer)
         'Remove packet ID
 100     Call UserList(UserIndex).incomingData.ReadInteger
     
-106     Call WriteShop(UserIndex)
+        ' Donador
+106     ' Call WriteShop(UserIndex)
         
         Exit Sub
 
@@ -29771,54 +29639,6 @@ HandleTraerRanking_Err:
         
 End Sub
 
-Public Sub WriteShop(ByVal UserIndex As Integer)
-
-        '***************************************************
-        On Error GoTo ErrHandler
-
-        Dim i              As Long
-
-        Dim obj            As ObjData
-
-        Dim validIndexes() As Integer
-
-        Dim Count          As Integer
-    
-100     ReDim validIndexes(1 To UBound(ObjDonador()))
-    
-102     With UserList(UserIndex).outgoingData
-104         Call .WriteByte(ServerPacketID.DonadorObj)
-        
-106         For i = 1 To UBound(ObjDonador())
-108             Count = Count + 1
-110             validIndexes(Count) = i
-112         Next i
-        
-            ' Write the number of objects in the list
-114         Call .WriteInteger(Count)
-        
-            ' Write the needed data of each object
-116         For i = 1 To Count
-118             Call .WriteInteger(ObjDonador(validIndexes(i)).ObjIndex)
-120             Call .WriteInteger(ObjDonador(validIndexes(i)).Valor)
-122         Next i
-        
-124         Call .WriteLong(CreditosDonadorCheck(UserList(UserIndex).Cuenta))
-126         Call .WriteInteger(DiasDonadorCheck(UserList(UserIndex).Cuenta))
-
-        End With
-
-        Exit Sub
-
-ErrHandler:
-
-128     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-130         Call FlushBuffer(UserIndex)
-132         Resume
-        End If
-
-End Sub
-
 Public Sub WriteRanking(ByVal UserIndex As Integer)
 
         '***************************************************
@@ -29844,97 +29664,6 @@ ErrHandler:
 114         Call FlushBuffer(UserIndex)
 116         Resume
         End If
-
-End Sub
-
-Private Sub HandleComprarItem(ByVal UserIndex As Integer)
-        'Author: Pablo Mercavides
-
-100     If UserList(UserIndex).incomingData.Length < 3 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
-
-        End If
-    
-        On Error GoTo ErrHandler
-
-104     With UserList(UserIndex)
-
-            Dim Buffer As New clsByteQueue
-
-106         Call Buffer.CopyBuffer(.incomingData)
-            'Remove packet ID
-108         Call Buffer.ReadInteger
-
-            Dim ItemIndex    As Byte
-        
-            Dim ObjComprado  As obj
-
-            Dim LogeoDonador As String
-
-110         ItemIndex = Buffer.ReadByte()
-        
-            Dim i              As Byte
-
-            Dim InvSlotsLibres As Byte
-        
-112         For i = 1 To UserList(UserIndex).CurrentInventorySlots
-
-114             If UserList(UserIndex).Invent.Object(i).ObjIndex = 0 Then InvSlotsLibres = InvSlotsLibres + 1
-116         Next i
-    
-            'Nos fijamos si entra
-118         If InvSlotsLibres = 0 Then
-120             Call WriteConsoleMsg(UserIndex, "Donación> Sin espacio en el inventario.", FontTypeNames.FONTTYPE_WARNING)
-            Else
-
-122             If CreditosDonadorCheck(UserList(UserIndex).Cuenta) - ObjDonador(ItemIndex).Valor >= 0 Then
-124                 ObjComprado.amount = ObjDonador(ItemIndex).Cantidad
-126                 ObjComprado.ObjIndex = ObjDonador(ItemIndex).ObjIndex
-            
-128                 LogeoDonador = LogeoDonador & vbCrLf & "****************************************************" & vbCrLf
-130                 LogeoDonador = LogeoDonador & "Compra iniciada. Balance de la cuenta " & CreditosDonadorCheck(UserList(UserIndex).Cuenta) & " creditos." & vbCrLf
-132                 LogeoDonador = LogeoDonador & "El personaje " & UserList(UserIndex).name & "(" & UserList(UserIndex).Cuenta & ") Compro el item " & ObjData(ObjDonador(ItemIndex).ObjIndex).name & vbCrLf
-134                 LogeoDonador = LogeoDonador & "Se descontaron " & CLng(ObjDonador(ItemIndex).Valor) & " creditos de la cuenta " & UserList(UserIndex).Cuenta & "." & vbCrLf
-            
-136                 If Not MeterItemEnInventario(UserIndex, ObjComprado) Then
-138                     LogeoDonador = LogeoDonador & "El item se tiro al piso" & vbCrLf
-140                     Call TirarItemAlPiso(UserList(UserIndex).Pos, ObjComprado)
-
-                    End If
-                
-142                 LogeoDonador = LogeoDonador & "****************************************************" & vbCrLf
-             
-144                 Call RestarCreditosDonador(UserList(UserIndex).Cuenta, CLng(ObjDonador(ItemIndex).Valor))
-146                 Call WriteConsoleMsg(UserIndex, "Donación> Gracias por tu compra. Tu saldo es de " & CreditosDonadorCheck(UserList(UserIndex).Cuenta) & " creditos.", FontTypeNames.FONTTYPE_WARNING)
-148                 Call LogearEventoDeDonador(LogeoDonador)
-150                 Call SaveUser(UserIndex)
-152                 Call WriteActShop(UserIndex)
-                Else
-154                 Call WriteConsoleMsg(UserIndex, "Donación> Tu saldo es insuficiente. Actualmente tu saldo es de " & CreditosDonadorCheck(UserList(UserIndex).Cuenta) & " creditos.", FontTypeNames.FONTTYPE_WARNING)
-156                 Call WriteActShop(UserIndex)
-
-                End If
-
-            End If
-    
-            'If we got here then packet is complete, copy data back to original queue
-158         Call .incomingData.CopyBuffer(Buffer)
-
-        End With
-    
-ErrHandler:
-
-        Dim Error As Long
-
-160     Error = Err.Number
-
-        On Error GoTo 0
-    
-        'Destroy auxiliar buffer
-162     Set Buffer = Nothing
-    
-164     If Error <> 0 Then Err.raise Error
 
 End Sub
 
@@ -30080,31 +29809,6 @@ ErrHandler:
 210     Set Buffer = Nothing
     
 212     If Error <> 0 Then Err.raise Error
-
-End Sub
-
-Public Sub WriteActShop(ByVal UserIndex As Integer)
-
-        'Author: Pablo Mercavides
-        On Error GoTo ErrHandler
-
-100     With UserList(UserIndex).outgoingData
-    
-102         Call .WriteByte(ServerPacketID.ActShop)
-104         Call .WriteLong(CreditosDonadorCheck(UserList(UserIndex).Cuenta))
-        
-106         Call .WriteInteger(DiasDonadorCheck(UserList(UserIndex).Cuenta))
-
-        End With
-
-        Exit Sub
-
-ErrHandler:
-
-108     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-110         Call FlushBuffer(UserIndex)
-112         Resume
-        End If
 
 End Sub
 
@@ -31545,14 +31249,8 @@ Private Sub HandleDenounce(ByVal UserIndex As Integer)
             Exit Sub
         End If
 
-        If UserList(UserIndex).donador.activo = 1 Then
-            Call Ayuda.Push(.name, Denuncia, "Denuncia a " & UserList(tUser).name & "-Prioritario")
-            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Se ha recibido una nueva denuncia de parte de " & .name & "(Prioritario).", FontTypeNames.FONTTYPE_SERVER))
-        
-        Else
-            Call Ayuda.Push(.name, Denuncia, "Denuncia a " & UserList(tUser).name)
-            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Se ha recibido una nueva denuncia de parte de " & .name & ".", FontTypeNames.FONTTYPE_SERVER))
-        End If
+        Call Ayuda.Push(.name, Denuncia, "Denuncia a " & UserList(tUser).name)
+        Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Se ha recibido una nueva denuncia de parte de " & .name & ".", FontTypeNames.FONTTYPE_SERVER))
 
         Call WriteConsoleMsg(UserIndex, "Tu denuncia fue recibida por el equipo de soporte.", FontTypeNames.FONTTYPE_INFOIAO)
 

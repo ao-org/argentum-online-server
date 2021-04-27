@@ -239,11 +239,6 @@ Public Sub SaveNewAccountCharfile(CuentaEmail As String, PasswordHash As String,
 124         Call .ChangeValue("BAN", "Motivo", "")
 126         Call .ChangeValue("BAN", "BANEO", "")
         
-            'Grabamos donador
-128         Call .ChangeValue("DONADOR", "DONADOR", "0")
-130         Call .ChangeValue("DONADOR", "CREDITOS", "0")
-132         Call .ChangeValue("DONADOR", "FECHAEXPIRACION", "")
-        
             'Seguridad Ladder
 134         Call .ChangeValue("INIT", "MacAdress", "0")
 136         Call .ChangeValue("INIT", "HDserial", "0")

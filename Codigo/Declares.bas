@@ -724,7 +724,6 @@ Public Enum eOBJType
     otNudillos = 46
     OtCorreo = 47
     OtCofre = 48
-    OtDonador = 50
     otCualquiera = 1000
 
 End Enum
@@ -1105,7 +1104,6 @@ Public Type ObjData
     ParticulaGolpe As Integer
     ParticulaViaje As Integer
 
-    donador As Byte
     ClaseTipo As Byte
 
     TipoRuna As Byte
@@ -1421,14 +1419,6 @@ End Type
 
 'Sistema de Barras
 
-Public Type TDonador
-
-    activo As Byte
-    CreditoDonador As Integer
-    FechaExpiracion As Date
-
-End Type
-
 'Flags
 Public Type UserFlags
 
@@ -1436,11 +1426,7 @@ Public Type UserFlags
     NecesitaOxigeno As Boolean
 
     Ahogandose As Byte
-    
     EnTorneo As Boolean
-
-    ScrollExp As Single
-    ScrollOro As Single
 
     'Ladder
     'Casamientos  08/6/10 01:10 am
@@ -1449,7 +1435,7 @@ Public Type UserFlags
     Candidato As Integer
     
     pregunta As Byte
-       
+
     ' 0: no esta hechizada;
     'Cualquier otro valor si lo esta: 0.8 -> reduce un 20% de velocidad; 1.3 -> Aumenta un 30%
     VelocidadHechizada As Single
@@ -1618,8 +1604,6 @@ Public Type UserCounters
 
     TiempoParaSubastar As Byte
     UserHechizosInterval(1 To MAXUSERHECHIZOS) As Long
-    ScrollExperiencia As Long
-    ScrollOro As Long
     Oxigeno As Long
     
     Ahogo As Long
@@ -1811,7 +1795,6 @@ Public Type user
     
     Stats As UserStats
     flags As UserFlags
-    donador As TDonador
     Accion As AccionPendiente
     
     NumeroPaquetesPorMiliSec As Long
@@ -2245,14 +2228,6 @@ Public EnPausa                           As Boolean
 
 Public EnTesting                         As Boolean
 
-Public Type tObjDonador
-
-    ObjIndex As Integer
-    Valor As Byte
-    Cantidad As Integer
-
-End Type
-
 '*****************ARRAYS PUBLICOS*************************
 Public UserList()                         As user 'USUARIOS
 
@@ -2295,8 +2270,6 @@ Public PesoPeces()                        As Long
 Public RangosFaccion()                    As tRangoFaccion
 
 Public RecompensasFaccion()               As tRecompensaFaccion
-
-Public ObjDonador()                       As tObjDonador
 
 Public BanIps                             As New Collection
 

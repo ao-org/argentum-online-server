@@ -1025,7 +1025,7 @@ Sub NPCTirarOro(MiNPC As npc, ByVal UserIndex As Integer)
 102         If MiNPC.GiveGLD > 0 Then
 
                 Dim Oro As Long
-104                 Oro = MiNPC.GiveGLD * OroMult * UserList(UserIndex).flags.ScrollOro
+104             Oro = MiNPC.GiveGLD * OroMult
         
 106             If UserList(UserIndex).Grupo.EnGrupo Then
 

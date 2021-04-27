@@ -30,14 +30,6 @@ Attribute VB_Name = "General"
 
 Option Explicit
 
-Public Type TDonador
-
-    activo As Byte
-    CreditoDonador As Integer
-    FechaExpiracion As Date
-
-End Type
-
 Public Declare Function QueryPerformanceCounter Lib "kernel32" (lpPerformanceCount As Currency) As Long
 Public Declare Function QueryPerformanceFrequency Lib "kernel32" (lpFrequency As Currency) As Long
 
@@ -642,7 +634,6 @@ Sub Main()
     Call LoadGuildsDB
     
     Call LoadConfiguraciones
-    Call CargarCodigosDonador
     Call loadAdministrativeUsers
 
     '¿?¿?¿?¿?¿?¿?¿?¿ CARGAMOS DATOS DESDE ARCHIVOS ¿??¿?¿?¿?¿?¿?¿?¿
@@ -744,9 +735,6 @@ Sub Main()
     frmCargando.Label1(2).Caption = "Cargando Baneos Temporales"
     Call LoadBans
     
-    frmCargando.Label1(2).Caption = "Cargando Usuarios Donadores"
-    Call LoadDonadores
-    Call LoadObjDonador
     Call LoadQuests
 
     EstadoGlobal = True
