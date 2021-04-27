@@ -99,7 +99,6 @@ Class=JS_Object; Codigo\JS_Object.cls
 Class=JS_Array; Codigo\JS_Array.cls
 Module=ModInvasion; Codigo\ModInvasion.bas
 Module=AI; Codigo\AI_NPC.bas
-Module=Database_Queries; Codigo\Database_Queries.bas
 IconForm="frmMain"
 Startup="Sub Main"
 HelpFile=""

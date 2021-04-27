@@ -106,8 +106,6 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 
     On Error GoTo ErrorHandler
     
-    Dim LoopC As Long
-    Dim ParamC As Long
     Dim Params() As Variant
     
     'Constructor de queries.
@@ -115,59 +113,66 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
     Set QueryBuilder = New cStringBuilder
     
     With UserList(UserIndex)
+    
+        'Basic user data
+        QueryBuilder.Append "INSERT INTO user SET "
+        QueryBuilder.Append "name = ?, "
+        QueryBuilder.Append "account_id = " & .AccountId & ", "
+        QueryBuilder.Append "level = " & .Stats.ELV & ", "
+        QueryBuilder.Append "exp = " & .Stats.Exp & ", "
+        QueryBuilder.Append "genre_id = " & .genero & ", "
+        QueryBuilder.Append "race_id = " & .raza & ", "
+        QueryBuilder.Append "class_id = " & .clase & ", "
+        QueryBuilder.Append "home_id = " & .Hogar & ", "
+        QueryBuilder.Append "description = ?, "
+        QueryBuilder.Append "gold = " & .Stats.GLD & ", "
+        QueryBuilder.Append "free_skillpoints = " & .Stats.SkillPts & ", "
+        'QueryBuilder.Append "assigned_skillpoints = " & .Counters.AsignedSkills & ", "
+        QueryBuilder.Append "pos_map = " & .Pos.Map & ", "
+        QueryBuilder.Append "pos_x = " & .Pos.X & ", "
+        QueryBuilder.Append "pos_y = " & .Pos.Y & ", "
+        QueryBuilder.Append "body_id = " & .Char.Body & ", "
+        QueryBuilder.Append "head_id = " & .Char.Head & ", "
+        QueryBuilder.Append "weapon_id = " & .Char.WeaponAnim & ", "
+        QueryBuilder.Append "helmet_id = " & .Char.CascoAnim & ", "
+        QueryBuilder.Append "shield_id = " & .Char.ShieldAnim & ", "
+        QueryBuilder.Append "items_Amount = " & .Invent.NroItems & ", "
+        QueryBuilder.Append "slot_armour = " & .Invent.ArmourEqpSlot & ", "
+        QueryBuilder.Append "slot_weapon = " & .Invent.WeaponEqpSlot & ", "
+        QueryBuilder.Append "slot_shield = " & .Invent.EscudoEqpSlot & ", "
+        QueryBuilder.Append "slot_helmet = " & .Invent.CascoEqpSlot & ", "
+        QueryBuilder.Append "slot_ammo = " & .Invent.MunicionEqpSlot & ", "
+        QueryBuilder.Append "slot_dm = " & .Invent.DañoMagicoEqpSlot & ", "
+        QueryBuilder.Append "slot_rm = " & .Invent.ResistenciaEqpSlot & ", "
+        QueryBuilder.Append "slot_tool = " & .Invent.HerramientaEqpSlot & ", "
+        QueryBuilder.Append "slot_magic = " & .Invent.MagicoSlot & ", "
+        QueryBuilder.Append "slot_knuckles = " & .Invent.NudilloSlot & ", "
+        QueryBuilder.Append "slot_ship = " & .Invent.BarcoSlot & ", "
+        QueryBuilder.Append "slot_mount = " & .Invent.MonturaSlot & ", "
+        QueryBuilder.Append "min_hp = " & .Stats.MinHp & ", "
+        QueryBuilder.Append "max_hp = " & .Stats.MaxHp & ", "
+        QueryBuilder.Append "min_man = " & .Stats.MinMAN & ", "
+        QueryBuilder.Append "max_man = " & .Stats.MaxMAN & ", "
+        QueryBuilder.Append "min_sta = " & .Stats.MinSta & ", "
+        QueryBuilder.Append "max_sta = " & .Stats.MaxSta & ", "
+        QueryBuilder.Append "min_ham = " & .Stats.MinHam & ", "
+        QueryBuilder.Append "max_ham = " & .Stats.MaxHam & ", "
+        QueryBuilder.Append "min_sed = " & .Stats.MinAGU & ", "
+        QueryBuilder.Append "max_sed = " & .Stats.MaxAGU & ", "
+        QueryBuilder.Append "min_hit = " & .Stats.MinHIT & ", "
+        QueryBuilder.Append "max_hit = " & .Stats.MaxHit & ", "
+        'QueryBuilder.Append "rep_noble = " & .NobleRep & ", "
+        'QueryBuilder.Append "rep_plebe = " & .Reputacion.PlebeRep & ", "
+        'QueryBuilder.Append "rep_average = " & .Reputacion.Promedio & ", "
+        QueryBuilder.Append "is_naked = " & .flags.Desnudo & ", "
+        QueryBuilder.Append "status = " & .Faccion.Status & ", "
+        QueryBuilder.Append "is_logged = TRUE; "
         
-        ReDim Params(45)
+        Call MakeQuery(QueryBuilder.ToString, True, .name, .Desc)
         
-        '  ************ Basic user data *******************
-        Params(0) = .name
-        Params(1) = .AccountId
-        Params(2) = .Stats.ELV
-        Params(3) = .Stats.Exp
-        Params(4) = .genero
-        Params(5) = .raza
-        Params(6) = .clase
-        Params(7) = .Hogar
-        Params(8) = .Desc
-        Params(9) = .Stats.GLD
-        Params(10) = .Stats.SkillPts
-        Params(11) = .Pos.Map
-        Params(12) = .Pos.X
-        Params(13) = .Pos.Y
-        Params(14) = .Char.Body
-        Params(15) = .Char.Head
-        Params(16) = .Char.WeaponAnim
-        Params(17) = .Char.CascoAnim
-        Params(18) = .Char.ShieldAnim
-        Params(19) = .Invent.NroItems
-        Params(20) = .Invent.ArmourEqpSlot
-        Params(21) = .Invent.WeaponEqpSlot
-        Params(22) = .Invent.EscudoEqpSlot
-        Params(23) = .Invent.CascoEqpSlot
-        Params(24) = .Invent.MunicionEqpSlot
-        Params(25) = .Invent.DañoMagicoEqpSlot
-        Params(26) = .Invent.ResistenciaEqpSlot
-        Params(27) = .Invent.HerramientaEqpSlot
-        Params(28) = .Invent.MagicoSlot
-        Params(29) = .Invent.NudilloSlot
-        Params(30) = .Invent.BarcoSlot
-        Params(31) = .Invent.MonturaSlot
-        Params(32) = .Stats.MinHp
-        Params(33) = .Stats.MaxHp
-        Params(34) = .Stats.MinMAN
-        Params(35) = .Stats.MaxMAN
-        Params(36) = .Stats.MinSta
-        Params(37) = .Stats.MaxSta
-        Params(38) = .Stats.MinHam
-        Params(39) = .Stats.MaxHam
-        Params(40) = .Stats.MinAGU
-        Params(41) = .Stats.MaxAGU
-        Params(42) = .Stats.MinHIT
-        Params(43) = .Stats.MaxHit
-        Params(44) = .flags.Desnudo
-        Params(45) = .Faccion.Status
+        'Borramos la query construida.
+        Call QueryBuilder.Clear
         
-        Call MakeQueryPrepared(QUERY_SAVE_MAINPJ, True, Params)
-
         ' Para recibir el ID del user
         Call MakeQuery("SELECT LAST_INSERT_ID();", False)
 
@@ -177,90 +182,138 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
             .Id = val(QueryData.Fields(0).Value)
         End If
         
-        ' ******************* ATRIBUTOS *******************
-        ReDim Params(NUMATRIBUTOS * 3 - 1)
-        ParamC = 0
-        
+        ' Comenzamos una cadena de queries (para enviar todo de una)
+        Dim LoopC As Long
+
+        'User attributes
+        QueryBuilder.Append "INSERT INTO attribute (user_id, number, value) VALUES "
+
         For LoopC = 1 To NUMATRIBUTOS
-            Params(ParamC) = .Id
-            Params(ParamC + 1) = LoopC
-            Params(ParamC + 2) = .Stats.UserAtributos(LoopC)
-            
-            ParamC = ParamC + 3
-        Next LoopC
         
-        Call MakeQueryPrepared(QUERY_SAVE_ATTRIBUTES, True, Params)
-        
-        ' ******************* SPELLS **********************
-        ReDim Params(MAXUSERHECHIZOS * 3 - 1)
-        ParamC = 0
-        
-        For LoopC = 1 To MAXUSERHECHIZOS
-            Params(ParamC) = .Id
-            Params(ParamC + 1) = LoopC
-            Params(ParamC + 2) = .Stats.UserHechizos(LoopC)
-            
-            ParamC = ParamC + 3
+            QueryBuilder.Append "("
+            QueryBuilder.Append .Id & ", "
+            QueryBuilder.Append LoopC & ", "
+            QueryBuilder.Append .Stats.UserAtributos(LoopC) & ")"
+
+            If LoopC < NUMATRIBUTOS Then
+                QueryBuilder.Append ", "
+            Else
+                QueryBuilder.Append "; "
+            End If
+
         Next LoopC
 
-        Call MakeQueryPrepared(QUERY_SAVE_SPELLS, True, Params)
-        
-        ' ******************* INVENTORY *******************
-        ReDim Params(MAX_INVENTORY_SLOTS * 5 - 1)
-        ParamC = 0
-        
-        For LoopC = 1 To MAX_INVENTORY_SLOTS
-            Params(ParamC) = .Id
-            Params(ParamC + 1) = LoopC
-            Params(ParamC + 2) = .Invent.Object(LoopC).ObjIndex
-            Params(ParamC + 3) = .Invent.Object(LoopC).amount
-            Params(ParamC + 4) = .Invent.Object(LoopC).Equipped
-            
-            ParamC = ParamC + 5
+        'User spells
+        QueryBuilder.Append "INSERT INTO spell (user_id, number, spell_id) VALUES "
+
+        For LoopC = 1 To MAXUSERHECHIZOS
+            QueryBuilder.Append "("
+            QueryBuilder.Append .Id & ", "
+            QueryBuilder.Append LoopC & ", "
+            QueryBuilder.Append .Stats.UserHechizos(LoopC) & ")"
+
+            If LoopC < MAXUSERHECHIZOS Then
+                QueryBuilder.Append ", "
+            Else
+                QueryBuilder.Append "; "
+            End If
+
         Next LoopC
-        
-        Call MakeQueryPrepared(QUERY_SAVE_INVENTORY, True, Params)
-        
-        ' ******************* SKILLS *******************
-        ReDim Params(NUMSKILLS * 3 - 1)
-        ParamC = 0
-        
+
+        'User inventory
+        QueryBuilder.Append "INSERT INTO inventory_item (user_id, number, item_id, Amount, is_equipped) VALUES "
+
+        For LoopC = 1 To UserList(UserIndex).CurrentInventorySlots
+            QueryBuilder.Append "("
+            QueryBuilder.Append .Id & ", "
+            QueryBuilder.Append LoopC & ", "
+            QueryBuilder.Append .Invent.Object(LoopC).ObjIndex & ", "
+            QueryBuilder.Append .Invent.Object(LoopC).Amount & ", "
+            QueryBuilder.Append .Invent.Object(LoopC).Equipped & ")"
+
+            If LoopC < UserList(UserIndex).CurrentInventorySlots Then
+                QueryBuilder.Append ", "
+            Else
+                QueryBuilder.Append "; "
+            End If
+
+        Next LoopC
+
+        'User skills
+        'QueryBuilder.Append "INSERT INTO skillpoint (user_id, number, value, exp, elu) VALUES "
+        QueryBuilder.Append "INSERT INTO skillpoint (user_id, number, value) VALUES "
+
         For LoopC = 1 To NUMSKILLS
-            Params(ParamC) = .Id
-            Params(ParamC + 1) = LoopC
-            Params(ParamC + 2) = .Stats.UserSkills(LoopC)
-            
-            ParamC = ParamC + 3
+            QueryBuilder.Append "("
+            QueryBuilder.Append .Id & ", "
+            QueryBuilder.Append LoopC & ", "
+            QueryBuilder.Append .Stats.UserSkills(LoopC) & ")"
+            'QueryBuilder.Append .Stats.UserSkills(LoopC) & ", "
+            'QueryBuilder.Append .Stats.ExpSkills(LoopC) & ", "
+            'QueryBuilder.Append .Stats.EluSkills(LoopC) & ")"
+
+            If LoopC < NUMSKILLS Then
+                QueryBuilder.Append ", "
+            Else
+                QueryBuilder.Append "; "
+            End If
+
         Next LoopC
         
-        Call MakeQueryPrepared(QUERY_SAVE_SKILLS, True, Params)
+        'User friends
+        'QueryBuilder.Append "INSERT INTO friend (user_id, number) VALUES "
+
+        'For LoopC = 1 To MAXAMIGOS
         
-        ' ******************* QUESTS *******************
-        ReDim Params(MAXUSERQUESTS * 2 - 1)
-        ParamC = 0
+        '    QueryBuilder.Append "("
+        '    QueryBuilder.Append .ID & ", "
+        '    QueryBuilder.Append LoopC & ")"
+
+        '    If LoopC < MAXAMIGOS Then
+        '        QueryBuilder.Append ", "
+        '    Else
+        '        QueryBuilder.Append "; "
+
+        '    End If
         
+        'Next LoopC
+        
+        'User quests
+        QueryBuilder.Append "INSERT INTO quest (user_id, number) VALUES "
+
         For LoopC = 1 To MAXUSERQUESTS
-            Params(ParamC) = .Id
-            Params(ParamC + 1) = LoopC
-            
-            ParamC = ParamC + 2
+        
+            QueryBuilder.Append "("
+            QueryBuilder.Append .Id & ", "
+            QueryBuilder.Append LoopC & ")"
+
+            If LoopC < MAXUSERQUESTS Then
+                QueryBuilder.Append ", "
+            Else
+                QueryBuilder.Append "; "
+            End If
+
         Next LoopC
         
-        Call MakeQueryPrepared(QUERY_SAVE_QUESTS, True, Params)
-        
-        ' ******************* PETS ********************
-        ReDim Params(MAXMASCOTAS * 3 - 1)
-        ParamC = 0
-        
+        'User pets
+        QueryBuilder.Append "INSERT INTO pet (user_id, number, pet_id) VALUES "
+
         For LoopC = 1 To MAXMASCOTAS
-            Params(ParamC) = .Id
-            Params(ParamC + 1) = LoopC
-            Params(ParamC + 2) = 0
-            
-            ParamC = ParamC + 3
+        
+            QueryBuilder.Append "("
+            QueryBuilder.Append .Id & ", "
+            QueryBuilder.Append LoopC & ", 0)"
+
+            If LoopC < MAXMASCOTAS Then
+                QueryBuilder.Append ", "
+            Else
+                QueryBuilder.Append "; "
+            End If
+
         Next LoopC
-    
-        Call MakeQueryPrepared(QUERY_SAVE_PETS, True, Params)
+
+        'Enviamos todas las queries
+        Call MakeQuery(QueryBuilder.ToString, True)
         
         Set QueryBuilder = Nothing
     
@@ -280,197 +333,226 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 
     On Error GoTo ErrorHandler
     
-    Dim Params() As Variant
-    Dim LoopC As Long
-    Dim ParamC As Long
-    
     'Constructor de queries.
     'Me permite concatenar strings MUCHO MAS rapido
     Set QueryBuilder = New cStringBuilder
 
     'Basic user data
     With UserList(UserIndex)
+        QueryBuilder.Append "UPDATE user SET "
+        QueryBuilder.Append "name = ?, "
+        QueryBuilder.Append "level = " & .Stats.ELV & ", "
+        QueryBuilder.Append "exp = " & CLng(.Stats.Exp) & ", "
+        QueryBuilder.Append "genre_id = " & .genero & ", "
+        QueryBuilder.Append "race_id = " & .raza & ", "
+        QueryBuilder.Append "class_id = " & .clase & ", "
+        QueryBuilder.Append "home_id = " & .Hogar & ", "
+        QueryBuilder.Append "description = ?, "
+        QueryBuilder.Append "gold = " & .Stats.GLD & ", "
+        QueryBuilder.Append "bank_gold = " & .Stats.Banco & ", "
+        QueryBuilder.Append "free_skillpoints = " & .Stats.SkillPts & ", "
+        'QueryBuilder.Append "assigned_skillpoints = " & .Counters.AsignedSkills & ", "
+        QueryBuilder.Append "pets_saved = " & .flags.MascotasGuardadas & ", "
+        QueryBuilder.Append "pos_map = " & .Pos.Map & ", "
+        QueryBuilder.Append "pos_x = " & .Pos.X & ", "
+        QueryBuilder.Append "pos_y = " & .Pos.Y & ", "
+        QueryBuilder.Append "last_map = " & .flags.lastMap & ", "
+        QueryBuilder.Append "message_info = ?, "
+        QueryBuilder.Append "body_id = " & .Char.Body & ", "
+        QueryBuilder.Append "head_id = " & .OrigChar.Head & ", "
+        QueryBuilder.Append "weapon_id = " & .Char.WeaponAnim & ", "
+        QueryBuilder.Append "helmet_id = " & .Char.CascoAnim & ", "
+        QueryBuilder.Append "shield_id = " & .Char.ShieldAnim & ", "
+        QueryBuilder.Append "heading = " & .Char.Heading & ", "
+        QueryBuilder.Append "items_Amount = " & .Invent.NroItems & ", "
+        QueryBuilder.Append "slot_armour = " & .Invent.ArmourEqpSlot & ", "
+        QueryBuilder.Append "slot_weapon = " & .Invent.WeaponEqpSlot & ", "
+        QueryBuilder.Append "slot_shield = " & .Invent.EscudoEqpSlot & ", "
+        QueryBuilder.Append "slot_helmet = " & .Invent.CascoEqpSlot & ", "
+        QueryBuilder.Append "slot_ammo = " & .Invent.MunicionEqpSlot & ", "
+        QueryBuilder.Append "slot_dm = " & .Invent.DañoMagicoEqpSlot & ", "
+        QueryBuilder.Append "slot_rm = " & .Invent.ResistenciaEqpSlot & ", "
+        QueryBuilder.Append "slot_tool = " & .Invent.HerramientaEqpSlot & ", "
+        QueryBuilder.Append "slot_magic = " & .Invent.MagicoSlot & ", "
+        QueryBuilder.Append "slot_knuckles = " & .Invent.NudilloSlot & ", "
+        QueryBuilder.Append "slot_ship = " & .Invent.BarcoSlot & ", "
+        QueryBuilder.Append "slot_mount = " & .Invent.MonturaSlot & ", "
+        QueryBuilder.Append "min_hp = " & .Stats.MinHp & ", "
+        QueryBuilder.Append "max_hp = " & .Stats.MaxHp & ", "
+        QueryBuilder.Append "min_man = " & .Stats.MinMAN & ", "
+        QueryBuilder.Append "max_man = " & .Stats.MaxMAN & ", "
+        QueryBuilder.Append "min_sta = " & .Stats.MinSta & ", "
+        QueryBuilder.Append "max_sta = " & .Stats.MaxSta & ", "
+        QueryBuilder.Append "min_ham = " & .Stats.MinHam & ", "
+        QueryBuilder.Append "max_ham = " & .Stats.MaxHam & ", "
+        QueryBuilder.Append "min_sed = " & .Stats.MinAGU & ", "
+        QueryBuilder.Append "max_sed = " & .Stats.MaxAGU & ", "
+        QueryBuilder.Append "min_hit = " & .Stats.MinHIT & ", "
+        QueryBuilder.Append "max_hit = " & .Stats.MaxHit & ", "
+        QueryBuilder.Append "killed_npcs = " & .Stats.NPCsMuertos & ", "
+        QueryBuilder.Append "killed_users = " & .Stats.UsuariosMatados & ", "
+        QueryBuilder.Append "invent_level = " & .Stats.InventLevel & ", "
+        'QueryBuilder.Append "rep_asesino = " & .Reputacion.AsesinoRep & ", "
+        'QueryBuilder.Append "rep_bandido = " & .Reputacion.BandidoRep & ", "
+        'QueryBuilder.Append "rep_burgues = " & .Reputacion.BurguesRep & ", "
+        'QueryBuilder.Append "rep_ladron = " & .Reputacion.LadronesRep & ", "
+        'QueryBuilder.Append "rep_noble = " & .Reputacion.NobleRep & ", "
+        'QueryBuilder.Append "rep_plebe = " & .Reputacion.PlebeRep & ", "
+        'QueryBuilder.Append "rep_average = " & .Reputacion.Promedio & ", "
+        QueryBuilder.Append "is_naked = " & .flags.Desnudo & ", "
+        QueryBuilder.Append "is_poisoned = " & .flags.Envenenado & ", "
+        QueryBuilder.Append "is_hidden = " & .flags.Escondido & ", "
+        QueryBuilder.Append "is_hungry = " & .flags.Hambre & ", "
+        QueryBuilder.Append "is_thirsty = " & .flags.Sed & ", "
+        'QueryBuilder.Append "is_banned = " & .flags.Ban & ", " Esto es innecesario porque se setea cuando lo baneas (creo)
+        QueryBuilder.Append "is_dead = " & .flags.Muerto & ", "
+        QueryBuilder.Append "is_sailing = " & .flags.Navegando & ", "
+        QueryBuilder.Append "is_paralyzed = " & .flags.Paralizado & ", "
+        QueryBuilder.Append "is_mounted = " & .flags.Montado & ", "
+        QueryBuilder.Append "is_silenced = " & .flags.Silenciado & ", "
+        QueryBuilder.Append "silence_minutes_left = " & .flags.MinutosRestantes & ", "
+        QueryBuilder.Append "silence_elapsed_seconds = " & .flags.SegundosPasados & ", "
+        QueryBuilder.Append "spouse = '" & .flags.Pareja & "', "
+        QueryBuilder.Append "counter_pena = " & .Counters.Pena & ", "
+        QueryBuilder.Append "deaths = " & .flags.VecesQueMoriste & ", "
+        QueryBuilder.Append "pertenece_consejo_real = " & (.flags.Privilegios And PlayerType.RoyalCouncil) & ", "
+        QueryBuilder.Append "pertenece_consejo_caos = " & (.flags.Privilegios And PlayerType.ChaosCouncil) & ", "
+        QueryBuilder.Append "pertenece_real = " & .Faccion.ArmadaReal & ", "
+        QueryBuilder.Append "pertenece_caos = " & .Faccion.FuerzasCaos & ", "
+        QueryBuilder.Append "ciudadanos_matados = " & .Faccion.ciudadanosMatados & ", "
+        QueryBuilder.Append "criminales_matados = " & .Faccion.CriminalesMatados & ", "
+        QueryBuilder.Append "recibio_armadura_real = " & .Faccion.RecibioArmaduraReal & ", "
+        QueryBuilder.Append "recibio_armadura_caos = " & .Faccion.RecibioArmaduraCaos & ", "
+        QueryBuilder.Append "recibio_exp_real = " & .Faccion.RecibioExpInicialReal & ", "
+        QueryBuilder.Append "recibio_exp_caos = " & .Faccion.RecibioExpInicialCaos & ", "
+        QueryBuilder.Append "recompensas_real = " & .Faccion.RecompensasReal & ", "
+        QueryBuilder.Append "recompensas_caos = " & .Faccion.RecompensasCaos & ", "
+        QueryBuilder.Append "reenlistadas = " & .Faccion.Reenlistadas & ", "
+        QueryBuilder.Append "fecha_ingreso = " & IIf(.Faccion.FechaIngreso <> vbNullString, "'" & .Faccion.FechaIngreso & "'", "NULL") & ", "
+        QueryBuilder.Append "nivel_ingreso = " & .Faccion.NivelIngreso & ", "
+        QueryBuilder.Append "matados_ingreso = " & .Faccion.MatadosIngreso & ", "
+        QueryBuilder.Append "siguiente_recompensa = " & .Faccion.NextRecompensa & ", "
+        QueryBuilder.Append "status = " & .Faccion.Status & ", "
+        QueryBuilder.Append "guild_index = " & .GuildIndex & ", "
+        QueryBuilder.Append "chat_combate = " & .ChatCombate & ", "
+        QueryBuilder.Append "chat_global = " & .ChatGlobal & ", "
+        QueryBuilder.Append "is_logged = " & IIf(Logout, "FALSE", "TRUE") & ", "
+        QueryBuilder.Append "warnings = " & .Stats.Advertencias
+        QueryBuilder.Append " WHERE id = " & .Id & "; "
         
-        ReDim Params(89)
+        Call MakeQuery(QueryBuilder.ToString, True, .name, .Desc, .MENSAJEINFORMACION)
         
-        Params(0) = .name
-        Params(1) = .Stats.ELV
-        Params(2) = CLng(.Stats.Exp)
-        Params(3) = .genero
-        Params(4) = .raza
-        Params(5) = .clase
-        Params(6) = .Hogar
-        Params(7) = .Desc
-        Params(8) = .Stats.GLD
-        Params(9) = .Stats.Banco
-        Params(10) = .Stats.SkillPts
-        Params(11) = .flags.MascotasGuardadas
-        Params(12) = .Pos.Map
-        Params(13) = .Pos.X
-        Params(14) = .Pos.Y
-        Params(15) = .flags.lastMap
-        Params(16) = .MENSAJEINFORMACION
-        Params(17) = .Char.Body
-        Params(18) = .OrigChar.Head
-        Params(19) = .Char.WeaponAnim
-        Params(20) = .Char.CascoAnim
-        Params(21) = .Char.ShieldAnim
-        Params(22) = .Char.Heading
-        Params(23) = .Invent.NroItems
-        Params(24) = .Invent.ArmourEqpSlot
-        Params(25) = .Invent.WeaponEqpSlot
-        Params(26) = .Invent.EscudoEqpSlot
-        Params(27) = .Invent.CascoEqpSlot
-        Params(28) = .Invent.MunicionEqpSlot
-        Params(29) = .Invent.DañoMagicoEqpSlot
-        Params(30) = .Invent.ResistenciaEqpSlot
-        Params(31) = .Invent.HerramientaEqpSlot
-        Params(32) = .Invent.MagicoSlot
-        Params(33) = .Invent.NudilloSlot
-        Params(34) = .Invent.BarcoSlot
-        Params(35) = .Invent.MonturaSlot
-        Params(36) = .Stats.MinHp
-        Params(37) = .Stats.MaxHp
-        Params(38) = .Stats.MinMAN
-        Params(39) = .Stats.MaxMAN
-        Params(40) = .Stats.MinSta
-        Params(41) = .Stats.MaxSta
-        Params(42) = .Stats.MinHam
-        Params(43) = .Stats.MaxHam
-        Params(44) = .Stats.MinAGU
-        Params(45) = .Stats.MaxAGU
-        Params(46) = .Stats.MinHIT
-        Params(47) = .Stats.MaxHit
-        Params(48) = .Stats.NPCsMuertos
-        Params(49) = .Stats.UsuariosMatados
-        Params(50) = .Stats.InventLevel
-        Params(51) = .flags.Desnudo
-        Params(52) = .flags.Envenenado
-        Params(53) = .flags.Escondido
-        Params(54) = .flags.Hambre
-        Params(55) = .flags.Sed
-        Params(56) = .flags.Muerto
-        Params(57) = .flags.Navegando
-        Params(58) = .flags.Paralizado
-        Params(59) = .flags.Montado
-        Params(60) = .flags.Silenciado
-        Params(61) = .flags.MinutosRestantes
-        Params(62) = .flags.SegundosPasados
-        Params(63) = .flags.Pareja
-        Params(64) = .Counters.Pena
-        Params(65) = .flags.VecesQueMoriste
-        Params(66) = (.flags.Privilegios And PlayerType.RoyalCouncil)
-        Params(67) = (.flags.Privilegios And PlayerType.ChaosCouncil)
-        Params(68) = .Faccion.ArmadaReal
-        Params(69) = .Faccion.FuerzasCaos
-        Params(70) = .Faccion.ciudadanosMatados
-        Params(71) = .Faccion.CriminalesMatados
-        Params(72) = .Faccion.RecibioArmaduraReal
-        Params(73) = .Faccion.RecibioArmaduraCaos
-        Params(74) = .Faccion.RecibioExpInicialReal
-        Params(75) = .Faccion.RecibioExpInicialCaos
-        Params(76) = .Faccion.RecompensasReal
-        Params(77) = .Faccion.RecompensasCaos
-        Params(78) = .Faccion.Reenlistadas
-        Params(79) = IIf(Len(.Faccion.FechaIngreso) <> 0, .Faccion.FechaIngreso, "NULL")
-        Params(80) = .Faccion.NivelIngreso
-        Params(81) = .Faccion.MatadosIngreso
-        Params(82) = .Faccion.NextRecompensa
-        Params(83) = .Faccion.Status
-        Params(84) = .GuildIndex
-        Params(85) = .ChatCombate
-        Params(86) = .ChatGlobal
-        Params(87) = IIf(Logout, "FALSE", "TRUE")
-        Params(88) = .Stats.Advertencias
+        QueryBuilder.Clear
         
-        ' WHERE block
-        Params(89) = .Id
-        
-        Call MakeQueryPrepared(QUERY_UPDATE_MAINPJ, True, Params)
-        
-        Call QueryBuilder.Clear
+        Dim LoopC As Long
 
-        ' ************************** User attributes ****************************
-        ReDim Params(NUMATRIBUTOS * 3 - 1)
-        ParamC = 0
-        
+        'User attributes
+        QueryBuilder.Append "INSERT INTO attribute (user_id, number, value) VALUES "
+
         For LoopC = 1 To NUMATRIBUTOS
-            Params(ParamC) = .Id
-            Params(ParamC + 1) = LoopC
-            Params(ParamC + 2) = .Stats.UserAtributosBackUP(LoopC)
-            
-            ParamC = ParamC + 3
+        
+            QueryBuilder.Append "("
+            QueryBuilder.Append .Id & ", "
+            QueryBuilder.Append LoopC & ", "
+            QueryBuilder.Append .Stats.UserAtributosBackUP(LoopC) & ")"
+
+            If LoopC < NUMATRIBUTOS Then
+                QueryBuilder.Append ", "
+            End If
+
         Next LoopC
         
-        Call MakeQueryPrepared(QUERY_UPSERT_ATTRIBUTES, True, Params)
+        QueryBuilder.Append " ON DUPLICATE KEY UPDATE value=VALUES(value); "
 
-        ' ************************** User spells *********************************
-        ReDim Params(MAXUSERHECHIZOS * 3 - 1)
-        ParamC = 0
-        
+        'User spells
+        QueryBuilder.Append "INSERT INTO spell (user_id, number, spell_id) VALUES "
+
         For LoopC = 1 To MAXUSERHECHIZOS
-            Params(ParamC) = .Id
-            Params(ParamC + 1) = LoopC
-            Params(ParamC + 2) = .Stats.UserHechizos(LoopC)
-            
-            ParamC = ParamC + 3
+        
+            QueryBuilder.Append "("
+            QueryBuilder.Append .Id & ", "
+            QueryBuilder.Append LoopC & ", "
+            QueryBuilder.Append .Stats.UserHechizos(LoopC) & ")"
+
+            If LoopC < MAXUSERHECHIZOS Then
+                QueryBuilder.Append ", "
+            End If
+
         Next LoopC
         
-        Call MakeQueryPrepared(QUERY_UPSERT_SPELLS, True, Params)
+        QueryBuilder.Append " ON DUPLICATE KEY UPDATE spell_id=VALUES(spell_id); "
 
-        ' ************************** User inventory *********************************
-        ReDim Params(MAX_INVENTORY_SLOTS * 5 - 1)
-        ParamC = 0
+        'User inventory
+        QueryBuilder.Append "INSERT INTO inventory_item (user_id, number, item_id, Amount, is_equipped) VALUES "
+
+        For LoopC = 1 To UserList(UserIndex).CurrentInventorySlots
         
-        For LoopC = 1 To MAX_INVENTORY_SLOTS
-            Params(ParamC) = .Id
-            Params(ParamC + 1) = LoopC
-            Params(ParamC + 2) = .Invent.Object(LoopC).ObjIndex
-            Params(ParamC + 3) = .Invent.Object(LoopC).amount
-            Params(ParamC + 4) = .Invent.Object(LoopC).Equipped
-            
-            ParamC = ParamC + 5
+            QueryBuilder.Append "("
+            QueryBuilder.Append .Id & ", "
+            QueryBuilder.Append LoopC & ", "
+            QueryBuilder.Append .Invent.Object(LoopC).ObjIndex & ", "
+            QueryBuilder.Append .Invent.Object(LoopC).Amount & ", "
+            QueryBuilder.Append .Invent.Object(LoopC).Equipped & ")"
+
+            If LoopC < UserList(UserIndex).CurrentInventorySlots Then
+                QueryBuilder.Append ", "
+            End If
+
         Next LoopC
         
-        Call MakeQueryPrepared(QUERY_UPSERT_INVENTORY, True, Params)
+        QueryBuilder.Append " ON DUPLICATE KEY UPDATE item_id=VALUES(item_id), amount=VALUES(Amount), is_equipped=VALUES(is_equipped); "
 
-        ' ************************** User bank inventory *********************************
-        ReDim Params(MAX_BANCOINVENTORY_SLOTS * 4 - 1)
-        ParamC = 0
-        
+        'User bank inventory
+        QueryBuilder.Append "INSERT INTO bank_item (user_id, number, item_id, Amount) VALUES "
+
         For LoopC = 1 To MAX_BANCOINVENTORY_SLOTS
-            Params(ParamC) = .Id
-            Params(ParamC + 1) = LoopC
-            Params(ParamC + 2) = .BancoInvent.Object(LoopC).ObjIndex
-            Params(ParamC + 3) = .BancoInvent.Object(LoopC).amount
-            
-            ParamC = ParamC + 4
+        
+            QueryBuilder.Append "("
+            QueryBuilder.Append .Id & ", "
+            QueryBuilder.Append LoopC & ", "
+            QueryBuilder.Append .BancoInvent.Object(LoopC).ObjIndex & ", "
+            QueryBuilder.Append .BancoInvent.Object(LoopC).Amount & ")"
+
+            If LoopC < MAX_BANCOINVENTORY_SLOTS Then
+                QueryBuilder.Append ", "
+            End If
+
         Next LoopC
         
-        Call MakeQueryPrepared(QUERY_SAVE_BANCOINV, True, Params)
+        QueryBuilder.Append " ON DUPLICATE KEY UPDATE item_id=VALUES(item_id), amount=VALUES(Amount); "
 
-        ' ************************** User skills *********************************
-        ReDim Params(NUMSKILLS * 3 - 1)
-        ParamC = 0
-        
+        'User skills
+        'QueryBuilder.Append "INSERT INTO skillpoint (user_id, number, value, exp, elu) VALUES "
+        QueryBuilder.Append "INSERT INTO skillpoint (user_id, number, value) VALUES "
+
         For LoopC = 1 To NUMSKILLS
-            Params(ParamC) = .Id
-            Params(ParamC + 1) = LoopC
-            Params(ParamC + 2) = .Stats.UserSkills(LoopC)
-            
-            ParamC = ParamC + 3
+        
+            QueryBuilder.Append "("
+            QueryBuilder.Append .Id & ", "
+            QueryBuilder.Append LoopC & ", "
+            QueryBuilder.Append .Stats.UserSkills(LoopC) & ")"
+            'QueryBuilder.Append .Stats.UserSkills(LoopC) & ", "
+            'Q  = Q & .Stats.ExpSkills(LoopC) & ", "
+            'QueryBuilder.Append .Stats.EluSkills(LoopC) & ")"
+
+            If LoopC < NUMSKILLS Then
+                QueryBuilder.Append ", "
+            End If
+
         Next LoopC
         
-        Call MakeQueryPrepared(QUERY_UPSERT_SKILLS, True, Params)
+        'QueryBuilder.Append " ON DUPLICATE KEY UPDATE value=VALUES(value), exp=VALUES(exp), elu=VALUES(elu); "
+        QueryBuilder.Append " ON DUPLICATE KEY UPDATE value=VALUES(value); "
 
-        ' ************************** User pets *********************************
-        ReDim Params(MAXMASCOTAS * 3 - 1)
-        ParamC = 0
+        'User pets
         Dim petType As Integer
+        
+        QueryBuilder.Append "INSERT INTO pet (user_id, number, pet_id) VALUES "
 
         For LoopC = 1 To MAXMASCOTAS
-            Params(ParamC) = .Id
-            Params(ParamC + 1) = LoopC
+            QueryBuilder.Append "("
+            QueryBuilder.Append .Id & ", "
+            QueryBuilder.Append LoopC & ", "
 
             'CHOTS | I got this logic from SaveUserToCharfile
             If .MascotasIndex(LoopC) > 0 Then
@@ -486,22 +568,52 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 
             End If
 
-            Params(ParamC + 2) = petType
-            
-            ParamC = ParamC + 3
+            QueryBuilder.Append petType & ")"
+
+            If LoopC < MAXMASCOTAS Then
+                QueryBuilder.Append ", "
+            End If
+
         Next LoopC
+
+        QueryBuilder.Append " ON DUPLICATE KEY UPDATE pet_id=VALUES(pet_id); "
         
-        Call MakeQueryPrepared(QUERY_UPSERT_PETS, True, Params)
+        'User friends
+        'Q = "INSERT INTO friend (user_id, number, friend, ignored) VALUES "
+
+        'For LoopC = 1 To MAXAMIGOS
         
-        ' ************************** User connection logs *********************************
+        '    QueryBuilder.Append "("
+        '    QueryBuilder.Append .ID & ", "
+        '    QueryBuilder.Append LoopC & ", "
+        '    QueryBuilder.Append "'" & .Amigos(LoopC).Nombre & "', "
+        '    QueryBuilder.Append .Amigos(LoopC).Ignorado & ")"
+
+        '    If LoopC < MAXAMIGOS Then
+        '        QueryBuilder.Append ", "
+        '    Else
+        '        QueryBuilder.Append ";"
+
+        '    End If
         
+        'Next LoopC
+       
         'Agrego ip del user
-        Call MakeQuery(QUERY_SAVE_CONNECTION, True, .Id, .ip)
+        QueryBuilder.Append "INSERT INTO connection (user_id, ip, date_last_login) VALUES ("
+        QueryBuilder.Append .Id & ", "
+        QueryBuilder.Append "'" & .ip & "', "
+        QueryBuilder.Append "NOW()) "
+        QueryBuilder.Append "ON DUPLICATE KEY UPDATE "
+        QueryBuilder.Append "date_last_login = VALUES(date_last_login); "
         
         'Borro la mas vieja si hay mas de 5 (WyroX: si alguien sabe una forma mejor de hacerlo me avisa)
-        Call MakeQuery(QUERY_DELETE_LAST_CONNECTIONS, True, .Id, .Id)
+        QueryBuilder.Append "DELETE FROM connection WHERE"
+        QueryBuilder.Append " user_id = " & .Id
+        QueryBuilder.Append " AND date_last_login < (SELECT min(date_last_login) FROM (SELECT date_last_login FROM connection WHERE"
+        QueryBuilder.Append " user_id = " & .Id
+        QueryBuilder.Append " ORDER BY date_last_login DESC LIMIT 5) AS d); "
         
-        ' ************************** User quests *********************************
+        'User quests
         QueryBuilder.Append "INSERT INTO quest (user_id, number, quest_id, npcs, npcstarget) VALUES "
         
         Dim Tmp As Integer, LoopK As Long
@@ -559,48 +671,34 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
         
         QueryBuilder.Append " ON DUPLICATE KEY UPDATE quest_id=VALUES(quest_id), npcs=VALUES(npcs); "
         
-        Call MakeQuery(QueryBuilder.ToString, True)
-        
-        Call QueryBuilder.Clear
-        
-        ' ************************** User completed quests *********************************
+        'User completed quests
         If .QuestStats.NumQuestsDone > 0 Then
-            
-            ' Armamos la query con los placeholders
             QueryBuilder.Append "INSERT INTO quest_done (user_id, quest_id) VALUES "
-            
+    
             For LoopC = 1 To .QuestStats.NumQuestsDone
-                QueryBuilder.Append "(?, ?)"
-            
+                QueryBuilder.Append "("
+                QueryBuilder.Append .Id & ", "
+                QueryBuilder.Append .QuestStats.QuestsDone(LoopC) & ")"
+    
                 If LoopC < .QuestStats.NumQuestsDone Then
                     QueryBuilder.Append ", "
                 End If
-            
+    
             Next LoopC
-                    
+            
             QueryBuilder.Append " ON DUPLICATE KEY UPDATE quest_id=VALUES(quest_id); "
-            
-            ' Metemos los parametros
-            ReDim Params(.QuestStats.NumQuestsDone * 2 - 1)
-            ParamC = 0
-            
-            For LoopC = 1 To .QuestStats.NumQuestsDone
-                Params(ParamC) = .Id
-                Params(ParamC + 1) = .QuestStats.QuestsDone(LoopC)
-                
-                ParamC = ParamC + 2
-            Next LoopC
-            
-            ' Mandamos la query
-            Call MakeQueryPrepared(QueryBuilder.ToString, True, Params)
-        
-        End If
 
-        ' ************************** User logout *********************************
+        End If
+        
+        'User mail
+        'TODO:
+        
         ' Si deslogueó, actualizo la cuenta
         If Logout Then
-            Call MakeQuery("UPDATE account SET logged = logged - 1 WHERE id = ?", True, .AccountId)
+            QueryBuilder.Append "UPDATE account SET logged = logged - 1 WHERE id = " & .AccountId & ";"
         End If
+        
+        Call MakeQuery(QueryBuilder.ToString, True)
 
     End With
     
@@ -618,210 +716,213 @@ End Sub
 
 Sub LoadUserDatabase(ByVal UserIndex As Integer)
 
-    On Error GoTo ErrorHandler
+On Error GoTo ErrorHandler
 
-    'Basic user data
-    With UserList(UserIndex)
+'Basic user data
+With UserList(UserIndex)
 
-        Call MakeQuery("SELECT *, DATE_FORMAT(fecha_ingreso, '%Y-%m-%d') as 'fecha_ingreso_format' FROM user WHERE name = ?;", False, .name)
+    Call MakeQuery("SELECT *, DATE_FORMAT(fecha_ingreso, '%Y-%m-%d') as 'fecha_ingreso_format' FROM user WHERE name = ?;", False, .name)
 
-        If QueryData Is Nothing Then Exit Sub
+    If QueryData Is Nothing Then Exit Sub
 
-        'Start setting data
-        .Id = QueryData!Id
-        .name = QueryData!name
-        .Stats.ELV = QueryData!level
-        .Stats.Exp = QueryData!Exp
-        .genero = QueryData!genre_id
-        .raza = QueryData!race_id
-        .clase = QueryData!class_id
-        .Hogar = QueryData!home_id
-        .Desc = QueryData!Description
-        .Stats.GLD = QueryData!gold
-        .Stats.Banco = QueryData!bank_gold
-        .Stats.SkillPts = QueryData!free_skillpoints
-        .Pos.Map = QueryData!pos_map
-        .Pos.X = QueryData!pos_x
-        .Pos.Y = QueryData!pos_y
-        .flags.lastMap = QueryData!last_map
-        .MENSAJEINFORMACION = QueryData!message_info
-        .OrigChar.Body = QueryData!body_id
-        .OrigChar.Head = QueryData!head_id
-        .OrigChar.WeaponAnim = QueryData!weapon_id
-        .OrigChar.CascoAnim = QueryData!helmet_id
-        .OrigChar.ShieldAnim = QueryData!shield_id
-        .OrigChar.Heading = QueryData!Heading
-        .Invent.NroItems = QueryData!items_Amount
-        .Invent.ArmourEqpSlot = SanitizeNullValue(QueryData!slot_armour, 0)
-        .Invent.WeaponEqpSlot = SanitizeNullValue(QueryData!slot_weapon, 0)
-        .Invent.CascoEqpSlot = SanitizeNullValue(QueryData!slot_helmet, 0)
-        .Invent.EscudoEqpSlot = SanitizeNullValue(QueryData!slot_shield, 0)
-        .Invent.MunicionEqpSlot = SanitizeNullValue(QueryData!slot_ammo, 0)
-        .Invent.BarcoSlot = SanitizeNullValue(QueryData!slot_ship, 0)
-        .Invent.MonturaSlot = SanitizeNullValue(QueryData!slot_mount, 0)
-        .Invent.DañoMagicoEqpSlot = SanitizeNullValue(QueryData!slot_dm, 0)
-        .Invent.ResistenciaEqpSlot = SanitizeNullValue(QueryData!slot_rm, 0)
-        .Invent.NudilloSlot = SanitizeNullValue(QueryData!slot_knuckles, 0)
-        .Invent.HerramientaEqpSlot = SanitizeNullValue(QueryData!slot_tool, 0)
-        .Invent.MagicoSlot = SanitizeNullValue(QueryData!slot_magic, 0)
-        .Stats.MinHp = QueryData!min_hp
-        .Stats.MaxHp = QueryData!max_hp
-        .Stats.MinMAN = QueryData!min_man
-        .Stats.MaxMAN = QueryData!max_man
-        .Stats.MinSta = QueryData!min_sta
-        .Stats.MaxSta = QueryData!max_sta
-        .Stats.MinHam = QueryData!min_ham
-        .Stats.MaxHam = QueryData!max_ham
-        .Stats.MinAGU = QueryData!min_sed
-        .Stats.MaxAGU = QueryData!max_sed
-        .Stats.MinHIT = QueryData!min_hit
-        .Stats.MaxHit = QueryData!max_hit
-        .Stats.NPCsMuertos = QueryData!killed_npcs
-        .Stats.UsuariosMatados = QueryData!killed_users
-        .Stats.InventLevel = QueryData!invent_level
-        .flags.Desnudo = QueryData!is_naked
-        .flags.Envenenado = QueryData!is_poisoned
-        .flags.Escondido = QueryData!is_hidden
-        .flags.Hambre = QueryData!is_hungry
-        .flags.Sed = QueryData!is_thirsty
-        .flags.Ban = QueryData!is_banned
-        .flags.Muerto = QueryData!is_dead
-        .flags.Navegando = QueryData!is_sailing
-        .flags.Paralizado = QueryData!is_paralyzed
-        .flags.VecesQueMoriste = QueryData!deaths
-        .flags.Montado = QueryData!is_mounted
-        .flags.Pareja = QueryData!spouse
-        .flags.Casado = IIf(Len(.flags.Pareja) > 0, 1, 0)
-        .flags.Silenciado = QueryData!is_silenced
-        .flags.MinutosRestantes = QueryData!silence_minutes_left
-        .flags.SegundosPasados = QueryData!silence_elapsed_seconds
-        .flags.MascotasGuardadas = QueryData!pets_saved
-        .flags.ScrollExp = 1 'TODO: sacar
-        .flags.ScrollOro = 1 'TODO: sacar
+    'Start setting data
+    .Id = QueryData!Id
+    .name = QueryData!name
+    .Stats.ELV = QueryData!level
+    .Stats.Exp = QueryData!Exp
+    .genero = QueryData!genre_id
+    .raza = QueryData!race_id
+    .clase = QueryData!class_id
+    .Hogar = QueryData!home_id
+    .Desc = QueryData!Description
+    .Stats.GLD = QueryData!gold
+    .Stats.Banco = QueryData!bank_gold
+    .Stats.SkillPts = QueryData!free_skillpoints
+    '.Counters.AsignedSkills = QueryData!assigned_skillpoints
+    .Pos.Map = QueryData!pos_map
+    .Pos.X = QueryData!pos_x
+    .Pos.Y = QueryData!pos_y
+    .flags.lastMap = QueryData!last_map
+    .MENSAJEINFORMACION = QueryData!message_info
+    .OrigChar.Body = QueryData!body_id
+    .OrigChar.Head = QueryData!head_id
+    .OrigChar.WeaponAnim = QueryData!weapon_id
+    .OrigChar.CascoAnim = QueryData!helmet_id
+    .OrigChar.ShieldAnim = QueryData!shield_id
+    .OrigChar.Heading = QueryData!Heading
+    .Invent.NroItems = QueryData!items_Amount
+    .Invent.ArmourEqpSlot = SanitizeNullValue(QueryData!slot_armour, 0)
+    .Invent.WeaponEqpSlot = SanitizeNullValue(QueryData!slot_weapon, 0)
+    .Invent.CascoEqpSlot = SanitizeNullValue(QueryData!slot_helmet, 0)
+    .Invent.EscudoEqpSlot = SanitizeNullValue(QueryData!slot_shield, 0)
+    .Invent.MunicionEqpSlot = SanitizeNullValue(QueryData!slot_ammo, 0)
+    .Invent.BarcoSlot = SanitizeNullValue(QueryData!slot_ship, 0)
+    .Invent.MonturaSlot = SanitizeNullValue(QueryData!slot_mount, 0)
+    .Invent.DañoMagicoEqpSlot = SanitizeNullValue(QueryData!slot_dm, 0)
+    .Invent.ResistenciaEqpSlot = SanitizeNullValue(QueryData!slot_rm, 0)
+    .Invent.NudilloSlot = SanitizeNullValue(QueryData!slot_knuckles, 0)
+    .Invent.HerramientaEqpSlot = SanitizeNullValue(QueryData!slot_tool, 0)
+    .Invent.MagicoSlot = SanitizeNullValue(QueryData!slot_magic, 0)
+    .Stats.MinHp = QueryData!min_hp
+    .Stats.MaxHp = QueryData!max_hp
+    .Stats.MinMAN = QueryData!min_man
+    .Stats.MaxMAN = QueryData!max_man
+    .Stats.MinSta = QueryData!min_sta
+    .Stats.MaxSta = QueryData!max_sta
+    .Stats.MinHam = QueryData!min_ham
+    .Stats.MaxHam = QueryData!max_ham
+    .Stats.MinAGU = QueryData!min_sed
+    .Stats.MaxAGU = QueryData!max_sed
+    .Stats.MinHIT = QueryData!min_hit
+    .Stats.MaxHit = QueryData!max_hit
+    .Stats.NPCsMuertos = QueryData!killed_npcs
+    .Stats.UsuariosMatados = QueryData!killed_users
+    .Stats.InventLevel = QueryData!invent_level
+    '.Reputacion.AsesinoRep = QueryData!rep_asesino
+    '.Reputacion.BandidoRep = QueryData!rep_bandido
+    '.Reputacion.BurguesRep = QueryData!rep_burgues
+    '.Reputacion.LadronesRep = QueryData!rep_ladron
+    '.Reputacion.NobleRep = QueryData!rep_noble
+    '.Reputacion.PlebeRep = QueryData!rep_plebe
+    '.Reputacion.Promedio = QueryData!rep_average
+    .flags.Desnudo = QueryData!is_naked
+    .flags.Envenenado = QueryData!is_poisoned
+    .flags.Escondido = QueryData!is_hidden
+    .flags.Hambre = QueryData!is_hungry
+    .flags.Sed = QueryData!is_thirsty
+    .flags.Ban = QueryData!is_banned
+    .flags.Muerto = QueryData!is_dead
+    .flags.Navegando = QueryData!is_sailing
+    .flags.Paralizado = QueryData!is_paralyzed
+    .flags.VecesQueMoriste = QueryData!deaths
+    .flags.Montado = QueryData!is_mounted
+    .flags.Pareja = QueryData!spouse
+    .flags.Casado = IIf(Len(.flags.Pareja) > 0, 1, 0)
+    .flags.Silenciado = QueryData!is_silenced
+    .flags.MinutosRestantes = QueryData!silence_minutes_left
+    .flags.SegundosPasados = QueryData!silence_elapsed_seconds
+    .flags.MascotasGuardadas = QueryData!pets_saved
+    .flags.ScrollExp = 1 'TODO: sacar
+    .flags.ScrollOro = 1 'TODO: sacar
         
-        .Counters.Pena = QueryData!counter_pena
+    .Counters.Pena = QueryData!counter_pena
         
-        .ChatGlobal = QueryData!chat_global
-        .ChatCombate = QueryData!chat_combate
+    .ChatGlobal = QueryData!chat_global
+    .ChatCombate = QueryData!chat_combate
 
-        If QueryData!pertenece_consejo_real Then
-            .flags.Privilegios = .flags.Privilegios Or PlayerType.RoyalCouncil
+    If QueryData!pertenece_consejo_real Then
+        .flags.Privilegios = .flags.Privilegios Or PlayerType.RoyalCouncil
+    End If
 
-        End If
+    If QueryData!pertenece_consejo_caos Then
+        .flags.Privilegios = .flags.Privilegios Or PlayerType.ChaosCouncil
+    End If
 
-        If QueryData!pertenece_consejo_caos Then
-            .flags.Privilegios = .flags.Privilegios Or PlayerType.ChaosCouncil
+    .Faccion.ArmadaReal = QueryData!pertenece_real
+    .Faccion.FuerzasCaos = QueryData!pertenece_caos
+    .Faccion.ciudadanosMatados = QueryData!ciudadanos_matados
+    .Faccion.CriminalesMatados = QueryData!criminales_matados
+    .Faccion.RecibioArmaduraReal = QueryData!recibio_armadura_real
+    .Faccion.RecibioArmaduraCaos = QueryData!recibio_armadura_caos
+    .Faccion.RecibioExpInicialReal = QueryData!recibio_exp_real
+    .Faccion.RecibioExpInicialCaos = QueryData!recibio_exp_caos
+    .Faccion.RecompensasReal = QueryData!recompensas_real
+    .Faccion.RecompensasCaos = QueryData!recompensas_caos
+    .Faccion.Reenlistadas = QueryData!Reenlistadas
+    .Faccion.FechaIngreso = SanitizeNullValue(QueryData!fecha_ingreso_format, vbNullString)
+    .Faccion.NivelIngreso = SanitizeNullValue(QueryData!nivel_ingreso, 0)
+    .Faccion.MatadosIngreso = SanitizeNullValue(QueryData!matados_ingreso, 0)
+    .Faccion.NextRecompensa = SanitizeNullValue(QueryData!siguiente_recompensa, 0)
+    .Faccion.Status = QueryData!Status
 
-        End If
-
-        .Faccion.ArmadaReal = QueryData!pertenece_real
-        .Faccion.FuerzasCaos = QueryData!pertenece_caos
-        .Faccion.ciudadanosMatados = QueryData!ciudadanos_matados
-        .Faccion.CriminalesMatados = QueryData!criminales_matados
-        .Faccion.RecibioArmaduraReal = QueryData!recibio_armadura_real
-        .Faccion.RecibioArmaduraCaos = QueryData!recibio_armadura_caos
-        .Faccion.RecibioExpInicialReal = QueryData!recibio_exp_real
-        .Faccion.RecibioExpInicialCaos = QueryData!recibio_exp_caos
-        .Faccion.RecompensasReal = QueryData!recompensas_real
-        .Faccion.RecompensasCaos = QueryData!recompensas_caos
-        .Faccion.Reenlistadas = QueryData!Reenlistadas
-        .Faccion.FechaIngreso = SanitizeNullValue(QueryData!fecha_ingreso_format, vbNullString)
-        .Faccion.NivelIngreso = SanitizeNullValue(QueryData!nivel_ingreso, 0)
-        .Faccion.MatadosIngreso = SanitizeNullValue(QueryData!matados_ingreso, 0)
-        .Faccion.NextRecompensa = SanitizeNullValue(QueryData!siguiente_recompensa, 0)
-        .Faccion.Status = QueryData!Status
-
-        .GuildIndex = SanitizeNullValue(QueryData!Guild_Index, 0)
+    .GuildIndex = SanitizeNullValue(QueryData!Guild_Index, 0)
         
-        .Stats.Advertencias = QueryData!warnings
+    .Stats.Advertencias = QueryData!warnings
         
-        'User attributes
-        Call MakeQuery("SELECT * FROM attribute WHERE user_id = ?;", False, .Id)
+    'User attributes
+    Call MakeQuery("SELECT * FROM attribute WHERE user_id = ?;", False, .Id)
     
-        If Not QueryData Is Nothing Then
-            QueryData.MoveFirst
+    If Not QueryData Is Nothing Then
+        QueryData.MoveFirst
 
-            While Not QueryData.EOF
+        While Not QueryData.EOF
 
-                .Stats.UserAtributos(QueryData!Number) = QueryData!Value
-                .Stats.UserAtributosBackUP(QueryData!Number) = .Stats.UserAtributos(QueryData!Number)
+            .Stats.UserAtributos(QueryData!Number) = QueryData!Value
+            .Stats.UserAtributosBackUP(QueryData!Number) = .Stats.UserAtributos(QueryData!Number)
 
-                QueryData.MoveNext
-            Wend
+            QueryData.MoveNext
+        Wend
 
-        End If
+    End If
 
-        'User spells
-        Call MakeQuery("SELECT * FROM spell WHERE user_id = ?;", False, .Id)
+    'User spells
+    Call MakeQuery("SELECT * FROM spell WHERE user_id = ?;", False, .Id)
 
-        If Not QueryData Is Nothing Then
-            QueryData.MoveFirst
+    If Not QueryData Is Nothing Then
+        QueryData.MoveFirst
 
-            While Not QueryData.EOF
+        While Not QueryData.EOF
 
-                .Stats.UserHechizos(QueryData!Number) = QueryData!spell_id
+            .Stats.UserHechizos(QueryData!Number) = QueryData!spell_id
 
-                QueryData.MoveNext
-            Wend
+            QueryData.MoveNext
+        Wend
 
-        End If
+    End If
 
-        'User pets
-        Call MakeQuery("SELECT * FROM pet WHERE user_id = ?;", False, .Id)
+    'User pets
+    Call MakeQuery("SELECT * FROM pet WHERE user_id = ?;", False, .Id)
 
-        If Not QueryData Is Nothing Then
-            QueryData.MoveFirst
+    If Not QueryData Is Nothing Then
+        QueryData.MoveFirst
 
-            While Not QueryData.EOF
+        While Not QueryData.EOF
 
-                .MascotasType(QueryData!Number) = QueryData!pet_id
+            .MascotasType(QueryData!Number) = QueryData!pet_id
                 
-                If val(QueryData!pet_id) <> 0 Then
-                    .NroMascotas = .NroMascotas + 1
+            If val(QueryData!pet_id) <> 0 Then
+                .NroMascotas = .NroMascotas + 1
+            End If
 
+            QueryData.MoveNext
+        Wend
+    End If
+
+    'User inventory
+    Call MakeQuery("SELECT * FROM inventory_item WHERE user_id = ?;", False, .Id)
+
+    If Not QueryData Is Nothing Then
+        QueryData.MoveFirst
+
+        While Not QueryData.EOF
+
+            With .Invent.Object(QueryData!Number)
+                .ObjIndex = QueryData!item_id
+                
+                If .ObjIndex <> 0 Then
+                    If LenB(ObjData(.ObjIndex).name) Then
+                        .Amount = QueryData!Amount
+                        .Equipped = QueryData!is_equipped
+                    Else
+                        .ObjIndex = 0
+                    End If
                 End If
+            End With
 
-                QueryData.MoveNext
-            Wend
+            QueryData.MoveNext
+        Wend
 
-        End If
+    End If
 
-        'User inventory
-        Call MakeQuery("SELECT * FROM inventory_item WHERE user_id = ?;", False, .Id)
+    'User bank inventory
+    Call MakeQuery("SELECT * FROM bank_item WHERE user_id = ?;", False, .Id)
 
-        If Not QueryData Is Nothing Then
-            QueryData.MoveFirst
+    If Not QueryData Is Nothing Then
+        QueryData.MoveFirst
 
-            While Not QueryData.EOF
+        While Not QueryData.EOF
 
-                With .Invent.Object(QueryData!Number)
-					.ObjIndex = QueryData!item_id
-					
-					If .ObjIndex <> 0 Then
-						If LenB(ObjData(.ObjIndex).name) Then
-							.Amount = QueryData!Amount
-							.Equipped = QueryData!is_equipped
-						Else
-							.ObjIndex = 0
-						End If
-					End If
-				End With
-
-                QueryData.MoveNext
-            Wend
-
-        End If
-
-        'User bank inventory
-        Call MakeQuery("SELECT * FROM bank_item WHERE user_id = ?;", False, .Id)
-
-        If Not QueryData Is Nothing Then
-            QueryData.MoveFirst
-
-
-            While Not QueryData.EOF
-
-                With .BancoInvent.Object(QueryData!Number)
+            With .BancoInvent.Object(QueryData!Number)
                 .ObjIndex = QueryData!item_id
                 
                 If .ObjIndex <> 0 Then
@@ -833,140 +934,139 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
                 End If
             End With
 
-                QueryData.MoveNext
-            Wend
+            QueryData.MoveNext
+        Wend
 
-        End If
+    End If
 
-        'User skills
-        Call MakeQuery("SELECT * FROM skillpoint WHERE user_id = ?;", False, .Id)
+    'User skills
+    Call MakeQuery("SELECT * FROM skillpoint WHERE user_id = ?;", False, .Id)
 
-        If Not QueryData Is Nothing Then
-            QueryData.MoveFirst
+    If Not QueryData Is Nothing Then
+        QueryData.MoveFirst
 
-            While Not QueryData.EOF
+        While Not QueryData.EOF
 
-                .Stats.UserSkills(QueryData!Number) = QueryData!Value
-                '.Stats.ExpSkills(QueryData!Number) = QueryData!Exp
-                '.Stats.EluSkills(QueryData!Number) = QueryData!ELU
+            .Stats.UserSkills(QueryData!Number) = QueryData!Value
+            '.Stats.ExpSkills(QueryData!Number) = QueryData!Exp
+            '.Stats.EluSkills(QueryData!Number) = QueryData!ELU
 
-                QueryData.MoveNext
-            Wend
+            QueryData.MoveNext
+        Wend
 
-        End If
+    End If
 
-        'User friends
-        'Call MakeQuery("SELECT * FROM friend WHERE user_id = ?;", False, .Id)
+    'User friends
+    'Call MakeQuery("SELECT * FROM friend WHERE user_id = ?;", False, .Id)
 
-        'If Not QueryData Is Nothing Then
-        '    QueryData.MoveFirst
+    'If Not QueryData Is Nothing Then
+    '    QueryData.MoveFirst
 
-        '    While Not QueryData.EOF
+    '    While Not QueryData.EOF
 
-        '200     .Amigos(QueryData!Number).Nombre = QueryData!friend
-        '200     .Amigos(QueryData!Number).Ignorado = QueryData!Ignored
+    '200     .Amigos(QueryData!Number).Nombre = QueryData!friend
+    '200     .Amigos(QueryData!Number).Ignorado = QueryData!Ignored
 
-        '        QueryData.MoveNext
-        '    Wend
-        'End If
+    '        QueryData.MoveNext
+    '    Wend
+    'End If
         
-        Dim LoopC As Byte
+    Dim LoopC As Byte
         
-        'User quests
-        Call MakeQuery("SELECT * FROM quest WHERE user_id = ?;", False, .Id)
+    'User quests
+    Call MakeQuery("SELECT * FROM quest WHERE user_id = ?;", False, .Id)
 
-        If Not QueryData Is Nothing Then
-            QueryData.MoveFirst
+    If Not QueryData Is Nothing Then
+        QueryData.MoveFirst
 
-            While Not QueryData.EOF
+        While Not QueryData.EOF
 
-                .QuestStats.Quests(QueryData!Number).QuestIndex = QueryData!quest_id
+            .QuestStats.Quests(QueryData!Number).QuestIndex = QueryData!quest_id
                 
-                If .QuestStats.Quests(QueryData!Number).QuestIndex > 0 Then
-                    If QuestList(.QuestStats.Quests(QueryData!Number).QuestIndex).RequiredNPCs Then
+            If .QuestStats.Quests(QueryData!Number).QuestIndex > 0 Then
+                If QuestList(.QuestStats.Quests(QueryData!Number).QuestIndex).RequiredNPCs Then
 
-                        Dim NPCs() As String
+                    Dim NPCs() As String
 
-                        NPCs = Split(QueryData!NPCs, "-")
-                        ReDim .QuestStats.Quests(QueryData!Number).NPCsKilled(1 To QuestList(.QuestStats.Quests(QueryData!Number).QuestIndex).RequiredNPCs)
+                    NPCs = Split(QueryData!NPCs, "-")
+                    ReDim .QuestStats.Quests(QueryData!Number).NPCsKilled(1 To QuestList(.QuestStats.Quests(QueryData!Number).QuestIndex).RequiredNPCs)
 
-                        For LoopC = 1 To QuestList(.QuestStats.Quests(QueryData!Number).QuestIndex).RequiredNPCs
-                            .QuestStats.Quests(QueryData!Number).NPCsKilled(LoopC) = val(NPCs(LoopC - 1))
-                        Next LoopC
+                    For LoopC = 1 To QuestList(.QuestStats.Quests(QueryData!Number).QuestIndex).RequiredNPCs
+                        .QuestStats.Quests(QueryData!Number).NPCsKilled(LoopC) = val(NPCs(LoopC - 1))
+                    Next LoopC
 
-                    End If
+                End If
                     
-                    If QuestList(.QuestStats.Quests(QueryData!Number).QuestIndex).RequiredTargetNPCs Then
+                    
+                If QuestList(.QuestStats.Quests(QueryData!Number).QuestIndex).RequiredTargetNPCs Then
 
-                        Dim NPCsTarget() As String
+                    Dim NPCsTarget() As String
 
-                        NPCsTarget = Split(QueryData!NPCsTarget, "-")
-                        ReDim .QuestStats.Quests(QueryData!Number).NPCsTarget(1 To QuestList(.QuestStats.Quests(QueryData!Number).QuestIndex).RequiredTargetNPCs)
+                    NPCsTarget = Split(QueryData!NPCsTarget, "-")
+                    ReDim .QuestStats.Quests(QueryData!Number).NPCsTarget(1 To QuestList(.QuestStats.Quests(QueryData!Number).QuestIndex).RequiredTargetNPCs)
 
-                        For LoopC = 1 To QuestList(.QuestStats.Quests(QueryData!Number).QuestIndex).RequiredTargetNPCs
-                            .QuestStats.Quests(QueryData!Number).NPCsTarget(LoopC) = val(NPCsTarget(LoopC - 1))
-                        Next LoopC
-
-                    End If
+                    For LoopC = 1 To QuestList(.QuestStats.Quests(QueryData!Number).QuestIndex).RequiredTargetNPCs
+                        .QuestStats.Quests(QueryData!Number).NPCsTarget(LoopC) = val(NPCsTarget(LoopC - 1))
+                    Next LoopC
 
                 End If
 
-                QueryData.MoveNext
-            Wend
+            End If
 
-        End If
+            QueryData.MoveNext
+        Wend
+
+    End If
         
-        'User quests done
-        Call MakeQuery("SELECT * FROM quest_done WHERE user_id = ?;", False, .Id)
+    'User quests done
+    Call MakeQuery("SELECT * FROM quest_done WHERE user_id = ?;", False, .Id)
 
-        If Not QueryData Is Nothing Then
-            .QuestStats.NumQuestsDone = QueryData.RecordCount
+    If Not QueryData Is Nothing Then
+        .QuestStats.NumQuestsDone = QueryData.RecordCount
                 
-            ReDim .QuestStats.QuestsDone(1 To .QuestStats.NumQuestsDone)
+        ReDim .QuestStats.QuestsDone(1 To .QuestStats.NumQuestsDone)
         
-            QueryData.MoveFirst
+        QueryData.MoveFirst
             
-            LoopC = 1
+        LoopC = 1
 
-            While Not QueryData.EOF
+        While Not QueryData.EOF
             
-                .QuestStats.QuestsDone(LoopC) = QueryData!quest_id
-                LoopC = LoopC + 1
+            .QuestStats.QuestsDone(LoopC) = QueryData!quest_id
+            LoopC = LoopC + 1
 
-                QueryData.MoveNext
-            Wend
+            QueryData.MoveNext
+        Wend
 
-        End If
+    End If
         
-        'User mail
-        'TODO:
+    'User mail
+    'TODO:
         
-        ' Llaves
-        Call MakeQuery("SELECT key_obj FROM house_key WHERE account_id = ?", False, .AccountId)
+    ' Llaves
+    Call MakeQuery("SELECT key_obj FROM house_key WHERE account_id = ?", False, .AccountId)
 
-        If Not QueryData Is Nothing Then
-            QueryData.MoveFirst
+    If Not QueryData Is Nothing Then
+        QueryData.MoveFirst
 
-            LoopC = 1
+        LoopC = 1
 
-            While Not QueryData.EOF
+        While Not QueryData.EOF
+            .Keys(LoopC) = QueryData!key_obj
+            LoopC = LoopC + 1
 
-                .Keys(LoopC) = QueryData!key_obj
-                LoopC = LoopC + 1
+            QueryData.MoveNext
+        Wend
 
-                QueryData.MoveNext
-            Wend
+    End If
 
-        End If
+End With
 
-    End With
-
-    Exit Sub
+Exit Sub
 
 ErrorHandler:
-    Call LogDatabaseError("Error en LoadUserDatabase: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
-
-    Resume Next
+Call LogDatabaseError("Error en LoadUserDatabase: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
+Resume Next
 
 End Sub
 
@@ -995,66 +1095,6 @@ Public Function MakeQuery(query As String, ByVal NoResult As Boolean, ParamArray
         Next
 
         .CommandText = query
-
-        If NoResult Then
-            Call .Execute(RecordsAffected, Params, adExecuteNoRecords)
-    
-        Else
-            Set QueryData = .Execute(RecordsAffected, Params)
-    
-            If QueryData.BOF Or QueryData.EOF Then
-                Set QueryData = Nothing
-            End If
-    
-        End If
-        
-    End With
-    
-    Exit Function
-    
-ErrorHandler:
-
-    If Not adoIsConnected(Database_Connection) Then
-        Call LogDatabaseError("Alerta en MakeQuery: Se perdió la conexión con la DB. Reconectando.")
-        Call Database_Connect
-        Resume
-        
-    Else
-        Call LogDatabaseError("Error en MakeQuery: query = '" & query & "'. " & Err.Number & " - " & Err.Description)
-        
-        On Error GoTo 0
-
-        Err.raise Err.Number
-
-    End If
-
-End Function
-
-Public Function MakeQueryPrepared(query As String, ByVal NoResult As Boolean, Query_Parameters() As Variant) As Boolean
-    ' 17/10/2020 Autor: Alexis Caraballo (WyroX)
-    ' Hace una unica query a la db. Asume una conexion.
-    ' Si NoResult = False, el metodo lee el resultado de la query
-    ' Guarda el resultado en QueryData
-    
-    On Error GoTo ErrorHandler
-    
-    Dim Params As Variant
-        
-    If UBound(Query_Parameters) < 0 Then
-        Params = Null
-    Else
-        Params = Query_Parameters
-    End If
-
-    With Command
-        .Prepared = True
-        .CommandText = query
-        
-        ' Clear old params
-        Dim i As Integer
-        For i = 0 To .Parameters.Count - 1
-            Call .Parameters.Delete(0)
-        Next
 
         If NoResult Then
             Call .Execute(RecordsAffected, Params, adExecuteNoRecords)
