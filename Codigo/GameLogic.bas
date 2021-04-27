@@ -1275,7 +1275,13 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                     ' End If
                 
                     If LenB(Stat) > 0 Then
-                        Call WriteConsoleMsg(UserIndex, Stat, ft)
+                        If UserList(TempCharIndex).flags.Muerto Then
+                            Call WriteConsoleMsg(UserIndex, Stat, FontTypeNames.FONTTYPE_New_Gris)
+                        Else
+                            Call WriteConsoleMsg(UserIndex, Stat, ft)
+                        End If
+                        
+                        
                     End If
                 
                     FoundSomething = 1
