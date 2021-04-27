@@ -889,6 +889,8 @@ Function FaltanItemsQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Intege
             End If
 
         End With
+        
+        Exit Function
             
 Handler:
 112     Call RegistrarError(Err.Number, Err.Description, "ModQuest.FaltanItemsQuest", Erl)
