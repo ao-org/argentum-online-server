@@ -638,6 +638,8 @@ Public Type PersonajeCuenta
     nombre As String
     nivel As Byte
     Mapa As Integer
+    PosX As Integer
+    PosY As Integer
     cuerpo As Integer
     Cabeza As Integer
     Status As Byte
@@ -26151,6 +26153,8 @@ Public Sub WritePersonajesDeCuenta(ByVal UserIndex As Integer)
 144             Call .WriteASCIIString(Personaje(i).nombre)
 146             Call .WriteByte(Personaje(i).nivel)
 148             Call .WriteInteger(Personaje(i).Mapa)
+                Call .WriteInteger(Personaje(i).PosX)
+                Call .WriteInteger(Personaje(i).PosY)
 150             Call .WriteInteger(Personaje(i).cuerpo)
 152             Call .WriteInteger(Personaje(i).Cabeza)
 154             Call .WriteByte(Personaje(i).Status)
