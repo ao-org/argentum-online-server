@@ -2,10 +2,10 @@ Attribute VB_Name = "Penas"
 Option Explicit
 
 Public Enum e_LoadBlacklistFlags
-    LoadAll = &H1   ' 2 ^ 0
-    LoadIPs = &H2   ' 2 ^ 1
-    LoadHDs = &H4   ' 2 ^ 2
-    LoadMACs = &H8  ' 2 ^ 3
+    LoadIPs = &H1   ' 2 ^ 0
+    LoadHDs = &H2   ' 2 ^ 1
+    LoadMACs = &H4  ' 2 ^ 2
+    LoadAll = LoadIPs Or LoadHDs Or LoadMACs
 End Enum
 
 Public IP_Blacklist As New Dictionary
@@ -24,7 +24,7 @@ Public Sub CargarListaNegraUsuarios(ByVal LoadFlags As e_LoadBlacklistFlags)
     Set File = New clsIniManager
     Call File.Initialize(DatPath & "Baneos.ini")
 
-    If (LoadFlags And (LoadAll Or LoadIPs)) Then
+    If (LoadFlags And LoadIPs) Then
 
         ' IP's
         For i = 0 To File.EntriesCount("IP") - 1
@@ -34,7 +34,7 @@ Public Sub CargarListaNegraUsuarios(ByVal LoadFlags As e_LoadBlacklistFlags)
 
     End If
 
-    If (LoadFlags And (LoadAll Or LoadHDs)) Then
+    If (LoadFlags And LoadHDs) Then
 
         ' HD's
         For i = 0 To File.EntriesCount("HD") - 1
@@ -44,7 +44,7 @@ Public Sub CargarListaNegraUsuarios(ByVal LoadFlags As e_LoadBlacklistFlags)
 
     End If
 
-    If (LoadFlags And (LoadAll Or LoadMACs)) Then
+    If (LoadFlags And LoadMACs) Then
 
         ' MAC's
         For i = 0 To File.EntriesCount("MAC") - 1
