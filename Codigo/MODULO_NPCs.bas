@@ -141,9 +141,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 180                                 If QuestList(.QuestIndex).RequiredNPC(j).amount > .NPCsKilled(j) Then
 182                                     .NPCsKilled(j) = .NPCsKilled(j) + 1
         
-                                    End If
-                                    
-184                                 If QuestList(.QuestIndex).RequiredNPC(j).amount = .NPCsKilled(j) Then
+                                    Else
 186                                     Call WriteConsoleMsg(UserIndex, "Ya has matado todos los " & MiNPC.name & " que la misión " & QuestList(.QuestIndex).nombre & " requería. Revisa si ya estás listo para recibir la recompensa.", FontTypeNames.FONTTYPE_INFOIAO)
                                     
                                     End If
@@ -1071,7 +1069,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
         '
         'El que ose desafiar esta LEY, se las tendrá que ver
         'conmigo. Para leer los NPCS se deberá usar la
-        'nueva clase clsIniReader.
+        'nueva clase clsIniManager.
         '
         'Alejo
         '
@@ -1079,7 +1077,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 
         Dim NpcIndex As Integer
     
-        Dim Leer As clsIniReader
+        Dim Leer As clsIniManager
 100     Set Leer = LeerNPCs
 
         'If requested index is invalid, abort

@@ -294,7 +294,7 @@ Public Sub CargarCodigosDonador()
 
         Dim Codigostrg As String
 
-        Dim Leer       As New clsIniReader
+        Dim Leer       As New clsIniManager
 
 100     Call Leer.Initialize(App.Path & "\codigosDonadores.ini")
 
@@ -329,7 +329,7 @@ Public Sub CheckearCodigo(ByVal UserIndex As Integer, ByVal CodigoKey As String)
         Dim LogCheckCodigo As String
 
 100     LogCheckCodigo = vbCrLf & "****************************************************" & vbCrLf
-102     LogCheckCodigo = LogCheckCodigo & "El usuario " & UserList(UserIndex).name & " ingresó el codigo: " & CodigoKey & "." & vbCrLf
+102     LogCheckCodigo = LogCheckCodigo & "El usuario " & UserList(UserIndex).Name & " ingresó el codigo: " & CodigoKey & "." & vbCrLf
 
         Dim i As Integer
 

@@ -101,7 +101,7 @@ Public Sub FinalizarSubasta()
 
         Dim tUser        As Integer
 
-        Dim Leer         As New clsIniReader
+        Dim Leer         As New clsIniManager
 
         Dim FileUser     As String
 
@@ -259,7 +259,7 @@ Public Sub DevolverItem()
 
         Dim tUser        As Integer
 
-        Dim Leer         As New clsIniReader
+        Dim Leer         As New clsIniManager
 
         Dim FileUser     As String
 
@@ -355,7 +355,7 @@ Public Sub CancelarSubasta()
 
         Dim tUser        As Integer
 
-        Dim Leer         As New clsIniReader
+        Dim Leer         As New clsIniManager
 
         Dim FileUser     As String
 

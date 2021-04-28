@@ -43,7 +43,7 @@ Public Declare Function QueryPerformanceFrequency Lib "kernel32" (lpFrequency As
 
 Public Declare Sub OutputDebugString Lib "kernel32" Alias "OutputDebugStringA" (ByVal lpOutputString As String)
 
-Global LeerNPCs As New clsIniReader
+Global LeerNPCs As New clsIniManager
 
 Sub DarCuerpoDesnudo(ByVal UserIndex As Integer)
         
@@ -2254,7 +2254,7 @@ Public Sub CargaNpcsDat(Optional ByVal ActualizarNPCsExistentes As Boolean = Fal
             On Error GoTo CargaNpcsDat_Err
         
             ' Leemos el NPCs.dat y lo almacenamos en la memoria.
-100         Set LeerNPCs = New clsIniReader
+100         Set LeerNPCs = New clsIniManager
 102         Call LeerNPCs.Initialize(DatPath & "NPCs.dat")
         
             ' Cargamos la lista de NPC's hostiles disponibles para spawnear.

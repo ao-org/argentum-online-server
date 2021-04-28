@@ -386,11 +386,11 @@ Public Sub loadAdministrativeUsers()
         Dim TempName() As String
        
         ' Public container
-102     Set Administradores = New clsIniReader
+102     Set Administradores = New clsIniManager
     
         ' Server ini info file
-        Dim ServerIni As clsIniReader
-104     Set ServerIni = New clsIniReader
+        Dim ServerIni As clsIniManager
+104     Set ServerIni = New clsIniManager
 106     Call ServerIni.Initialize(IniPath & "Server.ini")
        
         ' Admines
@@ -622,7 +622,7 @@ Public Sub CargarHechizos()
 
         Dim Hechizo As Integer
 
-        Dim Leer    As New clsIniReader
+        Dim Leer    As New clsIniManager
 
 102     Call Leer.Initialize(DatPath & "Hechizos.dat")
 
@@ -1095,9 +1095,9 @@ Sub LoadBalance()
         On Error GoTo LoadBalance_Err
         
 
-        Dim BalanceIni As clsIniReader
+        Dim BalanceIni As clsIniManager
 
-100     Set BalanceIni = New clsIniReader
+100     Set BalanceIni = New clsIniManager
     
 102     BalanceIni.Initialize DatPath & "Balance.dat"
     
@@ -1313,9 +1313,9 @@ Sub LoadOBJData()
         '*****************************************************************
         Dim Object As Integer
 
-        Dim Leer   As clsIniReader
-102     Set Leer = New clsIniReader
-104     Call Leer.Initialize(DatPath & "Obj.dat")
+    Dim Leer   As clsIniManager
+    Set Leer = New clsIniManager
+    Call Leer.Initialize(DatPath & "Obj.dat")
 
         'obtiene el numero de obj
 106     NumObjDatas = val(Leer.GetValue("INIT", "NumObjs"))
@@ -1743,7 +1743,7 @@ ErrHandler:
 
 End Sub
 
-Sub LoadUserStats(ByVal UserIndex As Integer, ByRef UserFile As clsIniReader)
+Sub LoadUserStats(ByVal UserIndex As Integer, ByRef UserFile As clsIniManager)
         
         On Error GoTo LoadUserStats_Err
         
@@ -1832,7 +1832,7 @@ LoadUserStats_Err:
         
 End Sub
 
-Sub LoadUserInit(ByVal UserIndex As Integer, ByRef UserFile As clsIniReader)
+Sub LoadUserInit(ByVal UserIndex As Integer, ByRef UserFile As clsIniManager)
         
         On Error GoTo LoadUserInit_Err
         
@@ -2467,13 +2467,13 @@ End Sub
 Sub LoadSini()
         On Error GoTo LoadSini_Err
 
-        Dim Lector   As clsIniReader
+        Dim Lector   As clsIniManager
 
         Dim Temporal As Long
     
 100     If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando info de inicio del server."
     
-102     Set Lector = New clsIniReader
+102     Set Lector = New clsIniManager
 104     Call Lector.Initialize(IniPath & "Server.ini")
     
         'Misc
@@ -2569,8 +2569,8 @@ Sub CargarCiudades()
     
         
 
-        Dim Lector As clsIniReader
-100     Set Lector = New clsIniReader
+        Dim Lector As clsIniManager
+100     Set Lector = New clsIniManager
 102     Call Lector.Initialize(DatPath & "Ciudades.dat")
     
 104     With CityNix
@@ -2711,8 +2711,8 @@ Sub LoadIntervalos()
         On Error GoTo LoadIntervalos_Err
         
 
-        Dim Lector As clsIniReader
-100     Set Lector = New clsIniReader
+        Dim Lector As clsIniManager
+100     Set Lector = New clsIniManager
 102     Call Lector.Initialize(IniPath & "intervalos.ini")
     
         'Intervalos
@@ -2842,8 +2842,8 @@ Sub LoadConfiguraciones()
         
         On Error GoTo LoadConfiguraciones_Err
         
-        Dim Leer As clsIniReader
-100     Set Leer = New clsIniReader
+        Dim Leer As clsIniManager
+        Set Leer = New clsIniManager
 
 102     Call Leer.Initialize(IniPath & "Configuracion.ini")
 
@@ -3106,7 +3106,7 @@ Sub LoadUserBinary(ByVal UserIndex As Integer)
         
 
         'Cargamos el personaje
-        Dim Leer As New clsIniReader
+        Dim Leer As New clsIniManager
 100     Call Leer.Initialize(CharPath & UCase$(UserList(UserIndex).name) & ".chr")
     
         'Cargamos los datos del personaje
@@ -3439,9 +3439,9 @@ Public Sub LoadRecursosEspeciales()
 
         End If
 
-        Dim IniFile As clsIniReader
+        Dim IniFile As clsIniManager
 
-106     Set IniFile = New clsIniReader
+106     Set IniFile = New clsIniManager
     
 108     Call IniFile.Initialize(DatPath & "RecursosEspeciales.dat")
     
@@ -3506,9 +3506,9 @@ Public Sub LoadPesca()
 
         End If
 
-        Dim IniFile As clsIniReader
+        Dim IniFile As clsIniManager
 
-106     Set IniFile = New clsIniReader
+106     Set IniFile = New clsIniManager
     
 108     Call IniFile.Initialize(DatPath & "pesca.dat")
     
@@ -3672,8 +3672,8 @@ Public Sub LoadRangosFaccion()
 
             End If
 
-            Dim IniFile As clsIniReader
-104         Set IniFile = New clsIniReader
+        Dim IniFile As clsIniManager
+        Set IniFile = New clsIniManager
 
 106         Call IniFile.Initialize(DatPath & "rangos_faccion.dat")
 
@@ -3723,8 +3723,8 @@ Public Sub LoadRecompensasFaccion()
 
             End If
 
-            Dim IniFile As clsIniReader
-104         Set IniFile = New clsIniReader
+        Dim IniFile As clsIniManager
+        Set IniFile = New clsIniManager
 
 106         Call IniFile.Initialize(DatPath & "recompensas_faccion.dat")
 

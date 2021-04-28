@@ -40,7 +40,7 @@ Public Enum e_Facciones
     Armada = 3
 End Enum
 
-Public Administradores As clsIniReader
+Public Administradores As clsIniManager
 
 Public Enum e_SoundIndex
 
