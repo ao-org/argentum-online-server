@@ -36,12 +36,12 @@ Public Sub CargarInfoRetos()
             
             With .Salas(Sala)
                 .PosIzquierda.Map = val(File.GetValue(SalaStr, "Mapa"))
-                .PosIzquierda.x = val(File.GetValue(SalaStr, "X"))
-                .PosIzquierda.y = val(File.GetValue(SalaStr, "Y"))
+                .PosIzquierda.X = val(File.GetValue(SalaStr, "X"))
+                .PosIzquierda.Y = val(File.GetValue(SalaStr, "Y"))
                 
                 .PosDerecha.Map = .PosIzquierda.Map
-                .PosDerecha.x = .PosIzquierda.x + Retos.AnchoSala - 1
-                .PosDerecha.y = .PosIzquierda.y + Retos.AltoSala - 1
+                .PosDerecha.X = .PosIzquierda.X + Retos.AnchoSala - 1
+                .PosDerecha.Y = .PosIzquierda.Y + Retos.AltoSala - 1
             End With
         Next
         
@@ -123,25 +123,29 @@ Public Sub CrearReto(ByVal UserIndex As Integer, JugadoresStr As String, ByVal A
                     End If
 
                     .CurIndex = tIndex
-                    .nombre = UserList(.CurIndex).name
+                    .Nombre = UserList(.CurIndex).name
                     .Aceptado = False
                     
                     If i Mod 2 Then
-                        Equipo1 = Equipo1 & IIf((i + 1) \ 2 < MaxIndexEquipo, ", ", " y ") & .nombre
+                        Equipo1 = Equipo1 & IIf((i + 1) \ 2 < MaxIndexEquipo, ", ", " y ") & .Nombre
                     Else
                         If LenB(Equipo2) > 0 Then
-                            Equipo2 = Equipo2 & IIf(i \ 2 < MaxIndexEquipo, ", ", " y ") & .nombre
+                            Equipo2 = Equipo2 & IIf(i \ 2 < MaxIndexEquipo, ", ", " y ") & .Nombre
                         Else
-                            Equipo2 = .nombre
+                            Equipo2 = .Nombre
                         End If
                     End If
                 End With
             Next
             
             Dim Texto1 As String, Texto2 As String, Texto3 As String
-            Texto1 = UserList(UserIndex).name & " te invita a jugar el siguiente reto:"
+            Texto1 = UserList(UserIndex).name & "(" & UserList(UserIndex).Stats.ELV & ") te invita a jugar el siguiente reto:"
             Texto2 = Equipo1 & " vs " & Equipo2 & ". Apuesta: " & PonerPuntos(Apuesta) & " monedas de oro" & IIf(CaenItems, " y los items.", ".")
             Texto3 = "Escribe /ACEPTAR " & UCase$(UserList(UserIndex).name) & " para participar en el reto."
+            
+            If PocionesMaximas >= 0 Then
+                Texto2 = Texto2 & " Máximo " & PocionesMaximas & " pociones rojas."
+            End If
 
             For i = 0 To UBound(.Jugadores)
                 With .Jugadores(i)
@@ -232,7 +236,7 @@ Public Sub AceptarReto(ByVal UserIndex As Integer, OferenteName As String)
         Dim i As Integer
         For i = 0 To UBound(.Jugadores)
             If Not .Jugadores(i).Aceptado Then
-                FaltanAceptar = FaltanAceptar & .Jugadores(i).nombre & " - "
+                FaltanAceptar = FaltanAceptar & .Jugadores(i).Nombre & " - "
             End If
         Next
         
@@ -271,7 +275,7 @@ Public Sub CancelarSolicitudReto(ByVal Oferente As Integer, Mensaje As String)
         ' Enviamos a los invitados
         For i = 0 To UBound(.Jugadores)
 
-            tIndex = NameIndex(.Jugadores(i).nombre)
+            tIndex = NameIndex(.Jugadores(i).Nombre)
             
             If tIndex > 0 Then
                 Call WriteConsoleMsg(tIndex, Mensaje, FontTypeNames.FONTTYPE_WARNING)
@@ -413,7 +417,7 @@ Private Sub IniciarReto(ByVal Oferente As Integer, ByVal Sala As Integer)
                 .EquipoReto = IIf(i Mod 2, EquipoReto.Derecha, EquipoReto.Izquierda)
                 .SalaReto = Sala
                 ' Guardar posición
-                .LastPos = UserList(tIndex).pos
+                .LastPos = UserList(tIndex).Pos
             End With
             
             Call WriteConsoleMsg(tIndex, "¡Ha comenzado el reto!", FontTypeNames.FONTTYPE_New_Rojo_Salmon)
@@ -451,10 +455,10 @@ Private Sub IniciarRonda(ByVal Sala As Integer)
                 ' Usando el número de ronda y el índice, decidimos el lado al que corresponde
                 If (.Ronda + i) Mod 2 = 1 Then
                     ' Lado izquierdo
-                    Call WarpToLegalPos(tIndex, .PosIzquierda.Map, .PosIzquierda.x, .PosIzquierda.y, True)
+                    Call WarpToLegalPos(tIndex, .PosIzquierda.Map, .PosIzquierda.X, .PosIzquierda.Y, True)
                 Else
                     ' Lado derecho
-                    Call WarpToLegalPos(tIndex, .PosDerecha.Map, .PosDerecha.x, .PosDerecha.y, True)
+                    Call WarpToLegalPos(tIndex, .PosDerecha.Map, .PosDerecha.X, .PosDerecha.Y, True)
                 End If
 
                 ' Si usamos el conteo
@@ -648,10 +652,10 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
                         If .CaenItems Then
                             If (tIndex \ 2) Mod 2 Then
                                    ' Lado izquierdo
-                               Call WarpToLegalPos(tIndex, .PosIzquierda.Map, .PosIzquierda.x, .PosIzquierda.y, True)
+                               Call WarpToLegalPos(tIndex, .PosIzquierda.Map, .PosIzquierda.X, .PosIzquierda.Y, True)
                             Else
                                    ' Lado derecho
-                               Call WarpToLegalPos(tIndex, .PosDerecha.Map, .PosDerecha.x, .PosDerecha.y, True)
+                               Call WarpToLegalPos(tIndex, .PosDerecha.Map, .PosDerecha.X, .PosDerecha.Y, True)
                             End If
                         Else
                             UserList(tIndex).flags.EnReto = False
@@ -659,7 +663,7 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
                         End If
                     Else
                         If .CaenItems Then
-                            Call TirarItemsEnPos(tIndex, ((.PosDerecha.x - .PosIzquierda.x) \ 2) + .PosIzquierda.x, ((.PosDerecha.y - .PosIzquierda.y) \ 2) + .PosIzquierda.y)
+                            Call TirarItemsEnPos(tIndex, ((.PosDerecha.X - .PosIzquierda.X) \ 2) + .PosIzquierda.X, ((.PosDerecha.Y - .PosIzquierda.Y) \ 2) + .PosIzquierda.Y)
                         End If
                             UserList(tIndex).flags.EnReto = False
                             Call DevolverPosAnterior(tIndex)
@@ -721,7 +725,7 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
     
     
 End Sub
-Public Sub TirarItemsEnPos(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y As Byte)
+Public Sub TirarItemsEnPos(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte)
             
         On Error GoTo TirarItemsEnPos_Err
 
@@ -733,23 +737,23 @@ Public Sub TirarItemsEnPos(ByVal UserIndex As Integer, ByVal x As Byte, ByVal y 
         
               
 100     With UserList(UserIndex)
-            posItems.Map = .pos.Map
-            posItems.x = x
-            posItems.y = y
+            posItems.Map = .Pos.Map
+            posItems.X = X
+            posItems.Y = Y
             
 102         For i = 1 To .CurrentInventorySlots
 104             ItemIndex = .Invent.Object(i).ObjIndex
 106             If ItemIndex > 0 Then
 108                 If ItemSeCae(ItemIndex) And PirataCaeItem(UserIndex, i) And (Not EsNewbie(UserIndex) Or Not ItemNewbie(ItemIndex)) Then
-110                     NuevaPos.x = 0
-112                     NuevaPos.y = 0
+110                     NuevaPos.X = 0
+112                     NuevaPos.Y = 0
 114                     MiObj.amount = .Invent.Object(i).amount
 116                     MiObj.ObjIndex = ItemIndex
                         
 122                     Call Tilelibre(posItems, NuevaPos, MiObj, True, True, False)
             
-124                     If NuevaPos.x <> 0 And NuevaPos.y <> 0 Then
-126                         Call DropObj(UserIndex, i, MiObj.amount, NuevaPos.Map, NuevaPos.x, NuevaPos.y)
+124                     If NuevaPos.X <> 0 And NuevaPos.Y <> 0 Then
+126                         Call DropObj(UserIndex, i, MiObj.amount, NuevaPos.Map, NuevaPos.X, NuevaPos.Y)
                         
                         ' WyroX: Si no hay lugar, quemamos el item del inventario (nada de mochilas gratis)
                         Else
@@ -793,13 +797,13 @@ Public Sub IniciarDepositoItems(ByVal Sala As Integer)
             End If
         Next i
         
-        Dim pos As WorldPos
+        Dim Pos As WorldPos
         
-        pos.Map = .PosIzquierda.Map
-        pos.x = ((.PosDerecha.x - .PosIzquierda.x) \ 2) + .PosIzquierda.x
-        pos.y = ((.PosDerecha.y - .PosIzquierda.y) \ 2) + .PosIzquierda.y
+        Pos.Map = .PosIzquierda.Map
+        Pos.X = ((.PosDerecha.X - .PosIzquierda.X) \ 2) + .PosIzquierda.X
+        Pos.Y = ((.PosDerecha.Y - .PosIzquierda.Y) \ 2) + .PosIzquierda.Y
         'Spawneo un banquero.
-        .IndexBanquero = SpawnNpc(3, pos, True, False)
+        .IndexBanquero = SpawnNpc(3, Pos, True, False)
         .TiempoItems = 60
     End With
     
@@ -832,14 +836,14 @@ Public Sub TerminarTiempoAgarrarItems(ByVal Sala As Integer)
         Next i
         .TiempoItems = 0
         
-        Dim x As Byte
-        Dim y As Byte
+        Dim X As Byte
+        Dim Y As Byte
         
-        For x = .PosIzquierda.x To .PosDerecha.x
-            For y = .PosIzquierda.y To .PosDerecha.y
-                Call EraseObj(MAX_INVENTORY_OBJS, .PosIzquierda.Map, x, y)
-            Next y
-        Next x
+        For X = .PosIzquierda.X To .PosDerecha.X
+            For Y = .PosIzquierda.Y To .PosDerecha.Y
+                Call EraseObj(MAX_INVENTORY_OBJS, .PosIzquierda.Map, X, Y)
+            Next Y
+        Next X
         
     End With
     
@@ -955,11 +959,11 @@ Public Function PuedeReto(ByVal UserIndex As Integer) As Boolean
         
         If .flags.EnConsulta Then Exit Function
         
-        If MapInfo(.pos.Map).Seguro = 0 Then Exit Function
+        If MapInfo(.Pos.Map).Seguro = 0 Then Exit Function
         
         If .flags.EnTorneo Then Exit Function
         
-        If MapData(.pos.Map, .pos.x, .pos.y).trigger = CARCEL Then Exit Function
+        If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = CARCEL Then Exit Function
         
     End With
     
@@ -981,7 +985,7 @@ Public Function PuedeRetoConMensaje(ByVal UserIndex As Integer) As Boolean
             Exit Function
         End If
         
-        If MapInfo(.pos.Map).Seguro = 0 Then
+        If MapInfo(.Pos.Map).Seguro = 0 Then
             Call WriteConsoleMsg(UserIndex, "No puedes participar de un reto en un mapa inseguro.", FontTypeNames.FONTTYPE_INFO)
             Exit Function
         End If
@@ -991,7 +995,7 @@ Public Function PuedeRetoConMensaje(ByVal UserIndex As Integer) As Boolean
             Exit Function
         End If
         
-        If MapData(.pos.Map, .pos.x, .pos.y).trigger = CARCEL Then
+        If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = CARCEL Then
             Call WriteConsoleMsg(UserIndex, "¡Estás encarcelado!", FontTypeNames.FONTTYPE_INFO)
             Exit Function
         End If
@@ -1012,7 +1016,7 @@ Private Function IndiceJugadorEnSolicitud(ByVal UserIndex As Integer, ByVal Ofer
 
         Dim i As Integer
         For i = 0 To UBound(.Jugadores)
-            If .Jugadores(i).nombre = UserList(UserIndex).name Then
+            If .Jugadores(i).Nombre = UserList(UserIndex).name Then
                 IndiceJugadorEnSolicitud = i
                 Exit Function
             End If
