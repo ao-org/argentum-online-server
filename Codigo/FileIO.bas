@@ -2454,9 +2454,7 @@ ErrorHandler:
 End Sub
 
 Sub LoadSini()
-        
         On Error GoTo LoadSini_Err
-        
 
         Dim Lector   As clsIniReader
 
@@ -2496,15 +2494,7 @@ Sub LoadSini()
 140     DiceMaximum = val(Lector.GetValue("INIT", "MaxDados"))
     
 142     EnTesting = val(Lector.GetValue("INIT", "Testing"))
-    
-        ' Database
-144     Database_Enabled = CBool(val(Lector.GetValue("DATABASE", "Enabled")))
-146     Database_DataSource = Lector.GetValue("DATABASE", "DSN")
-148     Database_Host = Lector.GetValue("DATABASE", "Host")
-150     Database_Name = Lector.GetValue("DATABASE", "Name")
-152     Database_Username = Lector.GetValue("DATABASE", "Username")
-154     Database_Password = Lector.GetValue("DATABASE", "Password")
-    
+        
         'Ressurect pos
 156     ResPos.Map = val(ReadField(1, Lector.GetValue("INIT", "ResPos"), 45))
 158     ResPos.X = val(ReadField(2, Lector.GetValue("INIT", "ResPos"), 45))
@@ -2535,6 +2525,31 @@ LoadSini_Err:
 186     Call RegistrarError(Err.Number, Err.Description, "ES.LoadSini", Erl)
 188     Resume Next
         
+End Sub
+
+Public Sub LoadDatabaseIniFile()
+    On Error GoTo LoadDatabaseIniFile_Err
+
+        Dim Lector As clsIniReader
+    
+100     If frmMain.Visible Then frmMain.txStatus.Caption = "Leyendo credenciales de la DB."
+    
+102     Set Lector = New clsIniReader
+104     Call Lector.Initialize(IniPath & "Database.ini")
+
+144     Database_Enabled = True
+146     Database_DataSource = Lector.GetValue("DATABASE", "DSN")
+148     Database_Host = Lector.GetValue("DATABASE", "Host")
+150     Database_Name = Lector.GetValue("DATABASE", "Name")
+152     Database_Username = Lector.GetValue("DATABASE", "Username")
+154     Database_Password = Lector.GetValue("DATABASE", "Password")
+
+        Exit Sub
+
+LoadDatabaseIniFile_Err:
+        Set Lector = Nothing
+186     Call RegistrarError(Err.Number, Err.Description, "ES.LoadDatabaseIniFile", Erl)
+188     Resume Next
 End Sub
 
 Sub CargarCiudades()
