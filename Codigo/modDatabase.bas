@@ -18,7 +18,7 @@ Public Database_Password    As String
 
 Private Database_Connection As ADODB.Connection
 Private Command             As ADODB.Command
-Private QueryData           As ADODB.Recordset
+Public QueryData           As ADODB.Recordset
 Private RecordsAffected     As Long
 
 Private QueryBuilder        As cStringBuilder
@@ -1106,9 +1106,9 @@ GetUserValue_Err:
         
 End Function
 
-Private Sub SetDBValue(Tabla As String, ColumnaSet As String, ByVal ValueSet As Variant, ColumnaTest As String, ByVal ValueTest As Variant)
-        ' 17/10/2020 Autor: Alexis Caraballo (WyroX)
-        ' Para escribir un unico valor de una unica fila
+Public Sub SetDBValue(Tabla As String, ColumnaSet As String, ByVal ValueSet As Variant, ColumnaTest As String, ByVal ValueTest As Variant)
+    ' 17/10/2020 Autor: Alexis Caraballo (WyroX)
+    ' Para escribir un unico valor de una unica fila
 
         On Error GoTo ErrorHandler
     
@@ -1841,6 +1841,7 @@ Public Sub SaveBanDatabase(UserName As String, Reason As String, BannedBy As Str
         '***************************************************
         On Error GoTo ErrorHandler
 
+<<<<<<< HEAD
         Dim query As String
 
 100     Call MakeQuery("UPDATE user SET is_banned = TRUE WHERE UPPER(name) = ?;", True, UCase$(UserName))
@@ -1851,6 +1852,11 @@ Public Sub SaveBanDatabase(UserName As String, Reason As String, BannedBy As Str
 108     query = query & "reason = ?;"
 
 110     Call MakeQuery(query, True, UCase$(UserName), BannedBy & ": " & Reason & " " & Date & " " & Time)
+=======
+    Call MakeQuery("UPDATE user SET is_banned = TRUE, banned_by = ?, ban_reason = ? WHERE UPPER(name) = ?;", True, BannedBy, Reason, UCase$(UserName))
+
+    Call SavePenaDatabase(UserName, "Baneado por: " & WarnedBy & " debido a " & Reason)
+>>>>>>> 357783e (Refactor de los distintos tipos de baneos.)
 
         Exit Sub
 
@@ -1867,6 +1873,7 @@ Public Sub SaveWarnDatabase(UserName As String, Reason As String, WarnedBy As St
         '***************************************************
         On Error GoTo ErrorHandler
 
+<<<<<<< HEAD
         Dim query As String
 
 100     Call MakeQuery("UPDATE user SET warnings = warnings + 1 WHERE UPPER(name) = ?;", True, UCase$(UserName))
@@ -1879,6 +1886,13 @@ Public Sub SaveWarnDatabase(UserName As String, Reason As String, WarnedBy As St
 110     Call MakeQuery(query, True, UCase$(UserName), WarnedBy & ": " & Reason & " " & Date & " " & Time)
 
         Exit Sub
+=======
+    Call MakeQuery("UPDATE user SET warnings = warnings + 1 WHERE UPPER(name) = ?;", True, UCase$(UserName))
+    
+    Call SavePenaDatabase(UserName, "Advertencia de: " & WarnedBy & " debido a " & Reason)
+    
+    Exit Sub
+>>>>>>> 357783e (Refactor de los distintos tipos de baneos.)
 
 ErrorHandler:
 112     Call LogDatabaseError("Error in SaveWarnDatabase: " & UserName & ". " & Err.Number & " - " & Err.Description)
@@ -1889,6 +1903,7 @@ Public Sub SavePenaDatabase(UserName As String, Reason As String)
 
         On Error GoTo ErrorHandler
 
+<<<<<<< HEAD
         Dim query As String
 
 100     query = query & "INSERT INTO punishment SET "
@@ -1897,6 +1912,13 @@ Public Sub SavePenaDatabase(UserName As String, Reason As String)
 106     query = query & "reason = ?;"
 
 108     Call MakeQuery(query, True, UCase$(UserName), Reason)
+=======
+    Dim query As String
+        query = "INSERT INTO punishment(user_id, NUMBER, reason)"
+        query = query & " SELECT u.id, COUNT(p.number) + 1, ? FROM user u LEFT JOIN punishment p ON p.user_id = u.id WHERE UPPER(u.name) = ?"
+    
+    Call MakeQuery(query, True, Reason, UCase$(UserName))
+>>>>>>> 357783e (Refactor de los distintos tipos de baneos.)
 
         Exit Sub
 

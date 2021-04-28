@@ -875,13 +875,13 @@ Function EntrarCuenta(ByVal UserIndex As Integer, CuentaEmail As String, CuentaP
 
         End If
 
-116     If CheckMAC(MacAddress) Then
-118         Call WriteShowMessageBox(UserIndex, "Su cuenta se encuentra bajo tolerancia 0. Tiene prohibido el acceso. Cod: #0001")
+106     If MAC_Blacklist.Exists(MacAddress) Then
+108         Call WriteShowMessageBox(UserIndex, "Su cuenta se encuentra bajo tolerancia 0. Tiene prohibido el acceso. Cod: #0001")
             Exit Function
         End If
     
-120     If CheckHD(HDserial) Then
-122         Call WriteShowMessageBox(UserIndex, "Su cuenta se encuentra bajo tolerancia 0. Tiene prohibido el acceso. Cod: #0002")
+110     If HD_Blacklist.Exists(HDSerial) Then
+112         Call WriteShowMessageBox(UserIndex, "Su cuenta se encuentra bajo tolerancia 0. Tiene prohibido el acceso. Cod: #0002")
             Exit Function
         End If
 

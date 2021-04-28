@@ -2352,8 +2352,6 @@ Public RecompensasFaccion()               As tRecompensaFaccion
 
 Public ObjDonador()                       As tObjDonador
 
-Public BanIps                             As New Collection
-
 Public ModClase(1 To NUMCLASES)           As ModClase
 
 Public ModRaza(1 To NUMRAZAS)             As ModRaza

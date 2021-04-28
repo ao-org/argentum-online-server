@@ -1549,17 +1549,13 @@ ChangeBan_Err:
         
 End Function
 
-Public Function CompararPrivilegiosUser(ByVal Personaje_1 As Integer, ByVal Personaje_2 As Integer) As Integer
-    '**************************************************************************************************************************
-    'Author: Jopi
-    'Last Modification: 05/07/2020
-    '   Funcion encargada de comparar los privilegios entre 2 Game Masters.
-    '   Funciona de la misma forma que el operador spaceship de PHP.
-    '       - Si los privilegios de el de la izquierda [Personaje1] son MAYORES que el de la derecha [Personaje2], devuelve 1
-    '       - Si los privilegios de el de la izquierda [Personaje1] son IGUALES que el de la derecha [Personaje2], devuelve 0
-    '       - Si los privilegios de el de la izquierda [Personaje1] son MENORES que el de la derecha [Personaje2], devuelve -1
-    '**************************************************************************************************************************
+Public Function CompararUserPrivilegios(ByVal Personaje_1 As Integer, ByVal Personaje_2 As Integer) As Integer
+    
+    CompararUserPrivilegios = CompararPrivilegios(UserList(Personaje_1).flags.Privilegios, UserList(Personaje_2).flags.Privilegios)
         
+End Function
+
+Public Function CompararPrivilegiosUser(ByVal Personaje_1 As Integer, ByVal Personaje_2 As Integer) As Integer
         On Error GoTo CompararPrivilegiosUser_Err
         
 100     CompararPrivilegiosUser = CompararPrivilegios(UserList(Personaje_1).flags.Privilegios, UserList(Personaje_2).flags.Privilegios)

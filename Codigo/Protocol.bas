@@ -1873,7 +1873,6 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
     If BANCheck(UserName) Then
 
         Dim LoopC As Integer
-        
         For LoopC = 1 To Baneos.Count
 
             If Baneos(LoopC).name = UCase$(UserName) Then
@@ -1888,8 +1887,8 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
         Dim BanNick     As String
         Dim BaneoMotivo As String
 
-        BanNick = GetVar(CharPath & UserName & ".chr", "BAN", "BannedBy")
-        BaneoMotivo = GetVar(CharPath & UserName & ".chr", "BAN", "BanMotivo")
+        BanNick = GetUserValue(UserName, "banned_by")
+        BaneoMotivo = GetUserValue(UserName, "ban_reason")
 
         If LenB(BanNick) = 0 Then BanNick = "*Error en la base de datos*"
         If LenB(BaneoMotivo) = 0 Then BaneoMotivo = "*No se registra el motivo del baneo.*"
@@ -12891,24 +12890,18 @@ Private Sub HandleBannedIPList(ByVal UserIndex As Integer)
         
     On Error GoTo HandleBannedIPList_Err
 
-    '***************************************************
-    'Author: Nicolas Matias Gonzalez (NIGO)
-    'Last Modification: 12/30/06
-    '
-    '***************************************************
     With UserList(UserIndex)
-
         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster)) Then Exit Sub
-        
-        Dim lista As String
 
+        Dim lista As String
         Dim LoopC As Long
-        
+
         Call LogGM(.name, "/BANIPLIST")
         
-        For LoopC = 1 To BanIps.Count
-            lista = lista & BanIps.Item(LoopC) & ", "
-        Next LoopC
+108         For LoopC = 1 To IP_Blacklist.Count
+110             lista = lista & IP_Blacklist.Item(LoopC) & ", "
+112         Next LoopC
+
         
         If LenB(lista) <> 0 Then lista = Left$(lista, Len(lista) - 2)
         
@@ -12933,15 +12926,12 @@ Private Sub HandleBannedIPReload(ByVal UserIndex As Integer)
         
     On Error GoTo HandleBannedIPReload_Err
 
-    '***************************************************
-    'Author: Nicolas Matias Gonzalez (NIGO)
-    'Last Modification: 12/30/06
-    '
-    '***************************************************
-    With UserList(UserIndex)
-
-        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster)) Then Exit Sub
+100     With UserList(UserIndex)
         
+104         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster)) Then Exit Sub
+
+106         Call CargarListaNegraUsuarios(LoadIPs)
+
         Call BanIpGuardar
         Call BanIpCargar
 
@@ -13051,75 +13041,72 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleBanIP(ByVal UserIndex As Integer)
+        On Error GoTo ErrHandler
 
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 12/30/06
-    '
-    '***************************************************
-    On Error GoTo ErrHandler
+        'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
+        Dim Buffer As New clsByteQueue
 
-    With UserList(UserIndex)
-
+        Call Buffer.CopyBuffer(.incomingData)
+        
+        'Remove packet ID
+        Call Buffer.ReadByte
+        
         Dim bannedIP As String
         Dim tUser    As Integer
         Dim Reason   As String
         Dim i        As Long
         
         ' Is it by ip??
-        If .incomingData.ReadBoolean() Then
-            bannedIP = .incomingData.ReadByte() & "."
-            bannedIP = bannedIP & .incomingData.ReadByte() & "."
-            bannedIP = bannedIP & .incomingData.ReadByte() & "."
-            bannedIP = bannedIP & .incomingData.ReadByte()
+        If Buffer.ReadBoolean() Then
+            bannedIP = Buffer.ReadByte() & "."
+            bannedIP = bannedIP & Buffer.ReadByte() & "."
+            bannedIP = bannedIP & Buffer.ReadByte() & "."
+            bannedIP = bannedIP & Buffer.ReadByte()
             
         Else
         
-            tUser = NameIndex(.incomingData.ReadASCIIString())
+            tUser = NameIndex(Buffer.ReadASCIIString())
             
             If tUser <= 0 Then
                 Call WriteConsoleMsg(UserIndex, "El personaje no está online.", FontTypeNames.FONTTYPE_INFO)
-                
             Else
-                bannedIP = UserList(tUser).ip
-
+                bannedIP = UserList(tUser).IP
             End If
 
         End If
         
-        Reason = .incomingData.ReadASCIIString()
+        Reason = Buffer.ReadASCIIString()
         
-        If LenB(bannedIP) > 0 Then
+        'If we got here then packet is complete, copy data back to original queue
+        Call .incomingData.CopyBuffer(Buffer)
         
-            If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) Then
+        If LenB(bannedIP) = 0 Then Exit Sub
+        
+        If Not (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then Exit Sub
+      
+        If IP_Blacklist.Exists(bannedIP) > 0 Then
+            Call WriteConsoleMsg(UserIndex, "La IP " & bannedIP & " ya se encuentra en la lista negra de IPs.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+
+        End If
+                
+        Call IP_Blacklist.Add(bannedIP, .Name)
+        Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " baneó la IP " & bannedIP & " por " & Reason, FontTypeNames.FONTTYPE_FIGHT))
+        
+        Call LogGM(.Name, "/BanIP " & bannedIP & " por " & Reason)
+        
+        'Find every player with that ip and ban him!
+        For i = 1 To LastUser
+
+            If UserList(i).ConnIDValida Then
             
-                Call LogGM(.name, "/BanIP " & bannedIP & " por " & Reason)
+                If UserList(i).IP = bannedIP Then
                 
-                If BanIpBuscar(bannedIP) > 0 Then
-                    Call WriteConsoleMsg(UserIndex, "La IP " & bannedIP & " ya se encuentra en la lista de bans.", FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-
+                    Call BanPJ(UserIndex, UserList(i).Name, "IP POR " & Reason)
                 End If
-                
-                Call BanIpAgrega(bannedIP)
-                Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.name & " baneó la IP " & bannedIP & " por " & Reason, FontTypeNames.FONTTYPE_FIGHT))
-                
-                'Find every player with that ip and ban him!
-                For i = 1 To LastUser
-
-                    If UserList(i).ConnIDValida Then
-                        If UserList(i).ip = bannedIP Then
-                            Call BanCharacter(UserIndex, UserList(i).name, "IP POR " & Reason)
-
-                        End If
-
-                    End If
-
-                Next i
-
             End If
 
-        End If
+        Next i
 
     End With
 
@@ -13140,13 +13127,8 @@ Private Sub HandleUnbanIP(ByVal UserIndex As Integer)
         
     On Error GoTo HandleUnbanIP_Err
 
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 12/30/06
-    '
-    '***************************************************
     With UserList(UserIndex)
-
+        
         Dim bannedIP As String
         
         bannedIP = .incomingData.ReadByte() & "."
@@ -13154,11 +13136,11 @@ Private Sub HandleUnbanIP(ByVal UserIndex As Integer)
         bannedIP = bannedIP & .incomingData.ReadByte() & "."
         bannedIP = bannedIP & .incomingData.ReadByte()
         
-        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster)) Then Exit Sub
+        If Not (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then Exit Sub
         
-        If BanIpQuita(bannedIP) Then
+        If IP_Blacklist.Exists(bannedIP) Then
+            Call DesbanearIP(bannedIP, UserIndex)
             Call WriteConsoleMsg(UserIndex, "La IP """ & bannedIP & """ se ha quitado de la lista de bans.", FontTypeNames.FONTTYPE_INFO)
-            
         Else
             Call WriteConsoleMsg(UserIndex, "La IP """ & bannedIP & """ NO se encuentra en la lista de bans.", FontTypeNames.FONTTYPE_INFO)
 
@@ -14863,17 +14845,6 @@ Public Sub HandleChangeMapInfoNoResu(ByVal UserIndex As Integer)
         
     On Error GoTo HandleChangeMapInfoNoResu_Err
 
-    '***************************************************
-    'Author: Pablo (ToxicWaste)
-    'Last Modification: 26/01/2007
-    'ResuSinEfecto -> Options: "1", "0"
-    '***************************************************
-    If UserList(UserIndex).incomingData.Length < 2 Then
-        Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-        Exit Sub
-
-    End If
-    
     Dim noresu As Boolean
     
     With UserList(UserIndex)

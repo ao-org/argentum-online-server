@@ -103,6 +103,7 @@ Class=clsByteQueue; Codigo\clsNewByteQueue.cls
 Module=Protocol_Writes; Codigo\Protocol_Writes.bas
 Module=Protocol_Prepares; Codigo\Protocol_Prepares.bas
 Class=clsIniManager; Codigo\clsIniManager.cls
+Module=Penas; Codigo\Penas.bas
 IconForm="frmMain"
 Startup="Sub Main"
 HelpFile=""
