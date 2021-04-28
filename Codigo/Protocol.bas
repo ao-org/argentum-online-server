@@ -1568,7 +1568,7 @@ Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
 160             Call HandleCasamiento(UserIndex)
 
 162         Case NewPacksID.EnviarCodigo
-164             Call HandleEnviarCodigo(UserIndex)
+164             'Call HandleEnviarCodigo(UserIndex)
 
 166         Case NewPacksID.CrearTorneo
 168             Call HandleCrearTorneo(UserIndex)
@@ -27293,51 +27293,6 @@ ErrHandler:
 162     Set Buffer = Nothing
     
 164     If Error <> 0 Then Err.raise Error
-
-End Sub
-
-Private Sub HandleEnviarCodigo(ByVal UserIndex As Integer)
-
-        'Author: Pablo Mercavides
-100     If UserList(UserIndex).incomingData.Length < 4 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
-
-        End If
-    
-        On Error GoTo ErrHandler
-
-104     With UserList(UserIndex)
-
-            Dim Buffer As New clsByteQueue
-
-106         Call Buffer.CopyBuffer(.incomingData)
-            'Remove packet ID
-108         Call Buffer.ReadInteger
-        
-            Dim Codigo As String
-
-110         Codigo = Buffer.ReadASCIIString()
-
-112         Call CheckearCodigo(UserIndex, Codigo)
-        
-            'If we got here then packet is complete, copy data back to original queue
-114         Call .incomingData.CopyBuffer(Buffer)
-
-        End With
-    
-ErrHandler:
-
-        Dim Error As Long
-
-116     Error = Err.Number
-
-        On Error GoTo 0
-    
-        'Destroy auxiliar buffer
-118     Set Buffer = Nothing
-    
-120     If Error <> 0 Then Err.raise Error
 
 End Sub
 

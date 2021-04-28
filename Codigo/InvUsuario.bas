@@ -2340,7 +2340,8 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 746                     Case 15  ' Aliento de sirena
                             
 748                         If .Counters.Oxigeno >= 3540 Then
-                            
+                                Dim secs As Long, HR As Integer, MS As Integer, SS As Integer
+                                
 750                             Call WriteConsoleMsg(UserIndex, "No podes acumular más de 59 minutos de oxigeno.", FontTypeNames.FONTTYPE_INFOIAO)
 752                             secs = .Counters.Oxigeno
 754                             HR = secs \ 3600
