@@ -856,8 +856,8 @@ Private Sub Command19_Click()
     
 104         n = IP_Blacklist.Count
 
-106         For i = 1 To IP_Blacklist.Count
-108             IP_Blacklist.Remove i
+106         For i = 1 To n
+108             IP_Blacklist.Remove(0)
 110         Next i
     
 112         MsgBox "Se han habilitado " & n & " ipes"
