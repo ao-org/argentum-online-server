@@ -1541,7 +1541,7 @@ Public Function GetPersonajesCuentaDatabase(ByVal AccountId As Long, Personaje()
     On Error GoTo GetPersonajesCuentaDatabase_Err
         
 
-    Call MakeQuery("SELECT name, head_id, class_id, body_id, pos_map, level, status, helmet_id, shield_id, weapon_id, guild_index, is_dead, is_sailing FROM user WHERE deleted = FALSE AND account_id = ?;", False, AccountId)
+    Call MakeQuery("SELECT name, head_id, class_id, body_id, pos_map, pos_x, pos_y, level, status, helmet_id, shield_id, weapon_id, guild_index, is_dead, is_sailing FROM user WHERE deleted = FALSE AND account_id = ?;", False, AccountId)
 
     If QueryData Is Nothing Then Exit Function
     
@@ -1557,6 +1557,8 @@ Public Function GetPersonajesCuentaDatabase(ByVal AccountId As Long, Personaje()
         Personaje(i).clase = QueryData!class_id
         Personaje(i).cuerpo = QueryData!body_id
         Personaje(i).Mapa = QueryData!pos_map
+        Personaje(i).PosX = QueryData!pos_x
+        Personaje(i).PosY = QueryData!pos_y
         Personaje(i).nivel = QueryData!level
         Personaje(i).Status = QueryData!Status
         Personaje(i).Casco = QueryData!helmet_id
