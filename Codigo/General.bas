@@ -650,6 +650,7 @@ Sub Main()
     
     MaxUsers = 0
     Call LoadSini
+    Call LoadDatabaseIniFile
     Call LoadIntervalos
     Call CargarForbidenWords
     Call CargaApuestas
