@@ -2352,7 +2352,7 @@ Function ValidarNombre(nombre As String) As Boolean
 
 End Function
 
-Function ContarUsuariosMismaCuenta(ByVal AccountId As Integer) As Integer
+Function ContarUsuariosMismaCuenta(ByVal AccountId As Long) As Integer
 
         Dim i As Integer
     

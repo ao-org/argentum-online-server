@@ -1147,7 +1147,7 @@ SetUserValue_Err:
         
 End Sub
 
-Private Sub SetCuentaValueByID(AccountId As Long, Columna As String, Value As Variant)
+Private Sub SetCuentaValueByID(ByVal AccountId As Long, Columna As String, Value As Variant)
     ' 18/10/2020 Autor: Alexis Caraballo (WyroX)
     ' Para cuando hay que escribir un unico valor de la cuenta
     ' Por ID
@@ -1165,7 +1165,7 @@ SetCuentaValueByID_Err:
         
 End Sub
 
-Private Sub SetUserValueByID(Id As Long, Columna As String, Value As Variant)
+Private Sub SetUserValueByID(ByVal Id As Long, Columna As String, Value As Variant)
     ' 18/10/2020 Autor: Alexis Caraballo (WyroX)
     ' Para cuando hay que escribir un unico valor del char
     ' Por ID
@@ -1506,7 +1506,7 @@ Public Function GetPersonajesCountDatabase(CuentaEmail As String) As Byte
 
     On Error GoTo ErrorHandler
 
-    Dim Id As Integer
+    Dim Id As Long
 
     Id = GetDBValue("account", "id", "email", LCase$(CuentaEmail))
     
@@ -1786,7 +1786,7 @@ ValidarCuentaDatabase_Err:
         
 End Sub
 
-Public Function CheckUserAccount(name As String, ByVal AccountId As Integer) As Boolean
+Public Function CheckUserAccount(name As String, ByVal AccountId As Long) As Boolean
 
     CheckUserAccount = (val(GetUserValue(name, "account_id")) = AccountId)
 
@@ -1809,7 +1809,7 @@ Public Sub BorrarCuentaDatabase(CuentaEmail As String)
 
     On Error GoTo ErrorHandler
 
-    Dim Id As Integer
+    Dim Id As Long
 
     Id = GetDBValue("account", "id", "email", LCase$(CuentaEmail))
 
@@ -1909,7 +1909,7 @@ ErrorHandler:
 
 End Sub
 
-Public Sub SaveBanCuentaDatabase(ByVal AccountId As Integer, Reason As String, BannedBy As String)
+Public Sub SaveBanCuentaDatabase(ByVal AccountId As Long, Reason As String, BannedBy As String)
 
     On Error GoTo ErrorHandler
 
@@ -2323,7 +2323,7 @@ Public Function PersonajePerteneceEmail(ByVal UserName As String, ByVal AccountE
     
 End Function
 
-Public Function PersonajePerteneceID(ByVal UserName As String, ByVal AccountId As Integer) As Boolean
+Public Function PersonajePerteneceID(ByVal UserName As String, ByVal AccountId As Long) As Boolean
     
     Call MakeQuery("SELECT id FROM user WHERE name = ? AND account_id = ?;", False, UserName, AccountId)
     
@@ -2382,7 +2382,7 @@ ErrorHandler:
 
 End Sub
 
-Public Function GetUsersLoggedAccountDatabase(ByVal AccountId As Integer) As Byte
+Public Function GetUsersLoggedAccountDatabase(ByVal AccountId As Long) As Byte
 
     On Error GoTo ErrorHandler
 
