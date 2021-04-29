@@ -638,8 +638,8 @@ Public Type PersonajeCuenta
     nombre As String
     nivel As Byte
     Mapa As Integer
-    PosX As Integer
-    PosY As Integer
+    posX As Integer
+    posY As Integer
     cuerpo As Integer
     Cabeza As Integer
     Status As Byte
@@ -3313,16 +3313,20 @@ Private Sub HandleCastSpell(ByVal UserIndex As Integer)
         
 124         If .flags.Hechizo <> 0 Then
 
-                Dim uh As Integer
-            
-126             uh = UserList(UserIndex).Stats.UserHechizos(Spell)
+                If (.flags.Privilegios And PlayerType.Consejero) = 0 Then
 
-128             If Hechizos(uh).AutoLanzar = 1 Then
-130                 UserList(UserIndex).flags.TargetUser = UserIndex
-132                 Call LanzarHechizo(.flags.Hechizo, UserIndex)
-                Else
-134                 Call WriteWorkRequestTarget(UserIndex, eSkill.Magia)
-
+                    Dim uh As Integer
+                
+126                 uh = .Stats.UserHechizos(Spell)
+    
+128                 If Hechizos(uh).AutoLanzar = 1 Then
+130                     UserList(UserIndex).flags.TargetUser = UserIndex
+132                     Call LanzarHechizo(.flags.Hechizo, UserIndex)
+                    Else
+134                     Call WriteWorkRequestTarget(UserIndex, eSkill.Magia)
+    
+                    End If
+                    
                 End If
 
             End If
@@ -26153,8 +26157,8 @@ Public Sub WritePersonajesDeCuenta(ByVal UserIndex As Integer)
 144             Call .WriteASCIIString(Personaje(i).nombre)
 146             Call .WriteByte(Personaje(i).nivel)
 148             Call .WriteInteger(Personaje(i).Mapa)
-                Call .WriteInteger(Personaje(i).PosX)
-                Call .WriteInteger(Personaje(i).PosY)
+                Call .WriteInteger(Personaje(i).posX)
+                Call .WriteInteger(Personaje(i).posY)
 150             Call .WriteInteger(Personaje(i).cuerpo)
 152             Call .WriteInteger(Personaje(i).Cabeza)
 154             Call .WriteByte(Personaje(i).Status)
@@ -31803,11 +31807,9 @@ Private Sub HandleCreateEvent(ByVal UserIndex As Integer)
         Call .incomingData.CopyBuffer(Buffer)
 
         If LenB(name) = 0 Then Exit Sub
-
-        If Not EsGM(UserIndex) Then Exit Sub
-
+    
         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then Exit Sub
-        
+    
         Select Case UCase$(name)
             Case "INVASION BANDER"
                 Call IniciarEvento(TipoEvento.Invasion, 1)

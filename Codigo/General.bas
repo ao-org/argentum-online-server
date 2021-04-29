@@ -444,7 +444,7 @@ Sub ApagarFogatas()
 
         Dim obj As obj
 100         obj.ObjIndex = FOGATA_APAG
-102         obj.Amount = 1
+102         obj.amount = 1
 
         Dim MapaActual As Long
         Dim Y          As Long
@@ -553,7 +553,7 @@ Private Sub InicializarConstantes()
 236     ListaClases(eClass.Thief) = "Ladrón"
 238     ListaClases(eClass.Bandit) = "Bandido"
     
-240     SkillsNames(eSkill.magia) = "Magia"
+240     SkillsNames(eSkill.Magia) = "Magia"
 242     SkillsNames(eSkill.Robar) = "Robar"
 244     SkillsNames(eSkill.Tacticas) = "Destreza en combate"
 246     SkillsNames(eSkill.Armas) = "Combate con armas"
@@ -611,7 +611,7 @@ Sub Main()
     If GetProcess(App.EXEName & ".exe") > 1 Then
     
         ' Si lo hay, pregunto si lo queremos cerrar.
-        If MsgBox("Se ha encontrado mas de 1 instancia abierta de esta aplicación, ¿ Desea continuar ?", vbYesNo) = vbNo Then
+        If MsgBox("Se ha encontrado mas de 1 instancia abierta de esta aplicación, ¿Desea continuar?", vbYesNo) = vbNo Then
             
             ' Cerramos esta instancia de la aplicacion.
             End
@@ -683,11 +683,8 @@ Sub Main()
     '*************************************************
     
     frmCargando.Label1(2).Caption = "Cargando Obj.Dat"
-    'Call LoadOBJData
-    Call LoadOBJData
 
-    Call InitTesoro
-    Call InitRegalo
+    Call LoadOBJData
         
     frmCargando.Label1(2).Caption = "Cargando Hechizos.Dat"
     Call CargarHechizos
@@ -730,9 +727,6 @@ Sub Main()
         frmCargando.Label1(2).Caption = "Cargando Mapas"
         Call LoadMapData
     End If
-        
-    Call CargarInfoRetos
-    Call CargarInfoEventos
     
     ' Pretorianos
     frmCargando.Label1(2).Caption = "Cargando Pretorianos.dat"
@@ -2022,7 +2016,8 @@ Public Sub EfectoAhogo(ByVal UserIndex As Integer)
         
         On Error GoTo EfectoAhogo_Err
         
-
+        If Not UserList(UserIndex).flags.Privilegios And PlayerType.user Then Exit Sub
+        
         Dim n As Integer
 
 100     If RequiereOxigeno(UserList(UserIndex).Pos.Map) Then
