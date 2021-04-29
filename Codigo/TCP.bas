@@ -1423,7 +1423,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
     
 ErrHandler:
 566     Call RegistrarError(Err.Number, Err.Description, "TCP.ConnectUser", Erl)
-568     Call WriteShowMessageBox(UserIndex, "El personaje contiene un error, comuniquese con un miembro del staff.")
+568     Call WriteShowMessageBox(UserIndex, "El personaje contiene un error. Comuníquese con un miembro del staff.")
 570     Call CloseSocket(UserIndex)
 
 End Sub
@@ -2352,7 +2352,7 @@ Function ValidarNombre(nombre As String) As Boolean
 
 End Function
 
-Function ContarUsuariosMismaCuenta(ByVal AccountId As Integer) As Integer
+Function ContarUsuariosMismaCuenta(ByVal AccountId As Long) As Integer
 
         Dim i As Integer
     

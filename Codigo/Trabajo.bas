@@ -2463,7 +2463,7 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 104     With UserList(UserIndex)
 
 
-            If .flags.Privilegios And (PlayerType.Consejero) Then Exit Sub
+            If .flags.Privilegios And PlayerType.Consejero Then Exit Sub
             
 106         If .NroMascotas < MAXMASCOTAS Then
 

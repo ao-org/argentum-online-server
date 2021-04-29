@@ -1145,7 +1145,7 @@ Public Sub BanAccount(ByVal bannerUserIndex As Integer, ByVal UserName As String
 
         Dim Cuenta    As String
         
-        Dim AccountId As Integer
+        Dim AccountId As Long
     
 100     If InStrB(UserName, "+") Then
 102         UserName = Replace(UserName, "+", " ")
