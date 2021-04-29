@@ -40,7 +40,7 @@ End Type
 Private Type tItem
 
     ObjIndex As Integer
-    Amount As Integer
+    amount As Integer
 
 End Type
 
@@ -952,7 +952,7 @@ Public Sub GrabarMapa(ByVal Map As Long, ByVal MAPFILE As String)
 196                     MH.NumeroOBJs = MH.NumeroOBJs + 1
 198                     ReDim Preserve Objetos(1 To MH.NumeroOBJs)
 200                     Objetos(MH.NumeroOBJs).ObjIndex = .ObjInfo.ObjIndex
-202                     Objetos(MH.NumeroOBJs).ObjAmmount = .ObjInfo.Amount
+202                     Objetos(MH.NumeroOBJs).ObjAmmount = .ObjInfo.amount
                
 204                     Objetos(MH.NumeroOBJs).X = i
 206                     Objetos(MH.NumeroOBJs).Y = j
@@ -1546,7 +1546,7 @@ Sub LoadOBJData()
                 
                         For i = 1 To .CantItem
                             .Item(i).ObjIndex = val(Leer.GetValue(ObjKey, "Item" & i))
-                            .Item(i).Amount = val(Leer.GetValue(ObjKey, "Cantidad" & i))
+                            .Item(i).amount = val(Leer.GetValue(ObjKey, "Cantidad" & i))
                         Next i
 
                     Else
@@ -1556,7 +1556,7 @@ Sub LoadOBJData()
 
                         For i = 1 To .CantItem
                             .Item(i).ObjIndex = val(Leer.GetValue(ObjKey, "Item" & i))
-                            .Item(i).Amount = val(Leer.GetValue(ObjKey, "Cantidad" & i))
+                            .Item(i).amount = val(Leer.GetValue(ObjKey, "Cantidad" & i))
                         Next i
 
                     End If
@@ -1572,7 +1572,7 @@ Sub LoadOBJData()
                             str = Leer.GetValue(ObjKey, "Gema" & i)
                             Field = Split(str, "-")
                             .Item(i).ObjIndex = val(Field(0))    ' ObjIndex
-                            .Item(i).Amount = val(Field(1))      ' Probabilidad de drop (1 en X)
+                            .Item(i).amount = val(Field(1))      ' Probabilidad de drop (1 en X)
                         Next i
 
                     End If
@@ -1667,28 +1667,28 @@ Sub LoadOBJData()
     
             'CHECK: !!! Esto es provisorio hasta que los de Dateo cambien los valores de string a numerico  -  Nunca más papu
             Dim n As Integer
-            Dim s As String
+            Dim S As String
 
             For i = 1 To NUMCLASES
-                s = UCase$(Leer.GetValue(ObjKey, "CP" & i))
+                S = UCase$(Leer.GetValue(ObjKey, "CP" & i))
                 n = 1
 
-                Do While LenB(s) > 0 And Tilde(ListaClases(n)) <> Trim$(s)
+                Do While LenB(S) > 0 And Tilde(ListaClases(n)) <> Trim$(S)
                     n = n + 1
                 Loop
             
-                .ClaseProhibida(i) = IIf(LenB(s) > 0, n, 0)
+                .ClaseProhibida(i) = IIf(LenB(S) > 0, n, 0)
             Next i
         
             For i = 1 To NUMRAZAS
-                s = UCase$(Leer.GetValue(ObjKey, "RP" & i))
+                S = UCase$(Leer.GetValue(ObjKey, "RP" & i))
                 n = 1
 
-                Do While LenB(s) > 0 And Tilde(ListaRazas(n)) <> Trim$(s)
+                Do While LenB(S) > 0 And Tilde(ListaRazas(n)) <> Trim$(S)
                     n = n + 1
                 Loop
             
-                .RazaProhibida(i) = IIf(LenB(s) > 0, n, 0)
+                .RazaProhibida(i) = IIf(LenB(S) > 0, n, 0)
             Next i
         
             ' Skill requerido
@@ -1732,6 +1732,9 @@ Sub LoadOBJData()
     Next Object
 
     Set Leer = Nothing
+    
+    Call InitTesoro
+    Call InitRegalo
 
     Exit Sub
 
@@ -1953,7 +1956,7 @@ Sub LoadUserInit(ByVal UserIndex As Integer, ByRef UserFile As clsIniReader)
 242     For LoopC = 1 To MAX_BANCOINVENTORY_SLOTS
 244         ln = UserFile.GetValue("BancoInventory", "Obj" & LoopC)
 246         UserList(UserIndex).BancoInvent.Object(LoopC).ObjIndex = CInt(ReadField(1, ln, 45))
-248         UserList(UserIndex).BancoInvent.Object(LoopC).Amount = CInt(ReadField(2, ln, 45))
+248         UserList(UserIndex).BancoInvent.Object(LoopC).amount = CInt(ReadField(2, ln, 45))
 250     Next LoopC
 
         '------------------------------------------------------------------------------------
@@ -1963,7 +1966,7 @@ Sub LoadUserInit(ByVal UserIndex As Integer, ByRef UserFile As clsIniReader)
 252     For LoopC = 1 To UserList(UserIndex).CurrentInventorySlots
 254         ln = UserFile.GetValue("Inventory", "Obj" & LoopC)
 256         UserList(UserIndex).Invent.Object(LoopC).ObjIndex = CInt(ReadField(1, ln, 45))
-258         UserList(UserIndex).Invent.Object(LoopC).Amount = CInt(ReadField(2, ln, 45))
+258         UserList(UserIndex).Invent.Object(LoopC).amount = CInt(ReadField(2, ln, 45))
 260         UserList(UserIndex).Invent.Object(LoopC).Equipped = CByte(ReadField(3, ln, 45))
 262     Next LoopC
 
@@ -2143,7 +2146,7 @@ Sub LoadMapData()
 
 man:
 134     Call MsgBox("Error durante la carga de mapas, el mapa " & Map & " contiene errores")
-136     Call LogError(Date & " " & Err.Description & " " & Err.HelpContext & " " & Err.HelpFile & " " & Err.Source)
+136     Call LogError(Date & " " & Err.Description & " " & Err.HelpContext & " " & Err.HelpFile & " " & Err.source)
 
 End Sub
 
@@ -2336,11 +2339,11 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
 264                 Select Case ObjData(Objetos(i).ObjIndex).OBJType
 
                         Case eOBJType.otYacimiento, eOBJType.otArboles
-266                         MapData(Map, Objetos(i).X, Objetos(i).Y).ObjInfo.Amount = ObjData(Objetos(i).ObjIndex).VidaUtil
+266                         MapData(Map, Objetos(i).X, Objetos(i).Y).ObjInfo.amount = ObjData(Objetos(i).ObjIndex).VidaUtil
 268                         MapData(Map, Objetos(i).X, Objetos(i).Y).ObjInfo.data = &H7FFFFFFF ' Ultimo uso = Max Long
 
 270                     Case Else
-272                         MapData(Map, Objetos(i).X, Objetos(i).Y).ObjInfo.Amount = Objetos(i).ObjAmmount
+272                         MapData(Map, Objetos(i).X, Objetos(i).Y).ObjInfo.amount = Objetos(i).ObjAmmount
 
                     End Select
 
@@ -2840,9 +2843,11 @@ Sub LoadConfiguraciones()
 125     frmMain.lblLimpieza.Caption = "Limpieza de objetos cada: " & TimerLimpiarObjetos & " minutos."
 
         Set Leer = Nothing
-        
-        CargarEventos
-        
+
+        Call CargarEventos
+        Call CargarInfoRetos
+        Call CargarInfoEventos
+
         Exit Sub
 
 LoadConfiguraciones_Err:
@@ -3168,7 +3173,7 @@ Sub BackUPnPc(NpcIndex As Integer)
 156     If NpcList(NpcIndex).Invent.NroItems > 0 Then
 
 158         For LoopC = 1 To MAX_INVENTORY_SLOTS
-160             Call WriteVar(npcfile, "NPC" & NpcNumero, "Obj" & LoopC, NpcList(NpcIndex).Invent.Object(LoopC).ObjIndex & "-" & NpcList(NpcIndex).Invent.Object(LoopC).Amount)
+160             Call WriteVar(npcfile, "NPC" & NpcNumero, "Obj" & LoopC, NpcList(NpcIndex).Invent.Object(LoopC).ObjIndex & "-" & NpcList(NpcIndex).Invent.Object(LoopC).amount)
             Next
 
         End If
@@ -3235,7 +3240,7 @@ Sub CargarNpcBackUp(NpcIndex As Integer, ByVal NpcNumber As Integer)
 148         For LoopC = 1 To MAX_INVENTORY_SLOTS
 150             ln = GetVar(npcfile, "NPC" & NpcNumber, "Obj" & LoopC)
 152             NpcList(NpcIndex).Invent.Object(LoopC).ObjIndex = val(ReadField(1, ln, 45))
-154             NpcList(NpcIndex).Invent.Object(LoopC).Amount = val(ReadField(2, ln, 45))
+154             NpcList(NpcIndex).Invent.Object(LoopC).amount = val(ReadField(2, ln, 45))
        
 156         Next LoopC
 
@@ -3243,7 +3248,7 @@ Sub CargarNpcBackUp(NpcIndex As Integer, ByVal NpcNumber As Integer)
 
 158         For LoopC = 1 To MAX_INVENTORY_SLOTS
 160             NpcList(NpcIndex).Invent.Object(LoopC).ObjIndex = 0
-162             NpcList(NpcIndex).Invent.Object(LoopC).Amount = 0
+162             NpcList(NpcIndex).Invent.Object(LoopC).amount = 0
 164         Next LoopC
 
         End If
@@ -3465,7 +3470,7 @@ Public Sub LoadPesca()
 130             nivel = val(Field(2))               ' Nivel de caña
 
 132             If (nivel > MaxLvlCania) Then nivel = MaxLvlCania
-134             Peces(i).Amount = nivel
+134             Peces(i).amount = nivel
             Next
 
             ' Los ordeno segun nivel de caña (quick sort)
@@ -3473,11 +3478,11 @@ Public Sub LoadPesca()
 
             ' Sumo los pesos
 138         For i = 1 To Count
-140             For j = Peces(i).Amount To MaxLvlCania
+140             For j = Peces(i).amount To MaxLvlCania
 142                 PesoPeces(j) = PesoPeces(j) + Peces(i).data
 144             Next j
 
-146             Peces(i).data = PesoPeces(Peces(i).Amount)
+146             Peces(i).data = PesoPeces(Peces(i).amount)
 148         Next i
         Else
 150         ReDim Peces(0) As obj
@@ -3509,16 +3514,16 @@ Private Sub QuickSortPeces(ByVal First As Long, ByVal Last As Long)
     
 100     low = First
 102     high = Last
-104     MidValue = Peces((First + Last) \ 2).Amount
+104     MidValue = Peces((First + Last) \ 2).amount
     
         Do
 
-106         While Peces(low).Amount < MidValue
+106         While Peces(low).amount < MidValue
 
 108             low = low + 1
             Wend
 
-110         While Peces(high).Amount > MidValue
+110         While Peces(high).amount > MidValue
 
 112             high = high - 1
             Wend
