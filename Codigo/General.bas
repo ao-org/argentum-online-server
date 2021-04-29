@@ -641,7 +641,6 @@ Sub Main()
     
     Call LoadGuildsDB
     
-    Call LoadConfiguraciones
     Call CargarCodigosDonador
     Call loadAdministrativeUsers
 
@@ -650,6 +649,7 @@ Sub Main()
     
     MaxUsers = 0
     Call LoadSini
+    Call LoadConfiguraciones
     Call LoadIntervalos
     Call CargarForbidenWords
     Call CargaApuestas
@@ -787,7 +787,7 @@ Sub Main()
     'Cierra el socket de escucha
     If LastSockListen >= 0 Then Call apiclosesocket(LastSockListen)
 
-    Call IniciaWsApi(frmMain.hwnd)
+    Call IniciaWsApi(frmMain.hWnd)
     SockListen = ListenForConnect(Puerto, hWndMsg, "")
 
     If SockListen <> -1 Then
@@ -2557,7 +2557,7 @@ Sub InicializaEstadisticas()
 
 100     Ta = GetTickCount()
 
-102     Call EstadisticasWeb.Inicializa(frmMain.hwnd)
+102     Call EstadisticasWeb.Inicializa(frmMain.hWnd)
 104     Call EstadisticasWeb.Informar(CANTIDAD_MAPAS, NumMaps)
 106     Call EstadisticasWeb.Informar(CANTIDAD_ONLINE, NumUsers)
 108     Call EstadisticasWeb.Informar(UPTIME_SERVER, (Ta - tInicioServer) / 1000)
