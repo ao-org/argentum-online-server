@@ -1,0 +1,28 @@
+' Para correr el servidor, se necesita un archivo Database.ini con 
+' los datos para [DATABASE]. Este archivo funciona de ejemplo, y es
+' el unico que deberia existir en el repositorio.
+' Duplicar este archivo y renombrar a Database.ini para poder iniciar
+' el servidor.
+ 
+
+' El servidor usara estas credenciales
+[DATABASE]
+Host=localhost
+Name=ao_server_prod
+Username=root
+Password=s3cr3tP@s5w0RD
+
+
+' Estos son los datos del servidor de Horacio
+[DATABASE_HORACIO]
+Host=ao20-test.duckdns.org:3306
+Name=ao_server_test
+Username=AO_USER
+Password=uQM8OCQOhGwC4xaHWDoJ
+
+' Esto se usa para conectarse a la DB local
+[DATABASE_LOCALHOST]
+Host=localhost
+Name=ao_server_prod
+Username=root
+Password=somepassword
