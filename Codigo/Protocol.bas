@@ -544,6 +544,7 @@ Private Enum NewPacksID
     CuentaDeposit
     CreateEvent
     CommerceSendChatMessage
+    LogMacroClickHechizo
 End Enum
 
 Public Enum eEditOptions
@@ -1747,6 +1748,9 @@ Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
                 
             Case NewPacksID.CommerceSendChatMessage
                 Call HandleCommerceSendChatMessage(UserIndex)
+                
+            Case NewPacksID.LogMacroClickHechizo
+                Call HandleLogMacroClickHechizo(UserIndex)
             
 394         Case Else
                 'ERROR : Abort!
@@ -31339,6 +31343,22 @@ ErrHandler:
          Resume
         End If
     
+End Sub
+
+Private Sub HandleLogMacroClickHechizo(ByVal UserIndex As Integer)
+     If UserList(UserIndex).incomingData.Length < 2 Then
+        Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
+        Exit Sub
+    End If
+    
+    
+    With UserList(UserIndex)
+        'Remove packet ID
+        Call .incomingData.ReadInteger
+        Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("AntiCheat> El usuario " & .name & " se le cerró el cliente por posible uso de macro de hechizos", FontTypeNames.FONTTYPE_INFO))
+        Call LogHackAttemp("Usuario: " & .name & "   " & "Ip: " & .ip & " Posible uso de macro de hechizos.")
+    End With
+
 End Sub
 
 Sub WriteCommerceRecieveChatMessage(ByVal UserIndex As Integer, ByVal message As String)
