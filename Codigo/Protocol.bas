@@ -445,13 +445,8 @@ Private Enum ClientPacketID
     GlobalMessage           '/CONSOLA
     GlobalOnOff
     SilenciarUser           '/SILENCIAR
-    CrearNuevaCuenta
-    ValidarCuenta
     IngresarConCuenta
-    RevalidarCuenta
     BorrarPJ
-    RecuperandoContraseña
-    BorrandoCuenta
     NewPacketID
     Desbuggear
     DarLlaveAUsuario
@@ -638,8 +633,8 @@ Public Type PersonajeCuenta
     nombre As String
     nivel As Byte
     Mapa As Integer
-    PosX As Integer
-    PosY As Integer
+    posX As Integer
+    posY As Integer
     cuerpo As Integer
     Cabeza As Integer
     Status As Byte
@@ -680,7 +675,7 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
         ' Debug.Print "Llego paquete ní" & packetID & " pesa: " & UserList(UserIndex).incomingData.length & "Bytes"
     
         'Does the packet requires a logged user??
-102     If Not (packetId = ClientPacketID.LoginExistingChar Or packetId = ClientPacketID.LoginNewChar Or packetId = ClientPacketID.CrearNuevaCuenta Or packetId = ClientPacketID.IngresarConCuenta Or packetId = ClientPacketID.RevalidarCuenta Or packetId = ClientPacketID.BorrarPJ Or packetId = ClientPacketID.RecuperandoContraseña Or packetId = ClientPacketID.BorrandoCuenta Or packetId = ClientPacketID.ValidarCuenta Or packetId = ClientPacketID.ThrowDice) Then
+102     If Not (packetId = ClientPacketID.LoginExistingChar Or packetId = ClientPacketID.LoginNewChar Or packetId = ClientPacketID.IngresarConCuenta Or packetId = ClientPacketID.BorrarPJ Or packetId = ClientPacketID.ThrowDice) Then
         
             'Is the user actually logged?
 104         If Not UserList(UserIndex).flags.UserLogged Then
@@ -723,28 +718,13 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
     
 132         Case ClientPacketID.LoginExistingChar       'OLOGIN
 134             Call HandleLoginExistingChar(UserIndex)
-            
-136         Case ClientPacketID.CrearNuevaCuenta
-138             Call HandleCrearCuenta(UserIndex)
-        
+
 140         Case ClientPacketID.IngresarConCuenta
 142             Call HandleIngresarConCuenta(UserIndex)
-            
-144         Case ClientPacketID.ValidarCuenta
-146             Call HandleValidarCuenta(UserIndex)
-            
-148         Case ClientPacketID.RevalidarCuenta
-150             Call HandleReValidarCuenta(UserIndex)
-            
+
 152         Case ClientPacketID.BorrarPJ
 154             Call HandleBorrarPJ(UserIndex)
-            
-156         Case ClientPacketID.RecuperandoContraseña
-158             Call HandleRecuperandoContraseña(UserIndex)
-        
-160         Case ClientPacketID.BorrandoCuenta
-162             Call HandleBorrandoCuenta(UserIndex)
-        
+
 164         Case ClientPacketID.LoginNewChar            'NLOGIN
 166             Call HandleLoginNewChar(UserIndex)
             
@@ -3313,16 +3293,20 @@ Private Sub HandleCastSpell(ByVal UserIndex As Integer)
         
 124         If .flags.Hechizo <> 0 Then
 
-                Dim uh As Integer
-            
-126             uh = UserList(UserIndex).Stats.UserHechizos(Spell)
+                If (.flags.Privilegios And PlayerType.Consejero) = 0 Then
 
-128             If Hechizos(uh).AutoLanzar = 1 Then
-130                 UserList(UserIndex).flags.TargetUser = UserIndex
-132                 Call LanzarHechizo(.flags.Hechizo, UserIndex)
-                Else
-134                 Call WriteWorkRequestTarget(UserIndex, eSkill.Magia)
-
+                    Dim uh As Integer
+                
+126                 uh = .Stats.UserHechizos(Spell)
+    
+128                 If Hechizos(uh).AutoLanzar = 1 Then
+130                     UserList(UserIndex).flags.TargetUser = UserIndex
+132                     Call LanzarHechizo(.flags.Hechizo, UserIndex)
+                    Else
+134                     Call WriteWorkRequestTarget(UserIndex, eSkill.Magia)
+    
+                    End If
+                    
                 End If
 
             End If
@@ -25545,238 +25529,6 @@ SilenciarUserName_Err:
         
 End Sub
 
-Private Sub HandleCrearCuenta(ByVal UserIndex As Integer)
-
-        'Author: Pablo Mercavides
-100     If UserList(UserIndex).incomingData.Length < 18 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
-
-        End If
-
-        On Error GoTo ErrHandler
-
-        'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-        Dim Buffer As New clsByteQueue
-
-104     Call Buffer.CopyBuffer(UserList(UserIndex).incomingData)
-    
-        'Remove packet ID
-106     Call Buffer.ReadByte
-
-        Dim CuentaEmail    As String
-
-        Dim CuentaPassword As String
-    
-108     CuentaEmail = Buffer.ReadASCIIString()
-110     CuentaPassword = Buffer.ReadASCIIString()
-  
-112     If Not CheckMailString(CuentaEmail) Then
-114         Call WriteErrorMsg(UserIndex, "Email inválido.")
-        
-116         Call CloseSocket(UserIndex)
-            Exit Sub
-
-        End If
-
-118     If Not CuentaExiste(CuentaEmail) Then
-
-120         Call SaveNewAccount(UserIndex, CuentaEmail, SDesencriptar(CuentaPassword))
-    
-122         Call EnviarCorreo(CuentaEmail)
-124         Call WriteShowFrmLogear(UserIndex)
-126         Call WriteShowMessageBox(UserIndex, "Cuenta creada. Se ha enviado un código de validación a su email, debe activar la cuenta antes de poder usarla. Recuerde revisar SPAM en caso de no encontrar el mail.")
-        
-128         Call UserList(UserIndex).incomingData.CopyBuffer(Buffer)
-        Else
-130         Call WriteShowMessageBox(UserIndex, "El email ya está en uso.")
-        
-132         Call CloseSocket(UserIndex)
-
-        End If
-    
-ErrHandler:
-
-        Dim Error As Long
-
-134     Error = Err.Number
-
-        On Error GoTo 0
-    
-        'Destroy auxiliar buffer
-136     Set Buffer = Nothing
-    
-138     If Error <> 0 Then Err.raise Error
-
-End Sub
-
-Private Sub HandleValidarCuenta(ByVal UserIndex As Integer)
-
-        'Author: Pablo Mercavides
-100     If UserList(UserIndex).incomingData.Length < 7 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
-
-        End If
-
-        On Error GoTo ErrHandler
-
-        'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-        Dim Buffer As New clsByteQueue
-
-104     Call Buffer.CopyBuffer(UserList(UserIndex).incomingData)
-    
-        'Remove packet ID
-106     Call Buffer.ReadByte
-
-        Dim CuentaEmail    As String
-
-        Dim ValidacionCode As String
-    
-108     CuentaEmail = Buffer.ReadASCIIString()
-110     ValidacionCode = Buffer.ReadASCIIString()
-
-112     If Not CheckMailString(CuentaEmail) Then
-114         Call WriteShowFrmLogear(UserIndex)
-116         Call WriteShowMessageBox(UserIndex, "Email inválido.")
-        
-118         Call CloseSocket(UserIndex)
-            Exit Sub
-
-        End If
-    
-120     If CuentaExiste(CuentaEmail) Then
-122         If Not ObtenerValidacion(CuentaEmail) Then
-124             If UCase$(ObtenerCodigo(CuentaEmail)) = UCase$(ValidacionCode) Then
-126                 If Database_Enabled Then
-128                     Call ValidarCuentaDatabase(CuentaEmail)
-                    Else
-130                     Call WriteVar(CuentasPath & LCase$(CuentaEmail) & ".act", "INIT", "Activada", "1")
-
-                    End If
-
-132                 Call WriteShowFrmLogear(UserIndex)
-134                 Call WriteShowMessageBox(UserIndex, "Cuenta activada con éxito, ya puede ingresar.")
-                Else
-136                 Call WriteShowFrmLogear(UserIndex)
-138                 Call WriteShowMessageBox(UserIndex, "¡Código de activación inválido!")
-
-                End If
-
-            Else
-140             Call WriteShowFrmLogear(UserIndex)
-142             Call WriteShowMessageBox(UserIndex, "La cuenta ya ha sido validada anteriormente.")
-
-            End If
-
-        Else
-144         Call WriteShowFrmLogear(UserIndex)
-146         Call WriteShowMessageBox(UserIndex, "La cuenta no existe.")
-
-        End If
-    
-        'If we got here then packet is complete, copy data back to original queue
-148     Call UserList(UserIndex).incomingData.CopyBuffer(Buffer)
-    
-ErrHandler:
-
-        Dim Error As Long
-
-150     Error = Err.Number
-
-        On Error GoTo 0
-    
-        'Destroy auxiliar buffer
-152     Set Buffer = Nothing
-    
-154     If Error <> 0 Then Err.raise Error
-
-End Sub
-
-Private Sub HandleReValidarCuenta(ByVal UserIndex As Integer)
-
-        'Author: Pablo Mercavides
-100     If UserList(UserIndex).incomingData.Length < 3 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
-
-        End If
-
-        On Error GoTo ErrHandler
-
-        'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-        Dim Buffer As New clsByteQueue
-
-104     Call Buffer.CopyBuffer(UserList(UserIndex).incomingData)
-    
-        'Remove packet ID
-106     Call Buffer.ReadByte
-
-        Dim UserCuenta As String
-
-        Dim Useremail  As String
-    
-108     UserCuenta = Buffer.ReadASCIIString()
-    
-110     Useremail = Buffer.ReadASCIIString()
-    
-        'WyroX: TODO:
-        'Saco este paquete, por el momento
-        Exit Sub
-    
-112     If Not AsciiValidos(UserCuenta) Then
-114         Call WriteShowFrmLogear(UserIndex)
-116         Call WriteShowMessageBox(UserIndex, "Nombre invalido.")
-        
-118         Call CloseSocket(UserIndex)
-            Exit Sub
-
-        End If
-    
-        'If Useremail <> ObtenerEmail(UserCuenta) Then
-120     Call WriteShowFrmLogear(UserIndex)
-122     Call WriteShowMessageBox(UserIndex, "El email introducido no coincide con el email registrador.")
-    
-124     Call CloseSocket(UserIndex)
-        Exit Sub
-        'End If
-    
-126     If CuentaExiste(UserCuenta) Then
-128         If ObtenerValidacion(UserCuenta) = 0 Then
-                'Call EnviarCorreo(UserCuenta, ObtenerEmail(UserCuenta))
-130             Call WriteShowFrmLogear(UserIndex)
-132             Call WriteShowMessageBox(UserIndex, "Se ha enviado el mail de validación a la dirección designada cuando se creo la cuenta.")
-                
-            Else
-134             Call WriteShowFrmLogear(UserIndex)
-136             Call WriteShowMessageBox(UserIndex, "La cuenta ya ha sido validada anteriormente.")
-
-            End If
-
-        Else
-138         Call WriteShowFrmLogear(UserIndex)
-140         Call WriteShowMessageBox(UserIndex, "La cuenta no existe.")
-
-        End If
-    
-        'If we got here then packet is complete, copy data back to original queue
-142     Call UserList(UserIndex).incomingData.CopyBuffer(Buffer)
-    
-ErrHandler:
-
-        Dim Error As Long
-
-144     Error = Err.Number
-
-        On Error GoTo 0
-    
-        'Destroy auxiliar buffer
-146     Set Buffer = Nothing
-    
-148     If Error <> 0 Then Err.raise Error
-
-End Sub
-
 Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
 
         Dim Version As String
@@ -25933,178 +25685,6 @@ ErrHandler:
 
 End Sub
 
-Private Sub HandleBorrandoCuenta(ByVal UserIndex As Integer)
-
-        'Author: Pablo Mercavides
-100     If UserList(UserIndex).incomingData.Length < 7 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
-
-        End If
-
-        On Error GoTo ErrHandler
-
-        'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-        Dim Buffer As New clsByteQueue
-
-104     Call Buffer.CopyBuffer(UserList(UserIndex).incomingData)
-    
-        'Remove packet ID
-106     Call Buffer.ReadByte
-
-        Dim AccountDelete As String
-
-        Dim UserMail      As String
-
-        Dim Password      As String
-    
-108     AccountDelete = Buffer.ReadASCIIString()
-110     UserMail = Buffer.ReadASCIIString()
-112     Password = Buffer.ReadASCIIString()
-    
-114     If CuentaExiste(AccountDelete) Then
-    
-116         If Not AsciiValidos(AccountDelete) Then
-118             Call WriteShowFrmLogear(UserIndex)
-120             Call WriteShowMessageBox(UserIndex, "Cuenta invalida.")
-            
-122             Call CloseSocket(UserIndex)
-                Exit Sub
-
-            End If
-        
-124         If UserMail <> ObtenerEmail(AccountDelete) Then
-126             Call WriteShowFrmLogear(UserIndex)
-128             Call WriteShowMessageBox(UserIndex, "El email introducido no coincide con el email registrador.")
-            
-130             Call CloseSocket(UserIndex)
-                Exit Sub
-
-            End If
-        
-132         If True Then ' Desactivado
-134             Call WriteShowFrmLogear(UserIndex)
-136             Call WriteShowMessageBox(UserIndex, "La contraseña introducida no es correcta.")
-            
-138             Call CloseSocket(UserIndex)
-                Exit Sub
-
-            End If
-
-140         Call BorrarCuenta(AccountDelete)
-142         Call WriteShowFrmLogear(UserIndex)
-144         Call WriteShowMessageBox(UserIndex, "La cuenta ha sido borrada.")
-        
-        Else
-146         Call WriteShowFrmLogear(UserIndex)
-148         Call WriteShowMessageBox(UserIndex, "La cuenta ingresada no existe.")
-        
-150         Call CloseSocket(UserIndex)
-            Exit Sub
-
-        End If
-    
-        'If we got here then packet is complete, copy data back to original queue
-152     Call UserList(UserIndex).incomingData.CopyBuffer(Buffer)
-    
-ErrHandler:
-
-        Dim Error As Long
-
-154     Error = Err.Number
-
-        On Error GoTo 0
-    
-        'Destroy auxiliar buffer
-156     Set Buffer = Nothing
-    
-158     If Error <> 0 Then Err.raise Error
-
-End Sub
-
-Private Sub HandleRecuperandoContraseña(ByVal UserIndex As Integer)
-
-        'Author: Pablo Mercavides
-100     If UserList(UserIndex).incomingData.Length < 5 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
-
-        End If
-
-        On Error GoTo ErrHandler
-
-        'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-        Dim Buffer As New clsByteQueue
-
-104     Call Buffer.CopyBuffer(UserList(UserIndex).incomingData)
-    
-        'Remove packet ID
-106     Call Buffer.ReadByte
-
-        Dim AcountDelete As String
-
-        Dim UserMail     As String
-    
-108     AcountDelete = Buffer.ReadASCIIString()
-110     UserMail = Buffer.ReadASCIIString()
-    
-112     If FileExist(CuentasPath & UCase$(AcountDelete) & ".act", vbNormal) Then
-    
-114         If Not AsciiValidos(AcountDelete) Then
-116             Call WriteShowFrmLogear(UserIndex)
-118             Call WriteShowMessageBox(UserIndex, "Cuenta invalida.")
-            
-            
-120             Call CloseSocket(UserIndex)
-                Exit Sub
-
-            End If
-
-122         If UserMail <> ObtenerEmail(AcountDelete) Then
-124             Call WriteShowFrmLogear(UserIndex)
-126             Call WriteShowMessageBox(UserIndex, "El email introducido no coincide con el email registrador.")
-            
-128             Call CloseSocket(UserIndex)
-                Exit Sub
-
-            End If
-        
-130         If EnviarCorreoRecuperacion(AcountDelete, ObtenerEmail(AcountDelete)) Then
-132             Call WriteShowFrmLogear(UserIndex)
-134             Call WriteShowMessageBox(UserIndex, "La contraseña de la cuenta a sido enviada por email a la direccion registrada.")
-            Else
-136             Call WriteShowFrmLogear(UserIndex)
-138             Call WriteShowMessageBox(UserIndex, "Se ha provocado un error al recuperar la clave, reintente mas tarde.")
-
-            End If
-
-        Else
-140         Call WriteShowFrmLogear(UserIndex)
-142         Call WriteShowMessageBox(UserIndex, "La cuenta ingresada no existe.")
-        
-144         Call CloseSocket(UserIndex)
-            Exit Sub
-
-        End If
-    
-        'If we got here then packet is complete, copy data back to original queue
-146     Call UserList(UserIndex).incomingData.CopyBuffer(Buffer)
-    
-ErrHandler:
-
-        Dim Error As Long
-
-148     Error = Err.Number
-
-        On Error GoTo 0
-    
-        'Destroy auxiliar buffer
-150     Set Buffer = Nothing
-    
-152     If Error <> 0 Then Err.raise Error
-
-End Sub
-
 Public Sub WritePersonajesDeCuenta(ByVal UserIndex As Integer)
         'Author: Pablo Mercavides
     
@@ -26153,8 +25733,8 @@ Public Sub WritePersonajesDeCuenta(ByVal UserIndex As Integer)
 144             Call .WriteASCIIString(Personaje(i).nombre)
 146             Call .WriteByte(Personaje(i).nivel)
 148             Call .WriteInteger(Personaje(i).Mapa)
-                Call .WriteInteger(Personaje(i).PosX)
-                Call .WriteInteger(Personaje(i).PosY)
+                Call .WriteInteger(Personaje(i).posX)
+                Call .WriteInteger(Personaje(i).posY)
 150             Call .WriteInteger(Personaje(i).cuerpo)
 152             Call .WriteInteger(Personaje(i).Cabeza)
 154             Call .WriteByte(Personaje(i).Status)
@@ -31803,11 +31383,9 @@ Private Sub HandleCreateEvent(ByVal UserIndex As Integer)
         Call .incomingData.CopyBuffer(Buffer)
 
         If LenB(name) = 0 Then Exit Sub
-
-        If Not EsGM(UserIndex) Then Exit Sub
-
+    
         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then Exit Sub
-        
+    
         Select Case UCase$(name)
             Case "INVASION BANDER"
                 Call IniciarEvento(TipoEvento.Invasion, 1)
