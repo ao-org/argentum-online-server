@@ -445,7 +445,6 @@ Private Enum ClientPacketID
     GlobalMessage           '/CONSOLA
     GlobalOnOff
     SilenciarUser           '/SILENCIAR
-    CrearNuevaCuenta
     ValidarCuenta
     IngresarConCuenta
     RevalidarCuenta
@@ -723,10 +722,7 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
     
 132         Case ClientPacketID.LoginExistingChar       'OLOGIN
 134             Call HandleLoginExistingChar(UserIndex)
-            
-136         Case ClientPacketID.CrearNuevaCuenta
-138             Call HandleCrearCuenta(UserIndex)
-        
+
 140         Case ClientPacketID.IngresarConCuenta
 142             Call HandleIngresarConCuenta(UserIndex)
             
