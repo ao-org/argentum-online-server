@@ -9666,7 +9666,6 @@ Private Sub HandleGoNearby(ByVal UserIndex As Integer)
 118                 If tIndex <= 0 Then 'existe el usuario destino?
 120                     Call WriteConsoleMsg(UserIndex, "Usuario offline.", FontTypeNames.FONTTYPE_INFO)
                     Else
-
 122                     For i = 2 To 5 'esto for sirve ir cambiando la distancia destino
 124                         For X = UserList(tIndex).Pos.X - i To UserList(tIndex).Pos.X + i
 126                             For Y = UserList(tIndex).Pos.Y - i To UserList(tIndex).Pos.Y + i
@@ -25847,7 +25846,9 @@ Private Sub HandlePossUser(ByVal UserIndex As Integer)
 118                     Call WriteConsoleMsg(UserIndex, "El usuario " & UserName & " no existe.", FontTypeNames.FONTTYPE_INFO)
                     End If
                 Else
-120                 Call WriteVar(CharPath & UCase$(UserName) & ".chr", "INIT", "Position", UserList(UserIndex).Pos.Map & "-" & UserList(UserIndex).Pos.X & "-" & UserList(UserIndex).Pos.Y)
+                    If Not .flags.Privilegios And PlayerType.Consejero Then
+120                      Call WriteVar(CharPath & UCase$(UserName) & ".chr", "INIT", "Position", UserList(UserIndex).Pos.Map & "-" & UserList(UserIndex).Pos.X & "-" & UserList(UserIndex).Pos.Y)
+                    End If
                 End If
 
 122             Call WriteConsoleMsg(UserIndex, "Servidor> Acción realizada con exito! La nueva posicion de " & UserName & "es: " & UserList(UserIndex).Pos.Map & "-" & UserList(UserIndex).Pos.X & "-" & UserList(UserIndex).Pos.Y & "...", FontTypeNames.FONTTYPE_INFO)
