@@ -3174,7 +3174,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
             If amount <= 0 Then Exit Sub
 
             'low rank admins can't drop item. Neither can the dead nor those sailing or riding a horse.
-114         'If .flags.Muerto = 1 Or ((.flags.Privilegios And PlayerType.Consejero) <> 0 And (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0) Then Exit Sub
+114         If .flags.Muerto = 1 Then Exit Sub  'Or ((.flags.Privilegios And PlayerType.Consejero) <> 0 And (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0) Then Exit Sub
                       
             'If the user is trading, he can't drop items => He's cheating, we kick him.
 116         If .flags.Comerciando Then Exit Sub
