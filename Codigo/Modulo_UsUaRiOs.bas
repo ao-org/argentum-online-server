@@ -1637,178 +1637,183 @@ WarpToLegalPos_Err:
         
 End Sub
 
-Sub WarpUserChar(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal x As Integer, ByVal y As Integer, Optional ByVal FX As Boolean = False)
+Sub WarpUserChar(ByVal UserIndex As Integer, _
+                 ByVal Map As Integer, _
+                 ByVal X As Integer, _
+                 ByVal Y As Integer, _
+                 Optional ByVal FX As Boolean = False)
         
         On Error GoTo WarpUserChar_Err
-        
 
         Dim OldMap As Integer
         Dim OldX   As Integer
         Dim OldY   As Integer
     
-100     If UserList(UserIndex).ComUsu.DestUsu > 0 Then
-102         If UserList(UserList(UserIndex).ComUsu.DestUsu).flags.UserLogged Then
-104             If UserList(UserList(UserIndex).ComUsu.DestUsu).ComUsu.DestUsu = UserIndex Then
-106                 Call WriteConsoleMsg(UserList(UserIndex).ComUsu.DestUsu, "Comercio cancelado por el otro usuario", FontTypeNames.FONTTYPE_TALK)
-108                 Call FinComerciarUsu(UserList(UserIndex).ComUsu.DestUsu)
-                
+100     With UserList(UserIndex)
+
+102         If .ComUsu.DestUsu > 0 Then
+
+104             If UserList(.ComUsu.DestUsu).flags.UserLogged Then
+
+106                 If UserList(.ComUsu.DestUsu).ComUsu.DestUsu = UserIndex Then
+108                     Call WriteConsoleMsg(.ComUsu.DestUsu, "Comercio cancelado por el otro usuario", FontTypeNames.FONTTYPE_TALK)
+110                     Call FinComerciarUsu(.ComUsu.DestUsu)
+
+                    End If
 
                 End If
 
             End If
+    
+            'Quitar el dialogo
+112         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageRemoveCharDialog(.Char.CharIndex))
+    
+114         Call WriteRemoveAllDialogs(UserIndex)
+    
+116         OldMap = .Pos.Map
+118         OldX = .Pos.X
+120         OldY = .Pos.Y
+    
+122         Call EraseUserChar(UserIndex, True)
+    
+124         If OldMap <> Map Then
+126             Call WriteChangeMap(UserIndex, Map)
 
-        End If
-    
-        'Quitar el dialogo
-110     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageRemoveCharDialog(UserList(UserIndex).Char.CharIndex))
-    
-112     Call WriteRemoveAllDialogs(UserIndex)
-    
-114     OldMap = UserList(UserIndex).pos.Map
-116     OldX = UserList(UserIndex).pos.x
-118     OldY = UserList(UserIndex).pos.y
-    
-120     Call EraseUserChar(UserIndex, True)
-    
-122     If OldMap <> Map Then
-124         Call WriteChangeMap(UserIndex, Map)
-            'Call WriteLight(UserIndex, map)
-            'Call WriteHora(UserIndex)
+128             If MapInfo(OldMap).Seguro = 1 And MapInfo(Map).Seguro = 0 And .Stats.ELV < 42 Then
+130                 Call WriteConsoleMsg(UserIndex, "Estás saliendo de una zona segura, recuerda que aquí corres riesgo de ser atacado.", FontTypeNames.FONTTYPE_WARNING)
+
+                End If
         
-            ' If MapInfo(OldMap).music_numberLow <> MapInfo(map).music_numberLow Then
-            'Call WritePlayMidi(UserIndex, MapInfo(map).music_numberLow, 1)
-            'End If
+132             .flags.NecesitaOxigeno = RequiereOxigeno(Map)
+
+134             If .flags.NecesitaOxigeno Then
+136                 Call WriteContadores(UserIndex)
+138                 Call WriteOxigeno(UserIndex)
+
+140                 If .Counters.Oxigeno = 0 Then
+142                     .flags.Ahogandose = 1
+
+                    End If
+
+                End If
+            
+144             .Counters.TiempoDeInmunidad = IntervaloPuedeSerAtacado
+146             .flags.Inmunidad = 1
+
+148             If RequiereOxigeno(OldMap) = True And .flags.NecesitaOxigeno = False Then  'And .Stats.ELV < 35 Then
         
-126         If MapInfo(OldMap).Seguro = 1 And MapInfo(Map).Seguro = 0 And UserList(UserIndex).Stats.ELV < 42 Then
-128             Call WriteConsoleMsg(UserIndex, "Estás saliendo de una zona segura, recuerda que aquí corres riesgo de ser atacado.", FontTypeNames.FONTTYPE_WARNING)
+                    'Call WriteConsoleMsg(UserIndex, "Ya no necesitas oxigeno.", FontTypeNames.FONTTYPE_WARNING)
+150                 Call WriteContadores(UserIndex)
+152                 Call WriteOxigeno(UserIndex)
 
-            End If
+                End If
         
-130         UserList(UserIndex).flags.NecesitaOxigeno = RequiereOxigeno(Map)
+                'Update new Map Users
+154             MapInfo(Map).NumUsers = MapInfo(Map).NumUsers + 1
+        
+                'Update old Map Users
+156             MapInfo(OldMap).NumUsers = MapInfo(OldMap).NumUsers - 1
 
-132         If UserList(UserIndex).flags.NecesitaOxigeno Then
-134             Call WriteContadores(UserIndex)
-136             Call WriteOxigeno(UserIndex)
+158             If MapInfo(OldMap).NumUsers < 0 Then
+160                 MapInfo(OldMap).NumUsers = 0
 
-138             If UserList(UserIndex).Counters.Oxigeno = 0 Then
-140                 UserList(UserIndex).flags.Ahogandose = 1
+                End If
+            
+                'Si el mapa al que entro NO ES superficial AND en el que estaba TAMPOCO ES superficial, ENTONCES
+                Dim nextMap, previousMap As Boolean
+            
+162             nextMap = distanceToCities(Map).distanceToCity(.Hogar) >= 0
+164             previousMap = distanceToCities(.Pos.Map).distanceToCity(.Hogar) >= 0
+
+166             If previousMap And nextMap Then '138 => 139 (Ambos superficiales, no tiene que pasar nada)
+                    'NO PASA NADA PORQUE NO ENTRO A UN DUNGEON.
+            
+168             ElseIf previousMap And Not nextMap Then '139 => 140 (139 es superficial, 140 no. Por lo tanto 139 es el ultimo mapa superficial)
+170                 .flags.lastMap = .Pos.Map
+            
+172             ElseIf Not previousMap And nextMap Then '140 => 139 (140 es no es superficial, 139 si. Por lo tanto, el ultimo mapa es 0 ya que no esta en un dungeon)
+174                 .flags.lastMap = 0
+            
+176             ElseIf Not previousMap And Not nextMap Then '140 => 141 (Ninguno es superficial, el ultimo mapa es el mismo de antes)
+178                 .flags.lastMap = .flags.lastMap
 
                 End If
 
+180             If .flags.Traveling = 1 Then
+182                 .flags.Traveling = 0
+184                 .Counters.goHome = 0
+186                 Call WriteConsoleMsg(UserIndex, "El viaje ha terminado.", FontTypeNames.FONTTYPE_INFOBOLD)
+
+                End If
+   
             End If
-            
-142         UserList(UserIndex).Counters.TiempoDeInmunidad = IntervaloPuedeSerAtacado
-144         UserList(UserIndex).flags.Inmunidad = 1
+    
+188         .Pos.X = X
+190         .Pos.Y = Y
+192         .Pos.Map = Map
 
-146         If RequiereOxigeno(OldMap) = True And UserList(UserIndex).flags.NecesitaOxigeno = False Then  'And UserList(UserIndex).Stats.ELV < 35 Then
-        
-                'Call WriteConsoleMsg(UserIndex, "Ya no necesitas oxigeno.", FontTypeNames.FONTTYPE_WARNING)
-148             Call WriteContadores(UserIndex)
-150             Call WriteOxigeno(UserIndex)
-
+194         If .Grupo.EnGrupo = True Then
+196             Call CompartirUbicacion(UserIndex)
             End If
-        
-            'Update new Map Users
-152         MapInfo(Map).NumUsers = MapInfo(Map).NumUsers + 1
-        
-            'Update old Map Users
-154         MapInfo(OldMap).NumUsers = MapInfo(OldMap).NumUsers - 1
-
-156         If MapInfo(OldMap).NumUsers < 0 Then
-158             MapInfo(OldMap).NumUsers = 0
-
-            End If
-            
-            'Si el mapa al que entro NO ES superficial AND en el que estaba TAMPOCO ES superficial, ENTONCES
-            Dim nextMap, previousMap As Boolean
-            
-160         nextMap = distanceToCities(Map).distanceToCity(UserList(UserIndex).Hogar) >= 0
-162         previousMap = distanceToCities(UserList(UserIndex).pos.Map).distanceToCity(UserList(UserIndex).Hogar) >= 0
-
-164         If previousMap And nextMap Then '138 => 139 (Ambos superficiales, no tiene que pasar nada)
-                'NO PASA NADA PORQUE NO ENTRO A UN DUNGEON.
-            
-166         ElseIf previousMap And Not nextMap Then '139 => 140 (139 es superficial, 140 no. Por lo tanto 139 es el ultimo mapa superficial)
-168             UserList(UserIndex).flags.lastMap = UserList(UserIndex).pos.Map
-            
-170         ElseIf Not previousMap And nextMap Then '140 => 139 (140 es no es superficial, 139 si. Por lo tanto, el ultimo mapa es 0 ya que no esta en un dungeon)
-172             UserList(UserIndex).flags.lastMap = 0
-            
-174         ElseIf Not previousMap And Not nextMap Then '140 => 141 (Ninguno es superficial, el ultimo mapa es el mismo de antes)
-176             UserList(UserIndex).flags.lastMap = UserList(UserIndex).flags.lastMap
-
-            End If
-
-178         If UserList(UserIndex).flags.Traveling = 1 Then
-180             UserList(UserIndex).flags.Traveling = 0
-182             UserList(UserIndex).Counters.goHome = 0
-184             Call WriteConsoleMsg(UserIndex, "El viaje ha terminado.", FontTypeNames.FONTTYPE_INFOBOLD)
     
-            End If
-
-        End If
-    
-186     UserList(UserIndex).pos.x = x
-188     UserList(UserIndex).pos.y = y
-190     UserList(UserIndex).pos.Map = Map
-
-        If UserList(UserIndex).Grupo.EnGrupo = True Then
-            Call CompartirUbicacion(UserIndex)
-        End If
-    
-192     If FX Then
-194         Call MakeUserChar(True, Map, UserIndex, Map, x, y, 1)
-        Else
-196         Call MakeUserChar(True, Map, UserIndex, Map, x, y, 0)
-
-        End If
-    
-198     Call WriteUserCharIndexInServer(UserIndex)
-    
-        'Seguis invisible al pasar de mapa
-200     If (UserList(UserIndex).flags.invisible = 1 Or UserList(UserIndex).flags.Oculto = 1) And (Not UserList(UserIndex).flags.AdminInvisible = 1) Then
-            ' Si el mapa lo permite
-202         If MapInfo(Map).SinInviOcul Then
-204             UserList(UserIndex).flags.invisible = 0
-206             UserList(UserIndex).flags.Oculto = 0
-208             UserList(UserIndex).Counters.TiempoOculto = 0
-210             Call WriteConsoleMsg(UserIndex, "Una fuerza divina que vigila esta zona te ha vuelto visible.", FontTypeNames.FONTTYPE_INFO)
+198         If FX Then
+200             Call MakeUserChar(True, Map, UserIndex, Map, X, Y, 1)
             Else
-212             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(UserList(UserIndex).Char.CharIndex, True))
+202             Call MakeUserChar(True, Map, UserIndex, Map, X, Y, 0)
             End If
-
-        End If
     
-        'Reparacion temporal del bug de particulas. 08/07/09 LADDER
-
-        'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(UserList(UserIndex).Char.CharIndex, 71, False))
+204         Call WriteUserCharIndexInServer(UserIndex)
     
-214     If UserList(UserIndex).flags.AdminInvisible = 0 Then
-216         If FX Then 'FX
-218             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_WARP, x, y))
-220             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.CharIndex, FXIDs.FXWARP, 0))
+            'Seguis invisible al pasar de mapa
+206         If (.flags.invisible = 1 Or .flags.Oculto = 1) And (Not .flags.AdminInvisible = 1) Then
+
+                ' Si el mapa lo permite
+208             If MapInfo(Map).SinInviOcul Then
+            
+210                 .flags.invisible = 0
+212                 .flags.Oculto = 0
+214                 .Counters.TiempoOculto = 0
+                
+216                 Call WriteConsoleMsg(UserIndex, "Una fuerza divina que vigila esta zona te ha vuelto visible.", FontTypeNames.FONTTYPE_INFO)
+                
+                Else
+218                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, True))
+
+                End If
+
             End If
-        Else
-222         Call EnviarDatosASlot(UserIndex, PrepareMessageSetInvisible(UserList(UserIndex).Char.CharIndex, True))
-        End If
+    
+            'Reparacion temporal del bug de particulas. 08/07/09 LADDER
+220         If .flags.AdminInvisible = 0 Then
         
-224     If UserList(UserIndex).NroMascotas > 0 Then Call WarpMascotas(UserIndex)
-    
-226     If MapInfo(Map).zone = "DUNGEON" Then
-228         If UserList(UserIndex).flags.Montado > 0 Then
-230             Call DoMontar(UserIndex, ObjData(UserList(UserIndex).Invent.MonturaObjIndex), UserList(UserIndex).Invent.MonturaSlot)
+222             If FX Then 'FX
+224                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_WARP, X, Y))
+226                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, FXIDs.FXWARP, 0))
+                End If
+
+            Else
+228             Call EnviarDatosASlot(UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, True))
 
             End If
-
-        End If
-    
-        ' Call WarpFamiliar(UserIndex)
         
+230         If .NroMascotas > 0 Then Call WarpMascotas(UserIndex)
+    
+232         If MapInfo(Map).zone = "DUNGEON" Or MapData(Map, X, Y).trigger >= 9 Then
+
+234             If .flags.Montado > 0 Then
+236                 Call DoMontar(UserIndex, ObjData(.Invent.MonturaObjIndex), .Invent.MonturaSlot)
+                End If
+
+            End If
+    
+        End With
+
         Exit Sub
 
 WarpUserChar_Err:
-232     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.WarpUserChar", Erl)
-234     Resume Next
+238     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.WarpUserChar", Erl)
+
+240     Resume Next
         
 End Sub
 
