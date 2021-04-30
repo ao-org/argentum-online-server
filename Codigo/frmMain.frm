@@ -758,6 +758,9 @@ auxSocket_DataArrival_Err:
 End Sub
 
 Private Sub Invasion_Timer()
+
+
+On Error GoTo Handler
     Dim i As Integer
 
     ' **********************************
@@ -802,11 +805,19 @@ Private Sub Invasion_Timer()
         
         End With
     Next
+    Exit Sub
+    
+Handler:
+    Call RegistrarError(Err.Number, Err.Description, "frmMain.Invasion_Timer")
+    Resume Next
+    
     ' **********************************
 End Sub
 
 ' WyroX: Comprobamos cada 10 segundos, porque no es necesaria tanta precisión
 Private Sub TiempoRetos_Timer()
+
+On Error GoTo Handler
     
     Dim IntervaloTimerRetosEnSegundos As Integer
     IntervaloTimerRetosEnSegundos = TiempoRetos.Interval * 0.001
@@ -830,6 +841,11 @@ Private Sub TiempoRetos_Timer()
         End With
 
     Next
+    Exit Sub
+    
+Handler:
+    Call RegistrarError(Err.Number, Err.Description, "frmMain.TiempoRetos_Timer")
+    Resume Next
     
 End Sub
 
