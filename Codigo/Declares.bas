@@ -632,7 +632,8 @@ Public Const SND_MINERO          As Byte = 15
 
 Public Const SND_WARP            As Byte = 3
 
-Public Const SND_PUERTA          As Byte = 5
+Public Const SND_PUERTA          As Integer = 5
+Public Const SND_PUERTA_DUCTO    As Integer = 380
 
 Public Const SND_NIVEL           As Integer = 554
 
