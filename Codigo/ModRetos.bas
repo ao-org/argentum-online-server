@@ -1048,9 +1048,23 @@ Private Function TodosPuedenReto(ByVal Oferente As Integer) As Boolean
     On Error GoTo ErrHandler
     
     With UserList(Oferente).flags.SolicitudReto
+    
+        If Not PuedeReto(Oferente) Then
+            Call CancelarSolicitudReto(Oferente, UserList(Oferente).name & " no puede entrar al reto en este momento.")
+            Exit Function
+        ElseIf UserList(Oferente).Stats.GLD < .Apuesta Then
+            Call CancelarSolicitudReto(Oferente, UserList(Oferente).name & " no tiene las monedas de oro suficientes.")
+            Exit Function
+        ElseIf .PocionesMaximas >= 0 Then
+            If TieneObjetos(38, .PocionesMaximas + 1, Oferente) Then
+                Call CancelarSolicitudReto(Oferente, UserList(Oferente).name & " tiene demasiadas pociones rojas (Cantidad máxima: " & .PocionesMaximas & ").")
+                Exit Function
+            End If
+        End If
+
 
         Dim i As Integer
-
+        
         For i = 0 To UBound(.Jugadores)
             If Not PuedeReto(.Jugadores(i).CurIndex) Then
                 Call CancelarSolicitudReto(Oferente, UserList(.Jugadores(i).CurIndex).name & " no puede entrar al reto en este momento.")
