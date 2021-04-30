@@ -229,7 +229,7 @@ Sub LimpiarInventario(ByVal UserIndex As Integer)
 
 100     For j = 1 To UserList(UserIndex).CurrentInventorySlots
 102         UserList(UserIndex).Invent.Object(j).ObjIndex = 0
-104         UserList(UserIndex).Invent.Object(j).Amount = 0
+104         UserList(UserIndex).Invent.Object(j).amount = 0
 106         UserList(UserIndex).Invent.Object(j).Equipped = 0
         
         Next
@@ -321,11 +321,11 @@ Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
 118             Do While (Cantidad > 0)
             
 120                 If Cantidad > MAX_INVENTORY_OBJS And .Stats.GLD > MAX_INVENTORY_OBJS Then
-122                     MiObj.Amount = MAX_INVENTORY_OBJS
-124                     Cantidad = Cantidad - MiObj.Amount
+122                     MiObj.amount = MAX_INVENTORY_OBJS
+124                     Cantidad = Cantidad - MiObj.amount
                     Else
-126                     MiObj.Amount = Cantidad
-128                     Cantidad = Cantidad - MiObj.Amount
+126                     MiObj.amount = Cantidad
+128                     Cantidad = Cantidad - MiObj.amount
 
                     End If
 
@@ -340,7 +340,7 @@ Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
                     End If
             
 138                 If AuxPos.X <> 0 And AuxPos.Y <> 0 Then
-140                     .Stats.GLD = .Stats.GLD - MiObj.Amount
+140                     .Stats.GLD = .Stats.GLD - MiObj.amount
 
                     End If
             
@@ -395,19 +395,19 @@ Sub QuitarUserInvItem(ByVal UserIndex As Integer, ByVal slot As Byte, ByVal Cant
     
 102     With UserList(UserIndex).Invent.Object(slot)
 
-104         If .Amount <= Cantidad And .Equipped = 1 Then
+104         If .amount <= Cantidad And .Equipped = 1 Then
 106             Call Desequipar(UserIndex, slot)
 
             End If
         
             'Quita un objeto
-108         .Amount = .Amount - Cantidad
+108         .amount = .amount - Cantidad
 
             '¿Quedan mas?
-110         If .Amount <= 0 Then
+110         If .amount <= 0 Then
 112             UserList(UserIndex).Invent.NroItems = UserList(UserIndex).Invent.NroItems - 1
 114             .ObjIndex = 0
-116             .Amount = 0
+116             .amount = 0
 
             End If
 
@@ -483,20 +483,20 @@ Sub DropObj(ByVal UserIndex As Integer, _
             
 102         With UserList(UserIndex)
 
-104             If num > .Invent.Object(slot).Amount Then
-106                 num = .Invent.Object(slot).Amount
+104             If num > .Invent.Object(slot).amount Then
+106                 num = .Invent.Object(slot).amount
                 End If
     
 108             obj.ObjIndex = .Invent.Object(slot).ObjIndex
-110             obj.Amount = num
+110             obj.amount = num
     
 112             If ObjData(obj.ObjIndex).Destruye = 0 Then
     
                     'Check objeto en el suelo
 114                 If MapData(.Pos.Map, X, Y).ObjInfo.ObjIndex = 0 Then
                       
-116                     If num + MapData(.Pos.Map, X, Y).ObjInfo.Amount > MAX_INVENTORY_OBJS Then
-118                         num = MAX_INVENTORY_OBJS - MapData(.Pos.Map, X, Y).ObjInfo.Amount
+116                     If num + MapData(.Pos.Map, X, Y).ObjInfo.amount > MAX_INVENTORY_OBJS Then
+118                         num = MAX_INVENTORY_OBJS - MapData(.Pos.Map, X, Y).ObjInfo.amount
                         End If
                         
                         ' Si sos Admin, Dios o Usuario, crea el objeto en el piso.
@@ -547,16 +547,16 @@ Sub EraseObj(ByVal num As Integer, ByVal Map As Integer, ByVal X As Integer, ByV
 
         Dim Rango As Byte
 
-100     MapData(Map, X, Y).ObjInfo.Amount = MapData(Map, X, Y).ObjInfo.Amount - num
+100     MapData(Map, X, Y).ObjInfo.amount = MapData(Map, X, Y).ObjInfo.amount - num
 
-102     If MapData(Map, X, Y).ObjInfo.Amount <= 0 Then
+102     If MapData(Map, X, Y).ObjInfo.amount <= 0 Then
 
 104         If ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).OBJType <> otTeleport Then
 106             Call QuitarItemLimpieza(Map, X, Y)
             End If
             
 108         MapData(Map, X, Y).ObjInfo.ObjIndex = 0
-110         MapData(Map, X, Y).ObjInfo.Amount = 0
+110         MapData(Map, X, Y).ObjInfo.amount = 0
     
     
 112         Call modSendData.SendToAreaByPos(Map, X, Y, PrepareMessageObjectDelete(X, Y))
@@ -583,7 +583,7 @@ Sub MakeObj(ByRef obj As obj, ByVal Map As Integer, ByVal X As Integer, ByVal Y 
 100     If obj.ObjIndex > 0 And obj.ObjIndex <= UBound(ObjData) Then
     
 102         If MapData(Map, X, Y).ObjInfo.ObjIndex = obj.ObjIndex Then
-104             MapData(Map, X, Y).ObjInfo.Amount = MapData(Map, X, Y).ObjInfo.Amount + obj.Amount
+104             MapData(Map, X, Y).ObjInfo.amount = MapData(Map, X, Y).ObjInfo.amount + obj.amount
             Else
                 ' Lo agrego a la limpieza del mundo o reseteo el timer si el objeto ya existía
 106             If ObjData(obj.ObjIndex).OBJType <> otTeleport Then
@@ -593,13 +593,13 @@ Sub MakeObj(ByRef obj As obj, ByVal Map As Integer, ByVal X As Integer, ByVal Y 
 110             MapData(Map, X, Y).ObjInfo.ObjIndex = obj.ObjIndex
 
 112             If ObjData(obj.ObjIndex).VidaUtil <> 0 Then
-114                 MapData(Map, X, Y).ObjInfo.Amount = ObjData(obj.ObjIndex).VidaUtil
+114                 MapData(Map, X, Y).ObjInfo.amount = ObjData(obj.ObjIndex).VidaUtil
                 Else
-116                 MapData(Map, X, Y).ObjInfo.Amount = obj.Amount
+116                 MapData(Map, X, Y).ObjInfo.amount = obj.amount
 
                 End If
             
-118             Call modSendData.SendToAreaByPos(Map, X, Y, PrepareMessageObjectCreate(obj.ObjIndex, obj.Amount, X, Y))
+118             Call modSendData.SendToAreaByPos(Map, X, Y, PrepareMessageObjectCreate(obj.ObjIndex, obj.amount, X, Y))
                 
             End If
     
@@ -629,7 +629,7 @@ Function MeterItemEnInventario(ByVal UserIndex As Integer, ByRef MiObj As obj) A
         '¿el user ya tiene un objeto del mismo tipo? ?????
 104     slot = 1
 
-106     Do Until UserList(UserIndex).Invent.Object(slot).ObjIndex = MiObj.ObjIndex And UserList(UserIndex).Invent.Object(slot).Amount + MiObj.Amount <= MAX_INVENTORY_OBJS
+106     Do Until UserList(UserIndex).Invent.Object(slot).ObjIndex = MiObj.ObjIndex And UserList(UserIndex).Invent.Object(slot).amount + MiObj.amount <= MAX_INVENTORY_OBJS
 108         slot = slot + 1
 
 110         If slot > UserList(UserIndex).CurrentInventorySlots Then
@@ -660,12 +660,12 @@ Function MeterItemEnInventario(ByVal UserIndex As Integer, ByRef MiObj As obj) A
         End If
         
         'Mete el objeto
-128     If UserList(UserIndex).Invent.Object(slot).Amount + MiObj.Amount <= MAX_INVENTORY_OBJS Then
+128     If UserList(UserIndex).Invent.Object(slot).amount + MiObj.amount <= MAX_INVENTORY_OBJS Then
             'Menor que MAX_INV_OBJS
 130         UserList(UserIndex).Invent.Object(slot).ObjIndex = MiObj.ObjIndex
-132         UserList(UserIndex).Invent.Object(slot).Amount = UserList(UserIndex).Invent.Object(slot).Amount + MiObj.Amount
+132         UserList(UserIndex).Invent.Object(slot).amount = UserList(UserIndex).Invent.Object(slot).amount + MiObj.amount
         Else
-134         UserList(UserIndex).Invent.Object(slot).Amount = MAX_INVENTORY_OBJS
+134         UserList(UserIndex).Invent.Object(slot).amount = MAX_INVENTORY_OBJS
 
         End If
         
@@ -702,7 +702,7 @@ Sub GetObj(ByVal UserIndex As Integer)
 104             X = UserList(UserIndex).Pos.X
 106             Y = UserList(UserIndex).Pos.Y
 108             obj = ObjData(MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).ObjInfo.ObjIndex)
-110             MiObj.Amount = MapData(UserList(UserIndex).Pos.Map, X, Y).ObjInfo.Amount
+110             MiObj.amount = MapData(UserList(UserIndex).Pos.Map, X, Y).ObjInfo.amount
 112             MiObj.ObjIndex = MapData(UserList(UserIndex).Pos.Map, X, Y).ObjInfo.ObjIndex
         
 114             If Not MeterItemEnInventario(UserIndex, MiObj) Then
@@ -710,9 +710,9 @@ Sub GetObj(ByVal UserIndex As Integer)
                 Else
             
                     'Quitamos el objeto
-116                 Call EraseObj(MapData(UserList(UserIndex).Pos.Map, X, Y).ObjInfo.Amount, UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y)
+116                 Call EraseObj(MapData(UserList(UserIndex).Pos.Map, X, Y).ObjInfo.amount, UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y)
 
-118                 If Not UserList(UserIndex).flags.Privilegios And PlayerType.user Then Call LogGM(UserList(UserIndex).name, "Agarro:" & MiObj.Amount & " Objeto:" & ObjData(MiObj.ObjIndex).name)
+118                 If Not UserList(UserIndex).flags.Privilegios And PlayerType.user Then Call LogGM(UserList(UserIndex).name, "Agarro:" & MiObj.amount & " Objeto:" & ObjData(MiObj.ObjIndex).name)
     
 120                 If BusquedaTesoroActiva Then
 122                     If UserList(UserIndex).Pos.Map = TesoroNumMapa And UserList(UserIndex).Pos.X = TesoroX And UserList(UserIndex).Pos.Y = TesoroY Then
@@ -736,7 +736,7 @@ Sub GetObj(ByVal UserIndex As Integer)
                     'Log de Objetos que se agarran del piso. Pablo (ToxicWaste) 07/09/07
                     'Es un Objeto que tenemos que loguear?
 136                 If ObjData(MiObj.ObjIndex).Log = 1 Then
-138                     Call LogDesarrollo(UserList(UserIndex).name & " juntó del piso " & MiObj.Amount & " " & ObjData(MiObj.ObjIndex).name)
+138                     Call LogDesarrollo(UserList(UserIndex).name & " juntó del piso " & MiObj.amount & " " & ObjData(MiObj.ObjIndex).name)
 
                         ' ElseIf MiObj.Amount = 1000 Then 'Es mucha cantidad?
                         '  'Si no es de los prohibidos de loguear, lo logueamos.
@@ -1701,7 +1701,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
         
 100     With UserList(UserIndex)
 
-102         If .Invent.Object(slot).Amount = 0 Then Exit Sub
+102         If .Invent.Object(slot).amount = 0 Then Exit Sub
     
 104         obj = ObjData(.Invent.Object(slot).ObjIndex)
     
@@ -1781,8 +1781,8 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
     
                     End If
             
-170                 .Stats.GLD = .Stats.GLD + .Invent.Object(slot).Amount
-172                 .Invent.Object(slot).Amount = 0
+170                 .Stats.GLD = .Stats.GLD + .Invent.Object(slot).amount
+172                 .Invent.Object(slot).amount = 0
 174                 .Invent.Object(slot).ObjIndex = 0
 176                 .Invent.NroItems = .Invent.NroItems - 1
             
@@ -2620,7 +2620,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
     
 928                     Case 19 ' Reseteo de skill
     
-                            Dim s As Byte
+                            Dim S As Byte
                     
 930                         If .Stats.UserSkills(eSkill.liderazgo) >= 80 Then
 932                             Call WriteConsoleMsg(UserIndex, "Has fundado un clan, no podes resetar tus skills. ", FontTypeNames.FONTTYPE_INFOIAO)
@@ -2628,9 +2628,9 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
     
                             End If
                         
-934                         For s = 1 To NUMSKILLS
-936                             .Stats.UserSkills(s) = 0
-938                         Next s
+934                         For S = 1 To NUMSKILLS
+936                             .Stats.UserSkills(S) = 0
+938                         Next S
                         
                             Dim SkillLibres As Integer
                         
@@ -2727,7 +2727,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                                 
                               End If
                             
-1026                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageConsoleMsg(ObjData(obj.Item(i).ObjIndex).name & " (" & obj.Item(i).Amount & ")", FontTypeNames.FONTTYPE_INFOBOLD))
+1026                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageConsoleMsg(ObjData(obj.Item(i).ObjIndex).name & " (" & obj.Item(i).amount & ")", FontTypeNames.FONTTYPE_INFOBOLD))
 
 1028                     Next i
             
@@ -2741,7 +2741,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                                Dim index As obj
     
 1034                         index.ObjIndex = obj.Item(indexobj).ObjIndex
-1036                         index.Amount = obj.Item(indexobj).Amount
+1036                         index.amount = obj.Item(indexobj).amount
     
 1038                         If Not MeterItemEnInventario(UserIndex, index) Then
 
@@ -2751,7 +2751,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                                 
                                End If
 
-1044                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageConsoleMsg(ObjData(index.ObjIndex).name & " (" & index.Amount & ")", FontTypeNames.FONTTYPE_INFOBOLD))
+1044                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageConsoleMsg(ObjData(index.ObjIndex).name & " (" & index.amount & ")", FontTypeNames.FONTTYPE_INFOBOLD))
 1046                     Next i
     
                        End If
@@ -2774,7 +2774,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
     
                        End If
     
-1062                 MiObj.Amount = 1
+1062                 MiObj.amount = 1
 1064                 MiObj.ObjIndex = ObjData(.Invent.Object(slot).ObjIndex).IndexAbierta
 
 1066                 Call QuitarUserInvItem(UserIndex, slot, 1)
@@ -2799,7 +2799,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 1082                 If .Stats.MinAGU > .Stats.MaxAGU Then .Stats.MinAGU = .Stats.MaxAGU
 1084                 .flags.Sed = 0
 1086                 Call WriteUpdateHungerAndThirst(UserIndex)
-1088                 MiObj.Amount = 1
+1088                 MiObj.amount = 1
 1090                 MiObj.ObjIndex = ObjData(.Invent.Object(slot).ObjIndex).IndexCerrada
 1092                 Call QuitarUserInvItem(UserIndex, slot, 1)
     
@@ -2919,7 +2919,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 1172                    If LegalWalk(.Pos.Map, .Pos.X - 1, .Pos.Y, eHeading.WEST, True, False) Or LegalWalk(.Pos.Map, .Pos.X, .Pos.Y - 1, eHeading.NORTH, True, False) Or LegalWalk(.Pos.Map, .Pos.X + 1, .Pos.Y, eHeading.EAST, True, False) Or LegalWalk(.Pos.Map, .Pos.X, .Pos.Y + 1, eHeading.SOUTH, True, False) Then
 1174                        Call DoNavega(UserIndex, obj, slot)
                           Else
-1176                        Call WriteConsoleMsg(UserIndex, "¡Debes aproximarte al agua para usar el barco!", FontTypeNames.FONTTYPE_INFO)
+1176                        Call WriteConsoleMsg(UserIndex, "¡Debes aproximarte al agua para usar el barco o traje de baño!", FontTypeNames.FONTTYPE_INFO)
                           End If
                     
                       Else
@@ -3279,23 +3279,23 @@ Sub TirarTodosLosItems(ByVal UserIndex As Integer)
 110                     NuevaPos.X = 0
 112                     NuevaPos.Y = 0
                     
-114                     MiObj.Amount = .Invent.Object(i).Amount
+114                     MiObj.amount = .Invent.Object(i).amount
 116                     MiObj.ObjIndex = ItemIndex
 
                         If .flags.CarroMineria = 1 Then
 118                         If ItemIndex = ORO_MINA Or ItemIndex = PLATA_MINA Or ItemIndex = HIERRO_MINA Then
-120                             MiObj.Amount = Int(MiObj.Amount * 0.3)
+120                             MiObj.amount = Int(MiObj.amount * 0.3)
                             End If
                         End If
                     
 122                     Call Tilelibre(.Pos, NuevaPos, MiObj, True, True)
             
 124                     If NuevaPos.X <> 0 And NuevaPos.Y <> 0 Then
-126                         Call DropObj(UserIndex, i, MiObj.Amount, NuevaPos.Map, NuevaPos.X, NuevaPos.Y)
+126                         Call DropObj(UserIndex, i, MiObj.amount, NuevaPos.Map, NuevaPos.X, NuevaPos.Y)
                         
                         ' WyroX: Si no hay lugar, quemamos el item del inventario (nada de mochilas gratis)
                         Else
-128                         Call QuitarUserInvItem(UserIndex, i, MiObj.Amount)
+128                         Call QuitarUserInvItem(UserIndex, i, MiObj.amount)
 130                         Call UpdateUserInv(False, UserIndex, i)
                         End If
                 
