@@ -2927,21 +2927,26 @@ Sub LoadUser(ByVal UserIndex As Integer)
         
             'Obtiene el indice-objeto del arma
 136         If .Invent.WeaponEqpSlot > 0 Then
-138             .Invent.WeaponEqpObjIndex = .Invent.Object(.Invent.WeaponEqpSlot).ObjIndex
-            
-140             If .flags.Muerto = 0 Then
-142                 .Char.Arma_Aura = ObjData(.Invent.WeaponEqpObjIndex).CreaGRH
+                If .Invent.Object(.Invent.WeaponEqpSlot).ObjIndex > 0 Then
+138                 .Invent.WeaponEqpObjIndex = .Invent.Object(.Invent.WeaponEqpSlot).ObjIndex
+140                 If .flags.Muerto = 0 Then
+142                     .Char.Arma_Aura = ObjData(.Invent.WeaponEqpObjIndex).CreaGRH
+                    End If
+                Else
+                    .Invent.WeaponEqpSlot = 0
                 End If
             End If
 
             'Obtiene el indice-objeto del armadura
 144         If .Invent.ArmourEqpSlot > 0 Then
-146             .Invent.ArmourEqpObjIndex = .Invent.Object(.Invent.ArmourEqpSlot).ObjIndex
-            
-148             If .flags.Muerto = 0 Then
-150                 .Char.Body_Aura = ObjData(.Invent.ArmourEqpObjIndex).CreaGRH
+                If .Invent.Object(.Invent.ArmourEqpSlot).ObjIndex > 0 Then
+146                 .Invent.ArmourEqpObjIndex = .Invent.Object(.Invent.ArmourEqpSlot).ObjIndex
+148                 If .flags.Muerto = 0 Then
+150                     .Char.Body_Aura = ObjData(.Invent.ArmourEqpObjIndex).CreaGRH
+                    End If
+                Else
+                    .Invent.ArmourEqpSlot = 0
                 End If
-
 152             .flags.Desnudo = 0
             Else
 154             .flags.Desnudo = 1
@@ -2949,71 +2954,106 @@ Sub LoadUser(ByVal UserIndex As Integer)
 
             'Obtiene el indice-objeto del escudo
 156         If .Invent.EscudoEqpSlot > 0 Then
-158             .Invent.EscudoEqpObjIndex = .Invent.Object(.Invent.EscudoEqpSlot).ObjIndex
-            
-160             If .flags.Muerto = 0 Then
-162                 .Char.Escudo_Aura = ObjData(.Invent.EscudoEqpObjIndex).CreaGRH
+                If .Invent.Object(.Invent.EscudoEqpSlot).ObjIndex > 0 Then
+158                 .Invent.EscudoEqpObjIndex = .Invent.Object(.Invent.EscudoEqpSlot).ObjIndex
+160                 If .flags.Muerto = 0 Then
+162                     .Char.Escudo_Aura = ObjData(.Invent.EscudoEqpObjIndex).CreaGRH
+                    End If
+                Else
+                    .Invent.EscudoEqpSlot = 0
                 End If
             End If
         
             'Obtiene el indice-objeto del casco
 164         If .Invent.CascoEqpSlot > 0 Then
-166             .Invent.CascoEqpObjIndex = .Invent.Object(.Invent.CascoEqpSlot).ObjIndex
-            
-168             If .flags.Muerto = 0 Then
-170                 .Char.Head_Aura = ObjData(.Invent.CascoEqpObjIndex).CreaGRH
+                If .Invent.Object(.Invent.CascoEqpSlot).ObjIndex > 0 Then
+166                 .Invent.CascoEqpObjIndex = .Invent.Object(.Invent.CascoEqpSlot).ObjIndex
+168                 If .flags.Muerto = 0 Then
+170                     .Char.Head_Aura = ObjData(.Invent.CascoEqpObjIndex).CreaGRH
+                    End If
+                Else
+                    .Invent.CascoEqpSlot = 0
                 End If
             End If
 
             'Obtiene el indice-objeto barco
 172         If .Invent.BarcoSlot > 0 Then
-174             .Invent.BarcoObjIndex = .Invent.Object(.Invent.BarcoSlot).ObjIndex
+                If .Invent.Object(.Invent.BarcoSlot).ObjIndex > 0 Then
+174                  .Invent.BarcoObjIndex = .Invent.Object(.Invent.BarcoSlot).ObjIndex
+                Else
+                    .Invent.BarcoSlot = 0
+                End If
             End If
 
             'Obtiene el indice-objeto municion
 176         If .Invent.MunicionEqpSlot > 0 Then
-178             .Invent.MunicionEqpObjIndex = .Invent.Object(.Invent.MunicionEqpSlot).ObjIndex
+                If .Invent.Object(.Invent.MunicionEqpSlot).ObjIndex > 0 Then
+178                 .Invent.MunicionEqpObjIndex = .Invent.Object(.Invent.MunicionEqpSlot).ObjIndex
+                Else
+                    .Invent.MunicionEqpSlot = 0
+                End If
             End If
 
             ' DM
 180         If .Invent.DañoMagicoEqpSlot > 0 Then
-182             .Invent.DañoMagicoEqpObjIndex = .Invent.Object(.Invent.DañoMagicoEqpSlot).ObjIndex
-            
-184             If .flags.Muerto = 0 Then
-186                 .Char.DM_Aura = ObjData(.Invent.DañoMagicoEqpObjIndex).CreaGRH
+                If .Invent.Object(.Invent.DañoMagicoEqpSlot).ObjIndex > 0 Then
+182                 .Invent.DañoMagicoEqpObjIndex = .Invent.Object(.Invent.DañoMagicoEqpSlot).ObjIndex
+184                 If .flags.Muerto = 0 Then
+186                     .Char.DM_Aura = ObjData(.Invent.DañoMagicoEqpObjIndex).CreaGRH
+                    End If
+                Else
+                     .Invent.DañoMagicoEqpSlot = 0
                 End If
             End If
             
             ' RM
 188         If .Invent.ResistenciaEqpSlot > 0 Then
-190            .Invent.ResistenciaEqpObjIndex = .Invent.Object(.Invent.ResistenciaEqpSlot).ObjIndex
-             
-192             If .flags.Muerto = 0 Then
-194                 .Char.RM_Aura = ObjData(.Invent.ResistenciaEqpObjIndex).CreaGRH
+                If .Invent.Object(.Invent.ResistenciaEqpSlot).ObjIndex > 0 Then
+190                .Invent.ResistenciaEqpObjIndex = .Invent.Object(.Invent.ResistenciaEqpSlot).ObjIndex
+192                 If .flags.Muerto = 0 Then
+194                     .Char.RM_Aura = ObjData(.Invent.ResistenciaEqpObjIndex).CreaGRH
+                    End If
+                Else
+                    .Invent.ResistenciaEqpSlot = 0
                 End If
             End If
 
 196         If .Invent.MonturaSlot > 0 Then
+                If .Invent.Object(.Invent.MonturaSlot).ObjIndex > 0 Then
 198             .Invent.MonturaObjIndex = .Invent.Object(.Invent.MonturaSlot).ObjIndex
+                Else
+                    .Invent.MonturaSlot = 0
+                End If
             End If
         
 200         If .Invent.HerramientaEqpSlot > 0 Then
-202             .Invent.HerramientaEqpObjIndex = .Invent.Object(.Invent.HerramientaEqpSlot).ObjIndex
+                If .Invent.Object(.Invent.HerramientaEqpSlot).ObjIndex Then
+202                 .Invent.HerramientaEqpObjIndex = .Invent.Object(.Invent.HerramientaEqpSlot).ObjIndex
+                Else
+                    .Invent.HerramientaEqpSlot = 0
+                End If
             End If
         
 204         If .Invent.NudilloSlot > 0 Then
-206             .Invent.NudilloObjIndex = .Invent.Object(.Invent.NudilloSlot).ObjIndex
-            
-208             If .flags.Muerto = 0 Then
-210                 .Char.Arma_Aura = ObjData(.Invent.NudilloObjIndex).CreaGRH
+                If .Invent.Object(.Invent.NudilloSlot).ObjIndex > 0 Then
+206                 .Invent.NudilloObjIndex = .Invent.Object(.Invent.NudilloSlot).ObjIndex
+208                 If .flags.Muerto = 0 Then
+210                     .Char.Arma_Aura = ObjData(.Invent.NudilloObjIndex).CreaGRH
+                    End If
+                Else
+                    .Invent.NudilloSlot = 0
                 End If
             End If
         
 212         If .Invent.MagicoSlot > 0 Then
-214             .Invent.MagicoObjIndex = .Invent.Object(.Invent.MagicoSlot).ObjIndex
+                If .Invent.Object(.Invent.MagicoSlot).ObjIndex Then
+214                 .Invent.MagicoObjIndex = .Invent.Object(.Invent.MagicoSlot).ObjIndex
 
-216             If .flags.Muerto = 0 Then
-218                 .Char.Otra_Aura = ObjData(.Invent.MagicoObjIndex).CreaGRH
+216                 If .flags.Muerto = 0 Then
+218                     .Char.Otra_Aura = ObjData(.Invent.MagicoObjIndex).CreaGRH
+                    End If
+                Else
+                    .Invent.MagicoSlot = 0
                 End If
             End If
 
