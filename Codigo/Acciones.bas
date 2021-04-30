@@ -784,8 +784,9 @@ Sub AccionParaPuerta(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, ByV
         End If
 
         Call modSendData.SendToAreaByPos(Map, X, Y, PrepareMessageObjectCreate(MapData(Map, X, Y).ObjInfo.ObjIndex, MapData(Map, X, Y).ObjInfo.Amount, X, Y))
-        If puerta.GrhIndex = 11447 Or puerta.GrhIndex = 11446 Then
+        If puerta.GrhIndex = 11445 Or puerta.GrhIndex = 11444 Then
             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_PUERTA_DUCTO, X, Y))
+        ElseIf puerta.GrhIndex = 11447 Or puerta.GrhIndex = 11446 Then
         Else
             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_PUERTA, X, Y))
         End If
