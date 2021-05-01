@@ -1990,17 +1990,8 @@ HechizoEstadoUsuario_Err:
 End Sub
 
 Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b As Boolean, ByVal UserIndex As Integer)
-        
         On Error GoTo HechizoEstadoNPC_Err
         
-
-        '***************************************************
-        'Autor: Unknown (orginal version)
-        'Last Modification: 04/13/2008
-        'Handles the Spells that afect the Stats of an NPC
-        '04/13/2008 NicoNZ - Guardias Faccionarios pueden ser
-        'removidos por users de su misma faccion.
-        '***************************************************
 100     If Hechizos(hIndex).Invisibilidad = 1 Then
 102         Call InfoHechizo(UserIndex)
 104         NpcList(NpcIndex).flags.invisible = 1
@@ -2063,7 +2054,7 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
 164             b = True
             Else
                 'Call WriteConsoleMsg(UserIndex, "El NPC es inmune al hechizo.", FontTypeNames.FONTTYPE_INFO)
-166             Call WriteLocaleMsg(UserIndex, "381", FontTypeNames.FONTTYPE_INFO)
+166             Call WriteLocaleMsg(UserIndex, "381", FontTypeNames.FONTTYPE_INFOIAO)
 168             b = False
                 Exit Sub
 
@@ -2072,51 +2063,29 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
         End If
 
 170     If Hechizos(hIndex).RemoverParalisis = 1 Then
-172         If NpcList(NpcIndex).flags.Paralizado = 1 Or NpcList(NpcIndex).flags.Inmovilizado = 1 Then
-174             If NpcList(NpcIndex).NPCtype = eNPCType.GuardiaReal Then
-176                 If esArmada(UserIndex) Then
-178                     Call InfoHechizo(UserIndex)
-180                     NpcList(NpcIndex).flags.Paralizado = 0
-182                     NpcList(NpcIndex).Contadores.Paralisis = 0
-184                     b = True
-                        Exit Sub
-                    Else
-186                     Call WriteConsoleMsg(UserIndex, "Solo podés Remover la Parálisis de los Guardias si perteneces a su facción.", FontTypeNames.FONTTYPE_INFO)
-188                     b = False
-                        Exit Sub
-
-                    End If
-                
-190                 Call WriteConsoleMsg(UserIndex, "Solo podés Remover la Parálisis de los NPCs que te consideren su amo", FontTypeNames.FONTTYPE_INFO)
-192                 b = False
-                    Exit Sub
+            With NpcList(NpcIndex)
+                If .flags.Paralizado + .flags.Inmovilizado = 0 Then
+                    Call WriteConsoleMsg(UserIndex, "Este NPC no esta Paralizado", FontTypeNames.FONTTYPE_INFOIAO)
+                    b = False
                 Else
-
-194                 If NpcList(NpcIndex).NPCtype = eNPCType.Guardiascaos Then
-196                     If esCaos(UserIndex) Then
-198                         Call InfoHechizo(UserIndex)
-200                         NpcList(NpcIndex).flags.Paralizado = 0
-202                         NpcList(NpcIndex).Contadores.Paralisis = 0
-204                         b = True
-                            Exit Sub
-                        Else
-206                         Call WriteConsoleMsg(UserIndex, "Solo podés Remover la Parálisis de los Guardias si perteneces a su facción.", FontTypeNames.FONTTYPE_INFO)
-208                         b = False
-                            Exit Sub
-
-                        End If
-
+                    ' Si el usuario es Armada o Caos y el NPC es de la misma faccion
+                    b = ((esArmada(UserIndex) Or esCaos(UserIndex)) And .flags.Faccion = UserList(UserIndex).Faccion.Status)
+                    'O si es mi propia mascota
+                    b = b Or (.MaestroUser = UserIndex)
+                    'O si es mascota de otro usuario de la misma faccion
+                    b = b Or ((esArmada(UserIndex) And esArmada(.MaestroUser)) Or (esCaos(UserIndex) And esCaos(.MaestroUser)))
+                    
+                    If b Then
+                        Call InfoHechizo(UserIndex)
+                        .flags.Paralizado = 0
+                        .Contadores.Paralisis = 0
+                        .flags.Inmovilizado = 0
+                        .Contadores.Inmovilizado = 0
+                    Else
+                        Call WriteConsoleMsg(UserIndex, "Solo podés remover la Parálisis de tus mascotas o de criaturas que pertenecen a tu facción.", FontTypeNames.FONTTYPE_INFOIAO)
                     End If
-
                 End If
-
-            Else
-210             Call WriteConsoleMsg(UserIndex, "Este NPC no esta Paralizado", FontTypeNames.FONTTYPE_INFO)
-212             b = False
-                Exit Sub
-
-            End If
-
+            End With
         End If
  
 214     If Hechizos(hIndex).Inmoviliza = 1 Then
@@ -2139,7 +2108,7 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
 234             b = True
             Else
                 'Call WriteConsoleMsg(UserIndex, "El NPC es inmune al hechizo.", FontTypeNames.FONTTYPE_INFO)
-236             Call WriteLocaleMsg(UserIndex, "381", FontTypeNames.FONTTYPE_INFO)
+236             Call WriteLocaleMsg(UserIndex, "381", FontTypeNames.FONTTYPE_INFOIAO)
 
             End If
 
@@ -2148,7 +2117,7 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
 238     If Hechizos(hIndex).Mimetiza = 1 Then
 
             If UserList(UserIndex).flags.EnReto Then
-                Call WriteConsoleMsg(UserIndex, "No podés mimetizarte durante un reto.", FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(UserIndex, "No podés mimetizarte durante un reto.", FontTypeNames.FONTTYPE_INFOIAO)
                 Exit Sub
             End If
     
@@ -2185,7 +2154,7 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
                 
             Else
             
-278             Call WriteConsoleMsg(UserIndex, "Solo los druidas pueden mimetizarse con criaturas.", FontTypeNames.FONTTYPE_INFO)
+278             Call WriteConsoleMsg(UserIndex, "Solo los druidas pueden mimetizarse con criaturas.", FontTypeNames.FONTTYPE_INFOIAO)
                 Exit Sub
                 
             End If
