@@ -142,13 +142,26 @@ End Sub
 
 ' Cuando un NPC no tiene target y se tiene que mover libremente
 Private Sub AI_CaminarSinRumbo(ByVal NpcIndex As Integer)
+
+        On Error GoTo AI_CaminarSinRumbo_Err
+
 100     With NpcList(NpcIndex)
+
 102         If RandomNumber(1, 6) = 3 And .flags.Paralizado = 0 And .flags.Inmovilizado = 0 Then
 104             Call MoveNPCChar(NpcIndex, CByte(RandomNumber(eHeading.NORTH, eHeading.WEST)))
             Else
 106             Call AnimacionIdle(NpcIndex, True)
+
             End If
+
         End With
+
+        Exit Sub
+
+AI_CaminarSinRumbo_Err:
+        Call RegistrarError(Err.Number, Err.Description, "AI.AI_CaminarSinRumbo", Erl)
+        Resume Next
+        
 End Sub
 
 Private Sub AI_CaminarConRumbo(ByVal NpcIndex As Integer, ByRef rumbo As WorldPos)
@@ -179,8 +192,8 @@ Private Sub AI_CaminarConRumbo(ByVal NpcIndex As Integer, ByRef rumbo As WorldPo
         Exit Sub
 
 AI_CaminarConRumbo_Err:
-
 118     Call RegistrarError(Err.Number, Err.Description, "AI.AI_CaminarConRumbo", Erl)
+
 End Sub
 
 
@@ -223,7 +236,6 @@ Private Sub AI_AtacarUsuarioObjetivo(ByVal AtackerNpcIndex As Integer)
         Exit Sub
 
 ErrorHandler:
-
 130     Call RegistrarError(Err.Number, Err.Description, "AIv2.AI_AtacarUsuarioObjetivo", Erl)
 
 End Sub
@@ -254,10 +266,12 @@ Public Sub AI_NpcAtacaNpc(ByVal NpcIndex As Integer)
 116         Call RestoreOldMovement(NpcIndex)
  
         End With
-
+                
+        Exit Sub
+                
 ErrorHandler:
-
 118     Call RegistrarError(Err.Number, Err.Description, "AIv2.AI_NpcAtacaNpc", Erl)
+
 End Sub
 
 Private Sub SeguirAgresor(ByVal NpcIndex As Integer)
@@ -266,11 +280,21 @@ Private Sub SeguirAgresor(ByVal NpcIndex As Integer)
         ' A diferencia de IrUsuarioCercano(), aca no buscamos objetivos cercanos en el area
         ' porque ya establecemos como objetivo a el usuario que ataco a los NPC con este tipo de IA
 
+        On Error GoTo SeguirAgresor_Err
+
+
 100     If EsObjetivoValido(NpcIndex, NpcList(NpcIndex).Target) Then
 102         Call AI_AtacarUsuarioObjetivo(NpcIndex)
         Else
 104         Call RestoreOldMovement(NpcIndex)
+
         End If
+
+        Exit Sub
+
+SeguirAgresor_Err:
+        Call RegistrarError(Err.Number, Err.Description, "AI.SeguirAgresor", Erl)
+        Resume Next
 
 End Sub
 
@@ -304,11 +328,13 @@ Public Sub SeguirAmo(ByVal NpcIndex As Integer)
         Exit Sub
 
 ErrorHandler:
-
 114     Call RegistrarError(Err.Number, Err.Description, "AIv2.SeguirAmo", Erl)
+
 End Sub
 
 Private Sub RestoreOldMovement(ByVal NpcIndex As Integer)
+
+        On Error GoTo RestoreOldMovement_Err
 
 100     With NpcList(NpcIndex)
 102         .Target = 0
@@ -327,6 +353,12 @@ Private Sub RestoreOldMovement(ByVal NpcIndex As Integer)
             End If
 
         End With
+
+        Exit Sub
+
+RestoreOldMovement_Err:
+        Call RegistrarError(Err.Number, Err.Description, "AI.RestoreOldMovement", Erl)
+        Resume Next
 
 End Sub
 
@@ -409,7 +441,7 @@ Private Sub HacerCaminata(ByVal NpcIndex As Integer)
     
 Handler:
 148     Call RegistrarError(Err.Number, Err.Description, "AI.HacerCaminata", Erl)
-150     Resume Next
+
 End Sub
 
 Private Sub MovimientoInvasion(ByVal NpcIndex As Integer)
@@ -491,10 +523,12 @@ End Sub
 ' Depdendiendo el tipo de spell que elije, se elije un target distinto que puede ser:
 ' - El .Target, el NPC mismo o area.
 Private Sub NpcLanzaUnSpell(ByVal NpcIndex As Integer)
+
         On Error GoTo NpcLanzaUnSpell_Err
+
         ' Elegir hechizo, dependiendo del hechizo lo tiro sobre NPC, sobre Target o Sobre area (cerca de user o NPC si no tiene)
         Dim SpellIndex As Integer
-        Dim Target As Integer
+        Dim Target     As Integer
         Dim PuedeDañarAlUsuario As Boolean
 
 100     If Not IntervaloPermiteLanzarHechizo(NpcIndex) Then Exit Sub
@@ -503,44 +537,50 @@ Private Sub NpcLanzaUnSpell(ByVal NpcIndex As Integer)
 104     SpellIndex = NpcList(NpcIndex).Spells(RandomNumber(1, NpcList(NpcIndex).flags.LanzaSpells))
 106     PuedeDañarAlUsuario = UserList(Target).flags.NoMagiaEfecto = 0 And NpcList(NpcIndex).flags.Paralizado = 0
     
-    
 108     Select Case Hechizos(SpellIndex).Target
-          Case TargetType.uUsuarios
 
-110         If UsuarioAtacableConMagia(Target) And PuedeDañarAlUsuario Then
-112           Call NpcLanzaSpellSobreUser(NpcIndex, Target, SpellIndex)
+            Case TargetType.uUsuarios
 
-114           If UserList(Target).flags.AtacadoPorNpc = 0 Then
-116             UserList(Target).flags.AtacadoPorNpc = NpcIndex
-              End If
-            End If
+110             If UsuarioAtacableConMagia(Target) And PuedeDañarAlUsuario Then
+112                 Call NpcLanzaSpellSobreUser(NpcIndex, Target, SpellIndex)
 
-118       Case TargetType.uNPC
-120         If Hechizos(SpellIndex).AutoLanzar = 1 Then
-122           Call NpcLanzaSpellSobreNpc(NpcIndex, NpcIndex, SpellIndex)
+114                 If UserList(Target).flags.AtacadoPorNpc = 0 Then
+116                     UserList(Target).flags.AtacadoPorNpc = NpcIndex
 
-124         ElseIf NpcList(NpcIndex).TargetNPC > 0 Then
-126           Call NpcLanzaSpellSobreNpc(NpcIndex, NpcList(NpcIndex).TargetNPC, SpellIndex)
-            End If
+                    End If
 
-128       Case TargetType.uUsuariosYnpc
-130         If Hechizos(SpellIndex).AutoLanzar = 1 Then
-132           Call NpcLanzaSpellSobreNpc(NpcIndex, NpcIndex, SpellIndex)
+                End If
 
-134         ElseIf UsuarioAtacableConMagia(Target) And PuedeDañarAlUsuario Then
-136           Call NpcLanzaSpellSobreUser(NpcIndex, Target, SpellIndex)
+118         Case TargetType.uNPC
 
-138           If UserList(Target).flags.AtacadoPorNpc = 0 Then
-140             UserList(Target).flags.AtacadoPorNpc = NpcIndex
-              End If
+120             If Hechizos(SpellIndex).AutoLanzar = 1 Then
+122                 Call NpcLanzaSpellSobreNpc(NpcIndex, NpcIndex, SpellIndex)
 
-142         ElseIf NpcList(NpcIndex).TargetNPC > 0 Then
-144           Call NpcLanzaSpellSobreNpc(NpcIndex, NpcList(NpcIndex).TargetNPC, SpellIndex)
+124             ElseIf NpcList(NpcIndex).TargetNPC > 0 Then
+126                 Call NpcLanzaSpellSobreNpc(NpcIndex, NpcList(NpcIndex).TargetNPC, SpellIndex)
 
-            End If
+                End If
 
-146       Case TargetType.uTerreno
-148         Call NpcLanzaSpellSobreArea(NpcIndex, SpellIndex)
+128         Case TargetType.uUsuariosYnpc
+
+130             If Hechizos(SpellIndex).AutoLanzar = 1 Then
+132                 Call NpcLanzaSpellSobreNpc(NpcIndex, NpcIndex, SpellIndex)
+
+134             ElseIf UsuarioAtacableConMagia(Target) And PuedeDañarAlUsuario Then
+136                 Call NpcLanzaSpellSobreUser(NpcIndex, Target, SpellIndex)
+
+138                 If UserList(Target).flags.AtacadoPorNpc = 0 Then
+140                     UserList(Target).flags.AtacadoPorNpc = NpcIndex
+
+                    End If
+
+142             ElseIf NpcList(NpcIndex).TargetNPC > 0 Then
+144                 Call NpcLanzaSpellSobreNpc(NpcIndex, NpcList(NpcIndex).TargetNPC, SpellIndex)
+
+                End If
+
+146         Case TargetType.uTerreno
+148             Call NpcLanzaSpellSobreArea(NpcIndex, SpellIndex)
 
         End Select
 
@@ -577,7 +617,6 @@ NpcLanzaUnSpellSobreNpc_Err:
 End Sub
 
 
-
 ' ---------------------------------------------------------------------------------------------------
 '                                       HELPERS
 ' ---------------------------------------------------------------------------------------------------
@@ -596,6 +635,9 @@ Private Function EsObjetivoValido(ByVal NpcIndex As Integer, ByVal UserIndex As 
 End Function
 
 Private Function EsEnemigo(ByVal NpcIndex As Integer, ByVal UserIndex As Integer) As Boolean
+
+        On Error GoTo EsEnemigo_Err
+
 
 100     If NpcIndex = 0 Or UserIndex = 0 Then Exit Function
 
@@ -620,9 +662,19 @@ Private Function EsEnemigo(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
             End Select
 
         End With
+
+        Exit Function
+
+EsEnemigo_Err:
+        Call RegistrarError(Err.Number, Err.Description, "AI.EsEnemigo", Erl)
+        Resume Next
+
 End Function
 
 Private Function EnRangoVision(ByVal NpcIndex As Integer, ByVal UserIndex As Integer) As Boolean
+
+        On Error GoTo EnRangoVision_Err
+
         Dim userPos As WorldPos
         Dim NpcPos As WorldPos
         Dim Limite_X As Byte, Limite_Y As Byte
@@ -642,9 +694,19 @@ Private Function EnRangoVision(ByVal NpcIndex As Integer, ByVal UserIndex As Int
           (Abs(userPos.Y - NpcPos.Y) <= Limite_Y) _
         )
 
+
+        Exit Function
+
+EnRangoVision_Err:
+        Call RegistrarError(Err.Number, Err.Description, "AI.EnRangoVision", Erl)
+        Resume Next
+
 End Function
 
 Private Function UsuarioAtacableConMagia(ByVal targetUserIndex As Integer) As Boolean
+
+        On Error GoTo UsuarioAtacableConMagia_Err
+
 100     If targetUserIndex = 0 Then Exit Function
 
 102     With UserList(targetUserIndex)
@@ -658,9 +720,19 @@ Private Function UsuarioAtacableConMagia(ByVal targetUserIndex As Integer) As Bo
             Not .flags.EnConsulta)
         End With
 
+
+        Exit Function
+
+UsuarioAtacableConMagia_Err:
+        Call RegistrarError(Err.Number, Err.Description, "AI.UsuarioAtacableConMagia", Erl)
+        Resume Next
+
 End Function
 
 Private Function UsuarioAtacableConMelee(ByVal NpcIndex As Integer, ByVal targetUserIndex As Integer) As Boolean
+
+        On Error GoTo UsuarioAtacableConMelee_Err
+
 100     If targetUserIndex = 0 Then Exit Function
 
         Dim EstaPegadoAlUser As Boolean
@@ -677,6 +749,12 @@ Private Function UsuarioAtacableConMelee(ByVal NpcIndex As Integer, ByVal target
             Not EsGM(targetUserIndex) And _
             Not .flags.EnConsulta)
         End With
+
+        Exit Function
+
+UsuarioAtacableConMelee_Err:
+        Call RegistrarError(Err.Number, Err.Description, "AI.UsuarioAtacableConMelee", Erl)
+        Resume Next
 
 End Function
 
