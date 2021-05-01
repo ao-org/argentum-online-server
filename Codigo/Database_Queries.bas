@@ -286,7 +286,6 @@ Private Sub ConstruirQuery_GuardarPersonaje()
     QueryBuilder.Append "recompensas_real = ?, "
     QueryBuilder.Append "recompensas_caos = ?, "
     QueryBuilder.Append "reenlistadas = ?, "
-    QueryBuilder.Append "fecha_ingreso = ?, "
     QueryBuilder.Append "nivel_ingreso = ?, "
     QueryBuilder.Append "matados_ingreso = ?, "
     QueryBuilder.Append "siguiente_recompensa = ?, "

@@ -110,10 +110,10 @@ Private Declare Sub MoveMemory Lib "kernel32" Alias "RtlMoveMemory" (pDest As An
 Public Sub InitPathFinding()
 
     Dim Heading As eHeading, DirH As Integer
-    
+        
     For Heading = eHeading.NORTH To eHeading.WEST
-        DirOffset(Heading).X = (2 - DirH) * DirH Mod 2
-        DirOffset(Heading).Y = (DirH - 1) * (1 - DirH Mod 2)
+        DirOffset(Heading).X = (2 - DirH) * (DirH Mod 2)
+        DirOffset(Heading).Y = (DirH - 1) * (1 - (DirH Mod 2))
         DirH = DirH + 1
     Next
 
@@ -290,9 +290,11 @@ Public Function SeekPath(ByVal NpcIndex As Integer, Optional ByVal Closest As Bo
         ClosestVertex.Y = PosNPC.Y
         
     End With
+    
 
     ' Loop principal del algoritmo
     Do While (VertexCount > 0)
+    
     
         MinTotalDistance = MAXINT
         
@@ -311,9 +313,7 @@ Public Function SeekPath(ByVal NpcIndex As Integer, Optional ByVal Closest As Bo
         Next
         
         Vertex = OpenVertices(BestVertexIndex)
-
         With Vertex
-        
             ' Si es la posición objetivo
             If .X = PosTarget.X And .Y = PosTarget.Y Then
             
@@ -363,6 +363,7 @@ Public Function SeekPath(ByVal NpcIndex As Integer, Optional ByVal Closest As Bo
         End If
         
     End If
+    
     
     ' Llegados a este punto, invalidamos el Path del NPC
     NpcList(NpcIndex).pathFindingInfo.PathLength = 0
