@@ -421,20 +421,20 @@ PurgarOxigeno_Err:
         
 End Sub
 
-Public Sub Encarcelar(ByVal UserIndex As Integer, ByVal minutos As Long, Optional ByVal GmName As String = vbNullString)
+Public Sub Encarcelar(ByVal UserIndex As Integer, ByVal Minutos As Long, Optional ByVal GmName As String = vbNullString)
         
         On Error GoTo Encarcelar_Err
         
 100     If EsGM(UserIndex) Then Exit Sub
         
-102     UserList(UserIndex).Counters.Pena = minutos
+102     UserList(UserIndex).Counters.Pena = Minutos
         
 104     Call WarpUserChar(UserIndex, Prision.Map, Prision.X, Prision.Y, True)
         
 106     If LenB(GmName) = 0 Then
-108         Call WriteConsoleMsg(UserIndex, "Has sido encarcelado, deberas permanecer en la carcel " & minutos & " minutos.", FontTypeNames.FONTTYPE_INFO)
+108         Call WriteConsoleMsg(UserIndex, "Has sido encarcelado, deberas permanecer en la carcel " & Minutos & " minutos.", FontTypeNames.FONTTYPE_INFO)
         Else
-110         Call WriteConsoleMsg(UserIndex, GmName & " te ha encarcelado, deberas permanecer en la carcel " & minutos & " minutos.", FontTypeNames.FONTTYPE_INFO)
+110         Call WriteConsoleMsg(UserIndex, GmName & " te ha encarcelado, deberas permanecer en la carcel " & Minutos & " minutos.", FontTypeNames.FONTTYPE_INFO)
 
         End If
         
@@ -1549,7 +1549,7 @@ ChangeBan_Err:
         
 End Function
 
-Public Function CompararPrivilegios(ByVal Personaje_1 As Integer, ByVal Personaje_2 As Integer) As Integer
+Public Function CompararPrivilegiosUser(ByVal Personaje_1 As Integer, ByVal Personaje_2 As Integer) As Integer
     '**************************************************************************************************************************
     'Author: Jopi
     'Last Modification: 05/07/2020
@@ -1560,17 +1560,37 @@ Public Function CompararPrivilegios(ByVal Personaje_1 As Integer, ByVal Personaj
     '       - Si los privilegios de el de la izquierda [Personaje1] son MENORES que el de la derecha [Personaje2], devuelve -1
     '**************************************************************************************************************************
         
+        On Error GoTo CompararPrivilegiosUser_Err
+        
+        CompararPrivilegiosUser = CompararPrivilegios(UserList(Personaje_1).flags.Privilegios, UserList(Personaje_2).flags.Privilegios)
+        
+        Exit Function
+
+CompararPrivilegiosUser_Err:
+118     Call RegistrarError(Err.Number, Err.Description, "Admin.CompararPrivilegiosUser", Erl)
+120     Resume Next
+        
+End Function
+
+Public Function CompararPrivilegios(ByVal Izquierda As PlayerType, ByVal Derecha As PlayerType) As Integer
+    '**************************************************************************************************************************
+    'Author: Jopi
+    'Last Modification: 05/07/2020
+    '   Funcion encargada de comparar los privilegios entre 2 Game Masters.
+    '   Funciona de la misma forma que el operador spaceship de PHP.
+    '       - Si los privilegios de el de la izquierda son MAYORES que el de la derecha, devuelve 1
+    '       - Si los privilegios de el de la izquierda son IGUALES que el de la derecha, devuelve 0
+    '       - Si los privilegios de el de la izquierda son MENORES que el de la derecha, devuelve -1
+    '**************************************************************************************************************************
+        
         On Error GoTo CompararPrivilegios_Err
         
         Dim PrivilegiosGM As PlayerType
-        Dim Izquierda As PlayerType
-        Dim Derecha As PlayerType
-
 100     PrivilegiosGM = PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero Or PlayerType.RoleMaster
 
         ' Obtenemos el rango de los 2 personajes.
-102     Izquierda = (UserList(Personaje_1).flags.Privilegios And PrivilegiosGM)
-104     Derecha = (UserList(Personaje_2).flags.Privilegios And PrivilegiosGM)
+102     Izquierda = (Izquierda And PrivilegiosGM)
+104     Derecha = (Derecha And PrivilegiosGM)
 
 106     Select Case Izquierda
 
