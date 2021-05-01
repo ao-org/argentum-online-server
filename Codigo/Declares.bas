@@ -76,8 +76,6 @@ Public EventoExpMult        As Integer
 
 Public EventoOroMult        As Integer
 
-Public OroAutoEquipable     As Integer
-
 Public EstadoGlobal         As Boolean
 
 Public TimerLimpiarObjetos  As Byte
@@ -665,13 +663,13 @@ Public Const MAX_INVENTORY_OBJS      As Integer = 10000
 ' Cantidad de "slots" en el inventario con todos los slots desbloqueados
 Public Const MAX_INVENTORY_SLOTS     As Byte = 42
 
-' Cantidad de "slots" en el inventario bï¿½sico
+' Cantidad de "slots" en el inventario básico
 Public Const MAX_USERINVENTORY_SLOTS As Byte = 24
 
 ' Cantidad de "slots" en el inventario por fila
 Public Const SLOTS_PER_ROW_INVENTORY As Byte = 6
 
-' Cantidad mï¿½xima de filas a desbloquear en el inventario
+' Cantidad máxima de filas a desbloquear en el inventario
 Public Const INVENTORY_EXTRA_ROWS    As Byte = 3
 
 ''
@@ -1729,7 +1727,6 @@ Public Type tFacciones
     RecibioArmaduraCaos As Byte
     Reenlistadas As Byte
     NivelIngreso As Integer
-    FechaIngreso As String
     MatadosIngreso As Integer 'Para Armadas nada mas
     NextRecompensa As Integer 'DEPRECATED: Atributo viejo. Deberiamos usar `tRangoFaccion`
 
@@ -1798,7 +1795,7 @@ Public Type user
         
     Invent As Inventario
     
-    pos As WorldPos
+    Pos As WorldPos
     
     ConnIDValida As Boolean
     ConnID As Long 'ID
@@ -1962,15 +1959,13 @@ Public Type tCriaturasEntrenador
 
 End Type
 
-' New type for holding the pathfinding info
 Public Type NpcPathFindingInfo
 
+    PathLength As Integer   ' Number of steps *
     Path() As tVertice      ' This array holds the path
-    Target As Position      ' The location where the NPC has to go
-    PathLenght As Integer   ' Number of steps *
-    CurPos As Integer       ' Current location of the npc
-    TargetUser As Integer   ' UserIndex chased
-    NoPath As Boolean       ' If it is true there is no path to the target location
+    Destination As Position ' The location where the NPC has to go
+    RangoVision As Single
+    Inteligencia As Integer
     
     '* By setting PathLenght to 0 we force the recalculation
     '  of the path, this is very useful. For example,
@@ -1984,6 +1979,33 @@ Public Type tCaminata
     Offset As Position
     Espera As Long
 End Type
+
+Public Enum TipoAI
+    Estatico = 1
+    MueveAlAzar = 2
+    NpcDefensa = 4
+    SigueAmo = 8
+    NpcAtacaNpc = 9
+
+    'Pretorianos
+    SacerdotePretorianoAi = 11
+    GuerreroPretorianoAi = 12
+    MagoPretorianoAi = 13
+    CazadorPretorianoAi = 14
+    ReyPretoriano = 15
+
+    ' Animado
+    Caminata = 20
+    
+    ' Eventos
+    Invasion = 21
+End Enum
+
+Public Enum e_Alineacion
+    ninguna = 0
+    Real = 1
+    Caos = 2
+End Enum
 
 Public Type npc
     
@@ -2018,7 +2040,7 @@ Public Type npc
 
     Veneno As Byte
 
-    pos As WorldPos 'Posicion
+    Pos As WorldPos 'Posicion
     Orig As WorldPos
 
     Movement As TipoAI
@@ -2060,7 +2082,9 @@ Public Type npc
     Mascotas As Integer
     
     ' New!! Needed for pathfindig
-    PFINFO As NpcPathFindingInfo
+    pathFindingInfo As NpcPathFindingInfo
+    
+    ' Esto es del Areas.bas
     AreasInfo As AreaInfo
     
     NumQuiza As Byte

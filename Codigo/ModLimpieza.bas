@@ -19,7 +19,7 @@ Public Sub InicializarLimpieza()
         Exit Sub
     
 ErrHandler:
-104     Call RegistrarError(Err.Number, Err.description, "ModLimpieza.InicializarLimpieza")
+104     Call RegistrarError(Err.Number, Err.Description, "ModLimpieza.InicializarLimpieza")
 106     Resume Next
 
 End Sub
@@ -33,7 +33,7 @@ Public Sub LimpiarModuloLimpieza() ' Valga la redundancia
     Exit Sub
 
 Class_Terminate_Err:
-102 Call RegistrarError(Err.Number, Err.description, "ModLimpieza.LimpiarModuloLimpieza", Erl)
+102 Call RegistrarError(Err.Number, Err.Description, "ModLimpieza.LimpiarModuloLimpieza", Erl)
 104 Resume Next
         
 End Sub
@@ -67,7 +67,7 @@ Public Sub AgregarItemLimpieza(ByVal Map As Integer, ByVal X As Byte, ByVal Y As
         Exit Sub
     
 hErr:
-122     Call RegistrarError(Err.Number, Err.description, "ModLimpieza.AgregarItemLimpiza")
+122     Call RegistrarError(Err.Number, Err.Description, "ModLimpieza.AgregarItemLimpiza")
 124     Resume Next
 
 End Sub
@@ -83,9 +83,6 @@ Public Sub QuitarItemLimpieza(ByVal Map As Integer, ByVal X As Byte, ByVal Y As 
 hErr:
     ' No hace falta registrar el error.
     ' Si un item no existe en la colección, es porque el item era del mapa y alguien lo agarró.
-    'Call RegistrarError(Err.Number, Err.description, "ModLimpieza.QuitarItemLimpieza", Erl)
-    'Resume Next
-
 End Sub
 
 Public Sub LimpiarItemsViejos()
@@ -115,7 +112,7 @@ Public Sub LimpiarItemsViejos()
         Exit Sub
 
 hErr:
-116     Call RegistrarError(Err.Number, Err.description, "ModLimpieza.LimpiarItemsViejos")
+116     Call RegistrarError(Err.Number, Err.Description, "ModLimpieza.LimpiarItemsViejos")
 118     Resume Next
 
 End Sub
@@ -140,7 +137,7 @@ Public Sub LimpiezaForzada() ' Limpio todo, no importa el tiempo
         Exit Sub
     
 hErr:
-110     Call RegistrarError(Err.Number, Err.description, "ModLimpieza.LimpiezaForzada")
+110     Call RegistrarError(Err.Number, Err.Description, "ModLimpieza.LimpiezaForzada")
 112     Resume Next
 
 End Sub
@@ -155,7 +152,7 @@ Public Function GetIndiceByPos(ByVal Map As Integer, ByVal X As Integer, ByVal Y
         Exit Function
 
 GetIndiceByPos_Err:
-102     Call RegistrarError(Err.Number, Err.description, "ModLimpieza.GetIndiceByPos", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "ModLimpieza.GetIndiceByPos", Erl)
 
         
 End Function

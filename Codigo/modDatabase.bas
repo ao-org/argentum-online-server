@@ -284,7 +284,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
     'Basic user data
     With UserList(UserIndex)
         
-        ReDim Params(89)
+        ReDim Params(88)
         
         Params(0) = .name
         Params(1) = .Stats.ELV
@@ -365,19 +365,18 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
         Params(76) = .Faccion.RecompensasReal
         Params(77) = .Faccion.RecompensasCaos
         Params(78) = .Faccion.Reenlistadas
-        Params(79) = IIf(Len(.Faccion.FechaIngreso) <> 0, .Faccion.FechaIngreso, "NULL")
-        Params(80) = .Faccion.NivelIngreso
-        Params(81) = .Faccion.MatadosIngreso
-        Params(82) = .Faccion.NextRecompensa
-        Params(83) = .Faccion.Status
-        Params(84) = .GuildIndex
-        Params(85) = .ChatCombate
-        Params(86) = .ChatGlobal
-        Params(87) = IIf(Logout, "FALSE", "TRUE")
-        Params(88) = .Stats.Advertencias
+        Params(79) = .Faccion.NivelIngreso
+        Params(80) = .Faccion.MatadosIngreso
+        Params(81) = .Faccion.NextRecompensa
+        Params(82) = .Faccion.Status
+        Params(83) = .GuildIndex
+        Params(84) = .ChatCombate
+        Params(85) = .ChatGlobal
+        Params(86) = IIf(Logout, 0, 1)
+        Params(87) = .Stats.Advertencias
         
         ' WHERE block
-        Params(89) = .Id
+        Params(88) = .Id
         
         Call MakeQuery(QUERY_UPDATE_MAINPJ, True, Params)
         
@@ -726,7 +725,6 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
         .Faccion.RecompensasReal = QueryData!recompensas_real
         .Faccion.RecompensasCaos = QueryData!recompensas_caos
         .Faccion.Reenlistadas = QueryData!Reenlistadas
-        .Faccion.FechaIngreso = SanitizeNullValue(QueryData!fecha_ingreso_format, vbNullString)
         .Faccion.NivelIngreso = SanitizeNullValue(QueryData!nivel_ingreso, 0)
         .Faccion.MatadosIngreso = SanitizeNullValue(QueryData!matados_ingreso, 0)
         .Faccion.NextRecompensa = SanitizeNullValue(QueryData!siguiente_recompensa, 0)
@@ -1557,8 +1555,8 @@ Public Function GetPersonajesCuentaDatabase(ByVal AccountId As Long, Personaje()
         Personaje(i).clase = QueryData!class_id
         Personaje(i).cuerpo = QueryData!body_id
         Personaje(i).Mapa = QueryData!pos_map
-        Personaje(i).PosX = QueryData!pos_x
-        Personaje(i).PosY = QueryData!pos_y
+        Personaje(i).posX = QueryData!pos_x
+        Personaje(i).posY = QueryData!pos_y
         Personaje(i).nivel = QueryData!level
         Personaje(i).Status = QueryData!Status
         Personaje(i).Casco = QueryData!helmet_id

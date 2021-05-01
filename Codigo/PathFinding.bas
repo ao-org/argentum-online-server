@@ -74,445 +74,397 @@ Attribute VB_Name = "PathFinding"
 'roles of first and second coordinates are different
 'that my routines
 '
-'#######################################################
+'.........................................................
+
+'###########################################################################
+' CHANGES
+'
+' 27/03/2021 WyroX: Fixed inverted coordinates and changed algorithm to A*
+'###########################################################################
+
 
 Option Explicit
 
-Private Const rows   As Integer = 100
-
-Private Const COLUMS As Integer = 100
-
-Private Const MAXINT As Integer = 1000
-
 Private Type tIntermidiateWork
-
-    Known As Boolean
-    DistV As Integer
-    PrevV As tVertice
-
+    Closed As Boolean
+    Distance As Integer
+    Previous As Position
+    EstimatedTotalDistance As Single
 End Type
 
-Dim TmpArray(1 To rows, 1 To COLUMS) As tIntermidiateWork
+Private OpenVertices(1000) As Position
+Private VertexCount As Integer
 
-Dim TilePosY                         As Integer
+Private Table(XMinMapSize To XMaxMapSize, YMinMapSize To YMaxMapSize) As tIntermidiateWork
 
-Private Function Limites(ByVal vfila As Integer, ByVal vcolu As Integer)
+Private DirOffset(eHeading.NORTH To eHeading.WEST) As Position
+
+Private ClosestVertex As Position
+Private ClosestDistance As Single
+
+Private Const MAXINT As Integer = 32767
+
+' WyroX: Usada para mover memoria... VB6 es un desastre en cuanto a contenedores dinámicos
+Private Declare Sub MoveMemory Lib "kernel32" Alias "RtlMoveMemory" (pDest As Any, pSource As Any, ByVal Length As Long)
+
+Public Sub InitPathFinding()
+
+    Dim Heading As eHeading, DirH As Integer
+    
+    For Heading = eHeading.NORTH To eHeading.WEST
+        DirOffset(Heading).X = (2 - DirH) * DirH Mod 2
+        DirOffset(Heading).Y = (DirH - 1) * (1 - DirH Mod 2)
+        DirH = DirH + 1
+    Next
+
+End Sub
+
+Public Sub FollowPath(ByVal NpcIndex As Integer)
+    Dim nextPos As WorldPos
+    
+    With NpcList(NpcIndex)
+        nextPos.Map = .Pos.Map
+        nextPos.X = .pathFindingInfo.Path(.pathFindingInfo.PathLength).X
+        nextPos.Y = .pathFindingInfo.Path(.pathFindingInfo.PathLength).Y
         
-        On Error GoTo Limites_Err
-        
-100     Limites = vcolu >= 1 And vcolu <= COLUMS And vfila >= 1 And vfila <= rows
+        Call MoveNPCChar(NpcIndex, GetHeadingFromWorldPos(.Pos, nextPos))
+        .pathFindingInfo.PathLength = .pathFindingInfo.PathLength - 1
+    
+    End With
+    
+End Sub
 
-        
-        Exit Function
+Private Function InsideLimits(ByVal X As Integer, ByVal Y As Integer)
+    InsideLimits = X >= XMinMapSize And X <= XMaxMapSize And Y >= YMinMapSize And Y <= YMaxMapSize
+End Function
 
-Limites_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "PathFinding.Limites", Erl)
-104     Resume Next
+Private Function IsWalkable(ByVal NpcIndex As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal Heading As eHeading) As Boolean
+        
+    On Error GoTo ErrHandler
+    
+    Dim Map As Integer
+    Map = NpcList(NpcIndex).Pos.Map
+    
+    With MapData(Map, X, Y)
+
+        ' Otro NPC
+        If .NpcIndex Then Exit Function
+        
+        ' Usuario
+        If .UserIndex And .UserIndex <> NpcList(NpcIndex).Target Then Exit Function
+
+        ' Traslado
+        If .TileExit.Map Then Exit Function
+
+        ' Agua
+        If .Blocked And FLAG_AGUA Then
+            If NpcList(NpcIndex).flags.AguaValida = 0 Then Exit Function
+        ' Tierra
+        Else
+            If NpcList(NpcIndex).flags.TierraInvalida <> 0 Then Exit Function
+        End If
+        
+        ' Trigger inválido para NPCs
+        If .trigger = eTrigger.POSINVALIDA Then
+            ' Si no es mascota
+            If NpcList(NpcIndex).MaestroNPC = 0 Then Exit Function
+        End If
+    
+        ' Tile bloqueado
+        'If .Blocked And 2 ^ (Heading - 1) Then Exit Function (fix nuevos bloqueos)
+        If .Blocked And eBlock.ALL_SIDES Then Exit Function
+        
+    End With
+    
+    IsWalkable = True
+
+ErrHandler:
         
 End Function
 
-Private Function IsWalkable(ByVal Map As Integer, ByVal row As Integer, ByVal Col As Integer, ByVal NpcIndex As Integer, ByVal Heading As eHeading) As Boolean
+Private Sub ProcessAdjacent(ByVal NpcIndex As Integer, ByVal CurX As Integer, ByVal CurY As Integer, ByVal Heading As eHeading, ByRef EndPos As Position)
+
+    On Error GoTo ErrHandler
+    
+    Dim X As Integer, Y As Integer, DistanceFromStart As Integer, EstimatedDistance As Single
+    
+    With DirOffset(Heading)
+        X = CurX + .X
+        Y = CurY + .Y
+    End With
+    
+    With Table(X, Y)
+
+        ' Si ya está cerrado, salimos
+        If .Closed Then Exit Sub
+    
+        ' Nos quedamos en el campo de visión del NPC
+        If InsideLimits(X, Y) Then
         
-        On Error GoTo IsWalkable_Err
+            ' Si puede atravesar el tile al siguiente
+            If IsWalkable(NpcIndex, X, Y, Heading) Then
+            
+                ' Calculamos la distancia hasta este vértice
+                DistanceFromStart = Table(CurX, CurY).Distance + 1
+    
+                ' Si no habíamos visitado este vértice
+                If .Distance = MAXINT Then
+                    ' Lo metemos en la cola
+                    Call OpenVertex(X, Y)
+                    
+                ' Si ya lo habíamos visitado, nos fijamos si este camino es más corto
+                ElseIf DistanceFromStart > .Distance Then
+                    ' Es más largo, salimos
+                    Exit Sub
+                End If
+    
+                ' Guardamos la distancia desde el inicio
+                .Distance = DistanceFromStart
+                
+                ' La distancia estimada al objetivo
+                EstimatedDistance = EuclideanDistance(X, Y, EndPos)
+                
+                ' La distancia total estimada
+                .EstimatedTotalDistance = DistanceFromStart + EstimatedDistance
+                
+                ' Y la posición de la que viene
+                .Previous.X = CurX
+                .Previous.Y = CurY
+                
+                ' Si la distancia total estimada es la menor hasta ahora
+                If EstimatedDistance < ClosestDistance Then
+                    ClosestDistance = EstimatedDistance
+                    ClosestVertex.X = X
+                    ClosestVertex.Y = Y
+                End If
+                
+            End If
+            
+        End If
 
-100     If MapData(Map, row, Col).NpcIndex <> 0 Then Exit Function
+    End With
 
-102     If MapData(Map, row, Col).UserIndex <> 0 Then
-104         If MapData(Map, row, Col).UserIndex <> Npclist(NpcIndex).PFINFO.TargetUser Then Exit Function
+ErrHandler:
+
+End Sub
+
+Public Function SeekPath(ByVal NpcIndex As Integer, Optional ByVal Closest As Boolean) As Boolean
+    ' Busca un camino desde la posición del NPC a la posición en .PFINFO.Target
+    ' El parámetro Closest indica que en caso de que no exista un camino completo, se debe retornar el camino parcial hasta la posición más cercana al objetivo.
+    ' Si Closest = True, la función devuelve True si puede moverse al menos un tile. Si Closest = False, devuelve True si se encontró un camino completo.
+    ' El camino se almacena en .PFINFO.Path
+    
+    Dim PosNPC As Position
+    Dim PosTarget As Position
+    Dim Heading As eHeading, Vertex As Position
+    Dim MaxDistance As Integer, index As Integer
+    Dim MinTotalDistance As Integer, BestVertexIndex As Integer
+
+    With NpcList(NpcIndex)
+        PosNPC.X = .Pos.X
+        PosNPC.Y = .Pos.Y
+    
+        ' Posición objetivo
+        PosTarget.X = .pathFindingInfo.Destination.X
+        PosTarget.Y = .pathFindingInfo.Destination.Y
+
+        ' Inicializar contenedores para el algoritmo
+        Call InitializeTable(Table, PosNPC, .pathFindingInfo.RangoVision)
+        VertexCount = 0
+        
+        ' Añadimos la posición inicial a la lista
+        Call OpenVertexV(PosNPC)
+        
+        ' Distancia máxima a calcular (distancia en tiles al target + inteligencia del NPC)
+        MaxDistance = TileDistance(PosNPC, PosTarget) + .pathFindingInfo.Inteligencia
+        
+        ' Distancia euclideana desde la posición inicial hasta la final
+        Table(PosNPC.X, PosNPC.Y).EstimatedTotalDistance = EuclideanDistanceV(PosNPC, PosTarget)
+        
+        ' Distancia posición inicial
+        Table(PosNPC.X, PosNPC.Y).Distance = 0
+        
+        ' Distancia mínima
+        ClosestDistance = Table(PosNPC.X, PosNPC.Y).EstimatedTotalDistance
+        ClosestVertex.X = PosNPC.X
+        ClosestVertex.Y = PosNPC.Y
+        
+    End With
+
+    ' Loop principal del algoritmo
+    Do While (VertexCount > 0)
+    
+        MinTotalDistance = MAXINT
+        
+        ' Buscamos en la cola la posición con menor distancia total
+        For index = 0 To VertexCount - 1
+        
+            With OpenVertices(index)
+            
+                If Table(.X, .Y).EstimatedTotalDistance < MinTotalDistance Then
+                    MinTotalDistance = Table(.X, .Y).EstimatedTotalDistance
+                    BestVertexIndex = index
+                End If
+                
+            End With
+            
+        Next
+        
+        Vertex = OpenVertices(BestVertexIndex)
+
+        With Vertex
+        
+            ' Si es la posición objetivo
+            If .X = PosTarget.X And .Y = PosTarget.Y Then
+            
+                ' Reconstruímos el trayecto
+                Call MakePath(NpcIndex, .X, .Y)
+                
+                ' Salimos
+                SeekPath = True
+                Exit Function
+                
+            End If
+
+            ' Eliminamos la posición de la cola
+            Call CloseVertex(BestVertexIndex)
+
+            ' Cerramos la posición actual
+            Table(.X, .Y).Closed = True
+
+            ' Si aún podemos seguir procesando más lejos
+            If Table(.X, .Y).Distance < MaxDistance Then
+            
+                ' Procesamos adyacentes
+                For Heading = eHeading.NORTH To eHeading.WEST
+                    Call ProcessAdjacent(NpcIndex, .X, .Y, Heading, PosTarget)
+                Next
+                
+            End If
+            
+        End With
+        
+    Loop
+    
+    ' No hay más nodos por procesar. O bien no existe un camino válido o el NPC no es suficientemente inteligente.
+    
+    ' Si debemos retornar la posición más cercana al objetivo
+    If Closest Then
+    
+        ' Si se recorrió al menos un tile
+        If ClosestVertex.X <> PosNPC.X Or ClosestVertex.Y <> PosNPC.Y Then
+        
+            ' Reconstruímos el camino desde la posición más cercana al objetivo
+            Call MakePath(NpcIndex, ClosestVertex.X, ClosestVertex.Y)
+            
+            SeekPath = True
+            Exit Function
+            
         End If
         
-         'Tile Bloqueado?
-106     If (MapData(row, Col).Blocked And 2 ^ (Heading - 1)) <> 0 Then Exit Function
-        
-        Exit Function
+    End If
+    
+    ' Llegados a este punto, invalidamos el Path del NPC
+    NpcList(NpcIndex).pathFindingInfo.PathLength = 0
 
-IsWalkable_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "PathFinding.IsWalkable", Erl)
-110     Resume Next
-        
 End Function
 
-Private Sub ProcessAdjacents(ByVal MapIndex As Integer, ByRef T() As tIntermidiateWork, ByRef vfila As Integer, ByRef vcolu As Integer, ByVal NpcIndex As Integer)
+Private Sub MakePath(ByVal NpcIndex As Integer, ByVal X As Integer, ByVal Y As Integer)
+
+    With NpcList(NpcIndex)
+        ' Obtenemos la distancia total del camino
+        .pathFindingInfo.PathLength = Table(X, Y).Distance
+
+        Dim Step As Integer
         
-        On Error GoTo ProcessAdjacents_Err
+        ' Asignamos las coordenadas del resto camino, el final queda al inicio del array
+        For Step = 1 To .pathFindingInfo.PathLength
         
+            With .pathFindingInfo.Path(Step)
+                .X = X
+                .Y = Y
+            End With
 
-        Dim V As tVertice
-
-        Dim j As Integer
-
-        'Look to North
-100     j = vfila - 1
-
-102     If Limites(j, vcolu) Then
-104         If IsWalkable(MapIndex, j, vcolu, NpcIndex, eHeading.NORTH) Then
-
-                'Nos aseguramos que no hay un camino más corto
-106             If T(j, vcolu).DistV = MAXINT Then
-                    'Actualizamos la tabla de calculos intermedios
-108                 T(j, vcolu).DistV = T(vfila, vcolu).DistV + 1
-110                 T(j, vcolu).PrevV.X = vcolu
-112                 T(j, vcolu).PrevV.Y = vfila
-                    'Mete el vertice en la cola
-114                 V.X = vcolu
-116                 V.Y = j
-118                 Call Push(V)
-
-                End If
-
-            End If
-
-        End If
-
-120     j = vfila + 1
-
-        'look to south
-122     If Limites(j, vcolu) Then
-124         If IsWalkable(MapIndex, j, vcolu, NpcIndex, eHeading.SOUTH) Then
-
-                'Nos aseguramos que no hay un camino más corto
-126             If T(j, vcolu).DistV = MAXINT Then
-                    'Actualizamos la tabla de calculos intermedios
-128                 T(j, vcolu).DistV = T(vfila, vcolu).DistV + 1
-130                 T(j, vcolu).PrevV.X = vcolu
-132                 T(j, vcolu).PrevV.Y = vfila
-                    'Mete el vertice en la cola
-134                 V.X = vcolu
-136                 V.Y = j
-138                 Call Push(V)
-
-                End If
-
-            End If
-
-        End If
-
-        'look to west
-140     If Limites(vfila, vcolu - 1) Then
-142         If IsWalkable(MapIndex, vfila, vcolu - 1, NpcIndex, eHeading.WEST) Then
-
-                'Nos aseguramos que no hay un camino más corto
-144             If T(vfila, vcolu - 1).DistV = MAXINT Then
-                    'Actualizamos la tabla de calculos intermedios
-146                 T(vfila, vcolu - 1).DistV = T(vfila, vcolu).DistV + 1
-148                 T(vfila, vcolu - 1).PrevV.X = vcolu
-150                 T(vfila, vcolu - 1).PrevV.Y = vfila
-                    'Mete el vertice en la cola
-152                 V.X = vcolu - 1
-154                 V.Y = vfila
-156                 Call Push(V)
-
-                End If
-
-            End If
-
-        End If
-
-        'look to east
-158     If Limites(vfila, vcolu + 1) Then
-160         If IsWalkable(MapIndex, vfila, vcolu + 1, NpcIndex, eHeading.EAST) Then
-
-                'Nos aseguramos que no hay un camino más corto
-162             If T(vfila, vcolu + 1).DistV = MAXINT Then
-                    'Actualizamos la tabla de calculos intermedios
-164                 T(vfila, vcolu + 1).DistV = T(vfila, vcolu).DistV + 1
-166                 T(vfila, vcolu + 1).PrevV.X = vcolu
-168                 T(vfila, vcolu + 1).PrevV.Y = vfila
-                    'Mete el vertice en la cola
-170                 V.X = vcolu + 1
-172                 V.Y = vfila
-174                 Call Push(V)
-
-                End If
-
-            End If
-
-        End If
-   
-        
-        Exit Sub
-
-ProcessAdjacents_Err:
-176     Call RegistrarError(Err.Number, Err.Description, "PathFinding.ProcessAdjacents", Erl)
-178     Resume Next
-        
-End Sub
-
-Public Sub SeekPath(ByVal NpcIndex As Integer, Optional ByVal MaxSteps As Integer = 30)
-        '############################################################
-        'This Sub seeks a path from the npclist(npcindex).pos
-        'to the location NPCList(NpcIndex).PFINFO.Target.
-        'The optional parameter MaxSteps is the maximum of steps
-        'allowed for the path.
-        '############################################################
-        
-        On Error GoTo SeekPath_Err
-        
-
-        Dim cur_npc_pos As tVertice
-
-        Dim tar_npc_pos As tVertice
-
-        Dim V           As tVertice
-
-        Dim NpcMap      As Integer
-
-        Dim steps       As Integer
-
-100     NpcMap = Npclist(NpcIndex).Pos.Map
-
-102     steps = 0
-
-104     cur_npc_pos.X = Npclist(NpcIndex).Pos.Y
-106     cur_npc_pos.Y = Npclist(NpcIndex).Pos.X
-
-108     tar_npc_pos.X = Npclist(NpcIndex).PFINFO.Target.X '  UserList(NPCList(NpcIndex).PFINFO.TargetUser).Pos.X
-110     tar_npc_pos.Y = Npclist(NpcIndex).PFINFO.Target.Y '  UserList(NPCList(NpcIndex).PFINFO.TargetUser).Pos.Y
-
-112     Call InitializeTable(TmpArray, cur_npc_pos)
-114     Call InitQueue
-
-        'We add the first vertex to the Queue
-116     Call Push(cur_npc_pos)
-
-118     Do While (Not IsEmpty)
-
-120         If steps > MaxSteps Then Exit Do
-122         V = Pop
-
-124         If V.X = tar_npc_pos.X And V.Y = tar_npc_pos.Y Then Exit Do
-126         Call ProcessAdjacents(NpcMap, TmpArray, V.Y, V.X, NpcIndex)
-        Loop
-
-128     Call MakePath(NpcIndex)
-
-        
-        Exit Sub
-
-SeekPath_Err:
-130     Call RegistrarError(Err.Number, Err.Description, "PathFinding.SeekPath", Erl)
-132     Resume Next
-        
-End Sub
-
-Private Sub MakePath(ByVal NpcIndex As Integer)
-        '#######################################################
-        'Builds the path previously calculated
-        '#######################################################
-        
-        On Error GoTo MakePath_Err
-        
-
-        Dim Pasos As Integer
-
-        Dim miV   As tVertice
-
-        Dim i     As Integer
-
-100     Pasos = TmpArray(Npclist(NpcIndex).PFINFO.Target.Y, Npclist(NpcIndex).PFINFO.Target.X).DistV
-102     Npclist(NpcIndex).PFINFO.PathLenght = Pasos
-
-104     If Pasos = MAXINT Then
-            'MsgBox "There is no path."
-106         Npclist(NpcIndex).PFINFO.NoPath = True
-108         Npclist(NpcIndex).PFINFO.PathLenght = 0
-            Exit Sub
-
-        End If
-
-110     ReDim Npclist(NpcIndex).PFINFO.Path(0 To Pasos) As tVertice
-
-112     miV.X = Npclist(NpcIndex).PFINFO.Target.X
-114     miV.Y = Npclist(NpcIndex).PFINFO.Target.Y
-
-116     For i = Pasos To 1 Step -1
-118         Npclist(NpcIndex).PFINFO.Path(i) = miV
-120         miV = TmpArray(miV.Y, miV.X).PrevV
-122     Next i
-
-124     Npclist(NpcIndex).PFINFO.CurPos = 1
-126     Npclist(NpcIndex).PFINFO.NoPath = False
-   
-        
-        Exit Sub
-
-MakePath_Err:
-128     Call RegistrarError(Err.Number, Err.Description, "PathFinding.MakePath", Erl)
-130     Resume Next
-        
-End Sub
-
-Private Sub InitializeTable(ByRef T() As tIntermidiateWork, ByRef s As tVertice, Optional ByVal MaxSteps As Integer = 30)
-        '#########################################################
-        'Initialize the array where we calculate the path
-        '#########################################################
-        
-        On Error GoTo InitializeTable_Err
-        
-
-        Dim j As Integer, K As Integer
-
-        Const anymap = 1
-
-100     For j = s.Y - MaxSteps To s.Y + MaxSteps
-102         For K = s.X - MaxSteps To s.X + MaxSteps
-
-104             If InMapBounds(anymap, j, K) Then
-106                 T(j, K).Known = False
-108                 T(j, K).DistV = MAXINT
-110                 T(j, K).PrevV.X = 0
-112                 T(j, K).PrevV.Y = 0
-
-                End If
-
-            Next
+            With Table(X, Y)
+                X = .Previous.X
+                Y = .Previous.Y
+            End With
+            
         Next
 
-114     T(s.Y, s.X).Known = False
-116     T(s.Y, s.X).DistV = 0
-
-        
-        Exit Sub
-
-InitializeTable_Err:
-118     Call RegistrarError(Err.Number, Err.Description, "PathFinding.InitializeTable", Erl)
-120     Resume Next
-        
+    End With
+   
 End Sub
 
-Function FindDirectionEAO(a As WorldPos, b As WorldPos, Optional ByVal PuedeAgu As Boolean, Optional ByVal PuedeTierra As Boolean = True, _
-                            Optional ByVal IgnoraInvalida As Boolean, Optional ByVal PuedePisar As Boolean) As Byte
+Private Sub InitializeTable(ByRef Table() As tIntermidiateWork, ByRef PosNPC As Position, ByVal RangoVision As Single)
+    ' Inicializar la tabla de posiciones para calcular el camino.
+    ' Solo limpiamos el campo de visión del NPC.
+
+    Dim X As Integer, Y As Integer
+
+    For Y = PosNPC.Y - RangoVision To PosNPC.Y + RangoVision
+        For X = PosNPC.X - RangoVision To PosNPC.X + RangoVision
         
-        On Error GoTo FindDirectionEAO_Err
-        
- 
-        Dim R  As Byte
- 
-        'Mejoras:
-        'Ahora los NPC puden doblar las esquinas, y pasar a los lados de los arboles, _
-         Tambien cuando te persiguen en ves de ir en forma orizontal y despues en vertical, te van sigsagueando.
- 
-        'A = NPCPOS
-        'B = UserPos
- 
-        'Esto es para que el NPC retroceda en caso de no poder seguir adelante, en ese caso se retrocede.
- 
-        'Lo que no pueden hacer los Npcs, es rodear cosas, EJ:
- 
-        '
-        ' *******************
-        ' *                 *
-        ' *                 *
-        ' * B              *
-        ' ******     ********
-        '   A  <------- El npc se va a quedar loco tratando de pasar de frente en ves de rodearlo.
-        '
-        '
-        'Saluda: <-.Siameze.->
- 
-        Dim PV As Integer
- 
-        'r = RandomNumber(1, 2)
-100     R = RandomNumber(1, 2)
- 
-102     If a.X > b.X And a.Y > b.Y Then
-104         FindDirectionEAO = IIf(R = 1, eHeading.NORTH, eHeading.WEST)
-   
-106     ElseIf a.X < b.X And a.Y < b.Y Then
-108         FindDirectionEAO = IIf(R = 1, eHeading.SOUTH, eHeading.EAST)
-   
-110     ElseIf a.X < b.X And a.Y > b.Y Then
-112         FindDirectionEAO = IIf(R = 1, eHeading.NORTH, eHeading.EAST)
-   
-114     ElseIf a.X > b.X And a.Y < b.Y Then
-116         FindDirectionEAO = IIf(R = 1, eHeading.SOUTH, eHeading.WEST)
-   
-118     ElseIf a.X = b.X Then
-120         FindDirectionEAO = IIf(a.Y < b.Y, eHeading.SOUTH, eHeading.NORTH)
-   
-122     ElseIf a.Y = b.Y Then
-124         FindDirectionEAO = IIf(a.X < b.X, eHeading.EAST, eHeading.WEST)
- 
-        Else
- 
-126         FindDirectionEAO = 0 ' this is imposible!
-            Exit Function
-   
-        End If
-        
-128     If Distancia(a, b) <= 1 Then Exit Function
+            If InsideLimits(X, Y) Then
+                Table(X, Y).Closed = False
+                Table(X, Y).Distance = MAXINT
+            End If
+            
+        Next
+    Next
 
-130     Select Case FindDirectionEAO
+End Sub
 
-            Case eHeading.NORTH
+Private Function TileDistance(ByRef Vertex1 As Position, ByRef Vertex2 As Position) As Integer
+    TileDistance = Abs(Vertex1.X - Vertex2.X) + Abs(Vertex1.Y - Vertex2.Y)
+End Function
 
-132             If Not LegalWalkNPC(a.Map, a.X, a.Y - 1, eHeading.NORTH, PuedeAgu, PuedeTierra, IgnoraInvalida, PuedePisar) Then
+Private Function EuclideanDistance(ByVal X As Integer, ByVal Y As Integer, ByRef Vertex As Position) As Single
+    Dim dX As Integer, dY As Integer
+    dX = Vertex.X - X
+    dY = Vertex.Y - Y
+    EuclideanDistance = Sqr(dX * dX + dY * dY)
+End Function
 
-134                 If a.X > b.X Then
-136                     FindDirectionEAO = eHeading.WEST
-138                 ElseIf a.X < b.X Then
-140                     FindDirectionEAO = eHeading.EAST
-                    Else
-142                     FindDirectionEAO = IIf(R > 1, eHeading.WEST, eHeading.EAST)
-                    End If
+Private Function EuclideanDistanceV(ByRef Vertex1 As Position, ByRef Vertex2 As Position) As Single
+    Dim dX As Integer, dY As Integer
+    dX = Vertex1.X - Vertex2.X
+    dY = Vertex1.Y - Vertex2.Y
+    EuclideanDistanceV = Sqr(dX * dX + dY * dY)
+End Function
 
-144                 PV = 1
+Private Sub OpenVertex(ByVal X As Integer, ByVal Y As Integer)
+    With OpenVertices(VertexCount)
+        .X = X: .Y = Y
+    End With
+    VertexCount = VertexCount + 1
+End Sub
+
+Private Sub OpenVertexV(ByRef Vertex As Position)
+    OpenVertices(VertexCount) = Vertex
+    VertexCount = VertexCount + 1
+End Sub
+
+Private Sub CloseVertex(ByVal index As Integer)
+    VertexCount = VertexCount - 1
+    Call MoveMemory(OpenVertices(index), OpenVertices(index + 1), Len(OpenVertices(0)) * (VertexCount - index))
+End Sub
+
+' Las posiciones se pasan ByRef pero NO SE MODIFICAN.
+Public Function GetHeadingFromWorldPos(ByRef currentPos As WorldPos, ByRef nextPos As WorldPos) As eHeading
+    Dim dX As Integer, dY As Integer
     
-                End If
-
-146         Case eHeading.SOUTH
-
-148             If Not LegalWalkNPC(a.Map, a.X, a.Y + 1, eHeading.SOUTH, PuedeAgu, PuedeTierra, IgnoraInvalida, PuedePisar) Then
-
-150                 If a.X > b.X Then
-152                     FindDirectionEAO = eHeading.WEST
-154                 ElseIf a.X < b.X Then
-156                     FindDirectionEAO = eHeading.EAST
-                    Else
-158                     FindDirectionEAO = IIf(R > 1, eHeading.WEST, eHeading.EAST)
-                    End If
-
-160                 PV = 1
-
-                End If
+    dX = nextPos.X - currentPos.X
+    dY = nextPos.Y - currentPos.Y
     
-162         Case eHeading.WEST
+    If dX < 0 Then
+        GetHeadingFromWorldPos = eHeading.WEST
+    ElseIf dX > 0 Then
+        GetHeadingFromWorldPos = eHeading.EAST
+    ElseIf dY < 0 Then
+        GetHeadingFromWorldPos = eHeading.NORTH
+    Else
+        GetHeadingFromWorldPos = eHeading.SOUTH
+    End If
 
-164             If Not LegalWalkNPC(a.Map, a.X - 1, a.Y, eHeading.WEST, PuedeAgu, PuedeTierra, IgnoraInvalida, PuedePisar) Then
-
-166                 If a.Y > b.Y Then
-168                      FindDirectionEAO = eHeading.NORTH
-170                 ElseIf a.Y < b.Y Then
-172                      FindDirectionEAO = eHeading.SOUTH
-                    Else
-174                      FindDirectionEAO = IIf(R > 1, eHeading.NORTH, eHeading.SOUTH)
-                    End If
-
-176                 PV = 1
-
-                 End If
-    
-178         Case eHeading.EAST
-
-180             If Not LegalWalkNPC(a.Map, a.X + 1, a.Y, eHeading.EAST, PuedeAgu, PuedeTierra, IgnoraInvalida, PuedePisar) Then
-182                 If a.Y > b.Y Then
-184                     FindDirectionEAO = eHeading.NORTH
-186                 ElseIf a.Y < b.Y Then
-188                     FindDirectionEAO = eHeading.SOUTH
-                    Else
-190                     FindDirectionEAO = IIf(R > 1, eHeading.NORTH, eHeading.SOUTH)
-                    End If
-
-192                 PV = 1
-
-                 End If
-    
-        End Select
-
-        Exit Function
-
-FindDirectionEAO_Err:
-194     Call RegistrarError(Err.Number, Err.Description, "PathFinding.FindDirectionEAO", Erl)
-196     Resume Next
-        
 End Function

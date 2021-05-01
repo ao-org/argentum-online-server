@@ -406,30 +406,17 @@ IntervaloPermiteMoverse_Err:
 End Function
 
 Public Function IntervaloPermiteLanzarHechizo(ByVal NpcIndex As Integer) As Boolean
+    On Error GoTo IntervaloPermiteLanzarHechizo_Err
         
-        On Error GoTo IntervaloPermiteLanzarHechizo_Err
+    With NpcList(NpcIndex)
+102     IntervaloPermiteLanzarHechizo = GetTickCount() - .Contadores.IntervaloLanzarHechizo >= .IntervaloLanzarHechizo
+    End With
         
-
-        Dim TActual As Long
-
-100     TActual = GetTickCount()
-
-102     If TActual - NpcList(NpcIndex).Contadores.IntervaloLanzarHechizo >= NpcList(NpcIndex).IntervaloLanzarHechizo Then
-    
-            '  Call AddtoRichTextBox(frmMain.RecTxt, "Usar OK.", 255, 0, 0, True, False, False)
-104         NpcList(NpcIndex).Contadores.IntervaloLanzarHechizo = TActual
-106         IntervaloPermiteLanzarHechizo = True
-        Else
-108         IntervaloPermiteLanzarHechizo = False
-
-        End If
-
-        
-        Exit Function
+    Exit Function
 
 IntervaloPermiteLanzarHechizo_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteLanzarHechizo", Erl)
-112     Resume Next
+    Call RegistrarError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteLanzarHechizo", Erl)
+    Resume Next
         
 End Function
 

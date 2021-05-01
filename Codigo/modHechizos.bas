@@ -46,6 +46,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
     End If
 
     Call InfoHechizoDeNpcSobreUser(NpcIndex, UserIndex, Spell)
+    NpcList(NpcIndex).Contadores.IntervaloLanzarHechizo = GetTickCount()
 
     If Hechizos(Spell).SubeHP = 1 Then
       Daño = RandomNumber(Hechizos(Spell).MinHp, Hechizos(Spell).MaxHp)
@@ -278,6 +279,9 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
   Dim DañoStr As String
 
   With NpcList(TargetNPC)
+  
+    .Contadores.IntervaloLanzarHechizo = GetTickCount()
+  
     If Hechizos(Spell).SubeHP = 1 Then ' Cura
       Daño = RandomNumber(Hechizos(Spell).MinHp, Hechizos(Spell).MaxHp)
       DañoStr = PonerPuntos(Daño)
@@ -387,6 +391,8 @@ Public Sub NpcLanzaSpellSobreArea(ByVal NpcIndex As Integer, ByVal SpellIndex As
     Dim Y            As Long
     Dim mitadAreaRadio As Integer
       
+    NpcList(NpcIndex).Contadores.IntervaloLanzarHechizo = GetTickCount()
+    
     With Hechizos(SpellIndex)
         afectaUsers = (.AreaAfecta = 1 Or .AreaAfecta = 3)
         afectaNPCs = (.AreaAfecta = 2 Or .AreaAfecta = 3)
@@ -654,7 +660,7 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
                 End If
         
 122             For j = 1 To Hechizos(h).cant
-                
+
 124                 If .NroMascotas < MAXMASCOTAS Then
 126                     ind = SpawnNpc(Hechizos(h).NumNpc, TargetPos, True, False, False, UserIndex)
 128                     If ind > 0 Then
