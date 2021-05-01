@@ -1474,22 +1474,21 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
         End If
 
 224     If Hechizos(h).Envenena > 0 Then
-            ' If UserIndex = tU Then
-            '    Call WriteConsoleMsg(UserIndex, "No podés atacarte a vos mismo.", FontTypeNames.FONTTYPE_FIGHT)
-            '   Exit Sub
-            'End If
-    
 226         If Not PuedeAtacar(UserIndex, tU) Then Exit Sub
-228         If UserIndex <> tU Then
-230             Call UsuarioAtacadoPorUsuario(UserIndex, tU)
 
+            If UserList(tU).flags.Envenenado = 0 Then
+228             If UserIndex <> tU Then
+230                 Call UsuarioAtacadoPorUsuario(UserIndex, tU)
+                End If
+
+232             UserList(tU).flags.Envenenado = Hechizos(h).Envenena
+233             UserList(tU).Counters.Veneno = Hechizos(h).Duration
+234             Call InfoHechizo(UserIndex)
+236             b = True
+            Else
+                Call WriteConsoleMsg(UserIndex, UserList(tU).name & " ya esta envenenado. El hechizo no tuvo efecto.", FontTypeNames.FONTTYPE_INFO)
+                b = False
             End If
-
-232         UserList(tU).flags.Envenenado = Hechizos(h).Envenena
-233         UserList(tU).Counters.Veneno = Hechizos(h).Duration
-234         Call InfoHechizo(UserIndex)
-236         b = True
-
         End If
 
 238     If Hechizos(h).desencantar = 1 Then
@@ -1563,7 +1562,13 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 296             Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
 298             b = False
                 Exit Sub
-
+            End If
+            
+            ' Si no esta envenenado, no hay nada mas que hacer
+            If UserList(tU).flags.Envenenado = 0 Then
+                Call WriteConsoleMsg(UserIndex, UserList(tU).name & " no está envenenado, el hechizo no tiene efecto.", FontTypeNames.FONTTYPE_INFOIAO)
+                b = False
+                Exit Sub
             End If
     
             'Para poder tirar curar veneno a un pk en el ring
@@ -1582,9 +1587,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 312                     Call WriteLocaleMsg(UserIndex, "378", FontTypeNames.FONTTYPE_INFO)
 314                     b = False
                         Exit Sub
-                    Else
 
-                        '    Call DisNobAuBan(UserIndex, UserList(UserIndex).Reputacion.NobleRep * 0.5, 10000)
                     End If
 
                 End If
@@ -2014,10 +2017,14 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
         End If
 
 122     If Hechizos(hIndex).CuraVeneno = 1 Then
-124         Call InfoHechizo(UserIndex)
-126         NpcList(NpcIndex).flags.Envenenado = 0
-128         b = True
-
+            If NpcList(NpcIndex).flags.Envenenado > 0 Then
+124             Call InfoHechizo(UserIndex)
+126             NpcList(NpcIndex).flags.Envenenado = 0
+128             b = True
+            Else
+                Call WriteConsoleMsg(UserIndex, "La criatura no esta envenenada, el hechizo no tiene efecto.", FontTypeNames.FONTTYPE_INFOIAO)
+                b = False
+            End If
         End If
 
 130     If Hechizos(hIndex).RemoverMaldicion = 1 Then
@@ -2188,21 +2195,26 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal Use
     
         'Salud
 100     If Hechizos(hIndex).SubeHP = 1 Then
-102         Daño = RandomNumber(Hechizos(hIndex).MinHp, Hechizos(hIndex).MaxHp)
-            'daño = daño + Porcentaje(daño, 3 * UserList(UserIndex).Stats.ELV)
+            If NpcList(NpcIndex).Stats.MinHp < NpcList(NpcIndex).Stats.MaxHp Then
+102             Daño = RandomNumber(Hechizos(hIndex).MinHp, Hechizos(hIndex).MaxHp)
+                'daño = daño + Porcentaje(daño, 3 * UserList(UserIndex).Stats.ELV)
         
-104         Call InfoHechizo(UserIndex)
-106         NpcList(NpcIndex).Stats.MinHp = NpcList(NpcIndex).Stats.MinHp + Daño
+104             Call InfoHechizo(UserIndex)
+106             NpcList(NpcIndex).Stats.MinHp = NpcList(NpcIndex).Stats.MinHp + Daño
 
-108         If NpcList(NpcIndex).Stats.MinHp > NpcList(NpcIndex).Stats.MaxHp Then NpcList(NpcIndex).Stats.MinHp = NpcList(NpcIndex).Stats.MaxHp
+108             If NpcList(NpcIndex).Stats.MinHp > NpcList(NpcIndex).Stats.MaxHp Then NpcList(NpcIndex).Stats.MinHp = NpcList(NpcIndex).Stats.MaxHp
 
-109         DañoStr = PonerPuntos(Daño)
+109             DañoStr = PonerPuntos(Daño)
 
-            'Call WriteConsoleMsg(UserIndex, "Has curado " & Daño & " puntos de salud a la criatura.", FontTypeNames.FONTTYPE_FIGHT)
-110         Call WriteLocaleMsg(UserIndex, "388", FontTypeNames.FONTTYPE_FIGHT, "la criatura¬" & DañoStr)
+                'Call WriteConsoleMsg(UserIndex, "Has curado " & Daño & " puntos de salud a la criatura.", FontTypeNames.FONTTYPE_FIGHT)
+110             Call WriteLocaleMsg(UserIndex, "388", FontTypeNames.FONTTYPE_FIGHT, "la criatura¬" & DañoStr)
 
-112         Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageTextOverChar(DañoStr, NpcList(NpcIndex).Char.CharIndex, vbGreen))
-114         b = True
+112             Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageTextOverChar(DañoStr, NpcList(NpcIndex).Char.CharIndex, vbGreen))
+114             b = True
+            Else
+                Call WriteConsoleMsg(UserIndex, "La criatura no tiene heridas que curar, el hechizo no tiene efecto.", FontTypeNames.FONTTYPE_INFOIAO)
+                b = False
+            End If
         
 116     ElseIf Hechizos(hIndex).SubeHP = 2 Then
 
@@ -2477,22 +2489,13 @@ InfoHechizo_Err:
 End Sub
 
 Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
-        '***************************************************
-        'Autor: Unknown (orginal version)
-        'Last Modification: 02/01/2008
-        '02/01/2008 Marcos (ByVal) - No permite tirar curar heridas a usuarios muertos.
-        '***************************************************
-        
         On Error GoTo HechizoPropUsuario_Err
         
 
         Dim h As Integer
-
         Dim Daño As Integer
-        
         Dim DañoStr As String
-
-        Dim tempChr           As Integer
+        Dim tempChr As Integer
     
 102     h = UserList(UserIndex).Stats.UserHechizos(UserList(UserIndex).flags.Hechizo)
 104     tempChr = UserList(UserIndex).flags.TargetUser
@@ -2760,7 +2763,12 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 338             Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
 340             b = False
                 Exit Sub
-
+            End If
+            
+            If UserList(tempChr).Stats.MinHp = UserList(tempChr).Stats.MaxHp Then
+                Call WriteConsoleMsg(UserIndex, UserList(tempChr).name & " no tiene heridas para curar.", FontTypeNames.FONTTYPE_INFOIAO)
+                b = False
+                Exit Sub
             End If
     
             'Para poder tirar curar a un pk en el ring
