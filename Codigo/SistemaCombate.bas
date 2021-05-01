@@ -1726,6 +1726,12 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
             End If
 
         End If
+        
+        If esCaos(AttackerIndex) And esCaos(VictimIndex) Then
+            Call WriteConsoleMsg(AttackerIndex, "Los miembros de las fuerzas del caos se pueden atacar entre si.", FontTypeNames.FONTTYPE_WARNING)
+            PuedeAtacar = False
+            Exit Function
+        End If
 
         'Estas en un Mapa Seguro?
 190     If MapInfo(UserList(VictimIndex).Pos.Map).Seguro = 1 Then
