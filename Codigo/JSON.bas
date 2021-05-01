@@ -59,7 +59,7 @@ Public Function GetParserErrors() As String
         Exit Function
 
 GetParserErrors_Err:
-102     Call RegistrarError(Err.Number, Err.description, "mod_JSON.GetParserErrors", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "mod_JSON.GetParserErrors", Erl)
 
         
 End Function
@@ -104,7 +104,7 @@ Public Function parse(ByRef str As String) As Object
         Exit Function
 
 parse_Err:
-126     Call RegistrarError(Err.Number, Err.description, "mod_JSON.parse", Erl)
+126     Call RegistrarError(Err.Number, Err.Description, "mod_JSON.parse", Erl)
 
         
 End Function
@@ -128,7 +128,7 @@ Private Sub GenerateStringArray(ByRef str As String)
         Exit Sub
 
 GenerateStringArray_Err:
-110     Call RegistrarError(Err.Number, Err.description, "mod_JSON.GenerateStringArray", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "mod_JSON.GenerateStringArray", Erl)
 
         
 End Sub
@@ -183,7 +183,7 @@ Private Function parseObject(ByRef str As String, ByRef index As Long) As Dictio
 130         Call parseObject.Add(sKey, parseValue(str, index))
 
 132         If Err.Number <> 0 Then
-134             m_parserrors = m_parserrors & Err.description & ": " & sKey & vbCrLf
+134             m_parserrors = m_parserrors & Err.Description & ": " & sKey & vbCrLf
                 Exit Do
             End If
 
@@ -193,7 +193,7 @@ Private Function parseObject(ByRef str As String, ByRef index As Long) As Dictio
         Exit Function
 
 parseObject_Err:
-136     Call RegistrarError(Err.Number, Err.description, "mod_JSON.parseObject", Erl)
+136     Call RegistrarError(Err.Number, Err.Description, "mod_JSON.parseObject", Erl)
 
         
 End Function
@@ -239,7 +239,7 @@ Private Function parseArray(ByRef str As String, ByRef index As Long) As Collect
 128         Call parseArray.Add(parseValue(str, index))
 
 130         If Err.Number <> 0 Then
-132             m_parserrors = m_parserrors & Err.description & ": " & mid$(str, index, 20) & vbCrLf
+132             m_parserrors = m_parserrors & Err.Description & ": " & mid$(str, index, 20) & vbCrLf
                 Exit Do
 
             End If
@@ -250,7 +250,7 @@ Private Function parseArray(ByRef str As String, ByRef index As Long) As Collect
         Exit Function
 
 parseArray_Err:
-134     Call RegistrarError(Err.Number, Err.description, "mod_JSON.parseArray", Erl)
+134     Call RegistrarError(Err.Number, Err.Description, "mod_JSON.parseArray", Erl)
 
         
 End Function
@@ -295,7 +295,7 @@ Private Function parseValue(ByRef str As String, ByRef index As Long)
         Exit Function
 
 parseValue_Err:
-126     Call RegistrarError(Err.Number, Err.description, "mod_JSON.parseValue", Erl)
+126     Call RegistrarError(Err.Number, Err.Description, "mod_JSON.parseValue", Erl)
 
         
 End Function
@@ -378,7 +378,7 @@ Private Function parseString(ByRef str As String, ByRef index As Long) As String
         Exit Function
 
 parseString_Err:
-172     Call RegistrarError(Err.Number, Err.description, "mod_JSON.parseString", Erl)
+172     Call RegistrarError(Err.Number, Err.Description, "mod_JSON.parseString", Erl)
 
         
 End Function
@@ -424,7 +424,7 @@ Private Function parseNumber(ByRef str As String, ByRef index As Long)
         Exit Function
 
 parseNumber_Err:
-122     Call RegistrarError(Err.Number, Err.description, "mod_JSON.parseNumber", Erl)
+122     Call RegistrarError(Err.Number, Err.Description, "mod_JSON.parseNumber", Erl)
 
         
 End Function
@@ -452,7 +452,7 @@ Private Function parseBoolean(ByRef str As String, ByRef index As Long) As Boole
         Exit Function
 
 parseBoolean_Err:
-116     Call RegistrarError(Err.Number, Err.description, "mod_JSON.parseBoolean", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "mod_JSON.parseBoolean", Erl)
 
         
 End Function
@@ -477,7 +477,7 @@ Private Function parseNull(ByRef str As String, ByRef index As Long)
         Exit Function
 
 parseNull_Err:
-110     Call RegistrarError(Err.Number, Err.description, "mod_JSON.parseNull", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "mod_JSON.parseNull", Erl)
 
         
 End Function
@@ -563,7 +563,7 @@ Private Function parseKey(ByRef index As Long) As String
         Exit Function
 
 parseKey_Err:
-158     Call RegistrarError(Err.Number, Err.description, "mod_JSON.parseKey", Erl)
+158     Call RegistrarError(Err.Number, Err.Description, "mod_JSON.parseKey", Erl)
 
         
 End Function
@@ -644,7 +644,7 @@ Private Sub skipChar(ByRef index As Long)
         Exit Sub
 
 skipChar_Err:
-154     Call RegistrarError(Err.Number, Err.description, "mod_JSON.skipChar", Erl)
+154     Call RegistrarError(Err.Number, Err.Description, "mod_JSON.skipChar", Erl)
 
         
 End Sub
@@ -733,14 +733,14 @@ Private Function Encode(str) As String
 122             If a > 31 And a < 127 Then
 124                 Call SB.Append(c)
 126             ElseIf a > -1 Or a < 65535 Then
-128                 Call SB.Append("\u" & String$(4 - LenB(hex$(a)), "0") & hex$(a))
+128                 Call SB.Append("\u" & String$(4 - LenB(Hex$(a)), "0") & Hex$(a))
                 End If
 
             End If
 
         Next
    
-130     Encode = SB.toString
+130     Encode = SB.ToString
     
 132     Set SB = Nothing
    
@@ -748,7 +748,7 @@ Private Function Encode(str) As String
         Exit Function
 
 Encode_Err:
-134     Call RegistrarError(Err.Number, Err.description, "mod_JSON.Encode", Erl)
+134     Call RegistrarError(Err.Number, Err.Description, "mod_JSON.Encode", Erl)
 
         
 End Function
@@ -786,17 +786,17 @@ Public Function StringToJSON(st As String) As String
 116                 sFlds = (sFlds & IIf(sFlds <> "", ",", "") & """" & fld(lFld) & """:""" & toUnicode(fld(lFld + 1) & "") & """")
                 Next 'fld
 
-118             Call sRecs.Append(IIf((Trim$(sRecs.toString) <> ""), "," & vbNewLine, "") & "{" & sFlds & "}")
+118             Call sRecs.Append(IIf((Trim$(sRecs.ToString) <> ""), "," & vbNewLine, "") & "{" & sFlds & "}")
             Next 'rec
 
-120         StringToJSON = ("( {""Records"": [" & vbNewLine & sRecs.toString & vbNewLine & "], " & """RecordCount"":""" & lRecCnt & """ } )")
+120         StringToJSON = ("( {""Records"": [" & vbNewLine & sRecs.ToString & vbNewLine & "], " & """RecordCount"":""" & lRecCnt & """ } )")
 
         End If
         
         Exit Function
 
 StringToJSON_Err:
-122     Call RegistrarError(Err.Number, Err.description, "mod_JSON.StringToJSON", Erl)
+122     Call RegistrarError(Err.Number, Err.Description, "mod_JSON.StringToJSON", Erl)
 
         
 End Function
@@ -829,11 +829,11 @@ Public Function RStoJSON(rs As ADODB.Recordset) As String
 118                     sFlds = (sFlds & IIf(sFlds <> "", ",", "") & """" & fld.name & """:""" & toUnicode(fld.Value & "") & """")
                     Next 'fld
 
-120                 Call sRecs.Append(IIf((Trim$(sRecs.toString) <> ""), "," & vbNewLine, "") & "{" & sFlds & "}")
+120                 Call sRecs.Append(IIf((Trim$(sRecs.ToString) <> ""), "," & vbNewLine, "") & "{" & sFlds & "}")
 122                 Call rs.MoveNext
                 Loop
             
-124             RStoJSON = ("( {""Records"": [" & vbNewLine & sRecs.toString & vbNewLine & "], " & """RecordCount"":""" & lRecCnt & """ } )")
+124             RStoJSON = ("( {""Records"": [" & vbNewLine & sRecs.ToString & vbNewLine & "], " & """RecordCount"":""" & lRecCnt & """ } )")
 
             End If
 
@@ -884,10 +884,10 @@ Public Function toUnicode(str As String) As String
 134                 Call uStr.Append("\\")
 
 136             Case 123, 125:  ' "{" and "}"
-138                 Call uStr.Append("\u" & Right$("0000" & hex$(uChrCode), 4))
+138                 Call uStr.Append("\u" & Right$("0000" & Hex$(uChrCode), 4))
 
 140             Case Is < 32, Is > 127: ' non-ascii characters
-142                 Call uStr.Append("\u" & Right$("0000" & hex$(uChrCode), 4))
+142                 Call uStr.Append("\u" & Right$("0000" & Hex$(uChrCode), 4))
 
 144             Case Else
 146                 Call uStr.Append(Chr$(uChrCode))
@@ -896,7 +896,7 @@ Public Function toUnicode(str As String) As String
 
         Next
     
-148     toUnicode = uStr.toString
+148     toUnicode = uStr.ToString
     
         Exit Function
 
@@ -904,7 +904,7 @@ Public Function toUnicode(str As String) As String
         Exit Function
 
 toUnicode_Err:
-150     Call RegistrarError(Err.Number, Err.description, "mod_JSON.toUnicode", Erl)
+150     Call RegistrarError(Err.Number, Err.Description, "mod_JSON.toUnicode", Erl)
 
         
 End Function

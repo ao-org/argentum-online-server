@@ -838,18 +838,18 @@ Public Sub AplicarIntervalos()
         '///////////////// TIMERS \\\\\\\\\\\\\\\\\\\
 
 138     IntervaloUserPuedeCastear = val(txtIntervaloLanzaHechizo.Text)
-142     frmMain.TIMER_AI.Interval = val(txtAI.Text)
-144     IntervaloTrabajarExtraer = val(txtTrabajoExtraer.Text)
-146     IntervaloTrabajarConstruir = val(txtTrabajoConstruir.Text)
-148     IntervaloUserPuedeAtacar = val(txtPuedeAtacar.Text)
+140     frmMain.TIMER_AI.Interval = val(txtAI.Text)
+142     IntervaloTrabajarExtraer = val(txtTrabajoExtraer.Text)
+144     IntervaloTrabajarConstruir = val(txtTrabajoConstruir.Text)
+146     IntervaloUserPuedeAtacar = val(txtPuedeAtacar.Text)
         'frmMain.tLluvia.Interval = val(txtIntervaloPerdidaStaminaLluvia.Text)
 
         
         Exit Sub
 
 AplicarIntervalos_Err:
-150     Call RegistrarError(Err.Number, Err.Description, "FrmInterv.AplicarIntervalos", Erl)
-152     Resume Next
+148     Call RegistrarError(Err.Number, Err.Description, "FrmInterv.AplicarIntervalos", Erl)
+150     Resume Next
         
 End Sub
 
@@ -899,16 +899,16 @@ Private Sub Command2_Click()
 
 136     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloLanzaHechizo", CStr(IntervaloUserPuedeCastear))
 138     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloNpcAI", frmMain.TIMER_AI.Interval)
-142     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloTrabajarExtraer", CStr(IntervaloTrabajarExtraer))
-144     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloTrabajarConstruir", CStr(IntervaloTrabajarConstruir))
-146     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloUserPuedeAtacar", CStr(IntervaloUserPuedeAtacar))
+140     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloTrabajarExtraer", CStr(IntervaloTrabajarExtraer))
+142     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloTrabajarConstruir", CStr(IntervaloTrabajarConstruir))
+144     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloUserPuedeAtacar", CStr(IntervaloUserPuedeAtacar))
         'Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloPerdidaStaminaLluvia", frmMain.tLluvia.Interval)
 
-148     MsgBox "Los intervalos se han guardado sin problemas"
+146     MsgBox "Los intervalos se han guardado sin problemas"
 
         Exit Sub
 Err:
-150     MsgBox "Error al intentar grabar los intervalos"
+148     MsgBox "Error al intentar grabar los intervalos"
 
 End Sub
 

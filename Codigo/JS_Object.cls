@@ -16,7 +16,7 @@ Option Explicit
 Private StringBuilder As cStringBuilder
 
 Private Sub Class_Initialize()
-    Set StringBuilder = New cStringBuilder
+100     Set StringBuilder = New cStringBuilder
 End Sub
 
 Private Sub Class_Terminate()
@@ -24,30 +24,30 @@ Private Sub Class_Terminate()
 End Sub
 
 Public Sub Clear()
-    StringBuilder.Clear
+100     StringBuilder.Clear
 End Sub
 
 Public Property Let Item(ByRef Key As String, ByRef Value As Variant)
-    StringBuilder.Append """" & Key & """: "
+100     StringBuilder.Append """" & Key & """: "
     
-    Select Case varType(Value)
-        Case vbString
-            StringBuilder.Append """" & Value & """"
+102     Select Case VarType(Value)
+            Case vbString
+104             StringBuilder.Append """" & Value & """"
             
-        Case vbBoolean
-            StringBuilder.Append IIf(Value, "true", "false")
+106         Case vbBoolean
+108             StringBuilder.Append IIf(Value, "true", "false")
             
-        Case vbObject
-            StringBuilder.Append Value.ToString
+110         Case vbObject
+112             StringBuilder.Append Value.ToString
             
-        Case Else
-            StringBuilder.Append CStr(Value)
+114         Case Else
+116             StringBuilder.Append CStr(Value)
             
-    End Select
+        End Select
     
-    StringBuilder.Append ", "
+118     StringBuilder.Append ", "
 End Property
 
 Public Function ToString() As String
-    ToString = "{" & Left$(StringBuilder.ToString, Len(StringBuilder.ToString) - 2) & "}"
+100     ToString = "{" & Left$(StringBuilder.ToString, Len(StringBuilder.ToString) - 2) & "}"
 End Function

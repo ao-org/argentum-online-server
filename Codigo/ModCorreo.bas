@@ -205,7 +205,7 @@ Public Sub ExtractItemCorreo(ByVal UserIndex As Integer, ByVal index As Byte)
 114         Cantidad = (ReadField(2, rdata, Asc("-")))
 
 116         ObjAMeter.ObjIndex = ObjIndex
-118         ObjAMeter.Amount = Cantidad
+118         ObjAMeter.amount = Cantidad
         
 120         If Not MeterItemEnInventario(UserIndex, ObjAMeter) Then
 122             Call TirarItemAlPiso(UserList(UserIndex).Pos, ObjAMeter)

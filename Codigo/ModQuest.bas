@@ -109,8 +109,8 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
 
 106             For i = 1 To .RequiredOBJs
 
-108                 If TieneObjetos(.RequiredOBJ(i).ObjIndex, .RequiredOBJ(i).Amount, UserIndex) = False Then
-110                     Call WriteChatOverHead(UserIndex, "No has conseguido todos los objetos que te he pedido.", Npclist(NpcIndex).Char.CharIndex, vbYellow)
+108                 If TieneObjetos(.RequiredOBJ(i).ObjIndex, .RequiredOBJ(i).amount, UserIndex) = False Then
+110                     Call WriteChatOverHead(UserIndex, "No has conseguido todos los objetos que te he pedido.", NpcList(NpcIndex).Char.CharIndex, vbYellow)
                     
                         Exit Sub
 
@@ -125,8 +125,8 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
 
 116             For i = 1 To .RequiredNPCs
 
-118                 If .RequiredNPC(i).Amount > UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsKilled(i) Then
-120                     Call WriteChatOverHead(UserIndex, "No has matado todas las criaturas que te he pedido.", Npclist(NpcIndex).Char.CharIndex, vbYellow)
+118                 If .RequiredNPC(i).amount > UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsKilled(i) Then
+120                     Call WriteChatOverHead(UserIndex, "No has matado todas las criaturas que te he pedido.", NpcList(NpcIndex).Char.CharIndex, vbYellow)
                         Exit Sub
 
                     End If
@@ -140,8 +140,8 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
 
 126              For i = 1 To .RequiredTargetNPCs
     
-128                  If .RequiredTargetNPC(i).Amount > UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsTarget(i) Then
-130                      Call WriteChatOverHead(UserIndex, "No has visitado al npc que te pedi.", Npclist(NpcIndex).Char.CharIndex, vbYellow)
+128                  If .RequiredTargetNPC(i).amount > UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsTarget(i) Then
+130                      Call WriteChatOverHead(UserIndex, "No has visitado al npc que te pedi.", NpcList(NpcIndex).Char.CharIndex, vbYellow)
                         Exit Sub
     
                         End If
@@ -161,7 +161,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
             
                 'Nos fijamos si entra
 142             If InvSlotsLibres < .RewardOBJs Then
-144                 Call WriteChatOverHead(UserIndex, "No tienes suficiente espacio en el inventario para recibir la recompensa. Vuelve cuando hayas hecho mas espacio.", Npclist(NpcIndex).Char.CharIndex, vbYellow)
+144                 Call WriteChatOverHead(UserIndex, "No tienes suficiente espacio en el inventario para recibir la recompensa. Vuelve cuando hayas hecho mas espacio.", NpcList(NpcIndex).Char.CharIndex, vbYellow)
                     Exit Sub
 
                 End If
@@ -169,14 +169,14 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
             End If
     
             'A esta altura ya cumplio los objetivos, entonces se le entregan las recompensas.
-146         Call WriteChatOverHead(UserIndex, "QUESTFIN*" & QuestIndex, Npclist(NpcIndex).Char.CharIndex, vbYellow)
+146         Call WriteChatOverHead(UserIndex, "QUESTFIN*" & QuestIndex, NpcList(NpcIndex).Char.CharIndex, vbYellow)
         
 
             'Si la quest pedia objetos, se los saca al personaje.
 148         If .RequiredOBJs Then
 
 150             For i = 1 To .RequiredOBJs
-152                 Call QuitarObjetos(.RequiredOBJ(i).ObjIndex, .RequiredOBJ(i).Amount, UserIndex)
+152                 Call QuitarObjetos(.RequiredOBJ(i).ObjIndex, .RequiredOBJ(i).amount, UserIndex)
 154             Next i
 
             End If
@@ -207,9 +207,9 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
 
 180             For i = 1 To .RewardOBJs
 
-182                 If .RewardOBJ(i).Amount Then
+182                 If .RewardOBJ(i).amount Then
 184                     Call MeterItemEnInventario(UserIndex, .RewardOBJ(i))
-186                     Call WriteConsoleMsg(UserIndex, "Has recibido " & QuestList(QuestIndex).RewardOBJ(i).Amount & " " & ObjData(QuestList(QuestIndex).RewardOBJ(i).ObjIndex).name & " como recompensa.", FontTypeNames.FONTTYPE_INFOIAO)
+186                     Call WriteConsoleMsg(UserIndex, "Has recibido " & QuestList(QuestIndex).RewardOBJ(i).amount & " " & ObjData(QuestList(QuestIndex).RewardOBJ(i).ObjIndex).name & " como recompensa.", FontTypeNames.FONTTYPE_INFOIAO)
 
                     End If
 
@@ -442,7 +442,7 @@ Public Sub LoadQuests()
 132                     tmpStr = Reader.GetValue("QUEST" & i, "RequiredOBJ" & j)
                     
 134                     .RequiredOBJ(j).ObjIndex = val(ReadField(1, tmpStr, 45))
-136                     .RequiredOBJ(j).Amount = val(ReadField(2, tmpStr, 45))
+136                     .RequiredOBJ(j).amount = val(ReadField(2, tmpStr, 45))
 138                 Next j
 
                 End If
@@ -457,7 +457,7 @@ Public Sub LoadQuests()
 148                     tmpStr = Reader.GetValue("QUEST" & i, "RequiredNPC" & j)
                     
 150                     .RequiredNPC(j).NpcIndex = val(ReadField(1, tmpStr, 45))
-152                     .RequiredNPC(j).Amount = val(ReadField(2, tmpStr, 45))
+152                     .RequiredNPC(j).amount = val(ReadField(2, tmpStr, 45))
 154                 Next j
 
                 End If
@@ -474,7 +474,7 @@ Public Sub LoadQuests()
 164                     tmpStr = Reader.GetValue("QUEST" & i, "RequiredTargetNPC" & j)
                     
 166                     .RequiredTargetNPC(j).NpcIndex = val(ReadField(1, tmpStr, 45))
-168                     .RequiredTargetNPC(j).Amount = 1
+168                     .RequiredTargetNPC(j).amount = 1
 170                 Next j
 
                 End If
@@ -497,7 +497,7 @@ Public Sub LoadQuests()
 186                     tmpStr = Reader.GetValue("QUEST" & i, "RewardOBJ" & j)
                     
 188                     .RewardOBJ(j).ObjIndex = val(ReadField(1, tmpStr, 45))
-190                     .RewardOBJ(j).Amount = val(ReadField(2, tmpStr, 45))
+190                     .RewardOBJ(j).amount = val(ReadField(2, tmpStr, 45))
 192                 Next j
 
                 End If
@@ -726,15 +726,15 @@ Public Sub EnviarQuest(ByVal UserIndex As Integer)
 102     If NpcIndex = 0 Then Exit Sub
     
         'Esta el personaje en la distancia correcta?
-104     If Distancia(UserList(UserIndex).Pos, Npclist(NpcIndex).Pos) > 5 Then
+104     If Distancia(UserList(UserIndex).Pos, NpcList(NpcIndex).Pos) > 5 Then
 106         Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
     
         'El NPC hace quests?
-108     If Npclist(NpcIndex).NumQuest = 0 Then
-110         Call WriteChatOverHead(UserIndex, "No tengo ninguna mision para ti.", Npclist(NpcIndex).Char.CharIndex, vbYellow)
+108     If NpcList(NpcIndex).NumQuest = 0 Then
+110         Call WriteChatOverHead(UserIndex, "No tengo ninguna mision para ti.", NpcList(NpcIndex).Char.CharIndex, vbYellow)
             Exit Sub
 
         End If
@@ -744,13 +744,13 @@ Public Sub EnviarQuest(ByVal UserIndex As Integer)
         Dim q As Byte
         
         
-112     For q = 1 To Npclist(NpcIndex).NumQuest
-114         tmpByte = TieneQuest(UserIndex, Npclist(NpcIndex).QuestNumber(q))
+112     For q = 1 To NpcList(NpcIndex).NumQuest
+114         tmpByte = TieneQuest(UserIndex, NpcList(NpcIndex).QuestNumber(q))
         
 116         If tmpByte Then
                 'El usuario esta haciendo la quest, entonces va a hablar con el NPC para recibir la recompensa.
-118             If FinishQuestCheck(UserIndex, Npclist(NpcIndex).QuestNumber(q), tmpByte) Then
-120                 Call FinishQuest(UserIndex, Npclist(NpcIndex).QuestNumber(q), tmpByte)
+118             If FinishQuestCheck(UserIndex, NpcList(NpcIndex).QuestNumber(q), tmpByte) Then
+120                 Call FinishQuest(UserIndex, NpcList(NpcIndex).QuestNumber(q), tmpByte)
                     Exit Sub
                 End If
 
@@ -807,7 +807,7 @@ Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As
 
 106             For i = 1 To .RequiredOBJs
 
-108                 If TieneObjetos(.RequiredOBJ(i).ObjIndex, .RequiredOBJ(i).Amount, UserIndex) = False Then
+108                 If TieneObjetos(.RequiredOBJ(i).ObjIndex, .RequiredOBJ(i).amount, UserIndex) = False Then
 110                     FinishQuestCheck = False
                     
                         Exit Function
@@ -823,7 +823,7 @@ Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As
 
 116             For i = 1 To .RequiredNPCs
 
-118                 If .RequiredNPC(i).Amount > UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsKilled(i) Then
+118                 If .RequiredNPC(i).amount > UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsKilled(i) Then
 120                     FinishQuestCheck = False
                         Exit Function
 
@@ -838,7 +838,7 @@ Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As
 
 126          For i = 1 To .RequiredTargetNPCs
 
-128              If .RequiredTargetNPC(i).Amount > UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsTarget(i) Then
+128              If .RequiredTargetNPC(i).amount > UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsTarget(i) Then
 130                  FinishQuestCheck = False
                         Exit Function
 
@@ -879,7 +879,7 @@ Function FaltanItemsQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Intege
 106                 If ObjIndex = .RequiredOBJ(i).ObjIndex Then
 
                         ' Devolvemos si ya tiene todos los que la quest pide
-108                     FaltanItemsQuest = Not TieneObjetos(ObjIndex, .RequiredOBJ(i).Amount, UserIndex)
+108                     FaltanItemsQuest = Not TieneObjetos(ObjIndex, .RequiredOBJ(i).amount, UserIndex)
                         Exit Function
 
                     End If

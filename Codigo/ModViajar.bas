@@ -7,7 +7,7 @@ Public Sub IniciarTransporte(ByVal UserIndex As Integer)
 
         Dim destinos As Byte
 
-100     destinos = Npclist(UserList(UserIndex).flags.TargetNPC).NumDestinos
+100     destinos = NpcList(UserList(UserIndex).flags.TargetNPC).NumDestinos
 
         
         Exit Sub

@@ -227,55 +227,55 @@ Public Function m_EcharMiembroDeClan(ByVal Expulsador As Integer, ByVal Expulsad
 114                 Call guilds(GI).DesConectarMiembro(UserIndex)
 116                 Call guilds(GI).ExpulsarMiembro(Expulsado)
 118                 Call LogClanes(Expulsado & " ha sido expulsado de " & guilds(GI).GuildName & " Expulsador = " & Expulsador)
-119                 UserList(UserIndex).GuildIndex = 0
+120                 UserList(UserIndex).GuildIndex = 0
 
-120                 Map = UserList(UserIndex).Pos.Map
+122                 Map = UserList(UserIndex).Pos.Map
 
-121                 If MapInfo(Map).SoloClanes And MapInfo(Map).Salida.Map <> 0 Then
-122                     Call WriteConsoleMsg(UserIndex, "Necesitas un clan para pertenecer en este mapa.", FontTypeNames.FONTTYPE_INFO)
-123                     Call WarpUserChar(UserIndex, MapInfo(Map).Salida.Map, MapInfo(Map).Salida.X, MapInfo(Map).Salida.Y, True)
+124                 If MapInfo(Map).SoloClanes And MapInfo(Map).Salida.Map <> 0 Then
+126                     Call WriteConsoleMsg(UserIndex, "Necesitas un clan para pertenecer en este mapa.", FontTypeNames.FONTTYPE_INFO)
+128                     Call WarpUserChar(UserIndex, MapInfo(Map).Salida.Map, MapInfo(Map).Salida.X, MapInfo(Map).Salida.Y, True)
                     Else
-124                     Call RefreshCharStatus(UserIndex)
+130                     Call RefreshCharStatus(UserIndex)
                     End If
 
-125                 m_EcharMiembroDeClan = GI
+132                 m_EcharMiembroDeClan = GI
                 Else
-126                 m_EcharMiembroDeClan = 0
+134                 m_EcharMiembroDeClan = 0
 
                 End If
 
             Else
-128             m_EcharMiembroDeClan = 0
+136             m_EcharMiembroDeClan = 0
 
             End If
 
         Else
             'pj offline
-130         If Database_Enabled Then
-132             GI = GetUserGuildIndexDatabase(Expulsado)
+138         If Database_Enabled Then
+140             GI = GetUserGuildIndexDatabase(Expulsado)
             Else
-134             GI = GetGuildIndexFromChar(Expulsado)
+142             GI = GetGuildIndexFromChar(Expulsado)
             End If
 
-136         If GI > 0 Then
-138             If m_PuedeSalirDeClan(Expulsado, GI, Expulsador) Then
-140                 If m_EsGuildLeader(Expulsado, GI) Then guilds(GI).SetLeader (guilds(GI).Fundador)
-142                 Call guilds(GI).ExpulsarMiembro(Expulsado)
-144                 Call LogClanes(Expulsado & " ha sido expulsado de " & guilds(GI).GuildName & " Expulsador = " & Expulsador)
+144         If GI > 0 Then
+146             If m_PuedeSalirDeClan(Expulsado, GI, Expulsador) Then
+148                 If m_EsGuildLeader(Expulsado, GI) Then guilds(GI).SetLeader (guilds(GI).Fundador)
+150                 Call guilds(GI).ExpulsarMiembro(Expulsado)
+152                 Call LogClanes(Expulsado & " ha sido expulsado de " & guilds(GI).GuildName & " Expulsador = " & Expulsador)
 
-                    Map = GetMapDatabase(Expulsado)
+154                 Map = GetMapDatabase(Expulsado)
 
-145                 If MapInfo(Map).SoloClanes And MapInfo(Map).Salida.Map <> 0 Then
-147                     Call SetPositionDatabase(Expulsado, MapInfo(Map).Salida.Map, MapInfo(Map).Salida.X, MapInfo(Map).Salida.Y)
+156                 If MapInfo(Map).SoloClanes And MapInfo(Map).Salida.Map <> 0 Then
+158                     Call SetPositionDatabase(Expulsado, MapInfo(Map).Salida.Map, MapInfo(Map).Salida.X, MapInfo(Map).Salida.Y)
                     End If
 
-149                 m_EcharMiembroDeClan = GI
+160                 m_EcharMiembroDeClan = GI
                 Else
-150                 m_EcharMiembroDeClan = 0
+162                 m_EcharMiembroDeClan = 0
                 End If
 
             Else
-151             m_EcharMiembroDeClan = 0
+164             m_EcharMiembroDeClan = 0
 
             End If
 
@@ -285,8 +285,8 @@ Public Function m_EcharMiembroDeClan(ByVal Expulsador As Integer, ByVal Expulsad
         Exit Function
 
 m_EcharMiembroDeClan_Err:
-152     Call RegistrarError(Err.Number, Err.Description, "modGuilds.m_EcharMiembroDeClan", Erl)
-154     Resume Next
+166     Call RegistrarError(Err.Number, Err.Description, "modGuilds.m_EcharMiembroDeClan", Erl)
+168     Resume Next
         
 End Function
 
@@ -551,34 +551,34 @@ Public Function PuedeFundarUnClan(ByVal UserIndex As Integer, ByVal Alineacion A
 
         End If
     
-122     Select Case Alineacion
+118     Select Case Alineacion
 
             Case ALINEACION_GUILD.ALINEACION_CIUDA
 
-124             If Status(UserIndex) = 0 Or Status(UserIndex) = 2 Then
-126                 refError = "Para fundar un clan de ciudadanos no debes ser criminal."
+120             If Status(UserIndex) = 0 Or Status(UserIndex) = 2 Then
+122                 refError = "Para fundar un clan de ciudadanos no debes ser criminal."
                     Exit Function
 
                 End If
 
-128         Case ALINEACION_GUILD.ALINEACION_CRIMINAL
+124         Case ALINEACION_GUILD.ALINEACION_CRIMINAL
 
-130             If Status(UserIndex) = 1 Or Status(UserIndex) = 3 Then
-132                 refError = "Para fundar un clan de criminales no debes ser ciudadano."
+126             If Status(UserIndex) = 1 Or Status(UserIndex) = 3 Then
+128                 refError = "Para fundar un clan de criminales no debes ser ciudadano."
                     Exit Function
 
                 End If
 
         End Select
 
-134     PuedeFundarUnClan = True
+130     PuedeFundarUnClan = True
     
         
         Exit Function
 
 PuedeFundarUnClan_Err:
-136     Call RegistrarError(Err.Number, Err.Description, "modGuilds.PuedeFundarUnClan", Erl)
-138     Resume Next
+132     Call RegistrarError(Err.Number, Err.Description, "modGuilds.PuedeFundarUnClan", Erl)
+134     Resume Next
         
 End Function
 
@@ -619,9 +619,9 @@ Private Function m_EstadoPermiteEntrarChar(ByRef Personaje As String, ByVal Guil
 
 120                 m_EstadoPermiteEntrarChar = Promedio = 1 Or Promedio = 3
 
-126             Case ALINEACION_GUILD.ALINEACION_CRIMINAL
+122             Case ALINEACION_GUILD.ALINEACION_CRIMINAL
 
-128                 m_EstadoPermiteEntrarChar = Promedio = 0 Or Promedio = 2
+124                 m_EstadoPermiteEntrarChar = Promedio = 0 Or Promedio = 2
 
 
             End Select
@@ -632,38 +632,38 @@ Private Function m_EstadoPermiteEntrarChar(ByRef Personaje As String, ByVal Guil
         Exit Function
 
 m_EstadoPermiteEntrarChar_Err:
-134     Call RegistrarError(Err.Number, Err.Description, "modGuilds.m_EstadoPermiteEntrarChar", Erl)
-136     Resume Next
+126     Call RegistrarError(Err.Number, Err.Description, "modGuilds.m_EstadoPermiteEntrarChar", Erl)
+128     Resume Next
         
 End Function
 
 Private Function m_EstadoPermiteEntrar(ByVal UserIndex As Integer, ByVal GuildIndex As Integer) As Boolean
         On Error GoTo m_EstadoPermiteEntrar_Err
 
-        Select Case guilds(GuildIndex).Alineacion
+100     Select Case guilds(GuildIndex).Alineacion
             Case ALINEACION_GUILD.ALINEACION_CIUDA
 
-              m_EstadoPermiteEntrar = Status(UserIndex) = 1 Or Status(UserIndex) = 3
+102           m_EstadoPermiteEntrar = Status(UserIndex) = 1 Or Status(UserIndex) = 3
 
-            Case ALINEACION_GUILD.ALINEACION_CRIMINAL
+104         Case ALINEACION_GUILD.ALINEACION_CRIMINAL
 
-              m_EstadoPermiteEntrar = Status(UserIndex) = 0 Or Status(UserIndex) = 2
+106           m_EstadoPermiteEntrar = Status(UserIndex) = 0 Or Status(UserIndex) = 2
 
         End Select
 
         Exit Function
 
 m_EstadoPermiteEntrar_Err:
-116     Call RegistrarError(Err.Number, Err.Description, "modGuilds.m_EstadoPermiteEntrar", Erl)
-118     Resume Next
+108     Call RegistrarError(Err.Number, Err.Description, "modGuilds.m_EstadoPermiteEntrar", Erl)
+110     Resume Next
 
 End Function
 
-Public Function String2Alineacion(ByRef s As String) As ALINEACION_GUILD
+Public Function String2Alineacion(ByRef S As String) As ALINEACION_GUILD
         
         On Error GoTo String2Alineacion_Err
 
-100     Select Case s
+100     Select Case S
 
             Case "Ciudadano"
 102             String2Alineacion = ALINEACION_CIUDA
@@ -736,12 +736,12 @@ Relacion2String_Err:
         
 End Function
 
-Public Function String2Relacion(ByVal s As String) As RELACIONES_GUILD
+Public Function String2Relacion(ByVal S As String) As RELACIONES_GUILD
         
         On Error GoTo String2Relacion_Err
         
 
-100     Select Case UCase$(Trim$(s))
+100     Select Case UCase$(Trim$(S))
 
             Case vbNullString, "P"
 102             String2Relacion = RELACIONES_GUILD.PAZ
@@ -1136,31 +1136,31 @@ Public Sub SendGuildLeaderInfo(ByVal UserIndex As Integer)
 
         Dim aspirantsList() As String
     
-104     With UserList(UserIndex)
-106         GI = .GuildIndex
+100     With UserList(UserIndex)
+102         GI = .GuildIndex
         
-108         guildList = PrepareGuildsList()
+104         guildList = PrepareGuildsList()
         
-110         If GI <= 0 Or GI > CANTIDADDECLANES Then
+106         If GI <= 0 Or GI > CANTIDADDECLANES Then
                 'Send the guild list instead
-112             Call Protocol.WriteGuildList(UserIndex, guildList)
+108             Call Protocol.WriteGuildList(UserIndex, guildList)
                 Exit Sub
 
             End If
         
-114         If Not m_EsGuildLeader(.name, GI) Then
+110         If Not m_EsGuildLeader(.name, GI) Then
                 'Send the guild list instead
-116             Call modGuilds.SendGuildNews(UserIndex, guildList)
+112             Call modGuilds.SendGuildNews(UserIndex, guildList)
                 '            Call WriteGuildMemberInfo(UserIndex, guildList, MemberList)
                 ' Call Protocol.WriteGuildList(UserIndex, guildList)
                 Exit Sub
 
             End If
         
-118         MemberList = guilds(GI).GetMemberList()
-120         aspirantsList = guilds(GI).GetAspirantes()
+114         MemberList = guilds(GI).GetMemberList()
+116         aspirantsList = guilds(GI).GetAspirantes()
         
-122         Call WriteGuildLeaderInfo(UserIndex, guildList, MemberList, guilds(GI).GetGuildNews(), aspirantsList, guilds(GI).GetNivelDeClan, guilds(GI).GetExpActual, guilds(GI).GetExpNecesaria)
+118         Call WriteGuildLeaderInfo(UserIndex, guildList, MemberList, guilds(GI).GetGuildNews(), aspirantsList, guilds(GI).GetNivelDeClan, guilds(GI).GetExpActual, guilds(GI).GetExpNecesaria)
 
         End With
 
@@ -1168,8 +1168,8 @@ Public Sub SendGuildLeaderInfo(ByVal UserIndex As Integer)
         Exit Sub
 
 SendGuildLeaderInfo_Err:
-124     Call RegistrarError(Err.Number, Err.Description, "modGuilds.SendGuildLeaderInfo", Erl)
-126     Resume Next
+120     Call RegistrarError(Err.Number, Err.Description, "modGuilds.SendGuildLeaderInfo", Erl)
+122     Resume Next
         
 End Sub
 
@@ -1998,15 +1998,15 @@ Public Sub SendDetallesPersonaje(ByVal UserIndex As Integer, ByVal Personaje As 
 
         End If
 
-        Call SendCharacterInfoDatabase(UserIndex, Personaje)
+140     Call SendCharacterInfoDatabase(UserIndex, Personaje)
 
         Exit Sub
 Error:
 
-146     If Not PersonajeExiste(Personaje) Then
-148         Call LogError("El usuario " & UserList(UserIndex).name & " (" & UserIndex & " ) ha pedido los detalles del personaje " & Personaje & " que no se encuentra.")
+142     If Not PersonajeExiste(Personaje) Then
+144         Call LogError("El usuario " & UserList(UserIndex).name & " (" & UserIndex & " ) ha pedido los detalles del personaje " & Personaje & " que no se encuentra.")
         Else
-150         Call LogError("[" & Err.Number & "] " & Err.Description & " En la rutina SendDetallesPersonaje, por el usuario " & UserList(UserIndex).name & " (" & UserIndex & " ), pidiendo informacion sobre el personaje " & Personaje)
+146         Call LogError("[" & Err.Number & "] " & Err.Description & " En la rutina SendDetallesPersonaje, por el usuario " & UserList(UserIndex).name & " (" & UserIndex & " ), pidiendo informacion sobre el personaje " & Personaje)
 
         End If
 

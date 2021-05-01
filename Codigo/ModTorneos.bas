@@ -57,7 +57,7 @@ Public Sub IniciarTorneo()
         Exit Sub
 
 IniciarTorneo_Err:
-126     Call RegistrarError(Err.Number, Err.description, "ModTorneos.IniciarTorneo", Erl)
+126     Call RegistrarError(Err.Number, Err.Description, "ModTorneos.IniciarTorneo", Erl)
 128     Resume Next
         
 End Sub
@@ -81,7 +81,7 @@ Public Sub ParticiparTorneo(ByVal UserIndex As Integer)
         Exit Sub
 
 ParticiparTorneo_Err:
-110     Call RegistrarError(Err.Number, Err.description, "ModTorneos.ParticiparTorneo", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "ModTorneos.ParticiparTorneo", Erl)
 112     Resume Next
         
 End Sub
@@ -107,7 +107,7 @@ Public Function BuscarIndexFreeTorneo() As Byte
         Exit Function
 
 BuscarIndexFreeTorneo_Err:
-108     Call RegistrarError(Err.Number, Err.description, "ModTorneos.BuscarIndexFreeTorneo", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "ModTorneos.BuscarIndexFreeTorneo", Erl)
 110     Resume Next
         
 End Function
@@ -135,7 +135,7 @@ Public Sub BorrarIndexInTorneo(ByVal index As Integer)
         Exit Sub
 
 BorrarIndexInTorneo_Err:
-110     Call RegistrarError(Err.Number, Err.description, "ModTorneos.BorrarIndexInTorneo", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "ModTorneos.BorrarIndexInTorneo", Erl)
 112     Resume Next
         
 End Sub
@@ -167,7 +167,7 @@ Public Sub ComenzarTorneoOk()
         Exit Sub
 
 ComenzarTorneoOk_Err:
-116     Call RegistrarError(Err.Number, Err.description, "ModTorneos.ComenzarTorneoOk", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "ModTorneos.ComenzarTorneoOk", Erl)
 118     Resume Next
         
 End Sub
@@ -212,7 +212,7 @@ Public Sub ResetearTorneo()
         Exit Sub
 
 ResetearTorneo_Err:
-152     Call RegistrarError(Err.Number, Err.description, "ModTorneos.ResetearTorneo", Erl)
+152     Call RegistrarError(Err.Number, Err.Description, "ModTorneos.ResetearTorneo", Erl)
 154     Resume Next
         
 End Sub

@@ -408,15 +408,15 @@ End Function
 Public Function IntervaloPermiteLanzarHechizo(ByVal NpcIndex As Integer) As Boolean
     On Error GoTo IntervaloPermiteLanzarHechizo_Err
         
-    With NpcList(NpcIndex)
+100 With NpcList(NpcIndex)
 102     IntervaloPermiteLanzarHechizo = GetTickCount() - .Contadores.IntervaloLanzarHechizo >= .IntervaloLanzarHechizo
     End With
         
     Exit Function
 
 IntervaloPermiteLanzarHechizo_Err:
-    Call RegistrarError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteLanzarHechizo", Erl)
-    Resume Next
+104 Call RegistrarError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteLanzarHechizo", Erl)
+106 Resume Next
         
 End Function
 
