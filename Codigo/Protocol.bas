@@ -9624,7 +9624,7 @@ Private Sub HandleGoNearby(ByVal UserIndex As Integer)
         'Last Modification: 01/10/07
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 3 Then
+100     If UserList(UserIndex).incomingData.Length < 4 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -9649,20 +9649,18 @@ Private Sub HandleGoNearby(ByVal UserIndex As Integer)
             Dim tIndex As Integer
 
             Dim X      As Long
-
             Dim Y      As Long
 
             Dim i      As Long
-
+            
             Dim Found  As Boolean
         
-112         tIndex = NameIndex(UserName)
-        
             'Check the user has enough powers
-114         If .flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios) Then
+114         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Or Ayuda.Existe(UserName) Then
+112             tIndex = NameIndex(UserName)
 
                 'Si es dios o Admins no podemos salvo que nosotros tambiín lo seamos
-116             If Not (EsDios(UserName) Or EsAdmin(UserName)) Or (.flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin)) Then
+                If CompararPrivilegios(UserIndex, tIndex) >= 0 Then
 118                 If tIndex <= 0 Then 'existe el usuario destino?
 120                     Call WriteConsoleMsg(UserIndex, "Usuario offline.", FontTypeNames.FONTTYPE_INFO)
                     Else
