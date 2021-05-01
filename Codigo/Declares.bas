@@ -76,8 +76,6 @@ Public EventoExpMult        As Integer
 
 Public EventoOroMult        As Integer
 
-Public OroAutoEquipable     As Integer
-
 Public EstadoGlobal         As Boolean
 
 Public TimerLimpiarObjetos  As Byte
@@ -1729,7 +1727,6 @@ Public Type tFacciones
     RecibioArmaduraCaos As Byte
     Reenlistadas As Byte
     NivelIngreso As Integer
-    FechaIngreso As String
     MatadosIngreso As Integer 'Para Armadas nada mas
     NextRecompensa As Integer 'DEPRECATED: Atributo viejo. Deberiamos usar `tRangoFaccion`
 
@@ -1798,7 +1795,7 @@ Public Type user
         
     Invent As Inventario
     
-    pos As WorldPos
+    Pos As WorldPos
     
     ConnIDValida As Boolean
     ConnID As Long 'ID
@@ -1962,15 +1959,13 @@ Public Type tCriaturasEntrenador
 
 End Type
 
-' New type for holding the pathfinding info
 Public Type NpcPathFindingInfo
 
+    PathLength As Integer   ' Number of steps *
     Path() As tVertice      ' This array holds the path
-    Target As Position      ' The location where the NPC has to go
-    PathLenght As Integer   ' Number of steps *
-    CurPos As Integer       ' Current location of the npc
-    TargetUser As Integer   ' UserIndex chased
-    NoPath As Boolean       ' If it is true there is no path to the target location
+    Destination As Position ' The location where the NPC has to go
+    RangoVision As Single
+    Inteligencia As Integer
     
     '* By setting PathLenght to 0 we force the recalculation
     '  of the path, this is very useful. For example,
@@ -2018,7 +2013,7 @@ Public Type npc
 
     Veneno As Byte
 
-    pos As WorldPos 'Posicion
+    Pos As WorldPos 'Posicion
     Orig As WorldPos
 
     Movement As TipoAI
@@ -2060,12 +2055,7 @@ Public Type npc
     Mascotas As Integer
     
     ' New!! Needed for pathfindig
-    Path() As Position
-    PathLength As Integer
-    TargetPos As Position
-
-    RangoVision As Single
-    Inteligencia As Integer
+    pathFindingInfo As NpcPathFindingInfo
     
     ' Esto es del Areas.bas
     AreasInfo As AreaInfo

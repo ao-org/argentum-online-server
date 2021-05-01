@@ -120,15 +120,15 @@ Public Sub InitPathFinding()
 End Sub
 
 Public Sub FollowPath(ByVal NpcIndex As Integer)
-
-    With NpcList(NpcIndex)
+    Dim nextPos As WorldPos
     
-        Dim NextPos As Position
-        NextPos = .Path(.PathLength)
-
-        Call MoveNPCChar(NpcIndex, GetHeadingFromDeltas(NextPos.X - .Pos.X, NextPos.Y - .Pos.Y))
-
-        .PathLength = .PathLength - 1
+    With NpcList(NpcIndex)
+        nextPos.Map = .Pos.Map
+        nextPos.X = .pathFindingInfo.Path(.pathFindingInfo.PathLength).X
+        nextPos.Y = .pathFindingInfo.Path(.pathFindingInfo.PathLength).Y
+        
+        Call MoveNPCChar(NpcIndex, GetHeadingFromWorldPos(.Pos, nextPos))
+        .pathFindingInfo.PathLength = .pathFindingInfo.PathLength - 1
     
     End With
     
@@ -265,18 +265,18 @@ Public Function SeekPath(ByVal NpcIndex As Integer, Optional ByVal Closest As Bo
         PosNPC.Y = .Pos.Y
     
         ' Posición objetivo
-        PosTarget.X = .TargetPos.X
-        PosTarget.Y = .TargetPos.Y
+        PosTarget.X = .pathFindingInfo.Destination.X
+        PosTarget.Y = .pathFindingInfo.Destination.Y
 
         ' Inicializar contenedores para el algoritmo
-        Call InitializeTable(Table, PosNPC, .RangoVision)
+        Call InitializeTable(Table, PosNPC, .pathFindingInfo.RangoVision)
         VertexCount = 0
         
         ' Añadimos la posición inicial a la lista
         Call OpenVertexV(PosNPC)
         
         ' Distancia máxima a calcular (distancia en tiles al target + inteligencia del NPC)
-        MaxDistance = TileDistance(PosNPC, PosTarget) + .Inteligencia
+        MaxDistance = TileDistance(PosNPC, PosTarget) + .pathFindingInfo.Inteligencia
         
         ' Distancia euclideana desde la posición inicial hasta la final
         Table(PosNPC.X, PosNPC.Y).EstimatedTotalDistance = EuclideanDistanceV(PosNPC, PosTarget)
@@ -365,7 +365,7 @@ Public Function SeekPath(ByVal NpcIndex As Integer, Optional ByVal Closest As Bo
     End If
     
     ' Llegados a este punto, invalidamos el Path del NPC
-    NpcList(NpcIndex).PathLength = 0
+    NpcList(NpcIndex).pathFindingInfo.PathLength = 0
 
 End Function
 
@@ -373,14 +373,14 @@ Private Sub MakePath(ByVal NpcIndex As Integer, ByVal X As Integer, ByVal Y As I
 
     With NpcList(NpcIndex)
         ' Obtenemos la distancia total del camino
-        .PathLength = Table(X, Y).Distance
+        .pathFindingInfo.PathLength = Table(X, Y).Distance
 
         Dim Step As Integer
         
         ' Asignamos las coordenadas del resto camino, el final queda al inicio del array
-        For Step = 1 To .PathLength
+        For Step = 1 To .pathFindingInfo.PathLength
         
-            With .Path(Step)
+            With .pathFindingInfo.Path(Step)
                 .X = X
                 .Y = Y
             End With
@@ -450,16 +450,21 @@ Private Sub CloseVertex(ByVal index As Integer)
     Call MoveMemory(OpenVertices(index), OpenVertices(index + 1), Len(OpenVertices(0)) * (VertexCount - index))
 End Sub
 
-Public Function GetHeadingFromDeltas(ByVal dX As Integer, ByVal dY As Integer) As eHeading
-
+' Las posiciones se pasan ByRef pero NO SE MODIFICAN.
+Public Function GetHeadingFromWorldPos(ByRef currentPos As WorldPos, ByRef nextPos As WorldPos) As eHeading
+    Dim dX As Integer, dY As Integer
+    
+    dX = nextPos.X - currentPos.X
+    dY = nextPos.Y - currentPos.Y
+    
     If dX < 0 Then
-        GetHeadingFromDeltas = eHeading.WEST
+        GetHeadingFromWorldPos = eHeading.WEST
     ElseIf dX > 0 Then
-        GetHeadingFromDeltas = eHeading.EAST
+        GetHeadingFromWorldPos = eHeading.EAST
     ElseIf dY < 0 Then
-        GetHeadingFromDeltas = eHeading.NORTH
+        GetHeadingFromWorldPos = eHeading.NORTH
     Else
-        GetHeadingFromDeltas = eHeading.SOUTH
+        GetHeadingFromWorldPos = eHeading.SOUTH
     End If
 
 End Function
