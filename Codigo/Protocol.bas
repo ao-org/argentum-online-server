@@ -1158,9 +1158,6 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
 720         Case ClientPacketID.BanChar                 '/BAN
 722             Call HandleBanChar(UserIndex)
             
-724         Case ClientPacketID.SilenciarUser               '/BAN
-726             Call HandleSilenciarUser(UserIndex)
-            
 728         Case ClientPacketID.UnbanChar               '/UNBAN
 730             Call HandleUnbanChar(UserIndex)
             
@@ -10228,7 +10225,7 @@ Private Sub HandleSilence(ByVal UserIndex As Integer)
                             If Minutos > 0 Then
                                 Call SilenciarUserDatabase(UserName, Minutos)
                                 Call SavePenaDatabase(UserName, .name & ": silencio por " & Time & " minutos. " & Date & " " & Time)
-                                Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("Administración » " & .name & " ha silenciado a " & UserName & "(offline) por " & Minutos & " minutos.", FontTypeNames.FONTTYPE_GM))
+                                Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("Administración » " & .name & " ha silenciado a " & UserName & "(offline) por " & minutos & " minutos.", FontTypeNames.FONTTYPE_GM))
                                 Call LogGM(.name, "Silenciar a " & UserList(tUser).name & " por " & Minutos & " minutos.")
                             Else
                                 Call DesilenciarUserDatabase(UserName)
@@ -10248,13 +10245,13 @@ Private Sub HandleSilence(ByVal UserIndex As Integer)
                         UserList(tUser).flags.MinutosRestantes = Minutos
                         UserList(tUser).flags.SegundosPasados = 0
                         Call SavePenaDatabase(UserName, .name & ": silencio por " & Time & " minutos. " & Date & " " & Time)
-                        Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("Administración » " & .name & " ha silenciado a " & UserList(tUser).name & " por " & Minutos & " minutos.", FontTypeNames.FONTTYPE_GM))
-                        Call WriteConsoleMsg("Has sido silenciado por los administradores, no podrás hablar con otros usuarios. Utilice /GM para pedir ayuda.", FontTypeNames.FONTTYPE_GM)
+                        Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("Administración » " & .name & " ha silenciado a " & UserList(tUser).name & " por " & minutos & " minutos.", FontTypeNames.FONTTYPE_GM))
+                        Call WriteConsoleMsg(tUser, "Has sido silenciado por los administradores, no podrás hablar con otros usuarios. Utilice /GM para pedir ayuda.", FontTypeNames.FONTTYPE_GM)
                         Call LogGM(.name, "Silenciar a " & UserList(tUser).name & " por " & Minutos & " minutos.")
                     Else
                         UserList(tUser).flags.Silenciado = 1
                         Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("Administración » " & .name & " ha desilenciado a " & UserList(tUser).name & ".", FontTypeNames.FONTTYPE_GM))
-                        Call WriteConsoleMsg("Has sido desilenciado.", FontTypeNames.FONTTYPE_GM)
+                        Call WriteConsoleMsg(tUser, "Has sido desilenciado.", FontTypeNames.FONTTYPE_GM)
                         Call LogGM(.name, "Desilenciar a " & UserList(tUser).name & ".")
                     End If
                 Else
