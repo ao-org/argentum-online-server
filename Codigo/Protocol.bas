@@ -3152,7 +3152,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
         '07/25/09: Marco - Agregue un checkeo para patear a los usuarios que tiran items mientras comercian.
         '***************************************************
         
-100     If UserList(UserIndex).incomingData.Length < 4 Then
+100     If UserList(UserIndex).incomingData.Length < 6 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
         End If
@@ -5035,7 +5035,7 @@ Private Sub HandleCommerceBuy(ByVal UserIndex As Integer)
         
             'Dead people can't commerce...
 112         If .flags.Muerto = 1 Then
-114             Call WriteConsoleMsg(UserIndex, "¡¡Estís muerto!!", FontTypeNames.FONTTYPE_INFO)
+114             Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
