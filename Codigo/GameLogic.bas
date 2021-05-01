@@ -131,12 +131,10 @@ FindLegalPos_Err:
 End Sub
 
 Public Function EsNewbie(ByVal UserIndex As Integer) As Boolean
-        
         On Error GoTo EsNewbie_Err
         
-100     EsNewbie = UserList(UserIndex).Stats.ELV <= LimiteNewbie
+100     If UserIndex > 0 Then EsNewbie = UserList(UserIndex).Stats.ELV <= LimiteNewbie
 
-        
         Exit Function
 
 EsNewbie_Err:
@@ -146,15 +144,9 @@ EsNewbie_Err:
 End Function
 
 Public Function esArmada(ByVal UserIndex As Integer) As Boolean
-        '***************************************************
-        'Autor: Pablo (ToxicWaste)
-        'Last Modification: 23/01/2007
-        '***************************************************
-        
         On Error GoTo esArmada_Err
         
-100     esArmada = (UserList(UserIndex).Faccion.ArmadaReal = 1)
-
+100     If UserIndex > 0 Then esArmada = (UserList(UserIndex).Faccion.ArmadaReal = 1)
         
         Exit Function
 
@@ -165,16 +157,10 @@ esArmada_Err:
 End Function
 
 Public Function esCaos(ByVal UserIndex As Integer) As Boolean
-        '***************************************************
-        'Autor: Pablo (ToxicWaste)
-        'Last Modification: 23/01/2007
-        '***************************************************
-        
         On Error GoTo esCaos_Err
         
-100     esCaos = (UserList(UserIndex).Faccion.FuerzasCaos = 1)
-
-        
+100     If UserIndex > 0 Then esCaos = (UserList(UserIndex).Faccion.FuerzasCaos = 1)
+     
         Exit Function
 
 esCaos_Err:
