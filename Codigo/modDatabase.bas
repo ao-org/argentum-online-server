@@ -1024,17 +1024,21 @@ Public Function MakeQuery(query As String, ByVal NoResult As Boolean, ParamArray
     
 ErrorHandler:
 
+    Dim ErrNumber As Long, ErrDesc As String
+    ErrNumber = Err.Number
+    ErrDesc = Err.Description
+
     If Not adoIsConnected(Database_Connection) Then
         Call LogDatabaseError("Alerta en MakeQuery: Se perdió la conexión con la DB. Reconectando.")
         Call Database_Connect
         Resume
         
     Else
-        Call LogDatabaseError("Error en MakeQuery: query = '" & query & "'. " & Err.Number & " - " & Err.Description)
+        Call LogDatabaseError("Error en MakeQuery: query = '" & query & "'. " & ErrNumber & " - " & ErrDesc)
         
         On Error GoTo 0
 
-        Err.raise Err.Number
+        Err.raise ErrNumber, "MakeQuery", ErrDesc
 
     End If
 
@@ -2582,19 +2586,19 @@ Function adoIsConnected(adoCn As ADODB.Connection) As Boolean
     On Error Resume Next
 
     Dim i As Long
-    Dim Cmd As New ADODB.Command
+    Dim cmd As New ADODB.Command
 
     'Set up SQL command to return 1
-    Cmd.CommandText = "SELECT 1"
-    Cmd.ActiveConnection = adoCn
+    cmd.CommandText = "SELECT 1"
+    cmd.ActiveConnection = adoCn
 
     'Run a simple query, to test the connection
         
-    i = Cmd.Execute.Fields(0)
+    i = cmd.Execute.Fields(0)
     On Error GoTo 0
 
     'Tidy up
-    Set Cmd = Nothing
+    Set cmd = Nothing
 
     'If i is 1, connection is open
     If i = 1 Then
