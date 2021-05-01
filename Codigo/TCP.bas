@@ -1458,7 +1458,7 @@ Sub ResetFacciones(ByVal UserIndex As Integer)
         'Last modified: 23/01/2007
         'Resetea todos los valores generales y las stats
         '03/15/2006 Maraxus - Uso de With para mayor performance y claridad.
-        '23/01/2007 Pablo (ToxicWaste) - Agrego NivelIngreso, FechaIngreso, MatadosIngreso y NextRecompensa.
+        '23/01/2007 Pablo (ToxicWaste) - Agrego NivelIngreso, MatadosIngreso y NextRecompensa.
         '*************************************************
 100     With UserList(UserIndex).Faccion
 102         .ArmadaReal = 0
@@ -1466,7 +1466,6 @@ Sub ResetFacciones(ByVal UserIndex As Integer)
 106         .CriminalesMatados = 0
 108         .Status = 0
 110         .FuerzasCaos = 0
-112         .FechaIngreso = ""
 114         .RecibioArmaduraCaos = 0
 116         .RecibioArmaduraReal = 0
 118         .RecibioExpInicialCaos = 0

@@ -78,7 +78,6 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
             If .Faccion.RecibioArmaduraReal = 0 Then
                 Call WriteChatOverHead(UserIndex, "¡¡¡Bienvenido al Ejercito Imperial!!!, aqui tienes tus vestimentas. Cumple bien tu labor exterminando Criminales y me encargaré de recompensarte.", charIndexStr, vbWhite)
 
-                .Faccion.FechaIngreso = Date
                 .Faccion.NivelIngreso = .Stats.ELV
                 .Faccion.MatadosIngreso = .Faccion.ciudadanosMatados
 
@@ -273,7 +272,6 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
             If .Faccion.RecibioArmaduraCaos = 0 Then
                 Call WriteChatOverHead(UserIndex, "¡¡¡Bienvenido al lado oscuro!!! Aqui tienes tus armaduras. Derrama sangre Ciudadana y Real y serás recompensado, lo prometo.", charIndexStr, vbWhite)
 
-                .Faccion.FechaIngreso = Date
                 .Faccion.NivelIngreso = .Stats.ELV
             End If
 

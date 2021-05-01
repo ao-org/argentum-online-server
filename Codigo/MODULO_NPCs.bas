@@ -580,8 +580,7 @@ Public Function CrearNPC(NroNPC As Integer, Mapa As Integer, OrigPos As WorldPos
 
 CrearNPC_Err:
 216     Call RegistrarError(Err.Number, Err.Description, "NPCs.CrearNPC", Erl)
-218     Resume Next
-        
+
 End Function
 
 Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer)
@@ -746,14 +745,6 @@ EraseNPCChar_Err:
 End Sub
 
 Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) As Boolean
-        '***************************************************
-        'Autor: Unknown (orginal version)
-        'Last Modification: 06/04/2009
-        '06/04/2009: ZaMa - Now npcs can force to change position with dead character
-        '01/08/2009: ZaMa - Now npcs can't force to chance position with a dead character if that means to change the terrain the character is in
-        '26/09/2010: ZaMa - Turn sub into function to know if npc has moved or not.
-        '***************************************************
-
         On Error GoTo errh
 
         Dim nPos      As WorldPos
@@ -1353,13 +1344,13 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
             End If
         
             '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< PATHFINDING >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-378         .RangoVision = val(Leer.GetValue("NPC" & NpcNumber, "Distancia"))
-380         If .RangoVision = 0 Then .RangoVision = RANGO_VISION_X
+378         .pathFindingInfo.RangoVision = val(Leer.GetValue("NPC" & NpcNumber, "Distancia"))
+380         If .pathFindingInfo.RangoVision = 0 Then .pathFindingInfo.RangoVision = RANGO_VISION_X
         
-382         .Inteligencia = val(Leer.GetValue("NPC" & NpcNumber, "Inteligencia"))
-384         If .Inteligencia = 0 Then .Inteligencia = 30
+382         .pathFindingInfo.Inteligencia = val(Leer.GetValue("NPC" & NpcNumber, "Inteligencia"))
+384         If .pathFindingInfo.Inteligencia = 0 Then .pathFindingInfo.Inteligencia = 30
         
-386         ReDim .Path(1 To .Inteligencia + RANGO_VISION_X * 3)
+386         ReDim .pathFindingInfo.Path(1 To .pathFindingInfo.Inteligencia + RANGO_VISION_X * 3)
     
             '<<<<<<<<<<<<<< Sistema de Viajes NUEVO >>>>>>>>>>>>>>>>
 388         aux = Leer.GetValue("NPC" & NpcNumber, "NumDestinos")
@@ -1476,7 +1467,7 @@ Public Sub FollowAmo(ByVal NpcIndex As Integer)
 102         .flags.Follow = True
 104         .Movement = TipoAI.SigueAmo
 112         .Hostile = 0
-114         .Target = 0 ' No deberia ser .MaestroUser ?
+114         .Target = 0
 116         .TargetNPC = 0
         End With
 
@@ -1489,7 +1480,7 @@ End Sub
 Public Sub AllFollowAmo(ByVal UserIndex As Integer)
         On Error GoTo AllFollowAmo_Err
 
-        Dim j As Integer
+        Dim j As Long
 
         For j = 1 To MAXMASCOTAS
             If UserList(UserIndex).MascotasIndex(j) > 0 Then
