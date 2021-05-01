@@ -247,7 +247,7 @@ Public Function Existe(ByVal nombre As String) As Boolean
  
 102     For i = 1 To Me.Longitud
             'Pablo
-104         V = mid$(Me.VerElemento(i), 10, Len(Me.VerElemento(i)))
+104         V = UCase(ReadField(1, Me.VerElemento(i), Asc("Ø")))
 
             '/Pablo
             'V = Me.VerElemento(i)
