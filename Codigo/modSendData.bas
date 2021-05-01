@@ -875,9 +875,9 @@ Private Sub SendToNpcArea(ByVal NpcIndex As Long, ByVal sndData As String)
         
 100     If NpcIndex = 0 Then Exit Sub
         
-102     Map = Npclist(NpcIndex).Pos.Map
-104     AreaX = Npclist(NpcIndex).AreasInfo.AreaPerteneceX
-106     AreaY = Npclist(NpcIndex).AreasInfo.AreaPerteneceY
+102     Map = NpcList(NpcIndex).Pos.Map
+104     AreaX = NpcList(NpcIndex).AreasInfo.AreaPerteneceX
+106     AreaY = NpcList(NpcIndex).AreasInfo.AreaPerteneceY
     
 108     If Not MapaValido(Map) Then Exit Sub
     

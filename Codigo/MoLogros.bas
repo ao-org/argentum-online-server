@@ -49,42 +49,42 @@ Public Sub CargarLogros()
 102     CantUserLogros = val(GetVar(DatPath & ARCHIVOCONFIG, "INIT", "UserLogros"))
 104     CantLevelLogros = val(GetVar(DatPath & ARCHIVOCONFIG, "INIT", "LevelLogros"))
 
-112     i = 1
+106     i = 1
 
-114     If CantNPcLogros > 0 Then
-            ReDim NPcLogros(1 To CantNPcLogros)
-116         For i = 1 To CantNPcLogros
-118             NPcLogros(i).nombre = GetVar(DatPath & ARCHIVOCONFIG, "NPcLogros" & i, "Nombre")
-120             NPcLogros(i).Desc = GetVar(DatPath & ARCHIVOCONFIG, "NPcLogros" & i, "Desc")
-122             NPcLogros(i).cant = val(GetVar(DatPath & ARCHIVOCONFIG, "NPcLogros" & i, "Cant"))
-124             NPcLogros(i).TipoRecompensa = val(GetVar(DatPath & ARCHIVOCONFIG, "NPcLogros" & i, "TipoRecompensa"))
-126             NPcLogros(i).ExpRecompensa = val(GetVar(DatPath & ARCHIVOCONFIG, "NPcLogros" & i, "ExpRecompensa"))
-128             NPcLogros(i).HechizoRecompensa = val(GetVar(DatPath & ARCHIVOCONFIG, "NPcLogros" & i, "HechizoRecompensa"))
-130             NPcLogros(i).OroRecompensa = val(GetVar(DatPath & ARCHIVOCONFIG, "NPcLogros" & i, "OroRecompensa"))
-132             NPcLogros(i).ObjRecompensa = GetVar(DatPath & ARCHIVOCONFIG, "NPcLogros" & i, "ObjRecompensa")
-134             NPcLogros(i).QueNpc = val(GetVar(DatPath & ARCHIVOCONFIG, "NPcLogros" & i, "QueNPC"))
-136         Next i
+108     If CantNPcLogros > 0 Then
+110         ReDim NPcLogros(1 To CantNPcLogros)
+112         For i = 1 To CantNPcLogros
+114             NPcLogros(i).nombre = GetVar(DatPath & ARCHIVOCONFIG, "NPcLogros" & i, "Nombre")
+116             NPcLogros(i).Desc = GetVar(DatPath & ARCHIVOCONFIG, "NPcLogros" & i, "Desc")
+118             NPcLogros(i).cant = val(GetVar(DatPath & ARCHIVOCONFIG, "NPcLogros" & i, "Cant"))
+120             NPcLogros(i).TipoRecompensa = val(GetVar(DatPath & ARCHIVOCONFIG, "NPcLogros" & i, "TipoRecompensa"))
+122             NPcLogros(i).ExpRecompensa = val(GetVar(DatPath & ARCHIVOCONFIG, "NPcLogros" & i, "ExpRecompensa"))
+124             NPcLogros(i).HechizoRecompensa = val(GetVar(DatPath & ARCHIVOCONFIG, "NPcLogros" & i, "HechizoRecompensa"))
+126             NPcLogros(i).OroRecompensa = val(GetVar(DatPath & ARCHIVOCONFIG, "NPcLogros" & i, "OroRecompensa"))
+128             NPcLogros(i).ObjRecompensa = GetVar(DatPath & ARCHIVOCONFIG, "NPcLogros" & i, "ObjRecompensa")
+130             NPcLogros(i).QueNpc = val(GetVar(DatPath & ARCHIVOCONFIG, "NPcLogros" & i, "QueNPC"))
+132         Next i
 
         End If
     
-138     If CantUserLogros > 0 Then
-            ReDim UserLogros(1 To CantUserLogros)
-140         For i = 1 To CantUserLogros
-142             UserLogros(i).nombre = GetVar(DatPath & ARCHIVOCONFIG, "UserLogros" & i, "Nombre")
-144             UserLogros(i).Desc = GetVar(DatPath & ARCHIVOCONFIG, "UserLogros" & i, "Desc")
-146             UserLogros(i).cant = val(GetVar(DatPath & ARCHIVOCONFIG, "UserLogros" & i, "Cant"))
-148             UserLogros(i).TipoRecompensa = val(GetVar(DatPath & ARCHIVOCONFIG, "UserLogros" & i, "TipoRecompensa"))
-150             UserLogros(i).ExpRecompensa = val(GetVar(DatPath & ARCHIVOCONFIG, "UserLogros" & i, "ExpRecompensa"))
-152             UserLogros(i).HechizoRecompensa = val(GetVar(DatPath & ARCHIVOCONFIG, "UserLogros" & i, "HechizoRecompensa"))
-154             UserLogros(i).OroRecompensa = val(GetVar(DatPath & ARCHIVOCONFIG, "UserLogros" & i, "OroRecompensa"))
-156             UserLogros(i).ObjRecompensa = GetVar(DatPath & ARCHIVOCONFIG, "UserLogros" & i, "ObjRecompensa")
+134     If CantUserLogros > 0 Then
+136         ReDim UserLogros(1 To CantUserLogros)
+138         For i = 1 To CantUserLogros
+140             UserLogros(i).nombre = GetVar(DatPath & ARCHIVOCONFIG, "UserLogros" & i, "Nombre")
+142             UserLogros(i).Desc = GetVar(DatPath & ARCHIVOCONFIG, "UserLogros" & i, "Desc")
+144             UserLogros(i).cant = val(GetVar(DatPath & ARCHIVOCONFIG, "UserLogros" & i, "Cant"))
+146             UserLogros(i).TipoRecompensa = val(GetVar(DatPath & ARCHIVOCONFIG, "UserLogros" & i, "TipoRecompensa"))
+148             UserLogros(i).ExpRecompensa = val(GetVar(DatPath & ARCHIVOCONFIG, "UserLogros" & i, "ExpRecompensa"))
+150             UserLogros(i).HechizoRecompensa = val(GetVar(DatPath & ARCHIVOCONFIG, "UserLogros" & i, "HechizoRecompensa"))
+152             UserLogros(i).OroRecompensa = val(GetVar(DatPath & ARCHIVOCONFIG, "UserLogros" & i, "OroRecompensa"))
+154             UserLogros(i).ObjRecompensa = GetVar(DatPath & ARCHIVOCONFIG, "UserLogros" & i, "ObjRecompensa")
                 'Debug.Print i & ":" & UserLogros(i).ObjRecompensa
-158         Next i
+156         Next i
 
         End If
     
-160     If CantLevelLogros > 0 Then
-            ReDim LevelLogros(1 To CantLevelLogros)
+158     If CantLevelLogros > 0 Then
+160         ReDim LevelLogros(1 To CantLevelLogros)
 162         For i = 1 To CantLevelLogros
 164             LevelLogros(i).nombre = GetVar(DatPath & ARCHIVOCONFIG, "LevelLogros" & i, "Nombre")
 166             LevelLogros(i).Desc = GetVar(DatPath & ARCHIVOCONFIG, "LevelLogros" & i, "Desc")
@@ -112,14 +112,14 @@ Public Sub EnviarRecompensaStat(ByVal UserIndex As Integer)
         On Error GoTo EnviarRecompensaStat_Err
         
 
-104     Call WriteRecompensas(UserIndex)
+100     Call WriteRecompensas(UserIndex)
 
         
         Exit Sub
 
 EnviarRecompensaStat_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "MoLogros.EnviarRecompensaStat", Erl)
-108     Resume Next
+102     Call RegistrarError(Err.Number, Err.Description, "MoLogros.EnviarRecompensaStat", Erl)
+104     Resume Next
         
 End Sub
 
@@ -127,29 +127,29 @@ Public Sub CheckearRecompesas(ByVal UserIndex As Integer, ByVal index As Byte)
         
         On Error GoTo CheckearRecompesas_Err
         
-102     Select Case index
+100     Select Case index
 
             Case 1
 
-104             If UserList(UserIndex).Stats.NPCsMuertos >= NPcLogros(UserList(UserIndex).NPcLogros + 1).cant Then
+102             If UserList(UserIndex).Stats.NPCsMuertos >= NPcLogros(UserList(UserIndex).NPcLogros + 1).cant Then
                     'Call WriteConsoleMsg(UserIndex, "¡Felicitaciones! Ya podes reclamar una nueva recompensa.", FontTypeNames.FONTTYPE_EXP)
-106                 Call WriteTrofeoToggleOn(UserIndex)
+104                 Call WriteTrofeoToggleOn(UserIndex)
 
                 End If
 
-108         Case 2
+106         Case 2
 
-110             If UserList(UserIndex).Stats.UsuariosMatados >= UserLogros(UserList(UserIndex).UserLogros + 1).cant Then
+108             If UserList(UserIndex).Stats.UsuariosMatados >= UserLogros(UserList(UserIndex).UserLogros + 1).cant Then
                     'Call WriteConsoleMsg(UserIndex, "¡Felicitaciones! Ya podes reclamar una nueva recompensa.", FontTypeNames.FONTTYPE_EXP)
-112                 Call WriteTrofeoToggleOn(UserIndex)
+110                 Call WriteTrofeoToggleOn(UserIndex)
 
                 End If
 
-114         Case 3
+112         Case 3
 
-116             If UserList(UserIndex).Stats.ELV >= LevelLogros(UserList(UserIndex).LevelLogros + 1).cant Then
+114             If UserList(UserIndex).Stats.ELV >= LevelLogros(UserList(UserIndex).LevelLogros + 1).cant Then
                     'Call WriteConsoleMsg(UserIndex, "¡Felicitaciones! Ya podes reclamar una nueva recompensa.", FontTypeNames.FONTTYPE_EXP)
-118                 Call WriteTrofeoToggleOn(UserIndex)
+116                 Call WriteTrofeoToggleOn(UserIndex)
 
                 End If
 
@@ -159,8 +159,8 @@ Public Sub CheckearRecompesas(ByVal UserIndex As Integer, ByVal index As Byte)
         Exit Sub
 
 CheckearRecompesas_Err:
-120     Call RegistrarError(Err.Number, Err.Description, "MoLogros.CheckearRecompesas", Erl)
-122     Resume Next
+118     Call RegistrarError(Err.Number, Err.Description, "MoLogros.CheckearRecompesas", Erl)
+120     Resume Next
         
 End Sub
 
@@ -169,49 +169,49 @@ Public Sub EntregarRecompensas(ByVal UserIndex As Integer, ByVal index As Byte)
         On Error GoTo EntregarRecompensas_Err
 
 
-104     Select Case index
+100     Select Case index
 
             Case 1
 
-106             If UserList(UserIndex).Stats.NPCsMuertos >= NPcLogros(UserList(UserIndex).NPcLogros + 1).cant Then
+102             If UserList(UserIndex).Stats.NPCsMuertos >= NPcLogros(UserList(UserIndex).NPcLogros + 1).cant Then
     
-108                 Call WriteConsoleMsg(UserIndex, "Acá tenes tu recompensa por este logro. ¡Que lo disfrutes y seguí participando!", FontTypeNames.FONTTYPE_EXP)
-110                 UserList(UserIndex).NPcLogros = UserList(UserIndex).NPcLogros + 1
-112                 Call WriteRecompensas(UserIndex)
-114                 Call WriteTrofeoToggleOff(UserIndex)
+104                 Call WriteConsoleMsg(UserIndex, "Acá tenes tu recompensa por este logro. ¡Que lo disfrutes y seguí participando!", FontTypeNames.FONTTYPE_EXP)
+106                 UserList(UserIndex).NPcLogros = UserList(UserIndex).NPcLogros + 1
+108                 Call WriteRecompensas(UserIndex)
+110                 Call WriteTrofeoToggleOff(UserIndex)
                     Exit Sub
                 Else
-116                 Call WriteConsoleMsg(UserIndex, "Aún no has terminado este logro ¡Continua luchando!", FontTypeNames.FONTTYPE_EXP)
+112                 Call WriteConsoleMsg(UserIndex, "Aún no has terminado este logro ¡Continua luchando!", FontTypeNames.FONTTYPE_EXP)
                     Exit Sub
 
                 End If
 
-118         Case 2
+114         Case 2
 
-120             If UserList(UserIndex).Stats.UsuariosMatados >= UserLogros(UserList(UserIndex).UserLogros + 1).cant Then
+116             If UserList(UserIndex).Stats.UsuariosMatados >= UserLogros(UserList(UserIndex).UserLogros + 1).cant Then
     
-122                 Call WriteConsoleMsg(UserIndex, "Acá tenes tu recompensa por este logro. ¡Que lo disfrutes y seguí participando!", FontTypeNames.FONTTYPE_EXP)
-124                 UserList(UserIndex).UserLogros = UserList(UserIndex).UserLogros + 1
-126                 Call WriteRecompensas(UserIndex)
-128                 Call WriteTrofeoToggleOff(UserIndex)
+118                 Call WriteConsoleMsg(UserIndex, "Acá tenes tu recompensa por este logro. ¡Que lo disfrutes y seguí participando!", FontTypeNames.FONTTYPE_EXP)
+120                 UserList(UserIndex).UserLogros = UserList(UserIndex).UserLogros + 1
+122                 Call WriteRecompensas(UserIndex)
+124                 Call WriteTrofeoToggleOff(UserIndex)
                     Exit Sub
                 Else
-130                 Call WriteConsoleMsg(UserIndex, "Aún no has terminado este logro ¡Continua luchando!", FontTypeNames.FONTTYPE_EXP)
+126                 Call WriteConsoleMsg(UserIndex, "Aún no has terminado este logro ¡Continua luchando!", FontTypeNames.FONTTYPE_EXP)
                     Exit Sub
 
                 End If
 
-132         Case 3
+128         Case 3
 
-134             If UserList(UserIndex).Stats.ELV >= LevelLogros(UserList(UserIndex).LevelLogros + 1).cant Then
+130             If UserList(UserIndex).Stats.ELV >= LevelLogros(UserList(UserIndex).LevelLogros + 1).cant Then
     
-136                 Call WriteConsoleMsg(UserIndex, "Acá tenes tu recompensa por este logro. ¡Que lo disfrutes y seguí participando!", FontTypeNames.FONTTYPE_EXP)
-138                 UserList(UserIndex).LevelLogros = UserList(UserIndex).LevelLogros + 1
-140                 Call WriteRecompensas(UserIndex)
-142                 Call WriteTrofeoToggleOff(UserIndex)
+132                 Call WriteConsoleMsg(UserIndex, "Acá tenes tu recompensa por este logro. ¡Que lo disfrutes y seguí participando!", FontTypeNames.FONTTYPE_EXP)
+134                 UserList(UserIndex).LevelLogros = UserList(UserIndex).LevelLogros + 1
+136                 Call WriteRecompensas(UserIndex)
+138                 Call WriteTrofeoToggleOff(UserIndex)
                     Exit Sub
                 Else
-144                 Call WriteConsoleMsg(UserIndex, "Aún no has terminado este logro ¡Continua luchando!", FontTypeNames.FONTTYPE_EXP)
+140                 Call WriteConsoleMsg(UserIndex, "Aún no has terminado este logro ¡Continua luchando!", FontTypeNames.FONTTYPE_EXP)
                     Exit Sub
 
                 End If
@@ -222,7 +222,7 @@ Public Sub EntregarRecompensas(ByVal UserIndex As Integer, ByVal index As Byte)
         Exit Sub
 
 EntregarRecompensas_Err:
-146     Call RegistrarError(Err.Number, Err.Description, "MoLogros.EntregarRecompensas", Erl)
-148     Resume Next
+142     Call RegistrarError(Err.Number, Err.Description, "MoLogros.EntregarRecompensas", Erl)
+144     Resume Next
         
 End Sub

@@ -24,7 +24,7 @@ Public Sub LimpiarMascota(UserIndex)
         
         On Error GoTo LimpiarMascota_Err
         
-100     Npclist(UserList(UserIndex).Familiar.Id).EsFamiliar = 0
+100     NpcList(UserList(UserIndex).Familiar.Id).EsFamiliar = 0
 102     UserList(UserIndex).Familiar.Muerto = 1
 104     UserList(UserIndex).Familiar.MinHp = 0
 106     UserList(UserIndex).Familiar.Invocado = 0
@@ -126,7 +126,7 @@ Public Sub InvocarFamiliar(ByVal UserIndex As Integer, ByVal b As Boolean)
                     End If
 
                 Else
-148                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageFxPiso(Hechizos(h).FXgrh, Npclist(.Familiar.Id).Pos.X, Npclist(.Familiar.Id).Pos.Y))
+148                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageFxPiso(Hechizos(h).FXgrh, NpcList(.Familiar.Id).Pos.X, NpcList(.Familiar.Id).Pos.Y))
 150                 .Familiar.Invocado = 0
 152                 Call QuitarNPC(.Familiar.Id)
 
@@ -177,16 +177,16 @@ Public Sub CargarFamiliar(ByVal UserIndex As Integer)
         
 
 100     With UserList(UserIndex)
-102         Npclist(.Familiar.Id).name = .Familiar.nombre
-104         Npclist(.Familiar.Id).Stats.MinHp = .Familiar.MinHp
-106         Npclist(.Familiar.Id).Stats.MaxHp = .Familiar.MaxHp
-108         Npclist(.Familiar.Id).Stats.MinHIT = .Familiar.MinHIT
-110         Npclist(.Familiar.Id).Stats.MaxHit = .Familiar.MaxHit
-112         Npclist(.Familiar.Id).EsFamiliar = 1
+102         NpcList(.Familiar.Id).name = .Familiar.nombre
+104         NpcList(.Familiar.Id).Stats.MinHp = .Familiar.MinHp
+106         NpcList(.Familiar.Id).Stats.MaxHp = .Familiar.MaxHp
+108         NpcList(.Familiar.Id).Stats.MinHIT = .Familiar.MinHIT
+110         NpcList(.Familiar.Id).Stats.MaxHit = .Familiar.MaxHit
+112         NpcList(.Familiar.Id).EsFamiliar = 1
 
-114         Npclist(.Familiar.Id).Movement = TipoAI.SigueAmo
-116         Npclist(.Familiar.Id).Target = 0
-118         Npclist(.Familiar.Id).TargetNPC = 0
+114         NpcList(.Familiar.Id).Movement = TipoAI.SigueAmo
+116         NpcList(.Familiar.Id).Target = 0
+118         NpcList(.Familiar.Id).TargetNPC = 0
 120         .Familiar.Invocado = 1
         
         End With
@@ -264,22 +264,22 @@ Sub CalcularDarExpCompartida(ByVal UserIndex As Integer, ByVal NpcIndex As Integ
         '[Nacho] Chekeamos que las variables sean validas para las operaciones
 100     If ElDaño <= 0 Then ElDaño = 0
     
-102     If Npclist(NpcIndex).Stats.MaxHp <= 0 Then Exit Sub
-104     If ElDaño > Npclist(NpcIndex).Stats.MinHp Then ElDaño = Npclist(NpcIndex).Stats.MinHp
+102     If NpcList(NpcIndex).Stats.MaxHp <= 0 Then Exit Sub
+104     If ElDaño > NpcList(NpcIndex).Stats.MinHp Then ElDaño = NpcList(NpcIndex).Stats.MinHp
     
         '[Nacho] La experiencia a dar es la porcion de vida quitada * toda la experiencia
-106     ExpaDar = CLng((ElDaño) * (Npclist(NpcIndex).GiveEXP / Npclist(NpcIndex).Stats.MaxHp))
+106     ExpaDar = CLng((ElDaño) * (NpcList(NpcIndex).GiveEXP / NpcList(NpcIndex).Stats.MaxHp))
     
 108     If ExpaDar <= 0 Then Exit Sub
     
         '[Nacho] Vamos contando cuanta experiencia sacamos, porque se da toda la que no se dio al user que mata al NPC
         'Esto es porque cuando un elemental ataca, no se da exp, y tambien porque la cuenta que hicimos antes
         'Podria dar un numero fraccionario, esas fracciones se acumulan hasta formar enteros ;P
-110     If ExpaDar > Npclist(NpcIndex).flags.ExpCount Then
-112         ExpaDar = Npclist(NpcIndex).flags.ExpCount
-114         Npclist(NpcIndex).flags.ExpCount = 0
+110     If ExpaDar > NpcList(NpcIndex).flags.ExpCount Then
+112         ExpaDar = NpcList(NpcIndex).flags.ExpCount
+114         NpcList(NpcIndex).flags.ExpCount = 0
         Else
-116         Npclist(NpcIndex).flags.ExpCount = Npclist(NpcIndex).flags.ExpCount - ExpaDar
+116         NpcList(NpcIndex).flags.ExpCount = NpcList(NpcIndex).flags.ExpCount - ExpaDar
 
         End If
     
@@ -379,11 +379,11 @@ Sub CheckFamiliarLevel(ByVal UserIndex As Integer)
 142         UserList(UserIndex).Familiar.MinHIT = UserList(UserIndex).Familiar.MinHIT + 5
 144         UserList(UserIndex).Familiar.MaxHit = UserList(UserIndex).Familiar.MaxHit + 5
     
-146         Npclist(UserList(UserIndex).Familiar.Id).Stats.MaxHit = UserList(UserIndex).Familiar.MaxHit
-148         Npclist(UserList(UserIndex).Familiar.Id).Stats.MinHIT = UserList(UserIndex).Familiar.MinHIT
+146         NpcList(UserList(UserIndex).Familiar.Id).Stats.MaxHit = UserList(UserIndex).Familiar.MaxHit
+148         NpcList(UserList(UserIndex).Familiar.Id).Stats.MinHIT = UserList(UserIndex).Familiar.MinHIT
      
-150         Npclist(UserList(UserIndex).Familiar.Id).Stats.MaxHp = UserList(UserIndex).Familiar.MaxHp
-152         Npclist(UserList(UserIndex).Familiar.Id).Stats.MinHp = UserList(UserIndex).Familiar.MaxHp
+150         NpcList(UserList(UserIndex).Familiar.Id).Stats.MaxHp = UserList(UserIndex).Familiar.MaxHp
+152         NpcList(UserList(UserIndex).Familiar.Id).Stats.MinHp = UserList(UserIndex).Familiar.MaxHp
 
             '    Select Case UserList(UserIndex).clase
             '        Case eClass.Warrior

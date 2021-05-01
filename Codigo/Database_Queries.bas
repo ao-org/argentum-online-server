@@ -27,309 +27,309 @@ Public Const QUERY_SAVE_CONNECTION As String = "INSERT INTO connection (user_id,
 Public Const QUERY_DELETE_LAST_CONNECTIONS As String = "DELETE FROM connection WHERE user_id = ? AND date_last_login < (SELECT min(date_last_login) FROM (SELECT date_last_login FROM connection WHERE user_id = ? ORDER BY date_last_login DESC LIMIT 5) AS d);"
 
 Public Sub Contruir_Querys()
-    Call ConstruirQuery_CrearPersonaje
-    Call ConstruirQuery_GuardarPersonaje
+100     Call ConstruirQuery_CrearPersonaje
+102     Call ConstruirQuery_GuardarPersonaje
 End Sub
 
 Private Sub ConstruirQuery_CrearPersonaje()
-    Dim LoopC As Long
+        Dim LoopC As Long
     
-    Set QueryBuilder = New cStringBuilder
+100     Set QueryBuilder = New cStringBuilder
     
-    ' ************************** Basic user data ********************************
-    QueryBuilder.Append "INSERT INTO user SET "
-    QueryBuilder.Append "name = ?, "
-    QueryBuilder.Append "account_id = ?, "
-    QueryBuilder.Append "level = ?, "
-    QueryBuilder.Append "exp = ?, "
-    QueryBuilder.Append "genre_id = ?, "
-    QueryBuilder.Append "race_id = ?, "
-    QueryBuilder.Append "class_id = ?, "
-    QueryBuilder.Append "home_id = ?, "
-    QueryBuilder.Append "description = ?, "
-    QueryBuilder.Append "gold = ?, "
-    QueryBuilder.Append "free_skillpoints = ?, "
-    QueryBuilder.Append "pos_map = ?, "
-    QueryBuilder.Append "pos_x = ?, "
-    QueryBuilder.Append "pos_y = ?, "
-    QueryBuilder.Append "body_id = ?, "
-    QueryBuilder.Append "head_id = ?, "
-    QueryBuilder.Append "weapon_id = ?, "
-    QueryBuilder.Append "helmet_id = ?, "
-    QueryBuilder.Append "shield_id = ?, "
-    QueryBuilder.Append "items_Amount = ?, "
-    QueryBuilder.Append "slot_armour = ?, "
-    QueryBuilder.Append "slot_weapon = ?, "
-    QueryBuilder.Append "slot_shield = ?, "
-    QueryBuilder.Append "slot_helmet = ?, "
-    QueryBuilder.Append "slot_ammo = ?, "
-    QueryBuilder.Append "slot_dm = ?, "
-    QueryBuilder.Append "slot_rm = ?, "
-    QueryBuilder.Append "slot_tool = ?, "
-    QueryBuilder.Append "slot_magic = ?, "
-    QueryBuilder.Append "slot_knuckles = ?, "
-    QueryBuilder.Append "slot_ship = ?, "
-    QueryBuilder.Append "slot_mount = ?, "
-    QueryBuilder.Append "min_hp = ?, "
-    QueryBuilder.Append "max_hp = ?, "
-    QueryBuilder.Append "min_man = ?, "
-    QueryBuilder.Append "max_man = ?, "
-    QueryBuilder.Append "min_sta = ?, "
-    QueryBuilder.Append "max_sta = ?, "
-    QueryBuilder.Append "min_ham = ?, "
-    QueryBuilder.Append "max_ham = ?, "
-    QueryBuilder.Append "min_sed = ?, "
-    QueryBuilder.Append "max_sed = ?, "
-    QueryBuilder.Append "min_hit = ?, "
-    QueryBuilder.Append "max_hit = ?, "
-    QueryBuilder.Append "is_naked = ?, "
-    QueryBuilder.Append "status = ?, "
-    QueryBuilder.Append "is_logged = TRUE;"
+        ' ************************** Basic user data ********************************
+102     QueryBuilder.Append "INSERT INTO user SET "
+104     QueryBuilder.Append "name = ?, "
+106     QueryBuilder.Append "account_id = ?, "
+108     QueryBuilder.Append "level = ?, "
+110     QueryBuilder.Append "exp = ?, "
+112     QueryBuilder.Append "genre_id = ?, "
+114     QueryBuilder.Append "race_id = ?, "
+116     QueryBuilder.Append "class_id = ?, "
+118     QueryBuilder.Append "home_id = ?, "
+120     QueryBuilder.Append "description = ?, "
+122     QueryBuilder.Append "gold = ?, "
+124     QueryBuilder.Append "free_skillpoints = ?, "
+126     QueryBuilder.Append "pos_map = ?, "
+128     QueryBuilder.Append "pos_x = ?, "
+130     QueryBuilder.Append "pos_y = ?, "
+132     QueryBuilder.Append "body_id = ?, "
+134     QueryBuilder.Append "head_id = ?, "
+136     QueryBuilder.Append "weapon_id = ?, "
+138     QueryBuilder.Append "helmet_id = ?, "
+140     QueryBuilder.Append "shield_id = ?, "
+142     QueryBuilder.Append "items_Amount = ?, "
+144     QueryBuilder.Append "slot_armour = ?, "
+146     QueryBuilder.Append "slot_weapon = ?, "
+148     QueryBuilder.Append "slot_shield = ?, "
+150     QueryBuilder.Append "slot_helmet = ?, "
+152     QueryBuilder.Append "slot_ammo = ?, "
+154     QueryBuilder.Append "slot_dm = ?, "
+156     QueryBuilder.Append "slot_rm = ?, "
+158     QueryBuilder.Append "slot_tool = ?, "
+160     QueryBuilder.Append "slot_magic = ?, "
+162     QueryBuilder.Append "slot_knuckles = ?, "
+164     QueryBuilder.Append "slot_ship = ?, "
+166     QueryBuilder.Append "slot_mount = ?, "
+168     QueryBuilder.Append "min_hp = ?, "
+170     QueryBuilder.Append "max_hp = ?, "
+172     QueryBuilder.Append "min_man = ?, "
+174     QueryBuilder.Append "max_man = ?, "
+176     QueryBuilder.Append "min_sta = ?, "
+178     QueryBuilder.Append "max_sta = ?, "
+180     QueryBuilder.Append "min_ham = ?, "
+182     QueryBuilder.Append "max_ham = ?, "
+184     QueryBuilder.Append "min_sed = ?, "
+186     QueryBuilder.Append "max_sed = ?, "
+188     QueryBuilder.Append "min_hit = ?, "
+190     QueryBuilder.Append "max_hit = ?, "
+192     QueryBuilder.Append "is_naked = ?, "
+194     QueryBuilder.Append "status = ?, "
+196     QueryBuilder.Append "is_logged = TRUE;"
     
-    ' Guardo la query ensamblada
-    QUERY_SAVE_MAINPJ = QueryBuilder.ToString
+        ' Guardo la query ensamblada
+198     QUERY_SAVE_MAINPJ = QueryBuilder.ToString
     
-    ' Limpio el constructor de querys
-    Call QueryBuilder.Clear
+        ' Limpio el constructor de querys
+200     Call QueryBuilder.Clear
     
-    ' ************************** User attributes ********************************
-    QueryBuilder.Append "INSERT INTO attribute (user_id, number, value) VALUES "
+        ' ************************** User attributes ********************************
+202     QueryBuilder.Append "INSERT INTO attribute (user_id, number, value) VALUES "
 
-    For LoopC = 1 To NUMATRIBUTOS
-        QueryBuilder.Append "(?, ?, ?)"
+204     For LoopC = 1 To NUMATRIBUTOS
+206         QueryBuilder.Append "(?, ?, ?)"
 
-        If LoopC < NUMATRIBUTOS Then
-            QueryBuilder.Append ", "
-        End If
+208         If LoopC < NUMATRIBUTOS Then
+210             QueryBuilder.Append ", "
+            End If
 
-    Next LoopC
+212     Next LoopC
     
-    ' Guardo la query ensamblada
-    QUERY_SAVE_ATTRIBUTES = QueryBuilder.ToString
+        ' Guardo la query ensamblada
+214     QUERY_SAVE_ATTRIBUTES = QueryBuilder.ToString
     
-    ' Limpio el constructor de querys
-    Call QueryBuilder.Clear
+        ' Limpio el constructor de querys
+216     Call QueryBuilder.Clear
     
-    ' ************************** User spells ************************************
-    QueryBuilder.Append "INSERT INTO spell (user_id, number, spell_id) VALUES "
+        ' ************************** User spells ************************************
+218     QueryBuilder.Append "INSERT INTO spell (user_id, number, spell_id) VALUES "
 
-    For LoopC = 1 To MAXUSERHECHIZOS
-        QueryBuilder.Append "(?, ?, ?)"
+220     For LoopC = 1 To MAXUSERHECHIZOS
+222         QueryBuilder.Append "(?, ?, ?)"
 
-        If LoopC < MAXUSERHECHIZOS Then
-            QueryBuilder.Append ", "
-        End If
+224         If LoopC < MAXUSERHECHIZOS Then
+226             QueryBuilder.Append ", "
+            End If
 
-    Next LoopC
+228     Next LoopC
     
-    ' Guardo la query ensamblada
-    QUERY_SAVE_SPELLS = QueryBuilder.ToString
+        ' Guardo la query ensamblada
+230     QUERY_SAVE_SPELLS = QueryBuilder.ToString
     
-    ' Limpio el constructor de querys
-    Call QueryBuilder.Clear
+        ' Limpio el constructor de querys
+232     Call QueryBuilder.Clear
     
-    ' ******************* INVENTORY *******************
-    QueryBuilder.Append "INSERT INTO inventory_item (user_id, number, item_id, Amount, is_equipped) VALUES "
+        ' ******************* INVENTORY *******************
+234     QueryBuilder.Append "INSERT INTO inventory_item (user_id, number, item_id, Amount, is_equipped) VALUES "
 
-    For LoopC = 1 To MAX_INVENTORY_SLOTS
-        QueryBuilder.Append "(?, ?, ?, ?, ?)"
+236     For LoopC = 1 To MAX_INVENTORY_SLOTS
+238         QueryBuilder.Append "(?, ?, ?, ?, ?)"
 
-        If LoopC < MAX_INVENTORY_SLOTS Then
-            QueryBuilder.Append ", "
-        End If
+240         If LoopC < MAX_INVENTORY_SLOTS Then
+242             QueryBuilder.Append ", "
+            End If
 
-    Next LoopC
+244     Next LoopC
     
-    ' Guardo la query ensamblada
-    QUERY_SAVE_INVENTORY = QueryBuilder.ToString
+        ' Guardo la query ensamblada
+246     QUERY_SAVE_INVENTORY = QueryBuilder.ToString
     
-    ' Limpio el constructor de querys
-    Call QueryBuilder.Clear
+        ' Limpio el constructor de querys
+248     Call QueryBuilder.Clear
 
-    ' ************************** User skills ************************************
-    QueryBuilder.Append "INSERT INTO skillpoint (user_id, number, value) VALUES "
+        ' ************************** User skills ************************************
+250     QueryBuilder.Append "INSERT INTO skillpoint (user_id, number, value) VALUES "
 
-    For LoopC = 1 To NUMSKILLS
-        QueryBuilder.Append "(?, ?, ?)"
+252     For LoopC = 1 To NUMSKILLS
+254         QueryBuilder.Append "(?, ?, ?)"
 
-        If LoopC < NUMSKILLS Then
-            QueryBuilder.Append ", "
-        End If
+256         If LoopC < NUMSKILLS Then
+258             QueryBuilder.Append ", "
+            End If
 
-    Next LoopC
+260     Next LoopC
 
-    ' Guardo la query ensamblada
-    QUERY_SAVE_SKILLS = QueryBuilder.ToString
+        ' Guardo la query ensamblada
+262     QUERY_SAVE_SKILLS = QueryBuilder.ToString
     
-    ' Limpio el constructor de querys
-    Call QueryBuilder.Clear
+        ' Limpio el constructor de querys
+264     Call QueryBuilder.Clear
 
-    ' ************************** User quests ************************************
-    QueryBuilder.Append "INSERT INTO quest (user_id, number) VALUES "
+        ' ************************** User quests ************************************
+266     QueryBuilder.Append "INSERT INTO quest (user_id, number) VALUES "
 
-    For LoopC = 1 To MAXUSERQUESTS
-        QueryBuilder.Append "(?, ?)"
+268     For LoopC = 1 To MAXUSERQUESTS
+270         QueryBuilder.Append "(?, ?)"
 
-        If LoopC < MAXUSERQUESTS Then
-            QueryBuilder.Append ", "
-        End If
+272         If LoopC < MAXUSERQUESTS Then
+274             QueryBuilder.Append ", "
+            End If
 
-    Next LoopC
+276     Next LoopC
     
-    ' Guardo la query ensamblada
-    QUERY_SAVE_QUESTS = QueryBuilder.ToString
+        ' Guardo la query ensamblada
+278     QUERY_SAVE_QUESTS = QueryBuilder.ToString
     
-    ' Limpio el constructor de querys
-    Call QueryBuilder.Clear
+        ' Limpio el constructor de querys
+280     Call QueryBuilder.Clear
     
-    ' ************************** User pets **************************************
-    QueryBuilder.Append "INSERT INTO pet (user_id, number, pet_id) VALUES "
+        ' ************************** User pets **************************************
+282     QueryBuilder.Append "INSERT INTO pet (user_id, number, pet_id) VALUES "
 
-    For LoopC = 1 To MAXMASCOTAS
-        QueryBuilder.Append "(?, ?, ?)"
+284     For LoopC = 1 To MAXMASCOTAS
+286         QueryBuilder.Append "(?, ?, ?)"
 
-        If LoopC < MAXMASCOTAS Then
-            QueryBuilder.Append ", "
-        End If
+288         If LoopC < MAXMASCOTAS Then
+290             QueryBuilder.Append ", "
+            End If
 
-    Next LoopC
+292     Next LoopC
     
-    ' Guardo la query ensamblada
-    QUERY_SAVE_PETS = QueryBuilder.ToString
+        ' Guardo la query ensamblada
+294     QUERY_SAVE_PETS = QueryBuilder.ToString
     
-    ' Limpio el constructor de querys
-    Call QueryBuilder.Clear
+        ' Limpio el constructor de querys
+296     Call QueryBuilder.Clear
     
 End Sub
 
 Private Sub ConstruirQuery_GuardarPersonaje()
 
-    Dim LoopC As Long
+        Dim LoopC As Long
     
-    QueryBuilder.Append "UPDATE user SET "
-    QueryBuilder.Append "name = ?, "
-    QueryBuilder.Append "level = ?, "
-    QueryBuilder.Append "exp = ?, "
-    QueryBuilder.Append "genre_id = ?, "
-    QueryBuilder.Append "race_id = ?, "
-    QueryBuilder.Append "class_id = ?, "
-    QueryBuilder.Append "home_id = ?, "
-    QueryBuilder.Append "description = ?, "
-    QueryBuilder.Append "gold = ?, "
-    QueryBuilder.Append "bank_gold = ?, "
-    QueryBuilder.Append "free_skillpoints = ?, "
-    QueryBuilder.Append "pets_saved = ?, "
-    QueryBuilder.Append "pos_map = ?, "
-    QueryBuilder.Append "pos_x = ?, "
-    QueryBuilder.Append "pos_y = ?, "
-    QueryBuilder.Append "last_map = ?, "
-    QueryBuilder.Append "message_info = ?, "
-    QueryBuilder.Append "body_id = ?, "
-    QueryBuilder.Append "head_id = ?, "
-    QueryBuilder.Append "weapon_id = ?, "
-    QueryBuilder.Append "helmet_id = ?, "
-    QueryBuilder.Append "shield_id = ?, "
-    QueryBuilder.Append "heading = ?, "
-    QueryBuilder.Append "items_Amount = ?, "
-    QueryBuilder.Append "slot_armour = ?, "
-    QueryBuilder.Append "slot_weapon = ?, "
-    QueryBuilder.Append "slot_shield = ?, "
-    QueryBuilder.Append "slot_helmet = ?, "
-    QueryBuilder.Append "slot_ammo = ?, "
-    QueryBuilder.Append "slot_dm = ?, "
-    QueryBuilder.Append "slot_rm = ?, "
-    QueryBuilder.Append "slot_tool = ?, "
-    QueryBuilder.Append "slot_magic = ?, "
-    QueryBuilder.Append "slot_knuckles = ?, "
-    QueryBuilder.Append "slot_ship = ?, "
-    QueryBuilder.Append "slot_mount = ?, "
-    QueryBuilder.Append "min_hp = ?, "
-    QueryBuilder.Append "max_hp = ?, "
-    QueryBuilder.Append "min_man = ?, "
-    QueryBuilder.Append "max_man = ?, "
-    QueryBuilder.Append "min_sta = ?, "
-    QueryBuilder.Append "max_sta = ?, "
-    QueryBuilder.Append "min_ham = ?, "
-    QueryBuilder.Append "max_ham = ?, "
-    QueryBuilder.Append "min_sed = ?, "
-    QueryBuilder.Append "max_sed = ?, "
-    QueryBuilder.Append "min_hit = ?, "
-    QueryBuilder.Append "max_hit = ?, "
-    QueryBuilder.Append "killed_npcs = ?, "
-    QueryBuilder.Append "killed_users = ?, "
-    QueryBuilder.Append "invent_level = ?, "
-    QueryBuilder.Append "is_naked = ?, "
-    QueryBuilder.Append "is_poisoned = ?, "
-    QueryBuilder.Append "is_hidden = ?, "
-    QueryBuilder.Append "is_hungry = ?, "
-    QueryBuilder.Append "is_thirsty = ?, "
-    QueryBuilder.Append "is_dead = ?, "
-    QueryBuilder.Append "is_sailing = ?, "
-    QueryBuilder.Append "is_paralyzed = ?, "
-    QueryBuilder.Append "is_mounted = ?, "
-    QueryBuilder.Append "is_silenced = ?, "
-    QueryBuilder.Append "silence_minutes_left = ?, "
-    QueryBuilder.Append "silence_elapsed_seconds = ?, "
-    QueryBuilder.Append "spouse = ?, "
-    QueryBuilder.Append "counter_pena = ?, "
-    QueryBuilder.Append "deaths = ?, "
-    QueryBuilder.Append "pertenece_consejo_real = ?, "
-    QueryBuilder.Append "pertenece_consejo_caos = ?, "
-    QueryBuilder.Append "pertenece_real = ?, "
-    QueryBuilder.Append "pertenece_caos = ?, "
-    QueryBuilder.Append "ciudadanos_matados = ?, "
-    QueryBuilder.Append "criminales_matados = ?, "
-    QueryBuilder.Append "recibio_armadura_real = ?, "
-    QueryBuilder.Append "recibio_armadura_caos = ?, "
-    QueryBuilder.Append "recibio_exp_real = ?, "
-    QueryBuilder.Append "recibio_exp_caos = ?, "
-    QueryBuilder.Append "recompensas_real = ?, "
-    QueryBuilder.Append "recompensas_caos = ?, "
-    QueryBuilder.Append "reenlistadas = ?, "
-    QueryBuilder.Append "nivel_ingreso = ?, "
-    QueryBuilder.Append "matados_ingreso = ?, "
-    QueryBuilder.Append "siguiente_recompensa = ?, "
-    QueryBuilder.Append "status = ?, "
-    QueryBuilder.Append "guild_index = ?, "
-    QueryBuilder.Append "chat_combate = ?, "
-    QueryBuilder.Append "chat_global = ?, "
-    QueryBuilder.Append "is_logged = ?, "
-    QueryBuilder.Append "warnings = ? "
-    QueryBuilder.Append " WHERE id = ?"
+100     QueryBuilder.Append "UPDATE user SET "
+102     QueryBuilder.Append "name = ?, "
+104     QueryBuilder.Append "level = ?, "
+106     QueryBuilder.Append "exp = ?, "
+108     QueryBuilder.Append "genre_id = ?, "
+110     QueryBuilder.Append "race_id = ?, "
+112     QueryBuilder.Append "class_id = ?, "
+114     QueryBuilder.Append "home_id = ?, "
+116     QueryBuilder.Append "description = ?, "
+118     QueryBuilder.Append "gold = ?, "
+120     QueryBuilder.Append "bank_gold = ?, "
+122     QueryBuilder.Append "free_skillpoints = ?, "
+124     QueryBuilder.Append "pets_saved = ?, "
+126     QueryBuilder.Append "pos_map = ?, "
+128     QueryBuilder.Append "pos_x = ?, "
+130     QueryBuilder.Append "pos_y = ?, "
+132     QueryBuilder.Append "last_map = ?, "
+134     QueryBuilder.Append "message_info = ?, "
+136     QueryBuilder.Append "body_id = ?, "
+138     QueryBuilder.Append "head_id = ?, "
+140     QueryBuilder.Append "weapon_id = ?, "
+142     QueryBuilder.Append "helmet_id = ?, "
+144     QueryBuilder.Append "shield_id = ?, "
+146     QueryBuilder.Append "heading = ?, "
+148     QueryBuilder.Append "items_Amount = ?, "
+150     QueryBuilder.Append "slot_armour = ?, "
+152     QueryBuilder.Append "slot_weapon = ?, "
+154     QueryBuilder.Append "slot_shield = ?, "
+156     QueryBuilder.Append "slot_helmet = ?, "
+158     QueryBuilder.Append "slot_ammo = ?, "
+160     QueryBuilder.Append "slot_dm = ?, "
+162     QueryBuilder.Append "slot_rm = ?, "
+164     QueryBuilder.Append "slot_tool = ?, "
+166     QueryBuilder.Append "slot_magic = ?, "
+168     QueryBuilder.Append "slot_knuckles = ?, "
+170     QueryBuilder.Append "slot_ship = ?, "
+172     QueryBuilder.Append "slot_mount = ?, "
+174     QueryBuilder.Append "min_hp = ?, "
+176     QueryBuilder.Append "max_hp = ?, "
+178     QueryBuilder.Append "min_man = ?, "
+180     QueryBuilder.Append "max_man = ?, "
+182     QueryBuilder.Append "min_sta = ?, "
+184     QueryBuilder.Append "max_sta = ?, "
+186     QueryBuilder.Append "min_ham = ?, "
+188     QueryBuilder.Append "max_ham = ?, "
+190     QueryBuilder.Append "min_sed = ?, "
+192     QueryBuilder.Append "max_sed = ?, "
+194     QueryBuilder.Append "min_hit = ?, "
+196     QueryBuilder.Append "max_hit = ?, "
+198     QueryBuilder.Append "killed_npcs = ?, "
+200     QueryBuilder.Append "killed_users = ?, "
+202     QueryBuilder.Append "invent_level = ?, "
+204     QueryBuilder.Append "is_naked = ?, "
+206     QueryBuilder.Append "is_poisoned = ?, "
+208     QueryBuilder.Append "is_hidden = ?, "
+210     QueryBuilder.Append "is_hungry = ?, "
+212     QueryBuilder.Append "is_thirsty = ?, "
+214     QueryBuilder.Append "is_dead = ?, "
+216     QueryBuilder.Append "is_sailing = ?, "
+218     QueryBuilder.Append "is_paralyzed = ?, "
+220     QueryBuilder.Append "is_mounted = ?, "
+222     QueryBuilder.Append "is_silenced = ?, "
+224     QueryBuilder.Append "silence_minutes_left = ?, "
+226     QueryBuilder.Append "silence_elapsed_seconds = ?, "
+228     QueryBuilder.Append "spouse = ?, "
+230     QueryBuilder.Append "counter_pena = ?, "
+232     QueryBuilder.Append "deaths = ?, "
+234     QueryBuilder.Append "pertenece_consejo_real = ?, "
+236     QueryBuilder.Append "pertenece_consejo_caos = ?, "
+238     QueryBuilder.Append "pertenece_real = ?, "
+240     QueryBuilder.Append "pertenece_caos = ?, "
+242     QueryBuilder.Append "ciudadanos_matados = ?, "
+244     QueryBuilder.Append "criminales_matados = ?, "
+246     QueryBuilder.Append "recibio_armadura_real = ?, "
+248     QueryBuilder.Append "recibio_armadura_caos = ?, "
+250     QueryBuilder.Append "recibio_exp_real = ?, "
+252     QueryBuilder.Append "recibio_exp_caos = ?, "
+254     QueryBuilder.Append "recompensas_real = ?, "
+256     QueryBuilder.Append "recompensas_caos = ?, "
+258     QueryBuilder.Append "reenlistadas = ?, "
+260     QueryBuilder.Append "nivel_ingreso = ?, "
+262     QueryBuilder.Append "matados_ingreso = ?, "
+264     QueryBuilder.Append "siguiente_recompensa = ?, "
+266     QueryBuilder.Append "status = ?, "
+268     QueryBuilder.Append "guild_index = ?, "
+270     QueryBuilder.Append "chat_combate = ?, "
+272     QueryBuilder.Append "chat_global = ?, "
+274     QueryBuilder.Append "is_logged = ?, "
+276     QueryBuilder.Append "warnings = ? "
+278     QueryBuilder.Append " WHERE id = ?"
     
-    ' Guardo la query ensamblada
-    QUERY_UPDATE_MAINPJ = QueryBuilder.ToString
+        ' Guardo la query ensamblada
+280     QUERY_UPDATE_MAINPJ = QueryBuilder.ToString
     
-    ' Limpio el constructor de querys
-    Call QueryBuilder.Clear
+        ' Limpio el constructor de querys
+282     Call QueryBuilder.Clear
     
-    ' ************************** User bank inventory **************************************
-    QueryBuilder.Append "INSERT INTO bank_item (user_id, number, item_id, amount) VALUES "
+        ' ************************** User bank inventory **************************************
+284     QueryBuilder.Append "INSERT INTO bank_item (user_id, number, item_id, amount) VALUES "
 
-    For LoopC = 1 To MAX_BANCOINVENTORY_SLOTS
-        QueryBuilder.Append "(?, ?, ?, ?)"
+286     For LoopC = 1 To MAX_BANCOINVENTORY_SLOTS
+288         QueryBuilder.Append "(?, ?, ?, ?)"
 
-        If LoopC < MAX_BANCOINVENTORY_SLOTS Then
-            QueryBuilder.Append ", "
+290         If LoopC < MAX_BANCOINVENTORY_SLOTS Then
+292             QueryBuilder.Append ", "
 
-        End If
+            End If
 
-    Next LoopC
+294     Next LoopC
         
-    QueryBuilder.Append " ON DUPLICATE KEY UPDATE item_id=VALUES(item_id), amount=VALUES(Amount); "
+296     QueryBuilder.Append " ON DUPLICATE KEY UPDATE item_id=VALUES(item_id), amount=VALUES(Amount); "
     
-    ' Guardo la query ensamblada
-    QUERY_SAVE_BANCOINV = QueryBuilder.ToString
+        ' Guardo la query ensamblada
+298     QUERY_SAVE_BANCOINV = QueryBuilder.ToString
     
-    ' Limpio el constructor de querys
-    Call QueryBuilder.Clear
+        ' Limpio el constructor de querys
+300     Call QueryBuilder.Clear
     
-    ' ************************** UPSERT QUERIES **************************************
+        ' ************************** UPSERT QUERIES **************************************
     
-    QUERY_UPSERT_ATTRIBUTES = QUERY_SAVE_ATTRIBUTES & " ON DUPLICATE KEY UPDATE value=VALUES(value); "
-    QUERY_UPSERT_SPELLS = QUERY_SAVE_SPELLS & " ON DUPLICATE KEY UPDATE spell_id=VALUES(spell_id); "
-    QUERY_UPSERT_INVENTORY = QUERY_SAVE_INVENTORY & " ON DUPLICATE KEY UPDATE item_id=VALUES(item_id), amount=VALUES(Amount), is_equipped=VALUES(is_equipped); "
-    QUERY_UPSERT_SKILLS = QUERY_SAVE_SKILLS & " ON DUPLICATE KEY UPDATE value=VALUES(value); "
-    QUERY_UPSERT_PETS = QUERY_SAVE_PETS & " ON DUPLICATE KEY UPDATE pet_id=VALUES(pet_id); "
+302     QUERY_UPSERT_ATTRIBUTES = QUERY_SAVE_ATTRIBUTES & " ON DUPLICATE KEY UPDATE value=VALUES(value); "
+304     QUERY_UPSERT_SPELLS = QUERY_SAVE_SPELLS & " ON DUPLICATE KEY UPDATE spell_id=VALUES(spell_id); "
+306     QUERY_UPSERT_INVENTORY = QUERY_SAVE_INVENTORY & " ON DUPLICATE KEY UPDATE item_id=VALUES(item_id), amount=VALUES(Amount), is_equipped=VALUES(is_equipped); "
+308     QUERY_UPSERT_SKILLS = QUERY_SAVE_SKILLS & " ON DUPLICATE KEY UPDATE value=VALUES(value); "
+310     QUERY_UPSERT_PETS = QUERY_SAVE_PETS & " ON DUPLICATE KEY UPDATE pet_id=VALUES(pet_id); "
     
 End Sub
