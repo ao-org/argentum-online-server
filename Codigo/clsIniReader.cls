@@ -143,7 +143,7 @@ Private Sub Class_Terminate()
     Exit Sub
 
 Class_Terminate_Err:
-    Call RegistrarError(Err.Number, Err.description, "clsIniReader.Class_Terminate", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "clsIniReader.Class_Terminate", Erl)
     Resume Next
         
 End Sub
@@ -249,7 +249,7 @@ Public Sub Initialize(ByVal File As String)
         Exit Sub
 
 Initialize_Err:
-152     Call RegistrarError(Err.Number, Err.description, "clsIniReader.Initialize", Erl)
+152     Call RegistrarError(Err.Number, Err.Description, "clsIniReader.Initialize", Erl)
 
         
 End Sub
@@ -315,7 +315,7 @@ Private Sub SortChildNodes(ByRef Node As MainNode, ByVal First As Integer, ByVal
         Exit Sub
 
 SortChildNodes_Err:
-134     Call RegistrarError(Err.Number, Err.description, "clsIniReader.SortChildNodes", Erl)
+134     Call RegistrarError(Err.Number, Err.Description, "clsIniReader.SortChildNodes", Erl)
 136     Resume Next
         
 End Sub
@@ -377,7 +377,7 @@ Private Sub SortMainNodes(ByVal First As Integer, ByVal Last As Integer)
         Exit Sub
 
 SortMainNodes_Err:
-132     Call RegistrarError(Err.Number, Err.description, "clsIniReader.SortMainNodes", Erl)
+132     Call RegistrarError(Err.Number, Err.Description, "clsIniReader.SortMainNodes", Erl)
 134     Resume Next
         
 End Sub
@@ -419,7 +419,7 @@ Public Function GetValue(ByVal Main As String, ByVal Key As String) As String
         Exit Function
 
 GetValue_Err:
-108     Call RegistrarError(Err.Number, Err.description, "clsIniReader.GetValue", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "clsIniReader.GetValue", Erl)
 110     Resume Next
         
 End Function
@@ -465,7 +465,7 @@ Public Sub ChangeValue(ByVal Main As String, ByVal Key As String, ByVal Value As
         Exit Sub
 
 ChangeValue_Err:
-112     Call RegistrarError(Err.Number, Err.description, "clsIniReader.ChangeValue", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "clsIniReader.ChangeValue", Erl)
 114     Resume Next
         
 End Sub
@@ -521,7 +521,7 @@ Private Function FindKey(ByRef Node As MainNode, ByVal Key As String) As Long
         Exit Function
 
 FindKey_Err:
-120     Call RegistrarError(Err.Number, Err.description, "clsIniReader.FindKey", Erl)
+120     Call RegistrarError(Err.Number, Err.Description, "clsIniReader.FindKey", Erl)
 122     Resume Next
         
 End Function
@@ -576,7 +576,7 @@ Private Function FindMain(ByVal name As String) As Long
         Exit Function
 
 FindMain_Err:
-120     Call RegistrarError(Err.Number, Err.description, "clsIniReader.FindMain", Erl)
+120     Call RegistrarError(Err.Number, Err.Description, "clsIniReader.FindMain", Erl)
 122     Resume Next
         
 End Function
@@ -602,7 +602,7 @@ Public Function KeyExists(ByVal name As String) As Boolean
         Exit Function
 
 KeyExists_Err:
-102     Call RegistrarError(Err.Number, Err.description, "clsIniReader.KeyExists", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "clsIniReader.KeyExists", Erl)
 104     Resume Next
         
 End Function
@@ -650,7 +650,7 @@ Private Function AddNode(ByRef name As String) As Long
         Exit Function
 
 AddNode_Err:
-126     Call RegistrarError(Err.Number, Err.description, "clsIniReader.AddNode", Erl)
+126     Call RegistrarError(Err.Number, Err.Description, "clsIniReader.AddNode", Erl)
 128     Resume Next
         
 End Function
@@ -706,7 +706,7 @@ Private Function AddKey(ByRef Main As String, ByRef Key As String, Optional ByRe
         Exit Function
 
 AddKey_Err:
-132     Call RegistrarError(Err.Number, Err.description, "clsIniReader.AddKey", Erl)
+132     Call RegistrarError(Err.Number, Err.Description, "clsIniReader.AddKey", Erl)
 134     Resume Next
         
 End Function
@@ -752,7 +752,7 @@ Public Sub DumpFile(ByRef File As String)
         Exit Sub
 
 DumpFile_Err:
-122     Call RegistrarError(Err.Number, Err.description, "clsIniReader.DumpFile", Erl)
+122     Call RegistrarError(Err.Number, Err.Description, "clsIniReader.DumpFile", Erl)
 124     Resume Next
         
 End Sub

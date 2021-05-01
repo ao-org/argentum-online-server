@@ -53,7 +53,7 @@ Sub IniciarBanco(ByVal UserIndex As Integer)
         Exit Sub
 
 IniciarBanco_Err:
-106     Call RegistrarError(Err.Number, Err.description, "modBanco.IniciarBanco", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "modBanco.IniciarBanco", Erl)
 108     Resume Next
         
 End Sub
@@ -71,7 +71,7 @@ Sub SendBanObj(UserIndex As Integer, slot As Byte, Object As UserOBJ)
         Exit Sub
 
 SendBanObj_Err:
-104     Call RegistrarError(Err.Number, Err.description, "modBanco.SendBanObj", Erl)
+104     Call RegistrarError(Err.Number, Err.Description, "modBanco.SendBanObj", Erl)
 106     Resume Next
         
 End Sub
@@ -118,7 +118,7 @@ Sub UpdateBanUserInv(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer, ByV
         Exit Sub
 
 UpdateBanUserInv_Err:
-118     Call RegistrarError(Err.Number, Err.description, "modBanco.UpdateBanUserInv", Erl)
+118     Call RegistrarError(Err.Number, Err.Description, "modBanco.UpdateBanUserInv", Erl)
 120     Resume Next
         
 End Sub
@@ -131,8 +131,8 @@ Sub UserRetiraItem(ByVal UserIndex As Integer, ByVal i As Integer, ByVal Cantida
 
         'Call WriteUpdateUserStats(UserIndex)
    
-102     If UserList(UserIndex).BancoInvent.Object(i).Amount > 0 Then
-104         If Cantidad > UserList(UserIndex).BancoInvent.Object(i).Amount Then Cantidad = UserList(UserIndex).BancoInvent.Object(i).Amount
+102     If UserList(UserIndex).BancoInvent.Object(i).amount > 0 Then
+104         If Cantidad > UserList(UserIndex).BancoInvent.Object(i).amount Then Cantidad = UserList(UserIndex).BancoInvent.Object(i).amount
             
             'Agregamos el obj que compro al inventario
 106         Call UserReciveObj(UserIndex, CInt(i), Cantidad, slotdestino)
@@ -146,7 +146,7 @@ Sub UserRetiraItem(ByVal UserIndex As Integer, ByVal i As Integer, ByVal Cantida
         Exit Sub
     
 ErrHandler:
-112     Call RegistrarError(Err.Number, Err.description, "modBanco.UsaRetiraItem")
+112     Call RegistrarError(Err.Number, Err.Description, "modBanco.UsaRetiraItem")
 114     Resume Next
     
 End Sub
@@ -160,7 +160,7 @@ Sub UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal C
 
         Dim obji As Integer
 
-100     If UserList(UserIndex).BancoInvent.Object(ObjIndex).Amount <= 0 Then Exit Sub
+100     If UserList(UserIndex).BancoInvent.Object(ObjIndex).amount <= 0 Then Exit Sub
 
 102     obji = UserList(UserIndex).BancoInvent.Object(ObjIndex).ObjIndex
 
@@ -177,7 +177,7 @@ Sub UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal C
 
             '¿Ya tiene un objeto de este tipo?
 
-112         If UserList(UserIndex).Invent.Object(slotdestino).ObjIndex = obji And UserList(UserIndex).Invent.Object(slotdestino).Amount + Cantidad <= MAX_INVENTORY_OBJS Then
+112         If UserList(UserIndex).Invent.Object(slotdestino).ObjIndex = obji And UserList(UserIndex).Invent.Object(slotdestino).amount + Cantidad <= MAX_INVENTORY_OBJS Then
     
 114             slotvalido = True
 
@@ -190,7 +190,7 @@ Sub UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal C
             '¿Ya tiene un objeto de este tipo?
 118         slot = 1
 
-120         Do Until UserList(UserIndex).Invent.Object(slot).ObjIndex = obji And UserList(UserIndex).Invent.Object(slot).Amount + Cantidad <= MAX_INVENTORY_OBJS
+120         Do Until UserList(UserIndex).Invent.Object(slot).ObjIndex = obji And UserList(UserIndex).Invent.Object(slot).amount + Cantidad <= MAX_INVENTORY_OBJS
     
 122             slot = slot + 1
 
@@ -228,11 +228,11 @@ Sub UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal C
         End If
 
         'Mete el obj en el slot
-146     If UserList(UserIndex).Invent.Object(slot).Amount + Cantidad <= MAX_INVENTORY_OBJS Then
+146     If UserList(UserIndex).Invent.Object(slot).amount + Cantidad <= MAX_INVENTORY_OBJS Then
     
             'Menor que MAX_INV_OBJS
 148         UserList(UserIndex).Invent.Object(slot).ObjIndex = obji
-150         UserList(UserIndex).Invent.Object(slot).Amount = UserList(UserIndex).Invent.Object(slot).Amount + Cantidad
+150         UserList(UserIndex).Invent.Object(slot).amount = UserList(UserIndex).Invent.Object(slot).amount + Cantidad
     
 152         Call QuitarBancoInvItem(UserIndex, CByte(ObjIndex), Cantidad)
         Else
@@ -244,7 +244,7 @@ Sub UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal C
         Exit Sub
 
 UserReciveObj_Err:
-156     Call RegistrarError(Err.Number, Err.description, "modBanco.UserReciveObj", Erl)
+156     Call RegistrarError(Err.Number, Err.Description, "modBanco.UserReciveObj", Erl)
 158     Resume Next
         
 End Sub
@@ -260,12 +260,12 @@ Sub QuitarBancoInvItem(ByVal UserIndex As Integer, ByVal slot As Byte, ByVal Can
 
         'Quita un Obj
 
-102     UserList(UserIndex).BancoInvent.Object(slot).Amount = UserList(UserIndex).BancoInvent.Object(slot).Amount - Cantidad
+102     UserList(UserIndex).BancoInvent.Object(slot).amount = UserList(UserIndex).BancoInvent.Object(slot).amount - Cantidad
         
-104     If UserList(UserIndex).BancoInvent.Object(slot).Amount <= 0 Then
+104     If UserList(UserIndex).BancoInvent.Object(slot).amount <= 0 Then
 106         UserList(UserIndex).BancoInvent.NroItems = UserList(UserIndex).BancoInvent.NroItems - 1
 108         UserList(UserIndex).BancoInvent.Object(slot).ObjIndex = 0
-110         UserList(UserIndex).BancoInvent.Object(slot).Amount = 0
+110         UserList(UserIndex).BancoInvent.Object(slot).amount = 0
 
         End If
     
@@ -273,7 +273,7 @@ Sub QuitarBancoInvItem(ByVal UserIndex As Integer, ByVal slot As Byte, ByVal Can
         Exit Sub
 
 QuitarBancoInvItem_Err:
-112     Call RegistrarError(Err.Number, Err.description, "modBanco.QuitarBancoInvItem", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "modBanco.QuitarBancoInvItem", Erl)
 114     Resume Next
         
 End Sub
@@ -282,8 +282,8 @@ Sub UserDepositaItem(ByVal UserIndex As Integer, ByVal Item As Integer, ByVal Ca
 
         On Error GoTo ErrHandler
 
-100     If UserList(UserIndex).Invent.Object(Item).Amount > 0 And Cantidad > 0 Then
-102         If Cantidad > UserList(UserIndex).Invent.Object(Item).Amount Then Cantidad = UserList(UserIndex).Invent.Object(Item).Amount
+100     If UserList(UserIndex).Invent.Object(Item).amount > 0 And Cantidad > 0 Then
+102         If Cantidad > UserList(UserIndex).Invent.Object(Item).amount Then Cantidad = UserList(UserIndex).Invent.Object(Item).amount
         
             'Agregamos el obj que deposita al banco
 104         Call UserDejaObj(UserIndex, CInt(Item), Cantidad, slotdestino)
@@ -299,7 +299,7 @@ Sub UserDepositaItem(ByVal UserIndex As Integer, ByVal Item As Integer, ByVal Ca
         Exit Sub
     
 ErrHandler:
-110     Call RegistrarError(Err.Number, Err.description, "modBanco.UserDepositaItem")
+110     Call RegistrarError(Err.Number, Err.Description, "modBanco.UserDepositaItem")
 112     Resume Next
     
 End Sub
@@ -308,8 +308,8 @@ Sub UserDepositaItemDrop(ByVal UserIndex As Integer, ByVal Item As Integer, ByVa
 
         On Error GoTo ErrHandler
 
-100     If UserList(UserIndex).Invent.Object(Item).Amount > 0 And Cantidad > 0 Then
-102         If Cantidad > UserList(UserIndex).Invent.Object(Item).Amount Then Cantidad = UserList(UserIndex).Invent.Object(Item).Amount
+100     If UserList(UserIndex).Invent.Object(Item).amount > 0 And Cantidad > 0 Then
+102         If Cantidad > UserList(UserIndex).Invent.Object(Item).amount Then Cantidad = UserList(UserIndex).Invent.Object(Item).amount
             'Agregamos el obj que deposita al banco
 104         Call UserDejaObj(UserIndex, CInt(Item), Cantidad, 0)
         
@@ -321,7 +321,7 @@ Sub UserDepositaItemDrop(ByVal UserIndex As Integer, ByVal Item As Integer, ByVa
         Exit Sub
 
 ErrHandler:
-108     Call RegistrarError(Err.Number, Err.description, "modBanco.UserDepositaItemDrop")
+108     Call RegistrarError(Err.Number, Err.Description, "modBanco.UserDepositaItemDrop")
 110     Resume Next
 
 End Sub
@@ -348,7 +348,7 @@ Sub UserDejaObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal Can
 
             End If
 
-112         If UserList(UserIndex).BancoInvent.Object(slotdestino).ObjIndex = obji And UserList(UserIndex).BancoInvent.Object(slotdestino).Amount + Cantidad <= MAX_INVENTORY_OBJS Then '¿Ya tiene un objeto de este tipo?
+112         If UserList(UserIndex).BancoInvent.Object(slotdestino).ObjIndex = obji And UserList(UserIndex).BancoInvent.Object(slotdestino).amount + Cantidad <= MAX_INVENTORY_OBJS Then '¿Ya tiene un objeto de este tipo?
 114             slotvalido = True
 
             End If
@@ -359,7 +359,7 @@ Sub UserDejaObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal Can
             '¿Ya tiene un objeto de este tipo?
 118         slot = 1
 
-120         Do Until UserList(UserIndex).BancoInvent.Object(slot).ObjIndex = obji And UserList(UserIndex).BancoInvent.Object(slot).Amount + Cantidad <= MAX_INVENTORY_OBJS
+120         Do Until UserList(UserIndex).BancoInvent.Object(slot).ObjIndex = obji And UserList(UserIndex).BancoInvent.Object(slot).amount + Cantidad <= MAX_INVENTORY_OBJS
 122             slot = slot + 1
         
 124             If slot > MAX_BANCOINVENTORY_SLOTS Then
@@ -399,11 +399,11 @@ Sub UserDejaObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal Can
 146     If slot <= MAX_BANCOINVENTORY_SLOTS Then 'Slot valido
 
             'Mete el obj en el slot
-148         If UserList(UserIndex).BancoInvent.Object(slot).Amount + Cantidad <= MAX_INVENTORY_OBJS Then
+148         If UserList(UserIndex).BancoInvent.Object(slot).amount + Cantidad <= MAX_INVENTORY_OBJS Then
             
                 'Menor que MAX_INV_OBJS
 150             UserList(UserIndex).BancoInvent.Object(slot).ObjIndex = obji
-152             UserList(UserIndex).BancoInvent.Object(slot).Amount = UserList(UserIndex).BancoInvent.Object(slot).Amount + Cantidad
+152             UserList(UserIndex).BancoInvent.Object(slot).amount = UserList(UserIndex).BancoInvent.Object(slot).amount + Cantidad
             
 154             Call QuitarUserInvItem(UserIndex, CByte(ObjIndex), Cantidad)
             Else
@@ -417,7 +417,7 @@ Sub UserDejaObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal Can
         Exit Sub
 
 UserDejaObj_Err:
-158     Call RegistrarError(Err.Number, Err.description, "modBanco.UserDejaObj", Erl)
+158     Call RegistrarError(Err.Number, Err.Description, "modBanco.UserDejaObj", Erl)
 160     Resume Next
         
 End Sub
@@ -438,7 +438,7 @@ Sub SendUserBovedaTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
 104     For j = 1 To MAX_BANCOINVENTORY_SLOTS
 
 106         If UserList(UserIndex).BancoInvent.Object(j).ObjIndex > 0 Then
-108             Call WriteConsoleMsg(sendIndex, " Objeto " & j & " " & ObjData(UserList(UserIndex).BancoInvent.Object(j).ObjIndex).name & " Cantidad:" & UserList(UserIndex).BancoInvent.Object(j).Amount, FontTypeNames.FONTTYPE_INFO)
+108             Call WriteConsoleMsg(sendIndex, " Objeto " & j & " " & ObjData(UserList(UserIndex).BancoInvent.Object(j).ObjIndex).name & " Cantidad:" & UserList(UserIndex).BancoInvent.Object(j).amount, FontTypeNames.FONTTYPE_INFO)
 
             End If
 
@@ -448,7 +448,7 @@ Sub SendUserBovedaTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
         Exit Sub
 
 SendUserBovedaTxt_Err:
-110     Call RegistrarError(Err.Number, Err.description, "modBanco.SendUserBovedaTxt", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "modBanco.SendUserBovedaTxt", Erl)
 
         
 End Sub
@@ -493,7 +493,7 @@ Sub SendUserBovedaTxtFromChar(ByVal sendIndex As Integer, ByVal CharName As Stri
         Exit Sub
 
 SendUserBovedaTxtFromChar_Err:
-122     Call RegistrarError(Err.Number, Err.description, "modBanco.SendUserBovedaTxtFromChar", Erl)
+122     Call RegistrarError(Err.Number, Err.Description, "modBanco.SendUserBovedaTxtFromChar", Erl)
 
         
 End Sub

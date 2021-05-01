@@ -71,7 +71,7 @@ Public Function MaxPersonajes(sIp As String) As Boolean
         Exit Function
 
 MaxPersonajes_Err:
-114     Call RegistrarError(Err.Number, Err.description, "clsAntiMassClon.MaxPersonajes", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "clsAntiMassClon.MaxPersonajes", Erl)
 116     Resume Next
         
 End Function
@@ -88,7 +88,7 @@ Public Function VaciarColeccion()
 
         Exit Function
 ErrHandler:
-104     Call LogError("Error en RestarConexion " & Err.description)
+104     Call LogError("Error en RestarConexion " & Err.Description)
 
 End Function
 

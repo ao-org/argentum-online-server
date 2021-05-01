@@ -102,7 +102,7 @@ Private Sub Command1_Click()
         Exit Sub
 
 Command1_Click_Err:
-116     Call RegistrarError(Err.Number, Err.description, "frmUserList.Command1_Click", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "frmUserList.Command1_Click", Erl)
 118     Resume Next
         
 End Sub
@@ -127,7 +127,7 @@ Private Sub Command2_Click()
         Exit Sub
 
 Command2_Click_Err:
-108     Call RegistrarError(Err.Number, Err.description, "frmUserList.Command2_Click", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "frmUserList.Command2_Click", Erl)
 110     Resume Next
         
 End Sub
@@ -160,7 +160,7 @@ Private Sub List1_Click()
         Exit Sub
 
 List1_Click_Err:
-116     Call RegistrarError(Err.Number, Err.description, "frmUserList.List1_Click", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "frmUserList.List1_Click", Erl)
 118     Resume Next
         
 End Sub

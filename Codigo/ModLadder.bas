@@ -325,81 +325,81 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
             
                 End Select
                 
-334         Case Accion_Barra.Hogar
-336             Call HomeArrival(UserIndex)
-338             UserList(UserIndex).Accion.AccionPendiente = False
-340             UserList(UserIndex).Accion.Particula = 0
-342             UserList(UserIndex).Accion.TipoAccion = Accion_Barra.CancelarAccion
+304         Case Accion_Barra.Hogar
+306             Call HomeArrival(UserIndex)
+308             UserList(UserIndex).Accion.AccionPendiente = False
+310             UserList(UserIndex).Accion.Particula = 0
+312             UserList(UserIndex).Accion.TipoAccion = Accion_Barra.CancelarAccion
             
 
-344         Case Accion_Barra.Intermundia
+314         Case Accion_Barra.Intermundia
         
-346             If UserList(UserIndex).flags.Muerto = 0 Then
+316             If UserList(UserIndex).flags.Muerto = 0 Then
 
                     Dim uh As Integer
 
                     Dim Mapaf, Xf, Yf As Integer
 
-348                 uh = UserList(UserIndex).Accion.HechizoPendiente
+318                 uh = UserList(UserIndex).Accion.HechizoPendiente
     
-350                 Mapaf = Hechizos(uh).TeleportXMap
-352                 Xf = Hechizos(uh).TeleportXX
-354                 Yf = Hechizos(uh).TeleportXY
+320                 Mapaf = Hechizos(uh).TeleportXMap
+322                 Xf = Hechizos(uh).TeleportXX
+324                 Yf = Hechizos(uh).TeleportXY
     
-356                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(uh).wav, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY))  'Esta linea faltaba. Pablo (ToxicWaste)
-358                 Call WriteConsoleMsg(UserIndex, "¡Has abierto la puerta a intermundia!", FontTypeNames.FONTTYPE_INFO)
-360                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Runa, -1, True))
-362                 UserList(UserIndex).flags.Portal = 10
-364                 UserList(UserIndex).flags.PortalMDestino = Mapaf
-366                 UserList(UserIndex).flags.PortalYDestino = Xf
-368                 UserList(UserIndex).flags.PortalXDestino = Yf
+326                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(uh).wav, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY))  'Esta linea faltaba. Pablo (ToxicWaste)
+328                 Call WriteConsoleMsg(UserIndex, "¡Has abierto la puerta a intermundia!", FontTypeNames.FONTTYPE_INFO)
+330                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Runa, -1, True))
+332                 UserList(UserIndex).flags.Portal = 10
+334                 UserList(UserIndex).flags.PortalMDestino = Mapaf
+336                 UserList(UserIndex).flags.PortalYDestino = Xf
+338                 UserList(UserIndex).flags.PortalXDestino = Yf
                 
                     Dim Mapa As Integer
 
-370                 Mapa = UserList(UserIndex).flags.PortalM
-372                 X = UserList(UserIndex).flags.PortalX
-374                 Y = UserList(UserIndex).flags.PortalY
-376                 MapData(Mapa, X, Y).Particula = ParticulasIndex.TpVerde
-378                 MapData(Mapa, X, Y).TimeParticula = -1
-380                 MapData(Mapa, X, Y).TileExit.Map = UserList(UserIndex).flags.PortalMDestino
-382                 MapData(Mapa, X, Y).TileExit.X = UserList(UserIndex).flags.PortalXDestino
-384                 MapData(Mapa, X, Y).TileExit.Y = UserList(UserIndex).flags.PortalYDestino
+340                 Mapa = UserList(UserIndex).flags.PortalM
+342                 X = UserList(UserIndex).flags.PortalX
+344                 Y = UserList(UserIndex).flags.PortalY
+346                 MapData(Mapa, X, Y).Particula = ParticulasIndex.TpVerde
+348                 MapData(Mapa, X, Y).TimeParticula = -1
+350                 MapData(Mapa, X, Y).TileExit.Map = UserList(UserIndex).flags.PortalMDestino
+352                 MapData(Mapa, X, Y).TileExit.X = UserList(UserIndex).flags.PortalXDestino
+354                 MapData(Mapa, X, Y).TileExit.Y = UserList(UserIndex).flags.PortalYDestino
                 
                     'Call SendData(SendTarget.toMap, UserList(UserIndex).flags.PortalM, PrepareMessageParticleFXToFloor(X, Y, ParticulasIndex.Intermundia, -1))
-386                 Call SendData(SendTarget.toMap, UserList(UserIndex).flags.PortalM, PrepareMessageParticleFXToFloor(X, Y, ParticulasIndex.TpVerde, -1))
+356                 Call SendData(SendTarget.toMap, UserList(UserIndex).flags.PortalM, PrepareMessageParticleFXToFloor(X, Y, ParticulasIndex.TpVerde, -1))
                 
-388                 Call SendData(SendTarget.toMap, UserList(UserIndex).flags.PortalM, PrepareMessageLightFXToFloor(X, Y, &HFF80C0, 105))
+358                 Call SendData(SendTarget.toMap, UserList(UserIndex).flags.PortalM, PrepareMessageLightFXToFloor(X, Y, &HFF80C0, 105))
 
                 End If
                     
-390             UserList(UserIndex).Accion.Particula = 0
-392             UserList(UserIndex).Accion.TipoAccion = Accion_Barra.CancelarAccion
-394             UserList(UserIndex).Accion.HechizoPendiente = 0
-396             UserList(UserIndex).Accion.RunaObj = 0
-398             UserList(UserIndex).Accion.ObjSlot = 0
-400             UserList(UserIndex).Accion.AccionPendiente = False
+360             UserList(UserIndex).Accion.Particula = 0
+362             UserList(UserIndex).Accion.TipoAccion = Accion_Barra.CancelarAccion
+364             UserList(UserIndex).Accion.HechizoPendiente = 0
+366             UserList(UserIndex).Accion.RunaObj = 0
+368             UserList(UserIndex).Accion.ObjSlot = 0
+370             UserList(UserIndex).Accion.AccionPendiente = False
             
                 '
-402         Case Accion_Barra.Resucitar
-404             Call WriteConsoleMsg(UserIndex, "¡Has sido resucitado!", FontTypeNames.FONTTYPE_INFO)
-406             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Resucitar, 250, True))
-408             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("117", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
-410             Call RevivirUsuario(UserIndex, True)
+372         Case Accion_Barra.Resucitar
+374             Call WriteConsoleMsg(UserIndex, "¡Has sido resucitado!", FontTypeNames.FONTTYPE_INFO)
+376             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Resucitar, 250, True))
+378             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("117", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+380             Call RevivirUsuario(UserIndex, True)
                 
-412             UserList(UserIndex).Accion.Particula = 0
-414             UserList(UserIndex).Accion.TipoAccion = Accion_Barra.CancelarAccion
-416             UserList(UserIndex).Accion.HechizoPendiente = 0
-418             UserList(UserIndex).Accion.RunaObj = 0
-420             UserList(UserIndex).Accion.ObjSlot = 0
-422             UserList(UserIndex).Accion.AccionPendiente = False
+382             UserList(UserIndex).Accion.Particula = 0
+384             UserList(UserIndex).Accion.TipoAccion = Accion_Barra.CancelarAccion
+386             UserList(UserIndex).Accion.HechizoPendiente = 0
+388             UserList(UserIndex).Accion.RunaObj = 0
+390             UserList(UserIndex).Accion.ObjSlot = 0
+392             UserList(UserIndex).Accion.AccionPendiente = False
                       
         End Select
                
         Exit Sub
 
 CompletarAccionFin_Err:
-504     Call RegistrarError(Err.Number, Err.Description, "ModLadder.CompletarAccionFin", Erl)
-506     Resume Next
+394     Call RegistrarError(Err.Number, Err.Description, "ModLadder.CompletarAccionFin", Erl)
+396     Resume Next
         
 End Sub
 
@@ -452,7 +452,7 @@ Public Function CantidadObjEnInv(ByVal UserIndex As Integer, ByVal ObjIndex As I
 100     For i = 1 To 36
 
 102         If UserList(UserIndex).Invent.Object(i).ObjIndex = ObjIndex Then
-104             CantidadObjEnInv = UserList(UserIndex).Invent.Object(i).Amount
+104             CantidadObjEnInv = UserList(UserIndex).Invent.Object(i).amount
                 Exit Function
             End If
 
@@ -522,69 +522,69 @@ Function PuedeUsarObjeto(UserIndex As Integer, ByVal ObjIndex As Integer, Option
 
         Dim Objeto As ObjData
         Dim msg As String, i As Long
-        Objeto = ObjData(ObjIndex)
+100     Objeto = ObjData(ObjIndex)
                 
-        If EsGM(UserIndex) Then
-            PuedeUsarObjeto = 0
-            msg = ""
+102     If EsGM(UserIndex) Then
+104         PuedeUsarObjeto = 0
+106         msg = ""
 
-        ElseIf Objeto.Newbie = 1 And Not EsNewbie(UserIndex) Then
-            PuedeUsarObjeto = 7
-            msg = "Solo los newbies pueden usar este objeto."
+108     ElseIf Objeto.Newbie = 1 And Not EsNewbie(UserIndex) Then
+110         PuedeUsarObjeto = 7
+112         msg = "Solo los newbies pueden usar este objeto."
             
-        ElseIf UserList(UserIndex).Stats.ELV < Objeto.MinELV Then
-            PuedeUsarObjeto = 6
-            msg = "Necesitas ser nivel " & Objeto.MinELV & " para usar este objeto."
+114     ElseIf UserList(UserIndex).Stats.ELV < Objeto.MinELV Then
+116         PuedeUsarObjeto = 6
+118         msg = "Necesitas ser nivel " & Objeto.MinELV & " para usar este objeto."
 
-        ElseIf Not FaccionPuedeUsarItem(UserIndex, ObjIndex) Then
-            PuedeUsarObjeto = 3
-            msg = "Tu facción no te permite utilizarlo."
+120     ElseIf Not FaccionPuedeUsarItem(UserIndex, ObjIndex) Then
+122         PuedeUsarObjeto = 3
+124         msg = "Tu facción no te permite utilizarlo."
 
-        ElseIf Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
-            PuedeUsarObjeto = 2
-            msg = "Tu clase no puede utilizar este objeto."
+126     ElseIf Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
+128         PuedeUsarObjeto = 2
+130         msg = "Tu clase no puede utilizar este objeto."
 
-        ElseIf Not SexoPuedeUsarItem(UserIndex, ObjIndex) Then
-            PuedeUsarObjeto = 1
-            msg = "Tu sexo no puede utilizar este objeto."
+132     ElseIf Not SexoPuedeUsarItem(UserIndex, ObjIndex) Then
+134         PuedeUsarObjeto = 1
+136         msg = "Tu sexo no puede utilizar este objeto."
 
-        ElseIf Not RazaPuedeUsarItem(UserIndex, ObjIndex) Then
-            PuedeUsarObjeto = 5
-            msg = "Tu raza no puede utilizar este objeto."
-        ElseIf (Objeto.SkillIndex > 0) Then
-            If (UserList(UserIndex).Stats.UserSkills(Objeto.SkillIndex) < Objeto.SkillRequerido) Then
-                PuedeUsarObjeto = 4
-                msg = "Necesitas " & Objeto.SkillRequerido & " puntos en " & SkillsNames(Objeto.SkillIndex) & " para usar este item."
+138     ElseIf Not RazaPuedeUsarItem(UserIndex, ObjIndex) Then
+140         PuedeUsarObjeto = 5
+142         msg = "Tu raza no puede utilizar este objeto."
+144     ElseIf (Objeto.SkillIndex > 0) Then
+146         If (UserList(UserIndex).Stats.UserSkills(Objeto.SkillIndex) < Objeto.SkillRequerido) Then
+148             PuedeUsarObjeto = 4
+150             msg = "Necesitas " & Objeto.SkillRequerido & " puntos en " & SkillsNames(Objeto.SkillIndex) & " para usar este item."
             Else
-                PuedeUsarObjeto = 0
-                msg = ""
+152             PuedeUsarObjeto = 0
+154             msg = ""
             End If
         Else
-            PuedeUsarObjeto = 0
-            msg = ""
+156         PuedeUsarObjeto = 0
+158         msg = ""
         End If
 
-        If writeInConsole And msg <> "" Then Call WriteConsoleMsg(UserIndex, msg, FontTypeNames.FONTTYPE_INFO)
+160     If writeInConsole And msg <> "" Then Call WriteConsoleMsg(UserIndex, msg, FontTypeNames.FONTTYPE_INFO)
 
         Exit Function
 
 PuedeUsarObjeto_Err:
-174     Call RegistrarError(Err.Number, Err.Description, "ModLadder.PuedeUsarObjeto", Erl)
-176     Resume Next
+162     Call RegistrarError(Err.Number, Err.Description, "ModLadder.PuedeUsarObjeto", Erl)
+164     Resume Next
 
 End Function
 
 Public Function RequiereOxigeno(ByVal UserMap) As Boolean
         On Error GoTo RequiereOxigeno_Err
         
-        RequiereOxigeno = (UserMap = 331) Or _
+100     RequiereOxigeno = (UserMap = 331) Or _
                           (UserMap = 332) Or _
                           (UserMap = 333)
         
         Exit Function
 
 RequiereOxigeno_Err:
-116     Call RegistrarError(Err.Number, Err.Description, "ModLadder.RequiereOxigeno", Erl)
-118     Resume Next
+102     Call RegistrarError(Err.Number, Err.Description, "ModLadder.RequiereOxigeno", Erl)
+104     Resume Next
         
 End Function
