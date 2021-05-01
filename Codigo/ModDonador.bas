@@ -58,7 +58,7 @@ Public Sub DonadorTiempo(ByVal nombre As String, ByVal dias As Integer)
         Exit Sub
 
 DonadorTiempo_Err:
-126     Call RegistrarError(Err.Number, Err.description, "ModDonador.DonadorTiempo", Erl)
+126     Call RegistrarError(Err.Number, Err.Description, "ModDonador.DonadorTiempo", Erl)
 128     Resume Next
         
 End Sub
@@ -81,7 +81,7 @@ Sub SaveDonadores()
         Exit Sub
 
 SaveDonadores_Err:
-108     Call RegistrarError(Err.Number, Err.description, "ModDonador.SaveDonadores", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "ModDonador.SaveDonadores", Erl)
 110     Resume Next
         
 End Sub
@@ -102,7 +102,7 @@ Sub SaveDonador(num As Integer)
         Exit Sub
 
 SaveDonador_Err:
-110     Call RegistrarError(Err.Number, Err.description, "ModDonador.SaveDonador", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "ModDonador.SaveDonador", Erl)
 112     Resume Next
         
 End Sub
@@ -124,7 +124,7 @@ Sub AgregarCreditosDonador(name As String, Cantidad As Long)
         Exit Sub
 
 AgregarCreditosDonador_Err:
-104     Call RegistrarError(Err.Number, Err.description, "ModDonador.AgregarCreditosDonador", Erl)
+104     Call RegistrarError(Err.Number, Err.Description, "ModDonador.AgregarCreditosDonador", Erl)
 106     Resume Next
         
 End Sub
@@ -145,7 +145,7 @@ Sub AgregarCompra(ByVal name As String, ByVal Desc As String)
         Exit Sub
 
 AgregarCompra_Err:
-106     Call RegistrarError(Err.Number, Err.description, "ModDonador.AgregarCompra", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "ModDonador.AgregarCompra", Erl)
 108     Resume Next
         
 End Sub
@@ -167,7 +167,7 @@ Sub RestarCreditosDonador(name As String, Cantidad As Long)
         Exit Sub
 
 RestarCreditosDonador_Err:
-106     Call RegistrarError(Err.Number, Err.description, "ModDonador.RestarCreditosDonador", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "ModDonador.RestarCreditosDonador", Erl)
 108     Resume Next
         
 End Sub
@@ -187,7 +187,7 @@ Sub AgregarCreditosCanjeados(name As String, Cantidad As Long)
         Exit Sub
 
 AgregarCreditosCanjeados_Err:
-104     Call RegistrarError(Err.Number, Err.description, "ModDonador.AgregarCreditosCanjeados", Erl)
+104     Call RegistrarError(Err.Number, Err.Description, "ModDonador.AgregarCreditosCanjeados", Erl)
 106     Resume Next
         
 End Sub
@@ -221,7 +221,7 @@ Sub LoadDonadores()
         Exit Sub
 
 LoadDonadores_Err:
-116     Call RegistrarError(Err.Number, Err.description, "ModDonador.LoadDonadores", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "ModDonador.LoadDonadores", Erl)
 118     Resume Next
         
 End Sub
@@ -240,7 +240,7 @@ Public Function ChangeDonador(ByVal name As String, ByVal Baneado As Byte) As Bo
         Exit Function
 
 ChangeDonador_Err:
-104     Call RegistrarError(Err.Number, Err.description, "ModDonador.ChangeDonador", Erl)
+104     Call RegistrarError(Err.Number, Err.Description, "ModDonador.ChangeDonador", Erl)
 106     Resume Next
         
 End Function
@@ -259,7 +259,7 @@ Public Function FinDonador(ByVal name As String) As Boolean
         Exit Function
 
 FinDonador_Err:
-106     Call RegistrarError(Err.Number, Err.description, "ModDonador.FinDonador", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "ModDonador.FinDonador", Erl)
 108     Resume Next
         
 End Function
@@ -280,7 +280,7 @@ Public Sub LogearEventoDeDonador(Logeo As String)
         Exit Sub
 
 LogearEventoDeDonador_Err:
-108     Call RegistrarError(Err.Number, Err.description, "ModDonador.LogearEventoDeDonador", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "ModDonador.LogearEventoDeDonador", Erl)
 110     Resume Next
         
 End Sub
@@ -316,7 +316,7 @@ Public Sub CargarCodigosDonador()
         Exit Sub
 
 CargarCodigosDonador_Err:
-118     Call RegistrarError(Err.Number, Err.description, "ModDonador.CargarCodigosDonador", Erl)
+118     Call RegistrarError(Err.Number, Err.Description, "ModDonador.CargarCodigosDonador", Erl)
 120     Resume Next
         
 End Sub
@@ -396,7 +396,7 @@ Public Sub CheckearCodigo(ByVal UserIndex As Integer, ByVal CodigoKey As String)
         Exit Sub
 
 CheckearCodigo_Err:
-162     Call RegistrarError(Err.Number, Err.description, "ModDonador.CheckearCodigo", Erl)
+162     Call RegistrarError(Err.Number, Err.Description, "ModDonador.CheckearCodigo", Erl)
 164     Resume Next
         
 End Sub

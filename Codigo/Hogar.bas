@@ -423,22 +423,22 @@ Public Sub HandleHome(ByVal UserIndex As Integer)
 
             End If
 
-120         If .flags.Traveling = 0 Then
+116         If .flags.Traveling = 0 Then
             
-122             If .Pos.Map <> Ciudades(.Hogar).Map Then
-124                 Call goHome(UserIndex)
+118             If .Pos.Map <> Ciudades(.Hogar).Map Then
+120                 Call goHome(UserIndex)
                 
                 Else
-126                 Call WriteConsoleMsg(UserIndex, "Ya te encuentras en tu hogar.", FontTypeNames.FONTTYPE_INFO)
+122                 Call WriteConsoleMsg(UserIndex, "Ya te encuentras en tu hogar.", FontTypeNames.FONTTYPE_INFO)
 
                 End If
 
             Else
 
-128             .flags.Traveling = 0
-130             .Counters.goHome = 0
+124             .flags.Traveling = 0
+126             .Counters.goHome = 0
             
-132             Call WriteConsoleMsg(UserIndex, "Ya hay un viaje en curso.", FontTypeNames.FONTTYPE_INFO)
+128             Call WriteConsoleMsg(UserIndex, "Ya hay un viaje en curso.", FontTypeNames.FONTTYPE_INFO)
             
             End If
         
@@ -448,7 +448,7 @@ Public Sub HandleHome(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleHome_Err:
-134     Call RegistrarError(Err.Number, Err.Description, "Hogar.HandleHome", Erl)
+130     Call RegistrarError(Err.Number, Err.Description, "Hogar.HandleHome", Erl)
 
         
 End Sub

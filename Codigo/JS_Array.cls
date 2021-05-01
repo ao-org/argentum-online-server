@@ -16,28 +16,28 @@ Option Explicit
 Private StringBuilder As cStringBuilder
 
 Private Sub Class_Initialize()
-    Set StringBuilder = New cStringBuilder
+100     Set StringBuilder = New cStringBuilder
 End Sub
 
 Public Sub Clear()
-    StringBuilder.Clear
+100     StringBuilder.Clear
 End Sub
 
 Public Sub Push(ByRef Value As Variant)
-    Select Case varType(Value)
-        Case vbString
-            StringBuilder.Append """" & Value & """"
-        Case vbBoolean
-            StringBuilder.Append IIf(Value, "true", "false")
-        Case vbObject
-            StringBuilder.Append Value.ToString
-        Case Else
-            StringBuilder.Append CStr(Value)
-    End Select
+100     Select Case VarType(Value)
+            Case vbString
+102             StringBuilder.Append """" & Value & """"
+104         Case vbBoolean
+106             StringBuilder.Append IIf(Value, "true", "false")
+108         Case vbObject
+110             StringBuilder.Append Value.ToString
+112         Case Else
+114             StringBuilder.Append CStr(Value)
+        End Select
     
-    StringBuilder.Append ", "
+116     StringBuilder.Append ", "
 End Sub
 
 Public Function ToString() As String
-    ToString = "[" & Left$(StringBuilder.ToString, Len(StringBuilder.ToString) - 2) & "]"
+100     ToString = "[" & Left$(StringBuilder.ToString, Len(StringBuilder.ToString) - 2) & "]"
 End Function

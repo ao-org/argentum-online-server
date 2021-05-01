@@ -241,7 +241,7 @@ Attribute VB_Name = "WSKSOCK"
     Public Const FIOASYNC = &H8004667D
 
     '---Windows System Functions
-    Public Declare Function PostMessage Lib "user32" Alias "PostMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+    Public Declare Function PostMessage Lib "user32" Alias "PostMessageA" (ByVal hwnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
     Public Declare Sub MemCopy Lib "kernel32" Alias "RtlMoveMemory" (Dest As Any, Src As Any, ByVal cb&)
     Public Declare Function lstrlen Lib "kernel32" Alias "lstrlenA" (ByVal lpString As Any) As Long
 
@@ -302,14 +302,14 @@ Attribute VB_Name = "WSKSOCK"
     Public Declare Function WSAUnhookBlockingHook Lib "wsock32.dll" () As Long
     Public Declare Function WSASetBlockingHook Lib "wsock32.dll" (ByVal lpBlockFunc As Long) As Long
     Public Declare Function WSACancelBlockingCall Lib "wsock32.dll" () As Long
-    Public Declare Function WSAAsyncGetServByName Lib "wsock32.dll" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal serv_name As String, ByVal proto As String, buf As Any, ByVal buflen As Long) As Long
-    Public Declare Function WSAAsyncGetServByPort Lib "wsock32.dll" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal Port As Long, ByVal proto As String, buf As Any, ByVal buflen As Long) As Long
-    Public Declare Function WSAAsyncGetProtoByName Lib "wsock32.dll" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal proto_name As String, buf As Any, ByVal buflen As Long) As Long
-    Public Declare Function WSAAsyncGetProtoByNumber Lib "wsock32.dll" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal Number As Long, buf As Any, ByVal buflen As Long) As Long
-    Public Declare Function WSAAsyncGetHostByName Lib "wsock32.dll" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal host_name As String, buf As Any, ByVal buflen As Long) As Long
-    Public Declare Function WSAAsyncGetHostByAddr Lib "wsock32.dll" (ByVal hWnd As Long, ByVal wMsg As Long, addr As Long, ByVal addr_len As Long, ByVal addr_type As Long, buf As Any, ByVal buflen As Long) As Long
+    Public Declare Function WSAAsyncGetServByName Lib "wsock32.dll" (ByVal hwnd As Long, ByVal wMsg As Long, ByVal serv_name As String, ByVal proto As String, buf As Any, ByVal buflen As Long) As Long
+    Public Declare Function WSAAsyncGetServByPort Lib "wsock32.dll" (ByVal hwnd As Long, ByVal wMsg As Long, ByVal Port As Long, ByVal proto As String, buf As Any, ByVal buflen As Long) As Long
+    Public Declare Function WSAAsyncGetProtoByName Lib "wsock32.dll" (ByVal hwnd As Long, ByVal wMsg As Long, ByVal proto_name As String, buf As Any, ByVal buflen As Long) As Long
+    Public Declare Function WSAAsyncGetProtoByNumber Lib "wsock32.dll" (ByVal hwnd As Long, ByVal wMsg As Long, ByVal Number As Long, buf As Any, ByVal buflen As Long) As Long
+    Public Declare Function WSAAsyncGetHostByName Lib "wsock32.dll" (ByVal hwnd As Long, ByVal wMsg As Long, ByVal host_name As String, buf As Any, ByVal buflen As Long) As Long
+    Public Declare Function WSAAsyncGetHostByAddr Lib "wsock32.dll" (ByVal hwnd As Long, ByVal wMsg As Long, addr As Long, ByVal addr_len As Long, ByVal addr_type As Long, buf As Any, ByVal buflen As Long) As Long
     Public Declare Function WSACancelAsyncRequest Lib "wsock32.dll" (ByVal hAsyncTaskHandle As Long) As Long
-    Public Declare Function WSAAsyncSelect Lib "wsock32.dll" (ByVal S As Long, ByVal hWnd As Long, ByVal wMsg As Long, ByVal lEvent As Long) As Long
+    Public Declare Function WSAAsyncSelect Lib "wsock32.dll" (ByVal S As Long, ByVal hwnd As Long, ByVal wMsg As Long, ByVal lEvent As Long) As Long
     Public Declare Function WSARecvEx Lib "wsock32.dll" (ByVal S As Long, buf As Any, ByVal buflen As Long, ByVal flags As Long) As Long
     
     'Agregado por Maraxus
@@ -340,7 +340,7 @@ Public Function WSAGetAsyncBufLen(ByVal lParam As Long) As Long
         Exit Function
 
 WSAGetAsyncBufLen_Err:
-106     Call RegistrarError(Err.Number, Err.description, "WSKSOCK.WSAGetAsyncBufLen", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "WSKSOCK.WSAGetAsyncBufLen", Erl)
 
         
 End Function
@@ -361,7 +361,7 @@ Public Function WSAGetSelectEvent(ByVal lParam As Long) As Integer
         Exit Function
 
 WSAGetSelectEvent_Err:
-106     Call RegistrarError(Err.Number, Err.description, "WSKSOCK.WSAGetSelectEvent", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "WSKSOCK.WSAGetSelectEvent", Erl)
 
         
 End Function
@@ -378,7 +378,7 @@ Public Function WSAGetAsyncError(ByVal lParam As Long) As Integer
         Exit Function
 
 WSAGetAsyncError_Err:
-102     Call RegistrarError(Err.Number, Err.description, "WSKSOCK.WSAGetAsyncError", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "WSKSOCK.WSAGetAsyncError", Erl)
 
         
 End Function
@@ -400,7 +400,7 @@ Public Function AddrToIP(ByVal AddrOrIP$) As String
         Exit Function
 
 AddrToIP_Err:
-106     Call RegistrarError(Err.Number, Err.description, "WSKSOCK.AddrToIP", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "WSKSOCK.AddrToIP", Erl)
 
         
 End Function
@@ -517,7 +517,7 @@ Function ConnectSock(ByVal Host$, ByVal Port&, retIpPort$, ByVal HWndToMsg&, ByV
         Exit Function
 
 ConnectSock_Err:
-176     Call RegistrarError(Err.Number, Err.description, "WSKSOCK.ConnectSock", Erl)
+176     Call RegistrarError(Err.Number, Err.Description, "WSKSOCK.ConnectSock", Erl)
 
         
 End Function
@@ -554,7 +554,7 @@ Public Function SetSockLinger(ByVal SockNum&, ByVal OnOff%, ByVal LingerTime%) A
         Exit Function
 
 SetSockLinger_Err:
-120     Call RegistrarError(Err.Number, Err.description, "WSKSOCK.SetSockLinger", Erl)
+120     Call RegistrarError(Err.Number, Err.Description, "WSKSOCK.SetSockLinger", Erl)
 
         
 End Function
@@ -579,7 +579,7 @@ Sub EndWinsock()
         Exit Sub
 
 EndWinsock_Err:
-108     Call RegistrarError(Err.Number, Err.description, "WSKSOCK.EndWinsock", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "WSKSOCK.EndWinsock", Erl)
 
         
 End Sub
@@ -619,7 +619,7 @@ Public Function GetAscIP(ByVal inn As Long) As String
         Exit Function
 
 GetAscIP_Err:
-118     Call RegistrarError(Err.Number, Err.description, "WSKSOCK.GetAscIP", Erl)
+118     Call RegistrarError(Err.Number, Err.Description, "WSKSOCK.GetAscIP", Erl)
 
         
 End Function
@@ -656,7 +656,7 @@ Public Function GetHostByAddress(ByVal addr As Long) As String
         Exit Function
 
 GetHostByAddress_Err:
-114     Call RegistrarError(Err.Number, Err.description, "WSKSOCK.GetHostByAddress", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "WSKSOCK.GetHostByAddress", Erl)
 
         
 End Function
@@ -697,7 +697,7 @@ Public Function GetHostByNameAlias(ByVal HostName$) As Long
         Exit Function
 
 GetHostByNameAlias_Err:
-118     Call RegistrarError(Err.Number, Err.description, "WSKSOCK.GetHostByNameAlias", Erl)
+118     Call RegistrarError(Err.Number, Err.Description, "WSKSOCK.GetHostByNameAlias", Erl)
 
         
 End Function
@@ -730,7 +730,7 @@ Public Function GetLocalHostName() As String
         Exit Function
 
 GetLocalHostName_Err:
-112     Call RegistrarError(Err.Number, Err.description, "WSKSOCK.GetLocalHostName", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "WSKSOCK.GetLocalHostName", Erl)
 
         
 End Function
@@ -758,7 +758,7 @@ Public Function GetPeerAddress(ByVal S&) As String
         Exit Function
 
 GetPeerAddress_Err:
-108     Call RegistrarError(Err.Number, Err.description, "WSKSOCK.GetPeerAddress", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "WSKSOCK.GetPeerAddress", Erl)
 
         
 End Function
@@ -787,7 +787,7 @@ Public Function GetPortFromString(ByVal PortStr$) As Long
         Exit Function
 
 GetPortFromString_Err:
-108     Call RegistrarError(Err.Number, Err.description, "WSKSOCK.GetPortFromString", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "WSKSOCK.GetPortFromString", Erl)
 
         
 End Function
@@ -828,7 +828,7 @@ Function GetProtocolByName(ByVal Protocol$) As Long
         Exit Function
 
 GetProtocolByName_Err:
-116     Call RegistrarError(Err.Number, Err.description, "WSKSOCK.GetProtocolByName", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "WSKSOCK.GetProtocolByName", Erl)
 
         
 End Function
@@ -868,7 +868,7 @@ Function GetServiceByName(ByVal service$, ByVal Protocol$) As Long
         Exit Function
 
 GetServiceByName_Err:
-116     Call RegistrarError(Err.Number, Err.description, "WSKSOCK.GetServiceByName", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "WSKSOCK.GetServiceByName", Erl)
 
         
 End Function
@@ -899,7 +899,7 @@ Function GetSockAddress(ByVal S&) As String
         Exit Function
 
 GetSockAddress_Err:
-110     Call RegistrarError(Err.Number, Err.description, "WSKSOCK.GetSockAddress", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "WSKSOCK.GetSockAddress", Erl)
 
         
 End Function
@@ -1076,7 +1076,7 @@ Function GetWSAErrorString(ByVal errnum&) As String
         Exit Function
 
 GetWSAErrorString_Err:
-304     Call RegistrarError(Err.Number, Err.description, "WSKSOCK.GetWSAErrorString", Erl)
+304     Call RegistrarError(Err.Number, Err.Description, "WSKSOCK.GetWSAErrorString", Erl)
 
         
 End Function
@@ -1098,7 +1098,7 @@ Function IpToAddr(ByVal AddrOrIP$) As String
         Exit Function
 
 IpToAddr_Err:
-104     Call RegistrarError(Err.Number, Err.description, "WSKSOCK.IpToAddr", Erl)
+104     Call RegistrarError(Err.Number, Err.Description, "WSKSOCK.IpToAddr", Erl)
 
         
 End Function
@@ -1162,7 +1162,7 @@ Public Function GetLongIp(ByVal IPS As String) As Long
         Exit Function
 
 GetLongIp_Err:
-102     Call RegistrarError(Err.Number, Err.description, "WSKSOCK.GetLongIp", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "WSKSOCK.GetLongIp", Erl)
 
         
 End Function

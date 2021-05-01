@@ -79,7 +79,7 @@ Public Sub Reset()
         Exit Sub
 
 Reset_Err:
-106     Call RegistrarError(Err.Number, Err.description, "cCola.Reset", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "cCola.Reset", Erl)
 
         
 End Sub
@@ -94,7 +94,7 @@ Public Property Get Longitud() As Integer
         Exit Property
 
 Longitud_Err:
-102     Call RegistrarError(Err.Number, Err.description, "cCola.Longitud", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "cCola.Longitud", Erl)
 104     Resume Next
         
 End Property
@@ -109,7 +109,7 @@ Private Function IndexValido(ByVal i As Integer) As Boolean
         Exit Function
 
 IndexValido_Err:
-102     Call RegistrarError(Err.Number, Err.description, "cCola.IndexValido", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "cCola.IndexValido", Erl)
 104     Resume Next
         
 End Function
@@ -124,7 +124,7 @@ Private Sub Class_Initialize()
         Exit Sub
 
 Class_Initialize_Err:
-102     Call RegistrarError(Err.Number, Err.description, "cCola.Class_Initialize", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "cCola.Class_Initialize", Erl)
 104     Resume Next
         
 End Sub
@@ -151,7 +151,7 @@ Public Function VerElemento(ByVal index As Integer) As String
         Exit Function
 
 VerElemento_Err:
-106     Call RegistrarError(Err.Number, Err.description, "cCola.VerElemento", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "cCola.VerElemento", Erl)
 
         
 End Function
@@ -171,7 +171,7 @@ Public Sub Push(ByVal nombre As String, ByVal Consulta As String, ByVal TipoDeCo
         Exit Sub
 
 Push_Err:
-102     Call RegistrarError(Err.Number, Err.description, "cCola.Push", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "cCola.Push", Erl)
 
         
 End Sub
@@ -197,7 +197,7 @@ Public Function Pop() As String
         Exit Function
 
 Pop_Err:
-108     Call RegistrarError(Err.Number, Err.description, "cCola.Pop", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "cCola.Pop", Erl)
 
         
 End Function
@@ -224,7 +224,7 @@ Public Function PopByVal() As String
         Exit Function
 
 PopByVal_Err:
-106     Call RegistrarError(Err.Number, Err.description, "cCola.PopByVal", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "cCola.PopByVal", Erl)
 
         
 End Function
@@ -264,7 +264,7 @@ Public Function Existe(ByVal nombre As String) As Boolean
         Exit Function
 
 Existe_Err:
-112     Call RegistrarError(Err.Number, Err.description, "cCola.Existe", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "cCola.Existe", Erl)
 
         
 End Function
@@ -303,7 +303,7 @@ Public Sub Quitar(ByVal nombre As String)
         Exit Sub
 
 Quitar_Err:
-110     Call RegistrarError(Err.Number, Err.description, "cCola.Quitar", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "cCola.Quitar", Erl)
 
         
 End Sub
@@ -322,7 +322,7 @@ Public Sub QuitarIndex(ByVal index As Integer)
         Exit Sub
 
 QuitarIndex_Err:
-102     Call RegistrarError(Err.Number, Err.description, "cCola.QuitarIndex", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "cCola.QuitarIndex", Erl)
 
         
 End Sub
@@ -338,7 +338,7 @@ Private Sub Class_Terminate()
     Exit Sub
 
 Class_Terminate_Err:
-    Call RegistrarError(Err.Number, Err.description, "cCola.Class_Terminate", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "cCola.Class_Terminate", Erl)
     Resume Next
         
 End Sub

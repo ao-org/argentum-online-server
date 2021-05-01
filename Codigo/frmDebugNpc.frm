@@ -102,13 +102,13 @@ Private Sub Command1_Click()
 
 100     For i = 1 To LastNPC
 
-102         If Npclist(i).flags.NPCActive Then K = K + 1
+102         If NpcList(i).flags.NPCActive Then K = K + 1
 104     Next i
 
 106     Label1.Caption = "Npcs Activos:" & K
-108     Label2.Caption = "Npcs Libres:" & MAXNPCS - K
+108     Label2.Caption = "Npcs Libres:" & MaxNPCs - K
 110     Label3.Caption = "LastNpcIndex:" & LastNPC
-112     Label4.Caption = "MAXNPCS:" & MAXNPCS
+112     Label4.Caption = "MAXNPCS:" & MaxNPCs
 
         
         Exit Sub

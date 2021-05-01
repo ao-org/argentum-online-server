@@ -5,16 +5,16 @@ Public Function EnviarCorreo(ByVal UserMail As String) As Boolean
         
         On Error GoTo EnviarCorreo_Err
         
-100     'Shell App.Path & "\cuentas.exe *" & UserMail & "*" & ObtenerCodigo(UserMail) & "*" ' & UserName
+        'Shell App.Path & "\cuentas.exe *" & UserMail & "*" & ObtenerCodigo(UserMail) & "*" ' & UserName
     
-102     EnviarCorreo = True
+100     EnviarCorreo = True
 
         
         Exit Function
 
 EnviarCorreo_Err:
-104     Call RegistrarError(Err.Number, Err.Description, "ModCuentas.EnviarCorreo", Erl)
-106     Resume Next
+102     Call RegistrarError(Err.Number, Err.Description, "ModCuentas.EnviarCorreo", Erl)
+104     Resume Next
         
 End Function
 
