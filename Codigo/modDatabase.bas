@@ -1898,6 +1898,32 @@ ErrorHandler:
 
 End Sub
 
+Public Sub SilenciarUserDatabase(UserName As String, ByVal Tiempo As Integer)
+    
+    On Error GoTo ErrorHandler
+
+    Call MakeQuery("UPDATE user SET is_silenced = 1, silence_minutes_left = ?, silence_elapsed_seconds = 0 WHERE UPPER(name) = ?;", True, Tiempo, UCase$(UserName))
+
+    Exit Sub
+
+ErrorHandler:
+    Call LogDatabaseError("Error in SilenciarUserDatabase: " & UserName & ". " & Err.Number & " - " & Err.Description)
+    
+End Sub
+
+Public Sub DesilenciarUserDatabase(UserName As String)
+
+    On Error GoTo ErrorHandler
+
+    Call SetUserValue(UserName, "is_silenced", 0)
+
+    Exit Sub
+
+ErrorHandler:
+    Call LogDatabaseError("Error in DesilenciarUserDatabase: " & UserName & ". " & Err.Number & " - " & Err.Description)
+    
+End Sub
+
 Public Sub UnBanDatabase(UserName As String)
 
     On Error GoTo ErrorHandler

@@ -444,7 +444,6 @@ Private Enum ClientPacketID
     'Nuevas Ladder
     GlobalMessage           '/CONSOLA
     GlobalOnOff
-    SilenciarUser           '/SILENCIAR
     IngresarConCuenta
     BorrarPJ
     NewPacketID
@@ -1158,10 +1157,7 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
             
 736         Case ClientPacketID.BanChar                 '/BAN
 738             Call HandleBanChar(UserIndex)
-            
-740         Case ClientPacketID.SilenciarUser               '/BAN
-742             Call HandleSilenciarUser(UserIndex)
-            
+
 744         Case ClientPacketID.UnbanChar               '/UNBAN
 746             Call HandleUnbanChar(UserIndex)
             
@@ -9859,7 +9855,7 @@ Private Sub HandleWhere(ByVal UserIndex As Integer)
 118                 Call WriteConsoleMsg(UserIndex, "Usuario offline.", FontTypeNames.FONTTYPE_INFO)
                 Else
 
-120                 If CompararPrivilegios(UserIndex, tUser) >= 0 Then
+120                 If CompararPrivilegiosUser(UserIndex, tUser) >= 0 Then
 122                     Call WriteConsoleMsg(UserIndex, "Ubicación  " & UserName & ": " & UserList(tUser).Pos.Map & ", " & UserList(tUser).Pos.X & ", " & UserList(tUser).Pos.Y & ".", FontTypeNames.FONTTYPE_INFO)
 124                     Call LogGM(.name, "/Donde " & UserName)
 
@@ -10196,7 +10192,7 @@ Private Sub HandleSilence(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 3 Then
+100     If UserList(UserIndex).incomingData.Length < 5 Then
 102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
             Exit Sub
 
@@ -10215,33 +10211,53 @@ Private Sub HandleSilence(ByVal UserIndex As Integer)
 108         Call Buffer.ReadByte
         
             Dim UserName As String
+            Dim Minutos  As Integer
 
             Dim tUser    As Integer
         
 110         UserName = Buffer.ReadASCIIString()
-        
-112         If Not .flags.Privilegios And PlayerType.user Then
+            Minutos = Buffer.ReadInteger()
+
+112         If EsGM(UserIndex) Then
 114             tUser = NameIndex(UserName)
         
 116             If tUser <= 0 Then
-118                 Call WriteConsoleMsg(UserIndex, "Usuario offline.", FontTypeNames.FONTTYPE_INFO)
-                Else
-
-120                 If UserList(tUser).flags.Silenciado = 0 Then
-122                     UserList(tUser).flags.Silenciado = 1
-124                     Call WriteConsoleMsg(UserIndex, "Usuario silenciado.", FontTypeNames.FONTTYPE_INFO)
-126                     Call WriteShowMessageBox(tUser, "ESTIMADO USUARIO, ud ha sido silenciado por los administradores. Sus denuncias serán ignoradas por el servidor de aquí en mís. Utilice /GM para contactar un administrador.")
-128                     Call LogGM(.name, "/silenciar " & UserList(tUser).name)
-                
-                        'Flush the other user's buffer
-                    
+118                 If PersonajeExiste(UserName) Then
+                        If CompararPrivilegios(.flags.Privilegios, UserDarPrivilegioLevel(UserName)) > 0 Then
+                            If Minutos > 0 Then
+                                Call SilenciarUserDatabase(UserName, Minutos)
+                                Call SavePenaDatabase(UserName, .name & ": silencio por " & Time & " minutos. " & Date & " " & Time)
+                                Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("Administración » " & .name & " ha silenciado a " & UserName & "(offline) por " & Minutos & " minutos.", FontTypeNames.FONTTYPE_GM))
+                                Call LogGM(.name, "Silenciar a " & UserList(tUser).name & " por " & Minutos & " minutos.")
+                            Else
+                                Call DesilenciarUserDatabase(UserName)
+                                Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("Administración » " & .name & " ha desilenciado a " & UserName & "(offline).", FontTypeNames.FONTTYPE_GM))
+                                Call LogGM(.name, "Desilenciar a " & UserList(tUser).name & ".")
+                            End If
+                        Else
+                            Call WriteConsoleMsg(UserIndex, "No puedes silenciar a un administrador de mayor o igual rango.", FontTypeNames.FONTTYPE_INFO)
+                        End If
                     Else
-130                     UserList(tUser).flags.Silenciado = 0
-132                     Call WriteConsoleMsg(UserIndex, "Usuario des silenciado.", FontTypeNames.FONTTYPE_INFO)
-134                     Call LogGM(.name, "/DESsilenciar " & UserList(tUser).name)
-
+                        Call WriteConsoleMsg(UserIndex, "El personaje no existe.", FontTypeNames.FONTTYPE_INFO)
                     End If
-
+                
+                ElseIf CompararPrivilegiosUser(UserIndex, tUser) > 0 Then
+                    If Minutos > 0 Then
+                        UserList(tUser).flags.Silenciado = 1
+                        UserList(tUser).flags.MinutosRestantes = Minutos
+                        UserList(tUser).flags.SegundosPasados = 0
+                        Call SavePenaDatabase(UserName, .name & ": silencio por " & Time & " minutos. " & Date & " " & Time)
+                        Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("Administración » " & .name & " ha silenciado a " & UserList(tUser).name & " por " & Minutos & " minutos.", FontTypeNames.FONTTYPE_GM))
+                        Call WriteConsoleMsg("Has sido silenciado por los administradores, no podrás hablar con otros usuarios. Utilice /GM para pedir ayuda.", FontTypeNames.FONTTYPE_GM)
+                        Call LogGM(.name, "Silenciar a " & UserList(tUser).name & " por " & Minutos & " minutos.")
+                    Else
+                        UserList(tUser).flags.Silenciado = 1
+                        Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("Administración » " & .name & " ha desilenciado a " & UserList(tUser).name & ".", FontTypeNames.FONTTYPE_GM))
+                        Call WriteConsoleMsg("Has sido desilenciado.", FontTypeNames.FONTTYPE_GM)
+                        Call LogGM(.name, "Desilenciar a " & UserList(tUser).name & ".")
+                    End If
+                Else
+                    Call WriteConsoleMsg(UserIndex, "No puedes silenciar a un administrador de mayor o igual rango.", FontTypeNames.FONTTYPE_INFO)
                 End If
 
             End If
@@ -10412,7 +10428,7 @@ Private Sub HandleGoToChar(ByVal UserIndex As Integer)
 126                 If tUser <= 0 Then Exit Sub
                 End If
       
-128             If CompararPrivilegios(tUser, UserIndex) > 0 Then
+128             If CompararPrivilegiosUser(tUser, UserIndex) > 0 Then
 130                 Call WriteConsoleMsg(UserIndex, "Se le ha avisado a " & UserList(tUser).name & " que quieres ir a su posición.", FontTypeNames.FONTTYPE_INFO)
 132                 Call WriteConsoleMsg(tUser, .name & " quiere transportarse a tu ubicación. Escribe /sum " & .name & " para traerlo.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
@@ -13098,59 +13114,6 @@ ErrHandler:
 
 End Sub
 
-Private Sub HandleSilenciarUser(ByVal UserIndex As Integer)
-
-        '***************************************************
-        'Author: Nicolas Matias Gonzalez (NIGO)
-        'Last Modification: 12/29/06
-        '
-        '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 5 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
-
-        End If
-    
-        On Error GoTo ErrHandler
-
-104     With UserList(UserIndex)
-
-            'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim Buffer As New clsByteQueue
-
-106         Call Buffer.CopyBuffer(.incomingData)
-        
-            'Remove packet ID
-108         Call Buffer.ReadByte
-        
-            Dim UserName As String
-
-            Dim Time     As Byte
-        
-110         UserName = Buffer.ReadASCIIString()
-112         Time = Buffer.ReadByte()
-    
-114         Call SilenciarUserName(UserIndex, UserName, Time)
-            'If we got here then packet is complete, copy data back to original queue
-116         Call .incomingData.CopyBuffer(Buffer)
-
-        End With
-
-ErrHandler:
-
-        Dim Error As Long
-
-118     Error = Err.Number
-
-        On Error GoTo 0
-    
-        'Destroy auxiliar buffer
-120     Set Buffer = Nothing
-    
-122     If Error <> 0 Then Err.raise Error
-
-End Sub
-
 ''
 ' Handles the "UnbanChar" message.
 '
@@ -13350,7 +13313,7 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
                     Exit Sub
                 End If
 
-138             If CompararPrivilegios(tUser, UserIndex) > 0 Then
+138             If CompararPrivilegiosUser(tUser, UserIndex) > 0 Then
 140                 Call WriteConsoleMsg(UserIndex, "Se le ha avisado a " & UserList(tUser).name & " que quieres traerlo a tu posición.", FontTypeNames.FONTTYPE_INFO)
 142                 Call WriteConsoleMsg(tUser, .name & " quiere transportarte a su ubicación. Escribe /ira " & .name & " para ir.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
@@ -25438,97 +25401,6 @@ Public Sub HandleGlobalOnOff(ByVal UserIndex As Integer)
 HandleGlobalOnOff_Err:
 118     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGlobalOnOff", Erl)
 120     Resume Next
-        
-End Sub
-
-Public Sub SilenciarUserName(ByVal SilencioUserIndex As Integer, ByVal UserName As String, ByVal Time As Byte)
-        
-        On Error GoTo SilenciarUserName_Err
-        
-
-        'Author: Pablo Mercavides
-        Dim tUser     As Integer
-
-        Dim userPriv  As Byte
-
-        Dim cantPenas As Byte
-
-        Dim rank      As Integer
-    
-100     If InStrB(UserName, "+") Then
-102         UserName = Replace(UserName, "+", " ")
-
-        End If
-    
-104     tUser = NameIndex(UserName)
-    
-106     rank = PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero
-    
-108     With UserList(SilencioUserIndex)
-
-110         If tUser <= 0 Then
-112             Call WriteConsoleMsg(SilencioUserIndex, "El usuario no esta online, pena grabada en el charfile.", FontTypeNames.FONTTYPE_TALK)
-            
-114             If FileExist(CharPath & UserName & ".chr", vbNormal) Then
-116                 userPriv = UserDarPrivilegioLevel(UserName)
-                
-118                 If (userPriv And rank) > (.flags.Privilegios And rank) Then
-120                     Call WriteConsoleMsg(SilencioUserIndex, "No podes silenciar a al alguien de mayor jerarquia.", FontTypeNames.FONTTYPE_INFO)
-                    Else
-                        
-                        'ponemos el flag de silencio a 1 y los minutos
-122                     Call WriteVar(CharPath & UserName & ".chr", "FLAGS", "Silenciado", "1")
-124                     Call WriteVar(CharPath & UserName & ".chr", "FLAGS", "MinutosRestantes", Time)
-126                     Call WriteVar(CharPath & UserName & ".chr", "FLAGS", "SegundosPasados", "0")
-                        
-                        'ponemos la pena
-128                     cantPenas = val(GetVar(CharPath & UserName & ".chr", "PENAS", "Cant"))
-130                     Call WriteVar(CharPath & UserName & ".chr", "PENAS", "Cant", cantPenas + 1)
-132                     Call WriteVar(CharPath & UserName & ".chr", "PENAS", "P" & cantPenas + 1, LCase$(.name) & ": Silenciado durante " & Time & " minutos. " & Date & " ")
-
-                    End If
-
-                Else
-134                 Call WriteConsoleMsg(SilencioUserIndex, "El pj " & UserName & " no existe.", FontTypeNames.FONTTYPE_INFO)
-
-                End If
-
-            Else
-
-136             If (UserList(tUser).flags.Privilegios And rank) > (.flags.Privilegios And rank) Then
-138                 Call WriteConsoleMsg(SilencioUserIndex, "No podes silenciar a al alguien de mayor jerarquia.", FontTypeNames.FONTTYPE_INFO)
-
-                End If
-            
-140             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> " & .name & " ha silenciado a " & UserList(tUser).name & ", por " & Time & " minutos.", FontTypeNames.FONTTYPE_SERVER))
-            
-                'Ponemos el flag de ban a 1
-142             UserList(tUser).flags.Silenciado = 1
-144             UserList(tUser).flags.MinutosRestantes = Time
-146             UserList(tUser).flags.SegundosPasados = 0
-148             Call LogGM(.name, "Silencio a " & UserName)
-            
-                'ponemos el flag de silencio
-150             Call WriteVar(CharPath & UserName & ".chr", "FLAGS", "Silenciado", "1")
-152             Call WriteVar(CharPath & UserName & ".chr", "FLAGS", "MinutosRestantes", Time)
-154             Call WriteVar(CharPath & UserName & ".chr", "FLAGS", "SegundosPasados", "0")
-                'ponemos la pena
-156             cantPenas = val(GetVar(CharPath & UserName & ".chr", "PENAS", "Cant"))
-158             Call WriteVar(CharPath & UserName & ".chr", "PENAS", "Cant", cantPenas + 1)
-160             Call WriteVar(CharPath & UserName & ".chr", "PENAS", "P" & cantPenas + 1, LCase$(.name) & ": silencio por " & Time & " minutos. " & Date & " " & Time)
-                'Call WriteConsoleMsg(tUser, "Has sido silenciado durante " & Time & " minutos.", FontTypeNames.FONTTYPE_INFO)
-162             Call WriteLocaleMsg(tUser, "11", FontTypeNames.FONTTYPE_VENENO)
-
-            End If
-
-        End With
-
-        
-        Exit Sub
-
-SilenciarUserName_Err:
-164     Call RegistrarError(Err.Number, Err.Description, "Protocol.SilenciarUserName", Erl)
-166     Resume Next
         
 End Sub
 
