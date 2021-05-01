@@ -1028,6 +1028,7 @@ Function FaccionPuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Inte
             Exit Function
         End If
         
+        If ObjIndex < 1 Then Exit Function
 
 104     If ObjData(ObjIndex).Real = 1 Then
 106         If Status(UserIndex) = 3 Then
