@@ -1,27 +1,6 @@
 Attribute VB_Name = "AI"
 Option Explicit
 
-Public Enum TipoAI
-    Estatico = 1
-    MueveAlAzar = 2
-    NpcDefensa = 4
-    SigueAmo = 8
-    NpcAtacaNpc = 9
-
-    'Pretorianos
-    SacerdotePretorianoAi = 11
-    GuerreroPretorianoAi = 12
-    MagoPretorianoAi = 13
-    CazadorPretorianoAi = 14
-    ReyPretoriano = 15
-
-    ' Animado
-    Caminata = 20
-    
-    ' Eventos
-    Invasion = 21
-End Enum
-
 ' WyroX: Hardcodeada de la vida...
 Public Const FUEGOFATUO      As Integer = 964
 
@@ -29,11 +8,6 @@ Public Const FUEGOFATUO      As Integer = 964
 Public Const RANGO_VISION_X  As Byte = 11
 Public Const RANGO_VISION_Y  As Byte = 9
 
-Public Enum e_Alineacion
-    ninguna = 0
-    Real = 1
-    Caos = 2
-End Enum
 
 Public Sub NpcAI(ByVal NpcIndex As Integer)
     On Error GoTo ErrorHandler
@@ -177,9 +151,7 @@ Private Sub AI_CaminarSinRumbo(ByVal NpcIndex As Integer)
     End With
 End Sub
 
-' Por alguna razon que no entiendo, no puedo pasar un WorldPos como rumbo, por dependencias ciclicas.
-' Por eso estoy mandando X e Y por separado
-Private Sub AI_CaminarConRumbo(ByVal NpcIndex As Integer, ByVal rumboX As Integer, ByVal rumboY As Integer)
+Private Sub AI_CaminarConRumbo(ByVal NpcIndex As Integer, ByRef rumbo As WorldPos)
     On Error GoTo AI_CaminarConRumbo_Err
     
     If NpcList(NpcIndex).flags.Paralizado Or NpcList(NpcIndex).flags.Inmovilizado Then
@@ -189,9 +161,9 @@ Private Sub AI_CaminarConRumbo(ByVal NpcIndex As Integer, ByVal rumboX As Intege
     
     With NpcList(NpcIndex).pathFindingInfo
         ' Si no tiene un camino calculado o si el destino cambio
-        If .PathLength = 0 Or .Destination.X <> rumboX Or .Destination.Y <> rumboY Then
-            .Destination.X = rumboX
-            .Destination.Y = rumboY
+        If .PathLength = 0 Or .Destination.X <> rumbo.X Or .Destination.Y <> rumbo.Y Then
+            .Destination.X = rumbo.X
+            .Destination.Y = rumbo.Y
 
             ' Recalculamos el camino
             If SeekPath(NpcIndex, True) Then
@@ -244,7 +216,7 @@ Private Sub AI_AtacarUsuarioObjetivo(ByVal AtackerNpcIndex As Integer)
             ' Si no tiene un camino pero esta pegado al usuario, no queremos gastar tiempo calculando caminos.
             If .pathFindingInfo.PathLength = 0 And EstaPegadoAlUsuario Then Exit Sub
             
-            Call AI_CaminarConRumbo(AtackerNpcIndex, UserList(.Target).Pos.X, UserList(.Target).Pos.Y)
+            Call AI_CaminarConRumbo(AtackerNpcIndex, UserList(.Target).Pos)
         End If
     End With
 
@@ -272,7 +244,7 @@ Public Sub AI_NpcAtacaNpc(ByVal NpcIndex As Integer)
                End If
                
                If .TargetNPC <> vbNull And .TargetNPC > 0 Then
-                   Call AI_CaminarConRumbo(NpcIndex, targetPos.X, targetPos.Y)
+                   Call AI_CaminarConRumbo(NpcIndex, targetPos)
                End If
                
                Exit Sub
@@ -319,7 +291,7 @@ Public Sub SeguirAmo(ByVal NpcIndex As Integer)
                     Distancia(.Pos, UserList(.MaestroUser).Pos) > 3 Then
                     
                     ' Caminamos cerca del usuario
-                    Call AI_CaminarConRumbo(NpcIndex, UserList(.MaestroUser).Pos.X, UserList(.MaestroUser).Pos.Y)
+                    Call AI_CaminarConRumbo(NpcIndex, UserList(.MaestroUser).Pos)
                     Exit Sub
                     
                 End If

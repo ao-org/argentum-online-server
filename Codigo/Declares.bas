@@ -1980,6 +1980,33 @@ Public Type tCaminata
     Espera As Long
 End Type
 
+Public Enum TipoAI
+    Estatico = 1
+    MueveAlAzar = 2
+    NpcDefensa = 4
+    SigueAmo = 8
+    NpcAtacaNpc = 9
+
+    'Pretorianos
+    SacerdotePretorianoAi = 11
+    GuerreroPretorianoAi = 12
+    MagoPretorianoAi = 13
+    CazadorPretorianoAi = 14
+    ReyPretoriano = 15
+
+    ' Animado
+    Caminata = 20
+    
+    ' Eventos
+    Invasion = 21
+End Enum
+
+Public Enum e_Alineacion
+    ninguna = 0
+    Real = 1
+    Caos = 2
+End Enum
+
 Public Type npc
     
     Distancia As Byte
