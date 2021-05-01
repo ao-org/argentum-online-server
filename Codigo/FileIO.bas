@@ -1841,7 +1841,7 @@ Sub LoadUserInit(ByVal UserIndex As Integer, ByRef UserFile As clsIniReader)
         'Author: Unknown
         'Last modified: 19/11/2006
         'Loads the Users records
-        '23/01/2007 Pablo (ToxicWaste) - Agrego NivelIngreso, FechaIngreso, MatadosIngreso y NextRecompensa.
+        '23/01/2007 Pablo (ToxicWaste) - Agrego NivelIngreso, MatadosIngreso y NextRecompensa.
         '23/01/2007 Pablo (ToxicWaste) - Quito CriminalesMatados de Stats porque era redundante.
         '*************************************************
         Dim LoopC As Long
@@ -1861,7 +1861,6 @@ Sub LoadUserInit(ByVal UserIndex As Integer, ByRef UserFile As clsIniReader)
 120     UserList(UserIndex).Faccion.RecompensasReal = CLng(UserFile.GetValue("FACCIONES", "recReal"))
 122     UserList(UserIndex).Faccion.Reenlistadas = CByte(UserFile.GetValue("FACCIONES", "Reenlistadas"))
 124     UserList(UserIndex).Faccion.NivelIngreso = CInt(UserFile.GetValue("FACCIONES", "NivelIngreso"))
-126     UserList(UserIndex).Faccion.FechaIngreso = UserFile.GetValue("FACCIONES", "FechaIngreso")
 128     UserList(UserIndex).Faccion.MatadosIngreso = CInt(UserFile.GetValue("FACCIONES", "MatadosIngreso"))
 130     UserList(UserIndex).Faccion.NextRecompensa = CInt(UserFile.GetValue("FACCIONES", "NextRecompensa"))
 
@@ -2841,7 +2840,6 @@ Sub LoadConfiguraciones()
 
 100     ExpMult = val(Leer.GetValue("CONFIGURACIONES", "ExpMult"))
 102     OroMult = val(Leer.GetValue("CONFIGURACIONES", "OroMult"))
-104     OroAutoEquipable = val(Leer.GetValue("CONFIGURACIONES", "OroAutoEquipable"))
 106     DropMult = val(Leer.GetValue("DROPEO", "DropMult"))
 108     DropActive = val(Leer.GetValue("DROPEO", "DropActive"))
 110     RecoleccionMult = val(Leer.GetValue("CONFIGURACIONES", "RecoleccionMult"))
