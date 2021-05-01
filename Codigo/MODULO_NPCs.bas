@@ -874,8 +874,6 @@ Function SpawnNpc(ByVal NpcIndex As Integer, Pos As WorldPos, ByVal FX As Boolea
 
         Dim nIndex         As Integer
 
-        Dim PosicionValida As Boolean
-
         Dim PuedeAgua      As Boolean
 
         Dim PuedeTierra    As Boolean
@@ -886,38 +884,30 @@ Function SpawnNpc(ByVal NpcIndex As Integer, Pos As WorldPos, ByVal FX As Boolea
 
         Dim Y              As Integer
 
-        Dim it             As Integer
-
 100     nIndex = OpenNPC(NpcIndex, Respawn)   'Conseguimos un indice
 
-102     If nIndex > MaxNPCs Then
+102     If nIndex = 0 Then
 104         SpawnNpc = 0
             Exit Function
-
         End If
 
 106     PuedeAgua = NpcList(nIndex).flags.AguaValida = 1
 108     PuedeTierra = NpcList(nIndex).flags.TierraInvalida = 0
 
-110     it = 0
-
-        
 114         Call ClosestLegalPos(Pos, newpos, PuedeAgua, PuedeTierra)  'Nos devuelve la posicion valida mas cercana
             'Si X e Y son iguales a 0 significa que no se encontro posicion valida
 
-118         If newpos.X <> 0 And newpos.Y <> 0 Then
-                'Asignamos las nuevas coordenas solo si son validas
-120             NpcList(nIndex).Pos.Map = newpos.Map
-122             NpcList(nIndex).Pos.X = newpos.X
-124             NpcList(nIndex).Pos.Y = newpos.Y
-126             PosicionValida = True
+118     If newpos.X <> 0 And newpos.Y <> 0 Then
+            'Asignamos las nuevas coordenas solo si son validas
+120         NpcList(nIndex).Pos.Map = newpos.Map
+122         NpcList(nIndex).Pos.X = newpos.X
+124         NpcList(nIndex).Pos.Y = newpos.Y
             
-            Else
-138             PosicionValida = False
-144             Call QuitarNPC(nIndex)
-146             SpawnNpc = 0
-                Exit Function
-            End If
+        Else
+144         Call QuitarNPC(nIndex)
+146         SpawnNpc = 0
+            Exit Function
+        End If
 
         'asignamos las nuevas coordenas
 150     Map = newpos.Map
@@ -943,7 +933,6 @@ Function SpawnNpc(ByVal NpcIndex As Integer, Pos As WorldPos, ByVal FX As Boolea
 
 164     If Avisar Then
 166         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(NpcList(nIndex).name & " ha aparecido en " & DarNameMapa(Map) & " , todo indica que puede tener una gran recompensa para el que logre sobrevivir a él.", FontTypeNames.FONTTYPE_CITIZEN))
-
         End If
 
 168     SpawnNpc = nIndex
@@ -1085,14 +1074,14 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 
         'If requested index is invalid, abort
 102     If Not Leer.KeyExists("NPC" & NpcNumber) Then
-104         OpenNPC = MaxNPCs + 1
+104         OpenNPC = 0
             Exit Function
         End If
 
 106     NpcIndex = NextOpenNPC
 
 108     If NpcIndex > MaxNPCs Then 'Limite de npcs
-110         OpenNPC = NpcIndex
+110         OpenNPC = 0
             Exit Function
         End If
 

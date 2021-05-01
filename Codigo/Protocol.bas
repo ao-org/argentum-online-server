@@ -2454,7 +2454,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
 
                     If DeltaStep > 0 Then
                         If .Counters.SpeedHackCounter > MaximoSpeedHack Then
-                            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Administración » Posible uso de SpeedHack del usuario " & .name & ".", FontTypeNames.FONTTYPE_SERVER))
+                            'Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Administración » Posible uso de SpeedHack del usuario " & .name & ".", FontTypeNames.FONTTYPE_SERVER))
                             Call WritePosUpdate(UserIndex)
                             Exit Sub
                         End If
