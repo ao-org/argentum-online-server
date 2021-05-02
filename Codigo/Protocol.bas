@@ -4467,7 +4467,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 622             Case eSkill.Grupo
                     'If UserList(UserIndex).Grupo.EnGrupo = False Then
                     'Target whatever is in that tile
-624                 Call LookatTile(UserIndex, UserList(UserIndex).Pos.Map, X, Y)
+624                 'Call LookatTile(UserIndex, UserList(UserIndex).Pos.Map, X, Y)
                     
 626                 tU = .flags.TargetUser
                     
