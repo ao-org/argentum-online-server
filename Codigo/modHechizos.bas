@@ -1180,7 +1180,8 @@ Sub LanzarHechizo(index As Integer, UserIndex As Integer)
         On Error GoTo LanzarHechizo_Err
 
         Dim uh As Integer
-100         uh = UserList(UserIndex).Stats.UserHechizos(index)
+        
+100     uh = UserList(UserIndex).Stats.UserHechizos(index)
 
 102     If PuedeLanzar(UserIndex, uh, index) Then
 
@@ -3876,10 +3877,12 @@ Public Sub DesplazarHechizo(ByVal UserIndex As Integer, ByVal Dire As Integer, B
 114             UserList(UserIndex).Stats.UserHechizos(CualHechizo - 1) = TempHechizo
 
                 'Prevent the user from casting other spells than the one he had selected when he hitted "cast".
-116             If UserList(UserIndex).flags.Hechizo > 0 Then
-118                 UserList(UserIndex).flags.Hechizo = UserList(UserIndex).flags.Hechizo - 1
-
+116             If UserList(UserIndex).flags.Hechizo = CualHechizo Then
+                    UserList(UserIndex).flags.Hechizo = UserList(UserIndex).flags.Hechizo - 1
+                ElseIf UserList(UserIndex).flags.Hechizo = CualHechizo - 1 Then
+                    UserList(UserIndex).flags.Hechizo = UserList(UserIndex).flags.Hechizo + 1
                 End If
+                
 
             End If
 
@@ -3894,9 +3897,10 @@ Public Sub DesplazarHechizo(ByVal UserIndex As Integer, ByVal Dire As Integer, B
 128             UserList(UserIndex).Stats.UserHechizos(CualHechizo + 1) = TempHechizo
 
                 'Prevent the user from casting other spells than the one he had selected when he hitted "cast".
-130             If UserList(UserIndex).flags.Hechizo > 0 Then
-132                 UserList(UserIndex).flags.Hechizo = UserList(UserIndex).flags.Hechizo + 1
-
+130             If UserList(UserIndex).flags.Hechizo = CualHechizo Then
+                    UserList(UserIndex).flags.Hechizo = UserList(UserIndex).flags.Hechizo + 1
+                ElseIf UserList(UserIndex).flags.Hechizo = CualHechizo + 1 Then
+                    UserList(UserIndex).flags.Hechizo = UserList(UserIndex).flags.Hechizo - 1
                 End If
 
             End If
