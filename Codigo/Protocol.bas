@@ -10126,6 +10126,10 @@ Private Sub HandleWarpChar(ByVal UserIndex As Integer)
 124             If MapInfo(Map).Seguro = 0 Then
 126                 Call WriteConsoleMsg(UserIndex, "Solo puedes transportarte a ciudades.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
+                'Si manda yo o su propio nombre
+                ElseIf LCase$(UserName) <> LCase$(UserList(UserIndex).name) And UCase$(UserName) <> "YO" Then
+                    Call WriteConsoleMsg(UserIndex, "Solo puedes transportarte a ti mismo.", FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
                 End If
             End If
             
@@ -10135,11 +10139,7 @@ Private Sub HandleWarpChar(ByVal UserIndex As Integer)
 130         If MapaValido(Map) And LenB(UserName) <> 0 Then
 
 132             If UCase$(UserName) <> "YO" Then
-
-134                 If Not .flags.Privilegios And PlayerType.Consejero Then
-136                     tUser = NameIndex(UserName)
-                    End If
-
+136                 tUser = NameIndex(UserName)
                 Else
 138                 tUser = UserIndex
 
