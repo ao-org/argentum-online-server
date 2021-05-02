@@ -1198,7 +1198,11 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
 
 128     If UserList(VictimaIndex).Invent.EscudoEqpObjIndex > 0 Then
 130         UserPoderEvasion = UserPoderEvasion + PoderEvasionEscudo(VictimaIndex)
-132         ProbRechazo = Maximo(10, Minimo(90, 100 * (SkillDefensa / (SkillDefensa + SkillTacticas))))
+            If SkillDefensa > 0 Then
+132             ProbRechazo = Maximo(10, Minimo(90, 100 * (SkillDefensa / (SkillDefensa + SkillTacticas))))
+            Else
+                ProbRechazo = 10
+            End If
         Else
 134         ProbRechazo = 0
         End If
