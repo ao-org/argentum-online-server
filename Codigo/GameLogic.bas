@@ -1106,11 +1106,11 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
             'Reaccion al personaje
 218         If FoundChar = 1 Then '  ¿Encontro un Usuario?
             
-220             If UserList(TempCharIndex).flags.AdminInvisible = 0 Or CompararPrivilegios(UserIndex, TempCharIndex) >= 0 Then
+220             If UserList(TempCharIndex).flags.AdminInvisible = 0 Or CompararPrivilegiosUser(UserIndex, TempCharIndex) >= 0 Then
             
                     'If LenB(UserList(TempCharIndex).DescRM) = 0 Then 'No tiene descRM y quiere que se vea su nombre.
                     
-222                 If UserList(TempCharIndex).showName Or CompararPrivilegios(UserIndex, TempCharIndex) >= 0 Then
+222                 If UserList(TempCharIndex).showName Or CompararPrivilegiosUser(UserIndex, TempCharIndex) >= 0 Then
                 
 224                     If UserList(TempCharIndex).flags.Privilegios = user Then
                     

@@ -3810,7 +3810,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 110         Y = .incomingData.ReadByte()
         
 112         Skill = .incomingData.ReadByte()
-
+            
 114         If .flags.Muerto = 1 Or .flags.Descansar Or Not InMapBounds(.Pos.Map, X, Y) Then Exit Sub
 
 116         If Not InRangoVision(UserIndex, X, Y) Then
@@ -9656,7 +9656,7 @@ Private Sub HandleGoNearby(ByVal UserIndex As Integer)
 112             tIndex = NameIndex(UserName)
 
                 'Si es dios o Admins no podemos salvo que nosotros tambiín lo seamos
-                If CompararPrivilegios(UserIndex, tIndex) >= 0 Then
+                If CompararPrivilegiosUser(UserIndex, tIndex) >= 0 Then
 118                 If tIndex <= 0 Then 'existe el usuario destino?
 120                     Call WriteConsoleMsg(UserIndex, "Usuario offline.", FontTypeNames.FONTTYPE_INFO)
                     Else
