@@ -2085,7 +2085,7 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
             End If
         Next
         
-        If CantidadMiembrosValidos Then Exit Sub
+        If CantidadMiembrosValidos = 0 Then Exit Sub
         
 138     If ExpMult > 0 Then
 140         ExpaDar = ExpaDar * ExpMult
