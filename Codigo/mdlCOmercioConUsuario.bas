@@ -99,7 +99,7 @@ Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer, ByVal UserIndex As I
         
                 Dim j As Long
                 'me fijo si tiene esas cantidades para que no duplique items
-108             For j = j To UBound(UserList(UserIndex).ComUsu.itemsAenviar)
+108             For j = 1 To UBound(UserList(UserIndex).ComUsu.itemsAenviar)
 110                 If UserList(UserIndex).ComUsu.itemsAenviar(j).ObjIndex = ObjAEnviar.ObjIndex Then
 112                     cantidadTotalItem = cantidadTotalItem + UserList(UserIndex).ComUsu.itemsAenviar(j).amount
                     End If
