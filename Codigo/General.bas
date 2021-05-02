@@ -1917,12 +1917,14 @@ Public Sub RecStamina(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, 
                     End Select
 
 162                 If .flags.RegeneracionSta = 1 Then Suerte = 45
-
-164                 .Stats.MinSta = .Stats.MinSta + RandomNumber(1, Porcentaje(.Stats.MaxSta, Suerte))
+                    
+                    Dim recuperoSta As Integer
+                    
+                    recuperoSta = RandomNumber(1, CInt(Porcentaje(.Stats.MaxSta, Suerte)))
+164                 .Stats.MinSta = IIf((recuperoSta + .Stats.MinSta) > 32000, 32000, (recuperoSta + .Stats.MinSta))
 
 166                 If .Stats.MinSta > .Stats.MaxSta Then
 168                     .Stats.MinSta = .Stats.MaxSta
-
                     End If
 
                 End If
