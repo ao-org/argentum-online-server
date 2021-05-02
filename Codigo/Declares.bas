@@ -135,7 +135,11 @@ Public Const iFragataFantasmal = 87 'ok
 
 Public Const iTraje = 694 'ok
 
-Public Const iBarca = 84 'ok
+Public Const iBarca = 84
+
+Public Const iBarcaCiuda = 1265
+
+Public Const iBarcaCrimi = 1266
 
 Public Const iGalera = 85 'ok
 
