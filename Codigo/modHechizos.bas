@@ -3985,10 +3985,9 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y 
 150                 Call MuereNpc(NpcIndex, UserIndex)
                 End If
 
-                Exit Sub
-
             End If
 
+            Exit Sub
         Else
 
 152         TilesDifNpc = UserList(NpcIndex).Pos.X + UserList(NpcIndex).Pos.Y
