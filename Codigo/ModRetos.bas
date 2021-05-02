@@ -819,7 +819,7 @@ Public Sub TerminarTiempoAgarrarItems(ByVal Sala As Integer)
             'Mato al banquero
 102         Call QuitarNPC(.IndexBanquero)
         
-104          If .Puntaje < 0 Then
+104         If .Puntaje < 0 Then
 106             Ganador = EquipoReto.Izquierda
             Else
 108             Ganador = EquipoReto.Derecha
@@ -958,11 +958,13 @@ Public Function PuedeReto(ByVal UserIndex As Integer) As Boolean
 102         If .flags.EnReto Then Exit Function
         
 104         If .flags.EnConsulta Then Exit Function
-        
+
+            If .Pos.Map = 0 Or .Pos.X = 0 Or .Pos.Y = 0 Then Exit Function
+            
 106         If MapInfo(.Pos.Map).Seguro = 0 Then Exit Function
         
 108         If .flags.EnTorneo Then Exit Function
-        
+            
 110         If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = CARCEL Then Exit Function
         
         End With
