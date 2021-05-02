@@ -705,10 +705,6 @@ End Sub
 Sub AccionParaYunque(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal UserIndex As Integer)
         
         On Error GoTo AccionParaYunque_Err
-    
-        
-
-        
 
         Dim Pos As WorldPos
 
@@ -724,9 +720,15 @@ Sub AccionParaYunque(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
         End If
     
         ' Herramientas: SubTipo 7 - Martillo de Herrero
+        
+        If UserList(UserIndex).Invent.HerramientaEqpObjIndex = 0 Then
+            Call WriteConsoleMsg(UserIndex, "Debes tener equipado un martillo de herrero para trabajar con el yunque.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+        
 110     If ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).Subtipo <> 7 Then
             'Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-112         Call WriteConsoleMsg(UserIndex, "Antes debes tener equipado un martillo de herrero.", FontTypeNames.FONTTYPE_INFO)
+112         Call WriteConsoleMsg(UserIndex, "La herramienta que tienes no es la correcta, necesitas un martillo de herrero para poder trabajar.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
