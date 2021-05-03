@@ -828,7 +828,7 @@ Sub AccionParaPuertaNpc(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, 
         Exit Sub
 
 Handler:
-136 Call RegistrarError(Err.Number, Err.Description, "Acciones.AccionParaPuerta", Erl)
+136 Call RegistrarError(Err.Number, Err.Description, "Acciones.AccionParaPuertaNpc", Erl)
 138 Resume Next
 
 End Sub

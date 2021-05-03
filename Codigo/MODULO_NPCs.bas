@@ -761,7 +761,7 @@ Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) A
 108         If LegalWalkNPC(nPos.Map, nPos.X, nPos.Y, nHeading, .flags.AguaValida = 1, .flags.TierraInvalida = 0, .MaestroUser <> 0, , esGuardia) Then
             
 110             UserIndex = MapData(.Pos.Map, nPos.X, nPos.Y).UserIndex
-
+    
                 ' Si hay un usuario a donde se mueve el npc, entonces esta muerto o es un gm invisible
 112             If UserIndex > 0 Then
 
@@ -782,9 +782,14 @@ Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) A
                 End If
                 
                 If HayPuerta(nPos.Map, nPos.X, nPos.Y) Then
-                
+                    Call AccionParaPuertaNpc(nPos.Map, nPos.X, nPos.Y, NpcIndex)
+                ElseIf HayPuerta(nPos.Map, nPos.X + 1, nPos.Y) Then
+                    Call AccionParaPuertaNpc(nPos.Map, nPos.X + 1, nPos.Y, NpcIndex)
+                ElseIf HayPuerta(nPos.Map, nPos.X + 1, nPos.Y - 1) Then
+                    Call AccionParaPuertaNpc(nPos.Map, nPos.X + 1, nPos.Y - 1, NpcIndex)
+                ElseIf HayPuerta(nPos.Map, nPos.X, nPos.Y - 1) Then
+                    Call AccionParaPuertaNpc(nPos.Map, nPos.X, nPos.Y - 1, NpcIndex)
                 End If
-            
 128             Call AnimacionIdle(NpcIndex, False)
             
 130             Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageCharacterMove(.Char.CharIndex, nPos.X, nPos.Y))
