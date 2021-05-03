@@ -10209,12 +10209,12 @@ Private Sub HandleSilence(ByVal UserIndex As Integer)
 108         Call Buffer.ReadByte
         
             Dim UserName As String
-            Dim Minutos  As Integer
+            Dim minutos  As Integer
 
             Dim tUser    As Integer
         
 110         UserName = Buffer.ReadASCIIString()
-            Minutos = Buffer.ReadInteger()
+            minutos = Buffer.ReadInteger()
 
 112         If EsGM(UserIndex) Then
 114             tUser = NameIndex(UserName)
@@ -10222,11 +10222,11 @@ Private Sub HandleSilence(ByVal UserIndex As Integer)
 116             If tUser <= 0 Then
 118                 If PersonajeExiste(UserName) Then
                         If CompararPrivilegios(.flags.Privilegios, UserDarPrivilegioLevel(UserName)) > 0 Then
-                            If Minutos > 0 Then
-                                Call SilenciarUserDatabase(UserName, Minutos)
+                            If minutos > 0 Then
+                                Call SilenciarUserDatabase(UserName, minutos)
                                 Call SavePenaDatabase(UserName, .name & ": silencio por " & Time & " minutos. " & Date & " " & Time)
                                 Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("Administración » " & .name & " ha silenciado a " & UserName & "(offline) por " & minutos & " minutos.", FontTypeNames.FONTTYPE_GM))
-                                Call LogGM(.name, "Silenciar a " & UserList(tUser).name & " por " & Minutos & " minutos.")
+                                Call LogGM(.name, "Silenciar a " & UserList(tUser).name & " por " & minutos & " minutos.")
                             Else
                                 Call DesilenciarUserDatabase(UserName)
                                 Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("Administración » " & .name & " ha desilenciado a " & UserName & "(offline).", FontTypeNames.FONTTYPE_GM))
@@ -10240,14 +10240,14 @@ Private Sub HandleSilence(ByVal UserIndex As Integer)
                     End If
                 
                 ElseIf CompararPrivilegiosUser(UserIndex, tUser) > 0 Then
-                    If Minutos > 0 Then
+                    If minutos > 0 Then
                         UserList(tUser).flags.Silenciado = 1
-                        UserList(tUser).flags.MinutosRestantes = Minutos
+                        UserList(tUser).flags.MinutosRestantes = minutos
                         UserList(tUser).flags.SegundosPasados = 0
                         Call SavePenaDatabase(UserName, .name & ": silencio por " & Time & " minutos. " & Date & " " & Time)
                         Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("Administración » " & .name & " ha silenciado a " & UserList(tUser).name & " por " & minutos & " minutos.", FontTypeNames.FONTTYPE_GM))
                         Call WriteConsoleMsg(tUser, "Has sido silenciado por los administradores, no podrás hablar con otros usuarios. Utilice /GM para pedir ayuda.", FontTypeNames.FONTTYPE_GM)
-                        Call LogGM(.name, "Silenciar a " & UserList(tUser).name & " por " & Minutos & " minutos.")
+                        Call LogGM(.name, "Silenciar a " & UserList(tUser).name & " por " & minutos & " minutos.")
                     Else
                         UserList(tUser).flags.Silenciado = 1
                         Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("Administración » " & .name & " ha desilenciado a " & UserList(tUser).name & ".", FontTypeNames.FONTTYPE_GM))
@@ -11635,15 +11635,16 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                        
 202             Case eEditOptions.eo_Particula
                 
+                If Not .flags.Privilegios = Consejero Then
 204                 If tUser <= 0 Then
-                       
+
 206                     If Database_Enabled Then
                            'Call SaveUserBodyDatabase(UserName, val(Arg1))
                            Else
                             'Call WriteVar(CharPath & UserName & ".chr", "INIT", "Arma", Arg1)
-                    
+
                            End If
-                    
+
 208                         Call WriteConsoleMsg(UserIndex, "Usuario Offline Alterado: " & UserName, FontTypeNames.FONTTYPE_INFO)
                         Else
                             'Call ChangeUserChar(tUser, UserList(tUser).Char.Body, UserList(tUser).Char.Head, UserList(tUser).Char.Heading, UserList(tUser).Char.WeaponAnim, UserList(tUser).Char.ShieldAnim, val(Arg1))
@@ -11651,7 +11652,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 212                         .Char.ParticulaFx = val(Arg1)
 214                         .Char.loops = 9999
                        End If
-                       
+                End If
                        
                 
 216             Case eEditOptions.eo_Head
