@@ -861,7 +861,7 @@ LegalPosNPC_Err:
         
 End Function
 
-Function LegalWalkNPC(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal Heading As eHeading, Optional ByVal PuedeAgua As Boolean = False, Optional ByVal PuedeTierra As Boolean = True, Optional ByVal IgnoraInvalida As Boolean = False, Optional ByVal PuedePisar As Boolean) As Boolean
+Function LegalWalkNPC(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal Heading As eHeading, Optional ByVal PuedeAgua As Boolean = False, Optional ByVal PuedeTierra As Boolean = True, Optional ByVal IgnoraInvalida As Boolean = False, Optional ByVal PuedePisar As Boolean, Optional ByVal esGuardia As Boolean = False) As Boolean
     ' Reescrito por WyroX
 
     On Error GoTo LegalWalkNPC_Err
@@ -902,9 +902,14 @@ Function LegalWalkNPC(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integ
             End If
         End If
         
-126     If .Blocked And 2 ^ (Heading - 1) Then
-            Exit Function
+        If Not esGuardia Then
+126         If .Blocked And 2 ^ (Heading - 1) Then
+                Exit Function
+            End If
+        Else
+            If (.Blocked And 2 ^ (Heading - 1)) And Not HayPuerta(Map, X + 1, Y) And Not HayPuerta(Map, X, Y) And Not HayPuerta(Map, X + 1, Y - 1) And Not HayPuerta(Map, X, Y - 1) Then Exit Function
         End If
+
 
     End With
     
@@ -1604,4 +1609,10 @@ EsObjetoFijo_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "Extra.EsObjetoFijo", Erl)
 104     Resume Next
         
+End Function
+
+Public Function HayPuerta(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
+    If MapData(Map, X, Y).ObjInfo.ObjIndex > 0 Then
+        HayPuerta = (ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).OBJType = eOBJType.otPuertas) And (ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).Llave = 0)
+    End If
 End Function

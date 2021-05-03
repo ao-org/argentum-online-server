@@ -171,9 +171,14 @@ Private Function IsWalkable(ByVal NpcIndex As Integer, ByVal X As Integer, ByVal
             End If
     
             ' Tile bloqueado
-            'If .Blocked And 2 ^ (Heading - 1) Then Exit Function (fix nuevos bloqueos)
-120         If .Blocked And eBlock.ALL_SIDES Then Exit Function
-        
+120         If NpcList(NpcIndex).NPCtype <> eNPCType.GuardiaReal And NpcList(NpcIndex).NPCtype <> eNPCType.GuardiasCaos Then
+126             If .Blocked And 2 ^ (Heading - 1) Then
+                    Exit Function
+                End If
+            Else
+                If (.Blocked And 2 ^ (Heading - 1)) And Not HayPuerta(Map, X + 1, Y) And Not HayPuerta(Map, X, Y) And Not HayPuerta(Map, X + 1, Y - 1) And Not HayPuerta(Map, X, Y - 1) Then Exit Function
+            End If
+            
         End With
     
 122     IsWalkable = True

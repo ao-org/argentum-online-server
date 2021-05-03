@@ -749,15 +749,16 @@ Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) A
 
         Dim nPos      As WorldPos
         Dim UserIndex As Integer
-    
+        Dim esGuardia As Boolean
 100     With NpcList(NpcIndex)
 102         If .flags.Paralizado + .flags.Inmovilizado > 0 Then Exit Function
             
 104         nPos = .Pos
 106         Call HeadtoPos(nHeading, nPos)
-            
+            esGuardia = .NPCtype = eNPCType.GuardiaReal Or .NPCtype = eNPCType.GuardiasCaos
             ' es una posicion legal
-108         If LegalWalkNPC(nPos.Map, nPos.X, nPos.Y, nHeading, .flags.AguaValida = 1, .flags.TierraInvalida = 0, .MaestroUser <> 0) Then
+            
+108         If LegalWalkNPC(nPos.Map, nPos.X, nPos.Y, nHeading, .flags.AguaValida = 1, .flags.TierraInvalida = 0, .MaestroUser <> 0, , esGuardia) Then
             
 110             UserIndex = MapData(.Pos.Map, nPos.X, nPos.Y).UserIndex
 
@@ -778,6 +779,10 @@ Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) A
 
                     End With
 
+                End If
+                
+                If HayPuerta(nPos.Map, nPos.X, nPos.Y) Then
+                
                 End If
             
 128             Call AnimacionIdle(NpcIndex, False)
