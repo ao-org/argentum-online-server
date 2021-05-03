@@ -802,6 +802,37 @@ Handler:
 
 End Sub
 
+
+Sub AccionParaPuertaNpc(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal NpcIndex As Integer)
+        On Error GoTo Handler
+
+        Dim puerta As ObjData 'ver ReyarB
+
+
+104     puerta = ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex)
+
+110     If puerta.Cerrada = 1 Then 'Abre la puerta
+112         MapData(Map, X, Y).ObjInfo.ObjIndex = puerta.IndexAbierta
+114         Call BloquearPuerta(Map, X, Y, False)
+
+        Else 'Cierra puerta
+116         MapData(Map, X, Y).ObjInfo.ObjIndex = puerta.IndexCerrada
+118         Call BloquearPuerta(Map, X, Y, True)
+
+        End If
+
+124     Call modSendData.SendToAreaByPos(Map, X, Y, PrepareMessageObjectCreate(MapData(Map, X, Y).ObjInfo.ObjIndex, MapData(Map, X, Y).ObjInfo.amount, X, Y))
+
+        Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessagePlayWave(SND_PUERTA, X, Y))
+
+        Exit Sub
+
+Handler:
+136 Call RegistrarError(Err.Number, Err.Description, "Acciones.AccionParaPuerta", Erl)
+138 Resume Next
+
+End Sub
+
 Sub AccionParaCartel(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal UserIndex As Integer)
 
         On Error GoTo Handler

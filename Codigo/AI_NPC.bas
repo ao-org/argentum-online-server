@@ -126,9 +126,21 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
 148         If .Target > 0 Then
 150             Call AI_AtacarUsuarioObjetivo(NpcIndex)
             Else
-152             Call RestoreOldMovement(NpcIndex)
-                ' No encontro a nadie cerca, camina unos pasos en cualquier direccion.
-154             Call AI_CaminarSinRumbo(NpcIndex)
+                If NpcList(NpcIndex).NPCtype <> eNPCType.GuardiaReal And NpcList(NpcIndex).NPCtype <> eNPCType.Guardiascaos Then
+                    Call RestoreOldMovement(NpcIndex)
+                    ' No encontro a nadie cerca, camina unos pasos en cualquier direccion.
+154                 Call AI_CaminarSinRumbo(NpcIndex)
+                    
+                   
+                Else
+152                  If Distancia(NpcList(NpcIndex).Pos, NpcList(NpcIndex).Orig) > 0 Then
+                        Call AI_CaminarConRumbo(NpcIndex, NpcList(NpcIndex).Orig)
+                    Else
+                        If .Char.Heading <> eHeading.SOUTH Then
+                            Call ChangeNPCChar(NpcIndex, .Char.Body, .Char.Head, eHeading.SOUTH)
+                        End If
+                    End If
+                End If
             End If
 
         End With
