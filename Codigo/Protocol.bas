@@ -5582,6 +5582,13 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
                     End If
 
                 End If
+                
+                If .Invent.Object(slot).ObjIndex > 0 Then
+                    If ObjData(.Invent.Object(slot).ObjIndex).Instransferible Then
+                        Call WriteConsoleMsg(UserIndex, "Este objeto es intransferible, no podés venderlo.", FontTypeNames.FONTTYPE_TALK)
+                        Exit Sub
+                    End If
+                End If
             
 152             .ComUsu.Objeto = slot
 154             .ComUsu.cant = amount
