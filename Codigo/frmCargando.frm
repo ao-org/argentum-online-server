@@ -20,11 +20,11 @@ Begin VB.Form frmCargando
    StartUpPosition =   2  'CenterScreen
    Begin ComctlLib.ProgressBar cargar 
       Height          =   300
-      Left            =   840
+      Left            =   1125
       TabIndex        =   1
       Top             =   2160
-      Width           =   4290
-      _ExtentX        =   7567
+      Width           =   4320
+      _ExtentX        =   7620
       _ExtentY        =   529
       _Version        =   327682
       Appearance      =   0
@@ -42,15 +42,16 @@ Begin VB.Form frmCargando
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H000000FF&
+      ForeColor       =   &H0000FFFF&
       Height          =   255
-      Left            =   4320
+      Left            =   4080
       TabIndex        =   2
-      Top             =   1920
+      Top             =   1800
       Visible         =   0   'False
       Width           =   735
    End
    Begin VB.Label Label1 
+      Alignment       =   2  'Center
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
       Caption         =   " Cargando Mapas"
@@ -66,9 +67,9 @@ Begin VB.Form frmCargando
       ForeColor       =   &H00FFFFFF&
       Height          =   195
       Index           =   2
-      Left            =   840
+      Left            =   1680
       TabIndex        =   0
-      Top             =   1920
+      Top             =   1800
       Width           =   3255
    End
    Begin VB.Label lblDragForm 
