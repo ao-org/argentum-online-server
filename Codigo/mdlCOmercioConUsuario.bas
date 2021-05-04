@@ -280,7 +280,7 @@ Public Sub AceptarComercioUsu(ByVal UserIndex As Integer)
     
 170     If UserList(UserIndex).ComUsu.Oro > 0 Then
 172         UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD - UserList(UserIndex).ComUsu.Oro
-174         Call WriteUpdateUserStats(OtroUserIndex)
+174         Call WriteUpdateUserStats(UserIndex)
 176         UserList(OtroUserIndex).Stats.GLD = UserList(OtroUserIndex).Stats.GLD + UserList(UserIndex).ComUsu.Oro
 178         Call WriteUpdateUserStats(OtroUserIndex)
         End If
