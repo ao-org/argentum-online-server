@@ -141,7 +141,11 @@ Public Const iBarcaCiuda = 1265
 
 Public Const iBarcaCrimi = 1266
 
-Public Const iGalera = 85 'ok
+Public Const iGalera = 85
+
+Public Const iGaleraCiuda = 1267
+
+Public Const iGaleraCrimi = 1268
 
 Public Const iGaleon = 86 'ok
 

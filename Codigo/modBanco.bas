@@ -45,7 +45,7 @@ Sub IniciarBanco(ByVal UserIndex As Integer)
         
 100     Call UpdateBanUserInv(True, UserIndex, 0)
         'Actualizamos el dinero
-102     Call WriteUpdateUserStats(UserIndex)
+102     Call WriteUpdateGold(UserIndex)
 
 104     Call WriteGoliathInit(UserIndex)
 

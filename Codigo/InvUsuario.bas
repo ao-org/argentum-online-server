@@ -1133,7 +1133,7 @@ Sub EquiparBarco(ByVal UserIndex As Integer)
           Else
 
 146         If Barco.Ropaje = iBarca Then .Char.Body = IIf(.Faccion.Status = 0, iBarcaCrimi, iBarcaCiuda)
-148         If Barco.Ropaje = iGalera Then .Char.Body = iGalera
+148         If Barco.Ropaje = iGalera Then .Char.Body = IIf(.Faccion.Status = 0, iGaleraCrimi, iGaleraCiuda)
 150         If Barco.Ropaje = iGaleon Then .Char.Body = iGaleon
           End If
         End If
