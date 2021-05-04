@@ -3,11 +3,11 @@ Object = "{248DD890-BB45-11CF-9ABC-0080C7E7B78D}#1.0#0"; "MSWINSCK.ocx"
 Begin VB.Form frmMain 
    BackColor       =   &H00E0E0E0&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   "Servidor Argentum 20 - Basado en RAO de Pablo Mercavides"
+   Caption         =   "Servidor Argentum 20"
    ClientHeight    =   6315
    ClientLeft      =   1950
    ClientTop       =   1695
-   ClientWidth     =   6915
+   ClientWidth     =   6930
    FillColor       =   &H00C0C0C0&
    BeginProperty Font 
       Name            =   "Arial"
@@ -25,7 +25,7 @@ Begin VB.Form frmMain
    MinButton       =   0   'False
    PaletteMode     =   1  'UseZOrder
    ScaleHeight     =   6315
-   ScaleWidth      =   6915
+   ScaleWidth      =   6930
    StartUpPosition =   2  'CenterScreen
    Begin VB.Timer Invasion 
       Enabled         =   0   'False
@@ -409,9 +409,9 @@ Begin VB.Form frmMain
       End
       Begin VB.TextBox BroadMsg 
          Height          =   315
-         Left            =   960
+         Left            =   -1080
          TabIndex        =   3
-         Top             =   240
+         Top             =   0
          Width           =   3855
       End
       Begin VB.Label Label1 
@@ -458,6 +458,22 @@ Begin VB.Form frmMain
          Top             =   240
          Width           =   1815
       End
+   End
+   Begin VB.Label Label9 
+      Caption         =   "Basado en rao"
+      Height          =   735
+      Left            =   5640
+      TabIndex        =   35
+      Top             =   5280
+      Width           =   855
+   End
+   Begin VB.Label Label8 
+      Caption         =   "Label8"
+      Height          =   495
+      Left            =   2880
+      TabIndex        =   34
+      Top             =   2880
+      Width           =   1215
    End
    Begin VB.Label txStatus 
       AutoSize        =   -1  'True
