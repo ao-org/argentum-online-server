@@ -144,30 +144,20 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
                 Exit Sub
                 
 166         ElseIf ObjData(Objeto.ObjIndex).Newbie = 1 Then
-168             Call WriteConsoleMsg(UserIndex, "Lo siento, no comercio objetos para newbies.", FontTypeNames.FONTTYPE_INFO)
+168             Call WriteConsoleMsg(UserIndex, "Lo siento, no comercio objetos para newbies.", FontTypeNames.FONTTYPE_TALK)
                 Exit Sub
                 
 170         ElseIf ObjData(Objeto.ObjIndex).Destruye = 1 Then
-172             Call WriteConsoleMsg(UserIndex, "Lo siento, no puedo comprarte ese item.", FontTypeNames.FONTTYPE_INFO)
+172             Call WriteConsoleMsg(UserIndex, "Lo siento, no puedo comprarte ese item.", FontTypeNames.FONTTYPE_TALK)
+                Exit Sub
+            
+174         ElseIf ObjData(Objeto.ObjIndex).Instransferible = 1 Then
+176             Call WriteConsoleMsg(UserIndex, "Lo siento, no puedo comprarte ese item.", FontTypeNames.FONTTYPE_TALK)
                 Exit Sub
           
-174         ElseIf (NpcList(NpcIndex).TipoItems <> ObjData(Objeto.ObjIndex).OBJType And NpcList(NpcIndex).TipoItems <> eOBJType.otCualquiera) Or Objeto.ObjIndex = iORO Then
-176             Call WriteConsoleMsg(UserIndex, "Lo siento, no estoy interesado en este tipo de objetos.", FontTypeNames.FONTTYPE_INFO)
+178         ElseIf (NpcList(NpcIndex).TipoItems <> ObjData(Objeto.ObjIndex).OBJType And NpcList(NpcIndex).TipoItems <> eOBJType.otCualquiera) Or Objeto.ObjIndex = iORO Then
+180             Call WriteConsoleMsg(UserIndex, "Lo siento, no estoy interesado en este tipo de objetos.", FontTypeNames.FONTTYPE_TALK)
                 Exit Sub
-
-178         ElseIf ObjData(Objeto.ObjIndex).Real = 1 Then
-
-180             If NpcList(NpcIndex).name <> "SR" Then
-182                 Call WriteConsoleMsg(UserIndex, "Las armaduras de la Armada solo pueden ser vendidas a los sastres reales.", FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-                End If
-
-184         ElseIf ObjData(Objeto.ObjIndex).Caos = 1 Then
-
-186             If NpcList(NpcIndex).name <> "SC" Then
-188                 Call WriteConsoleMsg(UserIndex, "Las armaduras de la Legión solo pueden ser vendidas a los sastres del demonio.", FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-                End If
 
 190         ElseIf UserList(UserIndex).Invent.Object(slot).amount < 0 Or Cantidad = 0 Then
                 Exit Sub
