@@ -46,6 +46,12 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
                     Exit Sub
 
                 End If
+                
+                If Not HayLugarEnInventario(UserIndex) Then
+                    Call WriteChatOverHead(UserIndex, "¡No tienes lugar suficiente en el inventario.", charIndexStr, vbWhite)
+                    Exit Sub
+                End If
+                
 
 128             If .Faccion.Reenlistadas > 0 Then
 130                 Call WriteChatOverHead(UserIndex, "¡Has traicionado al ejercito imperial una vez, no aceptamos traidores!", charIndexStr, vbWhite)
@@ -67,6 +73,7 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
                     Exit Sub
 
                 End If
+                
 
 
                 ' Cumple con los requisitos para enlistarse
@@ -112,7 +119,11 @@ Public Sub RecompensaArmadaReal(ByVal UserIndex As Integer)
 
 106             If .Faccion.RecompensasReal >= MaxRangoFaccion Then
 108                 Call WriteChatOverHead(UserIndex, "Eres uno de mis mejores Soldados. Mataste " & Crimis & ", sigue asi. Ya no tengo más recompensa para darte que mi agradescimiento. ¡Felicidades!", npcCharIndex, vbWhite)
-
+                    Exit Sub
+                End If
+                
+                If Not HayLugarEnInventario(UserIndex) Then
+                    Call WriteChatOverHead(UserIndex, "¡No tienes lugar suficiente en el inventario.", npcCharIndex, vbWhite)
                     Exit Sub
                 End If
 
@@ -233,6 +244,11 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
                     Exit Sub
 
                 End If
+                
+                If Not HayLugarEnInventario(UserIndex) Then
+                    Call WriteChatOverHead(UserIndex, "¡No tienes lugar suficiente en el inventario.", charIndexStr, vbWhite)
+                    Exit Sub
+                End If
 
 120             If .clase = eClass.Thief Then
 122                 Call WriteChatOverHead(UserIndex, "¡La legión oscura no tiene lugar para escorias como tú! Los ladrones no son dignos de llevar nuestras armaduras.", charIndexStr, vbWhite)
@@ -305,7 +321,11 @@ Public Sub RecompensaCaos(ByVal UserIndex As Integer)
 106             If .Faccion.RecompensasCaos >= MaxRangoFaccion Then
 108                 Call WriteChatOverHead(UserIndex, "¡Felicitaciones, eres de mis mejores guerreros, estas en lo más alto!", npcCharIndex, vbWhite)
                     Exit Sub
-
+                End If
+                
+                If Not HayLugarEnInventario(UserIndex) Then
+                    Call WriteChatOverHead(UserIndex, "¡No tienes lugar suficiente en el inventario.", npcCharIndex, vbWhite)
+                    Exit Sub
                 End If
 
 110             proxRango = ProximoRango(UserIndex)
@@ -313,7 +333,6 @@ Public Sub RecompensaCaos(ByVal UserIndex As Integer)
 112             If ciudadanosMatados < proxRango.AsesinatosRequeridos Then
 114                 Call WriteChatOverHead(UserIndex, "Mata " & proxRango.AsesinatosRequeridos - ciudadanosMatados & " Ciudadanos más para recibir la próxima Recompensa", npcCharIndex, vbWhite)
                     Exit Sub
-
                 End If
 
 116             If proxRango.NivelRequerido > .Stats.ELV Then

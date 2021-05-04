@@ -678,6 +678,33 @@ ErrHandler:
 
 End Function
 
+Function HayLugarEnInventario(ByVal UserIndex As Integer) As Boolean
+
+        On Error GoTo ErrHandler
+ 
+        Dim X    As Integer
+
+        Dim Y    As Integer
+
+        Dim slot As Byte
+
+110     slot = 1
+
+112     Do Until UserList(UserIndex).Invent.Object(slot).ObjIndex = 0
+114         slot = slot + 1
+116         If slot > UserList(UserIndex).CurrentInventorySlots Then
+120             HayLugarEnInventario = False
+                Exit Function
+            End If
+        Loop
+        
+134     HayLugarEnInventario = True
+
+        Exit Function
+ErrHandler:
+
+End Function
+
 Sub GetObj(ByVal UserIndex As Integer)
         
         On Error GoTo GetObj_Err
