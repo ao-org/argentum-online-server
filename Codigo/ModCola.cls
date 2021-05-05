@@ -328,17 +328,17 @@ QuitarIndex_Err:
 End Sub
 
 Private Sub Class_Terminate()
-    'Destruimos el objeto Cola
+        'Destruimos el objeto Cola
         
-    On Error GoTo Class_Terminate_Err
+        On Error GoTo Class_Terminate_Err
         
-    Set Cola = Nothing
+100     Set Cola = Nothing
 
         
-    Exit Sub
+        Exit Sub
 
 Class_Terminate_Err:
-    Call RegistrarError(Err.Number, Err.Description, "cCola.Class_Terminate", Erl)
-    Resume Next
+102     Call RegistrarError(Err.Number, Err.Description, "cCola.Class_Terminate", Erl)
+104     Resume Next
         
 End Sub

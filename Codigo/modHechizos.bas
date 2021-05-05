@@ -3878,9 +3878,9 @@ Public Sub DesplazarHechizo(ByVal UserIndex As Integer, ByVal Dire As Integer, B
 
                 'Prevent the user from casting other spells than the one he had selected when he hitted "cast".
 116             If UserList(UserIndex).flags.Hechizo = CualHechizo Then
-                    UserList(UserIndex).flags.Hechizo = UserList(UserIndex).flags.Hechizo - 1
-                ElseIf UserList(UserIndex).flags.Hechizo = CualHechizo - 1 Then
-                    UserList(UserIndex).flags.Hechizo = UserList(UserIndex).flags.Hechizo + 1
+118                 UserList(UserIndex).flags.Hechizo = UserList(UserIndex).flags.Hechizo - 1
+120             ElseIf UserList(UserIndex).flags.Hechizo = CualHechizo - 1 Then
+122                 UserList(UserIndex).flags.Hechizo = UserList(UserIndex).flags.Hechizo + 1
                 End If
                 
 
@@ -3888,19 +3888,19 @@ Public Sub DesplazarHechizo(ByVal UserIndex As Integer, ByVal Dire As Integer, B
 
         Else 'mover abajo
 
-120         If CualHechizo = MAXUSERHECHIZOS Then
-122             Call WriteConsoleMsg(UserIndex, "No podés mover el hechizo en esa direccion.", FontTypeNames.FONTTYPE_INFO)
+124         If CualHechizo = MAXUSERHECHIZOS Then
+126             Call WriteConsoleMsg(UserIndex, "No podés mover el hechizo en esa direccion.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             Else
-124             TempHechizo = UserList(UserIndex).Stats.UserHechizos(CualHechizo)
-126             UserList(UserIndex).Stats.UserHechizos(CualHechizo) = UserList(UserIndex).Stats.UserHechizos(CualHechizo + 1)
-128             UserList(UserIndex).Stats.UserHechizos(CualHechizo + 1) = TempHechizo
+128             TempHechizo = UserList(UserIndex).Stats.UserHechizos(CualHechizo)
+130             UserList(UserIndex).Stats.UserHechizos(CualHechizo) = UserList(UserIndex).Stats.UserHechizos(CualHechizo + 1)
+132             UserList(UserIndex).Stats.UserHechizos(CualHechizo + 1) = TempHechizo
 
                 'Prevent the user from casting other spells than the one he had selected when he hitted "cast".
-130             If UserList(UserIndex).flags.Hechizo = CualHechizo Then
-                    UserList(UserIndex).flags.Hechizo = UserList(UserIndex).flags.Hechizo + 1
-                ElseIf UserList(UserIndex).flags.Hechizo = CualHechizo + 1 Then
-                    UserList(UserIndex).flags.Hechizo = UserList(UserIndex).flags.Hechizo - 1
+134             If UserList(UserIndex).flags.Hechizo = CualHechizo Then
+136                 UserList(UserIndex).flags.Hechizo = UserList(UserIndex).flags.Hechizo + 1
+138             ElseIf UserList(UserIndex).flags.Hechizo = CualHechizo + 1 Then
+140                 UserList(UserIndex).flags.Hechizo = UserList(UserIndex).flags.Hechizo - 1
                 End If
 
             End If
@@ -3911,8 +3911,8 @@ Public Sub DesplazarHechizo(ByVal UserIndex As Integer, ByVal Dire As Integer, B
         Exit Sub
 
 DesplazarHechizo_Err:
-134     Call RegistrarError(Err.Number, Err.Description, "modHechizos.DesplazarHechizo", Erl)
-136     Resume Next
+142     Call RegistrarError(Err.Number, Err.Description, "modHechizos.DesplazarHechizo", Erl)
+144     Resume Next
         
 End Sub
 

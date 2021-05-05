@@ -47,29 +47,29 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
 
                 End If
                 
-                If Not HayLugarEnInventario(UserIndex) Then
-                    Call WriteChatOverHead(UserIndex, "¡No tienes lugar suficiente en el inventario.", charIndexStr, vbWhite)
+128             If Not HayLugarEnInventario(UserIndex) Then
+130                 Call WriteChatOverHead(UserIndex, "¡No tienes lugar suficiente en el inventario.", charIndexStr, vbWhite)
                     Exit Sub
                 End If
                 
 
-128             If .Faccion.Reenlistadas > 0 Then
-130                 Call WriteChatOverHead(UserIndex, "¡Has traicionado al ejercito imperial una vez, no aceptamos traidores!", charIndexStr, vbWhite)
+132             If .Faccion.Reenlistadas > 0 Then
+134                 Call WriteChatOverHead(UserIndex, "¡Has traicionado al ejercito imperial una vez, no aceptamos traidores!", charIndexStr, vbWhite)
                     Exit Sub
 
                 End If
 
                 Dim primerRango As tRangoFaccion
-132                 primerRango = RangosFaccion(1)
+136                 primerRango = RangosFaccion(1)
 
-134             If .Faccion.CriminalesMatados < primerRango.AsesinatosRequeridos Then
-136                 Call WriteChatOverHead(UserIndex, "Para unirte a nuestras fuerzas debes matar al menos " & primerRango.AsesinatosRequeridos & " criminales, solo has matado " & .Faccion.CriminalesMatados, charIndexStr, vbWhite)
+138             If .Faccion.CriminalesMatados < primerRango.AsesinatosRequeridos Then
+140                 Call WriteChatOverHead(UserIndex, "Para unirte a nuestras fuerzas debes matar al menos " & primerRango.AsesinatosRequeridos & " criminales, solo has matado " & .Faccion.CriminalesMatados, charIndexStr, vbWhite)
                     Exit Sub
 
                 End If
 
-138             If .Stats.ELV < primerRango.NivelRequerido Then
-140                 Call WriteChatOverHead(UserIndex, "¡¡¡Para unirte a nuestras fuerzas debes ser al menos de nivel " & primerRango.NivelRequerido & "!!!", charIndexStr, vbWhite)
+142             If .Stats.ELV < primerRango.NivelRequerido Then
+144                 Call WriteChatOverHead(UserIndex, "¡¡¡Para unirte a nuestras fuerzas debes ser al menos de nivel " & primerRango.NivelRequerido & "!!!", charIndexStr, vbWhite)
                     Exit Sub
 
                 End If
@@ -77,22 +77,22 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
 
 
                 ' Cumple con los requisitos para enlistarse
-142             .Faccion.ArmadaReal = 1
-144             .Faccion.RecompensasReal = primerRango.rank ' Asigna primer rango
-146             .Faccion.Reenlistadas = .Faccion.Reenlistadas + 1
-148             .Faccion.Status = 3
+146             .Faccion.ArmadaReal = 1
+148             .Faccion.RecompensasReal = primerRango.rank ' Asigna primer rango
+150             .Faccion.Reenlistadas = .Faccion.Reenlistadas + 1
+152             .Faccion.Status = 3
 
-150             If .Faccion.RecibioArmaduraReal = 0 Then
-152                 Call WriteChatOverHead(UserIndex, "¡¡¡Bienvenido al Ejercito Imperial!!!, aqui tienes tus vestimentas. Cumple bien tu labor exterminando Criminales y me encargaré de recompensarte.", charIndexStr, vbWhite)
+154             If .Faccion.RecibioArmaduraReal = 0 Then
+156                 Call WriteChatOverHead(UserIndex, "¡¡¡Bienvenido al Ejercito Imperial!!!, aqui tienes tus vestimentas. Cumple bien tu labor exterminando Criminales y me encargaré de recompensarte.", charIndexStr, vbWhite)
 
-154                 .Faccion.NivelIngreso = .Stats.ELV
-156                 .Faccion.MatadosIngreso = .Faccion.ciudadanosMatados
+158                 .Faccion.NivelIngreso = .Stats.ELV
+160                 .Faccion.MatadosIngreso = .Faccion.ciudadanosMatados
 
                 End If
 
-158             Call WriteConsoleMsg(UserIndex, "¡Ahora perteneces al Ejercito Real!", FontTypeNames.FONTTYPE_INFOIAO)
-160             Call DarRecompensas(UserIndex)
-162             Call RefreshCharStatus(UserIndex)
+162             Call WriteConsoleMsg(UserIndex, "¡Ahora perteneces al Ejercito Real!", FontTypeNames.FONTTYPE_INFOIAO)
+164             Call DarRecompensas(UserIndex)
+166             Call RefreshCharStatus(UserIndex)
 
             End With
 
@@ -101,8 +101,8 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
             Exit Sub
 
 EnlistarArmadaReal_Err:
-164         Call RegistrarError(Err.Number, Err.Description, "ModFacciones.EnlistarArmadaReal", Erl)
-166         Resume Next
+168         Call RegistrarError(Err.Number, Err.Description, "ModFacciones.EnlistarArmadaReal", Erl)
+170         Resume Next
 
 End Sub
 
@@ -122,27 +122,27 @@ Public Sub RecompensaArmadaReal(ByVal UserIndex As Integer)
                     Exit Sub
                 End If
                 
-                If Not HayLugarEnInventario(UserIndex) Then
-                    Call WriteChatOverHead(UserIndex, "¡No tienes lugar suficiente en el inventario.", npcCharIndex, vbWhite)
+110             If Not HayLugarEnInventario(UserIndex) Then
+112                 Call WriteChatOverHead(UserIndex, "¡No tienes lugar suficiente en el inventario.", npcCharIndex, vbWhite)
                     Exit Sub
                 End If
 
-110             proxRango = ProximoRango(UserIndex)
+114             proxRango = ProximoRango(UserIndex)
 
-112             If Crimis < proxRango.AsesinatosRequeridos Then
-114                 Call WriteChatOverHead(UserIndex, "Mata " & proxRango.AsesinatosRequeridos - Crimis & " Criminales más para recibir la próxima Recompensa", npcCharIndex, vbWhite)
+116             If Crimis < proxRango.AsesinatosRequeridos Then
+118                 Call WriteChatOverHead(UserIndex, "Mata " & proxRango.AsesinatosRequeridos - Crimis & " Criminales más para recibir la próxima Recompensa", npcCharIndex, vbWhite)
                     Exit Sub
 
                 End If
 
-116             If proxRango.NivelRequerido > .Stats.ELV Then
-118               Call WriteChatOverHead(UserIndex, "Mataste Suficientes Criminales, pero te faltan " & (proxRango.NivelRequerido - .Stats.ELV) & " Niveles para poder recibir la próxima Recompensa", npcCharIndex, vbWhite)
+120             If proxRango.NivelRequerido > .Stats.ELV Then
+122               Call WriteChatOverHead(UserIndex, "Mataste Suficientes Criminales, pero te faltan " & (proxRango.NivelRequerido - .Stats.ELV) & " Niveles para poder recibir la próxima Recompensa", npcCharIndex, vbWhite)
 
                 Else ' El usuario cumple con los requerimientos de nivel, se le asigna la recomenza.
-120               .Faccion.RecompensasReal = proxRango.rank
+124               .Faccion.RecompensasReal = proxRango.rank
 
-122               Call WriteChatOverHead(UserIndex, "¡¡¡Aqui tienes tu recompensa " + proxRango.Titulo + "!!!", npcCharIndex, vbWhite)
-124               Call DarRecompensas(UserIndex)
+126               Call WriteChatOverHead(UserIndex, "¡¡¡Aqui tienes tu recompensa " + proxRango.Titulo + "!!!", npcCharIndex, vbWhite)
+128               Call DarRecompensas(UserIndex)
                   '.Stats.Exp = .Stats.Exp + ExpX100
                 End If
             End With
@@ -150,8 +150,8 @@ Public Sub RecompensaArmadaReal(ByVal UserIndex As Integer)
             Exit Sub
 
 RecompensaArmadaReal_Err:
-126         Call RegistrarError(Err.Number, Err.Description, "ModFacciones.RecompensaArmadaReal", Erl)
-128         Resume Next
+130         Call RegistrarError(Err.Number, Err.Description, "ModFacciones.RecompensaArmadaReal", Erl)
+132         Resume Next
 
 End Sub
 
@@ -245,55 +245,55 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
 
                 End If
                 
-                If Not HayLugarEnInventario(UserIndex) Then
-                    Call WriteChatOverHead(UserIndex, "¡No tienes lugar suficiente en el inventario.", charIndexStr, vbWhite)
+120             If Not HayLugarEnInventario(UserIndex) Then
+122                 Call WriteChatOverHead(UserIndex, "¡No tienes lugar suficiente en el inventario.", charIndexStr, vbWhite)
                     Exit Sub
                 End If
 
-120             If .clase = eClass.Thief Then
-122                 Call WriteChatOverHead(UserIndex, "¡La legión oscura no tiene lugar para escorias como tú! Los ladrones no son dignos de llevar nuestras armaduras.", charIndexStr, vbWhite)
+124             If .clase = eClass.Thief Then
+126                 Call WriteChatOverHead(UserIndex, "¡La legión oscura no tiene lugar para escorias como tú! Los ladrones no son dignos de llevar nuestras armaduras.", charIndexStr, vbWhite)
                     Exit Sub
 
                 End If
 
-124             If UserList(UserIndex).Faccion.Reenlistadas > 0 Then
-126                 Call WriteChatOverHead(UserIndex, "Has sido expulsado de las fuerzas oscuras y durante tu rebeldía has atacado a mi ejército. ¡Vete de aquí!", charIndexStr, vbWhite)
+128             If UserList(UserIndex).Faccion.Reenlistadas > 0 Then
+130                 Call WriteChatOverHead(UserIndex, "Has sido expulsado de las fuerzas oscuras y durante tu rebeldía has atacado a mi ejército. ¡Vete de aquí!", charIndexStr, vbWhite)
                     Exit Sub
 
                 End If
 
 
                 Dim primerRango As tRangoFaccion
-128                 primerRango = RangosFaccion(2) ' 2 es el primer rango del caos
+132                 primerRango = RangosFaccion(2) ' 2 es el primer rango del caos
 
-130             If .Faccion.ciudadanosMatados < primerRango.AsesinatosRequeridos Then
-132                 Call WriteChatOverHead(UserIndex, "Para unirte a nuestras fuerzas debes matar al menos " & primerRango.AsesinatosRequeridos & " ciudadanos, solo has matado " & .Faccion.ciudadanosMatados, charIndexStr, vbWhite)
+134             If .Faccion.ciudadanosMatados < primerRango.AsesinatosRequeridos Then
+136                 Call WriteChatOverHead(UserIndex, "Para unirte a nuestras fuerzas debes matar al menos " & primerRango.AsesinatosRequeridos & " ciudadanos, solo has matado " & .Faccion.ciudadanosMatados, charIndexStr, vbWhite)
                     Exit Sub
 
                 End If
 
-134             If .Stats.ELV < primerRango.NivelRequerido Then
-136                 Call WriteChatOverHead(UserIndex, "¡¡¡Para unirte a nuestras fuerzas debes ser al menos de nivel " & primerRango.NivelRequerido & "!!!", charIndexStr, vbWhite)
+138             If .Stats.ELV < primerRango.NivelRequerido Then
+140                 Call WriteChatOverHead(UserIndex, "¡¡¡Para unirte a nuestras fuerzas debes ser al menos de nivel " & primerRango.NivelRequerido & "!!!", charIndexStr, vbWhite)
                     Exit Sub
 
                 End If
 
 
                 ' Cumple con los requisitos para enlistarse
-138             .Faccion.FuerzasCaos = 1
-140             .Faccion.RecompensasCaos = primerRango.rank ' Asigna primer rango
-142             .Faccion.Reenlistadas = .Faccion.Reenlistadas + 1
-144             .Faccion.Status = 2
+142             .Faccion.FuerzasCaos = 1
+144             .Faccion.RecompensasCaos = primerRango.rank ' Asigna primer rango
+146             .Faccion.Reenlistadas = .Faccion.Reenlistadas + 1
+148             .Faccion.Status = 2
 
-146             If .Faccion.RecibioArmaduraCaos = 0 Then
-148                 Call WriteChatOverHead(UserIndex, "¡¡¡Bienvenido al lado oscuro!!! Aqui tienes tus armaduras. Derrama sangre Ciudadana y Real y serás recompensado, lo prometo.", charIndexStr, vbWhite)
+150             If .Faccion.RecibioArmaduraCaos = 0 Then
+152                 Call WriteChatOverHead(UserIndex, "¡¡¡Bienvenido al lado oscuro!!! Aqui tienes tus armaduras. Derrama sangre Ciudadana y Real y serás recompensado, lo prometo.", charIndexStr, vbWhite)
 
-150                 .Faccion.NivelIngreso = .Stats.ELV
+154                 .Faccion.NivelIngreso = .Stats.ELV
                 End If
 
-152             Call WriteConsoleMsg(UserIndex, "¡Ahora perteneces al caos!", FontTypeNames.FONTTYPE_INFOIAO)
-154             Call DarRecompensas(UserIndex)
-156             Call RefreshCharStatus(UserIndex)
+156             Call WriteConsoleMsg(UserIndex, "¡Ahora perteneces al caos!", FontTypeNames.FONTTYPE_INFOIAO)
+158             Call DarRecompensas(UserIndex)
+160             Call RefreshCharStatus(UserIndex)
 
             End With
 
@@ -302,8 +302,8 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
             Exit Sub
 
 EnlistarCaos_Err:
-158         Call RegistrarError(Err.Number, Err.Description, "ModFacciones.EnlistarCaos", Erl)
-160         Resume Next
+162         Call RegistrarError(Err.Number, Err.Description, "ModFacciones.EnlistarCaos", Erl)
+164         Resume Next
 
 End Sub
 
@@ -323,26 +323,26 @@ Public Sub RecompensaCaos(ByVal UserIndex As Integer)
                     Exit Sub
                 End If
                 
-                If Not HayLugarEnInventario(UserIndex) Then
-                    Call WriteChatOverHead(UserIndex, "¡No tienes lugar suficiente en el inventario.", npcCharIndex, vbWhite)
+110             If Not HayLugarEnInventario(UserIndex) Then
+112                 Call WriteChatOverHead(UserIndex, "¡No tienes lugar suficiente en el inventario.", npcCharIndex, vbWhite)
                     Exit Sub
                 End If
 
-110             proxRango = ProximoRango(UserIndex)
+114             proxRango = ProximoRango(UserIndex)
 
-112             If ciudadanosMatados < proxRango.AsesinatosRequeridos Then
-114                 Call WriteChatOverHead(UserIndex, "Mata " & proxRango.AsesinatosRequeridos - ciudadanosMatados & " Ciudadanos más para recibir la próxima Recompensa", npcCharIndex, vbWhite)
+116             If ciudadanosMatados < proxRango.AsesinatosRequeridos Then
+118                 Call WriteChatOverHead(UserIndex, "Mata " & proxRango.AsesinatosRequeridos - ciudadanosMatados & " Ciudadanos más para recibir la próxima Recompensa", npcCharIndex, vbWhite)
                     Exit Sub
                 End If
 
-116             If proxRango.NivelRequerido > .Stats.ELV Then
-118               Call WriteChatOverHead(UserIndex, "Mataste Suficientes Ciudadanos, pero te faltan " & (proxRango.NivelRequerido - .Stats.ELV) & " Niveles para poder recibir la próxima Recompensa", npcCharIndex, vbWhite)
+120             If proxRango.NivelRequerido > .Stats.ELV Then
+122               Call WriteChatOverHead(UserIndex, "Mataste Suficientes Ciudadanos, pero te faltan " & (proxRango.NivelRequerido - .Stats.ELV) & " Niveles para poder recibir la próxima Recompensa", npcCharIndex, vbWhite)
 
                 Else ' El usuario cumple con los requerimientos de nivel, se le asigna la recomenza.
-120               .Faccion.RecompensasCaos = proxRango.rank
+124               .Faccion.RecompensasCaos = proxRango.rank
 
-122               Call WriteChatOverHead(UserIndex, "¡¡¡Bien hecho " + proxRango.Titulo + ", aquí tienes tu recompensa!!!", npcCharIndex, vbWhite)
-124               Call DarRecompensas(UserIndex)
+126               Call WriteChatOverHead(UserIndex, "¡¡¡Bien hecho " + proxRango.Titulo + ", aquí tienes tu recompensa!!!", npcCharIndex, vbWhite)
+128               Call DarRecompensas(UserIndex)
                   '.Stats.Exp = .Stats.Exp + ExpX100
                 End If
             End With
@@ -350,8 +350,8 @@ Public Sub RecompensaCaos(ByVal UserIndex As Integer)
             Exit Sub
 
 RecompensaCaos_Err:
-126         Call RegistrarError(Err.Number, Err.Description, "ModFacciones.RecompensaCaos", Erl)
-128         Resume Next
+130         Call RegistrarError(Err.Number, Err.Description, "ModFacciones.RecompensaCaos", Erl)
+132         Resume Next
 
 End Sub
 

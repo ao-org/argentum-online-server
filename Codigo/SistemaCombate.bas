@@ -920,35 +920,35 @@ Public Sub NpcAtacaNpc(ByVal Atacante As Integer, ByVal Victima As Integer, Opti
         On Error GoTo NpcAtacaNpc_Err
         
 100     If Not IntervaloPermiteAtacarNPC(Atacante) Then Exit Sub
-        Dim heading As eHeading
-        heading = GetHeadingFromWorldPos(NpcList(Atacante).Pos, NpcList(Victima).Pos)
-        Call ChangeNPCChar(Atacante, NpcList(Atacante).Char.Body, NpcList(Atacante).Char.Head, heading)
+        Dim Heading As eHeading
+102     Heading = GetHeadingFromWorldPos(NpcList(Atacante).Pos, NpcList(Victima).Pos)
+104     Call ChangeNPCChar(Atacante, NpcList(Atacante).Char.Body, NpcList(Atacante).Char.Head, Heading)
         
-102     If cambiarMovimiento Then
-104         NpcList(Victima).TargetNPC = Atacante
-106         NpcList(Victima).Movement = TipoAI.NpcAtacaNpc
+106     If cambiarMovimiento Then
+108         NpcList(Victima).TargetNPC = Atacante
+110         NpcList(Victima).Movement = TipoAI.NpcAtacaNpc
         End If
 
-108     If NpcList(Atacante).flags.Snd1 > 0 Then
-110         Call SendData(SendTarget.ToNPCArea, Atacante, PrepareMessagePlayWave(NpcList(Atacante).flags.Snd1, NpcList(Atacante).Pos.X, NpcList(Atacante).Pos.Y))
+112     If NpcList(Atacante).flags.Snd1 > 0 Then
+114         Call SendData(SendTarget.ToNPCArea, Atacante, PrepareMessagePlayWave(NpcList(Atacante).flags.Snd1, NpcList(Atacante).Pos.X, NpcList(Atacante).Pos.Y))
 
         End If
 
-112     If NpcImpactoNpc(Atacante, Victima) Then
+116     If NpcImpactoNpc(Atacante, Victima) Then
     
-114         If NpcList(Victima).flags.Snd2 > 0 Then
-116             Call SendData(SendTarget.ToNPCArea, Victima, PrepareMessagePlayWave(NpcList(Victima).flags.Snd2, NpcList(Victima).Pos.X, NpcList(Victima).Pos.Y))
+118         If NpcList(Victima).flags.Snd2 > 0 Then
+120             Call SendData(SendTarget.ToNPCArea, Victima, PrepareMessagePlayWave(NpcList(Victima).flags.Snd2, NpcList(Victima).Pos.X, NpcList(Victima).Pos.Y))
             Else
-118             Call SendData(SendTarget.ToNPCArea, Victima, PrepareMessagePlayWave(SND_IMPACTO2, NpcList(Victima).Pos.X, NpcList(Victima).Pos.Y))
+122             Call SendData(SendTarget.ToNPCArea, Victima, PrepareMessagePlayWave(SND_IMPACTO2, NpcList(Victima).Pos.X, NpcList(Victima).Pos.Y))
 
             End If
 
-120         Call SendData(SendTarget.ToNPCArea, Victima, PrepareMessagePlayWave(SND_IMPACTO, NpcList(Victima).Pos.X, NpcList(Victima).Pos.Y))
+124         Call SendData(SendTarget.ToNPCArea, Victima, PrepareMessagePlayWave(SND_IMPACTO, NpcList(Victima).Pos.X, NpcList(Victima).Pos.Y))
     
-122         Call NpcDañoNpc(Atacante, Victima)
+126         Call NpcDañoNpc(Atacante, Victima)
     
         Else
-124         Call SendData(SendTarget.ToNPCArea, Atacante, PrepareMessageCharSwing(NpcList(Atacante).Char.CharIndex, False, True))
+128         Call SendData(SendTarget.ToNPCArea, Atacante, PrepareMessageCharSwing(NpcList(Atacante).Char.CharIndex, False, True))
 
         End If
 
@@ -956,8 +956,8 @@ Public Sub NpcAtacaNpc(ByVal Atacante As Integer, ByVal Victima As Integer, Opti
         Exit Sub
 
 NpcAtacaNpc_Err:
-126     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.NpcAtacaNpc", Erl)
-128     Resume Next
+130     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.NpcAtacaNpc", Erl)
+132     Resume Next
         
 End Sub
 
@@ -1201,40 +1201,40 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
 
 128     If UserList(VictimaIndex).Invent.EscudoEqpObjIndex > 0 Then
 130         UserPoderEvasion = UserPoderEvasion + PoderEvasionEscudo(VictimaIndex)
-            If SkillDefensa > 0 Then
-132             ProbRechazo = Maximo(10, Minimo(90, 100 * (SkillDefensa / (SkillDefensa + SkillTacticas))))
+132         If SkillDefensa > 0 Then
+134             ProbRechazo = Maximo(10, Minimo(90, 100 * (SkillDefensa / (SkillDefensa + SkillTacticas))))
             Else
-                ProbRechazo = 10
+136             ProbRechazo = 10
             End If
         Else
-134         ProbRechazo = 0
+138         ProbRechazo = 0
         End If
 
-136     ProbExito = Maximo(10, Minimo(90, 50 + ((PoderAtaque - UserPoderEvasion) * 0.4)))
+140     ProbExito = Maximo(10, Minimo(90, 50 + ((PoderAtaque - UserPoderEvasion) * 0.4)))
 
-138     UsuarioImpacto = (RandomNumber(1, 100) <= ProbExito)
+142     UsuarioImpacto = (RandomNumber(1, 100) <= ProbExito)
 
-140     If UsuarioImpacto Then
-142       Call SubirSkillDeArmaActual(AtacanteIndex)
+144     If UsuarioImpacto Then
+146       Call SubirSkillDeArmaActual(AtacanteIndex)
 
         Else ' Falló
-144         If RandomNumber(1, 100) <= ProbRechazo Then
+148         If RandomNumber(1, 100) <= ProbRechazo Then
                 'Se rechazo el ataque con el escudo
-146             Call SendData(SendTarget.ToPCArea, VictimaIndex, PrepareMessagePlayWave(SND_ESCUDO, UserList(VictimaIndex).Pos.X, UserList(VictimaIndex).Pos.Y))
-148             Call SendData(SendTarget.ToPCArea, VictimaIndex, PrepareMessageEscudoMov(UserList(VictimaIndex).Char.CharIndex))
+150             Call SendData(SendTarget.ToPCArea, VictimaIndex, PrepareMessagePlayWave(SND_ESCUDO, UserList(VictimaIndex).Pos.X, UserList(VictimaIndex).Pos.Y))
+152             Call SendData(SendTarget.ToPCArea, VictimaIndex, PrepareMessageEscudoMov(UserList(VictimaIndex).Char.CharIndex))
 
-150             If UserList(AtacanteIndex).ChatCombate = 1 Then
-152                 Call WriteBlockedWithShieldOther(AtacanteIndex)
+154             If UserList(AtacanteIndex).ChatCombate = 1 Then
+156                 Call WriteBlockedWithShieldOther(AtacanteIndex)
                 End If
 
-154             If UserList(VictimaIndex).ChatCombate = 1 Then
-156                 Call WriteBlockedWithShieldUser(VictimaIndex)
+158             If UserList(VictimaIndex).ChatCombate = 1 Then
+160                 Call WriteBlockedWithShieldUser(VictimaIndex)
                 End If
 
-158             Call SendData(SendTarget.ToPCArea, VictimaIndex, PrepareMessageCreateFX(UserList(VictimaIndex).Char.CharIndex, 88, 0))
-160             Call SubirSkill(VictimaIndex, eSkill.Defensa)
+162             Call SendData(SendTarget.ToPCArea, VictimaIndex, PrepareMessageCreateFX(UserList(VictimaIndex).Char.CharIndex, 88, 0))
+164             Call SubirSkill(VictimaIndex, eSkill.Defensa)
             Else
-162             Call WriteConsoleMsg(VictimaIndex, "¡" & UserList(AtacanteIndex).name & " te atacó y falló! ", FontTypeNames.FONTTYPE_FIGHT)
+166             Call WriteConsoleMsg(VictimaIndex, "¡" & UserList(AtacanteIndex).name & " te atacó y falló! ", FontTypeNames.FONTTYPE_FIGHT)
 
             End If
         End If
@@ -1242,8 +1242,8 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
         Exit Function
 
 UsuarioImpacto_Err:
-164     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.UsuarioImpacto", Erl)
-166     Resume Next
+168     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.UsuarioImpacto", Erl)
+170     Resume Next
 
 End Function
 
@@ -1734,20 +1734,20 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
 
         End If
         
-        If esCaos(AttackerIndex) And esCaos(VictimIndex) Then
-            Call WriteConsoleMsg(AttackerIndex, "Los miembros de las fuerzas del caos se pueden atacar entre si.", FontTypeNames.FONTTYPE_WARNING)
-            PuedeAtacar = False
+190     If esCaos(AttackerIndex) And esCaos(VictimIndex) Then
+192         Call WriteConsoleMsg(AttackerIndex, "Los miembros de las fuerzas del caos se pueden atacar entre si.", FontTypeNames.FONTTYPE_WARNING)
+194         PuedeAtacar = False
             Exit Function
         End If
 
         'Estas en un Mapa Seguro?
-190     If MapInfo(UserList(VictimIndex).Pos.Map).Seguro = 1 Then
+196     If MapInfo(UserList(VictimIndex).Pos.Map).Seguro = 1 Then
 
-192         If esArmada(AttackerIndex) Then
-194             If UserList(AttackerIndex).Faccion.RecompensasReal >= 3 Then
-196                 If UserList(VictimIndex).Pos.Map = 58 Or UserList(VictimIndex).Pos.Map = 59 Or UserList(VictimIndex).Pos.Map = 60 Then
-198                     Call WriteConsoleMsg(VictimIndex, "Huye de la ciudad! estas siendo atacado y no podrás defenderte.", FontTypeNames.FONTTYPE_WARNING)
-200                     PuedeAtacar = True 'Beneficio de Armadas que atacan en su ciudad.
+198         If esArmada(AttackerIndex) Then
+200             If UserList(AttackerIndex).Faccion.RecompensasReal >= 3 Then
+202                 If UserList(VictimIndex).Pos.Map = 58 Or UserList(VictimIndex).Pos.Map = 59 Or UserList(VictimIndex).Pos.Map = 60 Then
+204                     Call WriteConsoleMsg(VictimIndex, "Huye de la ciudad! estas siendo atacado y no podrás defenderte.", FontTypeNames.FONTTYPE_WARNING)
+206                     PuedeAtacar = True 'Beneficio de Armadas que atacan en su ciudad.
                         Exit Function
 
                     End If
@@ -1756,11 +1756,11 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
 
             End If
 
-202         If esCaos(AttackerIndex) Then
-204             If UserList(AttackerIndex).Faccion.RecompensasCaos >= 3 Then
-206                 If UserList(VictimIndex).Pos.Map = 195 Or UserList(VictimIndex).Pos.Map = 196 Then
-208                     Call WriteConsoleMsg(VictimIndex, "Huye de la ciudad! estas siendo atacado y no podrás defenderte.", FontTypeNames.FONTTYPE_WARNING)
-210                     PuedeAtacar = True 'Beneficio de Caos que atacan en su ciudad.
+208         If esCaos(AttackerIndex) Then
+210             If UserList(AttackerIndex).Faccion.RecompensasCaos >= 3 Then
+212                 If UserList(VictimIndex).Pos.Map = 195 Or UserList(VictimIndex).Pos.Map = 196 Then
+214                     Call WriteConsoleMsg(VictimIndex, "Huye de la ciudad! estas siendo atacado y no podrás defenderte.", FontTypeNames.FONTTYPE_WARNING)
+216                     PuedeAtacar = True 'Beneficio de Caos que atacan en su ciudad.
                         Exit Function
 
                     End If
@@ -1769,28 +1769,28 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
 
             End If
 
-212         Call WriteConsoleMsg(AttackerIndex, "Esta es una zona segura, aqui no podes atacar otros usuarios.", FontTypeNames.FONTTYPE_WARNING)
-214         PuedeAtacar = False
-            Exit Function
-
-        End If
-
-        'Estas atacando desde un trigger seguro? o tu victima esta en uno asi?
-216     If MapData(UserList(VictimIndex).Pos.Map, UserList(VictimIndex).Pos.X, UserList(VictimIndex).Pos.Y).trigger = eTrigger.ZONASEGURA Or MapData(UserList(AttackerIndex).Pos.Map, UserList(AttackerIndex).Pos.X, UserList(AttackerIndex).Pos.Y).trigger = eTrigger.ZONASEGURA Then
-218         Call WriteConsoleMsg(AttackerIndex, "No podes pelear aqui.", FontTypeNames.FONTTYPE_WARNING)
+218         Call WriteConsoleMsg(AttackerIndex, "Esta es una zona segura, aqui no podes atacar otros usuarios.", FontTypeNames.FONTTYPE_WARNING)
 220         PuedeAtacar = False
             Exit Function
 
         End If
 
-222     PuedeAtacar = True
+        'Estas atacando desde un trigger seguro? o tu victima esta en uno asi?
+222     If MapData(UserList(VictimIndex).Pos.Map, UserList(VictimIndex).Pos.X, UserList(VictimIndex).Pos.Y).trigger = eTrigger.ZONASEGURA Or MapData(UserList(AttackerIndex).Pos.Map, UserList(AttackerIndex).Pos.X, UserList(AttackerIndex).Pos.Y).trigger = eTrigger.ZONASEGURA Then
+224         Call WriteConsoleMsg(AttackerIndex, "No podes pelear aqui.", FontTypeNames.FONTTYPE_WARNING)
+226         PuedeAtacar = False
+            Exit Function
+
+        End If
+
+228     PuedeAtacar = True
 
         
         Exit Function
 
 PuedeAtacar_Err:
-224     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.PuedeAtacar", Erl)
-226     Resume Next
+230     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.PuedeAtacar", Erl)
+232     Resume Next
         
 End Function
 
@@ -2088,53 +2088,53 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
             End If
         Next
         
-        If CantidadMiembrosValidos = 0 Then Exit Sub
+138     If CantidadMiembrosValidos = 0 Then Exit Sub
         
-138     If ExpMult > 0 Then
-140         ExpaDar = ExpaDar * ExpMult
+140     If ExpMult > 0 Then
+142         ExpaDar = ExpaDar * ExpMult
         End If
 
-142     ExpaDar = ExpaDar / CantidadMiembrosValidos
+144     ExpaDar = ExpaDar / CantidadMiembrosValidos
 
         Dim ExpUser As Long
 
-144     If ExpaDar > 0 Then
-146         For i = 1 To UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
-148             index = UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(i)
+146     If ExpaDar > 0 Then
+148         For i = 1 To UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
+150             index = UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(i)
     
-150             If UserList(index).flags.Muerto = 0 Then
-152                 If Distancia(UserList(UserIndex).Pos, UserList(index).Pos) < 20 Then
+152             If UserList(index).flags.Muerto = 0 Then
+154                 If Distancia(UserList(UserIndex).Pos, UserList(index).Pos) < 20 Then
 
-154                     ExpUser = 0
+156                     ExpUser = 0
 
-156                     If UserList(index).donador.activo = 1 Then
-158                         ExpUser = ExpaDar * 1.1
+158                     If UserList(index).donador.activo = 1 Then
+160                         ExpUser = ExpaDar * 1.1
                         Else
-160                         ExpUser = ExpaDar
+162                         ExpUser = ExpaDar
                         End If
                     
-162                     ExpUser = ExpUser * UserList(index).flags.ScrollExp
+164                     ExpUser = ExpUser * UserList(index).flags.ScrollExp
                 
-164                     If UserList(index).Stats.ELV < STAT_MAXELV Then
-166                         UserList(index).Stats.Exp = UserList(index).Stats.Exp + ExpUser
+166                     If UserList(index).Stats.ELV < STAT_MAXELV Then
+168                         UserList(index).Stats.Exp = UserList(index).Stats.Exp + ExpUser
 
-168                         If UserList(index).Stats.Exp > MAXEXP Then UserList(index).Stats.Exp = MAXEXP
+170                         If UserList(index).Stats.Exp > MAXEXP Then UserList(index).Stats.Exp = MAXEXP
 
-170                         If UserList(index).ChatCombate = 1 Then
-172                             Call WriteLocaleMsg(index, "141", FontTypeNames.FONTTYPE_EXP, ExpUser)
+172                         If UserList(index).ChatCombate = 1 Then
+174                             Call WriteLocaleMsg(index, "141", FontTypeNames.FONTTYPE_EXP, ExpUser)
 
                             End If
 
-174                         Call WriteUpdateExp(index)
-176                         Call CheckUserLevel(index)
+176                         Call WriteUpdateExp(index)
+178                         Call CheckUserLevel(index)
 
                         End If
     
                     Else
     
                         'Call WriteConsoleMsg(Index, "Estas demasiado lejos del grupo, no has ganado experiencia.", FontTypeNames.FONTTYPE_INFOIAO)
-178                     If UserList(index).ChatCombate = 1 Then
-180                         Call WriteLocaleMsg(index, "69", FontTypeNames.FONTTYPE_New_GRUPO)
+180                     If UserList(index).ChatCombate = 1 Then
+182                         Call WriteLocaleMsg(index, "69", FontTypeNames.FONTTYPE_New_GRUPO)
     
                         End If
     
@@ -2142,14 +2142,14 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
     
                 Else
     
-182                 If UserList(index).ChatCombate = 1 Then
-184                     Call WriteConsoleMsg(index, "Estás muerto, no has ganado experencia del grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
+184                 If UserList(index).ChatCombate = 1 Then
+186                     Call WriteConsoleMsg(index, "Estás muerto, no has ganado experencia del grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
     
                     End If
     
                 End If
     
-186         Next i
+188         Next i
         End If
 
         'Else
@@ -2160,8 +2160,8 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
         Exit Sub
 
 CalcularDarExpGrupal_Err:
-188     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.CalcularDarExpGrupal", Erl)
-190     Resume Next
+190     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.CalcularDarExpGrupal", Erl)
+192     Resume Next
         
 End Sub
 

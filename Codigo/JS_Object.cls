@@ -20,7 +20,7 @@ Private Sub Class_Initialize()
 End Sub
 
 Private Sub Class_Terminate()
-    Set StringBuilder = Nothing
+100     Set StringBuilder = Nothing
 End Sub
 
 Public Sub Clear()

@@ -902,24 +902,24 @@ Function LegalWalkNPC(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integ
             End If
         End If
         
-        If Not esGuardia Then
-126         If .Blocked And 2 ^ (Heading - 1) Then
+126     If Not esGuardia Then
+128         If .Blocked And 2 ^ (Heading - 1) Then
                 Exit Function
             End If
         Else
-            If (.Blocked And 2 ^ (Heading - 1)) And Not HayPuerta(Map, X + 1, Y) And Not HayPuerta(Map, X, Y) And Not HayPuerta(Map, X + 1, Y - 1) And Not HayPuerta(Map, X, Y - 1) Then Exit Function
+130         If (.Blocked And 2 ^ (Heading - 1)) And Not HayPuerta(Map, X + 1, Y) And Not HayPuerta(Map, X, Y) And Not HayPuerta(Map, X + 1, Y - 1) And Not HayPuerta(Map, X, Y - 1) Then Exit Function
         End If
 
 
     End With
     
-128 LegalWalkNPC = True
+132 LegalWalkNPC = True
     
     Exit Function
 
 LegalWalkNPC_Err:
-130     Call RegistrarError(Err.Number, Err.Description, "Extra.LegalWalkNPC", Erl)
-132     Resume Next
+134     Call RegistrarError(Err.Number, Err.Description, "Extra.LegalWalkNPC", Erl)
+136     Resume Next
         
 End Function
 
@@ -1612,7 +1612,7 @@ EsObjetoFijo_Err:
 End Function
 
 Public Function HayPuerta(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
-    If MapData(Map, X, Y).ObjInfo.ObjIndex > 0 Then
-        HayPuerta = (ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).OBJType = eOBJType.otPuertas) And ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).Cerrada = 1 And (ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).Llave = 0)
-    End If
+100     If MapData(Map, X, Y).ObjInfo.ObjIndex > 0 Then
+102         HayPuerta = (ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).OBJType = eOBJType.otPuertas) And ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).Cerrada = 1 And (ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).Llave = 0)
+        End If
 End Function

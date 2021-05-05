@@ -159,70 +159,70 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
 180             Call WriteConsoleMsg(UserIndex, "Lo siento, no estoy interesado en este tipo de objetos.", FontTypeNames.FONTTYPE_TALK)
                 Exit Sub
 
-190         ElseIf UserList(UserIndex).Invent.Object(slot).amount < 0 Or Cantidad = 0 Then
+182         ElseIf UserList(UserIndex).Invent.Object(slot).amount < 0 Or Cantidad = 0 Then
                 Exit Sub
                 
-192         ElseIf slot < LBound(UserList(UserIndex).Invent.Object()) Or slot > UBound(UserList(UserIndex).Invent.Object()) Then
+184         ElseIf slot < LBound(UserList(UserIndex).Invent.Object()) Or slot > UBound(UserList(UserIndex).Invent.Object()) Then
                 Exit Sub
                 
-194         ElseIf UserList(UserIndex).flags.Privilegios And (PlayerType.Consejero Or PlayerType.SemiDios) Then
-196             Call WriteConsoleMsg(UserIndex, "No podés vender items.", FontTypeNames.FONTTYPE_WARNING)
+186         ElseIf UserList(UserIndex).flags.Privilegios And (PlayerType.Consejero Or PlayerType.SemiDios) Then
+188             Call WriteConsoleMsg(UserIndex, "No podés vender items.", FontTypeNames.FONTTYPE_WARNING)
                 Exit Sub
 
             End If
         
-198         Call QuitarUserInvItem(UserIndex, slot, Cantidad)
+190         Call QuitarUserInvItem(UserIndex, slot, Cantidad)
             
-200         Call UpdateUserInv(False, UserIndex, slot)
+192         Call UpdateUserInv(False, UserIndex, slot)
             
             'Precio = Round(ObjData(Objeto.ObjIndex).valor / REDUCTOR_PRECIOVENTA * Cantidad, 0)
-202         Precio = Fix(SalePrice(Objeto.ObjIndex) * Cantidad)
+194         Precio = Fix(SalePrice(Objeto.ObjIndex) * Cantidad)
         
-204         UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + Precio
+196         UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + Precio
         
-206         If UserList(UserIndex).Stats.GLD > MAXORO Then UserList(UserIndex).Stats.GLD = MAXORO
+198         If UserList(UserIndex).Stats.GLD > MAXORO Then UserList(UserIndex).Stats.GLD = MAXORO
             
-208         Call WriteUpdateGold(UserIndex)
+200         Call WriteUpdateGold(UserIndex)
         
-210         NpcSlot = SlotEnNPCInv(NpcIndex, Objeto.ObjIndex, Objeto.amount)
+202         NpcSlot = SlotEnNPCInv(NpcIndex, Objeto.ObjIndex, Objeto.amount)
         
-212         If NpcSlot > 0 And NpcSlot <= MAX_INVENTORY_SLOTS Then 'Slot valido
+204         If NpcSlot > 0 And NpcSlot <= MAX_INVENTORY_SLOTS Then 'Slot valido
                 
                 ' Saque este incremento de SlotEnNPCInv porque me parece mejor manejarlo junto con el resto de las asignaciones
-214             If NpcList(NpcIndex).Invent.Object(NpcSlot).ObjIndex = 0 Then
-216                 NpcList(NpcIndex).Invent.NroItems = NpcList(NpcIndex).Invent.NroItems + 1
+206             If NpcList(NpcIndex).Invent.Object(NpcSlot).ObjIndex = 0 Then
+208                 NpcList(NpcIndex).Invent.NroItems = NpcList(NpcIndex).Invent.NroItems + 1
                 End If
                 
                 'Mete el obj en el slot
-218             NpcList(NpcIndex).Invent.Object(NpcSlot).ObjIndex = Objeto.ObjIndex
-220             NpcList(NpcIndex).Invent.Object(NpcSlot).amount = NpcList(NpcIndex).Invent.Object(NpcSlot).amount + Objeto.amount
+210             NpcList(NpcIndex).Invent.Object(NpcSlot).ObjIndex = Objeto.ObjIndex
+212             NpcList(NpcIndex).Invent.Object(NpcSlot).amount = NpcList(NpcIndex).Invent.Object(NpcSlot).amount + Objeto.amount
 
-222             If NpcList(NpcIndex).Invent.Object(NpcSlot).amount > MAX_INVENTORY_OBJS Then
-224                 NpcList(NpcIndex).Invent.Object(NpcSlot).amount = MAX_INVENTORY_OBJS
+214             If NpcList(NpcIndex).Invent.Object(NpcSlot).amount > MAX_INVENTORY_OBJS Then
+216                 NpcList(NpcIndex).Invent.Object(NpcSlot).amount = MAX_INVENTORY_OBJS
                 End If
                 
-226             Call UpdateNpcInvToAll(False, NpcIndex, NpcSlot)
+218             Call UpdateNpcInvToAll(False, NpcIndex, NpcSlot)
 
-228             objquedo.amount = NpcList(NpcIndex).Invent.Object(NpcSlot).amount
+220             objquedo.amount = NpcList(NpcIndex).Invent.Object(NpcSlot).amount
     
-230             objquedo.ObjIndex = NpcList(NpcIndex).Invent.Object(NpcSlot).ObjIndex
+222             objquedo.ObjIndex = NpcList(NpcIndex).Invent.Object(NpcSlot).ObjIndex
     
-232             precioenvio = CLng((ObjData(Objeto.ObjIndex).Valor / Descuento(UserIndex) * 1))
+224             precioenvio = CLng((ObjData(Objeto.ObjIndex).Valor / Descuento(UserIndex) * 1))
   
-234             Call WriteChangeNPCInventorySlot(UserIndex, NpcSlot, objquedo, precioenvio)
+226             Call WriteChangeNPCInventorySlot(UserIndex, NpcSlot, objquedo, precioenvio)
                 
             End If
 
         End If
 
-236     Call SubirSkill(UserIndex, eSkill.Comerciar)
+228     Call SubirSkill(UserIndex, eSkill.Comerciar)
 
         Exit Sub
 
 Comercio_Err:
 
-238     Call RegistrarError(Err.Number, Err.Description, "modSistemaComercio.Comercio", Erl)
-240     Resume Next
+230     Call RegistrarError(Err.Number, Err.Description, "modSistemaComercio.Comercio", Erl)
+232     Resume Next
         
 End Sub
 

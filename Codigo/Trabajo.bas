@@ -863,37 +863,37 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
             Exit Sub
         End If
         
-        If ItemIndex = 0 Then Exit Sub
+104     If ItemIndex = 0 Then Exit Sub
         
-104     If CarpinteroTieneMateriales(UserIndex, ItemIndex) _
+106     If CarpinteroTieneMateriales(UserIndex, ItemIndex) _
                 And UserList(UserIndex).Stats.UserSkills(eSkill.Carpinteria) >= ObjData(ItemIndex).SkCarpinteria _
                 And PuedeConstruirCarpintero(ItemIndex) _
                 And ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).OBJType = eOBJType.otHerramientas _
                 And ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).Subtipo = 5 Then
     
-106         If UserList(UserIndex).Stats.MinSta > 2 Then
-108             Call QuitarSta(UserIndex, 2)
+108         If UserList(UserIndex).Stats.MinSta > 2 Then
+110             Call QuitarSta(UserIndex, 2)
         
             Else
-110             Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
+112             Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
                 'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para trabajar.", FontTypeNames.FONTTYPE_INFO)
-112             Call WriteMacroTrabajoToggle(UserIndex, False)
+114             Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Sub
 
             End If
     
-114         Call CarpinteroQuitarMateriales(UserIndex, ItemIndex)
+116         Call CarpinteroQuitarMateriales(UserIndex, ItemIndex)
             'Call WriteConsoleMsg(UserIndex, "Has construido un objeto!", FontTypeNames.FONTTYPE_INFO)
             'Call WriteOroOverHead(UserIndex, 1, UserList(UserIndex).Char.CharIndex)
-116         Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.CharIndex, vbWhite)
+118         Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.CharIndex, vbWhite)
     
             Dim MiObj As obj
 
-118         MiObj.amount = 1
-120         MiObj.ObjIndex = ItemIndex
+120         MiObj.amount = 1
+122         MiObj.ObjIndex = ItemIndex
 
-122         If Not MeterItemEnInventario(UserIndex, MiObj) Then
-124             Call TirarItemAlPiso(UserList(UserIndex).Pos, MiObj)
+124         If Not MeterItemEnInventario(UserIndex, MiObj) Then
+126             Call TirarItemAlPiso(UserList(UserIndex).Pos, MiObj)
 
             End If
     
@@ -902,11 +902,11 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
             '    Call LogDesarrollo(UserList(UserIndex).name & " ha construído " & MiObj.Amount & " " & ObjData(MiObj.ObjIndex).name)
             ' End If
     
-126         Call SubirSkill(UserIndex, eSkill.Carpinteria)
+128         Call SubirSkill(UserIndex, eSkill.Carpinteria)
             'Call UpdateUserInv(True, UserIndex, 0)
-128         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(LABUROCARPINTERO, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+130         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(LABUROCARPINTERO, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 
-130         UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
+132         UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
 
         End If
 
@@ -914,8 +914,8 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
         Exit Sub
 
 CarpinteroConstruirItem_Err:
-132     Call RegistrarError(Err.Number, Err.Description, "Trabajo.CarpinteroConstruirItem", Erl)
-134     Resume Next
+134     Call RegistrarError(Err.Number, Err.Description, "Trabajo.CarpinteroConstruirItem", Erl)
+136     Resume Next
         
 End Sub
 

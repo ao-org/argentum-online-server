@@ -1920,11 +1920,11 @@ Public Sub RecStamina(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, 
                     
                     Dim recuperoSta As Integer
                     
-                    recuperoSta = RandomNumber(1, CInt(Porcentaje(.Stats.MaxSta, Suerte)))
-164                 .Stats.MinSta = IIf((recuperoSta + .Stats.MinSta) > 32000, 32000, (recuperoSta + .Stats.MinSta))
+164                 recuperoSta = RandomNumber(1, CInt(Porcentaje(.Stats.MaxSta, Suerte)))
+166                 .Stats.MinSta = IIf((recuperoSta + .Stats.MinSta) > 32000, 32000, (recuperoSta + .Stats.MinSta))
 
-166                 If .Stats.MinSta > .Stats.MaxSta Then
-168                     .Stats.MinSta = .Stats.MaxSta
+168                 If .Stats.MinSta > .Stats.MaxSta Then
+170                     .Stats.MinSta = .Stats.MaxSta
                     End If
 
                 End If
@@ -1933,8 +1933,8 @@ Public Sub RecStamina(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, 
             Exit Sub
 
 RecStamina_Err:
-170         Call RegistrarError(Err.Number, Err.Description, "General.RecStamina", Erl)
-172         Resume Next
+172         Call RegistrarError(Err.Number, Err.Description, "General.RecStamina", Erl)
+174         Resume Next
 
 End Sub
 

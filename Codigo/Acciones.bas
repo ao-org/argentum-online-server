@@ -721,21 +721,21 @@ Sub AccionParaYunque(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
     
         ' Herramientas: SubTipo 7 - Martillo de Herrero
         
-        If UserList(UserIndex).Invent.HerramientaEqpObjIndex = 0 Then
-            Call WriteConsoleMsg(UserIndex, "Debes tener equipado un martillo de herrero para trabajar con el yunque.", FontTypeNames.FONTTYPE_INFO)
+110     If UserList(UserIndex).Invent.HerramientaEqpObjIndex = 0 Then
+112         Call WriteConsoleMsg(UserIndex, "Debes tener equipado un martillo de herrero para trabajar con el yunque.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         
-110     If ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).Subtipo <> 7 Then
+114     If ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).Subtipo <> 7 Then
             'Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-112         Call WriteConsoleMsg(UserIndex, "La herramienta que tienes no es la correcta, necesitas un martillo de herrero para poder trabajar.", FontTypeNames.FONTTYPE_INFO)
+116         Call WriteConsoleMsg(UserIndex, "La herramienta que tienes no es la correcta, necesitas un martillo de herrero para poder trabajar.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
 
-114     Call EnivarArmasConstruibles(UserIndex)
-116     Call EnivarArmadurasConstruibles(UserIndex)
-118     Call WriteShowBlacksmithForm(UserIndex)
+118     Call EnivarArmasConstruibles(UserIndex)
+120     Call EnivarArmadurasConstruibles(UserIndex)
+122     Call WriteShowBlacksmithForm(UserIndex)
 
         'UserList(UserIndex).Invent.HerramientaEqpObjIndex = objindex
         'UserList(UserIndex).Invent.HerramientaEqpSlot = slot
@@ -744,7 +744,7 @@ Sub AccionParaYunque(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
         Exit Sub
 
 AccionParaYunque_Err:
-120     Call RegistrarError(Err.Number, Err.Description, "Acciones.AccionParaYunque", Erl)
+124     Call RegistrarError(Err.Number, Err.Description, "Acciones.AccionParaYunque", Erl)
 
         
 End Sub
@@ -809,27 +809,27 @@ Sub AccionParaPuertaNpc(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, 
         Dim puerta As ObjData 'ver ReyarB
 
 
-104     puerta = ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex)
+100     puerta = ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex)
 
-110     If puerta.Cerrada = 1 Then 'Abre la puerta
-112         MapData(Map, X, Y).ObjInfo.ObjIndex = puerta.IndexAbierta
-114         Call BloquearPuerta(Map, X, Y, False)
+102     If puerta.Cerrada = 1 Then 'Abre la puerta
+104         MapData(Map, X, Y).ObjInfo.ObjIndex = puerta.IndexAbierta
+106         Call BloquearPuerta(Map, X, Y, False)
 
         Else 'Cierra puerta
-116         MapData(Map, X, Y).ObjInfo.ObjIndex = puerta.IndexCerrada
-118         Call BloquearPuerta(Map, X, Y, True)
+108         MapData(Map, X, Y).ObjInfo.ObjIndex = puerta.IndexCerrada
+110         Call BloquearPuerta(Map, X, Y, True)
 
         End If
 
-124     Call modSendData.SendToAreaByPos(Map, X, Y, PrepareMessageObjectCreate(MapData(Map, X, Y).ObjInfo.ObjIndex, MapData(Map, X, Y).ObjInfo.amount, X, Y))
+112     Call modSendData.SendToAreaByPos(Map, X, Y, PrepareMessageObjectCreate(MapData(Map, X, Y).ObjInfo.ObjIndex, MapData(Map, X, Y).ObjInfo.amount, X, Y))
 
-        Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessagePlayWave(SND_PUERTA, X, Y))
+114     Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessagePlayWave(SND_PUERTA, X, Y))
 
         Exit Sub
 
 Handler:
-136 Call RegistrarError(Err.Number, Err.Description, "Acciones.AccionParaPuertaNpc", Erl)
-138 Resume Next
+116 Call RegistrarError(Err.Number, Err.Description, "Acciones.AccionParaPuertaNpc", Erl)
+118 Resume Next
 
 End Sub
 
