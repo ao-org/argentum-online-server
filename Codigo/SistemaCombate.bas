@@ -920,6 +920,9 @@ Public Sub NpcAtacaNpc(ByVal Atacante As Integer, ByVal Victima As Integer, Opti
         On Error GoTo NpcAtacaNpc_Err
         
 100     If Not IntervaloPermiteAtacarNPC(Atacante) Then Exit Sub
+        Dim heading As eHeading
+        heading = GetHeadingFromWorldPos(NpcList(Atacante).Pos, NpcList(Victima).Pos)
+        Call ChangeNPCChar(Atacante, NpcList(Atacante).Char.Body, NpcList(Atacante).Char.Head, heading)
         
 102     If cambiarMovimiento Then
 104         NpcList(Victima).TargetNPC = Atacante

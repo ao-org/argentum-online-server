@@ -928,7 +928,7 @@ Function SpawnNpc(ByVal NpcIndex As Integer, Pos As WorldPos, ByVal FX As Boolea
 130     NpcList(nIndex).MaestroUser = MaestroUser
         
         ' WyroX: Caminata de NPCs
-132     If NpcList(nIndex).Movement = Caminata Then
+132     If NpcList(nIndex).Movement = Caminata Or NpcList(nIndex).Movement = GuardiaPersigueNpc Then
 134         NpcList(nIndex).Orig = NpcList(nIndex).Pos
         End If
 

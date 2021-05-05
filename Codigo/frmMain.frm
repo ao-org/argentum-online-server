@@ -2005,7 +2005,7 @@ Private Sub TIMER_AI_Timer()
                         
                         If Mapa > 0 Then
 
-                            If MapInfo(Mapa).NumUsers > 0 Then
+                            If MapInfo(Mapa).NumUsers > 0 Or NpcList(NpcIndex).NPCtype = eNPCType.GuardiaNpc Then
     
                                 If IntervaloPermiteMoverse(NpcIndex) Then
                                         
