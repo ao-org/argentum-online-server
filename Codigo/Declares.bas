@@ -295,6 +295,7 @@ Public Enum Meditaciones
     MeditarInicial = 115
     MeditarMayor15 = 116
     MeditarMayor30 = 117
+    MeditarMayor40 = 118
     MeditarMayor45 = 119
     MeditarMayor47 = 120
 End Enum
