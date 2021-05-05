@@ -7560,15 +7560,19 @@ Private Sub HandleMeditate(ByVal UserIndex As Integer)
 122             Select Case .Stats.ELV
 
                     Case 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
+                    Case 1 To 14
 124                     .Char.FX = Meditaciones.MeditarInicial
 
-126                 Case 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29
+126                 Case 15 To 29
 128                     .Char.FX = Meditaciones.MeditarMayor15
 
-130                 Case 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44
+130                 Case 30 To 39
 132                     .Char.FX = Meditaciones.MeditarMayor30
 
-134                 Case 45, 46
+                    Case 40 To 44
+134                     .Char.FX = Meditaciones.MeditarMayor40
+
+                    Case 45 To 46
 136                     .Char.FX = Meditaciones.MeditarMayor45
 
 138                 Case Else
