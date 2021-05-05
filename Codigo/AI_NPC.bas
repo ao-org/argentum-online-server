@@ -40,6 +40,10 @@ Public Sub NpcAI(ByVal NpcIndex As Integer)
 128             Case TipoAI.Invasion
 130                 Call MovimientoInvasion(NpcIndex)
 
+                Case TipoAI.GuardiaPersigueNpc
+                    Call AI_GuardiaPersigueNpc(NpcIndex)
+
+
             End Select
 
         End With
@@ -249,8 +253,87 @@ Private Sub AI_AtacarUsuarioObjetivo(ByVal AtackerNpcIndex As Integer)
 
 ErrorHandler:
 130     Call RegistrarError(Err.Number, Err.Description, "AIv2.AI_AtacarUsuarioObjetivo", Erl)
+         Resume Next
+End Sub
+Public Sub AI_GuardiaPersigueNpc(ByVal NpcIndex As Integer)
+        On Error GoTo ErrorHandler
+        Dim TargetPos As WorldPos
+        
+        With NpcList(NpcIndex)
+        
+            If .targetNpc > 0 Then
+                TargetPos = NpcList(.targetNpc).Pos
+                
+                If Distancia(.Pos, TargetPos) <= 1 Then
+                    Call SistemaCombate.NpcAtacaNpc(NpcIndex, .targetNpc, False)
+                End If
+                
+                If DistanciaRadial(.Orig, TargetPos) <= (DIAMETRO_VISION_GUARDIAS_NPCS \ 2) And NpcList(.targetNpc).Target = 0 Then
+                    Call AI_CaminarConRumbo(NpcIndex, TargetPos)
+                    
+                Else
+                    .targetNpc = 0
+                    Call AI_CaminarConRumbo(NpcIndex, .Orig)
+                End If
+                
+            Else
+                .targetNpc = BuscarNpcEnArea(NpcIndex)
+                If Distancia(.Pos, .Orig) > 0 Then
+                    Call AI_CaminarConRumbo(NpcIndex, .Orig)
+                Else
+                    Call ChangeNPCChar(NpcIndex, .Char.Body, .Char.Head, eHeading.SOUTH)
+                End If
+            End If
+            
+            
+        End With
+        
+        Exit Sub
+        
+        
+ErrorHandler:
+118     Call RegistrarError(Err.Number, Err.Description, "AIv2.AI_GuardiaAtacaNpc", Erl)
+        Resume Next
 
 End Sub
+
+Public Function DistanciaRadial(OrigenPos As WorldPos, DestinoPos As WorldPos) As Long
+    DistanciaRadial = max(Abs(OrigenPos.x - DestinoPos.x), Abs(OrigenPos.y - DestinoPos.y))
+End Function
+
+Function BuscarNpcEnArea(ByVal NpcIndex As Integer) As Integer
+        
+        On Error GoTo BuscarNpcEnArea
+        
+        Dim x As Byte, y As Byte
+        
+        With NpcList(NpcIndex)
+            For x = (.Orig.x - (DIAMETRO_VISION_GUARDIAS_NPCS \ 2)) To (.Orig.x + (DIAMETRO_VISION_GUARDIAS_NPCS \ 2))
+                For y = (.Orig.y - (DIAMETRO_VISION_GUARDIAS_NPCS \ 2)) To (.Orig.y + (DIAMETRO_VISION_GUARDIAS_NPCS \ 2))
+                    If MapData(.Orig.Map, x, y).NpcIndex > 0 And NpcIndex <> MapData(.Orig.Map, x, y).NpcIndex Then
+                        Dim foundNpc As Integer
+                        
+                        foundNpc = MapData(.Orig.Map, x, y).NpcIndex
+                        If NpcList(foundNpc).Hostile And NpcList(foundNpc).Target = 0 Then
+                            BuscarNpcEnArea = MapData(.Orig.Map, x, y).NpcIndex
+                            Exit Function
+                        End If
+                        
+                    End If
+                Next y
+            Next x
+        End With
+        
+        BuscarNpcEnArea = 0
+        
+        Exit Function
+
+BuscarNpcEnArea:
+108     Call RegistrarError(Err.Number, Err.Description, "Extra.BuscarNpcEnArea", Erl)
+110     Resume Next
+        
+End Function
+
 
 Public Sub AI_NpcAtacaNpc(ByVal NpcIndex As Integer)
         On Error GoTo ErrorHandler
@@ -394,7 +477,6 @@ Private Sub HacerCaminata(ByVal NpcIndex As Integer)
         
                 ' Tratamos de acercarnos (podemos pisar npcs, usuarios o triggers)
 110             Heading = GetHeadingFromWorldPos(.Pos, Destino)
-            
                 ' Obtengo la posición según el heading
 112             NextTile = .Pos
 114             Call HeadtoPos(Heading, NextTile)

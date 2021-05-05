@@ -477,6 +477,7 @@ Public Enum eNPCType
     Pirata = 10
     Veterinaria = 11
     Gobernador = 12
+    GuardiaNpc = 13
     Subastador = 16
     Quest = 17
     Pretoriano = 18
@@ -1994,6 +1995,7 @@ Public Enum TipoAI
     NpcDefensa = 4
     SigueAmo = 8
     NpcAtacaNpc = 9
+    GuardiaPersigueNpc = 10
 
     'Pretorianos
     SacerdotePretorianoAi = 11
@@ -2397,3 +2399,5 @@ Public Type Rectangle
     X2 As Integer
     Y2 As Integer
 End Type
+
+Public Const DIAMETRO_VISION_GUARDIAS_NPCS As Byte = 7
