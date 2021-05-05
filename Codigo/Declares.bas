@@ -147,7 +147,11 @@ Public Const iGaleraCiuda = 1267
 
 Public Const iGaleraCrimi = 1268
 
-Public Const iGaleon = 86 'ok
+Public Const iGaleon = 86
+
+Public Const iGaleonCiuda = 1269
+
+Public Const iGaleonCrimi = 1270
 
 Public Const iBarcaArmada = 1264 'ok
 
@@ -472,7 +476,7 @@ Public Enum eNPCType
     Enlistador = 5
     DRAGON = 6
     Timbero = 7
-    Guardiascaos = 8
+    GuardiasCaos = 8
     ResucitadorNewbie = 9
     Pirata = 10
     Veterinaria = 11
@@ -1972,7 +1976,7 @@ Public Type NpcPathFindingInfo
 
     PathLength As Integer   ' Number of steps *
     Path() As tVertice      ' This array holds the path
-    Destination As Position ' The location where the NPC has to go
+    destination As Position ' The location where the NPC has to go
     RangoVision As Single
     Inteligencia As Integer
     
@@ -2376,7 +2380,7 @@ Public Declare Function writeprivateprofilestring Lib "kernel32" Alias "WritePri
 
 Public Declare Function GetPrivateProfileString Lib "kernel32" Alias "GetPrivateProfileStringA" (ByVal lpApplicationname As String, ByVal lpKeyname As Any, ByVal lpdefault As String, ByVal lpreturnedstring As String, ByVal nsize As Long, ByVal lpfilename As String) As Long
 
-Public Declare Sub ZeroMemory Lib "kernel32.dll" Alias "RtlZeroMemory" (ByRef Destination As Any, ByVal Length As Long)
+Public Declare Sub ZeroMemory Lib "kernel32.dll" Alias "RtlZeroMemory" (ByRef destination As Any, ByVal Length As Long)
 
 ' Los Objetos Criticos nunca desaparecen del inventario de los npcs vendedores, una vez que
 ' se venden los 10.000 (max. cantidad de items x slot) vuelven a reabastecer.
