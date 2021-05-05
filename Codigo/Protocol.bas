@@ -1158,327 +1158,327 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
 720         Case ClientPacketID.BanChar                 '/BAN
 722             Call HandleBanChar(UserIndex)
             
-728         Case ClientPacketID.UnbanChar               '/UNBAN
-730             Call HandleUnbanChar(UserIndex)
+724         Case ClientPacketID.UnbanChar               '/UNBAN
+726             Call HandleUnbanChar(UserIndex)
             
-732         Case ClientPacketID.NPCFollow               '/SEGUIR
-734             Call HandleNPCFollow(UserIndex)
+728         Case ClientPacketID.NPCFollow               '/SEGUIR
+730             Call HandleNPCFollow(UserIndex)
             
-736         Case ClientPacketID.SummonChar              '/SUM
-738             Call HandleSummonChar(UserIndex)
+732         Case ClientPacketID.SummonChar              '/SUM
+734             Call HandleSummonChar(UserIndex)
             
-740         Case ClientPacketID.SpawnListRequest        '/CC
-742             Call HandleSpawnListRequest(UserIndex)
+736         Case ClientPacketID.SpawnListRequest        '/CC
+738             Call HandleSpawnListRequest(UserIndex)
             
-744         Case ClientPacketID.SpawnCreature           'SPA
-746             Call HandleSpawnCreature(UserIndex)
+740         Case ClientPacketID.SpawnCreature           'SPA
+742             Call HandleSpawnCreature(UserIndex)
             
-748         Case ClientPacketID.ResetNPCInventory       '/RESETINV
-750             Call HandleResetNPCInventory(UserIndex)
+744         Case ClientPacketID.ResetNPCInventory       '/RESETINV
+746             Call HandleResetNPCInventory(UserIndex)
             
-752         Case ClientPacketID.CleanWorld              '/LIMPIAR
-754             Call HandleCleanWorld(UserIndex)
+748         Case ClientPacketID.CleanWorld              '/LIMPIAR
+750             Call HandleCleanWorld(UserIndex)
             
-756         Case ClientPacketID.ServerMessage           '/RMSG
-758             Call HandleServerMessage(UserIndex)
+752         Case ClientPacketID.ServerMessage           '/RMSG
+754             Call HandleServerMessage(UserIndex)
             
-760         Case ClientPacketID.NickToIP                '/NICK2IP
-762             Call HandleNickToIP(UserIndex)
+756         Case ClientPacketID.NickToIP                '/NICK2IP
+758             Call HandleNickToIP(UserIndex)
         
-764         Case ClientPacketID.IPToNick                '/IP2NICK
-766             Call HandleIPToNick(UserIndex)
+760         Case ClientPacketID.IPToNick                '/IP2NICK
+762             Call HandleIPToNick(UserIndex)
             
-768         Case ClientPacketID.GuildOnlineMembers      '/ONCLAN
-770             Call HandleGuildOnlineMembers(UserIndex)
+764         Case ClientPacketID.GuildOnlineMembers      '/ONCLAN
+766             Call HandleGuildOnlineMembers(UserIndex)
         
-772         Case ClientPacketID.TeleportCreate          '/CT
-774             Call HandleTeleportCreate(UserIndex)
+768         Case ClientPacketID.TeleportCreate          '/CT
+770             Call HandleTeleportCreate(UserIndex)
             
-776         Case ClientPacketID.TeleportDestroy         '/DT
-778             Call HandleTeleportDestroy(UserIndex)
+772         Case ClientPacketID.TeleportDestroy         '/DT
+774             Call HandleTeleportDestroy(UserIndex)
             
-780         Case ClientPacketID.RainToggle              '/LLUVIA
-782             Call HandleRainToggle(UserIndex)
+776         Case ClientPacketID.RainToggle              '/LLUVIA
+778             Call HandleRainToggle(UserIndex)
         
-784         Case ClientPacketID.SetCharDescription      '/SETDESC
-786             Call HandleSetCharDescription(UserIndex)
+780         Case ClientPacketID.SetCharDescription      '/SETDESC
+782             Call HandleSetCharDescription(UserIndex)
         
-788         Case ClientPacketID.ForceMIDIToMap          '/FORCEMIDIMAP
-790             Call HanldeForceMIDIToMap(UserIndex)
+784         Case ClientPacketID.ForceMIDIToMap          '/FORCEMIDIMAP
+786             Call HanldeForceMIDIToMap(UserIndex)
             
-792         Case ClientPacketID.ForceWAVEToMap          '/FORCEWAVMAP
-794             Call HandleForceWAVEToMap(UserIndex)
+788         Case ClientPacketID.ForceWAVEToMap          '/FORCEWAVMAP
+790             Call HandleForceWAVEToMap(UserIndex)
             
-796         Case ClientPacketID.RoyalArmyMessage        '/REALMSG
-798             Call HandleRoyalArmyMessage(UserIndex)
+792         Case ClientPacketID.RoyalArmyMessage        '/REALMSG
+794             Call HandleRoyalArmyMessage(UserIndex)
                         
-800         Case ClientPacketID.ChaosLegionMessage      '/CAOSMSG
-802             Call HandleChaosLegionMessage(UserIndex)
+796         Case ClientPacketID.ChaosLegionMessage      '/CAOSMSG
+798             Call HandleChaosLegionMessage(UserIndex)
             
-804         Case ClientPacketID.CitizenMessage          '/CIUMSG
-806             Call HandleCitizenMessage(UserIndex)
+800         Case ClientPacketID.CitizenMessage          '/CIUMSG
+802             Call HandleCitizenMessage(UserIndex)
             
-808         Case ClientPacketID.CriminalMessage         '/CRIMSG
-810             Call HandleCriminalMessage(UserIndex)
+804         Case ClientPacketID.CriminalMessage         '/CRIMSG
+806             Call HandleCriminalMessage(UserIndex)
             
-812         Case ClientPacketID.TalkAsNPC               '/TALKAS
-814             Call HandleTalkAsNPC(UserIndex)
+808         Case ClientPacketID.TalkAsNPC               '/TALKAS
+810             Call HandleTalkAsNPC(UserIndex)
         
-816         Case ClientPacketID.DestroyAllItemsInArea   '/MASSDEST
-818             Call HandleDestroyAllItemsInArea(UserIndex)
+812         Case ClientPacketID.DestroyAllItemsInArea   '/MASSDEST
+814             Call HandleDestroyAllItemsInArea(UserIndex)
             
-820         Case ClientPacketID.AcceptRoyalCouncilMember '/ACEPTCONSE
-822             Call HandleAcceptRoyalCouncilMember(UserIndex)
+816         Case ClientPacketID.AcceptRoyalCouncilMember '/ACEPTCONSE
+818             Call HandleAcceptRoyalCouncilMember(UserIndex)
             
-824         Case ClientPacketID.AcceptChaosCouncilMember '/ACEPTCONSECAOS
-826             Call HandleAcceptChaosCouncilMember(UserIndex)
+820         Case ClientPacketID.AcceptChaosCouncilMember '/ACEPTCONSECAOS
+822             Call HandleAcceptChaosCouncilMember(UserIndex)
             
-828         Case ClientPacketID.ItemsInTheFloor         '/PISO
-830             Call HandleItemsInTheFloor(UserIndex)
+824         Case ClientPacketID.ItemsInTheFloor         '/PISO
+826             Call HandleItemsInTheFloor(UserIndex)
             
-832         Case ClientPacketID.MakeDumb                '/ESTUPIDO
-834             Call HandleMakeDumb(UserIndex)
+828         Case ClientPacketID.MakeDumb                '/ESTUPIDO
+830             Call HandleMakeDumb(UserIndex)
             
-836         Case ClientPacketID.MakeDumbNoMore          '/NOESTUPIDO
-838             Call HandleMakeDumbNoMore(UserIndex)
+832         Case ClientPacketID.MakeDumbNoMore          '/NOESTUPIDO
+834             Call HandleMakeDumbNoMore(UserIndex)
             
-840         Case ClientPacketID.DumpIPTables            '/DUMPSECURITY"
-842             Call HandleDumpIPTables(UserIndex)
+836         Case ClientPacketID.DumpIPTables            '/DUMPSECURITY"
+838             Call HandleDumpIPTables(UserIndex)
             
-844         Case ClientPacketID.CouncilKick             '/KICKCONSE
-846             Call HandleCouncilKick(UserIndex)
+840         Case ClientPacketID.CouncilKick             '/KICKCONSE
+842             Call HandleCouncilKick(UserIndex)
         
-848         Case ClientPacketID.SetTrigger              '/TRIGGER
-850             Call HandleSetTrigger(UserIndex)
+844         Case ClientPacketID.SetTrigger              '/TRIGGER
+846             Call HandleSetTrigger(UserIndex)
         
-852         Case ClientPacketID.AskTrigger               '/TRIGGER
-854             Call HandleAskTrigger(UserIndex)
+848         Case ClientPacketID.AskTrigger               '/TRIGGER
+850             Call HandleAskTrigger(UserIndex)
             
-856         Case ClientPacketID.BannedIPList            '/BANIPLIST
-858             Call HandleBannedIPList(UserIndex)
+852         Case ClientPacketID.BannedIPList            '/BANIPLIST
+854             Call HandleBannedIPList(UserIndex)
         
-860         Case ClientPacketID.BannedIPReload          '/BANIPRELOAD
-862             Call HandleBannedIPReload(UserIndex)
+856         Case ClientPacketID.BannedIPReload          '/BANIPRELOAD
+858             Call HandleBannedIPReload(UserIndex)
         
-864         Case ClientPacketID.GuildBan                '/BANCLAN
-866             Call HandleGuildBan(UserIndex)
+860         Case ClientPacketID.GuildBan                '/BANCLAN
+862             Call HandleGuildBan(UserIndex)
         
-868         Case ClientPacketID.banip                   '/BANIP
-870             Call HandleBanIP(UserIndex)
+864         Case ClientPacketID.banip                   '/BANIP
+866             Call HandleBanIP(UserIndex)
         
-872         Case ClientPacketID.UnbanIP                 '/UNBANIP
-874             Call HandleUnbanIP(UserIndex)
+868         Case ClientPacketID.UnbanIP                 '/UNBANIP
+870             Call HandleUnbanIP(UserIndex)
         
-876         Case ClientPacketID.CreateItem              '/CI
-878             Call HandleCreateItem(UserIndex)
+872         Case ClientPacketID.CreateItem              '/CI
+874             Call HandleCreateItem(UserIndex)
         
-880         Case ClientPacketID.DestroyItems            '/DEST
-882             Call HandleDestroyItems(UserIndex)
+876         Case ClientPacketID.DestroyItems            '/DEST
+878             Call HandleDestroyItems(UserIndex)
         
-884         Case ClientPacketID.ChaosLegionKick         '/NOCAOS
-886             Call HandleChaosLegionKick(UserIndex)
+880         Case ClientPacketID.ChaosLegionKick         '/NOCAOS
+882             Call HandleChaosLegionKick(UserIndex)
         
-888         Case ClientPacketID.RoyalArmyKick           '/NOREAL
-890             Call HandleRoyalArmyKick(UserIndex)
+884         Case ClientPacketID.RoyalArmyKick           '/NOREAL
+886             Call HandleRoyalArmyKick(UserIndex)
         
-892         Case ClientPacketID.ForceMIDIAll            '/FORCEMIDI
-894             Call HandleForceMIDIAll(UserIndex)
+888         Case ClientPacketID.ForceMIDIAll            '/FORCEMIDI
+890             Call HandleForceMIDIAll(UserIndex)
         
-896         Case ClientPacketID.ForceWAVEAll            '/FORCEWAV
-898             Call HandleForceWAVEAll(UserIndex)
+892         Case ClientPacketID.ForceWAVEAll            '/FORCEWAV
+894             Call HandleForceWAVEAll(UserIndex)
         
-900         Case ClientPacketID.RemovePunishment        '/BORRARPENA
-902             Call HandleRemovePunishment(UserIndex)
+896         Case ClientPacketID.RemovePunishment        '/BORRARPENA
+898             Call HandleRemovePunishment(UserIndex)
         
-904         Case ClientPacketID.TileBlockedToggle       '/BLOQ
-906             Call HandleTileBlockedToggle(UserIndex)
+900         Case ClientPacketID.TileBlockedToggle       '/BLOQ
+902             Call HandleTileBlockedToggle(UserIndex)
         
-908         Case ClientPacketID.KillNPCNoRespawn        '/MATA
-910             Call HandleKillNPCNoRespawn(UserIndex)
+904         Case ClientPacketID.KillNPCNoRespawn        '/MATA
+906             Call HandleKillNPCNoRespawn(UserIndex)
         
-912         Case ClientPacketID.KillAllNearbyNPCs       '/MASSKILL
-914             Call HandleKillAllNearbyNPCs(UserIndex)
+908         Case ClientPacketID.KillAllNearbyNPCs       '/MASSKILL
+910             Call HandleKillAllNearbyNPCs(UserIndex)
         
-916         Case ClientPacketID.LastIP                  '/LASTIP
-918             Call HandleLastIP(UserIndex)
+912         Case ClientPacketID.LastIP                  '/LASTIP
+914             Call HandleLastIP(UserIndex)
         
-920         Case ClientPacketID.ChangeMOTD              '/MOTDCAMBIA
-922             Call HandleChangeMOTD(UserIndex)
+916         Case ClientPacketID.ChangeMOTD              '/MOTDCAMBIA
+918             Call HandleChangeMOTD(UserIndex)
         
-924         Case ClientPacketID.SetMOTD                 'ZMOTD
-926             Call HandleSetMOTD(UserIndex)
+920         Case ClientPacketID.SetMOTD                 'ZMOTD
+922             Call HandleSetMOTD(UserIndex)
         
-928         Case ClientPacketID.SystemMessage           '/SMSG
-930             Call HandleSystemMessage(UserIndex)
+924         Case ClientPacketID.SystemMessage           '/SMSG
+926             Call HandleSystemMessage(UserIndex)
         
-932         Case ClientPacketID.CreateNPC               '/ACC
-934             Call HandleCreateNPC(UserIndex)
+928         Case ClientPacketID.CreateNPC               '/ACC
+930             Call HandleCreateNPC(UserIndex)
         
-936         Case ClientPacketID.CreateNPCWithRespawn    '/RACC
-938             Call HandleCreateNPCWithRespawn(UserIndex)
+932         Case ClientPacketID.CreateNPCWithRespawn    '/RACC
+934             Call HandleCreateNPCWithRespawn(UserIndex)
         
-940         Case ClientPacketID.ImperialArmour          '/AI1 - 4
-942             Call HandleImperialArmour(UserIndex)
+936         Case ClientPacketID.ImperialArmour          '/AI1 - 4
+938             Call HandleImperialArmour(UserIndex)
         
-944         Case ClientPacketID.ChaosArmour             '/AC1 - 4
-946             Call HandleChaosArmour(UserIndex)
+940         Case ClientPacketID.ChaosArmour             '/AC1 - 4
+942             Call HandleChaosArmour(UserIndex)
         
-948         Case ClientPacketID.NavigateToggle          '/NAVE
-950             Call HandleNavigateToggle(UserIndex)
+944         Case ClientPacketID.NavigateToggle          '/NAVE
+946             Call HandleNavigateToggle(UserIndex)
         
-952         Case ClientPacketID.ServerOpenToUsersToggle '/HABILITAR
-954             Call HandleServerOpenToUsersToggle(UserIndex)
+948         Case ClientPacketID.ServerOpenToUsersToggle '/HABILITAR
+950             Call HandleServerOpenToUsersToggle(UserIndex)
         
-956         Case ClientPacketID.Participar           '/APAGAR
-958             Call HandleParticipar(UserIndex)
+952         Case ClientPacketID.Participar           '/APAGAR
+954             Call HandleParticipar(UserIndex)
         
-960         Case ClientPacketID.TurnCriminal            '/CONDEN
-962             Call HandleTurnCriminal(UserIndex)
+956         Case ClientPacketID.TurnCriminal            '/CONDEN
+958             Call HandleTurnCriminal(UserIndex)
         
-964         Case ClientPacketID.ResetFactions           '/RAJAR
-966             Call HandleResetFactions(UserIndex)
+960         Case ClientPacketID.ResetFactions           '/RAJAR
+962             Call HandleResetFactions(UserIndex)
         
-968         Case ClientPacketID.RemoveCharFromGuild     '/RAJARCLAN
-970             Call HandleRemoveCharFromGuild(UserIndex)
+964         Case ClientPacketID.RemoveCharFromGuild     '/RAJARCLAN
+966             Call HandleRemoveCharFromGuild(UserIndex)
         
-972         Case ClientPacketID.RequestCharMail         '/LASTEMAIL
-974             Call HandleRequestCharMail(UserIndex)
+968         Case ClientPacketID.RequestCharMail         '/LASTEMAIL
+970             Call HandleRequestCharMail(UserIndex)
         
-976         Case ClientPacketID.AlterPassword           '/APASS
-978             Call HandleAlterPassword(UserIndex)
+972         Case ClientPacketID.AlterPassword           '/APASS
+974             Call HandleAlterPassword(UserIndex)
         
-980         Case ClientPacketID.AlterMail               '/AEMAIL
-982             Call HandleAlterMail(UserIndex)
+976         Case ClientPacketID.AlterMail               '/AEMAIL
+978             Call HandleAlterMail(UserIndex)
         
-984         Case ClientPacketID.AlterName               '/ANAME
-986             Call HandleAlterName(UserIndex)
+980         Case ClientPacketID.AlterName               '/ANAME
+982             Call HandleAlterName(UserIndex)
         
-988         Case ClientPacketID.DoBackUp                '/DOBACKUP
-990             Call HandleDoBackUp(UserIndex)
+984         Case ClientPacketID.DoBackUp                '/DOBACKUP
+986             Call HandleDoBackUp(UserIndex)
         
-992         Case ClientPacketID.ShowGuildMessages       '/SHOWCMSG
-994             Call HandleShowGuildMessages(UserIndex)
+988         Case ClientPacketID.ShowGuildMessages       '/SHOWCMSG
+990             Call HandleShowGuildMessages(UserIndex)
         
-996         Case ClientPacketID.SaveMap                 '/GUARDAMAPA
-998             Call HandleSaveMap(UserIndex)
+992         Case ClientPacketID.SaveMap                 '/GUARDAMAPA
+994             Call HandleSaveMap(UserIndex)
         
-1000         Case ClientPacketID.ChangeMapInfoPK         '/MODMAPINFO PK
-1002             Call HandleChangeMapInfoPK(UserIndex)
+996         Case ClientPacketID.ChangeMapInfoPK         '/MODMAPINFO PK
+998             Call HandleChangeMapInfoPK(UserIndex)
         
-1004         Case ClientPacketID.ChangeMapInfoBackup     '/MODMAPINFO BACKUP
-1006             Call HandleChangeMapInfoBackup(UserIndex)
+1000         Case ClientPacketID.ChangeMapInfoBackup     '/MODMAPINFO BACKUP
+1002             Call HandleChangeMapInfoBackup(UserIndex)
     
-1008         Case ClientPacketID.ChangeMapInfoRestricted '/MODMAPINFO RESTRINGIR
-1010             Call HandleChangeMapInfoRestricted(UserIndex)
+1004         Case ClientPacketID.ChangeMapInfoRestricted '/MODMAPINFO RESTRINGIR
+1006             Call HandleChangeMapInfoRestricted(UserIndex)
             
-1012         Case ClientPacketID.ChangeMapInfoNoMagic    '/MODMAPINFO MAGIASINEFECTO
-1014             Call HandleChangeMapInfoNoMagic(UserIndex)
+1008         Case ClientPacketID.ChangeMapInfoNoMagic    '/MODMAPINFO MAGIASINEFECTO
+1010             Call HandleChangeMapInfoNoMagic(UserIndex)
             
-1016         Case ClientPacketID.ChangeMapInfoNoInvi     '/MODMAPINFO INVISINEFECTO
-1018             Call HandleChangeMapInfoNoInvi(UserIndex)
+1012         Case ClientPacketID.ChangeMapInfoNoInvi     '/MODMAPINFO INVISINEFECTO
+1014             Call HandleChangeMapInfoNoInvi(UserIndex)
             
-1020         Case ClientPacketID.ChangeMapInfoNoResu     '/MODMAPINFO RESUSINEFECTO
-1022             Call HandleChangeMapInfoNoResu(UserIndex)
+1016         Case ClientPacketID.ChangeMapInfoNoResu     '/MODMAPINFO RESUSINEFECTO
+1018             Call HandleChangeMapInfoNoResu(UserIndex)
             
-1024         Case ClientPacketID.ChangeMapInfoLand       '/MODMAPINFO TERRENO
-1026             Call HandleChangeMapInfoLand(UserIndex)
+1020         Case ClientPacketID.ChangeMapInfoLand       '/MODMAPINFO TERRENO
+1022             Call HandleChangeMapInfoLand(UserIndex)
             
-1028         Case ClientPacketID.ChangeMapInfoZone       '/MODMAPINFO ZONA
-1030             Call HandleChangeMapInfoZone(UserIndex)
+1024         Case ClientPacketID.ChangeMapInfoZone       '/MODMAPINFO ZONA
+1026             Call HandleChangeMapInfoZone(UserIndex)
         
-1032         Case ClientPacketID.SaveChars               '/GRABAR
-1034             Call HandleSaveChars(UserIndex)
+1028         Case ClientPacketID.SaveChars               '/GRABAR
+1030             Call HandleSaveChars(UserIndex)
         
-1036         Case ClientPacketID.CleanSOS                '/BORRAR SOS
-1038             Call HandleCleanSOS(UserIndex)
+1032         Case ClientPacketID.CleanSOS                '/BORRAR SOS
+1034             Call HandleCleanSOS(UserIndex)
         
-1040         Case ClientPacketID.ShowServerForm          '/SHOW INT
-1042             Call HandleShowServerForm(UserIndex)
+1036         Case ClientPacketID.ShowServerForm          '/SHOW INT
+1038             Call HandleShowServerForm(UserIndex)
             
-1044         Case ClientPacketID.night                   '/NOCHE
-1046             Call HandleNight(UserIndex)
+1040         Case ClientPacketID.night                   '/NOCHE
+1042             Call HandleNight(UserIndex)
 
-1048         Case ClientPacketID.Day                     '/DIA
-1050             Call HandleDay(UserIndex)
+1044         Case ClientPacketID.Day                     '/DIA
+1046             Call HandleDay(UserIndex)
 
-1052         Case ClientPacketID.SetTime                 '/HORA X
-1054             Call HandleSetTime(UserIndex)
+1048         Case ClientPacketID.SetTime                 '/HORA X
+1050             Call HandleSetTime(UserIndex)
 
-1056         Case ClientPacketID.DonateGold              '/DONAR
-1058             Call HandleDonateGold(UserIndex)
+1052         Case ClientPacketID.DonateGold              '/DONAR
+1054             Call HandleDonateGold(UserIndex)
                 
-1060         Case ClientPacketID.Promedio                '/PROMEDIO
-1062             Call HandlePromedio(UserIndex)
+1056         Case ClientPacketID.Promedio                '/PROMEDIO
+1058             Call HandlePromedio(UserIndex)
                 
-1064         Case ClientPacketID.GiveItem                '/DAR
-1066             Call HandleGiveItem(UserIndex)
+1060         Case ClientPacketID.GiveItem                '/DAR
+1062             Call HandleGiveItem(UserIndex)
 
-1068         Case ClientPacketID.KickAllChars            '/ECHARTODOSPJS
-1070             Call HandleKickAllChars(UserIndex)
+1064         Case ClientPacketID.KickAllChars            '/ECHARTODOSPJS
+1066             Call HandleKickAllChars(UserIndex)
         
-1072         Case ClientPacketID.RequestTCPStats         '/TCPESSTATS
-1074             Call HandleRequestTCPStats(UserIndex)
+1068         Case ClientPacketID.RequestTCPStats         '/TCPESSTATS
+1070             Call HandleRequestTCPStats(UserIndex)
         
-1076         Case ClientPacketID.ReloadNPCs              '/RELOADNPCS
-1078             Call HandleReloadNPCs(UserIndex)
+1072         Case ClientPacketID.ReloadNPCs              '/RELOADNPCS
+1074             Call HandleReloadNPCs(UserIndex)
         
-1080         Case ClientPacketID.ReloadServerIni         '/RELOADSINI
-1082             Call HandleReloadServerIni(UserIndex)
+1076         Case ClientPacketID.ReloadServerIni         '/RELOADSINI
+1078             Call HandleReloadServerIni(UserIndex)
         
-1084         Case ClientPacketID.ReloadSpells            '/RELOADHECHIZOS
-1086             Call HandleReloadSpells(UserIndex)
+1080         Case ClientPacketID.ReloadSpells            '/RELOADHECHIZOS
+1082             Call HandleReloadSpells(UserIndex)
         
-1088         Case ClientPacketID.ReloadObjects           '/RELOADOBJ
-1090             Call HandleReloadObjects(UserIndex)
+1084         Case ClientPacketID.ReloadObjects           '/RELOADOBJ
+1086             Call HandleReloadObjects(UserIndex)
         
-1092         Case ClientPacketID.Restart                 '/REINICIAR
-1094             Call HandleRestart(UserIndex)
+1088         Case ClientPacketID.Restart                 '/REINICIAR
+1090             Call HandleRestart(UserIndex)
         
-1096         Case ClientPacketID.ResetAutoUpdate         '/AUTOUPDATE
-1098             Call HandleResetAutoUpdate(UserIndex)
+1092         Case ClientPacketID.ResetAutoUpdate         '/AUTOUPDATE
+1094             Call HandleResetAutoUpdate(UserIndex)
         
-1100         Case ClientPacketID.ChatColor               '/CHATCOLOR
-1102             Call HandleChatColor(UserIndex)
+1096         Case ClientPacketID.ChatColor               '/CHATCOLOR
+1098             Call HandleChatColor(UserIndex)
         
-1104         Case ClientPacketID.Ignored                 '/IGNORADO
-1106             Call HandleIgnored(UserIndex)
+1100         Case ClientPacketID.Ignored                 '/IGNORADO
+1102             Call HandleIgnored(UserIndex)
         
-1108         Case ClientPacketID.CheckSlot               '/SLOT
-1110             Call HandleCheckSlot(UserIndex)
+1104         Case ClientPacketID.CheckSlot               '/SLOT
+1106             Call HandleCheckSlot(UserIndex)
             
-                    'Nuevo Ladder
+                     'Nuevo Ladder
             
-1112         Case ClientPacketID.GlobalMessage           '/CONSOLA
-1114             Call HandleGlobalMessage(UserIndex)
+1108         Case ClientPacketID.GlobalMessage           '/CONSOLA
+1110             Call HandleGlobalMessage(UserIndex)
         
-1116         Case ClientPacketID.GlobalOnOff             '/GLOBAL
-1118             Call HandleGlobalOnOff(UserIndex)
+1112         Case ClientPacketID.GlobalOnOff             '/GLOBAL
+1114             Call HandleGlobalOnOff(UserIndex)
         
-1120         Case ClientPacketID.NewPacketID    'Los Nuevos Packs ID
-1122             Call HandleIncomingDataNewPacks(UserIndex)
+1116         Case ClientPacketID.NewPacketID    'Los Nuevos Packs ID
+1118             Call HandleIncomingDataNewPacks(UserIndex)
 
-1124         Case Else
-                    'ERROR : Abort!
-1126             Call CloseSocket(UserIndex)
-                   Exit Function
-            End Select
+1120         Case Else
+                     'ERROR : Abort!
+1122             Call CloseSocket(UserIndex)
+                    Exit Function
+             End Select
 
-            'Done with this packet, move on to next one or send everything if no more packets found
-1128     If UserList(UserIndex).incomingData.Length > 0 And Err.Number = 0 Then
-1130         HandleIncomingData = True
+             'Done with this packet, move on to next one or send everything if no more packets found
+1124     If UserList(UserIndex).incomingData.Length > 0 And Err.Number = 0 Then
+1126         HandleIncomingData = True
   
-1132     ElseIf Err.Number <> 0 And Not Err.Number = UserList(UserIndex).incomingData.NotEnoughDataErrCode Then
-                'An error ocurred, log it and kick player.
-1134         Call RegistrarError(Err.Number, Err.Description & vbNewLine & "PackedId: " & packetId & vbNewLine & _
-                  IIf(UserList(UserIndex).flags.UserLogged, "UserName: " & UserList(UserIndex).name, "UserIndex: " & UserIndex), _
-                  "Protocol.HandleIncomingData", Erl)
+1128     ElseIf Err.Number <> 0 And Not Err.Number = UserList(UserIndex).incomingData.NotEnoughDataErrCode Then
+                 'An error ocurred, log it and kick player.
+1130         Call RegistrarError(Err.Number, Err.Description & vbNewLine & "PackedId: " & packetId & vbNewLine & _
+                   IIf(UserList(UserIndex).flags.UserLogged, "UserName: " & UserList(UserIndex).name, "UserIndex: " & UserIndex), _
+                   "Protocol.HandleIncomingData", Erl)
         
-1136         Call CloseSocket(UserIndex)
+1132         Call CloseSocket(UserIndex)
   
-1138         HandleIncomingData = False
-            Else
-1140         HandleIncomingData = False
-            End If
+1134         HandleIncomingData = False
+             Else
+1136         HandleIncomingData = False
+             End If
 
 End Function
 
@@ -4467,130 +4467,130 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 622             Case eSkill.Grupo
                     'If UserList(UserIndex).Grupo.EnGrupo = False Then
                     'Target whatever is in that tile
-624                 'Call LookatTile(UserIndex, UserList(UserIndex).Pos.Map, X, Y)
+                    'Call LookatTile(UserIndex, UserList(UserIndex).Pos.Map, X, Y)
                     
-626                 tU = .flags.TargetUser
+624                 tU = .flags.TargetUser
                     
                     'Call WritePreguntaBox(UserIndex, UserList(UserIndex).name & " te invitó a unirte a su grupo. ¿Deseas unirte?")
                     
-628                 If tU > 0 And tU <> UserIndex Then
+626                 If tU > 0 And tU <> UserIndex Then
 
                         'Can't steal administrative players
-630                     If UserList(UserIndex).Grupo.EnGrupo = False Then
-632                         If UserList(tU).flags.Muerto = 0 Then
-634                             If Abs(.Pos.X - X) + Abs(.Pos.Y - Y) > 8 Then
-636                                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
+628                     If UserList(UserIndex).Grupo.EnGrupo = False Then
+630                         If UserList(tU).flags.Muerto = 0 Then
+632                             If Abs(.Pos.X - X) + Abs(.Pos.Y - Y) > 8 Then
+634                                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                                     'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
-638                                 Call WriteWorkRequestTarget(UserIndex, 0)
+636                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                     Exit Sub
 
                                 End If
                                          
-640                             If UserList(UserIndex).Grupo.CantidadMiembros = 0 Then
-642                                 UserList(UserIndex).Grupo.Lider = UserIndex
-644                                 UserList(UserIndex).Grupo.Miembros(1) = UserIndex
-646                                 UserList(UserIndex).Grupo.CantidadMiembros = 1
-648                                 Call InvitarMiembro(UserIndex, tU)
+638                             If UserList(UserIndex).Grupo.CantidadMiembros = 0 Then
+640                                 UserList(UserIndex).Grupo.Lider = UserIndex
+642                                 UserList(UserIndex).Grupo.Miembros(1) = UserIndex
+644                                 UserList(UserIndex).Grupo.CantidadMiembros = 1
+646                                 Call InvitarMiembro(UserIndex, tU)
                                 Else
-650                                 UserList(UserIndex).Grupo.Lider = UserIndex
-652                                 Call InvitarMiembro(UserIndex, tU)
+648                                 UserList(UserIndex).Grupo.Lider = UserIndex
+650                                 Call InvitarMiembro(UserIndex, tU)
 
                                 End If
                                          
                             Else
-654                             Call WriteLocaleMsg(UserIndex, "7", FontTypeNames.FONTTYPE_INFO)
+652                             Call WriteLocaleMsg(UserIndex, "7", FontTypeNames.FONTTYPE_INFO)
                                 'Call WriteConsoleMsg(UserIndex, "El usuario esta muerto.", FontTypeNames.FONTTYPE_INFOIAO)
-656                             Call WriteWorkRequestTarget(UserIndex, 0)
+654                             Call WriteWorkRequestTarget(UserIndex, 0)
 
                             End If
 
                         Else
 
-658                         If UserList(UserIndex).Grupo.Lider = UserIndex Then
-660                             Call InvitarMiembro(UserIndex, tU)
+656                         If UserList(UserIndex).Grupo.Lider = UserIndex Then
+658                             Call InvitarMiembro(UserIndex, tU)
                             Else
-662                             Call WriteConsoleMsg(UserIndex, "Tu no podés invitar usuarios, debe hacerlo " & UserList(UserList(UserIndex).Grupo.Lider).name & ".", FontTypeNames.FONTTYPE_INFOIAO)
-664                             Call WriteWorkRequestTarget(UserIndex, 0)
+660                             Call WriteConsoleMsg(UserIndex, "Tu no podés invitar usuarios, debe hacerlo " & UserList(UserList(UserIndex).Grupo.Lider).name & ".", FontTypeNames.FONTTYPE_INFOIAO)
+662                             Call WriteWorkRequestTarget(UserIndex, 0)
 
                             End If
 
                         End If
 
                     Else
-666                     Call WriteLocaleMsg(UserIndex, "261", FontTypeNames.FONTTYPE_INFO)
+664                     Call WriteLocaleMsg(UserIndex, "261", FontTypeNames.FONTTYPE_INFO)
 
                     End If
 
                     ' End If
-668             Case eSkill.MarcaDeClan
+666             Case eSkill.MarcaDeClan
 
                     'If UserList(UserIndex).Grupo.EnGrupo = False Then
                     'Target whatever is in that tile
                     Dim clan_nivel As Byte
                 
-670                 If UserList(UserIndex).GuildIndex = 0 Then
-672                     Call WriteConsoleMsg(UserIndex, "Servidor> No Perteneces a ningun clan.", FontTypeNames.FONTTYPE_INFOIAO)
+668                 If UserList(UserIndex).GuildIndex = 0 Then
+670                     Call WriteConsoleMsg(UserIndex, "Servidor> No Perteneces a ningun clan.", FontTypeNames.FONTTYPE_INFOIAO)
                         Exit Sub
 
                     End If
                 
-674                 clan_nivel = modGuilds.NivelDeClan(UserList(UserIndex).GuildIndex)
+672                 clan_nivel = modGuilds.NivelDeClan(UserList(UserIndex).GuildIndex)
 
-676                 If clan_nivel < 4 Then
-678                     Call WriteConsoleMsg(UserIndex, "Servidor> El nivel de tu clan debe ser 4 para utilizar esta opción.", FontTypeNames.FONTTYPE_INFOIAO)
+674                 If clan_nivel < 4 Then
+676                     Call WriteConsoleMsg(UserIndex, "Servidor> El nivel de tu clan debe ser 4 para utilizar esta opción.", FontTypeNames.FONTTYPE_INFOIAO)
                         Exit Sub
 
                     End If
                                 
-680                 Call LookatTile(UserIndex, UserList(UserIndex).Pos.Map, X, Y)
+678                 Call LookatTile(UserIndex, UserList(UserIndex).Pos.Map, X, Y)
                     
-682                 tU = .flags.TargetUser
+680                 tU = .flags.TargetUser
 
-684                 If tU = 0 Then Exit Sub
+682                 If tU = 0 Then Exit Sub
                     
-686                 If UserList(UserIndex).GuildIndex = UserList(tU).GuildIndex Then
-688                     Call WriteConsoleMsg(UserIndex, "Servidor> No podes marcar a un miembro de tu clan.", FontTypeNames.FONTTYPE_INFOIAO)
+684                 If UserList(UserIndex).GuildIndex = UserList(tU).GuildIndex Then
+686                     Call WriteConsoleMsg(UserIndex, "Servidor> No podes marcar a un miembro de tu clan.", FontTypeNames.FONTTYPE_INFOIAO)
                         Exit Sub
 
                     End If
                     
                     'Call WritePreguntaBox(UserIndex, UserList(UserIndex).name & " te invitó a unirte a su grupo. ¿Deseas unirte?")
                     
-690                 If tU > 0 And tU <> UserIndex Then
+688                 If tU > 0 And tU <> UserIndex Then
 
                         ' WyroX: No puede marcar admins invisibles
-692                     If UserList(tU).flags.AdminInvisible <> 0 Then Exit Sub
+690                     If UserList(tU).flags.AdminInvisible <> 0 Then Exit Sub
 
                         'Can't steal administrative players
-694                     If UserList(tU).flags.Muerto = 0 Then
+692                     If UserList(tU).flags.Muerto = 0 Then
                             'call marcar
-696                         If UserList(tU).flags.invisible = 1 Or UserList(tU).flags.Oculto = 1 Then
-698                             Call SendData(SendTarget.ToClanArea, UserIndex, PrepareMessageParticleFX(UserList(tU).Char.CharIndex, 210, 50, False))
+694                         If UserList(tU).flags.invisible = 1 Or UserList(tU).flags.Oculto = 1 Then
+696                             Call SendData(SendTarget.ToClanArea, UserIndex, PrepareMessageParticleFX(UserList(tU).Char.CharIndex, 210, 50, False))
                             Else
-700                             Call SendData(SendTarget.ToClanArea, UserIndex, PrepareMessageParticleFX(UserList(tU).Char.CharIndex, 210, 150, False))
+698                             Call SendData(SendTarget.ToClanArea, UserIndex, PrepareMessageParticleFX(UserList(tU).Char.CharIndex, 210, 150, False))
                             End If
-702                         Call SendData(SendTarget.ToClanArea, UserIndex, PrepareMessageConsoleMsg("Clan> [" & UserList(UserIndex).name & "] marco a " & UserList(tU).name & ".", FontTypeNames.FONTTYPE_GUILD))
+700                         Call SendData(SendTarget.ToClanArea, UserIndex, PrepareMessageConsoleMsg("Clan> [" & UserList(UserIndex).name & "] marco a " & UserList(tU).name & ".", FontTypeNames.FONTTYPE_GUILD))
                         Else
-704                         Call WriteLocaleMsg(UserIndex, "7", FontTypeNames.FONTTYPE_INFO)
+702                         Call WriteLocaleMsg(UserIndex, "7", FontTypeNames.FONTTYPE_INFO)
                             'Call WriteConsoleMsg(UserIndex, "El usuario esta muerto.", FontTypeNames.FONTTYPE_INFOIAO)
-706                         Call WriteWorkRequestTarget(UserIndex, 0)
+704                         Call WriteWorkRequestTarget(UserIndex, 0)
 
                         End If
 
                     Else
-708                     Call WriteLocaleMsg(UserIndex, "261", FontTypeNames.FONTTYPE_INFO)
+706                     Call WriteLocaleMsg(UserIndex, "261", FontTypeNames.FONTTYPE_INFO)
 
                     End If
 
-710             Case eSkill.MarcaDeGM
-712                 Call LookatTile(UserIndex, UserList(UserIndex).Pos.Map, X, Y)
+708             Case eSkill.MarcaDeGM
+710                 Call LookatTile(UserIndex, UserList(UserIndex).Pos.Map, X, Y)
                     
-714                 tU = .flags.TargetUser
+712                 tU = .flags.TargetUser
 
-716                 If tU > 0 Then
-718                     Call WriteConsoleMsg(UserIndex, "Servidor> [" & UserList(tU).name & "] seleccionado.", FontTypeNames.FONTTYPE_SERVER)
+714                 If tU > 0 Then
+716                     Call WriteConsoleMsg(UserIndex, "Servidor> [" & UserList(tU).name & "] seleccionado.", FontTypeNames.FONTTYPE_SERVER)
                     Else
-720                     Call WriteLocaleMsg(UserIndex, "261", FontTypeNames.FONTTYPE_INFO)
+718                     Call WriteLocaleMsg(UserIndex, "261", FontTypeNames.FONTTYPE_INFO)
 
                     End If
                     
@@ -4602,8 +4602,8 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleWorkLeftClick_Err:
-722     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleWorkLeftClick", Erl)
-724     Resume Next
+720     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleWorkLeftClick", Erl)
+722     Resume Next
         
 End Sub
 
@@ -5583,30 +5583,30 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
 
                 End If
                 
-                If .Invent.Object(slot).ObjIndex > 0 Then
-                    If ObjData(.Invent.Object(slot).ObjIndex).Instransferible Then
-                        Call WriteConsoleMsg(UserIndex, "Este objeto es intransferible, no podés venderlo.", FontTypeNames.FONTTYPE_TALK)
+152             If .Invent.Object(slot).ObjIndex > 0 Then
+154                 If ObjData(.Invent.Object(slot).ObjIndex).Instransferible Then
+156                     Call WriteConsoleMsg(UserIndex, "Este objeto es intransferible, no podés venderlo.", FontTypeNames.FONTTYPE_TALK)
                         Exit Sub
                     End If
                 End If
             
-152             .ComUsu.Objeto = slot
-154             .ComUsu.cant = amount
+158             .ComUsu.Objeto = slot
+160             .ComUsu.cant = amount
             
                 'If the other one had accepted, we turn that back and inform of the new offer (just to be cautious).
-156             If UserList(tUser).ComUsu.Acepto = True Then
-158                 UserList(tUser).ComUsu.Acepto = False
-160                 Call WriteConsoleMsg(tUser, .name & " ha cambiado su oferta.", FontTypeNames.FONTTYPE_TALK)
+162             If UserList(tUser).ComUsu.Acepto = True Then
+164                 UserList(tUser).ComUsu.Acepto = False
+166                 Call WriteConsoleMsg(tUser, .name & " ha cambiado su oferta.", FontTypeNames.FONTTYPE_TALK)
 
                 End If
             
                 Dim ObjAEnviar As obj
                 
-162             ObjAEnviar.amount = amount
+168             ObjAEnviar.amount = amount
                 'Si no es oro tmb le agrego el objInex
-164             If slot <> 200 Then ObjAEnviar.ObjIndex = UserList(UserIndex).Invent.Object(slot).ObjIndex
+170             If slot <> 200 Then ObjAEnviar.ObjIndex = UserList(UserIndex).Invent.Object(slot).ObjIndex
                 'Llamos a la funcion
-166             Call EnviarObjetoTransaccion(tUser, UserIndex, ObjAEnviar)
+172             Call EnviarObjetoTransaccion(tUser, UserIndex, ObjAEnviar)
 
             End If
 
@@ -5616,8 +5616,8 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleUserCommerceOffer_Err:
-168     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleUserCommerceOffer", Erl)
-170     Resume Next
+174     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleUserCommerceOffer", Erl)
+176     Resume Next
         
 End Sub
 
@@ -9659,11 +9659,11 @@ Private Sub HandleGoNearby(ByVal UserIndex As Integer)
             Dim Found  As Boolean
         
             'Check the user has enough powers
-114         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Or Ayuda.Existe(UserName) Then
-112             tIndex = NameIndex(UserName)
+112         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Or Ayuda.Existe(UserName) Then
+114             tIndex = NameIndex(UserName)
 
                 'Si es dios o Admins no podemos salvo que nosotros tambiín lo seamos
-                If CompararPrivilegiosUser(UserIndex, tIndex) >= 0 Then
+116             If CompararPrivilegiosUser(UserIndex, tIndex) >= 0 Then
 118                 If tIndex <= 0 Then 'existe el usuario destino?
 120                     Call WriteConsoleMsg(UserIndex, "Usuario offline.", FontTypeNames.FONTTYPE_INFO)
                     Else
@@ -10134,33 +10134,33 @@ Private Sub HandleWarpChar(ByVal UserIndex As Integer)
 126                 Call WriteConsoleMsg(UserIndex, "Solo puedes transportarte a ciudades.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 'Si manda yo o su propio nombre
-                ElseIf LCase$(UserName) <> LCase$(UserList(UserIndex).name) And UCase$(UserName) <> "YO" Then
-                    Call WriteConsoleMsg(UserIndex, "Solo puedes transportarte a ti mismo.", FontTypeNames.FONTTYPE_INFO)
+128             ElseIf LCase$(UserName) <> LCase$(UserList(UserIndex).name) And UCase$(UserName) <> "YO" Then
+130                 Call WriteConsoleMsg(UserIndex, "Solo puedes transportarte a ti mismo.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
             End If
             
             '¿Para que te vas a transportar a la misma posicion?
-128         If .Pos.Map = Map And .Pos.X = X And .Pos.Y = Y Then Exit Sub
+132         If .Pos.Map = Map And .Pos.X = X And .Pos.Y = Y Then Exit Sub
             
-130         If MapaValido(Map) And LenB(UserName) <> 0 Then
+134         If MapaValido(Map) And LenB(UserName) <> 0 Then
 
-132             If UCase$(UserName) <> "YO" Then
-136                 tUser = NameIndex(UserName)
+136             If UCase$(UserName) <> "YO" Then
+138                 tUser = NameIndex(UserName)
                 Else
-138                 tUser = UserIndex
+140                 tUser = UserIndex
 
                 End If
             
-140             If tUser <= 0 Then
-142                 Call WriteConsoleMsg(UserIndex, "Usuario offline.", FontTypeNames.FONTTYPE_INFO)
+142             If tUser <= 0 Then
+144                 Call WriteConsoleMsg(UserIndex, "Usuario offline.", FontTypeNames.FONTTYPE_INFO)
 
-144             ElseIf InMapBounds(Map, X, Y) Then
-146                 Call FindLegalPos(tUser, Map, X, Y)
-148                 Call WarpUserChar(tUser, Map, X, Y, True)
+146             ElseIf InMapBounds(Map, X, Y) Then
+148                 Call FindLegalPos(tUser, Map, X, Y)
+150                 Call WarpUserChar(tUser, Map, X, Y, True)
 
-150                 If tUser <> UserIndex Then
-152                     Call LogGM(.name, "Transportó a " & UserList(tUser).name & " hacia " & "Mapa" & Map & " X:" & X & " Y:" & Y)
+152                 If tUser <> UserIndex Then
+154                     Call LogGM(.name, "Transportó a " & UserList(tUser).name & " hacia " & "Mapa" & Map & " X:" & X & " Y:" & Y)
                     End If
                         
                 End If
@@ -10174,14 +10174,14 @@ Private Sub HandleWarpChar(ByVal UserIndex As Integer)
 ErrHandler:
 
         Dim Error As Long
-154         Error = Err.Number
+156         Error = Err.Number
 
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-156     Set Buffer = Nothing
+158     Set Buffer = Nothing
     
-158     If Error <> 0 Then Err.raise Error
+160     If Error <> 0 Then Err.raise Error
 
 End Sub
 
@@ -10221,54 +10221,54 @@ Private Sub HandleSilence(ByVal UserIndex As Integer)
             Dim tUser    As Integer
         
 110         UserName = Buffer.ReadASCIIString()
-            minutos = Buffer.ReadInteger()
+112         minutos = Buffer.ReadInteger()
 
-112         If EsGM(UserIndex) Then
-114             tUser = NameIndex(UserName)
+114         If EsGM(UserIndex) Then
+116             tUser = NameIndex(UserName)
         
-116             If tUser <= 0 Then
-118                 If PersonajeExiste(UserName) Then
-                        If CompararPrivilegios(.flags.Privilegios, UserDarPrivilegioLevel(UserName)) > 0 Then
-                            If minutos > 0 Then
-                                Call SilenciarUserDatabase(UserName, minutos)
-                                Call SavePenaDatabase(UserName, .name & ": silencio por " & Time & " minutos. " & Date & " " & Time)
-                                Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("Administración » " & .name & " ha silenciado a " & UserName & "(offline) por " & minutos & " minutos.", FontTypeNames.FONTTYPE_GM))
-                                Call LogGM(.name, "Silenciar a " & UserList(tUser).name & " por " & minutos & " minutos.")
+118             If tUser <= 0 Then
+120                 If PersonajeExiste(UserName) Then
+122                     If CompararPrivilegios(.flags.Privilegios, UserDarPrivilegioLevel(UserName)) > 0 Then
+124                         If minutos > 0 Then
+126                             Call SilenciarUserDatabase(UserName, minutos)
+128                             Call SavePenaDatabase(UserName, .name & ": silencio por " & Time & " minutos. " & Date & " " & Time)
+130                             Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("Administración » " & .name & " ha silenciado a " & UserName & "(offline) por " & minutos & " minutos.", FontTypeNames.FONTTYPE_GM))
+132                             Call LogGM(.name, "Silenciar a " & UserList(tUser).name & " por " & minutos & " minutos.")
                             Else
-                                Call DesilenciarUserDatabase(UserName)
-                                Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("Administración » " & .name & " ha desilenciado a " & UserName & "(offline).", FontTypeNames.FONTTYPE_GM))
-                                Call LogGM(.name, "Desilenciar a " & UserList(tUser).name & ".")
+134                             Call DesilenciarUserDatabase(UserName)
+136                             Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("Administración » " & .name & " ha desilenciado a " & UserName & "(offline).", FontTypeNames.FONTTYPE_GM))
+138                             Call LogGM(.name, "Desilenciar a " & UserList(tUser).name & ".")
                             End If
                         Else
-                            Call WriteConsoleMsg(UserIndex, "No puedes silenciar a un administrador de mayor o igual rango.", FontTypeNames.FONTTYPE_INFO)
+140                         Call WriteConsoleMsg(UserIndex, "No puedes silenciar a un administrador de mayor o igual rango.", FontTypeNames.FONTTYPE_INFO)
                         End If
                     Else
-                        Call WriteConsoleMsg(UserIndex, "El personaje no existe.", FontTypeNames.FONTTYPE_INFO)
+142                     Call WriteConsoleMsg(UserIndex, "El personaje no existe.", FontTypeNames.FONTTYPE_INFO)
                     End If
                 
-                ElseIf CompararPrivilegiosUser(UserIndex, tUser) > 0 Then
-                    If minutos > 0 Then
-                        UserList(tUser).flags.Silenciado = 1
-                        UserList(tUser).flags.MinutosRestantes = minutos
-                        UserList(tUser).flags.SegundosPasados = 0
-                        Call SavePenaDatabase(UserName, .name & ": silencio por " & Time & " minutos. " & Date & " " & Time)
-                        Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("Administración » " & .name & " ha silenciado a " & UserList(tUser).name & " por " & minutos & " minutos.", FontTypeNames.FONTTYPE_GM))
-                        Call WriteConsoleMsg(tUser, "Has sido silenciado por los administradores, no podrás hablar con otros usuarios. Utilice /GM para pedir ayuda.", FontTypeNames.FONTTYPE_GM)
-                        Call LogGM(.name, "Silenciar a " & UserList(tUser).name & " por " & minutos & " minutos.")
+144             ElseIf CompararPrivilegiosUser(UserIndex, tUser) > 0 Then
+146                 If minutos > 0 Then
+148                     UserList(tUser).flags.Silenciado = 1
+150                     UserList(tUser).flags.MinutosRestantes = minutos
+152                     UserList(tUser).flags.SegundosPasados = 0
+154                     Call SavePenaDatabase(UserName, .name & ": silencio por " & Time & " minutos. " & Date & " " & Time)
+156                     Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("Administración » " & .name & " ha silenciado a " & UserList(tUser).name & " por " & minutos & " minutos.", FontTypeNames.FONTTYPE_GM))
+158                     Call WriteConsoleMsg(tUser, "Has sido silenciado por los administradores, no podrás hablar con otros usuarios. Utilice /GM para pedir ayuda.", FontTypeNames.FONTTYPE_GM)
+160                     Call LogGM(.name, "Silenciar a " & UserList(tUser).name & " por " & minutos & " minutos.")
                     Else
-                        UserList(tUser).flags.Silenciado = 1
-                        Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("Administración » " & .name & " ha desilenciado a " & UserList(tUser).name & ".", FontTypeNames.FONTTYPE_GM))
-                        Call WriteConsoleMsg(tUser, "Has sido desilenciado.", FontTypeNames.FONTTYPE_GM)
-                        Call LogGM(.name, "Desilenciar a " & UserList(tUser).name & ".")
+162                     UserList(tUser).flags.Silenciado = 1
+164                     Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("Administración » " & .name & " ha desilenciado a " & UserList(tUser).name & ".", FontTypeNames.FONTTYPE_GM))
+166                     Call WriteConsoleMsg(tUser, "Has sido desilenciado.", FontTypeNames.FONTTYPE_GM)
+168                     Call LogGM(.name, "Desilenciar a " & UserList(tUser).name & ".")
                     End If
                 Else
-                    Call WriteConsoleMsg(UserIndex, "No puedes silenciar a un administrador de mayor o igual rango.", FontTypeNames.FONTTYPE_INFO)
+170                 Call WriteConsoleMsg(UserIndex, "No puedes silenciar a un administrador de mayor o igual rango.", FontTypeNames.FONTTYPE_INFO)
                 End If
 
             End If
         
             'If we got here then packet is complete, copy data back to original queue
-136         Call .incomingData.CopyBuffer(Buffer)
+172         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
@@ -10276,14 +10276,14 @@ ErrHandler:
 
         Dim Error As Long
 
-138     Error = Err.Number
+174     Error = Err.Number
 
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-140     Set Buffer = Nothing
+176     Set Buffer = Nothing
     
-142     If Error <> 0 Then Err.raise Error
+178     If Error <> 0 Then Err.raise Error
 
 End Sub
 
@@ -11642,498 +11642,498 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                        
 202             Case eEditOptions.eo_Particula
                 
-                If Not .flags.Privilegios = Consejero Then
-204                 If tUser <= 0 Then
+204             If Not .flags.Privilegios = Consejero Then
+206                 If tUser <= 0 Then
 
-206                     If Database_Enabled Then
+208                     If Database_Enabled Then
                            'Call SaveUserBodyDatabase(UserName, val(Arg1))
                            Else
                             'Call WriteVar(CharPath & UserName & ".chr", "INIT", "Arma", Arg1)
 
                            End If
 
-208                         Call WriteConsoleMsg(UserIndex, "Usuario Offline Alterado: " & UserName, FontTypeNames.FONTTYPE_INFO)
+210                         Call WriteConsoleMsg(UserIndex, "Usuario Offline Alterado: " & UserName, FontTypeNames.FONTTYPE_INFO)
                         Else
                             'Call ChangeUserChar(tUser, UserList(tUser).Char.Body, UserList(tUser).Char.Head, UserList(tUser).Char.Heading, UserList(tUser).Char.WeaponAnim, UserList(tUser).Char.ShieldAnim, val(Arg1))
-210                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, val(Arg1), 9999, False))
-212                         .Char.ParticulaFx = val(Arg1)
-214                         .Char.loops = 9999
+212                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, val(Arg1), 9999, False))
+214                         .Char.ParticulaFx = val(Arg1)
+216                         .Char.loops = 9999
                        End If
                 End If
                        
                 
-216             Case eEditOptions.eo_Head
+218             Case eEditOptions.eo_Head
 
-218                 If tUser <= 0 Then
+220                 If tUser <= 0 Then
                     
-220                     If Database_Enabled Then
-222                         Call SaveUserHeadDatabase(UserName, val(Arg1))
+222                     If Database_Enabled Then
+224                         Call SaveUserHeadDatabase(UserName, val(Arg1))
                         Else
-224                         Call WriteVar(CharPath & UserName & ".chr", "INIT", "Head", Arg1)
+226                         Call WriteVar(CharPath & UserName & ".chr", "INIT", "Head", Arg1)
 
                         End If
 
-226                     Call WriteConsoleMsg(UserIndex, "Usuario Offline Alterado: " & UserName, FontTypeNames.FONTTYPE_INFO)
+228                     Call WriteConsoleMsg(UserIndex, "Usuario Offline Alterado: " & UserName, FontTypeNames.FONTTYPE_INFO)
                     Else
-228                     Call ChangeUserChar(tUser, UserList(tUser).Char.Body, val(Arg1), UserList(tUser).Char.Heading, UserList(tUser).Char.WeaponAnim, UserList(tUser).Char.ShieldAnim, UserList(tUser).Char.CascoAnim)
+230                     Call ChangeUserChar(tUser, UserList(tUser).Char.Body, val(Arg1), UserList(tUser).Char.Heading, UserList(tUser).Char.WeaponAnim, UserList(tUser).Char.ShieldAnim, UserList(tUser).Char.CascoAnim)
 
                     End If
                 
-230             Case eEditOptions.eo_CriminalsKilled
+232             Case eEditOptions.eo_CriminalsKilled
 
-232                 If tUser <= 0 Then
-234                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
+234                 If tUser <= 0 Then
+236                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
                     Else
 
-236                     If val(Arg1) > MAXUSERMATADOS Then
-238                         UserList(tUser).Faccion.CriminalesMatados = MAXUSERMATADOS
+238                     If val(Arg1) > MAXUSERMATADOS Then
+240                         UserList(tUser).Faccion.CriminalesMatados = MAXUSERMATADOS
                         Else
-240                         UserList(tUser).Faccion.CriminalesMatados = val(Arg1)
-
-                        End If
-
-                    End If
-                
-242             Case eEditOptions.eo_CiticensKilled
-
-244                 If tUser <= 0 Then
-246                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
-                    Else
-
-248                     If val(Arg1) > MAXUSERMATADOS Then
-250                         UserList(tUser).Faccion.ciudadanosMatados = MAXUSERMATADOS
-                        Else
-252                         UserList(tUser).Faccion.ciudadanosMatados = val(Arg1)
+242                         UserList(tUser).Faccion.CriminalesMatados = val(Arg1)
 
                         End If
 
                     End If
                 
-254             Case eEditOptions.eo_Level
+244             Case eEditOptions.eo_CiticensKilled
 
-256                 If tUser <= 0 Then
-258                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
+246                 If tUser <= 0 Then
+248                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
                     Else
 
-260                     If val(Arg1) > STAT_MAXELV Then
-262                         Arg1 = CStr(STAT_MAXELV)
-264                         Call WriteConsoleMsg(UserIndex, "No podés tener un nivel superior a " & STAT_MAXELV & ".", FONTTYPE_INFO)
+250                     If val(Arg1) > MAXUSERMATADOS Then
+252                         UserList(tUser).Faccion.ciudadanosMatados = MAXUSERMATADOS
+                        Else
+254                         UserList(tUser).Faccion.ciudadanosMatados = val(Arg1)
+
+                        End If
+
+                    End If
+                
+256             Case eEditOptions.eo_Level
+
+258                 If tUser <= 0 Then
+260                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                    Else
+
+262                     If val(Arg1) > STAT_MAXELV Then
+264                         Arg1 = CStr(STAT_MAXELV)
+266                         Call WriteConsoleMsg(UserIndex, "No podés tener un nivel superior a " & STAT_MAXELV & ".", FONTTYPE_INFO)
 
                         End If
                         
-266                     UserList(tUser).Stats.ELV = val(Arg1)
+268                     UserList(tUser).Stats.ELV = val(Arg1)
 
                     End If
                     
-268                 Call WriteUpdateUserStats(UserIndex)
+270                 Call WriteUpdateUserStats(UserIndex)
                 
-270             Case eEditOptions.eo_Class
+272             Case eEditOptions.eo_Class
 
-272                 If tUser <= 0 Then
-274                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
+274                 If tUser <= 0 Then
+276                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
                     Else
 
-276                     For LoopC = 1 To NUMCLASES
+278                     For LoopC = 1 To NUMCLASES
 
-278                         If Tilde(ListaClases(LoopC)) = Tilde(Arg1) Then Exit For
-280                     Next LoopC
+280                         If Tilde(ListaClases(LoopC)) = Tilde(Arg1) Then Exit For
+282                     Next LoopC
                         
-282                     If LoopC > NUMCLASES Then
-284                         Call WriteConsoleMsg(UserIndex, "Clase desconocida. Intente nuevamente.", FontTypeNames.FONTTYPE_INFO)
+284                     If LoopC > NUMCLASES Then
+286                         Call WriteConsoleMsg(UserIndex, "Clase desconocida. Intente nuevamente.", FontTypeNames.FONTTYPE_INFO)
                         Else
-286                         UserList(tUser).clase = LoopC
+288                         UserList(tUser).clase = LoopC
 
                         End If
 
                     End If
                 
-288             Case eEditOptions.eo_Skills
+290             Case eEditOptions.eo_Skills
 
-290                 For LoopC = 1 To NUMSKILLS
+292                 For LoopC = 1 To NUMSKILLS
 
-292                     If Tilde(Replace$(SkillsNames(LoopC), " ", "+")) = Tilde(Arg1) Then Exit For
-294                 Next LoopC
+294                     If Tilde(Replace$(SkillsNames(LoopC), " ", "+")) = Tilde(Arg1) Then Exit For
+296                 Next LoopC
                     
-296                 If LoopC > NUMSKILLS Then
-298                     Call WriteConsoleMsg(UserIndex, "Skill Inexistente!", FontTypeNames.FONTTYPE_INFO)
+298                 If LoopC > NUMSKILLS Then
+300                     Call WriteConsoleMsg(UserIndex, "Skill Inexistente!", FontTypeNames.FONTTYPE_INFO)
                     Else
 
-300                     If tUser <= 0 Then
+302                     If tUser <= 0 Then
                         
-302                         If Database_Enabled Then
-304                             Call SaveUserSkillDatabase(UserName, LoopC, val(Arg2))
+304                         If Database_Enabled Then
+306                             Call SaveUserSkillDatabase(UserName, LoopC, val(Arg2))
                             Else
-306                             Call WriteVar(CharPath & UserName & ".chr", "Skills", "SK" & LoopC, Arg2)
+308                             Call WriteVar(CharPath & UserName & ".chr", "Skills", "SK" & LoopC, Arg2)
 
                             End If
 
-308                         Call WriteConsoleMsg(UserIndex, "Usuario Offline Alterado: " & UserName, FontTypeNames.FONTTYPE_INFO)
+310                         Call WriteConsoleMsg(UserIndex, "Usuario Offline Alterado: " & UserName, FontTypeNames.FONTTYPE_INFO)
                         Else
-310                         UserList(tUser).Stats.UserSkills(LoopC) = val(Arg2)
+312                         UserList(tUser).Stats.UserSkills(LoopC) = val(Arg2)
 
                         End If
 
                     End If
                 
-312             Case eEditOptions.eo_SkillPointsLeft
+314             Case eEditOptions.eo_SkillPointsLeft
 
-314                 If tUser <= 0 Then
+316                 If tUser <= 0 Then
                     
-316                     If Database_Enabled Then
-318                         Call SaveUserSkillsLibres(UserName, val(Arg1))
+318                     If Database_Enabled Then
+320                         Call SaveUserSkillsLibres(UserName, val(Arg1))
                         Else
-320                         Call WriteVar(CharPath & UserName & ".chr", "STATS", "SkillPtsLibres", Arg1)
+322                         Call WriteVar(CharPath & UserName & ".chr", "STATS", "SkillPtsLibres", Arg1)
 
                         End If
                         
-322                     Call WriteConsoleMsg(UserIndex, "Usuario Offline Alterado: " & UserName, FontTypeNames.FONTTYPE_INFO)
+324                     Call WriteConsoleMsg(UserIndex, "Usuario Offline Alterado: " & UserName, FontTypeNames.FONTTYPE_INFO)
                     Else
-324                     UserList(tUser).Stats.SkillPts = val(Arg1)
-
-                    End If
-                
-326             Case eEditOptions.eo_Sex
-
-328                 If tUser <= 0 Then
-330                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
-                    
-                    Else
-332                     Arg1 = UCase$(Arg1)
-
-334                     If (Arg1 = "MUJER") Then
-336                         UserList(tUser).genero = eGenero.Mujer
-                        
-338                     ElseIf (Arg1 = "HOMBRE") Then
-340                         UserList(tUser).genero = eGenero.Hombre
-
-                        End If
+326                     UserList(tUser).Stats.SkillPts = val(Arg1)
 
                     End If
                 
-342             Case eEditOptions.eo_Raza
+328             Case eEditOptions.eo_Sex
 
-344                 If tUser <= 0 Then
-346                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
-                        
-                    Else
+330                 If tUser <= 0 Then
+332                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
                     
-348                     Arg1 = UCase$(Arg1)
+                    Else
+334                     Arg1 = UCase$(Arg1)
 
-350                     If (Arg1 = "HUMANO") Then
-352                         UserList(tUser).raza = eRaza.Humano
-                            
-354                     ElseIf (Arg1 = "ELFO") Then
-356                         UserList(tUser).raza = eRaza.Elfo
-                            
-358                     ElseIf (Arg1 = "DROW") Then
-360                         UserList(tUser).raza = eRaza.Drow
-                            
-362                     ElseIf (Arg1 = "ENANO") Then
-364                         UserList(tUser).raza = eRaza.Enano
-                            
-366                     ElseIf (Arg1 = "GNOMO") Then
-368                         UserList(tUser).raza = eRaza.Gnomo
-                            
-370                     ElseIf (Arg1 = "ORCO") Then
-372                         UserList(tUser).raza = eRaza.Orco
+336                     If (Arg1 = "MUJER") Then
+338                         UserList(tUser).genero = eGenero.Mujer
+                        
+340                     ElseIf (Arg1 = "HOMBRE") Then
+342                         UserList(tUser).genero = eGenero.Hombre
 
                         End If
 
                     End If
-                    
-374             Case eEditOptions.eo_Vida
-376                 If tUser <= 0 Then
-378                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
-                    
-                    Else
-380                     tmpLong = val(Arg1)
+                
+344             Case eEditOptions.eo_Raza
+
+346                 If tUser <= 0 Then
+348                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
                         
-382                     If tmpLong > 0 Then
-384                         UserList(tUser).Stats.MaxHp = min(tmpLong, STAT_MAXHP)
-386                         UserList(tUser).Stats.MinHp = UserList(tUser).Stats.MaxHp
+                    Else
+                    
+350                     Arg1 = UCase$(Arg1)
+
+352                     If (Arg1 = "HUMANO") Then
+354                         UserList(tUser).raza = eRaza.Humano
                             
-388                         Call WriteUpdateUserStats(tUser)
-                        End If
-                    End If
-                    
-390             Case eEditOptions.eo_Mana
-392                 If tUser <= 0 Then
-394                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
-                    
-                    Else
-396                     tmpLong = val(Arg1)
-                        
-398                     If tmpLong > 0 Then
-400                         UserList(tUser).Stats.MaxMAN = min(tmpLong, STAT_MAXMP)
-402                         UserList(tUser).Stats.MinMAN = UserList(tUser).Stats.MaxMAN
+356                     ElseIf (Arg1 = "ELFO") Then
+358                         UserList(tUser).raza = eRaza.Elfo
                             
-404                         Call WriteUpdateUserStats(tUser)
-                        End If
-                    End If
-                    
-406             Case eEditOptions.eo_Energia
-408                 If tUser <= 0 Then
-410                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
-                    
-                    Else
-412                     tmpLong = val(Arg1)
-                        
-414                     If tmpLong > 0 Then
-416                         UserList(tUser).Stats.MaxSta = min(tmpLong, STAT_MAXSTA)
-418                         UserList(tUser).Stats.MinSta = UserList(tUser).Stats.MaxSta
+360                     ElseIf (Arg1 = "DROW") Then
+362                         UserList(tUser).raza = eRaza.Drow
                             
-420                         Call WriteUpdateUserStats(tUser)
-                        End If
-                    End If
-                        
-422             Case eEditOptions.eo_MinHP
-424                 If tUser <= 0 Then
-426                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
-                    
-                    Else
-428                     tmpLong = val(Arg1)
-                        
-430                     If tmpLong >= 0 Then
-432                         UserList(tUser).Stats.MinHp = min(tmpLong, STAT_MAXHP)
+364                     ElseIf (Arg1 = "ENANO") Then
+366                         UserList(tUser).raza = eRaza.Enano
                             
-434                         Call WriteUpdateHP(tUser)
-                        End If
-                    End If
-                    
-436             Case eEditOptions.eo_MinMP
-438                 If tUser <= 0 Then
-440                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
-                    
-                    Else
-442                     tmpLong = val(Arg1)
-                        
-444                     If tmpLong >= 0 Then
-446                         UserList(tUser).Stats.MinMAN = min(tmpLong, STAT_MAXMP)
+368                     ElseIf (Arg1 = "GNOMO") Then
+370                         UserList(tUser).raza = eRaza.Gnomo
                             
-448                         Call WriteUpdateMana(tUser)
+372                     ElseIf (Arg1 = "ORCO") Then
+374                         UserList(tUser).raza = eRaza.Orco
+
+                        End If
+
+                    End If
+                    
+376             Case eEditOptions.eo_Vida
+378                 If tUser <= 0 Then
+380                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                    
+                    Else
+382                     tmpLong = val(Arg1)
+                        
+384                     If tmpLong > 0 Then
+386                         UserList(tUser).Stats.MaxHp = min(tmpLong, STAT_MAXHP)
+388                         UserList(tUser).Stats.MinHp = UserList(tUser).Stats.MaxHp
+                            
+390                         Call WriteUpdateUserStats(tUser)
                         End If
                     End If
                     
-450             Case eEditOptions.eo_Hit
-452                 If tUser <= 0 Then
-454                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
+392             Case eEditOptions.eo_Mana
+394                 If tUser <= 0 Then
+396                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
                     
                     Else
-456                     tmpLong = val(Arg1)
+398                     tmpLong = val(Arg1)
                         
-458                     If tmpLong >= 0 Then
-460                         UserList(tUser).Stats.MaxHit = min(tmpLong, STAT_MAXHIT)
-462                         UserList(tUser).Stats.MinHIT = UserList(tUser).Stats.MaxHit
+400                     If tmpLong > 0 Then
+402                         UserList(tUser).Stats.MaxMAN = min(tmpLong, STAT_MAXMP)
+404                         UserList(tUser).Stats.MinMAN = UserList(tUser).Stats.MaxMAN
+                            
+406                         Call WriteUpdateUserStats(tUser)
                         End If
                     End If
                     
-464             Case eEditOptions.eo_MinHit
-466                 If tUser <= 0 Then
-468                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
+408             Case eEditOptions.eo_Energia
+410                 If tUser <= 0 Then
+412                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
                     
                     Else
-470                     tmpLong = val(Arg1)
+414                     tmpLong = val(Arg1)
                         
-472                     If tmpLong >= 0 Then
-474                         UserList(tUser).Stats.MinHIT = min(tmpLong, STAT_MAXHIT)
+416                     If tmpLong > 0 Then
+418                         UserList(tUser).Stats.MaxSta = min(tmpLong, STAT_MAXSTA)
+420                         UserList(tUser).Stats.MinSta = UserList(tUser).Stats.MaxSta
+                            
+422                         Call WriteUpdateUserStats(tUser)
+                        End If
+                    End If
+                        
+424             Case eEditOptions.eo_MinHP
+426                 If tUser <= 0 Then
+428                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                    
+                    Else
+430                     tmpLong = val(Arg1)
+                        
+432                     If tmpLong >= 0 Then
+434                         UserList(tUser).Stats.MinHp = min(tmpLong, STAT_MAXHP)
+                            
+436                         Call WriteUpdateHP(tUser)
                         End If
                     End If
                     
-476             Case eEditOptions.eo_MaxHit
-478                 If tUser <= 0 Then
-480                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
+438             Case eEditOptions.eo_MinMP
+440                 If tUser <= 0 Then
+442                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
                     
                     Else
-482                     tmpLong = val(Arg1)
+444                     tmpLong = val(Arg1)
                         
-484                     If tmpLong >= 0 Then
-486                         UserList(tUser).Stats.MaxHit = min(tmpLong, STAT_MAXHIT)
+446                     If tmpLong >= 0 Then
+448                         UserList(tUser).Stats.MinMAN = min(tmpLong, STAT_MAXMP)
+                            
+450                         Call WriteUpdateMana(tUser)
                         End If
                     End If
                     
-488             Case eEditOptions.eo_Desc
-490                 If tUser <= 0 Then
-492                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
+452             Case eEditOptions.eo_Hit
+454                 If tUser <= 0 Then
+456                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
                     
-494                 ElseIf DescripcionValida(Arg1) Then
-496                     UserList(tUser).Desc = Arg1
-                        
                     Else
-498                     Call WriteConsoleMsg(UserIndex, "Caracteres inválidos en la descripción.", FontTypeNames.FONTTYPE_INFO)
+458                     tmpLong = val(Arg1)
+                        
+460                     If tmpLong >= 0 Then
+462                         UserList(tUser).Stats.MaxHit = min(tmpLong, STAT_MAXHIT)
+464                         UserList(tUser).Stats.MinHIT = UserList(tUser).Stats.MaxHit
+                        End If
                     End If
                     
-500             Case eEditOptions.eo_Intervalo
-502                 If tUser <= 0 Then
-504                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
-                    Else
-506                     Arg1 = UCase$(Arg1)
-                        
-508                     tmpLong = val(Arg2)
-                        
-510                     If tmpLong >= 0 Then
+466             Case eEditOptions.eo_MinHit
+468                 If tUser <= 0 Then
+470                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
                     
-512                         Select Case Arg1
+                    Else
+472                     tmpLong = val(Arg1)
+                        
+474                     If tmpLong >= 0 Then
+476                         UserList(tUser).Stats.MinHIT = min(tmpLong, STAT_MAXHIT)
+                        End If
+                    End If
+                    
+478             Case eEditOptions.eo_MaxHit
+480                 If tUser <= 0 Then
+482                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                    
+                    Else
+484                     tmpLong = val(Arg1)
+                        
+486                     If tmpLong >= 0 Then
+488                         UserList(tUser).Stats.MaxHit = min(tmpLong, STAT_MAXHIT)
+                        End If
+                    End If
+                    
+490             Case eEditOptions.eo_Desc
+492                 If tUser <= 0 Then
+494                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                    
+496                 ElseIf DescripcionValida(Arg1) Then
+498                     UserList(tUser).Desc = Arg1
+                        
+                    Else
+500                     Call WriteConsoleMsg(UserIndex, "Caracteres inválidos en la descripción.", FontTypeNames.FONTTYPE_INFO)
+                    End If
+                    
+502             Case eEditOptions.eo_Intervalo
+504                 If tUser <= 0 Then
+506                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
+                    Else
+508                     Arg1 = UCase$(Arg1)
+                        
+510                     tmpLong = val(Arg2)
+                        
+512                     If tmpLong >= 0 Then
+                    
+514                         Select Case Arg1
                                 Case "USAR"
-514                                 UserList(tUser).Intervals.UsarClic = tmpLong
-516                                 UserList(tUser).Intervals.UsarU = tmpLong
+516                                 UserList(tUser).Intervals.UsarClic = tmpLong
+518                                 UserList(tUser).Intervals.UsarU = tmpLong
                                     
-518                             Case "USAR_U", "USAR+U", "USAR-U"
-520                                 UserList(tUser).Intervals.UsarU = tmpLong
+520                             Case "USAR_U", "USAR+U", "USAR-U"
+522                                 UserList(tUser).Intervals.UsarU = tmpLong
                                     
-522                             Case "USAR_CLIC", "USAR+CLIC", "USAR-CLIC", "USAR_CLICK", "USAR+CLICK", "USAR-CLICK"
-524                                 UserList(tUser).Intervals.UsarClic = tmpLong
+524                             Case "USAR_CLIC", "USAR+CLIC", "USAR-CLIC", "USAR_CLICK", "USAR+CLICK", "USAR-CLICK"
+526                                 UserList(tUser).Intervals.UsarClic = tmpLong
                                     
-526                             Case "ARCO", "PROYECTILES"
-528                                 UserList(tUser).Intervals.Arco = tmpLong
+528                             Case "ARCO", "PROYECTILES"
+530                                 UserList(tUser).Intervals.Arco = tmpLong
                                     
-530                             Case "GOLPE", "GOLPES", "GOLPEAR"
-532                                 UserList(tUser).Intervals.Golpe = tmpLong
+532                             Case "GOLPE", "GOLPES", "GOLPEAR"
+534                                 UserList(tUser).Intervals.Golpe = tmpLong
                                     
-534                             Case "MAGIA", "HECHIZO", "HECHIZOS", "LANZAR"
-536                                 UserList(tUser).Intervals.Magia = tmpLong
+536                             Case "MAGIA", "HECHIZO", "HECHIZOS", "LANZAR"
+538                                 UserList(tUser).Intervals.Magia = tmpLong
 
-538                             Case "COMBO"
-540                                 UserList(tUser).Intervals.GolpeMagia = tmpLong
-542                                 UserList(tUser).Intervals.MagiaGolpe = tmpLong
+540                             Case "COMBO"
+542                                 UserList(tUser).Intervals.GolpeMagia = tmpLong
+544                                 UserList(tUser).Intervals.MagiaGolpe = tmpLong
 
-544                             Case "GOLPE-MAGIA", "GOLPE-HECHIZO"
-546                                 UserList(tUser).Intervals.GolpeMagia = tmpLong
+546                             Case "GOLPE-MAGIA", "GOLPE-HECHIZO"
+548                                 UserList(tUser).Intervals.GolpeMagia = tmpLong
 
-548                             Case "MAGIA-GOLPE", "HECHIZO-GOLPE"
-550                                 UserList(tUser).Intervals.MagiaGolpe = tmpLong
+550                             Case "MAGIA-GOLPE", "HECHIZO-GOLPE"
+552                                 UserList(tUser).Intervals.MagiaGolpe = tmpLong
                                     
-552                             Case "GOLPE-USAR"
-554                                 UserList(tUser).Intervals.GolpeUsar = tmpLong
+554                             Case "GOLPE-USAR"
+556                                 UserList(tUser).Intervals.GolpeUsar = tmpLong
                                     
-556                             Case "TRABAJAR", "WORK", "TRABAJO"
-558                                 UserList(tUser).Intervals.TrabajarConstruir = tmpLong
-560                                 UserList(tUser).Intervals.TrabajarExtraer = tmpLong
+558                             Case "TRABAJAR", "WORK", "TRABAJO"
+560                                 UserList(tUser).Intervals.TrabajarConstruir = tmpLong
+562                                 UserList(tUser).Intervals.TrabajarExtraer = tmpLong
                                     
-562                             Case "TRABAJAR_EXTRAER", "EXTRAER", "TRABAJO_EXTRAER"
-564                                 UserList(tUser).Intervals.TrabajarExtraer = tmpLong
+564                             Case "TRABAJAR_EXTRAER", "EXTRAER", "TRABAJO_EXTRAER"
+566                                 UserList(tUser).Intervals.TrabajarExtraer = tmpLong
                                     
-566                             Case "TRABAJAR_CONSTRUIR", "CONSTRUIR", "TRABAJO_CONSTRUIR"
-568                                 UserList(tUser).Intervals.TrabajarConstruir = tmpLong
+568                             Case "TRABAJAR_CONSTRUIR", "CONSTRUIR", "TRABAJO_CONSTRUIR"
+570                                 UserList(tUser).Intervals.TrabajarConstruir = tmpLong
                                     
-570                             Case Else
+572                             Case Else
                                     Exit Sub
                             End Select
                             
-572                         Call WriteIntervals(tUser)
+574                         Call WriteIntervals(tUser)
                             
                         End If
                     End If
                     
-574             Case eEditOptions.eo_Hogar
-576                 If tUser <= 0 Then
-578                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
+576             Case eEditOptions.eo_Hogar
+578                 If tUser <= 0 Then
+580                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
                     Else
-580                     Arg1 = UCase$(Arg1)
+582                     Arg1 = UCase$(Arg1)
                     
-582                     Select Case Arg1
+584                     Select Case Arg1
                             Case "NIX"
-584                             UserList(tUser).Hogar = eCiudad.cNix
-586                         Case "ULLA", "ULLATHORPE"
-588                             UserList(tUser).Hogar = eCiudad.cUllathorpe
-590                         Case "BANDER", "BANDERBILL"
-592                             UserList(tUser).Hogar = eCiudad.cBanderbill
-594                         Case "LINDOS"
-596                             UserList(tUser).Hogar = eCiudad.cLindos
-598                         Case "ARGHAL"
-600                             UserList(tUser).Hogar = eCiudad.cArghal
-602                         Case "ARKHEIN"
-604                             UserList(tUser).Hogar = eCiudad.cArkhein
+586                             UserList(tUser).Hogar = eCiudad.cNix
+588                         Case "ULLA", "ULLATHORPE"
+590                             UserList(tUser).Hogar = eCiudad.cUllathorpe
+592                         Case "BANDER", "BANDERBILL"
+594                             UserList(tUser).Hogar = eCiudad.cBanderbill
+596                         Case "LINDOS"
+598                             UserList(tUser).Hogar = eCiudad.cLindos
+600                         Case "ARGHAL"
+602                             UserList(tUser).Hogar = eCiudad.cArghal
+604                         Case "ARKHEIN"
+606                             UserList(tUser).Hogar = eCiudad.cArkhein
                         End Select
                     End If
                 
-606             Case Else
+608             Case Else
                 
-608                 Call WriteConsoleMsg(UserIndex, "Comando no permitido.", FontTypeNames.FONTTYPE_INFO)
+610                 Call WriteConsoleMsg(UserIndex, "Comando no permitido.", FontTypeNames.FONTTYPE_INFO)
 
             End Select
 
             'Log it!
-610         commandString = "/MOD "
+612         commandString = "/MOD "
         
-612         Select Case opcion
+614         Select Case opcion
 
                 Case eEditOptions.eo_Gold
-614                 commandString = commandString & "ORO "
+616                 commandString = commandString & "ORO "
             
-616             Case eEditOptions.eo_Experience
-618                 commandString = commandString & "EXP "
+618             Case eEditOptions.eo_Experience
+620                 commandString = commandString & "EXP "
             
-620             Case eEditOptions.eo_Body
-622                 commandString = commandString & "BODY "
+622             Case eEditOptions.eo_Body
+624                 commandString = commandString & "BODY "
             
-624             Case eEditOptions.eo_Head
-626                 commandString = commandString & "HEAD "
+626             Case eEditOptions.eo_Head
+628                 commandString = commandString & "HEAD "
             
-628             Case eEditOptions.eo_CriminalsKilled
-630                 commandString = commandString & "CRI "
+630             Case eEditOptions.eo_CriminalsKilled
+632                 commandString = commandString & "CRI "
             
-632             Case eEditOptions.eo_CiticensKilled
-634                 commandString = commandString & "CIU "
+634             Case eEditOptions.eo_CiticensKilled
+636                 commandString = commandString & "CIU "
             
-636             Case eEditOptions.eo_Level
-638                 commandString = commandString & "LEVEL "
+638             Case eEditOptions.eo_Level
+640                 commandString = commandString & "LEVEL "
             
-640             Case eEditOptions.eo_Class
-642                 commandString = commandString & "CLASE "
+642             Case eEditOptions.eo_Class
+644                 commandString = commandString & "CLASE "
             
-644             Case eEditOptions.eo_Skills
-646                 commandString = commandString & "SKILLS "
+646             Case eEditOptions.eo_Skills
+648                 commandString = commandString & "SKILLS "
             
-648             Case eEditOptions.eo_SkillPointsLeft
-650                 commandString = commandString & "SKILLSLIBRES "
+650             Case eEditOptions.eo_SkillPointsLeft
+652                 commandString = commandString & "SKILLSLIBRES "
                 
-652             Case eEditOptions.eo_Sex
-654                 commandString = commandString & "SEX "
+654             Case eEditOptions.eo_Sex
+656                 commandString = commandString & "SEX "
                 
-656             Case eEditOptions.eo_Raza
-658                 commandString = commandString & "RAZA "
+658             Case eEditOptions.eo_Raza
+660                 commandString = commandString & "RAZA "
 
-660             Case eEditOptions.eo_Vida
-662                 commandString = commandString & "VIDA "
+662             Case eEditOptions.eo_Vida
+664                 commandString = commandString & "VIDA "
                     
-664             Case eEditOptions.eo_Mana
-666                 commandString = commandString & "MANA "
+666             Case eEditOptions.eo_Mana
+668                 commandString = commandString & "MANA "
                     
-668             Case eEditOptions.eo_Energia
-670                 commandString = commandString & "ENERGIA "
+670             Case eEditOptions.eo_Energia
+672                 commandString = commandString & "ENERGIA "
                     
-672             Case eEditOptions.eo_MinHP
-674                 commandString = commandString & "MINHP "
+674             Case eEditOptions.eo_MinHP
+676                 commandString = commandString & "MINHP "
                     
-676             Case eEditOptions.eo_MinMP
-678                 commandString = commandString & "MINMP "
+678             Case eEditOptions.eo_MinMP
+680                 commandString = commandString & "MINMP "
                     
-680            Case eEditOptions.eo_Hit
-682                 commandString = commandString & "HIT "
+682            Case eEditOptions.eo_Hit
+684                 commandString = commandString & "HIT "
                     
-684             Case eEditOptions.eo_MinHit
-686                 commandString = commandString & "MINHIT "
+686             Case eEditOptions.eo_MinHit
+688                 commandString = commandString & "MINHIT "
                     
-688             Case eEditOptions.eo_MaxHit
-690                 commandString = commandString & "MAXHIT "
+690             Case eEditOptions.eo_MaxHit
+692                 commandString = commandString & "MAXHIT "
                     
-692             Case eEditOptions.eo_Desc
-694                 commandString = commandString & "DESC "
+694             Case eEditOptions.eo_Desc
+696                 commandString = commandString & "DESC "
                     
-696             Case eEditOptions.eo_Intervalo
-698                 commandString = commandString & "INTERVALO "
+698             Case eEditOptions.eo_Intervalo
+700                 commandString = commandString & "INTERVALO "
                     
-700             Case eEditOptions.eo_Hogar
-702                 commandString = commandString & "HOGAR "
+702             Case eEditOptions.eo_Hogar
+704                 commandString = commandString & "HOGAR "
                 
-704             Case Else
-706                 commandString = commandString & "UNKOWN "
+706             Case Else
+708                 commandString = commandString & "UNKOWN "
 
             End Select
         
-708         commandString = commandString & Arg1 & " " & Arg2
+710         commandString = commandString & Arg1 & " " & Arg2
         
-710         Call LogGM(.name, commandString & " " & UserName)
+712         Call LogGM(.name, commandString & " " & UserName)
 
         End With
 
@@ -12141,14 +12141,14 @@ ErrHandler:
 
         Dim Error As Long
 
-712     Error = Err.Number
+714     Error = Err.Number
 
         On Error GoTo 0
     
         'Destroy auxiliar buffer
-714     Set Buffer = Nothing
+716     Set Buffer = Nothing
     
-716     If Error <> 0 Then Err.raise Error
+718     If Error <> 0 Then Err.raise Error
 
 End Sub
 

@@ -421,20 +421,20 @@ PurgarOxigeno_Err:
         
 End Sub
 
-Public Sub Encarcelar(ByVal UserIndex As Integer, ByVal Minutos As Long, Optional ByVal GmName As String = vbNullString)
+Public Sub Encarcelar(ByVal UserIndex As Integer, ByVal minutos As Long, Optional ByVal GmName As String = vbNullString)
         
         On Error GoTo Encarcelar_Err
         
 100     If EsGM(UserIndex) Then Exit Sub
         
-102     UserList(UserIndex).Counters.Pena = Minutos
+102     UserList(UserIndex).Counters.Pena = minutos
         
 104     Call WarpUserChar(UserIndex, Prision.Map, Prision.X, Prision.Y, True)
         
 106     If LenB(GmName) = 0 Then
-108         Call WriteConsoleMsg(UserIndex, "Has sido encarcelado, deberas permanecer en la carcel " & Minutos & " minutos.", FontTypeNames.FONTTYPE_INFO)
+108         Call WriteConsoleMsg(UserIndex, "Has sido encarcelado, deberas permanecer en la carcel " & minutos & " minutos.", FontTypeNames.FONTTYPE_INFO)
         Else
-110         Call WriteConsoleMsg(UserIndex, GmName & " te ha encarcelado, deberas permanecer en la carcel " & Minutos & " minutos.", FontTypeNames.FONTTYPE_INFO)
+110         Call WriteConsoleMsg(UserIndex, GmName & " te ha encarcelado, deberas permanecer en la carcel " & minutos & " minutos.", FontTypeNames.FONTTYPE_INFO)
 
         End If
         
@@ -1562,13 +1562,13 @@ Public Function CompararPrivilegiosUser(ByVal Personaje_1 As Integer, ByVal Pers
         
         On Error GoTo CompararPrivilegiosUser_Err
         
-        CompararPrivilegiosUser = CompararPrivilegios(UserList(Personaje_1).flags.Privilegios, UserList(Personaje_2).flags.Privilegios)
+100     CompararPrivilegiosUser = CompararPrivilegios(UserList(Personaje_1).flags.Privilegios, UserList(Personaje_2).flags.Privilegios)
         
         Exit Function
 
 CompararPrivilegiosUser_Err:
-118     Call RegistrarError(Err.Number, Err.Description, "Admin.CompararPrivilegiosUser", Erl)
-120     Resume Next
+102     Call RegistrarError(Err.Number, Err.Description, "Admin.CompararPrivilegiosUser", Erl)
+104     Resume Next
         
 End Function
 

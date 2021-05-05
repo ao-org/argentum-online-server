@@ -755,55 +755,55 @@ Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) A
             
 104         nPos = .Pos
 106         Call HeadtoPos(nHeading, nPos)
-            esGuardia = .NPCtype = eNPCType.GuardiaReal Or .NPCtype = eNPCType.GuardiasCaos
+108         esGuardia = .NPCtype = eNPCType.GuardiaReal Or .NPCtype = eNPCType.GuardiasCaos
             ' es una posicion legal
             
-108         If LegalWalkNPC(nPos.Map, nPos.X, nPos.Y, nHeading, .flags.AguaValida = 1, .flags.TierraInvalida = 0, .MaestroUser <> 0, , esGuardia) Then
+110         If LegalWalkNPC(nPos.Map, nPos.X, nPos.Y, nHeading, .flags.AguaValida = 1, .flags.TierraInvalida = 0, .MaestroUser <> 0, , esGuardia) Then
             
-110             UserIndex = MapData(.Pos.Map, nPos.X, nPos.Y).UserIndex
+112             UserIndex = MapData(.Pos.Map, nPos.X, nPos.Y).UserIndex
     
                 ' Si hay un usuario a donde se mueve el npc, entonces esta muerto o es un gm invisible
-112             If UserIndex > 0 Then
+114             If UserIndex > 0 Then
 
-114                 With UserList(UserIndex)
+116                 With UserList(UserIndex)
                 
                         ' Actualizamos posicion y mapa
-116                     MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex = 0
-118                     .Pos.X = NpcList(NpcIndex).Pos.X
-120                     .Pos.Y = NpcList(NpcIndex).Pos.Y
-122                     MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex = UserIndex
+118                     MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex = 0
+120                     .Pos.X = NpcList(NpcIndex).Pos.X
+122                     .Pos.Y = NpcList(NpcIndex).Pos.Y
+124                     MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex = UserIndex
                         
                         ' Avisamos a los usuarios del area, y al propio usuario lo forzamos a moverse
-124                     Call SendData(SendTarget.ToPCAreaButIndex, UserIndex, PrepareMessageCharacterMove(UserList(UserIndex).Char.CharIndex, .Pos.X, .Pos.Y))
-126                     Call WriteForceCharMove(UserIndex, InvertHeading(nHeading))
+126                     Call SendData(SendTarget.ToPCAreaButIndex, UserIndex, PrepareMessageCharacterMove(UserList(UserIndex).Char.CharIndex, .Pos.X, .Pos.Y))
+128                     Call WriteForceCharMove(UserIndex, InvertHeading(nHeading))
 
                     End With
 
                 End If
                 
-                If HayPuerta(nPos.Map, nPos.X, nPos.Y) Then
-                    Call AccionParaPuertaNpc(nPos.Map, nPos.X, nPos.Y, NpcIndex)
-                ElseIf HayPuerta(nPos.Map, nPos.X + 1, nPos.Y) Then
-                    Call AccionParaPuertaNpc(nPos.Map, nPos.X + 1, nPos.Y, NpcIndex)
-                ElseIf HayPuerta(nPos.Map, nPos.X + 1, nPos.Y - 1) Then
-                    Call AccionParaPuertaNpc(nPos.Map, nPos.X + 1, nPos.Y - 1, NpcIndex)
-                ElseIf HayPuerta(nPos.Map, nPos.X, nPos.Y - 1) Then
-                    Call AccionParaPuertaNpc(nPos.Map, nPos.X, nPos.Y - 1, NpcIndex)
+130             If HayPuerta(nPos.Map, nPos.X, nPos.Y) Then
+132                 Call AccionParaPuertaNpc(nPos.Map, nPos.X, nPos.Y, NpcIndex)
+134             ElseIf HayPuerta(nPos.Map, nPos.X + 1, nPos.Y) Then
+136                 Call AccionParaPuertaNpc(nPos.Map, nPos.X + 1, nPos.Y, NpcIndex)
+138             ElseIf HayPuerta(nPos.Map, nPos.X + 1, nPos.Y - 1) Then
+140                 Call AccionParaPuertaNpc(nPos.Map, nPos.X + 1, nPos.Y - 1, NpcIndex)
+142             ElseIf HayPuerta(nPos.Map, nPos.X, nPos.Y - 1) Then
+144                 Call AccionParaPuertaNpc(nPos.Map, nPos.X, nPos.Y - 1, NpcIndex)
                 End If
-128             Call AnimacionIdle(NpcIndex, False)
+146             Call AnimacionIdle(NpcIndex, False)
             
-130             Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageCharacterMove(.Char.CharIndex, nPos.X, nPos.Y))
+148             Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageCharacterMove(.Char.CharIndex, nPos.X, nPos.Y))
 
                 'Update map and user pos
-132             MapData(.Pos.Map, .Pos.X, .Pos.Y).NpcIndex = 0
-134             .Pos = nPos
-136             .Char.Heading = nHeading
-138             MapData(.Pos.Map, nPos.X, nPos.Y).NpcIndex = NpcIndex
+150             MapData(.Pos.Map, .Pos.X, .Pos.Y).NpcIndex = 0
+152             .Pos = nPos
+154             .Char.Heading = nHeading
+156             MapData(.Pos.Map, nPos.X, nPos.Y).NpcIndex = NpcIndex
             
-140             Call CheckUpdateNeededNpc(NpcIndex, nHeading)
+158             Call CheckUpdateNeededNpc(NpcIndex, nHeading)
         
                 ' Npc has moved
-142             MoveNPCChar = True
+160             MoveNPCChar = True
 
             End If
 
@@ -812,7 +812,7 @@ Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) A
         Exit Function
 
 errh:
-144     LogError ("Error en move npc " & NpcIndex & ". Error: " & Err.Number & " - " & Err.Description)
+162     LogError ("Error en move npc " & NpcIndex & ". Error: " & Err.Number & " - " & Err.Description)
 
 End Function
 

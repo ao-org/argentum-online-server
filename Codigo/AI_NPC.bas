@@ -40,8 +40,8 @@ Public Sub NpcAI(ByVal NpcIndex As Integer)
 128             Case TipoAI.Invasion
 130                 Call MovimientoInvasion(NpcIndex)
 
-                Case TipoAI.GuardiaPersigueNpc
-                    Call AI_GuardiaPersigueNpc(NpcIndex)
+132             Case TipoAI.GuardiaPersigueNpc
+134                 Call AI_GuardiaPersigueNpc(NpcIndex)
 
 
             End Select
@@ -52,12 +52,12 @@ Public Sub NpcAI(ByVal NpcIndex As Integer)
 
 ErrorHandler:
     
-132     Call LogError("NPC.AI " & NpcList(NpcIndex).name & " " & NpcList(NpcIndex).MaestroNPC & " mapa:" & NpcList(NpcIndex).Pos.Map & " x:" & NpcList(NpcIndex).Pos.X & " y:" & NpcList(NpcIndex).Pos.Y & " Mov:" & NpcList(NpcIndex).Movement & " TargU:" & NpcList(NpcIndex).Target & " TargN:" & NpcList(NpcIndex).TargetNPC)
+136     Call LogError("NPC.AI " & NpcList(NpcIndex).name & " " & NpcList(NpcIndex).MaestroNPC & " mapa:" & NpcList(NpcIndex).Pos.Map & " x:" & NpcList(NpcIndex).Pos.X & " y:" & NpcList(NpcIndex).Pos.Y & " Mov:" & NpcList(NpcIndex).Movement & " TargU:" & NpcList(NpcIndex).Target & " TargN:" & NpcList(NpcIndex).TargetNPC)
 
-134     Dim MiNPC As npc: MiNPC = NpcList(NpcIndex)
+138     Dim MiNPC As npc: MiNPC = NpcList(NpcIndex)
     
-136     Call QuitarNPC(NpcIndex)
-138     Call ReSpawnNpc(MiNPC)
+140     Call QuitarNPC(NpcIndex)
+142     Call ReSpawnNpc(MiNPC)
 
 End Sub
 
@@ -130,18 +130,18 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
 148         If .Target > 0 Then
 150             Call AI_AtacarUsuarioObjetivo(NpcIndex)
             Else
-                If NpcList(NpcIndex).NPCtype <> eNPCType.GuardiaReal And NpcList(NpcIndex).NPCtype <> eNPCType.Guardiascaos Then
-                    Call RestoreOldMovement(NpcIndex)
+152             If NpcList(NpcIndex).NPCtype <> eNPCType.GuardiaReal And NpcList(NpcIndex).NPCtype <> eNPCType.GuardiasCaos Then
+154                 Call RestoreOldMovement(NpcIndex)
                     ' No encontro a nadie cerca, camina unos pasos en cualquier direccion.
-154                 Call AI_CaminarSinRumbo(NpcIndex)
+156                 Call AI_CaminarSinRumbo(NpcIndex)
                     
                    
                 Else
-152                  If Distancia(NpcList(NpcIndex).Pos, NpcList(NpcIndex).Orig) > 0 Then
-                        Call AI_CaminarConRumbo(NpcIndex, NpcList(NpcIndex).Orig)
+158                  If Distancia(NpcList(NpcIndex).Pos, NpcList(NpcIndex).Orig) > 0 Then
+160                     Call AI_CaminarConRumbo(NpcIndex, NpcList(NpcIndex).Orig)
                     Else
-                        If .Char.Heading <> eHeading.SOUTH Then
-                            Call ChangeNPCChar(NpcIndex, .Char.Body, .Char.Head, eHeading.SOUTH)
+162                     If .Char.Heading <> eHeading.SOUTH Then
+164                         Call ChangeNPCChar(NpcIndex, .Char.Body, .Char.Head, eHeading.SOUTH)
                         End If
                     End If
                 End If
@@ -152,7 +152,7 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
         Exit Sub
 
 ErrorHandler:
-156     Call RegistrarError(Err.Number, Err.Description, "AI_NPC.PerseguirUsuarioCercano", Erl)
+166     Call RegistrarError(Err.Number, Err.Description, "AI_NPC.PerseguirUsuarioCercano", Erl)
 
 End Sub
 
@@ -175,8 +175,8 @@ Private Sub AI_CaminarSinRumbo(ByVal NpcIndex As Integer)
         Exit Sub
 
 AI_CaminarSinRumbo_Err:
-        Call RegistrarError(Err.Number, Err.Description, "AI.AI_CaminarSinRumbo", Erl)
-        Resume Next
+108     Call RegistrarError(Err.Number, Err.Description, "AI.AI_CaminarSinRumbo", Erl)
+110     Resume Next
         
 End Sub
 
@@ -253,35 +253,35 @@ Private Sub AI_AtacarUsuarioObjetivo(ByVal AtackerNpcIndex As Integer)
 
 ErrorHandler:
 130     Call RegistrarError(Err.Number, Err.Description, "AIv2.AI_AtacarUsuarioObjetivo", Erl)
-         Resume Next
+132      Resume Next
 End Sub
 Public Sub AI_GuardiaPersigueNpc(ByVal NpcIndex As Integer)
         On Error GoTo ErrorHandler
-        Dim TargetPos As WorldPos
+        Dim targetPos As WorldPos
         
-        With NpcList(NpcIndex)
+100     With NpcList(NpcIndex)
         
-            If .targetNpc > 0 Then
-                TargetPos = NpcList(.targetNpc).Pos
+102         If .TargetNPC > 0 Then
+104             targetPos = NpcList(.TargetNPC).Pos
                 
-                If Distancia(.Pos, TargetPos) <= 1 Then
-                    Call SistemaCombate.NpcAtacaNpc(NpcIndex, .targetNpc, False)
+106             If Distancia(.Pos, targetPos) <= 1 Then
+108                 Call SistemaCombate.NpcAtacaNpc(NpcIndex, .TargetNPC, False)
                 End If
                 
-                If DistanciaRadial(.Orig, TargetPos) <= (DIAMETRO_VISION_GUARDIAS_NPCS \ 2) And NpcList(.targetNpc).Target = 0 Then
-                    Call AI_CaminarConRumbo(NpcIndex, TargetPos)
+110             If DistanciaRadial(.Orig, targetPos) <= (DIAMETRO_VISION_GUARDIAS_NPCS \ 2) And NpcList(.TargetNPC).Target = 0 Then
+112                 Call AI_CaminarConRumbo(NpcIndex, targetPos)
                     
                 Else
-                    .targetNpc = 0
-                    Call AI_CaminarConRumbo(NpcIndex, .Orig)
+114                 .TargetNPC = 0
+116                 Call AI_CaminarConRumbo(NpcIndex, .Orig)
                 End If
                 
             Else
-                .targetNpc = BuscarNpcEnArea(NpcIndex)
-                If Distancia(.Pos, .Orig) > 0 Then
-                    Call AI_CaminarConRumbo(NpcIndex, .Orig)
+118             .TargetNPC = BuscarNpcEnArea(NpcIndex)
+120             If Distancia(.Pos, .Orig) > 0 Then
+122                 Call AI_CaminarConRumbo(NpcIndex, .Orig)
                 Else
-                    Call ChangeNPCChar(NpcIndex, .Char.Body, .Char.Head, eHeading.SOUTH)
+124                 Call ChangeNPCChar(NpcIndex, .Char.Body, .Char.Head, eHeading.SOUTH)
                 End If
             End If
             
@@ -292,45 +292,45 @@ Public Sub AI_GuardiaPersigueNpc(ByVal NpcIndex As Integer)
         
         
 ErrorHandler:
-118     Call RegistrarError(Err.Number, Err.Description, "AIv2.AI_GuardiaAtacaNpc", Erl)
-        Resume Next
+126     Call RegistrarError(Err.Number, Err.Description, "AIv2.AI_GuardiaAtacaNpc", Erl)
+128     Resume Next
 
 End Sub
 
 Public Function DistanciaRadial(OrigenPos As WorldPos, DestinoPos As WorldPos) As Long
-    DistanciaRadial = max(Abs(OrigenPos.x - DestinoPos.x), Abs(OrigenPos.y - DestinoPos.y))
+100     DistanciaRadial = max(Abs(OrigenPos.X - DestinoPos.X), Abs(OrigenPos.Y - DestinoPos.Y))
 End Function
 
 Function BuscarNpcEnArea(ByVal NpcIndex As Integer) As Integer
         
         On Error GoTo BuscarNpcEnArea
         
-        Dim x As Byte, y As Byte
+        Dim X As Byte, Y As Byte
         
-        With NpcList(NpcIndex)
-            For x = (.Orig.x - (DIAMETRO_VISION_GUARDIAS_NPCS \ 2)) To (.Orig.x + (DIAMETRO_VISION_GUARDIAS_NPCS \ 2))
-                For y = (.Orig.y - (DIAMETRO_VISION_GUARDIAS_NPCS \ 2)) To (.Orig.y + (DIAMETRO_VISION_GUARDIAS_NPCS \ 2))
-                    If MapData(.Orig.Map, x, y).NpcIndex > 0 And NpcIndex <> MapData(.Orig.Map, x, y).NpcIndex Then
+100     With NpcList(NpcIndex)
+102         For X = (.Orig.X - (DIAMETRO_VISION_GUARDIAS_NPCS \ 2)) To (.Orig.X + (DIAMETRO_VISION_GUARDIAS_NPCS \ 2))
+104             For Y = (.Orig.Y - (DIAMETRO_VISION_GUARDIAS_NPCS \ 2)) To (.Orig.Y + (DIAMETRO_VISION_GUARDIAS_NPCS \ 2))
+106                 If MapData(.Orig.Map, X, Y).NpcIndex > 0 And NpcIndex <> MapData(.Orig.Map, X, Y).NpcIndex Then
                         Dim foundNpc As Integer
                         
-                        foundNpc = MapData(.Orig.Map, x, y).NpcIndex
-                        If NpcList(foundNpc).Hostile And NpcList(foundNpc).Target = 0 Then
-                            BuscarNpcEnArea = MapData(.Orig.Map, x, y).NpcIndex
+108                     foundNpc = MapData(.Orig.Map, X, Y).NpcIndex
+110                     If NpcList(foundNpc).Hostile And NpcList(foundNpc).Target = 0 Then
+112                         BuscarNpcEnArea = MapData(.Orig.Map, X, Y).NpcIndex
                             Exit Function
                         End If
                         
                     End If
-                Next y
-            Next x
+114             Next Y
+116         Next X
         End With
         
-        BuscarNpcEnArea = 0
+118     BuscarNpcEnArea = 0
         
         Exit Function
 
 BuscarNpcEnArea:
-108     Call RegistrarError(Err.Number, Err.Description, "Extra.BuscarNpcEnArea", Erl)
-110     Resume Next
+120     Call RegistrarError(Err.Number, Err.Description, "Extra.BuscarNpcEnArea", Erl)
+122     Resume Next
         
 End Function
 
@@ -388,8 +388,8 @@ Private Sub SeguirAgresor(ByVal NpcIndex As Integer)
         Exit Sub
 
 SeguirAgresor_Err:
-        Call RegistrarError(Err.Number, Err.Description, "AI.SeguirAgresor", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.Description, "AI.SeguirAgresor", Erl)
+108     Resume Next
 
 End Sub
 
@@ -452,8 +452,8 @@ Private Sub RestoreOldMovement(ByVal NpcIndex As Integer)
         Exit Sub
 
 RestoreOldMovement_Err:
-        Call RegistrarError(Err.Number, Err.Description, "AI.RestoreOldMovement", Erl)
-        Resume Next
+116     Call RegistrarError(Err.Number, Err.Description, "AI.RestoreOldMovement", Erl)
+118     Resume Next
 
 End Sub
 
@@ -760,8 +760,8 @@ Private Function EsEnemigo(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
         Exit Function
 
 EsEnemigo_Err:
-        Call RegistrarError(Err.Number, Err.Description, "AI.EsEnemigo", Erl)
-        Resume Next
+122     Call RegistrarError(Err.Number, Err.Description, "AI.EsEnemigo", Erl)
+124     Resume Next
 
 End Function
 
@@ -792,8 +792,8 @@ Private Function EnRangoVision(ByVal NpcIndex As Integer, ByVal UserIndex As Int
         Exit Function
 
 EnRangoVision_Err:
-        Call RegistrarError(Err.Number, Err.Description, "AI.EnRangoVision", Erl)
-        Resume Next
+112     Call RegistrarError(Err.Number, Err.Description, "AI.EnRangoVision", Erl)
+114     Resume Next
 
 End Function
 
@@ -818,8 +818,8 @@ Private Function UsuarioAtacableConMagia(ByVal targetUserIndex As Integer) As Bo
         Exit Function
 
 UsuarioAtacableConMagia_Err:
-        Call RegistrarError(Err.Number, Err.Description, "AI.UsuarioAtacableConMagia", Erl)
-        Resume Next
+106     Call RegistrarError(Err.Number, Err.Description, "AI.UsuarioAtacableConMagia", Erl)
+108     Resume Next
 
 End Function
 
@@ -847,8 +847,8 @@ Private Function UsuarioAtacableConMelee(ByVal NpcIndex As Integer, ByVal target
         Exit Function
 
 UsuarioAtacableConMelee_Err:
-        Call RegistrarError(Err.Number, Err.Description, "AI.UsuarioAtacableConMelee", Erl)
-        Resume Next
+108     Call RegistrarError(Err.Number, Err.Description, "AI.UsuarioAtacableConMelee", Erl)
+110     Resume Next
 
 End Function
 

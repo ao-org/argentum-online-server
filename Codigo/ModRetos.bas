@@ -959,17 +959,17 @@ Public Function PuedeReto(ByVal UserIndex As Integer) As Boolean
         
 104         If .flags.EnConsulta Then Exit Function
 
-            If .Pos.Map = 0 Or .Pos.X = 0 Or .Pos.Y = 0 Then Exit Function
+106         If .Pos.Map = 0 Or .Pos.X = 0 Or .Pos.Y = 0 Then Exit Function
             
-106         If MapInfo(.Pos.Map).Seguro = 0 Then Exit Function
+108         If MapInfo(.Pos.Map).Seguro = 0 Then Exit Function
         
-108         If .flags.EnTorneo Then Exit Function
+110         If .flags.EnTorneo Then Exit Function
             
-110         If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = CARCEL Then Exit Function
+112         If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = CARCEL Then Exit Function
         
         End With
     
-112     PuedeReto = True
+114     PuedeReto = True
     
 End Function
 

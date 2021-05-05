@@ -112,13 +112,13 @@ End Sub
 ' Clean up and release resources
 
 Private Sub Class_Terminate()
-    '***************************************************
-    'Autor: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 04/27/06
-    'Clean up
-    '***************************************************
+        '***************************************************
+        'Autor: Juan Martín Sotuyo Dodero (Maraxus)
+        'Last Modification: 04/27/06
+        'Clean up
+        '***************************************************
           
-    Erase data
+100     Erase data
 
 End Sub
 
