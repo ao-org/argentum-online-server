@@ -476,7 +476,7 @@ Function TestSpawnTrigger(ByVal Map As Integer, ByVal X As Integer, ByVal Y As I
 
         On Error GoTo TestSpawnTrigger_Err
 
-100     TestSpawnTrigger = MapData(Map, X, Y).trigger <> 3 And MapData(Map, X, Y).trigger <> 2 And MapData(Map, X, Y).trigger <> 1
+100     TestSpawnTrigger = MapData(Map, X, Y).trigger < 1 Or (MapData(Map, X, Y).trigger > 3 And MapData(Map, X, Y).trigger < 9)
 
         Exit Function
 
