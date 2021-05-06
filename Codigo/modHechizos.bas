@@ -427,6 +427,15 @@ Public Sub NpcLanzaSpellSobreArea(ByVal NpcIndex As Integer, ByVal SpellIndex As
                             
 138             Next Y
 140         Next X
+
+            ' El NPC invoca otros npcs independientes
+            If .Invoca = 1 Then
+                For X = 1 To .cant
+                    Call SpawnNpc(.NumNpc, NpcList(NpcIndex).Pos, True, False, False)
+                    
+                Next X
+            End If
+
         End With
         
         Exit Sub
