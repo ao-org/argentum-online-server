@@ -261,7 +261,6 @@ Public Sub AI_GuardiaPersigueNpc(ByVal NpcIndex As Integer)
         
 100     With NpcList(NpcIndex)
         
-<<<<<<< Updated upstream
 102         If .TargetNPC > 0 Then
 104             targetPos = NpcList(.TargetNPC).Pos
                 
@@ -281,33 +280,6 @@ Public Sub AI_GuardiaPersigueNpc(ByVal NpcIndex As Integer)
 118             .TargetNPC = BuscarNpcEnArea(NpcIndex)
 120             If Distancia(.Pos, .Orig) > 0 Then
 122                 Call AI_CaminarConRumbo(NpcIndex, .Orig)
-=======
-            If .TargetNPC > 0 Then
-                targetPos = NpcList(.TargetNPC).Pos
-                
-                If Distancia(.Pos, targetPos) <= 1 Then
-                    Call SistemaCombate.NpcAtacaNpc(NpcIndex, .TargetNPC, False)
-                End If
-                
-                If DistanciaRadial(.Orig, targetPos) <= (DIAMETRO_VISION_GUARDIAS_NPCS \ 2) Then
-                    If NpcList(.TargetNPC).Target = 0 Then
-                        Call AI_CaminarConRumbo(NpcIndex, targetPos)
-                    ElseIf UserList(NpcList(.TargetNPC).Target).flags.NPCAtacado <> .TargetNPC Then
-                        Call AI_CaminarConRumbo(NpcIndex, targetPos)
-                    Else
-                        .TargetNPC = 0
-                        Call AI_CaminarConRumbo(NpcIndex, .Orig)
-                    End If
-                Else
-                    .TargetNPC = 0
-                    Call AI_CaminarConRumbo(NpcIndex, .Orig)
-                End If
-                
-            Else
-                .TargetNPC = BuscarNpcEnArea(NpcIndex)
-                If Distancia(.Pos, .Orig) > 0 Then
-                    Call AI_CaminarConRumbo(NpcIndex, .Orig)
->>>>>>> Stashed changes
                 Else
 124                 Call ChangeNPCChar(NpcIndex, .Char.Body, .Char.Head, eHeading.SOUTH)
                 End If
@@ -326,11 +298,7 @@ ErrorHandler:
 End Sub
 
 Public Function DistanciaRadial(OrigenPos As WorldPos, DestinoPos As WorldPos) As Long
-<<<<<<< Updated upstream
 100     DistanciaRadial = max(Abs(OrigenPos.X - DestinoPos.X), Abs(OrigenPos.Y - DestinoPos.Y))
-=======
-    DistanciaRadial = max(Abs(OrigenPos.X - DestinoPos.X), Abs(OrigenPos.Y - DestinoPos.Y))
->>>>>>> Stashed changes
 End Function
 
 Function BuscarNpcEnArea(ByVal NpcIndex As Integer) As Integer
@@ -339,7 +307,6 @@ Function BuscarNpcEnArea(ByVal NpcIndex As Integer) As Integer
         
         Dim X As Byte, Y As Byte
         
-<<<<<<< Updated upstream
 100     With NpcList(NpcIndex)
 102         For X = (.Orig.X - (DIAMETRO_VISION_GUARDIAS_NPCS \ 2)) To (.Orig.X + (DIAMETRO_VISION_GUARDIAS_NPCS \ 2))
 104             For Y = (.Orig.Y - (DIAMETRO_VISION_GUARDIAS_NPCS \ 2)) To (.Orig.Y + (DIAMETRO_VISION_GUARDIAS_NPCS \ 2))
@@ -350,32 +317,11 @@ Function BuscarNpcEnArea(ByVal NpcIndex As Integer) As Integer
 110                     If NpcList(foundNpc).Hostile And NpcList(foundNpc).Target = 0 Then
 112                         BuscarNpcEnArea = MapData(.Orig.Map, X, Y).NpcIndex
                             Exit Function
-=======
-        With NpcList(NpcIndex)
-            For X = (.Orig.X - (DIAMETRO_VISION_GUARDIAS_NPCS \ 2)) To (.Orig.X + (DIAMETRO_VISION_GUARDIAS_NPCS \ 2))
-                For Y = (.Orig.Y - (DIAMETRO_VISION_GUARDIAS_NPCS \ 2)) To (.Orig.Y + (DIAMETRO_VISION_GUARDIAS_NPCS \ 2))
-                    If MapData(.Orig.Map, X, Y).NpcIndex > 0 And NpcIndex <> MapData(.Orig.Map, X, Y).NpcIndex Then
-                        Dim foundNpc As Integer
-                        
-                        foundNpc = MapData(.Orig.Map, X, Y).NpcIndex
-                        If NpcList(foundNpc).Hostile Then
-                            If NpcList(foundNpc).Target = 0 Then
-                                BuscarNpcEnArea = MapData(.Orig.Map, X, Y).NpcIndex
-                                Exit Function
-                            ElseIf UserList(NpcList(foundNpc).Target).flags.NPCAtacado <> foundNpc Then
-                                BuscarNpcEnArea = MapData(.Orig.Map, X, Y).NpcIndex
-                                Exit Function
-                            End If
->>>>>>> Stashed changes
                         End If
+                        
                     End If
-<<<<<<< Updated upstream
 114             Next Y
 116         Next X
-=======
-                Next Y
-            Next X
->>>>>>> Stashed changes
         End With
         
 118     BuscarNpcEnArea = 0
