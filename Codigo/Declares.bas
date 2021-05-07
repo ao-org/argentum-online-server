@@ -153,17 +153,17 @@ Public Const iGaleonCiuda = 1269
 
 Public Const iGaleonCrimi = 1270
 
-Public Const iBarcaArmada = 1264 'ok
+Public Const iBarcaArmada = 1273
 
-Public Const iBarcaCaos = 1263 'ok
+Public Const iBarcaCaos = 1274
 
-Public Const iGaleraArmada = 1264 'ok
+Public Const iGaleraArmada = 1271
 
-Public Const iGaleraCaos = 1263 'ok
+Public Const iGaleraCaos = 1272
 
-Public Const iGaleonArmada = 1264 'v
+Public Const iGaleonArmada = 1264
 
-Public Const iGaleonCaos = 1263 'ok
+Public Const iGaleonCaos = 1263
 
 Public Const iRopaBuceoMuerto = 772
 
