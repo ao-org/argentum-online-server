@@ -2058,7 +2058,7 @@ Private Sub HandleTalk(ByVal UserIndex As Integer)
             
             Call .incomingData.ReadID
             
-110         Dim chat As String: chat = .ReadASCIIString()
+110         Dim chat As String: chat = .incomingData.ReadASCIIString()
 
             '[Consejeros & GMs]
 114         If .flags.Privilegios And (PlayerType.Consejero Or PlayerType.SemiDios) Then
@@ -3247,8 +3247,8 @@ Private Sub HandleLeftClick(ByVal UserIndex As Integer)
             Dim X As Byte
             Dim Y As Byte
         
-108         X = .ReadByte()
-110         Y = .ReadByte()
+108         X = .incomingData.ReadByte()
+110         Y = .incomingData.ReadByte()
         
 112         Call LookatTile(UserIndex, .pos.Map, X, Y)
 
@@ -3286,8 +3286,8 @@ Private Sub HandleDoubleClick(ByVal UserIndex As Integer)
             Dim X As Byte
             Dim Y As Byte
         
-108         X = .ReadByte()
-110         Y = .ReadByte()
+108         X = .incomingData.ReadByte()
+110         Y = .incomingData.ReadByte()
         
 112         Call Accion(UserIndex, .pos.Map, X, Y)
 
@@ -5837,7 +5837,7 @@ Private Sub HandleGuildDeclareWar(ByVal UserIndex As Integer)
             Dim errorStr        As String
             Dim otherGuildIndex As Integer
         
-110         guild = Buffer.ReadASCIIString()
+110         guild = .incomingData.ReadASCIIString()
         
 112         otherGuildIndex = modGuilds.r_DeclararGuerra(UserIndex, guild, errorStr)
         
