@@ -645,6 +645,7 @@ Public Const SND_MINERO          As Byte = 15
 Public Const SND_WARP            As Byte = 3
 
 Public Const SND_PUERTA          As Integer = 5
+
 Public Const SND_PUERTA_DUCTO    As Integer = 380
 
 Public Const SND_NIVEL           As Integer = 554
@@ -653,11 +654,17 @@ Public Const SND_USERMUERTE      As Byte = 11
 
 Public Const SND_IMPACTO         As Byte = 10
 
+Public Const SND_IMPACTO_APU     As Integer = 2187
+
+Public Const SND_IMPACTO_CRITICO As Integer = 2186
+
 Public Const SND_IMPACTO2        As Byte = 12
+
+Public Const SND_DOPA As Byte = 77
 
 Public Const SND_LEÑADOR         As Byte = 13
 
-Public Const SND_FOGATA          As Byte = 14
+Public Const SND_FOGATA          As Byte = 116
 
 Public Const SND_SACARARMA       As Byte = 25
 
