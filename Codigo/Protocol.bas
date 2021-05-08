@@ -1765,7 +1765,7 @@ Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
 End Sub
 
 Public Function ConvertDataBuffer(ByVal Length As Integer, _
-                                  ByRef DATA() As Byte) As DataBuffer
+                                  ByRef DATA() As Byte) As t_DataBuffer
     
     ConvertDataBuffer.DATA = DATA
     ConvertDataBuffer.Length = Length
@@ -17184,7 +17184,7 @@ Public Sub WriteLoggedMessage(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.logged)
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -17201,7 +17201,7 @@ Public Sub WriteHora(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageHora())
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -17229,7 +17229,7 @@ Public Sub WriteRemoveAllDialogs(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.RemoveDialogs)
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -17258,7 +17258,7 @@ Public Sub WriteRemoveCharDialog(ByVal UserIndex As Integer, ByVal CharIndex As 
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageRemoveCharDialog(CharIndex))
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -17285,7 +17285,7 @@ Public Sub WriteNavigateToggle(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.NavigateToggle)
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -17312,7 +17312,7 @@ Public Sub WriteNadarToggle(ByVal UserIndex As Integer, ByVal Puede As Boolean)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -17329,7 +17329,7 @@ Public Sub WriteEquiteToggle(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.EquiteToggle)
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -17351,7 +17351,7 @@ Public Sub WriteVelocidadToggle(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -17384,7 +17384,7 @@ Public Sub WriteMacroTrabajoToggle(ByVal UserIndex As Integer, ByVal Activar As 
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -17417,7 +17417,7 @@ Public Sub WriteDisconnect(ByVal UserIndex As Integer)
     
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.Disconnect)
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -17445,7 +17445,7 @@ Public Sub WriteCommerceEnd(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.CommerceEnd)
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -17473,7 +17473,7 @@ Public Sub WriteBankEnd(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.BankEnd)
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -17502,7 +17502,7 @@ Public Sub WriteCommerceInit(ByVal UserIndex As Integer)
 
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.CommerceInit)
     Call UserList(UserIndex).outgoingData.WriteASCIIString(NpcList(UserList(UserIndex).flags.TargetNPC).name)
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -17530,7 +17530,7 @@ Public Sub WriteBankInit(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.BankInit)
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -17558,7 +17558,7 @@ Public Sub WriteUserCommerceInit(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.UserCommerceInit)
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -17586,7 +17586,7 @@ Public Sub WriteUserCommerceEnd(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.UserCommerceEnd)
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -17614,7 +17614,7 @@ Public Sub WriteShowBlacksmithForm(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.ShowBlacksmithForm)
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -17642,7 +17642,7 @@ Public Sub WriteShowCarpenterForm(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.ShowCarpenterForm)
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -17664,7 +17664,7 @@ Public Sub WriteShowAlquimiaForm(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.ShowAlquimiaForm)
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -17686,7 +17686,7 @@ Public Sub WriteShowSastreForm(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.ShowSastreForm)
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -17714,7 +17714,7 @@ Public Sub WriteNPCKillUser(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.NPCKillUser)
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -17742,7 +17742,7 @@ Public Sub WriteBlockedWithShieldUser(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.BlockedWithShieldUser)
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -17770,7 +17770,7 @@ Public Sub WriteBlockedWithShieldOther(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.BlockedWithShieldOther)
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -17794,7 +17794,7 @@ Public Sub WriteCharSwing(ByVal UserIndex As Integer, ByVal CharIndex As Integer
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageCharSwing(CharIndex, FX, ShowText))
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -17807,8 +17807,6 @@ ErrHandler:
 End Sub
 
 Public Function PrepareMessageCharSwing(ByVal CharIndex As Integer, Optional ByVal FX As Boolean = True, Optional ByVal ShowText As Boolean = True) As t_DataBuffer
-        
-    On Error GoTo PrepareMessageCharSwing_Err
 
     '***************************************************
     With auxiliarBuffer
@@ -17816,17 +17814,11 @@ Public Function PrepareMessageCharSwing(ByVal CharIndex As Integer, Optional ByV
         Call .WriteInteger(CharIndex)
         Call .WriteBoolean(FX)
         Call .WriteBoolean(ShowText)
-        
+        Call .EndPacket
         PrepareMessageCharSwing = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
 
-PrepareMessageCharSwing_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageCharSwing", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 ''
@@ -17845,7 +17837,7 @@ Public Sub WriteSafeModeOn(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.SafeModeOn)
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -17873,7 +17865,7 @@ Public Sub WriteSafeModeOff(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.SafeModeOff)
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -17901,7 +17893,7 @@ Public Sub WritePartySafeOn(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.PartySafeOn)
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -17929,7 +17921,7 @@ Public Sub WritePartySafeOff(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.PartySafeOff)
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -17952,7 +17944,7 @@ Public Sub WriteClanSeguro(ByVal UserIndex As Integer, ByVal estado As Boolean)
 
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.ClanSeguro)
     Call UserList(UserIndex).outgoingData.WriteBoolean(estado)
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -17970,7 +17962,7 @@ Public Sub WriteSeguroResu(ByVal UserIndex As Integer, ByVal estado As Boolean)
 
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.SeguroResu)
     Call UserList(UserIndex).outgoingData.WriteBoolean(estado)
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -17998,7 +17990,7 @@ Public Sub WriteCantUseWhileMeditating(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.CantUseWhileMeditating)
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -18031,7 +18023,7 @@ Public Sub WriteUpdateSta(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -18064,7 +18056,7 @@ Public Sub WriteUpdateMana(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -18100,7 +18092,7 @@ Public Sub WriteUpdateHP(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -18133,7 +18125,7 @@ Public Sub WriteUpdateGold(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -18166,7 +18158,7 @@ Public Sub WriteUpdateExp(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -18204,7 +18196,7 @@ Public Sub WriteChangeMap(ByVal UserIndex As Integer, ByVal Map As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -18238,7 +18230,7 @@ Public Sub WritePosUpdate(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -18274,7 +18266,7 @@ Public Sub WriteNPCHitUser(ByVal UserIndex As Integer, ByVal Target As PartesCue
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -18310,7 +18302,7 @@ Public Sub WriteUserHitNPC(ByVal UserIndex As Integer, ByVal damage As Long)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -18344,7 +18336,7 @@ Public Sub WriteUserAttackedSwing(ByVal UserIndex As Integer, ByVal AttackerInde
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -18382,7 +18374,7 @@ Public Sub WriteUserHittedByUser(ByVal UserIndex As Integer, ByVal Target As Par
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -18420,7 +18412,7 @@ Public Sub WriteUserHittedUser(ByVal UserIndex As Integer, ByVal Target As Parte
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -18451,7 +18443,7 @@ Public Sub WriteChatOverHead(ByVal UserIndex As Integer, ByVal chat As String, B
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageChatOverHead(chat, CharIndex, Color))
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -18468,7 +18460,7 @@ Public Sub WriteTextOverChar(ByVal UserIndex As Integer, ByVal chat As String, B
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageTextOverChar(chat, CharIndex, Color))
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -18485,7 +18477,7 @@ Public Sub WriteTextOverTile(ByVal UserIndex As Integer, ByVal chat As String, B
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageTextOverTile(chat, X, Y, Color))
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -18502,7 +18494,7 @@ Public Sub WriteTextCharDrop(ByVal UserIndex As Integer, ByVal chat As String, B
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageTextCharDrop(chat, CharIndex, Color))
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -18532,7 +18524,7 @@ Public Sub WriteConsoleMsg(ByVal UserIndex As Integer, ByVal chat As String, ByV
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageConsoleMsg(chat, FontIndex))
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -18556,7 +18548,7 @@ Public Sub WriteLocaleMsg(ByVal UserIndex As Integer, ByVal ID As Integer, ByVal
     If UserIndex = 0 Then Exit Sub
         
     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageLocaleMsg(ID, strExtra, FontIndex))
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -18578,7 +18570,7 @@ Public Sub WriteListaCorreo(ByVal UserIndex As Integer, ByVal Actualizar As Bool
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageListaCorreo(UserIndex, Actualizar))
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -18607,7 +18599,7 @@ Public Sub WriteGuildChat(ByVal UserIndex As Integer, ByVal chat As String)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageGuildChat(chat))
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -18641,7 +18633,7 @@ Public Sub WriteShowMessageBox(ByVal UserIndex As Integer, ByVal message As Stri
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -18667,7 +18659,7 @@ Public Sub WriteMostrarCuenta(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -18700,7 +18692,7 @@ Public Sub WriteUserIndexInServer(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -18733,7 +18725,7 @@ Public Sub WriteUserCharIndexInServer(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -18775,7 +18767,7 @@ Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, ByVal Body As Intege
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageCharacterCreate(Body, Head, Heading, CharIndex, X, Y, weapon, shield, FX, FXLoops, helmet, name, Status, privileges, ParticulaFx, Head_Aura, Arma_Aura, Body_Aura, DM_Aura, RM_Aura, Otra_Aura, Escudo_Aura, speeding, EsNPC, donador, appear, group_index, clan_index, clan_nivel, UserMinHp, UserMaxHp, Simbolo, Idle, Navegando))
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -18804,7 +18796,7 @@ Public Sub WriteCharacterRemove(ByVal UserIndex As Integer, ByVal CharIndex As I
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageCharacterRemove(CharIndex, Desvanecido))
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -18835,7 +18827,7 @@ Public Sub WriteCharacterMove(ByVal UserIndex As Integer, ByVal CharIndex As Int
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageCharacterMove(CharIndex, X, Y))
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -18857,7 +18849,7 @@ Public Sub WriteForceCharMove(ByVal UserIndex, ByVal Direccion As eHeading)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageForceCharMove(Direccion))
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -18894,7 +18886,7 @@ Public Sub WriteCharacterChange(ByVal UserIndex As Integer, ByVal Body As Intege
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageCharacterChange(Body, Head, Heading, CharIndex, weapon, shield, FX, FXLoops, helmet, Idle, Navegando))
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -18928,7 +18920,7 @@ Public Sub WriteObjectCreate(ByVal UserIndex As Integer, ByVal ObjIndex As Integ
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageObjectCreate(ObjIndex, amount, X, Y))
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -18946,7 +18938,7 @@ Public Sub WriteParticleFloorCreate(ByVal UserIndex As Integer, ByVal Particula 
   
     If Particula = 0 Then Exit Sub
     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageParticleFXToFloor(X, Y, Particula, ParticulaTime))
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -18984,7 +18976,7 @@ Public Sub WriteFxPiso(ByVal UserIndex As Integer, ByVal GrhIndex As Integer, By
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageFxPiso(GrhIndex, X, Y))
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -19014,7 +19006,7 @@ Public Sub WriteObjectDelete(ByVal UserIndex As Integer, ByVal X As Byte, ByVal 
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageObjectDelete(X, Y))
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -19052,7 +19044,7 @@ Public Sub WriteBlockPosition(ByVal UserIndex As Integer, ByVal X As Byte, ByVal
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -19082,7 +19074,7 @@ Public Sub WritePlayMidi(ByVal UserIndex As Integer, ByVal midi As Byte, Optiona
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessagePlayMidi(midi, loops))
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -19114,7 +19106,7 @@ Public Sub WritePlayWave(ByVal UserIndex As Integer, ByVal wave As Integer, ByVa
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessagePlayWave(wave, X, Y))
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -19160,7 +19152,7 @@ Public Sub WriteGuildList(ByVal UserIndex As Integer, ByRef guildList() As Strin
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -19194,7 +19186,7 @@ Public Sub WriteAreaChanged(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -19222,7 +19214,7 @@ Public Sub WritePauseToggle(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessagePauseToggle())
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -19250,7 +19242,7 @@ Public Sub WriteRainToggle(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageRainToggle())
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -19272,7 +19264,7 @@ Public Sub WriteNubesToggle(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageNieblandoToggle(IntensidadDeNubes))
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -19294,7 +19286,7 @@ Public Sub WriteTrofeoToggleOn(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageTrofeoToggleOn())
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -19316,7 +19308,7 @@ Public Sub WriteTrofeoToggleOff(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageTrofeoToggleOff())
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -19347,7 +19339,7 @@ Public Sub WriteCreateFX(ByVal UserIndex As Integer, ByVal CharIndex As Integer,
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageCreateFX(CharIndex, FX, FXLoops))
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -19392,7 +19384,7 @@ Public Sub WriteUpdateUserStats(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -19415,7 +19407,7 @@ Public Sub WriteUpdateUserKey(ByVal UserIndex As Integer, ByVal slot As Integer,
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -19456,7 +19448,7 @@ Public Sub WriteUpdateDM(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -19511,7 +19503,7 @@ Public Sub WriteUpdateRM(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -19545,7 +19537,7 @@ Public Sub WriteWorkRequestTarget(ByVal UserIndex As Integer, ByVal Skill As eSk
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -19577,7 +19569,7 @@ Public Sub WriteInventoryUnlockSlots(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -19610,7 +19602,7 @@ Public Sub WriteIntervals(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -19654,7 +19646,7 @@ Public Sub WriteChangeInventorySlot(ByVal UserIndex As Integer, ByVal slot As By
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -19706,7 +19698,7 @@ Public Sub WriteChangeBankSlot(ByVal UserIndex As Integer, ByVal slot As Byte)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -19748,7 +19740,7 @@ Public Sub WriteChangeSpellSlot(ByVal UserIndex As Integer, ByVal slot As Intege
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -19785,7 +19777,7 @@ Public Sub WriteAttributes(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -19851,7 +19843,7 @@ Public Sub WriteBlacksmithWeapons(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -19917,7 +19909,7 @@ Public Sub WriteBlacksmithArmors(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -19981,7 +19973,7 @@ Public Sub WriteCarpenterObjects(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -20036,7 +20028,7 @@ Public Sub WriteAlquimistaObjects(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -20097,7 +20089,7 @@ Public Sub WriteSastreObjects(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -20125,7 +20117,7 @@ Public Sub WriteRestOK(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.RestOK)
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -20154,7 +20146,7 @@ Public Sub WriteErrorMsg(ByVal UserIndex As Integer, ByVal message As String)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageErrorMsg(message))
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -20182,7 +20174,7 @@ Public Sub WriteBlind(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.Blind)
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -20210,7 +20202,7 @@ Public Sub WriteDumb(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.Dumb)
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -20246,7 +20238,7 @@ Public Sub WriteShowSignal(ByVal UserIndex As Integer, ByVal ObjIndex As Integer
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -20296,7 +20288,7 @@ Public Sub WriteChangeNPCInventorySlot(ByVal UserIndex As Integer, ByVal slot As
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -20332,7 +20324,7 @@ Public Sub WriteUpdateHungerAndThirst(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -20358,7 +20350,7 @@ Public Sub WriteLight(ByVal UserIndex As Integer, ByVal Map As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -20382,7 +20374,7 @@ Public Sub WriteFlashScreen(ByVal UserIndex As Integer, ByVal Color As Long, ByV
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -20411,7 +20403,7 @@ Public Sub WriteFYA(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -20437,7 +20429,7 @@ Public Sub WriteCerrarleCliente(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -20464,7 +20456,7 @@ Public Sub WriteOxigeno(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -20502,7 +20494,7 @@ Public Sub WriteContadores(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -20531,7 +20523,7 @@ Public Sub WriteBindKeys(ByVal UserIndex As Integer)
         
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -20586,7 +20578,7 @@ Public Sub WriteMiniStats(ByVal UserIndex As Integer)
                 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -20619,7 +20611,7 @@ Public Sub WriteLevelUp(ByVal UserIndex As Integer, ByVal skillPoints As Integer
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -20654,7 +20646,7 @@ Public Sub WriteAddForumMsg(ByVal UserIndex As Integer, ByVal title As String, B
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -20682,7 +20674,7 @@ Public Sub WriteShowForumForm(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.ShowForumForm)
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -20712,7 +20704,7 @@ Public Sub WriteSetInvisible(ByVal UserIndex As Integer, ByVal CharIndex As Inte
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(PrepareMessageSetInvisible(CharIndex, invisible))
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -20757,7 +20749,7 @@ Public Sub WriteDiceRoll(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -20785,7 +20777,7 @@ Public Sub WriteMeditateToggle(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.MeditateToggle)
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -20813,7 +20805,7 @@ Public Sub WriteBlindNoMore(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.BlindNoMore)
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -20841,7 +20833,7 @@ Public Sub WriteDumbNoMore(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.DumbNoMore)
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -20879,7 +20871,7 @@ Public Sub WriteSendSkills(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -20924,7 +20916,7 @@ Public Sub WriteTrainerCreatureList(ByVal UserIndex As Integer, ByVal NpcIndex A
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -20987,7 +20979,7 @@ Public Sub WriteGuildNews(ByVal UserIndex As Integer, ByVal guildNews As String,
         
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -21024,7 +21016,7 @@ Public Sub WriteOfferDetails(ByVal UserIndex As Integer, ByVal details As String
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -21070,7 +21062,7 @@ Public Sub WriteAlianceProposalsList(ByVal UserIndex As Integer, ByRef guilds() 
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -21116,7 +21108,7 @@ Public Sub WritePeaceProposalsList(ByVal UserIndex As Integer, ByRef guilds() As
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -21181,7 +21173,7 @@ Public Sub WriteCharacterInfo(ByVal UserIndex As Integer, ByVal CharName As Stri
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -21260,7 +21252,7 @@ Public Sub WriteGuildLeaderInfo(ByVal UserIndex As Integer, ByRef guildList() As
         
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -21324,7 +21316,7 @@ Public Sub WriteGuildDetails(ByVal UserIndex As Integer, ByVal GuildName As Stri
         ' Call .WriteInteger(ExpNecesaria)
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -21352,7 +21344,7 @@ Public Sub WriteShowGuildFundationForm(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.ShowGuildFundationForm)
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -21383,7 +21375,7 @@ Public Sub WriteParalizeOK(ByVal UserIndex As Integer)
 
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.ParalizeOK)
     
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -21405,7 +21397,7 @@ Public Sub WriteInmovilizaOK(ByVal UserIndex As Integer)
 
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.InmovilizadoOK)
     '  Call WritePosUpdate(UserIndex)
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -21427,7 +21419,7 @@ Public Sub WriteStopped(ByVal UserIndex As Integer, ByVal Stopped As Boolean)
 
     End With
     
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -21462,7 +21454,7 @@ Public Sub WriteShowUserRequest(ByVal UserIndex As Integer, ByVal details As Str
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -21521,7 +21513,7 @@ Public Sub WriteChangeUserTradeSlot(ByVal UserIndex As Integer, ByRef itemsAenvi
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -21567,7 +21559,7 @@ Public Sub WriteSpawnList(ByVal UserIndex As Integer, ByRef npcNames() As String
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -21611,7 +21603,7 @@ Public Sub WriteShowSOSForm(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -21646,7 +21638,7 @@ Public Sub WriteShowMOTDEditionForm(ByVal UserIndex As Integer, ByVal currentMOT
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -21676,7 +21668,7 @@ Public Sub WriteShowGMPanelForm(ByVal UserIndex As Integer)
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.ShowGMPanelForm)
     Call UserList(UserIndex).outgoingData.WriteInteger(UserList(UserIndex).Char.Head)
     Call UserList(UserIndex).outgoingData.WriteInteger(UserList(UserIndex).Char.Body)
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -21698,7 +21690,7 @@ Public Sub WriteShowFundarClanForm(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.ShowFundarClanForm)
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -21745,7 +21737,7 @@ Public Sub WriteUserNameList(ByVal UserIndex As Integer, ByRef userNamesList() A
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -21774,7 +21766,7 @@ Public Sub WritePong(ByVal UserIndex As Integer, ByVal Time As Long)
 
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.Pong)
     Call UserList(UserIndex).outgoingData.WriteLong(Time)
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -21805,7 +21797,7 @@ Public Sub FlushBuffer(ByVal UserIndex As Integer)
         
         ' Tratamos de enviar los datos.
         Dim ret As Long
-        ret = WsApiEnviar(UserIndex, ConvertDataBuffer(.Length, .ReadAll))
+            ret = WsApiEnviar(UserIndex, ConvertDataBuffer(.Length, .ReadAll))
     
         ' Si recibimos un error como respuesta de la API, cerramos el socket.
         If ret <> 0 And ret <> WSAEWOULDBLOCK Then
@@ -21814,7 +21806,9 @@ Public Sub FlushBuffer(ByVal UserIndex As Integer)
             Call Cerrar_Usuario(UserIndex)
 
         End If
-
+        
+        Call .Clean
+        
     End With
         
     Exit Sub
@@ -21834,8 +21828,6 @@ End Sub
 ' @remarks  The message is written to no outgoing buffer, but only prepared in a single string to be easily sent to several clients.
 
 Public Function PrepareMessageSetInvisible(ByVal CharIndex As Integer, ByVal invisible As Boolean) As t_DataBuffer
-        
-    On Error GoTo PrepareMessageSetInvisible_Err
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -21849,21 +21841,15 @@ Public Function PrepareMessageSetInvisible(ByVal CharIndex As Integer, ByVal inv
         Call .WriteInteger(CharIndex)
         Call .WriteBoolean(invisible)
         
+        Call .EndPacket
+        
         PrepareMessageSetInvisible = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
 
-PrepareMessageSetInvisible_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageSetInvisible", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 Public Function PrepareMessageSetEscribiendo(ByVal CharIndex As Integer, ByVal Escribiendo As Boolean) As t_DataBuffer
-        
-    On Error GoTo PrepareMessageSetEscribiendo_Err
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -21876,15 +21862,11 @@ Public Function PrepareMessageSetEscribiendo(ByVal CharIndex As Integer, ByVal E
         Call .WriteInteger(CharIndex)
         Call .WriteBoolean(Escribiendo)
         
+        Call .EndPacket
+        
         PrepareMessageSetEscribiendo = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
-
-PrepareMessageSetEscribiendo_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageSetEscribiendo", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -21898,8 +21880,6 @@ End Function
 ' @remarks  The message is written to no outgoing buffer, but only prepared in a single string to be easily sent to several clients.
 
 Public Function PrepareMessageChatOverHead(ByVal chat As String, ByVal CharIndex As Integer, ByVal Color As Long, Optional ByVal name As String = "") As t_DataBuffer
-        
-    On Error GoTo PrepareMessageChatOverHead_Err
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -21912,9 +21892,6 @@ Public Function PrepareMessageChatOverHead(ByVal chat As String, ByVal CharIndex
     g = (Color And 65280) / 256
     R = Color And 255
 
-    'b = color \ 65536
-    'g = (color - b * 65536) \ 256
-    ' r = color - b * 65536 - g * 256
     With auxiliarBuffer
         Call .WriteID(ServerPacketID.ChatOverHead)
         Call .WriteASCIIString(chat)
@@ -21926,68 +21903,48 @@ Public Function PrepareMessageChatOverHead(ByVal chat As String, ByVal CharIndex
         Call .WriteByte(b)
         Call .WriteLong(Color)
         
-        'Call .WriteASCIIString(name) Anulado gracias a Optimizacion ^^
+        Call .EndPacket
         
         PrepareMessageChatOverHead = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
 
-PrepareMessageChatOverHead_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageChatOverHead", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 Public Function PrepareMessageTextOverChar(ByVal chat As String, ByVal CharIndex As Integer, ByVal Color As Long) As t_DataBuffer
-        
-    On Error GoTo PrepareMessageTextOverChar_Err
 
     '***************************************************
     With auxiliarBuffer
+    
         Call .WriteID(ServerPacketID.TextOverChar)
         Call .WriteASCIIString(chat)
         Call .WriteInteger(CharIndex)
         Call .WriteLong(Color)
+        
+        Call .EndPacket
         PrepareMessageTextOverChar = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
-
-PrepareMessageTextOverChar_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageTextOverChar", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
 Public Function PrepareMessageTextCharDrop(ByVal chat As String, ByVal CharIndex As Integer, ByVal Color As Long) As t_DataBuffer
         
-    On Error GoTo PrepareMessageTextCharDrop_Err
-
     '***************************************************
     With auxiliarBuffer
         Call .WriteID(ServerPacketID.TextCharDrop)
         Call .WriteASCIIString(chat)
         Call .WriteInteger(CharIndex)
         Call .WriteLong(Color)
+        Call .EndPacket
         PrepareMessageTextCharDrop = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
-
-PrepareMessageTextCharDrop_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageTextCharDrop", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
 Public Function PrepareMessageTextOverTile(ByVal chat As String, ByVal X As Integer, ByVal Y As Integer, ByVal Color As Long) As t_DataBuffer
         
-    On Error GoTo PrepareMessageTextOverTile_Err
-
     '***************************************************
     With auxiliarBuffer
         Call .WriteID(ServerPacketID.TextOverTile)
@@ -21995,15 +21952,10 @@ Public Function PrepareMessageTextOverTile(ByVal chat As String, ByVal X As Inte
         Call .WriteInteger(X)
         Call .WriteInteger(Y)
         Call .WriteLong(Color)
+        Call .EndPacket
         PrepareMessageTextOverTile = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
-
-PrepareMessageTextOverTile_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageTextOverTile", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -22016,8 +21968,6 @@ End Function
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
 Public Function PrepareMessageConsoleMsg(ByVal chat As String, ByVal FontIndex As FontTypeNames) As t_DataBuffer
-        
-    On Error GoTo PrepareMessageConsoleMsg_Err
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -22028,22 +21978,15 @@ Public Function PrepareMessageConsoleMsg(ByVal chat As String, ByVal FontIndex A
         Call .WriteID(ServerPacketID.ConsoleMsg)
         Call .WriteASCIIString(chat)
         Call .WriteByte(FontIndex)
+        Call .EndPacket
         
         PrepareMessageConsoleMsg = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
-    Exit Function
-
-PrepareMessageConsoleMsg_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageConsoleMsg", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 Public Function PrepareMessageLocaleMsg(ByVal ID As Integer, ByVal chat As String, ByVal FontIndex As FontTypeNames) As t_DataBuffer
-        
-    On Error GoTo PrepareMessageLocaleMsg_Err
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -22055,16 +21998,10 @@ Public Function PrepareMessageLocaleMsg(ByVal ID As Integer, ByVal chat As Strin
         Call .WriteInteger(ID)
         Call .WriteASCIIString(chat)
         Call .WriteByte(FontIndex)
-        
+        Call .EndPacket
         PrepareMessageLocaleMsg = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
-
-PrepareMessageLocaleMsg_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageLocaleMsg", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -22074,8 +22011,6 @@ Public Function PrepareMessageListaCorreo(ByVal UserIndex As Integer, ByVal Actu
     'Last Modification: 05/17/06
     'Prepares the "ConsoleMsg" message and returns it.
     '***************************************************
-        
-    On Error GoTo PrepareMessageListaCorreo_Err
 
     Dim cant As Byte
 
@@ -22105,15 +22040,11 @@ Public Function PrepareMessageListaCorreo(ByVal UserIndex As Integer, ByVal Actu
 
         Call .WriteBoolean(Actualizar)
         
+        Call .EndPacket
+        
         PrepareMessageListaCorreo = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
-
-PrepareMessageListaCorreo_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageListaCorreo", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -22128,8 +22059,6 @@ End Function
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
 Public Function PrepareMessageCreateFX(ByVal CharIndex As Integer, ByVal FX As Integer, ByVal FXLoops As Integer) As t_DataBuffer
-        
-    On Error GoTo PrepareMessageCreateFX_Err
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -22141,44 +22070,29 @@ Public Function PrepareMessageCreateFX(ByVal CharIndex As Integer, ByVal FX As I
         Call .WriteInteger(CharIndex)
         Call .WriteInteger(FX)
         Call .WriteInteger(FXLoops)
+        Call .EndPacket
         
         PrepareMessageCreateFX = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
-    Exit Function
-
-PrepareMessageCreateFX_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageCreateFX", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 Public Function PrepareMessageMeditateToggle(ByVal CharIndex As Integer, ByVal FX As Integer) As t_DataBuffer
     '***************************************************
-        
-    On Error GoTo PrepareMessageMeditateToggle_Err
-        
+
     With auxiliarBuffer
         Call .WriteID(ServerPacketID.MeditateToggle)
         Call .WriteInteger(CharIndex)
         Call .WriteInteger(FX)
-        
+        Call .EndPacket
         PrepareMessageMeditateToggle = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
 
-PrepareMessageMeditateToggle_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageMeditateToggle", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 Public Function PrepareMessageParticleFX(ByVal CharIndex As Integer, ByVal Particula As Integer, ByVal Time As Long, ByVal Remove As Boolean) As t_DataBuffer
-        
-    On Error GoTo PrepareMessageParticleFX_Err
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -22191,22 +22105,14 @@ Public Function PrepareMessageParticleFX(ByVal CharIndex As Integer, ByVal Parti
         Call .WriteInteger(Particula)
         Call .WriteLong(Time)
         Call .WriteBoolean(Remove)
-        
+        Call .EndPacket
         PrepareMessageParticleFX = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
-    Exit Function
-
-PrepareMessageParticleFX_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageParticleFX", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 Public Function PrepareMessageParticleFXWithDestino(ByVal Emisor As Integer, ByVal Receptor As Integer, ByVal ParticulaViaje As Integer, ByVal ParticulaFinal As Integer, ByVal Time As Long, ByVal wav As Integer, ByVal FX As Integer) As t_DataBuffer
-        
-    On Error GoTo PrepareMessageParticleFXWithDestino_Err
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -22222,22 +22128,14 @@ Public Function PrepareMessageParticleFXWithDestino(ByVal Emisor As Integer, ByV
         Call .WriteLong(Time)
         Call .WriteInteger(wav)
         Call .WriteInteger(FX)
-        
+        Call .EndPacket
         PrepareMessageParticleFXWithDestino = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
-    Exit Function
-
-PrepareMessageParticleFXWithDestino_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageParticleFXWithDestino", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 Public Function PrepareMessageParticleFXWithDestinoXY(ByVal Emisor As Integer, ByVal ParticulaViaje As Integer, ByVal ParticulaFinal As Integer, ByVal Time As Long, ByVal wav As Integer, ByVal FX As Integer, ByVal X As Byte, ByVal Y As Byte) As t_DataBuffer
-        
-    On Error GoTo PrepareMessageParticleFXWithDestinoXY_Err
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -22254,22 +22152,14 @@ Public Function PrepareMessageParticleFXWithDestinoXY(ByVal Emisor As Integer, B
         Call .WriteInteger(FX)
         Call .WriteByte(X)
         Call .WriteByte(Y)
-        
+        Call .EndPacket
         PrepareMessageParticleFXWithDestinoXY = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
 
-PrepareMessageParticleFXWithDestinoXY_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageParticleFXWithDestinoXY", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 Public Function PrepareMessageAuraToChar(ByVal CharIndex As Integer, ByVal Aura As String, ByVal Remove As Boolean, ByVal Tipo As Byte) As t_DataBuffer
-        
-    On Error GoTo PrepareMessageAuraToChar_Err
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -22282,21 +22172,14 @@ Public Function PrepareMessageAuraToChar(ByVal CharIndex As Integer, ByVal Aura 
         Call .WriteASCIIString(Aura)
         Call .WriteBoolean(Remove)
         Call .WriteByte(Tipo)
+        Call .EndPacket
         PrepareMessageAuraToChar = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
-    Exit Function
-
-PrepareMessageAuraToChar_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageAuraToChar", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 Public Function PrepareMessageSpeedingACT(ByVal CharIndex As Integer, ByVal speeding As Single) As t_DataBuffer
-        
-    On Error GoTo PrepareMessageSpeedingACT_Err
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -22307,21 +22190,14 @@ Public Function PrepareMessageSpeedingACT(ByVal CharIndex As Integer, ByVal spee
         Call .WriteID(ServerPacketID.SpeedToChar)
         Call .WriteInteger(CharIndex)
         Call .WriteSingle(speeding)
+        Call .EndPacket
         PrepareMessageSpeedingACT = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
 
-PrepareMessageSpeedingACT_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageSpeedingACT", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 Public Function PrepareMessageParticleFXToFloor(ByVal X As Byte, ByVal Y As Byte, ByVal Particula As Integer, ByVal Time As Long) As t_DataBuffer
-        
-    On Error GoTo PrepareMessageParticleFXToFloor_Err
 
     '***************************************************
     '***************************************************
@@ -22331,21 +22207,14 @@ Public Function PrepareMessageParticleFXToFloor(ByVal X As Byte, ByVal Y As Byte
         Call .WriteByte(Y)
         Call .WriteInteger(Particula)
         Call .WriteLong(Time)
+        Call .EndPacket
         PrepareMessageParticleFXToFloor = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
 
-PrepareMessageParticleFXToFloor_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageParticleFXToFloor", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 Public Function PrepareMessageLightFXToFloor(ByVal X As Byte, ByVal Y As Byte, ByVal LuzColor As Long, ByVal Rango As Byte) As t_DataBuffer
-        
-    On Error GoTo PrepareMessageLightFXToFloor_Err
 
     '***************************************************
     '***************************************************
@@ -22355,16 +22224,11 @@ Public Function PrepareMessageLightFXToFloor(ByVal X As Byte, ByVal Y As Byte, B
         Call .WriteByte(Y)
         Call .WriteLong(LuzColor)
         Call .WriteByte(Rango)
+        Call .EndPacket
         PrepareMessageLightFXToFloor = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
 
-PrepareMessageLightFXToFloor_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageLightFXToFloor", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 ''
@@ -22377,8 +22241,6 @@ End Function
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
 Public Function PrepareMessagePlayWave(ByVal wave As Integer, ByVal X As Byte, ByVal Y As Byte) As t_DataBuffer
-        
-    On Error GoTo PrepareMessagePlayWave_Err
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -22391,22 +22253,14 @@ Public Function PrepareMessagePlayWave(ByVal wave As Integer, ByVal X As Byte, B
         Call .WriteInteger(wave)
         Call .WriteByte(X)
         Call .WriteByte(Y)
-        
+        Call .EndPacket
         PrepareMessagePlayWave = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
 
-PrepareMessagePlayWave_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessagePlayWave", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 Public Function PrepareMessageUbicacionLlamada(ByVal Mapa As Integer, ByVal X As Byte, ByVal Y As Byte) As t_DataBuffer
-        
-    On Error GoTo PrepareMessageUbicacionLlamada_Err
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -22419,22 +22273,15 @@ Public Function PrepareMessageUbicacionLlamada(ByVal Mapa As Integer, ByVal X As
         Call .WriteInteger(Mapa)
         Call .WriteByte(X)
         Call .WriteByte(Y)
+        Call .EndPacket
         
         PrepareMessageUbicacionLlamada = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
 
-PrepareMessageUbicacionLlamada_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageUbicacionLlamada", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 Public Function PrepareMessageCharUpdateHP(ByVal UserIndex As Integer) As t_DataBuffer
-        
-    On Error GoTo PrepareMessageCharUpdateHP_Err
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -22447,64 +22294,40 @@ Public Function PrepareMessageCharUpdateHP(ByVal UserIndex As Integer) As t_Data
         Call .WriteInteger(UserList(UserIndex).Char.CharIndex)
         Call .WriteInteger(UserList(UserIndex).Stats.MinHp)
         Call .WriteInteger(UserList(UserIndex).Stats.MaxHp)
-        
+        Call .EndPacket
         PrepareMessageCharUpdateHP = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
 
-PrepareMessageCharUpdateHP_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageCharUpdateHP", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 Public Function PrepareMessageArmaMov(ByVal CharIndex As Integer) As t_DataBuffer
-        
-    On Error GoTo PrepareMessageArmaMov_Err
 
     '***************************************************
     With auxiliarBuffer
         Call .WriteID(ServerPacketID.ArmaMov)
         Call .WriteInteger(CharIndex)
-        
+        Call .EndPacket
         PrepareMessageArmaMov = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
 
-PrepareMessageArmaMov_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageArmaMov", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 Public Function PrepareMessageEscudoMov(ByVal CharIndex As Integer) As t_DataBuffer
-        
-    On Error GoTo PrepareMessageEscudoMov_Err
 
     '***************************************************
     With auxiliarBuffer
         Call .WriteID(ServerPacketID.EscudoMov)
         Call .WriteInteger(CharIndex)
-        
+        Call .EndPacket
         PrepareMessageEscudoMov = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
 
-PrepareMessageEscudoMov_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageEscudoMov", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 Public Function PrepareMessageFlashScreen(ByVal Color As Long, ByVal Duracion As Long, Optional ByVal Ignorar As Boolean = False) As t_DataBuffer
-        
-    On Error GoTo PrepareMessageFlashScreen_Err
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -22517,16 +22340,11 @@ Public Function PrepareMessageFlashScreen(ByVal Color As Long, ByVal Duracion As
         Call .WriteLong(Color)
         Call .WriteLong(Duracion)
         Call .WriteBoolean(Ignorar)
+        Call .EndPacket
         PrepareMessageFlashScreen = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
 
-PrepareMessageFlashScreen_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageFlashScreen", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 ''
@@ -22537,8 +22355,6 @@ End Function
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
 Public Function PrepareMessageGuildChat(ByVal chat As String) As t_DataBuffer
-        
-    On Error GoTo PrepareMessageGuildChat_Err
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -22548,17 +22364,11 @@ Public Function PrepareMessageGuildChat(ByVal chat As String) As t_DataBuffer
     With auxiliarBuffer
         Call .WriteID(ServerPacketID.GuildChat)
         Call .WriteASCIIString(chat)
-        
+        Call .EndPacket
         PrepareMessageGuildChat = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
 
-PrepareMessageGuildChat_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageGuildChat", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 ''
@@ -22569,8 +22379,6 @@ End Function
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
 Public Function PrepareMessageShowMessageBox(ByVal chat As String) As t_DataBuffer
-        
-    On Error GoTo PrepareMessageShowMessageBox_Err
 
     '***************************************************
     'Author: Fredy Horacio Treboux (liquid)
@@ -22580,17 +22388,11 @@ Public Function PrepareMessageShowMessageBox(ByVal chat As String) As t_DataBuff
     With auxiliarBuffer
         Call .WriteID(ServerPacketID.ShowMessageBox)
         Call .WriteASCIIString(chat)
-        
+        Call .EndPacket
         PrepareMessageShowMessageBox = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
 
-PrepareMessageShowMessageBox_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageShowMessageBox", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 ''
@@ -22602,8 +22404,6 @@ End Function
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
 Public Function PrepareMessagePlayMidi(ByVal midi As Byte, Optional ByVal loops As Integer = -1) As t_DataBuffer
-        
-    On Error GoTo PrepareMessagePlayMidi_Err
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -22614,39 +22414,24 @@ Public Function PrepareMessagePlayMidi(ByVal midi As Byte, Optional ByVal loops 
         Call .WriteID(ServerPacketID.PlayMIDI)
         Call .WriteByte(midi)
         Call .WriteInteger(loops)
-        
+        Call .EndPacket
         PrepareMessagePlayMidi = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
 
-PrepareMessagePlayMidi_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessagePlayMidi", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 Public Function PrepareMessageOnlineUser(ByVal UserOnline As Integer) As t_DataBuffer
-    '***************************************************
-        
-    On Error GoTo PrepareMessageOnlineUser_Err
 
     '***************************************************
     With auxiliarBuffer
         Call .WriteID(ServerPacketID.UserOnline)
         Call .WriteInteger(UserOnline)
-        
+        Call .EndPacket
         PrepareMessageOnlineUser = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
 
-PrepareMessageOnlineUser_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageOnlineUser", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 ''
@@ -22656,8 +22441,6 @@ End Function
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
 Public Function PrepareMessagePauseToggle() As t_DataBuffer
-        
-    On Error GoTo PrepareMessagePauseToggle_Err
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -22666,16 +22449,11 @@ Public Function PrepareMessagePauseToggle() As t_DataBuffer
     '***************************************************
     With auxiliarBuffer
         Call .WriteID(ServerPacketID.PauseToggle)
+        Call .EndPacket
         PrepareMessagePauseToggle = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
 
-PrepareMessagePauseToggle_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessagePauseToggle", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 ''
@@ -22685,8 +22463,6 @@ End Function
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
 Public Function PrepareMessageRainToggle() As t_DataBuffer
-        
-    On Error GoTo PrepareMessageRainToggle_Err
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -22695,22 +22471,14 @@ Public Function PrepareMessageRainToggle() As t_DataBuffer
     '***************************************************
     With auxiliarBuffer
         Call .WriteID(ServerPacketID.RainToggle)
-        
+        Call .EndPacket
         PrepareMessageRainToggle = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
 
-PrepareMessageRainToggle_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageRainToggle", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 Public Function PrepareMessageTrofeoToggleOn() As t_DataBuffer
-        
-    On Error GoTo PrepareMessageTrofeoToggleOn_Err
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -22719,22 +22487,14 @@ Public Function PrepareMessageTrofeoToggleOn() As t_DataBuffer
     '***************************************************
     With auxiliarBuffer
         Call .WriteID(ServerPacketID.TrofeoToggleOn)
-        
+        Call .EndPacket
         PrepareMessageTrofeoToggleOn = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
 
-PrepareMessageTrofeoToggleOn_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageTrofeoToggleOn", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 Public Function PrepareMessageTrofeoToggleOff() As t_DataBuffer
-        
-    On Error GoTo PrepareMessageTrofeoToggleOff_Err
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -22743,22 +22503,14 @@ Public Function PrepareMessageTrofeoToggleOff() As t_DataBuffer
     '***************************************************
     With auxiliarBuffer
         Call .WriteID(ServerPacketID.TrofeoToggleOff)
-        
+        Call .EndPacket
         PrepareMessageTrofeoToggleOff = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
 
-PrepareMessageTrofeoToggleOff_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageTrofeoToggleOff", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 Public Function PrepareMessageHora() As t_DataBuffer
-        
-    On Error GoTo PrepareMessageHora_Err
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -22769,17 +22521,11 @@ Public Function PrepareMessageHora() As t_DataBuffer
         Call .WriteID(ServerPacketID.Hora)
         Call .WriteLong((GetTickCount() - HoraMundo) Mod DuracionDia)
         Call .WriteLong(DuracionDia)
-        
+        Call .EndPacket
         PrepareMessageHora = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
 
-PrepareMessageHora_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageHora", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 ''
@@ -22791,8 +22537,6 @@ End Function
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
 Public Function PrepareMessageObjectDelete(ByVal X As Byte, ByVal Y As Byte) As t_DataBuffer
-        
-    On Error GoTo PrepareMessageObjectDelete_Err
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -22803,17 +22547,11 @@ Public Function PrepareMessageObjectDelete(ByVal X As Byte, ByVal Y As Byte) As 
         Call .WriteID(ServerPacketID.ObjectDelete)
         Call .WriteByte(X)
         Call .WriteByte(Y)
-        
+        Call .EndPacket
         PrepareMessageObjectDelete = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
 
-PrepareMessageObjectDelete_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageObjectDelete", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 ''
@@ -22826,8 +22564,6 @@ End Function
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
 Public Function PrepareMessageBlockPosition(ByVal X As Byte, ByVal Y As Byte, ByVal Blocked As Byte) As t_DataBuffer
-        
-    On Error GoTo PrepareMessageBlockPosition_Err
 
     '***************************************************
     'Author: Fredy Horacio Treboux (liquid)
@@ -22839,17 +22575,11 @@ Public Function PrepareMessageBlockPosition(ByVal X As Byte, ByVal Y As Byte, By
         Call .WriteByte(X)
         Call .WriteByte(Y)
         Call .WriteByte(Blocked)
-        
+        Call .EndPacket
         PrepareMessageBlockPosition = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
 
-PrepareMessageBlockPosition_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageBlockPosition", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 ''
@@ -22862,8 +22592,6 @@ End Function
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 'Optimizacion por Ladder
 Public Function PrepareMessageObjectCreate(ByVal ObjIndex As Integer, ByVal amount As Integer, ByVal X As Byte, ByVal Y As Byte) As t_DataBuffer
-        
-    On Error GoTo PrepareMessageObjectCreate_Err
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -22876,22 +22604,14 @@ Public Function PrepareMessageObjectCreate(ByVal ObjIndex As Integer, ByVal amou
         Call .WriteByte(Y)
         Call .WriteInteger(ObjIndex)
         Call .WriteInteger(amount)
-        
+        Call .EndPacket
         PrepareMessageObjectCreate = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
 
-PrepareMessageObjectCreate_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageObjectCreate", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 Public Function PrepareMessageFxPiso(ByVal GrhIndex As Integer, ByVal X As Byte, ByVal Y As Byte) As t_DataBuffer
-        
-    On Error GoTo PrepareMessageFxPiso_Err
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -22903,17 +22623,11 @@ Public Function PrepareMessageFxPiso(ByVal GrhIndex As Integer, ByVal X As Byte,
         Call .WriteByte(X)
         Call .WriteByte(Y)
         Call .WriteInteger(GrhIndex)
-        
+        Call .EndPacket
         PrepareMessageFxPiso = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
 
-PrepareMessageFxPiso_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageFxPiso", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 ''
@@ -22924,8 +22638,6 @@ End Function
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
 Public Function PrepareMessageCharacterRemove(ByVal CharIndex As Integer, ByVal Desvanecido As Boolean) As t_DataBuffer
-        
-    On Error GoTo PrepareMessageCharacterRemove_Err
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -22936,17 +22648,11 @@ Public Function PrepareMessageCharacterRemove(ByVal CharIndex As Integer, ByVal 
         Call .WriteID(ServerPacketID.CharacterRemove)
         Call .WriteInteger(CharIndex)
         Call .WriteBoolean(Desvanecido)
-        
+        Call .EndPacket
         PrepareMessageCharacterRemove = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
 
-PrepareMessageCharacterRemove_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageCharacterRemove", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 ''
@@ -22957,8 +22663,6 @@ End Function
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
 Public Function PrepareMessageRemoveCharDialog(ByVal CharIndex As Integer) As t_DataBuffer
-        
-    On Error GoTo PrepareMessageRemoveCharDialog_Err
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -22968,17 +22672,11 @@ Public Function PrepareMessageRemoveCharDialog(ByVal CharIndex As Integer) As t_
     With auxiliarBuffer
         Call .WriteID(ServerPacketID.RemoveCharDialog)
         Call .WriteInteger(CharIndex)
-        
+        Call .EndPacket
         PrepareMessageRemoveCharDialog = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
 
-PrepareMessageRemoveCharDialog_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageRemoveCharDialog", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 ''
@@ -23007,8 +22705,6 @@ Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, ByVal Head 
     'Last Modification: 05/17/06
     'Prepares the "CharacterCreate" message and returns it
     '***************************************************
-        
-    On Error GoTo PrepareMessageCharacterCreate_Err
 
     With auxiliarBuffer
         Call .WriteID(ServerPacketID.CharacterCreate)
@@ -23047,17 +22743,11 @@ Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, ByVal Head 
         Call .WriteByte(Simbolo)
         Call .WriteBoolean(Idle)
         Call .WriteBoolean(Navegando)
-
+        Call .EndPacket
         PrepareMessageCharacterCreate = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
 
-PrepareMessageCharacterCreate_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageCharacterCreate", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 ''
@@ -23076,8 +22766,6 @@ End Function
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
 Public Function PrepareMessageCharacterChange(ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As eHeading, ByVal CharIndex As Integer, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal Idle As Boolean, ByVal Navegando As Boolean) As t_DataBuffer
-        
-    On Error GoTo PrepareMessageCharacterChange_Err
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -23099,16 +22787,12 @@ Public Function PrepareMessageCharacterChange(ByVal Body As Integer, ByVal Head 
         Call .WriteBoolean(Idle)
         Call .WriteBoolean(Navegando)
         
+        Call .EndPacket
+        
         PrepareMessageCharacterChange = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
-
-PrepareMessageCharacterChange_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageCharacterChange", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
+ 
 End Function
 
 ''
@@ -23121,8 +22805,6 @@ End Function
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
 Public Function PrepareMessageCharacterMove(ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte) As t_DataBuffer
-        
-    On Error GoTo PrepareMessageCharacterMove_Err
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -23134,22 +22816,14 @@ Public Function PrepareMessageCharacterMove(ByVal CharIndex As Integer, ByVal X 
         Call .WriteInteger(CharIndex)
         Call .WriteByte(X)
         Call .WriteByte(Y)
-        
+        Call .EndPacket
         PrepareMessageCharacterMove = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
 
-PrepareMessageCharacterMove_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageCharacterMove", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 Public Function PrepareMessageForceCharMove(ByVal Direccion As eHeading) As t_DataBuffer
-        
-    On Error GoTo PrepareMessageForceCharMove_Err
 
     '***************************************************
     'Author: ZaMa
@@ -23159,16 +22833,11 @@ Public Function PrepareMessageForceCharMove(ByVal Direccion As eHeading) As t_Da
     With auxiliarBuffer
         Call .WriteID(ServerPacketID.ForceCharMove)
         Call .WriteByte(Direccion)
-        
+        Call .EndPacket
         PrepareMessageForceCharMove = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
 
-PrepareMessageForceCharMove_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageForceCharMove", Erl)
-        
 End Function
 
 ''
@@ -23181,9 +22850,7 @@ End Function
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
 Public Function PrepareMessageUpdateTagAndStatus(ByVal UserIndex As Integer, Status As Byte, Tag As String) As t_DataBuffer
-        
-    On Error GoTo PrepareMessageUpdateTagAndStatus_Err
-
+  
     '***************************************************
     'Author: Alejandro Salvo (Salvito)
     'Last Modification: 04/07/07
@@ -23198,16 +22865,12 @@ Public Function PrepareMessageUpdateTagAndStatus(ByVal UserIndex As Integer, Sta
         Call .WriteASCIIString(Tag)
         Call .WriteInteger(UserList(UserIndex).Grupo.Lider)
         
+        Call .EndPacket
+        
         PrepareMessageUpdateTagAndStatus = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
 
-PrepareMessageUpdateTagAndStatus_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageUpdateTagAndStatus", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 Public Sub WriteUpdateNPCSimbolo(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal Simbolo As Byte)
@@ -23226,7 +22889,7 @@ Public Sub WriteUpdateNPCSimbolo(ByVal UserIndex As Integer, ByVal NpcIndex As I
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -23256,17 +22919,12 @@ Public Function PrepareMessageErrorMsg(ByVal message As String) As t_DataBuffer
     With auxiliarBuffer
         Call .WriteID(ServerPacketID.ErrorMsg)
         Call .WriteASCIIString(message)
+        Call .EndPacket
         
         PrepareMessageErrorMsg = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
 
-PrepareMessageErrorMsg_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageErrorMsg", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 Private Sub HandleQuestionGM(ByVal UserIndex As Integer)
@@ -23794,7 +23452,7 @@ Public Sub WritePersonajesDeCuenta(ByVal UserIndex As Integer)
 
     End With
     
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -24019,7 +23677,7 @@ Public Sub WriteGoliathInit(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -24041,7 +23699,7 @@ Public Sub WriteShowFrmLogear(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -24072,7 +23730,7 @@ Public Sub WriteShowFrmMapa(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -24703,17 +24361,12 @@ Public Function PrepareMessageNieblandoToggle(ByVal IntensidadMax As Byte) As t_
     With auxiliarBuffer
         Call .WriteID(ServerPacketID.NieblaToggle)
         Call .WriteByte(IntensidadMax)
+        Call .EndPacket
         
         PrepareMessageNieblandoToggle = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
 
-PrepareMessageNieblandoToggle_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageNieblandoToggle", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 Public Function PrepareMessageNevarToggle() As t_DataBuffer
@@ -24725,17 +24378,11 @@ Public Function PrepareMessageNevarToggle() As t_DataBuffer
     '***************************************************
     With auxiliarBuffer
         Call .WriteID(ServerPacketID.NieveToggle)
-        
+        Call .EndPacket
         PrepareMessageNevarToggle = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
 
-PrepareMessageNevarToggle_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageNevarToggle", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
 End Function
 
 Private Sub HandleGenio(ByVal UserIndex As Integer)
@@ -25269,7 +24916,7 @@ Public Sub WriteFamiliar(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -25295,17 +24942,12 @@ Public Function PrepareMessageBarFx(ByVal CharIndex As Integer, ByVal BarTime As
         Call .WriteInteger(CharIndex)
         Call .WriteInteger(BarTime)
         Call .WriteByte(BarAccion)
+        Call .EndPacket
         
         PrepareMessageBarFx = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
-        
-    Exit Function
-
-PrepareMessageBarFx_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageBarFx", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
+  
 End Function
 
 Private Sub HandleCompletarAccion(ByVal UserIndex As Integer)
@@ -25902,7 +25544,7 @@ Public Sub WritePreguntaBox(ByVal UserIndex As Integer, ByVal message As String)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -26265,7 +25907,7 @@ Public Sub WriteDatosGrupo(ByVal UserIndex As Integer)
    
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -26349,7 +25991,7 @@ Public Sub WriteUbicacion(ByVal UserIndex As Integer, ByVal Miembro As Byte, ByV
    
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -26426,7 +26068,7 @@ Public Sub WriteCorreoPicOn(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 
     Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.CorreoPicOn)
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -27036,7 +26678,7 @@ Public Sub WriteShop(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -27065,7 +26707,7 @@ Public Sub WriteRanking(ByVal UserIndex As Integer)
         
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -27301,7 +26943,7 @@ Public Sub WriteActShop(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -27338,7 +26980,7 @@ Public Sub WriteViajarForm(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -27672,7 +27314,7 @@ Public Sub WriteQuestDetails(ByVal UserIndex As Integer, ByVal QuestIndex As Int
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
 
     Exit Sub
  
@@ -27724,7 +27366,7 @@ Public Sub WriteQuestListSend(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
 
     Exit Sub
  
@@ -27874,7 +27516,7 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
 
     Exit Sub
  
@@ -28542,7 +28184,7 @@ Private Sub WriteShowScreenShot(ByVal UserIndex As Integer, name As String)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -28566,7 +28208,7 @@ Private Sub WriteShowProcesses(ByVal UserIndex As Integer, DATA As String)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -28590,7 +28232,7 @@ Private Sub WriteScreenShotData(ByVal UserIndex As Integer, Buffer As clsByteQue
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -28612,7 +28254,7 @@ Private Sub WriteTolerancia0(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -28635,7 +28277,7 @@ Private Sub WriteRedundancia(ByVal UserIndex As Integer)
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -28967,7 +28609,7 @@ Sub WriteCommerceRecieveChatMessage(ByVal UserIndex As Integer, ByVal message As
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 
@@ -29044,7 +28686,7 @@ Sub WriteInvasionInfo(ByVal UserIndex As Integer, ByVal Invasion As Integer, ByV
 
     End With
 
-    Call EndPacket
+    Call .EndPacket
     Exit Sub
 ErrHandler:
 

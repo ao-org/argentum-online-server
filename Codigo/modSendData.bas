@@ -65,7 +65,7 @@ Public Enum SendTarget
     
 End Enum
 
-Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, ByVal sndData As String)
+Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, ByVal sndData As t_DataBuffer)
         
         On Error GoTo SendData_Err
     
