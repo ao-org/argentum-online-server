@@ -9593,31 +9593,21 @@ End Sub
 
 Private Sub HandleDarLlaveAUsuario(ByVal UserIndex As Integer)
 
-        '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 5 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
-        End If
-    
         On Error GoTo ErrHandler
 
 104     With UserList(UserIndex)
 
-            'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim Buffer As New clsByteQueue
-
-106         Call Buffer.CopyBuffer(.incomingData)
-        
             'Remove packet ID
-108         Call Buffer.ReadByte
+108         Call .incomingData.ReadID
         
             Dim UserName As String, tUser As Integer, Llave As Integer
         
-110         UserName = Buffer.ReadASCIIString()
-112         Llave = Buffer.ReadInteger()
+110         UserName = .incomingData.ReadASCIIString()
+112         Llave = .incomingData.ReadInteger()
         
             ' Solo dios o admin
 114         If .flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin) Then
+
                 ' Me aseguro que esté activada la db
 116             If Not Database_Enabled Then
 118                 Call WriteConsoleMsg(UserIndex, "Es necesario que el juego esté corriendo con base de datos.", FontTypeNames.FONTTYPE_INFO)
@@ -9625,12 +9615,16 @@ Private Sub HandleDarLlaveAUsuario(ByVal UserIndex As Integer)
                 ' Me aseguro que el objeto sea una llave válida
 120             ElseIf Llave < 1 Or Llave > NumObjDatas Then
 122                 Call WriteConsoleMsg(UserIndex, "El número ingresado no es el de una llave válida.", FontTypeNames.FONTTYPE_INFO)
+
 124             ElseIf ObjData(Llave).OBJType <> eOBJType.otLlaves Then ' vb6 no tiene short-circuit evaluation :(
 126                 Call WriteConsoleMsg(UserIndex, "El número ingresado no es el de una llave válida.", FontTypeNames.FONTTYPE_INFO)
+
                 Else
+                
 128                 tUser = NameIndex(UserName)
                 
 130                 If tUser > 0 Then
+
                         ' Es un user online, guardamos la llave en la db
 132                     If DarLlaveAUsuarioDatabase(UserName, Llave) Then
                             ' Actualizamos su llavero
@@ -9642,7 +9636,9 @@ Private Sub HandleDarLlaveAUsuario(ByVal UserIndex As Integer)
                         Else
 140                         Call WriteConsoleMsg(UserIndex, "No se pudo entregar la llave. Asegúrese de que la llave esté disponible.", FontTypeNames.FONTTYPE_INFO)
                         End If
+                        
                     Else
+                    
                         ' No es un usuario online, nos fijamos si es un email
 142                     If CheckMailString(UserName) Then
                             ' Es un email, intentamos guardarlo en la db
@@ -9660,43 +9656,25 @@ Private Sub HandleDarLlaveAUsuario(ByVal UserIndex As Integer)
 152                 Call LogGM(.name, "/DARLLAVE " & UserName & " " & Llave)
                 End If
             End If
-        
-            'If we got here then packet is complete, copy data back to original queue
-154         Call .incomingData.CopyBuffer(Buffer)
 
         End With
-    
+        
+        Exit Sub
+        
 ErrHandler:
-
-        Dim Error As Long
-
-156     Error = Err.Number
-
-        On Error GoTo 0
-    
-        'Destroy auxiliar buffer
-158     Set Buffer = Nothing
-    
-160     If Error <> 0 Then Err.raise Error
+        Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleDarLlaveAUsuario", Erl)
+        Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
 
 Private Sub HandleSacarLlave(ByVal UserIndex As Integer)
         
         On Error GoTo HandleSacarLlave_Err
-    
-        
-
-        '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 3 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
-        End If
 
 104     With UserList(UserIndex)
 
             'Remove packet ID
-106         Call .incomingData.ReadByte
+106         Call .incomingData.ReadID
         
             Dim Llave As Integer
         
@@ -9704,6 +9682,7 @@ Private Sub HandleSacarLlave(ByVal UserIndex As Integer)
         
             ' Solo dios o admin
 110         If .flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin) Then
+
                 ' Me aseguro que esté activada la db
 112             If Not Database_Enabled Then
 114                 Call WriteConsoleMsg(UserIndex, "Es necesario que el juego esté corriendo con base de datos.", FontTypeNames.FONTTYPE_INFO)
@@ -9718,6 +9697,7 @@ Private Sub HandleSacarLlave(ByVal UserIndex As Integer)
 
 122                 Call LogGM(.name, "/SACARLLAVE " & Llave)
                 End If
+                
             End If
 
         End With
@@ -9727,19 +9707,17 @@ Private Sub HandleSacarLlave(ByVal UserIndex As Integer)
 
 HandleSacarLlave_Err:
 124     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleSacarLlave", Erl)
-
+        Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
 Private Sub HandleVerLlaves(ByVal UserIndex As Integer)
         
         On Error GoTo HandleVerLlaves_Err
-    
-        
 
 100     With UserList(UserIndex)
     
-102         Call .incomingData.ReadByte
+102         Call .incomingData.ReadID
 
             ' Sólo GMs
 104         If Not (.flags.Privilegios And PlayerType.user) Then
@@ -9755,29 +9733,21 @@ Private Sub HandleVerLlaves(ByVal UserIndex As Integer)
                 
         End With
 
-        
         Exit Sub
 
 HandleVerLlaves_Err:
 112     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleVerLlaves", Erl)
-
+        Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
 Private Sub HandleUseKey(ByVal UserIndex As Integer)
         
         On Error GoTo HandleUseKey_Err
-    
-        
-
-100     If UserList(UserIndex).incomingData.Length < 2 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
-        End If
 
 104     With UserList(UserIndex)
     
-106         Call .incomingData.ReadByte
+106         Call .incomingData.ReadID
         
             Dim slot As Byte
 108         slot = .incomingData.ReadByte
@@ -9791,7 +9761,7 @@ Private Sub HandleUseKey(ByVal UserIndex As Integer)
 
 HandleUseKey_Err:
 112     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleUseKey", Erl)
-
+        Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -9811,8 +9781,9 @@ Private Sub HandleInvisible(ByVal UserIndex As Integer)
         '
         '***************************************************
 100     With UserList(UserIndex)
+
             'Remove packet ID
-102         Call .incomingData.ReadByte
+102         Call .incomingData.ReadID
         
 104         If .flags.Privilegios And PlayerType.user Then Exit Sub
         
@@ -9825,7 +9796,7 @@ Private Sub HandleInvisible(ByVal UserIndex As Integer)
 
 HandleInvisible_Err:
 108     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleInvisible", Erl)
-110     Resume Next
+110     Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -9845,8 +9816,9 @@ Private Sub HandleGMPanel(ByVal UserIndex As Integer)
         '
         '***************************************************
 100     With UserList(UserIndex)
+
             'Remove packet ID
-102         Call .incomingData.ReadByte
+102         Call .incomingData.ReadID
         
 104         If .flags.Privilegios And PlayerType.user Then Exit Sub
         
@@ -9859,7 +9831,7 @@ Private Sub HandleGMPanel(ByVal UserIndex As Integer)
 
 HandleGMPanel_Err:
 108     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGMPanel", Erl)
-110     Resume Next
+110     Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -9880,14 +9852,13 @@ Private Sub HandleRequestUserList(ByVal UserIndex As Integer)
         'I haven`t found a solution to split, so i make an array of names
         '***************************************************
         Dim i       As Long
-
         Dim names() As String
-
         Dim Count   As Long
     
 100     With UserList(UserIndex)
+
             'Remove packet ID
-102         Call .incomingData.ReadByte
+102         Call .incomingData.ReadID
         
 104         If .flags.Privilegios And (PlayerType.user Or PlayerType.RoleMaster) Then Exit Sub
         
@@ -9914,7 +9885,7 @@ Private Sub HandleRequestUserList(ByVal UserIndex As Integer)
 
 HandleRequestUserList_Err:
 122     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleRequestUserList", Erl)
-124     Resume Next
+124     Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -9938,8 +9909,9 @@ Private Sub HandleWorking(ByVal UserIndex As Integer)
         Dim Users As String
     
 100     With UserList(UserIndex)
+
             'Remove packet ID
-102         Call .incomingData.ReadByte
+102         Call .incomingData.ReadID
         
 104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
         
@@ -9970,7 +9942,7 @@ Private Sub HandleWorking(ByVal UserIndex As Integer)
 
 HandleWorking_Err:
 124     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleWorking", Erl)
-126     Resume Next
+126     Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -9990,12 +9962,12 @@ Private Sub HandleHiding(ByVal UserIndex As Integer)
         '
         '***************************************************
         Dim i     As Long
-
         Dim Users As String
     
 100     With UserList(UserIndex)
+
             'Remove packet ID
-102         Call .incomingData.ReadByte
+102         Call .incomingData.ReadID
         
 104         If .flags.Privilegios And (PlayerType.user Or PlayerType.RoleMaster) Then Exit Sub
         
@@ -10023,7 +9995,7 @@ Private Sub HandleHiding(ByVal UserIndex As Integer)
 
 HandleHiding_Err:
 122     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleHiding", Erl)
-124     Resume Next
+124     Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -10039,45 +10011,31 @@ Private Sub HandleJail(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 6 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
 
-        End If
-    
         On Error GoTo ErrHandler
 
 104     With UserList(UserIndex)
 
-            'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim Buffer As New clsByteQueue
-
-106         Call Buffer.CopyBuffer(.incomingData)
-        
             'Remove packet ID
-108         Call Buffer.ReadByte
+108         Call .incomingData.ReadID
         
             Dim UserName As String
-
             Dim Reason   As String
-
             Dim jailTime As Byte
-
             Dim Count    As Byte
-
             Dim tUser    As Integer
         
-110         UserName = Buffer.ReadASCIIString()
-112         Reason = Buffer.ReadASCIIString()
-114         jailTime = Buffer.ReadByte()
+110         UserName = .incomingData.ReadASCIIString()
+112         Reason = .incomingData.ReadASCIIString()
+114         jailTime = .incomingData.ReadByte()
         
 116         If InStr(1, UserName, "+") Then
 118             UserName = Replace(UserName, "+", " ")
-
             End If
         
             '/carcel nick@motivo@<tiempo>
 120         If .flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios) Then
+
 122             If LenB(UserName) = 0 Or LenB(Reason) = 0 Then
 124                 Call WriteConsoleMsg(UserIndex, "Utilice /carcel nick@motivo@tiempo", FontTypeNames.FONTTYPE_INFO)
                 Else
@@ -10126,24 +10084,14 @@ Private Sub HandleJail(ByVal UserIndex As Integer)
                 End If
 
             End If
-        
-            'If we got here then packet is complete, copy data back to original queue
-164         Call .incomingData.CopyBuffer(Buffer)
 
         End With
-    
+        
+        Exit Sub
+        
 ErrHandler:
-
-        Dim Error As Long
-
-166     Error = Err.Number
-
-        On Error GoTo 0
-    
-        'Destroy auxiliar buffer
-168     Set Buffer = Nothing
-    
-170     If Error <> 0 Then Err.raise Error
+        Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleHiding", Erl)
+        Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
 
