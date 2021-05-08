@@ -12081,7 +12081,7 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
         Dim UserName As String
         Dim tUser    As Integer
         
-        UserName = Buffer.ReadASCIIString()
+        UserName = .incomingData.ReadASCIIString()
             
         
             
@@ -12330,7 +12330,7 @@ Private Sub HandleServerMessage(ByVal UserIndex As Integer)
         
         Dim message As String
 
-        message = Buffer.ReadASCIIString()
+        message = .incomingData.ReadASCIIString()
         
         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
             If LenB(message) <> 0 Then
@@ -12386,7 +12386,7 @@ Private Sub HandleNickToIP(ByVal UserIndex As Integer)
 
         Dim priv     As PlayerType
         
-        UserName = Buffer.ReadASCIIString()
+        UserName = .incomingData.ReadASCIIString()
         
         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) <> 0 Then
             tUser = NameIndex(UserName)
@@ -12559,7 +12559,7 @@ Private Sub HandleGuildOnlineMembers(ByVal UserIndex As Integer)
 
         Dim tGuild    As Integer
         
-        GuildName = Buffer.ReadASCIIString()
+        GuildName = .incomingData.ReadASCIIString()
         
         If (InStrB(GuildName, "+") <> 0) Then
             GuildName = Replace(GuildName, "+", " ")
@@ -12824,7 +12824,7 @@ Private Sub HandleSetCharDescription(ByVal UserIndex As Integer)
 
         Dim Desc  As String
         
-        Desc = Buffer.ReadASCIIString()
+        Desc = .incomingData.ReadASCIIString()
         
         If (.flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin)) <> 0 Or (.flags.Privilegios And PlayerType.RoleMaster) <> 0 Then
             tUser = .flags.TargetUser
@@ -13007,7 +13007,7 @@ Private Sub HandleRoyalArmyMessage(ByVal UserIndex As Integer)
         
         Dim message As String
 
-        message = Buffer.ReadASCIIString()
+        message = .incomingData.ReadASCIIString()
         
         'Solo dioses, admins y RMS
         If .flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin Or PlayerType.RoleMaster) Then
@@ -13056,7 +13056,7 @@ Private Sub HandleChaosLegionMessage(ByVal UserIndex As Integer)
         
         Dim message As String
 
-        message = Buffer.ReadASCIIString()
+        message = .incomingData.ReadASCIIString()
         
         'Solo dioses, admins y RMS
         If .flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin Or PlayerType.RoleMaster) Then
@@ -13105,7 +13105,7 @@ Private Sub HandleCitizenMessage(ByVal UserIndex As Integer)
         
         Dim message As String
 
-        message = Buffer.ReadASCIIString()
+        message = .incomingData.ReadASCIIString()
         
         'Solo dioses, admins y RMS
         If .flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin Or PlayerType.RoleMaster) Then
@@ -13154,7 +13154,7 @@ Private Sub HandleCriminalMessage(ByVal UserIndex As Integer)
         
         Dim message As String
 
-        message = Buffer.ReadASCIIString()
+        message = .incomingData.ReadASCIIString()
         
         'Solo dioses, admins y RMS
         If .flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin Or PlayerType.RoleMaster) Then
@@ -13203,7 +13203,7 @@ Private Sub HandleTalkAsNPC(ByVal UserIndex As Integer)
         
         Dim message As String
 
-        message = Buffer.ReadASCIIString()
+        message = .incomingData.ReadASCIIString()
         
         'Solo dioses, admins y RMS
         If .flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin Or PlayerType.RoleMaster) Then
@@ -13318,7 +13318,7 @@ Private Sub HandleAcceptRoyalCouncilMember(ByVal UserIndex As Integer)
 
         Dim LoopC    As Byte
         
-        UserName = Buffer.ReadASCIIString()
+        UserName = .incomingData.ReadASCIIString()
         
         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) Then
             tUser = NameIndex(UserName)
@@ -13386,7 +13386,7 @@ Private Sub HandleAcceptChaosCouncilMember(ByVal UserIndex As Integer)
 
         Dim LoopC    As Byte
         
-        UserName = Buffer.ReadASCIIString()
+        UserName = .incomingData.ReadASCIIString()
         
         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) Then
             tUser = NameIndex(UserName)
@@ -13507,7 +13507,7 @@ Private Sub HandleMakeDumb(ByVal UserIndex As Integer)
 
         Dim tUser    As Integer
         
-        UserName = Buffer.ReadASCIIString()
+        UserName = .incomingData.ReadASCIIString()
         
         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) Then
             tUser = NameIndex(UserName)
@@ -17433,7 +17433,7 @@ HandlePing_Err:
 End Sub
 
 ''
-' Writes the "Logged" message to the given user's outgoing data buffer.
+' Writes the "Logged" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -17470,7 +17470,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "RemoveDialogs" message to the given user's outgoing data buffer.
+' Writes the "RemoveDialogs" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -17497,7 +17497,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "RemoveCharDialog" message to the given user's outgoing data buffer.
+' Writes the "RemoveCharDialog" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    CharIndex Character whose dialog will be removed.
@@ -17524,7 +17524,7 @@ ErrHandler:
 
 End Sub
 
-' Writes the "NavigateToggle" message to the given user's outgoing data buffer.
+' Writes the "NavigateToggle" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -17646,7 +17646,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "Disconnect" message to the given user's outgoing data buffer.
+' Writes the "Disconnect" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -17678,7 +17678,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "CommerceEnd" message to the given user's outgoing data buffer.
+' Writes the "CommerceEnd" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -17705,7 +17705,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "BankEnd" message to the given user's outgoing data buffer.
+' Writes the "BankEnd" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -17732,7 +17732,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "CommerceInit" message to the given user's outgoing data buffer.
+' Writes the "CommerceInit" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -17760,7 +17760,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "BankInit" message to the given user's outgoing data buffer.
+' Writes the "BankInit" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -17787,7 +17787,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "UserCommerceInit" message to the given user's outgoing data buffer.
+' Writes the "UserCommerceInit" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -17814,7 +17814,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "UserCommerceEnd" message to the given user's outgoing data buffer.
+' Writes the "UserCommerceEnd" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -17841,7 +17841,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "ShowBlacksmithForm" message to the given user's outgoing data buffer.
+' Writes the "ShowBlacksmithForm" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -17868,7 +17868,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "ShowCarpenterForm" message to the given user's outgoing data buffer.
+' Writes the "ShowCarpenterForm" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -17937,7 +17937,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "NPCKillUser" message to the given user's outgoing data buffer.
+' Writes the "NPCKillUser" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -17964,7 +17964,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "BlockedWithShieldUser" message to the given user's outgoing data buffer.
+' Writes the "BlockedWithShieldUser" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -17991,7 +17991,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "BlockedWithShieldOther" message to the given user's outgoing data buffer.
+' Writes the "BlockedWithShieldOther" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -18018,7 +18018,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "CharSwing" message to the given user's outgoing data buffer.
+' Writes the "CharSwing" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -18066,7 +18066,7 @@ PrepareMessageCharSwing_Err:
 End Function
 
 ''
-' Writes the "SafeModeOn" message to the given user's outgoing data buffer.
+' Writes the "SafeModeOn" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -18093,7 +18093,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "SafeModeOff" message to the given user's outgoing data buffer.
+' Writes the "SafeModeOff" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -18120,7 +18120,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "PartySafeOn" message to the given user's outgoing data buffer.
+' Writes the "PartySafeOn" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -18147,7 +18147,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "PartySafeOff" message to the given user's outgoing data buffer.
+' Writes the "PartySafeOff" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -18213,7 +18213,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "CantUseWhileMeditating" message to the given user's outgoing data buffer.
+' Writes the "CantUseWhileMeditating" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -18240,7 +18240,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "UpdateSta" message to the given user's outgoing data buffer.
+' Writes the "UpdateSta" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -18272,7 +18272,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "UpdateMana" message to the given user's outgoing data buffer.
+' Writes the "UpdateMana" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -18304,7 +18304,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "UpdateHP" message to the given user's outgoing data buffer.
+' Writes the "UpdateHP" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -18339,7 +18339,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "UpdateGold" message to the given user's outgoing data buffer.
+' Writes the "UpdateGold" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -18371,7 +18371,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "UpdateExp" message to the given user's outgoing data buffer.
+' Writes the "UpdateExp" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -18403,7 +18403,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "ChangeMap" message to the given user's outgoing data buffer.
+' Writes the "ChangeMap" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    map The new map to load.
@@ -18440,7 +18440,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "PosUpdate" message to the given user's outgoing data buffer.
+' Writes the "PosUpdate" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -18473,7 +18473,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "NPCHitUser" message to the given user's outgoing data buffer.
+' Writes the "NPCHitUser" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    target Part of the body where the user was hitted.
@@ -18508,7 +18508,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "UserHitNPC" message to the given user's outgoing data buffer.
+' Writes the "UserHitNPC" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    damage The number of HP lost by the target creature.
@@ -18543,7 +18543,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "UserAttackedSwing" message to the given user's outgoing data buffer.
+' Writes the "UserAttackedSwing" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex       User to which the message is intended.
 ' @param    attackerIndex   The user index of the user that attacked.
@@ -18576,7 +18576,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "UserHittedByUser" message to the given user's outgoing data buffer.
+' Writes the "UserHittedByUser" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    target Part of the body where the user was hitted.
@@ -18613,7 +18613,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "UserHittedUser" message to the given user's outgoing data buffer.
+' Writes the "UserHittedUser" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    target Part of the body where the user was hitted.
@@ -18650,7 +18650,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "ChatOverHead" message to the given user's outgoing data buffer.
+' Writes the "ChatOverHead" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    Chat Text to be displayed over the char's head.
@@ -18728,7 +18728,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "ConsoleMsg" message to the given user's outgoing data buffer.
+' Writes the "ConsoleMsg" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    Chat Text to be displayed over the char's head.
@@ -18801,7 +18801,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "GuildChat" message to the given user's outgoing data buffer.
+' Writes the "GuildChat" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    Chat Text to be displayed over the char's head.
@@ -18829,7 +18829,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "ShowMessageBox" message to the given user's outgoing data buffer.
+' Writes the "ShowMessageBox" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    Message Text to be displayed in the message box.
@@ -18887,7 +18887,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "UserIndexInServer" message to the given user's outgoing data buffer.
+' Writes the "UserIndexInServer" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -18919,7 +18919,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "UserCharIndexInServer" message to the given user's outgoing data buffer.
+' Writes the "UserCharIndexInServer" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -18951,7 +18951,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "CharacterCreate" message to the given user's outgoing data buffer.
+' Writes the "CharacterCreate" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    body Body index of the new character.
@@ -18992,7 +18992,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "CharacterRemove" message to the given user's outgoing data buffer.
+' Writes the "CharacterRemove" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    CharIndex Character to be removed.
@@ -19020,7 +19020,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "CharacterMove" message to the given user's outgoing data buffer.
+' Writes the "CharacterMove" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    CharIndex Character which is moving.
@@ -19072,7 +19072,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "CharacterChange" message to the given user's outgoing data buffer.
+' Writes the "CharacterChange" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    body Body index of the new character.
@@ -19108,7 +19108,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "ObjectCreate" message to the given user's outgoing data buffer.
+' Writes the "ObjectCreate" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    GrhIndex Grh of the object.
@@ -19194,7 +19194,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "ObjectDelete" message to the given user's outgoing data buffer.
+' Writes the "ObjectDelete" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    X X coord of the character's new position.
@@ -19223,7 +19223,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "BlockPosition" message to the given user's outgoing data buffer.
+' Writes the "BlockPosition" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    X X coord of the character's new position.
@@ -19260,7 +19260,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "PlayMidi" message to the given user's outgoing data buffer.
+' Writes the "PlayMidi" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    midi The midi to be played.
@@ -19289,7 +19289,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "PlayWave" message to the given user's outgoing data buffer.
+' Writes the "PlayWave" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    wave The wave to be played.
@@ -19320,7 +19320,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "GuildList" message to the given user's outgoing data buffer.
+' Writes the "GuildList" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    GuildList List of guilds to be sent.
@@ -19365,7 +19365,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "AreaChanged" message to the given user's outgoing data buffer.
+' Writes the "AreaChanged" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -19398,7 +19398,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "PauseToggle" message to the given user's outgoing data buffer.
+' Writes the "PauseToggle" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -19425,7 +19425,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "RainToggle" message to the given user's outgoing data buffer.
+' Writes the "RainToggle" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -19515,7 +19515,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "CreateFX" message to the given user's outgoing data buffer.
+' Writes the "CreateFX" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    CharIndex Character upon which the FX will be created.
@@ -19545,7 +19545,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "UpdateUserStats" message to the given user's outgoing data buffer.
+' Writes the "UpdateUserStats" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -19684,7 +19684,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "WorkRequestTarget" message to the given user's outgoing data buffer.
+' Writes the "WorkRequestTarget" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    Skill The skill for which we request a target.
@@ -19716,7 +19716,7 @@ ErrHandler:
 
 End Sub
 
-' Writes the "InventoryUnlockSlots" message to the given user's outgoing data buffer.
+' Writes the "InventoryUnlockSlots" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -19821,7 +19821,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "ChangeBankSlot" message to the given user's outgoing data buffer.
+' Writes the "ChangeBankSlot" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    slot Inventory slot which needs to be updated.
@@ -19871,7 +19871,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "ChangeSpellSlot" message to the given user's outgoing data buffer.
+' Writes the "ChangeSpellSlot" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    slot Spell slot to update.
@@ -19912,7 +19912,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "Atributes" message to the given user's outgoing data buffer.
+' Writes the "Atributes" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -19947,7 +19947,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "BlacksmithWeapons" message to the given user's outgoing data buffer.
+' Writes the "BlacksmithWeapons" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -20012,7 +20012,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "BlacksmithArmors" message to the given user's outgoing data buffer.
+' Writes the "BlacksmithArmors" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -20077,7 +20077,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "CarpenterObjects" message to the given user's outgoing data buffer.
+' Writes the "CarpenterObjects" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -20254,7 +20254,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "RestOK" message to the given user's outgoing data buffer.
+' Writes the "RestOK" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -20281,7 +20281,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "ErrorMsg" message to the given user's outgoing data buffer.
+' Writes the "ErrorMsg" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    message The error message to be displayed.
@@ -20309,7 +20309,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "Blind" message to the given user's outgoing data buffer.
+' Writes the "Blind" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -20336,7 +20336,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "Dumb" message to the given user's outgoing data buffer.
+' Writes the "Dumb" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -20363,7 +20363,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "ShowSignal" message to the given user's outgoing data buffer.
+' Writes the "ShowSignal" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    objIndex Index of the signal to be displayed.
@@ -20398,7 +20398,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "ChangeNPCInventorySlot" message to the given user's outgoing data buffer.
+' Writes the "ChangeNPCInventorySlot" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex   User to which the message is intended.
 ' @param    slot        The inventory slot in which this item is to be placed.
@@ -20446,7 +20446,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "UpdateHungerAndThirst" message to the given user's outgoing data buffer.
+' Writes the "UpdateHungerAndThirst" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -20673,7 +20673,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "MiniStats" message to the given user's outgoing data buffer.
+' Writes the "MiniStats" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -20727,7 +20727,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "LevelUp" message to the given user's outgoing data buffer.
+' Writes the "LevelUp" message to the given user's outgoing data .incomingData.
 '
 ' @param    skillPoints The number of free skill points the player has.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -20759,7 +20759,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "AddForumMsg" message to the given user's outgoing data buffer.
+' Writes the "AddForumMsg" message to the given user's outgoing data .incomingData.
 '
 ' @param    title The title of the message to display.
 ' @param    message The message to be displayed.
@@ -20793,7 +20793,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "ShowForumForm" message to the given user's outgoing data buffer.
+' Writes the "ShowForumForm" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -20820,7 +20820,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "SetInvisible" message to the given user's outgoing data buffer.
+' Writes the "SetInvisible" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    CharIndex The char turning visible / invisible.
@@ -20849,14 +20849,14 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "SetInvisible" message to the given user's outgoing data buffer.
+' Writes the "SetInvisible" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    CharIndex The char turning visible / invisible.
 ' @param    invisible True if the char is no longer visible, False otherwise.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 ''
-' Writes the "DiceRoll" message to the given user's outgoing data buffer.
+' Writes the "DiceRoll" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -20892,7 +20892,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "MeditateToggle" message to the given user's outgoing data buffer.
+' Writes the "MeditateToggle" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -20919,7 +20919,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "BlindNoMore" message to the given user's outgoing data buffer.
+' Writes the "BlindNoMore" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -20946,7 +20946,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "DumbNoMore" message to the given user's outgoing data buffer.
+' Writes the "DumbNoMore" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -20973,7 +20973,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "SendSkills" message to the given user's outgoing data buffer.
+' Writes the "SendSkills" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -21010,7 +21010,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "TrainerCreatureList" message to the given user's outgoing data buffer.
+' Writes the "TrainerCreatureList" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    npcIndex The index of the requested trainer.
@@ -21054,7 +21054,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "GuildNews" message to the given user's outgoing data buffer.
+' Writes the "GuildNews" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    guildNews The guild's news.
@@ -21116,7 +21116,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "OfferDetails" message to the given user's outgoing data buffer.
+' Writes the "OfferDetails" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    details Th details of the Peace proposition.
@@ -21152,7 +21152,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "AlianceProposalsList" message to the given user's outgoing data buffer.
+' Writes the "AlianceProposalsList" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    guilds The list of guilds which propossed an alliance.
@@ -21197,7 +21197,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "PeaceProposalsList" message to the given user's outgoing data buffer.
+' Writes the "PeaceProposalsList" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    guilds The list of guilds which propossed peace.
@@ -21242,7 +21242,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "CharacterInfo" message to the given user's outgoing data buffer.
+' Writes the "CharacterInfo" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    charName The requested char's name.
@@ -21306,7 +21306,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "GuildLeaderInfo" message to the given user's outgoing data buffer.
+' Writes the "GuildLeaderInfo" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    guildList The list of guild names.
@@ -21384,7 +21384,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "GuildDetails" message to the given user's outgoing data buffer.
+' Writes the "GuildDetails" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    guildName The requested guild's name.
@@ -21447,7 +21447,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "ShowGuildFundationForm" message to the given user's outgoing data buffer.
+' Writes the "ShowGuildFundationForm" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -21474,7 +21474,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "ParalizeOK" message to the given user's outgoing data buffer.
+' Writes the "ParalizeOK" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -21546,7 +21546,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "ShowUserRequest" message to the given user's outgoing data buffer.
+' Writes the "ShowUserRequest" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    details DEtails of the char's request.
@@ -21580,7 +21580,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "ChangeUserTradeSlot" message to the given user's outgoing data buffer.
+' Writes the "ChangeUserTradeSlot" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    ObjIndex The object's index.
@@ -21633,7 +21633,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "SpawnList" message to the given user's outgoing data buffer.
+' Writes the "SpawnList" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    npcNames The names of the creatures that can be spawned.
@@ -21678,7 +21678,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "ShowSOSForm" message to the given user's outgoing data buffer.
+' Writes the "ShowSOSForm" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -21721,7 +21721,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "ShowMOTDEditionForm" message to the given user's outgoing data buffer.
+' Writes the "ShowMOTDEditionForm" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    currentMOTD The current Message Of The Day.
@@ -21755,7 +21755,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "ShowGMPanelForm" message to the given user's outgoing data buffer.
+' Writes the "ShowGMPanelForm" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -21805,7 +21805,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "UserNameList" message to the given user's outgoing data buffer.
+' Writes the "UserNameList" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @param    userNameList List of user names.
@@ -21851,7 +21851,7 @@ ErrHandler:
 End Sub
 
 ''
-' Writes the "Pong" message to the given user's outgoing data buffer.
+' Writes the "Pong" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
@@ -23144,7 +23144,7 @@ PrepareMessageRemoveCharDialog_Err:
 End Function
 
 ''
-' Writes the "CharacterCreate" message to the given user's outgoing data buffer.
+' Writes the "CharacterCreate" message to the given user's outgoing data .incomingData.
 '
 ' @param    body Body index of the new character.
 ' @param    head Head index of the new character.
@@ -23459,14 +23459,14 @@ Private Sub HandleQuestionGM(ByVal UserIndex As Integer)
 
         
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
         
         Dim Consulta       As String
 
         Dim TipoDeConsulta As String
 
-        Consulta = Buffer.ReadASCIIString()
-        TipoDeConsulta = Buffer.ReadASCIIString()
+        Consulta = .incomingData.ReadASCIIString()
+        TipoDeConsulta = .incomingData.ReadASCIIString()
 
         If UserList(UserIndex).donador.activo = 1 Then
             Call Ayuda.Push(.name, Consulta, TipoDeConsulta & "-Prioritario")
@@ -23598,13 +23598,13 @@ Private Sub HandleOfertaDeSubasta(ByVal UserIndex As Integer)
 
         
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
 
         Dim Oferta   As Long
 
         Dim ExOferta As Long
         
-        Oferta = Buffer.ReadLong()
+        Oferta = .incomingData.ReadLong()
         
         If Subasta.HaySubastaActiva = False Then
             Call WriteConsoleMsg(UserIndex, "No hay ninguna subasta en curso.", FontTypeNames.FONTTYPE_INFOIAO)
@@ -23699,7 +23699,7 @@ Private Sub HandleGlobalMessage(ByVal UserIndex As Integer)
         
         Dim chat As String
 
-        chat = Buffer.ReadASCIIString()
+        chat = .incomingData.ReadASCIIString()
 
         If .flags.Silenciado = 1 Then
             Call WriteLocaleMsg(UserIndex, "110", FontTypeNames.FONTTYPE_VENENO, .flags.MinutosRestantes)
@@ -23791,12 +23791,10 @@ Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
 
     On Error GoTo ErrHandler
 
-    'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-    Dim Buffer As New clsByteQueue
-    Call Buffer.CopyBuffer(UserList(UserIndex).incomingData)
+    
     
     'Remove packet ID
-    Call Buffer.ReadByte
+    Call .incomingData.ReadByte
 
     Dim CuentaEmail    As String
     Dim CuentaPassword As String
@@ -23804,13 +23802,12 @@ Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
     Dim HDserial       As Long
     Dim MD5            As String
     
-    CuentaEmail = Buffer.ReadASCIIString()
-    CuentaPassword = Buffer.ReadASCIIString()
-    Version = CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte())
-    MacAddress = Buffer.ReadASCIIString()
-    HDserial = Buffer.ReadLong()
-    MD5 = Buffer.ReadASCIIString()
-    
+    CuentaEmail = .incomingData.ReadASCIIString()
+    CuentaPassword = .incomingData.ReadASCIIString()
+    Version = CStr(.incomingData.ReadByte()) & "." & CStr(.incomingData.ReadByte()) & "." & CStr(.incomingData.ReadByte())
+    MacAddress = .incomingData.ReadASCIIString()
+    HDserial = .incomingData.ReadLong()
+    MD5 = .incomingData.ReadASCIIString()
     
     
         
@@ -23854,12 +23851,10 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
 
     On Error GoTo ErrHandler
 
-    'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-    Dim Buffer As New clsByteQueue
-    Call Buffer.CopyBuffer(UserList(UserIndex).incomingData)
+    
     
     'Remove packet ID
-    Call Buffer.ReadByte
+    Call .incomingData.ReadByte
 
     Dim UserDelete     As String
     Dim CuentaEmail    As String
@@ -23869,14 +23864,13 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
     Dim MD5            As String
     Dim Version        As String
     
-    UserDelete = Buffer.ReadASCIIString()
-    CuentaEmail = Buffer.ReadASCIIString()
-    CuentaPassword = Buffer.ReadASCIIString()
-    Version = CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte()) & "." & CStr(Buffer.ReadByte())
-    MacAddress = Buffer.ReadASCIIString()
-    HDserial = Buffer.ReadLong()
-    MD5 = Buffer.ReadASCIIString()
-    
+    UserDelete = .incomingData.ReadASCIIString()
+    CuentaEmail = .incomingData.ReadASCIIString()
+    CuentaPassword = .incomingData.ReadASCIIString()
+    Version = CStr(.incomingData.ReadByte()) & "." & CStr(.incomingData.ReadByte()) & "." & CStr(.incomingData.ReadByte())
+    MacAddress = .incomingData.ReadASCIIString()
+    HDserial = .incomingData.ReadLong()
+    MD5 = .incomingData.ReadASCIIString()
     
     
     
@@ -24011,11 +24005,11 @@ Private Sub HandleCuentaRegresiva(ByVal UserIndex As Integer)
         
         
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
         
         Dim Seconds As Byte
         
-        Seconds = Buffer.ReadByte()
+        Seconds = .incomingData.ReadByte()
 
         If Not .flags.Privilegios And PlayerType.user Then
             CuentaRegresivaTimer = Seconds
@@ -24052,11 +24046,11 @@ Private Sub HandlePossUser(ByVal UserIndex As Integer)
         
         
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
         
         Dim UserName As String
         
-        UserName = Buffer.ReadASCIIString()
+        UserName = .incomingData.ReadASCIIString()
             
         If NameIndex(UserName) <= 0 Then
             If Not .flags.Privilegios And PlayerType.user Then
@@ -24107,18 +24101,15 @@ Private Sub HandleDuel(ByVal UserIndex As Integer)
     Dim CaenItems As Boolean
     With UserList(UserIndex)
 
-        'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-        Dim Buffer As clsByteQueue
-        Set Buffer = New clsByteQueue
-        Call Buffer.CopyBuffer(.incomingData)
+        
         
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
 
-        Players = Buffer.ReadASCIIString
-        Bet = Buffer.ReadLong
-        PocionesMaximas = Buffer.ReadInteger
-        CaenItems = Buffer.ReadBoolean
+        Players = .incomingData.ReadASCIIString
+        Bet = .incomingData.ReadLong
+        PocionesMaximas = .incomingData.ReadInteger
+        CaenItems = .incomingData.ReadBoolean
             
         
 
@@ -24130,14 +24121,8 @@ Private Sub HandleDuel(ByVal UserIndex As Integer)
     
 ErrHandler:
 
-    Dim Error As Long: Error = Err.Number
-
-    On Error GoTo 0
-    
-    'Destroy auxiliar buffer
-    Set Buffer = Nothing
-    
-    If Error <> 0 Then Err.raise Error
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
 
@@ -24154,15 +24139,12 @@ Private Sub HandleAcceptDuel(ByVal UserIndex As Integer)
 
     With UserList(UserIndex)
 
-        'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-        Dim Buffer As clsByteQueue
-        Set Buffer = New clsByteQueue
-        Call Buffer.CopyBuffer(.incomingData)
+        
         
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
 
-        Offerer = Buffer.ReadASCIIString
+        Offerer = .incomingData.ReadASCIIString
         
         
 
@@ -24174,14 +24156,8 @@ Private Sub HandleAcceptDuel(ByVal UserIndex As Integer)
     
 ErrHandler:
 
-    Dim Error As Long: Error = Err.Number
-
-    On Error GoTo 0
-    
-    'Destroy auxiliar buffer
-    Set Buffer = Nothing
-    
-    If Error <> 0 Then Err.raise Error
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
 
@@ -24359,7 +24335,7 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
 
         
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
         
         Dim UserName As String
 
@@ -24367,8 +24343,8 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
 
         Dim tUser    As Integer
         
-        Cantidad = Buffer.ReadLong()
-        UserName = Buffer.ReadASCIIString()
+        Cantidad = .incomingData.ReadLong()
+        UserName = .incomingData.ReadASCIIString()
         
         
 
@@ -24464,14 +24440,14 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
 
         
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
         
         Dim SlotViejo As Byte
 
         Dim SlotNuevo As Byte
         
-        SlotViejo = Buffer.ReadByte()
-        SlotNuevo = Buffer.ReadByte()
+        SlotViejo = .incomingData.ReadByte()
+        SlotNuevo = .incomingData.ReadByte()
         
         Dim Objeto    As obj
         
@@ -24740,13 +24716,13 @@ Private Sub HandleBovedaMoveItem(ByVal UserIndex As Integer)
 
         
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
         
         Dim SlotViejo As Byte
         Dim SlotNuevo As Byte
         
-        SlotViejo = Buffer.ReadByte()
-        SlotNuevo = Buffer.ReadByte()
+        SlotViejo = .incomingData.ReadByte()
+        SlotNuevo = .incomingData.ReadByte()
         
         
         
@@ -24797,7 +24773,7 @@ Private Sub HandleQuieroFundarClan(ByVal UserIndex As Integer)
         
         
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
         
         
 
@@ -24854,7 +24830,7 @@ Private Sub HandleLlamadadeClan(ByVal UserIndex As Integer)
 
         
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
         
         Dim refError   As String
         
@@ -24990,16 +24966,13 @@ Private Sub HandleCasamiento(ByVal UserIndex As Integer)
 
     With UserList(UserIndex)
 
-        Dim Buffer As New clsByteQueue
-        Call Buffer.CopyBuffer(.incomingData)
-
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
         
         Dim UserName As String
         Dim tUser    As Integer
 
-        UserName = Buffer.ReadASCIIString()
+        UserName = .incomingData.ReadASCIIString()
         tUser = NameIndex(UserName)
             
         
@@ -25090,15 +25063,13 @@ Private Sub HandleEnviarCodigo(ByVal UserIndex As Integer)
 
     With UserList(UserIndex)
 
-        Dim Buffer As New clsByteQueue
-
-        Call Buffer.CopyBuffer(.incomingData)
+        
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
         
         Dim Codigo As String
 
-        Codigo = Buffer.ReadASCIIString()
+        Codigo = .incomingData.ReadASCIIString()
 
         Call CheckearCodigo(UserIndex, Codigo)
         
@@ -25127,11 +25098,9 @@ Private Sub HandleCrearTorneo(ByVal UserIndex As Integer)
 
     With UserList(UserIndex)
 
-        Dim Buffer As New clsByteQueue
-
-        Call Buffer.CopyBuffer(.incomingData)
+        
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
         
         Dim NivelMinimo As Byte
 
@@ -25169,26 +25138,26 @@ Private Sub HandleCrearTorneo(ByVal UserIndex As Integer)
 
         Dim reglas      As String
 
-        NivelMinimo = Buffer.ReadByte
-        nivelmaximo = Buffer.ReadByte
-        cupos = Buffer.ReadByte
-        costo = Buffer.ReadLong
-        mago = Buffer.ReadByte
-        clerico = Buffer.ReadByte
-        guerrero = Buffer.ReadByte
-        asesino = Buffer.ReadByte
-        bardo = Buffer.ReadByte
-        druido = Buffer.ReadByte
-        Paladin = Buffer.ReadByte
-        cazador = Buffer.ReadByte
+        NivelMinimo = .incomingData.ReadByte
+        nivelmaximo = .incomingData.ReadByte
+        cupos = .incomingData.ReadByte
+        costo = .incomingData.ReadLong
+        mago = .incomingData.ReadByte
+        clerico = .incomingData.ReadByte
+        guerrero = .incomingData.ReadByte
+        asesino = .incomingData.ReadByte
+        bardo = .incomingData.ReadByte
+        druido = .incomingData.ReadByte
+        Paladin = .incomingData.ReadByte
+        cazador = .incomingData.ReadByte
  
-        Trabajador = Buffer.ReadByte
+        Trabajador = .incomingData.ReadByte
 
-        Mapa = Buffer.ReadInteger
-        X = Buffer.ReadByte
-        Y = Buffer.ReadByte
-        nombre = Buffer.ReadASCIIString
-        reglas = Buffer.ReadASCIIString
+        Mapa = .incomingData.ReadInteger
+        X = .incomingData.ReadByte
+        Y = .incomingData.ReadByte
+        nombre = .incomingData.ReadASCIIString
+        reglas = .incomingData.ReadASCIIString
   
         If EsGM(UserIndex) Then
             Torneo.NivelMinimo = NivelMinimo
@@ -25240,13 +25209,11 @@ Private Sub HandleComenzarTorneo(ByVal UserIndex As Integer)
 
     With UserList(UserIndex)
 
-        Dim Buffer As New clsByteQueue
-
-        Call Buffer.CopyBuffer(.incomingData)
+        
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
 
-        'NivelMinimo = buffer.ReadByte
+        'NivelMinimo = .incomingData.ReadByte
   
         If EsGM(UserIndex) Then
 
@@ -25279,11 +25246,9 @@ Private Sub HandleCancelarTorneo(ByVal UserIndex As Integer)
 
     With UserList(UserIndex)
 
-        Dim Buffer As New clsByteQueue
-
-        Call Buffer.CopyBuffer(.incomingData)
+        
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
   
         If EsGM(UserIndex) Then
             Call ResetearTorneo
@@ -25315,15 +25280,13 @@ Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
 
     With UserList(UserIndex)
 
-        Dim Buffer As New clsByteQueue
-
-        Call Buffer.CopyBuffer(.incomingData)
+        
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
         
         Dim Tipo As Byte
 
-        Tipo = Buffer.ReadByte()
+        Tipo = .incomingData.ReadByte()
   
           If .flags.Privilegios And Not (PlayerType.Consejero Or PlayerType.user) Then
             Select Case Tipo
@@ -25403,11 +25366,9 @@ Private Sub HandleFlagTrabajar(ByVal UserIndex As Integer)
 
     With UserList(UserIndex)
 
-        Dim Buffer As New clsByteQueue
-
-        Call Buffer.CopyBuffer(.incomingData)
+        
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
         
         UserList(UserIndex).Counters.Trabajando = 0
         UserList(UserIndex).flags.UsandoMacro = False
@@ -25439,11 +25400,9 @@ Private Sub HandleEscribiendo(ByVal UserIndex As Integer)
 
     With UserList(UserIndex)
 
-        Dim Buffer As New clsByteQueue
-
-        Call Buffer.CopyBuffer(.incomingData)
+        
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
         
         If .flags.Escribiendo = False Then
             .flags.Escribiendo = True
@@ -25558,15 +25517,13 @@ Private Sub HandleCompletarAccion(ByVal UserIndex As Integer)
 
     With UserList(UserIndex)
 
-        Dim Buffer As New clsByteQueue
-
-        Call Buffer.CopyBuffer(.incomingData)
+        
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
         
         Dim Accion As Byte
 
-        Accion = Buffer.ReadByte()
+        Accion = .incomingData.ReadByte()
         
         If .Accion.AccionPendiente = True Then
             If .Accion.TipoAccion = Accion Then
@@ -25606,15 +25563,12 @@ Private Sub HandleReclamarRecompensa(ByVal UserIndex As Integer)
 
     With UserList(UserIndex)
 
-        Dim Buffer As New clsByteQueue
-
         Dim index  As Byte
 
-        Call Buffer.CopyBuffer(.incomingData)
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
         
-        index = Buffer.ReadByte()
+        index = .incomingData.ReadByte()
         
         Call EntregarRecompensas(UserIndex, index)
         
@@ -25643,11 +25597,9 @@ Private Sub HandleTraerRecompensas(ByVal UserIndex As Integer)
 
     With UserList(UserIndex)
 
-        Dim Buffer As New clsByteQueue
-
-        Call Buffer.CopyBuffer(.incomingData)
+        
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
 
         Call EnviarRecompensaStat(UserIndex)
         
@@ -25813,11 +25765,9 @@ Private Sub HandleCorreo(ByVal UserIndex As Integer)
 
     With UserList(UserIndex)
 
-        Dim Buffer As New clsByteQueue
-
-        Call Buffer.CopyBuffer(.incomingData)
+        
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
         
         'Call WriteListaCorreo(Userindex, False)
         '    Call EnviarRecompensaStat(UserIndex)
@@ -25847,11 +25797,9 @@ Private Sub HandleSendCorreo(ByVal UserIndex As Integer)
 
     With UserList(UserIndex)
 
-        Dim Buffer As New clsByteQueue
-
-        Call Buffer.CopyBuffer(.incomingData)
+        
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
 
         Dim Nick               As String
 
@@ -25865,9 +25813,9 @@ Private Sub HandleSendCorreo(ByVal UserIndex As Integer)
 
         Dim Itemlista(1 To 10) As obj
 
-        Nick = Buffer.ReadASCIIString()
-        msg = Buffer.ReadASCIIString()
-        ItemCount = Buffer.ReadByte()
+        Nick = .incomingData.ReadASCIIString()
+        msg = .incomingData.ReadASCIIString()
+        ItemCount = .incomingData.ReadByte()
         
         Dim ObjIndex   As Integer
 
@@ -25880,8 +25828,8 @@ Private Sub HandleSendCorreo(ByVal UserIndex As Integer)
             Dim i As Byte
 
             For i = 1 To ItemCount
-                Itemlista(i).ObjIndex = Buffer.ReadByte
-                Itemlista(i).amount = Buffer.ReadInteger
+                Itemlista(i).ObjIndex = .incomingData.ReadByte
+                Itemlista(i).amount = .incomingData.ReadInteger
             Next i
 
         Else 'Si es solo texto
@@ -25987,15 +25935,13 @@ Private Sub HandleRetirarItemCorreo(ByVal UserIndex As Integer)
 
     With UserList(UserIndex)
 
-        Dim Buffer As New clsByteQueue
-
-        Call Buffer.CopyBuffer(.incomingData)
+        
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
 
         Dim MsgIndex As Integer
 
-        MsgIndex = Buffer.ReadInteger()
+        MsgIndex = .incomingData.ReadInteger()
         
         'Call ExtractItemCorreo(Userindex, MsgIndex)
         
@@ -26034,15 +25980,13 @@ Private Sub HandleBorrarCorreo(ByVal UserIndex As Integer)
 
     With UserList(UserIndex)
 
-        Dim Buffer As New clsByteQueue
-
-        Call Buffer.CopyBuffer(.incomingData)
+        
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
 
         Dim MsgIndex As Integer
 
-        MsgIndex = Buffer.ReadInteger()
+        MsgIndex = .incomingData.ReadInteger()
         
         'Call BorrarCorreoMail(Userindex, MsgIndex)
         
@@ -26208,17 +26152,15 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
 
     With UserList(UserIndex)
 
-        Dim Buffer As New clsByteQueue
-
-        Call Buffer.CopyBuffer(.incomingData)
+        
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
 
         Dim respuesta As Boolean
 
         Dim DeDonde   As String
 
-        respuesta = Buffer.ReadBoolean()
+        respuesta = .incomingData.ReadBoolean()
         
         Dim Log As String
 
@@ -26788,11 +26730,9 @@ Private Sub HandleScrollInfo(ByVal UserIndex As Integer)
 
     With UserList(UserIndex)
 
-        Dim Buffer As New clsByteQueue
-
-        Call Buffer.CopyBuffer(.incomingData)
+        
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
         
         Dim activo As Boolean
 
@@ -26900,14 +26840,14 @@ Private Sub HandleBanCuenta(ByVal UserIndex As Integer)
         
         
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
         
         Dim UserName As String
 
         Dim Reason   As String
         
-        UserName = Buffer.ReadASCIIString()
-        Reason = Buffer.ReadASCIIString()
+        UserName = .incomingData.ReadASCIIString()
+        Reason = .incomingData.ReadASCIIString()
         
         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) <> 0 Then
             Call BanAccount(UserIndex, UserName, Reason)
@@ -26946,11 +26886,11 @@ Private Sub HandleUnBanCuenta(ByVal UserIndex As Integer)
         
         
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
         
         Dim UserName As String
         
-        UserName = Buffer.ReadASCIIString()
+        UserName = .incomingData.ReadASCIIString()
         
         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) <> 0 Then
             Call UnBanAccount(UserIndex, UserName)
@@ -26989,11 +26929,11 @@ Private Sub HandleBanSerial(ByVal UserIndex As Integer)
         
         
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
         
         Dim UserName As String
          
-        UserName = Buffer.ReadASCIIString()
+        UserName = .incomingData.ReadASCIIString()
         
         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) <> 0 Then
             Call BanSerialOK(UserIndex, UserName)
@@ -27032,11 +26972,11 @@ Private Sub HandleUnBanSerial(ByVal UserIndex As Integer)
         
         
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
         
         Dim UserName As String
          
-        UserName = Buffer.ReadASCIIString()
+        UserName = .incomingData.ReadASCIIString()
         
         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) <> 0 Then
             Call UnBanSerialOK(UserIndex, UserName)
@@ -27075,12 +27015,12 @@ Private Sub HandleCerrarCliente(ByVal UserIndex As Integer)
         
         
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
         
         Dim UserName As String
         Dim tUser    As Integer
          
-        UserName = Buffer.ReadASCIIString()
+        UserName = .incomingData.ReadASCIIString()
         
         ' Solo administradores pueden cerrar clientes ajenos
         If (.flags.Privilegios And PlayerType.Admin) <> 0 Then
@@ -27203,7 +27143,7 @@ Private Sub HandleCrearEvento(ByVal UserIndex As Integer)
         
         
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
         
         Dim Tipo           As Byte
 
@@ -27211,9 +27151,9 @@ Private Sub HandleCrearEvento(ByVal UserIndex As Integer)
 
         Dim multiplicacion As Byte
         
-        Tipo = Buffer.ReadByte()
-        Duracion = Buffer.ReadByte()
-        multiplicacion = Buffer.ReadByte()
+        Tipo = .incomingData.ReadByte()
+        Duracion = .incomingData.ReadByte()
+        multiplicacion = .incomingData.ReadByte()
 
         If multiplicacion > 3 Then 'no superar este multiplicador
             multiplicacion = "3"
@@ -27269,7 +27209,7 @@ Private Sub HandleBanTemporal(ByVal UserIndex As Integer)
         
         
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
         
         Dim UserName As String
 
@@ -27277,9 +27217,9 @@ Private Sub HandleBanTemporal(ByVal UserIndex As Integer)
 
         Dim dias     As Byte
         
-        UserName = Buffer.ReadASCIIString()
-        Reason = Buffer.ReadASCIIString()
-        dias = Buffer.ReadByte()
+        UserName = .incomingData.ReadASCIIString()
+        Reason = .incomingData.ReadASCIIString()
+        dias = .incomingData.ReadByte()
         
         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) <> 0 Then
             Call Admin.BanTemporal(UserName, dias, Reason, UserList(UserIndex).name)
@@ -27427,11 +27367,9 @@ Private Sub HandleComprarItem(ByVal UserIndex As Integer)
 
     With UserList(UserIndex)
 
-        Dim Buffer As New clsByteQueue
-
-        Call Buffer.CopyBuffer(.incomingData)
+        
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
 
         Dim ItemIndex    As Byte
         
@@ -27439,7 +27377,7 @@ Private Sub HandleComprarItem(ByVal UserIndex As Integer)
 
         Dim LogeoDonador As String
 
-        ItemIndex = Buffer.ReadByte()
+        ItemIndex = .incomingData.ReadByte()
         
         Dim i              As Byte
 
@@ -27510,18 +27448,16 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
 
     With UserList(UserIndex)
 
-        Dim Buffer As New clsByteQueue
-
-        Call Buffer.CopyBuffer(.incomingData)
+        
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
 
         Dim Destino As Byte
 
         Dim costo   As Long
 
-        Destino = Buffer.ReadByte()
-        costo = Buffer.ReadLong()
+        Destino = .incomingData.ReadByte()
+        costo = .incomingData.ReadLong()
 
         
 
@@ -28378,14 +28314,12 @@ Private Sub HandleConsulta(ByVal UserIndex As Integer)
     
     With UserList(UserIndex)
 
-        Dim Buffer As clsByteQueue
-        Set Buffer = New clsByteQueue
-        Call Buffer.CopyBuffer(.incomingData)
+        
         
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
         
-        Dim Nick As String: Nick = Buffer.ReadASCIIString
+        Dim Nick As String: Nick = .incomingData.ReadASCIIString
         
         ' De aca en adelante podes meter Exit Sub sin q esplote todo alv. ;)
         Call .incomingData.CopyBuffer(Buffer)
@@ -28488,14 +28422,8 @@ Private Sub HandleConsulta(ByVal UserIndex As Integer)
     
 ErrHandler:
 
-    Dim Error As Long: Error = Err.Number
-
-    On Error GoTo 0
-    
-    'Destroy auxiliar buffer
-    Set Buffer = Nothing
-    
-    If Error <> 0 Then Err.raise Error
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
 
@@ -28508,14 +28436,12 @@ Private Sub HandleRequestProcesses(ByVal UserIndex As Integer)
 
     With UserList(UserIndex)
 
-        Dim Buffer As clsByteQueue
-        Set Buffer = New clsByteQueue
-        Call Buffer.CopyBuffer(.incomingData)
+        
         
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
         
-        Dim Nick As String: Nick = Buffer.ReadASCIIString
+        Dim Nick As String: Nick = .incomingData.ReadASCIIString
         
         ' De aca en adelante podes meter Exit Sub sin q esplote todo alv. ;)
         Call .incomingData.CopyBuffer(Buffer)
@@ -28569,14 +28495,8 @@ Private Sub HandleRequestProcesses(ByVal UserIndex As Integer)
     
 ErrHandler:
 
-    Dim Error As Long: Error = Err.Number
-
-    On Error GoTo 0
-    
-    'Destroy auxiliar buffer
-    Set Buffer = Nothing
-    
-    If Error <> 0 Then Err.raise Error
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
 
@@ -28589,14 +28509,12 @@ Private Sub HandleRequestScreenShot(ByVal UserIndex As Integer)
 
     With UserList(UserIndex)
 
-        Dim Buffer As clsByteQueue
-        Set Buffer = New clsByteQueue
-        Call Buffer.CopyBuffer(.incomingData)
+        
         
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
         
-        Dim Nick As String: Nick = Buffer.ReadASCIIString
+        Dim Nick As String: Nick = .incomingData.ReadASCIIString
         
         ' De aca en adelante podes meter Exit Sub sin q esplote todo alv. ;)
         Call .incomingData.CopyBuffer(Buffer)
@@ -28652,14 +28570,8 @@ Private Sub HandleRequestScreenShot(ByVal UserIndex As Integer)
     
 ErrHandler:
 
-    Dim Error As Long: Error = Err.Number
-
-    On Error GoTo 0
-    
-    'Destroy auxiliar buffer
-    Set Buffer = Nothing
-    
-    If Error <> 0 Then Err.raise Error
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
 
@@ -28672,14 +28584,12 @@ Private Sub HandleTolerancia0(ByVal UserIndex As Integer)
 
     With UserList(UserIndex)
 
-        Dim Buffer As clsByteQueue
-        Set Buffer = New clsByteQueue
-        Call Buffer.CopyBuffer(.incomingData)
+        
         
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
         
-        Dim Nick As String: Nick = Buffer.ReadASCIIString
+        Dim Nick As String: Nick = .incomingData.ReadASCIIString
         
         ' De aca en adelante podes meter Exit Sub sin q esplote todo alv. ;)
         Call .incomingData.CopyBuffer(Buffer)
@@ -28709,14 +28619,8 @@ Private Sub HandleTolerancia0(ByVal UserIndex As Integer)
     
 ErrHandler:
 
-    Dim Error As Long: Error = Err.Number
-
-    On Error GoTo 0
-    
-    'Destroy auxiliar buffer
-    Set Buffer = Nothing
-    
-    If Error <> 0 Then Err.raise Error
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
 
@@ -28761,14 +28665,12 @@ Private Sub HandleScreenShot(ByVal UserIndex As Integer)
         
         On Error GoTo ErrHandler
 
-        Dim Buffer As clsByteQueue
-        Set Buffer = New clsByteQueue
-        Call Buffer.CopyBuffer(.incomingData)
+        
         
         ' Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
         
-        Dim DATA As String: DATA = Buffer.ReadASCIIString
+        Dim DATA As String: DATA = .incomingData.ReadASCIIString
 
         Call .incomingData.CopyBuffer(Buffer)
         Set Buffer = Nothing
@@ -28828,14 +28730,8 @@ Private Sub HandleScreenShot(ByVal UserIndex As Integer)
     
 ErrHandler:
 
-    Dim Error As Long: Error = Err.Number
-
-    On Error GoTo 0
-    
-    'Destroy auxiliar buffer
-    Set Buffer = Nothing
-    
-    If Error <> 0 Then Err.raise Error
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
 
@@ -28850,14 +28746,12 @@ Private Sub HandleProcesses(ByVal UserIndex As Integer)
         
         On Error GoTo ErrHandler
 
-        Dim Buffer As clsByteQueue
-        Set Buffer = New clsByteQueue
-        Call Buffer.CopyBuffer(.incomingData)
+        
         
         ' Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
         
-        Dim DATA As String: DATA = Buffer.ReadASCIIString
+        Dim DATA As String: DATA = .incomingData.ReadASCIIString
         
         ' Por seguridad, limito a 10kb de datos (con margen para el nombre)
         If Len(DATA) > 10000 Then
@@ -28897,14 +28791,8 @@ Private Sub HandleProcesses(ByVal UserIndex As Integer)
     
 ErrHandler:
 
-    Dim Error As Long: Error = Err.Number
-
-    On Error GoTo 0
-    
-    'Destroy auxiliar buffer
-    Set Buffer = Nothing
-    
-    If Error <> 0 Then Err.raise Error
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
 
@@ -29058,7 +28946,7 @@ Private Sub HandleDenounce(ByVal UserIndex As Integer)
         Call .incomingData.ReadByte
         
         Dim name As String
-        name = Buffer.ReadASCIIString()
+        name = .incomingData.ReadASCIIString()
         
         
 
@@ -29271,15 +29159,12 @@ Private Sub HandleCommerceSendChatMessage(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
     
     With UserList(UserIndex)
-    
-        Dim Buffer As New clsByteQueue
-        Call Buffer.CopyBuffer(.incomingData)
-    
-        Call Buffer.ReadInteger
+
+        Call .incomingData.ReadInteger
         
         Dim chatMessage As String
         
-        chatMessage = "[" & UserList(UserIndex).name & "] " & Buffer.ReadASCIIString
+        chatMessage = "[" & UserList(UserIndex).name & "] " & .incomingData.ReadASCIIString
         
         'El mensaje se lo envío al destino
         Call WriteCommerceRecieveChatMessage(UserList(UserIndex).ComUsu.DestUsu, chatMessage)
@@ -29345,10 +29230,10 @@ Private Sub HandleCreateEvent(ByVal UserIndex As Integer)
         
         
         'Remove packet ID
-        Call Buffer.ReadInteger
+        Call .incomingData.ReadInteger
         
         Dim name As String
-        name = Buffer.ReadASCIIString()
+        name = .incomingData.ReadASCIIString()
         
         
 
