@@ -5137,15 +5137,11 @@ Private Sub HandleMoveSpell(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 3 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
-
-        End If
     
 104     With UserList(UserIndex).incomingData
+
             'Remove packet ID
-106         Call .ReadByte
+106         Call .ReadID
         
             Dim dir As Integer
         
@@ -5153,7 +5149,6 @@ Private Sub HandleMoveSpell(ByVal UserIndex As Integer)
 110             dir = 1
             Else
 112             dir = -1
-
             End If
         
 114         Call DesplazarHechizo(UserIndex, dir, .ReadByte())
@@ -5165,7 +5160,7 @@ Private Sub HandleMoveSpell(ByVal UserIndex As Integer)
 
 HandleMoveSpell_Err:
 116     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleMoveSpell", Erl)
-118     Resume Next
+118     Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -5181,47 +5176,27 @@ Private Sub HandleClanCodexUpdate(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 3 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
-
-        End If
-    
+        
         On Error GoTo ErrHandler
 
 104     With UserList(UserIndex)
 
-            'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim Buffer As New clsByteQueue
-
-106         Call Buffer.CopyBuffer(.incomingData)
-        
             'Remove packet ID
-108         Call Buffer.ReadByte
+108         Call .incomingData.ReadByte
         
             Dim Desc As String
         
-110         Desc = Buffer.ReadASCIIString()
+110         Desc = .incomingData.ReadASCIIString()
         
 112         Call modGuilds.ChangeCodexAndDesc(Desc, .GuildIndex)
-        
-            'If we got here then packet is complete, copy data back to original queue
-114         Call .incomingData.CopyBuffer(Buffer)
 
         End With
-    
+        
+        Exit Sub
+        
 ErrHandler:
-
-        Dim Error As Long
-
-116     Error = Err.Number
-
-        On Error GoTo 0
-    
-        'Destroy auxiliar buffer
-118     Set Buffer = Nothing
-    
-120     If Error <> 0 Then Err.raise Error
+        Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleMoveSpell", Erl)
+        Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
 
@@ -5233,22 +5208,17 @@ End Sub
 Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
         
         On Error GoTo HandleUserCommerceOffer_Err
-        
 
         '***************************************************
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 6 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
-
-        End If
     
 104     With UserList(UserIndex)
+
             'Remove packet ID
-106         Call .incomingData.ReadByte
+106         Call .incomingData.ReadID
         
             Dim tUser  As Integer
             Dim slot As Byte
@@ -5362,12 +5332,11 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
 
         End With
 
-        
         Exit Sub
 
 HandleUserCommerceOffer_Err:
 174     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleUserCommerceOffer", Erl)
-176     Resume Next
+176     Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -5383,31 +5352,19 @@ Private Sub HandleGuildAcceptPeace(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 3 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
-
-        End If
     
         On Error GoTo ErrHandler
 
 104     With UserList(UserIndex)
 
-            'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim Buffer As New clsByteQueue
-
-106         Call Buffer.CopyBuffer(.incomingData)
-        
             'Remove packet ID
-108         Call Buffer.ReadByte
+108         Call .incomingData.ReadID
         
             Dim guild          As String
-
             Dim errorStr       As String
-
             Dim otherClanIndex As String
         
-110         guild = Buffer.ReadASCIIString()
+110         guild = .incomingData.ReadASCIIString()
         
 112         otherClanIndex = modGuilds.r_AceptarPropuestaDePaz(UserIndex, guild, errorStr)
         
@@ -5418,24 +5375,14 @@ Private Sub HandleGuildAcceptPeace(ByVal UserIndex As Integer)
 120             Call SendData(SendTarget.ToGuildMembers, otherClanIndex, PrepareMessageConsoleMsg("Tu clan ha firmado la paz con " & modGuilds.GuildName(.GuildIndex), FontTypeNames.FONTTYPE_GUILD))
 
             End If
-        
-            'If we got here then packet is complete, copy data back to original queue
-122         Call .incomingData.CopyBuffer(Buffer)
 
         End With
-    
+        
+        Exit Sub
+
 ErrHandler:
-
-        Dim Error As Long
-
-124     Error = Err.Number
-
-        On Error GoTo 0
-    
-        'Destroy auxiliar buffer
-126     Set Buffer = Nothing
-    
-128     If Error <> 0 Then Err.raise Error
+        Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGuildAcceptPeace", Erl)
+        Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
 
@@ -5451,59 +5398,38 @@ Private Sub HandleGuildRejectAlliance(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 3 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
-
-        End If
     
         On Error GoTo ErrHandler
 
 104     With UserList(UserIndex)
 
-            'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim Buffer As New clsByteQueue
-
-106         Call Buffer.CopyBuffer(.incomingData)
-        
             'Remove packet ID
-108         Call Buffer.ReadByte
+108         Call .incomingData.ReadID
         
             Dim guild          As String
-
             Dim errorStr       As String
-
             Dim otherClanIndex As String
         
-110         guild = Buffer.ReadASCIIString()
+110         guild = .incomingData.ReadASCIIString()
         
 112         otherClanIndex = modGuilds.r_RechazarPropuestaDeAlianza(UserIndex, guild, errorStr)
         
 114         If otherClanIndex = 0 Then
 116             Call WriteConsoleMsg(UserIndex, errorStr, FontTypeNames.FONTTYPE_GUILD)
+
             Else
 118             Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Tu clan rechazado la propuesta de alianza de " & guild, FontTypeNames.FONTTYPE_GUILD))
 120             Call SendData(SendTarget.ToGuildMembers, otherClanIndex, PrepareMessageConsoleMsg(modGuilds.GuildName(.GuildIndex) & " ha rechazado nuestra propuesta de alianza con su clan.", FontTypeNames.FONTTYPE_GUILD))
 
             End If
-        
-            'If we got here then packet is complete, copy data back to original queue
-122         Call .incomingData.CopyBuffer(Buffer)
 
         End With
-    
+        
+        Exit Sub
+        
 ErrHandler:
-
-        Dim Error As Long
-
-124     Error = Err.Number
-
-        On Error GoTo 0
-    
-        'Destroy auxiliar buffer
-126     Set Buffer = Nothing
-    
-128     If Error <> 0 Then Err.raise Error
+        Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGuildRejectAlliance", Erl)
+        Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
 
@@ -5529,49 +5455,33 @@ Private Sub HandleGuildRejectPeace(ByVal UserIndex As Integer)
 
 104     With UserList(UserIndex)
 
-            'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim Buffer As New clsByteQueue
-
-106         Call Buffer.CopyBuffer(.incomingData)
-        
             'Remove packet ID
-108         Call Buffer.ReadByte
+108         Call .incomingData.ReadID
         
             Dim guild          As String
-
             Dim errorStr       As String
-
             Dim otherClanIndex As String
         
-110         guild = Buffer.ReadASCIIString()
+110         guild = .incomingData.ReadASCIIString()
         
 112         otherClanIndex = modGuilds.r_RechazarPropuestaDePaz(UserIndex, guild, errorStr)
         
 114         If otherClanIndex = 0 Then
 116             Call WriteConsoleMsg(UserIndex, errorStr, FontTypeNames.FONTTYPE_GUILD)
+
             Else
 118             Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Tu clan rechazado la propuesta de paz de " & guild, FontTypeNames.FONTTYPE_GUILD))
 120             Call SendData(SendTarget.ToGuildMembers, otherClanIndex, PrepareMessageConsoleMsg(modGuilds.GuildName(.GuildIndex) & " ha rechazado nuestra propuesta de paz con su clan.", FontTypeNames.FONTTYPE_GUILD))
 
             End If
-        
-            'If we got here then packet is complete, copy data back to original queue
-122         Call .incomingData.CopyBuffer(Buffer)
 
         End With
-    
+        
+        Exit Sub
+        
 ErrHandler:
-
-        Dim Error As Long
-
-124     Error = Err.Number
-
-        On Error GoTo 0
-    
-        'Destroy auxiliar buffer
-126     Set Buffer = Nothing
-    
-128     If Error <> 0 Then Err.raise Error
+        Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGuildRejectPeace", Erl)
+        Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
 
@@ -5587,59 +5497,38 @@ Private Sub HandleGuildAcceptAlliance(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 3 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
-
-        End If
     
         On Error GoTo ErrHandler
 
 104     With UserList(UserIndex)
 
-            'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim Buffer As New clsByteQueue
-
-106         Call Buffer.CopyBuffer(.incomingData)
-        
             'Remove packet ID
-108         Call Buffer.ReadByte
+108         Call .incomingData.ReadID
         
             Dim guild          As String
-
             Dim errorStr       As String
-
             Dim otherClanIndex As String
         
-110         guild = Buffer.ReadASCIIString()
+110         guild = .incomingData.ReadASCIIString()
         
 112         otherClanIndex = modGuilds.r_AceptarPropuestaDeAlianza(UserIndex, guild, errorStr)
         
 114         If otherClanIndex = 0 Then
 116             Call WriteConsoleMsg(UserIndex, errorStr, FontTypeNames.FONTTYPE_GUILD)
+
             Else
 118             Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Tu clan ha firmado la alianza con " & guild, FontTypeNames.FONTTYPE_GUILD))
 120             Call SendData(SendTarget.ToGuildMembers, otherClanIndex, PrepareMessageConsoleMsg("Tu clan ha firmado la paz con " & modGuilds.GuildName(.GuildIndex), FontTypeNames.FONTTYPE_GUILD))
 
             End If
-        
-            'If we got here then packet is complete, copy data back to original queue
-122         Call .incomingData.CopyBuffer(Buffer)
 
         End With
-    
+        
+        Exit Sub
+        
 ErrHandler:
-
-        Dim Error As Long
-
-124     Error = Err.Number
-
-        On Error GoTo 0
-    
-        'Destroy auxiliar buffer
-126     Set Buffer = Nothing
-    
-128     If Error <> 0 Then Err.raise Error
+        Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGuildAcceptAlliance", Erl)
+        Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
 
@@ -5655,57 +5544,36 @@ Private Sub HandleGuildOfferPeace(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 5 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
 
-        End If
-    
         On Error GoTo ErrHandler
 
 104     With UserList(UserIndex)
-
-            'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim Buffer As New clsByteQueue
-
-106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call Buffer.ReadByte
+108         Call .incomingData.ReadID
         
             Dim guild    As String
-
             Dim proposal As String
-
             Dim errorStr As String
         
-110         guild = Buffer.ReadASCIIString()
-112         proposal = Buffer.ReadASCIIString()
+110         guild = .incomingData.ReadASCIIString()
+112         proposal = .incomingData.ReadASCIIString()
         
 114         If modGuilds.r_ClanGeneraPropuesta(UserIndex, guild, RELACIONES_GUILD.PAZ, proposal, errorStr) Then
 116             Call WriteConsoleMsg(UserIndex, "Propuesta de paz enviada", FontTypeNames.FONTTYPE_GUILD)
+
             Else
 118             Call WriteConsoleMsg(UserIndex, errorStr, FontTypeNames.FONTTYPE_GUILD)
 
             End If
-        
-            'If we got here then packet is complete, copy data back to original queue
-120         Call .incomingData.CopyBuffer(Buffer)
 
         End With
-    
+        
+        Exit Sub
+        
 ErrHandler:
-
-        Dim Error As Long
-
-122     Error = Err.Number
-
-        On Error GoTo 0
-    
-        'Destroy auxiliar buffer
-124     Set Buffer = Nothing
-    
-126     If Error <> 0 Then Err.raise Error
+        Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGuildOfferPeace", Erl)
+        Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
 
@@ -5721,57 +5589,36 @@ Private Sub HandleGuildOfferAlliance(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 5 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
-
-        End If
     
         On Error GoTo ErrHandler
 
 104     With UserList(UserIndex)
 
-            'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim Buffer As New clsByteQueue
-
-106         Call Buffer.CopyBuffer(.incomingData)
-        
             'Remove packet ID
-108         Call Buffer.ReadByte
+108         Call .incomingData.ReadID
         
             Dim guild    As String
-
             Dim proposal As String
-
             Dim errorStr As String
         
-110         guild = Buffer.ReadASCIIString()
-112         proposal = Buffer.ReadASCIIString()
+110         guild = .incomingData.ReadASCIIString()
+112         proposal = .incomingData.ReadASCIIString()
         
 114         If modGuilds.r_ClanGeneraPropuesta(UserIndex, guild, RELACIONES_GUILD.ALIADOS, proposal, errorStr) Then
 116             Call WriteConsoleMsg(UserIndex, "Propuesta de alianza enviada", FontTypeNames.FONTTYPE_GUILD)
+
             Else
 118             Call WriteConsoleMsg(UserIndex, errorStr, FontTypeNames.FONTTYPE_GUILD)
 
             End If
-        
-            'If we got here then packet is complete, copy data back to original queue
-120         Call .incomingData.CopyBuffer(Buffer)
 
         End With
-    
+        
+        Exit Sub
+        
 ErrHandler:
-
-        Dim Error As Long
-
-122     Error = Err.Number
-
-        On Error GoTo 0
-    
-        'Destroy auxiliar buffer
-124     Set Buffer = Nothing
-    
-126     If Error <> 0 Then Err.raise Error
+        Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGuildOfferPeace", Erl)
+        Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
 
@@ -5787,31 +5634,19 @@ Private Sub HandleGuildAllianceDetails(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 3 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
 
-        End If
-    
         On Error GoTo ErrHandler
 
 104     With UserList(UserIndex)
 
-            'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim Buffer As New clsByteQueue
-
-106         Call Buffer.CopyBuffer(.incomingData)
-        
             'Remove packet ID
-108         Call Buffer.ReadByte
+108         Call .incomingData.ReadID
         
             Dim guild    As String
-
             Dim errorStr As String
-
             Dim details  As String
         
-110         guild = Buffer.ReadASCIIString()
+110         guild = .incomingData.ReadASCIIString()
         
 112         details = modGuilds.r_VerPropuesta(UserIndex, guild, RELACIONES_GUILD.ALIADOS, errorStr)
         
@@ -5821,24 +5656,14 @@ Private Sub HandleGuildAllianceDetails(ByVal UserIndex As Integer)
 118             Call WriteOfferDetails(UserIndex, details)
 
             End If
-        
-            'If we got here then packet is complete, copy data back to original queue
-120         Call .incomingData.CopyBuffer(Buffer)
 
         End With
-    
+        
+        Exit Sub
+        
 ErrHandler:
-
-        Dim Error As Long
-
-122     Error = Err.Number
-
-        On Error GoTo 0
-    
-        'Destroy auxiliar buffer
-124     Set Buffer = Nothing
-    
-126     If Error <> 0 Then Err.raise Error
+        Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGuildOfferPeace", Erl)
+        Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
 
@@ -5854,58 +5679,37 @@ Private Sub HandleGuildPeaceDetails(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 3 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
-
-        End If
     
         On Error GoTo ErrHandler
 
 104     With UserList(UserIndex)
 
-            'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim Buffer As New clsByteQueue
-
-106         Call Buffer.CopyBuffer(.incomingData)
-        
             'Remove packet ID
-108         Call Buffer.ReadByte
+108         Call .incomingData.ReadID
         
             Dim guild    As String
-
             Dim errorStr As String
-
             Dim details  As String
         
-110         guild = Buffer.ReadASCIIString()
+110         guild = .incomingData.ReadASCIIString()
         
 112         details = modGuilds.r_VerPropuesta(UserIndex, guild, RELACIONES_GUILD.PAZ, errorStr)
         
 114         If LenB(details) = 0 Then
 116             Call WriteConsoleMsg(UserIndex, errorStr, FontTypeNames.FONTTYPE_GUILD)
+
             Else
 118             Call WriteOfferDetails(UserIndex, details)
 
             End If
-        
-            'If we got here then packet is complete, copy data back to original queue
-120         Call .incomingData.CopyBuffer(Buffer)
-
+            
         End With
-    
+        
+        Exit Sub
+        
 ErrHandler:
-
-        Dim Error As Long
-
-122     Error = Err.Number
-
-        On Error GoTo 0
-    
-        'Destroy auxiliar buffer
-124     Set Buffer = Nothing
-    
-126     If Error <> 0 Then Err.raise Error
+        Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGuildPeaceDetails", Erl)
+        Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
 
@@ -5921,29 +5725,18 @@ Private Sub HandleGuildRequestJoinerInfo(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 3 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
-
-        End If
     
         On Error GoTo ErrHandler
 
 104     With UserList(UserIndex)
 
-            'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim Buffer As New clsByteQueue
-
-106         Call Buffer.CopyBuffer(.incomingData)
-        
             'Remove packet ID
-108         Call Buffer.ReadByte
+108         Call .incomingData.ReadID
         
             Dim user    As String
-
             Dim details As String
         
-110         user = Buffer.ReadASCIIString()
+110         user = .incomingData.ReadASCIIString()
         
 112         details = modGuilds.a_DetallesAspirante(UserIndex, user)
         
@@ -5953,24 +5746,14 @@ Private Sub HandleGuildRequestJoinerInfo(ByVal UserIndex As Integer)
 118             Call WriteShowUserRequest(UserIndex, details)
 
             End If
-        
-            'If we got here then packet is complete, copy data back to original queue
-120         Call .incomingData.CopyBuffer(Buffer)
 
         End With
-    
+        
+        Exit Sub
+        
 ErrHandler:
-
-        Dim Error As Long
-
-122     Error = Err.Number
-
-        On Error GoTo 0
-    
-        'Destroy auxiliar buffer
-124     Set Buffer = Nothing
-    
-126     If Error <> 0 Then Err.raise Error
+        Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGuildRequestJoinerInfo", Erl)
+        Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
 
@@ -5989,7 +5772,7 @@ Private Sub HandleGuildAlliancePropList(ByVal UserIndex As Integer)
         
         On Error GoTo HandleGuildAlliancePropList_Err
         
-100     Call UserList(UserIndex).incomingData.ReadByte
+100     Call UserList(UserIndex).incomingData.ReadID
     
 102     Call WriteAlianceProposalsList(UserIndex, r_ListaDePropuestas(UserIndex, RELACIONES_GUILD.ALIADOS))
 
@@ -5998,7 +5781,7 @@ Private Sub HandleGuildAlliancePropList(ByVal UserIndex As Integer)
 
 HandleGuildAlliancePropList_Err:
 104     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGuildAlliancePropList", Erl)
-106     Resume Next
+106     Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -6017,7 +5800,7 @@ Private Sub HandleGuildPeacePropList(ByVal UserIndex As Integer)
         
         On Error GoTo HandleGuildPeacePropList_Err
         
-100     Call UserList(UserIndex).incomingData.ReadByte
+100     Call UserList(UserIndex).incomingData.ReadID
     
 102     Call WritePeaceProposalsList(UserIndex, r_ListaDePropuestas(UserIndex, RELACIONES_GUILD.PAZ))
 
@@ -6026,7 +5809,7 @@ Private Sub HandleGuildPeacePropList(ByVal UserIndex As Integer)
 
 HandleGuildPeacePropList_Err:
 104     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGuildPeacePropList", Erl)
-106     Resume Next
+106     Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -6042,28 +5825,16 @@ Private Sub HandleGuildDeclareWar(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 3 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
 
-        End If
-    
         On Error GoTo ErrHandler
 
 104     With UserList(UserIndex)
 
-            'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim Buffer As New clsByteQueue
-
-106         Call Buffer.CopyBuffer(.incomingData)
-        
             'Remove packet ID
-108         Call Buffer.ReadByte
+108         Call .incomingData.ReadID
         
             Dim guild           As String
-
             Dim errorStr        As String
-
             Dim otherGuildIndex As Integer
         
 110         guild = Buffer.ReadASCIIString()
@@ -6072,6 +5843,7 @@ Private Sub HandleGuildDeclareWar(ByVal UserIndex As Integer)
         
 114         If otherGuildIndex = 0 Then
 116             Call WriteConsoleMsg(UserIndex, errorStr, FontTypeNames.FONTTYPE_GUILD)
+
             Else
                 'WAR shall be!
 118             Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("TU CLAN HA ENTRADO EN GUERRA CON " & guild, FontTypeNames.FONTTYPE_GUILD))
@@ -6080,24 +5852,14 @@ Private Sub HandleGuildDeclareWar(ByVal UserIndex As Integer)
 124             Call SendData(SendTarget.ToGuildMembers, otherGuildIndex, PrepareMessagePlayWave(45, NO_3D_SOUND, NO_3D_SOUND))
 
             End If
-        
-            'If we got here then packet is complete, copy data back to original queue
-126         Call .incomingData.CopyBuffer(Buffer)
 
         End With
-    
+        
+        Exit Sub
+        
 ErrHandler:
-
-        Dim Error As Long
-
-128     Error = Err.Number
-
-        On Error GoTo 0
-    
-        'Destroy auxiliar buffer
-130     Set Buffer = Nothing
-    
-132     If Error <> 0 Then Err.raise Error
+        Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGuildPeacePropList", Erl)
+        Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
 
@@ -6113,43 +5875,23 @@ Private Sub HandleGuildNewWebsite(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 3 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
-
-        End If
-    
+        
         On Error GoTo ErrHandler
 
 104     With UserList(UserIndex)
-
-            'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim Buffer As New clsByteQueue
-
-106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call Buffer.ReadByte
+108         Call .incomingData.ReadID
         
-110         Call modGuilds.ActualizarWebSite(UserIndex, Buffer.ReadASCIIString())
-        
-            'If we got here then packet is complete, copy data back to original queue
-112         Call .incomingData.CopyBuffer(Buffer)
+110         Call modGuilds.ActualizarWebSite(UserIndex, .incomingData.ReadASCIIString())
 
         End With
-    
+        
+        Exit Sub
+        
 ErrHandler:
-
-        Dim Error As Long
-
-114     Error = Err.Number
-
-        On Error GoTo 0
-    
-        'Destroy auxiliar buffer
-116     Set Buffer = Nothing
-    
-118     If Error <> 0 Then Err.raise Error
+        Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGuildNewWebsite", Erl)
+        Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
 
@@ -6165,34 +5907,23 @@ Private Sub HandleGuildAcceptNewMember(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 3 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
 
-        End If
-    
         On Error GoTo ErrHandler
 
 104     With UserList(UserIndex)
 
-            'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim Buffer As New clsByteQueue
-
-106         Call Buffer.CopyBuffer(.incomingData)
-        
             'Remove packet ID
-108         Call Buffer.ReadByte
+108         Call .incomingData.ReadID
         
             Dim errorStr As String
-
             Dim UserName As String
-
             Dim tUser    As Integer
         
-110         UserName = Buffer.ReadASCIIString()
+110         UserName = .incomingData.ReadASCIIString()
         
 112         If Not modGuilds.a_AceptarAspirante(UserIndex, UserName, errorStr) Then
 114             Call WriteConsoleMsg(UserIndex, errorStr, FontTypeNames.FONTTYPE_GUILD)
+
             Else
 116             tUser = NameIndex(UserName)
 
@@ -6206,24 +5937,14 @@ Private Sub HandleGuildAcceptNewMember(ByVal UserIndex As Integer)
 126             Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessagePlayWave(43, NO_3D_SOUND, NO_3D_SOUND))
 
             End If
-        
-            'If we got here then packet is complete, copy data back to original queue
-128         Call .incomingData.CopyBuffer(Buffer)
 
         End With
-    
+        
+        Exit Sub
+        
 ErrHandler:
-
-        Dim Error As Long
-
-130     Error = Err.Number
-
-        On Error GoTo 0
-    
-        'Destroy auxiliar buffer
-132     Set Buffer = Nothing
-    
-134     If Error <> 0 Then Err.raise Error
+        Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGuildAcceptNewMember", Erl)
+        Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
 
@@ -6240,37 +5961,25 @@ Private Sub HandleGuildRejectNewMember(ByVal UserIndex As Integer)
         'Last Modification by: (liquid)
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 5 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
 
-        End If
-    
         On Error GoTo ErrHandler
 
 104     With UserList(UserIndex)
-
-            'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim Buffer As New clsByteQueue
-
-106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
-108         Call Buffer.ReadByte
+108         Call .incomingData.ReadID
         
             Dim errorStr As String
-
             Dim UserName As String
-
             Dim Reason   As String
-
             Dim tUser    As Integer
         
-110         UserName = Buffer.ReadASCIIString()
-112         Reason = Buffer.ReadASCIIString()
+110         UserName = .incomingData.ReadASCIIString()
+112         Reason = .incomingData.ReadASCIIString()
         
 114         If Not modGuilds.a_RechazarAspirante(UserIndex, UserName, errorStr) Then
 116             Call WriteConsoleMsg(UserIndex, errorStr, FontTypeNames.FONTTYPE_GUILD)
+
             Else
 118             tUser = NameIndex(UserName)
             
@@ -6283,24 +5992,14 @@ Private Sub HandleGuildRejectNewMember(ByVal UserIndex As Integer)
                 End If
 
             End If
-        
-            'If we got here then packet is complete, copy data back to original queue
-126         Call .incomingData.CopyBuffer(Buffer)
 
         End With
-    
+        
+        Exit Sub
+        
 ErrHandler:
-
-        Dim Error As Long
-
-128     Error = Err.Number
-
-        On Error GoTo 0
-    
-        'Destroy auxiliar buffer
-130     Set Buffer = Nothing
-    
-132     If Error <> 0 Then Err.raise Error
+        Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGuildAcceptNewMember", Erl)
+        Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
 
