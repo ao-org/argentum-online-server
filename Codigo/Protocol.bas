@@ -6015,57 +6015,37 @@ Private Sub HandleGuildKickMember(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 3 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
 
-        End If
-    
         On Error GoTo ErrHandler
 
 104     With UserList(UserIndex)
 
-            'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim Buffer As New clsByteQueue
-
-106         Call Buffer.CopyBuffer(.incomingData)
-        
             'Remove packet ID
-108         Call Buffer.ReadByte
+108         Call .incomingData.ReadByte
         
             Dim UserName   As String
-
             Dim GuildIndex As Integer
         
-110         UserName = Buffer.ReadASCIIString()
+110         UserName = .incomingData.ReadASCIIString()
         
 112         GuildIndex = modGuilds.m_EcharMiembroDeClan(UserIndex, UserName)
         
 114         If GuildIndex > 0 Then
 116             Call SendData(SendTarget.ToGuildMembers, GuildIndex, PrepareMessageConsoleMsg(UserName & " fue expulsado del clan.", FontTypeNames.FONTTYPE_GUILD))
 118             Call SendData(SendTarget.ToGuildMembers, GuildIndex, PrepareMessagePlayWave(45, NO_3D_SOUND, NO_3D_SOUND))
+
             Else
 120             Call WriteConsoleMsg(UserIndex, "No podés expulsar ese personaje del clan.", FontTypeNames.FONTTYPE_GUILD)
 
             End If
-        
-            'If we got here then packet is complete, copy data back to original queue
-122         Call .incomingData.CopyBuffer(Buffer)
 
         End With
-    
+        
+        Exit Sub
+        
 ErrHandler:
-
-        Dim Error As Long
-
-124     Error = Err.Number
-
-        On Error GoTo 0
-    
-        'Destroy auxiliar buffer
-126     Set Buffer = Nothing
-    
-128     If Error <> 0 Then Err.raise Error
+        Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGuildKickMember", Erl)
+        Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
 
@@ -6081,43 +6061,23 @@ Private Sub HandleGuildUpdateNews(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 3 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
-
-        End If
     
         On Error GoTo ErrHandler
 
 104     With UserList(UserIndex)
 
-            'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim Buffer As New clsByteQueue
-
-106         Call Buffer.CopyBuffer(.incomingData)
-        
             'Remove packet ID
-108         Call Buffer.ReadByte
+108         Call .incomingData.ReadID
         
-110         Call modGuilds.ActualizarNoticias(UserIndex, Buffer.ReadASCIIString())
-        
-            'If we got here then packet is complete, copy data back to original queue
-112         Call .incomingData.CopyBuffer(Buffer)
+110         Call modGuilds.ActualizarNoticias(UserIndex, .incomingData.ReadASCIIString())
 
         End With
     
+        Exit Sub
+        
 ErrHandler:
-
-        Dim Error As Long
-
-114     Error = Err.Number
-
-        On Error GoTo 0
-    
-        'Destroy auxiliar buffer
-116     Set Buffer = Nothing
-    
-118     If Error <> 0 Then Err.raise Error
+        Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGuildUpdateNews", Erl)
+        Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
 
@@ -6133,43 +6093,23 @@ Private Sub HandleGuildMemberInfo(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 3 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
-
-        End If
     
         On Error GoTo ErrHandler
 
 104     With UserList(UserIndex)
-
-            'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim Buffer As New clsByteQueue
-
-106         Call Buffer.CopyBuffer(.incomingData)
         
             'Remove packet ID
 108         Call Buffer.ReadByte
         
 110         Call modGuilds.SendDetallesPersonaje(UserIndex, Buffer.ReadASCIIString())
-        
-            'If we got here then packet is complete, copy data back to original queue
-112         Call .incomingData.CopyBuffer(Buffer)
 
         End With
     
+        Exit Sub
+        
 ErrHandler:
-
-        Dim Error As Long
-
-114     Error = Err.Number
-
-        On Error GoTo 0
-    
-        'Destroy auxiliar buffer
-116     Set Buffer = Nothing
-    
-118     If Error <> 0 Then Err.raise Error
+        Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGuildMemberInfo", Erl)
+        Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
 
@@ -6182,20 +6122,21 @@ Private Sub HandleGuildOpenElections(ByVal UserIndex As Integer)
         
         On Error GoTo HandleGuildOpenElections_Err
         
-
         '***************************************************
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
 100     With UserList(UserIndex)
+
             'Remove packet ID
-102         Call .incomingData.ReadByte
+102         Call .incomingData.ReadID
         
             Dim Error As String
         
 104         If Not modGuilds.v_AbrirElecciones(UserIndex, Error) Then
 106             Call WriteConsoleMsg(UserIndex, Error, FontTypeNames.FONTTYPE_GUILD)
+
             Else
 108             Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("¡Han comenzado las elecciones del clan! Puedes votar escribiendo /VOTO seguido del nombre del personaje, por ejemplo: /VOTO " & .name, FontTypeNames.FONTTYPE_GUILD))
 
@@ -6208,7 +6149,7 @@ Private Sub HandleGuildOpenElections(ByVal UserIndex As Integer)
 
 HandleGuildOpenElections_Err:
 110     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGuildOpenElections", Erl)
-112     Resume Next
+112     Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -6224,57 +6165,36 @@ Private Sub HandleGuildRequestMembership(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 5 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
-
-        End If
     
         On Error GoTo ErrHandler
 
 104     With UserList(UserIndex)
 
-            'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim Buffer As New clsByteQueue
-
-106         Call Buffer.CopyBuffer(.incomingData)
-        
             'Remove packet ID
-108         Call Buffer.ReadByte
+108         Call .incomingData.ReadID
         
             Dim guild       As String
-
             Dim application As String
-
             Dim errorStr    As String
         
-110         guild = Buffer.ReadASCIIString()
-112         application = Buffer.ReadASCIIString()
+110         guild = .incomingData.ReadASCIIString()
+112         application = .incomingData.ReadASCIIString()
         
 114         If Not modGuilds.a_NuevoAspirante(UserIndex, guild, application, errorStr) Then
 116             Call WriteConsoleMsg(UserIndex, errorStr, FontTypeNames.FONTTYPE_GUILD)
+
             Else
 118             Call WriteConsoleMsg(UserIndex, "Tu solicitud ha sido enviada. Espera prontas noticias del líder de " & guild & ".", FontTypeNames.FONTTYPE_GUILD)
 
             End If
-        
-            'If we got here then packet is complete, copy data back to original queue
-120         Call .incomingData.CopyBuffer(Buffer)
 
         End With
-    
+        
+        Exit Sub
+        
 ErrHandler:
-
-        Dim Error As Long
-
-122     Error = Err.Number
-
-        On Error GoTo 0
-    
-        'Destroy auxiliar buffer
-124     Set Buffer = Nothing
-    
-126     If Error <> 0 Then Err.raise Error
+        Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGuildRequestMembership", Erl)
+        Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
 
@@ -6290,43 +6210,23 @@ Private Sub HandleGuildRequestDetails(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 3 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
 
-        End If
-    
         On Error GoTo ErrHandler
 
 104     With UserList(UserIndex)
 
-            'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim Buffer As New clsByteQueue
-
-106         Call Buffer.CopyBuffer(.incomingData)
-        
             'Remove packet ID
-108         Call Buffer.ReadByte
+108         Call .incomingData.ReadID
         
 110         Call modGuilds.SendGuildDetails(UserIndex, Buffer.ReadASCIIString())
-        
-            'If we got here then packet is complete, copy data back to original queue
-112         Call .incomingData.CopyBuffer(Buffer)
 
         End With
-    
+        
+        Exit Sub
+        
 ErrHandler:
-
-        Dim Error As Long
-
-114     Error = Err.Number
-
-        On Error GoTo 0
-    
-        'Destroy auxiliar buffer
-116     Set Buffer = Nothing
-    
-118     If Error <> 0 Then Err.raise Error
+        Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGuildRequestDetails", Erl)
+        Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
 
@@ -6338,21 +6238,20 @@ End Sub
 Private Sub HandleOnline(ByVal UserIndex As Integer)
         
         On Error GoTo HandleOnline_Err
-        
 
         '***************************************************
         'Ladder 17/12/20 : Envio records de usuarios y uptime
-        Dim i     As Long
-
-        Dim Count As Long
+        '***************************************************
         
+        Dim i         As Long
+        Dim Count     As Long
         Dim Time      As Long
-    
         Dim UpTimeStr As String
     
 100     With UserList(UserIndex)
+
             'Remove packet ID
-102         Call .incomingData.ReadByte
+102         Call .incomingData.ReadID
 
             Dim nombres As String
         
@@ -6361,53 +6260,54 @@ Private Sub HandleOnline(ByVal UserIndex As Integer)
 106             If UserList(i).flags.UserLogged Then
 108                 If UserList(i).flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then
 110                     nombres = nombres & " - " & UserList(i).name
+
                     End If
+
 112                 Count = Count + 1
 
                 End If
 
 114         Next i
-
         
             'Get total time in seconds
-116      Time = ((GetTickCount()) - tInicioServer) \ 1000
+116         Time = ((GetTickCount()) - tInicioServer) \ 1000
         
             'Get times in dd:hh:mm:ss format
-118      UpTimeStr = (Time Mod 60) & " segundos."
-120      Time = Time \ 60
+118         UpTimeStr = (Time Mod 60) & " segundos."
+120         Time = Time \ 60
         
-122      UpTimeStr = (Time Mod 60) & " minutos, " & UpTimeStr
-124      Time = Time \ 60
+122         UpTimeStr = (Time Mod 60) & " minutos, " & UpTimeStr
+124         Time = Time \ 60
         
-126      UpTimeStr = (Time Mod 24) & " horas, " & UpTimeStr
-128      Time = Time \ 24
+126         UpTimeStr = (Time Mod 24) & " horas, " & UpTimeStr
+128         Time = Time \ 24
         
-130      If Time = 1 Then
-132          UpTimeStr = Time & " día, " & UpTimeStr
+130         If Time = 1 Then
+132             UpTimeStr = Time & " día, " & UpTimeStr
             Else
-134          UpTimeStr = Time & " días, " & UpTimeStr
+134             UpTimeStr = Time & " días, " & UpTimeStr
     
             End If
     
-136  Call WriteConsoleMsg(UserIndex, "Server Online: " & UpTimeStr, FontTypeNames.FONTTYPE_INFO)
-
+136         Call WriteConsoleMsg(UserIndex, "Server Online: " & UpTimeStr, FontTypeNames.FONTTYPE_INFO)
 
 138         If .flags.Privilegios And PlayerType.user Then
 140             Call WriteConsoleMsg(UserIndex, "Número de usuarios: " & CStr(Count) & " conectados.", FontTypeNames.FONTTYPE_INFOIAO)
 142             Call WriteConsoleMsg(UserIndex, "Tiempo en línea: " & UpTimeStr & " Record de usuarios en simultaneo: " & RecordUsuarios & ".", FontTypeNames.FONTTYPE_INFOIAO)
+
             Else
 144             Call WriteConsoleMsg(UserIndex, "Número de usuarios: " & CStr(Count) & " conectados: " & nombres & ".", FontTypeNames.FONTTYPE_INFOIAO)
 146             Call WriteConsoleMsg(UserIndex, "Tiempo en línea: " & UpTimeStr & " Record de usuarios en simultaneo: " & RecordUsuarios & ".", FontTypeNames.FONTTYPE_INFOIAO)
+
             End If
 
         End With
-
         
         Exit Sub
 
 HandleOnline_Err:
 148     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleOnline", Erl)
-150     Resume Next
+150     Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -6419,7 +6319,6 @@ End Sub
 Private Sub HandleQuit(ByVal UserIndex As Integer)
         
         On Error GoTo HandleQuit_Err
-        
 
         '***************************************************
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -6428,12 +6327,14 @@ Private Sub HandleQuit(ByVal UserIndex As Integer)
         'visible before doing the countdown to exit
         '04/15/2008 - No se reseteaban los contadores de invi ni de ocultar. (NicoNZ)
         '***************************************************
+        
         Dim tUser        As Integer
         Dim isNotVisible As Boolean
     
 100     With UserList(UserIndex)
+
             'Remove packet ID
-102         Call .incomingData.ReadByte
+102         Call .incomingData.ReadID
         
 104         If .flags.Paralizado = 1 Then
 106             Call WriteConsoleMsg(UserIndex, "No podés salir estando paralizado.", FontTypeNames.FONTTYPE_WARNING)
@@ -6473,18 +6374,16 @@ Private Sub HandleQuit(ByVal UserIndex As Integer)
 138             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, False))
 
             End If
-        
-            Rem   Call WritePersonajesDeCuenta(UserIndex, .Cuenta)
+
 140         Call Cerrar_Usuario(UserIndex)
 
         End With
 
-        
         Exit Sub
 
 HandleQuit_Err:
 142     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleQuit", Erl)
-144     Resume Next
+144     Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -6506,8 +6405,9 @@ Private Sub HandleGuildLeave(ByVal UserIndex As Integer)
         Dim GuildIndex As Integer
     
 100     With UserList(UserIndex)
+
             'Remove packet ID
-102         Call .incomingData.ReadByte
+102         Call .incomingData.ReadID
         
             'obtengo el guildindex
 104         GuildIndex = m_EcharMiembroDeClan(UserIndex, .name)
@@ -6522,12 +6422,11 @@ Private Sub HandleGuildLeave(ByVal UserIndex As Integer)
 
         End With
 
-        
         Exit Sub
 
 HandleGuildLeave_Err:
 114     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGuildLeave", Erl)
-116     Resume Next
+116     Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -6540,19 +6439,18 @@ Private Sub HandleRequestAccountState(ByVal UserIndex As Integer)
         
         On Error GoTo HandleRequestAccountState_Err
         
-
         '***************************************************
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
         Dim earnings   As Integer
-
         Dim percentage As Integer
     
 100     With UserList(UserIndex)
+
             'Remove packet ID
-102         Call .incomingData.ReadByte
+102         Call .incomingData.ReadID
         
             'Dead people can't check their accounts
 104         If .flags.Muerto = 1 Then
@@ -6608,7 +6506,7 @@ Private Sub HandleRequestAccountState(ByVal UserIndex As Integer)
 
 HandleRequestAccountState_Err:
 136     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleRequestAccountState", Erl)
-138     Resume Next
+138     Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -6628,8 +6526,9 @@ Private Sub HandlePetStand(ByVal UserIndex As Integer)
     
         
 100     With UserList(UserIndex)
+
             'Remove packet ID
-102         Call .incomingData.ReadByte
+102         Call .incomingData.ReadID
         
             'Dead people can't use pets
 104         If .flags.Muerto = 1 Then
@@ -6662,7 +6561,7 @@ Private Sub HandlePetStand(ByVal UserIndex As Integer)
 
 HandlePetStand_Err:
 122     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandlePetStand", Erl)
-
+        Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -6682,8 +6581,9 @@ Private Sub HandlePetFollow(ByVal UserIndex As Integer)
     
         
 100     With UserList(UserIndex)
+
             'Remove packet ID
-102         Call .incomingData.ReadByte
+102         Call .incomingData.ReadID
         
             'Dead users can't use pets
 104         If .flags.Muerto = 1 Then
@@ -6716,7 +6616,7 @@ Private Sub HandlePetFollow(ByVal UserIndex As Integer)
 
 HandlePetFollow_Err:
 122     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandlePetFollow", Erl)
-
+        Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -6732,8 +6632,9 @@ Private Sub HandlePetLeave(ByVal UserIndex As Integer)
     
         
 100     With UserList(UserIndex)
+
             'Remove packet ID
-102         Call .incomingData.ReadByte
+102         Call .incomingData.ReadID
         
             'Dead users can't use pets
 104         If .flags.Muerto = 1 Then
@@ -6757,7 +6658,7 @@ Private Sub HandlePetLeave(ByVal UserIndex As Integer)
 
 HandlePetLeave_Err:
 116     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandlePetLeave", Erl)
-
+        Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -6773,29 +6674,20 @@ Private Sub HandleGrupoMsg(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 3 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
 
-        End If
-    
         On Error GoTo ErrHandler
 
 104     With UserList(UserIndex)
 
-            'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim Buffer As New clsByteQueue
-
-106         Call Buffer.CopyBuffer(.incomingData)
-        
             'Remove packet ID
-108         Call Buffer.ReadByte
+108         Call .incomingData.ReadID
         
             Dim chat As String
         
-110         chat = Buffer.ReadASCIIString()
+110         chat = .incomingData.ReadASCIIString()
         
 112         If LenB(chat) <> 0 Then
+
                 'Analize chat...
 114             Call Statistics.ParseChat(chat)
             
@@ -6818,24 +6710,14 @@ Private Sub HandleGrupoMsg(ByVal UserIndex As Integer)
                 End If
 
             End If
-        
-            'If we got here then packet is complete, copy data back to original queue
-128         Call .incomingData.CopyBuffer(Buffer)
 
         End With
-    
+        
+        Exit Sub
+        
 ErrHandler:
-
-        Dim Error As Long
-
-130     Error = Err.Number
-
-        On Error GoTo 0
-    
-        'Destroy auxiliar buffer
-132     Set Buffer = Nothing
-    
-134     If Error <> 0 Then Err.raise Error
+        Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGrupoMsg", Erl)
+        Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
 
@@ -6855,8 +6737,9 @@ Private Sub HandleTrainList(ByVal UserIndex As Integer)
         '
         '***************************************************
 100     With UserList(UserIndex)
+
             'Remove packet ID
-102         Call .incomingData.ReadByte
+102         Call .incomingData.ReadID
         
             'Dead users can't use pets
 104         If .flags.Muerto = 1 Then
@@ -6887,12 +6770,11 @@ Private Sub HandleTrainList(ByVal UserIndex As Integer)
 
         End With
 
-        
         Exit Sub
 
 HandleTrainList_Err:
 120     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleTrainList", Erl)
-122     Resume Next
+122     Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
