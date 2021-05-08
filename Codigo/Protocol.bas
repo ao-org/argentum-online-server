@@ -658,7 +658,7 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
     '
     '***************************************************
 
-    On Error Resume Next
+    On Error Call UserList(UserIndex).incomingData.SafeClearPacket
 
     ' Dim packetID As Byte
     
@@ -10152,7 +10152,7 @@ Private Sub HandleKillNPC(ByVal UserIndex As Integer)
 HandleKillNPC_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleKillNPC", Erl)
 
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -11714,7 +11714,7 @@ Private Sub HandleOnlineGM(ByVal UserIndex As Integer)
 
 HandleOnlineGM_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleOnlineGM", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -11769,7 +11769,7 @@ Private Sub HandleOnlineMap(ByVal UserIndex As Integer)
 
 HandleOnlineMap_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleOnlineMap", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -11854,7 +11854,7 @@ Private Sub HandleForgive(ByVal UserIndex As Integer)
 
 HandleForgive_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleForgive", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -12206,7 +12206,7 @@ Private Sub HandleNPCFollow(ByVal UserIndex As Integer)
 
 HandleNPCFollow_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleNPCFollow", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -12349,7 +12349,7 @@ Private Sub HandleSpawnListRequest(ByVal UserIndex As Integer)
 
 HandleSpawnListRequest_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleSpawnListRequest", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -12396,7 +12396,7 @@ Private Sub HandleSpawnCreature(ByVal UserIndex As Integer)
 
 HandleSpawnCreature_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleSpawnCreature", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -12432,7 +12432,7 @@ Private Sub HandleResetNPCInventory(ByVal UserIndex As Integer)
 
 HandleResetNPCInventory_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleResetNPCInventory", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -12467,7 +12467,7 @@ Private Sub HandleCleanWorld(ByVal UserIndex As Integer)
 
 HandleCleanWorld_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleCleanWorld", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -12715,7 +12715,7 @@ Private Sub HandleIPToNick(ByVal UserIndex As Integer)
 
 HandleIPToNick_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleIPToNick", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -12869,7 +12869,7 @@ Private Sub HandleTeleportCreate(ByVal UserIndex As Integer)
 
 HandleTeleportCreate_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleTeleportCreate", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -12945,7 +12945,7 @@ Private Sub HandleTeleportDestroy(ByVal UserIndex As Integer)
 
 HandleTeleportDestroy_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleTeleportDestroy", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -12991,7 +12991,7 @@ Private Sub HandleRainToggle(ByVal UserIndex As Integer)
 
 HandleRainToggle_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleRainToggle", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -13122,7 +13122,7 @@ Private Sub HanldeForceMIDIToMap(ByVal UserIndex As Integer)
 
 HanldeForceMIDIToMap_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HanldeForceMIDIToMap", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -13187,7 +13187,7 @@ Private Sub HandleForceWAVEToMap(ByVal UserIndex As Integer)
 
 HandleForceWAVEToMap_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleForceWAVEToMap", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -13549,7 +13549,7 @@ Private Sub HandleDestroyAllItemsInArea(ByVal UserIndex As Integer)
 
 HandleDestroyAllItemsInArea_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleDestroyAllItemsInArea", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -13762,7 +13762,7 @@ Private Sub HandleItemsInTheFloor(ByVal UserIndex As Integer)
 
 HandleItemsInTheFloor_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleItemsInTheFloor", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -13935,7 +13935,7 @@ Private Sub HandleDumpIPTables(ByVal UserIndex As Integer)
 
 HandleDumpIPTables_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleDumpIPTables", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -14092,7 +14092,7 @@ Private Sub HandleSetTrigger(ByVal UserIndex As Integer)
 
 HandleSetTrigger_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleSetTrigger", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -14132,7 +14132,7 @@ Private Sub HandleAskTrigger(ByVal UserIndex As Integer)
 
 HandleAskTrigger_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleAskTrigger", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -14178,7 +14178,7 @@ Private Sub HandleBannedIPList(ByVal UserIndex As Integer)
 
 HandleBannedIPList_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleBannedIPList", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -14213,7 +14213,7 @@ Private Sub HandleBannedIPReload(ByVal UserIndex As Integer)
 
 HandleBannedIPReload_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleBannedIPReload", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -14488,7 +14488,7 @@ Private Sub HandleUnbanIP(ByVal UserIndex As Integer)
 
 HandleUnbanIP_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleUnbanIP", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -14588,7 +14588,7 @@ Private Sub HandleCreateItem(ByVal UserIndex As Integer)
 
 HandleCreateItem_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleCreateItem", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -14631,7 +14631,7 @@ Private Sub HandleDestroyItems(ByVal UserIndex As Integer)
 
 HandleDestroyItems_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleDestroyItems", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -14875,7 +14875,7 @@ Private Sub HandleForceMIDIAll(ByVal UserIndex As Integer)
 
 HandleForceMIDIAll_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleForceMIDIAll", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -14919,7 +14919,7 @@ Private Sub HandleForceWAVEAll(ByVal UserIndex As Integer)
 
 HandleForceWAVEAll_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleForceWAVEAll", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -15055,7 +15055,7 @@ Private Sub HandleTileBlockedToggle(ByVal UserIndex As Integer)
 
 HandleTileBlockedToggle_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleTileBlockedToggle", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -15092,7 +15092,7 @@ Private Sub HandleKillNPCNoRespawn(ByVal UserIndex As Integer)
 
 HandleKillNPCNoRespawn_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleKillNPCNoRespawn", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -15146,7 +15146,7 @@ Private Sub HandleKillAllNearbyNPCs(ByVal UserIndex As Integer)
 
 HandleKillAllNearbyNPCs_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleKillAllNearbyNPCs", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -15304,7 +15304,7 @@ Public Sub HandleChatColor(ByVal UserIndex As Integer)
 
 HandleChatColor_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleChatColor", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -15339,7 +15339,7 @@ Public Sub HandleIgnored(ByVal UserIndex As Integer)
 
 HandleIgnored_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleIgnored", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -15457,7 +15457,7 @@ Public Sub HandleResetAutoUpdate(ByVal UserIndex As Integer)
 
 HandleResetAutoUpdate_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleResetAutoUpdate", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -15494,7 +15494,7 @@ Public Sub HandleRestart(ByVal UserIndex As Integer)
 
 HandleRestart_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleRestart", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -15533,7 +15533,7 @@ Public Sub HandleReloadObjects(ByVal UserIndex As Integer)
 
 HandleReloadObjects_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleReloadObjects", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -15569,7 +15569,7 @@ Public Sub HandleReloadSpells(ByVal UserIndex As Integer)
 
 HandleReloadSpells_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleReloadSpells", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -15605,7 +15605,7 @@ Public Sub HandleReloadServerIni(ByVal UserIndex As Integer)
 
 HandleReloadServerIni_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleReloadServerIni", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -15643,7 +15643,7 @@ Public Sub HandleReloadNPCs(ByVal UserIndex As Integer)
 
 HandleReloadNPCs_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleReloadNPCs", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -15714,7 +15714,7 @@ Public Sub HandleRequestTCPStats(ByVal UserIndex As Integer)
 
 HandleRequestTCPStats_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleRequestTCPStats", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -15750,7 +15750,7 @@ Public Sub HandleKickAllChars(ByVal UserIndex As Integer)
 
 HandleKickAllChars_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleKickAllChars", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -15787,7 +15787,7 @@ Public Sub HandleNight(ByVal UserIndex As Integer)
 
 HandleNight_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleNight", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -15817,7 +15817,7 @@ Public Sub HandleDay(ByVal UserIndex As Integer)
 
 HandleDay_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleDay", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -15850,7 +15850,7 @@ Public Sub HandleSetTime(ByVal UserIndex As Integer)
 
 HandleSetTime_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleSetTime", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -15931,7 +15931,7 @@ Public Sub HandleDonateGold(ByVal UserIndex As Integer)
 
 handle:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleDonateGold", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -15978,7 +15978,7 @@ Public Sub HandlePromedio(ByVal UserIndex As Integer)
 
 handle:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandlePromedio", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -16098,7 +16098,7 @@ Public Sub HandleShowServerForm(ByVal UserIndex As Integer)
 
 HandleShowServerForm_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleShowServerForm", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -16134,7 +16134,7 @@ Public Sub HandleCleanSOS(ByVal UserIndex As Integer)
 
 HandleCleanSOS_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleCleanSOS", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -16170,7 +16170,7 @@ Public Sub HandleSaveChars(ByVal UserIndex As Integer)
 
 HandleSaveChars_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleSaveChars", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -16228,7 +16228,7 @@ Public Sub HandleChangeMapInfoBackup(ByVal UserIndex As Integer)
 
 HandleChangeMapInfoBackup_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleChangeMapInfoBackup", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -16280,7 +16280,7 @@ Public Sub HandleChangeMapInfoPK(ByVal UserIndex As Integer)
 
 HandleChangeMapInfoPK_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleChangeMapInfoPK", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -16416,7 +16416,7 @@ Public Sub HandleChangeMapInfoNoMagic(ByVal UserIndex As Integer)
 
 HandleChangeMapInfoNoMagic_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleChangeMapInfoNoMagic", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -16464,7 +16464,7 @@ Public Sub HandleChangeMapInfoNoInvi(ByVal UserIndex As Integer)
 
 HandleChangeMapInfoNoInvi_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleChangeMapInfoNoInvi", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
             
@@ -16512,7 +16512,7 @@ Public Sub HandleChangeMapInfoNoResu(ByVal UserIndex As Integer)
 
 HandleChangeMapInfoNoResu_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleChangeMapInfoNoResu", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -16686,7 +16686,7 @@ Public Sub HandleSaveMap(ByVal UserIndex As Integer)
 
 HandleSaveMap_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleSaveMap", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -16782,7 +16782,7 @@ Public Sub HandleDoBackUp(ByVal UserIndex As Integer)
 
 HandleDoBackUp_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleDoBackUp", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -17106,7 +17106,7 @@ Public Sub HandleCreateNPC(ByVal UserIndex As Integer)
 
 HandleCreateNPC_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleCreateNPC", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -17155,7 +17155,7 @@ Public Sub HandleCreateNPCWithRespawn(ByVal UserIndex As Integer)
 
 HandleCreateNPCWithRespawn_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleCreateNPCWithRespawn", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -17216,7 +17216,7 @@ Public Sub HandleImperialArmour(ByVal UserIndex As Integer)
 
 HandleImperialArmour_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleImperialArmour", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -17277,7 +17277,7 @@ Public Sub HandleChaosArmour(ByVal UserIndex As Integer)
 
 HandleChaosArmour_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleChaosArmour", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -17319,7 +17319,7 @@ Public Sub HandleNavigateToggle(ByVal UserIndex As Integer)
 
 HandleNavigateToggle_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleNavigateToggle", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -17360,7 +17360,7 @@ Public Sub HandleServerOpenToUsersToggle(ByVal UserIndex As Integer)
 
 HandleServerOpenToUsersToggle_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleServerOpenToUsersToggle", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -17484,7 +17484,7 @@ Public Sub HandleParticipar(ByVal UserIndex As Integer)
 
 HandleParticipar_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleParticipar", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -17946,7 +17946,7 @@ Public Sub HandleChangeMOTD(ByVal UserIndex As Integer)
 
 HandleChangeMOTD_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleChangeMOTD", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -17982,7 +17982,7 @@ Public Sub HandlePing(ByVal UserIndex As Integer)
 
 HandlePing_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandlePing", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -18615,7 +18615,7 @@ Public Function PrepareMessageCharSwing(ByVal CharIndex As Integer, Optional ByV
 
 PrepareMessageCharSwing_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageCharSwing", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -22467,7 +22467,7 @@ Public Sub FlushBuffer(ByVal UserIndex As Integer)
 
 FlushBuffer_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.FlushBuffer", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -22505,7 +22505,7 @@ Public Function PrepareMessageSetInvisible(ByVal CharIndex As Integer, ByVal inv
 
 PrepareMessageSetInvisible_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageSetInvisible", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -22534,7 +22534,7 @@ Public Function PrepareMessageSetEscribiendo(ByVal CharIndex As Integer, ByVal E
 
 PrepareMessageSetEscribiendo_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageSetEscribiendo", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -22588,7 +22588,7 @@ Public Function PrepareMessageChatOverHead(ByVal chat As String, ByVal CharIndex
 
 PrepareMessageChatOverHead_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageChatOverHead", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -22610,7 +22610,7 @@ Public Function PrepareMessageTextOverChar(ByVal chat As String, ByVal CharIndex
 
 PrepareMessageTextOverChar_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageTextOverChar", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -22632,7 +22632,7 @@ Public Function PrepareMessageTextCharDrop(ByVal chat As String, ByVal CharIndex
 
 PrepareMessageTextCharDrop_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageTextCharDrop", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -22655,7 +22655,7 @@ Public Function PrepareMessageTextOverTile(ByVal chat As String, ByVal X As Inte
 
 PrepareMessageTextOverTile_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageTextOverTile", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -22691,7 +22691,7 @@ Public Function PrepareMessageConsoleMsg(ByVal chat As String, ByVal FontIndex A
 
 PrepareMessageConsoleMsg_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageConsoleMsg", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -22720,7 +22720,7 @@ Public Function PrepareMessageLocaleMsg(ByVal ID As Integer, ByVal chat As Strin
 
 PrepareMessageLocaleMsg_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageLocaleMsg", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -22771,7 +22771,7 @@ Public Function PrepareMessageListaCorreo(ByVal UserIndex As Integer, ByVal Actu
 
 PrepareMessageListaCorreo_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageListaCorreo", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -22810,7 +22810,7 @@ Public Function PrepareMessageCreateFX(ByVal CharIndex As Integer, ByVal FX As I
 
 PrepareMessageCreateFX_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageCreateFX", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -22832,7 +22832,7 @@ Public Function PrepareMessageMeditateToggle(ByVal CharIndex As Integer, ByVal F
 
 PrepareMessageMeditateToggle_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageMeditateToggle", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -22862,7 +22862,7 @@ Public Function PrepareMessageParticleFX(ByVal CharIndex As Integer, ByVal Parti
 
 PrepareMessageParticleFX_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageParticleFX", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -22895,7 +22895,7 @@ Public Function PrepareMessageParticleFXWithDestino(ByVal Emisor As Integer, ByV
 
 PrepareMessageParticleFXWithDestino_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageParticleFXWithDestino", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -22929,7 +22929,7 @@ Public Function PrepareMessageParticleFXWithDestinoXY(ByVal Emisor As Integer, B
 
 PrepareMessageParticleFXWithDestinoXY_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageParticleFXWithDestinoXY", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -22958,7 +22958,7 @@ Public Function PrepareMessageAuraToChar(ByVal CharIndex As Integer, ByVal Aura 
 
 PrepareMessageAuraToChar_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageAuraToChar", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -22985,7 +22985,7 @@ Public Function PrepareMessageSpeedingACT(ByVal CharIndex As Integer, ByVal spee
 
 PrepareMessageSpeedingACT_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageSpeedingACT", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -23011,7 +23011,7 @@ Public Function PrepareMessageParticleFXToFloor(ByVal X As Byte, ByVal Y As Byte
 
 PrepareMessageParticleFXToFloor_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageParticleFXToFloor", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -23037,7 +23037,7 @@ Public Function PrepareMessageLightFXToFloor(ByVal X As Byte, ByVal Y As Byte, B
 
 PrepareMessageLightFXToFloor_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageLightFXToFloor", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -23076,7 +23076,7 @@ Public Function PrepareMessagePlayWave(ByVal wave As Integer, ByVal X As Byte, B
 
 PrepareMessagePlayWave_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessagePlayWave", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -23106,7 +23106,7 @@ Public Function PrepareMessageUbicacionLlamada(ByVal Mapa As Integer, ByVal X As
 
 PrepareMessageUbicacionLlamada_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageUbicacionLlamada", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -23136,7 +23136,7 @@ Public Function PrepareMessageCharUpdateHP(ByVal UserIndex As Integer) As String
 
 PrepareMessageCharUpdateHP_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageCharUpdateHP", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -23159,7 +23159,7 @@ Public Function PrepareMessageArmaMov(ByVal CharIndex As Integer) As String
 
 PrepareMessageArmaMov_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageArmaMov", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -23182,7 +23182,7 @@ Public Function PrepareMessageEscudoMov(ByVal CharIndex As Integer) As String
 
 PrepareMessageEscudoMov_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageEscudoMov", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -23211,7 +23211,7 @@ Public Function PrepareMessageFlashScreen(ByVal Color As Long, ByVal Duracion As
 
 PrepareMessageFlashScreen_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageFlashScreen", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -23245,7 +23245,7 @@ Public Function PrepareMessageGuildChat(ByVal chat As String) As String
 
 PrepareMessageGuildChat_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageGuildChat", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -23279,7 +23279,7 @@ Public Function PrepareMessageShowMessageBox(ByVal chat As String) As String
 
 PrepareMessageShowMessageBox_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageShowMessageBox", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -23315,7 +23315,7 @@ Public Function PrepareMessagePlayMidi(ByVal midi As Byte, Optional ByVal loops 
 
 PrepareMessagePlayMidi_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessagePlayMidi", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -23339,7 +23339,7 @@ Public Function PrepareMessageOnlineUser(ByVal UserOnline As Integer) As String
 
 PrepareMessageOnlineUser_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageOnlineUser", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -23370,7 +23370,7 @@ Public Function PrepareMessagePauseToggle() As String
 
 PrepareMessagePauseToggle_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessagePauseToggle", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -23402,7 +23402,7 @@ Public Function PrepareMessageRainToggle() As String
 
 PrepareMessageRainToggle_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageRainToggle", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -23428,7 +23428,7 @@ Public Function PrepareMessageTrofeoToggleOn() As String
 
 PrepareMessageTrofeoToggleOn_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageTrofeoToggleOn", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -23454,7 +23454,7 @@ Public Function PrepareMessageTrofeoToggleOff() As String
 
 PrepareMessageTrofeoToggleOff_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageTrofeoToggleOff", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -23482,7 +23482,7 @@ Public Function PrepareMessageHora() As String
 
 PrepareMessageHora_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageHora", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -23518,7 +23518,7 @@ Public Function PrepareMessageObjectDelete(ByVal X As Byte, ByVal Y As Byte) As 
 
 PrepareMessageObjectDelete_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageObjectDelete", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -23556,7 +23556,7 @@ Public Function PrepareMessageBlockPosition(ByVal X As Byte, ByVal Y As Byte, By
 
 PrepareMessageBlockPosition_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageBlockPosition", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -23595,7 +23595,7 @@ Public Function PrepareMessageObjectCreate(ByVal ObjIndex As Integer, ByVal amou
 
 PrepareMessageObjectCreate_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageObjectCreate", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -23624,7 +23624,7 @@ Public Function PrepareMessageFxPiso(ByVal GrhIndex As Integer, ByVal X As Byte,
 
 PrepareMessageFxPiso_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageFxPiso", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -23659,7 +23659,7 @@ Public Function PrepareMessageCharacterRemove(ByVal CharIndex As Integer, ByVal 
 
 PrepareMessageCharacterRemove_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageCharacterRemove", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -23693,7 +23693,7 @@ Public Function PrepareMessageRemoveCharDialog(ByVal CharIndex As Integer) As St
 
 PrepareMessageRemoveCharDialog_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageRemoveCharDialog", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -23774,7 +23774,7 @@ Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, ByVal Head 
 
 PrepareMessageCharacterCreate_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageCharacterCreate", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -23827,7 +23827,7 @@ Public Function PrepareMessageCharacterChange(ByVal Body As Integer, ByVal Head 
 
 PrepareMessageCharacterChange_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageCharacterChange", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -23865,7 +23865,7 @@ Public Function PrepareMessageCharacterMove(ByVal CharIndex As Integer, ByVal X 
 
 PrepareMessageCharacterMove_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageCharacterMove", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -23934,7 +23934,7 @@ Public Function PrepareMessageUpdateTagAndStatus(ByVal UserIndex As Integer, Sta
 
 PrepareMessageUpdateTagAndStatus_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageUpdateTagAndStatus", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -23994,7 +23994,7 @@ Public Function PrepareMessageErrorMsg(ByVal message As String) As String
 
 PrepareMessageErrorMsg_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageErrorMsg", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -24144,7 +24144,7 @@ Private Sub HandleOfertaInicial(ByVal UserIndex As Integer)
 
 HandleOfertaInicial_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleOfertaInicial", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -24360,7 +24360,7 @@ Public Sub HandleGlobalOnOff(ByVal UserIndex As Integer)
 
 HandleGlobalOnOff_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGlobalOnOff", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -24936,7 +24936,7 @@ Private Sub HandleNieveToggle(ByVal UserIndex As Integer)
 
 HandleNieveToggle_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleNieveToggle", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -24963,7 +24963,7 @@ Private Sub HandleNieblaToggle(ByVal UserIndex As Integer)
 
 HandleNieblaToggle_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleNieblaToggle", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -25587,7 +25587,7 @@ Public Function PrepareMessageNieblandoToggle(ByVal IntensidadMax As Byte) As St
 
 PrepareMessageNieblandoToggle_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageNieblandoToggle", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -25611,7 +25611,7 @@ Public Function PrepareMessageNevarToggle() As String
 
 PrepareMessageNevarToggle_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageNevarToggle", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -26222,7 +26222,7 @@ Private Sub HandleRequestFamiliar(ByVal UserIndex As Integer)
 
 HandleRequestFamiliar_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleRequestFamiliar", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -26282,7 +26282,7 @@ Public Function PrepareMessageBarFx(ByVal CharIndex As Integer, ByVal BarTime As
 
 PrepareMessageBarFx_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.PrepareMessageBarFx", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Function
 
@@ -26561,7 +26561,7 @@ Public Sub WriteRecompensas(ByVal UserIndex As Integer)
 
 WriteRecompensas_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.WriteRecompensas", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -27658,7 +27658,7 @@ Private Sub HandleCancelarExit(ByVal UserIndex As Integer)
 
 HandleCancelarExit_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleCancelarExit", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -28653,7 +28653,7 @@ Public Sub HandleQuest(ByVal UserIndex As Integer)
 
 HandleQuest_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleQuest", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -28747,7 +28747,7 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
 
 HandleQuestAccept_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleQuestAccept", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -28774,7 +28774,7 @@ Public Sub HandleQuestDetailsRequest(ByVal UserIndex As Integer)
 
 HandleQuestDetailsRequest_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleQuestDetailsRequest", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
  
@@ -28803,7 +28803,7 @@ Public Sub HandleQuestAbandon(ByVal UserIndex As Integer)
 
 HandleQuestAbandon_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleQuestAbandon", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -28824,7 +28824,7 @@ Public Sub HandleQuestListRequest(ByVal UserIndex As Integer)
 
 HandleQuestListRequest_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleQuestListRequest", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -30072,7 +30072,7 @@ Private Sub HandleCuentaExtractItem(ByVal UserIndex As Integer)
 
 HandleCuentaExtractItem_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleCuentaExtractItem", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -30142,7 +30142,7 @@ Private Sub HandleCuentaDeposit(ByVal UserIndex As Integer)
 
 HandleCuentaDeposit_Err:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleCuentaDeposit", Erl)
-    Resume Next
+    Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 Private Sub HandleCommerceSendChatMessage(ByVal UserIndex As Integer)
