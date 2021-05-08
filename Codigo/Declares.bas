@@ -1884,7 +1884,10 @@ Public Type user
     
     ' Solo se usa si la variable de compilación AntiExternos = 1
     Redundance As Byte
-    
+
+    LastPacketID As Byte
+    LastNewPacketID As Byte
+
 End Type
 
 '*********************************************************

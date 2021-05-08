@@ -291,7 +291,7 @@ Public Function WndProc(ByVal hwnd As Long, ByVal msg As Long, ByVal wParam As L
                         Dim AvaiableSpace As Long
 124                     AvaiableSpace = UserList(n).incomingData.Capacity - UserList(n).incomingData.Length
 
-126                     ReDim Preserve Tmp(AvaiableSpace - 1) As Byte
+126                     ReDim Tmp(AvaiableSpace - 1) As Byte
         
 128                     ret = recv(S, Tmp(0), AvaiableSpace, 0)
 
@@ -324,14 +324,8 @@ Public Function WndProc(ByVal hwnd As Long, ByVal msg As Long, ByVal wParam As L
 152                         Call Cerrar_Usuario(n)
 
                         End If
-        
-                        'Call WSAAsyncSelect(s, hWndMsg, ByVal 1025, ByVal (FD_READ Or FD_WRITE Or FD_CLOSE Or FD_ACCEPT))
-        
-154                     ReDim Preserve Tmp(ret - 1) As Byte
-        
-                        'Call LogApiSock("WndProc:FD_READ:N=" & N & ":TMP=" & Tmp)
-        
-156                     Call EventoSockRead(n, Tmp)
+
+156                     Call EventoSockRead(n, Tmp, ret)
         
 158                 Case FD_CLOSE
                         'Debug.Print WSAGETSELECTERROR(lParam)
@@ -591,7 +585,7 @@ EventoSockAccept_Err:
         
 End Sub
  
-Public Sub EventoSockRead(ByVal slot As Integer, ByRef Datos() As Byte)
+Public Sub EventoSockRead(ByVal slot As Integer, ByRef Datos() As Byte, ByVal Length As Long)
         
         On Error GoTo EventoSockRead_Err
 
@@ -615,7 +609,7 @@ Public Sub EventoSockRead(ByVal slot As Integer, ByRef Datos() As Byte)
 
             #End If
 
-110         Call .incomingData.WriteBlock(Datos)
+110         Call .incomingData.WriteBlock(Datos, Length)
 
 112         If .ConnID <> -1 Then
 

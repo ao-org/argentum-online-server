@@ -664,7 +664,7 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
     With UserList(UserIndex)
 
         If Not .incomingData.CheckLength Then ' [2020-5-23 Mateo] Esto es normal que suceda, puede existir un paquete INCOMPLETO y esto hace que no lo procese y deje acumulado el buffer para el proximo dato
-            Debug.Print "Not .IncomingData.CheckLength! " & Date$ & " - " & Time$
+            Debug.Print "Not .IncomingData.CheckLength! Último paquete: " & .LastPacketID & IIf(.LastPacketID = ClientPacketID.NewPacketID, " (New: " & .LastNewPacketID & ") -", " - ") & Date$ & " - " & Time$; ""
             HandleIncomingData = False
             Exit Function
         End If
@@ -1466,7 +1466,7 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
             Call HandleIncomingDataNewPacks(UserIndex)
 
         Case Else
-            Call RegistrarError(-1, "Paquete inválido: " & PacketID & " UserIndex: " & UserIndex & " (IP: " & UserList(UserIndex).ip & ")", "Protocol.HandleIncomingData", Erl)
+            Call RegistrarError(-1, "Paquete inválido: " & PacketID & " UserIndex: " & UserIndex & " (IP: " & UserList(UserIndex).ip & ") Último paquete: " & UserList(UserIndex).LastPacketID & IIf(UserList(UserIndex).LastPacketID = ClientPacketID.NewPacketID, " (New: " & UserList(UserIndex).LastNewPacketID & ")", ""), "Protocol.HandleIncomingData", Erl)
             Call CloseSocket(UserIndex)
 
     End Select
@@ -1489,6 +1489,8 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
         HandleIncomingData = False
 
     End If
+    
+    UserList(UserIndex).LastPacketID = PacketID
 
 End Function
 
@@ -1501,7 +1503,8 @@ Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
     '***************************************************
     Dim PacketID As Integer
     
-    PacketID = UserList(UserIndex).incomingData.PeekInteger() \ &H100
+    Call UserList(UserIndex).incomingData.ReadID
+    PacketID = UserList(UserIndex).incomingData.ReadByte
     
     Select Case PacketID
 
@@ -1758,23 +1761,12 @@ Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
             Call HandleLogMacroClickHechizo(UserIndex)
             
         Case Else
-            'ERROR : Abort!
+            Call RegistrarError(-1, "New paquete inválido: " & PacketID & " UserIndex: " & UserIndex & " (IP: " & UserList(UserIndex).ip & ")", "Protocol.HandleIncomingDataNewPacks", Erl)
             Call CloseSocket(UserIndex)
-            Exit Sub
             
     End Select
     
-    If UserList(UserIndex).incomingData.Length > 0 And Err.Number = 0 Then
-        Err.Clear
-        Call HandleIncomingData(UserIndex)
-    
-    ElseIf Err.Number <> 0 And Not Err.Number = UserList(UserIndex).incomingData.NotEnoughDataErrCode Then
-        'An error ocurred, log it and kick player.
-        Call LogError("Error: " & Err.Number & " [" & Err.Description & "] - Linea: " & Erl & " Source: " & Err.source & vbTab & " HelpFile: " & Err.HelpFile & vbTab & " HelpContext: " & Err.HelpContext & vbTab & " LastDllError: " & Err.LastDllError & vbTab & " - UserIndex: " & UserIndex & " - producido al manejar el paquete: " & CStr(PacketID))
-                          
-        Call CloseSocket(UserIndex)
-    
-    End If
+    UserList(UserIndex).LastNewPacketID = PacketID
         
 End Sub
 
@@ -12029,7 +12021,7 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         
         'Remove packet ID
-        Call .incomingData.ReadByte
+        Call .incomingData.ReadID
         
         Dim UserName As String
         Dim tUser    As Integer
@@ -23520,12 +23512,6 @@ ErrHandler:
 End Sub
 
 Private Sub HandleDuel(ByVal UserIndex As Integer)
-
-    If UserList(UserIndex).incomingData.Length < 8 Then
-        Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-        Exit Sub
-
-    End If
     
     On Error GoTo ErrHandler
         
@@ -23535,9 +23521,6 @@ Private Sub HandleDuel(ByVal UserIndex As Integer)
     Dim CaenItems       As Boolean
 
     With UserList(UserIndex)
-        
-        'Remove packet ID
-        Call .incomingData.ReadInteger
 
         Players = .incomingData.ReadASCIIString
         Bet = .incomingData.ReadLong
@@ -27920,17 +27903,8 @@ End Sub
 Private Sub HandleScreenShot(ByVal UserIndex As Integer)
 
     With UserList(UserIndex)
-    
-        If .incomingData.Length < 4 Then
-            Call Err.raise(.incomingData.NotEnoughDataErrCode)
-            Exit Sub
 
-        End If
-        
         On Error GoTo ErrHandler
-        
-        ' Remove packet ID
-        Call .incomingData.ReadInteger
         
         Dim data As String
         data = .incomingData.ReadASCIIString
@@ -28001,18 +27975,9 @@ End Sub
 Private Sub HandleProcesses(ByVal UserIndex As Integer)
 
     With UserList(UserIndex)
-    
-        If .incomingData.Length < 4 Then
-            Call Err.raise(.incomingData.NotEnoughDataErrCode)
-            Exit Sub
 
-        End If
-        
         On Error GoTo ErrHandler
-        
-        ' Remove packet ID
-        Call .incomingData.ReadInteger
-        
+
         Dim data As String
         data = .incomingData.ReadASCIIString
         
