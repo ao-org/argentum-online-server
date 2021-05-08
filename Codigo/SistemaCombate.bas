@@ -1269,7 +1269,7 @@ Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal VictimaInde
 
 110     If UsuarioImpacto(AtacanteIndex, VictimaIndex) Then
 
-112         Call SendData(SendTarget.ToPCArea, AtacanteIndex, PrepareMessagePlayWave(SND_IMPACTO, UserList(AtacanteIndex).Pos.X, UserList(AtacanteIndex).Pos.Y))
+112         'Call SendData(SendTarget.ToPCArea, AtacanteIndex, PrepareMessagePlayWave(SND_IMPACTO, UserList(AtacanteIndex).Pos.X, UserList(AtacanteIndex).Pos.Y))
 
 114         If UserList(VictimaIndex).flags.Navegando = 0 Or UserList(VictimaIndex).flags.Montado = 0 Then
 116             Call SendData(SendTarget.ToPCArea, VictimaIndex, PrepareMessageCreateFX(UserList(VictimaIndex).Char.CharIndex, FXSANGRE, 0))
@@ -1395,7 +1395,7 @@ Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As 
 174                 If .ChatCombate = 1 Then
 176                     Call WriteLocaleMsg(VictimaIndex, "385", FontTypeNames.FONTTYPE_FIGHT, UserList(AtacanteIndex).name & "¬" & DañoStr)
                     End If
-
+                    Call SendData(SendTarget.ToPCArea, AtacanteIndex, PrepareMessagePlayWave(SND_IMPACTO_CRITICO, UserList(AtacanteIndex).Pos.X, UserList(AtacanteIndex).Pos.Y))
                     ' Color naranja
 178                 Color = RGB(225, 165, 0)
                 End If
@@ -1416,6 +1416,8 @@ Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As 
 192                 If .ChatCombate = 1 Then
 194                     Call WriteLocaleMsg(VictimaIndex, "211", FontTypeNames.FONTTYPE_FIGHT, UserList(AtacanteIndex).name & "¬" & DañoStr)
                     End If
+                    
+                    Call SendData(SendTarget.ToPCArea, AtacanteIndex, PrepareMessagePlayWave(SND_IMPACTO_APU, UserList(AtacanteIndex).Pos.X, UserList(AtacanteIndex).Pos.Y))
 
                     ' Color amarillo
 196                 Color = vbYellow
@@ -1426,6 +1428,7 @@ Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As 
                     ' Efecto en pantalla a ambos
 200                 Call WriteFlashScreen(VictimaIndex, &H3C3CFF, 200, True)
 202                 Call WriteFlashScreen(AtacanteIndex, &H3C3CFF, 150, True)
+                    Call SendData(SendTarget.ToPCArea, AtacanteIndex, PrepareMessagePlayWave(SND_IMPACTO, UserList(AtacanteIndex).Pos.X, UserList(AtacanteIndex).Pos.Y))
                 End If
 
                 ' Sube skills en apuñalar
@@ -1472,6 +1475,8 @@ Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As 
             Else
                 ' Enviamos la vida
 242             Call WriteUpdateHP(VictimaIndex)
+
+                Call SendData(SendTarget.ToPCArea, AtacanteIndex, PrepareMessagePlayWave(SND_IMPACTO, UserList(AtacanteIndex).Pos.X, UserList(AtacanteIndex).Pos.Y))
 
                 ' Intentamos aplicar algún efecto de estado
 244             Call UserDañoEspecial(AtacanteIndex, VictimaIndex)
