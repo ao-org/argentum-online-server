@@ -1383,7 +1383,7 @@ Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As 
                 ' Si acertó
 164             If RandomNumber(1, 100) <= ProbabilidadGolpeCritico(AtacanteIndex) Then
                     ' Daño del golpe crítico (usamos el daño base)
-166                 DañoExtra = DañoBase * ModDañoGolpeCritico
+166                 DañoExtra = Daño * ModDañoGolpeCritico
 
 168                 DañoStr = PonerPuntos(DañoExtra)
 
