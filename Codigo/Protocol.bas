@@ -649,6 +649,11 @@ Public Type PersonajeCuenta
 
 End Type
 
+Public Type t_DataBuffer
+    DATA() As Byte
+    Length As Integer
+End Type: Private TempData As t_DataBuffer
+
 ''
 ' Handles incoming data.
 '
@@ -661,22 +666,10 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
     '
     '***************************************************
 
-    On Error Call UserList(UserIndex).incomingData.SafeClearPacket
-
-    ' Dim packetID As Byte
-    
-    '  PaquetesCount = PaquetesCount + 1
-    ' frmMain.paquetesRecibidos = PaquetesCount
-    
-    ' packetID = UserList(UserIndex).incomingData.PeekByte()
     
     Dim PacketID As Long
-    PacketID = CLng(UserList(UserIndex).incomingData.PeekByte())
+        PacketID = CLng(UserList(UserIndex).incomingData.PeekByte())
 
-    'frmMain.listaDePaquetes.AddItem "Paq:" & PaquetesCount & ": " & packetID
-    
-    ' Debug.Print "Llego paquete ní" & packetID & " pesa: " & UserList(UserIndex).incomingData.length & "Bytes"
-    
     'Does the packet requires a logged user??
     If Not (PacketID = ClientPacketID.LoginExistingChar Or PacketID = ClientPacketID.LoginNewChar Or PacketID = ClientPacketID.IngresarConCuenta Or PacketID = ClientPacketID.BorrarPJ Or PacketID = ClientPacketID.ThrowDice) Then
         
@@ -1770,6 +1763,14 @@ Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
     End If
         
 End Sub
+
+Public Function ConvertDataBuffer(ByVal Length As Integer, _
+                                  ByRef DATA() As Byte) As DataBuffer
+    
+    ConvertDataBuffer.DATA = DATA
+    ConvertDataBuffer.Length = Length
+    
+End Function
 
 ''
 ' Handles the "LoginExistingChar" message.
@@ -17805,7 +17806,7 @@ ErrHandler:
 
 End Sub
 
-Public Function PrepareMessageCharSwing(ByVal CharIndex As Integer, Optional ByVal FX As Boolean = True, Optional ByVal ShowText As Boolean = True) As String
+Public Function PrepareMessageCharSwing(ByVal CharIndex As Integer, Optional ByVal FX As Boolean = True, Optional ByVal ShowText As Boolean = True) As t_DataBuffer
         
     On Error GoTo PrepareMessageCharSwing_Err
 
@@ -17816,7 +17817,7 @@ Public Function PrepareMessageCharSwing(ByVal CharIndex As Integer, Optional ByV
         Call .WriteBoolean(FX)
         Call .WriteBoolean(ShowText)
         
-        PrepareMessageCharSwing = .ReadASCIIStringFixed(.Length)
+        PrepareMessageCharSwing = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -21804,7 +21805,7 @@ Public Sub FlushBuffer(ByVal UserIndex As Integer)
         
         ' Tratamos de enviar los datos.
         Dim ret As Long
-        ret = WsApiEnviar(UserIndex, .ReadASCIIStringFixed(.Length))
+        ret = WsApiEnviar(UserIndex, ConvertDataBuffer(.Length, .ReadAll))
     
         ' Si recibimos un error como respuesta de la API, cerramos el socket.
         If ret <> 0 And ret <> WSAEWOULDBLOCK Then
@@ -21832,7 +21833,7 @@ End Sub
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The message is written to no outgoing buffer, but only prepared in a single string to be easily sent to several clients.
 
-Public Function PrepareMessageSetInvisible(ByVal CharIndex As Integer, ByVal invisible As Boolean) As String
+Public Function PrepareMessageSetInvisible(ByVal CharIndex As Integer, ByVal invisible As Boolean) As t_DataBuffer
         
     On Error GoTo PrepareMessageSetInvisible_Err
 
@@ -21848,7 +21849,7 @@ Public Function PrepareMessageSetInvisible(ByVal CharIndex As Integer, ByVal inv
         Call .WriteInteger(CharIndex)
         Call .WriteBoolean(invisible)
         
-        PrepareMessageSetInvisible = .ReadASCIIStringFixed(.Length)
+        PrepareMessageSetInvisible = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -21860,7 +21861,7 @@ PrepareMessageSetInvisible_Err:
         
 End Function
 
-Public Function PrepareMessageSetEscribiendo(ByVal CharIndex As Integer, ByVal Escribiendo As Boolean) As String
+Public Function PrepareMessageSetEscribiendo(ByVal CharIndex As Integer, ByVal Escribiendo As Boolean) As t_DataBuffer
         
     On Error GoTo PrepareMessageSetEscribiendo_Err
 
@@ -21875,7 +21876,7 @@ Public Function PrepareMessageSetEscribiendo(ByVal CharIndex As Integer, ByVal E
         Call .WriteInteger(CharIndex)
         Call .WriteBoolean(Escribiendo)
         
-        PrepareMessageSetEscribiendo = .ReadASCIIStringFixed(.Length)
+        PrepareMessageSetEscribiendo = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -21896,7 +21897,7 @@ End Function
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The message is written to no outgoing buffer, but only prepared in a single string to be easily sent to several clients.
 
-Public Function PrepareMessageChatOverHead(ByVal chat As String, ByVal CharIndex As Integer, ByVal Color As Long, Optional ByVal name As String = "") As String
+Public Function PrepareMessageChatOverHead(ByVal chat As String, ByVal CharIndex As Integer, ByVal Color As Long, Optional ByVal name As String = "") As t_DataBuffer
         
     On Error GoTo PrepareMessageChatOverHead_Err
 
@@ -21927,7 +21928,7 @@ Public Function PrepareMessageChatOverHead(ByVal chat As String, ByVal CharIndex
         
         'Call .WriteASCIIString(name) Anulado gracias a Optimizacion ^^
         
-        PrepareMessageChatOverHead = .ReadASCIIStringFixed(.Length)
+        PrepareMessageChatOverHead = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -21939,7 +21940,7 @@ PrepareMessageChatOverHead_Err:
         
 End Function
 
-Public Function PrepareMessageTextOverChar(ByVal chat As String, ByVal CharIndex As Integer, ByVal Color As Long) As String
+Public Function PrepareMessageTextOverChar(ByVal chat As String, ByVal CharIndex As Integer, ByVal Color As Long) As t_DataBuffer
         
     On Error GoTo PrepareMessageTextOverChar_Err
 
@@ -21949,7 +21950,7 @@ Public Function PrepareMessageTextOverChar(ByVal chat As String, ByVal CharIndex
         Call .WriteASCIIString(chat)
         Call .WriteInteger(CharIndex)
         Call .WriteLong(Color)
-        PrepareMessageTextOverChar = .ReadASCIIStringFixed(.Length)
+        PrepareMessageTextOverChar = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -21961,7 +21962,7 @@ PrepareMessageTextOverChar_Err:
         
 End Function
 
-Public Function PrepareMessageTextCharDrop(ByVal chat As String, ByVal CharIndex As Integer, ByVal Color As Long) As String
+Public Function PrepareMessageTextCharDrop(ByVal chat As String, ByVal CharIndex As Integer, ByVal Color As Long) As t_DataBuffer
         
     On Error GoTo PrepareMessageTextCharDrop_Err
 
@@ -21971,7 +21972,7 @@ Public Function PrepareMessageTextCharDrop(ByVal chat As String, ByVal CharIndex
         Call .WriteASCIIString(chat)
         Call .WriteInteger(CharIndex)
         Call .WriteLong(Color)
-        PrepareMessageTextCharDrop = .ReadASCIIStringFixed(.Length)
+        PrepareMessageTextCharDrop = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -21983,7 +21984,7 @@ PrepareMessageTextCharDrop_Err:
         
 End Function
 
-Public Function PrepareMessageTextOverTile(ByVal chat As String, ByVal X As Integer, ByVal Y As Integer, ByVal Color As Long) As String
+Public Function PrepareMessageTextOverTile(ByVal chat As String, ByVal X As Integer, ByVal Y As Integer, ByVal Color As Long) As t_DataBuffer
         
     On Error GoTo PrepareMessageTextOverTile_Err
 
@@ -21994,7 +21995,7 @@ Public Function PrepareMessageTextOverTile(ByVal chat As String, ByVal X As Inte
         Call .WriteInteger(X)
         Call .WriteInteger(Y)
         Call .WriteLong(Color)
-        PrepareMessageTextOverTile = .ReadASCIIStringFixed(.Length)
+        PrepareMessageTextOverTile = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -22014,7 +22015,7 @@ End Function
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Function PrepareMessageConsoleMsg(ByVal chat As String, ByVal FontIndex As FontTypeNames) As String
+Public Function PrepareMessageConsoleMsg(ByVal chat As String, ByVal FontIndex As FontTypeNames) As t_DataBuffer
         
     On Error GoTo PrepareMessageConsoleMsg_Err
 
@@ -22028,7 +22029,7 @@ Public Function PrepareMessageConsoleMsg(ByVal chat As String, ByVal FontIndex A
         Call .WriteASCIIString(chat)
         Call .WriteByte(FontIndex)
         
-        PrepareMessageConsoleMsg = .ReadASCIIStringFixed(.Length)
+        PrepareMessageConsoleMsg = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -22040,7 +22041,7 @@ PrepareMessageConsoleMsg_Err:
         
 End Function
 
-Public Function PrepareMessageLocaleMsg(ByVal ID As Integer, ByVal chat As String, ByVal FontIndex As FontTypeNames) As String
+Public Function PrepareMessageLocaleMsg(ByVal ID As Integer, ByVal chat As String, ByVal FontIndex As FontTypeNames) As t_DataBuffer
         
     On Error GoTo PrepareMessageLocaleMsg_Err
 
@@ -22055,7 +22056,7 @@ Public Function PrepareMessageLocaleMsg(ByVal ID As Integer, ByVal chat As Strin
         Call .WriteASCIIString(chat)
         Call .WriteByte(FontIndex)
         
-        PrepareMessageLocaleMsg = .ReadASCIIStringFixed(.Length)
+        PrepareMessageLocaleMsg = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -22067,7 +22068,7 @@ PrepareMessageLocaleMsg_Err:
         
 End Function
 
-Public Function PrepareMessageListaCorreo(ByVal UserIndex As Integer, ByVal Actualizar As Boolean) As String
+Public Function PrepareMessageListaCorreo(ByVal UserIndex As Integer, ByVal Actualizar As Boolean) As t_DataBuffer
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
     'Last Modification: 05/17/06
@@ -22104,7 +22105,7 @@ Public Function PrepareMessageListaCorreo(ByVal UserIndex As Integer, ByVal Actu
 
         Call .WriteBoolean(Actualizar)
         
-        PrepareMessageListaCorreo = .ReadASCIIStringFixed(.Length)
+        PrepareMessageListaCorreo = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -22126,7 +22127,7 @@ End Function
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Function PrepareMessageCreateFX(ByVal CharIndex As Integer, ByVal FX As Integer, ByVal FXLoops As Integer) As String
+Public Function PrepareMessageCreateFX(ByVal CharIndex As Integer, ByVal FX As Integer, ByVal FXLoops As Integer) As t_DataBuffer
         
     On Error GoTo PrepareMessageCreateFX_Err
 
@@ -22141,7 +22142,7 @@ Public Function PrepareMessageCreateFX(ByVal CharIndex As Integer, ByVal FX As I
         Call .WriteInteger(FX)
         Call .WriteInteger(FXLoops)
         
-        PrepareMessageCreateFX = .ReadASCIIStringFixed(.Length)
+        PrepareMessageCreateFX = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -22153,7 +22154,7 @@ PrepareMessageCreateFX_Err:
         
 End Function
 
-Public Function PrepareMessageMeditateToggle(ByVal CharIndex As Integer, ByVal FX As Integer) As String
+Public Function PrepareMessageMeditateToggle(ByVal CharIndex As Integer, ByVal FX As Integer) As t_DataBuffer
     '***************************************************
         
     On Error GoTo PrepareMessageMeditateToggle_Err
@@ -22163,7 +22164,7 @@ Public Function PrepareMessageMeditateToggle(ByVal CharIndex As Integer, ByVal F
         Call .WriteInteger(CharIndex)
         Call .WriteInteger(FX)
         
-        PrepareMessageMeditateToggle = .ReadASCIIStringFixed(.Length)
+        PrepareMessageMeditateToggle = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -22175,7 +22176,7 @@ PrepareMessageMeditateToggle_Err:
         
 End Function
 
-Public Function PrepareMessageParticleFX(ByVal CharIndex As Integer, ByVal Particula As Integer, ByVal Time As Long, ByVal Remove As Boolean) As String
+Public Function PrepareMessageParticleFX(ByVal CharIndex As Integer, ByVal Particula As Integer, ByVal Time As Long, ByVal Remove As Boolean) As t_DataBuffer
         
     On Error GoTo PrepareMessageParticleFX_Err
 
@@ -22191,7 +22192,7 @@ Public Function PrepareMessageParticleFX(ByVal CharIndex As Integer, ByVal Parti
         Call .WriteLong(Time)
         Call .WriteBoolean(Remove)
         
-        PrepareMessageParticleFX = .ReadASCIIStringFixed(.Length)
+        PrepareMessageParticleFX = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -22203,7 +22204,7 @@ PrepareMessageParticleFX_Err:
         
 End Function
 
-Public Function PrepareMessageParticleFXWithDestino(ByVal Emisor As Integer, ByVal Receptor As Integer, ByVal ParticulaViaje As Integer, ByVal ParticulaFinal As Integer, ByVal Time As Long, ByVal wav As Integer, ByVal FX As Integer) As String
+Public Function PrepareMessageParticleFXWithDestino(ByVal Emisor As Integer, ByVal Receptor As Integer, ByVal ParticulaViaje As Integer, ByVal ParticulaFinal As Integer, ByVal Time As Long, ByVal wav As Integer, ByVal FX As Integer) As t_DataBuffer
         
     On Error GoTo PrepareMessageParticleFXWithDestino_Err
 
@@ -22222,7 +22223,7 @@ Public Function PrepareMessageParticleFXWithDestino(ByVal Emisor As Integer, ByV
         Call .WriteInteger(wav)
         Call .WriteInteger(FX)
         
-        PrepareMessageParticleFXWithDestino = .ReadASCIIStringFixed(.Length)
+        PrepareMessageParticleFXWithDestino = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -22234,7 +22235,7 @@ PrepareMessageParticleFXWithDestino_Err:
         
 End Function
 
-Public Function PrepareMessageParticleFXWithDestinoXY(ByVal Emisor As Integer, ByVal ParticulaViaje As Integer, ByVal ParticulaFinal As Integer, ByVal Time As Long, ByVal wav As Integer, ByVal FX As Integer, ByVal X As Byte, ByVal Y As Byte) As String
+Public Function PrepareMessageParticleFXWithDestinoXY(ByVal Emisor As Integer, ByVal ParticulaViaje As Integer, ByVal ParticulaFinal As Integer, ByVal Time As Long, ByVal wav As Integer, ByVal FX As Integer, ByVal X As Byte, ByVal Y As Byte) As t_DataBuffer
         
     On Error GoTo PrepareMessageParticleFXWithDestinoXY_Err
 
@@ -22254,7 +22255,7 @@ Public Function PrepareMessageParticleFXWithDestinoXY(ByVal Emisor As Integer, B
         Call .WriteByte(X)
         Call .WriteByte(Y)
         
-        PrepareMessageParticleFXWithDestinoXY = .ReadASCIIStringFixed(.Length)
+        PrepareMessageParticleFXWithDestinoXY = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -22266,7 +22267,7 @@ PrepareMessageParticleFXWithDestinoXY_Err:
         
 End Function
 
-Public Function PrepareMessageAuraToChar(ByVal CharIndex As Integer, ByVal Aura As String, ByVal Remove As Boolean, ByVal Tipo As Byte) As String
+Public Function PrepareMessageAuraToChar(ByVal CharIndex As Integer, ByVal Aura As String, ByVal Remove As Boolean, ByVal Tipo As Byte) As t_DataBuffer
         
     On Error GoTo PrepareMessageAuraToChar_Err
 
@@ -22281,7 +22282,7 @@ Public Function PrepareMessageAuraToChar(ByVal CharIndex As Integer, ByVal Aura 
         Call .WriteASCIIString(Aura)
         Call .WriteBoolean(Remove)
         Call .WriteByte(Tipo)
-        PrepareMessageAuraToChar = .ReadASCIIStringFixed(.Length)
+        PrepareMessageAuraToChar = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -22293,7 +22294,7 @@ PrepareMessageAuraToChar_Err:
         
 End Function
 
-Public Function PrepareMessageSpeedingACT(ByVal CharIndex As Integer, ByVal speeding As Single) As String
+Public Function PrepareMessageSpeedingACT(ByVal CharIndex As Integer, ByVal speeding As Single) As t_DataBuffer
         
     On Error GoTo PrepareMessageSpeedingACT_Err
 
@@ -22306,7 +22307,7 @@ Public Function PrepareMessageSpeedingACT(ByVal CharIndex As Integer, ByVal spee
         Call .WriteID(ServerPacketID.SpeedToChar)
         Call .WriteInteger(CharIndex)
         Call .WriteSingle(speeding)
-        PrepareMessageSpeedingACT = .ReadASCIIStringFixed(.Length)
+        PrepareMessageSpeedingACT = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -22318,7 +22319,7 @@ PrepareMessageSpeedingACT_Err:
         
 End Function
 
-Public Function PrepareMessageParticleFXToFloor(ByVal X As Byte, ByVal Y As Byte, ByVal Particula As Integer, ByVal Time As Long) As String
+Public Function PrepareMessageParticleFXToFloor(ByVal X As Byte, ByVal Y As Byte, ByVal Particula As Integer, ByVal Time As Long) As t_DataBuffer
         
     On Error GoTo PrepareMessageParticleFXToFloor_Err
 
@@ -22330,7 +22331,7 @@ Public Function PrepareMessageParticleFXToFloor(ByVal X As Byte, ByVal Y As Byte
         Call .WriteByte(Y)
         Call .WriteInteger(Particula)
         Call .WriteLong(Time)
-        PrepareMessageParticleFXToFloor = .ReadASCIIStringFixed(.Length)
+        PrepareMessageParticleFXToFloor = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -22342,7 +22343,7 @@ PrepareMessageParticleFXToFloor_Err:
         
 End Function
 
-Public Function PrepareMessageLightFXToFloor(ByVal X As Byte, ByVal Y As Byte, ByVal LuzColor As Long, ByVal Rango As Byte) As String
+Public Function PrepareMessageLightFXToFloor(ByVal X As Byte, ByVal Y As Byte, ByVal LuzColor As Long, ByVal Rango As Byte) As t_DataBuffer
         
     On Error GoTo PrepareMessageLightFXToFloor_Err
 
@@ -22354,7 +22355,7 @@ Public Function PrepareMessageLightFXToFloor(ByVal X As Byte, ByVal Y As Byte, B
         Call .WriteByte(Y)
         Call .WriteLong(LuzColor)
         Call .WriteByte(Rango)
-        PrepareMessageLightFXToFloor = .ReadASCIIStringFixed(.Length)
+        PrepareMessageLightFXToFloor = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -22375,7 +22376,7 @@ End Function
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Function PrepareMessagePlayWave(ByVal wave As Integer, ByVal X As Byte, ByVal Y As Byte) As String
+Public Function PrepareMessagePlayWave(ByVal wave As Integer, ByVal X As Byte, ByVal Y As Byte) As t_DataBuffer
         
     On Error GoTo PrepareMessagePlayWave_Err
 
@@ -22391,7 +22392,7 @@ Public Function PrepareMessagePlayWave(ByVal wave As Integer, ByVal X As Byte, B
         Call .WriteByte(X)
         Call .WriteByte(Y)
         
-        PrepareMessagePlayWave = .ReadASCIIStringFixed(.Length)
+        PrepareMessagePlayWave = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -22403,7 +22404,7 @@ PrepareMessagePlayWave_Err:
         
 End Function
 
-Public Function PrepareMessageUbicacionLlamada(ByVal Mapa As Integer, ByVal X As Byte, ByVal Y As Byte) As String
+Public Function PrepareMessageUbicacionLlamada(ByVal Mapa As Integer, ByVal X As Byte, ByVal Y As Byte) As t_DataBuffer
         
     On Error GoTo PrepareMessageUbicacionLlamada_Err
 
@@ -22419,7 +22420,7 @@ Public Function PrepareMessageUbicacionLlamada(ByVal Mapa As Integer, ByVal X As
         Call .WriteByte(X)
         Call .WriteByte(Y)
         
-        PrepareMessageUbicacionLlamada = .ReadASCIIStringFixed(.Length)
+        PrepareMessageUbicacionLlamada = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -22431,7 +22432,7 @@ PrepareMessageUbicacionLlamada_Err:
         
 End Function
 
-Public Function PrepareMessageCharUpdateHP(ByVal UserIndex As Integer) As String
+Public Function PrepareMessageCharUpdateHP(ByVal UserIndex As Integer) As t_DataBuffer
         
     On Error GoTo PrepareMessageCharUpdateHP_Err
 
@@ -22447,7 +22448,7 @@ Public Function PrepareMessageCharUpdateHP(ByVal UserIndex As Integer) As String
         Call .WriteInteger(UserList(UserIndex).Stats.MinHp)
         Call .WriteInteger(UserList(UserIndex).Stats.MaxHp)
         
-        PrepareMessageCharUpdateHP = .ReadASCIIStringFixed(.Length)
+        PrepareMessageCharUpdateHP = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -22459,7 +22460,7 @@ PrepareMessageCharUpdateHP_Err:
         
 End Function
 
-Public Function PrepareMessageArmaMov(ByVal CharIndex As Integer) As String
+Public Function PrepareMessageArmaMov(ByVal CharIndex As Integer) As t_DataBuffer
         
     On Error GoTo PrepareMessageArmaMov_Err
 
@@ -22468,7 +22469,7 @@ Public Function PrepareMessageArmaMov(ByVal CharIndex As Integer) As String
         Call .WriteID(ServerPacketID.ArmaMov)
         Call .WriteInteger(CharIndex)
         
-        PrepareMessageArmaMov = .ReadASCIIStringFixed(.Length)
+        PrepareMessageArmaMov = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -22480,7 +22481,7 @@ PrepareMessageArmaMov_Err:
         
 End Function
 
-Public Function PrepareMessageEscudoMov(ByVal CharIndex As Integer) As String
+Public Function PrepareMessageEscudoMov(ByVal CharIndex As Integer) As t_DataBuffer
         
     On Error GoTo PrepareMessageEscudoMov_Err
 
@@ -22489,7 +22490,7 @@ Public Function PrepareMessageEscudoMov(ByVal CharIndex As Integer) As String
         Call .WriteID(ServerPacketID.EscudoMov)
         Call .WriteInteger(CharIndex)
         
-        PrepareMessageEscudoMov = .ReadASCIIStringFixed(.Length)
+        PrepareMessageEscudoMov = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -22501,7 +22502,7 @@ PrepareMessageEscudoMov_Err:
         
 End Function
 
-Public Function PrepareMessageFlashScreen(ByVal Color As Long, ByVal Duracion As Long, Optional ByVal Ignorar As Boolean = False) As String
+Public Function PrepareMessageFlashScreen(ByVal Color As Long, ByVal Duracion As Long, Optional ByVal Ignorar As Boolean = False) As t_DataBuffer
         
     On Error GoTo PrepareMessageFlashScreen_Err
 
@@ -22516,7 +22517,7 @@ Public Function PrepareMessageFlashScreen(ByVal Color As Long, ByVal Duracion As
         Call .WriteLong(Color)
         Call .WriteLong(Duracion)
         Call .WriteBoolean(Ignorar)
-        PrepareMessageFlashScreen = .ReadASCIIStringFixed(.Length)
+        PrepareMessageFlashScreen = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -22535,7 +22536,7 @@ End Function
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Function PrepareMessageGuildChat(ByVal chat As String) As String
+Public Function PrepareMessageGuildChat(ByVal chat As String) As t_DataBuffer
         
     On Error GoTo PrepareMessageGuildChat_Err
 
@@ -22548,7 +22549,7 @@ Public Function PrepareMessageGuildChat(ByVal chat As String) As String
         Call .WriteID(ServerPacketID.GuildChat)
         Call .WriteASCIIString(chat)
         
-        PrepareMessageGuildChat = .ReadASCIIStringFixed(.Length)
+        PrepareMessageGuildChat = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -22567,7 +22568,7 @@ End Function
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Function PrepareMessageShowMessageBox(ByVal chat As String) As String
+Public Function PrepareMessageShowMessageBox(ByVal chat As String) As t_DataBuffer
         
     On Error GoTo PrepareMessageShowMessageBox_Err
 
@@ -22580,7 +22581,7 @@ Public Function PrepareMessageShowMessageBox(ByVal chat As String) As String
         Call .WriteID(ServerPacketID.ShowMessageBox)
         Call .WriteASCIIString(chat)
         
-        PrepareMessageShowMessageBox = .ReadASCIIStringFixed(.Length)
+        PrepareMessageShowMessageBox = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -22600,7 +22601,7 @@ End Function
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Function PrepareMessagePlayMidi(ByVal midi As Byte, Optional ByVal loops As Integer = -1) As String
+Public Function PrepareMessagePlayMidi(ByVal midi As Byte, Optional ByVal loops As Integer = -1) As t_DataBuffer
         
     On Error GoTo PrepareMessagePlayMidi_Err
 
@@ -22614,7 +22615,7 @@ Public Function PrepareMessagePlayMidi(ByVal midi As Byte, Optional ByVal loops 
         Call .WriteByte(midi)
         Call .WriteInteger(loops)
         
-        PrepareMessagePlayMidi = .ReadASCIIStringFixed(.Length)
+        PrepareMessagePlayMidi = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -22626,7 +22627,7 @@ PrepareMessagePlayMidi_Err:
         
 End Function
 
-Public Function PrepareMessageOnlineUser(ByVal UserOnline As Integer) As String
+Public Function PrepareMessageOnlineUser(ByVal UserOnline As Integer) As t_DataBuffer
     '***************************************************
         
     On Error GoTo PrepareMessageOnlineUser_Err
@@ -22636,7 +22637,7 @@ Public Function PrepareMessageOnlineUser(ByVal UserOnline As Integer) As String
         Call .WriteID(ServerPacketID.UserOnline)
         Call .WriteInteger(UserOnline)
         
-        PrepareMessageOnlineUser = .ReadASCIIStringFixed(.Length)
+        PrepareMessageOnlineUser = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -22654,7 +22655,7 @@ End Function
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Function PrepareMessagePauseToggle() As String
+Public Function PrepareMessagePauseToggle() As t_DataBuffer
         
     On Error GoTo PrepareMessagePauseToggle_Err
 
@@ -22665,7 +22666,7 @@ Public Function PrepareMessagePauseToggle() As String
     '***************************************************
     With auxiliarBuffer
         Call .WriteID(ServerPacketID.PauseToggle)
-        PrepareMessagePauseToggle = .ReadASCIIStringFixed(.Length)
+        PrepareMessagePauseToggle = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -22683,7 +22684,7 @@ End Function
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Function PrepareMessageRainToggle() As String
+Public Function PrepareMessageRainToggle() As t_DataBuffer
         
     On Error GoTo PrepareMessageRainToggle_Err
 
@@ -22695,7 +22696,7 @@ Public Function PrepareMessageRainToggle() As String
     With auxiliarBuffer
         Call .WriteID(ServerPacketID.RainToggle)
         
-        PrepareMessageRainToggle = .ReadASCIIStringFixed(.Length)
+        PrepareMessageRainToggle = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -22707,7 +22708,7 @@ PrepareMessageRainToggle_Err:
         
 End Function
 
-Public Function PrepareMessageTrofeoToggleOn() As String
+Public Function PrepareMessageTrofeoToggleOn() As t_DataBuffer
         
     On Error GoTo PrepareMessageTrofeoToggleOn_Err
 
@@ -22719,7 +22720,7 @@ Public Function PrepareMessageTrofeoToggleOn() As String
     With auxiliarBuffer
         Call .WriteID(ServerPacketID.TrofeoToggleOn)
         
-        PrepareMessageTrofeoToggleOn = .ReadASCIIStringFixed(.Length)
+        PrepareMessageTrofeoToggleOn = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -22731,7 +22732,7 @@ PrepareMessageTrofeoToggleOn_Err:
         
 End Function
 
-Public Function PrepareMessageTrofeoToggleOff() As String
+Public Function PrepareMessageTrofeoToggleOff() As t_DataBuffer
         
     On Error GoTo PrepareMessageTrofeoToggleOff_Err
 
@@ -22743,7 +22744,7 @@ Public Function PrepareMessageTrofeoToggleOff() As String
     With auxiliarBuffer
         Call .WriteID(ServerPacketID.TrofeoToggleOff)
         
-        PrepareMessageTrofeoToggleOff = .ReadASCIIStringFixed(.Length)
+        PrepareMessageTrofeoToggleOff = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -22755,7 +22756,7 @@ PrepareMessageTrofeoToggleOff_Err:
         
 End Function
 
-Public Function PrepareMessageHora() As String
+Public Function PrepareMessageHora() As t_DataBuffer
         
     On Error GoTo PrepareMessageHora_Err
 
@@ -22769,7 +22770,7 @@ Public Function PrepareMessageHora() As String
         Call .WriteLong((GetTickCount() - HoraMundo) Mod DuracionDia)
         Call .WriteLong(DuracionDia)
         
-        PrepareMessageHora = .ReadASCIIStringFixed(.Length)
+        PrepareMessageHora = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -22789,7 +22790,7 @@ End Function
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Function PrepareMessageObjectDelete(ByVal X As Byte, ByVal Y As Byte) As String
+Public Function PrepareMessageObjectDelete(ByVal X As Byte, ByVal Y As Byte) As t_DataBuffer
         
     On Error GoTo PrepareMessageObjectDelete_Err
 
@@ -22803,7 +22804,7 @@ Public Function PrepareMessageObjectDelete(ByVal X As Byte, ByVal Y As Byte) As 
         Call .WriteByte(X)
         Call .WriteByte(Y)
         
-        PrepareMessageObjectDelete = .ReadASCIIStringFixed(.Length)
+        PrepareMessageObjectDelete = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -22824,7 +22825,7 @@ End Function
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Function PrepareMessageBlockPosition(ByVal X As Byte, ByVal Y As Byte, ByVal Blocked As Byte) As String
+Public Function PrepareMessageBlockPosition(ByVal X As Byte, ByVal Y As Byte, ByVal Blocked As Byte) As t_DataBuffer
         
     On Error GoTo PrepareMessageBlockPosition_Err
 
@@ -22839,7 +22840,7 @@ Public Function PrepareMessageBlockPosition(ByVal X As Byte, ByVal Y As Byte, By
         Call .WriteByte(Y)
         Call .WriteByte(Blocked)
         
-        PrepareMessageBlockPosition = .ReadASCIIStringFixed(.Length)
+        PrepareMessageBlockPosition = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -22860,7 +22861,7 @@ End Function
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 'Optimizacion por Ladder
-Public Function PrepareMessageObjectCreate(ByVal ObjIndex As Integer, ByVal amount As Integer, ByVal X As Byte, ByVal Y As Byte) As String
+Public Function PrepareMessageObjectCreate(ByVal ObjIndex As Integer, ByVal amount As Integer, ByVal X As Byte, ByVal Y As Byte) As t_DataBuffer
         
     On Error GoTo PrepareMessageObjectCreate_Err
 
@@ -22876,7 +22877,7 @@ Public Function PrepareMessageObjectCreate(ByVal ObjIndex As Integer, ByVal amou
         Call .WriteInteger(ObjIndex)
         Call .WriteInteger(amount)
         
-        PrepareMessageObjectCreate = .ReadASCIIStringFixed(.Length)
+        PrepareMessageObjectCreate = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -22888,7 +22889,7 @@ PrepareMessageObjectCreate_Err:
         
 End Function
 
-Public Function PrepareMessageFxPiso(ByVal GrhIndex As Integer, ByVal X As Byte, ByVal Y As Byte) As String
+Public Function PrepareMessageFxPiso(ByVal GrhIndex As Integer, ByVal X As Byte, ByVal Y As Byte) As t_DataBuffer
         
     On Error GoTo PrepareMessageFxPiso_Err
 
@@ -22903,7 +22904,7 @@ Public Function PrepareMessageFxPiso(ByVal GrhIndex As Integer, ByVal X As Byte,
         Call .WriteByte(Y)
         Call .WriteInteger(GrhIndex)
         
-        PrepareMessageFxPiso = .ReadASCIIStringFixed(.Length)
+        PrepareMessageFxPiso = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -22922,7 +22923,7 @@ End Function
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Function PrepareMessageCharacterRemove(ByVal CharIndex As Integer, ByVal Desvanecido As Boolean) As String
+Public Function PrepareMessageCharacterRemove(ByVal CharIndex As Integer, ByVal Desvanecido As Boolean) As t_DataBuffer
         
     On Error GoTo PrepareMessageCharacterRemove_Err
 
@@ -22936,7 +22937,7 @@ Public Function PrepareMessageCharacterRemove(ByVal CharIndex As Integer, ByVal 
         Call .WriteInteger(CharIndex)
         Call .WriteBoolean(Desvanecido)
         
-        PrepareMessageCharacterRemove = .ReadASCIIStringFixed(.Length)
+        PrepareMessageCharacterRemove = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -22955,7 +22956,7 @@ End Function
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Function PrepareMessageRemoveCharDialog(ByVal CharIndex As Integer) As String
+Public Function PrepareMessageRemoveCharDialog(ByVal CharIndex As Integer) As t_DataBuffer
         
     On Error GoTo PrepareMessageRemoveCharDialog_Err
 
@@ -22968,7 +22969,7 @@ Public Function PrepareMessageRemoveCharDialog(ByVal CharIndex As Integer) As St
         Call .WriteID(ServerPacketID.RemoveCharDialog)
         Call .WriteInteger(CharIndex)
         
-        PrepareMessageRemoveCharDialog = .ReadASCIIStringFixed(.Length)
+        PrepareMessageRemoveCharDialog = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -23000,7 +23001,7 @@ End Function
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As eHeading, ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal DM_Aura As String, ByVal RM_Aura As String, ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Byte, ByVal donador As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal Simbolo As Byte, ByVal Idle As Boolean, ByVal Navegando As Boolean) As String
+Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As eHeading, ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal DM_Aura As String, ByVal RM_Aura As String, ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Byte, ByVal donador As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal Simbolo As Byte, ByVal Idle As Boolean, ByVal Navegando As Boolean) As t_DataBuffer
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
     'Last Modification: 05/17/06
@@ -23047,7 +23048,7 @@ Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, ByVal Head 
         Call .WriteBoolean(Idle)
         Call .WriteBoolean(Navegando)
 
-        PrepareMessageCharacterCreate = .ReadASCIIStringFixed(.Length)
+        PrepareMessageCharacterCreate = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -23074,7 +23075,7 @@ End Function
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Function PrepareMessageCharacterChange(ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As eHeading, ByVal CharIndex As Integer, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal Idle As Boolean, ByVal Navegando As Boolean) As String
+Public Function PrepareMessageCharacterChange(ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As eHeading, ByVal CharIndex As Integer, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal Idle As Boolean, ByVal Navegando As Boolean) As t_DataBuffer
         
     On Error GoTo PrepareMessageCharacterChange_Err
 
@@ -23098,7 +23099,7 @@ Public Function PrepareMessageCharacterChange(ByVal Body As Integer, ByVal Head 
         Call .WriteBoolean(Idle)
         Call .WriteBoolean(Navegando)
         
-        PrepareMessageCharacterChange = .ReadASCIIStringFixed(.Length)
+        PrepareMessageCharacterChange = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -23119,7 +23120,7 @@ End Function
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Function PrepareMessageCharacterMove(ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte) As String
+Public Function PrepareMessageCharacterMove(ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte) As t_DataBuffer
         
     On Error GoTo PrepareMessageCharacterMove_Err
 
@@ -23134,7 +23135,7 @@ Public Function PrepareMessageCharacterMove(ByVal CharIndex As Integer, ByVal X 
         Call .WriteByte(X)
         Call .WriteByte(Y)
         
-        PrepareMessageCharacterMove = .ReadASCIIStringFixed(.Length)
+        PrepareMessageCharacterMove = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -23146,7 +23147,7 @@ PrepareMessageCharacterMove_Err:
         
 End Function
 
-Public Function PrepareMessageForceCharMove(ByVal Direccion As eHeading) As String
+Public Function PrepareMessageForceCharMove(ByVal Direccion As eHeading) As t_DataBuffer
         
     On Error GoTo PrepareMessageForceCharMove_Err
 
@@ -23159,7 +23160,7 @@ Public Function PrepareMessageForceCharMove(ByVal Direccion As eHeading) As Stri
         Call .WriteID(ServerPacketID.ForceCharMove)
         Call .WriteByte(Direccion)
         
-        PrepareMessageForceCharMove = .ReadASCIIStringFixed(.Length)
+        PrepareMessageForceCharMove = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -23179,7 +23180,7 @@ End Function
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Function PrepareMessageUpdateTagAndStatus(ByVal UserIndex As Integer, Status As Byte, Tag As String) As String
+Public Function PrepareMessageUpdateTagAndStatus(ByVal UserIndex As Integer, Status As Byte, Tag As String) As t_DataBuffer
         
     On Error GoTo PrepareMessageUpdateTagAndStatus_Err
 
@@ -23197,7 +23198,7 @@ Public Function PrepareMessageUpdateTagAndStatus(ByVal UserIndex As Integer, Sta
         Call .WriteASCIIString(Tag)
         Call .WriteInteger(UserList(UserIndex).Grupo.Lider)
         
-        PrepareMessageUpdateTagAndStatus = .ReadASCIIStringFixed(.Length)
+        PrepareMessageUpdateTagAndStatus = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -23243,7 +23244,7 @@ End Sub
 ' @param    message The error message to be displayed.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Function PrepareMessageErrorMsg(ByVal message As String) As String
+Public Function PrepareMessageErrorMsg(ByVal message As String) As t_DataBuffer
         
     On Error GoTo PrepareMessageErrorMsg_Err
 
@@ -23256,7 +23257,7 @@ Public Function PrepareMessageErrorMsg(ByVal message As String) As String
         Call .WriteID(ServerPacketID.ErrorMsg)
         Call .WriteASCIIString(message)
         
-        PrepareMessageErrorMsg = .ReadASCIIStringFixed(.Length)
+        PrepareMessageErrorMsg = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -24692,7 +24693,7 @@ ErrHandler:
 
 End Sub
 
-Public Function PrepareMessageNieblandoToggle(ByVal IntensidadMax As Byte) As String
+Public Function PrepareMessageNieblandoToggle(ByVal IntensidadMax As Byte) As t_DataBuffer
         
     On Error GoTo PrepareMessageNieblandoToggle_Err
 
@@ -24703,7 +24704,7 @@ Public Function PrepareMessageNieblandoToggle(ByVal IntensidadMax As Byte) As St
         Call .WriteID(ServerPacketID.NieblaToggle)
         Call .WriteByte(IntensidadMax)
         
-        PrepareMessageNieblandoToggle = .ReadASCIIStringFixed(.Length)
+        PrepareMessageNieblandoToggle = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -24715,7 +24716,7 @@ PrepareMessageNieblandoToggle_Err:
         
 End Function
 
-Public Function PrepareMessageNevarToggle() As String
+Public Function PrepareMessageNevarToggle() As t_DataBuffer
         
     On Error GoTo PrepareMessageNevarToggle_Err
 
@@ -24725,7 +24726,7 @@ Public Function PrepareMessageNevarToggle() As String
     With auxiliarBuffer
         Call .WriteID(ServerPacketID.NieveToggle)
         
-        PrepareMessageNevarToggle = .ReadASCIIStringFixed(.Length)
+        PrepareMessageNevarToggle = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
@@ -25280,7 +25281,7 @@ ErrHandler:
 
 End Sub
 
-Public Function PrepareMessageBarFx(ByVal CharIndex As Integer, ByVal BarTime As Integer, ByVal BarAccion As Byte) As String
+Public Function PrepareMessageBarFx(ByVal CharIndex As Integer, ByVal BarTime As Integer, ByVal BarAccion As Byte) As t_DataBuffer
         
     On Error GoTo PrepareMessageBarFx_Err
 
@@ -25295,7 +25296,7 @@ Public Function PrepareMessageBarFx(ByVal CharIndex As Integer, ByVal BarTime As
         Call .WriteInteger(BarTime)
         Call .WriteByte(BarAccion)
         
-        PrepareMessageBarFx = .ReadASCIIStringFixed(.Length)
+        PrepareMessageBarFx = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
         
