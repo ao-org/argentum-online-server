@@ -3453,17 +3453,11 @@ Private Sub HandleUseItem(ByVal UserIndex As Integer)
         '***************************************************
         
         On Error GoTo HandleUseItem_Err
-        
-
-100     If UserList(UserIndex).incomingData.Length < 2 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
-
-        End If
     
 104     With UserList(UserIndex)
+
             'Remove packet ID
-106         Call .incomingData.ReadByte
+106         Call .incomingData.ReadID
         
             Dim slot As Byte
         
@@ -3479,12 +3473,11 @@ Private Sub HandleUseItem(ByVal UserIndex As Integer)
 
         End With
 
-        
         Exit Sub
 
 HandleUseItem_Err:
 116     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleUseItem", Erl)
-118     Resume Next
+        Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -3496,22 +3489,17 @@ End Sub
 Private Sub HandleCraftBlacksmith(ByVal UserIndex As Integer)
         
         On Error GoTo HandleCraftBlacksmith_Err
-        
 
         '***************************************************
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 3 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
 
-        End If
-    
 104     With UserList(UserIndex).incomingData
+
             'Remove packet ID
-106         Call .ReadByte
+106         Call .ReadID
         
             Dim Item As Integer
         
@@ -3530,7 +3518,7 @@ Private Sub HandleCraftBlacksmith(ByVal UserIndex As Integer)
 
 HandleCraftBlacksmith_Err:
 114     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleCraftBlacksmith", Erl)
-116     Resume Next
+        Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -3542,22 +3530,17 @@ End Sub
 Private Sub HandleCraftCarpenter(ByVal UserIndex As Integer)
         
         On Error GoTo HandleCraftCarpenter_Err
-        
 
         '***************************************************
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 3 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
 
-        End If
-    
 104     With UserList(UserIndex).incomingData
+
             'Remove packet ID
-106         Call .ReadByte
+106         Call .ReadID
         
             Dim Item As Integer
         
@@ -3576,7 +3559,7 @@ Private Sub HandleCraftCarpenter(ByVal UserIndex As Integer)
 
 HandleCraftCarpenter_Err:
 114     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleCraftCarpenter", Erl)
-116     Resume Next
+        Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -3584,19 +3567,14 @@ Private Sub HandleCraftAlquimia(ByVal UserIndex As Integer)
         
         On Error GoTo HandleCraftAlquimia_Err
         
-
         '***************************************************
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 4 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
 
-        End If
-    
 104     With UserList(UserIndex).incomingData
+
             'Remove packet ID
 106         Call .ReadInteger
         
@@ -3615,7 +3593,7 @@ Private Sub HandleCraftAlquimia(ByVal UserIndex As Integer)
 
 HandleCraftAlquimia_Err:
 112     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleCraftAlquimia", Erl)
-114     Resume Next
+        Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -3629,13 +3607,9 @@ Private Sub HandleCraftSastre(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 4 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
 
-        End If
-    
 104     With UserList(UserIndex).incomingData
+
             'Remove packet ID
 106         Call .ReadInteger
         
@@ -3650,12 +3624,11 @@ Private Sub HandleCraftSastre(ByVal UserIndex As Integer)
 
         End With
 
-        
         Exit Sub
 
 HandleCraftSastre_Err:
 114     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleCraftSastre", Erl)
-116     Resume Next
+        Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -3674,16 +3647,11 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 4 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
 
-        End If
-    
 104     With UserList(UserIndex)
             
             'Remove packet ID
-106         Call .incomingData.ReadByte
+106         Call .incomingData.ReadID
         
             Dim X        As Byte
             Dim Y        As Byte
@@ -4491,7 +4459,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
 HandleWorkLeftClick_Err:
 720     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleWorkLeftClick", Erl)
-722     Resume Next
+        Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -4507,35 +4475,22 @@ Private Sub HandleCreateNewGuild(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 6 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
 
-        End If
-    
         On Error GoTo ErrHandler
 
 104     With UserList(UserIndex)
 
-            'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim Buffer As New clsByteQueue
-
-106         Call Buffer.CopyBuffer(.incomingData)
-        
             'Remove packet ID
-108         Call Buffer.ReadByte
+108         Call .incomingData.ReadID
         
             Dim Desc       As String
-
             Dim GuildName  As String
-
             Dim errorStr   As String
-
             Dim Alineacion As Byte
         
-110         Desc = Buffer.ReadASCIIString()
-112         GuildName = Buffer.ReadASCIIString()
-114         Alineacion = Buffer.ReadByte()
+110         Desc = .incomingData.ReadASCIIString()
+112         GuildName = .incomingData.ReadASCIIString()
+114         Alineacion = .incomingData.ReadByte()
         
 116         If modGuilds.CrearNuevoClan(UserIndex, Desc, GuildName, Alineacion, errorStr) Then
 
@@ -4552,24 +4507,15 @@ Private Sub HandleCreateNewGuild(ByVal UserIndex As Integer)
 132             Call WriteConsoleMsg(UserIndex, errorStr, FontTypeNames.FONTTYPE_GUILD)
 
             End If
-        
-            'If we got here then packet is complete, copy data back to original queue
-134         Call .incomingData.CopyBuffer(Buffer)
 
         End With
-    
+        
+        Exit Sub
+        
 ErrHandler:
 
-        Dim Error As Long
-
-136     Error = Err.Number
-
-        On Error GoTo 0
-    
-        'Destroy auxiliar buffer
-138     Set Buffer = Nothing
-    
-140     If Error <> 0 Then Err.raise Error
+        Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleCreateNewGuild", Erl)
+        Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
 
@@ -4588,15 +4534,11 @@ Private Sub HandleSpellInfo(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 2 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
 
-        End If
-    
 104     With UserList(UserIndex)
+
             'Remove packet ID
-106         Call .incomingData.ReadByte
+106         Call .incomingData.ReadID
         
             Dim spellSlot As Byte
 
@@ -4631,7 +4573,7 @@ Private Sub HandleSpellInfo(ByVal UserIndex As Integer)
 
 HandleSpellInfo_Err:
 122     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleSpellInfo", Erl)
-124     Resume Next
+        Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -4650,15 +4592,11 @@ Private Sub HandleEquipItem(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 2 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
-
-        End If
     
 104     With UserList(UserIndex)
+
             'Remove packet ID
-106         Call .incomingData.ReadByte
+106         Call .incomingData.ReadID
         
             Dim itemSlot As Byte
         
@@ -4685,7 +4623,7 @@ Private Sub HandleEquipItem(ByVal UserIndex As Integer)
 
 HandleEquipItem_Err:
 120     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleEquipItem", Erl)
-122     Resume Next
+        Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -4705,15 +4643,11 @@ Private Sub HandleChangeHeading(ByVal UserIndex As Integer)
         'Last Modified By: Lucas Tavolaro Ortiz (Tavo)
         ' 10/01/2008: Tavo - Se cancela la salida del juego si el user esta saliendo
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 2 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
-
-        End If
     
 104     With UserList(UserIndex)
+
             'Remove packet ID
-106         Call .incomingData.ReadByte
+106         Call .incomingData.ReadID
         
             Dim Heading As eHeading
         
@@ -4728,12 +4662,11 @@ Private Sub HandleChangeHeading(ByVal UserIndex As Integer)
 
         End With
 
-        
         Exit Sub
 
 HandleChangeHeading_Err:
 116     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleChangeHeading", Erl)
-118     Resume Next
+        Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -4745,27 +4678,20 @@ End Sub
 Private Sub HandleModifySkills(ByVal UserIndex As Integer)
         
         On Error GoTo HandleModifySkills_Err
-        
 
         '***************************************************
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 1 + NUMSKILLS Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
 
-        End If
-    
 104     With UserList(UserIndex)
+
             'Remove packet ID
-106         Call .incomingData.ReadByte
+106         Call .incomingData.ReadID
         
             Dim i                      As Long
-
             Dim Count                  As Integer
-
             Dim points(1 To NUMSKILLS) As Byte
         
             'Codigo para prevenir el hackeo de los skills
@@ -4817,7 +4743,7 @@ Private Sub HandleModifySkills(ByVal UserIndex As Integer)
 
 HandleModifySkills_Err:
 146     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleModifySkills", Erl)
-148     Resume Next
+        Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -4829,25 +4755,19 @@ End Sub
 Private Sub HandleTrain(ByVal UserIndex As Integer)
         
         On Error GoTo HandleTrain_Err
-        
 
         '***************************************************
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 2 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
-
-        End If
     
 104     With UserList(UserIndex)
+
             'Remove packet ID
-106         Call .incomingData.ReadByte
+106         Call .incomingData.ReadID
         
             Dim SpawnedNpc As Integer
-
             Dim PetIndex   As Byte
         
 108         PetIndex = .incomingData.ReadByte()
@@ -4881,7 +4801,7 @@ Private Sub HandleTrain(ByVal UserIndex As Integer)
 
 HandleTrain_Err:
 128     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleTrain", Erl)
-130     Resume Next
+        Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -4893,25 +4813,19 @@ End Sub
 Private Sub HandleCommerceBuy(ByVal UserIndex As Integer)
         
         On Error GoTo HandleCommerceBuy_Err
-        
 
         '***************************************************
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 4 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
-
-        End If
     
 104     With UserList(UserIndex)
+
             'Remove packet ID
-106         Call .incomingData.ReadByte
+106         Call .incomingData.ReadID
         
             Dim slot   As Byte
-
             Dim amount As Integer
         
 108         slot = .incomingData.ReadByte()
@@ -4924,7 +4838,7 @@ Private Sub HandleCommerceBuy(ByVal UserIndex As Integer)
 
             End If
         
-            'íEl target es un NPC valido?
+            'El target es un NPC valido?
 116         If .flags.TargetNPC < 1 Then Exit Sub
             
             'íEl NPC puede comerciar?
@@ -4947,12 +4861,11 @@ Private Sub HandleCommerceBuy(ByVal UserIndex As Integer)
 
         End With
 
-        
         Exit Sub
 
 HandleCommerceBuy_Err:
 130     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleCommerceBuy", Erl)
-132     Resume Next
+        Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -4964,32 +4877,24 @@ End Sub
 Private Sub HandleBankExtractItem(ByVal UserIndex As Integer)
         
         On Error GoTo HandleBankExtractItem_Err
-        
 
         '***************************************************
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 5 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
 
-        End If
-    
 104     With UserList(UserIndex)
+
             'Remove packet ID
-106         Call .incomingData.ReadByte
+106         Call .incomingData.ReadID
         
             Dim slot        As Byte
-
             Dim slotdestino As Byte
-
             Dim amount      As Integer
         
 108         slot = .incomingData.ReadByte()
 110         amount = .incomingData.ReadInteger()
-        
 112         slotdestino = .incomingData.ReadByte()
         
             'Dead people can't commerce
@@ -5003,22 +4908,18 @@ Private Sub HandleBankExtractItem(ByVal UserIndex As Integer)
 118         If .flags.TargetNPC < 1 Then Exit Sub
         
             '¿Es el banquero?
-120         If NpcList(.flags.TargetNPC).NPCtype <> eNPCType.Banquero Then
-                Exit Sub
+120         If NpcList(.flags.TargetNPC).NPCtype <> eNPCType.Banquero Then Exit Sub
 
-            End If
-        
             'User retira el item del slot
 122         Call UserRetiraItem(UserIndex, slot, amount, slotdestino)
 
         End With
 
-        
         Exit Sub
 
 HandleBankExtractItem_Err:
 124     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleBankExtractItem", Erl)
-126     Resume Next
+        Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -5031,24 +4932,17 @@ Private Sub HandleCommerceSell(ByVal UserIndex As Integer)
         
         On Error GoTo HandleCommerceSell_Err
         
-
         '***************************************************
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 4 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
-
-        End If
     
 104     With UserList(UserIndex)
             'Remove packet ID
 106         Call .incomingData.ReadByte
         
             Dim slot   As Byte
-
             Dim amount As Integer
         
 108         slot = .incomingData.ReadByte()
@@ -5076,12 +4970,11 @@ Private Sub HandleCommerceSell(ByVal UserIndex As Integer)
 
         End With
 
-        
         Exit Sub
 
 HandleCommerceSell_Err:
 124     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleCommerceSell", Erl)
-126     Resume Next
+        Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -5100,20 +4993,14 @@ Private Sub HandleBankDeposit(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 5 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
-
-        End If
     
 104     With UserList(UserIndex)
+
             'Remove packet ID
-106         Call .incomingData.ReadByte
+106         Call .incomingData.ReadID
         
             Dim slot        As Byte
-
             Dim slotdestino As Byte
-
             Dim amount      As Integer
         
 108         slot = .incomingData.ReadByte()
@@ -5151,7 +5038,7 @@ Private Sub HandleBankDeposit(ByVal UserIndex As Integer)
 
 HandleBankDeposit_Err:
 128     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleBankDeposit", Erl)
-130     Resume Next
+        Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -5167,40 +5054,24 @@ Private Sub HandleForumPost(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     If UserList(UserIndex).incomingData.Length < 5 Then
-102         Err.raise UserList(UserIndex).incomingData.NotEnoughDataErrCode
-            Exit Sub
-
-        End If
     
         On Error GoTo ErrHandler
 
 104     With UserList(UserIndex)
 
-            'This packet contains strings, make a copy of the data to prevent losses if it's not complete yet...
-            Dim Buffer As New clsByteQueue
-
-106         Call Buffer.CopyBuffer(.incomingData)
-        
             'Remove packet ID
-108         Call Buffer.ReadByte
+108         Call .incomingData.ReadID
         
             Dim File     As String
-
             Dim title    As String
-
             Dim msg      As String
-
             Dim postFile As String
-        
             Dim handle   As Integer
-
             Dim i        As Long
-
             Dim Count    As Integer
         
-110         title = Buffer.ReadASCIIString()
-112         msg = Buffer.ReadASCIIString()
+110         title = .incomingData.ReadASCIIString()
+112         msg = .incomingData.ReadASCIIString()
         
 114         If .flags.TargetObj > 0 Then
 116             File = App.Path & "\foros\" & UCase$(ObjData(.flags.TargetObj).ForoID) & ".for"
@@ -5239,24 +5110,15 @@ Private Sub HandleForumPost(ByVal UserIndex As Integer)
 148             Call WriteVar(File, "INFO", "CantMSG", Count + 1)
 
             End If
-        
-            'If we got here then packet is complete, copy data back to original queue
-150         Call .incomingData.CopyBuffer(Buffer)
 
         End With
-    
+        
+        Exit Sub
+        
 ErrHandler:
-
-        Dim Error As Long
-
-152     Error = Err.Number
-
-        On Error GoTo 0
-    
-        'Destroy auxiliar buffer
-154     Set Buffer = Nothing
-    
-156     If Error <> 0 Then Err.raise Error
+        Close #handle
+        Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleForumPost", Erl)
+        Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
 
