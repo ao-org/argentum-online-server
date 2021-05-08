@@ -65,7 +65,7 @@ Public Enum SendTarget
     
 End Enum
 
-Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, ByVal sndData As t_DataBuffer)
+Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, sndData As t_DataBuffer)
         
         On Error GoTo SendData_Err
     
@@ -174,7 +174,7 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, ByV
 176             While LoopC > 0
 
 178                 If (UserList(LoopC).ConnID <> -1) Then
-180                     Call UserList(LoopC).outgoingData.WriteASCIIStringFixed(sndData)
+180                     Call UserList(LoopC).outgoingData.WritePrepared(sndData)
 
                     End If
 
@@ -420,7 +420,7 @@ SendData_Err:
         
 End Sub
 
-Private Sub SendToUserArea(ByVal UserIndex As Integer, ByVal sndData As String)
+Private Sub SendToUserArea(ByVal UserIndex As Integer, sndData As t_DataBuffer)
         
         On Error GoTo SendToUserArea_Err
         
@@ -469,7 +469,7 @@ SendToUserArea_Err:
         
 End Sub
 
-Private Sub SendToSuperioresArea(ByVal UserIndex As Integer, ByVal sndData As String)
+Private Sub SendToSuperioresArea(ByVal UserIndex As Integer, sndData As t_DataBuffer)
         
         On Error GoTo SendToUserAreaButindex_Err
 
@@ -526,7 +526,7 @@ SendToUserAreaButindex_Err:
         
 End Sub
 
-Private Sub SendToUserAreaButindex(ByVal UserIndex As Integer, ByVal sndData As String)
+Private Sub SendToUserAreaButindex(ByVal UserIndex As Integer, sndData As t_DataBuffer)
         
         On Error GoTo SendToUserAreaButindex_Err
         
@@ -584,7 +584,7 @@ SendToUserAreaButindex_Err:
         
 End Sub
 
-Private Sub SendToAdminAreaButIndex(ByVal UserIndex As Integer, ByVal sndData As String)
+Private Sub SendToAdminAreaButIndex(ByVal UserIndex As Integer, sndData As t_DataBuffer)
         
         On Error GoTo SendToUserAreaButindex_Err
         
@@ -644,7 +644,7 @@ SendToUserAreaButindex_Err:
         
 End Sub
 
-Private Sub SendToUserAreaButGMs(ByVal UserIndex As Integer, ByVal sndData As String)
+Private Sub SendToUserAreaButGMs(ByVal UserIndex As Integer, sndData As t_DataBuffer)
         
         On Error GoTo SendToUserAreaButindex_Err
         
@@ -706,7 +706,7 @@ SendToUserAreaButindex_Err:
         
 End Sub
 
-Private Sub SendToDeadUserArea(ByVal UserIndex As Integer, ByVal sndData As String)
+Private Sub SendToDeadUserArea(ByVal UserIndex As Integer, sndData As t_DataBuffer)
         
         On Error GoTo SendToDeadUserArea_Err
         
@@ -756,7 +756,7 @@ SendToDeadUserArea_Err:
         
 End Sub
 
-Private Sub SendToUserGuildArea(ByVal UserIndex As Integer, ByVal sndData As String)
+Private Sub SendToUserGuildArea(ByVal UserIndex As Integer, sndData As t_DataBuffer)
         
         On Error GoTo SendToUserGuildArea_Err
         
@@ -807,7 +807,7 @@ SendToUserGuildArea_Err:
         
 End Sub
 
-Private Sub SendToAdminsButConsejerosArea(ByVal UserIndex As Integer, ByVal sndData As String)
+Private Sub SendToAdminsButConsejerosArea(ByVal UserIndex As Integer, sndData As t_DataBuffer)
         
         On Error GoTo SendToAdminsButConsejerosArea_Err
         
@@ -856,7 +856,7 @@ SendToAdminsButConsejerosArea_Err:
         
 End Sub
 
-Private Sub SendToNpcArea(ByVal NpcIndex As Long, ByVal sndData As String)
+Private Sub SendToNpcArea(ByVal NpcIndex As Long, sndData As t_DataBuffer)
         
         On Error GoTo SendToNpcArea_Err
         
@@ -910,7 +910,7 @@ SendToNpcArea_Err:
         
 End Sub
 
-Public Sub SendToAreaByPos(ByVal Map As Integer, ByVal AreaX As Integer, ByVal AreaY As Integer, ByVal sndData As String)
+Public Sub SendToAreaByPos(ByVal Map As Integer, ByVal AreaX As Integer, ByVal AreaY As Integer, sndData As t_DataBuffer)
         
         On Error GoTo SendToAreaByPos_Err
         
@@ -952,7 +952,7 @@ SendToAreaByPos_Err:
         
 End Sub
 
-Public Sub SendToMap(ByVal Map As Integer, ByVal sndData As String)
+Public Sub SendToMap(ByVal Map As Integer, sndData As t_DataBuffer)
         
         On Error GoTo SendToMap_Err
         
@@ -986,7 +986,7 @@ SendToMap_Err:
         
 End Sub
 
-Public Sub SendToMapButIndex(ByVal UserIndex As Integer, ByVal sndData As String)
+Public Sub SendToMapButIndex(ByVal UserIndex As Integer, sndData As t_DataBuffer)
         
         On Error GoTo SendToMapButIndex_Err
         

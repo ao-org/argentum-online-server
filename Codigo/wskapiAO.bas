@@ -367,18 +367,13 @@ End Function
 
 'Retorna 0 cuando se envió o se metio en la cola,
 'retorna <> 0 cuando no se pudo enviar o no se pudo meter en la cola
-Public Function WsApiEnviar(ByVal slot As Integer, ByRef str As String) As Long
+Public Function WsApiEnviar(ByVal slot As Integer, ByRef data() As Byte) As Long
         
         On Error GoTo WsApiEnviar_Err
 
         Dim ret      As String
         Dim UltError As Long
         Dim Retorno  As Long
-        Dim data()   As Byte
-
-100     ReDim Preserve data(Len(str) - 1) As Byte
-
-102     data = StrConv(str, vbFromUnicode)
 
 104     Retorno = 0
 
@@ -391,7 +386,7 @@ Public Function WsApiEnviar(ByVal slot As Integer, ByRef str As String) As Long
 114             If UltError = WSAEWOULDBLOCK Then
             
                     ' WSAEWOULDBLOCK, put the data again in the outgoingData Buffer
-116                 Call UserList(slot).outgoingData.WriteASCIIStringFixed(str)
+116                 Call UserList(slot).outgoingData.WriteBlock(data)
 
                 End If
 
@@ -542,8 +537,7 @@ Public Sub EventoSockAccept(ByVal SockID As Long)
         '   BIENVENIDO AL SERVIDOR!!!!!!!!
         '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
         '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-            
-        Dim str    As String
+
         Dim data() As Byte
     
         'Mariano: Baje la busqueda de slot abajo de CondicionSocket y limite x ip
@@ -552,20 +546,17 @@ Public Sub EventoSockAccept(ByVal SockID As Long)
 142     If NewIndex <= MaxUsers Then
         
             'Make sure both outgoing and incoming data buffers are clean
-144         Call UserList(NewIndex).incomingData.ReadASCIIStringFixed(UserList(NewIndex).incomingData.Length)
-146         Call UserList(NewIndex).outgoingData.ReadASCIIStringFixed(UserList(NewIndex).outgoingData.Length)
+144         Call UserList(NewIndex).incomingData.Clean
+146         Call UserList(NewIndex).outgoingData.Clean
         
 148         UserList(NewIndex).ip = GetAscIP(sa.sin_addr)
 
             'Busca si esta banneada la ip
 150         If BanIpBuscar(UserList(NewIndex).ip) <> 0 Then
 152             Call WriteShowMessageBox(NewIndex, "Se te ha prohibido la entrada al servidor. Cod: #0003")
-                    
-                'Call FlushBuffer(NewIndex)
-154             str = UserList(NewIndex).outgoingData.ReadASCIIStringFixed(UserList(NewIndex).outgoingData.Length)
 
-156             ReDim Preserve data(Len(str) - 1)
-158             data = StrConv(str, vbFromUnicode)
+154             data = UserList(NewIndex).outgoingData.ReadAll
+
 160             Call send(NuevoSock, data(0), ByVal UBound(data()) + 1, ByVal 0)
 
 162             Call WSApiCloseSocket(NuevoSock)
@@ -581,14 +572,12 @@ Public Sub EventoSockAccept(ByVal SockID As Long)
 170         Call AgregaSlotSock(NuevoSock, NewIndex)
             
         Else
+            Dim TempBuffer As t_DataBuffer
+172         TempBuffer = Protocol.PrepareMessageErrorMsg("El server se encuentra lleno en este momento. Disculpe las molestias ocasionadas.")
+
+176         data = TempBuffer.data
         
-172         str = Protocol.PrepareMessageErrorMsg("El server se encuentra lleno en este momento. Disculpe las molestias ocasionadas.")
-        
-174         ReDim Preserve data(Len(str) - 1) As Byte
-        
-176         data = StrConv(str, vbFromUnicode)
-        
-178         Call send(ByVal NuevoSock, data(0), ByVal UBound(data()) + 1, ByVal 0)
+178         Call send(ByVal NuevoSock, data(0), ByVal TempBuffer.Length, ByVal 0)
 180         Call WSApiCloseSocket(NuevoSock)
 
         End If
@@ -632,18 +621,18 @@ Public Sub EventoSockRead(ByVal slot As Integer, ByRef Datos() As Byte)
 
                 ' WyroX: Pongo un límite a este loop... en caso de que por algún error bloquee el server
                 Dim Iterations As Long
-                Dim packetId   As Byte
+                Dim PacketID   As Byte
                 Dim LastPacket As Byte
 
 114             Do While HandleIncomingData(slot)
-116                 packetId = UserList(slot).incomingData.PeekByte
+116                 PacketID = UserList(slot).incomingData.PeekByte
 
-118                 If packetId = LastPacket Then
+118                 If PacketID = LastPacket Then
 
 120                     Iterations = Iterations + 1
 
 122                     If Iterations >= MAX_ITERATIONS_HID Then
-124                         Call RegistrarError(-1, "Se supero el maximo de iteraciones de HandleIncomingData. Paquete: " & packetId, "wskapiAO.EventoSockRead", Erl)
+124                         Call RegistrarError(-1, "Se supero el maximo de iteraciones de HandleIncomingData. Paquete: " & PacketID, "wskapiAO.EventoSockRead", Erl)
 126                         Call CloseSocket(slot)
                             Exit Do
 
@@ -651,7 +640,7 @@ Public Sub EventoSockRead(ByVal slot As Integer, ByRef Datos() As Byte)
 
                     Else
 128                     Iterations = 0
-130                     LastPacket = packetId
+130                     LastPacket = PacketID
 
                     End If
 

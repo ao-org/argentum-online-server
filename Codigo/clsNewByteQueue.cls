@@ -48,7 +48,7 @@ Private packetLength           As Long
 ' The byte data
 Public errNumber               As Long
 
-Dim DATA()                     As Byte
+Dim data()                     As Byte
 
 'Posicion de lectura
 Private queuePos               As Long
@@ -97,7 +97,7 @@ Private Sub Class_Initialize()
     'Last Modification: 04/27/06
     'Initializes the queue with the default queueCapacity
     '***************************************************
-    ReDim DATA(DATA_BUFFER - 1) As Byte
+    ReDim data(DATA_BUFFER - 1) As Byte
 
     queueCapacity = DATA_BUFFER
     CUSTOM_DATA_BUFFER = DATA_BUFFER
@@ -113,7 +113,7 @@ Private Sub Class_Terminate()
     'Last Modification: 04/27/06
     'Clean up
     '***************************************************
-    Erase DATA
+    Erase data
 
 End Sub
 
@@ -142,7 +142,7 @@ Public Sub CopyBuffer(ByRef source As clsByteQueue)
     queueCapacity = source.Capacity
     CUSTOM_DATA_BUFFER = queueCapacity
 
-    ReDim DATA(queueCapacity - 1) As Byte
+    ReDim data(queueCapacity - 1) As Byte
 
     ' Read buffer
     Dim buf() As Byte
@@ -210,7 +210,7 @@ Private Function WriteData(ByRef buf() As Byte, ByVal DataLength As Long) As Lon
     End If
 
     'Copy data from buffer
-    Call CopyMemory(DATA(queueLength), buf(0), DataLength)
+    Call CopyMemory(data(queueLength), buf(0), DataLength)
 
     'Update length of data
     queueLength = queueLength + DataLength
@@ -250,7 +250,7 @@ Private Function ReadData(ByRef buf() As Byte, ByVal DataLength As Long) As Long
     End If
 
     'Copy data to buffer
-    Call CopyMemory(buf(0), DATA(queuePos), DataLength)
+    Call CopyMemory(buf(0), data(queuePos), DataLength)
 
     ReadData = DataLength
 
@@ -284,7 +284,7 @@ End Function
 ' @see PeekByte
 ' @see ReadByte
 #If BYTE_QUEUE_DEBUG = 1 Then
-Public Sub WriteType(ByVal value As eWriteTypes)
+Public Sub WriteType(ByVal Value As eWriteTypes)
 '***************************************************
 'Autor: Juan Martín Sotuyo Dodero (Maraxus)
 'Last Modification: 04/27/06
@@ -297,13 +297,13 @@ Public Sub WriteType(ByVal value As eWriteTypes)
         Call ErrRaise(NOT_ENOUGH_SPACE)
         Exit Sub
     End If
-    DATA(queueLength) = value
+    data(queueLength) = Value
     queueLength = queueLength + 1
 
 End Sub
 
 #End If
-Public Function WriteByte(ByVal value As Byte) As Long
+Public Function WriteByte(ByVal Value As Byte) As Long
     '***************************************************
     'Autor: Juan Martín Sotuyo Dodero (Maraxus)
     'Last Modification: 04/27/06
@@ -322,7 +322,7 @@ Public Function WriteByte(ByVal value As Byte) As Long
 
     End If
 
-    DATA(queueLength) = value
+    data(queueLength) = Value
     queueLength = queueLength + 1
     WriteByte = 1
 
@@ -336,7 +336,7 @@ End Function
 ' @see PeekInteger
 ' @see ReadInteger
 
-Public Function WriteInteger(ByVal value As Integer) As Long
+Public Function WriteInteger(ByVal Value As Integer) As Long
     '***************************************************
     'Autor: Juan Martín Sotuyo Dodero (Maraxus)
     'Last Modification: 04/27/06
@@ -354,7 +354,7 @@ Public Function WriteInteger(ByVal value As Integer) As Long
 
     End If
 
-    CopyMemory DATA(queueLength), value, 2
+    CopyMemory data(queueLength), Value, 2
     queueLength = queueLength + 2
     WriteInteger = 2
 
@@ -368,7 +368,7 @@ End Function
 ' @see PeekLong
 ' @see ReadLong
 
-Public Function WriteLong(ByVal value As Long) As Long
+Public Function WriteLong(ByVal Value As Long) As Long
     '***************************************************
     'Autor: Juan Martín Sotuyo Dodero (Maraxus)
     'Last Modification: 04/27/06
@@ -382,20 +382,20 @@ Public Function WriteLong(ByVal value As Long) As Long
 
     'Debug.Print "Long: " & value
     'Copy data to temp buffer
-    Call CopyMemory(buf(0), value, 4)
+    Call CopyMemory(buf(0), Value, 4)
 
     WriteLong = WriteData(buf, 4)
 
 End Function
 
-Public Sub WriteCollection(ByRef value As Collection)
+Public Sub WriteCollection(ByRef Value As Collection)
 
     Dim i As Long
 
-    Call WriteLong(value.Count)
+    Call WriteLong(Value.Count)
 
-    For i = 1 To value.Count
-        Call WriteASCIIString(value.Item(i))
+    For i = 1 To Value.Count
+        Call WriteASCIIString(Value.Item(i))
     Next i
 
 End Sub
@@ -404,17 +404,17 @@ Public Function ReadCollection() As Collection
 
     Dim i    As Long
 
-    Dim Max  As Long
+    Dim max  As Long
 
-    Dim List As New Collection
+    Dim list As New Collection
 
-    Max = ReadLong()
+    max = ReadLong()
 
-    For i = 1 To Max
-        List.Add ReadASCIIString()
+    For i = 1 To max
+        list.Add ReadASCIIString()
     Next i
 
-    Set ReadCollection = List
+    Set ReadCollection = list
 
 End Function
 
@@ -426,7 +426,7 @@ End Function
 ' @see PeekSingle
 ' @see ReadSingle
 
-Public Function WriteSingle(ByVal value As Single) As Long
+Public Function WriteSingle(ByVal Value As Single) As Long
     '***************************************************
     'Autor: Juan Martín Sotuyo Dodero (Maraxus)
     'Last Modification: 10/28/07
@@ -439,7 +439,7 @@ Public Function WriteSingle(ByVal value As Single) As Long
     Dim buf(3) As Byte
 
     'Copy data to temp buffer
-    Call CopyMemory(buf(0), value, 4)
+    Call CopyMemory(buf(0), Value, 4)
 
     WriteSingle = WriteData(buf, 4)
 
@@ -453,7 +453,7 @@ End Function
 ' @see PeekDouble
 ' @see ReadDouble
 
-Public Function WriteDouble(ByVal value As Double) As Long
+Public Function WriteDouble(ByVal Value As Double) As Long
     '***************************************************
     'Autor: Juan Martín Sotuyo Dodero (Maraxus)
     'Last Modification: 10/28/07
@@ -466,7 +466,7 @@ Public Function WriteDouble(ByVal value As Double) As Long
     Dim buf(7) As Byte
 
     'Copy data to temp buffer
-    Call CopyMemory(buf(0), value, 8)
+    Call CopyMemory(buf(0), Value, 8)
 
     WriteDouble = WriteData(buf, 8)
 
@@ -480,7 +480,7 @@ End Function
 ' @see PeekBoolean
 ' @see ReadBoolean
 
-Public Function WriteBoolean(ByVal value As Boolean) As Long
+Public Function WriteBoolean(ByVal Value As Boolean) As Long
     '***************************************************
     'Autor: Juan Martín Sotuyo Dodero (Maraxus)
     'Last Modification: 04/27/06
@@ -492,7 +492,7 @@ Public Function WriteBoolean(ByVal value As Boolean) As Long
 
     Dim buf(0) As Byte
 
-    If value Then buf(0) = 1
+    If Value Then buf(0) = 1
 
     WriteBoolean = WriteData(buf, 1)
 
@@ -506,7 +506,7 @@ End Function
 ' @see PeekASCIIStringFixed
 ' @see ReadASCIIStringFixed
 
-Public Function WriteASCIIStringFixed(ByVal value As String) As Long
+Public Function WriteASCIIStringFixed(ByVal Value As String) As Long
     '***************************************************
     'Autor: Juan Martín Sotuyo Dodero (Maraxus)
     'Last Modification: 04/27/06
@@ -520,10 +520,10 @@ Public Function WriteASCIIStringFixed(ByVal value As String) As Long
 
     Dim i     As Integer
 
-    i = Len(value)
+    i = Len(Value)
     ReDim buf(i - 1) As Byte
     'Copy data to temp buffer
-    Call CopyMemory(buf(0), ByVal StrPtr(StrConv(value, vbFromUnicode)), i)
+    Call CopyMemory(buf(0), ByVal StrPtr(StrConv(Value, vbFromUnicode)), i)
 
     WriteASCIIStringFixed = WriteData(buf, i)
 
@@ -537,7 +537,7 @@ End Function
 ' @see PeekUnicodeStringFixed
 ' @see ReadUnicodeStringFixed
 
-Public Function WriteUnicodeStringFixed(ByVal value As String) As Long
+Public Function WriteUnicodeStringFixed(ByVal Value As String) As Long
 
     '***************************************************
     'Autor: Juan Martín Sotuyo Dodero (Maraxus)
@@ -548,11 +548,11 @@ Public Function WriteUnicodeStringFixed(ByVal value As String) As Long
 
     Dim i     As Integer
 
-    i = LenB(value)
+    i = LenB(Value)
     ReDim buf(i) As Byte
 
     'Copy data to temp buffer
-    Call CopyMemory(buf(0), ByVal StrPtr(value), i)
+    Call CopyMemory(buf(0), ByVal StrPtr(Value), i)
 
     WriteUnicodeStringFixed = WriteData(buf, i)
 
@@ -566,7 +566,7 @@ End Function
 ' @see PeekASCIIString
 ' @see ReadASCIIString
 
-Public Function WriteASCIIString(ByVal value As String) As Long
+Public Function WriteASCIIString(ByVal Value As String) As Long
     '***************************************************
     'Autor: Juan Martín Sotuyo Dodero (Maraxus)
     'Last Modification: 04/27/06
@@ -585,14 +585,14 @@ Public Function WriteASCIIString(ByVal value As String) As Long
 
     Dim i As Integer
 
-    i = Len(value)
+    i = Len(Value)
     'Copy length to temp buffer
     'value = Encriptar(value, "cryptbao")
-    Call CopyMemory(DATA(queueLength), i, 2)
+    Call CopyMemory(data(queueLength), i, 2)
 
     If i > 0 Then
         'Copy data to temp buffer
-        Call CopyMemory(DATA(queueLength + 2), ByVal StrPtr(StrConv(value, vbFromUnicode)), i)
+        Call CopyMemory(data(queueLength + 2), ByVal StrPtr(StrConv(Value, vbFromUnicode)), i)
 
     End If
 
@@ -609,7 +609,7 @@ End Function
 ' @see PeekUnicodeString
 ' @see ReadUnicodeString
 
-Public Function WriteUnicodeString(ByVal value As String) As Long
+Public Function WriteUnicodeString(ByVal Value As String) As Long
 
     '***************************************************
     'Autor: Juan Martín Sotuyo Dodero (Maraxus)
@@ -618,19 +618,19 @@ Public Function WriteUnicodeString(ByVal value As String) As Long
     '***************************************************
     Dim buf() As Byte
 
-    ReDim buf(LenB(value) + 1) As Byte
+    ReDim buf(LenB(Value) + 1) As Byte
 
     'Copy length to temp buffer
-    Call CopyMemory(buf(0), CInt(Len(value)), 2)
+    Call CopyMemory(buf(0), CInt(Len(Value)), 2)
 
     'If Len(value) > 0 Then
-    If Not StrComp(value, vbNullString) = 0 Then    'About
+    If Not StrComp(Value, vbNullString) = 0 Then    'About
         'Copy data to temp buffer
-        Call CopyMemory(buf(2), ByVal StrPtr(value), LenB(value))
+        Call CopyMemory(buf(2), ByVal StrPtr(Value), LenB(Value))
 
     End If
 
-    WriteUnicodeString = WriteData(buf, LenB(value) + 2)
+    WriteUnicodeString = WriteData(buf, LenB(Value) + 2)
 
 End Function
 
@@ -644,7 +644,7 @@ End Function
 ' @see PeekBlock
 ' @see ReadBlock
 
-Public Function WriteBlock(ByRef value() As Byte, _
+Public Function WriteBlock(ByRef Value() As Byte, _
                            Optional ByVal Length As Long = -1) As Long
 
     '***************************************************
@@ -659,9 +659,13 @@ Public Function WriteBlock(ByRef value() As Byte, _
 
     End If
 
-    If Length > UBound(value()) + 1 Or Length < 0 Then Length = UBound(value()) + 1
-    WriteBlock = WriteData(value, Length)
+    If Length > UBound(Value()) + 1 Or Length < 0 Then Length = UBound(Value()) + 1
+    WriteBlock = WriteData(Value, Length)
 
+End Function
+
+Friend Function WritePrepared(Buffer As t_DataBuffer) As Long
+    WritePrepared = WriteBlock(Buffer.data, Buffer.Length)
 End Function
 
 ''
@@ -1103,7 +1107,7 @@ Public Function PeekByte() As Byte
 
     End If
 
-    PeekByte = DATA(queuePos)
+    PeekByte = data(queuePos)
 
     #If BYTE_QUEUE_DEBUG = 1 Then
         Call RestoreCheckType
@@ -1145,9 +1149,9 @@ End Function
 Public Function PeekLength() As Integer
     #If BYTE_QUEUE_DEBUG = 1 Then
         ' En Debug escribimos 1byte antes del PacketID y otro Byte antes del PacketLength
-        CopyMemory PeekLength, DATA(queuePos + 3), 2
+        CopyMemory PeekLength, data(queuePos + 3), 2
     #Else
-        CopyMemory PeekLength, DATA(queuePos + 1), 2
+        CopyMemory PeekLength, data(queuePos + 1), 2
     #End If
 
 End Function
@@ -1517,23 +1521,31 @@ Public Property Get Capacity() As Long
 
 End Property
 
+Public Property Let Capacity(ByVal Length As Long)
+
+    ReDim data(Length - 1) As Byte
+
+    queueCapacity = Length
+
+End Property
+
 ' Sets the capacity of the queue.
 '
 ' @param value The new capacity of the queue.
 ' @remarks If the new capacity is smaller than the current Length, all exceeding data is lost.
 ' @see Length
 
-Public Property Let SetCapacity(ByVal value As Long)
+Public Property Let SetCapacity(ByVal Value As Long)
 
     'Upate capacity
-    queueCapacity = value
+    queueCapacity = Value
     CUSTOM_DATA_BUFFER = queueCapacity
 
     'All extra data is lost
-    If Length > value Then queueLength = value
+    If Length > Value Then queueLength = Value
 
     'Resize the queue
-    ReDim Preserve DATA(queueCapacity - 1) As Byte
+    ReDim Preserve data(queueCapacity - 1) As Byte
 
 End Property
 
@@ -1569,7 +1581,7 @@ Public Property Get NotEnoughSpaceErrCode() As Long
 End Property
 
 Public Function PeekAll() As Byte()
-    PeekAll = DATA
+    PeekAll = data
 
 End Function
 
@@ -1588,7 +1600,7 @@ Public Function ReadAll() As Byte()
 
         ReDim tData(queueLength - 1) As Byte
 
-        CopyMemory tData(0), DATA(0), queueLength
+        CopyMemory tData(0), data(0), queueLength
 
         ReadAll = tData
 
@@ -1603,7 +1615,7 @@ Public Sub ReadAllFixed(ByRef tData() As Byte)
 
     ReDim tData(queueLength - 1) As Byte
 
-    CopyMemory tData(0), DATA(0), queueLength
+    CopyMemory tData(0), data(0), queueLength
 
     queuePos = 0
     queueLength = 0
@@ -1612,14 +1624,14 @@ End Sub
 
 ' Limpia la data del buffer del queue array
 Public Sub Clear()
-    ReDim DATA(CUSTOM_DATA_BUFFER - 1) As Byte
+    ReDim data(CUSTOM_DATA_BUFFER - 1) As Byte
     queueCapacity = CUSTOM_DATA_BUFFER
     queueLength = 0
     queuePos = 0
 
 End Sub
 
-Public Function WriteID(ByVal value As Byte) As Long
+Public Function WriteID(ByVal Value As Byte) As Long
 
     If queueCapacity - queueLength - GetHeaderSize < 0 Then
 
@@ -1634,7 +1646,7 @@ Public Function WriteID(ByVal value As Byte) As Long
 
     PacketStartPosition = queueLength
 
-    Call WriteByte(value)
+    Call WriteByte(Value)
     Call WriteInteger(0)
 
     WriteID = 3
@@ -1679,7 +1691,7 @@ Public Function ValidCRC() As Boolean
         packetLength = PeekLength()
 
         For i = queuePos To queuePos + packetLength - GetCRCSize - 1
-            crc = crc Xor DATA(i)
+            crc = crc Xor data(i)
         Next i
 
         ValidCRC = crc = PeekCRC(queuePos + packetLength - 1)
@@ -1708,7 +1720,7 @@ Public Function ReadID() As Byte
 
 End Function
 
-Public Function PeekCRC(ByVal pos As Integer) As Byte
+Public Function PeekCRC(ByVal Pos As Integer) As Byte
     #If BYTE_QUEUE_DEBUG = 1 Then
         Call ReadCheckType(wrByte)
     #End If
@@ -1720,7 +1732,7 @@ Public Function PeekCRC(ByVal pos As Integer) As Byte
 
     End If
 
-    PeekCRC = DATA(pos)
+    PeekCRC = data(Pos)
 
     #If BYTE_QUEUE_DEBUG = 1 Then
         Call RestoreCheckType
@@ -1772,9 +1784,9 @@ Public Sub EndPacket()
         packetLength = queueLength - PacketStartPosition + GetCRCSize
 
         #If BYTE_QUEUE_DEBUG = 1 Then
-            CopyMemory DATA(PacketStartPosition + 3), packetLength, 2
+            CopyMemory data(PacketStartPosition + 3), packetLength, 2
         #Else
-            CopyMemory DATA(PacketStartPosition + 1), packetLength, 2
+            CopyMemory data(PacketStartPosition + 1), packetLength, 2
         #End If
 
         #If NO_CRC = 0 Then
@@ -1786,7 +1798,7 @@ Public Sub EndPacket()
             crc = 47
 
             For i = PacketStartPosition To queueLength - 1
-                crc = crc Xor DATA(i)
+                crc = crc Xor data(i)
             Next i
 
             Call WriteByte(crc)
@@ -1840,7 +1852,7 @@ Public Function ReadNewPacket()
         #If BYTE_QUEUE_DEBUG = 1 Then
             Call CheckCopyMemory(queuePos, queueLength - queuePos)
         #End If
-        CopyMemory DATA(0), DATA(queuePos), queueLength - queuePos
+        CopyMemory data(0), data(queuePos), queueLength - queuePos
         queueLength = queueLength - queuePos
         queuePos = 0
         LastLength = 0
@@ -1869,7 +1881,7 @@ Public Function SkipLength(ByVal Length As Integer)
     #End If
 
     If queueLength - packet_length > 0 Then
-        CopyMemory DATA(0), DATA(packet_length), queueLength - packet_length
+        CopyMemory data(0), data(packet_length), queueLength - packet_length
         queueLength = queueLength - packet_length
         queuePos = 0
     Else
@@ -1899,7 +1911,7 @@ Private Function SkipPacket()
         Call CheckCopyMemory(packet_length, queueLength - packet_length)
     #End If
 
-    CopyMemory DATA(0), DATA(packet_length), queueLength - packet_length
+    CopyMemory data(0), data(packet_length), queueLength - packet_length
     queueLength = queueLength - packet_length
     queuePos = 0
     LastLength = 0
@@ -1911,9 +1923,38 @@ Public Function ErrRaise(ByVal Error As Long)
 
 End Function
 
-Private Function CheckCopyMemory(ByVal pos As Long, ByVal Length As Long) As Boolean
+Private Function CheckCopyMemory(ByVal Pos As Long, ByVal Length As Long) As Boolean
 
-    If pos + Length > queueLength Then Stop
+    If Pos + Length > queueLength Then Stop
 
 End Function
 
+Public Sub WriteSubBuffer(Buffer As clsByteQueue, Optional ByVal Offset As Long = 0, Optional ByVal Size As Long = -1)
+    
+100     If Offset >= Buffer.Length Then Exit Sub
+102     If Size < 0 Then Size = Buffer.Length - Offset
+    
+        'Check if there is enough free space
+104     If queueCapacity - queueLength - Size - 2 < 0 Then
+106         Call Err.raise(NOT_ENOUGH_SPACE)
+            Exit Sub
+        End If
+    
+        'Copy length to temp buffer
+108     Call CopyMemory(data(queueLength), CInt(Size), 2)
+    
+110     queueLength = queueLength + 2
+    
+        'Copy data from buffer
+112     Call Buffer.CopyDataTo(data, queueLength, Offset, Size)
+    
+        'Update length of data
+114     queueLength = queueLength + Size
+
+End Sub
+
+Public Sub CopyDataTo(buf() As Byte, ByVal SrcOffset As Long, ByVal DstOffset As Long, ByVal Size As Long)
+
+100     Call CopyMemory(buf(SrcOffset), data(DstOffset), Size)
+
+End Sub
