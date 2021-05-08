@@ -3293,7 +3293,7 @@ Private Sub HandleCastSpell(ByVal UserIndex As Integer)
         
 124         If .flags.Hechizo <> 0 Then
 
-126             If (.flags.Privilegios And PlayerType.Consejero) = 0 Then
+126             If (.flags.Privilegios And PlayerType.Consejero Or PlayerType.SemiDios) = 0 Then
 
                     Dim uh As Integer
                 
@@ -6910,7 +6910,7 @@ Private Sub HandleOnline(ByVal UserIndex As Integer)
 104         For i = 1 To LastUser
 
 106             If UserList(i).flags.UserLogged Then
-108                 If UserList(i).flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then
+108                 If UserList(i).flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then
 110                     nombres = nombres & " - " & UserList(i).name
                     End If
 112                 Count = Count + 1
@@ -9856,7 +9856,7 @@ Private Sub HandleWhere(ByVal UserIndex As Integer)
         
 110         UserName = Buffer.ReadASCIIString()
         
-112         If .flags.Privilegios And Not (PlayerType.Consejero Or PlayerType.user) Then
+112         If .flags.Privilegios And Not (PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.user) Then
 114             tUser = NameIndex(UserName)
 
 116             If tUser <= 0 Then
@@ -10938,7 +10938,7 @@ Private Sub HandleWorking(ByVal UserIndex As Integer)
             'Remove packet ID
 102         Call .incomingData.ReadByte
         
-104         If .flags.Privilegios And (PlayerType.user Or PlayerType.RoleMaster) Then Exit Sub
+104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
         
 106         For i = 1 To LastUser
 
@@ -13238,7 +13238,7 @@ Private Sub HandleNPCFollow(ByVal UserIndex As Integer)
             'Remove packet ID
 102         Call .incomingData.ReadByte
         
-104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then Exit Sub
+104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
         
 106         If .flags.TargetNPC > 0 Then
 108             Call DoFollow(.flags.TargetNPC, .name)
@@ -13329,7 +13329,7 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
                 End If
                 
                 Dim NotConsejero As Boolean
-144             NotConsejero = (.flags.Privilegios And PlayerType.Consejero) = 0
+144             NotConsejero = (.flags.Privilegios And PlayerType.Consejero Or PlayerType.SemiDios) = 0
                 
                 ' Consejeros sólo pueden traer en el mismo mapa
 146             If NotConsejero Or .Pos.Map = UserList(tUser).Pos.Map Then
@@ -13387,7 +13387,7 @@ Private Sub HandleSpawnListRequest(ByVal UserIndex As Integer)
             'Remove packet ID
 102         Call .incomingData.ReadByte
         
-104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then Exit Sub
+104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
         
 106         Call EnviarSpawnList(UserIndex)
 
@@ -13504,7 +13504,7 @@ Private Sub HandleCleanWorld(ByVal UserIndex As Integer)
             'Remove packet ID
 102         Call .incomingData.ReadByte
 
-104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.RoleMaster) Then Exit Sub
+104         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
 
 106         Call LimpiezaForzada
             
