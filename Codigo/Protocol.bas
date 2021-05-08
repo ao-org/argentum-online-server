@@ -4940,7 +4940,7 @@ Private Sub HandleCommerceSell(ByVal UserIndex As Integer)
     
     With UserList(UserIndex)
         'Remove packet ID
-        Call .incomingData.ReadByte
+        Call .incomingData.ReadID
         
         Dim slot   As Byte
         Dim amount As Integer
@@ -5182,7 +5182,7 @@ Private Sub HandleClanCodexUpdate(ByVal UserIndex As Integer)
     With UserList(UserIndex)
 
         'Remove packet ID
-        Call .incomingData.ReadByte
+        Call .incomingData.ReadID
         
         Dim Desc As String
         
@@ -6021,7 +6021,7 @@ Private Sub HandleGuildKickMember(ByVal UserIndex As Integer)
     With UserList(UserIndex)
 
         'Remove packet ID
-        Call .incomingData.ReadByte
+        Call .incomingData.ReadID
         
         Dim UserName   As String
         Dim GuildIndex As Integer
@@ -6099,7 +6099,7 @@ Private Sub HandleGuildMemberInfo(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         
         'Remove packet ID
-        Call .incomingData.ReadByte
+        Call .incomingData.ReadID
         
         Call modGuilds.SendDetallesPersonaje(UserIndex, .incomingData.ReadASCIIString())
 
@@ -10112,7 +10112,7 @@ Private Sub HandleKillNPC(ByVal UserIndex As Integer)
     With UserList(UserIndex)
     
         'Remove packet ID
-        Call .incomingData.ReadByte
+        Call .incomingData.ReadID
         
         If .flags.Privilegios And PlayerType.user Then Exit Sub
 
@@ -11682,7 +11682,7 @@ Private Sub HandleOnlineGM(ByVal UserIndex As Integer)
     
     With UserList(UserIndex)
         'Remove packet ID
-        Call .incomingData.ReadByte
+        Call .incomingData.ReadID
         
         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then Exit Sub
 
@@ -11735,7 +11735,7 @@ Private Sub HandleOnlineMap(ByVal UserIndex As Integer)
     '***************************************************
     With UserList(UserIndex)
         'Remove packet ID
-        Call .incomingData.ReadByte
+        Call .incomingData.ReadID
         
         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then Exit Sub
         
@@ -11790,7 +11790,7 @@ Private Sub HandleForgive(ByVal UserIndex As Integer)
     '***************************************************
     With UserList(UserIndex)
         'Remove packet ID
-        Call .incomingData.ReadByte
+        Call .incomingData.ReadID
         
         'Se asegura que el target es un npc
         If .flags.TargetNPC = 0 Then
@@ -12187,7 +12187,7 @@ Private Sub HandleNPCFollow(ByVal UserIndex As Integer)
     '***************************************************
     With UserList(UserIndex)
         'Remove packet ID
-        Call .incomingData.ReadByte
+        Call .incomingData.ReadID
         
         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then Exit Sub
         
@@ -12336,7 +12336,7 @@ Private Sub HandleSpawnListRequest(ByVal UserIndex As Integer)
     '***************************************************
     With UserList(UserIndex)
         'Remove packet ID
-        Call .incomingData.ReadByte
+        Call .incomingData.ReadID
         
         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then Exit Sub
         
@@ -12376,7 +12376,7 @@ Private Sub HandleSpawnCreature(ByVal UserIndex As Integer)
     
     With UserList(UserIndex)
         'Remove packet ID
-        Call .incomingData.ReadByte
+        Call .incomingData.ReadID
         
         Dim npc As Integer
 
@@ -12417,7 +12417,7 @@ Private Sub HandleResetNPCInventory(ByVal UserIndex As Integer)
     '***************************************************
     With UserList(UserIndex)
         'Remove packet ID
-        Call .incomingData.ReadByte
+        Call .incomingData.ReadID
         
         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.RoleMaster) Then Exit Sub
         If .flags.TargetNPC = 0 Then Exit Sub
@@ -12453,7 +12453,7 @@ Private Sub HandleCleanWorld(ByVal UserIndex As Integer)
     '***************************************************
     With UserList(UserIndex)
         'Remove packet ID
-        Call .incomingData.ReadByte
+        Call .incomingData.ReadID
 
         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.RoleMaster) Then Exit Sub
 
@@ -12664,7 +12664,7 @@ Private Sub HandleIPToNick(ByVal UserIndex As Integer)
     
     With UserList(UserIndex)
         'Remove packet ID
-        Call .incomingData.ReadByte
+        Call .incomingData.ReadID
         
         Dim ip    As String
 
@@ -12813,7 +12813,7 @@ Private Sub HandleTeleportCreate(ByVal UserIndex As Integer)
     
     With UserList(UserIndex)
         'Remove packet ID
-        Call .incomingData.ReadByte
+        Call .incomingData.ReadID
         
         Dim Mapa As Integer
 
@@ -12897,7 +12897,7 @@ Private Sub HandleTeleportDestroy(ByVal UserIndex As Integer)
         Dim Y    As Byte
         
         'Remove packet ID
-        Call .incomingData.ReadByte
+        Call .incomingData.ReadID
         
         '/dt
         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
@@ -12966,7 +12966,7 @@ Private Sub HandleRainToggle(ByVal UserIndex As Integer)
     '***************************************************
     With UserList(UserIndex)
         'Remove packet ID
-        Call .incomingData.ReadByte
+        Call .incomingData.ReadID
         
         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then Exit Sub
         
@@ -13086,7 +13086,7 @@ Private Sub HanldeForceMIDIToMap(ByVal UserIndex As Integer)
     
     With UserList(UserIndex)
         'Remove packet ID
-        Call .incomingData.ReadByte
+        Call .incomingData.ReadID
         
         Dim midiID As Byte
 
@@ -13149,7 +13149,7 @@ Private Sub HandleForceWAVEToMap(ByVal UserIndex As Integer)
     
     With UserList(UserIndex)
         'Remove packet ID
-        Call .incomingData.ReadByte
+        Call .incomingData.ReadID
         
         Dim waveID As Byte
 
@@ -13515,7 +13515,7 @@ Private Sub HandleDestroyAllItemsInArea(ByVal UserIndex As Integer)
     '***************************************************
     With UserList(UserIndex)
         'Remove packet ID
-        Call .incomingData.ReadByte
+        Call .incomingData.ReadID
         
         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
         
@@ -13728,7 +13728,7 @@ Private Sub HandleItemsInTheFloor(ByVal UserIndex As Integer)
     '***************************************************
     With UserList(UserIndex)
         'Remove packet ID
-        Call .incomingData.ReadByte
+        Call .incomingData.ReadID
         
         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
         
@@ -13922,7 +13922,7 @@ Private Sub HandleDumpIPTables(ByVal UserIndex As Integer)
     '***************************************************
     With UserList(UserIndex)
         'Remove packet ID
-        Call .incomingData.ReadByte
+        Call .incomingData.ReadID
         
         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
         
@@ -14066,7 +14066,7 @@ Private Sub HandleSetTrigger(ByVal UserIndex As Integer)
     
     With UserList(UserIndex)
         'Remove packet ID
-        Call .incomingData.ReadByte
+        Call .incomingData.ReadID
         
         Dim tTrigger As Byte
 
@@ -14115,7 +14115,7 @@ Private Sub HandleAskTrigger(ByVal UserIndex As Integer)
     
     With UserList(UserIndex)
         'Remove packet ID
-        Call .incomingData.ReadByte
+        Call .incomingData.ReadID
         
         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
@@ -14153,7 +14153,7 @@ Private Sub HandleBannedIPList(ByVal UserIndex As Integer)
     '***************************************************
     With UserList(UserIndex)
         'Remove packet ID
-        Call .incomingData.ReadByte
+        Call .incomingData.ReadID
         
         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
@@ -14199,7 +14199,7 @@ Private Sub HandleBannedIPReload(ByVal UserIndex As Integer)
     '***************************************************
     With UserList(UserIndex)
         'Remove packet ID
-        Call .incomingData.ReadByte
+        Call .incomingData.ReadID
         
         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
@@ -14463,7 +14463,7 @@ Private Sub HandleUnbanIP(ByVal UserIndex As Integer)
     
     With UserList(UserIndex)
         'Remove packet ID
-        Call .incomingData.ReadByte
+        Call .incomingData.ReadID
         
         Dim bannedIP As String
         
@@ -14516,7 +14516,7 @@ Private Sub HandleCreateItem(ByVal UserIndex As Integer)
     With UserList(UserIndex)
 
         'Remove packet ID
-        Call .incomingData.ReadByte
+        Call .incomingData.ReadID
 
         Dim tObj    As Integer
         Dim Cuantos As Integer
@@ -14609,7 +14609,7 @@ Private Sub HandleDestroyItems(ByVal UserIndex As Integer)
     '***************************************************
     With UserList(UserIndex)
         'Remove packet ID
-        Call .incomingData.ReadByte
+        Call .incomingData.ReadID
         
         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
         
@@ -14856,7 +14856,7 @@ Private Sub HandleForceMIDIAll(ByVal UserIndex As Integer)
     
     With UserList(UserIndex)
         'Remove packet ID
-        Call .incomingData.ReadByte
+        Call .incomingData.ReadID
 
         Dim midiID As Byte
 
@@ -14902,7 +14902,7 @@ Private Sub HandleForceWAVEAll(ByVal UserIndex As Integer)
     
     With UserList(UserIndex)
         'Remove packet ID
-        Call .incomingData.ReadByte
+        Call .incomingData.ReadID
 
         Dim waveID As Byte
 
@@ -15033,7 +15033,7 @@ Private Sub HandleTileBlockedToggle(ByVal UserIndex As Integer)
     '***************************************************
     With UserList(UserIndex)
         'Remove packet ID
-        Call .incomingData.ReadByte
+        Call .incomingData.ReadID
         
         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then Exit Sub
 
@@ -15076,7 +15076,7 @@ Private Sub HandleKillNPCNoRespawn(ByVal UserIndex As Integer)
     '***************************************************
     With UserList(UserIndex)
         'Remove packet ID
-        Call .incomingData.ReadByte
+        Call .incomingData.ReadID
         
         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then Exit Sub
         
@@ -15113,7 +15113,7 @@ Private Sub HandleKillAllNearbyNPCs(ByVal UserIndex As Integer)
     '***************************************************
     With UserList(UserIndex)
         'Remove packet ID
-        Call .incomingData.ReadByte
+        Call .incomingData.ReadID
         
         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then Exit Sub
             
@@ -15286,7 +15286,7 @@ Public Sub HandleChatColor(ByVal UserIndex As Integer)
     
     With UserList(UserIndex)
         'Remove packet ID
-        Call .incomingData.ReadByte
+        Call .incomingData.ReadID
         
         Dim Color As Long
         
@@ -15325,7 +15325,7 @@ Public Sub HandleIgnored(ByVal UserIndex As Integer)
     '***************************************************
     With UserList(UserIndex)
         'Remove packet ID
-        Call .incomingData.ReadByte
+        Call .incomingData.ReadID
         
         If .flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero) Then
             .flags.AdminPerseguible = Not .flags.AdminPerseguible
@@ -15444,7 +15444,7 @@ Public Sub HandleResetAutoUpdate(ByVal UserIndex As Integer)
     '***************************************************
     With UserList(UserIndex)
         'Remove packet ID
-        Call .incomingData.ReadByte
+        Call .incomingData.ReadID
         
         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
         
@@ -15477,8 +15477,8 @@ Public Sub HandleRestart(ByVal UserIndex As Integer)
     'Restart the game
     '***************************************************
     With UserList(UserIndex)
-        'Remove Packet ID
-        Call .incomingData.ReadByte
+        'Remove packet ID
+        Call .incomingData.ReadID
     
         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
         
@@ -15514,8 +15514,8 @@ Public Sub HandleReloadObjects(ByVal UserIndex As Integer)
     'Reload the objects
     '***************************************************
     With UserList(UserIndex)
-        'Remove Packet ID
-        Call .incomingData.ReadByte
+        'Remove packet ID
+        Call .incomingData.ReadID
         
         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
@@ -15553,8 +15553,8 @@ Public Sub HandleReloadSpells(ByVal UserIndex As Integer)
     'Reload the spells
     '***************************************************
     With UserList(UserIndex)
-        'Remove Packet ID
-        Call .incomingData.ReadByte
+        'Remove packet ID
+        Call .incomingData.ReadID
         
         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
@@ -15589,8 +15589,8 @@ Public Sub HandleReloadServerIni(ByVal UserIndex As Integer)
     'Reload the Server`s INI
     '***************************************************
     With UserList(UserIndex)
-        'Remove Packet ID
-        Call .incomingData.ReadByte
+        'Remove packet ID
+        Call .incomingData.ReadID
         
         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
@@ -15625,8 +15625,8 @@ Public Sub HandleReloadNPCs(ByVal UserIndex As Integer)
     'Reload the Server`s NPC
     '***************************************************
     With UserList(UserIndex)
-        'Remove Packet ID
-        Call .incomingData.ReadByte
+        'Remove packet ID
+        Call .incomingData.ReadID
         
         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
          
@@ -15663,8 +15663,8 @@ Public Sub HandleRequestTCPStats(ByVal UserIndex As Integer)
     'Send the TCP`s stadistics
     '***************************************************
     With UserList(UserIndex)
-        'Remove Packet ID
-        Call .incomingData.ReadByte
+        'Remove packet ID
+        Call .incomingData.ReadID
         
         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
                 
@@ -15734,8 +15734,8 @@ Public Sub HandleKickAllChars(ByVal UserIndex As Integer)
     'Kick all the chars that are online
     '***************************************************
     With UserList(UserIndex)
-        'Remove Packet ID
-        Call .incomingData.ReadByte
+        'Remove packet ID
+        Call .incomingData.ReadID
         
         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
@@ -15771,8 +15771,8 @@ Public Sub HandleNight(ByVal UserIndex As Integer)
     '
     '***************************************************
     With UserList(UserIndex)
-        'Remove Packet ID
-        Call .incomingData.ReadByte
+        'Remove packet ID
+        Call .incomingData.ReadID
         
         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
 
@@ -15801,8 +15801,8 @@ Public Sub HandleDay(ByVal UserIndex As Integer)
     On Error GoTo HandleDay_Err
 
     With UserList(UserIndex)
-        'Remove Packet ID
-        Call .incomingData.ReadByte
+        'Remove packet ID
+        Call .incomingData.ReadID
         
         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
 
@@ -15831,8 +15831,8 @@ Public Sub HandleSetTime(ByVal UserIndex As Integer)
     On Error GoTo HandleSetTime_Err
 
     With UserList(UserIndex)
-        'Remove Packet ID
-        Call .incomingData.ReadByte
+        'Remove packet ID
+        Call .incomingData.ReadID
 
         Dim HoraDia As Long
         HoraDia = .incomingData.ReadLong
@@ -15859,8 +15859,8 @@ Public Sub HandleDonateGold(ByVal UserIndex As Integer)
      On Error GoTo handle
 
      With UserList(UserIndex)
-         'Remove Packet ID
-        Call .incomingData.ReadByte
+         'Remove packet ID
+        Call .incomingData.ReadID
 
         Dim Oro As Long
         Oro = .incomingData.ReadLong
@@ -16083,8 +16083,8 @@ Public Sub HandleShowServerForm(ByVal UserIndex As Integer)
     'Show the server form
     '***************************************************
     With UserList(UserIndex)
-        'Remove Packet ID
-        Call .incomingData.ReadByte
+        'Remove packet ID
+        Call .incomingData.ReadID
         
         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
@@ -16118,8 +16118,8 @@ Public Sub HandleCleanSOS(ByVal UserIndex As Integer)
     'Clean the SOS
     '***************************************************
     With UserList(UserIndex)
-        'Remove Packet ID
-        Call .incomingData.ReadByte
+        'Remove packet ID
+        Call .incomingData.ReadID
         
         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
@@ -16154,8 +16154,8 @@ Public Sub HandleSaveChars(ByVal UserIndex As Integer)
     'Save the characters
     '***************************************************
     With UserList(UserIndex)
-        'Remove Packet ID
-        Call .incomingData.ReadByte
+        'Remove packet ID
+        Call .incomingData.ReadID
         
         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.RoleMaster) Then Exit Sub
         
@@ -16197,8 +16197,8 @@ Public Sub HandleChangeMapInfoBackup(ByVal UserIndex As Integer)
     End If
     
     With UserList(UserIndex)
-        'Remove Packet ID
-        Call .incomingData.ReadByte
+        'Remove packet ID
+        Call .incomingData.ReadID
         
         Dim doTheBackUp As Boolean
         
@@ -16255,8 +16255,8 @@ Public Sub HandleChangeMapInfoPK(ByVal UserIndex As Integer)
     End If
     
     With UserList(UserIndex)
-        'Remove Packet ID
-        Call .incomingData.ReadByte
+        'Remove packet ID
+        Call .incomingData.ReadID
         
         Dim isMapPk As Boolean
         
@@ -16396,8 +16396,8 @@ Public Sub HandleChangeMapInfoNoMagic(ByVal UserIndex As Integer)
     Dim nomagic As Boolean
     
     With UserList(UserIndex)
-        'Remove Packet ID
-        Call .incomingData.ReadByte
+        'Remove packet ID
+        Call .incomingData.ReadID
         
         nomagic = .incomingData.ReadBoolean
         
@@ -16444,8 +16444,8 @@ Public Sub HandleChangeMapInfoNoInvi(ByVal UserIndex As Integer)
     Dim noinvi As Boolean
     
     With UserList(UserIndex)
-        'Remove Packet ID
-        Call .incomingData.ReadByte
+        'Remove packet ID
+        Call .incomingData.ReadID
         
         noinvi = .incomingData.ReadBoolean()
         
@@ -16492,8 +16492,8 @@ Public Sub HandleChangeMapInfoNoResu(ByVal UserIndex As Integer)
     Dim noresu As Boolean
     
     With UserList(UserIndex)
-        'Remove Packet ID
-        Call .incomingData.ReadByte
+        'Remove packet ID
+        Call .incomingData.ReadID
         
         noresu = .incomingData.ReadBoolean()
         
@@ -16668,8 +16668,8 @@ Public Sub HandleSaveMap(ByVal UserIndex As Integer)
     'Saves the map
     '***************************************************
     With UserList(UserIndex)
-        'Remove Packet ID
-        Call .incomingData.ReadByte
+        'Remove packet ID
+        Call .incomingData.ReadID
         
         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
@@ -16766,8 +16766,8 @@ Public Sub HandleDoBackUp(ByVal UserIndex As Integer)
     'Show guilds messages
     '***************************************************
     With UserList(UserIndex)
-        'Remove Packet ID
-        Call .incomingData.ReadByte
+        'Remove packet ID
+        Call .incomingData.ReadID
         
         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
 
@@ -17079,8 +17079,8 @@ Public Sub HandleCreateNPC(ByVal UserIndex As Integer)
     
     With UserList(UserIndex)
     
-        'Remove Packet ID
-        Call .incomingData.ReadByte
+        'Remove packet ID
+        Call .incomingData.ReadID
         
         Dim NpcIndex As Integer: NpcIndex = .incomingData.ReadInteger()
         
@@ -17132,8 +17132,8 @@ Public Sub HandleCreateNPCWithRespawn(ByVal UserIndex As Integer)
     End If
     
     With UserList(UserIndex)
-        'Remove Packet ID
-        Call .incomingData.ReadByte
+        'Remove packet ID
+        Call .incomingData.ReadID
         
         Dim NpcIndex As Integer
         
@@ -17181,8 +17181,8 @@ Public Sub HandleImperialArmour(ByVal UserIndex As Integer)
     End If
     
     With UserList(UserIndex)
-        'Remove Packet ID
-        Call .incomingData.ReadByte
+        'Remove packet ID
+        Call .incomingData.ReadID
         
         Dim index    As Byte
 
@@ -17242,8 +17242,8 @@ Public Sub HandleChaosArmour(ByVal UserIndex As Integer)
     End If
     
     With UserList(UserIndex)
-        'Remove Packet ID
-        Call .incomingData.ReadByte
+        'Remove packet ID
+        Call .incomingData.ReadID
         
         Dim index    As Byte
 
@@ -17297,8 +17297,8 @@ Public Sub HandleNavigateToggle(ByVal UserIndex As Integer)
     '
     '***************************************************
     With UserList(UserIndex)
-        'Remove Packet ID
-        Call .incomingData.ReadByte
+        'Remove packet ID
+        Call .incomingData.ReadID
         
         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then Exit Sub
         
@@ -17339,8 +17339,8 @@ Public Sub HandleServerOpenToUsersToggle(ByVal UserIndex As Integer)
     '
     '***************************************************
     With UserList(UserIndex)
-        'Remove Packet ID
-        Call .incomingData.ReadByte
+        'Remove packet ID
+        Call .incomingData.ReadID
         
         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster) Then Exit Sub
         
@@ -17382,8 +17382,8 @@ Public Sub HandleParticipar(ByVal UserIndex As Integer)
     Dim handle As Integer
     
     With UserList(UserIndex)
-        'Remove Packet ID
-        Call .incomingData.ReadByte
+        'Remove packet ID
+        Call .incomingData.ReadID
         
         If Torneo.HayTorneoaActivo = False Then
             Call WriteConsoleMsg(UserIndex, "No hay ningún evento disponible.", FontTypeNames.FONTTYPE_INFO)
@@ -17913,8 +17913,8 @@ Public Sub HandleChangeMOTD(ByVal UserIndex As Integer)
     'Change the MOTD
     '***************************************************
     With UserList(UserIndex)
-        'Remove Packet ID
-        Call .incomingData.ReadByte
+        'Remove packet ID
+        Call .incomingData.ReadID
         
         If (.flags.Privilegios And (PlayerType.RoleMaster Or PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) Then
             Exit Sub
@@ -17966,8 +17966,8 @@ Public Sub HandlePing(ByVal UserIndex As Integer)
     'Show guilds messages
     '***************************************************
     With UserList(UserIndex)
-        'Remove Packet ID
-        Call .incomingData.ReadByte
+        'Remove packet ID
+        Call .incomingData.ReadID
 
         Dim Time As Long
         
@@ -24338,8 +24338,8 @@ Public Sub HandleGlobalOnOff(ByVal UserIndex As Integer)
 
     'Author: Pablo Mercavides
     With UserList(UserIndex)
-        'Remove Packet ID
-        Call .incomingData.ReadByte
+        'Remove packet ID
+        Call .incomingData.ReadID
         
         If Not EsGM(UserIndex) Then Exit Sub
         Call LogGM(.name, "/GLOBAL")
