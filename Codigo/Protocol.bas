@@ -3293,7 +3293,7 @@ Private Sub HandleCastSpell(ByVal UserIndex As Integer)
         
 124         If .flags.Hechizo <> 0 Then
 
-126             If (.flags.Privilegios And PlayerType.Consejero Or PlayerType.SemiDios) = 0 Then
+126             If (.flags.Privilegios And (PlayerType.Consejero Or PlayerType.SemiDios)) = 0 Then
 
                     Dim uh As Integer
                 
@@ -13329,7 +13329,7 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
                 End If
                 
                 Dim NotConsejero As Boolean
-144             NotConsejero = (.flags.Privilegios And PlayerType.Consejero Or PlayerType.SemiDios) = 0
+144             NotConsejero = (.flags.Privilegios And (PlayerType.Consejero Or PlayerType.SemiDios)) = 0
                 
                 ' Consejeros sólo pueden traer en el mismo mapa
 146             If NotConsejero Or .Pos.Map = UserList(tUser).Pos.Map Then
