@@ -1499,6 +1499,7 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
     
         End If
         
+        .errNumber = 0
         UserList(UserIndex).LastPacketID = PacketID
     
     End With
