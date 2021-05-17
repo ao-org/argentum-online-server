@@ -567,7 +567,7 @@ Public Sub EventoSockAccept(ByVal SockID As Long)
             
         Else
             Dim TempBuffer As t_DataBuffer
-172         TempBuffer = Protocol.PrepareMessageErrorMsg("El server se encuentra lleno en este momento. Disculpe las molestias ocasionadas.")
+172         TempBuffer = PrepareMessageErrorMsg("El server se encuentra lleno en este momento. Disculpe las molestias ocasionadas.")
 
 176         data = TempBuffer.data
         
