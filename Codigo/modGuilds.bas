@@ -1105,7 +1105,7 @@ Public Sub SendGuildDetails(ByVal UserIndex As Integer, ByRef GuildName As Strin
 102     If GI = 0 Then Exit Sub
     
 104     With guilds(GI)
-106         Call Protocol.WriteGuildDetails(UserIndex, GuildName, .Fundador, .GetFechaFundacion, .GetLeader, .CantidadDeMiembros, Alineacion2String(.Alineacion), .GetDesc, .GetNivelDeClan, .GetExpActual, .GetExpNecesaria)
+106         Call WriteGuildDetails(UserIndex, GuildName, .Fundador, .GetFechaFundacion, .GetLeader, .CantidadDeMiembros, Alineacion2String(.Alineacion), .GetDesc, .GetNivelDeClan, .GetExpActual, .GetExpNecesaria)
 
         End With
 
@@ -1143,7 +1143,7 @@ Public Sub SendGuildLeaderInfo(ByVal UserIndex As Integer)
         
 106         If GI <= 0 Or GI > CANTIDADDECLANES Then
                 'Send the guild list instead
-108             Call Protocol.WriteGuildList(UserIndex, guildList)
+108             Call WriteGuildList(UserIndex, guildList)
                 Exit Sub
 
             End If
@@ -1152,7 +1152,7 @@ Public Sub SendGuildLeaderInfo(ByVal UserIndex As Integer)
                 'Send the guild list instead
 112             Call modGuilds.SendGuildNews(UserIndex, guildList)
                 '            Call WriteGuildMemberInfo(UserIndex, guildList, MemberList)
-                ' Call Protocol.WriteGuildList(UserIndex, guildList)
+                ' Call WriteGuildList(UserIndex, guildList)
                 Exit Sub
 
             End If
@@ -1954,13 +1954,13 @@ Public Sub SendDetallesPersonaje(ByVal UserIndex As Integer, ByVal Personaje As 
 102     Personaje = UCase$(Personaje)
     
 104     If GI <= 0 Or GI > CANTIDADDECLANES Then
-106         Call Protocol.WriteConsoleMsg(UserIndex, "No perteneces a ningun clan.", FontTypeNames.FONTTYPE_INFO)
+106         Call WriteConsoleMsg(UserIndex, "No perteneces a ningun clan.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
     
 108     If Not m_EsGuildLeader(UserList(UserIndex).name, GI) Then
-110         Call Protocol.WriteConsoleMsg(UserIndex, "No eres el lider de tu clan.", FontTypeNames.FONTTYPE_INFO)
+110         Call WriteConsoleMsg(UserIndex, "No eres el lider de tu clan.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
@@ -1991,7 +1991,7 @@ Public Sub SendDetallesPersonaje(ByVal UserIndex As Integer, ByVal Personaje As 
 134         Next i
         
 136         If i > UBound(list()) Then
-138             Call Protocol.WriteConsoleMsg(UserIndex, "El personaje no es ni aspirante ni miembro del clan.", FontTypeNames.FONTTYPE_INFO)
+138             Call WriteConsoleMsg(UserIndex, "El personaje no es ni aspirante ni miembro del clan.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If

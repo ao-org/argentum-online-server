@@ -2357,31 +2357,40 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
                 Dim NumNpc As Integer, NpcIndex As Integer
                  
 282             For i = 1 To .NumeroNPCs
-
 284                 NumNpc = NPCs(i).NpcIndex
                     
 286                 If NumNpc > 0 Then
 288                     npcfile = DatPath & "NPCs.dat"
-
 290                     NpcIndex = OpenNPC(NumNpc)
-292                     MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex = NpcIndex
-
-294                     NpcList(NpcIndex).Pos.Map = Map
-296                     NpcList(NpcIndex).Pos.X = NPCs(i).X
-298                     NpcList(NpcIndex).Pos.Y = NPCs(i).Y
-
-                        ' WyroX: guardo siempre la pos original... puede sernos útil ;)
-300                     NpcList(NpcIndex).Orig = NpcList(NpcIndex).Pos
-
-302                     If NpcList(NpcIndex).name = "" Then
-                       
-304                         MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex = 0
-                        Else
-
-306                         Call MakeNPCChar(True, 0, NpcIndex, Map, NPCs(i).X, NPCs(i).Y)
                         
-                        End If
+                        ' Jopi: Evitamos meter NPCs en el mapa que no existen o estan mal dateados.
+                        If NpcIndex > 0 Then
+                        
+292                         MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex = NpcIndex
+    
+294                         NpcList(NpcIndex).Pos.Map = Map
+296                         NpcList(NpcIndex).Pos.X = NPCs(i).X
+298                         NpcList(NpcIndex).Pos.Y = NPCs(i).Y
+    
+                            ' WyroX: guardo siempre la pos original... puede sernos útil ;)
+300                         NpcList(NpcIndex).Orig = NpcList(NpcIndex).Pos
+    
+302                         If LenB(NpcList(NpcIndex).name) = 0 Then
 
+304                             MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex = 0
+
+                            Else
+    
+306                             Call MakeNPCChar(True, 0, NpcIndex, Map, NPCs(i).X, NPCs(i).Y)
+                            
+                            End If
+                           
+                        Else
+                            
+                            ' Lo guardo en los logs + aparece en el Debug.Print
+                            Call RegistrarError(404, "NPC no existe en los .DAT's o está mal dateado. Posicion: " & Map & "-" & NPCs(i).X & "-" & NPCs(i).Y, "ES.CargarMapaFormatoCSM")
+                            
+                        End If
                     End If
 
 308             Next i

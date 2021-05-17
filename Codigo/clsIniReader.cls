@@ -249,7 +249,8 @@ Public Sub Initialize(ByVal File As String)
         Exit Sub
 
 Initialize_Err:
-152     Call RegistrarError(Err.Number, Err.Description, "clsIniReader.Initialize", Erl)
+        Close handle
+152     Call RegistrarError(Err.Number, Err.Description & vbNewLine & "Archivo: " & File, "clsIniReader.Initialize", Erl)
 
         
 End Sub

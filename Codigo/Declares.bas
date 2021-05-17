@@ -190,11 +190,11 @@ End Type
 Public Enum PlayerType
 
     user = &H1
-    Consejero = &H2
-    SemiDios = &H4
-    Dios = &H8
-    Admin = &H10
-    RoleMaster = &H20
+    RoleMaster = &H2
+    Consejero = &H4
+    SemiDios = &H8
+    Dios = &H10
+    Admin = &H20
     ChaosCouncil = &H40
     RoyalCouncil = &H80
 
@@ -1791,7 +1791,7 @@ Public Type user
     name As String
     Cuenta As String
     
-    Id As Long
+    ID As Long
     AccountId As Long
     
     Grupo As Tgrupo
@@ -1884,7 +1884,10 @@ Public Type user
     
     ' Solo se usa si la variable de compilación AntiExternos = 1
     Redundance As Byte
-    
+
+    LastPacketID As Byte
+    LastNewPacketID As Byte
+
 End Type
 
 '*********************************************************
