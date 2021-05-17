@@ -4656,7 +4656,7 @@ Private Sub HandleCreateNewGuild(ByVal UserIndex As Integer)
 122             Call QuitarObjetos(409, 1, UserIndex)
 124             Call QuitarObjetos(411, 1, UserIndex)
 
-126             Call SendData(SendTarget.ToAll, UserIndex, PrepareMessageConsoleMsg(.name & " fundó el clan " & GuildName & " con alineación: " & Alineacion & ".", FontTypeNames.FONTTYPE_GUILD))
+126             Call SendData(SendTarget.ToAll, UserIndex, PrepareMessageConsoleMsg(.name & " fundó el clan " & GuildName & " con alineación " & IIf(Alineacion = 0, "ciudadana", "criminal") & ".", FontTypeNames.FONTTYPE_GUILD))
 128             Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(44, NO_3D_SOUND, NO_3D_SOUND))
                 'Update tag
 130             Call RefreshCharStatus(UserIndex)
