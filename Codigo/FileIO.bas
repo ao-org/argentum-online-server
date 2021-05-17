@@ -2860,6 +2860,7 @@ Sub LoadConfiguraciones()
 128     Call CargarEventos
 130     Call CargarInfoRetos
 132     Call CargarInfoEventos
+        Call CargarMapasEspeciales
 
         Exit Sub
 

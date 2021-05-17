@@ -284,7 +284,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
         'Basic user data
 102     With UserList(UserIndex)
         
-104         ReDim Params(88)
+104         ReDim Params(91)
         
 106         Params(0) = .name
 108         Params(1) = .Stats.ELV
@@ -374,9 +374,12 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 276         Params(85) = .ChatGlobal
 278         Params(86) = IIf(Logout, 0, 1)
 280         Params(87) = .Stats.Advertencias
+            Params(88) = .flags.ReturnPos.Map
+            Params(89) = .flags.ReturnPos.X
+            Params(90) = .flags.ReturnPos.Y
         
             ' WHERE block
-282         Params(88) = .Id
+282         Params(91) = .Id
         
 284         Call MakeQuery(QUERY_UPDATE_MAINPJ, True, Params)
         
@@ -698,6 +701,10 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 240         .flags.MascotasGuardadas = QueryData!pets_saved
 242         .flags.ScrollExp = 1 'TODO: sacar
 244         .flags.ScrollOro = 1 'TODO: sacar
+
+            .flags.ReturnPos.Map = QueryData!return_map
+            .flags.ReturnPos.X = QueryData!return_x
+            .flags.ReturnPos.Y = QueryData!return_y
         
 246         .Counters.Pena = QueryData!counter_pena
         

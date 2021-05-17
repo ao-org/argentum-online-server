@@ -167,6 +167,8 @@ Public Const iGaleonCaos = 1263
 
 Public Const iRopaBuceoMuerto = 772
 
+Public MapasInterdimensionales() As Integer
+
 Public Enum iMinerales
 
     HierroCrudo = 192
@@ -1621,6 +1623,8 @@ Public Type UserFlags
     AceptoReto As Integer
     SolicitudReto As SolicitudReto
     LastPos As WorldPos
+    
+    ReturnPos As WorldPos
     
 End Type
 

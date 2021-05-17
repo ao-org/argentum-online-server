@@ -1826,6 +1826,7 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 270         .SolicitudReto.estado = SolicitudRetoEstado.Libre
 272         .AceptoReto = 0
 274         .LastPos.Map = 0
+            .ReturnPos.Map = 0
 
         End With
 
