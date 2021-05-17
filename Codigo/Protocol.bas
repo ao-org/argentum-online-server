@@ -13877,23 +13877,21 @@ Private Sub HandleTeleportCreate(ByVal UserIndex As Integer)
 114         If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Then Exit Sub
         
 116         Call LogGM(.name, "/CT " & Mapa & "," & X & "," & Y)
+
+118         If (Not MapaValido(Mapa) Or Not InMapBounds(Mapa, X, Y)) And Not EsMapaInterdimensional(UserList(UserIndex).Pos.Map) Then Exit Sub
         
-118         If Not MapaValido(Mapa) Or Not InMapBounds(Mapa, X, Y) Then Exit Sub
-        
-120         If MapData(.Pos.Map, .Pos.X, .Pos.Y - 1).ObjInfo.ObjIndex > 0 Then Exit Sub
+120         If MapData(.Pos.Map, .Pos.X, .Pos.Y - 1).ObjInfo.ObjIndex > 0 Then
+                Call WriteConsoleMsg(UserIndex, "Hay un objeto en el piso en ese lugar", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
         
 122         If MapData(.Pos.Map, .Pos.X, .Pos.Y - 1).TileExit.Map > 0 Then Exit Sub
         
-124         If MapData(Mapa, X, Y).ObjInfo.ObjIndex > 0 Then
-126             Call WriteConsoleMsg(UserIndex, "Hay un objeto en el piso en ese lugar", FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-
-            End If
-        
-128         If MapData(Mapa, X, Y).TileExit.Map > 0 Then
-130             Call WriteConsoleMsg(UserIndex, "No podés crear un teleport que apunte a la entrada de otro.", FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-
+            If Mapa > 0 Then
+128             If MapData(Mapa, X, Y).TileExit.Map > 0 Then
+130                 Call WriteConsoleMsg(UserIndex, "No podés crear un teleport que apunte a la entrada de otro.", FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                End If
             End If
         
             Rem Call WriteParticleFloorCreate(UserIndex, 37, -1, .Pos.map, .Pos.X, .Pos.Y - 1)

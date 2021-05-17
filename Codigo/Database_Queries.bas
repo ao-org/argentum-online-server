@@ -294,7 +294,10 @@ Private Sub ConstruirQuery_GuardarPersonaje()
 270     QueryBuilder.Append "chat_combate = ?, "
 272     QueryBuilder.Append "chat_global = ?, "
 274     QueryBuilder.Append "is_logged = ?, "
-276     QueryBuilder.Append "warnings = ? "
+276     QueryBuilder.Append "warnings = ?,"
+        QueryBuilder.Append "return_map = ?,"
+        QueryBuilder.Append "return_x = ?,"
+        QueryBuilder.Append "return_y = ? "
 278     QueryBuilder.Append " WHERE id = ?"
     
         ' Guardo la query ensamblada

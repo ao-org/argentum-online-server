@@ -2950,3 +2950,13 @@ Public Function GetProcess(ByVal processName As String) As Byte
 112     GetProcess = processCount
 
 End Function
+
+Public Function EsMapaInterdimensional(ByVal Map As Integer) As Boolean
+    Dim i As Integer
+    For i = 1 To UBound(MapasInterdimensionales)
+        If Map = MapasInterdimensionales(i) Then
+            EsMapaInterdimensional = True
+            Exit Function
+        End If
+    Next
+End Function

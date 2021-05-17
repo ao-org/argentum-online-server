@@ -271,67 +271,112 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
         Dim nPos   As WorldPos
 
         Dim EsTeleport As Boolean
+        
+        Dim aN As Integer
+        
+        With UserList(UserIndex)
 
-        'Controla las salidas
-100     If InMapBounds(Map, X, Y) Then
+            'Controla las salidas
+100         If InMapBounds(Map, X, Y) Then
+        
+102             If MapData(Map, X, Y).ObjInfo.ObjIndex > 0 Then
+104                 EsTeleport = ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).OBJType = eOBJType.otTeleport
+                End If
     
-102         If MapData(Map, X, Y).ObjInfo.ObjIndex > 0 Then
-104             EsTeleport = ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).OBJType = eOBJType.otTeleport
-            End If
-
-106         If (MapData(Map, X, Y).TileExit.Map > 0) And (MapData(Map, X, Y).TileExit.Map <= NumMaps) Then
-
-                ' WyroX: Restricciones de mapas
-108             If CheckMapRestrictions(UserIndex, MapData(Map, X, Y).TileExit.Map) Then
-110                 If LegalPos(MapData(Map, X, Y).TileExit.Map, MapData(Map, X, Y).TileExit.X, MapData(Map, X, Y).TileExit.Y, UserList(UserIndex).flags.Navegando = 1, , , False) Then
-112                     Call WarpUserChar(UserIndex, MapData(Map, X, Y).TileExit.Map, MapData(Map, X, Y).TileExit.X, MapData(Map, X, Y).TileExit.Y, EsTeleport)
-            
-                    Else
-114                     Call ClosestLegalPos(MapData(Map, X, Y).TileExit, nPos)
-
-116                     If nPos.X <> 0 And nPos.Y <> 0 Then
-118                         Call WarpUserChar(UserIndex, nPos.Map, nPos.X, nPos.Y, EsTeleport)
+106             If (MapData(Map, X, Y).TileExit.Map > 0) And (MapData(Map, X, Y).TileExit.Map <= NumMaps) Then
+    
+                    ' WyroX: Restricciones de mapas
+108                 If CheckMapRestrictions(UserIndex, MapData(Map, X, Y).TileExit.Map) Then
+                        If EsMapaInterdimensional(MapData(Map, X, Y).TileExit.Map) Then
+                            .flags.ReturnPos = .Pos
                         End If
 
+110                     If LegalPos(MapData(Map, X, Y).TileExit.Map, MapData(Map, X, Y).TileExit.X, MapData(Map, X, Y).TileExit.Y, .flags.Navegando = 1, , , False) Then
+112                         Call WarpUserChar(UserIndex, MapData(Map, X, Y).TileExit.Map, MapData(Map, X, Y).TileExit.X, MapData(Map, X, Y).TileExit.Y, EsTeleport)
+                
+                        Else
+114                         Call ClosestLegalPos(MapData(Map, X, Y).TileExit, nPos)
+    
+116                         If nPos.X <> 0 And nPos.Y <> 0 Then
+118                             Call WarpUserChar(UserIndex, nPos.Map, nPos.X, nPos.Y, EsTeleport)
+                            End If
+    
+                        End If
+                
+                    ' Si hay un teleport: movemos al usuario para que no se quede bloqueándolo
+120                 ElseIf EsTeleport Then
+122                     Call ClosestLegalPos(.Pos, nPos)
+    
+124                      If nPos.X <> 0 And nPos.Y <> 0 Then
+126                          Call WarpUserChar(UserIndex, nPos.Map, nPos.X, nPos.Y, EsTeleport)
+                        End If
                     End If
+    
+                    'Te fusite del mapa. La criatura ya no es más tuya ni te reconoce como que vos la atacaste.
+128                 aN = .flags.AtacadoPorNpc
+    
+130                 If aN > 0 Then
+132                     NpcList(aN).Movement = NpcList(aN).flags.OldMovement
+134                     NpcList(aN).Hostile = NpcList(aN).flags.OldHostil
+136                     NpcList(aN).flags.AttackedBy = vbNullString
+138                     NpcList(aN).Target = 0
+                    End If
+        
+140                 aN = .flags.NPCAtacado
+    
+142                 If aN > 0 Then
+144                     If NpcList(aN).flags.AttackedFirstBy = .name Then
+146                         NpcList(aN).flags.AttackedFirstBy = vbNullString
+    
+                        End If
+    
+                    End If
+    
+148                 .flags.AtacadoPorNpc = 0
+150                 .flags.NPCAtacado = 0
+    
+                ElseIf MapData(Map, X, Y).TileExit.Map < 0 Then
+                    If .flags.ReturnPos.Map <> 0 Then
+                        If LegalPos(.flags.ReturnPos.Map, .flags.ReturnPos.X, .flags.ReturnPos.Y, .flags.Navegando = 1, , , False) Then
+                            Call WarpUserChar(UserIndex, .flags.ReturnPos.Map, .flags.ReturnPos.X, .flags.ReturnPos.Y, False)
+                        
+                        Else
+                            Call ClosestLegalPos(.flags.ReturnPos, nPos)
+                        
+                            If nPos.X <> 0 And nPos.Y <> 0 Then
+                                Call WarpUserChar(UserIndex, nPos.Map, nPos.X, nPos.Y, EsTeleport)
+                            End If
+                        End If
+                        
+                        .flags.ReturnPos.Map = 0
+                        
+                        'Te fusite del mapa. La criatura ya no es más tuya ni te reconoce como que vos la atacaste.
+                        aN = .flags.AtacadoPorNpc
+        
+                        If aN > 0 Then
+                            NpcList(aN).Movement = NpcList(aN).flags.OldMovement
+                            NpcList(aN).Hostile = NpcList(aN).flags.OldHostil
+                            NpcList(aN).flags.AttackedBy = vbNullString
+                            NpcList(aN).Target = 0
+                        End If
             
-                ' Si hay un teleport: movemos al usuario para que no se quede bloqueándolo
-120             ElseIf EsTeleport Then
-122                 Call ClosestLegalPos(UserList(UserIndex).Pos, nPos)
-
-124                  If nPos.X <> 0 And nPos.Y <> 0 Then
-126                      Call WarpUserChar(UserIndex, nPos.Map, nPos.X, nPos.Y, EsTeleport)
+                        aN = .flags.NPCAtacado
+        
+                        If aN > 0 Then
+                            If NpcList(aN).flags.AttackedFirstBy = .name Then
+                                NpcList(aN).flags.AttackedFirstBy = vbNullString
+        
+                            End If
+        
+                        End If
+        
+                        .flags.AtacadoPorNpc = 0
+                        .flags.NPCAtacado = 0
                     End If
                 End If
-
-                'Te fusite del mapa. La criatura ya no es más tuya ni te reconoce como que vos la atacaste.
-                Dim aN As Integer
-    
-128             aN = UserList(UserIndex).flags.AtacadoPorNpc
-
-130             If aN > 0 Then
-132                 NpcList(aN).Movement = NpcList(aN).flags.OldMovement
-134                 NpcList(aN).Hostile = NpcList(aN).flags.OldHostil
-136                 NpcList(aN).flags.AttackedBy = vbNullString
-138                 NpcList(aN).Target = 0
-                End If
-    
-140             aN = UserList(UserIndex).flags.NPCAtacado
-
-142             If aN > 0 Then
-144                 If NpcList(aN).flags.AttackedFirstBy = UserList(UserIndex).name Then
-146                     NpcList(aN).flags.AttackedFirstBy = vbNullString
-
-                    End If
-
-                End If
-
-148             UserList(UserIndex).flags.AtacadoPorNpc = 0
-150             UserList(UserIndex).flags.NPCAtacado = 0
-
             End If
-    
-        End If
+
+        End With
 
         Exit Sub
 
@@ -1616,3 +1661,28 @@ Public Function HayPuerta(ByVal Map As Integer, ByVal X As Integer, ByVal Y As I
 102         HayPuerta = (ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).OBJType = eOBJType.otPuertas) And ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).Cerrada = 1 And (ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).Llave = 0)
         End If
 End Function
+
+Public Sub CargarMapasEspeciales()
+
+    Dim File As clsIniReader
+    Set File = New clsIniReader
+    
+    Call File.Initialize(DatPath & "MapasEspeciales.dat")
+    
+    Dim Cantidad As Integer
+    Cantidad = val(File.GetValue("MapasInterdimensionales", "Cantidad"))
+    
+    If Cantidad > 0 Then
+        ReDim MapasInterdimensionales(1 To Cantidad)
+        
+        Dim i As Integer
+        For i = 1 To Cantidad
+            MapasInterdimensionales(i) = val(File.GetValue("MapasInterdimensionales", "Mapa" & i))
+        Next
+    Else
+        ReDim MapasInterdimensionales(0)
+    End If
+    
+    Set File = Nothing
+
+End Sub
