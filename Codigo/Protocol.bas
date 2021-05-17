@@ -19423,7 +19423,7 @@ Private Sub HandleRequestScreenShot(ByVal UserIndex As Integer)
             
         Dim tUser As Integer
             
-        If Not (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then Exit Sub
+        If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) = 0 Then Exit Sub
 
         If Len(Nick) <> 0 Then
             tUser = NameIndex(Nick)
