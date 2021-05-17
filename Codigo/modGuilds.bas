@@ -953,7 +953,7 @@ errh:
 
 End Sub
 
-Private Function GetGuildIndexFromChar(ByRef PlayerName As String) As Integer
+Public Function GetGuildIndexFromChar(ByRef PlayerName As String) As Integer
         
         On Error GoTo GetGuildIndexFromChar_Err
         
