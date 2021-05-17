@@ -409,9 +409,9 @@ Begin VB.Form frmMain
       End
       Begin VB.TextBox BroadMsg 
          Height          =   315
-         Left            =   -1080
+         Left            =   960
          TabIndex        =   3
-         Top             =   0
+         Top             =   240
          Width           =   3855
       End
       Begin VB.Label Label1 

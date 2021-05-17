@@ -718,7 +718,7 @@ End Sub
 ' @param userIndex The index of the User
 ' @param Datos The string that will be send
 
-Public Sub EnviarDatosASlot(ByVal UserIndex As Integer, ByRef Datos As String)
+Public Sub EnviarDatosASlot(ByVal UserIndex As Integer, ByRef Datos As t_DataBuffer)
             '***************************************************
             'Author: Unknown
             'Last Modification: 09/11/20
@@ -729,8 +729,7 @@ Public Sub EnviarDatosASlot(ByVal UserIndex As Integer, ByRef Datos As String)
         
             On Error GoTo EnviarDatosASlot_Err
         
-
-100         Call UserList(UserIndex).outgoingData.WriteASCIIStringFixed(Datos)
+100         Call UserList(UserIndex).outgoingData.WritePrepared(Datos)
 
             Exit Sub
 
@@ -1617,7 +1616,7 @@ Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 102         .name = vbNullString
 104         .Cuenta = vbNullString
-106         .Id = -1
+106         .ID = -1
 108         .AccountId = -1
 110         .Desc = vbNullString
 112         .DescRM = vbNullString
