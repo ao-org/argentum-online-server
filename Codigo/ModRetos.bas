@@ -933,13 +933,13 @@ Private Sub SalaLiberada(ByVal Sala As Integer)
         On Error GoTo ErrHandler
     
 100     Retos.Salas(Sala).EnUso = False
-    
+        Retos.SalasLibres = Retos.SalasLibres + 1
 102     If ListaDeEspera.Count > 0 Then
     
             Dim Oferente As Integer
 104         Oferente = ListaDeEspera.Keys(0)
 106         Call ListaDeEspera.Remove(Oferente)
-        
+            
 108         Call IniciarReto(Oferente, Sala)
 
         End If

@@ -287,7 +287,7 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
     
                     ' WyroX: Restricciones de mapas
 108                 If CheckMapRestrictions(UserIndex, MapData(Map, X, Y).TileExit.Map) Then
-                        If EsMapaInterdimensional(MapData(Map, X, Y).TileExit.Map) Then
+                        If EsMapaInterdimensional(MapData(Map, X, Y).TileExit.Map) And Not EsMapaInterdimensional(.Pos.Map) Then
                             .flags.ReturnPos = .Pos
                         End If
 
@@ -347,8 +347,6 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
                                 Call WarpUserChar(UserIndex, nPos.Map, nPos.X, nPos.Y, EsTeleport)
                             End If
                         End If
-                        
-                        .flags.ReturnPos.Map = 0
                         
                         'Te fusite del mapa. La criatura ya no es más tuya ni te reconoce como que vos la atacaste.
                         aN = .flags.AtacadoPorNpc

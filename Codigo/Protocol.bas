@@ -4424,12 +4424,12 @@ Private Sub HandleCreateNewGuild(ByVal UserIndex As Integer)
             Call QuitarObjetos(409, 1, UserIndex)
             Call QuitarObjetos(411, 1, UserIndex)
 
-            Call SendData(SendTarget.ToAll, UserIndex, PrepareMessageConsoleMsg(.name & " fundó el clan " & GuildName & " con alineación: " & Alineacion & ".", FontTypeNames.FONTTYPE_GUILD))
-            Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(44, NO_3D_SOUND, NO_3D_SOUND))
-            'Update tag
-            Call RefreshCharStatus(UserIndex)
-        Else
-            Call WriteConsoleMsg(UserIndex, errorStr, FontTypeNames.FONTTYPE_GUILD)
+126             Call SendData(SendTarget.ToAll, UserIndex, PrepareMessageConsoleMsg(.name & " fundó el clan " & GuildName & " con alineación " & IIf(Alineacion = 0, "ciudadana", "criminal") & ".", FontTypeNames.FONTTYPE_GUILD))
+128             Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(44, NO_3D_SOUND, NO_3D_SOUND))
+                'Update tag
+130             Call RefreshCharStatus(UserIndex)
+            Else
+132             Call WriteConsoleMsg(UserIndex, errorStr, FontTypeNames.FONTTYPE_GUILD)
 
         End If
 
@@ -11464,13 +11464,19 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
             ' Consejeros sólo pueden traer en el mismo mapa
             If NotConsejero Or .Pos.Map = UserList(tUser).Pos.Map Then
                     
-                ' Si el admin está invisible no mostramos el nombre
-                If NotConsejero And .flags.AdminInvisible = 1 Then
-                    Call WriteConsoleMsg(tUser, "Te han trasportado.", FontTypeNames.FONTTYPE_INFO)
-                Else
-                    Call WriteConsoleMsg(tUser, .name & " te ha trasportado.", FontTypeNames.FONTTYPE_INFO)
-
-                End If
+                    ' Si el admin está invisible no mostramos el nombre
+148                 If NotConsejero And .flags.AdminInvisible = 1 Then
+150                     Call WriteConsoleMsg(tUser, "Te han trasportado.", FontTypeNames.FONTTYPE_INFO)
+                    Else
+152                     Call WriteConsoleMsg(tUser, .name & " te ha trasportado.", FontTypeNames.FONTTYPE_INFO)
+                    End If
+                    
+                    'HarThaoS: Si lo sumonean a un mapa interdimensional desde uno no interdimensional me guardo la posición de donde viene.
+                    If EsMapaInterdimensional(.Pos.Map) And Not EsMapaInterdimensional(UserList(tUser).Pos.Map) Then
+                        UserList(tUser).flags.ReturnPos = UserList(tUser).Pos
+                    End If
+                    
+                    
 
                 Call WarpToLegalPos(tUser, .Pos.Map, .Pos.X, .Pos.Y + 1, True, True)
 
