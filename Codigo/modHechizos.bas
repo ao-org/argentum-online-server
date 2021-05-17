@@ -2782,7 +2782,10 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             End If
     
             'Para poder tirar curar a un pk en el ring
-346         If (TriggerZonaPelea(UserIndex, tempChr) <> TRIGGER6_PERMITE) Then
+            Dim trigger As eTrigger6
+            trigger = TriggerZonaPelea(UserIndex, tempChr)
+
+346         If trigger = TRIGGER6_AUSENTE Then
 348             If Status(tempChr) = 0 And Status(UserIndex) = 1 Or Status(tempChr) = 2 And Status(UserIndex) = 1 Then
 350                 If esArmada(UserIndex) Then
                         'Call WriteConsoleMsg(UserIndex, "Los Armadas no pueden ayudar a los Criminales", FontTypeNames.FONTTYPE_INFO)
@@ -2797,17 +2800,17 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 358                     Call WriteLocaleMsg(UserIndex, "378", FontTypeNames.FONTTYPE_INFO)
 360                     b = False
                         Exit Sub
-                    Else
-
-                        'Call DisNobAuBan(UserIndex, UserList(UserIndex).Reputacion.NobleRep * 0.5, 10000)
                     End If
 
                 End If
-
+                
+            ' Están en zona segura en un ring e intenta curarse desde afuera hacia adentro o viceversa
+            ElseIf trigger = TRIGGER6_PROHIBE And MapInfo(UserList(UserIndex).Pos.Map).Seguro <> 0 Then
+                b = False
+                Exit Sub
             End If
        
 362         Daño = RandomNumber(Hechizos(h).MinHp, Hechizos(h).MaxHp)
-            ' daño = daño + Porcentaje(daño, 2 * UserList(UserIndex).Stats.ELV)
     
 364         Call InfoHechizo(UserIndex)
 
