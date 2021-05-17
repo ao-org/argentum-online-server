@@ -25527,6 +25527,16 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
                 Exit Sub
             End If
         #End If
+        
+        Dim GuildIndex As Integer
+        GuildIndex = GetGuildIndexFromChar(UserDelete)
+        If GuildIndex > 0 Then
+            If LCase$(GuildLeader(GuildIndex)) = LCase$(UserDelete) Then
+                Call WriteShowMessageBox(UserIndex, "Primero deberás abandonar el clan del cual sos lider.")
+                Call CloseSocket(UserIndex)
+                Exit Sub
+            End If
+        End If
     
 130     If Not EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MacAddress, HDserial, MD5) Then
 132         Call CloseSocket(UserIndex)
