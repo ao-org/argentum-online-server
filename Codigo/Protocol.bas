@@ -13340,6 +13340,13 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
                     Else
 152                     Call WriteConsoleMsg(tUser, .name & " te ha trasportado.", FontTypeNames.FONTTYPE_INFO)
                     End If
+                    
+                    'HarThaoS: Si lo sumonean a un mapa interdimensional desde uno no interdimensional me guardo la posición de donde viene.
+                    If EsMapaInterdimensional(.Pos.Map) And Not EsMapaInterdimensional(UserList(tUser).Pos.Map) Then
+                        UserList(tUser).flags.ReturnPos = UserList(tUser).Pos
+                    End If
+                    
+                    
 
 154                 Call WarpToLegalPos(tUser, .Pos.Map, .Pos.X, .Pos.Y + 1, True, True)
 
