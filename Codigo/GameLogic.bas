@@ -288,6 +288,7 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
                     ' WyroX: Restricciones de mapas
 108                 If CheckMapRestrictions(UserIndex, MapData(Map, X, Y).TileExit.Map) Then
                         If EsMapaInterdimensional(MapData(Map, X, Y).TileExit.Map) And Not EsMapaInterdimensional(.Pos.Map) Then
+                            Call WriteConsoleMsg(UserIndex, "GUARDO POS", FontTypeNames.FONTTYPE_INFO)
                             .flags.ReturnPos = .Pos
                         End If
 
