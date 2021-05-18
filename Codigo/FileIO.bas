@@ -230,7 +230,7 @@ CargarSpawnList_Err:
         
 End Sub
 
-Function EsAdmin(ByRef name As String) As Boolean
+Function EsAdmin(ByRef Name As String) As Boolean
         '***************************************************
         'Author: Unknown
         'Last Modification: 27/03/2011
@@ -239,7 +239,7 @@ Function EsAdmin(ByRef name As String) As Boolean
         
         On Error GoTo EsAdmin_Err
         
-100     EsAdmin = (val(Administradores.GetValue("Admin", name)) = 1)
+100     EsAdmin = (val(Administradores.GetValue("Admin", Name)) = 1)
 
         
         Exit Function
@@ -250,7 +250,7 @@ EsAdmin_Err:
         
 End Function
 
-Function EsDios(ByRef name As String) As Boolean
+Function EsDios(ByRef Name As String) As Boolean
         '***************************************************
         'Author: Unknown
         'Last Modification: 27/03/2011
@@ -259,7 +259,7 @@ Function EsDios(ByRef name As String) As Boolean
         
         On Error GoTo EsDios_Err
         
-100     EsDios = (val(Administradores.GetValue("Dios", name)) = 1)
+100     EsDios = (val(Administradores.GetValue("Dios", Name)) = 1)
 
         
         Exit Function
@@ -270,7 +270,7 @@ EsDios_Err:
         
 End Function
 
-Function EsSemiDios(ByRef name As String) As Boolean
+Function EsSemiDios(ByRef Name As String) As Boolean
         '***************************************************
         'Author: Unknown
         'Last Modification: 27/03/2011
@@ -279,7 +279,7 @@ Function EsSemiDios(ByRef name As String) As Boolean
         
         On Error GoTo EsSemiDios_Err
         
-100     EsSemiDios = (val(Administradores.GetValue("SemiDios", name)) = 1)
+100     EsSemiDios = (val(Administradores.GetValue("SemiDios", Name)) = 1)
 
         
         Exit Function
@@ -290,7 +290,7 @@ EsSemiDios_Err:
         
 End Function
 
-Function EsConsejero(ByRef name As String) As Boolean
+Function EsConsejero(ByRef Name As String) As Boolean
         '***************************************************
         'Author: Unknown
         'Last Modification: 27/03/2011
@@ -299,7 +299,7 @@ Function EsConsejero(ByRef name As String) As Boolean
         
         On Error GoTo EsConsejero_Err
         
-100     EsConsejero = (val(Administradores.GetValue("Consejero", name)) = 1)
+100     EsConsejero = (val(Administradores.GetValue("Consejero", Name)) = 1)
 
         
         Exit Function
@@ -310,7 +310,7 @@ EsConsejero_Err:
         
 End Function
 
-Function EsRolesMaster(ByRef name As String) As Boolean
+Function EsRolesMaster(ByRef Name As String) As Boolean
         '***************************************************
         'Author: Unknown
         'Last Modification: 27/03/2011
@@ -319,7 +319,7 @@ Function EsRolesMaster(ByRef name As String) As Boolean
         
         On Error GoTo EsRolesMaster_Err
         
-100     EsRolesMaster = (val(Administradores.GetValue("RM", name)) = 1)
+100     EsRolesMaster = (val(Administradores.GetValue("RM", Name)) = 1)
 
         
         Exit Function
@@ -330,7 +330,7 @@ EsRolesMaster_Err:
         
 End Function
 
-Public Function EsGmChar(ByRef name As String) As Boolean
+Public Function EsGmChar(ByRef Name As String) As Boolean
         '***************************************************
         'Author: ZaMa
         'Last Modification: 27/03/2011
@@ -343,16 +343,16 @@ Public Function EsGmChar(ByRef name As String) As Boolean
         Dim EsGM As Boolean
     
         ' Admin?
-100     EsGM = EsAdmin(name)
+100     EsGM = EsAdmin(Name)
 
         ' Dios?
-102     If Not EsGM Then EsGM = EsDios(name)
+102     If Not EsGM Then EsGM = EsDios(Name)
 
         ' Semidios?
-104     If Not EsGM Then EsGM = EsSemiDios(name)
+104     If Not EsGM Then EsGM = EsSemiDios(Name)
 
         ' Consejero?
-106     If Not EsGM Then EsGM = EsConsejero(name)
+106     If Not EsGM Then EsGM = EsConsejero(Name)
 
 108     EsGmChar = EsGM
 
@@ -379,7 +379,7 @@ Public Sub loadAdministrativeUsers()
         'Si esta mierda tuviese array asociativos el codigo seria tan lindo.
         Dim buf  As Integer
         Dim i    As Long
-        Dim name As String
+        Dim Name As String
         
         ' Anti-choreo de GM's
 100     Set AdministratorAccounts = New Dictionary
@@ -397,8 +397,8 @@ Public Sub loadAdministrativeUsers()
 108     buf = val(ServerIni.GetValue("INIT", "Admines"))
     
 110     For i = 1 To buf
-112         name = UCase$(ServerIni.GetValue("Admines", "Admin" & i))
-114         TempName = Split(name, "|", , vbTextCompare)
+112         Name = UCase$(ServerIni.GetValue("Admines", "Admin" & i))
+114         TempName = Split(Name, "|", , vbTextCompare)
         
             ' Si NO declara el mail de la cuenta en el Server.ini, NO le doy privilegios.
 116         If UBound(TempName()) > 0 Then
@@ -415,8 +415,8 @@ Public Sub loadAdministrativeUsers()
 124     buf = val(ServerIni.GetValue("INIT", "Dioses"))
     
 126     For i = 1 To buf
-128         name = UCase$(ServerIni.GetValue("Dioses", "Dios" & i))
-130         TempName = Split(name, "|", , vbTextCompare)
+128         Name = UCase$(ServerIni.GetValue("Dioses", "Dios" & i))
+130         TempName = Split(Name, "|", , vbTextCompare)
         
             ' Si NO declara el mail de la cuenta en el Server.ini, NO le doy privilegios.
 132         If UBound(TempName()) > 0 Then
@@ -433,8 +433,8 @@ Public Sub loadAdministrativeUsers()
 140     buf = val(ServerIni.GetValue("INIT", "SemiDioses"))
     
 142     For i = 1 To buf
-144         name = UCase$(ServerIni.GetValue("SemiDioses", "SemiDios" & i))
-146         TempName = Split(name, "|", , vbTextCompare)
+144         Name = UCase$(ServerIni.GetValue("SemiDioses", "SemiDios" & i))
+146         TempName = Split(Name, "|", , vbTextCompare)
         
             ' Si NO declara el mail de la cuenta en el Server.ini, NO le doy privilegios.
 148         If UBound(TempName()) > 0 Then
@@ -451,8 +451,8 @@ Public Sub loadAdministrativeUsers()
 156     buf = val(ServerIni.GetValue("INIT", "Consejeros"))
         
 158     For i = 1 To buf
-160         name = UCase$(ServerIni.GetValue("Consejeros", "Consejero" & i))
-162         TempName = Split(name, "|", , vbTextCompare)
+160         Name = UCase$(ServerIni.GetValue("Consejeros", "Consejero" & i))
+162         TempName = Split(Name, "|", , vbTextCompare)
         
             ' Si NO declara el mail de la cuenta en el Server.ini, NO le doy privilegios.
 164         If UBound(TempName()) > 0 Then
@@ -469,8 +469,8 @@ Public Sub loadAdministrativeUsers()
 172     buf = val(ServerIni.GetValue("INIT", "RolesMasters"))
         
 174     For i = 1 To buf
-176         name = UCase$(ServerIni.GetValue("RolesMasters", "RM" & i))
-178         TempName = Split(name, "|", , vbTextCompare)
+176         Name = UCase$(ServerIni.GetValue("RolesMasters", "RM" & i))
+178         TempName = Split(Name, "|", , vbTextCompare)
         
             ' Si NO declara el mail de la cuenta en el Server.ini, NO le doy privilegios.
 180         If UBound(TempName()) > 0 Then
@@ -536,7 +536,7 @@ GetCharPrivs_Err:
         
 End Function
 
-Public Function TxtDimension(ByVal name As String) As Long
+Public Function TxtDimension(ByVal Name As String) As Long
         
         On Error GoTo TxtDimension_Err
         
@@ -544,7 +544,7 @@ Public Function TxtDimension(ByVal name As String) As Long
         Dim n As Integer, cad As String, Tam As Long
 
 100     n = FreeFile(1)
-102     Open name For Input As #n
+102     Open Name For Input As #n
 104     Tam = 0
 
 106     Do While Not EOF(n)
@@ -1338,7 +1338,7 @@ Sub LoadOBJData()
 
 122             ObjKey = "OBJ" & Object
         
-124             .name = Leer.GetValue(ObjKey, "Name")
+124             .Name = Leer.GetValue(ObjKey, "Name")
     
                 ' If .Name = "" Then
                 '   Call LogError("Objeto libre:" & Object)
@@ -2375,7 +2375,7 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
                             ' WyroX: guardo siempre la pos original... puede sernos útil ;)
 300                         NpcList(NpcIndex).Orig = NpcList(NpcIndex).Pos
     
-302                         If LenB(NpcList(NpcIndex).name) = 0 Then
+302                         If LenB(NpcList(NpcIndex).Name) = 0 Then
 
 304                             MapData(Map, NPCs(i).X, NPCs(i).Y).NpcIndex = 0
 
@@ -2541,11 +2541,11 @@ End Sub
 Public Sub LoadDatabaseIniFile()
     On Error GoTo LoadDatabaseIniFile_Err
 
-        Dim Lector As clsIniReader
+        Dim Lector As clsIniManager
     
 100     If frmMain.Visible Then frmMain.txStatus.Caption = "Leyendo credenciales de la DB."
     
-102     Set Lector = New clsIniReader
+102     Set Lector = New clsIniManager
 104     Call Lector.Initialize(IniPath & "Database.ini")
 
 106     Database_Enabled = True
@@ -3070,7 +3070,7 @@ Sub LoadUser(ByVal UserIndex As Integer)
         Exit Sub
 
 ErrorHandler:
-268     Call RegistrarError(Err.Number, Err.Description & " UserName: " & UserList(UserIndex).name, "ES.LoadUser", Erl)
+268     Call RegistrarError(Err.Number, Err.Description & " UserName: " & UserList(UserIndex).Name, "ES.LoadUser", Erl)
 270     Resume Next
     
 End Sub
@@ -3107,7 +3107,7 @@ Sub LoadUserBinary(ByVal UserIndex As Integer)
 
         'Cargamos el personaje
         Dim Leer As New clsIniManager
-100     Call Leer.Initialize(CharPath & UCase$(UserList(UserIndex).name) & ".chr")
+100     Call Leer.Initialize(CharPath & UCase$(UserList(UserIndex).Name) & ".chr")
     
         'Cargamos los datos del personaje
 
@@ -3148,9 +3148,9 @@ Sub SetUserLogged(ByVal UserIndex As Integer)
         
 
 100     If Database_Enabled Then
-102         Call SetUserLoggedDatabase(UserList(UserIndex).Id, UserList(UserIndex).AccountId)
+102         Call SetUserLoggedDatabase(UserList(UserIndex).ID, UserList(UserIndex).AccountId)
         Else
-104         Call WriteVar(CharPath & UCase$(UserList(UserIndex).name) & ".chr", "INIT", "Logged", 1)
+104         Call WriteVar(CharPath & UCase$(UserList(UserIndex).Name) & ".chr", "INIT", "Logged", 1)
 106         Call WriteVar(CuentasPath & UCase$(UserList(UserIndex).Cuenta) & ".act", "INIT", "LOGEADA", 1)
 
         End If
@@ -3200,7 +3200,7 @@ Sub BackUPnPc(NpcIndex As Integer)
         'End If
 
         'General
-104     Call WriteVar(npcfile, "NPC" & NpcNumero, "Name", NpcList(NpcIndex).name)
+104     Call WriteVar(npcfile, "NPC" & NpcNumero, "Name", NpcList(NpcIndex).Name)
 106     Call WriteVar(npcfile, "NPC" & NpcNumero, "Desc", NpcList(NpcIndex).Desc)
 108     Call WriteVar(npcfile, "NPC" & NpcNumero, "Head", val(NpcList(NpcIndex).Char.Head))
 110     Call WriteVar(npcfile, "NPC" & NpcNumero, "Body", val(NpcList(NpcIndex).Char.Body))
@@ -3267,7 +3267,7 @@ Sub CargarNpcBackUp(NpcIndex As Integer, ByVal NpcNumber As Integer)
         'End If
 
 104     NpcList(NpcIndex).Numero = NpcNumber
-106     NpcList(NpcIndex).name = GetVar(npcfile, "NPC" & NpcNumber, "Name")
+106     NpcList(NpcIndex).Name = GetVar(npcfile, "NPC" & NpcNumber, "Name")
 108     NpcList(NpcIndex).Desc = GetVar(npcfile, "NPC" & NpcNumber, "Desc")
 110     NpcList(NpcIndex).Movement = val(GetVar(npcfile, "NPC" & NpcNumber, "Movement"))
 112     NpcList(NpcIndex).NPCtype = val(GetVar(npcfile, "NPC" & NpcNumber, "NpcType"))
@@ -3339,15 +3339,15 @@ Sub LogBan(ByVal BannedIndex As Integer, ByVal UserIndex As Integer, ByVal Motiv
         On Error GoTo LogBan_Err
         
 
-100     Call WriteVar(App.Path & "\logs\" & "BanDetail.log", UserList(BannedIndex).name, "BannedBy", UserList(UserIndex).name)
-102     Call WriteVar(App.Path & "\logs\" & "BanDetail.log", UserList(BannedIndex).name, "Reason", Motivo)
+100     Call WriteVar(App.Path & "\logs\" & "BanDetail.log", UserList(BannedIndex).Name, "BannedBy", UserList(UserIndex).Name)
+102     Call WriteVar(App.Path & "\logs\" & "BanDetail.log", UserList(BannedIndex).Name, "Reason", Motivo)
 
         'Log interno del servidor, lo usa para hacer un UNBAN general de toda la gente banned
         Dim mifile As Integer
 
 104     mifile = FreeFile
 106     Open App.Path & "\logs\GenteBanned.log" For Append Shared As #mifile
-108     Print #mifile, UserList(BannedIndex).name
+108     Print #mifile, UserList(BannedIndex).Name
 110     Close #mifile
 
         
@@ -3364,7 +3364,7 @@ Sub LogBanFromName(ByVal BannedName As String, ByVal UserIndex As Integer, ByVal
         On Error GoTo LogBanFromName_Err
         
 
-100     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", BannedName, "BannedBy", UserList(UserIndex).name)
+100     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", BannedName, "BannedBy", UserList(UserIndex).Name)
 102     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", BannedName, "Reason", Motivo)
 
         'Log interno del servidor, lo usa para hacer un UNBAN general de toda la gente banned
@@ -3564,7 +3564,7 @@ LoadPesca_Err:
 End Sub
 
 ' Adaptado de https://www.vbforums.com/showthread.php?231925-VB-Quick-Sort-algorithm-(very-fast-sorting-algorithm)
-Private Sub QuickSortPeces(ByVal First As Long, ByVal Last As Long)
+Private Sub QuickSortPeces(ByVal first As Long, ByVal last As Long)
         
         On Error GoTo QuickSortPeces_Err
         
@@ -3575,9 +3575,9 @@ Private Sub QuickSortPeces(ByVal First As Long, ByVal Last As Long)
 
         Dim aux      As obj
     
-100     low = First
-102     high = Last
-104     MidValue = Peces((First + Last) \ 2).amount
+100     low = first
+102     high = last
+104     MidValue = Peces((first + last) \ 2).amount
     
         Do
 
@@ -3602,8 +3602,8 @@ Private Sub QuickSortPeces(ByVal First As Long, ByVal Last As Long)
 
 126     Loop While low <= high
     
-128     If First < high Then QuickSortPeces First, high
-130     If low < Last Then QuickSortPeces low, Last
+128     If first < high Then QuickSortPeces first, high
+130     If low < last Then QuickSortPeces low, last
 
         
         Exit Sub
