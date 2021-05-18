@@ -1708,6 +1708,7 @@ Public Type UserCounters
 
     LastSave As Long
     CuentaRegresiva As Integer
+    TimerBarra As Integer
 
 End Type
 

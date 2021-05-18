@@ -2312,43 +2312,67 @@ Sub PasarSegundo()
     
 110     For i = 1 To LastUser
 
-112         If UserList(i).flags.Silenciado = 1 Then
-114             UserList(i).flags.SegundosPasados = UserList(i).flags.SegundosPasados + 1
+111         With UserList(i)
 
-116             If UserList(i).flags.SegundosPasados = 60 Then
-118                 UserList(i).flags.MinutosRestantes = UserList(i).flags.MinutosRestantes - 1
-120                 UserList(i).flags.SegundosPasados = 0
+112         If .flags.Silenciado = 1 Then
+114             .flags.SegundosPasados = .flags.SegundosPasados + 1
+
+116             If .flags.SegundosPasados = 60 Then
+118                 .flags.MinutosRestantes = .flags.MinutosRestantes - 1
+120                 .flags.SegundosPasados = 0
 
                 End If
             
-122             If UserList(i).flags.MinutosRestantes = 0 Then
-124                 UserList(i).flags.SegundosPasados = 0
-126                 UserList(i).flags.Silenciado = 0
-128                 UserList(i).flags.MinutosRestantes = 0
+122             If .flags.MinutosRestantes = 0 Then
+124                 .flags.SegundosPasados = 0
+126                 .flags.Silenciado = 0
+128                 .flags.MinutosRestantes = 0
 130                 Call WriteConsoleMsg(i, "Has sido liberado del silencio.", FontTypeNames.FONTTYPE_SERVER)
 
                 End If
 
             End If
+            
+134         Call DuracionPociones(i)
+136         If .flags.invisible = 1 Then Call EfectoInvisibilidad(i)
+138         If .flags.Paralizado = 1 Then Call EfectoParalisisUser(i)
+140         If .flags.Inmovilizado = 1 Then Call EfectoInmoUser(i)
+142         If .flags.Ceguera = 1 Then Call EfectoCeguera(i)
+144         If .flags.Estupidez = 1 Then Call EfectoEstupidez(i)
+146         If .flags.Maldicion = 1 Then Call EfectoMaldicionUser(i)
+148         If .flags.VelocidadHechizada > 0 Then Call EfectoVelocidadUser(i)
 
-132         With UserList(i)
+            If .Counters.TimerBarra > 0 Then
+                .Counters.TimerBarra = .Counters.TimerBarra - 1
                 
-134             Call DuracionPociones(i)
-136             If .flags.invisible = 1 Then Call EfectoInvisibilidad(i)
-138             If .flags.Paralizado = 1 Then Call EfectoParalisisUser(i)
-140             If .flags.Inmovilizado = 1 Then Call EfectoInmoUser(i)
-142             If .flags.Ceguera = 1 Then Call EfectoCeguera(i)
-144             If .flags.Estupidez = 1 Then Call EfectoEstupidez(i)
-146             If .flags.Maldicion = 1 Then Call EfectoMaldicionUser(i)
-148             If .flags.VelocidadHechizada > 0 Then Call EfectoVelocidadUser(i)
+                If .Counters.TimerBarra = 0 Then
 
-150             If .flags.UltimoMensaje > 0 Then
-152                 .Counters.RepetirMensaje = .Counters.RepetirMensaje + 1
-154                 If .Counters.RepetirMensaje >= 3 Then
-156                     .flags.UltimoMensaje = 0
-158                     .Counters.RepetirMensaje = 0
-                    End If
+                    Select Case .Accion.TipoAccion
+                        Case Accion_Barra.Hogar
+                            Call HomeArrival(i)
+                        Case Accion_Barra.Resucitar
+                            Call WriteConsoleMsg(i, "¡Has sido resucitado!", FontTypeNames.FONTTYPE_INFO)
+                            Call SendData(SendTarget.ToPCArea, i, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Resucitar, 250, True))
+                            Call SendData(SendTarget.ToPCArea, i, PrepareMessagePlayWave("117", .Pos.X, .Pos.Y))
+                            Call RevivirUsuario(i, True)
+                    End Select
+                    .Accion.Particula = 0
+                    .Accion.TipoAccion = Accion_Barra.CancelarAccion
+                    .Accion.HechizoPendiente = 0
+                    .Accion.RunaObj = 0
+                    .Accion.ObjSlot = 0
+                    .Accion.AccionPendiente = False
+                    
                 End If
+            End If
+
+150         If .flags.UltimoMensaje > 0 Then
+152             .Counters.RepetirMensaje = .Counters.RepetirMensaje + 1
+154             If .Counters.RepetirMensaje >= 3 Then
+156                 .flags.UltimoMensaje = 0
+158                 .Counters.RepetirMensaje = 0
+                End If
+            End If
                 
 160             If .Counters.CuentaRegresiva >= 0 Then
 162                 If .Counters.CuentaRegresiva > 0 Then
