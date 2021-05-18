@@ -1453,12 +1453,11 @@ End Type
 
 'Flags
 Public Type UserFlags
-
     Nadando As Byte
+    
     NecesitaOxigeno As Boolean
 
     Ahogandose As Byte
-    
     EnTorneo As Boolean
 
     ScrollExp As Single

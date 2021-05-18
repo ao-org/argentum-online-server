@@ -245,35 +245,6 @@ Public Function WndProc(ByVal hwnd As Long, ByVal msg As Long, ByVal wParam As L
 
                         End If
         
-                        '    Case FD_WRITE
-                        '        N = BuscaSlotSock(s)
-                        '        If N < 0 And s <> SockListen Then
-                        '            'Call apiclosesocket(s)
-                        '            call WSApiCloseSocket(s)
-                        '            Exit Function
-                        '        End If
-                        '
-
-                        '        Call IntentarEnviarDatosEncolados(N)
-                        '
-                        ''        Dale = UserList(N).ColaSalida.Count > 0
-                        ''        Do While Dale
-                        ''            Ret = WsApiEnviar(N, UserList(N).ColaSalida.Item(1), False)
-                        ''            If Ret <> 0 Then
-                        ''                If Ret = WSAEWOULDBLOCK Then
-                        ''                    Dale = False
-                        ''                Else
-                        ''                    'y aca que hacemo' ?? help! i need somebody, help!
-                        ''                    Dale = False
-                        ''                    Debug.Print "ERROR AL ENVIAR EL DATO DESDE LA COLA " & Ret & ": " & GetWSAErrorString(Ret)
-                        ''                End If
-                        ''            Else
-                        ''            '    Debug.Print "Dato de la cola enviado"
-                        ''                UserList(N).ColaSalida.Remove 1
-                        ''                Dale = (UserList(N).ColaSalida.Count > 0)
-                        ''            End If
-                        ''        Loop
-
 116                 Case FD_READ
         
 118                     n = BuscaSlotSock(S)
