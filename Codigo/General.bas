@@ -1554,6 +1554,48 @@ EfectoFrio_Err:
 142     Resume Next
         
 End Sub
+Public Sub EfectoStamina(ByVal UserIndex As Integer)
+    Dim bEnviarStats As Boolean
+    With UserList(UserIndex)
+        If .flags.Hambre = 0 And .flags.Sed = 0 Then 'Si no tiene hambre ni sed
+170         Call Sanar(UserIndex, bEnviarStats, IIf(.flags.Descansar, SanaIntervaloDescansar, SanaIntervaloSinDescansar))
+172         If bEnviarStats Then
+174             Call WriteUpdateHP(UserIndex)
+176             bEnviarStats = False
+            End If
+                                
+178         If .flags.Desnudo = 0 Then
+180             Call RecStamina(UserIndex, bEnviarStats, IIf(.flags.Descansar, StaminaIntervaloDescansar, StaminaIntervaloSinDescansar))
+            Else
+                If Lloviendo Then
+                    If Intemperie(UserIndex) Then
+                        Call PierdeEnergia(UserIndex, bEnviarStats, IntervaloPerderStamina * 0.5)
+                    Else
+                        Call PierdeEnergia(UserIndex, bEnviarStats, IIf(.flags.Descansar, IntervaloPerderStamina * 2, IntervaloPerderStamina))
+                    End If
+                Else
+                    Call PierdeEnergia(UserIndex, bEnviarStats, IIf(.flags.Descansar, IntervaloPerderStamina * 2, IntervaloPerderStamina))
+                End If
+            End If
+                                
+202         If bEnviarStats Then
+204             Call WriteUpdateSta(UserIndex)
+206             bEnviarStats = False
+            End If
+            
+            If .flags.Descansar Then
+                'termina de descansar automaticamente
+190             If .Stats.MaxHp = .Stats.MinHp And .Stats.MaxSta = .Stats.MinSta Then
+192                 Call WriteRestOK(UserIndex)
+194                 Call WriteConsoleMsg(UserIndex, "Has terminado de descansar.", FontTypeNames.FONTTYPE_INFO)
+196                 .flags.Descansar = False
+                End If
+            
+            End If
+        End If
+    End With
+End Sub
+
 
 Public Sub EfectoLava(ByVal UserIndex As Integer)
         
