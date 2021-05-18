@@ -13043,10 +13043,12 @@ Private Sub HandleBanIP(ByVal UserIndex As Integer)
     
     Dim bannedIP As String
     Dim tUser    As Integer
+    Dim Nick     As String
     Dim Reason   As String
     Dim i        As Long
         
     With UserList(UserIndex)
+    
         ' Is it by ip??
         If .incomingData.ReadBoolean() Then
             bannedIP = .incomingData.ReadByte() & "."
@@ -13055,8 +13057,9 @@ Private Sub HandleBanIP(ByVal UserIndex As Integer)
             bannedIP = bannedIP & .incomingData.ReadByte()
             
         Else
-        
-            tUser = NameIndex(.incomingData.ReadASCIIString())
+            
+            Nick = .incomingData.ReadASCIIString()
+            tUser = NameIndex(Nick)
             
             If tUser <= 0 Then
                 Call WriteConsoleMsg(UserIndex, "El personaje no está online.", FontTypeNames.FONTTYPE_INFO)
@@ -13078,7 +13081,7 @@ Private Sub HandleBanIP(ByVal UserIndex As Integer)
 
         End If
                 
-        Call IP_Blacklist.Add(bannedIP, .Name)
+        Call BanearIP(UserIndex, Nick, bannedIP)
         Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " baneó la IP " & bannedIP & " por " & Reason, FontTypeNames.FONTTYPE_FIGHT))
         
         Call LogGM(.Name, "/BanIP " & bannedIP & " por " & Reason)
@@ -13091,7 +13094,9 @@ Private Sub HandleBanIP(ByVal UserIndex As Integer)
                 If UserList(i).IP = bannedIP Then
                 
                     Call BanPJ(UserIndex, UserList(i).Name, "IP POR " & Reason)
+                    
                 End If
+                
             End If
 
         Next i

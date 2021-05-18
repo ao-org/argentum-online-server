@@ -243,15 +243,21 @@ Public Sub BanearIP(ByVal BannerIndex As Integer, ByVal UserName As String, ByVa
         
         On Error GoTo BanearIP_Err
         
-
         ' Lo guardo en Baneos.dat
 100     Call WriteVar(DatPath & "Baneos.dat", "IP", UserName, IP)
 
         ' Lo guardo en memoria.
 102     Call IP_Blacklist.Add(IP, UserName)
 
-        ' TODO: Agregar regla de firewall
-
+        ' Agregar a la regla de firewall
+        Dim i As Long
+        Dim NewIPs As String
+        For i = 0 To IP_Blacklist.Count - 1
+            NewIPs = NewIPs & IP_Blacklist(i) & ","
+        Next
+        
+        Call Shell("netsh.exe advfirewall firewall set rule name=""Lista Negra IPs"" dir=in remoteip=" & NewIPs)
+        
         ' Registramos el des-baneo en los logs.
 104     Call LogGM(UserList(BannerIndex).Name, "Baneó la IP: " & IP & " de " & UserName)
 
@@ -272,7 +278,19 @@ Public Sub DesbanearIP(ByVal IP As String, ByVal UnbannerIndex As Integer)
 
         ' Lo saco del archivo.
 102     Call WriteVar(DatPath & "Baneos.dat", "IP", GetVar(DatPath & "Baneos.dat", "IP", IP), vbNullString)
-
+        
+        ' Modificar en la regla de firewall
+        Dim i As Long
+        Dim NewIPs As String
+        For i = 0 To IP_Blacklist.Count - 1
+            ' Meto todas MENOS la que vamos a desbanear
+            If IP_Blacklist(i) <> IP Then
+                NewIPs = NewIPs & IP_Blacklist(i) & ","
+            End If
+        Next
+        
+        Call Shell("netsh.exe advfirewall firewall set rule name=""Lista Negra IPs"" dir=in remoteip=" & NewIPs)
+        
         ' Registramos el des-baneo en los logs.
 104     Call LogGM(UserList(UnbannerIndex).Name, "Des-Baneó la IP: " & IP & " de " & IP_Blacklist(IP))
 
