@@ -13,281 +13,353 @@ Public HD_Blacklist As New Dictionary
 Public MAC_Blacklist As New Dictionary
 
 Public Sub CargarListaNegraUsuarios(ByVal LoadFlags As e_LoadBlacklistFlags)
+        
+        On Error GoTo CargarListaNegraUsuarios_Err
 
-    Dim File As clsIniManager
-    Dim i As Long
-    Dim iKey As String
-    Dim iValue As String
+        Dim File   As clsIniManager
+        Dim i      As Long
+        Dim iKey   As String
+        Dim iValue As String
 
-    If Not FileExist(DatPath & "Baneos.ini") Then Exit Sub
+100     If Not FileExist(DatPath & "Baneos.ini") Then Exit Sub
 
-    Set File = New clsIniManager
-    Call File.Initialize(DatPath & "Baneos.ini")
+102     Set File = New clsIniManager
+104     Call File.Initialize(DatPath & "Baneos.ini")
 
-    If (LoadFlags And LoadIPs) Then
+106     If (LoadFlags And LoadIPs) Then
 
-        ' IP's
-        For i = 0 To File.EntriesCount("IP") - 1
-            Call File.GetPair("IP", i, iKey, iValue)
-            Call IP_Blacklist.Add(iKey, iValue)
-        Next
+            ' IP's
+108         For i = 0 To File.EntriesCount("IP") - 1
+110             Call File.GetPair("IP", i, iKey, iValue)
+112             Call IP_Blacklist.Add(iKey, iValue)
+            Next
 
-    End If
+        End If
 
-    If (LoadFlags And LoadHDs) Then
+114     If (LoadFlags And LoadHDs) Then
 
-        ' HD's
-        For i = 0 To File.EntriesCount("HD") - 1
-            Call File.GetPair("HD", i, iKey, iValue)
-            Call HD_Blacklist.Add(iKey, iValue)
-        Next
+            ' HD's
+116         For i = 0 To File.EntriesCount("HD") - 1
+118             Call File.GetPair("HD", i, iKey, iValue)
+120             Call HD_Blacklist.Add(iKey, iValue)
+            Next
 
-    End If
+        End If
 
-    If (LoadFlags And LoadMACs) Then
+122     If (LoadFlags And LoadMACs) Then
 
-        ' MAC's
-        For i = 0 To File.EntriesCount("MAC") - 1
-            Call File.GetPair("MAC", i, iKey, iValue)
-            Call MAC_Blacklist.Add(iKey, iValue)
-        Next
+            ' MAC's
+124         For i = 0 To File.EntriesCount("MAC") - 1
+126             Call File.GetPair("MAC", i, iKey, iValue)
+128             Call MAC_Blacklist.Add(iKey, iValue)
+            Next
 
-    End If
+        End If
+    
+        Exit Sub
 
+CargarListaNegraUsuarios_Err:
+        Set File = Nothing
+        Call RegistrarError(Err.Number, Err.Description, "Penas.CargarListaNegraUsuarios", Erl)
+
+        Resume Next
+        
 End Sub
 
 Private Function GlobalChecks(ByVal BannerIndex, ByRef UserName As String) As Integer
+        
+        On Error GoTo GlobalChecks_Err
 
-    Dim TargetIndex As Integer
+        Dim TargetIndex As Integer
 
-    GlobalChecks = False
+100     GlobalChecks = False
 
-    If Not EsGM(BannerIndex) Then Exit Function
+102     If Not EsGM(BannerIndex) Then Exit Function
 
-    ' Parseo los espacios en el Nick
-    If InStrB(UserName, "+") Then
-        UserName = Replace(UserName, "+", " ")
-    End If
-
-    TargetIndex = NameIndex(UserName)
-
-    If TargetIndex Then
-
-        If TargetIndex = BannerIndex Then
-            Call WriteConsoleMsg(BannerIndex, "No podes banearte a vos mismo.", FontTypeNames.FONTTYPE_INFO)
-            Exit Function
+        ' Parseo los espacios en el Nick
+104     If InStrB(UserName, "+") Then
+106         UserName = Replace(UserName, "+", " ")
         End If
 
-        ' Estas tratando de banear a alguien con mas privilegios que vos, no va a pasar bro.
-        If CompararUserPrivilegios(TargetIndex, BannerIndex) >= 0 Then
-            Call WriteConsoleMsg(BannerIndex, "No podes banear a al alguien de igual o mayor jerarquia.", FontTypeNames.FONTTYPE_INFO)
-            Exit Function
+108     TargetIndex = NameIndex(UserName)
+
+110     If TargetIndex Then
+
+112         If TargetIndex = BannerIndex Then
+114             Call WriteConsoleMsg(BannerIndex, "No podes banearte a vos mismo.", FontTypeNames.FONTTYPE_INFO)
+                Exit Function
+            End If
+
+            ' Estas tratando de banear a alguien con mas privilegios que vos, no va a pasar bro.
+116         If CompararUserPrivilegios(TargetIndex, BannerIndex) >= 0 Then
+118             Call WriteConsoleMsg(BannerIndex, "No podes banear a al alguien de igual o mayor jerarquia.", FontTypeNames.FONTTYPE_INFO)
+                Exit Function
+            End If
+
+        Else
+
+120         If CompararPrivilegios(UserDarPrivilegioLevel(UserName), UserList(BannerIndex).flags.Privilegios) >= 0 Then
+122             Call WriteConsoleMsg(BannerIndex, "No podes banear a al alguien de igual o mayor jerarquia.", FontTypeNames.FONTTYPE_INFO)
+                Exit Function
+            End If
+
         End If
 
-    Else
+        ' Se llegó hasta acá, todo bien!
+124     GlobalChecks = True
 
-        If CompararPrivilegios(UserDarPrivilegioLevel(UserName), UserList(BannerIndex).flags.Privilegios) >= 0 Then
-            Call WriteConsoleMsg(BannerIndex, "No podes banear a al alguien de igual o mayor jerarquia.", FontTypeNames.FONTTYPE_INFO)
-            Exit Function
-        End If
+        
+        Exit Function
 
-    End If
-
-    ' Se llegó hasta acá, todo bien!
-    GlobalChecks = True
-
+GlobalChecks_Err:
+    Call RegistrarError(Err.Number, Err.Description, "Penas.GlobalChecks", Erl)
+    Resume Next
+    
 End Function
 
 Public Sub BanPJ(ByVal BannerIndex As Integer, ByVal UserName As String, ByRef Razon As String)
-    On Error GoTo BanPJ_Err
+        On Error GoTo BanPJ_Err
 
-    If Not GlobalChecks(BannerIndex, UserName) Then Exit Sub
+100     If Not GlobalChecks(BannerIndex, UserName) Then Exit Sub
 
-    ' Busco el UserIndex del PJ
-    Dim tUser As Integer: tUser = NameIndex(UserName)
+        ' Si no existe el personaje...
+102     If Not PersonajeExiste(UserName) Then
+104         Call WriteConsoleMsg(BannerIndex, "El personaje no existe.", FontTypeNames.FONTTYPE_TALK)
+            Exit Sub
+        End If
 
-    ' Si no existe el personaje...
-    If Not PersonajeExiste(UserName) Then
-        Call WriteConsoleMsg(BannerIndex, "El personaje no existe.", FontTypeNames.FONTTYPE_TALK)
+106     If BANCheck(UserName) Then
+108         Call WriteConsoleMsg(BannerIndex, "El usuario ya se encuentra baneado.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+
+        ' Guardamos el estado de baneado en la base de datos.
+110     Call SaveBanDatabase(UserName, Razon, UserList(BannerIndex).Name)
+
+        ' Registramos el baneo en los logs.
+112     Call LogBanFromName(UserName, BannerIndex, Razon)
+
+        ' Le buchoneamos al mundo.
+114     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> " & UserList(BannerIndex).Name & " ha baneado a " & UserName & " debido a: " & LCase$(Razon) & ".", FontTypeNames.FONTTYPE_SERVER))
+
+        ' Si estaba online, lo echamos.
+116     Dim tUser As Integer: tUser = NameIndex(UserName)
+118     If tUser > 0 Then Call CloseSocket(tUser)
+
         Exit Sub
-    End If
-
-    If BANCheck(UserName) Then
-        Call WriteConsoleMsg(BannerIndex, "El usuario ya se encuentra baneado.", FontTypeNames.FONTTYPE_INFO)
-        Exit Sub
-    End If
-
-    ' Guardamos el estado de baneado en la base de datos.
-    Call SaveBanDatabase(UserName, Razon, UserList(BannerIndex).Name)
-
-    ' Registramos el baneo en los logs.
-    Call LogBanFromName(UserName, BannerIndex, Razon)
-
-    ' Le buchoneamos al mundo.
-    Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> " & UserList(BannerIndex).Name & " ha baneado a " & UserName & " debido a: " & LCase$(Razon) & ".", FontTypeNames.FONTTYPE_SERVER))
-
-    ' Si estaba online, lo echamos.
-    If tUser > 0 Then Call CloseSocket(tUser)
-
-    Exit Sub
 
 BanPJ_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Mod_Baneo.BanPJ")
-    Resume Next
+120     Call RegistrarError(Err.Number, Err.Description, "Mod_Baneo.BanPJ")
+122     Resume Next
 
 End Sub
 
 Public Sub BanearCuenta(ByVal BannerIndex As Integer, _
                         ByVal UserName As String, _
                         ByVal Reason As String)
+        
+        On Error GoTo BanearCuenta_Err
+        
 
-    Dim CuentaID As Integer
+        Dim CuentaID As Integer
 
-    If Not GlobalChecks(BannerIndex, UserName) Then Exit Sub
+100     If Not GlobalChecks(BannerIndex, UserName) Then Exit Sub
 
-    ' Obtenemos el ID de la cuenta
-    CuentaID = GetAccountIDDatabase(UserName)
+        ' Obtenemos el ID de la cuenta
+102     CuentaID = GetAccountIDDatabase(UserName)
 
-    ' Me fijo que exista la cuenta.
-    If CuentaID <= 0 Then
-        Call WriteConsoleMsg(BannerIndex, "El personaje no existe.", FontTypeNames.FONTTYPE_TALK)
-        Exit Sub
-
-    End If
-
-    If ObtenerBaneo(UserName) Then
-        Call WriteConsoleMsg(BannerIndex, "La cuenta ya se encuentra baneada.", FontTypeNames.FONTTYPE_INFO)
-        Exit Sub
-    End If
-
-    ' Guardamos el estado de baneado en la base de datos.
-    Call SaveBanCuentaDatabase(CuentaID, Reason, UserList(BannerIndex).Name)
-
-    ' Le buchoneamos al mundo.
-    Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & UserList(BannerIndex).Name & " ha baneado la cuenta de " & UserName & " debido a: " & Reason & ".", FontTypeNames.FONTTYPE_SERVER))
-
-    ' Registramos el baneo en los logs.
-    Call LogGM(UserList(BannerIndex).Name, "Baneó la cuenta de " & UserName & " por: " & Reason)
-
-    ' Echo a todos los logueados en esta cuenta
-    Dim i As Long
-    For i = 1 To LastUser
-
-        If UserList(i).AccountId = CuentaID Then
-            Call WriteShowMessageBox(i, "Has sido baneado del servidor. Motivo: " & Reason)
-            Call CloseSocket(i)
+        ' Me fijo que exista la cuenta.
+104     If CuentaID <= 0 Then
+106         Call WriteConsoleMsg(BannerIndex, "El personaje no existe.", FontTypeNames.FONTTYPE_TALK)
+            Exit Sub
 
         End If
 
-    Next
+108     If ObtenerBaneo(UserName) Then
+110         Call WriteConsoleMsg(BannerIndex, "La cuenta ya se encuentra baneada.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
 
+        ' Guardamos el estado de baneado en la base de datos.
+112     Call SaveBanCuentaDatabase(CuentaID, Reason, UserList(BannerIndex).Name)
+
+        ' Le buchoneamos al mundo.
+114     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & UserList(BannerIndex).Name & " ha baneado la cuenta de " & UserName & " debido a: " & Reason & ".", FontTypeNames.FONTTYPE_SERVER))
+
+        ' Registramos el baneo en los logs.
+116     Call LogGM(UserList(BannerIndex).Name, "Baneó la cuenta de " & UserName & " por: " & Reason)
+
+        ' Echo a todos los logueados en esta cuenta
+        Dim i As Long
+118     For i = 1 To LastUser
+
+120         If UserList(i).AccountId = CuentaID Then
+122             Call WriteShowMessageBox(i, "Has sido baneado del servidor. Motivo: " & Reason)
+124             Call CloseSocket(i)
+
+            End If
+
+        Next
+
+        Exit Sub
+
+BanearCuenta_Err:
+        Call RegistrarError(Err.Number, Err.Description, "Penas.BanearCuenta", Erl)
+        Resume Next
+        
 End Sub
 
 Public Sub DesbanearCuenta(ByVal BannerIndex As Integer, ByVal UserName As String)
+        
+        On Error GoTo DesbanearCuenta_Err
 
-    If Not GlobalChecks(BannerIndex, UserName) Then Exit Sub
+100     If Not GlobalChecks(BannerIndex, UserName) Then Exit Sub
 
-    If Not ObtenerBaneo(UserName) Then
-        Call WriteConsoleMsg(BannerIndex, "La cuenta no se encuentra baneada.", FontTypeNames.FONTTYPE_INFO)
+102     If Not ObtenerBaneo(UserName) Then
+104         Call WriteConsoleMsg(BannerIndex, "La cuenta no se encuentra baneada.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+
+        ' Busco el ID de la cuenta baneada a partir del nick de uno de sus PJ's
+106     Call MakeQuery("SELECT `account_id`, `account`.email FROM `user` INNER JOIN `account` ON `user`.account_id = account.id WHERE `account`.is_banned = TRUE AND UPPER(`user`.name) = ?;", False, UCase$(UserName))
+
+        ' Encontre algo?
+108     If QueryData Is Nothing Then Exit Sub
+
+        ' Seteamos is_banned = 0 en la DB
+110     Call SetDBValue("account", "is_banned", 0, "id", QueryData!account_id)
+
+112     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> " & UserList(BannerIndex).Name & " ha desbaneado la cuenta de " & UserName & "(" & QueryData!email & ").", FontTypeNames.FONTTYPE_SERVER))
+
         Exit Sub
-    End If
 
-    ' Busco el ID de la cuenta baneada a partir del nick de uno de sus PJ's
-    Call MakeQuery("SELECT `account_id`, `account`.email FROM `user` INNER JOIN `account` ON `user`.account_id = account.id WHERE `account`.is_banned = TRUE AND UPPER(`user`.name) = ?;", False, UCase$(UserName))
-
-    ' Encontre algo?
-    If QueryData Is Nothing Then Exit Sub
-
-    ' Seteamos is_banned = 0 en la DB
-    Call SetDBValue("account", "is_banned", 0, "id", QueryData!account_id)
-
-    Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> " & UserList(BannerIndex).Name & " ha desbaneado la cuenta de " & UserName & "(" & QueryData!email & ").", FontTypeNames.FONTTYPE_SERVER))
-
+DesbanearCuenta_Err:
+        Call RegistrarError(Err.Number, Err.Description, "Penas.DesbanearCuenta", Erl)
+        Resume Next
+        
 End Sub
 
 Public Sub BanearIP(ByVal BannerIndex As Integer, ByVal UserName As String, ByVal IP As String)
+        
+        On Error GoTo BanearIP_Err
+        
 
-    ' Lo guardo en Baneos.dat
-    Call WriteVar(DatPath & "Baneos.dat", "IP", UserName, IP)
+        ' Lo guardo en Baneos.dat
+100     Call WriteVar(DatPath & "Baneos.dat", "IP", UserName, IP)
 
-    ' Lo guardo en memoria.
-    Call IP_Blacklist.Add(IP, UserName)
+        ' Lo guardo en memoria.
+102     Call IP_Blacklist.Add(IP, UserName)
 
-    ' TODO: Agregar regla de firewall
+        ' TODO: Agregar regla de firewall
 
-    ' Registramos el des-baneo en los logs.
-    Call LogGM(UserList(BannerIndex).Name, "Baneó la IP: " & IP & " de " & UserName)
+        ' Registramos el des-baneo en los logs.
+104     Call LogGM(UserList(BannerIndex).Name, "Baneó la IP: " & IP & " de " & UserName)
 
+        Exit Sub
+
+BanearIP_Err:
+        Call RegistrarError(Err.Number, Err.Description, "Penas.BanearIP", Erl)
+        Resume Next
+        
 End Sub
 
 Public Sub DesbanearIP(ByVal IP As String, ByVal UnbannerIndex As Integer)
+        
+        On Error GoTo DesbanearIP_Err
 
-    ' Lo saco de la memoria.
-    If IP_Blacklist.Exists(IP) Then Call IP_Blacklist.Remove(IP)
+        ' Lo saco de la memoria.
+100     If IP_Blacklist.Exists(IP) Then Call IP_Blacklist.Remove(IP)
 
-    ' Lo saco del archivo.
-    Call WriteVar(DatPath & "Baneos.dat", "IP", GetVar(DatPath & "Baneos.dat", "IP", IP), vbNullString)
+        ' Lo saco del archivo.
+102     Call WriteVar(DatPath & "Baneos.dat", "IP", GetVar(DatPath & "Baneos.dat", "IP", IP), vbNullString)
 
-    ' Registramos el des-baneo en los logs.
-    Call LogGM(UserList(UnbannerIndex).Name, "Des-Baneó la IP: " & IP & " de " & IP_Blacklist(IP))
+        ' Registramos el des-baneo en los logs.
+104     Call LogGM(UserList(UnbannerIndex).Name, "Des-Baneó la IP: " & IP & " de " & IP_Blacklist(IP))
 
+        Exit Sub
+
+DesbanearIP_Err:
+        Call RegistrarError(Err.Number, Err.Description, "Penas.DesbanearIP", Erl)
+        Resume Next
+        
 End Sub
 
 Public Sub BanearHDMAC(ByVal BannerIndex As Integer, ByVal UserName As String)
+        
+        On Error GoTo BanearHDMAC_Err
 
-    Dim Cuenta As String
-    Dim HDSerial As String
-    Dim MacAddress As String
+        Dim Cuenta As String
+        Dim HDSerial As String
+        Dim MacAddress As String
 
-    If Not GlobalChecks(BannerIndex, UserName) Then Exit Sub
+100     If Not GlobalChecks(BannerIndex, UserName) Then Exit Sub
 
-    Cuenta = ObtenerCuenta(UserName)
+102     Cuenta = ObtenerCuenta(UserName)
 
-    If LenB(Cuenta) = 0 Then
-        Call WriteConsoleMsg(BannerIndex, "La cuenta no existe.", FontTypeNames.FONTTYPE_TALK)
+104     If LenB(Cuenta) = 0 Then
+106         Call WriteConsoleMsg(BannerIndex, "La cuenta no existe.", FontTypeNames.FONTTYPE_TALK)
+            Exit Sub
+
+        End If
+
+108     HDSerial = ObtenerHDserial(Cuenta)
+110     MacAddress = ObtenerMacAdress(Cuenta)
+
+        ' Lo guardo en memoria.
+112     Call HD_Blacklist.Add(HDSerial, UserName)
+114     Call MAC_Blacklist.Add(MacAddress, UserName)
+
+        ' Lo guardo en Baneos.dat
+116     Call WriteVar(DatPath & "Baneos.dat", "HD", HDSerial, UserName)
+118     Call WriteVar(DatPath & "Baneos.dat", "MAC", MacAddress, UserName)
+    
+        ' Lo kickeo
+120     Dim TargetIndex As Integer: TargetIndex = NameIndex(UserName)
+122     If TargetIndex > 0 Then Call CloseSocket(TargetIndex)
+    
+        ' Registramos el baneo en los logs.
+124     Call LogGM(UserList(BannerIndex).Name, "Aplicó Tolerancia 0 a: " & UserName & " con Serial HD: " & HDSerial & " y MAC Address: " & MacAddress)
+
         Exit Sub
 
-    End If
-
-    HDSerial = ObtenerHDserial(Cuenta)
-    MacAddress = ObtenerMacAdress(Cuenta)
-
-    ' Lo guardo en memoria.
-    Call HD_Blacklist.Add(HDSerial, UserName)
-    Call MAC_Blacklist.Add(MacAddress, UserName)
-
-    ' Lo guardo en Baneos.dat
-    Call WriteVar(DatPath & "Baneos.dat", "HD", HDSerial, UserName)
-    Call WriteVar(DatPath & "Baneos.dat", "MAC", MacAddress, UserName)
-
-    ' Registramos el baneo en los logs.
-    Call LogGM(UserList(BannerIndex).Name, "Aplicó Tolerancia 0 a: " & UserName & " con Serial HD: " & HDSerial & " y MAC Address: " & MacAddress)
+BanearHDMAC_Err:
+        Call RegistrarError(Err.Number, Err.Description, "Penas.BanearHDMAC", Erl)
+        Resume Next
 
 End Sub
 
 Public Sub DesbanearHDMAC(ByVal UserName As String)
 
-    Dim Cuenta As String
-    Dim HDSerial As String
-    Dim MacAddress As String
+        On Error GoTo DesbanearHDMAC_Err
+        
 
-    Cuenta = ObtenerCuenta(UserName)
+        Dim Cuenta As String
+        Dim HDSerial As String
+        Dim MacAddress As String
 
-    If LenB(Cuenta) = 0 Then Exit Sub
+100     Cuenta = ObtenerCuenta(UserName)
 
-    HDSerial = ObtenerHDserial(Cuenta)
-    MacAddress = ObtenerMacAdress(Cuenta)
+102     If LenB(Cuenta) = 0 Then Exit Sub
 
-    ' Lo guardo en memoria.
-    Call HD_Blacklist.Remove(HDSerial)
-    Call MAC_Blacklist.Remove(MacAddress)
+104     HDSerial = ObtenerHDserial(Cuenta)
+106     MacAddress = ObtenerMacAdress(Cuenta)
 
-    ' Lo guardo en Baneos.dat
-    Call WriteVar(DatPath & "Baneos.dat", "HD", HDSerial, vbNullString)
-    Call WriteVar(DatPath & "Baneos.dat", "MAC", MacAddress, vbNullString)
+        ' Lo guardo en memoria.
+108     Call HD_Blacklist.Remove(HDSerial)
+110     Call MAC_Blacklist.Remove(MacAddress)
 
-    ' Registramos el baneo en los logs.
-    Call LogDesarrollo("Le quitó la Tolerancia 0 a: " & UserName & " con Serial HD: " & HDSerial & " y MAC Address: " & MacAddress)
+        ' Lo guardo en Baneos.dat
+112     Call WriteVar(DatPath & "Baneos.dat", "HD", HDSerial, vbNullString)
+114     Call WriteVar(DatPath & "Baneos.dat", "MAC", MacAddress, vbNullString)
+
+        ' Registramos el baneo en los logs.
+116     Call LogDesarrollo("Le quitó la Tolerancia 0 a: " & UserName & " con Serial HD: " & HDSerial & " y MAC Address: " & MacAddress)
+
+        Exit Sub
+
+DesbanearHDMAC_Err:
+        Call RegistrarError(Err.Number, Err.Description, "Penas.DesbanearHDMAC", Erl)
+        Resume Next
 
 End Sub
 

@@ -2061,7 +2061,7 @@ Public Function GetNombreCuentaDatabase(name As String) As String
 102     If QueryData Is Nothing Then Exit Function
     
         'Obtenemos el nombre de la cuenta
-104     GetNombreCuentaDatabase = QueryData!name
+104     GetNombreCuentaDatabase = QueryData!email
 
         Exit Function
     

@@ -18374,7 +18374,7 @@ Private Sub HandleBanCuenta(ByVal UserIndex As Integer)
         Reason = .incomingData.ReadASCIIString()
         
         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
-            Call BanAccount(UserIndex, UserName, Reason)
+            Call BanearCuenta(UserIndex, UserName, Reason)
         End If
 
     End With

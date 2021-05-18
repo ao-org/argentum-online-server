@@ -230,16 +230,15 @@ Public Sub Initialize(ByVal File As String)
     Loop
     
     Close handle
-    
-    Dim i As Long
-    
+
     If MainNodes Then
+    
         'Sort main nodes to allow binary search
         Call SortMainNodes(0, MainNodes - 1)
         
         'Sort values of each node to allow binary search
+        Dim i As Long
         For i = 0 To MainNodes - 1
-
             If fileData(i).numValues Then Call SortChildNodes(fileData(i), 0, fileData(i).numValues - 1)
         Next i
 
@@ -249,7 +248,8 @@ Public Sub Initialize(ByVal File As String)
     Exit Sub
 
 Initialize_Err:
-    Call RegistrarError(Err.Number, Err.Description, "clsIniManager.Initialize", Erl)
+    Close handle
+    Call RegistrarError(Err.Number, Err.Description & vbNewLine & "Archivo: " & File, "clsIniManager.Initialize", Erl)
     Resume Next
     
 End Sub

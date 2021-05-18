@@ -1056,8 +1056,8 @@ Public Sub BanTemporal(ByVal nombre As String, ByVal dias As Integer, Causa As S
         
 
         Dim tBan As tBaneo
-
 100     Set tBan = New tBaneo
+
 102     tBan.Name = UCase$(nombre)
 104     tBan.FechaLiberacion = (Now + dias)
 106     tBan.Causa = Causa
