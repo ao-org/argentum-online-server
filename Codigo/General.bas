@@ -737,7 +737,7 @@ Sub Main()
     
         ' Pretorianos
 234     frmCargando.Label1(2).Caption = "Cargando Pretorianos.dat"
-236     Call LoadPretorianData
+236     'Call LoadPretorianData
     
 238     frmCargando.Label1(2).Caption = "Cargando Logros.ini"
 240     Call CargarLogros ' Ladder 22/04/2015
@@ -772,7 +772,11 @@ Sub Main()
     
 270     With frmMain
 272         .Minuto.Enabled = True
-274         .TimerGuardarUsuarios.Enabled = True
+            #If DEBUGGING Then
+                .TimerGuardarUsuarios.Enabled = False
+            #Else
+274             .TimerGuardarUsuarios.Enabled = True
+            #End If
 276         .TimerGuardarUsuarios.Interval = IntervaloTimerGuardarUsuarios
 278         .tPiqueteC.Enabled = True
 280         .GameTimer.Enabled = True
@@ -1558,30 +1562,45 @@ Public Sub EfectoStamina(ByVal UserIndex As Integer)
     Dim bEnviarStats As Boolean
     With UserList(UserIndex)
         If .flags.Hambre = 0 And .flags.Sed = 0 Then 'Si no tiene hambre ni sed
-170         Call Sanar(UserIndex, bEnviarStats, IIf(.flags.Descansar, SanaIntervaloDescansar, SanaIntervaloSinDescansar))
-172         If bEnviarStats Then
-174             Call WriteUpdateHP(UserIndex)
-176             bEnviarStats = False
+            If .Stats.MinHp < .Stats.MaxHp Then
+170             Call Sanar(UserIndex, bEnviarStats, IIf(.flags.Descansar, SanaIntervaloDescansar, SanaIntervaloSinDescansar))
+172             If bEnviarStats Then
+174                 Call WriteUpdateHP(UserIndex)
+176                 bEnviarStats = False
+                End If
             End If
                                 
 178         If .flags.Desnudo = 0 Then
 180             Call RecStamina(UserIndex, bEnviarStats, IIf(.flags.Descansar, StaminaIntervaloDescansar, StaminaIntervaloSinDescansar))
+                If bEnviarStats Then
+                    Call WriteUpdateSta(UserIndex)
+                    bEnviarStats = False
+                End If
             Else
                 If Lloviendo Then
                     If Intemperie(UserIndex) Then
                         Call PierdeEnergia(UserIndex, bEnviarStats, IntervaloPerderStamina * 0.5)
+                        If bEnviarStats Then
+                            Call WriteUpdateSta(UserIndex)
+                            bEnviarStats = False
+                        End If
                     Else
                         Call PierdeEnergia(UserIndex, bEnviarStats, IIf(.flags.Descansar, IntervaloPerderStamina * 2, IntervaloPerderStamina))
+                        If bEnviarStats Then
+                            Call WriteUpdateSta(UserIndex)
+                            bEnviarStats = False
+                        End If
                     End If
                 Else
                     Call PierdeEnergia(UserIndex, bEnviarStats, IIf(.flags.Descansar, IntervaloPerderStamina * 2, IntervaloPerderStamina))
+202                 If bEnviarStats Then
+204                     Call WriteUpdateSta(UserIndex)
+206                     bEnviarStats = False
+                    End If
                 End If
             End If
                                 
-202         If bEnviarStats Then
-204             Call WriteUpdateSta(UserIndex)
-206             bEnviarStats = False
-            End If
+
             
             If .flags.Descansar Then
                 'termina de descansar automaticamente
@@ -2193,7 +2212,7 @@ DuracionPociones_Err:
 End Sub
 
 Public Sub HambreYSed(ByVal UserIndex As Integer, ByRef fenviarAyS As Boolean)
-        
+         
         On Error GoTo HambreYSed_Err
         
 
@@ -2260,7 +2279,6 @@ Public Sub Sanar(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, ByVal
         Dim mashit As Integer
 
         'con el paso del tiempo va sanando....pero muy lentamente ;-)
-104     If UserList(UserIndex).Stats.MinHp < UserList(UserIndex).Stats.MaxHp Then
 106         If UserList(UserIndex).flags.RegeneracionHP = 1 Then
 108             Intervalo = 400
 
@@ -2279,10 +2297,6 @@ Public Sub Sanar(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, ByVal
 124             EnviarStats = True
 
             End If
-
-        End If
-
-        
         Exit Sub
 
 Sanar_Err:
