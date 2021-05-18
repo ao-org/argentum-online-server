@@ -494,7 +494,7 @@ Private Enum NewPacksID
     HecharDeGrupo
     MacroPossent
     SubastaInfo
-    BanCuenta
+    bancuenta
     unBanCuenta
     BanSerial
     unBanSerial
@@ -1658,7 +1658,7 @@ Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
         Case NewPacksID.CrearEvento
             Call HandleCrearEvento(UserIndex)
 
-        Case NewPacksID.BanCuenta
+        Case NewPacksID.bancuenta
             Call HandleBanCuenta(UserIndex)
             
         Case NewPacksID.unBanCuenta
@@ -18434,7 +18434,7 @@ Private Sub HandleBanSerial(ByVal UserIndex As Integer)
         UserName = .incomingData.ReadASCIIString()
         
         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) <> 0 Then
-            Call BanSerialOK(UserIndex, UserName)
+            Call BanearHDMAC(UserIndex, UserName)
 
         End If
 
@@ -18465,7 +18465,7 @@ Private Sub HandleUnBanSerial(ByVal UserIndex As Integer)
         UserName = .incomingData.ReadASCIIString()
         
         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
-            Call UnBanSerialOK(UserIndex, UserName)
+            Call DesbanearHDMAC(UserName)
         End If
 
     End With
@@ -19449,7 +19449,6 @@ Private Sub HandleTolerancia0(ByVal UserIndex As Integer)
         If (.flags.Privilegios And PlayerType.Admin) = 0 Then Exit Sub
         
         Dim tUser As Integer
-
         tUser = NameIndex(Nick)
         
         'Se asegura que el target exista
@@ -19460,9 +19459,10 @@ Private Sub HandleTolerancia0(ByVal UserIndex As Integer)
         End If
         
         Call WriteTolerancia0(tUser)
-        Call BanIpAgrega(UserList(tUser).IP)
-        Call BanSerialOK(UserIndex, Nick)
-        Call BanAccount(UserIndex, Nick, "Tolerancia cero")
+        
+        Call BanearIP(UserIndex, Nick, UserList(tUser).IP)
+        Call BanearHDMAC(UserIndex, Nick)
+        Call BanearCuenta(UserIndex, Nick, "Tolerancia cero")
 
     End With
     

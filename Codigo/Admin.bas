@@ -1050,140 +1050,6 @@ UnBanAccount_Err:
         
 End Sub
 
-Public Sub BanSerialOK(ByVal bannerUserIndex As Integer, ByVal UserName As String)
-        
-        On Error GoTo BanSerialOK_Err
-        
-
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 03/02/07
-        '
-        '***************************************************
-        Dim tUser     As Integer
-
-        Dim userPriv  As Byte
-
-        Dim cantPenas As Byte
-
-        Dim rank      As Integer
-
-        Dim Cuenta    As String
-    
-        Dim Serial    As Long
-
-        Dim MacAdress As String
-    
-100     If InStrB(UserName, "+") Then
-102         UserName = Replace(UserName, "+", " ")
-
-        End If
-    
-104     tUser = NameIndex(UserName)
-    
-106     rank = PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero
-    
-108     With UserList(bannerUserIndex)
-            
-110         If FileExist(CharPath & UserName & ".chr", vbNormal) Then
-                
-112             Cuenta = ObtenerCuenta(UserName)
-114             Serial = ObtenerHDserial(Cuenta)
-116             MacAdress = ObtenerMacAdress(Cuenta)
-
-118             Open "" & DatPath & "\BanHds.dat" For Append As #1
-120             Print #1, Serial
-122             Close #1
-                
-124             Open "" & DatPath & "\BanMacs.dat" For Append As #1
-126             Print #1, MacAdress
-128             Close #1
-
-130             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> " & .name & " ha baneado la computadora de: " & UserName & "(" & Cuenta & ").", FontTypeNames.FONTTYPE_SERVER))
-            
-132             Call LogGM(.name, "Baneo la computadora de " & UserName & ".")
-
-            Else
-134             Call WriteConsoleMsg(bannerUserIndex, "El pj " & UserName & " no existe.", FontTypeNames.FONTTYPE_INFO)
-
-            End If
-        
-136         If tUser > 0 Then
-138             Call WriteConsoleMsg(bannerUserIndex, "Servidor> Usuario expulsado.", FontTypeNames.FONTTYPE_SERVER)
-                ' Call CloseSocket(tUser)
-
-            End If
-
-        End With
-
-        
-        Exit Sub
-
-BanSerialOK_Err:
-140     Call RegistrarError(Err.Number, Err.Description, "Admin.BanSerialOK", Erl)
-142     Resume Next
-        
-End Sub
-
-Public Sub UnBanSerialOK(ByVal bannerUserIndex As Integer, ByVal UserName As String)
-        
-        On Error GoTo UnBanSerialOK_Err
-        
-
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 03/02/07
-        '
-        '***************************************************
-        Dim tUser     As Integer
-
-        Dim userPriv  As Byte
-
-        Dim cantPenas As Byte
-
-        Dim rank      As Integer
-
-        Dim Cuenta    As String
-    
-        Dim Serial    As Long
-
-        Dim MacAdress As String
-    
-100     If InStrB(UserName, "+") Then
-102         UserName = Replace(UserName, "+", " ")
-
-        End If
-    
-104     tUser = NameIndex(UserName)
-    
-106     rank = PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero
-    
-108     With UserList(bannerUserIndex)
-
-110         If FileExist(CharPath & UserName & ".chr", vbNormal) Then
-                
-112             Cuenta = ObtenerCuenta(UserName)
-114             Serial = ObtenerHDserial(Cuenta)
-116             MacAdress = ObtenerMacAdress(Cuenta)
-            
-118             Call WriteConsoleMsg(bannerUserIndex, "Solamente desbaneo manual: HDSerial:" & Serial & ". MacAdress:" & MacAdress & ".", FontTypeNames.FONTTYPE_INFO)
-
-            Else
-120             Call WriteConsoleMsg(bannerUserIndex, "El pj " & UserName & " no existe.", FontTypeNames.FONTTYPE_INFO)
-
-            End If
-        
-        End With
-
-        
-        Exit Sub
-
-UnBanSerialOK_Err:
-122     Call RegistrarError(Err.Number, Err.Description, "Admin.UnBanSerialOK", Erl)
-124     Resume Next
-        
-End Sub
-
 Public Sub BanTemporal(ByVal nombre As String, ByVal dias As Integer, Causa As String, Baneador As String)
         
         On Error GoTo BanTemporal_Err
@@ -1192,7 +1058,7 @@ Public Sub BanTemporal(ByVal nombre As String, ByVal dias As Integer, Causa As S
         Dim tBan As tBaneo
 
 100     Set tBan = New tBaneo
-102     tBan.name = UCase$(nombre)
+102     tBan.Name = UCase$(nombre)
 104     tBan.FechaLiberacion = (Now + dias)
 106     tBan.Causa = Causa
 108     tBan.Baneador = Baneador

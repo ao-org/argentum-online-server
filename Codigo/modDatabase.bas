@@ -1843,7 +1843,7 @@ Public Sub SaveBanDatabase(UserName As String, Reason As String, BannedBy As Str
 
         Call MakeQuery("UPDATE user SET is_banned = TRUE, banned_by = ?, ban_reason = ? WHERE UPPER(name) = ?;", True, BannedBy, Reason, UCase$(UserName))
 
-        Call SavePenaDatabase(UserName, "Baneado por: " & WarnedBy & " debido a " & Reason)
+        Call SavePenaDatabase(UserName, "Baneado por: " & BannedBy & " debido a " & Reason)
 
         Exit Sub
 
