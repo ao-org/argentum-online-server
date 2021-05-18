@@ -38,7 +38,7 @@ Private Const NOT_ENOUGH_SPACE As Long = vbObjectError + 10
 ' Default size of a data buffer (10 Kbs)
 
 ' @see Class_Initialize
-Private Const DATA_BUFFER      As Long = 358400    '358400    '350kb
+Private Const DATA_BUFFER      As Long = 20480    '358400    '350kb
 Private CUSTOM_DATA_BUFFER     As Long
 
 Private PacketStartPosition    As Long

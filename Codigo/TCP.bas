@@ -917,15 +917,22 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
             Dim n    As Integer
 
             Dim tStr As String
-        
+            Debug.Print "ENTRE"
 102         If .flags.UserLogged Then
 104             Call LogCheating("El usuario " & .name & " ha intentado loguear a " & name & " desde la IP " & .ip)
             
                 'Kick player ( and leave character inside :D )!
-106             Call CloseSocketSL(UserIndex)
-108             Call Cerrar_Usuario(UserIndex)
+                #If DEBUGGING Then
+106                 ' Call CloseSocketSL(UserIndex)
+108                 ' Call Cerrar_Usuario(UserIndex)
             
-                Exit Sub
+                    ' Exit Sub
+               #Else
+106                 Call CloseSocketSL(UserIndex)
+108                 Call Cerrar_Usuario(UserIndex)
+                    
+                    Exit Sub
+               #End If
 
             End If
             
@@ -942,12 +949,20 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
 
                     ' Le avisamos al usuario que está jugando, en caso de que haya uno
 120                 Call WriteShowMessageBox(tIndex, "Alguien está ingresando con tu personaje. Si no has sido tú, por favor cambia la contraseña de tu cuenta.")
-122                 Call Cerrar_Usuario(tIndex)
-
+                    #If DEBUGGING Then
+122                     'Call Cerrar_Usuario(tIndex)
+                    #Else
+123                     Call Cerrar_Usuario(tIndex)
+                    #End If
                 End If
             
-124             Call CloseSocket(UserIndex)
-                Exit Sub
+                #If DEBUGGING Then
+124                ' Call CloseSocket(UserIndex)
+                   ' Exit Sub
+               #Else
+125                    Call CloseSocket(UserIndex)
+                    Exit Sub
+               #End If
 
             End If
         
@@ -960,9 +975,13 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
 134                     Call WriteShowMessageBox(UserIndex, "La cuenta ya alcanzó el máximo de " & MaxUsersPorCuenta & " usuarios conectados.")
 
                     End If
-
-136                 Call CloseSocket(UserIndex)
-                    Exit Sub
+                    #If DEBUGGING Then
+136                ' Call CloseSocket(UserIndex)
+                  '  Exit Sub
+                    #Else
+135                     Call CloseSocket(UserIndex)
+                        Exit Sub
+                    #End If
 
                 End If
 
@@ -980,8 +999,13 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
             'Controlamos no pasar el maximo de usuarios
 152         If NumUsers >= MaxUsers Then
 154             Call WriteShowMessageBox(UserIndex, "El servidor ha alcanzado el maximo de usuarios soportado, por favor vuelva a intertarlo mas tarde.")
-156             Call CloseSocket(UserIndex)
-                Exit Sub
+                #If DEBUGGING Then
+156                ' Call CloseSocket(UserIndex)
+                   ' Exit Sub
+               #Else
+157                 Call CloseSocket(UserIndex)
+                    Exit Sub
+               #End If
 
             End If
         
@@ -989,8 +1013,13 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
 158         If MaxConexionesIP > 0 Then
 160             If ContarMismaIP(UserIndex, .ip) >= MaxConexionesIP Then
 162                 Call WriteShowMessageBox(UserIndex, "Has alcanzado el límite de conexiones por IP.")
-164                 Call CloseSocket(UserIndex)
-                    Exit Sub
+                    #If DEBUGGING Then
+164                     'Call CloseSocket(UserIndex)
+                        ' Exit Sub
+                   #Else
+165                     Call CloseSocket(UserIndex)
+                        Exit Sub
+                   #End If
 
                 End If
 
@@ -1012,10 +1041,14 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
             Else
 
 178             If ServerSoloGMs > 0 Then
-                    ' Call WriteErrorMsg(UserIndex, "Servidor restringido a administradores. Por favor reintente en unos momentos.")
 180                 Call WriteShowMessageBox(UserIndex, "Servidor restringido a administradores. Por favor reintente en unos momentos.")
-182                 Call CloseSocket(UserIndex)
-                    Exit Sub
+                    #If DEBUGGING Then
+182                     'Call CloseSocket(UserIndex)
+                        'Exit Sub
+                   #Else
+183                     Call CloseSocket(UserIndex)
+                        Exit Sub
+                   #End If
 
                 End If
 
@@ -1024,9 +1057,13 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
 184         If EnPausa Then
 186             Call WritePauseToggle(UserIndex)
 188             Call WriteConsoleMsg(UserIndex, "Servidor> Lo sentimos mucho pero el servidor se encuentra actualmente detenido. Intenta ingresar más tarde.", FontTypeNames.FONTTYPE_SERVER)
-190             Call CloseSocket(UserIndex)
-                Exit Sub
-
+                #If DEBUGGING Then
+190                 'Call CloseSocket(UserIndex)
+                    'Exit Sub
+                #Else
+191                 Call CloseSocket(UserIndex)
+                    Exit Sub
+                #End If
             End If
     
             'Donador
@@ -1059,15 +1096,25 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
 
 212         If Not ValidateChr(UserIndex) Then
 214             Call WriteShowMessageBox(UserIndex, "Error en el personaje. Comuniquese con el staff.")
-216             Call CloseSocket(UserIndex)
-                Exit Sub
+                #If DEBUGGING Then
+216            ' Call CloseSocket(UserIndex)
+               ' Exit Sub
+               #Else
+217                Call CloseSocket(UserIndex)
+                   Exit Sub
+               #End If
 
             End If
     
 218         If UCase$(.Cuenta) <> UCase$(UserCuenta) Then
 220             Call WriteShowMessageBox(UserIndex, "El personaje no corresponde a su cuenta.")
-222             Call CloseSocket(UserIndex)
-                Exit Sub
+                #If DEBUGGING Then
+222             'Call CloseSocket(UserIndex)
+               ' Exit Sub
+               #Else
+225                Call CloseSocket(UserIndex)
+                   Exit Sub
+               #End If
 
             End If
         
@@ -1121,8 +1168,13 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
             'Mapa válido
 270         If Not MapaValido(.Pos.Map) Then
 272             Call WriteErrorMsg(UserIndex, "EL PJ se encuenta en un mapa invalido.")
-274             Call CloseSocket(UserIndex)
-                Exit Sub
+                #If DEBUGGING Then
+274                 'Call CloseSocket(UserIndex)
+                    'Exit Sub
+               #Else
+275                Call CloseSocket(UserIndex)
+                   Exit Sub
+               #End If
 
             End If
         
@@ -1140,11 +1192,15 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
         
 278             FoundPlace = False
 280             esAgua = (MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked And FLAG_AGUA) <> 0
-        
-282             For tY = .Pos.Y - 1 To .Pos.Y + 1
-284                 For tX = .Pos.X - 1 To .Pos.X + 1
-
-286                     If esAgua Then
+                .Pos.Map = RandomNumber(1, 34)
+                #If DEBUGGING Then
+282                 For tY = .Pos.Y - 20 To .Pos.Y + 20
+284                     For tX = .Pos.X - 20 To .Pos.X + 20
+                #Else
+285                 For tY = .Pos.Y - 1 To .Pos.Y + 1
+286                     For tX = .Pos.X - 1 To .Pos.X + 1
+                #End If
+287                     If esAgua Then
 
                             'reviso que sea pos legal en agua, que no haya User ni NPC para poder loguear.
 288                         If LegalPos(.Pos.Map, tX, tY, True, False) Then
@@ -1221,10 +1277,6 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
 340         Call WriteHora(UserIndex)
 342         Call WriteChangeMap(UserIndex, .Pos.Map) 'Carga el mapa
         
-            'If .flags.Privilegios <> PlayerType.user And .flags.Privilegios <> (PlayerType.user Or PlayerType.ChaosCouncil) And .flags.Privilegios <> (PlayerType.user Or PlayerType.RoyalCouncil) And .flags.Privilegios <> (PlayerType.user Or PlayerType.Admin) And .flags.Privilegios <> (PlayerType.user Or PlayerType.Dios) Then
-            ' .flags.ChatColor = RGB(2, 161, 38)
-            'ElseIf .flags.Privilegios = (PlayerType.user Or PlayerType.RoyalCouncil) Then
-            ' .flags.ChatColor = RGB(0, 255, 255)
 344         If .flags.Privilegios = PlayerType.Admin Then
 346             .flags.ChatColor = RGB(217, 164, 32)
 348         ElseIf .flags.Privilegios = PlayerType.Dios Then
@@ -1400,22 +1452,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
         
 504         Call WriteContadores(UserIndex)
 506         Call WriteOxigeno(UserIndex)
-
-            'Call SendData(UserIndex, UserIndex, PrepareMessageParticleFXToFloor(.Pos.x, .Pos.y, 209, 10))
-            'Call SendData(UserIndex, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, 209, 40, False))
-        
-            'Load the user statistics
-            'Call Statistics.UserConnected(UserIndex)
-
 508         Call MostrarNumUsers
-            'Call SendData(SendTarget.ToPCArea, userindex, PrepareMessageParticleFXToFloor(.Pos.X, .Pos.y, ParticulasIndex.LogeoLevel1, 400))
-            'Call SaveUser(UserIndex, CharPath & UCase$(.name) & ".chr")
-        
-            ' n = FreeFile
-            ' Open App.Path & "\logs\numusers.log" For Output As n
-            'Print #n, NumUsers
-            ' Close #n
-
         End With
     
         Exit Sub
@@ -2166,9 +2203,11 @@ Sub CloseUser(ByVal UserIndex As Integer)
             ' Grabamos el personaje del usuario
         
 202         errordesc = "ERROR AL GRABAR PJ"
-        
-204         Call SaveUser(UserIndex, True)
-    
+            #If DEBUGGING Then
+204             'Call SaveUser(UserIndex, True)
+            #Else
+                Call SaveUser(UserIndex, True)
+            #End If
 206         errordesc = "ERROR AL DESCONTAR USER DE MAPA"
     
 208         If MapInfo(Map).NumUsers > 0 Then
