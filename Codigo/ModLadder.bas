@@ -259,14 +259,10 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
                 
 222                     If Resu Then
                 
-224                         If UserList(UserIndex).donador.activo = 0 Then ' Donador no espera tiempo
-226                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Resucitar, 400, False))
-228                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(UserList(UserIndex).Char.CharIndex, 400, Accion_Barra.Resucitar))
-                            Else
-230                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Resucitar, 10, False))
-232                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(UserList(UserIndex).Char.CharIndex, 10, Accion_Barra.Resucitar))
+                            UserList(UserIndex).Counters.TimerBarra = 5
+                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Resucitar, UserList(UserIndex).Counters.TimerBarra, False))
+                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(UserList(UserIndex).Char.CharIndex, UserList(UserIndex).Counters.TimerBarra, Accion_Barra.Resucitar))
 
-                            End If
                 
 234                         UserList(UserIndex).Accion.AccionPendiente = True
 236                         UserList(UserIndex).Accion.Particula = ParticulasIndex.Resucitar

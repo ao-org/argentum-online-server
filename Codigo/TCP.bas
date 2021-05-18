@@ -1545,6 +1545,7 @@ Sub ResetContadores(ByVal UserIndex As Integer)
 182         .CuentaRegresiva = -1
 184         .SpeedHackCounter = 0
 186         .LastStep = 0
+            .TimerBarra = 0
         End With
 
         
