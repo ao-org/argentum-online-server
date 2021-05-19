@@ -42,7 +42,6 @@ Public Property Let Item(ByRef Key As String, ByRef Value As Variant)
             
 114         Case Else
 116             StringBuilder.Append CStr(Value)
-            
         End Select
     
 118     StringBuilder.Append ", "
