@@ -1511,7 +1511,6 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
             
 108         If .Counters.Frio < IntervaloFrio Then
 110             .Counters.Frio = .Counters.Frio + 1
-
             Else
 
 112             If MapInfo(.Pos.Map).terrain = Nieve Then
@@ -1559,48 +1558,29 @@ EfectoFrio_Err:
         
 End Sub
 Public Sub EfectoStamina(ByVal UserIndex As Integer)
-    Dim bEnviarStats As Boolean
+
+    Dim bEnviarStats_HP As Boolean
+    Dim bEnviarStats_STA As Boolean
+    
     With UserList(UserIndex)
         If .flags.Hambre = 0 And .flags.Sed = 0 Then 'Si no tiene hambre ni sed
             If .Stats.MinHp < .Stats.MaxHp Then
-170             Call Sanar(UserIndex, bEnviarStats, IIf(.flags.Descansar, SanaIntervaloDescansar, SanaIntervaloSinDescansar))
-172             If bEnviarStats Then
-174                 Call WriteUpdateHP(UserIndex)
-176                 bEnviarStats = False
-                End If
+170             Call Sanar(UserIndex, bEnviarStats_HP, IIf(.flags.Descansar, SanaIntervaloDescansar, SanaIntervaloSinDescansar))
             End If
                                 
 178         If .flags.Desnudo = 0 Then
-180             Call RecStamina(UserIndex, bEnviarStats, IIf(.flags.Descansar, StaminaIntervaloDescansar, StaminaIntervaloSinDescansar))
-                If bEnviarStats Then
-                    Call WriteUpdateSta(UserIndex)
-                    bEnviarStats = False
-                End If
+180             Call RecStamina(UserIndex, bEnviarStats_STA, IIf(.flags.Descansar, StaminaIntervaloDescansar, StaminaIntervaloSinDescansar))
             Else
                 If Lloviendo Then
                     If Intemperie(UserIndex) Then
-                        Call PierdeEnergia(UserIndex, bEnviarStats, IntervaloPerderStamina * 0.5)
-                        If bEnviarStats Then
-                            Call WriteUpdateSta(UserIndex)
-                            bEnviarStats = False
-                        End If
+181                     Call PierdeEnergia(UserIndex, bEnviarStats_STA, IntervaloPerderStamina * 0.5)
                     Else
-                        Call PierdeEnergia(UserIndex, bEnviarStats, IIf(.flags.Descansar, IntervaloPerderStamina * 2, IntervaloPerderStamina))
-                        If bEnviarStats Then
-                            Call WriteUpdateSta(UserIndex)
-                            bEnviarStats = False
-                        End If
+182                     Call PierdeEnergia(UserIndex, bEnviarStats_STA, IIf(.flags.Descansar, IntervaloPerderStamina * 2, IntervaloPerderStamina))
                     End If
                 Else
-                    Call PierdeEnergia(UserIndex, bEnviarStats, IIf(.flags.Descansar, IntervaloPerderStamina * 2, IntervaloPerderStamina))
-202                 If bEnviarStats Then
-204                     Call WriteUpdateSta(UserIndex)
-206                     bEnviarStats = False
-                    End If
+183                 Call PierdeEnergia(UserIndex, bEnviarStats_STA, IIf(.flags.Descansar, IntervaloPerderStamina * 2, IntervaloPerderStamina))
                 End If
             End If
-                                
-
             
             If .flags.Descansar Then
                 'termina de descansar automaticamente
@@ -1611,6 +1591,14 @@ Public Sub EfectoStamina(ByVal UserIndex As Integer)
                 End If
             
             End If
+        End If
+        
+        If bEnviarStats_STA Then
+197         Call WriteUpdateSta(UserIndex)
+        End If
+        
+        If bEnviarStats_HP Then
+198         Call WriteUpdateHP(UserIndex)
         End If
     End With
 End Sub
@@ -2412,6 +2400,7 @@ Sub PasarSegundo()
                             Call SendData(SendTarget.ToPCArea, i, PrepareMessagePlayWave("117", .Pos.X, .Pos.Y))
                             Call RevivirUsuario(i, True)
                     End Select
+                    
                     .Accion.Particula = 0
                     .Accion.TipoAccion = Accion_Barra.CancelarAccion
                     .Accion.HechizoPendiente = 0
@@ -2623,7 +2612,11 @@ Sub GuardarUsuarios()
 114     For i = 1 To LastUser
 
 116         If UserList(i).flags.UserLogged Then
-118            ' Call SaveUser(i)
+                #If DEBUGGING Then
+118                 'Call SaveUser(i)
+                #Else
+                    Call SaveUser(i)
+                #End If
 
             End If
 

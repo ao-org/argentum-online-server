@@ -773,6 +773,10 @@ auxSocket_DataArrival_Err:
         
 End Sub
 
+Private Sub Frame2_DragDrop(Source As Control, X As Single, Y As Single)
+
+End Sub
+
 Private Sub Invasion_Timer()
 
 
@@ -1463,7 +1467,6 @@ End Sub
 Private Sub GameTimer_Timer()
 
         Dim iUserIndex   As Long
-        Dim bEnviarStats As Boolean
         Dim bEnviarAyS   As Boolean
     
         On Error GoTo HayError
@@ -1476,11 +1479,10 @@ Private Sub GameTimer_Timer()
                 'Conexion activa?
 104             If .ConnID <> -1 Then
                     '¿User valido?
-                
+                    
 106                 If .ConnIDValida And .flags.UserLogged Then
                     
                         '[Alejo-18-5]
-108                     bEnviarStats = False
 110                     bEnviarAyS = False
                     
 112                     .NumeroPaquetesPorMiliSec = 0
