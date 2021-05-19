@@ -18,7 +18,7 @@ Public Database_Password    As String
 
 Private Database_Connection As ADODB.Connection
 Private Command             As ADODB.Command
-Private QueryData           As ADODB.Recordset
+Public QueryData           As ADODB.Recordset
 Private RecordsAffected     As Long
 
 Private QueryBuilder        As cStringBuilder
@@ -975,7 +975,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
         Exit Sub
 
 ErrorHandler:
-468     Call LogDatabaseError("Error en LoadUserDatabase: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
+468     Call LogDatabaseError("Error en LoadUserDatabase: " & UserList(UserIndex).Name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
 
 470     Resume Next
 
@@ -1106,9 +1106,9 @@ GetUserValue_Err:
         
 End Function
 
-Private Sub SetDBValue(Tabla As String, ColumnaSet As String, ByVal ValueSet As Variant, ColumnaTest As String, ByVal ValueTest As Variant)
-        ' 17/10/2020 Autor: Alexis Caraballo (WyroX)
-        ' Para escribir un unico valor de una unica fila
+Public Sub SetDBValue(Tabla As String, ColumnaSet As String, ByVal ValueSet As Variant, ColumnaTest As String, ByVal ValueTest As Variant)
+    ' 17/10/2020 Autor: Alexis Caraballo (WyroX)
+    ' Para escribir un unico valor de una unica fila
 
         On Error GoTo ErrorHandler
     
@@ -1841,16 +1841,9 @@ Public Sub SaveBanDatabase(UserName As String, Reason As String, BannedBy As Str
         '***************************************************
         On Error GoTo ErrorHandler
 
-        Dim query As String
+        Call MakeQuery("UPDATE user SET is_banned = TRUE, banned_by = ?, ban_reason = ? WHERE UPPER(name) = ?;", True, BannedBy, Reason, UCase$(UserName))
 
-100     Call MakeQuery("UPDATE user SET is_banned = TRUE WHERE UPPER(name) = ?;", True, UCase$(UserName))
-
-102     query = "INSERT INTO punishment SET "
-104     query = query & "user_id = (SELECT id from user WHERE UPPER(name) = ?), "
-106     query = query & "number = number + 1, "
-108     query = query & "reason = ?;"
-
-110     Call MakeQuery(query, True, UCase$(UserName), BannedBy & ": " & Reason & " " & Date & " " & Time)
+        Call SavePenaDatabase(UserName, "Baneado por: " & BannedBy & " debido a " & Reason)
 
         Exit Sub
 
@@ -1867,18 +1860,11 @@ Public Sub SaveWarnDatabase(UserName As String, Reason As String, WarnedBy As St
         '***************************************************
         On Error GoTo ErrorHandler
 
-        Dim query As String
-
-100     Call MakeQuery("UPDATE user SET warnings = warnings + 1 WHERE UPPER(name) = ?;", True, UCase$(UserName))
-
-102     query = "INSERT INTO punishment SET "
-104     query = query & "user_id = (SELECT id from user WHERE UPPER(name) = ?), "
-106     query = query & "number = number + 1, "
-108     query = query & "reason = ?;"
-
-110     Call MakeQuery(query, True, UCase$(UserName), WarnedBy & ": " & Reason & " " & Date & " " & Time)
-
-        Exit Sub
+    Call MakeQuery("UPDATE user SET warnings = warnings + 1 WHERE UPPER(name) = ?;", True, UCase$(UserName))
+    
+    Call SavePenaDatabase(UserName, "Advertencia de: " & WarnedBy & " debido a " & Reason)
+    
+    Exit Sub
 
 ErrorHandler:
 112     Call LogDatabaseError("Error in SaveWarnDatabase: " & UserName & ". " & Err.Number & " - " & Err.Description)
@@ -1890,13 +1876,10 @@ Public Sub SavePenaDatabase(UserName As String, Reason As String)
         On Error GoTo ErrorHandler
 
         Dim query As String
+        query = "INSERT INTO punishment(user_id, NUMBER, reason)"
+        query = query & " SELECT u.id, COUNT(p.number) + 1, ? FROM user u LEFT JOIN punishment p ON p.user_id = u.id WHERE UPPER(u.name) = ?"
 
-100     query = query & "INSERT INTO punishment SET "
-102     query = query & "user_id = (SELECT id from user WHERE UPPER(name) = ?), "
-104     query = query & "number = number + 1, "
-106     query = query & "reason = ?;"
-
-108     Call MakeQuery(query, True, UCase$(UserName), Reason)
+        Call MakeQuery(query, True, Reason, UCase$(UserName))
 
         Exit Sub
 
@@ -1935,7 +1918,7 @@ Public Sub UnBanDatabase(UserName As String)
 
         On Error GoTo ErrorHandler
 
-100     Call MakeQuery("UPDATE user SET is_banned = FALSE WHERE UPPER(name) = ?;", True, UCase$(UserName))
+100     Call MakeQuery("UPDATE user SET is_banned = FALSE, banned_by = '', ban_reason = '' WHERE UPPER(name) = ?;", True, UCase$(UserName))
 
         Exit Sub
 
@@ -2078,7 +2061,7 @@ Public Function GetNombreCuentaDatabase(name As String) As String
 102     If QueryData Is Nothing Then Exit Function
     
         'Obtenemos el nombre de la cuenta
-104     GetNombreCuentaDatabase = QueryData!name
+104     GetNombreCuentaDatabase = QueryData!email
 
         Exit Function
     
@@ -2588,6 +2571,21 @@ ErrorHandler:
 124     Call LogDatabaseError("Error in VerLlavesDatabase. UserName: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
+
+Public Function GetAccountID(Email As String) As String
+On Error GoTo ErrorHandler
+
+    GetAccountID = val(GetCuentaValue(Email, "id"))
+
+    Exit Function
+ErrorHandler:
+    Call LogDatabaseError("Error in GetAccountID. Email: " & Email & ". " & Err.Number & " - " & Err.Description)
+
+End Function
+
+Public Function GetBaneoAccountId(ByVal AccountID As Long) As Boolean
+    GetBaneoAccountId = CBool(GetDBValue("account", "is_banned", "id", AccountID))
+End Function
 
 Public Function SanitizeNullValue(ByVal Value As Variant, ByVal defaultValue As Variant) As Variant
         

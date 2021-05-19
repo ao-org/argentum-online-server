@@ -398,7 +398,7 @@ Public Sub LoadQuests()
         '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         On Error GoTo ErrorHandler
 
-        Dim Reader    As clsIniReader
+        Dim Reader    As clsIniManager
 
         Dim NumQuests As Integer
 
@@ -409,7 +409,7 @@ Public Sub LoadQuests()
         Dim j         As Integer
     
         'Cargamos el clsIniManager en memoria
-100     Set Reader = New clsIniReader
+100     Set Reader = New clsIniManager
     
         'Lo inicializamos para el archivo Quests.DAT
 102     Call Reader.Initialize(DatPath & "Quests.DAT")
@@ -515,7 +515,7 @@ ErrorHandler:
 
 End Sub
  
-Public Sub LoadQuestStats(ByVal UserIndex As Integer, ByRef UserFile As clsIniReader)
+Public Sub LoadQuestStats(ByVal UserIndex As Integer, ByRef UserFile As clsIniManager)
         
         On Error GoTo LoadQuestStats_Err
         

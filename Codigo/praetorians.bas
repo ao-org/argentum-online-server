@@ -61,13 +61,13 @@ Public PretorianDatNumbers()     As Integer
 ''Cuantos pretorianos vivos quedan. Uno por cada alcoba
 'Public pretorianosVivos As Integer
 '
-Private FileReader As clsIniReader
+Private FileReader As clsIniManager
 
 Public Sub LoadPretorianData()
 
         On Error GoTo LoadPretorianData_Err
  
-100     Set FileReader = New clsIniReader
+100     Set FileReader = New clsIniManager
 102     Call FileReader.Initialize(DatPath & "Pretorianos.dat")
         
         'Ubicación predeterminada de los pretorianos.

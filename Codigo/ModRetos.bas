@@ -7,8 +7,8 @@ Public Retos As tRetos
 Private ListaDeEspera As New Dictionary
 
 Public Sub CargarInfoRetos()
-        Dim File As clsIniReader
-100     Set File = New clsIniReader
+    Dim File As clsIniManager
+    Set File = New clsIniManager
 
 102     Call File.Initialize(DatPath & "Retos.dat")
     
@@ -203,14 +203,14 @@ Public Sub AceptarReto(ByVal UserIndex As Integer, OferenteName As String)
 
 122     With UserList(Oferente).flags.SolicitudReto
 
-            Dim JugadorIndex As Integer
-124         JugadorIndex = IndiceJugadorEnSolicitud(UserIndex, Oferente)
-        
-126         If JugadorIndex < 0 Then
-128             Call WriteConsoleMsg(UserIndex, UserList(Oferente).name & " no te ha invitado a ningún reto o ha sido cancelado.", FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            End If
-        
+        Dim JugadorIndex As Integer
+        JugadorIndex = IndiceJugadorEnSolicitud(UserIndex, Oferente)
+
+        If JugadorIndex < 0 Then
+            Call WriteConsoleMsg(UserIndex, UserList(Oferente).Name & " no te ha invitado a ningún reto o ha sido cancelado.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+
 130         If UserList(UserIndex).Stats.GLD < .Apuesta Then
 132             Call WriteConsoleMsg(UserIndex, "Necesitas al menos " & PonerPuntos(.Apuesta) & " monedas de oro para aceptar este reto.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
@@ -608,9 +608,8 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
                             Else
 138                             Equipo2 = UserList(tIndex).name
                             End If
-                        
                         Else
-                    
+
 140                         If LenB(Equipo1) > 0 Then
 142                             Equipo1 = Equipo2 & IIf(i \ 2 < .TamañoEquipoIzq - 2, ", ", " y ") & UserList(tIndex).name
                             Else
@@ -1057,6 +1056,7 @@ Private Function TodosPuedenReto(ByVal Oferente As Integer) As Boolean
 106         ElseIf UserList(Oferente).Stats.GLD < .Apuesta Then
 108             Call CancelarSolicitudReto(Oferente, UserList(Oferente).name & " no tiene las monedas de oro suficientes.")
                 Exit Function
+
 110         ElseIf .PocionesMaximas >= 0 Then
 112             If TieneObjetos(38, .PocionesMaximas + 1, Oferente) Then
 114                 Call CancelarSolicitudReto(Oferente, UserList(Oferente).name & " tiene demasiadas pociones rojas (Cantidad máxima: " & .PocionesMaximas & ").")

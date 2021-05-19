@@ -325,7 +325,7 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
 140                 aN = .flags.NPCAtacado
     
 142                 If aN > 0 Then
-144                     If NpcList(aN).flags.AttackedFirstBy = .name Then
+144                     If NpcList(aN).flags.AttackedFirstBy = .Name Then
 146                         NpcList(aN).flags.AttackedFirstBy = vbNullString
     
                         End If
@@ -361,7 +361,7 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
                         aN = .flags.NPCAtacado
         
                         If aN > 0 Then
-                            If NpcList(aN).flags.AttackedFirstBy = .name Then
+                            If NpcList(aN).flags.AttackedFirstBy = .Name Then
                                 NpcList(aN).flags.AttackedFirstBy = vbNullString
         
                             End If
@@ -663,7 +663,7 @@ Function IP_Index(ByVal inIP As String) As Integer
   
 104     UserIndex = 1
 
-106     Do Until UserList(UserIndex).ip = inIP
+106     Do Until UserList(UserIndex).IP = inIP
     
 108         UserIndex = UserIndex + 1
     
@@ -698,7 +698,7 @@ Function ContarMismaIP(ByVal UserIndex As Integer, ByVal UserIP As String) As In
 100     For LoopC = 1 To MaxUsers
 
 102         If UserList(LoopC).flags.UserLogged = True Then
-104             If UserList(LoopC).ip = UserIP And UserIndex <> LoopC Then
+104             If UserList(LoopC).IP = UserIP And UserIndex <> LoopC Then
 106                 ContarMismaIP = ContarMismaIP + 1
                 End If
 
@@ -966,7 +966,7 @@ LegalWalkNPC_Err:
         
 End Function
 
-Sub SendHelp(ByVal index As Integer)
+Sub SendHelp(ByVal Index As Integer)
         
         On Error GoTo SendHelp_Err
         
@@ -978,7 +978,7 @@ Sub SendHelp(ByVal index As Integer)
 100     NumHelpLines = val(GetVar(DatPath & "Help.dat", "INIT", "NumLines"))
 
 102     For LoopC = 1 To NumHelpLines
-104         Call WriteConsoleMsg(index, GetVar(DatPath & "Help.dat", "Help", "Line" & LoopC), FontTypeNames.FONTTYPE_INFO)
+104         Call WriteConsoleMsg(Index, GetVar(DatPath & "Help.dat", "Help", "Line" & LoopC), FontTypeNames.FONTTYPE_INFO)
 106     Next LoopC
 
         
@@ -1094,11 +1094,11 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 
 164                 If ObjData(UserList(UserIndex).flags.TargetObj).OBJType = eOBJType.otYacimiento Then
 166                     Call ActualizarRecurso(Map, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY)
-168                     Call WriteConsoleMsg(UserIndex, ObjData(UserList(UserIndex).flags.TargetObj).name & " - (Minerales disponibles: " & MapData(Map, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.amount & ")", FontTypeNames.FONTTYPE_INFO)
+168                     Call WriteConsoleMsg(UserIndex, ObjData(UserList(UserIndex).flags.TargetObj).Name & " - (Minerales disponibles: " & MapData(Map, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.amount & ")", FontTypeNames.FONTTYPE_INFO)
 
 170                 ElseIf ObjData(UserList(UserIndex).flags.TargetObj).OBJType = eOBJType.otArboles Then
 172                     Call ActualizarRecurso(Map, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY)
-174                     Call WriteConsoleMsg(UserIndex, ObjData(UserList(UserIndex).flags.TargetObj).name & " - (Recursos disponibles: " & MapData(Map, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.amount & ")", FontTypeNames.FONTTYPE_INFO)
+174                     Call WriteConsoleMsg(UserIndex, ObjData(UserList(UserIndex).flags.TargetObj).Name & " - (Recursos disponibles: " & MapData(Map, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.amount & ")", FontTypeNames.FONTTYPE_INFO)
                     
 176                 ElseIf ObjData(UserList(UserIndex).flags.TargetObj).OBJType = eOBJType.otTeleport Then
 178                     If MapData(Map, X, Y).TileExit.Map > 0 Then
@@ -1297,9 +1297,9 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                         End If
                         
 362                     If Len(UserList(TempCharIndex).Desc) > 0 Then
-364                         Stat = "Ves a " & UserList(TempCharIndex).name & Stat & " - " & UserList(TempCharIndex).Desc
+364                         Stat = "Ves a " & UserList(TempCharIndex).Name & Stat & " - " & UserList(TempCharIndex).Desc
                         Else
-366                         Stat = "Ves a " & UserList(TempCharIndex).name & Stat
+366                         Stat = "Ves a " & UserList(TempCharIndex).Name & Stat
     
                         End If
                      
@@ -1410,7 +1410,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 466                 Call modCentinela.CentinelaSendClave(UserIndex)
                 
 468             ElseIf NpcList(TempCharIndex).MaestroUser > 0 Then
-470                 Call WriteConsoleMsg(UserIndex, "NPCNAME*" & NpcList(TempCharIndex).Numero & "* es mascota de " & UserList(NpcList(TempCharIndex).MaestroUser).name & " " & estatus, FontTypeNames.FONTTYPE_INFO)
+470                 Call WriteConsoleMsg(UserIndex, "NPCNAME*" & NpcList(TempCharIndex).Numero & "* es mascota de " & UserList(NpcList(TempCharIndex).MaestroUser).Name & " " & estatus, FontTypeNames.FONTTYPE_INFO)
                 
                 Else
                 
@@ -1508,9 +1508,9 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
         Exit Sub
 
 LookatTile_Err:
-554         Call RegistrarError(Err.Number, Err.Description & " Pos: " & Map & "-" & X & "-" & Y & " Usuario: " & UserList(UserIndex).name & " Extra.LookatTile", Erl)
+554         Call RegistrarError(Err.Number, Err.Description & " Pos: " & Map & "-" & X & "-" & Y & " Usuario: " & UserList(UserIndex).Name & " Extra.LookatTile", Erl)
 556     If FoundChar = 2 Then
-558         Call RegistrarError(Err.Number, Err.Description & " Pos: " & Map & "-" & X & "-" & Y & "Npc: " & NpcList(TempCharIndex).Numero & " Usuario: " & UserList(UserIndex).name & "Extra.LookatTile X LADDER", Erl)
+558         Call RegistrarError(Err.Number, Err.Description & " Pos: " & Map & "-" & X & "-" & Y & "Npc: " & NpcList(TempCharIndex).Numero & " Usuario: " & UserList(UserIndex).Name & "Extra.LookatTile X LADDER", Erl)
         End If
 560     Resume Next
         
@@ -1605,12 +1605,12 @@ FindDirection_Err:
 End Function
 
 '[Barrin 30-11-03]
-Public Function ItemNoEsDeMapa(ByVal index As Integer) As Boolean
+Public Function ItemNoEsDeMapa(ByVal Index As Integer) As Boolean
         
         On Error GoTo ItemNoEsDeMapa_Err
         
 
-100     ItemNoEsDeMapa = ObjData(index).OBJType <> eOBJType.otPuertas And ObjData(index).OBJType <> eOBJType.otForos And ObjData(index).OBJType <> eOBJType.otCarteles And ObjData(index).OBJType <> eOBJType.otArboles And ObjData(index).OBJType <> eOBJType.otYacimiento And ObjData(index).OBJType <> eOBJType.otTeleport And ObjData(index).OBJType <> eOBJType.OtCorreo And ObjData(index).OBJType <> eOBJType.OtDecoraciones
+100     ItemNoEsDeMapa = ObjData(Index).OBJType <> eOBJType.otPuertas And ObjData(Index).OBJType <> eOBJType.otForos And ObjData(Index).OBJType <> eOBJType.otCarteles And ObjData(Index).OBJType <> eOBJType.otArboles And ObjData(Index).OBJType <> eOBJType.otYacimiento And ObjData(Index).OBJType <> eOBJType.otTeleport And ObjData(Index).OBJType <> eOBJType.OtCorreo And ObjData(Index).OBJType <> eOBJType.OtDecoraciones
 
         
         Exit Function
@@ -1623,11 +1623,11 @@ End Function
 
 '[/Barrin 30-11-03]
 
-Public Function MostrarCantidad(ByVal index As Integer) As Boolean
+Public Function MostrarCantidad(ByVal Index As Integer) As Boolean
         
         On Error GoTo MostrarCantidad_Err
         
-100     MostrarCantidad = ObjData(index).OBJType <> eOBJType.otPuertas And ObjData(index).OBJType <> eOBJType.otForos And ObjData(index).OBJType <> eOBJType.otCarteles And ObjData(index).OBJType <> eOBJType.otYacimiento And ObjData(index).OBJType <> eOBJType.otArboles And ObjData(index).OBJType <> eOBJType.OtCorreo And ObjData(index).OBJType <> eOBJType.otTeleport
+100     MostrarCantidad = ObjData(Index).OBJType <> eOBJType.otPuertas And ObjData(Index).OBJType <> eOBJType.otForos And ObjData(Index).OBJType <> eOBJType.otCarteles And ObjData(Index).OBJType <> eOBJType.otYacimiento And ObjData(Index).OBJType <> eOBJType.otArboles And ObjData(Index).OBJType <> eOBJType.OtCorreo And ObjData(Index).OBJType <> eOBJType.otTeleport
 
         
         Exit Function
@@ -1662,8 +1662,8 @@ End Function
 
 Public Sub CargarMapasEspeciales()
 
-    Dim File As clsIniReader
-    Set File = New clsIniReader
+    Dim File As clsIniManager
+    Set File = New clsIniManager
     
     Call File.Initialize(DatPath & "MapasEspeciales.dat")
     

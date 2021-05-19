@@ -929,13 +929,13 @@ Public Sub v_RutinaElecciones()
 
         On Error GoTo errh
 
-100     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor> Revisando elecciones", FontTypeNames.FONTTYPE_SERVER))
+100     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » Revisando elecciones", FontTypeNames.FONTTYPE_SERVER))
 
 102     For i = 1 To CANTIDADDECLANES
 
 104         If Not guilds(i) Is Nothing Then
 106             If guilds(i).RevisarElecciones Then
-108                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor> " & guilds(i).GetLeader & " es el nuevo lider de " & guilds(i).GuildName & "!", FontTypeNames.FONTTYPE_SERVER))
+108                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » " & guilds(i).GetLeader & " es el nuevo lider de " & guilds(i).GuildName & "!", FontTypeNames.FONTTYPE_SERVER))
 
                 End If
 
@@ -944,7 +944,7 @@ Public Sub v_RutinaElecciones()
 proximo:
 110     Next i
 
-112     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor> Elecciones revisadas", FontTypeNames.FONTTYPE_SERVER))
+112     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » Elecciones revisadas", FontTypeNames.FONTTYPE_SERVER))
         Exit Sub
 errh:
 114     Call LogError("modGuilds.v_RutinaElecciones():" & Err.Description)

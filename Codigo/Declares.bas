@@ -40,7 +40,7 @@ Public Enum e_Facciones
     Armada = 3
 End Enum
 
-Public Administradores As clsIniReader
+Public Administradores As clsIniManager
 
 Public Enum e_SoundIndex
 
@@ -2352,8 +2352,6 @@ Public RecompensasFaccion()               As tRecompensaFaccion
 
 Public ObjDonador()                       As tObjDonador
 
-Public BanIps                             As New Collection
-
 Public ModClase(1 To NUMCLASES)           As ModClase
 
 Public ModRaza(1 To NUMRAZAS)             As ModRaza
@@ -2420,3 +2418,10 @@ Public Type Rectangle
 End Type
 
 Public Const DIAMETRO_VISION_GUARDIAS_NPCS As Byte = 7
+
+Public Enum eNumber_Types
+    ent_Byte
+    ent_Integer
+    ent_Long
+    ent_Trigger
+End Enum

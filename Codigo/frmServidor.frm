@@ -854,10 +854,10 @@ Private Sub Command19_Click()
 
 102     If sENtrada = "estoy DE acuerdo" Then
     
-104         n = BanIps.Count
+104         n = IP_Blacklist.Count
 
-106         For i = 1 To BanIps.Count
-108             BanIps.Remove 1
+106         For i = 1 To n
+108             IP_Blacklist.Remove(0)
 110         Next i
     
 112         MsgBox "Se han habilitado " & n & " ipes"
