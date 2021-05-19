@@ -1132,7 +1132,7 @@ Public Type ObjData
 
     TipoRuna As Byte
 
-    name As String 'Nombre del obj
+    Name As String 'Nombre del obj
     
     OBJType As eOBJType 'Tipo enum que determina cuales son las caract del obj
     
@@ -1788,11 +1788,11 @@ End Type
 'Tipo de los Usuarios
 Public Type user
 
-    name As String
+    Name As String
     Cuenta As String
     
     ID As Long
-    AccountId As Long
+    AccountID As Long
     
     Grupo As Tgrupo
 
@@ -1941,9 +1941,6 @@ Public Type NPCFlags
     InvasionIndex As Integer
     SpawnBox As Integer
     IndexInInvasion As Integer
-
-    '[KEVIN]
-    'DeQuest As Byte
 
     ExpCount As Long '[ALEJO]
     
