@@ -564,6 +564,11 @@ Public Function CrearNPC(NroNPC As Integer, Mapa As Integer, OrigPos As WorldPos
 160             Map = .Pos.Map
 162             X = .Pos.X
 164             Y = .Pos.Y
+
+                'Y tambien asignamos su posicion original, para tener una posicion de retorno.
+                .Orig.Map = .Pos.Map
+                .Orig.X = .Pos.X
+                .Orig.Y = .Pos.Y
     
             End If
 
@@ -902,8 +907,8 @@ Function SpawnNpc(ByVal NpcIndex As Integer, Pos As WorldPos, ByVal FX As Boolea
 106     PuedeAgua = NpcList(nIndex).flags.AguaValida = 1
 108     PuedeTierra = NpcList(nIndex).flags.TierraInvalida = 0
 
-110         Call ClosestLegalPos(Pos, newpos, PuedeAgua, PuedeTierra)  'Nos devuelve la posicion valida mas cercana
-            'Si X e Y son iguales a 0 significa que no se encontro posicion valida
+110     Call ClosestLegalPos(Pos, newpos, PuedeAgua, PuedeTierra)  'Nos devuelve la posicion valida mas cercana
+        'Si X e Y son iguales a 0 significa que no se encontro posicion valida
 
 112     If newpos.X <> 0 And newpos.Y <> 0 Then
             'Asignamos las nuevas coordenas solo si son validas
@@ -925,10 +930,7 @@ Function SpawnNpc(ByVal NpcIndex As Integer, Pos As WorldPos, ByVal FX As Boolea
         ' WyroX: Asignamos el dueño
 130     NpcList(nIndex).MaestroUser = MaestroUser
         
-        ' WyroX: Caminata de NPCs
-132     If NpcList(nIndex).Movement = Caminata Or NpcList(nIndex).Movement = GuardiaPersigueNpc Then
-134         NpcList(nIndex).Orig = NpcList(nIndex).Pos
-        End If
+134     NpcList(nIndex).Orig = NpcList(nIndex).Pos
 
         'Crea el NPC
 136     Call MakeNPCChar(True, Map, nIndex, Map, X, Y)
