@@ -2418,3 +2418,10 @@ Public Type Rectangle
 End Type
 
 Public Const DIAMETRO_VISION_GUARDIAS_NPCS As Byte = 7
+
+Public Enum eNumber_Types
+    ent_Byte
+    ent_Integer
+    ent_Long
+    ent_Trigger
+End Enum

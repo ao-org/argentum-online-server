@@ -975,7 +975,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
         Exit Sub
 
 ErrorHandler:
-468     Call LogDatabaseError("Error en LoadUserDatabase: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
+468     Call LogDatabaseError("Error en LoadUserDatabase: " & UserList(UserIndex).Name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
 
 470     Resume Next
 
@@ -1918,7 +1918,7 @@ Public Sub UnBanDatabase(UserName As String)
 
         On Error GoTo ErrorHandler
 
-100     Call MakeQuery("UPDATE user SET is_banned = FALSE WHERE UPPER(name) = ?;", True, UCase$(UserName))
+100     Call MakeQuery("UPDATE user SET is_banned = FALSE, banned_by = '', ban_reason = '' WHERE UPPER(name) = ?;", True, UCase$(UserName))
 
         Exit Sub
 
@@ -2571,6 +2571,21 @@ ErrorHandler:
 124     Call LogDatabaseError("Error in VerLlavesDatabase. UserName: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
+
+Public Function GetAccountID(Email As String) As String
+On Error GoTo ErrorHandler
+
+    GetAccountID = val(GetCuentaValue(Email, "id"))
+
+    Exit Function
+ErrorHandler:
+    Call LogDatabaseError("Error in GetAccountID. Email: " & Email & ". " & Err.Number & " - " & Err.Description)
+
+End Function
+
+Public Function GetBaneoAccountId(ByVal AccountID As Long) As Boolean
+    GetBaneoAccountId = CBool(GetDBValue("account", "is_banned", "id", AccountID))
+End Function
 
 Public Function SanitizeNullValue(ByVal Value As Variant, ByVal defaultValue As Variant) As Variant
         

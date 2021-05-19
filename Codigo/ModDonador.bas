@@ -33,7 +33,7 @@ Public Sub DonadorTiempo(ByVal nombre As String, ByVal dias As Integer)
     
 108         Call Donadores.Add(tDon)
 110         Call SaveDonador(Donadores.Count)
-112         Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> " & nombre & " agrego " & dias & " días de donador.", FontTypeNames.FONTTYPE_New_DONADOR))
+112         Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & nombre & " agrego " & dias & " días de donador.", FontTypeNames.FONTTYPE_New_DONADOR))
 114         Call LogearEventoDeDonador("Se agregaron " & dias & " a la cuenta " & nombre & ".")
         Else
 
@@ -329,7 +329,7 @@ Public Sub CheckearCodigo(ByVal UserIndex As Integer, ByVal CodigoKey As String)
         Dim LogCheckCodigo As String
 
 100     LogCheckCodigo = vbCrLf & "****************************************************" & vbCrLf
-102     LogCheckCodigo = LogCheckCodigo & "El usuario " & UserList(UserIndex).name & " ingresó el codigo: " & CodigoKey & "." & vbCrLf
+102     LogCheckCodigo = LogCheckCodigo & "El usuario " & UserList(UserIndex).Name & " ingresó el codigo: " & CodigoKey & "." & vbCrLf
 
         Dim i As Integer
 

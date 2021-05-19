@@ -2528,7 +2528,7 @@ Sub GuardarUsuarios()
 100     haciendoBK = True
     
 102     Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
-104     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor> Grabando Personajes", FontTypeNames.FONTTYPE_SERVER))
+104     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » Grabando Personajes", FontTypeNames.FONTTYPE_SERVER))
     
         Dim i As Long
         
@@ -2549,7 +2549,7 @@ Sub GuardarUsuarios()
 
 120     Next i
     
-122     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor> Personajes Grabados", FontTypeNames.FONTTYPE_SERVER))
+122     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » Personajes Grabados", FontTypeNames.FONTTYPE_SERVER))
 124     Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
 
 126     haciendoBK = False
@@ -3056,8 +3056,6 @@ End Function
 
 Public Function str2ipv4l(ByVal IP As String) As Byte()
 
-End Function
-    
     On Error GoTo str2ipv4l_Err
     
 
@@ -3089,3 +3087,4 @@ str2ipv4l_Err:
     Call RegistrarError(Err.Number, Err.Description, "ProtocolCmdParse.str2ipv4l", Erl)
     Resume Next
     
+End Function

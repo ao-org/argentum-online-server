@@ -1006,8 +1006,8 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
             End If
         
 172         If EsGM(UserIndex) Then
-174             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> " & Name & " se conecto al juego.", FontTypeNames.FONTTYPE_INFOBOLD))
-176             Call LogGM(.Name, "Se conectó con IP: " & .IP)
+174             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & Name & " se conecto al juego.", FontTypeNames.FONTTYPE_INFOBOLD))
+176             Call LogGM(.Name, "Se conectó con IP: " & .ip)
 
             Else
 
@@ -1023,7 +1023,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
         
 184         If EnPausa Then
 186             Call WritePauseToggle(UserIndex)
-188             Call WriteConsoleMsg(UserIndex, "Servidor> Lo sentimos mucho pero el servidor se encuentra actualmente detenido. Intenta ingresar más tarde.", FontTypeNames.FONTTYPE_SERVER)
+188             Call WriteConsoleMsg(UserIndex, "Servidor » Lo sentimos mucho pero el servidor se encuentra actualmente detenido. Intenta ingresar más tarde.", FontTypeNames.FONTTYPE_SERVER)
 190             Call CloseSocket(UserIndex)
                 Exit Sub
 

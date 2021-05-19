@@ -1466,7 +1466,7 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
             Call HandleIncomingDataNewPacks(UserIndex)
 
         Case Else
-            Call RegistrarError(-1, "Paquete inválido: " & PacketID & " UserIndex: " & UserIndex & " (IP: " & UserList(UserIndex).IP & ") Último paquete: " & UserList(UserIndex).LastPacketID & IIf(UserList(UserIndex).LastPacketID = ClientPacketID.NewPacketID, " (New: " & UserList(UserIndex).LastNewPacketID & ")", ""), "Protocol.HandleIncomingData", Erl)
+            Call RegistrarError(-1, "Paquete inválido: " & PacketID & " UserIndex: " & UserIndex & " (IP: " & UserList(UserIndex).ip & ") Último paquete: " & UserList(UserIndex).LastPacketID & IIf(UserList(UserIndex).LastPacketID = ClientPacketID.NewPacketID, " (New: " & UserList(UserIndex).LastNewPacketID & ")", ""), "Protocol.HandleIncomingData", Erl)
             Call CloseSocket(UserIndex)
 
     End Select
@@ -1767,7 +1767,7 @@ Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
             Call HandleLogMacroClickHechizo(UserIndex)
             
         Case Else
-            Call RegistrarError(-1, "New paquete inválido: " & PacketID & " UserIndex: " & UserIndex & " (IP: " & UserList(UserIndex).IP & ")", "Protocol.HandleIncomingDataNewPacks", Erl)
+            Call RegistrarError(-1, "New paquete inválido: " & PacketID & " UserIndex: " & UserIndex & " (IP: " & UserList(UserIndex).ip & ")", "Protocol.HandleIncomingDataNewPacks", Erl)
             Call CloseSocket(UserIndex)
             
     End Select
@@ -4310,7 +4310,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                 Dim clan_nivel As Byte
                 
                 If UserList(UserIndex).GuildIndex = 0 Then
-                    Call WriteConsoleMsg(UserIndex, "Servidor> No Perteneces a ningun clan.", FontTypeNames.FONTTYPE_INFOIAO)
+                    Call WriteConsoleMsg(UserIndex, "Servidor » No Perteneces a ningun clan.", FontTypeNames.FONTTYPE_INFOIAO)
                     Exit Sub
 
                 End If
@@ -4318,7 +4318,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                 clan_nivel = modGuilds.NivelDeClan(UserList(UserIndex).GuildIndex)
 
                 If clan_nivel < 4 Then
-                    Call WriteConsoleMsg(UserIndex, "Servidor> El nivel de tu clan debe ser 4 para utilizar esta opción.", FontTypeNames.FONTTYPE_INFOIAO)
+                    Call WriteConsoleMsg(UserIndex, "Servidor » El nivel de tu clan debe ser 4 para utilizar esta opción.", FontTypeNames.FONTTYPE_INFOIAO)
                     Exit Sub
 
                 End If
@@ -4330,7 +4330,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                 If tU = 0 Then Exit Sub
                     
                 If UserList(UserIndex).GuildIndex = UserList(tU).GuildIndex Then
-                    Call WriteConsoleMsg(UserIndex, "Servidor> No podes marcar a un miembro de tu clan.", FontTypeNames.FONTTYPE_INFOIAO)
+                    Call WriteConsoleMsg(UserIndex, "Servidor » No podes marcar a un miembro de tu clan.", FontTypeNames.FONTTYPE_INFOIAO)
                     Exit Sub
 
                 End If
@@ -4372,7 +4372,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                 tU = .flags.TargetUser
 
                 If tU > 0 Then
-                    Call WriteConsoleMsg(UserIndex, "Servidor> [" & UserList(tU).Name & "] seleccionado.", FontTypeNames.FONTTYPE_SERVER)
+                    Call WriteConsoleMsg(UserIndex, "Servidor » [" & UserList(tU).Name & "] seleccionado.", FontTypeNames.FONTTYPE_SERVER)
                 Else
                     Call WriteLocaleMsg(UserIndex, "261", FontTypeNames.FONTTYPE_INFO)
 
@@ -4604,7 +4604,7 @@ Private Sub HandleModifySkills(ByVal UserIndex As Integer)
             points(i) = .incomingData.ReadByte()
             
             If points(i) < 0 Then
-                Call LogHackAttemp(.Name & " IP:" & .IP & " trató de hackear los skills.")
+                Call LogHackAttemp(.Name & " IP:" & .ip & " trató de hackear los skills.")
                 .Stats.SkillPts = 0
                 Call CloseSocket(UserIndex)
                 Exit Sub
@@ -4615,7 +4615,7 @@ Private Sub HandleModifySkills(ByVal UserIndex As Integer)
         Next i
         
         If Count > .Stats.SkillPts Then
-            Call LogHackAttemp(.Name & " IP:" & .IP & " trató de hackear los skills.")
+            Call LogHackAttemp(.Name & " IP:" & .ip & " trató de hackear los skills.")
             Call CloseSocket(UserIndex)
             Exit Sub
 
@@ -11275,7 +11275,7 @@ Private Sub HandleBanChar(ByVal UserIndex As Integer)
         Reason = .incomingData.ReadASCIIString()
         
         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
-            Call BanCharacter(UserIndex, UserName, Reason)
+            Call BanPJ(UserIndex, UserName, Reason)
         End If
 
     End With
@@ -11309,39 +11309,19 @@ Private Sub HandleUnbanChar(ByVal UserIndex As Integer)
             UserName = .incomingData.ReadASCIIString()
         
         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
-        
-            If (InStrB(UserName, "\") <> 0) Then
-                UserName = Replace(UserName, "\", "")
-            End If
-
-            If (InStrB(UserName, "/") <> 0) Then
-                UserName = Replace(UserName, "/", "")
-            End If
             
             If Not PersonajeExiste(UserName) Then
-                Call WriteConsoleMsg(UserIndex, "Charfile inexistente (no use +)", FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(UserIndex, "El personaje no existe.", FontTypeNames.FONTTYPE_INFO)
             Else
 
-                If ObtenerBaneo(UserName) Then
-                    Call UnBan(UserName)
-                    
-                    If Database_Enabled Then
-                        Call SavePenaDatabase(UserName, .Name & ": UNBAN. " & Date & " " & Time)
-                    Else
-
-                        'penas
-                        Dim cantPenas As Byte
-
-                        cantPenas = val(GetVar(CharPath & UserName & ".chr", "PENAS", "Cant"))
-                        Call WriteVar(CharPath & UserName & ".chr", "PENAS", "Cant", cantPenas + 1)
-                        Call WriteVar(CharPath & UserName & ".chr", "PENAS", "P" & cantPenas + 1, .Name & ": UNBAN. " & Date & " " & Time)
-
-                    End If
+                If BANCheck(UserName) Then
+                    Call SavePenaDatabase(UserName, .Name & ": UNBAN. " & Date & " " & Time)
+                    Call UnBanDatabase(UserName)
 
                     Call LogGM(.Name, "/UNBAN a " & UserName)
                     Call WriteConsoleMsg(UserIndex, UserName & " desbaneado.", FontTypeNames.FONTTYPE_INFO)
                 Else
-                    Call WriteConsoleMsg(UserIndex, UserName & " no esta baneado. Imposible unbanear", FontTypeNames.FONTTYPE_INFO)
+                    Call WriteConsoleMsg(UserIndex, UserName & " no esta baneado. Imposible desbanear.", FontTypeNames.FONTTYPE_INFO)
 
                 End If
 
@@ -11354,7 +11334,7 @@ Private Sub HandleUnbanChar(ByVal UserIndex As Integer)
     Exit Sub
 
 ErrHandler:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleUnbanChar", Erl)
     Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
@@ -13093,7 +13073,8 @@ Private Sub HandleBanIP(ByVal UserIndex As Integer)
             
                 If UserList(i).IP = bannedIP Then
                 
-                    Call BanPJ(UserIndex, UserList(i).Name, "IP POR " & Reason)
+                    Call WriteCerrarleCliente(i)
+                    Call CloseSocket(i)
                     
                 End If
                 
@@ -13129,7 +13110,7 @@ Private Sub HandleUnbanIP(ByVal UserIndex As Integer)
         bannedIP = bannedIP & .incomingData.ReadByte() & "."
         bannedIP = bannedIP & .incomingData.ReadByte()
         
-        If Not (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then Exit Sub
+        If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) = 0 Then Exit Sub
         
         If IP_Blacklist.Exists(bannedIP) Then
             Call DesbanearIP(bannedIP, UserIndex)
@@ -16297,10 +16278,10 @@ Public Sub HandleGlobalOnOff(ByVal UserIndex As Integer)
         Call LogGM(.Name, "/GLOBAL")
         
         If EstadoGlobal = False Then
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor> Chat general habilitado. Escribe" & Chr(34) & "/CONSOLA" & Chr(34) & " o " & Chr(34) & ";" & Chr(34) & " y su mensaje para utilizarlo.", FontTypeNames.FONTTYPE_SERVER))
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » Chat general habilitado. Escribe" & Chr(34) & "/CONSOLA" & Chr(34) & " o " & Chr(34) & ";" & Chr(34) & " y su mensaje para utilizarlo.", FontTypeNames.FONTTYPE_SERVER))
             EstadoGlobal = True
         Else
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor> Chat General deshabilitado.", FontTypeNames.FONTTYPE_SERVER))
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » Chat General deshabilitado.", FontTypeNames.FONTTYPE_SERVER))
             EstadoGlobal = False
 
         End If
@@ -16407,7 +16388,7 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
         End If
         
         If Not CheckUserAccount(UserDelete, UserList(UserIndex).AccountId) Then
-            Call LogHackAttemp(CuentaEmail & "[" & UserList(UserIndex).IP & "] intentó borrar el pj " & UserDelete)
+            Call LogHackAttemp(CuentaEmail & "[" & UserList(UserIndex).ip & "] intentó borrar el pj " & UserDelete)
             Call CloseSocket(UserIndex)
             Exit Sub
     
@@ -16418,7 +16399,7 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
         targetUserIndex = NameIndex(UserDelete)
     
         If targetUserIndex > 0 Then
-            Call LogHackAttemp("Se trató de eliminar al personaje " & UserDelete & " cuando este estaba conectado desde la IP " & UserList(UserIndex).IP)
+            Call LogHackAttemp("Se trató de eliminar al personaje " & UserDelete & " cuando este estaba conectado desde la IP " & UserList(UserIndex).ip)
             Call CloseSocket(targetUserIndex)
     
         End If
@@ -16489,16 +16470,16 @@ Private Sub HandlePossUser(ByVal UserIndex As Integer)
                 End If
                     
                 If Not .flags.Privilegios And PlayerType.Consejero Then
-                    Call WriteConsoleMsg(UserIndex, "Servidor> Acción realizada con exito! La nueva posicion de " & UserName & "es: " & UserList(UserIndex).Pos.Map & "-" & UserList(UserIndex).Pos.X & "-" & UserList(UserIndex).Pos.Y & "...", FontTypeNames.FONTTYPE_INFO)
+                    Call WriteConsoleMsg(UserIndex, "Servidor » Acción realizada con exito! La nueva posicion de " & UserName & "es: " & UserList(UserIndex).Pos.Map & "-" & UserList(UserIndex).Pos.X & "-" & UserList(UserIndex).Pos.Y & "...", FontTypeNames.FONTTYPE_INFO)
                 Else
-                    Call WriteConsoleMsg(UserIndex, "Servidor> Acción realizada con exito!", FontTypeNames.FONTTYPE_INFO)
+                    Call WriteConsoleMsg(UserIndex, "Servidor » Acción realizada con exito!", FontTypeNames.FONTTYPE_INFO)
 
                 End If
 
             End If
 
         Else
-            Call WriteConsoleMsg(UserIndex, "Servidor> El usuario debe estar deslogueado para dicha solicitud!", FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "Servidor » El usuario debe estar deslogueado para dicha solicitud!", FontTypeNames.FONTTYPE_INFO)
 
         End If
 
@@ -17094,7 +17075,7 @@ Private Sub HandleQuieroFundarClan(ByVal UserIndex As Integer)
 
         End If
 
-        Call WriteConsoleMsg(UserIndex, "Servidor> ¡Comenzamos a fundar el clan! Ingresa todos los datos solicitados.", FontTypeNames.FONTTYPE_INFOIAO)
+        Call WriteConsoleMsg(UserIndex, "Servidor » ¡Comenzamos a fundar el clan! Ingresa todos los datos solicitados.", FontTypeNames.FONTTYPE_INFOIAO)
         
         Call WriteShowFundarClanForm(UserIndex)
 
@@ -17129,13 +17110,13 @@ Private Sub HandleLlamadadeClan(ByVal UserIndex As Integer)
                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageUbicacionLlamada(.Pos.Map, .Pos.X, .Pos.Y))
             
             Else
-                Call WriteConsoleMsg(UserIndex, "Servidor> El nivel de tu clan debe ser 2 para utilizar esta opción.", FontTypeNames.FONTTYPE_INFOIAO)
+                Call WriteConsoleMsg(UserIndex, "Servidor » El nivel de tu clan debe ser 2 para utilizar esta opción.", FontTypeNames.FONTTYPE_INFOIAO)
 
             End If
 
         Else
         
-            Call WriteConsoleMsg(UserIndex, "Servidor> No Perteneces a ningun clan.", FontTypeNames.FONTTYPE_INFOIAO)
+            Call WriteConsoleMsg(UserIndex, "Servidor » No Perteneces a ningun clan.", FontTypeNames.FONTTYPE_INFOIAO)
 
         End If
 
@@ -17581,12 +17562,12 @@ Private Sub HandleCompletarAccion(ByVal UserIndex As Integer)
             If .Accion.TipoAccion = Accion Then
                 Call CompletarAccionFin(UserIndex)
             Else
-                Call WriteConsoleMsg(UserIndex, "Servidor> La acción que solicitas no se corresponde.", FontTypeNames.FONTTYPE_SERVER)
+                Call WriteConsoleMsg(UserIndex, "Servidor » La acción que solicitas no se corresponde.", FontTypeNames.FONTTYPE_SERVER)
 
             End If
 
         Else
-            Call WriteConsoleMsg(UserIndex, "Servidor> Tu no tenias ninguna acción pendiente. ", FontTypeNames.FONTTYPE_SERVER)
+            Call WriteConsoleMsg(UserIndex, "Servidor » Tu no tenias ninguna acción pendiente. ", FontTypeNames.FONTTYPE_SERVER)
 
         End If
 
@@ -17961,7 +17942,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
 
                     Else
                     
-                        Call WriteConsoleMsg(UserIndex, "Servidor> Solicitud de grupo invalida, reintente...", FontTypeNames.FONTTYPE_SERVER)
+                        Call WriteConsoleMsg(UserIndex, "Servidor » Solicitud de grupo invalida, reintente...", FontTypeNames.FONTTYPE_SERVER)
                     
                     End If
 
@@ -18024,7 +18005,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                         Call IniciarComercioConUsuario(UserIndex, UserList(UserIndex).flags.TargetUser)
 
                     Else
-                        Call WriteConsoleMsg(UserIndex, "Servidor> Solicitud de comercio invalida, reintente...", FontTypeNames.FONTTYPE_SERVER)
+                        Call WriteConsoleMsg(UserIndex, "Servidor » Solicitud de comercio invalida, reintente...", FontTypeNames.FONTTYPE_SERVER)
                 
                     End If
                 
@@ -18394,22 +18375,36 @@ End Sub
 
 Private Sub HandleUnBanCuenta(ByVal UserIndex As Integer)
 
-    '***************************************************
-    'Author: Nicolas Matias Gonzalez (NIGO)
-    'Last Modification: 12/29/06
-    '
+    ' /unbancuenta namepj
+    ' /unbancuenta email
     '***************************************************
 
     On Error GoTo ErrHandler
 
     With UserList(UserIndex)
 
-        Dim UserName As String
-        
-        UserName = .incomingData.ReadASCIIString()
+        Dim UserNameOEmail As String
+        UserNameOEmail = .incomingData.ReadASCIIString()
         
         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
-            Call UnBanAccount(UserIndex, UserName)
+        
+            Dim AccountID As Long
+
+            If InStr(1, UserNameOEmail, "@") Then
+                ' Es un email
+                If Not CuentaExiste(UserNameOEmail) Then Exit Sub
+
+                AccountID = GetAccountID(UserNameOEmail)
+            Else
+                ' Es un nick
+                If Not PersonajeExiste(UserNameOEmail) Then Exit Sub
+                
+                AccountID = GetAccountIDDatabase(UserNameOEmail)
+            End If
+
+            If DesbanearCuenta(UserIndex, AccountID) Then
+                Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & .Name & " ha desbaneado la cuenta de " & UserNameOEmail & ".", FontTypeNames.FONTTYPE_SERVER))
+            End If
         End If
 
     End With

@@ -244,7 +244,7 @@ Sub WorldSave()
 
         Dim Porc  As Long
 
-100     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor> Iniciando WorldSave", FontTypeNames.FONTTYPE_SERVER))
+100     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » Iniciando WorldSave", FontTypeNames.FONTTYPE_SERVER))
 
 102     Call ReSpawnOrigPosNpcs 'respawn de los guardias en las pos originales
 
@@ -282,7 +282,7 @@ Sub WorldSave()
         '    End If
         'Next
 
-126     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor> WorldSave ha concluído", FontTypeNames.FONTTYPE_SERVER))
+126     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » WorldSave ha concluído", FontTypeNames.FONTTYPE_SERVER))
 
         Exit Sub
         
@@ -779,277 +779,6 @@ UserDarPrivilegioLevel_Err:
         
 End Function
 
-Public Sub BanCharacter(ByVal bannerUserIndex As Integer, ByVal UserName As String, ByVal Reason As String)
-        
-        On Error GoTo BanCharacter_Err
-        
-
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 03/02/07
-        '
-        '***************************************************
-        Dim tUser     As Integer
-
-        Dim userPriv  As Byte
-
-        Dim cantPenas As Byte
-
-        Dim rank      As Integer
-    
-100     If InStrB(UserName, "+") Then
-102         UserName = Replace(UserName, "+", " ")
-
-        End If
-    
-104     tUser = NameIndex(UserName)
-    
-106     rank = PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero
-    
-108     With UserList(bannerUserIndex)
-
-110         If tUser <= 0 Then
-112             Call WriteConsoleMsg(bannerUserIndex, "El usuario no esta online.", FontTypeNames.FONTTYPE_TALK)
-            
-114             If PersonajeExiste(UserName) Then
-116                 userPriv = UserDarPrivilegioLevel(UserName)
-                
-118                 If (userPriv And rank) > (.flags.Privilegios And rank) Then
-120                     Call WriteConsoleMsg(bannerUserIndex, "No podes banear a al alguien de mayor jerarquia.", FontTypeNames.FONTTYPE_INFO)
-                        Exit Sub
-
-                    End If
-
-122                 Call LogBanFromName(UserName, bannerUserIndex, Reason)
-124                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> " & .name & " ha baneado a " & UserName & " debido a: " & LCase$(Reason) & ".", FontTypeNames.FONTTYPE_SERVER))
-                    
-126                 If Database_Enabled Then
-128                     Call SaveBanDatabase(UserName, Reason, .name)
-                    Else
-                        'ponemos el flag de ban a 1
-130                     Call WriteVar(CharPath & UserName & ".chr", "BAN", "Baneado", "1")
-132                     Call WriteVar(CharPath & UserName & ".chr", "BAN", "BanMotivo", LCase$(Reason))
-134                     Call WriteVar(CharPath & UserName & ".chr", "BAN", "BannedBy", LCase$(.name))
-            
-                        'ponemos la pena
-136                     cantPenas = val(GetVar(CharPath & UserName & ".chr", "PENAS", "Cant"))
-138                     Call WriteVar(CharPath & UserName & ".chr", "PENAS", "Cant", cantPenas + 1)
-140                     Call WriteVar(CharPath & UserName & ".chr", "PENAS", "P" & cantPenas + 1, LCase$(.name) & ": " & LCase$(Reason) & " " & Date & " " & Time)
-
-                    End If
-                    
-142                 If (userPriv And rank) = (.flags.Privilegios And rank) Then
-144                     .flags.Ban = 1
-146                     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.name & " banned by the server por bannear un Administrador.", FontTypeNames.FONTTYPE_FIGHT))
-148                     Call CloseSocket(bannerUserIndex)
-
-                    End If
-                    
-150                 Call LogGM(.name, "BAN a " & UserName)
-                Else
-152                 Call WriteConsoleMsg(bannerUserIndex, "El pj " & UserName & " no existe.", FontTypeNames.FONTTYPE_INFO)
-
-                End If
-
-            Else
-
-154             If (UserList(tUser).flags.Privilegios And rank) > (.flags.Privilegios And rank) Then
-156                 Call WriteConsoleMsg(bannerUserIndex, "No podes banear a al alguien de mayor jerarquia.", FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-
-                End If
-            
-158             Call LogBan(tUser, bannerUserIndex, Reason)
-160             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> " & .name & " ha baneado a " & UserList(tUser).name & ".", FontTypeNames.FONTTYPE_SERVER))
-            
-                'Ponemos el flag de ban a 1
-162             UserList(tUser).flags.Ban = 1
-            
-164             If (UserList(tUser).flags.Privilegios And rank) = (.flags.Privilegios And rank) Then
-166                 .flags.Ban = 1
-168                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.name & " banned by the server por bannear un Administrador.", FontTypeNames.FONTTYPE_FIGHT))
-170                 Call CloseSocket(bannerUserIndex)
-
-                End If
-            
-172             Call LogGM(.name, "BAN a " & UserName)
-            
-174             If Database_Enabled Then
-176                 Call SaveBanDatabase(UserName, Reason, .name)
-                Else
-                    'ponemos el flag de ban a 1
-178                 Call WriteVar(CharPath & UserName & ".chr", "BAN", " Baneado", "1")
-180                 Call WriteVar(CharPath & UserName & ".chr", "BAN", "BanMotivo", LCase$(Reason))
-182                 Call WriteVar(CharPath & UserName & ".chr", "BAN", "BannedBy", LCase$(.name))
-                    'ponemos la pena
-184                 cantPenas = val(GetVar(CharPath & UserName & ".chr", "PENAS", "Cant"))
-186                 Call WriteVar(CharPath & UserName & ".chr", "PENAS", "Cant", cantPenas + 1)
-188                 Call WriteVar(CharPath & UserName & ".chr", "PENAS", "P" & cantPenas + 1, LCase$(.name) & ": " & LCase$(Reason) & " " & Date & " " & Time)
-
-                End If
-            
-190             Call CloseSocket(tUser)
-
-            End If
-
-        End With
-
-        
-        Exit Sub
-
-BanCharacter_Err:
-192     Call RegistrarError(Err.Number, Err.Description, "Admin.BanCharacter", Erl)
-194     Resume Next
-        
-End Sub
-
-Public Sub BanAccount(ByVal bannerUserIndex As Integer, ByVal UserName As String, ByVal Reason As String)
-        
-        On Error GoTo BanAccount_Err
-        
-
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 03/02/07
-        '
-        '***************************************************
-        Dim tUser     As Integer
-
-        Dim cantPenas As Byte
-
-        Dim Cuenta    As String
-        
-        Dim AccountId As Long
-    
-100     If InStrB(UserName, "+") Then
-102         UserName = Replace(UserName, "+", " ")
-        End If
-    
-104     tUser = NameIndex(UserName)
-
-106     With UserList(bannerUserIndex)
-
-108         If tUser <= 0 Then
-110             Call WriteConsoleMsg(bannerUserIndex, "El usuario no esta online.", FontTypeNames.FONTTYPE_SERVER)
-            
-112             If PersonajeExiste(UserName) Then
-
-114                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & .name & " ha baneado la cuenta de " & UserName & " debido a: " & Reason & ".", FontTypeNames.FONTTYPE_SERVER))
-                
-116                 If Database_Enabled Then
-118                     AccountId = GetAccountIDDatabase(UserName)
-120                     Call SaveBanCuentaDatabase(AccountId, Reason, .name)
-                    Else
-122                     Cuenta = ObtenerCuenta(UserName)
-124                     Call WriteVar(CuentasPath & Cuenta & ".act", "BAN", "Baneada", "1")
-126                     Call WriteVar(CuentasPath & Cuenta & ".act", "BAN", "Motivo", Reason)
-128                     Call WriteVar(CuentasPath & Cuenta & ".act", "BAN", "BANEO", .name)
-                    End If
-
-130                 Call LogGM(.name, "Baneó la cuenta de " & UserName & " por: " & Reason)
-
-                Else
-132                 Call WriteConsoleMsg(bannerUserIndex, "El pj " & UserName & " no existe.", FontTypeNames.FONTTYPE_INFO)
-                End If
-
-            Else
-134             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & .name & " ha baneado la cuenta de " & UserName & " debido a: " & Reason & ".", FontTypeNames.FONTTYPE_SERVER))
-            
-136             If Database_Enabled Then
-138                 AccountId = UserList(tUser).AccountId
-140                 Call SaveBanCuentaDatabase(AccountId, Reason, .name)
-                Else
-142                 Cuenta = ObtenerCuenta(UserName)
-144                 Call WriteVar(CuentasPath & Cuenta & ".act", "BAN", "Baneada", "1")
-146                 Call WriteVar(CuentasPath & Cuenta & ".act", "BAN", "Motivo", Reason)
-148                 Call WriteVar(CuentasPath & Cuenta & ".act", "BAN", "BANEO", .name)
-                End If
-                
-150             Call LogGM(.name, "Baneó la cuenta de " & UserName & " por: " & Reason)
-
-            End If
-            
-            ' Echo a todos los logueados en esta cuenta
-152         If Database_Enabled Then
-                Dim i As Integer
-154             For i = 1 To LastUser
-156                 If UserList(i).AccountId = AccountId Then
-158                     Call WriteShowMessageBox(i, "Has sido baneado del servidor. Motivo: " & Reason)
-160                     Call CloseSocket(i)
-                    End If
-                Next
-            End If
-
-        End With
-        
-        Exit Sub
-
-BanAccount_Err:
-162     Call RegistrarError(Err.Number, Err.Description, "Admin.BanAccount", Erl)
-164     Resume Next
-        
-End Sub
-
-Public Sub UnBanAccount(ByVal bannerUserIndex As Integer, ByVal UserName As String)
-        
-        On Error GoTo UnBanAccount_Err
-        
-
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 03/02/07
-        '
-        '***************************************************
-        Dim tUser     As Integer
-
-        Dim userPriv  As Byte
-
-        Dim cantPenas As Byte
-
-        Dim rank      As Integer
-
-        Dim Cuenta    As String
-    
-100     If InStrB(UserName, "+") Then
-102         UserName = Replace(UserName, "+", " ")
-
-        End If
-    
-104     tUser = NameIndex(UserName)
-    
-106     rank = PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero
-    
-108     With UserList(bannerUserIndex)
-            
-110         If FileExist(CharPath & UserName & ".chr", vbNormal) Then
-                
-112             Cuenta = ObtenerCuenta(UserName)
-
-                'Call LogBanFromName(UserName, bannerUserIndex, reason)
-114             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> " & .name & " ha desbaneado la cuenta de " & UserName & "(" & Cuenta & ").", FontTypeNames.FONTTYPE_SERVER))
-                
-116             Call WriteVar(CuentasPath & Cuenta & ".act", "BAN", "Baneada", "0")
-118             Call WriteVar(CuentasPath & Cuenta & ".act", "BAN", "Motivo", "")
-120             Call WriteVar(CuentasPath & Cuenta & ".act", "BAN", "BANEO", "")
-            
-122             Call LogGM(.name, "Desbaneo la cuenta de " & UserName & ".")
-                
-            Else
-124             Call WriteConsoleMsg(bannerUserIndex, "El pj " & UserName & " no existe.", FontTypeNames.FONTTYPE_INFO)
-
-            End If
-
-        End With
-
-        
-        Exit Sub
-
-UnBanAccount_Err:
-126     Call RegistrarError(Err.Number, Err.Description, "Admin.UnBanAccount", Erl)
-128     Resume Next
-        
-End Sub
-
 Public Sub BanTemporal(ByVal nombre As String, ByVal dias As Integer, Causa As String, Baneador As String)
         
         On Error GoTo BanTemporal_Err
@@ -1065,7 +794,7 @@ Public Sub BanTemporal(ByVal nombre As String, ByVal dias As Integer, Causa As S
 
 110     Call Baneos.Add(tBan)
 112     Call SaveBan(Baneos.Count)
-114     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> " & nombre & " fue baneado por " & Causa & " durante los próximos " & dias & " días. La medida fue tomada por: " & Baneador, FontTypeNames.FONTTYPE_SERVER))
+114     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & nombre & " fue baneado por " & Causa & " durante los próximos " & dias & " días. La medida fue tomada por: " & Baneador, FontTypeNames.FONTTYPE_SERVER))
 
         
         Exit Sub

@@ -140,11 +140,14 @@ Public Sub BanPJ(ByVal BannerIndex As Integer, ByVal UserName As String, ByRef R
 112     Call LogBanFromName(UserName, BannerIndex, Razon)
 
         ' Le buchoneamos al mundo.
-114     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> " & UserList(BannerIndex).Name & " ha baneado a " & UserName & " debido a: " & LCase$(Razon) & ".", FontTypeNames.FONTTYPE_SERVER))
+114     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & UserList(BannerIndex).Name & " ha baneado a " & UserName & " debido a: " & LCase$(Razon) & ".", FontTypeNames.FONTTYPE_SERVER))
 
         ' Si estaba online, lo echamos.
 116     Dim tUser As Integer: tUser = NameIndex(UserName)
-118     If tUser > 0 Then Call CloseSocket(tUser)
+118     If tUser > 0 Then
+            Call WriteDisconnect(tUser)
+            Call CloseSocket(tUser)
+        End If
 
         Exit Sub
 
@@ -195,6 +198,7 @@ Public Sub BanearCuenta(ByVal BannerIndex As Integer, _
 
 120         If UserList(i).AccountId = CuentaID Then
 122             Call WriteShowMessageBox(i, "Has sido baneado del servidor. Motivo: " & Reason)
+                Call WriteDisconnect(i)
 124             Call CloseSocket(i)
 
             End If
@@ -209,57 +213,49 @@ BanearCuenta_Err:
         
 End Sub
 
-Public Sub DesbanearCuenta(ByVal BannerIndex As Integer, ByVal UserName As String)
-        
+Public Function DesbanearCuenta(ByVal BannerIndex As Integer, ByVal AccountID As Long) As Boolean
+
         On Error GoTo DesbanearCuenta_Err
 
-100     If Not GlobalChecks(BannerIndex, UserName) Then Exit Sub
-
-102     If Not ObtenerBaneo(UserName) Then
+102     If Not GetBaneoAccountId(AccountID) Then
 104         Call WriteConsoleMsg(BannerIndex, "La cuenta no se encuentra baneada.", FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
+            Exit Function
         End If
 
-        ' Busco el ID de la cuenta baneada a partir del nick de uno de sus PJ's
-106     Call MakeQuery("SELECT `account_id`, `account`.email FROM `user` INNER JOIN `account` ON `user`.account_id = account.id WHERE `account`.is_banned = TRUE AND UPPER(`user`.name) = ?;", False, UCase$(UserName))
-
-        ' Encontre algo?
-108     If QueryData Is Nothing Then Exit Sub
-
         ' Seteamos is_banned = 0 en la DB
-110     Call SetDBValue("account", "is_banned", 0, "id", QueryData!account_id)
+110     Call SetDBValue("account", "is_banned", 0, "id", AccountID)
 
-112     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> " & UserList(BannerIndex).Name & " ha desbaneado la cuenta de " & UserName & "(" & QueryData!email & ").", FontTypeNames.FONTTYPE_SERVER))
+        DesbanearCuenta = True
 
-        Exit Sub
+        Exit Function
 
 DesbanearCuenta_Err:
         Call RegistrarError(Err.Number, Err.Description, "Penas.DesbanearCuenta", Erl)
         Resume Next
         
-End Sub
+End Function
 
 Public Sub BanearIP(ByVal BannerIndex As Integer, ByVal UserName As String, ByVal IP As String)
         
         On Error GoTo BanearIP_Err
         
         ' Lo guardo en Baneos.dat
-100     Call WriteVar(DatPath & "Baneos.dat", "IP", UserName, IP)
+100     Call WriteVar(DatPath & "Baneos.dat", "IP", ip, UserName)
 
         ' Lo guardo en memoria.
 102     Call IP_Blacklist.Add(IP, UserName)
 
         ' Agregar a la regla de firewall
-        Dim i As Long
-        Dim NewIPs As String
-        For i = 0 To IP_Blacklist.Count - 1
-            NewIPs = NewIPs & IP_Blacklist(i) & ","
-        Next
-        
-        Call Shell("netsh.exe advfirewall firewall set rule name=""Lista Negra IPs"" dir=in remoteip=" & NewIPs)
-        
+        'Dim i As Long
+        'Dim NewIPs As String
+        'For i = 0 To IP_Blacklist.Count - 1
+        '    NewIPs = NewIPs & IP_Blacklist(i) & ","
+        'Next
+
+        'Call Shell("netsh.exe advfirewall firewall set rule name=""Lista Negra IPs"" dir=in remoteip=" & NewIPs) ' Turbio esto
+
         ' Registramos el des-baneo en los logs.
-104     Call LogGM(UserList(BannerIndex).Name, "Baneó la IP: " & IP & " de " & UserName)
+104     Call LogGM(UserList(BannerIndex).Name, "Baneó la IP: " & ip & " de " & UserName)
 
         Exit Sub
 
@@ -277,22 +273,22 @@ Public Sub DesbanearIP(ByVal IP As String, ByVal UnbannerIndex As Integer)
 100     If IP_Blacklist.Exists(IP) Then Call IP_Blacklist.Remove(IP)
 
         ' Lo saco del archivo.
-102     Call WriteVar(DatPath & "Baneos.dat", "IP", GetVar(DatPath & "Baneos.dat", "IP", IP), vbNullString)
+102     Call WriteVar(DatPath & "Baneos.dat", "IP", ip, vbNullString)
         
         ' Modificar en la regla de firewall
-        Dim i As Long
-        Dim NewIPs As String
-        For i = 0 To IP_Blacklist.Count - 1
+        'Dim i As Long
+        'Dim NewIPs As String
+        'For i = 0 To IP_Blacklist.Count - 1
             ' Meto todas MENOS la que vamos a desbanear
-            If IP_Blacklist(i) <> IP Then
-                NewIPs = NewIPs & IP_Blacklist(i) & ","
-            End If
-        Next
+        '    If IP_Blacklist(i) <> ip Then
+        '        NewIPs = NewIPs & IP_Blacklist(i) & ","
+        '    End If
+        'Next
         
-        Call Shell("netsh.exe advfirewall firewall set rule name=""Lista Negra IPs"" dir=in remoteip=" & NewIPs)
+        'Call Shell("netsh.exe advfirewall firewall set rule name=""Lista Negra IPs"" dir=in remoteip=" & NewIPs)
         
         ' Registramos el des-baneo en los logs.
-104     Call LogGM(UserList(UnbannerIndex).Name, "Des-Baneó la IP: " & IP & " de " & IP_Blacklist(IP))
+104     Call LogGM(UserList(UnbannerIndex).Name, "Des-Baneó la IP: " & ip & " de " & IP_Blacklist(ip))
 
         Exit Sub
 
