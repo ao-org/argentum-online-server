@@ -218,11 +218,11 @@ Public Sub SaveNewAccountCharfile(CuentaEmail As String, PasswordHash As String,
 
         On Error GoTo ErrorHandler
 
-        Dim Manager     As clsIniReader
+        Dim Manager     As clsIniManager
     
         Dim AccountFile As String
 
-100     Set Manager = New clsIniReader
+100     Set Manager = New clsIniManager
 102     AccountFile = CuentasPath & LCase$(CuentaEmail) & ".act"
 
 104     With Manager
@@ -832,7 +832,7 @@ Sub SendCharacterInfoCharfile(ByVal UserIndex As Integer, ByVal UserName As Stri
         '***************************************************
         Dim gName       As String
 
-        Dim UserFile    As clsIniReader
+        Dim UserFile    As clsIniManager
 
         Dim Miembro     As String
 
@@ -856,7 +856,7 @@ Sub SendCharacterInfoCharfile(ByVal UserIndex As Integer, ByVal UserName As Stri
 
         End If
 
-114     Set UserFile = New clsIniReader
+114     Set UserFile = New clsIniManager
 
 116     With UserFile
 118         .Initialize (CharPath & UserName & ".chr")

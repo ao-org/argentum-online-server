@@ -54,8 +54,8 @@ End Type
 Public Invasiones() As tInvasion
 
 Sub CargarInfoEventos()
-        Dim File As clsIniReader
-100     Set File = New clsIniReader
+    Dim File As clsIniManager
+    Set File = New clsIniManager
 
 102     Call File.Initialize(DatPath & "Eventos.dat")
     

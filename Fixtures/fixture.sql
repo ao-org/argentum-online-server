@@ -149,7 +149,8 @@ DROP TABLE IF EXISTS `punishment`;
 CREATE TABLE `punishment` (
   `user_id` mediumint(8) UNSIGNED NOT NULL,
   `number` tinyint(3) UNSIGNED NOT NULL DEFAULT 0,
-  `reason` varchar(255) NOT NULL
+  `reason` varchar(255) NOT NULL,
+  `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------

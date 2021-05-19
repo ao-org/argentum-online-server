@@ -107,7 +107,7 @@ Public Function AddCorreo(ByVal UserIndex As Integer, ByRef UserName As String, 
 
 136         If PersonajeExiste(UserName) Then
     
-                Dim Leer       As New clsIniReader
+                Dim Leer       As New clsIniManager
 
                 Dim FileUser   As String
 
@@ -279,7 +279,7 @@ Private Function GrabarNuevoCorreoInChar(ByRef UserName As String, ByVal EmisorI
 
 100     If FileExist(CharPath & UCase$(UserName) & ".chr", vbNormal) Then
             
-            Dim Leer       As New clsIniReader
+            Dim Leer       As New clsIniManager
 
             Dim FileUser   As String
 
@@ -327,7 +327,7 @@ Private Function GrabarNuevoCorreoInCharBySubasta(ByRef Comprador As String, ByV
 
 100     If FileExist(CharPath & UCase$(Comprador) & ".chr", vbNormal) Then
             
-            Dim Leer       As New clsIniReader
+            Dim Leer       As New clsIniManager
 
             Dim FileUser   As String
 
@@ -414,7 +414,7 @@ Public Function AddCorreoBySubastador(ByVal Vendedor As String, ByRef Comprador 
 
 134         If PersonajeExiste(Comprador) Then
     
-                Dim Leer       As New clsIniReader
+                Dim Leer       As New clsIniManager
 
                 Dim FileUser   As String
 

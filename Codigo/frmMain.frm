@@ -1100,7 +1100,7 @@ Private Sub Command2_Click()
         
         On Error GoTo Command2_Click_Err
         
-100     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor> " & BroadMsg.Text, FontTypeNames.FONTTYPE_SERVER))
+100     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » " & BroadMsg.Text, FontTypeNames.FONTTYPE_SERVER))
 
         
         Exit Sub
@@ -1228,7 +1228,7 @@ Private Sub EstadoTimer_Timer()
 102     For i = 1 To Baneos.Count
 
 104         If Baneos(i).FechaLiberacion <= Now Then
-106             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> Se ha concluido la sentencia de ban para " & Baneos(i).name & ".", FontTypeNames.FONTTYPE_SERVER))
+106             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » Se ha concluido la sentencia de ban para " & Baneos(i).Name & ".", FontTypeNames.FONTTYPE_SERVER))
 108             Call ChangeBan(Baneos(i).name, 0)
 110             Call Baneos.Remove(i)
 112             Call SaveBans
@@ -1240,7 +1240,7 @@ Private Sub EstadoTimer_Timer()
 114     For i = 1 To Donadores.Count
 
 116         If Donadores(i).FechaExpiracion <= Now Then
-118             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor> Se ha concluido el tiempo de donador para " & Donadores(i).name & ".", FontTypeNames.FONTTYPE_SERVER))
+118             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » Se ha concluido el tiempo de donador para " & Donadores(i).Name & ".", FontTypeNames.FONTTYPE_SERVER))
 120             Call ChangeDonador(Donadores(i).name, 0)
 122             Call Donadores.Remove(i)
 124             Call SaveDonadores
