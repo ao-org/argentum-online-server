@@ -2960,3 +2960,132 @@ Public Function EsMapaInterdimensional(ByVal Map As Integer) As Boolean
         End If
     Next
 End Function
+
+
+''
+' Returns whether the number is correct.
+'
+' @param    Numero The number to be checked.
+' @param    Tipo The acceptable type of number.
+
+Public Function ValidNumber(ByVal Numero As String, ByVal TIPO As eNumber_Types) As Boolean
+    
+    On Error GoTo ValidNumber_Err
+    
+
+    '***************************************************
+    'Author: Nicolas Matias Gonzalez (NIGO)
+    'Last Modification: 01/06/07
+    '
+    '***************************************************
+    Dim Minimo As Long
+
+    Dim Maximo As Long
+    
+    If Not IsNumeric(Numero) Then Exit Function
+    
+    Select Case TIPO
+
+        Case eNumber_Types.ent_Byte
+            Minimo = 0
+            Maximo = 255
+
+        Case eNumber_Types.ent_Integer
+            Minimo = -32768
+            Maximo = 32767
+
+        Case eNumber_Types.ent_Long
+            Minimo = -2147483648#
+            Maximo = 2147483647
+        
+        Case eNumber_Types.ent_Trigger
+            Minimo = 0
+            Maximo = 7
+
+    End Select
+    
+    If val(Numero) >= Minimo And val(Numero) <= Maximo Then ValidNumber = True
+
+    
+    Exit Function
+
+ValidNumber_Err:
+    Call RegistrarError(Err.Number, Err.Description, "ProtocolCmdParse.ValidNumber", Erl)
+    Resume Next
+    
+End Function
+
+''
+' Returns whether the ip format is correct.
+'
+' @param    IP The ip to be checked.
+
+Public Function validipv4str(ByVal IP As String) As Boolean
+    
+    On Error GoTo validipv4str_Err
+    
+
+    '***************************************************
+    'Author: Nicolas Matias Gonzalez (NIGO)
+    'Last Modification: 01/06/07
+    '
+    '***************************************************
+    Dim tmpArr() As String
+    
+    tmpArr = Split(IP, ".")
+    
+    If UBound(tmpArr) <> 3 Then Exit Function
+
+    If Not ValidNumber(tmpArr(0), eNumber_Types.ent_Byte) Or Not ValidNumber(tmpArr(1), eNumber_Types.ent_Byte) Or Not ValidNumber(tmpArr(2), eNumber_Types.ent_Byte) Or Not ValidNumber(tmpArr(3), eNumber_Types.ent_Byte) Then Exit Function
+    
+    validipv4str = True
+
+    
+    Exit Function
+
+validipv4str_Err:
+    Call RegistrarError(Err.Number, Err.Description, "ProtocolCmdParse.validipv4str", Erl)
+    Resume Next
+    
+End Function
+
+''
+' Converts a string into the correct ip format.
+'
+' @param    IP The ip to be converted.
+
+Public Function str2ipv4l(ByVal IP As String) As Byte()
+
+End Function
+    
+    On Error GoTo str2ipv4l_Err
+    
+
+    '***************************************************
+    'Author: Nicolas Matias Gonzalez (NIGO)
+    'Last Modification: 07/26/07
+    'Last Modified By: Rapsodius
+    'Specify Return Type as Array of Bytes
+    'Otherwise, the default is a Variant or Array of Variants, that slows down
+    'the function
+    '***************************************************
+    Dim tmpArr() As String
+
+    Dim bArr(3)  As Byte
+    
+    tmpArr = Split(IP, ".")
+    
+    bArr(0) = CByte(tmpArr(0))
+    bArr(1) = CByte(tmpArr(1))
+    bArr(2) = CByte(tmpArr(2))
+    bArr(3) = CByte(tmpArr(3))
+
+    str2ipv4l = bArr
+
+    
+    Exit Function
+
+str2ipv4l_Err:
+    Call RegistrarError(Err.Number, Err.Description, "ProtocolCmdParse.str2ipv4l", Erl)
+    Resume Next
+    
