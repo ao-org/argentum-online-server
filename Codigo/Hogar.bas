@@ -196,13 +196,13 @@ Public Sub goHome(ByVal UserIndex As Integer)
 
 102         If .flags.Muerto = 1 Then
 
-104             If .donador.activo = 0 And Not EsGM(UserIndex) Then  ' Donador no espera tiempo
-106                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Runa, 800, False))
-108                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.CharIndex, 800, Accion_Barra.Hogar))
+104             If EsGM(UserIndex) Then
+                    .Counters.TimerBarra = 5
                 Else
-110                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Runa, 100, False))
-112                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.CharIndex, 100, Accion_Barra.Hogar))
+                    .Counters.TimerBarra = 5
                 End If
+110                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Runa, .Counters.TimerBarra, False))
+112                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.CharIndex, .Counters.TimerBarra, Accion_Barra.Hogar))
                 
 114             .Accion.Particula = ParticulasIndex.Runa
 116             .Accion.AccionPendiente = True

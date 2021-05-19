@@ -737,7 +737,7 @@ Sub Main()
     
         ' Pretorianos
 234     frmCargando.Label1(2).Caption = "Cargando Pretorianos.dat"
-236     Call LoadPretorianData
+236     'Call LoadPretorianData
     
 238     frmCargando.Label1(2).Caption = "Cargando Logros.ini"
 240     Call CargarLogros ' Ladder 22/04/2015
@@ -772,7 +772,11 @@ Sub Main()
     
 270     With frmMain
 272         .Minuto.Enabled = True
-274         .TimerGuardarUsuarios.Enabled = True
+            #If DEBUGGING Then
+                .TimerGuardarUsuarios.Enabled = False
+            #Else
+274             .TimerGuardarUsuarios.Enabled = True
+            #End If
 276         .TimerGuardarUsuarios.Interval = IntervaloTimerGuardarUsuarios
 278         .tPiqueteC.Enabled = True
 280         .GameTimer.Enabled = True
@@ -1507,7 +1511,6 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
             
 108         If .Counters.Frio < IntervaloFrio Then
 110             .Counters.Frio = .Counters.Frio + 1
-
             Else
 
 112             If MapInfo(.Pos.Map).terrain = Nieve Then
@@ -1554,6 +1557,52 @@ EfectoFrio_Err:
 142     Resume Next
         
 End Sub
+Public Sub EfectoStamina(ByVal UserIndex As Integer)
+
+    Dim bEnviarStats_HP As Boolean
+    Dim bEnviarStats_STA As Boolean
+    
+    With UserList(UserIndex)
+        If .flags.Hambre = 0 And .flags.Sed = 0 Then 'Si no tiene hambre ni sed
+            If .Stats.MinHp < .Stats.MaxHp Then
+170             Call Sanar(UserIndex, bEnviarStats_HP, IIf(.flags.Descansar, SanaIntervaloDescansar, SanaIntervaloSinDescansar))
+            End If
+                                
+178         If .flags.Desnudo = 0 Then
+180             Call RecStamina(UserIndex, bEnviarStats_STA, IIf(.flags.Descansar, StaminaIntervaloDescansar, StaminaIntervaloSinDescansar))
+            Else
+                If Lloviendo Then
+                    If Intemperie(UserIndex) Then
+181                     Call PierdeEnergia(UserIndex, bEnviarStats_STA, IntervaloPerderStamina * 0.5)
+                    Else
+182                     Call PierdeEnergia(UserIndex, bEnviarStats_STA, IIf(.flags.Descansar, IntervaloPerderStamina * 2, IntervaloPerderStamina))
+                    End If
+                Else
+183                 Call PierdeEnergia(UserIndex, bEnviarStats_STA, IIf(.flags.Descansar, IntervaloPerderStamina * 2, IntervaloPerderStamina))
+                End If
+            End If
+            
+            If .flags.Descansar Then
+                'termina de descansar automaticamente
+190             If .Stats.MaxHp = .Stats.MinHp And .Stats.MaxSta = .Stats.MinSta Then
+192                 Call WriteRestOK(UserIndex)
+194                 Call WriteConsoleMsg(UserIndex, "Has terminado de descansar.", FontTypeNames.FONTTYPE_INFO)
+196                 .flags.Descansar = False
+                End If
+            
+            End If
+        End If
+        
+        If bEnviarStats_STA Then
+197         Call WriteUpdateSta(UserIndex)
+        End If
+        
+        If bEnviarStats_HP Then
+198         Call WriteUpdateHP(UserIndex)
+        End If
+    End With
+End Sub
+
 
 Public Sub EfectoLava(ByVal UserIndex As Integer)
         
@@ -2151,7 +2200,7 @@ DuracionPociones_Err:
 End Sub
 
 Public Sub HambreYSed(ByVal UserIndex As Integer, ByRef fenviarAyS As Boolean)
-        
+         
         On Error GoTo HambreYSed_Err
         
 
@@ -2218,7 +2267,6 @@ Public Sub Sanar(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, ByVal
         Dim mashit As Integer
 
         'con el paso del tiempo va sanando....pero muy lentamente ;-)
-104     If UserList(UserIndex).Stats.MinHp < UserList(UserIndex).Stats.MaxHp Then
 106         If UserList(UserIndex).flags.RegeneracionHP = 1 Then
 108             Intervalo = 400
 
@@ -2237,10 +2285,6 @@ Public Sub Sanar(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, ByVal
 124             EnviarStats = True
 
             End If
-
-        End If
-
-        
         Exit Sub
 
 Sanar_Err:
@@ -2312,43 +2356,68 @@ Sub PasarSegundo()
     
 110     For i = 1 To LastUser
 
-112         If UserList(i).flags.Silenciado = 1 Then
-114             UserList(i).flags.SegundosPasados = UserList(i).flags.SegundosPasados + 1
+111         With UserList(i)
 
-116             If UserList(i).flags.SegundosPasados = 60 Then
-118                 UserList(i).flags.MinutosRestantes = UserList(i).flags.MinutosRestantes - 1
-120                 UserList(i).flags.SegundosPasados = 0
+112         If .flags.Silenciado = 1 Then
+114             .flags.SegundosPasados = .flags.SegundosPasados + 1
+
+116             If .flags.SegundosPasados = 60 Then
+118                 .flags.MinutosRestantes = .flags.MinutosRestantes - 1
+120                 .flags.SegundosPasados = 0
 
                 End If
             
-122             If UserList(i).flags.MinutosRestantes = 0 Then
-124                 UserList(i).flags.SegundosPasados = 0
-126                 UserList(i).flags.Silenciado = 0
-128                 UserList(i).flags.MinutosRestantes = 0
+122             If .flags.MinutosRestantes = 0 Then
+124                 .flags.SegundosPasados = 0
+126                 .flags.Silenciado = 0
+128                 .flags.MinutosRestantes = 0
 130                 Call WriteConsoleMsg(i, "Has sido liberado del silencio.", FontTypeNames.FONTTYPE_SERVER)
 
                 End If
 
             End If
+            
+134         Call DuracionPociones(i)
+136         If .flags.invisible = 1 Then Call EfectoInvisibilidad(i)
+138         If .flags.Paralizado = 1 Then Call EfectoParalisisUser(i)
+140         If .flags.Inmovilizado = 1 Then Call EfectoInmoUser(i)
+142         If .flags.Ceguera = 1 Then Call EfectoCeguera(i)
+144         If .flags.Estupidez = 1 Then Call EfectoEstupidez(i)
+146         If .flags.Maldicion = 1 Then Call EfectoMaldicionUser(i)
+148         If .flags.VelocidadHechizada > 0 Then Call EfectoVelocidadUser(i)
 
-132         With UserList(i)
+            If .Counters.TimerBarra > 0 Then
+                .Counters.TimerBarra = .Counters.TimerBarra - 1
                 
-134             Call DuracionPociones(i)
-136             If .flags.invisible = 1 Then Call EfectoInvisibilidad(i)
-138             If .flags.Paralizado = 1 Then Call EfectoParalisisUser(i)
-140             If .flags.Inmovilizado = 1 Then Call EfectoInmoUser(i)
-142             If .flags.Ceguera = 1 Then Call EfectoCeguera(i)
-144             If .flags.Estupidez = 1 Then Call EfectoEstupidez(i)
-146             If .flags.Maldicion = 1 Then Call EfectoMaldicionUser(i)
-148             If .flags.VelocidadHechizada > 0 Then Call EfectoVelocidadUser(i)
+                If .Counters.TimerBarra = 0 Then
 
-150             If .flags.UltimoMensaje > 0 Then
-152                 .Counters.RepetirMensaje = .Counters.RepetirMensaje + 1
-154                 If .Counters.RepetirMensaje >= 3 Then
-156                     .flags.UltimoMensaje = 0
-158                     .Counters.RepetirMensaje = 0
-                    End If
+                    Select Case .Accion.TipoAccion
+                        Case Accion_Barra.Hogar
+                            Call HomeArrival(i)
+                        Case Accion_Barra.Resucitar
+                            Call WriteConsoleMsg(i, "¡Has sido resucitado!", FontTypeNames.FONTTYPE_INFO)
+                            Call SendData(SendTarget.ToPCArea, i, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Resucitar, 250, True))
+                            Call SendData(SendTarget.ToPCArea, i, PrepareMessagePlayWave("117", .Pos.X, .Pos.Y))
+                            Call RevivirUsuario(i, True)
+                    End Select
+                    
+                    .Accion.Particula = 0
+                    .Accion.TipoAccion = Accion_Barra.CancelarAccion
+                    .Accion.HechizoPendiente = 0
+                    .Accion.RunaObj = 0
+                    .Accion.ObjSlot = 0
+                    .Accion.AccionPendiente = False
+                    
                 End If
+            End If
+
+150         If .flags.UltimoMensaje > 0 Then
+152             .Counters.RepetirMensaje = .Counters.RepetirMensaje + 1
+154             If .Counters.RepetirMensaje >= 3 Then
+156                 .flags.UltimoMensaje = 0
+158                 .Counters.RepetirMensaje = 0
+                End If
+            End If
                 
 160             If .Counters.CuentaRegresiva >= 0 Then
 162                 If .Counters.CuentaRegresiva > 0 Then
@@ -2543,7 +2612,11 @@ Sub GuardarUsuarios()
 114     For i = 1 To LastUser
 
 116         If UserList(i).flags.UserLogged Then
-118             Call SaveUser(i)
+                #If DEBUGGING Then
+118                 'Call SaveUser(i)
+                #Else
+                    Call SaveUser(i)
+                #End If
 
             End If
 

@@ -1920,9 +1920,9 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                     End If
 
                 End If
-                        
-636             Call SendData(SendTarget.ToPCArea, tU, PrepareMessageParticleFX(UserList(tU).Char.CharIndex, ParticulasIndex.Resucitar, 600, False))
-638             Call SendData(SendTarget.ToPCArea, tU, PrepareMessageBarFx(UserList(tU).Char.CharIndex, 600, Accion_Barra.Resucitar))
+                UserList(tU).Counters.TimerBarra = 5
+636             Call SendData(SendTarget.ToPCArea, tU, PrepareMessageParticleFX(UserList(tU).Char.CharIndex, ParticulasIndex.Resucitar, UserList(tU).Counters.TimerBarra, False))
+638             Call SendData(SendTarget.ToPCArea, tU, PrepareMessageBarFx(UserList(tU).Char.CharIndex, UserList(tU).Counters.TimerBarra, Accion_Barra.Resucitar))
 640             UserList(tU).Accion.AccionPendiente = True
 642             UserList(tU).Accion.Particula = ParticulasIndex.Resucitar
 644             UserList(tU).Accion.TipoAccion = Accion_Barra.Resucitar

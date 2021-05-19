@@ -773,6 +773,10 @@ auxSocket_DataArrival_Err:
         
 End Sub
 
+Private Sub Frame2_DragDrop(Source As Control, X As Single, Y As Single)
+
+End Sub
+
 Private Sub Invasion_Timer()
 
 
@@ -1463,7 +1467,6 @@ End Sub
 Private Sub GameTimer_Timer()
 
         Dim iUserIndex   As Long
-        Dim bEnviarStats As Boolean
         Dim bEnviarAyS   As Boolean
     
         On Error GoTo HayError
@@ -1476,11 +1479,10 @@ Private Sub GameTimer_Timer()
                 'Conexion activa?
 104             If .ConnID <> -1 Then
                     '¿User valido?
-                
+                    
 106                 If .ConnIDValida And .flags.UserLogged Then
                     
                         '[Alejo-18-5]
-108                     bEnviarStats = False
 110                     bEnviarAyS = False
                     
 112                     .NumeroPaquetesPorMiliSec = 0
@@ -1508,134 +1510,8 @@ Private Sub GameTimer_Timer()
 138                         If .NroMascotas > 0 Then Call TiempoInvocacion(iUserIndex)
                         
 140                         Call HambreYSed(iUserIndex, bEnviarAyS)
-                        
-142                         If .flags.Hambre = 0 And .flags.Sed = 0 Then
-                            
-144                             If Lloviendo Then
-                            
-146                                 If Not Intemperie(iUserIndex) Then
+                            Call EfectoStamina(iUserIndex)
                                     
-                                        'No esta descansando
-148                                     If Not .flags.Descansar Then
-
-150                                         Call Sanar(iUserIndex, bEnviarStats, SanaIntervaloSinDescansar)
-
-152                                         If bEnviarStats Then
-154                                             Call WriteUpdateHP(iUserIndex)
-156                                             bEnviarStats = False
-                                            End If
-    
-158                                         If .flags.Desnudo = 0 Then
-160                                             Call RecStamina(iUserIndex, bEnviarStats, StaminaIntervaloSinDescansar)
-                                            Else
-162                                             Call PierdeEnergia(iUserIndex, bEnviarStats, IntervaloPerderStamina)
-                                            End If
-
-164                                         If bEnviarStats Then
-166                                             Call WriteUpdateSta(iUserIndex)
-168                                             bEnviarStats = False
-                                            End If
-
-                                        Else
-                                            'esta descansando
-170                                         Call Sanar(iUserIndex, bEnviarStats, SanaIntervaloDescansar)
-
-172                                         If bEnviarStats Then
-174                                             Call WriteUpdateHP(iUserIndex)
-176                                             bEnviarStats = False
-                                            End If
-
-178                                         If .flags.Desnudo = 0 Then
-180                                             Call RecStamina(iUserIndex, bEnviarStats, StaminaIntervaloDescansar)
-                                            Else
-182                                             Call PierdeEnergia(iUserIndex, bEnviarStats, IntervaloPerderStamina * 2)
-                                            End If
-
-184                                         If bEnviarStats Then
-186                                             Call WriteUpdateSta(iUserIndex)
-188                                             bEnviarStats = False
-                                            End If
-
-                                            'termina de descansar automaticamente
-190                                         If .Stats.MaxHp = .Stats.MinHp And .Stats.MaxSta = .Stats.MinSta Then
-192                                             Call WriteRestOK(iUserIndex)
-194                                             Call WriteConsoleMsg(iUserIndex, "Has terminado de descansar.", FontTypeNames.FONTTYPE_INFO)
-196                                             .flags.Descansar = False
-                                            End If
-                                        
-                                        End If
-
-                                    Else ' Intemperie
-198                                     If .flags.Desnudo = 1 Then
-200                                         Call PierdeEnergia(iUserIndex, bEnviarStats, IntervaloPerderStamina * 0.5)
-                                        
-                                        End If
-
-202                                     If bEnviarStats Then
-204                                         Call WriteUpdateSta(iUserIndex)
-206                                         bEnviarStats = False
-                                        End If
-
-                                    End If
-                                
-                                Else ' No llueve
-
-208                                 If Not .flags.Descansar Then
-                                        'No esta descansando
-                                    
-210                                     Call Sanar(iUserIndex, bEnviarStats, SanaIntervaloSinDescansar)
-
-212                                     If bEnviarStats Then
-214                                         Call WriteUpdateHP(iUserIndex)
-216                                         bEnviarStats = False
-                                        End If
-
-218                                     If .flags.Desnudo = 0 Then
-220                                         Call RecStamina(iUserIndex, bEnviarStats, StaminaIntervaloSinDescansar)
-                                        Else
-222                                         Call PierdeEnergia(iUserIndex, bEnviarStats, IntervaloPerderStamina)
-                                        End If
-
-224                                     If bEnviarStats Then
-                                            'borrar este
-226                                         Call WriteUpdateSta(iUserIndex)
-228                                         bEnviarStats = False
-                                        End If
-                                    
-                                    Else
-                                        'esta descansando
-                                    
-230                                     Call Sanar(iUserIndex, bEnviarStats, SanaIntervaloDescansar)
-
-232                                     If bEnviarStats Then
-234                                         Call WriteUpdateHP(iUserIndex)
-236                                         bEnviarStats = False
-                                        End If
-
-238                                     If .flags.Desnudo = 0 Then
-240                                         Call RecStamina(iUserIndex, bEnviarStats, StaminaIntervaloDescansar)
-                                        Else
-242                                         Call PierdeEnergia(iUserIndex, bEnviarStats, IntervaloPerderStamina * 2)
-                                        End If
-
-244                                     If bEnviarStats Then
-                                            '  Call WriteUpdateSta(iUserIndex)
-246                                         bEnviarStats = False
-                                        End If
-
-                                        'termina de descansar automaticamente
-248                                     If .Stats.MaxHp = .Stats.MinHp And .Stats.MaxSta = .Stats.MinSta Then
-250                                         Call WriteRestOK(iUserIndex)
-252                                         Call WriteConsoleMsg(iUserIndex, "Has terminado de descansar.", FontTypeNames.FONTTYPE_INFO)
-254                                         .flags.Descansar = False
-                                        End If
-                                    
-                                    End If
-
-                                End If
-
-                            End If
-                        
 256                         If bEnviarAyS Then Call WriteUpdateHungerAndThirst(iUserIndex)
                         
                         Else

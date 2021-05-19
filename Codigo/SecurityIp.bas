@@ -109,28 +109,42 @@ Public Function IpSecurityAceptarNuevaConexion(ByVal ip As Long) As Boolean
 
 100     IpTableIndex = FindTableIp(ip, IP_INTERVALOS)
     
-102     If IpTableIndex >= 0 Then
-104         If IpTables(IpTableIndex + 1) + IntervaloEntreConexiones <= GetTickCount() Then   'No está saturando de connects?
-106             IpTables(IpTableIndex + 1) = GetTickCount()
-108             IpSecurityAceptarNuevaConexion = True
-110             Debug.Print "CONEXION ACEPTADA"
+        #If DEBUGGING Then
+            If IpTableIndex >= 0 Then
+                IpSecurityAceptarNuevaConexion = True
+                Debug.Print "CONEXION ACEPTADA"
                 Exit Function
-            Else
-112             IpSecurityAceptarNuevaConexion = False
-
-114             Debug.Print "CONEXION NO ACEPTADA"
+             Else
+                IpTableIndex = Not IpTableIndex
+                AddNewIpIntervalo ip, IpTableIndex
+                IpTables(IpTableIndex + 1) = GetTickCount()
+                IpSecurityAceptarNuevaConexion = True
                 Exit Function
-
             End If
+        #Else
+102         If IpTableIndex >= 0 Then
+104             If IpTables(IpTableIndex + 1) + IntervaloEntreConexiones <= GetTickCount() Then   'No está saturando de connects?
+106                 IpTables(IpTableIndex + 1) = GetTickCount()
+108                 IpSecurityAceptarNuevaConexion = True
+110                 Debug.Print "CONEXION ACEPTADA"
+                    Exit Function
+                Else
+112                 IpSecurityAceptarNuevaConexion = False
 
-        Else
-116         IpTableIndex = Not IpTableIndex
-118         AddNewIpIntervalo ip, IpTableIndex
-120         IpTables(IpTableIndex + 1) = GetTickCount()
-122         IpSecurityAceptarNuevaConexion = True
-            Exit Function
+114                 Debug.Print "CONEXION NO ACEPTADA"
+                    Exit Function
 
-        End If
+                End If
+
+            Else
+116             IpTableIndex = Not IpTableIndex
+118             AddNewIpIntervalo ip, IpTableIndex
+120             IpTables(IpTableIndex + 1) = GetTickCount()
+122             IpSecurityAceptarNuevaConexion = True
+                Exit Function
+            End If
+        #End If
+    
 
         
         Exit Function

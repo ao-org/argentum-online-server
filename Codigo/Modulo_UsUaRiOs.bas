@@ -624,8 +624,9 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As eHeading) As
             End If
 
 108         If .Accion.AccionPendiente = True Then
-110             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, .Accion.Particula, 1, True))
-112             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.CharIndex, 1, Accion_Barra.CancelarAccion))
+                .Counters.TimerBarra = 0
+110             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, .Accion.Particula, .Counters.TimerBarra, True))
+112             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.CharIndex, .Counters.TimerBarra, Accion_Barra.CancelarAccion))
 114             .Accion.AccionPendiente = False
 116             .Accion.Particula = 0
 118             .Accion.TipoAccion = Accion_Barra.CancelarAccion
