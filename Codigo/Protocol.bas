@@ -12911,7 +12911,9 @@ Private Sub HandleBannedIPReload(ByVal UserIndex As Integer)
 104         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster)) Then Exit Sub
 
 106         Call CargarListaNegraUsuarios(LoadIPs)
-
+            
+            Call WriteConsoleMsg(UserIndex, "Lista de IPs recargada.", FontTypeNames.FONTTYPE_INFO)
+            
     End With
         
     Exit Sub
@@ -13032,9 +13034,12 @@ Private Sub HandleBanIP(ByVal UserIndex As Integer)
         ' Si el 4to caracter es un ".", de "XXX.XXX.XXX.XXX", entonces es IP.
         If mid$(NickOrIP, 4, 1) = "." Then
             
-            ' Si no tiene formato válido, lo sanitizamos.
-            If Not validipv4str(NickOrIP) Then
-                bannedIP = StrConv(str2ipv4l(NickOrIP), vbFromUnicode)
+            ' Me fijo que tenga formato valido
+            If IsValidIPAddress(NickOrIP) Then
+                bannedIP = NickOrIP
+            Else
+                Call WriteConsoleMsg(UserIndex, "La IP " & NickOrIP & " no tiene un formato válido.", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
             End If
                
         Else ' Es un Nick
