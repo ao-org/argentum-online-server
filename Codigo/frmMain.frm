@@ -773,10 +773,6 @@ auxSocket_DataArrival_Err:
         
 End Sub
 
-Private Sub Frame2_DragDrop(Source As Control, X As Single, Y As Single)
-
-End Sub
-
 Private Sub Invasion_Timer()
 
 

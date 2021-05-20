@@ -162,7 +162,6 @@ Private Sub AI_CaminarSinRumboCercaDeOrigen(ByVal NpcIndex As Integer)
         On Error GoTo AI_CaminarSinRumboCercaDeOrigen_Err
 
 100     With NpcList(NpcIndex)
-            Debug.Print .Name & " original de (" & .Orig.X & ", " & .Orig.Y & ") y me encuentro en (" & .Pos.X & ", " & .Pos.Y & ")"
             If .flags.Paralizado > 0 Or .flags.Inmovilizado > 0 Then
 102             Call AnimacionIdle(NpcIndex, True)
             ElseIf Distancia(.Pos, .Orig) > 4 Then

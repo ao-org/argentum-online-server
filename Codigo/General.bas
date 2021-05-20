@@ -2612,11 +2612,8 @@ Sub GuardarUsuarios()
 114     For i = 1 To LastUser
 
 116         If UserList(i).flags.UserLogged Then
-                #If DEBUGGING Then
-118                 'Call SaveUser(i)
-                #Else
-                    Call SaveUser(i)
-                #End If
+
+117              Call SaveUser(i)
 
             End If
 
