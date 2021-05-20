@@ -1880,24 +1880,24 @@ Private Sub TIMER_AI_Timer()
 124                         If .flags.Inmovilizado > 0 Then Call EfectoInmovilizadoNpc(NpcIndex)
                         
 126                         If Mapa > 0 Then
-
-128                             If MapInfo(Mapa).NumUsers > 0 Or NpcList(NpcIndex).NPCtype = eNPCType.GuardiaNpc Then
+                                'Emancu: Vamos a probar si el server se degrada moviendo TODOS los npc, con o sin users.
+128                             'If MapInfo(Mapa).NumUsers > 0 Or NpcList(NpcIndex).NPCtype = eNPCType.GuardiaNpc Then
     
 130                                 If IntervaloPermiteMoverse(NpcIndex) Then
                                         
                                         'Si NO es pretoriano...
-132                                     If .NPCtype <> eNPCType.Pretoriano Then
-134                                         Call NpcAI(NpcIndex)
+                                        If .NPCtype = eNPCType.Pretoriano Then
+132                                         Call ClanPretoriano(.ClanIndex).PerformPretorianAI(NpcIndex)
                                     
                                         Else '... si es pretoriano.
-136                                         Call ClanPretoriano(.ClanIndex).PerformPretorianAI(NpcIndex)
+136                                         Call NpcAI(NpcIndex)
                                         
                                         End If
                                         
                                         
                                     End If
     
-                                End If
+                                'End If
     
                             End If
 
