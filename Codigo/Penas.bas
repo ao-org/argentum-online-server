@@ -21,10 +21,10 @@ Public Sub CargarListaNegraUsuarios(ByVal LoadFlags As e_LoadBlacklistFlags)
         Dim iKey   As String
         Dim iValue As String
 
-100     If Not FileExist(DatPath & "Baneos.ini") Then Exit Sub
+100     If Not FileExist(DatPath & "Baneos.dat") Then Exit Sub
 
 102     Set File = New clsIniManager
-104     Call File.Initialize(DatPath & "Baneos.ini")
+104     Call File.Initialize(DatPath & "Baneos.dat")
 
 106     If (LoadFlags And LoadIPs) Then
 
@@ -237,6 +237,7 @@ End Function
 
 Public Sub BanearIP(ByVal BannerIndex As Integer, ByVal UserName As String, ByVal IP As String)
         
+        
         On Error GoTo BanearIP_Err
         
         ' Lo guardo en Baneos.dat
@@ -279,16 +280,16 @@ Public Sub DesbanearIP(ByVal IP As String, ByVal UnbannerIndex As Integer)
         'Dim i As Long
         'Dim NewIPs As String
         'For i = 0 To IP_Blacklist.Count - 1
-            ' Meto todas MENOS la que vamos a desbanear
+        '    ' Meto todas MENOS la que vamos a desbanear
         '    If IP_Blacklist(i) <> ip Then
         '        NewIPs = NewIPs & IP_Blacklist(i) & ","
         '    End If
         'Next
         
-        'Call Shell("netsh.exe advfirewall firewall set rule name=""Lista Negra IPs"" dir=in remoteip=" & NewIPs)
+        'Call Shell("netsh.exe advfirewall firewall set rule name=""Lista IPs Prohibidas"" dir=in remoteip=" & NewIPs)
         
         ' Registramos el des-baneo en los logs.
-104     Call LogGM(UserList(UnbannerIndex).Name, "Des-Baneó la IP: " & ip & " de " & IP_Blacklist(ip))
+104     Call LogGM(UserList(UnbannerIndex).Name, "Des-Baneó la IP: " & IP & " de " & IP_Blacklist(IP))
 
         Exit Sub
 

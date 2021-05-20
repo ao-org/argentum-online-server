@@ -436,8 +436,8 @@ Public Sub EventoSockAccept(ByVal SockID As Long)
         'socket de la nueva conn
     
         'Modificado por Maraxus
-        'Ret = WSAAccept(SockID, sa, Tam, AddressOf CondicionSocket, 0)
-102     ret = accept(SockID, sa, Tam)
+        ret = WSAAccept(SockID, sa, Tam, AddressOf CondicionSocket, 0)
+102     'ret = accept(SockID, sa, Tam)
 
 104     If ret = INVALID_SOCKET Then
 106         i = Err.LastDllError
@@ -733,7 +733,6 @@ Public Function CondicionSocket(ByRef lpCallerId As WSABUF, ByRef lpCallerData A
         Dim sa As sockaddr
     
         'Check if we were requested to force reject
-
 100     If dwCallbackData = 1 Then
 102         CondicionSocket = CF_REJECT
             Exit Function
@@ -748,7 +747,14 @@ Public Function CondicionSocket(ByRef lpCallerId As WSABUF, ByRef lpCallerData A
             Exit Function
 
         End If
-
+        
+        ' Si esta en la lista de IPs prohibidas, rechazamos la conexion
+        If IP_Blacklist.Exists(GetAscIP(sa.sin_addr)) Then
+            Debug.Print "La IP " & GetAscIP(sa.sin_addr) & " esta baneada, CONEXION RECHAZADA"
+            CondicionSocket = CF_REJECT
+            Exit Function
+        End If
+        
 110     CondicionSocket = CF_ACCEPT 'En realdiad es al pedo, porque CondicionSocket se inicializa a 0, pero así es más claro....
         
         Exit Function
