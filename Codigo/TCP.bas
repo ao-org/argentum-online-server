@@ -2198,11 +2198,8 @@ Sub CloseUser(ByVal UserIndex As Integer)
             ' Grabamos el personaje del usuario
         
 202         errordesc = "ERROR AL GRABAR PJ"
-            #If DEBUGGING Then
-204             'Call SaveUser(UserIndex, True)
-            #Else
-                Call SaveUser(UserIndex, True)
-            #End If
+204         Call SaveUser(UserIndex, True)
+
 206         errordesc = "ERROR AL DESCONTAR USER DE MAPA"
     
 208         If MapInfo(Map).NumUsers > 0 Then

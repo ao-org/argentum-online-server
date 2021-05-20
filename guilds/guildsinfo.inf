@@ -1,2 +1,14 @@
 [INIT]
-NroGuilds=0
+NroGuilds=1
+
+[GUILD1]
+GuildName=PEPE EL SORETE
+Founder=Clero Clero
+Date=20/5/2021
+Antifaccion=0
+Desc=
+GuildNews=¡Bienvenido a PEPE EL SORETE! Clan creado con alineación : .
+Leader=Clero Clero
+NivelDeClan=1
+ExpActual=0
+ExpNecesaria=500
