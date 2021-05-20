@@ -22,7 +22,7 @@ Public Sub NpcAI(ByVal NpcIndex As Integer)
 106                 If .Hostile = 1 Then
 108                     Call PerseguirUsuarioCercano(NpcIndex)
                     Else
-110                     Call AI_CaminarSinRumbo(NpcIndex)
+110                     Call AI_CaminarSinRumboCercaDeOrigen(NpcIndex)
                     End If
 
 112             Case TipoAI.NpcDefensa
@@ -130,15 +130,14 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
 148         If .Target > 0 Then
 150             Call AI_AtacarUsuarioObjetivo(NpcIndex)
             Else
-152             If NpcList(NpcIndex).NPCtype <> eNPCType.GuardiaReal And NpcList(NpcIndex).NPCtype <> eNPCType.GuardiasCaos Then
+152             If .NPCtype <> eNPCType.GuardiaReal And .NPCtype <> eNPCType.GuardiasCaos Then
 154                 Call RestoreOldMovement(NpcIndex)
                     ' No encontro a nadie cerca, camina unos pasos en cualquier direccion.
-156                 Call AI_CaminarSinRumbo(NpcIndex)
-                    
+156                 Call AI_CaminarSinRumboCercaDeOrigen(NpcIndex)
                    
                 Else
-158                  If Distancia(NpcList(NpcIndex).Pos, NpcList(NpcIndex).Orig) > 0 Then
-160                     Call AI_CaminarConRumbo(NpcIndex, NpcList(NpcIndex).Orig)
+158                 If Distancia(.Pos, .Orig) > 0 Then
+160                     Call AI_CaminarConRumbo(NpcIndex, .Orig)
                     Else
 162                     If .Char.Heading <> eHeading.SOUTH Then
 164                         Call ChangeNPCChar(NpcIndex, .Char.Body, .Char.Head, eHeading.SOUTH)
@@ -154,6 +153,34 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
 ErrorHandler:
 166     Call RegistrarError(Err.Number, Err.Description, "AI_NPC.PerseguirUsuarioCercano", Erl)
 
+End Sub
+
+' Cuando un NPC no tiene target y se puede mover libremente pero cerca de su lugar de origen.
+' La mayoria de los NPC deberian mantenerse cerca de su posicion de origen, algunos quedaran quietos
+' en su posicion y otros se moveran libremente cerca de su posicion de origen.
+Private Sub AI_CaminarSinRumboCercaDeOrigen(ByVal NpcIndex As Integer)
+        On Error GoTo AI_CaminarSinRumboCercaDeOrigen_Err
+
+100     With NpcList(NpcIndex)
+            Debug.Print .Name & " original de (" & .Orig.X & ", " & .Orig.Y & ") y me encuentro en (" & .Pos.X & ", " & .Pos.Y & ")"
+            If .flags.Paralizado > 0 Or .flags.Inmovilizado > 0 Then
+102             Call AnimacionIdle(NpcIndex, True)
+            ElseIf Distancia(.Pos, .Orig) > 4 Then
+104             Call AI_CaminarConRumbo(NpcIndex, .Orig)
+            ElseIf RandomNumber(1, 6) = 3 Then
+106             Call MoveNPCChar(NpcIndex, CByte(RandomNumber(eHeading.NORTH, eHeading.WEST)))
+            Else
+108             Call AnimacionIdle(NpcIndex, True)
+            End If
+
+        End With
+
+        Exit Sub
+
+AI_CaminarSinRumboCercaDeOrigen_Err:
+110     Call RegistrarError(Err.Number, Err.Description, "AI.AI_CaminarSinRumboCercaDeOrigen_Err", Erl)
+112     Resume Next
+        
 End Sub
 
 ' Cuando un NPC no tiene target y se tiene que mover libremente
@@ -246,6 +273,8 @@ Private Sub AI_AtacarUsuarioObjetivo(ByVal AtackerNpcIndex As Integer)
 126             If .pathFindingInfo.PathLength = 0 And EstaPegadoAlUsuario Then Exit Sub
             
 128             Call AI_CaminarConRumbo(AtackerNpcIndex, UserList(.Target).Pos)
+            Else
+                Call AI_CaminarSinRumboCercaDeOrigen(AtackerNpcIndex)
             End If
         End With
 
@@ -255,6 +284,7 @@ ErrorHandler:
 130     Call RegistrarError(Err.Number, Err.Description, "AIv2.AI_AtacarUsuarioObjetivo", Erl)
 132      Resume Next
 End Sub
+
 Public Sub AI_GuardiaPersigueNpc(ByVal NpcIndex As Integer)
         On Error GoTo ErrorHandler
         Dim targetPos As WorldPos
@@ -303,11 +333,11 @@ ErrorHandler:
 
 End Sub
 
-Public Function DistanciaRadial(OrigenPos As WorldPos, DestinoPos As WorldPos) As Long
+Private Function DistanciaRadial(OrigenPos As WorldPos, DestinoPos As WorldPos) As Long
 100     DistanciaRadial = max(Abs(OrigenPos.X - DestinoPos.X), Abs(OrigenPos.Y - DestinoPos.Y))
 End Function
 
-Function BuscarNpcEnArea(ByVal NpcIndex As Integer) As Integer
+Private Function BuscarNpcEnArea(ByVal NpcIndex As Integer) As Integer
         
         On Error GoTo BuscarNpcEnArea
         
