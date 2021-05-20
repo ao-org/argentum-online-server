@@ -4357,11 +4357,11 @@ Public Sub WriteCharacterInfo(ByVal UserIndex As Integer, ByVal CharName As Stri
 
     With UserList(UserIndex).outgoingData
         Call .WriteID(ServerPacketID.CharacterInfo)
+        Call .WriteByte(gender)
         
         Call .WriteASCIIString(CharName)
         Call .WriteByte(race)
         Call .WriteByte(Class)
-        Call .WriteByte(gender)
         
         Call .WriteByte(level)
         Call .WriteLong(gold)
