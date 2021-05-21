@@ -25,8 +25,8 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
 112             If Status(UserIndex) = 2 Then
 114                 Call WriteChatOverHead(UserIndex, "¡¡¡No se permiten criminales en el ejercito imperial!!!", charIndexStr, vbWhite)
                     Exit Sub
-
                 End If
+                
 
 116             If Status(UserIndex) = 0 Then
 118                 Call WriteChatOverHead(UserIndex, "¡¡¡No se permiten neutrales en el ejercito imperial, antes debes solicitar el perdón con un sacerdote!!!", charIndexStr, vbWhite)
@@ -74,7 +74,15 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
 
                 End If
                 
-
+                'HarThaoS: Lo pongo al final para que lo expulse del clan solamente si cumple todos los requisitos.
+                If .GuildIndex > 0 Then
+                    If PersonajeEsLeader(.Name) Then
+                        Call WriteChatOverHead(UserIndex, "¡¡Para unirte a nuestras fuerzas deberás dejar el clan!!", charIndexStr, vbWhite)
+                        Exit Sub
+                    Else
+                        Call m_EcharMiembroDeClan(UserIndex, .Name)
+                    End If
+                End If
 
                 ' Cumple con los requisitos para enlistarse
 146             .Faccion.ArmadaReal = 1
@@ -164,7 +172,7 @@ Public Sub ExpulsarFaccionReal(ByVal UserIndex As Integer)
 
 106         Call PerderItemsFaccionarios(UserIndex)
 108         Call WriteConsoleMsg(UserIndex, "Has sido expulsado del Ejercito Real.", FontTypeNames.FONTTYPE_INFOIAO)
-
+            
 
             Exit Sub
 
@@ -275,9 +283,18 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
 138             If .Stats.ELV < primerRango.NivelRequerido Then
 140                 Call WriteChatOverHead(UserIndex, "¡¡¡Para unirte a nuestras fuerzas debes ser al menos de nivel " & primerRango.NivelRequerido & "!!!", charIndexStr, vbWhite)
                     Exit Sub
-
                 End If
-
+                
+                
+                'HarThaoS: Lo pongo al final para que lo expulse del clan solamente si cumple todos los requisitos.
+                If .GuildIndex > 0 Then
+                    If PersonajeEsLeader(.Name) Then
+                        Call WriteChatOverHead(UserIndex, "¡¡Para unirte a nuestras fuerzas deberás dejar el clan!!", charIndexStr, vbWhite)
+                        Exit Sub
+                    Else
+                        Call m_EcharMiembroDeClan(UserIndex, .Name)
+                    End If
+                End If
 
                 ' Cumple con los requisitos para enlistarse
 142             .Faccion.FuerzasCaos = 1
@@ -287,7 +304,6 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
 
 150             If .Faccion.RecibioArmaduraCaos = 0 Then
 152                 Call WriteChatOverHead(UserIndex, "¡¡¡Bienvenido al lado oscuro!!! Aqui tienes tus armaduras. Derrama sangre Ciudadana y Real y serás recompensado, lo prometo.", charIndexStr, vbWhite)
-
 154                 .Faccion.NivelIngreso = .Stats.ELV
                 End If
 

@@ -979,7 +979,6 @@ Public Function ObtenerCriminal(ByVal name As String) As Byte
 120         Criminal = 6
 122     ElseIf EsAdmin(name) Then
 124         Criminal = 7
-
         End If
 
 126     ObtenerCriminal = Criminal
