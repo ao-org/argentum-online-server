@@ -1466,7 +1466,7 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
             Call HandleIncomingDataNewPacks(UserIndex)
 
         Case Else
-            Call RegistrarError(-1, "Paquete inválido: " & PacketID & " UserIndex: " & UserIndex & " (IP: " & UserList(UserIndex).ip & ") Último paquete: " & UserList(UserIndex).LastPacketID & IIf(UserList(UserIndex).LastPacketID = ClientPacketID.NewPacketID, " (New: " & UserList(UserIndex).LastNewPacketID & ")", ""), "Protocol.HandleIncomingData", Erl)
+            Call RegistrarError(-1, "Paquete inválido: " & PacketID & " UserIndex: " & UserIndex & " (IP: " & UserList(UserIndex).IP & ") Último paquete: " & UserList(UserIndex).LastPacketID & IIf(UserList(UserIndex).LastPacketID = ClientPacketID.NewPacketID, " (New: " & UserList(UserIndex).LastNewPacketID & ")", ""), "Protocol.HandleIncomingData", Erl)
             Call CloseSocket(UserIndex)
 
     End Select
@@ -1767,7 +1767,7 @@ Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
             Call HandleLogMacroClickHechizo(UserIndex)
             
         Case Else
-            Call RegistrarError(-1, "New paquete inválido: " & PacketID & " UserIndex: " & UserIndex & " (IP: " & UserList(UserIndex).ip & ")", "Protocol.HandleIncomingDataNewPacks", Erl)
+            Call RegistrarError(-1, "New paquete inválido: " & PacketID & " UserIndex: " & UserIndex & " (IP: " & UserList(UserIndex).IP & ")", "Protocol.HandleIncomingDataNewPacks", Erl)
             Call CloseSocket(UserIndex)
             
     End Select
@@ -4422,8 +4422,10 @@ Private Sub HandleCreateNewGuild(ByVal UserIndex As Integer)
             Call QuitarObjetos(408, 1, UserIndex)
             Call QuitarObjetos(409, 1, UserIndex)
             Call QuitarObjetos(411, 1, UserIndex)
-
-126             Call SendData(SendTarget.ToAll, UserIndex, PrepareMessageConsoleMsg(.Name & " fundó el clan " & GuildName & " con alineación " & IIf(Alineacion = 0, "ciudadana", "criminal") & ".", FontTypeNames.FONTTYPE_GUILD))
+            
+            
+                
+126             Call SendData(SendTarget.ToAll, UserIndex, PrepareMessageConsoleMsg(.Name & " ha fundado el clan <" & GuildName & "> de alineación " & GuildAlignment(.GuildIndex) & ".", FontTypeNames.FONTTYPE_GUILD))
 128             Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(44, NO_3D_SOUND, NO_3D_SOUND))
                 'Update tag
 130             Call RefreshCharStatus(UserIndex)
@@ -4604,7 +4606,7 @@ Private Sub HandleModifySkills(ByVal UserIndex As Integer)
             points(i) = .incomingData.ReadByte()
             
             If points(i) < 0 Then
-                Call LogHackAttemp(.Name & " IP:" & .ip & " trató de hackear los skills.")
+                Call LogHackAttemp(.Name & " IP:" & .IP & " trató de hackear los skills.")
                 .Stats.SkillPts = 0
                 Call CloseSocket(UserIndex)
                 Exit Sub
@@ -4615,7 +4617,7 @@ Private Sub HandleModifySkills(ByVal UserIndex As Integer)
         Next i
         
         If Count > .Stats.SkillPts Then
-            Call LogHackAttemp(.Name & " IP:" & .ip & " trató de hackear los skills.")
+            Call LogHackAttemp(.Name & " IP:" & .IP & " trató de hackear los skills.")
             Call CloseSocket(UserIndex)
             Exit Sub
 
@@ -5851,9 +5853,12 @@ Private Sub HandleGuildKickMember(ByVal UserIndex As Integer)
         GuildIndex = modGuilds.m_EcharMiembroDeClan(UserIndex, UserName)
         
         If GuildIndex > 0 Then
+            Dim expulsadoIndex As Integer
+            expulsadoIndex = NameIndex(UserName)
+            If expulsadoIndex > 0 Then Call WriteConsoleMsg(expulsadoIndex, "Has sido expulsado del clan.", FontTypeNames.FONTTYPE_GUILD)
+            
             Call SendData(SendTarget.ToGuildMembers, GuildIndex, PrepareMessageConsoleMsg(UserName & " fue expulsado del clan.", FontTypeNames.FONTTYPE_GUILD))
             Call SendData(SendTarget.ToGuildMembers, GuildIndex, PrepareMessagePlayWave(45, NO_3D_SOUND, NO_3D_SOUND))
-
         Else
             Call WriteConsoleMsg(UserIndex, "No podés expulsar ese personaje del clan.", FontTypeNames.FONTTYPE_GUILD)
 
@@ -5939,7 +5944,6 @@ Private Sub HandleGuildOpenElections(ByVal UserIndex As Integer)
         
         If Not modGuilds.v_AbrirElecciones(UserIndex, Error) Then
             Call WriteConsoleMsg(UserIndex, Error, FontTypeNames.FONTTYPE_GUILD)
-
         Else
             Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("¡Han comenzado las elecciones del clan! Puedes votar escribiendo /VOTO seguido del nombre del personaje, por ejemplo: /VOTO " & .Name, FontTypeNames.FONTTYPE_GUILD))
 
@@ -6199,7 +6203,7 @@ Private Sub HandleGuildLeave(ByVal UserIndex As Integer)
             Call WriteConsoleMsg(UserIndex, "Dejas el clan.", FontTypeNames.FONTTYPE_GUILD)
             Call SendData(SendTarget.ToGuildMembers, GuildIndex, PrepareMessageConsoleMsg(.Name & " deja el clan.", FontTypeNames.FONTTYPE_GUILD))
         Else
-            Call WriteConsoleMsg(UserIndex, "Tu no podés salir de ningún clan.", FontTypeNames.FONTTYPE_GUILD)
+            Call WriteConsoleMsg(UserIndex, "Tu no puedes salir de ningún clan.", FontTypeNames.FONTTYPE_GUILD)
 
         End If
 
@@ -7970,38 +7974,43 @@ Private Sub HandleLeaveFaction(ByVal UserIndex As Integer)
                 Call VolverCriminal(UserIndex)
                 Call WriteConsoleMsg(UserIndex, "Ahora sos un criminal.", FontTypeNames.FONTTYPE_INFOIAO)
                 Exit Sub
-
             End If
-
-        Else
-
-            ' Call WriteConsoleMsg(UserIndex, "Ya sos un criminal.", FontTypeNames.FONTTYPE_INFOIAO)
-            ' Exit Sub
         End If
         
         'Validate target NPC
         If .flags.TargetNPC = 0 Then
-
             If .Faccion.ArmadaReal = 1 Then
                 Call WriteConsoleMsg(UserIndex, "Para salir del ejercito debes ir a visitar al rey.", FontTypeNames.FONTTYPE_INFOIAO)
                 Exit Sub
             ElseIf .Faccion.FuerzasCaos = 1 Then
                 Call WriteConsoleMsg(UserIndex, "Para salir de la legion debes ir a visitar al diablo.", FontTypeNames.FONTTYPE_INFOIAO)
                 Exit Sub
-
             End If
-
             Exit Sub
-
         End If
         
         If NpcList(.flags.TargetNPC).NPCtype = eNPCType.Enlistador Then
-
             'Quit the Royal Army?
             If .Faccion.ArmadaReal = 1 Then
                 If NpcList(.flags.TargetNPC).flags.Faccion = 0 Then
+                
+                    'HarThaoS
+                    'Si tiene clan
+                    If .GuildIndex > 0 Then
+                        'Y no es leader
+                        If Not PersonajeEsLeader(.Name) Then
+                            'Lo echo a la verga
+                            Call m_EcharMiembroDeClan(UserIndex, .Name)
+                            Call WriteConsoleMsg(UserIndex, "Has dejado el clan.", FontTypeNames.FONTTYPE_GUILD)
+                        Else
+                            Call WriteChatOverHead(UserIndex, "Para dejar la facción primero deberás ceder el clan", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+                            Exit Sub
+                        End If
+                    End If
+                    
                     Call ExpulsarFaccionReal(UserIndex)
-                    Call WriteChatOverHead(UserIndex, "Serís bienvenido a las fuerzas imperiales si deseas regresar.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+                    Call WriteChatOverHead(UserIndex, "Serás bienvenido a las fuerzas imperiales si deseas regresar.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+
                     Exit Sub
                 Else
                     Call WriteChatOverHead(UserIndex, "¡¡¡Sal de aquí bufón!!!", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
@@ -8011,9 +8020,23 @@ Private Sub HandleLeaveFaction(ByVal UserIndex As Integer)
                 'Quit the Chaos Legion??
             ElseIf .Faccion.FuerzasCaos = 1 Then
 
-                If NpcList(.flags.TargetNPC).flags.Faccion = 1 Then
+                If NpcList(.flags.TargetNPC).flags.Faccion = 2 Then
+                    'HarThaoS
+                    'Si tiene clan
+                    If .GuildIndex > 0 Then
+                        'Y no es leader
+                        If Not PersonajeEsLeader(.Name) Then
+                            'Lo echo a la verga
+                            Call m_EcharMiembroDeClan(UserIndex, .Name)
+                            Call WriteConsoleMsg(UserIndex, "Has dejado el clan.", FontTypeNames.FONTTYPE_GUILD)
+                        Else
+                            Call WriteChatOverHead(UserIndex, "Para dejar la facción primero deberás ceder el clan", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+                            Exit Sub
+                        End If
+                    End If
+                    
                     Call ExpulsarFaccionCaos(UserIndex)
-                    Call WriteChatOverHead(UserIndex, "Ya volverís arrastrandote.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+                    Call WriteChatOverHead(UserIndex, "Ya volverás arrastrandote.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
                 Else
                     Call WriteChatOverHead(UserIndex, "Sal de aquí maldito criminal", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
 
@@ -16376,35 +16399,40 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
         MD5 = .incomingData.ReadASCIIString()
         
         #If DEBUGGING = False Then
-    
             If Not VersionOK(Version) Then
                 Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
                 Call CloseSocket(UserIndex)
                 Exit Sub
-    
             End If
-    
         #End If
         
         If Not EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MacAddress, HDSerial, MD5) Then
             Call CloseSocket(UserIndex)
             Exit Sub
-    
         End If
         
         If Not CheckUserAccount(UserDelete, UserList(UserIndex).AccountId) Then
-            Call LogHackAttemp(CuentaEmail & "[" & UserList(UserIndex).ip & "] intentó borrar el pj " & UserDelete)
+            Call LogHackAttemp(CuentaEmail & "[" & UserList(UserIndex).IP & "] intentó borrar el pj " & UserDelete)
             Call CloseSocket(UserIndex)
             Exit Sub
-    
+        End If
+        
+        'HarThaoS: Si teine clan y es leader no lo puedo eliminar
+        If PersonajeEsLeader(UserDelete) Then
+            Call WriteShowMessageBox(UserIndex, "No puedes eliminar el personaje por ser lider de un clan.")
+            Exit Sub
         End If
         
         ' Si está online el personaje a borrar, lo kickeo para prevenir dupeos.
         Dim targetUserIndex As Integer
         targetUserIndex = NameIndex(UserDelete)
     
+        
+        'HarThaoS: Me fijo si tiene clan y me traigo el nombre del clan
+        
+        
         If targetUserIndex > 0 Then
-            Call LogHackAttemp("Se trató de eliminar al personaje " & UserDelete & " cuando este estaba conectado desde la IP " & UserList(UserIndex).ip)
+            Call LogHackAttemp("Se trató de eliminar al personaje " & UserDelete & " cuando este estaba conectado desde la IP " & UserList(UserIndex).IP)
             Call CloseSocket(targetUserIndex)
     
         End If
@@ -17076,7 +17104,7 @@ Private Sub HandleQuieroFundarClan(ByVal UserIndex As Integer)
 
         If Not TieneObjetos(407, 1, UserIndex) Or Not TieneObjetos(408, 1, UserIndex) Then
             Call WriteConsoleMsg(UserIndex, "Para fundar un clan debes tener en tu inventario las 2 gemas: Gema Azul(1), Gema Naranja(1).", FontTypeNames.FONTTYPE_INFOIAO)
-            Exit Sub
+            'Exit Sub
 
         End If
 

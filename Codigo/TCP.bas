@@ -917,7 +917,6 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
             Dim n    As Integer
 
             Dim tStr As String
-            Debug.Print "ENTRE"
 102         If .flags.UserLogged Then
 104             Call LogCheating("El usuario " & .Name & " ha intentado loguear a " & Name & " desde la IP " & .IP)
             
@@ -1036,7 +1035,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
         
 172         If EsGM(UserIndex) Then
 174             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & Name & " se conecto al juego.", FontTypeNames.FONTTYPE_INFOBOLD))
-176             Call LogGM(.Name, "Se conectó con IP: " & .ip)
+176             Call LogGM(.Name, "Se conectó con IP: " & .IP)
 
             Else
 

@@ -260,16 +260,12 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 246                         Call RecompensaArmadaReal(UserIndex)
 
                         End If
-
                     Else
-
 248                     If UserList(UserIndex).Faccion.FuerzasCaos = 0 Then
 250                         Call EnlistarCaos(UserIndex)
                         Else
 252                         Call RecompensaCaos(UserIndex)
-
                         End If
-
                     End If
 
 254             ElseIf NpcList(MapData(Map, X, Y).NpcIndex).NPCtype = eNPCType.Gobernador Then

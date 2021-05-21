@@ -57,14 +57,9 @@ Private Const MAXANTIFACCION      As Byte = 5
 'puntos maximos de antifaccion que un clan tolera antes de ser cambiada su alineacion
 
 Public Enum ALINEACION_GUILD
-
-    ALINEACION_CIUDA = 0
-    ALINEACION_CRIMINAL = 1
-
-    ' ALINEACION_NEUTRO = 3
-    ' ALINEACION_CIUDA = 4
-    ' ALINEACION_ARMADA = 5
-    ' ALINEACION_MASTER = 6
+    ALINEACION_NEUTRAL = 0
+    ALINEACION_ARMADA = 1
+    ALINEACION_CAOTICA = 2
 End Enum
 
 'alineaciones permitidas
@@ -531,44 +526,42 @@ Public Function PuedeFundarUnClan(ByVal UserIndex As Integer, ByVal Alineacion A
 102     If UserList(UserIndex).GuildIndex > 0 Then
 104         refError = "Ya perteneces a un clan, no podés fundar otro"
             Exit Function
-
         End If
     
-106     If UserList(UserIndex).Stats.ELV < 25 Or UserList(UserIndex).Stats.UserSkills(eSkill.liderazgo) < 80 Then
-108         refError = "Para fundar un clan debes ser nivel 25, tener 80 en liderazgo y tener en tu inventario las 2 gemas: Gema Azul(1), Gema Naranja(1)."
+106     If UserList(UserIndex).Stats.ELV < 35 Or UserList(UserIndex).Stats.UserSkills(eSkill.liderazgo) < 100 Then
+108         refError = "Para fundar un clan debes ser nivel 35, tener 100 puntos en liderazgo y tener en tu inventario las Gemas Polar y Roja (Fundación)."
             Exit Function
         End If
     
 110     If Not TieneObjetos(407, 1, UserIndex) Then
-112          refError = "Para fundar un clan debes ser nivel 25, tener 80 en liderazgo y tener en tu inventario las 2 gemas: Gema Azul(1), Gema Naranja(1)."
+112         refError = "Para fundar un clan debes ser nivel 35, tener 100 puntos en liderazgo y tener en tu inventario las Gemas Polar y Roja (Fundación)."
             Exit Function
-
         End If
     
 114     If Not TieneObjetos(408, 1, UserIndex) Then
-116           refError = "Para fundar un clan debes ser nivel 25, tener 80 en liderazgo y tener en tu inventario las 2 gemas: Gema Azul(1), Gema Naranja(1)."
+116         refError = "Para fundar un clan debes ser nivel 35, tener 100 puntos en liderazgo y tener en tu inventario las Gemas Polar y Roja (Fundación)."
             Exit Function
-
         End If
     
 118     Select Case Alineacion
-
-            Case ALINEACION_GUILD.ALINEACION_CIUDA
-
-120             If Status(UserIndex) = 0 Or Status(UserIndex) = 2 Then
-122                 refError = "Para fundar un clan de ciudadanos no debes ser criminal."
+            Case ALINEACION_GUILD.ALINEACION_NEUTRAL
+120             If Status(UserIndex) = e_Facciones.Caos Or Status(UserIndex) = e_Facciones.Armada Then
+122                 refError = "Para fundar un clan neutral deberás ser ciudadano o criminal."
                     Exit Function
-
                 End If
 
-124         Case ALINEACION_GUILD.ALINEACION_CRIMINAL
+124         Case ALINEACION_GUILD.ALINEACION_ARMADA
 
-126             If Status(UserIndex) = 1 Or Status(UserIndex) = 3 Then
-128                 refError = "Para fundar un clan de criminales no debes ser ciudadano."
+126             If Status(UserIndex) <> e_Facciones.Armada Then
+128                 refError = "Para fundar un clan de la Armada Real deberás pertenecer a la misma."
                     Exit Function
-
                 End If
-
+                
+125         Case ALINEACION_GUILD.ALINEACION_CAOTICA
+127             If Status(UserIndex) <> e_Facciones.Caos Then
+129                 refError = "Para fundar un clan de la Legión Oscura deberás pertenecer a la misma."
+                    Exit Function
+                End If
         End Select
 
 130     PuedeFundarUnClan = True
@@ -615,14 +608,14 @@ Private Function m_EstadoPermiteEntrarChar(ByRef Personaje As String, ByVal Guil
         
 118         Select Case guilds(GuildIndex).Alineacion
 
-                Case ALINEACION_GUILD.ALINEACION_CIUDA
+                Case ALINEACION_GUILD.ALINEACION_NEUTRAL
+120                 m_EstadoPermiteEntrarChar = Promedio = 0 Or Promedio = 1
 
-120                 m_EstadoPermiteEntrarChar = Promedio = 1 Or Promedio = 3
+122             Case ALINEACION_GUILD.ALINEACION_ARMADA
+124                 m_EstadoPermiteEntrarChar = CBool(GetUserValue(Personaje, "pertenece_real"))
 
-122             Case ALINEACION_GUILD.ALINEACION_CRIMINAL
-
-124                 m_EstadoPermiteEntrarChar = Promedio = 0 Or Promedio = 2
-
+                Case ALINEACION_GUILD.ALINEACION_CAOTICA
+                    m_EstadoPermiteEntrarChar = CBool(GetUserValue(Personaje, "pertenece_caos"))
 
             End Select
 
@@ -641,13 +634,14 @@ Private Function m_EstadoPermiteEntrar(ByVal UserIndex As Integer, ByVal GuildIn
         On Error GoTo m_EstadoPermiteEntrar_Err
 
 100     Select Case guilds(GuildIndex).Alineacion
-            Case ALINEACION_GUILD.ALINEACION_CIUDA
+            Case ALINEACION_GUILD.ALINEACION_NEUTRAL
+102           m_EstadoPermiteEntrar = Status(UserIndex) = 0 Or Status(UserIndex) = 1
 
-102           m_EstadoPermiteEntrar = Status(UserIndex) = 1 Or Status(UserIndex) = 3
+104         Case ALINEACION_GUILD.ALINEACION_ARMADA
+106           m_EstadoPermiteEntrar = (Status(UserIndex) = 3)
 
-104         Case ALINEACION_GUILD.ALINEACION_CRIMINAL
-
-106           m_EstadoPermiteEntrar = Status(UserIndex) = 0 Or Status(UserIndex) = 2
+105         Case ALINEACION_GUILD.ALINEACION_CAOTICA
+107           m_EstadoPermiteEntrar = (Status(UserIndex) = 2)
 
         End Select
 
@@ -665,11 +659,12 @@ Public Function String2Alineacion(ByRef S As String) As ALINEACION_GUILD
 
 100     Select Case S
 
-            Case "Ciudadano"
-102             String2Alineacion = ALINEACION_CIUDA
-
-104         Case "Criminal"
-106             String2Alineacion = ALINEACION_CRIMINAL
+            Case "Neutral"
+102             String2Alineacion = ALINEACION_GUILD.ALINEACION_NEUTRAL
+104         Case "Armada Real"
+106             String2Alineacion = ALINEACION_GUILD.ALINEACION_ARMADA
+105         Case "Legión Oscura"
+107             String2Alineacion = ALINEACION_GUILD.ALINEACION_CAOTICA
 
         End Select
 
@@ -689,12 +684,14 @@ Public Function Alineacion2String(ByVal Alineacion As ALINEACION_GUILD) As Strin
 
 100     Select Case Alineacion
 
-            Case ALINEACION_GUILD.ALINEACION_CIUDA
-102             Alineacion2String = "Ciudadano"
+            Case ALINEACION_GUILD.ALINEACION_NEUTRAL
+102             Alineacion2String = "Neutral"
 
-104         Case ALINEACION_GUILD.ALINEACION_CRIMINAL
-106             Alineacion2String = "Criminal"
+            Case ALINEACION_GUILD.ALINEACION_ARMADA
+104             Alineacion2String = "Armada Real"
 
+            Case ALINEACION_GUILD.ALINEACION_CAOTICA
+106             Alineacion2String = "Legión Oscura"
         End Select
 
         
@@ -826,7 +823,7 @@ YaExiste_Err:
         
 End Function
 
-Public Function v_AbrirElecciones(ByVal UserIndex As Integer, ByRef refError As String) As Boolean
+Public Function v_AbrirElecciones(ByVal UserIndex As Integer, Optional ByRef refError As String = "") As Boolean
         
         On Error GoTo v_AbrirElecciones_Err
         
@@ -1434,7 +1431,14 @@ r_AceptarPropuestaDePaz_Err:
 142     Resume Next
         
 End Function
-
+Public Function PersonajeEsLeader(ByVal Nombre As String) As Boolean
+    Dim GuildIndex As Integer
+    GuildIndex = GetUserGuildIndexDatabase(Nombre)
+    
+    If GuildIndex > 0 Then
+        If m_EsGuildLeader(Nombre, GuildIndex) Then PersonajeEsLeader = True
+    End If
+End Function
 Public Function r_RechazarPropuestaDeAlianza(ByVal UserIndex As Integer, ByRef GuildPro As String, ByRef refError As String) As Integer
         
         On Error GoTo r_RechazarPropuestaDeAlianza_Err
