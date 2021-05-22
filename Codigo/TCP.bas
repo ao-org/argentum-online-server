@@ -921,17 +921,10 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
 104             Call LogCheating("El usuario " & .Name & " ha intentado loguear a " & Name & " desde la IP " & .IP)
             
                 'Kick player ( and leave character inside :D )!
-                #If DEBUGGING Then
-106                 ' Call CloseSocketSL(UserIndex)
-108                 ' Call Cerrar_Usuario(UserIndex)
-            
-                    ' Exit Sub
-               #Else
 106                 Call CloseSocketSL(UserIndex)
 108                 Call Cerrar_Usuario(UserIndex)
                     
                     Exit Sub
-               #End If
 
             End If
             
@@ -948,20 +941,14 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
 
                     ' Le avisamos al usuario que está jugando, en caso de que haya uno
 120                 Call WriteShowMessageBox(tIndex, "Alguien está ingresando con tu personaje. Si no has sido tú, por favor cambia la contraseña de tu cuenta.")
-                    #If DEBUGGING Then
-122                     'Call Cerrar_Usuario(tIndex)
-                    #Else
+
 123                     Call Cerrar_Usuario(tIndex)
-                    #End If
                 End If
             
-                #If DEBUGGING Then
-124                ' Call CloseSocket(UserIndex)
-                   ' Exit Sub
-               #Else
-125                    Call CloseSocket(UserIndex)
-                    Exit Sub
-               #End If
+
+125             Call CloseSocket(UserIndex)
+                Exit Sub
+
 
             End If
         
@@ -974,13 +961,9 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
 134                     Call WriteShowMessageBox(UserIndex, "La cuenta ya alcanzó el máximo de " & MaxUsersPorCuenta & " usuarios conectados.")
 
                     End If
-                    #If DEBUGGING Then
-136                ' Call CloseSocket(UserIndex)
-                  '  Exit Sub
-                    #Else
-135                     Call CloseSocket(UserIndex)
-                        Exit Sub
-                    #End If
+
+135                 Call CloseSocket(UserIndex)
+                    Exit Sub
 
                 End If
 
@@ -998,13 +981,10 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
             'Controlamos no pasar el maximo de usuarios
 152         If NumUsers >= MaxUsers Then
 154             Call WriteShowMessageBox(UserIndex, "El servidor ha alcanzado el maximo de usuarios soportado, por favor vuelva a intertarlo mas tarde.")
-                #If DEBUGGING Then
-156                ' Call CloseSocket(UserIndex)
-                   ' Exit Sub
-               #Else
+
 157                 Call CloseSocket(UserIndex)
                     Exit Sub
-               #End If
+
 
             End If
         
@@ -1012,13 +992,9 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
 158         If MaxConexionesIP > 0 Then
 160             If ContarMismaIP(UserIndex, .IP) >= MaxConexionesIP Then
 162                 Call WriteShowMessageBox(UserIndex, "Has alcanzado el límite de conexiones por IP.")
-                    #If DEBUGGING Then
-164                     'Call CloseSocket(UserIndex)
-                        ' Exit Sub
-                   #Else
+
 165                     Call CloseSocket(UserIndex)
                         Exit Sub
-                   #End If
 
                 End If
 
@@ -1041,13 +1017,9 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
 
 178             If ServerSoloGMs > 0 Then
 180                 Call WriteShowMessageBox(UserIndex, "Servidor restringido a administradores. Por favor reintente en unos momentos.")
-                    #If DEBUGGING Then
-182                     'Call CloseSocket(UserIndex)
-                        'Exit Sub
-                   #Else
+
 183                     Call CloseSocket(UserIndex)
                         Exit Sub
-                   #End If
 
                 End If
 
@@ -1090,25 +1062,17 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
 
 212         If Not ValidateChr(UserIndex) Then
 214             Call WriteShowMessageBox(UserIndex, "Error en el personaje. Comuniquese con el staff.")
-                #If DEBUGGING Then
-216            ' Call CloseSocket(UserIndex)
-               ' Exit Sub
-               #Else
+
 217                Call CloseSocket(UserIndex)
                    Exit Sub
-               #End If
 
             End If
     
 218         If UCase$(.Cuenta) <> UCase$(UserCuenta) Then
 220             Call WriteShowMessageBox(UserIndex, "El personaje no corresponde a su cuenta.")
-                #If DEBUGGING Then
-222             'Call CloseSocket(UserIndex)
-               ' Exit Sub
-               #Else
 225                Call CloseSocket(UserIndex)
                    Exit Sub
-               #End If
+
 
             End If
         
@@ -1162,13 +1126,9 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
             'Mapa válido
 270         If Not MapaValido(.Pos.Map) Then
 272             Call WriteErrorMsg(UserIndex, "EL PJ se encuenta en un mapa invalido.")
-                #If DEBUGGING Then
-274                 'Call CloseSocket(UserIndex)
-                    'Exit Sub
-               #Else
+
 275                Call CloseSocket(UserIndex)
                    Exit Sub
-               #End If
 
             End If
         
@@ -1186,14 +1146,8 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
         
 278             FoundPlace = False
 280             esAgua = (MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked And FLAG_AGUA) <> 0
-                .Pos.Map = RandomNumber(1, 34)
-                #If DEBUGGING Then
-282                 For tY = .Pos.Y - 20 To .Pos.Y + 20
-284                     For tX = .Pos.X - 20 To .Pos.X + 20
-                #Else
 285                 For tY = .Pos.Y - 1 To .Pos.Y + 1
 286                     For tX = .Pos.X - 1 To .Pos.X + 1
-                #End If
 287                     If esAgua Then
 
                             'reviso que sea pos legal en agua, que no haya User ni NPC para poder loguear.

@@ -2519,11 +2519,8 @@ Sub LoadSini()
 156     Temporal = val(Lector.GetValue("INIT", "MaxUsers"))
 
 158     If MaxUsers = 0 Then
-            #If DEBUGGING Then
-160              MaxUsers = 3000
-            #Else
-                MaxUsers = Temporal
-            #End If
+
+            MaxUsers = Temporal
 162         ReDim UserList(1 To MaxUsers) As user
 
         End If
