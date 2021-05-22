@@ -741,12 +741,7 @@ Public Function CondicionSocket(ByRef lpCallerId As WSABUF, ByRef lpCallerData A
     
         'Get the address
 104     Call CopyMemory(sa, ByVal lpCallerId.LpBuffer, lpCallerId.dwBufferLen)
-    
-106     If Not SecurityIp.IpSecurityAceptarNuevaConexion(sa.sin_addr) Then
-108         CondicionSocket = CF_REJECT
-            Exit Function
 
-        End If
         
         ' Si esta en la lista de IPs prohibidas, rechazamos la conexion
         If IP_Blacklist.Exists(GetAscIP(sa.sin_addr)) Then

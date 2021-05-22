@@ -772,11 +772,7 @@ Sub Main()
     
 270     With frmMain
 272         .Minuto.Enabled = True
-            #If DEBUGGING Then
-                .TimerGuardarUsuarios.Enabled = False
-            #Else
-274             .TimerGuardarUsuarios.Enabled = True
-            #End If
+274         .TimerGuardarUsuarios.Enabled = True
 276         .TimerGuardarUsuarios.Interval = IntervaloTimerGuardarUsuarios
 278         .tPiqueteC.Enabled = True
 280         .GameTimer.Enabled = True
