@@ -975,7 +975,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
         Exit Sub
 
 ErrorHandler:
-468     Call LogDatabaseError("Error en LoadUserDatabase: " & UserList(UserIndex).Name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
+468     Call LogDatabaseError("Error en LoadUserDatabase: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
 
 470     Resume Next
 
@@ -1257,7 +1257,6 @@ GetUserDiasDonadorDatabase_Err:
 108     Resume Next
         
 End Function
-
 Public Function GetUserComprasDonadorDatabase(CuentaEmail As String) As Long
         
         On Error GoTo GetUserComprasDonadorDatabase_Err
@@ -2601,7 +2600,17 @@ SanitizeNullValue_Err:
 104     Resume Next
         
 End Function
+Public Function GetUserLevelDatabase(ByVal name As String) As Byte
+        On Error GoTo GetUserLevelDatabase_Err
 
+        GetUserLevelDatabase = val(GetUserValue(name, "level"))
+        
+        Exit Function
+        
+GetUserLevelDatabase_Err:
+102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetUserLevelDatabase", Erl)
+104     Resume Next
+End Function
 Function adoIsConnected(adoCn As ADODB.Connection) As Boolean
 
         '----------------------------------------------------------------
