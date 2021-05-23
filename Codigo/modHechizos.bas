@@ -1696,15 +1696,57 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 
         End If
 
-444      If Hechizos(h).velocidad <> 0 And Hechizos(h).velocidad < 0.99 Then
-446         If UserIndex = tU Then
-                'Call WriteConsoleMsg(UserIndex, "No podés atacarte a vos mismo.", FontTypeNames.FONTTYPE_FIGHT)
-448             Call WriteLocaleMsg(UserIndex, "380", FontTypeNames.FONTTYPE_FIGHT)
+444      If Hechizos(h).velocidad <> 0 Then
+            'Verificamos que el usuario no este muerto
+            If UserList(tU).flags.Muerto = 1 Then
+                'Call WriteConsoleMsg(UserIndex, "¡Está muerto!", FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
+                b = False
                 Exit Sub
-
             End If
+
+            If Hechizos(h).velocidad < 1 Then
+                If UserIndex = tU Then
+                    'Call WriteConsoleMsg(UserIndex, "No podés atacarte a vos mismo.", FontTypeNames.FONTTYPE_FIGHT)
+                    Call WriteLocaleMsg(UserIndex, "380", FontTypeNames.FONTTYPE_FIGHT)
+                    Exit Sub
+                End If
     
-450         If Not PuedeAtacar(UserIndex, tU) Then Exit Sub
+                If Not PuedeAtacar(UserIndex, tU) Then Exit Sub
+
+            Else
+                'Para poder tirar curar veneno a un pk en el ring
+                If (TriggerZonaPelea(UserIndex, tU) <> TRIGGER6_PERMITE) Then
+                    If Status(tU) = 0 And Status(UserIndex) = 1 Or Status(tU) = 2 And Status(UserIndex) = 1 Then
+                        If esArmada(UserIndex) Then
+                            'Call WriteConsoleMsg(UserIndex, "Los Armadas no pueden ayudar a los Criminales", FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, "379", FontTypeNames.FONTTYPE_INFO)
+                            b = False
+                            Exit Sub
+    
+                        End If
+    
+                        If UserList(UserIndex).flags.Seguro Then
+                            'Call WriteConsoleMsg(UserIndex, "Para ayudar criminales debes sacarte el seguro ya que te volverás criminal como ellos", FontTypeNames.FONTTYPE_INFO)
+                            Call WriteLocaleMsg(UserIndex, "378", FontTypeNames.FONTTYPE_INFO)
+                            b = False
+                            Exit Sub
+    
+                        End If
+    
+                    End If
+    
+                End If
+            
+                'Si sos user, no uses este hechizo con GMS.
+                If UserList(UserIndex).flags.Privilegios And PlayerType.user Then
+                    If Not UserList(tU).flags.Privilegios And PlayerType.user Then
+                        Exit Sub
+    
+                    End If
+    
+                End If
+            End If
 
 452         Call UsuarioAtacadoPorUsuario(UserIndex, tU)
 
