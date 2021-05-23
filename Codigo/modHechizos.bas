@@ -3762,13 +3762,16 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
 
         End If
 
-704     If Hechizos(h).velocidad > 0 Then
+704     If Hechizos(h).velocidad <> 0 Then
 
-706         If Not PuedeAtacar(UserIndex, tU) Then Exit Sub
-            
-708         If UserIndex <> tU Then
-710             Call UsuarioAtacadoPorUsuario(UserIndex, tU)
-
+            If Hechizos(h).velocidad < 1 Then
+                If UserIndex = tU Then
+                    'Call WriteConsoleMsg(UserIndex, "No podés atacarte a vos mismo.", FontTypeNames.FONTTYPE_FIGHT)
+684                 Call WriteLocaleMsg(UserIndex, "380", FontTypeNames.FONTTYPE_FIGHT)
+                    Exit Sub
+    
+                End If
+                If Not PuedeAtacar(UserIndex, tU) Then Exit Sub
             End If
             
 712         enviarInfoHechizo = True
