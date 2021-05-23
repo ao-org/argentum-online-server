@@ -1696,7 +1696,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 
         End If
 
-444      If UserIndex = tU And Hechizos(h).velocidad <> 0 And Hechizos(h).velocidad < 0.99 Then
+444      If Hechizos(h).velocidad <> 0 And Hechizos(h).velocidad < 0.99 Then
 446         If UserIndex = tU Then
                 'Call WriteConsoleMsg(UserIndex, "No podés atacarte a vos mismo.", FontTypeNames.FONTTYPE_FIGHT)
 448             Call WriteLocaleMsg(UserIndex, "380", FontTypeNames.FONTTYPE_FIGHT)
