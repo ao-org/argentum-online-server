@@ -449,7 +449,7 @@ Public Sub ConectarMiembro(ByVal UserIndex As Integer)
 
             ' No avisa cuando loguea un dios
 104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then
-106             Call SendData(SendTarget.ToDiosesYclan, .GuildIndex, PrepareMessageGuildChat(.name & " se ha conectado."))
+106             Call SendData(SendTarget.ToDiosesYclan, .GuildIndex, PrepareMessageGuildChat(.Name & " se ha conectado.", 9))
 
             End If
 
@@ -485,7 +485,7 @@ Public Sub DesConectarMiembro(ByVal UserIndex As Integer)
 
                     ' No avisa cuando se desconecta un dios
 108                 If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then
-110                     Call SendData(SendTarget.ToDiosesYclan, .GuildIndex, PrepareMessageGuildChat(.name & " se ha desconectado."))
+110                     Call SendData(SendTarget.ToDiosesYclan, .GuildIndex, PrepareMessageGuildChat(.Name & " se ha desconectado.", 8))
 
                     End If
 

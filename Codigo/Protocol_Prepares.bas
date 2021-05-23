@@ -609,7 +609,7 @@ End Function
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Function PrepareMessageGuildChat(ByVal chat As String) As t_DataBuffer
+Public Function PrepareMessageGuildChat(ByVal chat As String, ByVal status As Byte) As t_DataBuffer
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -618,7 +618,7 @@ Public Function PrepareMessageGuildChat(ByVal chat As String) As t_DataBuffer
     '***************************************************
     With auxiliarBuffer
         Call .WriteID(ServerPacketID.GuildChat)
-        
+        Call .WriteByte(status)
         Call .WriteASCIIString(chat)
         
         Call .EndPacket

@@ -4290,7 +4290,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         If UserList(UserIndex).Grupo.Lider = UserIndex Then
                             Call InvitarMiembro(UserIndex, tU)
                         Else
-                            Call WriteConsoleMsg(UserIndex, "Tu no podés invitar usuarios, debe hacerlo " & UserList(UserList(UserIndex).Grupo.Lider).name & ".", FontTypeNames.FONTTYPE_INFOIAO)
+                            Call WriteConsoleMsg(UserIndex, "Tu no podés invitar usuarios, debe hacerlo " & UserList(UserList(UserIndex).Grupo.Lider).Name & ".", FontTypeNames.FONTTYPE_INFOIAO)
                             Call WriteWorkRequestTarget(UserIndex, 0)
 
                         End If
@@ -4372,7 +4372,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                 tU = .flags.TargetUser
 
                 If tU > 0 Then
-                    Call WriteConsoleMsg(UserIndex, "Servidor » [" & UserList(tU).name & "] seleccionado.", FontTypeNames.FONTTYPE_SERVER)
+                    Call WriteConsoleMsg(UserIndex, "Servidor » [" & UserList(tU).Name & "] seleccionado.", FontTypeNames.FONTTYPE_SERVER)
                 Else
                     Call WriteLocaleMsg(UserIndex, "261", FontTypeNames.FONTTYPE_INFO)
 
@@ -4425,7 +4425,7 @@ Private Sub HandleCreateNewGuild(ByVal UserIndex As Integer)
             
             
                 
-126             Call SendData(SendTarget.ToAll, UserIndex, PrepareMessageConsoleMsg(.name & " ha fundado el clan <" & GuildName & "> de alineación " & GuildAlignment(.GuildIndex) & ".", FontTypeNames.FONTTYPE_GUILD))
+126             Call SendData(SendTarget.ToAll, UserIndex, PrepareMessageConsoleMsg(.Name & " ha fundado el clan <" & GuildName & "> de alineación " & GuildAlignment(.GuildIndex) & ".", FontTypeNames.FONTTYPE_GUILD))
 128             Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(44, NO_3D_SOUND, NO_3D_SOUND))
                 'Update tag
 130             Call RefreshCharStatus(UserIndex)
@@ -4606,7 +4606,7 @@ Private Sub HandleModifySkills(ByVal UserIndex As Integer)
             points(i) = .incomingData.ReadByte()
             
             If points(i) < 0 Then
-                Call LogHackAttemp(.name & " IP:" & .IP & " trató de hackear los skills.")
+                Call LogHackAttemp(.Name & " IP:" & .IP & " trató de hackear los skills.")
                 .Stats.SkillPts = 0
                 Call CloseSocket(UserIndex)
                 Exit Sub
@@ -4617,7 +4617,7 @@ Private Sub HandleModifySkills(ByVal UserIndex As Integer)
         Next i
         
         If Count > .Stats.SkillPts Then
-            Call LogHackAttemp(.name & " IP:" & .IP & " trató de hackear los skills.")
+            Call LogHackAttemp(.Name & " IP:" & .IP & " trató de hackear los skills.")
             Call CloseSocket(UserIndex)
             Exit Sub
 
@@ -5945,7 +5945,7 @@ Private Sub HandleGuildOpenElections(ByVal UserIndex As Integer)
         If Not modGuilds.v_AbrirElecciones(UserIndex, Error) Then
             Call WriteConsoleMsg(UserIndex, Error, FontTypeNames.FONTTYPE_GUILD)
         Else
-            Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("¡Han comenzado las elecciones del clan! Puedes votar escribiendo /VOTO seguido del nombre del personaje, por ejemplo: /VOTO " & .name, FontTypeNames.FONTTYPE_GUILD))
+            Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("¡Han comenzado las elecciones del clan! Puedes votar escribiendo /VOTO seguido del nombre del personaje, por ejemplo: /VOTO " & .Name, FontTypeNames.FONTTYPE_GUILD))
 
         End If
 
@@ -7336,8 +7336,12 @@ Private Sub HandleGuildMessage(ByVal UserIndex As Integer)
             .flags.ChatHistory(UBound(.flags.ChatHistory)) = chat
             
             If .GuildIndex > 0 Then
-                Call SendData(SendTarget.ToDiosesYclan, .GuildIndex, PrepareMessageGuildChat(.Name & "> " & chat))
-
+                'HarThaoS: si es leade mando un 10 para el status del color(medio villero pero me dio paja)
+                If LCase(GuildLeader(.GuildIndex)) = .Name Then
+                    Call SendData(SendTarget.ToDiosesYclan, .GuildIndex, PrepareMessageGuildChat(.Name & "> " & chat, 10))
+                Else
+                    Call SendData(SendTarget.ToDiosesYclan, .GuildIndex, PrepareMessageGuildChat(.Name & "> " & chat, .Faccion.status))
+                End If
                 'TODO : Con la 0.12.1 se debe definir si esto vuelve o se borra (/CMSG overhead)
                 'Call SendData(SendTarget.ToClanArea, UserIndex, UserList(UserIndex).Pos.Map, "||" & vbYellow & "í< " & rData & " >í" & CStr(UserList(UserIndex).Char.CharIndex))
             End If
@@ -8844,7 +8848,7 @@ Private Sub HandleWarpChar(ByVal UserIndex As Integer)
                 Call WarpUserChar(tUser, Map, X, Y, True)
 
                 If tUser <> UserIndex Then
-                    Call LogGM(.name, "Transportó a " & UserList(tUser).name & " hacia " & "Mapa" & Map & " X:" & X & " Y:" & Y)
+                    Call LogGM(.Name, "Transportó a " & UserList(tUser).Name & " hacia " & "Mapa" & Map & " X:" & X & " Y:" & Y)
                 End If
                         
             End If
@@ -8897,11 +8901,11 @@ Private Sub HandleSilence(ByVal UserIndex As Integer)
                         If minutos > 0 Then
                             Call SilenciarUserDatabase(UserName, minutos)
                             Call SavePenaDatabase(UserName, .Name & ": silencio por " & Time & " minutos. " & Date & " " & Time)
-                            Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("Administración » " & .name & " ha silenciado a " & UserName & "(offline) por " & minutos & " minutos.", FontTypeNames.FONTTYPE_GM))
+                            Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("Administración » " & .Name & " ha silenciado a " & UserName & "(offline) por " & minutos & " minutos.", FontTypeNames.FONTTYPE_GM))
                             Call LogGM(.Name, "Silenciar a " & UserList(tUser).Name & " por " & minutos & " minutos.")
                         Else
                             Call DesilenciarUserDatabase(UserName)
-                            Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("Administración » " & .name & " ha desilenciado a " & UserName & "(offline).", FontTypeNames.FONTTYPE_GM))
+                            Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("Administración » " & .Name & " ha desilenciado a " & UserName & "(offline).", FontTypeNames.FONTTYPE_GM))
                             Call LogGM(.Name, "Desilenciar a " & UserList(tUser).Name & ".")
 
                         End If
@@ -8926,7 +8930,7 @@ Private Sub HandleSilence(ByVal UserIndex As Integer)
                     UserList(tUser).flags.SegundosPasados = 0
 
                     Call SavePenaDatabase(UserName, .Name & ": silencio por " & Time & " minutos. " & Date & " " & Time)
-                    Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("Administración » " & .name & " ha silenciado a " & UserList(tUser).name & " por " & minutos & " minutos.", FontTypeNames.FONTTYPE_GM))
+                    Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("Administración » " & .Name & " ha silenciado a " & UserList(tUser).Name & " por " & minutos & " minutos.", FontTypeNames.FONTTYPE_GM))
                     Call WriteConsoleMsg(tUser, "Has sido silenciado por los administradores, no podrás hablar con otros usuarios. Utilice /GM para pedir ayuda.", FontTypeNames.FONTTYPE_GM)
                     Call LogGM(.Name, "Silenciar a " & UserList(tUser).Name & " por " & minutos & " minutos.")
 
@@ -8934,7 +8938,7 @@ Private Sub HandleSilence(ByVal UserIndex As Integer)
                     
                     UserList(tUser).flags.Silenciado = 1
 
-                    Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("Administración » " & .name & " ha desilenciado a " & UserList(tUser).name & ".", FontTypeNames.FONTTYPE_GM))
+                    Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("Administración » " & .Name & " ha desilenciado a " & UserList(tUser).Name & ".", FontTypeNames.FONTTYPE_GM))
                     Call WriteConsoleMsg(tUser, "Has sido desilenciado.", FontTypeNames.FONTTYPE_GM)
                     Call LogGM(.Name, "Desilenciar a " & UserList(tUser).Name & ".")
 
@@ -9063,8 +9067,8 @@ Private Sub HandleGoToChar(ByVal UserIndex As Integer)
             End If
       
             If CompararPrivilegiosUser(tUser, UserIndex) > 0 Then
-                Call WriteConsoleMsg(UserIndex, "Se le ha avisado a " & UserList(tUser).name & " que quieres ir a su posición.", FontTypeNames.FONTTYPE_INFO)
-                Call WriteConsoleMsg(tUser, .name & " quiere transportarse a tu ubicación. Escribe /sum " & .name & " para traerlo.", FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(UserIndex, "Se le ha avisado a " & UserList(tUser).Name & " que quieres ir a su posición.", FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(tUser, .Name & " quiere transportarse a tu ubicación. Escribe /sum " & .Name & " para traerlo.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
@@ -9220,7 +9224,7 @@ Private Sub HandleDarLlaveAUsuario(ByVal UserIndex As Integer)
 
                         ' Actualizamos su llavero
                         If MeterLlaveEnLLavero(tUser, Llave) Then
-                            Call WriteConsoleMsg(UserIndex, "Llave número " & Llave & " entregada a " & UserList(tUser).name & ".", FontTypeNames.FONTTYPE_INFO)
+                            Call WriteConsoleMsg(UserIndex, "Llave número " & Llave & " entregada a " & UserList(tUser).Name & ".", FontTypeNames.FONTTYPE_INFO)
                         Else
                             Call WriteConsoleMsg(UserIndex, "No se pudo entregar la llave. El usuario no tiene más espacio en su llavero.", FontTypeNames.FONTTYPE_INFO)
 
@@ -9649,7 +9653,7 @@ Private Sub HandleJail(ByVal UserIndex As Integer)
                         End If
                         
                         Call Encarcelar(tUser, jailTime, .Name)
-                        Call LogGM(.name, " encarceló a " & UserName)
+                        Call LogGM(.Name, " encarceló a " & UserName)
 
                     End If
 
@@ -11454,8 +11458,8 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
             End If
 
             If CompararPrivilegiosUser(tUser, UserIndex) > 0 Then
-                Call WriteConsoleMsg(UserIndex, "Se le ha avisado a " & UserList(tUser).name & " que quieres traerlo a tu posición.", FontTypeNames.FONTTYPE_INFO)
-                Call WriteConsoleMsg(tUser, .name & " quiere transportarte a su ubicación. Escribe /ira " & .name & " para ir.", FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(UserIndex, "Se le ha avisado a " & UserList(tUser).Name & " que quieres traerlo a tu posición.", FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(tUser, .Name & " quiere transportarte a su ubicación. Escribe /ira " & .Name & " para ir.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
@@ -11482,7 +11486,7 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
 
                 Call WarpToLegalPos(tUser, .Pos.Map, .Pos.X, .Pos.Y + 1, True, True)
 
-                Call WriteConsoleMsg(UserIndex, "Has traído a " & UserList(tUser).name & ".", FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(UserIndex, "Has traído a " & UserList(tUser).Name & ".", FontTypeNames.FONTTYPE_INFO)
                     
                 Call LogGM(.Name, "/SUM " & UserName & " Map:" & .Pos.Map & " X:" & .Pos.X & " Y:" & .Pos.Y)
                 
@@ -13090,7 +13094,7 @@ Private Sub HandleBanIP(ByVal UserIndex As Integer)
                 
         Call BanearIP(UserIndex, NickOrIP, bannedIP)
         
-        Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.name & " baneó la IP " & bannedIP & " por " & Reason, FontTypeNames.FONTTYPE_FIGHT))
+        Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " baneó la IP " & bannedIP & " por " & Reason, FontTypeNames.FONTTYPE_FIGHT))
         
         
         'Find every player with that ip and ban him!
@@ -13548,7 +13552,7 @@ Private Sub HandleRemovePunishment(ByVal UserIndex As Integer)
                 End If
                 
                 If PersonajeExiste(UserName) Then
-                    Call LogGM(.name, "Borro la pena " & punishment & " de " & UserName & " y la cambií por: " & NewText)
+                    Call LogGM(.Name, "Borro la pena " & punishment & " de " & UserName & " y la cambií por: " & NewText)
                     
                     If Database_Enabled Then
                         Call CambiarPenaDatabase(UserName, punishment, .Name & ": <" & NewText & "> " & Date & " " & Time)
@@ -14638,7 +14642,7 @@ Public Sub HandleChangeMapInfoBackup(ByVal UserIndex As Integer)
         
         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster)) Then Exit Sub
         
-        Call LogGM(.name, .name & " ha cambiado la informaciín sobre el BackUp")
+        Call LogGM(.Name, .Name & " ha cambiado la informaciín sobre el BackUp")
         
         'Change the boolean to byte in a fast way
         If doTheBackUp Then
@@ -14730,27 +14734,27 @@ Public Sub HandleChangeMapInfoRestricted(ByVal UserIndex As Integer)
                 Case "NEWBIE"
                     MapInfo(.Pos.Map).Newbie = Not MapInfo(.Pos.Map).Newbie
                     Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & ": Newbie = " & MapInfo(.Pos.Map).Newbie, FontTypeNames.FONTTYPE_INFO)
-                    Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .Pos.Map & ": Newbie = " & MapInfo(.Pos.Map).Newbie)
+                    Call LogGM(.Name, .Name & " ha cambiado la restricción del mapa " & .Pos.Map & ": Newbie = " & MapInfo(.Pos.Map).Newbie)
                         
                 Case "SINMAGIA"
                     MapInfo(.Pos.Map).SinMagia = Not MapInfo(.Pos.Map).SinMagia
                     Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & ": SinMagia = " & MapInfo(.Pos.Map).SinMagia, FontTypeNames.FONTTYPE_INFO)
-                    Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .Pos.Map & ": SinMagia = " & MapInfo(.Pos.Map).SinMagia)
+                    Call LogGM(.Name, .Name & " ha cambiado la restricción del mapa " & .Pos.Map & ": SinMagia = " & MapInfo(.Pos.Map).SinMagia)
                         
                 Case "NOPKS"
                     MapInfo(.Pos.Map).NoPKs = Not MapInfo(.Pos.Map).NoPKs
                     Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & ": NoPKs = " & MapInfo(.Pos.Map).NoPKs, FontTypeNames.FONTTYPE_INFO)
-                    Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .Pos.Map & ": NoPKs = " & MapInfo(.Pos.Map).NoPKs)
+                    Call LogGM(.Name, .Name & " ha cambiado la restricción del mapa " & .Pos.Map & ": NoPKs = " & MapInfo(.Pos.Map).NoPKs)
                         
                 Case "NOCIUD"
                     MapInfo(.Pos.Map).NoCiudadanos = Not MapInfo(.Pos.Map).NoCiudadanos
                     Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & ": NoCiudadanos = " & MapInfo(.Pos.Map).NoCiudadanos, FontTypeNames.FONTTYPE_INFO)
-                    Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .Pos.Map & ": NoCiudadanos = " & MapInfo(.Pos.Map).NoCiudadanos)
+                    Call LogGM(.Name, .Name & " ha cambiado la restricción del mapa " & .Pos.Map & ": NoCiudadanos = " & MapInfo(.Pos.Map).NoCiudadanos)
                         
                 Case "SININVI"
                     MapInfo(.Pos.Map).SinInviOcul = Not MapInfo(.Pos.Map).SinInviOcul
                     Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.Map & ": SinInvi = " & MapInfo(.Pos.Map).SinInviOcul, FontTypeNames.FONTTYPE_INFO)
-                    Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .Pos.Map & ": SinInvi = " & MapInfo(.Pos.Map).SinInviOcul)
+                    Call LogGM(.Name, .Name & " ha cambiado la restricción del mapa " & .Pos.Map & ": SinInvi = " & MapInfo(.Pos.Map).SinInviOcul)
                 
                 Case Else
                     Call WriteConsoleMsg(UserIndex, "Opciones para restringir: 'NEWBIE', 'SINMAGIA', 'SININVI', 'NOPKS', 'NOCIUD'", FontTypeNames.FONTTYPE_INFO)
@@ -15238,7 +15242,7 @@ Public Sub HandleAlterPassword(ByVal UserIndex As Integer)
         
         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.RoleMaster)) Then
         
-            Call LogGM(.name, "Ha alterado la contraseña de " & UserName)
+            Call LogGM(.Name, "Ha alterado la contraseña de " & UserName)
             
             If LenB(UserName) = 0 Or LenB(copyFrom) = 0 Then
                 Call WriteConsoleMsg(UserIndex, "usar /APASS <pjsinpass>@<pjconpass>", FontTypeNames.FONTTYPE_INFO)
@@ -16132,7 +16136,7 @@ Private Sub HandleOfertaInicial(ByVal UserIndex As Integer)
             UserList(UserIndex).Counters.TiempoParaSubastar = 0
             Subasta.OfertaInicial = Oferta
             Subasta.MejorOferta = 0
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.name & " está subastando: " & ObjData(Subasta.ObjSubastado).name & " (Cantidad: " & Subasta.ObjSubastadoCantidad & " ) - con un precio inicial de " & PonerPuntos(Subasta.OfertaInicial) & " monedas. Escribe /OFERTAR (cantidad) para participar.", FontTypeNames.FONTTYPE_SUBASTA))
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.Name & " está subastando: " & ObjData(Subasta.ObjSubastado).Name & " (Cantidad: " & Subasta.ObjSubastadoCantidad & " ) - con un precio inicial de " & PonerPuntos(Subasta.OfertaInicial) & " monedas. Escribe /OFERTAR (cantidad) para participar.", FontTypeNames.FONTTYPE_SUBASTA))
             .flags.Subastando = False
             Subasta.HaySubastaActiva = True
             Subasta.Subastador = .Name
@@ -16207,11 +16211,11 @@ Private Sub HandleOfertaDeSubasta(ByVal UserIndex As Integer)
             Call WriteUpdateGold(UserIndex)
             
             If Subasta.TiempoRestanteSubasta < 60 Then
-                Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Oferta mejorada por: " & .name & " (Ofrece " & PonerPuntos(Oferta) & " monedas de oro) - Tiempo Extendido. Escribe /SUBASTA para mas informaciín.", FontTypeNames.FONTTYPE_SUBASTA))
+                Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Oferta mejorada por: " & .Name & " (Ofrece " & PonerPuntos(Oferta) & " monedas de oro) - Tiempo Extendido. Escribe /SUBASTA para mas informaciín.", FontTypeNames.FONTTYPE_SUBASTA))
                 Call LogearEventoDeSubasta(.Name & ": Mejoro la oferta en el ultimo minuto ofreciendo " & PonerPuntos(Oferta) & " monedas.")
                 Subasta.TiempoRestanteSubasta = Subasta.TiempoRestanteSubasta + 30
             Else
-                Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Oferta mejorada por: " & .name & " (Ofrece " & PonerPuntos(Oferta) & " monedas de oro). Escribe /SUBASTA para mas informaciín.", FontTypeNames.FONTTYPE_SUBASTA))
+                Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Oferta mejorada por: " & .Name & " (Ofrece " & PonerPuntos(Oferta) & " monedas de oro). Escribe /SUBASTA para mas informaciín.", FontTypeNames.FONTTYPE_SUBASTA))
                 Call LogearEventoDeSubasta(.Name & ": Mejoro la oferta ofreciendo " & PonerPuntos(Oferta) & " monedas.")
                 Subasta.HuboOferta = True
                 Subasta.PosibleCancelo = False
@@ -16593,7 +16597,7 @@ Private Sub HandleCancelDuel(ByVal UserIndex As Integer)
             Call CancelarSolicitudReto(UserIndex, .Name & " ha cancelado la solicitud.")
 
         ElseIf .flags.AceptoReto > 0 Then
-            Call CancelarSolicitudReto(.flags.AceptoReto, .name & " ha cancelado su admisión.")
+            Call CancelarSolicitudReto(.flags.AceptoReto, .Name & " ha cancelado su admisión.")
 
         End If
 
@@ -17143,7 +17147,7 @@ Private Sub HandleLlamadadeClan(ByVal UserIndex As Integer)
             clan_nivel = modGuilds.NivelDeClan(.GuildIndex)
 
             If clan_nivel > 1 Then
-                Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Clan> [" & .name & "] solicita apoyo de su clan en " & DarNameMapa(.Pos.Map) & " (" & .Pos.Map & "-" & .Pos.X & "-" & .Pos.Y & "). Puedes ver su ubicación en el mapa del mundo.", FontTypeNames.FONTTYPE_GUILD))
+                Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Clan> [" & .Name & "] solicita apoyo de su clan en " & DarNameMapa(.Pos.Map) & " (" & .Pos.Map & "-" & .Pos.X & "-" & .Pos.Y & "). Puedes ver su ubicación en el mapa del mundo.", FontTypeNames.FONTTYPE_GUILD))
                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessagePlayWave("43", NO_3D_SOUND, NO_3D_SOUND))
                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageUbicacionLlamada(.Pos.Map, .Pos.X, .Pos.Y))
             
@@ -18022,9 +18026,9 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                     
                     If UserList(UserIndex).flags.TargetNPC <> 0 Then
                     
-                        Call WriteChatOverHead(UserIndex, "¡Gracias " & UserList(UserIndex).name & "! Ahora perteneces a la ciudad de " & DeDonde & ".", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
+                        Call WriteChatOverHead(UserIndex, "¡Gracias " & UserList(UserIndex).Name & "! Ahora perteneces a la ciudad de " & DeDonde & ".", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
                     Else
-                        Call WriteConsoleMsg(UserIndex, "¡Gracias " & UserList(UserIndex).name & "! Ahora perteneces a la ciudad de " & DeDonde & ".", FontTypeNames.FONTTYPE_INFOIAO)
+                        Call WriteConsoleMsg(UserIndex, "¡Gracias " & UserList(UserIndex).Name & "! Ahora perteneces a la ciudad de " & DeDonde & ".", FontTypeNames.FONTTYPE_INFOIAO)
 
                     End If
                     
@@ -18122,7 +18126,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                     End Select
                     
                     If UserList(UserIndex).flags.TargetNPC <> 0 Then
-                        Call WriteChatOverHead(UserIndex, "¡No hay problema " & UserList(UserIndex).name & "! Sos bienvenido en " & DeDonde & " cuando gustes.", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
+                        Call WriteChatOverHead(UserIndex, "¡No hay problema " & UserList(UserIndex).Name & "! Sos bienvenido en " & DeDonde & " cuando gustes.", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
 
                     End If
 
@@ -18434,7 +18438,7 @@ Private Sub HandleUnBanCuenta(ByVal UserIndex As Integer)
             End If
 
             If DesbanearCuenta(UserIndex, AccountID) Then
-                Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & .name & " ha desbaneado la cuenta de " & UserNameOEmail & ".", FontTypeNames.FONTTYPE_SERVER))
+                Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & .Name & " ha desbaneado la cuenta de " & UserNameOEmail & ".", FontTypeNames.FONTTYPE_SERVER))
             End If
         End If
 
@@ -19690,7 +19694,7 @@ Private Sub HandleDenounce(ByVal UserIndex As Integer)
         End If
         
         Dim Denuncia As String, HayChat As Boolean
-        Denuncia = "[Últimos mensajes de " & UserList(tUser).name & "]" & vbNewLine
+        Denuncia = "[Últimos mensajes de " & UserList(tUser).Name & "]" & vbNewLine
         
         Dim i As Integer
 
@@ -19889,7 +19893,7 @@ Private Sub HandleLogMacroClickHechizo(ByVal UserIndex As Integer)
 
     With UserList(UserIndex)
 
-        Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("AntiCheat> El usuario " & .name & " se le cerró el cliente por posible uso de macro de hechizos", FontTypeNames.FONTTYPE_INFO))
+        Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("AntiCheat> El usuario " & .Name & " se le cerró el cliente por posible uso de macro de hechizos", FontTypeNames.FONTTYPE_INFO))
         Call LogHackAttemp("Usuario: " & .Name & "   " & "Ip: " & .IP & " Posible uso de macro de hechizos.")
 
     End With
@@ -19913,11 +19917,11 @@ Private Sub HandleCreateEvent(ByVal UserIndex As Integer)
 
             Case "INVASION BANDER"
                 Call IniciarEvento(TipoEvento.Invasion, 1)
-                Call LogGM(.name, "Forzó el evento Invasión en Banderbille.")
+                Call LogGM(.Name, "Forzó el evento Invasión en Banderbille.")
                 
             Case "INVASION CARCEL"
                 Call IniciarEvento(TipoEvento.Invasion, 2)
-                Call LogGM(.name, "Forzó el evento Invasión en Carcel.")
+                Call LogGM(.Name, "Forzó el evento Invasión en Carcel.")
 
             Case Else
                 Call WriteConsoleMsg(UserIndex, "No existe el evento """ & Name & """.", FontTypeNames.FONTTYPE_INFO)

@@ -1612,7 +1612,7 @@ End Sub
 ' @param    Chat Text to be displayed over the char's head.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Sub WriteGuildChat(ByVal UserIndex As Integer, ByVal chat As String)
+Public Sub WriteGuildChat(ByVal UserIndex As Integer, ByVal chat As String, ByVal status As Byte)
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -1623,7 +1623,7 @@ Public Sub WriteGuildChat(ByVal UserIndex As Integer, ByVal chat As String)
 
     With UserList(UserIndex).outgoingData
     
-        Call .WritePrepared(PrepareMessageGuildChat(chat))
+        Call .WritePrepared(PrepareMessageGuildChat(chat, status))
         Call .EndPacket
     
     End With
