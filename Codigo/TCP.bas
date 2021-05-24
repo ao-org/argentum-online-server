@@ -886,7 +886,7 @@ Function EntrarCuenta(ByVal UserIndex As Integer, CuentaEmail As String, CuentaP
         End If
 
 124     If Md5Cliente <> vbNullString And LCase$(Md5Cliente) <> LCase$(MD5) Then
-126         Call WriteShowMessageBox(UserIndex, "Error al comprobar el cliente del juego, por favor reinstale y vuelva a intentar.")
+126         Call WriteShowMessageBox(UserIndex, "Tiene una versión incorrecta el juego, ejecute el Launcher y vuelva a intentarlo.")
             Exit Function
         End If
 
