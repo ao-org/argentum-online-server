@@ -1810,7 +1810,7 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
 
         CuentaEmail = .ReadASCIIString()
         Password = .ReadASCIIString()
-        Version = CStr(.ReadByte()) & "." & CStr(.ReadByte()) & "." & CStr(.ReadByte())
+       ' Version = CStr(.ReadByte()) & "." & CStr(.ReadByte()) & "." & CStr(.ReadByte())
         UserName = .ReadASCIIString()
         MacAddress = .ReadASCIIString()
         HDSerial = .ReadLong()
@@ -1818,16 +1818,16 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
         
     End With
 
-  '  #If DEBUGGING = False Then
+    #If DEBUGGING = False Then
 
-       ' If Not VersionOK(Version) Then
-            'Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
-            'Call CloseSocket(UserIndex)
-           ' Exit Sub
+        If Not VersionOK(Version) Then
+            Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
+            Call CloseSocket(UserIndex)
+            Exit Sub
 
-       ' End If
+        End If
 
-   ' #End If
+    #End If
         
     If EsGmChar(UserName) Then
             
@@ -1940,7 +1940,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
 
         CuentaEmail = .ReadASCIIString()
         Password = .ReadASCIIString()
-        Version = CStr(.ReadByte()) & "." & CStr(.ReadByte()) & "." & CStr(.ReadByte())
+        'Version = CStr(.ReadByte()) & "." & CStr(.ReadByte()) & "." & CStr(.ReadByte())
         UserName = .ReadASCIIString()
         race = .ReadByte()
         gender = .ReadByte()
@@ -1973,16 +1973,16 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
 
     End If
     
-   ' #If DEBUGGING = False Then
+    #If DEBUGGING = False Then
 
-        'If Not VersionOK(Version) Then
-            'Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
-            'Call CloseSocket(UserIndex)
-            'Exit Sub
+        If Not VersionOK(Version) Then
+            Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
+            Call CloseSocket(UserIndex)
+            Exit Sub
 
-        'End If
+        End If
 
-    '#End If
+    #End If
         
     If EsGmChar(UserName) Then
             
@@ -16344,21 +16344,21 @@ Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
         
         CuentaEmail = .incomingData.ReadASCIIString()
         CuentaPassword = .incomingData.ReadASCIIString()
-        Version = CStr(.incomingData.ReadByte()) & "." & CStr(.incomingData.ReadByte()) & "." & CStr(.incomingData.ReadByte())
+        'Version = CStr(.incomingData.ReadByte()) & "." & CStr(.incomingData.ReadByte()) & "." & CStr(.incomingData.ReadByte())
         MacAddress = .incomingData.ReadASCIIString()
         HDSerial = .incomingData.ReadLong()
         MD5 = .incomingData.ReadASCIIString()
             
-        '#If DEBUGGING = False Then
+        #If DEBUGGING = False Then
     
-            'If Not VersionOK(Version) Then
-                'Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
-                'Call CloseSocket(UserIndex)
-                'Exit Sub
+            If Not VersionOK(Version) Then
+                Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
+                Call CloseSocket(UserIndex)
+                Exit Sub
         
-            'end If
+            End If
     
-        '#End If
+        #End If
     
         If EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MacAddress, HDSerial, MD5) Then
             Call WritePersonajesDeCuenta(UserIndex)
@@ -16397,18 +16397,18 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
         UserDelete = .incomingData.ReadASCIIString()
         CuentaEmail = .incomingData.ReadASCIIString()
         CuentaPassword = .incomingData.ReadASCIIString()
-        Version = CStr(.incomingData.ReadByte()) & "." & CStr(.incomingData.ReadByte()) & "." & CStr(.incomingData.ReadByte())
+        'Version = CStr(.incomingData.ReadByte()) & "." & CStr(.incomingData.ReadByte()) & "." & CStr(.incomingData.ReadByte())
         MacAddress = .incomingData.ReadASCIIString()
         HDSerial = .incomingData.ReadLong()
         MD5 = .incomingData.ReadASCIIString()
         
-        '#If DEBUGGING = False Then
-            'If Not VersionOK(Version) Then
-               ' Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
-                'Call CloseSocket(UserIndex)
-                'Exit Sub
-           ' End If
-        '#End If
+        #If DEBUGGING = False Then
+            If Not VersionOK(Version) Then
+                Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
+                Call CloseSocket(UserIndex)
+                Exit Sub
+            End If
+        #End If
         
         If Not EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MacAddress, HDSerial, MD5) Then
             Call CloseSocket(UserIndex)
